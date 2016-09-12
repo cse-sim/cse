@@ -1,0 +1,103 @@
+// CSE test input file for airnet fan power heat gain
+// 2-15-2011 chip
+
+
+runTitle="AirNet fan heat"
+ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+wuDays=10 nSubSteps=30
+// dbgPrintMask = $dayofyear >= Sep 30 && $dayofyear <= Oct 2 ? 64 : 0
+windF = .25
+
+
+WfName="CTZ12S13b.CSW"  //
+
+#Define CNE  //Uncomment this to get CNE layering, otherwise CSE explicit layers
+#Define IAQVentCFM 50.        	// CFM of IAQ vent
+#Define IAQfanWperCFM  0.25        	// W/CFM of IAQ vent
+Meter VentMtr
+
+//Materials
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+
+MATERIAL   "ExpFoam"  	matCond=1./48.   matSpHt=.2   matDens=2.0 		// get EPS value
+MATERIAL   "SoftWood"  	matCond=.0667   matSpHt=.33   matDens=32.
+MATERIAL   "Earth"  matCond=1   matSpHt=0.2   matDens=115  //Bazjanac and Huang slab model 
+MATERIAL   "ConcreteSlab"  matCond=1   matSpHt=0.2   matDens=144. 
+MATERIAL   "stucco"  matCond=0.4167   matSpHt=0.2   matDens=116.          //  JA Table 4.6.1
+
+//Constructions
+
+CONSTRUCTION WFrm2x4_R4 // 3.5"    (2x4)   1, 1.5, 1
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12. 	
+ 	layer 	lrMat="SoftWood" lrThk=3.5/12. 
+	layer 	lrMat="ExpFoam" lrThk=1./12.    //R4 Foam
+ 	layer 	lrMat="Stucco" lrThk=0.0729    //7/8"   	
+ 	
+CONSTRUCTION ExpSlabfloor  			// Revised Layers BAW 8/6				
+	layer 	lrMat="ConcreteSlab" lrThk=0.5/12. 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+        layer 	lrMat="Earth" lrThk=2./12. 
+        layer 	lrMat="Earth" lrThk=4./12. 
+        layer 	lrMat="Earth" lrThk=6./12. 
+        layer 	lrMat="Earth" lrThk=6./12. 
+        layer 	lrMat="Earth" lrThk=6./12.
+      
+  
+#if 1
+IZXFER IAQfanS izNVTYPE = AirNetExtFan izZN1 = Single // izFanVfLo  = 100 izFanVfHi  = 200
+   izFanElecPwr = 1 izFanVfDs = @Zone[ "Single"].znArea izFanMtr = VentMtr izFanEndUse = FANV
+   izVfMin = 10 izVfMax = 90
+IZXFER Hole1   izNVTYPE = AirNetExt izZN1 = Single izALo=2  izAHi = 2 izHD = 5 izNVEff =.5 izCpr=0.6
+#endif
+
+  
+   
+//Schedules
+
+Zone Single znArea=100 znVol =1000 znCAir=0.0001 infAC=0 infShld=5 infStories=1 infELA=0
+	znModel = CZM znTH =68 znTD = 72  znTC = 75 znEaveZ=20
+	znQMxH = 1000000 znQMxC = -1000000
+#if 0
+    xfanVfDs= IAQVentCFM      
+    xfanEff=0.46947*IAQfanWperCFM      
+    xfanPress=.25
+    //xfanShaftBhp=0.001341022*IAQfanWperCFM * IAQVentCFM
+    xfanMtr=IAQvent
+#endif
+
+
+#define WallCon WFrm2x4_R4
+SURFACE Wall1 sfType=Wall sfCon=WallCon sfArea=100 sfAzm=0 sfModel = forward_difference
+              // sfExCnd=SPECIFIEDT sfExT=70 sfExAbs=0 sfInH=1.5 sfExH=1.5
+SURFACE Wall2 Like Wall1 sfAzm=90  // 	
+SURFACE Wall3 Like Wall1 sfAzm=180  //            
+SURFACE Wall4 Like Wall1 sfAzm=270
+SURFACE Floor sfType=Floor sfCon=ExpSlabfloor sfArea = 100 sfModel = forward_difference;
+    
+//report 
+Report rpType=MTR rpFreq=hour rpMeter=VentMtr rpBtuSf=1000 rpDayBeg= Sep 30; rpDayEnd=Sep 30
+Report rpType=ZDD rpZone=Single 
+
+
+Report rpType=ZEB rpFreq=hour rpDayBeg= Jul 1; rpDayEnd=Jul 10; rpZone=Single rpBtuSf=1000
+
+REPORT
+   rpType=UDT
+   rpFreq=HOUR
+   rpCPL = 200
+   rpDayBeg=Jul 1 rpDayEnd=Jul 10
+   reportcol colVal=@Top.dateStr colHead="Date"
+   reportcol colVal=@Top.iHr colHead="Hr"
+   reportcol colVal=@Top.tDbOHr    colHead="Tout"
+   reportcol colVal=@Znres[ 1].H.Tair colHead="Ta1"
+   reportcol colVal=@Znres[ 1].H.qsMech colHead = "Qhc1"
+   reportcol colVal=@Znres[ 1].H.qsIz colHead = "qVent"
+   reportcol colVal=@Znres[ 1].H.eqfVentHr colHead = "fVent"
+   reportcol colVal=@meter[ "VentMtr"].H.fanV colHead = "VElec"
+endReport
+
+    
+RUN
+//--- end of run ---

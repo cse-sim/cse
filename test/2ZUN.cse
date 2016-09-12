@@ -1,0 +1,341 @@
+// 2 zone test case
+// Tests unified convection model
+
+#define INABSORP 0.9
+#define ABSORP 0.8
+#define SURFMODEL FD
+#define WINH 4
+#define WINW 3
+#define OHDPTH 2
+#define COOLTEMP 75
+
+dbgPrintMaskC = 8
+dbgPrintMask = $dayofyear == Jul 10 ? 16384 + 32 : 0
+
+elevation = 1000
+
+ repHdrL="2Z Test"
+ repHdrR=""
+ WfName="CTZ12S13B.CSW"
+ BEGDay=Jan 1                   //
+ ENDDay=Dec 31                    //
+ ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ Jan1DOW=Tue
+ wuDays=30                        //
+ nSubSteps=10                      //
+ skyModel=anisotropic               //
+ WindF=1                      
+ bldgAzm=0.0                      //don't adjust surface azimuths
+ DT=NO                            //No daylight savings per BESTEST p.9
+
+ DELETE HOLIDAY "New Year's Day"  //No holidays per BESTEST p.9
+ DELETE HOLIDAY "M L King Day"
+ DELETE HOLIDAY "President's Day"
+ DELETE HOLIDAY "Memorial Day"
+ DELETE HOLIDAY "Fourth of July"
+ DELETE HOLIDAY "Labor Day"
+ DELETE HOLIDAY "Columbus Day"
+ DELETE HOLIDAY "Veterans Day"
+ DELETE HOLIDAY "Thanksgiving"
+ DELETE HOLIDAY "Christmas"
+
+//------ MATERIALS section for lightweight case ------
+MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDens=59.375
+MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
+MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+MATERIAL   "Ins0"      matCond=0.01   matSpHt=0       matDens=0
+MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
+
+//------ MATERIALS section for heavyweight case ------
+MATERIAL   "ConcreteBlock"     matCond=0.2946   matSpHt=0.239   matDens=87.5
+MATERIAL   "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+MATERIAL   "ConcreteSlab"  matCond=0.6528   matSpHt=0.239   matDens=87.5
+MATERIAL  "Mass0_Ins"   MatCond = 0.02  matSpHt=0  matDens = 0
+ 
+//Revised materials  120114  BAW
+#define RCQ 1.0
+MATERIAL   "NCeilIns"  	matCond=0.025/RCQ   matCondCT=.0042 matSpHt=0.2   matDens=0.7  // 
+MATERIAL   "NR21"  	matCond=(5.5/(12.*21.))/RCQ   matSpHt=.2   matDens=0.7  matThk=5.5/12.   // Lower density from 2009 HOF 26.6
+MATERIAL   "NR13"  	matCond=(3.5/(12.*13.))/RCQ   matSpHt=.2   matDens=0.7  matThk=3.5/12.  // Lower density from 2009 HOF 26.6
+MATERIAL   "NFoam"  	matCond=1./(48)   matSpHt=.35   matDens=1.5 // R4  from 2009 HOF 26.6
+MATERIAL   "NGypbd"     matCond=1.1/12   	matSpHt=0.27   	matDens=40  	// 2009 HOF 26.6
+MATERIAL   "NOSB"  	matCond=0.5/(0.68*12)  	matSpHt=.45   	matDens=41. 	//  2009 HOF 26.6  k=thick/R
+MATERIAL   "NSoftWood"  matCond=0.98/12   	matSpHt=.39   	matDens=35.  	// 2009 HOF 26.6 Douglas fir/larch
+MATERIAL   "TileGap"  matCond=0.75/(0.85*12.)  matSpHt=.24   	matDens=0.075  matThk=0.75/12.	// 2009 HOF 26.3  90 deg, down, E=.82
+MATERIAL   "ConcTile"  matCond=1   matSpHt=.2   matDens=120  	matThk=1./12.  // 2008 RACM  Table R3-10
+
+
+
+// ----- CONSTRUCTION section for lightweight case -----
+  
+ CONSTRUCTION lw_wall
+            layer     lrThk=0.03937
+                      lrMat="Plasterboard"
+            layer     lrThk=0.2165
+                      lrMat="FiberQuilt"
+            layer     lrThk=0.02953    lrMat="WoodSiding"
+            
+ CONSTRUCTION mass0
+		layer lrThk = .333 lrMat = mass0_Ins
+		
+ CONSTRUCTION light
+		layer lrThk = .333 lrMat = mass0_Ins
+		layer lrThk = .1 lrMat = FoamInsul
+		
+ CONSTRUCTION foam_wall
+		layer lrThk = .1 lrMat = FoamInsul
+		
+ CONSTRUCTION conc_wall
+		layer lrThk = .1 lrMat = ConcreteSlab
+
+
+MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
+
+CONSTRUCTION lw_floor
+            layer     lrThk=0.08202    lrMat="TimberFloor"
+            layer     lrThk=.12     lrMat="TimberFloor"
+
+
+ CONSTRUCTION roofcon
+            layer     lrThk=0.03937 lrMat="Plasterboard"
+           layer     lrThk=0.3668      lrMat="FiberQuilt"
+            layer     lrThk=0.06234    lrMat="WoodSiding"
+
+ CONSTRUCTION sunwall
+            layer     lrThk=0.656
+                      lrMat="SunWallMat"
+
+// ----- CONSTRUCTION section for heavyweight case -----
+  
+ CONSTRUCTION hw_wall
+            layer     lrThk=0.3281
+                      lrMat="ConcreteBlock"
+            layer     lrThk=1/12
+                      lrMat="FoamInsul"
+            layer     lrThk=0.02953   lrMat="WoodSiding"
+  
+ CONSTRUCTION hw_floor
+            layer     lrThk=0.2625
+                      lrMat="ConcreteSlab"
+            layer     lrThk=3.304
+                      lrMat="Ins0"
+     
+ CONSTRUCTION CFrm2x4 // 3.5"      
+ 	Layer 	lrMat="NGypbd" lrThk=0.5/12.	
+ 	Layer 	lrMat="NSoftWood" lrThk=3.5/12.              // 2x4 joist
+   	Layer 	lrMat="NCeilIns" lrThk=(9.794251-3.5)/12. //insulation above the joist
+
+
+  
+// ----- CONSTRUCTION section for R 1000 high resistance test case ---
+  
+ CONSTRUCTION styro
+            layer     lrThk=23       lrMat="FoamInsul"
+
+// ----- GLAZETYPES --------------------------------------------------
+
+IZXFER H341 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izHD = 24. izNVEff = 1
+
+DEFTYPE SURFACE WALL
+        sfType=Wall
+        sfModel=SURFMODEL
+        sfArea=400
+        sfAzm=0
+        sfCon=mass0
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInHcModel = UNIFIED
+        sfExHcModel = UNIFIED
+
+//----- ZONE SECTION -----
+ZONE Z1
+	znModel = CZM
+
+    znArea=400
+    znVol=3200
+    znSC=0                        //shades always open
+    znAzm=0
+    infAC=0
+    znCair=1000
+    znHcFrcF = .23
+    znEaveZ = 10
+    
+    infShld = 4
+    
+    znTH = 65
+    znTD = 68
+    znTC = 74
+    
+    znQMxH = 200000
+    znQMxC = -200000
+    
+	SURFACE WallN1 USETYPE WALL sfAzm = 0
+	SURFACE WallS1 USETYPE WALL sfAzm = 180 sfCon = CFrm2x4 sfExHcLChar = 18
+	SURFACE WallW1 USETYPE WALL sfAzm = 270 sfCon = lw_floor
+	SURFACE WallIZ USETYPE WALL sfAzm = 270 sfTilt=85 sfCon = CFrm2x4 sfExCnd=ADJZN
+	   sfAdjZn=Z2
+		
+	SURFACE Clg1
+        sfType=Ceiling
+        sfModel=SURFMODEL
+        sfArea=400
+        sfAzm=0
+        sfTilt = 15
+        sfCon=mass0
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInHcModel = UNIFIED
+        sfExHcModel = UNIFIED
+        
+        
+ ZONE Z2
+	znModel = CZM
+
+    znArea=400
+    znVol=3200
+    znSC=0                        //shades always open
+    znAzm=0
+    infAC=0
+    znCair=1000
+    znFloorZ = 2
+    
+    znTH = 65
+    znTD = 68
+    znTC = 70
+
+    
+    infShld = 4
+    infStories = 3
+    
+    znQMxH = 200000
+    znQMxC = -200000
+    
+	SURFACE WallN2 USETYPE WALL sfAzm = 0
+	SURFACE WallE2 USETYPE WALL sfAzm = 90 // sfCon = CFrm2x4
+	SURFACE WallS2 USETYPE WALL sfAzm = 180 sfCon = CFrm2x4
+	
+	SURFACE Clg2
+        sfType=Ceiling
+        sfModel=SURFMODEL
+        sfArea=400
+        sfAzm=0
+        sfTilt = 20
+        sfCon=mass0
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInHcModel = UNIFIED
+        sfExHcModel = UNIFIED
+
+
+ //--------- REPORTS ------------
+ REPORT  rpType=ZEB rpZone=Z1 rpFreq=Month
+ REPORT  rpType=ZEB rpZone=Z2 rpFreq=Month
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 10 rpDayEnd= Jul 10 rpFreq=Hour
+ REPORT  rpType=ZEB rpZone=Z2 rpDayBeg=Jul 10 rpDayEnd= Jul 10 rpFreq=Hour
+ 
+  
+ 
+ REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg= Jul 10; rpDayEnd= Jul 10 rpCPL=180
+    rpTitle="Convection coeffs"
+    ReportCol colVal=$hour colHead="Hr" colWid=2 colDec=0
+    ReportCol colVal=@top.iSubhr  colHead="SH" colWid=2 colDec=0
+    ReportCol colVal=@top.tDbOSh colHead="Tout" colWid=6 colDec=3
+    ReportCol colVal=$windSpeedSh colHead="Wmph" colWid=4 colDec=2
+    ReportCol colVal=@Zone[ Z1].tz colHead="Tin" colWid=6 colDec=3
+    ReportCol colVal=@Zone[ Z1].airX colHead="ACH" colWid=4 colDec=2
+
+    ReportCol colVal=@XSURF[ WallS1].sbcI.txa colHead="WI Ta"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcI.tSrf colHead="WI Ts"  colWid=5 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcI.hcNat colHead="WI hcN"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcI.hcFrc colHead="WI hcF"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcI.hxa colHead=" WI hc"  colWid=6 colDec=3
+    
+    ReportCol colVal=@XSURF[ WallS1].sbcO.txa colHead="WO Ta"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcO.tSrf colHead="WO Ts"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcO.eta colHead="  eta"  colWid=5 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcO.hcNat colHead="WO hcN"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcO.hcFrc colHead="WO hcF"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ WallS1].sbcO.hxa colHead=" WO hc"  colWid=6 colDec=3
+
+    ReportCol colVal=@XSURF[ Clg1].sbcI.txa colHead="CI Ta"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcI.tSrf colHead="CI Ts"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcI.hcNat colHead="CI hcN"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcI.hcFrc colHead="CI hcF"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcI.hxa colHead=" CI hc"  colWid=6 colDec=3
+    
+    ReportCol colVal=@XSURF[ Clg1].sbcO.txa colHead="CO Ta"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcO.tSrf colHead="CO Ts"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcO.eta colHead="  eta"  colWid=5 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcO.hcFrc colHead="CO hcF"  colWid=6 colDec=3
+    ReportCol colVal=@XSURF[ Clg1].sbcO.hxa colHead=" CO hc"  colWid=6 colDec=3
+
+ 
+  
+ 
+ REPORT   rpType=ZDD     rpZone="Z1"
+ REPORT   rpType=ZDD     rpZone="Z2"
+ 
+
+
+ //--------- EXPORTS ------------
+#if 0 
+  EXPORT
+        exType=UD
+        exFreq=SUBHOUR
+        exDayBeg=Jan 10
+        exDayEnd=Jan 15
+        ReportCol colVal=@Top.dateStr colHead="Date"
+        ReportCol colVal=@Top.iHr + @Top.iSubhr*@Top.subHrDur colHead="Hr"
+        ReportCol colVal=@Top.jDay*24 + @Top.iHr + @Top.iSubhr*@Top.subHrDur  colHead="YHr"
+        ReportCol colVal=@Znres[ 1].S.Tair colHead="Ta"
+        ReportCol colVal=@Znres[ 1].S.qhMech colHead = "Qh"
+        ReportCol colVal=@Znres[ 1].S.qcMech colHead = "Qc"
+        ReportCol colVal=@Znres[ 1].S.qsMech colHead = "Qhc"
+        ReportCol colVal=@Znres[ 1].S.PPD7730 colHead = "PPD"   
+        ReportCol colVal=@Znres[ 1].S.PMV7730 colHead = "PMV"   
+           
+   endExport
+   
+    EXPORT
+        exType=UDT
+        exFreq=HOUR
+        exDayBeg=Jan 10
+        exDayEnd=Jan 15
+        ReportCol colVal=@Top.dateStr colHead="Date"
+        ReportCol colVal=@Top.iHr colHead="Hr"
+        ReportCol colVal=@Top.jDay*24 + @Top.iHr colHead="YHr"
+        ReportCol colVal=@Znres[ 1].H.Tair colHead="Ta"
+        ReportCol colVal=@Znres[ 1].H.qhMech colHead = "Qh"
+        ReportCol colVal=@Znres[ 1].H.qcMech colHead = "Qc"
+        ReportCol colVal=@Znres[ 1].H.qsMech colHead = "Qhc"   
+   endExport
+#endif
+
+
+
+ REPORT
+        rpType=UDT
+        rpCpl = 200
+        reportcol colVal=$Month   colHead="Month"
+        reportcol colVal=@Top.tDbOHr       colHead="Top.tDbOHr"
+        reportcol colVal=@Weather.db       colHead="Weather.db"
+        reportcol colVal=@Weather.tgrnd    colHead="T Grnd"
+        reportcol colVal=@Top.radBeamHrAv  colHead="radBeam"
+        reportcol colVal=@Top.radDiffHrAv  colHead="radDiff"
+        reportcol colVal=0
+        reportcol colVal=@ahRes[1].H.ts    colHead="ahRes[1].ts"
+        reportcol colval=@ahRes[1].H.tmix  colHead="ahres.tmix"
+        reportcol colVal=@zone[1].qMsSg    colHead="MassSolar"
+        reportcol colval=@zone[1].qSgAir   colHead="AirSolar"
+        reportcol colval=@zone[1].qSgTotSh colHead="TotalSolar"
+        rpFreq=HOUR
+        rpDayBeg=Mar 5
+        rpDayEnd=Mar 8
+        endreport
+
+ RUN
+ 
+ 
+ //--------- END OF RUN ------------
+
+ $EOF

@@ -1,0 +1,751 @@
+//  Modified by                                                 BAW 5/23/95
+//  WININFILM keeps standard conductivity                       SW 5/25/95
+//  Modify Solar Gain targeting to adjust for
+//  fraction of solar lost out windows
+//  (= (win area/opaque area)*(1-DMRB))
+//  Frac lost =.0571                                            SW 6/5/95
+//  Modified to work with version 461                           SW 6/12/95
+//  Target all incoming solar to floor,
+//  use BESTEST absorptivity                                    SW 7/16/95
+//  Use built-in view factors                                   SW/BAW 7/17/95
+//  Add meters for heating and cooling                          SW 7/17/95
+//  Model infiltraion using ventilation
+//  system to bypass airmass problem                            BAW 7/18/95
+//  Change materials to use more accurate
+//  conversion factors                                          BAW 7/19/95
+//  Change insulation layer thickness to
+//  compensate for decreased film u-value                       SW 7/24/95
+//  Fix glazing type so that:
+//      1) gtSHGC matches BESTEST Table 1-22.
+//      2) coeffs give data matching values from
+//         table (see D:\SWUTIL\GLASS.XLS)
+//      3) gtDMSHGC and gtDMRBsol = .686/gtSHGC
+//  Readjust intfilms per appendix D
+
+
+#redefine INFILM (1.461-.903)        //interior film, e = 0.9, convective only
+                                     //see appendix D
+#define WinINFILM (1.461)            //window interior film
+#redefine WALEXF 5.158               //wall exterior film, emissivity = 0.9
+#redefine WINEXF 3.697               //window exterior film, emissivity = 0.9
+
+ repHdrL="BESTEST"
+ repHdrR=CASE
+ WfName="DC2.ET1"                 //Denver weather, from DRYCOLD.TMY, using TMY direct solar
+ BEGDay=Jan 1                     //
+ ENDDay=Dec 31                    //
+ ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ Jan1DOW=Tue
+ wuDays=30                        //
+ nSubSteps=4                      //
+ skyModel=anisotropic               //
+ dflExH=WALEXF                    //Exterior combined surface coefficient for
+                                  //regular walls
+ WindF=0.25                       //site located exactly at weather station with
+                                  //wind at 0.2m below top of building
+ bldgAzm=0.0                      //don't adjust surface azimuths
+ elevation=5297                   //1609 m
+ DT=NO                            //No daylight savings per BESTEST p.9
+
+ DELETE HOLIDAY "New Year's Day"  //No holidays per BESTEST p.9
+ DELETE HOLIDAY "M L King Day"
+ DELETE HOLIDAY "President's Day"
+ DELETE HOLIDAY "Memorial Day"
+ DELETE HOLIDAY "Fourth of July"
+ DELETE HOLIDAY "Labor Day"
+ DELETE HOLIDAY "Columbus Day"
+ DELETE HOLIDAY "Veterans Day"
+ DELETE HOLIDAY "Thanksgiving"
+ DELETE HOLIDAY "Christmas"
+
+//------ MATERIALS section for lightweight case ------
+  
+ MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDens=59.375
+  
+ MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
+  
+ MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+  
+ MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
+  
+ MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0       matDens=0
+  
+ MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
+
+ MATERIAL   "OpaqueWin"       matCond=1/(1/.52817-1/WinInFilm-1/WINEXF)
+                              matSpHt=0.239   matDens=87.399
+
+//------ MATERIALS section for heavyweight case ------
+  
+ MATERIAL   "ConcreteBlock"     matCond=0.2946   matSpHt=0.239   matDens=87.5
+  
+ MATERIAL   "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+  
+ MATERIAL   "ConcreteSlab"  matCond=0.6528   matSpHt=0.239   matDens=87.5
+
+
+// ----- CONSTRUCTION section for lightweight case -----
+ CONSTRUCTION opaque_window     // air-to-air U = .528
+            layer     lrThk=1.0      lrMat="OpaqueWin"
+  
+ CONSTRUCTION lw_wall
+            layer     lrThk=0.03937
+                      lrMat="Plasterboard"
+//            layer     lrThk=(0.2165-(.02311/INFILM)+(.02311/1.461))
+//                      lrMat="FiberQuilt"
+            layer     lrThk=0.2165
+                      lrMat="FiberQuilt"
+            layer     lrThk=0.02953    lrMat="WoodSiding"
+  
+ CONSTRUCTION lw_floor
+            layer     lrThk=0.08202    lrMat="TimberFloor"
+            layer     lrThk=3.291    lrMat="Insulation"
+
+ CONSTRUCTION roofcon
+            layer     lrThk=0.03937
+                      lrMat="Plasterboard"
+//            layer     lrThk=(0.3668-(.02311/INFILM)+(.02311/1.461))
+//                      lrMat="FiberQuilt"
+           layer     lrThk=0.3668
+                      lrMat="FiberQuilt"
+            layer     lrThk=0.06234    lrMat="WoodSiding"
+
+ CONSTRUCTION sunwall
+//            layer     lrThk=(0.656-(2*.295/INFILM))
+//                      lrMat="SunWallMat"
+            layer     lrThk=0.656
+                      lrMat="SunWallMat"
+
+// ----- CONSTRUCTION section for heavyweight case -----
+  
+ CONSTRUCTION hw_wall
+            layer     lrThk=0.3281
+                      lrMat="ConcreteBlock"
+            layer     lrThk=(0.2018-(.02311/INFILM)+(.02311/1.461))
+                      lrMat="FoamInsul"
+            layer     lrThk=0.02953   lrMat="WoodSiding"
+  
+ CONSTRUCTION hw_floor
+            layer     lrThk=0.2625
+                      lrMat="ConcreteSlab"
+            layer     lrThk=3.304
+                      lrMat="Insulation"
+
+  
+// ----- CONSTRUCTION section for R 1000 high resistance test case ---
+  
+ CONSTRUCTION styro
+            layer     lrThk=23       lrMat="FoamInsul"
+
+// ----- GLAZETYPES --------------------------------------------------
+
+ GLAZETYPE  Best_Double
+            gtu=1/(1/.52817-1/WinInFilm-1/WINEXF)        //air-to air u = .52817 without films
+            gtSHGC=0.787
+            gtSMSO= 1
+            gtSMSC= 1
+            gtFMult=1
+            gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+            gtDMSHGC=0.686/0.787
+            gtDMRBSol=0.686/0.787
+
+//----- METERS section -----                              
+  
+ METER  HEATMETER               //Mtr name
+ METER  COOLMETER               //Mtr name
+ METER  GAINMETER               //Mtr name
+  
+ //--------- AIR HANDLERS ------------
+  
+  
+#ifdef VENTILATE
+ AIRHANDLER "MainAH"
+    ahSched=ON
+    ahTsSp=ZN2                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
+    ahfanCycles=No              //1/20 bw
+    oaVfDsMn=1003               //1703.16 m3/h
+    oaMnCtrl=VOLUME             //
+    oaMnFrac=VENTFRAC           //0 except hourly schedule for ventilation runs
+    oaEcoType=NONE
+
+    oaOaLeak=0                  //No economizer damper leaks to outside
+    oaRaLeak=0                  //No economizer leaks to return air
+    ahSOLeak=0                  //No supply duct leaks
+    ahROLeak=0                  //No return duct leaks
+    ahSOLoss=0                  //No supply duct losses
+    ahROLoss=0                  //No return duct losses
+
+    //SUPPLY FAN & RETURN FAN
+    //==========
+    sfanVfDs=1003              //1703.16 m3/hr
+    sfanVfMxF=1.00             //Max volume multiplier
+    sfanPress=0                //equal to zero so no fan heat added to airstream, and no fan energy consumption
+    sfanEff=1.000              //combined sup & ret fan mech efficiency
+    sfanMotEff=1.000           //combined sup & ret fan motor efficiency
+    sfanMotPos=EXTERNAL        //discard heat from fan motor
+    //Supply Fan coeff"s 0-3
+    sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
+    sfanMtr=GAINMETER
+  
+    //COOLING COIL
+    //=========
+    ahccType=ELECTRIC
+    ahccCapTRat=100000        //very large
+    ahccCapSRat=100000        //No latent load capacity BESTEST p.19
+    ahccMtr=COOLMETER         //cooling plant primary meter
+
+#else
+
+ #ifdef FF
+  AIRHANDLER "MainAH"
+    ahSched=OFF
+    ahTsSp=ZN2                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
+    ahfanCycles=No              //1/20 bw
+    oaVfDsMn=1003               //1703.16 m3/h
+    oaMnCtrl=VOLUME             //
+    oaMnFrac=VENTFRAC           //0 except hourly schedule for ventilation runs
+    oaEcoType=NONE
+
+    oaOaLeak=0                  //No economizer damper leaks to outside
+    oaRaLeak=0                  //No economizer leaks to return air
+    ahSOLeak=0                  //No supply duct leaks
+    ahROLeak=0                  //No return duct leaks
+    ahSOLoss=0                  //No supply duct losses
+    ahROLoss=0                  //No return duct losses
+
+    //SUPPLY FAN & RETURN FAN
+    //==========
+    sfanVfDs=1003              //1703.16 m3/hr
+    sfanVfMxF=1.00             //Max volume multiplier
+    sfanPress=0                //equal to zero so no fan heat added to airstream, and no fan energy consumption
+    sfanEff=1.000              //combined sup & ret fan mech efficiency
+    sfanMotEff=1.000           //combined sup & ret fan motor efficiency
+    sfanMotPos=EXTERNAL        //discard heat from fan motor
+    //Supply Fan coeff"s 0-3
+    sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
+    sfanMtr=GAINMETER
+  
+    //COOLING COIL
+    //=========
+    ahccType=ELECTRIC
+    ahccCapTRat=0.1           //very small
+    ahccCapSRat=0.1           //No latent load capacity BESTEST p.19
+    ahccMtr=COOLMETER         //cooling plant primary meter
+
+ #else
+
+  AIRHANDLER "MainAH"
+    ahSched=ON
+    ahTsSp=ZN2                  //fixed vol supply temp varies
+    ahfanCycles=No              //1/20 bw
+    oaVfDsMn=1003               //7/20/95 BAW
+    oaMnCtrl=VOLUME             //
+    oaMnFrac=VENTFRAC           //0 except hourly schedule for ventilation runs
+    oaEcoType=NONE
+
+    oaOaLeak=0                  //No economizer damper leaks to outside
+    oaRaLeak=0                  //No economizer leaks to return air
+    ahSOLeak=0                  //No supply duct leaks
+    ahROLeak=0                  //No return duct leaks
+    ahSOLoss=0                  //No supply duct losses
+    ahROLoss=0                  //No return duct losses
+
+    //SUPPLY FAN & RETURN FAN
+    //==========
+    sfanVfDs=1003              //1703.16 m3/hr
+    sfanVfMxF=1.00             //Max volume multiplier
+    sfanPress=0                //equal to zero so no fan heat added to airstream, and no fan energy consumption
+    sfanEff=1.000              //combined sup & ret fan mech efficiency
+    sfanMotEff=1.000           //combined sup & ret fan motor efficiency
+    sfanMotPos=EXTERNAL        //discard heat from fan motor
+    //Supply Fan coeff"s 0-3
+    sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
+    sfanMtr=GAINMETER
+  
+    //COOLING COIL
+    //=========
+    ahccType=ELECTRIC
+    ahccCapTRat=100000        //very large
+    ahccCapSRat=100000        //No latent load capacity BESTEST p.19
+    ahccMtr=COOLMETER         //cooling plant primary meter
+
+ #endif
+#endif
+
+AIRHANDLER "Infil"   //Constant Volume no energy, heating or cooling to model infiltration
+    oaMnFrac=1.0
+    ahSched=ON
+    ahfanCycles=No
+    oaEcoType=None
+    sfanVfDs= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60 
+    oaVfDsMn= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60
+    oaOaLeak=0
+    oaRaLeak=0
+    ahSOLeak=0
+    ahROLeak=0
+    ahSOLoss=0
+    ahROLoss=0
+    sfanVfMxF=1. sfanPress=0 sfanEff=1.000 sfanMotEff=1.000 sfanMotPos=EXTERNAL
+    sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
+    sfanMtr=GAINMETER
+
+//----- ZONE SECTION -----
+
+ ZONE CASE
+
+    znArea=516.68                 //48 sq meters
+    znVol=4576.8                  //zone Area * zone wall height (2.7 m)
+    znSC=0                        //shades always open
+    znAzm=0
+    infAC=0
+    znCair=HEATCAP                //from Bestest specs
+
+    GAIN Internal
+        gnMeter=GAINMETER
+        gnEndUse=Lit
+        gnPower=INTGAIN*.4
+  
+    SURFACE Roof
+        sfType=Ceiling
+        sfModel=SURFTYPE
+        sfArea=516.68
+        sfCon=roofcon
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInH=INFILM             //ceiling inside film coefficient
+
+    SURFACE Floor
+        sfType=Floor
+        sfModel=SURFTYPE
+        sfArea=516.68
+        sfCon=FLOORCON
+        sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
+        sfExAbs=0                 //no solar on floor
+        sfExT=50                  //10 C ground temperature
+        sfInAbs=INABSORP
+        sfInH=INFILM             //floor inside film coefficient
+        sfExH=100000             //floor outside film coefficient
+
+    SURFACE North_Wall
+        sfType=Wall
+        sfModel=SURFTYPE
+        sfArea=232.51             //21.6 sq meters
+        sfAzm=0                   //north wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInH=INFILM             //wall inside film coefficient
+
+    SURFACE East_Wall
+        sfType=Wall
+        sfModel=SURFTYPE
+        sfArea=174.38             //16.2 sq meters
+        sfAzm=90                  //east wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInH=INFILM             //wall inside film coefficient
+
+#ifdef EASTWESTWIN
+        WINDOW East_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=WINH         //window height
+            wnWidth=WINW          //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+            SHADE East_OH
+                ohDepth=OHDPTH    //overhang depth
+                ohDistUp=1.64     //distance from top of window
+                ohExL=0           //distance:left edge of win to left edge of oh
+                ohExR=0           //distance:rght edge of win to rght edge of oh
+                lfDepth=OHDPTH    //fin depth
+                lfTopUp=1.64      //distance:top of window to top of fin
+                lfDistL=0         //distance:edge of window to fin
+                lfBotUp=0.656     //distance:bottom of window to bottom of fin
+                rfDepth=OHDPTH    //fin depth
+                rfTopUp=1.64      //distance:top of window to top of fin
+                rfDistR=0         //distance:edge of window to fin
+                rfBotUp=0.656     //distance:bottom of window to bottom of fin
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+#endif
+
+  SURFACE West_Wall
+      sfType=Wall
+      sfModel=SURFTYPE
+      sfArea=174.38             //16.2 sq meters
+      sfAzm=270                 //west wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfInH=INFILM             //wall inside film coefficient
+
+#ifdef EASTWESTWIN
+      WINDOW West_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF           //window exterior film coefficient
+            wnInH=WinInFilm        //window interior film coefficient
+            wnHeight=WINH          //window height
+            wnWidth=WINW           //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+          SHADE West_OH
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //distance from top of window
+              ohExL=0           //distance:left edge of win to left edge of oh
+              ohExR=0           //distance:rght edge of win to rght edge of oh
+              lfDepth=OHDPTH    //fin depth
+              lfTopUp=1.64      //distance:top of window to top of fin
+              lfDistL=0         //distance:edge of window to fin
+              lfBotUp=0.656     //distance:bottom of window to bottom of fin
+              rfDepth=OHDPTH    //findepth
+              rfTopUp=1.64      //distance:top of window to top of fin
+              rfDistR=0         //distance:edge of window to fin
+              rfBotUp=0.656     //distance:bottom of window to bottom of fin
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+#endif
+
+#ifndef SUNZONE
+SURFACE South_Wall
+      sfType=Wall
+      sfModel=SURFTYPE
+     #ifdef OPQWIN
+      sfArea=232.51-(2*WINH*WINW)             //wall area 21.6 sq meters
+     #else
+      sfArea=232.51                           //wall area 21.6 sq meters
+     #endif
+      sfAzm=180                 //south wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfInH=INFILM             //wall inside film coefficient
+
+#ifdef SOUTHWIN
+      WINDOW South_Win1
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=WINH        //window height
+            wnWidth=WINW         //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+           SHADE South_OH1
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //dance from top of window
+              ohExL=1.64        //distance:left edge of win to left edge of oh
+              ohExR=14.76       //distance:rght edge of win to rght edge of oh
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+      WINDOW South_Win2
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm          //window interior film coefficient
+            wnHeight=WINH        //window height
+            wnWidth=WINW         //window width
+            wnVfSkyDf=OHDPTH ?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+      SHADE South_OH2
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //distance from top of window .5m
+              ohExL=14.76       //distance:left edge of win to left edge of oh 4.5m
+              ohExR=1.64        //distance:rght edge of win to rght edge of oh .5m
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+#endif
+
+#ifdef OPQWIN
+     SURFACE South_Opaque1
+           sfType=Wall
+           sfModel=QUICK
+           sfArea=WINH*WINW
+           sfAzm=180
+           sfCon=opaque_window
+           sfExAbs=ABSORP
+           sfInAbs=INABSORP
+           sfExH=WINEXF
+           sfInH=WININFILM
+
+     SURFACE South_Opaque2
+           sfType=Wall
+           sfModel=QUICK
+           sfArea=WINH*WINW
+           sfAzm=180
+           sfCon=opaque_window
+           sfExAbs=ABSORP
+           sfInAbs=INABSORP
+           sfExH=WINEXF
+           sfInH=WININFILM
+#endif
+#endif
+
+#ifdef VENTILATE
+TERMINAL  CASE
+        tuAh="MainAH"
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMxC=1003            //1703.16 cu.m/hr
+        tuVfMn=1003             //constant volume
+        tuTC=COOLTEMP           //cooling setpoint
+#else
+ #ifdef FF
+ TERMINAL  CASE
+        tuAh="MainAH"
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMxC=1003            //1703.16 cu.m/hr
+        tuVfMn=1003             //constant volume
+        tuTC=COOLTEMP           //cooling setpoint
+ #else
+ TERMINAL  CASE
+        tuAh="MainAH"
+        tuTLH=HEATTEMP          //heating setpoint
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMxC=1003
+        tuVfMn=1003             //7/20/95 bw 
+        tuhcType=Electric       //1/20 bw
+        tulhNeedsFlow=No        //1/20 bw
+        tuTC=COOLTEMP           //cooling setpoint
+        tuhcMtr=HEATMETER       // heating plant primary meter
+        tuQMxLh=1000000            //1000 kW
+        tuhcCaptRat=1000000        //1000 kW capacity
+  #endif
+ #endif
+TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
+        tuAh="Infil"
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMn =.0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60
+
+#ifdef SUNZONE
+  #include "sunspace.cin"
+#endif
+
+ //--------- REPORTS ------------
+  
+ REPORT     rpType=ZDD     rpZone=CASE
+ REPORT     rpType=AH     rpAH="MainAH"          rpFreq=Month
+
+ REPORT     rpType=MTR     rpMeter=HEATMETER    rpFreq=Month
+ REPORT "Heating Energy"
+        rpType=UDT 
+        rpFreq=YEAR
+        reportcol colVal=@meter[HEATMETER].Y.dmd/3413             ColHead="Pk kW"
+        reportcol colVal=@Top.qhPeakM                             ColHead="Pk Month"
+        reportcol colVal=@Top.qhPeakD                             ColHead="Pk Day"
+        reportcol colVal=@Top.qhPeakH                             ColHead="Pk Hr"
+        reportcol colval=@meter[HEATMETER].y.tot* 0.000000292997   ColHead="Yr mWh"
+
+
+ REPORT     rpType=MTR     rpMeter=COOLMETER    rpFreq=Month
+ REPORT "Cooling Energy"
+        rpType=UDT 
+        rpFreq=YEAR
+ reportcol colVal=@meter[CoolMETER].Y.dmd/3413 ColHead="Pk kW"
+        reportcol colVal=@Top.qcPeakM          ColHead="Pk Month"
+        reportcol colVal=@Top.qcPeakD          ColHead="Pk Day"
+        reportcol colVal=@Top.qcPeakH          ColHead="Pk Hr"
+        reportcol colval=@meter[CoolMETER].y.tot* 0.000000292997   ColHead="Yr mWh"
+
+ REPORT     rpType=MTR     rpMeter=GAINMETER    rpFreq=Month
+ 
+ REPORT  rpType=ZEB rpZone=Case rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=Hour
+ REPORT  rpType=AH  rpAH="MainAH"   rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=HOUR
+ REPORT  rpType=ZEB rpZone=Case rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=Hour
+ REPORT  rpType=AH  rpAH="MainAH"  rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HOUR
+ REPORT  rpType=ZEB rpZone=Case rpDayBeg=Oct 16 rpDayEnd= Oct 16 rpFreq=Hour
+ REPORT  rpType=AH  rpAH="MainAH"  rpDayBeg= Oct 16 rpDayEnd= Oct 16 rpFreq=HOUR
+// REPORT  rpType=AH  rpAH="Infil"   rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=HOUR
+// REPORT  rpType=AH  rpAH="Infil"  rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HOUR
+// REPORT  rpType=AH  rpAH="Infil"  rpDayBeg= Oct 16 rpDayEnd= Oct 16 rpFreq=HOUR
+
+
+
+
+ //--------- EXPORTS ------------
+ EXPORTFILE "AnnualZEB"
+        xfFileName="zeb.csv"
+        xfFileStat=APPEND
+        endExportFile
+ EXPORT
+        exExportfile="AnnualZEB"
+        exHeader=NO
+        exFooter=NO
+        exType=ZEB
+        exZone=CASE
+        exFreq=YEAR
+        endExport
+
+#ifndef FF
+EXPORTFILE "AnnualMTR"
+        xfFileName="mtr.csv"
+        xfFileStat=APPEND
+        endExportFile
+
+EXPORT
+        exExportfile="AnnualMTR"
+        exHeader=NO
+        exFooter=NO
+        exType=UDT
+        exFreq=YEAR
+        exBtuSf=1000000
+        exportcol colVal=@znRes[1].name
+        exportcol colVal=@meter[COOLMETER].Y.dmd/-3413    //kwh
+        exportcol colVal=@Top.qcPeakM
+        exportcol colVal=@Top.qcPeakD
+        exportcol colVal=@Top.qcPeakH
+        exportcol colVal=@meter[HEATMETER].Y.dmd/3413
+        exportcol colVal=@Top.qhPeakM
+        exportcol colVal=@Top.qhPeakD
+        exportcol colVal=@Top.qhPeakH
+        exportcol colVal=@meter[COOLMETER].y.tot* 0.000000292997 //output in mWh
+        exportcol colval=@meter[HEATMETER].y.tot* 0.000000292997 
+        endExport
+#endif
+
+ #ifdef AUGREP
+ EXPORTFILE "AugAH"
+        xfFileName="ah.csv"
+        xfFileStat=APPEND
+        endExportFile
+ EXPORT
+        exExportfile="AugAH"
+        exHeader=YES
+        exFooter=NO
+        exType=AH
+        exAh=ALL
+        exFreq=HOUR
+        exDayBeg=Aug 1
+        exDayEnd=Aug 10
+        endExport
+
+ EXPORTFILE "Augzn"
+        xfFileName="zn.csv"
+        xfFileStat=APPEND
+        endExportFile
+ EXPORT
+        exExportfile="Augzn"
+        exHeader=YES
+        exFooter=NO
+        exType=ZEB
+        exZONE=CASE
+        exFreq=HOUR
+        exDayBeg=Aug 1
+        exDayEnd=Aug 10
+        endExport
+ #endif
+
+ #if JAN4REP
+ EXPORTFILE "Jan4Exp"
+        xfFileName=JAN4NAME
+        xfFileStat=OVERWRITE
+        endExportFile
+ EXPORT
+        exExportfile="Jan4Exp"
+        exFreq=HOUR
+    #ifdef HOURLYTEMPS
+        exType=ZEB
+      #ifdef SUNZONE
+        exZone=SUNSPACE
+      #else
+        exZone=CASE
+      #endif
+    #else
+        exType=MTR
+        exMeter=COOLMETER
+    #endif
+        exDayBeg=Jan 4
+        exDayEnd=Jan 4
+        endExport
+ #endif
+
+ #if MAR5REP
+ EXPORTFILE "Mar5Exp"
+        xfFileName=MAR5NAME
+        xfFileStat=OVERWRITE
+        endExportFile
+ EXPORT
+        exExportfile="Mar5Exp"
+        exType=UDT
+        exBtuSf=1000000
+        exportcol colVal= @znRes[1].name   colHead="ahRes[1].ts"
+        exportcol colVal=@Top.tDbOHr       colHead="Top.tDbOHr"
+        exportcol colVal=@Weather.db       colHead="Weather.db"
+        exportcol colVal=@Top.radBeamHrAv  colHead="radBeam"
+        exportcol colVal=@Top.radDiffHrAv  colHead="radDiff"
+        exportcol colVal=0
+        exportcol colVal=@ahRes[1].H.ts    colHead="ahRes[1].ts"
+        exportcol colval=@ahRes[1].H.tmix  colHead="ahres.tmix"
+        exportcol colVal=@zone[1].qMsSg    colHead="MassSolar"
+        exportcol colval=@zone[1].qSgAir   colHead="AirSolar"
+        exportcol colval=@zone[1].qSgTotSh colHead="TotalSolar"
+        exFreq=SUBHOUR
+        exDayBeg=Mar 5
+        exDayEnd=Mar 5
+        endExport
+ #endif
+
+ #if JUL27REP
+ EXPORTFILE "Jul27Exp"
+        xfFileName=JUL27NAME
+        xfFileStat=OVERWRITE
+        endExportFile
+ EXPORT
+        exExportfile="Jul27Exp"
+        exFreq=HOUR
+    #ifdef HOURLYTEMPS
+        exType=ZEB
+      #ifdef SUNZONE
+        exZone=SUNSPACE
+      #else
+        exZone=CASE
+      #endif
+    #else
+        exType=MTR
+        exMeter=COOLMETER
+    #endif
+        exDayBeg=Jul 27
+        exDayEnd=Jul 27
+        endExport
+ #endif
+
+ #ifdef YEARREP
+ EXPORTFILE "YearExp"
+        xfFileName=YEARNAME
+        xfFileStat=OVERWRITE
+        endExportFile
+ EXPORT
+        exExportfile="YearExp"
+        exFreq=HOUR
+    #ifdef HOURLYTEMPS
+        exType=ZEB
+      #ifdef SUNZONE
+        exZone=SUNSPACE
+      #else
+        exZone=CASE
+      #endif
+    #else
+        exType=MTR
+        exMeter=COOLMETER
+    #endif
+        exDayBeg=Jan 1
+        exDayEnd=Dec 31
+        endExport
+ #endif
+
+ RUN
+ //--------- END OF RUN ------------
+
+ $EOF

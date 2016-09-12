@@ -1,0 +1,498 @@
+
+
+#redefine INFILM (1.461-.903)        //interior film, e = 0.9, convective only
+                                     //see appendix D
+#define WinINFILM (1.461)            //window interior film
+#redefine WALEXF 5.158               //wall exterior film, emissivity = 0.9
+#redefine WINEXF 3.697               //window exterior film, emissivity = 0.9
+#define INABSORP 0.9
+#define ABSORP 0.5
+#define SURFMODEL forward_difference
+#define WINH 4
+#define WINW 3
+#define OHDPTH 2
+#define COOLTEMP 75
+#define JAN4REP  0                 //1 for hourly reports, 0 otherwise
+#define JAN4NAME "600jan4.csv"
+#define MAR5REP  0                 //1 for hourly reports, 0 otherwise
+#define MAR5NAME "mar5s.csv"
+#define JUL27REP 0                 //1 for hourly reports, 0 otherwise
+#define JUL27NAME "600jul27s.csv"
+dbgPrintMaskC = 8
+dbgPrintMask = $dayofyear == 191 ? 64 : 0
+
+ repHdrL="1Z Test"
+ repHdrR=""
+ repTestPfx = "?"
+ WfName="CTZ12S13B.CSW"
+ BEGDay=Jan 1                     //
+ ENDDay=Dec 31                    //
+ ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ Jan1DOW=Tue
+ wuDays=30                        //
+ nSubSteps=30                     //
+ skyModel=anisotropic             //
+ dflExH=WALEXF                    //Exterior combined surface coefficient for
+                                  //regular walls
+                                  
+ windf = .25
+ 
+ bldgAzm=0.0                      //don't adjust surface azimuths
+ elevation=5297                   //1609 m
+ DT=NO                            //No daylight savings per BESTEST p.9
+
+ DELETE HOLIDAY "New Year's Day"  //No holidays per BESTEST p.9
+ DELETE HOLIDAY "M L King Day"
+ DELETE HOLIDAY "President's Day"
+ DELETE HOLIDAY "Memorial Day"
+ DELETE HOLIDAY "Fourth of July"
+ DELETE HOLIDAY "Labor Day"
+ DELETE HOLIDAY "Columbus Day"
+ DELETE HOLIDAY "Veterans Day"
+ DELETE HOLIDAY "Thanksgiving"
+ DELETE HOLIDAY "Christmas"
+
+//------ MATERIALS section for lightweight case ------
+  
+ MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDens=59.375
+ MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
+ MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+ MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
+ MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0       matDens=0
+ MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
+ MATERIAL   "OpaqueWin"       matCond=1/(1/.52817-1/WinInFilm-1/WINEXF)
+                              matSpHt=0.239   matDens=87.399
+ MATERIAL   "SoftWood"  matCond=0.0842   	matSpHt=.33   	matDens=32.
+MATERIAL   "UZMWood"   matCond=0.08   	   matSpHt=.3825   	matDens=34.
+MATERIAL   "UZMCeilIns"  	matCond=0.025   matSpHt=0.2   matDens=1.5  matCondCT =0.00418
+MATERIAL   "UZMDeck"  	    matCond=0.052   matSpHt=0.2  matDens=10.7/0.2
+MATERIAL   "UZMShingle"  	matCond=1       matSpHt=0.2  matDens=24/0.2
+
+
+//------ MATERIALS section for heavyweight case ------
+  
+ MATERIAL   "ConcreteBlock"     matCond=0.2946   matSpHt=0.239   matDens=87.5
+ MATERIAL   "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+ MATERIAL   "ConcreteSlab"  matCond=0.6528   matSpHt=0.239   matDens=87.5
+
+
+// ----- CONSTRUCTION section for lightweight case -----
+ CONSTRUCTION opaque_window     // air-to-air U = .528
+            layer     lrThk=1.0      lrMat="OpaqueWin"
+  
+ CONSTRUCTION lw_wall
+            layer     lrThk=0.03937
+                      lrMat="Plasterboard"
+            layer     lrThk=0.2165     lrMat="FiberQuilt"
+            layer     lrThk=0.02953    lrMat="WoodSiding"
+  
+ CONSTRUCTION lw_floor
+            layer     lrThk=0.08202    lrMat="TimberFloor"
+            layer     lrThk=3.291    lrMat="Insulation"
+
+ CONSTRUCTION roofcon
+            layer     lrThk=0.03937 lrMat="Plasterboard"
+//          layer     lrThk=.7      lrMat="FiberQuilt"
+            layer     lrThk=0.06234    lrMat="WoodSiding"
+
+ CONSTRUCTION sunwall
+//            layer     lrThk=(0.656-(2*.295/INFILM))
+//                      lrMat="SunWallMat"
+            layer     lrThk=0.656
+                      lrMat="SunWallMat"
+
+// ----- CONSTRUCTION section for heavyweight case -----
+  
+ CONSTRUCTION hw_wall
+            layer     lrThk=0.3281
+                      lrMat="ConcreteBlock"
+            layer     lrThk=(0.2018-(.02311/INFILM)+(.02311/1.461))
+                      lrMat="FoamInsul"
+            layer     lrThk=0.02953   lrMat="WoodSiding"
+  
+ CONSTRUCTION hw_floor
+            layer     lrThk=0.2625
+                      lrMat="ConcreteSlab"
+            layer     lrThk=3.304
+                      lrMat="Insulation"
+                      
+CONSTRUCTION CFrm2x4 // 3.5"      
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+ 	layer 	lrMat="SoftWood" lrThk=3.5/12.              // 2x4 joist
+   	layer 	lrMat="UZMCeilIns" lrThk=(9.794251-3.5)/12. //insulation above the joist
+
+CONSTRUCTION CIns //    
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+   	layer 	lrMat="UZMCeilIns" lrThk=9.794251/12. //insulation between joists
+
+
+  
+// ----- CONSTRUCTION section for R 1000 high resistance test case ---
+  
+ CONSTRUCTION styro
+            layer     lrThk=23       lrMat="FoamInsul"
+
+// ----- GLAZETYPES --------------------------------------------------
+
+ GLAZETYPE  Best_Double
+            gtu=1/(1/.52817-1/WinInFilm-1/WINEXF)        //air-to air u = .52817 without films
+            gtSHGC=0.787
+            gtSMSO= 1
+            gtSMSC= 1
+            gtFMult=1
+            gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+            gtDMSHGC=0.686/0.787
+            gtDMRBSol=0.686/0.787
+
+//----- METERS section -----                              
+  
+ METER  GAINMETER               //Mtr name
+ METER FAN
+  
+//----- ZONE SECTION -----
+
+#define GLASSTYPE Best_Double
+#define WALLCON lw_wall
+#define FLOORCON lw_floor
+
+#define ACEIL 516.68
+#define CEILFF .1
+
+ZONE Z1
+	znModel = CZM
+
+    znArea=ACEIL
+    znVol=ACEIL*8                  //zone Area * zone wall height (2.7 m)
+    znSC=0                        //shades always open
+    znAzm=0
+    infAC=0
+    znCair=1000                //from Bestest specs
+    znEaveZ = 20
+    znWindFLkg = 1
+    
+    znTH = 65 - $hour/24
+    znTD = 68
+    znTC = 74 + $hour/24
+    znQMxH = 20000 znQMxC = -34000
+       
+    xfanVfDs = 1000
+    xfanMtr = FAN
+
+    GAIN Internal
+        gnMeter=GAINMETER
+        gnEndUse=Lit
+        gnPower=1000*.4
+  
+	SURFACE "CbJ"     sfType=Ceiling sfCon=Cins sfArea=(1-CeilFF) * ACEIL;
+		sfModel = forward_difference sfExCnd=ADJZN sfAdjZn=Attic
+		sfExHcModel = Unified sfInHcModel = Unified
+	SURFACE "CtJ"    sfType=Ceiling sfCon=CFrm2x4 sfArea=CeilFF * ACEIL;
+		sfModel = forward_difference sfExCnd=ADJZN sfAdjZn=Attic
+		sfExHcModel = Unified sfInHcModel = Unified
+
+
+    SURFACE Floor
+        sfType=Floor
+        sfModel=SURFMODEL
+        sfArea=516.68
+        sfCon=FLOORCON
+        sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
+        sfExAbs=0                 //no solar on floor
+        sfExT=50                  //10 C ground temperature
+        sfInAbs=INABSORP
+        sfInHcModel = Unified             //floor inside film coefficient
+        sfExH=100000             //floor outside film coefficient
+        sfExHcModel = Unified
+
+    SURFACE North_Wall
+        sfType=Wall
+        sfModel=SURFMODEL
+        sfArea=232.51             //21.6 sq meters
+        sfAzm=0                   //north wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfExHcModel = Unified
+        sfInHcModel = Unified
+        
+    SURFACE East_Wall
+        sfType=Wall
+        sfModel=SURFMODEL
+        sfArea=174.38             //16.2 sq meters
+        sfAzm=90                  //east wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfExHcModel = Unified
+        sfInHcModel = Unified             //wall inside film coefficient
+
+        WINDOW East_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=WINH         //window height
+            wnWidth=WINW          //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+            SHADE East_OH
+                ohDepth=OHDPTH    //overhang depth
+                ohDistUp=1.64     //distance from top of window
+                ohExL=0           //distance:left edge of win to left edge of oh
+                ohExR=0           //distance:rght edge of win to rght edge of oh
+                lfDepth=OHDPTH    //fin depth
+                lfTopUp=1.64      //distance:top of window to top of fin
+                lfDistL=0         //distance:edge of window to fin
+                lfBotUp=0.656     //distance:bottom of window to bottom of fin
+                rfDepth=OHDPTH    //fin depth
+                rfTopUp=1.64      //distance:top of window to top of fin
+                rfDistR=0         //distance:edge of window to fin
+                rfBotUp=0.656     //distance:bottom of window to bottom of fin
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+  SURFACE West_Wall
+      sfType=Wall
+      sfModel=SURFMODEL
+      sfArea=174.38             //16.2 sq meters
+      sfAzm=270                 //west wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfExHcModel = Unified
+      sfInHcModel = Unified             //wall inside film coefficient
+
+      WINDOW West_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF           //window exterior film coefficient
+            wnInH=WinInFilm        //window interior film coefficient
+            wnHeight=WINH          //window height
+            wnWidth=WINW           //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+          SHADE West_OH
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //distance from top of window
+              ohExL=0           //distance:left edge of win to left edge of oh
+              ohExR=0           //distance:rght edge of win to rght edge of oh
+              lfDepth=OHDPTH    //fin depth
+              lfTopUp=1.64      //distance:top of window to top of fin
+              lfDistL=0         //distance:edge of window to fin
+              lfBotUp=0.656     //distance:bottom of window to bottom of fin
+              rfDepth=OHDPTH    //findepth
+              rfTopUp=1.64      //distance:top of window to top of fin
+              rfDistR=0         //distance:edge of window to fin
+              rfBotUp=0.656     //distance:bottom of window to bottom of fin
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+SURFACE South_Wall
+      sfType=Wall
+      sfModel=SURFMODEL
+     #ifdef OPQWIN
+      sfArea=232.51-(2*WINH*WINW)             //wall area 21.6 sq meters
+     #else
+      sfArea=232.51                           //wall area 21.6 sq meters
+     #endif
+      sfAzm=180                 //south wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfExHcModel = Unified
+      sfInHcModel = Unified             //wall inside film coefficient
+
+      WINDOW South_Win1
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=WINH        //window height
+            wnWidth=WINW         //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+           SHADE South_OH1
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //dance from top of window
+              ohExL=1.64        //distance:left edge of win to left edge of oh
+              ohExR=14.76       //distance:rght edge of win to rght edge of oh
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+      WINDOW South_Win2
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm          //window interior film coefficient
+            wnHeight=WINH        //window height
+            wnWidth=WINW         //window width
+            wnVfSkyDf=OHDPTH ?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+      SHADE South_OH2
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //distance from top of window .5m
+              ohExL=14.76       //distance:left edge of win to left edge of oh 4.5m
+              ohExR=1.64        //distance:rght edge of win to rght edge of oh .5m
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+ENDzone // Z1
+
+IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65
+IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
+
+IZXFER AX1 izNVTYPE = AirNetExt izZN1 = Attic izALo = 3  izHD = 8 izNVEff = 1 izCpr=.5 izExp=.71
+IZXFER AX2 izNVTYPE = AirNetExt izZN1 = Attic izALo = 3  izHD = 12 izNVEff = .94 izCpr=.4
+
+IZXFER SxA  izNVTYPE = AirNetIZ izZN1=Z1 izZN2=Attic izALo=1.6 izHD = 8 izExp=0.65
+
+
+
+#define pitch 5 / 12.0
+#define AtticHeight (pitch * SQRT(ACEIL)) / 2
+
+
+CONSTRUCTION RD
+ 	layer 	lrMat="UZMDeck" lrThk=0.5/12.	
+   	layer 	lrMat="UZMShingle" lrThk=0.5/12. //Shingle
+   	
+CONSTRUCTION TrussCon // 3/4" wood	
+  	layer 	lrMat="UZMWood" lrThk=.75/12. 	
+  	
+
+Zone  "Attic" znModel = UZX  // Attic uses CSE internal uncond model
+         znTH =1  znTD = 70  znTC = 300 znQMxHRated = 0 znQMxCRated = 0 znQMxH = 0 znQMxC = 0 // Maybe these are required?
+         znCAIR = .01
+          
+	// Assume attic is a square pyramid (hip). Aroof = Aceilt * SQR(1 + pitch ^ 2) 
+	// Vol = 1/3* CeilArea*height 
+	znArea=ACEIL infAC=0 infShld=5 infStories=1 infELA=0 znVol = Aceil*AtticHeight/3.
+        #define DeckArea Aceil * SQRT(1 + pitch*pitch)
+             // Adjust ext solar absorptivity for larger area 
+           //   #define Exabsmult Aceil/DeckArea           //to match UZM solar model 
+              //  ZZZ something wrong here sfExabs comes out 0.83
+              #define Exabsmult 0.923076923        // for 5 in 12     
+     
+ 	#define Angle 22.62				// pitch = rise / 12  5/12
+ 	// #define Angle atan2d( 5, 12)
+ 	#define RDA DeckArea *(1-.07)/4                 // not frame part, 1 of 4 equal surfaces
+ 	#define RDAT DeckArea *(.07)/4                 // frame part, 1 of 4 equal surfaces
+ 	#define RDabs .8                 // Asphalt shingles refl=0.2
+ 	#define RDexEpsLW 0.85                 // Asphalt shingles exterior emmissivity
+ 	#define RDinEpsLW 0.05
+ 	#define RDExRf 1.
+ //North	
+  	SURFACE RD sfType=Ceiling sfCon=RD; sfAZM=0 sfModel = forward_difference sfArea=RDA sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=RDInEpsLW         //Radiant barrier
+            sfExHcModel=Unified  sfInHcModel=Unified
+        
+	SURFACE RDT sfType=Ceiling sfCon=RD; sfAZM=0 sfModel = forward_difference sfArea=RDAT sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=.9         //No radiant barrier at Chord        
+            sfExHcModel=Unified  sfInHcModel=Unified
+
+ //East	
+  	SURFACE RDe sfType=Ceiling sfCon=RD; sfAZM=90 sfModel = forward_difference sfArea=RDA sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=RDInEpsLW         //possible radiant barrier
+            sfExHcModel=Unified  sfInHcModel=Unified
+
+                    
+	SURFACE RDTe sfType=Ceiling sfCon=RD; sfAZM=90 sfModel = forward_difference sfArea=RDAT sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=.9         //No radiant barrier at Chord                    
+            sfExHcModel=Unified  sfInHcModel=Unified
+            
+ //South	
+  	SURFACE RDs sfType=Ceiling sfCon=RD; sfAZM=180 sfModel = forward_difference sfArea=RDA sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=RDInEpsLW         //possible radiant barrier
+            sfExHcModel=Unified  sfInHcModel=Unified
+                    
+	SURFACE RDTs sfType=Ceiling sfCon=RD; sfAZM=180 sfModel = forward_difference sfArea=RDAT sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=.9         //No radiant barrier at Chord        
+            sfExHcModel=Unified  sfInHcModel=Unified
+            
+ //West	
+  	SURFACE RDw sfType=Ceiling sfCon=RD; sfAZM=270 sfModel = forward_difference sfArea=RDA sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=RDInEpsLW         // possible radiant barrier
+            sfExHcModel=Unified  sfInHcModel=Unified
+                    
+	SURFACE RDTw sfType=Ceiling sfCon=RD; sfAZM=270 sfModel = forward_difference sfArea=RDAT sfTilt=Angle 
+            sfExAbs= RDabs  sfExRf=RDExRf sfexEpsLW=RDexEpsLW  sfInEpsLW=.9         //No radiant barrier at Chord          
+            sfExHcModel=Unified  sfInHcModel=Unified
+	
+	#define TrussArea 1146
+
+	Surface Truss   SFtype=Wall SFCon=TrussCon sfArea = Trussarea/3 sfExCnd=Adiabatic  sfAzm=0 sfModel = forward_difference
+		sfInHcModel=Input sfInHCMult = .5
+	Surface Truss2  SFtype=Wall SFCon=TrussCon sfArea = Trussarea/3 sfExCnd=Adiabatic  sfAzm=0 sfModel = forward_difference
+		sfInHcModel=Input sfInHCMult = .5
+	Surface Truss3  SFtype=Wall SFCon=TrussCon sfArea = Trussarea/3 sfExCnd=Adiabatic  sfAzm=0 sfModel = forward_difference
+		sfInHcModel=Input sfInHCMult = .5
+
+
+// Ceiling Bypass and Misc conductance.  
+	Gain "BypassAttic" gnPower=Max(0.0, .008 * ACEIL * (@znRes[Z1].prior.H.tAir - @znRes[Attic].prior.H.tAir))
+
+CONSTRUCTION CeilingCon
+	layer 	lrMat="Gypbd" lrThk=0.5/12.	//	Revised Layers BAW 8/4
+	
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+
+
+ //--------- REPORTS ------------
+ REPORT	    rpType=ZEB   rpFreq=MONTH rpZone="Z1" 
+ REPORT	    rpType=ZEB   rpFreq=MONTH rpZone="Attic" 
+ 
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=Hour
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=Hour
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Oct 16 rpDayEnd= Oct 16 rpFreq=Hour
+ 
+ REPORT     rpType=MTR     rpMeter=GAINMETER    rpFreq=Month
+
+  REPORT
+        rpType=UDT  rpFreq=SUBHOUR rpCPL=200
+        rpDayBeg=Jun 10 rpDayEnd=Jun 12
+        reportcol colVal=@Top.iHr colHead="Hr"
+        reportcol colVal=@Top.tDbOSh       colHead="Tdb"
+        reportcol colVal=@Top.windSpeedSh       colHead="WndSpd"
+        reportcol colVal=@Zone[ 1].tz colHead="Ta1"
+        reportcol colVal=@Zone[ 1].tr colHead="Tr1"
+        reportcol colVal=@Zone[ 1].fVent colHead="fVent" colDec=3
+        reportcol colVal=@Zone[ 1].airX colHead="airX" colDec=3
+				reportcol colVal=@Zone[ 1].qsHvac colHead = "QHvac"
+   endReport
+   
+
+ REPORT
+        rpType=UDT
+        rpCpl = 200
+        reportcol colVal=$Month   colHead="Month"
+        reportcol colVal=@Top.tDbOHr       colHead="Top.tDbOHr"
+        reportcol colVal=@Weather.db       colHead="Weather.db"
+        reportcol colVal=@Weather.tgrnd    colHead="T Grnd"
+        reportcol colVal=@Top.radBeamHrAv  colHead="radBeam"
+        reportcol colVal=@Top.radDiffHrAv  colHead="radDiff"
+        reportcol colVal=0
+        reportcol colVal=@ahRes[1].H.ts    colHead="ahRes[1].ts"
+        reportcol colval=@ahRes[1].H.tmix  colHead="ahres.tmix"
+        reportcol colVal=@zone[1].qMsSg    colHead="MassSolar"
+        reportcol colval=@zone[1].qSgAir   colHead="AirSolar"
+        reportcol colval=@zone[1].qSgTotSh colHead="TotalSolar"
+        rpFreq=HOUR
+        rpDayBeg=Mar 5
+        rpDayEnd=Mar 8
+        endreport
+        
+ REPORT     rpType=ZDD   rpZone="Z1"
+ REPORT     rpType=ZDD   rpZone="Attic"
+
+ RUN
+ //--------- END OF RUN ------------
+
+ $EOF

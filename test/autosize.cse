@@ -1,0 +1,236 @@
+WfName="ga_atlanta.et1"
+#Define CFA 2100
+#Define SLA 3		//   Specific Leakage area
+#Define CeilHeight 9	// Ceiling height of the zone
+#Define AtticVent 1/150	// ratio of vent/floor e.g 1/300
+#Define FracHigh  .33	//  Fract of attic vent high
+#Define AtticHeight 4	// at peak ft.
+
+ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+wuDays=30 nSubSteps=30
+
+//Materials
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+MATERIAL   "R11fglass"  	matCond=.025   matSpHt=.2   matDens=1.5  // 3.5" thick
+MATERIAL   "R13fglass"  	matCond=.025   matSpHt=.2   matDens=1.5  // 3.5"  Needs check on values
+MATERIAL   "R19fglass"  	matCond=.025   matSpHt=.2   matDens=1.5  // 5.5"  Needs check on values
+MATERIAL   "CeilInsul"  	matCond=.025   matSpHt=.2   matDens=1.5  // Table R3-18 – Attic Model Inputs
+MATERIAL   "comboSheath"  	matCond=.035   matSpHt=.2   matDens=8.2 
+MATERIAL   "SoftWood"  	matCond=.0667   matSpHt=.33   matDens=32
+MATERIAL   "ConcreteSlab"  matCond=1   matSpHt=0.2   matDens=144 
+MATERIAL   "stucco"  matCond=0.4167   matSpHt=0.2   matDens=116          //  JA Table 4.6.1
+MATERIAL   "Carpet"  	matCond=.21   matSpHt=.2   matDens=25
+
+
+
+//Constructions
+
+CONSTRUCTION Ceil_R38A21_Std // 
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12 	
+ 	layer 	lrMat="R13fglass" lrThk=3.5/12 
+		lrFrmFrac=.07 
+		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
+	layer "InsulTopLayer"	lrMat="CeilInsul" lrThk=0.6  // R38 Tbl4.2.1 #A21 Std Qual
+
+CONSTRUCTION Ceil_R38A21_Imp Like Ceil_R38A21_Std
+	layer "InsulTopLayer"	lrMat="CeilInsul" lrThk=0.71  // R38 Tbl4.2.1 #A21 Imp Qual
+
+
+CONSTRUCTION Wall_R19A5 // 2x6 R-19  Needs RCQ added
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12 	
+ 	layer 	lrMat="R19fglass" lrThk=5.5/12 
+		lrFrmFrac=.25 			// 16" OC
+		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
+ 	layer 	lrMat="Stucco" lrThk=0.0729    //7/8"  
+
+CONSTRUCTION IntwallCon // 2x4 
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12 	
+ 	layer 	lrMat="R13fglass" lrThk=3.5/12 
+		lrFrmFrac=.25 
+		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12
+
+CONSTRUCTION FurnCon // 
+ 	layer 	lrMat="SoftWood" lrThk=1/12 	
+ 	layer 	lrMat="R13fglass" lrThk=3.5/12 
+		lrFrmFrac=.5 
+		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
+ 
+CONSTRUCTION ExpSlabfloor 				
+            layer 	lrMat="ConcreteSlab" lrThk=0.5/12 
+            layer 	lrMat="ConcreteSlab" lrThk=1/12 
+            layer 	lrMat="ConcreteSlab" lrThk=2/12 
+            
+			
+CONSTRUCTION CarpSlabfloor 
+            layer 	lrMat="Carpet" lrThk=0.5/12 
+            layer 	lrMat="ConcreteSlab" lrThk=0.5/12 
+            layer 	lrMat="ConcreteSlab" lrThk=1/12 
+            layer 	lrMat="ConcreteSlab" lrThk=2/12 
+		 
+// ----- GLAZETYPES --------------------------------------------------
+
+ GLAZETYPE	"4040"		//double clear LOE U=0.4, SHGC=0.4
+ 	gtU=		(1/((1/0.40)-0.85))
+ 	gtSHGC=	0.40
+ 	gtSMSO=	1
+ 	gtSMSC=	1
+ 	gtFMult=	1
+ 	gtPySHGC=	1.838954, 1.241389, -4.34175, 2.261405
+ 	gtDMSHGC=	0.832326
+ 	gtDMRBSol=	0.832326
+ 	/*gtTvisO=	0.723
+ 	gtTvisCoef1=	1.609024
+ 	gtTvisCoef2=	2.22877
+ 	gtTvisCoef3=	-5.66425
+ 	gtTvisCoef4=	2.826456
+ 	gtDMTvis=	0.862691	
+ 	gtDMRBVis=	0.243	*/
+	// based on doe2 type #	2613
+	
+//Schedules
+#redefine SZ_Intgain_hr hourval(  \
+         0.024,0.022,0.021,0.021,0.021,0.026,0.038,0.059,0.056,0.06,0.059,0.046,\
+         0.045,0.03 ,0.028,0.031,0.057,0.064,0.064,0.052,0.05,0.055,0.044,0.027)
+#redefine Liv_Intgain_hr hourval(  \
+         0.0161,0.0148,0.0114,0.0113,0.0121,0.0146,0.0277,0.053 ,0.0633,0.0686,0.0638,0.05 ,\
+         0.0484,0.0315,0.0294,0.0341,0.0619,0.0718,0.0724,0.0596,0.0549,0.062,0.0438,0.0235)
+#redefine Slp_Intgain_hr hourval(  \
+         0.0161,0.0148,0.0114,0.0113,0.0121,0.0146,0.0277,0.053 ,0.0633,0.0686,0.0638,0.05 ,\
+         0.0484,0.0315,0.0294,0.0341,0.0619,0.0718,0.0724,0.0596,0.0549,0.062 ,0.0438,0.0235)
+
+#redefine Intgain_mo choose1($month,\
+          1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21)
+//Thermostats         
+#redefine SZ_Heat_hr hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)
+#redefine Liv_Heat_hr hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)
+#redefine Slp_Heat_hr hourval(65,65,65,65,65,65,65,68,65,65,65,65,65,65,65,65,65,65,65,65,65,68,68,65)
+#redefine SZ_Cool_hr hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78)
+#redefine Liv_Cool_hr hourval(83,83,83,83,83,83,83,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,83)
+#redefine Slp_Cool_hr hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,83,83,83,83,83,83,83,83,78,78,78)
+#redefine Wnd_Vent_hr hourval(Off,Off,Off,Off,Off,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,Off)  // Off sets vent flag passed to ZnBal
+#redefine CFI_Vent_hr 68
+
+// Types
+DEFTYPE ZONE "SingleZone" znArea=CFA znCAir=CFA infAC=0 infShld=5; infStories=1;infELA=0;
+DEFTYPE GAIN "SingleZone" gnPower=(20000 + CFA * 15) * Intgain_mo * SZ_Intgain_hr  // gnMeter=intgain
+
+
+DEFTYPE	SURFACE "IntWall" sfType=Wall sfArea=CFA sfCon="IntwallCon" sfExCnd=Adiabatic sfAZM=0;    //Needs Intmass2        
+DEFTYPE	SURFACE "Furn" sfType=floor sfArea= CFA;    sfCon="FurnCon" sfExCnd=Adiabatic;     //Needs Intmass2
+
+
+DEFTYPE SURFACE "PExpSlab"  sfCon= ExpSlabfloor  sfType=Floor
+DEFTYPE SURFACE "PCrpSlab"  sfCon= CarpSlabfloor sfType=Floor
+DEFTYPE SURFACE "IExpSlab"  sfCon= ExpSlabfloor  sfType=Floor
+DEFTYPE SURFACE "ICrpSlab"  sfCon= CarpSlabfloor sfType=Floor
+
+//HVAC
+
+DEFTYPE TERMINAL "HeatTerm" 		// 100% efficient local heat with unlimited capacity to establish heating load in zone
+	TuTlh=SZ_Heat_hr   		// Heating set point schedule
+	// Max heating Capacity tuQMxLH = set in input to zone heat capacity and passed to the UZM duct model does not limit zone heating
+	
+DEFTYPE TERMINAL "CoolTerm"             //100% efficient cooling terminal with unlimited capacity to establish cooling load in zone
+	tuAh="MainAH"
+	tuTC=SZ_Cool_hr		//Cooling setpoint
+	tuSRLeak=0
+	// Max cooling CFM tuVfMxC=10000 set in input to zone cool capacity and passed to the UZM duct model does not limit zone cooling
+	
+AIRHANDLER "MainAH"  //  Perfect Air conditioner to supply "CoolTerm" with no losses
+    ahSched=ON
+    ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 
+    ahfanCycles=No              //1/20 bw
+    
+    oaVfDsMn=0                  // No outside air, duct losses
+    oaMnCtrl=VOLUME             //
+    oaMnFrac=0         
+    oaEcoType=NONE
+
+    oaOaLeak=0                  //No economizer damper leaks to outside
+    oaRaLeak=0                  //No economizer leaks to return air
+    ahSOLeak=0                  //No supply duct leaks
+    ahROLeak=0                  //No return duct leaks
+    ahSOLoss=0                  //No supply duct losses
+    ahROLoss=0                  //No return duct losses
+
+    sfanVfDs=10000
+    sfanVfMxF=1.00             //Max volume multiplier
+    sfanPress=0                //equal to zero so no fan heat added to airstream, and no fan energy consumption
+    sfanEff=1.000              //combined sup & ret fan mech efficiency
+    sfanMotEff=1.000           //combined sup & ret fan motor efficiency
+    sfanMotPos=EXTERNAL        //discard heat from fan motor
+    //Supply Fan coeff"s 0-3
+    sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
+  
+    ahccType=ELECTRIC
+    AUTOSIZE ahccCapTRat
+
+
+//Set up attic        
+Zone  "Attic" znArea=CFA;znVol = CFA*3  // znType=Attic? needed set up UZM and air net in CSE
+
+// Air leakage and vent
+//  Inputs in the .inp file
+//	"SLA"   Specific Leakage area
+//	"CeilHeight" Ceiling height of the zone
+//      "AtticVent" ratio of vent/floor e.g 1/300
+//      "FracHigh"  Fract of attic vent high
+//      "AtticHeight" at peak ft.
+//8 Wall Holes in zone Single to Outdoors  Assumes no orientation so 1/4 each orientation, 1/8 low and 1/8 high
+	// Low is at 1/4 of ceiling height, high is at 3/4 of ceiling height
+	// Might be a problem if the orientation of the hole rotates with bldgAzm or znAZM because answer will change
+#redefine WallHole 0.57 * SLA * CFA/(8*10000)   	// 57% of leakage is in walls, 1/8th in each hole, convert to ft2
+IZXFER SLF  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.25 * CeilHeight izNVEff = 1 // Orientation = 0
+IZXFER SLL  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.25 * CeilHeight izNVEff = 1 // Orientation = 90
+IZXFER SLB  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.25 * CeilHeight izNVEff = 1 // Orientation = 180
+IZXFER SLR  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.25 * CeilHeight izNVEff = 1 // Orientation = 270
+IZXFER SHF  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 0
+IZXFER SHL  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 90
+IZXFER SHB  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 180
+IZXFER SHR  izNVTYPE = AirNetExt izZN1 = Single izALo = wallhole  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 270
+#redefine CeilHole 0.43 * SLA * CFA/(8*10000)   	// 57% of leakage is from Cond Zone to attic
+IZXFER SxA  izNVTYPE = AirNetIZ izZN1 = Single izALo = CeilHole  izHD = 1 * CeilHeight izNVEff = 1 izZN2 = Attic
+//Attic vent.  Assume 4 soffit vents at attic floor plus slope vents at 2/3 of Attic high if frac high > 1
+#redefine  SoffitVent 0.25 * AtticVent * CFA * (1-FracHigh)   	// soffit vent area
+IZXFER ASF  izNVTYPE = AirNetExt izZN1 = Attic izALo = SoffitVent  izHD = 1 * CeilHeight izNVEff = 1 // Orientation = 0
+IZXFER ASL  izNVTYPE = AirNetExt izZN1 = Attic izALo = SoffitVent  izHD = 1 * CeilHeight izNVEff = 1 // Orientation = 90
+IZXFER ASB  izNVTYPE = AirNetExt izZN1 = Attic izALo =SoffitVent  izHD = 1 * CeilHeight izNVEff = 1 // Orientation = 180
+IZXFER ASR  izNVTYPE = AirNetExt izZN1 = Attic izALo = SoffitVent  izHD = 1 * CeilHeight izNVEff = 1 // Orientation = 270
+#redefine  Deckvent 0.25 * AtticVent * CFA * FracHigh   	// High vent area
+IZXFER AHF  izNVTYPE = AirNetExt izZN1 = Attic izALo = DeckVent  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 0
+IZXFER AHL  izNVTYPE = AirNetExt izZN1 = Attic izALo = DeckVent  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 90
+IZXFER AHB  izNVTYPE = AirNetExt izZN1 = Attic izALo = DeckVent  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 180
+IZXFER AHR  izNVTYPE = AirNetExt izZN1 = Attic izALo = DeckVent  izHD = 0.75 * CeilHeight izNVEff = 1 // Orientation = 270
+BldgAzm = 0         // Rotates bldg.  Azimuths = BldgAzm + sfAzm  Problem with rotation air net holes?
+
+DoAutoSize = "Yes"
+
+ZONE  Single Usetype "SingleZone"; znVol =18900;
+SURFACE "Front" sfType=Wall; sfArea=442; sfAzm=0; sfCon="Wall_R19A5";       
+	DOOR DFront   drArea=20.;   drU=0.7827  
+	WINDOW  Wfront; wnHeight=6.; wnWidth=105 / 6 wnGT="4040";       
+SURFACE "Left" sfType=Wall;   sfArea=442;     sfAzm=90;    sfCon="Wall_R19A5";   
+      	WINDOW  Wleft;    wnHeight=6.;  wnWidth=105 / 6;   wnGT="4040";       
+SURFACE "Back" sfType=Wall;   sfArea=442;     sfAzm=180;    sfCon="Wall_R19A5";   
+      	WINDOW  Wleft;    wnHeight=6.;  wnWidth=105 / 6.   wnGT="4040";       
+SURFACE "Right" sfType=Wall;   sfArea=442;     sfAzm=270;    sfCon="Wall_R19A5";   
+      	WINDOW  Wleft;    wnHeight=6.;  wnWidth=105 / 6.   wnGT="4040";   
+SURFACE "Ceiling" sfType=Ceiling;   sfArea=CFA;    sfCon="Ceil_R38A21_Std";        
+SURFACE UseType "IntWall";            
+SURFACE UseType "Furn";     
+// Need new input structure for floor slab
+SURFACE "PExSlab" UseType "PExpSlab" sfArea=420 
+SURFACE "PCpSlab" UseType "PCrpSlab" sfArea=1680
+SURFACE "IExSlab" UseType "IExpSlab" sfArea=420 
+SURFACE "ICpSlab" UseType "ICrpSlab" sfArea=1680
+TERMINAL Z1H UseType"HeatTerm" tuQMxLH=1000000 AUTOSIZE tuhcCaptRat // Max heating Capacity 
+TERMINAL Z1C UseType"CoolTerm" tuVfMxC=10000  //Cooling CFM =
+
+// xfanVfDs = 51; xfanW=25     // IAQ exhaust fan cfm is new input for AirNet, xfanW is a new input if we decide we need it
+                                     
+REPORT AHX rpType = AHSIZE rpAH = MainAH;
+REPORT TUX rpType = TUSIZE rpTU = Z1H;
+
+RUN
+//--- end of run ---

@@ -1,0 +1,218 @@
+// Ducts!  CSE680  120412
+runTitle="Duct test"
+// meters for heating and cooling
+METER SysMtr;
+
+
+// duct insulation material
+//   temperature dependence coded but not tested
+MATERIAL   "DuctWrap"	matCond = .032 matCondCT = .00418   matSpHt=.2      matDens=0.7 matThk=4/12
+
+// System definition
+//	 referenced via znRSYS = <rsysName>  (see above)
+RSYS MySys
+	rsElecMtr = SysMtr rsFuelMtr = SysMtr
+	rsCapH = 40000  rsAFUE = .85
+	rsCapC = 60000  rsSEER = 13  rsEER=12
+	
+// Big supply duct, no return
+DUCTSEG MySysSup
+	dsTy=Supply				// "supply" or "return"
+	dsExArea = 235			// exterior (outside of insulation) area
+	// dsExCnd = Ambient / AdjZn / SpecifiedT (default AdjZn)
+	dsAdjZn = "SDuctZone"		// duct location
+	dsInsulMat = DuctWrap	// insulation material
+	//dsInsulThk = .1/12	// TODO insulation thickness (defaults from dsInsulMat)
+	 dsInsulR = 4			// insulation R-value (defaults from dsInsulMat)
+	// dsDiam / dsLength	// TODO
+	dsLeakF = .04			// leakage fraction
+	// dsEpsLW				// outside emissivity (default 0.9)
+	// dsExT				// outside zone temp (for dsExCnd = SpecifiedT)
+	// dsExH				// outside surface convection coeff (default 0.54)
+							//    (if dsExCnd = SpecfiedT, this is *combined* coeff)
+	
+DUCTSEG MySysRet dsTy=Return dsExArea = 140 dsAdjZn = "RDuctZone" dsInsulMat = DuctWrap
+	dsLeakF = .11	dsInsulR = 6
+    
+ENDRSYS
+
+WfName="CTZ12S13b.CSW"
+#Define WinDay Dec 3       // Coldest
+#Define SumDay Jul 10     // Hottest
+
+
+#Define reports
+//#UnDef reports
+#define Lay forward_difference  //New auto layering
+#Redefine LFact  .5  // layers
+nSubSteps=30
+endDay=Feb 28
+
+ebTolHour=.001  ebTolDay=.001 ebTolMon=.001 ebTolSubHr=.001 wuDays=30 // nSubSteps=600 
+DT=No 
+
+#define Heatday Jan 31
+#define Coolday Feb 28
+
+dbgPrintMask = $dayofyear == HeatDay || $dayofyear == CoolDay ? 64+128 : 0
+
+Windf=0.  //// no wind 
+
+#ifndef SprDay  //  If Spring day is not defined for this CTZ  BAW 9/22
+#Define SprDay Jun 6       // 
+#endif
+
+//Materials
+// Insulation Quality modifies wall cavity R values  // Revised BAW 110427  based on CavityIns1Expanded.xlxs
+#define RCQ 1.0
+#Ifdef ICQStandard 
+	#Redefine RCQ 0.7;  
+	#endif
+#ifDef ICQImproved 
+	#Redefine RCQ 0.9;  
+	#endif
+	
+//Materials
+//Materials list 4   120308  BAW  Adds variable conductivity insulation
+MATERIAL "Gypsum Board"    	matThk=0.5/12. 		matCond=1.1/12   		matSpHt=0.27   	matDens=40  	// 2009 HOF 26.6
+MATERIAL "Wood layer"  		matThk=0.5/12.		matCond=0.5/(0.68*12)  		matSpHt=.45   	matDens=41. 	//  2009 HOF 26.6  k=thick/R
+MATERIAL "R4 Synth Stucco"	matThk=1./12.		matCond=1./(48)   		matSpHt=.35   	matDens=1.5 	// R4  from 2009 HOF 26.6
+MATERIAL "3 Coat Stucco" 	matThk=7/(8*12) 	matCond=0.4167   		matSpHt=0.2   	matDens=116.	//  JA Table 4.6.1
+MATERIAL "Carpet"  		matThk=.5/12.		matCond=.02   			matSpHt=.34   	matDens=12.3 	// HOF R=2.08, SpHt=0.34  1/2" for R=2.08  Density from Seta paper in BruceRug.doc  BAW 10/13
+MATERIAL "Light Roof"		matThk=.2/12.		matCond=1      			matSpHt=0.2  	matDens=120
+MATERIAL "5 PSF Roof"		matThk=.5/12.		matCond=1      			matSpHt=0.2  	matDens=120
+MATERIAL "10 PSF Roof"		matThk=1./12.  	 	matCond=1   			matSpHt=.2   	matDens=120  	
+MATERIAL "15 PSF Roof" 		matThk=1.5/12.  	matCond=1   			matSpHt=.2   	matDens=120 
+MATERIAL "25 PSF Roof" 		matThk=2.5/12.  	matCond=1   			matSpHt=.2   	matDens=120 
+MATERIAL "TileGap"  		matThk=0.75/12.		matCond=0.75/(0.85*12.)  	matSpHt=.24   	matDens=0.075  	// 2009 HOF 26.3  90 deg, down, E=.82
+MATERIAL "SlabOnGrade"  	matThk=3.5/12.		matCond=1.   			matSpHt=0.2   	matDens=144. 
+MATERIAL "Earth"  					matCond=1.   			matSpHt=0.2   	matDens=115  	//Bazjanac and Huang slab model 
+MATERIAL "Crawl"  	        matThk=1.		matCond=1./6.           	matSpHt=.24   	matDens=0.075 	// JA Table 4.6.1  Vented crawspace	
+MATERIAL "SoftWood" 		 			matCond=0.98/12   		matSpHt=.39   	matDens=35.  	// 2009 HOF 26.6 Douglas fir/larch
+MATERIAL "Concrete"  					matCond=1.   			matSpHt=0.2   	matDens=144. 
+//MATERIAL "Sheath"  		matThk=1./12.		matCond=1./(12*Rval)   		matSpHt=.35   	matDens=1.5 	// R4  from 2009 HOF 26.6
+//MATERIAL "BlownInsul"					matCond=0.032051282/RCQ   	matSpHt=.2   	matDens=0.5  	// Certainteed InsulSafe®SP Fiber Glass	R=2.6/in for R30-38
+MATERIAL "BlownInsul"					matCond=0.032051282/RCQ   	matSpHt=.2   	matDens=0.5  	matCondCT =0.00418 // variable k
+
+  	
+CONSTRUCTION IntwallCav // 2x4 	Revised Layers BAW 8/4 	
+ 	Layer 	lrMat="Gypsum Board"
+
+
+// Reports NOTE all reports by default are in MMBTU (even for electric).  The rpBtuSf=1000 changes output to kBTU (even electric)
+ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
+
+//Kill all the default reports except the ERR  BAW 9/27
+Delete Report eb     // Deletes the sum of zones CNE format report which is never appropriate since it includes the attic
+
+#ifndef Reports  // no reports for speed
+//Delete Report Log     // Deletes the run log:  CSE version etc
+//Delete Report Inp     // Deletes input echo
+   #endif    
+#Ifdef Reports  // Switch in the .cse file to turn on the following optional diagnostic reports  BAW 9/3
+#Define CSEBtuSF 1000  //reports in kBtu
+
+// CSE Format Conditioned Zone sensible Energy Balance. 
+//Heating
+Report rpType=UDT rpFreq=SUBHOUR rpDayBeg=HeatDay rpDayEnd=HeatDay rpCPL=121
+   rpTitle="Sensible Energy Balance (+ into the Cond, Supduct and Retduct zone)"
+
+   Reportcol colVal=@zone[Single].mCpSysI colHead="CmCpI" colDec=0 colWid=5
+   Reportcol colVal=@zone[Single].mCpTSysI colHead="CmCpTI" colDec=0 colWid=6
+   Reportcol colVal=@zone[Single].mCpSysO colHead="CmCpO" colDec=0 colWid=5
+
+   Reportcol colVal=@zone[SDuctZone].qDuctCondAir colHead="SCondA" colDec=0 colWid=7
+   Reportcol colVal=@zone[SDuctZone].qDuctCondRad colHead="SCondR" colDec=0 colWid=7
+   Reportcol colVal=@zone[SDuctZone].qDuctCond colHead="SCondT" colDec=0 colWid=7
+   Reportcol colVal=@zone[SDuctZone].mCpDuctI colHead="SmCpI" colDec=0 colWid=6
+   Reportcol colVal=@zone[SDuctZone].mCpDuctO colHead="SmCpO" colDec=0 colWid=5
+   Reportcol colVal=@zone[SDuctZone].qsHVAC colHead="SHVAC" colDec=0 colWid=7
+   Reportcol colVal=@ductseg[ MySysSup].tSrf colHead="STSrf" colDec=2 colWid=5
+
+   Reportcol colVal=@zone[RDuctZone].qDuctCondAir colHead="RCondA" colDec=0 colWid=7
+   Reportcol colVal=@zone[RDuctZone].qDuctCondRad colHead="RCondR" colDec=0 colWid=7
+   Reportcol colVal=@zone[RDuctZone].qDuctCond colHead="RCondT" colDec=0 colWid=7
+   Reportcol colVal=@zone[RDuctZone].mCpDuctI colHead="RmCpI" colDec=0 colWid=6
+   Reportcol colVal=@zone[RDuctZone].mCpDuctO colHead="RmCpO" colDec=0 colWid=5
+   Reportcol colVal=@zone[RDuctZone].qsHVAC colHead="RHVAC" colDec=0 colWid=7
+   Reportcol colVal=@ductseg[ MySysRet].tSrf colHead="RTSrf" colDec=2 colWid=5
+   
+ Report rpType=UDT rpFreq=SUBHOUR rpDayBeg=CoolDay rpDayEnd=CoolDay rpCPL=121
+   rpTitle="Sensible Energy Balance (+ into the Cond, Supduct and Retduct zone)"
+
+   Reportcol colVal=@zone[Single].mCpSysI colHead="CmCpI" colDec=0 colWid=5
+   Reportcol colVal=@zone[Single].mCpTSysI colHead="CmCpTI" colDec=0 colWid=6
+   Reportcol colVal=@zone[Single].mCpSysO colHead="CmCpO" colDec=0 colWid=5
+
+   Reportcol colVal=@zone[SDuctZone].qDuctCondAir colHead="SCondA" colDec=0 colWid=7
+   Reportcol colVal=@zone[SDuctZone].qDuctCondRad colHead="SCondR" colDec=0 colWid=7
+   Reportcol colVal=@zone[SDuctZone].qDuctCond colHead="SCondT" colDec=0 colWid=7
+   Reportcol colVal=@zone[SDuctZone].mCpDuctI colHead="SmCpI" colDec=0 colWid=6
+   Reportcol colVal=@zone[SDuctZone].mCpDuctO colHead="SmCpO" colDec=0 colWid=5
+   Reportcol colVal=@zone[SDuctZone].qsHVAC colHead="SHVAC" colDec=0 colWid=7
+   Reportcol colVal=@ductseg[ MySysSup].tSrf colHead="STSrf" colDec=2 colWid=5
+
+   Reportcol colVal=@zone[RDuctZone].qDuctCondAir colHead="RCondA" colDec=0 colWid=7
+   Reportcol colVal=@zone[RDuctZone].qDuctCondRad colHead="RCondR" colDec=0 colWid=7
+   Reportcol colVal=@zone[RDuctZone].qDuctCond colHead="RCondT" colDec=0 colWid=7
+   Reportcol colVal=@zone[RDuctZone].mCpDuctI colHead="RmCpI" colDec=0 colWid=6
+   Reportcol colVal=@zone[RDuctZone].mCpDuctO colHead="RmCpO" colDec=0 colWid=5
+   Reportcol colVal=@zone[RDuctZone].qsHVAC colHead="RHVAC" colDec=0 colWid=7
+   Reportcol colVal=@ductseg[ MySysRet].tSrf colHead="RTSrf" colDec=2 colWid=5
+ 
+   
+  
+//Zone Data Dump reports
+Report rpType=ZDD rpZone=Single 
+Report rpType=ZDD rpZone= SDuctZone
+Report rpType=ZDD rpZone= RDuctZone
+
+Report rpType=MTR rpFreq=hour rpMeter=SysMtr rpBtuSf=1000 rpDayBeg= Heatday; rpDayEnd=Heatday 
+Report rpType=MTR rpFreq=hour rpMeter=SysMtr rpBtuSf=1000 rpDayBeg= Coolday; rpDayEnd=Coolday
+
+#Endif // Reports
+
+//Supply Duct Zone for testing the new duct system
+Zone SDuctZone znArea=900 infAC=0 infShld=4 infStories=1 infELA=0 znVol = 10000 znEaveZ=9
+	znModel = CZM znTH = select( $Month >1 ,140,default 1)  znTD = select( $Month >1 ,145,default 2)  znTC = select( $Month >1 ,150,default 10)
+        znQMxHRated = 1000000 znQMxCRated = -1000000      znQMxH = 1000000 znQMxC = -1000000
+		 	 	
+ 	SURFACE DWall1 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	SURFACE DWall2 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	SURFACE DWall3 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	SURFACE DWall4 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	
+ 	SURFACE DFloor sfType=floor sfArea=900 sfCon=IntwallCav; sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+	SURFACE DCeil sfType=ceiling sfArea=900 sfCon=IntwallCav;  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact   sfInHcModel=Unified 
+	IZXFER SDtran izNVTYPE = AirNetExt izZN1 = SDuctZone izALo = 1  izCpr=0. izExp=.65 izHD =1
+
+//Return Duct Zone for testing the new duct system
+Zone RDuctZone znArea=900 infAC=0 infShld=4 infStories=1 infELA=0 znVol = 10000 znEaveZ=9
+	znModel = CZM znTH = select( $Month >1 ,140,default 1)  znTD = select( $Month >1 ,145,default 2)  znTC = select( $Month >1 ,150,default 10)
+        znQMxHRated = 1000000 znQMxCRated = -1000000      znQMxH = 1000000 znQMxC = -1000000
+		 	 	
+ 	SURFACE DWall1 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	SURFACE DWall2 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	SURFACE DWall3 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	SURFACE DWall4 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+ 	
+ 	SURFACE DFloor sfType=floor sfArea=900 sfCon=IntwallCav; sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact sfInHcModel=Unified 
+	SURFACE DCeil sfType=ceiling sfArea=900 sfCon=IntwallCav;  sfExCnd=Adiabatic sfModel = FD sfLThkF=LFact   sfInHcModel=Unified 
+	IZXFER RDtran izNVTYPE = AirNetExt izZN1 = RDuctZone izALo = 1  izCpr=0. izExp=.65 izHD =1
+	
+#define OutT select( $Month >1 ,140,default 0)	//January winter, Feb summer
+//Conditioned Zone 
+Zone Single znArea=1000 infAC=0 infShld=4 infStories=1 infELA=0 znVol = 9000 znEaveZ=9
+	znRSYS = MySys  //BAW 120312
+	//znQMxHRated = 1000000 znQMxCRated = -1000000 znQMxH =1000000 znQMxC = -1000000
+	znModel = CZM znTH = 70  znTD = 75  znTC = 80
+ 	SURFACE Wall1 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Unified sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+ 	SURFACE Wall2 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Unified sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+ 	SURFACE Wall3 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Unified sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+ 	SURFACE Wall4 sfType=Wall sfArea=300 sfCon=IntwallCav; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Unified sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+ 	
+ 	SURFACE Floor sfType=floor sfArea=900 sfCon=IntwallCav; sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Unified sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+	SURFACE Ceil sfType=ceiling sfArea=900 sfCon=IntwallCav;  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact   sfInHcModel=Unified sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+	IZXFER CZtran izNVTYPE = AirNetExt izZN1 = Single izALo = 1  izCpr=0. izExp=.65 izHD =1
+	
+Run	

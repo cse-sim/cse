@@ -1,0 +1,168 @@
+// AirNet test case
+
+// #define to enable zone cooling
+#undef COOLING
+
+// ----- TOP LEVEL -----
+ // WfName="U1.et1"                 //
+ WfName = "CTZ13S13b.CSW"
+ BEGDay=Jan 1                     //
+ ENDDay=Dec 31                    //
+ ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ Jan1DOW=Tue
+ wuDays=30                        //
+ nSubSteps=30                      //
+ skyModel=anisotropic               //
+ 
+ WindF=0.25                       //site located exactly at weather station with
+                                  //wind at 0.2m below top of building
+ // dbgPrintMask = $dayofyear == 10 ? 16 : 0
+ // dbgPrintMask = 16
+ 
+
+// Transfers
+//Holes in Zone 1 to Outdoors
+IZXFER H141 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izHD = 2. izNVEff = 1
+IZXFER H142 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izHD = 6. izNVEff = 1
+IZXFER H143 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izHD = 2. izNVEff = 1
+IZXFER H144 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izHD = 6. izNVEff = 1
+
+//Holes from Zone 1 to Zone 2
+IZXFER H121 izNVTYPE = AirNetIZ    izZN1 = Z1 izALo =40  izHD = 12. izNVEff = 1 izZN2 = Z2
+
+//Holes in Zone 2 to Outdoors
+IZXFER H241 izNVTYPE = AirNetExt izZN1 = Z2 izALo = 2  izHD = 14. izNVEff = 1
+IZXFER H242 izNVTYPE = AirNetExt izZN1 = Z2 izALo = 2  izHD = 18  izNVEff = 1
+IZXFER H243 izNVTYPE = AirNetExt izZN1 = Z2 izALo = 2  izHD = 14. izNVEff = 1
+IZXFER H244 izNVTYPE = AirNetExt izZN1 = Z2 izALo = 2  izHD = 18. izNVEff = 1
+
+//Holes from Zone 2 to Zone 3
+IZXFER H231  izNVTYPE = AirNetIZ    izZN1 = Z2 izALo =2  izHD = 24. izNVEff = 1 izZN2 = Z3
+
+//Holes in Zone 3 to Outdoors
+IZXFER H341 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 24. izNVEff = 1
+IZXFER H342 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 24. izNVEff = 1
+IZXFER H343 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 32. izNVEff = 1
+IZXFER H344 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 28  izNVEff = 1
+
+REPORT
+    rpType=UDT rpFreq=HOUR rpDayBeg=Jan 10  rpDayEnd=Jan 10 rpCpl = 210
+    reportCol colVal=$hour  colHead="Hour"
+    reportCol colVal=@izxfer[ "H141"].air1.tdb colHead="Zone1 T"
+	reportCol colVal=@izxfer[ "H241"].air1.tdb colHead="Zone2 T"
+	reportCol colVal=@izxfer[ "H341"].air1.tdb colHead="Zone3 T"
+	reportCol colVal=@izxfer[ "H141"].air2.tdb colHead="Out T"
+    reportCol colVal=@izxfer[ "H141"].ad[ 0].mdotP colHead="H141"
+    reportCol colVal=@izxfer[ "H142"].ad[ 0].mdotP colHead="H142"
+    reportCol colVal=@izxfer[ "H143"].ad[ 0].mdotP colHead="H143"
+    reportCol colVal=@izxfer[ "H144"].ad[ 0].mdotP colHead="H144"
+    reportCol colVal=@izxfer[ "H121"].ad[ 0].mdotP colHead="H121"
+    reportCol colVal=@izxfer[ "H241"].ad[ 0].mdotP colHead="H241"
+	reportCol colVal=@izxfer[ "H242"].ad[ 0].mdotP colHead="H242"
+	reportCol colVal=@izxfer[ "H243"].ad[ 0].mdotP colHead="H243"
+	reportCol colVal=@izxfer[ "H244"].ad[ 0].mdotP colHead="H244"
+    reportCol colVal=@izxfer[ "H231"].ad[ 0].mdotP colHead="H231"
+    reportCol colVal=@izxfer[ "H341"].ad[ 0].mdotP colHead="H341"
+    reportCol colVal=@izxfer[ "H342"].ad[ 0].mdotP colHead="H342"
+    reportCol colVal=@izxfer[ "H343"].ad[ 0].mdotP colHead="H343"
+    reportCol colVal=@izxfer[ "H344"].ad[ 0].mdotP colHead="H344"
+ endReport
+
+//----- ZONE SECTION -----
+
+ ZONE Z1
+    znArea=100 znVol=1000 infAC=0
+   
+    
+    TERMINAL Z1HT
+        tuTLH = 80
+        tuQMxLH = 100000
+        tuhcType = ELECTRIC
+        tuhcCaptRat = 100000
+ 
+#if defined( COOLING)
+    TERMINAL Z1C
+        tuAh="MainAH"
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMxC=10000
+        tuVfMn=0
+        tuTC=80.5           //cooling setpoint
+#endif
+
+
+ ZONE Z2
+     znArea=100 znVol=1000    infAC=0
+      
+     TERMINAL Z2HT
+         tuTLH = 70
+         tuQMxLH = 1000000
+         tuhcType = ELECTRIC
+         tuhcCaptRat = 1000000
+    
+#if defined( COOLING)
+     TERMINAL Z2C
+        tuAh="MainAH"
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMxC=10000
+        tuVfMn=0
+        tuTC=70.5           //cooling setpoint
+#endif
+
+         
+ ZONE Z3
+     znArea=100 znVol=1000    infAC=0
+      
+     TERMINAL Z3HT
+         tuTLH = 60
+         tuQMxLH = 1000000
+         tuhcType = ELECTRIC
+         tuhcCaptRat = 1000000 
+
+#if defined( COOLING)
+     TERMINAL Z3C
+        tuAh="MainAH"
+        tuSRLeak=0.0            //no duct leaks
+        tuVfMxC=10000
+        tuVfMn=0
+        tuTC=60.5           //cooling setpoint
+#endif
+
+
+
+#if defined( COOLING)
+ AIRHANDLER "MainAH"
+    ahSched=ON
+    ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
+    ahfanCycles=No              //1/20 bw
+    oaVfDsMn=0
+    oaMnCtrl=VOLUME             //
+    oaMnFrac=0         
+    oaEcoType=NONE
+
+    oaOaLeak=0                  //No economizer damper leaks to outside
+    oaRaLeak=0                  //No economizer leaks to return air
+    ahSOLeak=0                  //No supply duct leaks
+    ahROLeak=0                  //No return duct leaks
+    ahSOLoss=0                  //No supply duct losses
+    ahROLoss=0                  //No return duct losses
+
+    sfanVfDs=10000
+    sfanVfMxF=1.00             //Max volume multiplier
+    sfanPress=0                //equal to zero so no fan heat added to airstream, and no fan energy consumption
+    sfanEff=1.000              //combined sup & ret fan mech efficiency
+    sfanMotEff=1.000           //combined sup & ret fan motor efficiency
+    sfanMotPos=EXTERNAL        //discard heat from fan motor
+    //Supply Fan coeff"s 0-3
+    sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
+  
+    ahccType=ELECTRIC
+    ahccCapTRat=1000000        //very large
+    ahccCapSRat=1000000        //No latent load capacity BESTEST p.19
+ #endif
+
+
+
+ RUN
+ //--------- END OF RUN ------------
+
+ $EOF

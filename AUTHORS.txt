@@ -1,0 +1,6 @@
+# This is the official list of CSE Authors for copyright purposes.
+
+John R. "Rob" Barnaby
+Charles S. Barnaby
+Big Ladder Software LLC
+Wrightsoft Corporation

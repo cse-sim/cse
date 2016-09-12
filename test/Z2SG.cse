@@ -1,0 +1,372 @@
+// Z2SG.cse
+// 2 identical zones separated by (physically impossible) mass wall
+//   distributed solar gain s/b same on both sides of mass wall
+
+// CTZ12 Weather
+WfName="CTZ12S13b.CSW"
+
+ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+wuDays=30 nSubSteps=30  DT=No  // No daylight savings time  BAW 8/6(0.61 for 2 story, 0.51 for one story)
+// dbgPrintMask = $dayofyear == 20 || $dayofyear==190 ? 8192 : 4096
+dbgPrintMask = 4096
+
+elevation = 0
+
+
+//Definitions
+// Standard orientations all of which rotate with bldgmxAZM
+#define Front 0
+#define Left  90
+#define Back  180
+#define Right 270
+
+BldgAzm = 0.0   // Orientation of front, Window on Back 
+
+windF= .25
+
+//Materials
+// Insulation Quality modifies wall cavity R values  All insulations below have changed  Values still need check  BAW 9/2
+
+MATERIAL   "R11"  	matCond=.025   matSpHt=.2   matDens=1.5  // 3.5" thick
+MATERIAL   "R13"  	matCond=0.0224  matSpHt=.2   matDens=1.5  // 3.5"  
+
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+MATERIAL   "SoftWood"  	matCond=.0667   matSpHt=.33   matDens=32.
+MATERIAL   "Earth"  matCond=1   matSpHt=0.2   matDens=115  //BmxAZjanac and Huang slab model 
+MATERIAL   "ConcreteSlab"  matCond=1   matSpHt=0.2   matDens=144. 
+MATERIAL   "stucco"  matCond=0.4167   matSpHt=0.2   matDens=116.          //  JA Table 4.6.1
+
+
+
+//Constructions
+ 	
+CONSTRUCTION Fast // 
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.	
+ 	
+ CONSTRUCTION WFrm2x4 // 3.5"       	Revised Layers BAW 8/4
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.	
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.	
+ 	layer 	lrMat="SoftWood" lrThk=0.75/12. 
+	layer 	lrMat="SoftWood" lrThk=1./12. 
+	layer 	lrMat="SoftWood" lrThk=1./12. 
+	layer 	lrMat="SoftWood" lrThk=0.75/12
+ 	layer 	lrMat="Stucco" lrThk=0.5*7./(8.*12.)    //7/8"   
+ 	layer 	lrMat="Stucco" lrThk=0.5*7./(8.*12.) 
+ 	
+CONSTRUCTION WCav13 // W.13.2X4  BAW 9/2
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.	
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.		
+   	layer 	lrMat="R13" lrThk=3.5/(12.*2)
+   	layer 	lrMat="R13" lrThk=3.5/(12.*2)
+ 	layer 	lrMat="Stucco" lrThk=0.5*7./(8.*12.)    //7/8"   
+ 	layer 	lrMat="Stucco" lrThk=0.5*7./(8.*12.)   
+
+		
+CONSTRUCTION ExpSlabfloor  			// Revised Layers BAW 8/6				
+	layer 	lrMat="ConcreteSlab" lrThk=0.5/12. 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+        layer 	lrMat="Earth" lrThk=2./12. 
+        layer 	lrMat="Earth" lrThk=4./12. 
+        layer 	lrMat="Earth" lrThk=6./12. 
+        layer 	lrMat="Earth" lrThk=6./12. 
+        layer 	lrMat="Earth" lrThk=6./12.
+        
+ CONSTRUCTION Heavy				
+	layer 	lrMat="ConcreteSlab" lrThk=0.5/12. 
+    layer 	lrMat="ConcreteSlab" lrThk=1./12 
+    layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+    layer 	lrMat="ConcreteSlab" lrThk=1./12.
+	layer 	lrMat="ConcreteSlab" lrThk=0.5/12. 
+
+      
+        
+//  Chip calculates these as identical at NFRC conditions
+ GLAZETYPE GT
+          	gtSMSO=	1
+          	gtSMSC=	1
+          	gtSHGC=	0.423	// as calculated by ASHWAT
+          	gtU = .67		// 1/(1/.4 - 1.01)
+          	gtFMult=	1
+          	gtPySHGC=	1.881643, 1.014431, -4.009235, 2.113160
+           	gtDMSHGC=	.852		// Windows6 values: SHGC=.419, SHGCdiffuse=.357
+           							//   .357/.419 = .852
+           	gtDMRBSol=	.852	
+         
+ GLAZETYPE GTAW
+        	gtModel = ASHWAT
+          	gtSHGC=	0.423
+          	gtFMult= 1
+          	gtNGlz = 2
+          	gtU = .4
+          	gtUNFRC = .4
+  	
+
+
+Zone Z1 znArea=100 znCAir=18.3 infAC=0 infShld=5 infStories=1 infELA=0 znVol = 1000 znEaveZ=20
+        
+	znModel = CZM
+	znTH = 68
+	znTD = 74
+	znTC = 80
+
+	znQMxH = 1000000 znQMxC = -500000  //
+ 	GAIN gnPower= select( $hour >12,0.,default 0.0) gnFrRad=0  //
+ 	
+SURFACE "CMN" sfType=Wall sfCon=Heavy sfArea=100 sfAzm=Front  sfExCnd=AdjZn sfAdjZn=Z2
+	sfModel = forward_difference sfInAbs=.6 sfExAbs=.6
+	
+SURFACE "M1" sfType=Wall sfCon=Heavy sfArea=20 sfAzm=Front  sfExCnd=AdjZn sfAdjZn=Z1
+	sfModel = forward_difference sfInAbs=.6 sfExAbs=.6
+ 
+SURFACE "N1" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Front  sfExCnd=Ambient sfModel = forward_difference
+
+SURFACE "S1" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExCnd=Ambient  sfModel = forward_difference
+WINDOW 	"G1" wnHeight=5; wnWidth=10  wnGt=GTAW wnSMSO=1.; wnSMSC=1.; //
+SGDIST sgSurf="M1" sgSide=INTERIOR sgFSO=.2;
+SGDIST sgSurf="CMN" sgSide=INTERIOR sgFSO=.2;
+      	
+SURFACE "E1" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back  sfExCnd=AMBIENT sfModel = quick
+SURFACE "W1" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=right  sfExCnd=Ambient sfModel = forward_difference
+SURFACE "C1" sfType=Ceiling sfCon=WCav13 sfArea=100  sfExCnd=Ambient sfModel = forward_difference
+SURFACE "F1" sfType=Floor sfCon=ExpSlabFloor sfArea=100  sfExCnd=Adiabatic sfModel = forward_difference
+
+Zone Z2 znArea=100 znCAir=18.3 infAC=0 infShld=5 infStories=1 infELA=0 znVol = 1000 znEaveZ=20
+        
+	znModel = CZM
+	znTH = 68
+	znTD = 74
+	znTC = 80
+	
+	znQMxH = 1000000 znQMxC = -500000  //
+ 	GAIN gnPower= select( $hour >12,0.,default 0.0) gnFrRad=0  //
+ 
+SURFACE "N2" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Front  sfExCnd=Ambient sfModel = forward_difference
+
+SURFACE "S2" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExCnd=Ambient  sfModel = forward_difference //
+WINDOW 	"G2" wnHeight=5; wnWidth=10  wnGt=GTAW wnSMSO=1.; wnSMSC=1.; 
+      	
+SURFACE "E2" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back  sfExCnd=AMBIENT sfModel = quick
+SURFACE "W2" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=right  sfExCnd=Ambient sfModel = forward_difference
+SURFACE "C2" sfType=Ceiling sfCon=WCav13 sfArea=100  sfExCnd=Ambient sfModel = forward_difference
+SURFACE "F2" sfType=Floor sfCon=ExpSlabFloor sfArea=100  sfExCnd=Adiabatic sfModel = forward_difference
+
+//Reports
+ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
+// Kill all the default reports except the ERR  BAW 9/27
+// Delete Report eb     // Deletes the sum of zones CNE format report which is never appropriate since it includes the attic
+// Delete Report Log     // Deletes the run log:  CSE version etc
+// Delete Report Inp     // Deletes input echo
+
+Report rpType=ZEB rpZone=Z1 rpFreq = MONTH
+Report rpType=ZEB rpZone=Z2 rpFreq = MONTH
+
+
+#Define CSEBtuSF 1000  //reports in kBtu
+
+// CSE Format Conditioned Zone sensible Energy Balance 
+//Monthly
+   Report rpType=UDT rpFreq=Month   rpCPL=140 
+   rpTitle="Monthly Sensible Energy Balance of the Conditioned Zone (kBtu + into the zone)"
+   Reportcol colVal=$month  colHead="mo"	  colWid=2
+   Reportcol colVal=@znRes[Z1].M.tAir colHead="T1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].M.tAir colHead="T2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].M.tRad colHead="TR1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].M.tRad colHead="TR2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].M.qSlr/CSEBtuSF colHead="Slr 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].M.qSlr/CSEBtuSF colHead="Slr 2"  colWid=7 colDec=0
+   
+   Reportcol colVal=@znRes[Z1].M.qCond/CSEBtuSF colHead="Cond 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].M.qCond/CSEBtuSF colHead="Cond 2"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z1].M.qMass/CSEBtuSF colHead="Surf 1"  colWid=8 colDec=0
+   Reportcol colVal=@znRes[Z2].M.qMass/CSEBtuSF colHead="Surf 2"  colWid=8 colDec=0
+   
+   Reportcol colVal=@znRes[Z1].M.qhMech/CSEBtuSF colHead="Hload 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].M.qhMech/CSEBtuSF colHead="Hload 2"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z1].M.qcMech/CSEBtuSF colHead="Cload 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].M.qcMech/CSEBtuSF colHead="Cload 2"  colWid=7 colDec=0
+   
+   Report rpType=UDT rpFreq=Year   rpCPL=140  rpHeader=No	 //Annual Summary
+   Reportcol colVal="Yr"  colHead="mo"	  colWid=2
+   Reportcol colVal=@znRes[Z1].Y.tAir colHead="T1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].Y.tAir colHead="T2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].Y.tRad colHead="TR1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].Y.tRad colHead="TR2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].Y.qSlr/CSEBtuSF colHead="Slr 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].Y.qSlr/CSEBtuSF colHead="Slr 2"  colWid=7 colDec=0
+   
+   Reportcol colVal=@znRes[Z1].Y.qCond/CSEBtuSF colHead="Cond 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].Y.qCond/CSEBtuSF colHead="Cond 2"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z1].Y.qMass/CSEBtuSF colHead="Surf 1"  colWid=8 colDec=0
+   Reportcol colVal=@znRes[Z2].Y.qMass/CSEBtuSF colHead="Surf 2"  colWid=8 colDec=0
+   
+   Reportcol colVal=@znRes[Z1].Y.qhMech/CSEBtuSF colHead="Hload 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].Y.qhMech/CSEBtuSF colHead="Hload 2"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z1].Y.qcMech/CSEBtuSF colHead="Cload 1"  colWid=7 colDec=0
+   Reportcol colVal=@znRes[Z2].Y.qcMech/CSEBtuSF colHead="Cload 2"  colWid=7 colDec=0
+   
+#Define WinDay Dec 3       // Coldest
+#Define SprDay Jun 7       // big swing
+#Define SumDay Jul 10     // Hottest
+//Hourly
+#Redefine CSEBtuSF 1  //Hourly reports in kBtu
+//Winter
+   Report rpType=UDT rpFreq=HOUR  rpDayBeg= Winday; rpDayEnd=Winday rpCPL=140
+   rpTitle="Peak Winter Day Conditioned Zone Sensible Energy Balance (kBtu + into the zone)"
+   Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+   Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1
+   Reportcol colVal=$windSpeed colHead="Wmph" colWid=4 colDec=2
+   Reportcol colVal=@znRes[Z1].H.tAir colHead="TA1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].H.tAir colHead="TA2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].H.tRad colHead="TR1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].H.tRad colHead="TR2" colWid=4 colDec=1
+   Reportcol colVal=@xsurf[G1].sbcI.tSrf colHead="TGI1" colWid=4 colDec=1  // Glass inside surface temp, last Sub time step value!
+   Reportcol colVal=@xsurf[G2].sbcI.tSrf colHead="TGI2" colWid=4 colDec=1
+   Reportcol colVal=@xsurf[G1].sbcO.tSrf colHead="TGO1" colWid=4 colDec=1  // Glass inside surface temp, last Sub time step value!
+   Reportcol colVal=@xsurf[G2].sbcO.tSrf colHead="TGO2" colWid=4 colDec=1  // 
+   
+   Reportcol colVal=@znRes[Z1].H.qSlr/CSEBtuSF colHead="Slr1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qSlr/CSEBtuSF colHead="Slr2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qCond/CSEBtuSF colHead="Cnd 1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qCond/CSEBtuSF colHead="Cnd 2"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qMass/CSEBtuSF colHead="Srf1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qMass/CSEBtuSF colHead="Srf2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qhMech/CSEBtuSF colHead="H 1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qhMech/CSEBtuSF colHead="H 2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qcMech/CSEBtuSF colHead="C 1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qcMech/CSEBtuSF colHead="C 2"  colWid=6 colDec=0
+   
+   Report rpType=UDT rpFreq=Day  rpDayBeg= Winday; rpDayEnd=Winday rpCPL=140 rpHeader=No
+   Reportcol colVal="Dy"  colHead="mo"	  colWid=2
+   Reportcol colVal=""  colWid=4 colDec=1   // No daily average outdoor temperature available.
+   Reportcol colVal=""  colWid=4 colDec=1   // No daily average wind available.
+   Reportcol colVal=@znRes[Z1].D.tAir colHead="T1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].D.tAir colHead="T2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].D.tRad colHead="TR1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].D.tRad colHead="TR2" colWid=4 colDec=1
+   Reportcol colVal="" colWid=4 colDec=1  // Glass inside surface temp No daily average
+   Reportcol colVal="" colWid=4 colDec=1   
+   Reportcol colVal="" colWid=4 colDec=1  
+   Reportcol colVal="" colWid=4 colDec=1  
+   
+   Reportcol colVal=@znRes[Z1].D.qSlr/CSEBtuSF colHead="Slr1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qSlr/CSEBtuSF colHead="Slr2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qCond/CSEBtuSF colHead="Cnd1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qCond/CSEBtuSF colHead="Cnd2"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qMass/CSEBtuSF colHead="Srf1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qMass/CSEBtuSF colHead="Srf2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qhMech/CSEBtuSF colHead="H 1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qhMech/CSEBtuSF colHead="H 2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qcMech/CSEBtuSF colHead="C 1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qcMech/CSEBtuSF colHead="C 2"  colWid=6 colDec=0
+
+//Spring
+   Report rpType=UDT rpFreq=HOUR  rpDayBeg= Sprday; rpDayEnd=Sprday rpCPL=140
+   rpTitle="Conditioned Zone Sensible Energy Balance (kBtu + into the zone)"
+      Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+      Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1
+      Reportcol colVal=$windSpeed colHead="Wmph" colWid=4 colDec=2
+      Reportcol colVal=@znRes[Z1].H.tAir colHead="TA1" colWid=4 colDec=1
+      Reportcol colVal=@znRes[Z2].H.tAir colHead="TA2" colWid=4 colDec=1
+      Reportcol colVal=@znRes[Z1].H.tRad colHead="TR1" colWid=4 colDec=1
+      Reportcol colVal=@znRes[Z2].H.tRad colHead="TR2" colWid=4 colDec=1
+      Reportcol colVal=@xsurf[G1].sbcI.tSrf colHead="TGI1" colWid=4 colDec=1  // Glass inside surface temp, last Sub time step value!
+      Reportcol colVal=@xsurf[G2].sbcI.tSrf colHead="TGI2" colWid=4 colDec=1
+      Reportcol colVal=@xsurf[G1].sbcO.tSrf colHead="TGO1" colWid=4 colDec=1  // Glass inside surface temp, last Sub time step value!
+      Reportcol colVal=@xsurf[G2].sbcO.tSrf colHead="TGO2" colWid=4 colDec=1  // 
+      
+      Reportcol colVal=@znRes[Z1].H.qSlr/CSEBtuSF colHead="Slr1"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z2].H.qSlr/CSEBtuSF colHead="Slr2"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z1].H.qCond/CSEBtuSF colHead="Cnd 1"  colWid=6 colDec=0
+      Reportcol colVal=@znRes[Z2].H.qCond/CSEBtuSF colHead="Cnd 2"  colWid=6 colDec=0
+      Reportcol colVal=@znRes[Z1].H.qMass/CSEBtuSF colHead="Srf1"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z2].H.qMass/CSEBtuSF colHead="Srf2"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z1].H.qhMech/CSEBtuSF colHead="H 1"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z2].H.qhMech/CSEBtuSF colHead="H 2"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z1].H.qcMech/CSEBtuSF colHead="C 1"  colWid=6 colDec=0
+      Reportcol colVal=@znRes[Z2].H.qcMech/CSEBtuSF colHead="C 2"  colWid=6 colDec=0
+      
+      Report rpType=UDT rpFreq=Day  rpDayBeg= Sprday; rpDayEnd=Sprday rpCPL=140 rpHeader=No
+      Reportcol colVal="Dy"  colHead="mo"	  colWid=2
+      Reportcol colVal=""  colWid=4 colDec=1   // No daily average outdoor temperature available.
+      Reportcol colVal=""  colWid=4 colDec=1   // No daily average wind available.
+      Reportcol colVal=@znRes[Z1].D.tAir colHead="T1" colWid=4 colDec=1
+      Reportcol colVal=@znRes[Z2].D.tAir colHead="T2" colWid=4 colDec=1
+      Reportcol colVal=@znRes[Z1].D.tRad colHead="TR1" colWid=4 colDec=1
+      Reportcol colVal=@znRes[Z2].D.tRad colHead="TR2" colWid=4 colDec=1
+      Reportcol colVal="" colWid=4 colDec=1  // Glass inside surface temp No daily average
+      Reportcol colVal="" colWid=4 colDec=1   
+      Reportcol colVal="" colWid=4 colDec=1  
+      Reportcol colVal="" colWid=4 colDec=1  
+      
+      Reportcol colVal=@znRes[Z1].D.qSlr/CSEBtuSF colHead="Slr1"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z2].D.qSlr/CSEBtuSF colHead="Slr2"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z1].D.qCond/CSEBtuSF colHead="Cnd1"  colWid=6 colDec=0
+      Reportcol colVal=@znRes[Z2].D.qCond/CSEBtuSF colHead="Cnd2"  colWid=6 colDec=0
+      Reportcol colVal=@znRes[Z1].D.qMass/CSEBtuSF colHead="Srf1"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z2].D.qMass/CSEBtuSF colHead="Srf2"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z1].D.qhMech/CSEBtuSF colHead="H 1"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z2].D.qhMech/CSEBtuSF colHead="H 2"  colWid=5 colDec=0
+      Reportcol colVal=@znRes[Z1].D.qcMech/CSEBtuSF colHead="C 1"  colWid=6 colDec=0
+      Reportcol colVal=@znRes[Z2].D.qcMech/CSEBtuSF colHead="C 2"  colWid=6 colDec=0
+
+   
+//Summer
+   Report rpType=UDT rpFreq=HOUR  rpDayBeg= Sumday; rpDayEnd=Sumday rpCPL=140
+   rpTitle="Conditioned Zone Sensible Energy Balance (kBtu + into the zone)"
+   Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+   Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1
+   Reportcol colVal=$windSpeed colHead="Wmph" colWid=4 colDec=2
+   Reportcol colVal=@znRes[Z1].H.tAir colHead="TA1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].H.tAir colHead="TA2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].H.tRad colHead="TR1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].H.tRad colHead="TR2" colWid=4 colDec=1
+   Reportcol colVal=@xsurf[G1].sbcI.tSrf colHead="TGI1" colWid=4 colDec=1  // Glass inside surface temp, last Sub time step value!
+   Reportcol colVal=@xsurf[G2].sbcI.tSrf colHead="TGI2" colWid=4 colDec=1
+   Reportcol colVal=@xsurf[G1].sbcO.tSrf colHead="TGO1" colWid=4 colDec=1  // Glass inside surface temp, last Sub time step value!
+   Reportcol colVal=@xsurf[G2].sbcO.tSrf colHead="TGO2" colWid=4 colDec=1  // 
+   
+   Reportcol colVal=@znRes[Z1].H.qSlr/CSEBtuSF colHead="Slr1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qSlr/CSEBtuSF colHead="Slr2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qCond/CSEBtuSF colHead="Cnd 1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qCond/CSEBtuSF colHead="Cnd 2"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qMass/CSEBtuSF colHead="Srf1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qMass/CSEBtuSF colHead="Srf2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qhMech/CSEBtuSF colHead="H 1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qhMech/CSEBtuSF colHead="H 2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].H.qcMech/CSEBtuSF colHead="C 1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].H.qcMech/CSEBtuSF colHead="C 2"  colWid=6 colDec=0
+   
+   Report rpType=UDT rpFreq=Day  rpDayBeg= Sumday; rpDayEnd=Sumday rpCPL=140 rpHeader=No
+   Reportcol colVal="Dy"  colHead="mo"	  colWid=2
+   Reportcol colVal=""  colWid=4 colDec=1   // No daily average outdoor temperature available.
+   Reportcol colVal=""  colWid=4 colDec=1   // No daily average wind available.
+   Reportcol colVal=@znRes[Z1].D.tAir colHead="T1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].D.tAir colHead="T2" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z1].D.tRad colHead="TR1" colWid=4 colDec=1
+   Reportcol colVal=@znRes[Z2].D.tRad colHead="TR2" colWid=4 colDec=1
+   Reportcol colVal="" colWid=4 colDec=1  // Glass inside surface temp No daily average
+   Reportcol colVal="" colWid=4 colDec=1   
+   Reportcol colVal="" colWid=4 colDec=1  
+   Reportcol colVal="" colWid=4 colDec=1  
+   
+   Reportcol colVal=@znRes[Z1].D.qSlr/CSEBtuSF colHead="Slr1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qSlr/CSEBtuSF colHead="Slr2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qCond/CSEBtuSF colHead="Cnd1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qCond/CSEBtuSF colHead="Cnd2"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qMass/CSEBtuSF colHead="Srf1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qMass/CSEBtuSF colHead="Srf2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qhMech/CSEBtuSF colHead="H 1"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qhMech/CSEBtuSF colHead="H 2"  colWid=5 colDec=0
+   Reportcol colVal=@znRes[Z1].D.qcMech/CSEBtuSF colHead="C 1"  colWid=6 colDec=0
+   Reportcol colVal=@znRes[Z2].D.qcMech/CSEBtuSF colHead="C 2"  colWid=6 colDec=0
+   
+ Report rpType = ZDD rpZone=Z1
+ Report rpType = ZDD rpZone=Z2
+ 
+
+ 
+RUN
+
+

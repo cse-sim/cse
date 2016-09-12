@@ -1,0 +1,210 @@
+// CSE input file with simple geometry for testing against CZM.
+//  Varying setpoints and horizontal surfaces that reverse heat flow
+//  No window Rev 5D BAW 11/2  Ext Sol Abs = 0
+//  Adds cooling to get walls colder than Tout
+
+// Test weather
+// First several days have artificial conditions
+// WfName="ZT5WTHR.CSW"
+WfName = "CTZ12S13B.csw"
+
+ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+wuDays=30 nSubSteps=30  DT=No  // No daylight savings time  BAW 8/6(0.61 for 2 story, 0.51 for one story)
+dbgPrintMask = ($dayofyear == 1 ? 32 : 0)
+// dbgPrintMask = 512
+elevation = 0
+
+
+//Definitions
+// Standard orientations all of which rotate with bldgmxAZM
+#define Front 0
+#define Left  90
+#define Back  180
+#define Right 270
+
+
+windF= .25
+
+//Materials
+// Insulation Quality modifies wall cavity R values  All insulations below have changed  Values still need check  BAW 9/2
+
+MATERIAL   "R11"  	matCond=.025   matSpHt=.2   matDens=1.5  // 3.5" thick
+
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+MATERIAL   "SoftWood"  	matCond=.0667   matSpHt=.33   matDens=32.
+MATERIAL   "Earth"  matCond=1   matSpHt=0.2   matDens=115  //BmxAZjanac and Huang slab model 
+MATERIAL   "ConcreteSlab"  matCond=1   matSpHt=0.2   matDens=144. 
+MATERIAL   "stucco"  matCond=0.4167   matSpHt=0.2   matDens=116.          //  JA Table 4.6.1
+
+
+
+//Constructions
+ 	
+CONSTRUCTION WCav13 // ’W.13.2X4  BAW 9/2
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.	
+ 	layer 	lrMat="Gypbd" lrThk=0.25/12.		
+   	layer 	lrMat="R11" lrThk=3.5/(12.*2)
+   	layer 	lrMat="R11" lrThk=3.5/(12.*2)
+ 	layer 	lrMat="Stucco" lrThk=0.5*7./(8.*12.)    //7/8"   
+ 	layer 	lrMat="Stucco" lrThk=0.5*7./(8.*12.)   
+ 
+		
+CONSTRUCTION ExpSlabfloor  			// Revised Layers BAW 8/6				
+	layer 	lrMat="ConcreteSlab" lrThk=0.5/12. 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+        layer 	lrMat="ConcreteSlab" lrThk=1./12. 
+        layer 	lrMat="Earth" lrThk=2./12. 
+        layer 	lrMat="Earth" lrThk=4./12. 
+        layer 	lrMat="Earth" lrThk=6./12. 
+        layer 	lrMat="Earth" lrThk=6./12. 
+        layer 	lrMat="Earth" lrThk=6./12.
+      
+        
+//Slab types    Connected to weather file BAW 9/3      
+DEFTYPE	SURFACE "PerExpSlab" sfType=floor sfCon="ExpSlabfloor" sfExCnd=SPECIFIEDT sfModel = forward_difference // 
+      	sfExT=(0.6926 * @weather.taDbAvg14 + 0.3017 * @weather.tgrnd + 0.0057 * @weatherFile.taDbAvgYr)  sfExH=1.1034 // Coefs for Exposed Perim R0
+DEFTYPE	SURFACE "IntExpSlab" sfType=floor sfCon="ExpSlabfloor" sfExCnd=SPECIFIEDT sfModel = forward_difference  //
+	sfExT= (0.6749 * @weather.tgrnd + 0.3251 * @weatherFile.taDbAvgYr)  sfExH=0.1024	// Coefs for Exposed Core R0
+	
+DEFTYPE GLAZETYPE "CECdbl"		//double glass from the 2008 RACM Table R3-29  BAW 10/2
+  	gtSMSO=	1
+  	gtSMSC=	1
+  	gtSHGC=	0.72                       // CEC overall glazing transmission multiplier from 2008 RACM 3.7.7, then apply SHGC at window with SMSO=SHGC combined with SHGCext BAW 10/2
+  	gtFMult=	1
+  	gtPySHGC=	1.881643, 1.014431, -4.009235, 2.113160
+  	gtDMSHGC=	0.828777
+  	gtDMRBSol=	0.828777
+  	/*gtTvisO=	0.723
+  	gtTvisCoef1=	1.609024
+  	gtTvisCoef2=	2.22877
+  	gtTvisCoef3=	-5.66425
+  	gtTvisCoef4=	2.826456
+  	gtDMTvis=	0.862691	
+  	gtDMRBVis=	0.243	*/ 	 
+  	
+GLAZETYPE "GT" UseType "CECdbl"		//   Enter wnU, SMSO $ SMSC at Window to get desired values	
+
+// Reports NOTE all reports by default are in MMBTU (even for electric).  The rpBtuSf=1000 changes output to kBTU (even electric)
+ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
+
+//Zone Data Dump reports
+Report rpType=ZDD rpZone=Single 
+
+#define Sumday Jan 31
+endDay=Sumday
+//Summer
+   Report rpType=UDT rpFreq=HOUR  rpDayBeg= Jan 1 rpDayEnd=Jan 10 rpCPL=122 
+   rpTitle="Conditioned Zone Sensible Energy Balance (kBtu + into the zone)"
+   Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+   Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1
+   Reportcol colVal=@top.tSkyhr   colHead="Tsky" colWid=7 colDec=4
+   Reportcol colVal=@zone[Single].znTH colHead="TH" colWid=3 colDec=0
+   Reportcol colVal=@zone[Single].znTD colHead="TD" colWid=3 colDec=0
+   Reportcol colVal=@zone[Single].znTC colHead="TC" colWid=3 colDec=0   
+   Reportcol colVal=@znRes[Single].H.tAir colHead="Tair" colWid=5 colDec=1
+   Reportcol colVal=@znRes[Single].H.tRad colHead="Trad" colWid=5 colDec=1
+   Reportcol colVal=@mass[North].inside.surfTemp colHead="North"  colDec=1	 colWid=5     // 
+   Reportcol colVal=@mass[South].inside.surfTemp colHead="South"  colDec=1	 colWid=5     //
+   Reportcol colVal=@mass[East].inside.surfTemp colHead="East"  colDec=1	 colWid=5     // 
+   Reportcol colVal=@mass[West].inside.surfTemp colHead="West"  colDec=1	 colWid=5     //  
+  // Reportcol colVal=@mass[Ceil].inside.surfTemp colHead="Ceil"  colDec=1	 colWid=5     //  
+  // Reportcol colVal=@mass[Floor].inside.surfTemp colHead="Floor"  colDec=1	 colWid=5     //  
+   Reportcol colVal=@znRes[Single].H.qSlr colHead="Slr" 
+   Reportcol colVal=@znRes[Single].H.qsIg colHead="IntG" 
+   Reportcol colVal=@znRes[Single].H.qCond colHead="Cond" 
+   Reportcol colVal=@znRes[Single].H.qMass colHead="Surf" 
+   Reportcol colVal=@znRes[Single].H.qsMech colHead="Qload" 
+   
+
+Report // subhourly report to check Envelope temp and heat flow details 
+    rpType=UDT rpFreq=SUBHOUR  rpCpl = 163 rpDayBeg= Jan 1; rpDayEnd=Jan 5
+    rpTitle="Envelope component inside surface temps and heat flows (Btu + into zone)"
+    Reportcol colVal=@top.iSubhr  colHead="Sh" colWid=2 colDec=0
+    Reportcol colVal=@top.tDbOSh colHead="Tdb" colWid=7 colDec=4
+    Reportcol colVal=@top.tSkySh colHead="Tsky" colWid=7 colDec=4
+    Reportcol colVal=@top.windSpeedSh colHead="Wind" colWid=7 colDec=4
+    Reportcol colVal=@znRes[Single].S.qsIg colHead="IntGain" colWid=7 colDec=4
+    Reportcol colVal=@znRes[Single].S.qMass colHead="Qmass" colWid=7 colDec=4
+    Reportcol colVal=@znRes[Single].S.qsMech colHead="Load" colWid=7 colDec=4
+    Reportcol colVal=@znRes[Single].S.tAir colHead="Tin" colWid=7 colDec=4
+    Reportcol colVal=@znRes[Single].S.tRad colHead="Trad" colWid=7 colDec=4
+    Reportcol colVal=@xsurf[North].sbcI.tSrf colHead="NInT"  colDec=4	 colWid=7  
+    Reportcol colVal=@xsurf[North].sbcO.tSrf colHead="NoutT"  colDec=4	 colWid=7
+    Reportcol colVal=@xsurf[North].sbcO.hxa colHead="NoutHC"  colDec=4	 colWid=7
+    Reportcol colVal=@xsurf[East].sbcI.tSrf colHead="EinT"  colDec=4	 colWid=7  
+    Reportcol colVal=@xsurf[East].sbcO.tSrf colHead="EOutT"  colDec=4	 colWid=7 
+    Reportcol colVal=@xsurf[East].sbcO.hxa colHead="EoutHC"  colDec=4	 colWid=7
+    Reportcol colVal=@xsurf[West].sbcI.tSrf colHead="WinT"  colDec=4	 colWid=7  
+    Reportcol colVal=@xsurf[West].sbcO.tSrf colHead="WoutT"  colDec=4	 colWid=7 
+    Reportcol colVal=@xsurf[West].sbcO.hxa colHead="WoutHC"  colDec=4	 colWid=7
+    Reportcol colVal=@xsurf[South].sbcI.tSrf colHead="WINinT"  colDec=4	 colWid=7
+    Reportcol colVal=@xsurf[South].sbcO.tSrf colHead="WINoutT"  colDec=4	 colWid=7 
+    Reportcol colVal=@xsurf[South].sbcO.hxa colHead="WINoutHC"  colDec=4	 colWid=7  
+   
+    
+//  Subhourly export to "Inputfile.CSV"            
+Export CSO exType=UDT exFreq=SUBHOUR exDayBeg=Jan 1  exDayEnd=Jan 1              
+    exTitle="ZT5D  Units are degF, BTU, W, + is into Conditioned Zone"
+    Exportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+    Exportcol colVal=@top.iSubhr  colHead="Sh" colWid=2 colDec=0
+    Exportcol colVal=@top.tDbOSh colHead="Tdb" colWid=7 colDec=4
+    Exportcol colVal=@top.tSkySh colHead="Tsky" colWid=7 colDec=4
+    Exportcol colVal=@top.windSpeedSh colHead="Wind" colWid=7 colDec=4
+    Exportcol colVal=@znRes[Single].S.qsIg colHead="IntGain" colWid=7 colDec=4
+    Exportcol colVal=@znRes[Single].S.qMass colHead="Qmass" colWid=7 colDec=4
+    Exportcol colVal=@znRes[Single].S.qsMech colHead="Load" colWid=7 colDec=4
+    Exportcol colVal=@znRes[Single].S.tAir colHead="Tin" colWid=7 colDec=4
+    Exportcol colVal=@znRes[Single].S.tRad colHead="Trad" colWid=7 colDec=4
+    
+    Exportcol colVal=@xsurf[North].sbcI.tSrf colHead="NInT"  colDec=4	 colWid=7  
+    Exportcol colVal=@xsurf[North].sbcO.hxa colHead="NoutHair"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[North].sbcO.hxr colHead="NoutHrad"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[North].sbcO.qrAbs colHead="NoutAbs"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[North].sbcO.tSrf colHead="NoutT"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[North].sbcO.qSrf colHead="NoutQ"  colDec=4	 colWid=7
+    
+    Exportcol colVal=@xsurf[East].sbcI.tSrf colHead="EinT"  colDec=4	 colWid=7  
+    Exportcol colVal=@xsurf[East].sbcO.tSrf colHead="EOutT"  colDec=4	 colWid=7 
+    Exportcol colVal=@xsurf[East].sbcO.hxa colHead="EoutHC"  colDec=4	 colWid=7
+    
+    Exportcol colVal=@xsurf[West].sbcI.tSrf colHead="WinT"  colDec=4	 colWid=7  
+    Exportcol colVal=@xsurf[West].sbcO.tSrf colHead="WoutT"  colDec=4	 colWid=7 
+    Exportcol colVal=@xsurf[West].sbcO.hxa colHead="WoutHC"  colDec=4	 colWid=7
+    
+    Exportcol colVal=@xsurf[South].sbcI.tSrf colHead="SinT"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[South].sbcO.hxa colHead="SoutHC"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[South].sbcO.hxr colHead="SoutHrad"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[South].sbcO.qrAbs colHead="SoutAbs"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[South].sbcO.tSrf colHead="SoutT"  colDec=4	 colWid=7
+    Exportcol colVal=@xsurf[South].sbcO.qSrf colHead="SoutQ"  colDec=4	 colWid=7
+
+
+
+    
+
+Zone Single znArea=100 znCAir=18.3 infAC=0 infShld=5 infStories=1 infELA=0 znVol = 1000
+        
+	znModel = CZM
+	znTH = select( $hour >0 && $hour <12, 80,default 40)  znTD = select(  $hour >0 && $hour <12,81, $hour>14,57,default 70)  znTC = select( $hour >14,55,default 85)
+	znQMxH = 1000000 znQMxC = -500000  //
+ 	GAIN gnPower= select( $hour >12,0.,default 0.0) gnFrRad=0  //
+ 
+SURFACE "North" sfType=Wall sfCon=WCav13 sfArea=10 sfAzm=Front sfExAbs=.5 sfModel = forward_difference  sfExCnd=AMBIENT //sfExH=1.5 //  
+SURFACE "South" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExAbs=.5 sfModel = forward_difference  sfExCnd=AMBIENT //sfExH=1.5 //
+      	
+SURFACE "East" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=left sfExAbs=.5 sfModel = forward_difference   sfExCnd=AMBIENT //sfExH=1.5  
+SURFACE "West" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=right sfExAbs=.5 sfModel = forward_difference  sfExCnd=AMBIENT //sfExH=1.5 //
+
+SURFACE "WestQW" sfType=Wall sfU = 0.1 sfArea=100 sfAzm=right sfExAbs=.5 sfModel = quick  sfExCnd=AMBIENT //sfExH=1.5 //
+
+SURFACE "Ceil" sfType=Ceiling sfCon=WCav13 sfArea=100 sfExAbs=.5 sfModel = forward_difference  sfExCnd=AMBIENT sfExH=1.5 //
+//SURFACE "Floor" sfType=Floor sfCon=WCav13 sfArea=100 sfExAbs=0. sfModel = forward_difference  sfExCnd=AMBIENT sfExH=1.5 //
+
+// SURFACE "IExSlab" UseType "IntExpSlab" sfArea=100
+
+
+ 
+RUN
+
+

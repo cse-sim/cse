@@ -1,0 +1,118 @@
+ ZONE SUNSPACE
+    znArea=172.23                 //16 sq meters
+    znVol=1525.6                  //zone Area * zone wall height (2.7 m)
+    znSC=0                        //shades always open
+    znAzm=0
+    infAC=0.5
+    znCair=0.01
+
+    SURFACE RoofSun
+        sfType=Ceiling
+        sfModel=SURFTYPE
+        sfArea=172.23
+        sfCon=roofcon
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInH=INFILM             //ceiling inside film coefficient
+
+    SURFACE FloorSun
+        sfType=Floor
+        sfModel=SURFTYPE
+        sfArea=172.23
+        sfCon=hw_floor
+        sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
+        sfExAbs=0                 //no solar on floor
+        sfExT=50                  //10 C ground temperature
+        sfInAbs=INABSORP
+        sfInH=INFILM             //floor inside film coefficient
+
+    SURFACE IntWallSun
+        sfType=Wall
+        sfModel=SURFTYPE
+        sfArea=232.51             //21.6 sq meters
+        sfCon=sunwall
+        sfAzm=0
+        sfExCnd=AdjZn
+        sfAdjZn=CASE
+        sfInAbs=INABSORP
+        sfInH=INFILM             //wall inside film coefficient
+        sfExH=INFILM             //wall inside film coefficient
+
+    SURFACE East_WallSun
+        sfType=Wall
+        sfModel=SURFTYPE
+        sfArea=58.127             //5.4  sq meters
+        sfAzm=90                  //east wall
+        sfCon=hw_wall
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInH=INFILM             //wall inside film coefficient
+
+
+  SURFACE West_WallSun
+      sfType=Wall
+      sfModel=SURFTYPE
+      sfArea=58.127             //5.4  sq meters
+      sfAzm=270                 //west wall
+      sfCon=hw_wall
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfInH=INFILM             //wall inside film coefficient
+
+SURFACE South_Wall
+      sfType=Wall
+      sfModel=SURFTYPE
+      sfArea=232.51             //wall area 21.6 sq meters
+      sfAzm=180                 //south wall
+      sfCon=hw_wall
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfInH=INFILM             //wall inside film coefficient
+
+      WINDOW South_WinSun1
+            wnGT=GLASSTYPE
+            wnExH=WINEXF            //window exterior film coefficient
+            wnInH=WinInFilm         //window interior film coefficient
+            wnHeight=WINH           //window height
+            wnWidth=WINW            //window width
+            wnVfSkyDf=OHDPTH?0.3492:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+          SHADE South_OHSun1
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=0.656    //distance up, .3m (=.984 ft) closer than others
+              ohExL=1.64        //distance:left edge of win to left edge of oh
+              ohExR=14.76       //distance:rght edge of win to rght edge of oh
+
+          SGDIST
+              sgSurf=FloorSun
+              sgSide=INTERIOR
+              sgFSO=0.75
+
+          SGDIST
+              sgSurf=IntWallSun
+              sgSide=INTERIOR
+              sgFSO=0.25
+
+      WINDOW South_WinSun2
+            wnGT=GLASSTYPE
+            wnExH=WINEXF        //window exterior film coefficient
+            wnInH=WinInFilm     //window interior film coefficient
+            wnHeight=WINH       //window height
+            wnWidth=WINW        //window width
+            wnVfSkyDf=OHDPTH?0.3492:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+          SHADE South_OHSun2
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=0.656    //distance up, .3m (=.984 ft) higher than others
+              ohExL=14.76       //distance:left edge of win to left edge of oh 4.5m
+              ohExR=1.64        //distance:rght edge of win to rght edge of oh .5m
+
+          SGDIST
+              sgSurf=FloorSun
+              sgSide=INTERIOR
+              sgFSO=0.75
+          SGDIST
+              sgSurf=IntWallSun
+              sgSide=INTERIOR
+              sgFSO=0.25
+
