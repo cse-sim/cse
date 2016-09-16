@@ -1,0 +1,41 @@
+src-dir: "src"
+media-dir: "src/media"
+css-dir: "config/css"
+template-dir: "config/template"
+reference-dir: "config/reference"
+cssnano-exe: "node_modules/.bin/cssnano"
+html-minifier-exe: "node_modules/.bin/html-minifier"
+use-node?: false
+build-dir: 'build'
+md-temp-dir: 'build/temp/md'
+html-temp-dir: 'build/temp/html'
+pdf-temp-dir: 'build/temp/pdf'
+html-output-dir: 'build/output/html'
+pdf-output-dir: 'build/output/pdf'
+log-dir: 'build/logs'
+options:
+  pandoc:
+    "*":
+      - "--parse-raw"
+      - "--standalone"
+      - "--wrap=none"
+    "pdf":
+      - '-Vgeometry="margin=1in"'
+      - "--latex-engine=xelatex"
+      - "--table-of-contents"
+      - "--toc-depth=3"
+      - "--number-sections"
+      - "--smart"
+    "md":
+      - "--atx-headers"
+      - "--normalize"
+      - "--to markdown"
+    "html":
+      - "--to html5"
+      - "--mathjax"
+      - "--css=css/base.css"
+      - "--table-of-contents"
+      - "--toc-depth=3"
+      - "--number-sections"
+      - "--smart"
+

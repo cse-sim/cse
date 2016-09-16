@@ -5,49 +5,40 @@
 require('fileutils')
 require('time')
 require('json')
+require('yaml')
 require_relative('lib/pandoc')
 
 ########################################
 # Globals
-# ... regular expressions
-HeaderRegex = /^#+[[:space:]]+.*$/
+CONFIG_FILE = 'config.yaml'
+CONFIG = YAML.load_file(CONFIG_FILE)
 # ... input paths
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
-SRC_DIR = File.join(THIS_DIR, 'src')
-CONTENT_DIR = File.join(SRC_DIR, 'content')
-STATIC_DIR = File.join(SRC_DIR, 'static')
-MEDIA_DIR = File.join(STATIC_DIR, 'media')
-CSS_DIR = File.join(STATIC_DIR, 'css')
-TEMPLATE_DIR = File.join(SRC_DIR, 'template')
-OPTIONS_DIR = File.join(SRC_DIR, 'options')
-REFERENCE_DIR = File.join(SRC_DIR, 'reference')
-PANDOC_HTML_OPTIONS_FILES = [
-  File.join(OPTIONS_DIR, 'pandoc.txt'),
-  File.join(OPTIONS_DIR, 'pandoc-html.txt'),
-]
-PANDOC_MD_OPTIONS_FILES = [
-  File.join(OPTIONS_DIR, 'pandoc.txt'),
-  File.join(OPTIONS_DIR, 'pandoc-md.txt'),
-]
-NODE_MODULES_DIR = File.join(THIS_DIR, 'node_modules')
-NODE_BIN_DIR = File.join(NODE_MODULES_DIR, '.bin')
+SRC_DIR = File.expand_path(CONFIG["src-dir"], THIS_DIR)
+CONTENT_DIR = SRC_DIR
+MEDIA_DIR = File.expand_path(CONFIG["media-dir"], THIS_DIR)
+CSS_DIR = File.expand_path(CONFIG["css-dir"], THIS_DIR)
+TEMPLATE_DIR = File.expand_path(CONFIG["template-dir"], THIS_DIR)
+REFERENCE_DIR = File.expand_path(CONFIG["reference-dir"], THIS_DIR)
+PANDOC_HTML_OPTIONS = (CONFIG["options"]["pandoc"]["*"] + CONFIG["options"]["pandoc"]["html"]).join(' ')
+PANDOC_MD_OPTIONS = (CONFIG["options"]["pandoc"]["*"] + CONFIG["options"]["pandoc"]["md"]).join(' ')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
+NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 # ... utility programs
-USE_NODE = false
-PREFIX = ''
-NANO_EXE = PREFIX + File.join(NODE_BIN_DIR, 'cssnano')
-HTML_MIN_EXE = PREFIX + File.join(NODE_BIN_DIR, 'html-minifier')
+USE_NODE = CONFIG["use-node?"]
+NANO_EXE = CONFIG["cssnano-exe"]
+HTML_MIN_EXE = CONFIG["html-minifier-exe"]
 # ... output paths
-BUILD_DIR = File.join(THIS_DIR, 'build')
-MD_TEMP_DIR = File.join(BUILD_DIR, 'md--1')
-MD_TEMP2_DIR = File.join(BUILD_DIR, 'md--2')
-HTML_TEMP_DIR = File.join(BUILD_DIR, 'html')
-PDF_TEMP_DIR = File.join(BUILD_DIR, 'pdf')
-OUT_DIR = File.join(BUILD_DIR, 'output')
-HTML_OUT_DIR = File.join(OUT_DIR, 'html')
+BUILD_DIR = File.expand_path(CONFIG["build-dir"], THIS_DIR)
+MD_TEMP_DIR = File.expand_path(File.join(CONFIG["md-temp-dir"], 'step-1-normalize'), THIS_DIR)
+MD_TEMP2_DIR = File.expand_path(File.join(CONFIG["md-temp-dir"], 'step-2-xlink'), THIS_DIR)
+HTML_TEMP_DIR = File.expand_path(CONFIG["html-temp-dir"], THIS_DIR)
+PDF_TEMP_DIR = File.expand_path(CONFIG["pdf-temp-dir"], THIS_DIR)
+HTML_OUT_DIR = File.expand_path(CONFIG["html-output-dir"], THIS_DIR)
 HTML_CSS_OUT_DIR = File.join(HTML_OUT_DIR, 'css')
 HTML_MEDIA_OUT_DIR = File.join(HTML_OUT_DIR, 'media')
-LOG_DIR = File.join(BUILD_DIR, 'logs')
+PDF_OUT_DIR = File.expand_path(CONFIG["pdf-output-dir"], THIS_DIR)
+LOG_DIR = File.expand_path(CONFIG["log-dir"], THIS_DIR)
 
 ########################################
 # Helper Functions
@@ -94,7 +85,7 @@ RunAndLog = lambda do |log, cmd|
   end
 end
 
-SelectHeader = lambda {|s| s =~ HeaderRegex }
+SelectHeader = lambda {|s| s =~ /^#+[[:space:]]+.*$/ }
 
 HeaderLevel = lambda do |s|
   m = /^(#+)[^.#].*$/.match(s)
@@ -283,7 +274,6 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   record_name_set = Set.new(
     File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
   )
-  pandoc_md_options = OptionsFilesToOptionString[PANDOC_MD_OPTIONS_FILES]
   log["... copying all markdown source to temp directory for processing"]
   md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
   md_tmp_files = []
@@ -293,16 +283,18 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
       log["... #{out_path} up to date"]
     else
       log["... normalizing #{path} => #{out_path}"]
-      RunAndLog[log, "pandoc #{pandoc_md_options} -o #{out_path} #{path}"]
+      RunAndLog[log, "pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
       md_tmp_files << out_path
     end
   end
   rec_idx = CreateRecordIndex[record_name_set, md_tmp_files, levels=[1,2,3]]
+  md_tmp2_files = []
   md_tmp_files.each do |path|
     out_path = File.join(MD_TEMP2_DIR, File.basename(path))
     if FileUtils.uptodate?(out_path, [path])
       log["... already processed #{path}"]
     else
+      md_tmp2_files << out_path
       # cross link
       log["... cross linking #{path} => #{out_path}"]
       content = File.read(path)
@@ -316,7 +308,7 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
       log["... cross linked #{path} => #{out_path}; #{num_hits} links found!"]
     end
   end
-  md_tmp_files
+  md_tmp2_files
 end
 
 BuildHTML = lambda do
@@ -328,8 +320,6 @@ BuildHTML = lambda do
   record_name_set = Set.new(
     File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
   )
-  pandoc_options = OptionsFilesToOptionString[PANDOC_HTML_OPTIONS_FILES]
-  pandoc_md_options = OptionsFilesToOptionString[PANDOC_MD_OPTIONS_FILES]
   File.open(File.join(LOG_DIR, TimeStamp[] + ".txt"), 'w') do |f|
     log = MkLogger[f]
     log["Compressing CSS and moving it to destination"]
@@ -353,7 +343,7 @@ BuildHTML = lambda do
       html_base = File.basename(path, '.md') + '.html'
       out_path = File.join(HTML_TEMP_DIR, html_base)
       log["... generating #{path} => #{out_path}"]
-      RunAndLog[log, "pandoc #{pandoc_options} -o #{out_path} #{path}"]
+      RunAndLog[log, "pandoc #{PANDOC_HTML_OPTIONS} -o #{out_path} #{path}"]
       out_compress = File.join(HTML_OUT_DIR, html_base)
       if FileUtils.uptodate?(out_compress, [out_path])
         log["... already compressed  #{out_path} => #{out_compress}"]
@@ -386,13 +376,15 @@ end
 
 ########################################
 # Tasks
-task :build_html do
+desc "Build the HTML"
+task :html do
   InstallNodeDeps[]
   BuildHTML[]
   puts("Done!")
 end
 
-task :build_pdf do
+desc "Build the PDFs"
+task :pdf do
   InstallNodeDeps[]
   BuildPDF[]
   puts("Done!")
