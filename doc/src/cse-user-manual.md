@@ -1,7 +1,7 @@
 ---
 title: "CSE User's Manual"
 subtitle: "California Simulation Engine"
-date: February 23, 2016
+date: "February 23, 2016"
 ...
 
 # Introduction

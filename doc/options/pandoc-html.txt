@@ -1,0 +1,7 @@
+--to html5
+--mathjax
+--css=css/base.css
+--table-of-contents
+--toc-depth=3
+--number-sections
+--smart

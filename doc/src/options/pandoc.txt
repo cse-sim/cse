@@ -1,8 +1,0 @@
---parse-raw
---smart
---normalize
---standalone
---wrap=none
---table-of-contents
---toc-depth=3
---number-sections

@@ -1,0 +1,3 @@
+--atx-headers
+--normalize
+--to markdown

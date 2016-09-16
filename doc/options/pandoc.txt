@@ -1,0 +1,3 @@
+--parse-raw
+--standalone
+--wrap=none

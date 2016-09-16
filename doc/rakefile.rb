@@ -275,9 +275,52 @@ XLinkMarkdown = lambda do |oi, ons, content|
   [new_content, state[:num_hits]]
 end
 
-BuildHTML = lambda do
+BuildCrossLinkedNormalizedMD = lambda do |log|
   dirs = [
     MD_TEMP_DIR, MD_TEMP2_DIR,
+  ]
+  EnsureAllExist[dirs]
+  record_name_set = Set.new(
+    File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
+  )
+  pandoc_md_options = OptionsFilesToOptionString[PANDOC_MD_OPTIONS_FILES]
+  log["... copying all markdown source to temp directory for processing"]
+  md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
+  md_tmp_files = []
+  md_src_files.each do |path|
+    out_path = File.join(MD_TEMP_DIR, File.basename(path))
+    if FileUtils.uptodate?(out_path, [path])
+      log["... #{out_path} up to date"]
+    else
+      log["... normalizing #{path} => #{out_path}"]
+      RunAndLog[log, "pandoc #{pandoc_md_options} -o #{out_path} #{path}"]
+      md_tmp_files << out_path
+    end
+  end
+  rec_idx = CreateRecordIndex[record_name_set, md_tmp_files, levels=[1,2,3]]
+  md_tmp_files.each do |path|
+    out_path = File.join(MD_TEMP2_DIR, File.basename(path))
+    if FileUtils.uptodate?(out_path, [path])
+      log["... already processed #{path}"]
+    else
+      # cross link
+      log["... cross linking #{path} => #{out_path}"]
+      content = File.read(path)
+      new_content, num_hits = XLinkMarkdown[rec_idx, record_name_set, content]
+      if content.start_with?('---')
+        m = content.match(/\A(---.*?^---$).*/m)
+        log["... re-adding yaml metadata block"] if m
+        new_content =  m[1] + "\n\n" + new_content unless m.nil?
+      end
+      File.write(out_path, new_content)
+      log["... cross linked #{path} => #{out_path}; #{num_hits} links found!"]
+    end
+  end
+  md_tmp_files
+end
+
+BuildHTML = lambda do
+  dirs = [
     HTML_TEMP_DIR, HTML_CSS_OUT_DIR, HTML_MEDIA_OUT_DIR,
     LOG_DIR,
   ]
@@ -305,35 +348,12 @@ BuildHTML = lambda do
     log["... copied"]
     md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
     log["Build HTML from Markdown, Add Cross-Links, and Compress"]
-    log["... copying all markdown source to temp directory for processing"]
-    md_tmp_files = []
-    md_src_files.each do |path|
-      out_path = File.join(MD_TEMP_DIR, File.basename(path))
-      if FileUtils.uptodate?(out_path, [path])
-        log["... #{out_path} up to date"]
-      else
-        log["... normalizing #{path} => #{out_path}"]
-        RunAndLog[log, "pandoc #{pandoc_md_options} -o #{out_path} #{path}"]
-        md_tmp_files << out_path
-      end
-    end
-    rec_idx = CreateRecordIndex[record_name_set, md_tmp_files, levels=[1,2,3]]
+    md_tmp_files = BuildCrossLinkedNormalizedMD[log]
     md_tmp_files.each do |path|
-      md_xl_path = File.join(MD_TEMP2_DIR, File.basename(path))
       html_base = File.basename(path, '.md') + '.html'
       out_path = File.join(HTML_TEMP_DIR, html_base)
-      if FileUtils.uptodate?(out_path, [path])
-        log["... already processed #{path}"]
-      else
-        # cross link
-        log["... cross linking #{path}"]
-        content = File.read(path)
-        new_content, num_hits = XLinkMarkdown[rec_idx, record_name_set, content]
-        File.write(md_xl_path, new_content)
-        log["... cross linked #{path} => #{md_xl_path}; #{num_hits} links found!"]
-        log["... generating #{md_xl_path} => #{out_path}"]
-        RunAndLog[log, "pandoc #{pandoc_options} -o #{out_path} #{md_xl_path}"]
-      end
+      log["... generating #{path} => #{out_path}"]
+      RunAndLog[log, "pandoc #{pandoc_options} -o #{out_path} #{path}"]
       out_compress = File.join(HTML_OUT_DIR, html_base)
       if FileUtils.uptodate?(out_compress, [out_path])
         log["... already compressed  #{out_path} => #{out_compress}"]
