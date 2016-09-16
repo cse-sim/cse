@@ -1,0 +1,16 @@
+{
+  "name": "cse-user-manual-build-utils",
+  "version": "0.0.1",
+  "description": "Node dependencies to assist in building the CSE User Manual",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "private": true,
+  "license": "ISC",
+  "dependencies": {
+    "cssnano-cli": "^1.0.4",
+    "html-minifier": "^3.0.3"
+  }
+}

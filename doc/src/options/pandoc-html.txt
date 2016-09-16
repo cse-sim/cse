@@ -1,0 +1,3 @@
+--to html5
+--mathjax
+--css=css/base.css
