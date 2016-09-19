@@ -1,7 +1,4 @@
 # Build the Documents
-# TODO:
-# - add xlinking (make caps only, handle plurals)
-# - add report generation from source and from markdown
 require('fileutils')
 require('time')
 require('json')
