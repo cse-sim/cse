@@ -31,6 +31,7 @@ PANDOC_PDF_OPTIONS = (
   CONFIG.fetch("options").fetch("pandoc").fetch("pdf")
 ).join(' ')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
+RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 # ... utility programs
 USE_NODE = CONFIG.fetch("use-node?")
@@ -407,7 +408,7 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
     end
   end
   log["... copied #{m}/#{n} files."]
-  rec_idx = CreateRecordIndex[record_name_set, md_tmp_files, levels=[1,2,3]]
+  rec_idx = YAML.load_file(RECORD_INDEX_FILE)
   md_tmp2_files = []
   md_tmp_files.each do |path|
     out_path = File.join(MD_TEMP2_DIR, File.basename(path))
@@ -533,6 +534,15 @@ InstallNodeDeps = lambda do
   end
 end
 
+RegenerateRecordIndex = lambda do
+  record_name_set = Set.new(
+    File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
+  )
+  md_files = Dir[File.join(CONTENT_DIR, '*.md')]
+  rec_idx = CreateRecordIndex[record_name_set, md_files, levels=[1,2,3]]
+  File.write(RECORD_INDEX_FILE, rec_idx.to_yaml)
+end
+
 ########################################
 # Tasks
 desc "Build the HTML"
@@ -547,6 +557,11 @@ task :pdf do
   InstallNodeDeps[]
   BuildPDF[]
   puts("Done!")
+end
+
+desc "[Internal] (re-)generate record index (overwrites file!)"
+task :gen_rec_idx do
+  RegenerateRecordIndex[]
 end
 
 desc "Remove all output"
