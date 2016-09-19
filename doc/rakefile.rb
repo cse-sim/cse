@@ -42,7 +42,9 @@ HTML_MIN_EXE = CONFIG.fetch("html-minifier-exe")
 PDF_HEADER = eval(CONFIG.fetch("pdf-header"))
 PDF_FOOTER = eval(CONFIG.fetch("pdf-footer"))
 PDF_SKIP_LIST = CONFIG.fetch("pdf-skip-list")
+# ... github integration
 DOCS_BRANCH = CONFIG.fetch("docs-branch")
+USE_GHPAGES = CONFIG.fetch("use-ghpages?")
 # ... output paths
 BUILD_DIR = File.expand_path(
   CONFIG.fetch("build-dir"), THIS_DIR
@@ -93,7 +95,9 @@ end
 # This subroutine pulls from the gh-pages branch in the build directory to the
 # main branch
 PullFromGHPages = lambda do
-  `cd .. && git checkout #{DOCS_BRANCH} && git pull #{HTML_OUT_DIR} #{DOCS_BRANCH}`
+  if USE_GHPAGES
+    `cd .. && git checkout #{DOCS_BRANCH} && git pull #{HTML_OUT_DIR} #{DOCS_BRANCH}`
+  end
 end
 
 # -> Nil
@@ -102,13 +106,17 @@ end
 # files out and (re-)generate into that git repository. The user can then manually
 # pull back into the local gh-pages branch after inspection.
 SetupGHPages = lambda do
-  if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
-    FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
-    `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
-    `cd #{HTML_OUT_DIR} && git checkout #{DOCS_BRANCH}`
-    Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
-      unless File.basename(path) == '.git'
-        FileUtils.rm_rf(path)
+  if USE_GHPAGES
+    if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
+      FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
+      `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
+      `cd #{HTML_OUT_DIR} && git checkout #{DOCS_BRANCH}`
+      puts("Removing existing content...")
+      Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
+        unless File.basename(path) == '.git'
+          puts("... removing: rm -rf #{path}")
+          FileUtils.rm_rf(path)
+        end
       end
     end
   end
@@ -660,10 +668,13 @@ task :reset do
   Clean[BUILD_DIR]
 end
 
-desc "Dump generated HTML to gh-pages branch"
+desc "Pull generated content into local gh-pages"
 task :ghp => [:html, :pdf] do
-  `cd #{HTML_OUT_DIR} && git add -A && git commit -m \"Update Website\"`
-  PullFromGHPages[]
+  if USE_GHPAGES
+    `cd #{HTML_OUT_DIR} && git add -A && git commit -m \"Update Website\"`
+    PullFromGHPages[]
+    `cd .. && git checkout #{DOCS_BRANCH} && git merge file://#{HTML_OUT_DIR}`
+  end
 end
 
 task :default => [:html, :pdf]

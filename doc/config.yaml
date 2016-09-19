@@ -7,6 +7,7 @@ reference-dir: "config/reference"
 cssnano-exe: "node_modules/.bin/cssnano"
 html-minifier-exe: "node_modules/.bin/html-minifier"
 use-node?: false
+use-ghpages?: true
 build-dir: 'build'
 md-temp-dir: 'build/temp/md'
 html-temp-dir: 'build/temp/html'
