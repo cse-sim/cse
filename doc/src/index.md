@@ -5,7 +5,7 @@ toc: false
 
 # Overview {-}
 
-Welcome to the landing page for the California Simulation Engine computer program, CSE. CSE is an hourly building and HVAC simulation program which calculates annual energy requirements for building space conditioning and lighting. CSE is specifically tailored for use as internal calculation machinery for compliance with the California building standards.
+CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings ([CBECC-Res](http://www.bwilcox.com/BEES/BEES.html)) software.
 
 ## CSE User Manual {-}
 
