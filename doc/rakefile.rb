@@ -37,10 +37,11 @@ NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 USE_NODE = CONFIG.fetch("use-node?")
 NANO_EXE = CONFIG.fetch("cssnano-exe")
 HTML_MIN_EXE = CONFIG.fetch("html-minifier-exe")
-# ... constants
+# ... misc. constants
 PDF_HEADER = eval(CONFIG.fetch("pdf-header"))
 PDF_FOOTER = eval(CONFIG.fetch("pdf-footer"))
 PDF_SKIP_LIST = CONFIG.fetch("pdf-skip-list")
+DOCS_BRANCH = CONFIG.fetch("docs-branch")
 # ... output paths
 BUILD_DIR = File.expand_path(
   CONFIG.fetch("build-dir"), THIS_DIR
@@ -628,6 +629,18 @@ end
 desc "Alias for clean_all"
 task :reset do
   Clean[BUILD_DIR]
+end
+
+desc "Dump generated HTML to gh-pages branch"
+task :ghp => [:html, :pdf] do
+  current_branch = `git symbolic-ref --short -q HEAD`
+  `git checkout -b #{DOCS_BRANCH}` unless current_branch == DOCS_BRANCH
+  if $?.success?
+    FileUtils.cp_r(Dir[File.join(HTML_OUT_DIR, '*')], "..")
+  else
+    puts("Error encountered with pushing to #{DOCS_BRANCH}")
+  end
+  puts("On #{DOCS_BRANCH} from #{current_branch}; add files manually to git")
 end
 
 task :default => [:html, :pdf]

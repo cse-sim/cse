@@ -1,3 +1,4 @@
+docs-branch: "gh-pages"
 src-dir: "src"
 media-dir: "src/media"
 css-dir: "config/css"
