@@ -475,7 +475,7 @@ BuildHTML = lambda do
     end
     log["Copying #{MEDIA_DIR} to #{HTML_MEDIA_OUT_DIR}"]
     num_media_copied, all_media = CopyFilesGlob[
-      File.join(MEDIA_DIR, '*'), File.join(HTML_MEDIA_OUT_DIR, 'media')
+      File.join(MEDIA_DIR, '*'), HTML_MEDIA_OUT_DIR
     ]
     log["... copied #{num_media_copied}/#{all_media} files"]
     log["Build HTML from Markdown, Add Cross-Links, and Compress"]
