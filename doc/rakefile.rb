@@ -96,7 +96,10 @@ end
 # main branch
 PullFromGHPages = lambda do
   if USE_GHPAGES
-    `cd .. && git checkout #{DOCS_BRANCH} && git pull #{HTML_OUT_DIR} #{DOCS_BRANCH}`
+    Dir.chdir(File.dirname(THIS_DIR)) do
+      `git checkout #{DOCS_BRANCH}`
+      `git pull #{HTML_OUT_DIR} #{DOCS_BRANCH}`
+    end
   end
 end
 
@@ -110,7 +113,9 @@ SetupGHPages = lambda do
     if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
       FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
       `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
-      `cd #{HTML_OUT_DIR} && git checkout #{DOCS_BRANCH}`
+      Dir.chdir(HTML_OUT_DIR) do
+        `git checkout #{DOCS_BRANCH}`
+      end
       puts("Removing existing content...")
       Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
         unless File.basename(path) == '.git'
@@ -142,10 +147,9 @@ end
 # Run the given command using Ruby's Object.system(...) command. Checks the
 # exit code to determine success/failure
 RunAndLog = lambda do |log, cmd|
-  c, *opts = cmd.split(/\s/)
-  opts = opts.join(' ')
+  log["Running command:\n#{cmd}"]
   begin
-    result = Command::Run[c, opts]
+    result = `#{cmd}`
     if !result or result.empty?
       log["... success!"]
     else
@@ -424,7 +428,6 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   dirs = [
     MD_TEMP_DIR, MD_TEMP2_DIR,
   ]
-  SetupGHPages[]
   EnsureAllExist[dirs]
   record_name_set = Set.new(
     File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
@@ -596,7 +599,10 @@ BuildPDF = lambda do
       lambda do |path, out_path|
         tmp_path = File.join(PDF_TEMP_DIR, File.basename(path, '.md') + '.pdf')
         working_dir = File.dirname(path)
-        "cd #{working_dir} && pandoc #{pdf_opts} -o #{tmp_path} #{path} && cp #{tmp_path} #{out_path}"
+        Dir.chdir(working_dir) do
+          `pandoc #{pdf_opts} -o #{tmp_path} #{path}`
+          FileUtils.cp(tmp_path, out_path)
+        end
       end,
       lambda do |path|
         File.join(PDF_OUT_DIR, File.basename(path, '.md') + '.pdf')
@@ -671,9 +677,15 @@ end
 desc "Pull generated content into local gh-pages"
 task :ghp => [:html, :pdf] do
   if USE_GHPAGES
-    `cd #{HTML_OUT_DIR} && git add -A && git commit -m \"Update Website\"`
+    Dir.chdir(HTML_OUT_DIR) do
+      `git add -A`
+      `git commit -m "Update Website"`
+    end
     PullFromGHPages[]
-    `cd .. && git checkout #{DOCS_BRANCH} && git merge file://#{HTML_OUT_DIR}`
+    Dir.chdir(File.dirname(THIS_DIR)) do
+      `git checkout #{DOCS_BRANCH}`
+      `git merge file://#{HTML_OUT_DIR}`
+    end
   end
 end
 
