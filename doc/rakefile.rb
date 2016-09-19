@@ -591,14 +591,14 @@ end
 # Tasks
 desc "Build the HTML"
 task :html do
-  InstallNodeDeps[]
+  InstallNodeDeps[] if USE_NODE
   BuildHTML[]
   puts("HTML Built!")
 end
 
 desc "Build the PDFs"
 task :pdf do
-  InstallNodeDeps[]
+  InstallNodeDeps[] if USE_NODE
   BuildPDF[]
   puts("PDF(s) Built!")
 end
