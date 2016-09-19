@@ -40,6 +40,7 @@ HTML_MIN_EXE = CONFIG.fetch("html-minifier-exe")
 # ... constants
 PDF_HEADER = eval(CONFIG.fetch("pdf-header"))
 PDF_FOOTER = eval(CONFIG.fetch("pdf-footer"))
+PDF_SKIP_LIST = CONFIG.fetch("pdf-skip-list")
 # ... output paths
 BUILD_DIR = File.expand_path(
   CONFIG.fetch("build-dir"), THIS_DIR
@@ -380,8 +381,10 @@ RunCmdOverEach = lambda do |log_fn, src_files, cmd_fn, tgt_fn|
   [num_changed, num_considered, changed_files]
 end
 
-# (Function -> nil)
-# Build the cross-linked normalized markdown
+# (Function -> nil) -> (Array String)
+# Build the cross-linked normalized markdown. Returns an array of file paths to
+# all of the cross-linked normalized markdown files, regardless of whether they
+# were uptodate or newly built.
 BuildCrossLinkedNormalizedMD = lambda do |log|
   dirs = [
     MD_TEMP_DIR, MD_TEMP2_DIR,
@@ -398,13 +401,13 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   md_src_files.each do |path|
     n += 1
     out_path = File.join(MD_TEMP_DIR, File.basename(path))
+    md_tmp_files << out_path
     if FileUtils.uptodate?(out_path, [path])
       log["... #{out_path} up to date"]
     else
       m += 1
       log["... normalizing #{path} => #{out_path}"]
       RunAndLog[log, "pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
-      md_tmp_files << out_path
     end
   end
   log["... copied #{m}/#{n} files."]
@@ -412,10 +415,10 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   md_tmp2_files = []
   md_tmp_files.each do |path|
     out_path = File.join(MD_TEMP2_DIR, File.basename(path))
+    md_tmp2_files << out_path
     if FileUtils.uptodate?(out_path, [path])
       log["... already processed #{path}"]
     else
-      md_tmp2_files << out_path
       # cross link
       log["... cross linking #{path} => #{out_path}"]
       content = File.read(path)
@@ -432,14 +435,32 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   md_tmp2_files
 end
 
+UniquePath = lambda do |path|
+  if File.exist?(path)
+    parent = File.dirname(path)
+    bn = File.basename(path)
+    base, ext = bn.split(/\./)
+    n = 0
+    new_path = path
+    while File.exist?(new_path)
+      new_path = File.join(parent, base + ("-%03d"%n) + "." + ext)
+    end
+    new_path
+  else
+    path
+  end
+end
+
 BuildHTML = lambda do
   dirs = [
     HTML_TEMP_DIR, HTML_CSS_OUT_DIR, HTML_MEDIA_OUT_DIR,
     LOG_DIR,
   ]
   EnsureAllExist[dirs]
-  File.open(File.join(LOG_DIR, TimeStamp[] + ".txt"), 'w') do |f|
+  log_file_path = UniquePath[File.join(LOG_DIR, TimeStamp[] + ".txt")]
+  File.open(log_file_path, 'w') do |f|
     log = MkLogger[f]
+    log["Building HTML"]
     log["Compressing CSS and moving it to destination"]
     Dir[File.join(CSS_DIR, '*.css')].each do |path|
       out_path = File.join(HTML_CSS_OUT_DIR, File.basename(path))
@@ -479,13 +500,30 @@ BuildHTML = lambda do
   end
 end
 
+# (Array String) (Array String) (Fn [String] Nil) -> (Array String)
+# Given an array of paths and an array of file basenames, returns the list of
+# paths which DO NOT match any of the basenames.
+Skip = lambda do |path_list, skip_list, log_fn=nil|
+  path_list.reject do |path|
+    flag = skip_list.include?(File.basename(path))
+    if flag
+      log_fn["Skipping #{path}"] if log_fn
+    else
+      log_fn["Building #{path}"] if log_fn
+    end
+    flag
+  end
+end
+
 BuildPDF = lambda do
   dirs = [
     PDF_TEMP_DIR, LOG_DIR, PDF_OUT_DIR
   ]
   EnsureAllExist[dirs]
-  File.open(File.join(LOG_DIR, TimeStamp[] + ".txt"), 'w') do |f|
+  log_file_path = UniquePath[File.join(LOG_DIR, TimeStamp[] + ".txt")]
+  File.open(log_file_path, 'w') do |f|
     log = MkLogger[f]
+    log["Building PDFs"]
     log["Copy media to pdf temporary directory"]
     num_copied, total, _ = CopyFilesGlob[
       File.join(MEDIA_DIR, '*'),
@@ -495,6 +533,11 @@ BuildPDF = lambda do
     log["... #{num_copied}/#{total} files copied"]
     log["Cross-link Markdown and Build PDF"]
     md_tmp_files = BuildCrossLinkedNormalizedMD[log]
+    num_files = md_tmp_files.length
+    log["... #{md_tmp_files.length} files found"]
+    md_tmp_files = Skip[md_tmp_files, PDF_SKIP_LIST, log]
+    num_files_to_build = md_tmp_files.length
+    log["... building #{num_files_to_build}/#{num_files} files"]
     log["Copying cross-linked markdown to #{PDF_TEMP_DIR}"]
     num_copied, total, _ = CopyFilesExplicit[md_tmp_files, PDF_TEMP_DIR, log]
     log["... #{num_copied}/#{total} files copied."]
@@ -549,14 +592,14 @@ desc "Build the HTML"
 task :html do
   InstallNodeDeps[]
   BuildHTML[]
-  puts("Done!")
+  puts("HTML Built!")
 end
 
 desc "Build the PDFs"
 task :pdf do
   InstallNodeDeps[]
   BuildPDF[]
-  puts("Done!")
+  puts("PDF(s) Built!")
 end
 
 desc "[Internal] (re-)generate record index (overwrites file!)"
@@ -587,4 +630,4 @@ task :reset do
   Clean[BUILD_DIR]
 end
 
-task :default => [:build_html, :build_pdf]
+task :default => [:html, :pdf]
