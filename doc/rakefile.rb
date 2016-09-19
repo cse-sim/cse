@@ -111,12 +111,12 @@ SetupGHPages = lambda do
       FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
       `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
       `cd #{HTML_OUT_DIR} && git checkout #{DOCS_BRANCH}`
-    end
-    puts("Removing existing content...")
-    Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
-      unless File.basename(path) == '.git'
-        puts("... removing: rm -rf #{path}")
-        FileUtils.rm_rf(path)
+      puts("Removing existing content...")
+      Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
+        unless File.basename(path) == '.git'
+          puts("... removing: rm -rf #{path}")
+          FileUtils.rm_rf(path)
+        end
       end
     end
   end
