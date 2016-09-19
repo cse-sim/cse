@@ -13,6 +13,8 @@ pdf-temp-dir: 'build/temp/pdf'
 html-output-dir: 'build/output/html'
 pdf-output-dir: 'build/output/pdf'
 log-dir: 'build/logs'
+pdf-header: "\"CSE User's Manual\""
+pdf-footer: "Time.now.strftime(\"%FT%T%:z\")"
 options:
   pandoc:
     "*":
@@ -20,12 +22,15 @@ options:
       - "--standalone"
       - "--wrap=none"
     "pdf":
-      - '-Vgeometry="margin=1in"'
+      - '--variable geometry="margin=1in"'
+      - '--variable urlcolor=cyan'
       - "--latex-engine=xelatex"
       - "--table-of-contents"
       - "--toc-depth=3"
       - "--number-sections"
       - "--smart"
+      - "--template=template.tex"
+      - "--listings"
     "md":
       - "--atx-headers"
       - "--normalize"

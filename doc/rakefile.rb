@@ -4,6 +4,7 @@ require('time')
 require('json')
 require('yaml')
 require_relative('lib/pandoc')
+require_relative('lib/command')
 
 ########################################
 # Globals
@@ -25,12 +26,19 @@ PANDOC_MD_OPTIONS = (
   CONFIG.fetch("options").fetch("pandoc").fetch("*") +
   CONFIG.fetch("options").fetch("pandoc").fetch("md")
 ).join(' ')
+PANDOC_PDF_OPTIONS = (
+  CONFIG.fetch("options").fetch("pandoc").fetch("*") +
+  CONFIG.fetch("options").fetch("pandoc").fetch("pdf")
+).join(' ')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 # ... utility programs
 USE_NODE = CONFIG.fetch("use-node?")
 NANO_EXE = CONFIG.fetch("cssnano-exe")
 HTML_MIN_EXE = CONFIG.fetch("html-minifier-exe")
+# ... constants
+PDF_HEADER = eval(CONFIG.fetch("pdf-header"))
+PDF_FOOTER = eval(CONFIG.fetch("pdf-footer"))
 # ... output paths
 BUILD_DIR = File.expand_path(
   CONFIG.fetch("build-dir"), THIS_DIR
@@ -82,25 +90,32 @@ TimeStamp = lambda do
   DateTime.now.strftime("%Y-%m-%d-%H-%M")
 end
 
+# FileID -> (Function String -> Nil)
+# Create a logging file; Note: as a first action, the logger documents the
+# config file being used
 MkLogger = lambda do |f|
-  lambda do |msg|
+  logger = lambda do |msg|
     f.write("#{TimeStamp[]} :: #{msg}\n")
   end
+  logger["Begin logging with settings from #{CONFIG_FILE}"]
+  logger
 end
 
-OptionsFilesToOptionString = lambda do |paths|
-  opts = []
-  paths.each do |path|
-    opts << File.read(path).split(/\n/).map {|x|x.strip}.join(' ')
-  end
-  opts.join(' ')
-end
-
+# (Function String -> Nil) String -> Nil
+# Run the given command using Ruby's Object.system(...) command. Checks the
+# exit code to determine success/failure
 RunAndLog = lambda do |log, cmd|
-  if system(cmd)
-    log["... success!"]
-  else
-    log["... failure: #{$?}"]
+  c, *opts = cmd.split(/\s/)
+  opts = opts.join(' ')
+  begin
+    result = Command::Run[c, opts]
+    if !result or result.empty?
+      log["... success!"]
+    else
+      log["... success! result:\n#{result}"]
+    end
+  rescue => e
+    log["... failure:\n#{e.message}"]
   end
 end
 
@@ -143,7 +158,10 @@ SlugifyName = lambda do |s|
   end
 end
 
-# (Array Int) -> (State Line -> State)
+# (Array Int) -> (Function State Line -> State)
+# Given an array of heading levels to consider, create and return a reducing
+# function for use in walking over a Markdown source file and determining index
+# locations for certain headers.
 ObjectIndexReducer = lambda do |target_levels|
   lambda do |state, line|
     debug = false
@@ -183,6 +201,10 @@ ObjectIndexReducer = lambda do |target_levels|
   end
 end
 
+# (Array String) State (Function State String -> State) -> State
+# where State = (Record :name_set (Set String)
+#                       :index (Map String String)
+#                       :file_url String)
 ReduceOverFiles = lambda do |files, init, reducer|
   val = init
   files.each do |f|
@@ -195,6 +217,11 @@ ReduceOverFiles = lambda do |files, init, reducer|
   val
 end
 
+# (Set String) (Array String) ?(Array Int) ?Bool -> (Map String String)
+# Determines the index of certain records within a markdown file. Note: assumes
+# that the markdown has been authored with ATX style headers! Also, this
+# algorithm will get confused if the record name being searched for is not an
+# exact match with the header name (including case).
 CreateRecordIndex = lambda do |name_set, files, levels=nil, verbose=false|
   levels ||= (1..6).to_a
   puts "Indexing objects..." if verbose
@@ -203,10 +230,43 @@ CreateRecordIndex = lambda do |name_set, files, levels=nil, verbose=false|
     {
       :name_set => name_set,
       :index => {},
-      :file_url => nil},
-      ObjectIndexReducer[levels]
+      :file_url => nil
+    },
+    ObjectIndexReducer[levels]
   ]
   out[:index]
+end
+
+# (Array String) String ?(Fn [String] Nil) -> (Tuple Int Int (Array String))
+# Given an array of file paths, a target directory path, and an optional
+# logging function, copy all files to the target directory path (i.e., keep
+# the same base name). Note: does not copy if the target directory already has
+# a file that is newer than the one being copied.  Note: creates the target
+# directory if it doesn't already exist.
+CopyFilesExplicit = lambda do |paths, tgt, log_fn=nil|
+  FileUtils.mkdir_p(tgt) unless File.exist?(tgt)
+  copied_paths = []
+  files_copied = 0
+  paths.each do |path|
+    out_path = File.join(tgt, File.basename(path))
+    if ! FileUtils.uptodate?(out_path, [path])
+      files_copied += 1
+      copied_paths << out_path
+      FileUtils.cp_r(path, out_path)
+      log_fn["... copying #{path} => #{out_path}"] if log_fn
+    else
+      log_fn["... #{path} up-to-date at #{out_path}"] if log_fn
+    end
+  end
+  [files_copied, paths.length, copied_paths]
+end
+
+# String String (Fn [String] Nil) -> (Tuple Int Int)
+# Given a source path GLOB, a target path, and an optional logging function,
+# copy all files matched by GLOB to the target directory. Note: does not copy
+# if the file in the target directory is newer than the one in source.
+CopyFilesGlob = lambda do |src_glob, tgt, log_fn=nil|
+  CopyFilesExplicit[Dir[src_glob], tgt, log_fn]
 end
 
 # String -> Bool
@@ -215,6 +275,9 @@ IsCapitalized = lambda do |word|
   (!word.nil?) and (!word.empty?) and (!word[0].match(/[A-Z]/).nil?)
 end
 
+# String -> String
+# Attempts to remove a plural "s" from a word if appropriate. Note: this is a
+# very basic algorithm.
 DePluralize = lambda do |word|
   if word.end_with?("s")
     if word.length > 1
@@ -285,6 +348,39 @@ XLinkMarkdown = lambda do |oi, ons, content|
   [new_content, state[:num_hits]]
 end
 
+# (Fn [String] nil) (Array String) (Fn [String String] String) (Fn [String] String) ->
+#     (Tuple Int Int (Array String))
+# Given a logging function (taking a message and logging it), an array of
+# source file paths to process, a function taking the path to process and
+# output-path to process to and returning a string command, and a function
+# taking the input path and returning the output path (which this code will
+# ensure exists), run the given command over all input source files. Returns a
+# tuple of the number of files processed, number of files considered, and an
+# array of all the paths (in target folder) that were updated.
+RunCmdOverEach = lambda do |log_fn, src_files, cmd_fn, tgt_fn|
+  changed_files = []
+  num_changed = 0
+  num_considered = 0
+  src_files.each do |path|
+    num_considered += 1
+    out_path = tgt_fn[path]
+    if FileUtils.uptodate?(out_path, [path])
+      log_fn["... #{out_path} up to date"]
+    else
+      parent = File.dirname(out_path)
+      FileUtils.mkdir_p(parent) unless File.exist?(parent)
+      num_changed += 1
+      changed_files << out_path
+      c = cmd_fn[path, out_path]
+      log_fn["... running command \"#{c}\"\n... ... from #{path} => #{out_path}"]
+      RunAndLog[log_fn, c]
+    end
+  end
+  [num_changed, num_considered, changed_files]
+end
+
+# (Function -> nil)
+# Build the cross-linked normalized markdown
 BuildCrossLinkedNormalizedMD = lambda do |log|
   dirs = [
     MD_TEMP_DIR, MD_TEMP2_DIR,
@@ -296,16 +392,21 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   log["... copying all markdown source to temp directory for processing"]
   md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
   md_tmp_files = []
+  m = 0
+  n = 0
   md_src_files.each do |path|
+    n += 1
     out_path = File.join(MD_TEMP_DIR, File.basename(path))
     if FileUtils.uptodate?(out_path, [path])
       log["... #{out_path} up to date"]
     else
+      m += 1
       log["... normalizing #{path} => #{out_path}"]
       RunAndLog[log, "pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
       md_tmp_files << out_path
     end
   end
+  log["... copied #{m}/#{n} files."]
   rec_idx = CreateRecordIndex[record_name_set, md_tmp_files, levels=[1,2,3]]
   md_tmp2_files = []
   md_tmp_files.each do |path|
@@ -336,9 +437,6 @@ BuildHTML = lambda do
     LOG_DIR,
   ]
   EnsureAllExist[dirs]
-  record_name_set = Set.new(
-    File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
-  )
   File.open(File.join(LOG_DIR, TimeStamp[] + ".txt"), 'w') do |f|
     log = MkLogger[f]
     log["Compressing CSS and moving it to destination"]
@@ -353,9 +451,10 @@ BuildHTML = lambda do
       end
     end
     log["Copying #{MEDIA_DIR} to #{HTML_MEDIA_OUT_DIR}"]
-    FileUtils.cp_r(Dir[File.join(MEDIA_DIR, '*')], HTML_MEDIA_OUT_DIR)
-    log["... copied"]
-    md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
+    num_media_copied, all_media = CopyFilesGlob[
+      File.join(MEDIA_DIR, '*'), File.join(HTML_MEDIA_OUT_DIR, 'media')
+    ]
+    log["... copied #{num_media_copied}/#{all_media} files"]
     log["Build HTML from Markdown, Add Cross-Links, and Compress"]
     md_tmp_files = BuildCrossLinkedNormalizedMD[log]
     md_tmp_files.each do |path|
@@ -380,7 +479,48 @@ BuildHTML = lambda do
 end
 
 BuildPDF = lambda do
-  EnsureAllExist[[PDF_TEMP_DIR, LOG_DIR, OUT_DIR]]
+  dirs = [
+    PDF_TEMP_DIR, LOG_DIR, PDF_OUT_DIR
+  ]
+  EnsureAllExist[dirs]
+  File.open(File.join(LOG_DIR, TimeStamp[] + ".txt"), 'w') do |f|
+    log = MkLogger[f]
+    log["Copy media to pdf temporary directory"]
+    num_copied, total, _ = CopyFilesGlob[
+      File.join(MEDIA_DIR, '*'),
+      File.join(PDF_TEMP_DIR, 'media'),
+      log
+    ]
+    log["... #{num_copied}/#{total} files copied"]
+    log["Cross-link Markdown and Build PDF"]
+    md_tmp_files = BuildCrossLinkedNormalizedMD[log]
+    log["Copying cross-linked markdown to #{PDF_TEMP_DIR}"]
+    num_copied, total, _ = CopyFilesExplicit[md_tmp_files, PDF_TEMP_DIR, log]
+    log["... #{num_copied}/#{total} files copied."]
+    log["Copying template files to #{PDF_TEMP_DIR}"]
+    num_copied, total, _ = CopyFilesGlob[
+      File.join(TEMPLATE_DIR, '*.tex'), PDF_TEMP_DIR, log
+    ]
+    log["... #{num_copied}/#{total} files copied."]
+    # Note: if we move to multiple markdown pages, we need to base the
+    # following around a "manifest file" -- one manifest file per document.
+    pdf_opts = PANDOC_PDF_OPTIONS + ' ' + [
+      "--variable header=\"#{PDF_HEADER}\"",
+      "--variable footer=\"#{PDF_FOOTER}\""
+    ].join(' ')
+    RunCmdOverEach[
+      log,
+      Dir[File.join(PDF_TEMP_DIR, '*.md')],
+      lambda do |path, out_path|
+        tmp_path = File.join(PDF_TEMP_DIR, File.basename(path, '.md') + '.pdf')
+        working_dir = File.dirname(path)
+        "cd #{working_dir} && pandoc #{pdf_opts} -o #{tmp_path} #{path} && cp #{tmp_path} #{out_path}"
+      end,
+      lambda do |path|
+        File.join(PDF_OUT_DIR, File.basename(path, '.md') + '.pdf')
+      end
+    ]
+  end
 end
 
 Clean = lambda do |path|
@@ -422,8 +562,13 @@ task :clean_logs do
   Clean[LOG_DIR]
 end
 
-desc "Clean all -- Note: you will loose build cache!"
+desc "Removes the entire build directory. Note: you will loose build cache!"
 task :clean_all do
+  Clean[BUILD_DIR]
+end
+
+desc "Alias for clean_all"
+task :reset do
   Clean[BUILD_DIR]
 end
 
