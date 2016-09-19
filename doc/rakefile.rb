@@ -14,31 +14,53 @@ CONFIG_FILE = 'config.yaml'
 CONFIG = YAML.load_file(CONFIG_FILE)
 # ... input paths
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
-SRC_DIR = File.expand_path(CONFIG["src-dir"], THIS_DIR)
+SRC_DIR = File.expand_path(CONFIG.fetch("src-dir"), THIS_DIR)
 CONTENT_DIR = SRC_DIR
-MEDIA_DIR = File.expand_path(CONFIG["media-dir"], THIS_DIR)
-CSS_DIR = File.expand_path(CONFIG["css-dir"], THIS_DIR)
-TEMPLATE_DIR = File.expand_path(CONFIG["template-dir"], THIS_DIR)
-REFERENCE_DIR = File.expand_path(CONFIG["reference-dir"], THIS_DIR)
-PANDOC_HTML_OPTIONS = (CONFIG["options"]["pandoc"]["*"] + CONFIG["options"]["pandoc"]["html"]).join(' ')
-PANDOC_MD_OPTIONS = (CONFIG["options"]["pandoc"]["*"] + CONFIG["options"]["pandoc"]["md"]).join(' ')
+MEDIA_DIR = File.expand_path(CONFIG.fetch("media-dir"), THIS_DIR)
+CSS_DIR = File.expand_path(CONFIG.fetch("css-dir"), THIS_DIR)
+TEMPLATE_DIR = File.expand_path(CONFIG.fetch("template-dir"), THIS_DIR)
+REFERENCE_DIR = File.expand_path(CONFIG.fetch("reference-dir"), THIS_DIR)
+PANDOC_HTML_OPTIONS = (
+  CONFIG.fetch("options").fetch("pandoc").fetch("*") +
+  CONFIG.fetch("options").fetch("pandoc").fetch("html")
+).join(' ')
+PANDOC_MD_OPTIONS = (
+  CONFIG.fetch("options").fetch("pandoc").fetch("*") +
+  CONFIG.fetch("options").fetch("pandoc").fetch("md")
+).join(' ')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 # ... utility programs
-USE_NODE = CONFIG["use-node?"]
-NANO_EXE = CONFIG["cssnano-exe"]
-HTML_MIN_EXE = CONFIG["html-minifier-exe"]
+USE_NODE = CONFIG.fetch("use-node?")
+NANO_EXE = CONFIG.fetch("cssnano-exe")
+HTML_MIN_EXE = CONFIG.fetch("html-minifier-exe")
 # ... output paths
-BUILD_DIR = File.expand_path(CONFIG["build-dir"], THIS_DIR)
-MD_TEMP_DIR = File.expand_path(File.join(CONFIG["md-temp-dir"], 'step-1-normalize'), THIS_DIR)
-MD_TEMP2_DIR = File.expand_path(File.join(CONFIG["md-temp-dir"], 'step-2-xlink'), THIS_DIR)
-HTML_TEMP_DIR = File.expand_path(CONFIG["html-temp-dir"], THIS_DIR)
-PDF_TEMP_DIR = File.expand_path(CONFIG["pdf-temp-dir"], THIS_DIR)
-HTML_OUT_DIR = File.expand_path(CONFIG["html-output-dir"], THIS_DIR)
+BUILD_DIR = File.expand_path(
+  CONFIG.fetch("build-dir"), THIS_DIR
+)
+MD_TEMP_DIR = File.expand_path(
+  File.join(CONFIG.fetch("md-temp-dir"), 'step-1-normalize'), THIS_DIR
+)
+MD_TEMP2_DIR = File.expand_path(
+  File.join(CONFIG.fetch("md-temp-dir"), 'step-2-xlink'), THIS_DIR
+)
+HTML_TEMP_DIR = File.expand_path(
+  CONFIG.fetch("html-temp-dir"), THIS_DIR
+)
+PDF_TEMP_DIR = File.expand_path(
+  CONFIG.fetch("pdf-temp-dir"), THIS_DIR
+)
+HTML_OUT_DIR = File.expand_path(
+  CONFIG.fetch("html-output-dir"), THIS_DIR
+)
 HTML_CSS_OUT_DIR = File.join(HTML_OUT_DIR, 'css')
 HTML_MEDIA_OUT_DIR = File.join(HTML_OUT_DIR, 'media')
-PDF_OUT_DIR = File.expand_path(CONFIG["pdf-output-dir"], THIS_DIR)
-LOG_DIR = File.expand_path(CONFIG["log-dir"], THIS_DIR)
+PDF_OUT_DIR = File.expand_path(
+  CONFIG.fetch("pdf-output-dir"), THIS_DIR
+)
+LOG_DIR = File.expand_path(
+  CONFIG.fetch("log-dir"), THIS_DIR
+)
 
 ########################################
 # Helper Functions
