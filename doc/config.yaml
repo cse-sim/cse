@@ -11,7 +11,7 @@ md-temp-dir: 'build/temp/md'
 html-temp-dir: 'build/temp/html'
 pdf-temp-dir: 'build/temp/pdf'
 html-output-dir: 'build/output/html'
-pdf-output-dir: 'build/output/pdf'
+pdf-output-dir: 'build/output/html/pdfs'
 log-dir: 'build/logs'
 pdf-header: "\"CSE User's Manual\""
 pdf-footer: "Time.now.strftime(\"%FT%T%:z\")"
