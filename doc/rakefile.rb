@@ -12,6 +12,7 @@ CONFIG_FILE = 'config.yaml'
 CONFIG = YAML.load_file(CONFIG_FILE)
 # ... input paths
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
+LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 SRC_DIR = File.expand_path(CONFIG.fetch("src-dir"), THIS_DIR)
 CONTENT_DIR = SRC_DIR
 MEDIA_DIR = File.expand_path(CONFIG.fetch("media-dir"), THIS_DIR)
@@ -86,6 +87,31 @@ end
 
 EnsureAllExist = lambda do |paths|
   paths.each {|p| EnsureExists[p]}
+end
+
+# -> Nil
+# This subroutine pulls from the gh-pages branch in the build directory to the
+# main branch
+PullFromGHPages = lambda do
+  `cd .. && git checkout #{DOCS_BRANCH} && git pull #{HTML_OUT_DIR} #{DOCS_BRANCH}`
+end
+
+# -> Nil
+# The basic idea of this subroutine is to clone the current repository into the
+# build output directory and checkout the gh-pages branch. We then clean all
+# files out and (re-)generate into that git repository. The user can then manually
+# pull back into the local gh-pages branch after inspection.
+SetupGHPages = lambda do
+  if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
+    FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
+    `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
+    `cd #{HTML_OUT_DIR} && git checkout #{DOCS_BRANCH}`
+    Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
+      unless File.basename(path) == '.git'
+        FileUtils.rm_rf(path)
+      end
+    end
+  end
 end
 
 # Get a time-stamp usable as a filename
@@ -390,6 +416,7 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   dirs = [
     MD_TEMP_DIR, MD_TEMP2_DIR,
   ]
+  SetupGHPages[]
   EnsureAllExist[dirs]
   record_name_set = Set.new(
     File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
@@ -457,6 +484,7 @@ BuildHTML = lambda do
     HTML_TEMP_DIR, HTML_CSS_OUT_DIR, HTML_MEDIA_OUT_DIR,
     LOG_DIR,
   ]
+  SetupGHPages[]
   EnsureAllExist[dirs]
   log_file_path = UniquePath[File.join(LOG_DIR, TimeStamp[] + ".txt")]
   File.open(log_file_path, 'w') do |f|
@@ -520,6 +548,7 @@ BuildPDF = lambda do
   dirs = [
     PDF_TEMP_DIR, LOG_DIR, PDF_OUT_DIR
   ]
+  SetupGHPages[]
   EnsureAllExist[dirs]
   log_file_path = UniquePath[File.join(LOG_DIR, TimeStamp[] + ".txt")]
   File.open(log_file_path, 'w') do |f|
@@ -633,14 +662,8 @@ end
 
 desc "Dump generated HTML to gh-pages branch"
 task :ghp => [:html, :pdf] do
-  current_branch = `git symbolic-ref --short -q HEAD`
-  `git checkout -b #{DOCS_BRANCH}` unless current_branch == DOCS_BRANCH
-  if $?.success?
-    FileUtils.cp_r(Dir[File.join(HTML_OUT_DIR, '*')], "..")
-  else
-    puts("Error encountered with pushing to #{DOCS_BRANCH}")
-  end
-  puts("On #{DOCS_BRANCH} from #{current_branch}; add files manually to git")
+  `cd #{HTML_OUT_DIR} && git add -A && git commit -m \"Update Website\"`
+  PullFromGHPages[]
 end
 
 task :default => [:html, :pdf]
