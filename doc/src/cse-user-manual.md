@@ -9337,5 +9337,3 @@ Qbal       Sum of all the 'Q' columns, primarily a development aid. Zero
            print in the space alloted, but not precisely zero, due to          
            computational tolerances and internal round-off errors.             
 -------------------------------------------------------------------------------
-
-# Index
