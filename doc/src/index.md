@@ -1,7 +1,7 @@
 ---
 title: "California Simulation Engine"
 toc: false
-numbered-sections: false
+number-sections: false
 ---
 
 # California Simulation Engine (CSE)
