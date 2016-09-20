@@ -35,12 +35,15 @@ options:
       - "--smart"
       - "--template=template.tex"
       - "--listings"
+      - "--from markdown"
     "md":
       - "--atx-headers"
       - "--normalize"
       - "--to markdown"
+      - "--from markdown"
     "html":
       - "--to html5"
+      - "--from markdown"
       - "--mathjax"
       - "--css=css/base.css"
       - "--table-of-contents"
