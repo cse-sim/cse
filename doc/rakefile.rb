@@ -81,7 +81,7 @@ end
 
 ReduceLines = lambda do |str, init, reducer|
   val = init
-  str.split("\n").each {|line|
+  str.lines.map(&:chomp).each {|line|
     val = reducer.call(val, line)
   }
   val
@@ -146,17 +146,20 @@ end
 # (Function String -> Nil) String -> Nil
 # Run the given command using Ruby's Object.system(...) command. Checks the
 # exit code to determine success/failure
-RunAndLog = lambda do |log, cmd|
+RunAndLog = lambda do |log, cmd, working_dir=nil|
   log["Running command:\n#{cmd}"]
-  begin
-    result = `#{cmd}`
-    if !result or result.empty?
-      log["... success!"]
-    else
-      log["... success! result:\n#{result}"]
+  working_dir ||= Dir.pwd
+  Dir.chdir(working_dir) do
+    begin
+      result = `#{cmd}`
+      if !result or result.empty?
+        log["... success!"]
+      else
+        log["... success! result:\n#{result}"]
+      end
+    rescue => e
+      log["... failure:\n#{e.message}"]
     end
-  rescue => e
-    log["... failure:\n#{e.message}"]
   end
 end
 
@@ -211,7 +214,7 @@ ObjectIndexReducer = lambda do |target_levels|
       next_state = state
       if target_levels.include?(level)
         name_set = state[:name_set]
-        words = NameFromHeader[line].strip.gsub(/,/,'').split
+        words = NameFromHeader[line].strip.gsub(/,/,'').split(/\s/)
         if words.length > 1
           # Not just the name of an IDD object
           # This prevents false matches such as "Building Controls Virtual Test Bed"
@@ -389,32 +392,36 @@ XLinkMarkdown = lambda do |oi, ons, content|
   [new_content, state[:num_hits]]
 end
 
-# (Fn [String] nil) (Array String) (Fn [String String] String) (Fn [String] String) ->
-#     (Tuple Int Int (Array String))
+# (Fn [String] nil) (Array String) (Fn [String String] (Tuple String String))
+#   (Fn [String] String) -> (Tuple Int Int (Array String))
 # Given a logging function (taking a message and logging it), an array of
 # source file paths to process, a function taking the path to process and
-# output-path to process to and returning a string command, and a function
-# taking the input path and returning the output path (which this code will
-# ensure exists), run the given command over all input source files. Returns a
-# tuple of the number of files processed, number of files considered, and an
-# array of all the paths (in target folder) that were updated.
+# output-path to process to and returning a 2-tuple of string command and
+# working directory to switch to (can be nil for current directory), and a
+# function taking the input path and returning the output path (which this code
+# will ensure exists), run the given command over all input source files.
+# Returns a tuple of the number of files processed, number of files considered,
+# and an array of all the paths (in target folder) that were updated.
 RunCmdOverEach = lambda do |log_fn, src_files, cmd_fn, tgt_fn|
+  log_fn["Running RunCmdOverEach..."]
   changed_files = []
   num_changed = 0
   num_considered = 0
   src_files.each do |path|
     num_considered += 1
     out_path = tgt_fn[path]
+    log_fn["... out_path = #{out_path}"]
     if FileUtils.uptodate?(out_path, [path])
       log_fn["... #{out_path} up to date"]
     else
+      log_fn["... #{out_path} needs to be generated"]
       parent = File.dirname(out_path)
       FileUtils.mkdir_p(parent) unless File.exist?(parent)
       num_changed += 1
       changed_files << out_path
-      c = cmd_fn[path, out_path]
+      c, working_dir = cmd_fn[path, out_path]
       log_fn["... running command \"#{c}\"\n... ... from #{path} => #{out_path}"]
-      RunAndLog[log_fn, c]
+      RunAndLog[log_fn, c, working_dir]
     end
   end
   [num_changed, num_considered, changed_files]
@@ -430,7 +437,7 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
   ]
   EnsureAllExist[dirs]
   record_name_set = Set.new(
-    File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
+    File.read(RECORD_NAME_FILE).lines.map {|x|x.strip}
   )
   log["... copying all markdown source to temp directory for processing"]
   md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
@@ -463,9 +470,23 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
       content = File.read(path)
       new_content, num_hits = XLinkMarkdown[rec_idx, record_name_set, content]
       if content.start_with?('---')
-        m = content.match(/\A(---.*?^---$).*/m)
-        log["... re-adding yaml metadata block"] if m
-        new_content =  m[1] + "\n\n" + new_content unless m.nil?
+        log["... re-adding yaml metadata block"]
+        yaml_metadata = []
+        markers_found = 0
+        in_block = false
+        content.lines.map(&:chomp).each do |line|
+          break if markers_found == 2
+          if line == "---" or line == "..."
+            yaml_metadata << line
+            markers_found += 1
+            in_block = !in_block
+            next
+          end
+          yaml_metadata << line if in_block
+        end
+        if !yaml_metadata.empty?
+          new_content = yaml_metadata.join("\n") + "\n\n" + new_content
+        end
       end
       File.write(out_path, new_content)
       log["... cross linked #{path} => #{out_path}; #{num_hits} links found!"]
@@ -597,12 +618,8 @@ BuildPDF = lambda do
       log,
       Dir[File.join(PDF_TEMP_DIR, '*.md')],
       lambda do |path, out_path|
-        tmp_path = File.join(PDF_TEMP_DIR, File.basename(path, '.md') + '.pdf')
         working_dir = File.dirname(path)
-        Dir.chdir(working_dir) do
-          `pandoc #{pdf_opts} -o #{tmp_path} #{path}`
-          FileUtils.cp(tmp_path, out_path)
-        end
+        ["pandoc #{pdf_opts} -o #{out_path} #{path}", working_dir]
       end,
       lambda do |path|
         File.join(PDF_OUT_DIR, File.basename(path, '.md') + '.pdf')
@@ -623,7 +640,7 @@ end
 
 RegenerateRecordIndex = lambda do
   record_name_set = Set.new(
-    File.read(RECORD_NAME_FILE).split(/\n/).map {|x|x.strip}
+    File.read(RECORD_NAME_FILE).lines.map {|x|x.strip}
   )
   md_files = Dir[File.join(CONTENT_DIR, '*.md')]
   rec_idx = CreateRecordIndex[record_name_set, md_files, levels=[1,2,3]]
