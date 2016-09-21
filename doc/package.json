@@ -8,7 +8,7 @@
   },
   "author": "",
   "private": true,
-  "license": "ISC",
+  "license": "BSD",
   "dependencies": {
     "cssnano-cli": "^1.0.4",
     "html-minifier": "^3.0.3"
