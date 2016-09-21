@@ -104,18 +104,6 @@ EnsureAllExist = lambda do |paths|
 end
 
 # -> Nil
-# This subroutine pulls from the gh-pages branch in the build directory to the
-# main branch
-PullFromGHPages = lambda do
-  if USE_GHPAGES
-    Dir.chdir(File.dirname(THIS_DIR)) do
-      `git checkout #{DOCS_BRANCH}`
-      `git pull #{HTML_OUT_DIR} #{DOCS_BRANCH}`
-    end
-  end
-end
-
-# -> Nil
 # The basic idea of this subroutine is to clone the current repository into the
 # build output directory and checkout the gh-pages branch. We then clean all
 # files out and (re-)generate into that git repository. The user can then manually
@@ -733,18 +721,17 @@ task :reset do
   Clean[BUILD_DIR]
 end
 
-desc "Pull generated content into local gh-pages"
+desc "Add generated content to gh-pages branch"
 task :ghp => [:html, :pdf] do
   if USE_GHPAGES
     Dir.chdir(HTML_OUT_DIR) do
       `git add -A`
-      `git commit -m "Update Website"`
     end
-    PullFromGHPages[]
-    Dir.chdir(File.dirname(THIS_DIR)) do
-      `git checkout #{DOCS_BRANCH}`
-      `git merge file://#{HTML_OUT_DIR}`
-    end
+    puts("Content added to index at #{HTML_OUT_DIR}, #{DOCS_BRANCH}")
+    puts("Once you've reviewed the files at #{HTML_OUT_DIR}, type:\n")
+    puts("- `git commit -m \"Your Commit Message\"`")
+    puts("- `get remote add github https://github.com/cse-sim/cse.git`")
+    puts("- `get push github gh-pages`")
   end
 end
 
