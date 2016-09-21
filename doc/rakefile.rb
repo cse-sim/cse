@@ -10,6 +10,7 @@ require('yaml')
 require_relative('lib/pandoc')
 require_relative('lib/command')
 require_relative('lib/def_parser')
+require_relative('lib/tables')
 
 ########################################
 # Globals
@@ -647,7 +648,37 @@ RegenerateRecordIndex = lambda do
   File.write(RECORD_INDEX_FILE, rec_idx.to_yaml)
 end
 
+EscapeForMd = lambda do |word|
+  word.gsub(/_/, "\\_").gsub(/\$/, "\\$")
+end
+
+MkVariabilityString = lambda do |flags|
+  fs = flags.map(&:downcase)
+  s = []
+  g = lambda do |flag, message|
+    if fs.include?(flag)
+      s << message
+      fs.reject {|x| x == flag}
+    end
+  end
+  g["e", "end of each"]
+  g["r", "start of run"]
+  g["y", "end of run"]
+  g["s", "subhour"]
+  g["h", "hour"]
+  g["mh", "month-hour"]
+  g["d", "day"]
+  g["m", "month"]
+  g["z", "constant"]
+  g["i", "after input"]
+  s.join(' ')
+end
+
 BuildProbesDocs = lambda do
+  spec_translation = {
+    "float" => "number",
+    "boo" => "integer number",
+  }
   dirs = [
     PROBES_TEMP_DIR
   ]
@@ -657,21 +688,27 @@ BuildProbesDocs = lambda do
   probes = DefParser::ParseCnRecs[]
   md_path = File.join(PROBES_TEMP_DIR, 'probes.md')
   File.open(md_path, 'w') do |f|
+    f.write("# Probe Definitions\n\n")
     probes.keys.sort.each do |k|
-      f.write("# #{probes[k][:name]} Probes [#{k}]\n\n")
-      f.write("| Name | Variability | Type |\n")
-      f.write("|------|-------------|------|\n")
+      table = [["Name", "Type", "Description", "Variability"]]
       flds = probes[k][:fields].sort_by {|x| x[:name]}
+      next if flds.empty?
+      f.write("## @#{probes[k][:name]} Probes [#{k}]\n\n")
       flds.each do |fld|
+        minor_type = spec_translation.fetch(fld[:spec].downcase, fld[:spec])
         type = if fld.include?(:array)
-                 "Array of #{fld[:spec]}[#{fld[:size]}]"
+                 "Array of #{minor_type}[#{fld[:size]}]"
                else
-                 fld[:spec]
+                 minor_type
                end
-        var = fld[:variability].join("; ")
-        f.write("| #{fld[:name]} | #{var} | #{type} |\n")
+        var = MkVariabilityString[fld[:variability]]
+        desc = fld.fetch(:description, "--")
+        table << [fld[:name], type, desc, var].map do |x|
+          EscapeForMd[x]
+        end
       end
-      f.write("\n\n")
+      f.write(Tables::WriteTable[ table, true ])
+      f.write("\n\n\n")
     end
   end
   puts("Probes markdown built!")
