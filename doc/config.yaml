@@ -15,11 +15,13 @@ build-dir: 'build'
 md-temp-dir: 'build/temp/md'
 html-temp-dir: 'build/temp/html'
 pdf-temp-dir: 'build/temp/pdf'
-html-output-dir: 'build/output/html'
-pdf-output-dir: 'build/output/html/pdfs'
+probes-temp-dir: 'build/temp/probes'
+html-output-dir: 'build/output'
+pdf-output-dir: 'build/output/pdfs'
 log-dir: 'build/logs'
 pdf-header: "\"CSE User's Manual\""
 pdf-footer: "Time.now.strftime(\"%FT%T%:z\")"
+generate-probes-documentation?: true
 pdf-skip-list:
   - index.md
 options:

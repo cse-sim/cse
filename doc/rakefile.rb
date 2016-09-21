@@ -9,6 +9,7 @@ require('json')
 require('yaml')
 require_relative('lib/pandoc')
 require_relative('lib/command')
+require_relative('lib/def_parser')
 
 ########################################
 # Globals
@@ -58,6 +59,10 @@ MD_TEMP_DIR = File.expand_path(
 )
 MD_TEMP2_DIR = File.expand_path(
   File.join(CONFIG.fetch("md-temp-dir"), 'step-2-xlink'), THIS_DIR
+)
+GEN_PROBES = CONFIG.fetch("generate-probes-documentation?")
+PROBES_TEMP_DIR = File.expand_path(
+  CONFIG.fetch("probes-temp-dir"), THIS_DIR
 )
 HTML_TEMP_DIR = File.expand_path(
   CONFIG.fetch("html-temp-dir"), THIS_DIR
@@ -651,6 +656,36 @@ RegenerateRecordIndex = lambda do
   File.write(RECORD_INDEX_FILE, rec_idx.to_yaml)
 end
 
+BuildProbesDocs = lambda do
+  dirs = [
+    PROBES_TEMP_DIR
+  ]
+  EnsureAllExist[dirs]
+  out_path = File.join(PROBES_TEMP_DIR, 'probes.yaml')
+  DefParser::ParseCnRecsToYaml[out_path]
+  probes = DefParser::ParseCnRecs[]
+  md_path = File.join(PROBES_TEMP_DIR, 'probes.md')
+  File.open(md_path, 'w') do |f|
+    probes.keys.sort.each do |k|
+      f.write("# #{probes[k][:name]} Probes [#{k}]\n\n")
+      f.write("| Name | Variability | Type |\n")
+      f.write("|------|-------------|------|\n")
+      flds = probes[k][:fields].sort_by {|x| x[:name]}
+      flds.each do |fld|
+        type = if fld.include?(:array)
+                 "Array of #{fld[:spec]}[#{fld[:size]}]"
+               else
+                 fld[:spec]
+               end
+        var = fld[:variability].join("; ")
+        f.write("| #{fld[:name]} | #{var} | #{type} |\n")
+      end
+      f.write("\n\n")
+    end
+  end
+  puts("Probes markdown built!")
+end
+
 ########################################
 # Tasks
 desc "Build the HTML"
@@ -708,6 +743,11 @@ task :ghp => [:html, :pdf] do
       `git merge file://#{HTML_OUT_DIR}`
     end
   end
+end
+
+desc "Generate probes markdown documentation"
+task :probes do
+  BuildProbesDocs[]
 end
 
 task :default => [:html, :pdf]

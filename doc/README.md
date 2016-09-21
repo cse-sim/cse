@@ -1,6 +1,6 @@
 # CSE User Manual Build Scripts
 
-## Dependencies
+## Dependencies for Website Generation
 
 - the [Pandoc](http://pandoc.org/) markup language converter (we are using Pandoc 1.17.2, but any recent version should work)
 - (optional) a recent version of [node.js](https://nodejs.org/en/)
@@ -12,3 +12,7 @@ With the above installed, the scripts in this directory should be able to downlo
 The specific dependencies for Node.js are listed in:
 
 - package.json (for Node.js)
+
+## Dependencies for Generating Probes Documenation
+
+In addition to the dependencies above, probles documentation requires the availability of a C Preprocessor. Which we assume is called `cpp`.
