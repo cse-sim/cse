@@ -8,6 +8,11 @@ require 'yaml'
 module DefParser
   # This is the starting state for the parser
   THIS_DIR = File.expand_path(File.dirname(__FILE__))
+  LoadCnRecsOrig = lambda do
+    src_dir = File.expand_path(File.join(THIS_DIR, '..', '..', 'src'), THIS_DIR)
+    cnrecs_path = File.join(src_dir, 'CNRECS.DEF')
+    File.read(cnrecs_path)
+  end
   LoadCnRecs = lambda do
     output = nil
     Tempfile.open('CNRECS.DEF') do |f|
@@ -27,25 +32,26 @@ module DefParser
       :fields => fields
     }
   end
-  Parse = lambda do |input|
+  Parse = lambda do |input, reference=nil|
     in_record = false
     record_id = nil
     record_name = nil
     record_fields = []
     output = {}
-    variability = {
-      "e" => "field varies at end of interval.",
-      "f" => "value available after input, before setup; before re-setup after autosize.",
-      "r" => "runly (start of run) variability, including things set by input check/setup",
-      "y" => "runly (end of run) variability, including things set by input check/setup",
-      "s" => "subhour",
-      "h" => "hour",
-      "mh" =>"monthly-hourly",
-      "d" => "daily",
-      "m" => "monthly",
-      "z" => "constant",
-      "i" => "value available after input, before checking/setup",
-    }
+    variability = Set.new([
+      "e" ,# field varies at end of interval.
+      "f" ,# value available after input, before setup; before re-setup after autosize.
+      "r" ,# runly (start of run) variability, including things set by input check/setup
+      "y" ,# runly (end of run) variability, including things set by input check/setup
+      "s" ,# subhour
+      "h" ,# hour
+      "mh",# month-hour
+      "d" ,# day
+      "m" ,# month
+      "z" ,# constant
+      "i" ,# after input, before checking/setup
+    ])
+    ref_lines = reference.lines.map(&:chomp) if reference
     input.lines.map(&:chomp).each_with_index do |line, idx|
       if line =~ /^\s*RECORD/
         m = line.match(/^\s*RECORD\s+([a-zA-Z_0-9-]*)\s*\"([^"]*)\"\s+\*(RAT|STRUCT).*$/)
@@ -61,11 +67,16 @@ module DefParser
       elsif line =~ /^\s*\*.*$/ && !(line =~ /^\s*\*END.*$/)
         # take the last two items
         spec, name = line.split(/\s+/)[-2..-1]
+        next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
         field = {
           :spec => spec,
-          :name => name
+          :name => name.gsub(/;/,'')
         }
-        next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
+        if reference
+          m = ref_lines[idx].match(/^.*?\/\/(.*)$/)
+          field[:description] = m[1].strip if m
+        else
+        end
         toks = line.gsub(/#{spec}\s+#{name}\s*$/, '')
           .strip
           .split(/\*/)
@@ -78,9 +89,9 @@ module DefParser
             hide = true
           elsif variability.include?(t)
             if field.include?(:variability)
-              field[:variability] += [variability[t]]
+              field[:variability] += [t]
             else
-              field[:variability] = [variability[t]]
+              field[:variability] = [t]
             end
           elsif t == "array"
             field[:array] = true
@@ -101,6 +112,16 @@ module DefParser
           end
         end
         record_fields << field unless hide
+      elsif (line =~ /^\s*[a-zA-Z_0-9]+\s+[a-zA-Z_0-9]+\s*$/) && in_record
+        # we have a two token field
+        spec, name = line.strip.split(/\s+/)
+        field = {
+          :spec => spec,
+          :name => name,
+          :variability => ["constant"]
+        }
+        next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
+        record_fields << field
       elsif (line =~ /^\s*\*END/) && in_record
         in_record = false
         if output.include?(record_id)
@@ -116,7 +137,7 @@ module DefParser
     end
     output
   end
-  ParseCnRecs = lambda {Parse[LoadCnRecs[]]}
+  ParseCnRecs = lambda {Parse[LoadCnRecs[], LoadCnRecsOrig[]]}
   # String -> Nil
   # Given the path to an output file, write the output file in YAML format.
   ParseCnRecsToYaml = lambda {|p| File.write(p, ParseCnRecs[].to_yaml)}
