@@ -25,6 +25,11 @@ generate-probes-documentation?: true
 pdf-skip-list:
   - index.md
 options:
+  html-minifier:
+    "*":
+      - "--minify-css"
+      - "--minify-js"
+      - "--remove-comments"
   pandoc:
     "*":
       - "--parse-raw"

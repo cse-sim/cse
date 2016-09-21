@@ -36,6 +36,9 @@ PANDOC_PDF_OPTIONS = (
   CONFIG.fetch("options").fetch("pandoc").fetch("*") +
   CONFIG.fetch("options").fetch("pandoc").fetch("pdf")
 ).join(' ')
+HTML_MIN_OPTIONS = (
+  CONFIG.fetch("options").fetch("html-minifier").fetch("*")
+).join(' ')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
@@ -560,7 +563,7 @@ BuildHTML = lambda do
       else
         if USE_NODE
           log["... compressing  #{out_path} => #{out_compress}"]
-          RunAndLog[log, "#{HTML_MIN_EXE} -o #{out_compress} #{out_path}"]
+          RunAndLog[log, "#{HTML_MIN_EXE} #{HTML_MIN_OPTIONS} -o #{out_compress} #{out_path}"]
         else
           log["... node.js not used (see USE_NODE in #{__FILE__}; copying to destination vs compressing"]
           FileUtils.cp(out_path, out_compress)
