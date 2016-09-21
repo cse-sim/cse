@@ -8,13 +8,7 @@ module Pandoc
   C = Command
 
   STD_MD_OPTS = [
-    '-t markdown'\
-    '+fenced_code_blocks'\
-    '-grid_tables'\
-    '-multiline_tables'\
-    '+pipe_tables'\
-    '-simple_tables'\
-    '-backtick_code_blocks',
+    '-t markdown',
     '--atx-headers',
     '--normalize',
     '--wrap=none',
