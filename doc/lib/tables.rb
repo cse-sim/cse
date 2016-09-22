@@ -4,6 +4,7 @@
 
 module Tables
   INTERCOL_SPACE = 2
+  PAGE_MAX_COLS = 80
 
   TxtToTable = lambda do |txt|
     table = []
@@ -45,7 +46,7 @@ module Tables
   ColWidths = lambda do |mins, maxs|
     num_cols = mins.length
     spacing = 2 * (num_cols - 1)
-    extra_space = 80 - (mins.inject(0, &:+) + spacing)
+    extra_space = PAGE_MAX_COLS - (mins.inject(0, &:+) + spacing)
     total_max = maxs.inject(0, &:+).to_f
     width_fracs = maxs.map {|m| m / total_max}
     extra_space_alloc = width_fracs.map {|w| (w * extra_space).to_i}
