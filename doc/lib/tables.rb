@@ -47,6 +47,7 @@ module Tables
     num_cols = mins.length
     spacing = 2 * (num_cols - 1)
     extra_space = PAGE_MAX_COLS - (mins.inject(0, &:+) + spacing)
+    extra_space = 0 if extra_space < 0
     total_max = maxs.inject(0, &:+).to_f
     width_fracs = maxs.map {|m| m / total_max}
     extra_space_alloc = width_fracs.map {|w| (w * extra_space).to_i}
