@@ -677,26 +677,58 @@ MkVariabilityString = lambda do |flags|
   s.join(' ')
 end
 
+BuildProbesYaml = lambda do
+  dirs = [
+    PROBES_TEMP_DIR
+  ]
+  EnsureAllExist[dirs]
+  out_path = File.join(PROBES_TEMP_DIR, 'probes_input.yaml')
+  probes = DefParser::ParseProbesTxt[]
+  probes_alt = DefParser::ParseCnRecs[]
+  probes.keys.sort_by {|k| k.downcase}.each do |k|
+    rec_alt = nil
+    if probes_alt.include?(k.downcase)
+      rec_alt = probes_alt[k.downcase]
+    end
+    next if rec_alt.nil?
+    flds = probes[k][:fields]
+    next if flds.empty?
+    name = k
+    flds.each do |fld|
+      desc = nil
+      flds_alt = rec_alt[:fields].select do |f|
+        na = f[:name].downcase
+        n1a = na
+        n2a = na.gsub(/^[^_]*_/, '')
+        nb = fld[:name].downcase 
+        n1a == nb || n2a == nb
+      end
+      if flds_alt.length == 1
+        fld_alt = flds_alt[0]
+        desc = fld_alt.fetch(:description, desc)
+      end
+      fld[:description] = desc unless desc.nil?
+    end
+  end
+  File.write(out_path, probes.to_yaml)
+end
+
 BuildProbesDocs = lambda do
   dirs = [
     PROBES_TEMP_DIR
   ]
   EnsureAllExist[dirs]
-  out_path = File.join(PROBES_TEMP_DIR, 'probes.yaml')
-  DefParser::ParseCnRecsToYaml[out_path]
-  probes = DefParser::ParseProbesTxt[]
-  probes_alt = DefParser::ParseCnRecs[]
+  in_path = File.join(REFERENCE_DIR, 'probes_input.yaml')
+  probes = YAML.load_file(in_path)
   md_path = File.join(PROBES_TEMP_DIR, 'probes.md')
   File.open(md_path, 'w') do |f|
     f.write("# Probe Definitions\n\n")
     probes.keys.sort_by {|k| k.downcase}.each do |k|
-      rec_alt = nil
-      if probes_alt.include?(k.downcase)
-        #puts("Alternate record exists for #{k}")
-        rec_alt = probes_alt[k.downcase]
+      if probes[k].include?(:description)
+        f.write(probes[k][:description] + "\n\n")
       end
       table = [["Name", "Input?", "Runtime?", "Type", "Variability", "Description"]]
-      flds = probes[k][:fields] #.sort_by {|x| x[:name]}
+      flds = probes[k][:fields]
       next if flds.empty?
       name = k
       array_txt = if probes[k][:array] then "[1..]" else "" end
@@ -705,28 +737,13 @@ BuildProbesDocs = lambda do
       owner_txt = if owner == "--" then "" else " (owner: #{owner})" end
       f.write("## #{title}#{owner_txt}\n\n")
       flds.each do |fld|
-        desc = "--"
-        if rec_alt
-          flds_alt = rec_alt[:fields].select do |f|
-            na = f[:name].downcase
-            n1a = na
-            n2a = na.gsub(/^[^_]*_/, '')
-            nb = fld[:name].downcase 
-            n1a == nb || n2a == nb
-          end
-          #puts("... matching #{fld[:name]}: #{flds_alt.inspect}") unless flds_alt.empty?
-          if flds_alt.length == 1
-            fld_alt = flds_alt[0]
-            desc = fld_alt.fetch(:description, desc)
-          end
-        end
         table << [
           fld[:name],
           if fld[:input] then "X" else "--" end,
           if fld[:runtime] then "X" else "--" end,
           fld[:type],
           fld[:variability],
-          desc
+          fld.fetch(:description, "--")
         ]
       end
       f.write(Tables::WriteTable[ table, true ])
@@ -792,6 +809,11 @@ task :ghp => [:html, :pdf] do
     puts("- `get remote add github https://github.com/cse-sim/cse.git`")
     puts("- `get push github gh-pages`")
   end
+end
+
+desc "Generate probes yaml input"
+task :gen_probes_yaml do
+  BuildProbesYaml[]
 end
 
 desc "Generate probes markdown documentation"
