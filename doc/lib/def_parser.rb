@@ -8,23 +8,34 @@ require 'yaml'
 module DefParser
   # This is the starting state for the parser
   THIS_DIR = File.expand_path(File.dirname(__FILE__))
-  LoadCnRecsOrig = lambda do
-    src_dir = File.expand_path(File.join(THIS_DIR, '..', '..', 'src'), THIS_DIR)
-    cnrecs_path = File.join(src_dir, 'CNRECS.DEF')
-    File.read(cnrecs_path)
+  LoadFromReference = lambda do |fname|
+    ref_dir = File.expand_path(File.join(THIS_DIR, '..', 'config', 'reference'), THIS_DIR)
+    path = File.join(ref_dir, fname)
+    File.read(path)
   end
-  LoadCnRecs = lambda do
+  LoadProbes = lambda {LoadFromReference["probes.txt"]}
+  LoadFromSrc = lambda do |fname|
+    src_dir = File.expand_path(File.join(THIS_DIR, '..', '..', 'src'), THIS_DIR)
+    path = File.join(src_dir, fname)
+    File.read(path)
+  end
+  LoadCnRecsOrig = lambda {LoadFromSrc['CNRECS.DEF']}
+  LoadCnFieldsOrig = lambda {LoadFromSrc['CNFIELDS.DEF']}
+  LoadCndTypesOrig = lambda {LoadFromSrc['CNDTYPES.DEF']}
+  LoadViaCpp = lambda do |fname|
     output = nil
-    Tempfile.open('CNRECS.DEF') do |f|
+    Tempfile.open('temp_file') do |f|
       # Call the c preprocessor
       src_dir = File.expand_path(File.join(THIS_DIR, '..', '..', 'src'), THIS_DIR)
-      cnrecs_path = File.join(src_dir, 'CNRECS.DEF')
+      path = File.join(src_dir, fname)
       tgt_path = f.path
-      `cpp -I#{src_dir} -xc++ #{cnrecs_path} #{tgt_path}`
+      `cpp -I#{src_dir} -xc++ #{path} #{tgt_path}`
       output = File.read(f.path)
     end
     output
   end
+  LoadCnRecs = lambda {LoadViaCpp['CNRECS.DEF']}
+  LoadCndTypes = lambda {LoadViaCpp['CNDTYPES.DEF']}
   MkRecord = lambda do |id, name, fields|
     {
       :id => id,
@@ -32,6 +43,81 @@ module DefParser
       :fields => fields
     }
   end
+  ReplaceMultiLineCommentsKeepSpace = lambda do |txt|
+    txt.gsub(/\/\*[^*]*\*\//m) {|m| m.gsub(/[^\n]/, ' ')}
+  end
+  # Parser for CNFIELDS.DEF
+  ParseUnits = lambda do |input|
+    data = {}
+    ReplaceMultiLineCommentsKeepSpace[input].lines.map(&:chomp).each do |line|
+      next if line =~/^\s*$/
+      next if line =~ /^\s*\/\/.*$/
+      toks = line.split(/\s+/)
+      comment_match = line.match(/^.*?\/\/(.*)$/)
+      data[toks[0]] = {
+        :typename => toks[0],
+        :datatype => toks[1],
+        :limits   => toks[2],
+        :units    => toks[3],
+      }
+      if comment_match
+        data[toks[0]][:description] = comment_match[1].strip
+      end
+    end
+    data
+  end
+  ParseCnFields = lambda {ParseUnits[LoadCnFieldsOrig[]]}
+  ParseTypes = lambda do |input|
+    
+  end
+  ParseCnTypes = lambda {ParseTypes[LoadCndTypes[]]}
+  ParseCseDashP = lambda do |input|
+    records = {}
+    fields = []
+    name = nil
+    input.lines.map(&:chomp).each do |line|
+      if line.start_with?("@")
+        re = Regexp.new(
+          /^@(?<name>[a-zA-Z_0-9]+)/.source +
+          /(?<array>\[1\.\.\])?\./.source +
+          /(?<input>\s+I)?/.source +
+          /(?<runtime>\s+R)?/.source +
+          /(?<owner>\s+owner:\s+[a-zA-Z_0-9]+)?.*$/.source
+        )
+        m = line.match(re)
+        if m
+          # add fields from last record
+          records[name][:fields] = fields if name
+          fields = []
+          name = m["name"]
+          records[name] = {}
+          records[name][:input] = ! m["input"].nil?
+          records[name][:runtime] = ! m["runtime"].nil?
+          if m["owner"].nil?
+            records[name][:owner] = "--"
+          else
+            records[name][:owner] = m["owner"].strip.split(/\s+/)[1]
+          end
+          records[name][:array] = ! m["array"].nil?
+        end
+      elsif line =~ /^\s*$/ or name.nil?
+        next
+      else
+        field = {
+          :name => line[0..20].strip,
+          :input => line[21..24].strip == "I", 
+          :runtime => line[25..28].strip == "R",
+          :type => line[29..49].strip,
+          :variability => line[50..-1].strip
+        }
+        fields << field
+      end
+    end
+    # add fields that may not have been added
+    records[name][:fields] = fields unless records[name].include?(:fields)
+    records
+  end
+  ParseProbesTxt = lambda {ParseCseDashP[LoadProbes[]]}
   Parse = lambda do |input, reference=nil|
     in_record = false
     record_id = nil
@@ -126,9 +212,9 @@ module DefParser
         in_record = false
         if output.include?(record_id)
           puts("Warning! Duplicate id found: #{record_id}")
-          output[record_id][:fields] += record_fields
+          output[record_id.downcase][:fields] += record_fields
         else
-          output[record_id] = MkRecord[record_id, record_name, record_fields]
+          output[record_id.downcase] = MkRecord[record_id, record_name, record_fields]
         end
         record_id = nil
         record_name = nil

@@ -649,7 +649,10 @@ RegenerateRecordIndex = lambda do
 end
 
 EscapeForMd = lambda do |word|
-  word.gsub(/_/, "\\_").gsub(/\$/, "\\$")
+  word
+    .gsub(/_/, "\\_")
+    .gsub(/\$/, "\\$")
+    .gsub(/\*/, "\\*")
 end
 
 MkVariabilityString = lambda do |flags|
@@ -665,47 +668,66 @@ MkVariabilityString = lambda do |flags|
   g["r", "start of run"]
   g["y", "end of run"]
   g["s", "subhour"]
-  g["h", "hour"]
+  g["h", "hourly"]
   g["mh", "month-hour"]
   g["d", "day"]
   g["m", "month"]
   g["z", "constant"]
-  g["i", "after input"]
+  g["i", "input time"]
   s.join(' ')
 end
 
 BuildProbesDocs = lambda do
-  spec_translation = {
-    "float" => "number",
-    "boo" => "integer number",
-  }
   dirs = [
     PROBES_TEMP_DIR
   ]
   EnsureAllExist[dirs]
   out_path = File.join(PROBES_TEMP_DIR, 'probes.yaml')
   DefParser::ParseCnRecsToYaml[out_path]
-  probes = DefParser::ParseCnRecs[]
+  probes = DefParser::ParseProbesTxt[]
+  probes_alt = DefParser::ParseCnRecs[]
   md_path = File.join(PROBES_TEMP_DIR, 'probes.md')
   File.open(md_path, 'w') do |f|
     f.write("# Probe Definitions\n\n")
-    probes.keys.sort.each do |k|
-      table = [["Name", "Type", "Description", "Variability"]]
-      flds = probes[k][:fields].sort_by {|x| x[:name]}
+    probes.keys.sort_by {|k| k.downcase}.each do |k|
+      rec_alt = nil
+      if probes_alt.include?(k.downcase)
+        #puts("Alternate record exists for #{k}")
+        rec_alt = probes_alt[k.downcase]
+      end
+      table = [["Name", "Input?", "Runtime?", "Type", "Variability", "Description"]]
+      flds = probes[k][:fields] #.sort_by {|x| x[:name]}
       next if flds.empty?
-      f.write("## @#{probes[k][:name]} Probes [#{k}]\n\n")
+      name = k
+      array_txt = if probes[k][:array] then "[1..]" else "" end
+      title = "@#{name}#{array_txt}."
+      owner = probes[k][:owner]
+      owner_txt = if owner == "--" then "" else " (owner: #{owner})" end
+      f.write("## #{title}#{owner_txt}\n\n")
       flds.each do |fld|
-        minor_type = spec_translation.fetch(fld[:spec].downcase, fld[:spec])
-        type = if fld.include?(:array)
-                 "Array of #{minor_type}[#{fld[:size]}]"
-               else
-                 minor_type
-               end
-        var = MkVariabilityString[fld[:variability]]
-        desc = fld.fetch(:description, "--")
-        table << [fld[:name], type, desc, var].map do |x|
-          EscapeForMd[x]
+        desc = "--"
+        if rec_alt
+          flds_alt = rec_alt[:fields].select do |f|
+            na = f[:name].downcase
+            n1a = na
+            n2a = na.gsub(/^[^_]*_/, '')
+            nb = fld[:name].downcase 
+            n1a == nb || n2a == nb
+          end
+          #puts("... matching #{fld[:name]}: #{flds_alt.inspect}") unless flds_alt.empty?
+          if flds_alt.length == 1
+            fld_alt = flds_alt[0]
+            desc = fld_alt.fetch(:description, desc)
+          end
         end
+        table << [
+          fld[:name],
+          if fld[:input] then "X" else "--" end,
+          if fld[:runtime] then "X" else "--" end,
+          fld[:type],
+          fld[:variability],
+          desc
+        ]
       end
       f.write(Tables::WriteTable[ table, true ])
       f.write("\n\n\n")
