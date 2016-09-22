@@ -40,6 +40,7 @@ table td {
   color: #669;
   font-size: 80%;
   padding: 9px 8px 0;
+  vertical-align: top;
 }
 h1 {
   font-family: "Helvetica";
