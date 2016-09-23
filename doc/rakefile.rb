@@ -543,11 +543,17 @@ BuildHTML = lambda do
     log["... copied #{num_media_copied}/#{all_media} files"]
     log["Build HTML from Markdown, Add Cross-Links, and Compress"]
     md_tmp_files = BuildCrossLinkedNormalizedMD[log]
+    probes_file = File.join(PROBES_TEMP_DIR, 'probes.md') if BUILD_PROBES
     md_tmp_files.each do |path|
       html_base = File.basename(path, '.md') + '.html'
       out_path = File.join(HTML_TEMP_DIR, html_base)
       log["... generating #{path} => #{out_path}"]
-      RunAndLog[log, "pandoc #{PANDOC_HTML_OPTIONS} -o #{out_path} #{path}"]
+      all_paths = "#{path}"
+      if BUILD_PROBES and APPEND_PROBES_TO.include?(File.basename(path))
+        log["... building probes atop #{File.basename(path)}"]
+        all_paths += " #{probes_file}" 
+      end
+      RunAndLog[log, "pandoc #{PANDOC_HTML_OPTIONS} -o #{out_path} #{all_paths}"]
       out_compress = File.join(HTML_OUT_DIR, html_base)
       if FileUtils.uptodate?(out_compress, [out_path])
         log["... already compressed  #{out_path} => #{out_compress}"]
@@ -622,7 +628,12 @@ BuildPDF = lambda do
       Dir[File.join(PDF_TEMP_DIR, '*.md')],
       lambda do |path, out_path|
         working_dir = File.dirname(path)
-        ["pandoc #{pdf_opts} -o #{out_path} #{path}", working_dir]
+        all_paths = "#{path}"
+        if BUILD_PROBES and APPEND_PROBES_TO.include?(File.basename(path))
+          probes_file = File.join(PROBES_TEMP_DIR, 'probes.md')
+          all_paths += " #{probes_file}" 
+        end
+        ["pandoc #{pdf_opts} -o #{out_path} #{all_paths}", working_dir]
       end,
       lambda do |path|
         File.join(PDF_OUT_DIR, File.basename(path, '.md') + '.pdf')
@@ -726,9 +737,6 @@ BuildProbesDocs = lambda do
   File.open(md_path, 'w') do |f|
     f.write("# Probe Definitions\n\n")
     probes.keys.sort_by {|k| k.downcase}.each do |k|
-      if probes[k].include?(:description)
-        f.write(probes[k][:description] + "\n\n")
-      end
       table = [["Name", "Input?", "Runtime?", "Type", "Variability", "Description"]]
       flds = probes[k][:fields]
       next if flds.empty?
@@ -738,6 +746,9 @@ BuildProbesDocs = lambda do
       owner = probes[k][:owner]
       owner_txt = if owner == "--" then "" else " (owner: #{owner})" end
       f.write("## #{title}#{owner_txt}\n\n")
+      if probes[k].include?(:description)
+        f.write(probes[k][:description] + "\n\n")
+      end
       flds.each do |fld|
         table << [
           fld[:name],
@@ -757,8 +768,9 @@ end
 
 ########################################
 # Tasks
+html_deps = if BUILD_PROBES then [:probes] else [] end
 desc "Build the HTML"
-task :html do
+task :html => html_deps do
   InstallNodeDeps[] if USE_NODE
   BuildHTML[]
   puts("HTML Built!")
