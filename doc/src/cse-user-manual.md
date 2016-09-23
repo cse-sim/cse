@@ -118,7 +118,7 @@ Output files created by default by CSE (error message file, primary report and e
 
 ## Output File Names
 
-If any error or warning messages are generated, CSE puts them in a file with the same name and path as the input file and extension .ERR, as well as on the screen and, usually, in the primary (default) report file. The exception is errors in the command line: these appear only on the screen. If there are no error or warning messages, any prior file will this name is deleted. 
+If any error or warning messages are generated, CSE puts them in a file with the same name and path as the input file and extension .ERR, as well as on the screen and, usually, in the primary (default) report file. The exception is errors in the command line: these appear only on the screen. If there are no error or warning messages, any prior file with this name is deleted. 
 
 By default, CSE generates an output report file with the same name and path as the input file, and extension ".REP". This file may be examined with a text editor and/or copied to an ASCII printer. If any exports are specified, they go by default into a file with the same name and path as the input file and extension ".EXP".
 
