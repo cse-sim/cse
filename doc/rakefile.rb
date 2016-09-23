@@ -51,6 +51,8 @@ HTML_MIN_EXE = CONFIG.fetch("html-minifier-exe")
 PDF_HEADER = eval(CONFIG.fetch("pdf-header"))
 PDF_FOOTER = eval(CONFIG.fetch("pdf-footer"))
 PDF_SKIP_LIST = CONFIG.fetch("pdf-skip-list")
+BUILD_PROBES = CONFIG.fetch("build-probes?")
+APPEND_PROBES_TO = CONFIG.fetch("append-probes-to").map(&:downcase)
 # ... github integration
 DOCS_BRANCH = CONFIG.fetch("docs-branch")
 USE_GHPAGES = CONFIG.fetch("use-ghpages?")
