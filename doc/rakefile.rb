@@ -355,7 +355,7 @@ XLinkMarkdown = lambda do |oi, ons, content|
             {'t' => 'Link',
              'c' => [
                ["", [], []],
-               [{'t'=>'Str','c'=>w}],
+               [{'t'=>'Str','c'=>word}],
                [ref, '']]}
           else
             puts("WARNING! ObjectNameSet includes #{word_only}|#{word_only_singular}; Index doesn't")
