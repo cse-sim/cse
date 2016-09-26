@@ -60,7 +60,7 @@ MySys Characteristics
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  1
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Yr  15.248  1.614 12.603      0      0      0  0.386  0.336      0  0.308      0
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  2
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  3
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  4
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  4
 
 
 
@@ -260,7 +260,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.797 for Win32 console
+! CSE 0.815 for Win32 console
 
 
 
@@ -312,7 +312,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  5
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  6
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
         		layer lrThk = .1 lrMat = FoamInsul
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  7
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  8
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Input for Run 001:
             znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page  9
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page  9
 
 
 
@@ -579,11 +579,7 @@ Input for Run 001:
 0           znTC = 74
 #       #endif
          
-            znRSys = MySys
-                
-            znComfClo = 1
-            znComfMet = 1
-           
+            znRSys = MySys  
         
         	SURFACE Floor
                 sfType=Floor
@@ -625,19 +621,19 @@ Input for Run 001:
         	rsElecMtr = SysMtr //for electricity use (accumulated in Btu) (compressor and fan)
         	rsFuelMtr = SysMtr //for fuel use (accumulated in Btu)
         	rsSEER = 13
+        	//rsEER = rated EER (defaulted per ACM if missing)
+        	//rsVfPerTon = cfm per ton (default = 350)
+        	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
+        	rsFChg = 1		//ACM charge factor (default = 1)
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page 10
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page 10
 
 
 
 1Z Test
 ------------------------------------------------------------------------------
 
-        	//rsEER = rated EER (defaulted per ACM if missing)
-        	//rsVfPerTon = cfm per ton (default = 350)
-        	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
-        	rsFChg = 1		//ACM charge factor (default = 1)
         	rsFSize = 1		//ACM size factor (default = 1)
         
         	rsAFUE =.71
@@ -689,8 +685,12 @@ Input for Run 001:
 
 
 
+
+
+
+
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page 11
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page 11
 
 
 
@@ -699,20 +699,20 @@ Input for Run 001:
 
 
 
-! CSE 0.797 for Win32 console run(s) done: Thu 07-Apr-16   3:07:58 pm
-! Executable: c:\cse\run\csed.exe
-!             07-Apr-16   3:00 pm   (VS 12.0    2270720 bytes)  (HPWH 1.2.3)
+! CSE 0.815 for Win32 console run(s) done: Sun 25-Sep-16   3:50:31 pm
+! Executable: c:\cse\run\cse.exe
+!             25-Sep-16   3:43 pm   (VS 12.0    1162240 bytes)  (HPWH 1.3.0)
 
 ! Input file name:  C:\cse\test\herv.cse
 ! Report file name: C:\cse\test\herv.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 1      T/C = 0.0180   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0120   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 5.65     Calls = 1      T/C = 5.6530   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
-!                Total:  Time = 5.68     Calls = 1      T/C = 5.6790   
+!           Simulation:  Time = 1.23     Calls = 1      T/C = 1.2260   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0060   
+!                Total:  Time = 1.26     Calls = 1      T/C = 1.2560   
 
 
 
@@ -753,5 +753,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 07-Apr-16   3:07:52 pm  Page 12
+! herv  001                                Sun 25-Sep-16   3:50:30 pm  Page 12
 

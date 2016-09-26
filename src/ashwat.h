@@ -228,7 +228,7 @@ struct CFSFILLGAS
 	const char* DbFmt( const char* tag="") const;
 };	// struct CFSFILLGAS
 
-
+//=============================================================================
 // CFSGAP: space between layers
 // gap types
 const int gtySEALED = 1;	// sealed

@@ -11,10 +11,15 @@
 
 #include "ashwat.h"
 
+// FORTRAN-to-C++ conversion aids
 #define ASHWAT_USECPP	// define to use C++ implementation
 						//   else ashwat.dll (FORTRAN)
 #undef ASHWAT_LINKDLL	// define to set up linkage to ashwat.dll
 						//   transition aid 9-2016
+#undef ASHWAT_CPPTEST	// enable DLL<->C++ comparison code
+						//   usually does nothing if defined( ASHWAT_USECPP)
+#undef ASHWAT_CPPTESTTHERMAL // enable DLL<->C++ comparison for cf_Thermal() only
+
 
 #undef ASHWAT_REV2		// enable revised ASHWAT interface code, 5-2015
 						//   revised scheme reuses cached results
@@ -188,12 +193,16 @@ class AWOUT
 {
 friend class FENAW;
 	double aw_TL[ CFSMAXNL];	// calculated layer temps, K
+#if defined(ASHWAT_CPPTESTTHERMAL)
+	double aw_TLX[ CFSMAXNL];	// alternative calculated layer temps, K
+								//   re C++ conversion testing
+#endif
 	double aw_SHGCrt;		// SHGC (or 0 if not computed)
 	double aw_Urt;			// U-factor, Btuh/ft2-F
 	double aw_Cx;			// cross-coupling = implicit conductance between
 							//   zone air temp and zone rad temp, W/m2-K
-	double aw_FM;
-	double aw_FP;
+	double aw_FM;			//	radiant inward flowing fraction of incident solar
+	double aw_FP;			//	convective inward flowing fraction of incident solar
 	double aw_FHR_IN;
 	double aw_FHR_OUT;
 	double aw_cc;			// glazing effective conductance, airtemp-to-environment, Btuh/ft2-F
@@ -365,9 +374,6 @@ public:
 		double hProfA, CFSSWP& LSWP_ON);
 	RC xw_Solar( int nl, CFSSWP* swpON, CFSSWP& swpRoom,
 		double iBm, double iDf, double iDfIn, double* source);
-#if 0
-x	RC xw_Thermal( FENAW& F, SBC sbc[ 2]);
-#endif
 	RC xw_Subhr( ZNR* zp);
 	// RC xc_Finish();	// finish now done in xc_Shutdown(); add separate call if needed
 
