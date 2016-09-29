@@ -49,6 +49,10 @@ h1 {
   padding-top: 0em;
   font-size: 170%;
 }
+h1.subtitle {
+  font-size: 125%;
+  border: none;
+}
 pre {
   background-color: #fbf1d2;
 	padding-top: 1rem;
