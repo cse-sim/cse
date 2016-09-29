@@ -835,4 +835,21 @@ task :probes do
   BuildProbesDocs[]
 end
 
+desc "Check manifests"
+task :check_manifests do
+  md_file_set = Set.new(
+    Dir[File.join("src", "*.md")].map {|f| File.basename(f)}
+  )
+  Dir[File.join("src", "*.yaml")].each do |path|
+    puts("... checking #{File.basename(path)}")
+    man = YAML.load_file(path)
+    man["sections"].each do |_, section_file|
+      bn = File.basename(section_file)
+      md_file_set.delete(bn) if md_file_set.include?(bn)
+    end
+  end
+  puts("Files unaccounted for by manifests: ")
+  md_file_set.sort.each {|f| puts("- #{f}")}
+end
+
 task :default => [:html, :pdf]
