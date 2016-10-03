@@ -1,0 +1,18 @@
+description: "CSE Website"
+tag: "website"
+metadata:
+  title: "California Simulation Engine"
+url-multipage: ~
+url-singlepage: ~
+url-pdf: ~
+media-dir: ~
+cross-link?: false
+build-singlepage-html?: false
+build-multipage-html?: true
+build-pdf?: false
+html-template: "../config/template/site-template.html"
+build-table-of-contents?: false
+css-files:
+  - "/css/base.css"
+sections:
+  - [1, "index.md"]

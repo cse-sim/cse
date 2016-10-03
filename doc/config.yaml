@@ -16,10 +16,9 @@ md-temp-dir: 'build/temp/md'
 html-temp-dir: 'build/temp/html'
 pdf-temp-dir: 'build/temp/pdf'
 build-probes?: false
-append-probes-to: ['cse-user-manual.md']
+append-probes-to: ['output-reports.md']
 probes-temp-dir: 'build/temp/probes'
-html-output-dir: 'build/output'
-pdf-output-dir: 'build/output/pdfs'
+output-dir: 'build/output'
 log-dir: 'build/logs'
 pdf-header: "\"CSE User's Manual\""
 pdf-footer: "Time.now.strftime(\"%FT%T%:z\")"
@@ -57,9 +56,7 @@ options:
       - "--to html5"
       - "--from markdown"
       - "--mathjax"
-      - "--css=css/base.css"
-      - "--table-of-contents"
-      - "--toc-depth=3"
       - "--number-sections"
       - "--smart"
+      - "--template=site-template.html"
 

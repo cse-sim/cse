@@ -66,3 +66,12 @@ pre code {
   font-weight: lighter;
   width: 100%;
 }
+.nav-bar {
+  display: inline-block;
+  list-style: none;
+}
+.nav-bar li {
+  padding-left: 1em;
+  padding-right: 1em;
+  display: inline;
+}

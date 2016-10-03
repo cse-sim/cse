@@ -12,6 +12,7 @@ require_relative('lib/pandoc')
 require_relative('lib/command')
 require_relative('lib/def_parser')
 require_relative('lib/tables')
+require_relative('lib/toc')
 
 ########################################
 # Globals
@@ -77,14 +78,13 @@ HTML_TEMP_DIR = File.expand_path(
 PDF_TEMP_DIR = File.expand_path(
   CONFIG.fetch("pdf-temp-dir"), THIS_DIR
 )
-HTML_OUT_DIR = File.expand_path(
-  CONFIG.fetch("html-output-dir"), THIS_DIR
+OUT_DIR = File.expand_path(
+  CONFIG.fetch("output-dir"), THIS_DIR
 )
+HTML_OUT_DIR = OUT_DIR
 HTML_CSS_OUT_DIR = File.join(HTML_OUT_DIR, 'css')
 HTML_MEDIA_OUT_DIR = File.join(HTML_OUT_DIR, 'media')
-PDF_OUT_DIR = File.expand_path(
-  CONFIG.fetch("pdf-output-dir"), THIS_DIR
-)
+PDF_OUT_DIR = OUT_DIR
 LOG_DIR = File.expand_path(
   CONFIG.fetch("log-dir"), THIS_DIR
 )
@@ -190,6 +190,9 @@ NameFromHeader = lambda do |line|
   end
 end
 
+# String -> String
+# Create a "slug" from a name. Example:
+# SlugifyName["This is a title!"] => "this-is-a-title"
 SlugifyName = lambda do |s|
   val = s.strip.downcase
     .gsub(/^[\d\s]*/, '')
@@ -431,26 +434,28 @@ RunCmdOverEach = lambda do |log_fn, src_files, cmd_fn, tgt_fn|
   [num_changed, num_considered, changed_files]
 end
 
-# (Function -> nil) -> (Array String)
-# Build the cross-linked normalized markdown. Returns an array of file paths to
-# all of the cross-linked normalized markdown files, regardless of whether they
-# were uptodate or newly built.
-BuildCrossLinkedNormalizedMD = lambda do |log|
-  dirs = [
-    MD_TEMP_DIR, MD_TEMP2_DIR,
-  ]
+# (Function -> nil) Manifest FolderPath FileName -> (Array String)
+# Build normalized markdown. Returns an array of file paths to all of the
+# cross-linked normalized markdown files, regardless of whether they were
+# uptodate or newly built.
+BuildNormalizedMD = lambda do |log, man, man_dir, man_name, multipage=true|
+  md_temp_dir = File.join(MD_TEMP_DIR, man["tag"])
+  md_temp2_dir = File.join(MD_TEMP2_DIR, man["tag"])
+  dirs = [md_temp_dir, md_temp2_dir]
   EnsureAllExist[dirs]
-  record_name_set = Set.new(
-    File.read(RECORD_NAME_FILE).lines.map {|x|x.strip}
-  )
+  if multipage
+    log["Building and normalizing markdown for multipage"]
+  else
+    log["Building and normalizing markdown for singlepage"]
+  end
   log["... copying all markdown source to temp directory for processing"]
-  md_src_files = Dir[File.join(CONTENT_DIR, '*.md')]
+  md_src_files = man["sections"].map {|_, f| File.expand_path(f, man_dir)}
   md_tmp_files = []
   m = 0
   n = 0
   md_src_files.each do |path|
     n += 1
-    out_path = File.join(MD_TEMP_DIR, File.basename(path))
+    out_path = File.join(md_temp_dir, File.basename(path))
     md_tmp_files << out_path
     if FileUtils.uptodate?(out_path, [path])
       log["... #{out_path} up to date"]
@@ -461,10 +466,46 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
     end
   end
   log["... copied #{m}/#{n} files."]
+  # Generate Table of Contents
+  if man.fetch( "build-table-of-contents?", false) and multipage
+    log["Building table of contents"]
+    toc_name = man.fetch("table-of-contents-name")
+    toc_path = File.join(md_temp_dir, toc_name)
+    File.write(
+      toc_path,
+      TOC::GenTableOfContentsFromFiles[
+        man.fetch("toc-depth", 3),
+        man.fetch("sections").map do |idx, name|
+          [idx - 1, File.expand_path(name, man_dir)]
+        end
+      ]
+    )
+    md_tmp_files.unshift(toc_path)
+    log["Table of Contents written to #{toc_path}"]
+  else
+    log["Not building table of contents. Key 'build-table-of-contents?' " + 
+        "did not exist or was false or not multipage"]
+  end
+  md_tmp_files
+end
+
+# (Function -> nil) Manifest FolderPath FileName -> (Array String)
+# Build the cross-linked normalized markdown. Returns an array of file paths to
+# all of the cross-linked normalized markdown files, regardless of whether they
+# were uptodate or newly built.
+BuildCrossLinkedNormalizedMD = lambda do |log, man, man_dir, man_name, multipage=true|
+  md_temp_dir = File.join(MD_TEMP_DIR, man["tag"])
+  md_temp2_dir = File.join(MD_TEMP2_DIR, man["tag"])
+  dirs = [md_temp_dir, md_temp2_dir]
+  EnsureAllExist[dirs]
+  record_name_set = Set.new(
+    File.read(RECORD_NAME_FILE).lines.map {|x|x.strip}
+  )
+  md_tmp_files = BuildNormalizedMD[log, man, man_dir, man_name, multipage]
   rec_idx = YAML.load_file(RECORD_INDEX_FILE)
   md_tmp2_files = []
   md_tmp_files.each do |path|
-    out_path = File.join(MD_TEMP2_DIR, File.basename(path))
+    out_path = File.join(md_temp2_dir, File.basename(path))
     md_tmp2_files << out_path
     if FileUtils.uptodate?(out_path, [path])
       log["... already processed #{path}"]
@@ -500,6 +541,7 @@ BuildCrossLinkedNormalizedMD = lambda do |log|
 end
 
 UniquePath = lambda do |path|
+  count = 0
   if File.exist?(path)
     parent = File.dirname(path)
     bn = File.basename(path)
@@ -508,6 +550,7 @@ UniquePath = lambda do |path|
     new_path = path
     while File.exist?(new_path)
       new_path = File.join(parent, base + ("-%03d"%n) + "." + ext)
+      n += 1
     end
     new_path
   else
@@ -515,19 +558,46 @@ UniquePath = lambda do |path|
   end
 end
 
-BuildHTML = lambda do
+# Manifest DirPath FileName -> Nil
+BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
+  html_temp_dir = File.join(HTML_TEMP_DIR, man["tag"])
+  html_out_dir = nil
+  html_media_out_dir = nil
+  if multipage
+    html_out_dir = if man.fetch("url-multipage")
+                     File.join(HTML_OUT_DIR, man.fetch("url-multipage"))
+                   else
+                     HTML_OUT_DIR
+                   end
+    html_media_out_dir = if man.fetch("url-multipage")
+                           File.join(HTML_OUT_DIR, man.fetch("url-multipage"), "media")
+                         else
+                           HTML_MEDIA_OUT_DIR
+                         end
+  else
+    html_out_dir = if man.fetch("url-singlepage")
+                     File.join(HTML_OUT_DIR, man.fetch("url-singlepage"))
+                   else
+                     HTML_OUT_DIR
+                   end
+    html_media_out_dir = if man.fetch("url-singlepage")
+                           File.join(HTML_OUT_DIR, man.fetch("url-singlepage"), "media")
+                         else
+                           HTML_MEDIA_OUT_DIR
+                         end
+  end
   dirs = [
-    HTML_TEMP_DIR, HTML_CSS_OUT_DIR, HTML_MEDIA_OUT_DIR,
-    LOG_DIR,
+    html_temp_dir, HTML_CSS_OUT_DIR, html_media_out_dir, LOG_DIR, html_out_dir
   ]
   SetupGHPages[]
   EnsureAllExist[dirs]
   log_file_path = UniquePath[File.join(LOG_DIR, TimeStamp[] + ".txt")]
   File.open(log_file_path, 'w') do |f|
     log = MkLogger[f]
-    log["Building HTML"]
+    log["Building HTML #{if multipage then "Multi-Page" else "Single-Page" end}"]
     log["Compressing CSS and moving it to destination"]
-    Dir[File.join(CSS_DIR, '*.css')].each do |path|
+    man["css-files"].each do |css_file|
+      path = File.join(CSS_DIR, File.basename(css_file))
       out_path = File.join(HTML_CSS_OUT_DIR, File.basename(path))
       log["... compressing #{path} => #{out_path}"]
       if USE_NODE
@@ -537,35 +607,114 @@ BuildHTML = lambda do
         FileUtils.cp(path, out_path)
       end
     end
-    log["Copying #{MEDIA_DIR} to #{HTML_MEDIA_OUT_DIR}"]
-    num_media_copied, all_media = CopyFilesGlob[
-      File.join(MEDIA_DIR, '*'), HTML_MEDIA_OUT_DIR
-    ]
-    log["... copied #{num_media_copied}/#{all_media} files"]
+    if man["media-dir"]
+      media_dir = File.expand_path(man["media-dir"], man_dir)
+      log["Copying #{media_dir} to #{html_media_out_dir}"]
+      num_media_copied, all_media = CopyFilesGlob[
+        File.join(media_dir, '*'), html_media_out_dir
+      ]
+      log["... copied #{num_media_copied}/#{all_media} files"]
+    else
+      log["... No key 'media-dir' in manifest"]
+    end
     log["Build HTML from Markdown, Add Cross-Links, and Compress"]
-    md_tmp_files = BuildCrossLinkedNormalizedMD[log]
+    md_tmp_files = if man["cross-link?"]
+                     BuildCrossLinkedNormalizedMD[log, man, man_dir, man_name, multipage]
+                   else
+                     BuildNormalizedMD[log, man, man_dir, man_name, multipage]
+                   end
     probes_file = File.join(PROBES_TEMP_DIR, 'probes.md') if BUILD_PROBES
-    md_tmp_files.each do |path|
-      html_base = File.basename(path, '.md') + '.html'
-      out_path = File.join(HTML_TEMP_DIR, html_base)
-      log["... generating #{path} => #{out_path}"]
-      all_paths = "#{path}"
-      if BUILD_PROBES and APPEND_PROBES_TO.include?(File.basename(path))
-        log["... building probes atop #{File.basename(path)}"]
-        all_paths += " #{probes_file}" 
-      end
-      RunAndLog[log, "pandoc #{PANDOC_HTML_OPTIONS} -o #{out_path} #{all_paths}"]
-      out_compress = File.join(HTML_OUT_DIR, html_base)
-      if FileUtils.uptodate?(out_compress, [out_path])
-        log["... already compressed  #{out_path} => #{out_compress}"]
-      else
-        if USE_NODE
-          log["... compressing  #{out_path} => #{out_compress}"]
-          RunAndLog[log, "#{HTML_MIN_EXE} #{HTML_MIN_OPTIONS} -o #{out_compress} #{out_path}"]
-        else
-          log["... node.js not used (see USE_NODE in #{__FILE__}; copying to destination vs compressing"]
-          FileUtils.cp(out_path, out_compress)
+    md = man["metadata"]
+    other_opts = []
+    add_md = lambda do |key|
+      other_opts << "--variable #{key}=\"#{md[key]}\""
+    end
+    md.keys.sort.each {|k| add_md[k]}
+    man["css-files"].each {|f| other_opts << "--css=\"#{f}\""}
+    if man["build-table-of-contents?"] and !multipage
+      other_opts << "--table-of-contents"
+      other_opts << "--toc-depth=#{man.fetch("toc-depth", 3)}"
+    end
+    opts = PANDOC_HTML_OPTIONS + " " + other_opts.join(' ')
+    md_temp_dir = File.dirname(md_tmp_files[0])
+    if man["html-template"]
+      num_copied, total, _ = CopyFilesGlob[
+        File.expand_path(man["html-template"], man_dir), md_temp_dir, log
+      ]
+      log["... #{num_copied}/#{total} files copied."]
+    else
+      log["... no key 'html-template' found in manifest"]
+    end
+    if multipage
+      log["Generating for multi-page..."]
+      md_tmp_files.each_with_index do |path, index|
+        html_base = File.basename(path, '.md') + '.html'
+        out_path = File.join(html_temp_dir, html_base)
+        log["... generating #{path} => #{out_path}"]
+        all_paths = "#{path}"
+        do_app = man.fetch("mp-append-probes-to", []).include?(
+          File.basename(path)
+        )
+        if man.fetch("build-probes?", false) && do_app
+          log["... building probes atop #{File.basename(path)}"]
+          all_paths += " #{probes_file}" 
         end
+        prv = if index == 0
+                md_tmp_files[-1]
+              else
+                md_tmp_files[index-1]
+              end
+        prv = File.basename(prv, '.md') + ".html"
+        nxt = if index == (md_tmp_files.length - 1)
+                md_tmp_files[0]
+              else
+                md_tmp_files[index+1]
+              end
+        nxt = File.basename(nxt, '.md') + ".html"
+        top = md_tmp_files[0]
+        top = File.basename(top, '.md') + ".html"
+        full_opts = opts + " " + [
+          "--variable prev=\"#{prv}\"",
+          "--variable next=\"#{nxt}\"",
+          "--variable top=\"#{top}\"",
+        ].join(" ")
+        RunAndLog[log, "pandoc #{full_opts} -o #{out_path} #{all_paths}", md_temp_dir]
+        out_compress = File.join(html_out_dir, html_base)
+        if FileUtils.uptodate?(out_compress, [out_path])
+          log["... already compressed  #{out_path} => #{out_compress}"]
+        else
+          if USE_NODE
+            log["... compressing  #{out_path} => #{out_compress}"]
+            RunAndLog[log, "#{HTML_MIN_EXE} #{HTML_MIN_OPTIONS} -o #{out_compress} #{out_path}"]
+          else
+            log["... node.js not used (see USE_NODE in #{__FILE__}; copying to destination vs compressing"]
+            FileUtils.cp(out_path, out_compress)
+          end
+        end
+      end
+    else # singlepage
+      out_path = File.join(html_temp_dir, man.fetch("html-singlepage-name"))
+      out_compress = File.join(html_out_dir, man.fetch("html-singlepage-name"))
+      log["Generating for single-page to #{out_path}..."]
+      all_files = []
+      if man.fetch("build-probes?", false)
+        md_tmp_files.each do |file|
+          all_files << file
+          if man.fetch("sp-append_probes_to", []).include?(File.basename(file))
+            all_files << probes_file
+          end
+        end
+      else
+        all_files = md_tmp_files
+      end
+      all_paths = md_tmp_files.join(" ")
+      RunAndLog[log, "pandoc #{opts} -o #{out_path} #{all_paths}", md_temp_dir]
+      if USE_NODE
+        log["... compressing  #{out_path} => #{out_compress}"]
+        RunAndLog[log, "#{HTML_MIN_EXE} #{HTML_MIN_OPTIONS} -o #{out_compress} #{out_path}"]
+      else
+        log["... node.js not used (see USE_NODE in #{__FILE__}; copying to destination vs compressing"]
+        FileUtils.cp(out_path, out_compress)
       end
     end
   end
@@ -586,38 +735,61 @@ Skip = lambda do |path_list, skip_list, log_fn=nil|
   end
 end
 
-BuildPDF = lambda do
-  dirs = [
-    PDF_TEMP_DIR, LOG_DIR, PDF_OUT_DIR
-  ]
+# Manifest FilePath FileName -> Nil
+# where
+#   Manifest :: the Ruby data read in from a manifest file and parsed by
+#               YAML.parse_file(.), i.e., exclusively Ruby datastructures like
+#               Arrays, Hash Maps, strings, numbers, and booleans.
+#   FilePath :: String -- (full) path to the directory where Manifest file
+#               lives.
+#   FileName :: String -- base name of the manifest file
+BuildPDF = lambda do |man, man_dir, man_name|
+  pdf_temp_dir = File.join(PDF_TEMP_DIR, man["tag"])
+  pdf_out_dir = if man["url-pdf"]
+                  File.join(PDF_OUT_DIR, man["url-pdf"])
+                else
+                  PDF_OUT_DIR
+                end
+  dirs = [pdf_temp_dir, LOG_DIR, pdf_out_dir]
   SetupGHPages[]
   EnsureAllExist[dirs]
   log_file_path = UniquePath[File.join(LOG_DIR, TimeStamp[] + ".txt")]
   File.open(log_file_path, 'w') do |f|
     log = MkLogger[f]
     log["Building PDFs"]
-    log["Copy media to pdf temporary directory"]
-    num_copied, total, _ = CopyFilesGlob[
-      File.join(MEDIA_DIR, '*'),
-      File.join(PDF_TEMP_DIR, 'media'),
-      log
-    ]
-    log["... #{num_copied}/#{total} files copied"]
-    log["Cross-link Markdown and Build PDF"]
-    md_tmp_files = BuildCrossLinkedNormalizedMD[log]
+    if man.fetch("media-dir", false)
+      log["Copy media to pdf temporary directory"]
+      media_dir = File.expand_path(man["media-dir"], man_dir)
+      num_copied, total, _ = CopyFilesGlob[
+        File.join(MEDIA_DIR, '*'),
+        File.join(pdf_temp_dir, 'media'),
+        log
+      ]
+      log["... #{num_copied}/#{total} files copied"]
+    end
+    md_tmp_files = nil
+    if man.fetch("cross-link?", false)
+      log["Cross-link Markdown and Build PDF"]
+      md_tmp_files = BuildCrossLinkedNormalizedMD[log, man, man_dir, man_name]
+    else
+      log["... no key 'cross-link?' in manifest or key value is false"]
+      md_tmp_files = BuildNormalizedMD[log, man, man_dir, man_name]
+    end
     num_files = md_tmp_files.length
     log["... #{md_tmp_files.length} files found"]
-    md_tmp_files = Skip[md_tmp_files, PDF_SKIP_LIST, log]
-    num_files_to_build = md_tmp_files.length
-    log["... building #{num_files_to_build}/#{num_files} files"]
-    log["Copying cross-linked markdown to #{PDF_TEMP_DIR}"]
-    num_copied, total, _ = CopyFilesExplicit[md_tmp_files, PDF_TEMP_DIR, log]
+    xlink_wording = if man["cross-link?"] then "cross-linked " else "" end
+    log["Copying #{xlink_wording}markdown to #{pdf_temp_dir}"]
+    num_copied, total, _ = CopyFilesExplicit[md_tmp_files, pdf_temp_dir, log]
     log["... #{num_copied}/#{total} files copied."]
-    log["Copying template files to #{PDF_TEMP_DIR}"]
-    num_copied, total, _ = CopyFilesGlob[
-      File.join(TEMPLATE_DIR, '*.tex'), PDF_TEMP_DIR, log
-    ]
-    log["... #{num_copied}/#{total} files copied."]
+    log["Copying template files to #{pdf_temp_dir}"]
+    if man["pdf-template"]
+      num_copied, total, _ = CopyFilesGlob[
+        File.expand_path(man["pdf-template"], man_dir), pdf_temp_dir, log
+      ]
+      log["... #{num_copied}/#{total} files copied."]
+    else
+      log["... no key 'pdf-template' found in manifest"]
+    end
     # Note: if we move to multiple markdown pages, we need to base the
     # following around a "manifest file" -- one manifest file per document.
     pdf_opts = PANDOC_PDF_OPTIONS + ' ' + [
@@ -626,7 +798,7 @@ BuildPDF = lambda do
     ].join(' ')
     RunCmdOverEach[
       log,
-      Dir[File.join(PDF_TEMP_DIR, '*.md')],
+      Dir[File.join(pdf_temp_dir, '*.md')],
       lambda do |path, out_path|
         working_dir = File.dirname(path)
         all_paths = "#{path}"
@@ -637,9 +809,32 @@ BuildPDF = lambda do
         ["pandoc #{pdf_opts} -o #{out_path} #{all_paths}", working_dir]
       end,
       lambda do |path|
-        File.join(PDF_OUT_DIR, File.basename(path, '.md') + '.pdf')
+        File.join(pdf_out_dir, File.basename(path, '.md') + '.pdf')
       end
     ]
+  end
+end
+
+# Manifest -> Nil
+# Given a manifest datastructure, build the corresponding files.
+BuildFromManifest = lambda do |man, man_dir, man_name|
+  if man["build-probes?"]
+    BuildProbesDocs[]
+  end
+  if man.fetch("build-multipage-html?", false)
+    puts("Building HTML for multipage #{man.fetch("description")}")
+    BuildHTML[man, man_dir, man_name, true]
+    puts("HTML for multipage #{man.fetch("description")} generated...")
+  end
+  if man.fetch("build-singlepage-html?", false)
+    puts("Building HTML for singlepage #{man.fetch("description")}")
+    BuildHTML[man, man_dir, man_name, false]
+    puts("HTML for singlepage #{man.fetch("description")} generated...")
+  end
+  if man.fetch("build-pdf?", false)
+    puts("Building PDF for #{man.fetch("description")}")
+    BuildPDF[man, man_dir, man_name]
+    puts("PDF for #{man.fetch("description")} generated...")
   end
 end
 
@@ -860,6 +1055,18 @@ task :check_manifests do
   md_file_set.sort.each {|f| puts("- #{f}")}
   puts("Files in manifest but not on disk: ")
   unknown_files.sort.each {|f| puts(" - #{f}")}
+end
+
+desc "Build documents from manifest"
+task :build do
+  Dir[File.join(SRC_DIR, "**", "*.yaml")].each do |path|
+    full_path = File.expand_path(path)
+    man_dir = File.dirname(full_path)
+    man_name = File.basename(full_path)
+    puts("Building #{File.basename(path)}...")
+    man = YAML.load_file(path)
+    BuildFromManifest[man, man_dir, man_name]
+  end
 end
 
 task :default => [:html, :pdf]

@@ -51,6 +51,11 @@ $endfor$
 $if(date)$
 <h3 class="date">$date$</h3>
 $endif$
+<ul class="nav-bar">
+  $if(prev)$<li><a href="$prev$">&larr; Previous</a></li>$endif$
+  $if(top)$<li><a href="$top$">&uarr; Top &uarr;</a></li>$endif$
+  $if(next)$<li><a href="$next$">Next &rarr;</a></li>$endif$
+</ul>
 </header>
 $endif$
 $if(toc)$
