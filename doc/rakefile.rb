@@ -558,6 +558,48 @@ UniquePath = lambda do |path|
   end
 end
 
+NumberMd = lambda do |config|
+  out_dir = config.fetch("output-dir")
+  levels = config.fetch("levels", nil)
+  starting_count = config.fetch("starting-count", [0])
+  exceptions = config.fetch("exceptions", [])
+  EnsureExists[out_dir]
+  lambda do |manifest|
+    new_manifest = []
+    count = starting_count
+    manifest.each_with_index do |path, idx|
+      bn = File.basename(path)
+      out_path = File.join(out_dir, bn)
+      new_manifest << out_path
+      if exceptions.include?(bn)
+        if !FileUtils.uptodate?(out_path, [path])
+          FileUtils.cp(path, out_path)
+        end
+        next
+      end
+      level_adjustment = levels ? (levels[idx] - 1) : 0
+      md = File.read(path)
+      if !FileUtils.uptodate?(out_path, [path])
+        File.open(out_path, 'w') do |f|
+          md.lines.each do |line|
+            if line =~ /^#+\s+/
+              m = line.match(/^(#+)\s+(.*)$/)
+              level_at = m[1].length + level_adjustment
+              count = UpdateOutlineCount[count, level_at]
+              outline_number = OutlineCountToStr[count]
+              f.write(m[1] + ' ' + outline_number + ' ' + m[2].chomp + "\n")
+            else
+              f.write(line)
+            end
+          end
+        end
+      end
+    end
+    new_manifest
+  end
+end
+
+
 # Manifest DirPath FileName -> Nil
 BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
   html_temp_dir = File.join(HTML_TEMP_DIR, man["tag"])
@@ -648,9 +690,21 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
     # TODO: Need to loop over manifest files, NOT md_tmp_files; one is the full
     # manifest of files, the other is the manifest of files NEEDING UPDATES!
     # Not necessarily the same!
+    section_map = {}
+    man["sections"].each do |level, path|
+      section_map[File.basename(path)] = level
+    end
     if multipage
       log["Generating for multi-page..."]
-      md_tmp_files.each_with_index do |path, index|
+      # Create markdown that's been numbered manually
+      md_numd = NumberMd[
+        "output-dir" => html_temp_dir,
+        "levels" => md_tmp_files.map do |f|
+          bn = File.basename(f)
+          if section_map.include?(bn) then section_map[bn] else 1 end
+        end,
+      ][md_tmp_files]
+      md_numd.each_with_index do |path, index|
         html_base = File.basename(path, '.md') + '.html'
         out_path = File.join(html_temp_dir, html_base)
         log["... generating #{path} => #{out_path}"]
@@ -689,6 +743,7 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
         nav_opts << "--variable nav-toc=\"#{toc}\"" if md_tmp_files.length > 1
         full_opts = opts + " " + nav_opts.join(" ")
         full_opts += " --variable do-nav=true" if man.fetch("html-navigation?", false)
+        full_opts = full_opts.gsub(/--number-sections\s*/, '')
         RunAndLog[log, "pandoc #{full_opts} -o #{out_path} #{all_paths}", md_temp_dir]
         out_compress = File.join(html_out_dir, html_base)
         if FileUtils.uptodate?(out_compress, [out_path])
@@ -704,6 +759,13 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
         end
       end
     else # singlepage
+      md_adjusted = AdjustMarkdownLevels[
+        "output-dir" => html_temp_dir,
+        "levels" => md_tmp_files.map {|f|
+          bn = File.basename(f)
+          if section_map.include?(bn) then section_map[bn] else 1 end
+        },
+      ][md_tmp_files]
       out_path = File.join(html_temp_dir, man.fetch("html-singlepage-name"))
       out_compress = File.join(html_out_dir, man.fetch("html-singlepage-name"))
       log["Generating for single-page to #{out_path}..."]
@@ -711,7 +773,7 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
       if man.fetch("build-probes?", false)
         append_to = man.fetch("sp-append-probes-to", "")
         log["... probes_file to append to: #{append_to}"]
-        md_tmp_files.each do |file|
+        md_adjusted.each do |file|
           all_files << file
           if append_to == File.basename(file)
             log["... appending probes file after #{File.basename(file)}"]
@@ -719,9 +781,8 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
           end
         end
       else
-        all_files = md_tmp_files
+        all_files = md_adjusted
       end
-      all_paths = md_tmp_files.join(" ")
       all_opts = nil 
       if man.fetch("html-navigation?", false)
         all_opts = opts
@@ -732,7 +793,7 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
       else
         all_opts = opts
       end
-      RunAndLog[log, "pandoc #{all_opts} -o #{out_path} #{all_paths}", md_temp_dir]
+      RunAndLog[log, "pandoc #{all_opts} -o #{out_path} #{all_files.join(' ')}", md_temp_dir]
       if USE_NODE
         log["... compressing  #{out_path} => #{out_compress}"]
         RunAndLog[log, "#{HTML_MIN_EXE} #{HTML_MIN_OPTIONS} -o #{out_compress} #{out_path}"]
@@ -797,6 +858,48 @@ OutlineCountToStr = lambda do |count|
   count.map(&:to_s).join(".")
 end
 
+# (Record "levels" (Array Integer) "output-dir" String) ->
+#   (Fn (Array FilePath) -> (Array FilePath))
+# Given a "record" (in Ruby, a hash-map with the given keys and values)
+# specifying file levels and a key specifying the output directory, return a
+# function that takes a file-path manifest and adjusts the markdown file's
+# levels per the levels array, writing the adjusted files to the output
+# directory.
+AdjustMarkdownLevels = lambda do |config|
+  levels = config.fetch("levels")
+  out_dir = config.fetch("output-dir")
+  EnsureExists[out_dir]
+  lambda do |manifest|
+    new_manifest = []
+    if manifest.length != levels.length
+      puts("length of manifest doesn't equal length of levels:")
+      puts("... manifest length: #{manifest.length}")
+      puts("... levels length: #{levels.length}")
+      exit(1)
+    end
+    manifest.zip(levels).each do |path, level|
+      out_path = File.join(out_dir, File.basename(path))
+      new_manifest << out_path
+      if level == 1
+        FileUtils.cp(path, out_path)
+      else
+        adjustment = "#" * (level - 1)
+        md = File.read(path)
+        File.open(out_path, 'w') do |f|
+          md.lines.each do |line|
+            if line =~ /^#+\s+/
+              f.write(adjustment + line)
+            else
+              f.write(line)
+            end
+          end
+        end
+      end
+    end
+    new_manifest
+  end
+end
+
 # Manifest FilePath FileName -> Nil
 # where
 #   Manifest :: the Ruby data read in from a manifest file and parsed by
@@ -857,32 +960,13 @@ BuildPDF = lambda do |man, man_dir, man_name|
     man["sections"].each do |level, path|
       section_map[File.basename(path)] = level
     end
-    md_adjusted = []
-    md_tmp_files.each do |path|
-      bn = File.basename(path)
-      out_path = File.join(pdf_temp_dir, bn)
-      md_adjusted << out_path
-      next if FileUtils.uptodate?(out_path, [path])
-      if section_map.include?(bn)
-        if section_map.fetch(bn) == 1
-          FileUtils.cp(out_path, path)
-        else
-          adjust = "#" * (section_map[bn] - 1)
-          md = File.read(path)
-          File.open(out_path, 'w') do |f|
-            md.lines.each do |line|
-              if line =~ /^#+\s+/
-                f.write(adjust + line)
-              else
-                f.write(line)
-              end
-            end
-          end
-        end
-      else
-        FileUtils.cp(out_path, path)
-      end
-    end
+    md_adjusted = AdjustMarkdownLevels[
+      "output-dir" => pdf_temp_dir,
+      "levels" => md_tmp_files.map {|f|
+        bn = File.basename(f)
+        if section_map.include?(bn) then section_map[bn] else 1 end
+      },
+    ][md_tmp_files]
     # Note: if we move to multiple markdown pages, we need to base the
     # following around a "manifest file" -- one manifest file per document.
     meta_opts = []
