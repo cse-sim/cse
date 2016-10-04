@@ -75,3 +75,10 @@ pre code {
   padding-right: 1em;
   display: inline;
 }
+.footer {
+  font-size: 60%;
+  font-weight: lighter;
+  width: 100%;
+  border-top: medium solid black;
+  padding: 1em;
+}

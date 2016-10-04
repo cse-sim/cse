@@ -12,6 +12,7 @@ build-multipage-html?: true
 build-pdf?: false
 html-template: "../config/template/site-template.html"
 build-table-of-contents?: false
+html-navigation?: false
 css-files:
   - "/css/base.css"
 sections:

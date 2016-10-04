@@ -51,11 +51,14 @@ $endfor$
 $if(date)$
 <h3 class="date">$date$</h3>
 $endif$
+$if(do-nav)$
 <ul class="nav-bar">
   $if(prev)$<li><a href="$prev$">&larr; Previous</a></li>$endif$
   $if(top)$<li><a href="$top$">&uarr; Top &uarr;</a></li>$endif$
+  $if(nav-toc)$<li><a href="$nav-toc$">&lt;&lt; Contents &gt;&gt;</a></li>$endif$
   $if(next)$<li><a href="$next$">Next &rarr;</a></li>$endif$
 </ul>
+$endif$
 </header>
 $endif$
 $if(toc)$
@@ -64,6 +67,7 @@ $toc$
 </nav>
 $endif$
 $body$
+<p class="footer">Copyright (c) 1997-2016 The CSE Authors. All rights reserved.</p>
 $for(include-after)$
 $include-after$
 $endfor$

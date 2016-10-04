@@ -9,6 +9,7 @@ CSE is a general purpose building simulation model developed primarily to perfor
 
 ## CSE User Manual {-}
 
+- [HTML Format](cse-user-manual/index.html) (multiple pages)
 - [HTML Format](cse-user-manual.html) (single page)
 - [PDF Format](pdfs/cse-user-manual.pdf)
 

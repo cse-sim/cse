@@ -645,6 +645,9 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
     else
       log["... no key 'html-template' found in manifest"]
     end
+    # TODO: Need to loop over manifest files, NOT md_tmp_files; one is the full
+    # manifest of files, the other is the manifest of files NEEDING UPDATES!
+    # Not necessarily the same!
     if multipage
       log["Generating for multi-page..."]
       md_tmp_files.each_with_index do |path, index|
@@ -652,9 +655,7 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
         out_path = File.join(html_temp_dir, html_base)
         log["... generating #{path} => #{out_path}"]
         all_paths = "#{path}"
-        do_app = man.fetch("mp-append-probes-to", []).include?(
-          File.basename(path)
-        )
+        do_app = man["mp-append-probes-to"] == File.basename(path)
         if man.fetch("build-probes?", false) && do_app
           log["... building probes atop #{File.basename(path)}"]
           all_paths += " #{probes_file}" 
@@ -671,13 +672,23 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
                 md_tmp_files[index+1]
               end
         nxt = File.basename(nxt, '.md') + ".html"
-        top = md_tmp_files[0]
-        top = File.basename(top, '.md') + ".html"
-        full_opts = opts + " " + [
-          "--variable prev=\"#{prv}\"",
-          "--variable next=\"#{nxt}\"",
-          "--variable top=\"#{top}\"",
-        ].join(" ")
+        top = if man["html-site-top"]
+                man["html-site-top"]
+              else
+                File.basename(md_tmp_files[0], '.md') + '.html'
+              end
+        toc = if man["html-site-toc"]
+                man["html-site-toc"]
+              else
+                File.basename(md_tmp_files[0], '.md') + '.html'
+              end
+        nav_opts = []
+        nav_opts << "--variable prev=\"#{prv}\"" if md_tmp_files.length > 1
+        nav_opts << "--variable next=\"#{nxt}\"" if md_tmp_files.length > 1
+        nav_opts << "--variable top=\"#{top}\""
+        nav_opts << "--variable nav-toc=\"#{toc}\"" if md_tmp_files.length > 1
+        full_opts = opts + " " + nav_opts.join(" ")
+        full_opts += " --variable do-nav=true" if man.fetch("html-navigation?", false)
         RunAndLog[log, "pandoc #{full_opts} -o #{out_path} #{all_paths}", md_temp_dir]
         out_compress = File.join(html_out_dir, html_base)
         if FileUtils.uptodate?(out_compress, [out_path])
@@ -698,9 +709,12 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
       log["Generating for single-page to #{out_path}..."]
       all_files = []
       if man.fetch("build-probes?", false)
+        append_to = man.fetch("sp-append-probes-to", "")
+        log["... probes_file to append to: #{append_to}"]
         md_tmp_files.each do |file|
           all_files << file
-          if man.fetch("sp-append_probes_to", []).include?(File.basename(file))
+          if append_to == File.basename(file)
+            log["... appending probes file after #{File.basename(file)}"]
             all_files << probes_file
           end
         end
@@ -708,7 +722,17 @@ BuildHTML = lambda do |man, man_dir, man_name, multipage=true|
         all_files = md_tmp_files
       end
       all_paths = md_tmp_files.join(" ")
-      RunAndLog[log, "pandoc #{opts} -o #{out_path} #{all_paths}", md_temp_dir]
+      all_opts = nil 
+      if man.fetch("html-navigation?", false)
+        all_opts = opts
+        all_opts += " --variable do-nav=true"
+        if man.fetch("html-site-top", false)
+          all_opts += " --variable top=\"#{man["html-site-top"]}\""
+        end
+      else
+        all_opts = opts
+      end
+      RunAndLog[log, "pandoc #{all_opts} -o #{out_path} #{all_paths}", md_temp_dir]
       if USE_NODE
         log["... compressing  #{out_path} => #{out_compress}"]
         RunAndLog[log, "#{HTML_MIN_EXE} #{HTML_MIN_OPTIONS} -o #{out_compress} #{out_path}"]
@@ -733,6 +757,44 @@ Skip = lambda do |path_list, skip_list, log_fn=nil|
     end
     flag
   end
+end
+
+# (Array PositiveInteger) Integer -> (Array PositiveInteger)
+# Given an "outline count" and the 1-based level to increment at, return a new
+# outline count. The outline count is a outline counter represented as array of
+# positive integers. For example, [1,1,3] would be outline level 1.1.3. If we
+# next had a second level heading, then:
+#   UpdateOutlineCount[[1,1,3], 2] => [1,2]
+# Similarly, if we encountered a top level heading:
+#   UpdateOutlineCount[[1,1,3], 1] => [2]
+# If we encounted a 3rd level heading:
+#   UpdateOutlineCount[[1,1,3], 3] => [1,1,4]
+# If we encounted a 4th level heading:
+#   UpdateOutlineCount[[1,1,3], 4] => [1,1,3,1]
+# And lastly, if we encounted a 5th level heading:
+#   UpdateOutlineCount[[1,1,3], 5] => [1,1,3,1,1]
+UpdateOutlineCount = lambda do |count, level_at|
+  new_count = []
+  mod_idx = level_at - 1
+  0.upto(mod_idx).each do |idx|
+    c = count.fetch(idx, 0)
+    if idx == mod_idx
+      new_count << c+1
+    elsif idx < mod_idx
+      if idx > (count.length-1)
+        new_count << c+1
+      else
+        new_count << c
+      end
+    else
+      next
+    end
+  end
+  new_count
+end
+
+OutlineCountToStr = lambda do |count|
+  count.map(&:to_s).join(".")
 end
 
 # Manifest FilePath FileName -> Nil
@@ -790,27 +852,70 @@ BuildPDF = lambda do |man, man_dir, man_name|
     else
       log["... no key 'pdf-template' found in manifest"]
     end
+    log["...adjusting markdown files to be indented to correct level"]
+    section_map = {}
+    man["sections"].each do |level, path|
+      section_map[File.basename(path)] = level
+    end
+    md_adjusted = []
+    md_tmp_files.each do |path|
+      bn = File.basename(path)
+      out_path = File.join(pdf_temp_dir, bn)
+      md_adjusted << out_path
+      next if FileUtils.uptodate?(out_path, [path])
+      if section_map.include?(bn)
+        if section_map.fetch(bn) == 1
+          FileUtils.cp(out_path, path)
+        else
+          adjust = "#" * (section_map[bn] - 1)
+          md = File.read(path)
+          File.open(out_path, 'w') do |f|
+            md.lines.each do |line|
+              if line =~ /^#+\s+/
+                f.write(adjust + line)
+              else
+                f.write(line)
+              end
+            end
+          end
+        end
+      else
+        FileUtils.cp(out_path, path)
+      end
+    end
     # Note: if we move to multiple markdown pages, we need to base the
     # following around a "manifest file" -- one manifest file per document.
+    meta_opts = []
+    man["metadata"].keys.each do |k|
+      meta_opts << "--variable #{k}=\"#{man["metadata"][k]}\""
+    end
     pdf_opts = PANDOC_PDF_OPTIONS + ' ' + [
       "--variable header=\"#{PDF_HEADER}\"",
       "--variable footer=\"#{PDF_FOOTER}\""
-    ].join(' ')
-    RunCmdOverEach[
-      log,
-      Dir[File.join(pdf_temp_dir, '*.md')],
-      lambda do |path, out_path|
-        working_dir = File.dirname(path)
-        all_paths = "#{path}"
-        if BUILD_PROBES and APPEND_PROBES_TO.include?(File.basename(path))
-          probes_file = File.join(PROBES_TEMP_DIR, 'probes.md')
-          all_paths += " #{probes_file}" 
+    ].join(' ') + ' ' + meta_opts.join(' ')
+    all_paths = []
+    exceptions = man.fetch("pdf-exceptions", [])
+    if man.fetch("build-probes?", false)
+      append_to = man.fetch("sp-append-probes-to")
+      probes_file = File.join(PROBES_TEMP_DIR, 'probes.md')
+      md_adjusted.each do |path|
+        bn = File.basename(path)
+        next if exceptions.include?(bn)
+        all_paths << path
+        if File.basename(path) == append_to
+          all_paths << probes_file
         end
-        ["pandoc #{pdf_opts} -o #{out_path} #{all_paths}", working_dir]
-      end,
-      lambda do |path|
-        File.join(pdf_out_dir, File.basename(path, '.md') + '.pdf')
       end
+    else
+      all_paths = md_adjusted.reject do |f|
+        exceptions.include?(File.basename(f))
+      end
+    end
+    out_path = File.join(pdf_out_dir, man.fetch("pdf-name"))
+    RunAndLog[
+      log,
+      "pandoc #{pdf_opts} -o #{out_path} #{all_paths.join(' ')}",
+      pdf_temp_dir
     ]
   end
 end

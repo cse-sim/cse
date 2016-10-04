@@ -221,9 +221,21 @@ $endif$
 \date{$date$}
 
 \begin{document}
-$if(title)$
-\maketitle
-$endif$
+\begin{titlepage}
+\centering
+  {\LARGE $title$ \par}
+  $if(subtitle)$
+  \vspace{1cm}
+  {\Large $subtitle$ \par}
+  $endif$
+  \vspace{2cm}
+  {\Large $date$ \par}
+  \vspace{12cm}
+  {\small Copyright (c) 1997-2016 The CSE Authors. All rights reserved. \par}
+
+  \vfill
+
+\end{titlepage}
 $if(abstract)$
 \begin{abstract}
 $abstract$
