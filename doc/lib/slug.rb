@@ -1,11 +1,11 @@
 module Slug
   Slugify = lambda do |s|
     val = s.strip.downcase
-      .gsub(/^[\d\s]*/, '')
-      .gsub(/[:)(\/]/, '')
+      .gsub(/^[\d\.\s]*/, '')
+      .gsub(/[:)(\/\[\]]/, '')
       .gsub(/---/, '')
       .gsub(/--/, '')
-      .gsub(/[^\w-]+/, '-')
+      .gsub(/[^\.\w-]+/, '-')
       .gsub(/^-+/, '')
       .gsub(/-+$/, '')
     if val == ''
