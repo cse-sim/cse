@@ -51,6 +51,9 @@ $endfor$
 $if(date)$
 <h3 class="date">$date$</h3>
 $endif$
+$if(draft)$
+<h3 class="draft">DRAFT</h3>
+$endif$
 $if(do-nav)$
 <ul class="nav-bar">
   $if(prev)$<li><a href="$prev$">&larr; Previous</a></li>$endif$

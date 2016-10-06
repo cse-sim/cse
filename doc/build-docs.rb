@@ -10,6 +10,10 @@ THIS_DIR = File.expand_path(File.dirname(__FILE__))
 REFERENCE_DIR = File.expand_path(File.join("config", "reference"), THIS_DIR)
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
+DATE = nil # "February 23, 2016"
+DRAFT = true # true means, it is a draft
+HEADER = "CSE User's Manual"
+FOOTER = "Generated: #{Time.now.strftime("%FT%T%:z")}"
 MANIFEST = [
   [1, "introduction.md"],
   [1, "about-cse.md"],
@@ -765,12 +769,15 @@ BuildSinglePageHTML = JoinFunctions[[
       "--table-of-contents",
       "--toc-depth=3",
       "--smart",
+      "--variable header=\"#{HEADER}\"",
+      "--variable footer=\"#{FOOTER}\"",
       "--variable do-nav=true",
       "--variable top=\"/index.html\"",
       "--template=site-template.html",
       "--variable title=\"CSE User's Manual\"",
       "--variable subtitle=\"California Simulation Engine\"",
-      "--variable date=\"February 23, 2016\"",
+      DATE ? "--variable date=\"#{DATE}\"" : "",
+      DRAFT ? "--variable draft=true" : "",
     ].join(' '),
     "output-path" => File.expand_path(
       File.join("build", "html", "generated", "cse-user-manual.html"), THIS_DIR
@@ -832,7 +839,8 @@ BuildMultiPageHTML = lambda do |config|
   do_navigation = config.fetch("do-navigation?", false)
   title = config.fetch("title", "CSE User's Manual")
   subtitle = config.fetch("subtitle", "California Simulation Engine")
-  date = config.fetch("date", "February 23, 2016")
+  date = config.fetch("date", nil)
+  draft = config.fetch("draft?", true)
   levels = config.fetch("levels", Levels)
   JoinFunctions[[
     ExpandPathsFrom[
@@ -899,9 +907,12 @@ BuildMultiPageHTML = lambda do |config|
         "--css=css/base.css",
         "--smart",
         "--template=site-template.html",
+        "--variable header=\"#{HEADER}\"",
+        "--variable footer=\"#{FOOTER}\"",
         title ? "--variable title=\"#{title}\"" : "",
         subtitle ? "--variable subtitle=\"#{subtitle}\"" : "",
         date ? "--variable date=\"#{date}\"" : "",
+        draft ? "--variable draft=true" : "",
       ].join(' '),
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, html_dir, "generated-multipage"), this_dir
@@ -1035,9 +1046,12 @@ BuildPDF = JoinFunctions[[
       "--template=template.tex",
       "--listings",
       "--from markdown",
+      "--variable header=\"#{HEADER}\"",
+      "--variable footer=\"#{FOOTER}\"",
       "--variable title=\"CSE User's Manual\"",
       "--variable subtitle=\"California Simulation Engine\"",
-      "--variable date=\"February 23, 2016\"",
+      DATE ? "--variable date=\"#{DATE}\"" : "",
+      DRAFT ? "--variable draft=true" : "",
     ].join(' '),
     "output-path" => File.expand_path(
       File.join("build", "output", "pdfs", "cse-user-manual.pdf"), THIS_DIR
@@ -1086,6 +1100,8 @@ if true
     puts("Build Multi-Page HTML")
     BuildMultiPageHTML[
       "tag" => "cse-user-manual",
+      "draft?" => true,
+      "date" => nil,
       "output-dir" => "build/output/cse-user-manual",
       "do-navigation?" => true,
       "levels" => Levels
@@ -1113,6 +1129,7 @@ if true
     BuildMultiPageHTML[
       "tag" => "web-site",
       "date" => nil,
+      "draft?" => true,
       "subtitle" => nil,
       "title" => "California Simulation Engine",
       "do-navigation?" => false,

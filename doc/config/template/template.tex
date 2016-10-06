@@ -66,7 +66,7 @@ $endif$
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhead[CO,CE]{$header$}
-\fancyfoot[CO,CE]{$footer$}
+\fancyfoot[CO,CE]{$footer$$if(draft)$ -- DRAFT --$endif$}
 \fancyfoot[LE,RO]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
@@ -223,6 +223,10 @@ $endif$
 \begin{document}
 \begin{titlepage}
 \centering
+  $if(draft)$
+  {\Large DRAFT \par}
+  \vspace{1cm}
+  $endif$
   {\LARGE $title$ \par}
   $if(subtitle)$
   \vspace{1cm}
@@ -230,7 +234,7 @@ $endif$
   $endif$
   \vspace{4cm}
   {\Large $date$ \par}
-  \vspace{14cm}
+  \vspace{$if(draft)$13cm$else$14cm$endif$}
   {\small Copyright (c) 1997-2016 The CSE Authors. All rights reserved. \par}
 
   \vfill

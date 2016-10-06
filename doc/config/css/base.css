@@ -82,3 +82,8 @@ pre code {
   border-top: medium solid black;
   padding: 1em;
 }
+.draft {
+  font-weight: bold;
+  text-align: center;
+  color: cornflowerblue;
+}
