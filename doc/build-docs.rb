@@ -110,7 +110,7 @@ CheckConfigHasKeys = lambda do |config, keys|
   end
   true
 end
-# (String String (Map String *) -> *) ?(Or Nil (Array String)) ->
+# (String String Int (Map String *) -> *) ?(Or Nil (Array String)) ->
 #   ((Map String *) -> ((Array String) -> (Array String)))
 MapOverManifest = lambda do |fn, check_keys=nil|
   lambda do |config|
@@ -123,11 +123,11 @@ MapOverManifest = lambda do |fn, check_keys=nil|
     else
       lambda do |manifest|
         new_manifest = []
-        manifest.each do |path|
+        manifest.each_with_index do |path, idx|
           out_path = File.join(out_dir, File.basename(path))
           new_manifest << out_path
           if !FileUtils.uptodate?(out_path, [path] + other_deps)
-            fn[path, out_path, config]
+            fn[path, out_path, idx, config]
           end
         end
         new_manifest
@@ -155,17 +155,27 @@ MapOverManifestPaths = lambda do |fn, check_keys=nil|
     end
   end
 end
+# (Map "reference-dir" String ...) -> ((Array String) -> (Array String))
+# Configuring with a reference directory, expand all manifest paths and
+# return them.
 ExpandPathsFrom = MapOverManifestPaths[
   lambda do |path, config|
     reference_dir = config.fetch("reference-dir")
     File.expand_path(path, reference_dir)
-  end
+  end,
+  ["reference-dir"]
 ]
 NormalizeMarkdown = MapOverManifest[
-  lambda do |path, out_path, config|
+  lambda do |path, out_path, _, _|
     Run["pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
   end
 ]
+#AdjustMarkdownLevels = MapOverManifest[
+#  lambda do |path, out_path, idx, config|
+#    levels = config.fetch("levels")
+#  end,
+#  ["levels"]
+#]
 AdjustMarkdownLevels = lambda do |config|
   levels = config.fetch("levels")
   out_dir = config.fetch("output-dir")
