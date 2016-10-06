@@ -1,3 +1,9 @@
+# Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license
+# that can be found in the LICENSE file.
+########################################
+# Build Documentation and Website
+########################################
 require 'fileutils'
 require 'json'
 require 'yaml'
@@ -6,6 +12,9 @@ require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
 
+########################################
+# Globals
+########################################
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 REFERENCE_DIR = File.expand_path(File.join("config", "reference"), THIS_DIR)
@@ -79,6 +88,10 @@ PANDOC_MD_OPTIONS = PANDOC_GENERAL_OPTIONS + " " + [
   "--to markdown",
   "--from markdown",
 ].join(' ')
+########################################
+# Helper Functions
+########################################
+
 # -> Nil
 # The basic idea of this subroutine is to clone the current repository into the
 # build output directory and checkout the gh-pages branch. We then clean all
@@ -102,13 +115,17 @@ SetupGHPages = lambda do
     end
   end
 end
+
 SetupGHPages[]
+
 EnsureExists = lambda do |path|
   FileUtils.mkdir_p(path) unless File.exist?(path)
 end
+
 EnsureAllExist = lambda do |paths|
   paths.each {|p| EnsureExists[p]}
 end
+
 Run = lambda do |cmd, working_dir=nil|
   working_dir ||= Dir.pwd
   Dir.chdir(working_dir) do
@@ -124,9 +141,11 @@ Run = lambda do |cmd, working_dir=nil|
     end
   end
 end
+
 CopyFile = lambda do |path, out_path, _|
   FileUtils.cp(path, out_path)
 end
+
 # (Array String) (Map String *) -> Bool
 # Returns true if the configuration has the given keys
 CheckConfigHasKeys = lambda do |config, keys|
@@ -142,6 +161,7 @@ CheckConfigHasKeys = lambda do |config, keys|
   end
   true
 end
+
 # (String String Int (Map String *) -> *) ?(Or Nil (Array String)) ->
 #   ((Map String *) -> ((Array String) -> (Array String)))
 MapOverManifest = lambda do |fn, check_keys=nil|
@@ -167,6 +187,7 @@ MapOverManifest = lambda do |fn, check_keys=nil|
     end
   end
 end
+
 # (String (Map String *) -> String) ?(Or Nil (Array String)) ->
 #   ((Map String *) -> ((Array String) -> (Array String)))
 MapOverManifestPaths = lambda do |fn, check_keys=nil|
@@ -187,6 +208,7 @@ MapOverManifestPaths = lambda do |fn, check_keys=nil|
     end
   end
 end
+
 # (Map "reference-dir" String ...) -> ((Array String) -> (Array String))
 # Configuring with a reference directory, expand all manifest paths and
 # return them.
@@ -197,11 +219,13 @@ ExpandPathsFrom = MapOverManifestPaths[
   end,
   ["reference-dir"]
 ]
+
 NormalizeMarkdown = MapOverManifest[
   lambda do |path, out_path, _, _|
     Run["pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
   end
 ]
+
 #AdjustMarkdownLevels = MapOverManifest[
 #  lambda do |path, out_path, idx, config|
 #    levels = config.fetch("levels")
@@ -242,6 +266,7 @@ AdjustMarkdownLevels = lambda do |config|
     new_manifest
   end
 end
+
 AddFiles = lambda do |config|
   new_paths = config.fetch("paths")
   out_dir = config.fetch("output-dir")
@@ -266,6 +291,7 @@ AddFiles = lambda do |config|
     new_manifest
   end
 end
+
 CopyToDir = lambda do |config|
   out_dir = config.fetch("output-dir")
   EnsureExists[out_dir]
@@ -281,6 +307,7 @@ CopyToDir = lambda do |config|
     new_manifest
   end
 end
+
 CopyByGlob = lambda do |config|
   from_glob = config.fetch("from-glob")
   out_dir = config.fetch("output-dir")
@@ -297,6 +324,7 @@ CopyByGlob = lambda do |config|
     new_manifest
   end
 end
+
 PassThroughWithSideEffect = lambda do |config|
   fn = config.fetch("function")
   disable = config.fetch("disable?", false)
@@ -305,6 +333,7 @@ PassThroughWithSideEffect = lambda do |config|
     x
   end
 end
+
 UpdateOutlineCount = lambda do |count, level_at|
   new_count = []
   mod_idx = level_at - 1
@@ -324,9 +353,11 @@ UpdateOutlineCount = lambda do |count, level_at|
   end
   new_count
 end
+
 OutlineCountToStr = lambda do |count|
   count.map(&:to_s).join(".")
 end
+
 NumberMd = lambda do |config|
   if config.fetch("disable", false)
     lambda do |manifest|
@@ -376,6 +407,7 @@ NumberMd = lambda do |config|
     end
   end
 end
+
 # String -> String
 # Attempts to remove a plural "s" from a word if appropriate. Note: this is a
 # very basic algorithm.
@@ -388,6 +420,7 @@ DePluralize = lambda do |word|
     word
   end
 end
+
 XLinkMarkdown = lambda do |config|
   disable = config.fetch('disable?', false)
   if disable
@@ -465,9 +498,11 @@ XLinkMarkdown = lambda do |config|
     end
   end
 end
+
 JoinManifestToString = lambda do |manifest|
   manifest.join(' ')
 end
+
 RunPandoc = lambda do |config|
   opts = config.fetch('options')
   out_path = config.fetch('output-path')
@@ -480,6 +515,7 @@ RunPandoc = lambda do |config|
     out_path
   end
 end
+
 RunPandocOverEach = lambda do |config|
   opts = config.fetch('options')
   out_dir = config.fetch('output-dir')
@@ -512,6 +548,7 @@ RunPandocOverEach = lambda do |config|
     new_manifest
   end
 end
+
 GenTOC = lambda do |config|
   max_level = config.fetch('max-level')
   out_dir = config.fetch('output-dir')
@@ -546,7 +583,9 @@ GenTOC = lambda do |config|
     end
   end
 end
+
 Listify = lambda {|x| [x]}
+
 JoinFunctions = lambda do |fs|
   lambda do |x|
     fs.each do |f|
@@ -555,21 +594,13 @@ JoinFunctions = lambda do |fs|
     x
   end
 end
-Template = lambda do |config|
-  lambda do |manifest|
-    new_manifest = []
-    # out_path = ...
-    # FileUtils.uptodate?(out_path, [path])
-    # ... do something ...
-    # ... or copy ...
-    new_manifest
-  end
-end
+
 NewManifest = lambda do |manifest|
   lambda do |_|
     manifest
   end
 end
+
 CompressCSS = lambda do |config|
   disable = config.fetch("disable?", false)
   out_dir = config.fetch("output-dir")
@@ -603,6 +634,7 @@ CompressCSS = lambda do |config|
     end
   end
 end
+
 CompressHTML = lambda do |config|
   out_dir = config.fetch("output-dir")
   disable = config.fetch("disable?", false)
@@ -641,6 +673,7 @@ CompressHTML = lambda do |config|
     end
   end
 end
+
 BuildProbesAndCopyIntoManifest = lambda do |config|
   disable = config.fetch("disable?", false)
   if disable
@@ -705,6 +738,7 @@ BuildProbesAndCopyIntoManifest = lambda do |config|
     end
   end
 end
+
 ReLinkHTML = lambda do |config|
   out_dir = config.fetch("output-dir")
   tags_fname_map = config.fetch("tags-filename-map")
@@ -737,6 +771,7 @@ ReLinkHTML = lambda do |config|
     new_manifest
   end
 end
+
 BuildSinglePageHTML = JoinFunctions[[
   ExpandPathsFrom[
     "reference-dir" => File.expand_path('src')
@@ -850,6 +885,7 @@ BuildSinglePageHTML = JoinFunctions[[
     )
   ],
 ]]
+
 BuildMultiPageHTML = lambda do |config|
   tag = config.fetch("tag")
   build_dir = config.fetch("build-dir", "build")
@@ -999,6 +1035,7 @@ BuildMultiPageHTML = lambda do |config|
     ],
   ]]
 end
+
 BuildPDF = JoinFunctions[[
   ExpandPathsFrom[
     "reference-dir" => File.expand_path('src')
@@ -1089,6 +1126,7 @@ BuildPDF = JoinFunctions[[
     ),
   ],
 ]]
+
 Test = lambda do |expr1, expr2|
   puts("Test: #{expr1} =? #{expr2}")
   puts("... expr1: #{eval(expr1).inspect}")
@@ -1097,14 +1135,9 @@ Test = lambda do |expr1, expr2|
 end
 
 ########################################
-# Examples
+# Tasks
 ########################################
-
-if false
-  ExpandPathsFrom['reference-dir' => File.expand_path('src')][Files]
-end
-
-if false
+task :test do
   Test["UpdateOutlineCount[[0], 1]", "[1]"]
   Test["UpdateOutlineCount[[1,1,3], 2]", "[1,2]"]
   Test["UpdateOutlineCount[[1,1,3], 3]", "[1,1,4]"]
@@ -1114,61 +1147,56 @@ if false
   Test["OutlineCountToStr[[1,1,3]]", "\"1.1.3\""]
 end
 
-if true
-  if true
-    puts("#"*60)
-    puts("Build Single-Page HTML")
-    BuildSinglePageHTML[Files]
-    puts("Single-Page HTML DONE!")
-    puts("^"*60)
-  end
+desc "Build the website/documents (HTML/PDF)"
+task :build do
+  puts("#"*60)
+  puts("Build Single-Page HTML")
+  BuildSinglePageHTML[Files]
+  puts("Single-Page HTML DONE!")
+  puts("^"*60)
 
-  if true
-    puts("#"*60)
-    puts("Build Multi-Page HTML")
-    BuildMultiPageHTML[
-      "tag" => "cse-user-manual",
-      "draft?" => true,
-      "date" => nil,
-      "output-dir" => "build/output/cse-user-manual",
-      "do-navigation?" => true,
-      "disable-compression?" => false,
-      "levels" => Levels
-    ][Files]
-    puts("Multi-Page HTML DONE!")
-    puts("^"*60)
-  end
+  puts("#"*60)
+  puts("Build Multi-Page HTML")
+  BuildMultiPageHTML[
+    "tag" => "cse-user-manual",
+    "draft?" => true,
+    "date" => nil,
+    "output-dir" => "build/output/cse-user-manual",
+    "do-navigation?" => true,
+    "disable-compression?" => false,
+    "levels" => Levels
+  ][Files]
+  puts("Multi-Page HTML DONE!")
+  puts("^"*60)
 
-  if true
-    puts("#"*60)
-    puts("Build PDF")
-    BuildPDF[Files]
-    puts("PDF DONE!")
-    puts("^"*60)
-  end
+  puts("#"*60)
+  puts("Build PDF")
+  BuildPDF[Files]
+  puts("PDF DONE!")
+  puts("^"*60)
 
-  if true 
-    WebManifest = [
-      [1, "index.md"]
-    ]
-    WebLevels = WebManifest.map {|x| x[0]}
-    WebFiles = WebManifest.map {|x| x[1]}
-    puts("#"*60)
-    puts("Build Site HTML")
-    BuildMultiPageHTML[
-      "tag" => "web-site",
-      "date" => nil,
-      "draft?" => true,
-      "subtitle" => nil,
-      "title" => "California Simulation Engine",
-      "do-navigation?" => false,
-      "output-dir" => "build/output",
-      "disable-toc?" => true,
-      "disable-xlink?" => true,
-      "disable-compression?" => false,
-      "levels" => WebLevels
-    ][WebFiles]
-    puts("Site HTML DONE!")
-    puts("^"*60)
-  end
+  web_manifest = [
+    [1, "index.md"]
+  ]
+  web_levels = web_manifest.map {|x| x[0]}
+  web_files = web_manifest.map {|x| x[1]}
+  puts("#"*60)
+  puts("Build Site HTML")
+  BuildMultiPageHTML[
+    "tag" => "web-site",
+    "date" => nil,
+    "draft?" => true,
+    "subtitle" => nil,
+    "title" => "California Simulation Engine",
+    "do-navigation?" => false,
+    "output-dir" => "build/output",
+    "disable-toc?" => true,
+    "disable-xlink?" => true,
+    "disable-compression?" => false,
+    "levels" => web_levels
+  ][web_files]
+  puts("Site HTML DONE!")
+  puts("^"*60)
 end
+
+task :default => [:build]
