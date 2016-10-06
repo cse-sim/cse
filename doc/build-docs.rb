@@ -92,6 +92,30 @@ Run = lambda do |cmd, working_dir=nil|
     end
   end
 end
+CopyFile = lambda do |path, out_path, _|
+  FileUtils.cp(path, out_path)
+end
+MapOverManifest = lambda do |fn|
+  lambda do |config|
+    out_dir = config.fetch("output-dir")
+    EnsureExists[out_dir]
+    if config.fetch("disable?", false)
+      MapOverManifest[CopyFile][config.merge("disable?", false)]
+    else
+      lambda do |manifest|
+        new_manifest = []
+        manifest.each do |path|
+          out_path = File.join(out_dir, File.basename(path))
+          new_manifest << out_path
+          if !FileUtils.uptodate?(out_path, [path])
+            fn[path, out_path, config]
+          end
+        end
+        new_manifest
+      end
+    end
+  end
+end
 ExpandPathsFrom = lambda do |config|
   reference_dir = config.fetch('reference-dir')
   lambda do |manifest|
@@ -102,21 +126,11 @@ ExpandPathsFrom = lambda do |config|
     new_manifest
   end
 end
-NormalizeMarkdown = lambda do |config|
-  out_dir = config.fetch("output-dir")
-  EnsureExists[out_dir]
-  lambda do |manifest|
-    new_manifest = []
-    manifest.each do |path|
-      out_path = File.join(out_dir, File.basename(path))
-      new_manifest << out_path
-      if not FileUtils.uptodate?(out_path, [path])
-        Run["pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
-      end
-    end
-    new_manifest
+NormalizeMarkdown = MapOverManifest[
+  lambda do |path, out_path, config|
+    Run["pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
   end
-end
+]
 AdjustMarkdownLevels = lambda do |config|
   levels = config.fetch("levels")
   out_dir = config.fetch("output-dir")
@@ -1014,7 +1028,7 @@ if false
 end
 
 if true
-  if false
+  if true
     puts("#"*60)
     puts("Build Single-Page HTML")
     BuildSinglePageHTML[Files]
@@ -1022,15 +1036,20 @@ if true
     puts("^"*60)
   end
 
-  if false
+  if true
     puts("#"*60)
     puts("Build Multi-Page HTML")
-    BuildMultiPageHTML[Files]
+    BuildMultiPageHTML[
+      "tag" => "cse-user-manual",
+      "output-dir" => "build/output/cse-user-manual",
+      "do-navigation?" => true,
+      "levels" => Levels
+    ][Files]
     puts("Multi-Page HTML DONE!")
     puts("^"*60)
   end
 
-  if false
+  if true
     puts("#"*60)
     puts("Build PDF")
     BuildPDF[Files]
