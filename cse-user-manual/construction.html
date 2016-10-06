@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space:pre}</style>
+  <link rel="stylesheet" href="css/base.css">
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">CSE User's Manual</h1>
+<h1 class="subtitle">California Simulation Engine</h1>
+<h3 class="draft">DRAFT</h3>
+<ul class="nav-bar">
+  <li><a href="material.html">&larr; Previous</a></li>
+  <li><a href="/index.html">&uarr; Top &uarr;</a></li>
+  <li><a href="index.html">&lt;&lt; Contents &gt;&gt;</a></li>
+  <li><a href="layer.html">Next &rarr;</a></li>
+</ul>
+</header>
+<h1 id="construction">5.4 CONSTRUCTION</h1><p><a href="#construction">CONSTRUCTION</a> constructs an object of class <a href="#construction">CONSTRUCTION</a> that represents a light weight or massive ceiling, wall, floor, or mass assembly (mass assemblies cannot, obviously, be lightweight). Once defined, <a href="#construction">CONSTRUCTIONs</a> can be referenced from <a href="surface.html#surface">SURFACEs</a> (below). A defined <a href="#construction">CONSTRUCTION</a> need not be referenced. Each <a href="#construction">CONSTRUCTION</a> is optionally followed by <a href="layer.html#layer">LAYERs,</a> which define the constituent <a href="layer.html#layer">LAYERs</a> of the construction.</p><p><strong>conName</strong></p><p>Name of construction. Required for reference from <a href="surface.html#surface">SURFACE</a> and <a href="door.html#door">DOOR</a> objects, below.</p><table><thead><tr class="header"><th style="text-align:left"><strong>Units</strong></th><th style="text-align:left"><strong>Legal Range</strong></th><th style="text-align:left"><strong>Default</strong></th><th style="text-align:left"><strong>Required</strong></th><th style="text-align:left"><strong>Variability</strong></th></tr></thead><tbody><tr class="odd"><td style="text-align:left"></td><td style="text-align:left"><em>63 characters</em></td><td style="text-align:left"><em>none</em></td><td style="text-align:left">Yes</td><td style="text-align:left">constant</td></tr></tbody></table><p><strong>conU=<em>float</em></strong></p><p>U-value for the construction (NOT including surface (air film) conductances; see <a href="surface.html#surface">SURFACE</a> statements). If omitted, one or more <a href="layer.html#layer">LAYERs</a> must immediately follow to specify the <a href="layer.html#layer">LAYERs</a> that make up the construction. If specified, no <a href="layer.html#layer">LAYERs</a> can follow.</p><table style="width:97%"><colgroup><col style="width:16%"><col style="width:16%"><col style="width:25%"><col style="width:27%"><col style="width:11%"></colgroup><thead><tr class="header"><th style="text-align:left"><strong>Units</strong></th><th style="text-align:left"><strong>Legal Range</strong></th><th style="text-align:left"><strong>Default</strong></th><th style="text-align:left"><strong>Required</strong></th><th style="text-align:left"><strong>Variab i l i ty</strong></th></tr></thead><tbody><tr class="odd"><td style="text-align:left">Btuh/ft<sup>2</sup>- <sup>o</sup>F</td><td style="text-align:left"><em>x</em> <span class="math inline">\(&gt;\)</span> 0</td><td style="text-align:left"><em>calculated from LAYERs</em></td><td style="text-align:left">if omitted, LAYERs must follow</td><td style="text-align:left">constant</td></tr></tbody></table><p><strong>endConstruction</strong></p><p>Optional to indicates the end of the <a href="#construction">CONSTRUCTION.</a> Alternatively, the end of the <a href="#construction">CONSTRUCTION</a> definition can be indicated by “END” or by beginning another object If END or endConstruction is used, it should follow the construction’s <a href="layer.html#layer">LAYER</a> subobjects, if any.</p><table><thead><tr class="header"><th style="text-align:left"><strong>Units</strong></th><th style="text-align:left"><strong>Legal Range</strong></th><th style="text-align:left"><strong>Default</strong></th><th style="text-align:left"><strong>Required</strong></th><th style="text-align:left"><strong>Variability</strong></th></tr></thead><tbody><tr class="odd"><td style="text-align:left"></td><td style="text-align:left"></td><td style="text-align:left"><em>N/A</em></td><td style="text-align:left">No</td><td style="text-align:left">constant</td></tr></tbody></table>
+<p class="footer">Copyright (c) 1997-2016 The CSE Authors. All rights reserved.</p>
+</body>
+</html>
