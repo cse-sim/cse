@@ -95,19 +95,38 @@ end
 CopyFile = lambda do |path, out_path, _|
   FileUtils.cp(path, out_path)
 end
-MapOverManifest = lambda do |fn|
+# (Array String) (Map String *) -> Bool
+# Returns true if the configuration has the given keys
+CheckConfigHasKeys = lambda do |config, keys|
+  keys.each do |k|
+    if !config.include?(k)
+      msg = (
+        "KeyNotFound Error:\n" +
+        "Configuration missing expected key #{k}\n" +
+        "config: #{config.inspect}"
+      )
+      raise msg
+    end
+  end
+  true
+end
+# (String String (Map String *) -> *) ?(Or Nil (Array String)) ->
+#   ((Map String *) -> ((Array String) -> (Array String)))
+MapOverManifest = lambda do |fn, check_keys=nil|
   lambda do |config|
+    CheckConfigHasKeys[config, check_keys] unless check_keys.nil?
     out_dir = config.fetch("output-dir")
     EnsureExists[out_dir]
+    other_deps = config.fetch("paths-to-other-dependencies", [])
     if config.fetch("disable?", false)
-      MapOverManifest[CopyFile][config.merge("disable?", false)]
+      MapOverManifest[CopyFile][config.merge("disable?" => false)]
     else
       lambda do |manifest|
         new_manifest = []
         manifest.each do |path|
           out_path = File.join(out_dir, File.basename(path))
           new_manifest << out_path
-          if !FileUtils.uptodate?(out_path, [path])
+          if !FileUtils.uptodate?(out_path, [path] + other_deps)
             fn[path, out_path, config]
           end
         end
@@ -116,16 +135,32 @@ MapOverManifest = lambda do |fn|
     end
   end
 end
-ExpandPathsFrom = lambda do |config|
-  reference_dir = config.fetch('reference-dir')
-  lambda do |manifest|
-    new_manifest = []
-    manifest.each do |path|
-      new_manifest << File.expand_path(path, reference_dir)
+# (String (Map String *) -> String) ?(Or Nil (Array String)) ->
+#   ((Map String *) -> ((Array String) -> (Array String)))
+MapOverManifestPaths = lambda do |fn, check_keys=nil|
+  lambda do |config|
+    CheckConfigHasKeys[config, check_keys] unless check_keys.nil?
+    if config.fetch('disable?', false)
+      lambda do |manifest|
+        manifest
+      end
+    else
+      lambda do |manifest|
+        new_manifest = []
+        manifest.map do |path|
+          new_manifest << fn[path, config]
+        end
+        new_manifest
+      end
     end
-    new_manifest
   end
 end
+ExpandPathsFrom = MapOverManifestPaths[
+  lambda do |path, config|
+    reference_dir = config.fetch("reference-dir")
+    File.expand_path(path, reference_dir)
+  end
+]
 NormalizeMarkdown = MapOverManifest[
   lambda do |path, out_path, config|
     Run["pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
