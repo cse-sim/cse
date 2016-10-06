@@ -7,6 +7,7 @@ require_relative 'lib/tables'
 require_relative 'lib/toc'
 
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
+LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 REFERENCE_DIR = File.expand_path(File.join("config", "reference"), THIS_DIR)
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
@@ -64,6 +65,9 @@ MANIFEST = [
 ]
 Levels = MANIFEST.map {|level, _| level}
 Files = MANIFEST.map {|_, path| path}
+USE_GHPAGES = true
+DOCS_BRANCH = "gh-pages"
+HTML_OUT_DIR = 'build/output'
 PANDOC_GENERAL_OPTIONS = [
   "--parse-raw",
   "--standalone",
@@ -75,6 +79,30 @@ PANDOC_MD_OPTIONS = PANDOC_GENERAL_OPTIONS + " " + [
   "--to markdown",
   "--from markdown",
 ].join(' ')
+# -> Nil
+# The basic idea of this subroutine is to clone the current repository into the
+# build output directory and checkout the gh-pages branch. We then clean all
+# files out and (re-)generate into that git repository. The user can then manually
+# pull back into the local gh-pages branch after inspection.
+SetupGHPages = lambda do
+  if USE_GHPAGES
+    if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
+      FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
+      `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
+      Dir.chdir(HTML_OUT_DIR) do
+        `git checkout #{DOCS_BRANCH}`
+      end
+      puts("Removing existing content...")
+      Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
+        unless File.basename(path) == '.git'
+          puts("... removing: rm -rf #{path}")
+          FileUtils.rm_rf(path)
+        end
+      end
+    end
+  end
+end
+SetupGHPages[]
 EnsureExists = lambda do |path|
   FileUtils.mkdir_p(path) unless File.exist?(path)
 end
@@ -765,14 +793,14 @@ BuildSinglePageHTML = JoinFunctions[[
       "--from markdown",
       "--mathjax",
       "--number-sections",
-      "--css=/css/base.css",
+      "--css=css/base.css",
       "--table-of-contents",
       "--toc-depth=3",
       "--smart",
       "--variable header=\"#{HEADER}\"",
       "--variable footer=\"#{FOOTER}\"",
       "--variable do-nav=true",
-      "--variable top=\"/index.html\"",
+      "--variable top=\"index.html\"",
       "--template=site-template.html",
       "--variable title=\"CSE User's Manual\"",
       "--variable subtitle=\"California Simulation Engine\"",
@@ -917,7 +945,7 @@ BuildMultiPageHTML = lambda do |config|
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, html_dir, "generated-multipage"), this_dir
       ),
-      "top-url" => "/index.html",
+      "top-url" => "../index.html",
       "toc-url" => "index.html",
       "do-navigation?" => do_navigation
     ],
@@ -1104,6 +1132,7 @@ if true
       "date" => nil,
       "output-dir" => "build/output/cse-user-manual",
       "do-navigation?" => true,
+      "disable-compression?" => false,
       "levels" => Levels
     ][Files]
     puts("Multi-Page HTML DONE!")
@@ -1136,6 +1165,7 @@ if true
       "output-dir" => "build/output",
       "disable-toc?" => true,
       "disable-xlink?" => true,
+      "disable-compression?" => false,
       "levels" => WebLevels
     ][WebFiles]
     puts("Site HTML DONE!")
