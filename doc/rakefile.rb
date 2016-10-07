@@ -16,11 +16,15 @@ require_relative 'lib/toc'
 ########################################
 # Globals
 ########################################
+CONFIG_FILE = "config.yaml"
+CONFIG = YAML.load_file(CONFIG_FILE)
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
-BUILD_DIR = "build"
-SRC_DIR = "src"
+BUILD_DIR = CONFIG.fetch("build-dir")
+SRC_DIR = CONFIG.fetch("src-dir")
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
-REFERENCE_DIR = File.expand_path(File.join("config", "reference"), THIS_DIR)
+REFERENCE_DIR = File.expand_path(
+  CONFIG.fetch("reference-dir") , THIS_DIR
+)
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
 DATE = nil # "February 23, 2016"
@@ -34,11 +38,11 @@ CSE_USER_MANUAL_CONFIG = YAML.load_file(
 MANIFEST = CSE_USER_MANUAL_CONFIG["sections"]
 Levels = MANIFEST.map {|level, _| level}
 Files = MANIFEST.map {|_, path| path}
-USE_GHPAGES = true
-USE_NODE = false
+USE_GHPAGES = CONFIG.fetch("use-ghpages?")
+USE_NODE = CONFIG.fetch("use-node?")
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
-DOCS_BRANCH = "gh-pages"
-HTML_OUT_DIR = 'build/output'
+DOCS_BRANCH = CONFIG.fetch("docs-branch")
+HTML_OUT_DIR = CONFIG.fetch("output-dir")
 PANDOC_GENERAL_OPTIONS = [
   "--parse-raw",
   "--standalone",
@@ -50,6 +54,12 @@ PANDOC_MD_OPTIONS = PANDOC_GENERAL_OPTIONS + " " + [
   "--to markdown",
   "--from markdown",
 ].join(' ')
+CSS_NANO_EXE = File.expand_path(
+  CONFIG.fetch("cssnano-exe"), THIS_DIR
+)
+HTML_MIN_EXE = File.expand_path(
+  CONFIG.fetch("html-minifier-exe"), THIS_DIR
+)
 
 ########################################
 # Helper Functions
@@ -825,9 +835,7 @@ BuildSinglePageHTML = JoinFunctions[[
   ],
   Listify,
   CompressHTML[
-    "path-to-html-minifier" => File.expand_path(
-      File.join("node_modules", ".bin", "html-minifier"), THIS_DIR
-    ),
+    "path-to-html-minifier" => HTML_MIN_EXE,
     "options" => [
       "--minify-css",
       "--minify-js",
@@ -844,9 +852,7 @@ BuildSinglePageHTML = JoinFunctions[[
     ]
   ],
   CompressCSS[
-    "path-to-cssnano" => File.expand_path(
-      File.join("node_modules", ".bin", "cssnano"), THIS_DIR
-    ),
+    "path-to-cssnano" => CSS_NANO_EXE,
     "output-dir" => File.expand_path(
       File.join("build", "output", "css"), THIS_DIR
     ),
@@ -976,9 +982,7 @@ BuildMultiPageHTML = lambda do |config|
       )
     ],
     CompressHTML[
-      "path-to-html-minifier" => File.expand_path(
-        File.join("node_modules", ".bin", "html-minifier"), this_dir
-      ),
+      "path-to-html-minifier" => HTML_MIN_EXE,
       "options" => [
         "--minify-css",
         "--minify-js",
@@ -993,9 +997,7 @@ BuildMultiPageHTML = lambda do |config|
       ]
     ],
     CompressCSS[
-      "path-to-cssnano" => File.expand_path(
-        File.join("node_modules", ".bin", "cssnano"), this_dir
-      ),
+      "path-to-cssnano" => CSS_NANO_EXE,
       "output-dir" => File.expand_path(
         File.join(out_dir, "css"), this_dir
       ),

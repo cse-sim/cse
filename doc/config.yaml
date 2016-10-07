@@ -3,60 +3,10 @@
 # that can be found in the LICENSE file.
 docs-branch: "gh-pages"
 src-dir: "src"
-media-dir: "src/media"
-css-dir: "config/css"
-template-dir: "config/template"
 reference-dir: "config/reference"
 cssnano-exe: "node_modules/.bin/cssnano"
 html-minifier-exe: "node_modules/.bin/html-minifier"
 use-node?: false
 use-ghpages?: true
 build-dir: 'build'
-md-temp-dir: 'build/temp/md'
-html-temp-dir: 'build/temp/html'
-pdf-temp-dir: 'build/temp/pdf'
-build-probes?: false
-append-probes-to: ['output-reports.md']
-probes-temp-dir: 'build/temp/probes'
 output-dir: 'build/output'
-log-dir: 'build/logs'
-pdf-header: "\"CSE User's Manual\""
-pdf-footer: "Time.now.strftime(\"%FT%T%:z\")"
-generate-probes-documentation?: true
-pdf-skip-list:
-  - index.md
-options:
-  html-minifier:
-    "*":
-      - "--minify-css"
-      - "--minify-js"
-      - "--remove-comments"
-  pandoc:
-    "*":
-      - "--parse-raw"
-      - "--standalone"
-      - "--wrap=none"
-    "pdf":
-      - '--variable geometry="margin=1in"'
-      - '--variable urlcolor=cyan'
-      - "--latex-engine=xelatex"
-      - "--table-of-contents"
-      - "--toc-depth=3"
-      - "--number-sections"
-      - "--smart"
-      - "--template=template.tex"
-      - "--listings"
-      - "--from markdown"
-    "md":
-      - "--atx-headers"
-      - "--normalize"
-      - "--to markdown"
-      - "--from markdown"
-    "html":
-      - "--to html5"
-      - "--from markdown"
-      - "--mathjax"
-      - "--number-sections"
-      - "--smart"
-      - "--template=site-template.html"
-
