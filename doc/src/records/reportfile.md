@@ -2,7 +2,7 @@
 
 REPORTFILE allows optional specification of different or additional files to receive CSE reports.
 
-By default, CSE generates several "reports" on each run showing the simulated HVAC energy use, the CIDL input statements specifying the run, any error or warning messages, etc. Different or additional reports can be specified using the REPORT object, described in Section 5.25, next.
+By default, CSE generates several "reports" on each run showing the simulated HVAC energy use, the input statements specifying the run, any error or warning messages, etc. Different or additional reports can be specified using the REPORT object, described in Section 5.25, next.
 
 All CSE reports are written to text files as plain ASCII text. The files may be printed (on most printers other than postscript printers) by copying them to your printer with the COPY command. Since many built-in reports are over 80 characters wide; you may want to set your printer for "compressed" characters or a small font first. You may wish to examine the report file with a text editor or LIST program before printing it. (?? Improve printing discussion)
 
