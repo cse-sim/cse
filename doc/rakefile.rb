@@ -85,7 +85,7 @@ SetupGHPages = lambda do
   if USE_GHPAGES
     if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
       FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
-      `git clone #{LOCAL_REPO} #{HTML_OUT_DIR}`
+      `git clone "#{LOCAL_REPO}" "#{HTML_OUT_DIR}"`
       Dir.chdir(HTML_OUT_DIR) do
         `git checkout #{DOCS_BRANCH}`
       end
@@ -206,7 +206,7 @@ ExpandPathsFrom = MapOverManifestPaths[
 
 NormalizeMarkdown = MapOverManifest[
   lambda do |path, out_path, _, _|
-    Run["pandoc #{PANDOC_MD_OPTIONS} -o #{out_path} #{path}"]
+    Run["pandoc #{PANDOC_MD_OPTIONS} -o \"#{out_path}\" \"#{path}\""]
   end
 ]
 
@@ -484,7 +484,7 @@ XLinkMarkdown = lambda do |config|
 end
 
 JoinManifestToString = lambda do |manifest|
-  manifest.join(' ')
+  manifest.map{|f| "\"#{f}\""}.join(' ')
 end
 
 RunPandoc = lambda do |config|
@@ -494,7 +494,7 @@ RunPandoc = lambda do |config|
   working_dir = config.fetch('working-dir', out_dir)
   EnsureExists[out_dir]
   lambda do |input|
-    cmd = "pandoc #{opts} -o #{out_path} #{input}"
+    cmd = "pandoc #{opts} -o \"#{out_path}\" #{input}"
     Run[cmd, working_dir]
     out_path
   end
@@ -525,7 +525,7 @@ RunPandocOverEach = lambda do |config|
         nav_opts << "--variable nav-toc=\"#{toc}\"" if toc
         nav_opts << "--variable do-nav=true" if do_nav
         all_opts = opts + ' ' + nav_opts.join(' ')
-        cmd = "pandoc #{all_opts} -o #{out_path} #{path}"
+        cmd = "pandoc #{all_opts} -o \"#{out_path}\" \"#{path}\""
         Run[cmd, working_dir]
       end
     end
@@ -1148,7 +1148,7 @@ task :build do
   puts("^"*60)
 
   puts("#"*60)
-  puts("Build PDF")
+  puts("Building PDF...(grab a coffee)")
   BuildPDF[Files]
   puts("PDF DONE!")
   puts("^"*60)
@@ -1200,7 +1200,7 @@ task :check_manifests do
     man = YAML.load_file(path)
     man["sections"].each do |_, section_file|
       if md_file_set.include?(section_file)
-        md_file_set.delete(section_file) 
+        md_file_set.delete(section_file)
       else
         unknown_files << section_file
       end

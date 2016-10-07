@@ -19,8 +19,6 @@ The specific dependencies for [Node.js] are listed in the `package.json` file.
 
 Using [Node.js] enables us to compress the HTML and CSS for the website. However, it is an optional dependency. In order to use [Node.js], change the value of `use-node?:` in the file `config.yaml` to `true`.
 
-[Node.js]: https://nodejs.org/en/
-
 Your primary interaction with the build system will be through the [Rake] build tool (from the [Ruby] programming folks). [Rake] is a "make for Ruby".
 
 [Rake]: https://github.com/ruby/rake
