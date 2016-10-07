@@ -163,7 +163,7 @@ DC-to-AC ratio used to intentionally undersize the AC inverter. This is used to 
   ----------------------------------------------------------------------------------
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ---------------------   ------------- -------------- -----------------
-              *x* $\gt$ 0.0           1.1           No             constant
+              *x* > 0.0               1.1           No             constant
   ----------------------------------------------------------------------------------
 
 **pvInverterEff=*float***
@@ -178,7 +178,7 @@ AC inverter efficiency at rated DC power.
 
 **pvSysLosses=*float***
 
-Fraction of total DC energy lost. The total loss from a system is aggregated from several possible causes as illustrated below: 
+Fraction of total DC energy lost. The total loss from a system is aggregated from several possible causes as illustrated below:
 
   **Loss Type**             **Default Assumption**
   ------------------------- ----------------------
