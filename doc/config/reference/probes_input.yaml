@@ -4,337 +4,429 @@ top:
   :runtime: true
   :owner: --
   :array: false
+  :description: Top level fields
   :fields:
   - :name: name
     :input: true
     :runtime: true
     :type: string
     :variability: constant
+    :description: Name of the object.
   - :name: bAutoSizeCmd
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Non-0 if any AUTOSIZE commands seen in input
   - :name: chAutoSize
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Whether to do autosizing, default per bAutoSizeCmd
   - :name: chSimulate
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Whether to do main simulation, default is TRUE; input FALSE
+    for autosizing only."
   - :name: begDay
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: First 1-based Julian day of year of run.
   - :name: endDay
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Last 1-based Julian day of year of run, inclusive
   - :name: nDays
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Number of days in run
   - :name: jan1DoW
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "January 1 day of week: sun=1"
   - :name: year
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Generic non-leap year. -1 = Jan 1 is Monday .. -7 Jan 1 is
+    Sunday"
   - :name: wuDays
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Number of warm-up days
   - :name: nSubSteps
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Subhours per hour, determines subhour duration
   - :name: skipDayStart
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Number of days to skip at beginning of year (not beginning
+    of run), default 0."
   - :name: skipDayStep
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Number of days in each step through year, default 1 
   - :name: wfName
     :input: true
     :runtime: true
     :type: string
     :variability: autosize and simulate phase start time
+    :description: Weather file name string.
   - :name: elevation
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Site elevation in feet (for determining air density) 
   - :name: refTemp
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: "Temperature for computing the humidity ratio (w). Used in
+    air-density calculations, default 70 F."
   - :name: refRH
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Relative humidity (as a fraction); default 0.6 (60%).
   - :name: grndRefl
     :input: true
     :runtime: true
     :type: number
     :variability: monthly-hourly
+    :description: Ground surface reflectivity, regarding solar gain.
   - :name: soilDiff
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "Local soil diffusivity in ft^2^/hr. Relates to annual deep
+    ground temperature cycle estimation."
   - :name: tol
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "(Relative) tolerance used in many HVAC calculations, default
+    0.001 or as changed."
   - :name: humTolF
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    # TODO: original "w change to consider as important as 1F temp re convergedness"; correct?
+    :description: "Humidity ratio (w) change to consider as important as 1F
+    temp regarding convergedness."
   - :name: ebTolMon
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Monthly tolerance. 
   - :name: ebTolDay
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Daily tolerance. 
   - :name: ebTolHour
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Hourly tolerance. 
   - :name: ebTolSubhr
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Subhourly tolerance. 
   - :name: AWTrigT
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "ASHWAT: inside or outside environmental temperature, F
+    (default = 1)"
   - :name: AWTrigSlr
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "ASHWAT: incident solar, fraction (default = 0.05)"
   - :name: AWTrigH
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "ASHWAT: total surface coefficient (conv+rad), fraction
+    (default = 0.1)"
   - :name: ANTolAbs
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "AirNet: absolute tolerance, lbm/sec, dflt=0.00125 (about 1
+    cfm)."
   - :name: ANTolRel
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "AirNet: relative tolerance, dflt = .0001."
   - :name: bldgAzm
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Angle to add to all zone/surface azimuths
   - :name: skyModel
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Sky model: C\\_..\\_ISO or \\_ANISO."
   - :name: skyModelLW
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: input time
+    :description: Long-wave sky model.
   - :name: dhwModel
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: input time
+    :description: Runtime DHW model selection. 
   - :name: humMeth
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: input time
+    :description: "Humidity calculation method: Rob (w = wa/wb) or Phil
+    (central difference)" 
   - :name: dflExH
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    #TODO: check "default ext (air film) cond for os & gz. 2-91"
+    :description: "Default external (air film) conductivity." 
   - :name: workDayMask
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Mask with bits set for \"work\" days, clear for \"non-work\"
+    days. Default Mon..Fri. Bits: Sun=1, Mon=2, Tu=4, W=8, Th=16, F=32, Sat=64,
+    holidays=128, heatDsnDay=256, coolDsnDays=512." 
   - :name: DT
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: YES (default) to enable daylight saving time
   - :name: DTBegDay
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Daylight saving start day, 1-365, default 1st Sun (Sun after
+    1st Sat?) in April."
   - :name: DTEndDay
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Daylight saving end day, 1-365. Default is last Sunday in
+    October" 
   - :name: windSpeedMin
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Minimum wind speed in miles-per-hour (default = 0.5) 
   - :name: windF
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Wind factor (default=1) 
   - :name: terrainClass
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Terrain class (1-5) for wind speed adjustment.
   - :name: radBeamF
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    #TODO: check "Beam radiation fctr. appl sees ANISO( <fileVal>) * BeamRadFactor. cgwthr.cpp."
+    :description: "Beam radiation factor. appl sees ANISO( &lt;fileVal&gt; )
+    \\* BeamRadFactor." 
   - :name: radDiffF
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: Diffuse variant of BeamRadFactor.
   - :name: ventAvail
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: All-zone ventilation availability (default = WholeHouse)
   - :name: verbose
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: "Screen messages: autosizing: 0 none, 1 some, 2-5 more"
   - :name: dbgPrintMask
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    # TODO: Check debug print mask, controls DbPrintf() etc., schedulable via std capabilities
+    :description: "Debug print mask, controls printing. Schedulable via
+    standard capabilities."
   - :name: dbgPrintMaskC
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "Constant portion (value known during setup) of debug print
+    mask."
   - :name: auszTol
     :input: true
     :runtime: true
     :type: number
     :variability: input time
+    :description: "Autosizing result tolerance, default: 0.005"
   - :name: heatDsTDbO
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "Heat design outdoor temperature. Default per the weather
+    file header."
   - :name: heatDsTWbO
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "Heating design outdoor wetbulb temperature. Default: 70% RH
+    @ heatDsTDbO."
   - :name: coolDsMo[0]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Cooling design month(s) 1-12 + 0 terminator. Default per ET1
+    weather file header."
   - :name: coolDsMo[1]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[2]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[3]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[4]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[5]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[6]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[7]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[8]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[9]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[10]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[11]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsMo[12]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "As per coolDsMo[0]"
   - :name: coolDsDay[0]
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    # TODO: no description in source
   - :name: coolDsDay[1]
     :input: true
     :runtime: true
@@ -399,167 +491,222 @@ top:
     :input: true
     :runtime: true
     :type: string
-    :variability: run start time (of each phase, autoSize or simulate)
+    :variability: "Run start time (of each phase, autoSize or simulate)."
+    :display: full path to current .exe
   - :name: exeInfo
     :input: true
     :runtime: true
     :type: string
     :variability: run start time (of each phase, autoSize or simulate)
+    :display: "Information about current .exe (from header): build timestame,
+    linker version, code size"
   - :name: exeCodeSize
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :display: Code size, bytes (from exe header).
   - :name: progVersion
     :input: true
     :runtime: true
     :type: string
     :variability: run start time (of each phase, autoSize or simulate)
+    :display: "Program version identifier as string (for probing); set from
+    ::ProgVersion."
   - :name: HPWHVersion
     :input: true
     :runtime: true
     :type: string
     :variability: run start time (of each phase, autoSize or simulate)
+    :display: Ecotope HPWH (heat pump water heater) model version.
   - :name: runSerial
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    #TODO: check "run #, 000-999, per (future 11-91) status file (meanwhile,
+    #see cnguts:cnRunSerial 7-92)."
+    :display: "Run number, 000-999, per status file."
   - :name: runTitle
     :input: true
     :runtime: true
     :type: string
     :variability: input time
+    :display: User text for report titles, footers, export title.
   - :name: runDateTime
     :input: true
     :runtime: true
     :type: string
     :variability: run start time (of each phase, autoSize or simulate)
+    # TODO check run date & time string, set by cncult2.cpp:topStarPrf2(), used
+    # in reports & bin res file, 9-94.
+    :display: Run date & time string, used in reports & binary results file.
   - :name: brs
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :display: "YES to generate basic binary results file, default NO. From
+    input file or command line switch."
   - :name: brHrly
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :display: "YES to generate hourly binary results file, default NO. From
+    input file or cmd line."
   - :name: brFileName
     :input: true
     :runtime: true
     :type: string
     :variability: input time
+    :display: "File name for binary results, extension .brs and/or .bhr added.
+    Default: input file name. Settable in DLL version only, only by command
+    line switches. Default is file output (if brs/brHrly) only."
   - :name: brMem
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Put binary results in Windows global memory and return
+    handles; do not write file."
   - :name: brDiscardable
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    #TODO: Check: Put binary results in discardable memory as well as file, return
+    #handles. overrides brfMem.
+    :description: "Put binary results in discardable memory as well as file,
+    return handles. Overrides brMem."
   - :name: repHdrL
     :input: true
     :runtime: true
     :type: string
     :variability: input time
+    :description: User-specified text for left end of report header line.
   - :name: repHdrR
     :input: true
     :runtime: true
     :type: string
     :variability: input time
+    :description: User-specified text for right end of report header line.
   - :name: repCpl
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Report characters per line.
   - :name: repLpp
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Total number of lines per page (paper size).
   - :name: repTopM
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Top margin in lines; Number of newlines written above
+    header."
   - :name: repBotM
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: "Bottom margin in lines; not actually output."
   - :name: repTestPfx
     :input: true
     :runtime: true
     :type: string
     :variability: input time
+    :description: "Prefix pre-pended to e.g. footer lines regarding hiding
+    lines and/or automated testing. \"\" for normal runs, \"!\" for 3-2010 test
+    framework."
   - :name: latitude
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Degrees north."
   - :name: longitude
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Degress west."
   - :name: timeZone
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Hours west (fraction ok)."
   - :name: presAtm
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Nominal atmospheric pressure at Top.elevation (in Hg).
+    Constant for simulation."
   - :name: refW
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Humidity ratio for refTemp, refRH (ratio)."
   - :name: refWX
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "1 / (1.0 + refW )."
   - :name: airSH
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Air specific heat (Btu/lbDryAir-F) @ refW."
   - :name: airVK
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Specific volume per temperature (ft^3^/lb-F): multiply by
+    absolute temperature."
   - :name: airRhoK
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "density \\* temp (lb-F/ft^3^): divide by absolute
+    temperature to get density."
   - :name: airVshK
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Volumetric specific heat / temperature (Btu/ft3-F): divide
+    by absolute temperature for heat capacity per ft^3^"
   - :name: airXK
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Divide by absolute temperature for specific heat of flow
+    (Btuh/cfm-F)"
   - :name: hConvF
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Convective coefficient pressure modification factor."
   - :name: nDesDays
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "Number of design days: 1 for heating + number of non-0 coolDsMo's."
   - :name: auszSmTol
     :input: true
     :runtime: true
