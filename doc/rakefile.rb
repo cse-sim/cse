@@ -950,7 +950,7 @@ BuildMultiPageHTML = lambda do |config|
       "disable?" => disable_numbering
     ],
     GenTOC[
-      "max-level" => 3,
+      "max-level" => TOC_DEPTH,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "toc"), this_dir
       ),
