@@ -8,6 +8,7 @@ require 'fileutils'
 require 'json'
 require 'yaml'
 require 'set'
+require 'pathname'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
@@ -17,6 +18,7 @@ require_relative 'lib/toc'
 ########################################
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
 BUILD_DIR = "build"
+SRC_DIR = "src"
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 REFERENCE_DIR = File.expand_path(File.join("config", "reference"), THIS_DIR)
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
@@ -26,54 +28,10 @@ DRAFT = true # true means, it is a draft
 HEADER = "CSE User's Manual"
 FOOTER = "Generated: #{Time.now.strftime("%FT%T%:z")}"
 TOC_DEPTH = 4
-MANIFEST = [
-  [1, "introduction.md"],
-  [1, "about-cse.md"],
-  [1, "operation.md"],
-  [1, "input-structure.md"],
-  [1, "input-data.md"],
-  [2, "records/top-members.md"],
-  [2, "records/holiday.md"],
-  [2, "records/material.md"],
-  [2, "records/construction.md"],
-  [2, "records/layer.md"],
-  [2, "records/glazetype.md"],
-  [2, "records/meter.md"],
-  [2, "records/zone.md"],
-  [2, "records/gain.md"],
-  [2, "records/surface.md"],
-  [2, "records/window.md"],
-  [2, "records/shade.md"],
-  [2, "records/sgdist.md"],
-  [2, "records/door.md"],
-  [2, "records/perimeter.md"],
-  [2, "records/terminal.md"],
-  [2, "records/izxfer.md"],
-  [2, "records/rsys.md"],
-  [2, "records/ductseg.md"],
-  [2, "records/dhwsys.md"],
-  [2, "records/dhwheater.md"],
-  [2, "records/dhwtank.md"],
-  [2, "records/dhwpump.md"],
-  [2, "records/dhwloop.md"],
-  [2, "records/dhwlooppump.md"],
-  [2, "records/dhwloopseg.md"],
-  [2, "records/dhwloopbranch.md"],
-  [2, "records/airhandler.md"],
-  [2, "records/heatplant.md"],
-  [2, "records/boiler.md"],
-  [2, "records/coolplant.md"],
-  [2, "records/chiller.md"],
-  [2, "records/towerplant.md"],
-  [2, "records/hploop.md"],
-  [2, "records/reportfile.md"],
-  [2, "records/report.md"],
-  [2, "records/reportcol.md"],
-  [2, "records/exportfile.md"],
-  [2, "records/export.md"],
-  [2, "records/exportcol.md"],
-  [1, "output-reports.md"],
-]
+CSE_USER_MANUAL_CONFIG = YAML.load_file(
+  File.join(SRC_DIR, 'cse-user-manual.yaml')
+)
+MANIFEST = CSE_USER_MANUAL_CONFIG["sections"]
 Levels = MANIFEST.map {|level, _| level}
 Files = MANIFEST.map {|_, path| path}
 USE_GHPAGES = true
@@ -1183,9 +1141,8 @@ task :build do
   puts("PDF DONE!")
   puts("^"*60)
 
-  web_manifest = [
-    [1, "index.md"]
-  ]
+  web_config = YAML.load_file(File.join(SRC_DIR, "web-page.yaml"))
+  web_manifest = web_config["sections"]
   web_levels = web_manifest.map {|x| x[0]}
   web_files = web_manifest.map {|x| x[1]}
   puts("#"*60)
