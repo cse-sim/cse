@@ -25,6 +25,7 @@ DATE = nil # "February 23, 2016"
 DRAFT = true # true means, it is a draft
 HEADER = "CSE User's Manual"
 FOOTER = "Generated: #{Time.now.strftime("%FT%T%:z")}"
+TOC_DEPTH = 4
 MANIFEST = [
   [1, "introduction.md"],
   [1, "about-cse.md"],
@@ -837,7 +838,7 @@ BuildSinglePageHTML = JoinFunctions[[
       "--number-sections",
       "--css=css/base.css",
       "--table-of-contents",
-      "--toc-depth=4",
+      "--toc-depth=#{TOC_DEPTH}",
       "--smart",
       "--variable header=\"#{HEADER}\"",
       "--variable footer=\"#{FOOTER}\"",
@@ -1112,7 +1113,7 @@ BuildPDF = JoinFunctions[[
       '--variable urlcolor=cyan',
       "--latex-engine=xelatex",
       "--table-of-contents",
-      "--toc-depth=4",
+      "--toc-depth=#{TOC_DEPTH}",
       "--number-sections",
       "--smart",
       "--template=template.tex",
