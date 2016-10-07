@@ -1174,4 +1174,30 @@ task :reset do
   Clean[BUILD_DIR]
 end
 
+desc "Check manifests for missing/misspelled files"
+task :check_manifests do
+  src = Pathname.new(SRC_DIR)
+  md_file_set = Set.new(
+    Dir[File.join(SRC_DIR, "**", "*.md")].map do |p|
+      Pathname.new(File.expand_path(p, THIS_DIR)).relative_path_from(src).to_s
+    end
+  )
+  unknown_files = Set.new
+  Dir[File.join("src", "**", "*.yaml")].each do |path|
+    puts("... checking #{File.basename(path)}")
+    man = YAML.load_file(path)
+    man["sections"].each do |_, section_file|
+      if md_file_set.include?(section_file)
+        md_file_set.delete(section_file) 
+      else
+        unknown_files << section_file
+      end
+    end
+  end
+  puts("Files on disk but not in any manifest: ")
+  md_file_set.sort.each {|f| puts("- #{f}")}
+  puts("Files in manifest but not on disk: ")
+  unknown_files.sort.each {|f| puts(" - #{f}")}
+end
+
 task :default => [:build]
