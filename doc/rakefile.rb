@@ -575,7 +575,7 @@ GenTOC = lambda do |config|
       new_manifest << toc_out_path
       if !FileUtils.uptodate?(toc_out_path, manifest)
         toc_content = TOC::GenTableOfContentsFromFiles[
-          max_level - 1,
+          max_level,
           levels.zip(manifest)
         ]
         File.write(toc_out_path, toc_content)
