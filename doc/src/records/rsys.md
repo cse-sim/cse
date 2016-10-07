@@ -184,7 +184,7 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
 
 **rsCap47=*float***
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 °F. If both rsCap47 and rsCapC are autosized, both are set to the larger consistent value.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F. If both rsCap47 and rsCapC are autosized, both are set to the larger consistent value.
 
   **Units**   **Legal Range**           **Default**            **Required**   **Variability**
   ----------- ------------------------- ---------------------- -------------- -----------------
@@ -192,7 +192,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 °F
 
 **rsCap35=*float***
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 °F.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^F.
 
   **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
   ----------- ----------------- ------------------------------------ -------------- -----------------
@@ -200,7 +200,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 °F
 
 **rsCap17=*float***
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 °F.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^F.
 
   **Units**   **Legal Range**   **Default**              **Required**   **Variability**
   ----------- ----------------- ------------------------ -------------- -----------------
@@ -208,7 +208,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 °F
 
 **rsCOP47=*float***
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 °F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 ^o^F.
 
   **Units**   **Legal Range**   **Default**                                   **Required**   **Variability**
   ----------- ----------------- --------------------------------------------- -------------- -----------------
@@ -216,7 +216,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 **rsCOP35=*float***
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 °F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 ^o^F.
 
   ------------------------------------------------------------------------
   **Unit **Legal    **Default**                         **Requir **Variabi
@@ -229,7 +229,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 **rsCOP17=*float***
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 17 °F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 17 ^o^F.
 
   **Units**   **Legal Range**   **Default**                                   **Required**   **Variability**
   ----------- ----------------- --------------------------------------------- -------------- -----------------
@@ -291,7 +291,7 @@ Nominal cooling temperature fall (across system, not zone) used during autosizin
 
 **rsFxCapC=*float***
 
-Cooling autosizing capacity factor. rsCapC is set to rsFxCapC × (peak design-day load). Peak design-day load is the cooling capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
+Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak design-day load). Peak design-day load is the cooling capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -352,5 +352,3 @@ Optionally indicates the end of the RSYS definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

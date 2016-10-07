@@ -32,7 +32,7 @@ Inlet temperature of first DHWLOOPSEG.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  °F          $>$ 0             130           No             hourly
+  ^o^F          $>$ 0             130           No             hourly
 
 **wlRunF=*float***
 
@@ -57,5 +57,3 @@ Optionally indicates the end of the DHWLOOP definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
-
-

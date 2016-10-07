@@ -125,7 +125,7 @@ The tilt of the photovoltaic array from horizontal.  Values outside the range 0 
 
 **pvAzm=*float***
 
-Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0° $\leq$ *x* $<$ 360° is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays.
+Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays.
 
   --------------------------------------------------------------------------------
   **Units**   **Legal Range**       **Default**   **Required**   **Variability**

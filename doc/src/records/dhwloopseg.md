@@ -50,7 +50,7 @@ Pipe insulation conductivity
 
   **Units**          **Legal Range**   **Default**   **Required**   **Variability**
   ------------------ ----------------- ------------- -------------- -----------------
-  Btuh-ft/ft^2^-°F   $>$ 0             0.02167       No             constant
+  Btuh-ft/ft^2^-^o^F   $>$ 0             0.02167       No             constant
 
 **wgInsulThk=*float***
 
@@ -66,7 +66,7 @@ Combined radiant/convective exterior surface conductance between insulation (or 
 
   **Units**       **Legal Range**   **Default**   **Required**   **Variability**
   --------------- ----------------- ------------- -------------- -----------------
-  Btuh/ft^2^-°F   $>$ 0             1.5           No             hourly
+  Btuh/ft^2^-^o^F   $>$ 0             1.5           No             hourly
 
 **wgExT=*float***
 
@@ -74,7 +74,7 @@ Surrounding equivalent temperature.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  °F          $>$ 0             70            No             hourly
+  ^o^F          $>$ 0             70            No             hourly
 
 **wgFNoDraw=*float***
 
@@ -82,7 +82,7 @@ Fraction of hour when no draw occurs.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  °F          $>$ 0             70            No             hourly
+  ^o^F          $>$ 0             70            No             hourly
 
 **endDHWLoopSeg**
 

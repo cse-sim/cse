@@ -143,11 +143,11 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
 
 **bldgAzm=*float***
 
-Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0° $\leq$ *x* $<$ 360° is given, it is normalized to that range.
+Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range.
 
   **Units**     **Legal Range**   **Default**   **Required**   **Variability**
   ------------- ----------------- ------------- -------------- -----------------
-  ° (degrees)   unrestricted      0             No             constant
+  ^o^ (degrees)   unrestricted      0             No             constant
 
 **elevation=*float***
 
