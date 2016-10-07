@@ -35,6 +35,8 @@ MANIFEST = CSE_USER_MANUAL_CONFIG["sections"]
 Levels = MANIFEST.map {|level, _| level}
 Files = MANIFEST.map {|_, path| path}
 USE_GHPAGES = true
+USE_NODE = false
+NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 DOCS_BRANCH = "gh-pages"
 HTML_OUT_DIR = 'build/output'
 PANDOC_GENERAL_OPTIONS = [
@@ -52,6 +54,12 @@ PANDOC_MD_OPTIONS = PANDOC_GENERAL_OPTIONS + " " + [
 ########################################
 # Helper Functions
 ########################################
+InstallNodeDeps = lambda do
+  unless File.exist?(NODE_BIN_DIR)
+    `npm install`
+  end
+end
+InstallNodeDeps[] if USE_NODE
 # String -> Nil
 # Removes all files under the given path
 Clean = lambda do |path|
@@ -827,7 +835,8 @@ BuildSinglePageHTML = JoinFunctions[[
     ].join(' '),
     "output-dir" => File.expand_path(
       File.join("build", "output"), THIS_DIR
-    )
+    ),
+    "disable?" => !USE_NODE
   ],
   NewManifest[
     Dir[
@@ -840,7 +849,8 @@ BuildSinglePageHTML = JoinFunctions[[
     ),
     "output-dir" => File.expand_path(
       File.join("build", "output", "css"), THIS_DIR
-    )
+    ),
+    "disable?" => !USE_NODE
   ],
   NewManifest[
     Dir[File.expand_path(File.join("src", "media", "*"), THIS_DIR)]
@@ -864,7 +874,7 @@ BuildMultiPageHTML = lambda do |config|
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
-  disable_compression = config.fetch("disable-compression?", true)
+  disable_compression = config.fetch("disable-compression?", !USE_NODE)
   disable_numbering = config.fetch("disable-numbering?", false)
   do_navigation = config.fetch("do-navigation?", false)
   title = config.fetch("title", "CSE User's Manual")
@@ -1129,7 +1139,7 @@ task :build do
     "date" => nil,
     "output-dir" => "build/output/cse-user-manual",
     "do-navigation?" => true,
-    "disable-compression?" => false,
+    "disable-compression?" => !USE_NODE,
     "levels" => Levels
   ][Files]
   puts("Multi-Page HTML DONE!")
@@ -1157,7 +1167,7 @@ task :build do
     "output-dir" => "build/output",
     "disable-toc?" => true,
     "disable-xlink?" => true,
-    "disable-compression?" => false,
+    "disable-compression?" => !USE_NODE,
     "levels" => web_levels
   ][web_files]
   puts("Site HTML DONE!")
