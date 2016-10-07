@@ -16,6 +16,7 @@ require_relative 'lib/toc'
 # Globals
 ########################################
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
+BUILD_DIR = "build"
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 REFERENCE_DIR = File.expand_path(File.join("config", "reference"), THIS_DIR)
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
@@ -91,6 +92,12 @@ PANDOC_MD_OPTIONS = PANDOC_GENERAL_OPTIONS + " " + [
 ########################################
 # Helper Functions
 ########################################
+
+# String -> Nil
+# Removes all files under the given path
+Clean = lambda do |path|
+  FileUtils.rm_rf(Dir[File.join(path, '*')])
+end
 
 # -> Nil
 # The basic idea of this subroutine is to clone the current repository into the
@@ -1197,6 +1204,16 @@ task :build do
   ][web_files]
   puts("Site HTML DONE!")
   puts("^"*60)
+end
+
+desc "Removes the entire build directory. Note: you will loose build cache!"
+task :clean_all do
+  Clean[BUILD_DIR]
+end
+
+desc "Alias for clean_all"
+task :reset do
+  Clean[BUILD_DIR]
 end
 
 task :default => [:build]
