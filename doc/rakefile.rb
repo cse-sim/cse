@@ -90,10 +90,10 @@ PANDOC_MD_OPTIONS = PANDOC_GENERAL_OPTIONS + " " + [
   "--to markdown",
   "--from markdown",
 ].join(' ')
+
 ########################################
 # Helper Functions
 ########################################
-
 # String -> Nil
 # Removes all files under the given path
 Clean = lambda do |path|
