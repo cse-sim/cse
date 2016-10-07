@@ -6121,7 +6121,7 @@ The following might be used to run an air handler between 8 AM and 5 PM:
 |-----------|-----------------|-------------|--------------|-----------------|
 |           |      ON/OFF     |      ON     |      No      |      hourly     |
 
-#### AIRHANDLER Supply Air Temperature Controller
+### AIRHANDLER Supply Air Temperature Controller
 
 **ahTsSp=*float or choice***
 
@@ -6366,7 +6366,7 @@ If return air moves outside the range *ahTsRaMn* to *ahTsRaMx*, the supply tempe
 |-----------|--------------------------------------------------|-------------|----------------------|-----------------|
 |    ^o^F   | *no limit*; typically: 40 $\le$ *x* $\le$ 140^o^ |    *none*   | Only for *ahTsSp*=RA |      hourly     |
 
-#### AIRHANDLER Supply fan
+### AIRHANDLER Supply fan
 
 All AIRHANDLERs have supply fans.
 
@@ -6481,7 +6481,7 @@ Name of meter, if any, to record energy used by supply fan. End use category use
 |-----------|-------------------|----------------|--------------|-----------------|
 |           | *name of a METER* | *not recorded* |      No      |     constant    |
 
-#### AIRHANDLER Return/Relief fan
+### AIRHANDLER Return/Relief fan
 
 A return/relief fan is optional. Its presence is established by setting *rfanType* to a value other than NONE. For additional information on the return/relief fan members, refer to the description of the corresponding supply fan member above.
 
@@ -6599,7 +6599,7 @@ Name of meter, if any, to record power consumption of this return fan. May be sa
 |-----------|-------------------|----------------|--------------|-----------------|
 |           | *name of a METER* | *not recorded* |      No      |     constant    |
 
-#### AIRHANDLER Heating coil/Modeling Furnaces
+### AIRHANDLER Heating coil/Modeling Furnaces
 
 Heating coils are optional devices that warm the air flowing through the AIRHANDLER, including electric resistance heaters, hot water coils supplied by a HEATPLANT, the heating function of an air source heat pump, and furnaces.
 
@@ -6958,7 +6958,7 @@ The following four members specify meters for recording auxiliary energy use thr
 |-----------|-------------------|----------------|--------------|-----------------|
 |           | *name of a METER* | *not recorded* |      No      |     constant    |
 
-#### AIRHANDLER Cooling coil
+### AIRHANDLER Cooling coil
 
 A cooling coil is an optional device that remove heat and humidity from the air passing through the AIRHANDLER. Available cooling coil types include chilled water (CHW), supported by a COOLPLANT that supplies cold water, and Direct Expansion (DX), supported by a dedicated compressor and condenser that are modeled integrally with the DX coil. No plant is used with DX coils.
 
@@ -7288,7 +7288,7 @@ The following four allow specification of meters to record cool coil auxiliary e
 |-----------|-------------------|----------------|--------------|-----------------|
 |           | *name of a METER* | *not recorded* |      No      |     constant    |
 
-#### AIRHANDLER Outside Air
+### AIRHANDLER Outside Air
 
 Outside air introduced into the air hander supply air can be controlled on two levels. First, a *minimum *fraction or volume of outside air may be specified. By default, a minimum volume of .15 cfm per square foot of zone area is used. Second, an *economizer* may be specified. The simulated economizer increases the outside air above the minimum when the outside air is cooler or has lower enthalpy than the return air, in order to reduce cooling coil energy usage. By default, there is no economizer.
 
@@ -7404,7 +7404,7 @@ Return air damper leakage to mixed air. Puts a minimum on return air flow and th
 |-----------|-----------------------|-------------|--------------|-----------------|
 |           | 0 $\le$ *x* $\le$ 1.0 |     0.1     |      No      |     constant    |
 
-#### AIRHANDLER Leaks and Losses
+### AIRHANDLER Leaks and Losses
 
 *AhSOLeak* and *ahRoLeak* express air leaks in the common supply and return ducts, if any, that connect the air handler to the conditioned space. For leakage after the point where a duct branches off to an individual zone, see TERMINAL member *tuSRLeak*. These inputs model leaks in constant pressure (or vacuum) areas nearer the supply fan than the terminal VAV dampers; thus, they are constant volume regardless of flow to the zones. Hence, unless 0 leakage flows are specified, the air handler cfm is greater than the sum of the terminal cfm's, and the air handler cfm is non-0 even when all terminal flows are 0. Any heating or cooling energy applied to the excess cfm is lost to the outdoors.
 
@@ -7444,7 +7444,7 @@ Return duct heat loss/gain to the outdoors.
 |-----------|---------------------|-------------|--------------|-----------------|
 |           | 0 $\le$ *x* $\le$ 1 |     0.1     |      No      |     constant    |
 
-#### AIRHANDLER Crankcase Heater
+### AIRHANDLER Crankcase Heater
 
 A "crankcase heater" is an electric resistance heater in the crankcase of the compressor of heat pumps and dx cooling coils. The function of the crankcase heater is to keep the compressor's oil warmer than the refrigerant when the compressor is not operating, in order to prevent refrigerant from condensing into and remaining in the oil, which impairs its lubricating properties and shortens the life of the compressor. Manufacturers have come up with a number of different methods for controlling the crankcase heater. The crankcase heater can consume a significant part of the heat pump's energy input; thus, it is important to model it. 
 
