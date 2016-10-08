@@ -16,6 +16,8 @@
 						//   else ashwat.dll (FORTRAN)
 #undef ASHWAT_LINKDLL	// define to set up linkage to ashwat.dll
 						//   transition aid 9-2016
+#define ASHWAT_NEWCALL	// define to use updated ASHWAT_THERMAL call
+						//   (meaningful iff ASHWAT_LINKDLL)
 #undef ASHWAT_CPPTEST	// enable DLL<->C++ comparison code
 						//   usually does nothing if defined( ASHWAT_USECPP)
 #undef ASHWAT_CPPTESTTHERMAL // enable DLL<->C++ comparison for cf_Thermal() only
@@ -112,32 +114,6 @@ public:
 	}
 };
 #endif // ASHWAT_STATS
-
-///////////////////////////////////////////////////////////////////////////////
-// class KEYPART
-///////////////////////////////////////////////////////////////////////////////
-class KEYPART
-{
-	double kp_min;
-	double kp_max;
-	int kp_nSeg;
-	double kp_step;
-
-public:
-	KEYPART() : kp_min( 0.), kp_max( 0.), kp_nSeg( 0), kp_step( 0.) {}
-	KEYPART( double _min, double _max, int _nSeg)
-	{	kp_Init( _min, _max, _nSeg);
-	}
-	void kp_Init( double _min, double _max, int _nSeg)
-	{	kp_min = _min; kp_max = _max; kp_nSeg = _nSeg;
-		kp_step = (kp_max - kp_min) / kp_nSeg;
-	}
-	double kp_val( int kpIdx) const
-	{	return kp_min + kpIdx * kp_step; }
-	int kp_Idx( double val)
-	{	return bracket( 0, int( 0.5 + (val - kp_min) / kp_step), kp_nSeg);
-	}
-};		// class KEYPART
 
 ///////////////////////////////////////////////////////////////////////////////
 // class AWIN -- consolidated inputs for ASHWAT calculation
@@ -318,11 +294,21 @@ class XASHWAT : public XMODULE
 friend class FENAW;
 friend struct CFSTY;
 #if defined( ASHWAT_LINKDLL)
+#if defined( ASHWAT_NEWCALL)
+// updated FORTRAN call
+typedef int _stdcall AWThermal( const CFSTY& CFS, const double& TIN, const double& TOUT,
+	const double& HCIN, const double& HCOUT, const double& TRMIN, const double& TRMOUT,
+	const double& ISOL, const double* SOURCE, const double& tol, const int& IterControl,
+	double* T, double* Q, double& QInConv, double& QInRad, double& UCG, double& SHGC,
+	double& Cx, double& NConv, double& Nrad, double& FHR_IN, double& FHR_OUT);
+#else
 typedef int _stdcall AWThermal( const CFSTY& CFS, const double& TIN, const double& TOUT,
 	const double& HCIN, const double& HCOUT, const double& TRMIN, const double& TRMOUT,
 	const double& ISOL, const double* SOURCE, const double& tol, const int& IterControl,
 	double* T, double* Q, double& UCG, double& SHGC, double& Cx, double& FM, double& FP,
 	double& FHR_IN, double& FHR_OUT);
+#endif
+
 typedef int _stdcall AWCheckFixCFSLayer( CFSLAYER& L,
 	char* msgs, int lMsg, int& nMsgs,
 	const char* what, int lWhat);
@@ -361,8 +347,8 @@ public:
 	~XASHWAT();
 	virtual void xm_ClearPtrs();
 
-	RC xw_Init();
 	RC xw_Setup();
+	static void MsgCallBackFunc( AWMSGTY msgTy, const char* msg);
 	RC xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
 	RC xw_ClearCFSLayer( CFSLAYER& L);
 	RC xw_ClearCFSFillGas( CFSFILLGAS& F);
@@ -377,10 +363,11 @@ public:
 	RC xw_Subhr( ZNR* zp);
 	// RC xc_Finish();	// finish now done in xc_Shutdown(); add separate call if needed
 
-	WVect< CFSLAYER> xw_layerLib;	// collection of built-in CFS layers
-	WVect<  struct CFSTYX> xw_CFSLib;		// ditto CFSs
+	WVect< CFSLAYER> xw_layerLib;		// collection of built-in CFS layers
+	WVect<  struct CFSTYX> xw_CFSLib;	// ditto CFSs
 
 	RC xw_BuildLib();
+	bool xw_IsLibEmpty() const;
 	const CFSLAYER* xw_FindLibCFSLAYER( const char* id) const;
 	const CFSTYX* xw_FindLibCFSTYX( const char* id) const;
 	const CFSTYX* xw_FindLibCFSTYX( float SHGC, int nL) const;

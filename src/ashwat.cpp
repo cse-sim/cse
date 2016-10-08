@@ -23,7 +23,6 @@
 
 
 // TODO
-// * cf_Thermal mismatch
 // * Unified air properties
 // * Cache constant long wave derived values (beg of cf_Thermal)
 // * CFSShadeMod.f90: finish arg rationalization / commenting
@@ -94,6 +93,18 @@ static const double HOC_ASHRAE = 16.9;	// nominal ASHRAE exterior convective
 										//   coefficient, W/m2-K
 										//   7.5 mph cooling conditions
 
+///////////////////////////////////////////////////////////////////////////////
+static int awOptions = 0;		// ASHWAT global options (none defined, 9-2016)
+static void (*pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg) = NULL;
+//-----------------------------------------------------------------------------
+void ASHWAT_Setup(
+	void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg),
+	int options /*=0*/)
+{
+	pMsgCallBackFunc = _pMsgCallBackFunc;
+	awOptions = options;
+}		// ASHWAT_Setup
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // utility functions
@@ -275,12 +286,8 @@ static string strFromBlankFilled(		// convert blank-filled to 0-terminated
 #define SX( s) s
 #endif		// FORTRAN_TRANSITION
 //-----------------------------------------------------------------------------
-const int msgIGN = 0;
-const int msgDBG = 1;
-const int msgWRN = 2;
-const int msgERR = 3;
 static bool MessageV(
-	int msgTy,
+	AWMSGTY msgTy,		// message type
 	const char* fmt,
 	va_list ap=NULL)
 {
@@ -290,13 +297,17 @@ static bool MessageV(
 	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
 		fmt = fRet >= 0 ? buf : "?? MessageV vsprintf_s failure.";
 	}
-	printf( fmt);		// TODO: transmit message to caller
-	printf("\n");
+	if (pMsgCallBackFunc)
+		(*pMsgCallBackFunc)( msgTy, fmt);	// transmit message to caller
+	else
+	{	printf( fmt);		// no message callback defined, use printf
+		printf("\n");
+	}
 	return msgTy >= msgWRN;	// TODO
 }	// ::MessageV
 //------------------------------------------------------------------------------
 static bool Message(
-	int msgTy,
+	AWMSGTY msgTy,
 	const char* fmt,
 	...)
 {

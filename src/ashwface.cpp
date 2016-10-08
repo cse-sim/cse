@@ -1248,8 +1248,8 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	double Q[ CFSMAXNL+2];
 	double ucgSI;
 	fa_nCalc++;
-#if defined( ASHWAT_USECPP)
 	double QInConv, QInRad;
+#if defined( ASHWAT_USECPP)
 	bool bRet = fa_CFS.cf_Thermal(
 			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
 			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
@@ -1263,6 +1263,18 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	if (!bRet)
 		rc = RCBAD;
 #else
+#if defined( ASHWAT_NEWCALL)
+		int ret = (*ASHWAT.xw_pAWThermal)( fa_CFS,
+			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
+			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
+			DegFtoK( awI.aw_txrI), DegFtoK( awI.aw_txrO),
+			awI.aw_incSlr, awI.aw_absSlr,
+			tol, fa_iterControl, awO.aw_TL, Q,
+			QInConv, QInRad,
+			ucgSI, awO.aw_SHGCrt, awO.aw_Cx,
+			awO.aw_FP, awO.aw_FM,	// note order: rad, conv
+			awO.aw_FHR_IN, awO.aw_FHR_OUT);
+#else
 	int ret = (*ASHWAT.xw_pAWThermal)( fa_CFS,
 			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
 			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
@@ -1272,6 +1284,7 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 			ucgSI, awO.aw_SHGCrt, awO.aw_Cx,
 			awO.aw_FM, awO.aw_FP,	// note order: rad, conv
 			awO.aw_FHR_IN, awO.aw_FHR_OUT);
+#endif
 	if (ret == 0)
 		rc = RCBAD;
 #if defined( ASHWAT_CPPTESTTHERMAL)
@@ -1299,6 +1312,10 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	 || fabs( SHGCrtX - awO.aw_SHGCrt) > 0.000001
 	 || fabs( FHR_INX - awO.aw_FHR_IN) > 0.000001
 	 || fabs( FHR_OUTX - awO.aw_FHR_OUT) > 0.000001
+#if defined( ASHWAT_NEWCALL)
+	 || fabs( QInConvX - QInConv) > 0.00001
+	 || fabs( QInRadX - QInRad) > 0.00001
+#endif
 	 || fabs( FMX - awO.aw_FM) > 0.000001
 	 || fabs( FPX - awO.aw_FP) > 0.000001
 	 || fabs( CxX - awO.aw_Cx) > 0.000001)
@@ -1380,17 +1397,15 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// ASHWAT.DLL interface
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-// class XASHWAT: interface to ASHWAT (complex fenestration model)
+// class XASHWAT: ASHWAT interface
+//   routes calls either to ASHWAT.DLL (FORTRAN implementation)
+//   or staticly-linked ashwat.cpp
 ///////////////////////////////////////////////////////////////////////////////
 XASHWAT ASHWAT(		// public ASHWAT object
 #if !defined( ASHWAT_LINKDLL)
 	"");
-#elif 0 && defined( _DEBUG)
-	"\\hbx\\run\\ASHWATD.DLL");
+#elif defined( _DEBUG)
+	"\\hbx\\run\\ASHWAT.DLL");
 #elif 0
 	"\\hbx\\run\\ASHWAT.DLL");
 #else
@@ -1415,11 +1430,15 @@ XASHWAT::~XASHWAT()
 #endif
 }		// XASHWAT::xm_ClearPtrs
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_Setup()
+RC XASHWAT::xw_Setup()		// general initialization
+// duplicate calls OK
 {
-#if !defined( ASHWAT_LINKDLL)
+static bool bSetup = false;
+	if (bSetup)
+		return RCOK;
+
 	RC rc = RCOK;
-#else
+#if defined( ASHWAT_LINKDLL)
 	if (!xm_hModule)
 	{	if (xm_LoadLibrary() == RCOK)
 		{	xw_pAWThermal = (AWThermal *)xm_GetProcAddress( "ASHWAT_Thermal");
@@ -1437,16 +1456,23 @@ RC XASHWAT::xw_Setup()
 	}
 	RC rc = xm_RC;
 #endif
-	if (!rc)
-		rc = xw_BuildLib();
+#if defined( ASHWAT_USECPP)
+	ASHWAT_Setup( MsgCallBackFunc, 0);
+#endif
+	if (!rc && xw_IsLibEmpty())
+		rc = xw_BuildLib();		// build library of CFSLAYERs and CFSTYs
+	bSetup = true;
 	return rc;
 }		// XASHWAT::xw_Setup
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_Init()
+/*static*/ void XASHWAT::MsgCallBackFunc(
+	AWMSGTY msgTy,
+	const char* msg)
 {
-	return RCOK;
-}		// XASHWAT::xw_Init
 
+	warn( msg);
+
+}		// XASHWAT::MsgCallBackFunc
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_CheckFixCFSLayer(
 	CFSLAYER& L,		// layer to be checked / fixed
@@ -1649,7 +1675,12 @@ RC XASHWAT::xw_Solar(		// ASHWAT_Solar interface fcn
 #endif
 }		// XASHWAT::xw_Solar
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_BuildLib()		// libary of built-in type
+bool XASHWAT::xw_IsLibEmpty() const
+{	return xw_layerLib.size() == 0;
+}		// XASHWAT::xw_IsLibEmpty
+//-----------------------------------------------------------------------------
+RC XASHWAT::xw_BuildLib()		// libary of built-in types
+// overwrites any existing library entries
 {
 	RC rc = RCOK;
 	xw_layerLib.clear();
