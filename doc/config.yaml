@@ -6,9 +6,9 @@ src-dir: "src"
 reference-dir: "config/reference"
 cssnano-exe: "node_modules/.bin/cssnano"
 html-minifier-exe: "node_modules/.bin/html-minifier"
-use-node?: true
+use-node?: false
 use-ghpages?: true
-build-pdf?: true
+build-pdf?: false
 build-dir: 'build'
 output-dir: 'build/output'
 remote-repo-url: "https://github.com/cse-sim/cse.git"
