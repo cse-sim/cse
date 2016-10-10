@@ -1107,7 +1107,7 @@ BuildPDF = lambda do |config|
       "object-name-set" => Set.new(
         File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x|x.strip}
       ),
-      "output-dir" => File.join(build_dir, md_dir, "xlink")
+      "output-dir" => File.join(build_dir, tag, md_dir, "xlink")
     ],
     AdjustMarkdownLevels[
       "output-dir" => File.expand_path(
