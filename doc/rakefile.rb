@@ -9,6 +9,7 @@ require 'json'
 require 'yaml'
 require 'set'
 require 'pathname'
+require 'time'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
@@ -17,18 +18,20 @@ require_relative 'lib/toc'
 # Globals
 ########################################
 CONFIG_FILE = "config.yaml"
+LOG = STDOUT
 CONFIG = YAML.load_file(CONFIG_FILE)
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
 BUILD_DIR = CONFIG.fetch("build-dir")
 SRC_DIR = CONFIG.fetch("src-dir")
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
+REMOTE_REPO = CONFIG.fetch("remote-repo-url")
 REFERENCE_DIR = File.expand_path(
   CONFIG.fetch("reference-dir") , THIS_DIR
 )
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
 DATE = nil # "February 23, 2016"
-DRAFT = true # true means, it is a draft
+DRAFT = CONFIG.fetch("draft?") # true means, it is a draft
 HEADER = "CSE User's Manual"
 FOOTER = "Generated: #{Time.now.strftime("%FT%T%:z")}"
 TOC_DEPTH = 4
@@ -36,6 +39,7 @@ CSE_USER_MANUAL_CONFIG = YAML.load_file(
   File.join(SRC_DIR, 'cse-user-manual.yaml')
 )
 MANIFEST = CSE_USER_MANUAL_CONFIG["sections"]
+BUILD_PDF = CONFIG.fetch("build-pdf?")
 Levels = MANIFEST.map {|level, _| level}
 Files = MANIFEST.map {|_, path| path}
 USE_GHPAGES = CONFIG.fetch("use-ghpages?")
@@ -69,7 +73,7 @@ InstallNodeDeps = lambda do
     `npm install`
   end
 end
-InstallNodeDeps[] if USE_NODE
+
 # String -> Nil
 # Removes all files under the given path
 Clean = lambda do |path|
@@ -87,6 +91,9 @@ SetupGHPages = lambda do
       FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
       `git clone "#{LOCAL_REPO}" "#{HTML_OUT_DIR}"`
       Dir.chdir(HTML_OUT_DIR) do
+        `git remote rm origin`
+        `git remote add origin #{REMOTE_REPO}`
+        `git fetch --all`
         `git checkout #{DOCS_BRANCH}`
       end
       puts("Removing existing content...")
@@ -100,7 +107,6 @@ SetupGHPages = lambda do
   end
 end
 
-SetupGHPages[]
 
 EnsureExists = lambda do |path|
   FileUtils.mkdir_p(path) unless File.exist?(path)
@@ -116,9 +122,14 @@ Run = lambda do |cmd, working_dir=nil|
     begin
       result = `#{cmd}`
       if !result or result.empty?
-        puts("... success!")
+        LOG.write(".")
+        LOG.flush
       else
-        puts("... success! result:\n#{result}")
+        LOG.write(".")
+        LOG.flush
+        if false
+          puts("... success! result:\n#{result}")
+        end
       end
     rescue => e
       puts("... failure:\n#{e.message}")
@@ -235,7 +246,7 @@ AdjustMarkdownLevels = lambda do |config|
         FileUtils.cp(path, out_path)
       else
         adjustment = "#" * (level - 1)
-        md = File.read(path)
+        md = File.read(path, :encoding=>"UTF-8")
         File.open(out_path, 'w') do |f|
           md.lines.each do |line|
             if line =~ /^#+\s+/
@@ -370,7 +381,7 @@ NumberMd = lambda do |config|
           next
         end
         level_adjustment = levels ? (levels[idx] - 1) : 0
-        md = File.read(path)
+        md = File.read(path, :encoding=>"UTF-8")
         if !FileUtils.uptodate?(out_path, [path])
           File.open(out_path, 'w') do |f|
             md.lines.each do |line|
@@ -466,7 +477,7 @@ XLinkMarkdown = lambda do |config|
             nil
           end
         end
-        content = File.read(path)
+        content = File.read(path, :encoding=>"UTF-8")
         doc = JSON.parse(Pandoc::MdToJson[content])
         state = {
           num_hits: 0,
@@ -737,7 +748,7 @@ ReLinkHTML = lambda do |config|
       new_manifest << out_path
       if !FileUtils.uptodate?(out_path, [path])
         n += 1
-        content = File.read(path)
+        content = File.read(path, :encoding=>"UTF-8")
         new_content = tags_fname_map.to_a.inject(content) do |nc, tag_fname|
           tag = tag_fname[0]
           fname = tag_fname[1]
@@ -756,117 +767,134 @@ ReLinkHTML = lambda do |config|
   end
 end
 
-BuildSinglePageHTML = JoinFunctions[[
-  ExpandPathsFrom[
-    "reference-dir" => File.expand_path('src')
-  ],
-  NormalizeMarkdown[
-    "output-dir" => File.join("build", "md", "normalize")
-  ],
-  XLinkMarkdown[
-    "object-index" => YAML.load_file(RECORD_INDEX_FILE),
-    "object-name-set" => Set.new(
-      File.read(RECORD_NAME_FILE).lines.map {|x| x.strip}
-    ),
-    "output-dir" => File.expand_path(
-      File.join("build", "md", "xlink"), THIS_DIR
-    )
-  ],
-  AdjustMarkdownLevels[
-    "output-dir" => File.join("build", "md", "adjusted-headers"),
-    "levels" => Levels
-  ],
-  BuildProbesAndCopyIntoManifest[
-    "probes-build-dir" => File.expand_path(
-      File.join("build", "md", "probes"), THIS_DIR
-    ),
-    "output-dir" => File.expand_path(
-      File.join("build", "md", "all-with-probes"), THIS_DIR
-    ),
-    "insert-after-file" => "output-reports.md",
-    "path-to-probes-input" => File.expand_path(
-      File.join("config", "reference", "probes_input.yaml"), THIS_DIR
-    )
-  ],
-  PassThroughWithSideEffect[
-    "function" => lambda do
-      # Copy template to the right spot
-      path = File.expand_path(
-        File.join("config", "template", "site-template.html"), THIS_DIR
+BuildSinglePageHTML = lambda do |config|
+  tag = config.fetch("tag")
+  this_dir = config.fetch('this-dir', THIS_DIR)
+  build_dir = config.fetch("build-dir", "build")
+  md_dir = config.fetch("md-dir", "md")
+  html_dir = config.fetch("html-dir", "html")
+  out_dir = config.fetch("output-dir", "build/output")
+  out_file = config.fetch("output-file-name", "out.html")
+  record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
+  record_name_file = config.fetch("record-name-file", RECORD_NAME_FILE)
+  disable_probes = config.fetch("disable-probes?", false)
+  disable_toc = config.fetch("disable-toc?", false)
+  disable_xlink = config.fetch("disable-xlink?", false)
+  disable_compression = config.fetch("disable-compression?", !USE_NODE)
+  disable_numbering = config.fetch("disable-numbering?", false)
+  do_navigation = config.fetch("do-navigation?", false)
+  title = config.fetch("title", "CSE User's Manual")
+  subtitle = config.fetch("subtitle", "California Simulation Engine")
+  date = config.fetch("date", nil)
+  draft = config.fetch("draft?", true)
+  levels = config.fetch("levels", Levels)
+  JoinFunctions[[
+    ExpandPathsFrom[
+      "reference-dir" => File.expand_path('src')
+    ],
+    NormalizeMarkdown[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
-      out_path = File.expand_path(
-        File.join("build", "md", "all-with-probes", "site-template.html"), THIS_DIR
+    ],
+    XLinkMarkdown[
+      "object-index" => YAML.load_file(record_index_file),
+      "object-name-set" => Set.new(
+        File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x| x.strip}
+      ),
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "xlink"), this_dir
       )
-      if !FileUtils.uptodate?(out_path, [path])
-        FileUtils.cp(path, out_path)
-      end
-    end
-  ],
-  JoinManifestToString,
-  RunPandoc[
-    "options" => [
-      "--parse-raw",
-      "--standalone",
-      "--wrap=none",
-      "--to html5",
-      "--from markdown",
-      "--mathjax",
-      "--number-sections",
-      "--css=css/base.css",
-      "--table-of-contents",
-      "--toc-depth=#{TOC_DEPTH}",
-      "--smart",
-      "--variable header=\"#{HEADER}\"",
-      "--variable footer=\"#{FOOTER}\"",
-      "--variable do-nav=true",
-      "--variable top=\"index.html\"",
-      "--template=site-template.html",
-      "--variable title=\"CSE User's Manual\"",
-      "--variable subtitle=\"California Simulation Engine\"",
-      DATE ? "--variable date=\"#{DATE}\"" : "",
-      DRAFT ? "--variable draft=true" : "",
-    ].join(' '),
-    "output-path" => File.expand_path(
-      File.join("build", "html", "generated", "cse-user-manual.html"), THIS_DIR
-    ),
-    "working-dir" => File.expand_path(
-      File.join("build", "md", "all-with-probes"), THIS_DIR
-    ),
-  ],
-  Listify,
-  CompressHTML[
-    "path-to-html-minifier" => HTML_MIN_EXE,
-    "options" => [
-      "--minify-css",
-      "--minify-js",
-      "--remove-comments"
-    ].join(' '),
-    "output-dir" => File.expand_path(
-      File.join("build", "output"), THIS_DIR
-    ),
-    "disable?" => !USE_NODE
-  ],
-  NewManifest[
-    Dir[
-      File.expand_path(File.join("config", "css", "*.css"), THIS_DIR)
-    ]
-  ],
-  CompressCSS[
-    "path-to-cssnano" => CSS_NANO_EXE,
-    "output-dir" => File.expand_path(
-      File.join("build", "output", "css"), THIS_DIR
-    ),
-    "disable?" => !USE_NODE
-  ],
-  NewManifest[
-    Dir[File.expand_path(File.join("src", "media", "*"), THIS_DIR)]
-  ],
-  CopyToDir[
-    "output-dir" => File.expand_path(
-      File.join("build", "output", "media"), THIS_DIR
-    )
-  ],
-]]
+    ],
+    AdjustMarkdownLevels[
+      "output-dir" => File.join(build_dir, tag, md_dir, "adjusted-headers"),
+      "levels" => levels
+    ],
+    BuildProbesAndCopyIntoManifest[
+      "probes-build-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "probes"), this_dir
+      ),
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-with-probes"), this_dir
+      ),
+      "insert-after-file" => "output-reports.md",
+      "path-to-probes-input" => File.expand_path(
+        File.join("config", "reference", "probes_input.yaml"), this_dir
+      )
+    ],
+    AddFiles[
+      "paths" => [File.expand_path(
+        File.join("config", "template", "site-template.html"), this_dir
+      )],
+      "append-to-manifest?" => false,
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-with-probes-and-template"), this_dir
+      )
+    ],
+    JoinManifestToString,
+    RunPandoc[
+      "options" => [
+        "--parse-raw",
+        "--standalone",
+        "--wrap=none",
+        "--to html5",
+        "--from markdown",
+        "--mathjax",
+        "--number-sections",
+        "--css=css/base.css",
+        "--table-of-contents",
+        "--toc-depth=#{TOC_DEPTH}",
+        "--smart",
+        "--variable header=\"#{HEADER}\"",
+        "--variable footer=\"#{FOOTER}\"",
+        "--variable do-nav=#{do_navigation}",
+        "--variable top=\"index.html\"",
+        "--template=site-template.html",
+        title ? "--variable title=\"#{title}\"" : "",
+        subtitle ? "--variable subtitle=\"#{subtitle}\"" : "",
+        date ? "--variable date=\"#{date}\"" : "",
+        draft ? "--variable draft=true" : "",
+      ].join(' '),
+      "output-path" => File.expand_path(
+        File.join(build_dir, tag, html_dir, "generated-singlepage", out_file), this_dir
+      ),
+      "working-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-with-probes-and-template"), this_dir
+      ),
+    ],
+    Listify,
+    CompressHTML[
+      "path-to-html-minifier" => HTML_MIN_EXE,
+      "options" => [
+        "--minify-css",
+        "--minify-js",
+        "--remove-comments"
+      ].join(' '),
+      "output-dir" => File.expand_path(out_dir, this_dir),
+      "disable?" => disable_compression
+    ],
+    NewManifest[
+      Dir[
+        File.expand_path(File.join("config", "css", "*.css"), this_dir)
+      ]
+    ],
+    CompressCSS[
+      "path-to-cssnano" => CSS_NANO_EXE,
+      "output-dir" => File.expand_path(
+        File.join(out_dir, "css"), this_dir
+      ),
+      "disable?" => disable_compression
+    ],
+    NewManifest[
+      Dir[File.expand_path(File.join("src", "media", "*"), this_dir)]
+    ],
+    CopyToDir[
+      "output-dir" => File.expand_path(
+        File.join(out_dir, "media"), this_dir
+      )
+    ],
+  ]]
+end
 
 BuildMultiPageHTML = lambda do |config|
   tag = config.fetch("tag")
@@ -900,7 +928,7 @@ BuildMultiPageHTML = lambda do |config|
     XLinkMarkdown[
       "object-index" => YAML.load_file(record_index_file),
       "object-name-set" => Set.new(
-        File.read(record_name_file).lines.map {|x|x.strip}
+        File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x|x.strip}
       ),
       "output-dir" => File.join(build_dir, tag, md_dir, "xlink"),
       "disable?" => disable_xlink
@@ -1014,96 +1042,108 @@ BuildMultiPageHTML = lambda do |config|
   ]]
 end
 
-BuildPDF = JoinFunctions[[
-  ExpandPathsFrom[
-    "reference-dir" => File.expand_path('src')
-  ],
-  NormalizeMarkdown[
-    "output-dir" => File.expand_path(
-      File.join("build", "md", "normalize"), THIS_DIR
-    )
-  ],
-  XLinkMarkdown[
-    "object-index" => YAML.load_file(RECORD_INDEX_FILE),
-    "object-name-set" => Set.new(
-      File.read(RECORD_NAME_FILE).lines.map {|x|x.strip}
-    ),
-    "output-dir" => File.join("build", "md", "xlink")
-  ],
-  AdjustMarkdownLevels[
-    "output-dir" => File.expand_path(
-      File.join("build", "md", "adjusted-headers"), THIS_DIR
-    ),
-    "levels" => Levels
-  ],
-  BuildProbesAndCopyIntoManifest[
-    "probes-build-dir" => File.expand_path(
-      File.join("build", "md", "probes"), THIS_DIR
-    ),
-    "output-dir" => File.expand_path(
-      File.join("build", "md", "all-with-probes"), THIS_DIR
-    ),
-    "insert-after-file" => "output-reports.md",
-    "path-to-probes-input" => File.expand_path(
-      File.join("config", "reference", "probes_input.yaml"), THIS_DIR
-    )
-  ],
-  PassThroughWithSideEffect[
-    "function" => lambda do
-      # Copy template to the right spot
-      paths = [File.expand_path(
-        File.join("config", "template", "template.tex"), THIS_DIR
-      )]
-      CopyToDir[
-        "output-dir" => File.expand_path(
-          File.join("build", "md", "all-with-probes"), THIS_DIR
-        )
-      ][paths]
-    end
-  ],
-  PassThroughWithSideEffect[
-    "function" => lambda do
-      media_files = Dir[
-        File.expand_path(File.join("src", "media", "*"), THIS_DIR)
-      ]
-      CopyToDir[
-        "output-dir" => File.expand_path(
-          File.join("build", "md", "all-with-probes", "media"), THIS_DIR
-        )
-      ][media_files]
-    end
-  ],
-  JoinManifestToString,
-  RunPandoc[
-    "options" => [
-      "--parse-raw",
-      "--standalone",
-      "--wrap=none",
-      '--variable geometry="margin=1in"',
-      '--variable urlcolor=cyan',
-      "--latex-engine=xelatex",
-      "--table-of-contents",
-      "--toc-depth=#{TOC_DEPTH}",
-      "--number-sections",
-      "--smart",
-      "--template=template.tex",
-      "--listings",
-      "--from markdown",
-      "--variable header=\"#{HEADER}\"",
-      "--variable footer=\"#{FOOTER}\"",
-      "--variable title=\"CSE User's Manual\"",
-      "--variable subtitle=\"California Simulation Engine\"",
-      DATE ? "--variable date=\"#{DATE}\"" : "",
-      DRAFT ? "--variable draft=true" : "",
-    ].join(' '),
-    "output-path" => File.expand_path(
-      File.join("build", "output", "pdfs", "cse-user-manual.pdf"), THIS_DIR
-    ),
-    "working-dir" => File.expand_path(
-      File.join("build", "md", "all-with-probes"), THIS_DIR
-    ),
-  ],
-]]
+BuildPDF = lambda do |config|
+  tag = config.fetch("tag")
+  this_dir = config.fetch('this-dir', THIS_DIR)
+  build_dir = config.fetch("build-dir", "build")
+  md_dir = config.fetch("md-dir", "md")
+  html_dir = config.fetch("html-dir", "html")
+  out_dir = config.fetch("output-dir", "build/output")
+  out_file = config.fetch("output-file-name", "out.pdf")
+  record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
+  record_name_file = config.fetch("record-name-file", RECORD_NAME_FILE)
+  disable_probes = config.fetch("disable-probes?", false)
+  disable_toc = config.fetch("disable-toc?", false)
+  disable_xlink = config.fetch("disable-xlink?", false)
+  title = config.fetch("title", "CSE User's Manual")
+  subtitle = config.fetch("subtitle", "California Simulation Engine")
+  date = config.fetch("date", nil)
+  draft = config.fetch("draft?", true)
+  levels = config.fetch("levels", Levels)
+  JoinFunctions[[
+    ExpandPathsFrom[
+      "reference-dir" => File.expand_path('src')
+    ],
+    NormalizeMarkdown[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "normalize"), this_dir
+      )
+    ],
+    XLinkMarkdown[
+      "object-index" => YAML.load_file(record_index_file),
+      "object-name-set" => Set.new(
+        File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x|x.strip}
+      ),
+      "output-dir" => File.join(build_dir, md_dir, "xlink")
+    ],
+    AdjustMarkdownLevels[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "adjusted-headers"), this_dir
+      ),
+      "levels" => levels
+    ],
+    BuildProbesAndCopyIntoManifest[
+      "probes-build-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "probes"), this_dir
+      ),
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-with-probes"), this_dir
+      ),
+      "insert-after-file" => "output-reports.md",
+      "path-to-probes-input" => File.expand_path(
+        File.join("config", "reference", "probes_input.yaml"), this_dir
+      )
+    ],
+    AddFiles[
+      "paths" => [File.expand_path(
+        File.join("config", "template", "template.tex"), this_dir
+      )],
+      "append-to-manifest?" => false,
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-ready-to-build"), this_dir
+      )
+    ],
+    AddFiles[
+      "paths" => Dir[
+        File.expand_path(File.join("src", "media", "*"), this_dir)
+      ],
+      "append-to-manifest?" => false,
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-ready-to-build", "media"), this_dir
+      )
+    ],
+    JoinManifestToString,
+    RunPandoc[
+      "options" => [
+        "--parse-raw",
+        "--standalone",
+        "--wrap=none",
+        '--variable geometry="margin=1in"',
+        '--variable urlcolor=cyan',
+        "--latex-engine=xelatex",
+        "--table-of-contents",
+        "--toc-depth=#{TOC_DEPTH}",
+        "--number-sections",
+        "--smart",
+        "--template=template.tex",
+        "--listings",
+        "--from markdown",
+        "--variable header=\"#{HEADER}\"",
+        "--variable footer=\"#{FOOTER}\"",
+        title ? "--variable title=\"#{title}\"" : "",
+        subtitle ? "--variable subtitle=\"#{subtitle}\"" : "",
+        date ? "--variable date=\"#{date}\"" : "",
+        draft ? "--variable draft=true" : "",
+      ].join(' '),
+      "output-path" => File.expand_path(
+        File.join(out_dir, out_file), this_dir
+      ),
+      "working-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "all-ready-to-build"), this_dir
+      ),
+    ],
+  ]]
+end
 
 Test = lambda do |expr1, expr2|
   puts("Test: #{expr1} =? #{expr2}")
@@ -1125,59 +1165,111 @@ task :test do
   Test["OutlineCountToStr[[1,1,3]]", "\"1.1.3\""]
 end
 
-desc "Build the website/documents (HTML/PDF)"
-task :build do
-  puts("#"*60)
-  puts("Build Single-Page HTML")
-  BuildSinglePageHTML[Files]
-  puts("Single-Page HTML DONE!")
-  puts("^"*60)
-
-  puts("#"*60)
-  puts("Build Multi-Page HTML")
-  BuildMultiPageHTML[
-    "tag" => "cse-user-manual",
-    "draft?" => true,
-    "date" => nil,
-    "output-dir" => "build/output/cse-user-manual",
-    "do-navigation?" => true,
-    "disable-compression?" => !USE_NODE,
-    "levels" => Levels
-  ][Files]
-  puts("Multi-Page HTML DONE!")
-  puts("^"*60)
-
-  puts("#"*60)
-  puts("Building PDF...(grab a coffee)")
-  BuildPDF[Files]
-  puts("PDF DONE!")
-  puts("^"*60)
-
-  web_config = YAML.load_file(File.join(SRC_DIR, "web-page.yaml"))
-  web_manifest = web_config["sections"]
-  web_levels = web_manifest.map {|x| x[0]}
-  web_files = web_manifest.map {|x| x[1]}
-  puts("#"*60)
-  puts("Build Site HTML")
-  BuildMultiPageHTML[
-    "tag" => "web-site",
-    "date" => nil,
-    "draft?" => true,
-    "subtitle" => nil,
-    "title" => "California Simulation Engine",
-    "do-navigation?" => false,
-    "output-dir" => "build/output",
-    "disable-toc?" => true,
-    "disable-xlink?" => true,
-    "disable-compression?" => !USE_NODE,
-    "levels" => web_levels
-  ][web_files]
-  puts("Site HTML DONE!")
-  puts("^"*60)
+def time_it(&block)
+  start_time = Time.now
+  block.call
+  puts("Elapsed time: #{Time.now - start_time} seconds")
 end
 
+desc "Setup gh-pages and node if used"
+task :setup do
+  SetupGHPages[] if USE_GHPAGES
+  InstallNodeDeps[] if USE_NODE
+end
+
+desc "Build single-page HTML"
+task :build_html_single => [:setup] do
+  time_it do
+    puts("#"*60)
+    puts("Build Single-Page HTML")
+    BuildSinglePageHTML[
+      "tag" => "cse-user-manual-single-page",
+      "draft?" => DRAFT,
+      "date" => DATE,
+      "output-dir" => "build/output",
+      "output-file-name" => "cse-user-manual.html",
+      "do-navigation?" => true,
+      "disable-compression?" => !USE_NODE,
+      "levels" => Levels,
+    ][Files]
+    puts("Single-Page HTML DONE!")
+    puts("^"*60)
+  end
+end
+
+desc "Build multi-page html"
+task :build_html_multi => [:setup] do
+  time_it do
+    puts("#"*60)
+    puts("Build Multi-Page HTML")
+    BuildMultiPageHTML[
+      "tag" => "cse-user-manual",
+      "draft?" => DRAFT,
+      "date" => DATE,
+      "output-dir" => "build/output/cse-user-manual",
+      "do-navigation?" => true,
+      "disable-compression?" => !USE_NODE,
+      "levels" => Levels,
+    ][Files]
+    puts("Multi-Page HTML DONE!")
+    puts("^"*60)
+  end
+end
+
+desc "Build PDF"
+task :build_pdf => [:setup] do
+  time_it do
+    puts("#"*60)
+    puts("Building PDF...(note: can take up to several minutes)")
+    BuildPDF[
+      "tag" => "cse-user-manual-pdf",
+      "output-dir" => "build/output/pdfs",
+      "output-file-name" => "cse-user-manual.pdf",
+      "levels" => Levels,
+    ][Files]
+    puts("PDF DONE!")
+    puts("^"*60)
+  end
+end
+
+desc "Build Site"
+task :build_site => [:setup] do
+  time_it do
+    web_config = YAML.load_file(File.join(SRC_DIR, "web-page.yaml"))
+    web_manifest = web_config["sections"]
+    web_levels = web_manifest.map {|x| x[0]}
+    web_files = web_manifest.map {|x| x[1]}
+    puts("#"*60)
+    puts("Build Site HTML")
+    BuildMultiPageHTML[
+      "tag" => "web-site",
+      "date" => nil,
+      "draft?" => true,
+      "subtitle" => nil,
+      "title" => "California Simulation Engine",
+      "do-navigation?" => false,
+      "output-dir" => "build/output",
+      "disable-toc?" => true,
+      "disable-xlink?" => true,
+      "disable-compression?" => !USE_NODE,
+      "levels" => web_levels
+    ][web_files]
+    puts("Site HTML DONE!")
+    puts("^"*60)
+  end
+end
+
+all_builds = [:build_html_single, :build_html_multi, :build_site]
+all_builds << :build_pdf if BUILD_PDF
+
+desc "Build everything"
+task :build_all => all_builds
+
+desc "Build everything (alias for build_all)"
+task :build => all_builds
+
 desc "Removes the entire build directory. Note: you will loose build cache!"
-task :clean_all do
+task :clean do
   Clean[BUILD_DIR]
 end
 
@@ -1212,4 +1304,4 @@ task :check_manifests do
   unknown_files.sort.each {|f| puts(" - #{f}")}
 end
 
-task :default => [:build]
+task :default => [:build_all]
