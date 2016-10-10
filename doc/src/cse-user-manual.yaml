@@ -30,7 +30,6 @@ css-files:
   - "/css/base.css"
 sections:
   - [1, "introduction.md"]
-  - [1, "about-cse.md"]
   - [1, "operation.md"]
   - [1, "input-structure.md"]
   - [1, "input-data.md"]
@@ -68,7 +67,6 @@ sections:
   - [2, "records/coolplant.md"]
   - [2, "records/chiller.md"]
   - [2, "records/towerplant.md"]
-  - [2, "records/hploop.md"]
   - [2, "records/reportfile.md"]
   - [2, "records/report.md"]
   - [2, "records/reportcol.md"]

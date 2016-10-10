@@ -59,9 +59,10 @@ CSE sets the command processor ERRORLEVEL to 2 if any error occurs in the sessio
 <!--
 REST OF FILE (7 PAGES) IS ALL HIDDEN TEST 7-92 rob
 -->
-### Results Files
 
 <!--
+### Results Files
+
     This section hidden by rob 7-26-92 becuase 1) it doesn't explain what its doing (showing examples of the reports, I guess) 2) it generates a lot of blank paper - need to use small line spacing to show a whole report page in a box on one page, or something 3) style is wrong: no monospace font; .5 lines between lines (may be my change).  Probably need to use reports without page formatting, or copy them in and doctor them.
 
     Run log (LOG)
@@ -84,15 +85,17 @@ REST OF FILE (7 PAGES) IS ALL HIDDEN TEST 7-92 rob
 
     User Defined Table (UDT)
 -->
-### Error Files
 
 <!--
+
+### Error Files
+
 *Hidden by rob 7-26-92.  Suggest explaining, then showing a copied-in and doctored example.*
 
 Error Messages (ERR)
 
 **Error! Not a valid filename.**
--->
+
 ### External File Interface
 
 ### Hourly files
@@ -100,6 +103,8 @@ Error Messages (ERR)
 ## Helpful Hints
 
 ### Memory
+
+-->
 
 <!--
 *Hidden by rob, 7-26-92: it doesn't say anything. When restored, need to address extended memory version here.*

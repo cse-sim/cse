@@ -1591,9 +1591,9 @@ At risk of beating the topic to death, we're going to review once more the frequ
 
 Also there are end-of varieties of all of the above; these are values computed during simulation: end of each hour, end of run, etc. Such values may be reported (using a probe in a UDT report), but will produce an error message if probed in an expression for an input member value.
 
+<!--
 ### Probes: Issues and Cautions
 
-<!--
 Watch yourself when using znRes[ ].prior when combined with AUTOSIZE – there is no prior!
 -->
 
