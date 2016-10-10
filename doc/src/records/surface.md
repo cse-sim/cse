@@ -59,14 +59,17 @@ Surface tilt from horizontal. Values outside the range 0 to 360 are first normal
 
 Azimuth of surface with respect to znAzm. The azimuth used in simulating a surface is bldgAzm + znAzm + sfAzm; the surface is rotated if any of those are changed. Values outside the range 0 to 360 are normalized to that range. Required for non-horizontal surfaces.
 
-  ----------------------------------------------------------------------
-  **Units **Legal    **Defaul **Required**                      **Variab
-  **      Range**    t**                                        i
-                                                                l ity**
-  ------- ---------- -------- --------------------------------- --------
-  degrees unrestrict *none*   Required if *sfTilt* $\neq$ 0 and constant
-          ed                  *sfTilt* $\neq$ 180               
-  ----------------------------------------------------------------------
+  ---------------------------------------------------------------
+  **Units** **Legal**    **Default** **Required** **Variability**
+            **Range**
+  --------- ------------ ----------- ------------ ---------------
+  degrees   unrestricted *none*      Required if       constant
+                                     *sfTilt*
+                                     $\neq$ 0
+                                     and *sfTilt*
+                                     $\neq$ 180               
+
+  ---------------------------------------------------------------
 
 **sfModel=*choice***
 
@@ -191,27 +194,27 @@ Outside surface (air film) conductance. Ignored for sfModel = Forward\_Differenc
 
 Surface exterior absorptivity.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal      **Defaul **Required**                      **Variab
-  s**    Range**      t**                                        i
-                                                                 l ity**
-  ------ ------------ -------- --------------------------------- --------
-  (none) 0 $\le$ *x*  0.5      Required if *sfExCon* = AMBIENT   monthly-
-         $\le$ 1               or *sfExCon* = SPECIFIEDT         h
-                                                                 o urly
-  -----------------------------------------------------------------------
+  -------------------------------------------------------------------------
+  **Units** **Legal**   **Default** **Required**            **Variability**
+            **Range**
+  --------- ----------- ----------- ----------------------- ---------------
+  (none)    0 $\le$ *x*     0.5     Required if *sfExCon* = monthly-
+            $\le$ 1                 AMBIENT or *sfExCon* =  hourly
+                                    SPECIFIEDT
+  -------------------------------------------------------------------------
 
 **sfInAbs=*float***
 
 Surface interior solar absorptivity.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal      **Default**                       **Requir **Variab
-  s**    Range**                                        ed**     i lity**
-  ------ ------------ --------------------------------- -------- --------
-  (none) 0 $\le$ *x*  sfType = CEILING, 0.2; sfType =   No       monthly-
-         $\le$ 1      WALL, 0.6; sfType = FLOOR, 0.8             h ourly
-  -----------------------------------------------------------------------
+  ----------------------------------------------------------------------------
+  **Units** **Legal**    **Default**              **Required** **Variability**
+            **Range**
+  --------- ------------ ------------------------ ------------ ---------------
+  (none)    0 $\le$ *x*  sfType = CEILING, 0.2;\  No           monthly-
+            $\le$ 1      sfType = WALL, 0.6;\                  hourly
+                         sfType = FLOOR, 0.8
+  ----------------------------------------------------------------------------
 
 **sfExEpsLW=*float***
 
@@ -263,42 +266,39 @@ Optional to indicates the end of the surface definition. Alternatively, the end 
 
 The following tables summarize the defaults and legal ranges of surface members for each sfType. "n.a." indicates "not applicable" and also "not allowed".
 
-  ----------------------------------------------------------------------
-  **Membe **WALL**                  **FLOOR**    **CEILING**
-  r**                                            
-  ------- ------------------------- ------------ -----------------------
-  sfTilt  optional, default=90, 60  n.a. (fixed  optional, default=0, 0
-          $<$ *sfTilt* $<$ 180      at 180)      $\le$ *sfTilt* $\le$ 60
+  -------------------------------------------------------------------------
+  **Member** **WALL**                  **FLOOR**    **CEILING**
+  ---------- ------------------------- ------------ -----------------------
+  sfTilt     optional, default=90, 60  n.a. (fixed  optional, default=0, 0
+             $<$ *sfTilt* $<$ 180      at 180)      $\le$ *sfTilt* $\le$ 60
 
-  sfAzm   **required**              n.a.         **required if sfTilt
-                                                 $>$ 0**
-  ----------------------------------------------------------------------
+  sfAzm      **required**              n.a.         **required if sfTilt
+                                                    $>$ 0**
+  -------------------------------------------------------------------------
 
   -----------------------------------------------------------------------
-  \*\*Membe  **WALL**/**FLOOR**/**CEILING**
-  r* *       
-  ---------- ------------------------------------------------------------
-  sfArea     **required**
+  **Member**  **WALL**/**FLOOR**/**CEILING**
+  ----------- ------------------------------------------------------------
+  sfArea      **required**
 
-  sfCon      **required unless sfU given**
+  sfCon       **required unless sfU given**
 
-  sfU        **required unless sfCon given**
+  sfU         **required unless sfCon given**
 
-  sfInH      optional, default = 1.5
+  sfInH       optional, default = 1.5
 
-  sfExH      optional, default per *sfExCon*
+  sfExH       optional, default per *sfExCon*
 
-  sfExCnd    optional, default = AMBIENT
+  sfExCnd     optional, default = AMBIENT
 
-  sfExAbs    optional if *sfExCon* = AMBIENT or *sfExCon* = SPECIFIEDT
-             (default = .5), else n.a.
+  sfExAbs     optional if *sfExCon* = AMBIENT or *sfExCon* = SPECIFIEDT
+              (default = .5), else n.a.
 
-  sfExT      **required if sfExCon = SPECIFIEDT; else n.a.**
+  sfExT       **required if sfExCon = SPECIFIEDT; else n.a.**
 
-  sfAdjZn    **required if sfExCon = ADJZN; else n.a.**
+  sfAdjZn     **required if sfExCon = ADJZN; else n.a.**
 
-  sfGrndRef  optional, default to grndRefl
-  l          
+  sfGrndRefl  optional, default to grndRefl
   -----------------------------------------------------------------------
 
 

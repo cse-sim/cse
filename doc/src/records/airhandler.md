@@ -125,14 +125,15 @@ Unless *ahTsSp* is ZN or ZN2, the AIRHANDLER does not know whether it is heating
 
 Giving *ahTsSp* is disallowed for an air handler with no economizer, no heat coil and no cooling coil. Such an AIRHANDLER object is valid as a ventilator; its supply temperature is not controlled. but rather determined by the outside temperature and/or the return air temperature.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal** **Range**     **Defaul **Required**          **Variabi
-  s**                            t**                            l
-                                                                ity**
-  ------ ----------------------- -------- --------------------- ---------
-  ^o^F   *number*, RA\*, WZ, CZ, 0        YES, if coil(s) or    hourly
-         ZN\*\*, ZN2\*\*                  economizer present    
-  -----------------------------------------------------------------------
+  ---------------------------------------------------------------------------
+  **Unit** **Legal**        **Default**   **Required**       **Variability**
+           **Range**
+  -------- --------------- ------------- ------------------ -----------------
+  ^o^F     *number*, RA\*,   0            YES, if coil(s)    hourly
+            WZ, CZ,                       or economizer    
+            ZN\*\*,                       present
+            ZN2\*\*
+  ---------------------------------------------------------------------------
 
 \* ahTsRaMn, ahTsRaMx, ahTsMn, and ahTsMx are *required* input for this choice.
 
@@ -232,15 +233,18 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
   ^o^F        *no limit*; typically: 40 $\le$ *x* $\le$ 140^o^   0^o^F         Only for *ahTsSp*=RA   hourly
 
 <!-- P to permit page break after frame -->
-  -----------------------------------------------------------------------
-  **Uni **Legal Range**         **Defa **Required**               **Varia
-  ts**                          ult**                             b
-                                                                  ility**
-  ----- ----------------------- ------ -------------------------- -------
-  ^o^F  *no limit*; typically:  999^o^ Only for *ahTsSp*=RA;      hourly
-        40 $\le$ *x* $\le$      F      recommend giving for       
-        140^o^                         *ahTsSp*=ZN                
-  -----------------------------------------------------------------------
+
+  ------------------------------------------------------------------
+  **Units** **Legal**   **Default**   **Required**   **Variability**
+            **Range**
+  --------- ----------- ----------- ---------------- ---------------
+  ^o^F      *no limit*;  999^o^ F   Only for         hourly
+            typically:              *ahTsSp*=RA;
+            40 $\le$                recommend giving
+            *x* $\le$               for *ahTsSp*=ZN
+            140^o^                                 
+
+  ------------------------------------------------------------------
 
 **ahTsMx=*float***
 
@@ -271,6 +275,7 @@ Specify zones monitored to determine supply temperature setpoint value (control 
 A comma must be entered between zone names and after the word ALL\_BUT.
 
 <!-- P to permit page break after frame -->
+
   **Units**   **Legal Range**                                  **Default**   **Required**   **Variability**
   ----------- ------------------------------------------------ ------------- -------------- -----------------
               *name(s) of ZONEs* ALL ALL\_BUT *zone Name(s)*   ALL           NO             hourly
@@ -279,17 +284,18 @@ A comma must be entered between zone names and after the word ALL\_BUT.
 
 Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since ahTsSp = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.
 
-  ------------------------------------------------------------------------
-  **Unit **Legal     **Default**         **Required**             **Variab
-  s**    Range**                                                  i
-                                                                  lity**
-  ------ ----------- ------------------- ------------------------ --------
-         name of a   AIRHANDLER's        If *ahTsSp* = ZN with    hourly
-         TERMINAL    TERMINAL, if only   more than 1 TERMINAL     
-                     one                                          
-  ------------------------------------------------------------------------
+  -----------------------------------------------------------------
+  **Units** **Legal** **Default**  **Required**     **Variability**
+            **Range**
+  --------- --------- ------------ ---------------- ---------------
+            name of a AIRHANDLER's If *ahTsSp* = ZN hourly
+            TERMINAL  TERMINAL, if with more than 1
+                      only one     TERMINAL
+
+  -----------------------------------------------------------------
 
 <!-- For page break -->
+
 *AhTsRaMn* and *ahTsRaMx* are used when *ahTsSp* is RA.
 
 **ahTsRaMx=*float***
@@ -354,15 +360,14 @@ New possible text (after addition of sfanElecPwr): Only one of sfanElecPwr, sfan
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  ------------------------------------------------------------------------
-  **Unit **Legal   **Default**            **Required**            **Variab
-  s**    Range**                                                  i
-                                                                  lity**
-  ------ --------- ---------------------- ----------------------- --------
-  W/cfm  *x* $>$ 0 derived from sfanEff   If sfanEff and          constant
-                   and sfanShaftBhp       sfanShaftBhp not        
-                                          present                 
-  ------------------------------------------------------------------------
+  -------------------------------------------------------------------------
+  **Units** **Legal**   **Default**        **Required**     **Variability**
+            **Range**
+  --------- --------- -------------------- ---------------- ---------------
+  W/cfm     *x* $>$ 0 derived from sfanEff If sfanEff and          constant
+                      and sfanShaftBhp     sfanShaftBhp not        
+                                           present                 
+  -------------------------------------------------------------------------
 
 **sfanEff=*float***
 
@@ -484,15 +489,14 @@ design or rated pressure.
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  ------------------------------------------------------------------------
-  **Unit **Legal   **Default**            **Required**            **Variab
-  s**    Range**                                                  i
-                                                                  lity**
-  ------ --------- ---------------------- ----------------------- --------
-  W/cfm  *x* $>$ 0 derived from rfanEff   If rfanEff and          constant
-                   and rfanShaftBhp       rfanShaftBhp not        
-                                          present                 
-  ------------------------------------------------------------------------
+  -------------------------------------------------------------------------
+  **Units** **Legal** **Default**          **Required**     **Variability**
+            **Range**
+  --------- --------- -------------------- ---------------- ---------------
+  W/cfm     *x* $>$ 0 derived from rfanEff If rfanEff and   constant
+                      and rfanShaftBhp     rfanShaftBhp not        
+                                           present                 
+  -------------------------------------------------------------------------
 
 **rfanEff=*float***
 
@@ -812,15 +816,20 @@ During the fraction of the time spent defrosting, the heat pump's input remains 
 
 The program will issue an error message if *ahpDfrFMx* $\le$ *ahpDfrFMn*.
 
-  -----------------------------------------------------------------------
-  **Uni **Legal    **Default**                             **Requ **Varia
-  ts**  Range**                                            ired** b
-                                                                  ility**
-  ----- ---------- --------------------------------------- ------ -------
-        0 $\le$    *ahpDfrFMn*: .0222, (2 minutes/90       No     constan
-        *x* $\le$  minutes), *ahpDfrFMx*: .0889, (8               t
-        1          minutes/90 minutes)                            
-  -----------------------------------------------------------------------
+  ---------------------------------------------------------------
+  **Units** **Legal**  **Default**   **Required** **Variability**
+            **Range**
+  --------- ---------- ------------- ------------ ---------------
+            0 $\le$    *ahpDfrFMn*:  No           constant
+            *x* $\le$  .0222,
+            1          (2 minutes/90
+                       minutes),
+                       *ahpDfrFMx*:                            
+                       .0889, (8
+                       minutes / 90
+                       minutes)
+
+  ---------------------------------------------------------------
 
 **ahpDfrCap=*float***
 
@@ -1106,14 +1115,18 @@ The default values for the polynomial coefficients are the DOE2 PTAC values.
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust *ahccCaptRat* for the actual entering air temperatures. The condenser temperature is the outdoor drybulb, but not less than 70. See discussion in preceding paragraphs.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal   **Default**                           **Requi **Variab
-  s**    Range**                                         red**   i
-                                                                 lity**
-  ------ --------- ------------------------------------- ------- --------
-                   1.1839345, -0.0081087, 0.00021104,    No      constant
-                   -0.0061425, 0.00000161, -0.0000030            
-  -----------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+                      1.1839345,  No           constant
+                      -0.0081087,            
+                      0.00021104,
+                      -0.0061425,
+                      0.00000161,
+                      -0.0000030
+
+  ------------------------------------------------------------
 
 **pydxCaptF=a=a, b, c, d**
 
@@ -1127,14 +1140,18 @@ Coefficients of cubic polynomial function of relative flow (entering air cfm/*ah
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust *ahccEirR* for the actual entering air temperatures. The condenser temperature is the outdoor air drybulb, but not less than 70. If the entering air wetbulb is less than 60, 60 is used, in this function only. See discussion in preceding paragraphs.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal   **Default**                           **Requi **Variab
-  s**    Range**                                         red**   i
-                                                                 lity**
-  ------ --------- ------------------------------------- ------- --------
-                   -0.6550461, 0.03889096, -0.0001925,   No      constant
-                   0.00130464, 0.00013517, -0.0002247            
-  -----------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+                      -0.6550461, No           constant
+                      0.03889096,
+                      -0.0001925,
+                      0.00130464,
+                      0.00013517,
+                      -0.0002247            
+
+  ------------------------------------------------------------
 
 **pydxEirUl=*a, b, c, d***
 
@@ -1448,18 +1465,18 @@ Crankcase heater presence and control method. Choice of:
                 not operate anyway when the compressor is on.
   ------------- --------------------------------------------------------
 
-  -------------------------------------------------------------------------
-  **Units**  **Legal**         **Default**    **Required**   \*\*Variabilit
-             **Range**                                       y*
-                                                             *
-  ---------- ----------------- -------------- -------------- --------------
-             CONSTANT\         PTC\_CLO if    No             constant
-             CONSTANT\_CLO\    *ahhcType* is                 
-             PTC\              AHP, else NONE                
-             PTC\_CLO\                                       
-             TSTAT\                                          
-             NONE                                            
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------
+  **Units** **Legal**       **Default** **Required** **Variability**
+            **Range**
+  --------- --------------- ----------- ------------ ---------------
+            CONSTANT\       PTC\_CLO if No           constant
+            CONSTANT\_CLO\  *ahhcType*                 
+            PTC\            is AHP,                
+            PTC\_CLO\       else NONE                                
+            TSTAT\                                          
+            NONE                                            
+
+  ------------------------------------------------------------------
 
 **cchPMx=*float***
 

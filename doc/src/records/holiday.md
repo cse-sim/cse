@@ -55,28 +55,34 @@ Week of the month that the holiday is observed. hdCase, hdMon, and hdDow may be 
 
 Month that the holiday is observed.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal Range**                  **Defau **Required**   **Variab
-  s**                                     lt**                   i
-                                                                 lity**
-  ------ -------------------------------- ------- -------------- --------
-         JAN, FEB, MAR, APR, MAY, JUN,    *none*  required if    constant
-         JUL, AUG, SEP, OCT, NOV, DEC             hdCase given   
-  -----------------------------------------------------------------------
+  -----------------------------------------------------------------
+  **Units** **Legal**      **Default** **Required** **Variability**
+            **Range**
+  --------- -------------- ----------- ------------ ---------------
+            JAN, FEB, MAR, *none*      required if  constant
+            APR, MAY, JUN,             hdCase given   
+            JUL, AUG, SEP,
+            OCT, NOV, DEC
+
+  -----------------------------------------------------------------
 
 **hdDow*=choice***
 
 Day of the week that the holiday is observed.
 
-  ------------------------------------------------------------------------
-  **Unit **Legal Range**                   **Defau **Required**   **Variab
-  s**                                      lt**                   i
-                                                                  lity**
-  ------ --------------------------------- ------- -------------- --------
-         SUNDAY, MONDAY, TUESDAY,          MONDAY  required if    constant
-         WEDNESDAY, THURSDAY, FRIDAY,              hdCase given   
-         SATURDAY                                                 
-  ------------------------------------------------------------------------
+  -------------------------------------------------------------
+  **Units** **Legal**  **Default** **Required** **Variability**
+            **Range**
+  --------- ---------- ----------- ------------ ---------------
+            SUNDAY,    MONDAY      required if  constant
+            MONDAY,                hdCase given   
+            TUESDAY,
+            WEDNESDAY,
+            THURSDAY,
+            FRIDAY,
+            SATURDAY                                                 
+
+  -------------------------------------------------------------
 
 **endHoliday**
 

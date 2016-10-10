@@ -51,14 +51,21 @@ Provides user control over how program models this door:
                                       and the CZM zone model)
   ----------------------------------- -----------------------------------
 
-  ----------------------------------------------------------------------
-  **Unit **Legal Range**                       **Defau **Requir **Variab
-  s**                                          lt**    ed**     i lity**
-  ------ ------------------------------------- ------- -------- --------
-         QUICK, DELAYED DELAYED\_HOUR,         AUTO    No       constant
-         DELAYED\_SUBOUR, AUTO,                                 
-         FORWARD\_DIFFERENCE                                    
-  ----------------------------------------------------------------------
+  ---------------------------------------------------------------
+  **Units** **Legal**    **Default** **Required** **Variability**
+            **Range**
+  ------    ------------ ----------- ------------ ---------------
+            QUICK,       AUTO        No           constant
+            DELAYED
+            DELAYED
+            \_HOUR,
+            DELAYED
+            \_SUBOUR,
+            AUTO,
+            FORWARD
+            \_DIFFERENCE
+
+  ---------------------------------------------------------------
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------

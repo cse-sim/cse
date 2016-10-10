@@ -36,16 +36,23 @@ Designates the side of the surface to which the gain is to be targeted:
   EXTERIOR   Apply gain to exterior of surface
   ---------- -----------------------------------
 
-  ----------------------------------------------------------------------
-  **Uni **Legal   **Default**                              **Requ \*\*Va
-  ts**  Range**                                            ired** ria
-                                                                  bility
-                                                                  * *
-  ----- --------- ---------------------------------------- ------ ------
-        INTERIOR, Side of surface in zone containing       Yes    consta
-        EXTERIOR  window; or INTERIOR if both sides are in        n t
-                  zone containing window.                         
-  ----------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+            INTERIOR, Side of     Yes          constant
+            EXTERIOR  surface
+                      in zone
+                      containing
+                      window; or
+                      INTERIOR
+                      if both
+                      sides are
+                      in zone
+                      containing
+                      window.
+
+  ------------------------------------------------------------
 
 <!--
   ??This can produce some strange arrangements; verify that energy balance can be properly defined in all cases.

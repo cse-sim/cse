@@ -18,18 +18,20 @@ Name of export. Give after the word EXPORT.
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        No             constant
 
-**exExportfile=x*fname***
+**exExportfile=*fname***
 
 Name of export file to which current export will be written. If omitted, if EXPORT is within an EXPORTFILE object, report will be written to that export file, or else to the automatically-supplied EXPORTFILE "Primary", which by default uses the name of the input file with the extension .csv.
 
-  ------------------------------------------------------------------------
-  **Units **Legal Range** **Default**                  **Require **Variabi
-  **                                                   d**       l
-                                                                 ity**
-  ------- --------------- ---------------------------- --------- ---------
-          name of an      current *EXPORTFILE,* if     No        constant
-          *EXPORTFILE*    any, else "Primary"                    
-  ------------------------------------------------------------------------
+  -----------------------------------------------------------------
+  **Units** **Legal**    **Default**   **Required** **Variability**
+            **Range**
+  --------- ------------ ------------- ------------ ---------------
+            name of an   current       No           constant
+            *EXPORTFILE* *EXPORTFILE*,
+                         if any, else
+                         "Primary"                    
+
+  -----------------------------------------------------------------
 
 **exType=*choice***
 
@@ -51,17 +53,21 @@ Export Frequency: specifies interval for generating rows of export data:
 
 Initial day of export. Exports for which *exFreq* = YEAR do not allow specification of *exDayBeg* and *exDayEnd*; for MONTH exports, these members are optional and default to include the entire run; for DAY and shorter-interval exports, *exDayBeg* is required and *exDayEnd* defaults to *exDayBeg*.
 
-  ------------------------------------------------------------------------
-  \*\* \*\*Le **Default**       **Required**                         **Var
-  Un   ga                                                            i
-  its* l                                                             abili
-  *    Range*                                                        t
-       *                                                             y**
-  ---- ------ ----------------- ------------------------------------ -----
-       *date* first day of      Required for *exTypes* ZEB, ZST,     const
-              simulation if     MTR, AH, and UDTif *exFreq* is DAY,  a
-              *exFreq* = MONTH  HOUR, HOURANDSUB, or SUBHOUR         nt
-  ------------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+            *date*    first day   Required for constant
+                      of          *exTypes*
+                      simulation  ZEB, ZST,
+                      if *exFreq* MTR, AH,
+                      = MONTH     and UDT if
+                                  *exFreq* is
+                                  DAY, HOUR,
+                                  HOURANDSUB,
+                                  or SUBHOUR
+
+  ------------------------------------------------------------
 
 **exDayEnd=*date***
 

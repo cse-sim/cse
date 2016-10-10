@@ -138,31 +138,37 @@ Report Frequency: specifies interval for generating rows of report data:
 
 We recommend using HOURly and more frequent reports sparingly, to report on only a few typical or extreme days, or to explore a problem once it is known what day(s) it occurs on. Specifying such reports for a full-year run will generate a huge amount of output and cause extremely slow CSE execution.
 
-  ------------------------------------------------------------------------
-  **Unit **Legal Range**        **Defau **Required**              **Variab
-  s**                           lt**                              i
-                                                                  lity**
-  ------ ---------------------- ------- ------------------------- --------
-         YEAR, MONTH, DAY,              Required for *rpTypes*    constant
-         HOUR, HOURANDSUB,              ZEB, ZST, MTR, AH, and    
-         SUBHOUR                        UDT                       
-  ------------------------------------------------------------------------
+  --------------------------------------------------------------
+  **Units** **Legal**   **Default** **Required** **Variability**
+            **Range**
+  --------- ----------- ----------- ------------ ---------------
+            YEAR,                   Required for constant
+            MONTH,                  *rpTypes*
+            DAY, HOUR,              ZEB, ZST,                       
+            HOURANDSUB,             MTR, AH,
+            SUBHOUR                 and UDT
+
+  --------------------------------------------------------------
 
 **rpDayBeg=*date***
 
 Initial day of period to be reported. Reports for which *rpFreq* = YEAR do not allow specification of *rpDayBeg* and *rpDayEnd*; for MONTH reports, these members default to include all months in the run; for DAY and shorter-interval reports, *rpDayBeg* is required and *rpDayEnd* defaults to *rpDayBeg*.
 
-  ------------------------------------------------------------------------
-  \*\* \*\*Le **Default**       **Required**                         **Var
-  Un   ga                                                            i
-  its* l                                                             abili
-  *    Range*                                                        t
-       *                                                             y**
-  ---- ------ ----------------- ------------------------------------ -----
-       *date* first day of      Required for *rpTypes* ZEB, ZST,     const
-              simulation if     MTR, AH, and UDTif *rpFreq* is DAY,  a
-              *rpFreq* = MONTH  HOUR, HOURANDSUB, or SUBHOUR         nt
-  ------------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+            *date*    first day   Required for constant
+                      of          *rpTypes*
+                      simulation  ZEB, ZST,
+                      if          MTR, AH,
+                      *rpFreq* =  and UDT if
+                      MONTH       *rpFreq* is
+                                  DAY, HOUR,
+                                  HOURANDSUB,
+                                  or SUBHOUR
+
+  ------------------------------------------------------------
 
 **rpDayEnd=*date***
 
@@ -192,15 +198,16 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
 
 Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal Range**     **Defaul **Required**              **Variabi
-  s**                        t**                                l
-                                                                ity**
-  ------ ------------------- -------- ------------------------- ---------
-         name of an                   Required for *rpType*=AH, constant
-         *AIRHANDLER*, ALL,           AHSIZE, or AHSIZE         
-         SUM                                                    
-  -----------------------------------------------------------------------
+  ----------------------------------------------------------------
+  **Units** **Legal**     **Default** **Required** **Variability**
+            **Range**
+  --------- ------------- ----------- ------------ ---------------
+            name of an                Required for constant
+            *AIRHANDLER*,             *rpType*=AH,
+            ALL, SUM                  AHSIZE, or
+                                      AHSIZE
+
+  ----------------------------------------------------------------
 
 **rpTu=tu*Name***
 

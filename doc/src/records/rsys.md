@@ -44,14 +44,18 @@ Specifies type of system.
                   meter rsElecMtr
   --------------- ---------------------------------------
 
-  ------------------------------------------------------------------------
-  **Units **Legal Range**                    **Defaul **Require **Variabil
-  **                                         t**      d**       i
-                                                                ty**
-  ------- ---------------------------------- -------- --------- ----------
-          ACFURNACE, ACRESISTANCE, ASHP, AC, ACFURNAC No        constant
-          FURNACE, RESISTANCE                E                  
-  ------------------------------------------------------------------------
+  ----------------------------------------------------------------
+  **Units** **Legal**     **Default** **Required** **Variability**
+            **Range**
+  --------- ------------- ----------- ------------ ---------------
+            ACFURNACE,    No          constant
+            ACRESISTANCE,
+            ACFURNACE
+            ASHP, AC,
+            FURNACE,
+            RESISTANCE
+
+  ----------------------------------------------------------------
 
 **rsDesc=*string***
 
@@ -218,14 +222,16 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 ^o^F.
 
-  ------------------------------------------------------------------------
-  **Unit **Legal    **Default**                         **Requir **Variabi
-  s**    Range**                                        ed**     l
-                                                                 ity**
-  ------ ---------- ----------------------------------- -------- ---------
-         *x* $>$ 0  Estimated from rsCap35, rsCap47,    no       constant
-                    rsCap17, rsCOP47, and rsCOP17                
-  ------------------------------------------------------------------------
+  ------------------------------------------------------------------
+  **Units** **Legal** **Default**       **Required** **Variability**
+            **Range**                                        
+  --------- --------- ----------------- ------------ ---------------
+            *x* $>$ 0 Estimated from    no           constant
+                      rsCap35, rsCap47,
+                      rsCap17, rsCOP47,
+                      and rsCOP17
+
+  ------------------------------------------------------------------
 
 **rsCOP17=*float***
 

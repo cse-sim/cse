@@ -14,14 +14,15 @@ Name of construction. Required for reference from SURFACE and DOOR objects, belo
 
 U-value for the construction (NOT including surface (air film) conductances; see SURFACE statements). If omitted, one or more LAYERs must immediately follow to specify the LAYERs that make up the construction. If specified, no LAYERs can follow.
 
-  ------------------------------------------------------------------------
-  **Units**   **Legal     **Default**       **Required**        **Variabil
-              Range**                                           i
-                                                                ty**
-  ----------- ----------- ----------------- ------------------- ----------
-  Btuh/ft^2^- *x* $>$ 0   *calculated from  if omitted, LAYERs  constant
-  ^o^F                    LAYERs*           must follow         
-  ------------------------------------------------------------------------
+  --------------------------------------------------------------
+  **Units**   **Legal** **Default** **Required** **Variability**
+              **Range**
+  ----------- --------- ----------- ------------ ---------------
+  Btuh/ft^2^- *x* $>$ 0 calculated  if omitted,  constant
+  ^o^F                  from LAYERs LAYERs must
+                                    follow         
+
+  --------------------------------------------------------------
 
 **endConstruction**
 

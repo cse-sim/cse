@@ -51,15 +51,20 @@ Choice determining interzone ventilation
                    the air stream
   ---------------- ---------------------------------------
 
-  -----------------------------------------------------------------------
-  **Uni **Legal Range**                             **Defa **Requ **Varia
-  ts**                                              ult**  ired** b
-                                                                  ility**
-  ----- ------------------------------------------- ------ ------ -------
-        NONE, TWOWAY, AIRNET, AIRNETEXT,            None   No     constan
-        AIRNETHORIZ, AIRNETEXTFAN, AIRNETIZFAN,                   t
-        AIRNETEXTFLOW, AIRNETIZFLOW                               
-  -----------------------------------------------------------------------
+  -----------------------------------------------------------------
+  **Units** **Legal**      **Default** **Required** **Variability**
+            **Range**
+  --------- -------------- ----------- ------------ ---------------
+            NONE, TWOWAY,  None        No           constant
+            AIRNET,
+            AIRNETEXT,
+            AIRNETHORIZ,
+            AIRNETEXTFAN,
+            AIRNETIZFAN,
+            AIRNETEXTFLOW,
+            AIRNETIZFLOW
+
+  -----------------------------------------------------------------
 
 **izZn1=*znName***
 
@@ -73,15 +78,18 @@ Name of primary zone. Flow rates $>$ 0 are into the primary zone.
 
 Name of secondary zone.
 
-  ----------------------------------------------------------------------
-  **Unit **Legal   **Defau **Required**                         **Variab
-  s**    Range**   lt**                                         i
-                                                                lity**
-  ------ --------- ------- ------------------------------------ --------
-         name of a         required unless izNVType =           constant
-         ZONE              AIRNETEXT,AIRNETEXTFAN,              
-                           orAIRNETEXTFLOW                      
-  ----------------------------------------------------------------------
+  ---------------------------------------------------------------
+  **Units** **Legal** **Default** **Required**    **Variability**
+            **Range**
+  --------- --------- ----------- --------------- ---------------
+            name of a             required unless constant
+            ZONE                  izNVType =
+                                  AIRNETEXT,
+                                  AIRNETEXTFAN,
+                                  or
+                                  AIRNETEXTFLOW
+
+  ---------------------------------------------------------------
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. ?? Not known to work properly as of July 2011
 
@@ -203,15 +211,14 @@ Only one of izfanElecPwr, izfanEff, and izfanShaftBhp may be given: together wit
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  ------------------------------------------------------------------------
-  **Unit **Legal   **Default**            **Required**            **Variab
-  s**    Range**                                                  i
-                                                                  lity**
-  ------ --------- ---------------------- ----------------------- --------
-  W/cfm  *x* $>$ 0 derived from izfanEff  If izfanEff and         constant
-                   and izfanShaftBhp      izfanShaftBhp not       
-                                          present                 
-  ------------------------------------------------------------------------
+  ------------------------------------------------------------------
+  **Units** **Legal** **Default**   **Required**     **Variability**
+            **Range**
+  --------- --------- ------------- ---------------- ---------------
+  W/cfm     *x* $>$ 0 derived from  If izfanEff and  constant
+                      izfanEff and  izfanShaftBhp
+                      izfanShaftBhp not present
+  ------------------------------------------------------------------
 
 **izfanEff=*float***
 

@@ -34,18 +34,18 @@ Local heating thermostat setpoint. Hourly expression may be used to schedule as 
   ----------- ----------------- ------------------------- -------------- -----------------
   ^o^F        *x* $>$ 0         *no thermostat control*   No             hourly
 
-***tuQMnLh*=*float***
+**tuQMnLh=*float***
 
 Minimum local heat output or set local heat output. If tuTLh is given, this is the minimum output, used when the thermostat is not calling for (local) heat. If tuTLh is not given, giving tuQMnLh implies *set output* local heat and specifies the set output level. An hourly expression may be used to schedule as desired.
 
-  -----------------------------------------------------------------------
-  **Units **Legal     **Default**             **Required**      **Variabi
-  **      Range**                                               l
-                                                                i ty**
-  ------- ----------- ----------------------- ----------------- ---------
-  Btuh    *x* $\ge$ 0 0 if tuTLh givenelse no For set output    hourly
-                      local heat              local heat        
-  -----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  **Units** **Legal**     **Default**    **Required**   **Variability**
+            **Range**
+  --------- ----------- ---------------- -------------- ---------------
+  Btuh      *x* $\ge$ 0 0 if tuTLh given For set output hourly
+                        else no local    local heat        
+                        heat
+  ---------------------------------------------------------------------
 
 The next three items are allowed only for thermostat controlled local heating (tuTLh given):
 
@@ -94,15 +94,18 @@ Caution should be exercised in using air heat and air cooling in the same termin
 
 Name of air handler supplying this terminal.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal       **Default**                        **Requi **Varia
-  s**    Range**                                          red**   b
-                                                                  i
-                                                                  lity**
-  ------ ------------- ---------------------------------- ------- -------
-  Btu/F  *name of an   *If omitted*, terminal has no air  No      constan
-         AIRHANDLER*   heating nor cooling capability.            t
-  -----------------------------------------------------------------------
+  -----------------------------------------------------------------
+  **Units** **Legal**    **Default**   **Required** **Variability**
+            **Range**
+  --------- ------------ ------------- ------------ ---------------
+  Btu/F     name of an   *If omitted*, No           constant
+            *AIRHANDLER* terminal has
+                         no air
+                         heating nor
+                         cooling
+                         capability.
+
+  -----------------------------------------------------------------
 
 If both of the following (tuTH and tuTC) are specified, be careful not to accidentally permit the heating setpoint to be active when the air handler is blowing cold air, or vice versa. CSE's simulated thermostats and VAV boxes are at least as dumb as their real counterparts; if the thermostat calls for heat, the VAV damper will open even if the supply air is colder than the zone. To schedule deactivation of the air heating or cooling capability, schedule an extreme setpoint, such as 1 for heating or 199 for cooling.
 
@@ -132,17 +135,18 @@ The design air flow rate is used to apportion the available cfm among the termin
 
 CSE will default tuVfDs to the largest of tuVfMn, tuVfMxH, and tuVfMxC unless a variable expression is given for any of them. Thus, you must given tuVfDs only when a variable minimum or maximum flow is used, or when you wish to override the default cfm apportionment under fan overload conditions.
 
-  ----------------------------------------------------------------------
-  **Uni **Legal  **Default**                **Required**          **Vari
-  ts**  Range**                                                   a
-                                                                  b
-                                                                  ility*
-                                                                  *
-  ----- -------- -------------------------- --------------------- ------
-  cfm   *x*      largest of tuVfMn,         Yes, if tuVfMn,       hourly
-        $\ge$ 0  tuVfMxH, and tuVfMxC if    tuVfMxH, or tuVfMxC   
-                 all are constant           is variable           
-  ----------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+  cfm       *x*       largest of  Yes, if      hourly
+            $\ge$ 0   tuVfMn,     tuVfMn,   
+                      tuVfMxH,    tuVfMxH, or
+                      and tuVfMxC tuVfMxC is
+                      if all are  variable
+                      constant
+
+  ------------------------------------------------------------
 
 **tuVfMn=*float***
 
@@ -152,14 +156,17 @@ If neither tuTH nor tuTC is given, giving tuVfMn implies *set output* air capabi
 
 If either setpoint (tuTH or tuTC) is given, tuVfMn is the cfm used when the thermostat is not calling for heat nor cold; it might be non-0, for example, to meet ventilation requirements. If tuVfMn is larger than tuVfMxH (when heating) or tuVfMxC (when cooling), it overrules them; thus a minimum (e.g. ventilation) requirement need not be considered in formulating expressions for the maximum flows.
 
-  -----------------------------------------------------------------------
-  **Unit **Legal    **Default**                **Required**      **Variab
-  s**    Range**                                                 i
-                                                                 l ity**
-  ------ ---------- -------------------------- ----------------- --------
-  cfm    *x* $\ge$  0 if tuTH or tuTC given,   For set output    hourly
-         0          else no air heat/cool      air operation     
-  -----------------------------------------------------------------------
+  ------------------------------------------------------------
+  **Units** **Legal** **Default** **Required** **Variability**
+            **Range**
+  --------- --------- ----------- ------------ ---------------
+  cfm       *x* $\ge$ 0 if tuTH   For set      hourly
+            0         or tuTC     output air
+                      given,      operation
+                      else no air
+                      heat/cool
+
+  ------------------------------------------------------------
 
 **tuVfMxH=*float***
 

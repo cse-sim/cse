@@ -42,14 +42,17 @@ Name of framing MATERIAL in layer, if any. At most one layer with lrFrmMat is al
 
 Fraction of layer that is framing. Must be specified if frmMat is specified. See caution above regarding framed-layer model.
 
-  ----------------------------------------------------------------------
-  **Unit **Legal       **Default** **Required**                 **Variab
-  s**    Range**                                                i
-                                                                l ity**
-  ------ ------------- ----------- ---------------------------- --------
-         0 $\leq$ *x*  *no framed  Required if *lrFrmMat*       constant
-         $\leq$ 1      layer*      specified, else disallowed   
-  ----------------------------------------------------------------------
+  ---------------------------------------------------------------
+  **Units** **Legal**    **Default** **Required** **Variability**
+            **Range**
+  --------- ------------ ----------- ------------ ---------------
+            0 $\leq$ *x* *no framed  Required if  constant
+            $\leq$ 1     layer*      *lrFrmMat*
+                                     specified,
+                                     else
+                                     disallowed
+
+  ---------------------------------------------------------------
 
 **endLayer**
 

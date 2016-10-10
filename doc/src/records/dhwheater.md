@@ -87,31 +87,32 @@ Specifies tank volume. Documentation only. Must be omitted or 0 for instantaneou
 
 Rated energy factor, used in modeling whType SMALLSTORAGE and SMALLINSTANTANEOUS.
 
-  ------------------------------------------------------------------------
-  **Units**  **Legal**       **Default**  **Required**       \*\*Variabili
-             **Range**                                       ty*
-                                                             *
-  ---------- --------------- ------------ ------------------ -------------
-             $>$ 0           .82          When whType =      constant
-                                          SMALLSTORAGE and   
-                                          whLDEF not         
-                                          specified or       
-                                          SMALLINSTANTANEOUS 
-  ------------------------------------------------------------------------
+  -----------------------------------------------------------------------
+  **Units**  **Legal** **Default**  **Required**         **Variability**
+             **Range**
+  ---------- --------- ----------- -------------------- -----------------
+              $>$ 0          .82    When whType =        constant
+                                    SMALLSTORAGE and   
+                                    whLDEF not         
+                                    specified or       
+                                    SMALLINSTANTANEOUS 
+
+  -----------------------------------------------------------------------
 
 **whLDEF=*float***
 
-Load-dependent energy factor, used in modeling whType SMALLSTORAGE. Can
+Load-dependent energy factor, used in modeling whType SMALLSTORAGE.
 
-  ----------------------------------------------------------------------
-  **Units**  **Legal**      **Default**    **Required**   **Variability*
-             **Range**                                    *
-  ---------- -------------- -------------- -------------- --------------
-             $>$ 0          Calculated via When whType =  constant
-                            DHWSYS PreRun  SMALLSTORAGE   
-                            mechanism      and PreRun not 
-                                           used           
-  ----------------------------------------------------------------------
+  ------------------------------------------------------------------
+  **Units** **Legal** **Default**    **Required**    **Variability**
+            **Range**
+  --------- --------- -------------- -------------- ----------------
+            $>$ 0     Calculated via When whType =   constant
+                      DHWSYS PreRun  SMALLSTORAGE   
+                      mechanism      and PreRun not 
+                                     used           
+
+  ------------------------------------------------------------------
 
 **whZone=*znName***
 

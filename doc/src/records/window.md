@@ -162,27 +162,33 @@ Ground reflectivity for this window.
 
 View factor from this window to sky for diffuse radiation. For the shading effects of an overhang, a wnVfSkyDf value smaller than the default would be used
 
-  -----------------------------------------------------------------------
-  **Units **Legal        **Default**                  **Require **Variabi
-  **      Range**                                     d**       l
-                                                                i ty**
-  ------- -------------- ---------------------------- --------- ---------
-  fractio 0 $\leq$ *x*   0.5 - 0.5\*cos(tilt) = .5    No        Monthly -
-  n       $\leq$ 1       for vertical surface                   Hourly
-  -----------------------------------------------------------------------
+  -------------------------------------------------------------
+  **Units** **Legal** **Default**  **Required** **Variability**
+            **Range**
+  --------- --------- ------------ ------------ ---------------
+  fraction  0 $\leq$  0.5 - 0.5    No           Monthly -
+            *x*       \* cos(tilt)              Hourly
+            $\leq$ 1  = .5 for
+                      vertical
+                      surface
+
+  -------------------------------------------------------------
 
 **wnVfGrndDf=*float***
 
 View factor from this window to ground for diffuse radiation. For the shading effects of a fin(s), both wnVfSkyDf and wnVfGrndDf would be used.
 
-  -----------------------------------------------------------------------
-  **Units **Legal        **Default**                  **Require **Variabi
-  **      Range**                                     d**       l
-                                                                i ty**
-  ------- -------------- ---------------------------- --------- ---------
-  fractio 0 $\leq$ *x*   0.5 + 0.5\*cos(tilt) = .5    No        Monthly -
-  n       $\leq$ 1       for vertical surface                   Hourly
-  -----------------------------------------------------------------------
+  -------------------------------------------------------------
+  **Units** **Legal** **Default**  **Required** **Variability**
+            **Range**
+  --------- --------- ------------ ------------ ---------------
+  fraction  0 $\leq$  0.5 + 0.5 \* No           Monthly -
+            *x*       cos(tilt) =               Hourly
+            $\leq$ 1  .5 for
+                      vertical
+                      surface
+
+  -------------------------------------------------------------
 
 **endWindow**
 

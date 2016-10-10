@@ -27,54 +27,58 @@ Duct segment surface area at outside face of insulation for flat duct shape, see
 
 Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct.
 
-  ------------------------------------------------------------------------
-  **Units **Legal     **Default**             **Required**      **Variabil
-  **      Range**                                               i
-                                                                ty**
-  ------- ----------- ----------------------- ----------------- ----------
-  ft^2^   *x* $\ge$ 0 Derived from dsDiameter (see above re     constant
-                      and dsLength            duct shape)       
-  ------------------------------------------------------------------------
+  -----------------------------------------------------------------
+  **Units** **Legal**   **Default**   **Required**  **Variability**
+            **Range**
+  --------- ----------- ------------- ------------- ---------------
+  ft^2^     *x* $\ge$ 0 Derived from  (see above re constant
+                         dsDiameter   duct shape)       
+                         and dsLength
+
+  -----------------------------------------------------------------
 
 **dsDiameter=*float***
 
 Duct segment round duct diameter (duct wall thickness assumed negligible)
 
-  ------------------------------------------------------------------------
-  **Units **Legal     **Default**             **Required**      **Variabil
-  **      Range**                                               i
-                                                                ty**
-  ------- ----------- ----------------------- ----------------- ----------
-  ft      *x* $\ge$ 0 Derived from dsInArea   (see above re     constant
-                      and dsLength            duct shape)       
-  ------------------------------------------------------------------------
+  ----------------------------------------------------------------
+  **Units** **Legal**   **Default**  **Required**  **Variability**
+            **Range**
+  --------- ----------- ------------ ------------- ---------------
+  ft        *x* $\ge$ 0 Derived from (see above re constant
+                        dsInArea and          duct shape)       
+                        dsLength
+
+  ----------------------------------------------------------------
 
 **dsLength=*float***
 
 Duct segment length.
 
-  ------------------------------------------------------------------------
-  **Units **Legal     **Default**             **Required**      **Variabil
-  **      Range**                                               i
-                                                                ty**
-  ------- ----------- ----------------------- ----------------- ----------
-  ft      *x* $\ge$ 0 Derived from dsInArea   (see above re     constant
-                      and dsDiameter          duct shape)       
-  ------------------------------------------------------------------------
+  ----------------------------------------------------------------
+  **Units** **Legal**   **Default**  **Required**  **Variability**
+            **Range**
+  --------- ----------- ------------ ------------- ---------------
+  ft        *x* $\ge$ 0 Derived from (see above re constant
+                        dsInArea and duct shape)       
+                        dsDiameter
+
+  ----------------------------------------------------------------
 
 **dsExCnd=*choice***
 
 Conditions surrounding duct segment.
 
-  ------------------------------------------------------------------------
-  **Units**   **Legal**        **Default**   **Required**   **Variability*
-              **Range**                                     *
-  ----------- ---------------- ------------- -------------- --------------
-              ADIABATIC,       ADJZN         No             constant
-              AMBIENT,                                      
-              SPECIFIEDT,                                   
-              ADJZN                                         
-  ------------------------------------------------------------------------
+  ------------------------------------------------------------------
+  **Units** **Legal**   **Default**    **Required**  **Variability**
+            **Range**
+  --------- ----------- -------------  ------------- ---------------
+            ADIABATIC,       ADJZN         No           constant
+            AMBIENT,                                      
+            SPECIFIEDT,                                   
+            ADJZN                                         
+
+  ------------------------------------------------------------------
 
 **dsAdjZn=*znName***
 

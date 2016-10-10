@@ -273,15 +273,14 @@ Only one of xfanElecPwr, xfanEff, and xfanShaftBhp may be given: together with x
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  ------------------------------------------------------------------------
-  **Unit **Legal** **Default**            **Required**            **Variab
-  s**    **Range**                                                i
-                                                                  lity**
-  ------ --------- ---------------------- ----------------------- --------
-  W/cfm  *x* $>$ 0 derived from xfanEff   If xfanEff and          constant
-                   and xfanShaftBhp       xfanShaftBhp not        
-                                          present                 
-  ------------------------------------------------------------------------
+  -------------------------------------------------------------------------
+  **Units** **Legal** **Default**          **Required**     **Variability**
+            **Range**
+  --------- --------- -------------------- ---------------- ---------------
+  W/cfm     *x* $>$ 0 derived from xfanEff If xfanEff and   constant
+                      and xfanShaftBhp     xfanShaftBhp not
+                                           present
+  -------------------------------------------------------------------------
 
 **xfanEff=*floatExhaust***
 
@@ -295,15 +294,14 @@ fan/motor/drive combined efficiency*.*
 
 Fan shaft power at design flow and pressure.
 
-  ------------------------------------------------------------------------
-  **Units **Legal     **Default**             **Required**      **Variabil
-  **      Range**                                               i
-                                                                ty**
-  ------- ----------- ----------------------- ----------------- ----------
-  BHP     *x* $>$ 0   derived from            If xfanElecPwr    constant
-                      xfanElecPwr and         not present       
-                      xfanVfDs                                  
-  ------------------------------------------------------------------------
+  ------------------------------------------------------------------
+  **Units** **Legal** **Default**     **Required**   **Variability**
+            **Range**
+  --------- --------- --------------- -------------- ---------------
+  BHP       *x* $>$ 0 derived from    If xfanElecPwr constant
+                      xfanElecPwr and not present
+                      xfanVfDs
+  ------------------------------------------------------------------
 
 **xfanMtr=*mtrName***
 
