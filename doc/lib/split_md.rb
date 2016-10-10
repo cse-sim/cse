@@ -12,7 +12,7 @@ def split_file_by(fname, levels=nil)
     File.join('..', 'src', fname),
     THIS_DIR
   )
-  md = File.read(src)
+  md = File.read(src, :encoding=>"UTF-8")
   json = Pandoc::MdToJson[md]
   doc = JSON.parse(json)
   sections = Pandoc::SplitJsonByHeadingLevel[doc, levels]
