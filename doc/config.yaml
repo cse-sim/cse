@@ -13,3 +13,4 @@ build-dir: 'build'
 output-dir: 'build/output'
 remote-repo-url: "https://github.com/cse-sim/cse.git"
 draft?: true
+verbose?: false

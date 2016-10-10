@@ -47,6 +47,7 @@ USE_NODE = CONFIG.fetch("use-node?")
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 DOCS_BRANCH = CONFIG.fetch("docs-branch")
 HTML_OUT_DIR = CONFIG.fetch("output-dir")
+VERBOSE = CONFIG.fetch("verbose?", false)
 PANDOC_GENERAL_OPTIONS = [
   "--parse-raw",
   "--standalone",
@@ -121,18 +122,37 @@ Run = lambda do |cmd, working_dir=nil|
   Dir.chdir(working_dir) do
     begin
       result = `#{cmd}`
+      raise "Error running command" if $?.exitstatus != 0
       if !result or result.empty?
-        LOG.write(".")
-        LOG.flush
+        if VERBOSE
+          LOG.write("executed command: `#{cmd}`\n")
+          LOG.write("... in directory: #{working_dir}\n")
+          LOG.flush
+        else
+          LOG.write(".")
+          LOG.flush
+        end
       else
-        LOG.write(".")
-        LOG.flush
-        if false
-          puts("... success! result:\n#{result}")
+        if VERBOSE
+          LOG.write("executed command: `#{cmd}`\n")
+          LOG.write("... in directory: #{working_dir}\n")
+          LOG.write("... result:\n#{result}\n")
+          LOG.flush
+        else
+          LOG.write(".")
+          LOG.flush
         end
       end
     rescue => e
-      puts("... failure:\n#{e.message}")
+      if VERBOSE
+        LOG.write("Error running command: `#{cmd}`\n")
+        LOG.write("... from directory: #{working_dir}\n")
+        LOG.write("... failure:\n #{result}")
+        LOG.flush
+      else
+        LOG.write("X")
+        LOG.flush
+      end
     end
   end
 end
@@ -486,7 +506,13 @@ XLinkMarkdown = lambda do |config|
         }
         new_doc = Pandoc::Walk[doc, f, state]
         new_content = Pandoc::JsonToMd[new_doc]
-        puts("Crosslinked #{bn}; #{state[:num_hits]} found")
+        if VERBOSE
+          LOG.write("Crosslinked #{bn}; #{state[:num_hits]} found\n")
+          LOG.flush
+        else
+          LOG.write(".")
+          LOG.flush
+        end
         File.write(out_path, new_content)
       end
       new_manifest
@@ -762,7 +788,13 @@ ReLinkHTML = lambda do |config|
         File.write(out_path, new_content)
       end
     end
-    puts("Updated #{n}/#{m} files for relinking")
+    if VERBOSE
+      LOG.write("Updated #{n}/#{m} files for relinking\n")
+      LOG.flush
+    else
+      LOG.write(".")
+      LOG.flush
+    end
     new_manifest
   end
 end
@@ -1192,7 +1224,7 @@ task :build_html_single => [:setup] do
       "disable-compression?" => !USE_NODE,
       "levels" => Levels,
     ][Files]
-    puts("Single-Page HTML DONE!")
+    puts("\nSingle-Page HTML DONE!")
     puts("^"*60)
   end
 end
@@ -1211,7 +1243,7 @@ task :build_html_multi => [:setup] do
       "disable-compression?" => !USE_NODE,
       "levels" => Levels,
     ][Files]
-    puts("Multi-Page HTML DONE!")
+    puts("\nMulti-Page HTML DONE!")
     puts("^"*60)
   end
 end
@@ -1227,7 +1259,7 @@ task :build_pdf => [:setup] do
       "output-file-name" => "cse-user-manual.pdf",
       "levels" => Levels,
     ][Files]
-    puts("PDF DONE!")
+    puts("\nPDF DONE!")
     puts("^"*60)
   end
 end
@@ -1254,7 +1286,7 @@ task :build_site => [:setup] do
       "disable-compression?" => !USE_NODE,
       "levels" => web_levels
     ][web_files]
-    puts("Site HTML DONE!")
+    puts("\nSite HTML DONE!")
     puts("^"*60)
   end
 end
