@@ -1090,13 +1090,13 @@ If the polynomial does not evaluate to 1.0 when its inputs are equal to the rati
 
 Some of the polynomials are biquadratic polynomials whose variables are the entering air wetbulb and drybulb temperatures. These are of the form
 
-$$\bm{z} = a + b\bm{x} + c\bm{x}^2 + d\bm{y} + e\bm{y}^2 + f\bm{xy}$$
+$$z = a + bx + cx^2 + dy + ey^2 + fxy$$
 
 where a through f are user-inputtable coefficients, x is the entering wetbulb temperature, y is the entering drybulb temperature, and the polynomial value, z, is a factor by which the coil's capacity, power input, etc. at rated conditions is multiplied to adjust it for the actual entering air temperatures.
 
 Other polynomials are cubic polynomials whose variable is the air flow or load as a fraction of full flow or load.. These are of the form
 
-$$\bm{z} = a + b\bm{x} + c\bm{x}^2+ d\bm{x}^3$$
+$$z = a + bx + cx^2+ dx^3$$
 
 where a, b, c, and d are user-inputtable coefficients, $x$ is the variable, and the value $z$ is a factor by which the coil's capacity, power input, etc. at rated conditions is multiplied to adjust it for the actual flow or load.
 

@@ -42,7 +42,7 @@ Design condenser temperature: temperature of secondary water entering chiller co
 
 Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
 
-$$a + b \cdot \bm{ts} + c \cdot \bm{ts}^2 + d \cdot \bm{tcnd} + e \cdot \bm{tcnd}^2 + f \cdot \bm{ts} \cdot \bm{tcnd}$$
+$$a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd$$
 
 Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when ts is chTsDs and tcnd is chTcndDs, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
@@ -72,7 +72,7 @@ Alternate input for COP: Full-load Energy Input Ratio (electrical input energy d
 
 Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
 
-$$a + b \cdot \bm{ts} + c \cdot \bm{ts}^2 + d \cdot \bm{tcnd} + e \cdot \bm{tcnd}^2 + f \cdot \bm{ts} \cdot \bm{tcnd}$$
+$$a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd$$
 
 Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when ts is chTsDs and tcnd is chTcndDs, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
