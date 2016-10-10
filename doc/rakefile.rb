@@ -30,6 +30,7 @@ REFERENCE_DIR = File.expand_path(
 )
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
 RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
+SECTION_INDEX = File.join(REFERENCE_DIR, 'section-index.yaml')
 DATE = nil # "February 23, 2016"
 DRAFT = CONFIG.fetch("draft?") # true means, it is a draft
 HEADER = "CSE User's Manual"
@@ -1032,7 +1033,7 @@ BuildMultiPageHTML = lambda do |config|
         index = YAML.load_file(RECORD_INDEX_FILE)
         index.to_a.sort_by do |e|
           e[0]
-        end.inject({}) do |m, e|
+        end.inject(YAML.load_file(SECTION_INDEX)) do |m, e|
           fname_tag = e[1].scan(/([^\#]*)(\#.*)/).flatten
           m.merge(Hash[fname_tag[1], fname_tag[0]])
         end
@@ -1334,6 +1335,17 @@ task :check_manifests do
   md_file_set.sort.each {|f| puts("- #{f}")}
   puts("Files in manifest but not on disk: ")
   unknown_files.sort.each {|f| puts(" - #{f}")}
+end
+
+task :generate_section_index do
+  require_relative 'lib/section_index'
+  File.write(
+    "config/reference/section-index.yaml",
+    SectionIndex::Generate[
+      Dir[File.expand_path("src/*.md", THIS_DIR)] +
+      Dir[File.expand_path("src/records/*.md", THIS_DIR)]
+    ].to_yaml
+  )
 end
 
 task :default => [:build_all]
