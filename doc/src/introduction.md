@@ -30,7 +30,11 @@ Section 5 (Input Data) describes all of the specific input language statements.
 
 Section 6 (Output) will describe the output reports.
 
+<!--
+
 Finally, Appendix A gives an example CSE input file and the output it produces.
+
+-->
 
 ## Installation
 

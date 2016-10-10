@@ -194,9 +194,13 @@ The preprocessor is similar to that of the C programming language, and thus will
 
 After the next section, which is an example of a complete CSE input file using many features, Section 4.4 describes the preprocessor in detail. The preprocessor description is followed by sections detailing statements, then expressions.
 
+<!--
+
 ### Example
 
 A CSE input file for a building with two zones, four gains, and two air handlers is given in Appendix A. You may wish to look at this example of the CSE input language now.
+
+-->
 
 ## The Preprocessor
 
