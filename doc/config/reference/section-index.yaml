@@ -134,3 +134,4 @@
 '#zone-general-members': zone.html
 '#zone-infiltration': zone.html
 '#zone-exhaust-fan': zone.html
+'#probe-definitions': probes.html
