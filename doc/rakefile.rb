@@ -1344,7 +1344,7 @@ task :generate_section_index do
     SectionIndex::Generate[
       Dir[File.expand_path("src/*.md", THIS_DIR)] +
       Dir[File.expand_path("src/records/*.md", THIS_DIR)]
-    ].to_yaml
+    ].merge({"#probe-definitions"=>"probes.html"}).to_yaml
   )
 end
 
