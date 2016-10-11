@@ -75,7 +75,7 @@ A statement specifying a data member consists of the data member's name, an = si
 
         znVol = 100000;
 
-specifies that the zone has a volume of 100000 cubic feet. (If the statement occurs outside of the description of a ZONE, an error message occurs.) All of the member names for each class are described in Section 5; most of them begin with an abbreviation of the class name for clarity.
+specifies that the zone has a volume of 100000 cubic feet. (If the statement occurs outside of the description of a ZONE, an error message occurs.) All of the member names for each class are described in the [input data](#input-data) section; most of them begin with an abbreviation of the class name for clarity.
 
 The description of a zone or any object except Top can be terminated with the word "END"; but this is not essential; CSE will assume the ZONE ends when you start another ZONE or any object not a subobject of ZONE, or when you specify a member of a higher level class (Top for ZONE), or give an action-command such as RUN.
 
@@ -102,7 +102,7 @@ The following is a brief CSE input file, annotated with comments intended to exe
         CONSTRUCTION slab140C;  /* create object of class CONSTRUCTION, named
                                    slab140C. Terminates MATERIAL, because
                                    CONSTRUCTION is not a subclass of material
-                                   in the hierarchy shown in section 4.2. */
+                                   in the hierarchy shown in another section** */
           LAYER                 /* start an unnamed object of class LAYER.
                                    Since LAYER is a subclass of CONSTRUCTION,
                                    this will be a subobject of slab140C. */
@@ -133,9 +133,11 @@ The following is a brief CSE input file, annotated with comments intended to exe
                                    Terminates ZONE North, since action-commands
                                    terminate all objects being constructed. */
 
+\*\* See [Form of the CSE Data](#form-of-the-cse-data)
+
 ### Expressions -- Overview
 
-*Expressions* are the parts of statements that specify values -- numeric values, string values, object name values, and choice values. Expressions are composed of operators and operands, in a manner similar to many programming languages. The available operators and operands will be described in Section <!-- TODO add section -->.
+*Expressions* are the parts of statements that specify values -- numeric values, string values, object name values, and choice values. Expressions are composed of operators and operands, in a manner similar to many programming languages. The available operators and operands will be described in the section on [operators](#operators).
 
 Unlike most programming languages, CSE expressions have Variation. *Variation* is how often a value changes during the simulation run -- hourly, daily, monthly, yearly (i.e. does not change during run), etc. For instance, the operand `$hour` represents the hour of the day and has "hourly" variation. An expression has the variation of its fastest-varying component.
 
@@ -192,7 +194,7 @@ Macros can be especially powerful when combined with the file inclusion feature;
 
 The preprocessor is similar to that of the C programming language, and thus will be familiar to C programmers.
 
-After the next section, which is an example of a complete CSE input file using many features, Section 4.4 describes the preprocessor in detail. The preprocessor description is followed by sections detailing statements, then expressions.
+The next section describes the preprocessor in detail. The preprocessor description is followed by sections detailing statements, then expressions.
 
 <!--
 
@@ -246,13 +248,13 @@ A line of the form
 
 where there is no space between the identifier and the (, is a macro with parameters given by the identifier list. The expansion of macros with parameters is discussed below.
 
-Macros may also be defined *on the CSE command line*, making it possible to vary a run without changing the input files at all. As described in Section 3, macros are defined on the CSE command line using the `-D` switch in the forms
+Macros may also be defined *on the CSE command line*, making it possible to vary a run without changing the input files at all. As described in the [command line](#command-line) section, macros are defined on the CSE command line using the `-D` switch in the forms
 
         -D_identifier_
 
         -D_identifier_=_token-sequence_
 
-The first form simply defines the name with no token-sequence; this is convenient for testing with `#ifdef`, `#ifndef`, or `defined()`, as described in Section 4.4.4. The second form allows an argument list and token sequence. The entire command line argument must be enclosed in quotes if it contains any spaces.
+The first form simply defines the name with no token-sequence; this is convenient for testing with `#ifdef`, `#ifndef`, or `defined()`, as described in the section on [conditional inclusion of tex](#conditional-inclusion-of-text). The second form allows an argument list and token sequence. The entire command line argument must be enclosed in quotes if it contains any spaces.
 
 A macro definition is forgotten when an `#undef` directive is encountered:
 
@@ -304,7 +306,7 @@ For an example of the use `#include`s, please see the preprocessor examples at t
 
 Conditional text inclusion provides a facility for selectively including or excluding groups of input file lines. The lines so included or excluded may be either CSE input language text *or other preprocessor directives*. The latter capability is very powerful.
 
-Several conditional inclusion directive involve integer constant expressions. Constant integer expressions are formed according the rules discussed in Section 4.6 with the following changes:
+Several conditional inclusion directive involve integer constant expressions. Constant integer expressions are formed according the rules discussed in the section on [expressions](#expressions) with the following changes:
 
 1.  Only constant integer operands are allowed.
 
@@ -401,11 +403,11 @@ This macro can be used whenever a U-value is required (e.g. SURFACE ... sfU=UWin
 
 ## CSE Input Language Statements
 
-This section describes the general form of CSE input language statements that define objects, assign values to the data members of objects, and initiate actions. The concepts of objects and the class hierarchy were introduced in Section 4.2. Information on statements for specific CSE input language classes and their members is the subject of Section 5.
+This section describes the general form of CSE input language statements that define objects, assign values to the data members of objects, and initiate actions. The concepts of objects and the class hierarchy were introduced in the section on [form of CSE data](#form-of-the-cse-data). Information on statements for specific CSE input language classes and their members is the subject of the [input data](#input-data) section.
 
 ### Object Statements
 
-As we described in Section 4.3.1, the description of an object is introduced by a statement containing at least the class name, and usually your chosen name for the particular object. In addition, this section will describe several optional qualifiers and modifying clauses that permit defining similar objects without repeating all of the member details, and reopening a previously given object description to change or add to it.
+As we described in a [previous section](#statements-overview), the description of an object is introduced by a statement containing at least the class name, and usually your chosen name for the particular object. In addition, this section will describe several optional qualifiers and modifying clauses that permit defining similar objects without repeating all of the member details, and reopening a previously given object description to change or add to it.
 
 Examples of the basic object-beginning statement:
 
@@ -415,7 +417,7 @@ Examples of the basic object-beginning statement:
 
         LAYER;
 
-As described in Section 4.3.2, such a statement is followed by statements giving the object's member values or describing subobjects of the object. The object description ends when you begin another object that is not of a subclass of the object, or when a member of an embedding (higher level) object previously begun is given, or when END is given.
+As described in [the section on nested objects](#nested-objects), such a statement is followed by statements giving the object's member values or describing subobjects of the object. The object description ends when you begin another object that is not of a subclass of the object, or when a member of an embedding (higher level) object previously begun is given, or when END is given.
 
 #### Object Names
 
@@ -438,7 +440,7 @@ We suggest always quoting object names so you won't have to worry about disallow
 
 Duplicate names result in error messages. Object names must be distinct between objects of the same class which are subobjects of the same object. For example, all ZONE names must be distinct, since all ZONEs are subobjects of Top. It is permissible to have SURFACEs with the same name in different ZONEs -- but it is a good idea to keep all of your object names distinct to minimize the chance of an accidental mismatch or a confusing message regarding some other error.
 
-For some classes, such as ZONE, a name is required for each object. This is because several other statements refer to specific ZONEs, and because a name is needed to identify ZONEs in reports. For other classes, the name is optional. The specific statement descriptions in Section 5 say which names are required. We suggest always using object names even where not required; one reason is because they allow CSE to issue clearer error messages.
+For some classes, such as ZONE, a name is required for each object. This is because several other statements refer to specific ZONEs, and because a name is needed to identify ZONEs in reports. For other classes, the name is optional. The specific statement descriptions in the [Input Data](#input-data) Section 5 say which names are required. We suggest always using object names even where not required; one reason is because they allow CSE to issue clearer error messages.
 
 The following *reserved words will not work as object names unless enclosed in quotes*:
 
@@ -474,7 +476,7 @@ ALTER can be used to facilitate making similar runs. For example, to evaluate th
                     wnHeight = 4;  wnWidth = 12;  // make window smaller
         RUN;          // perform simulation and print reports again
 
-ALTER also lets you access the predefined "Primary" REPORTFILE and EXPORTFILE objects which will be described in Section 5:
+ALTER also lets you access the predefined "Primary" REPORTFILE and EXPORTFILE objects which will be described in the [Input Data](#input-data) Section:
 
         ALTER REPORTFILE "Primary";    /* open description of object automatically
                                           supplied by CSE -- no other way to access */
@@ -524,7 +526,7 @@ USETYPE followed by the type name is used in creating an object of a type previo
             sfArea = 8 * 30;                      // area of each wall is different
             sfAdjZn = "East";                     // zone on other side of wall
 
-Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless FROZEN (Section 4.5.2.3) in the type (normally, a duplicate specification for a member results in an error message).
+Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless FROZEN (see [this section](#freeze)) in the type (normally, a duplicate specification for a member results in an error message).
 
 #### DEFTYPE
 
@@ -568,39 +570,39 @@ END, optionally followed by an object name, can be used to unequivocally termina
 
 ### Member Statements
 
-As introduced in Section 4.3.1, statements which assign values to members are of the general form:
+As introduced in the section on [statements](#statements-overview), statements which assign values to members are of the general form:
 
         *memberName* = *expression*;
 
 The specific member names for each class of objects are given in Section 5; many have already been shown in examples.
 
-Depending on the member, the appropriate type for the expression giving the member value may be numeric (integer or floating point), string, object name, or multiple-choice. Expressions of all types will be described in detail in Section 4.6.
+Depending on the member, the appropriate type for the expression giving the member value may be numeric (integer or floating point), string, object name, or multiple-choice. Expressions of all types will be described in detail in the section on [expressions](#expressions).
 
-Each member also has its *variability* (also given in Section 5), or maximum acceptable *variation*. This is how often the expression for the value can change during the simulation -- hourly, daily, monthly, no change (constant), etc. The "variations" were introduced in Section 4.3.3 and will be further detailed in Section 4.6.8.
+Each member also has its *variability* (also given in the [input data](#input-data) section), or maximum acceptable *variation*. This is how often the expression for the value can change during the simulation -- hourly, daily, monthly, no change (constant), etc. The "variations" were introduced in the [expressions overview](#expressions-overview) section and will be further detailed in a [section on variation frequencies](#variation-frequencies-revisited).
 
 Three special statements, UNSET, REQUIRE, and FREEZE, add flexibility in working with members.
 
 #### UNSET
 
-UNSET followed by a member name is used when it is desired to delete a member value previously given. UNSETing a member resets the object to the same internal state it was in before the member was originally given. This makes it legal to specify a new value for the member (normally, a duplicate specification results in an error message); if the member is required (as specified in Section 5), then an error message will occur if RUN is given without re specifying the member.
+UNSET followed by a member name is used when it is desired to delete a member value previously given. UNSETing a member resets the object to the same internal state it was in before the member was originally given. This makes it legal to specify a new value for the member (normally, a duplicate specification results in an error message); if the member is required (as specified in the [input data](#input-data) section), then an error message will occur if RUN is given without re specifying the member.
 
 Situations where you really might want to specify a member, then later remove it, include:
 
 -   After a RUN command has completed one simulation run, if you wish to specify another simulation run without CLEARing and giving all the data again, you may need to UNSET some members of some objects in order to re specify them or because they need to be omitted from the new run. In this case, use ALTER(s) to reopen the object(s) before UNSETing.
 
--   In defining a TYPE (Section 4.5.1.7), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of DEFTYPEs, LIKEs, and/or COPYs) has defined unwanted members, get rid of them with UNSET.
+-   In defining a TYPE (see [this section](#deftype)), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of DEFTYPEs, LIKEs, and/or COPYs) has defined unwanted members, get rid of them with UNSET.
 
-Note that UNSET is only for deleting *members* (names that would be followed with an = and a a value when being defined). To delete an entire *object*, use DELETE (Section 4.5.1.3).
+Note that UNSET is only for deleting *members* (names that would be followed with an = and a a value when being defined). To delete an entire *object*, use DELETE (see [this section](#delete)).
 
 #### REQUIRE
 
-REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a TYPE (Section 4.5.1.7) when you desire to make sure the user enters a particular member, for example to be sure the TYPE is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to UNSET it. ?? *verify*
+REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a TYPE (see [this section](#deftype)) when you desire to make sure the user enters a particular member, for example to be sure the TYPE is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to UNSET it. ?? *verify*
 
 #### FREEZE
 
-FREEZE followed by a member name makes it illegal to UNSET or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening UNSET, unless the original definition came from a TYPE (Section 4.5.1.7). Situations where you might want to FREEZE one or more members include:
+FREEZE followed by a member name makes it illegal to UNSET or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening UNSET, unless the original definition came from a TYPE (see [this section](#deftype)). Situations where you might want to FREEZE one or more members include:
 
--   When defining a TYPE (Section 4.5.1.7). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a TYPE is used as intended, you may wish to FREEZE members to prevent accidental misuse.
+-   When defining a TYPE (see [this section](#deftype)). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a TYPE is used as intended, you may wish to FREEZE members to prevent accidental misuse.
 
 -   When your are defining objects for later use or for somebody else to use (perhaps in a file to be included) and you wish to guard against misuse, you may wish to FREEZE members. Of course, this is not foolproof, since there is at present no way to allow use of predefined objects or types without allowing access to the statements defining them.
 
@@ -626,17 +628,17 @@ Probably the CSE input language's most powerful characteristic is its ability to
 
 But for many object members, CSE accepts *live expressions* that *vary* according to time of day, weather, zone temperatures, etc. (etc., etc., etc.!). Live expressions permit simulation of many relationships without special-purpose features in the language. Live expressions support controlling setpoints, scheduling HVAC system operation, resetting air handler supply temperature according to outdoor temperature, and other necessary and foreseen functions without dedicated language features; they will also support many unforeseen user-generated functionalities that would otherwise be unavailable.
 
-Additional expression flexibility is provided by the ability to access all of the input data and much of the internal data as operands in expressions (*probes*, Section 4.6.7).
+Additional expression flexibility is provided by the ability to access all of the input data and much of the internal data as operands in expressions (*probes*, see [this section](#probes)).
 
 As in a programming language, CSE expressions are constructed from operators and operands; unlike most programming languages, CSE determines how often an expression's operands change and automatically compute and store the value as often as necessary.
 
-Expressions in which all operands are known when the statement is being decoded (for example, if all values are constants) are *always* allowed, because the input language processor immediately evaluates them and presents the value to the rest of the program in the same manner as if a single number had been entered. *Most* members also accept expressions that can be evaluated as soon as the run's input is complete, for example expressions involving a reference to another member that has not been given yet. Expressions that vary during the run, say at hourly or daily intervals, are accepted by *many* members. The *variability* or maximum acceptable variation for each member is given in the descriptions in Section 5, and the *variation* of each non-constant expression component is given in its description in this section.
+Expressions in which all operands are known when the statement is being decoded (for example, if all values are constants) are *always* allowed, because the input language processor immediately evaluates them and presents the value to the rest of the program in the same manner as if a single number had been entered. *Most* members also accept expressions that can be evaluated as soon as the run's input is complete, for example expressions involving a reference to another member that has not been given yet. Expressions that vary during the run, say at hourly or daily intervals, are accepted by *many* members. The *variability* or maximum acceptable variation for each member is given in the descriptions in the [input data](#input-data) section, and the *variation* of each non-constant expression component is given in its description in this section.
 
 <span class="underline">Interaction of expressions and the preprocessor</span>: Generally, they don't interact. The preprocessor is a text processor which completes its work by including specified files, deleting sections under false \#if's, remembering define definitions, replacing macro calls with the text of the definition, removing preprocessor directives from the text after interpreting them, etc., *then* the resulting character stream is analyzed by the input language statement compiler. However, the if statement takes an integer numeric expression argument. This expression is similar to those described here except that it can only use constant operands, since the preprocessor must evaluate it before deciding what text to feed to the input statement statement compiler.
 
 ### Expression Types
 
-The type of value to which an expression must evaluate is specified in each member description (Section 5) or other context in which an expression can be used. Each expression may be a single constant or may be made up of operators and operands described in the rest of this section, so long as the result is the required type or can be converted to that type by CSE, and its variation is not too great for the context. The possible types are:
+The type of value to which an expression must evaluate is specified in each member description (see the [input data](#input-data) section) or other context in which an expression can be used. Each expression may be a single constant or may be made up of operators and operands described in the rest of this section, so long as the result is the required type or can be converted to that type by CSE, and its variation is not too great for the context. The possible types are:
 
   ------------------ -----------------------------------------------------
   *float*            A real number (3.0, 5.34, -2., etc.). Approximately 7
@@ -661,7 +663,7 @@ The type of value to which an expression must evaluate is specified in each memb
                      quotes if it consists only of letters, digits, \_,
                      and \$, begins with a non-digit, and is different
                      from all reserved words now in or later added to the
-                     language (see Object Names, Section 4.5.1.1).
+                     language (see [Object Names](#object-names)).
 
                      The object may be defined after it is referred to. An
                      expression using conditional operators, functions,
@@ -764,8 +766,8 @@ This section reviews how to enter ordinary non-varying numbers and other values.
   *object name*      Same as *string*, or without quotes if name consists
                      only of letters, digits, \_, and \$, begins with a
                      non-digit, and is different from all reserved words
-                     now in or later added to the language (see Object
-                     Names, Section 4.5.1.1). Control character codes
+                     now in or later added to the language (see
+                     [Object Names](#object-names)). Control character codes
                      (ASCII 0-31) are not allowed.
 
   *choice*           Same as string; quotes optional on choice words valid
@@ -883,7 +885,7 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
 <!-- TODO: A string concatenation operator would be very helpful!  2010-07 -->
 ### System Variables
 
-*System Variables* are built-in operands with useful values. To avoid confusion with other words, they begin with a \$. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the *variations* shown; they cannot be used where the context will not accept variation at least this fast. (Section 5 gives the *variability*, or maximum acceptable variation, for each object member.)
+*System Variables* are built-in operands with useful values. To avoid confusion with other words, they begin with a \$. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the *variations* shown; they cannot be used where the context will not accept variation at least this fast. (The [Input Data Section](#input-data) gives the *variability*, or maximum acceptable variation, for each object member.)
 
   -------------- ---------------------------------------------------------
   \$dayOfYear    Day of year of simulation, 1 - 365; 1 corresponds to
@@ -946,7 +948,7 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
 
 ### Built-in Functions
 
-Built-in functions perform a number of useful scheduling and conditional operations in expressions. Built-in functions have the combined variation of their arguments; for *hourval*, the minimum result variation is hourly. For definitions of *numeric* and *anyType*, see Section 4.6.1.
+Built-in functions perform a number of useful scheduling and conditional operations in expressions. Built-in functions have the combined variation of their arguments; for *hourval*, the minimum result variation is hourly. For definitions of *numeric* and *anyType*, see [Expression Types](#expression-types).
 
 **brkt**
 
@@ -1443,7 +1445,7 @@ Note that while macros require line-splicing ("\\")to extend over one line, func
 
 ### Probes
 
-*Probes* provide a universal means of referencing data within the simulator. Probes permit using the inputtable members of each object, as described in Section 5, as operands in expressions. In addition, most internal members can be probed; we will describe how to find their names shortly.
+*Probes* provide a universal means of referencing data within the simulator. Probes permit using the inputtable members of each object, as described in the [Input Data](#input-data) Section, as operands in expressions. In addition, most internal members can be probed; we will describe how to find their names shortly.
 
 Three general ways of using probes are:
 
@@ -1461,7 +1463,7 @@ However, a number of *prior subhour* values are available for probing, making it
 
         tuMnLh = @znres["North"].S.prior.tAir < 65 ? 1000 : 500;
 
-3.  For output reports, allowing arbitrary data to be reported at subhourly, hourly, daily, monthly, or annual intervals. The REPORT class description in Section 5 describes the user-defined report type (UDT), for which you write the expression for the value to be reported. With probes, you can thus report almost any datum within CSE -- not just those values chosen for reporting when the program was designed. Even values calculated during the current subhour simulation can be probed and reported, because expressions for reports are evaluated after the subhour's calculations are performed.
+3.  For output reports, allowing arbitrary data to be reported at subhourly, hourly, daily, monthly, or annual intervals. The REPORT class description describes the user-defined report type (UDT), for which you write the expression for the value to be reported. With probes, you can thus report almost any datum within CSE -- not just those values chosen for reporting when the program was designed. Even values calculated during the current subhour simulation can be probed and reported, because expressions for reports are evaluated after the subhour's calculations are performed.
 
 Examples:
 
@@ -1485,9 +1487,10 @@ The initial @ is always necessary. And don't miss the period after the \].
 
   *member*     is the name of the particular member being probed. This
                must be exactly correct. For some inputtable members, the
-               probe name is not the same as the input name given in
-               Section 5, and there are many probe-able members not
-               described in Section 55.
+               probe name is not the same as the input name given in the
+               [Input Data](#input-data) Section, and there are many
+               probe-able members not described in the
+               [Input Data](#input-data) section.
   ------------ -----------------------------------------------------------
 
 How do you find out what the probe-able member names are? CSE will display the a list of the latest class and member names if invoked with the -p switch. Use the command line
@@ -1516,7 +1519,7 @@ A portion of the `-p` output looks like:
 
 In the above "exportCol" and "holiday" are class names, and "name", "colHead", "colGap", . . . are member names for class exportCol. Some members have multiple names separated by .'s, or they may contain an additional subscript. To probe one of these, type all of the names and punctuation exactly as shown (except capitalization may differ); if an additional subscript is shown, give a number in the specified range. An "I" designates an "input" parameter, an R means "runtime" parameter. The "owner" is the class of which this class is a subclass.
 
-The data type and variation of each member is also shown. Note that *variation*, or how often the member changes, is shown here. (*Variability*, or how often an expression assigned to the member may change, is given for the inputtable members in Section 5.) Members for which an "end of" variation is shown can be probed only for use in reports. A name described as "un-probe-able" is a structure or something not convertible to an integer, float, or string.
+The data type and variation of each member is also shown. Note that *variation*, or how often the member changes, is shown here. (*Variability*, or how often an expression assigned to the member may change, is given for the input table members in the [Input Data](#input-data) Section). Members for which an "end of" variation is shown can be probed only for use in reports. A name described as "un-probe-able" is a structure or something not convertible to an integer, float, or string.
 
 <!--
 
@@ -1576,10 +1579,11 @@ At risk of beating the topic to death, we're going to review once more the frequ
 
                    Expressions with "input time" variation may be used in
                    many members that cannot accept any variation during
-                   the run. Many members documented in Section 5 as having
-                   "constant" variability may actually accept expressions
-                   with "input time" variation; to find out, try it: set
-                   the member to an expression containing a proposed probe
+                   the run. Many members documented in the
+                   [Input Data](#input-data) Section as having "constant"
+                   variability may actually accept expressions with
+                   "input time" variation; to find out, try it: set the
+                   member to an expression containing a proposed probe
                    and see if an error message results.
 
                    "Input time" differs from "constant" in that it

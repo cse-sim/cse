@@ -20,15 +20,21 @@ Please note that CSE is under development and will be for many more months. Thin
 
 This Introduction covers general matters, including program installation.
 
-Next, Section 2 (About CSE) will describe the program and the calculation techniques used in it.
+<!--
 
-Section 3 (Operation) documents the operational aspects of CSE, such as command line switches, file naming conventions, and how CSE finds files it needs.
+Next, [About CSE](#about-cse) will describe the program and the calculation techniques used in it.
 
-Section 4 (Input Structure) documents the CSE input language in general.
+-->
 
-Section 5 (Input Data) describes all of the specific input language statements.
+[Operation](#operation) documents the operational aspects of CSE, such as command line switches, file naming conventions, and how CSE finds files it needs.
 
-Section 6 (Output) will describe the output reports.
+[Input Structure](#input-structure) documents the CSE input language in general.
+
+[Input Data](#input-data) describes all of the specific input language statements.
+
+[Output Reports](#output-reports) will describe the output reports.
+
+Lastly, [Probe Definitions](#probe-definitions) lists all available probes.
 
 <!--
 
