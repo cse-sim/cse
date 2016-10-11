@@ -87,3 +87,6 @@ pre code {
   text-align: center;
   color: cornflowerblue;
 }
+.underline {
+  text-decoration: underline;
+}
