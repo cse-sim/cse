@@ -19,6 +19,7 @@ module Command
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
       stdin.puts(input) if input
       stdin.close
+      stdout.set_encoding('utf-8')
       output = stdout.read
       error = stderr.read
       exit_status = wait_thr.value
