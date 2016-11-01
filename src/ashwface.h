@@ -11,10 +11,17 @@
 
 #include "ashwat.h"
 
+// FORTRAN-to-C++ conversion aids
 #define ASHWAT_USECPP	// define to use C++ implementation
 						//   else ashwat.dll (FORTRAN)
 #undef ASHWAT_LINKDLL	// define to set up linkage to ashwat.dll
 						//   transition aid 9-2016
+#define ASHWAT_NEWCALL	// define to use updated ASHWAT_THERMAL call
+						//   (meaningful iff ASHWAT_LINKDLL)
+#undef ASHWAT_CPPTEST	// enable DLL<->C++ comparison code
+						//   usually does nothing if defined( ASHWAT_USECPP)
+#undef ASHWAT_CPPTESTTHERMAL // enable DLL<->C++ comparison for cf_Thermal() only
+
 
 #undef ASHWAT_REV2		// enable revised ASHWAT interface code, 5-2015
 						//   revised scheme reuses cached results
@@ -109,32 +116,6 @@ public:
 #endif // ASHWAT_STATS
 
 ///////////////////////////////////////////////////////////////////////////////
-// class KEYPART
-///////////////////////////////////////////////////////////////////////////////
-class KEYPART
-{
-	double kp_min;
-	double kp_max;
-	int kp_nSeg;
-	double kp_step;
-
-public:
-	KEYPART() : kp_min( 0.), kp_max( 0.), kp_nSeg( 0), kp_step( 0.) {}
-	KEYPART( double _min, double _max, int _nSeg)
-	{	kp_Init( _min, _max, _nSeg);
-	}
-	void kp_Init( double _min, double _max, int _nSeg)
-	{	kp_min = _min; kp_max = _max; kp_nSeg = _nSeg;
-		kp_step = (kp_max - kp_min) / kp_nSeg;
-	}
-	double kp_val( int kpIdx) const
-	{	return kp_min + kpIdx * kp_step; }
-	int kp_Idx( double val)
-	{	return bracket( 0, int( 0.5 + (val - kp_min) / kp_step), kp_nSeg);
-	}
-};		// class KEYPART
-
-///////////////////////////////////////////////////////////////////////////////
 // class AWIN -- consolidated inputs for ASHWAT calculation
 ///////////////////////////////////////////////////////////////////////////////
 class AWIN
@@ -188,12 +169,16 @@ class AWOUT
 {
 friend class FENAW;
 	double aw_TL[ CFSMAXNL];	// calculated layer temps, K
+#if defined(ASHWAT_CPPTESTTHERMAL)
+	double aw_TLX[ CFSMAXNL];	// alternative calculated layer temps, K
+								//   re C++ conversion testing
+#endif
 	double aw_SHGCrt;		// SHGC (or 0 if not computed)
 	double aw_Urt;			// U-factor, Btuh/ft2-F
 	double aw_Cx;			// cross-coupling = implicit conductance between
 							//   zone air temp and zone rad temp, W/m2-K
-	double aw_FM;
-	double aw_FP;
+	double aw_FM;			//	radiant inward flowing fraction of incident solar
+	double aw_FP;			//	convective inward flowing fraction of incident solar
 	double aw_FHR_IN;
 	double aw_FHR_OUT;
 	double aw_cc;			// glazing effective conductance, airtemp-to-environment, Btuh/ft2-F
@@ -309,11 +294,21 @@ class XASHWAT : public XMODULE
 friend class FENAW;
 friend struct CFSTY;
 #if defined( ASHWAT_LINKDLL)
+#if defined( ASHWAT_NEWCALL)
+// updated FORTRAN call
+typedef int _stdcall AWThermal( const CFSTY& CFS, const double& TIN, const double& TOUT,
+	const double& HCIN, const double& HCOUT, const double& TRMIN, const double& TRMOUT,
+	const double& ISOL, const double* SOURCE, const double& tol, const int& IterControl,
+	double* T, double* Q, double& QInConv, double& QInRad, double& UCG, double& SHGC,
+	double& Cx, double& NConv, double& Nrad, double& FHR_IN, double& FHR_OUT);
+#else
 typedef int _stdcall AWThermal( const CFSTY& CFS, const double& TIN, const double& TOUT,
 	const double& HCIN, const double& HCOUT, const double& TRMIN, const double& TRMOUT,
 	const double& ISOL, const double* SOURCE, const double& tol, const int& IterControl,
 	double* T, double* Q, double& UCG, double& SHGC, double& Cx, double& FM, double& FP,
 	double& FHR_IN, double& FHR_OUT);
+#endif
+
 typedef int _stdcall AWCheckFixCFSLayer( CFSLAYER& L,
 	char* msgs, int lMsg, int& nMsgs,
 	const char* what, int lWhat);
@@ -352,8 +347,8 @@ public:
 	~XASHWAT();
 	virtual void xm_ClearPtrs();
 
-	RC xw_Init();
 	RC xw_Setup();
+	static void MsgCallBackFunc( AWMSGTY msgTy, const char* msg);
 	RC xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
 	RC xw_ClearCFSLayer( CFSLAYER& L);
 	RC xw_ClearCFSFillGas( CFSFILLGAS& F);
@@ -365,16 +360,14 @@ public:
 		double hProfA, CFSSWP& LSWP_ON);
 	RC xw_Solar( int nl, CFSSWP* swpON, CFSSWP& swpRoom,
 		double iBm, double iDf, double iDfIn, double* source);
-#if 0
-x	RC xw_Thermal( FENAW& F, SBC sbc[ 2]);
-#endif
 	RC xw_Subhr( ZNR* zp);
 	// RC xc_Finish();	// finish now done in xc_Shutdown(); add separate call if needed
 
-	WVect< CFSLAYER> xw_layerLib;	// collection of built-in CFS layers
-	WVect<  struct CFSTYX> xw_CFSLib;		// ditto CFSs
+	WVect< CFSLAYER> xw_layerLib;		// collection of built-in CFS layers
+	WVect<  struct CFSTYX> xw_CFSLib;	// ditto CFSs
 
 	RC xw_BuildLib();
+	bool xw_IsLibEmpty() const;
 	const CFSLAYER* xw_FindLibCFSLAYER( const char* id) const;
 	const CFSTYX* xw_FindLibCFSTYX( const char* id) const;
 	const CFSTYX* xw_FindLibCFSTYX( float SHGC, int nL) const;

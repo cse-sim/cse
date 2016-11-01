@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 ///////////////////////////////////////////////////////////////////////////////
-// ASHWAT.cpp -- interface to ASHWAT
+// ashwface.cpp -- interface to ASHWAT
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
@@ -13,11 +13,6 @@
 #include "timer.h"
 
 #include "ashwface.h"
-
-// conditionally enable DLL<->C++ comparison code
-//   usually does nothing if defined( ASHWAT_USECPP)
-#undef ASHWAT_CPPTEST
-#undef ASHWAT_CPPTESTTHERMAL
 
 
 // ASHWAT constants
@@ -1253,8 +1248,8 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	double Q[ CFSMAXNL+2];
 	double ucgSI;
 	fa_nCalc++;
-#if defined( ASHWAT_USECPP)
 	double QInConv, QInRad;
+#if defined( ASHWAT_USECPP)
 	bool bRet = fa_CFS.cf_Thermal(
 			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
 			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
@@ -1262,43 +1257,53 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 			awI.aw_incSlr, awI.aw_absSlr-1,
 			tol, fa_iterControl, awO.aw_TL-1, Q,
 			QInConv, QInRad,
-			ucgSI, awO.aw_SHGCrt, awO.aw_Cx, awO.aw_FM, awO.aw_FP,
+			ucgSI, awO.aw_SHGCrt, awO.aw_Cx,
+			awO.aw_FP, awO.aw_FM,	// note order: conv, rad
 			awO.aw_FHR_IN, awO.aw_FHR_OUT);
 	if (!bRet)
 		rc = RCBAD;
 #else
-#if defined( ASHWAT_CPPTESTTHERMAL)
-	double TLX[ CFSMAXNL+1];
-	TLX[ 0] = 0.;
-	VCopy( TLX+1, CFSMAXNL, awO.aw_TL);
-#endif
+#if defined( ASHWAT_NEWCALL)
+		int ret = (*ASHWAT.xw_pAWThermal)( fa_CFS,
+			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
+			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
+			DegFtoK( awI.aw_txrI), DegFtoK( awI.aw_txrO),
+			awI.aw_incSlr, awI.aw_absSlr,
+			tol, fa_iterControl, awO.aw_TL, Q,
+			QInConv, QInRad,
+			ucgSI, awO.aw_SHGCrt, awO.aw_Cx,
+			awO.aw_FP, awO.aw_FM,	// note order: rad, conv
+			awO.aw_FHR_IN, awO.aw_FHR_OUT);
+#else
 	int ret = (*ASHWAT.xw_pAWThermal)( fa_CFS,
 			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
 			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
 			DegFtoK( awI.aw_txrI), DegFtoK( awI.aw_txrO),
 			awI.aw_incSlr, awI.aw_absSlr,
 			tol, fa_iterControl, awO.aw_TL, Q,
-			ucgSI, awO.aw_SHGCrt, awO.aw_Cx, awO.aw_FM, awO.aw_FP,
+			ucgSI, awO.aw_SHGCrt, awO.aw_Cx,
+			awO.aw_FM, awO.aw_FP,	// note order: rad, conv
 			awO.aw_FHR_IN, awO.aw_FHR_OUT);
+#endif
 	if (ret == 0)
 		rc = RCBAD;
-
-	// fa_iterControl = -1;
 #if defined( ASHWAT_CPPTESTTHERMAL)
-	double QX[ CFSMAXNL+1];
+	double QX[ CFSMAXNL+2];
 	double ucgSIX, SHGCrtX, CxX, FMX, FPX, FHR_INX, FHR_OUTX, QInConvX, QInRadX;
 	bool bRetX = fa_CFS.cf_Thermal(
 			DegFtoK( awI.aw_txaI), DegFtoK( awI.aw_txaO),
 			UIPtoSI( awI.aw_hxaI), UIPtoSI( awI.aw_hxaO),
 			DegFtoK( awI.aw_txrI), DegFtoK( awI.aw_txrO),
 			awI.aw_incSlr, awI.aw_absSlr-1,
-			tol, fa_iterControl, TLX, QX,
+			tol, fa_iterControl,
+			awO.aw_TLX-1, QX,
 			QInConvX, QInRadX,
-			ucgSIX, SHGCrtX, CxX, FPX, FMX,
+			ucgSIX, SHGCrtX, CxX, 
+			FPX, FMX,	// note order: conv, rad
 			FHR_INX, FHR_OUTX);
 	double TErr = 0.;
 	for (int iL=1;iL<=fa_CFS.NL; iL++)
-		TErr += fabs( TLX[ iL] - awO.aw_TL[ iL-1]);
+		TErr += fabs( awO.aw_TLX[ iL-1] - awO.aw_TL[ iL-1]);
 	double QErr = 0.;
 	for (int iL=1;iL<=fa_CFS.NL; iL++)
 		QErr += fabs( QX[ iL] - Q[ iL]);
@@ -1307,9 +1312,13 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	 || fabs( SHGCrtX - awO.aw_SHGCrt) > 0.000001
 	 || fabs( FHR_INX - awO.aw_FHR_IN) > 0.000001
 	 || fabs( FHR_OUTX - awO.aw_FHR_OUT) > 0.000001
+#if defined( ASHWAT_NEWCALL)
+	 || fabs( QInConvX - QInConv) > 0.00001
+	 || fabs( QInRadX - QInRad) > 0.00001
+#endif
 	 || fabs( FMX - awO.aw_FM) > 0.000001
-	 || fabs( FPX - awO.aw_FP) > 0.00001
-	 || fabs( CxX - awO.aw_Cx) > 0.00001)
+	 || fabs( FPX - awO.aw_FP) > 0.000001
+	 || fabs( CxX - awO.aw_Cx) > 0.000001)
 	 		printf( "\ncf_Thermal mismatch, NL=%d  Err=%0.4f", fa_CFS.NL, TErr);
 #endif	// ASHWAT_CPPTEST
 #endif	// ASHWAT_USECPP
@@ -1388,17 +1397,15 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// ASHWAT.DLL interface
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-// class XASHWAT: interface to ASHWAT (complex fenestration model)
+// class XASHWAT: ASHWAT interface
+//   routes calls either to ASHWAT.DLL (FORTRAN implementation)
+//   or staticly-linked ashwat.cpp
 ///////////////////////////////////////////////////////////////////////////////
 XASHWAT ASHWAT(		// public ASHWAT object
 #if !defined( ASHWAT_LINKDLL)
 	"");
-#elif 0 && defined( _DEBUG)
-	"\\hbx\\run\\ASHWATD.DLL");
+#elif defined( _DEBUG)
+	"\\hbx\\run\\ASHWAT.DLL");
 #elif 0
 	"\\hbx\\run\\ASHWAT.DLL");
 #else
@@ -1423,11 +1430,15 @@ XASHWAT::~XASHWAT()
 #endif
 }		// XASHWAT::xm_ClearPtrs
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_Setup()
+RC XASHWAT::xw_Setup()		// general initialization
+// duplicate calls OK
 {
-#if !defined( ASHWAT_LINKDLL)
+static bool bSetup = false;
+	if (bSetup)
+		return RCOK;
+
 	RC rc = RCOK;
-#else
+#if defined( ASHWAT_LINKDLL)
 	if (!xm_hModule)
 	{	if (xm_LoadLibrary() == RCOK)
 		{	xw_pAWThermal = (AWThermal *)xm_GetProcAddress( "ASHWAT_Thermal");
@@ -1445,16 +1456,23 @@ RC XASHWAT::xw_Setup()
 	}
 	RC rc = xm_RC;
 #endif
-	if (!rc)
-		rc = xw_BuildLib();
+#if defined( ASHWAT_USECPP)
+	ASHWAT_Setup( MsgCallBackFunc, 0);
+#endif
+	if (!rc && xw_IsLibEmpty())
+		rc = xw_BuildLib();		// build library of CFSLAYERs and CFSTYs
+	bSetup = true;
 	return rc;
 }		// XASHWAT::xw_Setup
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_Init()
+/*static*/ void XASHWAT::MsgCallBackFunc(
+	AWMSGTY msgTy,
+	const char* msg)
 {
-	return RCOK;
-}		// XASHWAT::xw_Init
 
+	warn( msg);
+
+}		// XASHWAT::MsgCallBackFunc
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_CheckFixCFSLayer(
 	CFSLAYER& L,		// layer to be checked / fixed
@@ -1655,79 +1673,14 @@ RC XASHWAT::xw_Solar(		// ASHWAT_Solar interface fcn
 
 	return ret != 0 ? RCOK : RCBAD;
 #endif
-}		// XASHWAT::xs_Solar
+}		// XASHWAT::xw_Solar
 //-----------------------------------------------------------------------------
-#if 0
-RC XASHWAT::xw_Thermal(
-	FENAW& F,
-	SBC sbc[ 2])
-{
-const double tol = .001;
-
-	if (!xw_pAWThermal)
-		return RCBAD;
-
-	int nL = F.fa_CFS.NL;
-	int iH = 12;
-
-	// inputs
-	double tai = DegFtoK( sbc[ 0].sb_txa);
-	double tri = DegFtoK( sbc[ 0].sb_txr);
-	double hci = 2.;
-	double tao = DegFtoK( sbc[ 1].sb_txa);
-	double tro = DegFtoK( sbc[ 1].sb_txr);		// dubious tSky
-	double hco = 2.;
-
-	double isol = 0.;
-	double source[ CFSMAXNL+1];
-	for (int iL=0; iL<nL; iL++)
-		source[ iL] = F.fa_bmAbsL[ iH][ iL]*100.;
-	double Q[ CFSMAXNL+1];
-
-	// outputs
-	double UCG;
-	double SHGC;
-	double Cx;
-	double FM;
-	double FP;
-	double FHR_IN;
-	double FHR_OUT;
-
-	int ret = (*xw_pAWThermal)( F.fa_CFS,
-		tai, tao, hci, hco, tri, tro, isol, source,
-		tol, F.fa_iterControl, F.fa_TL, Q,
-		UCG, SHGC, Cx, FM, FP, FHR_IN, FHR_OUT);
-
-	F.fa_iterControl = -1;		// don't init / don't iterate
-								//   subsequent calls
-
-#if defined( _DEBUG)
-	for (iL=0; iL<nL; iL++)
-	{	if (_isnan( F.fa_TL[ iL]) || F.fa_TL[ iL] < 200. || F.fa_TL[ iL] > 400.)
-			warn( "Window '%s': Implausible layer %d temp (%.f degF)\n",
-					F.fa_Name(), iL+0, DegKtoF( F.fa_TL[ iL]));
-	}
-#endif
-
-	// map results to CSE vars
-	//  Note CSE 0=inside, ASHWAT 0=outside
-	sbc[ 0].sb_tSrf = DegKtoF( F.fa_TL[ nL-1]);		// inside
-	sbc[ 1].sb_tSrf = DegKtoF( F.fa_TL[ 0]);		// outside
-
-#if 0
-typedef int _stdcall AWThermal( CFSTY& CFS, double& TIN, double& TOUT,
-	double& HCIN, double& HCOUT, double& TRMIN, double& TRMOUT, double& ISOL,
-	double* SOURCE, double& tol, int& IterControl, double* T, double& Q,
-	double& UCG, double& SHGC, double& Cx, double& FM, double& FP,
-	double& FHR_IN, double& FHR_OUT)
-#endif
-
-	return ret != 0 ? RCOK : RCBAD;
-
-}		// XASHWAT::xw_Thermal
-#endif
+bool XASHWAT::xw_IsLibEmpty() const
+{	return xw_layerLib.size() == 0;
+}		// XASHWAT::xw_IsLibEmpty
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_BuildLib()		// libary of built-in type
+RC XASHWAT::xw_BuildLib()		// libary of built-in types
+// overwrites any existing library entries
 {
 	RC rc = RCOK;
 	xw_layerLib.clear();
@@ -1816,4 +1769,4 @@ const CFSTYX* XASHWAT::xw_FindLibCFSTYX(
 
 
 
-// ashwat.cpp end
+// ashwface.cpp end

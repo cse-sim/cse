@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 814
+#define CSEVRSN_MINOR 816
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,8 +22,10 @@
 // ONLY comments below here
 
 /* History:
+   0.816: ...
+   0.815: Initial open-source version w/ C++ ASHWAT; committed 9-26-2016
    0.814: ASHWAT C++ conversion test version
-   0.813: HPHW 1.3.0 (Ecotope cleanup), non-HPWH whUse bug fix; committed 8-3-2013
+   0.813: HPHW 1.3.0 (Ecotope cleanup), non-HPWH whUse bug fix; committed 8-3-2016
    0.812: Accum-during-warmup: fixes use of prior hour results in expressions;
           HPWH 1.2.9 (reworked generic per Ecotope); DHWSYS load share; committed 7-21-2016
    0.811: HPWH generic LTC=45, corrected UA; committed 5-25-2016
@@ -37,6 +39,7 @@
    0.804: test version w/ HPWH Generic, committed 5-17-2016
    0.803: test version w/ HPWH UEF2generic, commited 5-14-2016
    0.802: central DHWSYS; committed 5-12-2016
+
    0.801: test version with HPWH generic models; partial central DHWSYS; sent 5-11-2016
    0.800: path search; suffixed output files; HPWH 1.2.5; committed 5-7-2016
    0.799: RFI cleanup; fix DHWMTR accum bugs; committed 4-26-2016

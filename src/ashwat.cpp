@@ -23,7 +23,6 @@
 
 
 // TODO
-// * cf_Thermal mismatch
 // * Unified air properties
 // * Cache constant long wave derived values (beg of cf_Thermal)
 // * CFSShadeMod.f90: finish arg rationalization / commenting
@@ -94,6 +93,18 @@ static const double HOC_ASHRAE = 16.9;	// nominal ASHRAE exterior convective
 										//   coefficient, W/m2-K
 										//   7.5 mph cooling conditions
 
+///////////////////////////////////////////////////////////////////////////////
+static int awOptions = 0;		// ASHWAT global options (none defined, 9-2016)
+static void (*pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg) = NULL;
+//-----------------------------------------------------------------------------
+void ASHWAT_Setup(
+	void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg),
+	int options /*=0*/)
+{
+	pMsgCallBackFunc = _pMsgCallBackFunc;
+	awOptions = options;
+}		// ASHWAT_Setup
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // utility functions
@@ -275,12 +286,8 @@ static string strFromBlankFilled(		// convert blank-filled to 0-terminated
 #define SX( s) s
 #endif		// FORTRAN_TRANSITION
 //-----------------------------------------------------------------------------
-const int msgIGN = 0;
-const int msgDBG = 1;
-const int msgWRN = 2;
-const int msgERR = 3;
 static bool MessageV(
-	int msgTy,
+	AWMSGTY msgTy,		// message type
 	const char* fmt,
 	va_list ap=NULL)
 {
@@ -290,13 +297,17 @@ static bool MessageV(
 	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
 		fmt = fRet >= 0 ? buf : "?? MessageV vsprintf_s failure.";
 	}
-	printf( fmt);		// TODO: transmit message to caller
-	printf("\n");
+	if (pMsgCallBackFunc)
+		(*pMsgCallBackFunc)( msgTy, fmt);	// transmit message to caller
+	else
+	{	printf( fmt);		// no message callback defined, use printf
+		printf("\n");
+	}
 	return msgTy >= msgWRN;	// TODO
 }	// ::MessageV
 //------------------------------------------------------------------------------
 static bool Message(
-	int msgTy,
+	AWMSGTY msgTy,
 	const char* fmt,
 	...)
 {
@@ -1138,10 +1149,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		}
 	}  // iTry Iteration loop
 
-
-
-	//calculate radiosities of each layer
-	//set up matrix
+	// calculate radiosities of each layer
 	ADIM = 2*NL + 2;
 	A = ACopy; // right hand column will be all zeros
 
@@ -1172,8 +1180,8 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 	JF(NL+1) = XSOL(2*NL+2);
 	JB(NL+1) = 0.;
 
-	//calculate indices of merit
-	//set up matrix
+	// calculate indices of merit
+	// set up matrix
 	ADIM = NL;
 	A.Resize( ADIM, ADIM+2, 1, 1);
 	A = 0.;
@@ -1216,7 +1224,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 
 	// find SHGCcg
 	SHGCcg = 0.;
-	if ( ISOL > 0.01)  //for now only calculate if insolation is non-zero
+	if (ISOL > 0.01)  // for now only calculate if insolation is non-zero
 	{	A = ACopy;
 
 		TOUTdv = 0.;
@@ -1294,7 +1302,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 	// can only be done if ISOL > 0
 	NRad = 0.;
 	NConv = 0.;
-	if (ISOL > 0.01)
+	if (ISOL >= 0.001)
 	{   TOUTdv =	0.;
 		TRMOUTdv =	0.;
 		TINdv =		0.;
@@ -1321,11 +1329,8 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 			}
 		}
 
-		// Message( msgXXX, "M( I) = " 6F8.5)'), M(1:NL)
-		// Message( msgXXX, "P( I) = " 6F8.5)'), P(1:NL)
-
 		// find A for each layer, use to get NRad & NConv fraction for that layer
-		for(I=1; I<=NL; I++)
+		for (I=1; I<=NL; I++)
 		{	SOURCEdv( I) = SOURCE[ I]/ISOL;
 			NRad  += M[ I]*SOURCEdv( I);
 			NConv += P[ I]*SOURCEdv( I);
@@ -1333,13 +1338,15 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 
 #if defined( _DEBUG)
 		// check values, should be equal to SHGC
-		Q_INdv = SOURCE[ NL+1];
-		for(I=1; I<=NL; I++)
-			Q_INdv += SOURCE[ I]*(M[ I] + P[ I]);
-		Q_INdv /= ISOL;
-		double SUMERR = Q_INdv - SHGCcg;
-		if (abs( SUMERR) > .0001)
-			Message( msgERR, "Check for M & P, should be 0: %0.6f", SUMERR);
+		if (ISOL > .01)		// else no SHGCcg, see above
+		{	Q_INdv = SOURCE[ NL+1];
+			for (I=1; I<=NL; I++)
+				Q_INdv += SOURCE[ I]*(M[ I] + P[ I]);
+			Q_INdv /= ISOL;
+			double SUMERR = Q_INdv - SHGCcg;
+			if (abs( SUMERR) > .0001)
+				Message( msgERR, "Check for M & P, should be 0: %0.6f", SUMERR);
+		}
 #endif
 	}
 
@@ -4227,6 +4234,8 @@ static double VB_SLAT_RADIUS_RATIO(		//  curved slat radius ratio (W / R)
 	}
 	return rat;
 } // VB_SLAT_RADIUS_RATIO
+
+
 //-----------------------------------------------------------------------------
 static void VB_SOL4(	// four surface flat-slat model with slat transmittance
 	double S,		//  slat spacing (any length units; same units as W)
@@ -4254,9 +4263,55 @@ static void VB_SOL4(	// four surface flat-slat model with slat transmittance
 // if you want the back-side reflectance call with the same
 // input data - except negate the slat angle, PHI_DEG
 {
-#if 1
-	RHO_BD = TAU_BD = 0.;
-#endif
+	//  lengths of diagonal strings used in the four-surface model
+	double AF = SqrtSumSq( W*cos(PHI), S - W*sin( PHI));
+	double CD = SqrtSumSq( W*cos(PHI), S + W*sin( PHI));
+
+	double Z3, Z4;	//  diffuse source terms from surfaces 3 and 4 due to incident beam radiation
+	if ((PHI + OMEGA) >= 0.0)
+	{	//  sun shines on top of slat
+		Z3 = TAU_SLAT*S / DE;
+		Z4 = RHOUFS_SLAT*S / DE;
+	}
+	else
+	{	//  sun shines on bottom of slat
+		Z3 = RHODFS_SLAT*S / DE;
+		Z4 = TAU_SLAT*S / DE;
+	}
+	
+	if (abs(PHI - PIOVER2) < SMALL_ERROR)
+	{	// venetian blind is closed
+		if (W < S)
+		{	// gaps between slats when closed
+			RHO_BD = (W / S)*RHOUFS_SLAT;
+			TAU_BD = (W / S)*TAU_SLAT;
+		}
+		else
+		{	// no gaps between slats when closed
+			RHO_BD = RHOUFS_SLAT;
+			TAU_BD = TAU_SLAT;
+		}
+	}
+	else
+	{	// blind is open
+		double F13, F14, F23, F24, F34, F43;	//  Shape factors
+		F13 = (S+W-CD)/(2.0*S);
+		F14 = (S+W-AF)/(2.0*S);
+		F23 = (S+W-AF)/(2.0*S);
+		F24 = (S+W-CD)/(2.0*S);
+		F34 = (CD+AF-2.0*S)/(2.0*W);
+		F43 = (CD+AF-2.0*S)/(2.0*W);
+
+		double C3 = 1.0 / (1.0 - TAU_SLAT*F43);
+		double B3 = (RHODFS_SLAT*F34) / (1.0 - TAU_SLAT*F43);
+		double C4 = 1.0 / (1.0 - TAU_SLAT*F34);
+		double B4 = (RHOUFS_SLAT*F43) / (1.0 - TAU_SLAT*F34);
+		double J3 = (C3*Z3 + B3*C4*Z4) / (1.0 - B3*B4);
+		double J4 = (C4*Z4 + B4*C3*Z3) / (1.0 - B3*B4);
+
+		RHO_BD = F13*J3 + F14*J4;
+		TAU_BD = F23*J3 + F24*J4;
+	}
 }  // VB_SOL4
 //-----------------------------------------------------------------------------
 void VB_SOL6(	// 6 surface flat-slat model with slat transmittance
@@ -4286,9 +4341,98 @@ void VB_SOL6(	// 6 surface flat-slat model with slat transmittance
 //	     except negate the slat angle, PHI_DEG
 //
 {
-#if 1
-	RHO_BD = TAU_BD = 0.;
-#endif
+	double Z3, Z4;			//  diffuse source terms from surfaces 3 and 4 due to incident beam radiation
+	if ((PHI + OMEGA) >= 0.)
+	{	// sun shines on top of slat
+		Z3 = TAU_SLAT*S / DE;
+		Z4 = RHOUFS_SLAT*S / DE;
+	}
+	else
+	{	// sun shines on bottom of slat
+		Z3 = RHODFS_SLAT*S / DE;
+		Z4 = TAU_SLAT*S / DE;
+	}
+
+//  CHECK TO SEE if VENETIAN BLIND IS CLOSED
+	if (abs(PHI - PIOVER2) < SMALL_ERROR)
+	{	// blind is closed
+		if (W < S)
+		{	// gaps between slats when blind is closed
+			RHO_BD = (W / S)*RHOUFS_SLAT;
+			TAU_BD = (W / S)*TAU_SLAT;
+		}
+		else
+		{	// no gaps when closed
+			RHO_BD = RHOUFS_SLAT;
+			TAU_BD = TAU_SLAT;
+		}
+	}
+	else
+	{	// blind is open
+		//  lengths of slat segments and diagonal strings used in the six-surface model
+		double AB = DE;
+		double AF = SqrtSumSq(W*cos(PHI), S - W*sin(PHI));
+		double BC = W - AB;
+		double EF = BC;
+		double BD = SqrtSumSq(DE*cos(PHI), S + DE*sin(PHI));
+		double BF = SqrtSumSq(EF*cos(PHI), S - EF*sin(PHI));
+		double CD = SqrtSumSq(W*cos(PHI), S + W*sin(PHI));
+		double CE = SqrtSumSq(EF*cos(PHI), S + EF*sin(PHI));
+		double AE = SqrtSumSq(DE*cos(PHI), S - DE*sin(PHI));
+
+		double F13, F14, F23, F24, F34, F36, F15, F16;	//  shape factors
+		double F43, F45, F54, F56, F63, F65, F25, F26;
+		F13 = (S + AB - BD) / (2.0*S);
+		F14 = (S + DE - AE) / (2.0*S);
+		F15 = (W + BD - (AB + CD)) / (2.0*S);
+		F16 = (W + AE - (AF + DE)) / (2.0*S);
+		F23 = (W + BF - (BC + AF)) / (2.0*S);
+		F24 = (W + CE - (CD + EF)) / (2.0*S);
+		F25 = (S + BC - BF) / (2.0*S);
+		F26 = (S + EF - CE) / (2.0*S);
+		F34 = (AE + BD - 2.0*S) / (2.0*AB);
+		F36 = (AF + S - (AE + BF)) / (2.0*AB);
+		F43 = (AE + BD - 2.0*S) / (2.0*DE);
+		F45 = (CD + S - (BD + CE)) / (2.0*DE);
+		F54 = (CD + S - (BD + CE)) / (2.0*BC);
+		F56 = (CE + BF - 2.0*S) / (2.0*BC);
+		F63 = (AF + S - (AE + BF)) / (2.0*EF);
+		F65 = (BF + CE - 2.0*S) / (2.0*EF);
+
+		//  POPULATE THE COEFFICIENTS OF THE RADIOSITY MATRIX
+		A2D< 4, 6> A(4, 6, 1, 1);
+		A(1, 1) = 1.0 - TAU_SLAT*F43;
+		A(1, 2) = -RHODFS_SLAT*F34;
+		A(1, 3) = -TAU_SLAT*F45;
+		A(1, 4) = -RHODFS_SLAT*F36;
+		A(1, 5) = Z3;
+		A(2, 1) = -RHOUFS_SLAT*F43;
+		A(2, 2) = 1.0 - TAU_SLAT*F34;
+		A(2, 3) = -RHOUFS_SLAT*F45;
+		A(2, 4) = -TAU_SLAT*F36;
+		A(2, 5) = Z4;
+		A(3, 1) = -TAU_SLAT*F63;
+		A(3, 2) = -RHODFS_SLAT*F54;
+		A(3, 3) = 1.0 - TAU_SLAT*F65;
+		A(3, 4) = -RHODFS_SLAT*F56;
+		A(3, 5) = 0.0;
+		A(4, 1) = -RHOUFS_SLAT*F63;
+		A(4, 2) = -TAU_SLAT*F54;
+		A(4, 3) = -RHOUFS_SLAT*F65;
+		A(4, 4) = 1.0 - TAU_SLAT*F56;
+		A(4, 5) = 0.0;
+
+		A1D< 1> XSOL(4);
+		A.Solve(XSOL);
+		double J3, J4, J5, J6;	//  radiosity, surface i
+		J3 = XSOL(1);
+		J4 = XSOL(2);
+		J5 = XSOL(3);
+		J6 = XSOL(4);
+
+		RHO_BD = F13*J3 + F14*J4 + F15*J5 + F16*J6;
+		TAU_BD = F23*J3 + F24*J4 + F25*J5 + F26*J6;
+	}
 }  // VB_SOL6
 //-----------------------------------------------------------------------------
 static void VB_SOL46_CURVE(	// four and six surface curve-slat model with slat transmittance
@@ -4704,8 +4848,37 @@ bool CFSLAYER::cl_Reverse(			// reverse a layer
 	CFSLAYER& LR) const		// returned: reversed layer
 // returns true iff success
 {
-	bool bRet = false;
-	// TODO
+#if 1
+    bool bRet = false;
+#else
+	bool bRet = true;
+
+	// TODO: incomplete 9-25-2016
+
+	// LR.ID = SX(ID) // ' REV'
+	
+	// copy invariant mbrs
+	LR.LTYPE = LTYPE;
+	LR.S = S;
+	LR.W = W;
+	LR.C = C;
+	LR.PHI_DEG = -PHI_DEG;	// flip slat angle
+	if (cl_IsVB())
+	{	// blinds: slat properties don't change (up still up)
+		LR.SWP_MAT = SWP_MAT;
+		LR.LWP_MAT = LWP_MAT;
+		bRet = LR.cl_Finalize();	// ??? put at end?
+	}
+    // else drapes?
+    else
+	{   // other types: F <-> B
+		(LR.SWP_MAT = SWP_MAT).csw_Reverse();
+		(LR.LWP_MAT = LWP_MAT).clw_Reverse();
+		(LR.SWP_EL = SWP_EL).csw_Reverse();
+		(LR.LWP_EL = LWP_EL).clw_Reverse();
+    }
+#endif
+
 	return bRet;
 }  // CFSLAYER::cl_Reverse
 //------------------------------------------------------------------------------
