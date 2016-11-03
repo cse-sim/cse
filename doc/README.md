@@ -8,7 +8,7 @@
 - a recent version of the [Ruby] programming language (we are using Ruby 2.0.0p648)
 - (optional) an internet connection (for installing node dependencies)
 
-For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For Windows, [MiKTeX] is recommended. For Mac OS and Linux, please follow the instructions for recommended (La)TeX systems at [Pandoc's Install] page.
+For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For Windows, [MiKTeX] is recommended. For Mac OS and Linux, please follow the instructions for recommended (La)TeX systems at [Pandoc's Install] page. Note that to build the PDF, you must change the value of the "build-pdf?" key to true in the `config.yaml` file in this directory. This configuration file is discussed more below.
 
 [Pandoc]: http://pandoc.org/
 [Ruby]: https://www.ruby-lang.org/en/
@@ -41,6 +41,12 @@ The default command is `build` which can be invoked either by:
 or, since it is the default command:
 
     > rake
+
+## The Configuration File
+
+The file `config.yaml` is meant to set user-specific parameters for the build process. The file is written in [YAML] format. The file is documented with comments to help clarify the role of each parameter.
+
+[YAML]: http://yaml.org/
 
 ## Pushing Built Documents to the Server
 
