@@ -67,6 +67,7 @@ sections:
   - [2, "records/coolplant.md"]
   - [2, "records/chiller.md"]
   - [2, "records/towerplant.md"]
+  - [2, "records/importfile.md"]
   - [2, "records/reportfile.md"]
   - [2, "records/report.md"]
   - [2, "records/reportcol.md"]

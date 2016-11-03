@@ -97,7 +97,7 @@ The following is a brief CSE input file, annotated with comments intended to exe
 
         MATERIAL carpet;        // create object of class MATERIAL
         matThk = .296;          // specify 'matThk' member of MATERIAL 'carpet'
-        matCond = 1./24;        // give value of 'matCond' for 'carpet' 
+        matCond = 1./24;        // give value of 'matCond' for 'carpet'
 
         CONSTRUCTION slab140C;  /* create object of class CONSTRUCTION, named
                                    slab140C. Terminates MATERIAL, because
@@ -184,7 +184,7 @@ Macros are a mechanism to substitute a specified text for each occurrence of a w
         #define ZNWID 20
         #define ZNLEN 30
         . . .
-        
+
         znArea = ZNWID * ZNLEN;
         znVol  = ZNWID * ZNLEN * 8;
 
@@ -232,7 +232,7 @@ Line splicing finds its main use in defining long macros:
         #define LIGHT_GAIN       .024, .022, .021, .021, .021, .026, \
                                  .038, .059, .056, .060, .059, .046, \
                                  .045, .5  , .5  , .05 , .057, .064, \
-                                 .064, .052, .050, .055, .044, .027 
+                                 .064, .052, .050, .055, .044, .027
 
 ### Macro definition and expansion
 
@@ -458,7 +458,7 @@ ALTER could be used if you wish to order the input in a special way. For example
         ALTER ZONE "1";               // revert to specifying zone 1
             SURFACE "Roof1";  . . .   (describe roof of zone 1)
         ALTER ZONE "2";
-            SURFACE "Roof2";  . . . 
+            SURFACE "Roof2";  . . .
 
 ALTER can be used to facilitate making similar runs. For example, to evaluate the effect of a change in the size of a window, you might use:
 
@@ -539,11 +539,11 @@ DEFTYPE is used to begin defining a TYPE for a class. When a TYPE is created, no
                                                   //  but sfAzm varies, so it is not in TYPE.
             sfU = .83;                            // surf conductance; override if different
             sfModel = QUICK;
-            
+
         DEFTYPE SURFACE "ExtWall" USETYPE "BaseWall";
             sfExCnd = AMBIENT;                    // other side of wall is outdoors
             sfExAbs = 0.5;                        // member only needed for exterior walls
-        
+
         DEFTYPE SURFACE "IntWall" USETYPE "BaseWall";   // interior wall
             sfExCnd = ADJZN;                      // user must give sfAdjZn.
 
@@ -967,7 +967,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                  outdoor air temperature, but not less than 55 nor greater
                  than 80:
 
-                     `ahTsSp = brkt( 55, 130 - \$tDbO, 80);`
+                     `ahTsSp = brkt( 55, 130 - $tDbO, 80);`
 
                  This would produce a 55-degree setpoint in hot weather,
                  an 80-degree setpoint in cold weather, and a transition
@@ -1084,7 +1084,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                internal gain that has different schedules for holidays,
                weekdays, and weekends could be defined as follows:
 
-               `// 24-hour lighting power schedules for weekend, weekday, 
+               `// 24-hour lighting power schedules for weekend, weekday,
                holiday:`
 
                `#define WE_LIGHT  hourval( .024, .022, .021, .021, .021, .
@@ -1344,7 +1344,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
   **Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
                temperature (F) and relative humidity (0 – 1)
 
-  **Syntax**   *float* **wFromDbWb**(*float tDb, float rh*)
+  **Syntax**   *float* **wFromDbRh**(*float tDb, float rh*)
   ------------ -----------------------------------------------------------
 
 <!--
@@ -1352,16 +1352,25 @@ TODO: test psychrometric functions 7-22-2011
 -->
 **import**
 
-  ------------ -----------------------------------------------------------
-  **Function** Returns *float* read from import file.
-  **Syntax**   *float* **import**(*?? arguments to be documented*)
-  ------------ -----------------------------------------------------------
+  ------------- -------------------------------------------------------------
+  **Function**  Returns *float* read from an import file.
+
+  **Syntax**    *float* **import**(*string importFileID, int fieldN*)
+                *float* **import**(*string importFileID, string fieldName*)
+
+  **Remark**     See IMPORTFILE for examples of import() use
+  -------------  -------------------------------------------------------------
+
 
 **importStr**
 
   ------------ -----------------------------------------------------------
-  **Function** Returns *string* read from import file.
-  **Syntax**   *string* **importStr**(*?? arguments to be documented*)
+  **Function** Returns *string* read from an import file.
+
+  **Syntax**    *string* **importStr**(*string importFileID, int fieldN*)
+                *string* **importStr**(*string importFileID, string fieldName*)
+
+  **Remark**     See IMPORTFILE for examples of import() use
   ------------ -----------------------------------------------------------
 
 **contin**
@@ -1376,7 +1385,7 @@ TODO: test psychrometric functions 7-22-2011
                the range 0 – 1 ???
 
   **Example**  --
-               <!-- TODO: complete documentation for contin()   7-26-2012 
+               <!-- TODO: complete documentation for contin()   7-26-2012
                -->
   ------------ -----------------------------------------------------------
 
@@ -1528,7 +1537,7 @@ hidden by rob 7-26-92: believe this is useless without member names; full detail
 The following is a list of all of the top-level internal members (some of these members, like ahU,  are obsolete):
 
 ```
-@top.                 I   R @zone[1..].           I   R @izXfer[1..].         I   R @gain[1..].           I   R                   owner: zone@meter[1..].          I   R @ahu[1..].            I   R @terminalx[1..].      I   R                   owner: zone@terminal[1..].       I   R                   owner: zone@airHandler[1..].     I   R @perimeter[1..].      I                       owner: zone@surface[1..].        I                       owner: zone  sgdist[0-4].targTy  I       integer number    run start time  sgdist[0-4].targTi  I       integer number    run start time    sgdist[0-4].f[0]  I       number            monthly-hourly    sgdist[0-4].f[1]  I       number            monthly-hourly@door[1..].           I                       owner: surface  sgdist[0-4].targTy  I       integer number    run start time  sgdist[0-4].targTi  I       integer number    run start time    sgdist[0-4].f[0]  I       number            monthly-hourly    sgdist[0-4].f[1]  I       number            monthly-hourly@window[1..].         I                       owner: surface  sgdist[0-4].targTy  I       integer number    run start time  sgdist[0-4].targTi  I       integer number    run start time    sgdist[0-4].f[0]  I       number            monthly-hourly    sgdist[0-4].f[1]  I       number            monthly-hourly@shade[1..].          I   R                   owner: window@sgdist[1..].         I                       owner: window@construction[1..].   I     @layer[1..].          I                       owner: construction@material[1..].       I     @reportFile[1..].     I     @export file[1..].    I     @report[1..].         I                       owner: reportFile@export[1..].         I                       owner: export file@reportCol[1..].      I   R                   owner: report@exportCol[1..].      I   R                   owner: export@holiday[1..].        I     @znRes[1..].              R @zhx[1..].                R                   owner: zone@xsurf[1..].              R @mass[1..].               R @massType[1..].           R 
+@top.                 I   R @zone[1..].           I   R @izXfer[1..].         I   R @gain[1..].           I   R                   owner: zone@meter[1..].          I   R @ahu[1..].            I   R @terminalx[1..].      I   R                   owner: zone@terminal[1..].       I   R                   owner: zone@airHandler[1..].     I   R @perimeter[1..].      I                       owner: zone@surface[1..].        I                       owner: zone  sgdist[0-4].targTy  I       integer number    run start time  sgdist[0-4].targTi  I       integer number    run start time    sgdist[0-4].f[0]  I       number            monthly-hourly    sgdist[0-4].f[1]  I       number            monthly-hourly@door[1..].           I                       owner: surface  sgdist[0-4].targTy  I       integer number    run start time  sgdist[0-4].targTi  I       integer number    run start time    sgdist[0-4].f[0]  I       number            monthly-hourly    sgdist[0-4].f[1]  I       number            monthly-hourly@window[1..].         I                       owner: surface  sgdist[0-4].targTy  I       integer number    run start time  sgdist[0-4].targTi  I       integer number    run start time    sgdist[0-4].f[0]  I       number            monthly-hourly    sgdist[0-4].f[1]  I       number            monthly-hourly@shade[1..].          I   R                   owner: window@sgdist[1..].         I                       owner: window@construction[1..].   I     @layer[1..].          I                       owner: construction@material[1..].       I     @reportFile[1..].     I     @export file[1..].    I     @report[1..].         I                       owner: reportFile@export[1..].         I                       owner: export file@reportCol[1..].      I   R                   owner: report@exportCol[1..].      I   R                   owner: export@holiday[1..].        I     @znRes[1..].              R @zhx[1..].                R                   owner: zone@xsurf[1..].              R @mass[1..].               R @massType[1..].           R
 ```
 
 hidden by rob, 7-26-92: This info should be part of annotation of -p report in appendix B. And, it is stale.
@@ -1604,4 +1613,3 @@ Also there are end-of varieties of all of the above; these are values computed d
 
 Watch yourself when using znRes[ ].prior when combined with AUTOSIZE – there is no prior!
 -->
-

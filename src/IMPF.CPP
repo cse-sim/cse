@@ -52,6 +52,13 @@ IFFNM strange status:
 
    They cannot be deleted after setup like most input records;
    they must be preserved thru run and successive runs till CLEAR.
+
+TODO 11-2016 (when documentation written)
+* Add an interval choice that supports only YEAR MONTH DAY HOUR
+  (or add subhour support to import capabilities
+* Use common tokenizing code?
+
+
 */
 
 
@@ -67,8 +74,6 @@ IFFNM strange status:
 #include <rmkerr.h>	// warn
 
 #include <cnguts.h>	// ImpfB IffnmB
-
-//#include <pp.h>		// still needed 5-97?
 
 #include <impf.h>	// declarations for fcns in this file
 
@@ -89,9 +94,9 @@ RC FC impfStart()		// import files stuff done at start run
 
 		// allocate buffer
 #define BUFSZ (1024+2)			// buffer size = absolute max record size, +2 for \r\n
-		if ( dmal( DMPP( impf->buf),		// dmpak.cpp. returns RCOK (which is 0) if ok.
+		if ( dmal( DMPP( impf->buf),	// dmpak.cpp. returns RCOK (which is 0) if ok.
 				   BUFSZ+1, 			// 1 extra byte for \0 always stored after data.
-				   DMZERO			// zero buffer - debug aid
+				   DMZERO				// zero buffer - debug aid
 				   | WRN ) )			// warn & continue if can't get memory
 		{
 			rc = RCBAD;				// if failed, say return bad. caller should prevent run else many Import() errors.
@@ -397,8 +402,8 @@ RC FC ImpFldDcdr::decNum()		// decode field's numeric value, set fnrt->fnv
 							   "    called w/o preceding successful field scan" */
 	if (fnrt->nDecoded)  return RCOK;			// if this field of this record already decoded, don't repeat
 #if 0	// moved below so DOES DECODE each use & repeat error msg & bad return, as opposed to using 0. 2-94.
-	x    fnrt->nDecoded = TRUE;				// say don't need to decode this field again
-	x    							// (if error, later calls get 0 without repeating message)
+x		fnrt->nDecoded = TRUE;	// say don't need to decode this field again
+x    							// (if error, later calls get 0 without repeating message)
 #endif
 
 #define SUBERR(text) { sub = text; goto subErr; }
@@ -527,7 +532,7 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 	BOO imperfect = FALSE;			// flag set if header format seems wrong but may be useable
 
 // line 1: runTitle, runNumber. Not checked.
-	if (!readRec())  						// read record, TRUE if 0k
+	if (!readRec())  					// read record, TRUE if 0k
 		goto eof;						// if premature eof or error, cannot use file
 	if (!scanNextField() || !scanNextField() || scanNextField())	// expect 2 fields & error on 3rd call
 		imperfect++;						// wrong # fields: say warn & continue attempting to use file
@@ -603,11 +608,11 @@ bad:
 		FNMT * fnmt = iffnm->fnmt;		// fetch pointer to field names table in heap (or a NULL from record 0)
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
 		{
-			char *nm = fnrt[nFieldsScanned].fp;		// point to scanned field text: this is name of field in this position
+			char *nm = fnrt[nFieldsScanned].fp;	// point to scanned field text: this is name of field in this position
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
 			fnrt[nFieldsScanned].fieldName = strsave(nm);	// save field name for use in error msgs
 			if ( iffnmi   				// if file has field names table record -- else skip
-					&&  fnmt )   				// and names table record has allocated heap names table -- insurance
+					&&  fnmt )   		// and names table record has allocated heap names table -- insurance
 			{
 				for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
 					if (!strcmpi( nm, fnmt[fnmi].fieldName))	// if this entry matches

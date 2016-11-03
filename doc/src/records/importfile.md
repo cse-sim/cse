@@ -1,8 +1,27 @@
 # IMPORTFILE
 
-IMPORTFILE allows specification of files from which data is read using the Import() function, allowing external values to be referenced in expressions.
+IMPORTFILE allows specification of files from which external data can be accessed using the import() and importStr() functions, allowing external values to be referenced in expressions.
 
-A file suitable for importing has the following structure ...
+Import files are text files containing a header plus comma-separated data fields.  The structure of an import file matches that of an exported file (see EXPORTFILE and EXPORT), making it possible to directly import files exported from prior runs.
+
+  Line     Contents                     Notes
+  -------- -----------------------      --------------------------------------
+  1        *runTitle*, *runNumber*      read but not checked
+  2        *timestamp*                  read but not checked
+  3        *title*, *freq*              must match imTitle and imFreq
+  4        column headings
+  5 ..     comma separated data
+
+
+
+
+Line 2:
+[Line 3]
+Line 4:
+data1, data2, data3, ...
+...
+
+
 
 EXPORT, then IMPORT
 
@@ -18,7 +37,7 @@ Name of IMPORTFILE object (for reference from Import()).
 
 **imFileName=*string***
 
-path name of file to be read. If no path is specified, the file located via include.  What is the assumed extension??
+path name of file to be read. If no path is specified, the file sought via include paths specified using the -I command line parameter (if any).
 
   **Units**   **Legal Range**                            **Default**   **Required**   **Variability**
   ----------- ------------------------------------------ ------------- -------------- -----------------
@@ -34,11 +53,12 @@ Expected title found on line 3 of file.  If title does not match, what?
 
 **imFreq=*choice***
 
-Specifies the record frequency of the file.
+Specifies the interval at which CSE reads from the import file.  Data is read at the beginning of the indicated interval and buffered in memory for access in expressions via import() or importStr().
 
-  **Units**   **Legal Range**          **Default**   **Required**   **Variability**
-  ----------- ------------------------ ------------- -------------- -----------------
-              YES NO                                 Yes             constant
+  **Units**   **Legal Range**           **Default**   **Required**   **Variability**
+  ----------- ------------------------- ------------- -------------- -----------------
+              YEAR, MONTH, DAY, or HOUR                    Yes             constant
+
 
 **imHeader=*choice***
 
@@ -47,11 +67,6 @@ Specifies the record frequency of the file.
             YES NO                   YES            No             constant
 
 
-**imBinary=*choice***
-
-**Units**   **Legal Range**          **Default**   **Required**   **Variability**
------------ ------------------------ ------------- -------------- -----------------
-            YES NO                   YES            No             constant
 
 **endImportFile**
 
