@@ -1350,28 +1350,28 @@ Built-in functions perform a number of useful scheduling and conditional operati
 <!--
 TODO: test psychrometric functions 7-22-2011
 -->
-**import**
+## import
 
-  ------------- -------------------------------------------------------------
+  ------------- ----------------------------------------------------------------
   **Function**  Returns *float* read from an import file.
 
-  **Syntax**    *float* **import**(*string importFileID, int fieldN*)
-                *float* **import**(*string importFileID, string fieldName*)
+  **Syntax**    *float* **import**( *string importFileID, int fieldN*)\
+                *float* **import**( *string importFileID, string fieldName*)
 
-  **Remark**     See IMPORTFILE for examples of import() use
-  -------------  -------------------------------------------------------------
+  **Remark**     See [IMPORTFILE](#importfile) for details on use of import()
+  -------------  ---------------------------------------------------------------
 
 
-**importStr**
+## importStr
 
-  ------------ -----------------------------------------------------------
+  ------------ -----------------------------------------------------------------
   **Function** Returns *string* read from an import file.
 
-  **Syntax**    *string* **importStr**(*string importFileID, int fieldN*)
-                *string* **importStr**(*string importFileID, string fieldName*)
+  **Syntax**    *string* **importStr**( *string importFileID, int fieldN*)\
+                *string* **importStr**( *string importFileID, string fieldName*)
 
-  **Remark**     See IMPORTFILE for examples of import() use
-  ------------ -----------------------------------------------------------
+  **Remark**     See [IMPORTFILE](#importfile) for details on use of importStr()
+  ------------ -----------------------------------------------------------------
 
 **contin**
 

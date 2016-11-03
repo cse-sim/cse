@@ -1,6 +1,6 @@
 # IMPORTFILE
 
-IMPORTFILE allows specification of files from which external data can be accessed using the import() and importStr() functions, allowing external values to be referenced in expressions.
+IMPORTFILE allows specification of files from which external data can be accessed using the [import()](#import) and [importStr()](#importstr) functions, allowing external values to be referenced in expressions.
 
 Import files are text files containing a header plus comma-separated data fields.  The structure of an import file matches that of an exported file (see EXPORTFILE and EXPORT), making it possible to directly import files exported from prior runs.
 
@@ -15,11 +15,11 @@ Import files are text files containing a header plus comma-separated data fields
 
 
 
-Line 2:
-[Line 3]
-Line 4:
-data1, data2, data3, ...
-...
+        Line 2:
+        [Line 3]
+        Line 4:
+        data1, data2, data3, ...
+        ...
 
 
 
