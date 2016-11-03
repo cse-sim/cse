@@ -1,25 +1,26 @@
-@media all                       {html {font-size: 22px;}}
-@media all and (max-width:1000px){html {font-size: 22px;}}
-@media all and (max-width: 960px){html {font-size: 21px;}}
-@media all and (max-width: 920px){html {font-size: 20px;}}
-@media all and (max-width: 880px){html {font-size: 19px;}}
-@media all and (max-width: 840px){html {font-size: 18px;}}
-@media all and (max-width: 800px){html {font-size: 17px;}}
-@media all and (max-width: 760px){html {font-size: 16px;}}
-@media all and (max-width: 720px){html {font-size: 15px;}}
-@media all and (max-width: 680px){html {font-size: 14px;}}
-@media all and (max-width: 640px){html {font-size: 13px;}}
-@media all and (max-width: 600px){html {font-size: 12px;}}
-@media all and (max-width: 560px){html {font-size: 11px;}}
+@media all                       {html {font-size: 24px;}}
+@media all and (max-width:1000px){html {font-size: 24px;}}
+@media all and (max-width: 960px){html {font-size: 22px;}}
+@media all and (max-width: 920px){html {font-size: 21px;}}
+@media all and (max-width: 880px){html {font-size: 20px;}}
+@media all and (max-width: 840px){html {font-size: 19px;}}
+@media all and (max-width: 800px){html {font-size: 18px;}}
+@media all and (max-width: 760px){html {font-size: 17px;}}
+@media all and (max-width: 720px){html {font-size: 16px;}}
+@media all and (max-width: 680px){html {font-size: 15px;}}
+@media all and (max-width: 640px){html {font-size: 14px;}}
+@media all and (max-width: 600px){html {font-size: 13px;}}
+@media all and (max-width: 560px){html {font-size: 12px;}}
 @media all and (max-width: 520px){html {font-size: 10px;}}
 body {
-  width: 800px;
+  width: 1000px;
   margin: 0 auto;
 }
 body > * {
   font-size: 100%;
   margin-left:  2.5rem;
   margin-right: 2.5rem;
+  text-align: justify;
 }
 table {
   font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -27,7 +28,8 @@ table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  margin: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 table th {
   font-size: 100%;
