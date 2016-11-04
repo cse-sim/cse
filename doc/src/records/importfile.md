@@ -2,15 +2,16 @@
 
 IMPORTFILE allows specification of a file from which external data can be accessed using the [import()](#import) and [importStr()](#importstr) functions. This allows external values to be referenced in expressions.  Any number of IMPORTFILEs can be defined and any number of import()/importStr() references can be made to a give IMPORTFILE.
 
-Import files are text files containing a header plus comma-separated data fields.  The structure of an import file matches that of an exported file (see [EXPORTFILE](#exportfile) and [EXPORT](#export)), making it possible to directly import files exported from prior runs.  The file structure is --
+Import files are text files containing an optional header and comma-separated data fields.  With
+the header present, the structure of an import file matches that of an [EXPORT](#export) file.  This makes it convenient to import unmodified files EXPORTed from prior runs.  The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
 
   Line      Contents                     Notes
   --------- -----------------------      --------------------------------------
   1         *runTitle*, *runNumber*      read but not checked
   2         *timestamp*                  in quotes, read but not checked
   3         *title*, *freq*              should match imTitle and imFreq
-  4         *colName1*,*colName2*,...    comma separated column names in quotes (if imHeader=Yes)
-  4 or 5 ..     *val1*,*val2*,...            comma separated values (string values in quotes)
+  4         *colName1*,*colName2*,...    comma separated column names in quotes
+  5 ..      *val1*,*val2*,...            comma separated values (string values in quotes)
 
 
 Example import file imp1.csv
@@ -44,7 +45,7 @@ Example IMPORTFILE use (reading from imp1.csv)
 Notes
 
  * As usual, file order is not important -- IMPORTFILEs can be referenced before they are defined.
- * Columns are referenced by 1-based index or column names (if column headings are provided)\
+ * Columns are referenced by 1-based index or column names (assuming file header is present).
  In the example above, "Tdb" could be replaced by 3.
 
 
@@ -83,6 +84,9 @@ Specifies the interval at which CSE reads from the import file.  Data is read at
 
 
 **imHeader=*choice***
+
+Indicates whether the import file include a 4 line header, as described above.  If NO, the import file
+should contain only comma-separated data rows and data items can be referenced only by 1-based column number.
 
 **Units**   **Legal Range**          **Default**   **Required**   **Variability**
 ----------- ------------------------ ------------- -------------- -----------------
