@@ -950,12 +950,12 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
 
 Built-in functions perform a number of useful scheduling and conditional operations in expressions. Built-in functions have the combined variation of their arguments; for *hourval*, the minimum result variation is hourly. For definitions of *numeric* and *anyType*, see [Expression Types](#expression-types).
 
-**brkt**
+#### brkt
 
   -------------- ---------------------------------------------------------
   **Function**   limits a value to be in a given range
 
-  **Syntax**     *numeric* **brkt**(*numeric min, numeric val, numeric
+  **Syntax**     *numeric* **brkt**( *numeric min, numeric val, numeric
                  max*)
 
   **Remark**     If *val* is less than *min*, returns *min*; if *val* is
@@ -975,7 +975,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                  50.
   -------------- ---------------------------------------------------------
 
-**fix**
+#### fix
 
   -------------- ---------------------------------------------------------
   **Function**   converts *float* to *int*
@@ -987,14 +987,14 @@ Built-in functions perform a number of useful scheduling and conditional operati
                  returns -4.
   -------------- ---------------------------------------------------------
 
-**toFloat**
+#### toFloat
 
   -------------- ---------------------------------------------------------
   **Function**   converts *int* to *float*
   **Syntax**     *float* **toFloat**( *int val* )
   -------------- ---------------------------------------------------------
 
-**min**
+#### min
 
   -------------- ---------------------------------------------------------
   **Function**   returns the lowest quantity from a list of values.
@@ -1006,7 +1006,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                  if floats and ints are intermixed, the result is float.
   -------------- ---------------------------------------------------------
 
-**max**
+#### max
 
   -------------- ---------------------------------------------------------
   **Function**   returns the highest quantity from a list of values.
@@ -1015,7 +1015,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                  *numeric valuen* )
   -------------- ---------------------------------------------------------
 
-**choose**
+#### choose
 
   -------------- ---------------------------------------------------------
   **Function**   returns the nth value from a list. If *arg0* is 0,
@@ -1032,7 +1032,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                  an error will occur.
   -------------- ---------------------------------------------------------
 
-**choose1**
+#### choose1
 
   ------------- ----------------------------------------------------------
   **Function**  same as choose except *arg0* is 1-based. Choose1 returns
@@ -1056,7 +1056,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                 explicit declaration of the \$hour system variable.
   ------------- ----------------------------------------------------------
 
-**select**
+#### select
 
   ------------ -----------------------------------------------------------
   **Function** contains Boolean-value pairs; returns the value associated
@@ -1138,7 +1138,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
                variation determines the variation of the result).
   ------------ -----------------------------------------------------------
 
-**hourval**
+#### hourval
 
   ------------ -----------------------------------------------------------
   **Function** from a list of 24 values, returns the value corresponding
@@ -1161,224 +1161,225 @@ Built-in functions perform a number of useful scheduling and conditional operati
   **Example**  see **select**, just above.
   ------------ -----------------------------------------------------------
 
-**abs**
+#### abs
 
   ------------ -----------------------------------------------------------
   **Function** converts numeric to its absolute value
   **Syntax**   numeric **abs**( numeric val)
   ------------ -----------------------------------------------------------
 
-**sqrt**
+#### sqrt
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the positive square root of *val*
-               (*val* must be $\geq$ 0).
+               ( *val* must be $\geq$ 0).
 
-  **Syntax**   *float* **sqrt** (*float val*)
+  **Syntax**   *float* **sqrt** ( *float val*)
   ------------ -----------------------------------------------------------
 
-**exp**
+#### exp
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the exponential of *val* (=
                e*^val^*)
 
-  **Syntax**   *float* **exp**(*float val*)
+  **Syntax**   *float* **exp**( *float val*)
   ------------ -----------------------------------------------------------
 
-**logE**
+#### logE
 
   ------------ -----------------------------------------------------------
-  **Function** Calculates and returns the base e logarithm of *val* (*val*
+  **Function** Calculates and returns the base e logarithm of *val* ( *val*
                must be $\geq$ 0).
 
-  **Syntax**   *float* **logE**(*float val*)
+  **Syntax**   *float* **logE**( *float val*)
   ------------ -----------------------------------------------------------
 
-**log10**
+#### log10
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the base 10 logarithm of *val*
-               (*val* must be $\geq$ 0).
+               ( *val* must be $\geq$ 0).
 
-  **Syntax**   *float* **log10**(*float val*)
+  **Syntax**   *float* **log10**( *float val*)
   ------------ -----------------------------------------------------------
 
-**sin**
+#### sin
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the sine of *val* (val in radians)
-  **Syntax**   *float* **sin**(*float val*)
+  **Syntax**   *float* **sin**( *float val*)
   ------------ -----------------------------------------------------------
 
-**sind**
+#### sind
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the sine of *val* (val in degrees)
-  **Syntax**   *float* **sind**(*float val*)
+  **Syntax**   *float* **sind**( *float val*)
   ------------ -----------------------------------------------------------
 
-**asin**
+#### asin
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in radians) the arcsine of *val*
-  **Syntax**   *float* **asin**(*float val*)
+  **Syntax**   *float* **asin**( *float val*)
   ------------ -----------------------------------------------------------
 
-**asind**
+#### asind
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in degrees) the arcsine of *val*
-  **Syntax**   *float* **asind**(*float val*)
+  **Syntax**   *float* **asind**( *float val*)
   ------------ -----------------------------------------------------------
 
-**cos**
+#### cos
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the cosine of *val* (val in radians)
-  **Syntax**   *float* **cos**(*float val*)
+  **Syntax**   *float* **cos**( *float val*)
   ------------ -----------------------------------------------------------
 
-**cosd**
+#### cosd
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the cosine of *val* (val in degrees)
-  **Syntax**   *float* **cosd**(*float val*)
+  **Syntax**   *float* **cosd**( *float val*)
   ------------ -----------------------------------------------------------
 
-**acos**
+#### acos
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in radians) the arccosine of *val*
-  **Syntax**   *float* **acos**(*float val*)
+  **Syntax**   *float* **acos**( *float val*)
   ------------ -----------------------------------------------------------
 
-**acosd**
+#### acosd
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in degrees) the arccosine of *val*
-  **Syntax**   *float* **acosd**(*float val*)
+  **Syntax**   *float* **acosd**( *float val*)
   ------------ -----------------------------------------------------------
 
-**tan**
+#### tan
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the tangent of *val* (val in
                radians)
 
-  **Syntax**   *float* **tan**(*float val*)
+  **Syntax**   *float* **tan**( *float val*)
   ------------ -----------------------------------------------------------
 
-**tand**
+#### tand
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns the tangent of *val* (val in
                degrees)
 
-  **Syntax**   *float* **tand**(*float val*)
+  **Syntax**   *float* **tand**( *float val*)
   ------------ -----------------------------------------------------------
 
-**atan**
+#### atan
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in radians) the arctangent of *val*
-  **Syntax**   *float* **atan**(*float val*)
+  **Syntax**   *float* **atan**( *float val*)
   ------------ -----------------------------------------------------------
 
-**atand**
+#### atand
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in degrees) the arctangent of *val*
-  **Syntax**   *float* **atand**(*float val*)
+  **Syntax**   *float* **atand**( *float val*)
   ------------ -----------------------------------------------------------
 
-**atan2**
+#### atan2
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in radians) the arctangent of y/x
                (handling x = 0)
 
-  **Syntax**   *float* **atan2**(*float y, float x*)
+  **Syntax**   *float* **atan2**( *float y, float x*)
   ------------ -----------------------------------------------------------
 
-**atan2d**
+#### atan2d
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns (in degrees) the arctangent of y/x
                (handling x = 0)
 
-  **Syntax**   *float* **atan2d**(*float y, float x*)
+  **Syntax**   *float* **atan2d**( *float y, float x*)
   ------------ -----------------------------------------------------------
 
-**pow**
+#### pow
 
   ------------ -----------------------------------------------------------
   **Function** Calculates and returns *val* raised to the *x*th power (=
                *val*^x^). *val* and *x* cannot both be 0. If *val* &lt; 0,
                *x* must be integral.
 
-  **Syntax**   *float* **pow**(*float val, numeric x*)
+  **Syntax**   *float* **pow**( *float val, numeric x*)
   ------------ -----------------------------------------------------------
 
-**enthalpy**
+#### enthalpy
 
   ------------ -----------------------------------------------------------
   **Function** Returns enthalpy of moist air (Btu/lb) for dry bulb
                temperature (F) and humidity ratio (lb/lb)
 
-  **Syntax**   *float* **enthalpy**(*float tDb, float w*)
+  **Syntax**   *float* **enthalpy**( *float tDb, float w*)
   ------------ -----------------------------------------------------------
 
-**wFromDbWb**
+#### wFromDbWb
 
   ------------ -----------------------------------------------------------
   **Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
                and wet bulb temperatures (F)
 
-  **Syntax**   *float* **wFromDbWb**(*float tDb, float tWb*)
+  **Syntax**   *float* **wFromDbWb**( *float tDb, float tWb*)
   ------------ -----------------------------------------------------------
 
-**wFromDbRh**
+#### wFromDbRh
 
   ------------ -----------------------------------------------------------
   **Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
                temperature (F) and relative humidity (0 – 1)
 
-  **Syntax**   *float* **wFromDbRh**(*float tDb, float rh*)
+  **Syntax**   *float* **wFromDbRh**( *float tDb, float rh*)
   ------------ -----------------------------------------------------------
 
 <!--
 TODO: test psychrometric functions 7-22-2011
 -->
-## import
+#### import
 
   ------------- ----------------------------------------------------------------
   **Function**  Returns *float* read from an import file.
 
-  **Syntax**    *float* **import**( *string importFileID, int fieldN*)\
-                *float* **import**( *string importFileID, string fieldName*)
+  **Syntax**    *float* **import**( *string importFile, string colName*)\
+                *float* **import**( *string importFile, int colN*)
 
-  **Remark**     See [IMPORTFILE](#importfile) for details on use of import()
+  **Remark**     Columns can be referenced by name or 1-based index.\
+                 See [IMPORTFILE](#importfile) for details on use of import()
   -------------  ---------------------------------------------------------------
 
 
-## importStr
+#### importStr
 
   ------------ -----------------------------------------------------------------
   **Function** Returns *string* read from an import file.
 
-  **Syntax**    *string* **importStr**( *string importFileID, int fieldN*)\
-                *string* **importStr**( *string importFileID, string fieldName*)
+  **Syntax**    *string* **importStr**( *string importFile, string colName*)\
+                *string* **importStr**( *string importFile, int colN*)
 
   **Remark**     See [IMPORTFILE](#importfile) for details on use of importStr()
   ------------ -----------------------------------------------------------------
 
-**contin**
+#### contin
 
   ------------ -----------------------------------------------------------
   **Function** Returns continuous control value, e.g. for lighting control
 
-  **Syntax**   *float* **contin**(*float* mpf, *float* mlf, *float* sp,
+  **Syntax**   *float* **contin**( *float* mpf, *float* mlf, *float* sp,
                *float* val)
 
   **Remark**   **contin** is evaluated at runtime and returns a value in
@@ -1389,13 +1390,13 @@ TODO: test psychrometric functions 7-22-2011
                -->
   ------------ -----------------------------------------------------------
 
-**stepped**
+#### stepped
 
   ------------ -----------------------------------------------------------
   **Function** Returns stepped reverse-acting control value, e.g. for
                lighting control
 
-  **Syntax**   *float* **stepped**(*int* nsteps, *float* sp, *float* val)
+  **Syntax**   *float* **stepped**( *int* nsteps, *float* sp, *float* val)
 
   **Remark**   **stepped** is evaluated at runtime and returns a value in
                the range 0 – 1. If val &lt;= 0, 1 is returned; if val

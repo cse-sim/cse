@@ -16,11 +16,8 @@ Name of gain; follows the word GAIN if given.
 
 Rate of heat addition to zone. Negative gnPower values may be used to represent heat removal. Expressions containing functions are commonly used with this member to schedule the gain power on a daily and/or hourly basis. Refer to the functions section in Section 4 for details and examples.
 
-All gains, including electrical, are specified in Btuh units. But note that internal gain and meter reporting is in MBtuh by default even though input is in Btuh.
+All gains, including electrical, are specified in Btuh units. But note that internal gain and meter reporting is in MBtu (millions of Btu) by default even though input is in Btuh.
 
-<!--
-TODO: clarify ambiguous MBtuh units (10^3 or 10^6?)
--->
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
   Btuh        *no restrictions*   *none*        Yes            hourly
