@@ -10,6 +10,7 @@ require 'yaml'
 require 'set'
 require 'pathname'
 require 'time'
+require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
@@ -66,6 +67,7 @@ CSS_NANO_EXE = File.expand_path(
 HTML_MIN_EXE = File.expand_path(
   CONFIG.fetch("html-minifier-exe"), THIS_DIR
 )
+PREPROCESSOR_CONTEXT = CONFIG.fetch("context", {})
 
 ########################################
 # Helper Functions
@@ -224,6 +226,16 @@ MapOverManifestPaths = lambda do |fn, check_keys=nil|
     end
   end
 end
+
+# (Record 'output-dir' String 'context' (Map String *))
+#   -> ((Array String) -> (Array String))
+# This function takes an array of source files and preprocesses each with ERB,
+# saving the rendered result with the same basename in the designated
+# output-dir, creating the output-dir if necessary.
+PreprocessManifest = MapOverManifest[
+  Template::PreprocFile,
+  ['output-dir', 'context']
+]
 
 # (Map "reference-dir" String ...) -> ((Array String) -> (Array String))
 # Configuring with a reference directory, expand all manifest paths and
@@ -825,6 +837,12 @@ BuildSinglePageHTML = lambda do |config|
     ExpandPathsFrom[
       "reference-dir" => File.expand_path('src')
     ],
+    PreprocessManifest[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
+      ),
+      "context" => PREPROCESSOR_CONTEXT
+    ],
     NormalizeMarkdown[
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
@@ -952,6 +970,12 @@ BuildMultiPageHTML = lambda do |config|
   JoinFunctions[[
     ExpandPathsFrom[
       "reference-dir" => File.expand_path('src')
+    ],
+    PreprocessManifest[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
+      ),
+      "context" => PREPROCESSOR_CONTEXT
     ],
     NormalizeMarkdown[
       "output-dir" => File.expand_path(
@@ -1096,6 +1120,12 @@ BuildPDF = lambda do |config|
   JoinFunctions[[
     ExpandPathsFrom[
       "reference-dir" => File.expand_path('src')
+    ],
+    PreprocessManifest[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
+      ),
+      "context" => PREPROCESSOR_CONTEXT
     ],
     NormalizeMarkdown[
       "output-dir" => File.expand_path(
