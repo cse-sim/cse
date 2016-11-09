@@ -13,9 +13,24 @@
 #include <string>
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
+// public functions
+///////////////////////////////////////////////////////////////////////////////
+enum AWMSGTY { msgIGN, msgDBG, msgWRN, msgERR };
+#if 0
+const int msgIGN = 0;
+const int msgDBG = 1;
+const int msgWRN = 2;
+const int msgERR = 3;
+#endif
+void ASHWAT_Setup( void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg),
+	int options=0);
+//=============================================================================
+
 
 ///////////////////////////////////////////////////////////////////////////////
-// structs and constants corresponding to FORTRAN TYPEs in ASHWAT CFSCalcMod.f90
+// until compatability with ASHWAT.DLL is abandoned,
+//   structs and constants corresponding to FORTRAN TYPEs in ASHWAT CFSCalcMod.f90
 //   *MUST* be maintained in parallel
 ///////////////////////////////////////////////////////////////////////////////
 const int CFSIDLEN = 40;		// length of IDs

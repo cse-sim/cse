@@ -1437,18 +1437,16 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_R1920, "garbage after numeric value" },
 	{ MH_R1921, "number out of range" },
 	{ MH_R1922, "R1922: %s(%d): \n    Import file %s, line %d, field %s:\n      %s:\n          \"%s\"" },
-	{ MH_R1923, "R1923: Import file %s: title is %s not %s." },
+	{ MH_R1923, "R1923: Import file %s:\n    File title (\"%s\") does not match IMPORTFILE imTitle (\"%s\")." },
 	{ MH_R1924, "R1924: Import file %s: bad header format. No Run." },
-	{ MH_R1925, "R1925: Import file %s: \n    File header says frequency is %s, not %s." },
+	{ MH_R1925, "R1925: Import file %s:\n    File frequency (%s) does not match IMPORTFILE imFreq.  Expected %s." },
 	{ MH_R1926, "R1926: Import file %s: Incorrect header format." },
-	{
-		MH_R1927, "R1927: Import file %s:\n"
-		"    The following field name(s) were used in IMPORT()s\n"
-		"    but not found in import file %s:\n"
-		"        %s  %s  %s  %s  %s"
-	},
-	{ MH_R1928, "R1928: Import file %s: \n    Premature end-of-file or error while reading header. No Run." },
-	{ MH_R1929, "R1929: Import file %s, line %d: \n    record longer than %d characters" },
+	{ MH_R1927, "R1927: Import file %s:\n"
+				"    The following field name(s) were used in IMPORT()s\n"
+				"    but not found in import file %s:\n"
+				"        %s  %s  %s  %s  %s" },
+	{ MH_R1928, "R1928: Import file %s:\n    Premature end-of-file or error while reading header. No Run." },
+	{ MH_R1929, "R1929: Import file %s, line %d:\n    record longer than %d characters" },
 	{ MH_R1930, "R1930: Import file %s, line %d: second quote missing" },
 	{ MH_R1931, "R1931: Read error on import file %s" },
 	{ MH_R1932, "R1932: Close error on import file %s" },

@@ -52,6 +52,15 @@ IFFNM strange status:
 
    They cannot be deleted after setup like most input records;
    they must be preserved thru run and successive runs till CLEAR.
+
+TODO 11-2016 (when documentation written)
+* Add an interval choice that supports only YEAR MONTH DAY HOUR
+  (or add subhour support to import capabilities
+* Use common tokenizing code?
+* Improve messages
+
+
+
 */
 
 
@@ -67,8 +76,6 @@ IFFNM strange status:
 #include <rmkerr.h>	// warn
 
 #include <cnguts.h>	// ImpfB IffnmB
-
-//#include <pp.h>		// still needed 5-97?
 
 #include <impf.h>	// declarations for fcns in this file
 
@@ -89,15 +96,15 @@ RC FC impfStart()		// import files stuff done at start run
 
 		// allocate buffer
 #define BUFSZ (1024+2)			// buffer size = absolute max record size, +2 for \r\n
-		if ( dmal( DMPP( impf->buf),		// dmpak.cpp. returns RCOK (which is 0) if ok.
+		if ( dmal( DMPP( impf->buf),	// dmpak.cpp. returns RCOK (which is 0) if ok.
 				   BUFSZ+1, 			// 1 extra byte for \0 always stored after data.
-				   DMZERO			// zero buffer - debug aid
+				   DMZERO				// zero buffer - debug aid
 				   | WRN ) )			// warn & continue if can't get memory
 		{
 			rc = RCBAD;				// if failed, say return bad. caller should prevent run else many Import() errors.
 			continue;				// don't open file if no buffer
 		}   					// CODE ASSUMES BUFFER OK IF .isOpen NON-0.
-		impf->bufSz = BUFSZ;			// ok, store buffer size for readBuf.
+		impf->bufSz = BUFSZ;		// ok, store buffer size for readBuf.
 
 		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
 
@@ -109,12 +116,12 @@ RC FC impfStart()		// import files stuff done at start run
 					  impf->fileName );
 			continue;
 		}
-		impf->isOpen = TRUE;			// say open & buffer allocated: enable read and close
+		impf->isOpen = TRUE;		// say open & buffer allocated: enable read and close
 
 		// scan header
-		if (impf->scanHdr())			// scan file header, nop if none, get field names, non-RCOK (non-0) if error.
+		if (impf->scanHdr())		// scan file header, nop if none, get field names, non-RCOK (non-0) if error.
 		{
-			impf->close();  			// after bad header, close now to avoid impfEnd's "too few lines" warning
+			impf->close();  		// after bad header, close now to avoid impfEnd's "too few lines" warning
 			rc = RCBAD;				// return bad. expected to stop run.
 			continue;
 		}
@@ -130,7 +137,7 @@ RC FC impfStart()		// import files stuff done at start run
 		}
 		USI unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
 		impf->posEndHdr = temPos - (LI)(ULI)unused;	// store position at start of data
-		impf->lineNoEndHdr = impf->lineNo;		// store corresponding line number for error messages
+		impf->lineNoEndHdr = impf->lineNo;			// store corresponding line number for error messages
 	}
 	return rc;
 }		// impfStart
@@ -187,7 +194,7 @@ void FC impfEnd()			// import files stuff done at end run
 				nlnfwud = 1;
 				break;	// incl C_IVLCH_Y
 			}
-			if (impf->lineNo >= nlnfwud)			// if more data used than warmup could require
+			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
 				if (impf->readRec())			// read next record from file / TRUE if successful
 					warn( (char *)MH_R1904,			// "Import File %s has too many lines. \n"
 						  impf->fileName, 			// "    Text at at/after line %d not used." */
@@ -201,7 +208,6 @@ void FC impfEnd()			// import files stuff done at end run
 }		// impfEnd
 //---------------------------------------------------------------------------
 void FC impfIvl( 		// import files stuff done at start interval: get new record
-
 	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, or _H
 // D implies H, M implies H and D, etc.
 {
@@ -225,12 +231,12 @@ class ImpFldDcdr
 	//the import file
 	IFFNM *iffnm;	// pointer to Import File Names Table record in IffnmB
 	IMPF *impf;		// pointer to IMPORTFILE record in ImpfB
-//the field
-	SI fnr;		// field number
+// the field
+	SI fnr;			// field number
 	FNRT *fnrt;		// pointer to field number info: &impf->fnrt[fnr].  .fp .fnv .nDecoded
-//re errors
-	RC rc1;		// RCOK if axFile successfully completed
-	RC rc2;		// RCOK if axscanFnm or -Fnr successfully completed
+// re errors
+	RC rc1;			// RCOK if axFile successfully completed
+	RC rc2;			// RCOK if axscanFnm or -Fnr successfully completed
 	char *impfName;	// "" or import file name or object name text to use in error messages
 	USI fileIx;		// cne input file name index for use in error messages
 	const char* srcFile;	// text for fileIx: "" or cne source file in which import() occurred
@@ -257,9 +263,9 @@ public:
 //  member functions of local class for decoding import files
 //===========================================================================
 ImpFldDcdr::ImpFldDcdr( 		// constructor: initializes
-	USI fileIx,			// cne input file name index for file in which import() occurred, for use in error messages
+	USI fileIx,			// cse input file name index for file in which import() occurred, for use in error messages
 	USI line,			// line number in ditto
-	const char** pms )		// receives message pointer on error, to let caller insert in message giving context.
+	const char** pms )	// receives message pointer on error, to let caller insert in message giving context.
 {
 	iffnm = NULL;
 	impf = NULL;
@@ -282,21 +288,21 @@ RC FC ImpFldDcdr::axFile(SI iffnmi)		// access import file, set .iffnmi, .iffnm,
 {
 	if (iffnmi <= 0 || iffnmi > IffnmB.n)
 		return IMPERR(( (char *)MH_R1905, 	/* "%s(%d): Internal error:\n"
-						   "    Import file names table record subscript %d out of range 1 to %d." */
-						srcFile, (INT)line, (INT)iffnmi, (INT)IffnmB.n ));
+											   "    Import file names table record subscript %d out of range 1 to %d." */
+				srcFile, (INT)line, (INT)iffnmi, (INT)IffnmB.n ));
 	iffnm = IffnmB.p + iffnmi;				// set member pointer to names table record
 	TI impfi = iffnm->impfi;				// get IMPORTFILE record subscript from names table record
 	if (impfi <= 0 || impfi > ImpfB.n)
 		return IMPERR(( (char *)MH_R1906, 		/* "%s(%d): Internal error:\n"
-							   "    Import file subscript %d out of range 1 to %d." */
-						srcFile, (INT)line, (INT)impfi, (INT)ImpfB.n ));
+												   "    Import file subscript %d out of range 1 to %d." */
+				srcFile, (INT)line, (INT)impfi, (INT)ImpfB.n ));
 	impf = &ImpfB.p[impfi];				// point Import File record
 	impfName = impf->fileName && *impf->fileName	// name for error messages: dos pathName if present,
 			   ? impf->fileName : impf->name;		//  else object name, which is "" if not given
 	if (!impf->isOpen)					// unless file is open and buffer allocated ok
 		return IMPERR(( (char *)MH_R1907, 		/* "%s(%d): Internal error:\n"
-							   "    Import file %s was not opened successfully." */
-						srcFile, (INT)line, impfName ));	// unexpected: run should have been stopped
+												   "    Import file %s was not opened successfully." */
+				srcFile, (INT)line, impfName ));	// unexpected: run should have been stopped
 	if (impf->eof)
 		return IMPERR(( (char *)MH_R1908, 		// "%s(%d): End of import file %s: data previously used up.%s"
 						srcFile, (INT)line, impfName,
@@ -318,7 +324,7 @@ RC FC ImpFldDcdr::axscanFnm(SI fnmi)		// access field by name: set fieldName, fn
 							   "    called w/o preceding successful file access" */
 	if (!iffnm->fnmt)					// prevent GP fault
 		return IMPERR(( (char *)MH_R1911, 		/* "%s(%d): Internal error:\n"
-							   "    no IFFNM.fnmt pointer for Import file %s" */
+												   "    no IFFNM.fnmt pointer for Import file %s" */
 						srcFile, (INT)line, impf->name ));
 
 // fetch and check field number for given field name index
@@ -331,9 +337,9 @@ RC FC ImpFldDcdr::axscanFnm(SI fnmi)		// access field by name: set fieldName, fn
 		fieldName = iffnm->fnmt[fnmi].fieldName;		// field name text, for error messages, eg in decNum
 	SI tfnr =   iffnm->fnmt[fnmi].fnr;			// 1-based field number for this field name index, to local til validated.
 	if (tfnr <= 0 || tfnr > FNRMAX)			// FNRMAX: impf.h
-		return IMPERR(( (char *)MH_R1913,			/* "%s(%d): Internal error:\n"
-							   "    in IMPORT() from file %s field %s (name index %d),\n"
-							   "    field number %d out of range 1 to %d." */
+		return IMPERR(( (char *)MH_R1913,	/* "%s(%d): Internal error:\n"
+											   "    in IMPORT() from file %s field %s (name index %d),\n"
+											   "    field number %d out of range 1 to %d." */
 						srcFile, (INT)line,
 						impfName, iffnm->fnmt[fnmi].fieldName, (INT)fnmi,
 						(INT)tfnr, (INT)FNRMAX ));
@@ -343,7 +349,7 @@ RC FC ImpFldDcdr::axscanFnm(SI fnmi)		// access field by name: set fieldName, fn
 	while (impf->nFieldsScanned < tfnr)			// until enough fields scanned in current record, if not already done
 		if (!impf->scanNextField())			// scan field: delimit, dequote, do \ codes, null-terminate, etc in place
 			return IMPERR(( (char *)MH_R1914,		/* "%s(%d): Too few fields in line %d of import file %s:\n"
-							   "      looking for field %s (field # %d), found only %d fields." */
+													 "      looking for field %s (field # %d), found only %d fields." */
 							srcFile, (INT)line, (INT)impf->lineNo, impfName,
 							fieldName, (INT)tfnr, (INT)impf->nFieldsScanned ));
 
@@ -361,7 +367,7 @@ RC FC ImpFldDcdr::axscanFnr(SI fnr)	// access and scan field by number, set .fie
 {
 	if (rc1)						// if file not accessed ok, don't attempt to access field
 		return IMPERR(( (char *)MH_R1915));		/* "Internal error: ImpfldDcdr::axscanFnr():\n"
-							   "    called w/o preceding successful file access" */
+												   "    called w/o preceding successful file access" */
 	if (fnr <= 0 || fnr > FNRMAX)
 		return IMPERR(( (char *)MH_R1916, 		/* "%s(%d): Internal error: in IMPORT() from file %s, \n"
 							   "    field number %d out of range 1 to %d." */
@@ -397,8 +403,8 @@ RC FC ImpFldDcdr::decNum()		// decode field's numeric value, set fnrt->fnv
 							   "    called w/o preceding successful field scan" */
 	if (fnrt->nDecoded)  return RCOK;			// if this field of this record already decoded, don't repeat
 #if 0	// moved below so DOES DECODE each use & repeat error msg & bad return, as opposed to using 0. 2-94.
-	x    fnrt->nDecoded = TRUE;				// say don't need to decode this field again
-	x    							// (if error, later calls get 0 without repeating message)
+x		fnrt->nDecoded = TRUE;	// say don't need to decode this field again
+x    							// (if error, later calls get 0 without repeating message)
 #endif
 
 #define SUBERR(text) { sub = text; goto subErr; }
@@ -527,7 +533,7 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 	BOO imperfect = FALSE;			// flag set if header format seems wrong but may be useable
 
 // line 1: runTitle, runNumber. Not checked.
-	if (!readRec())  						// read record, TRUE if 0k
+	if (!readRec())  					// read record, TRUE if 0k
 		goto eof;						// if premature eof or error, cannot use file
 	if (!scanNextField() || !scanNextField() || scanNextField())	// expect 2 fields & error on 3rd call
 		imperfect++;						// wrong # fields: say warn & continue attempting to use file
@@ -594,7 +600,7 @@ bad:
 
 // line 4: field names list: get field numbers for named fields from position of names in list
 
-	if (!readRec())  			// read record into buffer
+	if (!readRec())  		// read record into buffer
 		goto eof;			// fail if premature eof or other error
 	{
 		// { for variable scope re goto warning
@@ -603,11 +609,11 @@ bad:
 		FNMT * fnmt = iffnm->fnmt;		// fetch pointer to field names table in heap (or a NULL from record 0)
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
 		{
-			char *nm = fnrt[nFieldsScanned].fp;		// point to scanned field text: this is name of field in this position
+			char *nm = fnrt[nFieldsScanned].fp;	// point to scanned field text: this is name of field in this position
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
 			fnrt[nFieldsScanned].fieldName = strsave(nm);	// save field name for use in error msgs
 			if ( iffnmi   				// if file has field names table record -- else skip
-					&&  fnmt )   				// and names table record has allocated heap names table -- insurance
+					&&  fnmt )   		// and names table record has allocated heap names table -- insurance
 			{
 				for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
 					if (!strcmpi( nm, fnmt[fnmi].fieldName))	// if this entry matches
@@ -644,9 +650,9 @@ bad:
 			if (nBads)
 				return err( WRN, 				// err: general error (++errCount's) rmkerr.cpp. WRN: await keypress.
 							(char *)MH_R1927,		/* "Import file %s:\n"
-							   "    The following field name(s) were used in IMPORT()s\n"
-							   "    but not found in import file %s:\n"
-							   "        %s  %s  %s  %s  %s" */
+													   "    The following field name(s) were used in IMPORT()s\n"
+													   "    but not found in import file %s:\n"
+													   "        %s  %s  %s  %s  %s" */
 							fileName, fileName,
 							bads[0], bads[1], bads[2], bads[3], bads[4] );
 		}
@@ -655,8 +661,8 @@ bad:
 
 // bad header record read common error exit
 eof:
-	return err( WRN, (char *)MH_R1928,    		// "Import file %s: \n"
-				fileName );			// "    Premature end-of-file or error while reading header. No Run."
+	return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 }					// IMPF::scanHdr
 //---------------------------------------------------------------------------
 BOO FC IMPF::readRec()	 // get next import file record in buffer and init to scan fields

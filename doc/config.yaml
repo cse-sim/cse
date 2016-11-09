@@ -1,0 +1,36 @@
+# Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license
+# that can be found in the LICENSE file.
+# The branch in this git repository used for "GitHub Pages"
+# see https://pages.github.com/
+docs-branch: "gh-pages"
+# the source directory for the documentation
+src-dir: "src"
+# The reference directory with various reference files
+reference-dir: "config/reference"
+# Path to CSSNano if it is present
+# see http://cssnano.co/
+cssnano-exe: "node_modules/.bin/cssnano"
+# Path to html-minifier
+# see https://github.com/kangax/html-minifier
+html-minifier-exe: "node_modules/.bin/html-minifier"
+# Flag on whether to use Node.js or not
+# if yes, node is used to compress the HTML and CSS files
+use-node?: false
+# Flag on whether or not to use GitHub pages
+# if yes, when the documentation is generated, it is set up for easier use to
+# push to github pages
+use-ghpages?: true
+# Flag on whether to build the PDFs or not. Defaults to false since PDF
+# requires more dependencies
+build-pdf?: false
+# Location of the build directory (relative to this file)
+build-dir: 'build'
+# Location of the final output directory
+output-dir: 'build/output'
+# URL of the remote origin. This is also the location where the gh-pages branch
+remote-repo-url: "https://github.com/cse-sim/cse.git"
+# Flag to build under 'draft' status or not
+draft?: true
+# Flag to set the verbosity of output
+verbose?: false

@@ -1,0 +1,77 @@
+description: "CSE User's Manual"
+tag: "cse-user-manual"
+metadata:
+  title: "CSE User's Manual"
+  subtitle: "California Simulation Engine"
+  date: "February 23, 2016"
+url-multipage: "cse-user-manual"
+url-singlepage: ~
+url-pdf: "pdfs"
+media-dir: "media"
+cross-link?: true
+build-singlepage-html?: true
+html-singlepage-name: "cse-user-manual.html"
+pdf-name: "cse-user-manual.pdf"
+build-multipage-html?: true
+build-pdf?: true
+html-template: "../config/template/site-template.html"
+pdf-template: "../config/template/template.tex"
+pdf-exceptions: ["index.md"]
+build-table-of-contents?: true
+toc-depth: 3
+table-of-contents-name: "index.md"
+build-probes?: true
+sp-append-probes-to: 'output-reports.md'
+mp-append-probes-to: 'output-reports.md'
+html-navigation?: true
+html-site-top: "/index.html"
+html-site-toc: "/cse-user-manual/index.html"
+css-files:
+  - "/css/base.css"
+sections:
+  - [1, "introduction.md"]
+  - [1, "operation.md"]
+  - [1, "input-structure.md"]
+  - [1, "input-data.md"]
+  - [2, "records/top-members.md"]
+  - [2, "records/holiday.md"]
+  - [2, "records/material.md"]
+  - [2, "records/construction.md"]
+  - [2, "records/layer.md"]
+  - [2, "records/glazetype.md"]
+  - [2, "records/meter.md"]
+  - [2, "records/zone.md"]
+  - [2, "records/gain.md"]
+  - [2, "records/surface.md"]
+  - [2, "records/window.md"]
+  - [2, "records/shade.md"]
+  - [2, "records/sgdist.md"]
+  - [2, "records/door.md"]
+  - [2, "records/perimeter.md"]
+  - [2, "records/terminal.md"]
+  - [2, "records/izxfer.md"]
+  - [2, "records/rsys.md"]
+  - [2, "records/ductseg.md"]
+  - [2, "records/dhwsys.md"]
+  - [2, "records/dhwheater.md"]
+  - [2, "records/dhwtank.md"]
+  - [2, "records/dhwpump.md"]
+  - [2, "records/dhwloop.md"]
+  - [2, "records/dhwlooppump.md"]
+  - [2, "records/dhwloopseg.md"]
+  - [2, "records/dhwloopbranch.md"]
+  - [2, "records/pvarray.md"]
+  - [2, "records/airhandler.md"]
+  - [2, "records/heatplant.md"]
+  - [2, "records/boiler.md"]
+  - [2, "records/coolplant.md"]
+  - [2, "records/chiller.md"]
+  - [2, "records/towerplant.md"]
+  - [2, "records/reportfile.md"]
+  - [2, "records/report.md"]
+  - [2, "records/reportcol.md"]
+  - [2, "records/exportfile.md"]
+  - [2, "records/export.md"]
+  - [2, "records/exportcol.md"]
+  - [2, "records/importfile.md"]
+  - [1, "output-reports.md"]
