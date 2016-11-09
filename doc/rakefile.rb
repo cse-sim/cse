@@ -1362,6 +1362,11 @@ desc "Build everything (alias for build_all)"
 task :build => all_builds
 
 desc "Removes the entire build directory. Note: you will loose build cache!"
+task :clean_all do
+  Clean[BUILD_DIR]
+end
+
+desc "Alias for clean_all"
 task :clean do
   Clean[BUILD_DIR]
 end
