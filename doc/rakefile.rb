@@ -180,8 +180,34 @@ CheckConfigHasKeys = lambda do |config, keys|
   true
 end
 
-# (String String Int (Map String *) -> *) ?(Or Nil (Array String)) ->
+# (String String Int (Map String *) -> nil) ?(Or Nil (Array String)) ->
 #   ((Map String *) -> ((Array String) -> (Array String)))
+# Setup up a function to take an array of file paths and process their contents
+# to an output path while wrapping in a context of parameters.
+# The initial arguments are a function to do the work of transforming from
+# source path to target path and configuration keys to check.
+#
+# This function has signature:
+#   String String Int (Map String *) -> nil
+# That is, it takes a source path, a target path, the index of which path it is
+# in the overall process (a manifest is an array of source paths, so the index
+# is the index into that array), and finally a map from string to any value (*)
+# that is for configuation purposes. This file doesn't return any meaningful
+# results (or if it does, they are not captured) and, instead, is run for its
+# side-effects: creating a transformed file at the ouptut path location based
+# on applying the function to the source path contents (presumably).
+#
+# The configuration keys is an array of strings to ensure exist in the
+# configuration parameters fed into the next step of this function.
+#
+# Feeding MapOverManifest these two first arguments returns another function
+# which takes a HashTable of configuration parameters which are optionally
+# checked for values from the check_keys array.
+#
+# Feeding that next function the configuration parameters returns the
+# final function which takes an array of source file paths (the "manifest")
+# and processes them to the output directory (with the same basename as the
+# input).
 MapOverManifest = lambda do |fn, check_keys=nil|
   lambda do |config|
     CheckConfigHasKeys[config, check_keys] unless check_keys.nil?
@@ -208,6 +234,10 @@ end
 
 # (String (Map String *) -> String) ?(Or Nil (Array String)) ->
 #   ((Map String *) -> ((Array String) -> (Array String)))
+# This function is very similar to MapOverManifest but instead
+# works only on the manfiest path names themselves (and doesn't
+# touch the actual file content). This can be used to modify
+# path names.
 MapOverManifestPaths = lambda do |fn, check_keys=nil|
   lambda do |config|
     CheckConfigHasKeys[config, check_keys] unless check_keys.nil?
