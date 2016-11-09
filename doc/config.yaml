@@ -34,3 +34,9 @@ remote-repo-url: "https://github.com/cse-sim/cse.git"
 draft?: true
 # Flag to set the verbosity of output
 verbose?: false
+# this variable holds various "flags" to pass into the ERB preprocessor
+# NOTE: only define variable keys as standard Ruby variables!
+#       for example, "some-variable: 10" would not work since "some-variable"
+#       is a valid Ruby name
+context:
+  build_all: true
