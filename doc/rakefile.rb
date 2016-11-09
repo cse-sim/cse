@@ -36,7 +36,6 @@ REFERENCE_DIR = File.expand_path(
   CONFIG.fetch("reference-dir") , THIS_DIR
 )
 RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
-RECORD_NAME_FILE = File.join(REFERENCE_DIR, 'known-records.txt')
 SECTION_INDEX = File.join(REFERENCE_DIR, 'section-index.yaml')
 DATE = nil # "February 23, 2016"
 DRAFT = CONFIG.fetch("draft?") # true means, it is a draft
@@ -857,7 +856,6 @@ BuildSinglePageHTML = lambda do |config|
   out_dir = config.fetch("output-dir", "build/output")
   out_file = config.fetch("output-file-name", "out.html")
   record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
-  record_name_file = config.fetch("record-name-file", RECORD_NAME_FILE)
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
@@ -887,7 +885,7 @@ BuildSinglePageHTML = lambda do |config|
     XLinkMarkdown[
       "object-index" => YAML.load_file(record_index_file),
       "object-name-set" => Set.new(
-        File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x| x.strip}
+        YAML.load_file(record_index_file).keys
       ),
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
@@ -991,7 +989,6 @@ BuildMultiPageHTML = lambda do |config|
   this_dir = config.fetch("this-dir", THIS_DIR)
   out_dir = config.fetch("output-dir", "build/output")
   record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
-  record_name_file = config.fetch("record-name-file", RECORD_NAME_FILE)
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
@@ -1021,7 +1018,7 @@ BuildMultiPageHTML = lambda do |config|
     XLinkMarkdown[
       "object-index" => YAML.load_file(record_index_file),
       "object-name-set" => Set.new(
-        File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x|x.strip}
+        YAML.load_file(record_index_file).keys
       ),
       "output-dir" => File.join(build_dir, tag, md_dir, "xlink"),
       "disable?" => disable_xlink
@@ -1144,7 +1141,6 @@ BuildPDF = lambda do |config|
   out_dir = config.fetch("output-dir", "build/output")
   out_file = config.fetch("output-file-name", "out.pdf")
   record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
-  record_name_file = config.fetch("record-name-file", RECORD_NAME_FILE)
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
@@ -1171,7 +1167,7 @@ BuildPDF = lambda do |config|
     XLinkMarkdown[
       "object-index" => YAML.load_file(record_index_file),
       "object-name-set" => Set.new(
-        File.read(record_name_file, :encoding=>"UTF-8").lines.map {|x|x.strip}
+        YAML.load_file(record_index_file).keys
       ),
       "output-dir" => File.join(build_dir, tag, md_dir, "xlink")
     ],
