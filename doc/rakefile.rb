@@ -18,9 +18,15 @@ require_relative 'lib/toc'
 ########################################
 # Globals
 ########################################
+DEFAULT_CONFIG_FILE = "config/defaults.yaml"
 CONFIG_FILE = "config.yaml"
 LOG = STDOUT
-CONFIG = YAML.load_file(CONFIG_FILE)
+CONFIG = lambda do
+  f = lambda {|path| if File.exist?(path) then YAML.load_file(path) else {} end}
+  defaults = f[DEFAULT_CONFIG_FILE]
+  local = f[CONFIG_FILE]
+  defaults.merge(local)
+end.call
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
 BUILD_DIR = CONFIG.fetch("build-dir")
 SRC_DIR = CONFIG.fetch("src-dir")
