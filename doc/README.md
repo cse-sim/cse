@@ -4,7 +4,7 @@ The files in this folder are concerned with building the documentation and websi
 
 The source files including both manifest files (in yaml) and markdown files (ending with a `.md` extension) are preprocessed by "embedded Ruby" or [ERB] prior to running through the rest of the documentation build pipeline.
 
-[Markdown]: http://pandoc.org/MANUAL.html#pandocs-markdown
+[Pandoc-flavored Markdown]: http://pandoc.org/MANUAL.html#pandocs-markdown
 [YAML]: http://yaml.org/
 [ERB]: http://ruby-doc.org/stdlib-2.3.1/libdoc/erb/rdoc/ERB.html
 
