@@ -122,8 +122,9 @@ When adding a new section or record you generally just open up your text editor 
 
 - be sure to save the file extension as `.md` -- the build tooling assumes markdown files are named with this extension
 - write your file as if it were at the "top level". That is, even if you know the document will be nested several levels deep, make your top-most header a first-level header.
-- be sure to enter the file's name and *actual* level in the document in the appropriate manifest.yaml file -- otherwise it won't get built!
+- be sure to enter the file's name and *actual* level in the document in the appropriate manifest.yaml file -- otherwise it won't get included in the documentation when you build!
 - be sure to add your file to the version control sytem
+- you don't need to explicitly link *any* RECORD names. If you uppercase record names per the document convention, the build process will automatically detect the name as a record name and cross-link the name to the "canonical location" where the record is defined
 
 ## Pushing Built Documents to the Server
 
