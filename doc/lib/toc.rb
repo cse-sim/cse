@@ -1,5 +1,6 @@
 # Generate Table of Contents
 require 'yaml'
+require 'set'
 require_relative 'md'
 require_relative 'slug'
 require_relative 'lineproc'
@@ -17,10 +18,17 @@ module TOC
       level = line.match(/^#+/).to_s.length
       name = MD::NameFromHeader[line]
       slug = Slug::Slugify[name]
+      final_slug = slug
+      idx = 1
+      while toc[:slug_set].include?(final_slug)
+        final_slug = "#{slug}-#{idx}"
+        idx += 1
+      end
+      toc[:slug_set] << final_slug
       src_basename = File.basename(toc[:file_url])
       ext = File.extname(src_basename)
       file_url = src_basename.gsub(ext, '.html')
-      link = file_url + "##{slug}"
+      link = file_url + "##{final_slug}"
       new_contents = toc[:contents] + [[level, name, link]]
       if name.strip == ''
         # we have a 'blank' header... don't bother recording it
@@ -39,7 +47,7 @@ module TOC
   # a string of the table of contents markdown file.
   GenTableOfContentsFromFiles = lambda do |max_level, files|
     r = TocReducer
-    init = {:contents=>[]}
+    init = {:contents=>[], :slug_set=>Set.new}
     toc = LineProc::ReduceOverFiles[
       files.map {|f| f[1]},
       init,
