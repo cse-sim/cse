@@ -424,6 +424,14 @@ ExpandPathsFrom = MapOverManifestPaths[
   ["reference-dir"]
 ]
 
+TapManifest = lambda do |msg|
+  lambda do |manifest|
+    puts(msg)
+    puts("manifest = #{manifest.inspect}")
+    manifest
+  end
+end
+
 NormalizeMarkdown = MapOverManifest[
   lambda do |path, out_path, _, _|
     Run["pandoc #{PANDOC_MD_OPTIONS} -o \"#{out_path}\" \"#{path}\""]
