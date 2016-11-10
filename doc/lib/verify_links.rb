@@ -37,7 +37,9 @@ module VerifyLinks
     links.each do |link|
       good = true
       if link.start_with?("http")
-        if !UrlGood[link]
+        # calling urls with Ruby via SSL not robust on windows...
+        # skipping the check below for now...
+        if false # !UrlGood[link]
           problems << link
           good = false
         end
@@ -52,13 +54,13 @@ module VerifyLinks
         if id and exist and File.file?(full_path)
           txt = File.read(full_path)
           if !(txt =~ /id\s*=\s*["']#{id}["']/)
-            problems << "\"##{id}\" not found in file #{full_path}" 
+            problems << "\"##{id}\" not found in file #{full_path}"
             good = false
           end
         end
       end
       if display
-        STDOUT.write(good ? '.' : 'x') 
+        STDOUT.write(good ? '.' : 'x')
         STDOUT.flush
       end
     end
