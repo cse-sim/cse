@@ -14,6 +14,7 @@ require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
+require_relative 'lib/section_index'
 
 ########################################
 # Globals
@@ -35,8 +36,9 @@ REMOTE_REPO = CONFIG.fetch("remote-repo-url")
 REFERENCE_DIR = File.expand_path(
   CONFIG.fetch("reference-dir") , THIS_DIR
 )
-RECORD_INDEX_FILE = File.join(REFERENCE_DIR, 'record-index.yaml')
-SECTION_INDEX = File.join(REFERENCE_DIR, 'section-index.yaml')
+RECORD_INDEX_EXCEPTIONS_FILE = File.join(
+  REFERENCE_DIR, 'record-index-exceptions.yaml'
+)
 DATE = nil # "February 23, 2016"
 DRAFT = CONFIG.fetch("draft?") # true means, it is a draft
 HEADER = "CSE User's Manual"
@@ -77,6 +79,99 @@ PREPROCESSOR_CONTEXT = CONFIG.fetch("context", {})
 ########################################
 # Helper Functions
 ########################################
+# Note: section index must be generated *after* the preprocessing
+# source-paths can (should?) be a glob, i.e., some-path/**/* or
+# some-path/**/*.md
+GenerateSectionIndex = lambda do |config|
+  src_path_glob = config.fetch("source-paths")
+  outpath = config.fetch("output-path")
+  merge_values = config.fetch("merge-values", nil)
+  parent = File.dirname(outpath)
+  FileUtils.mkdir_p(parent) unless File.exist?(parent)
+  lambda do
+    srcpaths = Dir[src_path_glob]
+    if !FileUtils.uptodate?(outpath, srcpaths)
+      si = SectionIndex::Generate[srcpaths]
+      si = si.merge(merge_values) if merge_values
+      File.write(outpath, si.to_yaml)
+    end
+  end
+end
+
+# String String -> String
+# Given a full path and a root path, return the relative path from root
+RelativePath = lambda do |path, root_path|
+  Pathname.new(path).relative_path_from(Pathname.new(root_path)).to_s
+end
+
+# (Array String) -> (Map String String)
+# Given an array of basefile names, return a record index array based on the
+# "typical rules".
+FilesToRecordIndex = lambda do |paths|
+  rec_idx = {}
+  paths.each do |path|
+    base_no_ext = File.basename(path, ".*")
+    base_html = base_no_ext + ".html"
+    rec_idx[base_no_ext.upcase] = "#{base_html}##{base_no_ext.downcase}"
+  end
+  rec_idx
+end
+
+# (Map String String) (Map String (Map String String)) -> (Map String String)
+# Given a record index of record name to index value (file and hashtag), and a
+# map of known exceptions representing "false record name" to correct index entry
+# to merge, update the record index with the exceptions. Example:
+#
+# UpdateRecordIndex[
+#   {
+#     "TOP-MEMBERS"=>"top-members.html#top-members",
+#     "RSYS"=>"rsys.html#rsys"
+#   },
+#   {
+#     "TOP-MEMBERS" => {
+#       "TOP" => "top-members.html#top-members"
+#     }
+#   }
+# ]
+# =>
+#   {
+#     "TOP"=>"top-members.html#top-members",
+#     "RSYS"=>"rsys.html#rsys"
+#   }
+UpdateRecordIndex = lambda do |ri, updates|
+  new_ri = ri.dup
+  updates.each do |k, v|
+    if new_ri.include?(k)
+      new_ri.delete(k)
+      new_ri.merge!(v)
+    end
+  end
+  new_ri
+end
+
+# Problem: need to build the record index on the fly based on what is left
+# AFTER preprocessing. We also need to account for exceptions to the basic
+# rule. The basic rule seems to be:
+#
+# 1. one record per file in doc/src/records
+# 2. the index of that file is <basefilename with ext change to
+#    html>#<basefilename without ext downcased>
+# 3. the record name seems to be <basefilename without ext upcase>
+# 4. put the above in a map
+#
+# String String String -> Nil
+# Given the path to the records/ directory, a path to save the record index at,
+# and a file with known exceptions, read the record directory and create the
+# record index and save it at the given path.
+CreateRecordIndex = lambda do |rec_dir, outpath, exc_path=nil|
+  paths = Dir[File.join(rec_dir, '*.md')]
+  ri = FilesToRecordIndex[paths]
+  exceptions = if exc_path then YAML.load_file(exc_path) else {} end
+  ri = UpdateRecordIndex[ri, exceptions]
+  File.write(outpath, ri.to_yaml)
+  nil
+end
+
 InstallNodeDeps = lambda do
   unless File.exist?(NODE_BIN_DIR)
     `npm install`
@@ -225,7 +320,16 @@ MapOverManifest = lambda do |fn, check_keys=nil|
       lambda do |manifest|
         new_manifest = []
         manifest.each_with_index do |path, idx|
-          out_path = File.join(out_dir, File.basename(path))
+          out_path = nil
+          if config.fetch("relative-root-path", nil)
+            out_path = File.join(
+              out_dir,
+              RelativePath[path, config["relative-root-path"]]
+            )
+            EnsureExists[File.dirname(out_path)]
+          else
+            out_path = File.join(out_dir, File.basename(path))
+          end
           new_manifest << out_path
           if !FileUtils.uptodate?(out_path, [path] + other_deps)
             fn[path, out_path, idx, config]
@@ -491,11 +595,15 @@ XLinkMarkdown = lambda do |config|
       manifest
     end
   else
-    oi = config.fetch('object-index')
-    ons = config.fetch('object-name-set')
     out_dir = config.fetch('output-dir')
     EnsureExists[out_dir]
     lambda do |manifest|
+      oi = if config.include?('object-index-path')
+             YAML.load_file(config['object-index-path'])
+           else
+             config.fetch('object-index')
+           end
+      ons = Set.new(oi.keys)
       new_manifest = []
       manifest.each do |path|
         bn = File.basename(path)
@@ -813,6 +921,9 @@ ReLinkHTML = lambda do |config|
   tags_fname_map = config.fetch("tags-filename-map")
   EnsureExists[out_dir]
   lambda do |manifest|
+    if tags_fname_map.respond_to?(:call)
+      tags_fname_map = tags_fname_map.call
+    end
     new_manifest = []
     m = manifest.length
     n = 0
@@ -853,9 +964,9 @@ BuildSinglePageHTML = lambda do |config|
   build_dir = config.fetch("build-dir", "build")
   md_dir = config.fetch("md-dir", "md")
   html_dir = config.fetch("html-dir", "html")
+  rsrc_dir = config.fetch("resource-dir", "resources")
   out_dir = config.fetch("output-dir", "build/output")
   out_file = config.fetch("output-file-name", "out.html")
-  record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
@@ -867,6 +978,18 @@ BuildSinglePageHTML = lambda do |config|
   date = config.fetch("date", nil)
   draft = config.fetch("draft?", true)
   levels = config.fetch("levels", Levels)
+  section_index = config.fetch(
+    "section-index-path",
+    File.expand_path(
+      File.join(build_dir, tag, rsrc_dir, "section-index.yaml"), this_dir
+    )
+  )
+  record_index_file = config.fetch(
+    "record-index-file",
+    File.expand_path(
+      File.join(build_dir, tag, rsrc_dir, "record-index.yaml"), this_dir
+    )
+  )
   JoinFunctions[[
     ExpandPathsFrom[
       "reference-dir" => File.expand_path('src')
@@ -875,7 +998,32 @@ BuildSinglePageHTML = lambda do |config|
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
       ),
+      "relative-root-path" => File.expand_path('src'),
       "context" => PREPROCESSOR_CONTEXT
+    ],
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
+    ],
+    PassThroughWithSideEffect[
+      "function" => lambda do
+        rec_dir = File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
+        )
+        outpath = record_index_file
+        parent = File.dirname(outpath)
+        FileUtils.mkdir_p(parent) unless File.exist?(parent)
+        exc_path = RECORD_INDEX_EXCEPTIONS_FILE
+        deps = [exc_path] + Dir[File.join(rec_dir, '*.md')]
+        if !FileUtils.uptodate?(outpath, deps)
+          CreateRecordIndex[rec_dir, outpath, exc_path]
+        end
+      end
     ],
     NormalizeMarkdown[
       "output-dir" => File.expand_path(
@@ -883,13 +1031,11 @@ BuildSinglePageHTML = lambda do |config|
       )
     ],
     XLinkMarkdown[
-      "object-index" => YAML.load_file(record_index_file),
-      "object-name-set" => Set.new(
-        YAML.load_file(record_index_file).keys
-      ),
+      "object-index-path" => record_index_file,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
-      )
+      ),
+      "disable?" => disable_xlink
     ],
     AdjustMarkdownLevels[
       "output-dir" => File.join(build_dir, tag, md_dir, "adjusted-headers"),
@@ -988,7 +1134,7 @@ BuildMultiPageHTML = lambda do |config|
   html_dir = config.fetch("html-dir", "html")
   this_dir = config.fetch("this-dir", THIS_DIR)
   out_dir = config.fetch("output-dir", "build/output")
-  record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
+  rsrc_dir = config.fetch("resource-dir", "resources")
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
@@ -1000,6 +1146,18 @@ BuildMultiPageHTML = lambda do |config|
   date = config.fetch("date", nil)
   draft = config.fetch("draft?", true)
   levels = config.fetch("levels", Levels)
+  section_index = config.fetch(
+    "section-index-path",
+    File.expand_path(
+      File.join(build_dir, tag, rsrc_dir, "section-index.yaml"), this_dir
+    )
+  )
+  record_index_file = config.fetch(
+    "record-index-file",
+    File.expand_path(
+      File.join(build_dir, tag, rsrc_dir, "record-index.yaml"), this_dir
+    )
+  )
   JoinFunctions[[
     ExpandPathsFrom[
       "reference-dir" => File.expand_path('src')
@@ -1008,7 +1166,32 @@ BuildMultiPageHTML = lambda do |config|
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
       ),
+      "relative-root-path" => File.expand_path('src'),
       "context" => PREPROCESSOR_CONTEXT
+    ],
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
+    ],
+    PassThroughWithSideEffect[
+      "function" => lambda do
+        rec_dir = File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
+        )
+        outpath = record_index_file
+        parent = File.dirname(outpath)
+        FileUtils.mkdir_p(parent) unless File.exist?(parent)
+        exc_path = RECORD_INDEX_EXCEPTIONS_FILE
+        deps = [exc_path]+Dir[File.join(rec_dir,'*.md')]
+        if !FileUtils.uptodate?(outpath, deps)
+          CreateRecordIndex[rec_dir, outpath, exc_path]
+        end
+      end
     ],
     NormalizeMarkdown[
       "output-dir" => File.expand_path(
@@ -1016,11 +1199,10 @@ BuildMultiPageHTML = lambda do |config|
       )
     ],
     XLinkMarkdown[
-      "object-index" => YAML.load_file(record_index_file),
-      "object-name-set" => Set.new(
-        YAML.load_file(record_index_file).keys
+      "object-index-path" => record_index_file,
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
-      "output-dir" => File.join(build_dir, tag, md_dir, "xlink"),
       "disable?" => disable_xlink
     ],
     BuildProbesAndCopyIntoManifest[
@@ -1087,14 +1269,14 @@ BuildMultiPageHTML = lambda do |config|
     ],
     ReLinkHTML[
       "tags-filename-map" => lambda do
-        index = YAML.load_file(RECORD_INDEX_FILE)
+        index = YAML.load_file(record_index_file)
         index.to_a.sort_by do |e|
           e[0]
-        end.inject(YAML.load_file(SECTION_INDEX)) do |m, e|
+        end.inject(YAML.load_file(section_index)) do |m, e|
           fname_tag = e[1].scan(/([^\#]*)(\#.*)/).flatten
           m.merge(Hash[fname_tag[1], fname_tag[0]])
         end
-      end.call,
+      end,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, html_dir, "relinked"), this_dir
       )
@@ -1140,7 +1322,7 @@ BuildPDF = lambda do |config|
   html_dir = config.fetch("html-dir", "html")
   out_dir = config.fetch("output-dir", "build/output")
   out_file = config.fetch("output-file-name", "out.pdf")
-  record_index_file = config.fetch("record-index-file", RECORD_INDEX_FILE)
+  rsrc_dir = config.fetch("resource-dir", "resources")
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
   disable_xlink = config.fetch("disable-xlink?", false)
@@ -1149,6 +1331,18 @@ BuildPDF = lambda do |config|
   date = config.fetch("date", nil)
   draft = config.fetch("draft?", true)
   levels = config.fetch("levels", Levels)
+  section_index = config.fetch(
+    "section-index-path",
+    File.expand_path(
+      File.join(build_dir, tag, rsrc_dir, "section-index.yaml"), this_dir
+    )
+  )
+  record_index_file = config.fetch(
+    "record-index-file",
+    File.expand_path(
+      File.join(build_dir, tag, rsrc_dir, "record-index.yaml"), this_dir
+    )
+  )
   JoinFunctions[[
     ExpandPathsFrom[
       "reference-dir" => File.expand_path('src')
@@ -1157,7 +1351,32 @@ BuildPDF = lambda do |config|
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
       ),
+      "relative-root-path" => File.expand_path('src'),
       "context" => PREPROCESSOR_CONTEXT
+    ],
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
+    ],
+    PassThroughWithSideEffect[
+      "function" => lambda do
+        rec_dir = File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
+        )
+        outpath = record_index_file
+        parent = File.dirname(outpath)
+        FileUtils.mkdir_p(parent) unless File.exist?(parent)
+        exc_path = RECORD_INDEX_EXCEPTIONS_FILE
+        deps = [exc_path]+Dir[File.join(rec_dir,'*.md')]
+        if !FileUtils.uptodate?(outpath, deps)
+          CreateRecordIndex[rec_dir, outpath, exc_path]
+        end
+      end
     ],
     NormalizeMarkdown[
       "output-dir" => File.expand_path(
@@ -1165,11 +1384,11 @@ BuildPDF = lambda do |config|
       )
     ],
     XLinkMarkdown[
-      "object-index" => YAML.load_file(record_index_file),
-      "object-name-set" => Set.new(
-        YAML.load_file(record_index_file).keys
+      "object-index-path" => record_index_file,
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
-      "output-dir" => File.join(build_dir, tag, md_dir, "xlink")
+      "disable?" => disable_xlink
     ],
     AdjustMarkdownLevels[
       "output-dir" => File.expand_path(

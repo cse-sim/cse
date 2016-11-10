@@ -16,3 +16,7 @@ CSE is a general purpose building simulation model developed primarily to perfor
 ## CSE Source Code {-}
 
 The CSE source code is hosted on [GitHub](https://github.com/cse-sim/cse).
+
+<% if test_erb %>
+ERB is Working!
+<% end %>

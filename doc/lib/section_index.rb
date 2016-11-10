@@ -20,7 +20,7 @@ module SectionIndex
         end
       end
     end
-    puts("Processed #{n_} files, #{m_} sections")
+    #puts("Processed #{n_} files, #{m_} sections")
     idx
   end
 end
