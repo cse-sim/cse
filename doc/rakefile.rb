@@ -104,6 +104,43 @@ RelativePath = lambda do |path, root_path|
   Pathname.new(path).relative_path_from(Pathname.new(root_path)).to_s
 end
 
+# String -> Nil
+# Given a path to a directory where manifest yaml files can be found, report on
+# whether the manifests represent all files on disk
+CheckManifests = lambda do |src_dir|
+  src = Pathname.new(src_dir)
+  md_file_set = Set.new(
+    Dir[File.join(src_dir, "**", "*.md")].map do |p|
+      Pathname.new(p).relative_path_from(src).to_s
+    end
+  )
+  unknown_files = Set.new
+  Dir[File.join("src", "**", "*.yaml")].each do |path|
+    puts("... checking #{File.basename(path)}")
+    man = YAML.load_file(path)
+    man["sections"].each do |_, section_file|
+      if md_file_set.include?(section_file)
+        md_file_set.delete(section_file)
+      else
+        unknown_files << section_file
+      end
+    end
+  end
+  if md_file_set.empty? and unknown_files.empty?
+    puts("No problems detected")
+    return
+  end
+  puts("Problems detected:")
+  if !md_file_set.empty?
+    puts("  Files on disk but not in any manifest: ")
+    md_file_set.sort.each {|f| puts("   - #{f}")}
+  end
+  if !unknown_files.empty?
+    puts("  Files in manifest but not on disk: ")
+    unknown_files.sort.each {|f| puts("   - #{f}")}
+  end
+end
+
 # (Array String) -> (Map String String)
 # Given an array of basefile names, return a record index array based on the
 # "typical rules".
@@ -1599,39 +1636,7 @@ end
 
 desc "Check manifests for missing/misspelled files"
 task :check_manifests do
-  src = Pathname.new(SRC_DIR)
-  md_file_set = Set.new(
-    Dir[File.join(SRC_DIR, "**", "*.md")].map do |p|
-      Pathname.new(File.expand_path(p, THIS_DIR)).relative_path_from(src).to_s
-    end
-  )
-  unknown_files = Set.new
-  Dir[File.join("src", "**", "*.yaml")].each do |path|
-    puts("... checking #{File.basename(path)}")
-    man = YAML.load_file(path)
-    man["sections"].each do |_, section_file|
-      if md_file_set.include?(section_file)
-        md_file_set.delete(section_file)
-      else
-        unknown_files << section_file
-      end
-    end
-  end
-  puts("Files on disk but not in any manifest: ")
-  md_file_set.sort.each {|f| puts("- #{f}")}
-  puts("Files in manifest but not on disk: ")
-  unknown_files.sort.each {|f| puts(" - #{f}")}
-end
-
-task :generate_section_index do
-  require_relative 'lib/section_index'
-  File.write(
-    "config/reference/section-index.yaml",
-    SectionIndex::Generate[
-      Dir[File.expand_path("src/*.md", THIS_DIR)] +
-      Dir[File.expand_path("src/records/*.md", THIS_DIR)]
-    ].merge({"#probe-definitions"=>"probes.html"}).to_yaml
-  )
+  CheckManifests[SRC_DIR]
 end
 
 task :default => [:build_all]
