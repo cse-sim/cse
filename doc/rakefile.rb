@@ -19,14 +19,43 @@ require_relative 'lib/section_index'
 ########################################
 # Globals
 ########################################
+class EvalContext
+  def test(name)
+    begin
+      if name[0] != "_" and (name[0] == name[0].upcase)
+        puts("Bad context variable name: #{name}")
+        puts("Cannot use uppercase letter to start context variable name (Ruby limitation)")
+        puts("Either use a lowercase letter to start the name or start the name with an '_'")
+        exit(1)
+      end
+      eval("#{name} = true")
+    rescue => e
+      puts("issue with context key \"#{name}\" in #{CONFIG_FILE}'s context section")
+      puts("all context variables must be valid Ruby variables:")
+      puts("   a lowercase letter or underscore followed by any\n" +
+           "   combination of upper/lowercase letters, underscores, and digits")
+      puts("please fix the variable in question in #{CONFIG_FILE} before continuing")
+      exit
+    end
+  end
+end
 DEFAULT_CONFIG_FILE = "config/defaults.yaml"
 CONFIG_FILE = "config.yaml"
 LOG = STDOUT
+ERB_OUTPUT_FILE = "erb-out.txt"
 CONFIG = lambda do
   f = lambda {|path| if File.exist?(path) then YAML.load_file(path) else {} end}
   defaults = f[DEFAULT_CONFIG_FILE]
   local = f[CONFIG_FILE]
-  defaults.merge(local)
+  config = defaults.merge(local)
+  default_context = if defaults.include?("context") then defaults["context"] else {} end
+  local_context = if local.include?("context") then local["context"] else {} end
+  context = default_context.merge(local_context)
+  ec = EvalContext.new
+  context.each {|k, _| ec.test(k)}
+  config['context'] = context
+  #puts(config.inspect)
+  config
 end.call
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
 BUILD_DIR = CONFIG.fetch("build-dir")
@@ -1707,6 +1736,22 @@ end
 desc "Check manifests for missing/misspelled files"
 task :check_manifests do
   CheckManifests[SRC_DIR]
+end
+
+desc "Render file specified with FILE env variable to #{ERB_OUTPUT_FILE}"
+task :erb do
+  if ENV.include? "FILE"
+    Template::PreprocFile[
+      ENV["FILE"],
+      ERB_OUTPUT_FILE,
+      1,
+      "context" => PREPROCESSOR_CONTEXT
+    ]
+  else
+    puts("You must define the environment variable `FILE` so we\n" +
+         "know which file to test preprocessing with")
+    exit(1)
+  end
 end
 
 task :default => [:build_all]

@@ -2,11 +2,23 @@ require 'ostruct'
 require 'erb'
 
 module Template
+  class Namespace
+    def initialize(hash)
+      hash.each do |key, value|
+        singleton_class.send(:define_method, key) { value }
+      end
+    end
+    def get_binding
+      binding
+    end
+  end
+
   # String (Map String *) -> String
   # Render the given string template with Embedded Ruby (ERB) using the context
   # given by the second parameter which is a binding map.
+  # See http://stackoverflow.com/a/5462069
   RenderWithErb = lambda do |template, vars|
-    ERB.new(template).result(OpenStruct.new(vars).instance_eval { binding })
+    ERB.new(template,0,'>').result(Namespace.new(vars).get_binding)
   end
 
   # String String Int (Map String *) -> nil

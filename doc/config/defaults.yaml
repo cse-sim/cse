@@ -40,3 +40,4 @@ verbose?: false
 #       is a valid Ruby name
 context:
   build_all: true
+  test_erb: false
