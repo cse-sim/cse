@@ -143,7 +143,7 @@ CheckManifests = lambda do |src_dir|
     end
   )
   unknown_files = Set.new
-  Dir[File.join("src", "**", "*.yaml")].each do |path|
+  Dir[File.join(src_dir, "**", "*.yaml")].each do |path|
     puts("... checking #{File.basename(path)}")
     man = YAML.load_file(path)
     man["sections"].each do |_, section_file|
@@ -154,6 +154,7 @@ CheckManifests = lambda do |src_dir|
       end
     end
   end
+  puts("Verifying manifest")
   if md_file_set.empty? and unknown_files.empty?
     puts("No problems detected")
     return
