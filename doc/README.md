@@ -22,7 +22,7 @@ For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For 
 [Ruby]: https://www.ruby-lang.org/en/
 [Node.js]: https://nodejs.org/en/
 [MiKTeX]: https://miktex.org/
-[Pandoc's Install]: http://pandoc.org/installing.html 
+[Pandoc's Install]: http://pandoc.org/installing.html
 
 With the above installed, the scripts in this directory should be able to download and install all other dependencies.
 
@@ -63,7 +63,7 @@ A typical `doc/config.yaml` file for a developer planning to build the documenta
     context:
       build_all: true
 
-Note in particular that the "context" attribute contains a dictionary (i.e., map or hash table) of values to define and pass into the embedded ruby ([ERB]) preprocessor. 
+Note in particular that the "context" attribute contains a dictionary (i.e., map or hash table) of values to define and pass into the embedded ruby ([ERB]) preprocessor.
 
 
 [YAML]: http://yaml.org/
@@ -89,6 +89,10 @@ In the above code, assuming that the variable `dev_build` was defined, this snip
       dev_build: true
 
 **Note**: due to limitations with Ruby, your context variables need to start with either a lowercase letter or an underscore ("_"). A great way to test that ERB is doing the right thing for you is to use the `rake erb` task:
+
+    set FILE=path\to\file.md & rake erb
+
+or, if you happen to be on a Unix, GNU/Linux, or Mac OS computer:
 
     rake erb FILE=path/to/file.md
 
