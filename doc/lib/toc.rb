@@ -40,7 +40,12 @@ module TOC
   GenTableOfContentsFromFiles = lambda do |max_level, files|
     r = TocReducer
     init = {:contents=>[]}
-    toc = LineProc::ReduceOverFiles[files.map {|f| f[1]}, init, r]
+    toc = LineProc::ReduceOverFiles[
+      files.map {|f| f[1]},
+      init,
+      r,
+      [[/<!--(.*?)-->/m, '']]
+    ]
     out = ""
     last_level0 = 1
     idx0 = 0
