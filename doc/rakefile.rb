@@ -15,6 +15,7 @@ require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
 require_relative 'lib/section_index'
+require_relative 'lib/verify_links'
 
 ########################################
 # Globals
@@ -82,6 +83,8 @@ NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 DOCS_BRANCH = CONFIG.fetch("docs-branch")
 HTML_OUT_DIR = CONFIG.fetch("output-dir")
 VERBOSE = CONFIG.fetch("verbose?", false)
+VERIFY_LINKS = CONFIG.fetch("verify-links?", false)
+VERIFY_MANIFEST = CONFIG.fetch("verify-manifest?", false)
 PANDOC_GENERAL_OPTIONS = [
   "--parse-raw",
   "--standalone",
@@ -1598,6 +1601,7 @@ task :build_html_single => [:setup] do
     ][files]
     puts("\nSingle-Page HTML DONE!")
     puts("^"*60)
+    CheckManifests[processed_manifest_path] if VERIFY_MANIFEST
   end
 end
 
@@ -1634,6 +1638,7 @@ task :build_html_multi => [:setup] do
     ][files]
     puts("\nMulti-Page HTML DONE!")
     puts("^"*60)
+    CheckManifests[processed_manifest_path] if VERIFY_MANIFEST
   end
 end
 
@@ -1666,6 +1671,7 @@ task :build_pdf => [:setup] do
     ][files]
     puts("\nPDF DONE!")
     puts("^"*60)
+    CheckManifests[processed_manifest_path] if VERIFY_MANIFEST
   end
 end
 
@@ -1706,17 +1712,28 @@ task :build_site => [:setup] do
     ][files]
     puts("\nSite HTML DONE!")
     puts("^"*60)
+    CheckManifests[processed_manifest_path] if VERIFY_MANIFEST
   end
 end
 
 all_builds = [:build_html_single, :build_html_multi, :build_site]
 all_builds << :build_pdf if BUILD_PDF
+all_builds << :verify_links if VERIFY_LINKS
 
 desc "Build everything"
 task :build_all => all_builds
 
+desc "Check links for issues"
+task :verify_links do
+  puts("Checking links")
+  problems = VerifyLinks::CheckLinks[HTML_OUT_DIR]
+  problems.each do |p|
+    puts("  - #{p}")
+  end
+end
+
 desc "Build everything (alias for build_all)"
-task :build => all_builds
+task :build => [:build_all]
 
 desc "Removes the entire build directory. Note: you will loose build cache!"
 task :clean_all do

@@ -32,6 +32,11 @@ output-dir: 'build/output'
 remote-repo-url: "https://github.com/cse-sim/cse.git"
 # Flag to build under 'draft' status or not
 draft?: true
+# If true, runs verification after a build to check generated document links
+verify-links?: true
+# If true, runs verification after a build to check that manifests include all
+# files and that all files expected are accounted for
+verify-manifest?: true
 # Flag to set the verbosity of output
 verbose?: false
 # this variable holds various "flags" to pass into the ERB preprocessor
