@@ -2,7 +2,7 @@
 
 The files in this folder are concerned with building the documentation and website for CSE; specifically, the CSE User Manual. The build process heavily leverages the [Ruby] programming language, the [Pandoc] documentation processing tool, and, optionally, [Node.js] for doing compression of html/css. The majority of the build process is contained in the `rakefile.rb` located in this directory with supporting code in the `lib` subdirectory. The source code for the documentation is written in [Pandoc-flavored Markdown] with the manifest of files located in [YAML] files, both in the `src` directory. Additional support files are located in the `config` directory.
 
-The source files including both manifest files (in yaml) and markdown files (ending with a `.md` extension) are preprocessed by "embedded Ruby" or [ERB] prior to running through the rest of the documentation build pipeline.
+The source files including both manifest files (in YAML) and markdown files (ending with a `.md` extension) are preprocessed by "embedded Ruby" or [ERB] prior to running through the rest of the documentation build pipeline.
 
 [Pandoc-flavored Markdown]: http://pandoc.org/MANUAL.html#pandocs-markdown
 [YAML]: http://yaml.org/
