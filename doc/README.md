@@ -88,7 +88,11 @@ In the above code, assuming that the variable `dev_build` was defined, this snip
     context:
       dev_build: true
 
-**Note**: due to limitations with Ruby, your context variables need to start with either a lowercase letter or an underscore ("_").
+**Note**: due to limitations with Ruby, your context variables need to start with either a lowercase letter or an underscore ("_"). A great way to test that ERB is doing the right thing for you is to use the `rake erb` task:
+
+    rake erb FILE=path/to/file.md
+
+This will preprocess the file using [ERB] and write the results to `doc/erb-out.txt` for your perusal using the context variables you've defined in your local `doc/config.yaml` (which are merged with the context variables defined in `doc/config/defaults.yaml` -- your local context variables override the defaults).
 
 We recommend looking at an [ERB Tutorial] to get up to speed on using [ERB].
 
