@@ -44,13 +44,9 @@ DRAFT = CONFIG.fetch("draft?") # true means, it is a draft
 HEADER = "CSE User's Manual"
 FOOTER = "Generated: #{Time.now.strftime("%FT%T%:z")}"
 TOC_DEPTH = 4
-CSE_USER_MANUAL_CONFIG = YAML.load_file(
-  File.join(SRC_DIR, 'cse-user-manual.yaml')
-)
-MANIFEST = CSE_USER_MANUAL_CONFIG["sections"]
+WEB_SITE_MANIFEST_PATH = File.join(SRC_DIR, "web-page.yaml")
+CSE_USER_MANUAL_MANIFEST_PATH = File.join(SRC_DIR, 'cse-user-manual.yaml')
 BUILD_PDF = CONFIG.fetch("build-pdf?")
-Levels = MANIFEST.map {|level, _| level}
-Files = MANIFEST.map {|_, path| path}
 USE_GHPAGES = CONFIG.fetch("use-ghpages?")
 USE_NODE = CONFIG.fetch("use-node?")
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
@@ -1005,6 +1001,7 @@ end
 
 BuildSinglePageHTML = lambda do |config|
   tag = config.fetch("tag")
+  levels = config.fetch("levels")
   this_dir = config.fetch('this-dir', THIS_DIR)
   build_dir = config.fetch("build-dir", "build")
   md_dir = config.fetch("md-dir", "md")
@@ -1022,7 +1019,7 @@ BuildSinglePageHTML = lambda do |config|
   subtitle = config.fetch("subtitle", "California Simulation Engine")
   date = config.fetch("date", nil)
   draft = config.fetch("draft?", true)
-  levels = config.fetch("levels", Levels)
+  context = config.fetch("preproc-context", PREPROCESSOR_CONTEXT)
   section_index = config.fetch(
     "section-index-path",
     File.expand_path(
@@ -1044,7 +1041,7 @@ BuildSinglePageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
       ),
       "relative-root-path" => File.expand_path('src'),
-      "context" => PREPROCESSOR_CONTEXT
+      "context" => context
     ],
     PassThroughWithSideEffect[
       "function" => GenerateSectionIndex[
@@ -1174,6 +1171,7 @@ end
 
 BuildMultiPageHTML = lambda do |config|
   tag = config.fetch("tag")
+  levels = config.fetch("levels")
   build_dir = config.fetch("build-dir", "build")
   md_dir = config.fetch("md-dir", "md")
   html_dir = config.fetch("html-dir", "html")
@@ -1190,7 +1188,7 @@ BuildMultiPageHTML = lambda do |config|
   subtitle = config.fetch("subtitle", "California Simulation Engine")
   date = config.fetch("date", nil)
   draft = config.fetch("draft?", true)
-  levels = config.fetch("levels", Levels)
+  context = config.fetch("preproc-context", PREPROCESSOR_CONTEXT)
   section_index = config.fetch(
     "section-index-path",
     File.expand_path(
@@ -1212,7 +1210,7 @@ BuildMultiPageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
       ),
       "relative-root-path" => File.expand_path('src'),
-      "context" => PREPROCESSOR_CONTEXT
+      "context" => context
     ],
     PassThroughWithSideEffect[
       "function" => GenerateSectionIndex[
@@ -1361,6 +1359,7 @@ end
 
 BuildPDF = lambda do |config|
   tag = config.fetch("tag")
+  levels = config.fetch("levels")
   this_dir = config.fetch('this-dir', THIS_DIR)
   build_dir = config.fetch("build-dir", "build")
   md_dir = config.fetch("md-dir", "md")
@@ -1375,7 +1374,7 @@ BuildPDF = lambda do |config|
   subtitle = config.fetch("subtitle", "California Simulation Engine")
   date = config.fetch("date", nil)
   draft = config.fetch("draft?", true)
-  levels = config.fetch("levels", Levels)
+  context = config.fetch("preproc-context", PREPROCESSOR_CONTEXT)
   section_index = config.fetch(
     "section-index-path",
     File.expand_path(
@@ -1397,7 +1396,7 @@ BuildPDF = lambda do |config|
         File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
       ),
       "relative-root-path" => File.expand_path('src'),
-      "context" => PREPROCESSOR_CONTEXT
+      "context" => context
     ],
     PassThroughWithSideEffect[
       "function" => GenerateSectionIndex[
@@ -1541,16 +1540,33 @@ task :build_html_single => [:setup] do
   time_it do
     puts("#"*60)
     puts("Build Single-Page HTML")
+    tag = "cse-user-manual-single-page"
+    processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
+    context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_html_single'})
+    PreprocessManifest[
+      'output-dir' => processed_manifest_path,
+      'context' => context
+    ][[CSE_USER_MANUAL_MANIFEST_PATH]]
+    doc = YAML.load_file(
+      File.join(
+        processed_manifest_path,
+        File.basename(CSE_USER_MANUAL_MANIFEST_PATH)
+      )
+    )
+    manifest = doc["sections"]
+    levels = manifest.map {|level, _| level}
+    files = manifest.map {|_, path| path} 
     BuildSinglePageHTML[
-      "tag" => "cse-user-manual-single-page",
+      "tag" => tag,
+      "levels" => levels,
       "draft?" => DRAFT,
       "date" => DATE,
       "output-dir" => "build/output",
       "output-file-name" => "cse-user-manual.html",
       "do-navigation?" => true,
       "disable-compression?" => !USE_NODE,
-      "levels" => Levels,
-    ][Files]
+      "context" => context,
+    ][files]
     puts("\nSingle-Page HTML DONE!")
     puts("^"*60)
   end
@@ -1561,15 +1577,32 @@ task :build_html_multi => [:setup] do
   time_it do
     puts("#"*60)
     puts("Build Multi-Page HTML")
+    tag = "cse-user-manual-multi-page"
+    processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
+    context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_html_multi'})
+    PreprocessManifest[
+      'output-dir' => processed_manifest_path,
+      'context' => context
+    ][[CSE_USER_MANUAL_MANIFEST_PATH]]
+    doc = YAML.load_file(
+      File.join(
+        processed_manifest_path,
+        File.basename(CSE_USER_MANUAL_MANIFEST_PATH)
+      )
+    )
+    manifest = doc["sections"]
+    levels = manifest.map {|level, _| level}
+    files = manifest.map {|_, path| path} 
     BuildMultiPageHTML[
-      "tag" => "cse-user-manual",
+      "tag" => tag,
+      "levels" => levels,
       "draft?" => DRAFT,
       "date" => DATE,
       "output-dir" => "build/output/cse-user-manual",
       "do-navigation?" => true,
       "disable-compression?" => !USE_NODE,
-      "levels" => Levels,
-    ][Files]
+      "context" => context,
+    ][files]
     puts("\nMulti-Page HTML DONE!")
     puts("^"*60)
   end
@@ -1580,12 +1613,28 @@ task :build_pdf => [:setup] do
   time_it do
     puts("#"*60)
     puts("Building PDF...(note: can take up to several minutes)")
+    tag = "cse-user-manual-pdf"
+    processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
+    context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_pdf'})
+    PreprocessManifest[
+      'output-dir' => processed_manifest_path,
+      'context' => context
+    ][[CSE_USER_MANUAL_MANIFEST_PATH]]
+    doc = YAML.load_file(
+      File.join(
+        processed_manifest_path,
+        File.basename(CSE_USER_MANUAL_MANIFEST_PATH)
+      )
+    )
+    manifest = doc["sections"]
+    levels = manifest.map {|level, _| level}
+    files = manifest.map {|_, path| path} 
     BuildPDF[
-      "tag" => "cse-user-manual-pdf",
+      "tag" => tag,
+      "levels" => levels,
       "output-dir" => "build/output/pdfs",
       "output-file-name" => "cse-user-manual.pdf",
-      "levels" => Levels,
-    ][Files]
+    ][files]
     puts("\nPDF DONE!")
     puts("^"*60)
   end
@@ -1594,14 +1643,27 @@ end
 desc "Build Site"
 task :build_site => [:setup] do
   time_it do
-    web_config = YAML.load_file(File.join(SRC_DIR, "web-page.yaml"))
-    web_manifest = web_config["sections"]
-    web_levels = web_manifest.map {|x| x[0]}
-    web_files = web_manifest.map {|x| x[1]}
     puts("#"*60)
     puts("Build Site HTML")
+    tag = "web-site"
+    processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
+    context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_site'})
+    PreprocessManifest[
+      'output-dir' => processed_manifest_path,
+      'context' => context
+    ][[WEB_SITE_MANIFEST_PATH]]
+    doc = YAML.load_file(
+      File.join(
+        processed_manifest_path,
+        File.basename(WEB_SITE_MANIFEST_PATH)
+      )
+    )
+    manifest = doc["sections"]
+    levels = manifest.map {|level, _| level}
+    files = manifest.map {|_, path| path} 
     BuildMultiPageHTML[
-      "tag" => "web-site",
+      "tag" => tag,
+      "levels" => levels,
       "date" => nil,
       "draft?" => true,
       "subtitle" => nil,
@@ -1611,8 +1673,8 @@ task :build_site => [:setup] do
       "disable-toc?" => true,
       "disable-xlink?" => true,
       "disable-compression?" => !USE_NODE,
-      "levels" => web_levels
-    ][web_files]
+      "context" => context,
+    ][files]
     puts("\nSite HTML DONE!")
     puts("^"*60)
   end
