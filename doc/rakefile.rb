@@ -277,7 +277,6 @@ SetupGHPages = lambda do
   end
 end
 
-
 EnsureExists = lambda do |path|
   FileUtils.mkdir_p(path) unless File.exist?(path)
 end
