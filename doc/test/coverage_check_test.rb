@@ -294,7 +294,19 @@ class CoverageCheckTest < Minitest::Test
     }
     assert_equal(expected, actual)
   end
-  def test_RenameMap
+  def test_AdjustMap
+
+  end
+  def test_PrintDifferences
+    diffs = {
+      :records_in_1st_not_2nd => nil,
+      :records_in_2nd_not_1st => nil,
+      "coolsys" => {
+        :in_2nd_not_1st => Set.new(["csName"]),
+        :in_1st_not_2nd => nil
+      }
+    }
+    assert("".class == PrintDifferences[diffs].class)
   end
   def test_RecordInputSetDifferences
     ris1 = {
@@ -360,6 +372,10 @@ class CoverageCheckTest < Minitest::Test
     ris1 = ReadCulList[@cullist_full_path]
     ris2 = ReadAllRecordDocuments[@all_records_path]
     actual = RecordInputSetDifferences[ris1, ris2, false]
+    assert(!actual.nil?)
+    ris3 = AdjustMap[ris2]
+    actual = RecordInputSetDifferences[ris1, ris3, false]
+    
     assert(!actual.nil?)
   end
 end

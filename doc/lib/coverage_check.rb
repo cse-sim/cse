@@ -126,16 +126,21 @@ module CoverageCheck
       end
     end
   end
-  # (Map String *) (Map String String) -> (Map String *)
-  # Given a map from string to any and a map from string to string, create a
-  # new map with any keys in the first map also in the second map renamed to
-  # the second map's keys
-  # Examples:
-  #   RenameMap[m, names]
-  #     =>
-  #
-  RenameMap = lambda do |m, names|
-    m
+  # (Map String (Set String)) -> (Map String *)
+  # Given a map from string to set of string, adjust the map so that fields
+  # with spacing in them get collapsed to the record defined by the first word
+  # through set union 
+  AdjustMap = lambda do |m|
+    n = {}
+    m.each do |k, v|
+      new_k = (k =~ /\s+/) ? k.split(/\s+/)[0] : k
+      if n.include?(new_k)
+        n[new_k] += v
+      else
+        n[new_k] = v
+      end
+    end
+    n
   end
   # (Map String (Set String)) (Map String (Set String)) ?Bool ->
   # (Or Nil
@@ -181,6 +186,80 @@ module CoverageCheck
         end
       end
       out
+    end
+  end
+  # (Map String *) String * * String String -> String
+  # Given a map from string to any, a string for a name of what the map
+  # represents (e.g., Records, Data Input Fields, etc.), two keys into the map,
+  # and two strings to name the variations represented by the two keys, report
+  # off on the differences as a string.
+  DiffsToString = lambda do |diffs, name, k1, k2, a, b, indent=0|
+    if diffs.nil?
+      ""
+    else
+      ind = " "*indent
+      s = ""
+      s += "#{name}:\n" if !name.nil? and !diffs.nil? and (diffs[k1] or diffs[k2])
+      [[k1,a,b], [k2,b,a]].each do |k, x, y|
+        if diffs[k]
+          s += "#{ind}in #{x} but not in #{y}:\n" unless diffs[k].nil? or diffs[k].empty?
+          diffs[k].sort.each do |r|
+            s += "#{ind}- #{r}\n"
+          end
+        else
+          s += ""
+        end
+      end
+      s
+    end
+  end
+  # (Or Nil
+  #     (Record :records_in_1st_not_2nd (Or Nil (Set String))
+  #             :records_in_2nd_not_1st (Or Nil (Set String))
+  #             :field_set_differences
+  #             (Or Nil
+  #                 (Map String
+  #                      (Record :in_1st_not_2nd (Or Nil (Set String))
+  #                              :in_2nd_not_1st (Or Nil (Set String)))))))
+  # -> String
+  # Given the output of RecordInputSetDifferences, format it and retun as a string
+  PrintDifferences = lambda do |diffs, a=nil, b=nil|
+    a ||= "First"
+    b ||= "Second"
+    if diffs.nil?
+      "No changes detected between #{a} and #{b}"
+    else
+      s = ""
+      if diffs[:records_in_1st_not_2nd] or diffs[:records_in_1st_not_2nd]
+        s += "RECORD INCONSISTENCIES:\n"
+        s += DiffsToString[
+          diffs,
+          nil,
+          :records_in_1st_not_2nd,
+          :records_in_2nd_not_1st,
+          a,
+          b,
+          4
+        ]
+      end
+      if !diffs.empty?
+        ks = diffs.keys.select {|x| x.class == "".class}.sort
+        if ks and !ks.empty?
+          s += "DATA FIELD INCONSISTENCIES:\n"
+          ks.each do |k|
+            s += DiffsToString[
+              diffs[k],
+              k,
+              :in_1st_not_2nd,
+              :in_2nd_not_1st,
+              a,
+              b,
+              4
+            ]
+          end
+        end
+      end
+      s
     end
   end
 end
