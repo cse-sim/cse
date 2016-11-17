@@ -5,8 +5,9 @@ require 'set'
 class CoverageCheckTest < Minitest::Test
   include CoverageCheck
   def setup
-    @coolplant_path = File.expand_path('../../src/records/coolplant.md', __FILE__)
-    @airhandler_path = File.expand_path('../../src/records/airhandler.md', __FILE__)
+    @coolplant_path = File.expand_path('../resources/coolplant.md', __FILE__)
+    @airhandler_path = File.expand_path('../resources/airhandler.md', __FILE__)
+    @cullist_path = File.expand_path('../resources/cullist-snippet.txt', __FILE__)
   end
   def test_MdHead
     line = "3"
@@ -243,26 +244,52 @@ class CoverageCheckTest < Minitest::Test
     assert_equal(expected, actual)
   end
   def test_ParseCulList
-    content = <<DOC
-
-CSE 0.816 for Win32 console
-Command line: -c
-
-Top
-   doAutoSize
-   doMainSim
-
-
-material    Parent: Top
-   matThk
-   matCond
-
-DOC
+    content = File.read(@cullist_path)
     expected = {
       "Top" => Set.new(["doAutoSize", "doMainSim"]),
       "material" => Set.new(["matThk", "matCond"])
     }
     actual = ParseCulList[content]
+    assert_equal(expected, actual)
+  end
+  def test_ReadCulList
+    expected = {
+      "Top" => Set.new(["doAutoSize", "doMainSim"]),
+      "material" => Set.new(["matThk", "matCond"])
+    }
+    actual = ReadCulList[@cullist_path]
+    assert_equal(expected, actual)
+  end
+  def test_SetDifferences
+    #
+    s1 = Set.new(["A", "B", "C"])
+    s2 = Set.new(["B", "C", "D"])
+    actual = SetDifferences[s1, s2, false]
+    expected = {
+      :in_1st_not_2nd => Set.new(["A"]),
+      :in_2nd_not_1st => Set.new(["D"])
+    }
+    assert_equal(expected, actual)
+    #
+    s1 = Set.new(["1","2","3"])
+    s2 = Set.new(["1","2","3"])
+    actual = SetDifferences[s1, s2, false]
+    expected = nil
+    assert_equal(expected, actual)
+    #
+    s1 = Set.new(["A","B","C"])
+    s2 = Set.new(["a","b","c"])
+    actual = SetDifferences[s1, s2, false]
+    expected = nil
+    assert_equal(expected, actual)
+    #
+    s1 = Set.new(["A","B","C"])
+    s2 = Set.new(["a","b","c"])
+    actual = SetDifferences[s1, s2, true]
+    expected = {
+      :in_1st_not_2nd => Set.new(["A","B","C"]),
+      :in_2nd_not_1st => Set.new(["a","b","c"])
+    }
     assert_equal(expected, actual)
   end
 end

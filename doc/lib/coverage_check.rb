@@ -74,28 +74,6 @@ module CoverageCheck
   # String -> (Map String (Set String))
   # Given the string content of the results of `cse -c > cullist.txt`,
   # parse that into a RecordInputSet
-  # Examples:
-  #   content = <<DOC
-  #
-  #   CSE 0.816 for Win32 console
-  #   Command line: -c
-  #
-  #   Top
-  #      doAutoSize
-  #      doMainSim
-  #
-  #
-  #   material    Parent: Top
-  #      matThk
-  #      matCond
-  #
-  #   DOC
-  #   ParseCulList[content]
-  #     =>
-  #     {
-  #       "Top" => Set.new(["doAutoSize", "doMainSim"]),
-  #       "material" => Set.new(["matThk", "matCond"])
-  #     }
   ParseCulList = lambda do |content|
     output = {}
     current_record = nil
@@ -118,31 +96,8 @@ module CoverageCheck
   # String -> (Map String (Set String))
   # Given the path to a cullist.txt file (i.e., the result of `cse -c >
   # cullist.txt`), read the file and parse it into a RecordInputSet
-  # Examples:
-  #   # In file "a.txt"
-  #
-  #   CSE 0.816 for Win32 console
-  #   Command line: -c
-  #
-  #   Top
-  #      doAutoSize
-  #      doMainSim
-  #
-  #
-  #   material    Parent: Top
-  #      matThk
-  #      matCond
-  #
-  #   # End file "a.txt"   
-  #   path = "a.txt"
-  #   ReadCulList[path]
-  #     =>
-  #     {
-  #       "Top" => Set.new(["doAutoSize", "doMainSim"]),
-  #       "material" => Set.new(["matThk", "matCond"])
-  #     }
   ReadCulList = lambda do |path|
-    {}
+    ParseCulList[File.read(path)]
   end
 
   # (Set String) (Set String) ?Bool ->
@@ -154,22 +109,29 @@ module CoverageCheck
   # contents of set 1 and the contents of set 2, reporting items in the first
   # set (but not in the second) and items in the second set (but not in the
   # first)
-  # Examples:
-  #   s1 = Set.new(["A", "B", "C"])
-  #   s2 = Set.new(["B", "C", "D"])
-  #   SetDifferences[s1, s2, false]
-  #     =>
-  #     {
-  #       :in_1st_not_2nd => Set.new(["A"]),
-  #       :in_2nd_not_1st => Set.new(["D"])
-  #     }
-  #   s1 = Set.new(["1","2","3"])
-  #   s2 = Set.new(["1","2","3"])
-  #   SetDifferences[s1, s2, false]
-  #     =>
-  #     nil
   SetDifferences = lambda do |s1, s2, case_matters=false|
-    nil
+    if s1 == s2
+      nil
+    elsif case_matters
+      {
+        :in_1st_not_2nd => s1 - s2,
+        :in_2nd_not_1st => s2 - s1
+      }
+    else
+      f = lambda {|m, item| m.merge({item.downcase => item})}
+      m1 = s1.inject({}, &f)
+      m2 = s2.inject({}, &f)
+      s1_ = Set.new(m1.keys)
+      s2_ = Set.new(m2.keys)
+      if s1_ == s2_
+        nil
+      else
+        {
+          :in_1st_not_2nd => Set.new((s1_ - s2_).map {|k| m1[k]}),
+          :in_2nd_not_1st => Set.new((s2_ - s1_).map {|k| m2[k]})
+        }
+      end
+    end
   end
 
   # (Map String (Set String)) (Map String (Set String)) ?Bool ->
