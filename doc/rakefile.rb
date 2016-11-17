@@ -10,6 +10,7 @@ require 'yaml'
 require 'set'
 require 'pathname'
 require 'time'
+require "rake/testtask"
 require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
@@ -30,7 +31,7 @@ class EvalContext
         exit(1)
       end
       eval("#{name} = true")
-    rescue => e
+    rescue
       puts("issue with context key \"#{name}\" in #{CONFIG_FILE}'s context section")
       puts("all context variables must be valid Ruby variables:")
       puts("   a lowercase letter or underscore followed by any\n" +
@@ -311,7 +312,7 @@ Run = lambda do |cmd, working_dir=nil|
           LOG.flush
         end
       end
-    rescue => e
+    rescue
       if VERBOSE
         LOG.write("Error running command: `#{cmd}`\n")
         LOG.write("... from directory: #{working_dir}\n")
@@ -1116,6 +1117,7 @@ BuildSinglePageHTML = lambda do |config|
       "levels" => levels
     ],
     BuildProbesAndCopyIntoManifest[
+      "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
       ),
@@ -1145,10 +1147,10 @@ BuildSinglePageHTML = lambda do |config|
         "--to html5",
         "--from markdown",
         "--mathjax",
-        "--number-sections",
+        disable_numbering ? "" : "--number-sections",
         "--css=css/base.css",
-        "--table-of-contents",
-        "--toc-depth=#{TOC_DEPTH}",
+        disable_toc ? "" : "--table-of-contents",
+        disable_toc ? "" : "--toc-depth=#{TOC_DEPTH}",
         "--smart",
         "--variable header=\"#{HEADER}\"",
         "--variable footer=\"#{FOOTER}\"",
@@ -1395,7 +1397,6 @@ BuildPDF = lambda do |config|
   this_dir = config.fetch('this-dir', THIS_DIR)
   build_dir = config.fetch("build-dir", "build")
   md_dir = config.fetch("md-dir", "md")
-  html_dir = config.fetch("html-dir", "html")
   out_dir = config.fetch("output-dir", "build/output")
   out_file = config.fetch("output-file-name", "out.pdf")
   rsrc_dir = config.fetch("resource-dir", "resources")
@@ -1473,6 +1474,7 @@ BuildPDF = lambda do |config|
       "levels" => levels
     ],
     BuildProbesAndCopyIntoManifest[
+      "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
       ),
@@ -1511,8 +1513,8 @@ BuildPDF = lambda do |config|
         '--variable geometry="margin=1in"',
         '--variable urlcolor=cyan',
         "--latex-engine=xelatex",
-        "--table-of-contents",
-        "--toc-depth=#{TOC_DEPTH}",
+        disable_toc ? "" : "--table-of-contents",
+        disable_toc ? "" : "--toc-depth=#{TOC_DEPTH}",
         "--number-sections",
         "--smart",
         "--template=template.tex",
@@ -1535,26 +1537,9 @@ BuildPDF = lambda do |config|
   ]]
 end
 
-Test = lambda do |expr1, expr2|
-  puts("Test: #{expr1} =? #{expr2}")
-  puts("... expr1: #{eval(expr1).inspect}")
-  puts("... expr2: #{eval(expr2).inspect}")
-  puts("... ? #{eval(expr1) == eval(expr2)}")
-end
-
 ########################################
 # Tasks
 ########################################
-task :test do
-  Test["UpdateOutlineCount[[0], 1]", "[1]"]
-  Test["UpdateOutlineCount[[1,1,3], 2]", "[1,2]"]
-  Test["UpdateOutlineCount[[1,1,3], 3]", "[1,1,4]"]
-  Test["UpdateOutlineCount[[1,1,3], 1]", "[2]"]
-  Test["UpdateOutlineCount[[1,1,3], 4]", "[1,1,3,1]"]
-  Test["UpdateOutlineCount[[1,1,3], 5]", "[1,1,3,1,1]"]
-  Test["OutlineCountToStr[[1,1,3]]", "\"1.1.3\""]
-end
-
 def time_it(&block)
   start_time = Time.now
   block.call
@@ -1769,6 +1754,12 @@ task :erb do
          "know which file to test preprocessing with")
     exit(1)
   end
+end
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList['test/**/*_test.rb']
 end
 
 task :default => [:build_all]
