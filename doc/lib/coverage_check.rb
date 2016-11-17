@@ -10,7 +10,6 @@ module CoverageCheck
       nil
     end
   end
-
   # String -> (Or Nil String)
   # Given a line of markdown, recognize a data item header and return it, or
   # return nil
@@ -22,7 +21,6 @@ module CoverageCheck
       nil
     end
   end
-
   # String -> (Map String (Set String))
   # Given the content of a markdown document of a record and its input, return
   # a RecordInputSet for the records and input fields found in that document
@@ -43,7 +41,6 @@ module CoverageCheck
     end
     output
   end
-
   # String -> (Map String (Set String))
   # Given a file path to a markdown document containing record documentation,
   # return a RecordInputSet for the records and input fields found in that
@@ -51,7 +48,6 @@ module CoverageCheck
   ReadRecordDocument = lambda do |path|
     ParseRecordDocument[File.read(path)]
   end
-
   # (Array String) -> (Map String (Set String))
   # Given an array of file paths to record documentation, consecutively
   # construct a RecordInputSet from all of the documents listed. Note: it is an
@@ -70,7 +66,6 @@ module CoverageCheck
     end
     output
   end
-
   # String -> (Map String (Set String))
   # Given the string content of the results of `cse -c > cullist.txt`,
   # parse that into a RecordInputSet
@@ -92,14 +87,12 @@ module CoverageCheck
     end
     output
   end
-
   # String -> (Map String (Set String))
   # Given the path to a cullist.txt file (i.e., the result of `cse -c >
   # cullist.txt`), read the file and parse it into a RecordInputSet
   ReadCulList = lambda do |path|
     ParseCulList[File.read(path)]
   end
-
   # (Set String) (Set String) ?Bool ->
   #   (Or Nil
   #       (Record :in_1st_not_2nd (Or Nil (Set String))
@@ -133,7 +126,6 @@ module CoverageCheck
       end
     end
   end
-
   # (Map String (Set String)) (Map String (Set String)) ?Bool ->
   # (Or Nil
   #     (Record :records_in_1st_not_2nd (Or Nil (Set String))
@@ -154,7 +146,6 @@ module CoverageCheck
   RecordInputSetDifferences = lambda do |ris1, ris2, case_matters=false|
     nil
   end
-
   # (Map String *) (Map String String) -> (Map String *)
   # Given a map from string to any and a map from string to string, create a
   # new map with any keys in the first map also in the second map renamed to
