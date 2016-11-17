@@ -8,6 +8,8 @@ class CoverageCheckTest < Minitest::Test
     @coolplant_path = File.expand_path('../resources/coolplant.md', __FILE__)
     @airhandler_path = File.expand_path('../resources/airhandler.md', __FILE__)
     @cullist_path = File.expand_path('../resources/cullist-snippet.txt', __FILE__)
+    @cullist_full_path = File.expand_path('../resources/cullist.txt', __FILE__)
+    @all_records_path = Dir[File.expand_path('../resources/*.md', __FILE__)]
   end
   def test_MdHead
     line = "3"
@@ -291,5 +293,73 @@ class CoverageCheckTest < Minitest::Test
       :in_2nd_not_1st => Set.new(["a","b","c"])
     }
     assert_equal(expected, actual)
+  end
+  def test_RenameMap
+  end
+  def test_RecordInputSetDifferences
+    ris1 = {
+      "Top" => Set.new(["a", "b", "c"]),
+      "Bottom" => Set.new(["a", "b", "c"])
+    }
+    ris2 = {
+      "Top" => Set.new(["a", "B", "c"]),
+      "Bottom" => Set.new(["a", "b", "C"])
+    }
+    actual = RecordInputSetDifferences[ris1, ris2, false]
+    expected = nil
+    assert_equal(expected, actual)
+    #
+    actual = RecordInputSetDifferences[ris1, ris2, true]
+    expected = {
+      records_in_1st_not_2nd: nil,
+      records_in_2nd_not_1st: nil,
+      "Top" => {
+        in_1st_not_2nd: Set.new(["b"]),
+        in_2nd_not_1st: Set.new(["B"])
+      },
+      "Bottom" => {
+        in_1st_not_2nd: Set.new(["c"]),
+        in_2nd_not_1st: Set.new(["C"])
+      }
+    }
+    assert_equal(expected, actual)
+    #
+    ris1 = {
+      "Top" => Set.new(["a", "b", "c"]),
+      "Bottom" => Set.new(["a", "b", "c"])
+    }
+    ris2 = {
+      "Top" => Set.new(["a", "b", "c"]),
+      "Side" => Set.new(["a", "b", "c"])
+    }
+    actual = RecordInputSetDifferences[ris1, ris2, true]
+    expected = {
+      records_in_1st_not_2nd: Set.new(["Bottom"]),
+      records_in_2nd_not_1st: Set.new(["Side"])
+    }
+    assert_equal(expected, actual)
+    #
+    ris1 = {
+      "Top" => Set.new(["b", "c"]),
+      "Bottom" => Set.new(["a", "b", "c"])
+    }
+    ris2 = {
+      "Top" => Set.new(["a", "b", "c"]),
+      "Bottom" => Set.new(["b", "c", "d"])
+    }
+    actual = RecordInputSetDifferences[ris1, ris2, true]
+    expected = {
+      records_in_1st_not_2nd: nil,
+      records_in_2nd_not_1st: nil,
+      "Top" => {in_1st_not_2nd: Set.new, in_2nd_not_1st: Set.new(["a"])},
+      "Bottom" => {
+        in_1st_not_2nd: Set.new(["a"]), in_2nd_not_1st: Set.new(["d"])
+      }
+    }
+    assert_equal(expected, actual)
+    ris1 = ReadCulList[@cullist_full_path]
+    ris2 = ReadAllRecordDocuments[@all_records_path]
+    actual = RecordInputSetDifferences[ris1, ris2, false]
+    assert(!actual.nil?)
   end
 end

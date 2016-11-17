@@ -126,6 +126,17 @@ module CoverageCheck
       end
     end
   end
+  # (Map String *) (Map String String) -> (Map String *)
+  # Given a map from string to any and a map from string to string, create a
+  # new map with any keys in the first map also in the second map renamed to
+  # the second map's keys
+  # Examples:
+  #   RenameMap[m, names]
+  #     =>
+  #
+  RenameMap = lambda do |m, names|
+    m
+  end
   # (Map String (Set String)) (Map String (Set String)) ?Bool ->
   # (Or Nil
   #     (Record :records_in_1st_not_2nd (Or Nil (Set String))
@@ -139,22 +150,37 @@ module CoverageCheck
   # to false) which, if true, compares based on case, compare the two
   # RecordInputSet objects, returning any differences. If no differences,
   # return nil.
-  # Examples:
-  #   RecordInputSetDifferences[ris1, ris2, false]
-  #     =>
-  #     
   RecordInputSetDifferences = lambda do |ris1, ris2, case_matters=false|
-    nil
-  end
-  # (Map String *) (Map String String) -> (Map String *)
-  # Given a map from string to any and a map from string to string, create a
-  # new map with any keys in the first map also in the second map renamed to
-  # the second map's keys
-  # Examples:
-  #   RenameMap[m, names]
-  #     =>
-  #
-  RenameMap = lambda do |m, names|
-    m
+    if ris1 == ris2
+      nil
+    else
+      g = lambda {|x,y|{records_in_1st_not_2nd: x, records_in_2nd_not_1st: y}}
+      ks1 = Set.new(ris1.keys)
+      ks2 = Set.new(ris2.keys)
+      key_diffs = SetDifferences[ks1, ks2, case_matters]
+      out = nil
+      if key_diffs
+        out = g[key_diffs[:in_1st_not_2nd], key_diffs[:in_2nd_not_1st]]
+      end
+      # check fields
+      f = lambda {|m, item| m.merge({item.downcase => item})}
+      m1 = ks1.inject({}, &f)
+      m2 = ks2.inject({}, &f)
+      ks = case_matters ? (ks1 & ks2) : (Set.new(m1.keys) & Set.new(m2.keys))
+      ks.each do |k|
+        k1 = case_matters ? k : m1[k]
+        k2 = case_matters ? k : m2[k]
+        diffs = SetDifferences[ris1[k1], ris2[k2], case_matters]
+        if diffs
+          if out
+            out[k] = diffs
+          else
+            out = g[nil, nil]
+            out[k] = diffs
+          end
+        end
+      end
+      out
+    end
   end
 end
