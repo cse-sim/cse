@@ -295,18 +295,38 @@ class CoverageCheckTest < Minitest::Test
     assert_equal(expected, actual)
   end
   def test_AdjustMap
-
+    ris = {
+      "A" => Set.new(["a"]),
+      "A B" => Set.new(["b"]),
+      "A B C" => Set.new(["c"])
+    }
+    expected = {
+      "A" => Set.new(["a", "b", "c"])
+    }
+    actual = AdjustMap[ris]
+    assert_equal(expected, actual)
   end
-  def test_PrintDifferences
+  def test_DiffsToString
+    m = {
+      :a=>Set.new(["a"]),
+      :b=>Set.new(["b"])
+    }
+    expected = "Stuff:\nin a but not in b:\n- a\nin b but not in a:\n- b\n"
+    actual = DiffsToString[m,"Stuff",:a,:b,"a","b"]
+    assert_equal(expected, actual)
+  end
+  def test_RecordInputSetDifferencesToString
     diffs = {
       :records_in_1st_not_2nd => nil,
       :records_in_2nd_not_1st => nil,
-      "coolsys" => {
-        :in_2nd_not_1st => Set.new(["csName"]),
-        :in_1st_not_2nd => nil
+      :field_set_differences => {
+        "coolsys" => {
+          :in_2nd_not_1st => Set.new(["csName"]),
+          :in_1st_not_2nd => nil
+        }
       }
     }
-    assert("".class == PrintDifferences[diffs].class)
+    assert("".class == RecordInputSetDifferencesToString[diffs].class)
   end
   def test_RecordInputSetDifferences
     ris1 = {
@@ -325,13 +345,15 @@ class CoverageCheckTest < Minitest::Test
     expected = {
       records_in_1st_not_2nd: nil,
       records_in_2nd_not_1st: nil,
-      "Top" => {
-        in_1st_not_2nd: Set.new(["b"]),
-        in_2nd_not_1st: Set.new(["B"])
-      },
-      "Bottom" => {
-        in_1st_not_2nd: Set.new(["c"]),
-        in_2nd_not_1st: Set.new(["C"])
+      field_set_differences: {
+        "Top" => {
+          in_1st_not_2nd: Set.new(["b"]),
+          in_2nd_not_1st: Set.new(["B"])
+        },
+        "Bottom" => {
+          in_1st_not_2nd: Set.new(["c"]),
+          in_2nd_not_1st: Set.new(["C"])
+        }
       }
     }
     assert_equal(expected, actual)
@@ -363,9 +385,11 @@ class CoverageCheckTest < Minitest::Test
     expected = {
       records_in_1st_not_2nd: nil,
       records_in_2nd_not_1st: nil,
-      "Top" => {in_1st_not_2nd: Set.new, in_2nd_not_1st: Set.new(["a"])},
-      "Bottom" => {
-        in_1st_not_2nd: Set.new(["a"]), in_2nd_not_1st: Set.new(["d"])
+      field_set_differences: {
+        "Top" => {in_1st_not_2nd: Set.new, in_2nd_not_1st: Set.new(["a"])},
+        "Bottom" => {
+          in_1st_not_2nd: Set.new(["a"]), in_2nd_not_1st: Set.new(["d"])
+        }
       }
     }
     assert_equal(expected, actual)
@@ -375,7 +399,6 @@ class CoverageCheckTest < Minitest::Test
     assert(!actual.nil?)
     ris3 = AdjustMap[ris2]
     actual = RecordInputSetDifferences[ris1, ris3, false]
-    
     assert(!actual.nil?)
   end
 end

@@ -146,11 +146,9 @@ module CoverageCheck
   # (Or Nil
   #     (Record :records_in_1st_not_2nd (Or Nil (Set String))
   #             :records_in_2nd_not_1st (Or Nil (Set String))
-  #             :field_set_differences
-  #             (Or Nil
-  #                 (Map String
-  #                      (Record :in_1st_not_2nd (Or Nil (Set String))
-  #                              :in_2nd_not_1st (Or Nil (Set String)))))))
+  #             String
+  #             (Record :in_1st_not_2nd (Or Nil (Set String))
+  #                     :in_2nd_not_1st (Or Nil (Set String)))))
   # Given two RecordInputSet objects and an optional flag (defaulting
   # to false) which, if true, compares based on case, compare the two
   # RecordInputSet objects, returning any differences. If no differences,
@@ -169,6 +167,7 @@ module CoverageCheck
       end
       # check fields
       f = lambda {|m, item| m.merge({item.downcase => item})}
+      fsd = :field_set_differences
       m1 = ks1.inject({}, &f)
       m2 = ks2.inject({}, &f)
       ks = case_matters ? (ks1 & ks2) : (Set.new(m1.keys) & Set.new(m2.keys))
@@ -178,21 +177,23 @@ module CoverageCheck
         diffs = SetDifferences[ris1[k1], ris2[k2], case_matters]
         if diffs
           if out
-            out[k] = diffs
+            out[fsd] = {} unless out.include?(fsd)
+            out[fsd][k] = diffs
           else
             out = g[nil, nil]
-            out[k] = diffs
+            out[fsd] = {} unless out.include?(fsd)
+            out[fsd][k] = diffs
           end
         end
       end
       out
     end
   end
-  # (Map String *) String * * String String -> String
-  # Given a map from string to any, a string for a name of what the map
-  # represents (e.g., Records, Data Input Fields, etc.), two keys into the map,
-  # and two strings to name the variations represented by the two keys, report
-  # off on the differences as a string.
+  # (Map * *) String * * String String -> String
+  # Given a map,  a string for a name of what the map represents (e.g.,
+  # Records, Data Input Fields, etc.), two keys into the map, and two strings
+  # to name the variations represented by the two keys, report off on the
+  # differences as a string.
   DiffsToString = lambda do |diffs, name, k1, k2, a, b, indent=0|
     if diffs.nil?
       ""
@@ -223,7 +224,7 @@ module CoverageCheck
   #                              :in_2nd_not_1st (Or Nil (Set String)))))))
   # -> String
   # Given the output of RecordInputSetDifferences, format it and retun as a string
-  PrintDifferences = lambda do |diffs, a=nil, b=nil|
+  RecordInputSetDifferencesToString = lambda do |diffs, a=nil, b=nil|
     a ||= "First"
     b ||= "Second"
     if diffs.nil?
@@ -242,13 +243,13 @@ module CoverageCheck
           4
         ]
       end
-      if !diffs.empty?
-        ks = diffs.keys.select {|x| x.class == "".class}.sort
+      if diffs[:field_set_differences]
+        ks = diffs[:field_set_differences].keys.sort
         if ks and !ks.empty?
           s += "DATA FIELD INCONSISTENCIES:\n"
           ks.each do |k|
             s += DiffsToString[
-              diffs[k],
+              diffs[:field_set_differences][k],
               k,
               :in_1st_not_2nd,
               :in_2nd_not_1st,
