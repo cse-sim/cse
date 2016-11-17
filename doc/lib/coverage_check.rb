@@ -16,7 +16,7 @@ module CoverageCheck
   DataItemHeader = lambda do |line|
     m = line.match(/^\*\*(.*)\*\*$/)
     if m
-      m[1].split(/=/)[0].gsub(/\*/,'')
+      m[1].split(/=/)[0].gsub(/\*/,'').strip
     else
       nil
     end
