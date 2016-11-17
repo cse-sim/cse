@@ -15,6 +15,7 @@ The source files including both manifest files (in YAML) and markdown files (end
 - (optional) for compression of HTML/CSS, a recent version of [Node.js]
 - a recent version of the [Ruby] programming language (we are using Ruby 2.0.0p648)
 - (optional) an internet connection (for installing node dependencies)
+- the git version control manager (we are using 2.10.2)
 
 For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For Windows, [MiKTeX] is recommended. For Mac OS and Linux, please follow the instructions for recommended (La)TeX systems at [Pandoc's Install] page. Note that to build the PDF, you must change the value of the "build-pdf?" key to true in the `config.yaml` file in this directory. This configuration file is discussed more below.
 
