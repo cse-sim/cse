@@ -126,7 +126,7 @@ module CoverageCheck
       end
     end
   end
-  # (Map String (Set String)) -> (Map String *)
+  # (Map String (Set String)) -> (Map String (Set String))
   # Given a map from string to set of string, adjust the map so that fields
   # with spacing in them get collapsed to the record defined by the first word
   # through set union 
