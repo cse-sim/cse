@@ -17,6 +17,7 @@ require_relative 'lib/tables'
 require_relative 'lib/toc'
 require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
+require_relative 'lib/coverage_check'
 
 ########################################
 # Globals
@@ -64,6 +65,7 @@ BUILD_DIR = CONFIG.fetch("build-dir")
 SRC_DIR = CONFIG.fetch("src-dir")
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 REMOTE_REPO = CONFIG.fetch("remote-repo-url")
+RUN_COVERAGE = CONFIG.fetch("coverage?")
 REFERENCE_DIR = File.expand_path(
   CONFIG.fetch("reference-dir") , THIS_DIR
 )
@@ -1032,6 +1034,31 @@ ReLinkHTML = lambda do |config|
   end
 end
 
+CheckCoverage = lambda do |config|
+  tag = config.fetch("tag")
+  this_dir = config.fetch('this-dir', THIS_DIR)
+  build_dir = config.fetch("build-dir", "build")
+  md_dir = config.fetch("md-dir", "md")
+  context = config.fetch("preproc-context", PREPROCESSOR_CONTEXT)
+  JoinFunctions[[
+    ExpandPathsFrom[
+      "reference-dir" => File.expand_path('src')
+    ],
+    PreprocessManifest[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
+      ),
+      "relative-root-path" => File.expand_path('src'),
+      "context" => context
+    ],
+    NormalizeMarkdown[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "normalize"), this_dir
+      )
+    ]
+  ]]
+end
+
 BuildSinglePageHTML = lambda do |config|
   tag = config.fetch("tag")
   levels = config.fetch("levels")
@@ -1704,6 +1731,7 @@ end
 all_builds = [:build_html_single, :build_html_multi, :build_site]
 all_builds << :build_pdf if BUILD_PDF
 all_builds << :verify_links if VERIFY_LINKS
+all_builds << :coverage if RUN_COVERAGE
 
 desc "Build everything"
 task :build_all => all_builds
@@ -1753,6 +1781,49 @@ task :erb do
     puts("You must define the environment variable `FILE` so we\n" +
          "know which file to test preprocessing with")
     exit(1)
+  end
+end
+
+desc "Run documentation coverage checker"
+task :coverage do
+  time_it do
+    puts("#"*60)
+    puts("Check CSE User Manual's Documentation Coverage")
+    tag = "cse-user-manual-coverage"
+    processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
+    context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_html_single'})
+    PreprocessManifest[
+      'output-dir' => processed_manifest_path,
+      'context' => context
+    ][[CSE_USER_MANUAL_MANIFEST_PATH]]
+    doc = YAML.load_file(
+      File.join(
+        processed_manifest_path,
+        File.basename(CSE_USER_MANUAL_MANIFEST_PATH)
+      )
+    )
+    manifest = doc["sections"]
+    files = manifest.map {|_, path| path} 
+    CheckCoverage[
+      "tag" => tag,
+      "context" => context,
+    ][files]
+    ris1 = CoverageCheck::ReadCulList[
+      File.join('config','reference','cullist.txt')
+    ]
+    files = Dir[File.join(BUILD_DIR, tag, 'md', 'preprocessed', 'records', '*.md')].map do |path|
+      File.join(BUILD_DIR, tag, 'md', 'normalize', File.basename(path))
+    end
+    ris2 = CoverageCheck::ReadAllRecordDocuments[files]
+    ris3 = CoverageCheck::AdjustMap[ris2]
+    diffs = CoverageCheck::RecordInputSetDifferences[ris1, ris3, false]
+    diff_report = CoverageCheck::RecordInputSetDifferencesToString[
+      diffs, "CSE", "Documentation"
+    ]
+    puts("\n\n"+diff_report)
+    File.write("documentation-coverage-report.txt", diff_report)
+    puts("\nCoverage Check DONE!")
+    puts("^"*60)
   end
 end
 
