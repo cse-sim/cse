@@ -740,7 +740,9 @@ ARI steady state (continuous operation) rated capacities at 70 degrees F indoor 
   ----------- ----------------- ------------- ------------------- -----------------
   Btuh        *x* $>$ 0                       Yes, for AHP coil   constant
 
-ahpCap35=*float*ARI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to *ahpFd35Df* (next description) times a value determined by linear interpolation between the given *ahpCap17* and *ahpCap47* values. If *ahpCap35* is given, CSE will issue an error message if it is greater than value determined by linear interpolation between *ahpCap17* and *ahpCap47*.
+**ahpCap35=*float***
+
+ARI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to *ahpFd35Df* (next description) times a value determined by linear interpolation between the given *ahpCap17* and *ahpCap47* values. If *ahpCap35* is given, CSE will issue an error message if it is greater than value determined by linear interpolation between *ahpCap17* and *ahpCap47*.
 
   **Units**   **Legal Range**   **Default**      **Required**   **Variability**
   ----------- ----------------- ---------------- -------------- -----------------
@@ -754,7 +756,9 @@ Default frost/defrost degradation factor at 35 F: reduction of output at unchang
   ----------- --------------------- ------------- -------------- -----------------
               0 $\le$ *x* $\le$ 1   .85           No             constant
 
-ahpCapIa=*float*Capacity correction factor for indoor (return) air temperature, expressed as a fraction reduction in capacity per degree above 70F.
+**ahpCapIa=*float***
+
+Capacity correction factor for indoor (return) air temperature, expressed as a fraction reduction in capacity per degree above 70F.
 
   **Units**   **Legal Range**       **Default**   **Required**   **Variability**
   ----------- --------------------- ------------- -------------- -----------------
