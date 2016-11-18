@@ -10,12 +10,14 @@ require 'yaml'
 require 'set'
 require 'pathname'
 require 'time'
+require "rake/testtask"
 require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/toc'
 require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
+require_relative 'lib/coverage_check'
 
 ########################################
 # Globals
@@ -30,7 +32,7 @@ class EvalContext
         exit(1)
       end
       eval("#{name} = true")
-    rescue => e
+    rescue
       puts("issue with context key \"#{name}\" in #{CONFIG_FILE}'s context section")
       puts("all context variables must be valid Ruby variables:")
       puts("   a lowercase letter or underscore followed by any\n" +
@@ -63,6 +65,7 @@ BUILD_DIR = CONFIG.fetch("build-dir")
 SRC_DIR = CONFIG.fetch("src-dir")
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
 REMOTE_REPO = CONFIG.fetch("remote-repo-url")
+RUN_COVERAGE = CONFIG.fetch("coverage?")
 REFERENCE_DIR = File.expand_path(
   CONFIG.fetch("reference-dir") , THIS_DIR
 )
@@ -311,7 +314,7 @@ Run = lambda do |cmd, working_dir=nil|
           LOG.flush
         end
       end
-    rescue => e
+    rescue
       if VERBOSE
         LOG.write("Error running command: `#{cmd}`\n")
         LOG.write("... from directory: #{working_dir}\n")
@@ -1031,6 +1034,31 @@ ReLinkHTML = lambda do |config|
   end
 end
 
+CheckCoverage = lambda do |config|
+  tag = config.fetch("tag")
+  this_dir = config.fetch('this-dir', THIS_DIR)
+  build_dir = config.fetch("build-dir", "build")
+  md_dir = config.fetch("md-dir", "md")
+  context = config.fetch("preproc-context", PREPROCESSOR_CONTEXT)
+  JoinFunctions[[
+    ExpandPathsFrom[
+      "reference-dir" => File.expand_path('src')
+    ],
+    PreprocessManifest[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "preprocessed"), this_dir
+      ),
+      "relative-root-path" => File.expand_path('src'),
+      "context" => context
+    ],
+    NormalizeMarkdown[
+      "output-dir" => File.expand_path(
+        File.join(build_dir, tag, md_dir, "normalize"), this_dir
+      )
+    ]
+  ]]
+end
+
 BuildSinglePageHTML = lambda do |config|
   tag = config.fetch("tag")
   levels = config.fetch("levels")
@@ -1116,6 +1144,7 @@ BuildSinglePageHTML = lambda do |config|
       "levels" => levels
     ],
     BuildProbesAndCopyIntoManifest[
+      "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
       ),
@@ -1145,10 +1174,10 @@ BuildSinglePageHTML = lambda do |config|
         "--to html5",
         "--from markdown",
         "--mathjax",
-        "--number-sections",
+        disable_numbering ? "" : "--number-sections",
         "--css=css/base.css",
-        "--table-of-contents",
-        "--toc-depth=#{TOC_DEPTH}",
+        disable_toc ? "" : "--table-of-contents",
+        disable_toc ? "" : "--toc-depth=#{TOC_DEPTH}",
         "--smart",
         "--variable header=\"#{HEADER}\"",
         "--variable footer=\"#{FOOTER}\"",
@@ -1395,7 +1424,6 @@ BuildPDF = lambda do |config|
   this_dir = config.fetch('this-dir', THIS_DIR)
   build_dir = config.fetch("build-dir", "build")
   md_dir = config.fetch("md-dir", "md")
-  html_dir = config.fetch("html-dir", "html")
   out_dir = config.fetch("output-dir", "build/output")
   out_file = config.fetch("output-file-name", "out.pdf")
   rsrc_dir = config.fetch("resource-dir", "resources")
@@ -1473,6 +1501,7 @@ BuildPDF = lambda do |config|
       "levels" => levels
     ],
     BuildProbesAndCopyIntoManifest[
+      "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
       ),
@@ -1511,8 +1540,8 @@ BuildPDF = lambda do |config|
         '--variable geometry="margin=1in"',
         '--variable urlcolor=cyan',
         "--latex-engine=xelatex",
-        "--table-of-contents",
-        "--toc-depth=#{TOC_DEPTH}",
+        disable_toc ? "" : "--table-of-contents",
+        disable_toc ? "" : "--toc-depth=#{TOC_DEPTH}",
         "--number-sections",
         "--smart",
         "--template=template.tex",
@@ -1535,26 +1564,9 @@ BuildPDF = lambda do |config|
   ]]
 end
 
-Test = lambda do |expr1, expr2|
-  puts("Test: #{expr1} =? #{expr2}")
-  puts("... expr1: #{eval(expr1).inspect}")
-  puts("... expr2: #{eval(expr2).inspect}")
-  puts("... ? #{eval(expr1) == eval(expr2)}")
-end
-
 ########################################
 # Tasks
 ########################################
-task :test do
-  Test["UpdateOutlineCount[[0], 1]", "[1]"]
-  Test["UpdateOutlineCount[[1,1,3], 2]", "[1,2]"]
-  Test["UpdateOutlineCount[[1,1,3], 3]", "[1,1,4]"]
-  Test["UpdateOutlineCount[[1,1,3], 1]", "[2]"]
-  Test["UpdateOutlineCount[[1,1,3], 4]", "[1,1,3,1]"]
-  Test["UpdateOutlineCount[[1,1,3], 5]", "[1,1,3,1,1]"]
-  Test["OutlineCountToStr[[1,1,3]]", "\"1.1.3\""]
-end
-
 def time_it(&block)
   start_time = Time.now
   block.call
@@ -1719,6 +1731,7 @@ end
 all_builds = [:build_html_single, :build_html_multi, :build_site]
 all_builds << :build_pdf if BUILD_PDF
 all_builds << :verify_links if VERIFY_LINKS
+all_builds << :coverage if RUN_COVERAGE
 
 desc "Build everything"
 task :build_all => all_builds
@@ -1769,6 +1782,55 @@ task :erb do
          "know which file to test preprocessing with")
     exit(1)
   end
+end
+
+desc "Run documentation coverage checker"
+task :coverage do
+  time_it do
+    puts("#"*60)
+    puts("Check CSE User Manual's Documentation Coverage")
+    tag = "cse-user-manual-coverage"
+    processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
+    context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_html_single'})
+    PreprocessManifest[
+      'output-dir' => processed_manifest_path,
+      'context' => context
+    ][[CSE_USER_MANUAL_MANIFEST_PATH]]
+    doc = YAML.load_file(
+      File.join(
+        processed_manifest_path,
+        File.basename(CSE_USER_MANUAL_MANIFEST_PATH)
+      )
+    )
+    manifest = doc["sections"]
+    files = manifest.map {|_, path| path} 
+    CheckCoverage[
+      "tag" => tag,
+      "context" => context,
+    ][files]
+    ris1 = CoverageCheck::ReadCulList[
+      File.join('config','reference','cullist.txt')
+    ]
+    files = Dir[File.join(BUILD_DIR, tag, 'md', 'preprocessed', 'records', '*.md')].map do |path|
+      File.join(BUILD_DIR, tag, 'md', 'normalize', File.basename(path))
+    end
+    ris2 = CoverageCheck::ReadAllRecordDocuments[files]
+    ris3 = CoverageCheck::AdjustMap[ris2]
+    diffs = CoverageCheck::RecordInputSetDifferences[ris1, ris3, false]
+    diff_report = CoverageCheck::RecordInputSetDifferencesToString[
+      diffs, "CSE", "Documentation"
+    ]
+    puts("\n\n"+diff_report)
+    File.write("documentation-coverage-report.txt", diff_report)
+    puts("\nCoverage Check DONE!")
+    puts("^"*60)
+  end
+end
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList['test/**/*_test.rb']
 end
 
 task :default => [:build_all]

@@ -39,6 +39,10 @@ verify-links?: true
 verify-manifest?: true
 # Flag to set the verbosity of output
 verbose?: false
+# Run documentation coverage report by default?
+# This report checks doc/config/reference/cullist.txt against what's in the
+# documentation to determine if the documentation is covering all topics
+coverage?: true
 # this variable holds various "flags" to pass into the ERB preprocessor
 # NOTE: only define variable keys as standard Ruby variables!
 #       for example, "some-variable: 10" would not work since "some-variable"

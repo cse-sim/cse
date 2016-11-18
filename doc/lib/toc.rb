@@ -85,7 +85,7 @@ module TOC
   # - *max_level*: Integer >= 1, the maximum header depth to use in TOC
   # - *manifest_path*: String, path to the manifest file in YAML
   # - *toc_path*: String, path to the table of contents file to write out in markdown
-  GenTableOfContents = lambda do |max_level, manifest_path, toc_path, except=nil|
+  GenTableOfContents = lambda do |max_level, manifest_path, toc_path|
     man_dir = File.dirname(manifest_path)
     data = YAML.load_file(manifest_path)
     fs = data.fetch('sections', [])
@@ -101,5 +101,5 @@ if false
   THIS_DIR = File.expand_path(File.dirname(__FILE__))
   MAN_PATH = File.expand_path(File.join('..','src','cse-user-manual.yaml'), THIS_DIR)
   TOC_PATH = File.join(THIS_DIR, 'junk-toc.md')
-  TOC::GenTableOfContents[3, MAN_PATH, TOC_PATH, except=nil]
+  TOC::GenTableOfContents[3, MAN_PATH, TOC_PATH]
 end
