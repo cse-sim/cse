@@ -506,6 +506,21 @@ char * FC strBsUnDouble( char *s)	// un-double any \'s in string: for reversing 
 	}
 	return s;
 }		// strBsUnDouble
+//-----------------------------------------------------------------------------
+const char* strOrdinal(		// convert number to string in Tmpstr with st, rd, th as appropriate
+    int number)
+{
+	static const char *cases[] = {"%dth", "%dst", "%dnd", "%drd"};
+	int caseNr;
+	int mod100 = number % 100;
+	if (mod100 > 10 && mod100 < 20)	// for 11, 12, 13, 111, 211...
+		caseNr = 0;			// say 11th not 11st ...
+	else
+		caseNr = number % 10;
+	if (caseNr > 3)
+		caseNr = 0;
+	return strtprintf( cases[caseNr], number);
+}				// strOrdinal
 
 // ====================================================================
 char* FC strsave(		// save a copy of a string in heap

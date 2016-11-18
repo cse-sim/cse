@@ -780,9 +780,10 @@ LOCAL INT cse3( INT argc, const char* argv[])
 
 // decode command line
 
-	SI probeNamesFlag = 0;	// non-0 to display probeable record/member names (-p or -q on command line)
-	SI allProbeNames = 0;	// non-0 to display ALL probe names (-q on command line)
-	BOO warnNoScrn = 0;		// non-0 to suppress display of warnings on screen (-n), rob 5-97
+	int probeNamesFlag = 0;	// non-0 to display probeable record/member names (-p or -q on command line)
+	int allProbeNames = 0;	// non-0 to display ALL probe names (-q on command line)
+	BOO warnNoScrn = 0;		// non-0 to suppress display of warnings on screen (-n)
+	int culDocFlag = 0;		// non-0 to display entire input tree (-c)
 
 #ifdef BINRES
 	// init flags above for binary results files command line switches. Used after each run input decoded -- see tp_SetOptions.
@@ -823,6 +824,10 @@ LOCAL INT cse3( INT argc, const char* argv[])
 			case 'p':
 				probeNamesFlag++;  			// -p: display user probeable member names
 				break; /*lint+e 616 */
+
+			case 'c':
+				culDocFlag++;
+				break;
 
 			case 'n':
 				warnNoScrn++;
@@ -888,8 +893,8 @@ noHans:
 				 arg );
 	}
 
-	if ( !InputFileName			// if no filename given
-			&&  !probeNamesFlag )		// nor anything else to do requested
+	if ( !InputFileName					// if no filename given
+	 &&  !probeNamesFlag && !culDocFlag)	// nor anything else to do requested
 		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
 			 (char *)MH_C0003);  	//    "No input file name given on command line"
 
@@ -905,13 +910,14 @@ noHans:
 	cnPreInit();				// preliminary input data init needed by showProbeNames (cncult.cpp)
 	cgPreInit();				// preliminary simulator data init needed by showProbeNames (cnguts.cpp)
 	if (cul( 0, NULL, "", cnTopCult, &Topi ))	// prelim cul.cpp:cul init: set things needed by showProbeNames
-		err( PABT, 			 	// if error, fatal program error message (rmkerr.cpp). no return.
+		err( PABT, 			 				// if error, fatal program error message (rmkerr.cpp). no return.
 			 (char *)MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
 
 	if (probeNamesFlag)
-	{
-		showProbeNames(allProbeNames);  		// do it, cuprobe.cpp
-	}
+		showProbeNames( allProbeNames);  		// do it, cuprobe.cpp
+
+	if (culDocFlag)
+		culShowDoc();
 
 // exit if no input file (gets to here only if -p or other no-input-file switch given)
 

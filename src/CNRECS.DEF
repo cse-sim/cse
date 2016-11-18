@@ -3083,7 +3083,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 	*declare "void wmt_Finalize() { total = VSum( &unknown, NDHWENDUSES); }"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.
-    // Use by purpose (end use), energy used in Btu:
+    // Use by purpose (end use), water use, gal:
     // CAUTION: order of members MATCHES DTDHWEUCH choices (cndtypes.def)
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
 	FLOAT unknown		// unknown (= DHWENDUSE 0, no associated choice)

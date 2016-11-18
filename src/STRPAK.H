@@ -93,6 +93,7 @@ const char* scWrapIf( const char* s1, const char* s2, const char* tween);
 const char* strtprintf( const char *format, ...);
 const char* strtvprintf( const char *format, va_list ap=NULL);
 SI     FC strlstin( const char *list, const char *str);
+const char* strOrdinal( int number);
 
 #if 0	// out of service
 x const int STRTRIGHT = 0;  // truncate right end of string  (keep first char)
@@ -146,109 +147,6 @@ int strReplace( char* str, const char* sOld, const char* sNew,
 char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 
-
-#if 0
-/////////////////////////////////////////////////////////////////////////////
-// class CWString -- Wrightsoft extended CString
-/////////////////////////////////////////////////////////////////////////////
-class CWString : public CString
-{
-public:
-// constructors (same as CString)
-	CWString()							 : CString() {}
-	CWString( const CString& stringSrc)	 : CString(stringSrc) {}
-	CWString( TCHAR ch, int nRepeat = 1) : CString( ch, nRepeat) {}
-	CWString( LPCSTR lpsz)			 	 : CString( lpsz) {}
-	CWString( LPCWSTR lpsz)				 : CString( lpsz) {}
-	CWString( LPCTSTR lpch, int nLength) : CString( lpch, nLength) {}
-	CWString( const unsigned char* psz)	 : CString( psz) {}
-
-    ~CWString() {}
-
-	CWString Set( const char* s, int len=INT_MAX);
-	CWString Fill( const char* s, int len=-1);
-	CWString Format( LPCTSTR lpszFormat, ...);
-	CWString Format( UINT nFormatID, ...);
-	CWString FormatV( LPCTSTR lpszFormat, va_list arglist);
-	CWString FmtIfV( LPCTSTR fmtNonBlank, LPCTSTR fmtBlank, va_list argList);
-	CWString FmtIf( LPCTSTR fmtNonBlank, LPCTSTR fmtBlank, ...);
-	CWString FmtForWhat( const char* what, const char* fmt, ...);
-	CWString FmtFloatDTZ( double v, int maxPrec, int minPrec=0);
-	CWString DropTrailing0s( int minPrec=0);
-	CWString CSV( const char* s);
-	CWString CSV( double v, int maxPres, int minPrec=0);
-	CWString CSV( float v, int maxPres, int minPrec=0);
-	CWString CSV( int v);
-	CWString PathParts( int parts) const;
-	int CWString::SplitPfx( CWString& sPfx, CWString& sMain, const char* delim="|") const;
-	BOOL Piece( CWString &sRet, int iB, const char* delim="|", int iE=-1,
-		int* pNPRet=NULL) const;
-	inline CWString Piece(	int iB, const char* delim="|", int iE= -1) const
-	{	CWString t;	Piece( t, iB, delim, iE); return t; }
-	int PieceCount(	const char* delim="|", int *pNNonBlank=NULL) const;
-	static int PieceFindHelper( const char* s, const char* sFind,
-		const char* delim="|", int brk=-1, CWString* pFound=NULL);
-	inline int PieceFind( const char* s, const char* delim="|", int brk=-1,
-		CWString* pFound=NULL) const
-	{	return PieceFindHelper( s, *this, delim, brk, pFound); }
-	inline int PieceFind2( const char* sFind, const char* delim="|", int brk=-1,
-		CWString* pFound=NULL) const
-	{	return PieceFindHelper( *this, sFind, delim, brk, pFound); }
-	CWString PieceDelimPad( int nPReq, int nPHave=-1, const char* delim="|");
-	CWString PieceSet( const char* s, int iB, const char* delim="|", int iE=-1);
-	CWString PieceDel( int iB, const char* delim="|", int iE=-1);
-	CWString PieceAdd( const char* s, int iB=-3, const char* delim="|");
-	BOOL PieceAddUniq( const char* s, int iB=-3, const char* delim="|");
-	CWString PieceStringFromNullSeparated( const char* s, int len=-1,
-		const char* delim="|");
-	CWString PieceFormatList( int* pCount=NULL, const char* last="and",
-		const char* delim="|") const;
-	CWString PieceTrim( const char* delim="|") const;
-	CWString& Trim();
-	CWString& CatIf( const char* s, const char* brk=" ");
-	BOOL IsBlank() const {  return ::IsBlank( *this); }
-	CWString& MakeLower() { CString::MakeLower(); return *this; }
-	CWString& MakeUpper() { CString::MakeUpper(); return *this; }
-	CWString DoubleDelim( const char* delim);
-	CWString TranslateEscapes();
-	CWString DeBar();
-	CWString DeWS();
-	CWString Case( const char toCases[ 3]);
-	int ReplaceNoCase( const char* sOld, const char* sNew);
-	int FindNoCase( const char* str) const;
-	CWString& Replace2( char cFrom, char cTo, int options=0);
-	CWString& RemoveCRLF();
-};		// class CWString
-
-// handy global temporary CWString fcns
-inline CWString tTrim( const char* s)	// note: s=NULL OK (returns "")
-{	return CWString( s).Trim(); }
-inline CWString tCopy( const char* s)	// note: s=NULL OK (returns "")
-{	return CWString ( s); }
-CWString tCase( const char* s, const char toCases[ 3]);
-CWString tFormatV( LPCTSTR lpszFormat, va_list ap);
-CWString tFormat( LPCTSTR lpszFormat, ...);
-CWString tFmtIf( LPCTSTR fmtNonBlank, LPCTSTR fmtBlank, ...);
-inline CWString tFmtFloatDTZ( double v, int maxPrec, int minPrec=0)
-{	return CWString().FmtFloatDTZ( v, maxPrec, minPrec); }
-inline CWString tMsgPfx( const char* msgPfx, const char* delim=": ")
-{	return tFmtIf( "%s%s", "", msgPfx, delim); }
-
-// tPluralize: form plural of word
-CWString tPluralize( const char* word, bool bPlural=true);
-// tPluralize variants count as int and float
-inline CWString tPluralize( const char* word, int count)
-{	return tPluralize( word, count != 1); }
-inline CWString tPluralize( const char* word, float count)
-{	return tPluralize( word, fabs( count-1.f) < 0.001); }
-// tPluralize variants: return "1 zone" or "2 zones"
-inline CWString tFmtPlural( int count, const char* word,
-		const char* fmt="%d %s")
-{	return tFormat( fmt, count, tPluralize( word, count)); }
-inline CWString tFmtPlural( float count, const char* word,
-	const char* fmt="%0.2f %s")
-{	return tFormat( fmt, count, tPluralize( word, count)); }
-#endif
 
 #endif	// _STRPAK_H
 

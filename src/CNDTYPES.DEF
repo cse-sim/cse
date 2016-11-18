@@ -377,7 +377,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 #if 1
 			GENERIC "Generic"				// general generic (parameterized by EF and vol)
 			UEF2GENERIC "UEF2Generic"			// experimental UEF=2
-			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports re-existing test cases)
+			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports pre-existing test cases)
 #else
 x			GENERICRESFRAC35 "GenericResFrac35"
 x			GENERICRESFRAC45 "GenericResFrac45"

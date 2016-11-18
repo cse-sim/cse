@@ -2296,10 +2296,10 @@ setFsVAL:
 			// search specified basAnc for record with that name.  If > 1 found, use the one whose owning RATE is open per xStk.
 			if (ratLuCtx( (BP)c->b, p, c->id, &e) != RCOK)	// local.  if not found...
 			{
-				xSp->fs[xSp->j] |= FsERR;			// say msg issued for field (eg suppress "no ___ given" if RQD)
+				xSp->fs[xSp->j] |= FsERR;		// say msg issued for field (eg suppress "no ___ given" if RQD)
 				return perNx(NULL);				// skip input to nxt stmt (ratLuCtx issued message).
 			}
-			*(SI *)xSp->p = e->ss;      			// found.  Store subscript.
+			*(SI *)xSp->p = e->ss;      		// found.  Store subscript.
 
 			// also treat as deferred reference so verified still good at RUN -- in case record deleted later
 			drefAdd(p);				// add dref to basAnc entry named *p; uses xSp. local.
@@ -4711,22 +4711,6 @@ const char* FC quifnn( char *s)	// quote if not null, & supply leading space
 	return (s && *s)  ?  strtprintf( " '%s'", s)  :  "";
 }								// quifnn
 //===========================================================================
-const char* FC ordinal( int number)		// convert number to string in Tmpstr with st, rd, th as appropriate
-{
-	static const char *cases[] = {"%dth", "%dst", "%dnd", "%drd"};
-	int caseNr;
-	int mod100 = number % 100;
-	if (mod100 > 10 && mod100 < 20)	// for 11, 12, 13, 111, 211...
-		caseNr = 0;			// say 11th not 11st ...
-	else
-		caseNr = number % 10;
-	if (caseNr > 3)
-		caseNr = 0;
-	return strtprintf( cases[caseNr], number);
-}						// ordinal
-
-/*lint +e507 "size incompatibility" always produced by offsetof */
-/*lint +e569 "Loss of info (16 bits to 15 bits)" produced by offsetof */
 
 // end of cul.cpp
 

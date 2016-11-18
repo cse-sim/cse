@@ -2,7 +2,7 @@
 
 DHWSYS constructs an object representing a domestic hot water system consisting of one or more hot water heaters, storage tanks, loops, and pumps (DHWHEATER, DHWTANK, DHWLOOP, and DHWPUMP, see below) and a distribution system characterized by loss parameters. This model is based on Appendix B of the 2016 Residential ACM Reference Manual. This version is preliminary, revisions are expected.
 
-The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to DHWSYS that preceeds them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
+The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to DHWSYS that precedes them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
 
 -   DHWSYS
     -   DHWHEATER
@@ -45,7 +45,16 @@ Specifies hourly hot water use (at the point of use)
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  gal         $\ge$ 0           0             No             hourly
+  gal         $\ge$ 0            0             No             hourly
+
+**wsDayUse=*????***
+
+  Specifies a day use schedule???
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+    gal         $\ge$ 0            0             No             hourly
+
 
 **wsTUse=*float***
 
@@ -53,7 +62,15 @@ Specifies hot water use temperature (at the point of use)
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        $>$ 32 ^o^F       130           No             hourly
+  ^o^F        $>$ 32 ^o^F       120           No             hourly
+
+**wsTSetPoint=*float***
+
+  Specifies hot water setpoint temperature
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+    ^o^F        $>$ 32 ^o^F         wsTUse           No             hourly
 
 **wsParElec=*float***
 
@@ -97,7 +114,7 @@ Specifies the hourly recirculation distribution loss. TODO: the implementation w
 
 **wsElecMtr=*mtrName***
 
-Name of METER object, if any, by which DHWSYS\* electrical energy use is recorded (under end use DHW). In addition, wsElecMtr provides the default whElectMtr selection for all DHWHEATERs and DHWPUMPs in this DHWSYS.
+Name of METER object, if any, to which DHWSYS\* electrical energy use is recorded (under end use DHW). In addition, wsElecMtr provides the default whElectMtr selection for all DHWHEATERs and DHWPUMPs in this DHWSYS.
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
@@ -105,7 +122,7 @@ Name of METER object, if any, by which DHWSYS\* electrical energy use is recorde
 
 **wsFuelMtr =*mtrName***
 
-Name of METER object, if any, by which DHWSYS’s fuel energy use is reco\*rded (under end use DWH). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default whFuelMtr choice for DHWHEATERs in this DHWSYS.
+Name of METER object, if any, to which DHWSYS’s fuel energy use is recorded (under end use DWH). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default whFuelMtr choice for DHWHEATERs in this DHWSYS.
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
@@ -135,5 +152,3 @@ Optionally indicates the end of the DHWSYS definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
-
-

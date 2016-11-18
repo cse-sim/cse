@@ -32,6 +32,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>	// USI SI LI
+#include <unordered_set>
 
 #include <ancrec.h>	// record: base class for rccn.h classes
 #include <rccn.h>	// TOPRATstr ZNRstr SFIstr SDIstr
@@ -2480,6 +2481,85 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 {	RiB.an_SetCULTLink( rpT);
 	XiB.an_SetCULTLink( exT);
 }		// SetCULTLinks
+//============================================================================================
+class CULTDOC
+{
+public:
+	CULTDOC( int options) : cu_options( options) {}
+	int cu_Doc();
+
+private:
+	int cu_options;
+	std::unordered_set< std::string> cu_doneList;
+	int cu_Doc1( const CULT* pCULT, const char* name, const char* parentName=NULL);
+};		// class CULTDOC
+//----------------------------------------------------------------------------
+int CULTDOC::cu_Doc()
+{
+	return cu_Doc1( cnTopCult, "Top");
+
+}		// CULTDOC::cu_Doc
+//----------------------------------------------------------------------------
+int CULTDOC::cu_Doc1(	// document CULT table and children
+	const CULT* pCULT,
+	const char* name,
+	const char* parentName /*=NULL*/)
+// returns 0 if info displayed
+//         1 if skipped (already seen)
+{
+	int ret = 0;
+	std::string nameS( name);
+
+	std::unordered_set<std::string>::const_iterator doneIt = cu_doneList.find( nameS);
+	if (doneIt != cu_doneList.end() )
+		ret = 1;
+	else
+	{	printf( "\n\n%s", name);
+		if (parentName)
+			printf("    Parent: %s", parentName);
+		printf("\n");
+		const CULT* pCX = pCULT;
+		while (pCX->id)
+		{   if (pCX->cs != RATE)
+				pCX->cu_ShowDoc( cu_options);
+			pCX++;
+		}
+		pCX = pCULT;
+		while (pCX->id)
+		{   if (pCX->cs == RATE)
+				cu_Doc1( (const CULT*)pCX->p2, pCX->id, name);
+			pCX++;
+		}
+		cu_doneList.insert( nameS);
+	}
+    return ret;
+}       // CULTDOC::cu_Doc1
+//---------------------------------------------------------------------------
+int CULT::cu_ShowDoc(       // document this CULT
+    int options /*=0*/) const
+// returns 0 if info displayed
+//         1 if no display (id=="*" or NO_INP)
+{ 
+    options;
+	int ret = 0;
+	if (strcmp( id, "*") == 0
+	 || (f & NO_INP))
+		ret = 1;
+	else
+		printf( "   %s\n", id);
+
+    return ret;
+    
+}   // CULT::cu_ShowDoc
+//----------------------------------------------------------------------------
+int culShowDoc(			// public function: display all input
+    int options/*=0*/)
+{
+	CULTDOC cultDoc( options);		// local class
+	int ret = cultDoc.cu_Doc();
+    return ret;
+}       // culDoc1
+//=============================================================================
 
 /************************************************ rest of file is if-outs ***************************************************/
 
