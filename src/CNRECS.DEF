@@ -3595,8 +3595,8 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *prefix bt_
 
   *declare "RC bt_CkF();"
-  //*declare "virtual RC RunDup( const record* pSrc, int options=0);"
-  //*declare "RC bt_Init();"
+  *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *declare "RC bt_Init();"
   //*declare "RC bt_DoHour();"
 
   *i TI bt_meter;			// meter for system electricity production

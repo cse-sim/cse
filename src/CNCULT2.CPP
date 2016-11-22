@@ -65,6 +65,7 @@ LOCAL RC topGain();
 LOCAL RC topRSys();
 LOCAL RC topDHW();
 LOCAL RC topPV();
+LOCAL RC topBT();
 LOCAL RC topRadGainDist();
 LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, record* ownRec );
 
@@ -325,6 +326,7 @@ LOCAL RC topCkfI( int re)
 
 	E( topRSys() )			// RSYS
 	E( topPV() )			// PV
+	E( topBT() )            // BT
 
 	E( topZn3() )			// zones: added generated IZXFERs,
 
@@ -1400,6 +1402,19 @@ LOCAL RC topPV()		// check PVARRAY ... copy to run rat
 
 	return rc;
 }	// ::topPV
+//=============================================================================
+LOCAL RC topBT()		// check BATTERY ... copy to run rat
+{
+	RC rc = RCOK;
+
+	E(BtR.RunDup(BTiB));
+
+	BATTERY* pBT;
+	RLUP(BtR, pBT)
+		rc |= pBT->bt_Init();
+
+	return rc;
+}	// ::topBT
 //=============================================================================
 LOCAL RC topGain()	// check GAINs / copy to run rat
 {

@@ -61,6 +61,7 @@ extern anc<DHWDAYUSE> WDUiB;	// DHW daily use input records
 extern anc<DHWUSE> WUiB;		// DHW use input records
 
 extern anc<PVARRAY> PViB;		// PV array input records
+extern anc<BATTERY> BTiB;		// Battery input records
 
 extern anc<RFI> RfiB; 			// REPORTFILE input info
 extern anc<RFI> XfiB; 			// EXPORTFILE input info

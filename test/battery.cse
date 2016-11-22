@@ -1,0 +1,31 @@
+// Battery Test file
+
+WfName="Boulder.epw"
+wuDays=0
+nSubSteps=1
+
+METER Elec0
+
+BATTERY "Base"
+  btMeter = Elec0
+
+EXPORTFILE "battery_out"
+  xfFileName="battery_out"
+  xfFileStat=OVERWRITE
+
+EXPORT
+  exExportFile="battery_out"
+  exType=UDT
+  exFreq=HOUR
+  exTitle="Battery Output"
+  exDayBeg=jan 1
+  exDayEnd=dec 31
+  exHeader=ColumnsOnly
+  ExportCol colhead="Day" colVal=@Top.dateStr
+  ExportCol colhead="Hour" colVal=@Top.iHr
+  ExportCol colhead="ST Hour" colVal=@Top.iHrST
+  ExportCol colhead="Base" colVal=@BATTERY["Base"].soe
+
+REPORT     rpType=MTR     rpMeter=Elec0    rpFreq=Month
+
+RUN
