@@ -2013,18 +2013,6 @@ static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 	CULT("btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
 	CULT("btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
 	CULT("btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
-	//CULT("pvModuleType", DAT,  PVARRAY_MODULETYPE, 0,    0, VEOI,   TYCH,  0,      C_PVMODCH_STD, N, N),
-	//CULT("pvCoverRefrInd", DAT, PVARRAY_COVREFRIND, 0,   0, VEOI,   TYFL,  0,      1.0f,   N, N),
-	//CULT("pvTempCoeff", DAT,   PVARRAY_TEMPCOEFF, 0,     0, VEOI,   TYFL,  0,      -0.0026f,  N, N),
-	//CULT("pvArrayType", DAT,   PVARRAY_ARRAYTYPE, 0,     0, VEOI,   TYCH,  0,      C_PVARRCH_FXDOR, N, N),
-	//CULT("pvTilt",      DAT,   PVARRAY_TILT,    0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
-	//CULT("pvAzm",       DAT,   PVARRAY_AZM,     0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
-	//CULT("pvGrndRefl",  DAT,   PVARRAY_GRNDREFL, 0,      0, VHRLY,  TYFL,  0,      0.2f,   N, N),
-	//CULT("pvGCR",       DAT,   PVARRAY_GCR,     0,       0, VEOI,   TYFL,  0,      0.4f,   N, N),
-	//CULT("pvDCtoACRatio", DAT, PVARRAY_DCACRAT, 0,       0, VEOI,   TYFL,  0,      1.1f,   N, N),
-	//CULT("pvInverterEff", DAT, PVARRAY_INVEFF,  0,       0, VEOI,   TYFL,  0,      0.96f,  N, N),
-	//CULT("pvSysLosses", DAT,   PVARRAY_SYSLOSS, 0,       0, VHRLY,   TYFL,  0,      0.14f,  N, N),
-	//CULT("pvUsePVWatts", DAT,  PVARRAY_USEPVWATTSDLL, 0, 0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 	CULT("endBATTERY",  ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// btT
