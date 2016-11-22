@@ -3605,6 +3605,7 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *s FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
   *r FLOAT_GEZ bt_maxCap    // maximum (usable) battery capacity in kWh
   *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
+  *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0) 
 
 *END		// BATTERY
 //=============================================================================
