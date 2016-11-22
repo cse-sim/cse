@@ -3607,7 +3607,8 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
   *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0)
   *s FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
-  *s FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW) 
+  *s FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
+  *s FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
 
 *END		// BATTERY
 //=============================================================================
