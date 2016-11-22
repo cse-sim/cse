@@ -60,7 +60,7 @@ The charging efficiency of storing electricity into the BATTERY system. A value 
 
 |**Units**|**Legal Range**  |**Default**|**Required**|**Variability**|
 |---------|-----------------|-----------|------------|---------------|
-|         |0 $\le$ x $\le$ 1|0.9        |No          |subhourly      |
+|         |0 $\le$ x $\le$ 1|0.975      |No          |subhourly      |
 
 **btDschgEff=*float***
 
@@ -68,7 +68,7 @@ The discharge efficiency for when the BATTERY system is discharging power. A val
 
 |**Units**| **Legal Range**   |**Default**|**Required**|**Variability**|
 |---------|-------------------|-----------|------------|---------------|
-|         | 0 $\le$ x $\le$ 1 |   0.9     |     No     |subhourly      |
+|         | 0 $\le$ x $\le$ 1 |0.975      |     No     |subhourly      |
 
 **btMaxCap=*float***
 
@@ -76,7 +76,37 @@ This is the maximum amount of energy that can be stored in the BATTERY system in
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| KWhr    | x $\ge$ 0     | 1e11      |No          |subhourly      |
+| KWhr    | x $\ge$ 0     | 6         |No          |constant       |
+
+**btInitSOE=*float***
+
+The initial state of energy of the BATTERY system as a fraction of the total capacity.
+
+|**Units**|**Legal Range**    |**Default**|**Required**|**Variability**|
+|---------|-------------------|-----------|------------|---------------|
+|         | 0 $\le$ x $\le$ 0 |    0.5    |No          |constant       |
+
+**btInitCycles=*int***
+
+The number of cycles on the battery at the beginning of the run.
+
+<% if show_comments %>
+
+Note: a more robust life model will need not only cycle counts but cycles by depth of discharge to capture "shallow cycling" vs "deep cycling". A further enhancement is to capture "time at temperature". We may want to look into the battery literature and also more into this application to better understand what kind of life model may be a good fit in terms of information requirements vs fidelity.
+
+<% end %>
+
+<!--
+# Implementation idea for ERB-based table generator
+CsvTable.new(header: true).render(<<TABLE)
+Units,            Legal Range, Default, Required, Variability
+number of cycles, $\ge$ 0,     0,       No,       runly
+TABLE
+-->
+
+|**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
+|---------|---------------|-----------|------------|---------------|
+|number of cycles|x $\ge$ 0|0         |No          |runly          |
 
 **btMaxChgPwr=*float***
 
@@ -94,7 +124,7 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 |---------|---------------|-----------|------------|---------------|
 | kW      | x $\ge$ 0     | 25e3      |No          |subhourly      |
 
-**btRqstChg=*float***
+**btChgReq=*float***
 
 The power request to charge (or discharge if negative) the battery in kilowatts. The value of this parameter gets limited by the physical limitations of the battery and can be set by an expression to allow complex energy management/dispatch strategies.
 
