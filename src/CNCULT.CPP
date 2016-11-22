@@ -2010,6 +2010,8 @@ static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 	CULT("btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),
 	CULT("btInitSOE",    DAT,   BATTERY_INITSOE, 0,       0, VEOI,   TYFL,  0,      0.5f,   N,   N),
 	CULT("btInitCycles", DAT,   BATTERY_INITCYCLES,0,     0, VEOI,   TYFL,  0,      0.f,    N,   N),
+	CULT("btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+	CULT("btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
 	//CULT("pvModuleType", DAT,  PVARRAY_MODULETYPE, 0,    0, VEOI,   TYCH,  0,      C_PVMODCH_STD, N, N),
 	//CULT("pvCoverRefrInd", DAT, PVARRAY_COVREFRIND, 0,   0, VEOI,   TYFL,  0,      1.0f,   N, N),
 	//CULT("pvTempCoeff", DAT,   PVARRAY_TEMPCOEFF, 0,     0, VEOI,   TYFL,  0,      -0.0026f,  N, N),
