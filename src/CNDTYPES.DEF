@@ -504,6 +504,7 @@ x			GENERICRESFRAC55 "GenericResFrac55"
               COOK		"Cook"	// cooking
               USR1      "User1"	// User-defined catagories 1 and 2 for user-defined breakdown of GAINs
               USR2      "User2" //
+			  BT		"BT"	// battery energy
               PV        "PV"	// CAUTION: code (cnguts,cgresult.cpp) assumes C_ENDUSECH_PV is largest.
 			}
 

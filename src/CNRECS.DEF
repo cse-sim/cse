@@ -3591,6 +3591,21 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
 
 *END		// PVARRAY
 //=============================================================================
+RECORD BATTERY "Battery" *RAT		// input / runtime battery
+  *prefix bt_
+
+  *declare "RC bt_CkF();"
+  //*declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  //*declare "RC bt_Init();"
+  //*declare "RC bt_DoHour();"
+
+  *i TI bt_meter;			// meter for system electricity production
+  *f ENDUSECH bt_endUse		// end use of energy. defataults to "BT"
+  *s FLOAT bt_chgEff        // battery efficiency while charging
+  *s FLOAT bt_dschgEff      // battery efficiency while discharging
+
+*END		// BATTERY
+//=============================================================================
 RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
    *prefix gn_
    *declare "virtual RC RunDup( const record* pSrc, int options=0);"
@@ -3649,6 +3664,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
     float cook		// cooking
     float usr1		// user-defined category 1
     float usr2		// user-defined catagory 2. code may assume is last member.
+	float bt		// battery output (negative)
     float pv		// photovoltaic array output (negative)
  // cost results. for now (11-93), must report with probes. Code (cnguts) may assume in this order, after uses.
     float cost		// accumulated  tot*rate
