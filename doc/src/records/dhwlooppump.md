@@ -34,12 +34,10 @@ Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is reco
   ----------- ------------------- --------------------------- -------------- -----------------
               *name of a METER*   *Parent DHWSYS wsElecMtr*   No             constant
 
-**endDHWPump**
+**endDHWLOOPPUMP**
 
 Optionally indicates the end of the DHWPUMP definition.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
-
-

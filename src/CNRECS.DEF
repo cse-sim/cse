@@ -3157,8 +3157,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    used by e.g. HPWH (includes ws_hwUse)
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
-  *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s), gal
-  *i TI ws_FXhwMtri;		// DHWMTR for hot water use at fixtures, gal
+  *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
+  *i TI ws_FXhwMtri;		// DHWMTR for hot water use at fixtures (= ws_fxUseMix), gal
   *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolve DHWMTR pointers
 
 						// hot or mix water use for this DHWSYS (w/o ws_mult)

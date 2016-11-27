@@ -318,7 +318,7 @@ Parasitic electricity power, included in electrical energy use of all DHWHEATERs
   ----------- ----------------- ------------- -------------- -----------------
   W           $\ge$ 0           0             No             hourly
 
-whElecMtr=*mtrName*
+**whElecMtr=*mtrName***
 
 Name of METER object, if any, by which DHWHEATER electrical energy use is recorded (under end use DHW).
 
@@ -328,7 +328,7 @@ Name of METER object, if any, by which DHWHEATER electrical energy use is record
 
 **whFuelMtr =*mtrName***
 
-Name of METER object, if any, by which DHWHEATER fuel energy use is recorded.
+Name of METER object, if any, by which DHWHEATER fuel energy use is recorded (under end use DHW).
 
   **Units**   **Legal Range**     **Default**                 **Required**   **Variability**
   ----------- ------------------- --------------------------- -------------- -----------------

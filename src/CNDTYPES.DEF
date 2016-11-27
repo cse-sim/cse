@@ -395,7 +395,7 @@ x			GENERICRESFRAC55 "GenericResFrac55"
 							//   used for checking array dim
 		  }
 *choicb DHWEUXCH {			// extended hot water end uses
-							// same as Total + Unknown + DHWEUX
+							// same as Total + Unknown + DHWEUCH
 			TOTAL "Total"
 			UNKNOWN "Unknown"
 			FAUCET "Faucet"
