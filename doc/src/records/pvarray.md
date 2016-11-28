@@ -10,13 +10,13 @@ Name of photovoltaic array. Give after the word PVARRAY.
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        No             constant
 
-**pvElecMeter=*choice***
+**pvElecMtr=*choice***
 
 Name of meter by which this PVARRAY's AC power out is recorded. Generated power is expressed as a negative value.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              meter name        *none*        No             constant
+              *name of a METER*     *none*        No             constant
 
 **pvEndUse=*choice***
 
@@ -75,8 +75,8 @@ Type of module to model. The module type determines the refraction index and tem
             **Range**
   --------- ----------- ----------- ------------ ---------------
             Standard \  Standard    No             constant
-            Premium \ 
-            ThinFilm \ 
+            Premium \
+            ThinFilm \
             Custom
 
   --------------------------------------------------------------
@@ -110,7 +110,7 @@ The type of array describes mounting and tracking options. Roof mounted arrays h
   **Units** **Legal Range**  **Default**   **Required** **Variability**
   --------- ---------------- ------------- ------------ ---------------
             FixedOpenRack,   FixedOpenRack No           constant
-            FixedRoofMount, 
+            FixedRoofMount,
             OneAxisTracking,
             TwoAxisTracking
 

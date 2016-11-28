@@ -2,6 +2,15 @@
 
 DUCTSEG defines a duct segment. Each RSYS has at most one return duct segment and at most one supply duct segment. That is, DUCTSEG input may be completely omitted to eliminate duct losses.
 
+**dsName**
+
+Optional name of duct segment; give after the word “DUCTSEG” if desired.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+              *63 characters*   *none*        No             constant
+
+
 **dsTy=*choice***
 
 Duct segment type.
@@ -145,5 +154,3 @@ Optionally indicates the end of the DUCTSEG definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
-
-

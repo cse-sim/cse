@@ -472,7 +472,7 @@ dhwheater    Parent: dhwsys
    whVol
    whEF
    whResHtPwr
-   whResTHPwr2
+   whResHtPwr2
    whLDEF
    whHPAF
    whEff

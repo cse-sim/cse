@@ -12,50 +12,52 @@ Optional name of HVAC system; give after the word “RSYS” if desired.
 
 **rsType=*choice***
 
-Specifies type of system.
+Type of system.
 
-  --------------- ---------------------------------------
-  ACFURNACE       Compressor-based cooling and fuel-fired
-                  heating. Primary heating input energy
-                  is accumulated to end use HTG of meter
-                  rsFuelMtr.
+--------------------------------------------------------------------
+**rsType**      **Description**
+--------------  --------------------------------------------------
+ACFURNACE       Compressor-based cooling and fuel-fired
+                heating.\
+                Primary heating input energy
+                is accumulated to end use HTG of meter
+                rsFuelMtr.
 
-  ACRESISTANCE    Compressor-based cooling and electric
-                  (“strip”) heating. Primary heating
-                  input energy is accumulated to end use
-                  HTG of meter rsElecMtr.
+ACRESISTANCE    Compressor-based cooling and electric
+                (“strip”) heating. Primary heating
+                input energy is accumulated to end use
+                HTG of meter rsElecMtr.
 
-  ASHP            Air-source heat pump (compressor-based
-                  heating and cooling). Primary
-                  (compressor) heating input energy is
-                  accumulated to end use HTG of meter
-                  rsElecMtr. Auxililary heating input
-                  energy is accumulated to end use HPHTG
-                  of meter rsElecMtr.
+ASHP            Air-source heat pump (compressor-based
+                heating and cooling). Primary
+                (compressor) heating input energy is
+                accumulated to end use HTG of meter
+                rsElecMtr. Auxiliary heating input
+                energy is accumulated to end use HPHTG
+                of meter rsElecMtr.
 
-  AC              Compressor-based cooling; no heating.
+ASHPHYDRONIC    Air-to-water heat pump with hydronic distribution.
+                Compressor performance is approximated using
+                the air-to-air model with adjusted
+                efficiencies.
 
-  FURNACE         Fuel-fired heating. Primary heating
-                  input energy is accumulated to end use
-                  HTG of meter rsFuelMtr.
+AC              Compressor-based cooling; no heating.
 
-  RESISTANCE      Electric heating. Primary heating input
-                  energy is accumulated to end use HTG of
-                  meter rsElecMtr
-  --------------- ---------------------------------------
+FURNACE         Fuel-fired heating. Primary heating
+                input energy is accumulated to end use
+                HTG of meter rsFuelMtr.
 
-  ----------------------------------------------------------------
-  **Units** **Legal**     **Default** **Required** **Variability**
-            **Range**
-  --------- ------------- ----------- ------------ ---------------
-            ACFURNACE,    No          constant
-            ACRESISTANCE,
-            ACFURNACE
-            ASHP, AC,
-            FURNACE,
-            RESISTANCE
+RESISTANCE      Electric heating. Primary heating input
+                energy is accumulated to end use HTG of
+                meter rsElecMtr
+------------------------------------------------------------------
 
-  ----------------------------------------------------------------
+
+
+  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
+  ----------- ---------------------- ------------- -------------- -----------------
+              *one of above choices*   ACFURNACE        No             constant
+
 
 **rsDesc=*string***
 
@@ -88,11 +90,11 @@ Specifies systems heating/cooling availability during simulation.
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
-              OFF, HEAT, COOL, AUTO   AUTO          No             hourly
+              OFF, HEAT, COOL, AUTO    AUTO          No             hourly
 
 **rsPerfMap=*choice***
 
-Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_<rsName>.csv. This is a debugging capabilitiy that is not necessarily maintained.
+Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -161,11 +163,12 @@ Nominal heating temperature rise (across system, not zone) used during autosizin
 
 **rsFxCapH=*float***
 
-Heating autosizing capacity factor. rsCapH is set to rsFxCapH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
+Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 are set to rsFxCapH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
               *x* $>$ 0         1.4           No             constant
+
 
 **rsFanPwrH=*float***
 
@@ -192,7 +195,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^
 
   **Units**   **Legal Range**           **Default**            **Required**   **Variability**
   ----------- ------------------------- ---------------------- -------------- -----------------
-  Btu/Wh      *AUTOSIZE* or *x* $>$ 0   Estimate from rsCapC   no             constant
+  Btu/Wh      *AUTOSIZE* or *x* $>$ 0   Calculated from rsCapC   no             constant
 
 **rsCap35=*float***
 
@@ -200,7 +203,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^
 
   **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
   ----------- ----------------- ------------------------------------ -------------- -----------------
-  Btu/Wh      *x* $>$ 0         Estimated from rsCap47 and rsCap17   no             constant
+  Btu/Wh      *x* $>$ 0         Calculated from rsCap47 and rsCap17   no             constant
 
 **rsCap17=*float***
 
@@ -208,7 +211,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^
 
   **Units**   **Legal Range**   **Default**              **Required**   **Variability**
   ----------- ----------------- ------------------------ -------------- -----------------
-  Btu/Wh      *x* $>$ 0         Estimated from rsCap47   no             constant
+  Btu/Wh      *x* $>$ 0         Calculated from rsCap47   no             constant
 
 **rsCOP47=*float***
 
@@ -226,7 +229,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   **Units** **Legal** **Default**       **Required** **Variability**
             **Range**                                        
   --------- --------- ----------------- ------------ ---------------
-            *x* $>$ 0 Estimated from    no           constant
+            *x* $>$ 0 Calculated from    no           constant
                       rsCap35, rsCap47,
                       rsCap17, rsCOP47,
                       and rsCOP17
@@ -239,7 +242,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
   **Units**   **Legal Range**   **Default**                                   **Required**   **Variability**
   ----------- ----------------- --------------------------------------------- -------------- -----------------
-              *x* $>$ 0         Estimated from rsHSPF, rsCap47, and rsCap17   no             constant
+              *x* $>$ 0          Calculated from rsHSPF, rsCap47, and rsCap17   no             constant
 
 **rsCapAuxH=*float***
 
@@ -248,6 +251,14 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If autosized
   **Units**   **Legal Range**             **Default**   **Required**   **Variability**
   ----------- --------------------------- ------------- -------------- -----------------
   Btu/hr      *AUTOSIZE* or *x* $\ge$ 0   0             no             constant
+
+**rsFxCapAuxH=*float***
+
+  Auxiliary heating autosizing capacity factor. If AUTOSIZEd, rsCapAuxH is set to rsFxCapAuxH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+              *x* $>$ 0             1           No             constant
 
 **rsCOPAuxH=*float***
 
@@ -334,6 +345,100 @@ Cooling fan power.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   W/cfm       *x* $\ge$ 0       .365          No             constant
+
+**rsASHPLockOutT=*float***
+
+  Source air dry-bulb temperature below which the air source heat pump compressor does not operate.
+
+  **Units**   **Legal Range**   **Default**         **Required**   **Variability**
+  ----------- ----------------- ------------------- -------------- -----------------
+  ^o^F                          (no lockout)          No             hourly
+
+
+**rsCdH=*float***
+
+  Heating cyclic degradation coefficient, valid only for compressor-based heating (heat pumps).
+
+  ---------------------------------------------------------------------------------------------
+  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
+  ----------- --------------------- -------------------------- -------------- -----------------
+                0 $\le$ x $\le$ 0.5  ASHPHYDRONIC: 0.25\           No             hourly
+                                     ASHP: derived from rsHSPF
+  ---------------------------------------------------------------------------------------------
+
+  **rsCdC=*float***
+
+  Cooling cyclic degradation coefficient, valid for configurations having compressor-based cooling.
+
+
+  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
+  ----------- --------------------- -------------------------- -------------- -----------------
+                0 $\le$ x $\le$ 0.5  0                          No             hourly
+
+
+  **rsDSEH=*float***
+
+  Heating distribution system efficiency.  If given, (1-rsDSEH) of RSYS heating output is discarded.  Cannot be combined with more detailed DUCTSEG model.
+
+
+  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
+  ----------- --------------------- -------------------------- -------------- -----------------
+                0 < x < 1             (use DUCTSEG model)            No             hourly
+
+  **rsDSEC=*float***
+
+  Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling output is discarded.  Cannot be combined with more detailed DUCTSEG model.
+
+
+  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
+  ----------- --------------------- -------------------------- -------------- -----------------
+                0 < x < 1             (use DUCTSEG model)            No             hourly  
+
+
+**rsOAVType=*choice***
+
+Type of integrated outside air ventilation (OAV) included in this RSYS.  OAV systems use the central system fan to circulate outdoor air (e.g. for night ventilation).
+
+  ---------  ---------------------------------------
+  NONE       No OAV capabilities
+
+  FIXED      Fixed-flow OAV (aka SmartVent)
+
+  VARIABLE   Variable flow OAV (aka NightBreeze)
+  ---------  ---------------------------------------
+
+  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
+  ----------- ----------------------- ------------- -------------- -----------------
+               NONE, FIXED, VARIABLE    NONE          No             constant
+
+
+    - rsOAVFanPwr
+    - rsOAVReliefZn
+    - rsOAVTDbInlet
+    - rsOAVTdiff
+    - rsOAVType
+    - rsOAVVfDs
+    - rsOAVVfMinF
+
+
+**rsParElec=*float***
+
+Parasitic electrical power.  rsParElec is unconditionally accumulated to rsElecMtr (if specified) and has no other effect.
+
+**Units**   **Legal Range**       **Default**                **Required**   **Variability**
+----------- --------------------- -------------------------- -------------- -----------------
+  W                                0                           No             hourly  
+
+
+**rsParFuel=*float***
+
+Parasitic fuel use.  rsParFuel is unconditionally accumulated to rsFuelMtr (if specified) and has no other effect.
+
+
+**Units**   **Legal Range**       **Default**                **Required**   **Variability**
+----------- --------------------- -------------------------- -------------- -----------------
+Btuh                                 0                          No             hourly  
+
 
 **rsRhIn=*float***
 
