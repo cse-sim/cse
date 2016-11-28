@@ -12,13 +12,6 @@ RC BATTERY::bt_CkF()
 	return rc;
 }	// BATTERY::bt_CkF
 
-RC BATTERY::bt_Init()
-{
-	RC rc = RCOK;
-	bt_soe = 42.0;
-	return rc;
-}	// BATTERY::bt_Init
-
 RC BATTERY::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
 	int options/*=0*/)
@@ -26,3 +19,17 @@ RC BATTERY::RunDup(		// copy input to run record; check and initialize
 	RC rc = record::RunDup(pSrc, options);
 	return rc;
 }	// BATTERY::RunDup
+
+RC BATTERY::bt_Init()
+{
+	RC rc = RCOK;
+	bt_soe = bt_initSOE;
+	bt_cycles = bt_initCycles;
+	return rc;
+}	// BATTERY::bt_Init
+
+RC BATTERY::bt_DoHour()
+{
+	RC rc = RCOK;
+	return rc;
+}	// BATTERY::bt_DoHour()
