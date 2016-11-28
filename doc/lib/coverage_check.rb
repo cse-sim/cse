@@ -142,6 +142,15 @@ module CoverageCheck
     end
     n
   end
+  # (Map String (Set String)) -> (Map String (Set String))
+  # Adjust a record input set to drop all fields that end with "Name"
+  DropNameFields = lambda do |ris|
+    n = {}
+    ris.each do |k, vs|
+      n[k] = vs.reject {|v| v.end_with?("Name")}.to_set
+    end
+    n
+  end
   # (Map String (Set String)) (Map String (Set String)) ?Bool ->
   # (Or Nil
   #     (Record :records_in_1st_not_2nd (Or Nil (Set String))
