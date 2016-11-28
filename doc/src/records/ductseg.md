@@ -102,7 +102,7 @@ Air dry-bulb temperature surrounding duct segment. <!-- TODO: what is humidity? 
 
   **Units**   **Legal Range**   **Default**   **Required**                         **Variability**
   ----------- ----------------- ------------- ------------------------------------ -----------------
-  ^o^F        *unrestricted*    *none*        Required if *sfExCon* = SPECIFIEDT   hourly
+  ^o^F        *unrestricted*    *none*        Required if *sfExCnd* = SPECIFIEDT   hourly
 
 Duct insulation is modeled as a pure conductance (no mass).
 
