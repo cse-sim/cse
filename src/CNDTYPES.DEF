@@ -377,7 +377,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 #if 1
 			GENERIC "Generic"				// general generic (parameterized by EF and vol)
 			UEF2GENERIC "UEF2Generic"			// experimental UEF=2
-			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports re-existing test cases)
+			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports pre-existing test cases)
 #else
 x			GENERICRESFRAC35 "GenericResFrac35"
 x			GENERICRESFRAC45 "GenericResFrac45"
@@ -395,7 +395,7 @@ x			GENERICRESFRAC55 "GenericResFrac55"
 							//   used for checking array dim
 		  }
 *choicb DHWEUXCH {			// extended hot water end uses
-							// same as Total + Unknown + DHWEUX
+							// same as Total + Unknown + DHWEUCH
 			TOTAL "Total"
 			UNKNOWN "Unknown"
 			FAUCET "Faucet"

@@ -198,8 +198,8 @@ Surface exterior absorptivity.
   **Units** **Legal**   **Default** **Required**            **Variability**
             **Range**
   --------- ----------- ----------- ----------------------- ---------------
-  (none)    0 $\le$ *x*     0.5     Required if *sfExCon* = monthly-
-            $\le$ 1                 AMBIENT or *sfExCon* =  hourly
+  (none)    0 $\le$ *x*     0.5     Required if *sfExCnd* = monthly-
+            $\le$ 1                 AMBIENT or *sfExCnd* =  hourly
                                     SPECIFIEDT
   -------------------------------------------------------------------------
 
@@ -238,15 +238,15 @@ Exterior air temperature.
 
   **Units**   **Legal Range**   **Default**   **Required**                         **Variability**
   ----------- ----------------- ------------- ------------------------------------ -----------------
-  ^o^F        *unrestricted*    *none*        Required if *sfExCon* = SPECIFIEDT   hourly
+  ^o^F        *unrestricted*    *none*        Required if *sfExCnd* = SPECIFIEDT   hourly
 
 **sfAdjZn=*znName***
 
-Name of adjacent zone; used only when sfExCon is ADJZN. Can be the same as the current zone.
+Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
 
   **Units**   **Legal Range**    **Default**   **Required**                          **Variability**
   ----------- ------------------ ------------- ------------------------------------- -----------------
-              name of a *ZONE*   *none*        Required when<br/>*sfExCon* = ADJZN   constant
+              name of a *ZONE*   *none*        Required when<br/>*sfExCnd* = ADJZN   constant
 
 **sfGrndRefl=*float***
 
@@ -287,16 +287,16 @@ The following tables summarize the defaults and legal ranges of surface members 
 
   sfInH       optional, default = 1.5
 
-  sfExH       optional, default per *sfExCon*
+  sfExH       optional, default per *sfExCnd*
 
   sfExCnd     optional, default = AMBIENT
 
-  sfExAbs     optional if *sfExCon* = AMBIENT or *sfExCon* = SPECIFIEDT
+  sfExAbs     optional if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT
               (default = .5), else n.a.
 
-  sfExT       **required if sfExCon = SPECIFIEDT; else n.a.**
+  sfExT       **required if sfExCnd = SPECIFIEDT; else n.a.**
 
-  sfAdjZn     **required if sfExCon = ADJZN; else n.a.**
+  sfAdjZn     **required if sfExCnd = ADJZN; else n.a.**
 
   sfGrndRefl  optional, default to grndRefl
   -----------------------------------------------------------------------

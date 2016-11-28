@@ -107,7 +107,7 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Diff
 
 **drExAbs=*float***
 
-Door exterior solar absorptivity. Applicable only if sfExCon of owning surface is AMBIENT or SPECIFIEDT.
+Door exterior solar absorptivity. Applicable only if sfExCnd of owning surface is AMBIENT or SPECIFIEDT.
 
   **Units**         **Legal Range**   **Default**              **Required**   **Variability**
   ----------------- ----------------- ------------------------ -------------- -----------------

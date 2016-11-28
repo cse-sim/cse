@@ -723,7 +723,7 @@ w          break;
 }			// lopNty4dt
 
 //==========================================================================
-void FC showProbeNames(SI showAll)
+void FC showProbeNames(int showAll)
 
 // display record and member names and info, for -p command line switch
 {

@@ -974,12 +974,12 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	else if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	// small storage HPWH model
 		// TODO: more specific checking for ASHPX
-		ignoreN( whenHs, DHWHEATER_LDEF, 0);
+		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
 		RC rc1 = requireN( whenHs, DHWHEATER_ASHPTY, 0);
 		rc |= rc1;
 		if (!rc1)
 		{	if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
-				rc |= requireN( "when whASHPType=Generic", DHWHEATER_EF, 0);
+				rc |= requireN( "when whASHPType=Generic", DHWHEATER_EF, DHWHEATER_VOL, 0);
 			else
 				ignoreN( whenHs, DHWHEATER_EF, DHWHEATER_ASHPRESUSE, 0);
 		}
@@ -998,7 +998,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	{	// small storage electric resistance (HPWH model)
 		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_ASHPTY,
 			DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI, DHWHEATER_ASHPRESUSE, 0);
-		rc |= require( DHWHEATER_VOL, whenHs);
+		rc |= requireN( whenHs, DHWHEATER_EF, DHWHEATER_VOL, 0);
 		if (!IsSet( DHWHEATER_RESHTPWR2))
 			wh_resHtPwr2 = wh_resHtPwr;		// lower element power defaults from upper
 	}
@@ -1006,7 +1006,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	{	// T24DHW.DLL model
 		//   ASHPX inputs ignored
 		ignoreN( whenHs, DHWHEATER_ASHPTY, DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI,
-			DHWHEATER_ASHPRESUSE, 0);
+			DHWHEATER_ASHPRESUSE, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
 
 		if (wh_EF == 1.f)
 		{	// special case: "ideal" behavior (no losses)
@@ -1025,7 +1025,9 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	}
 
 	if (wh_IsStorage())
-	{	if (!IsSet( DHWHEATER_VOL))
+	{	// note wh_vol is required in some cases
+        //   see above
+        if (!IsSet( DHWHEATER_VOL))
 			wh_vol = 50.f;
 		rc |= limitCheck( DHWHEATER_VOL, .1, 10000., 2., 500.);
 	}

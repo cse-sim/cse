@@ -69,6 +69,6 @@ RC FC   perNxV( int isWarn, const char* msg, va_list ap);
 void FC curLine( SI retokPar, USI *pFileIx, USI *pline, USI *pcol, char *s, USI sSize);
 
 // cuprobe.cpp
-void FC showProbeNames(SI showAll);
+void FC showProbeNames(int showAll);
 
 // end of cuparse.h
