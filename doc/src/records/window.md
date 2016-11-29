@@ -20,7 +20,9 @@ Overall height of window (including frame).
   ----------- ----------------- ------------- -------------- -----------------
   ft          *x* $>$ 0         *none*        Yes            constant
 
-wnWidth=*float*Overall width of window (including frame).
+**wnWidth=*float***
+
+Overall width of window (including frame).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
