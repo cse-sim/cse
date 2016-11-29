@@ -201,11 +201,31 @@ End day for daylight saving time (assuming DT=Yes)
   ----------- ----------------- ---------------------------- -------------- -----------------
               *date*            *first Sunday in November*   No             constant
 
+## TOP Model Control Items
+
+**ventAvail=*choice***
+
+Indicates availability of outdoor ventilation strategies.  CSE cannot model simultaneously-operating alternative ventilation strategies.  For example, an RSYS central fan integrated (CFI) OAV system is never modeled while whole house fan ventilation is available.  ventAvail controls which ventilation mode, if any, is available for the current hour.  Note that mode availability means that the strategy could operate but may not operate due to other control assumptions.
+
+**Choice**    **Ventilation Strategy Available**
+------------- ---------------------------------
+NONE          None
+WHOLEBUILDING IZXFER (window and whole-house fan)
+RSYSOAV       RSYS central fan integrated (CFI) outside air ventilation (OAV)
+------------- ---------------------------------
+
+As noted, ventAvail is evaluated hourly, permitting flexible control strategy modeling.  The following example specifies that RSYSOAV (CFI) ventilation is available when the seven day moving average temperature is above 68 ^o^F, otherwise whole building ventilation is available between 7 and 11 PM, otherwise no ventilation.
+
+    ventAvail = (@weather.taDbAvg07 > 68)    ? RSYSOAV
+              : ($hour >= 19 && $hour <= 23) ? WHOLEBUILDING
+              :                                NONE
+
+  **Units**   **Legal Range**         **Default**    **Required**   **Variability**
+  ----------- ----------------------- -------------- -------------- -----------------
+              *Choices above*          WHOLEBUILDING           No         hourly
+
 ## TOP Weather Data Items
 
-<!--
-TODO ??Add material about STD files?  Probably not functional, don’t include?
--->
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
 
   ---------------- -----------------------------------------------------
@@ -459,5 +479,3 @@ Hourly portion of debug reporting control (generally an expression that evaluate
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 0             No             hourly
-
-

@@ -2975,7 +2975,7 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *i TI rs_OAVReliefZi		// OAV relief zone index
 *s FLOAT rs_OAVTdbInlet		// OAV inlet dry-bulb temp, F
 							//   default = from project weather data source (generally weather file)
-							// note: default varies subhourly but input expression is hourly
+							//   note: default varies subhourly but input expression is hourly
 *h FLOAT_GZ rs_OAVTdiff		// OAV temperature differential, F
 *i FLOAT_GEZ rs_OAVAvfDs	// OAV design air flow rate, cfm actual air
 *i FLOAT_GEZ rs_OAVFanPwr	// OAV design fan power (based on rs_OAVVfDs), W/cfm

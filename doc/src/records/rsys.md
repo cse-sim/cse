@@ -395,31 +395,85 @@ Cooling fan power.
                 0 < x < 1             (use DUCTSEG model)            No             hourly  
 
 
-**rsOAVType=*choice***
+  **rsOAVType=*choice***
 
-Type of integrated outside air ventilation (OAV) included in this RSYS.  OAV systems use the central system fan to circulate outdoor air (e.g. for night ventilation).
+  Type of central fan integrated (CFI) outside air ventilation (OAV) included in this RSYS.  OAV systems use the central system fan to circulate outdoor air (e.g. for night ventilation).
 
-  ---------  ---------------------------------------
-  NONE       No OAV capabilities
+  OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via the Top ventAvail item [top-model-control-items](#ventAvail).
 
-  FIXED      Fixed-flow OAV (aka SmartVent)
+  ---------  ---------------------------------------------------------------------------
+  NONE       No CFI ventilation capabilities
 
-  VARIABLE   Variable flow OAV (aka NightBreeze)
-  ---------  ---------------------------------------
+  FIXED      Fixed-flow CFI (aka SmartVent).  The specified rsOAVVfDs is used whenever
+             the RSYS operates in OAV mode.
+
+  VARIABLE   Variable-flow CFI (aka NightBreeze).  Flow rate is determined at midnight
+             based on prior day's average dry-bulb temperature according to a control
+             algorithm defined by the NightBreeze vendor.
+  ---------  ----------------------------------------------------------------------------
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
                NONE, FIXED, VARIABLE    NONE          No             constant
 
+ **rsOAVVfDs=*float***
 
-    - rsOAVFanPwr
-    - rsOAVReliefZn
-    - rsOAVTDbInlet
-    - rsOAVTdiff
-    - rsOAVType
-    - rsOAVVfDs
-    - rsOAVVfMinF
+ Design air volume flow rate when RSYS is operating in OAV mode.
 
+
+ **Units**   **Legal Range**       **Default**    **Required**               **Variability**
+ ----------- --------------------- ------------ ------------------------ -----------------
+    cfm         $\ge$ 0                         if rsOAVType $\ne$ NONE         constant  
+
+ **rsOAVVfMinF=*float***
+
+ Minimum air volume flow rate fraction when RSYS is operating in OAV mode.  When rsOAVType=VARIABLE, air flow rate is constrained to rsOAVVfMinF * rsOAVVfDs or greater.
+
+ **Units**   **Legal Range**       **Default**                **Required**   **Variability**
+ ----------- --------------------- -------------------------- -------------- -----------------
+               0 $\le$ x $\le$ 1          0.2                         No             constant  
+
+
+ **rsOAVFanPwr=*float***
+
+ RSYS OAV-mode fan power.
+
+-------------------------------------------------------------------------------------------------------
+ **Units**   **Legal Range**       **Default**                        **Required**   **Variability**
+ ----------- --------------------- ---------------------------------- -------------- -----------------
+    W/cfm       0 < x $\le$ 5       per rsOAVTYPE\                         No             constant  
+                                    \ \ FIXED: rsFanPwrC\
+                                    \ \ VARIABLE: NightBreeze vendor\
+                                    \ \ \ \ curve based on rsOAVvfDs
+----------- --------------------- ---------------------------------- -------------- -----------------
+
+
+**rsOAVTDbInlet=*float***
+
+OAV inlet (source) air temperature.  Supply air temperature at the zone is generally higher due to fan heat.  Duct losses, if any, also alter the supply air temperature.
+
+--------------------------------------------------------------------------------------------
+**Units**   **Legal Range**       **Default**                **Required**   **Variability**
+----------- ----------------- -------------------------- -------------- -----------------
+  ^o^F                              Dry-bulb temperature            No             hourly  
+                                    from weather file
+----------- ----------------  -------------------------- -------------- -----------------
+
+**rsOAVTdiff=*float***
+
+ OAV temperature differential.  When operating in OAV mode, the zone set point temperature is max( znTD, inletT+rsOAVTdiff).  Small values can result in inadvertent zone heating, due to fan heat.
+
+ **Units**   **Legal Range**       **Default**                **Required**   **Variability**
+ ----------- --------------------- -------------------------- -------------- -----------------
+    ^o^F         > 0                      5 ^o^F                    No             hourly  
+
+**rsOAVReliefZn=*znName***
+
+Name of zone to which relief air is directed during RSYS OAV operation, typically an attic zone.  Relief air flow is included in the target zone's pressure and thermal balance.
+
+ **Units**   **Legal Range**       **Default**  **Required**               **Variability**
+ ----------- --------------------- ----------  -------------------------- -----------------
+               *name of ZONE*                   if rsOAVType $\ne$ NONE       constant
 
 **rsParElec=*float***
 

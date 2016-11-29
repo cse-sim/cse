@@ -49,7 +49,9 @@ sections:
   - [2, "records/sgdist.md"]
   - [2, "records/door.md"]
   - [2, "records/perimeter.md"]
+<% if inactive_CNE_records %>
   - [2, "records/terminal.md"]
+<% end %>
   - [2, "records/izxfer.md"]
   - [2, "records/rsys.md"]
   - [2, "records/ductseg.md"]
@@ -64,12 +66,14 @@ sections:
   - [2, "records/dhwloopseg.md"]
   - [2, "records/dhwloopbranch.md"]
   - [2, "records/pvarray.md"]
+ <% if inactive_CNE_records %>
   - [2, "records/airhandler.md"]
   - [2, "records/heatplant.md"]
   - [2, "records/boiler.md"]
   - [2, "records/coolplant.md"]
   - [2, "records/chiller.md"]
   - [2, "records/towerplant.md"]
+ <% end %>
   - [2, "records/reportfile.md"]
   - [2, "records/report.md"]
   - [2, "records/reportcol.md"]

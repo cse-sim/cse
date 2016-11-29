@@ -50,3 +50,4 @@ coverage?: true
 context:
   build_all: true
   test_erb: false
+  inactive_CNE_records: false
