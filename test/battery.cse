@@ -43,3 +43,11 @@ EXPORT
 REPORT     rpType=MTR     rpMeter=Elec0    rpFreq=Month
 
 RUN
+
+ALTER GAIN BuildingLoad
+  gnPower=-3412.142 // 1 kW charge
+
+ALTER EXPORTFILE "battery_out"
+  xfFileName="battery_out_charging"
+
+RUN
