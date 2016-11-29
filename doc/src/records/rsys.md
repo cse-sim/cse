@@ -399,7 +399,7 @@ Cooling fan power.
 
   Type of central fan integrated (CFI) outside air ventilation (OAV) included in this RSYS.  OAV systems use the central system fan to circulate outdoor air (e.g. for night ventilation).
 
-  OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via the Top ventAvail item [top-model-control-items](#ventAvail).
+  OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via  [Top ventAvail](#top-model-control-items).
 
   ---------  ---------------------------------------------------------------------------
   NONE       No CFI ventilation capabilities
