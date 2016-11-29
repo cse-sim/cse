@@ -1815,7 +1815,7 @@ task :coverage do
       File.join(BUILD_DIR, tag, 'md', 'normalize', File.basename(path))
     end
     ris2 = CoverageCheck::ReadAllRecordDocuments[files]
-    ris3 = CoverageCheck::DropNameFields[CoverageCheck::AdjustMap[ris2]]
+    ris3 = CoverageCheck::DropNameFieldsIfNotInRef[CoverageCheck::AdjustMap[ris2], ris1]
     diffs = CoverageCheck::RecordInputSetDifferences[ris1, ris3, false]
     diff_report = CoverageCheck::RecordInputSetDifferencesToString[
       diffs, "CSE", "Documentation"
