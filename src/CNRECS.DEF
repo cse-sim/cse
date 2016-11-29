@@ -3598,6 +3598,7 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC bt_Init();"
   *declare "RC bt_DoHour();"
+  *declare "float bt_CalcAdjLoad(MTR m);"
 
   *i TI bt_meter;			// meter for system electricity production
   *f ENDUSECH bt_endUse		// end use of energy. defataults to "BT"
@@ -3611,6 +3612,7 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *s FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
   *s *e FRAC bt_soe         // battery state of energy (0 <= SOE <= 1)
   *s *e FLOAT_GEZ bt_cycles // accumulated battery cycles
+  *s *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
 
 *END		// BATTERY
 //=============================================================================

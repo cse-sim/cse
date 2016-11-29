@@ -614,6 +614,8 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		PVARRAY* pv;
 		RLUP(PvR, pv) EF(pv->pv_DoHour())
 
+		BATTERY* bt;
+		RLUP(BtR, bt) EF(bt->bt_DoHour())
 		// hourly part of loads computation (most of it). Must call after gains.
 		EF( loadsHourBeg() )   				// start-hour loads stuff -- solar gains, masses, zones. cnloads.cpp.
 

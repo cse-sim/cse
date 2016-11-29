@@ -6,8 +6,18 @@ nSubSteps=1
 
 METER Elec0
 
-BATTERY "Base"
+ZONE Z1
+  znArea = 500.0
+  znVol = 500.0 * 8
+  GAIN BuildingLoad
+      gnMeter=Elec0
+      gnEndUse=Lit
+      gnPower=3412.142 // = 1 kW
+
+BATTERY "Basic"
   btMeter = Elec0
+  btEndUse = BT
+  btMaxCap = 10.0
 
 EXPORTFILE "battery_out"
   xfFileName="battery_out"
@@ -23,8 +33,12 @@ EXPORT
   exHeader=ColumnsOnly
   ExportCol colhead="Day" colVal=@Top.dateStr
   ExportCol colhead="Hour" colVal=@Top.iHr
-  ExportCol colhead="ST Hour" colVal=@Top.iHrST
-  ExportCol colhead="Base" colVal=@BATTERY["Base"].soe
+  ExportCol colhead="Battery SOE" colVal=@BATTERY["Basic"].soe
+  ExportCol colhead="Battery Cycles" colVal=@BATTERY["Basic"].cycles
+  ExportCol colhead="Battery Energy [kWh]" colVal=@BATTERY["Basic"].energy
+  ExportCol colhead="Meter: Lighting EndUse" colVal=@METER["Elec0"].H.lit
+  ExportCol colhead="Meter: Battery EndUse" colVal=@METER["Elec0"].H.bt
+  ExportCol colhead="Meter: Total EndUse" colVal=@METER["Elec0"].H.tot
 
 REPORT     rpType=MTR     rpMeter=Elec0    rpFreq=Month
 

@@ -2015,7 +2015,7 @@ static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 	CULT("btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
 	CULT("btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
 	CULT("btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
-	CULT("endBATTERY",  ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+	CULT("endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// btT
 
