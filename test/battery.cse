@@ -12,7 +12,7 @@ ZONE Z1
   GAIN BuildingLoad
       gnMeter=Elec0
       gnEndUse=Lit
-      gnPower=3412.142 // = 1 kW
+      gnPower=3412.142 // approximately equal to 1 kW
 
 BATTERY "Basic"
   btMeter = Elec0
