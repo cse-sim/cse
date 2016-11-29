@@ -14,7 +14,7 @@ Name of gain; follows the word GAIN if given.
 
 **gnPower=*float***
 
-Rate of heat addition to zone. Negative gnPower values may be used to represent heat removal. Expressions containing functions are commonly used with this member to schedule the gain power on a daily and/or hourly basis. Refer to the functions section in Section 4 for details and examples.
+Rate of heat addition/energy use. Negative gnPower values may be used to represent heat removal/energy generation. Expressions containing functions are commonly used with this member to schedule the gain power on a daily and/or hourly basis. Refer to the functions section in Section 4 for details and examples.
 
 All gains, including electrical, are specified in Btuh units. But note that internal gain and meter reporting is in MBtu (millions of Btu) by default even though input is in Btuh.
 
