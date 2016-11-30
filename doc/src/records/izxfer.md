@@ -2,7 +2,10 @@
 
 IZXFER constructs an object that represents an interzone or zone/ambient heat transfer due to conduction and/or air transfer. The air transfer modeled by IZXFER transfers heat only; humidity transfer is not modeled as of July 2011. Note that SURFACE is the preferred way represent conduction between ZONEs.
 
-The AIRNET types are used in a multi-cell pressure balancing model that finds zone pressures that produce net 0 mass flow into each zone. The model operates in concert with the znType=CZM to represent ventilation strategies. During each time step, the pressure balance is found for two modes that can be thought of as “VentOff” (or infiltration-only) and “VentOn” (or infiltration+ventilation). The zone model then determines the ventilation fraction required to hold the desired zone temperature (if possible).
+The AIRNET types are used in a multi-cell pressure balancing model that finds zone pressures that produce net 0 mass flow into each zone. The model operates in concert with the znType=CZM or znType=UZM to represent ventilation strategies. During each time step, the pressure balance is found for two modes that can be thought of as “VentOff” (or infiltration-only) and “VentOn” (or infiltration+ventilation). The zone model then determines the ventilation fraction required to hold the desired zone temperature (if possible). AIRNET modeling methods are documented in the CSE Engineering Documentation.
+
+Note that fan-driven types assume pressure-independent flow.  That is, the specified flow is included in the zone pressure balance but the modeled fan flow does not change with zone pressure.
+The assumption is that in realistic configurations, zone pressure will generally be close to ambient pressure.  Unbalanced fan ventilation in a zone without relief area will result in runtime termination due to excessively high or low pressure.
 
 **izName**
 
@@ -19,18 +22,26 @@ Choice determining interzone ventilation
   ---------------- ---------------------------------------
   NONE             No interzone ventilation
 
+  ONEWAY           Uncontrolled flow from izZn1 to izZn2
+                   when izZn1 air temperature exceeds
+                   izZn2 air temperature
+                   (using ASHRAE high/low vent model).
+
   TWOWAY           Uncontrolled flow in either direction
-                   (using ASHRAE high/low vent model)
+                   (using ASHRAE high/low vent model).
 
   AIRNETIZ         Single opening to another zone (using
-                   pressure balance AirNet model)
+                   pressure balance AirNet model).  Flow
+                   is driven by buoyancy.
 
   AIRNETEXT        Single opening to ambient (using
-                   pressure balance AirNet model)
+                   pressure balance AirNet model).  Flow
+                   is driven by buoyancy and wind pressure.
 
   AIRNETHORIZ      Horizontal (large) opening between two
                    zones, used to represent e.g.
-                   stairwells
+                   stairwells.  Flow is driven by buoyancy;
+                   simultaneous up and down flow is modeled.
 
   AIRNETEXTFAN     Fan from exterior to zone (flow either
                    direction).
@@ -44,25 +55,24 @@ Choice determining interzone ventilation
                    is consumed and no fan heat is added to
                    the air stream.
 
-  AIRNETIZFLOW     Specicified flow between two zones
+  AIRNETIZFLOW     Specified flow between two zones
                    (either direction). Behaves identically
                    to AIRNETIZFAN except no electricity is
                    consumed and no fan heat is added to
-                   the air stream
+                   the air stream.
+
+  AIRNETHERV       Heat or energy recovery ventilator.
+                   Supply and exhaust air are exchanged
+                   with the exterior with heat and/or
+                   moisture exchange between the air streams.
+                   Flow may or may not be balanced.
   ---------------- ---------------------------------------
 
   -----------------------------------------------------------------
   **Units** **Legal**      **Default** **Required** **Variability**
             **Range**
   --------- -------------- ----------- ------------ ---------------
-            NONE, TWOWAY,  None        No           constant
-            AIRNET,
-            AIRNETEXT,
-            AIRNETHORIZ,
-            AIRNETEXTFAN,
-            AIRNETIZFAN,
-            AIRNETEXTFLOW,
-            AIRNETIZFLOW
+            *choices above*   NONE        No           constant
 
   -----------------------------------------------------------------
 
@@ -86,12 +96,11 @@ Name of secondary zone.
             ZONE                  izNVType =
                                   AIRNETEXT,
                                   AIRNETEXTFAN,
-                                  or
-                                  AIRNETEXTFLOW
-
+                                  AIRNETEXTFLOW,
+                                  or AIRNETHERV
   ---------------------------------------------------------------
 
-Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. ?? Not known to work properly as of July 2011
+Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
 
 **izHConst=*float***
 
@@ -119,7 +128,7 @@ Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo 
 
 **izL1=*float***
 
-Length or width of AIRNETHORIZ opening
+Length or width of AIRNETHORIZ opening.
 
   **Units**   **Legal Range**   **Default**   **Required**                **Variability**
   ----------- ----------------- ------------- --------------------------- -----------------
@@ -127,7 +136,7 @@ Length or width of AIRNETHORIZ opening
 
 **izL2=*float***
 
-width or length of AIRNETHORIZ opening
+Width or length of AIRNETHORIZ opening.
 
   **Units**   **Legal Range**   **Default**   **Required**                **Variability**
   ----------- ----------------- ------------- --------------------------- -----------------
@@ -135,7 +144,7 @@ width or length of AIRNETHORIZ opening
 
 **izStairAngle=*float***
 
-stairway angle for AIRNETHORIZ opening. Use 90 for open hole. Note that 0 prevents flow.
+Stairway angle for AIRNETHORIZ opening. Use 90 for an open hole. Note that 0 prevents flow.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -151,7 +160,7 @@ Vent center-to-center height difference (for TWOWAY) or vent height above nomina
 
 **izNVEff=*float***
 
-Vent discharge coefficient coefficient.
+Vent discharge coefficient.
 
   **Units**   **Legal Range**       **Default**   **Required**   **Variability**
   ----------- --------------------- ------------- -------------- -----------------
@@ -159,7 +168,7 @@ Vent discharge coefficient coefficient.
 
 **izfanVfDs=*float***
 
-Fan design or rated flow at rated pressure
+Fan design or rated flow at rated pressure.  For AIRNETHERV, this is the net air flow into the zone, gross flow at the fan is derived using izEATR (see below).
 
   **Units**   **Legal Range**   **Default**   **Required**     **Variability**
   ----------- ----------------- ------------- ---------------- -----------------
@@ -167,45 +176,79 @@ Fan design or rated flow at rated pressure
 
 **izCpr=*float***
 
-Wind pressure coefficient (for AIRNETEXT)
+Wind pressure coefficient (for AIRNETEXT).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  ??          *x* $\ge$ 0       0.            No             constant
+               *x* $\ge$ 0       0.            No             constant
 
 **izExp=*float***
 
-Opening exponent
+Opening exponent (for AIRNETEXT).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   none        *x* $>$ 0         0.5           No             constant
 
-**izfanVfMin=*float***
+**izVfMin=*float***
 
-Minimum volume flow rate (VentOff mode)
+Minimum volume flow rate (VentOff mode).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  cfm         *x* $\ge$ 0       0             No             subhourly
+  cfm         *x* $\ge$ 0        izfanVfDs             No             subhourly
 
-**izfanVfMax=*float***
+**izVfMax=*float***
 
 Maximum volume flow rate (VentOn mode)
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  cfm         *x* $\ge$ 0       0             No             subhourly
+  cfm         *x* $\ge$ 0       izVfMin             No             subhourly
+
+
+**izASEF=*float***
+
+Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-reported HERV rating and is calculated as (supplyT - sourceT) / (returnT - sourceT).  This formulation includes fan heat (in supplyT), hence the term "apparent".
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+                                     0             No             subhourly
+
+**izEATR=*float***
+
+Exhaust air transfer ratio for AIRNETHERV ventilator.  NetFlow = (1 - EATR)*(grossFlow).
+
+ **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+ ----------- ------------------- ------------- -------------- -----------------
+ cfm         0 $\le$ x $\le$ 1       0             No             subhourly
+
+**izLEF=*float***
+
+Latent heat recovery effectiveness for AIRNETHERV ventilator.  The default value (0) results in sensible-only heat recovery.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+              0 $\le$ x $\le$ 1       0             No             subhourly
+
+**izVfExhRat=*float***
+
+Exhaust volume flow ratio for AIRNETHERV ventilator = (exhaust flow) / (supply flow).  Any
+value other than 1 indicates unbalanced flow that effects the zone pressure.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+                                 1 (balanced)      No             subhourly
 
 **izfanPress=*float***
 
-Design or rated pressure.
+Design or rated fan pressure.
 
   **Units**      **Legal Range**   **Default**   **Required**   **Variability**
   -------------- ----------------- ------------- -------------- -----------------
   inches H~2~O   *x* $>$ 0         .3            No             constant
 
-Only one of izfanElecPwr, izfanEff, and izfanShaftBhp may be given: together with izfanVfDs and izfanPress, any one is sufficient for CSE to detemine the others and to compute the fan heat contribution to the air stream.
+Only one of izfanElecPwr, izfanEff, and izfanShaftBhp may be given: together with izfanVfDs and izfanPress, any one is sufficient for CSE to determine the others and to compute the fan heat contribution to the air stream.
 
 **izfanElecPwr=*float***
 
@@ -255,20 +298,26 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   ----------- ----------------- -------------------------- -------------- -----------------
                                 *0, 1, 0, 0, 0 (linear)*   No             constant
 
-**izfanMtr=*mtrName***
+**izFanMtr=*mtrName***
 
-Name of meter, if any, to record energy used by supply fan. End use category used is "Fan".
+Name of meter, if any, to record energy used by supply fan. End use category used is specified by izFanEndUse (next).
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 
-**endIzxfer**
+**izFanEndUse=*choice***
+
+End use to which fan energy is recorded (in METER specified by izFanMtr).  See METER for available end use choices.
+
+**Units**   **Legal Range**     **Default**      **Required**   **Variability**
+----------- ------------------- ---------------- -------------- -----------------
+            *end use choice*       Fan             No             constant
+
+**endIZXFER**
 
 Optionally indicates the end of the interzone transfer definition.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

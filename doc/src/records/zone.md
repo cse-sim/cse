@@ -16,9 +16,25 @@ Name of zone. Enter after the word ZONE; no "=" is used.
 
 Selects model for zone.
 
+----------- ------------------------------
+CNE         Older, central difference model based on
+            original CALPAS methods.  Not fully supported
+            and not suitable for current compliance applications.
+
+CZM         Conditioned zone model.  Forward-difference,
+            short time step methods are used.
+
+UZM         Unconditioned zone model.  Identical to CZM
+            except heating and cooling are not supported.
+            Typically used for attics, garages, and other
+            ancillary spaces.
+
+----------- ------------------------------
+
+
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              CNE CZM UZM       CNE           No             constant
+              *choices above*      CNE           No             constant
 
 **znArea=*float***
 
@@ -35,6 +51,14 @@ Nominal zone volume.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   ft^3^       *x* $>$ 0         *none*        Yes            constant
+
+**znAzm=*float***
+
+Zone azimuth with respect to bldgAzm. All surface azimuths are relative to znAzm, so that the zone can be rotated by changing this member only. Values outside the range 0^o^ to 360^o^ are normalized to that range.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+  degrees     unrestricted      0             No             constant
 
 **znFloorZ=*float***
 
@@ -62,19 +86,36 @@ Nominal eave height above ground level. Used re calculation of local surface win
 
 **znCAir=*float***
 
-Zone "air" heat capacity: represents heat capacity of air, furniture, "light" walls, and everything in zone except surfaces surfaces having heat capacity (that is, non-QUICK surfaces).
+Zone "air" heat capacity: represents heat capacity of air, furniture, "light" walls, and everything in zone except surfaces having heat capacity (that is, non-QUICK surfaces).
 
   **Units**   **Legal Range**   **Default**       **Required**   **Variability**
   ----------- ----------------- ----------------- -------------- -----------------
   Btu/^o^F    *x* $\geq$ 0      3.5 \* *znArea*   No             constant
 
-**znAzm=*float***
+**znHcAirX=*float***
 
-Zone azimuth with respect to bldgAzm. All surface azimuths are relative to znAzm, so that the zone can be rotated by changing this member only. Values outside the range 0^o^ to 360^o^ are normalized to that range.
+Zone air exchange rate used in determination of interior surface convective coefficients.  This item is generally used only for model testing.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  degrees     unrestricted      0             No             constant
+**Units**   **Legal Range**   **Default**                   **Required**   **Variability**
+----------- ----------------- ---------------------------- -------------- -----------------
+  ACH          x $\ge$ 0       as modeled                       No        subhourly
+
+**znHcFrcF=*float***
+
+Zone surface forced convection factor.  Interior surface convective transfer is modeled as a combination of forced and natural convection.  hcFrc = znHcFrcF * znHcAirX^.8.  See CSE Engineering Documentation.
+
+**Units**           **Legal Range**   **Default**   **Required**   **Variability**
+------------------ ----------------- ------------ -------------- -----------------
+Btuh/ft^2^-^o^F                        .2                No         hourly
+
+
+**znHIRatio=*float***
+
+Zone hygric inertia ratio.  In zone moisture balance calculations, the effective dry-air mass = znHIRatio * (zone dry air mass).  This enhancement can be used to represente the moisture storage capacity of zone surfaces and contents.
+
+**Units**   **Legal Range**   **Default**       **Required**   **Variability**
+----------- ----------------- ----------------- -------------- -----------------
+             *x* $\gt$ 0         1                    No             constant
 
 **znSC=*float***
 
@@ -84,11 +125,10 @@ Zone shade closure. Determines insolation through windows (see WINDOW members *w
   ----------- ----------------------- ---------------------------------------------------- -------------- -----------------
               0 $\leq$ *x* $\leq$ 1   1 when cooling was used in *previous* hour, else 0   No             hourly
 
-The following apply to *znModel* = CZM.
 
 **znTH=*float***
 
-Heating set point
+Heating set point for znModel=CZM.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -96,7 +136,7 @@ Heating set point
 
 **znTD=*float***
 
-Desired set point (temperature maintained with ventilation if possible).
+Desired set point (temperature maintained with ventilation if possible) for znModel=CZM
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -104,11 +144,22 @@ Desired set point (temperature maintained with ventilation if possible).
 
 **znTC=*float***
 
-Cooling set point
+Cooling set point for znModel=CZM.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* $\geq$ 0                                   Hourly
+
+CZM zone heating and cooling is provided either via an RSYS HVAC system or by "magic" heat transfers specified by znQxxx items.
+
+**znRSys=*rsysName***
+
+Name of RSYS providing heating, cooling, and optional central fan integrated ventilation to this zone.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+              *RSYS name*      (no RSYS)      No              constant
+
 
 **znQMxH=*float***
 
@@ -142,6 +193,7 @@ Rated cooling capacity
   ----------- ----------------- ------------- -------------- -----------------
   Btuh        *x* $\leq$ 0                                   constant
 
+<% if comfort_model %>
 The following provide parameters for comfort calculations
 
 **znComfClo=*float***
@@ -175,6 +227,7 @@ Nominal zone relative humidity used for comfort model
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
               0 $\leq$ *x* $\leq$ 1                 No             hourly
+<% end %>
 
 ## ZONE Infiltration
 
@@ -282,9 +335,9 @@ Fan input power per unit air flow (at design flow and pressure).
                                            present
   -------------------------------------------------------------------------
 
-**xfanEff=*floatExhaust***
+**xfanEff=*float***
 
-fan/motor/drive combined efficiency*.*
+Exhaust fan/motor/drive combined efficiency.
 
   **Units**   **Legal Range**       **Default**   **Required**   **Variability**
   ----------- --------------------- ------------- -------------- -----------------
@@ -318,4 +371,3 @@ Indicates the end of the zone definition. Alternatively, the end of the zone def
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-

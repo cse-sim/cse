@@ -50,4 +50,6 @@ coverage?: true
 context:
   build_all: true
   test_erb: false
-  cne_build: false
+  inactive_CNE_records: false   # true -> include TERMINAL, CHILLER, etc
+                                #   (records not used in CA compliance)
+  comfort_model: false          # true -> include ZONE comfort model inputs
