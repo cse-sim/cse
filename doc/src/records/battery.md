@@ -46,8 +46,8 @@ Meter end use to which the BATTERY's charged/discharged energy should be accumul
   COOK    Cooking
   USER1   User-defined category 1
   USER2   User-defined category 2
-  PV      Photovoltaic power generation
   BT      Battery power generation
+  PV      Photovoltaic power generation
   ------- -------------------------------------------------------------
 
 |**Units**|   **Legal Range**  |**Default**|**Required**|**Variability**|
@@ -131,6 +131,14 @@ The power request to charge (or discharge if negative) the battery in kilowatts.
 |**Units**|**Legal Range** |**Default**|**Required**|**Variability**|
 |---------|----------------|-----------|------------|---------------|
 | kW      |                | 0         |No          |subhourly      |
+
+**btUseUsrChg=*bool***
+
+A boolean choice (YES/NO) that defaults to NO. If YES, then the user specified `btChgReq` will be used to set the battery's charge request; if false, the default strategy (i.e., to attempt to satisfy all loads and absorb all available excess power), will be used. Both the `btChgReq` and the default strategy requested power are literally *requests*: that is, more power will not be delivered than is available; more power will not be absorbed than capacity exits to store; and the battery's power limits will be respected.
+
+|**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
+|---------|---------------|-----------|------------|---------------|
+|         | YES, NO       | NO        | No         |subhourly      |
 
 **endBATTERY**
 
