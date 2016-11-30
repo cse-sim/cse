@@ -80,7 +80,7 @@ RC BATTERY::bt_DoHour()
 	if (bt_meter) {
 		P_load_adj = bt_CalcAdjLoad(MtrB.p[bt_meter]);
 	}
-	P_bt_req = -1.0 * P_load_adj;
+	P_bt_req = (bt_useUsrChg == C_NOYESCH_NO) ? -1.0 * P_load_adj : bt_chgReq;
 	P_bt_max_cap = (bt_maxCap * (1.0 - bt_soe)) / (dt * bt_chgEff);
 	if (P_bt_max_cap < tolerance)
 		P_bt_max_cap = 0.0;

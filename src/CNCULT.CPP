@@ -2002,21 +2002,22 @@ LOCAL RC FC btStarCkf(CULT* c, /*BATTERY* */ void *p, void *p2, void *p3)
 		//=============================================================================
 static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 {
-	// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
-	//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
-	CULT("*",            STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   btStarCkf),
-	CULT("btMeter",      DAT,   BATTERY_METER,   0,       0, VEOI,   TYREF, &MtriB, N,      N,   N),
-	CULT("btEndUse",     DAT,   BATTERY_ENDUSE,  0,       0, VEOI,   TYCH,  0,      C_ENDUSECH_BT, N, N),
-	CULT("btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
-	CULT("btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
-	CULT("btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),
-	CULT("btInitSOE",    DAT,   BATTERY_INITSOE, 0,       0, VEOI,   TYFL,  0,      0.5f,   N,   N),
-	CULT("btInitCycles", DAT,   BATTERY_INITCYCLES,0,     0, VEOI,   TYFL,  0,      0.f,    N,   N),
-	CULT("btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
-	CULT("btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
-	CULT("btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
-	CULT("endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
-	CULT()
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",            STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   btStarCkf),
+CULT( "btMeter",      DAT,   BATTERY_METER,   0,       0, VEOI,   TYREF, &MtriB, N,      N,   N),
+CULT( "btEndUse",     DAT,   BATTERY_ENDUSE,  0,       0, VEOI,   TYCH,  0,      C_ENDUSECH_BT, N, N),
+CULT( "btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),
+CULT( "btInitSOE",    DAT,   BATTERY_INITSOE, 0,       0, VEOI,   TYFL,  0,      0.5f,   N,   N),
+CULT( "btInitCycles", DAT,   BATTERY_INITCYCLES,0,     0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
+CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
+CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
 };	// btT
 
 //====================== AIRHANDLER command (Air Handler) ===========================
