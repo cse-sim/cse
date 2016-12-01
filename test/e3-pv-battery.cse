@@ -2,6 +2,8 @@
 This file illustrates loading a battery charge/discharge command from an external csv file.
 
 The (electrical) load of a building is simulated by loading an externally calculated "House Load" and combining that with an externally calculated "Photovoltaic Output" signal -- both of these signals are combined and assigned to a GAIN object called "BuildingLoad" with the gnPower field being (abused) to take the net house load (actual house load - pv generation).
+
+NOTE: if CSE is built with the _DEBUG symbol defined, then you will get a warning when the gnPower of BuildingLoad goes negative. The GAIN object is not typically used in the fashion we present here: we merely want to specify the "effective" building load + PV without clutting this file with an entire building definition (as you would do in a real study).
 */
 IMPORTFILE E3Data
   imFileName="e3data.csv"
