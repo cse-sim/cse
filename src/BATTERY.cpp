@@ -37,28 +37,28 @@ RC BATTERY::bt_Init()
 float BATTERY::bt_CalcAdjLoad(MTR m)
 {
 	float P_load_adj(0.0); // building + PV load, power [kW]
-	float btu_per_hr_to_kW(1.0/3412.142);
-	P_load_adj += m.H.clg * btu_per_hr_to_kW;
-	P_load_adj += m.H.htg * btu_per_hr_to_kW;
-	P_load_adj += m.H.hp * btu_per_hr_to_kW;
-	P_load_adj += m.H.dhw * btu_per_hr_to_kW;
-	P_load_adj += m.H.dhwBU * btu_per_hr_to_kW;
-	P_load_adj += m.H.fanC * btu_per_hr_to_kW;
-	P_load_adj += m.H.fanH * btu_per_hr_to_kW;
-	P_load_adj += m.H.fanV * btu_per_hr_to_kW;
-	P_load_adj += m.H.fan * btu_per_hr_to_kW;
-	P_load_adj += m.H.aux * btu_per_hr_to_kW;
-	P_load_adj += m.H.proc * btu_per_hr_to_kW;
-	P_load_adj += m.H.lit * btu_per_hr_to_kW;
-	P_load_adj += m.H.rcp * btu_per_hr_to_kW;
-	P_load_adj += m.H.ext * btu_per_hr_to_kW;
-	P_load_adj += m.H.refr * btu_per_hr_to_kW;
-	P_load_adj += m.H.dish * btu_per_hr_to_kW;
-	P_load_adj += m.H.dry * btu_per_hr_to_kW;
-	P_load_adj += m.H.cook * btu_per_hr_to_kW;
-	P_load_adj += m.H.usr1 * btu_per_hr_to_kW;
-	P_load_adj += m.H.usr2 * btu_per_hr_to_kW;
-	P_load_adj += m.H.pv * btu_per_hr_to_kW;
+	float btuh_to_kW(1.0/3412.142);
+	P_load_adj += m.H.clg * btuh_to_kW;
+	P_load_adj += m.H.htg * btuh_to_kW;
+	P_load_adj += m.H.hp * btuh_to_kW;
+	P_load_adj += m.H.dhw * btuh_to_kW;
+	P_load_adj += m.H.dhwBU * btuh_to_kW;
+	P_load_adj += m.H.fanC * btuh_to_kW;
+	P_load_adj += m.H.fanH * btuh_to_kW;
+	P_load_adj += m.H.fanV * btuh_to_kW;
+	P_load_adj += m.H.fan * btuh_to_kW;
+	P_load_adj += m.H.aux * btuh_to_kW;
+	P_load_adj += m.H.proc * btuh_to_kW;
+	P_load_adj += m.H.lit * btuh_to_kW;
+	P_load_adj += m.H.rcp * btuh_to_kW;
+	P_load_adj += m.H.ext * btuh_to_kW;
+	P_load_adj += m.H.refr * btuh_to_kW;
+	P_load_adj += m.H.dish * btuh_to_kW;
+	P_load_adj += m.H.dry * btuh_to_kW;
+	P_load_adj += m.H.cook * btuh_to_kW;
+	P_load_adj += m.H.usr1 * btuh_to_kW;
+	P_load_adj += m.H.usr2 * btuh_to_kW;
+	P_load_adj += m.H.pv * btuh_to_kW;
 	return P_load_adj;
 }
 
@@ -75,7 +75,7 @@ RC BATTERY::bt_DoHour()
 	float eff(1.0); // efficiency of the battery [fraction]
 	float dt(1.0); // hours in this timestep [hr]
 	float dsoe(0.0); // change in SOE
-	float kW_to_btu_per_hr(3412.142); 
+	float kW_to_btuh(3412.142); 
 	float tolerance(bt_maxCap * 1e-6); // tolerance for capacity calculations [kW] -- used to prevent underflow issues
 	if (bt_meter) {
 		P_load_adj = bt_CalcAdjLoad(MtrB.p[bt_meter]);
@@ -97,6 +97,6 @@ RC BATTERY::bt_DoHour()
 	// we devide by two because one full discharge and one full charge = one cycle
 	bt_cycles = bt_cycles + (std::abs(dsoe) / 2.0);
 	if (bt_meter)
-		MtrB.p[bt_meter].H.mtr_Accum(bt_endUse, P_bt * kW_to_btu_per_hr);
+		MtrB.p[bt_meter].H.mtr_Accum(bt_endUse, P_bt * kW_to_btuh);
 	return rc;
 }	// BATTERY::bt_DoHour()
