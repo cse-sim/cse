@@ -138,7 +138,7 @@ A boolean choice (YES/NO) that defaults to NO. If YES, then the user specified `
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-|         | YES, NO       | NO        | No         |subhourly      |
+|         | YES, NO       | NO        | No         |runly          |
 
 **endBATTERY**
 
