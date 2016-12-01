@@ -316,6 +316,7 @@
     </ClCompile>
     <ClCompile Include="ashwat.cpp" />
     <ClCompile Include="ashwface.cpp" />
+    <ClCompile Include="BATTERY.cpp" />
     <ClCompile Include="BRFW.CPP" />
     <ClCompile Include="CGCOMP.CPP" />
     <ClCompile Include="CGDEBUG.CPP" />
