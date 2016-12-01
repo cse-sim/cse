@@ -4,6 +4,18 @@ BATTERY + PV TEST AND CONTROL STRATEGIES
 
 This module seeks to test the BATTERY and PV records using various control strategies. The Battery and PVArray are simulated while a "typical" building load is specified from an external CSV file and set to a GAIN block using the gnPower field.
 
+DEFAULT:
+--------
+
+The default algorithm that ships with the code. This algorithm simply takes the adjusted load (Home Load - PV Generation) and sets the battery request to satisfy that. If excess PV is available, the battery attempts to absorb all energy, otherwise, the battery attempts to provide all energy. The default strategy (as all strategies) is limited to the physical capabilities of the battery.
+
+PEAK SHAVING:
+-------------
+
+The basic "peak shaving" algorithm demonstrated here compares the current adjusted load (Home - PV Generation) with a power setpoint. If above the setpoint, the battery will attempt to provide assistance if it can. In essence, the battery attempts to limit the peak within its capability.
+
+The battery is called to discharge when peak power (average peak power over the hour) is over a given threshold. Otherwise, it always charges when storage capacity is available.
+
 THERMOSTAT:
 -----------
 
@@ -104,14 +116,7 @@ BATTERY "BatteryThermostat" LIKE BatteryDefault
 PVARRAY "PvThermostat" LIKE PvDefault
   pvElecMtr = ElecMtrThermostat
 
-#define BtSOE( n ) \
-  ExportCol colhead=n colVal=@BATTERY[n].soe
-#define BtEnergy( n ) \
-  ExportCol colhead=n colVal=@BATTERY[n].energy
-#define GridLoad( n ) \
-  ExportCol colhead=n colVal=@METER[n].H.tot
-#define TDV( n ) \
-  ExportCol colhead="TDV Cost" colVal=(@METER[n].H.tot * import(Data,"TDV_kBtu__kWh"))
+#define CalcTDV_kBtuh( n ) (@METER[n].H.tot / (kw_to_btuh * 1000.0)) * import(Data,"TDV_kBtu__kWh")
 
 EXPORTFILE "PvBtOut"
   xfFileName = "pv_bt_out"
@@ -127,18 +132,18 @@ EXPORTFILE "PvBtOut"
     ExportCol colhead="Hour" colVal=@Top.iHr
     ExportCol colhead="PV Out [kW]" colVal=@PVArray["PvDefault"].acOut / kw_to_btuh
     ExportCol colhead="HomeLoad [kW]" colVal=@METER["ElecMtrDefault"].H.lit / kw_to_btuh
-    BtSOE( "BatteryDefault" )
-    BtEnergy( "BatteryDefault" )
-    GridLoad( "ElecMtrDefault" ) / kw_to_btuh
-    TDV( "ElecMtrDefault" ) / kw_to_btuh
-    BtSOE( "BatteryPeakShaving" )
-    BtEnergy( "BatteryPeakShaving" )
-    GridLoad( "ElecMtrPeakShaving" ) / kw_to_btuh
-    TDV( "ElecMtrPeakShaving" ) / kw_to_btuh
-    BtSOE( "BatteryThermostat" )
-    BtEnergy( "BatteryThermostat" )
-    GridLoad( "ElecMtrThermostat" ) / kw_to_btuh
-    TDV( "ElecMtrThermostat" ) / kw_to_btuh
+    ExportCol colhead="Default SOE" colVal=@BATTERY["BatteryDefault"].soe
+    ExportCol colhead="Energy Default [kWh]" colVal=@BATTERY["BatteryDefault"].energy
+    ExportCol colhead="GridLoad Default [kW]" colVal=@METER["ElecMtrDefault"].H.tot / kw_to_btuh
+    ExportCol colhead="TDV Cost (Default)" colVal=CalcTDV_kBtuh("ElecMtrDefault")
+    ExportCol colhead="PeakShaving SOE" colVal=@BATTERY["BatteryPeakShaving"].soe
+    ExportCol colhead="Energy PeakShaving [kWh]" colVal=@BATTERY["BatteryPeakShaving"].energy
+    ExportCol colhead="GridLoad PeakShaving [kW]" colVal=@METER["ElecMtrPeakShaving"].H.tot / kw_to_btuh
+    ExportCol colhead="TDV (PeakShaving) [kBtu]" colVal=CalcTDV_kBtuh("ElecMtrPeakShaving")
+    ExportCol colhead="Thermostat SOE" colVal=@BATTERY["BatteryThermostat"].soe
+    ExportCol colhead="Energy Thermostat [kWh]" colVal=@BATTERY["BatteryThermostat"].energy
+    ExportCol colhead="GridLoad Thermostat [kW]" colVal=@METER["ElecMtrThermostat"].H.tot / kw_to_btuh
+    ExportCol colhead="TDV (Thermostat) [kBtu]" colVal=CalcTDV_kBtuh("ElecMtrThermostat")
 
 RUN
 
