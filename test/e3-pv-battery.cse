@@ -1,0 +1,63 @@
+/*
+- obtain building loads from E3 spreadsheet
+- hook up a similar battery with efficiencies
+*/
+
+IMPORTFILE E3Data
+  imFileName="e3data.csv"
+  imFreq="Hour"
+  imTitle="E3 Data"
+
+WfName="Boulder.epw"
+wuDays=0
+nSubSteps=1
+
+METER Elec0
+
+#define kw_to_btu_per_hr 3412.142
+#define zone_area 2100.0
+
+ZONE Z1
+  znArea = zone_area
+  znVol = zone_area * 8
+  GAIN BuildingLoad
+      gnMeter = Elec0
+      gnEndUse = Lit
+      gnPower = (import(E3Data,"HouseLoad_kW") - import(E3Data,"PvOut_kW")) * kw_to_btu_per_hr
+
+BATTERY "e3Battery"
+  btMeter = Elec0
+  btEndUse = BT
+  btMaxCap = 16.0 // kWh
+  btMaxChgPwr = 4.0 // kW
+  btMaxDschgPwr = 4.0 // kW
+  btUseUsrChg = Yes
+  btChgEff = 0.97467943
+  btDschgEff = 0.97467943
+  btInitSOE = 1.0 // 100% state of energy
+  btChgReq = -1.0 * import(E3Data,"BtPwrReq_kW")
+
+EXPORTFILE "e3bt_out"
+  xfFileName = "e3bt_out"
+  xfFileStat = OVERWRITE
+
+EXPORT
+  exExportFile = "e3bt_out"
+  exType = UDT
+  exFreq = HOUR
+  exTitle = "Battery Output"
+  exDayBeg = jan 1
+  exDayEnd = dec 31
+  exHeader = ColumnsOnly
+  ExportCol colhead="Day" colVal=@Top.dateStr
+  ExportCol colhead="Hour" colVal=@Top.iHr
+  ExportCol colhead="Battery SOE" colVal=@BATTERY["e3Battery"].soe
+  ExportCol colhead="Battery Cycles" colVal=@BATTERY["e3Battery"].cycles
+  ExportCol colhead="Battery Energy [kWh]" colVal=@BATTERY["e3Battery"].energy
+  ExportCol colhead="Meter: House Load [Btu/hr]" colVal=@METER["Elec0"].H.lit
+  ExportCol colhead="Meter: Battery EndUse" colVal=@METER["Elec0"].H.bt
+  ExportCol colhead="Meter: Total EndUse" colVal=@METER["Elec0"].H.tot
+
+REPORT rpType=MTR rpMeter=Elec0 rpFreq=Month
+
+RUN
