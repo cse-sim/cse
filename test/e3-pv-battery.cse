@@ -1,8 +1,8 @@
 /*
-- obtain building loads from E3 spreadsheet
-- hook up a similar battery with efficiencies
-*/
+This file illustrates loading a battery charge/discharge command from an external csv file.
 
+The (electrical) load of a building is simulated by loading an externally calculated "House Load" and combining that with an externally calculated "Photovoltaic Output" signal -- both of these signals are combined and assigned to a GAIN object called "BuildingLoad" with the gnPower field being (abused) to take the net house load (actual house load - pv generation).
+*/
 IMPORTFILE E3Data
   imFileName="e3data.csv"
   imFreq="Hour"
