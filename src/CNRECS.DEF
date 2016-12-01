@@ -3613,7 +3613,7 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *s NOYESCH bt_useUsrChg   // YES: user specifies charge request;
 							// NO (default): calculate charge request via
 							//               default strategy 
-  *s *e FRAC bt_soe         // battery state of energy (0 <= SOE <= 1)
+  *s FRAC bt_soe         // battery state of energy (0 <= SOE <= 1)
   *s *e FLOAT_GEZ bt_cycles // accumulated battery cycles
   *s *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
 
