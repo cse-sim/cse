@@ -57,6 +57,10 @@ nSubSteps=1
 #define pwr_target_kW 4.0
 #define soe_target 0.7
 
+// Given a meter name, calculate the house load - PV generation
+FLOAT FUNCTION CalcAdjustedLoad_kW ( STRING mtrName ) = import(Data,"AdjustedLoad_kW");
+  /* METER[mtrName].H.tot / kw_to_btuh; */
+
 METER ElecMtrDefault
 GAIN BuildingLoadDefault
   gnMeter = ElecMtrDefault
@@ -108,10 +112,10 @@ BATTERY "BatteryPeakShaving" LIKE BatteryDefault
   btMeter = ElecMtrPeakShaving
   btUseUsrChg = Yes
   btChgReq = -1.0 * select(
-    import(Data,"AdjustedLoad_kW") > pwr_target_kW,
-      import(Data,"AdjustedLoad_kW") - pwr_target_kW,
-    import(Data,"AdjustedLoad_kW") < 0.0,
-      import(Data,"AdjustedLoad_kW"),
+    CalcAdjustedLoad_kW("ElecMtrPeakShaving") > pwr_target_kW,
+      CalcAdjustedLoad_kW("ElecMtrPeakShaving") - pwr_target_kW,
+    CalcAdjustedLoad_kW("ElecMtrPeakShaving") < 0.0,
+      CalcAdjustedLoad_kW("ElecMtrPeakShaving"),
     default 0.0)
 PVARRAY "PvPeakShaving" LIKE PvDefault
   pvElecMtr = ElecMtrPeakShaving
@@ -123,14 +127,14 @@ BATTERY "BatteryThermostat" LIKE BatteryDefault
   btMeter = ElecMtrThermostat
   btUseUsrChg = Yes
   btChgReq = -1.0 * select(
-    import(Data,"AdjustedLoad_kW") >= 0.0,
+    CalcAdjustedLoad_kW("ElecMtrThermostat") >= 0.0,
       select(
         @BATTERY["BatteryThermostat"].soe > soe_target,
-          import(Data,"AdjustedLoad_kW"),
+          CalcAdjustedLoad_kW("ElecMtrThermostat"),
         default (
-          min(import(Data, "AdjustedLoad_kW"), max_bt_pwr)
-            - (((soe_target - @BATTERY["BatteryDefault"].soe) / soe_target) * max_bt_pwr))),
-    default import(Data,"AdjustedLoad_kW"))
+          min(CalcAdjustedLoad_kW("ElecMtrThermostat"), max_bt_pwr)
+            - (((soe_target - @BATTERY["BatteryThermostat"].soe) / soe_target) * max_bt_pwr))),
+    default CalcAdjustedLoad_kW("ElecMtrThermostat"))
 PVARRAY "PvThermostat" LIKE PvDefault
   pvElecMtr = ElecMtrThermostat
 
