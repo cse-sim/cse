@@ -5,10 +5,10 @@ The (electrical) load of a building is simulated by loading an externally calcul
 
 NOTE: if CSE is built with the _DEBUG symbol defined, then you will get a warning when the gnPower of BuildingLoad goes negative. The GAIN object is not typically used in the fashion we present here: we merely want to specify the "effective" building load + PV without clutting this file with an entire building definition (as you would do in a real study).
 */
-IMPORTFILE E3Data
-  imFileName="e3data.csv"
+IMPORTFILE Data
+  imFileName="pv-bt-data.csv"
   imFreq="Hour"
-  imTitle="E3 Data"
+  imTitle="PV/BT Data"
 
 WfName="Boulder.epw"
 wuDays=0
@@ -25,9 +25,9 @@ ZONE Z1
   GAIN BuildingLoad
       gnMeter = Elec0
       gnEndUse = Lit
-      gnPower = (import(E3Data,"HouseLoad_kW") - import(E3Data,"PvOut_kW")) * kw_to_btu_per_hr
+      gnPower = (import(Data,"HouseLoad_kW") - import(Data,"PvOut_kW")) * kw_to_btu_per_hr
 
-BATTERY "e3Battery"
+BATTERY "Battery"
   btMeter = Elec0
   btEndUse = BT
   btMaxCap = 16.0 // kWh
@@ -37,14 +37,14 @@ BATTERY "e3Battery"
   btChgEff = 0.97467943
   btDschgEff = 0.97467943
   btInitSOE = 1.0 // 100% state of energy
-  btChgReq = -1.0 * import(E3Data,"BtPwrReq_kW")
+  btChgReq = -1.0 * import(Data,"BtPwrReq_kW")
 
-EXPORTFILE "e3bt_out"
-  xfFileName = "e3bt_out"
+EXPORTFILE "pv_bt_out"
+  xfFileName = "pv_bt_out"
   xfFileStat = OVERWRITE
 
 EXPORT
-  exExportFile = "e3bt_out"
+  exExportFile = "pv_bt_out"
   exType = UDT
   exFreq = HOUR
   exTitle = "Battery Output"
@@ -53,9 +53,9 @@ EXPORT
   exHeader = ColumnsOnly
   ExportCol colhead="Day" colVal=@Top.dateStr
   ExportCol colhead="Hour" colVal=@Top.iHr
-  ExportCol colhead="Battery SOE" colVal=@BATTERY["e3Battery"].soe
-  ExportCol colhead="Battery Cycles" colVal=@BATTERY["e3Battery"].cycles
-  ExportCol colhead="Battery Energy [kWh]" colVal=@BATTERY["e3Battery"].energy
+  ExportCol colhead="Battery SOE" colVal=@BATTERY["Battery"].soe
+  ExportCol colhead="Battery Cycles" colVal=@BATTERY["Battery"].cycles
+  ExportCol colhead="Battery Energy [kWh]" colVal=@BATTERY["Battery"].energy
   ExportCol colhead="Meter: House Load [Btu/hr]" colVal=@METER["Elec0"].H.lit
   ExportCol colhead="Meter: Battery EndUse" colVal=@METER["Elec0"].H.bt
   ExportCol colhead="Meter: Total EndUse" colVal=@METER["Elec0"].H.tot

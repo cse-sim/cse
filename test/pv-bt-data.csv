@@ -1,6 +1,6 @@
 "Test Run",1
 "Wed 30-Nov-16  01:57:00 pm"
-"E3 Data","Hour"
+"PV/BT Data","Hour"
 "DayOfYear","Mon","Hour","TDV_kBtu__kWh","HouseLoad_kW","PvOut_kW","BtPwrReq_kW","AdjustedLoad_kW","PeakAdjustedLoad_kW"
 1,1,1,26.1,2.3,0,0,2.3,8.9
 1,1,2,25.8,2.3,0,0,2.3,8.9
