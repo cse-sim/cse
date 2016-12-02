@@ -167,9 +167,9 @@ Specifies the thermal conditions assumed at surface exterior, and at exterior of
                  surfaces are modeled.
   -------------- ---------------------------------------
 
-  **sfExAbs=*float***
+**sfExAbs=*float***
 
-  Surface exterior absorptivity.
+Surface exterior absorptivity.
 
   -------------------------------------------------------------------------
   **Units** **Legal**   **Default** **Required**            **Variability**
@@ -180,9 +180,9 @@ Specifies the thermal conditions assumed at surface exterior, and at exterior of
                                     SPECIFIEDT
   -------------------------------------------------------------------------
 
-  **sfInAbs=*float***
+**sfInAbs=*float***
 
-  Surface interior solar absorptivity.
+Surface interior solar absorptivity.
 
   ----------------------------------------------------------------------------
   **Units** **Legal**    **Default**              **Required** **Variability**
@@ -193,41 +193,41 @@ Specifies the thermal conditions assumed at surface exterior, and at exterior of
                          sfType = FLOOR, 0.8
   ----------------------------------------------------------------------------
 
-  **sfExEpsLW=*float***
+**sfExEpsLW=*float***
 
-  Surface exterior long wave (thermal) emittance.
-
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-  (none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
-
-  **sfInEpsLW=*float***
-
-  Surface interior long wave (thermal) emittance.
+Surface exterior long wave (thermal) emittance.
 
   **Units**   **Legal Range**       **Default**   **Required**   **Variability**
   ----------- --------------------- ------------- -------------- -----------------
   (none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
 
-  **sfExT=*float***
+**sfInEpsLW=*float***
 
-  Exterior air temperature.
+Surface interior long wave (thermal) emittance.
+
+  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
+  ----------- --------------------- ------------- -------------- -----------------
+  (none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
+
+**sfExT=*float***
+
+Exterior air temperature.
 
   **Units**   **Legal Range**   **Default**   **Required**                         **Variability**
   ----------- ----------------- ------------- ------------------------------------ -----------------
   ^o^F        *unrestricted*    *none*        Required if *sfExCnd* = SPECIFIEDT   hourly
 
-  **sfAdjZn=*znName***
+**sfAdjZn=*znName***
 
-  Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
+Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
 
-    **Units**   **Legal Range**    **Default**   **Required**                          **Variability**
-    ----------- ------------------ ------------- ------------------------------------- -----------------
-                name of a *ZONE*   *none*        Required when<br/>*sfExCnd* = ADJZN   constant
+  **Units**   **Legal Range**    **Default**   **Required**                          **Variability**
+  ----------- ------------------ ------------- ------------------------------------- -----------------
+              name of a *ZONE*   *none*        Required when<br/>*sfExCnd* = ADJZN   constant
 
-  **sfGrndRefl=*float***
+**sfGrndRefl=*float***
 
-  Ground reflectivity for this surface.
+Ground reflectivity for this surface.
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- ------------------
@@ -248,7 +248,7 @@ Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference
   Btuh/ft^2^-^o^F   *x* $>$ 0         *see above*   No             constant
 
 
-  <!--
+<!--
      - sfExRConGrnd
      - sfInHcModel
      - sfInHcMult
