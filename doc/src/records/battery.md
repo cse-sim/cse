@@ -148,3 +148,9 @@ Optionally indicates the end of the BATTERY definition. Alternatively, the end o
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+<!--
+Probes? Control strategies?
+
+SOE
+
+-->
