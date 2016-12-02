@@ -281,20 +281,6 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
 ----------- ----------------- ------------- -------------- -----------------
                x > 0            .1         No             constant
 
-
-                  -
-                  - coolDsDay
-
-                  - run
-                  - clear
-                  - skipDayStart
-                  - skipDayStep
-                  -BinResFile
-                 - BinResFileHourly
-                 - BinResFileName
-
-
-
 ## TOP Weather Data Items
 
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
