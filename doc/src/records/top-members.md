@@ -523,9 +523,9 @@ Report test prefix. Appears at beginning of report lines that are expected to di
 
 Controls invocation of autosizing phase prior to simulation.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              YES, NO           NO            No             constant
+  **Units**   **Legal Range**   **Default**                            **Required**   **Variability**
+  ----------- ----------------- -------------------------------------- -------------- -----------------
+              YES, NO           NO, unless AUTOSIZE commands in input            No             constant
 
 **auszTol=*float***
 
