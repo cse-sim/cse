@@ -52,7 +52,7 @@ Selects window model
   ----------- ----------------- ------------- -------------- -----------------
               SHGC, ASHWAT      SHGC          No             constant
 
-wnGt=*choice*
+**wnGt=*choice***
 
 GLAZETYPE for window. Provides many defaults for window properties as cited below.
 
@@ -80,6 +80,23 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
   ----------------- ----------------- ------------- ---------------------------------- -----------------
   Btuh/ft^2^-^o^F   *x* $>$ 0         gtUNFRC       Required when *wnModel* = ASHWAT   constant
 
+**wnExEpsLW=*float***
+
+Window exterior long wave (thermal) emittance.
+
+**Units**   **Legal Range**       **Default**   **Required**   **Variability**
+----------- --------------------- ------------- -------------- -----------------
+(none)      0 $\le$ *x* $\le$ 1   0.84           No             constant
+
+**wnInEpsLW=*float***
+
+Window interior long wave (thermal) emittance.
+
+**Units**   **Legal Range**       **Default**   **Required**   **Variability**
+----------- --------------------- ------------- -------------- -----------------
+(none)      0 $\le$ *x* $\le$ 1   0.84           No             constant
+
+
 **wnInH=*float***
 
 Window interior surface (air film) conductance.
@@ -102,7 +119,78 @@ Window exterior surface (air film) conductance.
 
   **Units**         **Legal Range**   **Default**              **Required**   **Variability**
   ----------------- ----------------- ------------------------ -------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         same as owning surface   No             constant
+  Btuh/ft^2^-^o^F    x > 0             same as owning surface   No             constant
+
+
+When wnModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on wnExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
+
+Model            Exposed to ambient              Exposed to zone
+---------------- ------------------------------- ----------------------------
+UNIFIED          default CSE model               default CSE model
+INPUT            hc = wnExHcMult                 hc = wnxxHcMult
+AKBARI           Akbari model                    n/a
+WALTON           Walton model                    n/a
+WINKELMANN       Winkelmann model                n/a
+MILLS            n/a                             Mills model
+ASHRAE           n/a                             ASHRAE handbook values
+--------------- ------------------------------- ----------------------------
+
+**wnExHcModel=*choice***
+
+Selects the model used for exterior surface convection when wnModel = Forward\_Difference.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+---------- ----------------- ------------- -------------- -----------------
+          *choices above*  UNIFIED         No             constant
+
+**wnExHcLChar=*float***
+
+Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside face is exposed to ambient (i.e. to wind).
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+    ft            x > 0              10            No            constant
+
+
+**wnExHcMult=*float***
+
+Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=wnExHcMult.  For other wnExHcModel choices, the model-derived hc is multiplied by wnExHcMult.
+
+**Units**         **Legal Range**   **Default**   **Required**   **Variability**
+----------------- ----------------- ------------- -------------- -----------------
+                                       1               No            subhourly
+
+**wnInHcModel=*choice***
+
+Selects the model used for the inside (zone) surface convection when wnModel = Forward\_Difference.
+
+**Units**   **Legal Range**                    **Default**   **Required**   **Variability**
+---------- ----------------------------------- ------------- -------------- -----------------
+            *choices above (see wnExHcModel)*  UNIFIED         No             constant
+
+**wnInHcMult=*float***
+
+Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=wnInHcMult.  For other wnInHcModel choices, the model-derived hc is multiplied by wnInHcMult.
+
+**Units**         **Legal Range**   **Default**   **Required**   **Variability**
+----------------- ----------------- ------------- -------------- -----------------
+                                       1               No            subhourly
+
+**wnSHGC=*float***
+
+Rated Solar Heat Gain Coefficient (SHGC) for the window assembly.
+
+**Units**   **Legal Range**         **Default**   **Required**   **Variability**
+----------- ----------------------- ------------- -------------- ------------------
+fraction    0 < x < 1                gtSHGC          No           constant
+
+**wnFMult=*float***
+
+Frame area multiplier = areaGlaze / areaAssembly
+
+**Units**   **Legal Range**         **Default**   **Required**   **Variability**
+----------- ----------------------- ------------- -------------- ------------------
+fraction    0 < x < 1                gtFMult or 1      No           constant
 
 **wnSMSO=*float***
 
@@ -192,12 +280,10 @@ View factor from this window to ground for diffuse radiation. For the shading ef
 
   -------------------------------------------------------------
 
-**endWindow**
+**endWINDOW**
 
 Optionally indicates the end of the window definition. Alternatively, the end of the window definition can be indicated by END or the declaration of another object. END or endWindow, if used, should follow any subobjects of the window (SHADEs and/or SGDISTs).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

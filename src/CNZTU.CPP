@@ -847,7 +847,8 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 
 // returns non-RCOK for error that should terminate run (message issued).
 {
-#if 0 // 5-97 moved to end run, cnguts.cpp.   1 //10-96
+
+#if 0 // 5-97 moved to end run, cnguts.cpp.
 x//----- excess humidity message
 x
 x    if (znXLGain != 0.)  			// if znW() rejected latent gain to avoid supersaturation at tu-ah convergence

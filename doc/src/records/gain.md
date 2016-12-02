@@ -1,6 +1,6 @@
 # GAIN
 
-A GAIN object adds sensible and/or latent heat to the ZONE, and/or adds arbitrary energy use to a METER. GAINs are subobjects of ZONEs and are normally given within the input for their ZONE (also see ALTER). As many GAINs as desired (or none) may be given for each ZONE.
+A GAIN object adds sensible and/or latent heat to the ZONE, and/or adds arbitrary energy use to a METER. GAINs may be subobjects of ZONEs and are normally given within the input for their ZONE.  As many GAINs as desired (or none) may be given for each ZONE.  Alternatively, GAINs may be subobjects of TOP and specify gnZone to specify their associate zone.
 
 Each gain has an amount of power (gnPower), which may optionally be accumulated to a METER (gnMeter). The power may be distributed to the zone, plenum, or return as sensible heat with an optionl fraction radiant, or to the zone as latent heat (moisture addition), or not.
 
@@ -12,11 +12,20 @@ Name of gain; follows the word GAIN if given.
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        No             constant
 
+**gnZone=*znName***
+
+Name of ZONE to which heat gains are added.  Omitted when GAIN is given as a ZONE subobject.  If a TOP subobject (i.e., not a ZONE subobject) and znZone is omitted, heat gains are discarded but energy use is still recorded to gnMeter.  This feature can be used to represent energy uses that our outside of conditioned zones (e.g. exterior lighting).
+
+**Units**   **Legal Range**   **Default**             **Required**   **Variability**
+----------- ----------------- ----------------------  -------------- -----------------
+            *name of ZONE*     *parent zone if any*       No             constant
+
+
 **gnPower=*float***
 
 Rate of heat addition/energy use. Negative gnPower values may be used to represent heat removal/energy generation. Expressions containing functions are commonly used with this member to schedule the gain power on a daily and/or hourly basis. Refer to the functions section in Section 4 for details and examples.
 
-All gains, including electrical, are specified in Btuh units. But note that internal gain and meter reporting is in MBtu (millions of Btu) by default even though input is in Btuh.
+All gains, including electrical, are specified in Btuh units unless associated with DHW use (see gnCtrlDHWSYS), in which case gnPower is specified in Btuh/gal.  Note that meter reporting of internal gain is in MBtu (millions of Btu) by default.  
 
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
@@ -26,9 +35,9 @@ All gains, including electrical, are specified in Btuh units. But note that inte
 
 Name of meter by which this GAIN's gnPower is recorded. If omitted, gain is assigned to no meter and energy use is not accounted in CSE simulation reports; thus, gnMeter should only be omitted for "free" energy sources.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              meter name        *none*        No             constant
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+            *name of METER*      *none*        No             constant
 
 **gnEndUse=*choice***
 
@@ -75,7 +84,7 @@ Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that 
 
 **gnFrPl=*float***
 
-Fraction of gain going to plenum. Plenums are not implementented as of August, 2012. Any gain directed to the plenum is discarded.
+Fraction of gain going to plenum. Plenums are not implemented as of August, 2012. Any gain directed to the plenum is discarded.
 
 **gnFrRtn=*float***
 
@@ -87,10 +96,6 @@ Fraction of gain going to return. The return fraction model is not implemented a
 
 The gain to the zone may be further divided into convective sensible, radiant sensible and latent heat via the gnFrRad and gnFrLat members; the plenum and return gains are assumed all convective sensible.
 
-<!-- TODO: verify / update when implemented -->
-**Gain Modeling in CR zone**
-
-In the CNE zone mode, the radiant internal gain is distributed to the surfaces in the zone, rather than going directly to the zone "air" heat capacity (znCAir). A simple model is used -- all surfaces are assumed to be opaque and to have the same (infrared) absorptivity -- even windows. Along with the assumption that the zone is spherical (implicit in the current treatment of solar gains), this allows distribution of gains to surfaces in proportion to their area, without any absorptivity or transmissivity calculations. The gain for windows and quick-model surfaces is assigned to the znCAir, except for the portion which conducts through the surface to the other side rather than through the surface film to the adjacent zone air; the gain to massive (delayed-model) surfaces is assigned to the side of surface in the zone with the gain.
 
 **Gain Modeling in CNE zones**
 
@@ -112,7 +117,36 @@ Fraction of total gain going to zone (gnFrZn) that is latent heat (moisture addi
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
-              0 $\leq$ *x* $\leq$ 1   0.            No             hourly
+              0 $\le$ x $\le$ 1         0.            No             hourly
+
+
+**gnDlFrPow=*float***
+
+Hourly power reduction factor, typically used to modify lighting power to account for
+daylighting.
+
+  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
+  ----------- ----------------------- ------------- -------------- -----------------
+              0 $\leq$ *x* $\leq$ 1    1.            No             hourly
+
+
+**gnCtrlDHWSYS=*dhwsysName***
+
+Name of a DHWSYS whose water use modulates gnPower.  For example, electricity use of water-using appliances (e.g. dishwasher or clothes washer) can be modeled based on water use, ensuring that the uses are synchronized.  When this feature is used, gnPower should be specified in Btuh/gal.
+
+**Units**   **Legal Range**     **Default**            **Required**   **Variability**
+----------- ------------------- ---------------------- -------------- -----------------
+            *name of a DHWSYS*  no DHWSYS/GAIN linkage            No         constant
+
+**gnCtrlDHWEndUse=*dhwEndUseName***
+
+Name of the DHWSYS end use consumption that modulates gnPower.  See DHWMETER for DHW end use definitions.
+
+**Units**   **Legal Range**     **Default**            **Required**   **Variability**
+----------- ------------------- ---------------------- -------------- -----------------
+             DHW end use         Total                     No          constant
+
+
 
 **endGain**
 

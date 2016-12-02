@@ -212,11 +212,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SKYMODCH skyModel 	// sky model: C_.._ISO or _ANISO
     *i SKYMODLWCH skyModelLW	// long-wave sky model
     *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)
-								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs (default)
-								//   C_DHWMODELCH_2013: corrected 2013 implementation
-								//   C_DHWMODELCH_2016: 2016 implementation
+								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs
+								//   C_DHWMODELCH_2013: corrected 2013 implementation (default)
 
-								//   
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
     *i USI workDayMask		// mask with bits set for "work" days, clear for "non-work" days, default Mon..Fri, 5-95.
@@ -1320,10 +1318,10 @@ RECORD GT "glazeType" *RAT	// glazing type input or run info
     *mh FRAC gtSMSO		// optional solar heat gain coef multiplier, shades open, used if not spec'd in window, dflt 1.0.
     *mh FRAC gtSMSC		// ditto shades closed, defaults at window level.
     *i FLOAT_GEZ gtFMult   	// optional frame/mullion multiplier for use when not spec'd in window. constant.
-    *i *nest PY4 gtPySHGC	/* beam SHGC incidence angle multiplier: 4th-order polynomial in cosine of angle.
-    				   4 inputtable coefficients (no constant). .val1(x) returns value. */
+    *i *nest PY4 gtPySHGC	// beam SHGC incidence angle multiplier: 4th-order polynomial in cosine of angle.
+    						//   4 inputtable coefficients (no constant). .val1(x) returns value.
     *i FRAC gtDMSHGC	// diffuse SHGC multiplier used (in place of polynomial). RQD. constant.
-    *i FRAC gtDMRBSol	// reflactance for diffuse solar on inside of glass, for Cavity Absorptance calc'ns (cgsolar.cpp).
+    *i FRAC gtDMRBSol	// reflectance for diffuse solar on inside of glass, for Cavity Absorptance calc'ns (cgsolar.cpp).
     *i UH_GZ gtU		// optional u-value for use when not spec'd in window. contant.
     *i UH_GZ gtUNFRC	// overall U-factor evaluated under per NFRC heating conditions
     *i SI gtNGlz		// # of glazings bare-glass assembly
