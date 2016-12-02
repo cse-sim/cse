@@ -282,6 +282,9 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
                x > 0            .1         No             constant
 
 
+<!--
+TODO: Address this snippet. Is it needed for anything? If not, delete.
+
                   -
                   - coolDsDay
 
@@ -292,7 +295,7 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
                   -BinResFile
                  - BinResFileHourly
                  - BinResFileName
-
+-->
 
 
 ## TOP Weather Data Items
