@@ -224,6 +224,77 @@ As noted, ventAvail is evaluated hourly, permitting flexible control strategy mo
   ----------- ----------------------- -------------- -------------- -----------------
               *Choices above*          WHOLEBUILDING           No         hourly
 
+**dhwModel=*choice***
+
+Modifies aspects of DHW calculations.
+
+**Choice**    **Effect**
+------------- ---------------------------------
+T24DHW          Matches results from T24DHW.DLL
+2013            Corrected CEC 2013 methods with 2016 updates
+------------- ---------------------------------
+
+  **Units**   **Legal Range**         **Default**    **Required**   **Variability**
+  ----------- ----------------------- -------------- -------------- -----------------
+              *Choices above*          2013             No            constant
+
+**ANTolAbs=*float***
+
+AirNet absolute convergence tolerance. Ideally, calculated zone air pressures should be such that the net air flow into each zone is 0 -- that is, there should be a perfect mass balance.  The iterative AirNet solution techniques are deemed converged when netAirMassFlow < max( ANTolAbs, ANTolRel*totAirMassFlow).
+
+**Units**   **Legal Range** **Default**            **Required**   **Variability**
+----------- --------------- --------------------- -------------- -----------------
+ lbm/sec        x > 0       0.00125 (about 1 cfm)       No             constant
+
+**ANTolRel=*float***
+
+AirNet relative convergence tolerance.  See AnTolAbs just above.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+               x > 0            .0001         No             constant
+
+
+The ASHWAT complex fenestration model used when WINDOW wnModel=ASHWAT yields several heat transfer results that are accurate over local ranges of conditions.  Several values control when these value are recalculated.  If any of the specified values changes more than the associated threshold, a full ASHWAT calculation is triggered.  Otherwise, prior results are used.  ASHWAT calculations are computationally expensive and conditions often change only incrementally between time steps.
+
+**AWTrigT=*float***
+
+ASHWAT temperature change threshold -- full calculation is triggered by a change of either indoor or outdoor environmental (combined air and radiant) temperature that exceeds AWTrigT.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+  ^o^F         x > 0            1              No             constant
+
+**AWTrigSlr=*float***
+
+ASHWAT solar change threshold -- full calculation is triggered by a fractional change of incident solar radiation that exceeds AWTrigSlr.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+              x > 0            .05            No             constant
+
+**AWTrigH=*float***
+
+ASHWAT convection coefficient change threshold -- full calculation is triggered by a fractional change of inside surface convection coefficient that exceeds AWTrigH.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+               x > 0            .1         No             constant
+
+
+                  -
+                  - coolDsDay
+
+                  - run
+                  - clear
+                  - skipDayStart
+                  - skipDayStep
+                  -BinResFile
+                 - BinResFileHourly
+                 - BinResFileName
+
+
+
 ## TOP Weather Data Items
 
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
@@ -254,11 +325,13 @@ The following are the terms determined from the weather file for internal use, a
 
 **wfName=*string***
 
-Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH. (?? Temporarily, backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\cz01.cec"). This will be corrected.).
+Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.
+
+(?? Temporarily, backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\cz01.cec"). This will be corrected.).  
 
   **Units**   **Legal Range**           **Default**   **Required**   **Variability**
   ----------- ------------------------- ------------- -------------- -----------------
-              file name,path optional                 Yes            constant
+              file name,path optional                   Yes            constant
 
 **skyModel=*choice***
 
@@ -271,7 +344,24 @@ Selects sky model used to determine relative amounts of direct and diffuse irrad
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
-              ISOTROPIC ANISOTROPIC   ANISOTROPIC   No             constant
+              *choices above*   ANISOTROPIC   No             constant
+
+**skyModelLW=*choice***
+
+Selects the model used to derive sky temperature used in long-wave (thermal) radiant heat exchange calculations for SURFACEs exposed to ambient conditions.  See the RACM alorithms documentation for technical details.
+
+  Choice         Description
+  -------------- ---------------------------------------------
+  DEFAULT        Default: tSky from weather file if available else Berdahl-Martin
+	BERDAHLMARTIN  Berdahl-Martin (tSky depends on dew point, cloud cover, and hour)
+	DRYBULB   	   tSky = dry-bulb temperature (for testing)
+	BLAST          Blast model (tSky depends on dry-bulb)
+  ------------- ---------------------------------
+
+  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
+  ----------- ----------------------- ------------- -------------- -----------------
+               *choices above*          DEFAULT        No             constant
+
 
 The reference temperature and humidity are used to calculate a humidity ratio assumed in air specific heat calculations. The small effect of changing humidity on the specific heat of air is generally ignored in the interests of speed, but the user can control the humidity whose specific heat is used through the refTemp and refRH inputs.
 
@@ -358,6 +448,15 @@ Multiplier for diffuse horizonal irradiance.
   ----------- ----------------- ------------- -------------- -----------------
               *x* $\geq$ 0      1             No             constant
 
+**soilDiff=*float***
+
+Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note that derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+    ft^2^/hr      x > 0          0.025             No             constant
+
+
 ## TOP Report Data Items
 
 These items are used in page-formatted report output files. See REPORTFILE, Section 5.245.21, and REPORT, Section 5.25.
@@ -422,7 +521,7 @@ Report test prefix. Appears at beginning of report lines that are expected to di
 
 **doAutoSize=*choice***
 
-Controls invocation of autosizing step prior to simulation.
+Controls invocation of autosizing phase prior to simulation.
 
   **Units**   **Legal Range**   **Default**                            **Required**   **Variability**
   ----------- ----------------- -------------------------------------- -------------- -----------------
@@ -430,27 +529,45 @@ Controls invocation of autosizing step prior to simulation.
 
 **auszTol=*float***
 
+Autosize tolerance.  Sized capacity results are deemed final when successive design day calculations produce results within auszTol of the prior iteration.
+
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-                                .01           No             constant
+                                .005           No             constant
 
 **heatDsTDbO=*float***
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F                          0             No             hourly
+Heating outdoor dry bulb design temperature used for autosizing heating equipment.
+
+  **Units**   **Legal Range**   **Default**   **Required**    **Variability**
+  ----------- ----------------- ------------- --------------- -----------------
+  ^o^F                                          if autosizing          hourly
 
 **heatDsTWbO=*float***
 
+Heating outdoor Whether bulb design temperature used for autosizing heating equipment.
+
+  **Units**   **Legal Range**   **Default**              **Required**   **Variability**
+  ----------- ----------------- ------------------------ -------------- -----------------
+   ^o^F                          derived assuming RH=.7            No          hourly
+
+**coolDsDay=*list of up to 12 days***
+
+Specifies cooling design days for autosizing.  Each day will be simulated repeatedly using weather file conditions for that day.
+
+ **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+ ----------- ----------------- ------------- -------------- -----------------
+    dates                           *none*           No             constant
+
+**coolDsMo=*list of up to 12 months***
+
+Deprecated method for specifying cooling autosizing days.  Design conditions are taken from ET1 weather file header, however, the limited availale ET1 files do not contain design condition information.
+
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  F                             0             No             hourly
+     months                         *none*           No           constant
 
-**coolDsMo=*??***
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  F                             .01           No             hourly
 
 ## TOP Debug Reporting
 

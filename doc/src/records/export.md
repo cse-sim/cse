@@ -89,9 +89,17 @@ Name of ZONE for which a ZEB, ZST, or ZDD export is being requested; ALL and SUM
 
 Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 
+**Units**   **Legal Range**               **Default**   **Required**                **Variability**
+----------- ----------------------------- ------------- --------------------------- -----------------
+name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
+
+**exDHWMeter=*dhwMtrName***
+
+Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
+
   **Units**   **Legal Range**               **Default**   **Required**                **Variability**
-  ----------- ----------------------------- ------------- --------------------------- -----------------
-              name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
+  ----------- ----------------------------- ------------- ------------------------------ -----------------
+              name of a *DHWMETER*, ALL, SUM              Required for *exType*=DHWMTR   constant
 
 **exAh=ah*Name***
 

@@ -125,7 +125,9 @@ void FC cgClean( 		// cg overall init/cleanup routine
 
 	locDone();				// clean up location stuff: free Locsolar. local. redundant call ok.
 
+#if defined( BINRES)
 	brfw.clean();			// clean the only ResfWriter object. local object, brfw.cpp code.
+#endif
 
 	IffnmB.free();	   	/* Import File Field Names info: used for autosize & run & further compile support til CLEAR;
 				   may not be free'd in runFazDataFree(). 2-94. */
@@ -1270,11 +1272,11 @@ RC GAIN::gn_CkF(
 	if (fs[GAIN_GNDLFRPOW] & FsSET)			// if daylighting fraction power given
 	{
 		if (!gnEndUse)				// if end use not given
-			oWarn( (char *)MH_S0507);		/* "No gnEndUse given when gnDlFrPow given.\n"
-							"    gnEndUse=\"Lit\" is usual with gnDlFrPow." */
+			oWarn( (char *)MH_S0507);		// No gnEndUse given when gnDlFrPow given.\n"
+											// "    gnEndUse=\"Lit\" is usual with gnDlFrPow."
 		else if (gnEndUse != C_ENDUSECH_LIT)	// if end use isn't lighting
-			oWarn( (char *)MH_S0508);		/* "gnEndUse other than \"Lit\" given when gnDlFrPow given.\n"
-							"    gnEndUse=\"Lit\" is usual with gnDlFrPow." */
+			oWarn( (char *)MH_S0508);		// gnEndUse other than \"Lit\" given when gnDlFrPow given.\n"
+											// "    gnEndUse=\"Lit\" is usual with gnDlFrPow."
 	}
 	return rc;
 }		// GAIN::gn_CkF
