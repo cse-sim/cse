@@ -377,7 +377,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 #if 1
 			GENERIC "Generic"				// general generic (parameterized by EF and vol)
 			UEF2GENERIC "UEF2Generic"			// experimental UEF=2
-			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports re-existing test cases)
+			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports pre-existing test cases)
 #else
 x			GENERICRESFRAC35 "GenericResFrac35"
 x			GENERICRESFRAC45 "GenericResFrac45"
@@ -395,7 +395,7 @@ x			GENERICRESFRAC55 "GenericResFrac55"
 							//   used for checking array dim
 		  }
 *choicb DHWEUXCH {			// extended hot water end uses
-							// same as Total + Unknown + DHWEUX
+							// same as Total + Unknown + DHWEUCH
 			TOTAL "Total"
 			UNKNOWN "Unknown"
 			FAUCET "Faucet"
@@ -504,6 +504,7 @@ x			GENERICRESFRAC55 "GenericResFrac55"
               COOK		"Cook"	// cooking
               USR1      "User1"	// User-defined catagories 1 and 2 for user-defined breakdown of GAINs
               USR2      "User2" //
+			  BT		"BT"	// battery energy
               PV        "PV"	// CAUTION: code (cnguts,cgresult.cpp) assumes C_ENDUSECH_PV is largest.
 			}
 

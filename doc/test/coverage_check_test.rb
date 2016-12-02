@@ -401,4 +401,10 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     actual = RecordInputSetDifferences[ris1, ris3, false]
     assert(!actual.nil?)
   end
+  def test_DropNameFields
+    input = {"A"=>Set.new(["a","b","cName","c","d"])}
+    actual = DropNameFields[input]
+    expected = {"A"=>Set.new(["a","b","c","d"])}
+    assert_equal(expected, actual)
+  end
 end

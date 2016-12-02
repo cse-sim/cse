@@ -1,0 +1,66 @@
+// Battery Test file
+
+WfName="Boulder.epw"
+wuDays=0
+nSubSteps=1
+
+METER Elec0
+
+ZONE Z1
+  znArea = 500.0
+  znVol = 500.0 * 8
+  GAIN BuildingLoad
+      gnMeter = Elec0
+      gnEndUse = Lit
+      gnPower = 3412.142 // approximately equal to 1 kW
+
+BATTERY "Basic"
+  btMeter = Elec0
+  btEndUse = BT
+  btMaxCap = 10.0
+  btUseUsrChg = No
+
+EXPORTFILE "battery_out"
+  xfFileName = "battery_out"
+  xfFileStat = OVERWRITE
+
+EXPORT
+  exExportFile = "battery_out"
+  exType = UDT
+  exFreq = HOUR
+  exTitle = "Battery Output"
+  exDayBeg = jan 1
+  exDayEnd = dec 31
+  exHeader = ColumnsOnly
+  ExportCol colhead="Day" colVal=@Top.dateStr
+  ExportCol colhead="Hour" colVal=@Top.iHr
+  ExportCol colhead="Battery SOE" colVal=@BATTERY["Basic"].soe
+  ExportCol colhead="Battery Cycles" colVal=@BATTERY["Basic"].cycles
+  ExportCol colhead="Battery Energy [kWh]" colVal=@BATTERY["Basic"].energy
+  ExportCol colhead="Meter: Lighting EndUse" colVal=@METER["Elec0"].H.lit
+  ExportCol colhead="Meter: Battery EndUse" colVal=@METER["Elec0"].H.bt
+  ExportCol colhead="Meter: Total EndUse" colVal=@METER["Elec0"].H.tot
+
+REPORT rpType=MTR rpMeter=Elec0 rpFreq=Month
+
+RUN
+
+ALTER EXPORTFILE "battery_out"
+  xfFileName = "battery_out_custom"
+
+ALTER BATTERY "Basic"
+  btUseUsrChg = YES
+  btChgReq = -0.5 // kW
+
+RUN
+
+ALTER BATTERY "Basic"
+  btUseUsrChg = NO
+
+ALTER GAIN BuildingLoad
+  gnPower = -3412.142 // 1 kW charge
+
+ALTER EXPORTFILE "battery_out"
+  xfFileName = "battery_out_charging"
+
+RUN

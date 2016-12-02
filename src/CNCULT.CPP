@@ -32,6 +32,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>	// USI SI LI
+#include <unordered_set>
 
 #include <ancrec.h>	// record: base class for rccn.h classes
 #include <rccn.h>	// TOPRATstr ZNRstr SFIstr SDIstr
@@ -85,6 +86,7 @@ makAncDHWUSE( WUiB);		// DHW use (single draw)
 
 // PV: PV Watts photovoltaic array
 makAncPVARRAY(PViB);		// PV array
+makAncBATTERY(BTiB);		// Battery
 
 // air handlers and terminals and plant
 makAncTU(TuiB);				// terminals input
@@ -1768,7 +1770,7 @@ CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whEF",		 DAT,   DHWHEATER_EF,      0,     0, VEOI,   TYFL,  0,      0.82f,  N, N),
 CULT( "whResHtPwr",	 DAT,   DHWHEATER_RESHTPWR,0,     0, VEOI,   TYFL,  0,     4500.f,  N, N),
-CULT( "whResTHPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "whResHtPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whLDEF",		 DAT,   DHWHEATER_LDEF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whHPAF",		 DAT,   DHWHEATER_HPAF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whEff",		 DAT,   DHWHEATER_EFF,     0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
@@ -1991,6 +1993,32 @@ CULT( "endPVARRAY",  ENDER, 0,               0,       0, 0,      0,     0,      
 CULT()
 };	// pvArrT
 
+	//============================== BATTERY command ===============================
+LOCAL RC FC btStarCkf(CULT* c, /*BATTERY* */ void *p, void *p2, void *p3)
+// called at end of BATTERY input, to get messages near source of error.
+{
+	return ((BATTERY*)p)->bt_CkF();
+}		// btStarCkf
+		//=============================================================================
+static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
+{
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",            STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   btStarCkf),
+CULT( "btMeter",      DAT,   BATTERY_METER,   0,       0, VEOI,   TYREF, &MtriB, N,      N,   N),
+CULT( "btEndUse",     DAT,   BATTERY_ENDUSE,  0,       0, VEOI,   TYCH,  0,      C_ENDUSECH_BT, N, N),
+CULT( "btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),
+CULT( "btInitSOE",    DAT,   BATTERY_INITSOE, 0,       0, VEOI,   TYFL,  0,      0.5f,   N,   N),
+CULT( "btInitCycles", DAT,   BATTERY_INITCYCLES,0,     0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
+CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
+CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// btT
 
 //====================== AIRHANDLER command (Air Handler) ===========================
 static CULT ahT[] = //-------------------------- AIRHANDLER cmd RAT Entry table, used from cnTopCult
@@ -2454,6 +2482,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
+	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),
@@ -2480,6 +2509,85 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 {	RiB.an_SetCULTLink( rpT);
 	XiB.an_SetCULTLink( exT);
 }		// SetCULTLinks
+//============================================================================================
+class CULTDOC
+{
+public:
+	CULTDOC( int options) : cu_options( options) {}
+	int cu_Doc();
+
+private:
+	int cu_options;
+	std::unordered_set< std::string> cu_doneList;
+	int cu_Doc1( const CULT* pCULT, const char* name, const char* parentName=NULL);
+};		// class CULTDOC
+//----------------------------------------------------------------------------
+int CULTDOC::cu_Doc()
+{
+	return cu_Doc1( cnTopCult, "Top");
+
+}		// CULTDOC::cu_Doc
+//----------------------------------------------------------------------------
+int CULTDOC::cu_Doc1(	// document CULT table and children
+	const CULT* pCULT,
+	const char* name,
+	const char* parentName /*=NULL*/)
+// returns 0 if info displayed
+//         1 if skipped (already seen)
+{
+	int ret = 0;
+	std::string nameS( name);
+
+	std::unordered_set<std::string>::const_iterator doneIt = cu_doneList.find( nameS);
+	if (doneIt != cu_doneList.end() )
+		ret = 1;
+	else
+	{	printf( "\n\n%s", name);
+		if (parentName)
+			printf("    Parent: %s", parentName);
+		printf("\n");
+		const CULT* pCX = pCULT;
+		while (pCX->id)
+		{   if (pCX->cs != RATE)
+				pCX->cu_ShowDoc( cu_options);
+			pCX++;
+		}
+		pCX = pCULT;
+		while (pCX->id)
+		{   if (pCX->cs == RATE)
+				cu_Doc1( (const CULT*)pCX->p2, pCX->id, name);
+			pCX++;
+		}
+		cu_doneList.insert( nameS);
+	}
+    return ret;
+}       // CULTDOC::cu_Doc1
+//---------------------------------------------------------------------------
+int CULT::cu_ShowDoc(       // document this CULT
+    int options /*=0*/) const
+// returns 0 if info displayed
+//         1 if no display (id=="*" or NO_INP)
+{ 
+    options;
+	int ret = 0;
+	if (strcmp( id, "*") == 0
+	 || (f & NO_INP))
+		ret = 1;
+	else
+		printf( "   %s\n", id);
+
+    return ret;
+    
+}   // CULT::cu_ShowDoc
+//----------------------------------------------------------------------------
+int culShowDoc(			// public function: display all input
+    int options/*=0*/)
+{
+	CULTDOC cultDoc( options);		// local class
+	int ret = cultDoc.cu_Doc();
+    return ret;
+}       // culDoc1
+//=============================================================================
 
 /************************************************ rest of file is if-outs ***************************************************/
 

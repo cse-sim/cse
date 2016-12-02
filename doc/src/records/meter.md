@@ -5,17 +5,17 @@ A METER object is a user-defined "device" that records energy consumption of equ
 Meters account for energy use in the following pre-defined categories, called *end uses*. The abbreviations in parentheses are used in MTR report headings (and for gnMeter input, below).
 
 -   Total use
--   Space Cooling Use (Clg)
--   Space Heating Use - including heat pump compressor (Htg)
--   Heat Pump Backup Heat (HPHtg)
--   Domestic (Service)
--   Hot Water Heating (DHW)
+-   Space cooling use (Clg)
+-   Space heating use - including heat pump compressor (Htg)
+-   Heat pump backup heating (HPHtg)
+-   Hot water heating (DHW)
+-   Hot water heating backup - detailed HPWH model only (DHWBU)
 -   Fans – AC and cooling ventilation (FanC)
 -   Fans – heating (FanH)
 -   Fans – IAQ venting (FanV)
 -   Fans -- other (Fan)
--   HVAC Auxiliary - not including fans (Aux)
--   Process Energy (Proc)
+-   HVAC auxiliary - not including fans (Aux)
+-   Process energy (Proc)
 -   Lighting (Lit)
 -   Receptacles (Rcp)
 -   Exterior (Ext)
@@ -26,19 +26,20 @@ Meters account for energy use in the following pre-defined categories, called *e
 -   Cooking (Cook)
 -   User defined 1 (User1)
 -   User defined 2 (User2)
+-   Photovoltaic generation (PV)
 
 The user has complete freedom over how many meters are defined and how equipment is assigned to them. At one extreme, a single meter "Electricity" could be defined and have all of electrical uses assigned to it. On the other hand, definition of separate meters "Elect\_Fan1", "Elect\_Fan2", and so forth allows accounting of the electricity use for individual pieces of equipment. Various groupings are possible: for example, in a building with several air handlers, one could separate the energy consumption of the fans from the coils, or one could separate the energy use by air handler, or both ways, depending on the information desired from the run.
 
-The members which assign energy use to meters include:
+The members that assign energy use to meters include:
 
 -   GAIN: gnMeter, gnEndUse
 -   ZONE: xfanMtr
 -   IZXFER: izfanMtr
 -   RSYS: rsElecMtr, rsFuelMtr
--   DHWSYS
--   DHWHEATER
--   DHWPUMP
--   DHWLOOPPUMP
+-   DHWSYS: wsElecMtr, wsFuelMtr
+-   DHWHEATER: whElectMtr, whFuelMtr
+-   DHWPUMP: wpElecMtr
+-   DHWLOOPPUMP: wlpElecMtr
 -   TERMINAL: tuhcMtr, tfanMtr
 -   AIRHANDLER: sfanMtr, rfanMtr, ahhcMtr, ahccMtr, ahhcAuxOnMtr, ahhcAuxOffMtr, ahhcAuxFullOnMtr, ahhcAuxOnAtAllMtr, ahccAuxOnMtr, ahccAuxOffMtr, ahccAuxFullOnMtr, ahccAuxOnAtAllMtr
 -   BOILER: blrMtr, blrpMtr, blrAuxOnMtr, blrAuxOffMtr, blrAuxFullOnMtr, blrAuxOnAtAllMtr
@@ -65,5 +66,3 @@ Indicates the end of the meter definition. Alternatively, the end of the meter d
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

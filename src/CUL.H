@@ -115,6 +115,8 @@ struct CULT	: public STBK // for initialized data to drive user interface
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( (void*)_dfpi), dff( 0.f), p2( _p2), ckf( _ckf) { }
 
+    int cu_ShowDoc( int options=0) const;
+
 };	// struct CULT
 
 /* CULT user function calls ------
@@ -204,7 +206,7 @@ III. Member Input
 
 // CULT.f flag bits ---------------------------------------------------------
 
-#define RDFLIN	    1	// for TYIREF/TYREF: default to context in which  nested, if proper type RATE, else implies RQD.
+#define RDFLIN	    1	// for TYIREF/TYREF: default to context in which nested, if proper type RATE, else implies RQD.
 #define DFLIN       2	// default TYIREF/TYREF per context, but do NOT imply required. eg for report zones.
 #define NO_INP      4	// may not be input: just gets init via .dfpi/.dff, .itf.
 #define RQD			8	// input required
@@ -242,12 +244,12 @@ x #define ELECTRIC_OK ????	// TYREF: ok to enter "electric" (TI_ELECTRIC stored)
 //	TYFL		   DTFLOAT
 //	TYSTR		   DTCHP	Dm char * is stored
 #define TYREF   0x2000	// TI	Reference to record in basAnc .b.  Input by name (like TYID); looked up and subscr stored at RUN.
-#define TYIREF	0x3000	/* TI.  Immediate-resolution reference to already-defined entry in basAnc .b.  Input like TYID.
-				TYIREF not TYREF used in ownTi's of rats that may own entries in others rats,
-				so set during input, in case used during input re ambiguity resolution
-				(not positive needed) 2-91. Typically used with RDFLIN. */
-#define TYQCH	0x6000	/* SI or any CHOICB.  "Quick choice", decoded per /-delimited keyword string in cult.b.
-                                              historical; still needed 2-91? */
+#define TYIREF	0x3000	// TI.  Immediate-resolution reference to already-defined entry in basAnc .b.  Input like TYID.
+						// TYIREF not TYREF used in ownTi's of rats that may own entries in others rats,
+						// so set during input, in case used during input re ambiguity resolution
+						// (not positive needed) 2-91. Typically used with RDFLIN. */
+#define TYQCH	0x6000	// SI or any CHOICB.  "Quick choice", decoded per /-delimited keyword string in cult.b.
+                        // historical; still needed 2-91? */
 #define TYDOY	0x7000	// DOY	Day of year julian date, input as SI expr (month day syntax accepted).
 
 /* bit assignment CAUTION: only 0xf000 avail here; others used in cuparse.h.
@@ -256,11 +258,11 @@ x #define ELECTRIC_OK ????	// TYREF: ok to enter "electric" (TI_ELECTRIC stored)
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
 // intended for testing by user .itf, .prf, .ckf fcns:
-extern SI NEAR defTyping;	/* non-0 if defining a "type"
-				   (a type is a RATE while setting members) */
+extern SI NEAR defTyping;	// non-0 if defining a "type"
+							//  (a type is a RATE while setting members)
 
 extern SI NEAR firstCulCall;	// non-0 if first cul call, 0 on reentry (eg after a RUN).
-				// added 11-91 and NOT YET USED; delete later.
+								// added 11-91 and NOT YET USED; delete later.
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cul.cpp
@@ -269,7 +271,6 @@ SI FC cul( SI cs, const char* fName, char *defex, CULT *cult, record *e, BOO *pA
 TI FC ratDefO( BP b);
 const char* FC culMbrId( BP b, int fn);
 const char* FC quifnn( char *s);
-const char* FC ordinal( int number);
 
 // cncult2.cpp
 RC   FC ckRefPt( BP toBase, record * fromRec, TI mbr, const char* mbrName="",

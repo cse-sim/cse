@@ -1,0 +1,144 @@
+/*
+BATTERY + PV TEST AND CONTROL STRATEGIES
+========================================
+
+This module seeks to test the BATTERY and PV records using various control strategies. The Battery and PVArray are simulated while a "typical" building load is specified from an external CSV file and set to a GAIN block using the gnPower field.
+
+THERMOSTAT:
+-----------
+
+This module demonstrates a simplistic "thermostat" algorithm for the battery. Under this strategy, the battery system attempts to stay at the SOE (or above) by developing a "restoring force" that counteracts the load as the SOE deviates more and more from the target.
+
+Sign convention is:
+
+* P_load is positive if there is a net load required by the House after adjusting for any PV generation
+* P_load is negative if there is an excess of PV power after satisfying house load
+* P_req is positive if the battery is to be charged
+* P_req is negative if the battery is to be discharged
+
+P_req(P_load, P_max_chg, t) =
+  -1 * if (P_load >= 0)
+         if (SOE(t-1) > SOE_set)
+           P_load
+         else
+           min(P_load, P_max_chg) - (((SOE_set - SOE(t-1)) / SOE_set) * P_max_chg)
+         end
+       else
+         P_load
+       end
+
+Recall that what we specify to the battery is a *request*. The battery will not charge or discharge more than it has capacity. Nor will it violate its specified maximum charge/discharge rate.
+
+NOTE: if CSE is built with the _DEBUG symbol defined, then you will get a warning when the gnPower of BuildingLoad goes negative. The GAIN object is not typically used in the fashion we present here: we merely want to specify the "effective" building load + PV without clutting this file with an entire building definition (as you would do in a real study).
+*/
+IMPORTFILE Data
+  imFileName="pv-bt-data.csv"
+  imFreq="Hour"
+  imTitle="PV/BT Data"
+
+WfName="Bishop.epw" // reference city for CA Climate Zone 16
+wuDays=0
+nSubSteps=1
+
+#define kw_to_btuh 3412.142
+#define max_bt_pwr 4.0
+#define pwr_target_kW 4.0
+#define soe_target 0.7
+
+METER ElecMtrDefault
+GAIN BuildingLoadDefault
+  gnMeter = ElecMtrDefault
+  gnEndUse = Lit
+  gnPower = import(Data,"HouseLoad_kW") * kw_to_btuh
+BATTERY "BatteryDefault"
+  btMeter = ElecMtrDefault
+  btEndUse = BT
+  btMaxCap = 16.0 // kWh
+  btMaxChgPwr = max_bt_pwr // kW
+  btMaxDschgPwr = max_bt_pwr // kW
+  btUseUsrChg = No
+  btChgEff = 0.97467943
+  btDschgEff = 0.97467943
+  btInitSOE = 1.0 // 100% state of energy
+PVARRAY "PvDefault"
+  pvElecMtr = ElecMtrDefault
+  pvEndUse = PV
+  pvDCSysSize = 5
+  pvModuleType = Standard
+  pvArrayType = FixedOpenRack
+  pvTilt = 37
+  pvAzm = 180
+  pvGrndRefl = 0.2
+  pvUsePVWatts = No
+
+METER ElecMtrPeakShaving
+GAIN BuildingLoadPeakShaving LIKE BuildingLoadDefault
+  gnMeter = ElecMtrPeakShaving
+BATTERY "BatteryPeakShaving" LIKE BatteryDefault
+  btMeter = ElecMtrPeakShaving
+  btUseUsrChg = Yes
+  btChgReq = -1.0 * select(
+    import(Data,"AdjustedLoad_kW") > pwr_target_kW,
+      import(Data,"AdjustedLoad_kW") - pwr_target_kW,
+    import(Data,"AdjustedLoad_kW") < 0.0,
+      import(Data,"AdjustedLoad_kW"),
+    default 0.0)
+PVARRAY "PvPeakShaving" LIKE PvDefault
+  pvElecMtr = ElecMtrPeakShaving
+
+METER ElecMtrThermostat
+GAIN BuildingLoadThermostat LIKE BuildingLoadDefault
+  gnMeter = ElecMtrThermostat
+BATTERY "BatteryThermostat" LIKE BatteryDefault
+  btMeter = ElecMtrThermostat
+  btUseUsrChg = Yes
+  btChgReq = -1.0 * select(
+    import(Data,"AdjustedLoad_kW") >= 0.0,
+      select(
+        @BATTERY["BatteryThermostat"].soe > soe_target,
+          import(Data,"AdjustedLoad_kW"),
+        default (
+          min(import(Data, "AdjustedLoad_kW"), max_bt_pwr)
+            - (((soe_target - @BATTERY["BatteryDefault"].soe) / soe_target) * max_bt_pwr))),
+    default import(Data,"AdjustedLoad_kW"))
+PVARRAY "PvThermostat" LIKE PvDefault
+  pvElecMtr = ElecMtrThermostat
+
+#define BtSOE( n ) \
+  ExportCol colhead=n colVal=@BATTERY[n].soe
+#define BtEnergy( n ) \
+  ExportCol colhead=n colVal=@BATTERY[n].energy
+#define GridLoad( n ) \
+  ExportCol colhead=n colVal=@METER[n].H.tot
+#define TDV( n ) \
+  ExportCol colhead="TDV Cost" colVal=(@METER[n].H.tot * import(Data,"TDV_kBtu__kWh"))
+
+EXPORTFILE "PvBtOut"
+  xfFileName = "pv_bt_out"
+  xfFileStat = OVERWRITE
+  EXPORT
+    exType = UDT
+    exFreq = HOUR
+    exTitle = "Battery/PV Output"
+    exDayBeg = jan 1
+    exDayEnd = dec 31
+    exHeader = ColumnsOnly
+    ExportCol colhead="Day" colVal=@Top.dateStr
+    ExportCol colhead="Hour" colVal=@Top.iHr
+    ExportCol colhead="PV Out [kW]" colVal=@PVArray["PvDefault"].acOut / kw_to_btuh
+    ExportCol colhead="HomeLoad [kW]" colVal=@METER["ElecMtrDefault"].H.lit / kw_to_btuh
+    BtSOE( "BatteryDefault" )
+    BtEnergy( "BatteryDefault" )
+    GridLoad( "ElecMtrDefault" ) / kw_to_btuh
+    TDV( "ElecMtrDefault" ) / kw_to_btuh
+    BtSOE( "BatteryPeakShaving" )
+    BtEnergy( "BatteryPeakShaving" )
+    GridLoad( "ElecMtrPeakShaving" ) / kw_to_btuh
+    TDV( "ElecMtrPeakShaving" ) / kw_to_btuh
+    BtSOE( "BatteryThermostat" )
+    BtEnergy( "BatteryThermostat" )
+    GridLoad( "ElecMtrThermostat" ) / kw_to_btuh
+    TDV( "ElecMtrThermostat" ) / kw_to_btuh
+
+RUN
+

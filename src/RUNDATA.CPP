@@ -93,6 +93,8 @@ makAncDHWUSE( WuR);			// DHW use
 
 // PV: PV Watts photovoltaic array
 makAncPVARRAY(PvR);			// PV array
+// BT: Battery
+makAncBATTERY(BtR);			// Battery
 
 // hvac: terminals, air handlers, plant
 makAncTU( TuB);  			// terminals

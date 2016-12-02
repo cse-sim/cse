@@ -37,9 +37,9 @@ Name of export file to which current export will be written. If omitted, if EXPO
 
 Choice indicating export type. See descriptions in Section 5.22, REPORT. While not actually disallowed, use of *exType* = ERR, LOG, INP, or ZDD is unexpected.
 
-  **Units**   **Legal Range**                  **Default**   **Required**   **Variability**
-  ----------- -------------------------------- ------------- -------------- -----------------
-              ZEB, ZST, MTR, AH, UDT, or SUM                 Yes            constant
+  **Units**   **Legal Range**                        **Default**   **Required**   **Variability**
+  ----------- -------------------------------------- ------------- -------------- -----------------
+              ZEB, ZST, MTR, DHWMTR, AH, UDT, or SUM                 Yes            constant
 
 **exFreq=*choice***
 
@@ -156,5 +156,3 @@ Optionally indicates the end of the export definition. Alternatively, the end of
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

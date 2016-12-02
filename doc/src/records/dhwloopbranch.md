@@ -66,13 +66,13 @@ Surrounding equivalent temperature.
 
 **wbFlow=*float***
 
-Branch flow rate during draw.
+Branch flow rate assumed during draw.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   gpm         $\ge$ 0           2             No             hourly
 
-**wgFWaste=*float***
+**wbFWaste=*float***
 
 Number of times during the hour when the branch volume is discarded.
 
@@ -80,12 +80,10 @@ Number of times during the hour when the branch volume is discarded.
   ----------- ----------------- ------------- -------------- -----------------
               $\ge$ 0           0             No             hourly
 
-**endDHWLoopBranch**
+**endDHWLOOPBRANCH**
 
 Optionally indicates the end of the DHWLOOPBRANCH definition.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
-
-

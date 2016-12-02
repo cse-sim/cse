@@ -3083,7 +3083,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 	*declare "void wmt_Finalize() { total = VSum( &unknown, NDHWENDUSES); }"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.
-    // Use by purpose (end use), energy used in Btu:
+    // Use by purpose (end use), water use, gal:
     // CAUTION: order of members MATCHES DTDHWEUCH choices (cndtypes.def)
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
 	FLOAT unknown		// unknown (= DHWENDUSE 0, no associated choice)
@@ -3157,8 +3157,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    used by e.g. HPWH (includes ws_hwUse)
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
-  *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s), gal
-  *i TI ws_FXhwMtri;		// DHWMTR for hot water use at fixtures, gal
+  *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
+  *i TI ws_FXhwMtri;		// DHWMTR for hot water use at fixtures (= ws_fxUseMix), gal
   *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolve DHWMTR pointers
 
 						// hot or mix water use for this DHWSYS (w/o ws_mult)
@@ -3591,6 +3591,34 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
 
 *END		// PVARRAY
 //=============================================================================
+RECORD BATTERY "Battery" *RAT		// input / runtime battery
+  *prefix bt_
+
+  *declare "RC bt_CkF();"
+  *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *declare "RC bt_Init();"
+  *declare "RC bt_DoHour();"
+  *declare "float bt_CalcAdjLoad(MTR m);"
+
+  *i TI bt_meter;			// meter for system electricity production
+  *f ENDUSECH bt_endUse		// end use of energy. defataults to "BT"
+  *s FRAC bt_chgEff         // battery efficiency while charging
+  *s FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
+  *r FLOAT_GEZ bt_maxCap    // maximum (usable) battery capacity in kWh
+  *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
+  *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0)
+  *s FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
+  *s FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
+  *s FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
+  *s NOYESCH bt_useUsrChg   // YES: user specifies charge request;
+							// NO (default): calculate charge request via
+							//               default strategy 
+  *s FRAC bt_soe         // battery state of energy (0 <= SOE <= 1)
+  *s *e FLOAT_GEZ bt_cycles // accumulated battery cycles
+  *s *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
+
+*END		// BATTERY
+//=============================================================================
 RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
    *prefix gn_
    *declare "virtual RC RunDup( const record* pSrc, int options=0);"
@@ -3649,6 +3677,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
     float cook		// cooking
     float usr1		// user-defined category 1
     float usr2		// user-defined catagory 2. code may assume is last member.
+	float bt		// battery output (negative)
     float pv		// photovoltaic array output (negative)
  // cost results. for now (11-93), must report with probes. Code (cnguts) may assume in this order, after uses.
     float cost		// accumulated  tot*rate

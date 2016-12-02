@@ -136,6 +136,7 @@ extern anc<DHWDAYUSE> WduR;		// DHW day use
 extern anc<DHWUSE> WuR;			// DHW use (single draw)
 
 extern anc<PVARRAY> PvR;        // PV array
+extern anc<BATTERY> BtR;		// Battery
 
 extern anc<GAIN> GnB;			// (zone) gains (with their fuel use) run records basAnc
 extern anc<MTR> MtrB;   		// meters, by name, each containing use by interval H D M Y and end use

@@ -720,11 +720,20 @@ badTu4ty:
 
 			if (!isEx  &&  coli)			// no width check for exports or if no columns
 			{
-				SI cpl = rpCpl ? rpCpl : getCpl();		// line width
+				int cpl = rpCpl ? rpCpl : getCpl();		// line width
+#if 1
+				if (wid > cpl)
+				{	oInfo( "%s width %d is greater than line width %d.\n"
+						"    Line width has been adjusted.",
+						exrePort, wid, cpl);
+					rpCpl = wid;
+				}
+#else
 				if (wid > cpl )
 					oer( (char *)MH_S0564,
 						exrePort, wid, cpl,		// "%s width %d greater than line width %d.\n"
 						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
+#endif
 			}
 		}
 
