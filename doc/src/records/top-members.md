@@ -348,7 +348,7 @@ Selects sky model used to determine relative amounts of direct and diffuse irrad
 
 **skyModelLW=*choice***
 
-Selects the model used to derive sky temperature used in long-wave (thermal) radiant heat exchange calculations for SURFACEs exposed to ambient conditions.  See CSE Engineering Documentation for technical details.
+Selects the model used to derive sky temperature used in long-wave (thermal) radiant heat exchange calculations for SURFACEs exposed to ambient conditions.  See the RACM alorithms documentation for technical details.
 
   Choice         Description
   -------------- ---------------------------------------------

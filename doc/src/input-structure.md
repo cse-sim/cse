@@ -36,22 +36,35 @@ TODO: review hierarchy
         CONSTRUCTION
             LAYER
         METER
-        ZONE
+        DHWMETER
+        IZXFER
+        DHWDAYUSE
+            DHWUSE
+        DHWSYS
+            DHWHEATER
+            DHWTANK
+            DHWPUMP
+            DHWLOOP
+            DHWLOOPPUMP
+            DHWLOOPSEG
+                DHWLOOPBRANCH
+       ZONE
             GAIN
             SURFACE
                 WINDOW
                     SHADE
                     SGDIST
                 DOOR
+<% if inactive_CNE_records %>
             PERIMETER
             TERMINAL
-        IZXFER
         AIRHANDLER
         HEATPLANT
             BOILER
         COOLPLANT
         TOWERPLANT
         HPLOOP
+<% end %>
         REPORTFILE
         REPORT
         REPORTCOL
@@ -891,58 +904,58 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
   \$dayOfYear      Day of year of simulation, 1 - 365; 1 corresponds to
                    Jan-1. (Note that this is not the day of the simulation
                    unless begDay is Jan-1.) **Variation:** daily.
-  
+
   \$month          Month of year, 1 - 12. **Variation**: monthly.
-  
+
   \$dayOfMonth     Day of month, 1 - 31. **Variation**: daily.
-  
+
   \$hour           Hour of day, 1 - 24; 1 corresponds to midnight - 1 AM.
                    **Variation**: hourly.
-  
+
   \$dayOfWeek      Day of week, 1 - 7; 1 corresponds to Sunday, 2 to
                    Monday, etc. **Variation:** daily.
-  
+
   \$DOWH           Day of week 1-7 except 8 on every observed holiday.
                    **Variation**: daily.
-  
+
   \$isHoliday      1 on days that a holiday is observed (regardless of the
                    true date of the holiday); 0 on other days.
                    **Variation**: daily.
-  
+
   \$isHoliTrue     1 on days that are the true date of a holiday, otherwise
                    0. **Variation**: daily.
-  
+
   \$isWeHol        1 on weekend days or days that are observed as holidays.
                    **Variation:** daily.
-  
+
   \$isWeekend      1 on Saturday and Sunday, 0 on any day from Monday to
                    Friday. **Variation:** daily.
-  
+
   \$isWeekday      1 on Monday through Friday, 0 on Saturday and Sunday.
                    **Variation:** daily.
-  
+
   \$isBegWeek      1 for any day immediately following a weekend day or
                    observed holiday that is neither a weekend day or an
                    observed holiday. **Variation:** daily.
-  
+
   \$isWorkDay      1 on non-holiday Monday through Friday, 0 on holidays,
                    Saturday and Sunday. **Variation:** daily.
-  
-  \$isNonWorkDay   1 on Saturday, Sunday and observed holidays, 0 on 
-                   non-holiday Monday through Friday. **Variation:** 
+
+  \$isNonWorkDay   1 on Saturday, Sunday and observed holidays, 0 on
+                   non-holiday Monday through Friday. **Variation:**
                    daily.
-  
+
   \$isBegWorkWeek  1 on the first workday after a non-workday, 0 all
                    other days. **Variation:** daily.
-  
+
   \$isDT           1 if Daylight Saving time is in effect, 0 otherwise.
                    **Variation:** hourly.
-  
+
   \$autoSizing     1 during autosizing calculations, 0 during main
                    simulation. **Variation:** for each phase.
-  
-  \$dsDay          Design day type, 0 during main simulation, 1 during 
-                   heating autosize, 2 during cool autosize. 
+
+  \$dsDay          Design day type, 0 during main simulation, 1 during
+                   heating autosize, 2 during cool autosize.
                    **Variation:** daily.
   ---------------- ---------------------------------------------------------
 
