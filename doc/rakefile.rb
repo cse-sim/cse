@@ -223,10 +223,10 @@ end
 # rule. The basic rule seems to be:
 #
 # 1. one record per file in doc/src/records
-# 2. the index of that file is <basefilename with ext change to
+# 2. the index of that file is <basefilename with ext changed to
 #    html>#<basefilename without ext downcased>
 # 3. the record name seems to be <basefilename without ext upcase>
-# 4. put the above in a map
+# 4. put the above in a map (i.e., Ruby hash table, Python dictionary)
 #
 # String String String -> Nil
 # Given the path to the records/ directory, a path to save the record index at,
