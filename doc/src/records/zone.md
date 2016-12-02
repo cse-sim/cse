@@ -115,7 +115,7 @@ Zone hygric inertia ratio.  In zone moisture balance calculations, the effective
 
 **Units**   **Legal Range**   **Default**       **Required**   **Variability**
 ----------- ----------------- ----------------- -------------- -----------------
-             *x* $\gt$ 0         1                    No             constant
+             *x* &gt; 0         1                    No             constant
 
 **znSC=*float***
 
