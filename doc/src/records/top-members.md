@@ -269,17 +269,17 @@ ASHWAT temperature change threshold -- full calculation is triggered by a change
 
 ASHWAT solar change threshold -- full calculation is triggered by a fractional change of incident solar radiation that exceeds AWTrigSlr.
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-              x > 0            .05            No             constant
+**Units**   **Legal Range**   **Default** **Required** **Variability**
+----------- ----------------- ----------- ------------ ---------------
+            x > 0             .05          No           constant
 
 **AWTrigH=*float***
 
 ASHWAT convection coefficient change threshold -- full calculation is triggered by a fractional change of inside surface convection coefficient that exceeds AWTrigH.
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-               x > 0            .1         No             constant
+**Units** **Legal Range** **Default** **Required** **Variability**
+--------- --------------- ----------- ------------ ---------------
+          x > 0           .1          No           constant
 
 
 <!--

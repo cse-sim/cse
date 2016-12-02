@@ -126,17 +126,18 @@ below.  Calculation methods are documented in RACM, Appendix B.
   ----------------------------------------------------------------------
 
 
-  -----------------------------------------------------------------------
-  **Units**  **Legal**                      **Default**  **Required**         **Variability**
+  --------------------------------------------------------------------------------
+  **Units**  **Legal**                    **Default** **Required** **Variability**
              **Range**
-  ---------- ------------------------------   ----------- -------------------- -----------------
-              $>$ 0\
-              *Caution: maximum*              *See above*    *See above*           constant
+  ---------- ---------------------------- ----------- ------------ ---------------
+              $>$ 0\                      *See above* *See above*  constant
+              *Caution: maximum*          
               *not checked. Unrealistic*
               *values will cause runtime*
-              *errors and/or invalid results*       
+              *errors and/or invalid*
+              *results*       
 
-  -----------------------------------------------------------------------
+  --------------------------------------------------------------------------------
 
 **whLDEF=*float***
 

@@ -219,9 +219,9 @@ Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-r
 
 Exhaust air transfer ratio for AIRNETHERV ventilator.  NetFlow = (1 - EATR)*(grossFlow).
 
- **Units**   **Legal Range**   **Default**   **Required**   **Variability**
- ----------- ------------------- ------------- -------------- -----------------
- cfm         0 $\le$ x $\le$ 1       0             No             subhourly
+ **Units** **Legal Range**   **Default** **Required** **Variability**
+ --------- ----------------- ----------- ------------ ---------------
+ cfm       0 $\le$ x $\le$ 1 0           No           subhourly
 
 **izLEF=*float***
 
