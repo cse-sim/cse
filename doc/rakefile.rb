@@ -224,10 +224,10 @@ end
 # rule. The basic rule seems to be:
 #
 # 1. one record per file in doc/src/records
-# 2. the index of that file is <basefilename with ext changed to
+# 2. the index of that file is <basefilename with ext change to
 #    html>#<basefilename without ext downcased>
 # 3. the record name seems to be <basefilename without ext upcase>
-# 4. put the above in a map (i.e., Ruby hash table, Python dictionary)
+# 4. put the above in a map
 #
 # String String String -> Nil
 # Given the path to the records/ directory, a path to save the record index at,
@@ -666,6 +666,7 @@ DePluralize = lambda do |word|
   end
 end
 
+# Task to cross-link terms in source documents
 # Config (and defaults)
 #   "record-index-path"
 #   "output-dir"
@@ -679,93 +680,26 @@ XLinkMarkdown = MapOverManifest[
   ["record-index-path"]
 ]
 
-#XLinkMarkdown = lambda do |config|
-#  disable = config.fetch('disable?', false)
-#  if disable
-#    lambda do |manifest|
-#      manifest
-#    end
-#  else
-#    out_dir = config.fetch('output-dir')
-#    EnsureExists[out_dir]
-#    lambda do |manifest|
-#      oi = if config.include?('object-index-path')
-#             YAML.load_file(config['object-index-path'])
-#           else
-#             config.fetch('object-index')
-#           end
-#      ons = Set.new(oi.keys)
-#      new_manifest = []
-#      manifest.each do |path|
-#        bn = File.basename(path)
-#        out_path = File.join(out_dir, bn)
-#        new_manifest << out_path
-#        next if FileUtils.uptodate?(out_path, [path])
-#        f = lambda do |tag, the_content, state|
-#          g = lambda do |inline|
-#            if inline['t'] == 'Str'
-#              index = state[:oi]
-#              ons = state[:ons]
-#              word = inline['c']
-#              word_only = word.scan(/[a-zA-Z:]/).join
-#              word_only_singular = DePluralize[word_only]
-#              if ons.include?(word_only) or ons.include?(word_only_singular)
-#                if index.include?(word_only) or index.include?(word_only_singular)
-#                  w = ons.include?(word_only) ? word_only : word_only_singular
-#                  state[:num_hits] += 1
-#                  ref = index[w].scan(/(\#.*)/).flatten[0]
-#                  {'t' => 'Link',
-#                   'c' => [
-#                     ["", [], []],
-#                     [{'t'=>'Str','c'=>word}],
-#                     [ref, '']]}
-#                else
-#                  puts("WARNING! ObjectNameSet includes #{word_only}|#{word_only_singular}; Index doesn't")
-#                  inline
-#                end
-#              else
-#                inline
-#              end
-#            elsif inline['t'] == 'Emph'
-#              new_ins = inline['c'].map(&g)
-#              {'t'=>'Emph', 'c'=>new_ins}
-#            elsif inline['t'] == 'Strong'
-#              new_ins = inline['c'].map(&g)
-#              {'t'=>'Strong', 'c'=>new_ins}
-#            else
-#              inline
-#            end
-#          end
-#          if tag == "Para"
-#            new_inlines = the_content.map(&g)
-#            {'t' => 'Para',
-#             'c' => new_inlines}
-#          else
-#            nil
-#          end
-#        end
-#        content = File.read(path, :encoding=>"UTF-8")
-#        doc = JSON.parse(Pandoc::MdToJson[content])
-#        state = {
-#          num_hits: 0,
-#          oi: oi,
-#          ons: ons
-#        }
-#        new_doc = Pandoc::Walk[doc, f, state]
-#        new_content = Pandoc::JsonToMd[new_doc]
-#        if VERBOSE
-#          LOG.write("Crosslinked #{bn}; #{state[:num_hits]} found\n")
-#          LOG.flush
-#        else
-#          LOG.write(".")
-#          LOG.flush
-#        end
-#        File.write(out_path, new_content)
-#      end
-#      new_manifest
-#    end
-#  end
-#end
+# Task to cross-link terms in source documents. This version allows us to
+# remove "self-links" -- i.e., links to sections that are the immediate parent
+# or (optionally) on the path of sections to the current point. The basic idea
+# is that we shouldn't have links to a section in the paragraph immediately
+# below the beginning of a section.
+# Config (and defaults)
+#   "record-index-path"
+#   "output-dir"
+#   "levels" => (Array Int), default: [1,1,1, ...]
+#   "nolinklevel" => Int, default: 1, how high up to go in the path to check if we are "self-linking"
+#   "section-path" => []
+#   "log" => nil
+#   "verbose" => false
+#   "disable?" => false
+#   "paths-to-other-dependencies" => []
+#   "relative-root-path" => nil
+XLinkMarkdownAdv = MapOverManifest[
+  XLink::OverFile,
+  ["record-index-path"]
+]
 
 JoinManifestToString = lambda do |manifest|
   manifest.map{|f| "\"#{f}\""}.join(' ')
@@ -1147,8 +1081,10 @@ BuildSinglePageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
     ],
-    XLinkMarkdown[
+    XLinkMarkdownAdv[
       "record-index-path" => record_index_file,
+      "levels" => levels,
+      "nolinklevel" => 1,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
@@ -1318,11 +1254,13 @@ BuildMultiPageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
     ],
-    XLinkMarkdown[
+    XLinkMarkdownAdv[
       "record-index-path" => record_index_file,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
+      "levels" => levels,
+      "nolinklevel" => 1,
       "log" => STDOUT,
       "disable?" => disable_xlink
     ],
@@ -1504,8 +1442,10 @@ BuildPDF = lambda do |config|
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
     ],
-    XLinkMarkdown[
+    XLinkMarkdownAdv[
       "record-index-path" => record_index_file,
+      "levels" => levels,
+      "nolinklevel" => 1,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),

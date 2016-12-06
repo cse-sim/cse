@@ -129,11 +129,6 @@ require_relative 'slug'
 # it along with any updates to the section path. Note: the FilePath has to be
 # equivalent to what is used in the values of the RecordIndex.
 #
-# ### Header
-#
-# We should utilize MapOverManifest (and pull that into library code while
-# we're at it) for XLinkMarkdownNoSelflinks.
-#
 # ### Notes
 #
 # - make the log a config variable, not a global; although, it could default to
@@ -343,7 +338,11 @@ module XLink
       h_lvl, _, inlines = the_content
       h_adj = state[:hdr_adj]
       slug = Slug::Slugify[InlinesToText[inlines]]
-      new_sp = UpdateSectionPath[sp, state[:file_path] + "#" + slug, h_lvl + h_adj]
+      new_sp = UpdateSectionPath[
+        sp,
+        File.basename(state[:file_path],'.*') + '.html' + "#" + slug,
+        h_lvl + h_adj
+      ]
       state[:sec_path] = new_sp
       nil
     else
@@ -417,7 +416,7 @@ module XLink
     }
     new_rjson = Pandoc::Walk[rjson, SectionWalker, state]
     new_md_str = Pandoc::JsonToMd[new_rjson]
-    [new_md_str, state[:sec_path]]
+    [new_md_str, state[:sec_path], state[:num_hits]]
   end
 
   # FilePath FilePath Int (Record "record-index-path" String
@@ -431,11 +430,11 @@ module XLink
     nolink_level = config.fetch("nolinklevel", 1)
     levels = config.fetch("levels", nil)
     level = if levels.nil? then 1 else levels[idx] end
-    md, new_sp = OverString[
+    md, new_sp, num_hits = OverString[
       File.read(path), path, level, nolink_level, rec_idx, sec_path
     ]
     config["section-path"] = new_sp
-    LogRun[path, config, state]
+    LogRun[path, config, {num_hits: num_hits}]
     File.write(out_path, md)
   end
 end
