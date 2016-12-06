@@ -54,6 +54,15 @@ Number of digits after decimal point.
   ----------- ----------------- ------------------- -------------- -----------------
               *x* $\ge$ 0       *flexible format*   No             constant
 
+**colJust=*choice***
+
+Specifies positioning of data within column:
+
+  ------- -----------------
+  Left    Left justified
+  Right   Right justified
+  ------- -----------------
+
 **endExportCol**
 
 Optionally indicates the end of the EXPORTCOL. Alternatively, the end of the definition can be indicated by END or by beginning another object.
@@ -61,5 +70,3 @@ Optionally indicates the end of the EXPORTCOL. Alternatively, the end of the def
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

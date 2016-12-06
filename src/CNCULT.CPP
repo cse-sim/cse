@@ -544,12 +544,7 @@ CULT( "wnExHcLChar",DAT, SFXO( HCLCHAR),0,         0, VEOI,   TYFL,   0,     10.
 CULT( "wnExHcMult", DAT, SFXO( HCMULT), 0,         0, VSUBHRLY,TYFL,  0,      1.f,                   N,   N),
 CULT( "wnInHcModel",DAT, SFXI( HCMODEL),0,         0, 0,      TYCH,   0,     C_CONVMODELCH_UNIFIED,   N,   N),
 CULT( "wnInHcMult", DAT, SFXI( HCMULT), 0,         0, VSUBHRLY,TYFL,  0,      1.f,                   N,   N),
-
-#if 1	// default=1 (re no-GLAZTY case), 4-9-2013
 CULT( "wnSMSO",    DAT,  SFX( SCO),    0,          0, VMHLY,  TYFL,   0,     1.f,          N,   N),	// dfls to gtSMSO in code
-#else
-x CULT( "wnSMSO",  DAT,  SFX( SCO),    0,          0, VMHLY,  TYFL,   0,     0.f,          N,   N),	// dfls to gtSMSO in code
-#endif
 CULT( "wnSMSC",    DAT,  SFX( SCC),    0,          0, VMHLY,  TYFL,   0,     0.f,          N,   N),	// dfls in code
 CULT( "wnGrndRefl",DAT,  SFX( GRNDREFL), 0,        0, VMHLY,  TYFL,   0,     0.f,          N,   N),	// dfl'd by code. 5-95.
 CULT( "wnVfSkyDf", DAT,  SFX( VFSKYDF),  0,        0, VMHLY,  TYFL,   0,     0.f,          N,   N),	// dfl'd by code. 5-95.
@@ -808,8 +803,6 @@ RC SFI::sf_CkfSURFGround(
 						//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
 	BOOL bRun = (options & 1) != 0;
-	if (bRun)
-		bRun = bRun;
 	RC rc = RCOK;
 
 	const char* whenGROUND = "when sfExCnd=GROUND";

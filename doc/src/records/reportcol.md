@@ -38,7 +38,7 @@ Text used for column head.
 
 **colGap=*int***
 
-Space between (to left of) column, in character positions. Allows you to space columns unequally, to emphasize relations among columns or to improve readability. If the total of the *colGaps* and *colWids* in the report's REPORTCOLs is substantially less than the REPORT's *rpCPL* (characters per line, previous section), CSE will insert additional spaces between columns. To suppress these spaces, use a smaller *rpCPL*.
+Space between (to left of) column, in character positions. Allows you to space columns unequally, to emphasize relations among columns or to improve readability. If the total of the *colGaps* and *colWids* in the report's REPORTCOLs is substantially less than the REPORT's *rpCPL* (characters per line, see REPORT), CSE will insert additional spaces between columns. To suppress these spaces, use a smaller *rpCPL* or use *rpCPL* = -1.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -76,5 +76,3 @@ Optionally indicates the end of the report column definition. Alternatively, the
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-
