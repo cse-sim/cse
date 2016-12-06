@@ -1,5 +1,6 @@
 require 'set'
 require_relative 'pandoc'
+require_relative 'slug'
 
 # Below method of program design adapted from "How to Design Programs, 2nd
 # Edition":
@@ -23,6 +24,33 @@ require_relative 'pandoc'
 # that could use some refactoring.
 #
 # ### Data Definitions
+#
+#     QuoteType :: (Case "SingleQuote" "DoubleQuote")
+#     -------------------- 
+#     Types of Quotes -- used in Pandoc JSON
+#
+#     Inline :: (Case
+#       {'t' => 'Str', 'c' => String}
+#       {'t' => 'Emph', 'c' => (Array Inline)}
+#       {'t' => 'Strong', 'c' => (Array Inline)}
+#       {'t' => 'Strikeout', 'c' => (Array Inline)}
+#       {'t' => 'Superscript', 'c' => (Array Inline)}
+#       {'t' => 'Subscript', 'c' => (Array Inline)}
+#       {'t' => 'SmallCaps', 'c' => (Array Inline)}
+#       {'t' => 'Quoted', 'c' => (Tuple QuoteType (Array Inline))}
+#       {'t' => 'Cite', 'c' => (Tuple (Array Citation) (Array Inline))}
+#       {'t' => 'Code', 'c' => (Tuple Attr String)}
+#       {'t' => 'Space', 'c' => []}
+#       {'t' => 'SoftBreak', 'c' => []}
+#       {'t' => 'LineBreak', 'c' => []}
+#       {'t' => 'Math', 'c' => (Tuple MathType String)}
+#       {'t' => 'RawInline', 'c' => (Tuple Format String)}
+#       {'t' => 'Link', 'c' => (Tuple Attr (Array Inline) Target)}
+#       {'t' => 'Image', 'c' => (Tuple Attr (Array Inline) Target)}
+#       {'t' => 'Note', 'c' => (Array Block)}
+#       {'t' => 'Span', 'c' => (Tuple Attr (Array Inline))})
+#     --------------------
+#     Types of Inline constructs in Pandoc JSON
 #
 #     RecordIndex :: (Map String String)
 #     --------------------
@@ -90,19 +118,11 @@ require_relative 'pandoc'
 #
 #     XLinkMarkdownNoSelflinks :: (Map String Any) ->
 #       ((Array String) -> (Array String))
-#
-#     OverString :: Markdown FilePath FileLevel NoLinkLevels RecordIndex SectionPath -> (Tuple Markdown SectionPath)
-#
-# ### Purpose Statement
-#
-# #### XLinkMarkdownNoSelflinks
-#
 # The XLinkMarkdownNoSelflinks block is designed to be configured and return a
 # closure around a function that takes a manifest of files to process,
 # processes them, and returns the manifest of the newly processed files.
 #
-# #### OverString
-#
+#     OverString :: Markdown FilePath FileLevel NoLinkLevels RecordIndex SectionPath -> (Tuple Markdown SectionPath)
 # Given a markdown string, a file path corresponding to the markdown string,
 # the file level of the path, the levels to check for no-linking, a record
 # index and a section path, cross-link the given markdown string and return
@@ -181,19 +201,31 @@ require_relative 'pandoc'
 #     ["junk"]
 #
 module XLink
+  # String -> String
+  # Attempts to remove a plural "s" from a word if appropriate. Note: this is a
+  # very basic algorithm.
+  DePluralize = lambda do |word|
+    if word.end_with?("s")
+      if word.length > 1
+        word[0..-2]
+      end
+    else
+      word
+    end
+  end
 
   # String RJson (Record :rec_idx RecordIndex :rec_name_set (Set String) :sec_path (Array String))
   Walker = lambda do |tag, the_content, state|
     g = lambda do |inline|
       if inline['t'] == 'Str'
-        index = state[:oi]
-        ons = state[:ons]
+        index = state[:rec_idx]
+        rns = state[:rec_name_set]
         word = inline['c']
         word_only = word.scan(/[a-zA-Z:]/).join
         word_only_singular = DePluralize[word_only]
-        if ons.include?(word_only) or ons.include?(word_only_singular)
+        if rns.include?(word_only) or rns.include?(word_only_singular)
           if index.include?(word_only) or index.include?(word_only_singular)
-            w = ons.include?(word_only) ? word_only : word_only_singular
+            w = rns.include?(word_only) ? word_only : word_only_singular
             state[:num_hits] += 1
             ref = index[w].scan(/(\#.*)/).flatten[0]
             {'t' => 'Link',
@@ -227,19 +259,183 @@ module XLink
     end
   end
 
-  # Markdown FilePath FileLevel NoLinkLevels RecordIndex SectionPath -> (Tuple Markdown SectionPath)
+  OverFileOrig = lambda do |path, out_path, idx, config|
+    content = File.read(path, :encoding=>"UTF-8")
+    rec_idx_path = config.fetch("record-index-path")
+    rec_idx = YAML.load_file(rec_idx_path)
+    rec_name_set = Set.new(rec_idx.keys)
+    state = {
+      num_hits: 0,
+      rec_idx: rec_idx,
+      rec_name_set: rec_name_set
+    }
+    doc = JSON.parse(Pandoc::MdToJson[content])
+    new_doc = Pandoc::Walk[doc, Walker, state]
+    new_content = Pandoc::JsonToMd[new_doc]
+    LogRun[path, config, state]
+    File.write(out_path, new_content)
+  end
+
+  # String (Record "log"? (Or IO Nil) "verbose"? Bool) (Record :num_hits Int) -> Void
+  # Prints a log to the "log" field of the config variable if exists. If "verbose" field
+  # is set to true, logs a line stating the number of hits in the given file, otherwise "."
+  LogRun = lambda do |path, config, state|
+    log = config.fetch("log", nil)
+    if config.fetch("verbose", false) and log
+      log.write("CrossLinked #{File.basename(path)}; #{state[:num_hits]} found\n")
+      log.flush
+    elsif log
+      log.write(".")
+      log.flush
+    end
+  end
+
+  # String RJson (Record :rec_idx RecordIndex :rec_name_set (Set String) :sec_path (Array String))
+  # Walker that keeps track of the section it is in
+  SectionWalker = lambda do |tag, the_content, state|
+    g = lambda do |inline|
+      if inline['t'] == 'Str'
+        index = state[:rec_idx]
+        rns = state[:rec_name_set]
+        sp = state[:sec_path]
+        word = inline['c']
+        word_only = word.scan(/[a-zA-Z:]/).join
+        word_only_singular = DePluralize[word_only]
+        if rns.include?(word_only) or rns.include?(word_only_singular)
+          if index.include?(word_only) or index.include?(word_only_singular)
+            w = rns.include?(word_only) ? word_only : word_only_singular
+            ref = index[w].scan(/(\#.*)/).flatten[0]
+            id = index[w]
+            if InSectionPath[sp, id, state[:nolink_lvl]]
+              inline
+            else
+              state[:num_hits] += 1
+              {'t' => 'Link',
+               'c' => [
+                 ["", [], []],
+                 [{'t'=>'Str','c'=>word}],
+                 [ref, '']]}
+            end
+          else
+            puts("WARNING! ObjectNameSet includes #{word_only}|#{word_only_singular}; Index doesn't")
+            inline
+          end
+        else
+          inline
+        end
+      elsif inline['t'] == 'Emph'
+        new_ins = inline['c'].map(&g)
+        {'t'=>'Emph', 'c'=>new_ins}
+      elsif inline['t'] == 'Strong'
+        new_ins = inline['c'].map(&g)
+        {'t'=>'Strong', 'c'=>new_ins}
+      else
+        inline
+      end
+    end
+    if tag == "Para"
+      new_inlines = the_content.map(&g)
+      {'t' => 'Para',
+       'c' => new_inlines}
+    elsif tag == "Header"
+      sp = state[:sec_path]
+      h_adj = state[:hdr_adj]
+      h_lvl, _, inlines = the_content
+      h_adj = state[:hdr_adj]
+      slug = Slug::Slugify[InlinesToText[inlines]]
+      new_sp = UpdateSectionPath[sp, state[:file_path] + "#" + slug, h_lvl + h_adj]
+      state[:sec_path] = new_sp
+      nil
+    else
+      nil
+    end
+  end
+
+  InlinesToText_vtable = {
+    'Str' => lambda {|c| c},
+    'Emph' => lambda {|c| '*' + InlinesToText[c] + '*'},
+    'Strong' => lambda {|c| '**' + InlinesToText[c] + '**'},
+    'Strikeout' => lambda {|c| '~~' + InlinesToText[c] + '~~'},
+    'Superscript' => lambda {|c| '^' + InlinesToText[c] + '^'},
+    'Subscript' => lambda {|c| '~' + InlinesToText[c] + '~'},
+    'SmallCaps' => lambda {|c| '[' + InlinesToText[c] + ']{style="font-variant:small-caps;"}'},
+    'Quoted' => lambda do |c|
+      q = (c[0] == "DoubleQuote" ? '"' : "'")
+      q + InlinesToText[c[1]] + q
+    end,
+    'Space' => lambda {|_| " "},
+  }
+
+  # (Array Inline) -> String
+  # Compute a (markdown) string from an array of inlines
+  InlinesToText = lambda do |inlines|
+    out = ""
+    inlines.each do |inln|
+      f = InlinesToText_vtable.fetch(inln['t'])
+      out += f[inln['c']]
+    end
+    out
+  end
+
+  # String (Array String) PositiveInt (Array Inline) -> (Array String)
+  # Updates the section path given the current file path, the existing section
+  # path, the header level, and the header text
+  UpdateSectionPath = lambda do |sec_path, id, lvl|
+    new_sp = []
+    0.upto(lvl).each do |idx|
+      if idx == (lvl - 1)
+        new_sp << id
+        break
+      else
+        new_sp << sec_path[idx]
+      end
+    end
+    new_sp
+  end
+
+  # (Array String) String NonNegativeInt -> Bool
+  # Return true if `id` is in the first `search_levels` of section path, else false.
+  InSectionPath = lambda do |sec_path, id, search_levels|
+    p = sec_path.reverse.take(search_levels)
+    p.include?(id)
+  end
+
+  # Markdown FilePath FileLevel NoLinkLevel RecordIndex SectionPath -> (Tuple Markdown SectionPath)
+  # Add cross-linking to the given file and return. Don't cross-link when link
+  # goes to a header in the direct path of the current location up to
+  # NoLinkLevels up the ancestor chain.
   OverString = lambda do |md_str, path, hdr_lvl, nolink_lvl, rec_idx, sec_path|
     rjson = JSON.parse(Pandoc::MdToJson[md_str])
     state = {
       num_hits: 0,
       rec_idx: rec_idx,
       rec_name_set: Set.new(rec_idx.keys),
-      sec_path: sec_path.dup
+      hdr_adj: (hdr_lvl - 1),
+      nolink_lvl: nolink_lvl,
+      sec_path: sec_path.dup,
+      file_path: path
     }
-    # ...
-    new_rjson = Pandoc::Walk[rjson, Walker, state]
+    new_rjson = Pandoc::Walk[rjson, SectionWalker, state]
     new_md_str = Pandoc::JsonToMd[new_rjson]
     [new_md_str, state[:sec_path]]
   end
 
+  # FilePath FilePath Int (Record "record-index-path" String
+  #   "section-path"? (Array String) "levels" (Array Int) "nolinklevel" Int
+  #   "verbose"? Bool "log"? IO) -> Void
+  # Assume that path is in the format to correspond to paths in config record-index
+  OverFile = lambda do |path, out_path, idx, config|
+    rec_idx_path = config.fetch("record-index-path")
+    rec_idx = YAML.load_file(rec_idx_path)
+    sec_path = config.fetch("section-path", [])
+    nolink_level = config.fetch("nolinklevel", 1)
+    levels = config.fetch("levels", nil)
+    level = if levels.nil? then 1 else levels[idx] end
+    md, new_sp = OverString[
+      File.read(path), path, level, nolink_level, rec_idx, sec_path
+    ]
+    config["section-path"] = new_sp
+    LogRun[path, config, state]
+    File.write(out_path, md)
+  end
 end
