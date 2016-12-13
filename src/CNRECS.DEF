@@ -3602,18 +3602,21 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
 
   *i TI bt_meter;			// meter for system electricity production
   *f ENDUSECH bt_endUse		// end use of energy. defataults to "BT"
-  *s FRAC bt_chgEff         // battery efficiency while charging
-  *s FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
+  *r NOYESCH bt_useUsrChg   // YES: user specifies charge request;
+							// NO (default): calculate charge request via
+							//               default strategy
   *r FLOAT_GEZ bt_maxCap    // maximum (usable) battery capacity in kWh
   *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
   *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0)
+  *s FRAC bt_chgEff         // battery efficiency while charging
+  *s FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
   *s FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
   *s FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
   *s FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
-  *s NOYESCH bt_useUsrChg   // YES: user specifies charge request;
-							// NO (default): calculate charge request via
-							//               default strategy 
-  *s FRAC bt_soe         // battery state of energy (0 <= SOE <= 1)
+  *s FRAC bt_soe            // battery state of energy (SOE) (0 <= SOE <= 1)
+							// when accessed as a probe in expressions, represents
+							// the beginning of step SOE. When accessed for reporting,
+							// represents the end of step SOE.
   *s *e FLOAT_GEZ bt_cycles // accumulated battery cycles
   *s *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
 
