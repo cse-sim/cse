@@ -36,30 +36,28 @@ RC BATTERY::bt_Init()
 // Given a meter (MTR) object, calculate all loads and return as power in kW
 float BATTERY::bt_CalcAdjLoad(MTR m)
 {
-	float P_load_adj(0.0); // building + PV load, power [kW]
 	float btuh_to_kW(1.0/3412.142);
-	P_load_adj += m.H.clg * btuh_to_kW;
-	P_load_adj += m.H.htg * btuh_to_kW;
-	P_load_adj += m.H.hp * btuh_to_kW;
-	P_load_adj += m.H.dhw * btuh_to_kW;
-	P_load_adj += m.H.dhwBU * btuh_to_kW;
-	P_load_adj += m.H.fanC * btuh_to_kW;
-	P_load_adj += m.H.fanH * btuh_to_kW;
-	P_load_adj += m.H.fanV * btuh_to_kW;
-	P_load_adj += m.H.fan * btuh_to_kW;
-	P_load_adj += m.H.aux * btuh_to_kW;
-	P_load_adj += m.H.proc * btuh_to_kW;
-	P_load_adj += m.H.lit * btuh_to_kW;
-	P_load_adj += m.H.rcp * btuh_to_kW;
-	P_load_adj += m.H.ext * btuh_to_kW;
-	P_load_adj += m.H.refr * btuh_to_kW;
-	P_load_adj += m.H.dish * btuh_to_kW;
-	P_load_adj += m.H.dry * btuh_to_kW;
-	P_load_adj += m.H.cook * btuh_to_kW;
-	P_load_adj += m.H.usr1 * btuh_to_kW;
-	P_load_adj += m.H.usr2 * btuh_to_kW;
-	P_load_adj += m.H.pv * btuh_to_kW;
-	return P_load_adj;
+	return (m.H.clg
+		+ m.H.htg
+		+ m.H.hp
+		+ m.H.dhw
+		+ m.H.dhwBU
+		+ m.H.fanC
+		+ m.H.fanH
+		+ m.H.fanV
+		+ m.H.fan
+		+ m.H.aux
+		+ m.H.proc
+		+ m.H.lit
+		+ m.H.rcp
+		+ m.H.ext
+		+ m.H.refr
+		+ m.H.dish
+		+ m.H.dry
+		+ m.H.cook
+		+ m.H.usr1
+		+ m.H.usr2
+		+ m.H.pv) * btuh_to_kW;
 }
 
 RC BATTERY::bt_DoHour()
