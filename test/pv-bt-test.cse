@@ -2,7 +2,7 @@
 BATTERY + PV TEST AND CONTROL STRATEGIES
 ========================================
 
-This module seeks to test the BATTERY and PV records using various control strategies. The Battery and PVArray are simulated while a "typical" building load is specified from an external CSV file and set to a GAIN block using the gnPower field.
+This module seeks to test the BATTERY record using various control strategies. The Battery is simulated while a "typical" building load and associated "PV Array" is specified from an external CSV file and set to a GAIN block using gnPower fields.
 
 DEFAULT:
 --------
@@ -188,8 +188,9 @@ EXPORTFILE "PvBtOut"
     exHeader = ColumnsOnly
     ExportCol colhead="Day" colVal=@Top.dateStr
     ExportCol colhead="Hour" colVal=@Top.iHr
-    ExportCol colhead="PV Out [kW]" colVal=@PVArray["PvDefault"].acOut / kw_to_btuh
+    ExportCol colhead="PV Out [kW]" colVal=@METER["ElecMtrDefault"].H.pv / kw_to_btuh
     ExportCol colhead="HomeLoad [kW]" colVal=@METER["ElecMtrDefault"].H.lit / kw_to_btuh
+    ExportCol colhead="AdjLoad [kW]" colVal=(@METER["ElecMtrDefault"].H.lit + @METER["ElecMtrDefault"].H.pv) / kw_to_btuh
     ExportCol colhead="TDV [kBtu/kWh]" colVal=import(Data,"TDV_kBtu__kWh")
     ExportCol colhead="NoBtNoPv SOE" colVal=@BATTERY["Battery00"].soe
     ExportCol colhead="NoBtNoPv Energy [kWh]" colVal=@BATTERY["Battery00"].energy
