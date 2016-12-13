@@ -27,6 +27,7 @@ RC BATTERY::bt_Init()
 {
 	RC rc = RCOK;
 	bt_soe = bt_initSOE;
+	bt_soeBegIvl = bt_initSOE;
 	bt_cycles = bt_initCycles;
 	bt_energy = bt_initSOE * bt_maxCap;
 	return rc;
@@ -92,6 +93,9 @@ RC BATTERY::bt_DoHour()
 	bt_energy = bt_energy + dE_bt;
 	dsoe = dE_bt / bt_maxCap;
 	bt_soe = bt_soe + dsoe;
+	// soeBegIvl is used to provide probe access to SOE for the beginning of the next interval
+	// during expression evaluation
+	bt_soeBegIvl = bt_soe;
 	// we devide by two because one full discharge and one full charge = one cycle
 	bt_cycles = bt_cycles + (std::abs(dsoe) / 2.0);
 	if (bt_meter)
