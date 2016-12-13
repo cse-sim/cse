@@ -1506,7 +1506,7 @@ LOCAL void FC NEAR doIvlAccum()
 			euClg += h->clg;			// cooling
 			euHtg += h->htg + h->hp;		// heat energy use: incl heat pump backup heat
 			euFan += h->fan + h->aux;		// fan: include auxiliary
-			euX += h->dhw + h->proc + h->lit + h->rcp + h->ext + h->usr1 + h->usr2 + h->pv;	// "extra": everything else?
+			euX += h->dhw + h->proc + h->lit + h->rcp + h->ext + h->usr1 + h->usr2 + h->pv + h->bt;	// "extra": everything else?
 		}
 		// set daylighting weather variable(s) for brf
 		switch (Wfile.wFileFormat)
