@@ -22,7 +22,7 @@ Name of a meter by which the BATTERY's power input/output (i.e., charge/discharg
 
 **btEndUse=*choice***
 
-Meter end use to which the BATTERY's charged/discharged energy should be accumulated.
+Meter end use to which the BATTERY's charged/discharged energy should be accumulated. Note that the battery end use is seen from the standpoint of a "load" on the electric grid. That is, when the battery is being charged, the end use will show up as positive. When the battery is being discharged (i.e., when it is offsetting other loads), it is seen as negative.
 
   ------- -------------------------------------------------------------
   Clg     Cooling
@@ -46,7 +46,7 @@ Meter end use to which the BATTERY's charged/discharged energy should be accumul
   COOK    Cooking
   USER1   User-defined category 1
   USER2   User-defined category 2
-  BT      Battery power generation
+  BT      Battery charge power 
   PV      Photovoltaic power generation
   ------- -------------------------------------------------------------
 
@@ -76,7 +76,7 @@ This is the maximum amount of energy that can be stored in the BATTERY system in
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| KWhr    | x $\ge$ 0     | 6         |No          |constant       |
+| KWhr    | x $\ge$ 0     | 16        |No          |constant       |
 
 **btInitSOE=*float***
 
@@ -114,7 +114,7 @@ The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy 
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| kW      | x $\ge$ 0     | 50e3      |No          |subhourly      |
+| kW      | x $\ge$ 0     | 4         |No          |subhourly      |
 
 **btMaxDschgPwr=*float***
 
@@ -122,7 +122,7 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| kW      | x $\ge$ 0     | 25e3      |No          |subhourly      |
+| kW      | x $\ge$ 0     | 4         |No          |subhourly      |
 
 **btChgReq=*float***
 
