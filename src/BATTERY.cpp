@@ -56,6 +56,7 @@ float BATTERY::bt_CalcAdjLoad(MTR m)
 		+ m.H.refr
 		+ m.H.dish
 		+ m.H.dry
+		+ m.H.wash
 		+ m.H.cook
 		+ m.H.usr1
 		+ m.H.usr2
