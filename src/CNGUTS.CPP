@@ -614,8 +614,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		PVARRAY* pv;
 		RLUP(PvR, pv) EF(pv->pv_DoHour())
 
-		BATTERY* bt;
-		RLUP(BtR, bt) EF(bt->bt_DoHour())
+
 		// hourly part of loads computation (most of it). Must call after gains.
 		EF( loadsHourBeg() )   				// start-hour loads stuff -- solar gains, masses, zones. cnloads.cpp.
 
@@ -690,6 +689,11 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 // Mass end-of-interval enthalpy accounting
 	msEndIvl( Top.ivl);
+
+	if (Top.ivl < C_IVLCH_S) {
+		BATTERY* bt;
+		RLUP(BtR, bt) EF(bt->bt_DoHour())
+	}
 
 // results accumulation for interval: simulation and meters
 	if (!Top.tp_skipDay)
