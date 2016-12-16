@@ -3608,17 +3608,17 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *r FLOAT_GEZ bt_maxCap    // maximum (usable) battery capacity in kWh
   *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
   *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0)
-  *s FRAC bt_chgEff         // battery efficiency while charging
-  *s FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
-  *s FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
-  *s FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
-  *s FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
-  *s FRAC bt_soeBegIvl      // battery SOE at beginning of interval
-  *s *e FRAC bt_soe         // battery state of energy (SOE) (0 <= SOE <= 1)
+  *h FRAC bt_chgEff         // battery efficiency while charging
+  *h FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
+  *h FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
+  *h FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
+  *h FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
+  *h FRAC bt_soeBegIvl      // battery SOE at beginning of interval
   *h *e FLOAT bt_loadSeen   // the adjusted load seen by the battery that step (kW)
+  *h *e FRAC bt_soe         // battery state of energy (SOE) (0 <= SOE <= 1)
 							// represents the end of interval SOE.
-  *s *e FLOAT_GEZ bt_cycles // accumulated battery cycles
-  *s *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
+  *h *e FLOAT_GEZ bt_cycles // accumulated battery cycles
+  *h *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
 
 *END		// BATTERY
 //=============================================================================
