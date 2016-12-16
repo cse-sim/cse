@@ -30,6 +30,7 @@ RC BATTERY::bt_Init()
 	bt_soeBegIvl = bt_initSOE;
 	bt_cycles = bt_initCycles;
 	bt_energy = bt_initSOE * bt_maxCap;
+	bt_loadSeen = 0.0;
 	return rc;
 }	// BATTERY::bt_Init
 
@@ -76,8 +77,10 @@ RC BATTERY::bt_DoHour()
 	float dsoe(0.0); // change in SOE
 	float kW_to_btuh(3412.142); 
 	float tolerance(bt_maxCap * 1e-6); // tolerance for capacity calculations [kW] -- used to prevent underflow issues
+	bt_loadSeen = 0.0;
 	if (bt_meter) {
 		P_load_adj = bt_CalcAdjLoad(MtrB.p[bt_meter]);
+		bt_loadSeen = P_load_adj;
 	}
 	P_bt_req = (bt_useUsrChg == C_NOYESCH_NO) ? -1.0 * P_load_adj : bt_chgReq;
 	P_bt_max_cap = (bt_maxCap * (1.0 - bt_soe)) / (dt * bt_chgEff);
