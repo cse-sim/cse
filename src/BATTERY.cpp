@@ -27,8 +27,10 @@ RC BATTERY::bt_Init()
 {
 	RC rc = RCOK;
 	bt_soe = bt_initSOE;
+	bt_soeBegIvl = bt_initSOE;
 	bt_cycles = bt_initCycles;
 	bt_energy = bt_initSOE * bt_maxCap;
+	bt_loadSeen = 0.0;
 	return rc;
 }	// BATTERY::bt_Init
 
@@ -36,30 +38,29 @@ RC BATTERY::bt_Init()
 // Given a meter (MTR) object, calculate all loads and return as power in kW
 float BATTERY::bt_CalcAdjLoad(MTR m)
 {
-	float P_load_adj(0.0); // building + PV load, power [kW]
 	float btuh_to_kW(1.0/3412.142);
-	P_load_adj += m.H.clg * btuh_to_kW;
-	P_load_adj += m.H.htg * btuh_to_kW;
-	P_load_adj += m.H.hp * btuh_to_kW;
-	P_load_adj += m.H.dhw * btuh_to_kW;
-	P_load_adj += m.H.dhwBU * btuh_to_kW;
-	P_load_adj += m.H.fanC * btuh_to_kW;
-	P_load_adj += m.H.fanH * btuh_to_kW;
-	P_load_adj += m.H.fanV * btuh_to_kW;
-	P_load_adj += m.H.fan * btuh_to_kW;
-	P_load_adj += m.H.aux * btuh_to_kW;
-	P_load_adj += m.H.proc * btuh_to_kW;
-	P_load_adj += m.H.lit * btuh_to_kW;
-	P_load_adj += m.H.rcp * btuh_to_kW;
-	P_load_adj += m.H.ext * btuh_to_kW;
-	P_load_adj += m.H.refr * btuh_to_kW;
-	P_load_adj += m.H.dish * btuh_to_kW;
-	P_load_adj += m.H.dry * btuh_to_kW;
-	P_load_adj += m.H.cook * btuh_to_kW;
-	P_load_adj += m.H.usr1 * btuh_to_kW;
-	P_load_adj += m.H.usr2 * btuh_to_kW;
-	P_load_adj += m.H.pv * btuh_to_kW;
-	return P_load_adj;
+	return (m.H.clg
+		+ m.H.htg
+		+ m.H.hp
+		+ m.H.dhw
+		+ m.H.dhwBU
+		+ m.H.fanC
+		+ m.H.fanH
+		+ m.H.fanV
+		+ m.H.fan
+		+ m.H.aux
+		+ m.H.proc
+		+ m.H.lit
+		+ m.H.rcp
+		+ m.H.ext
+		+ m.H.refr
+		+ m.H.dish
+		+ m.H.dry
+		+ m.H.wash
+		+ m.H.cook
+		+ m.H.usr1
+		+ m.H.usr2
+		+ m.H.pv) * btuh_to_kW;
 }
 
 RC BATTERY::bt_DoHour()
@@ -77,8 +78,10 @@ RC BATTERY::bt_DoHour()
 	float dsoe(0.0); // change in SOE
 	float kW_to_btuh(3412.142); 
 	float tolerance(bt_maxCap * 1e-6); // tolerance for capacity calculations [kW] -- used to prevent underflow issues
+	bt_loadSeen = 0.0;
 	if (bt_meter) {
 		P_load_adj = bt_CalcAdjLoad(MtrB.p[bt_meter]);
+		bt_loadSeen = P_load_adj;
 	}
 	P_bt_req = (bt_useUsrChg == C_NOYESCH_NO) ? -1.0 * P_load_adj : bt_chgReq;
 	P_bt_max_cap = (bt_maxCap * (1.0 - bt_soe)) / (dt * bt_chgEff);
@@ -94,6 +97,9 @@ RC BATTERY::bt_DoHour()
 	bt_energy = bt_energy + dE_bt;
 	dsoe = dE_bt / bt_maxCap;
 	bt_soe = bt_soe + dsoe;
+	// soeBegIvl is used to provide probe access to SOE for the beginning of the next interval
+	// during expression evaluation
+	bt_soeBegIvl = bt_soe;
 	// we devide by two because one full discharge and one full charge = one cycle
 	bt_cycles = bt_cycles + (std::abs(dsoe) / 2.0);
 	if (bt_meter)
