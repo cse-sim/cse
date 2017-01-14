@@ -452,12 +452,12 @@ Cooling fan power.
 
 OAV inlet (source) air temperature.  Supply air temperature at the zone is generally higher due to fan heat.  Duct losses, if any, also alter the supply air temperature.
 
---------------------------------------------------------------------------------------------
-**Units**   **Legal Range**       **Default**                **Required**   **Variability**
------------ ----------------- -------------------------- -------------- -----------------
-  ^o^F                              Dry-bulb temperature            No             hourly  
-                                    from weather file
------------ ----------------  -------------------------- -------------- -----------------
+---------------------------------------------------------------------------
+**Units** **Legal Range** **Default**          **Required** **Variability**
+--------- --------------- -------------------- ------------ ---------------
+  ^o^F                    Dry-bulb temperature No           hourly  
+                          from weather file
+---------------------------------------------------------------------------
 
 **rsOAVTdiff=*float***
 

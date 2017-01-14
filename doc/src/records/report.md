@@ -198,9 +198,9 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
 
 Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
 
-  **Units**   **Legal Range**                 **Default**   **Required**                **Variability**
-  ----------- ------------------------------- ------------- ----------------------------- -----------------
-              name of a *DHWMETER*, ALL, SUM               Required for *rpType*=DHWMTR   constant
+**Units** **Legal Range**                **Default**   **Required**                 **Variability**
+--------- ------------------------------ ------------- ---------------------------- ---------------
+          name of a *DHWMETER*, ALL, SUM               Required for *rpType*=DHWMTR constant
 
 <% if inactive_CNE_records %>
 **rpAh=*ahName***

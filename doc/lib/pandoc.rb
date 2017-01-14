@@ -325,7 +325,7 @@ module Pandoc
     begin
       Pandoc::Run.call(['-f json'] + STD_MD_OPTS, json_str)
     rescue
-      puts "Error running json_to_markdown over:\n#{json_str[0..1200]}"
+      puts "Error running JsonToMd over:\n#{json_str[0..1200]}"
       raise
     end
   end
