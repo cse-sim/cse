@@ -3314,10 +3314,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int* wh_HPWHHSMap;"		// runtime map by heat source (allocated at runtime)
 									//   0=resistance, 1=compressor
   *s *e *array 2 DBL wh_HPWHUse;	// current step HPWH energy use, kWh
-									//   [0]=resistance backup (iff HP) (not including wh_qXBU)
+									//   [0]=resistance backup (iff HP) (not including wh_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
   *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
-									//   output water heated to ws_tUse if HPWH does not meet load
+									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
   *h *e INT wh_HPWHTankTempSet;		// nz iff tank temp has been initialized
   *declare "static void wh_HPWHMessageCallback( const std::string message, void* contextPtr);"
   *declare "void wh_HPWHReceiveMessage( const std::string message);"
@@ -3332,6 +3332,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h INT wh_hrCount;		// # of hourly values included in wh_totHARL
 							//   re calc of avg
   *h DBL wh_totOut;			// total heat delivered to hot water, Btu
+							//   includes wh_HPWHxBU
   *h *e INT wh_unMetSh;		// HPWH: count of subhrs in this hour
 							//       when wh_tHWOut < wh_tUse
 							//   else unused

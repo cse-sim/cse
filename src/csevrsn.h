@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.817: ...
+   0.817: HPWH wsTUse bug fix; enable HPWH CSV dump; committed 1-17-2017
    0.816: support rpCpl=-1; misc. doc-related cleanup; committed 11-30-2016
    0.815: Initial open-source version w/ C++ ASHWAT; committed 9-26-2016
    0.814: ASHWAT C++ conversion test version
