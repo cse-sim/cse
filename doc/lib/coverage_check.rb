@@ -151,6 +151,32 @@ module CoverageCheck
     end
     n
   end
+  DowncaseRecordInputSet = lambda do |ris|
+    n = {}
+    ris.each do |k, vs|
+      n[k.downcase] = vs.map(&:downcase).to_set
+    end
+    n
+  end
+  # (Map String (Set String)) (Map String (Set String)) ?Bool ->
+  #   (Map String (Set String))
+  # Given a record input set and a reference record input set and an optional
+  # boolean flag (defaulting to false) that, if true, compares case sensitive,
+  # drop all fields that end with "Name" UNLESS they also appear in the
+  # reference. Note: compares
+  DropNameFieldsIfNotInRef = lambda do |ris, ref, case_sensitive=false|
+    ref = case_sensitive ? ref : DowncaseRecordInputSet[ref]
+    name = case_sensitive ? "Name" : "name"
+    n = {}
+    ris.each do |k, vs|
+      kk = case_sensitive ? k : k.downcase
+      n[k] = vs.reject {|v|
+        w = case_sensitive ? v : v.downcase
+        w.end_with?(name) && !(ref.include?(kk) && ref[kk].include?(w))
+      }.to_set
+    end
+    n
+  end
   # (Map String (Set String)) (Map String (Set String)) ?Bool ->
   # (Or Nil
   #     (Record :records_in_1st_not_2nd (Or Nil (Set String))

@@ -12,7 +12,7 @@ Name of solar gain distribution (follows "SGDIST" if given).
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        No             constant
 
-sgSurf=*sfName*
+**sgSurf=*sfName***
 
 Name of surface to which gain is targeted.
 

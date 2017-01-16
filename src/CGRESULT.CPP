@@ -1830,7 +1830,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 				text = cvin2s( &fv, dt, UNNONE, colWid, cvFmt, spB4 + spAf); 	// convert, to Tmpstr, cvpak.cpp
 
 #if 1		// this may be controversial too, 12-11-91
-				// conditionally adjust default format if space permits for 3 character positions right of point position
+			// conditionally adjust default format if space permits for 3 character positions right of point position
 				if ( colp->colDec < 0					// only if decimals not specified by user (dflt -1)
 						&&  colp->colJust <= 0					// only if justification not specified (dflt 0)
 						&&  strcspn( text, "Ee") >= strlen(text) )		// not if e format

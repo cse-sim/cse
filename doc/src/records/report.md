@@ -92,6 +92,9 @@ Choice indicating report type. Report types may be described at greater length, 
 
   MTR     Meter report. Requires *rpMeter*.
 
+  DHWMTR  DHW meter report.  Requires *rpDHWMeter*
+
+<% if inactive_CNE_records %>
   AH      Air handler report. Requires *rpAh*.
 
   AHSIZE  Air handler autosizing report. Requires *rpAh*.
@@ -101,6 +104,7 @@ Choice indicating report type. Report types may be described at greater length, 
   TUSIZE  Terminal autosizing report. Requires *rpTu.*
 
   TULOAD  Terminal load. Requires *rpTu.* TODO
+<% end %>
 
   UDT     User-defined table. Data items are specified with REPORTCOL
           commands (next section). Allows creating almost any desired
@@ -134,19 +138,15 @@ Report Frequency: specifies interval for generating rows of report data:
   SUBHOUR            at end of each subhour
   ------------------ ---------------------------------------------------
 
-*RpFreq* values of HOURANDSUB and SUBHOUR are not supported with *rpType*'s of MTR and ZST, nor if *rpType* is ZEB or AH and *rpZone* or *rpAh* is SUM.
+*rpFreq* values of HOURANDSUB and SUBHOUR are not supported in some combinations with data selection of ALL or SUM.
 
 We recommend using HOURly and more frequent reports sparingly, to report on only a few typical or extreme days, or to explore a problem once it is known what day(s) it occurs on. Specifying such reports for a full-year run will generate a huge amount of output and cause extremely slow CSE execution.
 
   --------------------------------------------------------------
-  **Units** **Legal**   **Default** **Required** **Variability**
-            **Range**
-  --------- ----------- ----------- ------------ ---------------
-            YEAR,                   Required for constant
-            MONTH,                  *rpTypes*
-            DAY, HOUR,              ZEB, ZST,                       
-            HOURANDSUB,             MTR, AH,
-            SUBHOUR                 and UDT
+  **Units** **Legal Range**   **Default** **Required** **Variability**
+  --------- ----------------- ----------- ------------ ---------------
+            *choices above*                per rpType        constant
+
 
   --------------------------------------------------------------
 
@@ -194,7 +194,16 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
   ----------- ----------------------------- ------------- --------------------------- -----------------
               name of a *METER*, ALL, SUM                 Required for *rpType*=MTR   constant
 
-**rpAh=ah*Name***
+**rpDHWMeter=*dhwMtrName***
+
+Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
+
+**Units** **Legal Range**                **Default**   **Required**                 **Variability**
+--------- ------------------------------ ------------- ---------------------------- ---------------
+          name of a *DHWMETER*, ALL, SUM               Required for *rpType*=DHWMTR constant
+
+<% if inactive_CNE_records %>
+**rpAh=*ahName***
 
 Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
@@ -209,13 +218,14 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
   ----------------------------------------------------------------
 
-**rpTu=tu*Name***
+**rpTu=*tuName***
 
 Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD. TODO
 
   **Units**   **Legal Range**                **Default**   **Required**              **Variability**
   ----------- ------------------------------ ------------- ------------------------- -----------------
               name of a TERMINAL, ALL, SUM                 Required for *rpType*=?   constant
+<% end %>
 
 **rpBtuSf=*float***
 
@@ -235,11 +245,11 @@ Conditional reporting flag. If given, report rows are printed only when value of
 
 **rpCPL=*int***
 
-Characters per line for a User-Defined report. If widths specified in REPORTCOLs (next section) add up to more than this, an error occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. Not allowed if *rpType* is not UDT.
+Characters per line for a User-Defined report. If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCpl = -1, the report width determined based on required space with a single between each column.  Not allowed if *rpType* is not UDT.
 
   **Units**   **Legal Range**          **Default**          **Required**   **Variability**
   ----------- ------------------------ -------------------- -------------- -----------------
-              78 $\le$ *x* $\le$ 132   top level *repCPL*   No             constant
+               x = -1 or x > 78                    top level *repCPL*   No             constant
 
 **rpTitle=*string***
 
@@ -276,5 +286,3 @@ Optionally indicates the end of the report definition. Alternatively, the end of
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-

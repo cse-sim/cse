@@ -18,6 +18,7 @@ require_relative 'lib/toc'
 require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
 require_relative 'lib/coverage_check'
+require_relative 'lib/xlink'
 
 ########################################
 # Globals
@@ -328,7 +329,7 @@ Run = lambda do |cmd, working_dir=nil|
   end
 end
 
-CopyFile = lambda do |path, out_path, _|
+CopyFile = lambda do |path, out_path, dummy1=nil, dummy2=nil|
   FileUtils.cp(path, out_path)
 end
 
@@ -383,7 +384,8 @@ MapOverManifest = lambda do |fn, check_keys=nil|
     EnsureExists[out_dir]
     other_deps = config.fetch("paths-to-other-dependencies", [])
     if config.fetch("disable?", false)
-      MapOverManifest[CopyFile][config.merge("disable?" => false)]
+      #MapOverManifest[CopyFile][config.merge("disable?" => false)]
+      lambda {|manifest| manifest}
     else
       lambda do |manifest|
         new_manifest = []
@@ -664,93 +666,40 @@ DePluralize = lambda do |word|
   end
 end
 
-XLinkMarkdown = lambda do |config|
-  disable = config.fetch('disable?', false)
-  if disable
-    lambda do |manifest|
-      manifest
-    end
-  else
-    out_dir = config.fetch('output-dir')
-    EnsureExists[out_dir]
-    lambda do |manifest|
-      oi = if config.include?('object-index-path')
-             YAML.load_file(config['object-index-path'])
-           else
-             config.fetch('object-index')
-           end
-      ons = Set.new(oi.keys)
-      new_manifest = []
-      manifest.each do |path|
-        bn = File.basename(path)
-        out_path = File.join(out_dir, bn)
-        new_manifest << out_path
-        next if FileUtils.uptodate?(out_path, [path])
-        f = lambda do |tag, the_content, state|
-          g = lambda do |inline|
-            if inline['t'] == 'Str'
-              index = state[:oi]
-              ons = state[:ons]
-              word = inline['c']
-              word_only = word.scan(/[a-zA-Z:]/).join
-              word_only_singular = DePluralize[word_only]
-              if ons.include?(word_only) or ons.include?(word_only_singular)
-                if index.include?(word_only) or index.include?(word_only_singular)
-                  w = ons.include?(word_only) ? word_only : word_only_singular
-                  state[:num_hits] += 1
-                  ref = index[w].scan(/(\#.*)/).flatten[0]
-                  {'t' => 'Link',
-                   'c' => [
-                     ["", [], []],
-                     [{'t'=>'Str','c'=>word}],
-                     [ref, '']]}
-                else
-                  puts("WARNING! ObjectNameSet includes #{word_only}|#{word_only_singular}; Index doesn't")
-                  inline
-                end
-              else
-                inline
-              end
-            elsif inline['t'] == 'Emph'
-              new_ins = inline['c'].map(&g)
-              {'t'=>'Emph', 'c'=>new_ins}
-            elsif inline['t'] == 'Strong'
-              new_ins = inline['c'].map(&g)
-              {'t'=>'Strong', 'c'=>new_ins}
-            else
-              inline
-            end
-          end
-          if tag == "Para"
-            new_inlines = the_content.map(&g)
-            {'t' => 'Para',
-             'c' => new_inlines}
-          else
-            nil
-          end
-        end
-        content = File.read(path, :encoding=>"UTF-8")
-        doc = JSON.parse(Pandoc::MdToJson[content])
-        state = {
-          num_hits: 0,
-          oi: oi,
-          ons: ons
-        }
-        new_doc = Pandoc::Walk[doc, f, state]
-        new_content = Pandoc::JsonToMd[new_doc]
-        if VERBOSE
-          LOG.write("Crosslinked #{bn}; #{state[:num_hits]} found\n")
-          LOG.flush
-        else
-          LOG.write(".")
-          LOG.flush
-        end
-        File.write(out_path, new_content)
-      end
-      new_manifest
-    end
-  end
-end
+# Task to cross-link terms in source documents
+# Config (and defaults)
+#   "record-index-path"
+#   "output-dir"
+#   "log" => nil
+#   "verbose" => false
+#   "disable?" => false
+#   "paths-to-other-dependencies" => []
+#   "relative-root-path" => nil
+XLinkMarkdown = MapOverManifest[
+  XLink::OverFileOrig,
+  ["record-index-path"]
+]
+
+# Task to cross-link terms in source documents. This version allows us to
+# remove "self-links" -- i.e., links to sections that are the immediate parent
+# or (optionally) on the path of sections to the current point. The basic idea
+# is that we shouldn't have links to a section in the paragraph immediately
+# below the beginning of a section.
+# Config (and defaults)
+#   "record-index-path"
+#   "output-dir"
+#   "levels" => (Array Int), default: [1,1,1, ...]
+#   "nolinklevel" => Int, default: 1, how high up to go in the path to check if we are "self-linking"
+#   "section-path" => []
+#   "log" => nil
+#   "verbose" => false
+#   "disable?" => false
+#   "paths-to-other-dependencies" => []
+#   "relative-root-path" => nil
+XLinkMarkdownAdv = MapOverManifest[
+  XLink::OverFile,
+  ["record-index-path"]
+]
 
 JoinManifestToString = lambda do |manifest|
   manifest.map{|f| "\"#{f}\""}.join(' ')
@@ -1132,11 +1081,14 @@ BuildSinglePageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
     ],
-    XLinkMarkdown[
-      "object-index-path" => record_index_file,
+    XLinkMarkdownAdv[
+      "record-index-path" => record_index_file,
+      "levels" => levels,
+      "nolinklevel" => 1,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
+      "log" => STDOUT,
       "disable?" => disable_xlink
     ],
     AdjustMarkdownLevels[
@@ -1302,11 +1254,14 @@ BuildMultiPageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
     ],
-    XLinkMarkdown[
-      "object-index-path" => record_index_file,
+    XLinkMarkdownAdv[
+      "record-index-path" => record_index_file,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
+      "levels" => levels,
+      "nolinklevel" => 1,
+      "log" => STDOUT,
       "disable?" => disable_xlink
     ],
     BuildProbesAndCopyIntoManifest[
@@ -1487,11 +1442,14 @@ BuildPDF = lambda do |config|
         File.join(build_dir, tag, md_dir, "normalize"), this_dir
       )
     ],
-    XLinkMarkdown[
-      "object-index-path" => record_index_file,
+    XLinkMarkdownAdv[
+      "record-index-path" => record_index_file,
+      "levels" => levels,
+      "nolinklevel" => 1,
       "output-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "xlink"), this_dir
       ),
+      "log" => STDOUT,
       "disable?" => disable_xlink
     ],
     AdjustMarkdownLevels[
@@ -1815,7 +1773,7 @@ task :coverage do
       File.join(BUILD_DIR, tag, 'md', 'normalize', File.basename(path))
     end
     ris2 = CoverageCheck::ReadAllRecordDocuments[files]
-    ris3 = CoverageCheck::DropNameFields[CoverageCheck::AdjustMap[ris2]]
+    ris3 = CoverageCheck::DropNameFieldsIfNotInRef[CoverageCheck::AdjustMap[ris2], ris1]
     diffs = CoverageCheck::RecordInputSetDifferences[ris1, ris3, false]
     diff_report = CoverageCheck::RecordInputSetDifferencesToString[
       diffs, "CSE", "Documentation"

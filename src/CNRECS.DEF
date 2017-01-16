@@ -212,11 +212,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SKYMODCH skyModel 	// sky model: C_.._ISO or _ANISO
     *i SKYMODLWCH skyModelLW	// long-wave sky model
     *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)
-								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs (default)
-								//   C_DHWMODELCH_2013: corrected 2013 implementation
-								//   C_DHWMODELCH_2016: 2016 implementation
+								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs
+								//   C_DHWMODELCH_2013: corrected 2013 implementation (default)
 
-								//   
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
     *i USI workDayMask		// mask with bits set for "work" days, clear for "non-work" days, default Mon..Fri, 5-95.
@@ -1320,10 +1318,10 @@ RECORD GT "glazeType" *RAT	// glazing type input or run info
     *mh FRAC gtSMSO		// optional solar heat gain coef multiplier, shades open, used if not spec'd in window, dflt 1.0.
     *mh FRAC gtSMSC		// ditto shades closed, defaults at window level.
     *i FLOAT_GEZ gtFMult   	// optional frame/mullion multiplier for use when not spec'd in window. constant.
-    *i *nest PY4 gtPySHGC	/* beam SHGC incidence angle multiplier: 4th-order polynomial in cosine of angle.
-    				   4 inputtable coefficients (no constant). .val1(x) returns value. */
+    *i *nest PY4 gtPySHGC	// beam SHGC incidence angle multiplier: 4th-order polynomial in cosine of angle.
+    						//   4 inputtable coefficients (no constant). .val1(x) returns value.
     *i FRAC gtDMSHGC	// diffuse SHGC multiplier used (in place of polynomial). RQD. constant.
-    *i FRAC gtDMRBSol	// reflactance for diffuse solar on inside of glass, for Cavity Absorptance calc'ns (cgsolar.cpp).
+    *i FRAC gtDMRBSol	// reflectance for diffuse solar on inside of glass, for Cavity Absorptance calc'ns (cgsolar.cpp).
     *i UH_GZ gtU		// optional u-value for use when not spec'd in window. contant.
     *i UH_GZ gtUNFRC	// overall U-factor evaluated under per NFRC heating conditions
     *i SI gtNGlz		// # of glazings bare-glass assembly
@@ -2975,7 +2973,7 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *i TI rs_OAVReliefZi		// OAV relief zone index
 *s FLOAT rs_OAVTdbInlet		// OAV inlet dry-bulb temp, F
 							//   default = from project weather data source (generally weather file)
-							// note: default varies subhourly but input expression is hourly
+							//   note: default varies subhourly but input expression is hourly
 *h FLOAT_GZ rs_OAVTdiff		// OAV temperature differential, F
 *i FLOAT_GEZ rs_OAVAvfDs	// OAV design air flow rate, cfm actual air
 *i FLOAT_GEZ rs_OAVFanPwr	// OAV design fan power (based on rs_OAVVfDs), W/cfm
@@ -3316,10 +3314,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int* wh_HPWHHSMap;"		// runtime map by heat source (allocated at runtime)
 									//   0=resistance, 1=compressor
   *s *e *array 2 DBL wh_HPWHUse;	// current step HPWH energy use, kWh
-									//   [0]=resistance backup (iff HP) (not including wh_qXBU)
+									//   [0]=resistance backup (iff HP) (not including wh_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
   *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
-									//   output water heated to ws_tUse if HPWH does not meet load
+									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
   *h *e INT wh_HPWHTankTempSet;		// nz iff tank temp has been initialized
   *declare "static void wh_HPWHMessageCallback( const std::string message, void* contextPtr);"
   *declare "void wh_HPWHReceiveMessage( const std::string message);"
@@ -3334,6 +3332,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h INT wh_hrCount;		// # of hourly values included in wh_totHARL
 							//   re calc of avg
   *h DBL wh_totOut;			// total heat delivered to hot water, Btu
+							//   includes wh_HPWHxBU
   *h *e INT wh_unMetSh;		// HPWH: count of subhrs in this hour
 							//       when wh_tHWOut < wh_tUse
 							//   else unused

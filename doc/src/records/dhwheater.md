@@ -20,10 +20,12 @@ Number of identical water heaters of this type. Any value $>1$ is equivalent to 
 
 **whType=*choice***
 
-Specifies type of water heater.
+Type of water heater.  This categorization is based on CEC and federal rating standards that change from time to time.
 
   --------------------- ---------------------------------------
-  SMALLSTORAGE          A gas-fired storage water heater with
+  SMALLSTORAGE          A storage water heater having an energy
+                        factor (EF) rating.  Generally, a gas-fired
+                        storage water heater with
                         input of 75,000 Btuh or less, an
                         oil-fired storage water heater with
                         input of 105,000 Btuh or less, an
@@ -58,17 +60,20 @@ Specifies type of water heater.
 
 **whHeatSrc=*choice***
 
-Specifies heat source for water heater.
+Heat source for water heater.  CSE implements uses efficiency-based models for
+all whTypes (as documented in RACM, App. B).  In addition, the detailed Ecotope HPWH model is
+available for electric (air source heat pump and resistance) SMALLSTORAGE water heaters.
 
   ------------- ---------------------------------------
-  RESISTANCE    Electric resistance heating element
+  RESISTANCE    Electric resistance heating element\
+                Deprecated for whType=SMALLSTORAGE (use RESISTANCEX)
 
-  RESISTANCEX   Electric resistance heating element (detailed HPWH model)
+  RESISTANCEX   Electric resistance heating element, detailed HPWH model
 
-  ASHP          Air source heat pump
+  ASHP          Air source heat pump, EF model\
+                Deprecated for whType=SMALLSTORAGE (use ASHPX)
 
-  ASHPX         Air source heat pump (detailed HPWH
-                model)
+  ASHPX         Air source heat pump, detailed HPWH model
 
   FUEL          Fuel-fired burner
   ------------- ---------------------------------------
@@ -79,7 +84,7 @@ Specifies heat source for water heater.
 
 **whVol=*float***
 
-Specifies storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used in the detailed HPWH model when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC (other whASHPTypes implicitly determine tank volume).  For all other configurations, whVol is documentation-only.
+Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used in the detailed HPWH model when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC (other whASHPTypes implicitly determine tank volume).  For all other configurations, whVol is documentation-only.
 
   -----------------------------------------------------------------------
   **Units**   **Legal Range**   **Default**   **Required**       **Variability**
@@ -99,23 +104,21 @@ below.  Calculation methods are documented in RACM, Appendix B.
   ----------------------------------------------------------------------------
   Configuration                 whEF default    Use
   ---------------------------- ---------------  -------------------------
-  whType=SMALLSTORAGE\               0.82        Used in derivation of whLDEF
-  whHeatSrc=RESISTANCE
-
-  whType=SMALLSTORAGE\               0.82        Used in derivation of whLDEF
+  whType=SMALLSTORAGE\               0.82        Derivation of whLDEF
   whHeatSrc=RESISTANCE or FUEL     
 
-  whType=SMALLSTORAGE\               0.82        whHPAF applied
-  whHeatSrc=ASPX                   
+  whType=SMALLSTORAGE\               0.82        Derivation of whLDEF\
+  whHeatSrc=ASHP                                 note inappropriate default\
+                                                 (deprecated, use ASHPX)
 
-  whType=SMALLSTORAGE\             (req'd)      Tank losses, overall efficiency
-  whHeatSrc=ASHPX\
+  whType=SMALLSTORAGE\             (req'd)      Tank losses\
+  whHeatSrc=ASHPX\                              Overall efficiency
   whASHPType=GENERIC              
 
-  whType=SMALLSTORAGE\             (req'd)      Tank losses, maximum whEF = 0.98.
-  whHeatSrc=RESISTANCEX
+  whType=SMALLSTORAGE\             (req'd)      Tank losses\
+  whHeatSrc=RESISTANCEX                         Note: maximum whEF=0.98.
 
-  whType=SMALLINSTANTANEOUS          0.82       Energy use
+  whType=SMALLINSTANTANEOUS          0.82       Annual efficiency = whEF*0.92
   whHeatSrc=RESISTANCE or FUEL
 
   Any other                        (unused)
@@ -123,22 +126,23 @@ below.  Calculation methods are documented in RACM, Appendix B.
   ----------------------------------------------------------------------
 
 
-  -----------------------------------------------------------------------
-  **Units**  **Legal**                      **Default**  **Required**         **Variability**
+  --------------------------------------------------------------------------------
+  **Units**  **Legal**                    **Default** **Required** **Variability**
              **Range**
-  ---------- ------------------------------   ----------- -------------------- -----------------
-              $>$ 0\
-              *Caution: maximum*              *See above*    *See above*           constant
+  ---------- ---------------------------- ----------- ------------ ---------------
+              $>$ 0\                      *See above* *See above*  constant
+              *Caution: maximum*          
               *not checked. Unrealistic*
               *values will cause runtime*
-              *errors and/or invalid results*       
+              *errors and/or invalid*
+              *results*       
 
-  -----------------------------------------------------------------------
+  --------------------------------------------------------------------------------
 
 **whLDEF=*float***
 
 Load-dependent energy factor for DHWHEATERs with whType=SMALLSTORAGE and whHeatSrc=FUEL
-or whHeatSrc=RESIStANCE.  If not given, whLDEF is derived using a preliminary simulation
+or whHeatSrc=RESISTANCE.  If not given, whLDEF is derived using a preliminary simulation
 activated via DHWSYS wsCalcMode=PRERUN.  See RACM Appendix B.
 
   ------------------------------------------------------------------
@@ -174,7 +178,7 @@ Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=
 
 **whASHPType=*choice***
 
-Specifies the type of air source heat pump, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
+Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
 
 ----------------------------------------------------------------------
   Choice             Specified type
@@ -280,11 +284,11 @@ Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from t
 
 **whHPAF=*float***
 
-Heat pump adjustment factor, used when modeling whType=SMALLSTORAGE and whHeatSrc=ASHP. This value should be derived according to RACM App B Table B-6.
+Heat pump adjustment factor, applied to whLDEF when modeling whType=SMALLSTORAGE and whHeatSrc=ASHP. This value should be derived according to RACM App B Table B-6.  Deprecated: the detailed HPWH model (whHeatSrc=ASHPX) is recommended for air source heat pumps.
 
   **Units**   **Legal Range**   **Default**   **Required**                                    **Variability**
   ----------- ----------------- ------------- ----------------------------------------------- -----------------
-              $>$ 0             1             When whType=SMALLSTORAGE and whHeatSrc = ASHP   constant
+              $>$ 0             1             When whType=SMALLSTORAGE and whHeatSrc=ASHP   constant
 
 **whEff=*float***
 

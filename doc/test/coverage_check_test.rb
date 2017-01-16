@@ -407,4 +407,18 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     expected = {"A"=>Set.new(["a","b","c","d"])}
     assert_equal(expected, actual)
   end
+  def test_DropNameFieldsIfNotInRef
+    # Case insensitive
+    input = {"A"=>Set.new(["a","b","cName","c","d","dName"])}
+    ref = {"A"=>Set.new(["a","b","c","d","dname"])}
+    actual = DropNameFieldsIfNotInRef[input, ref]
+    expected = {"A"=>Set.new(["a","b","c","d","dName"])}
+    assert_equal(expected, actual)
+    # Case sensitive
+    input = {"A"=>Set.new(["a","b","cName","c","d","dName"])}
+    ref = {"A"=>Set.new(["a","b","c","cName","d","dname"])}
+    actual = DropNameFieldsIfNotInRef[input, ref, true]
+    expected = {"A"=>Set.new(["a","b","c","cName","d"])}
+    assert_equal(expected, actual)
+  end
 end

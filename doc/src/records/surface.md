@@ -73,7 +73,7 @@ Azimuth of surface with respect to znAzm. The azimuth used in simulating a surfa
 
 **sfModel=*choice***
 
-Provides user control over how program models this surface:
+Provides user control over how CSE models conduction for this surface.
 
   ----------------------------------- -----------------------------------
   QUICK                               Surface is modeled using a simple
@@ -101,7 +101,7 @@ Provides user control over how program models this surface:
 
   FD (or FORWARD\_DIFFERENCE)         Selects the forward difference
                                       model (used with short time steps
-                                      and the CZM zone model)
+                                      and the CZM/UZM zone model)
   ----------------------------------- -----------------------------------
 
   **Units**   **Legal Range**                                            **Default**   **Required**   **Variability**
@@ -111,7 +111,15 @@ Provides user control over how program models this surface:
 <!--
 TODO: better sfModel desciptions
 -->
-One of the following two parameters must be specified:
+Either sfU or sfCon must be specified, but not both.
+
+**sfU=*float***
+
+Surface U-value (NOT including surface (air film) conductances). For surfaces for which no heat capacity is to be modeled, allows direct entry of U-value without defining a CONSTRUCTION.
+
+  **Units**         **Legal Range**   **Default**               **Required**           **Variability**
+  ----------------- ----------------- ------------------------- ---------------------- -----------------
+  Btuh/ft^2^-^o^F   *x* $>$ 0         Determined from *sfCon*   if *sfCon* not given   constant
 
 **sfCon=*conName***
 
@@ -121,13 +129,13 @@ Name of CONSTRUCTION of the surface.
   ----------- -------------------------- ------------- -------------------- -----------------
               Name of a *CONSTRUCTION*   *none*        unless *sfU* given   constant
 
-**sfU=*float***
+**sfLThkF=*float***
 
-Surface U-value (NOT including surface (air film) conductances). For surfaces for which no heat capacity is to be modeled, allows direct entry of U-value without defining a CONSTRUCTION.
+Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model used with sfCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  sfLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
 
-  **Units**         **Legal Range**   **Default**               **Required**           **Variability**
-  ----------------- ----------------- ------------------------- ---------------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         Determined from *sfCon*   if *sfCon* not given   constant
+**Units**   **Legal Range**            **Default**   **Required**         **Variability**
+----------- -------------------------- ------------- -------------------- -----------------
+             x $\ge$ 0                    .5             No                  constant
 
 **sfExCnd=*choice***
 
@@ -158,6 +166,73 @@ Specifies the thermal conditions assumed at surface exterior, and at exterior of
                  surfaces are modeled.
   -------------- ---------------------------------------
 
+**sfExAbs=*float***
+
+Surface exterior absorptivity.
+
+-------------------------------------------------------------------------
+**Units** **Legal**   **Default** **Required**            **Variability**
+          **Range**
+--------- ----------- ----------- ----------------------- ---------------
+(none)    0 $\le$ *x*     0.5     Required if *sfExCnd* = monthly-
+          $\le$ 1                 AMBIENT or *sfExCnd* =  hourly
+                                  SPECIFIEDT
+-------------------------------------------------------------------------
+
+**sfInAbs=*float***
+
+Surface interior solar absorptivity.
+
+----------------------------------------------------------------------------
+**Units** **Legal**    **Default**              **Required** **Variability**
+          **Range**
+--------- ------------ ------------------------ ------------ ---------------
+(none)    0 $\le$ *x*  sfType = CEILING, 0.2;\  No           monthly-
+          $\le$ 1      sfType = WALL, 0.6;\                  hourly
+                       sfType = FLOOR, 0.8
+----------------------------------------------------------------------------
+
+**sfExEpsLW=*float***
+
+Surface exterior long wave (thermal) emittance.
+
+**Units**   **Legal Range**       **Default**   **Required**   **Variability**
+----------- --------------------- ------------- -------------- -----------------
+(none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
+
+**sfInEpsLW=*float***
+
+Surface interior long wave (thermal) emittance.
+
+**Units**   **Legal Range**       **Default**   **Required**   **Variability**
+----------- --------------------- ------------- -------------- -----------------
+(none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
+
+**sfExT=*float***
+
+Exterior air temperature.
+
+**Units**   **Legal Range**   **Default**   **Required**                         **Variability**
+----------- ----------------- ------------- ------------------------------------ -----------------
+^o^F        *unrestricted*    *none*        Required if *sfExCnd* = SPECIFIEDT   hourly
+
+**sfAdjZn=*znName***
+
+Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
+
+  **Units**   **Legal Range**    **Default**   **Required**                          **Variability**
+  ----------- ------------------ ------------- ------------------------------------- -----------------
+              name of a *ZONE*   *none*        Required when<br/>*sfExCnd* = ADJZN   constant
+
+**sfGrndRefl=*float***
+
+Ground reflectivity for this surface.
+
+**Units**   **Legal Range**         **Default**   **Required**   **Variability**
+----------- ----------------------- ------------- -------------- ------------------
+fraction    0 $\leq$ *x* $\leq$ 1   grndRefl      No             Monthly - Hourly
+
+
 **sfInH=*float***
 
 Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference. Default depends on the surface type.
@@ -171,9 +246,10 @@ Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference
   ----------------- ----------------- ------------- -------------- -----------------
   Btuh/ft^2^-^o^F   *x* $>$ 0         *see above*   No             constant
 
+
 **sfExH=*float***
 
-Outside surface (air film) conductance. Ignored for sfModel = Forward\_Difference. The default value is dependent upon the exterior conditions:
+Outside combined surface (air film) conductance. Ignored for sfModel = Forward\_Difference. The default value is dependent upon the exterior conditions:
 
   ------------------------ ---------------------------------------
   sfExCnd = AMBIENT        dflExH (Top-level member, described
@@ -190,73 +266,119 @@ Outside surface (air film) conductance. Ignored for sfModel = Forward\_Differenc
   ----------------- ----------------- ------------- -------------- -----------------
   Btuh/ft^2^-^o^F   *x* $>$ 0         see above     No             constant
 
-**sfExAbs=*float***
 
-Surface exterior absorptivity.
+When sfModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on sfExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
-  -------------------------------------------------------------------------
-  **Units** **Legal**   **Default** **Required**            **Variability**
-            **Range**
-  --------- ----------- ----------- ----------------------- ---------------
-  (none)    0 $\le$ *x*     0.5     Required if *sfExCnd* = monthly-
-            $\le$ 1                 AMBIENT or *sfExCnd* =  hourly
-                                    SPECIFIEDT
-  -------------------------------------------------------------------------
+Model            Exposed to ambient              Exposed to zone
+---------------- ------------------------------- ----------------------------
+UNIFIED          default CSE model               default CSE model
+INPUT            hc = sfExHcMult                 hc = sfxxHcMult
+AKBARI           Akbari model                    n/a
+WALTON           Walton model                    n/a
+WINKELMANN       Winkelmann model                n/a
+MILLS            n/a                             Mills model
+ASHRAE           n/a                             ASHRAE handbook values
+--------------- ------------------------------- ----------------------------
 
-**sfInAbs=*float***
+**sfExHcModel=*choice***
 
-Surface interior solar absorptivity.
+Selects the model used for exterior surface convection when sfModel = Forward\_Difference.
 
-  ----------------------------------------------------------------------------
-  **Units** **Legal**    **Default**              **Required** **Variability**
-            **Range**
-  --------- ------------ ------------------------ ------------ ---------------
-  (none)    0 $\le$ *x*  sfType = CEILING, 0.2;\  No           monthly-
-            $\le$ 1      sfType = WALL, 0.6;\                  hourly
-                         sfType = FLOOR, 0.8
-  ----------------------------------------------------------------------------
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+---------- ----------------- ------------- -------------- -----------------
+            *choices above*  UNIFIED         No             constant
 
-**sfExEpsLW=*float***
+**sfExHcLChar=*float***
 
-Surface exterior long wave (thermal) emittance.
+Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside surface is exposed to ambient.  See sfExHcModel.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-  (none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+ft            x > 0              10            No            constant
 
-**sfInEpsLW=*float***
 
-Surface interior long wave (thermal) emittance.
+**sfExHcMult=*float***
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-  (none)      0 $\le$ *x* $\le$ 1   0.9           No             constant
+Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=sfExHcMult.  For other sfExHcModel choices, the model-derived hc is multiplied by sfExHcMult.
 
-**sfExT=*float***
+**Units**         **Legal Range**   **Default**   **Required**   **Variability**
+----------------- ----------------- ------------- -------------- -----------------
+                                       1               No            subhourly
 
-Exterior air temperature.
+**sfExRf=*float***
 
-  **Units**   **Legal Range**   **Default**   **Required**                         **Variability**
-  ----------- ----------------- ------------- ------------------------------------ -----------------
-  ^o^F        *unrestricted*    *none*        Required if *sfExCnd* = SPECIFIEDT   hourly
+Exterior surface roughness factor.  Used only when surface is exposed to ambient (i.e. with wind exposure).  Typical values:
 
-**sfAdjZn=*znName***
+Roughness Index	   sfExRf	 Example
+-----------------  ------  ---------
+1 (very rough)		 2.17	   Stucco
+2 (rough)          1.67 	 Brick
+3 (medium rough)	 1.52 	 Concrete
+4 (Medium smooth)	 1.13	   Clear pine
+5 (Smooth)         1.11    Smooth plaster
+6 (Very Smooth)		 1		   Glass
 
-Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
+----------------------------------------------------------------------------------------------
+**Units** **Legal Range**  **Default**                       **Required**   **Variability**
+--------  ---------------- --------------------------------- -------------- -----------------
+                           sfExHcModel = WINKELMANN: 1.66\        No           constant
+                           else 2.17               
+--------  ---------------- --------------------------------- -------------- -----------------
 
-  **Units**   **Legal Range**    **Default**   **Required**                          **Variability**
-  ----------- ------------------ ------------- ------------------------------------- -----------------
-              name of a *ZONE*   *none*        Required when<br/>*sfExCnd* = ADJZN   constant
 
-**sfGrndRefl=*float***
+**sfInHcModel=*choice***
 
-Ground reflectivity for this surface.
+  Selects the model used for the inside (zone) surface convection when sfModel = Forward\_Difference.
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- ------------------
-  fraction    0 $\leq$ *x* $\leq$ 1   grndRefl      No             Monthly - Hourly
+  **Units**   **Legal Range**                    **Default**   **Required**   **Variability**
+  ---------- ----------------------------------- ------------- -------------- -----------------
+              *choices above (see sfExHcModel)*  UNIFIED         No             constant
 
-**endSurface**
+  **sfInHcMult=*float***
+
+  Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.
+
+  **Units**         **Legal Range**   **Default**   **Required**   **Variability**
+  ----------------- ----------------- ------------- -------------- -----------------
+                                         1               No            subhourly
+
+The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
+
+**sfDepthBG=*float***
+
+Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edge.  For floors, sfDepthBG is measured to the bottom face.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- --------------   ------------- -------------- ------------------
+ft            x $\ge$ 0                      No                constant
+
+
+**sfExCTGrnd=*float***
+
+**sfExCTaDbAvg07=*float***
+
+**sfExCTaDbAvg14=*float***
+
+**sfExCTaDbAvg31=*float***
+
+**sfExCTaDbAvgYr=*float***
+
+Conductances from outside face of surface to the weather file ground temperature and the moving average outdoor dry-bulb temperatures for 7, 14, 31, and 365 days.
+
+**Units**         **Legal Range**   **Default**   **Required**   **Variability**
+----------------- ----------------- ------------- -------------- -----------------
+Btuh/ft^2^-^o^F    x $\ge$ 0         see above     No             constant
+
+**sfExRConGrnd=*float***
+
+Resistance overall construction resistance.  TODO: full documentation.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- --------------   ------------- -------------- ------------------
+             x $\ge$ 0                      No                constant
+
+
+**endSURFACE**
 
 Optional to indicates the end of the surface definition. Alternatively, the end of the surface definition can be indicated by END, or by beginning another SURFACE or other object definition. If used, should follow the definitions of the SURFACE's subobjects -- DOORs, WINDOWs, SHADEs, SGDISTs, etc.
 
@@ -264,6 +386,7 @@ Optional to indicates the end of the surface definition. Alternatively, the end 
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+<!--
 The following tables summarize the defaults and legal ranges of surface members for each sfType. "n.a." indicates "not applicable" and also "not allowed".
 
   -------------------------------------------------------------------------
@@ -300,5 +423,4 @@ The following tables summarize the defaults and legal ranges of surface members 
 
   sfGrndRefl  optional, default to grndRefl
   -----------------------------------------------------------------------
-
-
+  -->

@@ -40,13 +40,14 @@ The members that assign energy use to meters include:
 -   DHWHEATER: whElectMtr, whFuelMtr
 -   DHWPUMP: wpElecMtr
 -   DHWLOOPPUMP: wlpElecMtr
+-   PVARRAY: pvElecMeter
 -   TERMINAL: tuhcMtr, tfanMtr
 -   AIRHANDLER: sfanMtr, rfanMtr, ahhcMtr, ahccMtr, ahhcAuxOnMtr, ahhcAuxOffMtr, ahhcAuxFullOnMtr, ahhcAuxOnAtAllMtr, ahccAuxOnMtr, ahccAuxOffMtr, ahccAuxFullOnMtr, ahccAuxOnAtAllMtr
 -   BOILER: blrMtr, blrpMtr, blrAuxOnMtr, blrAuxOffMtr, blrAuxFullOnMtr, blrAuxOnAtAllMtr
 -   CHILLER: chMtr, chppMtr, chcpMtr, chAuxOnMtr, chAuxOffMtr, chAuxFullOnMtr, chAuxOnAtAllMtr
 -   TOWERPLANT: tpMtr
 
-The end use can be specified by the user only for GAINs; in other cases it is hard-wired to Clg, Htg, FanC, FanH, FanV, Fan, or Aux as appropriate.
+The end use can be specified by the user only for GAINs and PVARRAYs; in other cases it is hard-wired to Clg, Htg, FanC, FanH, FanV, Fan, or Aux as appropriate.
 
 **mtrName**
 

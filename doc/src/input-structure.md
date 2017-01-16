@@ -36,22 +36,35 @@ TODO: review hierarchy
         CONSTRUCTION
             LAYER
         METER
-        ZONE
+        DHWMETER
+        IZXFER
+        DHWDAYUSE
+            DHWUSE
+        DHWSYS
+            DHWHEATER
+            DHWTANK
+            DHWPUMP
+            DHWLOOP
+            DHWLOOPPUMP
+            DHWLOOPSEG
+                DHWLOOPBRANCH
+       ZONE
             GAIN
             SURFACE
                 WINDOW
                     SHADE
                     SGDIST
                 DOOR
+<% if inactive_CNE_records %>
             PERIMETER
             TERMINAL
-        IZXFER
         AIRHANDLER
         HEATPLANT
             BOILER
         COOLPLANT
         TOWERPLANT
         HPLOOP
+<% end %>
         REPORTFILE
         REPORT
         REPORTCOL
@@ -887,63 +900,83 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
 
 *System Variables* are built-in operands with useful values. To avoid confusion with other words, they begin with a \$. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the *variations* shown; they cannot be used where the context will not accept variation at least this fast. (The [Input Data Section](#input-data) gives the *variability*, or maximum acceptable variation, for each object member.)
 
-  -------------- ---------------------------------------------------------
-  \$dayOfYear    Day of year of simulation, 1 - 365; 1 corresponds to
-                 Jan-1. (Note that this is not the day of the simulation
-                 unless begDay is Jan-1.) **Variation:** daily.
+  ---------------- ---------------------------------------------------------
+  \$dayOfYear      Day of year of simulation, 1 - 365; 1 corresponds to
+                   Jan-1. (Note that this is not the day of the simulation
+                   unless begDay is Jan-1.) **Variation:** daily.
 
-  \$month        Month of year, 1 - 12. **Variation**: monthly.
+  \$month          Month of year, 1 - 12. **Variation**: monthly.
 
-  \$dayOfMonth   Day of month, 1 - 31. **Variation**: daily.
+  \$dayOfMonth     Day of month, 1 - 31. **Variation**: daily.
 
-  \$hour         Hour of day, 1 - 24; 1 corresponds to midnight - 1 AM.
-                 **Variation**: hourly.
+  \$hour           Hour of day, 1 - 24; 1 corresponds to midnight - 1 AM.
+                   **Variation**: hourly.
 
-  \$dayOfWeek    Day of week, 1 - 7; 1 corresponds to Sunday, 2 to Monday,
-                 etc. **Variation:** daily.
+  \$dayOfWeek      Day of week, 1 - 7; 1 corresponds to Sunday, 2 to
+                   Monday, etc. **Variation:** daily.
 
-  \$DOWH         Day of week 1-7 except 8 on every observed holiday.
-                 **Variation**: daily.
+  \$DOWH           Day of week 1-7 except 8 on every observed holiday.
+                   **Variation**: daily.
 
-  \$isHoliday    1 on days that a holiday is observed (regardless of the
-                 true date of the holiday); 0 on other days.
-                 **Variation**: daily.
+  \$isHoliday      1 on days that a holiday is observed (regardless of the
+                   true date of the holiday); 0 on other days.
+                   **Variation**: daily.
 
-  \$isHoliTrue   1 on days that are the true date of a holiday, otherwise
-                 0. **Variation**: daily.
+  \$isHoliTrue     1 on days that are the true date of a holiday, otherwise
+                   0. **Variation**: daily.
 
-  \$isWeHol      1 on weekend days or days that are observed as holidays.
-                 **Variation:** daily.
+  \$isWeHol        1 on weekend days or days that are observed as holidays.
+                   **Variation:** daily.
 
-  \$isWeekend    1 on Saturday and Sunday, 0 on any day from Monday to
-                 Friday. **Variation:** daily.
+  \$isWeekend      1 on Saturday and Sunday, 0 on any day from Monday to
+                   Friday. **Variation:** daily.
 
-  \$isWeekday    1 on Monday through Friday, 0 on Saturday and Sunday.
-                 **Variation:** daily.
+  \$isWeekday      1 on Monday through Friday, 0 on Saturday and Sunday.
+                   **Variation:** daily.
 
-  \$isBegWeek    1 for any day immediately following a weekend day or
-                 observed holiday that is neither a weekend day or an
-                 observed holiday. **Variation:** daily.
-  -------------- ---------------------------------------------------------
+  \$isBegWeek      1 for any day immediately following a weekend day or
+                   observed holiday that is neither a weekend day or an
+                   observed holiday. **Variation:** daily.
+
+  \$isWorkDay      1 on non-holiday Monday through Friday, 0 on holidays,
+                   Saturday and Sunday. **Variation:** daily.
+
+  \$isNonWorkDay   1 on Saturday, Sunday and observed holidays, 0 on
+                   non-holiday Monday through Friday. **Variation:**
+                   daily.
+
+  \$isBegWorkWeek  1 on the first workday after a non-workday, 0 all
+                   other days. **Variation:** daily.
+
+  \$isDT           1 if Daylight Saving time is in effect, 0 otherwise.
+                   **Variation:** hourly.
+
+  \$autoSizing     1 during autosizing calculations, 0 during main
+                   simulation. **Variation:** for each phase.
+
+  \$dsDay          Design day type, 0 during main simulation, 1 during
+                   heating autosize, 2 during cool autosize.
+                   **Variation:** daily.
+  ---------------- ---------------------------------------------------------
 
 **Weather variables**: the following allow access to the current hour's weather conditions in you CSE expressions. Units of measure are shown in parentheses. All have **Variation**: hourly.
 
   ----------------- ------------------------------------------------------
-  \$radBeamSolar    beam irradiance (on a sun-tracking surface) this hour
+  \$radBeam         Solar beam irradiance (on a sun-tracking surface) this hour
                     (Btu/ft2)
 
-  \$radDiffSolar    diffuse irradiance (on horizontal surface) this hour
+  \$radDiff         Solar diffuse irradiance (on horizontal surface) this hour
                     (Btu/ft2)
 
-  \$tDbOOutdoor     drybulb temperature this hour (degrees F)
+  \$tDbO            Outdoor drybulb temperature this hour (degrees F)
 
-  \$tWbOOutdoor     wetbulb temperature this hour (degrees F)
+  \$tWbO            Outdoor wetbulb temperature this hour (degrees F)
 
-  \$wOOutdoor       humidity ratio this hour (lb H2O/lb dry air)
+  \$wO              Outdoor humidity ratio this hour (lb H2O/lb dry air)
 
-  \$windDirDegWind  direction (compass degrees)
+  \$windDirDeg      Wind direction (compass degrees)
 
-  \$windSpeedWind   speed (mph)
+  \$windSpeed       Wind speed (mph)
   ----------------- ------------------------------------------------------
 
 ### Built-in Functions

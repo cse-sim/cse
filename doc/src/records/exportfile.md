@@ -20,7 +20,7 @@ path name of file to be written. If no path is specified, the file is written in
 
   **Units**   **Legal Range**                            **Default**   **Required**   **Variability**
   ----------- ------------------------------------------ ------------- -------------- -----------------
-              *file name, path and extension optional*                 No             constant
+              *file name, path and extension optional*                 Yes             constant
 
 **xfFileStat=*choice***
 
@@ -48,5 +48,3 @@ Optionally indicates the end of the export file definition. Alternatively, the e
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
-
-
