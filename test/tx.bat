@@ -33,6 +33,7 @@ call Run1 dhwX %1 %2
 call Run1 dhwDU %1 %2
 call Run1 dhw_C %1 %2
 call Run1 pvtest %1 %2
+call Run1 pv-bt-test.cse %1 %2
 
 
 echo.
