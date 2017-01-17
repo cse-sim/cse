@@ -29,38 +29,38 @@ Yr  70.35 57.30      0      0     0     0 -2.475 -1.174  3.649    0      0     0
 
 Hourly Energy Use, meter "VentMtr", Wed 30-Sep
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     PV
---- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-  1 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  2 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  3 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  4 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  5 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  6 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  7 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  8 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-  9 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 10 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 11 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 12 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 13 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 14 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 15 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 16 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 17 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 18 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 19 0.0344      0      0      0      0      0      0      0 0.0344      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 20 0.0344      0      0      0      0      0      0      0 0.0344      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 21 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 22 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 23 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 24 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+  1 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  2 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  3 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  4 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  5 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  6 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  7 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  8 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  9 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 10 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 11 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 12 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 13 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 14 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 15 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 16 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 17 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 18 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 19 0.0344      0      0      0      0      0      0      0 0.0344      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 20 0.0344      0      0      0      0      0      0      0 0.0344      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 21 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 22 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 23 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 24 0.0343      0      0      0      0      0      0      0 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Day  0.824      0      0      0      0      0      0      0  0.824      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Day  0.824      0      0      0      0      0      0      0  0.824      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  1
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Mass Wall3              Area: 100.000   UNom: 0.1015      tc: 3.56   subhrly:
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  2
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ IzXfer Hole1            Zn1: Single  Zn2: (ambient)  UAconst: 0      NVctrl: Air
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  3
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
  16 75.00 60.31      0      0     0     0  0.789  0.189 -0.977    0      0     0 -.0150 0.0150      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  4
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
   6 72.00 58.72      0      0     0     0  0.715 -0.715      0    0      0     0 -.0124 0.0124      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  5
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Day 73.80 61.74      0      0     0     0 10.017 -4.279 -5.738    0      0     0
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  6
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
  18 75.00 63.32      0      0     0     0  0.443  0.175 -0.618    0      0     0 0.0326 -.0326      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  7
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
   8 72.56 60.73      0      0     0     0  0.582 -0.582      0    0      0     0 0.0114 -.0114      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  8
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Day 74.96 63.70      0      0     0     0 24.156  2.217 -26.37    0      0     0
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page  9
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ Hourly User-defined Report, Thu 02-Jul
       Thu 02-Jul           17               86               75               -1.12k          159.013            0               34.317
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 10
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 10
 
 
 
@@ -690,7 +690,7 @@ Hourly User-defined Report, Sat 04-Jul
       Sat 04-Jul           11               73.58            73.359            0               82.833            0.967          299.631
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 11
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ Hourly User-defined Report, Mon 06-Jul
       Mon 06-Jul            5               57.92            72                0             -712                0.643          210.839
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 12
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 12
 
 
 
@@ -816,7 +816,7 @@ Hourly User-defined Report, Wed 08-Jul
       ----------       ----------       ----------       ----------       ----------       ----------       ----------       ----------
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 13
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 13
 
 
 
@@ -879,7 +879,7 @@ Hourly User-defined Report, Thu 09-Jul
       Thu 09-Jul           23               81.14            75               -1.47k          133.909            0               34.279
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 14
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 14
 
 
 
@@ -921,7 +921,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001: AirNet fan heat
 
-! CSE 0.792 for Win32 console
+! CSE 0.818 for Win32 console
 
 
 
@@ -942,7 +942,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 15
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Input for Run 001: AirNet fan heat
            izFanElecPwr = 1 izFanVfDs = @Zone[ "Single"].znArea izFanMtr = VentMtr izFanEndUse = FANV
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 16
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Input for Run 001: AirNet fan heat
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 17
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 17
 
 
 
@@ -1077,20 +1077,20 @@ Input for Run 001: AirNet fan heat
 
 
 
-! CSE 0.792 for Win32 console run(s) done: Tue 22-Mar-16   9:19:16 am
-! Executable: c:\cse\run\cse.exe
-!             22-Mar-16   9:18 am   (VS 12.0    1077760 bytes)
+! CSE 0.818 for Win32 console run(s) done: Mon 16-Jan-17   5:01:14 pm
+! Executable: c:\projects\cse\run\csed.exe
+!             16-Jan-17   4:19 pm   (VS 14.0    2959872 bytes)  (HPWH 1.3.0)
 
-! Input file name:  C:\cse\test\izfantest.cse
-! Report file name: C:\cse\test\izfantest.rep
+! Input file name:  C:\Projects\cse\test\izfantest.cse
+! Report file name: C:\Projects\cse\test\izfantest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 1      T/C = 0.0200   
+!                Input:  Time = 0.03     Calls = 1      T/C = 0.0320   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.12     Calls = 1      T/C = 1.1160   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0100   
-!                Total:  Time = 1.16     Calls = 1      T/C = 1.1560   
+!           Simulation:  Time = 9.29     Calls = 1      T/C = 9.2920   
+!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0260   
+!                Total:  Time = 9.36     Calls = 1      T/C = 9.3590   
 
 
 
@@ -1131,5 +1131,5 @@ Input for Run 001: AirNet fan heat
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Mar-16   9:19:15 am  Page 18
+! izfantest  001  AirNet fan heat          Mon 16-Jan-17   5:01:04 pm  Page 18
 
