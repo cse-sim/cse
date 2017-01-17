@@ -1749,17 +1749,17 @@ Input for Run 001:
 
 
 
-! CSE 0.818 for Win32 console run(s) done: Mon 16-Jan-17   5:07:52 pm
-! Executable: c:\projects\cse\run\csed.exe
-!             16-Jan-17   4:19 pm   (VS 14.0    2959872 bytes)  (HPWH 1.3.0)
+! CSE 0.818 for Win32 console run(s) done: Tue 17-Jan-17  11:34:56 am
+! Executable: c:\projects\cse\run\cse.exe
+!             16-Jan-17   4:17 pm   (VS 14.0    1291264 bytes)  (HPWH 1.3.0)
 
 ! Input file name:  C:\Projects\cse\test\ashptest2.cse
 ! Report file name: C:\Projects\cse\test\ashptest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.36     Calls = 2      T/C = 0.1820   
-!           AutoSizing:  Time = 11.81    Calls = 1      T/C = 11.8120  
-!           Simulation:  Time = 135.47   Calls = 1      T/C = 135.4740 
-!              Reports:  Time = 0.08     Calls = 1      T/C = 0.0780   
-!                Total:  Time = 148.78   Calls = 1      T/C = 148.7800 
+!                Input:  Time = 0.02     Calls = 2      T/C = 0.0080   
+!           AutoSizing:  Time = 1.63     Calls = 1      T/C = 1.6300   
+!           Simulation:  Time = 20.43    Calls = 1      T/C = 20.4270  
+!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0630   
+!                Total:  Time = 22.15    Calls = 1      T/C = 22.1480  

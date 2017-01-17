@@ -60,7 +60,7 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  1
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Annual Cooling Energy Report
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  2
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  3
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  4
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  5
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  6
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  7
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  7
 
 
 
@@ -447,20 +447,20 @@ Input for Run 001:
 
 
 
-! CSE 0.818 for Win32 console run(s) done: Mon 16-Jan-17   4:55:02 pm
-! Executable: c:\projects\cse\run\csed.exe
-!             16-Jan-17   4:19 pm   (VS 14.0    2959872 bytes)  (HPWH 1.3.0)
+! CSE 0.818 for Win32 console run(s) done: Tue 17-Jan-17  11:33:51 am
+! Executable: c:\projects\cse\run\cse.exe
+!             16-Jan-17   4:17 pm   (VS 14.0    1291264 bytes)  (HPWH 1.3.0)
 
 ! Input file name:  C:\Projects\cse\test\Fresno.cse
 ! Report file name: C:\Projects\cse\test\Fresno.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1      T/C = 0.0720   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0070   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.90     Calls = 1      T/C = 4.8950   
-!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0340   
-!                Total:  Time = 5.01     Calls = 1      T/C = 5.0150   
+!           Simulation:  Time = 1.06     Calls = 1      T/C = 1.0600   
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0200   
+!                Total:  Time = 1.09     Calls = 1      T/C = 1.0930   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 16-Jan-17   4:54:57 pm  Page  8
+! Fresno  001                              Tue 17-Jan-17  11:33:50 am  Page  8
 

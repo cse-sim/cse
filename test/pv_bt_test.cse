@@ -1,0 +1,150 @@
+/*
+BATTERY + PV TEST AND CONTROL STRATEGIES
+========================================
+
+This module seeks to test the BATTERY record using various control strategies. The Battery is simulated while a "typical" building load and associated "PV Array" is specified from an external CSV file and set to a GAIN block using gnPower fields.
+
+DEFAULT:
+--------
+
+The default algorithm that ships with the code. This algorithm simply takes the adjusted load (Home Load - PV Generation) and sets the battery request to satisfy that. If excess PV is available, the battery attempts to absorb all energy, otherwise, the battery attempts to provide all energy. The default strategy (as all strategies) is limited to the physical capabilities of the battery.
+
+PEAK SHAVING:
+-------------
+
+The basic "peak shaving" algorithm demonstrated here compares the current adjusted load (Home - PV Generation) with a power setpoint. If above the setpoint, the battery will attempt to provide assistance if it can. In essence, the battery attempts to limit the peak within its capability.
+
+The battery is called to discharge when peak power (average peak power over the hour) is over a given threshold. Otherwise, it always charges when storage capacity is available.
+
+TDV-Attenuated Strategy:
+------------------------
+
+This strategy controls based on the TDV signal and the load with the following guidelines:
+
+- Any available excess energy to charge the battery is always requested
+- Discharge is made in proportion to the amount the actual TDV signal vs a reference
+
+Sign convention is the same as above. TDV is the current step's TDV signal; TDV_ref is the global reference TDV signal (which could change over time). As seen below, as TDV attains the reference value and above, the battery supplies a full charge. When the TDV is less than the reference value, only a fraction of the load is attempted.
+
+P_req(P_load, P_max_chg, TDV, TDV_ref) =
+  -1 * if (P_load >= 0)
+         min(P_load, P_max_dschg) * (min(TDV, TDV_ref) / TDV_ref) ** 2
+       else
+         P_load
+       end
+
+Specifically, above, if TDV is 1/2 of TDV_ref, then only 1/4 of the load is requested to be supplied. If TDV is 3/4 of TDV_ref, then only 9/16 of the load is requested to be supplied. If TDV is greater than or equal to TDV_ref, the full load is requested to be supplied. Thus, charging at higher TDVs is favored without neglecting low-loads completely.
+
+NOTE: if CSE is built with the _DEBUG symbol defined, then you will get a warning when the gnPower of BuildingLoad goes negative. The GAIN object is not typically used in the fashion we present here: we merely want to specify the "effective" building load + PV without clutting this file with an entire building definition (as you would do in a real study).
+*/
+IMPORTFILE Data
+  imFileName="pv_bt_data.dat"
+  imFreq="Hour"
+  imTitle="PV/BT Data"
+
+WfName="Bishop.epw" // reference city for CA Climate Zone 16
+wuDays=0
+nSubSteps=1
+
+#define kw_to_btuh 3412.142
+#define max_bt_pwr 4.08
+#define pwr_target_kW 4.0
+#define soe_target 0.7
+#define TDV_ref 27.0
+#define AdjLoad_kW import(Data, "AdjustedLoad_kW")
+
+METER "ElecMtrDefault"
+GAIN "BuildingLoadDefault"
+  gnMeter = ElecMtrDefault
+  gnEndUse = Lit
+  gnPower = import(Data,"HouseLoad_kW") * kw_to_btuh
+BATTERY "BatteryDefault"
+  btMeter = ElecMtrDefault
+  btEndUse = BT
+  btMaxCap = 16.320 // kWh
+  btMaxChgPwr = max_bt_pwr // kW
+  btMaxDschgPwr = max_bt_pwr // kW
+  btUseUsrChg = No
+  btChgEff = 0.97467943
+  btDschgEff = 0.97467943
+  btInitSOE = 1.0 // 100% state of energy
+GAIN "PvDefault"
+  gnMeter = ElecMtrDefault
+  gnEndUse = PV
+  gnPower = -1.0 * import(Data,"PvOut_kW") * kw_to_btuh
+
+METER "ElecMtr00"
+GAIN "BuildingLoad00" LIKE BuildingLoadDefault
+  gnMeter = ElecMtr00
+BATTERY "Battery00" LIKE BatteryDefault
+  btMeter = ElecMtr00
+  btUseUsrChg = Yes
+  btChgReq = 0.0
+
+METER "ElecMtr0"
+GAIN "BuildingLoad0" LIKE BuildingLoadDefault
+  gnMeter = ElecMtr0
+BATTERY "Battery0" LIKE BatteryDefault
+  btMeter = ElecMtr0
+  btUseUsrChg = Yes
+  btChgReq = 0.0
+GAIN "Pv0" LIKE PvDefault
+  gnMeter = ElecMtr0
+
+METER "ElecMtrPeakShaving"
+GAIN "BuildingLoadPeakShaving" LIKE BuildingLoadDefault
+  gnMeter = ElecMtrPeakShaving
+BATTERY "BatteryPeakShaving" LIKE BatteryDefault
+  btMeter = ElecMtrPeakShaving
+  btUseUsrChg = Yes
+  btChgReq = -1.0 * select(
+    AdjLoad_kW > pwr_target_kW,
+      AdjLoad_kW - pwr_target_kW,
+    AdjLoad_kW < 0.0,
+      AdjLoad_kW,
+    default 0.0)
+GAIN "PvPeakShaving" LIKE PvDefault
+  gnMeter = ElecMtrPeakShaving
+
+METER "ElecMtrTDV"
+GAIN "BuildingLoadTDV" LIKE BuildingLoadDefault
+  gnMeter = ElecMtrTDV
+BATTERY "BatteryTDV" LIKE BatteryDefault
+  btMeter = ElecMtrTDV
+  btUseUsrChg = Yes
+  btChgReq = -1.0 * select(
+    AdjLoad_kW >= 0.0,
+      min(AdjLoad_kW, max_bt_pwr) * pow(min(import(Data,"TDV_kBtu__kWh"), TDV_ref) / TDV_ref, 2),
+    default AdjLoad_kW)
+GAIN "PvTDV" LIKE PvDefault
+  gnMeter = ElecMtrTDV
+
+METER "ElecMtrExtCalc"
+GAIN "BuildingLoadExtCalc" LIKE BuildingLoadDefault
+  gnMeter = ElecMtrExtCalc
+BATTERY "BatteryExtCalc" LIKE BatteryDefault
+  btMeter = ElecMtrExtCalc
+  btUseUsrChg = Yes
+  btChgReq = import(Data, "BtPwrReq_kW")
+GAIN "PvExtCalc" LIKE PvDefault
+  gnMeter = ElecMtrExtCalc
+
+REPORT
+  rpType = UDT
+  rpFreq = MONTH
+  rpTitle = "GridLoads by Battery Control (kWh)"
+  rpDayBeg = jan 1
+  rpDayEnd = dec 31
+  rpHeader = Yes
+  ReportCol colhead="Day" colVal=@Top.dateStr
+  ReportCol colhead="NoBtNoPv" colVal=@METER["ElecMtr00"].M.tot / kw_to_btuh
+  ReportCol colhead="NoBt" colVal=@METER["ElecMtr0"].M.tot / kw_to_btuh
+  ReportCol colhead="Dflt" colVal=@METER["ElecMtrDefault"].M.tot / kw_to_btuh
+  ReportCol colhead="PkShv" colVal=@METER["ElecMtrPeakShaving"].M.tot / kw_to_btuh
+  ReportCol colhead="TDV" colVal=@METER["ElecMtrTDV"].M.tot / kw_to_btuh
+  ReportCol colhead="Ext" colVal=@METER["ElecMtrExtCalc"].M.tot / kw_to_btuh
+
+DELETE REPORT "EB"
+
+RUN
+
