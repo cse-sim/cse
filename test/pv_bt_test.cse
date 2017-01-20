@@ -238,6 +238,39 @@ EXPORTFILE "PvBtOut"
     ExportCol colhead="Debug Energy [kWh]" colVal=@BATTERY["BatteryDebugCalc"].energy
     ExportCol colhead="Debug GridLoad [kW]" colVal=@METER["ElecMtrDebugCalc"].H.tot / kw_to_btuh
 
+EXPORTFILE "PvBtOutElecMtrMaxCalc"
+  xfFileName = "pv_bt_out_max"
+  xfFileStat = OVERWRITE
+  EXPORT   "ExportElecMtrMaxCalc"
+     exType = "MTR"                       // Export type
+     exFreq = "HOUR"                      // Time interval for generating rows of export data
+     exMeter = "ElecMtrMaxCalc"           // Meter to report
+     exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+     exDayBeg = Jan 1
+     exDayEnd = Dec 31
+
+EXPORTFILE "PvBtOutElecMtrMinCalc"
+  xfFileName = "pv_bt_out_min"
+  xfFileStat = OVERWRITE
+  EXPORT   "ExportElecMtrMinCalc"
+     exType = "MTR"                       // Export type
+     exFreq = "HOUR"                      // Time interval for generating rows of export data
+     exMeter = "ElecMtrMinCalc"           // Meter to report
+     exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+     exDayBeg = Jan 1
+     exDayEnd = Dec 31
+
+EXPORTFILE "PvBtOutElecMtrDebug"
+  xfFileName = "pv_bt_out_debug"
+  xfFileStat = OVERWRITE
+  EXPORT   "ExportElecMtrDebug"
+     exType = "MTR"                       // Export type
+     exFreq = "HOUR"                      // Time interval for generating rows of export data
+     exMeter = "ElecMtrDebugCalc"         // Meter to report
+     exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+     exDayBeg = Jan 1
+     exDayEnd = Dec 31
+
 DELETE REPORT "EB"
 
 RUN
