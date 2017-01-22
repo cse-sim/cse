@@ -792,13 +792,19 @@ x                     "    A total of %g kBtu of condensation heat was added to 
 x                     zp->i.name, (long)zp->znNSubhrXLG,
 x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 #endif
-			AH * ah;
+			AH* ah;
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
 					  "    entry in %ld subhours of run.  A total of %g kBtu \n"
 					  "    of condensation heat was added to the entering air.",
 					  ah->name, (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
+
+			DHWHEATER* wh;
+			RLUP( WhR, wh)
+				if (wh->wh_balErrCount > 0)
+					warn( "DHWHEATER '%s': Energy balance errors occurred in %d subhours.",
+						wh->name, wh->wh_balErrCount);
 
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.
