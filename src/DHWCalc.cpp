@@ -1083,6 +1083,7 @@ RC DHWHEATER::wh_Init()		// init for run
 	wh_hrCount = 0;
 	wh_totOut = 0.;
 	wh_unMetHrs = 0;
+	wh_balErrCount = 0;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
@@ -1303,7 +1304,7 @@ RC DHWHEATER::wh_DoEndPreRun()
 //-----------------------------------------------------------------------------
 void DHWHEATER::wh_HPWHReceiveMessage( const std::string message)
 {
-	pInfo( "DHWHEATER '%s' HPWH message: %s", name, message.c_str());
+	pInfo( "DHWHEATER '%s' HPWH message (%s): %s", name, Top.When( C_IVLCH_S), message.c_str());
 }		// DHWHEATER::wh_HPWHReceiveMessage
 //-----------------------------------------------------------------------------
 int DHWHEATER::wh_HPWHHasCompressor() const
@@ -1469,16 +1470,11 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 							//   + = to water heater
 	double qLoss = 0.;		// standby losses, kWh
 							//   + = to surround
-#if defined( _DEBUG)
-#define HPWH_QBAL
-#endif
 
 	double qHW = 0.;		// useful hot water heating, kWh
 							//   always >= 0
 							//   does not include wh_HPWHxBU
-#if defined( HPWH_QBAL)
-	double qHCStart = wh_pHPWH->getTankHeatContent_kJ();
-#endif
+
 	double tHWOutF = 0.;	// accum re average hot water outlet temp, F
 
 	wh_HPWHUse[ 0] = wh_HPWHUse[ 1] = 0.;	// energy use totals, kWh
@@ -1494,10 +1490,14 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	if (wh_pAshpSrcZn)
 		wh_ashpTSrc = wh_pAshpSrcZn->tzls;
 
-// debug CSV file control
-#define HPWH_DUMP
+#define HPWH_QBAL		// define to include sub-hour energy balance check
+#if defined( HPWH_QBAL)
+	double qHCStart = wh_pHPWH->getTankHeatContent_kJ();
+#endif
+
+#define HPWH_DUMP		// define to include debug CSV file
 #if defined( HPWH_DUMP)
-// #define HPWH_DUMPSMALL		// #define to enable abbreviated version
+// #define HPWH_DUMPSMALL	// #define to use abbreviated version
 	int bWriteCSV = DbDo( dbdHPWH);
 #endif
 
@@ -1514,7 +1514,16 @@ x		xLoss *= max( 0., (wh_tHWOut - 70.)/( 105. - 70.));
 
 	int nTickNZDraw = 0;		// count of ticks with draw > 0
 	for (int iT=0; !rc && iT<Top.tp_nSubhrTicks; iT++)
-	{	double drawForTick = draw[ iT]*scale*wh_mixDownF + drawLoss;
+	{	
+#if 0 && defined( _DEBUG)
+		if (Top.tp_date.month == 7
+		  && Top.tp_date.mday == 27
+		  && Top.iHr == 10
+		  && Top.iSubhr == 3)
+			wh_pHPWH->setVerbosity( HPWH::VRB_emetic);
+#endif
+		
+		double drawForTick = draw[ iT]*scale*wh_mixDownF + drawLoss;
 		int hpwhRet = wh_pHPWH->runOneStep(
 						GAL_TO_L( drawForTick),	// draw volume, L
 						DegFtoC( wh_tEx),		// ambient T (=tank surround), C
@@ -1635,7 +1644,18 @@ x		xLoss *= max( 0., (wh_tHWOut - 70.)/( 105. - 70.));
 				- qHW								// hot water energy
 				- deltaHC;							// change in tank stored energy
 	if (fabs( qBal) > .0002)
-		printf( "\nHPWH eBal err (%0.4f kHw)", qBal);
+	{	// energy balance error
+		static const int WHBALERRCOUNTMAX = 10;
+		wh_balErrCount++;
+		if (wh_balErrCount < WHBALERRCOUNTMAX)
+			warn( "DHWHEATER '%s': HPWH energy balance error for %s (%1.6f kWh)",
+				name,
+				Top.When( C_IVLCH_S),	// date, hr, subhr
+				qBal);   				// unbalance calc'd just above
+		if (wh_balErrCount == WHBALERRCOUNTMAX)
+				warn( "DHWHEATER '%s': Skipping further energy balance warning messages.",
+					name);
+	}
 #endif
 	
 	// output accounting = heat delivered to water

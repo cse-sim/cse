@@ -3338,6 +3338,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//   else unused
   *y *e INT wh_unMetHrs;	// HPHW: annual count of hrs having
 							//       any wh_unMetSh
+  *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
 *END
 
 //=============================================================================

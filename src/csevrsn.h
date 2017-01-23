@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.819: ...
+   0.819: HPWH setpoint-below-water-temp bug fix, 1-22-2017
    0.818: add Battery model; committed 1-16-2017
    0.817: HPWH wsTUse bug fix; enable HPWH CSV dump; committed 1-17-2017
    0.816: support rpCpl=-1; misc. doc-related cleanup; committed 11-30-2016

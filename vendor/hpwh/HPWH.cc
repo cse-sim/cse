@@ -56,6 +56,11 @@ const float HPWH::UNINITIALIZED_LOCATIONTEMP = -500.f;
 //ugh, this should be in the header
 const std::string HPWH::version_maint = "0";
 
+#define SETPOINT_FIX	// #define to include fixes for
+						// setpoint-below-water-temp issues
+						//   1-22-2017
+	
+
 
 //the HPWH functions
 //the publics
@@ -1642,6 +1647,11 @@ void HPWH::HeatSource::addHeat(double externalT_C, double minutesToRun) {
 
 		//after you've done everything, any leftover capacity is time that didn't run
 		this->runtime_min = (1.0 - (leftoverCap_kJ / BTU_TO_KJ(cap_BTUperHr * minutesToRun / 60.0))) * minutesToRun;
+#if 1	// error check, 1-22-2017
+		if (runtime_min < 0.)
+			if (hpwh->hpwhVerbosity >= VRB_reluctant)
+				hpwh->msg("Internal error: Negative runtime = %0.3f min\n", runtime_min);
+#endif
 	}
 	break;
 
@@ -1782,6 +1792,10 @@ void HPWH::HeatSource::calcHeatDist(std::vector<double> &heatDistribution) {
 			else if (configuration == CONFIG_WRAPPED) { // Wrapped around the tank, send through the logistic function
 				temp = expitFunc((hpwh->tankTemps_C[i] - hpwh->tankTemps_C[lowestNode]) / this->shrinkage, offset);
 				temp *= (hpwh->setpoint_C - hpwh->tankTemps_C[i]);
+#if defined( SETPOINT_FIX)
+				if (temp < 0.)
+					temp = 0.;
+#endif
 				heatDistribution.push_back(temp);
 			}
 		}
@@ -1836,6 +1850,15 @@ double HPWH::HeatSource::addHeatAboveNode(double cap_kJ, int node, double minute
 			}
 			cap_kJ = 0;
 		}
+#if defined( SETPOINT_FIX)
+		else if (Q_kJ > 0.)
+		{	// temp will recover by/before end of timestep
+			for (int j = node; j <= setPointNodeNum; j++)
+				hpwh->tankTemps_C[j] = targetTemp_C;
+			cap_kJ -= Q_kJ;
+		}
+		setPointNodeNum++;
+#else
 		//temp will recover by/before end of timestep
 		else{
 			for (int j = node; j <= setPointNodeNum; j++){
@@ -1844,6 +1867,7 @@ double HPWH::HeatSource::addHeatAboveNode(double cap_kJ, int node, double minute
 			setPointNodeNum++;
 			cap_kJ -= Q_kJ;
 		}
+#endif
 	}
 
 	//return the unused capacity
