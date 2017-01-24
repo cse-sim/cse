@@ -76,7 +76,7 @@ RC BATTERY::bt_DoHour()
 	float eff(1.0); // efficiency of the battery [fraction]
 	float dt(1.0); // hours in this timestep [hr]
 	float dsoe(0.0); // change in SOE
-	float kW_to_btuh(3412.142); 
+	float kW_to_btuh(3412.142);
 	float tolerance(bt_maxCap * 1e-6); // tolerance for capacity calculations [kW] -- used to prevent underflow issues
 	bt_loadSeen = 0.0;
 	if (bt_meter) {
