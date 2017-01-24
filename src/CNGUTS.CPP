@@ -692,6 +692,12 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 // Mass end-of-interval enthalpy accounting
 	msEndIvl( Top.ivl);
 
+	if ((Top.ivl <= C_IVLCH_S) && Top.tp_isBegMainSim) {
+		// Ensure battery is reinitialized
+		// after warmup and/or autosizing
+		BATTERY* bt;
+		RLUP(BtR, bt) EF(bt->bt_Init())
+	}
 	if (Top.ivl < C_IVLCH_S) {
 		BATTERY* bt;
 		RLUP(BtR, bt) EF(bt->bt_DoHour())
