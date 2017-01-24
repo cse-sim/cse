@@ -27,7 +27,7 @@ GridLoads by Battery Control (kWh)
 
 ! Log for Run 001:
 
-! CSE 0.818 for Win32 console
+! CSE 0.819 for Win32 console
 
 
 
@@ -60,7 +60,7 @@ GridLoads by Battery Control (kWh)
 
 
 ------------------------------------------------------------------------------
-! pv_bt_test  001                          Tue 17-Jan-17  11:36:15 am  Page  1
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
 #       #define max_bt_pwr 4.08
 
 ------------------------------------------------------------------------------
-! pv_bt_test  001                          Tue 17-Jan-17  11:36:15 am  Page  2
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
               AdjLoad_kW,
 
 ------------------------------------------------------------------------------
-! pv_bt_test  001                          Tue 17-Jan-17  11:36:15 am  Page  3
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  3
 
 
 
@@ -220,6 +220,65 @@ Input for Run 001:
         GAIN "PvExtCalc" LIKE PvDefault
           gnMeter = ElecMtrExtCalc
         
+        // Test that max discharge power changes
+        // Should go from 1 to 0 SOE in first step
+        METER "ElecMtrMaxCalc"
+        GAIN "BuildingLoadMaxCalc"
+          gnMeter = ElecMtrMaxCalc
+          gnEndUse = Lit
+          gnPower = 10 * kw_to_btuh
+        BATTERY "BatteryMaxCalc" LIKE BatteryDefault
+          btInitSOE=1        // kWh
+          btMaxChgPwr=10     // kW
+          btMaxDschgPwr=10   // kW
+          btMaxCap = 10.0    // kWh
+          btChgEff = 1.0
+          btDschgEff = 1.0
+          btUseUsrChg = No
+          btMeter = ElecMtrMaxCalc
+        
+        // Test that max charge power changes
+        // Should go from 0 to 1 SOE in first step
+        METER "ElecMtrMinCalc"
+        GAIN "BuildingLoadMinCalc"
+          gnMeter = ElecMtrMinCalc
+          gnEndUse = Lit
+          gnPower = -10 * kw_to_btuh
+        BATTERY "BatteryMinCalc" LIKE BatteryDefault
+          btInitSOE=0        // kWh
+          btMaxChgPwr=10     // kW
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  4
+
+
+
+
+------------------------------------------------------------------------------
+
+          btMaxDschgPwr=10   // kW
+          btMaxCap = 10.0    // kWh
+          btChgEff = 1.0
+          btDschgEff = 1.0
+          btUseUsrChg = No
+          btMeter = ElecMtrMinCalc
+        
+        // Should result in Grid loads of 5 kW and 7.4 kW over the first two hours
+        METER "ElecMtrDebugCalc"
+        GAIN "BuildingLoadDebugCalc"
+          gnEndUse= Lit
+          gnMeter = ElecMtrDebugCalc
+          gnPower = 10 * kw_to_btuh
+        BATTERY "BatteryDebugCalc" LIKE BatteryDefault
+          btChgEff = 0.95                      // The charging efficiency of storing electricity into the BATTERY system
+          btDschgEff = 0.95                    // The discharge efficiency for when the BATTERY system is discharging power
+          btMaxCap = 8                         // The maximum amount of energy that can be stored in the BATTERY system, kWh
+          btMaxChgPwr = 5                      // The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy flowing into the BATTERY), kW
+          btMaxDschgPwr = 5                    // The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., energy flowing out of the BATTERY), kW
+          //btChgReq = import(BTCtrlData,"BatteryCharge")    // The power request to charge (or discharge if negative) the battery (expression), kW
+          btUseUsrChg = No                     // If YES/1, then the user specified btChgReq will be used to set the battery?s charge request; if NO/0, the default strategy will be used
+          btMeter = "ElecMtrDebugCalc"         // Electric meter to log charge/discharge to
+        
         REPORT
           rpType = UDT
           rpFreq = MONTH
@@ -235,10 +294,140 @@ Input for Run 001:
           ReportCol colhead="TDV" colVal=@METER["ElecMtrTDV"].M.tot / kw_to_btuh
           ReportCol colhead="Ext" colVal=@METER["ElecMtrExtCalc"].M.tot / kw_to_btuh
         
+        EXPORTFILE "PvBtOut"
+          xfFileName = "pv_bt_out"
+          xfFileStat = OVERWRITE
+          EXPORT
+            exType = UDT
+            exFreq = HOUR
+            exTitle = "Battery/PV Output"
+            exDayBeg = jan 1
+            exDayEnd = dec 31
+            exHeader = ColumnsOnly
+            ExportCol colhead="Day" colVal=@Top.dateStr
+            ExportCol colhead="Hour" colVal=@Top.iHr
+            ExportCol colhead="PV Out [kW]" colVal=@METER["ElecMtrDefault"].H.pv / kw_to_btuh
+            ExportCol colhead="HomeLoad [kW]" colVal=@METER["ElecMtrDefault"].H.lit / kw_to_btuh
+            ExportCol colhead="AdjLoad [kW]" colVal=(@METER["ElecMtrDefault"].H.lit + @METER["ElecMtrDefault"].H.pv) / kw_to_btuh
+            ExportCol colhead="TDV [kBtu/kWh]" colVal=import(Data,"TDV_kBtu__kWh")
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  5
+
+
+
+
+------------------------------------------------------------------------------
+
+            ExportCol colhead="NoBtNoPv SOE" colVal=@BATTERY["Battery00"].soe
+            ExportCol colhead="NoBtNoPv Energy [kWh]" colVal=@BATTERY["Battery00"].energy
+            ExportCol colhead="NoBtNoPv GridLoad [kW]" colVal=@METER["ElecMtr00"].H.tot / kw_to_btuh
+            ExportCol colhead="NoBt SOE" colVal=@BATTERY["Battery0"].soe
+            ExportCol colhead="NoBt Energy [kWh]" colVal=@BATTERY["Battery0"].energy
+            ExportCol colhead="NoBt GridLoad [kW]" colVal=@METER["ElecMtr0"].H.tot / kw_to_btuh
+            ExportCol colhead="Dflt SOE" colVal=@BATTERY["BatteryDefault"].soe
+            ExportCol colhead="Dflt Energy [kWh]" colVal=@BATTERY["BatteryDefault"].energy
+            ExportCol colhead="Dflt GridLoad [kW]" colVal=@METER["ElecMtrDefault"].H.tot / kw_to_btuh
+            ExportCol colhead="PkShv SOE" colVal=@BATTERY["BatteryPeakShaving"].soe
+            ExportCol colhead="PkShv Energy [kWh]" colVal=@BATTERY["BatteryPeakShaving"].energy
+            ExportCol colhead="PkShv GridLoad [kW]" colVal=@METER["ElecMtrPeakShaving"].H.tot / kw_to_btuh
+            ExportCol colhead="TDV SOE" colVal=@BATTERY["BatteryTDV"].soe
+            ExportCol colhead="TDV Energy [kWh]" colVal=@BATTERY["BatteryTDV"].energy
+            ExportCol colhead="TDV GridLoad [kW]" colVal=@METER["ElecMtrTDV"].H.tot / kw_to_btuh
+            ExportCol colhead="Ext SOE" colVal=@BATTERY["BatteryExtCalc"].soe
+            ExportCol colhead="Ext Energy [kWh]" colVal=@BATTERY["BatteryExtCalc"].energy
+            ExportCol colhead="Ext GridLoad [kW]" colVal=@METER["ElecMtrExtCalc"].H.tot / kw_to_btuh
+            ExportCol colhead="Max SOE" colVal=@BATTERY["BatteryMaxCalc"].soe
+            ExportCol colhead="Max Energy [kWh]" colVal=@BATTERY["BatteryMaxCalc"].energy
+            ExportCol colhead="Max GridLoad [kW]" colVal=@METER["ElecMtrMaxCalc"].H.tot / kw_to_btuh
+            ExportCol colhead="Min SOE" colVal=@BATTERY["BatteryMinCalc"].soe
+            ExportCol colhead="Min Energy [kWh]" colVal=@BATTERY["BatteryMinCalc"].energy
+            ExportCol colhead="Min GridLoad [kW]" colVal=@METER["ElecMtrMinCalc"].H.tot / kw_to_btuh
+            ExportCol colhead="Debug SOE" colVal=@BATTERY["BatteryDebugCalc"].soe
+            ExportCol colhead="Debug Energy [kWh]" colVal=@BATTERY["BatteryDebugCalc"].energy
+            ExportCol colhead="Debug GridLoad [kW]" colVal=@METER["ElecMtrDebugCalc"].H.tot / kw_to_btuh
+        
+        EXPORTFILE "PvBtOutElecMtrMaxCalc"
+          xfFileName = "pv_bt_out_max"
+          xfFileStat = OVERWRITE
+          EXPORT   "ExportElecMtrMaxCalc"
+             exType = "MTR"                       // Export type
+             exFreq = "HOUR"                      // Time interval for generating rows of export data
+             exMeter = "ElecMtrMaxCalc"           // Meter to report
+             exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+             exDayBeg = Jan 1
+             exDayEnd = Dec 31
+        
+        EXPORTFILE "PvBtOutElecMtrMinCalc"
+          xfFileName = "pv_bt_out_min"
+          xfFileStat = OVERWRITE
+          EXPORT   "ExportElecMtrMinCalc"
+             exType = "MTR"                       // Export type
+             exFreq = "HOUR"                      // Time interval for generating rows of export data
+             exMeter = "ElecMtrMinCalc"           // Meter to report
+             exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+             exDayBeg = Jan 1
+             exDayEnd = Dec 31
+        
+        EXPORTFILE "PvBtOutElecMtrDebug"
+          xfFileName = "pv_bt_out_debug"
+          xfFileStat = OVERWRITE
+          EXPORT   "ExportElecMtrDebug"
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  6
+
+
+
+
+------------------------------------------------------------------------------
+
+             exType = "MTR"                       // Export type
+             exFreq = "HOUR"                      // Time interval for generating rows of export data
+             exMeter = "ElecMtrDebugCalc"         // Meter to report
+             exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+             exDayBeg = Jan 1
+             exDayEnd = Dec 31
+        
         DELETE REPORT "EB"
         
         RUN
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -249,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! pv_bt_test  001                          Tue 17-Jan-17  11:36:15 am  Page  4
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  7
 
 
 
@@ -258,20 +447,20 @@ Input for Run 001:
 
 
 
-! CSE 0.818 for Win32 console run(s) done: Tue 17-Jan-17  11:36:15 am
-! Executable: c:\projects\cse\run\cse.exe
-!             16-Jan-17   4:17 pm   (VS 14.0    1291264 bytes)  (HPWH 1.3.0)
+! CSE 0.819 for Win32 console run(s) done: Tue 24-Jan-17   9:57:52 am
+! Executable: c:\projects\cse\run\csed.exe
+!             24-Jan-17   8:45 am   (VS 14.0    2954752 bytes)  (HPWH 1.3.0)
 
 ! Input file name:  C:\Projects\cse\test\pv_bt_test.cse
 ! Report file name: C:\Projects\cse\test\pv_bt_test.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0050   
+!                Input:  Time = 0.12     Calls = 1      T/C = 0.1230   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.19     Calls = 1      T/C = 0.1890   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0070   
-!                Total:  Time = 0.21     Calls = 1      T/C = 0.2120   
+!           Simulation:  Time = 121.26   Calls = 1      T/C = 121.2640 
+!              Reports:  Time = 0.36     Calls = 1      T/C = 0.3620   
+!                Total:  Time = 121.76   Calls = 1      T/C = 121.7560 
 
 
 
@@ -312,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! pv_bt_test  001                          Tue 17-Jan-17  11:36:15 am  Page  5
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  8
 
