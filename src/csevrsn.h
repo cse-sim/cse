@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 820
+#define CSEVRSN_MINOR 821
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.821: BATTERY now only reinitializes at begin of sim if bt_initSOE is set
    0.820: BATTERY now re-initializes at begin of sim (after warmup, etc.)
    0.819: HPWH setpoint-below-water-temp bug fix, 1-22-2017
    0.818: add Battery model; committed 1-16-2017
