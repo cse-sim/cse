@@ -80,11 +80,11 @@ This is the maximum amount of energy that can be stored in the BATTERY system in
 
 **btInitSOE=*float***
 
-The initial state of energy of the BATTERY system as a fraction of the total capacity.
+The initial state of energy of the BATTERY system as a fraction of the total capacity. If `btInitSOE` is specified, the battery state-of-energy at the beginning of the actual simulation will be set to the amount specified, regardless of whether there was a warm-up period or not. If `btInitSOE` is NOT specififed, it will default to 1.0 (i.e., 100%) at the beginning of the warmup period (if any).
 
 |**Units**|**Legal Range**    |**Default**|**Required**|**Variability**|
 |---------|-------------------|-----------|------------|---------------|
-|         | 0 $\le$ x $\le$ 0 |    0.5    |No          |constant       |
+|         | 0 $\le$ x $\le$ 0 |    1.0    |No          |constant       |
 
 **btInitCycles=*int***
 
