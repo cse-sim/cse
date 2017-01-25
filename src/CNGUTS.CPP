@@ -695,8 +695,9 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	if ((Top.ivl <= C_IVLCH_S) && Top.tp_isBegMainSim) {
 		// Ensure battery is reinitialized
 		// after warmup and/or autosizing
+		// ONLY IF bt_initSOE was set by user
 		BATTERY* bt;
-		RLUP(BtR, bt) EF(bt->bt_Init())
+		RLUP(BtR, bt) { if (bt->IsSet(BATTERY_INITSOE)) EF(bt->bt_Init()) }
 	}
 	if (Top.ivl < C_IVLCH_S) {
 		BATTERY* bt;
