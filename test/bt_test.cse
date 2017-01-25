@@ -1,0 +1,61 @@
+#define kw_to_btuh 3412.142
+#define max_bt_pwr 4.08
+
+  wuDays = 30
+  WfName="Bishop.epw" // reference city for CA Climate Zone 16
+  nSubSteps=1
+
+// This battery should go through warm-up with a default assumption of 100% SOE
+// at beginning of warmup. This battery should be initialized to the initSOE
+// value at the beginning of the warmup (default of 100%). Since we don't
+// explicitly see the warmup in the output reports, we should see that battery
+// SOE is (10 kWh - (30 days x 24 hrs/day x 0.01 kWh/hr)) / 10 kWh = 0.28 at
+// the beginning of first timestep. However, since we only report SOE at the
+// END of each timestep, the first value should be 0.28 - 0.01/10.0 = 0.279 and
+// decrease 0.01 each hour after that.
+METER "ElecMtrInitNo"
+GAIN "BuildingLoadInitNo"
+  gnEndUse= Lit
+  gnMeter = ElecMtrInitNo
+  gnPower = 0.01 * kw_to_btuh
+BATTERY "BatteryInitNo"
+  btMeter = ElecMtrInitNo
+  btEndUse = BT
+  btMaxCap = 10.0 // kWh
+  btMaxChgPwr = 5.0 // kW
+  btMaxDschgPwr = 5.0 // kW
+  btUseUsrChg = No
+  btChgEff = 1.0
+  btDschgEff = 1.0
+
+// This battery should be initialized to the initSOE value at the beginning of
+// the simulation. Since the spreadsheet shows the SOE values at the END of
+// each timestep, we should see the first SOE at 0.799 (0.8 - 0.01 kWh / 10kWh) =
+// 0.799), then dropping 0.001 each additional hour.
+METER "ElecMtrInitYes"
+GAIN "BuildingLoadInitYes" LIKE "BuildingLoadInitNo"
+  gnMeter = ElecMtrInitYes
+BATTERY "BatteryInitYes" LIKE "BatteryInitNo"
+  btMeter = ElecMtrInitYes
+  btInitSOE = 0.8 // 80% state of energy
+
+REPORT
+  rpType = UDT
+  rpFreq = HOUR
+  rpTitle = "Battery and warmup with (Yes) & without (No) btInitSOE"
+  rpDayBeg = jan 1
+  rpDayEnd = jan 1
+  rpHeader = "Yes"
+  rpFooter = "No"
+  ReportCol colhead="Day" colVal=@Top.dateStr
+  ReportCol colhead="Hour" colVal=@Top.iHr
+  ReportCol colhead="YesSOE" colWid=6 colVal=@BATTERY["BatteryInitYes"].soe
+  ReportCol colhead="YesEgy[kWh]" colWid=11 colVal=@BATTERY["BatteryInitYes"].energy
+  ReportCol colhead="YesBT[kW]" colWid=9 colVal=@METER["ElecMtrInitYes"].H.BT / kw_to_btuh
+  ReportCol colhead="NoSOE" colWid=6 colVal=@BATTERY["BatteryInitNo"].soe
+  ReportCol colhead="NoEgy[kWh]" colWid=10 colVal=@BATTERY["BatteryInitNo"].energy
+  ReportCol colhead="NoBT[kW]" colWid=8 colVal=@METER["ElecMtrInitNo"].H.BT / kw_to_btuh
+
+DELETE REPORT "EB"
+
+RUN

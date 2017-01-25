@@ -34,6 +34,7 @@ call Run1 dhwDU %1 %2
 call Run1 dhw_C %1 %2
 call Run1 pvtest %1 %2
 call Run1 pv_bt_test %1 %2
+call Run1 bt_test %1 %2
 
 
 echo.
