@@ -1,0 +1,505 @@
+
+
+
+
+------------------------------------------------------------------------------
+
+
+
+GridLoads by Battery Control (kWh)
+
+ Day          NoBtNoPv       NoBt       Dflt      PkShv        TDV        Ext
+ ---------- ---------- ---------- ---------- ---------- ---------- ----------
+ Sat 31-Jan   1618.13    1258.89    1248.98    1256.95    1248.98    1272.05
+ Sat 28-Feb   1475.21    1056.08    1062.64    1053.05    1062.64    1059.98
+ Tue 31-Mar   1353.98     788.596    811.425    801.199    811.687    816.733
+ Thu 30-Apr   1269.84     666.533    681.699    668.307    681.209    687.514
+ Sun 31-May    798.286    138.446    153.204    138.52     152.299    148.374
+ Tue 30-Jun    494.55    -224       -213       -224       -215       -209
+ Fri 31-Jul    505.609   -216       -203       -216       -204       -202
+ Mon 31-Aug    494.616   -219       -203       -219       -203       -201
+ Wed 30-Sep    474.129   -160       -148       -160       -149       -139
+ Sat 31-Oct    738.145    201.981    215.106    202.42     214.956    224.487
+ Mon 30-Nov   1274.11     880.22     880.098    880.622    879.92     887.477
+ Thu 31-Dec   1488.14    1102.05    1109.34    1088.86    1109.34    1129.58
+
+
+
+! Log for Run 001:
+
+! CSE 0.819 for Win32 console
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  1
+
+
+
+
+------------------------------------------------------------------------------
+
+
+
+Input for Run 001:
+
+        /*
+        BATTERY + PV TEST AND CONTROL STRATEGIES
+        ========================================
+        
+        This module seeks to test the BATTERY record using various control strategies. The Battery is simulated while a "typical" building load and associated "PV Array" is specified from an external CSV file and set to a GAIN block using gnPower fields.
+        
+        DEFAULT:
+        --------
+        
+        The default algorithm that ships with the code. This algorithm simply takes the adjusted load (Home Load - PV Generation) and sets the battery request to satisfy that. If excess PV is available, the battery attempts to absorb all energy, otherwise, the battery attempts to provide all energy. The default strategy (as all strategies) is limited to the physical capabilities of the battery.
+        
+        PEAK SHAVING:
+        -------------
+        
+        The basic "peak shaving" algorithm demonstrated here compares the current adjusted load (Home - PV Generation) with a power setpoint. If above the setpoint, the battery will attempt to provide assistance if it can. In essence, the battery attempts to limit the peak within its capability.
+        
+        The battery is called to discharge when peak power (average peak power over the hour) is over a given threshold. Otherwise, it always charges when storage capacity is available.
+        
+        TDV-Attenuated Strategy:
+        ------------------------
+        
+        This strategy controls based on the TDV signal and the load with the following guidelines:
+        
+        - Any available excess energy to charge the battery is always requested
+        - Discharge is made in proportion to the amount the actual TDV signal vs a reference
+        
+        Sign convention is the same as above. TDV is the current step's TDV signal; TDV_ref is the global reference TDV signal (which could change over time). As seen below, as TDV attains the reference value and above, the battery supplies a full charge. When the TDV is less than the reference value, only a fraction of the load is attempted.
+        
+        P_req(P_load, P_max_chg, TDV, TDV_ref) =
+          -1 * if (P_load >= 0)
+                 min(P_load, P_max_dschg) * (min(TDV, TDV_ref) / TDV_ref) ** 2
+               else
+                 P_load
+               end
+        
+        Specifically, above, if TDV is 1/2 of TDV_ref, then only 1/4 of the load is requested to be supplied. If TDV is 3/4 of TDV_ref, then only 9/16 of the load is requested to be supplied. If TDV is greater than or equal to TDV_ref, the full load is requested to be supplied. Thus, charging at higher TDVs is favored without neglecting low-loads completely.
+        
+        NOTE: if CSE is built with the _DEBUG symbol defined, then you will get a warning when the gnPower of BuildingLoad goes negative. The GAIN object is not typically used in the fashion we present here: we merely want to specify the "effective" building load + PV without clutting this file with an entire building definition (as you would do in a real study).
+        */
+        IMPORTFILE Data
+          imFileName="pv_bt_data.dat"
+          imFreq="Hour"
+          imTitle="PV/BT Data"
+        
+        WfName="Bishop.epw" // reference city for CA Climate Zone 16
+        wuDays=0
+        nSubSteps=1
+        
+#       #define kw_to_btuh 3412.142
+#       #define max_bt_pwr 4.08
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  2
+
+
+
+
+------------------------------------------------------------------------------
+
+#       #define pwr_target_kW 4.0
+#       #define soe_target 0.7
+#       #define TDV_ref 27.0
+#       #define AdjLoad_kW import(Data, "AdjustedLoad_kW")
+        
+        METER "ElecMtrDefault"
+        GAIN "BuildingLoadDefault"
+          gnMeter = ElecMtrDefault
+          gnEndUse = Lit
+          gnPower = import(Data,"HouseLoad_kW") * kw_to_btuh
+        BATTERY "BatteryDefault"
+          btMeter = ElecMtrDefault
+          btEndUse = BT
+          btMaxCap = 16.320 // kWh
+          btMaxChgPwr = max_bt_pwr // kW
+          btMaxDschgPwr = max_bt_pwr // kW
+          btUseUsrChg = No
+          btChgEff = 0.97467943
+          btDschgEff = 0.97467943
+          btInitSOE = 1.0 // 100% state of energy
+        GAIN "PvDefault"
+          gnMeter = ElecMtrDefault
+          gnEndUse = PV
+          gnPower = -1.0 * import(Data,"PvOut_kW") * kw_to_btuh
+        
+        METER "ElecMtr00"
+        GAIN "BuildingLoad00" LIKE BuildingLoadDefault
+          gnMeter = ElecMtr00
+        BATTERY "Battery00" LIKE BatteryDefault
+          btMeter = ElecMtr00
+          btUseUsrChg = Yes
+          btChgReq = 0.0
+        
+        METER "ElecMtr0"
+        GAIN "BuildingLoad0" LIKE BuildingLoadDefault
+          gnMeter = ElecMtr0
+        BATTERY "Battery0" LIKE BatteryDefault
+          btMeter = ElecMtr0
+          btUseUsrChg = Yes
+          btChgReq = 0.0
+        GAIN "Pv0" LIKE PvDefault
+          gnMeter = ElecMtr0
+        
+        METER "ElecMtrPeakShaving"
+        GAIN "BuildingLoadPeakShaving" LIKE BuildingLoadDefault
+          gnMeter = ElecMtrPeakShaving
+        BATTERY "BatteryPeakShaving" LIKE BatteryDefault
+          btMeter = ElecMtrPeakShaving
+          btUseUsrChg = Yes
+          btChgReq = -1.0 * select(
+            AdjLoad_kW > pwr_target_kW,
+              AdjLoad_kW - pwr_target_kW,
+            AdjLoad_kW < 0.0,
+              AdjLoad_kW,
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  3
+
+
+
+
+------------------------------------------------------------------------------
+
+            default 0.0)
+        GAIN "PvPeakShaving" LIKE PvDefault
+          gnMeter = ElecMtrPeakShaving
+        
+        METER "ElecMtrTDV"
+        GAIN "BuildingLoadTDV" LIKE BuildingLoadDefault
+          gnMeter = ElecMtrTDV
+        BATTERY "BatteryTDV" LIKE BatteryDefault
+          btMeter = ElecMtrTDV
+          btUseUsrChg = Yes
+          btChgReq = -1.0 * select(
+            AdjLoad_kW >= 0.0,
+              min(AdjLoad_kW, max_bt_pwr) * pow(min(import(Data,"TDV_kBtu__kWh"), TDV_ref) / TDV_ref, 2),
+            default AdjLoad_kW)
+        GAIN "PvTDV" LIKE PvDefault
+          gnMeter = ElecMtrTDV
+        
+        METER "ElecMtrExtCalc"
+        GAIN "BuildingLoadExtCalc" LIKE BuildingLoadDefault
+          gnMeter = ElecMtrExtCalc
+        BATTERY "BatteryExtCalc" LIKE BatteryDefault
+          btMeter = ElecMtrExtCalc
+          btUseUsrChg = Yes
+          btChgReq = import(Data, "BtPwrReq_kW")
+        GAIN "PvExtCalc" LIKE PvDefault
+          gnMeter = ElecMtrExtCalc
+        
+        // Test that max discharge power changes
+        // Should go from 1 to 0 SOE in first step
+        METER "ElecMtrMaxCalc"
+        GAIN "BuildingLoadMaxCalc"
+          gnMeter = ElecMtrMaxCalc
+          gnEndUse = Lit
+          gnPower = 10 * kw_to_btuh
+        BATTERY "BatteryMaxCalc" LIKE BatteryDefault
+          btInitSOE=1        // kWh
+          btMaxChgPwr=10     // kW
+          btMaxDschgPwr=10   // kW
+          btMaxCap = 10.0    // kWh
+          btChgEff = 1.0
+          btDschgEff = 1.0
+          btUseUsrChg = No
+          btMeter = ElecMtrMaxCalc
+        
+        // Test that max charge power changes
+        // Should go from 0 to 1 SOE in first step
+        METER "ElecMtrMinCalc"
+        GAIN "BuildingLoadMinCalc"
+          gnMeter = ElecMtrMinCalc
+          gnEndUse = Lit
+          gnPower = -10 * kw_to_btuh
+        BATTERY "BatteryMinCalc" LIKE BatteryDefault
+          btInitSOE=0        // kWh
+          btMaxChgPwr=10     // kW
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  4
+
+
+
+
+------------------------------------------------------------------------------
+
+          btMaxDschgPwr=10   // kW
+          btMaxCap = 10.0    // kWh
+          btChgEff = 1.0
+          btDschgEff = 1.0
+          btUseUsrChg = No
+          btMeter = ElecMtrMinCalc
+        
+        // Should result in Grid loads of 5 kW and 7.4 kW over the first two hours
+        METER "ElecMtrDebugCalc"
+        GAIN "BuildingLoadDebugCalc"
+          gnEndUse= Lit
+          gnMeter = ElecMtrDebugCalc
+          gnPower = 10 * kw_to_btuh
+        BATTERY "BatteryDebugCalc" LIKE BatteryDefault
+          btChgEff = 0.95                      // The charging efficiency of storing electricity into the BATTERY system
+          btDschgEff = 0.95                    // The discharge efficiency for when the BATTERY system is discharging power
+          btMaxCap = 8                         // The maximum amount of energy that can be stored in the BATTERY system, kWh
+          btMaxChgPwr = 5                      // The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy flowing into the BATTERY), kW
+          btMaxDschgPwr = 5                    // The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., energy flowing out of the BATTERY), kW
+          //btChgReq = import(BTCtrlData,"BatteryCharge")    // The power request to charge (or discharge if negative) the battery (expression), kW
+          btUseUsrChg = No                     // If YES/1, then the user specified btChgReq will be used to set the battery?s charge request; if NO/0, the default strategy will be used
+          btMeter = "ElecMtrDebugCalc"         // Electric meter to log charge/discharge to
+        
+        REPORT
+          rpType = UDT
+          rpFreq = MONTH
+          rpTitle = "GridLoads by Battery Control (kWh)"
+          rpDayBeg = jan 1
+          rpDayEnd = dec 31
+          rpHeader = Yes
+          ReportCol colhead="Day" colVal=@Top.dateStr
+          ReportCol colhead="NoBtNoPv" colVal=@METER["ElecMtr00"].M.tot / kw_to_btuh
+          ReportCol colhead="NoBt" colVal=@METER["ElecMtr0"].M.tot / kw_to_btuh
+          ReportCol colhead="Dflt" colVal=@METER["ElecMtrDefault"].M.tot / kw_to_btuh
+          ReportCol colhead="PkShv" colVal=@METER["ElecMtrPeakShaving"].M.tot / kw_to_btuh
+          ReportCol colhead="TDV" colVal=@METER["ElecMtrTDV"].M.tot / kw_to_btuh
+          ReportCol colhead="Ext" colVal=@METER["ElecMtrExtCalc"].M.tot / kw_to_btuh
+        
+        EXPORTFILE "PvBtOut"
+          xfFileName = "pv_bt_out"
+          xfFileStat = OVERWRITE
+          EXPORT
+            exType = UDT
+            exFreq = HOUR
+            exTitle = "Battery/PV Output"
+            exDayBeg = jan 1
+            exDayEnd = dec 31
+            exHeader = ColumnsOnly
+            ExportCol colhead="Day" colVal=@Top.dateStr
+            ExportCol colhead="Hour" colVal=@Top.iHr
+            ExportCol colhead="PV Out [kW]" colVal=@METER["ElecMtrDefault"].H.pv / kw_to_btuh
+            ExportCol colhead="HomeLoad [kW]" colVal=@METER["ElecMtrDefault"].H.lit / kw_to_btuh
+            ExportCol colhead="AdjLoad [kW]" colVal=(@METER["ElecMtrDefault"].H.lit + @METER["ElecMtrDefault"].H.pv) / kw_to_btuh
+            ExportCol colhead="TDV [kBtu/kWh]" colVal=import(Data,"TDV_kBtu__kWh")
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  5
+
+
+
+
+------------------------------------------------------------------------------
+
+            ExportCol colhead="NoBtNoPv SOE" colVal=@BATTERY["Battery00"].soe
+            ExportCol colhead="NoBtNoPv Energy [kWh]" colVal=@BATTERY["Battery00"].energy
+            ExportCol colhead="NoBtNoPv GridLoad [kW]" colVal=@METER["ElecMtr00"].H.tot / kw_to_btuh
+            ExportCol colhead="NoBt SOE" colVal=@BATTERY["Battery0"].soe
+            ExportCol colhead="NoBt Energy [kWh]" colVal=@BATTERY["Battery0"].energy
+            ExportCol colhead="NoBt GridLoad [kW]" colVal=@METER["ElecMtr0"].H.tot / kw_to_btuh
+            ExportCol colhead="Dflt SOE" colVal=@BATTERY["BatteryDefault"].soe
+            ExportCol colhead="Dflt Energy [kWh]" colVal=@BATTERY["BatteryDefault"].energy
+            ExportCol colhead="Dflt GridLoad [kW]" colVal=@METER["ElecMtrDefault"].H.tot / kw_to_btuh
+            ExportCol colhead="PkShv SOE" colVal=@BATTERY["BatteryPeakShaving"].soe
+            ExportCol colhead="PkShv Energy [kWh]" colVal=@BATTERY["BatteryPeakShaving"].energy
+            ExportCol colhead="PkShv GridLoad [kW]" colVal=@METER["ElecMtrPeakShaving"].H.tot / kw_to_btuh
+            ExportCol colhead="TDV SOE" colVal=@BATTERY["BatteryTDV"].soe
+            ExportCol colhead="TDV Energy [kWh]" colVal=@BATTERY["BatteryTDV"].energy
+            ExportCol colhead="TDV GridLoad [kW]" colVal=@METER["ElecMtrTDV"].H.tot / kw_to_btuh
+            ExportCol colhead="Ext SOE" colVal=@BATTERY["BatteryExtCalc"].soe
+            ExportCol colhead="Ext Energy [kWh]" colVal=@BATTERY["BatteryExtCalc"].energy
+            ExportCol colhead="Ext GridLoad [kW]" colVal=@METER["ElecMtrExtCalc"].H.tot / kw_to_btuh
+            ExportCol colhead="Max SOE" colVal=@BATTERY["BatteryMaxCalc"].soe
+            ExportCol colhead="Max Energy [kWh]" colVal=@BATTERY["BatteryMaxCalc"].energy
+            ExportCol colhead="Max GridLoad [kW]" colVal=@METER["ElecMtrMaxCalc"].H.tot / kw_to_btuh
+            ExportCol colhead="Min SOE" colVal=@BATTERY["BatteryMinCalc"].soe
+            ExportCol colhead="Min Energy [kWh]" colVal=@BATTERY["BatteryMinCalc"].energy
+            ExportCol colhead="Min GridLoad [kW]" colVal=@METER["ElecMtrMinCalc"].H.tot / kw_to_btuh
+            ExportCol colhead="Debug SOE" colVal=@BATTERY["BatteryDebugCalc"].soe
+            ExportCol colhead="Debug Energy [kWh]" colVal=@BATTERY["BatteryDebugCalc"].energy
+            ExportCol colhead="Debug GridLoad [kW]" colVal=@METER["ElecMtrDebugCalc"].H.tot / kw_to_btuh
+        
+        EXPORTFILE "PvBtOutElecMtrMaxCalc"
+          xfFileName = "pv_bt_out_max"
+          xfFileStat = OVERWRITE
+          EXPORT   "ExportElecMtrMaxCalc"
+             exType = "MTR"                       // Export type
+             exFreq = "HOUR"                      // Time interval for generating rows of export data
+             exMeter = "ElecMtrMaxCalc"           // Meter to report
+             exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+             exDayBeg = Jan 1
+             exDayEnd = Dec 31
+        
+        EXPORTFILE "PvBtOutElecMtrMinCalc"
+          xfFileName = "pv_bt_out_min"
+          xfFileStat = OVERWRITE
+          EXPORT   "ExportElecMtrMinCalc"
+             exType = "MTR"                       // Export type
+             exFreq = "HOUR"                      // Time interval for generating rows of export data
+             exMeter = "ElecMtrMinCalc"           // Meter to report
+             exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+             exDayBeg = Jan 1
+             exDayEnd = Dec 31
+        
+        EXPORTFILE "PvBtOutElecMtrDebug"
+          xfFileName = "pv_bt_out_debug"
+          xfFileStat = OVERWRITE
+          EXPORT   "ExportElecMtrDebug"
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  6
+
+
+
+
+------------------------------------------------------------------------------
+
+             exType = "MTR"                       // Export type
+             exFreq = "HOUR"                      // Time interval for generating rows of export data
+             exMeter = "ElecMtrDebugCalc"         // Meter to report
+             exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+             exDayBeg = Jan 1
+             exDayEnd = Dec 31
+        
+        DELETE REPORT "EB"
+        
+        RUN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  7
+
+
+
+
+------------------------------------------------------------------------------
+
+
+
+! CSE 0.819 for Win32 console run(s) done: Tue 24-Jan-17   9:57:52 am
+! Executable: c:\projects\cse\run\csed.exe
+!             24-Jan-17   8:45 am   (VS 14.0    2954752 bytes)  (HPWH 1.3.0)
+
+! Input file name:  C:\Projects\cse\test\pv_bt_test.cse
+! Report file name: C:\Projects\cse\test\pv_bt_test.rep
+
+! Timing info --
+
+!                Input:  Time = 0.12     Calls = 1      T/C = 0.1230   
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
+!           Simulation:  Time = 121.26   Calls = 1      T/C = 121.2640 
+!              Reports:  Time = 0.36     Calls = 1      T/C = 0.3620   
+!                Total:  Time = 121.76   Calls = 1      T/C = 121.7560 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! pv_bt_test  001                          Tue 24-Jan-17   9:55:51 am  Page  8
+

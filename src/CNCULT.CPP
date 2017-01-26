@@ -86,6 +86,7 @@ makAncDHWUSE( WUiB);		// DHW use (single draw)
 
 // PV: PV Watts photovoltaic array
 makAncPVARRAY(PViB);		// PV array
+makAncBATTERY(BTiB);		// Battery
 
 // air handlers and terminals and plant
 makAncTU(TuiB);				// terminals input
@@ -1985,6 +1986,32 @@ CULT( "endPVARRAY",  ENDER, 0,               0,       0, 0,      0,     0,      
 CULT()
 };	// pvArrT
 
+	//============================== BATTERY command ===============================
+LOCAL RC FC btStarCkf(CULT* c, /*BATTERY* */ void *p, void *p2, void *p3)
+// called at end of BATTERY input, to get messages near source of error.
+{
+	return ((BATTERY*)p)->bt_CkF();
+}		// btStarCkf
+		//=============================================================================
+static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
+{
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",            STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   btStarCkf),
+CULT( "btMeter",      DAT,   BATTERY_METER,   0,       0, VEOI,   TYREF, &MtriB, N,      N,   N),
+CULT( "btEndUse",     DAT,   BATTERY_ENDUSE,  0,       0, VEOI,   TYCH,  0,      C_ENDUSECH_BT, N, N),
+CULT( "btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),
+CULT( "btInitSOE",    DAT,   BATTERY_INITSOE, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "btInitCycles", DAT,   BATTERY_INITCYCLES,0,     0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
+CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
+CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
+CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// btT
 
 //====================== AIRHANDLER command (Air Handler) ===========================
 static CULT ahT[] = //-------------------------- AIRHANDLER cmd RAT Entry table, used from cnTopCult
@@ -2448,6 +2475,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
+	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),

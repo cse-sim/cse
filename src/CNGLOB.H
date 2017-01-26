@@ -280,9 +280,9 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 
 /*---------------------------- dept of NANs: unset, nandles, nchoices ---------------------------*/
 
-/* a NANDLE is a 32-bit quantitity that is not a valid IEEE float number nor an expected string pointer value,
+/* a NANDLE is a 32-bit quantity that is not a valid IEEE float number nor an expected string pointer value,
    used to indicate unset data and to specify the "expression number" of runtime expression entered for the variable
-     or whose value is to be stored in the variable later.  More discussion in ul\exman.h, ul\exman.cpp.
+     or whose value is to be stored in the variable later.  More discussion in exman.h, exman.cpp.
    A NANDLE contains 0xFF80 in the hi word and 0 for unset or ffff for autosizing or expression number 1-16383 in the low word.
    CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below) */
 

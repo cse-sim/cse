@@ -212,6 +212,7 @@ static COLDEF mtrColdef[] =
 	{ "Cook",            0,  6, D, oMtr(cook),    BTU },  	// cooking (range/oven)
 	{ "User1",           0,  6, D, oMtr(usr1),    BTU },  	// user1
 	{ "User2",           0,  6, D, oMtr(usr2),    BTU },  	// user2
+	{ "BT",              0,  6, D, oMtr(bt),      BTU },    // battery
 	{ "PV",              0,  6, D, oMtr(pv),      BTU },  	// photovoltaics
 	{ 0,                 0,  0, 0, 0,             CV1 }
 };

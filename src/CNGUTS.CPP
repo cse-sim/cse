@@ -616,6 +616,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		PVARRAY* pv;
 		RLUP(PvR, pv) EF(pv->pv_DoHour())
 
+
 		// hourly part of loads computation (most of it). Must call after gains.
 		EF( loadsHourBeg() )   				// start-hour loads stuff -- solar gains, masses, zones. cnloads.cpp.
 
@@ -690,6 +691,18 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 // Mass end-of-interval enthalpy accounting
 	msEndIvl( Top.ivl);
+
+	if ((Top.ivl <= C_IVLCH_S) && Top.tp_isBegMainSim) {
+		// Ensure battery is reinitialized
+		// after warmup and/or autosizing
+		// ONLY IF bt_initSOE was set by user
+		BATTERY* bt;
+		RLUP(BtR, bt) { if (bt->IsSet(BATTERY_INITSOE)) EF(bt->bt_Init()) }
+	}
+	if (Top.ivl < C_IVLCH_S) {
+		BATTERY* bt;
+		RLUP(BtR, bt) EF(bt->bt_DoHour())
+	}
 
 // results accumulation for interval: simulation and meters
 	if (!Top.tp_skipDay)
@@ -786,13 +799,19 @@ x                     "    A total of %g kBtu of condensation heat was added to 
 x                     zp->i.name, (long)zp->znNSubhrXLG,
 x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 #endif
-			AH * ah;
+			AH* ah;
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
 					  "    entry in %ld subhours of run.  A total of %g kBtu \n"
 					  "    of condensation heat was added to the entering air.",
 					  ah->name, (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
+
+			DHWHEATER* wh;
+			RLUP( WhR, wh)
+				if (wh->wh_balErrCount > 0)
+					warn( "DHWHEATER '%s': Energy balance errors occurred in %d subhours.",
+						wh->name, wh->wh_balErrCount);
 
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.
@@ -1506,7 +1525,7 @@ LOCAL void FC NEAR doIvlAccum()
 			euClg += h->clg;			// cooling
 			euHtg += h->htg + h->hp;		// heat energy use: incl heat pump backup heat
 			euFan += h->fan + h->aux;		// fan: include auxiliary
-			euX += h->dhw + h->proc + h->lit + h->rcp + h->ext + h->usr1 + h->usr2 + h->pv;	// "extra": everything else?
+			euX += h->dhw + h->proc + h->lit + h->rcp + h->ext + h->usr1 + h->usr2 + h->pv + h->bt;	// "extra": everything else?
 		}
 		// set daylighting weather variable(s) for brf
 		switch (Wfile.wFileFormat)
