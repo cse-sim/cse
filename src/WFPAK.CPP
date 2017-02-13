@@ -760,7 +760,7 @@ float CalcGroundTemp(			// ground temperature model
 {
 	int yrLen = isLeapYr ? 366 : 365;
 
-	double beta = depth * sqrt( Pi / (max( soilDiff, .001) * yrLen*24.));
+	double beta = depth * sqrt( kPi / (max( soilDiff, .001) * yrLen*24.));
 
 	double cosB = cos( beta);
 	double sinB = sin( beta);
@@ -768,7 +768,7 @@ float CalcGroundTemp(			// ground temperature model
 
 	double gm = sqrt( (expMB*expMB - 2.*expMB*cosB + 1.) / (2.*beta*beta));
 	double phi = atan2( 1.-expMB*(cosB+sinB), 1.-expMB*(cosB-sinB));
-	double ang = TwoPi * (jD-1)/yrLen	// time of year, 0 - 2Pi
+	double ang = k2Pi * (jD-1)/yrLen	// time of year, 0 - 2Pi
 				 - 0.6		// phase angle for ground surf temp (Kusuda)
 				 - phi;		// phase angle for depth averaged ground temp
 	double tGrnd = taDbAvYr - gm * taDbRngYr * cos( ang) / 2.;
@@ -833,7 +833,7 @@ float CalcSkyTemp(		// sky temp model
 	if (!isSetup)
 	{	// set constants only once
 		for (int iHx=0; iHx<24; iHx++)
-			hrConst[ iHx] = float( 0.013f * cos( Pi * (iHx+1)/12.));
+			hrConst[ iHx] = float( 0.013f * cos( kPi * (iHx+1)/12.));
 		isSetup++;
 	}
 

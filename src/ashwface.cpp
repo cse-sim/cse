@@ -777,7 +777,7 @@ RC FENAW::fa_BmSolar(			// ASHWAT beam solar (optical) calcs
 {
 	RC rc = RCOK;
 	VZero( fa_bmLAbsF[ iH], CFSMAXNL+1);
-	if (incA < PiOvr2)
+	if (incA < kPiOver2)
 	{	CFSSWP swpON[ CFSMAXNL];
 		rc = fa_CFS.cf_OffNormal( incA, vProfA, hProfA, swpON);
 		if (!rc)

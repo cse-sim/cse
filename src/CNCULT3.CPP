@@ -3013,7 +3013,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 	// apply building and zone rotation
 	//   use double, make Top.tp_bldgAzm=360 have no effect
 	double azmRot = double( xr->x.azm) + zp->i.znAzm + Top.tp_bldgAzm;
-	xr->x.azm = float( fmod( azmRot + 3*TwoPi, TwoPi));
+	xr->x.azm = float( fmod( azmRot + 3*k2Pi, k2Pi));
 	slsdc( xr->x.azm, xr->x.tilt, xr->x.xs_dircos);  // dircos from tilt/azm. slpak.cpp
 
 // chain

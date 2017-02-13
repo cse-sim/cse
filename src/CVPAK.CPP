@@ -1278,14 +1278,14 @@ double FC cvstdangle(			// Normalize an angle into 0 to 2*PI range
 
 // Returns equivalent angle that falls in range 0 - 2*PI
 {
-	if (ang >= TwoPi)			// if 2*Pi or greater
-		return fmod( ang, TwoPi );	// take mod 2 * Pi
+	if (ang >= k2Pi)			// if 2*Pi or greater
+		return fmod( ang, k2Pi );	// take mod 2 * Pi
 
 	/* If negative, want to be independent of what fmod does if < 0.
-	   Values 0. <= ang < TwoPi fall thru and are returned */
+	   Values 0. <= ang < k2Pi fall thru and are returned */
 	while (ang < 0.0)			// until positive
-		ang += TwoPi;			// add 2 * Pi
-	if (ang > (TwoPi - .001))
+		ang += k2Pi;			// add 2 * Pi
+	if (ang > (k2Pi - .001))
 		ang = 0.;		// If angle is close to 2PI, change it to 0 so it won't display as 360.
 	return ang;
 }		// cvstdangle

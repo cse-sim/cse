@@ -100,8 +100,8 @@ UNAREA2		"in2"		144.0		// Small area
 UNVOLUME	"ft3"		1.00		// Volume
 			"m3"		0.0283
 
-UNANGLE		"deg"		180./Pi		// Angle
-			"deg"		180./Pi
+UNANGLE		"deg"		180./kPi	// Angle
+			"deg"		180./kPi
 
 UNPOWERDEN	"Btuh/ft2"	1.00		// Power density
 			"W/m2"		3.15

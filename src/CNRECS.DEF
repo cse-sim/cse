@@ -741,6 +741,24 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 							//   WDHR used elsewhere (e.g. whole file pre-read)
 *END		// WFDATA
 //========================================================================================================
+RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
+	*prefix gx_
+	*i *ARRAY 22 FLOAT gx_vrtInp	// input vertices (x, y, z)
+									// max 7 points (3*7)+1 (for cul)
+									// = octagon is largest polygon supported
+*END	// SURFGEOP
+    
+
+//========================================================================================================
+RECORD SHADEX "shadex" *RAT		// shade object (polygon that can shade surfaces)
+
+	*prefix sx_
+	*declare "RC sx_CkF();"
+
+	*i *nest SURFGEOM sx_g;
+
+*END	// SHADE
+//========================================================================================================
 RECORD SGDIST "sgdist sub" *SUBSTRUCT	// solar gain distribution substructure for XSURF and SGI
 	*prefix sd_
     *r SI sd_targTy   	// target type: define (cnguts.h)   basAnc & member
