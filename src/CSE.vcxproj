@@ -386,7 +386,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHead
     </ClCompile>
     <ClCompile Include="STRPAK.CPP" />
     <ClCompile Include="SYTB.CPP" />

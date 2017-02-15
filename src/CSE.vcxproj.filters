@@ -183,9 +183,6 @@
     <ClCompile Include="SRFD.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="STRPAK.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -231,7 +228,10 @@
     <ClCompile Include="BATTERY.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SHADING.CPP">
+    <ClCompile Include="shading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

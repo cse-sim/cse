@@ -261,8 +261,8 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 // AIRSTATE
 /////////////////////////////////////////////////////////////////////////////////
 int AIRSTATE::as_IsEqual( const AIRSTATE& as, double tol/*=.001*/) const
-{	return FEQX( as_tdb, as.as_tdb) < tol
-        && FEQX( as_w,   as.as_w)   < tol;
+{	return frDiff( as_tdb, as.as_tdb) < tol
+        && frDiff( as_w,   as.as_w)   < tol;
 }		// AIRSTATE_as_IsEqual
 //------------------------------------------------------------------------------
 double AIRSTATE::as_AddQSen(		// add sensible heat to an air stream
@@ -1925,12 +1925,12 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 #if defined( _DEBUG)
 		if (ds_Uduct > 0.)
 		{	double tdb2 = ds_sbcO.sb_qSrf / ds_Uduct + ds_sbcO.sb_tSrf;
-			double tErrF = FEQX( ds_air[ 2].as_tdb, tdb2, .01);
+			double tErrF = frDiff( ds_air[ 2].as_tdb, tdb2, .01);
 			if (tErrF > .001)
 				warn( "DUCTSEG '%s': avg temp inconsistency (%.5f)", name, tErrF);
 		}
 		// compare separately calc'd conduction, small diffs are common
-		double condErrF = FEQX( ds_qCondFL, ds_qCondAirFL + ds_qCondRadFL,
+		double condErrF =frDiff( ds_qCondFL, ds_qCondAirFL + ds_qCondRadFL,
 			.1);				// .01 -> .1  8-9-2013
 		if (condErrF > .002)	// .001 -> .002 8-9-2013
 			warn( "DUCTSEG '%s': conduction mismatch (%.5f)", name, condErrF);

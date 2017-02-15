@@ -674,8 +674,8 @@ RC MSRAT::ms_Make(				// fill MSRAT for SFI + CON
 		if (!sf->sf_IsBG())
 		{	double cFactor, hc;
 			ms_pMM->mm_GetProperties( cFactor, hc);
-			if (FEQX( con->conU, cFactor) > .0001
-			 || FEQX( con->hc, hc) > .0001)
+			if (frDiff( double( con->conU), cFactor) > .0001
+			 || frDiff( double( con->hc), hc) > .0001)
 				rc |= sf->oWarn( "MASSMODEL properties mismatch");
 		}
 	}
