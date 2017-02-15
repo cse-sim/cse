@@ -16,7 +16,7 @@ Warning: Zone 'RDuctZone': Condensation occurred in 2313 subhours of run.
     Total condensation heat = 4.19246 kBtu.
 ---------------
 Warning: Zone 'Single': Condensation occurred in 845 subhours of run.
-    Total condensation heat = -5.05892e-11 kBtu.
+    Total condensation heat = -5.05892e-011 kBtu.
 ---------------
 
 
@@ -4420,7 +4420,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.818 for Win32 console   Tue 17-Jan-17  11:34:28 am
+! CSE 0.822 for Win32 console   Wed 15-Feb-17   2:35:05 pm
 
 
 ================
@@ -53381,7 +53381,7 @@ Single CZ: anMCp/T[ 0]=34.47/4170.7  anMCp/T[ 1]=0.00/0.0  ventUt=-99999
      Nair=8389261.20  Dair=107027.43  Nrad=205608.91  Drad=2437.95  CX=1169.53  airX=20.121
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=14261  amfSup=12978   tSup=63.37
      ta=78.00  tr=82.28  qIzSh=1482  fvent=0.000  pz0=0.0018  qsHvac=-46130
-! CSE 0.818 for Win32 console
+! CSE 0.822 for Win32 console
 
 
 
@@ -54040,17 +54040,17 @@ Input for Run 001:
 
 
 
-! CSE 0.818 for Win32 console run(s) done: Tue 17-Jan-17  11:34:33 am
-! Executable: c:\projects\cse\run\cse.exe
-!             16-Jan-17   4:17 pm   (VS 14.0    1291264 bytes)  (HPWH 1.3.0)
+! CSE 0.822 for Win32 console run(s) done: Wed 15-Feb-17   2:35:09 pm
+! Executable: d:\cse\run\cse.exe
+!             15-Feb-17   2:32 pm   (VS 12.0    1172480 bytes)  (HPWH 1.3.0)
 
-! Input file name:  C:\Projects\cse\test\actest1bL.cse
-! Report file name: C:\Projects\cse\test\actest1bL.rep
+! Input file name:  D:\cse\test\actest1bL.cse
+! Report file name: D:\cse\test\actest1bL.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0500   
+!                Input:  Time = 0.03     Calls = 1      T/C = 0.0310   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.42     Calls = 1      T/C = 4.4230   
-!              Reports:  Time = 0.59     Calls = 1      T/C = 0.5880   
-!                Total:  Time = 5.07     Calls = 1      T/C = 5.0690   
+!           Simulation:  Time = 3.22     Calls = 1      T/C = 3.2190   
+!              Reports:  Time = 0.45     Calls = 1      T/C = 0.4530   
+!                Total:  Time = 3.70     Calls = 1      T/C = 3.7030   
