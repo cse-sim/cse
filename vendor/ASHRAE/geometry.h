@@ -210,7 +210,10 @@ const CPV3D kCPV3Dz1( 0., 0., 1.);
 class CPolygon3D
 {
 public:
-	CPolygon3D( int n=4) : p3_vrt( n) {}		// default: 4 verticies
+	CPolygon3D( int n=4)
+	{	if (n>0)
+			p3_vrt.reserve( n);
+	}
 	CPolygon3D( const CPolygon3D& p3)
 		: p3_vrt( p3.p3_vrt)
 	{	/* Copy( ptsAr); */ }
@@ -322,7 +325,7 @@ public:
 #else
 	// release: no range check
 	CPolygon3D* ap_Plg( int i) const { return ap_plg[ i]; }
-	CPolygon3D* ap_Plg( int i) { return ap_plg.at[ i]; }
+	CPolygon3D* ap_Plg( int i) { return ap_plg[ i]; }
 #endif
 	CPolygon3D* operator[](int i) {	return ap_Plg( i); }
 	CPolygon3D* operator[](int i) const { return ap_Plg( i); }
@@ -670,7 +673,7 @@ public:
 	int t3_SubTriGetSize() const
 	{	return t3_arSubTri.GetSize(); }
 	void t3_SubTriSetSize( int n)
-	{	t3_arSubTri.resize( n); }
+	{	t3_arSubTri.SetSize( n); }
 #else
 	std::vector< CTri3DX> t3_arSubTri;
 	int t3_SubTriGetSize() const

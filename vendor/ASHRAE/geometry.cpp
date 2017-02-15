@@ -187,14 +187,14 @@ double matrix33(double a11, double a12, double a13,
 ///////////////////////////////////////////////////////////////////////////////
 // 3D Geometry
 ///////////////////////////////////////////////////////////////////////////////
-std::string CPV3D::FmtXYZ(			// format coordinates
+string CPV3D::FmtXYZ(			// format coordinates
 	int precOp/*=3*/) const		// lo bits = precision
 								// options: 0x100 = surround with parens (x,y,z)
 // returns coords as comma-separated string (with optional parens
 {	
 	int prec = precOp & 0xff;
 	bool bParens = (precOp & 0x100) != 0;
-	std::string t;
+	string t;
 	if (bParens)
 		t = "(";
 	t += sFmtFloatDTZ( x, prec) + ',' + sFmtFloatDTZ( y, prec) + ',' + sFmtFloatDTZ( z, prec);

@@ -183,8 +183,10 @@ const double ABOUT0 = 0.001;
 template< typename T> inline int FEQUAL(T a, T b) { return fabs(a-b) < ABOUT0; }
 template< typename T> inline T frDiff( T a, T b)
 {	double d=fabs(a)+fabs(b); return T( d==0. ? 0. : 2.*fabs(a-b)/d); }
+#if 0
 template< typename T> inline T fr( T a, T b)
 {	double d=fabs(a)+fabs(b); return T( d==0. ? 0. : 2.*fabs(a-b)/d); }
+#endif
 inline double FEQX( double a, double b, double tolAbs=.00001)
 {	double d=fabs(a-b);
 	return d<=max( tolAbs, 1e-30) ? 0. : 2.*d/(fabs( a)+fabs( b));
