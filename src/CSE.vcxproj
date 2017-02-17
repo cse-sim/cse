@@ -379,11 +379,13 @@
     <ClCompile Include="PVCalc.cpp" />
     <ClCompile Include="RMKERR.CPP" />
     <ClCompile Include="RUNDATA.CPP" />
-    <ClCompile Include="shading.cpp" />
+    <ClCompile Include="SHADING.CPP" />
     <ClCompile Include="SLPAK.CPP" />
     <ClCompile Include="SRFD.CPP" />
     <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="STRPAK.CPP" />

@@ -244,8 +244,8 @@ template< typename T> int snap( T& v, T vSnap, double tol=1e-10)
 {	if (fabs(v-vSnap)<tol) { v=vSnap; return 1; } return 0; }
 template< typename T> int snapRAD( T& v, double tol=.1)
 {	return snap( v, T( 0), tol)
-        || v < T( 0) ? snap( v, T( -PiOvr2), tol) || snap( v, T( -Pi), tol)
-                     : snap( v, T(  PiOvr2), tol) || snap( v, T(  Pi), tol);
+        || v < T( 0) ? snap( v, T( -kPiOver2), tol) || snap( v, T( -kPi), tol)
+                     : snap( v, T(  kPiOver2), tol) || snap( v, T(  kPi), tol);
 }
 template< typename T> int snapDEG( T& v, double tol=.1)
 {	return snap( v, T( 0), tol)
@@ -530,9 +530,10 @@ inline float pow033( float v)
 }
 
 // useful constants
-const double PiOvr2    = 1.5707963267948966;
-const double Pi        = 3.1415926535897932;
-const double TwoPi     = 6.2831853071795864;
+const double kPi=3.14159265358979323846;
+const double k2Pi=2.*kPi;
+const double k4Pi=4.*kPi;
+const double kPiOver2=kPi/2.;
 const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
 const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
 const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto

@@ -137,6 +137,25 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   degrees   unrestricted    0.0         No           hourly
 
   ------------------------------------------------------------------
+**pvVertices=*list of up to 27 floats***
+
+  Vertices of a polygon representing the shape of the photovoltaic array and used to calculate the shaded fraction of the array during the simulation (assuming one or more SHADEX objects are defined).
+
+  The values that follow pvVertices are a series of X, Y, and Z values for the vertices of the polygon. The coordinate system is defined from a viewpoint facing north.  X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north).  Z values convey height relative to the building 0 level and positive values are upward.
+
+  The vertices are specified in counter-clockwise order when facing the receiving surface of the array.  The number of values provided must be a multiple of 3.  The defined polygon must be planar and have no crossing edges.  The effective position of the polygon reflects building rotation specified by bldgAzm.
+
+  For example, to specify a rectangular photovoltaic array that is 10 x 20 ft, tilted 45 degrees, and facing south --
+
+     pvVertices = 0, 0, 15,   20, 0, 15,  20, 7.07, 22.07,  0, 7.07, 22.07
+
+  ------------------------------------------------------------------
+  **Units** **Legal Range** **Default** **Required**     **Variability**
+  --------- --------------- ----------- ---------------- ---------------
+  ft         unrestricted     *none*      9, 12, 15, 18,      constant
+                                         21, 24, or 27
+                                         values
+  ------------------------------------------------------------------
 
 **pvGrndRefl=*float***
 

@@ -1652,14 +1652,14 @@ RC DUCTSEG::ds_TopDS(			// set up run record
 	if (bRound)
 	{	if (!IsSet( DUCTSEG_DIAM))
 		{	if (ds_len > 0.f)
-				ds_diam = ds_inArea / (Pi * ds_len);
+				ds_diam = ds_inArea / (kPi * ds_len);
 		}
 		if (ds_diam < .001f)
 			rc |= oer( "cannot determine dsDiam");
 		else if (!IsSet( DUCTSEG_INAREA))
-			ds_inArea = Pi * ds_diam * ds_len;		// OK if 0
+			ds_inArea = kPi * ds_diam * ds_len;		// OK if 0
 		else if (!IsSet( DUCTSEG_LEN))
-			ds_len = ds_inArea / (Pi * ds_diam);	// OK if 0
+			ds_len = ds_inArea / (kPi * ds_diam);	// OK if 0
 	}
 
 	// insulation material and thickness

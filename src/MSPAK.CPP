@@ -548,7 +548,7 @@ double MASSLAYER::ml_PenetrationDepth(
 {
 	return ml_IsMassless()
 		 ? 9999.		// return huge
-		 : sqrt( period*ml_condNom/(Pi*ml_vhc));
+		 : sqrt( period*ml_condNom/(kPi*ml_vhc));
 
 }	// MASSLAYER::ml_PenetrationDepth
 //---------------------------------------------------------------------------

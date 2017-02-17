@@ -88,6 +88,8 @@ makAncDHWUSE( WUiB);		// DHW use (single draw)
 makAncPVARRAY(PViB);		// PV array
 makAncBATTERY(BTiB);		// Battery
 
+makAncSHADEX( SxiB);
+
 // air handlers and terminals and plant
 makAncTU(TuiB);				// terminals input
 makAncAH(AhiB);				// air handlers input
@@ -143,6 +145,8 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WBiB.free();
 	WLPiB.free();
 	PViB.free();
+	BTiB.free();
+	SxiB.free();
 	TuiB.free();
 	AhiB.free();
 	HpiB.free();
@@ -1986,7 +1990,7 @@ CULT( "endPVARRAY",  ENDER, 0,               0,       0, 0,      0,     0,      
 CULT()
 };	// pvArrT
 
-	//============================== BATTERY command ===============================
+//============================== BATTERY command ===============================
 LOCAL RC FC btStarCkf(CULT* c, /*BATTERY* */ void *p, void *p2, void *p3)
 // called at end of BATTERY input, to get messages near source of error.
 {
@@ -2012,6 +2016,24 @@ CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      
 CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// btT
+
+//============================== SHADEX command ===============================
+LOCAL RC FC shStarCkf(CULT* c, /*SHADE* */ void *p, void *p2, void *p3)
+// called at end of SHADE input, to get messages near source of error.
+{
+	return ((SHADEX*)p)->sx_CkF();
+}		// shStarCkf
+//=============================================================================
+#define SXG( m) (SHADEX_G+SURFGEOM_##m)
+static CULT shadexT[] = //------ SHADEX cmd RAT Entry table, used from cnTopCult
+{
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   shStarCkf),
+CULT( "sxVertices",  DAT,   SXG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v 22,  N),
+CULT( "endXSHADE",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// shadeT
 
 //====================== AIRHANDLER command (Air Handler) ===========================
 static CULT ahT[] = //-------------------------- AIRHANDLER cmd RAT Entry table, used from cnTopCult
@@ -2476,6 +2498,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
+	CULT( "shadex",       RATE,  0,                0,          0, 0,      0,    &SxiB,   N,    0.f,         shadexT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),
