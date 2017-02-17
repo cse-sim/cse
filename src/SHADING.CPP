@@ -322,7 +322,7 @@ exit68:  		// come here to exit
 // return 0 if result so small that is probably just roundoff errors; in particular, for small negative results.  rob 1-90.
 	return fsunlit > 0.0000001f ? fsunlit : 0.f;
 
-}		// shadwin
+}		// ::shadwin
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

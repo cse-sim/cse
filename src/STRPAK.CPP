@@ -763,6 +763,47 @@ WStr WStrVprintf(	// make like vsprintf and return pointer to result in tmpstr.
 	return t;
 }			// WStrVprintf
 // ======================================================================
+WStr WStrFmtFloatDTZ(		// format float / strip trailing 0s
+	double v,				// value
+	int maxPrec,			// max precision (used for initial format)
+	int minPrec /*=0*/)		// min precision, if 0, '.' deleted also
+{
+	WStr s = WStrPrintf( "%0.*f", maxPrec, v);
+	return WStrDTZ( s, minPrec);
+}		// WStrFmtFloatDTZ
+//------------------------------------------------------------------------
+WStr WStrDTZ(		// drop trailing 0s
+	const WStr& s,			// original string
+	int minPrec /*=0*/)		// min precision, if 0, '.' deleted also
+// returns s w/o trailing 0s
+{
+	WStr sx;
+	int len = s.length();
+	int newLen = len;	// candidate new length
+	for (int i = len; --i >= 0; )
+	{	if (s[ i] == '0')
+		{	if (newLen == i+1)
+				newLen = i;
+		}
+		else if (s[ i] == '.')
+		{	if (newLen <= i + minPrec)
+				newLen = i + minPrec + 1;
+			else if (!minPrec && newLen == i+1)
+				newLen = i;		// drop decimal too
+			if (newLen == 0)
+				sx = "0";	// string was ".0000"
+			else
+				sx = s.substr( 0, newLen);
+			break;
+		}
+		else if (newLen == len)
+			break;		// no trailing 0s, give up
+		// else keep scanning
+	}
+	// never hit decimal point, do nothing
+	return sx;
+}			// WStrDTZ
+// ======================================================================
 SI FC strlstin(			// case insensitive search for string in list
 
 	const char *list,	// list of strings delimited by " ,/"

@@ -53,7 +53,7 @@ inline double Distance2( const CPV3D& p1, const CPV3D& p2);
 inline double Distance( const CPV3D& p1, const CPV3D& p2);
 inline CPV3D CrossProd( const CPV3D& p1, const CPV3D& p2);
 //---------------------------------------------------------------
-class CPV3D		// 3D point
+class CPV3D
 {
 public:
 	CPV3D()	{ x = y = z = 0.;}
@@ -147,7 +147,7 @@ public:
 	double Normalize();
 	inline double Length2() const { return x*x + y*y + z*z; }
 	inline double Length() const { return sqrt( x*x + y*y + z*z); }
-	std::string FmtXYZ( int precOp=3) const;
+	WStr FmtXYZ( int precOp=3) const;
 	CPV3D& Combine( const CPV3D& pt1, const CPV3D& pt2, double f2);
 	inline double Distance2( const CPV3D& p) const
 	{	return ::Distance2( *this, p); }
@@ -159,11 +159,8 @@ public:
 		int i01 = fabs( p[ 1]) > fabs( p[ 0]);
 		return fabs( p[ 2]) > fabs( p[ i01]) ? 2 : i01;
 	}
-	std::string Format() const
-	{	TCHAR buf[ 100];
-		_sntprintf( buf, sizeof( buf), _T("(%.4f,%.4f,%.4f)"), x, y, z);
-		return std::string( buf);
-	}
+	WStr Format() const
+	{	return WStrPrintf( "(%.4f,%.4f,%.4f)", x, y, z); }
 
 public:
 	double x;
@@ -286,17 +283,17 @@ public:
 	static void Test1();
 #endif
 private:
-	std::vector< CPV3D> p3_vrt;		// vertices
+	WVect< CPV3D> p3_vrt;		// vertices
 };	// class CPolygon3D
 
 ///////////////////////////////////////////////////////////////////////////////
-// class CPolygon3DAr: vector of 3D polygons (optionally shallow)
+// class CPolygon3DAr: collection of 3D polygons (optionally shallow)
 ///////////////////////////////////////////////////////////////////////////////
 class CPolygon3DAr
 {
 private:
 	bool ap_bShallow;	// true iff shallow array (don't delete polygons in d'tor)
-	std::vector< CPolygon3D *> ap_plg;		// 
+	WVect< CPolygon3D *> ap_plg;	// polygons
 public:
 	CPolygon3DAr( bool bShallow=false) : ap_bShallow( bShallow) { }
 	~CPolygon3DAr() { if (!ap_bShallow) DeleteAll(); }
@@ -624,85 +621,6 @@ private:
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// class CTri3DX: 3D triangle with additional data
-///////////////////////////////////////////////////////////////////////////////
-const int t3viVISNO = 0;
-const int t3viVISYES = 1;
-const int t3viVISUNKOWN = 3;
-const int t3viVISMASK = 3;
-//----------------------------------------------------------------------------
-class CTri3DX : public CTri3D
-{	
-public:
-	CTri3DX() {};
-	CTri3DX( const CTri3DX& tri)
-	{ *this = tri; }
-	const CTri3DX& operator =(const CTri3DX& tri)
-	{	CTri3D::operator=( tri);
-		t3_vi[ 0] = tri.t3_vi[ 0];
-		t3_vi[ 1] = tri.t3_vi[ 1];
-		t3_vi[ 2] = tri.t3_vi[ 2];
-		t3_pDVP = tri.t3_pDVP;
-		t3_area = tri.t3_area;
-		return *this;
-	}
-
-	int t3_SetDerived();
-	int t3_SubDivide();
-	void t3_UpdateVisIf();
-	virtual void CopyX( const CTri3D& src, int iVX, const CPV3D& ptX);
-	int t3_SetVisible();
-	void t3_SetVis( int iV, int t3vi)
-	{	t3_vi[ iV] = (t3_vi[ iV] & ~t3viVISMASK) | t3vi; }
-	float t3_VisFrac() const
-	{	int nVis = 0;
-		for (int iV=0; iV<3; iV++)
-			nVis += (t3_vi[ iV] & t3viVISYES) != 0;
-		return float( nVis) / 3.f;
-	}
-
-	class DVFPlane* t3_pDVP;	// pointer to plane containing this triangle
-	void t3_SetDVP( class DVFPlane* pDVP) { t3_pDVP = pDVP; }
-	void t3_SetupTopLevel( class DVFPlane* pDVP);
-
-	int t3_vi[ 3];		// vertex info
-	double t3_area;		// area (set by t3_SetDerived())
-
-#if defined( USE_MFC)
-	CArray< CTri3DX, CTri3DX&> t3_arSubTri;	// child triangles
-	int t3_SubTriGetSize() const
-	{	return t3_arSubTri.GetSize(); }
-	void t3_SubTriSetSize( int n)
-	{	t3_arSubTri.SetSize( n); }
-#else
-	std::vector< CTri3DX> t3_arSubTri;
-	int t3_SubTriGetSize() const
-	{	return t3_arSubTri.size(); }
-	void t3_SubTriSetSize( int n)
-	{	t3_arSubTri.resize( n); }
-#endif
-
-private:
-	// edge info -- used re t3_subdivide
-	//  does not need to be copied
-	struct
-	{	double len;		// length of edge
-		double lenNorm;	// normalized length (fraction of longest)
-		int doSplit;	// nz if this edge s/b split
-		CPV3D ptM;		// midpoint of side
-		int ptM_vi;		// vertex info for midpoint
-	} t3_ei[ 3];
-	int t3_nSplit;		// # of edges to divide
-						//   code handles 1 and 3 only (1-23-2013)
-	int t3_iE1;			// edge to be split iff t3_nSplit == 1
-
-	int t3_SetChildInfo1( CTri3DX& d, int what, int iV0, int iV1, int iV2);
-	void t3_SetChildInfo( int what);
-	int t3_SetEdgeMidPointVis( int iE);
-};		// class CTri3DX
-//=============================================================================
-
-///////////////////////////////////////////////////////////////////////////////
 // class CAABB: axis-aligned bounding box
 ///////////////////////////////////////////////////////////////////////////////
 class CAABB
@@ -788,6 +706,13 @@ public:
 private:
 	double v[ 16];
 };	// class CT3D
+//==============================================================================
+
+////////////////////////////////////////////////////////////////////////////////
+// public functions
+////////////////////////////////////////////////////////////////////////////////
+double Det33( double a11, double a12, double a13,
+	double a21, double a22, double a23, double a31, double a32, double a33);
 //==============================================================================
 
 #endif // __GEOMETRY_H__

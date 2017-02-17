@@ -40,6 +40,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+// debugging output
+//   use MFC TRACE if available
+//   else printf
+#if !defined( TRACE)
+#define TRACE printf
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // class CT3D: 4x4 3D transformation
@@ -175,29 +181,29 @@ CPolygon3D CT3D::TX( const CPolygon3D& plg) const
 	return tPlg;
 }	// CT3D::TX
 //----------------------------------------------------------------------------
-double matrix33(double a11, double a12, double a13,
-				double a21, double a22, double a23,
-				double a31, double a32, double a33)
+double Det33(		// determinant of 3x3 matrix
+	double a11, double a12, double a13,
+	double a21, double a22, double a23,
+	double a31, double a32, double a33)
 {
-	return		a11*a22*a33 + a12*a23*a31 + a13*a21*a32
-			-	a13*a22*a31 - a11*a23*a32 - a12*a21*a33;
-}
-
+	return a11*(a22*a33-a23*a32) + a12*(a23*a31-a21*a33)+a13*(a21*a32-a22*a31);
+}	// ::Det33
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// 3D Geometry
+// 3D point / vector
 ///////////////////////////////////////////////////////////////////////////////
-string CPV3D::FmtXYZ(			// format coordinates
+WStr CPV3D::FmtXYZ(			// format coordinates
 	int precOp/*=3*/) const		// lo bits = precision
 								// options: 0x100 = surround with parens (x,y,z)
 // returns coords as comma-separated string (with optional parens
 {	
 	int prec = precOp & 0xff;
 	bool bParens = (precOp & 0x100) != 0;
-	string t;
+	WStr t;
 	if (bParens)
 		t = "(";
-	t += sFmtFloatDTZ( x, prec) + ',' + sFmtFloatDTZ( y, prec) + ',' + sFmtFloatDTZ( z, prec);
+	t += WStrFmtFloatDTZ( x, prec) + ',' + WStrFmtFloatDTZ( y, prec) + ',' + WStrFmtFloatDTZ( z, prec);
 	if (bParens)
 		t += ")";
 	return t;
@@ -774,164 +780,6 @@ int CTri3D::RayHit(			// determine if ray intersects this triangle
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// class CTri3DX -- 3D triangle with additional info
-///////////////////////////////////////////////////////////////////////////////
-int CTri3DX::t3_SetDerived()		// set derived members
-// returns 1 if this CTri3DX is valid (area > 0, )
-{
-	t3_area = Area();
-
-	return t3_area > 0.;
-}		// CTri3DX::t3_SetDerived
-//------------------------------------------------------------------------------
-int CTri3DX::t3_SetChildInfo1(			// set info for a single child
-	CTri3DX& d,		// child triangle
-	int what,		// bitwise what info to set
-					//  1: vertex location; 2: vertex info; 3: both
-	int iV0, int iV1, int iV2)	// source for vertex 0, 1, 2
-// returns 1 iff result is valid (per t3_SetDerived())
-{
-	d.t3_pDVP = t3_pDVP;	// pass plane downward
-
-	int iVM[ 3] = { iV0, iV1, iV2 };
-	for ( int iV=0; iV<3; iV++)
-	{	int iX = iVM[ iV];
-		if (iX & 8)
-		{	// get child info from midpoint of edge
-			int iE = (iX&7)%3;
-			if (what & 1)
-				d.Vertex( iV) = t3_ei[ iE].ptM;
-			if (what & 2)
-				d.t3_vi[ iV]  = t3_ei[ iE].ptM_vi;
-		}
-		else
-		{	// get child info from parent
-			if (what & 1)
-				d.Vertex( iV) = Vertex( iX%3);
-			if (what & 2)
-				d.t3_vi[ iV] = t3_vi[ iX%3];
-		}
-	}
-	return d.t3_SetDerived();
-}		// CTri3DX::t3_SetChildInfo1
-//------------------------------------------------------------------------------
-void CTri3DX::t3_SetChildInfo(		// set info in child triangles
-	int what)			// bitwise what info to set
-						//  1: vertex location
-						//  2: vertex info
-						//  3: both
-{
-	int iE;
-	if (t3_nSplit == 1)
-	{	// one long side: divide it
-		iE = t3_iE1;		// edge to be split
-		// visibility calc *before* copy: point is used in 2 triangles
-		if (what & 2)
-			t3_SetEdgeMidPointVis( iE);
-		t3_SetChildInfo1( t3_arSubTri[ 0], what, 8|iE, iE+2, iE);
-		t3_SetChildInfo1( t3_arSubTri[ 1], what, 8|iE, iE,   iE+1); 
-	}
-	else 
-	{	// equilateral-ish: divide into 4
-		//   also used for tall isocseles
-
-		// visibility calc *before* copy: midpoints are used in 3 triangles
-		if (what&2)
-			for (iE=0; iE<3; iE++)
-				t3_SetEdgeMidPointVis( iE);
-
-		for (iE=0; iE<3; iE++)
-			t3_SetChildInfo1( t3_arSubTri[ iE], what, 8|iE, iE+2, 8|(iE+1));
-		t3_SetChildInfo1( t3_arSubTri[ 3], what, 8|0, 8|1, 8|2);
-	}
-}		// CTri3DX::t3_SetChildInfo
-//------------------------------------------------------------------------------
-void CTri3DX::t3_UpdateVisIf()		// update point visibility
-{
-	t3_SetChildInfo( 2);
-}		// CTri3DX::t3_UpdateVisIf
-//------------------------------------------------------------------------------
-int CTri3DX::t3_SubDivide()			// subdivide triangle
-{
-	double lenMax = 0.;
-	int iE;
-	int iEL = 0;
-
-	// calc side lengths and find longest
-	for (iE=0; iE<3; iE++)
-	{	t3_ei[ iE].len = Distance( Vertex((iE+1)%3), Vertex((iE+2)%3));
-		// midpoint of side
-		t3_ei[ iE].ptM.Combine( Vertex((iE+1)%3), Vertex((iE+2)%3), .5);
-		if (t3_ei[ iE].len > lenMax)
-		{	lenMax = t3_ei[ iE].len;
-			iEL = iE;
-		}
-	}
-	t3_nSplit = 0;
-	t3_iE1 = -1;
-
-	if (lenMax == 0.)
-		return 0;		// degenerate
-
-	for (iE=0; iE<3; iE++)
-	{	t3_ei[ iE].lenNorm = t3_ei[ iE].len / lenMax;
-		t3_ei[ iE].doSplit = 0;
-		if (t3_ei[ iE].lenNorm > 0.8)
-		{	// this edge is "long": split it
-			t3_ei[ iE].doSplit++;
-			if (t3_nSplit == 0)
-				t3_iE1 = iE;
-			t3_nSplit++;
-		}
-	}
-	int nTri;
-	if (t3_nSplit==1)
-	{	nTri = 2;
-		// t3_iE1 set above = only edge = one being split
-	}
-	// else if t3_nSplit == 2: treat as 3 (make 4 children)
-	else
-	{	// t3_nSplit == 2 or 3
-		nTri = 4;
-		t3_iE1 = -1;
-	}
-
-	t3_SubTriSetSize( nTri);		// # of subtriangles
-
-	t3_SetChildInfo( 3);
-
-#if defined( _DEBUG)
-	CPV3D uNormThis;
-	double areaThis = UnitNormal( uNormThis);
-	double areaSubTri = 0.;
-	CPV3D uNormSubTri;
-	int nS = t3_SubTriGetSize();
-	for (int iS=0; iS<nS; iS++)
-	{	areaSubTri += t3_arSubTri[ iS].UnitNormal( uNormSubTri);
-		if (!uNormThis.IsEqual( uNormSubTri, .00001))
-			mbErr( _T("Normal mismatch, iS=%d  nS=%d  nSplit=%d  iEL=%d"), iS, nS, t3_nSplit, iEL);
-	}
-	if (fDiff( areaThis, areaSubTri) > .001)
-		mbErr( _T("Area mismatch, nSplit=%d   iEL=%d"), t3_nSplit, iEL);
-
-#endif
-
-	return nTri;
-}		// t3_SubDivide
-//-----------------------------------------------------------------------------
-/*virtual*/ void CTri3DX::CopyX(				// copy with vertex substitution
-	const CTri3D& src,		// source triangle
-	int iVX,				// exception vertex (0 - 2)
-	const CPV3D& ptX)	// exception pt
-{
-	CTri3D::CopyX( src, iVX, ptX);
-	const CTri3DX& srcX = (const CTri3DX&)src;
-	for (int iV=0; iV<3; iV++)
-		t3_vi[ iV] = iV==iVX ? 0 : srcX.t3_vi[ iV];
-}	// CTri3D::CopyX
-//=============================================================================
-
-///////////////////////////////////////////////////////////////////////////////
 // class CPlane3D: represents a plane in 3D space
 ///////////////////////////////////////////////////////////////////////////////
 // plane equation: Ax + By + Cz + D = 0
@@ -977,21 +825,14 @@ bool CPlane3D::Init(		// plane from normal and point on plane
 }		// CPlane3D::Init
 //--------------------------------------------------------------------------
 bool CPlane3D::Init(const CPV3D& p1, const CPV3D& p2, const CPV3D& p3)
-{	pl_n.x = matrix33(	1, p1.y, p1.z,
-					1, p2.y, p2.z,
-					1, p3.y, p3.z );
+{	pl_n.x = Det33(	1., p1.y, p1.z,	1., p2.y, p2.z, 1., p3.y, p3.z );
 	
-	pl_n.y = matrix33(	p1.x, 1, p1.z,
-					p2.x, 1, p2.z,
-					p3.x, 1, p3.z );
+	pl_n.y = Det33(	p1.x, 1., p1.z,	p2.x, 1., p2.z, p3.x, 1., p3.z );
 	
-	pl_n.z = matrix33(	p1.x, p1.y, 1,
-					p2.x, p2.y, 1,
-					p3.x, p3.y, 1 );
+	pl_n.z = Det33(	p1.x, p1.y, 1., p2.x, p2.y, 1., p3.x, p3.y, 1. );
 	
-	pl_d = - matrix33(	p1.x, p1.y, p1.z,
-					p2.x, p2.y, p2.z,
-					p3.x, p3.y, p3.z );
+	pl_d = - Det33(	p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p3.x, p3.y, p3.z );
+
 	return true;		// TODO: detect degenerate cases
 }	// CPlane3D::Init
 //--------------------------------------------------------------------------
