@@ -79,8 +79,6 @@
 
 #define USE_STDLIB		// re conversion to non-MFC containers
 
-#define ANC_DTOR		// define to better use basAnc etc. destructors
-
 #undef AUSZ_REPORTS		// define to enable hourly reports during autosizing
 						//   Note: crude at best, use for testing only, 12-31-2012
 
@@ -135,7 +133,16 @@
 
 #define DETAILED_TIMING		// define to enable fine-grain timing
 
-#undef COMFORT_MODEL
+#undef COMFORT_MODEL		// define to include comfort model
+							//   calculation of PPD and PMV
+
+							// initial geometry implementation, 2-2017
+							//   fixed size polygons as input convenience
+							//   using ARRAY mechanism
+							//   Note limit is due to ARRAY input only.
+#define MAX_POLYGONVERTICES 9	// maximum number of input polygon vertices
+#define DIM_POLYGONXYZ 28		// input arrays dimension
+								//   = MAX_POLYLPVERTICIES*3 + 1
 
 #endif	// ifndef _CNEDEFNS_H
 
