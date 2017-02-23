@@ -4420,7 +4420,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.822 for Win32 console   Fri 17-Feb-17   5:50:16 pm
+! CSE 0.822 for Win32 console   Thu 23-Feb-17   1:36:56 pm
 
 
 ================
@@ -54040,17 +54040,17 @@ Input for Run 001:
 
 
 
-! CSE 0.822 for Win32 console run(s) done: Fri 17-Feb-17   5:50:30 pm
-! Executable: d:\cse\run\csed.exe
-!             17-Feb-17   5:49 pm   (VS 12.0    2512384 bytes)  (HPWH 1.3.0)
+! CSE 0.822 for Win32 console run(s) done: Thu 23-Feb-17   1:37:00 pm
+! Executable: d:\cse\run\cse.exe
+!             23-Feb-17   1:35 pm   (VS 12.0    1193472 bytes)  (HPWH 1.3.0)
 
-! Input file name:  D:\cse\test\actest1bl.cse
-! Report file name: D:\cse\test\actest1bl.rep
+! Input file name:  D:\cse\test\actest1bL.cse
+! Report file name: D:\cse\test\actest1bL.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 1      T/C = 0.1250   
+!                Input:  Time = 0.03     Calls = 1      T/C = 0.0310   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 14.00    Calls = 1      T/C = 13.9980  
-!              Reports:  Time = 0.45     Calls = 1      T/C = 0.4530   
-!                Total:  Time = 14.58    Calls = 1      T/C = 14.5760  
+!           Simulation:  Time = 3.33     Calls = 1      T/C = 3.3280   
+!              Reports:  Time = 0.47     Calls = 1      T/C = 0.4740   
+!                Total:  Time = 3.84     Calls = 1      T/C = 3.8360   
