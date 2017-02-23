@@ -23,12 +23,29 @@ XPVWATTS PVWATTS; // public PVWATTS Library object
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
 
+PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
+	: record( b, i, noZ)
+{
+	FixUp();
+}	// PVARRAY::PVARRAY
+
 PVARRAY::~PVARRAY()
 {
 	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
 		PVWATTS.xp_ClearData(this);
 	}
 }	// PVARRAY::~PVARRAY
+
+/*virtual*/ void PVARRAY::FixUp()	// set parent linkage
+{	pv_g.gx_Init( this);
+}
+
+void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
+{	// bitwise copy of record
+	record::Copy( pSrc, options);	// calls FixUp()
+	// copy SURFGEOM heap subobjects
+	pv_g.gx_CopySubObjects();
+}	// PVARRAY::Copy
 
 RC PVARRAY::pv_CkF()
 {
@@ -76,6 +93,10 @@ RC PVARRAY::pv_CkF()
 			rc |= oWarn("Temperature coefficient (%0.4f) is positive. Values are typically negative.", pv_tempCoeff);
 		}
 	}
+
+	// check geometry
+	rc |= pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
+
 	return rc;
 
 }	// PVARRAY::pv_CkF

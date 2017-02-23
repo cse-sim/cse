@@ -31,6 +31,8 @@
 
 #include <cnguts.h>	// decl for shadwin()
 
+#include <ashrae/geometry.h>
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // overhang/fin shading
@@ -326,11 +328,94 @@ exit68:  		// come here to exit
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
+// class SURFGEOM: nestable surface geometry
+///////////////////////////////////////////////////////////////////////////////
+SURFGEOM::SURFGEOM()
+{
+	gx_polygon = new CPolygon3D();
+}	// SURFGEOM::SURFGEOM
+//-----------------------------------------------------------------------------
+SURFGEOM::~SURFGEOM()
+{
+	delete gx_polygon;
+}	// SURFGEOM::~SURFGEOM
+//-----------------------------------------------------------------------------
+void SURFGEOM::gx_Init(			// parent linkage etc
+	record* pParent,		// parent record: SHADEX, PVARRAY, etc
+	int options /*=0*/)		// options TBD
+{
+	gx_pParent = pParent;
+}		// SURFGEOM::gx_Init
+//-----------------------------------------------------------------------------
+void SURFGEOM::gx_CopySubObjects()		// copy heap subobjects
+// call AFTER bitwise parent Copy()
+//   subojects are duplicated
+{	if (gx_polygon)
+		gx_polygon = new CPolygon3D( *gx_polygon);
+}	// SURFGEOM::gx_CopySubObjects
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_CheckAndMakePolygon(
+	int phase,
+	int fnG)		// SURFGEOM field number within parent
+// returns RCOK iff success
+
+{
+	// gx_polygon->DeleteAll();  clean out on first call?
+
+	int fnVI = fnG + SURFGEOM_VRTINP;
+	int nSet, nVal;
+	RC rc = ArrayStatus( &gx_pParent->fStat( fnVI), DIM_POLYGONXYZ, nSet, nVal);
+
+	if (rc)
+		gx_pParent->ooer( fnVI, "Internal error: invalid ARRAY");
+	else if (nSet == 0)
+		return RCOK;
+
+	else if (nSet < 9 || nSet%3 != 0)
+		rc = gx_pParent->ooer( fnVI, "Invalid number of XYZ coordinates (%d)."
+			   "  Must be a multiple of 3 and >= 9.", nSet);
+
+	if (!rc)
+	{	// fill polygon from input verticies
+		gx_polygon->DeleteAll();
+		gx_polygon->Add( gx_vrtInp, nSet/3);
+
+		// validate polyon
+		// compare to tilt / azm?
+	}
+	
+	return rc;
+
+}	// SURFGEOM::gx_CheckAndMakePolygon
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
 // class SHADEX: geometric shade object
 ///////////////////////////////////////////////////////////////////////////////
+SHADEX::SHADEX( basAnc *b, TI i, SI noZ /*=0*/)
+	: record( b, i, noZ)
+{
+	FixUp();
+}	// SHADEX::SHADEX
+//----------------------------------------------------------------------------
+/*virtual*/ void SHADEX::FixUp()
+{
+	sx_g.gx_Init( this);
+}		// SHADEX::FixUp
+//----------------------------------------------------------------------------
+void SHADEX::Copy( const record* pSrc, int options/*=0*/)
+{	// bitwise copy of record
+	record::Copy( pSrc, options);	// calls FixUp()
+	// copy SURFGEOM heap subobjects
+	sx_g.gx_CopySubObjects();
+}	// SHADEX::Copy
+//----------------------------------------------------------------------------
 RC SHADEX::sx_CkF()
 {
 	RC rc = RCOK;
+
+	rc = sx_g.gx_CheckAndMakePolygon( 0, SHADEX_G);
+
 	return rc;
 }		// SHADEX::xs_CkF
 //=============================================================================
