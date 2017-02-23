@@ -271,7 +271,7 @@ int record::IsSetAny(
 	}
 }		// record::IsSetAny
 //-----------------------------------------------------------------------------
-int record::IsValAll(
+int record::IsValAll(		// check for resolved (non-expression) values
 	int fn, ...) const	// 0 terminated fn list (don't forget the 0!)
 // return 1 iff all fields have values
 {	va_list ap;
@@ -365,23 +365,49 @@ o                          what );
 }		// record::classObjTx
 //=============================================================================
 
-//***************************************************************************************************************************
+///////////////////////////////////////////////////////////////////////////////
+// public helper functions
+///////////////////////////////////////////////////////////////////////////////
+RC ArrayStatus(		// count/check status of ARRAY elements
+	const UCH* _sstat0,		// status array
+	int count,	// # of values to check (dimension of array
+	int& nSet,	// returned: # of array elements set (FsSet)
+	int& nVal)	// returned: # of array elements with value (FsVAL)
+// re checking of ARRAY input
+// returns RCOK on success
+//        RCBAD iff malformed (impossible unless bug?)
+{	
+	RC rc = RCOK;
+	int n0 = 0;		// # of 0 status
+	nSet = nVal = 0;
+	for (int fn=0; fn < count; fn++)
+	{	int stat = _sstat0[ fn];
+		if (stat == 0)
+			n0++;
+		else
+		{	if (n0)
+				rc = RCBAD;		// 0 followed by non-0
+			if (stat & FsSET)
+				nSet++;
+			if (stat & FsVAL)
+				nVal++;
+		}
+	}
+	return rc;
+}		// ::ArrayStatus
+//=============================================================================
+
+//*****************************************************************************
 //  class basAnc: base class for application record anchors.
-//***************************************************************************************************************************
+//*****************************************************************************
 
 //--- variables re "anchor numbers".  ancBase.ancN contains #.
-#if defined( ANC_DTOR)
 const int MAXANCS = 200;	// Maximum number of basAncs supported
 							//   actual required = ~65 12-20-2012
 static BP ancs[ MAXANCS];	// table of pointers to contructed basAncs
 							//   persists for entire session re multiple DLL cse() calls
 							//   "big enuf" static array simplifies persistence
 static int Nanc = -1;		// # of entries in anc[] (-1 = unintialized) (see regis())
-#else
-LOCAL BP * NEAR ancs = NULL;		// dm array of NEAR ptrs to basAncs by #. excludes b.tyB's (not regis'd by cul.cpp).
-LOCAL USI NEAR Nanc = 0;		// max ancN in use (0 unused)
-LOCAL USI NEAR ancNal = 0;		// ancs size: # #'s allocated
-#endif
 //---------------------------------------------------------------------------------------
 basAnc::basAnc()		// default c'tor (for derived copy c'tor
 {
@@ -405,16 +431,13 @@ basAnc::basAnc( USI _flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT
 //--------------------------------------------------------------------------------------------------------------
 /*virtual*/ basAnc::~basAnc()		// d'tor
 {
-#if defined( ANC_DTOR)
 	if (flags & RFTYS)
 		dmfree( DMPP( what));
-#endif
 }		// basAnc::~basAnc
 //---------------------------------------------------------------------------------------------------------------------------
 void FC basAnc::regis()				// "register" anchor for nextAnc() iteration.  Constructor helper.
 {
 	int an;
-#if defined( ANC_DTOR)
 	if (Nanc < 0)		// if not initialized
 	{	VZero( ancs, MAXANCS);
 		Nanc = 0;
@@ -423,12 +446,6 @@ void FC basAnc::regis()				// "register" anchor for nextAnc() iteration.  Constr
 		;							// (or one already set for this anc: reconstr insurance)
 	if (an >= MAXANCS)
 		err( PABT, "Insufficient anc[] space");
-#else
-	if (!ancs || ancNal < Nanc + 2)					// if necessary
-		dmral( DMPP( ancs), (ancNal += 32) * sizeof(BP), DMZERO|ABT); 	// enlarge array of pointers
-	for (an = 1;  ancs[an] && ancs[an] != this;  an++)		// find free pointer
-		;							// (or one already set for this anc: reconstr insurance)
-#endif
 	ancs[an] = this;   			// set pointer in static array
 	Nanc = max( Nanc, an);
 	ancN = an;							// set index in anchor
@@ -452,30 +469,15 @@ void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary 
 			if (!b)
 				continue;			// skip (unexpected) NULL pointer
 			b->free();				// destroy b's records, free record memory unless static, clear flags
-#if defined( ANC_DTOR)
 			delete b->tyB;
 			b->tyB = NULL;
-#else
-			if (b->tyB)				// if b has a subsidiary "types" ancRec (not registered; in heap)
-			{
-				b->tyB->free();			//  destroy/free its records (believed redundant)
-				dmfree( DMPP( b->tyB->what));	//  free its "what" string if non-NULL, set pointer NULL
-				delete (basAnc *)b->tyB;		//  destroy types basAnc and free its memory. cast makes ptr pointer.
-				b->tyB = 0;			//  16-bit-NULL tyB pointer
-			}
-#endif
 		}
 
-	if (cs == DONE || cs == CRASH)
-	{
-#if !defined( ANC_DTOR)
-		Nanc = 0;
-		ancNal = 0;
-		dmfree( DMPP( ancs));
-#endif
-	}
-	// else
-	//	ancs[] is built by c'tor, thus must persist from entry to entry (all non-tyB ancRecs believed static).
+//  if (cs == DONE || cs == CRASH)
+//	{	// nothing to do
+//	}
+//  else
+//		ancs[] is built by c'tor, thus must persist from entry to entry (all non-tyB ancRecs believed static).
 
 	clearFileIxs();		// clear file names referenced by record.fileIx members
 }	// cleanBasAncs

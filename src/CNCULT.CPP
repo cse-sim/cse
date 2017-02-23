@@ -1021,7 +1021,7 @@ CULT()
 
 
 //===================================== GAIN command for ZONE ============================================
-LOCAL RC FC gnStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
+LOCAL RC FC gnStarCkf( CULT* c, /*GAIN* */ void *p, void *p2, void *p3)
 // called at end of GAIN input, to get messages near source of error.
 {
 	return ((GAIN*)p)->gn_CkF( 0);
@@ -1966,6 +1966,7 @@ LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
 	return ((PVARRAY*)p)->pv_CkF();
 }		// pvStarCkf
 //=============================================================================
+#define PVG( m) (PVARRAY_G+SURFGEOM_##m)
 static CULT pvArrT[] = //------ PVARRAY cmd RAT Entry table, used from cnTopCult
 {
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
@@ -1986,6 +1987,7 @@ CULT( "pvDCtoACRatio", DAT, PVARRAY_DCACRAT, 0,       0, VEOI,   TYFL,  0,      
 CULT( "pvInverterEff", DAT, PVARRAY_INVEFF,  0,       0, VEOI,   TYFL,  0,      0.96f,  N, N),
 CULT( "pvSysLosses", DAT,   PVARRAY_SYSLOSS, 0,       0, VHRLY,   TYFL,  0,      0.14f,  N, N),
 CULT( "pvUsePVWatts", DAT,  PVARRAY_USEPVWATTSDLL, 0, 0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
+CULT( "pvVertices",  DAT,   PVG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
 CULT( "endPVARRAY",  ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// pvArrT
@@ -2030,7 +2032,7 @@ static CULT shadexT[] = //------ SHADEX cmd RAT Entry table, used from cnTopCult
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   shStarCkf),
-CULT( "sxVertices",  DAT,   SXG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v 22,  N),
+CULT( "sxVertices",  DAT,   SXG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
 CULT( "endXSHADE",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// shadeT

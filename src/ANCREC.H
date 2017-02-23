@@ -361,14 +361,8 @@ x    n = nAl = 0;				// say no records in use, none allocated: insurance
 	// if this anchor has user language subsidiary 'type' records anchor, destroy it and its records
     if (tyB)					// .tyB is basAnc *
     {
-#if defined( ANC_DTOR)
 	   delete tyB;
 	   tyB = NULL;
-#else
-       dmfree( DMPP( tyB->what));		// free its "what" string if non-NULL, set ptr NULL
-       delete (basAnc *)tyB;   			// basAnc d'tor is virtual, so this should call here to destroy records.
-       tyB = 0;							// insurance.     ...10-93 need to be sure all rec d'tors free all heap ptrs!
-#endif
     }
 }		// anc<T>::~anc
 //-------------------------------------------------------------------------------------------------------------------------
@@ -429,6 +423,7 @@ template <class T> T* anc<T>::GetAt( int i) const
 ///////////////////////////////////////////////////////////////////////////////
 //  ancrec.cpp non-member fcn declarations
 //-----------------------------------------------------------------------------
+RC ArrayStatus( const UCH* _sstat0,	int count, int& nSet, int& nVal);
 void FC cleanBasAncs( CLEANCASE cs); 	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
 
 // functions for saving file names for record.fileIx 2-94

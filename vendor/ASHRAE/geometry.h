@@ -61,6 +61,7 @@ public:
 	CPV3D( double _x, double _y, double _z)
 	{	x = _x; y = _y; z = _z; }
 	CPV3D( const double v[3]) { x=v[0]; y=v[1]; z=v[2]; }
+	CPV3D( const float v[3])  { x=v[0]; y=v[1]; z=v[2]; }
 	void Zero() { x = y = z = 0.; }
 	CPV3D& FixSmall( double v)
 	{	if (fabs(x) < v) x = 0.; if (fabs(y) < v) y = 0.; if (fabs(z) < v) z = 0.; return *this; }
@@ -252,12 +253,19 @@ public:
 	CPV3D& operator[](int i) {	return p3_VrtW( i); }
 	const CPV3D& operator[](int i) const { return p3_VrtW( i); }
 
-
+	// add 1 or more vertices at end
 	void Add( const CPV3D& vrt)
 	{	p3_vrt.push_back( vrt); }
 	void Add( double x, double y, double z)
 	{	p3_vrt.push_back( CPV3D( x, y, z)); }
-
+	void Add( const double v[3])
+	{	Add( CPV3D( v)); }
+	void Add( const float v[3])
+	{	Add( CPV3D( v)); }
+	void Add( const float v[], int nV)
+	{	for (int iV=0; iV<nV; iV++)
+			Add( v+iV*3);
+	}
 	void InitAxisAlignedRect( int iD0, double v0, double L1, double L2, double v1=0., double v2=0.);
 	void InitVertParallelogram( const CPV3D& p0, const CPV3D& p1, double zHt, int options=0);
 
