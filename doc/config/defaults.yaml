@@ -59,3 +59,5 @@ context:
   # Note: linking to the BEES reference section as the location of standards on
   # the CA website is believed to change often
   racm_url: "http://www.bwilcox.com/BEES/reference.html"
+  # show_comments: if true, show comments, otherwise don't
+  show_comments: false
