@@ -23,12 +23,29 @@ XPVWATTS PVWATTS; // public PVWATTS Library object
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
 
+PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
+	: record( b, i, noZ)
+{
+	FixUp();
+}	// PVARRAY::PVARRAY
+
 PVARRAY::~PVARRAY()
 {
 	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
 		PVWATTS.xp_ClearData(this);
 	}
 }	// PVARRAY::~PVARRAY
+
+/*virtual*/ void PVARRAY::FixUp()	// set parent linkage
+{	pv_g.gx_Init( this);
+}
+
+void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
+{	// bitwise copy of record
+	record::Copy( pSrc, options);	// calls FixUp()
+	// copy SURFGEOM heap subobjects
+	pv_g.gx_CopySubObjects();
+}	// PVARRAY::Copy
 
 RC PVARRAY::pv_CkF()
 {
@@ -76,6 +93,10 @@ RC PVARRAY::pv_CkF()
 			rc |= oWarn("Temperature coefficient (%0.4f) is positive. Values are typically negative.", pv_tempCoeff);
 		}
 	}
+
+	// check geometry
+	rc |= pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
+
 	return rc;
 
 }	// PVARRAY::pv_CkF
@@ -244,7 +265,7 @@ RC PVARRAY::pv_CalcPOA()
 	if (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f) {
 		pv_poa = 0.f;
 		pv_poaT = 0.f;
-		pv_aoi = PiOvr2;
+		pv_aoi = kPiOver2;
 		return rc;
 	}
 
@@ -269,29 +290,29 @@ RC PVARRAY::pv_CalcPOA()
 		float x = (sinz*sin(azm - pv_azm)) / (sinz*cos(azm - pv_azm)*sin(pv_tilt) + cosz*cos(pv_tilt));
 		float psi;
 		if (x < 0.f && (azm - pv_azm) > 0.f) {
-			psi = Pi;
+			psi = kPi;
 		}
 		else if (x > 0.f && (azm - pv_azm) < 0.f){
-			psi = -Pi;
+			psi = -kPi;
 		}
 		else {
 			psi = 0.f;
 		}
 		float r = atan(x) + psi;
-		const float rlim = 0.25f*Pi;
+		const float rlim = 0.25f*kPi;
 		r = max(-rlim, min(rlim, r));
 		pv_panelTilt = acos(cos(r)*cos(pv_tilt));
 		if (pv_panelTilt == 0.f) {
 			pv_panelAzm = pv_azm;
 		}
-		else if (r >= -PiOvr2 && r <= PiOvr2) {
+		else if (r >= -kPiOver2 && r <= kPiOver2) {
 			pv_panelAzm = pv_azm + asin(sin(r) / sin(pv_panelTilt));
 		}
-		else if (r >= -Pi && r < -PiOvr2) {
-			pv_panelAzm = pv_azm - asin(sin(r) / sin(pv_panelTilt)) - Pi;
+		else if (r >= -kPi && r < -kPiOver2) {
+			pv_panelAzm = pv_azm - asin(sin(r) / sin(pv_panelTilt)) - kPi;
 		}
-		else {// if (r > PiOvr2 && r <= Pi) {
-			pv_panelAzm = pv_azm - asin(sin(r) / sin(pv_panelTilt)) + Pi;
+		else {// if (r > kPiOver2 && r <= kPi) {
+			pv_panelAzm = pv_azm - asin(sin(r) / sin(pv_panelTilt)) + kPi;
 		}
 	}
 		break;
@@ -324,7 +345,7 @@ RC PVARRAY::pv_CalcPOA()
 	}
 	else {
 		poaBeam = 0.f;  // incident beam
-		pv_aoi = PiOvr2;
+		pv_aoi = kPiOver2;
 	}
 
 	float poaDiffI, poaDiffC, poaDiffH, poaDiffG;  // Components of diffuse solar (isotropic, circumsolar, horizon, ground reflected)

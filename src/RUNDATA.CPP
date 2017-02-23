@@ -96,6 +96,9 @@ makAncPVARRAY(PvR);			// PV array
 // BT: Battery
 makAncBATTERY(BtR);			// Battery
 
+// Shading
+makAncSHADEX( SxR);
+
 // hvac: terminals, air handlers, plant
 makAncTU( TuB);  			// terminals
 makAncAH( AhB); 			// air handlers

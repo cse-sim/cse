@@ -1055,7 +1055,7 @@ x						printf( "1B\n");
 #if defined( _DEBUG)
 							double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
 							double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
-							if (FEQX( qHt0, qHt1) > .001)
+							if (frDiff( qHt0, qHt1) > .001)
 								printf( "qHt mismatch\n");
 #endif
 						}

@@ -39,20 +39,20 @@ void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
 		val =  sqrt(1.0 - dcos[2] * dcos[2]);
 		if ( FEQUAL( val, 0.0) )
 		{
-			*azmp = Pi;
+			*azmp = kPi;
 		}
 		else
 		{
 			val = -dcos[0]/val;
 			if ( FEQUAL(val,1.0) )       /* NO NO NO -- derivative is flat --
 					   look at dcos[1] when dcos[0] near 1, or at least use smaller ABOUT0. */
-				azm = PiOvr2;
+				azm = kPiOver2;
 			else if ( FEQUAL(val,-1.0) )
-				azm = -PiOvr2;
+				azm = -kPiOver2;
 			else
 				azm = asin(val);
 			// asymettry! NO snap near 0 and PI after too much snap near +- pi/2.
-			*azmp = (float)( (dcos[1] > 0.F) ? -azm : azm + Pi );
+			*azmp = (float)( (dcos[1] > 0.F) ? -azm : azm + kPi );
 		}
 	}
 	else                // rob's rewrite 7-16-88
@@ -61,8 +61,8 @@ void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
 			 is a snerd out of range (no case actually seen -- rob).
 			 (do NOT use FEQUAL: would 'snap' too far!) */
 
-		*altp =  dcos[2] >= 1.F  ? PiOvr2
-			   : dcos[2] <= -1.F ? -PiOvr2
+		*altp =  dcos[2] >= 1.F  ? kPiOver2
+			   : dcos[2] <= -1.F ? -kPiOver2
 			   :                   (float)asin( (double) dcos[2]);
 
 		/* for more accuracy near vertical consider:
@@ -78,7 +78,7 @@ void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
 
 		if (FEQUAL( dcos[0], 0.F) && FEQUAL( dcos[1], 0.F))
 		{
-			*azmp = Pi;                   /* arbitrarily return Pi */
+			*azmp = kPi;                   /* arbitrarily return Pi */
 		}
 		else
 		{
@@ -129,28 +129,34 @@ LOCAL SI FC NEAR gmazmx( 		// Converts true azm to octant value
 
 // Returns the octant value from 0 to 7 : 0 is north, 2 is east, 4 is south
 {
-	double ang = azm/TwoPi;
+	double ang = azm/k2Pi;
 	ang = ang - (SI)ang;
-	ang *= TwoPi;
+	ang *= k2Pi;
 	if (pos)
 	{
-		if (ang <= -Pi)       ang += TwoPi;
-		else if (ang >= Pi)   ang -= TwoPi;
+		if (ang <= -kPi)       ang += k2Pi;
+		else if (ang >= kPi)   ang -= k2Pi;
 		ang = fabs(ang);
 	}
 	else if (ang < 0.)
-		ang += TwoPi;
+		ang += k2Pi;
 
-	if (ang < Pi/8.0)		return GMAZM_N;
-	if (ang < Pi*(3.0/8.0) )	return GMAZM_NE;
-	if (ang < Pi*(5.0/8.0) )	return GMAZM_E;
-	if (ang < Pi*(7.0/8.0) )	return GMAZM_SE;
-	if (ang < Pi*(9.0/8.0) )	return GMAZM_S;
-	if (ang < Pi*(11.0/8.0) )	return GMAZM_SW;
-	if (ang < Pi*(13.0/8.0) )	return GMAZM_W;
-	if (ang < Pi*(15.0/8.0) )	return GMAZM_NW;
+	if (ang < kPi/8.0)		return GMAZM_N;
+	if (ang < kPi*(3.0/8.0) )	return GMAZM_NE;
+	if (ang < kPi*(5.0/8.0) )	return GMAZM_E;
+	if (ang < kPi*(7.0/8.0) )	return GMAZM_SE;
+	if (ang < kPi*(9.0/8.0) )	return GMAZM_S;
+	if (ang < kPi*(11.0/8.0) )	return GMAZM_SW;
+	if (ang < kPi*(13.0/8.0) )	return GMAZM_W;
+	if (ang < kPi*(15.0/8.0) )	return GMAZM_NW;
 	return GMAZM_N;
 }			// gmazmx
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// ASHRAE geometry 
+///////////////////////////////////////////////////////////////////////////////
+#include "ASHRAE\geometry.cpp"
 
 // end of gmutil.cpp
 

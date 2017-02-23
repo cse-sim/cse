@@ -290,11 +290,11 @@ float slVProfAng(			// vertical profile angle
 // TODO: non-vert surfaces, horiz profile, 12-30-08
 	float profAng;
 	if (cosZen >= .9999f || cosZen < .001f)
-        profAng = PiOvr2;		// sun down or at zenith
+        profAng = kPiOver2;		// sun down or at zenith
 	else
 	{   float cosRA = cos( relAzm);
 	    if (cosRA <= .001f)
-			profAng = PiOvr2;	// sun behind wall
+			profAng = kPiOver2;	// sun behind wall
 		else
 			profAng = atan( cosZen/sqrt( 1.-cosZen*cosZen) / cosRA);
 	}
@@ -496,7 +496,7 @@ void FC sldec(	/* Set declination-related data in current SLLOCDAT struct */
 
 	/* Time conversion constant: add to hour angle to convert current type system
 				     to solar and make 0 at noon */
-	tmconst = - Pi;			/* converts 0 at midnite to 0 at noon*/
+	tmconst = - kPi;			/* converts 0 at midnite to 0 at noon*/
 	/* converting solar to local: add equation of time, and
 	   adjust for longitude relative to center of time zone */
 	if (timetype != SLTMSOLAR)		/* if not solar, convert local to solar */
@@ -554,7 +554,7 @@ x            hsr, hss, hss-hsr);
                             		      in slcoshr() below */
 				1);                      /* Use improved accuracy version */
 			if (slloccur->slrazm[ihr] < 0.F)
-				slloccur->slrazm[ihr] += (float)TwoPi;
+				slloccur->slrazm[ihr] += (float)k2Pi;
 			/* Keep solar azimuth in 0 - 2Pi range
 			   so slsurfhr interpolation works */
 		}

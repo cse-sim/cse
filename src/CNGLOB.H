@@ -178,18 +178,6 @@ extern UINT doControlFP();
 #define FPCHECK __asm { fwait }	// trap pending FP exception (if any)
 								//   re searching for FP exceptions
 
-// floating point compare
-const double ABOUT0 = 0.001;
-template< typename T> inline int FEQUAL(T a, T b) { return fabs(a-b) < ABOUT0; }
-template< typename T> inline T frDiff( T a, T b)
-{	double d=fabs(a)+fabs(b); return T( d==0. ? 0. : 2.*fabs(a-b)/d); }
-template< typename T> inline T fr( T a, T b)
-{	double d=fabs(a)+fabs(b); return T( d==0. ? 0. : 2.*fabs(a-b)/d); }
-inline double FEQX( double a, double b, double tolAbs=.00001)
-{	double d=fabs(a-b);
-	return d<=max( tolAbs, 1e-30) ? 0. : 2.*d/(fabs( a)+fabs( b));
-}
-
 // min and max (converted to template fcns, 10-12)
 #undef min
 #undef max
@@ -204,6 +192,14 @@ inline double max( double a, double b, double c, double d)   { return max( max(a
 inline double max( double a, double b, double c, double d, double e)   { return max( max(a,b,c), max(d,e) ); }
 inline double max( double a, double b, double c, double d, double e, double f)   { return max( max(a,b,c), max(d,e,f) ); }
 #endif
+
+// floating point compare
+const double ABOUT0 = 0.001;
+template< typename T> inline int FEQUAL(T a, T b) { return fabs(a-b) < ABOUT0; }
+template< typename T> inline T frDiff( T a, T b, T tolAbs=T(.00001))
+{	T d=abs(a-b);
+	return d<=max( tolAbs, T( 1e-30)) ? T( 0.) : T(2.)*d/(abs( a)+abs( b));
+}
 #define ABSCHANGE(is,was) (fabs((is)-(was)))				// absolute change of float
 #define RELCHANGE(is,was) (fabs( ((is)-(was)) / (fabs(is)+.1f) ))	// relative change of float as fraction, w /0 protection
 
@@ -248,8 +244,8 @@ template< typename T> int snap( T& v, T vSnap, double tol=1e-10)
 {	if (fabs(v-vSnap)<tol) { v=vSnap; return 1; } return 0; }
 template< typename T> int snapRAD( T& v, double tol=.1)
 {	return snap( v, T( 0), tol)
-        || v < T( 0) ? snap( v, T( -PiOvr2), tol) || snap( v, T( -Pi), tol)
-                     : snap( v, T(  PiOvr2), tol) || snap( v, T(  Pi), tol);
+        || v < T( 0) ? snap( v, T( -kPiOver2), tol) || snap( v, T( -kPi), tol)
+                     : snap( v, T(  kPiOver2), tol) || snap( v, T(  kPi), tol);
 }
 template< typename T> int snapDEG( T& v, double tol=.1)
 {	return snap( v, T( 0), tol)
@@ -534,9 +530,10 @@ inline float pow033( float v)
 }
 
 // useful constants
-const double PiOvr2    = 1.5707963267948966;
-const double Pi        = 3.1415926535897932;
-const double TwoPi     = 6.2831853071795864;
+const double kPi=3.14159265358979323846;
+const double k2Pi=2.*kPi;
+const double k4Pi=4.*kPi;
+const double kPiOver2=kPi/2.;
 const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
 const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
 const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto

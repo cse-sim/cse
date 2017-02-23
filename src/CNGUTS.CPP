@@ -937,8 +937,8 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	}
 	RLUP( ZrB, zp)						// loop zone run records
 	{	int iz = zp->ss;
-		if (FEQX( zp->zn_ua, tUA[ iz]) > .0001
-	       || FEQX(zp->zn_uaSpecT, tUASpecT[ iz]) > .0001)
+		if (frDiff( zp->zn_ua, tUA[ iz]) > .0001
+	       || frDiff(zp->zn_uaSpecT, tUASpecT[ iz]) > .0001)
 		   warn( "Zone '%s': UA mismatch", zp->name);
 	}
 #endif

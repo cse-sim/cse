@@ -512,10 +512,10 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 	double fsunlit;		// fraction sunlit
 	if (!sunupSrf)
 	{	cosi = 0.f;
-		incA = PiOvr2;
+		incA = kPiOver2;
 		cosz = 0.f;
 		azm = 0.f;
-		relAzm = Pi;
+		relAzm = kPi;
 		fsunlit = 0.;
 		sgf[ sgcBMXBM] = 0.;
 	}

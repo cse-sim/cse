@@ -741,6 +741,34 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 							//   WDHR used elsewhere (e.g. whole file pre-read)
 *END		// WFDATA
 //========================================================================================================
+RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
+	*prefix gx_
+	*declare "SURFGEOM();"
+	*declare "~SURFGEOM();"
+    *declare "void gx_Init( record* pParent, int options=0);"
+	*declare "void gx_CopySubObjects();"
+	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
+
+	*declare "record* gx_pParent;"				// pointer to parent record
+												//   (SHADEX, PVARRAY, ...)
+	*declare "class CPolygon3D* gx_polygon;"	// derived polygon
+
+	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z)
+*END	// SURFGEOM
+//========================================================================================================
+RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)
+
+	*prefix sx_
+	*excon
+	*ovrcopy
+	*declare "void FixUp();"	// virtual fixup after basAnc reAl
+								// .ownTi (base class) is zone subscript
+	*declare "RC sx_CkF();"
+
+	*i *nest SURFGEOM sx_g;
+
+*END	// SHADE
+//========================================================================================================
 RECORD SGDIST "sgdist sub" *SUBSTRUCT	// solar gain distribution substructure for XSURF and SGI
 	*prefix sd_
     *r SI sd_targTy   	// target type: define (cnguts.h)   basAnc & member
@@ -3539,8 +3567,10 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
-
+  *excon
   *exdes			// define destructor in pvwatts.cpp to free SSC data container
+  *ovrcopy
+  *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC pv_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC pv_Init();"
@@ -3555,6 +3585,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *declare "MTR* pv_pMtrElec;"
   *declare "void* pv_ssc_data;"
 
+  *i *nest SURFGEOM pv_g;	// array geometry (re shading)
   *i TI pv_elecMtri;		// meter for system electricity production
   *f ENDUSECH pv_endUse		// end use of energy. defataults to "PV"
   *i FLOAT_GEZ pv_dcCap		// system capacity/size (DC nameplate), kW

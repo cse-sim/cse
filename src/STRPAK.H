@@ -110,8 +110,10 @@ x char tolowerx( char *p );
 // WStr variants
 WStr& WStrUpper( WStr& s);
 WStr& WStrLower( WStr& s);
-WStr WStrPrintf( const char* format, ...);
-WStr WStrVprintf( const char* format, va_list ap=NULL);
+WStr WStrPrintf( const char* mOrH, ...);
+WStr WStrVprintf( const char* mOrH, va_list ap=NULL);
+WStr WStrFmtFloatDTZ( double v, int maxPrec, int minPrec=0);
+WStr WStrDTZ( const WStr& s, int minPrec=0);
 
 int strDecode( const char* s, const char* fmt, void *p, int erOp=IGN,
 	const char* what=NULL, const char** pMsg=NULL);

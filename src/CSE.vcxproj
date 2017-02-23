@@ -379,7 +379,7 @@
     <ClCompile Include="PVCalc.cpp" />
     <ClCompile Include="RMKERR.CPP" />
     <ClCompile Include="RUNDATA.CPP" />
-    <ClCompile Include="SHAD.CPP" />
+    <ClCompile Include="SHADING.CPP" />
     <ClCompile Include="SLPAK.CPP" />
     <ClCompile Include="SRFD.CPP" />
     <ClCompile Include="StdAfx.cpp">

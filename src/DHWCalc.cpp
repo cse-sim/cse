@@ -1903,7 +1903,7 @@ float PIPESEG::ps_CalcVol()		// pipe seg volume
 {
 	float r = ps_GetOD( 0) / 24.f;	// pipe radius, ft
 	// include tube wall in vol, approximates heat cap of tubing
-	ps_vol = 7.48f * Pi * r * r * ps_len;
+	ps_vol = 7.48f * kPi * r * r * ps_len;
 	return ps_vol;
 }		// PIPESEG::ps_CalcVol
 //----------------------------------------------------------------------------
@@ -1911,7 +1911,7 @@ float PIPESEG::ps_CalcUA(
 	float fUA /*=1.f*/)
 {
 	float diaO = ps_GetOD( 0);	// bare pipe OD, in
-	float Ubare = ps_exH * Pi * diaO / 12.f;
+	float Ubare = ps_exH * kPi * diaO / 12.f;
 
 	float Uinsul;
 	if (ps_insulThk < .001f)
@@ -1921,7 +1921,7 @@ float PIPESEG::ps_CalcUA(
 		double rIns = log( diaX/diaO) / (2.* ps_insulK);	// insulation resistance
 															// ps_insulK units = Btuh-ft/ft2-F
 		double rSrf = 12./(ps_exH * diaX);			// surface restance
-		Uinsul = float( Pi / (rIns + rSrf));
+		Uinsul = float( kPi / (rIns + rSrf));
 #if 0 && defined( _DEBUG)
 0 test code: for diaX >> insulThk, Uround == Uflat approx
 0		float Uround = Uinsul / (Pi * diaX/12.f);

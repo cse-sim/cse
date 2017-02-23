@@ -66,6 +66,7 @@ sections:
   - [2, "records/dhwloopseg.md"]
   - [2, "records/dhwloopbranch.md"]
   - [2, "records/pvarray.md"]
+  - [2, "records/shadex.md"]
   - [2, "records/battery.md"]
 <% if inactive_CNE_records %>
   - [2, "records/airhandler.md"]
