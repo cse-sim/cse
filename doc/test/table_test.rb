@@ -23,11 +23,11 @@ class TableTest < TC
     assert(t2.respond_to?(:n))
   end
   def test_render
-    b = Main.new(:context=>{"m"=>"a", "n"=>"b"}).get_binding
+    b = MakeBinding.({"m"=>"a", "n"=>"b"})
     expected = "Hi a and b"
     actual = Template::RenderWithErb.("Hi <%= m %> and <%= n %>", b)
     assert_equal(actual, expected)
-    b = Main.new(:context=>{"inspect"=>"a"}).get_binding
+    b = MakeBinding.({"inspect"=>"a"})
     expected = "Hi a"
     actual = Template::RenderWithErb.("Hi <%= inspect %>", b)
     assert_equal(actual, expected)

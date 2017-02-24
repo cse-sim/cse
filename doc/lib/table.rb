@@ -12,6 +12,10 @@ module Table
       raise "Unexpected keys: #{unexpected_keys.to_a}"
     end
   end
+  # (Map String String) -> Binding
+  MakeBinding = lambda do |ctxt|
+    Main.new(:context => ctxt).get_binding
+  end
   # The Main class's responsibility is to serve as the binding context for
   # an ERB template rendering. As such, it must expose the methods that
   # correspond to the table language and, additionally, it must be able
