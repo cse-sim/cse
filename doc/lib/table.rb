@@ -16,7 +16,6 @@ module Table
   # and/or LaTeX.
   class Main
     def initialize(args=nil)
-      @_debug = true
       @_verbose = false 
       args = args || {}
       expected_keys = Set.new(
