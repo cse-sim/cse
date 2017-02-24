@@ -6,6 +6,12 @@ require 'set'
 require 'csv'
 
 module Table
+  CheckKeys = lambda do |expected_keys, args|
+    unexpected_keys = Set.new(args.keys) - expected_keys
+    if not unexpected_keys.empty?
+      raise "Unexpected keys: #{unexpected_keys.to_a}"
+    end
+  end
   # The Main class's responsibility is to serve as the binding context for
   # an ERB template rendering. As such, it must expose the methods that
   # correspond to the table language and, additionally, it must be able
@@ -19,9 +25,8 @@ module Table
       @_verbose = false 
       args = args || {}
       expected_keys = Set.new(
-        [:template, :output, :writer, :context, :allow_shadowing])
-      _check_keys(expected_keys, args)
-      @template = args.fetch(:template)
+        [:writer, :base_path, :allow_shadowing, :context])
+      CheckKeys.(expected_keys, args)
       @writer = args.fetch(:writer, MdWriter.new)
       @base_path = args.fetch(:base_path, nil)
       # if true, context can overwrite some or all method names
@@ -40,9 +45,8 @@ module Table
         define_singleton_method(sym) { v }
       end
     end
-    def render
-      renderer = ERB.new(@template)
-      renderer.result(binding)
+    def get_binding
+      binding
     end
     def csv_table(csv_str, opts=nil)
       opts = opts || {}
@@ -60,12 +64,6 @@ module Table
       expected_keys = Set.new([:units,:legal_range,:default,:required,:variability])
       _check_keys(expected_keys, args)
       @writer.member_table(args)
-    end
-    def _check_keys(expected_keys, args)
-      unexpected_keys = Set.new(args.keys) - expected_keys
-      if not unexpected_keys.empty?
-        raise "Unexpected keys in table: #{unexpected_keys.to_a}"
-      end
     end
   end
 
