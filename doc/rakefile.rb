@@ -108,6 +108,11 @@ HTML_MIN_EXE = File.expand_path(
   CONFIG.fetch("html-minifier-exe"), THIS_DIR
 )
 PREPROCESSOR_CONTEXT = CONFIG.fetch("context", {})
+ERB_BINDING_FN = if CONFIG.fetch("use-table-lang?", true)
+                   Table::MakeBinding
+                 else
+                   Template::MakeBinding
+                 end
 
 ########################################
 # Helper Functions
@@ -443,7 +448,7 @@ end
 # saving the rendered result with the same basename in the designated
 # output-dir, creating the output-dir if necessary.
 PreprocessManifest = MapOverManifest[
-  Template::PreprocFile[],
+  Template::PreprocFile[ERB_BINDING_FN],
   ['output-dir', 'context']
 ]
 
@@ -1730,7 +1735,7 @@ end
 desc "Render file specified with FILE env variable to #{ERB_OUTPUT_FILE}"
 task :erb do
   if ENV.include? "FILE"
-    Template::PreprocFile[][
+    Template::PreprocFile[ERB_BINDING_FN][
       ENV["FILE"],
       ERB_OUTPUT_FILE,
       1,
