@@ -17,6 +17,7 @@ module Table
   class Main
     def initialize(args=nil)
       @_debug = true
+      @_verbose = false 
       args = args || {}
       expected_keys = Set.new(
         [:template, :output, :writer, :context, :allow_shadowing])
@@ -32,7 +33,7 @@ module Table
         if local_methods.include?(sym)
           msg = "Key \"#{k}\" will be shadowed by a local method"
           if @allow_shadowing
-            puts "WARNING! #{msg}"
+            puts "WARNING! #{msg}" if @_verbose
           else
             raise ArgumentError, msg
           end
