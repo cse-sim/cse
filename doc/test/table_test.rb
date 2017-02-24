@@ -17,5 +17,8 @@ class TableTest < Minitest::Unit::TestCase
     expected = "Hi a and b"
     actual = Main.new(:template=>"Hi <%= m %> and <%= n %>", :context=>{"m"=>"a", "n"=>"b"}).render
     assert_equal(actual, expected)
+    expected = "Hi a"
+    actual = Main.new(:template=>"Hi <%= inspect %>", :context=>{"inspect"=>"a"}).render
+    assert_equal(actual, expected)
   end
 end
