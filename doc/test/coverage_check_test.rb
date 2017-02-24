@@ -2,7 +2,7 @@ require_relative 'test_helper'
 require 'coverage_check'
 require 'set'
 
-class CoverageCheckTest < Minitest::Unit::TestCase
+class CoverageCheckTest < TC
   include CoverageCheck
   def setup
     @coolplant_path = File.expand_path('../resources/coolplant.md', __FILE__)

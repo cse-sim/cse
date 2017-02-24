@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 require 'table'
 
-class TableTest < Minitest::Unit::TestCase
+class TableTest < TC
   include Table
   def test_context
     t1 = Main.new(:template=>"Hi <%= m %> and <%= n %>", :context=>{"m"=>"a", "n"=>"b"})

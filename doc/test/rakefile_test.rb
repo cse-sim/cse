@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 require_relative '../rakefile.rb'
 
-class RakefileTest < Minitest::Unit::TestCase
+class RakefileTest < TC
   def test_UpdateOutlineCount
     assert_equal(UpdateOutlineCount[[0], 1], [1])
     assert_equal(UpdateOutlineCount[[1,1,3], 2], [1,2])

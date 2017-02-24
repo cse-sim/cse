@@ -2,7 +2,7 @@ require_relative 'test_helper'
 require 'xlink'
 require 'set'
 
-class XLinkTest < Minitest::Unit::TestCase
+class XLinkTest < TC
   include XLink
   def test_OverString
     rec_idx = {"STUFF"=>"index.html#stuff","JUNK"=>"index.html#junk"}
