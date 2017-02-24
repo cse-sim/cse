@@ -14,6 +14,7 @@ module Template
     end
   end
 
+  # (Map String String) -> Binding
   MakeBinding = lambda do |ctxt|
     Namespace.new(ctxt).get_binding
   end
