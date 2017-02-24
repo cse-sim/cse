@@ -43,6 +43,11 @@ verbose?: false
 # This report checks doc/config/reference/cullist.txt against what's in the
 # documentation to determine if the documentation is covering all topics
 coverage?: true
+# This flag determines whether the "table pre-processing language" is made
+# active during ERB preprocessing or not. If this is set to "true", then
+# the directives available in lib/table.rb in the class Main are available
+# within ERB
+use-table-lang?: true
 # this variable holds various "flags" to pass into the ERB preprocessor
 # NOTE: only define variable keys as standard Ruby variables!
 #       for example, "some-variable: 10" would not work since "some-variable"
