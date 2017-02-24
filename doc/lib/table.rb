@@ -55,8 +55,8 @@ module Table
     def csv_table(csv_str, opts=nil)
       opts = opts || {}
       expected_keys = Set.new([:row_header, :col_header])
-      _check_keys(expected_keys, opts)
-      cells = CSV.new(csv_str, liberal_parsing: true).read
+      CheckKeys.(expected_keys, opts)
+      cells = CSV.new(csv_str).read
       @writer.array_of_array_to_table(cells, opts)
     end
     def csv_table_from_file(csv_path, opts=nil)
@@ -66,7 +66,7 @@ module Table
     end
     def member_table(args)
       expected_keys = Set.new([:units,:legal_range,:default,:required,:variability])
-      _check_keys(expected_keys, args)
+      CheckKeys.(expected_keys, args)
       @writer.member_table(args)
     end
   end
