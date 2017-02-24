@@ -443,7 +443,7 @@ end
 # saving the rendered result with the same basename in the designated
 # output-dir, creating the output-dir if necessary.
 PreprocessManifest = MapOverManifest[
-  Template::PreprocFile,
+  Template::PreprocFile[],
   ['output-dir', 'context']
 ]
 
@@ -1730,7 +1730,7 @@ end
 desc "Render file specified with FILE env variable to #{ERB_OUTPUT_FILE}"
 task :erb do
   if ENV.include? "FILE"
-    Template::PreprocFile[
+    Template::PreprocFile[][
       ENV["FILE"],
       ERB_OUTPUT_FILE,
       1,
