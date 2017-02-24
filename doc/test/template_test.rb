@@ -4,9 +4,6 @@ require 'fileutils'
 
 class TestTemplate < TC
   include Template
-  def make_bind(vars)
-    Namespace.new(vars).get_binding
-  end
   def setup
     @temp_path_in = "junk_in.txt"
     File.write(@temp_path_in, "Hi <%= a %>")
@@ -18,11 +15,11 @@ class TestTemplate < TC
   end
   def test_rendering_a_template
     expected = "Hi b"
-    actual = RenderWithErb.("Hi <%= a %>", make_bind({"a"=>"b"}))
+    actual = RenderWithErb.("Hi <%= a %>", MakeBinding.({"a"=>"b"}))
     assert_equal(expected, actual)
   end
   def test_preproc_file
-    PreprocFile.(@temp_path_in, @temp_path_out, nil, make_bind({"a"=>"b"}))
+    PreprocFile[].(@temp_path_in, @temp_path_out, nil, {"context"=>{"a"=>"b"}})
     expected = "Hi b"
     actual = File.read(@temp_path_out)
     assert_equal(expected, actual)

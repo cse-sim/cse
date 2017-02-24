@@ -14,23 +14,29 @@ module Template
     end
   end
 
-  # String (Map String *) -> String
-  # Render the given string template with Embedded Ruby (ERB) using the context
-  # given by the second parameter which is a binding map.
-  # See http://stackoverflow.com/a/5462069
-  RenderWithErb = lambda do |template, binding|
-    ERB.new(template,0,'>').result(binding)
+  MakeBinding = lambda do |ctxt|
+    Namespace.new(ctxt).get_binding
   end
 
-  # String String Int Binding -> nil
+  # String Binding -> String
+  # Render the given string template with Embedded Ruby (ERB) using the binding
+  # context passed in by the second parameter.
+  # See http://stackoverflow.com/a/5462069
+  RenderWithErb = lambda do |template, b|
+    ERB.new(template,0,'>').result(b)
+  end
+
+  # String String Int (Map String String) -> nil
   # Given a source file path, an output file path (assumed to be created up to
   # the parent directory), an integer for the processing file number (not
-  # used), and a class that has method get_binding which returns the binding
-  # context for template rendering, process the input file to the output file
-  # and save.
-  PreprocFile = lambda do |path, out_path, _, binding|
-    text = File.read(path)
-    result = RenderWithErb[text, binding]
-    File.write(out_path, result)
+  # used), and a context hash to create a binding context for template
+  # rendering, process the input file to the output file and save.
+  PreprocFile = lambda do |fn=MakeBinding|
+    lambda do |path, out_path, _, config|
+      b = fn[config.fetch("context")]
+      text = File.read(path)
+      result = RenderWithErb[text, b]
+      File.write(out_path, result)
+    end
   end
 end
