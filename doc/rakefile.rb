@@ -14,6 +14,7 @@ require "rake/testtask"
 require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
+require_relative 'lib/table'
 require_relative 'lib/toc'
 require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
