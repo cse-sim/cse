@@ -15,7 +15,7 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     line = "3"
     expected = nil
     actual = MdHeader[line]
-    assert_equal(expected, actual)
+    assert_nil(actual)
     #
     line = "# A Header"
     expected = "A Header"
@@ -26,7 +26,7 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     line = "3"
     expected = nil
     actual = DataItemHeader[line]
-    assert_equal(expected, actual)
+    assert_nil(actual)
     #
     line = "**sfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**"
     expected = "sfanCurvePy"
@@ -36,7 +36,7 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     line = "  **Units** **Legal Range** **Default** **Required** **Variability**"
     expected = nil
     actual = DataItemHeader[line]
-    assert_equal(expected, actual)
+    assert_nil(actual)
     #
     line = "**ahTsSp=*float or choice***"
     expected = "ahTsSp"
@@ -46,7 +46,7 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     line = "*AhTsRaMn* and *ahTsRaMx* are used when *ahTsSp* is RA."
     expected = nil
     actual = DataItemHeader[line]
-    assert_equal(expected, actual)
+    assert_nil(actual)
   end
   def test_ParseRecordDocument
     content = File.read(@coolplant_path)
@@ -277,13 +277,13 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     s2 = Set.new(["1","2","3"])
     actual = SetDifferences[s1, s2, false]
     expected = nil
-    assert_equal(expected, actual)
+    assert_nil(actual)
     #
     s1 = Set.new(["A","B","C"])
     s2 = Set.new(["a","b","c"])
     actual = SetDifferences[s1, s2, false]
     expected = nil
-    assert_equal(expected, actual)
+    assert_nil(actual)
     #
     s1 = Set.new(["A","B","C"])
     s2 = Set.new(["a","b","c"])
@@ -339,7 +339,7 @@ class CoverageCheckTest < Minitest::Unit::TestCase
     }
     actual = RecordInputSetDifferences[ris1, ris2, false]
     expected = nil
-    assert_equal(expected, actual)
+    assert_nil(actual)
     #
     actual = RecordInputSetDifferences[ris1, ris2, true]
     expected = {
