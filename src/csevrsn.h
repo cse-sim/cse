@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 822
+#define CSEVRSN_MINOR 823
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,7 +22,8 @@
 // ONLY comments below here
 
 /* History:
-   0.822: ...
+   0.823: ...
+   0.822: SHADEX and PVARRAY vertices input, committed 2-23-2017
    0.821: BATTERY now only reinitializes at begin of sim if bt_initSOE is set
    0.820: BATTERY now re-initializes at begin of sim (after warmup, etc.)
    0.819: HPWH setpoint-below-water-temp bug fix, 1-22-2017
