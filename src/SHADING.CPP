@@ -33,6 +33,10 @@
 
 #include <ashrae/geometry.h>
 
+#include <penumbra/penumbra.h>
+
+Pumbra::Penumbra pumbra;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // overhang/fin shading
