@@ -742,18 +742,21 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 *END		// WFDATA
 //========================================================================================================
 RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
+// embedded in many surface types, initially SHADEX and PVARRAY, 2-17
 	*prefix gx_
 	*declare "SURFGEOM();"
 	*declare "~SURFGEOM();"
     *declare "void gx_Init( record* pParent, int options=0);"
+	*declare "bool gx_IsEmpty() const;"
 	*declare "void gx_CopySubObjects();"
 	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
+	*declare "int gx_GetAzmTilt( float& azm, float& tilt) const;"
 
 	*declare "record* gx_pParent;"				// pointer to parent record
 												//   (SHADEX, PVARRAY, ...)
-	*declare "class CPolygon3D* gx_polygon;"	// polygon generated from gx_vrtInp
+	*declare "class SURFGEOMDET* gx_sgDet;"		// geometric details (polygon, normal, )
+												//   hides geometry.h classes
 	*i DBL gx_area;								// area derived from polygon, ft2
-	// *declare "class CVP3D gx_uNorm;"			// unit normal (direction cosines)
 
 	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z), ft
 *END	// SURFGEOM
@@ -3575,6 +3578,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC pv_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *declare "int pv_HasShading() const;"
   *declare "RC pv_Init();"
   *declare "RC pv_DoHour();"
   *declare "RC pv_CalcPOA();"

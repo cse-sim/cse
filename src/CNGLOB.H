@@ -563,11 +563,16 @@ inline double DegKtoF( double k)  { return k*1.8-tAbs0F; }
 inline double QRad( double t1, double t2)		// radiant power betw 2 black surfaces
 {	return sigmaSB*(pow4( DegFtoR( t1))-pow4(DegFtoR( t2))); }
 
-// Radians <--> degrees -- double and float versions
+// Radians <--> degrees
+#if 1
+template <typename T> inline T DEG( T r) {	return r*T( 180./kPi); }
+template <typename T> inline T RAD( T d) {	return d*T( kPi/180.); }
+#else
 inline double DEG( double r) { return r*57.29577951308232; }
 inline double RAD( double d) { return d/57.29577951308232; }
 inline float  DEG( float r) { return float( r*57.29577951308232); }
 inline float  RAD( float d) { return float( d/57.29577951308232); }
+#endif
 
 // Btuh/ft2-F <--> W/m2-K
 const double cfU = 5.678263;		// W/m2-K per Btuh/ft2-F

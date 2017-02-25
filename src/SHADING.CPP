@@ -328,16 +328,77 @@ exit68:  		// come here to exit
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// class SURFGEOM: nestable surface geometry
+// class SURFGEOMDET -- geometric details for SURFGEOM
+//                      local / hides geometry.h classes
+///////////////////////////////////////////////////////////////////////////////
+class SURFGEOMDET
+{
+friend SURFGEOM;
+	SURFGEOMDET( SURFGEOM* pSG) : gxd_pSG( pSG)
+	{}
+	SURFGEOMDET( SURFGEOM* pSG, const SURFGEOMDET& sgd);
+	bool gxd_IsEmpty() const	// true iff no valid polygon
+	{	return gxd_uNorm.IsZero(); }
+
+	SURFGEOM* gxd_pSG;			// parent
+	CPolygon3D gxd_polygon;
+	CPV3D gxd_uNorm;
+
+	SURFGEOM& SG()
+	{	return *gxd_pSG; }
+	record& PREC()
+	{	return *SG().gx_pParent; }
+	RC gxd_FillAndCheck( int fnVI, float vrt[], int nVrt);
+	int gxd_GetAzmTilt( float& azm, float& tilt) const
+	{	double dAzm,dTilt;
+		int ret = gxd_uNorm.AzmTilt( dAzm, dTilt);
+		azm = float( dAzm);
+		tilt = float( dTilt);
+		return ret;
+	}
+};		// class SURFGEOMDET
+//-----------------------------------------------------------------------------
+SURFGEOMDET::SURFGEOMDET(		// special copy c'tor
+	SURFGEOM* pSG,			// parent SURFGEOM
+	const SURFGEOMDET& sgd)	// source data
+	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( gxd_uNorm)
+{
+}	// SURFGEOMDET::SURFGEOMDET
+//-----------------------------------------------------------------------------
+RC SURFGEOMDET::gxd_FillAndCheck(
+	int fnVI,			// source record vertices field number
+	float vrt[],		// vertices (x, y, z)
+	int nVrt)			// # of vertices (= dim vrt[]/3)
+{
+	RC rc = RCOK;
+	gxd_polygon.DeleteAll();
+	gxd_polygon.Add( vrt, nVrt);
+	record& PR = PREC();		// parent record (SHADEX, PVARRAY, )
+
+	SG().gx_area = gxd_polygon.UnitNormal( gxd_uNorm);
+	if (SG().gx_area < 0.)
+		rc = PR.ooer( fnVI, "Bad polygon, cannot determine normal");
+	else
+	{	double dist = gxd_polygon.CheckFix( 1);
+		if (dist > .01)
+			rc = PR.ooer( fnVI, "Bad vertices");
+	}
+	return rc;
+}		// SURFGEOMDET::gxd_FillAndCheck
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// struct SURFGEOM: nestable surface geometry
+//                  used with *nest in e.g. SHADEX, PVARRAY
 ///////////////////////////////////////////////////////////////////////////////
 SURFGEOM::SURFGEOM()
 {
-	gx_polygon = new CPolygon3D();
+	gx_sgDet = new SURFGEOMDET( this);
 }	// SURFGEOM::SURFGEOM
 //-----------------------------------------------------------------------------
 SURFGEOM::~SURFGEOM()
 {
-	delete gx_polygon;
+	delete gx_sgDet;
 }	// SURFGEOM::~SURFGEOM
 //-----------------------------------------------------------------------------
 void SURFGEOM::gx_Init(			// parent linkage etc
@@ -347,11 +408,16 @@ void SURFGEOM::gx_Init(			// parent linkage etc
 	gx_pParent = pParent;
 }		// SURFGEOM::gx_Init
 //-----------------------------------------------------------------------------
+bool SURFGEOM::gx_IsEmpty() const	// true iff no polygon
+{
+	return !gx_sgDet || gx_sgDet->gxd_IsEmpty();
+}		// SURFGEOM::gx_IsEmpty
+//-----------------------------------------------------------------------------
 void SURFGEOM::gx_CopySubObjects()		// copy heap subobjects
 // call AFTER bitwise parent Copy()
 //   subojects are duplicated
-{	if (gx_polygon)
-		gx_polygon = new CPolygon3D( *gx_polygon);
+{	if (gx_sgDet)
+		gx_sgDet = new SURFGEOMDET( this, *gx_sgDet);
 }	// SURFGEOM::gx_CopySubObjects
 //-----------------------------------------------------------------------------
 RC SURFGEOM::gx_CheckAndMakePolygon(
@@ -376,18 +442,8 @@ RC SURFGEOM::gx_CheckAndMakePolygon(
 			   "  Must be a multiple of 3 and >= 9.", nSet);
 
 	if (!rc)
-	{	// fill polygon from input verticies
-		gx_polygon->DeleteAll();
-		gx_polygon->Add( gx_vrtInp, nSet/3);
-		CPV3D uNorm;
-		gx_area = gx_polygon->UnitNormal( uNorm);
-		if (gx_area < 0.)
-			rc = gx_pParent->ooer( fnVI, "Bad polygon, cannot determine normal");
-		else
-		{	double dist = gx_polygon->CheckFix( 1);
-			if (dist > .01)
-				rc = gx_pParent->ooer( fnVI, "Bad vertices");
-		}
+	{	
+		gx_sgDet->gxd_FillAndCheck( fnVI, gx_vrtInp, nSet/3);
 
 		// validate polyon
 		// compare to tilt / azm?
@@ -396,6 +452,11 @@ RC SURFGEOM::gx_CheckAndMakePolygon(
 	return rc;
 
 }	// SURFGEOM::gx_CheckAndMakePolygon
+//----------------------------------------------------------------------------
+int SURFGEOM::gx_GetAzmTilt( float& azmR, float& tiltR) const
+// azm / tilt (radians)
+{	return gx_sgDet->gxd_GetAzmTilt( azmR, tiltR);
+}	// SURFGEOM::gx_GetAzmTilt
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

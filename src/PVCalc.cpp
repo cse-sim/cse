@@ -47,6 +47,16 @@ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 	pv_g.gx_CopySubObjects();
 }	// PVARRAY::Copy
 
+int PVARRAY::pv_HasShading() const
+// returns
+//   0 iff no geometry
+//   -1 iff has geometry but there are no surfaces that could shade
+//   1 iff has geometry and shading possible
+{	return 
+		pv_g.gx_IsEmpty() ? 0
+	:                       1;
+}		// PVARRAY::pv_HasShading
+
 RC PVARRAY::pv_CkF()
 {
 	RC rc = RCOK;
@@ -60,10 +70,18 @@ RC PVARRAY::pv_CkF()
 	const char* pvUsePVWTyTx = getChoiTx(PVARRAY_USEPVWATTSDLL, 1);
 	const char* whenPVW = strtprintf("pvUsePVWatts=%s", pvUsePVWTyTx);
 
+	// process geometry
+	RC rcGeom = pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
+	rc |= rcGeom;
+	bool bDetailGeom = rcGeom == RCOK && !pv_g.gx_IsEmpty();
+	float dgAzm=0.f, dgTilt=0.f;
+	if (bDetailGeom)
+		pv_g.gx_GetAzmTilt( dgAzm, dgTilt);
+
 	if (pv_usePVWattsDLL == C_NOYESCH_NO) {
 		if (pv_arrayType == C_PVARRCH_1AXT)
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to capture effects of array self-shading.", whenAT, whenPVW);
-		if (pv_arrayType == C_PVARRCH_1AXBT)
+		else if (pv_arrayType == C_PVARRCH_1AXBT)
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to utilize backtracking algorithm.", whenAT, whenPVW);
 	}
 
@@ -94,8 +112,6 @@ RC PVARRAY::pv_CkF()
 		}
 	}
 
-	// check geometry
-	rc |= pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
 
 	return rc;
 

@@ -232,6 +232,42 @@ double CPV3D::Normalize()
 	}
 	return d;
 }		// CPV3D::Normalize
+//-----------------------------------------------------------------------------
+int CPV3D::AzmTilt(		// normal -> azm/tilt (radians)
+	double& azmR,			// returned: azm (0=N, +clockwise from above)
+	double& tiltR) const	// returned: tilt (0=facing up, pi/2=vertical, pi=facing down)	
+// returns 0 iff *this has 0 length
+//    else 1 = success
+{
+	double d = Length();
+	if (d < 1e-9)
+	{	azmR = 0.;
+		tiltR = 0.;
+		return 0;
+	}
+
+	if (fabs( z/d) > 1.-1e-9)
+	{	tiltR = z>0. ? kPi : -kPi;
+		azmR = 0.;
+	}
+	else
+	{	tiltR = acos( z/d);
+		azmR = atan2( x/d, y/d);
+	}
+
+	return 1;
+}	// CPV3D::AzmTilt
+//----------------------------------------------------------------------------
+int CPV3D::AzmTiltD(		// normal -> azm/tilt (degrees)
+	float& azmD,
+	float& tiltD) const
+{	
+	double azmR, tiltR;	
+	int ret = AzmTilt( azmR, tiltR);	// returns radians
+	azmD = float( DEG( azmR));
+	tiltD = float( DEG( tiltR));
+	return ret;
+}		// CPV3D:AzmTiltD
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

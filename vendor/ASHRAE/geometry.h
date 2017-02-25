@@ -148,6 +148,8 @@ public:
 	double Normalize();
 	inline double Length2() const { return x*x + y*y + z*z; }
 	inline double Length() const { return sqrt( x*x + y*y + z*z); }
+	int AzmTilt( double& azmR, double& tiltR) const;
+	int AzmTiltD( float& azmD, float& tiltD) const;
 	WStr FmtXYZ( int precOp=3) const;
 	CPV3D& Combine( const CPV3D& pt1, const CPV3D& pt2, double f2);
 	inline double Distance2( const CPV3D& p) const
