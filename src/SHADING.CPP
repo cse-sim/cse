@@ -379,6 +379,15 @@ RC SURFGEOM::gx_CheckAndMakePolygon(
 	{	// fill polygon from input verticies
 		gx_polygon->DeleteAll();
 		gx_polygon->Add( gx_vrtInp, nSet/3);
+		CPV3D uNorm;
+		gx_area = gx_polygon->UnitNormal( uNorm);
+		if (gx_area < 0.)
+			rc = gx_pParent->ooer( fnVI, "Bad polygon, cannot determine normal");
+		else
+		{	double dist = gx_polygon->CheckFix( 1);
+			if (dist > .01)
+				rc = gx_pParent->ooer( fnVI, "Bad vertices");
+		}
 
 		// validate polyon
 		// compare to tilt / azm?

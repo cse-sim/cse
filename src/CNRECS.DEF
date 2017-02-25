@@ -751,9 +751,11 @@ RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 
 	*declare "record* gx_pParent;"				// pointer to parent record
 												//   (SHADEX, PVARRAY, ...)
-	*declare "class CPolygon3D* gx_polygon;"	// derived polygon
+	*declare "class CPolygon3D* gx_polygon;"	// polygon generated from gx_vrtInp
+	*i DBL gx_area;								// area derived from polygon, ft2
+	// *declare "class CVP3D gx_uNorm;"			// unit normal (direction cosines)
 
-	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z)
+	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z), ft
 *END	// SURFGEOM
 //========================================================================================================
 RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)

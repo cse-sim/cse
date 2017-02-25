@@ -278,6 +278,7 @@ public:
 	int GetCenter( CPV3D& ptC) const;
 	int GetCentroid( CPV3D& ptC) const;
 	int GetBestPlane( class CPlane3D& pln, bool bRev=false) const;
+	double CheckFix( int options=0);
 	double Area() const;
 	double Area2D( int id0=0, int id1=1) const;
 	double UnitNormal( CPV3D& uNormal) const;
@@ -558,6 +559,7 @@ public:
 	// Distance between point and  plane (perpendicular from point to plane)
 	double Distance( const CPV3D& pt) const;
 	double Distance( const CPV3D& pt, CPV3D& ptP) const;
+	double CheckFixPolygon(	CPolygon3D& p3, int options /*=0*/) const;
 	double AngleCos( const CPlane3D& pl) const;	// cosine of the angle between 2 planes
 												// -2 - if ERROR
 	int IntersectSegment( const CPV3D& a, const CPV3D& b, CPV3D& pt, double& t) const;

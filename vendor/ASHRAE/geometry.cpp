@@ -395,6 +395,22 @@ int CPolygon3D::GetBestPlane(			// best-fit plane for this polygon
 		pln.Zero();
 	return nP;
 }		// CPolygon3D::GetBestPlane
+//----------------------------------------------------------------------------
+double CPolygon3D::CheckFix(
+	int options /*=0*/)	// option bits
+						//   1: alter verticies to be exactly on best plane
+// returns largest distance from any vertex to best plane
+//             (*this modified iff options&1)
+//         -1 if failure, *this unchanged (can't make plane, )
+{
+	CPlane3D pln;
+	int nP = GetBestPlane( pln);
+	if (nP < 3)
+		return -1.;
+
+	return pln.CheckFixPolygon( *this, options);
+
+}		// CPolygon3D
 //-----------------------------------------------------------------------------
 double CPolygon3D::Area2D(
 	int id0/*=0*/, int id1/*=1*/) const
@@ -409,6 +425,7 @@ double CPolygon3D::Area2D(
 double CPolygon3D::UnitNormal(			// find unit normal (aka direction cosines)
 	CPV3D& uNormal) const	// returned: unit normal vector
 // returns: unnormalized length = area of polygon
+//          -1 if normal cannot be determined
 {
     // get the Newell normal
 	for (int i=0; i<3; i++)
@@ -416,6 +433,8 @@ double CPolygon3D::UnitNormal(			// find unit normal (aka direction cosines)
 
     // get length of the Newell normal
     double nLen = uNormal.Length(); // sqrt( nwx*nwx + nwy*nwy + nwz*nwz );
+	if (nLen < SMALL_NUM)
+		return -1.;		// uNormal is (0,0,0) or close to it
 
     // compute the unit normal
 	uNormal /= nLen;
@@ -890,6 +909,34 @@ double CPlane3D::Distance(		// distance: plane to point + closest point
 	}
 	return dist;
 }	// CPlane3D::Distance
+//--------------------------------------------------------------------------
+double CPlane3D::CheckFixPolygon(		// check polygon against plane
+	CPolygon3D& p3,
+	int options /*=0*/) const	// option bits
+								//  1: change polygon vertices to nearest point on plane
+// determines how close polygon is to this plane
+//   optionally alters each polygon vertex to closest point on plane
+// returns largest distance between any polygon vertex and plane
+//         -1 if failure (incomplete plane, )
+{
+	double div = pl_n.Length();
+	if (div < SMALL_NUM)
+		return -1.;
+
+	bool bFix = options & 1;
+
+	double distMax = 0.;
+	int nV = p3.GetSize();
+	for (int iV=0; iV<nV; iV++)
+	{	CPV3D& pt = p3[ iV];
+		double dist = (pl_n * pt + pl_d) / div;
+		if (dist > distMax)
+			distMax = dist;
+		if (bFix)
+			p3[ iV] = pt - pl_n*(dist/div);
+	}
+	return distMax;
+}	// CPlane3D::CheckFixPolygon
 //-----------------------------------------------------------------------------
 double CPlane3D::AngleCos(		// cos of angle between two planes
 	const CPlane3D& pl) const

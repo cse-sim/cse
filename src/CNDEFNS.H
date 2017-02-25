@@ -140,8 +140,8 @@
 							//   fixed size polygons as input convenience
 							//   using ARRAY mechanism
 							//   Note limit is due to ARRAY input only.
-#define MAX_POLYGONVERTICES 9	// maximum number of input polygon vertices
-#define DIM_POLYGONXYZ 28		// input arrays dimension
+#define MAX_POLYGONVERTICES 12	// maximum number of input polygon vertices
+#define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
 
 #endif	// ifndef _CNEDEFNS_H
