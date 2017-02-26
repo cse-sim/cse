@@ -327,6 +327,9 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 							// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
 	EF( cgRddInit(FALSE) );		// more init (what is repeated for each des day for autoSize). local below.
 								// EF: if error, return bad now.
+
+	EF( ShadingRunInit());		// Penumbra external shading initialization
+
 	screen( NONL|QUIETIF, " Warmup");	// screen msg on current line (rmkerr.cpp): beg of warmup.
     									//   Continues line started in cse.cpp.
 
@@ -554,7 +557,9 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		Top.tp_DoDTStuff();				// update DT/ST stuff, local, below
 
 		// weather data
-		EF( Top.tp_WthrBegHour() );     // read weather file, set Wthr, and Top hourly weather members, eg tDbOHr. cgwthr.cpp.
+		EF( Top.tp_WthrBegHour() );	// read weather file, set Wthr, and Top hourly weather members, eg tDbOHr. cgwthr.cpp.
+
+		EF( ShadingBegHour());		// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
 #if defined( DEBUGDUMP)

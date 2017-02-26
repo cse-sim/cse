@@ -251,8 +251,9 @@ void FC makHrSgt( float * pVerSun = NULL);
 // cgdebug.cpp
 void FC cgzndump( SI vrh, TI zi);
 
-// shad.cpp
+// shading.cpp
 float FC shadwin( const WSHADRAT *p, float gamma, float cosz);
-
+RC ShadingRunInit();
+RC ShadingBegHour();
 
 // end of cnguts.h

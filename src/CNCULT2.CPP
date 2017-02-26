@@ -66,6 +66,7 @@ LOCAL RC topRSys();
 LOCAL RC topDHW();
 LOCAL RC topPV();
 LOCAL RC topBT();
+LOCAL RC topSX();
 LOCAL RC topRadGainDist();
 LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, record* ownRec );
 
@@ -325,10 +326,11 @@ LOCAL RC topCkfI( int re)
 	E( topRadGainDist() )	// set up distribution of radiant internal gains. Must follow most surface/zone stuff
 
 	E( topRSys() )			// RSYS
-	E( topPV() )			// PV
-	E( topBT() )            // BT
+	E( topPV() )			// PVArrays
+	E( topBT() )            // Batteries
+	E( topSX() )			// ShadeX external shading
 
-	E( topZn3() )			// zones: added generated IZXFERs,
+	E( topZn3() )			// zones: add generated IZXFERs,
 
 
 #ifdef AUTOSIZE
@@ -1378,7 +1380,7 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E( WuR.RunDup( WUiB, &WduR))
 
 	// initialization -- do *last* -- all children in place
-	//   multiple pass re e.g. wsLoadShareDHWSYS
+	//   multiple passes re e.g. wsLoadShareDHWSYS
 	DHWSYS* pWS;
 	RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 0);
@@ -1415,6 +1417,18 @@ LOCAL RC topBT()		// check BATTERY ... copy to run rat
 
 	return rc;
 }	// ::topBT
+//=============================================================================
+LOCAL RC topSX()		// SHADEX copy to run rat
+{
+	RC rc = RCOK;
+
+	E(SxR.RunDup(SXiB));
+
+	SHADEX* pSX;
+	RLUP( SxR, pSX)
+		rc |= pSX->sx_Init();
+	return rc;
+}	// ::topSX
 //=============================================================================
 LOCAL RC topGain()	// check GAINs / copy to run rat
 {

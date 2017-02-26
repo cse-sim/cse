@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 ///////////////////////////////////////////////////////////////////////////////
-// pvwatts.cpp -- interfact to PVWATTS
+// pvcalc.cpp -- interface to PVWATTS
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
@@ -18,7 +18,7 @@
 
 
 bool pvWattsLoaded = false;
-XPVWATTS PVWATTS; // public PVWATTS Library object
+static XPVWATTS PVWATTS; // public PVWATTS Library object
 
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
@@ -47,7 +47,7 @@ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 	pv_g.gx_CopySubObjects();
 }	// PVARRAY::Copy
 
-int PVARRAY::pv_HasShading() const
+int PVARRAY::pv_HasPenumbraShading() const
 // returns
 //   0 iff no geometry
 //   -1 iff has geometry but there are no surfaces that could shade
@@ -55,7 +55,15 @@ int PVARRAY::pv_HasShading() const
 {	return 
 		pv_g.gx_IsEmpty() ? 0
 	:                       1;
-}		// PVARRAY::pv_HasShading
+}		// PVARRAY::pv_HasPenumbraShading
+
+RC PVARRAY::pv_AddPenumbraSurface( int options/*=0*/)
+{	return pv_g.gx_AddPenumbraSurface( options);
+}		// PVARRAY::pv_AddPenumbraSurface
+
+float PVARRAY::pv_CalcPenumbraShading( float cosi)
+{	return pv_g.gx_CalcPenumbraShading( cosi);
+}
 
 RC PVARRAY::pv_CkF()
 {
@@ -355,9 +363,10 @@ RC PVARRAY::pv_CalcPOA()
 	int sunupSrf = sunup && slsurfhr(dcos, Top.iHrST, &cosi, NULL, NULL);
 
 	float poaBeam;
-	if (sunupSrf) {
+	if (sunupSrf)
+	{	float fBeam = pv_CalcPenumbraShading( cosi);
+		poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
 		pv_aoi = acos(cosi);
-		poaBeam = Top.radBeamHrAv*cosi;  // incident beam
 	}
 	else {
 		poaBeam = 0.f;  // incident beam

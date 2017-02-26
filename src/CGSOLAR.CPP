@@ -524,7 +524,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 		incA = acos( cosi);
 		relAzm = azm - x.azm;	// sun azm wrt wall
 		fsunlit = x.iwshad 		// nz iff xs has shading info
-					? shadwin(				//calc shading, shad.cpp
+					? shadwin(				// calc shading
 						&WshadR[ x.iwshad],	// window/ovh/fin info in WSHADRAT entry, all VMHLY.
 						relAzm,
 						cosz)				// cos( slr zenith ang)

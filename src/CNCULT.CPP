@@ -84,11 +84,10 @@ makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
-// PV: PV Watts photovoltaic array
 makAncPVARRAY(PViB);		// PV array
 makAncBATTERY(BTiB);		// Battery
 
-makAncSHADEX( SxiB);
+makAncSHADEX( SXiB);		// SHADEX external shading
 
 // air handlers and terminals and plant
 makAncTU(TuiB);				// terminals input
@@ -146,7 +145,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WLPiB.free();
 	PViB.free();
 	BTiB.free();
-	SxiB.free();
+	SXiB.free();
 	TuiB.free();
 	AhiB.free();
 	HpiB.free();
@@ -2500,7 +2499,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
-	CULT( "shadex",       RATE,  0,                0,          0, 0,      0,    &SxiB,   N,    0.f,         shadexT,  N),
+	CULT( "shadex",       RATE,  0,                0,          0, 0,      0,    &SXiB,   N,    0.f,         shadexT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),

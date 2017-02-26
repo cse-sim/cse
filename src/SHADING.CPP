@@ -24,18 +24,19 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include "cnglob.h"
 
-#include <ancrec.h>	// record: base class for rccn.h classes
-#include <rccn.h>	// WSHADRAT, SHADEX, 
-
-#include <cnguts.h>	// decl for shadwin()
+#include "ancrec.h"	// record: base class for rccn.h classes
+#include "rccn.h"	// WSHADRAT, SHADEX,
+#include "cuparse.h"
+#include "slpak.h"
+#include "cnguts.h"
 
 #include <ashrae/geometry.h>
 
 #include <penumbra/penumbra.h>
 
-Pumbra::Penumbra pumbra;
+static Pumbra::Penumbra pumbra;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -360,12 +361,13 @@ friend SURFGEOM;
 		tilt = float( dTilt);
 		return ret;
 	}
+	int gxd_FillPenumbraPolygon( Pumbra::Polygon& s) const;
 };		// class SURFGEOMDET
 //-----------------------------------------------------------------------------
 SURFGEOMDET::SURFGEOMDET(		// special copy c'tor
 	SURFGEOM* pSG,			// parent SURFGEOM
 	const SURFGEOMDET& sgd)	// source data
-	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( gxd_uNorm)
+	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( sgd.gxd_uNorm)
 {
 }	// SURFGEOMDET::SURFGEOMDET
 //-----------------------------------------------------------------------------
@@ -389,6 +391,23 @@ RC SURFGEOMDET::gxd_FillAndCheck(
 	}
 	return rc;
 }		// SURFGEOMDET::gxd_FillAndCheck
+//-----------------------------------------------------------------------------
+int SURFGEOMDET::gxd_FillPenumbraPolygon(	// transform polygon to Penumbra-style
+	Pumbra::Polygon& plg) const	// polygon to be filled
+// minimal error checking -- *this assumed good
+// returns # of vertices
+{	
+	plg.clear();
+	int nV=gxd_polygon.GetSize();
+	for (int iV=0; iV<nV; iV++)
+	{	const CPV3D& p3 = gxd_polygon.p3_Vrt( iV);
+		// Penumbra coords are float
+		//   winding order same as CSE
+		for (int iD=0; iD<3; iD++)	// loop x, y, z
+			plg.push_back( float( p3[ iD]));
+	}
+	return nV;
+}		// SURFGEOMDET::gxd_FillPenumbraSurface
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -398,6 +417,7 @@ RC SURFGEOMDET::gxd_FillAndCheck(
 SURFGEOM::SURFGEOM()
 {
 	gx_sgDet = new SURFGEOMDET( this);
+	gx_pnIdx = -1;
 }	// SURFGEOM::SURFGEOM
 //-----------------------------------------------------------------------------
 SURFGEOM::~SURFGEOM()
@@ -461,6 +481,48 @@ int SURFGEOM::gx_GetAzmTilt( float& azmR, float& tiltR) const
 // azm / tilt (radians)
 {	return gx_sgDet->gxd_GetAzmTilt( azmR, tiltR);
 }	// SURFGEOM::gx_GetAzmTilt
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_AddPenumbraSurface(
+	int options /*=0*/)		// options TBD
+// add this surface to the Penumbra model
+// returns RCOK iff success or no geometry
+//    else RCBAD
+{
+	options;
+	gx_pnIdx = -1;
+	if (gx_IsEmpty())
+		return RCOK;		// no geometry
+
+	Pumbra::Polygon pnPlg;
+	int nV = gx_sgDet->gxd_FillPenumbraPolygon( pnPlg);
+	if (nV >= 3)
+	{	Pumbra::Surface pnSurf( pnPlg);
+		gx_pnIdx = pumbra.addSurface( pnSurf);
+	}
+	return gx_pnIdx >= 0 ? RCOK : RCBAD;
+}		// SURFGEOM::gx_AddPenumbraSurface
+//-----------------------------------------------------------------------------
+float SURFGEOM::gx_CalcPenumbraShading(
+	float cosi)		// cos( beam incA)
+// returns 0 on success
+//        -1 no Penumbra shading
+{	
+	if (cosi <= 0.f)
+		gx_fBeam = 0.;		// sun behind surface
+	else if (gx_pnIdx < 0)
+		gx_fBeam = 1.f;		// no shading -> full sun
+	else
+	{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
+		gx_fBeam = PSSF / (cosi*gx_area);
+		if (gx_fBeam > 1.f)
+			gx_fBeam = 1.;
+#if 0
+		if (gx_fBeam < .8f)
+			printf( "\nShade!");
+#endif
+	}
+	return gx_fBeam;
+}		// SURFGEOM::gx_CalcPenumbraShading
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -477,6 +539,13 @@ SHADEX::SHADEX( basAnc *b, TI i, SI noZ /*=0*/)
 	sx_g.gx_Init( this);
 }		// SHADEX::FixUp
 //----------------------------------------------------------------------------
+RC SHADEX::sx_Init()		// init at run start
+{
+	RC rc = RCOK;
+
+	return rc;
+}		// SHADEX::sx_Init
+//----------------------------------------------------------------------------
 void SHADEX::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
 	record::Copy( pSrc, options);	// calls FixUp()
@@ -491,8 +560,75 @@ RC SHADEX::sx_CkF()
 	rc = sx_g.gx_CheckAndMakePolygon( 0, SHADEX_G);
 
 	return rc;
-}		// SHADEX::xs_CkF
+}		// SHADEX::sx_CkF
+//-----------------------------------------------------------------------------
+RC SHADEX::sx_AddPenumbraSurface( int options/*=0*/)
+{	return sx_g.gx_AddPenumbraSurface( options);
+}		// SHADEX::sx_AddPenumbraSurface
 //=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// public interface to shading calcs
+///////////////////////////////////////////////////////////////////////////////
+static void PemumbraMessageHandler(
+	const int messageType,
+	const std::string message,
+	void* contextPtr)
+{
+	contextPtr;
+
+	(messageType == Pumbra::MSG_ERR ? per : messageType == Pumbra::MSG_WARN ? pWarn : pInfo)
+		( "Penumbra msg: %s", message.c_str());
+
+}		// penumbraMessageHandler
+//-----------------------------------------------------------------------------
+RC ShadingRunInit()		// start-of-run init for Penumbra shading
+// sets up Penumbra model from all shading or receiving objects
+{
+	RC rc = RCOK;
+
+	// route Penumbra messages to CSE output
+	//   use pumbra as context even though only one
+	pumbra.setMessageCallback( PemumbraMessageHandler, &pumbra);
+
+	// Penumbra clear
+
+	// create Penumbra surface model
+	PVARRAY* pPV;
+	RLUP( PvR, pPV)
+		rc |= pPV->pv_AddPenumbraSurface();
+
+	SHADEX* pSX;
+	RLUP( SxR, pSX)
+		rc |= pSX->sx_AddPenumbraSurface();
+
+	if (!rc)
+	{	if (pumbra.setModel() != Pumbra::PN_SUCCESS)
+			rc |= RCBAD;
+	}
+
+	return rc;
+
+}		// ::ShadingRunInit
+//-----------------------------------------------------------------------------
+RC ShadingBegHour()		// once-per-hour Penumbra steps
+{
+	RC rc = RCOK;
+
+	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
+	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
+	float azm, cosz;
+	int sunup = 					// nz if sun above horizon this hour
+		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
+
+	if (sunup)
+	{	float alt = kPiOver2 - acos( cosz);
+		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
+			rc |= RCBAD;
+	}
+
+	return rc;
+}		// ::ShadingBegHour
 
 
 // shading.cpp end
