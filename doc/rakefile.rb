@@ -22,6 +22,19 @@ require_relative 'lib/coverage_check'
 require_relative 'lib/xlink'
 
 ########################################
+# Check Dependencies
+########################################
+PANDOC_VERSION = `pandoc --version`.split(/\n/)[0].gsub(/pandoc\s*/,'')
+if PANDOC_VERSION != "1.17.2"
+  puts "This build tool requires pandoc 1.17.2"
+  puts "Please uninstall your current pandoc via Windows"
+  puts "'Add and Remove Programs' and then install"
+  puts "Pandco 1.17.2 via the *.msi file from here:"
+  puts "https://github.com/jgm/pandoc/releases"
+  exit(1)
+end
+
+########################################
 # Globals
 ########################################
 class EvalContext
