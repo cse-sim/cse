@@ -1510,6 +1510,8 @@ BuildPDF = lambda do |config|
         '--variable geometry="margin=1in"',
         '--variable urlcolor=cyan',
         "--variable current_year=#{DateTime.now.year}",
+        #"--variable monofont='Courier New'",
+        #"--variable monofont='Inconsolatazi4-Regular.otf'",
         "--latex-engine=xelatex",
         disable_toc ? "" : "--table-of-contents",
         disable_toc ? "" : "--toc-depth=#{TOC_DEPTH}",
