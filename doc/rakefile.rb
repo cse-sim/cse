@@ -1516,7 +1516,7 @@ BuildPDF = lambda do |config|
         "--number-sections",
         "--smart",
         "--template=template.tex",
-        "--listings",
+        #"--listings",
         "--from markdown",
         "--variable header=\"#{HEADER}\"",
         "--variable footer=\"#{FOOTER}\"",
