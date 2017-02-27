@@ -18,30 +18,24 @@ After the object name, each member's description is introduced with a line of th
 
 These types discussed in the section on [expression types](#expression-types).
 
-Each member's description continues with a table of the form
+Each member's description continues with a table of the form:
 
-  -------------------------------------------------------------------------
-  **Units**  **Legal Range**  **Default**  **Required**   **Variability**
-  ---------- ---------------- ------------ ------------- ------------------
-    ft^2^        x &gt; 0     wnHeight \*       No            constant
-                                wnWidth                  
-  -------------------------------------------------------------------------
+<%= member_table(
+  units: "ft^2^",
+  legal_range: "x &gt; 0",
+  default: "wnHeight \\\* wnWidth",
+  required: "No",
+  variability: "constant") %>
 
-  -------------- ---------------------------------------------------------
-  *Units*        units of measure (lb., ft, Btu, etc.) where applicable
+where the column headers have the following meaning:
 
-  *Legal*        limits of valid range for numeric inputs; valid choices
-  *Range*        for *choice* members, etc.
-
-  *Default*      value assumed if member not given; applicable only if not
-                 required
-
-  *Required*     YES if you must give this member
-
-  *Variability*  how often the given expression can change: hourly, daily,
-                 etc. See sections on
-                 [expressions](#expressions-overview),
-                 [statements](#member-statements), and
-                 [variation frequencies](#variation-frequencies-revisited)
-  -------------- ---------------------------------------------------------
+<%= csv_table(<<END, row_header: false)
+"*Units*","units of measure (lb., ft, Btu, etc.) where applicable"
+"*Legal*","limits of valid range for numeric inputs; valid choices"
+"*Range*","for *choice* members, etc."
+"*Default*","value assumed if member not given; applicable only if not required"
+"*Required*","YES if you must give this member"
+"*Variability*","how often the given expression can change: hourly, daily, etc. See sections on [expressions](#expressions-overview), [statements](#member-statements), and [variation frequencies](#variation-frequencies-revisited)"
+END
+%>
 
