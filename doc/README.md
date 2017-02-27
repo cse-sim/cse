@@ -124,6 +124,7 @@ When adding a new section or record you generally just open up your text editor 
 - be sure to add your file to the version control sytem
 - you don't need to explicitly link *any* RECORD names. If you uppercase record names per the document convention, the build process will automatically detect the name as a record name and cross-link the name to the "canonical location" where the record is defined
 - all non-RECORD cross-links including section links **do** need to be added explicitly. The target for a section can be formed using [some straightforward rules] and would be written as `[link text](#identifier)`. Note: only use the `#identifier` syntax -- you don't need to specify the filename; even when the cross-link is in another physical file. The build process detects and fills in the filename depending on the type of build (pdf, single-page html, multi-page html, etc.)
+- the [YAML] manifests for each document are located in the source. The section you will typically be adjusting is the `sections:` area. This is a list of two-tuples: the first is the "file level" and the second is the relative path from the "src/" directory. A "file level" indicates the level of indentation of that file in the documentation tree. "File levels" should **not** increase more than one at a time.
 
 [some straightforward rules]: http://pandoc.org/MANUAL.html#extension-auto_identifiers
 
