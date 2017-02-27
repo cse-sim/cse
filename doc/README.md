@@ -55,7 +55,7 @@ or, since it is the default command:
 
 ## The Configuration File
 
-Configuration parameters can be used to change how the documentation builds. The config defaults are located in `doc/config/defaults.yaml`. If a file named `doc/config.yaml` is placed in the `doc` directory, it will override the corresponding value in the defaults.yaml file. By default, the `doc/config.yaml` file is ignored (see `doc/.gitignore`) allowing developers to customize the build process for their needs. The `doc/config/defaults.yaml` file is written in [YAML] format and is heavily documented with comments to help clarify the role of each parameter.
+Configuration parameters can be used to change how the documentation builds. The config defaults are located in `doc/config/defaults.yaml`. If a file named `doc/config.yaml` is placed in the `doc` directory, it will override the corresponding value in the defaults.yaml file. By default, the `doc/config.yaml` file is ignored by the version control system (see `doc/.gitignore`) allowing developers to customize the build process for their needs. The `doc/config/defaults.yaml` file is written in [YAML] format and is heavily documented with comments to help clarify the role of each parameter.
 
 A typical `doc/config.yaml` file for a developer planning to build the documentation for [GitHub Pages] would be as follows:
 
