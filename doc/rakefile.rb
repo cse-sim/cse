@@ -1509,6 +1509,7 @@ BuildPDF = lambda do |config|
         "--wrap=none",
         '--variable geometry="margin=1in"',
         '--variable urlcolor=cyan',
+        "--variable current_year=#{DateTime.now.year}",
         "--latex-engine=xelatex",
         disable_toc ? "" : "--table-of-contents",
         disable_toc ? "" : "--toc-depth=#{TOC_DEPTH}",
