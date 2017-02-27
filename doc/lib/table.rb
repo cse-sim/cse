@@ -13,8 +13,10 @@ module Table
     end
   end
   # (Map String String) -> Binding
-  MakeBinding = lambda do |ctxt|
-    Main.new(:context => ctxt).get_binding
+  MakeBinding = lambda do |base_path=nil|
+    lambda do |ctxt|
+      Main.new(:context => ctxt, :base_path => base_path).get_binding
+    end
   end
   # The Main class's responsibility is to serve as the binding context for
   # an ERB template rendering. As such, it must expose the methods that

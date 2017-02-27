@@ -48,6 +48,9 @@ coverage?: true
 # the directives available in lib/table.rb in the class Main are available
 # within ERB
 use-table-lang?: true
+# if defined, the path below directs the table preprocessing language as to
+# where to find CSV table files. Only relevant if "use-table-lang?" is true
+table-path: "src/tables"
 # this variable holds various "flags" to pass into the ERB preprocessor
 # NOTE: only define variable keys as standard Ruby variables!
 #       for example, "some-variable: 10" would not work since "some-variable"

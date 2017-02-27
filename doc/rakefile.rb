@@ -109,7 +109,14 @@ HTML_MIN_EXE = File.expand_path(
 )
 PREPROCESSOR_CONTEXT = CONFIG.fetch("context", {})
 ERB_BINDING_FN = if CONFIG.fetch("use-table-lang?", true)
-                   Table::MakeBinding
+                   if CONFIG.include?("table-path")
+                     table_path = File.expand_path(
+                       CONFIG.fetch("table-path"), THIS_DIR)
+                     puts "table-path: #{table_path}"
+                     Table::MakeBinding[table_path]
+                   else
+                     Table::MakeBinding[]
+                   end
                  else
                    Template::MakeBinding
                  end
