@@ -64,10 +64,7 @@ A typical `doc/config.yaml` file for a developer planning to build the documenta
     context:
       build_all: true
 
-Note in particular that the "context" attribute contains a dictionary (i.e., map or hash table) of values to define and pass into the embedded ruby ([ERB]) preprocessor.
-
-
-[YAML]: http://yaml.org/
+Note in particular that the "context" attribute contains a dictionary (i.e., map or hash table) of values to define and pass into the embedded ruby ([ERB]) preprocessor. These attributes must be lower-case as discussed below.
 
 ## Preprocessing files with Embedded Ruby
 
