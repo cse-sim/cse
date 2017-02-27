@@ -84,6 +84,7 @@ artifacts/
 *.scc
 *.exe
 !/test/*.exe
+*.VC.db
 
 
 # Chutzpah Test files
