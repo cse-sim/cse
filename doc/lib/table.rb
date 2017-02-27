@@ -294,7 +294,7 @@ module Table
       default = args.fetch(:default, nil_mark)
       required= args.fetch(:required, "No")
       variability=args.fetch(:variability, "constant")
-      headers = ["Units","Legal Range","Default","Required","Variability"]
+      headers = ["**Units**","**Legal** **Range**","**Default**","**Required**","**Variability**"]
       content = [units, legal_range, default, required, variability]
       table = [headers, content]
       write_table_with_header(table)
