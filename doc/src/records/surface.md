@@ -104,9 +104,11 @@ Provides user control over how CSE models conduction for this surface.
                                       and the CZM/UZM zone model)
   ----------------------------------- -----------------------------------
 
-  **Units**   **Legal Range**                                            **Default**   **Required**   **Variability**
-  ----------- ---------------------------------------------------------- ------------- -------------- -----------------
-              QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, FD   AUTO          No             constant
+<%= member_table(
+  legal_range: "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, FD",
+  default: "AUTO",
+  required: "No",
+  variability: "constant") %>
 
 <!--
 TODO: better sfModel desciptions
