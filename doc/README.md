@@ -100,6 +100,176 @@ We recommend looking at an [ERB Tutorial] to get up to speed on using [ERB].
 
 [ERB Tutorial]: http://www.stuartellis.name/articles/erb/
 
+## Table Pre-processing Directives
+
+By setting the config variable "use-table-lang?" to `true` (note: it is `true` by default), we enable [ERB] to use a table pre-processing language. At the time of this writing, these table directives are used to transform imbedded CSV data (CSV = comma-separated value), in-file CSV data, or special tables to the "ascii-art" multi-line tables required by [Pandoc-flavored Markdown]. For general tables, external CSV files can be used (recommended). In this case, the source files may be edited with a spreadsheet program and saved to disk (in CSV format). By default, tables are stored in the directory relative to the `doc` directory as specified by the "table-path" variable specified in the `doc/config/defaults.yaml` file. At the time of this writing, that variable defaults to `doc/src/tables`.
+
+The three table directives and their options and syntax are shown below:
+
+### member\_table -- special syntax for Record Member Tables
+
+The `member_table` has the following syntax:
+
+    <%= member_table(
+      units: "1/^o^F",
+      legal_range: "no restrictions",
+      default: "-0.0026",
+      required: "No",
+      variability: "constant") %>
+
+This writes a Markdown table similar to the following:
+
+    ---------------------------------------------------------------
+    **Units** **Legal**    **Default** **Required** **Variability**
+              **Range**                                            
+    --------- ------------ ----------- ------------ ---------------
+    1/^o^F    no           -0.0026     No           constant       
+              restrictions                                         
+    ---------------------------------------------------------------
+
+The arguments to `member_table` are a [Ruby] hash (also called a hash-table, dictionary, or map). An alternate valid [Ruby] syntax for the same thing is:
+
+    <%= member_table(
+      :units => "1/^o^F",
+      :legal_range => "no restrictions",
+      :default => "-0.0026",
+      :required => "No",
+      :variability => "constant") %>
+
+or alternately to be very explicit (note the curly brackets `{` and `}` below):
+
+    <%= member_table({
+      :units => "1/^o^F",
+      :legal_range => "no restrictions",
+      :default => "-0.0026",
+      :required => "No",
+      :variability => "constant"}) %>
+
+In the call to `member_table`, each of the keys is checked for correct spelling. Keys that are elided are replaced with `--`, the markdown symbol for "--".
+
+### csv\_table -- inline csv tables
+
+CSV tables provide an alternate syntax for describing a multi-line table. Cell contents should be written in [Pandoc-flavored Markdown] to indicate boldness, links, etc.
+
+A simple CSV Table appears below:
+
+    <%= csv_table(<<END, :row_header => false)
+    A,B,C
+    1,2,3
+    END
+    %>
+
+Here, we use [Ruby] syntax for ["here docs"](http://blog.jayfields.com/2006/12/ruby-multiline-strings-here-doc-or.html). Essentially, the CSV string gets escaped and placed where `<<END` appears in the call. Note that the end marker (which can be any identifier, but `END` is recommended) must be flush-left. The above code yields the following markdown table:
+
+    ---------------------- ---------------------- ----------------------
+    A                      B                      C                     
+
+    1                      2                      3                     
+    ---------------------- ---------------------- ----------------------
+
+Note the option for having a `row_header` or not. If we indicate `true` for `row_header`
+
+    <%= csv_table(<<END, :row_header => true)
+    A,B,C
+    1,2,3
+    END
+    %>
+    
+... we get:
+
+    --------------------------------------------------------------------
+    A                      B                      C                     
+    ---------------------- ---------------------- ----------------------
+    1                      2                      3                     
+    --------------------------------------------------------------------
+
+But what if we want to use a comma (",") in our strings? In this case, we must quote (i.e., surround with `"`) all of our cells. But what if we want to use a literal `"`? Then we double up the `"` character. See this example:
+
+    <%= csv_table(<<END, :row_header => true)
+    "Property","Value"
+    "*Units*","units of measure (lb., ft, Btu, etc.) where applicable"
+    "*Legal*","limits of valid range for numeric inputs; valid ""choices"""
+    END
+    %>
+
+This yields:
+
+    --------------------------------------------------------------------
+    Property       Value                                                
+    -------------- -----------------------------------------------------
+    *Units*        units of measure (lb., ft, Btu, etc.) where          
+                   applicable                                           
+
+    *Legal*        limits of valid range for numeric inputs; valid      
+                   "choices"                                            
+    --------------------------------------------------------------------
+
+So, all in all, it is relatively straight-forward to embed a csv table inline with the markdown. However, we recommend using the next directive for handling CSV tables: `csv_table_from_file`
+
+### csv\_table\_from\_file
+
+This last directive loads a CSV file from the file system and processes it into a multi-line Markdown table per [Pandoc-flavored Markdown].
+
+An example of calling this directive lies below:
+
+    <%= csv_table_from_file("input-data--member-table-definition.csv") %>
+
+This yields:
+
+    --------------------------------------------------------------------
+    *Units*       units of measure (lb., ft, Btu, etc.) where applicable
+    ------------- ------------------------------------------------------
+    *Legal*       limits of valid range for numeric inputs; valid       
+                  choices                                               
+
+    *Range*       for *choice* members, etc.                            
+
+    *Default*     value assumed if member not given; applicable only if 
+                  not required                                          
+
+    *Required*    YES if you must give this member                      
+
+    *Variability* how often the given expression can change: hourly,    
+                  daily, etc. See sections on                           
+                  [expressions](#expressions-overview),                 
+                  [statements](#member-statements), and [variation      
+                  frequencies](#variation-frequencies-revisited)        
+    --------------------------------------------------------------------
+
+Note that by default (same as `csv_table`), the value of `:row_header` is `true`. To turn that off, we use:
+
+    <%= csv_table_from_file(
+      "input-data--member-table-definition.csv", row_header: false) %>
+
+which is equivalent to:
+
+    <%= csv_table_from_file(
+      "input-data--member-table-definition.csv", :row_header => false) %>
+
+Both of the above yield:
+
+    ------------- ------------------------------------------------------
+    *Units*       units of measure (lb., ft, Btu, etc.) where applicable
+
+    *Legal*       limits of valid range for numeric inputs; valid       
+                  choices                                               
+
+    *Range*       for *choice* members, etc.                            
+
+    *Default*     value assumed if member not given; applicable only if 
+                  not required                                          
+
+    *Required*    YES if you must give this member                      
+
+    *Variability* how often the given expression can change: hourly,    
+                  daily, etc. See sections on                           
+                  [expressions](#expressions-overview),                 
+                  [statements](#member-statements), and [variation      
+                  frequencies](#variation-frequencies-revisited)        
+    ------------- ------------------------------------------------------
+
+The exciting thing about using `csv_table_from_file` is that the table data can live on the file system and be edited with a spreadsheet tool such as *Microsoft Excel* or *LibreOffice Calc*.
+
 ## Updating the Documents: Support Files
 
 The `doc/config/` directory contains various support files used to help build the documents. The `defaults.yaml` holds default configuration parameters that are discussed in the [configuration section](#the-configuration-file). Specifically, the css used for html styling is in the `css` directory; the templates used for both HTML and LaTeX (a precursor for a pdf build) are located in the `template` directory; and finally we have a `reference` directory which holds the following files:
