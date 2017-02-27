@@ -10,12 +10,14 @@ The source files including both manifest files (in YAML) and markdown files (end
 
 ## Dependencies for Website Generation
 
-- the [Pandoc] markup language converter (we've used Pandoc both 1.17.2 and 1.19)
+- the [Pandoc] markup language converter (use Pandoc version 1.17.2; other versions are not supported)
 - (optional) for PDF output, you will need to install a LaTeX system (see below)
 - (optional) for compression of HTML/CSS, a recent version of [Node.js]
 - a recent version of the [Ruby] programming language (we are using Ruby 2.0.0p648)
 - (optional) an internet connection (for installing node dependencies)
 - the git version control manager (we are using 2.10.2)
+
+Pandoc version 1.17.2 can be downloaded from [here](https://github.com/jgm/pandoc/releases). If you do not have version 1.17.2 installed, the build tool will stop immediately with instructions on how to install Pandoc 1.17.2.
 
 For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For Windows, [MiKTeX] is recommended. For Mac OS and Linux, please follow the instructions for recommended (La)TeX systems at [Pandoc's Install] page. Note that to build the PDF, you must change the value of the "build-pdf?" key to true in the `config.yaml` file in this directory. This configuration file is discussed more below.
 
