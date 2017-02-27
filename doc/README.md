@@ -10,7 +10,7 @@ The source files including both manifest files (in YAML) and markdown files (end
 
 ## Dependencies for Website Generation
 
-- the [Pandoc] markup language converter (we are using Pandoc 1.17.2, but any recent version should work)
+- the [Pandoc] markup language converter (we are using Pandoc 1.17.2, versions of 1.18 and above **do not** work)
 - (optional) for PDF output, you will need to install a LaTeX system (see below)
 - (optional) for compression of HTML/CSS, a recent version of [Node.js]
 - a recent version of the [Ruby] programming language (we are using Ruby 2.0.0p648)
