@@ -144,6 +144,7 @@ module Table
     def initialize(args=nil)
       args = args || {}
       @intercol_space = args.fetch(:intercol_space, 1)
+      @max_width = args.fetch(:max_width, 70)
     end
     def min_column_widths(table)
       min_widths = [2] * table[0].length
@@ -171,7 +172,7 @@ module Table
     def col_widths(mins, maxs)
       num_cols = mins.length
       spacing = 2 * (num_cols - 1)
-      extra_space = 80 - (mins.inject(0, &:+) + spacing)
+      extra_space = @max_width - (mins.inject(0, &:+) + spacing)
       total_max = maxs.inject(0, &:+).to_f
       width_fracs = maxs.map {|m| m / total_max}
       extra_space_alloc = width_fracs.map {|w| (w * extra_space).to_i}
