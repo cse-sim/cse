@@ -112,7 +112,6 @@ ERB_BINDING_FN = if CONFIG.fetch("use-table-lang?", true)
                    if CONFIG.include?("table-path")
                      table_path = File.expand_path(
                        CONFIG.fetch("table-path"), THIS_DIR)
-                     puts "table-path: #{table_path}"
                      Table::MakeBinding[table_path]
                    else
                      Table::MakeBinding[]
