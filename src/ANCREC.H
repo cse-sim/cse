@@ -290,7 +290,10 @@ template <class T>  class anc : public basAnc
 
  protected:
     void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
-    virtual void desRec( TI i) { if (p[i].gud) p[i].T::~T(); }			// destroy record if constructed
+    virtual void desRec( TI i)
+	{	if (p[i].gud)
+			p[i].T::~T();	// destroy record if constructed
+	}
 
     virtual void conRec( TI i, SI noZ=0)
 	{	// construct record in space i

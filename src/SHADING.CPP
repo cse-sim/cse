@@ -483,32 +483,39 @@ int SURFGEOM::gx_GetAzmTilt( float& azmR, float& tiltR) const
 }	// SURFGEOM::gx_GetAzmTilt
 //-----------------------------------------------------------------------------
 RC SURFGEOM::gx_AddPenumbraSurface(
+	int& nS,				// shading surface count
+							//    incremented iff success
 	int options /*=0*/)		// options TBD
 // add this surface to the Penumbra model
-// returns RCOK iff success or no geometry
-//    else RCBAD
+// returns RCOK: success or no geometry
+//    else RCBAD: bad geometry or addSurface fail
 {
 	options;
-	gx_pnIdx = -1;
-	if (gx_IsEmpty())
-		return RCOK;		// no geometry
-
-	Pumbra::Polygon pnPlg;
-	int nV = gx_sgDet->gxd_FillPenumbraPolygon( pnPlg);
-	if (nV >= 3)
-	{	Pumbra::Surface pnSurf( pnPlg);
-		gx_pnIdx = pumbra.addSurface( pnSurf);
+	gx_pnIdx = -1;		// no associated surface
+	RC rc = RCOK;
+	if (!gx_IsEmpty())
+	{	Pumbra::Polygon pnPlg;
+		int nV = gx_sgDet->gxd_FillPenumbraPolygon( pnPlg);
+		if (nV >= 3)
+		{	Pumbra::Surface pnSurf( pnPlg);
+			gx_pnIdx = pumbra.addSurface( pnSurf);
+		}
+		if (gx_pnIdx >= 0)
+			nS++;
+		else
+			rc = RCBAD;
 	}
-	return gx_pnIdx >= 0 ? RCOK : RCBAD;
+	return rc;
 }		// SURFGEOM::gx_AddPenumbraSurface
 //-----------------------------------------------------------------------------
 float SURFGEOM::gx_CalcPenumbraShading(
+	int sunupf,		// nz iff sun is above horizon
 	float cosi)		// cos( beam incA)
 // returns 0 on success
 //        -1 no Penumbra shading
 {	
-	if (cosi <= 0.f)
-		gx_fBeam = 0.;		// sun behind surface
+	if (!sunupf || cosi <= 0.f)
+		gx_fBeam = 0.;		// sun down or behind surface
 	else if (gx_pnIdx < 0)
 		gx_fBeam = 1.f;		// no shading -> full sun
 	else
@@ -561,10 +568,6 @@ RC SHADEX::sx_CkF()
 
 	return rc;
 }		// SHADEX::sx_CkF
-//-----------------------------------------------------------------------------
-RC SHADEX::sx_AddPenumbraSurface( int options/*=0*/)
-{	return sx_g.gx_AddPenumbraSurface( options);
-}		// SHADEX::sx_AddPenumbraSurface
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -582,7 +585,7 @@ static void PemumbraMessageHandler(
 
 }		// penumbraMessageHandler
 //-----------------------------------------------------------------------------
-RC ShadingRunInit()		// start-of-run init for Penumbra shading
+RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 // sets up Penumbra model from all shading or receiving objects
 {
 	RC rc = RCOK;
@@ -593,25 +596,29 @@ RC ShadingRunInit()		// start-of-run init for Penumbra shading
 
 	// Penumbra clear
 
+	tp_exshNShade = 0;		// # of shade surfaces
+	tp_exshNRec = 0;		// # of receiving surfaces
+
 	// create Penumbra surface model
 	PVARRAY* pPV;
 	RLUP( PvR, pPV)
-		rc |= pPV->pv_AddPenumbraSurface();
+		rc |= pPV->pv_AddPenumbraSurface( tp_exshNRec);
+	tp_exshNShade = tp_exshNRec;		// PVARRAYs shade each other
 
 	SHADEX* pSX;
 	RLUP( SxR, pSX)
-		rc |= pSX->sx_AddPenumbraSurface();
+		rc |= pSX->sx_AddPenumbraSurface( tp_exshNShade);
 
-	if (!rc)
+	if (!rc && tp_exshNShade > 0)
 	{	if (pumbra.setModel() != Pumbra::PN_SUCCESS)
 			rc |= RCBAD;
 	}
 
 	return rc;
 
-}		// ::ShadingRunInit
+}		// TOPRAT::tp_ExshRunInit
 //-----------------------------------------------------------------------------
-RC ShadingBegHour()		// once-per-hour Penumbra steps
+RC TOPRAT::tp_ExshBegHour()		// once-per-hour Penumbra steps
 {
 	RC rc = RCOK;
 
@@ -628,7 +635,7 @@ RC ShadingBegHour()		// once-per-hour Penumbra steps
 	}
 
 	return rc;
-}		// ::ShadingBegHour
+}		// TOPRAT::tp_ExshBegHour
 
 
 // shading.cpp end
