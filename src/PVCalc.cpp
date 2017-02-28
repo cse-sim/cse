@@ -80,7 +80,7 @@ int PVARRAY::pv_HasPenumbraShading() const
 		pv_g.gx_IsEmpty() ? 0
 	:                       1;
 }		// PVARRAY::pv_HasPenumbraShading
-
+//-----------------------------------------------------------------------------
 RC PVARRAY::pv_CkF()
 {
 	RC rc = RCOK;
@@ -94,13 +94,6 @@ RC PVARRAY::pv_CkF()
 	const char* pvUsePVWTyTx = getChoiTx(PVARRAY_USEPVWATTSDLL, 1);
 	const char* whenPVW = strtprintf("pvUsePVWatts=%s", pvUsePVWTyTx);
 
-	// process geometry
-	RC rcGeom = pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
-	rc |= rcGeom;
-	bool bDetailGeom = rcGeom == RCOK && !pv_g.gx_IsEmpty();
-	float dgAzm=0.f, dgTilt=0.f;
-	if (bDetailGeom)
-		pv_g.gx_GetAzmTilt( dgAzm, dgTilt);
 
 	if (pv_usePVWattsDLL == C_NOYESCH_NO) {
 		if (pv_arrayType == C_PVARRCH_1AXT)
@@ -109,15 +102,31 @@ RC PVARRAY::pv_CkF()
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to utilize backtracking algorithm.", whenAT, whenPVW);
 	}
 
-	if (pv_arrayType != C_PVARRCH_2AXT) {
-		rc |= requireN(whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
-	}
-	else {
-		rc |= ignoreN(whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
-	}
+	// process geometry
+	RC rcGeom = pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
+	rc |= rcGeom;
+	bool bDetailGeom = !rcGeom && !pv_g.gx_IsEmpty();
+	if (bDetailGeom)
+	{	float dgAzm=0.f, dgTilt=0.f;
+		pv_g.gx_GetAzmTilt( dgAzm, dgTilt);
 
-	if (pv_arrayType != C_PVARRCH_1AXT && pv_arrayType != C_PVARRCH_1AXBT) {
-		rc |= ignore(PVARRAY_GCR, whenAT);
+#if 0
+		FXDOR "FixedOpenRack"
+			FXDRF "FixedRoofMount"
+			1AXT "OneAxisTracking"
+			1AXBT "OneAxisBacktracking"
+			2AXT "TwoAxisTracking"
+#endif
+	}
+	else
+	{	// geometry not given, check azm and tilt against array type
+		if (pv_arrayType != C_PVARRCH_2AXT)
+			rc |= requireN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
+		else
+			rc |= ignoreN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
+
+		if (pv_arrayType != C_PVARRCH_1AXT && pv_arrayType != C_PVARRCH_1AXBT)
+			rc |= ignore( PVARRAY_GCR, whenAT);
 	}
 
 	const char* pvModTyTx = getChoiTx(PVARRAY_MODULETYPE, 1);
@@ -135,7 +144,6 @@ RC PVARRAY::pv_CkF()
 			rc |= oWarn("Temperature coefficient (%0.4f) is positive. Values are typically negative.", pv_tempCoeff);
 		}
 	}
-
 
 	return rc;
 
