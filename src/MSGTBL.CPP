@@ -107,7 +107,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 { MH_X0048, "X0048: %s(): called for non-%s RATBASE" },
 
 // ancrec.cpp, added 5-14-92
-{ MH_X0050, "X0050: record::copyFrom: unconstructed destination (b is 0)" },
+{ MH_X0050, "X0050: record::CopyFrom: unconstructed destination (b is 0)" },
 { MH_X0051, "X0051: record::operator=(): unconstructed destination (b is 0)" },
 { MH_X0052, "X0052: record::operator=(): records not same type" },
 { MH_X0053, "X0053: anc4n: bad or unassigned record anchor number %d" },

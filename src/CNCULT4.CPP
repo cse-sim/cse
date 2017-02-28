@@ -1245,7 +1245,7 @@ COL::~COL()
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 }			// COL::Copy
 //-----------------------------------------------------------------------------
-/*virtual*/ record& COL::copyFrom( record* pSrc, SI copyName/*=1*/,SI dupPtrs/*=0*/)
+/*virtual*/ record& COL::CopyFrom( record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
 {
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	cupfree( DMPP( colHead));
@@ -1253,13 +1253,13 @@ COL::~COL()
 		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
        								   inline in pseudo-code, dmfree it.  cueval.cpp. */
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
-	record::copyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
+	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
 // increment reference count for pointer(s) just copied
 	cupIncRef( DMPP( colHead));
 	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 	return *this;
-}			// COL::copyFrom
+}			// COL::CopyFrom
 //---------------------------------------------------------------------------------------
 DVRI::~DVRI()
 {

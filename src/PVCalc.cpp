@@ -23,30 +23,54 @@ static XPVWATTS PVWATTS; // public PVWATTS Library object
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
 
+//-----------------------------------------------------------------------------
 PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
 {
 	FixUp();
 }	// PVARRAY::PVARRAY
-
+//-----------------------------------------------------------------------------
 PVARRAY::~PVARRAY()
 {
 	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
 		PVWATTS.xp_ClearData(this);
 	}
 }	// PVARRAY::~PVARRAY
-
+//-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
 {	pv_g.gx_Init( this);
 }
-
-void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
+//-----------------------------------------------------------------------------
+/*virtual*/ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	pv_g.gx_CopySubObjects();
 }	// PVARRAY::Copy
-
+//-----------------------------------------------------------------------------
+/*virtual*/ PVARRAY& PVARRAY::CopyFrom(
+	record* src,
+	int copyName/*=1*/,
+	int dupPtrs/*=0*/)
+{
+	record::CopyFrom( src, copyName, dupPtrs);		// calls FixUp()
+	pv_g.gx_CopySubObjects();
+#if defined( _DEBUG)
+	Validate( 1);	// 1: check SURFGEOMDET also
+#endif
+	return *this;
+}		// PVARRAY::CopyFrom
+//-----------------------------------------------------------------------------
+/*virtual*/ RC PVARRAY::Validate(
+	int options/*=0*/)		// options bits
+							//  1: check child SURFGEOMDET also
+{
+	RC rc = record::Validate( options);
+	if (rc == RCOK)
+		rc = pv_g.gx_Validate( this, "PVARRAY", options);
+	return rc;
+}		// PVARRAY::Validate
+//-----------------------------------------------------------------------------
 int PVARRAY::pv_HasPenumbraShading() const
 // returns
 //   0 iff no geometry
@@ -286,12 +310,15 @@ RC PVARRAY::pv_CalcPOA()
 	int sunup = 					// nz if sun above horizon this hour
 		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
 
+	if (!sunup)
+		pv_CalcPenumbraShading( 0, 0.f);	// sun not up for any portion of hour
+											//   clear Penumbra results
+
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
 	{	pv_poa = 0.f;
 		pv_poaT = 0.f;
 		pv_aoi = kPiOver2;
-		pv_CalcPenumbraShading( 0, 0.f);	// clear Penumbra results
 		return rc;
 	}
 

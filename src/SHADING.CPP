@@ -423,6 +423,7 @@ SURFGEOM::SURFGEOM()
 SURFGEOM::~SURFGEOM()
 {
 	delete gx_sgDet;
+	gx_sgDet = NULL;
 }	// SURFGEOM::~SURFGEOM
 //-----------------------------------------------------------------------------
 void SURFGEOM::gx_Init(			// parent linkage etc
@@ -436,6 +437,20 @@ bool SURFGEOM::gx_IsEmpty() const	// true iff no polygon
 {
 	return !gx_sgDet || gx_sgDet->gxd_IsEmpty();
 }		// SURFGEOM::gx_IsEmpty
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_Validate(
+	record* pParent,	// actual parent
+	const char* what,	// parent type ("PVARRAY")
+	int options /*=0*/)	// option bits
+						//   1: check SURFGEOMDET linkage
+{
+	RC rc = RCOK;
+	if (gx_pParent != pParent)
+		rc |= errCrit( WRN, "%s::Validate: Bad SURFGEOM linkage", what);
+	else if (options&1 && gx_sgDet->gxd_pSG != this)
+		rc |= errCrit( WRN, "%s::Validate: Bad SURFGEOMDET linkage", what);
+	return rc;
+}		// SURFGEOM::gx_Validate
 //-----------------------------------------------------------------------------
 void SURFGEOM::gx_CopySubObjects()		// copy heap subobjects
 // call AFTER bitwise parent Copy()
@@ -521,6 +536,10 @@ float SURFGEOM::gx_CalcPenumbraShading(
 	else
 	{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
 		gx_fBeam = PSSF / (cosi*gx_area);
+#if defined( _DEBUG)
+		if (Top.iHr < 10 && gx_fBeam < 1.f)
+			printf( "\nHit");
+#endif
 		if (gx_fBeam > 1.f)
 			gx_fBeam = 1.;
 #if 0
@@ -545,6 +564,16 @@ SHADEX::SHADEX( basAnc *b, TI i, SI noZ /*=0*/)
 {
 	sx_g.gx_Init( this);
 }		// SHADEX::FixUp
+//-----------------------------------------------------------------------------
+/*virtual*/ RC SHADEX::Validate(
+	int options/*=0*/)		// options bits
+							//  1: check child SURFGEOMDET also
+{
+	RC rc = record::Validate( options);
+	if (rc == RCOK)
+		rc = sx_g.gx_Validate( this, "SHADEX", options);
+	return rc;
+}		// SHADEX::Validate
 //----------------------------------------------------------------------------
 RC SHADEX::sx_Init()		// init at run start
 {
@@ -571,7 +600,7 @@ RC SHADEX::sx_CkF()
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// public interface to shading calcs
+// TOPRAT interface to shading model
 ///////////////////////////////////////////////////////////////////////////////
 static void PemumbraMessageHandler(
 	const int messageType,
@@ -594,7 +623,7 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 	//   use pumbra as context even though only one
 	pumbra.setMessageCallback( PemumbraMessageHandler, &pumbra);
 
-	// Penumbra clear
+	pumbra.clearModel();
 
 	tp_exshNShade = 0;		// # of shade surfaces
 	tp_exshNRec = 0;		// # of receiving surfaces

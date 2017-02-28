@@ -757,6 +757,7 @@ RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 	*declare "~SURFGEOM();"
     *declare "void gx_Init( record* pParent, int options=0);"
 	*declare "bool gx_IsEmpty() const;"
+	*declare "RC gx_Validate( record* pParent, const char* what, int options=0);"
 	*declare "void gx_CopySubObjects();"
 	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
 	*declare "int gx_GetAzmTilt( float& azm, float& tilt) const;"
@@ -786,6 +787,7 @@ RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
 								// .ownTi (base class) is zone subscript
 	*declare "RC sx_CkF();"
+	*declare "RC Validate( int options=0);"
 	*declare "RC sx_AddPenumbraSurface( int& nS, int options=0) { return sx_g.gx_AddPenumbraSurface( nS, options); }"
 
 	*i *noname *nest SURFGEOM sx_g;
@@ -1493,7 +1495,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& copyFrom( record *src, SI copyName=1, SI dupPtrs=0);"
+    *declare "virtual record& CopyFrom( record *src, int copyName=1, int dupPtrs=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CHP colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
@@ -3593,7 +3595,9 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *excon
   *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
+  *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
+  *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "int pv_HasPenumbraShading() const;"

@@ -69,7 +69,7 @@ x//#define MH_T0004  1084	//
 #define MH_X0048  48
 //#define MH_X0048  49
 // ancrec.cpp, added 5-14-92
-#define MH_X0050  50	// "record::copyFrom: unconstructed destination (b is 0)"
+#define MH_X0050  50	// "record::CopyFrom: unconstructed destination (b is 0)"
 #define MH_X0051  51	// "record::operator=(): unconstructed destination (b is 0)"
 #define MH_X0052  52	// "record::operator=(): records not same type"
 #define MH_X0053  53	// "anc4n: bad or unassigned record anchor number %d"
