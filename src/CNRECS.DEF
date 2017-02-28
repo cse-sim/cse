@@ -211,6 +211,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i ANGLE tp_bldgAzm		// angle to add to all zone/surface azms
     *i SKYMODCH skyModel 	// sky model: C_.._ISO or _ANISO
     *i SKYMODLWCH skyModelLW	// long-wave sky model
+	*i EXSHMODELCH tp_exshModel;	// exterior shading model (other than overhang/fins)
+									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
+									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
     *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)
 								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs
 								//   C_DHWMODELCH_2013: corrected 2013 implementation (default)
@@ -289,6 +292,12 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 //TOP: setup time
 	*r *hide BOO tp_bAllCR	// nz iff all zones use convective/radiant model
 							// (else all CNE, mix not supported (detected/err'd during setup)
+
+//TOP: setup: exterior (non-overhang/fin) shading
+	*r INT tp_exshNShade;		// # of shading surfaces in model
+	*r INT tp_exshNRec;			// # of receiving surfaces in model (may also be shading)
+	*declare "RC tp_ExshRunInit();"
+	*declare "RC tp_ExshBegHour();"
 
 //TOP: setup time (derived from inputs b4 run): tolerances
     *r *hide FLOAT relTol	// hvac computation precision relative value tolerance -- input as Tol above
@@ -748,11 +757,12 @@ RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 	*declare "~SURFGEOM();"
     *declare "void gx_Init( record* pParent, int options=0);"
 	*declare "bool gx_IsEmpty() const;"
+	*declare "RC gx_Validate( record* pParent, const char* what, int options=0);"
 	*declare "void gx_CopySubObjects();"
 	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
 	*declare "int gx_GetAzmTilt( float& azm, float& tilt) const;"
-	*declare "RC gx_AddPenumbraSurface( int options=0);"
-	*declare "float gx_CalcPenumbraShading( float cosi);"
+	*declare "RC gx_AddPenumbraSurface( int &nS, int options=0);"
+	*declare "float gx_CalcPenumbraShading( int sunupf, float cosi);"
 
 	*declare "record* gx_pParent;"				// pointer to parent record
 												//   (SHADEX, PVARRAY, ...)
@@ -777,8 +787,8 @@ RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
 								// .ownTi (base class) is zone subscript
 	*declare "RC sx_CkF();"
-	*declare "RC sx_AddPenumbraSurface( int options=0);"
-
+	*declare "RC Validate( int options=0);"
+	*declare "RC sx_AddPenumbraSurface( int& nS, int options=0) { return sx_g.gx_AddPenumbraSurface( nS, options); }"
 
 	*i *noname *nest SURFGEOM sx_g;
 
@@ -1485,7 +1495,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& copyFrom( record *src, SI copyName=1, SI dupPtrs=0);"
+    *declare "virtual record& CopyFrom( record *src, int copyName=1, int dupPtrs=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CHP colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
@@ -3585,12 +3595,14 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *excon
   *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
+  *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
+  *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "int pv_HasPenumbraShading() const;"
-  *declare "RC pv_AddPenumbraSurface( int options=0);"
-  *declare "float pv_CalcPenumbraShading( float cosi);"
+  *declare "RC pv_AddPenumbraSurface( int options=0) { return pv_g.gx_AddPenumbraSurface( options); }"
+  *declare "float pv_CalcPenumbraShading( int sunupf, float cosi) { return pv_g.gx_CalcPenumbraShading( sunupf, cosi); }"
   *declare "RC pv_Init();"
   *declare "RC pv_DoHour();"
   *declare "RC pv_CalcPOA();"

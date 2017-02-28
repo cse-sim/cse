@@ -236,6 +236,10 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  DRYBULB "DryBulb"
 			  BLAST "Blast"
 			  }
+*choicb EXSHMODELCH {
+			  NONE "None"
+			  PENUMBRA "Penumbra"
+			  }
 // day of week choice, sun=1: subtract 1 for DOW for use with tdpak.
 *choicb DOWCH    {  SUN "Sun"
 			  MON "Mon"

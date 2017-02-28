@@ -253,7 +253,5 @@ void FC cgzndump( SI vrh, TI zi);
 
 // shading.cpp
 float FC shadwin( const WSHADRAT *p, float gamma, float cosz);
-RC ShadingRunInit();
-RC ShadingBegHour();
 
 // end of cnguts.h

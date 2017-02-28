@@ -69,8 +69,8 @@
 #undef BUG_COLTYPECOPY	// define to include object trap code re memcpy bug
 						//   associated with copying COL objects
 						//   File coltypebug.cse crashes if ANAMELENGTH64 defined.
-						//   Fixed (maybe) by overriding COL::copyFrom().
-						//   Further research needed: why both Copy() and copyFrom()?
+						//   Fixed (maybe) by overriding COL::CopyFrom().
+						//   Further research needed: why both Copy() and CopyFrom()?
 						//      (both use memcpy(), dangerous when object contains heap ptrs)
 						//   2-24-2012
 

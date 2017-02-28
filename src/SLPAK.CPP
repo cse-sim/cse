@@ -612,7 +612,6 @@ SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
                  *pcosi = 0, *pazm and *pcosz undefined. */
 {
 	float c1, c2, fc1, fc2, faz1, faz2;
-	SI ihx, pos1, pos2;
 
 	/* If sun below HORIZON for the entire hour, no need to calculate */
 	if (slloccur->sunupf[ihr] == 0.F)	/* if sun below horizon entire hour */
@@ -628,9 +627,9 @@ SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
 
 	/* Compute dot products at beg and end of hour.  Set pos flags TRUE if
 	   product is positive (meaning sun is above surface at beg/end of hour) */
-	ihx  = ihr < 23 ? ihr+1 : 0;
-	pos1 = (c1 = DotProd( sdircos, slloccur->dircos[ihr])) >= 0.F;
-	pos2 = (c2 = DotProd( sdircos, slloccur->dircos[ihx])) >= 0.F;
+	int ihx  = ihr < 23 ? ihr+1 : 0;
+	int pos1 = (c1 = DotProd( sdircos, slloccur->dircos[ihr])) >= 0.F;
+	int pos2 = (c2 = DotProd( sdircos, slloccur->dircos[ihx])) >= 0.F;
 
 	/* If sun below SURFACE for the entire hour, stop */
 	if (!pos1 && !pos2)

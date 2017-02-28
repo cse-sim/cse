@@ -23,30 +23,54 @@ static XPVWATTS PVWATTS; // public PVWATTS Library object
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
 
+//-----------------------------------------------------------------------------
 PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
 {
 	FixUp();
 }	// PVARRAY::PVARRAY
-
+//-----------------------------------------------------------------------------
 PVARRAY::~PVARRAY()
 {
 	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
 		PVWATTS.xp_ClearData(this);
 	}
 }	// PVARRAY::~PVARRAY
-
+//-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
 {	pv_g.gx_Init( this);
 }
-
-void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
+//-----------------------------------------------------------------------------
+/*virtual*/ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	pv_g.gx_CopySubObjects();
 }	// PVARRAY::Copy
-
+//-----------------------------------------------------------------------------
+/*virtual*/ PVARRAY& PVARRAY::CopyFrom(
+	record* src,
+	int copyName/*=1*/,
+	int dupPtrs/*=0*/)
+{
+	record::CopyFrom( src, copyName, dupPtrs);		// calls FixUp()
+	pv_g.gx_CopySubObjects();
+#if defined( _DEBUG)
+	Validate( 1);	// 1: check SURFGEOMDET also
+#endif
+	return *this;
+}		// PVARRAY::CopyFrom
+//-----------------------------------------------------------------------------
+/*virtual*/ RC PVARRAY::Validate(
+	int options/*=0*/)		// options bits
+							//  1: check child SURFGEOMDET also
+{
+	RC rc = record::Validate( options);
+	if (rc == RCOK)
+		rc = pv_g.gx_Validate( this, "PVARRAY", options);
+	return rc;
+}		// PVARRAY::Validate
+//-----------------------------------------------------------------------------
 int PVARRAY::pv_HasPenumbraShading() const
 // returns
 //   0 iff no geometry
@@ -56,14 +80,6 @@ int PVARRAY::pv_HasPenumbraShading() const
 		pv_g.gx_IsEmpty() ? 0
 	:                       1;
 }		// PVARRAY::pv_HasPenumbraShading
-
-RC PVARRAY::pv_AddPenumbraSurface( int options/*=0*/)
-{	return pv_g.gx_AddPenumbraSurface( options);
-}		// PVARRAY::pv_AddPenumbraSurface
-
-float PVARRAY::pv_CalcPenumbraShading( float cosi)
-{	return pv_g.gx_CalcPenumbraShading( cosi);
-}
 
 RC PVARRAY::pv_CkF()
 {
@@ -285,14 +301,6 @@ RC PVARRAY::pv_CalcPOA()
 {
 	RC rc = RCOK;
 
-	// Don't bother if no solar from weather
-	if (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f) {
-		pv_poa = 0.f;
-		pv_poaT = 0.f;
-		pv_aoi = kPiOver2;
-		return rc;
-	}
-
 	// Some routines borrowed from elsewhere in code. Should be updated to share routines with XSURF and SBC.
 
 	// Calculate horizontal incidence
@@ -301,7 +309,18 @@ RC PVARRAY::pv_CalcPOA()
 	float azm, cosz;
 	int sunup = 					// nz if sun above horizon this hour
 		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
-	if (!sunup)	cosz = 0.f;
+
+	if (!sunup)
+		pv_CalcPenumbraShading( 0, 0.f);	// sun not up for any portion of hour
+											//   clear Penumbra results
+
+	// Don't bother if sun down or no solar from weather
+	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
+	{	pv_poa = 0.f;
+		pv_poaT = 0.f;
+		pv_aoi = kPiOver2;
+		return rc;
+	}
 
 	// TODO Calculate shading and backtracking for single-axis tracking and fixed arrays
 
@@ -360,16 +379,19 @@ RC PVARRAY::pv_CalcPOA()
 	float dcos[3]; // direction cosines
 	slsdc(pv_panelAzm, pv_panelTilt, dcos);
 	float cosi;
-	int sunupSrf = sunup && slsurfhr(dcos, Top.iHrST, &cosi, NULL, NULL);
+	int sunupSrf = slsurfhr( dcos, Top.iHrST, &cosi, NULL, NULL);
 
+	// fraction receiving beam sun
+	float fBeam = Top.tp_exshModel == C_EXSHMODELCH_PENUMBRA
+					? pv_CalcPenumbraShading( sunupSrf, cosi)
+					: 1.f;
 	float poaBeam;
-	if (sunupSrf)
-	{	float fBeam = pv_CalcPenumbraShading( cosi);
-		poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
+	if (sunupSrf)	
+	{	poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
 		pv_aoi = acos(cosi);
 	}
-	else {
-		poaBeam = 0.f;  // incident beam
+	else
+	{	poaBeam = 0.f;  // incident beam
 		pv_aoi = kPiOver2;
 	}
 

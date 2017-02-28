@@ -3546,10 +3546,10 @@ LOCAL RC NEAR rateDuper(
 // copy contents.  Caller has ratAdded to main or types basAnc as desired.
 	if (move >= 0)		// not if just deleting oldE
 	{
-		newE->copyFrom( oldE, cn);	// copy contents, and name if cn
+		newE->CopyFrom( oldE, cn);	// copy contents, and name if cn
 		if (own >= 0)				// if new owner value (or 0) given
-			newE->ownTi = own;		//  store it: overwrite what copyFrom copied.
-		DMHEAPCHK( "cul rateDuper() copyFrom")
+			newE->ownTi = own;		//  store it: overwrite what CopyFrom copied.
+		DMHEAPCHK( "cul rateDuper() CopyFrom")
 	}
 
 // do reference table and expression table entries
