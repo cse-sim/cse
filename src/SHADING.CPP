@@ -572,8 +572,8 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 		{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
 			fBeam = PSSF / (cosi*gx_area);
 			if (fBeam > 1.f)
-			{	if (fBeam > 1.02f)
-				{	// report some errors > 2% and all errors > 10%
+			{	if (fBeam > 1.05f)
+				{	// report some errors > 5% and all errors > 10%
 					static const int MAXFBEAMMSGS = 20;
 					if ( ++gx_fBeamErrCount <= MAXFBEAMMSGS || fBeam > 1.10f)
 					{	const char* noMore = gx_fBeamErrCount == MAXFBEAMMSGS
