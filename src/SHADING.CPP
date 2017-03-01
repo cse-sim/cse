@@ -31,6 +31,7 @@
 #include "cuparse.h"
 #include "slpak.h"
 #include "cnguts.h"
+#include "exman.h"
 
 #include <ashrae/geometry.h>
 
@@ -426,11 +427,17 @@ SURFGEOM::~SURFGEOM()
 	gx_sgDet = NULL;
 }	// SURFGEOM::~SURFGEOM
 //-----------------------------------------------------------------------------
-void SURFGEOM::gx_Init(			// parent linkage etc
+void SURFGEOM::gx_SetParent(			// parent linkage etc
 	record* pParent,		// parent record: SHADEX, PVARRAY, etc
 	int options /*=0*/)		// options TBD
 {
 	gx_pParent = pParent;
+}		// SURFGEOM::gx_SetParent
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_Init()		// start-of-run init
+{	RC rc = RCOK;
+	gx_fBeamErrCount = 0;	// fBeam > 1ish error count
+	return rc;
 }		// SURFGEOM::gx_Init
 //-----------------------------------------------------------------------------
 bool SURFGEOM::gx_IsEmpty() const	// true iff no polygon
@@ -523,32 +530,66 @@ RC SURFGEOM::gx_AddPenumbraSurface(
 	return rc;
 }		// SURFGEOM::gx_AddPenumbraSurface
 //-----------------------------------------------------------------------------
-float SURFGEOM::gx_CalcPenumbraShading(
-	int sunupf,		// nz iff sun is above horizon
-	float cosi)		// cos( beam incA)
-// returns 0 on success
-//        -1 no Penumbra shading
-{	
-	if (!sunupf || cosi <= 0.f)
-		gx_fBeam = 0.;		// sun down or behind surface
-	else if (gx_pnIdx < 0)
-		gx_fBeam = 1.f;		// no shading -> full sun
-	else
-	{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
-		gx_fBeam = PSSF / (cosi*gx_area);
-#if defined( _DEBUG)
-		if (Top.iHr < 10 && gx_fBeam < 1.f)
-			printf( "\nHit");
-#endif
-		if (gx_fBeam > 1.f)
-			gx_fBeam = 1.;
-#if 0
-		if (gx_fBeam < .8f)
-			printf( "\nShade!");
-#endif
+void SURFGEOM::gx_ClearShading()		// clear shading results (e.g. when sun is down)
+{	gx_fBeam = 0.f;
+}	// SURFGEOM::gx_ClearShading
+//-----------------------------------------------------------------------------
+int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
+	float& cosi,	// returned: cos( beam incA)
+	float& fBeam)	// returned: fraction of surface sunlit
+
+// slday() must have been called
+
+// returns 1: sun up relative to surface (cosi, fBeam set)
+//            fBeam = 1 if Penumbra shading not possible or disabled
+//         0: sun down relative to surface
+//            (cosi=fBeam=0)
+//        -1: calc failure (cosi=fBeam=0)
+{
+	float dcSrf[ 3];		// surface direction cosines
+	gx_sgDet->gxd_uNorm.Get( dcSrf);
+	float azm, cosz;
+	int sunupSrf = slsurfhr( dcSrf, Top.iHrST, &cosi, &azm, &cosz);
+
+	if (!sunupSrf)
+	{	fBeam = 0.f;		// sun is down or behind surface
+		// cosi = 0.f;		// set in slsurfhr
+
 	}
-	return gx_fBeam;
-}		// SURFGEOM::gx_CalcPenumbraShading
+	else if (Top.tp_exshModel != C_EXSHMODELCH_PENUMBRA
+		  || gx_pnIdx < 0)
+		fBeam = 1.f;		// Penumbra model disabled
+							// or no associated Penumbra surface
+							// say no shade
+	else
+	{	// use Penumbra model
+		float alt = kPiOver2 - acos( cosz);
+		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
+		{	cosi = fBeam = 0.f;
+			sunupSrf = -1;	// unexpected
+		}
+		else
+		{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
+			fBeam = PSSF / (cosi*gx_area);
+			if (fBeam > 1.f)
+			{	if (fBeam > 1.02f)
+				{	// report some errors > 2% and all errors > 10%
+					static const int MAXFBEAMMSGS = 20;
+					if ( ++gx_fBeamErrCount <= MAXFBEAMMSGS || fBeam > 1.10f)
+					{	const char* noMore = gx_fBeamErrCount == MAXFBEAMMSGS
+									? "\n  Omitting further messages for small errors of this type."
+									: "";
+						rWarn( "%s: calculated sunlit fraction (=%0.4f) s/b <= 1.%s",
+							gx_pParent->classObjTx( 1), fBeam, noMore);
+					}
+				}
+				fBeam = 1.;		// limit to 1
+			}
+		}
+	}
+	gx_fBeam = fBeam;
+	return sunupSrf;
+}		// SURFGEOM::gx_CalcBeamShading
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -562,7 +603,7 @@ SHADEX::SHADEX( basAnc *b, TI i, SI noZ /*=0*/)
 //----------------------------------------------------------------------------
 /*virtual*/ void SHADEX::FixUp()
 {
-	sx_g.gx_Init( this);
+	sx_g.gx_SetParent( this);
 }		// SHADEX::FixUp
 //-----------------------------------------------------------------------------
 /*virtual*/ RC SHADEX::Validate(
@@ -577,7 +618,7 @@ SHADEX::SHADEX( basAnc *b, TI i, SI noZ /*=0*/)
 //----------------------------------------------------------------------------
 RC SHADEX::sx_Init()		// init at run start
 {
-	RC rc = RCOK;
+	RC rc = sx_g.gx_Init();
 
 	return rc;
 }		// SHADEX::sx_Init
@@ -647,21 +688,24 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 
 }		// TOPRAT::tp_ExshRunInit
 //-----------------------------------------------------------------------------
-RC TOPRAT::tp_ExshBegHour()		// once-per-hour Penumbra steps
+RC TOPRAT::tp_ExshBegHour()		// once-per-hour exterior shading setup
 {
 	RC rc = RCOK;
 
-	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
-	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
-	float azm, cosz;
-	int sunup = 					// nz if sun above horizon this hour
-		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
-
-	if (sunup)
-	{	float alt = kPiOver2 - acos( cosz);
-		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
-			rc |= RCBAD;
-	}
+#if 0
+0 now done per surface
+0	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
+0	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
+0	float azm, cosz;
+0	int sunup = 					// nz if sun above horizon this hour
+0		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
+0
+0	if (sunup)
+0	{	float alt = kPiOver2 - acos( cosz);
+0		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
+0			rc |= RCBAD;
+0	}
+#endif
 
 	return rc;
 }		// TOPRAT::tp_ExshBegHour

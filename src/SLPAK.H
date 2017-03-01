@@ -79,8 +79,8 @@ SLLOCDAT * FC slselect( SLLOCDAT *pSlr);
 void   FC slfree( SLLOCDAT **ppSlr);
 void   FC slday( DOY jday, SI timetype);
 void   FC sldec( float sldec, SI timetype);
-SI     FC slsurfhr( float sdircos[3], SI ihr, float *pcosi, float *pazm,
-                    float *pcosz);
+int slsurfhr( float sdircos[3], int ihr, float* pCosi, float* pAzm=NULL,
+                    float* pCos=NULL);
 void   FC slaltazm( float fhour, float *altp, float *azmp);
 void   FC slaniso( float *pbeam, float *pdiff, SI ihr);
 

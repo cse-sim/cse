@@ -707,6 +707,10 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 
     *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
     *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
+	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
+							// solar position at midpoint of hour (or portion of hour sun is up)
+	*h float wd_slAzm;		//   azmimuth, radians (0=N, +clockwise)
+	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
     *h float wd_db			// air dry bulb temp, deg F
     *h float wd_wb			// air wet bulb temp, deg F
     *h float wd_wnddir		// wind direction, deg, 0=N, 90=E
@@ -755,14 +759,18 @@ RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 	*prefix gx_
 	*declare "SURFGEOM();"
 	*declare "~SURFGEOM();"
-    *declare "void gx_Init( record* pParent, int options=0);"
+    *declare "void gx_SetParent( record* pParent, int options=0);"
+	*declare "RC gx_Init();"
 	*declare "bool gx_IsEmpty() const;"
 	*declare "RC gx_Validate( record* pParent, const char* what, int options=0);"
 	*declare "void gx_CopySubObjects();"
 	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
 	*declare "int gx_GetAzmTilt( float& azm, float& tilt) const;"
 	*declare "RC gx_AddPenumbraSurface( int &nS, int options=0);"
+	*declare "void gx_ClearShading();"
 	*declare "float gx_CalcPenumbraShading( int sunupf, float cosi);"
+	*declare "int gx_CalcBeamShading( float& cosi, float& fBeam);"
+
 
 	*declare "record* gx_pParent;"				// pointer to parent record
 												//   (SHADEX, PVARRAY, ...)
@@ -774,6 +782,8 @@ RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 
 	*h *e FLOAT gx_fBeam;						// fraction of area receiving direct beam
 												//   1 if no Penumbra shading
+	*h *e INT gx_fBeamErrCount;					// counter for fBeam > 1 errors
+												//   limits # of runtime messages
 
 	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z), ft
 *END	// SURFGEOM
@@ -3601,8 +3611,14 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *declare "RC pv_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "int pv_HasPenumbraShading() const;"
+  *declare "int pv_AxisCount() const;"
   *declare "RC pv_AddPenumbraSurface( int options=0) { return pv_g.gx_AddPenumbraSurface( options); }"
+#if 1
+  *declare "void pv_ClearShading() { pv_g.gx_ClearShading(); }"
+  *declare "int pv_CalcBeamShading( float& cosi, float& fBeam) { return pv_g.gx_CalcBeamShading( cosi, fBeam);}"
+#else
   *declare "float pv_CalcPenumbraShading( int sunupf, float cosi) { return pv_g.gx_CalcPenumbraShading( sunupf, cosi); }"
+#endif
   *declare "RC pv_Init();"
   *declare "RC pv_DoHour();"
   *declare "RC pv_CalcPOA();"

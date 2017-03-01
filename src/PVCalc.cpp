@@ -38,7 +38,7 @@ PVARRAY::~PVARRAY()
 }	// PVARRAY::~PVARRAY
 //-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
-{	pv_g.gx_Init( this);
+{	pv_g.gx_SetParent( this);
 }
 //-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
@@ -73,13 +73,17 @@ PVARRAY::~PVARRAY()
 //-----------------------------------------------------------------------------
 int PVARRAY::pv_HasPenumbraShading() const
 // returns
-//   0 iff no geometry
-//   -1 iff has geometry but there are no surfaces that could shade
+//   0 iff no geometry or unsupported type
 //   1 iff has geometry and shading possible
-{	return 
-		pv_g.gx_IsEmpty() ? 0
-	:                       1;
+{	return !pv_g.gx_IsEmpty() && pv_AxisCount()==0;
 }		// PVARRAY::pv_HasPenumbraShading
+//-----------------------------------------------------------------------------
+int PVARRAY::pv_AxisCount() const
+// returns 0 (=fixed), 1 (=1-axis tracking), or 2 (=2-axis tracking
+{	return (pv_arrayType == C_PVARRCH_FXDOR || pv_arrayType == C_PVARRCH_FXDRF) ? 0
+         : pv_arrayType == C_PVARRCH_2AXT ? 2
+	     :                                  1;
+}		// PVARRAY::pv_AxisCount
 //-----------------------------------------------------------------------------
 RC PVARRAY::pv_CkF()
 {
@@ -94,7 +98,6 @@ RC PVARRAY::pv_CkF()
 	const char* pvUsePVWTyTx = getChoiTx(PVARRAY_USEPVWATTSDLL, 1);
 	const char* whenPVW = strtprintf("pvUsePVWatts=%s", pvUsePVWTyTx);
 
-
 	if (pv_usePVWattsDLL == C_NOYESCH_NO) {
 		if (pv_arrayType == C_PVARRCH_1AXT)
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to capture effects of array self-shading.", whenAT, whenPVW);
@@ -102,30 +105,41 @@ RC PVARRAY::pv_CkF()
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to utilize backtracking algorithm.", whenAT, whenPVW);
 	}
 
+	int axisCount = pv_AxisCount();		// 0 (fixed), 1, or 2
+
 	// process geometry
 	RC rcGeom = pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
 	rc |= rcGeom;
 	bool bDetailGeom = !rcGeom && !pv_g.gx_IsEmpty();
 	if (bDetailGeom)
-	{	float dgAzm=0.f, dgTilt=0.f;
-		pv_g.gx_GetAzmTilt( dgAzm, dgTilt);
-
-#if 0
-		FXDOR "FixedOpenRack"
-			FXDRF "FixedRoofMount"
-			1AXT "OneAxisTracking"
-			1AXBT "OneAxisBacktracking"
-			2AXT "TwoAxisTracking"
-#endif
+	{	if (axisCount > 0)
+			rc |= oer("Cannot use pvVertices detailed geometry %s", whenAT);
+		else
+		{	// pvVertices provided -- force pv_azm and pv_tilt to match
+			float dgAzm=0.f, dgTilt=0.f;
+			pv_g.gx_GetAzmTilt( dgAzm, dgTilt);
+			if (IsSet( PVARRAY_AZM) && frDiff( dgAzm, pv_azm) > .005f)
+				oer( "Array azimuth derived from pvVertices (=%0.2f) does not match pvAzm (=%0.2f)."
+				     " Omit pvAzm to use pvVertices value as default.",
+					DEG( dgAzm), DEG( pv_azm));
+			pv_azm = dgAzm;
+			fStat( PVARRAY_AZM) |= FsVAL;
+			if (IsSet( PVARRAY_TILT) && frDiff( dgTilt, pv_tilt) > .005f)
+				oer( "Array tilt derived from pvVertices (=%0.2f) does not match pvTilt (=%0.2f)."
+				     " Omit pvTilt to use pvVertices value as default.",
+					DEG( dgTilt), DEG( pv_tilt));
+			pv_tilt = dgTilt;
+			fStat( PVARRAY_TILT) |= FsVAL;
+		}
 	}
 	else
 	{	// geometry not given, check azm and tilt against array type
-		if (pv_arrayType != C_PVARRCH_2AXT)
+		if (axisCount != 2)
 			rc |= requireN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
 		else
 			rc |= ignoreN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
 
-		if (pv_arrayType != C_PVARRCH_1AXT && pv_arrayType != C_PVARRCH_1AXBT)
+		if (axisCount != 1)
 			rc |= ignore( PVARRAY_GCR, whenAT);
 	}
 
@@ -149,9 +163,9 @@ RC PVARRAY::pv_CkF()
 
 }	// PVARRAY::pv_CkF
 
-RC PVARRAY::pv_Init()
+RC PVARRAY::pv_Init()		// init for run
 {
-	RC rc = RCOK;
+	RC rc = pv_g.gx_Init();
 
 	switch (pv_moduleType)
 	{
@@ -318,13 +332,16 @@ RC PVARRAY::pv_CalcPOA()
 	int sunup = 					// nz if sun above horizon this hour
 		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
 
-	if (!sunup)
-		pv_CalcPenumbraShading( 0, 0.f);	// sun not up for any portion of hour
-											//   clear Penumbra results
+#if 0
+0 // incomplete effort to set up global values for solar position
+0	if (sunup != Wthr.d.wd_sunup || azm != Wthr.d.wd_slAzm)
+0		printf( "Solar ismatch");
+#endif
 
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
-	{	pv_poa = 0.f;
+	{	pv_ClearShading();
+		pv_poa = 0.f;
 		pv_poaT = 0.f;
 		pv_aoi = kPiOver2;
 		return rc;
@@ -384,15 +401,21 @@ RC PVARRAY::pv_CalcPOA()
 
 
 	// Calculate plane-of-array incidence
-	float dcos[3]; // direction cosines
-	slsdc(pv_panelAzm, pv_panelTilt, dcos);
-	float cosi;
-	int sunupSrf = slsurfhr( dcos, Top.iHrST, &cosi, NULL, NULL);
+	int sunupSrf;	// nz iff
+	float cosi, fBeam;
+	if (pv_HasPenumbraShading())
+		sunupSrf = pv_CalcBeamShading( cosi, fBeam);
+	else
+	{	// tracking: Penumbra shading not supported
+		//   azm and tilt vary
+		float dcos[3]; // direction cosines
+		slsdc( pv_panelAzm, pv_panelTilt, dcos);
+		sunupSrf = slsurfhr( dcos, Top.iHrST, &cosi);
+		fBeam = 1.f;
+	}
+	if (sunupSrf < 0)
+		return RCBAD;	// shading error
 
-	// fraction receiving beam sun
-	float fBeam = Top.tp_exshModel == C_EXSHMODELCH_PENUMBRA
-					? pv_CalcPenumbraShading( sunupSrf, cosi)
-					: 1.f;
 	float poaBeam;
 	if (sunupSrf)	
 	{	poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
@@ -407,7 +430,8 @@ RC PVARRAY::pv_CalcPOA()
 
 	bool usePerez = true;
 
-	if (usePerez) {
+	if (usePerez)
+	{
 		// Modified Perez sky model
 		float zRad = acos(cosz);
 		float zDeg = DEG(zRad);

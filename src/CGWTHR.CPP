@@ -402,17 +402,37 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	}
 	if (rc)  return rc;					// if wfRead failed, eg date not in file or type without design days
 
+#if 1
+	if (iHrST==0)		// if start of new day
+		slday( jDayST, SLTMLST);	// set up curr SLLOCDAT struct for today:
+									// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
+									// used by slaniso & most other slpak calls.
+
+	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
+	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
+	float cosz;
+	wd_sunup = slsurfhr(dchoriz, Top.iHrST, &verSun, &wd_slAzm, &cosz);
+	if (!wd_sunup)
+		wd_slAzm = wd_slAlt = 0.f;
+	else
+		wd_slAlt = kPiOver2 - acos( cosz);
+#endif
+
 // Optional anisotropic sky adjustment
 	if (Top.skyModel==C_SKYMODCH_ANISO)
-	{	if (iHrST==0)		// if start of new day
+	{	
+#if 0
+		if (iHrST==0)		// if start of new day
 			slday( jDayST, SLTMLST);	/* set up curr SLLOCDAT struct (which is app\cse.cpp:Locsolar) for today:
 					   sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 					   Used by slaniso & most other slpak calls. lib\slpak.cpp. */
+#endif
 
 		slaniso( &wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
 			       								//   near sun, etc, while still computing with sun's
 												//	 beam and isotropic diffuse radiation. slpak.cpp. */
 	}
+
 
 // other adjustments
 	wd_bmrad *= Top.radBeamF; 	// Adjust radiation values for possible user input factors, defaults 1.0.

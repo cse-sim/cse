@@ -578,20 +578,20 @@ x    printf("\n");
 }			/* sldec */
 
 //======================================================================
-SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
+int slsurfhr(		// Calculate solar values for a surface for an hour
 
-	float sdircos[3],	// Direction cosines for surface
-	SI ihr,				// Hour for which to calculate. 0 = midnight - 1AM etc.
-						//   Time depends on last setup call to slday().
-	float *pcosi,		// NULL or pointer for returning approximate average
-						//   cosine of incident angle.  See notes
-	float *pazm,		// NULL or pointer for returning solar azimuth
-    					//   (radians, 0 = north, Pi/2 = east etc.) for midpoint
-						//   of time sun is above surface during hour.
-	float *pcosz )		// NULL or receives cosine of solar zenith angle for
-						//   midpoint of time sun is above the surf during hr
+	float sdircos[3],		// Direction cosines for surface
+	int ihr,				// Hour for which to calculate. 0 = midnight - 1AM etc.
+							//   Time depends on last setup call to slday().
+	float* pCosi,			// NULL or pointer for returning approximate average
+							//   cosine of incident angle.  See notes
+	float* pAzm/*=NULL*/,	// NULL or pointer for returning solar azimuth
+    						//   (radians, 0 = north, Pi/2 = east etc.) for midpoint
+							//   of time sun is above surface during hour.
+	float* pCosz/*=NULL*/)	// NULL or receives cosine of solar zenith angle for
+							//   midpoint of time sun is above the surf during hr
 
-/* *pcosi receives the approx average cosine of angle of incidence of solar
+/* *pCosi receives the approx average cosine of angle of incidence of solar
    beam on surface during the hour.  If the sun is not above the surface for
    the entire hour, this is the average over the fraction of the hour that
    surface is exposed to the sun, times (weighted by) that fraction.
@@ -600,24 +600,24 @@ SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
    (reduced) for time sun is behind the surface but *NOT* adjusted for time
    sun is below horizon, since solar beam data already includes that effect.
 
-   *pazm and *pcosz are required for calling the CALRES shading routine
+   *pAzm and *pCosz are required for calling the CALRES shading routine
    (shadow), and are evaluated at the approximate mid point of the time the
-   sun is above the surface.  They should thus be consistent with *pcosi.
+   sun is above the surface.  They should thus be consistent with *pCosi.
 
    Note that slday() must be called for desired day prior to this.
 
    Returns TRUE  if sun is up with respect to surface (and horizon) at any
-                 time during hour.  *pcosi, *pazm, and *pcosz are meaningful.
+                 time during hour.  *pCosi, *pAzm, and *pCosz are meaningful.
            FALSE if no direct solar on surface this hour.
-                 *pcosi = 0, *pazm and *pcosz undefined. */
+                 *pCosi = 0, *pAzm and *pCosz undefined. */
 {
 	float c1, c2, fc1, fc2, faz1, faz2;
 
-	/* If sun below HORIZON for the entire hour, no need to calculate */
-	if (slloccur->sunupf[ihr] == 0.F)	/* if sun below horizon entire hour */
+	// If sun below HORIZON for the entire hour, no need to calculate
+	if (slloccur->sunupf[ihr] == 0.F)	// if sun below horizon entire hour
 	{
-		if (pcosi)
-			*pcosi = 0.F;
+		if (pCosi)
+			*pCosi = 0.f;
 		return FALSE;
 	}
 	/* Note: if sun above horizon only part of hour, sldec put sunrise/sunset
@@ -625,17 +625,17 @@ SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
 	   come out to be average positions over time sun above horizon in hour
 	   (code elsewhere must multiply by sunupf[ihr] to weight ENERGY values).*/
 
-	/* Compute dot products at beg and end of hour.  Set pos flags TRUE if
-	   product is positive (meaning sun is above surface at beg/end of hour) */
+	// Compute dot products at beg and end of hour.  Set pos flags TRUE if
+	// product is positive (meaning sun is above surface at beg/end of hour)
 	int ihx  = ihr < 23 ? ihr+1 : 0;
-	int pos1 = (c1 = DotProd( sdircos, slloccur->dircos[ihr])) >= 0.F;
-	int pos2 = (c2 = DotProd( sdircos, slloccur->dircos[ihx])) >= 0.F;
+	int pos1 = (c1 = DotProd( sdircos, slloccur->dircos[ihr])) >= 0.f;
+	int pos2 = (c2 = DotProd( sdircos, slloccur->dircos[ihx])) >= 0.f;
 
-	/* If sun below SURFACE for the entire hour, stop */
+	// if sun below SURFACE for the entire hour, stop
 	if (!pos1 && !pos2)
 	{
-		if (pcosi)
-			*pcosi = 0.F;
+		if (pCosi)
+			*pCosi = 0.f;
 		return FALSE;
 	}
 
@@ -644,9 +644,9 @@ SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
 	       fc1, fc2:    for cosine of incident angle: also weight for fraction of
 	       		    hour sun above surface in same computation; use the fact
 	       		    that cosi is 0 at rise/set (vs surface). */
-	if (pos1 && pos2)			/* if above surface entire hour */
-		faz1 = fc1 = fc2 = 0.5F;		/* use equal parts of start, end */
-	else if (pos1)		/* if sets (re surface) during hour */
+	if (pos1 && pos2)			// if above surface entire hour
+		faz1 = fc1 = fc2 = 0.5f;		// use equal parts of start, end
+	else if (pos1)		// if sets (re surface) during hour
 	{
 		fc1 = 				/* fractn of starting cosi to use is */
 		(float)( 0.5 		/* avg of 2 items (other cosi is 0) */
@@ -670,22 +670,22 @@ SI FC slsurfhr(		/* Calculate solar values for a surface for an hour */
 	}
 
 	/* Calculate results */
-	if (pcosi)				// no return if NULL ptr (rob 3-91)
-		*pcosi = fc1 * c1 + fc2 * c2;	/* cos(incident angle) is weighted
+	if (pCosi)				// no return if NULL ptr (rob 3-91)
+		*pCosi = fc1 * c1 + fc2 * c2;	/* cos(incident angle) is weighted
     					   average of dircos dot products */
 	faz2 = 1.F - faz1;
-	if (pazm)
-		*pazm  =   faz1 * slloccur->slrazm[ihr]   	// Azimuth is calc'd
-		+ faz2 * slloccur->slrazm[ihx];  	//   from slday values
-	if (pcosz)
-		*pcosz =   faz1 * slloccur->dircos[ihr][2]	// z dircos is cosz
-		+ faz2 * slloccur->dircos[ihx][2];
+	if (pAzm)
+		*pAzm  =   faz1 * slloccur->slrazm[ihr]   	// Azimuth is calc'd
+				+ faz2 * slloccur->slrazm[ihx];  	//   from slday values
+	if (pCosz)
+		*pCosz =   faz1 * slloccur->dircos[ihr][2]	// z dircos is cosz
+				+ faz2 * slloccur->dircos[ihx][2];
 
 #ifdef PRINTSTUFF
-x    printf("\n%d  %f  %f  %f", (INT)ihr, *pcosi, *pazm, *pcosz );
+x    printf("\n%d  %f  %f  %f", (INT)ihr, *pCosi, *pAzm, *pCosz );
 #endif
 	return TRUE;
-}			/* slsurfhr */
+}			// slsurfhr
 
 //======================================================================
 LOCAL float FC NEAR slha(	/* Calculate hour angle for hour of day */
@@ -778,23 +778,11 @@ void FC slaniso(	/* Adjust beam and diffuse radiation values
 	{
 		if ((f = slloccur->sunupf[ihr]) > .05f) 	/* if sun up > 3 mins */
 		{
-#if 0		/* worked in msc 5.1. 6-28-90. */
-			ihx = ihr < 23 ? ihr+1 : 0;
-			c1 = slloccur->dircos[ihr][2];
-			c2 = slloccur->dircos[ihx][2];	/* only use of ihx */
-			pos1 = (c1 >= 0.f);
-			/* next line gets following message in msc 6.0 6-28-90:
-			 * slpak.c(698) : fatal error C1001: Internal Compiler Error
-			 *		     (compiler file '@(#)pgo2.c:1.41', line 243)
-			 *		     Contact Microsoft Product Support Services */
-			pos2 = (c2 >= 0.f);
-#else		/* redo ihx to fixe msc 6.0 error at c2 use, 6-28-90 */
 			ihx = (ihr+1) % 24;
 			c1 = slloccur->dircos[ihr][2];
 			c2 = slloccur->dircos[ihx][2];
 			pos1 = (c1 >= 0.f);
 			pos2 = (c2 >= 0.f);
-#endif
 			if (pos1 && pos2)
 				cosi = (float)(0.5f*(c1+c2));
 			else  if (pos1)
