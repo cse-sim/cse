@@ -347,8 +347,9 @@ friend SURFGEOM;
 	{	return gxd_uNorm.IsZero(); }
 
 	SURFGEOM* gxd_pSG;			// parent
-	CPolygon3D gxd_polygon;
-	CPV3D gxd_uNorm;
+	CPolygon3D gxd_polygon;		// polygon (as input, no rotation etc.)
+	CPV3D gxd_uNorm;			// unit normal of gxd_polygon (not transforms)
+	CPV3D gxd_uNormT;			// unit normal with any transforms (e.g. bldgAzm rotation)
 
 	SURFGEOM& SG()
 	{	return *gxd_pSG; }
@@ -362,13 +363,14 @@ friend SURFGEOM;
 		tilt = float( dTilt);
 		return ret;
 	}
-	int gxd_FillPenumbraPolygon( Pumbra::Polygon& s) const;
+	int gxd_SetupShading( const CT3D* MT=NULL);
 };		// class SURFGEOMDET
 //-----------------------------------------------------------------------------
 SURFGEOMDET::SURFGEOMDET(		// special copy c'tor
 	SURFGEOM* pSG,			// parent SURFGEOM
 	const SURFGEOMDET& sgd)	// source data
-	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( sgd.gxd_uNorm)
+	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( sgd.gxd_uNorm),
+	  gxd_uNormT( sgd.gxd_uNormT)
 {
 }	// SURFGEOMDET::SURFGEOMDET
 //-----------------------------------------------------------------------------
@@ -393,22 +395,35 @@ RC SURFGEOMDET::gxd_FillAndCheck(
 	return rc;
 }		// SURFGEOMDET::gxd_FillAndCheck
 //-----------------------------------------------------------------------------
-int SURFGEOMDET::gxd_FillPenumbraPolygon(	// transform polygon to Penumbra-style
-	Pumbra::Polygon& plg) const	// polygon to be filled
+int SURFGEOMDET::gxd_SetupShading(	// convert polygon to Penumbra format
+	const CT3D* MT /*=NULL*/) 	// point transform matrix if any
+								//   e.g. re bldgAzm rotation
 // minimal error checking -- *this assumed good
-// returns # of vertices
+// returns Penumbra surface idx
+//         -1 if not successful
 {	
-	plg.clear();
+	// unit normal
+	gxd_uNormT = MT ? MT->TX( gxd_uNorm) : gxd_uNorm;
+
+	// polygon
+	int pnIdx = -1;
 	int nV=gxd_polygon.GetSize();
-	for (int iV=0; iV<nV; iV++)
-	{	const CPV3D& p3 = gxd_polygon.p3_Vrt( iV);
-		// Penumbra coords are float
-		//   winding order same as CSE
-		for (int iD=0; iD<3; iD++)	// loop x, y, z
-			plg.push_back( float( p3[ iD]));
+	if (nV >= 3)
+	{	Pumbra::Polygon plg;
+		for (int iV=0; iV<nV; iV++)
+		{	CPV3D p3 = gxd_polygon.p3_Vrt( iV);
+			if (MT)
+				p3 = MT->TX( p3);	// apply transform if caller provides
+			// Penumbra coords are float
+			//   winding order same as CSE
+			for (int iD=0; iD<3; iD++)	// loop x, y, z
+				plg.push_back( float( p3[ iD]));
+		}
+		Pumbra::Surface pnSurf( plg);
+		pnIdx = pumbra.addSurface( pnSurf);
 	}
-	return nV;
-}		// SURFGEOMDET::gxd_FillPenumbraSurface
+	return pnIdx;
+}		// SURFGEOMDET::gxd_SetupShading
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -504,31 +519,31 @@ int SURFGEOM::gx_GetAzmTilt( float& azmR, float& tiltR) const
 {	return gx_sgDet->gxd_GetAzmTilt( azmR, tiltR);
 }	// SURFGEOM::gx_GetAzmTilt
 //-----------------------------------------------------------------------------
-RC SURFGEOM::gx_AddPenumbraSurface(
+RC SURFGEOM::gx_SetupShading(		// shading calcs setup
 	int& nS,				// shading surface count
 							//    incremented iff success
+	const CT3D* MT,			// point transformation matrix
+							//   (e.g. re bldgAzm rotation)
+							//   NULL -> no transformation
 	int options /*=0*/)		// options TBD
 // add this surface to the Penumbra model
-// returns RCOK: success or no geometry
+// returns RCOK: success or no geometry specified
 //    else RCBAD: bad geometry or addSurface fail
 {
 	options;
-	gx_pnIdx = -1;		// no associated surface
+	gx_pnIdx = -1;		// no associated Penumbra surface
 	RC rc = RCOK;
-	if (!gx_IsEmpty())
-	{	Pumbra::Polygon pnPlg;
-		int nV = gx_sgDet->gxd_FillPenumbraPolygon( pnPlg);
-		if (nV >= 3)
-		{	Pumbra::Surface pnSurf( pnPlg);
-			gx_pnIdx = pumbra.addSurface( pnSurf);
-		}
+	if (gx_sgDet && !gx_IsEmpty())
+	{	if (gx_mounting == C_MOUNTCH_SITE)
+			MT = NULL;		// no rotation for site-mounted objects
+		gx_pnIdx = gx_sgDet->gxd_SetupShading( MT);
 		if (gx_pnIdx >= 0)
 			nS++;
 		else
 			rc = RCBAD;
 	}
 	return rc;
-}		// SURFGEOM::gx_AddPenumbraSurface
+}		// SURFGEOM::gx_SetupShading
 //-----------------------------------------------------------------------------
 void SURFGEOM::gx_ClearShading()		// clear shading results (e.g. when sun is down)
 {	gx_fBeam = 0.f;
@@ -572,10 +587,12 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 		{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
 			fBeam = PSSF / (cosi*gx_area);
 			if (fBeam > 1.f)
-			{	if (fBeam > 1.05f)
+			{	
+#if 0
+				if (fBeam > 1.05f)
 				{	// report some errors > 5% and all errors > 10%
 					static const int MAXFBEAMMSGS = 20;
-					if ( ++gx_fBeamErrCount <= MAXFBEAMMSGS || fBeam > 1.10f)
+					if ( ++gx_fBeamErrCount <= MAXFBEAMMSGS || fBeam > 5.f)
 					{	const char* noMore = gx_fBeamErrCount == MAXFBEAMMSGS
 									? "\n  Omitting further messages for small errors of this type."
 									: "";
@@ -583,6 +600,7 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 							gx_pParent->classObjTx( 1), fBeam, noMore);
 					}
 				}
+#endif
 				fBeam = 1.;		// limit to 1
 			}
 		}
@@ -666,18 +684,24 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 
 	pumbra.clearModel();
 
+	// building rotation
+	//   construct rotation matrix re C_SHADETY_BLDG
+	CT3D MRot( 1);		// rotation matrix
+	MRot.Rotate( tp_bldgAzm, -2);	// rotate about z axis
+									//  -2 = right-handed coord system
+
 	tp_exshNShade = 0;		// # of shade surfaces
 	tp_exshNRec = 0;		// # of receiving surfaces
 
 	// create Penumbra surface model
 	PVARRAY* pPV;
 	RLUP( PvR, pPV)
-		rc |= pPV->pv_AddPenumbraSurface( tp_exshNRec);
+		rc |= pPV->pv_SetupShading( tp_exshNRec, &MRot);
 	tp_exshNShade = tp_exshNRec;		// PVARRAYs shade each other
 
 	SHADEX* pSX;
 	RLUP( SxR, pSX)
-		rc |= pSX->sx_AddPenumbraSurface( tp_exshNShade);
+		rc |= pSX->sx_SetupShading( tp_exshNShade, &MRot);
 
 	if (!rc && tp_exshNShade > 0)
 	{	if (pumbra.setModel() != Pumbra::PN_SUCCESS)

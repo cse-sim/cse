@@ -116,12 +116,17 @@ CT3D& CT3D::Rearrange(		// apply axis rearrangement (aka swizzling)
 	return Concat( R);
 }		// CT3D::Rearrange
 //-----------------------------------------------------------------------------
-CT3D& CT3D::Rotate(		// apply rotation
+CT3D& CT3D::Rotate(		// apply rotation (left hand coord system)
 	double angle,	// angle to rotate (radians)
+					//   + per left hand rule (clockwise)
 	int xyz)		// 0, 1, or 2 = axis about which to rotate
 {
 	double sinA = sin( angle);
 	double cosA = cos( angle);
+	if (xyz < 0)
+	{	sinA = -sinA;
+		xyz = abs( xyz);
+	}
 	CT3D R( 1);		// identity matrix
 	if (xyz == 0)
 	{	R( 1, 1) = cosA;
@@ -159,7 +164,9 @@ CT3D& CT3D::Concat(			// concatenate matrices
 	return Copy( MX);
 }		// CT3D::Concat
 //----------------------------------------------------------------------------
-CPV3D CT3D::TX( const CPV3D& p) const			// apply transformation
+CPV3D CT3D::TX(		// apply transformation to a point
+	const CPV3D& p) const	// input point (column vector)
+// return p' = [this]*p
 {
 	// implicit w = p[ 3] = 1
 	// init point to last col
@@ -171,7 +178,8 @@ CPV3D CT3D::TX( const CPV3D& p) const			// apply transformation
 	return tP;
 }	// CT3D::TX
 //----------------------------------------------------------------------------
-CPolygon3D CT3D::TX( const CPolygon3D& plg) const
+CPolygon3D CT3D::TX(		// apply transformation to polygon
+	const CPolygon3D& plg) const	// source polygon
 {
 	CPolygon3D tPlg;
 	int nV = plg.GetSize();

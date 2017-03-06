@@ -10,15 +10,15 @@ Name of photovoltaic array. Give after the word SHADEX.
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        No             constant
 
-**sxType=*choice***
+**sxMounting=*choice***
 
-Specifies type of shade.  sxType=Site indicates the SHADEX position is not altered by building rotation via bldgAzm, while SHADEXs with sxType=Building are assumed to rotate with the building.
+Specifies the mounting location of the shade.  sxMounting=Site indicates the SHADEX position is fixed and is not modified if the building is rotated.  The position of SHADEXs with sxMounting=Building are modified to include the effect of building rotation specified via bldgAzm.
 
 **Units**   **Legal Range**        **Default**   **Required**   **Variability**
 ----------- ---------------------- ------------- -------------- -----------------
             Building or Site        Site           No             constant
 
-**sxVertices=*list of up to 27 floats***
+**sxVertices=*list of up to 36 floats***
 
   Vertices of a polygon representing the shape of the shading object.
 
@@ -34,7 +34,8 @@ Specifies type of shade.  sxType=Site indicates the SHADEX position is not alter
   **Units** **Legal Range** **Default** **Required**     **Variability**
   --------- --------------- ----------- ---------------- ---------------
   ft         unrestricted     *none*      9, 12, 15, 18,      constant
-                                         21, 24, or 27
+                                         21, 24, 27, 30,
+                                         33 or 36
                                          values
   ------------------------------------------------------------------
 

@@ -766,16 +766,17 @@ RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 	*declare "void gx_CopySubObjects();"
 	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
 	*declare "int gx_GetAzmTilt( float& azm, float& tilt) const;"
-	*declare "RC gx_AddPenumbraSurface( int &nS, int options=0);"
+	*declare "RC gx_SetupShading ( int &nS, const class CT3D* MT, int options=0);"
 	*declare "void gx_ClearShading();"
-	*declare "float gx_CalcPenumbraShading( int sunupf, float cosi);"
 	*declare "int gx_CalcBeamShading( float& cosi, float& fBeam);"
-
 
 	*declare "record* gx_pParent;"				// pointer to parent record
 												//   (SHADEX, PVARRAY, ...)
 	*declare "class SURFGEOMDET* gx_sgDet;"		// geometric details (polygon, normal, )
 												//   hides geometry.h classes
+	*i MOUNTCH gx_mounting						// mounting
+												//    C_MOUNTCH_BLDG: attached to bldg (rotates per bldgAzm)
+												//	  C_MOUNTCH_SITE: site base (does not rotate)
 	*i INT gx_pnIdx;							// Penumbra surface index
 												//   -1 if no Penumbra surface
 	*i DBL gx_area;								// area derived from polygon, ft2
@@ -798,9 +799,9 @@ RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)
 								// .ownTi (base class) is zone subscript
 	*declare "RC sx_CkF();"
 	*declare "RC Validate( int options=0);"
-	*declare "RC sx_AddPenumbraSurface( int& nS, int options=0) { return sx_g.gx_AddPenumbraSurface( nS, options); }"
+	*declare "RC sx_SetupShading( int& nS, const class CT3D* MT, int options=0) { return sx_g.gx_SetupShading( nS, MT, options);}"
 
-	*i *noname *nest SURFGEOM sx_g;
+	*i *noname *nest SURFGEOM sx_g;	// geometry of shade
 
 *END	// SHADE
 //========================================================================================================
@@ -3612,13 +3613,9 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "int pv_HasPenumbraShading() const;"
   *declare "int pv_AxisCount() const;"
-  *declare "RC pv_AddPenumbraSurface( int options=0) { return pv_g.gx_AddPenumbraSurface( options); }"
-#if 1
+  *declare "RC pv_SetupShading( int& nS, const class CT3D* MT, int options=0) { return pv_g.gx_SetupShading( nS, MT, options);}"
   *declare "void pv_ClearShading() { pv_g.gx_ClearShading(); }"
   *declare "int pv_CalcBeamShading( float& cosi, float& fBeam) { return pv_g.gx_CalcBeamShading( cosi, fBeam);}"
-#else
-  *declare "float pv_CalcPenumbraShading( int sunupf, float cosi) { return pv_g.gx_CalcPenumbraShading( sunupf, cosi); }"
-#endif
   *declare "RC pv_Init();"
   *declare "RC pv_DoHour();"
   *declare "RC pv_CalcPOA();"
@@ -3637,7 +3634,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *i FLOAT_GEZ pv_dcCap		// system capacity/size (DC nameplate), kW
   *i NOYESCH pv_usePVWattsDLL  // use PVWatts DLL instead of CSE calculations
   *i PVMODCH pv_moduleType	// type of module (Standard, Premium, ThinFilm)
-  *i FLOAT pv_tempCoeff	// temperature coefficient, 1/F
+  *i FLOAT pv_tempCoeff		// temperature coefficient, 1/F
   *i FLOAT_GE1 pv_covRefrInd  // refraction index for coating applied to cover
   *i PVARRCH pv_arrayType	// type of array (Fixed, FixedRoof, 1Axis, Backtracked, 2Axis)
   *h ANGLE pv_tilt			// Array tilt, radians (input as degrees)

@@ -285,7 +285,7 @@ RC PVARRAY::pv_DoHour()
 
 	return rc;
 }	// PVARRAY::pv_DoHour
-
+//-----------------------------------------------------------------------------
 RC PVARRAY::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
 	int options/*=0*/)
@@ -294,16 +294,14 @@ RC PVARRAY::RunDup(		// copy input to run record; check and initialize
 	pv_SetMTRPtrs();
 	return rc;
 }	// PVARRAY::RunDup
-
+//-----------------------------------------------------------------------------
 void PVARRAY::pv_SetMTRPtrs()		// set runtime pointers to meters
 // WHY: simplifies runtime code
 {
 	pv_pMtrElec = MtrB.GetAtSafe(pv_elecMtri);		// elec mtr or NULL
 }		// PVARRAY::pv_SetMTRPtrs
-
-
-// combine Snell's and Bougher's laws
-RC PVARRAY::pv_CalcRefr(
+//-----------------------------------------------------------------------------
+RC PVARRAY::pv_CalcRefr(	// combine Snell's and Bougher's laws
 	float n1,  // first index of refraction
 	float n2,  // second index of refraction
 	float theta1, // angle of incidence, rad
@@ -318,7 +316,7 @@ RC PVARRAY::pv_CalcRefr(
 	tau = 1.f - 0.5f*(pow2(sin(theta2 - theta1)) / pow2(sin(theta2 + theta1)) + pow2(tan(theta2 - theta1)) / pow2(tan(theta2 + theta1)));
 	return rc;
 }
-
+//-----------------------------------------------------------------------------
 RC PVARRAY::pv_CalcPOA()
 {
 	RC rc = RCOK;

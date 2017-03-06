@@ -1986,6 +1986,7 @@ CULT( "pvDCtoACRatio", DAT, PVARRAY_DCACRAT, 0,       0, VEOI,   TYFL,  0,      
 CULT( "pvInverterEff", DAT, PVARRAY_INVEFF,  0,       0, VEOI,   TYFL,  0,      0.96f,  N, N),
 CULT( "pvSysLosses", DAT,   PVARRAY_SYSLOSS, 0,       0, VHRLY,  TYFL,  0,      0.14f,  N, N),
 CULT( "pvUsePVWatts", DAT,  PVARRAY_USEPVWATTSDLL, 0, 0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
+CULT( "pvMounting",  DAT,   PVG( MOUNTING),  0,       0, VEOI,   TYCH,  0,      C_MOUNTCH_BLDG, N, N),
 CULT( "pvVertices",  DAT,   PVG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
 CULT( "endPVARRAY",  ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
@@ -2031,6 +2032,7 @@ static CULT shadexT[] = //------ SHADEX cmd RAT Entry table, used from cnTopCult
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   shStarCkf),
+CULT( "sxMounting",  DAT,   SXG( MOUNTING),  0,       0, VEOI,   TYCH,  0,      C_MOUNTCH_SITE, N, N),
 CULT( "sxVertices",  DAT,   SXG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
 CULT( "endXSHADE",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()

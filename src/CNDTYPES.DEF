@@ -430,6 +430,12 @@ x			GENERICRESFRAC55 "GenericResFrac55"
 			2AXT "TwoAxisTracking"
 		  }
 
+// shade / PVARRAY attachment
+*choicb MOUNTCH {
+		BLDG "Building"
+		SITE "Site"
+		}
+
 // fenestration model -- gtModel
 *choicb FENMODELCH { SHGC "SHGC"		// Solar Heat Gain Coefficient model (pre-existing CSE)
 			ASHWAT "ASHWAT"					// ASHWAT complex fenestration model (added 11-8-2010)
