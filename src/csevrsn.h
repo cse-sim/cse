@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 825
+#define CSEVRSN_MINOR 826
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,7 +22,8 @@
 // ONLY comments below here
 
 /* History:
-   0.825: ...
+   0.826: ...
+   0.825: fix excessive fSunlit; add tp_TDVfName, committed 3-9-2017
    0.824: shading rotation, committed 3-7-2017
    0.823: Initial version with PVARRAY shading calcs, committed 3-1-2017
    0.822: SHADEX and PVARRAY vertices input, committed 2-23-2017
