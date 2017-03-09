@@ -179,7 +179,7 @@ t     hour = 1.;
 t     lasthour = hour;
 t     for (loop = 0, small=YES;  loop < 20;  loop++)
 t     {	slaltazm( hour, &alt, &azmx);
-t        if (FEQUAL( azmx, azm))
+t        if (fAboutEqual( azmx, azm))
 t           break;
 t        hourx = hour;
 t        if (azmx < azm)
@@ -221,7 +221,7 @@ t     hour = 1.;
 t     lasthour = hour;
 t     for (loop = 0, small = YES;  loop < 20;  loop++)
 t     {	 slaltazm( hour, &altx, &azm);
-t        if (FEQUAL( altx, alt))
+t        if (fAboutEqual( altx, alt))
 t           break;
 t        hourx = hour;
 t        if (altx < alt)
@@ -262,13 +262,10 @@ t}
 #endif  /* TEST */
 
 //======================================================================
-void FC slsdc( 	// Calculate direction cosines from azm/tilt of a surface
-
+void FC slsdc( 	// direction cosines from azm/tilt of a surface
 	float azm,		// Surface azm (radians)
 	float tilt,		// Surface tilt (radians)
 	float dcos[3] )	// Array for returning direction cosines
-
-// appears same as gmaltdir, use that (move it to gmutil.c) ?? 1st check on tilt vs alt!  12-89.
 {
 	double st = sin( tilt);
 	dcos[0] = float(sin(azm) * st);
@@ -628,8 +625,8 @@ int slsurfhr(		// Calculate solar values for a surface for an hour
 	// Compute dot products at beg and end of hour.  Set pos flags TRUE if
 	// product is positive (meaning sun is above surface at beg/end of hour)
 	int ihx  = ihr < 23 ? ihr+1 : 0;
-	int pos1 = (c1 = DotProd( sdircos, slloccur->dircos[ihr])) >= 0.f;
-	int pos2 = (c2 = DotProd( sdircos, slloccur->dircos[ihx])) >= 0.f;
+	int pos1 = (c1 = DotProd3( sdircos, slloccur->dircos[ihr])) >= 0.f;
+	int pos2 = (c2 = DotProd3( sdircos, slloccur->dircos[ihx])) >= 0.f;
 
 	// if sun below SURFACE for the entire hour, stop
 	if (!pos1 && !pos2)
@@ -800,6 +797,12 @@ void FC slaniso(	/* Adjust beam and diffuse radiation values
 		}
 	}
 }                       /* slansio */
+
+////////////////////////////////////////////////////////////////////////////
+// ASHRAE solar
+////////////////////////////////////////////////////////////////////////////
+
+#include "ASHRAE/solar.cpp"
 
 /************************ rest of file is if-outs *************************/
 

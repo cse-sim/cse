@@ -1,8 +1,8 @@
+// tdpak.h -- declarations for time and date related functions (tdpak.cpp)
+
 // Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
-
-// tdpak.h -- declarations for time and date related functions (tdpak.cpp)
 
 /*-------------------------------- DEFINES --------------------------------*/
 
@@ -24,18 +24,19 @@
 //  0-based: .wday, .hour, .min, .sec.; typedef SI DOW.
 
 
-/*------------------------- FUNCTION DECLARATIONS -------------------------*/
-// tdpak.cpp
+// public functions
 const char* tdldts( LDATETIME, char *);
 void   tdldti( LDATETIME, IDATETIME *);
 const char* tddtis( IDATETIME *, char *);
 const char* tddys( DOY iDoy, int year=-1, char *s = NULL);
-void   tddyi( DOY, int, IDATE *);
-DOY    tddiy( IDATE *);
+void   tddyi( IDATE& idt, DOY doy, int year=-1);
+DOY    tddiy( const IDATE& idt);
 DOY    tddiy( int month, int mday, int year=-1);
+#if 0
 int    tddiw( IDATE *);
+#endif
 int     tddyw( DOY, int);
-const char* tddis( IDATE *, char *);
+const char* tddis( const IDATE& idt, char *s=NULL);
 RC     tddsi( char *, IDATE *);
 int tddmon( const char *);
 const char* tddMonAbbrev( int iMon);
@@ -46,5 +47,24 @@ DOY tddDoyMonBeg( int iMon);
 DOY tddDoyMonEnd( int iMon);
 int tddMonLen( int iMon);
 DOY tdHoliDate( int year, HDAYCASECH hCase, DOW hDow, MONTH hMon); 	// 3-6-92
+
+// modern-ish interface used by e.g. ASHRAE solar.cpp
+class CALENDAR
+{
+public:
+	CALENDAR::CALENDAR() {}
+
+	int GetMonDoy( int iDoy, int yr=-1) const;
+	int GetMDDoy( int iDoy, int yr=-1) const;
+	int GetDoy( int month, int mDay, int yr=-1) const;
+	const char* GetMonAbbrev( int month) const;
+	WStr FmtDOY( int iDoy, int yr=-1, const char* fmt="%b-%d") const;
+	void FillTM( struct tm& t, const IDATE& idt) const;
+
+
+};	// class CALENDAR
+//-----------------------------------------------------------------------------
+extern CALENDAR Calendar;	// public intance
+//=============================================================================
 
 // tdpak.h end

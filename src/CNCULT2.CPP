@@ -460,20 +460,16 @@ LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data from it
 	int* pHotMo )			// receives hottest month 1-12 if avail in wthr file hdr, if autoSizing
 {
-	/* tentatively 6-95 wf stuff here & cnguts.cpp redone for run
-	   after autosize, allowing wfName etc to change. */
+	// wf stuff here & cnguts.cpp redone for run
+	// after autosize, allowing wfName etc to change.
+
 // find weather file, store full path
-	char buf[_MAX_PATH];			// receives full path
-	if (ppFindFile( wfName, buf))		// find file using input file paths including -i paths / if ok. pp.cpp.
-		// (if fails, fall thru for historical wfOpen error msg)
-		if (strcmpi( wfName, buf))		// if full path found different than path already have (else don't fragment)
-		{
-			cupfree( DMPP(wfName));  	// free old wfName if in heap (just decr ref count if multiple uses)
-			wfName = strsave(buf);		// copy full path from stack buffer to heap block, set Top member pointer.
-		}
+	ppFindFile( tp_wfName);		// find file, update tp_wfName to full path
+	if (tp_TDVfName)
+		ppFindFile( tp_TDVfName);		// auxiliary TDV (time dependent value) file if any
 
 // open weather file
-	RC rc = Wfile.wf_Open( wfName, WRN);	// lib\wfpak.cpp.  reports err if can't open. Wfile is in rundata.cpp.
+	RC rc = Wfile.wf_Open( tp_wfName, WRN);	// reports err if can't open.
 	if (!rc)					// if opened ok
 	{
 		// fetch latitude, longitude, time zone to Top members
@@ -503,7 +499,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 									   "    run is %s to %s,\n"
 									   "    but '%s' dates are %s to %s.\n" */
 							  tddys( tp_begDay),  tddys( tp_endDay),
-							  Top.wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
+							  Top.tp_wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
 			}
 		}
 
@@ -727,7 +723,8 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 	record::Copy( pSrc);				// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
-	cupIncRef( DMPP(wfName));   	// incr reference counts of dm strings if nonNULL, lib\dmpak.cpp
+	cupIncRef( DMPP(tp_wfName));   	// incr reference counts of dm strings if nonNULL
+	cupIncRef( DMPP(tp_TDVfName));  
 	cupIncRef( DMPP(runTitle));		//  cupIncRef: cueval.cpp: if pointer is not NANDLE nor pointer to
 	cupIncRef( DMPP(runDateTime));	//   "text" embedded in pseudocode, call dmpak:dmIncRef to increment
 	cupIncRef( DMPP(repHdrL));		//   block's reference count (or dup block).
@@ -752,7 +749,8 @@ TOPRAT::~TOPRAT()
 //-----------------------------------------------------------------------------
 void TOPRAT::freeDM()		// free child objects in DM
 {
-	cupfree( DMPP( wfName));			// decRef or free dm (heap) strings
+	cupfree( DMPP( tp_wfName));			// decRef or free dm (heap) strings
+	cupfree( DMPP( tp_TDVfName));		// decRef or free dm (heap) strings
 	cupfree( DMPP( runTitle));			//  cupfree: cueval.cpp: if pointer is not NANDLE nor pointer to
 	cupfree( DMPP( runDateTime));  		//   "text" embedded in pseudocode, call dmpak:dmfree to free its block
 	cupfree( DMPP( repHdrL)); 			//   or decrement its ref count, and NULL the pointer here.

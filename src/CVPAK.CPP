@@ -260,7 +260,7 @@ p		break;
 		goto strjust;
 
 	case DTIDATE:
-		data = tddis( (IDATE *)data, NULL);
+		data = tddis( *(IDATE *)data);
 		goto strjust;
 
 	case DTITIME:

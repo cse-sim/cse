@@ -37,17 +37,17 @@ void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
 	{
 		*altp = (float)asin(dcos[2]);
 		val =  sqrt(1.0 - dcos[2] * dcos[2]);
-		if ( FEQUAL( val, 0.0) )
+		if ( fAboutEqual( val, 0.0) )
 		{
 			*azmp = kPi;
 		}
 		else
 		{
 			val = -dcos[0]/val;
-			if ( FEQUAL(val,1.0) )       /* NO NO NO -- derivative is flat --
+			if ( fAboutEqual(val,1.0) )       /* NO NO NO -- derivative is flat --
 					   look at dcos[1] when dcos[0] near 1, or at least use smaller ABOUT0. */
 				azm = kPiOver2;
-			else if ( FEQUAL(val,-1.0) )
+			else if ( fAboutEqual(val,-1.0) )
 				azm = -kPiOver2;
 			else
 				azm = asin(val);
@@ -59,7 +59,7 @@ void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
 	{
 		/* altitude.  > 1 and < -1 execptions insure against domain errors if input
 			 is a snerd out of range (no case actually seen -- rob).
-			 (do NOT use FEQUAL: would 'snap' too far!) */
+			 (do NOT use fAboutEqual: would 'snap' too far!) */
 
 		*altp =  dcos[2] >= 1.F  ? kPiOver2
 			   : dcos[2] <= -1.F ? -kPiOver2
@@ -76,7 +76,7 @@ void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
 		   dcos[z] for being nearly 1.0; probably about the same as testing
 		   dcos[z]^2 for nearly 1.0. */
 
-		if (FEQUAL( dcos[0], 0.F) && FEQUAL( dcos[1], 0.F))
+		if (fAboutEqual( dcos[0], 0.F) && fAboutEqual( dcos[1], 0.F))
 		{
 			*azmp = kPi;                   /* arbitrarily return Pi */
 		}

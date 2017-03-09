@@ -63,10 +63,10 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 }		// cgWthrClean
 //---------------------------------------------------------------------------
 RC FC cgWfInit()  	// Initialize weather file.  Displays any error messages.
-// also uses: Top.wfName [,.isDT]
+// also uses: Top.tp_wfName [,.isDT]
 // returns non-RCOK if error, message already issued.
 {
-	RC rc = Wfile.wf_Open( Top.wfName, WRN);	// open wthr file and init WFILE object msg if error.
+	RC rc = Wfile.wf_Open( Top.tp_wfName, WRN);	// open wthr file and init WFILE object msg if error.
 	if (rc != RCOK)
 		return rc;
 	rc = Wfile.wf_FillWDYEAR( WRN);

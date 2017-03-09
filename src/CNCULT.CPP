@@ -654,8 +654,8 @@ RC SFI::sf_CkfSURF(		// surface checker
 				rc |= ooer( SFX( TILT), (char *)MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
 			break;
 		case C_OSTYCH_FLR:
-			// note FEQUAL (cnglob.h) compares for fabs(difference) < ABOUT0
-			if (!FEQUAL(DEG(t),180.f)) 				// no msg if 180
+			// note fAboutEqual (cnglob.h) compares for fabs(difference) < ABOUT0
+			if (!fAboutEqual(DEG(t),180.f)) 				// no msg if 180
 				rc |= ooer( SFX( TILT), (char *)MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
 			break;
 		case C_OSTYCH_CEIL:
@@ -704,7 +704,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 		{	int azmNeeded =
 			   xc != C_EXCNDCH_GROUND
 				&& IsVal( SFX( TILT))		// tilt has a value (in t)
-				&& ( !FEQUAL(DEG(t),0.f) && !FEQUAL(DEG(t),180.f) );   	// if tilted surface
+				&& ( !fAboutEqual(DEG(t),0.f) && !fAboutEqual(DEG(t),180.f) );   	// if tilted surface
 			if (azmNeeded)
 				rc |= ooer( SFX( AZM), (char *)MH_S0412);		// "No sfAzm given for tilted surface"
 		}
@@ -2417,6 +2417,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 
 // TOP location
 	CULT( "wfName",      DAT,   TOPRAT_WFNAME,     RQD,        0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),
+	CULT( "TDVfName",    DAT,   TOPRAT_TDVFNAME,   0,          0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),
 	CULT( "elevation",   DAT,   TOPRAT_ELEVATION,  0,          0, VFAZLY, TYFL,  0,      N,    0.f,            N,   N), // defaulted from wthr file by code 1-95
 	CULT( "refTemp",     DAT,   TOPRAT_REFTEMP,    0,          0, VFAZLY, TYFL,  0,      N,   60.f,            N,   N),
 	CULT( "refRH",       DAT,   TOPRAT_REFRH,      0,          0, VFAZLY, TYFL,  0,      N,    .6f,            N,   N),

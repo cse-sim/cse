@@ -1054,9 +1054,9 @@ RC WFILE::wf_Close( 			// Close weather file if open. returns RCOK if ok.
 {
 	RC rc = RCOK;
 	if (yac)
-	{	if ( hdr						// if header given
-			&&  yac->wrAccess() )	// and file open for write access (ie only in util programs)
-									// (FALSE if file not open at all)
+	{	if ( hdr				// if header given
+		 &&  yac->wrAccess() )	// and file open for write access (ie only in util programs)
+								// (FALSE if file not open at all)
 		rc = yac->write( hdr, hdrBytes, 0L, WRN); 	// rewrite header at start file from caller's buffer
 
 		rc |= yac->close(WRN);					// close file. nop if not open. yacam.cpp.
@@ -1405,12 +1405,10 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
 	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr));
-#if 1
 		if ( iHr == 23 && (erOp&WF_DSTFIX))
 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
 			pwd->wd_taDbPvPk = wdd.wdd_taDbPvPk;
 		}
-#endif
 		return RCOK;
 	}
 

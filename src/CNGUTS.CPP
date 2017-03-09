@@ -913,7 +913,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 // Set up weather file
 // tentatively 6-95 do each phase, allowing name to change. Messages errors. cgwthr.cpp. only call.
-	EF( cgWfInit() )	// also uses Top .wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
+	EF( cgWfInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
 
 // Open import files used in this run, if any. 2-94.
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
@@ -2071,7 +2071,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{
 		// get autosizing Julian day, month, mday, wday. Preset by callers: (tp_dsDayI), .tp_dsDay, .auszMon, .jDay, (.xJDay).
-		tddyi( jDay, year, &tp_date);	// convert (caller's solar) Julian date to month-day-wday.
+		tddyi( tp_date, jDay, year);	// convert (caller's solar) Julian date to month-day-wday.
 		tp_date.wday = 3;					// change day of week to Wednesday during autosizing.
 
 		// autosizing beginning of month flag, month and date strings
@@ -2105,9 +2105,9 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		// date: get month, mday, wday; convert to string.  jDay is primary independent variable, set in tp_MainSimI().
 
-		tddyi( jDay, year, &tp_date);		// convert current simulation julian date to month-day, tdpak.cpp.
+		tddyi( tp_date, jDay, year);		// convert current simulation julian date to month-day, tdpak.cpp.
 		// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
-		tddis( &tp_date, dateStr);				// convert to string for rpt hdrs. tdpak.cpp.
+		tddis( tp_date, dateStr);				// convert to string for rpt hdrs. tdpak.cpp.
 
 		// main sim beginning of month flag, month string, local end of month date
 

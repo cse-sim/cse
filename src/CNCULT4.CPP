@@ -1800,6 +1800,9 @@ RC topImpf()		// check/process ImportFiles at end of input
 		E( ckSet( iimpf, IMPF_IMFREQ))			// if not set, no run, terminate checking now
 
 		// find file & save full path. Search same paths as for #include files. 2-95.
+#if 1
+		ppFindFile( iimpf->fileName);
+#else
 		char buf[_MAX_PATH];				// receives full pathname
 		if (ppFindFile( iimpf->fileName, buf))		// search #include file paths, return full path. pp.cpp. if found...
 			if (strcmpi( buf, iimpf->fileName))		// if found path different (else don't save for less fragmentation)
@@ -1807,6 +1810,7 @@ RC topImpf()		// check/process ImportFiles at end of input
 				cupfree( DMPP( iimpf->fileName));		// if not a pointer to "text" embedded in pseudocode, dmfree name
 				iimpf->fileName = strsave(buf);		// replace name with full pathname
 			}
+#endif
 		// if not found, no message here... let old code issue message at runtime attempt to open.
 
 		// warn if unused (no Imports)

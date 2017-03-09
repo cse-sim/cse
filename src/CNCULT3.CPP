@@ -945,7 +945,7 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// check for vertical surface (assumed by shading compute fcn).
 
-		if ( !FEQUAL( DEG(gz->x.tilt), (float)90.f ) )	// surf tilt-->gz in topSf1()
+		if ( !fAboutEqual( DEG(gz->x.tilt), (float)90.f ) )	// surf tilt-->gz in topSf1()
 		{
 			sh->oer( (char *)MH_S0521,			// "sfTilt is %g.  Shaded window must be in vertical surface."
 				DEG(gz->x.tilt) );

@@ -218,7 +218,7 @@ x	tp_dsDay = 1 + (tp_dsDayI != 0);			// 1st desDay is heating (1), others coolin
 	else if (tp_AuszWthrSource() == 2)
 	{	// autosizing cooling from specific weather file day
 		jDay = coolDsDay[ tp_dsDayI-1];
-		tddyi(jDay, -1, &tp_date);
+		tddyi(tp_date, jDay);
 		auszMon = tp_date.month;
 	}
 	else

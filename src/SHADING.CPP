@@ -562,7 +562,7 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 //        -1: calc failure (cosi=fBeam=0)
 {
 	float dcSrf[ 3];		// surface direction cosines
-	gx_sgDet->gxd_uNorm.Get( dcSrf);
+	gx_sgDet->gxd_uNormT.Get( dcSrf);
 	float azm, cosz;
 	int sunupSrf = slsurfhr( dcSrf, Top.iHrST, &cosi, &azm, &cosz);
 
@@ -579,6 +579,10 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 	else
 	{	// use Penumbra model
 		float alt = kPiOver2 - acos( cosz);
+		float dcSun[ 3];
+		slsdc( azm, kPiOver2-alt, dcSun);
+		cosi = DotProd3( dcSrf, dcSun);		// replace cosi with value
+											//   consistent with alt and azm
 		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
 		{	cosi = fBeam = 0.f;
 			sunupSrf = -1;	// unexpected
@@ -588,9 +592,10 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 			fBeam = PSSF / (cosi*gx_area);
 			if (fBeam > 1.f)
 			{	
-#if 0
-				if (fBeam > 1.05f)
+#if 1
+				if (fBeam > 1.05f && cosi > .01f)
 				{	// report some errors > 5% and all errors > 10%
+					//  ignore if low sun angles
 					static const int MAXFBEAMMSGS = 20;
 					if ( ++gx_fBeamErrCount <= MAXFBEAMMSGS || fBeam > 5.f)
 					{	const char* noMore = gx_fBeamErrCount == MAXFBEAMMSGS

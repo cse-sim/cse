@@ -175,7 +175,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SI_GZ tp_skipDayStep		// # of days in each step through year, default 1
 
 //TOP: inputs: location/air properties/ground properties
-    *f CHP wfName    		// weather file name string
+    *f CHP tp_wfName    	// weather file path string
+	*f CHP tp_TDVfName		// TDV (time dependent value) file path string
     *r LEN elevation		// site elevation (for determining air density) (ft). defaults from weather file 1-95.
     *f TEMP refTemp			// temp for computing the hum ratio (w) used in air-density calculations, default 70 F
     *f FRAC_GZ refRH		// relative humidity (as fraction) ditto, default .6 (60%).
