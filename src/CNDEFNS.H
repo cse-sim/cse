@@ -128,9 +128,6 @@
 
 #define ASHP_DEFROSTHT		// define to model heating during defrost, 8-7-2013
 
-#define WFILE_SUPPORTEPW	// define to enable code to support EnergyPlus EPW weather files
-							//   under development, 7-2012
-
 #define DETAILED_TIMING		// define to enable fine-grain timing
 
 #undef COMFORT_MODEL		// define to include comfort model

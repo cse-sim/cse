@@ -1,9 +1,10 @@
+///////////////////////////////////////////////////////////////////////////////
+// strpak.cpp -- string functions
+///////////////////////////////////////////////////////////////////////////////
+
 // Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
-
-/* strpak.c: String functions above and beyond standard C library
-	     Except as noted, these routines have specs identical to Microsoft library routines */
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>
@@ -58,7 +59,7 @@ t #define XTOKTEST
 t #ifdef XTOKTEST
 t     p = "  Token  / ,  test ing,,1      ";
 t     printf("\n[%s]\n",p);
-t     while (ptok = strxtok( NULL, &p, " ,/", TRUE))
+t     while (ptok = strxtok( NULL, p, " ,/", TRUE))
 t        printf( "[%s]  %p\n", ptok, p);
 t #endif /* XTOKTEST */
 t}
@@ -73,7 +74,7 @@ int strCheckPtr( DMP p)		// check DM ptr for strpak conflict
 char* strxtok( 		// Extract a token from a string
 
 	char *tokbuf,		// Pointer to buffer to receive extracted token, or NULL, to use Tmpstr.
-	const char** p,		// Pointer to string pointer.
+	const char* &p,		// string pointer.
     					//  *p is the starting point for scan and is updated to be the start point for next call.
     					//  Successive calls will retrieve successive tokens.
 	const char* delims,	// String of delimiter characters ('\0' terminated).
@@ -89,27 +90,21 @@ char* strxtok( 		// Extract a token from a string
 
 // Returns NULL if no more tokens in string.  Otherwise, returns pointer to extracted token.
 {
-	int i;
+	int ib = -1;
+	int ie = -1;
+	const char* ps = p;
+	int i = 0;
+	int endscan = FALSE;
 	char c;
-	int ib, ie, endscan, ltok;
-	const char *ps;
-
-	ib = ie = -1;
-	ps = *p;
-	i = 0;
-	endscan = FALSE;
 	while ((c = *(ps+i)) != 0)
-	{
-		if (isspaceW(c) && wsflag)
+	{	if (isspaceW(c) && wsflag)
 			endscan = (ib != -1);
 		else if (strchr( delims, c) != NULL)
-		{
-			i++;
+		{	i++;
 			break;
 		}
 		else
-		{
-			if (endscan)
+		{	if (endscan)
 				break;
 			if (ib == -1)
 				ib = i;
@@ -119,13 +114,11 @@ char* strxtok( 		// Extract a token from a string
 	}  /* Scan loop */
 
 // Set up return
-	*p = ps+i;
+	p = ps+i;
+	int ltok = 0;
 	if (ib==-1)
-	{
-		if (c=='\0')
+	{	if (c=='\0')
 			return NULL;
-		else
-			ltok = 0;
 	}
 	else
 		ltok = ie - ib + 1;
@@ -211,7 +204,6 @@ char* strncpy0(			// copy/truncate with 0 fill
 	return d;
 }		// ::strncpy0
 // ====================================================================
-#if 1
 char* FC strTrim( 			// trim white space from beginning and end of a string
 	char* s1,			// destination (can be the same as s2), or NULL to use Tmpstr
 	const char* s2,		// string to be trimmed
@@ -275,34 +267,6 @@ char * strTrimB( char* d, const char* s)		// deblank beg of string
 {
 	return strcpy( d, strTrimB( s));
 }		// strTrimB
-#else
-char* FC strtrim( 		// Trim white space from beginning and end of a string
-
-	char *s1,		 // destination (can be the same as S2), or NULL to use Tmpstr
-	const char *s2 ) // string to be trimmed
-
-// Returns s1 (pointer to destination string)
-{
-	char *p, *pend, c;
-
-	if (s1 == NULL)
-		s1 = strtemp( strlen(s2) );	// alloc n+1 Tmpstr[] bytes. local.
-	p = pend = s1;
-	int flag = FALSE;
-	while ((c = *s2++) != 0)
-	{
-		if (!isspaceW(c))
-		{
-			flag = TRUE;
-			pend = p+1;
-		}
-		if (flag)
-			*p++ = c;
-	}
-	*pend = '\0';
-	return s1;
-}		// strtrim
-#endif
 // ====================================================================
 int strLineLen( const char *s)		// line length including \n (# chars thru 1st newline or to \0)  rob 11-91
 
@@ -832,955 +796,6 @@ SI FC strlstin(			// case insensitive search for string in list
 	}
 	return match;
 }		// strlstin
-
-
-#if 0
-///////////////////////////////////////////////////////////////////////////
-// class CWString
-///////////////////////////////////////////////////////////////////////////
-CWString CWString::Set(			// set CWString from char[]
-	const char* s,			// char array
-	int len /*=INT_MAX*/)	// max # of chars to copy
-//   if INT_MAX, use length (added 3-29-05)
-{
-	if (!s || len <=0)
-		Empty();
-	else
-	{
-		if (len == INT_MAX)
-			len = strlen( s);
-		strncpy0( GetBuffer( len), s, len+1);
-		ReleaseBuffer( len);
-	}
-	return *this;
-}		// CWString::Set
-//------------------------------------------------------------------------
-CWString CWString::Fill(			// fill CWString
-	const char* s,		// source string, repeatedly copied until len
-	int len /*=-1*/)	// required length, -1 = use current
-{
-	if (len < 0)
-		len = GetLength();
-	strFill( GetBuffer( len), s, len);
-	ReleaseBuffer( len);
-	return *this;
-}			// CWString::Fill
-//------------------------------------------------------------------------
-CWString CWString::FormatV(			// expose useful CString protected mbr
-	//   and return self
-	LPCTSTR lpszFormat,
-	va_list arglist)			// args (if NULL, no format)
-// returns self
-
-{
-	if (!lpszFormat || !arglist)
-		*this = lpszFormat;		// no FormatV, NULL OK (yields empty)
-	else
-		CString::FormatV( lpszFormat, arglist);
-	return *this;
-}			// CWString::FormatV
-//------------------------------------------------------------------------
-CWString CWString::Format( LPCTSTR lpszFormat, ...)
-{
-	va_list argList;
-	va_start( argList, lpszFormat);
-	return FormatV( lpszFormat, argList);
-}			// CWString::Format
-//------------------------------------------------------------------------
-CWString CWString::Format( UINT nFormatID, ...)
-{
-	CString strFormat;
-	VERIFY( strFormat.LoadString( nFormatID) != 0);
-	va_list argList;
-	va_start( argList, nFormatID);
-	return FormatV( strFormat, argList);
-}			// CWString::Format
-//------------------------------------------------------------------------
-CWString CWString::FmtIfV(				// conditional Format
-	LPCTSTR fmtNonBlank,		// format to use if arg1 non-blank
-	LPCTSTR fmtBlank,			// format to use if arg1 is blank
-	va_list argList)			// args for format, 1st assumed char *
-{
-	va_list aL2 = argList;
-	const char* arg1 = va_arg( aL2, const char *);
-	return FormatV( !::IsBlank( arg1) ? fmtNonBlank : fmtBlank, argList);
-}			// CWString::FmtIfV
-//------------------------------------------------------------------------
-CWString CWString::FmtIf(				// conditional Format
-	LPCTSTR fmtNonBlank,		// format to use if arg1 non-blank
-	LPCTSTR fmtBlank,			// format to use if arg1 is blank
-	...)						// args for format, 1st assumed char *
-{
-	va_list argList;
-	va_start( argList, fmtBlank);
-	FmtIfV( fmtNonBlank, fmtBlank, argList);
-	return *this;
-}			// CWString::FmtIf
-//---------------------------------------------------------------------------
-CWString CWString::FmtForWhat(		// format msg with optional "for what"
-	const char* what,		// if non-blank, "for <what>" appended to msg
-	const char* fmt, ...)
-{
-	va_list ap;
-	va_start( ap, fmt);
-	FormatV( fmt, ap);
-	CatIf( what, " for ");
-	return *this;
-}		// CWString::FmtForWhat
-//------------------------------------------------------------------------
-CWString CWString::FmtFloatDTZ(		// format float / strip trailing 0s
-	double v,				// value
-	int maxPrec,			// max precision (used for initial format)
-	int minPrec /*=0*/)		// min precision, if 0, '.' deleted also
-{
-	Format( "%0.*f", maxPrec, v);
-	return DropTrailing0s( minPrec);
-}		// CWString::FmtFloatDTZ
-//------------------------------------------------------------------------
-CWString CWString::DropTrailing0s(		// drop trailing 0s (in place)
-	int minPrec /*=0*/)		// min precision, if 0, '.' deleted also
-// returns *this with trailing 0s removed
-{
-	int len = GetLength();
-	int newLen = len;	// candidate new length
-	for (int i = len; --i >= 0; )
-	{
-		int c = GetAt( i);
-		if (c == '0')
-		{
-			if (newLen == i+1)
-				newLen = i;
-		}
-		else if (c == '.')
-		{
-			if (newLen <= i + minPrec)
-				newLen = i + minPrec + 1;
-			else if (!minPrec && newLen == i+1)
-				newLen = i;		// drop decimal too
-			if (newLen == 0)
-				*this = "0";	// string was ".0000"
-			else
-				Delete( newLen, len-newLen);
-			break;
-		}
-		else if (newLen == len)
-			break;		// no trailing 0s, give up
-		// else keep scanning
-	}
-	// never hit decimal point, do nothing
-	return *this;
-}			// CWString::DropTrailing0s
-//------------------------------------------------------------------------
-CWString CWString::CSV( const char* s)		// append string to CSV line
-{
-	if (!IsEmpty())
-		*this += ',';
-	*this += s;
-	return *this;
-}		// CWString::CSV
-//------------------------------------------------------------------------
-CWString CWString::CSV(						// append double to CSV line
-	double v, int maxPrec, int minPrec/*=0*/)
-{
-	return CSV( tFmtFloatDTZ( v, maxPrec, minPrec));
-}		// CWString::CSV
-//------------------------------------------------------------------------
-CWString CWString::CSV(						// append float to CSV line
-	float v, int maxPrec, int minPrec/*=0*/)
-{
-	return CSV( tFmtFloatDTZ( v, maxPrec, minPrec));
-}		// CWString::CSV
-//------------------------------------------------------------------------
-CWString CWString::CSV( int v)				// append int to CSV line
-// append double to CSV line
-{
-	return CSV( tFormat( "%d", v));
-}		// CWString::CSV
-//------------------------------------------------------------------------
-CWString CWString::PathParts(			// return portions of full path
-
-	int parts) const		// bits = parts desired
-//    8 = drive	or UNC share
-//    4 = dir
-//    2 = file (aka "title")
-//    1 = ext
-
-// NOTE: combinations 9, 10, 11 (share w/o dir) not meaningful for UNC
-
-// returns reassembled portions
-//		e.g. if x = "c:\path\file.ext", x.PathParts( 6) = "\path\file"
-{
-
-	char drive[ _MAX_DRIVE];
-	char dir[ _MAX_DIR];
-	char file[ _MAX_FNAME];
-	char ext[ _MAX_EXT];
-
-	CWString t( *this);
-	t.Trim();
-	int len = t.GetLength();
-	int partsSav;
-	CWString uncDrive;
-	if (len >= 2 && t.Left( 2) == "\\\\")		// if UNC
-	{
-		int bs1 = t.Find( '\\', 2);
-		int bs2 = bs1 > 0 ? t.Find( '\\', bs1+1) : -1;
-		int split = bs2 < 0 ? len : bs2;
-		uncDrive = t.Left( split);
-		t = t.Right( len - split);
-		partsSav = parts;
-		parts &= 7;			// drop drive
-	}
-	else
-		partsSav = 0;
-
-	_splitpath( t, drive, dir, file, ext);
-
-	char assembly[ _MAX_PATH];
-	_makepath( assembly,
-			   (parts & 8) ? drive : NULL,
-			   (parts & 4) ? dir   : NULL,
-			   (parts & 2) ? file  : NULL,
-			   (parts & 1) ? ext   : NULL);
-	return (partsSav & 8)
-		   ? uncDrive + assembly
-		   : assembly;
-}					// CWString::PathParts
-//-------------------------------------------------------------------------
-int CWString::SplitPfx(			// split delimited prefix
-	CWString& sPfx,				// returned: prefix section
-	CWString& sMain,			// returned: remaining section
-	const char* delim /*="|"*/) const		// delimiter
-// handy equivalent to 1 or 2 Piece calls
-
-// returns -1: bad call (no delim etc)
-//          0: no prefix found (sMain = this)
-//          1: prefix found (sPfx = prefix, sMain = remainder (after delim)
-{
-	int ret = -1;
-	if (delim && *delim)		// if meaningful delimiter
-	{
-		int iDelim = Find( delim);
-		if (iDelim >= 0)
-		{
-			sPfx = Left( iDelim);
-			sMain = Mid( iDelim+strlen( delim));
-			ret = 1;		// prefix found
-		}
-		else
-		{
-			sPfx.Empty();
-			sMain = *this;
-			ret = 0;		// no prefix
-		}
-	}
-	else
-	{
-		sPfx.Empty();
-		sMain.Empty();
-	}
-	return ret;
-}		// CWString::SplitPfx
-//-------------------------------------------------------------------------
-BOOL CWString::Piece(			// return a delimited piece of a string
-
-	CWString& sRet,				// returned string pieces
-	int iB,						// idx of 1st piece (0-based)
-	const char* delim /*="|"*/,	// delimiter: generally single char but
-	//   can be anything
-	int iE /*=-1*/,				// idx of last piece, -1 = same as 1st
-	//   (rarely used)
-	int* pNPRet /*=NULL*/) const	// optional return: # of pieces in sRet
-//   (avoids caller PieceCount() in some cases)
-
-// Example: given "aaaa.bbbb.cccc.d.e",
-//    Piece( t, 0, "."), t = "aaaa"
-//    Piece( t, 3, "."), = "d"
-//    Piece( t, 99, "."), t = "" (returns FALSE)
-//    Piece( t, 2, ".", 3), t = "cccc.d"
-
-// returns FALSE if piece iB is beyond end of string, sRet = ""
-//    else TRUE and sRet = string piece(s)
-{
-// out-of-bounds requests return sensible things
-	if (iB < 0)
-		iB = 0;
-	if (iE < iB)
-		iE = iB;
-
-	int i1 = 0;			// 0-based char pos of beg of 1st piece
-	int n = 0;			// length of chunk to return
-
-	const char* pStr = *this;	// ptr to this string
-	int lStr = GetLength();
-	BOOL bFound = FALSE;
-	int nPRet = 0;
-	if (delim && *delim && pStr && lStr)		// if meaningful
-	{
-		const char* p1 = pStr;
-		const char* pNew;
-		int lDelim = strlen( delim);
-
-		bFound = TRUE;
-		int i;
-		for (i=0; i < iB; i++)	  	// scan p1 for beg of 1st piece
-		{
-			pNew = strstr( p1, delim);
-			if (pNew)
-				p1 = pNew + lDelim;
-			else
-			{
-				bFound = FALSE;			// 1st piece is beyond end of str
-				break;
-			}
-		}
-
-		if (bFound)			// if found piece iB
-		{
-			const char* p2 = p1;
-			for ( ; i <= iE; i++)
-			{
-				pNew = strstr( p2, delim);
-				nPRet++;
-				if (pNew)
-				{
-					p2 = pNew + lDelim;
-				}
-				else
-				{
-					p2 = pStr + lStr + lDelim;
-					break;
-				}
-			}
-			i1 = p1 - pStr;
-			n  = p2 - p1 - lDelim;
-		}
-	}
-	sRet = Mid(i1, n);
-	if (pNPRet)
-		*pNPRet = nPRet;
-	return bFound;
-}					// CWString::Piece
-//---------------------------------------------------------------------------
-int CWString::PieceCount(			// count pieces in piece string
-	const char* delim /*="|"*/,		// delimiter: generally single char but
-	//   can be anything
-	int* pNNonBlank /*=NULL*/) const // if non-NULL, return # of non-blank
-//   pieces here
-
-// returns # of pieces and optionally # of non-blank pieces
-{
-	int n = 0;
-	int nNonBlank = 0;
-	CWString pc;
-	while ( Piece( pc, n, delim))
-	{
-		if (!pc.IsBlank())
-			nNonBlank++;
-		n++;
-	}
-	if (pNNonBlank)
-		*pNNonBlank = nNonBlank;
-	return n;
-}		// CWString::PieceCount
-//---------------------------------------------------------------------------
-/*static*/ int CWString::PieceFindHelper(  	// PieceFind() internal fcn
-	const char* s,	   			// delimited list of strings to search
-	//   e.g. "str1|str2|str3"
-	const char* sFind,			// string sought
-	const char* delim/*="|"*/,	// delimiter: generally single char but
-	//   can be anything
-	int brk/*=-1*/,				// break char: alters match rules
-	//   -2: beg with 1: match length of s
-	//   -1: exact piece match required
-	//    0: beg with 2: match length of piece
-	//   >0: prefix: match part before brk
-	CWString* pFound/*=NULL*/)	// if non-NULL, entire found piece
-//   is returned here
-
-// WHY: this function supports PieceFind() (= find string=this in list)
-//      and PieceFind2() (= find string in list=this)
-// performs case-insensitive compare of this against each piece of s
-//    PieceFind( "XX|ZZZ|FT", "FT") returns 2
-//    PieceFind( "XX-3|FT-2|FTX", "FT", "|", '-') returns 1
-//    s.PieceFind( "A|C|E|F", "FT", "|", 0) returns 3
-// returns 0-based idx of found piece
-//        -1 if not found
-{
-	int lFind = sFind ? strlen( sFind) : 0;
-	int lCmp = lFind;		// length to compare
-	if (!delim || !*delim || !s || !*s || !sFind || !lFind)	// if meaningful
-		return -1;
-
-	int lS = strlen( s);
-	int lDelim = strlen( delim);
-	const char* p1 = s;
-	for (int iP=0;  ; iP++)
-	{
-		const char* pNew = strstr( p1, delim);		// ptr to next delim
-		if (!pNew)
-			pNew = s + lS;					// at end: pt to '\0'
-		int lP = pNew - p1;					// length of piece
-		if (!brk)
-			lCmp = min( lFind, lP);
-		if (lP >= lCmp						// if piece big enuf to match
-				&& !_strnicmp( p1, sFind, lCmp))	// and it matches
-		{
-			if (lP == lCmp					// if identical
-					|| (*(p1+lFind) == brk)		// or next char is brk
-					|| brk == -2)					// or partial match
-			{
-				if (pFound)
-				{
-					memcpy( pFound->GetBuffer( lP), p1, lP);
-					pFound->ReleaseBuffer( lP);
-				}
-				return iP;
-			}
-		}
-		if (!*pNew)						// if no more
-			return -1;					//   not found
-		p1 = pNew + lDelim;			// move past delim and try next one
-	}
-}				// CWString::PieceFindHelper
-//---------------------------------------------------------------------------
-CWString CWString::PieceDelimPad(		// helper: add delimiters if needed
-	int nPReq,						// required # of pieces
-	int nPHave /*=-1*/,				// current # of pieces (-1 = not known)
-	const char* delim /*="|"*/)		// delimiter: generally single char but
-//   can be anything
-// returns modified string
-{
-	if (nPHave < 0)
-		nPHave = PieceCount( delim);
-	int nPAdd = nPReq - nPHave;	// # to be added
-	for (int iPAdd=0; iPAdd < nPAdd; iPAdd++)
-		*this += delim;
-	return *this;
-}		// CWString::PieceDelimPad
-//---------------------------------------------------------------------------------
-CWString CWString::PieceSet(  			// set (overwrite or add) piece in this string
-	const char* s,					// string to add (NULL treated as "")
-	int iB,							// piece to set
-	//   if beyond end, append with add'l delims
-	//   if <0, append w/o add'l delims
-	const char* delim /*="|"*/,		// delimiter: generally single char but
-	//   can be anything
-	int iE /*=-1*/)					// idx of last piece, -1 = same as 1st
-//   (rarely used)
-
-// returns modified string
-{
-	if (!s)
-		s = "";
-	BOOL bPad = TRUE;
-	if (iB < 0)
-	{
-		bPad = FALSE;
-		iB = 999999;
-	}
-	if (iE < 0)
-		iE = iB;
-	CWString beg;
-	int nPBeg = 0;		// # of pieces in beg
-	if (iB > 0)
-		Piece( beg, 0, delim, iB-1, &nPBeg);
-	CWString end;
-	if (!Piece( end, iE+1, delim, 999999))
-	{
-		// beyond end
-		if (bPad)
-			beg.PieceDelimPad( iB, nPBeg, delim);
-	}
-	*this = beg;
-	if (!IsEmpty())
-		*this += delim;
-	*this += s;
-	if (!end.IsEmpty())
-		*this += delim + end;
-	return *this;
-}			// CWString::PieceSet
-//---------------------------------------------------------------------------------
-CWString CWString::PieceDel(  			// delete piece(s)
-	int iB,							// idx of 1st piece to delete (0-based)
-	//   if beyond end, NOP
-	const char* delim /*="|"*/,		// delimiter: generally single char but
-	//   can be anything
-	int iE /*=-1*/)					// idx of last piece, -1 = same as 1st
-//   (rarely used)
-// returns modified string
-{
-	if (iE < 0)
-		iE = iB;
-	CWString beg;
-	if (iB > 0)
-		beg = Piece( 0, delim, iB-1);
-	CWString end( Piece( iE+1, delim, 999999));
-	*this = beg;
-	if (!end.IsEmpty())
-		*this += delim + end;
-	return *this;
-}			// CWString::PieceDel
-//---------------------------------------------------------------------------
-CWString CWString::PieceAdd(  			// add/insert a piece to this string
-	const char* s,				// string to add (NULL treated as "")
-	int iB/*=-3*/,				// where to add
-	//   -3: append w/o delimiter pad
-	//   -2: descending order (s inserted bef
-	//       1st piece <= s)
-	//   -1: ascending order (s inserted bef
-	//		 1st piece >= s)
-	//  >=0: at piece iB (0 based); if iB beyond end, s is
-	//       appended with add'l delimiters
-	const char* delim /*="|"*/)		// delimiter: generally single char but
-//   can be anything
-// returns modified string
-{
-	if (!s)
-		s = "";
-	BOOL bPad = TRUE;		// pad with delimiters
-	if (iB == -3)
-	{
-		bPad = FALSE;	// append: suppress pad
-		iB = 999999;
-	}
-	else if (iB < 0)
-	{
-		BOOL bAscend = iB == -1;
-		CWString p;
-		for( iB=0; Piece( p, iB, delim); iB++)
-		{
-			if (bAscend)
-			{
-				if (s <= p)
-					break;
-			}
-			else if (s >= p)
-				break;
-		}
-	}
-	CWString beg;
-	int nPBeg = 0;		// # of pieces in beg
-	if (iB > 0)
-		Piece( beg, 0, delim, iB-1, &nPBeg);
-#if 1	// recode: handle s="" and add DelimPad, 9-28-06
-	CWString end;
-	if (!Piece( end, iB, delim, 999999))
-	{
-		// beyond end
-		if (bPad)
-			beg.PieceDelimPad( iB, nPBeg, delim);
-	}
-	*this = beg;
-	if (!IsEmpty())
-		*this += delim;
-	*this += s;
-	if (!end.IsEmpty())
-		*this += delim + end;
-	return *this;
-#else
-x	CWString end = Piece( iB, delim, 9999);
-x
-x	*this = beg;
-x	CatIf( s, delim);
-x	return CatIf( end, delim);
-#endif
-}			// CWString::PieceAdd
-//---------------------------------------------------------------------------------
-BOOL CWString::PieceAddUniq(  			// add/insert piece iff not already there
-	const char* s,					// string to add
-	int iB/*=-3*/,					// where to add
-	//   -3: append w/o add'l delimiters
-	//   -2: descending order (s inserted bef
-	//       1st piece <= s)
-	//   -1: ascending order (s inserted bef
-	//		 1st piece >= s)
-	//  >=0: at piece iB (0 based); if iB beyond end, s is
-	//       appended with add'l delimiters
-	const char* delim /*="|"*/)		// delimiter: generally single char but
-//   can be anything
-//returns TRUE if added, otherwise FALSE (already exist)
-{
-	if (PieceFind2( s, delim) >=0 )
-		return FALSE;
-	PieceAdd( s, iB, delim);
-	return TRUE;
-}			// CWString::PieceAddUniq
-//---------------------------------------------------------------------------
-CWString CWString::PieceStringFromNullSeparated(
-	const char* s,		// \0 separated string list
-	//   (as returned by e.g. GetPrivateProfileSectionNames())
-	int len/*=-1*/,			// length of s, if <0, s is terminated
-	//	by \0\0
-	const char* delim /*="|"*/)		// delimiter: generally single char
-//   but can be any non-blank string
-{
-	Empty();
-	const char* pS = s;
-	for (int iB=0; (len < 0 && *s) || pS < s+len; iB++)
-	{
-		PieceAdd( pS, iB, delim);
-		pS += strlen( pS)+1;
-	}
-	return *this;
-}		// CWString::PieceStringFromNullSeparated
-//---------------------------------------------------------------------------
-CWString CWString::PieceFormatList(			// make "x, y, and z" list
-	int* pCount /*=NULL*/,				// if non-NULL, returns count of
-	//   entries in list
-	const char* last /*="and"*/,		// last separator ("and", "or", )
-	const char* delim /*="|"*/)	const	// delimiter: generally single char
-//   but can be any non-blank string
-// returns list suitable for display (may be empty)
-{
-	CWString list;
-	CWString cur;
-	CWString prev;		// prior non-blank piece
-	int iCount = 0;		// # on list so far
-	for (int i=0; ; i++)
-	{
-		if (!Piece( cur, i, delim))			// if no more
-		{
-			if (!prev.IsEmpty())
-			{
-				if (iCount == 1)
-					list += tFormat( " %s ", last);
-				else if (iCount > 1)
-					list += tFormat(", %s ", last);
-				list += prev;
-				iCount++;
-			}
-			break;
-		}
-		cur.Trim();
-		if (cur.IsEmpty())
-			continue;
-		if (!prev.IsEmpty())
-		{
-			if (iCount)
-				list += ", ";
-			list += prev;
-			iCount++;
-		}
-		prev = cur;
-	}
-	if (pCount)
-		*pCount = iCount;
-	return list;
-}			// CWString::PieceFormatList
-//---------------------------------------------------------------------------
-CWString CWString::PieceTrim(				// trim all pieces
-	const char* delim /*="|"*/)	const	// delimiter: generally single char
-//   but can be any non-blank string
-// returns string with leading / trailing WS trimmed from each piece
-{
-	CWString t,sP;
-	for (int i=0; Piece( sP, i, delim); i++)
-		t.PieceAdd( sP.Trim(), i, delim);
-	return t;
-}		// CWString::PieceTrim
-//---------------------------------------------------------------------------
-CWString& CWString::Trim()			// remove leading and trailing WS
-{
-	TrimRight();
-	TrimLeft();
-	return *this;
-}			// CWString::Trim
-//----------------------------------------------------------------------------
-CWString& CWString::CatIf( const char* s, const char *brk /*=" "*/)
-// conditional concatenate
-// adds break string iff both d and s non-null --
-//    this   s	  result
-//    ----  ---  -------
-//    ""	""    ""
-//    "d"   ""    "d"
-//    ""    "s"   "s"
-//    "d"   "s"   "d" + brk + "s"
-// returns *this
-{
-	if ( s && *s)	// if s contains a string
-	{
-		if (IsEmpty())		// if we're empty
-			*this = s;		//   just use s
-		else
-			*this += CWString( brk) + s;  	// concat brk + s
-	}
-	return *this;
-}		// CWString::CatIf
-//-----------------------------------------------------------------------------
-CWString CWString::TranslateEscapes() 		// translate std escape sequences
-{
-	strTranslateEscapes( GetBuffer( 1));	// translate in place
-	ReleaseBuffer();			// reset length, release buffer
-	return *this;
-
-}		// CWString::TranslateEscapes
-//-------------------------------------------------------------------------
-CWString CWString::DeBar() 				// change '_' to ' ' in place
-{
-	strDeBar( GetBuffer( 1));
-	ReleaseBuffer();			// reset length, release buffer
-	return *this;
-}		// CWString::DeBar
-//-------------------------------------------------------------------------
-CWString CWString::DeWS()			// remove all WS characters
-{
-	strDeWS( GetBuffer( 1));
-	ReleaseBuffer();			// reset length, release buffer
-	return *this;
-}		// CWString::DeWS
-//-------------------------------------------------------------------------
-CWString& CWString::RemoveCRLF()
-{
-	strRemoveCRLF( GetBuffer( 1));
-	ReleaseBuffer();			// reset length, release buffer
-	return *this;
-}		// CWString::RemoveCRLF
-//-------------------------------------------------------------------------
-CWString& CWString::Replace2(
-	char cFrom,
-	char cTo,
-	int options /*=0*/)
-{
-	strReplace2( GetBuffer( 1), cFrom, cTo, options);
-	ReleaseBuffer();
-	return *this;
-}		// CWString::Replace2
-//-------------------------------------------------------------------------
-CWString CWString::Case( const char toCases[ 3])		// alter case
-{
-	strCase( GetBuffer( 1), toCases);
-	ReleaseBuffer();
-	return *this;
-}		// CWString::Case
-//-------------------------------------------------------------------------
-int CWString::ReplaceNoCase(  				// case-insensitive replace
-	const char* sOld,		// string to be replaced
-	const char* sNew)		// string to replace with
-// Replaces all instances of sOld with sNew; sOld match is case-
-//	insensitive.  Subsequent search starts after each replacement.
-//	Analogous to Replace(), tho slower.
-// returns # of replacements
-{
-	if (!sNew)
-		sNew = "";
-	int lenNew = strlen( sNew);
-	int lenOld = strlen( sOld);
-
-	int count = 0;
-	int iStart = 0;
-	while (1)
-	{
-		char* pOld = stristr( (const char*)(*this)+iStart, sOld);
-		if (!pOld)
-			break;
-		int iOld = pOld - (const char*)(*this);
-		pOld = GetBuffer( GetLength() + lenNew - lenOld) + iOld;
-		if (lenNew != lenOld)
-		{
-			int nAfter = GetLength() - iOld - lenOld;
-			if (nAfter)
-				memmove( pOld+lenNew, pOld+lenOld, nAfter+1);
-		}
-		memcpy( pOld, sNew, lenNew);
-		iStart += lenNew;
-		ReleaseBuffer();
-		count++;
-	}
-	return count;
-
-}		// CWString::ReplaceNoCase
-//-------------------------------------------------------------------------
-int CWString::FindNoCase( const char* str) const
-{
-	CWString fw(str), ts(*this);
-	fw.MakeLower();
-	ts.MakeLower();
-	return ts.Find(fw);
-}	// CWString::FindNoCase
-//-------------------------------------------------------------------------
-#if 0
-CWString CWString::WordWrap(			// crude word wrap
-	int lLineMax /*=80*/,			// max line final line length (including pfx len)
-	//   min length = 20+lPfx
-	const char* pfx /*=NULL*/,		// prefix added to each line (re indent etc)
-	int options /*=0*/) const		// option bits
-//   1: no prefix on 1st line
-//   2: drop blank lines
-// returns *this broken into multiple chunks with embedded \n's
-{
-	int lThis = GetLength();
-	BOOL bPfx1 = (options & 1) == 0;
-	BOOL bDropBlankLines = (options & 2) != 0;
-	if (!pfx)
-		pfx = "";
-	int lPfx = strlen( pfx);
-	lLineMax = max( 20, lLineMax-lPfx);
-
-	CWString tOut;		// output string
-	int nLOut = 0;		// # of lines in tOut
-	CWString tLine;		// current line
-	int lToWS = 999;	// length to last non-WS in line
-	//   init to "whole line"
-	for (int i=0; i<=lThis; i++)
-	{
-		int lLine = tLine.GetLength();	// current line length
-		char c;
-		if (!lLine && i == lThis)
-			break;		// no more chars and cur line empty
-		else
-			c = i < lThis ? GetAt( i) : '\n';		// fake '\n' at end
-		BOOL bWS = isspaceW( c);
-		if ( bWS)
-		{
-			if (!lLine)
-			{
-				if (c != '\n' || bDropBlankLines)
-					continue;	// drop leading WS
-			}
-			else if (!isspaceW( tLine[ lLine-1]))
-				lToWS = lLine;
-		}
-		if (lLine >= lLineMax || c == '\n')
-		{
-			// wrap line
-			if (nLOut > 0)
-				tOut += '\n';	// if not 1st line
-			if (nLOut > 0 || bPfx1)
-				tOut += pfx;
-			tOut += tLine.Left( lToWS);
-			nLOut++;
-			tLine = tLine.Right( lLine - lToWS);
-			tLine.TrimLeft();
-			lToWS = 999;
-			if (bWS && !tLine.GetLength())
-				continue;	// don't add WS at beg
-		}
-		tLine += c;
-	}
-	return tOut;
-}		// CWString::WordWrap
-#endif
-//=========================================================================
-
-///////////////////////////////////////////////////////////////////////////
-// handy temporary CWString public fcns
-//   inline CWString tCopy( const char* s);		// in str_opts.h
-//-------------------------------------------------------------------------
-CWString tFormatV( LPCTSTR lpszFormat, va_list ap)
-{
-	CWString t;
-	t.FormatV( lpszFormat, ap);
-	return t;
-}		// tFormatV
-//-------------------------------------------------------------------------
-CWString tFormat( LPCTSTR lpszFormat, ...)		// format to temporary
-{
-	va_list argList;
-	return tFormatV( lpszFormat, va_start( argList, lpszFormat));
-}				// ::tFormat
-//-------------------------------------------------------------------------
-CWString tFmtIf(					// conditional format to temporary
-	LPCTSTR fmtNonBlank,		// format to use if arg1 not blank
-	LPCTSTR fmtBlank,			// format to use if arg1 is blank
-	...)						// args ... 1st arg assumed to be char*
-{
-	va_list argList;
-	va_start( argList, fmtBlank);
-	CWString t;
-	return t.FmtIfV( fmtNonBlank, fmtBlank, argList);
-}				// ::tFmtIf
-//-------------------------------------------------------------------------
-CWString tPluralize( const char* word, bool bPlural/*=true*/)
-{
-	CWString t;
-	strPluralize( t.GetBuffer( 50), word, bPlural);
-	t.ReleaseBuffer();
-	return t;
-}				// ::tPluralize
-//-------------------------------------------------------------------------
-CWString tCase( const char* s, const char toCases[ 3])
-{
-	CWString t( s);
-	return t.Case( toCases);
-}				// ::tCase
-//-------------------------------------------------------------------------
-CWString CWString::DoubleDelim(		// double delimiter in place
-	const char* delim)		// delimiter (len>1 OK)
-
-// Convert all occurences of "c" to "cc". For example
-// string "kdd'kd'kddd'" will become "kdd''kd''kddd''"
-// This is useful for building SQL statements, because
-// all ' should be converted to '' there.
-
-// returns converted string
-{
-	CWString delim2( delim);
-	delim2 += delim;
-	Replace( delim, delim2);
-	return *this;
-}		// CWString::DoubleDelim
-#endif
-
-#if 0
-//----------------------------------------------------------------------------
-char * strTrim( char* d, const char* s)		// deblank beg and end of string
-//  if d == s, trims in place
-{
-	strTrim( d, s, 999999);		// don't limit d, ignore return
-	return d;
-}		// strTrim
-//----------------------------------------------------------------------------
-BOOL strTrim(			// deblank beg and end of string
-	char* d,			// dest string, if d==s, deblanks in place
-	const char* s,		// source string
-	int l)			// sizeof( d); truncates at l-1
-// returns TRUE if all non-WS chars preserved
-//        FALSE if 1 or more non-WS chars truncated
-{
-	s = strTrimB( s);	// scan off leading ws
-
-	int iWS = l;		// idx of beg of last WS run
-	//    =l when not in run
-	for (int i=0; *s && i<l-1; i++)
-	{
-		d[ i] = *s;				// store char
-		if (isspaceW( *s))
-		{
-			if (iWS == l)
-				iWS = i;		// start new WS run
-		}
-		else
-			iWS = l;			// we're not in a WS run
-		s++;
-	}
-	d[ min( iWS, i)] = '\0';	// terminate at beg of WS or end
-
-	s = strTrimB( s);			// scan for dropped non-WS
-	return *s == '\0';
-}			// strTrim
-//----------------------------------------------------------------------------
-char* strTrim2(			// deblank beg and end of string in place
-	char* s)			// string
-// returns TRUE if all non-WS chars preserved
-//        FALSE if 1 or more non-WS chars truncated
-{
-	char* sEnd = NULL;
-	char* sBeg = strTrimB( s);
-	for (s=sBeg; *s; s++)
-	{	if (isspaceW( *s))
-		{	if (!sEnd)
-				sEnd = s;
-		}
-		else
-			sEnd = NULL;
-	}
-	if (sEnd)
-		*sEnd = '\0';
-
-	return sBeg;
-}			// strTrim2
-#endif
 //===========================================================================
 int strDecode(					// decode numeric value (internal fcn)
 	//   note inline mapping fcns (str_opts.h)
@@ -1866,14 +881,30 @@ char* strDeBar( 						// translate '_' to ' '
 
 	int i = 0;
 	while (s[ i])
-	{
-		d[ i] = s[ i] == '_' ? ' ' : s[ i];		// copy / translate
+	{	d[ i] = s[ i] == '_' ? ' ' : s[ i];		// copy / translate
 		i++;
 	}
 	d[ i] = '\0';			// terminate
 
 	return d;
 }						// strDeBar
+//----------------------------------------------------------------------------
+char* strDeQuote(		// remove quotes
+	char* d,					// destination string
+	const char* s /*=NULL*/)	// source; if NULL, deBar d in place
+// trims WS and " from beg and end of string
+{
+	if (!s)
+		s = d;
+
+	// scan over leading WS and "
+	int ib = 0;		// idx of 1st char wanted
+	while ( s[ ib] == '\"' || isspaceW( s[ ib]))
+		ib++;
+
+	return strTrimEX( d, s+ib, "\"");
+
+}		// strDeQuote
 //----------------------------------------------------------------------------
 char* strDeWS( 						// remove WS chars
 	char* d,					// destination string

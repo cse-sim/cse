@@ -15,7 +15,6 @@
 /*-------------------------- PUBLIC FUNCTIONS ------------------------------*/
 // cgwthr.cpp
 extern void FC cgWthrClean( CLEANCASE cs);
-extern RC   FC cgWfInit();
 extern void FC cgWfDone();
 
 // end cgwthr.h

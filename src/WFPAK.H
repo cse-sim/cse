@@ -4,8 +4,6 @@
 
 // wfpak.h -- definitions for weather file reading and decoding
 
-		// include first: cneglob.h or notcne.h; yacam.h.
-
 /* The Weather File Story ...
 
 Weather files are efficiently packed binary files with hold up to a full year

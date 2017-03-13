@@ -62,16 +62,16 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 
 }		// cgWthrClean
 //---------------------------------------------------------------------------
-RC FC cgWfInit()  	// Initialize weather file.  Displays any error messages.
+RC TOPRAT::tp_WfInit()  	// Initialize weather file.  Displays any error messages.
 // also uses: Top.tp_wfName [,.isDT]
 // returns non-RCOK if error, message already issued.
 {
-	RC rc = Wfile.wf_Open( Top.tp_wfName, WRN);	// open wthr file and init WFILE object msg if error.
-	if (rc != RCOK)
-		return rc;
-	rc = Wfile.wf_FillWDYEAR( WRN);
+	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName, WRN);	// open wthr file and option TDV file
+															// init WFILE object msg if error.
+	if (!rc)
+		rc = Wfile.wf_FillWDYEAR( WRN);
 	return rc;
-}		// cgWfInit
+}		// TOPRAT::tp_WfInit
 //---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up public Wthr and Top members.
 // tp_WthrBegSubhr must also be called, after this function.
@@ -87,7 +87,7 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 		// get hour's weather data to WthrNxHr if previous call did not read ahead
 		//   -- at first hour of simulation.
 		rc = WthrNxHr.d.wd_WfReader( FALSE,	// fcn below. FALSE to read current hour.
-							 &Wfile);  		// public open weather file structure set by cgWfInit()
+							 &Wfile);  		// public open weather file structure
 		if (rc)
 			return rc;			// if failed (msg issued), return to caller
 	}
@@ -103,7 +103,7 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 			||  tp_autoSizing)		// do read-ahead when autosizing: wraps day, and day may be repeated.
 	{
 		rc = WthrNxHr.d.wd_WfReader( TRUE, 	// read next hour weather data, RCOK if OK. fcn below.
-						 &Wfile); 			// public open weather file structure set by cgWfInit()
+						 &Wfile); 			// public open weather file structure
 		if (rc)
 			return rc;			// if failed (msg issued), return to caller
 	}
@@ -118,16 +118,12 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 	// instantaneous values at end of hour
 	tDbOHr = Wthr.d.wd_db;				// dry bulb temp, deg F
 	tWbOHr = Wthr.d.wd_wb;				// wet bulb temp, deg F
-#if 1	// alternative long-wave sky models, 11-6-2014
 	// sky temp: select value per user model choice
 	//   default = from weather file or as estimated (generally Berdahl-Martin)
 	tSkyHr = skyModelLW == C_SKYMODLWCH_DEFAULT
 		   ? Wthr.d.wd_tSky
 		   : Wthr.d.wd_CalcSkyTemp( skyModelLW, iHrST);
-#else
-	tSkyHr = Wthr.d.wd_tSky;				// sky temp, deg F
-#endif
-	windDirDegHr = Wthr.d.wd_wnddir;		// wind direction, deg, 0=N, 90=E
+	windDirDegHr = Wthr.d.wd_wnddir;	// wind direction, deg, 0=N, 90=E
 	windSpeedHr = Wthr.d.wd_wndspd;		// wind speed, mph
 						// Note: windSpeedMin and windF adjustments
 						//       already applied in WFDATA::wd_WfReader

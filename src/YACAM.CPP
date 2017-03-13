@@ -802,7 +802,7 @@ static unsigned char asTab[ 5][9] = 	// [state][ct]
 //	I L F:	short integer, long integer, float.
 //      C:	read quoted string to char[] array. Array size follows pointer in var arg list.
 //	    D:  date, month and day, no year, leap year flag from caller
-//      X:  skip (data discarded, so pointer advance
+//      X:  skip (data discarded, no pointer advance)
 //   1-99:	repeat count for following char, using same pointer: for arrays or adjacent members of same type.
 //----------------------------------------------------------------------------
 #pragma optimize( "", off)		// re bad va_arg code, 9-2010
@@ -869,8 +869,9 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 		{
 			// get token
 			char tok[ 256];				// token buffer
-			if (!strxtok( tok, &pLn, ",", FALSE))
+			if (!strxtok( tok, pLn, ",", FALSE))
 				return RCBAD;		// out of tokens
+			strDeQuote( tok);
 			erOp &= ~YAC_EOFOK;				// after first token clear no-message-on-eof option bit
 			strTrim( tok);
 

@@ -912,10 +912,10 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 				   inits Locsolar (comments below). EF: return RCBAD on any non-RCOK return. */
 
 // Set up weather file
-// tentatively 6-95 do each phase, allowing name to change. Messages errors. cgwthr.cpp. only call.
-	EF( cgWfInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
+// do each phase, allowing name to change. Messages errors.
+	EF( Top.tp_WfInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
 
-// Open import files used in this run, if any. 2-94.
+// Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
 
 // portion in cgausz.cpp: eg init peak load/plr mbrs (for autosize, may be redone elsewhere each design day iteration)
@@ -2263,7 +2263,7 @@ LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (
 					/* ***** TEMPORARY weather file info for initial DL test graphs ***** 9-4-94
 					   Make names match values passed to setHourInfo() in doIvlAccum()!
 					   Expect will depend on wf type.
-					   Coordinate via cgWfInit (xxx called in this fcn about 100 lines up) ***** */
+					   Coordinate via tp_WfInit (xxx called in this fcn about 100 lines up) ***** */
 #ifdef TWOWV // bfr.h 9-94
 					2, "Est Direct", "Est Diffuse" ) )	// # dl weather vbls and their names. Estimated from CEC wthr file for now.
 #else

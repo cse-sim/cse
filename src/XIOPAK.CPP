@@ -2017,7 +2017,7 @@ t}
 0 0    while (*s)		/* strxtok returns s pointing to terminating '\0'
 0 0			   when no more tokens */
 0 0       *perf |= addaPath( strxtok( ws,      /* seg. buffer */
-0 0                                   &s,      /* Working pointer */
+0 0                                   s,      /* Working pointer */
 0 0                                   ";",     /* Delimiter */
 0 0                                   TRUE),   /* Trim WS from segs. */
 0 0                          erOp);
