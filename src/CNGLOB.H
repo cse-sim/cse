@@ -195,7 +195,7 @@ inline double max( double a, double b, double c, double d, double e, double f)  
 
 // floating point compare
 const double ABOUT0 = 0.001;
-template< typename T> inline int FEQUAL(T a, T b) { return fabs(a-b) < ABOUT0; }
+template< typename T> inline int fAboutEqual(T a, T b) { return fabs(a-b) < ABOUT0; }
 template< typename T> inline T frDiff( T a, T b, T tolAbs=T(.00001))
 {	T d=abs(a-b);
 	return d<=max( tolAbs, T( 1e-30)) ? T( 0.) : T(2.)*d/(abs( a)+abs( b));
@@ -255,6 +255,8 @@ template< typename T> int snapDEG( T& v, double tol=.1)
 // round v to nearest rv (e.g. roundNearest( 14., 5.) -> 15.
 template< typename T> inline void roundNearest( T &v, T rv)
 {	v = round( v/rv)*rv;  }
+// round double to integer (no overflow protection!) 
+inline int iRound( double a) { return int( a > 0. ? a+.5 : a-.5 ); }
 //-----------------------------------------------------------------------------
 
 
@@ -324,8 +326,6 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 /*----------------------------- constants ----------------------------------*/
 #define TRUE 1
 #define FALSE 0
-
-// constant ABOUT0 is above with FEQUAL
 
 /*---------------------- return codes / error codes ------------------------*/
 
@@ -563,11 +563,9 @@ inline double DegKtoF( double k)  { return k*1.8-tAbs0F; }
 inline double QRad( double t1, double t2)		// radiant power betw 2 black surfaces
 {	return sigmaSB*(pow4( DegFtoR( t1))-pow4(DegFtoR( t2))); }
 
-// Radians <--> degrees -- double and float versions
-inline double DEG( double r) { return r*57.29577951308232; }
-inline double RAD( double d) { return d/57.29577951308232; }
-inline float  DEG( float r) { return float( r*57.29577951308232); }
-inline float  RAD( float d) { return float( d/57.29577951308232); }
+// Radians <--> degrees
+template <typename T> inline T DEG( T r) {	return T( r*180./kPi); }
+template <typename T> inline T RAD( T d) {	return T( d*kPi/180.); }
 
 // Btuh/ft2-F <--> W/m2-K
 const double cfU = 5.678263;		// W/m2-K per Btuh/ft2-F

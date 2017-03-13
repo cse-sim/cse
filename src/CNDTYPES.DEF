@@ -236,6 +236,10 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  DRYBULB "DryBulb"
 			  BLAST "Blast"
 			  }
+*choicb EXSHMODELCH {
+			  NONE "None"
+			  PENUMBRA "Penumbra"
+			  }
 // day of week choice, sun=1: subtract 1 for DOW for use with tdpak.
 *choicb DOWCH    {  SUN "Sun"
 			  MON "Mon"
@@ -425,6 +429,12 @@ x			GENERICRESFRAC55 "GenericResFrac55"
 			1AXBT "OneAxisBacktracking"
 			2AXT "TwoAxisTracking"
 		  }
+
+// shade / PVARRAY attachment
+*choicb MOUNTCH {
+		BLDG "Building"
+		SITE "Site"
+		}
 
 // fenestration model -- gtModel
 *choicb FENMODELCH { SHGC "SHGC"		// Solar Heat Gain Coefficient model (pre-existing CSE)

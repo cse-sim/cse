@@ -63,6 +63,8 @@ extern anc<DHWUSE> WUiB;		// DHW use input records
 extern anc<PVARRAY> PViB;		// PV array input records
 extern anc<BATTERY> BTiB;		// Battery input records
 
+extern anc<SHADEX> SXiB;		// SHADEX (external shading) input records
+
 extern anc<RFI> RfiB; 			// REPORTFILE input info
 extern anc<RFI> XfiB; 			// EXPORTFILE input info
 extern anc<RI> RiB;    			// REPORT input info

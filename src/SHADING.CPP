@@ -24,14 +24,20 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include "cnglob.h"
 
-#include <ancrec.h>	// record: base class for rccn.h classes
-#include <rccn.h>	// WSHADRAT, SHADEX, 
-
-#include <cnguts.h>	// decl for shadwin()
+#include "ancrec.h"	// record: base class for rccn.h classes
+#include "rccn.h"	// WSHADRAT, SHADEX,
+#include "cuparse.h"
+#include "slpak.h"
+#include "cnguts.h"
+#include "exman.h"
 
 #include <ashrae/geometry.h>
+
+#include <penumbra/penumbra.h>
+
+static Pumbra::Penumbra pumbra;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -328,30 +334,151 @@ exit68:  		// come here to exit
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// class SURFGEOM: nestable surface geometry
+// class SURFGEOMDET -- geometric details for SURFGEOM
+//                      local / hides geometry.h classes
+///////////////////////////////////////////////////////////////////////////////
+class SURFGEOMDET
+{
+friend SURFGEOM;
+	SURFGEOMDET( SURFGEOM* pSG) : gxd_pSG( pSG)
+	{}
+	SURFGEOMDET( SURFGEOM* pSG, const SURFGEOMDET& sgd);
+	bool gxd_IsEmpty() const	// true iff no valid polygon
+	{	return gxd_uNorm.IsZero(); }
+
+	SURFGEOM* gxd_pSG;			// parent
+	CPolygon3D gxd_polygon;		// polygon (as input, no rotation etc.)
+	CPV3D gxd_uNorm;			// unit normal of gxd_polygon (not transforms)
+	CPV3D gxd_uNormT;			// unit normal with any transforms (e.g. bldgAzm rotation)
+
+	SURFGEOM& SG()
+	{	return *gxd_pSG; }
+	record& PREC()
+	{	return *SG().gx_pParent; }
+	RC gxd_FillAndCheck( int fnVI, float vrt[], int nVrt);
+	int gxd_GetAzmTilt( float& azm, float& tilt) const
+	{	double dAzm,dTilt;
+		int ret = gxd_uNorm.AzmTilt( dAzm, dTilt);
+		azm = float( dAzm);
+		tilt = float( dTilt);
+		return ret;
+	}
+	int gxd_SetupShading( const CT3D* MT=NULL);
+};		// class SURFGEOMDET
+//-----------------------------------------------------------------------------
+SURFGEOMDET::SURFGEOMDET(		// special copy c'tor
+	SURFGEOM* pSG,			// parent SURFGEOM
+	const SURFGEOMDET& sgd)	// source data
+	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( sgd.gxd_uNorm),
+	  gxd_uNormT( sgd.gxd_uNormT)
+{
+}	// SURFGEOMDET::SURFGEOMDET
+//-----------------------------------------------------------------------------
+RC SURFGEOMDET::gxd_FillAndCheck(
+	int fnVI,			// source record vertices field number
+	float vrt[],		// vertices (x, y, z)
+	int nVrt)			// # of vertices (= dim vrt[]/3)
+{
+	RC rc = RCOK;
+	gxd_polygon.DeleteAll();
+	gxd_polygon.Add( vrt, nVrt);
+	record& PR = PREC();		// parent record (SHADEX, PVARRAY, )
+
+	SG().gx_area = gxd_polygon.UnitNormal( gxd_uNorm);
+	if (SG().gx_area < 0.)
+		rc = PR.ooer( fnVI, "Bad polygon, cannot determine normal");
+	else
+	{	double dist = gxd_polygon.CheckFix( 1);
+		if (dist > .01)
+			rc = PR.ooer( fnVI, "Bad vertices");
+	}
+	return rc;
+}		// SURFGEOMDET::gxd_FillAndCheck
+//-----------------------------------------------------------------------------
+int SURFGEOMDET::gxd_SetupShading(	// convert polygon to Penumbra format
+	const CT3D* MT /*=NULL*/) 	// point transform matrix if any
+								//   e.g. re bldgAzm rotation
+// minimal error checking -- *this assumed good
+// returns Penumbra surface idx
+//         -1 if not successful
+{	
+	// unit normal
+	gxd_uNormT = MT ? MT->TX( gxd_uNorm) : gxd_uNorm;
+
+	// polygon
+	int pnIdx = -1;
+	int nV=gxd_polygon.GetSize();
+	if (nV >= 3)
+	{	Pumbra::Polygon plg;
+		for (int iV=0; iV<nV; iV++)
+		{	CPV3D p3 = gxd_polygon.p3_Vrt( iV);
+			if (MT)
+				p3 = MT->TX( p3);	// apply transform if caller provides
+			// Penumbra coords are float
+			//   winding order same as CSE
+			for (int iD=0; iD<3; iD++)	// loop x, y, z
+				plg.push_back( float( p3[ iD]));
+		}
+		Pumbra::Surface pnSurf( plg);
+		pnIdx = pumbra.addSurface( pnSurf);
+	}
+	return pnIdx;
+}		// SURFGEOMDET::gxd_SetupShading
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// struct SURFGEOM: nestable surface geometry
+//                  used with *nest in e.g. SHADEX, PVARRAY
 ///////////////////////////////////////////////////////////////////////////////
 SURFGEOM::SURFGEOM()
 {
-	gx_polygon = new CPolygon3D();
+	gx_sgDet = new SURFGEOMDET( this);
+	gx_pnIdx = -1;
 }	// SURFGEOM::SURFGEOM
 //-----------------------------------------------------------------------------
 SURFGEOM::~SURFGEOM()
 {
-	delete gx_polygon;
+	delete gx_sgDet;
+	gx_sgDet = NULL;
 }	// SURFGEOM::~SURFGEOM
 //-----------------------------------------------------------------------------
-void SURFGEOM::gx_Init(			// parent linkage etc
+void SURFGEOM::gx_SetParent(			// parent linkage etc
 	record* pParent,		// parent record: SHADEX, PVARRAY, etc
 	int options /*=0*/)		// options TBD
 {
 	gx_pParent = pParent;
+}		// SURFGEOM::gx_SetParent
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_Init()		// start-of-run init
+{	RC rc = RCOK;
+	gx_fBeamErrCount = 0;	// fBeam > 1ish error count
+	return rc;
 }		// SURFGEOM::gx_Init
+//-----------------------------------------------------------------------------
+bool SURFGEOM::gx_IsEmpty() const	// true iff no polygon
+{
+	return !gx_sgDet || gx_sgDet->gxd_IsEmpty();
+}		// SURFGEOM::gx_IsEmpty
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_Validate(
+	record* pParent,	// actual parent
+	const char* what,	// parent type ("PVARRAY")
+	int options /*=0*/)	// option bits
+						//   1: check SURFGEOMDET linkage
+{
+	RC rc = RCOK;
+	if (gx_pParent != pParent)
+		rc |= errCrit( WRN, "%s::Validate: Bad SURFGEOM linkage", what);
+	else if (options&1 && gx_sgDet->gxd_pSG != this)
+		rc |= errCrit( WRN, "%s::Validate: Bad SURFGEOMDET linkage", what);
+	return rc;
+}		// SURFGEOM::gx_Validate
 //-----------------------------------------------------------------------------
 void SURFGEOM::gx_CopySubObjects()		// copy heap subobjects
 // call AFTER bitwise parent Copy()
 //   subojects are duplicated
-{	if (gx_polygon)
-		gx_polygon = new CPolygon3D( *gx_polygon);
+{	if (gx_sgDet)
+		gx_sgDet = new SURFGEOMDET( this, *gx_sgDet);
 }	// SURFGEOM::gx_CopySubObjects
 //-----------------------------------------------------------------------------
 RC SURFGEOM::gx_CheckAndMakePolygon(
@@ -376,9 +503,8 @@ RC SURFGEOM::gx_CheckAndMakePolygon(
 			   "  Must be a multiple of 3 and >= 9.", nSet);
 
 	if (!rc)
-	{	// fill polygon from input verticies
-		gx_polygon->DeleteAll();
-		gx_polygon->Add( gx_vrtInp, nSet/3);
+	{	
+		gx_sgDet->gxd_FillAndCheck( fnVI, gx_vrtInp, nSet/3);
 
 		// validate polyon
 		// compare to tilt / azm?
@@ -387,6 +513,106 @@ RC SURFGEOM::gx_CheckAndMakePolygon(
 	return rc;
 
 }	// SURFGEOM::gx_CheckAndMakePolygon
+//----------------------------------------------------------------------------
+int SURFGEOM::gx_GetAzmTilt( float& azmR, float& tiltR) const
+// azm / tilt (radians)
+{	return gx_sgDet->gxd_GetAzmTilt( azmR, tiltR);
+}	// SURFGEOM::gx_GetAzmTilt
+//-----------------------------------------------------------------------------
+RC SURFGEOM::gx_SetupShading(		// shading calcs setup
+	int& nS,				// shading surface count
+							//    incremented iff success
+	const CT3D* MT,			// point transformation matrix
+							//   (e.g. re bldgAzm rotation)
+							//   NULL -> no transformation
+	int options /*=0*/)		// options TBD
+// add this surface to the Penumbra model
+// returns RCOK: success or no geometry specified
+//    else RCBAD: bad geometry or addSurface fail
+{
+	options;
+	gx_pnIdx = -1;		// no associated Penumbra surface
+	RC rc = RCOK;
+	if (gx_sgDet && !gx_IsEmpty())
+	{	if (gx_mounting == C_MOUNTCH_SITE)
+			MT = NULL;		// no rotation for site-mounted objects
+		gx_pnIdx = gx_sgDet->gxd_SetupShading( MT);
+		if (gx_pnIdx >= 0)
+			nS++;
+		else
+			rc = RCBAD;
+	}
+	return rc;
+}		// SURFGEOM::gx_SetupShading
+//-----------------------------------------------------------------------------
+void SURFGEOM::gx_ClearShading()		// clear shading results (e.g. when sun is down)
+{	gx_fBeam = 0.f;
+}	// SURFGEOM::gx_ClearShading
+//-----------------------------------------------------------------------------
+int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
+	float& cosi,	// returned: cos( beam incA)
+	float& fBeam)	// returned: fraction of surface sunlit
+
+// slday() must have been called
+
+// returns 1: sun up relative to surface (cosi, fBeam set)
+//            fBeam = 1 if Penumbra shading not possible or disabled
+//         0: sun down relative to surface
+//            (cosi=fBeam=0)
+//        -1: calc failure (cosi=fBeam=0)
+{
+	float dcSrf[ 3];		// surface direction cosines
+	gx_sgDet->gxd_uNormT.Get( dcSrf);
+	float azm, cosz;
+	int sunupSrf = slsurfhr( dcSrf, Top.iHrST, &cosi, &azm, &cosz);
+
+	if (!sunupSrf)
+	{	fBeam = 0.f;		// sun is down or behind surface
+		// cosi = 0.f;		// set in slsurfhr
+
+	}
+	else if (Top.tp_exshModel != C_EXSHMODELCH_PENUMBRA
+		  || gx_pnIdx < 0)
+		fBeam = 1.f;		// Penumbra model disabled
+							// or no associated Penumbra surface
+							// say no shade
+	else
+	{	// use Penumbra model
+		float alt = kPiOver2 - acos( cosz);
+		float dcSun[ 3];
+		slsdc( azm, kPiOver2-alt, dcSun);
+		cosi = DotProd3( dcSrf, dcSun);		// replace cosi with value
+											//   consistent with alt and azm
+		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
+		{	cosi = fBeam = 0.f;
+			sunupSrf = -1;	// unexpected
+		}
+		else
+		{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
+			fBeam = PSSF / (cosi*gx_area);
+			if (fBeam > 1.f)
+			{	
+#if 1
+				if (fBeam > 1.05f && cosi > .01f)
+				{	// report some errors > 5% and all errors > 10%
+					//  ignore if low sun angles
+					static const int MAXFBEAMMSGS = 20;
+					if ( ++gx_fBeamErrCount <= MAXFBEAMMSGS || fBeam > 5.f)
+					{	const char* noMore = gx_fBeamErrCount == MAXFBEAMMSGS
+									? "\n  Omitting further messages for small errors of this type."
+									: "";
+						rWarn( "%s: calculated sunlit fraction (=%0.4f) s/b <= 1.%s",
+							gx_pParent->classObjTx( 1), fBeam, noMore);
+					}
+				}
+#endif
+				fBeam = 1.;		// limit to 1
+			}
+		}
+	}
+	gx_fBeam = fBeam;
+	return sunupSrf;
+}		// SURFGEOM::gx_CalcBeamShading
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,8 +626,25 @@ SHADEX::SHADEX( basAnc *b, TI i, SI noZ /*=0*/)
 //----------------------------------------------------------------------------
 /*virtual*/ void SHADEX::FixUp()
 {
-	sx_g.gx_Init( this);
+	sx_g.gx_SetParent( this);
 }		// SHADEX::FixUp
+//-----------------------------------------------------------------------------
+/*virtual*/ RC SHADEX::Validate(
+	int options/*=0*/)		// options bits
+							//  1: check child SURFGEOMDET also
+{
+	RC rc = record::Validate( options);
+	if (rc == RCOK)
+		rc = sx_g.gx_Validate( this, "SHADEX", options);
+	return rc;
+}		// SHADEX::Validate
+//----------------------------------------------------------------------------
+RC SHADEX::sx_Init()		// init at run start
+{
+	RC rc = sx_g.gx_Init();
+
+	return rc;
+}		// SHADEX::sx_Init
 //----------------------------------------------------------------------------
 void SHADEX::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
@@ -417,8 +660,84 @@ RC SHADEX::sx_CkF()
 	rc = sx_g.gx_CheckAndMakePolygon( 0, SHADEX_G);
 
 	return rc;
-}		// SHADEX::xs_CkF
+}		// SHADEX::sx_CkF
 //=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// TOPRAT interface to shading model
+///////////////////////////////////////////////////////////////////////////////
+static void PemumbraMessageHandler(
+	const int messageType,
+	const std::string message,
+	void* contextPtr)
+{
+	contextPtr;
+
+	(messageType == Pumbra::MSG_ERR ? per : messageType == Pumbra::MSG_WARN ? pWarn : pInfo)
+		( "Penumbra msg: %s", message.c_str());
+
+}		// penumbraMessageHandler
+//-----------------------------------------------------------------------------
+RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
+// sets up Penumbra model from all shading or receiving objects
+{
+	RC rc = RCOK;
+
+	// route Penumbra messages to CSE output
+	//   use pumbra as context even though only one
+	pumbra.setMessageCallback( PemumbraMessageHandler, &pumbra);
+
+	pumbra.clearModel();
+
+	// building rotation
+	//   construct rotation matrix re C_SHADETY_BLDG
+	CT3D MRot( 1);		// rotation matrix
+	MRot.Rotate( tp_bldgAzm, -2);	// rotate about z axis
+									//  -2 = right-handed coord system
+
+	tp_exshNShade = 0;		// # of shade surfaces
+	tp_exshNRec = 0;		// # of receiving surfaces
+
+	// create Penumbra surface model
+	PVARRAY* pPV;
+	RLUP( PvR, pPV)
+		rc |= pPV->pv_SetupShading( tp_exshNRec, &MRot);
+	tp_exshNShade = tp_exshNRec;		// PVARRAYs shade each other
+
+	SHADEX* pSX;
+	RLUP( SxR, pSX)
+		rc |= pSX->sx_SetupShading( tp_exshNShade, &MRot);
+
+	if (!rc && tp_exshNShade > 0)
+	{	if (pumbra.setModel() != Pumbra::PN_SUCCESS)
+			rc |= RCBAD;
+	}
+
+	return rc;
+
+}		// TOPRAT::tp_ExshRunInit
+//-----------------------------------------------------------------------------
+RC TOPRAT::tp_ExshBegHour()		// once-per-hour exterior shading setup
+{
+	RC rc = RCOK;
+
+#if 0
+0 now done per surface
+0	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
+0	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
+0	float azm, cosz;
+0	int sunup = 					// nz if sun above horizon this hour
+0		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
+0
+0	if (sunup)
+0	{	float alt = kPiOver2 - acos( cosz);
+0		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
+0			rc |= RCBAD;
+0	}
+#endif
+
+	return rc;
+}		// TOPRAT::tp_ExshBegHour
 
 
 // shading.cpp end

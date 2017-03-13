@@ -69,8 +69,8 @@
 #undef BUG_COLTYPECOPY	// define to include object trap code re memcpy bug
 						//   associated with copying COL objects
 						//   File coltypebug.cse crashes if ANAMELENGTH64 defined.
-						//   Fixed (maybe) by overriding COL::copyFrom().
-						//   Further research needed: why both Copy() and copyFrom()?
+						//   Fixed (maybe) by overriding COL::CopyFrom().
+						//   Further research needed: why both Copy() and CopyFrom()?
 						//      (both use memcpy(), dangerous when object contains heap ptrs)
 						//   2-24-2012
 
@@ -128,9 +128,6 @@
 
 #define ASHP_DEFROSTHT		// define to model heating during defrost, 8-7-2013
 
-#define WFILE_SUPPORTEPW	// define to enable code to support EnergyPlus EPW weather files
-							//   under development, 7-2012
-
 #define DETAILED_TIMING		// define to enable fine-grain timing
 
 #undef COMFORT_MODEL		// define to include comfort model
@@ -140,8 +137,8 @@
 							//   fixed size polygons as input convenience
 							//   using ARRAY mechanism
 							//   Note limit is due to ARRAY input only.
-#define MAX_POLYGONVERTICES 9	// maximum number of input polygon vertices
-#define DIM_POLYGONXYZ 28		// input arrays dimension
+#define MAX_POLYGONVERTICES 12	// maximum number of input polygon vertices
+#define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
 
 #endif	// ifndef _CNEDEFNS_H

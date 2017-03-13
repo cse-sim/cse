@@ -57,7 +57,7 @@ inline int intC( const char* p) { return int( (unsigned char)*p); }
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 int strCheckPtr( DMP p);
-char * strxtok( char *tokbuf, const char** p, const char* delims, int wsflag);
+char * strxtok( char *tokbuf, const char* &p, const char* delims, int wsflag);
 int strTokSplit( char* str, const char* delims, const char* toks[], int dimToks);
 void * FC memsetPass( void * * pdest, char c, USI n);
 void * FC memcpyPass( void * * pdest, const void * src, USI n);
@@ -138,6 +138,7 @@ char* strFill( char* d, const char* s, int len=-1);
 char* strTranslateEscapes( char* d, const char* s=NULL);
 char* strCatIf( char* d, size_t dSize, const char* brk, const char* s);
 char* strDeBar( char* d, const char* s=NULL);
+char* strDeQuote( char* d, const char* s=NULL);
 char* strDeWS( char* d, const char* s=NULL);
 char* strCase( char* s, const char toCases[3]);
 char* strCase( char* d, const char* s, const char toCases[3]);

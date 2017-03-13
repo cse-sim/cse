@@ -34,6 +34,7 @@ SI FC ppClargIf( const char* s, RC *prc /*,era?*/ );
 void FC ppClean( CLEANCASE cs);				// init/cleanup
 void ppAddPath( const char* paths);			// add path(s) to search for input/include files. 2-21-95.
 BOO ppFindFile( const char *fname, char *fullPath);	// search pp paths, return full file path. 2-21-95.
+BOO ppFindFile( char* &fname);	// ditto, update fname to path found
 RC FC ppOpen( const char* fname, char *defex);		// open file
 void FC ppClose();						// close file(s)
 USI FC ppGet( char *p, USI n);			// get preprocessed text

@@ -340,10 +340,22 @@ template< typename T1, typename T2> void VMul1(	// vector * constant
 		v[ i] = T1( v[ i] * f);
 }		// VMul1< T1, T2>
 //-------------------------------------------------------------------------
-template< typename T> T DotProd(			// 3-vector dot product
+template< typename T> T DotProd3(			// 3-vector dot product
 	const T* v1, const T* v2)
 {
 	return v1[ 0]*v2[ 0] + v1[ 1]*v2[ 1] + v1[ 2]*v2[ 2];
+}		// DotProd< T>
+//-------------------------------------------------------------------------
+template< typename T> T DotProd(			// n-vector dot product
+	const T* v1,			// vector 1
+	const T* v2,			// vector 2
+	int n)					// dim of v1, v2
+// see also VIProd (next)
+{
+	T t = 0;
+	for (int i=0; i < n; i++)
+		t += *v1++ * *v2++;
+	return t;
 }		// DotProd< T>
 //-------------------------------------------------------------------------
 template< typename T,typename TR=T> TR VIProd(	// inner product

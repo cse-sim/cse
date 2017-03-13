@@ -7,22 +7,13 @@
 /*--------------------------------- INCLUDES ------------------------------- */
 #include "cnglob.h"	// CSE global definitions -- included first in every module
 
-#ifdef INCNE
 #include "msghans.h"	// MH_xxxx defns
 #include "srd.h"	// SFIRstr: BC3 needs b4 rccn.h, 2-92
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRAT WFILE WFDATA
 #include "psychro.h"
-#ifdef WANTED // restore if xfFindOnPath restored below, 3-95
-x  #include "xiopak.h"	// xfFindOnPath
-#endif
-#else
-// if not in CSE, use no disk text message handles.
-// if not in CSE, WFILE and WFDATA are defined in wfpak.h
-// [if not in CSE,] finding file on directories of path must be done by caller.
-#endif
 
-#include "yacam.h"	// class YACAM for .yac
+#include "yacam.h"	// class YACAM
 #include "tdpak.h"
 
 #if defined( WTHR_T24DLL)
@@ -325,6 +316,30 @@ void WDHR::wd_Init()	// initialize all members
 	// bitwise OK (no ptrs)
 	memset( (char *)this, 0, sizeof( WDHR));
 }			// WDHR::wd_Init()
+//------------------------------------------------------------------------------
+void WDHR::wd_ClearDerived(		// init derived values
+	int options /*=0*/)		// options
+							//  1: init all to "missing" (else 0)
+{
+	float v = (options&1) ? -999.f : 0.f;
+	
+	wd_taDbPk =
+	wd_taDbAvg =
+	wd_taDbPvPk =
+	wd_taDbAvg01 =
+	wd_taDbAvg07 =
+	wd_taDbAvg14 =
+	wd_taDbAvg31 =
+
+	wd_tdvElecPk =
+	wd_tdvElecAvg =
+	wd_tdvElecPvPk =
+	wd_tdvElecAvg01 =
+
+	wd_tGrnd     = 
+	wd_tMains	 = v;
+
+}		// WDHR::wd_ClearDerived
 //----------------------------------------------------------------------------
 WDHR& WDHR::Copy( const WDHR& wdhr)
 {	memcpy( (char *)this, (const char*)&wdhr, sizeof( WDHR));
@@ -362,17 +377,7 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 	}
 	// else if ...
 
-	wd_tGrnd =
-	wd_tMains =
-	wd_taDbPvPk =
-	wd_taDbAvg01 =
-	wd_taDbAvg07 =
-	wd_taDbAvg14 =
-	wd_taDbAvg31 =
-	wd_taDbAvg =
-	wd_tdvElec	=
-	wd_tdvNatGas =
-	wd_tdvPropane = -999.f;
+	wd_ClearDerived( 1);		// set derived values to "missing"
 
 	return RCOK;
 }		// WDHR::wd_UnPack
@@ -387,6 +392,7 @@ class WDDAY
 friend class WDYEAR;
 friend class WFILE;
 	float wdd_taDbPvPk;		// previous day max dry bulb air temp, F
+	float wdd_taDbPk;		// current day max dry bulb air temp, F
 	float wdd_taDbAvg;		// this day mean dry bulb air temp, F
 							//   used re calc of wdd_taDbAvgXX, wd_taDbAvg01,
 	float wdd_tGrnd;		// ground temp, F.  Calculated with Kusuda model
@@ -400,6 +406,12 @@ friend class WFILE;
 	float wdd_taDbAvg07;	//    7 day
 	float wdd_taDbAvg14;	//   14 day
 	float wdd_taDbAvg31;	//   31 day
+
+							// TDV elect statistics
+	float wdd_tdvElecPk;	//   peak for cur day
+	float wdd_tdvElecAvg;	//   avg for cur day
+	float wdd_tdvElecPvPk;	//   peak for prior day
+	float wdd_tdvElecAvg01;	//   avg for print day
 public:
 	void wdd_Init();
 	int wdd_Compare( const WDHR* wdHr) const;
@@ -427,8 +439,8 @@ public:
 		return wdy_day[ iD0];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
-	void wdy_taDbMinMeanMax( int jDay, double& taDbMin, double& taDbMean,
-		double& taDbMax) const;
+	void wdy_MeanMax( int jDay, double& taDbMean, double& taDbMax,
+		double& tdvElecMean, double& tdvElecMax) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 };		// class WDYEAR
 //-----------------------------------------------------------------------------
@@ -513,14 +525,20 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			}
 			if (rc)
 				break;
-			double taDbMin, taDbMean, taDbMax;
-			wdy_taDbMinMeanMax( jDay, taDbMin, taDbMean, taDbMax);
-			float taDbAvgDay = VSum( &wdy_Hr( jDay, 0).wd_db, 24, sizeof( WDHR)) / 24.f;
-			wdy_Day( jDay).wdd_taDbAvg = taDbMean;
-			wdy_Day( jDay+1).wdd_taDbPvPk = taDbMax;
-			wdy_taDbAvg[ iMon] += taDbMean;
+			double taDbMean, taDbMax, tdvElecMean, tdvElecMax;
+			wdy_MeanMax( jDay, taDbMean, taDbMax, tdvElecMean, tdvElecMax);
+
+			// current day values
+			// next day's previous day values = current day
+			WDDAY& wdd = wdy_Day( jDay);
+			WDDAY& wdd1 = wdy_Day( jDay+1);
+			wdd.wdd_taDbPk = wdd1.wdd_taDbPvPk = taDbMax;
+			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbMean;
+			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecMax;
+			wdd.wdd_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecMean;
+			wdy_taDbAvg[ iMon] += taDbMean;		// re monthly average
 		}
-		wdy_taDbAvg[ 0] += wdy_taDbAvg[ iMon];
+		wdy_taDbAvg[ 0] += wdy_taDbAvg[ iMon];		// re year avg
 		wdy_taDbAvg[ iMon] /= monLen;
 	}
 	if (rc)
@@ -542,7 +560,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 		{	jDay++;
 			WDDAY& wdd = wdy_Day( jDay);
 			// lagged average dry-bulb temps: values do not include current day
-			wdd.wdd_taDbAvg01 = wdy_TaDbAvg( jDay-1, jDay-1);
+			// wdd.wdd_taDbAvg01 = wdy_TaDbAvg( jDay-1, jDay-1) -- see above
 			wdd.wdd_taDbAvg07 = wdy_TaDbAvg( jDay-7, jDay-1);
 			wdd.wdd_taDbAvg14 = wdy_TaDbAvg( jDay-14, jDay-1);
 			wdd.wdd_taDbAvg31 = wdy_TaDbAvg( jDay-31, jDay-1);
@@ -569,26 +587,28 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	return rc;
 }	// WDYEAR::wdy_Fill
 //-----------------------------------------------------------------------------
-void WDYEAR::wdy_taDbMinMeanMax(			// statistics for day
+void WDYEAR::wdy_MeanMax(			// statistics for day
 	int jDay,				// day of year (1-365/366)
-	double& taDbMin,		// returned: min dry-bulb, F
 	double& taDbMean,		// returned: 24hr mean dry-bulb, F
-	double& taDbMax) const	// returned: max dry-bulb, F
+	double& taDbMax,		// returned: max dry-bulb, F
+	double& tdvElecMean,		// returned: mean TDV elec
+	double& tdvElecMax)	const	// returned: max TDV elec
 // returns min, mean, and max dry-bulb for day
 {
-	taDbMin = 9999.;
-	taDbMax = -9999.;
-	taDbMean = 0.;
+	taDbMax = tdvElecMax = -9999.;
+	taDbMean = tdvElecMean = 0.;
 	for (int iHr=0; iHr<24; iHr++)
 	{	const WDHR& wd = wdy_Hr( jDay, iHr);
 		if (wd.wd_db > taDbMax)
 			taDbMax = wd.wd_db;
-		if (wd.wd_db < taDbMin)
-			taDbMin = wd.wd_db;
 		taDbMean += wd.wd_db;
+		if (wd.wd_tdvElec > tdvElecMax)
+			tdvElecMax = wd.wd_tdvElec;
+		tdvElecMean += wd.wd_tdvElec;
 	}
 	taDbMean = taDbMean / 24.;
-}		// WDYEAR::wdy_taDbMinMeanMax
+	tdvElecMean = tdvElecMean / 24.;
+}		// WDYEAR::wdy_MeanMax
 //-----------------------------------------------------------------------------
 float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
 	int jDay1,		// 1st day (possibly < 0)
@@ -601,14 +621,25 @@ float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
 }		// WDYEAR::wdy_TaDbAvg
 //-----------------------------------------------------------------------------
 void WDDAY::wdd_Init()
-{	wdd_taDbPvPk = 0.f;
+{	
+	wdd_taDbPk = 0.f;
 	wdd_taDbAvg = 0.f;
-	wdd_tGrnd = 0.f;
-	wdd_tMains = 0.f;
+	
+	wdd_taDbPvPk = 0.f;
 	wdd_taDbAvg01 = 0.f;
+
 	wdd_taDbAvg07 = 0.f;
 	wdd_taDbAvg14 = 0.f;
 	wdd_taDbAvg31 = 0.f;
+	
+	wdd_tdvElecPk = 0.f;
+	wdd_tdvElecAvg = 0.f;
+	wdd_tdvElecPvPk = 0.f;
+	wdd_tdvElecAvg01 = 0.f;
+
+	wdd_tGrnd = 0.f;
+	wdd_tMains = 0.f;
+
 }	// WDDAY::wdd_Init
 //-----------------------------------------------------------------------------
 int WDDAY::wdd_Compare(		// check that hour values match daily
@@ -644,14 +675,20 @@ void WDDAY::wdd_Set(		// set hourly values from daily
 	int bForce = (options & 1) == 0;
 	for (int iHr=0; iHr<24; iHr++)
 	{	WDHR& wd = wdHr[ iHr];
-		SETIF( wd.wd_taDbPvPk, wdd_taDbPvPk)
+		SETIF( wd.wd_taDbPk,    wdd_taDbPk)
+		SETIF( wd.wd_taDbAvg,   wdd_taDbAvg)
+		SETIF( wd.wd_taDbPvPk,  wdd_taDbPvPk)
 		SETIF( wd.wd_taDbAvg01, wdd_taDbAvg01)
 		SETIF( wd.wd_taDbAvg07, wdd_taDbAvg07)
 		SETIF( wd.wd_taDbAvg14, wdd_taDbAvg14)
 		SETIF( wd.wd_taDbAvg31, wdd_taDbAvg31)
-		SETIF( wd.wd_taDbAvg,   wdd_taDbAvg)
 		SETIF( wd.wd_tGrnd, wdd_tGrnd);
 		SETIF( wd.wd_tMains, wdd_tMains);
+
+		SETIF( wd.wd_tdvElecPk,   wdd_tdvElecPk);
+		SETIF( wd.wd_tdvElecAvg,  wdd_tdvElecAvg);
+		SETIF( wd.wd_tdvElecPvPk, wdd_tdvElecPvPk);
+		SETIF( wd.wd_tdvElecAvg01,wdd_tdvElecAvg01);
 	}
 #undef SETIF
 }		// WDDAY::wdd_Set
@@ -700,25 +737,23 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 #endif
 	int m, d, h;
 	RC rc = RCOK;
+	wd_ClearDerived( 1);		// clear derived values to "missing"
 	while (1)
-	{	rc = pWF->yac->getLineCSV( erOp, pWF->isLeap, "LLLFFFFFFFFFFFFFFFFFF",
+	{	rc = pWF->yac->getLineCSV( erOp, pWF->isLeap, "LLLXXXFFFXXXXXFFFFFFF",
 			&m, &d, &h,			// month / day / hour (all 1-based)
-			&wd_tdvElec, &wd_tdvNatGas, &wd_tdvPropane,		// "TDV Elec", "TDV NatGas", "TDV Propane"
+			// skip, skip, skip,	// "TDV Elec", "TDV NatGas", "TDV Propane"
 			&wd_db, &wd_wb, &wd_taDp,	// "Dry Bulb", "Wet Bulb", "Dew Point"
-			&wd_taDbAvg31,			// "31-day Avg lag DB"
-			&wd_taDbAvg14,			// "14-day Avg lag DB"
-			&wd_taDbAvg07,			// "7-day Avg lag DB"
-			&wd_tGrnd,				// "T Ground"
-			&wd_taDbPvPk,			// "previous day's peak DB"
+			// skip &wd_taDbAvg31,		// "31-day Avg lag DB"
+			// skip &wd_taDbAvg14,		// "14-day Avg lag DB"
+			// skip &wd_taDbAvg07,		// "7-day Avg lag DB"
+			// skip &wd_tGrnd,				// "T Ground"
+			// skip &wd_taDbPvPk,	// "previous day's peak DB"
 			&wd_tSky,				// "T sky"
 			&wd_wnddir, &wd_wndspd,	// "Wind direction", "Wind speed"
 			&wd_glrad,				// "Global Horizontal Radiation",
 			&wd_bmrad, &wd_dfrad,	// "Direct Normal Radiation", "Diffuse Horiz Radiation"
 			&wd_cldCvr,				// "Total Sky Cover"
 			NULL);
-		wd_taDbAvg01 = -999.f;		// prior day average tDb, not in file, added 3-2014
-									//    set missing, wdd_Set() will fix
-		wd_taDbAvg   = -999.f;		// ditto current day average tDb
 
  		if (rc != RCBAD2)
 		{	if (rc)
@@ -733,19 +768,39 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 		}
 		pWF->wf_CSWPosHr1( erOp);
 	}
-#if 0	// test code: force missing
-x	wd_taDbAvg31 = -999.f;
-x	wd_taDbAvg14 = -999.f;
-x	wd_taDbAvg07 = -999.f;
-x	wd_taDbAvg01 = -999.f;
-x	wd_tGrnd = -999.f;
-x	wd_taDbPvPk = -999.f;
-#endif
+
 	if (!rc && IsMissing( wd_tSky))
 		wd_tSky = wd_CalcSkyTemp( C_SKYMODLWCH_BERDAHLMARTIN, h-1);
 
 	return rc;
 }		// WDHR::wd_CSWReadHr
+//-----------------------------------------------------------------------------
+RC WDHR::wd_TDVReadHr(			// read 1 hour's data from CSW weather file
+	WFILE* pWF,			// source file (open, header read, )
+	int jHr,			// hour-of-year sought, 1-8760 (or 8784 TODO)
+	int erOp /*=WRN*/)	// err msg control
+{
+
+	RC rc = RCOK;
+	while (1)
+	{	rc = pWF->yacTDV->getLineCSV( erOp, pWF->isLeap, "FF",
+		    &wd_tdvElec, &wd_tdvFuel, NULL);
+
+ 		if (rc != RCBAD2)
+		{	if (rc)
+				return pWF->yacTDV->errFlLn("Unreadable data");		// issue msg per last get's erOp with file & line, ret RCBAD
+
+			pWF->wf_TDVFileJHr++;
+			if (pWF->wf_TDVFileJHr == jHr)
+				break;
+			else if (pWF->wf_TDVFileJHr < jHr)
+				continue;
+		}
+		pWF->wf_TDVPosHr1( erOp);
+	}
+
+	return rc;
+}		// WDHR::wd_TDVReadHr
 //-----------------------------------------------------------------------------
 float CalcGroundTemp(			// ground temperature model
 	int jD,				// day of year (1-365/366)
@@ -896,23 +951,23 @@ float WDHR::wd_CalcSkyTemp(
 // class WFILE: general interface to weather file
 //              supports several formats
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef INCNE	// note standalone c'tor is inline in wfpak.h
 WFILE::WFILE( basAnc *b, TI i, SI noZ /*=0*/)	// c'tor to help insure init is called, 10-94
 	:  record( b, i, noZ),			// "*excon" is used in cnrecs.def.
-	   yac( NULL), wf_pWDY( NULL)
+	   yac( NULL), yacTDV( NULL), wf_pWDY( NULL)
 {
 	wf_Init();			// say no file open, etc. next.
 }		// WFILE::WFILE
 //----------------------------------------------------------------------------
 WFILE::WFILE()			// default c'tor (insurance)
-	: record( NULL, 0, 1), yac( NULL)
+	: record( NULL, 0, 1), yac( NULL), yacTDV( NULL)
 {	wf_Init();
 }		// WFILE::WFILE
-#endif
 //----------------------------------------------------------------------------
 WFILE::~WFILE()
 {	delete yac;
 	yac = NULL;
+	delete yacTDV;
+	yacTDV = NULL;
 	delete wf_pWDY;
 	wf_pWDY = NULL;
 }		// WFILE::~WFILE
@@ -920,10 +975,12 @@ WFILE::~WFILE()
 /*virtual*/ void WFILE::Copy( const record* pSrc, int options/*=0*/)
 {
 	delete yac;			// free destination yac
+	delete yacTDV;
 
 	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
 	yac = new YACAM();		// overwrite yac pointer, if any
+	yacTDV = new YACAM();
 
 }		// WFILE::Copy
 //----------------------------------------------------------------------------
@@ -968,14 +1025,19 @@ void WFILE::wf_Init()	// WFILE initialization function to call before each run
 	{	yac->close();				// insurance
 		yac->init();				// say no file open
 	}
+	if (yacTDV)
+	{	yacTDV->close();
+		yacTDV->init();
+	}
 	// else leave NULL (created in wf_Open() below)
 
 }			// WFILE::wf_Init()
 //----------------------------------------------------------------------------
 RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 
-	const char* wfName,		// filename string
-	int erOp /*=WRN*/,		// error handling: WRN, IGN etc (cnglob.h (or notcne.h))
+	const char* wfName,		// file path
+	const char* TDVfName,	// optional TDV file path, NULL = no TDV file
+	int erOp /*=WRN*/,		// error handling: WRN, IGN etc
 	int wrAccess/*=FALSE*/,	// write access desired. Used only in utilities (not in CSE).
 	char* hdr /*=NULL*/,	// non-null to return raw header of packed files. For wthr utility programs.
 							// WFHDRSZ bytes returned even if file's hdr smaller.
@@ -994,14 +1056,12 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 {
 
 #ifdef WANTED // not needed here in CSE 3-95... caller cncult2.cpp now does path search.
-x #ifdef INCNE  // if compiling to link with CSE... else caller must do any path search
 x // search for file in directories on path and others given by caller
 x     if (xfFindOnPath( &wfName, erOp) != RCOK)		// check name, find file, substitute strsave'd full path / if ok
 x        // BUG: double message: xfFindOnPath already issued msg I0022 or other message, 3-95.
 x        return err( erOp, (char *)MH_I0022, wfName);	// "I0022: file '%s' does not exist"
 x 							/* error may also have been bad drive, dir not found, etc;
 x 							   xfFindOnPath issued msg per erOp.*/
-x #endif
 #endif
 
 // create YACAM if haven't yet done so
@@ -1018,33 +1078,36 @@ x #endif
 						hdr, clrnss, turbid, atmois );
 	if (rc == RCBAD2)						// if wrong file type (but file could be opened)
 		rc = wf_CSWOpen( wfName, erOp);		// retry as CSW
-#if defined( WFILE_SUPPORTEPW)
 	if (rc == RCBAD2)
 		rc = wf_EPWOpen( wfName, erOp);		// retry as EPW
-#endif
 
-// if error, report it and close file (if opened)
 	if (rc)				// if error
 	{	err( erOp,			// display msg per erOp, rmkerr.cpp
-#ifdef INCNE
 			 rc==RCBAD2
-			 ? (char *)MH_R0101		//  "R0101: Bad header in file '%s'"
-			 : (char *)MH_R0100,	//  "R0100: Unable to open weather file '%s' %s"  (2nd %s for SEC msg: SHOULD REMOVE 10-94)
-#else
-				rc==RCBAD2
-					? "Bad header in file '%s'"
-					: "Unable to open weather file '%s'",
-#endif
-			 wfName,		//    msg arg: file name
-			 "" );			//    msg arg: for %s for former SEC (errno) text, in case not removed from eg MH_R0100.
-		// %s for secMsg should be removed from: MH_R0100. 10-94.
-		wf_Close();		// conditionally close, fcn below
+			   ? (char *)MH_R0101	//  "R0101: %s file '%s': bad format or header"
+			   : (char *)MH_R0100,	//  "R0100: %s file '%s': open failed"
+			 "Weather",  wfName);
 	}
 
+	if (TDVfName)
+	{	if (!yacTDV)
+			yacTDV = new YACAM();
+		RC rcTDV = wf_TDVOpen( TDVfName, erOp);
+		if (rcTDV)
+		{	err( erOp,			// display msg per erOp, rmkerr.cpp
+			 rc==RCBAD2
+			   ? (char *)MH_R0101	//  "R0101: %s file '%s': bad format or header"
+			   : (char *)MH_R0100,	//  "R0100: %s file '%s': open failed"
+			 "TDV",  TDVfName);
+			rc |= rcTDV;
+		}
+	}
+
+	if (rc)
+		wf_Close();
+
 #ifdef WANTED // restore if xfFindOnPath restored above
-x #ifdef INCNE				// if xfFindOnPath in wfOpen put wfName in dm
 x     dmfree( DMPP( wfName));		// free the heap storage now -- name is in yac->pathName().
-x #endif
 #endif
 	return rc;			// return value RCOK if ok
 }		// WFILE::wf_Open
@@ -1054,13 +1117,15 @@ RC WFILE::wf_Close( 			// Close weather file if open. returns RCOK if ok.
 {
 	RC rc = RCOK;
 	if (yac)
-	{	if ( hdr						// if header given
-			&&  yac->wrAccess() )	// and file open for write access (ie only in util programs)
-									// (FALSE if file not open at all)
-		rc = yac->write( hdr, hdrBytes, 0L, WRN); 	// rewrite header at start file from caller's buffer
+	{	if ( hdr				// if header given
+		 &&  yac->wrAccess() )	// and file open for write access (ie only in util programs)
+								// (FALSE if file not open at all)
+			rc = yac->write( hdr, hdrBytes, 0L, WRN); 	// rewrite header at start file from caller's buffer
 
 		rc |= yac->close(WRN);					// close file. nop if not open. yacam.cpp.
 	}
+	if (yacTDV)
+		rc |= yacTDV->close( WRN);
 #if defined( WTHR_T24DLL)
 	rc |= T24Wthr.xw_Shutdown();
 #endif
@@ -1089,13 +1154,6 @@ struct WFHTAB
 #define WFO(m)   offsetof(WFILE,m)		// WFILE member offset macro for use for WFHTAB.wfileOffeeset
 #define WFS(m)   (sizeof( ((WFILE *)0L)->m ))	// WFILE member size macro for use for WFHTAB.wfileLen
 #define WFOS(m)  WFO(m), WFS(m)			// macro for both offset and size of WFILE member
-//----------------------------------------------------------------------------
-#ifndef INCNE			// if not in CSE supply some defines from dtypes.h. Values must be distinct but need not match.
-#define DTSI    0x02		// short int -- 16 bits
-#define DTFLOAT 0x08		// float -- 32 bits
-#define DTCH    0x0d		// character array of specified size
-#define DTNONE  0x00		// used as table terminator
-#endif
 //----------------------------------------------------------------------------
 RC WFILE::wf_PackedOpen(	// open BSGS or BSGSdemo or ET or ... packed weather file and read its header
 
@@ -1144,11 +1202,7 @@ RC WFILE::wf_PackedOpen(	// open BSGS or BSGSdemo or ET or ... packed weather fi
 		{
 			// insure validity of header and program by checking 2nd formatCode near end of header
 			if (memcmp( ((ET1Hdr *)hdr)->formatCode2, "ET1!", 4))
-#ifdef INCNE
 				return err( erOp, (char *)MH_R1101, wfName);	// "Corrupted header in ET1 weather file \"%s\"."
-#else
-				return err( erOp, "Corrupted header in ET1 weather file \"%s\".", wfName);
-#endif
 
 			if (wf_EtDecodeHdr( hdr, erOp, clrnss, turbid, atmois)==RCOK)	// decode hdr (below) / if ok
 				return RCOK;
@@ -1327,15 +1381,9 @@ LOCAL RC FC NEAR decodeFld( 		// decode one by-column-number field to internal -
 			char *pNext = pBeg;				// pointer to input text. Note already deblanked above
 			if (strchr( "+-", *pNext))   pNext++;		// if sign present, pass it
 			if (!isdigitW(*pNext))				// if no digit, it is not a valid number
-#ifdef INCNE
 				rc |= err( erOp, 					// conditionally issue message. prefixes "Error:\n  ".
 					(char *)MH_R1102,			// "Missing or invalid number at offset %d in %s %s"
 					(int)srcOff, what, which );
-#else
-				rc |= err( erOp, 							// conditionally issue message
-					"Missing or invalid number at offset %d in %s %s",	// err() prefixes "Error:\n  "
-					(int)srcOff, what, which );
-#endif
 			else								// has digit, finish decoding
 			{
 				if (dt==DTSI)				// 16-bit integer
@@ -1352,21 +1400,14 @@ LOCAL RC FC NEAR decodeFld( 		// decode one by-column-number field to internal -
 				else
 				{
 					rc |= err( PWRN, 						// bad table. unconditional error.
-#ifdef INCNE
 					(char *)MH_R1103, what );				// "Bad decoding table for %s in wfpak.cpp"
-#else
-					"Bad decoding table for %s in wfpak.cpp", what );
-#endif
 					pNext = "";							// suppress error message just below
 				}
 			}
 			if (*pNext)						// if number did not use all of input
 				rc |= err( erOp,
-#ifdef INCNE
 				(char *)MH_R1104,			// "Unrecognized characters after number at offset %d in %s %s"
-#else
 				"Unrecognized characters after number at offset %d in %s %s",
-#endif
 				(int)srcOff, what, which );
 		}
 		*pEnd = cSave;			// restore char after data
@@ -1388,8 +1429,8 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 						//  WF_USELEAP: use Feb 29 data if in file, else skip over it.
 						//		Added for poss future use. CSE does not do leap years, 10-94.
 						//		Caller may test isLeap to detect leap year file.
-						//  WF_DSTFIX: get taDbPvPk from jDay+1 if iHr==23
-						//      Why: During daylight savings, prior hour data is used, resulting
+						//  WF_DSTFIX: get previous-day values from jDay+1 if iHr==23
+						//      WHY: During daylight savings, prior hour data is used, resulting
 						//			 in prior day for iHrClock=0
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 // returns RCOK if OK else other RC, error msg issued per erOp.
@@ -1405,32 +1446,31 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
 	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr));
-#if 1
 		if ( iHr == 23 && (erOp&WF_DSTFIX))
 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
 			pwd->wd_taDbPvPk = wdd.wdd_taDbPvPk;
+			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
 		}
-#endif
 		return RCOK;
 	}
 
-// handle alternative formats
-	switch (wFileFormat)
-	{
-	case CSW:
-		return wf_CSWRead( erOp, jDay, iHr, pwd);
-	case EPW:
-		return wf_EPWRead( erOp, jDay, iHr, pwd);
-	case T24DLL:
-		return wf_T24DLLRead( erOp, jDay, iHr, pwd);
+	RC rc = RCOK;
+
+	// handle alternative formats
+	if (wf_IsPacked())
+	{	// format is packed: BSGS, BSGSdemo, ET1, or ... .
+		USI* phour = (USI *)wf_PackedHrRead( jDay, iHr, erOp);
+		rc |= phour ? pwd->wd_Unpack( iHr, phour, wFileFormat) : RCBAD;
 	}
+	else
+		rc |=
+		  wFileFormat==CSW    ? wf_CSWRead( erOp, jDay, iHr, pwd)
+		: wFileFormat==EPW    ? wf_EPWRead( erOp, jDay, iHr, pwd)
+		: wFileFormat==T24DLL ? wf_T24DLLRead( erOp, jDay, iHr, pwd)
+		:                       RCBAD;
 
-	// else format must be packed: BSGS, BSGSdemo, ET1, or ... .
-
-// access hour's data
-	USI* phour = (USI *)wf_PackedHrRead( jDay, iHr, erOp);
-
-	RC rc = phour ? pwd->wd_Unpack( iHr, phour, wFileFormat) : RCBAD;
+	// read additional TDV data if requested and available
+	rc |= wf_TDVReadIf( erOp, jDay, iHr, pwd);
 
 	return rc;		// other returns above
 }		// WFILE::wf_Read
@@ -1469,47 +1509,27 @@ LI WFILE::wf_PackedHrOffset( 	// determine file offset of an hour's packed data
 	{
 		if (wFileFormat==BSGS || wFileFormat==BSGSdemo)
 		{
-#ifdef INCNE
 			err( erOp, (char *)MH_R0107);  		// "Design Days not supported in BSGS (aka TMP or PC) weather files"
-#else
-			err( erOp, "Design Days not supported in BSGS (aka TMP or PC) weather files");
-#endif
 			return 0L;
 		}
 		// assume ET1 or later format
 		if (jDay < 1 || jDay > 12)
 		{
-#ifdef INCNE
 			err( erOp, (char *)MH_R0108, (int) jDay);	/* "Program error in use of function wfPackedhrRead\n\n"
                      					   "    Invalid Month (%d) in \"jDay\" argument: not in range 1 to 12." */
-#else
-			err( erOp, "Program error in use of function wfPackedhrRead\n\n"
-				 "    Invalid Month (%d) in \"jDay\" argument: not in range 1 to 12.",
-				 (int) jDay );
-#endif
 			return 0L;
 		}
 		if (firstDdm > lastDdm || lastDdm < 1)
 		{
-#ifdef INCNE
 			err( erOp, (char *)MH_R0109, yac->pathName() );			// "Weather file \"%s\" contains no design days"
-#else
-			err( erOp, "Weather file \"%s\" contains no design days", yac->pathName() );
-#endif
 			return 0L;
 		}
 		if (jDay < firstDdm || jDay > lastDdm)
 		{
-#ifdef INCNE
 			err( erOp, (char *)MH_R0110, jDay,	// "Weather file contains no design day for month %d\n\n"
 				 yac->pathName(), 	// "    (Weather file \"%s\" contains design day data only for months %d to %d)"
 				 (int)firstDdm,
 				 (int)lastDdm );
-#else
-			err( erOp, "Weather file contains no design day for month %d\n\n"
-				 "    (Weather file \"%s\" contains design day data only for months %d to %d)",
-				 jDay, yac->pathName(), (int)firstDdm, (int)lastDdm );
-#endif
 			return 0L;
 		}
 		// design days are AFTER the regular days
@@ -1548,12 +1568,12 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 	int erOp)
 // no wrAccess argument: can't rewrite records in exiting file; create files with text editor or spreadsheet.
 
-// returns: RCOK:   successful, *pWf initialized from file header.
-//	          RCBAD:  could not open file (no message)
-//            RCBAD2: file opened but not of a type known here (no message)
+// returns: RCOK:   success, *this initialized from file header.
+//	        RCBAD:  could not open file (no message)
+//          RCBAD2: file opened but not of a type known here (no message)
 //                    or has bad header (possible specific message issued here).
-//            No message issued for file not found or wrong type, so caller may silently try a different open function.
-//            Caller issues "not found" or "bad header" error message on bad return if no other fcn works.
+//          No message issued for file not found or wrong type, so caller may silently try a different open function.
+//          Caller issues "not found" or "bad header" error message on bad return if no other fcn works.
 {
 // set WFILE members, including unused ones as insurance
 	wf_Init();
@@ -1688,6 +1708,115 @@ RC WFILE::wf_CSWRead(	// read and unpack data from CSW
 
 	return rc;
 }			// WFILE::wf_CSWRead
+//------------------------------------------------------------------------------
+RC WFILE::wf_TDVOpen(	// open California CSW weather file
+	const char* TDVfName,	// pathName of file to open
+	int erOp)
+
+// returns: RCOK:   successful, *this members set
+//	        RCBAD:  could not open file (no message)
+//          RCBAD2: but format bad (no message)
+{
+	// wf_Init() assumed called
+
+	RC rc = RCOK;
+
+// open file
+	if (yacTDV->open( TDVfName, "TDV file", IGN) != RCOK)	// attempt open, no message
+		rc = RCBAD;										// return if failed. caller issues message.
+	else
+	{	rc = wf_TDVReadHdr( erOp);
+		if (rc)
+		{	yacTDV->close( erOp);	// close file if open, nop if not open
+			delete yacTDV;
+			yacTDV=NULL;
+			rc = RCBAD2;			// RCBAD2: bad file format
+		}
+	}
+	return rc;
+}			// WFILE::wf_TDVOpen
+//----------------------------------------------------------------------------
+#define _C( s) s,sizeof( s)		// helper re getLineCSV calls
+//----------------------------------------------------------------------------
+void WFILE::wf_TDVInitHdrInfo()
+{	memset(  wf_TDVFileTimeStamp, 0, sizeof( wf_TDVFileTimeStamp));
+	memset(  wf_TDVFileTitle, 0, sizeof( wf_TDVFileTimeStamp));
+}	// WFILE::wf_TDVInitHdrInfo
+//----------------------------------------------------------------------------
+RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
+{
+	RC rc = RCOK;
+	yacTDV->rewind();
+	wf_TDVFileJHr = 0;
+	wf_TDVInitHdrInfo();
+
+// example TDV header
+// same structure as import file
+//	"TDV Data (TDV/Btu)","001"
+//	"Wed 14-Dec-16  12:30:29 pm"
+//	"BEMCmpMgr 2019.0.0 RV (758), CZ12, Fuel NatGas","Hour"
+//	"tdvElec","tdvFuel"
+
+	char T1[ 200], T2[ 200];
+
+	// initial tag
+	rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( T1), _C( T2), NULL);
+	if (!strMatch( T1, "TDV Data (TDV/Btu)"))
+		rc = err( erOp, "Munged header");
+	if (!rc)
+		// time stamp
+		rc = yacTDV->getLineCSV( erOp, 0, "C", _C( wf_TDVFileTimeStamp), NULL);
+	if (!rc)
+		// title
+		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( wf_TDVFileTitle), _C( T2), NULL);
+	if (!rc)
+		// column heads (ignored)
+		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C(T1), _C( T2), NULL);
+
+	if (!rc)
+		wf_TDVInitHdrInfo();
+	
+	return rc;
+
+}		// WFILE::wf_TDVReadHdr
+//----------------------------------------------------------------------------
+RC WFILE::wf_TDVPosHr1( int erOp)			// position file at beg of 1st hour
+{
+	RC rc = RCOK;
+	yacTDV->rewind();		// pos file to beginning
+	wf_TDVFileJHr = 0;
+
+	// read/discard head (4 lines)
+	char ln[ WFMAXLNLEN];
+	for (int iL=0; !rc && iL<4; iL++)
+	{	int len = yacTDV->line( ln, sizeof( ln), IGN);
+		if (len < 0)
+			rc = RCBAD;
+	}
+	if (rc)
+		rc = err( erOp,	"format trouble in TDV file '%s'", wf_FilePath());
+	return rc;
+}		// WFILE::wf_TDVPosHr1
+//-----------------------------------------------------------------------------
+RC WFILE::wf_TDVReadIf(	// read TDV data
+	int erOp,		// msg control: WRN, IGN, etc.
+					// option bit WF_DSNDAY: ignored here
+	int jDay,		// Julian day for which data is expected (1 - 365)
+	int iHr,		// Hour for which data is expected (0 - 23)
+	WDHR* pwd )		// weather data structure to receive hourly data.
+
+// returns RCOK if OK or NOP
+//		else other RC; msg issued per erOp
+{
+	RC rc = RCOK;
+	if (yacTDV && !(erOp & WF_DSNDAY))
+	{	int jHrSought = (jDay-1)*24 + iHr + 1;		// 1-based hour of year
+		rc |= pwd->wd_TDVReadHr( this, jHrSought, erOp);
+	}
+	// else NOP
+
+	return rc;
+}			// WFILE::wf_TDVReadIf
 //-----------------------------------------------------------------------------
 RC WFILE::wf_T24DLLOpen(		// set up access to T24WTHR.DLL hourly data
 	const char* wfName,	// file "name" -- if not in form "$CZxx", return RCBAD2
@@ -1750,8 +1879,6 @@ RC WFILE::wf_T24DLLRead(	// read and unpack data from CSW
 	return RCBAD;
 #endif
 }	// WFILE::wf_T24DLLRead
-#if defined( WFILE_SUPPORTEPW)
-#define _C( s) s,sizeof( s)		// helper re getLineCSV calls
 //------------------------------------------------------------------------------
 RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 	const char* wfName,	// pathName of file to open
@@ -1806,7 +1933,6 @@ RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 
 
 }		// WFILE::wf_EPWOpen
-
 //----------------------------------------------------------------------------
 RC WFILE::wf_EPWPosHr1( int erOp)			// position EPW file at beg of 1st hour
 {
@@ -2181,8 +2307,10 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 		// loop stopper?
 	}
 
+
 	if (!rc)
-	{	// missing?
+	{	wd_ClearDerived( 1);		// set derived values to "missing"
+		// missing?
 		wd_db = DegCtoF( db);
 		wd_taDp = DegCtoF( dp);
 		float w = psyHumRat3( wd_taDp);
@@ -2201,15 +2329,6 @@ x			printf( "mismatch\n");
 		wd_wndspd = VSItoIP( wndspd);
 
 		wd_cldCvr = tsc;
-
-		wd_taDbAvg31 = -999.f;
-		wd_taDbAvg14 = -999.f;
-		wd_taDbAvg07 = -999.f;
-		wd_taDbAvg01 = -999.f;
-		wd_taDbAvg   = -999.f;
-		wd_tGrnd     = -999.f;
-		wd_tMains	 = -999.f;
-		wd_taDbPvPk  = -999.f;
 
 		wd_tSky = wd_CalcSkyTemp( C_SKYMODLWCH_BERDAHLMARTIN, h-1);
 	}
@@ -2276,7 +2395,6 @@ const char* pCols[ WFMAXCOLS];
 
 
 #endif
-#endif	// WFILE_SUPPORTEPW
 //---------------------------------------------------------------------------
 
 // end of wfpak.cpp

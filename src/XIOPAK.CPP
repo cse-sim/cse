@@ -943,11 +943,12 @@ void Path::add( 		// add ;-delimited paths to Path object
 }		// Path::add
 //---------------------------------------------------------------------------
 BOO Path::find(   	// find file using paths in Path object.
- 			// Searches current dir first. Does not search dos PATH unless it has been added to object.
-     const char *fName,   	// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
-     char *buf )   		/* receives full path if found; is altered even if not found.
- 				   array size must be >= _MAX_PATH (stdlib.h). */
- // function returns TRUE if found
+	const char *fName, 	// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
+	char *buf )   		// receives full path if found; is altered even if not found.
+ 						// array size must be >= _MAX_PATH (stdlib.h).
+// Searches current dir first. Does not search dos PATH unless it has been added to object.
+
+// returns TRUE iff found
 {
      return ::findFile( fName, p ? p : "", buf);	// use non-member path search fcn (above).
      							// suppress dos path search on NULL for consistency with paths-added case.
@@ -2016,7 +2017,7 @@ t}
 0 0    while (*s)		/* strxtok returns s pointing to terminating '\0'
 0 0			   when no more tokens */
 0 0       *perf |= addaPath( strxtok( ws,      /* seg. buffer */
-0 0                                   &s,      /* Working pointer */
+0 0                                   s,      /* Working pointer */
 0 0                                   ";",     /* Delimiter */
 0 0                                   TRUE),   /* Trim WS from segs. */
 0 0                          erOp);

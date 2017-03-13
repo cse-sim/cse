@@ -99,7 +99,7 @@ static BOO isGoodPtr(  	// return FALSE if p clearly not a malloc'd heap pointer
        return FALSE;						// NULL pointers are nops, no error message
 #if 0	// debugging trap, 7-10
 x	RC rc = 0;
-x	if (p == Top.wfName || p == Topi.wfName)
+x	if (p == Top.tp_wfName || p == Topi.tp_wfName)
 x		rc = RCOK;
 #endif
 

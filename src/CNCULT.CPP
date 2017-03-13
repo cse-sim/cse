@@ -84,11 +84,10 @@ makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
-// PV: PV Watts photovoltaic array
 makAncPVARRAY(PViB);		// PV array
 makAncBATTERY(BTiB);		// Battery
 
-makAncSHADEX( SxiB);
+makAncSHADEX( SXiB);		// SHADEX external shading
 
 // air handlers and terminals and plant
 makAncTU(TuiB);				// terminals input
@@ -146,7 +145,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WLPiB.free();
 	PViB.free();
 	BTiB.free();
-	SxiB.free();
+	SXiB.free();
 	TuiB.free();
 	AhiB.free();
 	HpiB.free();
@@ -655,8 +654,8 @@ RC SFI::sf_CkfSURF(		// surface checker
 				rc |= ooer( SFX( TILT), (char *)MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
 			break;
 		case C_OSTYCH_FLR:
-			// note FEQUAL (cnglob.h) compares for fabs(difference) < ABOUT0
-			if (!FEQUAL(DEG(t),180.f)) 				// no msg if 180
+			// note fAboutEqual (cnglob.h) compares for fabs(difference) < ABOUT0
+			if (!fAboutEqual(DEG(t),180.f)) 				// no msg if 180
 				rc |= ooer( SFX( TILT), (char *)MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
 			break;
 		case C_OSTYCH_CEIL:
@@ -705,7 +704,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 		{	int azmNeeded =
 			   xc != C_EXCNDCH_GROUND
 				&& IsVal( SFX( TILT))		// tilt has a value (in t)
-				&& ( !FEQUAL(DEG(t),0.f) && !FEQUAL(DEG(t),180.f) );   	// if tilted surface
+				&& ( !fAboutEqual(DEG(t),0.f) && !fAboutEqual(DEG(t),180.f) );   	// if tilted surface
 			if (azmNeeded)
 				rc |= ooer( SFX( AZM), (char *)MH_S0412);		// "No sfAzm given for tilted surface"
 		}
@@ -1985,8 +1984,9 @@ CULT( "pvGrndRefl",  DAT,   PVARRAY_GRNDREFL, 0,      0, VHRLY,  TYFL,  0,      
 CULT( "pvGCR",       DAT,   PVARRAY_GCR,     0,       0, VEOI,   TYFL,  0,      0.4f,   N, N),
 CULT( "pvDCtoACRatio", DAT, PVARRAY_DCACRAT, 0,       0, VEOI,   TYFL,  0,      1.1f,   N, N),
 CULT( "pvInverterEff", DAT, PVARRAY_INVEFF,  0,       0, VEOI,   TYFL,  0,      0.96f,  N, N),
-CULT( "pvSysLosses", DAT,   PVARRAY_SYSLOSS, 0,       0, VHRLY,   TYFL,  0,      0.14f,  N, N),
+CULT( "pvSysLosses", DAT,   PVARRAY_SYSLOSS, 0,       0, VHRLY,  TYFL,  0,      0.14f,  N, N),
 CULT( "pvUsePVWatts", DAT,  PVARRAY_USEPVWATTSDLL, 0, 0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
+CULT( "pvMounting",  DAT,   PVG( MOUNTING),  0,       0, VEOI,   TYCH,  0,      C_MOUNTCH_BLDG, N, N),
 CULT( "pvVertices",  DAT,   PVG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
 CULT( "endPVARRAY",  ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
@@ -2032,6 +2032,7 @@ static CULT shadexT[] = //------ SHADEX cmd RAT Entry table, used from cnTopCult
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   shStarCkf),
+CULT( "sxMounting",  DAT,   SXG( MOUNTING),  0,       0, VEOI,   TYCH,  0,      C_MOUNTCH_SITE, N, N),
 CULT( "sxVertices",  DAT,   SXG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
 CULT( "endXSHADE",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
@@ -2416,6 +2417,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 
 // TOP location
 	CULT( "wfName",      DAT,   TOPRAT_WFNAME,     RQD,        0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),
+	CULT( "TDVfName",    DAT,   TOPRAT_TDVFNAME,   0,          0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),
 	CULT( "elevation",   DAT,   TOPRAT_ELEVATION,  0,          0, VFAZLY, TYFL,  0,      N,    0.f,            N,   N), // defaulted from wthr file by code 1-95
 	CULT( "refTemp",     DAT,   TOPRAT_REFTEMP,    0,          0, VFAZLY, TYFL,  0,      N,   60.f,            N,   N),
 	CULT( "refRH",       DAT,   TOPRAT_REFRH,      0,          0, VFAZLY, TYFL,  0,      N,    .6f,            N,   N),
@@ -2444,6 +2446,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "bldgAzm",     DAT,   TOPRAT_BLDGAZM,    0,          0, VEOI,   TYFL,  0,      0.f,            N,   N),
 	CULT( "skymodel",    DAT,   TOPRAT_SKYMODEL,   0,          0, VEOI,   TYCH,  0,   C_SKYMODCH_ANISO,  N,   N),
 	CULT( "skymodelLW",  DAT,   TOPRAT_SKYMODELLW, 0,          0, VEOI,   TYCH,  0,   C_SKYMODLWCH_DEFAULT, N, N),
+	CULT( "exShadeModel",DAT,   TOPRAT_EXSHMODEL, 0,           0, VEOI,   TYCH,  0,   C_EXSHMODELCH_PENUMBRA, N, N),
 	CULT( "dhwModel",	 DAT,   TOPRAT_DHWMODEL,   0,          0, VEOI,   TYCH,  0,     C_DHWMODELCH_2013, N, N),
 
 	CULT( "humMeth",     DAT,   TOPRAT_HUMMETH,    0,          0, VEOI,   TYCH,  0,   C_HUMTHCH_ROB,     N,   N),
@@ -2500,7 +2503,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
-	CULT( "shadex",       RATE,  0,                0,          0, 0,      0,    &SxiB,   N,    0.f,         shadexT,  N),
+	CULT( "shadex",       RATE,  0,                0,          0, 0,      0,    &SXiB,   N,    0.f,         shadexT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),

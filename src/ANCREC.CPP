@@ -143,10 +143,10 @@ x	return strMatch( _name, name);
 #endif
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
-/*virtual*/ record& record::copyFrom(
+/*virtual*/ record& record::CopyFrom(
 	record *src,
-	SI copyName/*=1*/,
-	SI dupPtrs/*=0*/)
+	int copyName/*=1*/,
+	int dupPtrs/*=0*/)
 
 // copy user and ul data from another record or init data to already-constructed record
 
@@ -155,32 +155,28 @@ x	return strMatch( _name, name);
 
 /* "dupPtrs" is for poss future use duplicating heap pointers in derived classes
    (in present uses (input to run rat copies) ptrs are not currenly being dup'd 2-92)
-   (7-92: converting to dup'd ptrs with explicit derived class copyFrom's and destructors.
+   (7-92: converting to dup'd ptrs with explicit derived class CopyFrom's and destructors.
    "dupPtrs" would shorten code; table bit or different field ty needed to say which ptrs to dup (some CHP's don't get dup'd). */
 {
 // error if not init (can't constr here: need b, ss). (if needed, do a "copyTo" or a "copy(b,i1,i2)" that constructs dest.)
 	if (!b)								// (or gud? wd error here if init then destroyed)
-		err( PABT, (char *)MH_X0050);	// error msg "record::copyFrom: unconstructed destination (b is 0)" and abort program.
+		err( PABT, (char *)MH_X0050);	// error msg "record::CopyFrom: unconstructed destination (b is 0)" and abort program.
 #ifdef DEBUG2							// message not occuring (1-95) so omit from release version.
-	b->validate("record::copyFrom");		// abort if record 'this' not associated with valid anchor
+	b->validate("record::CopyFrom");	// abort if record 'this' not associated with valid anchor
 #endif
 
 // use shorter record length
 	USI eSz = b->eSz;				// get dest derived class rec length from anchor
-#if 0 //worked for a while, then upon record change faild apparently due to sstat contents copied into mbrs of longer dest.
-x    if (src->b && src->b->rt==src->rt)		// if source has anchor (could be just init data)
-x       eSz = min(eSz, src->b->eSz);		// use source length if shorter: source rec might be start dest rec (ug!)
-#else //3-12-92
 	if ( src->b  &&  src->b->rt==src->rt   	// if source has anchor (could be just init data)
 			&&  eSz != src->b->eSz )			// and source record length is different
 		eSz = min( b->sOff, src->b->sOff);	// use the shorter length and do not copy status bytes (3-12-92).
 	//  calls exist (ZNI->ZNR) where source is start of dest record (ug!)
-	//  add logic to copy status bytes to corress place if need found
-#endif
+	//  add logic to copy status bytes to correct place if need found
 
 // copy data after front
-	USI rfSz = sizeof(record) - sizeof(TI);				// do not copy base class except ownTi
-	if (copyName) rfSz -= sizeof(ANAME);				// and name on option (defaults ON)
+	USI rfSz = sizeof(record) - sizeof(TI);	// do not copy base class except ownTi
+	if (copyName)
+		rfSz -= sizeof(ANAME);				// copy name on option (defaults ON)
 	memcpy( (char *)this + rfSz,  (char *)src + rfSz,  eSz - rfSz );
 
 // copy user language front members. another arg option?
@@ -197,7 +193,7 @@ x       eSz = min(eSz, src->b->eSz);		// use source length if shorter: source re
 	Validate();		// virtual
 #endif
 	return *this;
-}			// record::copyFrom
+}			// record::CopyFrom
 //---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
 	const record* pSrc,
@@ -609,7 +605,7 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 		{
 			if (!dest.gud)
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
-			dest.copyFrom(&src);			// copy record i+1 to i without dup'ing heap ptrs
+			dest.CopyFrom(&src);			// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
 		}
 		else					// (not currently expected 2-92)

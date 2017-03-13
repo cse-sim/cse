@@ -137,6 +137,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*declare "RC tp_SetDerived();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
+	*declare "RC tp_WfInit();"
     *declare "int tp_AuszWthrSource() const;"
     *declare "RC tp_MainSim();"
     *declare "RC tp_MainSimI();"
@@ -175,7 +176,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SI_GZ tp_skipDayStep		// # of days in each step through year, default 1
 
 //TOP: inputs: location/air properties/ground properties
-    *f CHP wfName    		// weather file name string
+    *f CHP tp_wfName    	// weather file path string
+	*f CHP tp_TDVfName		// TDV (time dependent value) file path string
     *r LEN elevation		// site elevation (for determining air density) (ft). defaults from weather file 1-95.
     *f TEMP refTemp			// temp for computing the hum ratio (w) used in air-density calculations, default 70 F
     *f FRAC_GZ refRH		// relative humidity (as fraction) ditto, default .6 (60%).
@@ -211,6 +213,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i ANGLE tp_bldgAzm		// angle to add to all zone/surface azms
     *i SKYMODCH skyModel 	// sky model: C_.._ISO or _ANISO
     *i SKYMODLWCH skyModelLW	// long-wave sky model
+	*i EXSHMODELCH tp_exshModel;	// exterior shading model (other than overhang/fins)
+									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
+									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
     *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)
 								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs
 								//   C_DHWMODELCH_2013: corrected 2013 implementation (default)
@@ -289,6 +294,12 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 //TOP: setup time
 	*r *hide BOO tp_bAllCR	// nz iff all zones use convective/radiant model
 							// (else all CNE, mix not supported (detected/err'd during setup)
+
+//TOP: setup: exterior (non-overhang/fin) shading
+	*r INT tp_exshNShade;		// # of shading surfaces in model
+	*r INT tp_exshNRec;			// # of receiving surfaces in model (may also be shading)
+	*declare "RC tp_ExshRunInit();"
+	*declare "RC tp_ExshBegHour();"
 
 //TOP: setup time (derived from inputs b4 run): tolerances
     *r *hide FLOAT relTol	// hvac computation precision relative value tolerance -- input as Tol above
@@ -616,7 +627,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *ovrcopy		// overridden Copy()
     *declare "WFILE();"		// default c'tor
     *declare "void wf_Init();"	// initialization member fcn
-    *declare "RC wf_Open( const char* wfName, int erOp=WRN, int wrA=FALSE, char* hdr=NULL,"
+    *declare "RC wf_Open( const char* wfName, const char* TDVfName, int erOp=WRN, int wrA=FALSE, char* hdr=NULL,"
     *declare "    float* clrnss=NULL, float* turbid=NULL, float* atmois=NULL);"
 	*declare "RC wf_Close( char *hdr=NULL);"
 	*declare "const char* wf_FilePath() const;"
@@ -638,9 +649,16 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_EPWOpen( const char* wfName, int erOp );"
 	*declare "RC wf_EPWPosHr1( int erOp=WRN);"
 	*declare "RC wf_EPWRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_TDVOpen( const char* TDVfName, int erOp);"
+	*declare "void wf_TDVInitHdrInfo();"
+	*declare "RC wf_TDVReadHdr( int erOp=WRN);"
+	*declare "RC wf_TDVPosHr1( int erOp=WRN);"
+	*declare "RC wf_TDVReadIf( int erOp, int jDay, int iHr, WDHR* pwd );"
 	 
 	 // in base class: .name, .ownTi, more.
      *r WFileFormat wFileFormat	// file format enum: UNK, BSGS, ET1, etc.
+
+     *declare "int wf_IsPacked() const { return wFileFormat==BSGS || wFileFormat==BSGSdemo || wFileFormat==ET1 || wFileFormat==ET2; }"
 
  // Header info: from file hdr decode (wfpak:wfOpen) or computed from hourly
     *r WFLOC loc		// char loc[]  Location (for ET, is loc 1 only: city etc).
@@ -677,27 +695,39 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     // *array 12 *r float turbidity	// monthly average atmospheric turbidity, for daylight calcs
     // *array 12 *r float atmois	// monthly aveage atmospheric moisture, for daylight calcs
 
+// TDV file header info
+    *r WFLOC wf_TDVFileTimeStamp		// timestamp string
+	*r WFLOC wf_TDVFileTitle			// title string (identifies file CZ, fuel, vintage, )
+
  //internal
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)
     *r *hide SI hourBytes	// # bytes per hour
     *r *hide INT csvCols	// # of columns in comma separated formats (e.g. CSW)
-    *r *hide YACAMP yac		// pointer to "Yet Another Char Access Method" subobject for buffering & decoding weather file. Yacam.h/cpp.
+    *r *hide YACAMP yac		// pointer to "Yet Another Char Access Method" subobject for buffering & decoding weather file
+	*r *hide YACAMP yacTDV	// ditto TDV file
+    *r INT wf_TDVFileJHr;	// last hour (row) in file that has read (1 based)
     *r *hide WDYEARP wf_pWDY	// pointer to entire year weather data pre-read from file
 *END			// WFILE
 //========================================================================================================
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*prefix wd_
     *declare "void wd_Init();"
+	*declare "void wd_ClearDerived( int options=0);"
     *declare "WDHR& Copy( const WDHR& wd);"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
     *declare "float wd_CalcSkyTemp( int skyModelLW, int iHr);"
     *declare "RC wd_CSWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
+    *declare "RC wd_TDVReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_EPWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
 
     *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
     *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
+	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
+							// solar position at midpoint of hour (or portion of hour sun is up)
+	*h float wd_slAzm;		//   azmimuth, radians (0=N, +clockwise)
+	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
     *h float wd_db			// air dry bulb temp, deg F
     *h float wd_wb			// air wet bulb temp, deg F
     *h float wd_wnddir		// wind direction, deg, 0=N, 90=E
@@ -713,19 +743,29 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_tMains		// cold water mains temp, F
 							//   computed using CEC ACM method
 
-							// computed values (some available from some file formats)
+							// derived (computed) drybulb temp values
 							//   values change at day beg / same all day
-	*h float wd_taDbPvPk		// previous-day peak DB, F (same all day)
-	*h float wd_taDbAvg01		// average temp over last 1 day (not including current day), F
-	*h float wd_taDbAvg07		// ditto last 7 days, F
-	*h float wd_taDbAvg14		// ditto last 14 days, F
-	*h float wd_taDbAvg31		// ditto last 31 days, F
-	*h float wd_taDbAvg			// average temp for current day (includes future hours)	
+	*h float wd_taDbPk			// current day peak DB (includes future hours), F
+	*h float wd_taDbAvg			// current day average DB (includes future hours), F
+	*h float wd_taDbPvPk		// previous-day peak DB, F
+	*h float wd_taDbAvg01		// previous-day avg DB (not including current day), F
+	*h float wd_taDbAvg07		// trailing 7-day avg DB (not including current day), F
+	*h float wd_taDbAvg14		// trailing 14-day avg DB (not including current day), F
+	*h float wd_taDbAvg31		// trailing 31-day avg DB (not including current day), F
+
 	
-							// time-of-day fuel values, units = ?
-	*h float wd_tdvElec	
-	*h float wd_tdvNatGas
-	*h float wd_tdvPropane
+							// time-of-day fuel values, units = TDV/Btu
+							//   values are read from optional TDV file
+	*h float wd_tdvElec		//      electricity
+	*h float wd_tdvFuel		//      fuel
+
+							// derived (computed) electricity TDV values
+							//   values change at day beg / same all day
+	*h float wd_tdvElecPk			// current day peak TDVelec (includes future hours)
+	*h float wd_tdvElecAvg			// current day avg TDVelec (includes future hours)
+	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
+	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)
+
 *END	// WDHR
 //========================================================================================================
 RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr", here so probe-able
@@ -742,18 +782,38 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 *END		// WFDATA
 //========================================================================================================
 RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
+// embedded in many surface types, initially SHADEX and PVARRAY, 2-17
 	*prefix gx_
 	*declare "SURFGEOM();"
 	*declare "~SURFGEOM();"
-    *declare "void gx_Init( record* pParent, int options=0);"
+    *declare "void gx_SetParent( record* pParent, int options=0);"
+	*declare "RC gx_Init();"
+	*declare "bool gx_IsEmpty() const;"
+	*declare "RC gx_Validate( record* pParent, const char* what, int options=0);"
 	*declare "void gx_CopySubObjects();"
 	*declare "RC gx_CheckAndMakePolygon( int phase, int fn);"
+	*declare "int gx_GetAzmTilt( float& azm, float& tilt) const;"
+	*declare "RC gx_SetupShading ( int &nS, const class CT3D* MT, int options=0);"
+	*declare "void gx_ClearShading();"
+	*declare "int gx_CalcBeamShading( float& cosi, float& fBeam);"
 
 	*declare "record* gx_pParent;"				// pointer to parent record
 												//   (SHADEX, PVARRAY, ...)
-	*declare "class CPolygon3D* gx_polygon;"	// derived polygon
+	*declare "class SURFGEOMDET* gx_sgDet;"		// geometric details (polygon, normal, )
+												//   hides geometry.h classes
+	*i MOUNTCH gx_mounting						// mounting
+												//    C_MOUNTCH_BLDG: attached to bldg (rotates per bldgAzm)
+												//	  C_MOUNTCH_SITE: site base (does not rotate)
+	*i INT gx_pnIdx;							// Penumbra surface index
+												//   -1 if no Penumbra surface
+	*i DBL gx_area;								// area derived from polygon, ft2
 
-	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z)
+	*h *e FLOAT gx_fBeam;						// fraction of area receiving direct beam
+												//   1 if no Penumbra shading
+	*h *e INT gx_fBeamErrCount;					// counter for fBeam > 1 errors
+												//   limits # of runtime messages
+
+	*i *ARRAY DIM_POLYGONXYZ FLOAT gx_vrtInp	// input vertices (x, y, z), ft
 *END	// SURFGEOM
 //========================================================================================================
 RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)
@@ -761,11 +821,14 @@ RECORD SHADEX "SHADEX" *RAT		// shade object (polygon that can shade surfaces)
 	*prefix sx_
 	*excon
 	*ovrcopy
+	*declare "RC sx_Init();"
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
 								// .ownTi (base class) is zone subscript
 	*declare "RC sx_CkF();"
+	*declare "RC Validate( int options=0);"
+	*declare "RC sx_SetupShading( int& nS, const class CT3D* MT, int options=0) { return sx_g.gx_SetupShading( nS, MT, options);}"
 
-	*i *nest SURFGEOM sx_g;
+	*i *noname *nest SURFGEOM sx_g;	// geometry of shade
 
 *END	// SHADE
 //========================================================================================================
@@ -1470,7 +1533,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& copyFrom( record *src, SI copyName=1, SI dupPtrs=0);"
+    *declare "virtual record& CopyFrom( record *src, int copyName=1, int dupPtrs=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CHP colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
@@ -3570,9 +3633,16 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *excon
   *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
+  *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
+  *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *declare "int pv_HasPenumbraShading() const;"
+  *declare "int pv_AxisCount() const;"
+  *declare "RC pv_SetupShading( int& nS, const class CT3D* MT, int options=0) { return pv_g.gx_SetupShading( nS, MT, options);}"
+  *declare "void pv_ClearShading() { pv_g.gx_ClearShading(); }"
+  *declare "int pv_CalcBeamShading( float& cosi, float& fBeam) { return pv_g.gx_CalcBeamShading( cosi, fBeam);}"
   *declare "RC pv_Init();"
   *declare "RC pv_DoHour();"
   *declare "RC pv_CalcPOA();"
@@ -3585,13 +3655,13 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *declare "MTR* pv_pMtrElec;"
   *declare "void* pv_ssc_data;"
 
-  *i *nest SURFGEOM pv_g;	// array geometry (re shading)
+  *i *noname *nest SURFGEOM pv_g;	// array geometry (re shading)
   *i TI pv_elecMtri;		// meter for system electricity production
   *f ENDUSECH pv_endUse		// end use of energy. defataults to "PV"
   *i FLOAT_GEZ pv_dcCap		// system capacity/size (DC nameplate), kW
   *i NOYESCH pv_usePVWattsDLL  // use PVWatts DLL instead of CSE calculations
   *i PVMODCH pv_moduleType	// type of module (Standard, Premium, ThinFilm)
-  *i FLOAT pv_tempCoeff	// temperature coefficient, 1/F
+  *i FLOAT pv_tempCoeff		// temperature coefficient, 1/F
   *i FLOAT_GE1 pv_covRefrInd  // refraction index for coating applied to cover
   *i PVARRCH pv_arrayType	// type of array (Fixed, FixedRoof, 1Axis, Backtracked, 2Axis)
   *h ANGLE pv_tilt			// Array tilt, radians (input as degrees)

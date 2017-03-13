@@ -1245,7 +1245,7 @@ COL::~COL()
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 }			// COL::Copy
 //-----------------------------------------------------------------------------
-/*virtual*/ record& COL::copyFrom( record* pSrc, SI copyName/*=1*/,SI dupPtrs/*=0*/)
+/*virtual*/ record& COL::CopyFrom( record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
 {
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	cupfree( DMPP( colHead));
@@ -1253,13 +1253,13 @@ COL::~COL()
 		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
        								   inline in pseudo-code, dmfree it.  cueval.cpp. */
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
-	record::copyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
+	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
 // increment reference count for pointer(s) just copied
 	cupIncRef( DMPP( colHead));
 	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 	return *this;
-}			// COL::copyFrom
+}			// COL::CopyFrom
 //---------------------------------------------------------------------------------------
 DVRI::~DVRI()
 {
@@ -1800,13 +1800,7 @@ RC topImpf()		// check/process ImportFiles at end of input
 		E( ckSet( iimpf, IMPF_IMFREQ))			// if not set, no run, terminate checking now
 
 		// find file & save full path. Search same paths as for #include files. 2-95.
-		char buf[_MAX_PATH];				// receives full pathname
-		if (ppFindFile( iimpf->fileName, buf))		// search #include file paths, return full path. pp.cpp. if found...
-			if (strcmpi( buf, iimpf->fileName))		// if found path different (else don't save for less fragmentation)
-			{
-				cupfree( DMPP( iimpf->fileName));		// if not a pointer to "text" embedded in pseudocode, dmfree name
-				iimpf->fileName = strsave(buf);		// replace name with full pathname
-			}
+		ppFindFile( iimpf->fileName);
 		// if not found, no message here... let old code issue message at runtime attempt to open.
 
 		// warn if unused (no Imports)

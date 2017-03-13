@@ -260,7 +260,7 @@ p		break;
 		goto strjust;
 
 	case DTIDATE:
-		data = tddis( (IDATE *)data, NULL);
+		data = tddis( *(IDATE *)data);
 		goto strjust;
 
 	case DTITIME:
@@ -1355,7 +1355,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 		if (!(options&1))
 		{	// retrieve 1st piece to TmpStr
 			const char* p = chtx;
-			chtx = strxtok( NULL, &p, "|", TRUE);
+			chtx = strxtok( NULL, p, "|", TRUE);
 		}
 		int tyX = getChoiTxTyX( chtx);
 		if (tyX > chtyNORMAL)
@@ -1397,7 +1397,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 
 			const char* p = chtx;
 			while (1)
-			{	chtx = strxtok( NULL, &p, "|", TRUE);
+			{	chtx = strxtok( NULL, p, "|", TRUE);
 				if (!chtx)
 					break;
 				tyX = getChoiTxTyX( chtx);

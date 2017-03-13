@@ -107,7 +107,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 { MH_X0048, "X0048: %s(): called for non-%s RATBASE" },
 
 // ancrec.cpp, added 5-14-92
-{ MH_X0050, "X0050: record::copyFrom: unconstructed destination (b is 0)" },
+{ MH_X0050, "X0050: record::CopyFrom: unconstructed destination (b is 0)" },
 { MH_X0051, "X0051: record::operator=(): unconstructed destination (b is 0)" },
 { MH_X0052, "X0052: record::operator=(): records not same type" },
 { MH_X0053, "X0053: anc4n: bad or unassigned record anchor number %d" },
@@ -1074,20 +1074,10 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_R0003, "R0003: %s(): temperature apparently over boiling for elevation" },
 
 // Weather files and Simulator Test Driver Files (wfpak.cpp)
-	{ MH_R0100, "R0100: Unable to open weather file '%s' %s" },
-	{ MH_R0101, "R0101: Bad header in file '%s'" },
-	{
-		MH_R0102, "R0102: Internal gain and setpoint data provided for too many "
-		"zones in simulator test driver file '%s'"
-	},
+	{ MH_R0100, "R0100: %s file '%s': open failed" },
+	{ MH_R0101, "R0101: %s file '%s': bad format or header" },
 	{ MH_R0103, "R0103: Attempt to read data for day not in weather file '%s'" },
 	{ MH_R0104, "R0104: Weather file read error in file '%s'" },
-	/* R0105,6 probably unused 10-94
-	 * { MH_R0105, "R0105: Date is unreadable or incorrect in simulator test driver "
-	 *                  "file '%s'" },
-	 * { MH_R0106, "R0106: Hourly data is unreadable or is for incorrect hour "
-	 *                  "in simulator test driver file '%s'" }, */
-	//wfpak additions 6-95
 	{ MH_R1101, "R1101: Corrupted header in ET1 weather file \"%s\"." },
 	{ MH_R1102, "R1102: Missing or invalid number at offset %d in %s %s" },
 	{ MH_R1103, "R1103: Bad decoding table for %s in wfpak.cpp" },
@@ -1517,7 +1507,6 @@ x  { MH_T0003, "\nReport file name: %s" },
 // dskdrive.cpp --
 	{ MH_I0031, "I0031: '%c': not a valid drive letter" },
 
-// yacam.cpp when INCNE, 6-95 --
 	//used with errFl
 	{ MH_I0101, "I0101: Cannot open" },
 	{ MH_I0102, "I0102: Cannot create" },

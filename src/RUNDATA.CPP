@@ -91,13 +91,10 @@ makAncDHWLOOPPUMP( WlpR);	// DHW loop pump
 makAncDHWDAYUSE( WduR);		// DHW day use
 makAncDHWUSE( WuR);			// DHW use
 
-// PV: PV Watts photovoltaic array
 makAncPVARRAY(PvR);			// PV array
-// BT: Battery
 makAncBATTERY(BtR);			// Battery
 
-// Shading
-makAncSHADEX( SxR);
+makAncSHADEX( SxR);			// Shading
 
 // hvac: terminals, air handlers, plant
 makAncTU( TuB);  			// terminals

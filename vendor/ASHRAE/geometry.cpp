@@ -116,12 +116,17 @@ CT3D& CT3D::Rearrange(		// apply axis rearrangement (aka swizzling)
 	return Concat( R);
 }		// CT3D::Rearrange
 //-----------------------------------------------------------------------------
-CT3D& CT3D::Rotate(		// apply rotation
+CT3D& CT3D::Rotate(		// apply rotation (left hand coord system)
 	double angle,	// angle to rotate (radians)
+					//   + per left hand rule (clockwise)
 	int xyz)		// 0, 1, or 2 = axis about which to rotate
 {
 	double sinA = sin( angle);
 	double cosA = cos( angle);
+	if (xyz < 0)
+	{	sinA = -sinA;
+		xyz = abs( xyz);
+	}
 	CT3D R( 1);		// identity matrix
 	if (xyz == 0)
 	{	R( 1, 1) = cosA;
@@ -159,7 +164,9 @@ CT3D& CT3D::Concat(			// concatenate matrices
 	return Copy( MX);
 }		// CT3D::Concat
 //----------------------------------------------------------------------------
-CPV3D CT3D::TX( const CPV3D& p) const			// apply transformation
+CPV3D CT3D::TX(		// apply transformation to a point
+	const CPV3D& p) const	// input point (column vector)
+// return p' = [this]*p
 {
 	// implicit w = p[ 3] = 1
 	// init point to last col
@@ -171,7 +178,8 @@ CPV3D CT3D::TX( const CPV3D& p) const			// apply transformation
 	return tP;
 }	// CT3D::TX
 //----------------------------------------------------------------------------
-CPolygon3D CT3D::TX( const CPolygon3D& plg) const
+CPolygon3D CT3D::TX(		// apply transformation to polygon
+	const CPolygon3D& plg) const	// source polygon
 {
 	CPolygon3D tPlg;
 	int nV = plg.GetSize();
@@ -232,6 +240,42 @@ double CPV3D::Normalize()
 	}
 	return d;
 }		// CPV3D::Normalize
+//-----------------------------------------------------------------------------
+int CPV3D::AzmTilt(		// normal -> azm/tilt (radians)
+	double& azmR,			// returned: azm (0=N, +clockwise from above)
+	double& tiltR) const	// returned: tilt (0=facing up, pi/2=vertical, pi=facing down)	
+// returns 0 iff *this has 0 length
+//    else 1 = success
+{
+	double d = Length();
+	if (d < 1e-9)
+	{	azmR = 0.;
+		tiltR = 0.;
+		return 0;
+	}
+
+	if (fabs( z/d) > 1.-1e-9)
+	{	tiltR = z>0. ? kPi : -kPi;
+		azmR = 0.;
+	}
+	else
+	{	tiltR = acos( z/d);
+		azmR = atan2( x/d, y/d);
+	}
+
+	return 1;
+}	// CPV3D::AzmTilt
+//----------------------------------------------------------------------------
+int CPV3D::AzmTiltD(		// normal -> azm/tilt (degrees)
+	float& azmD,
+	float& tiltD) const
+{	
+	double azmR, tiltR;	
+	int ret = AzmTilt( azmR, tiltR);	// returns radians
+	azmD = float( DEG( azmR));
+	tiltD = float( DEG( tiltR));
+	return ret;
+}		// CPV3D:AzmTiltD
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -395,6 +439,22 @@ int CPolygon3D::GetBestPlane(			// best-fit plane for this polygon
 		pln.Zero();
 	return nP;
 }		// CPolygon3D::GetBestPlane
+//----------------------------------------------------------------------------
+double CPolygon3D::CheckFix(
+	int options /*=0*/)	// option bits
+						//   1: alter verticies to be exactly on best plane
+// returns largest distance from any vertex to best plane
+//             (*this modified iff options&1)
+//         -1 if failure, *this unchanged (can't make plane, )
+{
+	CPlane3D pln;
+	int nP = GetBestPlane( pln);
+	if (nP < 3)
+		return -1.;
+
+	return pln.CheckFixPolygon( *this, options);
+
+}		// CPolygon3D
 //-----------------------------------------------------------------------------
 double CPolygon3D::Area2D(
 	int id0/*=0*/, int id1/*=1*/) const
@@ -409,6 +469,7 @@ double CPolygon3D::Area2D(
 double CPolygon3D::UnitNormal(			// find unit normal (aka direction cosines)
 	CPV3D& uNormal) const	// returned: unit normal vector
 // returns: unnormalized length = area of polygon
+//          -1 if normal cannot be determined
 {
     // get the Newell normal
 	for (int i=0; i<3; i++)
@@ -416,6 +477,8 @@ double CPolygon3D::UnitNormal(			// find unit normal (aka direction cosines)
 
     // get length of the Newell normal
     double nLen = uNormal.Length(); // sqrt( nwx*nwx + nwy*nwy + nwz*nwz );
+	if (nLen < SMALL_NUM)
+		return -1.;		// uNormal is (0,0,0) or close to it
 
     // compute the unit normal
 	uNormal /= nLen;
@@ -890,6 +953,34 @@ double CPlane3D::Distance(		// distance: plane to point + closest point
 	}
 	return dist;
 }	// CPlane3D::Distance
+//--------------------------------------------------------------------------
+double CPlane3D::CheckFixPolygon(		// check polygon against plane
+	CPolygon3D& p3,
+	int options /*=0*/) const	// option bits
+								//  1: change polygon vertices to nearest point on plane
+// determines how close polygon is to this plane
+//   optionally alters each polygon vertex to closest point on plane
+// returns largest distance between any polygon vertex and plane
+//         -1 if failure (incomplete plane, )
+{
+	double div = pl_n.Length();
+	if (div < SMALL_NUM)
+		return -1.;
+
+	bool bFix = options & 1;
+
+	double distMax = 0.;
+	int nV = p3.GetSize();
+	for (int iV=0; iV<nV; iV++)
+	{	CPV3D& pt = p3[ iV];
+		double dist = (pl_n * pt + pl_d) / div;
+		if (dist > distMax)
+			distMax = dist;
+		if (bFix)
+			p3[ iV] = pt - pl_n*(dist/div);
+	}
+	return distMax;
+}	// CPlane3D::CheckFixPolygon
 //-----------------------------------------------------------------------------
 double CPlane3D::AngleCos(		// cos of angle between two planes
 	const CPlane3D& pl) const

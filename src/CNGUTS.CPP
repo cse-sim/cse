@@ -327,6 +327,9 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 							// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
 	EF( cgRddInit(FALSE) );		// more init (what is repeated for each des day for autoSize). local below.
 								// EF: if error, return bad now.
+
+	EF( tp_ExshRunInit());		// Penumbra external shading initialization
+
 	screen( NONL|QUIETIF, " Warmup");	// screen msg on current line (rmkerr.cpp): beg of warmup.
     									//   Continues line started in cse.cpp.
 
@@ -554,7 +557,9 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		Top.tp_DoDTStuff();				// update DT/ST stuff, local, below
 
 		// weather data
-		EF( Top.tp_WthrBegHour() );     // read weather file, set Wthr, and Top hourly weather members, eg tDbOHr. cgwthr.cpp.
+		EF( Top.tp_WthrBegHour() );	// read weather file, set Wthr, and Top hourly weather members, eg tDbOHr. cgwthr.cpp.
+
+		EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
 #if defined( DEBUGDUMP)
@@ -907,10 +912,10 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 				   inits Locsolar (comments below). EF: return RCBAD on any non-RCOK return. */
 
 // Set up weather file
-// tentatively 6-95 do each phase, allowing name to change. Messages errors. cgwthr.cpp. only call.
-	EF( cgWfInit() )	// also uses Top .wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
+// do each phase, allowing name to change. Messages errors.
+	EF( Top.tp_WfInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
 
-// Open import files used in this run, if any. 2-94.
+// Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
 
 // portion in cgausz.cpp: eg init peak load/plr mbrs (for autosize, may be redone elsewhere each design day iteration)
@@ -2066,7 +2071,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{
 		// get autosizing Julian day, month, mday, wday. Preset by callers: (tp_dsDayI), .tp_dsDay, .auszMon, .jDay, (.xJDay).
-		tddyi( jDay, year, &tp_date);	// convert (caller's solar) Julian date to month-day-wday.
+		tddyi( tp_date, jDay, year);	// convert (caller's solar) Julian date to month-day-wday.
 		tp_date.wday = 3;					// change day of week to Wednesday during autosizing.
 
 		// autosizing beginning of month flag, month and date strings
@@ -2100,9 +2105,9 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		// date: get month, mday, wday; convert to string.  jDay is primary independent variable, set in tp_MainSimI().
 
-		tddyi( jDay, year, &tp_date);		// convert current simulation julian date to month-day, tdpak.cpp.
+		tddyi( tp_date, jDay, year);		// convert current simulation julian date to month-day, tdpak.cpp.
 		// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
-		tddis( &tp_date, dateStr);				// convert to string for rpt hdrs. tdpak.cpp.
+		tddis( tp_date, dateStr);				// convert to string for rpt hdrs. tdpak.cpp.
 
 		// main sim beginning of month flag, month string, local end of month date
 
@@ -2258,7 +2263,7 @@ LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (
 					/* ***** TEMPORARY weather file info for initial DL test graphs ***** 9-4-94
 					   Make names match values passed to setHourInfo() in doIvlAccum()!
 					   Expect will depend on wf type.
-					   Coordinate via cgWfInit (xxx called in this fcn about 100 lines up) ***** */
+					   Coordinate via tp_WfInit (xxx called in this fcn about 100 lines up) ***** */
 #ifdef TWOWV // bfr.h 9-94
 					2, "Est Direct", "Est Diffuse" ) )	// # dl weather vbls and their names. Estimated from CEC wthr file for now.
 #else

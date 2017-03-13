@@ -66,6 +66,7 @@ LOCAL RC topRSys();
 LOCAL RC topDHW();
 LOCAL RC topPV();
 LOCAL RC topBT();
+LOCAL RC topSX();
 LOCAL RC topRadGainDist();
 LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, record* ownRec );
 
@@ -325,10 +326,11 @@ LOCAL RC topCkfI( int re)
 	E( topRadGainDist() )	// set up distribution of radiant internal gains. Must follow most surface/zone stuff
 
 	E( topRSys() )			// RSYS
-	E( topPV() )			// PV
-	E( topBT() )            // BT
+	E( topPV() )			// PVArrays
+	E( topBT() )            // Batteries
+	E( topSX() )			// ShadeX external shading
 
-	E( topZn3() )			// zones: added generated IZXFERs,
+	E( topZn3() )			// zones: add generated IZXFERs,
 
 
 #ifdef AUTOSIZE
@@ -458,20 +460,16 @@ LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data from it
 	int* pHotMo )			// receives hottest month 1-12 if avail in wthr file hdr, if autoSizing
 {
-	/* tentatively 6-95 wf stuff here & cnguts.cpp redone for run
-	   after autosize, allowing wfName etc to change. */
+	// wf stuff here & cnguts.cpp redone for run
+	// after autosize, allowing wfName etc to change.
+
 // find weather file, store full path
-	char buf[_MAX_PATH];			// receives full path
-	if (ppFindFile( wfName, buf))		// find file using input file paths including -i paths / if ok. pp.cpp.
-		// (if fails, fall thru for historical wfOpen error msg)
-		if (strcmpi( wfName, buf))		// if full path found different than path already have (else don't fragment)
-		{
-			cupfree( DMPP(wfName));  	// free old wfName if in heap (just decr ref count if multiple uses)
-			wfName = strsave(buf);		// copy full path from stack buffer to heap block, set Top member pointer.
-		}
+	ppFindFile( tp_wfName);		// find file, update tp_wfName to full path
+	if (tp_TDVfName)
+		ppFindFile( tp_TDVfName);		// auxiliary TDV (time dependent value) file if any
 
 // open weather file
-	RC rc = Wfile.wf_Open( wfName, WRN);	// lib\wfpak.cpp.  reports err if can't open. Wfile is in rundata.cpp.
+	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName, WRN);	// reports err if can't open.
 	if (!rc)					// if opened ok
 	{
 		// fetch latitude, longitude, time zone to Top members
@@ -501,7 +499,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 									   "    run is %s to %s,\n"
 									   "    but '%s' dates are %s to %s.\n" */
 							  tddys( tp_begDay),  tddys( tp_endDay),
-							  Top.wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
+							  Top.tp_wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
 			}
 		}
 
@@ -725,7 +723,8 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 	record::Copy( pSrc);				// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
-	cupIncRef( DMPP(wfName));   	// incr reference counts of dm strings if nonNULL, lib\dmpak.cpp
+	cupIncRef( DMPP(tp_wfName));   	// incr reference counts of dm strings if nonNULL
+	cupIncRef( DMPP(tp_TDVfName));  
 	cupIncRef( DMPP(runTitle));		//  cupIncRef: cueval.cpp: if pointer is not NANDLE nor pointer to
 	cupIncRef( DMPP(runDateTime));	//   "text" embedded in pseudocode, call dmpak:dmIncRef to increment
 	cupIncRef( DMPP(repHdrL));		//   block's reference count (or dup block).
@@ -750,7 +749,8 @@ TOPRAT::~TOPRAT()
 //-----------------------------------------------------------------------------
 void TOPRAT::freeDM()		// free child objects in DM
 {
-	cupfree( DMPP( wfName));			// decRef or free dm (heap) strings
+	cupfree( DMPP( tp_wfName));			// decRef or free dm (heap) strings
+	cupfree( DMPP( tp_TDVfName));		// decRef or free dm (heap) strings
 	cupfree( DMPP( runTitle));			//  cupfree: cueval.cpp: if pointer is not NANDLE nor pointer to
 	cupfree( DMPP( runDateTime));  		//   "text" embedded in pseudocode, call dmpak:dmfree to free its block
 	cupfree( DMPP( repHdrL)); 			//   or decrement its ref count, and NULL the pointer here.
@@ -897,7 +897,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	// copy data from zones input rat.  Specify subscripts to insure match.
 	ZNR* zp;
 	ZrB.add( &zp, ABT, ss );		// add zone run record. expect no error due to ZrB.al above.
-	zp->copyFrom( this);	// copy record except internal front overhead.  Not '=': records different.
+	zp->CopyFrom( this);	// copy record except internal front overhead.  Not '=': records different.
 							// DEPENDS ON start of ZNR being same as ZNI.  ---> DOES NOT handle DM strings.
 
 	// zero surface area summations and other totals re view factors and solar gain targetting
@@ -929,11 +929,11 @@ x record& ZNR::operator=(record& src)	// overrides record::operator=, decl must 
 x{
 x}	// ZNR::operator=
 x //===========================================================================
-x record& ZNR::copyFrom( record& src, SI copyName=1, SI dupPtrs=0)
-x // copy contents & front info from a record possibly of different deriv class.  Overrides record::copyFrom (decl must match)
+x record& ZNR::CopyFrom( record& src, int copyName=1, int dupPtrs=0)
+x // copy contents & front info from a record possibly of different deriv class.  Overrides record::CopyFrom (decl must match)
 x // used to copy ZNI into ZNR to init larger zone run records from zone input records
 x{
-x}	// ZNR::copyFrom
+x}	// ZNR::CopyFrom
 x //===========================================================================
 x ZNI::~ZNI()
 x{
@@ -1378,7 +1378,7 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E( WuR.RunDup( WUiB, &WduR))
 
 	// initialization -- do *last* -- all children in place
-	//   multiple pass re e.g. wsLoadShareDHWSYS
+	//   multiple passes re e.g. wsLoadShareDHWSYS
 	DHWSYS* pWS;
 	RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 0);
@@ -1415,6 +1415,18 @@ LOCAL RC topBT()		// check BATTERY ... copy to run rat
 
 	return rc;
 }	// ::topBT
+//=============================================================================
+LOCAL RC topSX()		// SHADEX copy to run rat
+{
+	RC rc = RCOK;
+
+	E(SxR.RunDup(SXiB));
+
+	SHADEX* pSX;
+	RLUP( SxR, pSX)
+		rc |= pSX->sx_Init();
+	return rc;
+}	// ::topSX
 //=============================================================================
 LOCAL RC topGain()	// check GAINs / copy to run rat
 {

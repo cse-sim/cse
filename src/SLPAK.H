@@ -24,15 +24,9 @@
 
 /*--------------------------------- TYPES ---------------------------------*/
 
-/* SLLOCDAT: Location/day specific solar data.
-
-	These structures are alloc/init by slinit();
-	daily values are set by slday().
-
-   users 12-89: locpak.c:Locsolar (ref'd in locpak, sdpak, hsssolar, hssoltk,
-		   used more places as slpak remembers location internally);
-		slinit return value;
-		various arguments, local variables, and test code. */
+// SLLOCDAT: Location/day specific solar data.
+//	These structures are alloc/init by slinit();
+//	daily values are set by slday().
 
 struct SLLOCDAT
 {
@@ -79,8 +73,8 @@ SLLOCDAT * FC slselect( SLLOCDAT *pSlr);
 void   FC slfree( SLLOCDAT **ppSlr);
 void   FC slday( DOY jday, SI timetype);
 void   FC sldec( float sldec, SI timetype);
-SI     FC slsurfhr( float sdircos[3], SI ihr, float *pcosi, float *pazm,
-                    float *pcosz);
+int slsurfhr( float sdircos[3], int ihr, float* pCosi, float* pAzm=NULL,
+                    float* pCos=NULL);
 void   FC slaltazm( float fhour, float *altp, float *azmp);
 void   FC slaniso( float *pbeam, float *pdiff, SI ihr);
 

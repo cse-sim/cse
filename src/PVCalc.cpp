@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 ///////////////////////////////////////////////////////////////////////////////
-// pvwatts.cpp -- interfact to PVWATTS
+// pvcalc.cpp -- interface to PVWATTS
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
@@ -18,35 +18,73 @@
 
 
 bool pvWattsLoaded = false;
-XPVWATTS PVWATTS; // public PVWATTS Library object
+static XPVWATTS PVWATTS; // public PVWATTS Library object
 
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
 
+//-----------------------------------------------------------------------------
 PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
 {
 	FixUp();
 }	// PVARRAY::PVARRAY
-
+//-----------------------------------------------------------------------------
 PVARRAY::~PVARRAY()
 {
 	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
 		PVWATTS.xp_ClearData(this);
 	}
 }	// PVARRAY::~PVARRAY
-
+//-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
-{	pv_g.gx_Init( this);
+{	pv_g.gx_SetParent( this);
 }
-
-void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
+//-----------------------------------------------------------------------------
+/*virtual*/ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	pv_g.gx_CopySubObjects();
 }	// PVARRAY::Copy
-
+//-----------------------------------------------------------------------------
+/*virtual*/ PVARRAY& PVARRAY::CopyFrom(
+	record* src,
+	int copyName/*=1*/,
+	int dupPtrs/*=0*/)
+{
+	record::CopyFrom( src, copyName, dupPtrs);		// calls FixUp()
+	pv_g.gx_CopySubObjects();
+#if defined( _DEBUG)
+	Validate( 1);	// 1: check SURFGEOMDET also
+#endif
+	return *this;
+}		// PVARRAY::CopyFrom
+//-----------------------------------------------------------------------------
+/*virtual*/ RC PVARRAY::Validate(
+	int options/*=0*/)		// options bits
+							//  1: check child SURFGEOMDET also
+{
+	RC rc = record::Validate( options);
+	if (rc == RCOK)
+		rc = pv_g.gx_Validate( this, "PVARRAY", options);
+	return rc;
+}		// PVARRAY::Validate
+//-----------------------------------------------------------------------------
+int PVARRAY::pv_HasPenumbraShading() const
+// returns
+//   0 iff no geometry or unsupported type
+//   1 iff has geometry and shading possible
+{	return !pv_g.gx_IsEmpty() && pv_AxisCount()==0;
+}		// PVARRAY::pv_HasPenumbraShading
+//-----------------------------------------------------------------------------
+int PVARRAY::pv_AxisCount() const
+// returns 0 (=fixed), 1 (=1-axis tracking), or 2 (=2-axis tracking
+{	return (pv_arrayType == C_PVARRCH_FXDOR || pv_arrayType == C_PVARRCH_FXDRF) ? 0
+         : pv_arrayType == C_PVARRCH_2AXT ? 2
+	     :                                  1;
+}		// PVARRAY::pv_AxisCount
+//-----------------------------------------------------------------------------
 RC PVARRAY::pv_CkF()
 {
 	RC rc = RCOK;
@@ -63,19 +101,46 @@ RC PVARRAY::pv_CkF()
 	if (pv_usePVWattsDLL == C_NOYESCH_NO) {
 		if (pv_arrayType == C_PVARRCH_1AXT)
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to capture effects of array self-shading.", whenAT, whenPVW);
-		if (pv_arrayType == C_PVARRCH_1AXBT)
+		else if (pv_arrayType == C_PVARRCH_1AXBT)
 			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to utilize backtracking algorithm.", whenAT, whenPVW);
 	}
 
-	if (pv_arrayType != C_PVARRCH_2AXT) {
-		rc |= requireN(whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
-	}
-	else {
-		rc |= ignoreN(whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
-	}
+	int axisCount = pv_AxisCount();		// 0 (fixed), 1, or 2
 
-	if (pv_arrayType != C_PVARRCH_1AXT && pv_arrayType != C_PVARRCH_1AXBT) {
-		rc |= ignore(PVARRAY_GCR, whenAT);
+	// process geometry
+	RC rcGeom = pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
+	rc |= rcGeom;
+	bool bDetailGeom = !rcGeom && !pv_g.gx_IsEmpty();
+	if (bDetailGeom)
+	{	if (axisCount > 0)
+			rc |= oer("Cannot use pvVertices detailed geometry %s", whenAT);
+		else
+		{	// pvVertices provided -- force pv_azm and pv_tilt to match
+			float dgAzm=0.f, dgTilt=0.f;
+			pv_g.gx_GetAzmTilt( dgAzm, dgTilt);
+			if (IsSet( PVARRAY_AZM) && frDiff( dgAzm, pv_azm) > .005f)
+				oer( "Array azimuth derived from pvVertices (=%0.2f) does not match pvAzm (=%0.2f)."
+				     " Omit pvAzm to use pvVertices value as default.",
+					DEG( dgAzm), DEG( pv_azm));
+			pv_azm = dgAzm;
+			fStat( PVARRAY_AZM) |= FsVAL;
+			if (IsSet( PVARRAY_TILT) && frDiff( dgTilt, pv_tilt) > .005f)
+				oer( "Array tilt derived from pvVertices (=%0.2f) does not match pvTilt (=%0.2f)."
+				     " Omit pvTilt to use pvVertices value as default.",
+					DEG( dgTilt), DEG( pv_tilt));
+			pv_tilt = dgTilt;
+			fStat( PVARRAY_TILT) |= FsVAL;
+		}
+	}
+	else
+	{	// geometry not given, check azm and tilt against array type
+		if (axisCount != 2)
+			rc |= requireN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
+		else
+			rc |= ignoreN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
+
+		if (axisCount != 1)
+			rc |= ignore( PVARRAY_GCR, whenAT);
 	}
 
 	const char* pvModTyTx = getChoiTx(PVARRAY_MODULETYPE, 1);
@@ -94,16 +159,13 @@ RC PVARRAY::pv_CkF()
 		}
 	}
 
-	// check geometry
-	rc |= pv_g.gx_CheckAndMakePolygon( 0, PVARRAY_G);
-
 	return rc;
 
 }	// PVARRAY::pv_CkF
 
-RC PVARRAY::pv_Init()
+RC PVARRAY::pv_Init()		// init for run
 {
-	RC rc = RCOK;
+	RC rc = pv_g.gx_Init();
 
 	switch (pv_moduleType)
 	{
@@ -223,7 +285,7 @@ RC PVARRAY::pv_DoHour()
 
 	return rc;
 }	// PVARRAY::pv_DoHour
-
+//-----------------------------------------------------------------------------
 RC PVARRAY::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
 	int options/*=0*/)
@@ -232,16 +294,14 @@ RC PVARRAY::RunDup(		// copy input to run record; check and initialize
 	pv_SetMTRPtrs();
 	return rc;
 }	// PVARRAY::RunDup
-
+//-----------------------------------------------------------------------------
 void PVARRAY::pv_SetMTRPtrs()		// set runtime pointers to meters
 // WHY: simplifies runtime code
 {
 	pv_pMtrElec = MtrB.GetAtSafe(pv_elecMtri);		// elec mtr or NULL
 }		// PVARRAY::pv_SetMTRPtrs
-
-
-// combine Snell's and Bougher's laws
-RC PVARRAY::pv_CalcRefr(
+//-----------------------------------------------------------------------------
+RC PVARRAY::pv_CalcRefr(	// combine Snell's and Bougher's laws
 	float n1,  // first index of refraction
 	float n2,  // second index of refraction
 	float theta1, // angle of incidence, rad
@@ -256,18 +316,10 @@ RC PVARRAY::pv_CalcRefr(
 	tau = 1.f - 0.5f*(pow2(sin(theta2 - theta1)) / pow2(sin(theta2 + theta1)) + pow2(tan(theta2 - theta1)) / pow2(tan(theta2 + theta1)));
 	return rc;
 }
-
+//-----------------------------------------------------------------------------
 RC PVARRAY::pv_CalcPOA()
 {
 	RC rc = RCOK;
-
-	// Don't bother if no solar from weather
-	if (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f) {
-		pv_poa = 0.f;
-		pv_poaT = 0.f;
-		pv_aoi = kPiOver2;
-		return rc;
-	}
 
 	// Some routines borrowed from elsewhere in code. Should be updated to share routines with XSURF and SBC.
 
@@ -277,7 +329,21 @@ RC PVARRAY::pv_CalcPOA()
 	float azm, cosz;
 	int sunup = 					// nz if sun above horizon this hour
 		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
-	if (!sunup)	cosz = 0.f;
+
+#if 0
+0 // incomplete effort to set up global values for solar position
+0	if (sunup != Wthr.d.wd_sunup || azm != Wthr.d.wd_slAzm)
+0		printf( "Solar ismatch");
+#endif
+
+	// Don't bother if sun down or no solar from weather
+	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
+	{	pv_ClearShading();
+		pv_poa = 0.f;
+		pv_poaT = 0.f;
+		pv_aoi = kPiOver2;
+		return rc;
+	}
 
 	// TODO Calculate shading and backtracking for single-axis tracking and fixed arrays
 
@@ -333,18 +399,28 @@ RC PVARRAY::pv_CalcPOA()
 
 
 	// Calculate plane-of-array incidence
-	float dcos[3]; // direction cosines
-	slsdc(pv_panelAzm, pv_panelTilt, dcos);
-	float cosi;
-	int sunupSrf = sunup && slsurfhr(dcos, Top.iHrST, &cosi, NULL, NULL);
+	int sunupSrf;	// nz iff
+	float cosi, fBeam;
+	if (pv_HasPenumbraShading())
+		sunupSrf = pv_CalcBeamShading( cosi, fBeam);
+	else
+	{	// tracking: Penumbra shading not supported
+		//   azm and tilt vary
+		float dcos[3]; // direction cosines
+		slsdc( pv_panelAzm, pv_panelTilt, dcos);
+		sunupSrf = slsurfhr( dcos, Top.iHrST, &cosi);
+		fBeam = 1.f;
+	}
+	if (sunupSrf < 0)
+		return RCBAD;	// shading error
 
 	float poaBeam;
-	if (sunupSrf) {
+	if (sunupSrf)	
+	{	poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
 		pv_aoi = acos(cosi);
-		poaBeam = Top.radBeamHrAv*cosi;  // incident beam
 	}
-	else {
-		poaBeam = 0.f;  // incident beam
+	else
+	{	poaBeam = 0.f;  // incident beam
 		pv_aoi = kPiOver2;
 	}
 
@@ -352,7 +428,8 @@ RC PVARRAY::pv_CalcPOA()
 
 	bool usePerez = true;
 
-	if (usePerez) {
+	if (usePerez)
+	{
 		// Modified Perez sky model
 		float zRad = acos(cosz);
 		float zDeg = DEG(zRad);

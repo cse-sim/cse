@@ -9,6 +9,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>
 #include <time.h>	// struct tm
+#include <tchar.h>
 
 #include <msghans.h>	// MH_xxxx defns
 
@@ -23,6 +24,16 @@
 //  0-based: .wday, .hour, .min, .sec.; typedef SI DOW.
 
 #define LEAPDAY(y,m) ((y) >= 0 && !((y)%4) && (m) > 2)
+// local functions
+int tdLeapDay(		// 1 iff after Feb in leap year
+	int yr,		// actual year or -1
+	int mon)	// month, 1-12
+{	return  yr >= 0 && !(yr%4) && mon>2;
+}
+int tdYearLen(		// year length (365 or 366)
+	int yr)		// actual year or -1
+{	return 365 + (yr>=0 && !(yr%4));
+}
 
 // Date/time info structure
 //    Month related entries have 14 slots:
@@ -59,7 +70,7 @@ static const char Tdsnake[] = "\0\0\0\0\0\0\0\0January\0\0Jan\0\0February"
 /*------------------------------- VARIABLES -------------------------------*/
 // make public if needed
 static int Tdfulldate = FALSE;	// FALSE:  display date in "12-Jun-86" format.
-							// TRUE: display full "June 12, 1986" date.
+								// TRUE: display full "June 12, 1986" date.
 static int Td24hrtime = FALSE;	// FALSE:  display time in 12 hr AM/PM format.
 								// TRUE: use 24 hr time display.
 
@@ -109,7 +120,7 @@ t #endif
 t #undef TESTTDDTIS
 t #ifdef TESTTDDTIS
 t     ensystd(&idatetime);
-t     printf("[%s]   ",tddis(&idatetime,buff));
+t     printf("[%s]   ",tddis(idatetime,buff));
 t     printf("[%s]   ",tdtis(&(idatetime.hour),buff));
 t     printf("[%s]\n",tddtis(&idatetime,buff));
 t #endif
@@ -199,7 +210,7 @@ const char* tddtis( 		// Convert integer date/time structure to string
 	if (!s)
 		s = strtemp( TDFULLDTLENMAX);
 	sbeg = s;				// save string start to return
-	tddis( (IDATE *)idt, s);		// date-->string, below. tests Tdfulldate. (beginning of IDATETIME is same as IDATE).
+	tddis( *(IDATE *)idt, s);		// date-->string, below. tests Tdfulldate. (beginning of IDATETIME is same as IDATE).
 	s += strlen(s);			// point past
 	*s++ = ' ';				// add 2 spaces
 	*s++ = ' ';				// ..
@@ -228,33 +239,33 @@ const char* tddys( 			// Convert day of year + year to date string
 // Returns s
 {
 	IDATE tdate;	// year/month/mday/wday
-	tddyi( doy, year, &tdate);		// convert to integer date structure, next in this file.
+	tddyi( tdate, doy, year);		// convert to integer date structure, next in this file.
 	tdate.wday = -1;				// suppress day of week
-	return tddis( &tdate, s);   	// convert that to string, tests Tdfulldate. in this file
+	return tddis( tdate, s);   	// convert that to string, tests Tdfulldate. in this file
 }			// tddys
 //=======================================================================
 void tddyi( 			// Convert day of year to integer format date (year/month/mday/wday)
+	IDATE& idt,		// returned
 	DOY doy,		// day of year, 1 .. 366, validity not checked
-	int year,		// year, if >= 0, is a real year and doy will be converted with leap year adjustment.
-	IDATE* idt )  	// structure into which to convert.
+	int year /*=-1*/)	// year, if >= 0, is a real year and doy will be converted with leap year adjustment.
 {
 	int im = (doy-1)/31;			// start table lookup at smallest poss month
 	while (tddDoyMonBeg( im) + LEAPDAY(year,im) <= doy)
 		im++;						// 1st month that begins after doy is month+1
-	idt->year = year;
-	idt->month = im-1;
-	idt->mday = doy - ( tddDoyMonBeg( idt->month) + LEAPDAY(year,idt->month)) + 1;
-	idt->wday = tddyw( doy, year);						// get day of week, this file
+	idt.year = year;
+	idt.month = im-1;
+	idt.mday = doy - ( tddDoyMonBeg( idt.month) + LEAPDAY(year,idt.month)) + 1;
+	idt.wday = tddyw( doy, year);			// day of week
 }					// tddyi
 //=======================================================================
 DOY tddiy(			// Convert integer date structure to day of year
-	IDATE* idt )  	// Date structure.
-// If idt->year >= 0, this date is taken to be a real year and leap years are handled.
-// If idt->year < 0, this is a generic 365 day year.
+	const IDATE& idt )  	// Date structure.
+// If idt.year >= 0, this date is taken to be a real year and leap years are handled.
+// If idt.year < 0, this is a generic 365 day year.
 
 // Returns day of year, 1 - 366
 {
-	return tddDoyMonBeg( idt->month) + LEAPDAY( idt->year, idt->month) + idt->mday - 1;
+	return tddDoyMonBeg( idt.month) + LEAPDAY( idt.year, idt.month) + idt.mday - 1;
 
 }			// tddiy
 //=======================================================================
@@ -264,14 +275,14 @@ DOY tddiy( int month, int mday, int year /*=-1*/)
 //=======================================================================
 int tddiw(			// Determine day of week corresponding to integer date
 
-	IDATE *idt )   	// Date for which day of week is required.  Leap year accounted for if idt->year >= 0.
+	IDATE& idt )   	// Date for which day of week is required.  Leap year accounted for if idt->year >= 0.
 
 // Returns calculated day of week and also stores it in idt->wday.
 {
-	idt->wday = tddyw( 			// convert doy and year to day of week, next
-					tddiy(idt), 	// get day of year, above
-					idt->year );
-	return idt->wday;
+	idt.wday = tddyw( 			// convert doy and year to day of week, next
+					tddiy( idt), 	// get day of year, above
+					idt.year );
+	return idt.wday;
 }				// tddiw
 //=======================================================================
 int tddyw( 			// Determine day of week for day of year
@@ -290,33 +301,30 @@ int tddyw( 			// Determine day of week for day of year
 }			// tddyw
 //=======================================================================
 const char* tddis( 		// Convert integer format date structure to string
-	IDATE *idt,		// Date structure: year-month-day
-	char *s )		// NULL to return in Tmpstr[], or destination buffer
+	const IDATE& idt,		// Date structure: year-month-day
+	char *s /*=NULL*/ )		// NULL to return in Tmpstr[], or destination buffer
 
 // uses full or short format per Tdfulldate global
 
 // Returns s
 {
-	char *sbeg;
-	int yt;
-
 	if (!s)
 		s=strtemp( TDFULLDATELENMAX);
-	sbeg = s;					// save to return
+	const char* sbeg = s;		// save to return
 
 // start with weekday if not suppressed.  Advance s past text.
-	if (idt->wday != -1)
-		s += sprintf( s, "%s ", tddDowName( idt->wday) );
+	if (idt.wday != -1)
+		s += sprintf( s, "%s ", tddDowName( idt.wday) );
 
 // full format date
 	if (Tdfulldate) 				// global full-date format flag
 	{
 		s += sprintf( s, "%s %d", 			// do month, day, point past
-				tddMonName( idt->month),
-				idt->mday );
-		if (idt->year >= 0) 			// if real year given
+				tddMonName( idt.month),
+				idt.mday );
+		if (idt.year >= 0) 			// if real year given
 		{
-			yt = idt->year;			// fetch to modify
+			int yt = idt.year;		// fetch to modify
 			if (yt < 100) 			// unless already present
 				yt += 1900;			// supply the 19 for full date format
 			sprintf( s, ", %4d", yt);		// format and append year
@@ -326,9 +334,9 @@ const char* tddis( 		// Convert integer format date structure to string
 	else
 	{
 		s += sprintf( s, "%2.2d-%s", 					// format dd-mon, point past
-			idt->mday, tddMonAbbrev( idt->month));
-		if (idt->year >= 0) 						// if a real year given
-			sprintf( s, "-%2.2d", (idt->year)%100 );			// append it
+			idt.mday, tddMonAbbrev( idt.month));
+		if (idt.year >= 0) 						// if a real year given
+			sprintf( s, "-%2.2d", (idt.year)%100 );			// append it
 	}
 	return sbeg;
 }				// tddis
@@ -473,5 +481,97 @@ DOY tdHoliDate( 	// determine date of holiday this year
 	return doyDow;
 }			// tdHoliDate
 #endif	// C_HDAYCASECH_FIRST
+
+///////////////////////////////////////////////////////////////////////////////
+// class CALENDAR: modern-ish interface to date/time functions
+//                 used in e.g. ASHRAE solar.cpp
+//                 transition aid
+///////////////////////////////////////////////////////////////////////////////
+
+// public instance
+CALENDAR Calendar;
+//-----------------------------------------------------------------------------
+int CALENDAR::GetMonDoy(		// month for day of year
+	int iDoy,				// day of year, 1-365/366
+	int yr /*=-1*/) const	// year
+// returns month 1 - 12
+{
+	if (iDoy < 1 || iDoy > tdYearLen( yr))
+		return -1;
+
+	IDATE idt;
+	tddyi( idt, iDoy, yr);
+	return idt.month;
+}	// CALENDAR::GetMonDoy
+//------------------------------------------------------------------------------
+int CALENDAR::GetMDDoy(		// MMDD for day of year
+	int iDoy,
+	int yr/*=-1*/) const
+// returns iMD (MMDD) for doy
+{
+	if (iDoy < 1 || iDoy > tdYearLen( yr))
+		return -1;
+
+	IDATE idt;
+	tddyi( idt, iDoy, yr);
+
+	return idt.month*100 + idt.mday;
+
+}		// CALENDAR::GetMDDoy
+//-----------------------------------------------------------------------------
+int CALENDAR::GetDoy(
+	int month,				// month, 1-12
+	int mDay,				// day of month, 1-31
+	int yr /*=-1*/) const	// actual year or -1
+{
+	return tddiy( month, month, yr);
+}	// CALENDAR::GetDoy
+//-----------------------------------------------------------------------------
+const char* CALENDAR::GetMonAbbrev(		// month abbrev: "Jan", "Feb", ...
+	int month) const		// month, 1-12
+{	return tddMonAbbrev( month);
+}		// CALENDAR::GetMonAbbrev
+//-----------------------------------------------------------------------------
+WStr CALENDAR::FmtDOY(			// formatted date from DOY
+	int iDoy,							// date to be formatted
+	int yr /*=-1*/,						// yr
+	const TCHAR* fmt /*=_T("%b-%d")*/) const	// strftime-style format
+												//   default = mmm-dd
+// returns date formatted per fmt
+//         "?" if invalid doy
+{
+	WStr s;
+	if (iDoy < 1 || iDoy > tdYearLen( yr))
+		s = "?";
+	else
+	{	IDATE idt;
+		tddyi( idt, iDoy, yr);
+		char buf[ 100];
+		struct tm t;
+		FillTM( t, idt);
+		_tcsftime( buf, sizeof( buf), fmt, &t);
+		s = buf;
+	}
+	return s;
+}		// CWCalendar::FmtDOY
+//-----------------------------------------------------------------------------
+void CALENDAR::FillTM(			// fill struct tm
+	struct tm& t,				// returned: set to midnight on YMD
+	const IDATE& idt) const	// date
+{
+	int yr = idt.year >= 0 ? idt.year : 2001;
+	int iDoy = GetDoy( idt.month, idt.mday, yr);
+    t.tm_sec = 0;			// seconds after the minute - [0,59]
+    t.tm_min = 0;			// minutes after the hour - [0,59]
+    t.tm_hour = 0;			// hours since midnight - [0,23]
+    t.tm_mday = idt.mday;    	// day of the month - [1,31]
+    t.tm_mon = idt.month-1;		// months since January - [0,11]
+    t.tm_year = yr-1900;		// years since 1900
+    t.tm_wday = idt.wday;		// days since Sunday - [0,6]
+    t.tm_yday = iDoy-1;			// days since January 1 - [0,365]
+    t.tm_isdst = 0;				// daylight savings time flag
+}		// CWCalendar::FillTM
+//=============================================================================
+
 
 // end of tdpak.cpp

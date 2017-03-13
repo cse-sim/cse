@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.826: ...
+   0.826: tdv file read and derived values, committed 3-13-2017
    0.825: fix excessive fSunlit; add tp_TDVfName, committed 3-9-2017
    0.824: shading rotation, committed 3-7-2017
    0.823: Initial version with PVARRAY shading calcs, committed 3-1-2017

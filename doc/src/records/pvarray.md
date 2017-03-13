@@ -137,7 +137,7 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   degrees   unrestricted    0.0         No           hourly
 
   ------------------------------------------------------------------
-**pvVertices=*list of up to 27 floats***
+**pvVertices=*list of up to 36 floats***
 
   Vertices of a polygon representing the shape of the photovoltaic array and used to calculate the shaded fraction of the array during the simulation (assuming one or more SHADEX objects are defined).
 
@@ -153,9 +153,19 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   **Units** **Legal Range** **Default** **Required**     **Variability**
   --------- --------------- ----------- ---------------- ---------------
   ft         unrestricted     *none*      9, 12, 15, 18,      constant
-                                         21, 24, or 27
+                                         21, 24, 27, 30,
+                                         33, or 36
                                          values
   ------------------------------------------------------------------
+
+  **pvMounting=*choice***
+
+  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via bldgAzm, while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
+
+  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
+  ----------- ---------------------- ------------- -------------- -----------------
+              Building or Site        Building           No             constant
+
 
 **pvGrndRefl=*float***
 
