@@ -1664,6 +1664,7 @@ task :build_pdf => [:setup] do
     BuildPDF[
       "tag" => tag,
       "levels" => levels,
+      "draft?" => DRAFT,
       "output-dir" => "build/output/pdfs",
       "output-file-name" => "cse-user-manual.pdf",
     ][files]
@@ -1698,7 +1699,7 @@ task :build_site => [:setup] do
       "tag" => tag,
       "levels" => levels,
       "date" => nil,
-      "draft?" => true,
+      "draft?" => DRAFT,
       "subtitle" => nil,
       "title" => "California Simulation Engine",
       "do-navigation?" => false,

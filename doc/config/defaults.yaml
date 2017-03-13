@@ -31,7 +31,7 @@ output-dir: 'build/output'
 # URL of the remote origin. This is also the location where the gh-pages branch
 remote-repo-url: "https://github.com/cse-sim/cse.git"
 # Flag to build under 'draft' status or not
-draft?: true
+draft?: false
 # If true, runs verification after a build to check generated document links
 verify-links?: true
 # If true, runs verification after a build to check that manifests include all
