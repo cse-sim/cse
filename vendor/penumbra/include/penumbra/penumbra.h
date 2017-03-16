@@ -31,7 +31,19 @@ class PenumbraPrivate;
 
 class Penumbra {
 public:
-  Penumbra(unsigned size = 512);
+  Penumbra(unsigned size = 512u);
+  
+  Penumbra(
+    PenumbraCallbackFunction callbackFunction,
+    unsigned size = 512u
+  );
+
+  Penumbra(
+    PenumbraCallbackFunction callbackFunction,
+    void* contextPtr,
+    unsigned size = 512u
+  );
+
   ~Penumbra();
 
 public:
