@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 827
+#define CSEVRSN_MINOR 828
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.828: ...
    0.827: tdv file error handling; Penumbra only-if-needed, committed 3-16-2017
    0.826: tdv file read and derived values, committed 3-13-2017
    0.825: fix excessive fSunlit; add tp_TDVfName, committed 3-9-2017
