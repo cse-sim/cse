@@ -71,8 +71,8 @@ class YACAM
 	int line( char* line, int lineSz, int erOp=WRN);
 	int scanLine( const char* s, int erOp=WRN, int maxLines=-1);
 
-    RC toke( char *tokBuf, unsigned tokBufSz,		// return next whitespace/comma delimited token. decomments, dequotes.
-             int erOp=WRN );						//  YAC_EOFOK for no message at clean EOF
+    RC toke( char* tok, unsigned tokSz,		// return next whitespace/comma delimited token. decomments, dequotes.
+             int erOp=WRN, const char* ln=NULL);	//  YAC_EOFOK for no message at clean EOF
     RC cdecl get( int erOp, int isLeap,    			// read, decode, and store data per control string
 		const char* cstr, void* p, ... );
     RC cdecl getLineCSV( int erOp, int isLeap,     	// read, decode, and store data from CSV line per control string

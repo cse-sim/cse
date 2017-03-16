@@ -469,7 +469,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 		ppFindFile( tp_TDVfName);		// auxiliary TDV (time dependent value) file if any
 
 // open weather file
-	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName, WRN);	// reports err if can't open.
+	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName);	// reports err if can't open.
 	if (!rc)					// if opened ok
 	{
 		// fetch latitude, longitude, time zone to Top members
@@ -767,6 +767,9 @@ void TOPRAT::freeDM()		// free child objects in DM
 #endif
 	delete tp_pAirNet;
 	tp_pAirNet = NULL;
+
+	tp_PumbraDestroy();		// cleanup / delete Penumbra shading machinery
+
 	//CHP monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------

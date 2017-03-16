@@ -401,7 +401,7 @@ RC PVARRAY::pv_CalcPOA()
 	// Calculate plane-of-array incidence
 	int sunupSrf;	// nz iff
 	float cosi, fBeam;
-	if (pv_HasPenumbraShading())
+	if (pv_HasPenumbraShading() && Top.tp_PumbraAvailability() > 0)
 		sunupSrf = pv_CalcBeamShading( cosi, fBeam);
 	else
 	{	// tracking: Penumbra shading not supported

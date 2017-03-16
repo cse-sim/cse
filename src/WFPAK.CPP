@@ -1037,7 +1037,8 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 
 	const char* wfName,		// file path
 	const char* TDVfName,	// optional TDV file path, NULL = no TDV file
-	int erOp /*=WRN*/,		// error handling: WRN, IGN etc
+	int erOp /*=ERR*/,		// error handling: ERR, WRN, IGN etc
+							//   default ERR: report error, return rc != RCOK
 	int wrAccess/*=FALSE*/,	// write access desired. Used only in utilities (not in CSE).
 	char* hdr /*=NULL*/,	// non-null to return raw header of packed files. For wthr utility programs.
 							// WFHDRSZ bytes returned even if file's hdr smaller.
@@ -1048,7 +1049,7 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 	float* turbid /*=NULL*/,	// receives 12 monthly average atmospheric turbidity values
 	float* atmois /*=NULL*/ )	// receives 12 monthly average atmospheric moisure values
 
-// returns RCOK if all ok,
+// returns RCOK iff success
 //		else other value, message issued per erOp
 
 // sets isLeap if leap year file (future ET1 files 10-94).
@@ -1095,7 +1096,7 @@ x 							   xfFindOnPath issued msg per erOp.*/
 		RC rcTDV = wf_TDVOpen( TDVfName, erOp);
 		if (rcTDV)
 		{	err( erOp,			// display msg per erOp, rmkerr.cpp
-			 rc==RCBAD2
+			 rcTDV==RCBAD2
 			   ? (char *)MH_R0101	//  "R0101: %s file '%s': bad format or header"
 			   : (char *)MH_R0100,	//  "R0100: %s file '%s': open failed"
 			 "TDV",  TDVfName);
@@ -1761,8 +1762,10 @@ RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
 
 	// initial tag
 	rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( T1), _C( T2), NULL);
-	if (!strMatch( T1, "TDV Data (TDV/Btu)"))
-		rc = err( erOp, "Munged header");
+	const char* TDVFileTag = "TDV Data (TDV/Btu)";
+	if (!strMatch( T1, TDVFileTag))
+		rc =  yacTDV->errFlLn( "Incorrect first item \"%s\" -- expected \"%s\"",
+				T1, TDVFileTag);
 	if (!rc)
 		// time stamp
 		rc = yacTDV->getLineCSV( erOp, 0, "C", _C( wf_TDVFileTimeStamp), NULL);
@@ -1773,8 +1776,8 @@ RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
 		// column heads (ignored)
 		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C(T1), _C( T2), NULL);
 
-	if (!rc)
-		wf_TDVInitHdrInfo();
+	if (rc)
+		wf_TDVInitHdrInfo();	// error: clear any partial data
 	
 	return rc;
 

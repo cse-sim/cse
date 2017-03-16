@@ -1527,7 +1527,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_I0116, "I0116: Unrecognized character(s) after %snumber \"%s\"." },
 	{ MH_I0117, "I0117: Internal error: Invalid call to YACAM::get(): \n    NULL not found at end arg list.\n" },
 	//errFlLn meta-message, no msg number in text:
-	{ MH_I0118, ": Error in %s %s near line %d:\n  %s" },
+	{ MH_I0118, "%s '%s' (near line %d):\n  %s" },
 
 // nb: no terminator, use msgTblCount
 };

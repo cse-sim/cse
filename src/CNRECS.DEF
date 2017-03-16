@@ -298,6 +298,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 //TOP: setup: exterior (non-overhang/fin) shading
 	*r INT tp_exshNShade;		// # of shading surfaces in model
 	*r INT tp_exshNRec;			// # of receiving surfaces in model (may also be shading)
+	*declare "int tp_ExshCount();"
 	*declare "RC tp_ExshRunInit();"
 	*declare "RC tp_ExshBegHour();"
 
@@ -569,6 +570,15 @@ x								// not maintained, 12-12
 // TOP: runtime: AIRNET solution
 	*declare "AIRNET* tp_pAirNet;"
 
+// TOP: runtime: pointer to Penumbra (GPU shading) object
+//      instantiated iff needed
+	*declare "class Pumbra::Penumbra* tp_pPumbra;"
+	*declare "RC tp_PumbraInit();"
+	*declare "int tp_PumbraClearIf();"
+	*declare "void tp_PumbraDestroy();"
+	*declare "int tp_PumbraAvailability() const;"
+	*declare "RC tp_PumbraSetModel();"
+
     *r SI ck5aa5		// stuffed with 0x5aa5 from topCult for verifying initialization & matching versions
 *END		// TOPRAT
 
@@ -621,13 +631,13 @@ RECORD PY4 "4th power poly sub" *SUBSTRUCT	// 4th power polynomial. for GT, whic
 RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile", made a record 1-94 so probe-able
 
 // CAUTION: record layout matches code in wfpak.cpp, do not change without updating header decode !!
-
+    *prefix wf_
     *excon			// declare constructor WFILE( basAnc *b, TI i, SI noZ=0) in wfpak.cpp: calls init().
     *exdes			// d'tor
     *ovrcopy		// overridden Copy()
     *declare "WFILE();"		// default c'tor
     *declare "void wf_Init();"	// initialization member fcn
-    *declare "RC wf_Open( const char* wfName, const char* TDVfName, int erOp=WRN, int wrA=FALSE, char* hdr=NULL,"
+    *declare "RC wf_Open( const char* wfName, const char* TDVfName, int erOp=ERR, int wrA=FALSE, char* hdr=NULL,"
     *declare "    float* clrnss=NULL, float* turbid=NULL, float* atmois=NULL);"
 	*declare "RC wf_Close( char *hdr=NULL);"
 	*declare "const char* wf_FilePath() const;"
@@ -660,7 +670,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 
      *declare "int wf_IsPacked() const { return wFileFormat==BSGS || wFileFormat==BSGSdemo || wFileFormat==ET1 || wFileFormat==ET2; }"
 
- // Header info: from file hdr decode (wfpak:wfOpen) or computed from hourly
+ // Header info: from file hdr decode or computed from hourly
     *r WFLOC loc		// char loc[]  Location (for ET, is loc 1 only: city etc).
     *r WFLID lid		// char lid[]  Location ID
     *r SI yr			// Year of weather data (00 - 99, -1 if N/A)
@@ -696,8 +706,8 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     // *array 12 *r float atmois	// monthly aveage atmospheric moisture, for daylight calcs
 
 // TDV file header info
-    *r WFLOC wf_TDVFileTimeStamp		// timestamp string
-	*r WFLOC wf_TDVFileTitle			// title string (identifies file CZ, fuel, vintage, )
+    *f WFLOC wf_TDVFileTimeStamp	// timestamp string
+	*f WFLOC wf_TDVFileTitle		// title string (identifies file CZ, fuel, vintage, )
 
  //internal
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)

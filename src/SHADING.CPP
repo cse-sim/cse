@@ -37,8 +37,13 @@
 
 #include <penumbra/penumbra.h>
 
+#define PUMBRAIF
+#if defined PUMBRAIF
+#define PUMBRA( m) (Top.tp_pPumbra->m)
+#else
 static Pumbra::Penumbra pumbra;
-
+#define PUMBRA( m) (pumbra.m)
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // overhang/fin shading
@@ -420,7 +425,7 @@ int SURFGEOMDET::gxd_SetupShading(	// convert polygon to Penumbra format
 				plg.push_back( float( p3[ iD]));
 		}
 		Pumbra::Surface pnSurf( plg);
-		pnIdx = pumbra.addSurface( pnSurf);
+		pnIdx = PUMBRA( addSurface( pnSurf));
 	}
 	return pnIdx;
 }		// SURFGEOMDET::gxd_SetupShading
@@ -583,12 +588,12 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 		slsdc( azm, kPiOver2-alt, dcSun);
 		cosi = DotProd3( dcSrf, dcSun);		// replace cosi with value
 											//   consistent with alt and azm
-		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
+		if (PUMBRA(setSunPosition)( azm, alt) != Pumbra::PN_SUCCESS)
 		{	cosi = fBeam = 0.f;
 			sunupSrf = -1;	// unexpected
 		}
 		else
-		{	float PSSF = pumbra.calculatePSSF( gx_pnIdx);
+		{	float PSSF = PUMBRA( calculatePSSF)( gx_pnIdx);
 			fBeam = PSSF / (cosi*gx_area);
 			if (fBeam > 1.f)
 			{	
@@ -666,22 +671,129 @@ RC SHADEX::sx_CkF()
 ///////////////////////////////////////////////////////////////////////////////
 // TOPRAT interface to shading model
 ///////////////////////////////////////////////////////////////////////////////
-static void PemumbraMessageHandler(
+static void PenumbraMessageHandler(
 	const int messageType,
 	const std::string message,
 	void* contextPtr)
 {
-	contextPtr;
+	// TOPRAT* pTop = (TOPRAT *)contextPtr;
 
-	(messageType == Pumbra::MSG_ERR ? per : messageType == Pumbra::MSG_WARN ? pWarn : pInfo)
-		( "Penumbra msg: %s", message.c_str());
+	int erOp;
+	const char* what;
+	if (messageType == Pumbra::MSG_ERR)
+	{	erOp = ABT;		// message / keypress / abort
+		what = "error";
+	}
+	else if (messageType == Pumbra::MSG_WARN)
+	{	erOp = ERR;		// message / keypress / continue
+		what = "warning";
+	}
+	else
+	{	erOp = INF;		// message / continue
+		what = "info";
+	}
+	err(
+		erOp | NOPREF,			// do not prepend "Error:"
+		"Shading %s: %s", what, message.c_str());
 
 }		// penumbraMessageHandler
+//-----------------------------------------------------------------------------
+RC TOPRAT::tp_PumbraInit()
+{	RC rc = RCOK;
+	if (!tp_pPumbra)
+	{	const int size = 512;	// context size (=# of pixels)
+		tp_pPumbra = new Pumbra::Penumbra( PenumbraMessageHandler, this, size);
+		if (!tp_pPumbra)
+			rc = RCBAD;		// not expected
+	}
+	else
+		tp_PumbraClearIf();
+
+	return rc;
+}	// TOPRAT::tp_PumbraInit
+//-----------------------------------------------------------------------------
+void TOPRAT::tp_PumbraDestroy()
+{	delete tp_pPumbra;
+	tp_pPumbra = NULL;
+}		// TOPRAT::tp_PumbraDestroy
+//-----------------------------------------------------------------------------
+int TOPRAT::tp_PumbraClearIf()		// clear Penumbra data if any
+// returns 0 if Penumbra not instantiated, nothing done
+//         1 if data successfully cleared
+{	if (!tp_pPumbra)
+		return 0;		// nothing to do
+
+	tp_pPumbra->clearModel();
+	return 1;
+}		// TOPRAT::tp_PumbraClearIf
+//-----------------------------------------------------------------------------
+int TOPRAT::tp_PumbraAvailability() const
+{
+	return tp_pPumbra != NULL;
+}		// TOPRAT::tp_PumbraAvailability
+//-----------------------------------------------------------------------------
+RC TOPRAT::tp_PumbraSetModel()
+{
+	RC rc = tp_pPumbra->setModel() == Pumbra::PN_SUCCESS
+				? RCOK
+				: RCBAD;
+	// message?
+	return rc;
+}		// TOPRAT::tp_PumbraSetModel
+//-----------------------------------------------------------------------------
+int TOPRAT::tp_ExshCount()
+// returns nz if current project has ANY shading surface
+{
+	int pvCount = 0;
+	PVARRAY* pPV;
+	RLUP( PvR, pPV)
+	{	if (pPV->pv_HasPenumbraShading())
+			pvCount++;
+	}
+
+	int sxCount = SxR.GetCount();
+
+	tp_exshNShade = pvCount + sxCount;	// # of shade surfaces
+	tp_exshNRec = pvCount;				// # of receiving surfaces
+
+	return pvCount > 1 || (pvCount > 0 && sxCount > 0);
+}	// TOPRAT::tp_ExshCount
 //-----------------------------------------------------------------------------
 RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 // sets up Penumbra model from all shading or receiving objects
 {
 	RC rc = RCOK;
+
+#if defined( PUMBRAIF)
+	if (!tp_ExshCount())
+	{	tp_PumbraClearIf();		// clear Penumbra data if any
+		return RCOK;
+	}
+
+	// shading is required
+	tp_PumbraInit();
+
+	// building rotation
+	//   construct rotation matrix re C_SHADETY_BLDG
+	CT3D MRot( 1);		// rotation matrix
+	MRot.Rotate( tp_bldgAzm, -2);	// rotate about z axis
+									//  -2 = right-handed coord system
+
+	int NShade = 0;		// # of shade surfaces
+	int NRec = 0;		// # of receiving surfaces
+
+	// create Penumbra surface model
+	PVARRAY* pPV;
+	RLUP( PvR, pPV)
+		rc |= pPV->pv_SetupShading( NRec, &MRot);
+
+	SHADEX* pSX;
+	RLUP( SxR, pSX)
+		rc |= pSX->sx_SetupShading( NShade, &MRot);
+
+	if (!rc)
+		rc = tp_PumbraSetModel();
+#else
 
 	// route Penumbra messages to CSE output
 	//   use pumbra as context even though only one
@@ -712,7 +824,7 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 	{	if (pumbra.setModel() != Pumbra::PN_SUCCESS)
 			rc |= RCBAD;
 	}
-
+#endif
 	return rc;
 
 }		// TOPRAT::tp_ExshRunInit
@@ -738,6 +850,7 @@ RC TOPRAT::tp_ExshBegHour()		// once-per-hour exterior shading setup
 
 	return rc;
 }		// TOPRAT::tp_ExshBegHour
+
 
 
 // shading.cpp end

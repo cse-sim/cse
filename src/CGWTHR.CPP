@@ -66,8 +66,8 @@ RC TOPRAT::tp_WfInit()  	// Initialize weather file.  Displays any error message
 // also uses: Top.tp_wfName [,.isDT]
 // returns non-RCOK if error, message already issued.
 {
-	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName, WRN);	// open wthr file and option TDV file
-															// init WFILE object msg if error.
+	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName);	// open wthr file and option TDV file
+													// init WFILE object, msg if error.
 	if (!rc)
 		rc = Wfile.wf_FillWDYEAR( WRN);
 	return rc;

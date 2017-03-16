@@ -447,19 +447,19 @@ char YACAM::getC( int erOp /*=WRN*/)			// return next character or EOF
 }		// YACAM::getC
 //---------------------------------------------------------------------------
 RC YACAM::toke( 	// return next whitespace/comma delimited token.  decomments, dequotes, deblanks.
-	char* tok, unsigned tokSz,	// token buffer and its size. must be big enuf to hold \0.
-	int erOp /*=WRN*/ )  	// error message action, comments above.
+	char* tok,		// returned: token
+	unsigned tokSz,	// *tok size. must be big enuf to hold \0.
+	int erOp /*=WRN*/,	// error message action, comments above.
+	const char* altBuf /*=NULL*/)		// alternative source (else getC())
 // and option bit(s): YAC_EOFOK: issue no error message at clean EOF.
 
-// returns RCOK ok, RCBAD2 at clean eof before token, RCBAD unexpected eof or buffer overrun (msg issued per erOp).
 // Uses getC function (above).
 // DO NOT INTERMIX with random i/o here without adding code to manage mFilO and/or bufI.
 
 // Features: scans over c-style /*...*/ comments and includes ws in "ed or 'ed tokens.
 //   Old examples: {  126.54          } yields {126.54}
 //                 { /* comment */124 }        {124}
-//	           { 12/*comment*/4   }        {124}     (!) <---- NO undone 10-94 -- comment splits token.
-//	           { 12/*comment*/ 4  }        {12},{4}  (2 calls)
+//	           { 12/*comment*/4  }        {12},{4}  (2 calls)
 //	           { "  124"          }        {124}
 //	           { "12""4"          }        {124}
 //	           { "12" "4"         }        {12},{4}  (2 calls)
@@ -467,7 +467,7 @@ RC YACAM::toke( 	// return next whitespace/comma delimited token.  decomments, d
 //	           { "'"124'"'        }        {'124"}
 //
 //   commas added 10-94 with intent of making spreadsheet files readable:
-//	comma in token (not quoted nor commented) terminates token.
+//	 comma in token (not quoted nor commented) terminates token.
 //      comma before token returns null token.
 //      spaces, tabs, 1 comma gobbled after token.
 //
@@ -476,6 +476,11 @@ RC YACAM::toke( 	// return next whitespace/comma delimited token.  decomments, d
 //   C /*..*/ comments changed 10-94 to terminate token like whitespace (passing comma)
 //
 // from xiochar.cpp:cToken, 10-94, before comma and comment changes.
+
+// returns RCOK ok, tok set
+//         RCEOF at clean eof before token
+//         RCBAD unexpected eof or buffer overrun (msg issued per erOp).
+
 {
 //---Action/state table: specifies action & new state per cur state & char type
 
@@ -523,18 +528,27 @@ state	    -------- -------- -------- -------- -------- -------- -------- -------
 /* SQT */ { rcc+SQT, rcc+SQT, rcc+SQT, rcc+SQT, rcc+SQT, scn+TOK, rcc+SQT, rcc+SQT, efr     }
 };
 
-	short overrun = 0;		// 0 ok; non-0 = token buffer overrun (scan continues, msg at return)
-	short st = LWS;		// init state
-	register unsigned toki = 0;	// no returned chars yet
+	int overrun = 0;	// 0 ok; non-0 = token buffer overrun (scan continues, msg at return)
+	int st = LWS;		// init state
+	unsigned toki = 0;	// no returned chars yet
+	int iC = 0;			// input char idx
 	mErOp = erOp;		// communicate error action to errFl
 
 	while (1)			// loop until complete token or EOF
 	{
 		// get and classify character
-		char c = getC(erOp); 			// get next character
+		char c;
+		if (altBuf)
+		{	c=altBuf[ iC];
+			if (c = '\0')
+				c=EOF;
+		}
+		else
+			c = getC(erOp); 			// get next character
+		iC++;
 		int ct;  			// character type
 		if (c=='\r' || c=='\n') ct=0;		// tentatively end C++ //comment at \r so lineNo not ++'d til next token 10-94
-		else if (isspaceW(c))    ct=1;		// determine char type. see also space-tabs distinction in pcx case.
+		else if (isspaceW(c))   ct=1;		// determine char type. see also space-tabs distinction in pcx case.
 		else if (c=='/')        ct=2;
 		else if (c=='*')        ct=3;
 		else if (c=='\"')       ct=4;
@@ -570,14 +584,14 @@ chkfull:
 				break;			// continue in all cases
 
 			case efo:
-				*(tok + toki) = '\0';	// ok EOF, before start of token. store terminull.
-				if (!(erOp & YAC_EOFOK))		// option bit suppresses this error message only
+				*(tok + toki) = '\0';		// ok EOF, before start of token. store terminull.
+				if (!(erOp & YAC_EOFOK))	// option bit suppresses this error message only
 					errFlLn((const char *)MH_I0109);	// cond'l msg per erOp (via mErOp), with "Unexpected end of file."
 				return RCBAD2;							// unique return code for clean eof
 
 			case efr:
 				*(tok + toki) = '\0';	// premature EOF. store terminull.
-				errFlLn((const char *)MH_I0109);	// cond'l error message with "Unexpected end of file.", 2nd use.
+				errFlLn((const char *)MH_I0109);	// cond'l error message with "Unexpected end of file."
 				return RCBAD;						// error return
 
 			case pcx:
@@ -869,9 +883,15 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 		{
 			// get token
 			char tok[ 256];				// token buffer
+#if 0
+			experiment, 3-16-2017
+			rc = toke( tok, sizeof( tok), erOp, pLn);
+			if (rc)
+				return RCBAD;
+#else
 			if (!strxtok( tok, pLn, ",", FALSE))
 				return RCBAD;		// out of tokens
-			strDeQuote( tok);
+#endif
 			erOp &= ~YAC_EOFOK;				// after first token clear no-message-on-eof option bit
 			strTrim( tok);
 
@@ -889,9 +909,11 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 
 			  case 'C': 				     	// string to *p
 				if (strlen( tok) >= size)	// if too long, issue message, truncate, continue
-					errFlLn( "Overlong string will be truncated to %d characters (from %d):\n    \"%s\".",
+				{	errFlLn( "Overlong string will be truncated to %d characters (from %d):\n    \"%s\".",
 							 (int)size-1, (int)strlen(tok), tok );
-				strncpy0( (char *)p, tok, size-1);			// store string, truncating if overlong
+					tok[ size-1] = '\0';		// truncate;
+				}
+				strDeQuote( (char *)p, tok);
 				break;
 
 			  case 'D':
@@ -984,8 +1006,8 @@ RC cdecl YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mP
 	msgI( WRN, buf, sizeof( buf), NULL, s, ap);	// retrieve disk text if s is handle
 												// format args into it to form text to insert in our msg
 	return err( 						// conditionally issue message, rmkerr.cpp or errdmy.cpp.
-			   mErOp | NOPREF,			// pass error action, say do not prefix "Error" " to our text
-			   (char *)MH_I0118,		// "Error in %s %s near line %d:\n  %s"
+			   mErOp,					// ERR, WRN, ...
+			   (char *)MH_I0118,		// "%s '%s' (near line %d):\n  %s"
 			   mWhat,  mPathName ? mPathName : "bug",  mLineNo,  buf );
 }
 //----------------------------------------------------------------------------

@@ -470,6 +470,7 @@ typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record stru
 inline void IncP( void **pp, int b) { *pp = (void *)((char*)(*pp) + b); }
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
 struct RXPORTINFO;
+namespace Pumbra { class Penumbra; }
 
 #ifdef WINorDLL
   // control of scattered code for returning file names used via a cne() argument.
