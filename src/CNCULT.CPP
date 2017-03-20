@@ -2034,7 +2034,7 @@ static CULT shadexT[] = //------ SHADEX cmd RAT Entry table, used from cnTopCult
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   shStarCkf),
 CULT( "sxMounting",  DAT,   SXG( MOUNTING),  0,       0, VEOI,   TYCH,  0,      C_MOUNTCH_SITE, N, N),
 CULT( "sxVertices",  DAT,   SXG( VRTINP),    ARRAY,   0, VEOI,   TYFL,  0,      0.f,    v DIM_POLYGONXYZ,  N),
-CULT( "endXSHADE",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT( "endSHADEX",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// shadeT
 

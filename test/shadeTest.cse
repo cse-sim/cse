@@ -1,0 +1,99 @@
+
+#if 0
+#redefine INFILM (1.461-.903)        //interior film, e = 0.9, convective only
+                                     //see appendix D
+#define WinINFILM (1.461)            //window interior film
+#redefine WALEXF 5.158               //wall exterior film, emissivity = 0.9
+#redefine WINEXF 3.697               //window exterior film, emissivity = 0.9
+#define INABSORP 0.9
+#define ABSORP 0.5
+#define SURFMODEL forward_difference
+#define WINH 4
+#define WINW 3
+#define OHDPTH 2
+#define COOLTEMP 75
+#define JAN4REP  0                 //1 for hourly reports, 0 otherwise
+#define JAN4NAME "600jan4.csv"
+#define MAR5REP  0                 //1 for hourly reports, 0 otherwise
+#define MAR5NAME "mar5s.csv"
+#define JUL27REP 0                 //1 for hourly reports, 0 otherwise
+#define JUL27NAME "600jul27s.csv"
+#endif
+
+#if 0
+dbgPrintMaskC = 8
+dbgPrintMask = $dayofyear == 191 ? 64 : 0
+#endif
+
+ repHdrL="1Z Test"
+ repHdrR=""
+ repTestPfx = "! "
+ WfName= "Boulder.epw"
+//  WfName= "CTZ12S13B.CSW"
+//  tdvfName = "test2x.tdv"
+ BEGDay=Jan 1                     //
+ ENDDay=Dec 31                    //
+ ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ Jan1DOW=Tue
+ wuDays=30                        //
+ nSubSteps=10                     //
+ skyModel=anisotropic             //
+ windf = .25
+ 
+ bldgAzm=0
+ elevation=0
+ DT=Yes
+
+ DELETE HOLIDAY "New Year's Day"
+ DELETE HOLIDAY "M L King Day"
+ DELETE HOLIDAY "President's Day"
+ DELETE HOLIDAY "Memorial Day"
+ DELETE HOLIDAY "Fourth of July"
+ DELETE HOLIDAY "Labor Day"
+ DELETE HOLIDAY "Columbus Day"
+ DELETE HOLIDAY "Veterans Day"
+ DELETE HOLIDAY "Thanksgiving"
+ DELETE HOLIDAY "Christmas"
+
+ METER MtrElec;
+
+ PVARRAY   "pvarray 1"  
+   pvDCSysSize = 2                      // Rated array output, kW
+   pvModuleType = "Standard"
+   pvArrayType = "FixedOpenRack"
+   pvMounting = Building
+   pvVertices = 0, 0, 15,   20, 0, 15,  20, 7.07, 22.07,  0, 7.07, 22.07
+   
+   // pvTilt = 45                     // Array tilt (0=H, 90=V), deg
+   // pvAzm = 180                          // Array azimuth (0=N, 90=E, ...), deg
+   pvInverterEff = 0.96                 // Inverter efficiency at full load, frac
+   pvElecMtr = "MtrElec"                // Electric meter to report results to
+
+SHADEX Tree
+   sxMounting = Site
+   sxVertices = 0,-100,0,  20,-100,0,  20,-100,150,  0,-100, 150
+
+DELETE Report EB
+
+REPORT rpType=MTR rpMeter=MtrElec rpFreq=month
+
+REPORT rpType=UDT rpFreq=hour rpDayBeg = Jan 1    rpDayEnd = Dec 31 rpCPL=88
+		reportcol colVal=$Month   colWid = 3 colHead="Mon"
+		reportcol colVal=$dayofmonth colWid = 3 colHead="Day"
+		reportcol colVal=$Hour   colWid = 2 colHead="Hr"
+		reportcol colVal=@Top.iHrST  colWid = 4 colHead="HrSt"
+        reportcol colVal=@Top.radBeamHrAv  colHead="radBeam"
+        reportcol colVal=@Top.radDiffHrAv  colHead="radDiff"
+		reportcol colVal=@PVARRAY[ 1].fBeam colHead="FBeam"
+		reportcol colVal=@PVARRAY[ 1].poa   colHead="POASlr"
+endReport
+
+
+ RUN
+
+ UNSET bldgAzm
+ bldgAzm = 30
+
+ RUN
+
+ $EOF
