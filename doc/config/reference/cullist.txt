@@ -1,5 +1,5 @@
 
-CSE 0.817 for Win32 console
+CSE 0.828 for Win32 console
 Command line: -c
 
 Top
@@ -13,6 +13,7 @@ Top
    skipDayStart
    skipDayStep
    wfName
+   TDVfName
    elevation
    refTemp
    refRH
@@ -32,6 +33,7 @@ Top
    bldgAzm
    skymodel
    skymodelLW
+   exShadeModel
    dhwModel
    humMeth
    dflExH
@@ -556,7 +558,30 @@ pvarray    Parent: Top
    pvInverterEff
    pvSysLosses
    pvUsePVWatts
+   pvMounting
+   pvVertices
    endPVARRAY
+
+
+battery    Parent: Top
+   btMeter
+   btEndUse
+   btChgEff
+   btDschgEff
+   btMaxCap
+   btInitSOE
+   btInitCycles
+   btMaxChgPwr
+   btMaxDschgPwr
+   btChgReq
+   btUseUsrChg
+   endBATTERY
+
+
+shadex    Parent: Top
+   sxMounting
+   sxVertices
+   endXSHADE
 
 
 airHandler    Parent: Top
