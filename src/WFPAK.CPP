@@ -1762,16 +1762,15 @@ RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
 
 	// initial tag
 	rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( T1), _C( T2), NULL);
-	const char* TDVFileTag = "TDV Data (TDV/Btu)";
-	if (!strMatch( T1, TDVFileTag))
-		rc =  yacTDV->errFlLn( "Incorrect first item \"%s\" -- expected \"%s\"",
-				T1, TDVFileTag);
+	rc |= yacTDV->checkExpected( T1, "TDV Data (TDV/Btu)");
 	if (!rc)
 		// time stamp
 		rc = yacTDV->getLineCSV( erOp, 0, "C", _C( wf_TDVFileTimeStamp), NULL);
 	if (!rc)
-		// title
+	{	// title
 		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( wf_TDVFileTitle), _C( T2), NULL);
+		rc |= yacTDV->checkExpected( T2, "Hour");
+	}
 	if (!rc)
 		// column heads (ignored)
 		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C(T1), _C( T2), NULL);

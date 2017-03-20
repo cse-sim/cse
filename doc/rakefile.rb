@@ -29,7 +29,7 @@ if PANDOC_VERSION != "1.17.2"
   puts "This build tool requires pandoc 1.17.2"
   puts "Please uninstall your current pandoc via Windows"
   puts "'Add and Remove Programs' and then install"
-  puts "Pandco 1.17.2 via the *.msi file from here:"
+  puts "Pandoc 1.17.2 via the *.msi file from here:"
   puts "https://github.com/jgm/pandoc/releases"
   exit(1)
 end

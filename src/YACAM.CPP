@@ -366,7 +366,7 @@ RC YACAM::putBytes(     // random access using buffer in object -- use for short
 //===========================================================================
 //  string (sequential) write
 //---------------------------------------------------------------------------
-RC cdecl YACAM::printf( 	// "printf" to file with implicit "WRN" error action
+RC YACAM::printf( 	// "printf" to file with implicit "WRN" error action
 
 	const char *fmt, 		// string to output, max 512 chars after insertion of arguments
 	... )			// printf-like arguments as required by "fmt"
@@ -376,7 +376,7 @@ RC cdecl YACAM::printf( 	// "printf" to file with implicit "WRN" error action
 	return vprintf( WRN, fmt, ap);
 }
 //---------------------------------------------------------------------------
-RC cdecl YACAM::printf( 	// "printf" to file
+RC YACAM::printf( 	// "printf" to file
 
 	int erOp, 		// error action: WaRN, ABorT, IGNore, etc as commented above.
 	const char *fmt, 		// string to output, max 512 chars after insertion of arguments
@@ -447,10 +447,12 @@ char YACAM::getC( int erOp /*=WRN*/)			// return next character or EOF
 }		// YACAM::getC
 //---------------------------------------------------------------------------
 RC YACAM::toke( 	// return next whitespace/comma delimited token.  decomments, dequotes, deblanks.
-	char* tok,		// returned: token
-	unsigned tokSz,	// *tok size. must be big enuf to hold \0.
+	char* tok,			// returned: token
+	unsigned tokSz,		// *tok size. must be big enuf to hold \0.
 	int erOp /*=WRN*/,	// error message action, comments above.
-	const char* altBuf /*=NULL*/)		// alternative source (else getC())
+	const char** ppBuf /*=NULL*/)	// alternative source (else getC())
+									// returned updated if used
+									// >> not tested, 3-2017
 // and option bit(s): YAC_EOFOK: issue no error message at clean EOF.
 
 // Uses getC function (above).
@@ -485,29 +487,29 @@ RC YACAM::toke( 	// return next whitespace/comma delimited token.  decomments, d
 //---Action/state table: specifies action & new state per cur state & char type
 
 // actions (hi bits in asTab entries)
-#define scn 0x00	// save current char and go to next
-#define rsc 0x10	// return saved char, look at current again
-#define rcc 0x20	// return current char and go to next
-#define pcx 0x30	// pass spaces, tabs, 1 comma and xit -- added 10-94.
-#define xit 0x40	// add terminating '\0' to token, return
-#define efo 0x50	// "clean" eof (before token) -- added 10-94
-#define efr 0x60	// premature EOF, return error
+static const unsigned char scn=0x00;	// save current char and go to next
+static const unsigned char rsc=0x10;	// return saved char, look at current again
+static const unsigned char rcc=0x20;	// return current char and go to next
+static const unsigned char pcx=0x30;	// pass spaces, tabs, 1 comma and xit -- added 10-94.
+static const unsigned char xit=0x40;	// add terminating '\0' to token, return
+static const unsigned char efo=0x50;	// "clean" eof (before token) -- added 10-94
+static const unsigned char efr=0x60;	// premature EOF, return error
 
 // new state (lo bits in asTab entries)
-#define LWS 0x00	// leading ws scan
-#define LCB 0x01	// leading comment begin ('/' seen, check for '*' or '/')
-#define LCS 0x02	// leading C comment scan (discard chars until '*')
-#define LCE 0x03	// leading C comment end ('*' seen, check for '/')
-#define LPS 0x04  	// leading C++ comment scan (// seen, discard chars thru end line)
-#define TOK 0x05	// token body (return chars)
-#define TCB 0x06	// token comment beg ('/' in token, check for '*' or '/')
-#define TCS 0x07	// token C comment scan (discard chars until '*')
-#define TCE 0x08	// token C comment end ('*' seen, check for '/')
-#define TPS 0x09  	// token C++ comment scan (// seen, discard chars thru end line)
-#define DQT 0x0a	// " enclosed token (return chars until ")
-#define SQT 0x0b	// ' enclosed token (return chars until ')
+static const unsigned char LWS=0x00;	// leading ws scan
+static const unsigned char LCB=0x01;	// leading comment begin ('/' seen, check for '*' or '/')
+static const unsigned char LCS=0x02;	// leading C comment scan (discard chars until '*')
+static const unsigned char LCE=0x03;	// leading C comment end ('*' seen, check for '/')
+static const unsigned char LPS=0x04;  	// leading C++ comment scan (// seen, discard chars thru end line)
+static const unsigned char TOK=0x05;	// token body (return chars)
+static const unsigned char TCB=0x06;	// token comment beg ('/' in token, check for '*' or '/')
+static const unsigned char TCS=0x07;	// token C comment scan (discard chars until '*')
+static const unsigned char TCE=0x08;	// token C comment end ('*' seen, check for '/')
+static const unsigned char TPS=0x09;  	// token C++ comment scan (// seen, discard chars thru end line)
+static const unsigned char DQT=0x0a;	// " enclosed token (return chars until ")
+static const unsigned char SQT=0x0b;	// ' enclosed token (return chars until ')
 
-static unsigned char asTab[12][9] = 	// [state][ct]
+static const unsigned char asTab[12][9] = 	// [state][ct]
 {
 /*          10-94   other
      ct-->  \r \n   white sp     /       *        "        '        ,      other     EOF
@@ -531,21 +533,21 @@ state	    -------- -------- -------- -------- -------- -------- -------- -------
 	int overrun = 0;	// 0 ok; non-0 = token buffer overrun (scan continues, msg at return)
 	int st = LWS;		// init state
 	unsigned toki = 0;	// no returned chars yet
-	int iC = 0;			// input char idx
 	mErOp = erOp;		// communicate error action to errFl
+	const char* srcTy = ppBuf ? "line" : "file";
 
 	while (1)			// loop until complete token or EOF
 	{
 		// get and classify character
 		char c;
-		if (altBuf)
-		{	c=altBuf[ iC];
-			if (c = '\0')
+		if (ppBuf)
+		{	c= **ppBuf;
+			(*ppBuf)++;
+			if (c == '\0')
 				c=EOF;
 		}
 		else
 			c = getC(erOp); 			// get next character
-		iC++;
 		int ct;  			// character type
 		if (c=='\r' || c=='\n') ct=0;		// tentatively end C++ //comment at \r so lineNo not ++'d til next token 10-94
 		else if (isspaceW(c))   ct=1;		// determine char type. see also space-tabs distinction in pcx case.
@@ -586,12 +588,12 @@ chkfull:
 			case efo:
 				*(tok + toki) = '\0';		// ok EOF, before start of token. store terminull.
 				if (!(erOp & YAC_EOFOK))	// option bit suppresses this error message only
-					errFlLn((const char *)MH_I0109);	// cond'l msg per erOp (via mErOp), with "Unexpected end of file."
-				return RCBAD2;							// unique return code for clean eof
+					errFlLn((const char *)MH_I0109,srcTy);	// cond'l msg per erOp (via mErOp), with "Unexpected end of line/file."
+				return RCEOF;							// unique return code for clean eof
 
 			case efr:
 				*(tok + toki) = '\0';	// premature EOF. store terminull.
-				errFlLn((const char *)MH_I0109);	// cond'l error message with "Unexpected end of file."
+				errFlLn((const char *)MH_I0109,srcTy);	// cond'l error message with "Unexpected end of line/file."
 				return RCBAD;						// error return
 
 			case pcx:
@@ -611,7 +613,7 @@ chkfull:
 			case xit:
 				*(tok + toki) = '\0';	// exit. store terminull.
 				if (!overrun)				// if ok
-					return RCOK;				// good return
+					return RCOK;			// good return
 				return errFlLn((char *)MH_I0110);	// conditional error message with "Token too long.", return RCBAD
 			default:
 				;
@@ -623,19 +625,153 @@ chkfull:
 	/*NOTREACHED */
 }		// YACAM::toke
 //---------------------------------------------------------------------------
-#if 0
-0 int YACAM::line(		// CWString Line() variant
-0 	CWString& sLine,
-0 	int erOp /*=WRN*/)
-0 // returns -1 if clear EOF before 1st char
-0 //         else >= 0 = line length
-0 {
-0 	char t[ 2000];
-0 	int ret = line( t, sizeof( t), erOp);
-0 	sLine = t;
-0 	return ret;
-0 }		// YACAM::line
+RC YACAM::tokeCSV( 	// return next comma delimited token.  decomments, dequotes, deblanks.
+    char* tok, 	unsigned tokSz,	// token buffer and its size. must be big enuf to hold \0.
+    int erOp /*=WRN*/, 	// error message action, comments above.
+						// and option bit(s): YAK_EOFOK: issue no error message at clean EOF.
+	const char** ppBuf /*=NULL*/)		// alternative text source (else getC())
+										//  *ppBuf returned updated if used
+
+// DO NOT INTERMIX with random i/o here without adding code to manage mFilO and/or bufI.
+
+// returns RCOK iff success,
+//	   RCEOF at clean eof before token
+//     RCBAD unexpected eof or buffer overrun (msg issued per erOp).
+{
+//---Action/state table: specifies action & new state per cur state & char type
+
+// actions (hi bits in asTab entries)
+static const unsigned char scn=0x00;	// save current char and go to next
+static const unsigned char rsc=0x10;	// return saved char, look at current again
+static const unsigned char rcc=0x20;	// return current char and go to next
+static const unsigned char rcw=0x30;	// return current char (retain WS) and go to next
+static const unsigned char xit=0x40;	// add terminating '\0' to token, return
+static const unsigned char efo=0x50;	// "clean" eof (before token)
+static const unsigned char efr=0x60;	// premature EOF, return error
+
+// state (lo bits in asTab entries)
+//   non-quoted tokens returned trimmed
+//   WS retained in quoted
+//   "" returns " within quoted
+//   quoted multi-line tokens may not be handled correctly
+static const unsigned char LWS=0x00;	// leading ws scan
+static const unsigned char TOK=0x01;	// token body (return chars)
+static const unsigned char DQS=0x02;	// leading " during LWS
+static const unsigned char DQT=0x03;	// " enclosed token (return chars until ")
+static const unsigned char DQX=0x04;	// " found within DQT, check for double quote
+
+// see comments below re currently unnec char types
+#if 1
+static const unsigned char asTab[ 5][9] = 	// [state][ct]
+{/*                  other
+      ct--> \n       white sp     /       *        "        '        ,      other     EOF
+ state	    -------- -------- -------- -------- -------- -------- -------- -------- -------- */
+/* LWS */ { scn+LWS, scn+LWS, rcc+TOK, rcc+TOK, scn+DQS, rcc+TOK, xit,     rcc+TOK, efo     },
+/* TOK */ { xit    , rcc+TOK, rcc+TOK, rcc+TOK, scn+DQS, rcc+TOK, xit,	   rcc+TOK, xit     },
+/* DQS */ { rcw+DQT, rcw+DQT, rcw+DQT, rcw+DQT, rcc+TOK, rcw+DQT, rcw+DQT, rcw+DQT, efr     },
+/* DQT */ { rcw+DQT, rcw+DQT, rcw+DQT, rcw+DQT, scn+DQX, rcw+DQT, rcw+DQT, rcw+DQT, efr     },
+/* DQX */ { xit,     rcc+TOK, rcc+TOK, rcc+TOK, rcc+DQT, rcc+TOK, xit,     rcc+TOK, xit     },
+};
+#else
+static const unsigned char asTab[ 5][9] = 	// [state][ct]
+{/*                  other
+      ct--> \n       white sp     /       *        "        '        ,      other     EOF
+ state	    -------- -------- -------- -------- -------- -------- -------- -------- -------- */
+/* LWS */ { scn+LWS, scn+LWS, rcc+TOK, rcc+TOK, scn+DQS, rcc+TOK, xit,     rcc+TOK, efo     },
+/* TOK */ { xit    , rcc+TOK, rcc+TOK, rcc+TOK, scn+DQS, rcc+TOK, xit,	   rcc+TOK, efo     },
+/* DQS */ { rcw+DQT, rcw+DQT, rcw+DQT, rcw+DQT, rcc+TOK, rcw+DQT, rcw+DQT, rcw+DQT, efr     },
+/* DQT */ { rcw+DQT, rcw+DQT, rcw+DQT, rcw+DQT, scn+DQX, rcw+DQT, rcw+DQT, rcw+DQT, efr     },
+/* DQX */ { xit,     rcc+TOK, rcc+TOK, rcc+TOK, rcc+DQT, rcc+TOK, xit,     rcc+TOK, efo     },
+};
 #endif
+
+	int overrun = 0;	// 0 ok; non-0 = token buffer overrun (scan continues, msg at return)
+	int st = LWS;		// init state
+	unsigned toki = 0;		// no returned chars yet
+	unsigned tokiEnd = 0;	// last+1 char to be returned (re trailing WS trim)
+	mErOp = erOp;			// communicate error action to errFl
+	const char* srcTy = ppBuf ? "line" : "file";
+
+	while (1)			// loop until complete token or EOF
+	{  // get and classify character
+	   // Note extra char types inherited from toke()
+	   //   retained for possible future use, 6-21-05
+		char c;
+		if (ppBuf)
+		{	c= **ppBuf;
+			if (c == '\0')
+				c=EOF;		// treat end of string as end of file
+							//  do not advance beyond end
+			else
+				(*ppBuf)++;
+		}
+		else
+			c = getC(erOp); 			// get next character
+		int ct = c == '\n'            ? 0
+			   : isspaceW( c)         ? 1
+			   : c == '/'             ? 2
+			   : c == '*'             ? 3
+			   : c == '\"'            ? 4
+			   : c == '\''            ? 5
+			   : c == ','             ? 6
+			   : c == EOF             ? 8
+			   :                        7;
+
+   // perform action for char type in state
+		char savc = 0;
+		int reDo = 0;
+		do
+		{	reDo = 0;			// normally don't redo action switch
+			char storc = 0;		// character to be stored to tok[] if nz
+			BOOL bKeepWS = FALSE;	// TRUE iff token WS should be retained
+			int action = asTab[ st][ ct] & 0xF0;
+			switch( action)
+			{	case scn:	savc = c;		// save char and go on
+							break;
+
+				case rsc:	storc = savc;	// return saved char, redo c in new state
+							reDo++;
+							break;
+
+				case rcc:	storc = c;		// return current char
+							break;
+
+				case rcw:	storc = c;
+							bKeepWS = TRUE;
+							break;
+
+				case efo:  	tok[ tokiEnd] = '\0';	// ok EOF, before start of token. store terminull.
+							if (!(erOp & YAC_EOFOK))	// option bit suppresses this error message only
+								errFlLn((const char *)MH_I0109, srcTy);	// cond'l msg per erOp (via mErOp), with "Unexpected end of file."
+							return RCEOF;								// unique return code for clean eof
+
+				case efr:   tok[ tokiEnd] = '\0';	// premature EOF. store terminull.
+							errFlLn( (const char *)MH_I0109, srcTy);	// cond'l error message with "Unexpected end of file."
+							return RCBAD;				// error return
+
+				case xit:	tok[ tokiEnd] = '\0';	// exit. store terminull.
+							if (overrun)			// if overrun
+            					return errFlLn( (const char *)MH_I0110);	// Token too long
+							return RCOK;		// good return
+				default: ;
+			}
+
+			if (storc)
+			{	if (toki < tokSz-1)		// if space for char + \0
+				{	tok[ toki++] = storc;
+					if (bKeepWS || !isspaceW( tok[ toki-1]))
+						tokiEnd = toki;		// remember last pos of token
+				}
+				else
+					overrun++;		// out of space, discard char and continue
+			}
+
+			st = asTab[ st][ ct] & 0x0F;	// new state (asTab lo bits)
+
+		} while (reDo);			// action loop
+    }					// character loop
+    /*NOTREACHED */
+}		// YACAM::tokeCSV
 //---------------------------------------------------------------------------
 int YACAM::line( 	// return current line
     char* line,	int lineSz,	// token buffer and its size. must be big enuf to hold \0.
@@ -688,129 +824,6 @@ int YACAM::scanLine(			// scan file for line match
 	}
 	return ret;
 }		// YACAM::scanLine
-//---------------------------------------------------------------------------
-#if 0
-int YACAM::TokeCSV( 	// return next comma delimited token.  decomments, dequotes, deblanks.
-    char *tok, 	int tokSz,	// token buffer and its size. must be big enuf to hold \0.
-    int erOp /*=WRN*/ )  	// error message action, comments above.
-				// and option bit(s): CWR_EOFOK: issue no error message at clean EOF.
-// returns 0 if ok,
-//	   1 at clean eof before token
-//    -1 unexpected eof or buffer overrun (msg issued per erOp).
-// Uses getC function (above).
-// DO NOT INTERMIX with random i/o here without adding code to manage mFilO and/or bufI.
-{
-//---Action/state table: specifies action & new state per cur state & char type
-
-// actions (hi bits in asTab entries)
-const unsigned char scn=0x00;	// save current char and go to next
-const unsigned char rsc=0x10;	// return saved char, look at current again
-const unsigned char rcc=0x20;	// return current char and go to next
-const unsigned char rcw=0x30;	// return current char (retain WS) and go to next
-const unsigned char xit=0x40;	// add terminating '\0' to token, return
-const unsigned char efo=0x50;	// "clean" eof (before token)
-const unsigned char efr=0x60;	// premature EOF, return error
-
-// state (lo bits in asTab entries)
-//   non-quoted tokens returned trimmed
-//   WS retained in quoted
-//   "" returns " within quoted
-//   quoted multi-line tokens may not be handled correctly
-const unsigned char LWS=0x00;	// leading ws scan
-const unsigned char TOK=0x01;	// token body (return chars)
-const unsigned char DQS=0x02;	// leading " during LWS
-const unsigned char DQT=0x03;	// " enclosed token (return chars until ")
-const unsigned char DQX=0x04;	// " found within DQT, check for double quote
-
-// see comments below re currently unnec char types
-static unsigned char asTab[ 5][9] = 	// [state][ct]
-{/*                  other
-      ct--> \n       white sp     /       *        "        '        ,      other     EOF
- state	    -------- -------- -------- -------- -------- -------- -------- -------- -------- */
-/* LWS */ { scn+LWS, scn+LWS, rcc+TOK, rcc+TOK, scn+DQS, rcc+TOK, xit,     rcc+TOK, efo     },
-/* TOK */ { xit    , rcc+TOK, rcc+TOK, rcc+TOK, scn+DQS, rcc+TOK, xit,	   rcc+TOK, efo     },
-/* DQS */ { rcw+DQT, rcw+DQT, rcw+DQT, rcw+DQT, rcc+TOK, rcw+DQT, rcw+DQT, rcw+DQT, efr     },
-/* DQT */ { rcw+DQT, rcw+DQT, rcw+DQT, rcw+DQT, scn+DQX, rcw+DQT, rcw+DQT, rcw+DQT, efr     },
-/* DQX */ { xit,     rcc+TOK, rcc+TOK, rcc+TOK, rcc+DQT, rcc+TOK, xit,     rcc+TOK, efo     },
-};
-
-	int overrun = 0;	// 0 ok; non-0 = token buffer overrun (scan continues, msg at return)
-	int st = LWS;		// init state
-	int toki = 0;		// no returned chars yet
-	int tokiEnd = 0;	// last+1 char to be returned (re trailing WS trim)
-
-	while (1)			// loop until complete token or EOF
-	{  // get and classify character
-	   // Note extra char types inherited from Toke()
-	   //   retained for possible future use, 6-21-05
-		char c = GetC( erOp); 			// get next character
-		int ct = (c=='\n')            ? 0
-			   : isspaceW( c)         ? 1
-			   : c == '/'             ? 2
-			   : c == '*'             ? 3
-			   : c == '\"'            ? 4
-			   : c == '\''            ? 5
-			   : c == ','             ? 6
-			   : c == EOF             ? 8
-			   :                        7;
-
-   // perform action for char type in state
-		char savc = 0;
-		int reDo = 0;
-		do
-		{	reDo = 0;			// normally don't redo action swtch
-			char storc = 0;		// character to be stored to tok[] if nz
-			BOOL bKeepWS = FALSE;	// TRUE iff token WS should be retained
-			int action = asTab[ st][ ct] & 0xF0;
-			switch( action)
-			{	case scn:	savc = c;		// save char and go on
-							break;
-
-				case rsc:	storc = savc;	// return saved char, redo c in new state
-							reDo++;
-							break;
-
-				case rcc:	storc = c;		// return current char
-							break;
-
-				case rcw:	storc = c;
-							bKeepWS = TRUE;
-							break;
-
-				case efo:  	tok[ tokiEnd] = '\0';	// ok EOF, before start of token. store terminull.
-							if (!(erOp & CWR_EOFOK))		// option bit suppresses this error message only
-								ErrMsg( erOp|CWR_LINENO, "Unexpected end of file in");
-							return 1;				// unique return code for clean eof
-
-				case efr:   tok[ tokiEnd] = '\0';	// premature EOF. store terminull.
-							ErrMsg( erOp|CWR_LINENO, "Unexpected end of file in");
-							return -1;				// error return
-
-				case xit:	tok[ tokiEnd] = '\0';	// exit. store terminull.
-							if (!overrun)			// if ok
-								return 0;			// good return
-            				return ErrMsg( erOp|CWR_LINENO, "Token too long in");
-
-				default: ;
-			}
-
-			if (storc)
-			{	if (toki < tokSz-1)		// if space for char + \0
-				{	tok[ toki++] = storc;
-					if (bKeepWS || !isspaceW( tok[ toki-1]))
-						tokiEnd = toki;		// remember last pos of token
-				}
-				else
-					overrun++;		// out of space, discard char and continue
-			}
-
-			st = asTab[ st][ ct] & 0x0F;	// new state (asTab lo bits)
-
-		} while (reDo);			// action loop
-    }					// character loop
-    /*NOTREACHED */
-}		// YACAM::TokeCSV
-#endif
 //---------------------------------------------------------------------------
 // "control string" chars for YACAM::getLineCSV. Each letter uses a pointer from variable arg list
 //	I L F:	short integer, long integer, float.
@@ -883,10 +896,10 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 		{
 			// get token
 			char tok[ 256];				// token buffer
-#if 0
-			experiment, 3-16-2017
-			rc = toke( tok, sizeof( tok), erOp, pLn);
-			if (rc)
+#if 1
+			// experiment, 3-16-2017
+			rc = tokeCSV( tok, sizeof( tok), erOp, &pLn);
+			if (rc != RCOK && rc != RCEOF)
 				return RCBAD;
 #else
 			if (!strxtok( tok, pLn, ",", FALSE))
@@ -909,11 +922,11 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 
 			  case 'C': 				     	// string to *p
 				if (strlen( tok) >= size)	// if too long, issue message, truncate, continue
-				{	errFlLn( "Overlong string will be truncated to %d characters (from %d):\n    \"%s\".",
+				{	errFlLn( "Overlong string will be truncated to %d characters (from %d):\n    '%s'.",
 							 (int)size-1, (int)strlen(tok), tok );
 					tok[ size-1] = '\0';		// truncate;
 				}
-				strDeQuote( (char *)p, tok);
+				strcpy( (char *)p, tok);		// cannot overrun
 				break;
 
 			  case 'D':
@@ -978,16 +991,26 @@ x				else							// has digit
 // check for NULL at end arg list: insures that control string and arg list match.
 	void* pn = va_arg( pp, void *);
 	if (pn)
-		rc = errFlLn("Internal error: Invalid call to YACAM::getLineCSV(): \n    NULL not found at end arg list.\n");
+		rc = errFlLn("Internal error: Invalid call to YACAM::getLineCSV():"
+			         "\n    NULL not found at end arg list.");
 
  	return rc;
 }		// YACAM::getLineCSV
 //---------------------
 #pragma optimize( "", on)
-//============================================================================
-//  YACAM internal error message functions
-//----------------------------------------------------------------------------
-RC cdecl YACAM::errFl( const char *s, ...)		// error message "%s <mWhat> <mPathName>". returns RCBAD.
+//-----------------------------------------------------------------------------
+RC YACAM::checkExpected(		// check match to expected item
+	const char* found,
+	const char* expected)
+{	
+	RC rc = RCOK;
+	if (!strMatch( found, expected))
+		rc = errFlLn( "Incorrect item '%s', expected '%s'",
+				found, expected);
+	return rc;
+}		// YACAM::checkExpected
+//-----------------------------------------------------------------------------
+RC YACAM::errFl( const char *s, ...)		// error message "%s <mWhat> <mPathName>". returns RCBAD.
 {
 	va_list ap;
 	va_start( ap, s);
@@ -998,7 +1021,7 @@ RC cdecl YACAM::errFl( const char *s, ...)		// error message "%s <mWhat> <mPathN
 				buf,  mWhat,  mPathName ? mPathName : "bug") ;
 }
 //----------------------------------------------------------------------------
-RC cdecl YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathName> near line <mLineMo>". returns RCBAD.
+RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathName> near line <mLineMo>". returns RCBAD.
 {
 	va_list ap;
 	va_start( ap, s);

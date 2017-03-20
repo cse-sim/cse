@@ -816,7 +816,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 			{
 			case 'b':    					// -b: batch: do not stop for errors once err file open
 				setBatchMode(TRUE);
-				break;		// set flag in lib\rmkerr.cpp, 4-7-22
+				break;
 
 			case 'q':
 				allProbeNames++;			// -q: display ALL member names
@@ -825,13 +825,13 @@ LOCAL INT cse3( INT argc, const char* argv[])
 				probeNamesFlag++;  			// -p: display user probeable member names
 				break; /*lint+e 616 */
 
-			case 'c':
+			case 'c':				// -c: list all input names (walks cul tree)
 				culDocFlag++;
 				break;
 
-			case 'n':
+			case 'n':				// -n: no warnings on screen
 				warnNoScrn++;
-				break;				// -n: no warnings on screen. added Rob 5-97.
+				break;
 
 #ifdef BINRES	// cnglob.h. rob 11-93
 			case 'r':

@@ -311,9 +311,13 @@ The following are the terms determined from the weather file for internal use, a
 
 **wfName=*string***
 
-Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.
+Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.
 
-(?? Temporarily, backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\cz01.cec"). This will be corrected.).  
+Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\mywthr.epw").  Forward slash (/) may be used in place of backslash without doubling.
+
+  **Units**   **Legal Range**           **Default**   **Required**   **Variability**
+  ----------- ------------------------- ------------- -------------- -----------------
+              file name,path optional                   Yes            constant
 
   **Units**   **Legal Range**           **Default**   **Required**   **Variability**
   ----------- ------------------------- ------------- -------------- -----------------
@@ -399,7 +403,7 @@ Specifies characteristics of ground terrain in the project region.
 
   ------------ ---------------------------------------------------------
   1            ocean or other body of water with at least 5 km
-               unrestriced expanse
+               unrestricted expanse
 
   2            flat terrain with some isolated obstacles (buildings or
                trees well separated)
@@ -442,6 +446,72 @@ Soil diffusivity, used in derivation of ground temperature.  CSE calculates a gr
   ----------- ----------------- ------------- -------------- -----------------
     ft^2^/hr      x > 0          0.025             No             constant
 
+## TOP TDV (Time Dependent Value) Items
+
+CSE supports an optional comma-separated (CSV) text file that provides hourly TDV values for electricity and fuel.  TDV values are read along with the weather file and the values merged with weather data.  Several daily statistics are calculated for use via probes.  The file has no other effect on the simulation.  Only full-year TDV files are supported.
+
+The format of a TDV file is the same as an [IMPORTFILE](#importfile) with the proviso that the 4 line header is not optional and certain header items must have specified values.  In the following table, non-italic items must be provided as shown (with optional quotes).
+
+  -----------------------------------------------------------------------------------------------------
+  Line      Contents                          Notes
+  --------- ------------------------------    --------------------------------------------------------------
+  1         TDV Data (TDV/Btu), *runNumber*   *runNumber* is not checked
+
+  2         *timestamp*                       optionally in quotes\
+                                              accessible via @TOP.TDVFileTimeStamp
+
+  3         *title*, hour                     *title* (in quotes if it contains commas)\
+                                              accessible via @TOP.TDVFileTitle
+
+  4         tdvElec, tdvFuel                  comma separated column names (optionally in quotes)\
+                                              not checked
+
+  5 ..      *valElec*,*valFuel*               comma separated numerical values (8760 or 8784 rows)\
+                                              tdvElec is always in column 1, tdvFuel always in column 2\
+                                              column names in row 4 do not determine order
+ -------------------------------------------------------------------------------------------------------
+
+Example TDV file --
+
+        "TDV Data (TDV/Btu)","001"
+        "Wed 14-Dec-16  12:30:29 pm"
+        "BEMCmpMgr 2019.0.0 RV (758), CZ12, Fuel NatGas", Hour
+        "tdvElec","tdvFuel"
+        7.5638,2.2311
+        7.4907,2.2311
+        7.4478,2.2311
+        7.4362,2.2311
+        7.5255,2.2311
+        7.5793,2.2311
+        7.6151,2.2311
+        7.6153,2.2311
+        7.5516,2.2311
+        (... continues for 8760 or 8784 data lines ...)
+
+Note: additional columns can be included and are ignored.
+
+The following probes are available for accessing TDV data in expressions --
+
+ Probe                         Variability         Description
+ --------------                ------------        ------------------
+ @Weather.tdvElec               Hour               current hour electricity TDV
+ @Weather.tdvFuel               Hour               current hour fuel TDV
+ @Weather.tdvElecPk             Day                current day peak electricity TDV (includes future hours)
+ @Weather.tdvElecAvg            Day                 current day average electricity TDV (includes future hours)
+ @Weather.tdvElecPvPk           Day                previous day peak electricity TDV
+ @Weather.tdvElecAvg01          Day                previous day average electricity TDV
+ @weatherFile.tdvFileTimeStamp  Constant           TDV file timestamp (line 2 of header)
+ @weatherFile.tdvFileTitle      Constant           TDV file title (line 3 of header)
+ @Top.tdvFName                  Constant           TDV file full path
+
+
+**TDVfName=*string***
+
+Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\data\\\\mytdv.tdv").  Forward slash (/) may be used in place of backslash without doubling.
+
+  **Units**   **Legal Range**           **Default**    **Required**   **Variability**
+  ----------- ------------------------- -------------- -------------- -----------------
+              file name, path optional    (no TDV file)          No           constant
 
 ## TOP Report Data Items
 
@@ -511,7 +581,7 @@ Controls invocation of autosizing phase prior to simulation.
 
   **Units**   **Legal Range**   **Default**                            **Required**   **Variability**
   ----------- ----------------- -------------------------------------- -------------- -----------------
-              YES, NO           NO, unless AUTOSIZE commands in input            No             constant
+              YES, NO           NO, unless AUTOSIZE commands in input            No           constant
 
 **auszTol=*float***
 

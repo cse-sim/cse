@@ -1504,10 +1504,10 @@ x			// "   trNx=%g  wrNx=%g  crNx=%g"
 #define MH_I0104  2104	// "Seek error on"  3 uses
 #define MH_I0105  2105	// "Write error on" 2 uses
 #define MH_I0106  2106	// "Read error on"
-#define MH_I0107  2107	// "Unexpected end of file in" 2 uses
+#define MH_I0107  2107	// "Unexpected end of file in"
 #define MH_I0108  2108	// "Writing to file not opened for writing:" 2 uses
 //used with errFlLn
-#define MH_I0109  2109	// "Unexpected end of file." 2 uses
+#define MH_I0109  2109	// "Unexpected end of %s."
 #define MH_I0110  2110	// "Token too long."
 #define MH_I0111  2111	// "Internal error: invalid character '%c' in control string in call to YACAM::get()."
 #define MH_I0112  2112	// "Overlong string will be truncated to %d characters (from %d):\n    \"%s\"."

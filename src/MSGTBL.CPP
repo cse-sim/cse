@@ -38,12 +38,16 @@ MSGTBL far msgTbl[] =		//(far rob 1-92 for BC)
 		"     -Dname  or  -Dname=value   define preprocessor symbol\n"
 		"     -Uname                     undefine preprocessor symbol\n"
 		"     -b     batch: don't await keypress at error\n"
-		"     -n     no warning messages on screen (only in error file)\n"	// added rob 5-97 .485
+		"     -n     no warning messages on screen (only in error file)\n"
 #ifdef BINRES//cndefns.h
 		"     -r     generate basic binary results file\n"
 		"     -h     generate hourly binary results file. Use with -r.\n"
 #endif
 		"     -p     display member names for use in input file 'probe' expressions\n"
+	    "     -q     display all member names, including unprobable\n"
+	    "     -c     display input names\n"
+	    "     -tnn   set test options to nn\n"
+	    "     -x\"s\"  set report test prefix to s\n"
 	},
 { MH_C0002, "C0002: Too many non-switch arguments on command line: %s ..." },
 { MH_C0003, "C0003: No input file name given on command line" },
@@ -1511,13 +1515,13 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_I0101, "I0101: Cannot open" },
 	{ MH_I0102, "I0102: Cannot create" },
 	{ MH_I0103, "I0103: Close error on" },
-	{ MH_I0104, "I0104: Seek error on" },			// 3 uses
-	{ MH_I0105, "I0105: Write error on" }, 		// 2 uses
+	{ MH_I0104, "I0104: Seek error on" },
+	{ MH_I0105, "I0105: Write error on" },
 	{ MH_I0106, "I0106: Read error on" },
-	{ MH_I0107, "I0107: Unexpected end of file in" },			//  2 uses
-	{ MH_I0108, "I0108: Writing to file not opened for writing:" },	//  2 uses
+	{ MH_I0107, "I0107: Unexpected end of file in" },
+	{ MH_I0108, "I0108: Writing to file not opened for writing:" },
 	//used with errFlLn
-	{ MH_I0109, "I0109: Unexpected end of file." },		//  2 uses
+	{ MH_I0109, "I0109: Unexpected end of %s." },	// "line" or "file"
 	{ MH_I0110, "I0110: Token too long." },
 	{ MH_I0111, "I0111: Internal error: invalid character '%c' in control string in call to YACAM::get()." },
 	{ MH_I0112, "I0112: Overlong string will be truncated to %d characters (from %d):\n    \"%s\"." },

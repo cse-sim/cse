@@ -37,13 +37,6 @@
 
 #include <penumbra/penumbra.h>
 
-#define PUMBRAIF
-#if defined PUMBRAIF
-#define PUMBRA( m) (Top.tp_pPumbra->m)
-#else
-static Pumbra::Penumbra pumbra;
-#define PUMBRA( m) (pumbra.m)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // overhang/fin shading
@@ -342,6 +335,8 @@ exit68:  		// come here to exit
 // class SURFGEOMDET -- geometric details for SURFGEOM
 //                      local / hides geometry.h classes
 ///////////////////////////////////////////////////////////////////////////////
+#define PUMBRA( m) (Top.tp_pPumbra->m)		// access to Penumbra GPU shading
+//-----------------------------------------------------------------------------
 class SURFGEOMDET
 {
 friend SURFGEOM;
@@ -764,7 +759,6 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 {
 	RC rc = RCOK;
 
-#if defined( PUMBRAIF)
 	if (!tp_ExshCount())
 	{	tp_PumbraClearIf();		// clear Penumbra data if any
 		return RCOK;
@@ -779,79 +773,33 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 	MRot.Rotate( tp_bldgAzm, -2);	// rotate about z axis
 									//  -2 = right-handed coord system
 
-	int NShade = 0;		// # of shade surfaces
-	int NRec = 0;		// # of receiving surfaces
-
 	// create Penumbra surface model
 	PVARRAY* pPV;
+	int NRec = 0;		// # of receiving surfaces (unused)
+						//  = PVARRAYs with vertices
 	RLUP( PvR, pPV)
 		rc |= pPV->pv_SetupShading( NRec, &MRot);
 
 	SHADEX* pSX;
+	int NShade = 0;		// # of shade surfaces (unused)
 	RLUP( SxR, pSX)
 		rc |= pSX->sx_SetupShading( NShade, &MRot);
 
 	if (!rc)
 		rc = tp_PumbraSetModel();
-#else
 
-	// route Penumbra messages to CSE output
-	//   use pumbra as context even though only one
-	pumbra.setMessageCallback( PemumbraMessageHandler, &pumbra);
-
-	pumbra.clearModel();
-
-	// building rotation
-	//   construct rotation matrix re C_SHADETY_BLDG
-	CT3D MRot( 1);		// rotation matrix
-	MRot.Rotate( tp_bldgAzm, -2);	// rotate about z axis
-									//  -2 = right-handed coord system
-
-	tp_exshNShade = 0;		// # of shade surfaces
-	tp_exshNRec = 0;		// # of receiving surfaces
-
-	// create Penumbra surface model
-	PVARRAY* pPV;
-	RLUP( PvR, pPV)
-		rc |= pPV->pv_SetupShading( tp_exshNRec, &MRot);
-	tp_exshNShade = tp_exshNRec;		// PVARRAYs shade each other
-
-	SHADEX* pSX;
-	RLUP( SxR, pSX)
-		rc |= pSX->sx_SetupShading( tp_exshNShade, &MRot);
-
-	if (!rc && tp_exshNShade > 0)
-	{	if (pumbra.setModel() != Pumbra::PN_SUCCESS)
-			rc |= RCBAD;
-	}
-#endif
 	return rc;
-
 }		// TOPRAT::tp_ExshRunInit
 //-----------------------------------------------------------------------------
 RC TOPRAT::tp_ExshBegHour()		// once-per-hour exterior shading setup
 {
 	RC rc = RCOK;
 
-#if 0
-0 now done per surface
-0	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
-0	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
-0	float azm, cosz;
-0	int sunup = 					// nz if sun above horizon this hour
-0		slsurfhr(dchoriz, Top.iHrST, &verSun, &azm, &cosz);
-0
-0	if (sunup)
-0	{	float alt = kPiOver2 - acos( cosz);
-0		if (pumbra.setSunPosition( azm, alt) != Pumbra::PN_SUCCESS)
-0			rc |= RCBAD;
-0	}
-#endif
+	// all setup done per-surface
 
 	return rc;
 }		// TOPRAT::tp_ExshBegHour
-
-
+//=============================================================================
 
 // shading.cpp end
 

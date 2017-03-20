@@ -707,7 +707,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 
 // TDV file header info
     *f WFLOC wf_TDVFileTimeStamp	// timestamp string
-	*f WFLOC wf_TDVFileTitle		// title string (identifies file CZ, fuel, vintage, )
+	*f ANAME wf_TDVFileTitle		// title string (identifies file CZ, fuel, vintage, )
 
  //internal
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)

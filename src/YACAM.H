@@ -57,8 +57,8 @@ class YACAM
     RC putBytes( const char* data, int count, long filO, int erOp=WRN); 	// returns RCOK if ok
 
     // string sequential write
-    RC cdecl printf( const char *fmt, ...);		// erAct=WRN implict
-    RC cdecl printf( int erOp, const char *fmt, ...);
+    RC printf( const char *fmt, ...);		// erAct=WRN implict
+    RC printf( int erOp, const char *fmt, ...);
     RC vprintf( int erOp, const char *fmt, va_list ap);
 
     // character/token read. Don't intermix with random access functions above.
@@ -72,20 +72,23 @@ class YACAM
 	int scanLine( const char* s, int erOp=WRN, int maxLines=-1);
 
     RC toke( char* tok, unsigned tokSz,		// return next whitespace/comma delimited token. decomments, dequotes.
-             int erOp=WRN, const char* ln=NULL);	//  YAC_EOFOK for no message at clean EOF
-    RC cdecl get( int erOp, int isLeap,    			// read, decode, and store data per control string
+             int erOp=WRN, const char** ppBuf=NULL);	//  YAC_EOFOK for no message at clean EOF
+	RC tokeCSV( char* tok, unsigned tokSz,				// return next comma delimited token. decomments, dequotes.
+             int erOp=WRN, const char** ppBuf=NULL);	//  YAC_EOFOK for no message at clean EOF
+    RC get( int erOp, int isLeap,    			// read, decode, and store data per control string
 		const char* cstr, void* p, ... );
-    RC cdecl getLineCSV( int erOp, int isLeap,     	// read, decode, and store data from CSV line per control string
+    RC getLineCSV( int erOp, int isLeap,     	// read, decode, and store data from CSV line per control string
         const char* cstr, void* p, ... );
 
     /* "control string" argument characters for YACAM::get: I short integer; L long integer; F float;
 	D date: month and day, no year, leap year flag from caller;
-        C (quoted) string, stored *p (thus need , next in cstr if not end);
-	, start using next storage pointer in call */
+    C (quoted) string, stored *p (thus need , next in cstr if not end);
+	  , start using next storage pointer in call */
 
-    // error message functions. If called externally, erAct from last YACAM member function call is used.
-    RC cdecl errFl( const char* s, ...);	// conditional error message "Error: %s <mWhat> <mPathName>". returns RCBAD.
-    RC cdecl errFlLn( const char *s, ...);  // cond'l message "Error in <mWhat> <mPathName> near line <mLineNo>: %s". rets RCBAD.
+    // error message functions. If called externally, erOp from last YACAM member function call is used.
+	RC checkExpected( const char* found, const char* expected);
+    RC errFl( const char* s, ...);	// conditional error message "Error: %s <mWhat> <mPathName>". returns RCBAD.
+    RC errFlLn( const char *s, ...);  // cond'l message "Error in <mWhat> <mPathName> near line <mLineNo>: %s". rets RCBAD.
 
     int mErOp;	// communicates erOp from entry points to error fcns
 				// note need a data mbr at end due to rcdef.exe deficiency 10-94.

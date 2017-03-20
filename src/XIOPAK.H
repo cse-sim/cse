@@ -14,8 +14,8 @@ const int XFCOPYTEXT=EROP1;	// terminate input file at ctrl-Z:
 							// corrects WordStar's vestigial cp/m style file termination,
 							// to prevent additional appended stuff from dissappearing. 11-90, rob.
 // xfopen() erOp options
-const int XFBUFALLOC=EROP1;	// allocate character buffer during open for xiochar.cpp input.
-							// Used: xiochar:cOpen, ref: xiopak:xfopen.
+const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
+
 //---------------------------- COMPILE OPTIONS ------------------------------
 
 
