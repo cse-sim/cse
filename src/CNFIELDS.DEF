@@ -69,25 +69,25 @@ TI	      TI           LMGEZ     UNNONE
 //               ---> near start to keep fdtab.c small.
 LEN           FLOAT        LMGEZ     UNLENGTH
 LEN_GZ        FLOAT        LMGZ      UNLENGTH
-//THK           FLOAT        LMGEZ     UNLENGTH2
+//THK         FLOAT        LMGEZ     UNLENGTH2
 AREA	      FLOAT        LMGEZ     UNAREA	// ft2
 AREA_GZ	      FLOAT        LMGZ      UNAREA	// ft2
 AREA_GEZ	  FLOAT        LMGEZ     UNAREA	// ft2
 AREA2         FLOAT        LMGEZ     UNAREA2	// in2
 //ELA	      FLOAT        LMGEZ     UNAREA2
-//VOL           FLOAT        LMGEZ     UNVOLUME
+//VOL         FLOAT        LMGEZ     UNVOLUME
 VOL_GZ        FLOAT        LMGZ      UNVOLUME
 AFLOW         FLOAT        LMNONE    UNAIRFLOW	// rob 2-12 (air) flow in cfm, or L/s
 AFLOW_GZ      FLOAT        LMGZ      UNAIRFLOW	// rob 3-92
 AFLOW_GEZ     FLOAT        LMGEZ     UNAIRFLOW	// rob 3-92
-//ACH           FLOAT        LMGEZ     UNAIRCHANGE	unused 9-92
+//ACH         FLOAT        LMGEZ     UNAIRCHANGE	unused 9-92
 CFLOW         FLOAT        LMNONE    UNUA	// air flow in heat capacity, Btuh/F (same units as UA) rob 3-92
 MFLOW         FLOAT        LMNONE    UNMFLOW	// air or moisture flow in mass units, lb/hr.
-//PRESAIR_GZ    FLOAT	   LMGZ      UNPRESAIR	// Air pressure, in H2O or Pa
-PRESAIR_GEZ   FLOAT	   LMGEZ     UNPRESAIR	// Air pressure, in H2O or Pa
+//PRESAIR_GZ  FLOAT	       LMGZ      UNPRESAIR	// Air pressure, in H2O or Pa
+PRESAIR_GEZ   FLOAT	       LMGEZ     UNPRESAIR	// Air pressure, in H2O or Pa
 PRESH2O_GEZ   FLOAT        LMGEZ     UNPRESH2O	// Water pressure, ft-H2O or kPa
 H2OFLOW_GZ    FLOAT        LMGZ      UNH2OFLOW	// water flow, gpm / L/s.
-//VELOCITY_GZ   FLOAT        LMGZ      UNVELOCITY	// fpm   unused 9-92
+//VELOCITY_GZ FLOAT        LMGZ      UNVELOCITY	// fpm   unused 9-92
 ANGLE         FLOAT        LMNONE    UNANGLE
 ANGLE_DBL	  DBL		   LMNONE    UNANGLE
 TEMP          FLOAT        LMNONE    UNTEMP
@@ -100,26 +100,26 @@ POWER         FLOAT        LMNONE    UNPOWER	// Btuh
 POWER_NZ      FLOAT        LMNZ      UNPOWER	//      Many "POWER" fields actually
 POWER_GZ      FLOAT        LMGZ      UNPOWER	// 	should be "ENERGY".
 POWER_GEZ     FLOAT        LMGEZ     UNPOWER	// 	otta review them, 6-92.
-//POWER_LEZ     FLOAT        LMLEZ     UNPOWER	// unused 9-92
-KW_GZ         FLOAT        LMGZ     UNELPWR2   	// power entered in kW, internally in Btuh
+//POWER_LEZ   FLOAT        LMLEZ     UNPOWER	// unused 9-92
+KW_GZ         FLOAT        LMGZ      UNELPWR2   // power entered in kW, internally in Btuh
 BHP_GZ        FLOAT        LMGZ      UNBHP		// 
-//BHP_GEZ       FLOAT        LMGEZ     UNBHP	// 
+//BHP_GEZ     FLOAT        LMGEZ     UNBHP	// 
 DENSITY       FLOAT        LMGEZ     UNDENSITY
 //CNDVY	      FLOAT        LMGEZ     UNCNDVY	// conductivity: Btuh-ft/ft2-F
 CNDVY_GZ      FLOAT        LMGZ      UNCNDVY	// conductivity: Btuh-ft/ft2-F
-UH            FLOAT        LMGEZ     UNUVAL	// uval = conductance (per area): Btuh/ft2-F
+UH            FLOAT        LMGEZ     UNUVAL	    // uval = conductance (per area): Btuh/ft2-F
 UH_GZ         FLOAT        LMGZ      UNUVAL
-//F2            FLOAT	   LMGEZ     UNF2
-F2_GZ         FLOAT	   LMGZ      UNF2
-UA	      FLOAT        LMGEZ     UNUA   	// ua = uval * area = [conductance] of whole area: Btuh/F.  CFLOW same units.
-//RESVY         FLOAT        LMGEZ     UNRESVY	// resistivity: resistance of 1 ft2 per ft thick: ft2-F/ft-Btuh
+//F2          FLOAT	       LMGEZ     UNF2
+F2_GZ         FLOAT	       LMGZ      UNF2
+UA	          FLOAT        LMGEZ     UNUA   	// ua = uval * area = [conductance] of whole area: Btuh/F.  CFLOW same units.
+//RESVY       FLOAT        LMGEZ     UNRESVY	// resistivity: resistance of 1 ft2 per ft thick: ft2-F/ft-Btuh
 RESVY_GZ      FLOAT        LMGZ      UNRESVY	// resistivity: resistance of 1 ft2 per ft thick: ft2-F/ft-Btuh
 RES_GZ        FLOAT        LMGZ      UNRVAL	// rval: resistance: ft2-F/Btuh
 SPECHEAT      FLOAT        LMGEZ     UNSPECHEAT
-//HC            FLOAT        LMGEZ     UNHEATCAP
+//HC          FLOAT        LMGEZ     UNHEATCAP
 HC_GZ         FLOAT        LMGZ      UNHEATCAP
 HC_AREA       FLOAT        LMGEZ     UNHEATCAP_AREA
-//HC_AREA_GZ    FLOAT        LMGZ      UNHEATCAP_AREA
+//HC_AREA_GZ  FLOAT        LMGZ      UNHEATCAP_AREA
 HC_VOL        FLOAT        LMGZ      UNHEATCAP_VOL
 HOURS         FLOAT        LMGEZ     UNHOURS	// time interval in hours, rob 6-92
 SGTARGP       SGTARGP      LMNONE    UNNONE	// pointer to an SGTARG
@@ -160,7 +160,7 @@ ZNMODELCH     ZNMODELCH    LMNONE    UNNONE
 IZNVTYCH      IZNVTYCH     LMNONE    UNNONE
 EXCNDCH       EXCNDCH      LMNONE    UNNONE
 SFMODELCH     SFMODELCH    LMNONE    UNNONE
-GROUNDMODELCH GROUNDMODELCH LMNONE    UNNONE
+GROUNDMODELCH GROUNDMODELCH LMNONE   UNNONE
 CONVMODELCH	  CONVMODELCH  LMNONE    UNNONE
 RSYSMODECTRLCH RSYSMODECTRLCH LMNONE UNNONE
 RSYSTYCH	  RSYSTYCH	   LMNONE	 UNNONE

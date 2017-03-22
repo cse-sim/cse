@@ -581,7 +581,7 @@ battery    Parent: Top
 shadex    Parent: Top
    sxMounting
    sxVertices
-   endXSHADE
+   endSHADEX
 
 
 airHandler    Parent: Top

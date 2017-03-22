@@ -759,7 +759,7 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 {
 	RC rc = RCOK;
 
-	if (!tp_ExshCount())
+	if (Top.tp_exshModel != C_EXSHMODELCH_PENUMBRA || !tp_ExshCount())
 	{	tp_PumbraClearIf();		// clear Penumbra data if any
 		return RCOK;
 	}

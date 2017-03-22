@@ -54,7 +54,7 @@ const float HPWH::HEATDIST_MINVALUE = 0.0001f;
 const float HPWH::UNINITIALIZED_LOCATIONTEMP = -500.f;
 
 //ugh, this should be in the header
-const std::string HPWH::version_maint = "0";
+const std::string HPWH::version_maint = "1";
 
 #define SETPOINT_FIX	// #define to include fixes for
 						// setpoint-below-water-temp issues
@@ -1363,6 +1363,16 @@ bool HPWH::HeatSource::shouldHeat(double heatSourceAmbientT_C) const {
 		case ONLOGIC_topThird:
 			//when the top third is too cold - typically used for upper resistance/VIP heat sources
 			if (hpwh->topThirdAvg_C() < hpwh->setpoint_C - turnOnLogicSet[i].decisionPoint) {
+				shouldEngage = true;
+
+				//debugging message handling
+				if (hpwh->hpwhVerbosity >= VRB_typical) hpwh->msg("engages!\n");
+			}
+			break;
+
+		case ONLOGIC_topThird_absolute:
+			//when the top third is too cold - typically used for upper resistance/VIP heat sources
+			if (hpwh->topThirdAvg_C() < turnOnLogicSet[i].decisionPoint) {
 				shouldEngage = true;
 
 				//debugging message handling
@@ -3624,6 +3634,88 @@ int HPWH::HPWHinit_presets(MODELS presetNum) {
 		resistiveElementBottom.addShutOffLogic(HeatSource::OFFLOGIC_bottomTwelthMaxTemp, F_TO_C(80.108));
 
 		resistiveElementTop.addTurnOnLogic(HeatSource::ONLOGIC_topThird, dF_TO_dC(39.9691));
+
+
+		//set everything in its places
+		setOfSources[0] = resistiveElementTop;
+		setOfSources[1] = resistiveElementBottom;
+		setOfSources[2] = compressor;
+
+		//and you have to do this after putting them into setOfSources, otherwise
+		//you don't get the right pointers
+		setOfSources[2].backupHeatSource = &setOfSources[1];
+		setOfSources[1].backupHeatSource = &setOfSources[2];
+
+	}
+	else if (presetNum == MODELS_AOSmithHPTU80_DR) {
+		numNodes = 12;
+		tankTemps_C = new double[numNodes];
+		setpoint_C = F_TO_C(127.0);
+
+		//start tank off at setpoint
+		resetTankToSetpoint();
+
+		tankVolume_L = 283.9;
+		tankUA_kJperHrC = 9;
+
+		doTempDepression = false;
+		tankMixesOnDraw = true;
+
+		numHeatSources = 3;
+		setOfSources = new HeatSource[numHeatSources];
+
+		HeatSource compressor(this);
+		HeatSource resistiveElementBottom(this);
+		HeatSource resistiveElementTop(this);
+
+		//compressor values
+		compressor.isOn = false;
+		compressor.isVIP = false;
+		compressor.typeOfHeatSource = TYPE_compressor;
+
+		double split = 1.0 / 4.0;
+		compressor.setCondensity(split, split, split, split, 0, 0, 0, 0, 0, 0, 0, 0);
+
+		//voltex60 tier 1 values
+		compressor.T1_F = 47;
+		compressor.T2_F = 67;
+
+		compressor.inputPower_T1_constant_W = 142.6;
+		compressor.inputPower_T1_linear_WperF = 2.152;
+		compressor.inputPower_T1_quadratic_WperF2 = 0.0;
+		compressor.inputPower_T2_constant_W = 120.14;
+		compressor.inputPower_T2_linear_WperF = 2.513;
+		compressor.inputPower_T2_quadratic_WperF2 = 0.0;
+		compressor.COP_T1_constant = 6.989258;
+		compressor.COP_T1_linear = -0.038320;
+		compressor.COP_T1_quadratic = 0.0;
+		compressor.COP_T2_constant = 8.188;
+		compressor.COP_T2_linear = -0.0432;
+		compressor.COP_T2_quadratic = 0.0;
+		compressor.hysteresis_dC = dF_TO_dC(2);
+		compressor.configuration = HeatSource::CONFIG_WRAPPED;
+
+		//top resistor values
+		resistiveElementTop.setupAsResistiveElement(8, 4500);
+		resistiveElementTop.isVIP = true;
+
+		//bottom resistor values
+		resistiveElementBottom.setupAsResistiveElement(0, 4500);
+		resistiveElementBottom.hysteresis_dC = dF_TO_dC(2);
+
+		//logic conditions
+		double compStart = dF_TO_dC(34.1636);
+		double lowTcutoff = F_TO_C(42.0);
+		double standby = dF_TO_dC(7.1528);
+		compressor.addTurnOnLogic(HeatSource::ONLOGIC_bottomThird, compStart);
+		compressor.addTurnOnLogic(HeatSource::ONLOGIC_standby, standby);
+		compressor.addShutOffLogic(HeatSource::OFFLOGIC_lowT, lowTcutoff);
+
+		resistiveElementBottom.addTurnOnLogic(HeatSource::ONLOGIC_bottomThird, 100000);
+		resistiveElementBottom.addShutOffLogic(HeatSource::OFFLOGIC_bottomTwelthMaxTemp, F_TO_C(80.108));
+
+		// resistiveElementTop.addTurnOnLogic(HeatSource::ONLOGIC_topThird, dF_TO_dC(39.9691));
+                resistiveElementTop.addTurnOnLogic(HeatSource::ONLOGIC_topThird_absolute, F_TO_C(87));
 
 
 		//set everything in its places

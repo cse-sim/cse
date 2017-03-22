@@ -367,6 +367,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 		    AOSMITHHPTU50 "AOSmithHPTU50"	// 50 gallon AOSmith HPTU
 			AOSMITHHPTU66 "AOSmithHPTU66"	// 66 gallon AOSmith HPTU
 			AOSMITHHPTU80 "AOSmithHPTU80"	// 80 gallon AOSmith HPTU
+			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
 			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
 			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
 			GE2012 "GE2012"					// 2012 era GeoSpring

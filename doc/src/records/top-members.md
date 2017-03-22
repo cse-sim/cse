@@ -238,6 +238,20 @@ T24DHW          Matches results from T24DHW.DLL
   ----------- ----------------------- -------------- -------------- -----------------
               *Choices above*          2013             No            constant
 
+**exShadeModel=*choice***
+
+Specifies exterior shading model.  NOTE: not SHADE for windows??
+
+**Choice**    **Effect**
+------------- ---------------------------------
+PENUMBRA        Detailed PVARRAY shading???
+NONE            Advanced shading calculations are disabled
+------------- ---------------------------------
+
+  **Units**   **Legal Range**         **Default**    **Required**   **Variability**
+  ----------- ----------------------- -------------- -------------- -----------------
+              *Choices above*          PENUMBRA           No            constant
+
 **ANTolAbs=*float***
 
 AirNet absolute convergence tolerance. Ideally, calculated zone air pressures should be such that the net air flow into each zone is 0 -- that is, there should be a perfect mass balance.  The iterative AirNet solution techniques are deemed converged when netAirMassFlow < max( ANTolAbs, ANTolRel*totAirMassFlow).
