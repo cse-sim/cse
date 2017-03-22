@@ -96,14 +96,6 @@ Note: a more robust life model will need not only cycle counts but cycles by dep
 
 <% end %>
 
-<!--
-# Implementation idea for ERB-based table generator
-CsvTable.new(header: true).render(<<TABLE)
-Units,            Legal Range, Default, Required, Variability
-number of cycles, $\ge$ 0,     0,       No,       runly
-TABLE
--->
-
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
 |number of cycles|x $\ge$ 0|0         |No          |runly          |
