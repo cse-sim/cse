@@ -1,4 +1,4 @@
-# Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+# Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file.
 ########################################
@@ -99,7 +99,7 @@ USE_GHPAGES = CONFIG.fetch("use-ghpages?")
 USE_NODE = CONFIG.fetch("use-node?")
 NODE_BIN_DIR = File.expand_path('node_modules', THIS_DIR)
 DOCS_BRANCH = CONFIG.fetch("docs-branch")
-HTML_OUT_DIR = CONFIG.fetch("output-dir")
+OUTPUT_DIR = CONFIG.fetch("output-dir")
 VERBOSE = CONFIG.fetch("verbose?", false)
 VERIFY_LINKS = CONFIG.fetch("verify-links?", false)
 VERIFY_MANIFEST = CONFIG.fetch("verify-manifest?", false)
@@ -132,6 +132,7 @@ ERB_BINDING_FN = if CONFIG.fetch("use-table-lang?", true)
                  else
                    Template::MakeBinding
                  end
+DELETE_BUILD_DIR = CONFIG.fetch("delete-build-dir?", false)
 
 ########################################
 # Helper Functions
@@ -286,17 +287,17 @@ end
 # pull back into the local gh-pages branch after inspection.
 SetupGHPages = lambda do
   if USE_GHPAGES
-    if ! File.exist?(File.join(HTML_OUT_DIR, '.git'))
-      FileUtils.mkdir_p(File.dirname(HTML_OUT_DIR))
-      `git clone "#{LOCAL_REPO}" "#{HTML_OUT_DIR}"`
-      Dir.chdir(HTML_OUT_DIR) do
+    if ! File.exist?(File.join(OUTPUT_DIR, '.git'))
+      FileUtils.mkdir_p(File.dirname(OUTPUT_DIR))
+      `git clone "#{LOCAL_REPO}" "#{OUTPUT_DIR}"`
+      Dir.chdir(OUTPUT_DIR) do
         `git remote rm origin`
         `git remote add origin #{REMOTE_REPO}`
         `git fetch --all`
         `git checkout #{DOCS_BRANCH}`
       end
       puts("Removing existing content...")
-      Dir[File.join(HTML_OUT_DIR, '*')].each do |path|
+      Dir[File.join(OUTPUT_DIR, '*')].each do |path|
         unless File.basename(path) == '.git'
           puts("... removing: rm -rf #{path}")
           FileUtils.rm_rf(path)
@@ -1037,11 +1038,11 @@ BuildSinglePageHTML = lambda do |config|
   tag = config.fetch("tag")
   levels = config.fetch("levels")
   this_dir = config.fetch('this-dir', THIS_DIR)
-  build_dir = config.fetch("build-dir", "build")
+  build_dir = config.fetch("build-dir", BUILD_DIR)
   md_dir = config.fetch("md-dir", "md")
   html_dir = config.fetch("html-dir", "html")
   rsrc_dir = config.fetch("resource-dir", "resources")
-  out_dir = config.fetch("output-dir", "build/output")
+  out_dir = config.fetch("output-dir", OUTPUT_DIR)
   out_file = config.fetch("output-file-name", "out.html")
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
@@ -1210,11 +1211,11 @@ end
 BuildMultiPageHTML = lambda do |config|
   tag = config.fetch("tag")
   levels = config.fetch("levels")
-  build_dir = config.fetch("build-dir", "build")
+  build_dir = config.fetch("build-dir", BUILD_DIR)
   md_dir = config.fetch("md-dir", "md")
   html_dir = config.fetch("html-dir", "html")
   this_dir = config.fetch("this-dir", THIS_DIR)
-  out_dir = config.fetch("output-dir", "build/output")
+  out_dir = config.fetch("output-dir", OUTPUT_DIR)
   rsrc_dir = config.fetch("resource-dir", "resources")
   disable_probes = config.fetch("disable-probes?", false)
   disable_toc = config.fetch("disable-toc?", false)
@@ -1402,9 +1403,9 @@ BuildPDF = lambda do |config|
   tag = config.fetch("tag")
   levels = config.fetch("levels")
   this_dir = config.fetch('this-dir', THIS_DIR)
-  build_dir = config.fetch("build-dir", "build")
+  build_dir = config.fetch("build-dir", BUILD_DIR)
   md_dir = config.fetch("md-dir", "md")
-  out_dir = config.fetch("output-dir", "build/output")
+  out_dir = config.fetch("output-dir", OUTPUT_DIR)
   out_file = config.fetch("output-file-name", "out.pdf")
   rsrc_dir = config.fetch("resource-dir", "resources")
   disable_probes = config.fetch("disable-probes?", false)
@@ -1591,7 +1592,7 @@ task :build_html_single => [:setup] do
       "levels" => levels,
       "draft?" => DRAFT,
       "date" => DATE,
-      "output-dir" => "build/output",
+      "output-dir" => OUTPUT_DIR,
       "output-file-name" => "cse-user-manual.html",
       "do-navigation?" => true,
       "disable-compression?" => !USE_NODE,
@@ -1629,7 +1630,7 @@ task :build_html_multi => [:setup] do
       "levels" => levels,
       "draft?" => DRAFT,
       "date" => DATE,
-      "output-dir" => "build/output/cse-user-manual",
+      "output-dir" => File.join(OUTPUT_DIR, "cse-user-manual"),
       "do-navigation?" => true,
       "disable-compression?" => !USE_NODE,
       "context" => context,
@@ -1665,7 +1666,7 @@ task :build_pdf => [:setup] do
       "tag" => tag,
       "levels" => levels,
       "draft?" => DRAFT,
-      "output-dir" => "build/output/pdfs",
+      "output-dir" => File.join(OUTPUT_DIR, "pdfs"),
       "output-file-name" => "cse-user-manual.pdf",
     ][files]
     puts("\nPDF DONE!")
@@ -1703,7 +1704,7 @@ task :build_site => [:setup] do
       "subtitle" => nil,
       "title" => "California Simulation Engine",
       "do-navigation?" => false,
-      "output-dir" => "build/output",
+      "output-dir" => OUTPUT_DIR,
       "disable-toc?" => true,
       "disable-xlink?" => true,
       "disable-compression?" => !USE_NODE,
@@ -1719,6 +1720,7 @@ all_builds = [:build_html_single, :build_html_multi, :build_site]
 all_builds << :build_pdf if BUILD_PDF
 all_builds << :verify_links if VERIFY_LINKS
 all_builds << :coverage if RUN_COVERAGE
+all_builds << :clean if DELETE_BUILD_DIR
 
 desc "Build everything"
 task :build_all => all_builds
@@ -1726,7 +1728,7 @@ task :build_all => all_builds
 desc "Check links for issues"
 task :verify_links do
   puts("Checking links")
-  problems = VerifyLinks::CheckLinks[HTML_OUT_DIR]
+  problems = VerifyLinks::CheckLinks[OUTPUT_DIR]
   problems.each do |p|
     puts("  - #{p}")
   end

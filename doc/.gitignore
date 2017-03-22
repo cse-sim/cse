@@ -1,4 +1,5 @@
 build/
+output/
 node_modules/
 config.yaml
 erb-out.txt

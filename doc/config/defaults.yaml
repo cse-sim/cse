@@ -16,18 +16,18 @@ cssnano-exe: "node_modules/.bin/cssnano"
 html-minifier-exe: "node_modules/.bin/html-minifier"
 # Flag on whether to use Node.js or not
 # if yes, node is used to compress the HTML and CSS files
-use-node?: false
+use-node?: true
 # Flag on whether or not to use GitHub pages
 # if yes, when the documentation is generated, it is set up for easier use to
 # push to github pages
 use-ghpages?: true
 # Flag on whether to build the PDFs or not. Defaults to false since PDF
 # requires more dependencies
-build-pdf?: false
+build-pdf?: true
 # Location of the build directory (relative to this file)
 build-dir: 'build'
 # Location of the final output directory
-output-dir: 'build/output'
+output-dir: 'output'
 # URL of the remote origin. This is also the location where the gh-pages branch
 remote-repo-url: "https://github.com/cse-sim/cse.git"
 # Flag to build under 'draft' status or not
@@ -51,6 +51,14 @@ use-table-lang?: true
 # if defined, the path below directs the table preprocessing language as to
 # where to find CSV table files. Only relevant if "use-table-lang?" is true
 table-path: "src/tables"
+# if true, the build directory will be automatically deleted after output
+# is created. Defaults to false as the system only rebuilds what is needed
+# so it is more efficient to keep the build directory around. Note: this
+# is the same as calling "rake clean" after building and will only be
+# invoked on the default "rake" or "rake build" tasks. Also, NOTE that
+# if your output directory is inside of the build directory, it will
+# be deleted, too!
+delete-build-dir?: false
 # this variable holds various "flags" to pass into the ERB preprocessor
 # NOTE: only define variable keys as standard Ruby variables!
 #       for example, "some-variable: 10" would not work since "some-variable"
