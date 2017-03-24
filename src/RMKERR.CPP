@@ -443,8 +443,8 @@ LOCAL RC errCritV(		// common routine for warnCrit, errCrit
 // ================================================================================
 RC CDEC info(			// issue information message, rob 5-97
 
-	char *mOrH,		// ptr to printf fmt message or message handle
-	... )  		// args as reqd by mOrH
+	const char* mOrH,	// ptr to printf fmt message or message handle
+	... )  				// args as reqd by mOrH
 
 // difference from error message: error count not incremented; "Info: " not "Error: " prefixed.
 // difference from warning message: displayed on screen even if setWarnNoScrn(1) called.

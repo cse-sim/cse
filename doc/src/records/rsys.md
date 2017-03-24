@@ -169,7 +169,6 @@ Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 are set to r
   ----------- ----------------- ------------- -------------- -----------------
               *x* $>$ 0         1.4           No             constant
 
-
 **rsFanPwrH=*float***
 
 Heating fan power. Heating air flow is estimated based on a 50 ^o^F temperature rise.

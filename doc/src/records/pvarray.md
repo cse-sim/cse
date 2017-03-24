@@ -118,32 +118,32 @@ The type of array describes mounting and tracking options. Roof mounted arrays h
 
 **pvTilt=*float***
 
-The tilt of the photovoltaic array from horizontal.  Values outside the range 0 to 360 are first normalized to that range. For one-axis tracking, defines the tilt of the rotation axis. Not used for two-axis tracking arrays.
+The tilt of the photovoltaic array from horizontal.  Values outside the range 0 to 360 are first normalized to that range. For one-axis tracking, defines the tilt of the rotation axis. Not used for two-axis tracking arrays.  Should be omitted if pvVertices is given.
 
   ------------------------------------------------------------------
-  **Units** **Legal Range** **Default** **Required** **Variability**
-  --------- --------------- ----------- ------------ ---------------
-  degrees   unrestricted    0.0         No           hourly
-
+  **Units** **Legal Range** **Default**                      **Required**  **Variability**
+  --------- --------------- -----------------------------    ------------  ---------------
+  degrees   unrestricted    from pvVertices (if given)\         No            hourly
+                            else 0
   ------------------------------------------------------------------
 
 **pvAzm=*float***
 
-Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays.
+Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
 
   ------------------------------------------------------------------
-  **Units** **Legal Range** **Default** **Required** **Variability**
-  --------- --------------- ----------- ------------ ---------------
-  degrees   unrestricted    0.0         No           hourly
-
+  **Units** **Legal Range** **Default**                  **Required**  **Variability**
+  --------- --------------- --------------------------- -------------  ---------------
+  degrees   unrestricted    from pvVertices (if given)\         No            hourly
+                            else 0                           
   ------------------------------------------------------------------
 **pvVertices=*list of up to 36 floats***
 
-  Vertices of a polygon representing the shape of the photovoltaic array and used to calculate the shaded fraction of the array during the simulation (assuming one or more SHADEX objects are defined).
+  Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs](#shadex) are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [Top exShadeModel](#top-model-control-items).  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
 
-  The values that follow pvVertices are a series of X, Y, and Z values for the vertices of the polygon. The coordinate system is defined from a viewpoint facing north.  X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north).  Z values convey height relative to the building 0 level and positive values are upward.
+  The values that follow pvVertices are a series of X, Y, and Z values for the vertices of the polygon using a coordinate system defined from a viewpoint facing north.  X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north).  Z values convey height relative to the building 0 level and positive values are upward.
 
-  The vertices are specified in counter-clockwise order when facing the receiving surface of the array.  The number of values provided must be a multiple of 3.  The defined polygon must be planar and have no crossing edges.  The effective position of the polygon reflects building rotation specified by bldgAzm.
+  The vertices are specified in counter-clockwise order when facing the receiving surface of the PVARRAY.  The number of values provided must be a multiple of 3.  The defined polygon must be planar and have no crossing edges.  When pvMounting=Building, the effective position of the polygon is modified in response to building rotation specified by [TOP bldgAzm](#top-general-data-items).
 
   For example, to specify a rectangular photovoltaic array that is 10 x 20 ft, tilted 45 degrees, and facing south --
 
@@ -152,15 +152,15 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   ------------------------------------------------------------------
   **Units** **Legal Range** **Default** **Required**     **Variability**
   --------- --------------- ----------- ---------------- ---------------
-  ft         unrestricted     *none*      9, 12, 15, 18,      constant
-                                         21, 24, 27, 30,
-                                         33, or 36
-                                         values
+  ft         unrestricted    no polygon   9, 12, 15, 18,      constant
+                                          21, 24, 27, 30,
+                                          33, or 36
+                                          values
   ------------------------------------------------------------------
 
   **pvMounting=*choice***
 
-  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via bldgAzm, while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
+  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via Top bldgAzm, while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------

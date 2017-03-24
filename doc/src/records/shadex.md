@@ -1,6 +1,6 @@
 # SHADEX
 
-SHADEX describes an object that shades other building surfaces.  As initially implemented, SHADEX calculations are provided only for PVARRAYs.
+SHADEX describes an object that shades other building surfaces using an advanced shading model.  Advanced shading calculations are provided only for [PVARRAYs](#pvarray). Advanced shading must be enabled via [Top exShadeModel](#top-model-control-items).
 
 **sxName**
 
@@ -12,7 +12,7 @@ Name of photovoltaic array. Give after the word SHADEX.
 
 **sxMounting=*choice***
 
-Specifies the mounting location of the shade.  sxMounting=Site indicates the SHADEX position is fixed and is not modified if the building is rotated.  The position of SHADEXs with sxMounting=Building are modified to include the effect of building rotation specified via bldgAzm.
+Specifies the mounting location of the shade.  sxMounting=Site indicates the SHADEX position is fixed and is not modified if the building is rotated.  The position of SHADEXs with sxMounting=Building are modified to include the effect of building rotation specified via [Top bldgAz](#bldgAzm)
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------

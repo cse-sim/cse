@@ -223,7 +223,15 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 
   ResTank            Resistance heater (no compressor).  Superceded by whHeatSrc=RESITANCEX
 
-  ResTankNoUA        Resistance heater (no compressor) with no tank losses.  Superceded by whHeatSrc=RESISTANCEX.
+  ResTankNoUA        Resistance heater (no compressor) with no tank losses.  Superseded by whHeatSrc=RESISTANCEX.
+
+  AOSmithHPTU80DR     80 gallon AOSmith HPTU with fixed backup setpoint (experimental for demand response testing)
+
+  AOSmithSHPT50       50 gal AOSmith SHPT
+
+  AOSmithSHPT66       66 gal AOSmith SHPT
+
+  AOSmithSHPT80       80 gal AOSmith SHPT
   ------------------------------------------------------------------------------------
 
   **Units**   **Legal Range**        **Default**   **Required**           **Variability**

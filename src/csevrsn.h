@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.828: ...
+   0.828: Top.exShadeModel; HPWH 1.3.1; add'l HPWH types, committed 3-24-2017
    0.827: tdv file error handling; Penumbra only-if-needed, committed 3-16-2017
    0.826: tdv file read and derived values, committed 3-13-2017
    0.825: fix excessive fSunlit; add tp_TDVfName, committed 3-9-2017

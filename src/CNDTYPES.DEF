@@ -379,15 +379,12 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2
 			GENERIC3 "GenericTier3"			// Generic Tier 3
-#if 1
 			GENERIC "Generic"				// general generic (parameterized by EF and vol)
 			UEF2GENERIC "UEF2Generic"			// experimental UEF=2
 			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports pre-existing test cases)
-#else
-x			GENERICRESFRAC35 "GenericResFrac35"
-x			GENERICRESFRAC45 "GenericResFrac45"
-x			GENERICRESFRAC55 "GenericResFrac55"
-#endif
+			AOSMITHSHPT50 "AOSmithSHPT50"		// AOSmith add'l models (added 3-24-2017)
+			AOSMITHSHPT66 "AOSmithSHPT66"
+			AOSMITHSHPT80 "AOSmithSHPT80"
 		}
 
 *choicb DHWEUCH {			// hot end uses

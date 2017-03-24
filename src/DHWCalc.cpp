@@ -1338,20 +1338,37 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	wh_pHPWH->setVerbosity( HPWH::VRB_reluctant);		// messages only for fatal errors
 
 	int hpwhRet = 0;
+	float UAX = -1.f;		// alternative UA
+	float volX = -1.f;		// alternative volume
+	HPWH::MODELS preset = HPWH::MODELS( -1);	// HPWH "preset" = predefined type that determines most model parameters
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
-	{	// resistance tank
+	{	// resistance tank (no preset)
 		hpwhRet = wh_pHPWH->HPWHinit_resTank( GAL_TO_L( max( wh_vol, 1.f)), wh_EF,
 						wh_resHtPwr, wh_resHtPwr2);
 	}
 	else if ( wh_ashpTy == C_WHASHPTYCH_GENERIC)
-	{	// generic HPWH
+	{	// generic HPWH (no preset)
 		hpwhRet = wh_pHPWH->HPWHinit_genericHPWH(
 					GAL_TO_L( max( wh_vol, 1.f)), wh_EF, wh_ashpResUse);
 	}
+	else if ( wh_ashpTy == C_WHASHPTYCH_AOSMITHSHPT50)
+	{	preset = HPWH::MODELS_GE2012;	// AO Smith SHPT models: base on GE2012
+		volX = 45.f;			// ... and change vol / UA
+		UAX = 2.9f;
+	}
+	else if ( wh_ashpTy == C_WHASHPTYCH_AOSMITHSHPT66)
+	{	preset = HPWH::MODELS_GE2012;
+		volX = 63.9f;
+		UAX = 3.4f;
+	}
+	else if ( wh_ashpTy == C_WHASHPTYCH_AOSMITHSHPT80)
+	{	preset = HPWH::MODELS_GE2012;
+		volX = 80.7f;
+		UAX = 4.7f;
+	}
 	else
 	{	// heat pump
-		// HPWH "preset" = predefined type that determines most model parameters
-		HPWH::MODELS preset =
+		preset =
 			  wh_ashpTy == C_WHASHPTYCH_BASICINT      ? HPWH::MODELS_basicIntegrated
 			: wh_ashpTy == C_WHASHPTYCH_RESTANK       ? HPWH::MODELS_restankRealistic
 			: wh_ashpTy == C_WHASHPTYCH_RESTANKNOUA   ? HPWH::MODELS_restankNoUA
@@ -1375,15 +1392,21 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			: wh_ashpTy == C_WHASHPTYCH_UEF2GENERIC   ? HPWH::MODELS_UEF2generic
 			: wh_ashpTy == C_WHASHPTYCH_WORSTCASEMEDIUM	 ? HPWH::MODELS_UEF2generic	// alias (testing aid)
 			:										       HPWH::MODELS( -1);	// HPWHInit_presets will reject
-
-		hpwhRet = wh_pHPWH->HPWHinit_presets( preset);
-#if 0	// debugging experiment
-x		wh_pHPWH->setUA( 0.);
-#endif
 	}
+	if (preset > 0)
+		hpwhRet = wh_pHPWH->HPWHinit_presets( preset);
+
 	if (hpwhRet)	// 0 means success
 		rc |= RCBAD;
 	else
+	{	// set additional parameters if needed
+		if (volX > 0.f && wh_pHPWH->setTankSize( volX, HPWH::UNITS_GAL) != 0)
+			rc = RCBAD;
+		if (UAX > 0.f && wh_pHPWH->setUA( UAX, HPWH::UNITS_BTUperHrF) != 0)
+			rc = RCBAD;
+	}
+
+	if (!rc)
 	{	// make map of heat sources = idxs for wh_HPWHUse[]
 		// WHY: HPWH model frequently uses 3 heat sources in
 		//      preset-specific order

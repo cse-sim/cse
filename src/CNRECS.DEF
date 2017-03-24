@@ -213,7 +213,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i ANGLE tp_bldgAzm		// angle to add to all zone/surface azms
     *i SKYMODCH skyModel 	// sky model: C_.._ISO or _ANISO
     *i SKYMODLWCH skyModelLW	// long-wave sky model
-	*i EXSHMODELCH tp_exshModel;	// exterior shading model (other than overhang/fins)
+	*i EXSHMODELCH tp_exShadeModel;	// exterior shading model (other than overhang/fins)
 									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
 									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
     *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)

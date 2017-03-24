@@ -240,12 +240,12 @@ T24DHW          Matches results from T24DHW.DLL
 
 **exShadeModel=*choice***
 
-Specifies exterior shading model.  NOTE: not SHADE for windows??
+Specifies advanced exterior shading model used to evaluate shading of [PVARRAYs](#pvarray) by [SHADEXs](#shadex) or other PVARRAYs.  Advanced shading is not implemented for building surfaces and this setting has no effect on walls or windows.
 
 **Choice**    **Effect**
 ------------- ---------------------------------
-PENUMBRA        Detailed PVARRAY shading???
-NONE            Advanced shading calculations are disabled
+PENUMBRA        Calculate shading using the Penumbra model
+NONE            Disable advanced shading calculations
 ------------- ---------------------------------
 
   **Units**   **Legal Range**         **Default**    **Required**   **Variability**

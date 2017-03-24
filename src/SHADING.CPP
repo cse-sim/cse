@@ -571,7 +571,7 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 		// cosi = 0.f;		// set in slsurfhr
 
 	}
-	else if (Top.tp_exshModel != C_EXSHMODELCH_PENUMBRA
+	else if (Top.tp_exShadeModel != C_EXSHMODELCH_PENUMBRA
 		  || gx_pnIdx < 0)
 		fBeam = 1.f;		// Penumbra model disabled
 							// or no associated Penumbra surface
@@ -759,12 +759,21 @@ RC TOPRAT::tp_ExshRunInit()		// start-of-run init for Penumbra shading
 {
 	RC rc = RCOK;
 
-	if (Top.tp_exshModel != C_EXSHMODELCH_PENUMBRA || !tp_ExshCount())
+	int exshCalcNeeded = tp_ExshCount();	// set tp_exshNShade and tp_exshNRec
+											//   return nz iff shading calc needed
+
+	if (exshCalcNeeded && Top.tp_exShadeModel == C_EXSHMODELCH_NONE)
+	{	info( "Advanced shading input in PVARRAY and/or SHADEX has been ignored\n"
+			  "      due to Top exShadeModel='none'");
+		exshCalcNeeded = 0;
+	}
+
+	if (!exshCalcNeeded)
 	{	tp_PumbraClearIf();		// clear Penumbra data if any
 		return RCOK;
 	}
 
-	// shading is required
+	// shading is available and required
 	tp_PumbraInit();
 
 	// building rotation
