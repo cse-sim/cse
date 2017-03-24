@@ -139,7 +139,7 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   ------------------------------------------------------------------
 **pvVertices=*list of up to 36 floats***
 
-  Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs](#shadex) are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [Top exShadeModel](#top-model-control-items).  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
+  Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs](#shadex) are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [TOP exShadeModel](#top-model-control-items).  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
 
   The values that follow pvVertices are a series of X, Y, and Z values for the vertices of the polygon using a coordinate system defined from a viewpoint facing north.  X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north).  Z values convey height relative to the building 0 level and positive values are upward.
 
@@ -160,7 +160,7 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
   **pvMounting=*choice***
 
-  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via Top bldgAzm, while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
+  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm](#top-general-data-items), while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------
