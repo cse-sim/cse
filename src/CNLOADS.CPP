@@ -3387,6 +3387,7 @@ RC RSYS::rs_HSPFMatchASHP()			// adjust COP17 to yield user's HSPF
 // returns RCOK iff COP17 found
 {
 	int rc = RCOK;
+	rs_CalcInputsAndSlopesASHP();		// ensure consistent starting point
 	int ashpModel = 0;
 	double hspf = rs_HSPFCheckASHP( ashpModel);
 	double COP17 = rs_COP17;
@@ -3406,6 +3407,8 @@ float RSYS::rs_HSPFCheckASHP(		// calculate region 4 HSPF
 							//   0x100 = DbPrintf info for all bins
 // testing aid, "back calculates" HSPF from ASHP ratings
 //    method = AHRI 210/240 single speed
+// Prerequisite: rs_CalcInputsAndSlopesASHP() or equivalent
+//               (sets values used by rs_CapEffASHP())
 // returns HSPF calculated from RSYS properties
 {
 // bin hours for region 4
@@ -3595,7 +3598,7 @@ RC RSYS::rs_SizeASHP(			// size ASHP
 
 	return rc;
 
-}	// RSYS::rs_Cap47ForDesignLoad
+}	// RSYS::rs_SizeASHP
 //-------------------------------------------------------------------------------
 void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 	int rsModeNew)

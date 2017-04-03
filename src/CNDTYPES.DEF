@@ -372,8 +372,11 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
 			GE2012 "GE2012"					// 2012 era GeoSpring
 			GE2014 "GE2014"					// 2014 50 gal GE run in the efficiency mode
+			GE2014_80 "GE2014_80"			// 2014 80 gal GE model run in the efficiency mode
+			GE2014_80DR "GE2014_80DR"		// 2014 80 gal GE model run in the efficiency mode (demand reduction variant)
 			GE2014STDMODE "GE2014StdMode"	// 2014 50 gal GE run in standard mode
 			GE2014STDMODE_80 "GE2014StdMode80"	// 2014 80 gal GE run in standard mode
+
 			RHEEMHB50 "RheemHB50"			// newish Rheem (2014 model?)
 			STIEBEL220E "Stiebel220E"		// Stiebel Eltron (2014 model?)
 			GENERIC1 "GenericTier1"			// Generic Tier 1

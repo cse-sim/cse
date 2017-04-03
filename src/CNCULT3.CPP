@@ -1333,11 +1333,6 @@ RC ZNR::zn_RadX()
 //         RCBAD on missing inputs (e.g. zn_surfEpsLWAvg, ); mbrs 0.
 
 {
-#if 0
-double tArea[ 2000];		// temp arrays: assume big enuf
-double F[ 2000];
-#endif
-
 	RC rc = RCOK;
 
 	zn_airRadXArea = 0.;

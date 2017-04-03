@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 828
+#define CSEVRSN_MINOR 829
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.829: HPWH 1.3.2; additional HPWH types; ASHP COP17 bug fix, committed 4-3-2017
    0.828: Top.exShadeModel; HPWH 1.3.1; add'l HPWH types, committed 3-24-2017
    0.827: tdv file error handling; Penumbra only-if-needed, committed 3-16-2017
    0.826: tdv file read and derived values, committed 3-13-2017

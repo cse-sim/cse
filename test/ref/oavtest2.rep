@@ -47,7 +47,7 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 3356.3      0 926.31 752.09      0      0      0 229.48      0      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Jan 3356.3      0 926.30 752.09      0      0      0 229.48      0      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
 Feb 2386.9      0 468.21 567.51      0      0      0 117.00      0      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
 Mar 1827.3      0 263.91 223.68      0      0  0.327 66.575      0      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
 Apr 1486.7      0 151.63 152.84      0      0  1.795 36.817      0      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
@@ -60,7 +60,7 @@ Oct 1343.6      0  0.407  0.203      0      0 17.593 0.0911      0      0      0
 Nov 2050.0      0 306.30 295.28      0      0      0 75.131      0      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
 Dec 3286.0      0 831.79 784.52      0      0      0 200.78      0      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   22276 491.58 2952.7 2782.5      0      0 558.67 726.88      0      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   22275 491.58 2952.7 2782.5      0      0 558.67 726.88      0      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -186,7 +186,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.818 for Win32 console
+! CSE 0.829 for Win32 console
 
 
 
@@ -1492,17 +1492,17 @@ Input for Run 001:
 
 
 
-! CSE 0.818 for Win32 console run(s) done: Tue 17-Jan-17  11:35:18 am
-! Executable: c:\projects\cse\run\cse.exe
-!             16-Jan-17   4:17 pm   (VS 14.0    1291264 bytes)  (HPWH 1.3.0)
+! CSE 0.829 for Win32 console run(s) done: Mon 03-Apr-17   4:31:41 pm
+! Executable: d:\cse\run\cse.exe
+!             03-Apr-17   4:29 pm   (VS 12.0    1329664 bytes)  (HPWH 1.3.2)
 
-! Input file name:  C:\Projects\cse\test\oavtest2.cse
-! Report file name: C:\Projects\cse\test\oavtest2.rep
+! Input file name:  D:\cse\test\oavtest2.cse
+! Report file name: D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0140   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0130   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 19.47    Calls = 1      T/C = 19.4670  
-!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0270   
-!                Total:  Time = 19.51    Calls = 1      T/C = 19.5140  
+!           Simulation:  Time = 14.77    Calls = 1      T/C = 14.7700  
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0180   
+!                Total:  Time = 14.80    Calls = 1      T/C = 14.8040  

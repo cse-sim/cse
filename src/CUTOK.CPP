@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// cutok.cpp: cal non-res engine user language get token stuff
+// cutok.cpp: CSE user language get token stuff
 
 #include <cnglob.h>
 

@@ -1382,6 +1382,8 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			: wh_ashpTy == C_WHASHPTYCH_SANDEN80      ? HPWH::MODELS_Sanden80
 			: wh_ashpTy == C_WHASHPTYCH_GE2012		  ? HPWH::MODELS_GE2012
 			: wh_ashpTy == C_WHASHPTYCH_GE2014		  ? HPWH::MODELS_GE2014
+			: wh_ashpTy == C_WHASHPTYCH_GE2014_80	  ? HPWH::MODELS_GE2014_80
+			: wh_ashpTy == C_WHASHPTYCH_GE2014_80DR   ? HPWH::MODELS_GE2014_80DR
 			: wh_ashpTy == C_WHASHPTYCH_GE2014STDMODE ? HPWH::MODELS_GE2014STDMode
 			: wh_ashpTy == C_WHASHPTYCH_GE2014STDMODE_80 ? HPWH::MODELS_GE2014STDMode_80
 			: wh_ashpTy == C_WHASHPTYCH_RHEEMHB50     ? HPWH::MODELS_RheemHB50
@@ -1667,7 +1669,7 @@ x		xLoss *= max( 0., (wh_tHWOut - 70.)/( 105. - 70.));
 				+ wh_HPWHUse[ 0] + wh_HPWHUse[ 1]	// electricity in
 				- qHW								// hot water energy
 				- deltaHC;							// change in tank stored energy
-	if (fabs( qBal) > .0002)
+	if (fabs( qBal) > .001)		// .0002 -> .001 3-30-2017
 	{	// energy balance error
 		static const int WHBALERRCOUNTMAX = 10;
 		wh_balErrCount++;
@@ -1676,7 +1678,7 @@ x		xLoss *= max( 0., (wh_tHWOut - 70.)/( 105. - 70.));
 				name,
 				Top.When( C_IVLCH_S),	// date, hr, subhr
 				qBal);   				// unbalance calc'd just above
-		if (wh_balErrCount == WHBALERRCOUNTMAX)
+		else if (wh_balErrCount == WHBALERRCOUNTMAX)
 				warn( "DHWHEATER '%s': Skipping further energy balance warning messages.",
 					name);
 	}
