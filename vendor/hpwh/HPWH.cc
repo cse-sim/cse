@@ -54,7 +54,7 @@ const float HPWH::HEATDIST_MINVALUE = 0.0001f;
 const float HPWH::UNINITIALIZED_LOCATIONTEMP = -500.f;
 
 //ugh, this should be in the header
-const std::string HPWH::version_maint = "2";
+const std::string HPWH::version_maint = "3";
 
 #define SETPOINT_FIX	// #define to include fixes for
 						// setpoint-below-water-temp issues
@@ -4106,8 +4106,8 @@ int HPWH::HPWHinit_presets(MODELS presetNum) {
 
 		//logic conditions
 		// resistiveElementTop.addTurnOnLogic(HeatSource::ONLOGIC_topThird, dF_TO_dC(20));
-		resistiveElementTop.addTurnOnLogic(HeatSource::ONLOGIC_topThird_absolute, F_TO_C(105));
-		resistiveElementTop.addShutOffLogic(HeatSource::OFFLOGIC_topNodeMaxTemp, F_TO_C(116.6358));
+		resistiveElementTop.addTurnOnLogic(HeatSource::ONLOGIC_topThird_absolute, F_TO_C(87));
+		// resistiveElementTop.addShutOffLogic(HeatSource::OFFLOGIC_topNodeMaxTemp, F_TO_C(116.6358));
 
 		compressor.addTurnOnLogic(HeatSource::ONLOGIC_bottomThird, dF_TO_dC(33.6883));
 		compressor.addTurnOnLogic(HeatSource::ONLOGIC_standby, dF_TO_dC(11.0648));
