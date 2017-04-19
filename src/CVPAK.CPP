@@ -450,7 +450,7 @@ undef:
 static SI NEAR amfw;				// set by cvdd/cvsd: mfw adjusted for sign. used in cvDouble2s, nexK,
 static SI NEAR ki;				// 0 or number of times divided by 1000 for K format. cvDouble2s inits.
 static SI nDigB4Pt;				// number of digits b4 point, set in cvsd/cvdd, adj in nexK
-static const char ddalpha[]=" kMGTPE???????"; 	// Chars for K format output field overflow handling
+static const char ddalpha[]=" kMGTPEZY?????"; 	// Chars for K format output field overflow handling
 //======================================================================
 
 // 4-92: needs completion of review re producing minimum-overwidth result for xfw -- cvsd at least done.
