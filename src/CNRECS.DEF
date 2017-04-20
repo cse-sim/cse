@@ -3127,8 +3127,41 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *END	// RSYS
 //=============================================================================
 RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult substruct for RSYSRES
-    INT n			// number of intervals added together in this one (divisor for averages)
     
+	*declare "void rsr_Accum( RSYSRES_IVL_SUB* d, BOO firstFlg, BOO lastFlg) const;"
+
+	INT n			// number of intervals added together in this one (divisor for averages)
+
+	// float members to add, hrsOn is first hrsOnAux is last
+	HOURS hrsOn		// operating hours
+	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
+					//   not including defrost
+	ENERGY qh		// heating output w/o fan, Btu
+	ENERGY qcSen	// cooling output w/o fan, Btu
+					//   not including defrost
+	ENERGY qcLat
+	ENERGY qFan
+	ENERGY qDefrost
+	ENERGY qAux
+
+#if 0
+
+	rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
+						//   (includes rs_runF, does not include fan, defrost, or aux heat)
+						//   used for both heating and cooling
+*s *e DBL rs_outLat		// ditto latent, Btuh
+*s *e DBL rs_outFan		// ditto fan heat added to air stream, Btuh
+*s *e DBL rs_outDefrost // ditto defrost heat, Btuh
+						//	  = typically resistance heat added to prevent cold supply air
+						//    0 if not ASHP or if defrost not active
+*s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
+
+*s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
+*s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
+*s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
+*s *e DBL rs_inAux		// auxiliary heating input, Btuh
+#endif
+
 #if 0
  //float members to average in results accumulation. cnguts.h defines assume tDbO is 1st, vf is last.
     //pairs consisting of temperature & humidity (wetbulb temp may be generated when printing)

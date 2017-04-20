@@ -52,12 +52,15 @@ inline int IsMSBCZone( int bcty) { return bcty==MSBCZONE || bcty==MSBCTNODE; }
 
 //----- for ZNRES_IVL_SUB: zone simulation results for 1 interval
 // constants for limits for avg and sum loops, cgnguts.cpp & cgenbal.cpp.  Note members are grouped by type.
-#define oRes(m) offsetof( ZNRES_IVL_SUB, m)				// macro for following defines, and cgresult.cpp.
+#define oRes(m) offsetof( ZNRES_IVL_SUB, m)
+
+//----- for RSYSRES_IVL_SUB: RSYS simulation results for 1 interval
+// constants for limits for avg and sum loops, Note members are grouped by type
+#define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
 
 //----- for AHRES_IVL_SUB: air handler simulation results for 1 interval
-
 // constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then LI's.
-#define oaRes(m) offsetof( AHRES_IVL_SUB, m)				// macro for following defines
+#define oaRes(m) offsetof( AHRES_IVL_SUB, m)
 
 //----- for ZNR.mdSeq[].xi: zone hvac mode sequence ZHX subsript (> 0) or --
 #define MDS_FLOAT (-1)		// in this mode temp is floating; is no active (tstat-ctrl'd) ZHX (Zone Heat Xfer) record.
@@ -96,13 +99,6 @@ const int xstyCEILING = 0;
 const int xstyWALL = 1;
 const int xstyFLOOR = 2;
 
-#if 0
-// RSYS operating modes
-const int smOFF = 0;
-const int smHEAT = 1;
-const int smCOOL = 2;
-const int smVENT = 3;
-#endif
 
 //----------------------- RUNDATA.CPP PUBLIC VARIABLES ----------------------
 

@@ -2521,6 +2521,31 @@ RC RSYS::rs_EndSubhr()
 				rs_fxCapCDay = rs_fxCap[ 0];
 		}
 	}
+
+	// populate results
+	RSYSRES_IVL_SUB& R = RSysResR[ ss].S;
+	RSYSRES_IVL_SUB& RH = RSysResR[ ss].H;
+	R.hrsOn = rs_runF * Top.subhrDur;
+	if (R.hrsOn == 0.f)
+	{	R.qh = R.qcSen = R.qcLat = R.qFan = R.qDefrost = R.qAux = 0.f;
+		if (rs_runFAux > 0.f)
+			printf( "\nUnexpected Aux!");
+	}
+	else
+	{	R.hrsOnAux = rs_runFAux * Top.subhrDur;
+		if (rs_outSen >= 0.)
+		{	R.qh = rs_outSen * Top.subhrDur;
+			R.qDefrost = rs_outDefrost * Top.subhrDur;
+			R.qAux = rs_outAux * Top.subhrDur;
+			R.qcSen = R.qcLat = 0.f;
+		}
+		else
+		{	R.qh = R.qAux = R.qDefrost = 0.f;
+			R.qcSen = rs_outSen * Top.subhrDur;
+			R.qcLat = rs_outLat * Top.subhrDur;
+		}
+		R.qFan = rs_outFan * Top.subhrDur;
+	}
 	return rc;
 }		// RSYS::rs_EndSubhr
 //-----------------------------------------------------------------------------

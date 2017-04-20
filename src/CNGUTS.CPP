@@ -59,10 +59,6 @@ static float verSun[24] = { 0.f };	/* cosine of solar beam incidence angle on ho
 					   Set by makHrSgt call in doBegIvl(); used re bin res file from doIvlAccum().
 					   Added 9-94. */
 
-#undef SKIPACCUM	// define to skip results accumulation during warmup and autosize
-					//   Always skipped prior to 7-2016
-					//   However, results values can be used in expressions, so
-					//   accum is needed.  Code out #undef'd soon.
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
 
@@ -212,6 +208,7 @@ void FC runFazDataFree()
 
 	ZrB.free(); 	// Zones runtime info.  basAnc::free is in lib\ancrec.cpp.
 	ZnresB.free();	// zone simulation results
+	RSysResR.free();	// RSYS results
 	IzxR.free();	// interzone transfers
 	GnB.free();   	// (zone) gains
 	MtrB.free();  	// meters
@@ -971,7 +968,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 // Allocate zone results storage records for each zone and for sum of all zones (Top)
 
 	int i = ZrB.n + 1;				// need a results record for each zone, and one for sum of zones
-	EF( ZnresB.al( i, WRN) )		// alloc ZNRES recs, at once for less fragmentation. destroys old. lib\ancrec.cpp.
+	EF( ZnresB.al( i, WRN) )		// alloc ZNRES recs, at once for less fragmentation. destroys old.
 	do							// (Note: may be no results accumulation during autoSize,
 	{	//  but alloc anyway cuz code several places stores into records)
 		ZNRES *zp;
@@ -982,10 +979,23 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	}
 	while (--i > 0);
 
+// Allocate RSYS results storage records for each zone and for sum of all RSYSs
+
+	i = RsR.n /* + 1*/;			// need a results record for each RSYS, and one for sum of RSYSs
+	EF( RSysResR.al( i, WRN) )		// alloc RSYSRES recs, at once for less fragmentation. destroys old.
+	do							// (Note: may be no results accumulation during autoSize,
+	{							//  but alloc anyway cuz code several places stores into records)
+		RSYSRES* pRSR;
+		RSysResR.add( &pRSR, ABT, i);	// init (to 0) each zone results record, 1 thru i.
+		strcpy( pRSR->name, i <= RsR.n ? RsR.p[i].name : "sum_of_RSYS");	// results name for rpts: name of zone or "sum_of_RSYS"
+	}
+	while (--i > 0);
+
+
 // Allocate air handler results storage records for each air handler and for sum of all air handlers
 
 	i = AhB.n + 1;				// need a results record for each ah, and one for sum of ahs
-	EF( AhresB.al( i, WRN) )			// alloc AHRES recs, all at once for less mem frag. destroys any old. ancrec.cpp.
+	EF( AhresB.al( i, WRN) )			// alloc AHRES recs, all at once for less mem frag. destroys any old.
 	do
 	{
 		AHRES *ahr;
@@ -1447,24 +1457,12 @@ LOCAL void FC NEAR doIvlAccum()
 // uses: Top.ivl: interval subhour, hour, day, month, year.  Coinciding shorter intervals also done.
 
 {
-#if defined( SKIPACCUM)	// bug fix, 7-15-2016
- #if defined( AUSZ_REPORTS)
-	if (Top.isWarmup && !Top.tp_autoSizing)
- 		return;
- #else
-	if (Top.isWarmup)  return;		// no results accumulation during warmup (may also exclude autoSizing)
-	if (Top.tp_autoSizing)  return;	// no results accumulation during autosize, 7-95.
- #endif
-#else
 // always accum during warmup / autosize
 // re possible expression use and prior values
 
-#endif
-
-	ZNRES* resp, *azResp = ZnresB.p + ZnresB.n;   	// last results record is for sum_of record
-
 // accumulate subhour zone and ah results to hour [and subhour sum_of_zones].  There are no subhour meter results nor sums.
 
+	ZNRES* resp;
 	RLUP( ZnresB, resp)				// loop sim results for zones; last record is for sum of zones.  ancrec.h macro.
 	{
 #if 0 && defined( _DEBUG)
@@ -1504,9 +1502,14 @@ LOCAL void FC NEAR doIvlAccum()
 #endif
 	}
 
-	AHRES* ahres, *allAhres = AhresB.p + AhresB.n;
+	RSYSRES* pRSR;
+	RLUP( RSysResR, pRSR)						// loop simulation results for RSYSs. last is sum.
+		pRSR->S.rsr_Accum( &pRSR->H, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour RSYS sim results
+
+	AHRES* ahres;
 	RLUP( AhresB, ahres)						// loop simulation results for air handlers. last is sum.
 		accumAhr( &ahres->S, &ahres->H, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour ah sim results, local, below.
+
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
 
@@ -1551,6 +1554,7 @@ LOCAL void FC NEAR doIvlAccum()
 		}
 	}
 #endif
+	ZNRES* azResp = ZnresB.p + ZnresB.n;   	// last results record is for sum_of record
 	RLUP( ZnresB, resp)				// loop sim results for zones; last record is for sum of zones.  ancrec.h macro.
 	{
 		ZNRES_IVL_SUB *rh = &resp->curr.H;
@@ -1575,7 +1579,7 @@ LOCAL void FC NEAR doIvlAccum()
 			if (fabs(rh->qcMech) > fabs(Top.qcPeak))
 			{
 				Top.qcPeak = rh->qcMech;		// total cooling Btu's to zones in this peak hour
-				Top.qcPeakH = Top.iHr+1;		// hour 1-12
+				Top.qcPeakH = Top.iHr+1;		// hour 1-24
 				Top.qcPeakD = Top.tp_date.mday;	// day of month 1-31
 				Top.qcPeakM = Top.tp_date.month;	// month 1-12
 			}
@@ -1633,13 +1637,26 @@ LOCAL void FC NEAR doIvlAccum()
 		}
 #endif
 	}
+
+	RSYSRES* allRsysRes = RSysResR.p + RSysResR.n;
+	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
+	{	pRSR->H.rsr_Accum( &pRSR->D, Top.isBegDay, Top.isEndDay);		// accumulate hour results to day. local
+#if 0
+		if (pRSR->ss < RSysResR.n)						// if not the sum record (last)
+			pRSR->H.rsr_Accum( &allRsysRes->H, pRSR->ss==1, pRSR->ss==RsR.n);	// also accumulate each hour to sum_of_RSYS
+#endif
+	}
+
+	AHRES* allAhres = AhresB.p + AhresB.n;
 	RLUP( AhresB, ahres)							// loop air handers simulation results incl sum_of.
 	{
 		accumAhr( &ahres->H, &ahres->D, Top.isBegDay, Top.isEndDay);		// accumulate hour ah results to day. local, below.
 		if (ahres->ss < AhresB.n)						// if not the sum record (last)
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
+
 	mtrsAccum( C_IVLCH_D, Top.isBegDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
 
@@ -1685,6 +1702,7 @@ LOCAL void FC NEAR doIvlAccum()
 	}
 	RLUP( AhresB, ahres)							// loop air handers simulation results
 		accumAhr( &ahres->M, &ahres->Y, Top.isFirstMon, Top.isLastDay);		// accumulate month ah results to run (year)
+
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
@@ -1776,6 +1794,72 @@ void ZNRES_IVL_SUB::zr_Init1(
 		}
 	}
 }		// ZNRES_IVL_SUB::zr_Init1
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// RSYS results
+///////////////////////////////////////////////////////////////////////////////
+// float members to sum
+#define RRs1 hrsOn								// first float member to sum (energies)
+#define RRnS ((rsysRes(qAux) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
+//-----------------------------------------------------------------------------
+void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
+
+	RSYSRES_IVL_SUB* d,    	// destination: next longer interval, or same interval for sum_of_ahs
+	BOO firstflg, 			// If TRUE, destination will be initialized before values are accumulated into it
+	BOO lastflg ) const  	// If TRUE, destination means will be computed after values are accumulated.
+
+{
+
+// if first call, copy source into destination, weigh averages in place
+	if (firstflg)
+	{
+		memcpy( d, this, sizeof( RSYSRES_IVL_SUB) );
+		d->n = 0;					// reset call count. used?
+#if 0
+		float *fp2 = &ahres2->ARa1;			// point 1st average in destination
+		float t = ahres1->hrsOn;          	// weighting factor: time interval: sigma subhrDur from source
+		for (int i = 0;  i++ < ARnA; )
+			*(fp2++) *= t;				// averages: times interval; divided by total time at end.
+#endif
+	}
+
+	// not first, add source into destination
+	else
+	{
+		// VAccum( &d->ARl1, ARnL, &ARl1); 	// sum longs, even when ah off: count iterations involved in deciding
+
+		// if (ahres1->hrsOn != 0.)				// if hrsOn is 0 (indicating ah off), skip floats: they will all be 0.
+		{
+#if 0
+			const float* fpS = &ARa1,		// ptrs to 1st average in src and dest
+			const float *fpD = &d->ARa1;	
+			float t = ahres1->hrsOn;          			// weighting factor: time interval: sigma subhrDur from source
+			for (int i = 0;  i++ < ARnA; )
+				*(fpD++) += *(fpS++) * t;				// averages: times interval & add
+#endif
+			if (qcSen < 0.f)
+				printf( "\nCool");
+
+			VAccum( &d->RRs1, RRnS, &RRs1); 	// float values not averages: add each to corress dest member
+		}
+	}
+
+// count call in destination
+	d->n++;					// used?
+
+// on last call, calculate averages for temperature and cfm values
+#if 0
+	if ( lastflg
+			&&  ahres2->hrsOn != 0.)			// not if accumulated time is 0: all values already 0 and would divide by 0.
+	{
+		float t = ahres2->hrsOn;			// divisor is accumulated time in destination
+		float *fp2 = &ahres2->ARa1;		// ptr to 1st float to average (cnguts.h)
+		for (int i = -1; ++i < ARnA; )
+			*(fp2++) /= t;			// divide each by total time (each value mult by its own time as accumulated)
+	}
+#endif
+}               // RSYSRES_IVL_SUB::rs_Accum
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1937,18 +2021,8 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 // uses: Top.ivl: interval subhour, hour, day, month, year.  coinciding shorter intervals also done.
 
 {
-#if defined( SKIPACCUM)	// bug fix, 7-15-2016
- #if defined( AUSZ_REPORTS)
- 	if (Top.isWarmup && !Top.tp_autoSizing)
- 		return;
- #else
- 	if (Top.isWarmup)  return;     	// no results accumulation during warmup
- 	if (Top.tp_autoSizing)  return;	// no results accumulation during autoSize, 7-95
- #endif
-#else
 // always maintain prior values
 // re possible expression use during warmup / autosize
-#endif
 
 // copy each zone's subhour results to prior subhour results
 	ZNRES *resp;
