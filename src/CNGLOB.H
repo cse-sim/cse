@@ -606,10 +606,10 @@ inline float  AVFtoAMF( float avf)  { return avf * 60.f*.075f; }
 
 
 // Powers of 10
-const int PTENSIZE = 16;			// # of pwrs of 10 in Pten array
-const double Pten[PTENSIZE] = {1.,10.,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11,1e12,1e13,1e14,1e15};
-const int NPTENSIZE = 16;			// # of negative pwrs of 10 in NPten array
-const double NPten[NPTENSIZE] = {1.,.1,.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e-10,1e-11,1e-12,1e-13,1e-14,1e-15};	// rob 6-92
+const int PTENSIZE = 21;			// # of pwrs of 10 in Pten array
+const double Pten[PTENSIZE] = {1.,10.,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11,1e12,1e13,1e14,1e15,1e16,1e17,1e18,1e19,1e20};
+const int NPTENSIZE = 21;			// # of negative pwrs of 10 in NPten array
+const double NPten[NPTENSIZE] = {1.,.1,.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20 };	// rob 6-92
 
 const float FHuge = float(1.E38);	// Handy large (not strictly largest) value used for x/0,
 									// search initializations, etc.  Single defn for portability and code clarity.
