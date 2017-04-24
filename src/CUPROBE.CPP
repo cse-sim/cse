@@ -82,16 +82,16 @@ RC FC probe()
 
 	for (USI ancN = 0;  basAnc::ancNext( ancN, &b );  ) 	// loop 'registered' record anchors using ancrec.cpp fcn
 	{
-		if (b->flags & RFTYS)    		// if a "types" basAnc
+		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
 			continue;       			// accept no probes; keep looking for input & run rats with same name
 		if (!stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
-			if (b->flags & RFINP ? o.inB : o.runB)
+			if (b->ba_flags & RFINP ? o.inB : o.runB)
 				return perNx( (char *)MH_U0002,
 							  // "U0002: Internal error: Ambiguous class name '%s':\n"
 							  // "    there are TWO %s rats with that .what.  Change one of them.",
-							  (char *)b->what,  b->flags & RFINP ? "input" : "run" );
-			if (b->flags & RFINP)
+							  (char *)b->what,  b->ba_flags & RFINP ? "input" : "run" );
+			if (b->ba_flags & RFINP)
 				o.inB = b;
 			else
 				o.runB = b;
@@ -118,7 +118,7 @@ RC FC probe()
 
 // for single-record static basAnc such as Top, allow omission of subscript; supply constant 0
 
-		if ( b->flags & RFSTAT			// if a static-record basAnc (expect 1 entry only; inB/runB assumed consistent)
+		if ( b->ba_flags & RFSTAT			// if a static-record basAnc (expect 1 entry only; inB/runB assumed consistent)
 				&&  b->n < 1				// without more than 1 entry (yet)(insurance)
 				&&  tokeIf(CUTPER) )			// if period next -- what would follow subscript
 		{
@@ -244,7 +244,7 @@ RC FC probe()
 
 // finish
 
-	b->flags |= RFPROBED;	// say have compiled a probe into a record of basAnc: do not free its (input records) block b4 run.
+	b->ba_flags |= RFPROBED;	// say have compiled a probe into a record of basAnc: do not free its (input records) block b4 run.
 	// ... not needed for EVEOI/EVFFAZ probe, but set where if another operand changes evf to runtime?
 	parSp->ty = o.ty;			// data type resulting from this probe
 	parSp->evf |= 			// with evf of any preceding sub-expr and subscr/name expr above, if any, combine...
@@ -734,21 +734,21 @@ void FC showProbeNames(int showAll)
 
 // in all basAncs, clear flag we will use to indicate already displayed
 	for (USI ancN = 0;  basAnc::ancNext( ancN, &b);  )	// loop registered record anchors using fcn in ancrec.cpp
-		b->flags &=~RFLOCAL;
+		b->ba_flags &=~RFLOCAL;
 
 
 // loop over basAncs. display input-run pairs together when found (rest of fcn)
 
 	for (ancN = 0;  basAnc::ancNext( ancN, &b);  )	// for each record base-anchor
 	{
-		if (b->flags & (RFLOCAL			// skip if already displayed (via input-run pairing)
+		if (b->ba_flags & (RFLOCAL		// skip if already displayed (via input-run pairing)
 				|RFTYS) )    			// skip if a types basAnc (not expected at startup; names duplicate)
 			continue;
 		if (b->rt & RTBHIDE  &&  !showAll)		// if record type has "hide" bit (*i on record in cnrecs.def),
 			continue;					//  do not display it
-		b->flags |= RFLOCAL;				// say this one displayed
+		b->ba_flags |= RFLOCAL;				// say this one displayed
 		inB = runB = 0;
-		if (b->flags & RFINP)  inB = b;
+		if (b->ba_flags & RFINP)  inB = b;
 		else  runB = b; 	// set input or run basAnc ptr (whichever it is)
 
 		// find run records basAnc to match input basAnc or vica versa; error message if 2 in or 2 run rats with same name
@@ -757,15 +757,15 @@ void FC showProbeNames(int showAll)
 		{
 			if (strcmpi( (char *)b->what, (char *)b2->what))
 				continue;							// name different, skip it
-			if (b2->flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
+			if (b2->ba_flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
 				printf( msg( NULL, (char *)MH_U0025,		//"\nInternal error: Ambiguous class name '%s':\n"
 				(char *)b->what,  			//"   there are TWO %s rats with that .what. Change one of them.\n"
-				b->flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
+				b->ba_flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
 			else
 			{
-				b2->flags |= RFLOCAL;					// say this one displayed too
-				if (b2->flags & RFINP)  inB = b2;
-				else  runB = b2; 	// set input or run records basAnc ptr (whichever it is)
+				b2->ba_flags |= RFLOCAL;	// say this one displayed too
+				if (b2->ba_flags & RFINP)  inB = b2;
+				else  runB = b2; 		// set input or run records basAnc ptr (whichever it is)
 			}
 		}
 
@@ -773,7 +773,7 @@ void FC showProbeNames(int showAll)
 
 		{
 			// 7-92 min subscr is now a basAnc member, recode this when needed.
-			char *subSub = (b->flags & RFSTAT)==0 ?  "[1..]."	// normal (non-static) subscript basAnc: subscript runs 1 up
+			char *subSub = (b->ba_flags & RFSTAT)==0 ?  "[1..]."	// normal (non-static) subscript basAnc: subscript runs 1 up
 			:   b->n < 1           ?  ".     "	// static single-entry (Top, Topi): no subscript needed
 			:   "[0..].";				// static multi-entry (not expected): subscript 0 up
 

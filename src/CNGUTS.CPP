@@ -1838,8 +1838,10 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 			for (int i = 0;  i++ < ARnA; )
 				*(fpD++) += *(fpS++) * t;				// averages: times interval & add
 #endif
+#if 0
 			if (qcSen < 0.f)
 				printf( "\nCool");
+#endif
 
 			VAccum( &d->RRs1, RRnS, &RRs1); 	// float values not averages: add each to corress dest member
 		}

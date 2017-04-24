@@ -72,7 +72,7 @@
 
 /*--------------------------- DEFINES and TYPES ---------------------------*/
 
-// see cnglob.h/exman.h for: NANDLE, NANDAT, UNSET, EXN, ISUNSET, ISNANDLE
+// see cnglob.h for: NANDLE, NANDAT, UNSET, EXN, ISUNSET, ISNANDLE
 
 struct RECREF
 {
@@ -120,7 +120,8 @@ struct EXTAB	// expression table (*exTab[i]) struct
 	UCH fdTy;		// (0 or) target field type (sFdtab[] subscript) 2-91
 	UCH filla;		// alignment filler / avail / future flags etc
 	// original destination of expr, for runtime error msgs (see whatEx()):
-	SI srcIsType;	//  non-0 if a 'type' (see cul.cpp).  suspect can now 12-91 use b->flags & RFTYS; must check cul.cpp carefully.
+	SI srcIsType;	//  non-0 if a 'type' (see cul.cpp)
+					//    suspect can now 12-91 use b->ba_flags & RFTYS; must check cul.cpp carefully.
 	BP srcB;		//  baseAnc where expression originally input
 	TI srcI;		//  record subscript where input
 	SI srcFn;		//  field number where input
@@ -502,7 +503,7 @@ void FC extMove( record *nuE, record *e)	// change expression table entries for 
 		{
 			ex->srcB = nuE->b;
 			ex->srcI = nuE->ss;
-			ex->srcIsType = (nuE->b->flags & RFTYS) != 0;
+			ex->srcIsType = (nuE->b->ba_flags & RFTYS) != 0;
 		}
 	}
 }		// extMove
@@ -518,7 +519,7 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 		{
 			USI off = ex->srcB->fir[ex->srcFn].off;
 			if ( ex->ty==TYSI 					// if integer (too small for nandle)
-			|| *(void **)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
+			 || *(void **)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
 			{
 				USI nuH;
 				if (extAdd(&nuH)==RCOK)				// add exTab entry / if ok
@@ -528,14 +529,14 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 					ex = exTab + h;					// repoint: may have moved
 
 					// initialize duplicate exTab entry
-					memcpy( nuEx, ex, sizeof(EXTAB) );		// start by copying old
+					memcpy( nuEx, ex, sizeof(EXTAB) );	// start by copying old
 					dmIncRef( DMPP( nuEx->ip));			// increment reference count to (same) pseudo-code block, 4-14-92
-					nuEx->srcB = nuB;				// update for new source
+					nuEx->srcB = nuB;					// update for new source
 					nuEx->srcI = nuE->ss;
-					nuEx->srcIsType = ((nuB->flags & RFTYS) != 0);	// determine whether new record is type
-					nuEx->v = UNSET;				// value: not evaluated yet
-					dmfree( DMPP( nuEx->whVal));    			// new expression has no uses yet,
-					dmfree( DMPP( nuEx->whChaf));    			// and no registered increment-on-change locations
+					nuEx->srcIsType = ((nuB->ba_flags & RFTYS) != 0);	// determine whether new record is type
+					nuEx->v = UNSET;					// value: not evaluated yet
+					dmfree( DMPP( nuEx->whVal));    	// new expression has no uses yet,
+					dmfree( DMPP( nuEx->whChaf));    	// and no registered increment-on-change locations
 					nuEx->whValN = nuEx->whValNal = nuEx->whChafN = nuEx->whChafNal = 0;	// ..   this line missing til 5-92
 
 					// append to evaluation order list
@@ -636,7 +637,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 			{
 				w = ex->whVal+i;
 				b = basAnc::anc4n( w->ancN, WRN);   	// point basAnc of record of expr use
-				if (b  &&  b->flags & RFPERSIS)		// if basAnc has flag set, keep this expr use entry
+				if (b  &&  b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this expr use entry
 				{
 					if (j < i)				// if any uses have been deleted,
 					{
@@ -656,7 +657,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 			{
 				w = ex->whChaf+i;
 				BP b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
-				if (b && b->flags & RFPERSIS)		// if basAnc has flag set, keep this entry
+				if (b && b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this entry
 				{
 					if (j < i)				// if any have been deleted,
 					{
@@ -675,7 +676,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 }		    // exClrExUses
 
 //===========================================================================
-RC FC exWalkRecs()									// formerly "exWalkRats" 7-92.
+RC FC exWalkRecs()
 
 // "Walk" the records of all basAncs and 1) issue messages for unset data 2) register any run-time expression uses found.
 
@@ -696,8 +697,8 @@ RC FC exWalkRecs()									// formerly "exWalkRats" 7-92.
 	{
 
 		// skip flagged rats
-		if (b->flags & (RFTYS    		// in "types" (1-91) and ...
-		| RFNOEX) )		// in records of basAncs flagged by application, eg input basAncs, ...
+		if (b->ba_flags & (RFTYS    	// in "types" and ...
+		             | RFNOEX) )		// in records of basAncs flagged by application, eg input basAncs, ...
 			continue;       			// register no expressions.
 
 		// select locations of interest and make table.
@@ -709,8 +710,8 @@ RC FC exWalkRecs()									// formerly "exWalkRats" 7-92.
 		for (SI f = 0;  f < b->nFlds; f++)		// loop fields in record
 		{
 			USI dt = sFdtab[ b->fir[f].fdTy ].dtype;	// get data type from field info
-			if ( GetDttab(dt).size==4 			// if any 4-byte field (FLOAT, CHP, ... ) (GetDttab: srd.h)
-			|| dt==DTVALNDT )				/* or value+data type substruct, which begins with
+			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CHP, ... ) (GetDttab: srd.h)
+			  || dt==DTVALNDT )				/* or value+data type substruct, which begins with
            						   a 4-byte value field (for reportCol 11-91) */
 			{
 				if (oi >= sizeof(os)/sizeof(os[0]))
@@ -1342,7 +1343,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 	return strtprintf( "%s of %s%s %s",
 				mName,
 				(char *)b->what,
-				b->flags & RFTYS ? " type" : "",
+				b->ba_flags & RFTYS ? " type" : "",
 				rName );
 }	// whatNio
 //===========================================================================

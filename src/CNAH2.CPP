@@ -2228,7 +2228,7 @@ RC AH::setMode()		// set ahMode per ts sp control method and supply fan schedule
 	return RCOK;
 }			// AH::setMode
 //-----------------------------------------------------------------------------------------------------------------------------
-/* Notes re AH ZN and ZN2 supply temp control methods, Rob 5-95. Also at start of ul\cncult5.cpp and app\cnah1.cpp.
+/* Notes re AH ZN and ZN2 supply temp control methods, Rob 5-95. Also at start of cncult5.cpp and app\cnah1.cpp.
  *
  * 1. ZN and ZN2 are needed to simulate single zone constant volume systems.
  *    VAV is still allowed but could be removed (says Bruce in fax 5-95) if hard-to-fix problems

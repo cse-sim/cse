@@ -345,7 +345,7 @@ void FC culClean( 		// cul overall init/cleanup routine
 	/* cleanup analysis/coding/calling done: cuparse,cutok,ppxxx.cpp. 10-93
 	                                         exman,cncult,2,3,4,5,6   12-93
 	                                         cueval,sytb - nothing found 12-93
-	                                         beleive all ul\ files now done. */
+	                                         beleive all  files now done. */
 
 	/* notes re this file (cul.cpp) cleanup:
 	   Neither of following repeated here cuz may be delicate & require much initialization:
@@ -1645,7 +1645,7 @@ LOCAL RC FC NEAR clearRat( CULT *c)
 					USI j;
 					for (j = 0;  j < arSz;  j++, IncP( &p, sizeof(char *)) )	// loop array elements
 						if (ISNANDLE(*(void **)p))					// if UNSET, ASING, expr handle, etc (cnglob.h)
-							*(void **)p = NULL;					// just remove value, don't crash in dmfree, 11-95
+							*(void **)p = NULL;				// just remove value, don't crash in dmfree, 11-95
 						else								// else is heap ptr or NULL (dmfree cks 4 NULL)
 							dmfree( (void **)p);		// free the string, set ptr NULL. dmpak.cpp.
 				}
@@ -1653,7 +1653,7 @@ LOCAL RC FC NEAR clearRat( CULT *c)
 	}
 
 // now free records of this basAnc
-	if (!(b->flags & RFSTAT))				// unless "static-record" basAnc like TopR
+	if (!(b->ba_flags & RFSTAT))				// unless "static-record" basAnc like TopR
 	{
 		// >>>> (future) code needed to remove names from central symtab?
 		b->free();					// destroy/delete all of basAnc's records, ancrec.cpp
@@ -2537,12 +2537,12 @@ LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
 
 	for (c = NULL;  xnxC(&c); ) 			// loop over all members of all cults
 	{
-		/* flag input basAncs as input basAncs and to suppress expression evaluation.
-		     because: 1) speed; 2) keep NANDLEs in input records in case used in a later run.
-		     (Run basAncs are separate from input basAncs & have no CULT entries.) */
+		// flag input basAncs as input basAncs and to suppress expression evaluation.
+		// because: 1) speed; 2) keep NANDLEs in input records in case used in a later run.
+		// (Run basAncs are separate from input basAncs & have no CULT entries.)
 		// (need only be in basAncs loop, not entries loop)
-		xSp->b->flags |= RFNOEX  		// flag causes exman.cpp:exWalkRecs to not look for expr references in this basAnc.
-		| RFINP;		// flag tells cuparse.cpp:probe that this is an input basAnc.
+		xSp->b->ba_flags |= RFNOEX  	// flag causes exman.cpp:exWalkRecs to not look for expr references in this basAnc.
+		                  | RFINP;		// flag tells cuparse.cpp:probe that this is an input basAnc.
 
 		// look for ambiguities re implicit ENDs: id of a group also used in any table nested within the group
 		for (x = xStk; x < xSp; x++)			// loop over nestING cults
@@ -2589,7 +2589,7 @@ LOCAL void FC NEAR finalClear()		// clear input data, for cul(4).
 	for (p = NULL;  xnxDatMbr( 1, &p); )    	/* loop over all data in all basAncs, incl TYPEs, incl bad/deleted recs (1).
     						   uses/adds to xStk. below. only use 3-92. */
 	{
-		if (!(xSp->b->flags & RFPROBED) )	// if its basAnc has not been 'probed' (would be accesed during run) 12-91
+		if (!(xSp->b->ba_flags & RFPROBED) )	// if its basAnc has not been 'probed' (would be accesed during run) 12-91
 			if ( xSp->c->ty==TYSTR					// if a string datum
 			||  xSp->c->ty==TYFLSTR && ((VALNDT *)p)->ty==TYSTR )	// or string-or-float now set to string
 				// 11-95: historically this hasn't crashed on nans -- already cleared elsewhere? adding protection anyway...
@@ -2603,7 +2603,7 @@ LOCAL void FC NEAR finalClear()		// clear input data, for cul(4).
 	for (b = 0; nxRat(&b); )		// loop all basAncs ref'd in CULTs, incl nesting & TYPEs sub-basAncs
 	{
 		if ( b != xStk->b 		// do not free top (static) basAnc: insurance
-		 &&  !(b->flags & RFPROBED) )	// do not free input basAncs which are 'probed' by compiled code (set in cuparse.cpp) 12-91
+		 &&  !(b->ba_flags & RFPROBED) )	// do not free input basAncs which are 'probed' by compiled code (set in cuparse.cpp) 12-91
 		{
 #if defined( BUG_COLTYPECOPY)
 			if (strMatch( b->what, "ReportCol type"))
@@ -3589,7 +3589,7 @@ LOCAL RC NEAR rateDuper(
 				// loop fromB entries with ownTi==oldE's ti
 				if (move >= 0)		// not if delete
 				{
-					if (newE->b->flags & RFTYS)	// if dest is a TYPE
+					if (newE->b->ba_flags & RFTYS)	// if dest is a TYPE
 					{
 						E( ratTyR(b) )		// add it if necessary (returns RCOK/RCFATAL), and
 						toB = b->tyB;		//  use dest's types subRatBas
@@ -3676,8 +3676,8 @@ LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for 
 
 		// generate constructor arguments: flags, what, ownB
 
-		USI _flags = RFTYS | RFNOEX  			// say is "types" anchor, disable expression expansion
-		| (b->flags & (RFNAMED|RFOWNED) );  	// same namedness and ?ownedness as base anchor
+		int flags = RFTYS | RFNOEX  				// say is "types" anchor, disable expression expansion
+		   | (b->ba_flags & (RFNAMED|RFOWNED) );  	// same namedness and ?ownedness as base anchor
 
 		char *_what = strsave( strtcat( (char *)b->what, " type", NULL) );	// form record type name
 		if (!_what)								// if failed (strsave issued msg, right?)
@@ -3692,7 +3692,7 @@ LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for 
 		// make anc<T> of main anc's <T> (ie same derived class): use special constructor (of an arbitrary T)
 		// that COPIES given anc INCLUDING VIRTUAL FCNS.  Copies rt, eSz, sOff, etc; drops records, tyB.
 		// CAUTION: must not register w/o adding unregister to d'tor.
-		b->tyB = (BP)new anc<ZNR>( b, _flags, _what, _ownB, 1 );	// construct copy w/ no records; do not register.  ancrec.h.
+		b->tyB = (BP)new anc<ZNR>( b, flags, _what, _ownB, 1 );	// construct copy w/ no records; do not register.  ancrec.h.
 		if (!b->tyB)
 		{
 			//  (known inconsistency: out of memory messages from
@@ -3732,7 +3732,7 @@ LOCAL SI NEAR nxOwRat( 	// next basAnc owned by b for CULT
 			if (ccc->cs==RATE && ccc->b==bb)	// if a duplicate
 				goto conCon;   			// proceed to next cc
 		// if ownB is a types basAnc, access types basAnc of bb
-		if (ownB->flags & RFTYS)		// if owner is TYPEs basAnc
+		if (ownB->ba_flags & RFTYS)		// if owner is TYPEs basAnc
 		{
 			bbTyIf = bb->tyB;     	// get ownee TYPEs basAnc
 			if (bbTyIf==0)			// if no TYPEs in this basAnc
@@ -3800,7 +3800,7 @@ LOCAL SI FC NEAR xnxDatMbr(
 // forms xStk entries per table nesting; xSp restored only at completion.
 // DO NOT NEST CALLS (nxRat, xnxDatMbr have internal static data)
 // walks tree bottom-up -- does most nested basAncs first.
-// includes TYPEs (detect with  if (xSp->b->flags & RFTYS) ... )
+// includes TYPEs (detect with  if (xSp->b->ba_flags & RFTYS) ... )
 // typical use:  for (p = NULL; xnxDatMbr( 0, &p); )
 {
 	static BP NEAR b; 		// self-cleaning: *pp NULL on outer call.
@@ -3844,7 +3844,7 @@ LOCAL SI FC NEAR xnxC(
 
 	for (b = 0;  nxRat(&b); )			// loop over all CULTs/basAncs
 	{
-		if (b->flags & RFTYS)     		// skip any types sub-basAncs
+		if (b->ba_flags & RFTYS)     		// skip any types sub-basAncs
 			continue; 					// .. wanna do each CULT once.
 		for (*pc = NULL;  nxC( pc); )  	// loop over members of cult
 		{
@@ -3867,7 +3867,7 @@ LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
 // call at top xStk level to loop over all basAncs.
 // DO NOT NEST CALLS (nxRat has internal static data)
 // walks tree bottom-up (does subrats first).  Includes TYPEs basAncs.
-// typical use: for (b=NULL; nxRat(&b); ) { [if (b->flags & RFTYS) continue;]
+// typical use: for (b=NULL; nxRat(&b); ) { [if (b->ba_flags & RFTYS) continue;]
 {
 	static XSTK* xSpSave;	// (self-cleaning cuz *pr NULL on outer call, 10-93)
 
@@ -4350,11 +4350,11 @@ LOCAL void FC NEAR drefRes()
 	TI *p;
 	const char* ms;
 
-	for (d = 0;  d < nDref;  d++)		// loop over deferred reference table.  Loop forward in case
+	for (d = 0;  d < nDref;  d++)	// loop over deferred reference table.  Loop forward in case
 	{
 		drfp = dref + d;  			// ... there are (unexpected) unremoved superceded entries.
 		b = drfp->b;
-		if (b->flags & RFTYS)			// don't fill ref's in TYPE rat entries
+		if (b->ba_flags & RFTYS)	// don't fill ref's in TYPE rat entries
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
 		if (drfp->i <= 0 || drfp->i > b->n)
 		{

@@ -4,7 +4,7 @@
 
 // cnhp.cpp -- HEATPLANTs and BOILERs runtime code for CSE.  Created 9-92.
 
-// related code: code used only at setup time: ul\cncult6.cpp
+// related code: code used only at setup time: cncult6.cpp
 //               HW coil model: cncoil.cpp.
 //               class declarations: rccn.h, automatically generated from cnrecs.def.
 

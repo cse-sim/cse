@@ -410,10 +410,10 @@ basAnc::basAnc()		// default c'tor (for derived copy c'tor
 	memset( (char *)this+SZVFTP, 0, sizeof(*this)-SZVFTP); // SZVFTP: virtFcnTblPtr: cnglob.h.
 }			// basAnc::basAnc
 //---------------------------------------------------------------------------------------------------------------------------
-basAnc::basAnc( USI _flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT _rt, USI _sOff, SI dontRegister/*=0*/ )
+basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT _rt, USI _sOff, int dontRegister/*=0*/ )
 {
 	memset( (char *)this+SZVFTP, 0, sizeof(basAnc)-SZVFTP);		// zero all basAnc members but virtFcnTblPtr at front
-	flags = _flags;
+	ba_flags = flags;
 	fir = _fir;
 	nFlds =_nFlds;
 	what = _what;  	// store non-0 member values
@@ -422,12 +422,13 @@ basAnc::basAnc( USI _flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT
 	sOff = _sOff;				// ..
 	mn = 1;						// min record subscript 1 (overwritten with 0 if static)
 	// ptr() = 0;				is done in derived class constructor (deriv vf not avail here; ptr is pure!)
-	if (!dontRegister)  regis();					// conditionally include anchor for nextAnc() iteration
+	if (!dontRegister)
+		regis();					// conditionally include anchor for nextAnc() iteration
 }					// basAnc::basAnc
 //--------------------------------------------------------------------------------------------------------------
 /*virtual*/ basAnc::~basAnc()		// d'tor
 {
-	if (flags & RFTYS)
+	if (ba_flags & RFTYS)
 		dmfree( DMPP( what));
 }		// basAnc::~basAnc
 //---------------------------------------------------------------------------------------------------------------------------
@@ -530,7 +531,7 @@ x					(char /*far!*/ *)what );					// returns RCBAD
 	{
 		nAl = _nAl;   				// save max alloc'd subscript+1.
 		mn = 1;  					// insurance: mn is already 1.
-		flags |= RFHEAP;					// say block is in heap, should be free'd
+		ba_flags |= RFHEAP;			// say block is in heap, should be free'd
 		// the n record spaces are subscripted 1 to n.  The spaces are not "records" till constructed by add().
 		// allocated but unused space[0] "grounds" unset references and allows using 0 subscript as "unset" indicator.
 		// set front members in block's space[0] now, as req'd by validate's check when ptr nz.
@@ -539,12 +540,12 @@ x					(char /*far!*/ *)what );					// returns RCBAD
 			ptr()->rt = rt;  			//   ... (rec(0) is not add'd, and anyway validate error would foil add.)
 			ptr()->b = (BP)this;			// .ss is already 0.  .gud is left 0.
 		}
-#if 1	// 9-10
+
 		// loop all pre-reAl gud records
 		for (int i=mn; i<=n ; i++)
 			if (rec( i).gud)
 				rec( i).FixUp();		// virtual, allow record to fix e.g. link ptrs
-#endif
+
 	}
 	return rc;
 } 		// basAnc::reAl
@@ -554,9 +555,9 @@ RC FC basAnc::free()				// free (non-static) record memory block for anchor
 	desRecs();  			// destroy any records: calls record-derived class virtual d'tor
 	n = nAl = 0;
 	mn = 1;					// minimum subscript 1 to be > n; also 1 expected by reAl/add.
-	if (flags & RFHEAP)		// do not free non-heap (static) block
+	if (ba_flags & RFHEAP)	// do not free non-heap (static) block
 		dmfree( pptr());	//   free memory block and set ptr() null
-	flags &= ~RFHEAP;		// clear all flags but non-heap flag
+	ba_flags &= ~RFHEAP;	// clear all flags but non-heap flag
 	return RCOK;
 }					// basAnc::free
 //---------------------------------------------------------------------------------------------------------------------------
@@ -634,11 +635,11 @@ void basAnc::statSetup( 		// init anchor with given non-expandable static record
 	// initialize run-time anc members.  eSz and rt are init by constructor.
 	setPtr( &r);
 	if (inHeap)
-		flags |= RFHEAP;
+		ba_flags |= RFHEAP;
 	else
-		flags &= ~RFHEAP;	// inHeap arg to flags bit
-	flags |= RFSTAT;		// disable realloc and var data
-	mn = 0;  				// minimum subscript is 0 for static (to save space: 1 large record is typical)
+		ba_flags &= ~RFHEAP;	// inHeap arg to flags bit
+	ba_flags |= RFSTAT;			// disable realloc and var data
+	mn = 0;  					// minimum subscript is 0 for static (to save space: 1 large record is typical)
 	nAl = _n;
 	n = _n - 1;
 	for (TI i = mn; i <= n; i++)
@@ -701,7 +702,7 @@ RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and
 	||  !(rt & RTBRAT) )				//   or base rt not a RAT rt
 		return err( erOp, (char *)MH_X0055, fcnName);	// errMsg "%s() argument not a valid anchor" & abort or return per erOp. rmkerr.cpp.
 
-	if (noStat && (flags & RFSTAT) )			// check staticness
+	if (noStat && (ba_flags & RFSTAT) )			// check staticness
 		return err( erOp, (char *)MH_X0056, fcnName);  	// "%s(): illegal use of static-storage anchor"
 
 	return RCOK;							// if here, all OK

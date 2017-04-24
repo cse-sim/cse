@@ -923,20 +923,13 @@ LOCAL RC FC NEAR funcDef( 	// compile function definition
 
 	/* allocate and fill symbol table block in dm */
 	E( dmal( DMPP( p),    					/* alloc heap space, dmpak.cpp */
-	sizeof(UFST) + (stb.nA - 1)*sizeof( UFARG),
-	WRN) )
+		sizeof(UFST) + (stb.nA - 1)*sizeof( UFARG),
+		WRN) )
 	memcpy( p, &stb, sizeof(UFST)-sizeof( UFARG) );	// basic info
 	memcpy( p->arg, arg, stb.nA * sizeof( UFARG) );	// arg info
 
 	/* add to symbol table */
-#if 0
-	x    E( syAdd( &symtab, CUTUF, FALSE /* case sens */, p, 0, FALSE /* near id */ ) )  	// sytb.cpp
-	x
-#else/* 11-3-94 tentatively making CSE uniformly case-insensitive.
-	See also #define syAdd in ppcmd.cpp and many ul\ strcmp-->strcmpi's re preprocessor cmds etc.
-	*/
 	E( syAdd( &symtab, CUTUF, TRUE /* case insens */, p, 0) )  	// sytb.cpp. changed to case-insens 11-94.
-#endif
 
 	return RCOK;					// also many error returns above.
 	// note dm string storage for id's is NOT (yet) recovered on error returns.

@@ -33,33 +33,6 @@
 	must be kept distinct from NCHOICES (cnglob.h?): 7F8x hi word. */
 
 
-#ifndef GLOB		// now 2-27-92 defined in cnglob.h, but better commented here.
-
-   // generic type to hold a NANDLE or a datum (ptr if string)
-   typedef void * NANDAT;	// note made a ptr not ULI for less casting in the many internal special cases re TYSTR.
-	// CAUTION: for TYSI, NANDAT * points to only 16 bits of user storage.
-	/* CAUTION: use NANDAT *, not NANDAT, function arguments --
-		    because casting a float to NANDAT (in call) causes C to convert to LI,
-		    a) loosing the bit pattern we want preserved and b) terminating execution if was a nan.
-		    (was this when NANDAT was ULI?) But casting a pointer is safe. */
-
-   // "unset" flag value for float/ptr/LI.  cast to desired type.
-   #define UNSET ((NANDAT)NANDLE(0))
-
-   // "expression n" reference for float/ptr/LI (or SI in 4 bytes). h = 1..16383
-   #define NANDLE(h) ((NANDAT)(0xff800000L + h))
-
-   // extract expression # from nandle
-   #define EXN(nandle)  ((USI)(ULI)(nandle))
-
-   // test for unset data
-   #define ISUNSET(nandat)  ((ULI)(nandat)==0xff800000L)
-
-   // test for reference to non-constant expression (or unset)
-   #define ISNANDLE(nandat) (((ULI)(nandat) & 0xffff0000L)==0xff800000L)
-
-#endif	// GLOB
-
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 void FC exClean(CLEANCASE cs);
 RC FC exPile( SI toprec, USI wanTy, USI choiDt, USI fdTy, USI evfOk, USI useCl,

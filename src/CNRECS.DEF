@@ -721,8 +721,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 //========================================================================================================
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*prefix wd_
-    *declare "void wd_Init();"
-	*declare "void wd_ClearDerived( int options=0);"
+    *declare "void wd_Init( int options=0);"
     *declare "WDHR& Copy( const WDHR& wd);"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
@@ -3929,7 +3928,7 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBRECORD
 			Use is: air handler cool coil. */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, ul\cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
     *declare "RC reSetup( AH *ah);"						// ausz size change (captRat), app\cncoil.cpp
     *declare "RC setup(AH *ah);"					// set derived members common code, app\cncoil.cpp, 7-95
     *declare "RC chwSetup(AH *ah);"					// app\cncoil.cpp 7-95
@@ -4071,7 +4070,7 @@ RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBREC
 //=============================================================================
 RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing COIL SUBRECORD with AHP members
 										   Use is: air handler heat coil. */
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, ul\cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
     *declare "RC reSetup( AH *ah);"						// autosize cap'y change (captRat), app\cncoil.cpp
     *declare "RC setup( AH *ah);"						// derived mbrs setup common code, app\cncoil.cpp
     *declare "DBL cprCapCon( FLOAT tout);"					// app\cncoil.cpp
@@ -4720,7 +4719,7 @@ RECORD TU "terminal" *RAT		/* TERMINAL
 		Each terminal can have local heat, air heat, and air cool capabilities.
 		Multiple terminal units are allowed in a zone (two must be used for dual duct systems). */
 
-    *declare "RC setup();"			// initial input check/setup, ul\cncult5.cpp
+    *declare "RC setup();"			// initial input check/setup, cncult5.cpp
     *declare "void fazInit( int isAusz);"
     *declare "RC tu_pass1AtoB();"
     *declare "RC tu_begP1b();"

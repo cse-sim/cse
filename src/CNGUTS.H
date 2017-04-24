@@ -174,7 +174,7 @@ extern VROUTINFO5 PriRep;	// info about primary output file, for appending final
 							// members set from cncult (at input) and vrpak (at close);
 							// room for user to stuff in up to 5 vrh's.
 // run serial number in lieu of future status file, 7-92.
-extern SI cnRunSerial;			// incremented in cgInit; copied to Topi.runSerial in ul\cncult2\TopStarPrf2.
+extern SI cnRunSerial;			// incremented in cgInit; copied to Topi.runSerial in cncult2\TopStarPrf2.
 
 // virtual report unspooling specifications for this run
 extern VROUTINFO* UnspoolInfo;	// dm array of info re unspooling virtual reports into actual report files.

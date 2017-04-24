@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.831: ...
+   0.831: missing TDV file -> UNSET data; 
    0.830: HPWH 1.3.3 (rev GE2014_80DR); committed 4-8-2017
    0.829: HPWH 1.3.2; additional HPWH types; ASHP COP17 bug fix, committed 4-3-2017
    0.828: Top.exShadeModel; HPWH 1.3.1; add'l HPWH types, committed 3-24-2017
