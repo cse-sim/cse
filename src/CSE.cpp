@@ -751,9 +751,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	// local fcn, below, may call fcns in other packages.
 	// corresponding exit call is done by caller to allow multiple returns here.
 
-#if 1
 	doControlFP();
-#endif
 
 	setbuf(stdout, NULL);	// disable buffering on stdout, 6/12/2014
 	/*----- Command line -----*/
@@ -1062,8 +1060,8 @@ noHans:
 
 	/*----- loop over runs specified in input file -----*/
 
-	SI rv;				// cul() ret val: 1 error, 2 go & recall, 3 go & done.
-	SI recall = 1;			// 2 when re-calling cul()
+	int rv;				// cul() ret val: 1 error, 2 go & recall, 3 go & done.
+	int recall = 1;		// 2 when re-calling cul()
 	do					// repeated for additional runs in input file
 	{
 		// init the houly simulator
@@ -1145,7 +1143,7 @@ noHans:
 				rc = exClrExUses(TRUE);		/* clear uses & chaf's of expressions except those uses & chafs
 											   in basAncs not re-set-up by topReCkf: DvriB, RcolB, XcolB 10-95. exman.cpp. */
 				if (rc==RCOK)
-					rc = topReCkf();   		/* re-check input data and re-setup run basAnc records, ul\cncult2.cpp.
+					rc = topReCkf();   		/* re-check input data and re-setup run basAnc records, cncult2.cpp.
 											   First updates Top.tp_autoSizing and re-evaluates "phasely" expressions.
 											   Similar to original topCkf call from cul.cpp:culRun(). */
 
@@ -1155,7 +1153,7 @@ noHans:
 					pInfo( "No main simulation due to error(s) above.");	// NUMS
 
 				if (rv != 2)				// not if cul() said above that there are more stmts in input file
-					cul( 4, NULL, NULL, NULL, NULL);	// delete input data now to make the most memory available. ul\cul.cpp.
+					cul( 4, NULL, NULL, NULL, NULL);	// delete input data now to make the most memory available. cul.cpp.
 				if (rc==RCOK)   			// if ok, find and register expression uses in re-set-up run basAnc records
 					rc = exWalkRecs();   	// search for exprs and register, msg UNSETS in all basAnc records. exman.cpp.
 				tmrStop( TMR_INPUT);

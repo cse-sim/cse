@@ -221,6 +221,7 @@ LOCAL RC topCkfI( int re)
 	   bad reference or other internal error that might cause many spurious messages in later fcns
 	   out of memory (continuation proliferates errors) */
 
+
 #ifdef AUTOSIZE
 	// 're' is TRUE on recall for run after autosize. Pass to called fcns as need found, 6-95.
 
@@ -228,12 +229,11 @@ LOCAL RC topCkfI( int re)
 	// flag use: exman.cpp: retain expr use info between phases for records in these basAncs 10-95, .
 	// list of basAncs must match: those not re-setup here if re;
 	//                             those not cleared by cnguts:runFazDataFree() (use RFPERSIS there?)
-	DvriB.flags |= RFPERSIS;
-	RcolB.flags |= RFPERSIS;
-	XcolB.flags |= RFPERSIS;
+	DvriB.ba_flags |= RFPERSIS;
+	RcolB.ba_flags |= RFPERSIS;
+	XcolB.ba_flags |= RFPERSIS;
 
 //--- first determine whether autosizing or main simulation will occur next, set $autosize, evaluate FAZLY expressions.
-
 	// default or check/fix chAutoSize (input "doAutoSize = YES | NO" or as changed)
 	if (!re)							// on initial call only
 	{
@@ -246,7 +246,7 @@ LOCAL RC topCkfI( int re)
 		{
 			Topi.chAutoSize = C_NOYESCH_NO;   			// change it to no -- no autosizing will be done
 			pWarn( "'DOAUTOSIZE = YES' will be disregarded because \n"
-					   "    no 'AUTOSIZE <x>' commands found in input." );  	// NUMS
+				   "    no 'AUTOSIZE <x>' commands found in input." );  	// NUMS
 		}
 		if (Topi.IsSet( TOPRAT_COOLDSDAY))
 			// can't specify both coolDsDay and coolDsMo
@@ -541,7 +541,9 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 			if (badAuszWthr)
 				rc |= per( "'coolDsDay' (not 'coolDsMo') is required"
 							" when autosizing and weather file is not ET1");
-
+			else if (tp_AuszWthrSource()==1)
+				warn( "Derived weather values (e.g. tGrnd and tMains) are missing when autosizing\n"
+					"   conditions are specified via 'coolDsMo' (as opposed to 'coolDsDay').");
 		}
 	}
 

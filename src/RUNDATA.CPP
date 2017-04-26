@@ -52,7 +52,7 @@
 // Record Array base/anchors (basAncs)
 // see members and comments in cnrecs.def.
 ///////////////////////////////////////////////////////////////////////////////
-// order of construction may control order of display by -p.  Input record basAncs are in ul\cncult.cpp.
+// order of construction may control order of display by -p.  Input record basAncs are in cncult.cpp.
 // "Top" record basAnc. Top record contains top-level / once-only stuff.  Access as Top.mbr or TopR.p->mbr.
 // Set (and used): cncult.cpp (from TopiR).  Used: cnguts (and frees .wfname), cgwthr. 2-91. probably now many more uses 1-92.
 makAncTOPRAT( TopR);   		// "Top" info record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
@@ -144,7 +144,7 @@ VROUTINFO5 PriRep = { { 0 } };	// information about primary output file, for app
 								// has room for 5 vrh's (set where used, in cse.cpp).
 
 // run serial number in lieu of future status file, 7-92.
-SI cnRunSerial = 0;		// incremented in cgInit; copied to Topi.runSerial in ul\cncult2\TopStarPrf2.
+SI cnRunSerial = 0;		// incremented in cgInit; copied to Topi.runSerial in cncult2\TopStarPrf2.
 
 // virtual report unspooling specifications for this run
 VROUTINFO* UnspoolInfo = NULL;	// dm block of info re unspooling virtual reports into actual report files.

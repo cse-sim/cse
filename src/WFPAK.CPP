@@ -311,17 +311,42 @@ static WFDATAMAP WFDATAMap[] =
 }	// XT24WTHR::xw_GetHr
 #endif	// WTHR_T24DLL
 //=============================================================================
-void WDHR::wd_Init()	// initialize all members
+void WDHR::wd_Init(	// initialize all members
+	int options/*=0*/)		// options
+							//   0: init to 0
+							//   1: init to UNSET
 {
-	// bitwise OK (no ptrs)
-	memset( (char *)this, 0, sizeof( WDHR));
-}			// WDHR::wd_Init()
+	if (!options)
+		// bitwise OK (no ptrs)
+		memset( (char *)this, 0, sizeof( WDHR));
+	else
+	{	static const NANDAT unset( UNSET);
+		float unsetf;
+		V unsetf = V unset;
+		// treat as all floats
+		int szFloat = sizeof( WDHR)/sizeof( float);
+		VSet( (float *)this, szFloat, unsetf);
+		wd_sunup = 0;	// only integer, overwrite UNSET
+	}
+}			// WDHR::wd_Init
 //------------------------------------------------------------------------------
+#if 0
 void WDHR::wd_ClearDerived(		// init derived values
 	int options /*=0*/)		// options
-							//  1: init all to "missing" (else 0)
+							//  0: init to 0.
+							//  1: init all to "missing" (-999.f)
+							//  2: init all to UNSET
 {
-	float v = (options&1) ? -999.f : 0.f;
+	float unsetf;
+	NANDAT unset( UNSET);
+	V unsetf = V unset;
+	int bUnset = ISUNSET( unset);
+	int bUnsetf = ISUNSET( unsetf);
+	float v;
+	if (options == 2)
+		v = unsetf;
+	else
+		v = options==0 ? 0.f : -999.f;
 	
 	wd_taDbPk =
 	wd_taDbAvg =
@@ -338,8 +363,8 @@ void WDHR::wd_ClearDerived(		// init derived values
 
 	wd_tGrnd     = 
 	wd_tMains	 = v;
-
 }		// WDHR::wd_ClearDerived
+#endif
 //----------------------------------------------------------------------------
 WDHR& WDHR::Copy( const WDHR& wdhr)
 {	memcpy( (char *)this, (const char*)&wdhr, sizeof( WDHR));
@@ -352,6 +377,8 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 	int wFileFormat /*=ET1*/)	// packed file format
 // returns RCOK
 {
+
+	wd_Init( 1);	// set all to UNSET)
 
 	int i = (wFileFormat==BSGSdemo);	// normally fetch words 0,1,2, but to unscramble demo format, fetch 1,2,0
 	int w = phour[i++];				// word 0, or 1 if scrambled
@@ -376,8 +403,6 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 		wd_EstimateMissingET1( iHr);
 	}
 	// else if ...
-
-	wd_ClearDerived( 1);		// set derived values to "missing"
 
 	return RCOK;
 }		// WDHR::wd_UnPack
@@ -545,9 +570,9 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 		return rc;
 
 	if (!wdy_isLeap)
-	{	// 365 day year: set unused day to 0 (insurance)
+	{	// 365 day year: set unused day to UNSET (insurance)
 		for (int iHr=0; iHr<24; iHr++)
-			wdy_Hr( 366, iHr).wd_Init();
+			wdy_Hr( 366, iHr).wd_Init( 1);
 	}
 
 	wdy_taDbAvg[ 0] /= yrLen;	// mean of daily means
@@ -602,12 +627,17 @@ void WDYEAR::wdy_MeanMax(			// statistics for day
 		if (wd.wd_db > taDbMax)
 			taDbMax = wd.wd_db;
 		taDbMean += wd.wd_db;
-		if (wd.wd_tdvElec > tdvElecMax)
-			tdvElecMax = wd.wd_tdvElec;
-		tdvElecMean += wd.wd_tdvElec;
+		if (ISUNSET( wd.wd_tdvElec))
+			tdvElecMax = tdvElecMean = wd.wd_tdvElec;		// first unset yields unset max and mean
+		else if (!ISUNSET( tdvElecMax))	// if tdvElec OK so far
+		{	if (wd.wd_tdvElec > tdvElecMax)
+				tdvElecMax = wd.wd_tdvElec;
+			tdvElecMean += wd.wd_tdvElec;
+		}
 	}
 	taDbMean = taDbMean / 24.;
-	tdvElecMean = tdvElecMean / 24.;
+	if (!ISUNSET( tdvElecMean))
+		tdvElecMean = tdvElecMean / 24.;
 }		// WDYEAR::wdy_MeanMax
 //-----------------------------------------------------------------------------
 float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
@@ -671,24 +701,42 @@ void WDDAY::wdd_Set(		// set hourly values from daily
 // WHY: values that change daily are copied to all hours of day.
 //      Facilitates probing
 {
-#define SETIF( d, s) if (bForce || IsMissing( d)) d = s;
-	int bForce = (options & 1) == 0;
-	for (int iHr=0; iHr<24; iHr++)
-	{	WDHR& wd = wdHr[ iHr];
-		SETIF( wd.wd_taDbPk,    wdd_taDbPk)
-		SETIF( wd.wd_taDbAvg,   wdd_taDbAvg)
-		SETIF( wd.wd_taDbPvPk,  wdd_taDbPvPk)
-		SETIF( wd.wd_taDbAvg01, wdd_taDbAvg01)
-		SETIF( wd.wd_taDbAvg07, wdd_taDbAvg07)
-		SETIF( wd.wd_taDbAvg14, wdd_taDbAvg14)
-		SETIF( wd.wd_taDbAvg31, wdd_taDbAvg31)
-		SETIF( wd.wd_tGrnd, wdd_tGrnd);
-		SETIF( wd.wd_tMains, wdd_tMains);
-
-		SETIF( wd.wd_tdvElecPk,   wdd_tdvElecPk);
-		SETIF( wd.wd_tdvElecAvg,  wdd_tdvElecAvg);
-		SETIF( wd.wd_tdvElecPvPk, wdd_tdvElecPvPk);
-		SETIF( wd.wd_tdvElecAvg01,wdd_tdvElecAvg01);
+#define SETIF( d, s) if (IsMissing( d)) d = s;
+	if (!options)
+	{	for (int iHr=0; iHr<24; iHr++)
+		{	WDHR& wd = wdHr[ iHr];
+			wd.wd_taDbPk      = wdd_taDbPk;
+			wd.wd_taDbAvg     = wdd_taDbAvg;
+			wd.wd_taDbPvPk    = wdd_taDbPvPk;
+			wd.wd_taDbAvg01   = wdd_taDbAvg01;
+			wd.wd_taDbAvg07   = wdd_taDbAvg07;
+			wd.wd_taDbAvg14   = wdd_taDbAvg14;
+			wd.wd_taDbAvg31   = wdd_taDbAvg31;
+			wd.wd_tGrnd       = wdd_tGrnd;
+			wd.wd_tMains      = wdd_tMains;
+			wd.wd_tdvElecPk   = wdd_tdvElecPk;
+			wd.wd_tdvElecAvg  = wdd_tdvElecAvg;
+			wd.wd_tdvElecPvPk = wdd_tdvElecPvPk;
+			wd.wd_tdvElecAvg01= wdd_tdvElecAvg01;
+		}
+	}
+	else
+	{	for (int iHr=0; iHr<24; iHr++)
+		{	WDHR& wd = wdHr[ iHr];
+			SETIF( wd.wd_taDbPk,    wdd_taDbPk)
+			SETIF( wd.wd_taDbAvg,   wdd_taDbAvg)
+			SETIF( wd.wd_taDbPvPk,  wdd_taDbPvPk)
+			SETIF( wd.wd_taDbAvg01, wdd_taDbAvg01)
+			SETIF( wd.wd_taDbAvg07, wdd_taDbAvg07)
+			SETIF( wd.wd_taDbAvg14, wdd_taDbAvg14)
+			SETIF( wd.wd_taDbAvg31, wdd_taDbAvg31)
+			SETIF( wd.wd_tGrnd, wdd_tGrnd);
+			SETIF( wd.wd_tMains, wdd_tMains);
+			SETIF( wd.wd_tdvElecPk,   wdd_tdvElecPk);
+			SETIF( wd.wd_tdvElecAvg,  wdd_tdvElecAvg);
+			SETIF( wd.wd_tdvElecPvPk, wdd_tdvElecPvPk);
+			SETIF( wd.wd_tdvElecAvg01,wdd_tdvElecAvg01);
+		}
 	}
 #undef SETIF
 }		// WDDAY::wdd_Set
@@ -737,9 +785,9 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 #endif
 	int m, d, h;
 	RC rc = RCOK;
-	wd_ClearDerived( 1);		// clear derived values to "missing"
 	while (1)
-	{	rc = pWF->yac->getLineCSV( erOp, pWF->isLeap, "LLLXXXFFFXXXXXFFFFFFF",
+	{	wd_Init( 1);	// set all to UNSET
+		rc = pWF->yac->getLineCSV( erOp, pWF->isLeap, "LLLXXXFFFXXXXXFFFFFFF",
 			&m, &d, &h,			// month / day / hour (all 1-based)
 			// skip, skip, skip,	// "TDV Elec", "TDV NatGas", "TDV Propane"
 			&wd_db, &wd_wb, &wd_taDp,	// "Dry Bulb", "Wet Bulb", "Dew Point"
@@ -1053,7 +1101,6 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 //		else other value, message issued per erOp
 
 // sets isLeap if leap year file (future ET1 files 10-94).
-// caller should also call WFDATA::wd_Init() to clear weather data record.
 {
 
 #ifdef WANTED // not needed here in CSE 3-95... caller cncult2.cpp now does path search.
@@ -1458,6 +1505,7 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	RC rc = RCOK;
 
 	// handle alternative formats
+	// pwd->wd_Init( 1);		// set all to UNSET -- done in each xxxRead
 	if (wf_IsPacked())
 	{	// format is packed: BSGS, BSGSdemo, ET1, or ... .
 		USI* phour = (USI *)wf_PackedHrRead( jDay, iHr, erOp);
@@ -1815,7 +1863,7 @@ RC WFILE::wf_TDVReadIf(	// read TDV data
 	{	int jHrSought = (jDay-1)*24 + iHr + 1;		// 1-based hour of year
 		rc |= pwd->wd_TDVReadHr( this, jHrSought, erOp);
 	}
-	// else NOP
+	// else NOP (caller initializes wd_TDVxxx to UNSET)
 
 	return rc;
 }			// WFILE::wf_TDVReadIf
@@ -2311,7 +2359,7 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 
 
 	if (!rc)
-	{	wd_ClearDerived( 1);		// set derived values to "missing"
+	{	wd_Init( 1);		// set all to UNSET
 		// missing?
 		wd_db = DegCtoF( db);
 		wd_taDp = DegCtoF( dp);

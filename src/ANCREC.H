@@ -54,8 +54,8 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 //--- bits for basAnc.flags
 #define RFSTAT  0x4000	// "static" record basAnc: not reallocable, min subscr 0 not 1. set ancrec.cpp, tested ancrec,cul,cuprobe.cpp.
 #define RFTYS   0x1000	// is in TYPES sub-basAnc (pted to by a basAnc.tys)
-#define RFNOEX  0x0800	// don't register exprs in records in this basAnc: appl (e.g. ul\cul.cpp) to ul\exman.cpp:exWalkRecs()
-#define RFINP   0x0400	// is an input (not run) records basAnc: ul\cul.cpp to ul\cuparse.cpp:probe.  12-91.
+#define RFNOEX  0x0800	// don't register exprs in records in this basAnc: appl (e.g. cul.cpp) to exman.cpp:exWalkRecs()
+#define RFINP   0x0400	// is an input (not run) records basAnc: cul.cpp to cuparse.cpp:probe.  12-91.
 #define RFPROBED 0x0200	// set if basAnc has been 'probed': do not free (input) basAnc b4 run. cuparse.cpp:probe to cul.cpp:finalClear.
 #define RFLOCAL 0x0100	// flag for private local uses 1-92. used in: cuprobe.cpp:showProbeNames, .
 #define RFHEAP  0x0080	// set if block is in heap, else don't dmfree. 5-92.
@@ -80,7 +80,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     TI mn, n;				// minimum (0 or 1) and max NOT+1 used record subscript (spaces unused if .gud==0)
 	inline int GetSSRange() const { return n-mn+1; }	// count INCLUDING UNUSED
 	inline int GetSS0() const { return mn; }			// subscript of 0th entry
-    USI flags;				// bits, RFxxxx defines above -- also set by user
+    int ba_flags;			// bits, RFxxxx defines above -- also set by user
   // members setable by application user language (cul.cpp)
     BP tyB;				// 0 or ptr to user language TYPES anchor in heap (destructor deletes)
     BP ownB;			// 0 or ptr to anchor whose objects own this anchor's objects (record.ownTi)
@@ -88,24 +88,24 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 							//   simplifies back translation of input names
 
     basAnc();
-    basAnc( USI flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, SI dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, int dontRegister=0 );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
 	virtual void** pptr() = 0;
 	virtual void setPtr( record* r) = 0;
     virtual record& rec(TI i) = 0;   // { return (record)((char *)ptr() + i*eSz); }	// access record i
-	virtual record* GetAtSafe( int i) const	= 0;			// typed pointer to ith record or NULL
-    virtual void* recMbr(TI i, USI off) = 0;				// point record i member by offset
-    void * FC recFld(TI i, SI fn);							// point record i member by FIELD # 3-92
-    RC FC al( TI n, int erOp=ABT, BP _ownB=NULL);		// allocate records block. destroys old recs.
-    RC FC reAl( TI n, int erOp=ABT);						// (re)allocate records block. keeps old recs <= n.
-    RC FC free();										// free block
-    RC add( record **r, int erOp, TI i=0);			// add record to block
-    RC FC del( TI i, int erOp=ABT);						// delete record i
-    void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);   		// set up with static record(s)
-    SI FC isNamed() const { return flags & RFNAMED; }		// records have .name[]: always on, coding out 7-92
-    static BP FC anc4n( USI an, int erOp=ABT);   					// access anchor by anchor #
+	virtual record* GetAtSafe( int i) const	= 0;				// typed pointer to ith record or NULL
+    virtual void* recMbr(TI i, USI off) = 0;					// point record i member by offset
+    void * FC recFld(TI i, SI fn);								// point record i member by FIELD # 3-92
+    RC FC al( TI n, int erOp=ABT, BP _ownB=NULL);				// allocate records block. destroys old recs.
+    RC FC reAl( TI n, int erOp=ABT);							// (re)allocate records block. keeps old recs <= n.
+    RC FC free();												// free block
+    RC add( record **r, int erOp, TI i=0);						// add record to block
+    RC FC del( TI i, int erOp=ABT);								// delete record i
+    void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);  // set up with static record(s)
+    int isNamed() const { return ba_flags & RFNAMED; }		// records have .name[]: always on, coding out 7-92
+    static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
     static SI FC ancNext( USI &an, BP *_b);						// iterate anchors
     RC validate( char *fcnName, int erOp=ABT, SI noStat=0);				// check for valid anchor
@@ -261,11 +261,11 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( char *what, SFIR *sFir, USI nFlds, RCT rt) 				// cpp'tor used for static instances
+    anc( char *what, SFIR *sFir, USI nFlds, RCT rt) 		// cpp'tor used for static instances
         : basAnc( RFNAMED|RFOWNED, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat) )
         { p = 0; }								// soon code out obsolete flags RFNAMED, RFOWNED.
-    anc( const BP src, USI _flags, char  *_what,  				// like-another constructor,
-         BP _ownB, SI dontRegister=0 );    					//  code included only ifdef NEEDLIKECTOR.
+    anc( const BP src, int flags, char  *_what,  			// like-another constructor,
+         BP _ownB, int dontRegister=0 );    				//  code included only ifdef NEEDLIKECTOR.
     virtual ~anc();							// destroys records, and types anchor & its recs.
 
     T* p;									// typed pointer to record array storage block
@@ -326,7 +326,7 @@ template <class T>  class anc : public basAnc
 //=============================================================================
 #ifdef NEEDLIKECTOR		// define where this constructor is USED: avoids generating for classes where not used.
 
-template <class T> anc<T>::anc( const BP src, USI _flags, char *_what, BP _ownB, SI dontRegister/*=0*/)
+template <class T> anc<T>::anc( const BP src, int flags, char *_what, BP _ownB, int dontRegister/*=0*/)
 
 	// like-another-with-records-deleted constructor.
 
@@ -337,10 +337,11 @@ template <class T> anc<T>::anc( const BP src, USI _flags, char *_what, BP _ownB,
     memcpy( this, src, sizeof(anc<T>) );  		// bitwise copy ALL, to incude virt fcn table ptr.
     ancN= nAl= n= 0; p= 0; tyB= 0; 			// clear what don't want: anchor #, records, ul stuff.
     mn = 1;						// mn = 1 when no records allocated even if will be static
-    flags = _flags;  what = _what;  ownB = _ownB; 	// store members given by caller
-    if (!dontRegister)  regis();			// conditionally include in nextAnc iteration.
-							/* CAUTION: don't regis() tyB's or any dm anc<T>'s without
-							   adding unregister logic to destructor, 10-93. */
+    ba_flags = flags;  what = _what;  ownB = _ownB; 	// store members given by caller
+    if (!dontRegister)
+		regis();			// conditionally include in nextAnc iteration.
+							// CAUTION: don't regis() tyB's or any dm anc<T>'s without
+							// adding unregister logic to destructor, 10-93.
 }				// anc<T>::anc
 #endif	// NEEDLIKECTOR
 //-------------------------------------------------------------------------------------------------------------------------

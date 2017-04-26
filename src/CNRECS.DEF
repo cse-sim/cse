@@ -721,8 +721,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 //========================================================================================================
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*prefix wd_
-    *declare "void wd_Init();"
-	*declare "void wd_ClearDerived( int options=0);"
+    *declare "void wd_Init( int options=0);"
     *declare "WDHR& Copy( const WDHR& wd);"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
@@ -3127,8 +3126,41 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *END	// RSYS
 //=============================================================================
 RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult substruct for RSYSRES
-    INT n			// number of intervals added together in this one (divisor for averages)
     
+	*declare "void rsr_Accum( RSYSRES_IVL_SUB* d, BOO firstFlg, BOO lastFlg) const;"
+
+	INT n			// number of intervals added together in this one (divisor for averages)
+
+	// float members to add, hrsOn is first hrsOnAux is last
+	HOURS hrsOn		// operating hours
+	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
+					//   not including defrost
+	ENERGY qh		// heating output w/o fan, Btu
+	ENERGY qcSen	// cooling output w/o fan, Btu
+					//   not including defrost
+	ENERGY qcLat
+	ENERGY qFan
+	ENERGY qDefrost
+	ENERGY qAux
+
+#if 0
+
+	rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
+						//   (includes rs_runF, does not include fan, defrost, or aux heat)
+						//   used for both heating and cooling
+*s *e DBL rs_outLat		// ditto latent, Btuh
+*s *e DBL rs_outFan		// ditto fan heat added to air stream, Btuh
+*s *e DBL rs_outDefrost // ditto defrost heat, Btuh
+						//	  = typically resistance heat added to prevent cold supply air
+						//    0 if not ASHP or if defrost not active
+*s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
+
+*s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
+*s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
+*s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
+*s *e DBL rs_inAux		// auxiliary heating input, Btuh
+#endif
+
 #if 0
  //float members to average in results accumulation. cnguts.h defines assume tDbO is 1st, vf is last.
     //pairs consisting of temperature & humidity (wetbulb temp may be generated when printing)
@@ -3896,7 +3928,7 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBRECORD
 			Use is: air handler cool coil. */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, ul\cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
     *declare "RC reSetup( AH *ah);"						// ausz size change (captRat), app\cncoil.cpp
     *declare "RC setup(AH *ah);"					// set derived members common code, app\cncoil.cpp, 7-95
     *declare "RC chwSetup(AH *ah);"					// app\cncoil.cpp 7-95
@@ -4038,7 +4070,7 @@ RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBREC
 //=============================================================================
 RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing COIL SUBRECORD with AHP members
 										   Use is: air handler heat coil. */
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, ul\cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
     *declare "RC reSetup( AH *ah);"						// autosize cap'y change (captRat), app\cncoil.cpp
     *declare "RC setup( AH *ah);"						// derived mbrs setup common code, app\cncoil.cpp
     *declare "DBL cprCapCon( FLOAT tout);"					// app\cncoil.cpp
@@ -4687,7 +4719,7 @@ RECORD TU "terminal" *RAT		/* TERMINAL
 		Each terminal can have local heat, air heat, and air cool capabilities.
 		Multiple terminal units are allowed in a zone (two must be used for dual duct systems). */
 
-    *declare "RC setup();"			// initial input check/setup, ul\cncult5.cpp
+    *declare "RC setup();"			// initial input check/setup, cncult5.cpp
     *declare "void fazInit( int isAusz);"
     *declare "RC tu_pass1AtoB();"
     *declare "RC tu_begP1b();"

@@ -11,8 +11,8 @@
 
 // TYREF's are supposed to be VEOI/VFAZLY, right? A lot were 0, changed to VEOI 10-9-92. cul.cpp doesn't check evf for TYREF.
 
-/* used in: cnr.exe (derived from \dev\ul\hscult.cpp 8-91)
-            formerly also \dev\ul\hstul.exe (preliminary test for above, not maintained as of 8-91. */
+/* used in: cnr.exe (derived from \dev\hscult.cpp 8-91)
+            formerly also \dev\hstul.exe (preliminary test for above, not maintained as of 8-91. */
 
 /* there are 3 include files for cncult,2,3,4,5,6.cpp (2-92), cuz various inclusions are required first, etc:
 cncult.h: use classes, globally used functions
@@ -186,6 +186,13 @@ void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before sho
 						   and zero record Topi and init its front members.
 						   Topi can then be accessed as static structure,
 						   or via gen'l routines that work thru TopiR.  lib\ancrec.cpp fcn. */
+
+// say WFDATA records have no members set by via expressions
+// prevents exWalkRecs() from msging deliberately UNSET values
+// (TDV values are left UNSET if no TDV file is provided and
+//  and are detected if used in expressions.)
+	WthrR.ba_flags |= RFNOEX;
+	WthrNxHrR.ba_flags |= RFNOEX;
 
 // note rats are now 'registered' in cse.cpp so input and run rats can be intermixed.
 

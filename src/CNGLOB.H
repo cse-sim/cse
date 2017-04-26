@@ -278,11 +278,11 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 
 /*---------------------------- dept of NANs: unset, nandles, nchoices ---------------------------*/
 
-/* a NANDLE is a 32-bit quantity that is not a valid IEEE float number nor an expected string pointer value,
-   used to indicate unset data and to specify the "expression number" of runtime expression entered for the variable
-     or whose value is to be stored in the variable later.  More discussion in exman.h, exman.cpp.
-   A NANDLE contains 0xFF80 in the hi word and 0 for unset or ffff for autosizing or expression number 1-16383 in the low word.
-   CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below) */
+// a NANDLE is a 32-bit quantity that is not a valid IEEE float number nor an expected string pointer value,
+// used to indicate unset data and to specify the "expression number" of runtime expression entered for the variable
+//    or whose value is to be stored in the variable later.  More discussion in exman.h, exman.cpp.
+// A NANDLE contains 0xFF80 in the hi word and 0 for unset or ffff for autosizing or expression number 1-16383 in the low word.
+// CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below)
 
 // type to hold a NANDLE or a datum (ptr if string)
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
@@ -295,13 +295,13 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
 
-/* NCHOICEs are values which can represent one of several choices and which can
-      be stored in a float and distinguished from all numeric values. 2-92.
-   NCHOICEs are used in CHOICN data types, definable thru rcdef.exe per input file cndtypes.def.
-   NCHOICES are stored as IEEE NAN's (not-a-number's) in the form 0x7f80 plus the choice number 1-7f in the hi word.
-   NCHOICES must be kept distinct from UNSET and NANDLES (hi word ff8x) (above/exman.h).
-   CAUTION: to test a float's bit pattern, cast to a pointer then to ULI.
-      Casting directly to ULI causes its numeric value to be converted, altering the bit pattern. */
+//  NCHOICEs are values which can represent one of several choices and which can
+//       be stored in a float and distinguished from all numeric values. 2-92.
+//  NCHOICEs are used in CHOICN data types, definable thru rcdef.exe per input file cndtypes.def.
+//  NCHOICES are stored as IEEE NAN's (not-a-number's) in the form 0x7f80 plus the choice number 1-7f in the hi word.
+//  NCHOICES must be kept distinct from UNSET and NANDLES (hi word ff8x) (above/exman.h).
+//    CAUTION: to test a float's bit pattern, cast to a pointer then to ULI.
+//    Casting directly to ULI causes its numeric value to be converted, altering the bit pattern
 
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
@@ -609,7 +609,7 @@ inline float  AVFtoAMF( float avf)  { return avf * 60.f*.075f; }
 const int PTENSIZE = 21;			// # of pwrs of 10 in Pten array
 const double Pten[PTENSIZE] = {1.,10.,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11,1e12,1e13,1e14,1e15,1e16,1e17,1e18,1e19,1e20};
 const int NPTENSIZE = 21;			// # of negative pwrs of 10 in NPten array
-const double NPten[NPTENSIZE] = {1.,.1,.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20 };	// rob 6-92
+const double NPten[NPTENSIZE] = {1.,.1,.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20 };
 
 const float FHuge = float(1.E38);	// Handy large (not strictly largest) value used for x/0,
 									// search initializations, etc.  Single defn for portability and code clarity.
