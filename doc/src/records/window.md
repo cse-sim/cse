@@ -122,7 +122,7 @@ Window exterior surface (air film) conductance.
   Btuh/ft^2^-^o^F    x > 0             same as owning surface   No             constant
 
 
-When wnModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on wnExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
+Several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on wnExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
 Model            Exposed to ambient              Exposed to zone
 ---------------- ------------------------------- ----------------------------
@@ -141,7 +141,7 @@ Selects the model used for exterior surface convection when wnModel = Forward\_D
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ---------- ----------------- ------------- -------------- -----------------
-          *choices above*  UNIFIED         No             constant
+           *choices above*     UNIFIED         No             constant
 
 **wnExHcLChar=*float***
 

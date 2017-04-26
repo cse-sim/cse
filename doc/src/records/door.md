@@ -176,6 +176,26 @@ Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=d
 ----------------- ----------------- ------------- -------------- -----------------
                                        1               No            subhourly
 
+**drExRf=*float***
+
+Exterior roughness factor.  Typical roughness values:
+
+Roughness Index	   drExRf	 Example
+-----------------  ------  ---------
+1 (very rough)		 2.17	   Stucco
+2 (rough)          1.67 	 Brick
+3 (medium rough)	 1.52 	 Concrete
+4 (Medium smooth)	 1.13	   Clear pine
+5 (Smooth)         1.11    Smooth plaster
+6 (Very Smooth)		 1		   Glass
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "drExHcModel = WINKELMANN:\n  1.66\nelse\n  2.17",
+  required: "No",
+  variability: "constant") %>
+
 **drInHcModel=*choice***
 
 Selects the model used for the inside (zone) surface convection when drModel = Forward\_Difference.

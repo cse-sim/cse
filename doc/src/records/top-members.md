@@ -348,7 +348,7 @@ Selects sky model used to determine relative amounts of direct and diffuse irrad
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
-              *choices above*   ANISOTROPIC   No             constant
+              *choices above*          ANISOTROPIC   No             constant
 
 **skyModelLW=*choice***
 

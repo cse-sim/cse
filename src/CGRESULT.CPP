@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -1727,7 +1727,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 {
 	COL* colp = NULL;
-	char buf[ 1000];
+	char buf[ 2000];
 
 // output row of quoted, comma-separated column head texts
 
