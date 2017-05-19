@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 831
+#define CSEVRSN_MINOR 832
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.832: preliminary UEF instantaneous DHW model, committed 5-19-2017
    0.831: missing TDV file -> UNSET data;
           RSYSRES (preliminary)
    0.830: HPWH 1.3.3 (rev GE2014_80DR); committed 4-8-2017

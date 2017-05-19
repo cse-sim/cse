@@ -3359,7 +3359,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
-  *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel(); }"
+  *declare "int wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
+  *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
   *declare "RC wh_DoHour( float HARL, int wsMult);"
   *declare "RC wh_DoEndPreRun();"
@@ -3374,7 +3375,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//     _ASHPX: air source heat pump (Ecotope HPWH)
 								//     _ELRESX: electric resistance (Ecotope HPWH)
   *i WHTYPECH wh_type;			// heater type
-  								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG
+  								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG,
+								//    _INSTUEF
   *i ANAME wh_desc;				// probe-able description text
   *i WHASHPTYCH wh_ashpTy;		// air source heat pump type, required iff ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
@@ -3397,26 +3399,41 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  
+
   *i FLOAT_GEZ wh_vol;			// storage tank vol, gal
 								//    applicable to STRGxx types
 								//    used only for HPWH ResistanceX, 5-2016
 								//    default=50 if STRGxx else 0
   *i FLOAT_GZ wh_EF;			// rated energy factor
   *i FLOAT_GZ wh_LDEF;			// load-dependent energy factor
-  *i FLOAT_GZ wh_eff;			// efficiency
+  *i FLOAT_GZ wh_UEF;			// rated uniform energy factor
+								//   documentation only re C_WHTYPECH_INSTUEF
+  *i FLOAT_GZ wh_ratedFlow;		// max rated flow per UEF test, gpm
+  *i FLOAT_GZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
+  *i FLOAT_GZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
+  *declare "RC wh_InstUEFInit();"
+  *declare "RC wh_InstUEFDoSubhr( double* draw,	double scale, double xLoss);"
+
+  *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
+  *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
+  *r FLOAT wh_maxFlowX;			// derived max flow for INSTUEF, gal/tick-F
+  *r FLOAT wh_maxInpX;			// input at max flow, Btu/tick
+
+  *i FLOAT_GZ wh_eff;			// efficiency (aka recovery efficiency)
   *i FLOAT_GZ wh_HPAF;			// heat pump adjustment factor
 								//   used for small storage ASHP only
   *i FLOAT_GEZ wh_SBL;			// standby loss, Btuh
   *h FLOAT_GEZ wh_pilotPwr;		// pilot light power, Btuh
-								//   included in
+								//   included in wh_inFuel
   *h FLOAT_GEZ wh_parElec;		// parasitic electric use, W
   *h FLOAT wh_tHWOut;			// average hot water temp, F (at water heater)
 								//   HPWH: as delivered by model (subhr average of tick calls)
 								//   other: DHWSYS.ws_tUse
   *h FLOAT wh_mixDownF;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
-								//   We reduce draws to balance load at ws_tUse.
+								//   draws are reduced to balance load at ws_tUse.
+  *s INt wh_drawTicks;			// duration of current draw, for HPWH and INSTUEF, ticks
+								//   allows detection of startup event
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
   *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
@@ -3431,8 +3448,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//       (includes wh_HPWHxBU)
   *h *e FLOAT wh_inFuel;	//	  fuel (including wh_pilotPwr)
 
-
-  *i FLOAT_GZ wh_input;		// rated input, Btuh (future use?)
+  *i FLOAT_GZ wh_ratedInput;// rated primary input, Btuh (doc only)
+  *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
+							//   never input, derived for INSTUEF
+  *r FLOAT wh_stbyElec;		// electrical power during standby, Btuh
+							//   never input, derive for INSTUEF
 
   *i FLOAT_GZ wh_resHtPwr;	// upper element resistance heating power, W
 							//   used for some models only

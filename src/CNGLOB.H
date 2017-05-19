@@ -615,12 +615,14 @@ const float FHuge = float(1.E38);	// Handy large (not strictly largest) value us
 									// search initializations, etc.  Single defn for portability and code clarity.
 
 // Other constants
-const float SrcMultElect = 3.f;	// Source multiplier for electrical energy (California CEC value)
 const float BtuperWh    =  3.413f;	// Btu per Wh
 const float BtuperkWh   =  3413.f;	// Btu per kWh
-const float BtuSrcperWh = 10.239f;	/* Btu (source energy) per Wh.  Includes California electric
-					   to source conversion factor of 3 (3 * 3.413 = 10.239);
-					   used to convert electrical consumption to source energy */
+#if 0	// obsolete
+x const float SrcMultElect = 3.f;	// Source multiplier for electrical energy (California CEC value)
+x const float BtuSrcperWh = 10.239f;	/* Btu (source energy) per Wh.  Includes California electric
+x					   to source conversion factor of 3 (3 * 3.413 = 10.239);
+x					   used to convert electrical consumption to source energy */
+#endif
 
 // re solar gain distribution (must be known for rccn.h)
 enum { socOPEN, socCLSD, socCOUNT };			// internal shade modes (open, closed)
