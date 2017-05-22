@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -23,8 +23,14 @@
 
 /* History:
    0.832: preliminary UEF instantaneous DHW model, committed 5-19-2017
-   0.831: missing TDV file -> UNSET data;
-          RSYSRES (preliminary)
+   0.831: missing TDV file -> UNSET data,
+          RSYSRES (preliminary),
+          Fix reading of high precision floats (up to 10^-21),
+          increase column header buffer size,
+          add drExRf input,
+          reduce minimum OpenGL for shading to 2.1,
+          fix pixel counting query limit issue,
+          committed 4-26-2017
    0.830: HPWH 1.3.3 (rev GE2014_80DR); committed 4-8-2017
    0.829: HPWH 1.3.2; additional HPWH types; ASHP COP17 bug fix, committed 4-3-2017
    0.828: Top.exShadeModel; HPWH 1.3.1; add'l HPWH types, committed 3-24-2017

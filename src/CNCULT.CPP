@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -617,6 +617,7 @@ CULT( "drLThkF",   DAT,	 SFX( LTHKF),   0,			   0, VEOI,   TYFL,  0,	    .5f,			
 CULT( "drInH",     DAT,  SFX( UI),      0,             0, VEOI,   TYFL,  0,      0.f,                 N,   N),
 CULT( "drExH",     DAT,  SFX( UX),      0,             0, VEOI,   TYFL,  0,      0.f,                 N,   N),
 CULT( "drExAbs",   DAT,  SFXO( ABSSLR), 0,             0, VMHLY,  TYFL,  0,      .5f,                 N,   N),
+CULT( "drExRf",    DAT,  SFX( RF),      0,             0, VEOI,   TYFL,  0,       1.f,                N,   N),
 CULT( "drInAbs",   DAT,  SFXI( ABSSLR), 0,             0, VMHLY,  TYFL,  0,      .5f,                 N,   N),//dfltd in code
 CULT( "drExEpsLW", DAT,  SFXO( EPSLW),  0,             0, VEOI,   TYFL,  0,      .9f,                 N,   N),
 CULT( "drInEpsLW", DAT,  SFXI( EPSLW),	0,             0, VEOI,   TYFL,  0,      .9f,                 N,   N),

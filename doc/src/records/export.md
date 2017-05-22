@@ -135,7 +135,7 @@ Title for use in export header of User-Defined export. Disallowed if *exType* is
 
 **exHeader=*choice***
 
-Use NO to suppress the export header which gives the export type, zone, meter, or air handler being exported, time interval, column headings, etc. You might do this if the export is to be subsequently imported to a program that is confused by the header information.
+Use NO to suppress the export header which gives the export type, zone, meter, or air handler being exported, time interval, column headings, etc. You might do this if the export is to be subsequently imported to a program that is confused by the header information. Alternatively, one may use COLUMNSONLY to print only the column headings. This can be useful when plotting CSV data in a spreadsheet tool or [DView](https://beopt.nrel.gov/downloadDView).
 
 If not suppressed, the export header shows, in four lines:
 
@@ -145,9 +145,12 @@ The *specific* month, day, etc. is NOT shown in the export header (as it is show
 
 The field names may be used by a program reading the export to identify the data in the rows which follow; if the program does this, it will not require modification when fields are added to or rearranged in the export in a future version of CSE.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              YES, NO           YES           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "YES, NO, COLUMNSONLY",
+  default: "YES",
+  required: "No",
+  variability: "constant") %>
 
 **exFooter=*choice***
 

@@ -3,7 +3,7 @@
 //                surfaces for given sun position
 ///////////////////////////////////////////////////////////////////////////////
 
-// Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -603,6 +603,7 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 									: "";
 						rWarn( "%s: calculated sunlit fraction (=%0.4f) s/b <= 1.%s",
 							gx_pParent->classObjTx( 1), fBeam, noMore);
+            PUMBRA(renderScene)(gx_pnIdx);
 					}
 				}
 #endif
