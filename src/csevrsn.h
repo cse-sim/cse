@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 832
+#define CSEVRSN_MINOR 833
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.833: revised UEF model (includes electricity use), committed 5-25-2017
    0.832: preliminary UEF instantaneous DHW model, committed 5-19-2017
    0.831: missing TDV file -> UNSET data,
           RSYSRES (preliminary),

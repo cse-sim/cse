@@ -3416,6 +3416,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
+								//   unused in revised model, 5-25-2017
   *r FLOAT wh_maxFlowX;			// derived max flow for INSTUEF, gal/tick-F
   *r FLOAT wh_maxInpX;			// input at max flow, Btu/tick
 
@@ -3448,11 +3449,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//       (includes wh_HPWHxBU)
   *h *e FLOAT wh_inFuel;	//	  fuel (including wh_pilotPwr)
 
-  *i FLOAT_GZ wh_ratedInput;// rated primary input, Btuh (doc only)
   *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
 							//   never input, derived for INSTUEF
-  *r FLOAT wh_stbyElec;		// electrical power during standby, Btuh
-							//   never input, derive for INSTUEF
+  *r FLOAT_GEZ wh_stbyElec;	// electrical power during standby, W
+							//   default=4, used for INSTUEF
 
   *i FLOAT_GZ wh_resHtPwr;	// upper element resistance heating power, W
 							//   used for some models only

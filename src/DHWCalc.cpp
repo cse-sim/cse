@@ -961,11 +961,22 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
 
 	if (wh_type != C_WHTYPECH_STRGSML)
-	{
-		if (wh_heatSrc == C_WHHEATSRCCH_ASHP
-	     || wh_heatSrc == C_WHHEATSRCCH_ASHPX)
+	{	if (wh_type == C_WHTYPECH_INSTUEF)
+		{	if (IsSet( DHWHEATER_HEATSRC) && wh_heatSrc != C_WHHEATSRCCH_FUEL)
+				rc |= ooer( DHWHEATER_HEATSRC,
+					"whHeatSrc=%s is not allowed %s (use whHeatSrc=Fuel or omit)", 
+					whHsTx, whenTy);
+			wh_heatSrc = C_WHHEATSRCCH_FUEL;
+			rc |= requireN( whenTy, DHWHEATER_UEF, DHWHEATER_RATEDFLOW, DHWHEATER_ANNUALFUEL,
+					DHWHEATER_ANNUALELEC, DHWHEATER_EFF, 0);
+			ignoreN( whenTy, DHWHEATER_EF, 0);
+			// note wh_vol check below (wh_vol=0 OK, else error)
+		}
+		else if (wh_heatSrc == C_WHHEATSRCCH_ASHP
+	          || wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 			rc |= ooer( DHWHEATER_HEATSRC,
 					"whHeatSrc=%s is not allowed %s", whHsTx, whenTy);
+		
 		if (wh_type == C_WHTYPECH_STRGLRG || wh_type == C_WHTYPECH_INSTLRG)
 			rc |= require( DHWHEATER_EFF, whenTy);
 		else if (wh_type == C_WHTYPECH_INSTSML)
@@ -1697,22 +1708,23 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 }		// DHWHEATER::wh_HPWHDoSubhr
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_InstUEFInit()		// one-time setup for UEF-based instantaneous model
+// returns RCOK on success
+//    else other -- do not run
 {
-#if 1
 // parameters used in deriving runtime coefficients
 struct UEFPARAMS
 {	float flowMax;  float flowRE;
-	float A; float B; float C; float D; float E;
+	float A; float B; float C; float D; float E; float honUEF;
 };
 static const UEFPARAMS UEFParams[] = {
-// size	       flowMax  flowRE	      A         B       C        D        E
-{ /*very small*/  0.f,	  1.f,     5452.f,	 9814.f,  -8.00f,	1090.f,	2.000f },
-{ /*low*/		 1.7f,	 1.7f,    20718.f,	89960.f, -74.71f,	8178.f,	8.824f },
-{ /*medium*/	 2.8f,	 1.7f,    29987.f,	98138.f, -73.53f,	8178.f,	8.824f },
-{ /*high*/	      4.f,	  3.f,    45798.f, 206090.f, -98.00f,  14721.f,	9.000f },
+// size	       flowMax  flowRE	      A         B       C        D        E     honUEF
+{ /*very small*/  0.f,	  1.f,     5452.f,	 9814.f,  -8.00f,	1090.f,	2.000f, 0.1667f },
+{ /*low*/		 1.7f,	 1.7f,    20718.f,	89960.f, -74.71f,	8178.f,	8.824f, 0.4275f },
+{ /*medium*/	 2.8f,	 1.7f,    29987.f,	98138.f, -73.53f,	8178.f,	8.824f, 0.5941f },
+{ /*high*/	      4.f,	  3.f,    45798.f, 206090.f, -98.00f,  14721.f,	9.000f, 0.6542f },
 { /*terminator*/  9999999.f }};
 
-RC rc = RCOK;
+	RC rc = RCOK;
 
 	// determine size bin
 	int iSize;
@@ -1722,9 +1734,23 @@ RC rc = RCOK;
 	}
 	const UEFPARAMS& UP = UEFParams[ iSize];
 
-	float P = (UP.A/wh_UEF - UP.B/ wh_eff) / UP.C;	// Btu/min at flow=flowRE and deltaT=67
+	// fraction of energy use that is fuel
+	double F = 0.99;
+	if (wh_annualFuel > 0.f)	// insurance
+		F = 1./(1. + (wh_annualElec/wh_annualFuel)*3412./100000.);
 
-	wh_cycLossFuel = (UP.D / wh_eff) - P*UP.E;	// startup energy, Btu/cycle
+	// electrical power during operation (recovery), W
+	double Pe = (wh_annualElec * 1000./365. - wh_stbyElec * (24.-UP.honUEF))
+				/ UP.honUEF;
+	if (Pe < 0)
+		rc |= oer( "Inconsistent input for whAnnualElec (=%.2f kWh) and whStbyElec (=%.2f W).\n"
+			       "    Derived operating electrical power is < 0.",
+			       wh_annualElec, wh_stbyElec);
+
+	float P = F * (UP.A/wh_UEF - UP.B/ wh_eff) / UP.C;	// fuel at flow=flowRE and deltaT=67, Btu/min
+
+	wh_cycLossFuel = F * (UP.D / wh_eff) - P*UP.E;		// startup fuel, Btu/cycle
+
 
 	// max flow per tick, gal-F/tick
 	// Top.tp_subhrTickDur = tick duration, min
@@ -1736,56 +1762,9 @@ RC rc = RCOK;
 		       * Top.tp_subhrTickDur;		// scale to actual tick duration
 
 	// no electricity use pending model development
-	wh_operElec = 0.f;
-	wh_stbyElec = 0.f;
-	wh_cycLossElec = 0.f;
-
-#else
-// parameters used in UEF tests
-struct UEFPARAMS
-{	float fMax;	float qOut;  float v;  float hOn; float N;
-	float f1;	float qOut1; float v1; float hOn1; 
-};
-static const UEFPARAMS UEFParams[] = {
-// size	         fMax	  qOut      v       hon      N        f1	 qout1    v1	   hon1
-{ /*very small*/  0.f,	 5452.f, 10.f,	0.1667f,	 9.f,	 1.f,	1090.f,	 2.f,	0.0333f },
-{ /*low*/		 1.7f,	20718.f, 38.f,	0.4275f,	11.f,	1.7f,	8178.f,	15.f,	0.1471f },
-{ /*medium*/	 2.8f,	29987.f, 55.f,	0.5941f,	12.f,	1.7f,	8178.f,	15.f,	0.1471f },
-{ /*high*/	      4.f,	45798.f, 84.f,	0.6542f,	14.f,	 3.f,  14721.f, 27.f,	0.15f   },
-{ /*terminator*/  9999999.f }};
-
-	RC rc = RCOK;
-
-	// determine size bin
-	int iSize;
-	for (iSize=0; iSize < 4; iSize++)
-	{	if (UEFParams[ iSize+1].fMax > wh_ratedFlow)
-			break;
-	}
-	const UEFPARAMS& UP = UEFParams[ iSize];
-	
-	float qiElec = wh_annualElec * 3412.f / 365.f;
-	float qiFuel = wh_annualFuel * 100000.f / 365.f;
-
-
-	float TDuef = (UP.v / (60.f *UP.hOn)) / wh_ratedFlow;
-	wh_cycLossFuel = (qiFuel - wh_ratedInput * TDuef * UP.hOn) / UP.N;
-
-	float Qr = UP.qOut1 / wh_eff;
-	float TDre = UP.f1 / wh_ratedFlow;
-	float hStby = 24.f - UP.hOn;
-	float J = TDre*UP.hOn1 + wh_cycLossFuel / wh_ratedInput;
-	float K = TDuef*UP.hOn + UP.N * wh_cycLossFuel / wh_ratedInput;
-
-	float qiFuelRe = wh_ratedInput * TDre * UP.hOn1 + wh_cycLossFuel;
-
-	wh_operElec = (qiElec + qiFuelRe - Qr) / (J * hStby + K);
-
-	wh_stbyElec = Qr - qiFuelRe - wh_operElec*J;
-
-	wh_cycLossElec =  wh_operElec * wh_cycLossFuel / wh_ratedInput;
-#endif
-
+	wh_operElec = Pe * BtuperWh;	// electrical power during opration, Btuh
+	// wh_cycLossElec = 0.f;		// electricity use per start, Btu
+									//    unused in revised model 5-24-2017
 	return rc;
 }		// DHWHEATER::wh_InstUEFInit
 //----------------------------------------------------------------------------
@@ -1807,13 +1786,12 @@ RC DHWHEATER::wh_InstUEFDoSubhr(
 																// max( 1, dT) to prevent x/0
 	double drawLoss = xLoss / (8.345*deltaT);
 
-#if 1
 	// max vol that can be heated in 1 tick
 	double drawFullLoad = wh_maxFlowX / deltaT;
 
-	double volxBU = 0.;		// volume in excess of capacity, gal
+	double volxBU = 0.;			// volume in excess of capacity, gal
 	int nTickNZDraw = 0;		// count of ticks with draw > 0
-	double nTickRcov = 0.;		// fractional ticks of recovery operation
+	double nTickFullLoad = 0.;	// fractional ticks of equiv full load
 	int nTickStart = 0;			// # of startup ticks (draw changes 0 -> nz)
 	for (int iT=0; !rc && iT<Top.tp_nSubhrTicks; iT++)
 	{	
@@ -1821,11 +1799,11 @@ RC DHWHEATER::wh_InstUEFDoSubhr(
 		if (drawForTick > 0.)
 		{	nTickNZDraw++;
 			if (drawForTick > drawFullLoad)
-			{	nTickRcov += 1.;		// full-tick recovery
+			{	nTickFullLoad += 1.;					// full capacity operation
 				volxBU += drawForTick - drawFullLoad;	// excess demand, gal
 			}
 			else
-				nTickRcov += drawForTick / drawFullLoad;
+				nTickFullLoad += drawForTick / drawFullLoad;
 			if (!wh_drawTicks++)	// if no draw in prior tick
 				nTickStart++;		//   count start
 		}
@@ -1835,63 +1813,23 @@ RC DHWHEATER::wh_InstUEFDoSubhr(
 	}
 
 	double tickDurHr = Top.tp_subhrTickDur / 60.;	// tick duration, hr
-	double rcovFuel = wh_maxInpX * nTickRcov;
+	double rcovFuel = wh_maxInpX * nTickFullLoad;
 	double startFuel = wh_cycLossFuel * nTickStart;
-	double rcovElec = wh_operElec * nTickRcov * tickDurHr;
-	double startElec = wh_cycLossElec * nTickStart;
+	double rcovElec = wh_operElec * nTickNZDraw * tickDurHr;	// assume operation for entire tick with any draw
+	// double startElec = wh_cycLossElec * nTickStart;	// unused in revised model
 	// standby in ticks w/o draw
 	double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks-nTickNZDraw) * tickDurHr;
 
 	wh_HPWHxBU = 8.345 * volxBU * deltaT;
 						//   excess heating required to meet ws_tUse
-#else
-	// max vol that can be heated in 1 tick
-	//   67 = UEF temp rise
-	double drawFullLoad = (67. / deltaT) * wh_ratedFlow * Top.tp_subhrTickDur;
 
-	double volxBU = 0.;		// volume in excess of capacity, gal
-	int nTickNZDraw = 0;		// count of ticks with draw > 0
-	double nTickRcov = 0.;		// fractional ticks of recovery operation
-	int nTickStart = 0;			// # of startup ticks (draw changes 0 -> nz)
-	int justOn = 0;
-	for (int iT=0; !rc && iT<Top.tp_nSubhrTicks; iT++)
-	{	
-		double drawForTick = draw[ iT]*scale*wh_mixDownF + drawLoss;	// gal
-		if (drawForTick > 0.)
-		{	nTickNZDraw++;
-			if (drawForTick > drawFullLoad)
-			{	nTickRcov += 1.;		// full-tick recovery
-				volxBU += drawForTick - drawFullLoad;	// excess demand, gal
-			}
-			else
-				nTickRcov += drawForTick / drawFullLoad;
-			if (!wh_drawTicks++)	// if no draw in prior tick
-				nTickStart++;		//   count start
-		}
-		else
-			// standby
-			wh_drawTicks = 0;	// reset draw duration
-	}
-
-	double tickDurHr = Top.tp_subhrTickDur / 60.;	// tick duration, hr
-	double rcovFuel = wh_ratedInput * nTickRcov * tickDurHr;
-	double startFuel = wh_cycLossFuel * nTickStart * tickDurHr;
-	double rcovElec = wh_operElec * nTickRcov * tickDurHr;
-	double startElec = wh_cycLossElec * nTickStart * tickDurHr;
-	// standby in ticks w/o draw
-	double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks-nTickNZDraw) * tickDurHr;
-
-	wh_HPWHxBU = 8.345 * volxBU * deltaT;
-						//   excess heating required to meet ws_tUse
-#endif
-	
 	// energy use accounting, Btu
 	double inFuel = rcovFuel + startFuel;
 	wh_inFuel += inFuel;
 	if (wh_pMtrFuel)
-		wh_pMtrFuel->H.dhw   += mult * inFuel;
+		wh_pMtrFuel->H.dhw += mult * inFuel;
 
-	double inElec   = rcovElec + startElec + stbyElec + wh_parElec * Top.subhrDur * BtuperWh;
+	double inElec   = rcovElec /*startElec*/ + (stbyElec + wh_parElec * Top.subhrDur) * BtuperWh;
 	double inElecBU = wh_HPWHxBU;
 	wh_inElec += inElec;		// hour total
 	wh_inElecBU += inElecBU;
