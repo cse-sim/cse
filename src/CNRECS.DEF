@@ -3433,8 +3433,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h FLOAT wh_mixDownF;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
 								//   draws are reduced to balance load at ws_tUse.
-  *s INt wh_drawTicks;			// duration of current draw, for HPWH and INSTUEF, ticks
-								//   allows detection of startup event
+  *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
+								//   re startup (cyclic) loss model
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
   *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)

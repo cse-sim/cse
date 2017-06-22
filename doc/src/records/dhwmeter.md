@@ -1,9 +1,10 @@
 # DHWMETER
 
-A DHWMETER object is a user-defined "device" that records water consumption as simulated by CSE.  The data accumulated by DHWMETERs can be reported at hourly, daily, monthly, and annual (run) intervals by using REPORTs and EXPORTs of type DHWMTR.
+A DHWMETER object is a user-defined "device" that records water consumption as simulated by CSE.  The data accumulated by DHWMETERs can be reported at hourly, daily, monthly, and annual (run) intervals by using REPORTs and EXPORTs of type DHWMTR. Water use is reported in gallons.
+
 
 DHWMETERs account for water use in the following pre-defined end uses.  The abbreviations in parentheses are used in DHWMTR report headings.
-
+  
 - Total water use (Total)
 - Unknown end use (Unknown)
 - Miscellaneous draws (Faucet)

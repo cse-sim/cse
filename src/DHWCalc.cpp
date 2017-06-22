@@ -1093,7 +1093,7 @@ RC DHWHEATER::wh_Init()		// init for run
 	wh_totOut = 0.;
 	wh_unMetHrs = 0;
 	wh_balErrCount = 0;
-	wh_drawTicks = 0;
+	wh_stbyTicks = 0;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
@@ -1578,7 +1578,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 				DHWMix( pWS->ws_tUse, tOF, pWS->ws_tInlet, wh_mixDownF);
 			tHWOutF += tOF;		// note tOF may have changed (but not tO)
 			nTickNZDraw++;		// this tick has draw
-			wh_drawTicks++;		// track draw duration (info only)
+			wh_stbyTicks = 0;	// reset standby duration
 			qHW += KJ_TO_KWH(
 				     GAL_TO_L( drawForTick)
 				   * HPWH::DENSITYWATER_kgperL
@@ -1586,7 +1586,8 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 				   * (tO - DegFtoC( pWS->ws_tInlet)));
 		}
 		else
-			wh_drawTicks = 0;		// no draw: reset current duration
+			wh_stbyTicks++;		// no draw: accum duration
+								//   (info only)
 
 		// energy use by heat source, kWh
 		// accumulate by backup resistance [ 0] vs primary (= compressor or all resistance) [ 1]
@@ -1804,12 +1805,12 @@ RC DHWHEATER::wh_InstUEFDoSubhr(
 			}
 			else
 				nTickFullLoad += drawForTick / drawFullLoad;
-			if (!wh_drawTicks++)	// if no draw in prior tick
+			if (wh_stbyTicks)	// if no draw in prior tick
 				nTickStart++;		//   count start
 		}
 		else
 			// standby
-			wh_drawTicks = 0;	// reset draw duration
+			wh_stbyTicks++;		// reset draw duration
 	}
 
 	double tickDurHr = Top.tp_subhrTickDur / 60.;	// tick duration, hr
