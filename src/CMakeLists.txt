@@ -24,6 +24,7 @@ add_custom_command(
     "${CMAKE_CURRENT_SOURCE_DIR}/DTTAB.CPP"
     "${CMAKE_CURRENT_SOURCE_DIR}/SRFD.CPP"
     "${CMAKE_CURRENT_SOURCE_DIR}/UNTAB.CPP"
+    "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
   DEPENDS cndtypes.i cnunits.i dtlims.i cnfields.i cnrecs.i
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -201,7 +202,7 @@ set(libsd
 
 target_link_libraries(CSE
   "$<$<CONFIG:Debug>:${libsd}>"
-  "$<$<CONFIG:RelWithDebInfo>:${libs}>"
+  "$<$<CONFIG:RelWithDebInfo>:${libsd}>"
   "$<$<CONFIG:Release>:${libs}>"
   "$<$<CONFIG:MinSizeRel>:${libs}>"
 )
