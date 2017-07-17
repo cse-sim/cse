@@ -1776,6 +1776,7 @@ CULT( "whEF",		 DAT,   DHWHEATER_EF,      0,     0, VEOI,   TYFL,  0,      0.82f
 CULT( "whUEF",		 DAT,   DHWHEATER_UEF,     0,     0, VEOI,   TYFL,  0,        0.f,  N, N),
 CULT( "whStbyElec",  DAT,   DHWHEATER_STBYELEC,  0,   0, VEOI,   TYFL,  0,        4.f,  N, N),
 CULT( "whRatedFlow", DAT,   DHWHEATER_RATEDFLOW, 0,   0, VEOI,   TYFL,  0,        0.f,  N, N),
+CULT( "whLoadCFwdF", DAT,   DHWHEATER_LOADCFWDF, 0,   0, VEOI,   TYFL,  0,        1.f,  N, N),
 CULT( "whAnnualFuel",DAT,   DHWHEATER_ANNUALFUEL,0,   0, VEOI,   TYFL,  0,        0.f,  N, N),
 CULT( "whAnnualElec",DAT,   DHWHEATER_ANNUALELEC,0,   0, VEOI,   TYFL,  0,        0.f,  N, N),
 CULT( "whResHtPwr",	 DAT,   DHWHEATER_RESHTPWR,0,     0, VEOI,   TYFL,  0,     4500.f,  N, N),
