@@ -1896,9 +1896,12 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{	// ASHP cooling autosized
 			//  force cap95 to be consistent with cap47
 			float cap47x = rs_Cap47FromCap95ASHP( rs_cap95);
+#if 0
 			if (cap47x <= rs_cap47)
 				rs_cap95 = rs_Cap95FromCap47ASHP( rs_cap47);
-			else if (IsAusz( RSYS_CAP47))
+			else
+#endif
+			if (IsAusz( RSYS_CAP47))
 				rs_cap47 = cap47x;	// both cap47 and cap95 autosized
 									//   force cap47 to be consistent with cap95
 		}

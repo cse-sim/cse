@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 834
+#define CSEVRSN_MINOR 835
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,8 @@
 // ONLY comments below here
 
 /* History:
+   0.835: heat pump autosize: don't force cap95 to be consistent with cap47
+          committed 7-19-2017
    0.834: UEF model 2nd rev (cooldown-time-dependent startup energy, load carry-forward)
           committed 7-17-2017
    0.833: revised UEF model (includes electricity use), committed 5-25-2017
