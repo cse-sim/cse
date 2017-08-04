@@ -3273,7 +3273,6 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	if (!IsSet( RSYS_CAP35))
 		rs_cap35 = 0.9f   * (rs_cap17 + 0.6f * (rs_cap47 - rs_cap17));
 
-
 #if ASHP_COPREG == 1
 	// "traditional" model
 	if (!IsSet( RSYS_COP47))
@@ -3338,7 +3337,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 }		// RSYS::rs_SetupASHP
 //----------------------------------------------------------------------------
 float RSYS::rs_Cap17RatioASHP() const
-// returns ration cap17 / cap47
+// returns ratio cap17 / cap47
 {
 #if defined( ASHP_CAPRAT2)
 	// multi-segment model from Abram Conant, 5-31-2013
@@ -3766,7 +3765,7 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 					printf( "Dubious low return tdb\n");
 				else if (afRet.as_tdb > 110.f)
 					printf( "Dubious high return tdb\n");
-	#endif
+#endif
 			}
 		}
 		rs_asRet = afRet;		// state = flow w/o amf
@@ -4213,8 +4212,6 @@ RC RSYS::rs_FinalizeSh()
 				rs_PLF = 1.f - rs_CdH * ( 1.f - rs_runF);
 
 				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);			// compressor input
-
-
 #else
 				double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
 				// rs_outLat = 0.;						// total latent output
