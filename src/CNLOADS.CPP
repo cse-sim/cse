@@ -1741,7 +1741,7 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 	else if (auszMode == rsmCOOL)
 	{	if (Top.tp_pass1A)
 		{	// pass1A: warmup with fixed air flow
-			static float cfmPerFt2 = 0.6f;
+			static const float cfmPerFt2 = 0.6f;
 			rs_amfC = AVFtoAMF( rs_areaServed * cfmPerFt2);
 			rs_SetupCapC( rs_areaServed * cfmPerFt2);		// rs_cap95 derived from AVF
 		}
@@ -1764,7 +1764,7 @@ RC RSYS::rs_endP1DsdIter()
 		if (Top.tp_pass1A)
 		{	// pass1A (warmup): system always has fixed size
 			//   after 1st iter, change rs_capH at will (used only for convergence test)
-			//   rs_capH re-inited in rs_rddiinit
+			//   rs_capH re-inited in rs_RddiInit
 			if (Top.dsDayNIt > 1)
 				rs_capH *= f;
 		}
@@ -1790,7 +1790,7 @@ RC RSYS::rs_endP1DsdIter()
 		if (Top.tp_pass1A)
 		{	// pass1A (warmup): system always has fixed size
 			//   after 1st iter, change rs_cap95 at will (used only for convergence test)
-			//   rs_cap95 re-inited in rs_rddiinit
+			//   rs_cap95 re-inited in rs_RddiInit
 			if (Top.dsDayNIt > 1)
 				rs_cap95 *= f;
 		}
@@ -1806,9 +1806,12 @@ RC RSYS::rs_endP1DsdIter()
 			float fX = bracket( .9f, errX+1.f, 1.1f);
 			rs_cap95 *= fX;
 
+#if 1
 			if (rs_cap95 < 1200.f)
 				rs_cap95 = 1200.f;			// never < 0.1 ton
-			else if (rs_cap95 < rs_auszC.az_b)
+			else
+#endif
+			if (rs_cap95 < rs_auszC.az_b)
 				rs_cap95 = rs_auszC.az_b;	// never < previous design day peak
 		}
 
@@ -2464,7 +2467,7 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 							: rs_SEER;
 
 	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
-	rs_EERnfX =  inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;
+	rs_EERnfX =  inpX > 0.f /*&& rs_capnfX < 0.f*/ ? -rs_capnfX / inpX : rs_EER95;
 
 	return rc;
 
@@ -3955,7 +3958,12 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 		znSupReq = rs_amf;
 	else if (znSupReq < 0.)
 		// reverse flow (caused by "backwards" supplyDT)
-		znSupReq = Top.tp_pass1A
+		znSupReq =
+#if 1
+			Top.tp_autoSizing
+#else
+			Top.tp_pass1A
+#endif
 					? 1.				// autosize warmup: ignore
 					: 2. * rs_amf;		// simulation: request "a lot"
 
@@ -4184,7 +4192,7 @@ RC RSYS::rs_FinalizeSh()
 		rs_outLat = rs_runF * rs_capLatCt;
 		rs_outFan = rs_inFan = rs_runF * rs_fanHeatC;	// all fan heat to air
 		rs_PLF = 1.f - rs_CdC * ( 1.f - rs_runF);
-		rs_inPrimary = fabs( rs_outSen / (rs_effCt * rs_PLF));		// compressor power, Btuh
+		rs_inPrimary = fabs( rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.subhrDur;	// compressor energy for step, Btu
 			rs_pMtrElec->H.fanC += rs_inFan * Top.subhrDur;

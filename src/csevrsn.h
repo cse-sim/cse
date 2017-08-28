@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 838
+#define CSEVRSN_MINOR 839
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.839: ..
    0.838: Instantaneous DHW UEF model w/ revised exponential cooldown, 8-1-2017
    0.837: Instantaneous DHW UEF model w/ exponential cooldown, 7-29-2017
    0.836: heat pump autosize: now uses ACM algorithm when both cap47 and cap95 autosized
