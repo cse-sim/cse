@@ -1069,7 +1069,7 @@ CULT( "colGap",      DAT,   COL_COLGAP,    0,       0, VEOI,     TYSI,   0,     
 CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,      N,   0.f,    N,   N),
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,   0.f,    N,   N),
-CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVENDIVL,			// ok to evaluate at end interval
+CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVPSTIVL,			// ok to evaluate at post interval
 TYFLSTR,			// float or string, struct w/ dt.
 0,      N,   0.f,    N,   N),
 CULT( "endReportcol",ENDER, 0,             0,       0, 0,        0,      0,      N,   0.f,    N,   N),
@@ -1089,7 +1089,7 @@ CULT( "colHead",     DAT,   COL_COLHEAD,   0,       0, VEOI,     TYSTR,  0,     
 CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,      N,  0.f,     N,   N),
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,  0.f,     N,   N),
-CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVENDIVL,			// ok to evaluate at end interval
+CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVPSTIVL,			// ok to evaluate at post interval
 TYFLSTR,			// float or string, struct w/ dt.
 0,      N,  0.f,     N,   N),
 CULT( "endExportcol",ENDER, 0,             0,       0, 0,     0,         0,      N,  0.f,     N,   N),
@@ -1251,8 +1251,8 @@ CULT( "rpFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,  0
 CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0,       v 0, 0.f,      N, N),
 CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       v 0, 0.f,      N, N),
 CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       v 0, 1e6,      N, N), // show mBtu. Also in cncult4:addRep().
-CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVENDIVL,		 	// ok if evaluated at end interval
-																		TYLLI, 			// SI condition, dflt TRUE, in LI for NAN
+CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
+																		TYLLI, 				// SI condition, dflt TRUE, in LI for NAN
 																		       0,       v 1L,0.f,      N, N),
 CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0, 0.f,      N, N),
 CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       v 0, 0.f,      N, N),
@@ -1293,7 +1293,7 @@ static CULT exT[] = //----------- EXPORT cmd table, used from cnTopCult and exfT
 	CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
 	CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
 	CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      v 0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
-	CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVENDIVL,		 	// ok if evaluated at end interval
+	CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
 	                                                                        TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
 	                                                                                0,      v 1L,0.f,    N,   N),
 	CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),

@@ -1550,7 +1550,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *i SI colWid	// column width
     *i SI colDec	// colDecimals: max digits after point
     *i JUSTCH colJust	// justification: C_JUSTCH_L or _R
-    *s *e VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCHP in run), used at end report interval.
+    *s *p VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCHP in run), used at end report interval.
  //derived
     TI nxColi		// for runtime: COL subscript of next column in this report, 0 if last one
 *END		// COL
@@ -3763,11 +3763,11 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "RC bt_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC bt_Init();"
-  *declare "RC bt_DoHour();"
-  *declare "float bt_CalcAdjLoad(MTR m);"
+  *declare "RC bt_DoHour( int stage);"
+  *declare "float bt_CalcAdjLoad(const MTR& m) const;"
 
   *i TI bt_meter;			// meter for system electricity production
-  *f ENDUSECH bt_endUse		// end use of energy. defataults to "BT"
+  *f ENDUSECH bt_endUse		// end use of energy. defaults to "BT"
   *r NOYESCH bt_useUsrChg   // YES: user specifies charge request;
 							// NO (default): calculate charge request via
 							//               default strategy
@@ -3778,13 +3778,13 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *h FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
   *h FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
   *h FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
-  *h FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
+  *h *e FLOAT bt_chgReq     // battery charge request (kW) +=charge;-=discharge
   *h FRAC bt_soeBegIvl      // battery SOE at beginning of interval
   *h *e FLOAT bt_loadSeen   // the adjusted load seen by the battery that step (kW)
-  *h *e FRAC bt_soe         // battery state of energy (SOE) (0 <= SOE <= 1)
+  *h *p FRAC bt_soe         // battery state of energy (SOE) (0 <= SOE <= 1)
 							// represents the end of interval SOE.
-  *h *e FLOAT_GEZ bt_cycles // accumulated battery cycles
-  *h *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
+  *h *p FLOAT_GEZ bt_cycles // accumulated battery cycles
+  *h *p FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
 
 *END		// BATTERY
 //=============================================================================
@@ -3817,43 +3817,46 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
  
 	// accum functions; see CAUTION below
  	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
-	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl);"
+	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
+	*declare "double mtr_NetBldgLoad() const;"
 
-    float tot		// total of following specific end uses.  Code assumes precedes them.
+    *p float tot		// total of following specific end uses.  Code assumes precedes them.
+						//  = allEU + bt + pv
     // Use by purpose (end use), energy used in Btu:
     // CAUTION: order of members MATCHES DTENDUSECH choices (cndtypes.def)
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
-    float clg		// space cooling.  code assumes 1st member.
-    float htg		// space heating incl heat pump compressor
-    float hp		// heat pump auxiliary (backup) heat
-    float dhw		// domestic (service) hot water heating
+    *e float clg		// space cooling.  code assumes 1st member.
+    *e float htg		// space heating incl heat pump compressor
+    *e float hp		// heat pump auxiliary (backup) heat
+    *e float dhw		// domestic (service) hot water heating
 					//   (for HPWH, compressor+misc energy)
-	float dhwBU		// domestic (service) hot water backup
+	*e float dhwBU		// domestic (service) hot water backup
 					//   (= HPWH resistance heating energy)
-    float fanC		// fans - cooling and cooling ventilation
-    float fanH		// fans - heating
-    float fanV		// fans - IAQ ventilation
-    float fan		// fans - other
-    float aux		// HVAC auxiliaries and parasitics, not including fans
-    float proc		// process energy
-    float lit		// lighting
-    float rcp		// receptacles
-    float ext		// external -- outdoor lights, etc
-    float refr		// refrigeration
-    float dish		// dish washing
-    float dry		// clothes drying
-    float wash		// clothes washing
-    float cook		// cooking
-    float usr1		// user-defined category 1
-    float usr2		// user-defined catagory 2. code may assume is last member.
-	float bt		// battery output (negative)
-    float pv		// photovoltaic array output (negative)
+    *e float fanC		// fans - cooling and cooling ventilation
+    *e float fanH		// fans - heating
+    *e float fanV		// fans - IAQ ventilation
+    *e float fan		// fans - other
+    *e float aux		// HVAC auxiliaries and parasitics, not including fans
+    *e float proc		// process energy
+    *e float lit		// lighting
+    *e float rcp		// receptacles
+    *e float ext		// external -- outdoor lights, etc
+    *e float refr		// refrigeration
+    *e float dish		// dish washing
+    *e float dry		// clothes drying
+    *e float wash		// clothes washing
+    *e float cook		// cooking
+    *e float usr1		// user-defined end use 1
+    *e float usr2		// user-defined end use 2
+	*p float bt			// battery output (negative)
+    *e float pv			// photovoltaic array output (negative)
+	*e float allEU		// subtotal, clg .. usr2 (= load w/o bt and pv)
  // cost results. for now (11-93), must report with probes. Code (cnguts) may assume in this order, after uses.
-    float cost		// accumulated  tot*rate
-    float dmdCost	// largest dmd*dmdRate to month level, then accumulates (cnguts.cpp:mtrAccum)
+    *p float cost		// accumulated  tot*rate
+    *p float dmdCost	// largest dmd*dmdRate to month level, then accumulates (cnguts.cpp:mtrAccum)
  //demand results. related code: cnguts.cpp:mtrAccum. for now, must be reported with probes. rob 11-93.
-    float dmd	 	// peak use in interval; hourly value same as .tot.
-    SHOY  dmdShoy	// peak time as subhour of year, subhr unused: 4*(hr+24*jDay).
+    *p float dmd	 	// peak use in interval; hourly value same as .tot.
+    *p SHOY  dmdShoy	// peak time as subhour of year, subhr unused: 4*(hr+24*jDay).
 *END		// MTR_IVL_SUB
 //=============================================================================
 RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, endUse for entire building 1-92

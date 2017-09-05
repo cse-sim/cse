@@ -1,4 +1,4 @@
-@echo off
+:: @echo off
 :: RCDEFX.BAT -- run rcdef for CSE
 :: Creates dttab.cpp, untab.cpp, srfd.cpp, dtypes.h, rctypes.h, rccn.h.
 :: args: %1

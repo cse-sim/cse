@@ -30,9 +30,9 @@ extern void * NEAR stbk; 	// symbol table value ptr, set by toke() for already-d
 extern SI NEAR isWord;  	// non-0 if word: reserved, defined, or CUTID.
 
 /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees, incl cuprobe.cpp. */
-extern USI NEAR evfOk;  	/* evaluation frequencies allowed bits for current expression,
-				   ffff-->no limits.  EVENDIVL bit here means end-of-interval evaluation ok.
-				   also ref'd in cuprobe.cpp. */
+extern USI NEAR evfOk;  	// evaluation frequencies allowed bits for current expression,
+							// ffff-->no limits.  EVENDIVL bit here means end-of-interval evaluation ok.
+							// also ref'd in cuprobe.cpp.
 extern char * NEAR ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
 
 /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.

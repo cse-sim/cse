@@ -385,15 +385,14 @@ void FC culClean( 		// cul overall init/cleanup routine
 //===========================================================================
 SI FC cul( 	// public entry to compile user language commands from open input file, using given table.
 
-	SI cs,	/* case: 0: opt'l prelim init, flag input basAncs, set input basAnc ownership, etc, eg re probe names rpt (CSE -p).
-                         1: first call (except poss cs 0 call), initialize, use cult.
-  			 2: recall (after execution after return 2), continue from current internal state & input file position.
-	  		 3: just close file (use after error elsewhere after 2 return).  Returns 1.
-	  		 4: clear input data, free input basAncs and DM alloc'd here:
-	  		    call for max DM for last run, or re finding unfree'd DM. Uses no other args. Returns 1. */
-
+	SI cs,	// case: 0: opt'l prelim init, flag input basAncs, set input basAnc ownership, etc, eg re probe names rpt (CSE -p).
+            //   1: first call (except poss cs 0 call), initialize, use cult.
+  			//   2: recall (after execution after return 2), continue from current internal state & input file position.
+	  		//   3: just close file (use after error elsewhere after 2 return).  Returns 1.
+	  		//   4: clear input data, free input basAncs and DM alloc'd here:
+	  		//      call for max DM for last run, or re finding unfree'd DM. Uses no other args. Returns 1.
 	const char* fName,	// file name (case 1)
-	char *defex,	// default extension (must include leading period)
+	char* defex,	// default extension (must include leading period)
 
 	CULT *cult,  	// top-level table, used if cs==1
 	record *e,   	// ptr to basAnc record (entry) to rcv top level data
@@ -2738,13 +2737,13 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	USI fdTy,		// 0 (FDNONE?) or rec def fld type: dtype (for choices), units (for floats) and limit type are used.
 	USI evf, 		// permissible eval frequency bits, 0 for constant.
 	USI useCl,		// "use class" for selective expr evaluation 3-91
-	USI f,		/* flag bits:
-			     ARRAY: enables comma as a terminator (CUTCOM returned in tokTy)
-    			   these options should be used with TYID and evf=0:
-                             SUM_OK (cul.h): accept "sum" (returns RC_SUM).
-                             ALL_OK (cul.h): accept "all" (returns RC_ALL)
-			     ARRAY and ALL_OK: also accept "all_but" (returns RC_ALLBUT)
-                             [ELECTRIC_OK (cul.h): accept "all" (returns RC_ELECTRIC)] */
+	USI f,			// flag bits:
+					// ARRAY: enables comma as a terminator (CUTCOM returned in tokTy)
+    				// these options should be used with TYID and evf=0:
+					//    SUM_OK (cul.h): accept "sum" (returns RC_SUM).
+					//    ALL_OK (cul.h): accept "all" (returns RC_ALL)
+					//    ARRAY and ALL_OK: also accept "all_but" (returns RC_ALLBUT)
+                    //    [ELECTRIC_OK (cul.h): accept "all" (returns RC_ELECTRIC)]
 	char *what,		// token text for errMsgs or NULL to use xSp->c->id.
 	NANDAT *pp,		// receives result (dm ptr for TYSTR), or "NANDLE" (see exman.h) if a run-time expr.
 	USI *pGotTy,  	// NULL or rcvs cuparse type found, eg TYFL or TYSTR for ty=TYFLSTR, TYSI for TYDOY. 11-91.
@@ -2793,10 +2792,10 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 		useCl,			// use Class for non-constants
 		what, 			// id to insert in error messages
 		defTyping,		// destination info, for runtime errMsgs ...
-		xSp->b,		// ... not used if evf 0 or expr constant ...
+		xSp->b,			// ... not used if evf 0 or expr constant ...
 		xSp->i, 		// ... don't matter for non-field iqx() calls.
 		xSp->c->fn + xSp->j,	// ...
-		pp,			// receives result or NANDLE
+		pp,				// receives result or NANDLE
 		&gotTy,  		// rcvs type of result
 		pGotEvf );		// NULL or rcvs evf of result
 	if (rc!=RCOK)		// if error (exPile has perNx'd)

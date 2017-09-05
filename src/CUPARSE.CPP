@@ -602,8 +602,9 @@ LOCAL SYTBH symtab = { NULL, 0 };
  SI NEAR isWord = 0;     	// nz if word: undef (CUTID), user-def (CUTUF, CUTUV), or reserved (CUTVRB CUTSF etc).
 
  /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees. */
- USI NEAR evfOk = 0xffff;	/* evaluation frequencies allowed bits for current expression, ffff-->no limits.
-							EVENDIVL bit here means end-of-interval evaluation ok. also ref'd in cuprobe.cpp. */
+ USI NEAR evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
+							// EVENDIVL/EVPSTIVL bit here means end/post-of-interval evaluation ok.
+							// also ref'd in cuprobe.cpp.
  char * NEAR ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
  LOCAL USI NEAR choiDt = 0;	// choice type (dtypes.h) for TYCH (incl TYNC): specifies ok choices & their conversions.
  // DTBCHOICB and DTBCHOICN bits determine whether 2-byte or 4-byte choice values are generated.
@@ -989,17 +990,17 @@ RC FC funcsVarsClear()	// remove all user functions and (future) variables from 
 //==========================================================================
 RC FC exOrk(	// compile expression from current input file, return constant value or pseudo-code
 
-	SI toprec,		// precedence to which to parse, or -1 to default
-	USI wanTy, 		// desired type (cuparse.h) TYSI TYFL TYSTR TYFLSTR TYSTR|TYSI TYID (rets TYSTR) TYID|TYSI
-	//                          TYCH (2 or 4 byte) TYNC (rets TYFL / TYCH / TYNC=runtime determined)
-	USI choiDtPar,	// DTxxx data type (dtype.h) when wanTy is TYCH or TYNC, else not used.
-	USI evfOkPar,  	// 0xffff or acceptable eval freq (and EVENDIVL) bits: other evf's error
+	SI toprec,			// precedence to which to parse, or -1 to default
+	USI wanTy, 			// desired type (cuparse.h) TYSI TYFL TYSTR TYFLSTR TYSTR|TYSI TYID (rets TYSTR) TYID|TYSI
+		                //    TYCH (2 or 4 byte) TYNC (rets TYFL / TYCH / TYNC=runtime determined)
+	USI choiDtPar,		// DTxxx data type (dtype.h) when wanTy is TYCH or TYNC, else not used.
+	USI evfOkPar,  		// 0xffff or acceptable eval freq (and EVxxxIVL) bits: other evf's error
 	char *ermTxPar, 	// NULL or text describing preceding verb etc for err msgs
 	USI *pGotTy,		// NULL or receives data type found (useful eg when TYFLSTR requested)
-	USI *pEvf,		// receives cleaned evaluation frequency bits
-	SI *pisK,		// receives non-0 if expression is constant
-	void *pvPar,		/* if constant, rcvs value, <= 4 bytes (ptr if TYSTR), else not changed -- caller may pre-store nandle.
-   			   RECEIVES 4 BYTES even for SI or 2-byte choice value (caller truncates). */
+	USI *pEvf,			// receives cleaned evaluation frequency bits
+	SI *pisK,			// receives non-0 if expression is constant
+	void *pvPar,		// if constant, rcvs value, <= 4 bytes (ptr if TYSTR), else not changed -- caller may pre-store nandle.
+   						//   RECEIVES 4 BYTES even for SI or 2-byte choice value (caller truncates).
 	PSOP **pip )		// rcvs ptr to code in dm (if not constant) else NULL
 /* also, on return, tokty reflects terminating token.
    ; , ) ] terminators passed; verb or other ungotten. */
@@ -1724,19 +1725,13 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 		// issue message if evf bits unacceptable per global set by exOrk()
 		// can EVFDUMMY get here? 3-91.  YES!, while compiling any subexpr within a function, 11-95.
 		{
-#if 0
-x			USI bb = parSp->evf & ~evfOk;				// bits 1 in .evf, 0 in evfOk
-#else// re MH evfOk dependency added in cleanEvf, 9-16-95.
-			USI evfC = cleanEvf( parSp->evf, evfOk);		/* clean up evf per context for check and msg, but don't save yet
-								   in case eg DAY later added to MN|HR (see cleanEvf). 9-95. */
-#if 1 // 11-25-95 making fcns work, also exOrk, cleanEvf, evfTx changes.
+			USI evfC = cleanEvf( parSp->evf, evfOk);	// clean up evf per context for check and msg, but don't save yet
+														// in case eg DAY later added to MN|HR (see cleanEvf)
 			evfC &= ~EVFDUMMY;	// here disregard "contains dummy arg ref, don't konstize" flag:
 								//    normally on here in fcn, cleared by caller funcDef. 11-25-95
-#endif
-			USI bb = evfC & ~evfOk;				// bad bits: 1 in evfC, 0 in evfOk
-#endif
-			if (bb)						// if any bad bits
-			{	if (bb & EVENDIVL)
+			USI bb = evfC & ~evfOk;			// bad bits: 1 in evfC, 0 in evfOk
+			if (0 && bb)						// ?EV? if any bad bits
+			{	if (bb & EVXBEGIVL)
 				{
 					rc = perNx( (char *)MH_S0025,   		/* "Value varies at end of %s \n"
 								   "    where only start-of-interval variation permitted%s.\n"
@@ -3456,50 +3451,32 @@ LOCAL SI FC NEAR isKE(		// test if *parSp is a constant expression
 }		// isKE
 
 //==========================================================================
-#if 1 // 11-25-95 recode to preserve EVFDUMMY. Also changes in cleanEvf, expr, exOrk.
 LOCAL USI FC NEAR maxEvf( USI evf)
 
 // clear bits to right of hiest (ruling) evf bit(s) where these bits represent subdivisions of bit to left.
 
-// possible returns 11-95: 0 (constant) or each evf bit alone; EVFDUMMY always preserved; EVENDIVL preserved unless constant.
+// possible returns 0 (constant) or each evf bit alone
+//     EVFDUMMY always preserved; EVXBEGIVL bits preserved unless constant.
 {
-	USI evf1 = evf & ~EVENDIVL;			// search for bits other than EVENDIVL and EVFDUMMY
+	USI evf1 = evf & ~EVXBEGIVL;		// search for bits other than stage modifier flags
 	for (USI bit = EVFMAX;  bit;  bit >>= 1)	// from hiest bit in evf word (cuevf.h) thru bit with value 1
 		if (bit & evf1)				// if this bit on
-			return bit				// return the bit,
-			| (evf & (EVENDIVL		//  and preserve "eval at end interval" flag
-			|EVFDUMMY));	//  and "contains dummy arg ref -- don't konstize" flag 11-95.
-	return evf & EVFDUMMY;			/* no bit found: constant. preserve EVFDUMMY 11-95.
-    						    discard (unexpected) EVENDIVL bit on constant. */
+			return bit | (evf & (EVXBEGIVL | EVFDUMMY));
+					// return the bit
+					//  preserve stage flags
+					//  and "contains dummy arg ref -- don't konstize" flag 11-95.
+
+	return evf & EVFDUMMY;		// no bit found: constant. preserve EVFDUMMY 11-95.
+    							//  discard (unexpected) EVXBEGIVL bits on constant
 }		// maxEvf
-#else // old code 11-25-95. No longer 11-95 worked if input file defined functions.
-x //==========================================================================
-x LOCAL USI FC NEAR maxEvf( USI evf)
-x
-x // clear bits to right of hiest (ruling) evf bit(s) where these bits represent subdivisions of bit to left.
-x
-x // possible returns 12-91: 0; each evf bit alone; each bit with EVENDIVL; EVFDUMMY.
-x
-x{
-x     if (evf & EVFDUMMY)			// if contains dummy arg ref
-x        return EVFDUMMY;			// say so (EVFDUMMY > EVFMAX)
-x
-x     USI evf1 = evf & ~EVENDIVL;			// search for bits other than EVENDIVL and EVFDUMMY
-x     for (USI bit = EVFMAX;  bit;  bit >>= 1)	// from hiest bit in evf word (cuevf.h) thru bit with value 1
-x        if (bit & evf1)				// if this bit on
-x            return bit				// return the bit,
-x                   | (evf & EVENDIVL);		//  and preserve "eval at end interval" flag
-x     return 0;					// no bit found: constant
-x}		// maxEvf
-#endif
 //==========================================================================
 LOCAL USI FC NEAR cleanEvf( 		// clean up eval frequency bits
 	USI evf, 			// value to clean up
 	USI _evfOk )		// evf bits ok in current context, or 0 to suppress cond'l changes to MH.
 
-/* eliminates redundant ones, eg month with day;
-   changes monthly plus hourly to monthly-hourly, if appropriate for context 9-95;
-   conditionally changes monthly-hourly + other to monthly plus hourly. */
+// eliminates redundant ones, eg month with day;
+// changes monthly plus hourly to monthly-hourly, if appropriate for context 9-95;
+// conditionally changes monthly-hourly + other to monthly plus hourly
 
 // possible returns 11-95: 0; each evf bit alone; each bit with EVENDIVL. Also EVFDUMMY returned if given.
 {
@@ -3542,8 +3519,8 @@ x
 	/* if we have non-subdivision bits such as month and week, must separate,
 	   find hiest of each (include non-confilicting bits in both), re-merge */
 
-// find most significant bit (shortest interval); return it, and EVENDIVL if on, and EVFDUMMY 11-95 if on.
-	// note MH and DAY are adjacent bits and not now both on.
+// find most significant bit (shortest interval); return it, any EVXBEGIVL bits, EVFDUMMY if on
+//   note MH and DAY are adjacent bits and not now both on.
 	return maxEvf(evf);			// just above
 }			// cleanEvf
 //==========================================================================
@@ -4558,12 +4535,12 @@ LOCAL const char* FC NEAR datyTx( USI ty) 	// return text for data type
 //==========================================================================
 const char* FC evfTx(	 		// text for eval freq bits, to insert in message
 	USI evf,
-	SI adverb ) 	/*    part of speech	  example use
-                           0   adjective	"%s change"
-    			   1   adverb		"changes %s"
-    			   2   noun  		"changes at end of %s" */
-// IGNORES 'EVENDIVL' BIT, 12-9-91.
-// ignores EVFDUMMY bit, 11-25-95.
+	SI adverb )		// part of speech	  example use
+                    //    0   adjective	  "%s change"
+    				//    1   adverb      "changes %s"
+    				//    2   noun  	  "changes at end of %s"
+// ignores EVXBEGIVL interval stage bits
+// ignores EVFDUMMY bits
 {
 #if 0 // historical comment
 x    // handle EVFDUMMY here if found necessary

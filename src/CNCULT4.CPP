@@ -226,22 +226,19 @@ RC topCol( SI isExport)
 	RC rc;				// used in E macros
 
 #define RPDEFWID 10 	// report default column width
-#define EXDEFWID 13		/* export default "max column width" before deblanking: enuf for "-1.23456e+123".
-coordinate changes with defaulted # sig digits (6, cgresult.cpp:vpUdtExRow)
-and with built-in export format (cgresult.cpp:vpRxRow) */
-
-	COL *colip, *colp;
-	RI *rp;
-	SI* pNxColi;
+#define EXDEFWID 13		// export default "max column width" before deblanking: enuf for "-1.23456e+123".
+						//   coordinate changes with defaulted # sig digits (6, cgresult.cpp:vpUdtExRow)
+						//   and with built-in export format (cgresult.cpp:vpRxRow)
 
 	anc<COL> * coliB = isExport ? &XcoliB : &RcoliB;    	// column input rat
 	anc<COL> * colB = isExport ? &XcolB : &RcolB; 		// column run rat
 	anc<RI> * rxB = isExport ? &XiB : &RiB;			// report/export input rat
-	char * exrp = isExport ? "ex" : "rp";    			// to insert in member names in error messages
-	char * exrePort = isExport ? "export" : "report";		// to insert in errmsgs
+	const char* exrp = isExport ? "ex" : "rp";    			// to insert in member names in error messages
+	const char* exrePort = isExport ? "export" : "report";	// to insert in errmsgs
 
 
 // init info set here in EXPORTs/REPORTs input RAT
+	RI* rp;
 	RLUP( *rxB, rp)
 	{
 		rp->coli = 0;     // no 1st column, no columns, no width
@@ -263,7 +260,8 @@ and with built-in export format (cgresult.cpp:vpRxRow) */
 					   have no report run rat so use input rat). */
 
 // copy input rat entries to run rat entries, check, init, set info in owning report
-
+	COL* colip;
+	COL* colp;
 	RLUP( *coliB, colip)				// loop input column RAT records
 	{
 		// copy data from input rat to run rat, same subscript (needed in this case?)
@@ -285,8 +283,8 @@ and with built-in export format (cgresult.cpp:vpRxRow) */
 		   3) results avg values may have working totals not yet divided by # values
 		   (if another operand in expr forces faster probing). */
 		if ( ISNANDLE( colip->colVal.val)	// if column value is expression (not constant)
-		&&  rp->rpFreq > C_IVLCH_Y )		/* if rpfreq set and more often than at end run (ASSUMES _Y is smallest C_IVLCH_)
-					           (yearly reports can use any variability)  */
+		 &&  rp->rpFreq > C_IVLCH_Y )		// if rpfreq set and more often than at end run (ASSUMES _Y is smallest C_IVLCH_)
+											//   (yearly reports can use any variability)
 		{
 			USI rpfreqEvf, colEvf = 0;
 			exInfo( EXN(colip->colVal.val), &colEvf, NULL, NULL);   		// get evf of expr; leave 0 if bad exn (exman.cpp)
@@ -308,14 +306,14 @@ and with built-in export format (cgresult.cpp:vpRxRow) */
 			}
 			if ( colEvf					// if exInfo() call above ok (fail leaves colExf 0, no msg)
 			 &&  rpfreqEvf > colEvf 	// and rpFreq faster than colVal varies (leftmost bit farther left)
-			 &&  (colEvf & EVENDIVL) )	// and colVal evaluated at end interval (results probe)
+			 &&  (colEvf & (EVXBEGIVL)) )	// and colVal evaluated at end/post interval (results probe)
 				colip->oWarn(
 					(char *)MH_S0546,		// "End-of-interval varying value is reported more often than it is set:\n"
 					exrp, exrePort, rp->name,	// "    %sFreq of %s '%s' is '%s',\n"		eg "rpFreq of report 'foo' is 'day'
 												// "    but colVal for colHead '%s' varies (is given a value) only at end of %s."
 					rp->getChoiTx( RI_RPFREQ, 1),	// text for rpfreq choice
 					colip->colHead,
-					evfTx(colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
+					evfTx( colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
 		}
 
 		// translate cuparse data types to cvpak data types for use at runtime, in string-or-float value VALNDT structure.
@@ -340,10 +338,10 @@ and with built-in export format (cgresult.cpp:vpRxRow) */
 		rp->wid += colp->colGap + colp->colWid;
 
 		// add this column to end of column list for its report
-
+		SI* pNxColi;
 		for (pNxColi = &rp->coli;  *pNxColi;  pNxColi = &colB->p[*pNxColi].nxColi )	// find end of list so far
 			;
-		*pNxColi = colp->ss;				// set rp->coli (1st column) or prev column->nxColi
+		*pNxColi = colp->ss;			// set rp->coli (1st column) or prev column->nxColi
 		colp->nxColi = 0;				// this column is current end of list for report.  insurance -- pre-0'd.
 
 	}	// RLUP coliB

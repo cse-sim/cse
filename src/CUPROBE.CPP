@@ -872,7 +872,7 @@ LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// displa
 		}
 
 	evfSubTx =    !f1->evf  ?  "constant"						// variability subtext
-	:  f1->evf & EVENDIVL ? strtprintf( "end of %s", evfTx(f1->evf,2) )
+	:  f1->evf & EVXBEGIVL ? strtprintf( "end of %s", evfTx(f1->evf,2) )
 	:  evfTx( f1->evf, 0);
 
 	printf( " %20s   %s   %s   %-15s   %s\n",

@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.839: ..
+   0.839: post-ivl expression evaluation stage, 9-3-2017
    0.838: Instantaneous DHW UEF model w/ revised exponential cooldown, 8-1-2017
    0.837: Instantaneous DHW UEF model w/ exponential cooldown, 7-29-2017
    0.836: heat pump autosize: now uses ACM algorithm when both cap47 and cap95 autosized
