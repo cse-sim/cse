@@ -603,7 +603,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
 
  /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees. */
  USI NEAR evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
-							// EVENDIVL/EVPSTIVL bit here means end/post-of-interval evaluation ok.
+							// EVENDIVL/EVPSTIVL stage bits here means end/post-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
  char * NEAR ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
  LOCAL USI NEAR choiDt = 0;	// choice type (dtypes.h) for TYCH (incl TYNC): specifies ok choices & their conversions.
@@ -1729,12 +1729,11 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 														// in case eg DAY later added to MN|HR (see cleanEvf)
 			evfC &= ~EVFDUMMY;	// here disregard "contains dummy arg ref, don't konstize" flag:
 								//    normally on here in fcn, cleared by caller funcDef. 11-25-95
-			USI bb = evfC & ~evfOk;			// bad bits: 1 in evfC, 0 in evfOk
-			if (0 && bb)						// ?EV? if any bad bits
+			USI bb = evfC & ~evfOk;		// bad bits: 1 in evfC, 0 in evfOk
+			if (bb)						// if any bad bits
 			{	if (bb & EVXBEGIVL)
-				{
-					rc = perNx( (char *)MH_S0025,   		/* "Value varies at end of %s \n"
-								   "    where only start-of-interval variation permitted%s.\n"
+				{	rc = perNx( (char *)MH_S0025,   		/* "Value is available later in %s \n"
+								   "    than is required%s.\n"
 								   "    You may need to use a .prior in place of a .res" */
 							evfTx( evfC, 2),					// 2: noun: eg "each hour"
 							ermTx  ?  strtprintf( " for '%s'", ermTx)  :  "" );
@@ -3463,11 +3462,10 @@ LOCAL USI FC NEAR maxEvf( USI evf)
 		if (bit & evf1)				// if this bit on
 			return bit | (evf & (EVXBEGIVL | EVFDUMMY));
 					// return the bit
-					//  preserve stage flags
-					//  and "contains dummy arg ref -- don't konstize" flag 11-95.
+					// preserve stage flags and "contains dummy arg ref -- don't konstize" flag
 
-	return evf & EVFDUMMY;		// no bit found: constant. preserve EVFDUMMY 11-95.
-    							//  discard (unexpected) EVXBEGIVL bits on constant
+	return evf & EVFDUMMY;		// no bit found: constant. preserve EVFDUMMY
+    							//  discard (unexpected) EVXBEGIVL stage bits on constant
 }		// maxEvf
 //==========================================================================
 LOCAL USI FC NEAR cleanEvf( 		// clean up eval frequency bits

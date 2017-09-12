@@ -274,7 +274,7 @@ LOCAL RC FC NEAR ckiCults( void);
 LOCAL void FC NEAR finalClear( void);
 LOCAL void FC NEAR xStkPt( void);
 LOCAL RC NEAR ganame( USI f, char *what, char **pp);
-LOCAL RC NEAR xpr( SI ty, USI fdTy, USI evf, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
+LOCAL RC NEAR xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
 LOCAL void FC NEAR termnIf( void);
 LOCAL RC CDEC NEAR perNxE( char *ms, ...);
 LOCAL SI FC NEAR skip2end( SI lastCs, SI *pcs);
@@ -2234,7 +2234,7 @@ setFsVAL:
 			// get Identifier, Quoted text, or string eXpression. local fcn.
 			E( xpr( TYID,			// get string, assume quotes around non-reserved undefined words
 				xSp->fdTy, 			// field type (or use 0 here?? 2-91)
-				0, 0,      			// no evf, no useCL: require constant.
+				0, 0,      			// no evfOk, no useCL: require constant.
 				0,	        		// for flags for "all" and "sum" and numbers
 				NULL,				// use xSp->c->id in errMsgs
 				(NANDAT *)&p,		// receives string ptr. xpr gets terminator.
@@ -2701,7 +2701,7 @@ LOCAL RC NEAR ganame(
 		sfirSFI[ SFI_NAME].fdTy,	// get field type for an ANAME field so exman.cpp will check string length
     								// (we have no defines for fld types: not invariant: data\fields.def
 									// is rearrangable & product dependent) 2-91. Declared in rccn.h.
-		0, 0,						// 0 evf, useCl: require constant value
+		0, 0,						// 0 evfOk, useCl: require constant value
 		f,							// pass flags for "all" and "sum", etc 1-92
 		what, 						// pass arg thru
 		(NANDAT *)&p,				// receives pointer to constant string value
@@ -2735,7 +2735,7 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYFLSTR or TYCH TYNC (fdTy req'd)
 	// or TYID (returns TYSTR).  Also accepts non-cuparse type: TYDOY.
 	USI fdTy,		// 0 (FDNONE?) or rec def fld type: dtype (for choices), units (for floats) and limit type are used.
-	USI evf, 		// permissible eval frequency bits, 0 for constant.
+	USI _evfOK, 	// permissible eval frequency bits, 0 for constant.
 	USI useCl,		// "use class" for selective expr evaluation 3-91
 	USI f,			// flag bits:
 					// ARRAY: enables comma as a terminator (CUTCOM returned in tokTy)
@@ -2750,7 +2750,7 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	USI *pGotEvf )	// NULL or rcvs variability gotten -- 0 constant (already stored), EVEOI, EVFHRLY, etc.
 
 /* also uses:  if 'what' is NULL: xSp->c->id (re compile errMsgs)
-           if evf is non-0 and expr non-constant:   defTyping, xSp->b, xSp->i, xSp->c->fn (run errMsgs,exman.cpp).*/
+   if _evfOK is non-0 and expr non-constant:   defTyping, xSp->b, xSp->i, xSp->c->fn (run errMsgs,exman.cpp).*/
 
 /* returns: RCOK:   normal success, tokTy = CUTCOM if comma followed it and f & ARRAY on.
             RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
@@ -2783,16 +2783,22 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 		ty = TYSI;		// cuparse accepts month-day in all SI exprs; later add 'goal-is-date' arg to enable that?
 
 // compile expression
+
+#if 1	// 9-11-2017
+	if (_evfOK & EVPSTIVL)		// if post-interval is acceptable
+		_evfOK |= EVENDIVL;		//   then end-interval OK too
+#endif
+
 	rc = exPile(		// exman.cpp. only call 11-91.
 		-1,				// say parse to ; or CUTVRB, etc
 		ty,				// desired cuparse type
 		fdTy ? sFdtab[fdTy].dtype : 0,	// 0 or choice type (DT___ define, dtypes.h) for TYCH, TYNC
 		fdTy,				// 0 or field type
-		evf,			// permissable evaluation frequency
+		_evfOK,			// permissable evaluation frequency
 		useCl,			// use Class for non-constants
 		what, 			// id to insert in error messages
 		defTyping,		// destination info, for runtime errMsgs ...
-		xSp->b,			// ... not used if evf 0 or expr constant ...
+		xSp->b,			// ... not used if _evfOK 0 or expr constant ...
 		xSp->i, 		// ... don't matter for non-field iqx() calls.
 		xSp->c->fn + xSp->j,	// ...
 		pp,				// receives result or NANDLE
@@ -2806,7 +2812,7 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	   here reject those that are passed that we do not like. */
 
 	if ( tokTy==CUTCOM && !(f & ARRAY)						// comma ok if 'array' flag, 3-92
-	||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
+	 ||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
 		perNx( (char *)MH_S0249 );				// issue msg, scan to eof, verb, or after ';'.
 	// "expected ';' (or class name, member name, or verb)"
 

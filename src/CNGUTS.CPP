@@ -1132,7 +1132,7 @@ LOCAL RC FC NEAR doIvlExprs( 		// evaluate and store user-input variable express
 		ucl = ~EVXBEGIVL;		// all bits except end/post
 	}
 	else
-	{	Top.isEndOf = Top.ivl;
+	{	Top.isEndOf = Top.ivl;		// isEndLvl set for both EVENDIVL and EVPSTIVL stages
 		ucl = ivlStage;
 		if (ivlStage == EVPSTIVL && Top.ivl == C_IVLCH_D)
 			Top.tp_tmrSnapshot();		// update probably copies of timing data
@@ -2003,27 +2003,31 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add int
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
 			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+				mtrSum.mtr_Accum1( mtrSub1, ivl, 0+(firstflg!=0));
+#if 0
 				if (firstRec)
 					memcpy( &mtrSum, mtrSub1, sizeof(MTR_IVL_SUB)); 	// copy first record
 				else								// additional records: accumulate ...
 					mtrSum.mtr_Accum1( mtrSub1, ivl);			// treatment of demand not necessarily sensible.
+#endif
 			}
 			firstRec = 0;
 		}
 
-		// accumulate: copy on first call (in lieu of 0'ing destination).  Note: doHourGains 0's MTR hour info at start hour.
-
+		// accumulate: copy on first call (in lieu of 0'ing destination).
+		// Note: doHourGains 0's MTR hour info at start hour.
+#if 1
+		mtrSub2->mtr_Accum1( mtrSub1, ivl, 0 + (firstflg!=0));
+#else
 		if (firstflg)						// if first call for destination interval
-		{
-			// memcpy( mtrSub2, mtrSub1, sizeof(MTR_IVL_SUB) );	// copy whole subrecord
-			if (bTrc && ivl == 2)
-			   printf( "\n   ivl=2");
+		{	// copy selected members
 			VCopy( &mtrSub2->clg, NENDUSES-2, &mtrSub1->clg);
 			mtrSub2->pv = mtrSub1->pv;
 			mtrSub2->allEU = mtrSub1->allEU;
 		}
 		else							// additional calls in interval use accumulation subr (next)
 			mtrSub2->mtr_Accum1( mtrSub1, ivl);	// adds up uses w/o bt or tot
+#endif
 	}
 
 	// DHWMTRs
@@ -2083,7 +2087,7 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 					mtrSum.dmdCost = mtrSub1->dmdCost;
 				}
 				else								// additional records: accumulate ...
-					mtrSum.mtr_Accum1( mtrSub1, ivl, 1);			// treatment of demand not necessarily sensible.
+					mtrSum.mtr_Accum1( mtrSub1, ivl, 2);			// treatment of demand not necessarily sensible.
 #if 0 && defined( _DEBUG)
 				float xTot = VSum<float,double>( &mtrSum.clg, NENDUSES-2);
 				if (frDiff( xTot, mtrSum.tot) > .001)
@@ -2093,7 +2097,6 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 			firstRec = 0;
 		}
 
-		// accumulate: copy on first call (in lieu of 0'ing destination).  Note: doHourGains 0's MTR hour info at start hour.
 
 #if defined( _DEBUG)
 		// MTR_IVL_SUB mtrSub2Was( *mtrSub2);
@@ -2101,15 +2104,21 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 		{	float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
 			if (frDiff( xTot, mtrSub1->tot) > .001)
 				printf( "\n    Bad sub1");
-			if (ivl == 2)
-				printf("   ivl=2");			
 		}
 
 #endif
+
+	// accumulate: copy on first call (in lieu of 0'ing destination).  Note: doHourGains 0's MTR hour info at start hour.
+#if 1
+		// accumulate to next level, handles dmd
+		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
+#else
 		if (firstflg)					// if first call for destination interval
 			memcpy( mtrSub2, mtrSub1, sizeof(MTR_IVL_SUB) );	// copy whole subrecord
 		else							// additional calls in interval use accumulation subr (next)
-			mtrSub2->mtr_Accum1( mtrSub1, ivl, 1);	// finalizes totals, handles dmd
+			mtrSub2->mtr_Accum1( mtrSub1, ivl, 2);	// finalizes totals, handles dmd
+#endif
+
 
 #if	defined( _DEBUG)
 		if (1 || bTrc)
@@ -2122,46 +2131,68 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 	}
 }		// mtrsFinalize
 //-----------------------------------------------------------------------------------------------------------
-void MTR_IVL_SUB::mtr_Accum1( 	// inner routine for non-first accumulation of one meter-interval into another
+void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
 
 	const MTR_IVL_SUB* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
 	IVLCH ivl,					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int options /*=0*/)			// option bits
-								//   1: do "finalize" accumulation (else end-of-calcs accum)
-// accums mtrSub1 into this
-
-// not called if firstflg -- caller just memcpy's!
+								//   1: copy to *this (re firstflg)
+								//      else accumulate
+								//   2: do "finalize" accumulation (after batttery calcs)
+								//      else end-of-calc
+// accums/copies mtrSub1 into *this
 {
 #if 1
-	bool bFinalize = (options & 1) != 0;
+	bool bCopy     = (options & 1) != 0;
+	bool bFinalize = (options & 2) != 0;
 
 	if (!bFinalize)
 	{	// end of calcs / before battery
-		// omit tot (see below), bt included but s/b 0
-		// Add up uses and cost, and demand cost if month to year
-		VAccum( &clg, 	// add 2nd arg float vector to 1st arg
-			NENDUSES-2,			// vector length: # end uses w/o pv and bt
-			&mtrSub1->clg);		// source
-		pv += mtrSub1->pv;
-		allEU += mtrSub1->allEU;
+		// omit all *p (EVPSTIVL) mbrs (tot, bt, cost, dmd, dmdCost, dmdShoy)
+		if (bCopy)
+		{	VCopy( &clg, NENDUSES-2, &mtrSub1->clg);
+			pv = mtrSub1->pv;
+			allEU = mtrSub1->allEU;
+		}
+		else
+		{	VAccum( &clg, 	// add 2nd arg float vector to 1st arg
+				NENDUSES-2,			// vector length: # end uses w/o pv and bt
+				&mtrSub1->clg);		// source
+			pv += mtrSub1->pv;
+			allEU += mtrSub1->allEU;
+		}
 	}
 	else
 	{	// after load management (e.g. battery)
 		// handle all mbrs w/ *p variability
-		tot += mtrSub1->tot;
-		bt += mtrSub1->bt;
-		cost += mtrSub1->cost;
-		if (ivl==C_IVLCH_Y)		// sum .dmdCost if month-to-year (thru month, largest
-	                    		//    dmdCost is used, not sum, by code just below).
-			dmdCost += mtrSub1->dmdCost;
+		if (bCopy)
+		{	memcpy( this, mtrSub1, sizeof( MTR_IVL_SUB));
 
-		// keep peak demand, and its cost thru month level
+#if 0
+			tot = mtrSub1->tot;
+			bt = mtrSub1->bt;
+			cost = mtrSub1->cost;
+			dmd = mtrSub1->dmd;
+			dmdCost = mtrSub1->dmdCost;
+			dmdShoy = mtrSub1->dmdShoy;
+#endif
+		}
+		else
+		{	tot += mtrSub1->tot;
+			bt += mtrSub1->bt;
+			cost += mtrSub1->cost;
+			if (ivl==C_IVLCH_Y)		// sum .dmdCost if month-to-year (thru month, largest
+			                		//    dmdCost is used, not sum, by code just below).
+				dmdCost += mtrSub1->dmdCost;
 
-		if (mtrSub1->dmd > dmd)		// if source demand (peak use) greater
-		{	dmd  = mtrSub1->dmd;		// update largest hourly demand in destination
-			dmdShoy = mtrSub1->dmdShoy;	// update peak date & time (subhr of year)
-			if (ivl != C_IVLCH_Y)			// thru month level, keep largest demand cost
-				dmdCost = mtrSub1->dmdCost;	// .. (but for month to year, dmdCost is summed, above).
+			// keep peak demand, and its cost thru month level
+
+			if (mtrSub1->dmd > dmd)		// if source demand (peak use) greater
+			{	dmd  = mtrSub1->dmd;		// update largest hourly demand in destination
+				dmdShoy = mtrSub1->dmdShoy;	// update peak date & time (subhr of year)
+				if (ivl != C_IVLCH_Y)			// thru month level, keep largest demand cost
+					dmdCost = mtrSub1->dmdCost;	// .. (but for month to year, dmdCost is summed, above).
+			}
 		}
 	}
 #else

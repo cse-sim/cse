@@ -1050,8 +1050,21 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 
 // check for mistimed probe eg to monthly results at end of day (when monthly results contain incomplete data)
 
-	if (fir->evf & EVENDIVL)			// ?EV? if probed field avail only at end ivl (can probe start-ivl flds anytime)
-	{
+	if (fir->evf & EVXBEGIVL)	// if probed field avail only at end ivl (can probe start-ivl flds anytime)
+	{	if (!Top.isEndOf)    // if not now end of an interval (cnguts.cpp)
+		{
+			*pms = strtprintf( (char *)MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
+													// "    but access occurred %s"
+						whatNio( e->b->ancN, e->ss, fir->off),
+						evfTx( fir->evf, 2),
+						Top.isBegOf
+							? strtprintf( (char *)MH_R0223,		// "at BEGINNING of %s"
+								ivlTx(Top.isBegOf) )  			// ivlTx: below
+							: strtprintf( (char *)MH_R0224) );	// use strtprintf to retreive msg to Tmpstr
+																//"neither at beginning nor end of an interval????"
+			return RCBAD;
+		}
+
 		IVLCH minIvl =
 			fir->evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
 		  : fir->evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
@@ -1059,27 +1072,14 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 	 	  : fir->evf >= EVFMON   ? C_IVLCH_M
 		  :                        C_IVLCH_Y;	// EVFRUN, EVFFAZ, EVFEOI
 
-		if (!Top.isEndOf)    					// if not now end of an interval (cnguts.cpp)
-		{
-			*pms = strtprintf( (char *)MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
-													// "    but accessed occurred %s"
-				whatNio( e->b->ancN, e->ss, fir->off),
-				evfTx( fir->evf, 2),
-				Top.isBegOf
-					? strtprintf( (char *)MH_R0223,		// "at BEGINNING of %s"
-						ivlTx(Top.isBegOf) )  			// ivlTx: below
-					: strtprintf( (char *)MH_R0224) );	// use strtprintf to retreive msg to Tmpstr
-			//"neither at beginning nor end of an interval????"
-			return RCBAD;
-		}
-		else if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
+		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
 		{
 			*pms = strtprintf( (char *)MH_R0225,	/* "Mistimed probe: %s\n"
-				                   "    varies at end of %s but accessed at end of %s.\n"
-				                   "    Possibly you combined it in an expression with a faster-varying datum." */
-			whatNio( e->b->ancN, e->ss, fir->off),
-			evfTx( fir->evf, 2),
-			ivlTx(Top.isEndOf) );
+														"    varies at end of %s but accessed at end of %s.\n"
+														"    Possibly you combined it in an expression with a faster-varying datum." */
+						whatNio( e->b->ancN, e->ss, fir->off),
+						evfTx( fir->evf, 2),
+						ivlTx(Top.isEndOf) );
 			return RCBAD;
 		}
 	}
