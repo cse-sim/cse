@@ -253,16 +253,16 @@ const char* record::whatIn() const 	// return basAnc record owner text
 					1 );				// say show [file(file)] in 1st object if unnamed
 }	// record::whatIn
 //-----------------------------------------------------------------------------
-int record::IsSetAny(
+int record::IsSetCount(			// count # of set fns in list
 	int fn, ...) const	// 0 terminated fn list (don't forget the 0!)
-// return 1 iff at least one of fields IsSet()
+// returns # of IsSet() fields
 {	va_list ap;
 	va_start( ap, fn);
+	int nSet = 0;
 	while (1)
 	{	if (fn == 0)
-			return 0;
-		if (IsSet( fn))
-			return 1;
+			return nSet;
+		nSet += IsSet( fn);
 		fn = va_arg( ap, int);
 	}
 }		// record::IsSetAny

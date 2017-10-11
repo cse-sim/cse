@@ -106,8 +106,8 @@ t           printf("db       = %f\n",wthrfp->db);
 t           printf("wb       = %f\n",wthrfp->wb);
 t           printf("dp       = %f\n",wthrfp->dp);
 t           printf("tsky     = %f\n",wthrfp->tsky);
-t           printf("wndspd   = %f\n",wthrfp->wndspd);
-t           printf("wnddir   = %f\n",wthrfp->wnddir);
+t           printf("wndSpd   = %f\n",wthrfp->wndSpd);
+t           printf("wndDir   = %f\n",wthrfp->wndDir);
 t           printf("ccov     = %f\n",wthrfp->ccov);
 t           printf("barpres  = %f\n",wthrfp->barpres);
 t           printf("bmrad    = %f\n",wthrfp->bmrad);
@@ -255,8 +255,8 @@ RC XT24WTHR::xw_GetHr(
     wd_dfrad = 0.f;
     wd_db	 = 0.f;
     wd_wb = 0.f;
-    wd_wnddir = 0.f;
-    wd_wndspd = 0.f;
+    wd_wndDir = 0.f;
+    wd_wndSpd = 0.f;
 	wd_glrad = 0.f;
 	wd_cldCvr = 0.f;
 	wd_tSky = 0.f;
@@ -283,7 +283,7 @@ static WFDATAMAP WFDATAMap[] =
 	t24WthrTS,   &WFDATA::wd_tSky,
 	t24WthrBR,   &WFDATA::wd_bmrad,
 	t24WthrDR,   &WFDATA::wd_dfrad,
-	t24WthrWS,   &WFDATA::wd_wndspd,
+	t24WthrWS,   &WFDATA::wd_wndSpd,
 	// t24WthrPA,   &WFDATA::wd_?
 	t24WthrTL7,  &WFDATA::wd_taDbAvg07,
 	t24WthrTL14, &WFDATA::wd_taDbAvg14,
@@ -291,7 +291,7 @@ static WFDATAMAP WFDATAMap[] =
 				// wd_glrad
 				// wd_cldCvr
 				// wd_taDbPvPk
-				// wd_wnddir
+				// wd_wndDir
    -1
 };
 
@@ -366,8 +366,16 @@ void WDHR::wd_ClearDerived(		// init derived values
 }		// WDHR::wd_ClearDerived
 #endif
 //----------------------------------------------------------------------------
-WDHR& WDHR::Copy( const WDHR& wdhr)
-{	memcpy( (char *)this, (const char*)&wdhr, sizeof( WDHR));
+WDHR& WDHR::Copy(
+	const WDHR& wdhr,	// source
+	int options /*=0*/)	// option bits
+						//  do not overwrite solar position data
+{	
+	if (options&1)
+		memcpy( (char *)&wd_db, (const char*)&wdhr.wd_db,
+			sizeof( WDHR) - offsetof( WDHR, wd_db));
+	else
+		memcpy( (char *)this, (const char*)&wdhr, sizeof( WDHR));
 	return* this;
 }	// WDHR::Copy
 //----------------------------------------------------------------------------
@@ -388,12 +396,12 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 
 	w = phour[i++];				// word 1, or 2 if scrambled
 	wd_bmrad   = (float)((USI)w >> 4);
-	wd_wnddir  = (float)(w & 0xF) * 22.5f;
+	wd_wndDir  = (float)(w & 0xF) * 22.5f;
 
 	i = i % 3;					// for demo format change i from 3 to 0; normally moot
 	w = phour[i /*++*/ ]; 			// word 2, or 0 if scrambled
 	wd_dfrad  = (float)((USI)w >> 7);
-	wd_wndspd = (float)(w & 0x7F);
+	wd_wndSpd = (float)(w & 0x7F);
 
 	// additional values for ET1 weather file
 	if (wFileFormat==ET1)
@@ -730,8 +738,8 @@ void WDDAY::wdd_Set(		// set hourly values from daily
 			SETIF( wd.wd_taDbAvg07, wdd_taDbAvg07)
 			SETIF( wd.wd_taDbAvg14, wdd_taDbAvg14)
 			SETIF( wd.wd_taDbAvg31, wdd_taDbAvg31)
-			SETIF( wd.wd_tGrnd, wdd_tGrnd);
-			SETIF( wd.wd_tMains, wdd_tMains);
+			SETIF( wd.wd_tGrnd,		wdd_tGrnd);
+			SETIF( wd.wd_tMains,	wdd_tMains);
 			SETIF( wd.wd_tdvElecPk,   wdd_tdvElecPk);
 			SETIF( wd.wd_tdvElecAvg,  wdd_tdvElecAvg);
 			SETIF( wd.wd_tdvElecPvPk, wdd_tdvElecPvPk);
@@ -797,7 +805,7 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 			// skip &wd_tGrnd,				// "T Ground"
 			// skip &wd_taDbPvPk,	// "previous day's peak DB"
 			&wd_tSky,				// "T sky"
-			&wd_wnddir, &wd_wndspd,	// "Wind direction", "Wind speed"
+			&wd_wndDir, &wd_wndSpd,	// "Wind direction", "Wind speed"
 			&wd_glrad,				// "Global Horizontal Radiation",
 			&wd_bmrad, &wd_dfrad,	// "Direct Normal Radiation", "Diffuse Horiz Radiation"
 			&wd_cldCvr,				// "Total Sky Cover"
@@ -1481,6 +1489,8 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 						//      WHY: During daylight savings, prior hour data is used, resulting
 						//			 in prior day for iHrClock=0
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
+						//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
+						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 // returns RCOK if OK else other RC, error msg issued per erOp.
 {
 	// handle Feb 29
@@ -1493,7 +1503,7 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//   NOTE: cached data assumes full annual weather file
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
-	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr));
+	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
 		if ( iHr == 23 && (erOp&WF_DSTFIX))
 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
 			pwd->wd_taDbPvPk = wdd.wdd_taDbPvPk;
@@ -2294,11 +2304,11 @@ x		printf("Btu/ft2 = %f\n", pWd->bmrad);
 	if (!rc)
 		rc = EPWfile.fGetFTempCR(7, curRow, &dewpoint);
 	if (!rc)
-		rc = EPWfile.GetValCR(20, curRow, &pWd->wnddir);		//	deg from North(360)
+		rc = EPWfile.GetValCR(20, curRow, &pWd->wndDir);		//	deg from North(360)
 	if (!rc)
-		rc = EPWfile.GetValCR(21, curRow, &pWd->wndspd);		//	m/s
+		rc = EPWfile.GetValCR(21, curRow, &pWd->wndSpd);		//	m/s
 	if (!rc)
-		pWd->wndspd = (float)Units.UnitConvert(pWd->wndspd, unVelMS, unVelMiHr);	//	convert to mph
+		pWd->wndSpd = (float)Units.UnitConvert(pWd->wndSpd, unVelMS, unVelMiHr);	//	convert to mph
 	if (!rc)
 		rc = EPWfile.GetValCR(22, curRow, &pWd->cldCvr);		//	10ths of sky
 
@@ -2320,7 +2330,7 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 	int yr, m, d, h, minute;
 	char sSink[ 100];
 	// temporaries for SI values
-	float db, dp, rh, prs, glrad, bmrad, dfrad, wnddir, wndspd, tsc, osc;
+	float db, dp, rh, prs, glrad, bmrad, dfrad, wndDir, wndSpd, tsc, osc;
 	RC rc = RCOK;
 	while (1)
 	{	char wfLine[ WFMAXLNLEN];
@@ -2337,8 +2347,8 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 			&glrad,					// global horizontal irradiation, Wh/m2
 			&bmrad,					// direct normal irradiation, Wh/m2
 			&dfrad,					// diffuse horizonal irradiation, Wh/m2
-			&wnddir,				// wind direction, deg
-			&wndspd,				// wind spd, m/s
+			&wndDir,				// wind direction, deg
+			&wndSpd,				// wind spd, m/s
 			&tsc,					// total sky cover, tenths
 			&osc,					// opaque sky cover, tenths
 			NULL);
@@ -2375,8 +2385,8 @@ x			printf( "mismatch\n");
 		wd_bmrad = IrSItoIP( bmrad);
 		wd_dfrad = IrSItoIP( dfrad);
 
-		wd_wnddir = wnddir;
-		wd_wndspd = VSItoIP( wndspd);
+		wd_wndDir = wndDir;
+		wd_wndSpd = VSItoIP( wndSpd);
 
 		wd_cldCvr = tsc;
 
@@ -2446,5 +2456,7 @@ const char* pCols[ WFMAXCOLS];
 
 #endif
 //---------------------------------------------------------------------------
+
+
 
 // end of wfpak.cpp

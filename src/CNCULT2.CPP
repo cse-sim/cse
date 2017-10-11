@@ -48,10 +48,7 @@
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
 LOCAL RC topCkfI( int re);
 LOCAL RC setTop();
-#if 0
-LOCAL RC topWfile( SI * pHotMo);
-LOCAL RC topAusz( SI hotMo);
-#endif
+LOCAL RC topDC();
 LOCAL RC topZn( int re);
 LOCAL RC topIz();
 LOCAL RC topDs();
@@ -248,9 +245,9 @@ LOCAL RC topCkfI( int re)
 			pWarn( "'DOAUTOSIZE = YES' will be disregarded because \n"
 				   "    no 'AUTOSIZE <x>' commands found in input." );  	// NUMS
 		}
-		if (Topi.IsSet( TOPRAT_COOLDSDAY))
-			// can't specify both coolDsDay and coolDsMo
-			rc |= Topi.disallow( TOPRAT_COOLDSMO, "when 'coolDsDay' is given");
+		if (Topi.IsSetCount( TOPRAT_COOLDSDAY, TOPRAT_COOLDSMO, TOPRAT_COOLDSCOND, 0) > 1)
+			// can specify at most 1 cooling design day scheme
+			rc |= Topi.oer( "only 1 of 'coolDsDay', 'coolDsMon', and 'coolDsCond' can be given");
 	}
 
 // set autosizing flag: TRUE if setting up now for autosizing, FALSE if setting up for main simulation or input check only.
@@ -268,6 +265,8 @@ LOCAL RC topCkfI( int re)
 
 //--- do Top record, including wthr file, location, air properties
 	E( setTop() )			// set up "Top" from input info in "Topi"
+
+	E( topDC() )			// finalize DESCONDs
 
 //--- zones next: reports store into zone run records
 	E( topZn( re) )			// do zones. E: returns if error.
@@ -530,18 +529,21 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 			BOOL badAuszWthr = FALSE;
 			if (IsSet( TOPRAT_COOLDSMO))
 				badAuszWthr = Wfile.wFileFormat != ET1;
-			else if (!IsSet( TOPRAT_COOLDSDAY))
-			{	if (Wfile.wFileFormat == ET1)
-				{	coolDsMo[0] = Wfile.sumMonHi;
-					coolDsMo[1] = 0;
+			else if (!IsSetCount( TOPRAT_COOLDSDAY, TOPRAT_COOLDSCOND, 0))
+			{	// no user input for any of TOPRAT_COOLDSxxx
+				//   default to ET1 header info if available
+				//   else error
+				if (Wfile.wFileFormat == ET1)
+				{	tp_coolDsMo[0] = Wfile.sumMonHi;
+					tp_coolDsMo[1] = 0;
 				}
 				else
 					badAuszWthr = TRUE;
 			}
 			if (badAuszWthr)
-				rc |= per( "'coolDsDay' (not 'coolDsMo') is required"
+				rc |= per( "'coolDsDay' or 'coolDsCond' (not 'coolDsMo') is required"
 							" when autosizing and weather file is not ET1");
-			else if (tp_AuszWthrSource()==1)
+			else if (tp_AuszWthrSource()==TOPRAT_COOLDSMO)
 				warn( "Derived weather values (e.g. tGrnd and tMains) are missing when autosizing\n"
 					"   conditions are specified via 'coolDsMo' (as opposed to 'coolDsDay').");
 		}
@@ -554,14 +556,16 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 }			// TOPRAT::tp_Wfile
 //-----------------------------------------------------------------------------
 int TOPRAT::tp_AuszWthrSource() const		// weather source for cooling autosize
-// returns 1: source is generated design day data for month (e.g. from ET1 header)
-//         2: sourse is specific day read from weather file
+// returns TOPRAT_COOLDSMO: generated design day data for month (e.g. from ET1 header)
+//         TOPRAT_COOLDSDAY: specific day read from weather file
+//         TOPRAT_COOLDSCOND: user-defined DESCOND info
 //         0: no source specified (assume not autosizing)
 {
 	int iAuszWthrSource =
-		  coolDsMo[ 0] > 0  ? 1
-		: coolDsDay[ 0] > 0 ? 2
-		:                     0;
+		  tp_coolDsDay[ 0] > 0  ? TOPRAT_COOLDSDAY
+		: tp_coolDsCond[ 0] > 0 ? TOPRAT_COOLDSCOND
+		: tp_coolDsMo[ 0] > 0   ? TOPRAT_COOLDSMO
+		:                         0;
 	return iAuszWthrSource;
 }		// TOPRAT::tp_AuszWthrSource
 //-----------------------------------------------------------------------------
@@ -574,33 +578,39 @@ RC TOPRAT::tp_Ausz(		// Top autosizing setup. call after tp_Wfile
 		return rc;
 
 	int iAuszWthrSource = tp_AuszWthrSource();
-	if (iAuszWthrSource == 1)
+	if (iAuszWthrSource == TOPRAT_COOLDSMO)
 	{
 		// count design days: 1 for heat, plus # cooling design months
 		tp_nDesDays = 1;
-		for (int i = 0;  coolDsMo[ i]; i++)
+		for (int i = 0;  tp_coolDsMo[ i]; i++)
 			tp_nDesDays++;
 
 		// sort the cooling design days to do hottest ones first. 7-14-94
-		for (int i = 0;  coolDsMo[ i];  i++)    	// for 0 to # cool des days
-			for (int j = 1;  coolDsMo[j];  j++)	// for 1 to # cool des days (NOP if < 2)
+		for (int i = 0;  tp_coolDsMo[ i];  i++)    	// for 0 to # cool des days
+			for (int j = 1;  tp_coolDsMo[j];  j++)	// for 1 to # cool des days (NOP if < 2)
 			{
-				int dfi = abs(coolDsMo[i] - hotMo);	// # months from month i to hottest month
+				int dfi = abs(tp_coolDsMo[i] - hotMo);	// # months from month i to hottest month
 				if (dfi > 6)  dfi = 12 - dfi;		// if > 6 months then measure the other way around
-				int dfj = abs(coolDsMo[j] - hotMo);	// j ..
+				int dfj = abs(tp_coolDsMo[j] - hotMo);	// j ..
 				if (dfj > 6)  dfi = 12 - dfi;		// ..
 				if (dfj < dfi)				// if [j] is closer to the hottest month than [i]
 				{
-					int tem = coolDsMo[i]; 		// swap months i and j
-					coolDsMo[i] = coolDsMo[j];
-					coolDsMo[j] = tem;
+					int tem = tp_coolDsMo[i]; 		// swap months i and j
+					tp_coolDsMo[i] = tp_coolDsMo[j];
+					tp_coolDsMo[j] = tem;
 				}
 			}
 	}
-	else if (iAuszWthrSource == 2)
+	else if (iAuszWthrSource == TOPRAT_COOLDSDAY)
 	{	// count design days: 1 for heat, plus # cooling design days
 		tp_nDesDays = 1;
-		for (int i = 0;  coolDsDay[ i]; i++)
+		for (int i = 0;  tp_coolDsDay[ i]; i++)
+			tp_nDesDays++;
+	}
+	else if (iAuszWthrSource == TOPRAT_COOLDSCOND)
+	{	// count design days: 1 for heat, plus # cooling design days
+		tp_nDesDays = 1;
+		for (int i = 0;  tp_coolDsCond[ i]; i++)
 			tp_nDesDays++;
 	}
 	else
@@ -802,6 +812,12 @@ const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error message
 	}
 	return s;
 }			// TOPRAT::When
+//-----------------------------------------------------------------------------
+LOCAL RC topDC()		// finalize DESCONDs
+{	RC rc = RCOK;
+	// input records used at runtime, nothing to do
+	return rc;
+}	// topDC
 //-----------------------------------------------------------------------------
 LOCAL RC topZn(		// all-zone initialization
 	int re)		// 0: initial setup

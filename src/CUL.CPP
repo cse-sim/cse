@@ -107,7 +107,7 @@ struct DREF
 	TI i;		// subscript ref'ing record in ditto
 	SI fn;		// referencing field number in ditto
 	BP toB;		// ptr to base of basAnc record being referenced
-	char *toName;  	// name of basAnc record (entry) being referenced
+	const char* toName;  	// name of basAnc record (entry) being referenced
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
 	USI fileIx;		// for err msgs: input file name index of referencing stmt
 	USI line;		// .. line number ..
@@ -310,12 +310,12 @@ LOCAL SI FC NEAR nxRec( SI bads, void **pe);
 LOCAL SI FC NEAR nxDatMbr( void **pp);
 LOCAL SI FC NEAR nxC( CULT **pp);
 LOCAL RC NEAR ratLuCtx( BP b, char *name, char *what, record **pE);
-LOCAL RC NEAR ratLuDefO( BP b, char *name, TI defO, char *what, record **pE, const char** pMsg);
+LOCAL RC NEAR ratLuDefO( BP b, const char* name, TI defO, char *what, record **pE, const char** pMsg);
 //public 1-92: LOCAL TI FC NEAR ratDefO( BP b);
 LOCAL void FC NEAR ratCultO( void);
 
-LOCAL void FC NEAR drefAdd( char *toName);
-LOCAL void FC NEAR drefAddI( BP b, TI i, SI fn, BP toB, char *toName, TI defO);
+LOCAL void FC NEAR drefAdd( const char* toName);
+LOCAL void FC NEAR drefAddI( BP b, TI i, SI fn, BP toB, const char* toName, TI defO);
 LOCAL DREF* drefNextFree();
 LOCAL void NEAR drefMove( record *nuE, record *e);
 LOCAL void NEAR drefDup( record *nuE, record *e);
@@ -4036,7 +4036,7 @@ LOCAL RC NEAR ratLuCtx(
 LOCAL RC NEAR ratLuDefO(	// look up basAnc record by name, resolving ambiguities using default owner if nz.
 
 	BP b,
-	char *name,
+	const char* name,
 	TI defO,    	/* 0 or dfl owner subscript for ambiguity resolution.  Must be 0 if b is not owned-record basAnc.
 			   May be obtained with ratDefO (below). */
 	char *what, 	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
@@ -4141,7 +4141,7 @@ LOCAL void FC NEAR ratCultO( void)
 
 //===========================================================================
 LOCAL void FC NEAR drefAdd( 		// add dref using xSp frame
-	char *toName )	// name of entry referred to. dm pointer used here, no IncRef here.
+	const char* toName )	// name of entry referred to. dm pointer used here, no IncRef here.
 
 /* reference is to a basAnc record named toName in rat xSp->c->b.
    reference is in current datum (per datPt'd xSp entry)
@@ -4156,24 +4156,21 @@ LOCAL void FC NEAR drefAdd( 		// add dref using xSp frame
 		ratDefO( (BP)xSp->c->b) );    	// owning subscript in ->ownB, if found in xStk, else 0.  Above.
 }				// drefAdd
 //===========================================================================
-LOCAL void FC NEAR drefAddI(
-
-	// add deferred reference table entry -- general inner routine
-
+LOCAL void FC NEAR drefAddI( 	// add deferred reference table entry -- general inner routine
 	BP b,		// rat containing reference
 	TI i,		//  entry subscript ditto
 	SI fn,		//  field number ditto
 	BP toB,		// rat being referred to
-	char *toName,	// name of entry being referred to.
-	//  Dm ptr used here: caller is done with pointer or does own IncRef.
-	TI defO )		// 0 or default owner per context
+	const char* toName,	// name of entry being referred to.
+						//  Dm ptr used here: caller is done with pointer or does own IncRef.
+	TI defO )			// 0 or default owner per context
 {
-	DREF * drfp;
-	SI d;
+	DREF* drfp;
 
-	/* search table for existing entry to overwrite:
-	       to eliminate superceded old entry (eg from type): save table space, prevent spurious errMsg if not found at RUN. */
-	for (d = 0;  d < nDref;  d++)
+	// search table for existing entry to overwrite:
+	// to eliminate superceded old entry (eg from type):
+	//   save table space, prevent spurious errMsg if not found at RUN.
+	for (int d = 0;  d < nDref;  d++)
 	{
 		drfp = dref + d;
 		if (drfp->fn==fn && drfp->i==i && drfp->b==b)
@@ -4197,10 +4194,6 @@ found:
 		&drfp->line,		// rcvs line number
 		NULL,			// would receive column
 		NULL, 0 );   		// char[] buffer would rcv line text
-#if 0
-x	if (drfp->line == 1058)
-x		printf( "Yak\n");
-#endif
 }			// drefAddI
 //-----------------------------------------------------------------------------
 LOCAL DREF* drefNextFree()		// ptr to next free DREF (enlarge table if needed)
@@ -4256,12 +4249,8 @@ LOCAL void NEAR drefDup( 	// duplicate dref's at basAnc record dup
 		DREF* drfp = dref + d;  			// point to entry d
 		if (drfp->b==b && drfp->i==i)		// if a ref to given basAnc entry
 		{
-#if 1	// bug fix (handle table expansion), 9-10
 			DREF* nud = drefNextFree();		// next available empty slot
 			drfp = dref + d;  				// repoint to entry d (drefNextFree reallocates to expand)
-#else
-x			nud = dref + nDref++; 			// add an entry
-#endif
 			memcpy( nud, drfp, sizeof(DREF) );		// copy contents
 			nud->b = nuB; 				// new referer
 			nud->i = nuI; 				// ..
@@ -4347,36 +4336,37 @@ LOCAL void FC NEAR drefRes()
 
 // resolve deferred rat references (TYREF's): look up names, store subscripts
 {
-	DREF * drfp;
-	SI d;
-	BP b;
-	record *e;
-	UCH *fs;
-	TI *p;
-	const char* ms;
-
-	for (d = 0;  d < nDref;  d++)	// loop over deferred reference table.  Loop forward in case
-	{
-		drfp = dref + d;  			// ... there are (unexpected) unremoved superceded entries.
-		b = drfp->b;
+	for (int d = 0;  d < nDref;  d++)	// loop over deferred reference table.  Loop forward in case
+	{								// ... there are (unexpected) unremoved superceded entries.
+		DREF* drfp = dref + d;  			
+		BP b = drfp->b;
 		if (b->ba_flags & RFTYS)	// don't fill ref's in TYPE rat entries
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
-		if (drfp->i <= 0 || drfp->i > b->n)
-		{
+#if 1
+		record* e = b->GetAtSafe( drfp->i);		// record location
+		if (!e)
+		{	per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
+			continue;
+		}
+#else
+x		if (drfp->i <= 0 || drfp->i > b->n)
+		{	// allow 0 due to Top
 			per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
 			continue;
 		}
-		e = &b->rec(drfp->i);				// record location
-		p = (TI *)((char *)e				// field location: where to store reference subscript: record location,
-				+ b->fir[drfp->fn].off);		//  plus field offset
-		fs = (UCH *)e + b->sOff;				// field status byte location for field
+		record* e = &b->rec(drfp->i);		// record location
+#endif
+		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
+				+ b->fir[drfp->fn].off);	//  plus field offset
+		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
+		const char* ms;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
 				NULL,
 				&e, &ms ) != RCOK )		// local.  Note e reuse.
 			// look up name in basAnc's records, resolving eg same surf name in 2 zones by dflt owner.
 		{
 			*p = 0;				// not found. store 0.
-			*fs |= FsERR;    			// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
+			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
 			if (ms)				// if ratLuDefO returned unissued msg
 				cuErv( 0, 0, 0, 0, drfp->fileIx, drfp->line, 0, ms, NULL);
 			// issue msg.  Show file/line of ref, not curr file/line (of RUN). cutok.cpp.

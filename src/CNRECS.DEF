@@ -97,6 +97,7 @@ FIELD * directives are
    *r 			runly (start of run) variability, incl things set by input check/setup (topCkf)
    *y 			same as *r; by convention, *y *e used for run-end results
    *e			with above, field varies at end of interval, not start (results)
+   *p			with above, field varies at post-calc stage, not start (intermediate results)
    *f			value available after input, b4 setup; may also change just b4 re-setup for main run after autosize. 6-95.
    *i			value available after input, before checking/setup: rat ref subscrs, resolved just b4 topCkf, 1-92
                 and anywhere eoi probe ok: any SI/FL/STR with VEOI in CULT, as doct'n aid to say value
@@ -233,7 +234,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *r DOY DTEndDay			// Daylight saving end day, 1-365, defaulted by cncult2.cpp code to last Sun in October
     
 							// wind speed adjustment, see cgwthr.cpp
-								//    appl sees Top.windF * max( wthrfile.wndspd, Top.windSpeedMin);
+							//    appl sees Top.windF * max( wthrfile.wndSpd, Top.windSpeedMin);
     *i FLOAT_GEZ windSpeedMin	//  minimum, mph (default=.5)
     *i FLOAT_GEZ windF  		//  factor (default=1)
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
@@ -255,8 +256,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h TEMP heatDsTDbO		// heat design outdoor temp, dfl per ET1 wthr file hdr.
 							//  Impl may be incomplete for non-constant.
     *h TEMP heatDsTWbO		// heating design outdoor wetbulb temp, dfl for 70% RH @ heatDsTDbO.
-    *i *ARRAY 13 SI coolDsMo	// SI[13] cooling design month(s) 1-12 + 0 terminator. Default per ET1 wthr file hdr.
-    *i *ARRAY 13 DOY coolDsDay
+    *i *ARRAY 13 SI tp_coolDsMo		// SI[13] cooling design month(s) 1-12 + 0 terminator. Default per ET1 wthr file hdr.
+    *i *ARRAY 13 DOY tp_coolDsDay	// DOY[13] design day(s) read from weather file + 0 terminator
+	*i *ARRAY 13 TI tp_coolDsCond	// TI[ 13] DESCOND idx(s) + 0 terminator
 
 //TOP: inputs: reporting and exporting
 	*r CHP tp_exePath		// full path to current .exe
@@ -722,7 +724,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*prefix wd_
     *declare "void wd_Init( int options=0);"
-    *declare "WDHR& Copy( const WDHR& wd);"
+    *declare "WDHR& Copy( const WDHR& wd, int options=0);"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
@@ -730,21 +732,26 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
     *declare "RC wd_CSWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_TDVReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_EPWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
+	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 
-    *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
-    *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
+						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
+						// wd_db assumed 1st non-solar geometry mbr
+						// re preservation of solar geometry info, see Copy()
 	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
 							// solar position at midpoint of hour (or portion of hour sun is up)
 	*h float wd_slAzm;		//   azmimuth, radians (0=N, +clockwise)
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
+
     *h float wd_db			// air dry bulb temp, deg F
+    *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
+    *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
     *h float wd_wb			// air wet bulb temp, deg F
-    *h float wd_wnddir		// wind direction, deg, 0=N, 90=E
-    *h float wd_wndspd		// wind speed, mph
- //additional members set only for ET1 or CSW weather files
+    *h float wd_wndDir		// wind direction, deg, 0=N, 90=E
+    *h float wd_wndSpd		// wind speed, mph
+
     *h float wd_glrad		// global irradiance on horizontal surface, for daylighting calculations
     *h float wd_cldCvr		// total cloud cover in tenths, 0-11, or 15 for missing data
- // additional members set only for CSW weather files 9-10
+
 	*h float wd_tSky		// sky temperature, F from weather file or CalcSkyTemp() (Berdahl-Martin)
 							//   Note: Top.tSkyHr alternative value per Top.skyModelLW
 	*h float wd_tGrnd		// ground temperature, F
@@ -789,6 +796,30 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 							//   WFDATA must be record re probing
 							//   WDHR used elsewhere (e.g. whole file pre-read)
 *END		// WFDATA
+//========================================================================================================
+RECORD DESCOND "DESCOND" *RAT		// cooling design conditions
+*prefix dc_
+	*declare "RC dc_CkF();"
+	*declare "DOY dc_GetDOY() const;"
+	*declare "void dc_GenerateTemps( int iHr, float astCor, float& db, float& wb, float& dbAvg) const;"
+
+	*i DOY dc_day;			// calc date for this DESCOND
+
+	*i FLOAT dc_DB;			// design dry-bulb temp, F
+	*i FLOAT dc_MCDBR;		// coincident daily db range, F
+	*i FLOAT dc_MCWB;		// coincident wet-bulb temp, F
+	*i FLOAT dc_MCWBR;		// coincident daily wb range, F
+	*i FLOAT dc_wndSpd;		// wind speed, mph
+	*i FLOAT dc_tauB;		// beam tau
+	*i FLOAT dc_tauD;		// diffuse tau
+
+	// float dcGrRfl;		// default ground reflectivity (0-1)
+	// CWString sDirRad;	// schedule ID for direct solar on normal surface (W/m2)
+							//   for testing, "" = use modelled
+	// CWString sDifRad;	// schedule ID for diffuse solar on horiz surface (W/m2)
+							//   for testing, "" = use modelled
+
+*END	// DESDAY
 //========================================================================================================
 RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 // embedded in many surface types, initially SHADEX and PVARRAY, 2-17
@@ -3594,7 +3625,7 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*h *e FLOAT ps_PLWF			// current hour heat loss when flowing, Btu
 	*h *e FLOAT ps_PLCD			// current hour standing (noflow) heat loss, Btu
 	*h *e FLOAT ps_PL			// ps_PLWF + ps_PLCD
-*END
+*END	// PipeSeg
 //=============================================================================
 RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW recirc loop segment
 // child of DHWLOOP
@@ -3614,7 +3645,7 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
 							//   note: may be non-integer
   *h FLOAT wg_fNoDraw		// fraction of hour when there is no draw
   *h FLOAT wg_BL			// current hour child DHWLOOPBRANCH losses, Btu
- *END
+ *END		// DHWLOOPSEG
 //=============================================================================
 RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime DHW branch
 // child of DHWLOOPSEG
@@ -3649,7 +3680,7 @@ RECORD DHWLOOPPUMP "DHWLoopPump" *RAT *BASECLASS DHWPUMP // input / runtime DHW 
   *declare "DHWSYS* wlp_GetDHWSYS() const;"
 
   *i *hide SI wlp_dummy		// RCDEF objects to RECORD with no members
-*END
+*END		// DHWLOOPPUMP
 //=============================================================================
 RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
   *prefix wdu_
@@ -3662,7 +3693,7 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 
   *h FLOAT_GEZ wdu_mult		// multiplier applied to all child DHWUSE wuFlows
 							//   note FLOAT (not integer)
-*END
+*END		// DHWDAYUSE
 //=============================================================================
 RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *prefix wu_
@@ -3691,7 +3722,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//		mains (cold) water mixing
   *h FLOAT_GEZ wu_heatRecEF	//   heat recovery effectiveness
 							//      re local drain water heat exchange
-*END
+*END	// DHWUSE
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
@@ -3766,26 +3797,29 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "RC bt_DoHour( int stage);"
   *declare "float bt_CalcAdjLoad(const MTR& m) const;"
 
-  *i TI bt_meter;			// meter for system electricity production
-  *f ENDUSECH bt_endUse		// end use of energy. defaults to "BT"
-  *r NOYESCH bt_useUsrChg   // YES: user specifies charge request;
-							// NO (default): calculate charge request via
-							//               default strategy
-  *r FLOAT_GEZ bt_maxCap    // maximum (usable) battery capacity in kWh
-  *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
-  *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0)
-  *h FRAC bt_chgEff         // battery efficiency while charging
-  *h FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
-  *h FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
-  *h FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
-  *h *e FLOAT bt_chgReq     // battery charge request (kW) +=charge;-=discharge
-  *h FRAC bt_soeBegIvl      // battery SOE at beginning of interval
-  *h *e FLOAT bt_loadSeen   // the adjusted load seen by the battery that step (kW)
-  *h *p FRAC bt_soe         // battery state of energy (SOE) (0 <= SOE <= 1)
-							// represents the end of interval SOE.
-  *h *p FLOAT_GEZ bt_cycles // accumulated battery cycles
-  *h *p FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
-
+  *i TI bt_meter;				// meter for system electricity production
+  *f ENDUSECH bt_endUse			// end use of energy. defaults to "BT"
+  *r NOYESCH bt_useUsrChg		// YES: user specifies charge request;
+								// NO (default): calculate charge request via
+								//               default strategy
+  *r FLOAT_GEZ bt_maxCap		// maximum (usable) battery capacity in kWh
+  *r FRAC bt_initSOE			// initial state of energy (0 <= SOE <= 1)
+  *r FLOAT_GEZ bt_initCycles	// initial number of cycles on battery (>= 0)
+  *h FRAC bt_chgEff				// battery efficiency while charging
+  *h FRAC bt_dschgEff			// battery efficiency while discharging (Fraction)
+  *h FLOAT_GEZ bt_maxChgPwr		// maximum allowable charging power (kW)
+  *h FLOAT_GEZ bt_maxDschgPwr	//maximum discharge power (kW)
+  *h *e FLOAT bt_chgReq			// battery charge request (kW) +=charge;-=discharge
+  *h FRAC bt_soeBegIvl			// battery SOE at beginning of interval
+  *h *e FLOAT bt_loadSeen		// the adjusted load seen by the battery that step (kW)
+  *h *p FRAC bt_soe				// battery state of energy (SOE) (0 <= SOE <= 1)
+								// represents the end of interval SOE.
+  *h FLOAT bt_soelh;			// battery state of energy (SOE) at end of prior hour
+  *h *p FLOAT_GEZ bt_cycles		// accumulated battery cycles
+  *h FLOAT_GEZ bt_cycleslh		// accumulated battery cycles, end of prior hour
+  *h *p FLOAT_GEZ bt_energy		// current amount of energy in battery (kWh)
+  *h FLOAT_GEZ bt_energylh		// amount of energy in battery (kWh)
+								// at end of prior hour
 *END		// BATTERY
 //=============================================================================
 RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime

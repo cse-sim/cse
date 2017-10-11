@@ -765,10 +765,14 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 	if (Top.ivl < C_IVLCH_S)
 	{
-		// loads/hvac end-hour-after-reports stuff, such as setting prior-value variables, that must be deferred cuz of probes.
+		// loads/hvac end-hour-after-reports stuff that must be deferred cuz of probes
+		//   e.g. setting prior-value variables
 
 		loadsAfterHour();			// cnloads.cpp
-		hvacAfterHour(); 			// cnguts.h 3-92. ... may be inline {} if nothing to do.
+		hvacAfterHour(); 			// may be inline {} if nothing to do.
+		BATTERY* bt;
+		RLUP(BtR, bt)
+			bt->bt_DoHour( 2);		// battery wrap-up
 
 		// interval-dependent stuff after reports
 
@@ -917,8 +921,9 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 
 // Initialize for location
-	EF( locInit() )		/* local locpak\locinit dummy calls lib\slpak\slinit() w wthr file location data (via Top).
-				   inits Locsolar (comments below). EF: return RCBAD on any non-RCOK return. */
+	EF( locInit() )		// calls slinit() w wthr file location data (via Top).
+						// inits Locsolar (comments below)
+						// EF: return RCBAD on any non-RCOK return.
 
 // Set up weather file
 // do each phase, allowing name to change. Messages errors.
@@ -2372,7 +2377,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 			{
 				monStr = (CHP)tddMonAbbrev( tp_date.month);		// eg "Jan"
 				const char* t;
-				if (tp_AuszWthrSource() == 2)		// if autosizing specific day
+				if (tp_AuszWthrSource() != TOPRAT_COOLDSMO)		// if autosizing specific day
 					t = strtprintf( "%2.2d-%s", 		// format dd-mon
 						tp_date.mday, tddMonAbbrev( tp_date.month));
 				else
@@ -2425,7 +2430,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	HDAY *hd;
 	isHoliday = isHoliTrue = 0;
 	if (!tp_autoSizing)					// no holidays while autosizing
-	{	RLUP( HdayB, hd)						// loop holidays, set up is in cncult4.cpp.
+	{	RLUP( HdayB, hd)				// loop holidays, set up is in cncult4.cpp.
 		{	if (jDay==hd->hdDateObs)   isHoliday++;   	// today is observed date of a holiday
 			if (jDay==hd->hdDateTrue)  isHoliTrue++;   	// today is true date of a holiday
 		}
@@ -2543,10 +2548,8 @@ LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (
 					Top.tp_brHrly==C_NOYESCH_YES,		// .. hourly ..
 					Top.tp_brMem || Top.tp_brDiscardable, 	// whether options call for memory handle return (Windows only)
 					Top.tp_begDay, Top.tp_endDay, Top.jan1DoW,
-#if 1//5-26-95 CSE .461 RESFVER 8
 					Top.workDayMask,			/* work day bits: Sun=1..Sat=64,Hol=128,htDsDay=256,coolDsDay=512:
 							   MATCHES brfw & opk encodings (no ausz ds days yet in bin res, 6-95) */
-#endif
 					ZrB.n,					// number of zones
 					MtrB.n - 1,				// # ery srcs: -1 to omit sum_of_meters rcd, added by cncult2: topMtr().
 					Top.repHdrL, Top.repHdrR,		// report top left and right header texts

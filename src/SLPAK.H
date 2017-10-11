@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-	/* cleanup notes rob 12-89: search ?? */
-
-// slpak.h -- slpak.c (solar) related definitions
+// slpak.cpp solar related definitions
 
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -19,8 +17,13 @@
          local time to solar (and date still changes at local/daylite midnite),
 	 so range is bit more than -Pi to Pi. (mainly used when sun is up.) */
 
-// Radians of earth rotation per hour
-#define HA 0.26179939  	// for converting hours to hour angle; then add SLLOCDAT.tmconst.  Used in sdpak.h??, slpak.h.
+#if 1
+#define HA 0.26179939
+#else
+const double HA = k2Pi/24.;  	// earth rotation, rad/hr
+								// for converting hours to hour angle
+								//   then add SLLOCDAT.tmconst.
+#endif
 
 /*--------------------------------- TYPES ---------------------------------*/
 
@@ -38,8 +41,9 @@ struct SLLOCDAT
     float coslat;		// cos of latitude
     float siteElev;		// site elevation, ft above sea level
     float pressureRatio;	// ratio of surface pressure to sea level pressure (used only in dirsimx.c, 8-9-90)
-// remaining members set daily by slday(), or sldec() from slday.
+	// remaining members set daily by slday(), or sldec() from slday.
     // declination: angle of earth's axis from vertical, + in summer (?) in N hemisphere, computed each day by sldaydat.
+	int doy;			// day of year (1 - 365)
     float rdecl;		// declination this day in radians
     float cosdec;		// cos of declination
     float sdsl;			// sindec * sinlat
@@ -52,8 +56,8 @@ struct SLLOCDAT
     float eqtime;		// equation of time, hours, set in slday().
     // time to hour angle conversion constant: add to hr/HA to make noon 0 & adjust curr type time to solar
     float tmconst;		// set in sldec(), used in slha,
-    float extbm;		// Normal intensity of extraterrestrial beam for current day (Btu/ft2), set in slday().
-    SI timetype;		// time type of following values
+    float extbm;		// normal intensity of extraterrestrial beam for current day (Btu/ft2), set in slday().
+    int timetype;		// time type of following values: SLTMSOLAR, SLTMLST, SLTMDT
     float sunupf[24];		// Sun up fraction of each hour (0 - 1); entry 0 is for midnight - 1 AM, etc.
     float dircos[24][3]; 	// Direction cosines of sun for day, on the hour, or at sunrise/sunset for last and 1st night hour
     float slrazm[24];		// Solar azimuth evaluated on the hour (or sunrise/sunset) for current day
@@ -71,11 +75,16 @@ float slVProfAng( float relAzm, float cosZen);
 SLLOCDAT * FC slinit ( float rlat, float rlong, float tzn, float siteElev);
 SLLOCDAT * FC slselect( SLLOCDAT *pSlr);
 void   FC slfree( SLLOCDAT **ppSlr);
-void   FC slday( DOY jday, SI timetype);
-void   FC sldec( float sldec, SI timetype);
+void   FC slday( DOY doy, int timetype, int options=0);
+void   FC sldec( float sldec, int timetype);
 int slsurfhr( float sdircos[3], int ihr, float* pCosi, float* pAzm=NULL,
                     float* pCos=NULL);
-void   FC slaltazm( float fhour, float *altp, float *azmp);
-void   FC slaniso( float *pbeam, float *pdiff, SI ihr);
+void   FC slaltazm( float fhour, float* altp, float* azmp);
+void   FC slaniso( float* pbeam, float* pdiff, SI ihr);
+float slha( float fhour);
+float slASTCor();
+
+float slASHRAETauModel(	float sunZen, float tauB, float tauD, float& radDirN, float& radDifH);
+
 
 // end of slpak.h

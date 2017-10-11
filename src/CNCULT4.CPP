@@ -1937,13 +1937,11 @@ IFFNM::~IFFNM()		// IMPORT FILE FIELD NAMES table record destructor
 //---------------------------------------------------------------------------------------------------------------------------
 
 
-/******************************************************************************************************************************
-*															      *
-*						         HOLIDAYS							      *
-*															      *
-******************************************************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////
+// HOLIDAYS
+///////////////////////////////////////////////////////////////////////////////
 
-//================================ HOLIDAY PRE-INPUT FCN called by cncult2.cpp:topStarPrf =======================================
+// HOLIDAY PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 
 RC topPrfHday()		// add default HDAY (holiday) records, before input
 {
@@ -2007,7 +2005,7 @@ RC topHday()		// check HDAY input info / build run info
 			if (hdi->hdCase || hdi->hdDow || hdi->hdMon)
 			{
 				hdi->oer( (char *)MH_S0566);		// "Can't intermix use of hdCase, hdDow, and hdMon\n"
-				continue;					// "    with hdDateTrue, hdDateObs, and hdOnMonday for same holiday"
+				continue;							// "    with hdDateTrue, hdDateObs, and hdOnMonday for same holiday"
 			}
 			if (!hdi->hdDateTrue)
 			{

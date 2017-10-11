@@ -113,6 +113,9 @@ extern anc<WFDATA> WthrR;		// basAnc for hour's weather data record. Runtime onl
 extern WFDATA Wthr;				// the one static WFDATA record containing unpacked & adjusted data for hour 1-94
 extern anc<WFDATA> WthrNxHrR;	// basAnc for next hour's weather data record ("weatherNextHour")
 extern WFDATA WthrNxHr;			// static record for next hour's unpacked & adjusted data for cgwthr.cpp read-ahead
+
+extern anc<DESCOND> DCiB;		// design conditions (input records only)
+
 extern anc<ZNR> ZrB;			// zones runtime info
 extern anc<ZNRES> ZnresB;      	// Zones simulation results info
 extern anc<IZXRAT> IzxR;		// interzone transfers
