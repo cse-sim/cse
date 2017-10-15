@@ -1607,21 +1607,28 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		static FILE* pF = NULL;		// file
 		if (bWriteCSV)
 		{	if (!pF)
-			{	const char* fName = strtprintf( "HPWH_%s.csv", name);
+			{
+#if 1
+				// dump file name = <cseFile>_hpwh.csv
+				const char* fName =
+					strsave( strffix2( strtprintf( "%s_hpwh", InputFilePathNoExt), ".csv", 1));
+#else
+x				const char* fName = strtprintf( "HPWH_%s.csv", name);
+#endif
 				pF = fopen( fName, "wt");
 				if (!pF)
 					err( PWRN, "HPWH report failure for '%s'", fName);
 				else
 				{	// headings
-					fprintf( pF, "%s\n",wh_desc, Top.runDateTime);
-					fprintf( pF, "%s%s %s %s HPWH %s   %s\n",
+					fprintf( pF, "%s,%s,%s\n",wh_desc, Top.repHdrL,Top.runDateTime);
+					fprintf( pF, "%s%s %s %s HPWH %s\n",
 						Top.tp_RepTestPfx(), ProgName, ProgVersion, ProgVariant,
-						Top.tp_HPWHVersion, Top.runDateTime);
+						Top.tp_HPWHVersion);
 #if defined( HPWH_DUMPSMALL)
 					fprintf( pF, "minYear,draw( L)\n");
 #else
 					wh_pHPWH->WriteCSVHeading( pF, "month,day,hr,min,minDay,"
-									"tEnv (C),tSrcAir (C),"
+						            "tOut (C),tEnv (C),tSrcAir (C),"
 						            "tInlet (C),tSetpoint (C),draw (gal),draw (L),");
 #endif
 				}
@@ -1634,9 +1641,9 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 				fprintf( pF, "%0.2f,%0.3f\n", minYear, GAL_TO_L( drawForTick));
 #else
 				wh_pHPWH->WriteCSVRow( pF, strtprintf(
-						"%d,%d,%d,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.3f,%0.3f,",
+						"%d,%d,%d,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f, %0.3f,%0.3f,",
 						Top.tp_date.month, Top.tp_date.mday, Top.iHr+1, minHr, minDay,
-						DegFtoC( wh_tEx), DegFtoC( wh_ashpTSrc),
+						DegFtoC( Top.tDbOSh),DegFtoC( wh_tEx),DegFtoC( wh_ashpTSrc),
 						DegFtoC( pWS->ws_tInlet), DegFtoC( pWS->ws_tSetpoint),
 						drawForTick, GAL_TO_L( drawForTick)));
 #endif

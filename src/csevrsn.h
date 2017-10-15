@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 843
+#define CSEVRSN_MINOR 844
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.844: ...
    0.843: BATTERY last hour values; DESCOND prelim version; 10-10-17
    0.842: btChgReq eval stage bug fix (cncult.cpp), 9-12-2017
    0.841: release version with post-ivl evaluation, autosize refinements, 9-12-2017
