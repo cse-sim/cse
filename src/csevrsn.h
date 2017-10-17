@@ -22,7 +22,7 @@
 // ONLY comments below here
 
 /* History:
-   0.844: ...
+   0.844: HPWH debug export enhanced, 10-17-2017
    0.843: BATTERY last hour values; DESCOND prelim version; 10-10-17
    0.842: btChgReq eval stage bug fix (cncult.cpp), 9-12-2017
    0.841: release version with post-ivl evaluation, autosize refinements, 9-12-2017
