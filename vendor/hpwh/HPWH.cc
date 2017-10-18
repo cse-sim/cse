@@ -707,6 +707,22 @@ int HPWH::setUA(double UA, UNITS units) {
 	return 0;
 }
 
+int HPWH::getUA(double& UA, UNITS units/*=UNITS_kJperHrC*/) const
+{
+	int ret = 0;
+	if (units == UNITS_kJperHrC)
+		UA = tankUA_kJperHrC;
+	else if (units == UNITS_BTUperHrF)
+		UA = tankUA_kJperHrC / UAf_TO_UAc( 1.);
+	else
+	{	if (hpwhVerbosity >= VRB_reluctant)
+			msg("Incorrect unit specification for getUA.  \n");
+		UA = -1.;
+		ret = HPWH_ABORT;
+	}
+	return ret;
+}
+
 int HPWH::getNumNodes() const {
 	return numNodes;
 }

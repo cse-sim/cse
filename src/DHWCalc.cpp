@@ -958,7 +958,10 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		rc |= disallowN( "when 'whTEx' is specified", DHWHEATER_ZNTI, 0);
 
 	if (wh_heatSrc != C_WHHEATSRCCH_ELRESX)
-		ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
+	{	ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
+		if (wh_heatSrc != C_WHHEATSRCCH_ASHPX)
+			ignore( DHWHEATER_UAMULT, whenHs);
+	}
 
 	if (wh_type != C_WHTYPECH_STRGSML)
 	{	if (wh_type == C_WHTYPECH_INSTUEF)
@@ -1420,7 +1423,15 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (volX > 0.f && wh_pHPWH->setTankSize( volX, HPWH::UNITS_GAL) != 0)
 			rc = RCBAD;
 		if (UAX > 0.f && wh_pHPWH->setUA( UAX, HPWH::UNITS_BTUperHrF) != 0)
-			rc = RCBAD;
+				rc = RCBAD;
+		if (wh_UAMult != 1.f)
+		{	// apply user-specified adjustment to implicit UA
+			//    approximates effect of e.g. tank wrap insulation
+			double UAdflt;
+			int ret = wh_pHPWH->getUA( UAdflt);
+			if (ret || wh_pHPWH->setUA( UAdflt*wh_UAMult) != 0)
+				rc = RCBAD;
+		}
 	}
 
 	if (!rc)
