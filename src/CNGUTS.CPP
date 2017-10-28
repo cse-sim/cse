@@ -1660,8 +1660,8 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
 	{	pRSR->H.rsr_Accum( &pRSR->D, Top.isBegDay, Top.isEndDay);		// accumulate hour results to day. local
 #if 0
-		if (pRSR->ss < RSysResR.n)						// if not the sum record (last)
-			pRSR->H.rsr_Accum( &allRsysRes->H, pRSR->ss==1, pRSR->ss==RsR.n);	// also accumulate each hour to sum_of_RSYS
+0		if (pRSR->ss < RSysResR.n)						// if not the sum record (last)
+0			pRSR->H.rsr_Accum( &allRsysRes->H, pRSR->ss==1, pRSR->ss==RsR.n);	// also accumulate each hour to sum_of_RSYS
 #endif
 	}
 
@@ -1983,15 +1983,17 @@ LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
 LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add interval to next, + tot and sum.
 
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-	int firstflg ) 	// If TRUE, destination will be initialized before values are accumulated into it
-
+	int firstflg) 	// If TRUE, destination will be initialized before values are accumulated into it
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
-	RLUP( MtrB, mtr)					// loop (good) meter records
-	{	int bTrc = 0; // strMatch( mtr->name, "ElecMtrInitNo");
+	RLUP( MtrB, mtr)		// loop (good) meter records
+	{	
+#if defined( _DEBUG)
+		int bTrc = 0; // strMatch( mtr->name, "ElecMtrInitNo");
 		if (bTrc)
 		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+#endif
 		
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
@@ -2002,37 +2004,20 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add int
 		if (ivl==C_IVLCH_D)
 		{
 			// compute hour's total load in each record.  .allEU then propogates to D, M, Y.
-			///  sum members .clg .. usr2 to .allEU, exclude .pv and .bt
+			//  sum members .clg .. usr2 to .allEU, exclude .pv and .bt
 			mtrSub1->allEU = VSum<float,double>( &mtrSub1->clg, NENDUSES-2);  	
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
 			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
-				mtrSum.mtr_Accum1( mtrSub1, ivl, 0+(firstflg!=0));
-#if 0
-				if (firstRec)
-					memcpy( &mtrSum, mtrSub1, sizeof(MTR_IVL_SUB)); 	// copy first record
-				else								// additional records: accumulate ...
-					mtrSum.mtr_Accum1( mtrSub1, ivl);			// treatment of demand not necessarily sensible.
-#endif
+				mtrSum.mtr_Accum1( mtrSub1, ivl, 0+(firstRec!=0));
 			}
 			firstRec = 0;
 		}
 
 		// accumulate: copy on first call (in lieu of 0'ing destination).
 		// Note: doHourGains 0's MTR hour info at start hour.
-#if 1
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 0 + (firstflg!=0));
-#else
-		if (firstflg)						// if first call for destination interval
-		{	// copy selected members
-			VCopy( &mtrSub2->clg, NENDUSES-2, &mtrSub1->clg);
-			mtrSub2->pv = mtrSub1->pv;
-			mtrSub2->allEU = mtrSub1->allEU;
-		}
-		else							// additional calls in interval use accumulation subr (next)
-			mtrSub2->mtr_Accum1( mtrSub1, ivl);	// adds up uses w/o bt or tot
-#endif
 	}
 
 	// DHWMTRs
@@ -2050,9 +2035,11 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 	int firstRec = 1;
 	RLUP( MtrB, mtr)					// loop (good) meter records
 	{
+#if defined( _DEBUG)
 		int bTrc = 0;   // strMatch( mtr->name, "ElecMtrInitNo");
 		if (bTrc)
 		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+#endif
 
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
@@ -2113,17 +2100,10 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 
 #endif
 
-	// accumulate: copy on first call (in lieu of 0'ing destination).  Note: doHourGains 0's MTR hour info at start hour.
-#if 1
-		// accumulate to next level, handles dmd
+	// accumulate: copy on first call (in lieu of 0'ing destination).
+	//   handles dmd
+	// Note: doHourGains 0's MTR hour info at start hour.
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
-#else
-		if (firstflg)					// if first call for destination interval
-			memcpy( mtrSub2, mtrSub1, sizeof(MTR_IVL_SUB) );	// copy whole subrecord
-		else							// additional calls in interval use accumulation subr (next)
-			mtrSub2->mtr_Accum1( mtrSub1, ivl, 2);	// finalizes totals, handles dmd
-#endif
-
 
 #if	defined( _DEBUG)
 		if (1 || bTrc)
@@ -2147,7 +2127,6 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into anoth
 								//      else end-of-calc
 // accums/copies mtrSub1 into *this
 {
-#if 1
 	bool bCopy     = (options & 1) != 0;
 	bool bFinalize = (options & 2) != 0;
 
@@ -2171,17 +2150,7 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into anoth
 	{	// after load management (e.g. battery)
 		// handle all mbrs w/ *p variability
 		if (bCopy)
-		{	memcpy( this, mtrSub1, sizeof( MTR_IVL_SUB));
-
-#if 0
-			tot = mtrSub1->tot;
-			bt = mtrSub1->bt;
-			cost = mtrSub1->cost;
-			dmd = mtrSub1->dmd;
-			dmdCost = mtrSub1->dmdCost;
-			dmdShoy = mtrSub1->dmdShoy;
-#endif
-		}
+			memcpy( this, mtrSub1, sizeof( MTR_IVL_SUB));
 		else
 		{	tot += mtrSub1->tot;
 			bt += mtrSub1->bt;
@@ -2191,7 +2160,6 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into anoth
 				dmdCost += mtrSub1->dmdCost;
 
 			// keep peak demand, and its cost thru month level
-
 			if (mtrSub1->dmd > dmd)		// if source demand (peak use) greater
 			{	dmd  = mtrSub1->dmd;		// update largest hourly demand in destination
 				dmdShoy = mtrSub1->dmdShoy;	// update peak date & time (subhr of year)
@@ -2200,28 +2168,6 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into anoth
 			}
 		}
 	}
-#else
-
-// Add up uses and cost, and demand cost if month to year
-
-	VAccum( &tot, 	// add 2nd arg float vector to 1st arg
-			NENDUSES			// vector length: # end uses
-			 + 1				//  plus .tot, assumed to precede end uses,
-			 + 1				//  plus .cost, assumed to immed follow end uses
-			 + (ivl==C_IVLCH_Y),	// plus .dmdCost if month-to-year (thru month, largest
-	                    			// dmdCost is used, not sum, by code just below).
-			&mtrSub1->tot);
-// Keep peak demand, and its cost thru month level
-
-	if (mtrSub1->dmd > dmd)		// if source demand (peak use) greater
-	{
-		dmd  = mtrSub1->dmd;		// update largest hourly demand in destination
-		dmdShoy = mtrSub1->dmdShoy;	// update peak date & time (subhr of year)
-		if (ivl != C_IVLCH_Y)			// thru month level, keep largest demand cost
-			dmdCost = mtrSub1->dmdCost;	// .. (but for month to year, dmdCost is summed, above).
-	}
-
-#endif
 }		// MTR_IVL_SUB::mtr_Accum1
 //-----------------------------------------------------------------------------------------------------------
 double MTR_IVL_SUB::mtr_NetBldgLoad() const	// building load (includes PV, excludes BT)
@@ -2362,7 +2308,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 // allocate date string storage once. Small, error unlikely, abort ok. dmpak.cpp.
 	if (!dateStr)
-		dmal( DMPP( dateStr), max( TDDATELENMAX+1U, strlen("ddd Jan xxx cooling design day xx")), ABT); 							// small, error unlikely, let program abort.
+		dmal( DMPP( dateStr), max( TDDATELENMAX+1U, strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
 
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{

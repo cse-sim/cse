@@ -379,7 +379,7 @@ void FC slday(	// set up daily data in current SLLOCDAT
 
 	sldec( dec, timetype);	// set declination-related slloccur members, below.
 
-}			/* slday */
+}			// slday
 //======================================================================
 LOCAL void FC NEAR sldaydat(
 

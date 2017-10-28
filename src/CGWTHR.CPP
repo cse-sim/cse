@@ -380,13 +380,13 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	}
 
 	// set up solar conditions
-#if 1
-	if (iHrST == 0)
-		slday( jDayST, SLTMLST);
-#else
+#if defined( SOLARFIX)
 	slday( jDayST, SLTMLST, 1);	// set up curr SLLOCDAT struct for today if needed
 								// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 								// used by slaniso & most other slpak calls.
+#else
+	if (iHrST == 0)
+		slday( jDayST, SLTMLST);
 #endif
 
 	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface

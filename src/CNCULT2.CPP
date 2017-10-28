@@ -186,9 +186,9 @@ RC topReCkf()
 	return topCkfI( TRUE);
 }
 //===========================================================================
-LOCAL RC topCkfI( int re)
-
-// finish/check/set up inner function, used when RUN seen, and again (re TRUE) if main simulation follows autosize.
+LOCAL RC topCkfI(	// finish/check/set up inner function
+	int re)		// 0: when RUN seen
+				// nz: 2nd call when main simulation follows autosize
 
 /* does:
      checking that must be deferred til multiple inputs present

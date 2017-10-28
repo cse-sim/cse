@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 845
+#define CSEVRSN_MINOR 847
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,8 @@
 // ONLY comments below here
 
 /* History:
+   0.847: fix inconsistent xs_UNom
+   0.846: SOLARFIX test version, 10-25-2017
    0.845: added DHWHEATER whUAMult, 10-18-2017
    0.844: HPWH debug export enhanced, 10-17-2017
    0.843: BATTERY last hour values; DESCOND prelim version; 10-10-17
