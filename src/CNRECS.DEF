@@ -2862,7 +2862,8 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC rs_CkF();"
-*declare "RC rs_TopRSys();"
+*declare "RC rs_TopRSys1();"
+*declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
 *declare "RC rs_FazInit( int isAusz);"
 *declare "RC rs_RddInit( int isAusz);"
