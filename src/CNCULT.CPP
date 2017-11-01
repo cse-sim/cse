@@ -1544,11 +1544,20 @@ RC DUCTSEG::ds_Ckf()
 	RC rc=RCOK;
 
 	if (IsSet( DUCTSEG_EXAREA))
-	{	rc |= disallow( DUCTSEG_INAREA, "when dsExArea is given");
-		ignoreN( "when dsExArea is given", DUCTSEG_DIAM, DUCTSEG_LEN, 0);
+	{	// flat configuration: area is fixed
+		rc |= disallow( DUCTSEG_INAREA, "when dsExArea is given");
+		ignoreN( "when dsExArea is given", DUCTSEG_DIAM, DUCTSEG_LEN,
+			DUCTSEG_BRANCHCOUNT, DUCTSEG_BRANCHLEN, DUCTSEG_BRANCHCFA, DUCTSEG_AIRVELDS, 0);
 	}
 	else
-	{	int dimCount = IsSet( DUCTSEG_DIAM) + IsSet( DUCTSEG_LEN) + IsSet( DUCTSEG_INAREA);
+	{	// round: many interdependent defaults
+		// # of branches: user-input branch count takes precedence
+		if (IsSet( DUCTSEG_BRANCHCOUNT))
+			ignore( DUCTSEG_BRANCHCFA, "when dsBranchCount is given");
+		if (IsSet( DUCTSEG_BRANCHLEN))
+			rc |= disallow( DUCTSEG_LEN, "when dsBranchLen is given");
+
+		int dimCount = IsSet( DUCTSEG_DIAM) + IsSet( DUCTSEG_LEN) + IsSet( DUCTSEG_INAREA);
 		if (dimCount == 3)
 			rc |= oer( "at most 2 of dsDiameter, dsLength, and dsInArea are allowed");
 	}
@@ -1595,10 +1604,14 @@ static CULT dsT[] = //------ DUCTSEG cmd RAT Entry table, used from RSys
 CULT( "*",           STAR, 0,             0,   0, 0,         0,     0,      0.f,                N,   &dsStarCkf),
 CULT( "dsRSys",      DAT,  DUCTSEG_OWNTI, NO_INP|RDFLIN,0,0, TYREF, &RSiB,  0,                  N,   N),
 CULT( "dsTy",		 DAT,  DUCTSEG_TY,    RQD, 0, VEOI,      TYCH,  0,      -1,                 N,   N),
+CULT( "dsBranchLen", DAT,  DUCTSEG_BRANCHLEN,0,0, VEOI, 	 TYFL,  0,     -1.f,				N,   N),
+CULT( "dsBranchCount",DAT, DUCTSEG_BRANCHCOUNT,0,0,VEOI,     TYSI,  0,     -1,                  N,   N),
+CULT( "dsBranchCFA", DAT,  DUCTSEG_BRANCHCFA,0,0, VEOI,      TYFL,  0,     -1,                  N,   N),
+CULT( "dsAirVelDs",  DAT,  DUCTSEG_AIRVELDS, 0,0, VEOI, 	 TYFL,  0,     -1.f,				N,   N),
 CULT( "dsExArea",    DAT,  DUCTSEG_EXAREA,0,   0, VEOI,      TYFL,  0,      0.f,                N,   N),
 CULT( "dsInArea",    DAT,  DUCTSEG_INAREA,0,   0, VEOI,      TYFL,  0,      0.f,                N,   N),
 CULT( "dsDiameter",	 DAT,  DUCTSEG_DIAM,  0,   0, VEOI,		 TYFL,  0,      0.f,				N,   N),
-CULT( "dsLength",	 DAT,  DUCTSEG_LEN,   0,   0, VEOI,		 TYFL,  0,      0.f,				N,   N),
+CULT( "dsLength",	 DAT,  DUCTSEG_LEN,   0,   0, VEOI, 	 TYFL,  0,      0.f,				N,   N),
 CULT( "dsExCnd",     DAT,  DUCTSEG_EXCND, 0,   0, 0,         TYCH,  0,      C_EXCNDCH_ADJZN,    N,   N),
 CULT( "dsAdjZn",     DAT,  DSBC( ZI),     0,   0, VEOI,      TYREF, &ZiB,   0.f,                N,   N),
 CULT( "dsExT",       DAT,  DSBC( TXA),    0,   0, VSUBHRLY,  TYFL,  0,      70.f,               N,   N),

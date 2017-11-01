@@ -2773,8 +2773,10 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *declare "ZNR* ds_GetExZone() const;"
 *declare "RSYS* ds_GetRSYS() const;"
 *declare "RC ds_Ckf();"
+*declare "bool ds_IsRound() const;"
 *declare "RC ds_TopDS( const DUCTSEG* pDSi);"
 *declare "void ds_SetRunConstants();"
+*declare "RC ds_SetSizeFromAVF( float avf);"
 *declare "double ds_InsulK( float T) const { return ds_insulKA + ds_insulKB * T; }"
 *declare "int ds_IsSupply() const { return ds_ty == C_DUCTTYCH_SUP; }"
 *declare "RC ds_BegHour();"
@@ -2790,10 +2792,18 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 								//   represents coupling(s) between duct exterior
 								//   surface and adjacent zone or ambient
 									
-*i FLOAT ds_exArea			// exterior heat transfer surface area, ft2 (outside of insulation)
+*i FLOAT_GEZ ds_exArea		// exterior heat transfer surface area, ft2 (outside of insulation)
+							//   if input, flat area-only model is used, many inputs have no effect
+							//   if NOT input, round ducts assumed
 
 *i FLOAT_GZ ds_diam			// duct diameter (w/o insulation), ft
-*i FLOAT_GEZ ds_len			// segment length, ft
+*i FLOAT_GEZ ds_len			// total length (all branches), ft
+*r FLOAT_GZ ds_branchLen	// average branch length, ft
+*i SI_GZ ds_branchCount		// # of branches
+*i FLOAT_GZ ds_branchCFA	// floor area served per per branch, ft2
+							//    used re default ds_branchCount
+*i FLOAT_GZ ds_airVelDs		// design air velocity, fpm
+							//   re flow-based sizing
 
 *i FLOAT_GEZ ds_inArea		// interior surface area, ft2
 							//   = inside wetted area / duct surf area w/o insulation
@@ -2873,6 +2883,7 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *declare "RC rs_SetupCapH( float avfH=-1.f, int options=0);"
 *declare "void rs_SetupFanC( float avfC=-1.f);"
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
+*declare "RC rs_SetDuctSizes();"
 *declare "void rs_SetModeAndClear( int rsModeNew);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
