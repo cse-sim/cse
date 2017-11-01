@@ -2855,7 +2855,7 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 
 *END	// DUCTSEG
 //=============================================================================
-RECORD RSYS "RSYS" *RAT	// residential system
+RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *prefix rs_
 
 // *excon	// explicit constructor
