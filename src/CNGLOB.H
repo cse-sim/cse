@@ -246,7 +246,7 @@ template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
 		warn( "bracketWarn: hit limit\n");
 	return vx;
 }
-template< typename T> inline void swap( T v1, T v2)
+template< typename T> inline void tswap( T v1, T v2)
 {	T vx = v1; v1 = v2; v2 = vx; }
 
 // snap to -1, 0, or 1
