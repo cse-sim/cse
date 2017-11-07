@@ -149,7 +149,6 @@ set(headers
   ENVPAK.H
   EXMAN.H
   GMPAK.H
-  ../vendor/hpwh/HPWH.hh
   IMPF.H
   IRATS.H
   LOOKUP.H
@@ -178,11 +177,9 @@ set(headers
   YACAM.H
 )
 
-include_directories("${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/vendor" "${CMAKE_SOURCE_DIR}/vendor/penumbra/include")
+include_directories("${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/vendor" "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include" "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src")
 
 add_definitions(-DINCNE)
-
-link_directories("${CMAKE_SOURCE_DIR}/vendor/penumbra/lib")
 
 add_executable(CSE ${source} ${headers})
 
@@ -191,18 +188,7 @@ set(libs
   penumbra
   glfw3
   tess2
+  libHPWHsim
 )
 
-set(libsd
-  gladd
-  penumbrad
-  glfw3d
-  tess2d
-)
-
-target_link_libraries(CSE
-  "$<$<CONFIG:Debug>:${libsd}>"
-  "$<$<CONFIG:RelWithDebInfo>:${libsd}>"
-  "$<$<CONFIG:Release>:${libs}>"
-  "$<$<CONFIG:MinSizeRel>:${libs}>"
-)
+target_link_libraries(CSE ${libs})
