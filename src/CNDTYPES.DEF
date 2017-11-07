@@ -355,8 +355,9 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 *choicb WHTYPECH {
 			STRGSML "SmallStorage"
 			STRGLRG "LargeStorage"
-			INSTSML  "SmallInstantaneous"
-			INSTLRG  "LargeInstantaneous"
+			INSTSML "SmallInstantaneous"
+			INSTLRG "LargeInstantaneous"
+			INSTUEF "InstantaneousUEF"
           }
 *choicb WHASHPTYCH {					// comments from Ecotope, see hphw.hh
 			RESTANKNOUA "ResTankNoUA"		// a simple resistance tank, but with no tank losses
@@ -497,7 +498,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  HTG		"Htg"	// space heating incl heat pump compressor
 			  HPHTG		"HPHtg"	// heat pump backup heat
 			  DHW		"DHW"	// domestic (service) hot water heating
-			  DHWBU		"DHWBU"	// domestic (service) not water heating backup (HPWH resistance)
+			  DHWBU		"DHWBU"	// domestic (service) hot water heating backup (HPWH resistance)
 			  FANC		"FanC"	// fan energy for AC and cooling ventilation
 			  FANH		"FanH"	// fan energy for heating
 			  FANV		"FanV"	// fan energy for IAQ venting

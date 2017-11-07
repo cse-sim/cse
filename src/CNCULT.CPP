@@ -11,8 +11,6 @@
 
 // TYREF's are supposed to be VEOI/VFAZLY, right? A lot were 0, changed to VEOI 10-9-92. cul.cpp doesn't check evf for TYREF.
 
-/* used in: cnr.exe (derived from \dev\hscult.cpp 8-91)
-            formerly also \dev\hstul.exe (preliminary test for above, not maintained as of 8-91. */
 
 /* there are 3 include files for cncult,2,3,4,5,6.cpp (2-92), cuz various inclusions are required first, etc:
 cncult.h: use classes, globally used functions
@@ -63,6 +61,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 makAncTOPRAT( TopiR);   		// "Top" info input record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
 TOPRAT Topi( (anc<TOPRAT> *)&TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
 // pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
+
 // zones, transfers, gains, meters
 makAncZNI(ZiB);				// zones input info records basAnc
 makAncIZXRAT( IzxiB);		// interzone transfer input records basAnc
@@ -97,7 +96,7 @@ makAncBOILER(BlriB);		// BOILERs input info
 makAncCOOLPLANT(CpiB);		// COOLPLANTs input info
 makAncCHILLER(ChiB);		// CHILLERs input info
 makAncTOWERPLANT(TpiB);		// TOWERPLANTs input info
-// surfaces &c
+// surfaces etc
 makAncPRI(PriB);  			// perimeters input records basAnc
 //surfaces, doors, windows: same struct: required by topSf1() and -2.
 makAncSFI(SfiB);  			// surfaces input records basAnc
@@ -110,7 +109,7 @@ makAncGT(GtiB);  			// glazeTypes input info 12-94
 makAncCON(ConiB);  			// constructions input info records basAnc
 makAncLR(LriB);    			// layers input info records basAnc
 makAncMAT(MatiB);			// materials input info records basAnc
-// reports &c
+// reports etc
 makAncRFI(RfiB);  				// REPORTFILE input info
 makAncRFI2(XfiB,"exportFile"); // EXPORTFILE input info
 makAncRI(RiB);    				// REPORT input info
@@ -120,7 +119,7 @@ makAncCOL2(XcoliB,"exportCol"); // EXPORTCOL input info for UDT exports
 makAncIMPF(ImpfiB);				// IMPORTFILE input info, 2-94
 // holidays
 makAncHDAY(HdayiB);				// HDAY input info
-
+makAncDESCOND(DCiB);			// DESCOND input info
 
 //=======================================================================
 void FC iRatsFree()	// free record storage for all input basAncs.
@@ -171,8 +170,8 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	XcoliB.free();
 	ImpfiB.free();
 	HdayiB.free();
+	DCiB.free();
 }			// iRatsFree
-
 //=======================================================================
 void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before showProbeNames]
 
@@ -182,10 +181,10 @@ void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before sho
 	basAnc::an_SetCULTLinks();	// link record anchors to associated input language CULTs
 
 // clear/Init the "Top input RAT" which holds once-only input parameters, set mainly via cnTopCult[]
-	TopiR.statSetup( Topi, 1);			/* init cncult:TopiR as basAnc with 1 static record cncult:Topi.
-						   and zero record Topi and init its front members.
-						   Topi can then be accessed as static structure,
-						   or via gen'l routines that work thru TopiR.  lib\ancrec.cpp fcn. */
+	TopiR.statSetup( Topi, 1);	// init cncult:TopiR as basAnc with 1 static record cncult:Topi.
+								// and zero record Topi and init its front members.
+								// Topi can then be accessed as static structure,
+								// or via gen'l routines that work thru TopiR.
 
 // say WFDATA records have no members set by via expressions
 // prevents exWalkRecs() from msging deliberately UNSET values
@@ -1069,7 +1068,7 @@ CULT( "colGap",      DAT,   COL_COLGAP,    0,       0, VEOI,     TYSI,   0,     
 CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,      N,   0.f,    N,   N),
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,   0.f,    N,   N),
-CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVENDIVL,			// ok to evaluate at end interval
+CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVPSTIVL,			// ok to evaluate at post interval
 TYFLSTR,			// float or string, struct w/ dt.
 0,      N,   0.f,    N,   N),
 CULT( "endReportcol",ENDER, 0,             0,       0, 0,        0,      0,      N,   0.f,    N,   N),
@@ -1089,7 +1088,7 @@ CULT( "colHead",     DAT,   COL_COLHEAD,   0,       0, VEOI,     TYSTR,  0,     
 CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,      N,  0.f,     N,   N),
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,  0.f,     N,   N),
-CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVENDIVL,			// ok to evaluate at end interval
+CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVPSTIVL,			// ok to evaluate at post interval
 TYFLSTR,			// float or string, struct w/ dt.
 0,      N,  0.f,     N,   N),
 CULT( "endExportcol",ENDER, 0,             0,       0, 0,     0,         0,      N,  0.f,     N,   N),
@@ -1251,8 +1250,8 @@ CULT( "rpFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,  0
 CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0,       v 0, 0.f,      N, N),
 CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       v 0, 0.f,      N, N),
 CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       v 0, 1e6,      N, N), // show mBtu. Also in cncult4:addRep().
-CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVENDIVL,		 	// ok if evaluated at end interval
-																		TYLLI, 			// SI condition, dflt TRUE, in LI for NAN
+CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
+																		TYLLI, 				// SI condition, dflt TRUE, in LI for NAN
 																		       0,       v 1L,0.f,      N, N),
 CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0, 0.f,      N, N),
 CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       v 0, 0.f,      N, N),
@@ -1293,7 +1292,7 @@ static CULT exT[] = //----------- EXPORT cmd table, used from cnTopCult and exfT
 	CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
 	CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
 	CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      v 0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
-	CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVENDIVL,		 	// ok if evaluated at end interval
+	CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
 	                                                                        TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
 	                                                                                0,      v 1L,0.f,    N,   N),
 	CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
@@ -1772,7 +1771,14 @@ CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "whUAMult",	 DAT,   DHWHEATER_UAMULT,  0,     0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whEF",		 DAT,   DHWHEATER_EF,      0,     0, VEOI,   TYFL,  0,      0.82f,  N, N),
+CULT( "whUEF",		 DAT,   DHWHEATER_UEF,     0,     0, VEOI,   TYFL,  0,        0.f,  N, N),
+CULT( "whStbyElec",  DAT,   DHWHEATER_STBYELEC,  0,   0, VEOI,   TYFL,  0,        4.f,  N, N),
+CULT( "whRatedFlow", DAT,   DHWHEATER_RATEDFLOW, 0,   0, VEOI,   TYFL,  0,        0.f,  N, N),
+CULT( "whLoadCFwdF", DAT,   DHWHEATER_LOADCFWDF, 0,   0, VEOI,   TYFL,  0,        1.f,  N, N),
+CULT( "whAnnualFuel",DAT,   DHWHEATER_ANNUALFUEL,0,   0, VEOI,   TYFL,  0,        0.f,  N, N),
+CULT( "whAnnualElec",DAT,   DHWHEATER_ANNUALELEC,0,   0, VEOI,   TYFL,  0,        0.f,  N, N),
 CULT( "whResHtPwr",	 DAT,   DHWHEATER_RESHTPWR,0,     0, VEOI,   TYFL,  0,     4500.f,  N, N),
 CULT( "whResHtPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whLDEF",		 DAT,   DHWHEATER_LDEF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
@@ -2006,7 +2012,7 @@ LOCAL RC FC btStarCkf(CULT* c, /*BATTERY* */ void *p, void *p2, void *p3)
 {
 	return ((BATTERY*)p)->bt_CkF();
 }		// btStarCkf
-		//=============================================================================
+//=============================================================================
 static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 {
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
@@ -2014,14 +2020,14 @@ static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 CULT( "*",            STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   btStarCkf),
 CULT( "btMeter",      DAT,   BATTERY_METER,   0,       0, VEOI,   TYREF, &MtriB, N,      N,   N),
 CULT( "btEndUse",     DAT,   BATTERY_ENDUSE,  0,       0, VEOI,   TYCH,  0,      C_ENDUSECH_BT, N, N),
-CULT( "btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
-CULT( "btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VSUBHRLY,TYFL, 0,      0.975f, N,   N),
+CULT( "btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VHRLY,  TYFL, 0,      0.975f, N,   N),
+CULT( "btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VHRLY,  TYFL, 0,      0.975f, N,   N),
 CULT( "btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),
 CULT( "btInitSOE",    DAT,   BATTERY_INITSOE, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "btInitCycles", DAT,   BATTERY_INITCYCLES,0,     0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
-CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VSUBHRLY,TYFL, 0,      4.f,    N,   N),
-CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VSUBHRLY,TYFL, 0,      0.f,    N,   N),
+CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VHRLY,  TYFL, 0,      4.f,    N,   N),
+CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VHRLY,  TYFL, 0,      4.f,    N,   N),
+CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VHRLY|EVENDIVL,  TYFL, 0,      0.f,    N,   N),
 CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
 CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
@@ -2047,7 +2053,7 @@ CULT()
 };	// shadeT
 
 //====================== AIRHANDLER command (Air Handler) ===========================
-static CULT ahT[] = //-------------------------- AIRHANDLER cmd RAT Entry table, used from cnTopCult
+static CULT ahT[] = 
 {
 #define SFAN(m)  (AH_SFAN + FAN_##m)
 #define RFAN(m)  (AH_RFAN + FAN_##m)
@@ -2388,17 +2394,46 @@ static CULT tpT[] =
 
 static CULT hdayT[] =
 {
-	// id         cs     fn               f        uc evf     ty      b     dfls        p2   ckf
-	//----------  -----  ---------------  -------  -- ------  ------  ----  ----------  ---- ----
-	CULT( "hdDateTrue",	DAT,   HDAY_HDDATETRUE,	0,       0, VEOI,   TYDOY,  0,    0.f,        N,   N),
-	CULT( "hdDateObs",	DAT,   HDAY_HDDATEOBS,	0,       0, VEOI,   TYDOY,  0,    0.f,        N,   N),
-	CULT( "hdOnMonday",	DAT,   HDAY_HDONMONDAY,	0,       0, VEOI,   TYCH,   0,    0.f,        N,   N), // defaulted YES in code
-	CULT( "hdCase",	DAT,   HDAY_HDCASE,	0,       0, VEOI,   TYCH,   0,    0.f,        N,   N),
-	CULT( "hdDow",	DAT,   HDAY_HDDOW,	0,       0, VEOI,   TYCH,   0,    0.f,        N,   N),
-	CULT( "hdMon",	DAT,   HDAY_HDMON,	0,       0, VEOI,   TYCH,   0,    0.f,        N,   N),
-	CULT( "endHoliday",  ENDER, 0,               0,       0, 0,      0,      0,    0.f,        N,   N),
-	CULT()
+// id               cs     fn               f        uc evf     ty      b     dfls        p2   ckf
+//----------        -----  ---------------  -------  -- ------  ------  ----  ----------  ---- ----
+CULT( "hdDateTrue",	DAT,   HDAY_HDDATETRUE,	0,       0, VEOI,   TYDOY,  0,    0.f,        N,   N),
+CULT( "hdDateObs",	DAT,   HDAY_HDDATEOBS,	0,       0, VEOI,   TYDOY,  0,    0.f,        N,   N),
+CULT( "hdOnMonday",	DAT,   HDAY_HDONMONDAY,	0,       0, VEOI,   TYCH,   0,    0.f,        N,   N), // defaulted YES in code
+CULT( "hdCase",	    DAT,   HDAY_HDCASE,	    0,       0, VEOI,   TYCH,   0,    0.f,        N,   N),
+CULT( "hdDow",	    DAT,   HDAY_HDDOW,	    0,       0, VEOI,   TYCH,   0,    0.f,        N,   N),
+CULT( "hdMon",	    DAT,   HDAY_HDMON,	    0,       0, VEOI,   TYCH,   0,    0.f,        N,   N),
+CULT( "endHoliday",  ENDER, 0,              0,       0, 0,      0,      0,    0.f,        N,   N),
+CULT()
 };	// hdayT
+
+//================== DESCOND command =================
+
+LOCAL RC FC dcStarCkf(CULT* c, /*DESCOND* */ void *p, void *p2, void *p3)
+// called at end of DESCOND input, to get messages near source of error.
+{
+	return ((DESCOND*)p)->dc_CkF();
+}		// dsStarCkf
+//-----------------------------------------------------------------------------------------------
+static CULT dcT[] =
+{
+// id               cs    fn               f        uc evf     ty      b     dfls        p2   ckf
+//----------        ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
+CULT( "*",          STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   dcStarCkf),
+
+CULT( "dcDay",	    DAT,  DESCOND_DAY,	    RQD,      0, VEOI,   TYDOY,  0,    200,    N,   N),
+
+CULT( "dcDB",       DAT,  DESCOND_DB,       RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcMCDBR",    DAT,  DESCOND_MCDBR,    RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcMCWB",     DAT,  DESCOND_MCWB,     RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcMCWBR",	DAT,  DESCOND_MCWBR,    RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcWindSpeed",DAT,  DESCOND_WNDSPD,   RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcTauB",     DAT,  DESCOND_TAUB,     RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcTauD",     DAT,  DESCOND_TAUD,     RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+
+CULT( "endDesCond", ENDER, 0,           0,        0, 0,      0,      0,    0.f,       N,   N),
+CULT()
+};	// dcT
+
 
 
 //================== TOP LEVEL COMMANDS, used to access all other tables. ==================
@@ -2481,6 +2516,8 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "heatDsTWbO",  DAT,   TOPRAT_HEATDSTWBO, 0,          0, VHRLY,  TYFL,  0,      0.f,            N,   N), // code dflts at runtime
 	CULT( "coolDsMo",    DAT,   TOPRAT_COOLDSMO,   ARRAY,      0, VEOI,   TYSI,  0,      0.f,           v 13, N), // code dflts
 	CULT( "coolDsDay",   DAT,   TOPRAT_COOLDSDAY,  ARRAY,      0, VEOI,   TYDOY, 0,      0.f,           v 13, N), // code dflts
+	CULT( "coolDsCond",  DAT,   TOPRAT_COOLDSCOND, ARRAY,      0, VEOI,   TYREF, &DCiB,  0.f,           v 13, N),
+
 #endif
 // TOP reporting and exporting
 	CULT( "runSerial",   DAT,   TOPRAT_RUNSERIAL,  0,          0, VEOI,   TYSI,  0,      0,            N,   N), // dflt'd by topStarPrf2.
@@ -2511,7 +2548,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
-	CULT( "shadex",       RATE,  0,                0,          0, 0,      0,    &SXiB,   N,    0.f,         shadexT,  N),
+	CULT( "shadex",      RATE,  0,                 0,          0, 0,      0,    &SXiB,   N,    0.f,       shadexT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),
@@ -2526,6 +2563,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "coolPlant",   RATE,  0,                 NM_RQD,     0, 0,      0,    &CpiB,   N,    0.f,           cpT,  N),
 	CULT( "towerPlant",  RATE,  0,                 NM_RQD,     0, 0,      0,    &TpiB,   N,    0.f,           tpT,  N),
 	CULT( "holiday",     RATE,  0,                 NM_RQD,     0, 0,      0,    &HdayiB, N,    0.f,         hdayT,  N),
+	CULT( "descond",     RATE,  0,                 NM_RQD,     0, 0,      0,    &DCiB,   N,    0.f,           dcT,  N),
 // TOP commands
 	CULT( "run",         RUN,   0,                 0,          0, 0,      0,     0,      N,    0.f,            N,   topCkf),
 	CULT( "clear",       CLEAR, 0,                 PRFP,       0, 0,      0,     0,   v topClearItf,0.f,   v topStarPrf, N), // note topStarPrf reuse

@@ -31,9 +31,9 @@
 #ifdef PROBE
 #include <cul.h>		// FsSET FsVAL
 #include <cuparse.h>	// evfTx     must follow cueval.h, for PSOP
-#include <cnguts.h>	// Top
-#include <cuevf.h>	// EVENDIVL
-#include <exman.h>	// whatEx whatNio exInfo
+#include <cnguts.h>		// Top
+#include <cuevf.h>
+#include <exman.h>		// whatEx whatNio exInfo
 #endif
 
 
@@ -165,8 +165,8 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 	RC rc;
 
 	rc = cuEval( ip, pmsg, pBadH);	// evaluate to *evStk
-	if (ppv != NULL)			// return pointer to value in eval stack
-		*ppv = evSp;			//  for TYSTR, stack contains ptr.
+	if (ppv != NULL)				// return pointer to value in eval stack
+		*ppv = evSp;				//  for TYSTR, stack contains ptr.
 	if (rc==RCOK)			// if ok, check size of value: devel aid
 	{
 		// remove if other sizes become possible
@@ -232,8 +232,8 @@ LOCAL RC FC NEAR cuEvalI(
 
 	/* code assumes LI's, floats, char * are same size */ /*lint -e506 */
 	if ( sizeof(LI) != sizeof(float)		// in case ported
-	|| sizeof(LI) != sizeof(char *) )
-		err( PABT,				// display internal error msg, wait for key, abort. rmkerr.cpp
+	  || sizeof(LI) != sizeof(char *) )
+		err( PABT,					// display internal error msg, wait for key, abort. rmkerr.cpp
 		(char *)MH_R0203);			// "cueval.cpp must be reworked for float size != long size or != char * size"
 	/*lint +e506 "constant value boolean" */
 	ASSERT( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case 3-94
@@ -810,7 +810,7 @@ jmp:
 			if (i < b->mn || i > b->n)
 			{
 				ms = strtprintf( (char *)MH_R0217, 			// "%s subscript %d out of range %d to %d"
-				(char *)b->what, (INT)i, (INT)b->mn, (INT)b->n);
+						(char *)b->what, (INT)i, (INT)b->mn, (INT)b->n);
 				goto breakbreak;
 			}
 			*--SPP = &b->rec(i);			// push pointer to record i
@@ -1047,54 +1047,46 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 	SFIR *fir = e->b->fir + *IPU++;	// get inline field ptr, point to fields-in-record entry for field
 	//USI off = fir->off;			how to get member offset from fields-in-record table
 	//USI evf = fir.evf;			how to get field variation (evaluation frequency) bits
-	void *v;
 
 // check for mistimed probe eg to monthly results at end of day (when monthly results contain incomplete data)
 
-	if (fir->evf & EVENDIVL)			// if probed field avail only at end ivl (can probe start-ivl flds anytime)
-	{
-#if 1	// fix minIvl uninitialized for EVFFAZ, 10-24-2012
+	if (fir->evf & EVXBEGIVL)	// if probed field avail only at end ivl (can probe start-ivl flds anytime)
+	{	if (!Top.isEndOf)    // if not now end of an interval (cnguts.cpp)
+		{
+			*pms = strtprintf( (char *)MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
+													// "    but access occurred %s"
+						whatNio( e->b->ancN, e->ss, fir->off),
+						evfTx( fir->evf, 2),
+						Top.isBegOf
+							? strtprintf( (char *)MH_R0223,		// "at BEGINNING of %s"
+								ivlTx(Top.isBegOf) )  			// ivlTx: below
+							: strtprintf( (char *)MH_R0224) );	// use strtprintf to retreive msg to Tmpstr
+																//"neither at beginning nor end of an interval????"
+			return RCBAD;
+		}
+
 		IVLCH minIvl =
 			fir->evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
 		  : fir->evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
 		  : fir->evf >= EVFDAY   ? C_IVLCH_D
 	 	  : fir->evf >= EVFMON   ? C_IVLCH_M
 		  :                        C_IVLCH_Y;	// EVFRUN, EVFFAZ, EVFEOI
-#else
-x		IVLCH minIvl;
-x		if (fir->evf >= EVFSUBHR)     minIvl = C_IVLCH_S;	// get ivl corresponding to leftmost evf bit
-x		else if (fir->evf >= EVFHR)   minIvl = C_IVLCH_H;	//   (shortest interval at which ok to probe this field)
-x		else if (fir->evf >= EVFDAY)  minIvl = C_IVLCH_D;
-x		else if (fir->evf >= EVFMON)  minIvl = C_IVLCH_M;
-x		else if (fir->evf >= EVFRUN) minIvl = C_IVLCH_Y;
-#endif
 
-		if (!Top.isEndOf)    					// if not now end of an interval (cnguts.cpp)
-		{
-			*pms = strtprintf( (char *)MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
-													// "    but accessed occurred %s"
-				whatNio( e->b->ancN, e->ss, fir->off),  evfTx( fir->evf, 2),	// evfTx:cuparse.cpp
-				Top.isBegOf
-					? strtprintf( (char *)MH_R0223,		// "at BEGINNING of %s"
-						ivlTx(Top.isBegOf) )  			// ivlTx: below
-					:  strtprintf( (char *)MH_R0224) );	// use strtprintf to retreive msg to Tmpstr
-			//"neither at beginning nor end of an interval????"
-			return RCBAD;
-		}
-		else if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
+		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
 		{
 			*pms = strtprintf( (char *)MH_R0225,	/* "Mistimed probe: %s\n"
-				                   "    varies at end of %s but accessed at end of %s.\n"
-				                   "    Possibly you combined it in an expression with a faster-varying datum." */
-			whatNio( e->b->ancN, e->ss, fir->off),
-			evfTx( fir->evf, 2),  ivlTx(Top.isEndOf) );
+														"    varies at end of %s but accessed at end of %s.\n"
+														"    Possibly you combined it in an expression with a faster-varying datum." */
+						whatNio( e->b->ancN, e->ss, fir->off),
+						evfTx( fir->evf, 2),
+						ivlTx(Top.isEndOf) );
 			return RCBAD;
 		}
 	}
 
 // fetch and check 4-byte quantity
 
-	v = *(void **)((char *)e + fir->off); 			// fetch 4-byte value from record at offset
+	void* v = *(void **)((char *)e + fir->off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))
 	{
 		if (ISUNSET(v))
@@ -1177,9 +1169,6 @@ LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 	return RCOK;
 }			// cuRm2Get
 #endif
-
-/* lint restores: */
-/*lint +e124 */ /*lint +e52 */ /*lint +e63 */ /*lint +e616 */
 
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================

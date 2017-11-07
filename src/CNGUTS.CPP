@@ -66,9 +66,11 @@ LOCAL RC   FC NEAR doBegIvl();
 LOCAL RC   FC NEAR doEndIvl();
 LOCAL RC   FC NEAR cgAfterWarmup();
 LOCAL RC   FC NEAR doHourGains();
-LOCAL RC   FC NEAR doIvlExprs( int isBegIvl);
+LOCAL RC   FC NEAR doIvlExprs( int ivlStage);
 LOCAL void FC NEAR doIvlAccum();
 LOCAL void FC NEAR mtrsAccum( IVLCH ivl, int firstflg);
+LOCAL void FC NEAR doIvlFinalize();
+LOCAL void FC NEAR mtrsFinalize( IVLCH ivl, int firstflg);
 LOCAL void FC NEAR accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
 LOCAL void FC NEAR accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
 LOCAL void FC NEAR doIvlPrior();
@@ -571,7 +573,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 	impfIvl( Top.ivl);			// impf.cpp.
 
 // evaluate and stuff user's variable expressions that are or may be calc inputs
-	EF( doIvlExprs( 1) )  		// do all start-of-interval expressions for this interval. uses Top.ivl. local, below.
+	EF( doIvlExprs( EVBEGIVL) )  	// do all start-of-interval expressions for this interval. uses Top.ivl. local, below.
 
 // stuff done hourly (& longer intervals) only, after expressions
 	if (Top.ivl < C_IVLCH_S)	// if start of hour or longer interval, not start subhour only
@@ -694,21 +696,18 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 // Mass end-of-interval enthalpy accounting
 	msEndIvl( Top.ivl);
 
-	if ((Top.ivl <= C_IVLCH_S) && Top.tp_isBegMainSim) {
-		// Ensure battery is reinitialized
-		// after warmup and/or autosizing
-		// ONLY IF bt_initSOE was set by user
-		BATTERY* bt;
-		RLUP(BtR, bt) { if (bt->IsSet(BATTERY_INITSOE)) EF(bt->bt_Init()) }
-	}
-	if (Top.ivl < C_IVLCH_S) {
-		BATTERY* bt;
-		RLUP(BtR, bt) EF(bt->bt_DoHour())
-	}
-
 // results accumulation for interval: simulation and meters
 	if (!Top.tp_skipDay)
 		doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
+
+	if (Top.ivl < C_IVLCH_S)
+	{	// battery stage 0 hourly
+		//   *AFTER* meter accum
+		//   *BEFORE* EVENDIVL expressions (sets probable values)
+		BATTERY* bt;
+		RLUP(BtR, bt)
+			EF(bt->bt_DoHour( 0))
+	}
 
 // energy balance check.  After results accumulation.
 	if (Top.isEndHour)					// not if end of subhour interval only
@@ -727,7 +726,20 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 			}
 
 // now evaluate and stuff exprs from user input that are used in reports -- may show results.  Others done at interval start.
-	EF( doIvlExprs( 0) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
+	EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
+
+// post-processing steps (may depend on end-of-interval (*e) values)
+	if (Top.ivl < C_IVLCH_S)
+	{	// battery stage 1 hourly
+		//   *AFTER* EVENDIVL function eval
+		BATTERY* bt;
+		RLUP(BtR, bt)
+			EF(bt->bt_DoHour( 1))
+	}
+
+	doIvlFinalize();				// finalize meters etc
+
+	EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
 
 // do reports due for intervals ending now
 	doIvlReports();					// uses not-yet-updated Top.iSubhr.
@@ -753,10 +765,14 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 	if (Top.ivl < C_IVLCH_S)
 	{
-		// loads/hvac end-hour-after-reports stuff, such as setting prior-value variables, that must be deferred cuz of probes.
+		// loads/hvac end-hour-after-reports stuff that must be deferred cuz of probes
+		//   e.g. setting prior-value variables
 
 		loadsAfterHour();			// cnloads.cpp
-		hvacAfterHour(); 			// cnguts.h 3-92. ... may be inline {} if nothing to do.
+		hvacAfterHour(); 			// may be inline {} if nothing to do.
+		BATTERY* bt;
+		RLUP(BtR, bt)
+			bt->bt_DoHour( 2);		// battery wrap-up
 
 		// interval-dependent stuff after reports
 
@@ -905,8 +921,9 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 
 // Initialize for location
-	EF( locInit() )		/* local locpak\locinit dummy calls lib\slpak\slinit() w wthr file location data (via Top).
-				   inits Locsolar (comments below). EF: return RCBAD on any non-RCOK return. */
+	EF( locInit() )		// calls slinit() w wthr file location data (via Top).
+						// inits Locsolar (comments below)
+						// EF: return RCBAD on any non-RCOK return.
 
 // Set up weather file
 // do each phase, allowing name to change. Messages errors.
@@ -1101,29 +1118,30 @@ void TOPRAT::tp_DTInit()		// Init Top.isDT, Top.jDayST, Top.iHrST at start warmu
 //-----------------------------------------------------------------------------------------------------------
 LOCAL RC FC NEAR doIvlExprs( 		// evaluate and store user-input variable expressions for interval
 
-	int isBegIvl )	// 1 for start interval (do most exprs), 0 for end interval (do eg results probes for reports)
+	int ivlStage)	// interval stage
+					//   EVBEGIVL: beginning
+					//   EVENDIVL: end (before e.g. battery and load management, all building values known)
+					//   EVPSTIVL: post (after load management etc, e.g. results probe for reports)
+
 // also uses: Top.ivl: year,month,day,hour,subhour: interval starting or ending:
 //							exprs whose variabilites are this or shorter are eval'd.
 //            Top.isBegMonth:     if on, include monthly-hourly exprs with hourly.
 
 // return value: non-RCOK to end run.  error message(s) already issued.
 {
-	// callers 12-91: doBegIvl, doEndIvl, doBegSubhr, doEndSubhr
 
 // interval to global for possible probe checking in cueval.cpp
-	if (isBegIvl)
-		Top.isBegOf = Top.ivl;
+	int ucl;		// which use classes to evaluate
+	if (ivlStage == EVBEGIVL)
+	{	Top.isBegOf = Top.ivl;
+		ucl = ~EVXBEGIVL;		// all bits except end/post
+	}
 	else
-	{	Top.isEndOf = Top.ivl;
-		if (Top.ivl == C_IVLCH_D)
+	{	Top.isEndOf = Top.ivl;		// isEndLvl set for both EVENDIVL and EVPSTIVL stages
+		ucl = ivlStage;
+		if (ivlStage == EVPSTIVL && Top.ivl == C_IVLCH_D)
 			Top.tp_tmrSnapshot();		// update probably copies of timing data
 	}
-
-// which use classes to evaluate
-
-	int ucl = isBegIvl
-		  ? ~UENDIVL 	// at beginning of interval do everything but...
-		  : UENDIVL;	// at end of interval do end-interval expressions (eg results probes for reports)
 
 	// removed 9-95 cuz no exprs are USOL:
 	// if (!Top.isSolarCalcDay)	// unless doing solar calcs today (on for year,month calls + day/hr/subhr if IsBegMonth)
@@ -1642,8 +1660,8 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
 	{	pRSR->H.rsr_Accum( &pRSR->D, Top.isBegDay, Top.isEndDay);		// accumulate hour results to day. local
 #if 0
-		if (pRSR->ss < RSysResR.n)						// if not the sum record (last)
-			pRSR->H.rsr_Accum( &allRsysRes->H, pRSR->ss==1, pRSR->ss==RsR.n);	// also accumulate each hour to sum_of_RSYS
+0		if (pRSR->ss < RSysResR.n)						// if not the sum record (last)
+0			pRSR->H.rsr_Accum( &allRsysRes->H, pRSR->ss==1, pRSR->ss==RsR.n);	// also accumulate each hour to sum_of_RSYS
 #endif
 	}
 
@@ -1719,6 +1737,38 @@ LOCAL void FC NEAR doIvlAccum()
 	//   return;
 	// year (end of run) accumulation: nothing to do
 }							// doIvlAccum
+//-----------------------------------------------------------------------------------------------------------
+LOCAL void FC NEAR doIvlFinalize()
+
+// finalize meters (and ?) after load management (battery, ) stage at end of interval
+
+// uses: Top.ivl: interval subhour, hour, day, month, year.  Coinciding shorter intervals also done.
+
+{
+// always accum during warmup / autosize
+// re possible expression use and prior values
+
+	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
+		return;
+
+	mtrsFinalize( C_IVLCH_D, Top.isBegDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+
+	if (Top.ivl > C_IVLCH_D)					// if hour call, done
+		return;
+
+	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
+
+	if (Top.ivl > C_IVLCH_M)							// if day call, done.
+		return;
+
+	// accumulate month results to year
+
+	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
+
+	//if (Top.ivl > C_IVLCH_Y)							// if month call, done
+	//   return;
+	// year (end of run) accumulation: nothing to do
+}							// doIvlFinalize
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR accumZr(
 
@@ -1933,23 +1983,74 @@ LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
 LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add interval to next, + tot and sum.
 
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-	int firstflg ) 	// If TRUE, destination will be initialized before values are accumulated into it
+	int firstflg) 	// If TRUE, destination will be initialized before values are accumulated into it
+{
+	MTR* mtr;				// a meter record
+	int firstRec = 1;
+	RLUP( MtrB, mtr)		// loop (good) meter records
+	{	
+#if defined( _DEBUG)
+		int bTrc = 0; // strMatch( mtr->name, "ElecMtrInitNo");
+		if (bTrc)
+		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+#endif
+		
+		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
+												// ASSUMES MTR interval members ordered like DTIVLCH choices
+		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
+		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
+
+		if (ivl==C_IVLCH_D)
+		{
+			// compute hour's total load in each record.  .allEU then propogates to D, M, Y.
+			//  sum members .clg .. usr2 to .allEU, exclude .pv and .bt
+			mtrSub1->allEU = VSum<float,double>( &mtrSub1->clg, NENDUSES-2);  	
+
+			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
+			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
+			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+				mtrSum.mtr_Accum1( mtrSub1, ivl, 0+(firstRec!=0));
+			}
+			firstRec = 0;
+		}
+
+		// accumulate: copy on first call (in lieu of 0'ing destination).
+		// Note: doHourGains 0's MTR hour info at start hour.
+		mtrSub2->mtr_Accum1( mtrSub1, ivl, 0 + (firstflg!=0));
+	}
+
+	// DHWMTRs
+	DHWMTR* pWM;
+	RLUP( WMtrR, pWM)
+		pWM->wmt_Accum( ivl, firstflg);
+}               // mtrsAccum
+//-----------------------------------------------------------------------------------------------------------
+LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)
+
+	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
+	int firstflg ) 	// If TRUE, destination will be initialized before values are accumulated into it
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
 	RLUP( MtrB, mtr)					// loop (good) meter records
 	{
+#if defined( _DEBUG)
+		int bTrc = 0;   // strMatch( mtr->name, "ElecMtrInitNo");
+		if (bTrc)
+		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+#endif
+
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
-		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;			// source: next shorter interval
+		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
 		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
 
 		if (ivl==C_IVLCH_D)
 		{
 			// compute hour's total use in each record.  .tot then propogates to D, M, Y.
-			mtrSub1->tot = VSum<float,double>( &mtrSub1->clg, NENDUSES);  	// sum members .clg ... .usr2 to .tot.
+			mtrSub1->tot = mtrSub1->allEU + mtrSub1->pv + mtrSub1->bt;
 
 			// init hour's demand info in each record.  rob 11-93.
 			mtrSub1->dmd = mtrSub1->tot;		// total use this hour, copy for demand logic
@@ -1959,63 +2060,128 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add int
 			mtrSub1->cost = mtrSub1->tot * mtr->rate;
 			mtrSub1->dmdCost = mtrSub1->dmd * mtr->dmdRate;
 
+#if defined( _DEBUG)
+			float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
+			if (fabs( xTot - mtrSub1->tot) > 1.)
+				printf( "\nBad sub1");
+#endif
+
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
+			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
 				if (firstRec)
-					memcpy( &MtrB.p[MtrB.n].H, mtrSub1, sizeof(MTR_IVL_SUB)); 	// copy first record
+				{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+					mtrSum.tot = mtrSub1->tot;
+					mtrSum.bt = mtrSub1->bt;
+					mtrSum.dmd = mtrSub1->dmd;
+					mtrSum.dmdShoy = mtrSub1->dmdShoy;
+					mtrSum.cost = mtrSub1->cost;
+					mtrSum.dmdCost = mtrSub1->dmdCost;
+				}
 				else								// additional records: accumulate ...
-					MtrB.p[MtrB.n].H.mtr_Accum1( mtrSub1, ivl);			// treatment of demand not necessarily sensible.
+					mtrSum.mtr_Accum1( mtrSub1, ivl, 2);			// treatment of demand not necessarily sensible.
+#if 0 && defined( _DEBUG)
+				float xTot = VSum<float,double>( &mtrSum.clg, NENDUSES-2);
+				if (frDiff( xTot, mtrSum.tot) > .001)
+					printf( "\nBad sum");
+#endif
+			}
 			firstRec = 0;
 		}
 
-		// accumulate: copy on first call (in lieu of 0'ing destination).  Note: doHourGains 0's MTR hour info at start hour.
 
-		if (firstflg)						// if first call for destination interval
-			memcpy( mtrSub2, mtrSub1, sizeof(MTR_IVL_SUB) );	// copy whole subrecord
-		else							// additional calls in interval use accumulation subr (next)
-			mtrSub2->mtr_Accum1( mtrSub1, ivl);	// adds up uses and cost, handles demand stuff.
+#if defined( _DEBUG)
+		// MTR_IVL_SUB mtrSub2Was( *mtrSub2);
+		if (bTrc)
+		{	float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
+			if (frDiff( xTot, mtrSub1->tot) > .001)
+				printf( "\n    Bad sub1");
+		}
+
+#endif
+
+	// accumulate: copy on first call (in lieu of 0'ing destination).
+	//   handles dmd
+	// Note: doHourGains 0's MTR hour info at start hour.
+		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
+
+#if	defined( _DEBUG)
+		if (1 || bTrc)
+		{	float xTot = VSum<float,double>( &mtrSub2->clg, NENDUSES);
+			if (frDiff( xTot, mtrSub2->tot, 1.f) > .001)
+				printf( "\n    Bad sub2 after",
+					Top.jDay, Top.iHr);
+		}
+#endif
 	}
-
-	// DHWMTRs
-	DHWMTR* pWM;
-	RLUP( WMtrR, pWM)
-		pWM->wmt_Accum( ivl, firstflg);
-}               // mtrsAccum
+}		// mtrsFinalize
 //-----------------------------------------------------------------------------------------------------------
-void MTR_IVL_SUB::mtr_Accum1( 	// inner routine for non-first accumulation of one meter-interval into another
+void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
 
 	const MTR_IVL_SUB* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
-	IVLCH ivl )					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-// accums mtrSub1 into this
-
-// not called if firstflg -- caller just memcpy's!
+	IVLCH ivl,					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
+	int options /*=0*/)			// option bits
+								//   1: copy to *this (re firstflg)
+								//      else accumulate
+								//   2: do "finalize" accumulation (after batttery calcs)
+								//      else end-of-calc
+// accums/copies mtrSub1 into *this
 {
+	bool bCopy     = (options & 1) != 0;
+	bool bFinalize = (options & 2) != 0;
 
-// Add up uses and cost, and demand cost if month to year
+	if (!bFinalize)
+	{	// end of calcs / before battery
+		// omit all *p (EVPSTIVL) mbrs (tot, bt, cost, dmd, dmdCost, dmdShoy)
+		if (bCopy)
+		{	VCopy( &clg, NENDUSES-2, &mtrSub1->clg);
+			pv = mtrSub1->pv;
+			allEU = mtrSub1->allEU;
+		}
+		else
+		{	VAccum( &clg, 	// add 2nd arg float vector to 1st arg
+				NENDUSES-2,			// vector length: # end uses w/o pv and bt
+				&mtrSub1->clg);		// source
+			pv += mtrSub1->pv;
+			allEU += mtrSub1->allEU;
+		}
+	}
+	else
+	{	// after load management (e.g. battery)
+		// handle all mbrs w/ *p variability
+		if (bCopy)
+			memcpy( this, mtrSub1, sizeof( MTR_IVL_SUB));
+		else
+		{	tot += mtrSub1->tot;
+			bt += mtrSub1->bt;
+			cost += mtrSub1->cost;
+			if (ivl==C_IVLCH_Y)		// sum .dmdCost if month-to-year (thru month, largest
+			                		//    dmdCost is used, not sum, by code just below).
+				dmdCost += mtrSub1->dmdCost;
 
-	VAccum( &tot, 	// add 2nd arg float vector to 1st arg
-			NENDUSES			// vector length: # end uses
-			 + 1				//  plus .tot, assumed to precede end uses,
-			 + 1				//  plus .cost, assumed to immed follow end uses
-			 + (ivl==C_IVLCH_Y),	// plus .dmdCost if month-to-year (thru month, largest
-	                    			// dmdCost is used, not sum, by code just below).
-			&mtrSub1->tot);
-// Keep peak demand, and its cost thru month level
-
-	if (mtrSub1->dmd > dmd)		// if source demand (peak use) greater
-	{
-		dmd  = mtrSub1->dmd;		// update largest hourly demand in destination
-		dmdShoy = mtrSub1->dmdShoy;	// update peak date & time (subhr of year)
-		if (ivl != C_IVLCH_Y)			// thru month level, keep largest demand cost
-			dmdCost = mtrSub1->dmdCost;	// .. (but for month to year, dmdCost is summed, above).
+			// keep peak demand, and its cost thru month level
+			if (mtrSub1->dmd > dmd)		// if source demand (peak use) greater
+			{	dmd  = mtrSub1->dmd;		// update largest hourly demand in destination
+				dmdShoy = mtrSub1->dmdShoy;	// update peak date & time (subhr of year)
+				if (ivl != C_IVLCH_Y)			// thru month level, keep largest demand cost
+					dmdCost = mtrSub1->dmdCost;	// .. (but for month to year, dmdCost is summed, above).
+			}
+		}
 	}
 }		// MTR_IVL_SUB::mtr_Accum1
 //-----------------------------------------------------------------------------------------------------------
+double MTR_IVL_SUB::mtr_NetBldgLoad() const	// building load (includes PV, excludes BT)
+// valid only AFTER mtrs mtrsAccum has been called
+{
+	return allEU + pv;
+}		// MTR_IVL_SUB::mtr_NetBldgLoad
+//-----------------------------------------------------------------------------------------------------------
 void MTR::mtr_HrInit()			// init prior to hour accumulation
 {
-	memset( &H.tot, 0, (NENDUSES+1)*sizeof(float));
-						// zero H.tot, H.clg, H.htg, H.hp, H.shw, ...,
+	memset( &H.tot, 0, (NENDUSES+2)*sizeof(float));
+						// zero H.tot, H.clg, H.htg, H.hp, H.shw, ..., H.allEU
        					// ASSUMES the NENDUSES end use members follow .tot.
+						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending intervals for each zone and for sum-of-zones.
@@ -2142,7 +2308,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 // allocate date string storage once. Small, error unlikely, abort ok. dmpak.cpp.
 	if (!dateStr)
-		dmal( DMPP( dateStr), max( TDDATELENMAX+1U, strlen("ddd Jan xxx cooling design day xx")), ABT); 							// small, error unlikely, let program abort.
+		dmal( DMPP( dateStr), max( TDDATELENMAX+1U, strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
 
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{
@@ -2157,7 +2323,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 			{
 				monStr = (CHP)tddMonAbbrev( tp_date.month);		// eg "Jan"
 				const char* t;
-				if (tp_AuszWthrSource() == 2)		// if autosizing specific day
+				if (tp_AuszWthrSource() != TOPRAT_COOLDSMO)		// if autosizing specific day
 					t = strtprintf( "%2.2d-%s", 		// format dd-mon
 						tp_date.mday, tddMonAbbrev( tp_date.month));
 				else
@@ -2210,7 +2376,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	HDAY *hd;
 	isHoliday = isHoliTrue = 0;
 	if (!tp_autoSizing)					// no holidays while autosizing
-	{	RLUP( HdayB, hd)						// loop holidays, set up is in cncult4.cpp.
+	{	RLUP( HdayB, hd)				// loop holidays, set up is in cncult4.cpp.
 		{	if (jDay==hd->hdDateObs)   isHoliday++;   	// today is observed date of a holiday
 			if (jDay==hd->hdDateTrue)  isHoliTrue++;   	// today is true date of a holiday
 		}
@@ -2328,10 +2494,8 @@ LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (
 					Top.tp_brHrly==C_NOYESCH_YES,		// .. hourly ..
 					Top.tp_brMem || Top.tp_brDiscardable, 	// whether options call for memory handle return (Windows only)
 					Top.tp_begDay, Top.tp_endDay, Top.jan1DoW,
-#if 1//5-26-95 CSE .461 RESFVER 8
 					Top.workDayMask,			/* work day bits: Sun=1..Sat=64,Hol=128,htDsDay=256,coolDsDay=512:
 							   MATCHES brfw & opk encodings (no ausz ds days yet in bin res, 6-95) */
-#endif
 					ZrB.n,					// number of zones
 					MtrB.n - 1,				// # ery srcs: -1 to omit sum_of_meters rcd, added by cncult2: topMtr().
 					Top.repHdrL, Top.repHdrR,		// report top left and right header texts

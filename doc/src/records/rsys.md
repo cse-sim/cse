@@ -190,7 +190,9 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
 
 **rsCap47=*float***
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F. If both rsCap47 and rsCapC are autosized, both are set to the larger consistent value.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F.
+
+If both rsCap47 and rsCapC are autosized, they are set to consistent values based on the relative values of heating and cooling loads.  If the autosized capC is greater than 75% of the autosized cap47, then rsCapC is set to autosized capC and rsCap47 is derived from rsCapC.  Otherwise, rsCap47 is set to 75% of autosized cap47 and rsCapC is derived from rsCap47.
 
   **Units**   **Legal Range**           **Default**            **Required**   **Variability**
   ----------- ------------------------- ---------------------- -------------- -----------------

@@ -304,6 +304,11 @@ AIRHANDLER "Infil"   //Constant Volume no energy, heating or cooling to model in
         gnMeter=GAINMETER
         gnEndUse=Lit
         gnPower=INTGAIN*.4
+
+	  GAIN IX1
+        gnMeter=GAINMETER
+        gnEndUse=DHW
+        gnPower=$DayOfYear
   
     SURFACE Roof
         sfType=Ceiling
@@ -425,6 +430,11 @@ AIRHANDLER "Infil"   //Constant Volume no energy, heating or cooling to model in
         gnMeter=GAINMETER
         gnEndUse=Lit
         gnPower=INTGAIN*.4
+
+	GAIN Ix2
+        gnMeter=GAINMETER
+        gnEndUse=Htg
+        gnPower=$DayOfYear*.9
   
     SURFACE Roof
         sfType=Ceiling
@@ -573,11 +583,15 @@ TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
 
  //--------- REPORTS ------------
   
- REPORT rpType=ZDD     rpZone=Z1
  REPORT rpType=AH     rpAH="MainAH"          rpFreq=Month
 
- REPORT     rpType=MTR     rpMeter=HEATMETER    rpFreq=Month
- REPORT "Heating Energy"
+ REPORT     rpType=MTR     rpMeter=ALL    rpFreq=Month
+
+ REPORT     rpType=MTR     rpMeter=All    rpFreq=Day  rpDayBeg=May 14  rpDayEnd=May 24
+
+ REPORT     rpType=MTR     rpMeter=All    rpFreq=Hour  rpDayBeg=May 15  rpDayEnd=May 15
+ 
+  REPORT "Heating Energy"
         rpType=UDT 
         rpFreq=YEAR
         reportcol colVal=@meter[HEATMETER].Y.dmd/3413             ColHead="Pk kW"
@@ -586,9 +600,7 @@ TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
         reportcol colVal=@Top.qhPeakH                             ColHead="Pk Hr"
         reportcol colval=@meter[HEATMETER].y.tot* 0.000000292997   ColHead="Yr mWh"
 
-
- REPORT     rpType=MTR     rpMeter=COOLMETER    rpFreq=Month
- REPORT "Cooling Energy"
+  REPORT "Cooling Energy"
         rpType=UDT 
         rpFreq=YEAR
  reportcol colVal=@meter[CoolMETER].Y.dmd/3413 ColHead="Pk kW"
@@ -597,8 +609,6 @@ TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
         reportcol colVal=@Top.qcPeakH          ColHead="Pk Hr"
         reportcol colval=@meter[CoolMETER].y.tot* 0.000000292997   ColHead="Yr mWh"
 
- REPORT     rpType=MTR     rpMeter=GAINMETER    rpFreq=Month
- 
  REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=Hour
  REPORT  rpType=AH  rpAH="MainAH"   rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=HOUR
  REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=Hour
@@ -609,6 +619,7 @@ TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
 // REPORT  rpType=AH  rpAH="Infil"  rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HOUR
 // REPORT  rpType=AH  rpAH="Infil"  rpDayBeg= Oct 16 rpDayEnd= Oct 16 rpFreq=HOUR
 
+ REPORT rpType=ZDD     rpZone=Z1
 
 
 #if 0

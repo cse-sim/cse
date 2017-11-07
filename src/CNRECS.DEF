@@ -97,6 +97,7 @@ FIELD * directives are
    *r 			runly (start of run) variability, incl things set by input check/setup (topCkf)
    *y 			same as *r; by convention, *y *e used for run-end results
    *e			with above, field varies at end of interval, not start (results)
+   *p			with above, field varies at post-calc stage, not start (intermediate results)
    *f			value available after input, b4 setup; may also change just b4 re-setup for main run after autosize. 6-95.
    *i			value available after input, before checking/setup: rat ref subscrs, resolved just b4 topCkf, 1-92
                 and anywhere eoi probe ok: any SI/FL/STR with VEOI in CULT, as doct'n aid to say value
@@ -233,7 +234,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *r DOY DTEndDay			// Daylight saving end day, 1-365, defaulted by cncult2.cpp code to last Sun in October
     
 							// wind speed adjustment, see cgwthr.cpp
-								//    appl sees Top.windF * max( wthrfile.wndspd, Top.windSpeedMin);
+							//    appl sees Top.windF * max( wthrfile.wndSpd, Top.windSpeedMin);
     *i FLOAT_GEZ windSpeedMin	//  minimum, mph (default=.5)
     *i FLOAT_GEZ windF  		//  factor (default=1)
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
@@ -255,8 +256,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h TEMP heatDsTDbO		// heat design outdoor temp, dfl per ET1 wthr file hdr.
 							//  Impl may be incomplete for non-constant.
     *h TEMP heatDsTWbO		// heating design outdoor wetbulb temp, dfl for 70% RH @ heatDsTDbO.
-    *i *ARRAY 13 SI coolDsMo	// SI[13] cooling design month(s) 1-12 + 0 terminator. Default per ET1 wthr file hdr.
-    *i *ARRAY 13 DOY coolDsDay
+    *i *ARRAY 13 SI tp_coolDsMo		// SI[13] cooling design month(s) 1-12 + 0 terminator. Default per ET1 wthr file hdr.
+    *i *ARRAY 13 DOY tp_coolDsDay	// DOY[13] design day(s) read from weather file + 0 terminator
+	*i *ARRAY 13 TI tp_coolDsCond	// TI[ 13] DESCOND idx(s) + 0 terminator
 
 //TOP: inputs: reporting and exporting
 	*r CHP tp_exePath		// full path to current .exe
@@ -722,7 +724,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*prefix wd_
     *declare "void wd_Init( int options=0);"
-    *declare "WDHR& Copy( const WDHR& wd);"
+    *declare "WDHR& Copy( const WDHR& wd, int options=0);"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
@@ -730,21 +732,26 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
     *declare "RC wd_CSWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_TDVReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_EPWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
+	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 
-    *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
-    *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
+						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
+						// wd_db assumed 1st non-solar geometry mbr
+						// re preservation of solar geometry info, see Copy()
 	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
 							// solar position at midpoint of hour (or portion of hour sun is up)
 	*h float wd_slAzm;		//   azmimuth, radians (0=N, +clockwise)
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
+
     *h float wd_db			// air dry bulb temp, deg F
+    *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
+    *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
     *h float wd_wb			// air wet bulb temp, deg F
-    *h float wd_wnddir		// wind direction, deg, 0=N, 90=E
-    *h float wd_wndspd		// wind speed, mph
- //additional members set only for ET1 or CSW weather files
+    *h float wd_wndDir		// wind direction, deg, 0=N, 90=E
+    *h float wd_wndSpd		// wind speed, mph
+
     *h float wd_glrad		// global irradiance on horizontal surface, for daylighting calculations
     *h float wd_cldCvr		// total cloud cover in tenths, 0-11, or 15 for missing data
- // additional members set only for CSW weather files 9-10
+
 	*h float wd_tSky		// sky temperature, F from weather file or CalcSkyTemp() (Berdahl-Martin)
 							//   Note: Top.tSkyHr alternative value per Top.skyModelLW
 	*h float wd_tGrnd		// ground temperature, F
@@ -789,6 +796,30 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 							//   WFDATA must be record re probing
 							//   WDHR used elsewhere (e.g. whole file pre-read)
 *END		// WFDATA
+//========================================================================================================
+RECORD DESCOND "DESCOND" *RAT		// cooling design conditions
+*prefix dc_
+	*declare "RC dc_CkF();"
+	*declare "DOY dc_GetDOY() const;"
+	*declare "void dc_GenerateTemps( int iHr, float astCor, float& db, float& wb, float& dbAvg) const;"
+
+	*i DOY dc_day;			// calc date for this DESCOND
+
+	*i FLOAT dc_DB;			// design dry-bulb temp, F
+	*i FLOAT dc_MCDBR;		// coincident daily db range, F
+	*i FLOAT dc_MCWB;		// coincident wet-bulb temp, F
+	*i FLOAT dc_MCWBR;		// coincident daily wb range, F
+	*i FLOAT dc_wndSpd;		// wind speed, mph
+	*i FLOAT dc_tauB;		// beam tau
+	*i FLOAT dc_tauD;		// diffuse tau
+
+	// float dcGrRfl;		// default ground reflectivity (0-1)
+	// CWString sDirRad;	// schedule ID for direct solar on normal surface (W/m2)
+							//   for testing, "" = use modelled
+	// CWString sDifRad;	// schedule ID for diffuse solar on horiz surface (W/m2)
+							//   for testing, "" = use modelled
+
+*END	// DESDAY
 //========================================================================================================
 RECORD SURFGEOM "surfgeom sub" *SUBSTRUCT	// surface geometry substructure
 // embedded in many surface types, initially SHADEX and PVARRAY, 2-17
@@ -1550,7 +1581,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *i SI colWid	// column width
     *i SI colDec	// colDecimals: max digits after point
     *i JUSTCH colJust	// justification: C_JUSTCH_L or _R
-    *s *e VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCHP in run), used at end report interval.
+    *s *p VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCHP in run), used at end report interval.
  //derived
     TI nxColi		// for runtime: COL subscript of next column in this report, 0 if last one
 *END		// COL
@@ -3359,7 +3390,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
-  *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel(); }"
+  *declare "int wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
+  *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
   *declare "RC wh_DoHour( float HARL, int wsMult);"
   *declare "RC wh_DoEndPreRun();"
@@ -3374,7 +3406,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//     _ASHPX: air source heat pump (Ecotope HPWH)
 								//     _ELRESX: electric resistance (Ecotope HPWH)
   *i WHTYPECH wh_type;			// heater type
-  								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG
+  								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG,
+								//    _INSTUEF
   *i ANAME wh_desc;				// probe-able description text
   *i WHASHPTYCH wh_ashpTy;		// air source heat pump type, required iff ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
@@ -3397,26 +3430,48 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  
+
   *i FLOAT_GEZ wh_vol;			// storage tank vol, gal
 								//    applicable to STRGxx types
 								//    used only for HPWH ResistanceX, 5-2016
 								//    default=50 if STRGxx else 0
+  *i FLOAT_GZ wh_UAMult;		// storage tank UA multiplier, default=1
+								//    applied to implicit tank UA re e.g. tank blanket
+								//    used only re HPWH ASHPX and ResistanceX
   *i FLOAT_GZ wh_EF;			// rated energy factor
   *i FLOAT_GZ wh_LDEF;			// load-dependent energy factor
-  *i FLOAT_GZ wh_eff;			// efficiency
+  *i FLOAT_GZ wh_UEF;			// rated uniform energy factor
+								//   documentation only re C_WHTYPECH_INSTUEF
+  *i FLOAT_GZ wh_ratedFlow;		// max rated flow per UEF test, gpm
+  *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
+  *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
+  *declare "RC wh_InstUEFInit();"
+  *declare "RC wh_InstUEFDoSubhr( double* draw,	double scale, double xLoss);"
+
+  *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
+  *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
+								//   unused in revised model, 5-25-2017
+  *r FLOAT wh_maxFlowX;			// derived max flow for INSTUEF, gal/tick-F
+  *r FLOAT wh_maxInpX;			// input at max flow, Btu/tick
+
+  *i FLOAT_GZ wh_eff;			// efficiency (aka recovery efficiency)
   *i FLOAT_GZ wh_HPAF;			// heat pump adjustment factor
 								//   used for small storage ASHP only
   *i FLOAT_GEZ wh_SBL;			// standby loss, Btuh
   *h FLOAT_GEZ wh_pilotPwr;		// pilot light power, Btuh
-								//   included in
+								//   included in wh_inFuel
   *h FLOAT_GEZ wh_parElec;		// parasitic electric use, W
   *h FLOAT wh_tHWOut;			// average hot water temp, F (at water heater)
 								//   HPWH: as delivered by model (subhr average of tick calls)
 								//   other: DHWSYS.ws_tUse
   *h FLOAT wh_mixDownF;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
-								//   We reduce draws to balance load at ws_tUse.
+								//   draws are reduced to balance load at ws_tUse.
+  *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
+								//   re startup (cyclic) loss model
+  *s DBL wh_loadCFwd;
+  *i DBL wh_loadCFwdMax;
+  *i FLOAT_GEZ wh_loadCFwdF;
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
   *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
@@ -3431,8 +3486,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//       (includes wh_HPWHxBU)
   *h *e FLOAT wh_inFuel;	//	  fuel (including wh_pilotPwr)
 
-
-  *i FLOAT_GZ wh_input;		// rated input, Btuh (future use?)
+  *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
+							//   never input, derived for INSTUEF
+  *r FLOAT_GEZ wh_stbyElec;	// electrical power during standby, W
+							//   default=4, used for INSTUEF
 
   *i FLOAT_GZ wh_resHtPwr;	// upper element resistance heating power, W
 							//   used for some models only
@@ -3571,7 +3628,7 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*h *e FLOAT ps_PLWF			// current hour heat loss when flowing, Btu
 	*h *e FLOAT ps_PLCD			// current hour standing (noflow) heat loss, Btu
 	*h *e FLOAT ps_PL			// ps_PLWF + ps_PLCD
-*END
+*END	// PipeSeg
 //=============================================================================
 RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW recirc loop segment
 // child of DHWLOOP
@@ -3591,7 +3648,7 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
 							//   note: may be non-integer
   *h FLOAT wg_fNoDraw		// fraction of hour when there is no draw
   *h FLOAT wg_BL			// current hour child DHWLOOPBRANCH losses, Btu
- *END
+ *END		// DHWLOOPSEG
 //=============================================================================
 RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime DHW branch
 // child of DHWLOOPSEG
@@ -3626,7 +3683,7 @@ RECORD DHWLOOPPUMP "DHWLoopPump" *RAT *BASECLASS DHWPUMP // input / runtime DHW 
   *declare "DHWSYS* wlp_GetDHWSYS() const;"
 
   *i *hide SI wlp_dummy		// RCDEF objects to RECORD with no members
-*END
+*END		// DHWLOOPPUMP
 //=============================================================================
 RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
   *prefix wdu_
@@ -3639,7 +3696,7 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 
   *h FLOAT_GEZ wdu_mult		// multiplier applied to all child DHWUSE wuFlows
 							//   note FLOAT (not integer)
-*END
+*END		// DHWDAYUSE
 //=============================================================================
 RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *prefix wu_
@@ -3668,7 +3725,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//		mains (cold) water mixing
   *h FLOAT_GEZ wu_heatRecEF	//   heat recovery effectiveness
 							//      re local drain water heat exchange
-*END
+*END	// DHWUSE
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
@@ -3740,29 +3797,32 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "RC bt_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC bt_Init();"
-  *declare "RC bt_DoHour();"
-  *declare "float bt_CalcAdjLoad(MTR m);"
+  *declare "RC bt_DoHour( int stage);"
+  *declare "float bt_CalcAdjLoad(const MTR& m) const;"
 
-  *i TI bt_meter;			// meter for system electricity production
-  *f ENDUSECH bt_endUse		// end use of energy. defataults to "BT"
-  *r NOYESCH bt_useUsrChg   // YES: user specifies charge request;
-							// NO (default): calculate charge request via
-							//               default strategy
-  *r FLOAT_GEZ bt_maxCap    // maximum (usable) battery capacity in kWh
-  *r FRAC bt_initSOE        // initial state of energy (0 <= SOE <= 1)
-  *r FLOAT_GEZ bt_initCycles// initial number of cycles on battery (>= 0)
-  *h FRAC bt_chgEff         // battery efficiency while charging
-  *h FRAC bt_dschgEff       // battery efficiency while discharging (Fraction)
-  *h FLOAT_GEZ bt_maxChgPwr // maximum allowable charging power (kW)
-  *h FLOAT_GEZ bt_maxDschgPwr//maximum discharge power (kW)
-  *h FLOAT bt_chgReq        // battery charge request (kW) +=charge;-=discharge
-  *h FRAC bt_soeBegIvl      // battery SOE at beginning of interval
-  *h *e FLOAT bt_loadSeen   // the adjusted load seen by the battery that step (kW)
-  *h *e FRAC bt_soe         // battery state of energy (SOE) (0 <= SOE <= 1)
-							// represents the end of interval SOE.
-  *h *e FLOAT_GEZ bt_cycles // accumulated battery cycles
-  *h *e FLOAT_GEZ bt_energy // current amount of energy in battery (kWh)
-
+  *i TI bt_meter;				// meter for system electricity production
+  *f ENDUSECH bt_endUse			// end use of energy. defaults to "BT"
+  *r NOYESCH bt_useUsrChg		// YES: user specifies charge request;
+								// NO (default): calculate charge request via
+								//               default strategy
+  *r FLOAT_GEZ bt_maxCap		// maximum (usable) battery capacity in kWh
+  *r FRAC bt_initSOE			// initial state of energy (0 <= SOE <= 1)
+  *r FLOAT_GEZ bt_initCycles	// initial number of cycles on battery (>= 0)
+  *h FRAC bt_chgEff				// battery efficiency while charging
+  *h FRAC bt_dschgEff			// battery efficiency while discharging (Fraction)
+  *h FLOAT_GEZ bt_maxChgPwr		// maximum allowable charging power (kW)
+  *h FLOAT_GEZ bt_maxDschgPwr	//maximum discharge power (kW)
+  *h *e FLOAT bt_chgReq			// battery charge request (kW) +=charge;-=discharge
+  *h FRAC bt_soeBegIvl			// battery SOE at beginning of interval
+  *h *e FLOAT bt_loadSeen		// the adjusted load seen by the battery that step (kW)
+  *h *p FRAC bt_soe				// battery state of energy (SOE) (0 <= SOE <= 1)
+								// represents the end of interval SOE.
+  *h FLOAT bt_soelh;			// battery state of energy (SOE) at end of prior hour
+  *h *p FLOAT_GEZ bt_cycles		// accumulated battery cycles
+  *h FLOAT_GEZ bt_cycleslh		// accumulated battery cycles, end of prior hour
+  *h *p FLOAT_GEZ bt_energy		// current amount of energy in battery (kWh)
+  *h FLOAT_GEZ bt_energylh		// amount of energy in battery (kWh)
+								// at end of prior hour
 *END		// BATTERY
 //=============================================================================
 RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
@@ -3794,43 +3854,46 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
  
 	// accum functions; see CAUTION below
  	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
-	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl);"
+	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
+	*declare "double mtr_NetBldgLoad() const;"
 
-    float tot		// total of following specific end uses.  Code assumes precedes them.
+    *p float tot		// total of following specific end uses.  Code assumes precedes them.
+						//  = allEU + bt + pv
     // Use by purpose (end use), energy used in Btu:
     // CAUTION: order of members MATCHES DTENDUSECH choices (cndtypes.def)
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
-    float clg		// space cooling.  code assumes 1st member.
-    float htg		// space heating incl heat pump compressor
-    float hp		// heat pump auxiliary (backup) heat
-    float dhw		// domestic (service) hot water heating
+    *e float clg		// space cooling.  code assumes 1st member.
+    *e float htg		// space heating incl heat pump compressor
+    *e float hp		// heat pump auxiliary (backup) heat
+    *e float dhw		// domestic (service) hot water heating
 					//   (for HPWH, compressor+misc energy)
-	float dhwBU		// domestic (service) hot water backup
+	*e float dhwBU		// domestic (service) hot water backup
 					//   (= HPWH resistance heating energy)
-    float fanC		// fans - cooling and cooling ventilation
-    float fanH		// fans - heating
-    float fanV		// fans - IAQ ventilation
-    float fan		// fans - other
-    float aux		// HVAC auxiliaries and parasitics, not including fans
-    float proc		// process energy
-    float lit		// lighting
-    float rcp		// receptacles
-    float ext		// external -- outdoor lights, etc
-    float refr		// refrigeration
-    float dish		// dish washing
-    float dry		// clothes drying
-    float wash		// clothes washing
-    float cook		// cooking
-    float usr1		// user-defined category 1
-    float usr2		// user-defined catagory 2. code may assume is last member.
-	float bt		// battery output (negative)
-    float pv		// photovoltaic array output (negative)
+    *e float fanC		// fans - cooling and cooling ventilation
+    *e float fanH		// fans - heating
+    *e float fanV		// fans - IAQ ventilation
+    *e float fan		// fans - other
+    *e float aux		// HVAC auxiliaries and parasitics, not including fans
+    *e float proc		// process energy
+    *e float lit		// lighting
+    *e float rcp		// receptacles
+    *e float ext		// external -- outdoor lights, etc
+    *e float refr		// refrigeration
+    *e float dish		// dish washing
+    *e float dry		// clothes drying
+    *e float wash		// clothes washing
+    *e float cook		// cooking
+    *e float usr1		// user-defined end use 1
+    *e float usr2		// user-defined end use 2
+	*p float bt			// battery output (negative)
+    *e float pv			// photovoltaic array output (negative)
+	*e float allEU		// subtotal, clg .. usr2 (= load w/o bt and pv)
  // cost results. for now (11-93), must report with probes. Code (cnguts) may assume in this order, after uses.
-    float cost		// accumulated  tot*rate
-    float dmdCost	// largest dmd*dmdRate to month level, then accumulates (cnguts.cpp:mtrAccum)
+    *p float cost		// accumulated  tot*rate
+    *p float dmdCost	// largest dmd*dmdRate to month level, then accumulates (cnguts.cpp:mtrAccum)
  //demand results. related code: cnguts.cpp:mtrAccum. for now, must be reported with probes. rob 11-93.
-    float dmd	 	// peak use in interval; hourly value same as .tot.
-    SHOY  dmdShoy	// peak time as subhour of year, subhr unused: 4*(hr+24*jDay).
+    *p float dmd	 	// peak use in interval; hourly value same as .tot.
+    *p SHOY  dmdShoy	// peak time as subhour of year, subhr unused: 4*(hr+24*jDay).
 *END		// MTR_IVL_SUB
 //=============================================================================
 RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, endUse for entire building 1-92

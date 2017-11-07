@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 831
+#define CSEVRSN_MINOR 847
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,25 @@
 // ONLY comments below here
 
 /* History:
+   0.847: fix inconsistent xs_UNom
+   0.846: SOLARFIX test version, 10-25-2017
+   0.845: added DHWHEATER whUAMult, 10-18-2017
+   0.844: HPWH debug export enhanced, 10-17-2017
+   0.843: BATTERY last hour values; DESCOND prelim version; 10-10-17
+   0.842: btChgReq eval stage bug fix (cncult.cpp), 9-12-2017
+   0.841: release version with post-ivl evaluation, autosize refinements, 9-12-2017
+   0.840: experimental post-ivl evaluation cleanup, 9-5-2017
+   0.839: experimental post-ivl expression evaluation stage, 9-3-2017
+   0.838: Instantaneous DHW UEF model w/ revised exponential cooldown, 8-1-2017
+   0.837: Instantaneous DHW UEF model w/ exponential cooldown, 7-29-2017
+   0.836: heat pump autosize: now uses ACM algorithm when both cap47 and cap95 autosized
+          committed 7-20-2017
+   0.835: heat pump autosize: don't force cap95 to be consistent with cap47
+          committed 7-19-2017
+   0.834: UEF model 2nd rev (cooldown-time-dependent startup energy, load carry-forward)
+          committed 7-17-2017
+   0.833: revised UEF model (includes electricity use), committed 5-25-2017
+   0.832: preliminary UEF instantaneous DHW model, committed 5-19-2017
    0.831: missing TDV file -> UNSET data,
           RSYSRES (preliminary),
           Fix reading of high precision floats (up to 10^-21),

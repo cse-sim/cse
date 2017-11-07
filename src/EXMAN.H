@@ -35,7 +35,7 @@
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 void FC exClean(CLEANCASE cs);
-RC FC exPile( SI toprec, USI wanTy, USI choiDt, USI fdTy, USI evfOk, USI useCl,
+RC FC exPile( SI toprec, USI wanTy, USI choiDt, USI fdTy, USI _evfOk, USI useCl,
               char *ermTx, SI isType, BP b, TI i, SI fn,
 	      NANDAT *pDest, USI *pGotTy, USI *pGotEvf );
 RC FC uniLimCt( USI fdTy, SI ty, char *ermTx, void *p );

@@ -1871,7 +1871,7 @@ AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at full load
 		//   0: leaving air db = surround temp
 		//   1: leaving air = entering air
 		ds_beta = mCp > .1f
-						? exp( max( -100., -ds_uaTot/mCp))
+						? exp( max( -80., -ds_uaTot/mCp))
 						: 0.f;		// very small air flow
 		ds_air[ 3].as_Set(
 				ds_beta*ds_air[ 1].as_tdb + (1.f-ds_beta)*ds_sbcO.sb_txe,
