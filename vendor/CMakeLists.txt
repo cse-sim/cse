@@ -6,7 +6,7 @@ endif()
 
 include("${PROJECT_SOURCE_DIR}/cmake/DownloadProject.cmake")
 download_project(PROJ                Penumbra
-                 GIT_REPOSITORY      https://github.com/cse-sim/penumbra.git
+                 GIT_REPOSITORY      https://github.com/bigladder/penumbra.git
                  GIT_TAG             master
                  DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/Penumbra-dl"
                  SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/Penumbra"
