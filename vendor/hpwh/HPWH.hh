@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <functional>
 
 #include <cstdio>
 #include <cstdlib>   //for exit
@@ -19,14 +20,14 @@
 class HPWH {
  public:
   static const int version_major = 1;
-  static const int version_minor = 3;
+  static const int version_minor = 4;
   //oh man, why can't i initialize this here?
   static const std::string version_maint;
 
 
   static const float DENSITYWATER_kgperL;
   static const float CPWATER_kJperkgC;
-  static const int CONDENSITY_SIZE = 12;  /**< this must be an integer, and only the value 12 
+  static const int CONDENSITY_SIZE = 12;  /**< this must be an integer, and only the value 12
   //change at your own risk */
   static const int MAXOUTSTRING = 200;  /**< this is the maximum length for a debuging output string */
   static const float HEATDIST_MINVALUE; /**< any amount of heat distribution less than this is reduced to 0
@@ -59,19 +60,19 @@ class HPWH {
     MODELS_basicIntegrated = 4,   /**< a standard integrated HPWH  */
     MODELS_externalTest = 5,      /**< a single compressor tank, using "external" topology  */
 
-    // these models are based on real tanks and measured lab data 
+    // these models are based on real tanks and measured lab data
     // AO Smith models
     MODELS_AOSmithPHPT60 = 102,         /**< this is the Ecotope model for the 60 gallon Voltex HPWH  */
     MODELS_AOSmithPHPT80 = 103,         /**<  Voltex 80 gallon tank  */
-    MODELS_AOSmithHPTU50 = 104,    /**< 50 gallon AOSmith HPTU */ 
-    MODELS_AOSmithHPTU66 = 105,    /**< 66 gallon AOSmith HPTU */ 
+    MODELS_AOSmithHPTU50 = 104,    /**< 50 gallon AOSmith HPTU */
+    MODELS_AOSmithHPTU66 = 105,    /**< 66 gallon AOSmith HPTU */
     MODELS_AOSmithHPTU80 = 106,    /**< 80 gallon AOSmith HPTU */
-    MODELS_AOSmithHPTU80_DR = 107,    /**< 80 gallon AOSmith HPTU */  
+    MODELS_AOSmithHPTU80_DR = 107,    /**< 80 gallon AOSmith HPTU */
 
     // GE Models
     MODELS_GE2012 = 110,      /**<  The 2012 era GeoSpring  */
-    MODELS_GE2014STDMode = 111,    /**< 2014 GE model run in standard mode */ 
-    MODELS_GE2014STDMode_80 = 113,    /**< 2014 GE model run in standard mode, 80 gallon unit */ 
+    MODELS_GE2014STDMode = 111,    /**< 2014 GE model run in standard mode */
+    MODELS_GE2014STDMode_80 = 113,    /**< 2014 GE model run in standard mode, 80 gallon unit */
     MODELS_GE2014 = 112,           /**< 2014 GE model run in the efficiency mode */
     MODELS_GE2014_80 = 114,           /**< 2014 GE model run in the efficiency mode, 80 gallon unit */
     MODELS_GE2014_80DR = 115,           /**< 2014 GE model run in the efficiency mode, 80 gallon unit */
@@ -79,9 +80,16 @@ class HPWH {
     // Sanden CO2 transcritical heat pump water heaters
     MODELS_Sanden40 = 120,        /**<  Sanden 40 gallon CO2 external heat pump  */
     MODELS_Sanden80 = 121,        /**<  Sanden 80 gallon CO2 external heat pump  */
+    MODELS_SandenGen3 = 122, /**<  Sanden 80 gallon CO2 external heat pump, using expanded performance map  */
 
     // The new-ish Rheem
     MODELS_RheemHB50 = 140,        /**< Rheem 2014 (?) Model */
+    MODELS_RheemHBDR2250 = 141,    /**< 50 gallon, 2250 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR5050 = 142,    /**< 50 gallon, 5000 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR2265 = 143,    /**< 65 gallon, 2250 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR5065 = 144,    /**< 65 gallon, 5000 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR2280 = 145,    /**< 80 gallon, 2250 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR5080 = 146,    /**< 80 gallon, 5000 W resistance Rheem HB Duct Ready */
 
     // The new-ish Stiebel
     MODELS_Stiebel220E = 150,      /**< Stiebel Eltron (2014 model?) */
@@ -109,7 +117,7 @@ class HPWH {
     VRB_typical = 20,    /**< print some basic debugging info  */
     VRB_emetic = 30      /**< print all the things  */
     };
-    
+
 
   enum UNITS{
     UNITS_C,          /**< celsius  */
@@ -130,21 +138,57 @@ class HPWH {
     TYPE_compressor   /**< a vapor cycle compressor  */
     };
 
-    
+  struct NodeWeight {
+    int nodeNum;
+    double weight;
+    NodeWeight(int n, double w) : nodeNum(n), weight(w) {};
+
+    NodeWeight(int n) : nodeNum(n), weight(1.0) {};
+  };
+
+  struct HeatingLogic {
+    std::string description;  // for debug purposes
+    std::vector<NodeWeight> nodeWeights;
+    double decisionPoint;
+    bool isAbsolute;
+    std::function<bool(double,double)> compare;
+    HeatingLogic(std::string desc, std::vector<NodeWeight> n, double d, bool a=false, std::function<bool(double,double)> c=std::less<double>()) :
+      description(desc), nodeWeights(n), decisionPoint(d), isAbsolute(a), compare(c) {};
+  };
+
+  HeatingLogic topThird(double d) const;
+  HeatingLogic topThird_absolute(double d) const;
+	HeatingLogic bottomThird(double d) const;
+	HeatingLogic bottomHalf(double d) const;
+	HeatingLogic bottomTwelth(double d) const;
+	HeatingLogic bottomSixth(double d) const;
+	HeatingLogic secondSixth(double d) const;
+	HeatingLogic thirdSixth(double d) const;
+	HeatingLogic fourthSixth(double d) const;
+	HeatingLogic fifthSixth(double d) const;
+	HeatingLogic topSixth(double d) const;
+  HeatingLogic standby(double d) const;
+  HeatingLogic topNodeMaxTemp(double d) const;
+  HeatingLogic bottomNodeMaxTemp(double d) const;
+  HeatingLogic bottomTwelthMaxTemp(double d) const;
+  HeatingLogic largeDraw(double d) const;
+  HeatingLogic largerDraw(double d) const;
+
+
   ///this is the value that the public functions will return in case of a simulation
   ///destroying error
   static const int HPWH_ABORT = -274000;
 
   static std::string getVersion();
   /**< This function returns a string with the current version number */
-    
+
 	int HPWHinit_presets(MODELS presetNum);
-	/**< This function will load in a set of parameters that are hardcoded in this function - 
+	/**< This function will load in a set of parameters that are hardcoded in this function -
 	 * which particular set of parameters is selected by presetNum.
 	 * This is similar to the way the HPWHsim currently operates, as used in SEEM,
 	 * but not quite as versatile.
 	 * My impression is that this could be a useful input paradigm for CSE
-	 * 
+	 *
 	 * The return value is 0 for successful initialization, HPWH_ABORT otherwise
 	 */
 
@@ -155,7 +199,7 @@ class HPWH {
 	 * that we typically do when creating SEEM runs
 	 * Appropriate use of this function can be found in the documentation
    *
-   * 
+   *
 	 * The return value is 0 for successful initialization, HPWH_ABORT otherwise
 	 */
 
@@ -171,7 +215,7 @@ class HPWH {
    * is at the bottom, the upper element is at the top third.  The logics are also set
    * to standard setting, with upper as VIP activating when the top third is too cold.
    */
-   
+
   int HPWHinit_genericHPWH(double tankVol_L, double energyFactor, double resUse_C);
   /**< This function will initialize a HPWH object to be a non-specific HPWH model
    * with an energy factor as specified.  Since energy
@@ -179,22 +223,22 @@ class HPWH {
    * are taken from the GE2015_STDMode model.
    */
 
-  int runOneStep(double inletT_C, double drawVolume_L, 
+  int runOneStep(double inletT_C, double drawVolume_L,
                   double ambientT_C, double externalT_C,
                   DRMODES DRstatus, double minutesPerStep);
 	/**< This function will progress the simulation forward in time by one step
 	 * all calculated outputs are stored in private variables and accessed through functions
-	 * 
+	 *
 	 * The return value is 0 for successful simulation run, HPWH_ABORT otherwise
 	 */
-	 
-	int runNSteps(int N,  double *inletT_C, double *drawVolume_L, 
+
+	int runNSteps(int N,  double *inletT_C, double *drawVolume_L,
                   double *tankAmbientT_C, double *heatSourceAmbientT_C,
                   DRMODES *DRstatus, double minutesPerStep);
 	/**< This function will progress the simulation forward in time by N (equal) steps
-	 * The calculated values will be summed or averaged, as appropriate, and 
+	 * The calculated values will be summed or averaged, as appropriate, and
 	 * then stored in the usual variables to be accessed through functions
-	 * 
+	 *
 	 * The return value is 0 for successful simulation run, HPWH_ABORT otherwise
 	 */
 
@@ -245,7 +289,11 @@ class HPWH {
   int setUA(double UA_kJperHrC);
   int setUA(double UA, UNITS units);
   /**< This is a setter for the UA, with or without units specified - default is metric */
-  
+
+  int getUA(double& UA_kJperHrC) const;
+  int getUA(double& UA, UNITS units) const;
+  /**< Returns the UA, with or without units specified - default is metric */
+
 	int getNumNodes() const;
 	/**< returns the number of nodes  */
   double getTankNodeTemp(int nodeNum /**default units C*/) const;
@@ -268,7 +316,7 @@ class HPWH {
       energy used by the heat source is positive - should always be positive
       returns HPWH_ABORT for N out of bounds or incorrect units  */
 
-  
+
   double getNthHeatSourceEnergyOutput(int N /**default units kWh*/) const;
 	double getNthHeatSourceEnergyOutput(int N, UNITS units) const;
 	/**< returns the energy output from the Nth heat source, with the specified units
@@ -284,7 +332,7 @@ class HPWH {
   HEATSOURCE_TYPE getNthHeatSourceType(int N) const;
   /**< returns the enum value for what type of heat source the Nth heat source is  */
 
-  
+
 
 	double getOutletTemp(/**default units C*/) const;
 	double getOutletTemp(UNITS units) const;
@@ -318,8 +366,11 @@ class HPWH {
   void setInletT(double newInletT_C) {member_inletT_C = newInletT_C;};
   void setMinutesPerStep(double newMinutesPerStep) {member_minutesPerStep = newMinutesPerStep;};
 
+  double getLocationTemp_C() const;
+  int setMaxTempDepression(double maxDepression);
+  int setMaxTempDepression(double maxDepression, UNITS units);
 
- 
+
  private:
   class HeatSource;
 
@@ -328,18 +379,9 @@ class HPWH {
 	/**< test if all the heat sources are off  */
 	void turnAllHeatSourcesOff();
 	/**< disengage each heat source  */
-	
-	double topThirdAvg_C() const;
-	double bottomThirdAvg_C() const;
-	double bottomHalfAvg_C() const;
-	double bottomTwelthAvg_C() const;
-	double bottomSixthAvg_C() const;
-	double secondSixthAvg_C() const;
-	double thirdSixthAvg_C() const;
-	double fourthSixthAvg_C() const;
-	double fifthSixthAvg_C() const;
-	double topSixthAvg_C() const;
-  
+
+  double tankAvg_C(const std::vector<NodeWeight> nodeWeights) const;
+
 	/**< functions to calculate what the temperature in a portion of the tank is  */
 
   void calcDerivedValues();
@@ -357,7 +399,7 @@ class HPWH {
 
   bool simHasFailed;
 	/**< did an internal error cause the simulation to fail?  */
- 
+
 	bool isHeating;
 	/**< is the hpwh currently heating or not?  */
 
@@ -371,23 +413,33 @@ class HPWH {
 	/**< function pointer to indicate an external message processing function  */
   void* messageCallbackContextPtr;
 	/**< caller context pointer for external message processing  */
- 
+
 
   MODELS hpwhModel;
   /**< The hpwh should know which preset initialized it, or if it was from a file */
-  
+
 	int numHeatSources;
 	/**< how many heat sources this HPWH has  */
 	HeatSource *setOfSources;
 	/**< an array containing the HeatSources, in order of priority  */
-	
+
+  int compressorIndex;
+  /**< The index of the compressor heat source (set to -1 if no compressor)*/
+
+  int lowestElementIndex;
+  /**< The index of the lowest resistance element heat source (set to -1 if no resistance elements)*/
+
 	int numNodes;
 	/**< the number of nodes in the tank - must be >= 12, in multiples of 12  */
+
+  int nodeDensity;
+  /**< the number of calculation nodes in a logical node  */
+
 	double tankVolume_L;
 	/**< the volume in liters of the tank  */
 	double tankUA_kJperHrC;
 	/**< the UA of the tank, in metric units  */
-	
+
 	double setpoint_C;
 	/**< the setpoint of the tank  */
 	double *tankTemps_C;
@@ -401,19 +453,19 @@ class HPWH {
 	/**< the total energy removed from the environment, to heat the water  */
 	double standbyLosses_kWh;
 	/**< the amount of heat lost to standby  */
-	
-	
+
+
   // special variables for adding abilities
 	bool tankMixesOnDraw;
 	/**<  whether or not the bottom third of the tank should mix during draws  */
 	bool doTempDepression;
-	/**<  whether the HPWH should use the alternate ambient temperature that  
+	/**<  whether the HPWH should use the alternate ambient temperature that
         gets depressed when a compressor is running
         NOTE: this only works for 1 minute steps  */
-  double locationTemperature;
-	/**<  this is the special location temperature that stands in for the the 
+  double locationTemperature_C;
+	/**<  this is the special location temperature that stands in for the the
         ambient temperature if you are doing temp. depression  */
-
+  double maxDepression_C = 2.5;
   /** a couple variables to hold values which are typically inputs  */
   double member_inletT_C;
   double member_minutesPerStep;
@@ -438,92 +490,63 @@ class HPWH::HeatSource {
   void setupAsResistiveElement(int node, double Watts);
   /**< configure the heat source to be a resisive element, positioned at the
       specified node, with the specified power in watts */
-  
+
 	bool isEngaged() const;
   /**< return whether or not the heat source is engaged */
-	void engageHeatSource(double heatSourceAmbientT_C);
+	void engageHeatSource();
   /**< turn heat source on, i.e. set isEngaged to TRUE */
 	void disengageHeatSource();
   /**< turn heat source off, i.e. set isEngaged to FALSE */
-	
-	bool shouldHeat(double heatSourceAmbientT_C) const;
+
+  bool isLockedOut() const;
+  /**< return whether or not the heat source is locked out */
+  void lockOutHeatSource();
+  /**< lockout heat source, i.e. set isLockedOut to TRUE */
+  void unlockHeatSource();
+  /**< unlock heat source, i.e. set isLockedOut to FALSE */
+
+  bool shouldLockOut(double heatSourceAmbientT_C) const;
+  /**< queries the heat source as to whether it should lock out */
+  bool shouldUnlock(double heatSourceAmbientT_C) const;
+  /**< queries the heat source as to whether it should unlock */
+	bool shouldHeat() const;
   /**< queries the heat source as to whether or not it should turn on */
-	bool shutsOff(double heatSourceAmbientT_C) const;
-  /**< queries the heat source whether should shut off (typically lowT shutoff) */
+	bool shutsOff() const;
+  /**< queries the heat source whether should shut off */
+
+  int findParent() const;
+  /**< returns the index of the heat source where this heat source is a backup.
+      returns -1 if none found. */
 
 	void addHeat_temp(double externalT_C, double minutesPerStep);
 	void addHeat(double externalT_C, double minutesToRun);
-  /**< adds heat to the hpwh - this is the function that interprets the 
+  /**< adds heat to the hpwh - this is the function that interprets the
       various configurations (internal/external, resistance/heat pump) to add heat */
 
-	void setCondensity(double cnd1, double cnd2, double cnd3, double cnd4, 
-                     double cnd5, double cnd6, double cnd7, double cnd8, 
+	void setCondensity(double cnd1, double cnd2, double cnd3, double cnd4,
+                     double cnd5, double cnd6, double cnd7, double cnd8,
                      double cnd9, double cnd10, double cnd11, double cnd12);
   /**< a function to set the condensity values, it pretties up the init funcs. */
-	
-	
+
+
  private:
-  //start with a few type definitions  
+  //start with a few type definitions
   enum COIL_CONFIG {
     CONFIG_SUBMERGED,
     CONFIG_WRAPPED,
     CONFIG_EXTERNAL
     };
 
-  /**this is the set of logics available for shouldHeat */
-  enum ONLOGIC{
-    ONLOGIC_topThird,     /**< is the difference between setpoint and the topThird of
-                            the tank is greater than decision point, turn on */
-    ONLOGIC_topThird_absolute,     /**< if the average temp of the topThird of
-                            the tank greater than decision point, turn on */
-    ONLOGIC_bottomThird,  /**< is the difference between setpoint and the bottomThird of
-                            the tank is greater than decision point, turn on */
-    ONLOGIC_standby,       /**< if the difference between the top node and the setpoint is
-                            greater than the decision point, turn on */
-    ONLOGIC_bottomSixth,    /**< if the difference between the first (bottom) sixth of
-                            the tank and the setpoint is greater than the decision point, turn on */
-    ONLOGIC_secondSixth,    /**< if the difference between the second sixth of
-                            the tank and the setpoint is greater than the decision point, turn on */
-    ONLOGIC_thirdSixth,    /**< if the difference between the third sixth of
-                            the tank and the setpoint is greater than the decision point, turn on */
-    ONLOGIC_fourthSixth,    /**< if the difference between the fourth sixth of
-                            the tank and the setpoint is greater than the decision point, turn on */
-    ONLOGIC_fifthSixth,    /**< if the difference between the fifth sixth of
-                            the tank and the setpoint is greater than the decision point, turn on */
-    ONLOGIC_topSixth    /**< if the difference between the sixth (top) sixth of
-                            the tank and the setpoint is greater than the decision point, turn on */
-    };
-  /** this is the set of logics available for shutsDown  */
-  enum OFFLOGIC{
-    OFFLOGIC_lowT,                /**< if temp is below decision point, shut off */
-    OFFLOGIC_highT,                /**< if temp is abovr decision point, shut off */
-    OFFLOGIC_lowTreheat,          /**< if temp is above decision point, just while running, shut off */
-    OFFLOGIC_topNodeMaxTemp,   /**< if the top node temp is above decision point, shut off */
-    OFFLOGIC_bottomNodeMaxTemp,   /**< if the bottom node temp is above decision point, shut off */
-    OFFLOGIC_bottomTwelthMaxTemp, /**< if the bottom twelth of the tank is above decision point, shut off */
-    OFFLOGIC_largeDraw,           /**< if the bottom third of the tank is below decision point, shut off */
-    OFFLOGIC_largerDraw           /**< if the bottom half of the tank is below decision point, shut off */
-    };
-
-	/** the heating logic instructions come in pairs - a string to select
-    which logic function to use, and a double to give the setpoint
-    for that function */
-  template <typename T>
-	struct heatingLogicPair{
-		T selector;
-		double decisionPoint;
-		/**< and a constructor to allow creating anonymous structs for easy assignment */
-		heatingLogicPair(T x, double y) : selector(x), decisionPoint(y) {};
-		};
-
-
 	/** the creator of the heat source, necessary to access HPWH variables */
   HPWH *hpwh;
-	
+
   // these are the heat source state/output variables
 	bool isOn;
 	/**< is the heat source running or not	 */
-	
+
+  bool lockedOut;
+  /**< is the heat source locked out	 */
+
   // some outputs
 	double runtime_min;
 	/**< this is the percentage of the step that the heat source was running */
@@ -541,12 +564,15 @@ class HPWH::HeatSource {
 	HeatSource* companionHeatSource;
 	/**< a pointer to the heat source which will run concurrently with this one
       it still will only turn on if shutsOff is false */
-	
+
+  HeatSource* followedByHeatSource;
+	/**< a pointer to the heat source which will attempt to run after this one */
+
 	double condensity[CONDENSITY_SIZE];
-	/**< The condensity function is always composed of 12 nodes.  
+	/**< The condensity function is always composed of 12 nodes.
       It represents the location within the tank where heat will be distributed,
       and it also is used to calculate the condenser temperature for inputPower/COP calcs.
-      It is conceptually linked to the way condenser coils are wrapped around 
+      It is conceptually linked to the way condenser coils are wrapped around
       (or within) the tank, however a resistance heat source can also be simulated
       by specifying the entire condensity in one node. */
   double shrinkage;
@@ -554,29 +580,30 @@ class HPWH::HeatSource {
       and the condentropy, which is derived from the condensity
       alpha and beta are not intended to be settable
       see the hpwh_init functions for calculation of shrinkage */
-  
-	double T1_F, T2_F;
-	/**< the two temperatures where the input and COP curves are defined */
-	double inputPower_T1_constant_W, inputPower_T2_constant_W;
-	double inputPower_T1_linear_WperF, inputPower_T2_linear_WperF;
-	double inputPower_T1_quadratic_WperF2, inputPower_T2_quadratic_WperF2;
-	/**< these are the coefficients for the quadratic function 
-      defining the input power as a function of the condenser temperature */
-	double COP_T1_constant, COP_T2_constant;
-	double COP_T1_linear, COP_T2_linear;
-	double COP_T1_quadratic, COP_T2_quadratic;
-	/**< these are the coefficients for the quadratic function 
-      defining the COP as a function of the condenser temperature */
 
+  struct perfPoint {
+    double T_F;
+    double inputPower_coeffs[3]; // c0 + c1*T + c2*T*T
+    double COP_coeffs[3]; // c0 + c1*T + c2*T*T
+  };
+
+  std::vector<perfPoint> perfMap;
+  /**< A map with input/COP quadratic curve coefficients at a given external temperature */
 
 	/** a vector to hold the set of logical choices for turning this element on */
-	std::vector<heatingLogicPair<ONLOGIC> > turnOnLogicSet;
+	std::vector<HeatingLogic> turnOnLogicSet;
 	/** a vector to hold the set of logical choices that can cause an element to turn off */
-	std::vector<heatingLogicPair<OFFLOGIC> > shutOffLogicSet;
+	std::vector<HeatingLogic> shutOffLogicSet;
 
-  void addTurnOnLogic(ONLOGIC selector, double decisionPoint);
-  void addShutOffLogic(OFFLOGIC selector, double decisionPoint);
+  void addTurnOnLogic(HeatingLogic logic);
+  void addShutOffLogic(HeatingLogic logic);
   /**< these are two small functions to remove some of the cruft in initiation functions */
+
+  double minT;
+  /**<  minimum operating temperature of HPWH environment */
+
+  double maxT;
+  /**<  maximum operating temperature of HPWH environment */
 
 	double hysteresis_dC;
 	/**< a hysteresis term that prevents short cycling due to heat pump self-interaction
@@ -584,8 +611,8 @@ class HPWH::HeatSource {
       added to lowTreheat cutoffs */
 
 	bool depressesTemperature;
-	/**<  heat pumps can depress the temperature of their space in certain instances - 
-      whether or not this occurs is a bool in HPWH, but a heat source must 
+	/**<  heat pumps can depress the temperature of their space in certain instances -
+      whether or not this occurs is a bool in HPWH, but a heat source must
       know if it is capable of contributing to this effect or not
       NOTE: this only works for 1 minute steps
       ALSO:  this is set according the the heat source type, not user-specified */
@@ -612,7 +639,7 @@ class HPWH::HeatSource {
   double addHeatExternal(double externalT_C, double minutesToRun, double &cap_BTUperHr, double &input_BTUperHr, double &cop);
   /**<  Add heat from a source outside of the tank. Assume the condensity is where
       the water is drawn from and hot water is put at the top of the tank. */
-  
+
 	/**  I wrote some methods to help with the add heat interface - MJL  */
   void getCapacity(double externalT_C, double condenserTemp_C, double &input_BTUperHr, double &cap_BTUperHr, double &cop);
   void calcHeatDist(std::vector<double> &heatDistribution);
@@ -620,7 +647,10 @@ class HPWH::HeatSource {
 	double getCondenserTemp();
   /**< returns the temperature of the condensor - it's a weighted average of the
       tank temperature, using the condensity as weights */
-  
+
+  void sortPerformanceMap();
+  /**< sorts the Performance Map by increasing external temperatures */
+
   /**<  A few helper functions */
   double expitFunc(double x, double offset);
   void normalize(std::vector<double> &distribution);

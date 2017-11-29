@@ -379,6 +379,12 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			GE2014STDMODE_80 "GE2014StdMode80"	// 2014 80 gal GE run in standard mode
 
 			RHEEMHB50 "RheemHB50"			// newish Rheem (2014 model?)
+			RHEEMHBDR2250 "RheemHBDR2250"	// 50 gallon, 2250 W resistance Rheem HB Duct Ready
+			RHEEMHBDR5050 "RheemHBDR5050"	// 50 gallon, 5000 W resistance Rheem HB Duct Ready
+			RHEEMHBDR2265 "RheemHBDR2265"	// 65 gallon, 2250 W resistance Rheem HB Duct Ready
+			RHEEMHBDR5065 "RheemHBDR5065"	// 65 gallon, 5000 W resistance Rheem HB Duct Ready
+			RHEEMHBDR2280 "RheemHBDR2280"	// 80 gallon, 2250 W resistance Rheem HB Duct Ready
+			RHEEMHBDR5080 "RheemHBDR5080"	// 80 gallon, 5000 W resistance Rheem HB Duct Ready
 			STIEBEL220E "Stiebel220E"		// Stiebel Eltron (2014 model?)
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2

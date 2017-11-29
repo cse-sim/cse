@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 836
+#define CSEVRSN_MINOR 836b
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,8 @@
 // ONLY comments below here
 
 /* History:
+  0.836b: added new Rheem tank presets and updated HPWHsim files.
+          committed 11-14-2017 (alternate branch release)
    0.836: heat pump autosize: now uses ACM algorithm when both cap47 and cap95 autosized
           committed 7-20-2017
    0.835: heat pump autosize: don't force cap95 to be consistent with cap47
