@@ -85,11 +85,11 @@ class HPWH {
     // The new-ish Rheem
     MODELS_RheemHB50 = 140,        /**< Rheem 2014 (?) Model */
     MODELS_RheemHBDR2250 = 141,    /**< 50 gallon, 2250 W resistance Rheem HB Duct Ready */
-    MODELS_RheemHBDR5050 = 142,    /**< 50 gallon, 5000 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR4550 = 142,    /**< 50 gallon, 4500 W resistance Rheem HB Duct Ready */
     MODELS_RheemHBDR2265 = 143,    /**< 65 gallon, 2250 W resistance Rheem HB Duct Ready */
-    MODELS_RheemHBDR5065 = 144,    /**< 65 gallon, 5000 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR4565 = 144,    /**< 65 gallon, 4500 W resistance Rheem HB Duct Ready */
     MODELS_RheemHBDR2280 = 145,    /**< 80 gallon, 2250 W resistance Rheem HB Duct Ready */
-    MODELS_RheemHBDR5080 = 146,    /**< 80 gallon, 5000 W resistance Rheem HB Duct Ready */
+    MODELS_RheemHBDR4580 = 146,    /**< 80 gallon, 4500 W resistance Rheem HB Duct Ready */
 
     // The new-ish Stiebel
     MODELS_Stiebel220E = 150,      /**< Stiebel Eltron (2014 model?) */
