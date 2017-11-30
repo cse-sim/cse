@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.818 for Win32 console   Tue 17-Jan-17  11:35:30 am
+! CSE 0.836b for Win32 console   Thu 30-Nov-17   3:20:50 pm
 
 
 ================
@@ -13267,7 +13267,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=0.00
-! CSE 0.818 for Win32 console
+! CSE 0.836b for Win32 console
 
 
 
@@ -14823,17 +14823,17 @@ Input for Run 001:
 
 
 
-! CSE 0.818 for Win32 console run(s) done: Tue 17-Jan-17  11:35:52 am
-! Executable: c:\projects\cse\run\cse.exe
-!             16-Jan-17   4:17 pm   (VS 14.0    1291264 bytes)  (HPWH 1.3.0)
+! CSE 0.836b for Win32 console run(s) done: Thu 30-Nov-17   3:21:14 pm
+! Executable: c:\users\nkruis\projects\cse\run\cse.exe
+!             29-Nov-17   3:39 pm   (VS 12.0    1360384 bytes)  (HPWH 1.4.0)
 
-! Input file name:  C:\Projects\cse\test\ashwat1.cse
-! Report file name: C:\Projects\cse\test\ashwat1.rep
+! Input file name:  C:\Users\nkruis\projects\cse\test\ashwat1.cse
+! Report file name: C:\Users\nkruis\projects\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 2      T/C = 0.0095   
-!           AutoSizing:  Time = 2.00     Calls = 1      T/C = 2.0030   
-!           Simulation:  Time = 20.03    Calls = 1      T/C = 20.0340  
-!              Reports:  Time = 0.15     Calls = 1      T/C = 0.1470   
-!                Total:  Time = 22.21    Calls = 1      T/C = 22.2110  
+!                Input:  Time = 0.21     Calls = 2      T/C = 0.1070   
+!           AutoSizing:  Time = 2.95     Calls = 1      T/C = 2.9460   
+!           Simulation:  Time = 20.48    Calls = 1      T/C = 20.4750  
+!              Reports:  Time = 0.25     Calls = 1      T/C = 0.2450   
+!                Total:  Time = 23.91    Calls = 1      T/C = 23.9050  
