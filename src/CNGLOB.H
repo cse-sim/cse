@@ -87,6 +87,19 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
+#undef ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
+								//   work in progress, 10-2017
+#if defined( ELIMINATE_WINDOWS)
+// typedefs based on windows.h
+typedef unsigned long DWORD;
+typedef unsigned int UINT;
+typedef unsigned int BOOL;
+typedef unsigned short WORD;
+typedef char TCHAR;
+typedef unsigned char BYTE;
+#define _T(s) s
+#endif
+
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging
 #define REFDATA static	// For readonly, pak-specific data which could be overlayed
@@ -141,7 +154,9 @@ struct CULT;
 
 #else
 
+#if !defined( ELIMINATE_WINDOWS)
 #include <windows.h>
+#endif
 
 #include <string.h>
 #include <stddef.h>
@@ -538,7 +553,7 @@ const double kPiOver2=kPi/2.;
 const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
 const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
 const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
-const double sigmaSBSI = 5.669e-8;  // stefan-boltzman constant, W/m2-K4
+const double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
 const double tAbs0F						// 0 F in Rankine
 #if defined( CZM_COMPARE)
 	= 460.;

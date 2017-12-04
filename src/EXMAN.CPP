@@ -24,7 +24,7 @@
 #include <cnguts.h>	// Top
 #include <cueval.h>	// cuEvalR, RCUNSET
 #include <cul.h>	// FsVAL
-#include <cncult.h>	// UENDIVL  getCpl
+#include <cncult.h>
 #include <cuevf.h>	// evf's and variabilities: EVF____ defines and EVENDIVL
 #include <cuparse.h>	// exOrk TYSTR TYSI TYLLI. cueval.h rqd 1st.
 #include <cuparsex.h>	// maxErrors. only, 3-91.
@@ -115,7 +115,7 @@ struct EXTAB	// expression table (*exTab[i]) struct
 	SI nx;		// 0 or subscript of next entry in evaluation order (chain), -1 if deleted entry.
 	PSOP *ip;    	// ptr to pseudo-code dm block.  PSOP: cueval.h/cnglob.h.  (was void * b4 bcpp, 2-91)
 	USI evf;		// evaluation frequency (EVF___ defines, cuevf.h)
-	USI useCl;		// caller's use Class bits for selective eval (note always 1 or UENDIVL, 9-95)
+	USI useCl;		// caller's use class bits for selective eval (EVBEGIVL
 	USI ty;			// data type TYLLI/TYFL/TYSTR/[TYSI/]TYCH/TYNC, cuparse.h.
 	UCH fdTy;		// (0 or) target field type (sFdtab[] subscript) 2-91
 	UCH filla;		// alignment filler / avail / future flags etc
@@ -187,17 +187,17 @@ RC FC exPile(		// compile an expression from current input
 	USI choiDt,		// dtypes.h choice data type (DTxxx) when wanTy is TYCH or TYCN.  2-92
 	USI fdTy,		// 0 (FDNONE?) or target field type (sFdtab[] subscr), for units factor and limits check.
 	USI _evfOk,		// ffff or acceptable eval freq bits for context, including eval-at-end-interval bit, EVENDIVL.
-	USI useCl,		/* caller's "use class" bit(s) for selective expr eval, now (1995) always 1.
-			   changed here to UENDIVL if expr has EVENDIVL on. */
-	char *_ermTx,			/* NULL or text saying what expr is arg to,
-					   for (compile) errMsgs in form "after <ermTx>". */
-	SI isType, BP b,  TI i,  SI fn,	/* type flag, baseAnc, rec subscr (for name - fetched now), and fld #
-					   of destination, for RUNTIME ERROR MESSAGES.
-					   DON'T MATTER for non-field calls: not used if evfOk 0 or expr constant. */
-	/* >>> OR should we save ermTx, to show cult not fir member names?
-	   review what callers pass for ermTx. 2-91 <<<< */
-	NANDAT *pDest, 	/* rcvs constant value (LI, float, char *, or SI), or nandle for non-constant expr
-    			   (which is saved for access by the nandle) (not allowed for TYSI).*/
+	USI useCl,		// caller's "use class" bit(s) for selective expr eval, now (1995) always 1.
+					//   changed here to UENDIVL if expr has EVENDIVL on.
+	char *_ermTx,	// NULL or text saying what expr is arg to,
+					// for (compile) errMsgs in form "after <ermTx>".
+	SI isType, BP b,  TI i,  SI fn,	// type flag, baseAnc, rec subscr (for name - fetched now), and fld #
+									// of destination, for RUNTIME ERROR MESSAGES.
+									// DON'T MATTER for non-field calls: not used if evfOk 0 or expr constant. */
+									// >>> OR should we save ermTx, to show cult not fir member names?
+									// review what callers pass for ermTx. 2-91 <<<<
+	NANDAT *pDest, 	// rcvs constant value (LI, float, char *, or SI), or nandle for non-constant expr
+    				// (which is saved for access by the nandle) (not allowed for TYSI).
 	USI *pGotTy,	// NULL or receives actual data type gotten (useful with wanTy = TYFLSTR).
 	USI *pGotEvf )	// NULL or receives actual eval frequency (variation) of expression compiled
 
@@ -274,9 +274,9 @@ RC FC exPile(		// compile an expression from current input
 	{
 		E( extEntry( b, i, fn, &h) )  		// find existing entry to reuse, or add new expr table entry, return h / rif error
 
-		// if got an "evaluate-at-end-interval" expression, indicate in use class for eval at correct time
-		if (gotEvf & EVENDIVL)
-			useCl = UENDIVL; 			// overwrites any other distinction caller may have had.  cncult.h.
+		// if got an "evaluate-at-end/post-interval" expression, indicate in use class for eval at correct time
+		if (gotEvf & (EVENDIVL|EVPSTIVL))
+			useCl = gotEvf & (EVENDIVL|EVPSTIVL);	// overwrites any other distinction caller may have had.  cncult.h.
 		// start/end interval is really independent of evf and ucl; separate if found necessary.
 		// fill expression table entry
 		ex = exTab + h;				// point expression table entry
@@ -911,7 +911,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 	{
 		ex = exTab + h;
 		if (ex->evf & evf				// if has 1 or more given evf bit(s)
-		 && ex->useCl & useCl)				// & 1 or more given use class bit(s)
+		 && ex->useCl & useCl)			// & 1 or more given use class bit(s)
 		{
 			rc1 = exEvUp( h, isEoi, reordering, &uH); 	// do it, local, next.  'reordering' nz suppresses msg on RCUNSET.
 
@@ -924,11 +924,11 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 				 &&  uH > 0  &&  uH <= exN  &&  exTab[uH].nx >= 0	// if access to valid uneval'd expr (not UNSET nor bug)
 				 &&  !(uex->evf & evf  &&  uex->useCl & useCl)	// if accessed expr will not be evaluated now
 				 &&  !(uex->evf & ~ex->evfOk) 			// if accessed expr's evaluation time ok for current expression
-				 &&  uex->useCl==ex->useCl 			/* if accessed expr's use class same (in particular,
-													   don't replace non-UENDIVL with UENDIVL) */
-				 &&  ex->ty != TYSI )				/* can't eval SI's after end input as can't hold nandle
-              										   to identify where to store in run rats.
-              										   (insurance: evf check should cover). */
+				 &&  uex->useCl==ex->useCl 				// if accessed expr's use class same
+														//   don't replace expr's evaluated at different times in ivl
+				 &&  ex->ty != TYSI )					// can't eval SI's after end input as can't hold nandle
+              											// to identify where to store in run rats.
+              											// (insurance: evf check should cover).
 				{
 					/* End-of-input time expr contained probe to a member that now contains expr to be evaluatated later.
 					   Change current expression to be evaluated at that time. */

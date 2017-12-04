@@ -107,7 +107,7 @@ struct DREF
 	TI i;		// subscript ref'ing record in ditto
 	SI fn;		// referencing field number in ditto
 	BP toB;		// ptr to base of basAnc record being referenced
-	char *toName;  	// name of basAnc record (entry) being referenced
+	const char* toName;  	// name of basAnc record (entry) being referenced
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
 	USI fileIx;		// for err msgs: input file name index of referencing stmt
 	USI line;		// .. line number ..
@@ -274,7 +274,7 @@ LOCAL RC FC NEAR ckiCults( void);
 LOCAL void FC NEAR finalClear( void);
 LOCAL void FC NEAR xStkPt( void);
 LOCAL RC NEAR ganame( USI f, char *what, char **pp);
-LOCAL RC NEAR xpr( SI ty, USI fdTy, USI evf, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
+LOCAL RC NEAR xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
 LOCAL void FC NEAR termnIf( void);
 LOCAL RC CDEC NEAR perNxE( char *ms, ...);
 LOCAL SI FC NEAR skip2end( SI lastCs, SI *pcs);
@@ -310,12 +310,12 @@ LOCAL SI FC NEAR nxRec( SI bads, void **pe);
 LOCAL SI FC NEAR nxDatMbr( void **pp);
 LOCAL SI FC NEAR nxC( CULT **pp);
 LOCAL RC NEAR ratLuCtx( BP b, char *name, char *what, record **pE);
-LOCAL RC NEAR ratLuDefO( BP b, char *name, TI defO, char *what, record **pE, const char** pMsg);
+LOCAL RC NEAR ratLuDefO( BP b, const char* name, TI defO, char *what, record **pE, const char** pMsg);
 //public 1-92: LOCAL TI FC NEAR ratDefO( BP b);
 LOCAL void FC NEAR ratCultO( void);
 
-LOCAL void FC NEAR drefAdd( char *toName);
-LOCAL void FC NEAR drefAddI( BP b, TI i, SI fn, BP toB, char *toName, TI defO);
+LOCAL void FC NEAR drefAdd( const char* toName);
+LOCAL void FC NEAR drefAddI( BP b, TI i, SI fn, BP toB, const char* toName, TI defO);
 LOCAL DREF* drefNextFree();
 LOCAL void NEAR drefMove( record *nuE, record *e);
 LOCAL void NEAR drefDup( record *nuE, record *e);
@@ -385,15 +385,14 @@ void FC culClean( 		// cul overall init/cleanup routine
 //===========================================================================
 SI FC cul( 	// public entry to compile user language commands from open input file, using given table.
 
-	SI cs,	/* case: 0: opt'l prelim init, flag input basAncs, set input basAnc ownership, etc, eg re probe names rpt (CSE -p).
-                         1: first call (except poss cs 0 call), initialize, use cult.
-  			 2: recall (after execution after return 2), continue from current internal state & input file position.
-	  		 3: just close file (use after error elsewhere after 2 return).  Returns 1.
-	  		 4: clear input data, free input basAncs and DM alloc'd here:
-	  		    call for max DM for last run, or re finding unfree'd DM. Uses no other args. Returns 1. */
-
+	SI cs,	// case: 0: opt'l prelim init, flag input basAncs, set input basAnc ownership, etc, eg re probe names rpt (CSE -p).
+            //   1: first call (except poss cs 0 call), initialize, use cult.
+  			//   2: recall (after execution after return 2), continue from current internal state & input file position.
+	  		//   3: just close file (use after error elsewhere after 2 return).  Returns 1.
+	  		//   4: clear input data, free input basAncs and DM alloc'd here:
+	  		//      call for max DM for last run, or re finding unfree'd DM. Uses no other args. Returns 1.
 	const char* fName,	// file name (case 1)
-	char *defex,	// default extension (must include leading period)
+	char* defex,	// default extension (must include leading period)
 
 	CULT *cult,  	// top-level table, used if cs==1
 	record *e,   	// ptr to basAnc record (entry) to rcv top level data
@@ -2235,7 +2234,7 @@ setFsVAL:
 			// get Identifier, Quoted text, or string eXpression. local fcn.
 			E( xpr( TYID,			// get string, assume quotes around non-reserved undefined words
 				xSp->fdTy, 			// field type (or use 0 here?? 2-91)
-				0, 0,      			// no evf, no useCL: require constant.
+				0, 0,      			// no evfOk, no useCL: require constant.
 				0,	        		// for flags for "all" and "sum" and numbers
 				NULL,				// use xSp->c->id in errMsgs
 				(NANDAT *)&p,		// receives string ptr. xpr gets terminator.
@@ -2702,7 +2701,7 @@ LOCAL RC NEAR ganame(
 		sfirSFI[ SFI_NAME].fdTy,	// get field type for an ANAME field so exman.cpp will check string length
     								// (we have no defines for fld types: not invariant: data\fields.def
 									// is rearrangable & product dependent) 2-91. Declared in rccn.h.
-		0, 0,						// 0 evf, useCl: require constant value
+		0, 0,						// 0 evfOk, useCl: require constant value
 		f,							// pass flags for "all" and "sum", etc 1-92
 		what, 						// pass arg thru
 		(NANDAT *)&p,				// receives pointer to constant string value
@@ -2736,22 +2735,22 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYFLSTR or TYCH TYNC (fdTy req'd)
 	// or TYID (returns TYSTR).  Also accepts non-cuparse type: TYDOY.
 	USI fdTy,		// 0 (FDNONE?) or rec def fld type: dtype (for choices), units (for floats) and limit type are used.
-	USI evf, 		// permissible eval frequency bits, 0 for constant.
+	USI _evfOK, 	// permissible eval frequency bits, 0 for constant.
 	USI useCl,		// "use class" for selective expr evaluation 3-91
-	USI f,		/* flag bits:
-			     ARRAY: enables comma as a terminator (CUTCOM returned in tokTy)
-    			   these options should be used with TYID and evf=0:
-                             SUM_OK (cul.h): accept "sum" (returns RC_SUM).
-                             ALL_OK (cul.h): accept "all" (returns RC_ALL)
-			     ARRAY and ALL_OK: also accept "all_but" (returns RC_ALLBUT)
-                             [ELECTRIC_OK (cul.h): accept "all" (returns RC_ELECTRIC)] */
+	USI f,			// flag bits:
+					// ARRAY: enables comma as a terminator (CUTCOM returned in tokTy)
+    				// these options should be used with TYID and evf=0:
+					//    SUM_OK (cul.h): accept "sum" (returns RC_SUM).
+					//    ALL_OK (cul.h): accept "all" (returns RC_ALL)
+					//    ARRAY and ALL_OK: also accept "all_but" (returns RC_ALLBUT)
+                    //    [ELECTRIC_OK (cul.h): accept "all" (returns RC_ELECTRIC)]
 	char *what,		// token text for errMsgs or NULL to use xSp->c->id.
 	NANDAT *pp,		// receives result (dm ptr for TYSTR), or "NANDLE" (see exman.h) if a run-time expr.
 	USI *pGotTy,  	// NULL or rcvs cuparse type found, eg TYFL or TYSTR for ty=TYFLSTR, TYSI for TYDOY. 11-91.
 	USI *pGotEvf )	// NULL or rcvs variability gotten -- 0 constant (already stored), EVEOI, EVFHRLY, etc.
 
 /* also uses:  if 'what' is NULL: xSp->c->id (re compile errMsgs)
-           if evf is non-0 and expr non-constant:   defTyping, xSp->b, xSp->i, xSp->c->fn (run errMsgs,exman.cpp).*/
+   if _evfOK is non-0 and expr non-constant:   defTyping, xSp->b, xSp->i, xSp->c->fn (run errMsgs,exman.cpp).*/
 
 /* returns: RCOK:   normal success, tokTy = CUTCOM if comma followed it and f & ARRAY on.
             RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
@@ -2784,19 +2783,25 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 		ty = TYSI;		// cuparse accepts month-day in all SI exprs; later add 'goal-is-date' arg to enable that?
 
 // compile expression
+
+#if 1	// 9-11-2017
+	if (_evfOK & EVPSTIVL)		// if post-interval is acceptable
+		_evfOK |= EVENDIVL;		//   then end-interval OK too
+#endif
+
 	rc = exPile(		// exman.cpp. only call 11-91.
 		-1,				// say parse to ; or CUTVRB, etc
 		ty,				// desired cuparse type
 		fdTy ? sFdtab[fdTy].dtype : 0,	// 0 or choice type (DT___ define, dtypes.h) for TYCH, TYNC
 		fdTy,				// 0 or field type
-		evf,			// permissable evaluation frequency
+		_evfOK,			// permissable evaluation frequency
 		useCl,			// use Class for non-constants
 		what, 			// id to insert in error messages
 		defTyping,		// destination info, for runtime errMsgs ...
-		xSp->b,		// ... not used if evf 0 or expr constant ...
+		xSp->b,			// ... not used if _evfOK 0 or expr constant ...
 		xSp->i, 		// ... don't matter for non-field iqx() calls.
 		xSp->c->fn + xSp->j,	// ...
-		pp,			// receives result or NANDLE
+		pp,				// receives result or NANDLE
 		&gotTy,  		// rcvs type of result
 		pGotEvf );		// NULL or rcvs evf of result
 	if (rc!=RCOK)		// if error (exPile has perNx'd)
@@ -2807,7 +2812,7 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	   here reject those that are passed that we do not like. */
 
 	if ( tokTy==CUTCOM && !(f & ARRAY)						// comma ok if 'array' flag, 3-92
-	||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
+	 ||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
 		perNx( (char *)MH_S0249 );				// issue msg, scan to eof, verb, or after ';'.
 	// "expected ';' (or class name, member name, or verb)"
 
@@ -4031,7 +4036,7 @@ LOCAL RC NEAR ratLuCtx(
 LOCAL RC NEAR ratLuDefO(	// look up basAnc record by name, resolving ambiguities using default owner if nz.
 
 	BP b,
-	char *name,
+	const char* name,
 	TI defO,    	/* 0 or dfl owner subscript for ambiguity resolution.  Must be 0 if b is not owned-record basAnc.
 			   May be obtained with ratDefO (below). */
 	char *what, 	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
@@ -4136,7 +4141,7 @@ LOCAL void FC NEAR ratCultO( void)
 
 //===========================================================================
 LOCAL void FC NEAR drefAdd( 		// add dref using xSp frame
-	char *toName )	// name of entry referred to. dm pointer used here, no IncRef here.
+	const char* toName )	// name of entry referred to. dm pointer used here, no IncRef here.
 
 /* reference is to a basAnc record named toName in rat xSp->c->b.
    reference is in current datum (per datPt'd xSp entry)
@@ -4151,24 +4156,21 @@ LOCAL void FC NEAR drefAdd( 		// add dref using xSp frame
 		ratDefO( (BP)xSp->c->b) );    	// owning subscript in ->ownB, if found in xStk, else 0.  Above.
 }				// drefAdd
 //===========================================================================
-LOCAL void FC NEAR drefAddI(
-
-	// add deferred reference table entry -- general inner routine
-
+LOCAL void FC NEAR drefAddI( 	// add deferred reference table entry -- general inner routine
 	BP b,		// rat containing reference
 	TI i,		//  entry subscript ditto
 	SI fn,		//  field number ditto
 	BP toB,		// rat being referred to
-	char *toName,	// name of entry being referred to.
-	//  Dm ptr used here: caller is done with pointer or does own IncRef.
-	TI defO )		// 0 or default owner per context
+	const char* toName,	// name of entry being referred to.
+						//  Dm ptr used here: caller is done with pointer or does own IncRef.
+	TI defO )			// 0 or default owner per context
 {
-	DREF * drfp;
-	SI d;
+	DREF* drfp;
 
-	/* search table for existing entry to overwrite:
-	       to eliminate superceded old entry (eg from type): save table space, prevent spurious errMsg if not found at RUN. */
-	for (d = 0;  d < nDref;  d++)
+	// search table for existing entry to overwrite:
+	// to eliminate superceded old entry (eg from type):
+	//   save table space, prevent spurious errMsg if not found at RUN.
+	for (int d = 0;  d < nDref;  d++)
 	{
 		drfp = dref + d;
 		if (drfp->fn==fn && drfp->i==i && drfp->b==b)
@@ -4192,10 +4194,6 @@ found:
 		&drfp->line,		// rcvs line number
 		NULL,			// would receive column
 		NULL, 0 );   		// char[] buffer would rcv line text
-#if 0
-x	if (drfp->line == 1058)
-x		printf( "Yak\n");
-#endif
 }			// drefAddI
 //-----------------------------------------------------------------------------
 LOCAL DREF* drefNextFree()		// ptr to next free DREF (enlarge table if needed)
@@ -4251,12 +4249,8 @@ LOCAL void NEAR drefDup( 	// duplicate dref's at basAnc record dup
 		DREF* drfp = dref + d;  			// point to entry d
 		if (drfp->b==b && drfp->i==i)		// if a ref to given basAnc entry
 		{
-#if 1	// bug fix (handle table expansion), 9-10
 			DREF* nud = drefNextFree();		// next available empty slot
 			drfp = dref + d;  				// repoint to entry d (drefNextFree reallocates to expand)
-#else
-x			nud = dref + nDref++; 			// add an entry
-#endif
 			memcpy( nud, drfp, sizeof(DREF) );		// copy contents
 			nud->b = nuB; 				// new referer
 			nud->i = nuI; 				// ..
@@ -4342,36 +4336,37 @@ LOCAL void FC NEAR drefRes()
 
 // resolve deferred rat references (TYREF's): look up names, store subscripts
 {
-	DREF * drfp;
-	SI d;
-	BP b;
-	record *e;
-	UCH *fs;
-	TI *p;
-	const char* ms;
-
-	for (d = 0;  d < nDref;  d++)	// loop over deferred reference table.  Loop forward in case
-	{
-		drfp = dref + d;  			// ... there are (unexpected) unremoved superceded entries.
-		b = drfp->b;
+	for (int d = 0;  d < nDref;  d++)	// loop over deferred reference table.  Loop forward in case
+	{								// ... there are (unexpected) unremoved superceded entries.
+		DREF* drfp = dref + d;  			
+		BP b = drfp->b;
 		if (b->ba_flags & RFTYS)	// don't fill ref's in TYPE rat entries
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
-		if (drfp->i <= 0 || drfp->i > b->n)
-		{
+#if 1
+		record* e = b->GetAtSafe( drfp->i);		// record location
+		if (!e)
+		{	per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
+			continue;
+		}
+#else
+x		if (drfp->i <= 0 || drfp->i > b->n)
+		{	// allow 0 due to Top
 			per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
 			continue;
 		}
-		e = &b->rec(drfp->i);				// record location
-		p = (TI *)((char *)e				// field location: where to store reference subscript: record location,
-				+ b->fir[drfp->fn].off);		//  plus field offset
-		fs = (UCH *)e + b->sOff;				// field status byte location for field
+		record* e = &b->rec(drfp->i);		// record location
+#endif
+		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
+				+ b->fir[drfp->fn].off);	//  plus field offset
+		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
+		const char* ms;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
 				NULL,
 				&e, &ms ) != RCOK )		// local.  Note e reuse.
 			// look up name in basAnc's records, resolving eg same surf name in 2 zones by dflt owner.
 		{
 			*p = 0;				// not found. store 0.
-			*fs |= FsERR;    			// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
+			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
 			if (ms)				// if ratLuDefO returned unissued msg
 				cuErv( 0, 0, 0, 0, drfp->fileIx, drfp->line, 0, ms, NULL);
 			// issue msg.  Show file/line of ref, not curr file/line (of RUN). cutok.cpp.

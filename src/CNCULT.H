@@ -13,18 +13,20 @@
 /*--- "Use Class" bits for object member expressions ---
 
 	Mechanism intended (1991) for use eg to not evaluate hourly-variable exprs for solar inputs
-	on on-solar-calc days... But never (1995) used thus, only UENDIVL bit now significant.
+	on on-solar-calc days... But never (1995) used thus; now hold interval stage info (EVENDIVL, EVPSTIVL,)
 
 	For CULT.uc and thence useCl args to exPile, exEvf.  Data type: USI; unsigned:4 in CULT.uc. */
 
-//former use class values for CULT.uc, which is now (1995) always 0 (changed to 1 at access in cul.cpp) and could be deleted:
-// #define UGEN  1  	general: none of the below (may match a cul.cpp dfl)
-// #define USOL  2  	used in solar calcs only.  no uses found (except in exEvfUp calls 12-91, deleted 9-95).
+#if 0
+x //former use class values for CULT.uc, which is now (1995) always 0 (changed to 1 at access in cul.cpp) and could be deleted:
+x // #define UGEN  1  	general: none of the below (may match a cul.cpp dfl)
+x // #define USOL  2  	used in solar calcs only.  no uses found (except in exEvfUp calls 12-91, deleted 9-95).
 
-//end-interval-evaluation bit in use class: only bit now explicitly used, 9-95:
-#define UENDIVL 4	/* expression is to be evaluated at end of interval, not start (eg contains results probes).
-			   supplied by exman:exPile upon seeing EVENDIVL bit in the 'evf' word, 12-9-91.
-			   Should be only bit on.  Make an independent characteristic of expr if found necessary. */
+x // end-interval-evaluation bit in use class: only bit now explicitly used, 9-95:x 
+x #define UENDIVL 4	/* expression is to be evaluated at end of interval, not start (eg contains results probes).
+x			   supplied by exman:exPile upon seeing EVENDIVL bit in the 'evf' word, 12-9-91.
+x			   Should be only bit on.  Make an independent characteristic of expr if found necessary. */
+#endif
 
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/

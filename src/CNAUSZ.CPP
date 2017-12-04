@@ -94,14 +94,24 @@ const char* TOPRAT::tp_AuszDoing() const	// current autosizing activity
 // for e.g. screen display of autosizing progress
 // returns string (CAUTION: may be TmpStr)
 {
-	const char* p;
+	const char* p = "?";
 	if (!tp_dsDayI)
 		p = "Heat";
 	else
-	{	int iAWS = tp_AuszWthrSource();
-		p = iAWS == 1 ? tddMonName( coolDsMo[ tp_dsDayI - 1])
-		  : iAWS == 2 ? tddys( coolDsDay[ tp_dsDayI - 1])
-		  :             "?";
+	{	int iDs = tp_dsDayI - 1;
+		int iAWS = tp_AuszWthrSource();
+		if (iAWS == TOPRAT_COOLDSMO)
+			p = tddMonName( tp_coolDsMo[ iDs]);
+		else
+		{	int auszDoy;
+			if (iAWS == TOPRAT_COOLDSCOND)
+				auszDoy = DCiB[ tp_coolDsCond[ iDs]].dc_GetDOY();
+			else if (iAWS == TOPRAT_COOLDSDAY)
+				auszDoy = tp_coolDsDay[ iDs];
+			if (auszDoy > 0)
+				p = tddys( auszDoy);	// e.g. "21-jul"
+			// else bug, leave p="?"
+		}
 	}
 	return p;
 }		// TOPRAT::tp_AuszDoing
@@ -215,19 +225,25 @@ x	tp_dsDay = 1 + (tp_dsDayI != 0);			// 1st desDay is heating (1), others coolin
 		auszMon = 0;
 		jDay = slrCalcJDays[ 0];	// solar day = december
 	}
-	else if (tp_AuszWthrSource() == 2)
+	else if (tp_AuszWthrSource() == TOPRAT_COOLDSDAY)
 	{	// autosizing cooling from specific weather file day
-		jDay = coolDsDay[ tp_dsDayI-1];
+		jDay = tp_coolDsDay[ tp_dsDayI-1];
 		tddyi(tp_date, jDay);
+		auszMon = tp_date.month;
+	}
+	else if (tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
+	{	const DESCOND* pDC = DCiB.GetAtSafe( tp_coolDsCond[ tp_dsDayI-1]);
+		jDay = pDC->dc_GetDOY();
+		tddyi( tp_date, jDay);
 		auszMon = tp_date.month;
 	}
 	else
 	{	// autosizing from monthly design conditions
 		//   (only available in ET1 files 12-12)
-		auszMon = coolDsMo[ tp_dsDayI-1];	// fetch cooling month 1-12
-		jDay = slrCalcJDays[ auszMon];		// Julian date: fetch mid-month value as used for solar calcs.
+		auszMon = tp_coolDsMo[ tp_dsDayI-1];	// fetch cooling month 1-12
+		jDay = slrCalcJDays[ auszMon];			// Julian date: fetch mid-month value as used for solar calcs.
 	}
-	//note date.month will be same as auszMon except when that is 0.
+	// note date.month will be same as auszMon except when that is 0.
 	xJDay = 512 + 16 * (tp_dsDayI != 0) + auszMon;	// encoding 512=ausz, 16=cool, + month 1-12 or 0 if generic.
 	tp_DTInit();					// initialize isDT. Uses tp_dsDayI.
 	isLastWarmupDay = FALSE;		// insurance; believe never set non-0.

@@ -37,15 +37,14 @@ double SOLCON=434.;		// previous value, source unknown
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
-/* pointer to current solar/location info thing.  Set by slinit() / slselect().
-   Used by slday(), sldec, slsurfhr, slha, sldircos, slaniso. */
-LOCAL SLLOCDAT * NEAR slloccur;		/* struct in slpak.h */
+// pointer to current solar/location info thing.  Set by slinit() / slselect().
+// Used by slday(), sldec, slsurfhr, slha, sldircos, slaniso
+LOCAL SLLOCDAT * NEAR slloccur;
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
 LOCAL void FC NEAR sldaydat( DOY doy, float *dec, float *eqtime,float *extbm);
-LOCAL float FC NEAR slha( float fhour);
 LOCAL void FC NEAR sldircos( float ha, float dcos[3]);
 
 
@@ -300,12 +299,12 @@ float slVProfAng(			// vertical profile angle
 //======================================================================
 SLLOCDAT * FC slinit( 	/* Allocate, init, and select a SLLOCAT structure */
 
-	float rlat,  	/* latitude (radians) */
-	float rlong, 	/* longitude (radians) */
-	float tzn,	  	/* time zone (hrs west of GMT. EST=5, PST=8, etc. ) */
-	float siteElev )	/* site elevation (ft above sea level).
-    			   Used only with global/direct functions (eg dirsimx.c, gshift.c) SO passing 0 is generally harmless.
-			   Added 8-9-90 */
+	float rlat,		// latitude, +=N, radians
+	float rlong, 	// longitude, +=W (non-standard), radians
+	float tzn,	  	// time zone (hrs west of GMT. EST=5, PST=8, etc. )
+	float siteElev )	// site elevation (ft above sea level).
+    					// Used only with global/direct functions (eg dirsimx.c, gshift.c)
+						// SO passing 0 is generally harmless.
 
 /* Returns pointer to SLLOCDAT structure initialized for specified location.
    This location is now also the current location for subsequent
@@ -349,28 +348,38 @@ void FC slfree(		// Free a SLLOCDAT structure
 }		// slfree
 
 //======================================================================
-void FC slday(	/* Set up daily data in current SLLOCDAT structure */
+void FC slday(	// set up daily data in current SLLOCDAT
 
-	DOY doy,		/* Day of year, Jan-1 = 1, Dec-31 = 365 */
-	SI timetype)	/* Time system assumed for hourly tables (slpak.h)
-				SLTMSOLAR:   Solar time
-				SLTMLST:     Local standard
-				SLTMLDT:     Local daylight time */
+	DOY doy,		// day of year, Jan-1 = 1, Dec-31 = 365
+	int timetype,	// time system assumed for hourly tables (slpak.h)
+					//   SLTMSOLAR:   Solar time
+					//   SLTMLST:     Local standard
+					//   SLTMLDT:     Local daylight time
+	int options /*=0*/)		// option bits
+							//   1: skip setup if SLLOCDAT.doy == doy
 
 /* sets members re declination of earth's axis, time / hour angle conversion
    (.tmconst), hourly sunupf[], dircos[], slazm[], etc. */
 {
-	float dec;
+	if ((options&1) && slloccur->doy == doy && slloccur->timetype == timetype)
+		return;		// already set for doy
 
+#if 0 && defined( _DEBUG)
+	printf("\nslday %d %d", doy, timetype);
+#endif
+
+	slloccur->doy = doy;
+
+	float dec;
 	sldaydat(			/* compute values, does not ref slloccur directly, local */
 		doy, 		  	/*   current day of year */
 		&dec,			/*   declination returned */
 		&(slloccur->eqtime),	/*   equation of time returned */
 		&(slloccur->extbm) );	/*   extraterrestrial beam intensity retrnd */
 
-	sldec( dec, timetype);	/* set declination-related slloccur members, below. */
+	sldec( dec, timetype);	// set declination-related slloccur members, below.
 
-}			/* slday */
+}			// slday
 //======================================================================
 LOCAL void FC NEAR sldaydat(
 
@@ -383,6 +392,7 @@ LOCAL void FC NEAR sldaydat(
 	float *extbm )	/* .. Extraterrestial beam rediation intensity (Btuh/sf)*/
 {
 
+	
 #ifdef SERI
 
 	/* Story: SERI methods use Fourier series for declination, equation of time
@@ -455,9 +465,9 @@ LOCAL void FC NEAR sldaydat(
 //======================================================================
 void FC sldec(	/* Set declination-related data in current SLLOCDAT struct */
 
-	float dec,		/* declination of earth's axis, today, in radians */
-	SI timetype )	/* time system for setting solar tables:
-			   SLTMSOLAR, SLTMLST, or SLTMLDT (slpak.h). */
+	float dec,		// declination of earth's axis, today, in radians
+	int timetype )	// time system for setting solar tables:
+					//  SLTMSOLAR, SLTMLST, or SLTMLDT (slpak.h).
 {
 	double hasr, hass;	/* hour angles of sun rise, sun set (0 = solar noon) */
 	double hsr, hss;	/* hours of sun rise, sun set (curr time system) */
@@ -499,7 +509,7 @@ void FC sldec(	/* Set declination-related data in current SLLOCDAT struct */
 	if (timetype != SLTMSOLAR)		/* if not solar, convert local to solar */
 		tmconst += HA 			/* radians per hour: convert to angle*/
 		* ( slloccur->eqtime	/* equation of time */
-		+ slloccur->tzn )	/* time zone (longitude of zn ctr).. */
+		+ slloccur->tzn )		/* time zone (longitude of zn ctr).. */
 		- slloccur->rlong;		/* .. less actual longitude */
 	if (timetype == SLTMLDT)		/* if daylight local time */
 		tmconst -= HA;			/* 1 hour earlier */
@@ -685,9 +695,9 @@ x    printf("\n%d  %f  %f  %f", (INT)ihr, *pCosi, *pAzm, *pCosz );
 }			// slsurfhr
 
 //======================================================================
-LOCAL float FC NEAR slha(	/* Calculate hour angle for hour of day */
+float slha(			// Calculate hour angle for hour of day
 
-	float hour)		/* hour for which hour angle is reqd */
+	float hour)		// hour for which hour angle is reqd
 
 /* hour can be fractional and is solar, local std, or local daylight
    time per last call to slday. */
@@ -696,10 +706,24 @@ LOCAL float FC NEAR slha(	/* Calculate hour angle for hour of day */
 
 /* Returns hour angle (radians, 0 = solar noon) */
 {
-	return hour * HA 		/* HA: earth rotation per hr (slpak.h) */
-	+ slloccur->tmconst;	/* .tmconst: adjust current time system to
-               			   solar, make noon 0. set by sldec(). */
-}		/* slha */
+	return hour * HA 		// HA: earth rotation per hr (slpak.h)
+		+ slloccur->tmconst;	// .tmconst: adjust current time system to
+               					// solar, make noon 0. set by sldec(). */
+}	// ::slha
+//----------------------------------------------------------------------
+float slASTCor()		// apparent solar time correction
+// AST = LxT + astCor (X = S or D)
+// returns time diff
+{
+	// note non-standard definitions of rlong and tzn (+ = W)
+	// test example: location W of time meridian
+	//               -> rlong > tzn
+	//               -> astCor < 0 (neglecting eqtime)
+	//               -> AST earlier than LST as expected
+	// astCor = eqtime - (rlong/HA - tzn)
+	// use precalculated tmconst (which also includes DST)
+	return (slloccur->tmconst + kPi)/HA;
+}		// ::slASTCor
 //======================================================================
 LOCAL void FC NEAR sldircos(
 
@@ -803,6 +827,23 @@ void FC slaniso(	/* Adjust beam and diffuse radiation values
 ////////////////////////////////////////////////////////////////////////////
 
 #include "ASHRAE/solar.cpp"
+
+
+float slASHRAETauModel(	// ASHRAE "tau" clear sky model
+	float sunZen,		// solar zenith angle, radians
+	float tauB,			// ASHRAE beam "pseudo optical depth" (from database)
+	float tauD,			// ditto diffuse
+	float& radDirN,		// returned: direct normal irradiance, units per extBm
+	float& radDifH)		// returned: diffuse horizontal irradiance, units per extBm
+
+// returns radGlbH, units per extBm
+{
+	float extBm = slloccur->extbm;
+
+	return ASHRAETauModel(	// ASHRAE "tau" clear sky model
+			1, extBm, sunZen, tauB, tauD, radDirN, radDifH);
+
+}
 
 /************************ rest of file is if-outs *************************/
 

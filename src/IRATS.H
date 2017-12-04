@@ -5,8 +5,8 @@
 // irats.h  declarations of input record basAncs in cncult.cpp
 
 
-	// include first: ancrec.h for anc<T> template class;
-	//                rccn.h for record structures used in template class instances: TOPRAT, MAT, ZNI, etc.
+// include first: ancrec.h for anc<T> template class;
+//                rccn.h for record structures used in template class instances: TOPRAT, MAT, ZNI, etc.
 
 
 //--------------------------- INPUT VARIABLES cncult.cpp ---------------------------
@@ -74,5 +74,6 @@ extern anc<COL> XcoliB;			// EXPORTCOL input info for UDT exports
 extern anc<IMPF> ImpfiB;		// IMPORTFILE input info 2-94
 
 extern anc<HDAY> HdayiB;		// HDAY (holidays) input info
+extern anc<DESCOND> DCiB;		// DESCOND (design conditions) input info
 
 // end of irats.h

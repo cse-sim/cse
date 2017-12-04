@@ -692,7 +692,8 @@ x		printf( "Hit\n");
 	ms_area = sf->x.xs_area;			// net area
 	isSubhrly = SFI::sf_IsSubhrly( sf->x.xs_modelr);	// TRUE if to be simulated subhourly
 
-	ms_UNom = sf->x.xs_UNom;		// u value: construction/layers + surfaces
+	ms_UNom = sf->x.xs_UNom;		// U-factor: construction/layers + nominal surface conductance
+									// Note: ms_UNom also set in xs_SetUNom() to ensure consistency
 	ms_tc = con->hc/sf->x.uI;		// time constant, recomputed & stored here for reporting (cgresult.cpp) added 1-95
 
 	inside.bc_Setup( ss, MSBCZONE, 0);		// 0 = doing inside
@@ -1940,7 +1941,8 @@ int XSURF::xs_CanHaveExtSlr() const	// TRUE iff surface outside can receive ambi
         && xs_ty != CTPERIM && xs_ty != CTINTWALL;
 }		// XSURF::xs_CanHaveExtSlr
 //-----------------------------------------------------------------------------
-RC XSURF::xs_SetUNom()
+RC XSURF::xs_SetUNom()			// derive/set nominal U-factor
+// also sets xs_UANom, xs_rSrfNom, xs_hSrfNom, and ms_UNom
 {
 static float rSrfASHRAE[ 3][ 2] =
 //   down      up
@@ -1987,6 +1989,17 @@ static float rSrfASHRAE[ 3][ 2] =
 
 	for (int si=0; si<2; si++)
 		xs_hSrfNom[ si] = xs_rSrfNom[ si] > 0.f ? 1.f/xs_rSrfNom[ si] : 0.f;
+
+#if 1	// 10-28-2017
+	// set/update derived values
+	//   known case: xs_SetUNom is called a 2nd time for C_EXCNDCH_GROUND
+	//               xs_UNom value changes
+	xs_UANom = xs_area * xs_UNom;
+	if (xs_msi)
+	{	MSRAT* ms = MsR.GetAt( xs_msi);
+		ms->ms_UNom = xs_UNom;
+	}
+#endif
 
 	return RCOK;
 

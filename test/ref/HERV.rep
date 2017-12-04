@@ -60,7 +60,7 @@ MySys Characteristics
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  1
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Yr  15.248  1.614 12.603      0      0      0  0.386  0.336      0  0.308      0
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  2
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  2
 
 
 
@@ -137,14 +137,14 @@ ZONE DATA for zone Z1             Model: CZM
 CFA: 400.00   Vol: 3200.0  FloorZ: 0     CeilingHt: 8.00   EaveZ: 9.00   CAir: 1000 
 Infil AC: 0        ELA: 0        Stackc: 323.482  Windc: 80.870 
 UA:    0        UANom:  171.708
-Surface Floor           Area: 400.0   Az: 0   T: 180 UNom: 0.00300  UA: 1.21   InAbs: 0.90 ExAbs: 0.80   ExCnd: Ground         
+Surface Floor           Area: 400.0   Az: 0   T: 180 UNom: 0.00300  UA: 1.20   InAbs: 0.90 ExAbs: 0.80   ExCnd: Ground         
 Surface WallN           Area: 400.0   Az: 0   T: 90  UNom: 0.0930   UA: 37.19  InAbs: 0.90 ExAbs: 0.80   ExCnd: Ambient        
 Surface WallE           Area: 400.0   Az: 90  T: 90  UNom: 0.0930   UA: 37.19  InAbs: 0.90 ExAbs: 0.80   ExCnd: Ambient        
 Surface WallS           Area: 400.0   Az: 180 T: 90  UNom: 0.0930   UA: 37.19  InAbs: 0.90 ExAbs: 0.80   ExCnd: Ambient        
 Surface WallW           Area: 400.0   Az: 270 T: 90  UNom: 0.0930   UA: 37.19  InAbs: 0.90 ExAbs: 0.80   ExCnd: Ambient        
 Surface Clg             Area: 400.0   Az: 0   T: 0   UNom: 0.0574   UA: 22.95  InAbs: 0.90 ExAbs: 0.80   ExCnd: Ambient        
 
-Mass Floor              Area: 400.000   UNom: 0.003015    tc: 4.16   subhrly: 
+Mass Floor              Area: 400.000   UNom: 0.002995    tc: 4.16   subhrly: 
  Inside: Zone 'Z1'   RSrfNom: 0.92                                            
   Layer  thk: 0.131   vhc: 20.912  cond: 0.653      R: 0.201  
   Layer  thk: 0.131   vhc: 20.912  cond: 0.653      R: 0.201  
@@ -186,7 +186,7 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  3
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  4
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.836b for Win32 console
+! CSE 0.848 for Win32 console
 
 
 
@@ -312,7 +312,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  5
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  6
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
         		layer lrThk = .1 lrMat = FoamInsul
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  7
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  8
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Input for Run 001:
             znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page  9
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page  9
 
 
 
@@ -627,7 +627,7 @@ Input for Run 001:
         	rsFChg = 1		//ACM charge factor (default = 1)
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page 10
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page 10
 
 
 
@@ -690,7 +690,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page 11
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page 11
 
 
 
@@ -699,20 +699,20 @@ Input for Run 001:
 
 
 
-! CSE 0.836b for Win32 console run(s) done: Thu 30-Nov-17   3:20:13 pm
+! CSE 0.848 for Win32 console run(s) done: Mon 04-Dec-17  11:04:45 am
 ! Executable: c:\users\nkruis\projects\cse\run\cse.exe
-!             29-Nov-17   3:39 pm   (VS 12.0    1360384 bytes)  (HPWH 1.4.0)
+!             30-Nov-17   6:21 pm   (VS 12.0    1363968 bytes)  (HPWH 1.4.0)
 
 ! Input file name:  C:\Users\nkruis\projects\cse\test\herv.cse
 ! Report file name: C:\Users\nkruis\projects\cse\test\herv.rep
 
 ! Timing info --
 
-!                Input:  Time = 2.28     Calls = 1      T/C = 2.2820   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0430   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.12     Calls = 1      T/C = 2.1170   
-!              Reports:  Time = 0.08     Calls = 1      T/C = 0.0820   
-!                Total:  Time = 4.50     Calls = 1      T/C = 4.4980   
+!           Simulation:  Time = 1.91     Calls = 1      T/C = 1.9110   
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0200   
+!                Total:  Time = 1.98     Calls = 1      T/C = 1.9830   
 
 
 
@@ -753,5 +753,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Thu 30-Nov-17   3:20:09 pm  Page 12
+! herv  001                                Mon 04-Dec-17  11:04:43 am  Page 12
 

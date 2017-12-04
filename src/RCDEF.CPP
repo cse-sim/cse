@@ -1715,7 +1715,10 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 	{ "mh",     EVFMH    },             // *mh
 	{ "h",      EVFHR    },             // *h
 	{ "s",      EVFSUBHR },             // *s
-	{ "e",      EVENDIVL },             // *e value available and end, not start, of its interval (results). use with the above.
+	{ "e",      EVENDIVL },             // *e: value available at end of calcs for interval, not start (results)
+										//  use with the above.
+	{ "p",      EVPSTIVL },				// *p: value available after post-processing for interval
+										//  use with above
 
 // specials: numbers match switch cases...
 	{ "declare",  32762  },             // *declare "whatever"   spit text thru into record class definition immediately

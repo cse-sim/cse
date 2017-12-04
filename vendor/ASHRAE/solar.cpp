@@ -1630,7 +1630,7 @@ static float AirMass(			// air mass
 //------------------------------------------------------------------------------
 static float ASHRAETauModel(	// ASHRAE "tau" clear sky model
 	int options,		// option bits
-						//	 1: use 2013 coefficients (else 2009)
+						//	 1: use 2013/2017 coefficients (else 2009)
 	float extBm,		// extraterrestrial normal irradiance, aka E0
 						//   any suitable units, e.g. Btuh/ft2 or W/m2
 	float sunZen,		// solar zenith angle, radians
