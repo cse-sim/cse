@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 847
+#define CSEVRSN_MINOR 848
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.848: merge 0.836b (alternate branch release)
    0.847: fix inconsistent xs_UNom
    0.846: SOLARFIX test version, 10-25-2017
    0.845: added DHWHEATER whUAMult, 10-18-2017
@@ -33,6 +34,8 @@
    0.839: experimental post-ivl expression evaluation stage, 9-3-2017
    0.838: Instantaneous DHW UEF model w/ revised exponential cooldown, 8-1-2017
    0.837: Instantaneous DHW UEF model w/ exponential cooldown, 7-29-2017
+  0.836b: added new Rheem tank presets and updated HPWHsim files.
+          committed 11-14-2017 (alternate branch release)
    0.836: heat pump autosize: now uses ACM algorithm when both cap47 and cap95 autosized
           committed 7-20-2017
    0.835: heat pump autosize: don't force cap95 to be consistent with cap47

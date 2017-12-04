@@ -461,8 +461,8 @@ float psyTWEnthMu(	// dry bulb and humidity ratio from enthalpy and degree of sa
 	float h1 = psyEnthalpy2( t1, mu, w);
 	float h2 = psyEnthalpy2( t2, mu, w2);
 	if (fabs(h-h1) > fabs(h-h2))	// make point 1 the closer
-	{	swap( t1, t2);
-		swap( h1, h2);
+	{	tswap( t1, t2);
+		tswap( h1, h2);
 		w = w2;
 	}
 
@@ -507,8 +507,8 @@ float psyTWEnthRh(	// dry bulb and humidity ratio from enthalpy and relative hum
 	float h1 = psyEnthalpy3( t1, rh, w);
 	float h2 = psyEnthalpy3( t2, rh, w2);
 	if (fabs(h-h1) > fabs(h-h2))	// make point 1 the closer
-	{	swap( t1, t2);
-		swap( h1, h2);
+	{	tswap( t1, t2);
+		tswap( h1, h2);
 		w = w2;
 	}
 
