@@ -30,6 +30,68 @@ add_custom_command(
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+# Generate CSE Version header
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_branch_exit_status
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_branch_exit_status} MATCHES "0")
+  set(GIT_BRANCH "unknown-branch")
+endif()
+
+execute_process(
+  COMMAND git rev-parse --verify --short HEAD
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_sha_exit_status
+  OUTPUT_VARIABLE GIT_SHA
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_sha_exit_status} MATCHES "0")
+  set(GIT_SHA "unknown-commit")
+endif()
+
+execute_process(
+  COMMAND git describe --tags --abbrev=0
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_build_exit_status
+  OUTPUT_VARIABLE GIT_TAG
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_build_exit_status} MATCHES "0")
+  set(GIT_BUILD "unknown-build-number")
+endif()
+
+
+execute_process(
+  COMMAND git rev-list --count HEAD ^${GIT_TAG}
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_build_exit_status
+  OUTPUT_VARIABLE GIT_BUILD
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_build_exit_status} MATCHES "0")
+  set(GIT_BUILD "unknown-build-number")
+endif()
+
+if(NOT ${GIT_BUILD} MATCHES "0")
+  set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}")
+else()
+  set(CSEVRSN_META "")
+endif()
+
+configure_file(
+  "${PROJECT_SOURCE_DIR}/src/csevrsn.h.in"
+  "${PROJECT_SOURCE_DIR}/src/csevrsn.h"
+)
+
+# Clean up runtime compilation flags
 set(CompilerFlags
         CMAKE_CXX_FLAGS
         CMAKE_CXX_FLAGS_DEBUG
@@ -42,6 +104,7 @@ foreach(CompilerFlag ${CompilerFlags})
   string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
 endforeach()
 
+# Set source files
 set(source
   ANCREC.CPP
   ashwat.cpp
@@ -75,6 +138,7 @@ set(source
   CPGPRPUT.CPP
   CPNAT.CPP
   CSE.cpp
+  cse.rc
   CUEVAL.CPP
   CUL.CPP
   CUPARSE.CPP
@@ -186,7 +250,7 @@ add_executable(CSE ${source} ${headers})
 set(libs
   glad
   penumbra
-  glfw3
+  glfw
   tess2
   libHPWHsim
 )
