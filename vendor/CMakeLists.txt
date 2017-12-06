@@ -4,7 +4,7 @@ else()
     set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 endif()
 
-include("${PROJECT_SOURCE_DIR}/cmake/DownloadProject.cmake")
+include(DownloadProject)
 download_project(PROJ                Penumbra
                  GIT_REPOSITORY      https://github.com/bigladder/penumbra.git
                  GIT_TAG             master
@@ -16,7 +16,6 @@ download_project(PROJ                Penumbra
 
 add_subdirectory(${Penumbra_SOURCE_DIR})
 
-include("${PROJECT_SOURCE_DIR}/cmake/DownloadProject.cmake")
 download_project(PROJ                HPWHsim
                  GIT_REPOSITORY      https://github.com/EcotopeResearch/HPWHsim.git
                  GIT_TAG             cmake

@@ -58,13 +58,13 @@ endif()
 execute_process(
   COMMAND git describe --tags --abbrev=0
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  RESULT_VARIABLE git_build_exit_status
+  RESULT_VARIABLE git_tag_exit_status
   OUTPUT_VARIABLE GIT_TAG
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-if (NOT ${git_build_exit_status} MATCHES "0")
-  set(GIT_BUILD "unknown-build-number")
+if (NOT ${git_tag_exit_status} MATCHES "0")
+  set(GIT_TAG "unknown-tag")
 endif()
 
 
@@ -90,19 +90,6 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/src/csevrsn.h.in"
   "${PROJECT_SOURCE_DIR}/src/csevrsn.h"
 )
-
-# Clean up runtime compilation flags
-set(CompilerFlags
-        CMAKE_CXX_FLAGS
-        CMAKE_CXX_FLAGS_DEBUG
-        CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_C_FLAGS
-        CMAKE_C_FLAGS_DEBUG
-        CMAKE_C_FLAGS_RELEASE
-        )
-foreach(CompilerFlag ${CompilerFlags})
-  string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
-endforeach()
 
 # Set source files
 set(source
@@ -138,7 +125,6 @@ set(source
   CPGPRPUT.CPP
   CPNAT.CPP
   CSE.cpp
-  cse.rc
   CUEVAL.CPP
   CUL.CPP
   CUPARSE.CPP
@@ -169,7 +155,6 @@ set(source
   SHADING.CPP
   SLPAK.CPP
   SRFD.CPP
-  StdAfx.cpp
   STRPAK.CPP
   SYTB.CPP
   TDPAK.CPP
@@ -180,6 +165,14 @@ set(source
   XIOPAK.CPP
   XMODULE.CPP
   YACAM.CPP
+)
+
+set(precomp
+  StdAfx.cpp
+)
+
+set(rcFile
+  cse.rc
 )
 
 set(headers
@@ -243,9 +236,27 @@ set(headers
 
 include_directories("${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/vendor" "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include" "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src")
 
-add_definitions(-DINCNE)
+macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
+  if(MSVC)
+    get_filename_component(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
+    set(PrecompiledBinary "$(IntDir)/${PrecompiledBasename}.pch")
+    set(Sources ${${SourcesVar}})
+    set(PrecompiledSource ${${PrecompiledSourceVar}})
 
-add_executable(CSE ${source} ${headers})
+    set_source_files_properties(${PrecompiledSource}
+                                PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_OUTPUTS "${PrecompiledBinary}")
+    set_source_files_properties(${Sources}
+                                PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_DEPENDS "${PrecompiledBinary}")
+    # Add precompiled header to SourcesVar
+    list(APPEND ${SourcesVar} ${PrecompiledSource})
+  endif()
+endmacro()
+
+addMSVCPrecompiledHeader("cnglob.h" precomp source)
+
+add_executable(CSE ${source} ${rcfile} ${headers})
 
 set(libs
   glad
@@ -256,3 +267,6 @@ set(libs
 )
 
 target_link_libraries(CSE ${libs})
+
+#set_target_properties(CSE PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "StdAfx.cpp")
+#cotire(CSE)
