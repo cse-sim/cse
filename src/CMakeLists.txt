@@ -236,6 +236,7 @@ set(headers
 
 include_directories("${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/vendor" "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include" "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src")
 
+# Precompiled Headers
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
   if(MSVC)
     get_filename_component(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
@@ -256,6 +257,7 @@ endmacro()
 
 addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
+# Final executable/linking
 add_executable(CSE ${source} ${rcfile} ${headers})
 
 set(libs
@@ -268,5 +270,15 @@ set(libs
 
 target_link_libraries(CSE ${libs})
 
-#set_target_properties(CSE PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "StdAfx.cpp")
+set(exeDir "${CMAKE_BINARY_DIR}/products")
+
+set_target_properties(CSE PROPERTIES
+  DEBUG_POSTFIX "d"
+)
+
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
+    set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
+endforeach()
+
 #cotire(CSE)

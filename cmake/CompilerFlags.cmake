@@ -30,6 +30,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /MT         # Creates a multithreaded executable file using LIBCMT.lib.
     /O2         #*Creates fast code.
     /Ob2        #*Controls inline expansion (level 2).
+    /Zi         #*Includes debug information in a program database compatible with Edit and Continue.
   )
 
   string(REPLACE ";" " " CMAKE_CXX_FLAGS_RELEASE "${ReleaseFlags}")
@@ -38,7 +39,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /D_DEBUG    #*
   # /MDd        #*Creates a debug multithreaded DLL using MSVCRT.lib.
     /MTd        # Creates a debug multithreaded executable file using LIBCMTD.lib.
-    /Zi         #*Includes debug information in a program database compatible with Edit and Continue.
+    /Zi         #*Generates complete debugging information.
   # /Ob0        #*Controls inline expansion (level 0 -- disabled).
     /Od         #*Disables optimization.
     /RTC1       #*Enables run-time error checking.
@@ -46,27 +47,5 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
   )
 
   string(REPLACE ";" " " CMAKE_CXX_FLAGS_DEBUG "${DebugFlags}")
-
-  set(MinSizeRelFlags
-    /DNDEBUG    #*
-  # /MD         #*Creates a multithreaded DLL using MSVCRT.lib.
-    /MT         # Creates a multithreaded executable file using LIBCMT.lib.
-    /O1         #*Creates small code.
-    /Ob1        #*Controls inline expansion (level 1).
-  )
-
-  string(REPLACE ";" " " CMAKE_CXX_FLAGS_MINSIZEREL "${MinSizeRelFlags}")
-
-  set(RelWithDebInfoFlags
-    /DNDEBUG    #*
-  # /MD         #*Creates a multithreaded DLL using MSVCRT.lib.
-    /MT         # Creates a multithreaded executable file using LIBCMT.lib.
-    /Zi         #*Includes debug information in a program database compatible with Edit and Continue.
-    /O2         #*Creates fast code.
-    /Ob1        #*Controls inline expansion (level 1).
-    /Gm         # Enables minimal rebuild.
-  )
-
-  string(REPLACE ";" " " CMAKE_CXX_FLAGS_RELWITHDEBINFO "${RelWithDebInfoFlags}")
 
 endif()
