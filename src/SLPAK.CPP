@@ -828,7 +828,6 @@ void FC slaniso(	/* Adjust beam and diffuse radiation values
 
 #include "ASHRAE/solar.cpp"
 
-
 float slASHRAETauModel(	// ASHRAE "tau" clear sky model
 	float sunZen,		// solar zenith angle, radians
 	float tauB,			// ASHRAE beam "pseudo optical depth" (from database)
@@ -842,8 +841,82 @@ float slASHRAETauModel(	// ASHRAE "tau" clear sky model
 
 	return ASHRAETauModel(	// ASHRAE "tau" clear sky model
 			1, extBm, sunZen, tauB, tauD, radDirN, radDifH);
+}	// slASHRAETauModel
+//-----------------------------------------------------------------------------
+bool slInvertSolar(		// derive taub/taud from irradiance
+	double Ebn,		// beam normal irradiance (at m)
+	double Edh,		// diffuse horizontal irradiance (at m)
+	double E0,		// exterrestrial normal irradiatiance
+	double m,		// air mass, dimless
+	double& taub,	// returned
+	double& taud)	// returned
+// Ebn, Edh, and E0 should have same units
+{
+    double Kb = Ebn/E0;
+    double Kd = Edh/E0;
 
+    double logm = log( m);
+    double loglogKb = log( log(1.0/Kb));
+    double loglogKd = log( log(1.0/Kd));
+    double tol = 1e-8;
+
+	// First guess
+    taub = 0.75;
+	taud = 1.5;
+	
+	bool bConverge = false;
+    for (int iT=0; iT<20 && !bConverge; iT++)
+	{	// update ab & ad
+        double ab = 1.454 -0.406*taub -0.268*taud +0.021*taub*taud;
+        double ad = 0.507 +0.205*taub -0.080*taud -0.190*taub*taud;
+
+        // Calculate F
+        // Note: Took log twice of equations (17) and (18). F is the
+        // difference between LHS & RHS.  We want F to approach zero.
+        double Fb = log(taub) + ab*logm - loglogKb;
+        double Fd = log(taud) + ad*logm - loglogKd;
+
+        // calculate Jacobian
+        double Jbb = 1.0/taub + logm*(-0.406 +0.021*taud);
+        double Jbd = logm*(-0.268 + 0.021*taub);
+        double Jdb = logm*(+0.205 - 0.190*taud);
+        double Jdd = 1.0/taud + logm*(-0.080 -0.190*taub);
+
+        // solve system {-F} = [J]{dtau} using Cramer's rule
+        double detJ = Jbb*Jdd - Jdb*Jbd;
+        double dtaub = (-Fb*Jdd + Fd*Jbd)/detJ;
+        double dtaud = (-Jbb*Fd + Jdb*Fb)/detJ;
+
+        // update taus
+        taub += dtaub;
+        taud += dtaud;
+
+        bConverge = abs( dtaub) <= tol && abs( dtaud) <= tol;
+	}
+	return bConverge;
+}	// slInvertSolar
+//--------------------------------------------------------------------------
+bool slInvertSolar(
+	double Ebn,		// beam normal irradiance (typically solar noon)
+	double Edh,		// diffuse horizontal irradiance (ditto)
+	double sunAlt,	// solar altitude, radians
+	float& taub,	// returned
+	float& taud)	// returned
+{
+
+	float extBm = slloccur->extbm;
+
+	double m = AirMass( sunAlt);
+
+	double taubD, taudD;
+	bool bRet = slInvertSolar( Ebn, Edh, extBm, m, taubD, taudD);
+	taub = float( taubD);
+	taud = float( taudD);
+	return bRet;
 }
+
+//==========================================================================
+
 
 /************************ rest of file is if-outs *************************/
 
