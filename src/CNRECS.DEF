@@ -138,7 +138,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*declare "RC tp_SetDerived();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
-	*declare "RC tp_WfInit();"
+	*declare "RC tp_WthrInit();"
     *declare "int tp_AuszWthrSource() const;"
     *declare "RC tp_MainSim();"
     *declare "RC tp_MainSimI();"
@@ -739,7 +739,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 						// re preservation of solar geometry info, see Copy()
 	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
 							// solar position at midpoint of hour (or portion of hour sun is up)
-	*h float wd_slAzm;		//   azmimuth, radians (0=N, +clockwise)
+	*h float wd_slAzm;		//   azimuth, radians (0=N, +clockwise)
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
@@ -800,24 +800,27 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 RECORD DESCOND "DESCOND" *RAT		// cooling design conditions
 *prefix dc_
 	*declare "RC dc_CkF();"
-	*declare "DOY dc_GetDOY() const;"
+	*declare "DOY dc_GetDOY() const { return dc_doy; }"
+	*declare "RC dc_RunInit();"
+	*declare "RC dc_CheckFixSolar( int options);"
 	*declare "void dc_GenerateTemps( int iHr, float astCor, float& db, float& wb, float& dbAvg) const;"
 
-	*i DOY dc_day;			// calc date for this DESCOND
+	*i DOY dc_doy;			// calc date for this DESCOND (1-365)
 
 	*i FLOAT dc_DB;			// design dry-bulb temp, F
 	*i FLOAT dc_MCDBR;		// coincident daily db range, F
 	*i FLOAT dc_MCWB;		// coincident wet-bulb temp, F
 	*i FLOAT dc_MCWBR;		// coincident daily wb range, F
-	*i FLOAT dc_wndSpd;		// wind speed, mph
-	*i FLOAT dc_tauB;		// beam tau
-	*i FLOAT dc_tauD;		// diffuse tau
+							//    if omitted, constant dewpoint limited by saturation
+	*i FLOAT_GEZ dc_wndSpd;	// wind speed, mph
 
-	// float dcGrRfl;		// default ground reflectivity (0-1)
-	// CWString sDirRad;	// schedule ID for direct solar on normal surface (W/m2)
-							//   for testing, "" = use modelled
-	// CWString sDifRad;	// schedule ID for diffuse solar on horiz surface (W/m2)
-							//   for testing, "" = use modelled
+							// parameters for ASHRAE clear sky model
+							//      if taub/d provided, ebn/edh derived else reverse
+							//      if all 0, solar is 0 all hours
+	*i FLOAT_GEZ dc_tauB;		// beam tau
+	*i FLOAT_GEZ dc_tauD;		// diffuse tau
+	*i FLOAT_GEZ dc_ebnSlrNoon;	// solar noon beam normal, Btuh/ft2
+	*i FLOAT_GEZ dc_edhSlrNoon;	// solar noon diffuse horiz, Btuh/ft2
 
 *END	// DESDAY
 //========================================================================================================

@@ -815,9 +815,8 @@ const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error message
 	return s;
 }			// TOPRAT::When
 //-----------------------------------------------------------------------------
-LOCAL RC topDC()		// finalize DESCONDs
-{	RC rc = RCOK;
-	// input records used at runtime, nothing to do
+LOCAL RC topDC()		// copy input DESCONDs to run records
+{	RC rc = DcR.RunDup( DCiB);
 	return rc;
 }	// topDC
 //-----------------------------------------------------------------------------

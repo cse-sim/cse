@@ -54,24 +54,33 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 		cgWfDone();		// close any open weather file
 
 // init weather file info record
-	Wfile.wf_Init();		// mbr function in wfpak.cpp sets record to say no file open
-	Wthr.wd_Init();			// mbr function in wfpak.cpp clears record
-	WthrNxHr.wd_Init();		// mbr function in wfpak.cpp clears record
+	Wfile.wf_Init();		// sets record to say no file open
+	Wthr.wd_Init();			// clears record
+	WthrNxHr.wd_Init();		// clears record
 
 	// add any other init/cleanup found necessary or desirable
 
 }		// cgWthrClean
 //---------------------------------------------------------------------------
-RC TOPRAT::tp_WfInit()  	// Initialize weather file.  Displays any error messages.
-// also uses: Top.tp_wfName [,.isDT]
+RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error messages.
+// also uses: tp_wfName, tp_TDVfName, [,.isDT]
 // returns non-RCOK if error, message already issued.
 {
 	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName);	// open wthr file and option TDV file
 													// init WFILE object, msg if error.
 	if (!rc)
-		rc = Wfile.wf_FillWDYEAR( WRN);
+		rc = Wfile.wf_FillWDYEAR( WRN);		// read/cache entire weather file
+											//   TODO: handle partial years
+
+	// design conditions
+	//  set any derived values
+	//  WHY here: location dependence, call after locinit
+	DESCOND* pDC;
+	RLUP( DcR, pDC)
+		rc |= pDC->dc_RunInit();
+
 	return rc;
-}		// TOPRAT::tp_WfInit
+}		// TOPRAT::tp_WthrInit
 //---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up public Wthr and Top members.
 // tp_WthrBegSubhr must also be called, after this function.
@@ -432,7 +441,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 			if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
 			{	// DSCOND design day: overwrite/adjust weather file values with generated
 				int iDC = Top.tp_coolDsCond[ Top.tp_dsDayI-1];
-				const DESCOND& DC = DCiB[ iDC];
+				const DESCOND& DC = DcR[ iDC];
 				wd_FillFromDESCOND( DC, iHrST);
 			}
 		}
@@ -517,7 +526,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 			rc = pWF->wf_Read( jDayST, iHrST, this, WRN|wfOp);	// Read hour's data from weather file
 			if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
 			{	int iDC = Top.tp_coolDsCond[ Top.tp_dsDayI-1];
-				const DESCOND& DC = DCiB[ iDC];
+				const DESCOND& DC = DcR[ iDC];
 				DC.dc_GenerateTemps( iHrST, this);
 
 			}
@@ -611,11 +620,12 @@ void WDHR::wd_FillFromDESCOND(		// overwrite/adjust hourly data for design condi
 	wd_taDbAvg14 += dbAvgDiff / 14.f;
 	wd_taDbAvg31 += dbAvgDiff / 31.f;
 
-
 	wd_wndSpd = dc.dc_wndSpd;
 	wd_wndDir = 0.f;
 
-	if (wd_sunup)
+	// derive irradiance
+	//   note: tauB/tauD both 0 -> no solar
+	if (wd_sunup && dc.dc_tauB > 0.f && dc.dc_tauD > 0.f)
 		wd_glrad = slASHRAETauModel(
 			kPiOver2 - wd_slAlt,
 			dc.dc_tauB, dc.dc_tauD,
@@ -636,17 +646,107 @@ void WDHR::wd_FillFromDESCOND(		// overwrite/adjust hourly data for design condi
 /////////////////////////////////////////////////////////////////////////////
 RC DESCOND::dc_CkF()		// check after input
 {	RC rc = RCOK;
-	if (dc_MCWB > dc_DB)
-		rc |= oer( "dcMCWB (%g) must be <= dcDB (%g)", dc_MCWB, dc_DB);
 	return rc;
 }		// DESCOND::dc_CkF
 //-----------------------------------------------------------------------------
-DOY DESCOND::dc_GetDOY() const
+#if defined( _DEBUG)
+static void DCTauTest( int doy)
 {
-	return dc_day;
+float ebnlist[] = { 150.f, 200.f, 250.f, 300.f, -1.f };
+float edflist[] = { 20.f, 30.f, 40.f };
 
-}	// DESCOND::dc_GetDOY
+	DESCOND dc( &DcR, 1);
+	dc.dc_doy = doy;
+	strcpy( dc.name, "Test");
 
+	for (int ib=0; ebnlist[ ib]>=0.f; ib++)
+	{	dc.dc_ebnSlrNoon = ebnlist[ ib];
+		for (int id=0; edflist[ id]>=0.f; id++)
+		{	dc.dc_edhSlrNoon = edflist[ id];
+			dc.dc_CheckFixSolar( 0);
+		}
+	}
+}		// DCTauTest
+#endif
+//------------------------------------------------------------------------------
+RC DESCOND::dc_RunInit()		// init for run
+// call after all input-time expressions have been evaluated
+// call after locInit (re latitude dependency)
+{
+#if defined( _DEBUG)
+static int tested = 0;
+	if (!tested)
+	{	DCTauTest( dc_doy);
+		tested++;
+	}
+#endif
+
+	RC rc = RCOK;
+
+	if (dc_MCWB > dc_DB)
+		rc |= oer( "dcMCWB (%g) must be <= dcDB (%g)", dc_MCWB, dc_DB);
+
+	// if any solar values given, check and cross-derive
+	//   else leave all 0 = no solar
+	if (dc_tauB + dc_tauD + dc_ebnSlrNoon + dc_edhSlrNoon > 0.f)
+	{	int nTau = IsSetCount( DESCOND_TAUB, DESCOND_TAUD, 0);
+		int nE   = IsSetCount( DESCOND_EBNSLRNOON, DESCOND_EDHSLRNOON, 0);
+		if (nTau == 0)
+			rc |= dc_CheckFixSolar( 0);		// derive tauB / tauD
+		else if (nE == 0)
+			rc |= dc_CheckFixSolar( 1);		// derive Ebn / Edh
+		else
+			rc |= oer( "must give either dcTauB/dcTauD and"
+				 " not dcEbnSlrNoon/dcEdhSlrNoon or vice-versa");
+	}
+	else
+		oInfo( "no irradiance due to dcTauB/dcTauD/dcEbnSlrNoon/dcEdhSlrNoon all 0");
+
+	return rc;
+}	// DESCOND::dc_RunInit
+//-----------------------------------------------------------------------------
+RC DESCOND::dc_CheckFixSolar(
+	int options)	// option bits
+					//  0: derive tau from solar noon
+					//  1: derive solar noon from tau
+{
+	RC rc = RCOK;
+
+	// solar noon angles
+	slday( dc_doy, SLTMSOLAR, 1);
+	float sunAlt, sunAzm;
+	slaltazm( 12.f, &sunAlt, &sunAzm);
+	float sunZen = kPiOver2 - sunAlt;
+
+	if (options & 1)
+	{	rc |=   limitCheck( DESCOND_TAUB, .08, 1.)
+		      | limitCheck( DESCOND_TAUD, 1.2, 3.2);
+		if (!rc)
+			slASHRAETauModel( sunZen, dc_tauB, dc_tauD,
+						dc_ebnSlrNoon, dc_edhSlrNoon);
+	}
+	else	
+	{	rc |=   limitCheck( DESCOND_EBNSLRNOON, 0., 370.)
+		      | limitCheck( DESCOND_EDHSLRNOON, 0., 110.);
+		if (!rc)
+		{	bool ret = slASHRAETauModelInv( sunZen, dc_ebnSlrNoon, dc_edhSlrNoon,
+					dc_tauB, dc_tauD);
+			if (!ret)
+				rc = oer( "failed to derive dcTauB and dcTauD."
+					"  Check dcEbnSlrNoon and dcEdhSlrNoon input values.");
+#if defined( _DEBUG)
+			else
+			{	float ebn, edh;
+				float egl = slASHRAETauModel( sunZen, dc_tauB, dc_tauD, ebn, edh);
+				if (frDiff( ebn, dc_ebnSlrNoon) > .01f
+				  || frDiff( edh, dc_edhSlrNoon) > .01f)
+					oWarn( "ebn/edh mismatch");
+			}
+#endif
+		}
+	}
+	return rc;
+}	// DESCOND::dc_CheckFixSolar
 //-----------------------------------------------------------------------------
 void DESCOND::dc_GenerateTemps(
 	int iHr,				// hour of day (0 - 23)

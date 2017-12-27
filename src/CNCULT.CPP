@@ -117,7 +117,7 @@ makAncRI2(XiB,"export");		// EXPORT input info
 makAncCOL(RcoliB);				// REPORTCOL input info for UDT reports
 makAncCOL2(XcoliB,"exportCol"); // EXPORTCOL input info for UDT exports
 makAncIMPF(ImpfiB);				// IMPORTFILE input info, 2-94
-// holidays
+
 makAncHDAY(HdayiB);				// HDAY input info
 makAncDESCOND(DCiB);			// DESCOND input info
 
@@ -2433,15 +2433,19 @@ static CULT dcT[] =
 //----------        ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
 CULT( "*",          STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   dcStarCkf),
 
-CULT( "dcDay",	    DAT,  DESCOND_DAY,	    RQD,      0, VEOI,   TYDOY,  0,    200,    N,   N),
+CULT( "dcDay",	    DAT,  DESCOND_DOY,	    RQD,      0, VEOI,   TYDOY,  0,    200,    N,   N),
 
 CULT( "dcDB",       DAT,  DESCOND_DB,       RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcMCDBR",    DAT,  DESCOND_MCDBR,    RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcMCWB",     DAT,  DESCOND_MCWB,     RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcMCWBR",	DAT,  DESCOND_MCWBR,    RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcWindSpeed",DAT,  DESCOND_WNDSPD,   RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
-CULT( "dcTauB",     DAT,  DESCOND_TAUB,     RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
-CULT( "dcTauD",     DAT,  DESCOND_TAUD,     RQD,      0, VEOI,   TYFL,   0,    0.f,       N,   N),
+// Taub/Taud and Ebn/Ebh interact, see dc_TopDC
+CULT( "dcTauB",     DAT,  DESCOND_TAUB,      0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcTauD",     DAT,  DESCOND_TAUD,      0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcEbnSlrNoon",DAT, DESCOND_EBNSLRNOON,0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
+CULT( "dcEdhSlrNoon",DAT, DESCOND_EDHSLRNOON,0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
+
 
 CULT( "endDesCond", ENDER, 0,           0,        0, 0,      0,      0,    0.f,       N,   N),
 CULT()

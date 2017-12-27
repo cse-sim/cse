@@ -85,6 +85,7 @@ float slha( float fhour);
 float slASTCor();
 
 float slASHRAETauModel(	float sunZen, float tauB, float tauD, float& radDirN, float& radDifH);
+bool slASHRAETauModelInv( double sunZen, double Ebn, double Edh, float& tauB, float& tauD);
 
 
 // end of slpak.h

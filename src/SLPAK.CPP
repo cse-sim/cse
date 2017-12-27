@@ -361,6 +361,9 @@ void FC slday(	// set up daily data in current SLLOCDAT
 /* sets members re declination of earth's axis, time / hour angle conversion
    (.tmconst), hourly sunupf[], dircos[], slazm[], etc. */
 {
+	if (!slloccur)
+		err( PABT, "NULL slloccur");
+
 	if ((options&1) && slloccur->doy == doy && slloccur->timetype == timetype)
 		return;		// already set for doy
 
@@ -830,7 +833,7 @@ void FC slaniso(	/* Adjust beam and diffuse radiation values
 
 float slASHRAETauModel(	// ASHRAE "tau" clear sky model
 	float sunZen,		// solar zenith angle, radians
-	float tauB,			// ASHRAE beam "pseudo optical depth" (from database)
+	float tauB,			// ASHRAE beam "pseudo optical depth"
 	float tauD,			// ditto diffuse
 	float& radDirN,		// returned: direct normal irradiance, units per extBm
 	float& radDifH)		// returned: diffuse horizontal irradiance, units per extBm
@@ -843,14 +846,16 @@ float slASHRAETauModel(	// ASHRAE "tau" clear sky model
 			1, extBm, sunZen, tauB, tauD, radDirN, radDifH);
 }	// slASHRAETauModel
 //-----------------------------------------------------------------------------
-bool slInvertSolar(		// derive taub/taud from irradiance
+static bool slASHRAETauModelInv(		// derive tauB/tauD from irradiance
 	double Ebn,		// beam normal irradiance (at m)
 	double Edh,		// diffuse horizontal irradiance (at m)
-	double E0,		// exterrestrial normal irradiatiance
+	double E0,		// exterrestrial normal irradiance
 	double m,		// air mass, dimless
-	double& taub,	// returned
-	double& taud)	// returned
+	double& tauB,	// returned
+	double& tauD)	// returned
 // Ebn, Edh, and E0 should have same units
+// Based on Python implementation by Michael Roth
+// ASHRAE 2017 coefficients implicit
 {
     double Kb = Ebn/E0;
     double Kd = Edh/E0;
@@ -861,60 +866,59 @@ bool slInvertSolar(		// derive taub/taud from irradiance
     double tol = 1e-8;
 
 	// First guess
-    taub = 0.75;
-	taud = 1.5;
+    tauB = 0.75;
+	tauD = 1.5;
 	
 	bool bConverge = false;
     for (int iT=0; iT<20 && !bConverge; iT++)
 	{	// update ab & ad
-        double ab = 1.454 -0.406*taub -0.268*taud +0.021*taub*taud;
-        double ad = 0.507 +0.205*taub -0.080*taud -0.190*taub*taud;
+        double ab = 1.454 -0.406*tauB -0.268*tauD +0.021*tauB*tauD;
+        double ad = 0.507 +0.205*tauB -0.080*tauD -0.190*tauB*tauD;
 
         // Calculate F
         // Note: Took log twice of equations (17) and (18). F is the
         // difference between LHS & RHS.  We want F to approach zero.
-        double Fb = log(taub) + ab*logm - loglogKb;
-        double Fd = log(taud) + ad*logm - loglogKd;
+        double Fb = log(tauB) + ab*logm - loglogKb;
+        double Fd = log(tauD) + ad*logm - loglogKd;
 
         // calculate Jacobian
-        double Jbb = 1.0/taub + logm*(-0.406 +0.021*taud);
-        double Jbd = logm*(-0.268 + 0.021*taub);
-        double Jdb = logm*(+0.205 - 0.190*taud);
-        double Jdd = 1.0/taud + logm*(-0.080 -0.190*taub);
+        double Jbb = 1.0/tauB + logm*(-0.406 +0.021*tauD);
+        double Jbd = logm*(-0.268 + 0.021*tauB);
+        double Jdb = logm*(+0.205 - 0.190*tauD);
+        double Jdd = 1.0/tauD + logm*(-0.080 -0.190*tauB);
 
         // solve system {-F} = [J]{dtau} using Cramer's rule
         double detJ = Jbb*Jdd - Jdb*Jbd;
-        double dtaub = (-Fb*Jdd + Fd*Jbd)/detJ;
-        double dtaud = (-Jbb*Fd + Jdb*Fb)/detJ;
+        double dtauB = (-Fb*Jdd + Fd*Jbd)/detJ;
+        double dtauD = (-Jbb*Fd + Jdb*Fb)/detJ;
 
         // update taus
-        taub += dtaub;
-        taud += dtaud;
+        tauB += dtauB;
+        tauD += dtauD;
 
-        bConverge = abs( dtaub) <= tol && abs( dtaud) <= tol;
+        bConverge = abs( dtauB) <= tol && abs( dtauD) <= tol;
 	}
 	return bConverge;
-}	// slInvertSolar
+}	// slASHRAETauModelInv
 //--------------------------------------------------------------------------
-bool slInvertSolar(
+bool slASHRAETauModelInv(		// ASHRAE tau model inverse
+	double sunZen,	// solar zenith angle, radians
 	double Ebn,		// beam normal irradiance (typically solar noon)
 	double Edh,		// diffuse horizontal irradiance (ditto)
-	double sunAlt,	// solar altitude, radians
-	float& taub,	// returned
-	float& taud)	// returned
+	float& tauB,	// returned
+	float& tauD)	// returned
 {
 
 	float extBm = slloccur->extbm;
 
-	double m = AirMass( sunAlt);
+	double m = AirMass( kPiOver2-sunZen);
 
-	double taubD, taudD;
-	bool bRet = slInvertSolar( Ebn, Edh, extBm, m, taubD, taudD);
-	taub = float( taubD);
-	taud = float( taudD);
+	double tauBd, tauDd;
+	bool bRet = slASHRAETauModelInv( Ebn, Edh, extBm, m, tauBd, tauDd);
+	tauB = float( tauBd);
+	tauD = float( tauDd);
 	return bRet;
-}
-
+}	// slASHRAETauModelInv
 //==========================================================================
 
 
