@@ -1613,7 +1613,7 @@ x			rs_capAuxH = 100000.f;
 	return rc;
 }	// RSYS::rs_CkF
 //-----------------------------------------------------------------------------
-RC RSYS::rs_TopRSys()		// check RSYS, set up for run
+RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
@@ -1641,8 +1641,24 @@ RC RSYS::rs_TopRSys()		// check RSYS, set up for run
 		rs_fxCapHAsF = 1.4f;
 	}
 
-	DUCTSEG* ds;
+	// loop all zones served by this RSYS
+	rs_areaServed = 0.;
+	rs_zonesServed = 0;
 	ZNR* zp;
+	RLUP( ZrB, zp)
+	{	if (rs_IsZoneServed( zp))
+		{	rs_areaServed += zp->i.znArea;
+			rs_zonesServed++;
+		}
+	}
+	return rc;
+}		// RSYS::rs_TopRSys1
+//-----------------------------------------------------------------------------
+RC RSYS::rs_TopRSys2()		// final set up for run
+{
+	RC rc = RCOK;
+
+	DUCTSEG* ds;
 	memset( rs_ducts, 0, sizeof( rs_ducts));
 	RLUP( DsR, ds)
 	{	ds->ds_SetRunConstants();
@@ -1673,23 +1689,12 @@ RC RSYS::rs_TopRSys()		// check RSYS, set up for run
 		}
 	}
 
-	// if () determine unbalanced
-
-	// loop all zones served by this RSYS
-	rs_areaServed = 0.;
-	rs_zonesServed = 0;
-	RLUP( ZrB, zp)
-	{	if (rs_IsZoneServed( zp))
-		{	rs_areaServed += zp->i.znArea;
-			rs_zonesServed++;
-		}
-	}
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
 
-	return RCOK;
-}		// RSYS::rs_TopRSys
+	return rc;
+}		// RSYS::rs_TopRSys2
 //-----------------------------------------------------------------------------
 RC RSYS::rs_FazInit(		// init before autosize (once) and main sim
 	int isAusz)		// TRUE = autosize, FALSE = main simulation
@@ -2472,6 +2477,18 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	return rc;
 
 }		// RSYS::rs_SetupCapC
+//----------------------------------------------------------------------------
+#if 0
+RC RSYS::rs_SetDuctSizes()
+{
+	for (int iSR=0; iSR<2; iSR++)
+	{	int iDS = rs_Dsi( iSR);
+		if (iDS > 0)
+		{	DUCTSEG* pDS = DsR[ iDS];
+		}
+	}
+}		
+#endif
 //----------------------------------------------------------------------------
 int RSYS::rs_IsAutoSizing() const
 // returns rsmOFF, rsmHEAT, or rsmCOOL

@@ -105,7 +105,7 @@ const char* TOPRAT::tp_AuszDoing() const	// current autosizing activity
 		else
 		{	int auszDoy;
 			if (iAWS == TOPRAT_COOLDSCOND)
-				auszDoy = DCiB[ tp_coolDsCond[ iDs]].dc_GetDOY();
+				auszDoy = DcR[ tp_coolDsCond[ iDs]].dc_GetDOY();
 			else if (iAWS == TOPRAT_COOLDSDAY)
 				auszDoy = tp_coolDsDay[ iDs];
 			if (auszDoy > 0)
@@ -232,7 +232,7 @@ x	tp_dsDay = 1 + (tp_dsDayI != 0);			// 1st desDay is heating (1), others coolin
 		auszMon = tp_date.month;
 	}
 	else if (tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
-	{	const DESCOND* pDC = DCiB.GetAtSafe( tp_coolDsCond[ tp_dsDayI-1]);
+	{	const DESCOND* pDC = DcR.GetAtSafe( tp_coolDsCond[ tp_dsDayI-1]);
 		jDay = pDC->dc_GetDOY();
 		tddyi( tp_date, jDay);
 		auszMon = tp_date.month;

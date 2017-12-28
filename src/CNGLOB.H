@@ -231,6 +231,8 @@ template< typename T, typename TX> inline T setToMinOrMax( T &a, TX b, int doMin
 
 // return -1, 0, or 1 per value of v
 template< typename T> T xsign( T v) { return v==0 ? 0 : v>0 ? 1 : -1; }
+// return -1 if <, 0 if == , or 1 if >
+template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : -0; }
 
 // bracket: limit value betw vMin and vMax
 template< typename T> inline T bracket( T vMin, T v, T vMax)
@@ -405,9 +407,9 @@ const int NOSCRN = 0x0400;	// logit: do not also display on screen
 const int QUIETIF= 0x0800;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
 
 
-/* application option bits in same argument word as error action.
-   Options for specific functions are defined in other .h files in terms of
-   the following ---------- users include ------ */
+// application option bits in same argument word as error action.
+// Options for specific functions are defined in other .h files in terms of
+// the following                ---------- users include ------
 const int EROP1 =  0x010000;	//  vrpak.h  dmpak.h  xiopak.h    [ratpak.h]
 const int EROP2 =  0x020000;	//  vrpak.h  dmpak.h  [xiopak.h]  sytb.cpp
 const int EROP3 =  0x040000;	//  vrpak.h  wfpak.h  [xiopak.h]

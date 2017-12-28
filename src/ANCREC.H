@@ -108,7 +108,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
     static SI FC ancNext( USI &an, BP *_b);						// iterate anchors
-    RC validate( char *fcnName, int erOp=ABT, SI noStat=0);				// check for valid anchor
+    RC validate( const char* fcnName, int erOp=ABT, SI noStat=0);		// check for valid anchor
     RC findRecByNm1( const char* _name, TI *_i, record **_r);    		// find record by 1st match on name
     RC findRecByNmU( const char* _name, TI *_i, record **_r);  			// find record by unique name match
     RC findRecByNmO( const char* _name, TI ownTi, TI *_i, record **_r);	// find record by name and owner subscript

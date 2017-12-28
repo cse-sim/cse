@@ -93,8 +93,8 @@ record::record( BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, 
 	   				b->n++ : additional record in static array.
 	   CAUTION can be called from statSetup (til eliminated). */
 
-	_b->validate("record::record");			// abort if base bad -- we depend on it for size
-	if (!noZ)						// can be suppressed for data-init (static) records
+	_b->validate("record::record");		// abort if base bad -- we depend on it for size
+	if (!noZ)							// can be suppressed for data-init (static) records
 		memset( (char *)this+SZVFTP, 0, _b->eSz-SZVFTP);	/* zero all members of DERIVED CLASS record
 						           except virtFcnTblPtr in 1st 2 or 4 bytes (ancrec.h define) */
 	b = _b;
@@ -685,9 +685,9 @@ SI FC basAnc::ancNext( USI &an, BP * _b)		// (registered) record anchor iterator
 //---------------------------------------------------------------------------------------------------------------------------
 RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and its entry 0
 
-	char *fcnName,		// calling fcn name, for err msgs.
-	int erOp /*=ABT*/,	// reporting control. ABT-->PABT, WRN-->PWRN here.
-	SI noStat /*=0*/ )	// 0: caller's action OK on static-storage anchor. nz: not ok.
+	const char* fcnName,	// calling fcn name, for err msgs.
+	int erOp /*=ABT*/,		// reporting control. ABT-->PABT, WRN-->PWRN here.
+	SI noStat /*=0*/ )		// 0: caller's action OK on static-storage anchor. nz: not ok.
 
 // if error, issues message, returns non-RCOK if not ABT
 {

@@ -66,6 +66,8 @@ WFDATA Wthr( (anc<WFDATA>  *)&WthrR, 0);	// record containing current hour's wea
 makAncWFDATA2( WthrNxHrR,"weatherNextHour");	// basAnc for...
 WFDATA WthrNxHr( (anc<WFDATA>  *)&WthrNxHrR, 0);	// record containing current next hour's weather data,
 													// extracted and adjusted, for cgWthr.cpp read-ahead
+makAncDESCOND( DcR);						// design conditions
+
 // zones, transfers, gains, meters
 makAncZNR( ZrB);			// Zones runtime info: input set in cncult.
 makAncZNRES( ZnresB);		// Month and year simulation results for zones
