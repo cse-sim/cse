@@ -354,7 +354,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	int iHrST = Top.iHrST;  		// hour 0-23, standard time.
 	int wfOp = WF_SAVESLRGEOM;		// wf_Read(): do not overwrite solar geometry values
 	if (Top.isDT)
-		wfOp |= WF_DSTFIX;			// wf_Read(): taDbPvPk during daylight savings
+		wfOp |= WF_DSTFIX;			// wf_Read(): handle day-transition values during DST
 	RC rc = RCOK;
 
 	// modify iHrST and jDayST as needed

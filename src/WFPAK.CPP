@@ -323,10 +323,14 @@ void WDHR::wd_Init(	// initialize all members
 	{	static const NANDAT unset( UNSET);
 		float unsetf;
 		V unsetf = V unset;
-		// treat as all floats
-		int szFloat = sizeof( WDHR)/sizeof( float);
-		VSet( (float *)this, szFloat, unsetf);
-		wd_sunup = 0;	// only integer, overwrite UNSET
+		float* pF0 = &wd_slAzm;
+		float* pFN = &wd_tdvElecAvg01;
+		int szFloat = pFN - pF0 + 1;
+		// attempt to detect layout change (+2 is due to packing)
+		ASSERT( szFloat*sizeof( float)+sizeof( wd_sunup)+sizeof( wd_tdvElecHrRank)+2==sizeof( WDHR));
+		VSet( pF0, szFloat, unsetf);
+		wd_sunup = 0;	// non-floats
+		VZero( wd_tdvElecHrRank, 25);
 	}
 }			// WDHR::wd_Init
 //------------------------------------------------------------------------------
@@ -386,7 +390,7 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 // returns RCOK
 {
 
-	wd_Init( 1);	// set all to UNSET)
+	wd_Init( 1);	// set all to UNSET
 
 	int i = (wFileFormat==BSGSdemo);	// normally fetch words 0,1,2, but to unscramble demo format, fetch 1,2,0
 	int w = phour[i++];				// word 0, or 1 if scrambled
@@ -423,7 +427,8 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 class WDDAY
 {
 friend class WDYEAR;
-friend class WFILE;
+friend WDHR;
+friend WFILE;
 	float wdd_taDbPvPk;		// previous day max dry bulb air temp, F
 	float wdd_taDbPk;		// current day max dry bulb air temp, F
 	float wdd_taDbAvg;		// this day mean dry bulb air temp, F
@@ -445,11 +450,19 @@ friend class WFILE;
 	float wdd_tdvElecAvg;	//   avg for cur day
 	float wdd_tdvElecPvPk;	//   peak for prior day
 	float wdd_tdvElecAvg01;	//   avg for print day
+	SI wdd_tdvElecHrRank[ 25];//   hr rank
 public:
 	void wdd_Init();
 	int wdd_Compare( const WDHR* wdHr) const;
-	void wdd_Set( WDHR* wdHr, int options=0) const;
+	void wdd_Set24( WDHR* wdHr, int options=0) const;
 };	// class WDDAY
+//----------------------------------------------------------------------------
+struct VHR		// sort helper for wdy_Stats
+{	double v;		// value
+	SI iHr;		// hour when value occurs
+	static int Compare( const void* pV1, const void* pV2)
+	{	return LTEQGT( ((const VHR *)pV2)->v, ((const VHR *)pV1)->v); }
+};	// struct VHR
 //----------------------------------------------------------------------------
 class WDYEAR
 {
@@ -472,8 +485,8 @@ public:
 		return wdy_day[ iD0];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
-	void wdy_MeanMax( int jDay, double& taDbMean, double& taDbMax,
-		double& tdvElecMean, double& tdvElecMax) const;
+	void wdy_Stats( int jDay, double& taDbMean, double& taDbMax,
+		double& tdvElecMean, double& tdvElecMax, SI tdvElecHrRank[ 25]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 };		// class WDYEAR
 //-----------------------------------------------------------------------------
@@ -499,7 +512,7 @@ x											// others: fill always
 	int yrLen = wf_pWDY->wdy_isLeap ? 366 : 365;
 	int jD;
 	for (jD=1; jD <= yrLen; jD++)
-		wf_pWDY->wdy_Day( jD).wdd_Set( &wf_pWDY->wdy_Hr( jD, 0), options);
+		wf_pWDY->wdy_Day( jD).wdd_Set24( &wf_pWDY->wdy_Hr( jD, 0), options);
 #if 0 && defined( _DEBUG)
 	if (wFileFormat == CSW)
 	{	// CSW data should match calculated
@@ -559,11 +572,12 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			if (rc)
 				break;
 			double taDbMean, taDbMax, tdvElecMean, tdvElecMax;
-			wdy_MeanMax( jDay, taDbMean, taDbMax, tdvElecMean, tdvElecMax);
+			WDDAY& wdd = wdy_Day( jDay);
+			wdy_Stats( jDay, taDbMean, taDbMax, tdvElecMean, tdvElecMax, 
+				wdd.wdd_tdvElecHrRank);
 
 			// current day values
 			// next day's previous day values = current day
-			WDDAY& wdd = wdy_Day( jDay);
 			WDDAY& wdd1 = wdy_Day( jDay+1);
 			wdd.wdd_taDbPk = wdd1.wdd_taDbPvPk = taDbMax;
 			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbMean;
@@ -620,17 +634,20 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	return rc;
 }	// WDYEAR::wdy_Fill
 //-----------------------------------------------------------------------------
-void WDYEAR::wdy_MeanMax(			// statistics for day
+void WDYEAR::wdy_Stats(			// statistics for day
 	int jDay,				// day of year (1-365/366)
 	double& taDbMean,		// returned: 24hr mean dry-bulb, F
 	double& taDbMax,		// returned: max dry-bulb, F
 	double& tdvElecMean,		// returned: mean TDV elec
-	double& tdvElecMax)	const	// returned: max TDV elec
+	double& tdvElecMax,			// returned: max TDV elec
+	SI tdvElecHrRank[ 25]) const	// returned: tdvElec ranked
 // returns min, mean, and max dry-bulb for day
 {
+	VHR tdvElecHr[ 24];		// day's tdvElec for hour-rank sort
 	taDbMax = tdvElecMax = -9999.;
 	taDbMean = tdvElecMean = 0.;
-	for (int iHr=0; iHr<24; iHr++)
+	int iHr;
+	for (iHr=0; iHr<24; iHr++)
 	{	const WDHR& wd = wdy_Hr( jDay, iHr);
 		if (wd.wd_db > taDbMax)
 			taDbMax = wd.wd_db;
@@ -641,12 +658,25 @@ void WDYEAR::wdy_MeanMax(			// statistics for day
 		{	if (wd.wd_tdvElec > tdvElecMax)
 				tdvElecMax = wd.wd_tdvElec;
 			tdvElecMean += wd.wd_tdvElec;
+			tdvElecHr[ iHr].v = wd.wd_tdvElec;	// tdvElec for rank-hour sort
+			tdvElecHr[ iHr].iHr = iHr;			// corresponding hour
 		}
 	}
-	taDbMean = taDbMean / 24.;
+	taDbMean /= 24.;
 	if (!ISUNSET( tdvElecMean))
-		tdvElecMean = tdvElecMean / 24.;
-}		// WDYEAR::wdy_MeanMax
+	{	tdvElecMean /= 24.;
+		// sort the days tdvElec values is descending order
+		qsort( tdvElecHr, 24, sizeof( VHR), VHR::Compare);
+		// return hour ranking as 1-based
+		//   tdvElecHrRank[ 1] = 1-based hour of peak TDV
+		//                [ 2] = ditto, next highest
+		tdvElecHrRank[ 0] = 0;	// [ 0] is unused
+		for (iHr=0; iHr<24; iHr++)
+			tdvElecHrRank[ iHr+1] = tdvElecHr[ iHr].iHr+1;
+	}
+	else
+		VZero( tdvElecHrRank, 25);		// tdvElec values not complete
+}		// WDYEAR::wdy_Stats
 //-----------------------------------------------------------------------------
 float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
 	int jDay1,		// 1st day (possibly < 0)
@@ -674,6 +704,7 @@ void WDDAY::wdd_Init()
 	wdd_tdvElecAvg = 0.f;
 	wdd_tdvElecPvPk = 0.f;
 	wdd_tdvElecAvg01 = 0.f;
+	VZero( wdd_tdvElecHrRank, 25);
 
 	wdd_tGrnd = 0.f;
 	wdd_tMains = 0.f;
@@ -702,7 +733,7 @@ int WDDAY::wdd_Compare(		// check that hour values match daily
 	return diffCount;
 }		// WDDAY::wdd_Compare
 //-----------------------------------------------------------------------------
-void WDDAY::wdd_Set(		// set hourly values from daily
+void WDDAY::wdd_Set24(		// set hourly values from daily
 	WDHR* wdHr,					// 1st hour data for day
 	int options /*=0*/)	const	// option bits
 								//   1: set iff destination is "missing"
@@ -712,42 +743,62 @@ void WDDAY::wdd_Set(		// set hourly values from daily
 #define SETIF( d, s) if (IsMissing( d)) d = s;
 	if (!options)
 	{	for (int iHr=0; iHr<24; iHr++)
-		{	WDHR& wd = wdHr[ iHr];
-			wd.wd_taDbPk      = wdd_taDbPk;
-			wd.wd_taDbAvg     = wdd_taDbAvg;
-			wd.wd_taDbPvPk    = wdd_taDbPvPk;
-			wd.wd_taDbAvg01   = wdd_taDbAvg01;
-			wd.wd_taDbAvg07   = wdd_taDbAvg07;
-			wd.wd_taDbAvg14   = wdd_taDbAvg14;
-			wd.wd_taDbAvg31   = wdd_taDbAvg31;
-			wd.wd_tGrnd       = wdd_tGrnd;
-			wd.wd_tMains      = wdd_tMains;
-			wd.wd_tdvElecPk   = wdd_tdvElecPk;
-			wd.wd_tdvElecAvg  = wdd_tdvElecAvg;
-			wd.wd_tdvElecPvPk = wdd_tdvElecPvPk;
-			wd.wd_tdvElecAvg01= wdd_tdvElecAvg01;
-		}
+			wdHr[ iHr].wd_SetDayValues( *this);
 	}
 	else
 	{	for (int iHr=0; iHr<24; iHr++)
-		{	WDHR& wd = wdHr[ iHr];
-			SETIF( wd.wd_taDbPk,    wdd_taDbPk)
-			SETIF( wd.wd_taDbAvg,   wdd_taDbAvg)
-			SETIF( wd.wd_taDbPvPk,  wdd_taDbPvPk)
-			SETIF( wd.wd_taDbAvg01, wdd_taDbAvg01)
-			SETIF( wd.wd_taDbAvg07, wdd_taDbAvg07)
-			SETIF( wd.wd_taDbAvg14, wdd_taDbAvg14)
-			SETIF( wd.wd_taDbAvg31, wdd_taDbAvg31)
-			SETIF( wd.wd_tGrnd,		wdd_tGrnd);
-			SETIF( wd.wd_tMains,	wdd_tMains);
-			SETIF( wd.wd_tdvElecPk,   wdd_tdvElecPk);
-			SETIF( wd.wd_tdvElecAvg,  wdd_tdvElecAvg);
-			SETIF( wd.wd_tdvElecPvPk, wdd_tdvElecPvPk);
-			SETIF( wd.wd_tdvElecAvg01,wdd_tdvElecAvg01);
-		}
+			wdHr[ iHr].wd_SetDayValuesIfMissing( *this);
 	}
 #undef SETIF
-}		// WDDAY::wdd_Set
+}		// WDDAY::wdd_Set24
+//-----------------------------------------------------------------------------
+void WDHR::wd_SetDayValues(		// set daily members
+	const WDDAY& wdd)			// source
+{
+	wd_taDbPk      = wdd.wdd_taDbPk;
+	wd_taDbAvg     = wdd.wdd_taDbAvg;
+	wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+	wd_taDbAvg01   = wdd.wdd_taDbAvg01;
+	wd_taDbAvg07   = wdd.wdd_taDbAvg07;
+	wd_taDbAvg14   = wdd.wdd_taDbAvg14;
+	wd_taDbAvg31   = wdd.wdd_taDbAvg31;
+	wd_tGrnd       = wdd.wdd_tGrnd;
+	wd_tMains      = wdd.wdd_tMains;
+	wd_tdvElecPk   = wdd.wdd_tdvElecPk;
+	wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
+	wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+	wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
+	VCopy( wd_tdvElecHrRank, 25, wdd.wdd_tdvElecHrRank);
+}	// WDHR::wd_SetDayValues
+//-----------------------------------------------------------------------------
+void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
+	const WDDAY& wdd)			// source
+{
+#define SETIF( d, s) if (IsMissing( d)) d = s;
+	SETIF( wd_taDbPk,		wdd.wdd_taDbPk)
+	SETIF( wd_taDbAvg,		wdd.wdd_taDbAvg)
+	SETIF( wd_taDbPvPk,		wdd.wdd_taDbPvPk)
+	SETIF( wd_taDbAvg01,	wdd.wdd_taDbAvg01)
+	SETIF( wd_taDbAvg07,	wdd.wdd_taDbAvg07)
+	SETIF( wd_taDbAvg14,	wdd.wdd_taDbAvg14)
+	SETIF( wd_taDbAvg31,	wdd.wdd_taDbAvg31)
+	SETIF( wd_tGrnd,		wdd.wdd_tGrnd)
+	SETIF( wd_tMains,		wdd.wdd_tMains)
+	SETIF( wd_tdvElecPk,	wdd.wdd_tdvElecPk)
+	SETIF( wd_tdvElecAvg,	wdd.wdd_tdvElecAvg)
+	SETIF( wd_tdvElecPvPk,	wdd.wdd_tdvElecPvPk)
+	SETIF( wd_tdvElecAvg01,	wdd.wdd_tdvElecAvg01)
+	VCopy( wd_tdvElecHrRank, 25, wdd.wdd_tdvElecHrRank);
+#undef SETIF
+}	// WDHR::wd_SetDayValuesIfMissing
+//----------------------------------------------------------------------------
+void WDHR::wd_ShiftTdvElecHrRankForDST()		// handle DST
+{
+	for (int iHr=1; iHr<=24; iHr++)
+	{	if (++wd_tdvElecHrRank[ iHr] == 25)
+			wd_tdvElecHrRank[ iHr] = 1;		// wrap
+	}
+}		// WDHR::wd_ShiftTdvElecHrRankForDST
 //============================================================================
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1504,10 +1555,11 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
 	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
-		if ( iHr == 23 && (erOp&WF_DSTFIX))
+		if (erOp & WF_DSTFIX)
 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
-			pwd->wd_taDbPvPk = wdd.wdd_taDbPvPk;
-			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+			if (iHr == 23)
+				pwd->wd_SetDayValues( wdd);
+			pwd->wd_ShiftTdvElecHrRankForDST();
 		}
 		return RCOK;
 	}
