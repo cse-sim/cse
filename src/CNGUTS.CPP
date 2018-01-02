@@ -582,7 +582,6 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		Top.tp_SetDbMask();		// debug printout mask (dbdXXX), controls internal val dumping
 								//   (assumed not to change subhourly)
 #endif
-
 		// masses: init heat flow totals
 		//   (after tp_SetDbMask() re correct db printing)
 		EF( msBegIvl( Top.ivl));		// EF()=insurance, RCOK expected
@@ -2263,7 +2262,7 @@ LOCAL void FC NEAR doIvlReports()	// virtual print reports for ending intervals 
 	if (Top.ivl > C_IVLCH_M)		// if daily, hourly, or subhourly call, done
 		return;
 
-	if (Top.dvriM)			// if this zone/top has any active montly reports/exports (speed check)
+	if (Top.dvriM)			// if this zone/top has any active monthly reports/exports (speed check)
 		vpRxports(C_IVLCH_M);      	// do month's line for all monthly reports/exports active today
 	if (Top.ivl > C_IVLCH_Y)		// if montlhly...subhourly call, done
 		return;
