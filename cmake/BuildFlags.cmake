@@ -1,17 +1,15 @@
 if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
 
-  ## TODO:
-  #  - Check with Chip regarding other build types
-  #  - Add precompiled header flags (/Yu"cnglob.h" /Fp"xxxx\CSEd.PCH")
-  #  - Figure out where other flags are coming from in CMake (e.g., Zc:*, /analyze-, /Gd /TP, etc.)
-
-  # Final flags are CommonFlags + build-specific flags (e.g., ReleaseFlags, DebugFlags)
+  # Final flags are Common + build-specific flags (e.g., Release, Debug)
 
   # '*' indicates CMake default option
   # '+' indicates default compiler behavior
 
-  ## Compiler flags
-  set(CommonFlags
+  #================#
+  # Compiler flags #
+  #================#
+
+  set(CompileCommon
     /DWIN32     #*
   # /D_WINDOWS  #*
     /D_CONSOLE  #
@@ -24,9 +22,9 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /fp:except- # Specifies floating-point behavior.
     /arch:IA32  # Specifies the architecture for code generation (no special instructions).
   )
-  string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CommonFlags}")
+  string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CompileCommon}")
 
-  set(ReleaseFlags
+  set(CompileRelease
   # /DNDEBUG    #* TODO: Add back?
   # /MD         #*Creates a multithreaded DLL using MSVCRT.lib.
     /MT         # Creates a multithreaded executable file using LIBCMT.lib.
@@ -44,9 +42,9 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /GS-        # Buffers security check.
     /MP         # Compiles multiple source files by using multiple processes.
   )
-  string(REPLACE ";" " " CMAKE_CXX_FLAGS_RELEASE "${ReleaseFlags}")
+  string(REPLACE ";" " " CMAKE_CXX_FLAGS_RELEASE "${CompileRelease}")
 
-  set(DebugFlags
+  set(CompileDebug
     /D_DEBUG    #*
   # /MDd        #*Creates a debug multithreaded DLL using MSVCRT.lib.
     /MTd        # Creates a debug multithreaded executable file using LIBCMTD.lib.
@@ -56,30 +54,33 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /RTC1       #*Enables run-time error checking.
     /Gm         # Enables minimal rebuild.
   )
-  string(REPLACE ";" " " CMAKE_CXX_FLAGS_DEBUG "${DebugFlags}")
+  string(REPLACE ";" " " CMAKE_CXX_FLAGS_DEBUG "${CompileDebug}")
 
-  ## Linker flags
-  set(CommonLinkFlags
+  #==============#
+  # Linker flags #
+  #==============#
+
+  set(LinkCommon
     /NOLOGO     # Suppresses the startup banner.
     /DYNAMICBASE#Specifies whether to generate an executable image that can be randomly rebased at load time by using the address space layout randomization (ASLR) feature.
     /MACHINE:X86 # Specifies the target platform.
   )
-  string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS "${CommonLinkFlags}")
+  string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS "${LinkCommon}")
 
-  set(ReleaseLinkFlags
+  set(LinkRelease
     /LTCG       # Specifies link-time code generation.
     /DEBUG	    # Creates debugging information.
     /MAP        # Creates a mapfile.
     /INCREMENTAL:NO # Controls incremental linking.
   )
-  string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS_RELEASE "${ReleaseLinkFlags}")
+  string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS_RELEASE "${LinkRelease}")
 
-  set(DebugLinkFlags
+  set(LinkDebug
     /DEBUG	    # Creates debugging information.
     /MAP        # Creates a mapfile.
     /INCREMENTAL # Controls incremental linking.
   )
-  string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS_DEBUG "${DebugLinkFlags}")
+  string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS_DEBUG "${LinkDebug}")
 
 
 
