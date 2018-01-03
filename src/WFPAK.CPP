@@ -1555,12 +1555,33 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
 	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
+#if 1
+		if ( iHr == 23 && (erOp&WF_DSTFIX))
+ 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
+			pwd->wd_taDbPk      = wdd.wdd_taDbPk;
+			pwd->wd_taDbAvg     = wdd.wdd_taDbAvg;
+			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+			pwd->wd_taDbAvg01   = wdd.wdd_taDbAvg01;
+			pwd->wd_taDbAvg07   = wdd.wdd_taDbAvg07;
+			pwd->wd_taDbAvg14   = wdd.wdd_taDbAvg14;
+			pwd->wd_taDbAvg31   = wdd.wdd_taDbAvg31;
+			pwd->wd_tGrnd       = wdd.wdd_tGrnd;
+			pwd->wd_tMains      = wdd.wdd_tMains;
+#if 0
+			pwd->wd_tdvElecPk   = wdd.wdd_tdvElecPk;
+			pwd->wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
+			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+			pwd->wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
+#endif
+ 		}
+#else
 		if (erOp & WF_DSTFIX)
 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
 			if (iHr == 23)
 				pwd->wd_SetDayValues( wdd);
 			pwd->wd_ShiftTdvElecHrRankForDST();
 		}
+#endif
 		return RCOK;
 	}
 
