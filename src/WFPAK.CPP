@@ -1558,6 +1558,12 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 #if 1
 		if ( iHr == 23 && (erOp&WF_DSTFIX))
  		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
+			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+		}
+#elif 0
+		if ( iHr == 23 && (erOp&WF_DSTFIX))
+ 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
 			pwd->wd_taDbPk      = wdd.wdd_taDbPk;
 			pwd->wd_taDbAvg     = wdd.wdd_taDbAvg;
 			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
