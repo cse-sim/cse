@@ -22,7 +22,7 @@ const int STRPPEXT   = 8;
 //       const char* s;
 //       int c = *s;		// c is < 0 if *s is 128 - 255
 //       if (isspace( c))	// can assert
-//  isxxxxxW (Wrightsoft variants) are provided with explicit arg types
+//  isxxxxxW are provided with explicit arg types
 #include <ctype.h>
 #define charTypeW( fcn) \
 inline int fcn##W( int c) { return fcn( c); } \

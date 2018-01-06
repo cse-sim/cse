@@ -20,356 +20,13 @@
 const int MSGMAXLEN = 100;
 const int MSGMAXCOUNT = 20;
 
-static CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
+static const CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
 
 ///////////////////////////////////////////////////////////////////////////////
-// CFS member functions
+// ASHWAT wrappers: faciliate calling C++ and/or FORTRAN DLL fcns
+//                  as testing aid
 ///////////////////////////////////////////////////////////////////////////////
-const char* CFSLWP::DbFmt( const char* tag/*=""*/) const		// formatted string for e.g. DbDump()
-// returns self-description (in TmpStr, no \n re embedding)
-{
-	return strtprintf( "%sLW EF=%0.3f EB=%0.3f T=%0.3f",
-		tag, EPSLF, EPSLB, TAUL);
-}		// CFSLWP::DbFmt
-//=============================================================================
-CFSSWP::CFSSWP()
-{ }
-//-----------------------------------------------------------------------------
-const char* CFSSWP::DbFmt( const char* tag/*=""*/) const	// formatted string for e.g. DbDump()
-// returns self-description (in TmpStr, no \n re embedding)
-{
-	return strtprintf(
-		"%sSW TBB=%.3f/%.3f RBB=%.3f/%.3f  TBD=%.3f/%.3f RBD=%.3f/%.3f  TDD=%.3f RDD=%.3f/%.3f",
-			tag,
-			TAUSFBB, TAUSBBB, RHOSFBB, RHOSBBB,
-			TAUSFBD, TAUSBBD, RHOSFBD, RHOSBBD,
-			TAUS_DD, RHOSFDD, RHOSBDD);
-
-}	// CFSSWP::DbFmt
-//=============================================================================
-const char* CFSGAP::DbFmt( const char* tag/*=""*/) const
-// returns self-description (in TmpStr, no \n re embedding)
-{
-	return strtprintf( "%s%s ty=%d W=%0.3f Weff=%0.3f",
-		tag,
-		FCGET( FG.ID), GTYPE,
-		TAS/25.4, TAS_EFF/25.4);		// gap width: mm to inches
-}		// CFSGAP::DbFmt
-//=============================================================================
-CFSLAYER::CFSLAYER()
-{	ASHWAT.xw_ClearCFSLayer( *this);		// clear all members
-}	// CFSLAYER::CFSLAYER
-//-----------------------------------------------------------------------------
-CFSLAYER::CFSLAYER( const CFSLAYER& cl)
-{	memcpy( this, &cl, sizeof( CFSLAYER));	// bitwise
-}	// CFSLAYER::CFSLAYER
-//-----------------------------------------------------------------------------
-CFSLAYER::CFSLAYER(			// layer c'tor
-	const char* id,			// ID (name) of layer
-	int ltype,				// type (ltyGLAZE, )
-							// front (outside) properties
-	float tauFBB,			//    beam transmittance (or openness)
-	float rhoFBB,			//    beam reflectance
-	float tauBD,			//    beam-diffuse transmittance
-	float epsLF /*=-1.f*/,	//    LW emittance
-							// back (inside) normal properties
-							//  default = same as front
-	float rhoBBB /*=-1.f*/,	//    beam reflectance
-	float epsLB /*=-1.f*/,	//    LW emittance
-	float tauL /*=0.f*/)	//    LW transmittance
-{
-	if (ltype == ltyGLAZE)
-		cl_InitGlaze( id, tauFBB, rhoFBB, epsLF, rhoBBB, epsLB, tauL);
-	else if (ltype == ltyROLLB)
-		cl_InitRollB( id, tauFBB, rhoFBB, tauBD);
-	else if (ltype == ltyINSCRN)
-		cl_InitInscrn( id, tauFBB, rhoFBB, tauBD);
-	else if (ltype == ltyDRAPE)
-		cl_InitDrape( id, tauFBB, rhoFBB, tauBD);
-	else
-		ASHWAT.xw_ClearCFSLayer( *this);
-}		// CFSLAYER::CFSLAYER
-//-----------------------------------------------------------------------------
-CFSLAYER::CFSLAYER(			// special glazing layer c'tor (Windows 6 arg order)
-	const char* id,							// ID (name) of layer
-	float thk,								// thickness, in (unused)
-	float tSol, float rSol1, float rSol2,	// solar properties
-	float tVis, float rVis1, float rVis2,	// visible properties (unused)
-	float tIR,	float eIR1,  float eIR2,	// LW properties
-	float kEff)								// conductivity,
-{
-	thk, tVis, rVis1, rVis2, kEff;
-	cl_InitGlaze( id, tSol, rSol1, eIR1, rSol2, eIR2, tIR);
-}		// CFSLAYER::CFSLAYER
-//-----------------------------------------------------------------------------
-#if 0
-x void CFSLAYER::cl_Clear()
-x {
-x 	memset( this, 0, sizeof( CFSLAYER));	// TODO
-x }		// CFSLAYER::cl_Clear
-#endif
-//-----------------------------------------------------------------------------
-RC CFSLAYER::cl_InitGlaze(			// init glazing layer
-	const char* id,			// ID (name) of layer
-							// front (outside) normal properties
-	float tauFBB,			//    beam transmittance
-	float rhoFBB,			//    beam reflectance
-	float epsLF,			//    LW emittance
-							// back (inside) normal properties
-							//  default = same as front
-	float rhoBBB /*=-1.f*/,	//    beam reflectance
-	float epsLB /*=-1.f*/,	//    LW emittance
-	float tauL /*=0.f*/)	//    LW transmittance
-
-{
-	ASHWAT.xw_ClearCFSLayer( *this);
-
-	LTYPE = ltyGLAZE;
-	FCSET( ID, id);
-
-	// solar (short wave) properties
-	if (rhoBBB < 0.f)
-		rhoBBB = rhoFBB;
-
-	SWP_MAT.RHOSFBB = rhoFBB;
-	SWP_MAT.RHOSBBB = rhoBBB;
-	SWP_MAT.TAUSFBB = tauFBB;
-	SWP_MAT.TAUSBBB = tauFBB;		// front/back tau always same for glazing
-
-	// SWP_MAT.RHOSFBD = 0.;		// BD properties = 0 (no frosted glass TODO?)
-	// SWP_MAT.RHOSBBD = 0.;
-	// SWP_MAT.TAUSFBD = 0.;
-	// SWP_MAT.TAUSBBD = 0.;
-
-	SWP_MAT.RHOSFDD = -1.;	// force estimation of diffuse-diffuse properties
-	SWP_MAT.RHOSBDD = -1.;
-	SWP_MAT.TAUS_DD = -1.;
-
-	// long-wave (thermal) properties
-	if (epsLB < 0.f)
-		epsLB = epsLF;
-
-	LWP_MAT.EPSLF = epsLF;
-	LWP_MAT.EPSLB = epsLB;
-	LWP_MAT.TAUL = tauL;
-
-	// TODO: handle error message
-	return ASHWAT.xw_CheckFixCFSLayer( *this, id);
-}		// CFSLAYER::cl_InitGlaze
-//-----------------------------------------------------------------------------
-RC CFSLAYER::cl_InitRollB(			// init roller blind
-	const char* id,			// ID (name) of layer
-							// front (outside) normal properties
-	float fOpen,			// openness (=tauFBB)
-	float rhoFBD,			// front beam-diffuse reflectance
-	float tauBD,			// beam-diffuse transmittance
-	float rhoBBD /*=-1*/)	// back beam-diffuse reflectance
-
-// note: total transmittance = fOpen + tauBD
-{
-#if 0
-	ALL GxR( 6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
-	CALL GxR( 7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
-	CALL GxR( 8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
-	CALL GxR( 9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
-#endif
-
-	ASHWAT.xw_ClearCFSLayer( *this);
-
-	LTYPE = ltyROLLB;
-	FCSET( ID, id);
-
-	// solar (short wave) properties
-	if (rhoBBD < 0.f)
-		rhoBBD = rhoFBD;
-
-	SWP_MAT.TAUSFBB = fOpen;
-	SWP_MAT.TAUSBBB = fOpen;
-	SWP_MAT.RHOSFBD = rhoFBD;
-	SWP_MAT.RHOSBBD = rhoBBD;
-	SWP_MAT.TAUSFBD = tauBD;
-	SWP_MAT.TAUSBBD = tauBD;
-
-#if 0
-	SWP_MAT.RHOSFDD = -1.;			// force estimation of diffuse-diffuse properties
-	SWP_MAT.RHOSBDD = -1.;
-	SWP_MAT.TAUS_DD = -1.;
-#endif
-
-	LWP_MAT.EPSLF = -1.;			// default all LW properties
-	LWP_MAT.EPSLB = -1.;
-	LWP_MAT.TAUL = -1.;
-
-	// TODO: handle error message
-	return ASHWAT.xw_CheckFixCFSLayer( *this, id);
-}		// CFSLAYER::cl_InitRollB
-//-----------------------------------------------------------------------------
-RC CFSLAYER::cl_InitInscrn(			// init insect screen
-	const char* id,			// ID (name) of layer
-							// front (outside) normal properties
-	float fOpen,			// openness (=tauFBB)
-	float rhoFBD,			// front beam-diffuse reflectance
-	float tauBD,			// beam-diffuse transmittance
-	float rhoBBD /*=-1*/)	// back beam-diffuse reflectance
-
-// note: total transmittance = fOpen + tauBD
-{
-#if 0
-	CALL GxR( 6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
-	CALL GxR( 7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
-	CALL GxR( 8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
-	CALL GxR( 9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
-	CFSLayers( iL)%S = -1.		! force derivation of wire geom from openness
-	CFSLayers( iL)%W = -1.
-	CFSLayers( iL)%SWP_MAT%TAUSBBB = CFSLayers( iL)%SWP_MAT%TAUSFBB
-	CFSLayers( iL)%SWP_MAT%TAUSBBD = CFSLayers( iL)%SWP_MAT%TAUSFBD
-#endif
-
-	ASHWAT.xw_ClearCFSLayer( *this);
-
-	LTYPE = ltyINSCRN;
-	FCSET( ID, id);
-
-	// solar (short wave) properties
-	if (rhoBBD < 0.f)
-		rhoBBD = rhoFBD;
-
-	SWP_MAT.TAUSFBB = fOpen;
-	SWP_MAT.TAUSBBB = fOpen;
-	SWP_MAT.RHOSFBD = rhoFBD;
-	SWP_MAT.RHOSBBD = rhoBBD;
-	SWP_MAT.TAUSFBD = tauBD;
-	SWP_MAT.TAUSBBD = tauBD;
-
-#if 0
-	SWP_MAT.RHOSFDD = -1.;			// force estimation of diffuse-diffuse properties
-	SWP_MAT.RHOSBDD = -1.;
-	SWP_MAT.TAUS_DD = -1.;
-#endif
-
-	LWP_MAT.EPSLF = -1.;			// default all LW properties
-	LWP_MAT.EPSLB = -1.;
-	LWP_MAT.TAUL = -1.;
-
-	S = -1;		// force estimation of wire geometry from openness
-	W = -1;
-
-	// TODO: handle error message
-	return ASHWAT.xw_CheckFixCFSLayer( *this, id);
-}		// CFSLAYER::cl_InitInscrn
-//-----------------------------------------------------------------------------
-RC CFSLAYER::cl_InitDrape(			// init drape layer
-	const char* id,			// ID (name) of layer
-							// front (outside) normal properties
-	float fOpen,			// openness (=tauFBB)
-	float rhoFBD,			// front beam-diffuse reflectance
-	float tauBD,			// beam-diffuse transmittance
-	float rhoBBD /*=-1*/)	// back beam-diffuse reflectance
-{
-
-#if 0
-	CALL GxR(  6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
-	CALL GxR(  7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
-	CALL GxR(  8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
-	CALL GxR(  9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
-	CALL GxR( 10, CFSLayers( iL)%S,               'PleatS',  0,      '100|.01')
-	CALL GxR( 11, CFSLayers( iL)%W,               'PleatW',  0,      '100|0')
-	CFSLayers( iL)%SWP_MAT%RHOSFDD = -1.	! init diffuse SWP to force default derivation
-	CFSLayers( iL)%SWP_MAT%RHOSBDD = -1.
-	CFSLayers( iL)%SWP_MAT%TAUS_DD = -1.
-	CFSLayers( iL)%SWP_MAT%TAUSBBB = CFSLayers( iL)%SWP_MAT%TAUSFBB
-	CFSLayers( iL)%SWP_MAT%TAUSBBD = CFSLayers( iL)%SWP_MAT%TAUSFBD
-#endif
-
-	ASHWAT.xw_ClearCFSLayer( *this);
-
-	LTYPE = ltyDRAPE;
-	FCSET( ID, id);
-
-	// solar (short wave) properties
-	if (rhoBBD < 0.f)
-		rhoBBD = rhoFBD;
-
-	SWP_MAT.TAUSFBB = fOpen;
-	SWP_MAT.TAUSBBB = fOpen;
-	SWP_MAT.RHOSFBD = rhoFBD;
-	SWP_MAT.RHOSBBD = rhoBBD;
-	SWP_MAT.TAUSFBD = tauBD;
-	SWP_MAT.TAUSBBD = tauBD;
-
-	SWP_MAT.RHOSFDD = -1.;			// force estimation of diffuse-diffuse properties
-	SWP_MAT.RHOSBDD = -1.;
-	SWP_MAT.TAUS_DD = -1.;
-
-	LWP_MAT.EPSLF = -1.;			// default all LW properties
-	LWP_MAT.EPSLB = -1.;
-	LWP_MAT.TAUL = -1.;
-
-	S = 100.f;		// pleat geometry
-	W = 100.f;
-
-	// TODO: handle error message
-	return ASHWAT.xw_CheckFixCFSLayer( *this, id);
-}		// CFSLAYER::cl_InitDrape
-//----------------------------------------------------------------------
-void CFSLAYER::DbDump( const char* tag/*=""*/) const
-{
-	DbPrintf( "\n%s%-.10s   ty=%d\n  %s   %s\n  %s   %s",
-		tag, ID, LTYPE,
-		LWP_MAT.DbFmt("MAT "), SWP_MAT.DbFmt(),
-		LWP_EL.DbFmt("EL  "), SWP_EL.DbFmt());
-}
-//======================================================================
-CFSFILLGAS::CFSFILLGAS()
-{	ASHWAT.xw_ClearCFSFillGas( *this);
-}
-//----------------------------------------------------------------------
-#if 0
-// no .. use ASHWAT.DLL fcns
-CFSFILLGAS::CFSFILLGAS(
-	const char* id, double ak, double bk, double acp, double bcp,
-	double avisc, double bvisc, double mHat)
-{	Init( id, ak, bk, acp, bcp, avisc, bvisc, mHat);
-}		// CFSGILLGAS::CFSFILLGAS
-//----------------------------------------------------------------------
-void CFSFILLGAS::Init(
-	const char* id, double ak, double bk, double acp, double bcp,
-	double avisc, double bvisc, double mHat)
-{	FCSET( ID, id);
-	AK = ak; BK = bk; AVISC = avisc; BVISC = bvisc;
-	ACP = acp; BCP = bcp; MHAT = mHat;
-}	// CFSFILLGASS::Init
-//----------------------------------------------------------------------
-static CFSFILLGAS FGAir( "Air", 2.873E-3, 7.76E-5, 1002.737, 1.2324E-2, 3.723E-6, 4.94E-8,  28.97);
-// Fill gases and their properties
-//  Pre-defined, no input provided
-//  NOTE: FGX( 1) must be Air
-int iG
-TYPE (CFSFILLGAS) :: FGX( 4)
-DATA (FGX( iG),iG=1,SIZE( FGX)) / &
-//                      AK        BK       ACP	    BCP        AVISC     BVISC     MHAT
-CFSFILLGAS( "Air",     2.873E-3, 7.76E-5, 1002.737, 1.2324E-2, 3.723E-6, 4.94E-8,  28.97),  &
-CFSFILLGAS( "Argon",   2.285E-3, 5.149E-5,521.9285, 0,         3.379E-6, 6.451E-8, 39.948), &
-CFSFILLGAS( "Krypton", 0.9443E-3,2.826E-5,248.0907, 0.,        2.213E-6, 7.777E-8, 83.8),   &
-CFSFILLGAS( "Xenon",   0.4538E-3,1.723E-5,158.3397, 0.,        1.069E-6, 7.414E-8, 131.30)  &
-/
-#endif
-//======================================================================
-CFSGAP::CFSGAP()
-{	ASHWAT.xw_ClearCFSGap( *this);
-}	// CFSGAP::CFSGAP
-//=======================================================================
-CFSTY::CFSTY()
-{	cf_Clear();
-}		// CFSTY::CFSTY
-//-----------------------------------------------------------------------
-#if 0
-void CFSTY::cf_Clear()
-{	ASHWAT.xw_ClearCFS( *this);
-}		// CFSTY::cf_Clear
-#endif
-//-----------------------------------------------------------------------
-RC CFSTY::cf_OffNormal(			// derive off-normal properties for layers
+bool CFSTYX::cfx_OffNormal(			// derive off-normal properties for all layers
 	float incA,			// beam incident angle, radians
 	float vProfA,		// beam vertical profile angle, radians
 	float hProfA,		// beam horizontal profile angle, radians
@@ -392,8 +49,8 @@ RC CFSTY::cf_OffNormal(			// derive off-normal properties for layers
 		}
 #endif
 	}
-	return RCOK;
-}		// CFSTY::cf_OffNormal
+	return true;
+}		// CFSTYX::cfx_OffNormal
 #if defined( ASHWAT_CPPTEST)
 //------------------------------------------------------------------------
 int CFSLAYER::cl_OffNormalTest()
@@ -451,7 +108,7 @@ int CFSLAYER::cl_OffNormalTest1(
 }
 #endif
 //------------------------------------------------------------------------
-RC CFSTY::cf_SolarX(
+bool CFSTYX::cfx_Solar(
 	CFSSWP* swpON,		// layer properties w/ off-normal adjustments
 	float iBm,			// incident outside beam normal, any power units
 	float iDf,			// incident outside diffuse
@@ -459,11 +116,11 @@ RC CFSTY::cf_SolarX(
 	double absL[ CFSMAXNL+1])	// returned: absorbed by layer, same units
 								//   [0 .. NL-1] = outside ... inside layers
 								//   [NL] = absorbed in black room
+// returns true iff success
 {
 #if defined( ASHWAT_USECPP)
 	swpON[ NL] = swpBlack;
 	bool bRet = cf_Solar( swpON-1, iBm, iDf, iDfIn, absL-1);
-	RC rc = bRet ? RCOK : RCBAD;
 #else
 	RC rc = ASHWAT.xw_Solar( NL, swpON, swpBlack, iBm, iDf, iDfIn, absL);
 	VZero( absL+NL+1, CFSMAXNL-NL-1);		// clear unused values
@@ -480,14 +137,15 @@ RC CFSTY::cf_SolarX(
 			printf( "\ncf_Solar mismatch");
 	}
 #endif
+	bool bRet = !rc;
 #endif
-	return rc;
-}		// CFSTY::cf_SolarDLL
+	return bRet;
+}		// CFSTYX::cfx_Solar
 //-----------------------------------------------------------------------------
-RC CFSTY::cf_CalcRatings(
+bool CFSTYX::cfx_CalcRatings(
 	float& Urat,	// returned: NFRC rated winter U-factor, Btuh/ft2-F
 	float& SHGCrat)	// returned: NFRC rated summer SHGC, dimless
-// returns RCOK if success, else RCBAD
+// returns true iff success
 {
 	double Ux, SHGCx;
 #if defined( ASHWAT_USECPP)
@@ -495,7 +153,7 @@ RC CFSTY::cf_CalcRatings(
 	if (bRet)
 	{	Urat = USItoIP( Ux);
 		SHGCrat = SHGCx;
-		return RCOK;
+		return true;
 	}
 #else
 	if (ASHWAT.xw_pAWRatings)
@@ -510,15 +168,15 @@ RC CFSTY::cf_CalcRatings(
 #endif
 			Urat = USItoIP( Ux);
 			SHGCrat = SHGCx;
-			return RCOK;
+			return true;
 		}
 	}
 #endif
 	Urat = 0.;		// fail
 	SHGCrat = 0.;
-	return RCBAD;
+	return false;
 
-}		// CFSTY::cf_CalcRatings
+}		// CFSTYX::cfx_CalcRatings
 //-----------------------------------------------------------------------------
 CFSTYX::CFSTYX(			// build a CFS
 	const char* id,			// unique ID (max len = CFSIDLEN)
@@ -554,7 +212,8 @@ CFSTYX::CFSTYX(			// build a CFS
 	if (!rc)
 	{	rc = ASHWAT.xw_FinalizeCFS( *this);
 		if (!rc)
-		{	rc = cf_CalcRatings( UcogAW, SHGCcogAW);
+		{	if (!cfx_CalcRatings( UcogAW, SHGCcogAW))
+				rc = RCBAD;
 			// check that ratings are reasonably consistent
 			//   ASHWAT results are slightly different than Windows / THERM
 			if (!rc)
@@ -564,7 +223,7 @@ CFSTYX::CFSTYX(			// build a CFS
 		}
 	}
 	if (rc)
-	{	errCrit( WRN, "Library CFSTY '%s': FUBAR", id);
+	{	errCrit( WRN, "Failed to create library CFSTY '%s'.", id);
 		Clear();
 	}
 }		// CFSTYX::CFSTYX
@@ -763,7 +422,7 @@ void FENAW::DbDump() const
 	for (int iL=0; iL<nL; iL++)
 	{	fa_CFS._L[ iL].DbDump( strtprintf("%d ", iL+1));
 		if (iL < nL-1)
-			DbPrintf( "  %s\n", fa_CFS._G[ iL].DbFmt());
+			DbPrintf( "  %s\n", fa_CFS._G[ iL].DbFmt().c_str());
 	}
 }		// FENAW::DbDump
 //-----------------------------------------------------------------------------
@@ -779,9 +438,12 @@ RC FENAW::fa_BmSolar(			// ASHWAT beam solar (optical) calcs
 	VZero( fa_bmLAbsF[ iH], CFSMAXNL+1);
 	if (incA < kPiOver2)
 	{	CFSSWP swpON[ CFSMAXNL];
-		rc = fa_CFS.cf_OffNormal( incA, vProfA, hProfA, swpON);
+		if (!fa_CFS.cfx_OffNormal( incA, vProfA, hProfA, swpON))
+			rc = RCBAD;
 		if (!rc)
-			rc = fa_CFS.cf_SolarX( swpON, 1., 0., 0., fa_bmLAbsF[ iH]);
+		{	if (!fa_CFS.cfx_Solar( swpON, 1., 0., 0., fa_bmLAbsF[ iH]))
+				rc = RCBAD;
+		}
 		else
 			VZero( fa_bmLAbsF[ iH], CFSMAXNL+1);	// insurance after fail
 	}
@@ -795,13 +457,17 @@ RC FENAW::fa_DfSolar()			// ASHWAT diffuse solar (optical) calcs
 
 {
 	CFSSWP swpON[ CFSMAXNL];
-	RC rc = fa_CFS.cf_OffNormal( 0., 0., 0., swpON);
+	RC rc = fa_CFS.cfx_OffNormal( 0., 0., 0., swpON) ? RCOK : RCBAD;
 	VZero( fa_dfLAbsF, CFSMAXNL+1);
 	VZero( fa_dfLAbsB, CFSMAXNL+1);
 	if (!rc)
-		rc = fa_CFS.cf_SolarX( swpON, 0., 1., 0., fa_dfLAbsF);
+	{	if (!fa_CFS.cfx_Solar( swpON, 0., 1., 0., fa_dfLAbsF))
+			rc = RCBAD;
+	}
 	if (!rc)
-		rc = fa_CFS.cf_SolarX( swpON, 0., 0., 1., fa_dfLAbsB);
+	{	if (!fa_CFS.cfx_Solar( swpON, 0., 0., 1., fa_dfLAbsB))
+			rc = RCBAD;
+	}
 	if (!rc)
 	{	// back (room) side overall properties
 		//   last "layer" is room
@@ -820,7 +486,7 @@ RC FENAW::fa_DfSolar()			// ASHWAT diffuse solar (optical) calcs
 //-----------------------------------------------------------------------------
 RC FENAW::fa_CalcRatings()
 {
-	RC rc = fa_CFS.cf_CalcRatings( fa_CFS.SHGCcogAW, fa_CFS.UcogAW);
+	RC rc = fa_CFS.cfx_CalcRatings( fa_CFS.SHGCcogAW, fa_CFS.UcogAW);
 	return rc;
 }		// FENAW::fa_CalcRatings
 //-----------------------------------------------------------------------------
@@ -1394,6 +1060,7 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 	return RCOK;
 }
 #endif	// _DEBUG
+//=============================================================================
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1454,7 +1121,7 @@ static bool bSetup = false;
 			xw_pAWRatings = (AWRatings *)xm_GetProcAddress( "CFSRatings");
 		}
 	}
-	RC rc = xm_RC;
+	rc = xm_RC;
 #endif
 #if defined( ASHWAT_USECPP)
 	ASHWAT_Setup( MsgCallBackFunc, 0);
@@ -1467,14 +1134,15 @@ static bool bSetup = false;
 //-----------------------------------------------------------------------------
 /*static*/ void XASHWAT::MsgCallBackFunc(
 	AWMSGTY msgTy,
-	const char* msg)
+	const string& msg)
 {
-
-	warn( msg);
-
+	if (msgTy == msgDBG)
+		DbPrintf( msg.c_str());
+	else
+		warn( msg.c_str());
 }		// XASHWAT::MsgCallBackFunc
 //-----------------------------------------------------------------------------
-RC XASHWAT::xw_CheckFixCFSLayer(
+bool XASHWAT::xw_CheckFixCFSLayer(
 	CFSLAYER& L,		// layer to be checked / fixed
 	const char* what)	// context for messages
 {
@@ -1484,9 +1152,9 @@ RC XASHWAT::xw_CheckFixCFSLayer(
 	if (!bRet)
 	{	vector< string>::const_iterator  pos;
 		for (pos=msgs.begin(); pos!=msgs.end(); ++pos)
-			warn( pos->c_str());	// trim beg and end -> TmpStr
+			warn( pos->c_str());
 	}
-	return bRet ? RCOK : RCBAD;
+	return bRet;
 #else
 char msgs[ MSGMAXCOUNT][ MSGMAXLEN];
 int nMsgs;
@@ -1521,65 +1189,9 @@ char fWhat[ MSGMAXLEN];
 	}
 #endif
 
-	return ret != 0 ? RCOK : RCBAD;
+	return ret != 0;
 #endif
-
 }		// XASHWAT::xw_CheckFixCFSLayer
-//-----------------------------------------------------------------------------
-RC XASHWAT::xw_ClearCFSLayer( CFSLAYER& L)
-{
-#if defined( ASHWAT_USECPP)
-	L.cl_Clear();
-#else
-	if (!xw_pAWClearCFSLayer)
-		return RCBAD;
-
-	(*xw_pAWClearCFSLayer)( L);
-#endif
-	return RCOK;
-
-}		// XASHWAT::xw_ClearCFSLayer
-//-----------------------------------------------------------------------------
-RC XASHWAT::xw_ClearCFSGap( CFSGAP& G)
-{
-#if defined( ASHWAT_USECPP)
-	G.cg_Clear();
-#else
-	if (!xw_pAWClearCFSGap)
-		return RCBAD;
-
-	(*xw_pAWClearCFSGap)( G);
-#endif
-	return RCOK;
-}		// XASHWAT::xw_ClearCFSGap
-//-----------------------------------------------------------------------------
-RC XASHWAT::xw_ClearCFSFillGas( CFSFILLGAS& F)
-{
-#if defined( ASHWAT_USECPP)
-	F.cfg_Clear();
-#else
-	if (!xw_pAWClearCFSFillGas)
-		return RCBAD;
-
-	(*xw_pAWClearCFSFillGas)( F);
-#endif
-	return RCOK;
-
-}		// XASHWAT::xw_ClearCFSFillGas
-//-----------------------------------------------------------------------------
-RC XASHWAT::xw_ClearCFS( CFSTY& CFS)
-{
-#if defined( ASHWAT_USECPP)
-	CFS.cf_Clear();
-#else
-	if (!xw_pAWClearCFS)
-		return RCBAD;
-
-	(*xw_pAWClearCFS)( CFS);
-#endif
-	return RCOK;
-
-}		// XASHWAT::xw_ClearCFS
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_FinalizeCFS( CFSTY& CFS)
 {
@@ -1685,9 +1297,8 @@ RC XASHWAT::xw_BuildLib()		// libary of built-in types
 	RC rc = RCOK;
 	xw_layerLib.clear();
 	xw_CFSLib.clear();
-
 	// properties direct paste from Ken Nittler 11-19-2010 memo
-	//                         ID       D( ")  Tsol   1  Rsol 2   Tvis  1  Rvis 2   Tir   1 Emis 2   Keff
+	//                                ID   thk inch  Tsol rSol1 rSol2  Tvis rVis1 rVis2   tIR  eIR1  eIR2  cond
 	xw_layerLib.push_back( CFSLAYER( "102",   0.120, .834, .075, .075, .899, .083, .083, .000, .840, .840, .578)); // CLEAR
 	xw_layerLib.push_back( CFSLAYER( "9921",  0.118, .740, .119, .112, .842, .111, .106, .000, .164, .840, .578)); // EHSLE
 	xw_layerLib.push_back( CFSLAYER( "2184F", 0.122, .694, .169, .146, .869, .065, .081, .000, .110, .840, .578)); // HSLE

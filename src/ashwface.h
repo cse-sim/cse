@@ -49,12 +49,16 @@ struct CFSTYX : public CFSTY
 	float SHGCcogNFRC;	// NRFC cog SHGC (ditto)
 	float UcogAW;		// ASHWAT cog U
 	float SHGCcogAW;	// ASHWAT cog SHGC
+
 	CFSTYX() { Clear(); }
 	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, const char* layer1ID, ...);
 	void Clear();
-	void DbDump() const;
+	// wrappers for CFSTY mbrs that to facilitate C++ <-> DLL comparisons
+	bool cfx_CalcRatings( float& Urat, float& SHGCrat);
+	bool cfx_Solar( CFSSWP* swpON, float iBm, float iDf, float iDfIn,
+		double absL[ CFSMAXNL+1]);
+	bool cfx_OffNormal( float incA, float vProfA, float hProfA, CFSSWP* swpON);
 };		// struct CFSTYX
-
 //=============================================================================
 
 #undef ASHWAT_STATS		// define to derive statistics about ASHWAT use
@@ -348,20 +352,14 @@ public:
 	virtual void xm_ClearPtrs();
 
 	RC xw_Setup();
-	static void MsgCallBackFunc( AWMSGTY msgTy, const char* msg);
-	RC xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
-	RC xw_ClearCFSLayer( CFSLAYER& L);
-	RC xw_ClearCFSFillGas( CFSFILLGAS& F);
-	RC xw_ClearCFSGap( CFSGAP& G);
-	RC xw_ClearCFS( CFSTY& CFS);
+	static void MsgCallBackFunc( AWMSGTY msgTy, const string& msg);
+	bool xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
 	RC xw_FinalizeCFS( CFSTY& CFS);
 	RC xw_BuildGap( CFSGAP& G, const char* fgID, double tas, int gType=gtySEALED);
 	RC xw_OffNormalProperties( 	const CFSLAYER& L, double incA, double vProfA,
 		double hProfA, CFSSWP& LSWP_ON);
 	RC xw_Solar( int nl, CFSSWP* swpON, CFSSWP& swpRoom,
 		double iBm, double iDf, double iDfIn, double* source);
-	RC xw_Subhr( ZNR* zp);
-	// RC xc_Finish();	// finish now done in xc_Shutdown(); add separate call if needed
 
 	WVect< CFSLAYER> xw_layerLib;		// collection of built-in CFS layers
 	WVect<  struct CFSTYX> xw_CFSLib;	// ditto CFSs

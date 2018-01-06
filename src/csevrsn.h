@@ -14,7 +14,7 @@
 // version # for current build
 // change ONLY here
 #define CSEVRSN_MAJOR 0
-#define CSEVRSN_MINOR 849
+#define CSEVRSN_MINOR 850
 
 // version # as quoted text ("x.xxx")
 #define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR)
@@ -22,6 +22,7 @@
 // ONLY comments below here
 
 /* History:
+   0.850: ...
    0.849: added tdvElecHrRank; fix daily wthr/tdv values re DST; prelim DESCOND, committed 12-28-2017
    0.848: merge 0.836b (alternate branch release)
    0.847: fix inconsistent xs_UNom
