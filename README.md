@@ -30,6 +30,7 @@ from the **msvc\\build** directory.
 
 #### Dependencies
 
+- Microsoft Visual Studio with Visual C++ and [v120_xp toolset](https://www.microsoft.com/en-us/download/details.aspx?id=40760)
 - CMake 3.10 or later
 
 Note: Generating the documentation requires additional tools. See [doc\\README.md](doc/README.md).
