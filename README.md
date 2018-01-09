@@ -18,4 +18,18 @@ All known issues are listed on our [Issue Tracker]. New issues can be reported t
 
 ### Development
 
-CSE is configured as a Microsoft Visual Studio project. To compile the project, simply open the solution file (src/cse.sln) in Microsoft Visual Studio with Visual C++ and click "Build Solution".
+CSE is configured as a CMake project. Currently, CMake is only configured to generate Microsoft Visual Studio solutions compiled with Microsoft Visual C++ (other generators and compilers will not work). A batch script is set up for automatic project setup. Simply double click or run the **build.bat** script in the root directory. All products (e.g., CSE.exe) will be placed in a directory called **msvc**.
+
+#### Testing
+
+Automated testing of your build can be executed by running
+
+`ctest -C Release`
+
+from the **msvc\\build** directory.
+
+#### Dependencies
+
+- CMake 3.10 or later
+
+Note: Generating the documentation requires additional tools. See [doc\\README.md](doc/README.md).
