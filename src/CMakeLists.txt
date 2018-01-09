@@ -270,7 +270,7 @@ set(libs
 
 target_link_libraries(CSE ${libs})
 
-set(exeDir "${CMAKE_BINARY_DIR}/products")
+set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
 
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
