@@ -459,7 +459,9 @@
     <ClInclude Include="PP.H" />
     <ClInclude Include="PSYCHRO.H" />
     <ClInclude Include="PVCalc.h" />
-    <ClInclude Include="RCCN.H" />
+    <ClInclude Include="RCCN.H">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="RMKERR.H" />
     <ClInclude Include="SLPAK.H" />
     <ClInclude Include="SRD.H" />

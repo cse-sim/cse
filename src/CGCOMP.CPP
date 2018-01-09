@@ -1638,6 +1638,12 @@ RSYS* DUCTSEG::ds_GetRSYS() const
 	return pRS;
 }		// DUCTSEG::ds_GetRSYS
 //-----------------------------------------------------------------------------
+bool DUCTSEG::ds_IsRound() const
+{	// if ds_exArea is input, assume flat area-only model
+	// else round
+	return !IsSet( DUCTSEG_EXAREA);
+}	// DUCTSEG::ds_IsRound
+//-----------------------------------------------------------------------------
 RC DUCTSEG::ds_TopDS(			// set up run record
 	const DUCTSEG* pDSi)		// input record
 // caller must allocate this (in DsR)
@@ -1646,10 +1652,7 @@ RC DUCTSEG::ds_TopDS(			// set up run record
 
 	Copy( pDSi);	// copy record, incl name, excl internal front overhead.
 
-	BOOL bRound = !IsSet( DUCTSEG_EXAREA);	// if exterior area is specified
-											// assume flat config (no radius adj)
-
-	if (bRound)
+	if (ds_IsRound())
 	{	if (!IsSet( DUCTSEG_DIAM))
 		{	if (ds_len > 0.f)
 				ds_diam = ds_inArea / (kPi * ds_len);
@@ -1698,7 +1701,7 @@ RC DUCTSEG::ds_TopDS(			// set up run record
 	ds_RconvIn = 0.4;		// approx inside convection resistance, ft2-F/Btuh
 							//   derived per HOF correlations per typical diam, temp, vel
 	if (rc == RCOK)
-	{	if (bRound)
+	{	if (ds_IsRound())
 		{	// round configuration
 			double diamOut = ds_diam + 2.*ds_insulThk;
 			double diamRat = diamOut / ds_diam;	// ratio of outside to inside diameter
@@ -1744,6 +1747,35 @@ void DUCTSEG::ds_SetRunConstants()		// set constants that do not vary during sim
 	ZNR* zpx = ds_GetExZone();		// zone outside duct (NULL if none)
 	ds_sbcO.sb_SetRunConstants( zpx);
 }		// DUCTSEG::ds_SetRunConstants
+//----------------------------------------------------------------------------
+#if 0
+RC DUCTSEG::ds_SetSizeFromAVF(		// adjust diameter based on flow
+	float avf)		// design air volume flow, cfm
+{
+	const RSYS* pRS = ds_GetRSYS();
+
+	// # of runs
+	int nR = pRS->rs_areaServed / ds_desAirVel;
+
+	float avfPerRun = avf / ds_nDuctRun;
+
+	float ductArea = avfPerRun / ds_airVelDs;
+
+	ds_diam = 2.f * sqrt( ductArea / kPi);
+
+
+}	// DUCTSEG::ds_SetSizeFromAVF
+//-----------------------------------------------------------------------------
+int DUCTSEG::ds_GetDuctRunInfo(
+	float& runLen)	// average run length, ft
+// returns # of runs
+{	
+	const RSYS* pRS = ds_GetRSYS();
+
+	// # of runs
+	int nR = max( 1, iRound( pRS->rs_areaServed / ds_CFAperRun));
+}	// DUCTSEG::ds_GetRunInfo
+#endif
 //-----------------------------------------------------------------------------
 RC DUCTSEG::ds_BegHour()
 {

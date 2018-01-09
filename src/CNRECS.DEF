@@ -138,7 +138,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*declare "RC tp_SetDerived();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
-	*declare "RC tp_WfInit();"
+	*declare "RC tp_WthrInit();"
     *declare "int tp_AuszWthrSource() const;"
     *declare "RC tp_MainSim();"
     *declare "RC tp_MainSimI();"
@@ -733,13 +733,17 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
     *declare "RC wd_TDVReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_EPWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
+	*declare "void wd_SetDayValues( const class WDDAY& wdd);"
+	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
+	*declare "void wd_ShiftTdvElecHrRankForDST();"
 
 						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
 						// wd_db assumed 1st non-solar geometry mbr
 						// re preservation of solar geometry info, see Copy()
 	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
 							// solar position at midpoint of hour (or portion of hour sun is up)
-	*h float wd_slAzm;		//   azmimuth, radians (0=N, +clockwise)
+	*h float wd_slAzm;		//   azimuth, radians (0=N, +clockwise)
+							//     NOTE: code assumes wd_slAzm is 1st float
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
@@ -759,6 +763,11 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_tMains		// cold water mains temp, F
 							//   computed using CEC ACM method
 
+							// time-of-day fuel values, units = TDV/Btu
+							//   values are read from optional TDV file
+	*h float wd_tdvElec		//      electricity
+	*h float wd_tdvFuel		//      fuel
+
 							// derived (computed) drybulb temp values
 							//   values change at day beg / same all day
 	*h float wd_taDbPk			// current day peak DB (includes future hours), F
@@ -769,11 +778,6 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_taDbAvg14		// trailing 14-day avg DB (not including current day), F
 	*h float wd_taDbAvg31		// trailing 31-day avg DB (not including current day), F
 
-	
-							// time-of-day fuel values, units = TDV/Btu
-							//   values are read from optional TDV file
-	*h float wd_tdvElec		//      electricity
-	*h float wd_tdvFuel		//      fuel
 
 							// derived (computed) electricity TDV values
 							//   values change at day beg / same all day
@@ -781,6 +785,12 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_tdvElecAvg			// current day avg TDVelec (includes future hours)
 	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
 	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)
+									//     NOTE: code assumes wd_tdvElecAvg01 is last float
+	*h *ARRAY 25 SI wd_tdvElecHrRank	// hour ranking of TDV values
+										//   [ 0]=unused
+										//   [ 1]=hour of highest tdvElec, 1-24
+										//   [ 2]=hour of 2nd highest
+										//   etc
 
 *END	// WDHR
 //========================================================================================================
@@ -800,24 +810,27 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 RECORD DESCOND "DESCOND" *RAT		// cooling design conditions
 *prefix dc_
 	*declare "RC dc_CkF();"
-	*declare "DOY dc_GetDOY() const;"
+	*declare "DOY dc_GetDOY() const { return dc_doy; }"
+	*declare "RC dc_RunInit();"
+	*declare "RC dc_CheckFixSolar( int options);"
 	*declare "void dc_GenerateTemps( int iHr, float astCor, float& db, float& wb, float& dbAvg) const;"
 
-	*i DOY dc_day;			// calc date for this DESCOND
+	*i DOY dc_doy;			// calc date for this DESCOND (1-365)
 
 	*i FLOAT dc_DB;			// design dry-bulb temp, F
 	*i FLOAT dc_MCDBR;		// coincident daily db range, F
 	*i FLOAT dc_MCWB;		// coincident wet-bulb temp, F
 	*i FLOAT dc_MCWBR;		// coincident daily wb range, F
-	*i FLOAT dc_wndSpd;		// wind speed, mph
-	*i FLOAT dc_tauB;		// beam tau
-	*i FLOAT dc_tauD;		// diffuse tau
+							//    if omitted, constant dewpoint limited by saturation
+	*i FLOAT_GEZ dc_wndSpd;	// wind speed, mph
 
-	// float dcGrRfl;		// default ground reflectivity (0-1)
-	// CWString sDirRad;	// schedule ID for direct solar on normal surface (W/m2)
-							//   for testing, "" = use modelled
-	// CWString sDifRad;	// schedule ID for diffuse solar on horiz surface (W/m2)
-							//   for testing, "" = use modelled
+							// parameters for ASHRAE clear sky model
+							//      if taub/d provided, ebn/edh derived else reverse
+							//      if all 0, solar is 0 all hours
+	*i FLOAT_GEZ dc_tauB;		// beam tau
+	*i FLOAT_GEZ dc_tauD;		// diffuse tau
+	*i FLOAT_GEZ dc_ebnSlrNoon;	// solar noon beam normal, Btuh/ft2
+	*i FLOAT_GEZ dc_edhSlrNoon;	// solar noon diffuse horiz, Btuh/ft2
 
 *END	// DESDAY
 //========================================================================================================
@@ -2773,8 +2786,10 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *declare "ZNR* ds_GetExZone() const;"
 *declare "RSYS* ds_GetRSYS() const;"
 *declare "RC ds_Ckf();"
+*declare "bool ds_IsRound() const;"
 *declare "RC ds_TopDS( const DUCTSEG* pDSi);"
 *declare "void ds_SetRunConstants();"
+*declare "RC ds_SetSizeFromAVF( float avf);"
 *declare "double ds_InsulK( float T) const { return ds_insulKA + ds_insulKB * T; }"
 *declare "int ds_IsSupply() const { return ds_ty == C_DUCTTYCH_SUP; }"
 *declare "RC ds_BegHour();"
@@ -2790,10 +2805,18 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 								//   represents coupling(s) between duct exterior
 								//   surface and adjacent zone or ambient
 									
-*i FLOAT ds_exArea			// exterior heat transfer surface area, ft2 (outside of insulation)
+*i FLOAT_GEZ ds_exArea		// exterior heat transfer surface area, ft2 (outside of insulation)
+							//   if input, flat area-only model is used, many inputs have no effect
+							//   if NOT input, round ducts assumed
 
 *i FLOAT_GZ ds_diam			// duct diameter (w/o insulation), ft
-*i FLOAT_GEZ ds_len			// segment length, ft
+*i FLOAT_GEZ ds_len			// total length (all branches), ft
+*r FLOAT_GZ ds_branchLen	// average branch length, ft
+*i SI_GZ ds_branchCount		// # of branches
+*i FLOAT_GZ ds_branchCFA	// floor area served per per branch, ft2
+							//    used re default ds_branchCount
+*i FLOAT_GZ ds_airVelDs		// design air velocity, fpm
+							//   re flow-based sizing
 
 *i FLOAT_GEZ ds_inArea		// interior surface area, ft2
 							//   = inside wetted area / duct surf area w/o insulation
@@ -2845,14 +2868,15 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 
 *END	// DUCTSEG
 //=============================================================================
-RECORD RSYS "RSYS" *RAT	// residential system
+RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *prefix rs_
 
 // *excon	// explicit constructor
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC rs_CkF();"
-*declare "RC rs_TopRSys();"
+*declare "RC rs_TopRSys1();"
+*declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
 *declare "RC rs_FazInit( int isAusz);"
 *declare "RC rs_RddInit( int isAusz);"
@@ -2873,6 +2897,7 @@ RECORD RSYS "RSYS" *RAT	// residential system
 *declare "RC rs_SetupCapH( float avfH=-1.f, int options=0);"
 *declare "void rs_SetupFanC( float avfC=-1.f);"
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
+*declare "RC rs_SetDuctSizes();"
 *declare "void rs_SetModeAndClear( int rsModeNew);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"

@@ -208,7 +208,7 @@ void FC runFazDataFree()
 
 	// Note: entries are put into most of these in input code in cncult2.cpp:topCkf and its subfcns.
 
-	ZrB.free(); 	// Zones runtime info.  basAnc::free is in lib\ancrec.cpp.
+	ZrB.free(); 	// Zones runtime info
 	ZnresB.free();	// zone simulation results
 	RSysResR.free();	// RSYS results
 	IzxR.free();	// interzone transfers
@@ -924,9 +924,10 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 						// inits Locsolar (comments below)
 						// EF: return RCBAD on any non-RCOK return.
 
-// Set up weather file
-// do each phase, allowing name to change. Messages errors.
-	EF( Top.tp_WfInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT].  EF: return RCBAD if error.
+// Set up weather file, TDV file, and DESCONDs
+//   Do each phase, allowing file or location changes.
+//   Messages errors.
+	EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
 
 // Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
@@ -2502,7 +2503,7 @@ LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (
 					/* ***** TEMPORARY weather file info for initial DL test graphs ***** 9-4-94
 					   Make names match values passed to setHourInfo() in doIvlAccum()!
 					   Expect will depend on wf type.
-					   Coordinate via tp_WfInit (xxx called in this fcn about 100 lines up) ***** */
+					   Coordinate via tp_WthrInit(xxx called in this fcn about 100 lines up) ***** */
 #ifdef TWOWV // bfr.h 9-94
 					2, "Est Direct", "Est Diffuse" ) )	// # dl weather vbls and their names. Estimated from CEC wthr file for now.
 #else
@@ -2554,15 +2555,15 @@ static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) 
 				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
 //------------------------------------------------------------------------
 LOCAL RC FC NEAR locInit()		// location-initializer for cne
-// inits lib\slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
+// inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
 // returns RCOK if ok, else message already issued.
 {
-/* init lib\slpak.cpp: alloc SLLOCDAT (slpak.h) and init for location.
-   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
-   slpak remembers its location internally. */
+// init slpak.cpp: alloc SLLOCDAT (slpak.h) and init for location.
+//   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
+//   slpak remembers its location internally.
 
 	Locsolar = slinit( RAD( Top.latitude),	// latitude (to radians)
-					   RAD( Top.longitude), 	// longitude
+					   RAD( Top.longitude), // longitude
 					   Top.timeZone, 		// time zone
 					   Top.elevation );		// site altitude (ft)
 	return RCOK;

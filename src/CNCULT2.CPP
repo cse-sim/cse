@@ -59,7 +59,8 @@ LOCAL RC topCon2();
 LOCAL RC topGt();
 LOCAL RC topMtr();
 LOCAL RC topGain();
-LOCAL RC topRSys();
+LOCAL RC topRSys1();
+LOCAL RC topRSys2();
 LOCAL RC topDHW();
 LOCAL RC topPV();
 LOCAL RC topBT();
@@ -316,6 +317,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topMsCon())			// mass & masstype stuff between topSf1 and 2.  cncult3.cpp
 	E( topSg() )		   	// sgdists: do after windows pass 1. sets gz.sgdist[]: do b4 topSf2( , WINDOW). cncult3.
 	E( topSh() )			// shades: do after windows pass 1. sets gz.x.iwshad: do b4 topSf2( , WINDOW). cncult3.
+	E( topRSys1() )			// RSYS basic setup: before TopDs
 	E( topDs() )   			// duct segments: before topZn2
 	E( topZn2() )			// zones: accum total surf areas etc.
 	E( topSf2() )  			// surfs pass 2: make XSRATs and MSRATs.
@@ -324,7 +326,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topGain() )			// check gains / copy to run rat.  local fcn.
 	E( topRadGainDist() )	// set up distribution of radiant internal gains. Must follow most surface/zone stuff
 
-	E( topRSys() )			// RSYS
+	E( topRSys2() )			// RSYS final setup
 	E( topPV() )			// PVArrays
 	E( topBT() )            // Batteries
 	E( topSX() )			// ShadeX external shading
@@ -813,9 +815,8 @@ const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error message
 	return s;
 }			// TOPRAT::When
 //-----------------------------------------------------------------------------
-LOCAL RC topDC()		// finalize DESCONDs
-{	RC rc = RCOK;
-	// input records used at runtime, nothing to do
+LOCAL RC topDC()		// copy input DESCONDs to run records
+{	RC rc = DcR.RunDup( DCiB);
 	return rc;
 }	// topDC
 //-----------------------------------------------------------------------------
@@ -1367,7 +1368,7 @@ LOCAL RC topMtr()	// check METERs / copy to run rat.  Create sum-of-meters recor
 	return rc;
 }		// topMtr
 //-----------------------------------------------------------------------------
-LOCAL RC topRSys()	// check RSYS / copy to run rat
+LOCAL RC topRSys1()	// check RSYS / copy to run rat
 {
 	RC rc = RCOK;
 	E( RsR.al( RSiB.n, WRN) )	// delete old records, alloc to needed size now for min fragmentation
@@ -1377,11 +1378,21 @@ LOCAL RC topRSys()	// check RSYS / copy to run rat
 		{	RSYS* pRS;
 			RsR.add( &pRS, ABT, pRSi->ss); 	// add run RSYS record.  error not expected due to preceding al.
 			*pRS = *pRSi;					// copy input record to run record including name
-			rc |= pRS->rs_TopRSys();
+			rc |= pRS->rs_TopRSys1();
 		}
 	}
 	return rc;
-}	// ::topRSys
+}	// ::topRSys1
+//-----------------------------------------------------------------------------
+LOCAL RC topRSys2()	// additional RSYS check / setup
+{
+	RC rc = RCOK;
+	RSYS* pRS;
+	// loop run records (added by topRSys2())
+	RLUP( RsR, pRS)
+		rc |= pRS->rs_TopRSys2();
+	return rc;
+}	// ::topRSys2
 //=============================================================================
 LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 {

@@ -982,9 +982,9 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// make SHADE run record, put its subscript in window.x.iwshad
 
-		E( WshadR.add( &shr, WRN) )  			// add shade run record, return if error
-		*shr = *sh;					// copy record data (except internal overhead), ancrec.cpp.
-		gz->x.iwshad = shr->ss;    			// WSHADRAT subscript to XSURF
+		E( WshadR.add( &shr, WRN) )  	// add shade run record, return if error
+		*shr = *sh;						// copy record data (except internal overhead), ancrec.cpp.
+		gz->x.iwshad = shr->ss;    		// WSHADRAT subscript to XSURF
 	}
 	return rc;
 }		// topSh
@@ -1189,10 +1189,6 @@ RC topZn2()			// accumulate surface totals etc
 	RLUP( ZrB, zp)
 	{	zp->zn_FinalizeSurfTotals();
 		zp->zn_RadX();			// set F and Fp values for air and surfaces
-#if 0	// moved to topZn3(), 8-19-2013
-x		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
-x								//   AIRNET modeling of duct leakage and system air
-#endif
 	}
 
 	return rc;

@@ -361,6 +361,9 @@ void FC slday(	// set up daily data in current SLLOCDAT
 /* sets members re declination of earth's axis, time / hour angle conversion
    (.tmconst), hourly sunupf[], dircos[], slazm[], etc. */
 {
+	if (!slloccur)
+		err( PABT, "NULL slloccur");
+
 	if ((options&1) && slloccur->doy == doy && slloccur->timetype == timetype)
 		return;		// already set for doy
 
@@ -828,10 +831,9 @@ void FC slaniso(	/* Adjust beam and diffuse radiation values
 
 #include "ASHRAE/solar.cpp"
 
-
 float slASHRAETauModel(	// ASHRAE "tau" clear sky model
 	float sunZen,		// solar zenith angle, radians
-	float tauB,			// ASHRAE beam "pseudo optical depth" (from database)
+	float tauB,			// ASHRAE beam "pseudo optical depth"
 	float tauD,			// ditto diffuse
 	float& radDirN,		// returned: direct normal irradiance, units per extBm
 	float& radDifH)		// returned: diffuse horizontal irradiance, units per extBm
@@ -842,8 +844,83 @@ float slASHRAETauModel(	// ASHRAE "tau" clear sky model
 
 	return ASHRAETauModel(	// ASHRAE "tau" clear sky model
 			1, extBm, sunZen, tauB, tauD, radDirN, radDifH);
+}	// slASHRAETauModel
+//-----------------------------------------------------------------------------
+static bool slASHRAETauModelInv(		// derive tauB/tauD from irradiance
+	double Ebn,		// beam normal irradiance (at m)
+	double Edh,		// diffuse horizontal irradiance (at m)
+	double E0,		// exterrestrial normal irradiance
+	double m,		// air mass, dimless
+	double& tauB,	// returned
+	double& tauD)	// returned
+// Ebn, Edh, and E0 should have same units
+// Based on Python implementation by Michael Roth
+// ASHRAE 2017 coefficients implicit
+{
+    double Kb = Ebn/E0;
+    double Kd = Edh/E0;
 
-}
+    double logm = log( m);
+    double loglogKb = log( log(1.0/Kb));
+    double loglogKd = log( log(1.0/Kd));
+    double tol = 1e-8;
+
+	// First guess
+    tauB = 0.75;
+	tauD = 1.5;
+	
+	bool bConverge = false;
+    for (int iT=0; iT<20 && !bConverge; iT++)
+	{	// update ab & ad
+        double ab = 1.454 -0.406*tauB -0.268*tauD +0.021*tauB*tauD;
+        double ad = 0.507 +0.205*tauB -0.080*tauD -0.190*tauB*tauD;
+
+        // Calculate F
+        // Note: Took log twice of equations (17) and (18). F is the
+        // difference between LHS & RHS.  We want F to approach zero.
+        double Fb = log(tauB) + ab*logm - loglogKb;
+        double Fd = log(tauD) + ad*logm - loglogKd;
+
+        // calculate Jacobian
+        double Jbb = 1.0/tauB + logm*(-0.406 +0.021*tauD);
+        double Jbd = logm*(-0.268 + 0.021*tauB);
+        double Jdb = logm*(+0.205 - 0.190*tauD);
+        double Jdd = 1.0/tauD + logm*(-0.080 -0.190*tauB);
+
+        // solve system {-F} = [J]{dtau} using Cramer's rule
+        double detJ = Jbb*Jdd - Jdb*Jbd;
+        double dtauB = (-Fb*Jdd + Fd*Jbd)/detJ;
+        double dtauD = (-Jbb*Fd + Jdb*Fb)/detJ;
+
+        // update taus
+        tauB += dtauB;
+        tauD += dtauD;
+
+        bConverge = abs( dtauB) <= tol && abs( dtauD) <= tol;
+	}
+	return bConverge;
+}	// slASHRAETauModelInv
+//--------------------------------------------------------------------------
+bool slASHRAETauModelInv(		// ASHRAE tau model inverse
+	double sunZen,	// solar zenith angle, radians
+	double Ebn,		// beam normal irradiance (typically solar noon)
+	double Edh,		// diffuse horizontal irradiance (ditto)
+	float& tauB,	// returned
+	float& tauD)	// returned
+{
+
+	float extBm = slloccur->extbm;
+
+	double m = AirMass( kPiOver2-sunZen);
+
+	double tauBd, tauDd;
+	bool bRet = slASHRAETauModelInv( Ebn, Edh, extBm, m, tauBd, tauDd);
+	tauB = float( tauBd);
+	tauD = float( tauDd);
+	return bRet;
+}	// slASHRAETauModelInv
+//==========================================================================
+
 
 /************************ rest of file is if-outs *************************/
 
