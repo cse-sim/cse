@@ -1,3 +1,5 @@
+add_subdirectory(wcmp)
+
 macro(run_test case)
 set(test_comment "! ")
   add_test(NAME ${case}.Run
@@ -8,9 +10,10 @@ endmacro()
 
 macro(regress_test case)
   add_test(NAME ${case}.Regression
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/wcmp" "${CMAKE_CURRENT_SOURCE_DIR}/${case}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${case}.rep" "!"
+    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${case}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${case}.rep" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
+  set_tests_properties(${case}.Regression PROPERTIES DEPENDS ${case}.Run)
 endmacro()
 
 set(files
