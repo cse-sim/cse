@@ -11,6 +11,7 @@
 #include <io.h>			// open, read, close
 #include <ctype.h>		// isspace
 #include <fcntl.h>		// O_RDONLY
+#include <share.h>		// _SH_DENYRW
 
 static int filesAreDiffBinary( int hFile1, int hFile2);
 static int filesAreDiffLine( FILE* file1, FILE* file2, int comChar);
@@ -27,14 +28,18 @@ int main( int argc, char **argv)
     }
 
 	if (argc == 3)		// no comment char
-	{	int hFile1 = open( argv[ 1], O_RDONLY|O_BINARY);	// open files
-		int hFile2 = open( argv[ 2], O_RDONLY|O_BINARY);
+	{	int hFile1;
+		_sopen_s(&hFile1, argv[ 1], O_RDONLY|O_BINARY, _SH_DENYRW, 0);	// open files
+		int hFile2;
+		_sopen_s(&hFile2, argv[ 2], O_RDONLY|O_BINARY, _SH_DENYRW, 0);
 		ret = filesAreDiffBinary( hFile1, hFile2);
 	}
 	else
 	{	char comChar = *argv[ 3];
-		FILE* file1 = fopen(argv[ 1], "r");
-		FILE* file2 = fopen( argv[ 2], "r");
+		FILE* file1;
+		fopen_s(&file1, argv[ 1], "r");
+		FILE* file2;
+		fopen_s(&file2, argv[ 2], "r");
 		ret = filesAreDiffLine( file1, file2, comChar);
 	}
 
@@ -53,14 +58,14 @@ char buf1[ BUFSZ], buf2[ BUFSZ];
 	if (hFile1 == -1 || hFile2 == -1)
 		return 2;
     int areDiff = 1;
-    int len1 = filelength( hFile1);		// get file lengths
-    int len2 = filelength( hFile2);
+    int len1 = _filelength( hFile1);		// get file lengths
+    int len2 = _filelength( hFile2);
     if (len1 >= 0 && len2 >= 0 && len1==len2)	// if not error and lengths are same
     {	int szBuf = BUFSZ;
 		long cumRead = 0L;
 		for ( ; ; )					// compare buffers til difference or done
-		{	int nRead1 = read( hFile1, buf1, szBuf);	// read from each file
-			int nRead2 = read( hFile2, buf2, szBuf);
+		{	int nRead1 = _read( hFile1, buf1, szBuf);	// read from each file
+			int nRead2 = _read( hFile2, buf2, szBuf);
 			if ( nRead1==-1				// if read error, consider different (or issue error message?)
 			 ||  nRead1 != nRead2 )			// if read different # bytes from the 2 files, different
 				break;
@@ -74,9 +79,9 @@ char buf1[ BUFSZ], buf2[ BUFSZ];
 				break;					// files are different
 		}
     }
-    if (close( hFile2)==-1)
+    if (_close( hFile2)==-1)
 	   areDiff = 2;	// on close error, consider different (or issue msg?)
-    if (close( hFile1)==-1)
+    if (_close( hFile1)==-1)
 	   areDiff = 2;
 
     return areDiff;
