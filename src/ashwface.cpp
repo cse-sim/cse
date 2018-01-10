@@ -1133,6 +1133,7 @@ static bool bSetup = false;
 }		// XASHWAT::xw_Setup
 //-----------------------------------------------------------------------------
 /*static*/ void XASHWAT::MsgCallBackFunc(
+	void* msgContext,
 	AWMSGTY msgTy,
 	const string& msg)
 {
@@ -1233,7 +1234,7 @@ const double PATM = 101325.;	// atmospheric pressure (Pa)
 	int ret = (*xw_pAWBuildGap)( G, FCSL( FGID), tas, gType, 21., PATM);
 	return ret != 0 ? RCOK : RCBAD;
 #endif
-}		// XASHWAT::BuildGap
+}		// XASHWAT::xw_BuildGap
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_OffNormalProperties(			// ASHWAT: derive off-normal properties
 	const CFSLAYER& L,	// layer for which to derive off-normal properties
