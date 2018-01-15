@@ -258,7 +258,7 @@ endmacro()
 addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
-add_executable(CSE ${source} ${rcfile} ${headers})
+add_executable(CSE ${source} ${rcFile} ${headers})
 
 set(libs
   glad
