@@ -67,6 +67,24 @@ if (NOT ${git_tag_exit_status} MATCHES "0")
   set(GIT_TAG "unknown-tag")
 endif()
 
+if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+$")
+  string(REGEX REPLACE "^v([0-9]+)\\.[0-9]+\\.[0-9]+$" "\\1" CSEVRSN_MAJOR "${GIT_TAG}")
+  string(REGEX REPLACE "^v[0-9]+\\.([0-9]+)\\.[0-9]+$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
+  string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+)$" "\\1" CSEVRSN_PATCH "${GIT_TAG}")
+elseif(GIT_TAG MATCHES "^cse\\.[0-9]+$")
+  # old version scheme
+  set(CSEVRSN_MAJOR "0")
+  string(REGEX REPLACE "^cse\\.([0-9]+)$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
+  set(CSEVRSN_PATCH "0")
+else()
+  set(CSEVRSN_MAJOR "?")
+  set(CSEVRSN_MINOR "?")
+  set(CSEVRSN_PATCH "?")
+endif()
+
+set(CPACK_PACKAGE_VERSION_MAJOR "${CSEVRSN_MAJOR}" PARENT_SCOPE)
+set(CPACK_PACKAGE_VERSION_MINOR "${CSEVRSN_MINOR}" PARENT_SCOPE)
+set(CPACK_PACKAGE_VERSION_PATCH "${CSEVRSN_PATCH}" PARENT_SCOPE)
 
 execute_process(
   COMMAND git rev-list --count HEAD ^${GIT_TAG}

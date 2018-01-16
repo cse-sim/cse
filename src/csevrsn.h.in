@@ -13,9 +13,9 @@
 
 // version # for current build
 // change ONLY here
-#define CSEVRSN_MAJOR 1
-#define CSEVRSN_MINOR 0
-#define CSEVRSN_PATCH 0
+#define CSEVRSN_MAJOR @CSEVRSN_MAJOR@
+#define CSEVRSN_MINOR @CSEVRSN_MINOR@
+#define CSEVRSN_PATCH @CSEVRSN_PATCH@
 
 #define CSEVRSN_META "@CSEVRSN_META@"
 

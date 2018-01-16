@@ -11,7 +11,6 @@ if(EXISTS ${testLog})
         WORKING_DIRECTORY ${test_dir}
         RESULT_VARIABLE success
       )
-      message("${success}")
     endif()
   endforeach()
 else()
