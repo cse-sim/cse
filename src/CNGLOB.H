@@ -49,10 +49,12 @@
 //NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
 #if defined( _WIN32)
 #if !defined( _DEBUG)	// def'd in build
+  #define NDEBUG		// omit ASSERTs (and asserts) in release version
   #define DEBUG			// leave 1st level extra checks & messages in
   #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
   // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
 #else			// else debugging version
+  #undef NDEBUG			// include ASSERTs
   #define DEBUG
   #define DEBUG2
 #endif
