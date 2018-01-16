@@ -57,3 +57,5 @@ foreach(file ${files})
   run_test(${file})
   regress_test(${file})
 endforeach()
+
+configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
