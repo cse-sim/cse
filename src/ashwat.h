@@ -17,7 +17,9 @@ using namespace std;
 // public functions
 ///////////////////////////////////////////////////////////////////////////////
 enum AWMSGTY { msgIGN, msgDBG, msgWRN, msgERR };
-void ASHWAT_Setup( void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const string& msg),
+void ASHWAT_Setup(
+	void* msgContext,
+	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg),
 	int options=0);
 //=============================================================================
 
@@ -165,6 +167,7 @@ struct CFSLAYER
 		float epsLB=-1.f, float tauL=0.f);
 	CFSLAYER( const char* id, float thk, float tSol, float rSol1, float rSol2,
 		float tVis, float rVis1, float rVis2, float tIR, float eIR1, float eIR2, float kEff);
+	void cl_SetID( const char* _ID);
 	void cl_Clear();
 	void cl_ClearGeom();
 	bool cl_Reverse( CFSLAYER& LR) const;
@@ -281,20 +284,20 @@ struct CFSTY
 	CFSGAP _G[ CFSMAXNL-1];		// gap array, G[ 0] is outside-most, betw L[ 0] and L[ 1]
 
 	CFSTY();
+	void cf_SetID( const char* _ID);
 	CFSLAYER& L( int iL) { return _L[ iL-1]; }
 	const CFSLAYER& L( int iL) const { return _L[ iL-1]; }
 	CFSGAP& G( int iG) { return _G[ iG-1]; }
 	const CFSGAP& G( int iG) const { return _G[ iG-1]; }
 
 	void cf_Clear();
-	void cf_Init( int which);
 	int cf_NGlz() const;
 	int cf_HasShade() const;
 	int cf_HasControlledShade() const;
 	int cf_Info( int& nGlz, int& nShd, int& iLShd) const;
 	bool cf_IsSealed() const;
 	bool cf_Finalize( string* pMsg=NULL);
-	int cf_Append( const CFSTY& FSX, bool lRev=false);
+	int cf_Append( const CFSTY& FSX, bool bRev=false);
 	double cf_EffectiveEPSLB() const;
 	double cf_EffectiveEPSLF() const;
 	bool cf_Thermal( double TIN, double TOUT, double HCIN, double HCOUT,

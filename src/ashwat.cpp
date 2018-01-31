@@ -21,7 +21,6 @@
 
 #include "ashwat.h"
 
-
 // TODO
 // * Unified air properties
 // * Cache constant long wave derived values (beg of cf_Thermal)
@@ -90,12 +89,16 @@ static const double HOC_ASHRAE = 16.9;	// nominal ASHRAE exterior convective
 
 ///////////////////////////////////////////////////////////////////////////////
 static int awOptions = 0;		// ASHWAT global options (none defined, 9-2016)
-static void (*pMsgCallBackFunc)( AWMSGTY msgTy, const string& msg) = NULL;
+static void* awMsgContext = NULL;
+static void (*pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg) = NULL;
 //-----------------------------------------------------------------------------
-void ASHWAT_Setup(
-	void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const string& msg),
-	int options /*=0*/)
+void ASHWAT_Setup(		// setup message reporting linkage
+	void* _msgContext,		// caller's context passed to MsgCallBackFunc
+	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg),
+	int options /*=0*/)		// options TBD
+// duplicate calls harmless
 {
+	awMsgContext = _msgContext;
 	pMsgCallBackFunc = _pMsgCallBackFunc;
 	awOptions = options;
 }		// ASHWAT_Setup
@@ -306,11 +309,11 @@ static string stringFmtV( const char* fmt, va_list ap=NULL)
 	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
 		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf_s failure.";
 	}
-	return buf;
+	return fmt;
 }		// ::stringFmtV
 //-----------------------------------------------------------------------------
 static string stringFmt( const char* fmt, ...)
-{	va_list ap; va_start (ap, fmt);
+{	va_list ap; va_start( ap, fmt);
 	return stringFmtV( fmt, ap);
 }		// ::stringFmt
 //-----------------------------------------------------------------------------
@@ -321,7 +324,7 @@ static bool MessageV(
 {
 	string msg = stringFmtV( fmt, ap);
 	if (pMsgCallBackFunc)
-		(*pMsgCallBackFunc)( msgTy, msg);	// transmit message to caller
+		(*pMsgCallBackFunc)( awMsgContext, msgTy, msg);	// transmit message to caller
 	else
 	{	printf( msg.c_str());		// no message callback defined, use printf
 		printf("\n");
@@ -347,8 +350,9 @@ static bool AddMsgV(		// add message to array of messages
 // add message to array
 // returns false (handy in some contexts)
 {
-	string t = string( what) + ": " + stringFmt( fmt, ap);
-	msgs.push_back( t);
+	string msgText = stringFmtV( fmt, ap);
+	string msg = string( what) + ": " + msgText;
+	msgs.push_back( msg);
 	return false;
 }  // AddMsgV
 //------------------------------------------------------------------------------
@@ -4680,7 +4684,15 @@ void CFSTY::cf_Clear()			// clear CFS
 	for (int iG=1; iG<CFSMAXNL; iG++)
 		G( iG).cg_Clear();
 }    // CFSTY::cf_Clear
-//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CFSTY::cf_SetID( const char* _ID)
+{	FCSET( ID, _ID);
+}		// CFSTY::cf_SetID
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// CFSLAYER
+///////////////////////////////////////////////////////////////////////////////
 CFSLAYER::CFSLAYER()
 {	cl_Clear();		// clear all members
 }	// CFSLAYER::CFSLAYER
@@ -4726,6 +4738,10 @@ CFSLAYER::CFSLAYER(			// special glazing layer c'tor (Windows 6 arg order)
 	thk, tVis, rVis1, rVis2, kEff;
 	cl_InitGlaze( id, tSol, rSol1, eIR1, rSol2, eIR2, tIR);
 }		// CFSLAYER::CFSLAYER
+//-----------------------------------------------------------------------------
+void CFSLAYER::cl_SetID( const char* _ID)
+{	FCSET( ID, _ID);
+}		// CFSLAYER::cl_SetID
 //-----------------------------------------------------------------------------
 bool CFSLAYER::cl_InitGlaze(			// init glazing layer
 	const char* id,			// ID (name) of layer
@@ -4786,7 +4802,7 @@ bool CFSLAYER::cl_InitRollB(			// init roller blind
 // note: total transmittance = fOpen + tauBD
 {
 #if 0
-	ALL GxR( 6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
+	CALL GxR( 6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
 	CALL GxR( 7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
 	CALL GxR( 8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
 	CALL GxR( 9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
@@ -4981,26 +4997,21 @@ bool CFSLAYER::cl_Reverse(			// reverse a layer
 	CFSLAYER& LR) const		// returned: reversed layer
 // returns true iff success
 {
-#if 1
-    bool bRet = false;
-#else
-	bool bRet = true;
-
-	// TODO: incomplete 9-25-2016
-
-	// LR.ID = SX(ID) // ' REV'
+	string sID = FCGET( ID);
+	sID += "_Rev";
+	LR.cl_SetID( sID.c_str());
 	
 	// copy invariant mbrs
 	LR.LTYPE = LTYPE;
 	LR.S = S;
 	LR.W = W;
 	LR.C = C;
-	LR.PHI_DEG = -PHI_DEG;	// flip slat angle
+	LR.PHI_DEG = PHI_DEG != 0. ? -PHI_DEG : 0.;	// flip slat angle (avoid -0)
+	LR.CNTRL = CNTRL;
 	if (cl_IsVB())
 	{	// blinds: slat properties don't change (up still up)
 		LR.SWP_MAT = SWP_MAT;
 		LR.LWP_MAT = LWP_MAT;
-		bRet = LR.cl_Finalize();	// ??? put at end?
 	}
     // else drapes?
     else
@@ -5010,9 +5021,9 @@ bool CFSLAYER::cl_Reverse(			// reverse a layer
 		(LR.SWP_EL = SWP_EL).csw_Reverse();
 		(LR.LWP_EL = LWP_EL).clw_Reverse();
     }
-#endif
 
-	return bRet;
+	return LR.cl_Finalize();	// insurance
+
 }  // CFSLAYER::cl_Reverse
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_Finalize()	// finish layer construction
@@ -5114,8 +5125,11 @@ bool CFSLAYER::cl_IsShadeLayer() const	// true iff layer shade (not glaze or spe
 {
 	return LTYPE >= ltySHADE1 && LTYPE <= ltySHADEN;
 }  // CFSLAYER::cl_IsShadeLayer
-//------------------------------------------------------------------------------
+//==============================================================================
 
+////////////////////////////////////////////////////////////////////////////////
+// CFSSWP -- short wave properties
+////////////////////////////////////////////////////////////////////////////////
 CFSSWP::CFSSWP()
 {	csw_Clear();
 }		// CFSSWP::CFSSWP
@@ -5125,7 +5139,6 @@ void CFSSWP::csw_Clear()		// clear short-wave properties
 	TAUSFBB = TAUSBBB = RHOSFBB = RHOSBBB =
 	TAUSFBD = TAUSBBD = RHOSFBD = RHOSBBD =
 	TAUS_DD = RHOSFDD = RHOSBDD = 0.;
-
 }    // CFSSWP::csw_Clear
 //------------------------------------------------------------------------------
 void CFSSWP::csw_ClearUnused(	// clear unused short-wave properties
@@ -5565,11 +5578,10 @@ int CFSTY::cf_Info(			// info about this CFSTY
 }  // CFSTY::cf_Info
 //------------------------------------------------------------------------------
 int CFSTY::cf_HasControlledShade() const	// check for controlled shade layer
-// returns idx of outermost controlled shade layer
+// returns 1-based idx of outermost controlled shade layer
 //         0 if none
 {
-	int nGlz = 0;
-	for (int iL=1; iL<NL; iL++)
+	for (int iL=1; iL<=NL; iL++)
 		if (L( iL).cl_IsControlledShade())
 			return iL;
 	return 0;
@@ -5705,7 +5717,7 @@ void CFSLAYER::cl_FillDefaultsSWP(		// fill defaulted properties
 bool CFSLAYER::cl_CheckFixLWP(	// check layer long wave properties
 	CFSLWP& lwp,			// properties (may be within *this)
 	vector< string> &msgs,	// msg array
-	const char *what)		// check long wave properties
+	const char* what)		// context for messages
 // returns true iff LWP OK
 //    else false, LWP.xxx changed to legal but NOT necessarily consistent values
 //                Layer should not be used
@@ -5720,7 +5732,7 @@ bool CFSLAYER::cl_CheckFixLWP(	// check layer long wave properties
 bool CFSLAYER::cl_CheckFixSWP(	// check short wave properties
 	CFSSWP& swp,			// properties (may be within *this)
 	vector< string> &msgs,	// msg array
-	const char *what)		// check long wave properties
+	const char* what)		// context for messages
 
 // checks input layer properties
 // NOTE: equivalent layer properties may fail here, do not call for SWL_EL
@@ -5813,7 +5825,7 @@ bool CFSLAYER::cl_CheckFixSWP(	// check short wave properties
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_CheckFixGeom(		// check and apply limits to geometric values
 	vector< string> &msgs,		// msg array (any new messages appended)
-	const char* what)			// context for error
+	const char* what)			// context for messages
 // returns true iff no corrections
 //         false otherwise, msg(s) added
 {
@@ -5897,43 +5909,37 @@ bool CFSTY::cf_Finalize(			// complete CFS after BuildCFS or data input
 }  // CFSTY::cf_Finalize
 //------------------------------------------------------------------------------
 int CFSTY::cf_Append(		// append CFS
-	const CFSTY& FSX,	// CFS to append to *this
-	bool lRev /*=false*/)	// true: reverse FSX
+	const CFSTY& FS,		// source CFS to append to *this
+	bool bRev /*=false*/)	// true: reverse FS
 // returns 0 on success
-//         -1 if too many total layers
+//         -1 if too many total layers (*this unchanged)
 //          1 if reverse trouble
 {
-#if 1
-	int ret = -1;
-#else
-	int ret = 0;
+	if (NL + FS.NL > CFSMAXNL)
+		return -1;
 
-	if (NL + FSX.NL > CFSMAXNL)
-		ret = -1;
-	else
-	{	for (int iLX=1; iLX <= FSX.NL; iLX++)
-		{	int iGX = -1;
-			CFSTY LX;
-			if (lRev)
-			{	int iLXR = FSX.NL-iLX+1;
-				LX = FSX.L( iLXR);
-				if (!LX.cl_Reverse())
-					ret = 1;
+	int ret = 0;
+	for (int iLX=1; iLX <= FS.NL; iLX++)
+	{	int iGX = -1;
+		CFSLAYER LX;
+		if (bRev)
+		{	int iLXR = FS.NL-iLX+1;
+			if (!FS.L( iLXR).cl_Reverse( LX))
+			{	ret = 1;
 				if (iLXR > 1)
 					iGX = iLXR - 1;
 			}
 			else
-			{	LX = FSX.L( iLX);
-				if (iLX < FSX.NL)
+			{	LX = FS.L( iLX);
+				if (iLX < FS.NL)
 					iGX = iLX;
 			}
 			int iL = NL++;
 			L( iL) = LX;
 			if (iGX > 0)
-				G( iL) = FSX.G( iGX);
+				G( iL) = FS.G( iGX);
 		}
 	}
-#endif
 	return ret;
 }  // CFSTY::cf_Append
 //------------------------------------------------------------------------------

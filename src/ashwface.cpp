@@ -1124,7 +1124,7 @@ static bool bSetup = false;
 	rc = xm_RC;
 #endif
 #if defined( ASHWAT_USECPP)
-	ASHWAT_Setup( MsgCallBackFunc, 0);
+	ASHWAT_Setup( NULL, MsgCallBackFunc, 0);
 #endif
 	if (!rc && xw_IsLibEmpty())
 		rc = xw_BuildLib();		// build library of CFSLAYERs and CFSTYs

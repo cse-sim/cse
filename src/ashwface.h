@@ -352,7 +352,7 @@ public:
 	virtual void xm_ClearPtrs();
 
 	RC xw_Setup();
-	static void MsgCallBackFunc( AWMSGTY msgTy, const string& msg);
+	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const string& msg);
 	bool xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
 	RC xw_FinalizeCFS( CFSTY& CFS);
 	RC xw_BuildGap( CFSGAP& G, const char* fgID, double tas, int gType=gtySEALED);
