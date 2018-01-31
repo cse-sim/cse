@@ -890,5 +890,3 @@ static double dvcmean( 		// Compute the mean of a vector of double values
 
 
 // end of psychro.cpp
-
-

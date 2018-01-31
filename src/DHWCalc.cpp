@@ -18,7 +18,7 @@
 #include "cnguts.h"
 #include "exman.h"
 
-#include "hpwh/hpwh.hh"	// decls/defns for Ecotope heat pump water heater model
+#include "hpwh.hh"	// decls/defns for Ecotope heat pump water heater model
 
 
 #if 0 && defined( _DEBUG)
@@ -702,7 +702,7 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 		RLUPC( WhR, pWH, pWH->ownTi == ss)
 		{	if (pWH->wh_IsHPWHModel())
 				rc |= pWH->wh_HPWHDoSubhr(
-					draw,			
+					draw,
 					scale,			// draw scale factor (allocates draw if ws_whCount > 1)
 					xLoss);			// additional losses, Btu/tick
 			else if (pWH->wh_IsInstUEFModel())
@@ -967,7 +967,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	{	if (wh_type == C_WHTYPECH_INSTUEF)
 		{	if (IsSet( DHWHEATER_HEATSRC) && wh_heatSrc != C_WHHEATSRCCH_FUEL)
 				rc |= ooer( DHWHEATER_HEATSRC,
-					"whHeatSrc=%s is not allowed %s (use whHeatSrc=Fuel or omit)", 
+					"whHeatSrc=%s is not allowed %s (use whHeatSrc=Fuel or omit)",
 					whHsTx, whenTy);
 			wh_heatSrc = C_WHHEATSRCCH_FUEL;
 			rc |= requireN( whenTy, DHWHEATER_UEF, DHWHEATER_RATEDFLOW, DHWHEATER_ANNUALFUEL,
@@ -982,7 +982,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	          || wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 			rc |= ooer( DHWHEATER_HEATSRC,
 					"whHeatSrc=%s is not allowed %s", whHsTx, whenTy);
-		
+
 		if (wh_type == C_WHTYPECH_STRGLRG || wh_type == C_WHTYPECH_INSTLRG)
 			rc |= require( DHWHEATER_EFF, whenTy);
 		else if (wh_type == C_WHTYPECH_INSTSML)
@@ -1564,7 +1564,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 	int nTickNZDraw = 0;		// count of ticks with draw > 0
 	for (int iT=0; !rc && iT<Top.tp_nSubhrTicks; iT++)
-	{	
+	{
 #if 0 && defined( _DEBUG)
 		if (Top.tp_date.month == 7
 		  && Top.tp_date.mday == 27
@@ -1572,7 +1572,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		  && Top.iSubhr == 3)
 			wh_pHPWH->setVerbosity( HPWH::VRB_emetic);
 #endif
-		
+
 		double drawForTick = draw[ iT]*scale*wh_mixDownF + drawLoss;
 		int hpwhRet = wh_pHPWH->runOneStep(
 						GAL_TO_L( drawForTick),	// draw volume, L
@@ -1718,7 +1718,7 @@ x				const char* fName = strtprintf( "HPWH_%s.csv", name);
 					name);
 	}
 #endif
-	
+
 	// output accounting = heat delivered to water
 	wh_totOut += KWH_TO_BTU( qHW) + wh_HPWHxBU;
 
@@ -1867,7 +1867,7 @@ RC DHWHEATER::wh_InstUEFDoSubhr(
 				nColdStarts += r > 10. ? 1. : 1.-exp(-r);		// avoid underflow
 				// printf( "\n%0.2f  %0.4f", offMins, nColdStarts);
 
-#else			
+#else
 x				// cold start after 30 min, linearly reduced for short times
 x				nColdStarts += min( 1., offMins / 30.);
 #endif

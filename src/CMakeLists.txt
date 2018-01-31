@@ -1,0 +1,302 @@
+# Compile RCDEF
+add_subdirectory(RCDEF)
+
+# Run C Preprocessor on *.DEF files
+macro(c_preprocess file)
+  add_custom_command(
+    OUTPUT "${file}.i"
+    COMMAND "${CMAKE_C_COMPILER}" -c -EP -nologo -I "${CMAKE_CURRENT_SOURCE_DIR}" -Tc "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def" > "${file}.i"
+    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def"
+  )
+endmacro()
+
+c_preprocess(cndtypes)
+c_preprocess(cnunits)
+c_preprocess(dtlims)
+c_preprocess(cnfields)
+c_preprocess(cnrecs)
+
+# Run RCDEF
+add_custom_command(
+  OUTPUT
+    "${CMAKE_CURRENT_SOURCE_DIR}/DTYPES.H"
+    "${CMAKE_CURRENT_SOURCE_DIR}/RCCN.H"
+    "${CMAKE_CURRENT_SOURCE_DIR}/DTTAB.CPP"
+    "${CMAKE_CURRENT_SOURCE_DIR}/SRFD.CPP"
+    "${CMAKE_CURRENT_SOURCE_DIR}/UNTAB.CPP"
+    "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
+  COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
+  DEPENDS cndtypes.i cnunits.i dtlims.i cnfields.i cnrecs.i
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+# Generate CSE Version header
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_branch_exit_status
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_branch_exit_status} MATCHES "0")
+  set(GIT_BRANCH "unknown-branch")
+endif()
+
+execute_process(
+  COMMAND git rev-parse --verify --short HEAD
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_sha_exit_status
+  OUTPUT_VARIABLE GIT_SHA
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_sha_exit_status} MATCHES "0")
+  set(GIT_SHA "unknown-commit")
+endif()
+
+execute_process(
+  COMMAND git describe --tags --abbrev=0
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_tag_exit_status
+  OUTPUT_VARIABLE GIT_TAG
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_tag_exit_status} MATCHES "0")
+  set(GIT_TAG "unknown-tag")
+endif()
+
+if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+$")
+  string(REGEX REPLACE "^v([0-9]+)\\.[0-9]+\\.[0-9]+$" "\\1" CSEVRSN_MAJOR "${GIT_TAG}")
+  string(REGEX REPLACE "^v[0-9]+\\.([0-9]+)\\.[0-9]+$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
+  string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+)$" "\\1" CSEVRSN_PATCH "${GIT_TAG}")
+elseif(GIT_TAG MATCHES "^cse\\.[0-9]+$")
+  # old version scheme
+  set(CSEVRSN_MAJOR "0")
+  string(REGEX REPLACE "^cse\\.([0-9]+)$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
+  set(CSEVRSN_PATCH "0")
+else()
+  set(CSEVRSN_MAJOR "?")
+  set(CSEVRSN_MINOR "?")
+  set(CSEVRSN_PATCH "?")
+endif()
+
+set(CPACK_PACKAGE_VERSION_MAJOR "${CSEVRSN_MAJOR}" PARENT_SCOPE)
+set(CPACK_PACKAGE_VERSION_MINOR "${CSEVRSN_MINOR}" PARENT_SCOPE)
+set(CPACK_PACKAGE_VERSION_PATCH "${CSEVRSN_PATCH}" PARENT_SCOPE)
+
+execute_process(
+  COMMAND git rev-list --count HEAD ^${GIT_TAG}
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_build_exit_status
+  OUTPUT_VARIABLE GIT_BUILD
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (NOT ${git_build_exit_status} MATCHES "0")
+  set(GIT_BUILD "unknown-build-number")
+endif()
+
+if(NOT ${GIT_BUILD} MATCHES "0")
+  set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}")
+else()
+  set(CSEVRSN_META "")
+endif()
+
+configure_file(
+  "${PROJECT_SOURCE_DIR}/src/csevrsn.h.in"
+  "${PROJECT_SOURCE_DIR}/src/csevrsn.h"
+)
+
+# Set source files
+set(source
+  ANCREC.CPP
+  ashwat.cpp
+  ashwface.cpp
+  BATTERY.cpp
+  BRFW.CPP
+  CGCOMP.CPP
+  CGDEBUG.CPP
+  CGENBAL.CPP
+  CGRESULT.CPP
+  CGSOLAR.CPP
+  CGWTHR.CPP
+  CNAH1.CPP
+  CNAH2.CPP
+  CNAUSZ.CPP
+  CNCP.CPP
+  CNCOIL.CPP
+  CNCULT.CPP
+  CNCULT2.CPP
+  CNCULT3.CPP
+  CNCULT4.CPP
+  CNCULT5.CPP
+  CNCULT6.CPP
+  CNFAN.CPP
+  CNGUTS.CPP
+  CNHP.CPP
+  CNLOADS.CPP
+  CNTP.CPP
+  CNZTU.CPP
+  CPGBUILD.CPP
+  CPGPRPUT.CPP
+  CPNAT.CPP
+  CSE.cpp
+  CUEVAL.CPP
+  CUL.CPP
+  CUPARSE.CPP
+  CUPROBE.CPP
+  CUTOK.CPP
+  CVPAK.CPP
+  DATFCNS.CPP
+  DHWCalc.cpp
+  DMPAK.CPP
+  DTTAB.CPP
+  ENVPAK.CPP
+  EXMAN.CPP
+  GMUTIL.CPP
+  hpwhwrap.cpp
+  IMPF.CPP
+  LOOKUP.CPP
+  MESSAGES.CPP
+  MMPAK.CPP
+  MSGTBL.CPP
+  MSPAK.CPP
+  nummeth.cpp
+  PGPAK.CPP
+  PP.CPP
+  PSYCHRO.CPP
+  PVCalc.cpp
+  RMKERR.CPP
+  RUNDATA.CPP
+  SHADING.CPP
+  SLPAK.CPP
+  SRFD.CPP
+  STRPAK.CPP
+  SYTB.CPP
+  TDPAK.CPP
+  TIMER.CPP
+  UNTAB.CPP
+  VRPAK.CPP
+  WFPAK.CPP
+  XIOPAK.CPP
+  XMODULE.CPP
+  YACAM.CPP
+)
+
+set(precomp
+  StdAfx.cpp
+)
+
+set(rcFile
+  cse.rc
+)
+
+set(headers
+  ANCREC.H
+  ashwat.h
+  ashwface.h
+  BRF.H
+  BRFW.H
+  CGWTHR.H
+  CNCULT.H
+  CNCULTI.H
+  CNDEFNS.H
+  CNGLOB.H
+  CNGUTS.H
+  CPGBUILD.H
+  CPRINT.H
+  CSE.H
+  CSEFace.H
+  csevrsn.h
+  CUEVAL.H
+  CUEVF.H
+  CUL.H
+  CUPARSE.H
+  CUPARSEI.H
+  CUPARSEX.H
+  CUTOK.H
+  CVPAK.H
+  DATFCNS.H
+  DMPAK.H
+  DTYPES.H
+  ENVPAK.H
+  EXMAN.H
+  GMPAK.H
+  IMPF.H
+  IRATS.H
+  LOOKUP.H
+  MESSAGES.H
+  MMPAK.H
+  MSGHANS.H
+  mspak.h
+  NUMMETH.H
+  PGPAK.H
+  PP.H
+  PSYCHRO.H
+  PVCalc.h
+  RCCN.H
+  RMKERR.H
+  SLPAK.H
+  SRD.H
+  STRPAK.H
+  SYTB.H
+  TDPAK.H
+  TIMER.H
+  VECPAK.H
+  VRPAK.H
+  WFPAK.H
+  XIOPAK.H
+  XMODULE.h
+  YACAM.H
+)
+
+include_directories("${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/vendor" "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include" "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src")
+
+# Precompiled Headers
+macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
+  if(MSVC)
+    get_filename_component(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
+    set(PrecompiledBinary "$(IntDir)/${PrecompiledBasename}.pch")
+    set(Sources ${${SourcesVar}})
+    set(PrecompiledSource ${${PrecompiledSourceVar}})
+
+    set_source_files_properties(${PrecompiledSource}
+                                PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_OUTPUTS "${PrecompiledBinary}")
+    set_source_files_properties(${Sources}
+                                PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_DEPENDS "${PrecompiledBinary}")
+    # Add precompiled header to SourcesVar
+    list(APPEND ${SourcesVar} ${PrecompiledSource})
+  endif()
+endmacro()
+
+addMSVCPrecompiledHeader("cnglob.h" precomp source)
+
+# Final executable/linking
+add_executable(CSE ${source} ${rcFile} ${headers})
+
+set(libs
+  glad
+  penumbra
+  glfw
+  tess2
+  libHPWHsim
+)
+
+target_link_libraries(CSE ${libs})
+
+set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
+
+set_target_properties(CSE PROPERTIES
+  DEBUG_POSTFIX "d"
+)
+
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
+    set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
+endforeach()
+
+#cotire(CSE)
