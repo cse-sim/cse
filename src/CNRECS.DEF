@@ -3360,6 +3360,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *d CHP ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
   *h FLOAT_GEZ ws_parElec;	// electrical parasitic power, W
 							//    for e.g. unmodeled recirculation pumps
+  *h FLOAT_GEZ ws_LLMUPwr	// electrical loop loss makeup power, W
+							//    transfers some/all DHWLOOPSEG losses to ws_inElec	
   *i FLOAT_GZ ws_SDLM;		// standard distribution loss multiplier
 							//   see ACM AppE Eqn RE-5
   *i FLOAT_GZ ws_DSM		// distribution system multiplier (AppE table RE-2)
@@ -3397,6 +3399,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
   *h *e FLOAT ws_HRDL		// hourly recirculation loss, Btuh
 							//   includes DHWLOOPSEG and DHWLOOPBRANCH losses
+							//   adjusted re ws_LLMUPwr
   *h *e FLOAT ws_HJL;		// hourly jacket loss, Btuh
   *h *e FLOAT ws_HARL;		// hourly adjusted recovery load, Btu
 

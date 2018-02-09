@@ -2,7 +2,7 @@
 
 DHWSYS constructs an object representing a domestic hot water system consisting of one or more hot water heaters, storage tanks, loops, and pumps (DHWHEATER, DHWTANK, DHWLOOP, and DHWPUMP, see below) and a distribution system characterized by loss parameters. This model is based on Appendix B of the 2016 Residential ACM Reference Manual. This version is preliminary, revisions are expected.
 
-The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to DHWSYS that precedes them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
+The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to the DHWSYS that precedes them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
 
 -   DHWSYS
     -   DHWHEATER
@@ -38,7 +38,6 @@ Optional name of system; give after the word “DHWSYS” if desired.
  **Units**   **Legal Range**      **Default**            **Required**   **Variability**
  ----------- ------------------- ---------------------- -------------- -----------------
               *name of a DHWSYS*   No shared loads                 No           constant
-
 
 **wsMult=*integer***
 
@@ -83,7 +82,6 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   ----------- ----------------- ---------------------- -------------- -----------------
     gal         $\ge$ 0           (no scheduled draws)        No             daily
 
-
 **wsTUse=*float***
 
 Hot water delivery temperature (at the point of use).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
@@ -94,7 +92,7 @@ Hot water delivery temperature (at the point of use).  Note that draws defined v
 
 **wsTSetPoint=*float***
 
-  Specifies hot water setpoint temperature
+  Specifies the hot water setpoint temperature.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -107,6 +105,14 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   W           $>$ 0             0             No             hourly
+
+  **wsLoopLossMakeupPwr=*float***
+
+  Specifies electrical power available to meet central pumped-loop distribution system losses (as modelled by DHWLOOPs not including losses from associated DHWLOOPBRANCHs). Separate loss makeup is typically used in multi-unit HPWH systems to avoid inefficiencies associated with high condenser temperatures.  Loss-makeup energy is calculated hourly and is the smaller of loop losses and wsLoopLossMakeupPwr.  The result is accumulated to the METER specified by wsElecMtr (end use DHWBU). No other effect, such as heat gain to surroundings, is modeled.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+    W           $>$ 0             0             No             hourly
 
 **wsSDLM=*float***
 

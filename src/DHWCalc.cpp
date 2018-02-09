@@ -615,14 +615,23 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	}
 
 	// multi-unit distribution losses
-	ws_HRDL = 0.f;
+	double HRLL = 0.;
+	double HRBL = 0.;
 	if (ws_wlCount > 0)		// if any loops
 	{	DHWLOOP* pWL;
 		RLUPC( WlR, pWL, pWL->ownTi == ss)
 		{	rc |= pWL->wl_DoHour( mult);		// also calcs child DHWLOOPSEGs and DHWLOOPPUMPs
-			ws_HRDL += pWL->wl_HRLL + pWL->wl_HRBL;	// loop loss + branch loss
+			HRLL += pWL->wl_HRLL;	// loop loss
+			HRBL += pWL->wl_HRBL;	// branch loss
 		}
 	}
+	// reduce loop loss by electric makeup
+	double inElecLLMU = 0.;	// current hour loop-loss makeup electricity, Btu
+	if (ws_LLMUPwr > 0.f)
+	{	inElecLLMU = min( HRLL, ws_LLMUPwr * BtuperWh);
+		HRLL -= inElecLLMU;
+	}
+	ws_HRDL = float( HRLL + HRBL);
 
 	// total recovery load
 	ws_HHWO = 8.345f * ws_whUse.total * (ws_tUse - ws_tInlet);
@@ -657,7 +666,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// accum consumption to meters
 	//   note: each DHWHEATER and DHWPUMP accums also
 	if (ws_pMtrElec)
-		ws_pMtrElec->H.dhw += mult * ws_inElec;
+	{	ws_pMtrElec->H.dhw += mult * ws_inElec;
+		ws_pMtrElec->H.dhwBU += mult * inElecLLMU;
+	}
 	if (ws_pMtrFuel)
 		ws_pMtrFuel->H.dhw += mult * ws_inFuel;
 
@@ -1625,13 +1636,9 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		if (bWriteCSV)
 		{	if (!pF)
 			{
-#if 1
 				// dump file name = <cseFile>_hpwh.csv
 				const char* fName =
 					strsave( strffix2( strtprintf( "%s_hpwh", InputFilePathNoExt), ".csv", 1));
-#else
-x				const char* fName = strtprintf( "HPWH_%s.csv", name);
-#endif
 				pF = fopen( fName, "wt");
 				if (!pF)
 					err( PWRN, "HPWH report failure for '%s'", fName);
