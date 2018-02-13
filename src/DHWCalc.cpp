@@ -667,7 +667,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   note: each DHWHEATER and DHWPUMP accums also
 	if (ws_pMtrElec)
 	{	ws_pMtrElec->H.dhw += mult * ws_inElec;
-		ws_pMtrElec->H.dhwBU += mult * inElecLLMU;
+		ws_pMtrElec->H.dhwMFL += mult * inElecLLMU;
 	}
 	if (ws_pMtrFuel)
 		ws_pMtrFuel->H.dhw += mult * ws_inFuel;
@@ -2019,11 +2019,12 @@ DHWSYS* DHWPUMP::wp_GetDHWSYS() const
 	return pWS;
 }		// DHWPUMP::wh_GetDHWSYS
 //-----------------------------------------------------------------------------
-RC DHWPUMP::wp_DoHour(			// hourly DHWPUMP calcs
+RC DHWPUMP::wp_DoHour(			// hourly DHWPUMP/DHWLOOPPUMP calcs
 	int mult,		// system multiplier
 					//    DHWPUMP = ws_mult
 					//    DHWLOOPPUMP = ws_mult*wl_mult
 	float runF/*=1.*/)	// fraction of hour pump runs
+
 // returns RCOK on success
 //    else results unusable
 {
@@ -2031,7 +2032,13 @@ RC DHWPUMP::wp_DoHour(			// hourly DHWPUMP calcs
 	wp_inElec = BtuperWh * runF * wp_pwr;		// electrical input, Btuh
 
 	if (wp_pMtrElec)
-		wp_pMtrElec->H.dhw += wp_inElec * mult * wp_mult;
+	{	if (rt == RTDHWLOOPPUMP)
+			wp_pMtrElec->H.dhwMFL += wp_inElec * mult * wp_mult;
+		else
+			wp_pMtrElec->H.dhw += wp_inElec * mult * wp_mult;
+	}
+
+
 
 	return rc;
 }		// DHWPUMP::wp_DoHour
@@ -2057,6 +2064,11 @@ RC DHWLOOP::RunDup(		// copy input to run record; check and initialize
 
 	DHWSYS* pWS = wl_GetDHWSYS();
 	pWS->ws_wlCount += wl_mult;
+
+	if (!IsSet( DHWLOOP_ELECMTRI))
+		wl_elecMtri = pWS->ws_elecMtri;
+
+	wl_pMtrElec = MtrB.GetAtSafe( wl_elecMtri);		// elec mtr or NULL
 
 	return rc;
 }		// DHWLOOP::RunDup
@@ -2099,6 +2111,16 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 		tIn = pWG->ps_tOut;
 	}
 
+	if (wl_lossMakeupPwr > 0.f)
+	{	float HRLLMakeUp = min( wl_HRLL, wl_lossMakeupPwr * BtuperWh);
+		wl_HRLL -= HRLLMakeUp;
+		if (wl_pMtrElec)
+			wl_pMtrElec->H.dhwMFL += HRLLMakeUp * wl_mult*wsMult / wl_lossMakeupEff;
+	}
+
+	wl_HRLL *= wl_mult;
+	wl_HRBL *= wl_mult;
+
 	if (wl_wlpCount > 0)		// if any loop pumps
 	{	DHWLOOPPUMP* pWLP;
 		RLUPC( WlpR, pWLP, pWLP->ownTi == ss)
@@ -2106,9 +2128,6 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 			// accum to elect mtr with multipliers
 			pWLP->wp_DoHour( wl_mult*wsMult, wl_runF);
 	}
-
-	wl_HRLL *= wl_mult;
-	wl_HRBL *= wl_mult;
 
 	return rc;
 }		// DHWLOOP::wl_DoHour
@@ -2395,9 +2414,8 @@ RC DHWLOOPPUMP::RunDup(		// copy input to run record; check and initialize
 	pWL->wl_wlpCount += wp_mult;		// count total # of pumps on loop
 
 	// default meter from parent system
-	DHWSYS* pWS = wlp_GetDHWSYS();
 	if (!IsSet( DHWLOOPPUMP_ELECMTRI))
-		wp_elecMtri = pWS->ws_elecMtri;
+		wp_elecMtri = pWL->wl_elecMtri;
 
 	wp_pMtrElec = MtrB.GetAtSafe( wp_elecMtri);		// elec mtr or NULL
 
