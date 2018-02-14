@@ -625,12 +625,15 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			HRBL += pWL->wl_HRBL;	// branch loss
 		}
 	}
-	// reduce loop loss by electric makeup
-	double inElecLLMU = 0.;	// current hour loop-loss makeup electricity, Btu
-	if (ws_LLMUPwr > 0.f)
-	{	inElecLLMU = min( HRLL, ws_LLMUPwr * BtuperWh);
-		HRLL -= inElecLLMU;
-	}
+#if 0
+x	// reduce loop loss by electric makeup
+x   // superceded by DHWLOOP loss makeup scheme 2-18
+x	double inElecLLMU = 0.;	// current hour loop-loss makeup electricity, Btu
+x	if (ws_LLMUPwr > 0.f)
+x	{	inElecLLMU = min( HRLL, ws_LLMUPwr * BtuperWh);
+x		HRLL -= inElecLLMU;
+x	}
+#endif
 	ws_HRDL = float( HRLL + HRBL);
 
 	// total recovery load
@@ -667,7 +670,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   note: each DHWHEATER and DHWPUMP accums also
 	if (ws_pMtrElec)
 	{	ws_pMtrElec->H.dhw += mult * ws_inElec;
-		ws_pMtrElec->H.dhwMFL += mult * inElecLLMU;
+#if 0
+x		ws_pMtrElec->H.dhwMFL += mult * inElecLLMU;
+#endif
 	}
 	if (ws_pMtrFuel)
 		ws_pMtrFuel->H.dhw += mult * ws_inFuel;

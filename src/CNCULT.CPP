@@ -1973,8 +1973,10 @@ CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      
 CULT( "wsWHhwMtr",   DAT,   DHWSYS_WHHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsFXhwMtr",   DAT,   DHWSYS_FXHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsParElec",	 DAT,   DHWSYS_PARELEC,  0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT( "wsLoopLossMakeupPwr",
-					 DAT,   DHWSYS_LLMUPWR,  0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+#if 0
+x CULT( "wsLoopLossMakeupPwr",
+x					 DAT,   DHWSYS_LLMUPWR,  0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+#endif
 CULT( "wsSDLM",      DAT,   DHWSYS_SDLM,     0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsDSM",       DAT,   DHWSYS_DSM,      0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsSSF",       DAT,   DHWSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
