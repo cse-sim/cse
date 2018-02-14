@@ -28,3 +28,14 @@ download_project(PROJ                HPWHsim
 )
 
 add_subdirectory(${HPWHsim_SOURCE_DIR})
+
+set_target_properties(awning PROPERTIES FOLDER Dependencies/Penumbra)
+set_target_properties(glfw PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
+set_target_properties(uninstall PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
+set_target_properties(glad PROPERTIES FOLDER Dependencies/Penumbra)
+set_target_properties(penumbra PROPERTIES FOLDER Dependencies/Penumbra)
+set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
+
+set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim) 
+set_target_properties(testTool PROPERTIES FOLDER Dependencies/HPWHsim)
+

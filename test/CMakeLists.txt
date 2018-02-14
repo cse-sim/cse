@@ -59,3 +59,5 @@ foreach(file ${files})
 endforeach()
 
 configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
+
+set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
