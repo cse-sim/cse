@@ -63,13 +63,16 @@ if (NOT ${git_build_exit_status} MATCHES "0")
   set(GIT_BUILD "unknown-build-number")
 endif()
 
-if(NOT ${GIT_BUILD} MATCHES "0")
+if(NOT ${GIT_BUILD} MATCHES "^0$")
   set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}")
 else()
   set(CSEVRSN_META "")
 endif()
 
+message("Building CSE ${CSEVRSN_MAJOR}.${CSEVRSN_MINOR}.${CSEVRSN_PATCH}${CSEVRSN_META}")
+
 configure_file(
   "${PROJECT_SOURCE_DIR}/src/csevrsn.h.in"
   "${PROJECT_SOURCE_DIR}/src/csevrsn.h"
 )
+
