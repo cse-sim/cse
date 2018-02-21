@@ -106,14 +106,6 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
   ----------- ----------------- ------------- -------------- -----------------
   W           $>$ 0             0             No             hourly
 
-  **wsLoopLossMakeupPwr=*float***
-
-  Specifies electrical power available to meet central pumped-loop distribution system losses (as modelled by DHWLOOPs not including losses from associated DHWLOOPBRANCHs). Separate loss makeup is typically used in multi-unit HPWH systems to avoid inefficiencies associated with high condenser temperatures.  Loss-makeup energy is calculated hourly and is the smaller of loop losses and wsLoopLossMakeupPwr.  The result is accumulated to the METER specified by wsElecMtr (end use DHWBU). No other effect, such as heat gain to surroundings, is modeled.
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-    W           $>$ 0             0             No             hourly
-
 **wsSDLM=*float***
 
 Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplicate CEC 2016 methods, this value should be set according to the value derived with App B Eqn 5.

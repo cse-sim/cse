@@ -28,11 +28,11 @@ Pump power.
 
 **wlpElecMtr=*mtrName***
 
-Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is recorded (under end use DHW).
+Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is recorded (under end use dhwMFL).
 
   **Units**   **Legal Range**     **Default**                 **Required**   **Variability**
   ----------- ------------------- --------------------------- -------------- -----------------
-              *name of a METER*   *Parent DHWSYS wsElecMtr*   No             constant
+              *name of a METER*   *Parent DHWLOOP wlElecMtr*   No             constant
 
 **endDHWLOOPPUMP**
 
