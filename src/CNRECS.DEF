@@ -3395,10 +3395,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
   *h *e FLOAT ws_HHWO;		// hourly hot water output (at water heater), Btu
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
-  *h *e FLOAT ws_HRDL		// hourly recirculation loss, Btuh
-							//   includes DHWLOOPSEG and DHWLOOPBRANCH losses
-							//   adjusted re DHWLOOP wl_lossMakeupPwr
-  *h *e FLOAT ws_HJL;		// hourly jacket loss, Btuh
+  *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
+  *h *e FLOAT ws_HRBL;		// current hour all-DHWLOOPBRANCH losses, Btu
+  *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
+							//   = ws_HRBL + DHWLOOPSEG losses
+							//     (adjusted re DHWLOOP wl_lossMakeupPwr)
+  *h *e FLOAT ws_HJL;		// hourly jacket loss, Btu
   *h *e FLOAT ws_HARL;		// hourly adjusted recovery load, Btu
 
 *END		// DHWSYS
@@ -3456,7 +3458,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-
   *i FLOAT_GEZ wh_vol;			// storage tank vol, gal
 								//    applicable to STRGxx types
 								//    used only for HPWH ResistanceX, 5-2016
@@ -3540,7 +3541,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( double* draw, double scale, double xLoss);"
+  *declare "RC wh_HPWHDoSubhr( double* draw, double scale, double qLossDraw, double qLossRL, double volRL);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -3628,10 +3629,12 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 								//    represents heater that makes up for HRLL losses
 								//    re central HPWH systems
   *h FLOAT_GZ wl_lossMakeupEff	// loss makeup heating efficiency
-  *i TI wl_elecMtri;	// meter for loop electricity use (default = parent ws_elecMtri)
-						//   loss makeup DHWLOOPPUMP electricity accumulated to end use dhwMFL
+  *i TI wl_elecMtri;			// meter for loop electricity use (default = parent ws_elecMtri)
+								//   loss makeup DHWLOOPPUMP electricity accumulated to end use dhwMFL
   *declare "MTR* wl_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
 
+  *h *e FLOAT wl_volRL; // current hour volume returned, gal
+						//    (reflects wl_mult)
   *h *e FLOAT wl_HRLL;	// current hour loop seg pipe loss, Btu
 						//    (reflects wl_mult and reduction by wl_lossMakeupPwr)
   *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, But
