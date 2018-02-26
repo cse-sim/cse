@@ -3395,9 +3395,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
   *h *e FLOAT ws_HHWO;		// hourly hot water output (at water heater), Btu
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
-  *h *e FLOAT ws_HRDL		// hourly recirculation loss, Btuh
-							//   includes DHWLOOPSEG and DHWLOOPBRANCH losses
-  *h *e FLOAT ws_HJL;		// hourly jacket loss, Btuh
+  *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
+  *h *e FLOAT ws_HRBL;		// current hour all-DHWLOOPBRANCH losses, Btu
+  *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
+							//   = ws_HRBL + DHWLOOPSEG losses
+							//     (adjusted re DHWLOOP wl_lossMakeupPwr)
+  *h *e FLOAT ws_HJL;		// hourly jacket loss, Btu
   *h *e FLOAT ws_HARL;		// hourly adjusted recovery load, Btu
 
 *END		// DHWSYS
@@ -3455,7 +3458,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-
   *i FLOAT_GEZ wh_vol;			// storage tank vol, gal
 								//    applicable to STRGxx types
 								//    used only for HPWH ResistanceX, 5-2016
@@ -3539,7 +3541,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( double* draw, double scale, double xLoss);"
+  *declare "RC wh_HPWHDoSubhr( double* draw, double scale, double qLossDraw, double qLossRL, double volRL);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -3593,7 +3595,7 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
 								//   models as if repeated identical input
 
   *i TI wp_elecMtri				// meter for pump electricity use (default = parent ws_elecMtri)
-  *declare "MTR* wp_pMtrElec;"	// runtime pointers to meters, NULL if not accum'ing
+  *declare "MTR* wp_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
   
   *h FLOAT_GEZ wp_pwr;			// pump power, W
 
@@ -3623,8 +3625,18 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
   *h FLOAT_GZ wl_tIn1	// entering temperature at 1st DHWLOOPSEG
   *i FLOAT_GZ wl_fUA	// UA adjustment factor for child DHWLOOPSEGs
 						//    fudge factor re imperfect insulation
-  *h *e FLOAT wl_HRLL;	// current hour loop seg pipe loss, Btu
+  *h FLOAT_GEZ wl_lossMakeupPwr	// loss makeup heating (electrical) power, W
+								//    represents heater that makes up for HRLL losses
+								//    re central HPWH systems
+  *h FLOAT_GZ wl_lossMakeupEff	// loss makeup heating efficiency
+  *i TI wl_elecMtri;			// meter for loop electricity use (default = parent ws_elecMtri)
+								//   loss makeup DHWLOOPPUMP electricity accumulated to end use dhwMFL
+  *declare "MTR* wl_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
+
+  *h *e FLOAT wl_volRL; // current hour volume returned, gal
 						//    (reflects wl_mult)
+  *h *e FLOAT wl_HRLL;	// current hour loop seg pipe loss, Btu
+						//    (reflects wl_mult and reduction by wl_lossMakeupPwr)
   *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, But
 						//    (reflects wl_mult)
 *END	// DWHLOOP
@@ -3889,11 +3901,14 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
     *e float clg		// space cooling.  code assumes 1st member.
     *e float htg		// space heating incl heat pump compressor
-    *e float hp		// heat pump auxiliary (backup) heat
+    *e float hp			// heat pump auxiliary (backup) heat
     *e float dhw		// domestic (service) hot water heating
-					//   (for HPWH, compressor+misc energy)
+						//   HPWH: compressor+misc energy
 	*e float dhwBU		// domestic (service) hot water backup
-					//   (= HPWH resistance heating energy)
+						//   HPWH: resistance heating energy
+						//   others: virtual backup to maintain ws_tUse
+	*e float dhwMFL		// domestic (service) multi-family loop energy
+						//   = DHWLOOP pump electricity + loss makeup
     *e float fanC		// fans - cooling and cooling ventilation
     *e float fanH		// fans - heating
     *e float fanV		// fans - IAQ ventilation

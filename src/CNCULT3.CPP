@@ -1213,6 +1213,7 @@ void ZNR::zn_InitSurfTotals()			// init (0) surface area accumulators
 	zn_surfA = 0.;			// total surface area
 	zn_surfASlr = 0.;		// solar (non window, non duct) area
 	zn_ductA = 0.;			// duct surface area (included in zn_surfA)
+
 	// zn_ductCondUA = 0. done elsewhere due to calc sequence (
     zn_surfEpsLWAvg = 0.;	// SUM( area * epsLW)/SUM( area)
 	zn_ua = 0.;

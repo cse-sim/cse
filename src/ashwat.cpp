@@ -21,7 +21,6 @@
 
 #include "ashwat.h"
 
-
 // TODO
 // * Unified air properties
 // * Cache constant long wave derived values (beg of cf_Thermal)
@@ -61,18 +60,13 @@
 // * parameterize dimensions in new fcns
 // * comments etc in VB subroutines
 
-#if 0
-struct GSZTY
-{	// TODO
-
-}
-#endif
-
 // defines
 #define FORTRAN_TRANSITION		// define to include code that aids
 								//   FORTRAN->C++ transition / testing
 #undef PD_PRINTCASE				// define to enable pleated drape debug
 								//   printing
+#undef isspace					// code here should use library isspace
+								//   instead of locally #defined variants (as found in e.g. CSE)
 
 
 // Constants (all static to avoid conflict with possible public variants)
@@ -95,12 +89,16 @@ static const double HOC_ASHRAE = 16.9;	// nominal ASHRAE exterior convective
 
 ///////////////////////////////////////////////////////////////////////////////
 static int awOptions = 0;		// ASHWAT global options (none defined, 9-2016)
-static void (*pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg) = NULL;
+static void* awMsgContext = NULL;
+static void (*pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg) = NULL;
 //-----------------------------------------------------------------------------
-void ASHWAT_Setup(
-	void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg),
-	int options /*=0*/)
+void ASHWAT_Setup(		// setup message reporting linkage
+	void* _msgContext,		// caller's context passed to MsgCallBackFunc
+	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg),
+	int options /*=0*/)		// options TBD
+// duplicate calls harmless
 {
+	awMsgContext = _msgContext;
 	pMsgCallBackFunc = _pMsgCallBackFunc;
 	awOptions = options;
 }		// ASHWAT_Setup
@@ -254,53 +252,81 @@ int Solve(			// matrix solver
 }  // A2D::Solve
 };	// class A2D
 //-----------------------------------------------------------------------------
-#if defined( FORTRAN_TRANSITION)
-static int strLenBlankFilled(		// interpret 3 WS chars as "terminator"
-	const char* s)
+static string awStrFromBF(		// convert blank-filled to string
+	const char* s,
+	size_t sDim)
 {
-	int len = 0;
-	int nSpace = 0;
-	for (int i=0; i<100; i++)
-	{	if (isspaceW( s[ i]))
-		{	if (++nSpace == 3)
-				break;
-		}
-		else
-		{	len += nSpace + 1;
-			nSpace = 0;
-		}
-	}
-	return len;
-}	// strLenBlankFilled
-//-----------------------------------------------------------------------------
-static string strFromBlankFilled(		// convert blank-filled to 0-terminated
-	const char* s)
-{
-	int len = strLenBlankFilled( s);
-	string t( s, len);
+	int iS = sDim-1;
+	while (iS>=0 && isspace( unsigned(*(s+iS))))
+		iS--;
+	std::string t( s, iS+1);
 	return t;
-}	// strFromBlankFilled
+}	// awStrFromBF
 //-----------------------------------------------------------------------------
-#define SX( s) strFromBlankFilled( s).c_str()
+static const char* awStrToBF(		// c-string to space-padded string
+	char* d,		// destination
+	size_t dDim,	// size of destination
+	const char* s)	// source (null terminatinated)
+{
+	while (*s && isspace( unsigned( *s)))
+		s++;
+	size_t iD = 0;
+	while (*s && iD<dDim)
+		*(d+iD++) = *s++;
+	while (iD<dDim)
+		*(d+iD++) = ' ';
+	return d;
+}	// awStrToBF
+//-----------------------------------------------------------------------------
+static const char* awStrToZF(		// safe c-string copy with truncate
+	char* d,		// destination
+	size_t dDim,	// size of destination
+	const char* s)	// source (null terminatinated)
+{
+	while (*s && isspace( unsigned( *s)))
+		s++;
+	size_t iD = 0;
+	while (*s && iD<dDim-1)
+		*(d+iD++) = *s++;
+	while (iD<dDim)
+		*(d+iD++) = '\0';
+	return d;
+}	// awStrToZF
+//-----------------------------------------------------------------------------
+#if defined( FORTRAN_TRANSITION)
+#define FCSET( d, s) awStrToBF( d, sizeof( d), s)
+#define FCGET( s) awStrFromBF( s, sizeof( s)).c_str()
 #else
-#define SX( s) s
+#define FCSET( d, s) awStrToZF( d, sizeof( d))
+#define FCGET( s) s
 #endif		// FORTRAN_TRANSITION
+//-----------------------------------------------------------------------------
+static string stringFmtV( const char* fmt, va_list ap=NULL)
+{
+	static const int maxLen = 2000;
+	char buf[ maxLen];
+	if (ap)
+	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
+		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf_s failure.";
+	}
+	return fmt;
+}		// ::stringFmtV
+//-----------------------------------------------------------------------------
+static string stringFmt( const char* fmt, ...)
+{	va_list ap; va_start( ap, fmt);
+	return stringFmtV( fmt, ap);
+}		// ::stringFmt
 //-----------------------------------------------------------------------------
 static bool MessageV(
 	AWMSGTY msgTy,		// message type
 	const char* fmt,
 	va_list ap=NULL)
 {
-	static const int maxLen = 2000;
-	char buf[ maxLen];
-	if (ap)
-	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
-		fmt = fRet >= 0 ? buf : "?? MessageV vsprintf_s failure.";
-	}
+	string msg = stringFmtV( fmt, ap);
 	if (pMsgCallBackFunc)
-		(*pMsgCallBackFunc)( msgTy, fmt);	// transmit message to caller
+		(*pMsgCallBackFunc)( awMsgContext, msgTy, msg);	// transmit message to caller
 	else
-	{	printf( fmt);		// no message callback defined, use printf
+	{	printf( msg.c_str());		// no message callback defined, use printf
 		printf("\n");
 	}
 	return msgTy >= msgWRN;	// TODO
@@ -314,7 +340,7 @@ static bool Message(
 	va_list ap;
 	va_start( ap, fmt);
 	return MessageV( msgTy, fmt, ap);
-}
+}	// ::Message
 //------------------------------------------------------------------------------
 static bool AddMsgV(		// add message to array of messages
 	vector< string> &msgs,		// array of messages
@@ -324,14 +350,9 @@ static bool AddMsgV(		// add message to array of messages
 // add message to array
 // returns false (handy in some contexts)
 {
-	static const int maxLen = 2000;
-	char buf[ maxLen];
-	if (ap)
-	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
-		fmt = fRet >= 0 ? buf : "?? AddMsg vsprintf_s failure.";
-	}
-	string t = string( what) + ": " + fmt;
-	msgs.push_back( t);
+	string msgText = stringFmtV( fmt, ap);
+	string msg = string( what) + ": " + msgText;
+	msgs.push_back( msg);
 	return false;
 }  // AddMsgV
 //------------------------------------------------------------------------------
@@ -392,7 +413,7 @@ static bool CompMsg(		// message re compare error (int)
 	return false;
 }	// CompMsg
 //-----------------------------------------------------------------------------
-template <typename T>static int vNEQMsg(			// compare, issue message if fail
+template <typename T> static int vNEQMsg(			// compare, issue message if fail
 	T v1, T v2,				// values
 	T tol,					// fractional diff
 							//   if 0, require exact equality
@@ -530,7 +551,7 @@ static double HEMINT(	// hemisphere integration
 // Romberg integration of property function over hemispehere
 {
 static const int KMAX = 8;		//  max steps
-static const int NPANMAX = pow( 2, KMAX);
+static const int NPANMAX = int( pow( 2, KMAX));
 static const double TOL = .0005;		//  convergence tolerance
 double T[ KMAX][ KMAX];
 // double X, DX, SUM, DIFF
@@ -1084,7 +1105,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 			HC2D(2,1) = HC2D(1,2);
 		}
 
-		//radiative coefficients
+		// radiative coefficients
 		HR2D = 0.;
 		for (I=1; I<=NL; I++)
 		{	// to outside
@@ -1246,7 +1267,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 
 		SHGCcg = Q_INdv/ISOL;
 
-	} // ISOL > 0.01, calculate SHGC
+	} // calculate SHGCcg
 
 	// calculate FHR_IN
 	A = ACopy;
@@ -1338,7 +1359,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 
 #if defined( _DEBUG)
 		// check values, should be equal to SHGC
-		if (ISOL > .01)		// else no SHGCcg, see above
+		if (SHGCcg > 0. && ISOL > .01)
 		{	Q_INdv = SOURCE[ NL+1];
 			for (I=1; I<=NL; I++)
 				Q_INdv += SOURCE[ I]*(M[ I] + P[ I]);
@@ -1402,7 +1423,6 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		}
 	}
 #endif
-
 
 	// Calculate Cx
 	// experiment 1 (only experiment if not debugging)
@@ -1495,23 +1515,6 @@ static double FNU(	// Nusselt number (function of Rayleigh number)
 		FNU=0.0673838 * pow( ARA, 1./3.);
 	return FNU;
 }  // FNU
-//---------------------------------------------------------------------
-double CFSGAP::cg_HConvGap(		// convective coeff for gap
-	double T1,		// bounding surface temps, K
-	double T2)
-// returns convective coefficient, W/m2-K
-{
-	double T = TAS_EFF / 1000.;	// gap thickness, m
-	double TM = (T1 + T2) / 2.;
-	double DT = T1 - T2;
-	double RA=FRA( TM, T, DT, FG.AK, FG.BK,
-			FG.ACP, FG.BCP, FG.AVISC, FG.BVISC, RHOGAS);
-	double NU=FNU( RA);
-	//	if (NU > 1.) ALPHA=DOT(S-PI/6.)/(PI/3.)*0.5+0.5
-	double KGAS = FG.AK + FG.BK*TM;
-	double hc = NU*KGAS/T;
-	return hc;
-}  // CFSGAP::cg_HConvGap
 //--------------------------------------------------------------------------
 static double HRadPar(
 	double T1, double T2,	// bounding surface temps, K
@@ -1531,8 +1534,6 @@ static double HRadPar(
 	}
 	return hr;
 }  // HRadPar
-
-
 //==============================================================================
 double CFSLAYER::cl_ConvectionFactor() const	// layer convection enhancement
 // modifies convection rate per shade config
@@ -1717,7 +1718,7 @@ bool CFSTY::cf_SHGCRated(		// rated SHGC
 // returns TRUE on success, FALSE if error
 {
 
-	static CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
+	// static CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
 
 	// normal properties (insurance)
 	CFSSWP SWP_ON[ CFSMAXNL+1];
@@ -1729,7 +1730,7 @@ bool CFSTY::cf_SHGCRated(		// rated SHGC
 	if (bRet)
 	{	const double IBEAM = 783.;	// NFRC 200
 		double SOURCE[ CFSMAXNL+2] = { 0.};
-		bool bRet = cf_Solar( SWP_ON, IBEAM, 0., 0., SOURCE);
+		bRet = cf_Solar( SWP_ON, IBEAM, 0., 0., SOURCE);
 
 		int itr=0;
 		if (bRet)
@@ -1778,7 +1779,7 @@ bool CFSTY::cf_Ratings(		// standard ratings
 
 	return UOK && SHGCOK;
 
-}  // CFSRatings
+}  // CFSTY::cf_Ratings
 //==============================================================================
 static void NetRad(		// beam fluxes between layers
 	int NL,					// # of layers
@@ -2068,129 +2069,7 @@ bool CFSLAYER::cl_OffNormalProperties(		// off-normal properties
 			: /* LTYPE == ltyNONE || LTYPE == ltyROOM)*/  true;
 	return bRet;
 }    // CFSLAYER::cl_OffNormalProperties
-//--------------------------------------------------------------------------
-static int Specular_OffNormal(		// specular glazing off-normal property ratios
 
-	double THETA,		// solar beam angle of incidence from normal, radians
-						//	0 <= THETA <= PI/2
-	double& RAT_1MR,	// returned: ratio of off-normal to normal solar (1-reflectance)
-						//   NOTE: rhoAdj = 1-(1-rho)*RAT_1MR
-	double& RAT_TAU)	// returned: ratio of off-normal to normal solar transmittance
-
-// returns 2 iff RAT_TAU < 1 or RAT_1MR < 1 (and thus csw_SpecularAdjust s/b called)
-//         1 iff RAT_TAU==1 && RAT_1MR==1 (no need to call csw_SpecularAdjust)
-//         0 if error (none currently defined)
-
-{
-	int ret = 2;
-	THETA = abs( THETA);
-	if (THETA > PI/2. - DTOR)
-	{	// theta > 89 deg
-		RAT_TAU = 0.;
-		RAT_1MR = 0.;
-	}
-	else if (THETA >= DTOR)		// if theta >= 1 deg
-	{
-		// N2 = reference refractive index for generating general off-normal curves
-		static const double N2=1.526;
-
-		// KL = extinction coefficient*thickness product, also used as a
-		//	reference value to generate off-normal curves
-		static const double KL =55.*0.006;
-
-		static const double TAU_A0 = exp(-KL);
-		static const double RPERP0=Square((N2-1.)/(N2+1.));
-		static const double TAU0 = TAU_A0*Square(1.-RPERP0) / (1.-Square( RPERP0*TAU_A0));
-		static const double RHO0 = RPERP0*(1.+TAU_A0*TAU0);
-
-		double THETA2 = asin( sin(THETA)/N2);
-		double TAU_A = exp( -KL/cos(THETA2));
-		// RPERP, RPARL = interface reflectance with respect to perpendicular
-		//                and parallel polarization components of solar rad'n
-		double RPERP = Square( sin( THETA2-THETA)/ sin( THETA2+THETA));
-		double RPARL = Square( tan( THETA2-THETA)/ tan( THETA2+THETA));
-		double TAUPERP = TAU_A * Square(1.-RPERP) / (1. - Square( RPERP*TAU_A));
-		double TAUPARL = TAU_A * Square(1.-RPARL) / (1. - Square( RPARL*TAU_A));
-		double RHOPERP = RPERP*(1.+(TAU_A*TAUPERP));
-		double RHOPARL = RPARL*(1.+(TAU_A*TAUPARL));
-		double TAU_ON=(TAUPERP+TAUPARL)/2.;
-		double RHO_ON=(RHOPERP+RHOPARL)/2.;
-		RAT_TAU = TAU_ON/TAU0;
-		RAT_1MR = (1.-RHO_ON)/(1.-RHO0);
-	}
-	else
-	{	RAT_TAU = RAT_1MR = 1.;
-		ret = 1;
-	}
-	return ret;
-
-}  // ::Specular_OffNormal
-//------------------------------------------------------------------------------
-bool CFSSWP::csw_SpecularOffNormal(		// specular glazing off-normal short wave properties
-	double theta)				// incident angle, radians
-// properties adjusted in place
-// returns true iff success
-{
-	double RAT_1MR, RAT_TAU;			// adjustment factors, see Specular_OffNormal()
-	int ret = ::Specular_OffNormal( theta, RAT_1MR, RAT_TAU);
-	if (ret == 2)
-		csw_SpecularAdjust( RAT_1MR, RAT_TAU);
-	return ret > 0;
-}    // CFSSWP::csw_Specular
-//------------------------------------------------------------------------------
-void CFSSWP::csw_SpecularAdjust(		// adjust properties
-	double RAT_1MR,		// adjustment factors, see Specular_OffNormal()
-	double RAT_TAU)
-// properties adjusted in place
-{
-	TAUSFBB *= RAT_TAU;
-	TAUSBBB *= RAT_TAU;
-	RHOSFBB = 1.-RAT_1MR * (1.-RHOSFBB);
-	RHOSBBB = 1.-RAT_1MR * (1.-RHOSBBB);
-}    // CFSSWP::csw_SpecularAdjust
-//----------------------------------------------------------------------------
-static double Specular_F(		// integrand fcn for specular properties
-	double THETA,		// incidence angle, radians
-	const HEMINTP& P,	// parameters
-	int opt)			// options: what proterty to return
-{
-	double RAT_TAU, RAT_1MR;
-	::Specular_OffNormal( THETA, RAT_1MR, RAT_TAU);
-
-	double ret = opt == hipRHO ? RAT_1MR
-			   : opt == hipTAU ? RAT_TAU
-			   :                 -1.;
-	return ret;
-}  // Specular_F
-//--------------------------------------------------------------------
-void CFSSWP::csw_SpecularRATDiff(
-	double& RAT_1MRDiff,		// returned: (1-rho) ratio
-	double& RAT_TAUDiff)		// returned: tau ratio
-// returns property ratios re estimating diffuse properties
-{
-static double X1MRDiff = -1.;
-static double XTAUDiff = -1.;
-
-	if (XTAUDiff < 0.)
-	{	// calculate and save on first call
-		HEMINTP P( 0., 0., 0.);
-		X1MRDiff = HEMINT( Specular_F, P, hipRHO);
-		XTAUDiff = HEMINT( Specular_F, P, hipTAU);
-	}
-	RAT_TAUDiff = XTAUDiff;
-	RAT_1MRDiff = X1MRDiff;
-}    // CFSSWP::csw_SpecularRATDiff
-//--------------------------------------------------------------------
-void CFSSWP::csw_SpecularEstimateDiffuseProps()		// diffuse properties
-// derives diffuse propeties from beam properties
-{
-	double RAT_TAU, RAT_1MR;
-	csw_SpecularRATDiff( RAT_1MR, RAT_TAU);
-	TAUS_DD =    RAT_TAU * TAUSFBB;
-	RHOSFDD = 1.-RAT_1MR * (1.-RHOSFBB);
-	RHOSBDD = 1.-RAT_1MR * (1.-RHOSBBB);
-}    // CFSSWP::csw_SpecularEstimateDiffuseProps
-//===============================================================================
 
 //******************************************************************************
 // common models (shared by more than one shade type)
@@ -2320,7 +2199,7 @@ bool CFSLAYER::cl_RBLWP(	// roller blind LW properties
 
 #if defined( _DEBUG)
 	if (abs( LLWP.TAUL - TAULX) > 0.001)
-		Message( msgERR, "Layer '%s': RB LW TAU mismatch", SX( ID));
+		Message( msgERR, "Layer '%s': RB LW TAU mismatch", FCGET( ID));
 #endif
 	return bRet;
 }  // CFSLAYER::cl_RBLWP
@@ -2356,7 +2235,7 @@ bool CFSLAYER::cl_RBSWP(		// roller blind short wave properties
 #if defined( _DEBUG)
 		if (abs( LSWP.TAUS_DD - TAUX) > 0.001)
 			Message( msgERR, "Layer '%s': roller blind SW DD TAU mismatch  F=%0.4f   B=%0.4f",
-				SX( ID), LSWP.TAUS_DD, TAUX);
+				FCGET( ID), LSWP.TAUS_DD, TAUX);
 #endif
 	}
 	else
@@ -2495,7 +2374,7 @@ bool CFSLAYER::cl_ISLWP(		// insect screen LW properties
 
 #if defined( _DEBUG)
 	if (abs( LLWP.TAUL - TAULX) > 0.001)
-		Message( msgWRN, "Layer '%s': IS LW TAU mismatch", SX( ID));
+		Message( msgWRN, "Layer '%s': IS LW TAU mismatch", FCGET( ID));
 #endif
 	return bRet;
 }  // CFSLAYER::cl_ISLWP
@@ -2530,7 +2409,7 @@ bool CFSLAYER::cl_ISSWP(		// insect screen short wave properties
 				LSWP.RHOSBDD, TAUX);
 	  #if defined( _DEBUG)
 		if (abs( LSWP.TAUS_DD - TAUX) > 0.001)
-			Message( msgWRN, "Layer '%s': Insect screen SW DD TAU mismatch", SX( ID));
+			Message( msgWRN, "Layer '%s': Insect screen SW DD TAU mismatch", FCGET( ID));
 	  #endif
 	}
 	else
@@ -4112,7 +3991,7 @@ bool CFSLAYER::cl_PDLWP(	// Drape LW properties from fabric / geometry
 
 #if defined( _DEBUG)
 	if (abs( LLWP.TAUL - TAULX) > 0.001)
-		Message( msgERR, "Layer '%s': PD LW TAU mismatch", SX( ID));
+		Message( msgERR, "Layer '%s': PD LW TAU mismatch", FCGET( ID));
 #endif
 	return bRet;
 }  // CFSLAYER::cl_PDLWP
@@ -4143,7 +4022,7 @@ static int caseCount[ 7] = { 0};
 	  #if 0 && defined( _DEBUG)
 		DbDump( "cl_PDSWP diff  ");
 		if (abs( LSWP.TAUS_DD - TAUX) > 0.001)
-			Message( msgERR, "Layer '%s': Drape SW DD TAU mismatch", SX( ID));
+			Message( msgERR, "Layer '%s': Drape SW DD TAU mismatch", FCGET( ID));
 	  #endif
 	}
 	else
@@ -4170,6 +4049,14 @@ static int caseCount[ 7] = { 0};
 	}
 	return bRet;
 }  // CFSLAYER::cl_PDSWP
+//-----------------------------------------------------------------------------
+void CFSLAYER::DbDump( const char* tag/*=""*/) const
+{
+	Message( msgDBG, "\n%s%-.10s   ty=%d\n  %s   %s\n  %s   %s",
+		tag, ID, LTYPE,
+		LWP_MAT.DbFmt("MAT ").c_str(), SWP_MAT.DbFmt().c_str(),
+		LWP_EL.DbFmt("EL  ").c_str(), SWP_EL.DbFmt().c_str());
+}	// CFSLAYER::DbDump
 //==============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4671,7 +4558,7 @@ bool CFSLAYER::cl_VBLWP(
 
 #if defined( _DEBUG)
 	if (abs( LLWP.TAUL - TAULX) > 0.001)
-		Message( msgERR, "Layer '%s': VB LW TAU mismatch", SX( ID));
+		Message( msgERR, "Layer '%s': VB LW TAU mismatch", FCGET( ID));
 #endif
 	return bRet;
 }  // CFSLAYER::cl_VB_LWP
@@ -4701,7 +4588,7 @@ bool CFSLAYER::cl_VBSWP(	// VB off-normal short wave (solar) properties
 
 	#if defined( _DEBUG)
 		if (abs( LSWP.TAUS_DD - TAUX) > 0.001)
-			Message( msgERR, "Layer '%s': VB SW DD TAU mismatch", SX( ID));
+			Message( msgERR, "Layer '%s': VB SW DD TAU mismatch", FCGET( ID));
 	#endif
 	}
 	else
@@ -4784,6 +4671,10 @@ bool CFSLAYER::cl_DoShadeControl(		// apply shade control
 	return bRet;
 }  // CFSLAYER::cl_DoShadeControl
 //==============================================================================
+CFSTY::CFSTY()
+{	cf_Clear();
+}		// CFSTY::CFSTY
+//-----------------------------------------------------------------------
 void CFSTY::cf_Clear()			// clear CFS
 {
 	memset( ID, 0, sizeof( ID));
@@ -4793,6 +4684,264 @@ void CFSTY::cf_Clear()			// clear CFS
 	for (int iG=1; iG<CFSMAXNL; iG++)
 		G( iG).cg_Clear();
 }    // CFSTY::cf_Clear
+//-----------------------------------------------------------------------------
+void CFSTY::cf_SetID( const char* _ID)
+{	FCSET( ID, _ID);
+}		// CFSTY::cf_SetID
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// CFSLAYER
+///////////////////////////////////////////////////////////////////////////////
+CFSLAYER::CFSLAYER()
+{	cl_Clear();		// clear all members
+}	// CFSLAYER::CFSLAYER
+//-----------------------------------------------------------------------------
+CFSLAYER::CFSLAYER( const CFSLAYER& cl)
+{	memcpy( this, &cl, sizeof( CFSLAYER));	// bitwise
+}	// CFSLAYER::CFSLAYER
+//-----------------------------------------------------------------------------
+CFSLAYER::CFSLAYER(			// layer c'tor
+	const char* id,			// ID (name) of layer
+	int ltype,				// type (ltyGLAZE, )
+							// front (outside) properties
+	float tauFBB,			//    beam transmittance (or openness)
+	float rhoFBB,			//    beam reflectance
+	float tauBD,			//    beam-diffuse transmittance
+	float epsLF /*=-1.f*/,	//    LW emittance
+							// back (inside) normal properties
+							//  default = same as front
+	float rhoBBB /*=-1.f*/,	//    beam reflectance
+	float epsLB /*=-1.f*/,	//    LW emittance
+	float tauL /*=0.f*/)	//    LW transmittance
+{
+	if (ltype == ltyGLAZE)
+		cl_InitGlaze( id, tauFBB, rhoFBB, epsLF, rhoBBB, epsLB, tauL);
+	else if (ltype == ltyROLLB)
+		cl_InitRollB( id, tauFBB, rhoFBB, tauBD);
+	else if (ltype == ltyINSCRN)
+		cl_InitInscrn( id, tauFBB, rhoFBB, tauBD);
+	else if (ltype == ltyDRAPE)
+		cl_InitDrape( id, tauFBB, rhoFBB, tauBD);
+	else
+		cl_Clear();
+}		// CFSLAYER::CFSLAYER
+//-----------------------------------------------------------------------------
+CFSLAYER::CFSLAYER(			// special glazing layer c'tor (Windows 6 arg order)
+	const char* id,							// ID (name) of layer
+	float thk,								// thickness, in (unused)
+	float tSol, float rSol1, float rSol2,	// solar properties
+	float tVis, float rVis1, float rVis2,	// visible properties (unused)
+	float tIR,	float eIR1,  float eIR2,	// LW properties
+	float kEff)								// conductivity
+{
+	thk, tVis, rVis1, rVis2, kEff;
+	cl_InitGlaze( id, tSol, rSol1, eIR1, rSol2, eIR2, tIR);
+}		// CFSLAYER::CFSLAYER
+//-----------------------------------------------------------------------------
+void CFSLAYER::cl_SetID( const char* _ID)
+{	FCSET( ID, _ID);
+}		// CFSLAYER::cl_SetID
+//-----------------------------------------------------------------------------
+bool CFSLAYER::cl_InitGlaze(			// init glazing layer
+	const char* id,			// ID (name) of layer
+							// front (outside) normal properties
+	float tauFBB,			//    beam transmittance
+	float rhoFBB,			//    beam reflectance
+	float epsLF,			//    LW emittance
+							// back (inside) normal properties
+							//  default = same as front
+	float rhoBBB /*=-1.f*/,	//    beam reflectance
+	float epsLB /*=-1.f*/,	//    LW emittance
+	float tauL /*=0.f*/)	//    LW transmittance
+
+{
+	cl_Clear();
+
+	LTYPE = ltyGLAZE;
+	FCSET( ID, id);
+
+	// solar (short wave) properties
+	if (rhoBBB < 0.f)
+		rhoBBB = rhoFBB;
+
+	SWP_MAT.RHOSFBB = rhoFBB;
+	SWP_MAT.RHOSBBB = rhoBBB;
+	SWP_MAT.TAUSFBB = tauFBB;
+	SWP_MAT.TAUSBBB = tauFBB;		// front/back tau always same for glazing
+
+	// SWP_MAT.RHOSFBD = 0.;		// BD properties = 0 (no frosted glass TODO?)
+	// SWP_MAT.RHOSBBD = 0.;
+	// SWP_MAT.TAUSFBD = 0.;
+	// SWP_MAT.TAUSBBD = 0.;
+
+	SWP_MAT.RHOSFDD = -1.;	// force estimation of diffuse-diffuse properties
+	SWP_MAT.RHOSBDD = -1.;
+	SWP_MAT.TAUS_DD = -1.;
+
+	// long-wave (thermal) properties
+	if (epsLB < 0.f)
+		epsLB = epsLF;
+
+	LWP_MAT.EPSLF = epsLF;
+	LWP_MAT.EPSLB = epsLB;
+	LWP_MAT.TAUL = tauL;
+
+	// TODO: handle error message
+	return cl_CheckFix( id);
+}		// CFSLAYER::cl_InitGlaze
+//-----------------------------------------------------------------------------
+bool CFSLAYER::cl_InitRollB(			// init roller blind
+	const char* id,			// ID (name) of layer
+							// front (outside) normal properties
+	float fOpen,			// openness (=tauFBB)
+	float rhoFBD,			// front beam-diffuse reflectance
+	float tauBD,			// beam-diffuse transmittance
+	float rhoBBD /*=-1*/)	// back beam-diffuse reflectance
+
+// note: total transmittance = fOpen + tauBD
+{
+#if 0
+	CALL GxR( 6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
+	CALL GxR( 7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
+	CALL GxR( 8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
+	CALL GxR( 9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
+#endif
+
+	cl_Clear();
+
+	LTYPE = ltyROLLB;
+	FCSET( ID, id);
+
+	// solar (short wave) properties
+	if (rhoBBD < 0.f)
+		rhoBBD = rhoFBD;
+
+	SWP_MAT.TAUSFBB = fOpen;
+	SWP_MAT.TAUSBBB = fOpen;
+	SWP_MAT.RHOSFBD = rhoFBD;
+	SWP_MAT.RHOSBBD = rhoBBD;
+	SWP_MAT.TAUSFBD = tauBD;
+	SWP_MAT.TAUSBBD = tauBD;
+
+#if 0
+	SWP_MAT.RHOSFDD = -1.;			// force estimation of diffuse-diffuse properties
+	SWP_MAT.RHOSBDD = -1.;
+	SWP_MAT.TAUS_DD = -1.;
+#endif
+
+	LWP_MAT.EPSLF = -1.;			// default all LW properties
+	LWP_MAT.EPSLB = -1.;
+	LWP_MAT.TAUL = -1.;
+
+	return cl_CheckFix( id);
+}		// CFSLAYER::cl_InitRollB
+//-----------------------------------------------------------------------------
+bool CFSLAYER::cl_InitInscrn(			// init insect screen
+	const char* id,			// ID (name) of layer
+							// front (outside) normal properties
+	float fOpen,			// openness (=tauFBB)
+	float rhoFBD,			// front beam-diffuse reflectance
+	float tauBD,			// beam-diffuse transmittance
+	float rhoBBD /*=-1*/)	// back beam-diffuse reflectance
+
+// note: total transmittance = fOpen + tauBD
+{
+#if 0
+	CALL GxR( 6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
+	CALL GxR( 7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
+	CALL GxR( 8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
+	CALL GxR( 9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
+	CFSLayers( iL)%S = -1.		! force derivation of wire geom from openness
+	CFSLayers( iL)%W = -1.
+	CFSLayers( iL)%SWP_MAT%TAUSBBB = CFSLayers( iL)%SWP_MAT%TAUSFBB
+	CFSLayers( iL)%SWP_MAT%TAUSBBD = CFSLayers( iL)%SWP_MAT%TAUSFBD
+#endif
+
+	cl_Clear();
+
+	LTYPE = ltyINSCRN;
+	FCSET( ID, id);
+
+	// solar (short wave) properties
+	if (rhoBBD < 0.f)
+		rhoBBD = rhoFBD;
+
+	SWP_MAT.TAUSFBB = fOpen;
+	SWP_MAT.TAUSBBB = fOpen;
+	SWP_MAT.RHOSFBD = rhoFBD;
+	SWP_MAT.RHOSBBD = rhoBBD;
+	SWP_MAT.TAUSFBD = tauBD;
+	SWP_MAT.TAUSBBD = tauBD;
+
+#if 0
+	SWP_MAT.RHOSFDD = -1.;			// force estimation of diffuse-diffuse properties
+	SWP_MAT.RHOSBDD = -1.;
+	SWP_MAT.TAUS_DD = -1.;
+#endif
+
+	LWP_MAT.EPSLF = -1.;			// default all LW properties
+	LWP_MAT.EPSLB = -1.;
+	LWP_MAT.TAUL = -1.;
+
+	S = -1;		// force estimation of wire geometry from openness
+	W = -1;
+
+	return cl_CheckFix( id);
+}		// CFSLAYER::cl_InitInscrn
+//-----------------------------------------------------------------------------
+bool CFSLAYER::cl_InitDrape(			// init drape layer
+	const char* id,			// ID (name) of layer
+							// front (outside) normal properties
+	float fOpen,			// openness (=tauFBB)
+	float rhoFBD,			// front beam-diffuse reflectance
+	float tauBD,			// beam-diffuse transmittance
+	float rhoBBD /*=-1*/)	// back beam-diffuse reflectance
+{
+
+#if 0
+	CALL GxR(  6, CFSLayers( iL)%SWP_MAT%TAUSFBB, 'Openness', gxREQD, '|0|1')
+	CALL GxR(  7, CFSLayers( iL)%SWP_MAT%RHOSFBD, 'RHOSFBD',  gxREQD, '|0|1')
+	CALL GxR(  8, CFSLayers( iL)%SWP_MAT%RHOSBBD, 'RHOSBBD',  gxREQD, '|0|1')
+	CALL GxR(  9, CFSLayers( iL)%SWP_MAT%TAUSFBD, 'TAUS_BD',  gxREQD, '|0|1')
+	CALL GxR( 10, CFSLayers( iL)%S,               'PleatS',  0,      '100|.01')
+	CALL GxR( 11, CFSLayers( iL)%W,               'PleatW',  0,      '100|0')
+	CFSLayers( iL)%SWP_MAT%RHOSFDD = -1.	! init diffuse SWP to force default derivation
+	CFSLayers( iL)%SWP_MAT%RHOSBDD = -1.
+	CFSLayers( iL)%SWP_MAT%TAUS_DD = -1.
+	CFSLayers( iL)%SWP_MAT%TAUSBBB = CFSLayers( iL)%SWP_MAT%TAUSFBB
+	CFSLayers( iL)%SWP_MAT%TAUSBBD = CFSLayers( iL)%SWP_MAT%TAUSFBD
+#endif
+
+	cl_Clear();
+
+	LTYPE = ltyDRAPE;
+	FCSET( ID, id);
+
+	// solar (short wave) properties
+	if (rhoBBD < 0.f)
+		rhoBBD = rhoFBD;
+
+	SWP_MAT.TAUSFBB = fOpen;
+	SWP_MAT.TAUSBBB = fOpen;
+	SWP_MAT.RHOSFBD = rhoFBD;
+	SWP_MAT.RHOSBBD = rhoBBD;
+	SWP_MAT.TAUSFBD = tauBD;
+	SWP_MAT.TAUSBBD = tauBD;
+
+	SWP_MAT.RHOSFDD = -1.;			// force estimation of diffuse-diffuse properties
+	SWP_MAT.RHOSBDD = -1.;
+	SWP_MAT.TAUS_DD = -1.;
+
+	LWP_MAT.EPSLF = -1.;			// default all LW properties
+	LWP_MAT.EPSLB = -1.;
+	LWP_MAT.TAUL = -1.;
+
+	S = 100.f;		// pleat geometry
+	W = 100.f;
+
+	return cl_CheckFix( id);
+}		// CFSLAYER::cl_InitDrape
 //------------------------------------------------------------------------------
 void CFSLAYER::cl_Clear()		// clear CFS layer
 {
@@ -4848,26 +4997,21 @@ bool CFSLAYER::cl_Reverse(			// reverse a layer
 	CFSLAYER& LR) const		// returned: reversed layer
 // returns true iff success
 {
-#if 1
-    bool bRet = false;
-#else
-	bool bRet = true;
-
-	// TODO: incomplete 9-25-2016
-
-	// LR.ID = SX(ID) // ' REV'
+	string sID = FCGET( ID);
+	sID += "_Rev";
+	LR.cl_SetID( sID.c_str());
 	
 	// copy invariant mbrs
 	LR.LTYPE = LTYPE;
 	LR.S = S;
 	LR.W = W;
 	LR.C = C;
-	LR.PHI_DEG = -PHI_DEG;	// flip slat angle
+	LR.PHI_DEG = PHI_DEG != 0. ? -PHI_DEG : 0.;	// flip slat angle (avoid -0)
+	LR.CNTRL = CNTRL;
 	if (cl_IsVB())
 	{	// blinds: slat properties don't change (up still up)
 		LR.SWP_MAT = SWP_MAT;
 		LR.LWP_MAT = LWP_MAT;
-		bRet = LR.cl_Finalize();	// ??? put at end?
 	}
     // else drapes?
     else
@@ -4877,9 +5021,9 @@ bool CFSLAYER::cl_Reverse(			// reverse a layer
 		(LR.SWP_EL = SWP_EL).csw_Reverse();
 		(LR.LWP_EL = LWP_EL).clw_Reverse();
     }
-#endif
 
-	return bRet;
+	return LR.cl_Finalize();	// insurance
+
 }  // CFSLAYER::cl_Reverse
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_Finalize()	// finish layer construction
@@ -4981,13 +5125,20 @@ bool CFSLAYER::cl_IsShadeLayer() const	// true iff layer shade (not glaze or spe
 {
 	return LTYPE >= ltySHADE1 && LTYPE <= ltySHADEN;
 }  // CFSLAYER::cl_IsShadeLayer
+//==============================================================================
+
+////////////////////////////////////////////////////////////////////////////////
+// CFSSWP -- short wave properties
+////////////////////////////////////////////////////////////////////////////////
+CFSSWP::CFSSWP()
+{	csw_Clear();
+}		// CFSSWP::CFSSWP
 //------------------------------------------------------------------------------
 void CFSSWP::csw_Clear()		// clear short-wave properties
 {
 	TAUSFBB = TAUSBBB = RHOSFBB = RHOSBBB =
 	TAUSFBD = TAUSBBD = RHOSFBD = RHOSBBD =
 	TAUS_DD = RHOSFDD = RHOSBDD = 0.;
-
 }    // CFSSWP::csw_Clear
 //------------------------------------------------------------------------------
 void CFSSWP::csw_ClearUnused(	// clear unused short-wave properties
@@ -5040,7 +5191,6 @@ int errCount=0;
 CFSSWP& CFSSWP::csw_Reverse()		// reverse short-wave properties
 // back / front properties exhanged in place
 {
-
 	// beam-beam
 	vswap( TAUSFBB, TAUSBBB);
 	vswap( RHOSFBB, RHOSBBB);
@@ -5054,6 +5204,149 @@ CFSSWP& CFSSWP::csw_Reverse()		// reverse short-wave properties
 	return *this;
 
 }  // CFSSWP::csw_Reverse
+//--------------------------------------------------------------------------
+static int Specular_OffNormal(		// specular glazing off-normal property ratios
+
+	double THETA,		// solar beam angle of incidence from normal, radians
+						//	0 <= THETA <= PI/2
+	double& RAT_1MR,	// returned: ratio of off-normal to normal solar (1-reflectance)
+						//   NOTE: rhoAdj = 1-(1-rho)*RAT_1MR
+	double& RAT_TAU)	// returned: ratio of off-normal to normal solar transmittance
+
+// returns 2 iff RAT_TAU < 1 or RAT_1MR < 1 (and thus csw_SpecularAdjust s/b called)
+//         1 iff RAT_TAU==1 && RAT_1MR==1 (no need to call csw_SpecularAdjust)
+//         0 if error (none currently defined)
+
+{
+	int ret = 2;
+	THETA = abs( THETA);
+	if (THETA > PI/2. - DTOR)
+	{	// theta > 89 deg
+		RAT_TAU = 0.;
+		RAT_1MR = 0.;
+	}
+	else if (THETA >= DTOR)		// if theta >= 1 deg
+	{
+		// N2 = reference refractive index for generating general off-normal curves
+		static const double N2=1.526;
+
+		// KL = extinction coefficient*thickness product, also used as a
+		//	reference value to generate off-normal curves
+		static const double KL =55.*0.006;
+
+		static const double TAU_A0 = exp(-KL);
+		static const double RPERP0=Square((N2-1.)/(N2+1.));
+		static const double TAU0 = TAU_A0*Square(1.-RPERP0) / (1.-Square( RPERP0*TAU_A0));
+		static const double RHO0 = RPERP0*(1.+TAU_A0*TAU0);
+
+		double THETA2 = asin( sin(THETA)/N2);
+		double TAU_A = exp( -KL/cos(THETA2));
+		// RPERP, RPARL = interface reflectance with respect to perpendicular
+		//                and parallel polarization components of solar rad'n
+		double RPERP = Square( sin( THETA2-THETA)/ sin( THETA2+THETA));
+		double RPARL = Square( tan( THETA2-THETA)/ tan( THETA2+THETA));
+		double TAUPERP = TAU_A * Square(1.-RPERP) / (1. - Square( RPERP*TAU_A));
+		double TAUPARL = TAU_A * Square(1.-RPARL) / (1. - Square( RPARL*TAU_A));
+		double RHOPERP = RPERP*(1.+(TAU_A*TAUPERP));
+		double RHOPARL = RPARL*(1.+(TAU_A*TAUPARL));
+		double TAU_ON=(TAUPERP+TAUPARL)/2.;
+		double RHO_ON=(RHOPERP+RHOPARL)/2.;
+		RAT_TAU = TAU_ON/TAU0;
+		RAT_1MR = (1.-RHO_ON)/(1.-RHO0);
+	}
+	else
+	{	RAT_TAU = RAT_1MR = 1.;
+		ret = 1;
+	}
+	return ret;
+
+}  // ::Specular_OffNormal
+//------------------------------------------------------------------------------
+bool CFSSWP::csw_SpecularOffNormal(		// specular glazing off-normal short wave properties
+	double theta)				// incident angle, radians
+// properties adjusted in place
+// returns true iff success
+{
+	double RAT_1MR, RAT_TAU;			// adjustment factors, see Specular_OffNormal()
+	int ret = ::Specular_OffNormal( theta, RAT_1MR, RAT_TAU);
+	if (ret == 2)
+		csw_SpecularAdjust( RAT_1MR, RAT_TAU);
+	return ret > 0;
+}    // CFSSWP::csw_Specular
+//------------------------------------------------------------------------------
+void CFSSWP::csw_SpecularAdjust(		// adjust properties
+	double RAT_1MR,		// adjustment factors, see Specular_OffNormal()
+	double RAT_TAU)
+// properties adjusted in place
+{
+	TAUSFBB *= RAT_TAU;
+	TAUSBBB *= RAT_TAU;
+	RHOSFBB = 1.-RAT_1MR * (1.-RHOSFBB);
+	RHOSBBB = 1.-RAT_1MR * (1.-RHOSBBB);
+}    // CFSSWP::csw_SpecularAdjust
+//----------------------------------------------------------------------------
+static double Specular_F(		// integrand fcn for specular properties
+	double THETA,		// incidence angle, radians
+	const HEMINTP& P,	// parameters
+	int opt)			// options: what proterty to return
+{
+	double RAT_TAU, RAT_1MR;
+	::Specular_OffNormal( THETA, RAT_1MR, RAT_TAU);
+
+	double ret = opt == hipRHO ? RAT_1MR
+			   : opt == hipTAU ? RAT_TAU
+			   :                 -1.;
+	return ret;
+}  // Specular_F
+//--------------------------------------------------------------------
+void CFSSWP::csw_SpecularRATDiff(
+	double& RAT_1MRDiff,		// returned: (1-rho) ratio
+	double& RAT_TAUDiff)		// returned: tau ratio
+// returns property ratios re estimating diffuse properties
+{
+static double X1MRDiff = -1.;
+static double XTAUDiff = -1.;
+
+	if (XTAUDiff < 0.)
+	{	// calculate and save on first call
+		HEMINTP P( 0., 0., 0.);
+		X1MRDiff = HEMINT( Specular_F, P, hipRHO);
+		XTAUDiff = HEMINT( Specular_F, P, hipTAU);
+	}
+	RAT_TAUDiff = XTAUDiff;
+	RAT_1MRDiff = X1MRDiff;
+}    // CFSSWP::csw_SpecularRATDiff
+//--------------------------------------------------------------------
+void CFSSWP::csw_SpecularEstimateDiffuseProps()		// diffuse properties
+// derives diffuse propeties from beam properties
+{
+	double RAT_TAU, RAT_1MR;
+	csw_SpecularRATDiff( RAT_1MR, RAT_TAU);
+	TAUS_DD =    RAT_TAU * TAUSFBB;
+	RHOSFDD = 1.-RAT_1MR * (1.-RHOSFBB);
+	RHOSBDD = 1.-RAT_1MR * (1.-RHOSBBB);
+}    // CFSSWP::csw_SpecularEstimateDiffuseProps
+
+//-----------------------------------------------------------------------------
+string CFSSWP::DbFmt( const char* tag/*=""*/) const	// formatted string for e.g. DbDump()
+// returns self-description w/o \n
+{
+	return stringFmt(
+		"%sSW TBB=%.3f/%.3f RBB=%.3f/%.3f  TBD=%.3f/%.3f RBD=%.3f/%.3f  TDD=%.3f RDD=%.3f/%.3f",
+			tag,
+			TAUSFBB, TAUSBBB, RHOSFBB, RHOSBBB,
+			TAUSFBD, TAUSBBD, RHOSFBD, RHOSBBD,
+			TAUS_DD, RHOSFDD, RHOSBDD);
+
+}	// CFSSWP::DbFmt
+//===============================================================================
+
+/////////////////////////////////////////////////////////////////////////////////
+// CFSLWP
+/////////////////////////////////////////////////////////////////////////////////
+CFSLWP::CFSLWP()		// c'tor
+{	clw_Clear();
+}	// CFSLWP::CFSLWP
 //------------------------------------------------------------------------------
 void CFSLWP::clw_Clear()		// clear long-wave properties
 {
@@ -5091,7 +5384,22 @@ CFSLWP& CFSLWP::clw_Reverse()	// reverse long-wave properties in place
 	// TAUL unchanged
 	return *this;
 }  // CFSLWP::clw_Reverse
+//------------------------------------------------------------------------------
+string CFSLWP::DbFmt(		// formatted string for debugging
+	const char* tag/*=""*/) const
+// returns self-description
+{
+	return stringFmt( "%sLW EF=%0.3f EB=%0.3f T=%0.3f",
+		tag, EPSLF, EPSLB, TAUL);
+}		// CFSLWP::DbFmt
+//=============================================================================
 
+///////////////////////////////////////////////////////////////////////////////
+// CFSGAP
+///////////////////////////////////////////////////////////////////////////////
+CFSGAP::CFSGAP()
+{	cg_Clear();
+}	// CFSGAP::CFSGAP
 //------------------------------------------------------------------------------
 void CFSGAP::cg_Clear()			// clear gap
 {
@@ -5135,13 +5443,47 @@ void CFSGAP::cg_AdjustVBGap(		// adjust gap adjacent to slatted blind
 	double VBTHICK = L.W * cos( DTOR * L.PHI_DEG);	// VB layer thickness at slat angle
 	TAS_EFF = TAS + (L.W - 0.7*VBTHICK)/2.;
 }    // CFSGAP::cg_AdjustVBGap
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------
+double CFSGAP::cg_HConvGap(		// convective coeff for gap
+	double T1,		// bounding surface temps, K
+	double T2)
+// returns convective coefficient, W/m2-K
+{
+	double T = TAS_EFF / 1000.;	// gap thickness, m
+	double TM = (T1 + T2) / 2.;
+	double DT = T1 - T2;
+	double RA=FRA( TM, T, DT, FG.AK, FG.BK,
+			FG.ACP, FG.BCP, FG.AVISC, FG.BVISC, RHOGAS);
+	double NU=FNU( RA);
+	//	if (NU > 1.) ALPHA=DOT(S-PI/6.)/(PI/3.)*0.5+0.5
+	double KGAS = FG.AK + FG.BK*TM;
+	double hc = NU*KGAS/T;
+	return hc;
+}  // CFSGAP::cg_HConvGap
+//-----------------------------------------------------------------------------
+string CFSGAP::DbFmt( const char* tag/*=""*/) const
+// returns self-description w/o \n
+{
+	return stringFmt( "%s%s ty=%d W=%0.3f Weff=%0.3f",
+		tag,
+		FCGET( FG.ID), GTYPE,
+		TAS/25.4, TAS_EFF/25.4);		// gap width: mm to inches
+}		// CFSGAP::DbFmt
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// CFSFILLGAS
+///////////////////////////////////////////////////////////////////////////////
+CFSFILLGAS::CFSFILLGAS()
+{	cfg_Clear();
+}	// CFSGILLGAS::CFSFILLGAS
+//-----------------------------------------------------------------------------
 CFSFILLGAS::CFSFILLGAS(
 	const char* id, double ak, double bk, double acp, double bcp,
 	double avisc, double bvisc, double mHat)
 {	Init( id, ak, bk, acp, bcp, avisc, bvisc, mHat);
 }		// CFSGILLGAS::CFSFILLGAS
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CFSFILLGAS::Init(
 	const char* id, double ak, double bk, double acp, double bcp,
 	double avisc, double bvisc, double mHat)
@@ -5149,7 +5491,19 @@ void CFSFILLGAS::Init(
 	AK = ak; BK = bk; AVISC = avisc; BVISC = bvisc;
 	ACP = acp; BCP = bcp; MHAT = mHat;
 }	// CFSFILLGASS::Init
-//-----------------------------------------
+//-----------------------------------------------------------------------------
+void CFSFILLGAS::cfg_Clear()		// clear fill gas properties
+{
+	memset( ID, 0, sizeof( ID));
+	AK = 0.;
+	BK = 0.;
+	ACP = 0.;
+	BCP = 0.;
+	AVISC = 0.;
+	BVISC = 0.;
+	MHAT = 0.;
+}    // CFSFILLGAS::cfg_Clear
+//-----------------------------------------------------------------------------
 bool CFSFILLGAS::cfg_GetFillGas(		// init from ID
 	const char* FGID)		// fill gas ID sought ("Argon")
 // returns true iff FGID found, *this filled with properties
@@ -5177,18 +5531,6 @@ static CFSFILLGAS FGX[] =
 		*this = FGX[ 0];		// air
 	return bFound;
 }  // CFGFILLGAS::cfg_GetFillGas
-//------------------------------------------------------------------------------
-void CFSFILLGAS::cfg_Clear()		// clear fill gas properties
-{
-	memset( ID, 0, sizeof( ID));
-	AK = 0.;
-	BK = 0.;
-	ACP = 0.;
-	BCP = 0.;
-	AVISC = 0.;
-	BVISC = 0.;
-	MHAT = 0.;
-}    // CFSFILLGAS::cfg_Clear
 //------------------------------------------------------------------------------
 double CFSFILLGAS::cfg_Density(		// calculate gas density
 	double P,			// pressure, Pa
@@ -5236,11 +5578,10 @@ int CFSTY::cf_Info(			// info about this CFSTY
 }  // CFSTY::cf_Info
 //------------------------------------------------------------------------------
 int CFSTY::cf_HasControlledShade() const	// check for controlled shade layer
-// returns idx of outermost controlled shade layer
+// returns 1-based idx of outermost controlled shade layer
 //         0 if none
 {
-	int nGlz = 0;
-	for (int iL=1; iL<NL; iL++)
+	for (int iL=1; iL<=NL; iL++)
 		if (L( iL).cl_IsControlledShade())
 			return iL;
 	return 0;
@@ -5251,6 +5592,7 @@ bool CFSLAYER::cl_CheckFix(		// verify CFSLAYER validity
 	const char* what)		// context for message(s)
 // set bad items to valid defaults if possible
 // returns true iff all data OK
+//    else false (msgs populated)
 {
 	// set missing values to defaults
 	cl_FillDefaultsGeom( SWP_MAT);
@@ -5264,6 +5606,22 @@ bool CFSLAYER::cl_CheckFix(		// verify CFSLAYER validity
 	bool FLOK = cl_Finalize();
 	return LWPOK && SWPOK && GOK && FLOK;
 }  // CFSLAYER::cl_CheckFix
+//-----------------------------------------------------------------------------
+bool CFSLAYER::cl_CheckFix(		// verify CFSLAYER validity w/ message reporting)
+	const char* what)		// context for message(s)
+// set bad items to valid defaults if possible
+// returns true iff all data OK
+//    else false (msgs reported)
+{
+	vector< string> msgs;
+	bool bRet = cl_CheckFix( msgs, what);
+	if (!bRet)
+	{	vector< string>::const_iterator  pos;
+		for (pos=msgs.begin(); pos!=msgs.end(); ++pos)
+			Message( msgWRN, pos->c_str());
+	}
+	return bRet;
+}	// CFSLAYER::cl_CheckFix
 //------------------------------------------------------------------------------
 void CFSLAYER::cl_FillDefaultsGeom(
 	const CFSSWP& swp)	// properties (may be within *this)
@@ -5319,24 +5677,26 @@ void CFSLAYER::cl_FillDefaultsSWP(		// fill defaulted properties
 	CFSSWP& swp)		// properties to fill (may be within *this)
 {
 	// default back taus to front (often equal)
-	if (swp.TAUSBBB < 0.) swp.TAUSBBB = swp.TAUSFBB;
-	if( swp.TAUSBBD < 0.) swp.TAUSBBD = swp.TAUSFBD;
+	if (swp.TAUSBBB < 0.)
+		swp.TAUSBBB = swp.TAUSFBB;
+	if( swp.TAUSBBD < 0.)
+		swp.TAUSBBD = swp.TAUSFBD;
 
 	if (LTYPE == ltyGLAZE)
 	{	// estimate diffuse properties if any < 0
-		if (min( swp.RHOSBDD, swp.RHOSFDD, swp.TAUS_DD) < 0.)
+		if (swp.RHOSBDD<0. || swp.RHOSFDD<0. || swp.TAUS_DD<0.)
 			swp.csw_SpecularEstimateDiffuseProps();
 	}
 	else if (LTYPE == ltyVBHOR || LTYPE == ltyVBVER)
 		;	// nothing to do
 	else if (LTYPE == ltyDRAPE)
 	{	// estimate diffuse properties if any < 0
-		if (min( swp.RHOSBDD, swp.RHOSFDD, swp.TAUS_DD) < 0.)
+		if (swp.RHOSBDD<0. || swp.RHOSFDD<0. || swp.TAUS_DD<0.)
 			swp.csw_FabricEstimateDiffuseProps();
 	}
 	else if (LTYPE == ltyROLLB)
 	{	// estimate diffuse properties if any < 0
-		if (min( swp.RHOSBDD, swp.RHOSFDD, swp.TAUS_DD) < 0.)
+		if (swp.RHOSBDD<0. || swp.RHOSFDD<0. || swp.TAUS_DD<0.)
 			cl_RBSWP( swp);	// TODO RB
 	}
 	else if (LTYPE == ltyINSCRN)
@@ -5345,7 +5705,7 @@ void CFSLAYER::cl_FillDefaultsSWP(		// fill defaulted properties
 			if (swp.TAUSBBB < 0.)
 				swp.TAUSBBB = swp.TAUSFBB;
 		}
-		if (min( swp.RHOSBDD, swp.RHOSFDD, swp.TAUS_DD) < 0.)
+		if (swp.RHOSBDD<0. || swp.RHOSFDD<0. || swp.TAUS_DD<0.)
 			cl_ISSWP( swp);	// TODO IS
 	}
 	else if (LTYPE == ltyNONE || LTYPE == ltyROOM)
@@ -5357,7 +5717,7 @@ void CFSLAYER::cl_FillDefaultsSWP(		// fill defaulted properties
 bool CFSLAYER::cl_CheckFixLWP(	// check layer long wave properties
 	CFSLWP& lwp,			// properties (may be within *this)
 	vector< string> &msgs,	// msg array
-	const char *what)		// check long wave properties
+	const char* what)		// context for messages
 // returns true iff LWP OK
 //    else false, LWP.xxx changed to legal but NOT necessarily consistent values
 //                Layer should not be used
@@ -5372,7 +5732,7 @@ bool CFSLAYER::cl_CheckFixLWP(	// check layer long wave properties
 bool CFSLAYER::cl_CheckFixSWP(	// check short wave properties
 	CFSSWP& swp,			// properties (may be within *this)
 	vector< string> &msgs,	// msg array
-	const char *what)		// check long wave properties
+	const char* what)		// context for messages
 
 // checks input layer properties
 // NOTE: equivalent layer properties may fail here, do not call for SWL_EL
@@ -5465,7 +5825,7 @@ bool CFSLAYER::cl_CheckFixSWP(	// check short wave properties
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_CheckFixGeom(		// check and apply limits to geometric values
 	vector< string> &msgs,		// msg array (any new messages appended)
-	const char* what)			// context for error
+	const char* what)			// context for messages
 // returns true iff no corrections
 //         false otherwise, msg(s) added
 {
@@ -5549,43 +5909,37 @@ bool CFSTY::cf_Finalize(			// complete CFS after BuildCFS or data input
 }  // CFSTY::cf_Finalize
 //------------------------------------------------------------------------------
 int CFSTY::cf_Append(		// append CFS
-	const CFSTY& FSX,	// CFS to append to *this
-	bool lRev /*=false*/)	// true: reverse FSX
+	const CFSTY& FS,		// source CFS to append to *this
+	bool bRev /*=false*/)	// true: reverse FS
 // returns 0 on success
-//         -1 if too many total layers
+//         -1 if too many total layers (*this unchanged)
 //          1 if reverse trouble
 {
-#if 1
-	int ret = -1;
-#else
-	int ret = 0;
+	if (NL + FS.NL > CFSMAXNL)
+		return -1;
 
-	if (NL + FSX.NL > CFSMAXNL)
-		ret = -1;
-	else
-	{	for (int iLX=1; iLX <= FSX.NL; iLX++)
-		{	int iGX = -1;
-			CFSTY LX;
-			if (lRev)
-			{	int iLXR = FSX.NL-iLX+1;
-				LX = FSX.L( iLXR);
-				if (!LX.cl_Reverse())
-					ret = 1;
+	int ret = 0;
+	for (int iLX=1; iLX <= FS.NL; iLX++)
+	{	int iGX = -1;
+		CFSLAYER LX;
+		if (bRev)
+		{	int iLXR = FS.NL-iLX+1;
+			if (!FS.L( iLXR).cl_Reverse( LX))
+			{	ret = 1;
 				if (iLXR > 1)
 					iGX = iLXR - 1;
 			}
 			else
-			{	LX = FSX.L( iLX);
-				if (iLX < FSX.NL)
+			{	LX = FS.L( iLX);
+				if (iLX < FS.NL)
 					iGX = iLX;
 			}
 			int iL = NL++;
 			L( iL) = LX;
 			if (iGX > 0)
-				G( iL) = FSX.G( iGX);
+				G( iL) = FS.G( iGX);
 		}
 	}
-#endif
 	return ret;
 }  // CFSTY::cf_Append
 //------------------------------------------------------------------------------

@@ -196,6 +196,7 @@ static COLDEF mtrColdef[] =
 	{ "HPHtg",           0,  6, D, oMtr(hp),      BTU },  	// heat pump backup heat
 	{ "Dhw",             0,  6, D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
 	{ "DhwBU",           0,  6, D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
+	{ "DhwMFL",          0,  6, D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
 	{ "FanC",            0,  6, D, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
 	{ "FanH",            0,  6, D, oMtr(fanH),    BTU },  	// fans - heating
 	{ "FanV",            0,  6, D, oMtr(fanV),    BTU },  	// fans - IAQ ventilation

@@ -317,7 +317,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topMsCon())			// mass & masstype stuff between topSf1 and 2.  cncult3.cpp
 	E( topSg() )		   	// sgdists: do after windows pass 1. sets gz.sgdist[]: do b4 topSf2( , WINDOW). cncult3.
 	E( topSh() )			// shades: do after windows pass 1. sets gz.x.iwshad: do b4 topSf2( , WINDOW). cncult3.
-	E( topRSys1() )			// RSYS basic setup: before TopDs
+	E( topRSys1() )			// RSYS basic setup: before topDs
 	E( topDs() )   			// duct segments: before topZn2
 	E( topZn2() )			// zones: accum total surf areas etc.
 	E( topSf2() )  			// surfs pass 2: make XSRATs and MSRATs.

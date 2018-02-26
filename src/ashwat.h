@@ -17,13 +17,9 @@ using namespace std;
 // public functions
 ///////////////////////////////////////////////////////////////////////////////
 enum AWMSGTY { msgIGN, msgDBG, msgWRN, msgERR };
-#if 0
-const int msgIGN = 0;
-const int msgDBG = 1;
-const int msgWRN = 2;
-const int msgERR = 3;
-#endif
-void ASHWAT_Setup( void (*_pMsgCallBackFunc)( AWMSGTY msgTy, const char* msg),
+void ASHWAT_Setup(
+	void* msgContext,
+	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg),
 	int options=0);
 //=============================================================================
 
@@ -47,11 +43,12 @@ struct CFSLWP
 	double EPSLB;		// thermal emittance, back (inside) side
 	double TAUL;		// thermal transmittance
 						//   (same value for radiation incident from front or back)
+	CFSLWP();
 	void clw_Clear();
 	int clw_IsNEQ( const CFSLWP& lwp, double tol=0., int options=0,
 		const char* w1="?", const char* w2="?") const;
 	CFSLWP& clw_Reverse();
-	const char* DbFmt( const char* tag="") const;
+	string DbFmt( const char* tag="") const;
 };	// struct CFSLWP
 
 // Short wave (aka SW or solar) layer properties
@@ -92,7 +89,7 @@ struct CFSSWP
 	void csw_SpecularEstimateDiffuseProps();
 	bool csw_FabricEstimateDiffuseProps();
 
-	const char* DbFmt( const char* tag="") const;
+	string DbFmt( const char* tag="") const;
 };	// struct CFSSWP
 
 //=============================================================================
@@ -170,6 +167,7 @@ struct CFSLAYER
 		float epsLB=-1.f, float tauL=0.f);
 	CFSLAYER( const char* id, float thk, float tSol, float rSol1, float rSol2,
 		float tVis, float rVis1, float rVis2, float tIR, float eIR1, float eIR2, float kEff);
+	void cl_SetID( const char* _ID);
 	void cl_Clear();
 	void cl_ClearGeom();
 	bool cl_Reverse( CFSLAYER& LR) const;
@@ -201,20 +199,21 @@ struct CFSLAYER
     bool cl_CheckFixSWP( CFSSWP& swp, vector< string> &msgs, const char* what);
 	bool cl_CheckFixGeom( vector< string> &msgs, const char* what);
 	bool cl_CheckFix( vector< string> &msgs, const char* what);
+	bool cl_CheckFix( const char* what);
 
 	bool cl_OffNormalProperties( double THETA, double OMEGA_V, double OMEGA_H,
 		CFSSWP& SWP_ON) const;
 	int cl_OffNormalTest();
 	int cl_OffNormalTest1( double incA, double omega_V, double omega_H);
 
-	RC cl_InitGlaze( const char* id,
+	bool cl_InitGlaze( const char* id,
 		float rhoFBB, float tauFBB, float epsLF, float rhoBBB=-1.f,
 		float epsLB=-1.f, float tauL=0.f);
-	RC cl_InitInscrn( const char* id,
+	bool cl_InitInscrn( const char* id,
 		float fOpen, float rhoFBD, float tauBD, float rhoBBD=-1.f);
-	RC cl_InitRollB( const char* id,
+	bool cl_InitRollB( const char* id,
 		float fOpen, float rhoFBD, float tauBD, float rhoBBD=-1.f);
-	RC cl_InitDrape( const char* id,
+	bool cl_InitDrape( const char* id,
 		float fOpen, float rhoFBD, float tauBD, float rhoBBD=-1.f);
 	void DbDump( const char* tag="") const;
 
@@ -240,7 +239,7 @@ struct CFSFILLGAS
 	void cfg_Clear();
 	bool cfg_GetFillGas( const char* FGID);
 	double cfg_Density( double P, double T) const;
-	const char* DbFmt( const char* tag="") const;
+	string DbFmt( const char* tag="") const;
 };	// struct CFSFILLGAS
 
 //=============================================================================
@@ -268,7 +267,7 @@ struct CFSGAP
 		double _TMan=21., double _PMan=-1.);
 	void cg_AdjustVBGap( const CFSLAYER& L);
 	double cg_HConvGap( double T1, double T2);
-	const char* DbFmt( const char* tag="") const;
+	string DbFmt( const char* tag="") const;
 };	// struct CFSGAP
 
 //=============================================================================
@@ -277,6 +276,7 @@ struct CFSGAP
 // NOTE: C++ subscripts = 0 based, FORTRAN = 1-based (by default)
 //       Use care!
 const int CFSMAXNL = 6;	// max # of glaze or shade layers
+
 struct CFSTY
 {	char ID[ CFSIDLEN];			// ID (e.g. "Clr dbl")
 	int NL;						// number of layers
@@ -284,20 +284,20 @@ struct CFSTY
 	CFSGAP _G[ CFSMAXNL-1];		// gap array, G[ 0] is outside-most, betw L[ 0] and L[ 1]
 
 	CFSTY();
+	void cf_SetID( const char* _ID);
 	CFSLAYER& L( int iL) { return _L[ iL-1]; }
 	const CFSLAYER& L( int iL) const { return _L[ iL-1]; }
 	CFSGAP& G( int iG) { return _G[ iG-1]; }
 	const CFSGAP& G( int iG) const { return _G[ iG-1]; }
 
 	void cf_Clear();
-	void cf_Init( int which);
 	int cf_NGlz() const;
 	int cf_HasShade() const;
 	int cf_HasControlledShade() const;
 	int cf_Info( int& nGlz, int& nShd, int& iLShd) const;
 	bool cf_IsSealed() const;
 	bool cf_Finalize( string* pMsg=NULL);
-	int cf_Append( const CFSTY& FSX, bool lRev=false);
+	int cf_Append( const CFSTY& FSX, bool bRev=false);
 	double cf_EffectiveEPSLB() const;
 	double cf_EffectiveEPSLF() const;
 	bool cf_Thermal( double TIN, double TOUT, double HCIN, double HCOUT,
@@ -305,12 +305,10 @@ struct CFSTY
 		double TOL, int IterControl, double* T, double* Q, double& QInConv,
 		double& QInRad, double& UCG, double& SHGC, double& Cx, double& NConv,
 		double& NRad, double& FHR_IN, double& FHR_OUT);
-	RC cf_OffNormal( float incA, float vProfA, float hProfA, CFSSWP* swpON);
-	RC cf_SolarX( CFSSWP* swpON, float iBm, float iDf, float iDfIn,
-		double absL[ CFSMAXNL+1]);
+	bool cf_OffNormal( float incA, float vProfA, float hProfA, CFSSWP* swpON);
 	bool cf_Solar( const CFSSWP* LSWP_ON, double IBEAM, double IDIFF, double ILIGHTS,
 		double SOURCE[ CFSMAXNL+1]);
-	RC cf_CalcRatings( float& Urat, float& SHGCrat);
+	// bool cf_CalcRatings( float& Urat, float& SHGCrat);
 	bool cf_UFactor( double TOUT, double HCOUT,	double TIN,	double HCIN,
 		double& U, double DTRMIN=0., double* TL=NULL);
 	bool cf_UNFRC( double& UNFRC);
