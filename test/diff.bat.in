@@ -1,0 +1,1 @@
+cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"

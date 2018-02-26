@@ -11,12 +11,12 @@
 
 VS_VERSION_INFO VERSIONINFO
 
- FILEVERSION CSEVRSN_MAJOR, CSEVRSN_MINOR, 0, 0
- PRODUCTVERSION CSEVRSN_MAJOR, CSEVRSN_MINOR, 0, 0
+ FILEVERSION CSEVRSN_MAJOR, CSEVRSN_MINOR, CSEVRSN_PATCH, 0
+ PRODUCTVERSION CSEVRSN_MAJOR, CSEVRSN_MINOR, CSEVRSN_PATCH, 0
 
  FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 
- FILEFLAGS 
+ FILEFLAGS
 #if defined( _DEBUG)
 	VS_FF_DEBUG
 #else
@@ -35,7 +35,7 @@ VS_VERSION_INFO VERSIONINFO
  BEGIN
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x409, 1252	// identify StringFileInfo 
+        VALUE "Translation", 0x409, 1252	// identify StringFileInfo
 											//   lang/charset pairs
 											//   US English + Windows Multilingual
     END
@@ -58,10 +58,9 @@ VS_VERSION_INFO VERSIONINFO
 				#endif
 
             VALUE "ProductName", "CSE"
-			VALUE "ProductVersion",	CSEVRSN_TEXT
+            VALUE "ProductVersion",	CSEVRSN_TEXT
         END
     END
 END
 
 // cse.rc end
-

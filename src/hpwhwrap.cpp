@@ -11,6 +11,6 @@
 #include "cnglob.h"
 
 #define HPWH_ABRIDGED	// exclude some features not used by CSE
-#include "hpwh/hpwh.cc"		// Ecotope source file
+#include "hpwh.cc"		// Ecotope source file
 
 // end hpwhwrap.cpp

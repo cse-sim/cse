@@ -1,0 +1,25 @@
+// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license
+// that can be found in the LICENSE file.
+
+// csevrsn.h: specify current build CSE version number
+//    Used by cse.cpp and cse.rc
+
+// convert #defined value to string literal
+//   #define NAME BOB
+//   MAKE_LIT( NAME) -> "BOB"
+#define MAKE_LIT2(s) #s
+#define MAKE_LIT(s) MAKE_LIT2(s)
+
+// version # for current build
+// change ONLY here
+#define CSEVRSN_MAJOR @CSEVRSN_MAJOR@
+#define CSEVRSN_MINOR @CSEVRSN_MINOR@
+#define CSEVRSN_PATCH @CSEVRSN_PATCH@
+
+#define CSEVRSN_META "@CSEVRSN_META@"
+
+// version # as quoted text
+#define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR##.##CSEVRSN_PATCH) CSEVRSN_META
+
+// csevrsn.h end

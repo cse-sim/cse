@@ -7,6 +7,7 @@
 /src/rccn.h
 /src/dttab.cpp
 /src/dtypes.h
+/src/csevrsn.h
 
 # test files
 /test/*.rep
@@ -35,6 +36,9 @@ x86/
 bld/
 [Oo]bj/
 run/
+build/
+builds/
+msvc/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -156,7 +160,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings 
+# TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj

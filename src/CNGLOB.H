@@ -272,7 +272,7 @@ template< typename T> int snapDEG( T& v, double tol=.1)
 // round v to nearest rv (e.g. roundNearest( 14., 5.) -> 15.
 template< typename T> inline void roundNearest( T &v, T rv)
 {	v = round( v/rv)*rv;  }
-// round double to integer (no overflow protection!) 
+// round double to integer (no overflow protection!)
 inline int iRound( double a) { return int( a > 0. ? a+.5 : a-.5 ); }
 //-----------------------------------------------------------------------------
 
@@ -714,4 +714,3 @@ const DWORD dbdSBC = 16384;		// surface conditions
 
 
 // end of cnglob.h
-
