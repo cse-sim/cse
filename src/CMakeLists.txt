@@ -2,14 +2,6 @@
 add_subdirectory(RCDEF)
 
 # Run C Preprocessor on *.DEF files
-set(defs
-  CNDTYPES.DEF
-  CNUNITS.DEF
-  DTLIMS.DEF
-  CNFIELDS.DEF
-  CNRECS.DEF
-)
-
 macro(c_preprocess file)
   add_custom_command(
     OUTPUT "${file}.i"
@@ -18,10 +10,11 @@ macro(c_preprocess file)
   )
 endmacro()
 
-foreach(defFile ${defs})
-  string(REGEX REPLACE "^(\\w).DEF$" "\\1" file "${defFile}")
-  c_preprocess(${file})  
-endforeach()
+c_preprocess(cndtypes)
+c_preprocess(cnunits)
+c_preprocess(dtlims)
+c_preprocess(cnfields)
+c_preprocess(cnrecs)
 
 # Run RCDEF
 add_custom_command(
@@ -227,7 +220,6 @@ set(libs
 
 source_group("Source Files" FILES ${source})
 source_group("Header Files" FILES ${headers})
-source_group("Def Files" FILES ${defs})
 
 target_link_libraries(CSE ${libs})
 
