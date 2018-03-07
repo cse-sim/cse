@@ -216,6 +216,7 @@ set(libs
   glfw
   tess2
   libHPWHsim
+  libkiva
 )
 
 source_group("Source Files" FILES ${source})

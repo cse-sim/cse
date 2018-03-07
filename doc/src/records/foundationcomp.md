@@ -1,0 +1,131 @@
+# FOUNDATIONCOMP
+
+Foundation components are materials within the two-dimensional domain beyond those defined by the slab and wall SURFACEs. Each component is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user.
+
+<!-- TODO: Insert diagram of references -->
+
+The default reference is WALL_INT, WALL_TOP.
+
+**fcMat=*matName***
+
+Name of MATERIAL of the foundation component.
+
+<%= member_table(
+  legal_range: "Name of a *Material*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
+
+**fcX1Ref=*choice***
+
+Relative X origin for *frX1* point. Options are:
+
+- SYMMETRY
+- WALL_INT
+- WALL_CENTER
+- WALL_EXT
+- FAR_FIELD
+
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALL_INT",
+  required: "No",
+  variability: "constant") %>
+
+**fcZ1Ref=*choice***
+
+Relative Z origin for *frZ1* point. Options are:
+
+- WALL_TOP
+- GRADE
+- SLAB_TOP
+- SLAB_BOTTOM
+- WALL_BOTTOM
+- DEEP_GROUND
+
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALL_TOP",
+  required: "No",
+  variability: "constant") %>
+
+**fcX1=*float***
+
+The X position of the first corner of the component relative to *fcX1Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fcZ1=*float***
+
+The Z position of the first corner of the component relative to *fcZ1Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fcX2Ref=*choice***
+
+Relative X origin for *frX2* point. Options are:
+
+- SYMMETRY
+- WALL_INT
+- WALL_CENTER
+- WALL_EXT
+- FAR_FIELD
+
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALL_INT",
+  required: "No",
+  variability: "constant") %>
+
+**fcZ2Ref=*choice***
+
+Relative Z origin for *frZ2* point. Options are:
+
+- WALL_TOP
+- GRADE
+- SLAB_TOP
+- SLAB_BOTTOM
+- WALL_BOTTOM
+- DEEP_GROUND
+
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALL_TOP",
+  required: "No",
+  variability: "constant") %>
+
+**fcX2=*float***
+
+The X position of the second corner of the component relative to *fcX2Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fcZ2=*float***
+
+The Z position of the second corner of the component relative to *fcZ2Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>

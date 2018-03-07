@@ -101,11 +101,15 @@ Provides user control over how CSE models conduction for this surface.
 
   FD (or FORWARD\_DIFFERENCE)         Selects the forward difference
                                       model (used with short time steps
-                                      and the CZM/UZM zone model)
+                                      and the CZM/UZM zone model).
+
+  2D_FND                              Uses a two-dimensional finite
+                                      difference model to simulate heat
+                                      flow through foundation surfaces.
   ----------------------------------- -----------------------------------
 
 <%= member_table(
-  legal_range: "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, FD",
+  legal_range: "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, 2D_FND",
   default: "AUTO",
   required: "No",
   variability: "constant") %>
@@ -137,7 +141,7 @@ Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model us
 
 **Units**   **Legal Range**            **Default**   **Required**         **Variability**
 ----------- -------------------------- ------------- -------------------- -----------------
-             x $\ge$ 0                    .5             No                  constant
+             x $\geq$ 0                    .5             No                  constant
 
 **sfExCnd=*choice***
 
@@ -162,6 +166,12 @@ Specifies the thermal conditions assumed at surface exterior, and at exterior of
                  sfAdjZn. Solar gain is 0 unless gain is
                  targeted to the surface with SGDIST
                  below.
+
+  GROUND         The surface is in contact with the
+                 ground. Details of the two-dimensional
+                 foundation design are defined by
+                 sfFnd. Only floor and wall surfaces
+                 may use this option.
 
   ADIABATIC      Exterior surface heat flow is 0.
                  Thermal storage effects of delayed
@@ -284,6 +294,8 @@ ASHRAE           n/a                             ASHRAE handbook values
 
 **sfExHcModel=*choice***
 
+<!-- TODO: How does this impact Kiva? -->
+
 Selects the model used for exterior surface convection when sfModel = Forward\_Difference.
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
@@ -330,6 +342,8 @@ Roughness Index	   sfExRf	 Example
 
 **sfInHcModel=*choice***
 
+<!-- TODO How does this change for Kiva? -->
+
   Selects the model used for the inside (zone) surface convection when sfModel = Forward\_Difference.
 
   **Units**   **Legal Range**                    **Default**   **Required**   **Variability**
@@ -346,13 +360,49 @@ Roughness Index	   sfExRf	 Example
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
+**sfFnd=*fdName***
+
+Name of FOUNDATION applied to ground-contact surfaces; used only for Floor and Wall SURFACEs when sfExCnd is GROUND.
+
+<%= member_table(
+  legal_range: "Name of a *Foundation*",
+  default: "*none*",
+  required: "when<br/>*sfExCnd* = GROUND",
+  variability: "constant") %>
+
+
+**sfHeight=*float***
+
+Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepthBG?
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "*none*",
+  required: "when *sfType* is WALL and *sfExtCnd* is GROUND",
+  variability: "constant") %>
+
+**sfExpPerim=*float***
+
+Exposed perimeter of foundation floors.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $\geq$ 0",
+  default: "*none*",
+  required: "when *sfType* is FLOOR and *sfExtCnd* is GROUND",
+  variability: "constant") %>
+
+
 **sfDepthBG=*float***
+
+<!-- TODO How does this change for Kiva? -->
 
 Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edge.  For floors, sfDepthBG is measured to the bottom face.
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ----------- --------------   ------------- -------------- ------------------
-ft            x $\ge$ 0                      No                constant
+ft            x $\geq$ 0                      No                constant
 
 
 **sfExCTGrnd=*float***
@@ -369,7 +419,7 @@ Conductances from outside face of surface to the weather file ground temperature
 
 **Units**         **Legal Range**   **Default**   **Required**   **Variability**
 ----------------- ----------------- ------------- -------------- -----------------
-Btuh/ft^2^-^o^F    x $\ge$ 0         see above     No             constant
+Btuh/ft^2^-^o^F    x $\geq$ 0         see above     No             constant
 
 **sfExRConGrnd=*float***
 
@@ -377,7 +427,7 @@ Resistance overall construction resistance.  TODO: full documentation.
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ----------- --------------   ------------- -------------- ------------------
-             x $\ge$ 0                      No                constant
+             x $\geq$ 0                      No                constant
 
 
 **endSURFACE**

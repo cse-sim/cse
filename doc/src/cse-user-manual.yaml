@@ -37,6 +37,8 @@ sections:
   - [2, "records/holiday.md"]
   - [2, "records/material.md"]
   - [2, "records/construction.md"]
+  - [2, "records/foundation.md"]
+  - [2, "records/foundationcomp.md"]
   - [2, "records/layer.md"]
   - [2, "records/glazetype.md"]
   - [2, "records/meter.md"]
