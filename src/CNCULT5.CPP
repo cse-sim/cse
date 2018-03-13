@@ -484,16 +484,16 @@ x           ;									// don't require tuVfDs for autoSizing ... 6-95
 		if (cmLh==cmSo)
 			E( addZhx( ss, ownTi, 0, LhSo, 0, 0, name, &xiLh ) )    		// local heat, set output
 		else if (cmLh==cmStH)
-			E( addZhx( ss, ownTi, 0, LhStH, V tuTLh, tuPriLh, name, &xiLh ) )	// local heat, set temp
+			E( addZhx( ss, ownTi, 0, LhStH, VD tuTLh, tuPriLh, name, &xiLh ) )	// local heat, set temp
 
 		if (cmAr==cmSo)
 			E( addZhx( ss, ownTi, ai, ArSo, 0, 0, name, &xiArH ) )    		// air heat/cool set out. Will be linked as heat.
 		else
 		{
 			if (cmAr & cmStH)
-				E( addZhx( ss, ownTi, ai, ArStH, V tuTH, tuPriH, name, &xiArH) )  	// set temp air heat
+				E( addZhx( ss, ownTi, ai, ArStH, VD tuTH, tuPriH, name, &xiArH) )  	// set temp air heat
 			if (cmAr & cmStC)
-				E( addZhx( ss, ownTi, ai, ArStC, V tuTC, tuPriC, name, &xiArC) )  	// set temp air cool: can have both zhx's
+				E( addZhx( ss, ownTi, ai, ArStC, VD tuTC, tuPriC, name, &xiArC) )  	// set temp air cool: can have both zhx's
 		}
 		if (xiLh)
 		{
@@ -605,7 +605,7 @@ LOCAL RC FC NEAR addZhx(			// add ZHX (Zone HVAC transfer) for TU, probably late
 // store caller's data
 	if (name)  strcpy (zhx->name, name);
 	zhx->zhxTy = ty;
-	V zhx->sp = sp;		// V macro stores into float as tho it is a void * to prevent float error on NAN (expr handle)
+	VD zhx->sp = sp;		// VD macro stores into float as tho it is a void * to prevent float error on NAN (expr handle)
 	zhx->spPri = spPri;
 	zhx->ui = ui;
 	zhx->zi = zi;

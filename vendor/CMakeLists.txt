@@ -20,7 +20,7 @@ add_subdirectory(${Penumbra_SOURCE_DIR})
 
 download_project(PROJ                Kiva
                  GIT_REPOSITORY      https://github.com/bigladder/kiva.git
-                 GIT_TAG             v0.4.0
+                 GIT_TAG             cse
                  DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/kiva-dl"
                  SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/kiva"
                  BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/kiva"

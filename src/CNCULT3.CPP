@@ -202,7 +202,7 @@ RC SFI::sf_TopSf1()
 	{
 		// surface: default ground reflectance from Top, 5-95.
 		if (!IsSet( SFX( GRNDREFL)))	// if sfGrndRefl not given for this surface
-			V x.grndRefl = V Top.grndRefl;  	// get global value from Top object. m-h variable. default .2.
+			VD x.grndRefl = VD Top.grndRefl;  	// get global value from Top object. m-h variable. default .2.
 
 		// surface: get/check zone
 		if (ckOwnRefPt( &ZrB, this, (record **)&zp, &rc) )
@@ -231,14 +231,14 @@ RC SFI::sf_TopSf1()
 		x.tilt = ownSf->x.tilt;
 		x.azm = ownSf->x.azm;
 		x.sfExCnd = ownSf->x.sfExCnd;		// exterior condition
-		V x.sfExT = V ownSf->x.sfExT;		// exterior temp for SPECT. move as NANDAT: expr handle possible.
+		VD x.sfExT = VD ownSf->x.sfExT;		// exterior temp for SPECT. move as NANDAT: expr handle possible.
 		x.sfAdjZi = ownSf->x.sfAdjZi;		// adjacent zone for ADJZN.
 
 		if (!IsSet( SFX( UX)))	// exterior surface H
 			x.uX = ownSf->x.uX;			// default to owning surface's: drExH or wnExH = sfExH
 
 		if (!IsSet( SFX( GRNDREFL)))	// if wnGrndRefl not given for window, or if door (not inputtable)
-			V x.grndRefl = V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
+			VD x.grndRefl = VD ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
 		// inherit convective model
 		if (!IsSet( IsSet( SFXI( HCMODEL))))
@@ -251,7 +251,7 @@ RC SFI::sf_TopSf1()
 			if ( !IsSet( SFX( UI)))	// interior surface H
 				x.uI = ownSf->x.uI;			// default to owning surface's: drInH = sfInH
 			if ( !IsSet( SFXO( ABSSLR)))	// exterior absorptivity
-				V x.xs_AbsSlr( 1) = V ownSf->x.xs_AbsSlr( 1);	// default to owning surface's: drExAbs = sfExAbs
+				VD x.xs_AbsSlr( 1) = VD ownSf->x.xs_AbsSlr( 1);	// default to owning surface's: drExAbs = sfExAbs
 		}														// V (cnglob.h): don't move as float: (monthly-hourly) expr allowed. 4-92.
 
 
@@ -388,13 +388,13 @@ RC SFI::sf_TopSf1()
 			// Inputs are wnSMSO/C (placed in x.sco/c) else gtSMSO/C.
 			// Values are multiplied at runtime (cgsolar.cpp) by common part (normal transmissivity gtSHGC). */
 			if (!IsSet( SFX( SCO))) 	// if x.sco not given (as wnSMSO) for window
-				V x.sco = V gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
+				VD x.sco = VD gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
 			if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
 				if (IsSet( SFX( SCO)))	// if x.sco given (as wnSMSO) for window
-					V x.scc = V x.sco;  		// use window shades-open value, checked/defaulted just above
+					VD x.scc = VD x.sco;  		// use window shades-open value, checked/defaulted just above
 			// note that this makes shades inoperable even if gtSMSC != gtSMSO.
 				else
-					V x.scc = V gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
+					VD x.scc = VD gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
 
 			// default window values from GT
 			if (!IsSet( SFX( FMULT))) 	// if wnFMult (frame/mullion multplier) not given for window
@@ -445,7 +445,7 @@ RC SFI::sf_TopSf1()
 			{	x.xs_fenModel = C_FENMODELCH_ASHWAT;
 				// x.sco defaults to 1
 				if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
-					V x.scc = V x.sco;  		// use window shades-open value, checked/defaulted just above
+					VD x.scc = VD x.sco;  		// use window shades-open value, checked/defaulted just above
 			}
 		}
 		if (x.xs_IsASHWAT())
@@ -907,11 +907,11 @@ RC FC topSg()		// SGDIST processing at RUN
 		// solar gain: default shades closed target fraction to shades open
 
 		if (!(fs[SGI_D + SGDIST_FSC] & FsSET))		// if sd_FSC not entered by user
-			V sg->d.sd_FSC = V sg->d.sd_FSO;		// copy sd_FSO.  V: *(void**)&: don't copy possible NANDLE as a float
+			VD sg->d.sd_FSC = VD sg->d.sd_FSO;		// copy sd_FSO.  V: *(void**)&: don't copy possible NANDLE as a float
 
 		// solar gain: finally, add sgdist from window's XSURF to spec'd mass or quick surface side
 
-		cnuSgDist( &gz->x, targTy, targTi, V sg->d.sd_FSO, V sg->d.sd_FSC);	// V: clglob.h: *(void**)&
+		cnuSgDist( &gz->x, targTy, targTi, VD sg->d.sd_FSO, VD sg->d.sd_FSC);	// V: clglob.h: *(void**)&
 
 		// note: explicitly distributed solar gain is subtracted from that automatically distributed to zone's
 		// air and surfaces at run time, in cgsolar.cpp (can't do here as .sd_FSO/C may contain live exprs). 2-95.
@@ -3053,8 +3053,8 @@ LOCAL void FC NEAR cnuSgDist(
 	SGDIST* sg = x->sgdist + x->nsgdist++;	// pt next sgdist / bump count
 	sg->sd_targTy = targTy;	// store type
 	sg->sd_targTi = targTi;	// subscript of target record within base/anchor's records
-	V sg->sd_FSO = fso;		// fracs of distribution (FLOAT or expr nandle: latter errors if moved as float)
-	V sg->sd_FSC = fsc;		// ... shades open and closed.  V: clglob.h: *(void**)&
+	VD sg->sd_FSO = fso;		// fracs of distribution (FLOAT or expr nandle: latter errors if moved as float)
+	VD sg->sd_FSC = fsc;		// ... shades open and closed.  V: clglob.h: *(void**)&
 }			// cnuSgDist
 
 // end of cncult3.cpp

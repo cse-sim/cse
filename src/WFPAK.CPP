@@ -322,7 +322,7 @@ void WDHR::wd_Init(	// initialize all members
 	else
 	{	static const NANDAT unset( UNSET);
 		float unsetf;
-		V unsetf = V unset;
+		VD unsetf = VD unset;
 		float* pF0 = &wd_slAzm;
 		float* pFN = &wd_tdvElecAvg01;
 		int szFloat = pFN - pF0 + 1;
