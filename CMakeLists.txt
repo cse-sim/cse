@@ -16,6 +16,6 @@ add_subdirectory(vendor)
 add_subdirectory(src)
 add_subdirectory(bin)
 
-include(ctest)
+#include(ctest)
 
 add_subdirectory(test)
