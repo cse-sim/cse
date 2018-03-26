@@ -152,6 +152,7 @@ extern anc<TOWERPLANT> TpB;   	// TOWERPLANT run info
 extern anc<XSRAT> XsB;			// XSURFs
 extern anc<WSHADRAT> WshadR;	// Window SHADing info for shaded windows
 extern anc<MSRAT> MsR;   		// Masses
+extern anc<KIVA> KvR;   		// Kiva Instances
 extern anc<SGRAT> SgR;    		// Solar gains
 // construction: CON,LR,MAT have input info only.
 extern anc<GT> GtB;		// GlazeTypes, 12-94

@@ -115,6 +115,7 @@ makAncXSRAT( XsB);		// runtime XSURFs: radiant/conductive coupling-to-ambient in
 makAncWSHADRAT( WshadR);// Window shading info: entry for each window that has fin and/or overhang(s).
 						//    Accessed via subscript in XSURF.iwshad.
 makAncMSRAT( MsR);		// Masses
+makAncKIVA(KvR);		// Kiva Instances
 makAncSGRAT( SgR);		// Solar gains for current month/season, calculated when month or season
 						//   [or other input] changes.
 // construction: CON/LR/MAT have input rats only.

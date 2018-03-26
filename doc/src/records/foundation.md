@@ -1,10 +1,10 @@
 # FOUNDATION
 
-Foundation describes the two-dimensional relationship between ground-contact SURFACEs (i.e., **sfExCnd** = GROUND) and the surrounding ground. A FOUNDATION is referenced by SURFACEs (see **sfFnd**). FOUNDATIONs are used to describe the two-dimensional features of foundation designs that cannot be captured by the typical one-dimensional constructions.
+Foundation describes the two-dimensional relationship between ground-contact SURFACEs (i.e., **sfExCnd** = GROUND) and the surrounding ground. A FOUNDATION is referenced by Floor SURFACEs (see **sfFnd**). FOUNDATIONs are used to describe the two-dimensional features of foundation designs that cannot be captured by the typical one-dimensional constructions. Dimensions from the one-dimensional CONSTRUCTIONs associated with ground-contact floors and walls will automatically be interpreted into the two-dimensional context.
 
 <!--TODO: Add 2-D context image -->
 
-Any wall SURFACEs in contact with the ground must refer to a FOUNDATION object that is also referenced by a Floor SURFACE. A common reference to a FOUNDATION between a Floor and any number of Wall SURFACEs establishes that all SURFACEs share the same ground domain as a boundary condition. Exactly one Floor SURFACE must reference each FOUNDATION. However, multiple floors may exist in the same thermal zone so long as they reference separate FOUNDATIONs.
+Any wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground domain as a boundary condition (and establish the two-dimensional context for the basis of the ground calculations).
 
 FOUNDATION objects are used to instantiate instances of heat transfer within Kiva.
 
@@ -12,8 +12,10 @@ MATERIALs used in a FOUNDATION cannot have variable properties at this time.
 
 <!-- TODO: Mention all other relevant inputs in SURFACE and TOP -->
 
-Most of the relevant dimensions in the two-dimensional context are defined in the FOUNDATION object with a few exceptions specified by specific SURFACEs:
+Most of the relevant dimensions and properties in the two-dimensional context are defined in the FOUNDATION object (and FNDBLOCK subobjects) with a few exceptions specified by specific SURFACEs:
 
+- sfFnd
+- sfFndFloor
 - sfHeight
 - sfExpPerim
 - sfCon
@@ -34,6 +36,7 @@ Some properties applying to all FOUNDATIONs are defined at the TOP level:
 - grndMaxGrthCoeff
 - grndTimeStep
 
+The following fields describe the dimensions and properties of the foundation wall. For below-grade walls, the CONSTRUCTION (and corresponding width) of the foundation wall is defined by the Wall SURFACEs referencing the FOUNDATION object. For on-grade floors, the CONSTRUCTION of the foundation wall must be defined using **fdFtCon**. Other components of the foundation design (e.g., interior/exterior insulation) as well as other variations in thermal properties within the ground are defined using FNDBLOCK (foundation block) objects. Any number of FNDBLOCKs can appear after the definition of a FOUNDATION to be properly associated.
 
 **fdName**
 

@@ -4467,6 +4467,8 @@ static RC loadsSurfaces( 		// surface runtime simulation
 	} // mass loop
 	TMRSTOP( TMR_COND);
 
+	// kiva instances
+
 	return rc;
 }			 // loadsSurfaces
 //-----------------------------------------------------------------------------

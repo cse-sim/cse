@@ -3,12 +3,13 @@
 // that can be found in the LICENSE file.
 
 ///////////////////////////////////////////////////////////////////////////////
-// Foundation.cpp -- interface to Kiva
+// Foundation.h -- interface to Kiva
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "cnglob.h"
-#include "foundation.h"
-#include "ancrec.h"
+#if !defined( _FOUNDATION_H)
+#define _FOUNDATION_H
 
-#include "rccn.h"
+#include "libkiva/Ground.hpp"
 
+
+#endif	// _FOUNDATION_H

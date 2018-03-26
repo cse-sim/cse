@@ -106,6 +106,8 @@ makAncWSHADRAT(ShiB);		// shades (fins, ovh's) input records basAnc
 makAncSGI(SgiB); 			// solar gain distributions input records basAnc
 // construction
 makAncGT(GtiB);  			// glazeTypes input info 12-94
+makAncFOUNDATION(FndiB);  			// foundations input info records basAnc
+makAncFNDBLOCK(FbiB);  			// foundation blocks input info records basAnc
 makAncCON(ConiB);  			// constructions input info records basAnc
 makAncLR(LriB);    			// layers input info records basAnc
 makAncMAT(MatiB);			// materials input info records basAnc
@@ -159,6 +161,8 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	ShiB.free();
 	SgiB.free();
 	GtiB.free();
+	FndiB.free();
+	FbiB.free();
 	ConiB.free();
 	LriB.free();
 	MatiB.free();
@@ -323,6 +327,67 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 	CULT()
 };		// conT
 
+//------------- FNDBLOCK (for Foundation table) -------------
+
+//------------------------------------------------------------ FNDBLOCK check fcn
+RC FC fcStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+
+																// called at end layer, to get error messages near source.
+																// recalled at run (believe unnecessary except when using a defined type, 12-94).
+
+{
+	RC rc = RCOK;
+
+
+	return rc;
+#undef P
+}		// fcStarCkf
+
+static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
+{
+	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
+	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
+	CULT("*",	     STAR, 0,         0,    0, 0,    0,     0,       N,      0.f,  N, fcStarCkf),
+	CULT("fbMat",    DAT,  FNDBLOCK_MATI,  RQD,  0, VEOI, TYREF, &MatiB,  N,      0.f,  N, N), 	// non-shade part of SHGC: normal xmvty
+	CULT("fbX1Ref",  DAT,  FNDBLOCK_X1REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
+	CULT("fbZ1Ref",  DAT,  FNDBLOCK_Z1REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
+	CULT("fbX1",     DAT,  FNDBLOCK_X1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fbZ1",     DAT,  FNDBLOCK_Z1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fbX2Ref",  DAT,  FNDBLOCK_X2REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
+	CULT("fbZ2Ref",  DAT,  FNDBLOCK_Z2REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
+	CULT("fbX2",     DAT,  FNDBLOCK_X2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fbZ2",     DAT,  FNDBLOCK_Z2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("endFoundationComp",ENDER,0, 0,    0, VEOI, 0,     0,       N,       0.f,  N, N),
+	CULT()
+};		// fbT
+
+//------------- FOUNDATION (for Top table; ref'd in surface,) -------------
+
+//------------------------------------------------------------ FOUNDATION check fcn
+RC FC fdStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+
+
+{
+	RC rc = RCOK;
+
+
+	return rc;
+#undef P
+}		// fdStarCkf
+
+static CULT fdT[] = //---------------------------------- FOUNDATIONCOMP Cmd Table
+{
+	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
+	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
+	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
+	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N), 	// non-shade part of SHGC: normal xmvty
+	CULT("fndblock", RATE,  0,  0,  0, 0, 0, &FbiB,  0.f, fbT, N), 	// non-shade part of SHGC: normal xmvty
+	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
+	CULT()
+};		// fdT
+		
 //------------- GLAZETYPE (for Top table; ref'd in window,) -------------
 
 //------------------------------------------------------------ GLAZETYPE check fcn
@@ -901,6 +966,8 @@ CULT( "sfInEpsLW",DAT,  SFXI( EPSLW),		 0,             0, VEOI,   TYFL,   0,    
 CULT( "sfExHcModel",DAT,SFXO( HCMODEL),	     0,             0, 0,      TYCH,   0,      C_CONVMODELCH_UNIFIED,  N,   N),
 CULT( "sfExHcLChar",DAT,SFXO( HCLCHAR),	     0,             0, VEOI,   TYFL,   0,       10.f,                  N,   N),
 CULT( "sfExHcMult", DAT,SFXO( HCMULT),	     0,             0, VSUBHRLY,TYFL,  0,       1.f,                   N,   N),
+CULT( "sfFnd",    DAT,  SFI_SFFND,           0,             0, VEOI,   TYREF, &FndiB,   0.f,                   N,   N),
+CULT( "sfFndFloor", DAT,SFI_SFFNDFLOOR,      0,             0, VEOI,   TYREF, &SfiB,   0.f,                   N,   N),
 CULT( "sfExCTaDbAvgYr",DAT, SFXO( CTADBAVGYR),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExCTaDbAvg31",DAT, SFXO( CTADBAVG31),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExCTaDbAvg14",DAT, SFXO( CTADBAVG14),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
@@ -2563,6 +2630,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP subclasses
 	CULT( "material",    RATE,  0,                 NM_RQD,     0, 0,      0,    &MatiB,  N,    0.f,          matT,  N),
 	CULT( "construction",RATE,  0,                 NM_RQD,     0, 0,      0,    &ConiB,  N,    0.f,          conT,  N),
+	CULT( "foundation",  RATE,  0,                 NM_RQD,     0, 0,      0,    &FndiB,  N,    0.f,           fdT,  N),
 	CULT( "glazeType",   RATE,  0,                 NM_RQD,     0, 0,      0,    &GtiB,   N,    0.f,           gtT,  N), // added 12-94
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),

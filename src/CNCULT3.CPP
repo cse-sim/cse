@@ -516,6 +516,8 @@ x		printf( "Hit\n");
 	}
 
 	// topSf1: surface/door/window: determine surface model
+	SI fndSet = fs[SFI_SFFND] & FsSET;
+	SI fndFloorSet = fs[SFI_SFFNDFLOOR] & FsSET;
 
 	x.xs_modelr = C_SFMODELCH_QUICK;	// tentatively set resolved model to "quick"
 	switch (x.xs_model)
@@ -531,6 +533,7 @@ x		printf( "Hit\n");
 		if (!conSet)          break;				// if no construction, must use quick (preset)
 		if (con->nLr <= 0)    break;				// if con has no layers (just uval), must use quick
 		if (tc <= TC_SHMASS)  break;				// if time const short (constant above), use quick
+		if (fndSet || fndFloorSet) x.xs_modelr = C_SFMODELCH_KIVA;
 		//if decision gets more complicated, change to fall thru to share code with AUTO.
 		x.xs_modelr = C_SFMODELCH_DELAYED_SUBHOUR;     		// use subhourly calculated mass. no auto hour case.
 		break;
@@ -1142,6 +1145,10 @@ RC SFI::sf_TopSf2()
 				// "Internal error in cncult.cpp:topSf2(): Bad exterior condition %d"
 		}
 	}
+	else if (SFI::sf_IsKiva(x.xs_modelr))
+	{
+		rc |= sf_MakKIs();	// make KIVA record for finite difference foundation heat transfer
+	}
 	else
 		rc |= oer( (char *)MH_S0525, x.xs_modelr );
 				// "Internal error in cncult.cpp:topSf2(): Bad surface model %d"
@@ -1465,6 +1472,9 @@ RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 /*static*/ int SFI::sf_IsFD( int m)
 {  return m == C_SFMODELCH_FD; }
 //---------------------------------------------------------------------------
+/*static*/ int SFI::sf_IsKiva(int m)
+{  return m == C_SFMODELCH_KIVA; }
+//---------------------------------------------------------------------------
 SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
 {
@@ -1582,6 +1592,30 @@ RC SFI::sf_MakMs()
 
 	return rc;
 }		// SFI::sf_makMs
+
+		//---------------------------------------------------------------------------
+RC SFI::sf_MakKIs()
+
+// make kiva instances
+
+{
+	RC rc = RCOK;
+
+	// add mass run record.  Subscr previously assigned in topSf1().
+	SFI* sf;			// door, window, or surface
+	RLUP(SfiB, sf)		// loop through surfaces to see if any walls reference this floor
+	{
+
+	}
+
+	KIVA* ki;
+	KvR.add(&ki, ABT, 0);
+
+	return rc;
+}		// SFI::sf_makKIs
+
+
+
 //-----------------------------------------------------------------------------
 static RC BGDeriveCoeffs(
 	float depthBG,	// depth below grade of bottom of surface, ft

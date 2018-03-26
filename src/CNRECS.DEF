@@ -152,7 +152,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "const char* tp_AuszDoing() const;"
     *declare "RC tp_BegDesDay();"
     *declare "RC tp_EndDesDay();"
-    
+
 
 //TOP: user inputs (& some derived): overall control
     *i BOO bAutoSizeCmd  	// non-0 if any AUTOSIZE commands seen in input, set via arg to cul() from cse.cpp. 6-95.
@@ -203,7 +203,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i FLOAT_GZ tp_AWTrigT;		// inside or outside environmental temperature, F (default = 1)
 	*i FLOAT_GZ tp_AWTrigSlr;	// incident solar, fraction (default = .05)
 	*i FLOAT_GZ tp_AWTrigH;		// total surface coefficient (conv+rad), fraction (default=.1)
-	
+
 //TOP: inputs: AirNet convergence criteria
 								// a zone is deem converged iff
 								//  AMFnet <= max( tolAbs, tolRel*AMFTot)
@@ -232,7 +232,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i NOYESCH DT			// YES (default) to enable daylight saving time
     *r DOY DTBegDay			// Daylight saving start day, 1-365, default 1st Sun (Sun after 1st Sat?) in April
     *r DOY DTEndDay			// Daylight saving end day, 1-365, defaulted by cncult2.cpp code to last Sun in October
-    
+
 							// wind speed adjustment, see cgwthr.cpp
 							//    appl sees Top.windF * max( wthrfile.wndSpd, Top.windSpeedMin);
     *i FLOAT_GEZ windSpeedMin	//  minimum, mph (default=.5)
@@ -290,9 +290,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i CHP tp_repTestPfx	// prefix pre-pended to e.g. footer lines re hiding lines re automated testing
 							//   "" for normal runs, "!" re 3-2010 test framework.  new 3-28-10
 	*declare "const char* tp_RepTestPfx() const;"
-						
+
     // note: for derived # lines per page remaining after margins, hdr, footer, call cncult:getBodyLpp.
- 
+
 //TOP: setup time
 	*r *hide BOO tp_bAllCR	// nz iff all zones use convective/radiant model
 							// (else all CNE, mix not supported (detected/err'd during setup)
@@ -384,9 +384,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*d *e DBL tp_tmrAirNet;	// add'l timers active iff DETAILED_TIMING
 	*d *e DBL tp_tmrAWTot;
 	*d *e DBL tp_tmrAWCalc;
-	*d *e DBL tp_tmrCond;  
-	*d *e DBL tp_tmrBC;    
-	*d *e DBL tp_tmrZone; 
+	*d *e DBL tp_tmrCond;
+	*d *e DBL tp_tmrBC;
+	*d *e DBL tp_tmrZone;
 
     // many TOP working globals set/used comments are old, 12-91.
 
@@ -421,7 +421,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
    // Standard Time variables, for weather file interface and solar calcs.  Note std time date changes an hour later than daylight.
     *h SI iHrST     // Standard time Hour of day now simulating, 0-23.  set/used cnguts, used cgsolar.cpp.
     *h DOY jDayST  	// Standard time day of year, 1..365.  changes @ 1am -->*h.  set/used cnguts, used cgsolar.cpp.
-    
+
    // TOP: autosizing phase/date variables
     *f BOO tp_autoSizing	// TRUE if setting up for or doing autosizing, 0 for main simulation setup/run
     *d BOO tp_pass1		// TRUE autoSizing pass 1 (A or B) thru dsn days: find big-enuf sizes with open-ended models
@@ -483,7 +483,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     Application uses interval average values for central-difference algorithms (masses),
     but end-interval instantaneous values for backwards-difference algorithms (zone heat & humidity balances). */
 	*declare "void tp_SetPvHrWthr();"
-	
+
     // irradiance. Weather file values are energy integrated over hour.
     // program needs [both] interval average [and end-interval (subhour only)] values. SOLAVNEND.
     // power (Btuh/ft2)===energy (Btu/ft2) for 1 hour.
@@ -547,7 +547,7 @@ x								// not maintained, 12-12
 #endif
     *s FLOAT tp_rhoMoistOSh		// outdoor moist air density at end of subhour, lbm/ft3
     *s FLOAT tp_rhoDryOSh		// outdoor dry air density at end of subhour, lbm/ft3
- 
+
 // TOP: runtime: iteration control flags
     //each of the following is TRUE if the indicated class should be checKed for call-flagged or compute-flagged objects.
     //used in cnztu.cpp:hvacIterSubhr; set anywhere individual object call- and compute- flags are set.
@@ -568,7 +568,7 @@ x								// not maintained, 12-12
     *h SI qhPeakH		// hour 1-24 of peak heating load
     *h SI qhPeakD		// day of month 1-31 of peak load
     *h SI qhPeakM		// month 1-12 of peak load
-    
+
 // TOP: runtime: AIRNET solution
 	*declare "AIRNET* tp_pAirNet;"
 
@@ -580,6 +580,10 @@ x								// not maintained, 12-12
 	*declare "void tp_PumbraDestroy();"
 	*declare "int tp_PumbraAvailability() const;"
 	*declare "RC tp_PumbraSetModel();"
+
+// TOP: runtime: container for Kiva instances
+//      instantiated iff needed
+	*declare "class KivaInstances* kivaInstances;"
 
     *r SI ck5aa5		// stuffed with 0x5aa5 from topCult for verifying initialization & matching versions
 *END		// TOPRAT
@@ -666,7 +670,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_TDVReadHdr( int erOp=WRN);"
 	*declare "RC wf_TDVPosHr1( int erOp=WRN);"
 	*declare "RC wf_TDVReadIf( int erOp, int jDay, int iHr, WDHR* pwd );"
-	 
+
 	 // in base class: .name, .ownTi, more.
      *r WFileFormat wFileFormat	// file format enum: UNK, BSGS, ET1, etc.
 
@@ -800,7 +804,7 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
     *declare "void wd_Init();"		// initialize
 
     // in base class: .name, .ownTi, more.
-    
+
     *h *noname *nest WDHR d	// all data in substructure
 							// WHY: allows storage / manipulation w/o record overhead
 							//   WFDATA must be record re probing
@@ -900,9 +904,9 @@ RECORD HCI "hci sub" *SUBSTRUCT		// HCI: helper for managing variable inside con
     *prefix hc_
 	*declare "void hc_Init( float hc);"
 	*declare "double hc_HC( double hc);"
-	#define HCHISTL 4				// length of value history re smoothing 
+	#define HCHISTL 4				// length of value history re smoothing
 	*declare "enum { hcHISTL=4 };"	// make HCHISTL known to C++ (must agree with HCHISTL)
-						
+
 #if defined( CONV_ASHRAECOMPARE)
    	*declare "void hc_InitAsh( float tilt, int si);"
 	*declare "double hc_HCAsh( int mode, float taRoom, float tSurf);"
@@ -913,7 +917,7 @@ RECORD HCI "hci sub" *SUBSTRUCT		// HCI: helper for managing variable inside con
 #endif
 	*r *array HCHISTL FLOAT hc_history		// value history (used by hc_HC to average over prior calls)
 	*r INT hc_iXHist						// hc_history index (cycles 0 .. hcHISTL-1)
-	
+
 *END	// HCI
 //=======================================================================================
 RECORD SGTARG "sg targ" *SUBSTRUCT	// solar gain target
@@ -943,11 +947,11 @@ RECORD SBCBASE "SBCBASE" *SUBSTRUCT *HIDEALL
   *r DBL sb_F			// solar (short wave) fraction ?  TODO: NOT USED? as of 4-2012
   *r DBL sb_Fp			// "view factor" to zone radiant temp, dimless.  Includes Oppenheim surface conductance.
 						//   aka "F-prime" in CZM documentation.
-						
+
   *r DBL sb_frRad		// re radiant to radiant temp (room radiant node or sky)
   *r DBL sb_fSky		//   "view factor" to radiant surround at sky temp
   *r DBL sb_fAir		//   "view factor" to radiant surround at air temp (ground, horizon)
-						
+
   *s *e FLOAT sb_hcNat	// surface natural convection coefficient, Btuh/ft2-F
   *s *e FLOAT sb_hcFrc	// surface forced (wind) convection coefficient, Btuh/ft2-F
   *s *e FLOAT sb_hcMult	// surface convection coefficient multiplier, dimless
@@ -960,14 +964,14 @@ RECORD SBCBASE "SBCBASE" *SUBSTRUCT *HIDEALL
 						// where uC = surface-to-surface conductance
 						//       rC = 1/uC
 						// but: duct model outside surf to duct air
-						
+
   *s *e DBL sb_fRat		// sb_hxtot * sb_uRat, Btuh/ft2-F
 						//   = overall conductance not including other side
 						//     surface resistances
 						//   (ducts: overall conductance from duct air to sb_txe)
   *s *e DBL sb_cx		// air/radiant coupling due to this surface, Btuh/ft2-F
-						//   
-						
+						//
+
   *declare "double sb_sgf[ socCOUNT][ sgcCOUNT];"
 						// accumulators used *only* re cgsolar gain SGTARG setup
 						//  = gain per unit exterior solar
@@ -1027,7 +1031,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "const char* sb_SideText();"
   *declare "static void sb_DbPrintf( const char* tag, const SBC& sbcO, const SBC& sbcI);"
 
-  
+
   *r XSURFP sb_pXS		// parent pointer
   *r int sb_si			// side of *sb_pXS represented by this SBC
 						//   0=inside, 1=outside
@@ -1039,7 +1043,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *s *e DBL sb_eta		// unified: wind speed adjustment included in sb_hcNat
 						//   windV=0: sb_eta=1, sb_hcNat=still-air value
 						//   windv>0: sb_eta<1, sb_hcNat is reduced
-						
+
 						// characteristic dimensions re convection models
 						// not always set or used
 						// Note: may be derived from parent surface TODO
@@ -1047,7 +1051,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *r DBL sb_lenNom		//   nominal length, ft (larger dimension assuming rectangle)
   *r DBL sb_lenCharNat	//	 characteristic length for some natural convection models, ft
   *r DBL sb_lenEffWink	//   effective length for Winkelmann forced convection model, ft
-  
+
   *r DBL sb_atvDeg		// angle-to-vertical, deg (inside: 90-tilt; outside: tilt-90)
   *r DBL sb_cosAtv		// cos( angle to vertical) 0 - 1 (never < 0)
   *i CONVMODELCH sb_hcModel // surface convective coefficient model
@@ -1061,11 +1065,11 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
 						//    Unified: exposure to zone or ambient
 						//			   hcNat = sb_hcConst[]*abs( TD)^.33)
 						//			   [ 0]: tAir<=tSrf, [ 1]: tAir>tSrf
-						//			   [ 2]: unused 
+						//			   [ 2]: unused
 						//    ASHRAE: exposure to zone, hcNat = sb_hcConst[]
 						//			   [ 0]: sys off, tAir<=tSrf, [ 1]: sys off, tAir>tSrf
 						//             [ 2]: sys on
-						
+
 						// re sfExCnd = GROUND: conductances to weather vars, Btuh/ft2-F
 						//  correlation values derived by Bazjanac/Huang for various
 						//  insulation configurations
@@ -1085,7 +1089,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
 
   *i *noname *hide *nest HCI sb_hCX	// maintains convection coefficient moving average
 									//   at runtime (zone-exposed surfaces only)
-  
+
  #if defined( CONV_ASHRAECOMPARE)
   *s FLOAT sb_hcNatAsh
   *i *nest HCI sb_hCXAsh	// manages convective coefficient at runtime
@@ -1131,14 +1135,15 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*declare "int xs_IsASHWAT() const;"
 	*declare "int xs_HasControlledShade() const;"
 	*declare "int xs_IsDelayed() const { return xs_msi != 0; }"
+	*declare "int xs_IsKiva() const;"
 	*declare "int xs_CanBeSGTarget() const;"
 	*declare "int xs_Class() const;"
 	*declare "int xs_TyFromTilt() const;"
 	*declare "void DbDump() const;"
-	
+
 	*declare "record* xs_pParent;"	// pointer to parent record (SFI, XSRAT, PRI, )
     *z SI xs_ty		// type CTEXTWALL, CTINTWALL, CTWINDOW, CTMXWALL, CTPERIM, set by cult or code.
-    
+
 	// inputs.  *r's where set by topCkf in at least some cases.
     *r AREA_GZ xs_area	// (net) area, sf.  Reflects window multiplier.
     *r ANGLE azm 		// azimuth (radians, 0 = North, Pi/2 = East)
@@ -1146,9 +1151,10 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *r *array 3 FLOAT xs_dircos	// outward normal direction cosines for given azm/tilt
     *r FLOAT_GZ xs_depthBG	// depth below grade of bottom of wall, ft
     *z SFMODELCH xs_model	// surface model: user input
-							//   quick/auto/delayed(massive)/delayed_hour/delayed_subhour/forward_difference
+							//   quick/auto/delayed(massive)/delayed_hour/delayed_subhour/forward_difference/kiva
     *r SFMODELCH xs_modelr	// resolved to quick (runtime XSURF generated),
     						//    or to delayed_hour or _subhour (runtime MASS generated)
+                //    or to kiva (runtime KIVA generated)
     *r FLOAT xs_lThkF		// thickness factor, adjusts max thickness allowed for mass sublayers
 							//    default = 0.5
 	*declare "class FENAW* xs_pFENAW[ 2];"	// re ASHWAT xs_fenModel: ASHWAT data shades open/closed
@@ -1159,7 +1165,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *mh FRAC scc    // window: SMSC: Solar Heat Gain Coef, shades Closed
     *r *nest SBC xs_sbcI	// inside (zone side) surface boundary conditions
     *r *nest SBC xs_sbcO	// outside (ambient or adjacent zone) surface boundary conditions
-    
+
     *i FENMODELCH xs_fenModel	// fenestration model: user input
     *i FRAC xs_SHGC				// rated SHGC of assembly
     *r FLOAT_GEZ xs_fMult		// window frame/mullion multiplier (input or from GT)
@@ -1168,7 +1174,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*i EXSHDCH xs_exShd		// exterior shade (ASHWAT only)
 	*i INSHDCH xs_inShd		// interior shade (ditto)
     *r FLOAT_GEZ xs_dirtLoss	// window dirt loss factor (input or from GT)
-    
+
     // next 3 are input for surface, copied from surface of door or window
     *r EXCNDCH sfExCnd	// adjacent cond: adiabatic/ambient/specT/adjZn.
     *s TEMP sfExT    	// outside temp if .sfExCnd==C_EXCNDCH_SPECT
@@ -1179,18 +1185,18 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *r FLOAT xs_Rf		// exterior roughness factor, re convection (new 10-10)
 						//   default: windows=1, all others=2.17
     *mh FRAC grndRefl	// ground reflectivity, default: wall: Top.grndRefl; door/win: owning wall.
-    
+
 // view factors for diffuse (only) radiation so user can precompute shading effects of window overhang/fins
     *mh FRAC vfSkyDf	// sky view factor for diffuse solar, default .5 + .5*cos(tilt)
     *mh FRAC vfGrndDf	// ground view factor for diffuse solar, default .5 - .5*cos(tilt)
-    
+
 // view factors re outside surface LW (thermal) radiant exchange
     *r FRAC vfSkyLW		// sky view factor for long-wave radiation, hard-coded .5 + .5*cos( tilt)
     *r FRAC vfGrndLW	// ground view factor for long-wave radiation, hard-coded .5 - .5*cos( tilt)
-    
+
     *r UH_GZ xs_uval 	// Overall air-to-air conductance, Btuh/sf-F
 						//   includes uX and uC surf cond
-						
+
 						// *Nominal* U-factor etc including ASHRAE heating surface resistance
 						// documentation only!
     *r UH_GZ xs_UNom		// nominal air-to-air U-factor, Btuh/sf-F
@@ -1198,7 +1204,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 							// surface values, [0]=inside, [1]=outside
     *r *array 2 FLOAT xs_rSrfNom;	// surface resistance sf-F/Btuh
     *r *array 2 FLOAT xs_hSrfNom;	// surface conductance (1/xs_rSrfNom), Btuh/sf-F
-    
+
     *r UH_GZ xs_cFctr	// surface-to-surface conductance (not populated!)
 
     *r TI iwshad 		// 0 if none or subscr in WSHADRAT of overhang/fin info for a shaded window
@@ -1206,7 +1212,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *array XSMXTLRB *h *e
 		FLOAT xs_tLrB	// layer boundary temps re probes
 						// populated at end of hour
-    
+
 // solar gain distributions: [partly] based on SGDIST inputs
     *r SI nsgdist	 		// Number of SG distributions
     // SGDIST sgdist[ HSMXSGDIST]:
@@ -1239,6 +1245,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "RC sf_CkfWINDOW( int options);"
 	*declare "RC sf_TopSf2();"
 	*declare "RC sf_MakMs();"
+	*declare "RC sf_MakKIs();"	// Make Kiva Instances
 	*declare "int sf_IsWallBG() const;"
 	*declare "int sf_IsFloorBG() const;"
 	*declare "int sf_IsBG() const;"
@@ -1247,6 +1254,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "RC sf_BGFinalizeLayers( class AR_MASSLAYER& arML, float RFilm, float RNom=-1.f);"
 	*declare "static int sf_IsSubhrly( int m);"
 	*declare "static int sf_IsDelayed( int m);"
+	*declare "static int sf_IsKiva( int m);"
 	*declare "static int sf_IsFD( int m);"
 	*declare "int sf_IsChild() const;"
 	*declare "SFI* sf_GetParent();"
@@ -1255,7 +1263,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "ZNR* sf_GetZone( int si) const;"
 	*declare "RC Validate( int options=0);"
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
-	
+
  //surface/door/window
     // .ownTi (base class) is zone for surface, or surface for window or door.
     //   CAUTION: ambiguous base
@@ -1268,6 +1276,9 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
     // sfInAbs, sfExAbs: input/default to x.xs_AbsSlr(0, 1)
  //surface only
     *z OSTYCH sfTy 			// wall/floor/ceil/[intmass1/2]: for input cking.
+    *i TI sfFnd 			// surface foundation object (floors only, optional)
+    *i TI sfFndFloor		// surface foundation floor object (walls only, optional)
+	*i LEN sfExpPerim		// foundation floor exposed perimeter (floors only)
  //window only
     *i LEN_GZ width 		// width and height: used to compute shading,
     *i LEN_GZ height		//  ... and to compute area b4 mutliplier.
@@ -1292,7 +1303,7 @@ RECORD XSRAT "xsurf" *RAT
 	*declare "void xr_SGFAccum( const double sgf[ sgcCOUNT]);"
 	*declare "void xr_SGIncTrans( int sunup, float verSun);"
 	*declare "void xr_SGMakeSGRATs();"
-	
+
 				// .name: is that of of surface, door, window, perimeter, or mass (see x.ty) 1-92
 				// .ownTi: ZNR subscript
     *r TI nxXsurf		// 0 or XSRAT subscr of next record for zone.  Chain head is ZNR.xsurf1.
@@ -1357,7 +1368,7 @@ RECORD MASSBC "massbc sub" *SUBSTRUCT	// MASSBC: boundary conditions substruct f
     *m *e DBL qxmtot 	// ... ditto current month
   // for probe-ability (can't probe thru pointer MSRAT.temp[]) 1-19-94
     *s *e FLOAT bc_surfTemp	// probe-able duplicate copy of inside or outside layer surface temp, set in loadsSurfaces.
-	
+
 *END		// MASSBC
 
 //=======================================================================================================
@@ -1395,7 +1406,7 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 	*r UH_GZ ms_UNom   		// overall uval incl nominal surface films, Btuh/ft2-F
 							//   used for reporting only
 	*r FLOAT ms_tc 			// time constant (con->hc/sfInH) as used to default sfModel & isSubhrly, for reporting, 1-95
-	
+
 	// re-work interval energy balance info, 2-3-2012
 	// *h *e DBL ms_qBal		// total hour energy balance error for this mass, Btu
 	*h *e *hide *array IVLDATADIM DBL ms_qBal		// net energy balance during interval, Btu
@@ -1412,8 +1423,25 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 
 	*r MASSMODELP ms_pMM	// pointer to runtime mass model for this mass (type determined per input)
 							//   see mspak.h
-							
+
 *END			// MSRAT
+
+//=======================================================================================================
+RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
+	*prefix kv_
+	*declare "ZNR* kv_GetZone( int si) const;"
+	*declare "RC kv_InitGround();"
+	*declare "RC kv_SetBCs();"
+	*declare "RC kv_Calculate();"
+
+	*declare "class Kiva::Ground* ground;"
+	*declare "class Kiva::BoundaryConditions* bcs;"
+
+	*r *nest MASSBC inside  // inside surface boundary conditions
+	*r FRAC_GZ kv_perimWeight  // weight of this kiva instance for results of corresponding floor
+
+*END			// KIVA
+
 
 //=============================================================================
 RECORD SGI "sgdist" *RAT		// solar gain distribution info during input
@@ -1493,7 +1521,7 @@ RECORD LR "layer" *RAT	// layer input info.  Layers for a given construction are
 	*prefix lr_
 
     *declare "RC lr_TopLr();"
- 
+
 // input.  Also .ownTI (base class) is owning CONstruction subscript.
     *i LEN_GZ lr_thk	// thickness of layer, ft. dfl mt_thk else RQD. *i cuz VEOI in cncult:lrT[].
     *i TI lr_mati		// primary material (MAT subscript). RQD.
@@ -1531,6 +1559,36 @@ RECORD MAT "material" *RAT	// material (for construction layer) input info
 	// derived.  *r: set in input check/setup.
     *r HC_VOL mt_vhc  		// volumetric heat capac (Btu/ft3-F): mt_spHt*mt_dens
 *END		// MAT
+
+//=============================================================================
+RECORD FOUNDATION "foundation" *RAT	// foundation input info
+*prefix fd_
+
+ //input
+ *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
+ *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
+ *i TI fd_ftWlConi			// Foundation wall construction (CON subscript) RQD if
+							// no walls associated with this foundaiton
+							// (i.e., it is a slab)
+
+*END		// FND
+
+//=============================================================================
+RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
+*prefix fb_
+
+ //input
+ *i TI fb_mati				// Material (MAT subscript) for this component
+ *i FBXREFCH fb_x1Ref		// Point 1 X reference
+ *i FBZREFCH fb_z1Ref		// Point 1 Z reference
+ *i LEN fb_x1				// Point 1 X value (relative to reference)
+ *i LEN fb_z1				// Point 1 X value (relative to reference)
+ *i FBXREFCH fb_x2Ref		// Point 2 X reference
+ *i FBZREFCH fb_z2Ref		// Point 2 Z reference
+ *i LEN fb_x2				// Point 2 X value (relative to reference)
+ *i LEN fb_z2				// Point 2 X value (relative to reference)
+
+*END		// FDC
 
 //========================================================================================================
 RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what altered) input records.
@@ -1885,7 +1943,7 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 
 *r MOTTYCH fn_motTy		// motor type (C_MOTTYCH_PSC or C_MOTTYCH_BPM)
 						//   RSYS only minimal use 4-12, could effect defaults
-	
+
 *f FRAC_GZ motEff		// motor/drive efficiency, constant, default .9.
 
 *f MOTPOSCH motPos 	// motor/drive position: choice of INFLO (default), INRETURN, EXTERNAL.  constant.
@@ -1975,7 +2033,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 					// Pointed to by .cppontrol of SgR entries (whose factors are (neg) closed-shade gain reductions).
 					// Subhourly variablility desirable (rob's opinion); requires duplicating
 					// loadsHourBeg solar gain code in loadsSubhr with znSC-change trigger.
-					
+
 				// Alternate zone model inputs
 				//   used for some zone models only (e.g. CZM and thus UZM), else no effect
 					// thermostat set points, F (8-10)
@@ -1987,9 +2045,9 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *r FLOAT znQMxHRated	// heating cap rated (>=0, constant for run)  TODO: s/b autosizable?
     *h FLOAT znQMxC			// cooling cap for current hour (<= 0)
     *r FLOAT znQMxCRated	// cooling cap rated (<=0, constant for run)  TODO: s/b autosizable?
-    
+
 	*r TI zn_rsi;			// idx of RSYS serving zone
-    
+
     *h FLOAT zn_hcFrcF		// forced convection coefficient factor, default = 0.2
 							//     interior hcFrc = zn_hcFrcF * zn_hcAirX^.8
 	*s *e FLOAT zn_hcAirX;	// zone air change rate (1/hr), input for testing
@@ -2015,7 +2073,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *h FRAC xfanFOn			// zone exhaust fan schedule, fraction on, hourly scheduleable, default 1
     *i *nest FAN xfan		// subrecord for other fan members.
 							//   if xfan.vfDs is not given, no fan, other inputs disallowed.
-	
+
 // ZNISUB infiltration inputs.
     *h FLOAT_GEZ infAC		// ac	    Base air changes/hr, for q proportional to tempDiff ("constant" portion). (1/hr)
     *h AREA2 infELA			// ela	    Zone effective leakage area, for q prop to tempDiff ^ 3/2 (cuz flow prop to sqrt(tDiff))
@@ -2031,7 +2089,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 
 // ZNISUB setup time: reports.  (Most zone report info is in DvriB, accessed by interval via list heads in Top.)
     *r INT vrZdd	// 0 (report not requested) or vrh (virtual report handle) for zone description (ZDD report).
-					// in ZNISUB to persist from autosize to main sim, when most runtime stuff is cleared & resetup, 
+					// in ZNISUB to persist from autosize to main sim, when most runtime stuff is cleared & resetup,
 					// incl zones but excluding most report stuff.
 *END		// ZNISUB
 //=============================================================================
@@ -2094,7 +2152,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_MoistureBalCR();"
     *declare "RC zn_ComfortCR();"
     *declare "void zn_DbDump() const;"
-    
+
     *declare "RC zn_AfterSubhr();"
     *declare "RC zn_AfterHour();"
     *declare "RC zn_InfilSetup();"
@@ -2115,9 +2173,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_SGClearTots();"
     *declare "void zn_SGCavAbs();"
     *declare "void zn_SGToZone();"
-    
+
 // input info, substruct above. copy of ZNI.  noname: omit "i." from probe names in SFIR table.
-    *noname *nest ZNISUB i	
+    *noname *nest ZNISUB i
 
    // (following infil, vent, ceilfan info is mostly non-input members taken from former substructs of HSZN, 2-91)
 
@@ -2195,9 +2253,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 						// gave 1 part in 100000 differences (CEC certification test calls for 2-digit match).
     *r DBL zn_UANom		// UA to ambient based on surface UNom (derived with default surf conductances), Btuh/F
 	*r DBL zn_ductCondUANom	// nominal total UA of ducts in zone, Btuh/F (due to conduction, not air leakage)
-				
+
     *r DBL haMass	 	// Total ha (surf conductance * area) to mass (Btuh/F)
-    
+
 						// re determination of below grade floor coefficients
 						// floor coupling depends on wall insulation
 						// walls processed first and accumulate here
@@ -2227,7 +2285,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
       *h *e DBL /*POWER*/ znLitDmd	// lighting demand (before reduction by gnDlFrPow)
       *h *e DBL /*POWER*/ znLitEu	// lighting energy use (after reduction by gnDlFrPow; also posted to znS/LGain & meter).
 
-    *h *hide DBL qsIgHr 	// hour sens int gain rate (Btuh), from wthr file + znSGain, for zn_aqLdHr. 
+    *h *hide DBL qsIgHr 	// hour sens int gain rate (Btuh), from wthr file + znSGain, for zn_aqLdHr.
 							// does NOT include radiant gain (qrIgAir above). loadsHourBeg sets. note 2.
     *s *e DBL /*POWER*/ znXLGain	// excess latent gain (Btuh) rejected in znW() to prevent over-saturated w. 10-96.
     *s *e DBL /*POWER*/ znXLGainLs	// previous subhour ditto: added to sensible gain to simulate condensation in zone, 5-97.
@@ -2261,7 +2319,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e DBL zn_qIzXAnSh			// subhourly gain due to non-airnet IZXFERs (Btuh, +=into zone)
     *s *e DBL zn_qIzSh				// subhourly part of interzone gain rate (Btuh, +=into zone)
 									//   due to non-airnet IZXFERs
-									
+
 									// subhourly values re airnet heat gains (see IZXFER)
 									//   [ 0]=minimum (generally infil only)
 									//   [ 1]=maximum (generally infil+vent)
@@ -2277,7 +2335,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     							//  zn_aqLdHr + aMassSh + zn_qIzSh + qSgAir + top.tDbOSh*(ua + uaInfil) + tzlh*znCAir*subhrDur (told*hc/t)
     *s *e *hide DBL zn_bLdSh	// b ditto:  bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
     *s *e *hide DBL zn_xqs		//  like xqh but subhourly
-    
+
 								// subhour zone gains from duct conduction losses, Btuh
 								//   (convective/radiant only)
 								// CAUTION: subhr initialization not at beginning of step
@@ -2300,22 +2358,22 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								//   air assumed returned to source zone
 								//   affects zn_hcFrc but not pressure balance
 
-    
+
  	*array 2 *s *e *nest AIRFLOW zn_airNetI		// total *possible* airnet flow into zone
  												// note actual flow depends of zn_fVent
  												//   [ 0]=infil only
  												//   [ 1]=infil+vent (calc'd only if needed)
- 												
+
     *declare "double zn_AnAmfCp( int iV) const { return zn_airNetI[ iV].af_AmfCp(); }"
     *declare "double zn_AnAmfCpT( int iV) const { return zn_airNetI[ iV].af_AmfCpT(); }"
     *declare "double zn_AnAmf() const;"			// returns actual
     *declare "double zn_NonAnIVAmf() const;"
-    
+
    	*s *e FLOAT zn_fVent						// vent fraction; venting used to hold zone at znTD
 												//    = (actual mCp) / (possible mCp)
 	*s *e FLOAT zn_tzVent						// zone air temp with full vent, F (debug aid)
 												//    0 if vent not possible
-    *s *e DBL zn_anAmfCpVent					// vent flow (in excess of zn_airNetI[ 0])				
+    *s *e DBL zn_anAmfCpVent					// vent flow (in excess of zn_airNetI[ 0])
     *s *e DBL zn_anAmfCpTVent					// ditto *temp
 
 										// total HVAC-related air flows for step
@@ -2326,23 +2384,23 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e *nest AIRFLOW zn_sysAirO		//	 HVAC air out of zone (return)
 	*s *e *nest AIRFLOW zn_OAVRlfO		//   HVAC OAV air out
 										//		in OAV mode, zn_sysAirO = 0 and zn_OAVRlfO > 0
-										
+
 	*s *e *nest AIRFLOW zn_sysDepAirIls	// total system dependant flow into zone from prior step
 										//    = zn_ductLkI
 										// lagged value used in zone HB re duct leaks, etc.
 										//    that depend on HVAC performance.
 										//  * does NOT include zn_sysAirI
 										//  * NOT used in mass balance
-	
 
-         
+
+
 								// subhour values for convective/radiant model (9-10)
     *s *e *hide DBL zn_nAirSh	//  air numerator
     *s *e *hide DBL zn_dAirSh	//  air denominator
     *s *e *hide DBL zn_nRadSh	//  radiant numerator
     *s *e *hide DBL zn_dRadSh	//  radiant denominator
 	*s *e *hide DBL zn_cxSh		//  cross-coupling
-	
+
 								// useful combos of above
 	*s *e *hide DBL zn_dRpCx	//   zn_dRadSh + zn_cxSh
 	*s *e *hide DBL zn_nRxCx	//   zn_nRadSh * zn_cxSh
@@ -2376,12 +2434,12 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								// flag ument heating/cooling requirements (zn_tzsp not held)
 	*s *e INT zn_unMetH			//   nz iff current step heating load not met
 	*s *e INT zn_unMetC			//   nz iff currend step cooling load not met
-	
+
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating
 	*s FLOAT zn_fConvC			//    cooling
 	*s FLOAT zn_fConv			//    current step
-									
+
 // runtime comfort calcs (only for CZM zones 1-20-11)
 #ifdef COMFORT_MODEL
 	*declare "class CThermalComfort* zn_pComf;"	// interface to comfort models
@@ -2427,7 +2485,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 							//   but not system flows
 	*s *e FLOAT zn_airX		// overall zone air change rate (changes/hr)
 							//   includes *all* air flows; used re convective coeff determination
-				
+
 	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-RSYS zones having HVAC loads
 								//   inputable for testing; used re convection coeff model
 	*s FLOAT zn_hcAirXls	// prior subhour value of i.zn_hcAirX
@@ -2480,7 +2538,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 	           the fact that it is last interval's value.
                Meanwhile, use flexibility could perhaps be improved with a method to force probing at end interval.
        ADDITION 3-92: now have loadsAfterHour and such fcns, called AFTER probes/reports.  Moving end-interval computations
-       there, when applicable, will make the variable appear as a pure, clean, start-interval 'prior' to probes. *** 
+       there, when applicable, will make the variable appear as a pure, clean, start-interval 'prior' to probes. ***
        NOTE 11-95: tending toward flagging these *e for safety, and adding probable prior's only when clear need found. */
 
     /* note 2: set in cghinit, currently 1-92 called AFTER exprs evaluated, probe at start hour will get stale value
@@ -2557,7 +2615,7 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qsMech  	// zone total sensible mechanical heat gain, Btu
     float eqfVentHr	// equivalent full vent hours = sum( zn_fVent)
   //2. latent heats for latent heat balance: qlInfil thru qlMech
-    float qlInfil	// zone infiltration latent gain, Btu 
+    float qlInfil	// zone infiltration latent gain, Btu
     float qlIg    	// zone internal latent gain, Btu
     float qlIz		// zone IZXFER latent gain (infil, vent, duct leakage)
     float qlAir		// latent heat of moisture removed from zone air: moisture analog of znCAir.
@@ -2565,7 +2623,7 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
   //3. floats to sum, not included in either balance
     float qsBal  	// sensible balance: sum of sensible heats, should be near 0. Set in cnguts.cpp.
     float qlBal  	// latent balance similarly.  Consider removing Bals after development.
-    float qlX		// latent gain rejected to prevent zone supersaturation === heat of condensation. 
+    float qlX		// latent gain rejected to prevent zone supersaturation === heat of condensation.
 					//   - added to next subr sens gain. Btu.
     // following are accessible only via binary results files generated for NREL design tool (ET or E10),
     // or probes & custom report, as of 9-94. CSE accumulates to H-D-M-Y.
@@ -2576,7 +2634,7 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
      float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
 *END		// ZNRES_IVL_SUB
 //=============================================================================
-RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT	
+RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
 	// holds zones or all-zones current or prior simulation results for all intervals
     //CAUTION: code assumes these are in order matching IVLCH, so can add IVLCH-1 to ptr to .Y to access M,D,S. eg in cgresult.cpp.
     *y *nest ZNRES_IVL_SUB Y	// run results, aka year or annual
@@ -2605,7 +2663,7 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *declare "RC ad_MassFlow( double delP);"
    *declare "void ad_SetFromFixedAVF( double avf);"
    *declare "void ad_DupHERV( const ANDAT& ad);"
-   
+
    *r *hide IZXRATP ad_pIZXRAT	// parent pointer
    *h AREA_GEZ ad_Ae		// effective vent area, ft2; function of vent type and iz_cd
    *h AREA_GEZ ad_AeLin		// modified iz_Ae, ft2; prevents discontinuity at delPLinear
@@ -2618,7 +2676,7 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
 							//   balanced flow z1 <-> z2, used only for _ANHORIZ
    *s *e DBL ad_mdotX		// air mass exhaust flow, (lbm moist air)/sec (+ out of z2)
 							//   HERV = exhaust flow
-							//   Other = ad_mdotP 
+							//   Other = ad_mdotP
    *s *e DBL ad_xDelpF		// buoyancy flooding pressure factor
    *s *e DBL ad_xMbm		// buoyancy max possible flow factor
    *s *e DBL ad_tdFan		// air stream temp rise across fan, F
@@ -2684,7 +2742,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 						//   C_IZNVTYCH_ANSYSAIR: system air flow
 						//   C_IZNVTYCH_ANOAVRLF: RSYS OAV relief air
 						//                        ( = interzone hole sized per flow)
-						//   
+						//
     *h AREA_GEZ iz_a1  	// vent area 1, ft2
 						//   _TWOWAY = low vent area
 						//   AirNet = minimum vent area ("infil only")
@@ -2696,13 +2754,13 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *i LEN_GZ iz_L2		// opening dim 2, ft
     *i FLOAT iz_hz		//   _AN (non FAN): height of iz_a1 relative to arbitrary 0 (ft)
 						//   _TWOWAY: height a1 - height a2 difference (ft)
-		
+
 	*i FLOAT_GEZ iz_stairAngle	// stair angle, deg (_ANHORIZ) (90 = vert)
 								//   default = 34 deg
     *i FRAC_GZ iz_cd	// orifice coefficient, dimless (user input, default 0.8)
     *r FLOAT iz_exp		// power law exponent, (user input, default 0.5)
     *i FLOAT iz_cpr		// wind pressure coefficient (ignored if not _ANEXT)
-    
+
 				        // fan volume flow (cfm, += into zone1; if <0, fan is exhaust)
     *s AFLOW iz_vfMin	//    min vent flow rate, cfm (for fixed flow types)
 						//      (*net* supply flow for _ANHERV)
@@ -2721,7 +2779,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *r FLOAT iz_nvcoeff				// nat vent overall coeff Btuh/(dt^.5). set by izxSetup().
     *s *e *nest AIRSTATE iz_air1	// z1 air state (tdb and w)
     *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient)
-    
+
     *declare "inline float iz_T( int i) { return i ? iz_air2.as_tdb : iz_air1.as_tdb; }"
     *s float iz_rho1	// z1 moist air density, lb/cf
     *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient)
@@ -2742,14 +2800,14 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 *ovrcopy
 *declare "RC an_Calc( int vMode);"
 *declare "inline double& an_JAC(int i, int j) { return *(an_jac + i*an_nz + j); }"
-	
+
 *r DBLP an_jac		// jacobian matrix (nz x nz)
 *r DBLP an_V1		// residual/correction vector #1 (nz)
 *r DBLP an_V2		// residual/correction vector #2 (nz)
 *r DBLP an_mdotAbs	// total abs flow by zone (nz)
 *r INTP an_didLast	// re relax scheme (see code) (nz)
 *r INT an_nz		// # of zones
-	
+
 *END	// AIRNET
 //=============================================================================
 #if 0	// not needed, save for possible use, 4-12
@@ -2804,7 +2862,7 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *s *noname *nest DBC ds_sbcO	// (outside) surface boundary conditions
 								//   represents coupling(s) between duct exterior
 								//   surface and adjacent zone or ambient
-									
+
 *i FLOAT_GEZ ds_exArea		// exterior heat transfer surface area, ft2 (outside of insulation)
 							//   if input, flat area-only model is used, many inputs have no effect
 							//   if NOT input, round ducts assumed
@@ -2957,7 +3015,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   writes file <PM_name>.csv
 *r DBL rs_areaServed		// total zone floor area served by this RSYS, ft2
 *r INT rs_zonesServed		// # of zones served by this RSYS
-							
+
 *i TI rs_elecMtri			// meter for system electricity use
 *i TI rs_fuelMtri			// meter for system fuel use
 *declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat;"
@@ -3112,7 +3170,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_fCondCap		// conditions factor, capacity
 *s *e FLOAT rs_fCondSEER	// conditions factor, SEER
 *s *e FLOAT rs_fCondEER		// conditions factor, EER
-						
+
 							// values for current step (adjusted for outdoor and indoor temps)
 *s *e FLOAT rs_SEERnf		//	SEER w/o fan power
 *s *e FLOAT rs_EERnf		//	EER w/o fan power
@@ -3123,7 +3181,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions, Btuh (<0)
 *s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions, Btuh (<0)
 *s *e FLOAT rs_capSenCt;	// coil sensibgle cooling capacity at current conditions, Btuh (<0)
-						
+
 						// Central outside air vent (aka OAV)
 *i RSYSOAVTYCH rs_OAVType	// type: NONE, FIXEDFLOW (aka SmartVent), VARFLOW (aka SmartBreeze)
 *i TI rs_OAVReliefZi		// OAV relief zone index
@@ -3140,7 +3198,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *d FLOAT rs_amfOAV			// ditto air mass flow, lbm/hr
 
 							// DUCTSEG linkage
-*declare "struct"	
+*declare "struct"
 *declare "{ TI dsi[ 2];"			// idx of associated DUCTSEGs, 0 if none
 									//  [ 0] = supply, [ 1] = return
 *declare "  FLOAT ductLkXF[ 2];"	// nonleak fraction = (1 - ds_leakF) [ 0] = sup, [ 1] = ret
@@ -3178,11 +3236,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
 *s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
 *s *e DBL rs_inAux		// auxiliary heating input, Btuh
-	
+
 *END	// RSYS
 //=============================================================================
 RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult substruct for RSYSRES
-    
+
 	*declare "void rsr_Accum( RSYSRES_IVL_SUB* d, BOO firstFlg, BOO lastFlg) const;"
 
 	INT n			// number of intervals added together in this one (divisor for averages)
@@ -3260,7 +3318,7 @@ RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (lat
 //=============================================================================
 RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for DHW meter
  // use results
- 
+
 	// accum function; see CAUTION below
 	*declare "void wmt_Clear() { memset( this, 0, sizeof( DHWMTR_IVL));}"
 	*declare "void wmt_Copy( const DHWMTR_IVL* s, float mult=1.f);"
@@ -3279,7 +3337,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
     FLOAT bath			// bath
     FLOAT cwashr		// clothes washer
     FLOAT dwashr		// dish washer
-    
+
 *END		// DHWMTR_IVL
 //=============================================================================
 RECORD DHWMTR "DHWmeter" *RAT 	// DHWMTR: hot water consumption
@@ -3523,7 +3581,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//   default = 4500
   *i FLOAT_GZ wh_resHtPwr2;	// lower element resistance heating power, W
 							//   default = wh_resPwr
-  
+
   							// re Ecotope HPWH detailed heat pump model
   *declare "class HPWH* wh_pHPWH;"	// pointer HPWH data else NULL
   *r INT wh_HPWHHSCount;			// # of HPWH heatsources in use for
@@ -3590,13 +3648,13 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "DHWSYS* wp_GetDHWSYS() const;"
   *declare "RC wp_DoHour( int mult, float runF=1.f);"
-  
+
   *i SI wp_mult;				// count of identical DHW pumps (default 1)
 								//   models as if repeated identical input
 
   *i TI wp_elecMtri				// meter for pump electricity use (default = parent ws_elecMtri)
   *declare "MTR* wp_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
-  
+
   *h FLOAT_GEZ wp_pwr;			// pump power, W
 
   								// energy inputs for current hour, Btu
@@ -3757,7 +3815,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *h FRAC wu_hotF			//   fraction hot water, default = 1
 							//       derived from wu_temp / wu_heatRecEF if given
 							//       else input
-  *h FLOAT_GZ wu_temp		//   use temperature, F.  If given, 
+  *h FLOAT_GZ wu_temp		//   use temperature, F.  If given,
 							//      hot water draw is calculated assuming
 							//		mains (cold) water mixing
   *h FLOAT_GEZ wu_heatRecEF	//   heat recovery effectiveness
@@ -3888,7 +3946,7 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 //=============================================================================
 RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
  // use results
- 
+
 	// accum functions; see CAUTION below
  	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
 	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
@@ -4055,7 +4113,7 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     *f TEMP_GZ dsTDbEn		// design (rating) (dx,chw) entering air dry bulb temp, default = ARI = 80F.
     *f TEMP_GZ dsTWbEn		// design (rating) (dx) entering air wet bulb temp, default = ARI = 67F.  replaces Taylor's dsEAWB.
     *r AFLOW_GZ vfR		// rating (dx,chw) air flow (cfm). default: DX: per vfRperTon. CHW: sfan.vfDs.
-    *r FLOAT vfRperTon		// DX default vfR per ton (12000 Btuh) of captRat. default: 400. 
+    *r FLOAT vfRperTon		// DX default vfR per ton (12000 Btuh) of captRat. default: 400.
 
   // re dx cool coil compressor cycling and energy consumption
     *f FRAC  minUnldPlr   	// part load ratio (fraction of full load) at/above which "compressor unloading" is used. dfl 1.
@@ -4329,39 +4387,39 @@ RECORD AH "airHandler" *RAT
 //         and (probably deferred) warmup, optimum start, and setback/setup control.
 // Member names begin with ah-, py-, sfan-, rfan-, and oa-. */
 
-    *declare "RC setup();"					
-    *declare "void fazInit( int isAusz);"   
-    *declare "RC rddInit( int isAusz);"		
-    *declare "RC ah_pass1AtoB();"				
-    *declare "RC ah_begP1b();"					
-    *declare "void rddiInit();"				
-    *declare "RC ah_SetupSizes();"				
-    *declare "void ah_p2Init();"				
-    *declare "void endP2Dsd();"				
-    *declare "RC ah_p2EndTest();"				
-    *declare "RC ah_endAutosize();"  			
-    *declare "void ah_auszFinal();"			
-    *declare "RC begSubhr();"				
-    *declare "RC endSubhr();"				
-    *declare "RC ah_AfterSubhr();"			
-    *declare "RC begHour();"				
-    *declare "RC ahEstimate();"				
-    *declare "RC ahCompute();"				
-    *declare "BOO iter4Fs( BOO &cvgFail);"	
-    *declare "void pute4Fs();"				
-    *declare "void setFrFanOn( DBL leakCOn);"  
-    *declare "BOO incrFanF();"				
-    *declare "BOO decrFanF();"				
-    *declare "BOO fanXtrap( SI whichway);"	
-    *declare "BOO ceeClip( BOO canClip);"	
-    *declare "BOO converger();"				
-    *declare "BOO binClip();"				
+    *declare "RC setup();"
+    *declare "void fazInit( int isAusz);"
+    *declare "RC rddInit( int isAusz);"
+    *declare "RC ah_pass1AtoB();"
+    *declare "RC ah_begP1b();"
+    *declare "void rddiInit();"
+    *declare "RC ah_SetupSizes();"
+    *declare "void ah_p2Init();"
+    *declare "void endP2Dsd();"
+    *declare "RC ah_p2EndTest();"
+    *declare "RC ah_endAutosize();"
+    *declare "void ah_auszFinal();"
+    *declare "RC begSubhr();"
+    *declare "RC endSubhr();"
+    *declare "RC ah_AfterSubhr();"
+    *declare "RC begHour();"
+    *declare "RC ahEstimate();"
+    *declare "RC ahCompute();"
+    *declare "BOO iter4Fs( BOO &cvgFail);"
+    *declare "void pute4Fs();"
+    *declare "void setFrFanOn( DBL leakCOn);"
+    *declare "BOO incrFanF();"
+    *declare "BOO decrFanF();"
+    *declare "BOO fanXtrap( SI whichway);"
+    *declare "BOO ceeClip( BOO canClip);"
+    *declare "BOO converger();"
+    *declare "BOO binClip();"
     *declare "void getTsXtrapBounds(DBL d);"
-    *declare "BOO humXtrap();"				
-    *declare "BOO humXtrap2();"				
-    *declare "BOO humXtrapI( DBL r, char x);" 
-    *declare "void doOa();"					
-    *declare "void doEco();"				
+    *declare "BOO humXtrap();"
+    *declare "BOO humXtrap2();"
+    *declare "BOO humXtrapI( DBL r, char x);"
+    *declare "void doOa();"
+    *declare "void doEco();"
     *declare "DBL getTsMnFo( BOO outsideCall);"
     *declare "DBL getTsMxFo( BOO outsideCall);"
     *declare "DBL tsFo( float approach,  BOO outsideCall);"
@@ -4369,22 +4427,22 @@ RECORD AH "airHandler" *RAT
      *declare "DBL tsfo( DBL _tr, DBL _cr);"
      *declare "BOO tsPoss( DBL _tr, DBL _wr, DBL _cr, int want, DBL & _ts);"
     *declare "BOO AH::resizeFansIf( float _cMx, float vfDsWas);"
-    *declare "RC setMode();"							
-    *declare "BOO setTsSp1( BOO est, DBL &tsOut);"	
-    *declare "void wzczSp( BOO est, BOO cooling, BOO maxIt, DBL llim, DBL ulim, TU *ctu, DBL &tTsSp, FLOAT &cznC);"	
-    *declare "void zRat();"								
-    *declare "void antRatTs();"							
-    *declare "void puteRa();"							
-    *declare "BOO flagTusIf();"							
-    *declare "void flagChanges();"						
+    *declare "RC setMode();"
+    *declare "BOO setTsSp1( BOO est, DBL &tsOut);"
+    *declare "void wzczSp( BOO est, BOO cooling, BOO maxIt, DBL llim, DBL ulim, TU *ctu, DBL &tTsSp, FLOAT &cznC);"
+    *declare "void zRat();"
+    *declare "void antRatTs();"
+    *declare "void puteRa();"
+    *declare "BOO flagTusIf();"
+    *declare "void flagChanges();"
     *declare "void upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas);"
-    *declare "void upPriors();"				
+    *declare "void upPriors();"
     *declare "void ahVshNLims( DBL _ts, DBL &cIncr, DBL &cDecr);"
-    *declare "void flagTus();"						
-    *declare "BOO nxTu(TU *&tu);"					
-    *declare "BOO nxZhx( ZHX *&x);"					
-    *declare "BOO nxZn( ZNR *&zp);"					
-    *declare "BOO nxTsCzn( ZNR *&z);"				
+    *declare "void flagTus();"
+    *declare "BOO nxTu(TU *&tu);"
+    *declare "BOO nxZhx( ZHX *&x);"
+    *declare "BOO nxZn( ZNR *&zp);"
+    *declare "BOO nxTsCzn( ZNR *&z);"
     *declare "BOO resizeHeatCoilIf( float capt, float captWas);"
     *declare "BOO resizeCoolCoilIf( float capt, float captWas);"
     *declare "BOO estCoils( DBL _ten, DBL _wen, DBL _cen, DBL _frFanOn, BOO _coilLockout, int cooling, DBL &_tex, DBL &_wex);"
@@ -4394,8 +4452,8 @@ RECORD AH "airHandler" *RAT
     *declare "BOO doElecHeatCoil( DBL texWant, DBL &llLim, DBL &uLim );"
     *declare "BOO doGasOrOilFurn( DBL texWant, DBL &llLim, DBL &uLim );"
     *declare "BOO doAhpHeatCoil(  DBL texWant, DBL &llLim, DBL &uLim );"
-    *declare "float heatCapThing( float captWant);"	
-    *declare "BOO doElecCoolCoil( DBL texWant1, DBL texWant, DBL &llLim, DBL &uLim );" 
+    *declare "float heatCapThing( float captWant);"
+    *declare "BOO doElecCoolCoil( DBL texWant1, DBL texWant, DBL &llLim, DBL &uLim );"
     *declare "BOO doChwCoil( DBL texWant1, DBL texWant, DBL &lLim, DBL &uLim);"
     *declare "BOO doDxCoil( DBL texWant1, DBL texWant, DBL &llLim, DBL &uLim );"
     *declare "void coilsEndSubhr();"
@@ -4431,7 +4489,7 @@ RECORD AH "airHandler" *RAT
       *s *e TEMP   qcPkTen	// entering air temp
       *s *e HUMRAT qcPkWen	//  hum rat
       *s *e TEMP   qcPkTex	// exiting air temp (b4 remix w bypass air)
-      *s *e HUMRAT qcPkWex	//  hum rat (b4 remix w bypass air)									
+      *s *e HUMRAT qcPkWex	//  hum rat (b4 remix w bypass air)
     // above for autoSize pass 2 cvg'd des day with largest peak cool coil load, saved for size rpts in input rec thru main run.
       *s *e POWER qcPkSAs	// sensible load @ peak total load
       *s *e POWER qcPkLAs	// latent cool coil load ditto
@@ -4443,7 +4501,7 @@ RECORD AH "airHandler" *RAT
       *s *e TEMP   qcPkTenAs	// entering air temp
       *s *e HUMRAT qcPkWenAs	//  hum rat
       *s *e TEMP   qcPkTexAs	// exiting air temp (b4 remix w bypass air)
-      *s *e HUMRAT qcPkWexAs 	//  hum rat (b4 remix w bypass air)									
+      *s *e HUMRAT qcPkWexAs 	//  hum rat (b4 remix w bypass air)
 
 // SUPPLY AIR TEMP CONTROLLER user inputs for air handler
 
@@ -4573,7 +4631,7 @@ RECORD AH "airHandler" *RAT
 
     *f *nest FAN sfan	// supply fan FAN substruct (as declared above)
 		// following supply fan inputs are stored in FAN subrecord sfan:
-    // FANTYCH sfanType		// supply fan type/position: choice of DRAWTHRU (default) or BLOWTHRU.  constant.	
+    // FANTYCH sfanType		// supply fan type/position: choice of DRAWTHRU (default) or BLOWTHRU.  constant.
     // AFLOW_GZ sfanVfDs    	// design volume flow (cfm actual air), constant, RQD.
     // FLOAT  sfanVfMxF     	// factor by which fan will exceed vfDs (at reduced pressure). default 1.3. constant.
     // PRESAIR_GZ sfanPress  	// design pressure, "H2O, constant, default 3.
@@ -4876,7 +4934,7 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *s *e BOO dtLoHSh   *s *e BOO dtLoCSh	// .. this subhr, set in cnztu.cpp:ztuMode, cleared in ztuAbs.
     *s *e BOO aDtLoHSh  *s *e BOO aDtLoCSh	// .. this subhr, set at end of cnah1.cpp:ahCompute
     *s *e BOO aDtLoTem  					// cnah2:antRatTs to ahCompute temp flag re aDtLoHSh, CSh
-    *s *e BOO dtLoH     *s *e BOO dtLoC  	// .. on this autoSizing design day iteration (or poss run) 
+    *s *e BOO dtLoH     *s *e BOO dtLoC  	// .. on this autoSizing design day iteration (or poss run)
     *d *e BOO dtLoHAs   *s *e BOO dtLoCAs	// .. on any converged pass 2 design day: invokes endAutosizing() message.
     //runtime: results: see COIL tuhc.captRat_As, tuVfMn/MxH/MxC_As, ditto _AsNov, below.
 #endif
@@ -5574,10 +5632,10 @@ o    *z FRAC nvStEM 	// steffm   Stack effectiveness multiplier
 o    *z FRAC nvDdEM 	// ddeffm   Direction-dependent effectiveness mult.
 o    *z FRAC nvDiEM 	// dieffm   Direction-independent effectiveness mult.
 o    *z TEMPDIFF nvTD 	// tdiff    Min out-zone temp diff to vent. Set:crsimzn.cpp.
-o			   Normally 0 to vent only if cooler outdoors.  
-o			   < 0 lets allows vent even if heats zone: << 0 used for uncontrolled vents eg cr's CVCs.  
+o			   Normally 0 to vent only if cooler outdoors.
+o			   < 0 lets allows vent even if heats zone: << 0 used for uncontrolled vents eg cr's CVCs.
 o			   > 0 would hold zone warmer than out (CAUTION as now coded 1-90 wd also prevent fanvent). */
-o    /* note: addl historical nat vent input info that was never used (only _INDOOR strategy implemented), 
+o    /* note: addl historical nat vent input info that was never used (only _INDOOR strategy implemented),
 o     * deleted 1-91 as have no choice type sharable between tk and cne.
 o     * CONTROL control	* Type of controls on vent, dt VENTCON, C_VENTCON_INDOOR, _SEASONAL, _OUTDOOR, _OPEN *
 o     * FLOAT topen 	* Open temp for _OUTDOOR *
@@ -5594,7 +5652,7 @@ o    *z TEMPDIFF fvTD	// tdiff    Min allowed approach (F). hshour.cpp uses.
 o    *z TEMP fvWbMax	// wbmax    No vent if wb > this (F).  I think always 1000 to disable, 1-90. hshour.cpp uses.
 #endif
 #ifdef OLDCF
-o// ZNISUB ceiling fan user inputs.  Set in crsimzn.cpp or hstest.cpp. 
+o// ZNISUB ceiling fan user inputs.  Set in crsimzn.cpp or hstest.cpp.
 o    *z KW cfKW		// kW 	    elect power for fan (kW, internally Btuh)
 o    *z FRAC cfFz    	// fQ2Zn    frac fan power to zone (always 1?)
 #endif
@@ -5643,7 +5701,7 @@ o    // set in hscomp:hsfvinit:
 o    *r FLOAT tRise 	// supply temp rise due to fan power (derived from cfmmax, kwmax, and fQ2Zn)
 o    *r FLOAT havmax 	// Max heat xfer, ie 1.08*cfmmax (Btuh/F)
 o    // set/used in hshour.cpp: fan/evap vent supply temps, current hour:
-o    *h FLOAT tsfv   	//   lowest dry bulb achievable with all stages 
+o    *h FLOAT tsfv   	//   lowest dry bulb achievable with all stages
 o    			//   supply air state with 1st stage only (meaningful iff fanvflg==4):
 o    *h FLOAT tsfv1   	//      dry bulb
 o    *h FLOAT wbsfv1  	//      wet bulb
@@ -5693,13 +5751,13 @@ o 	   In CSE, a TUs represent all HVAC devices which xfer heat to/from a zone,
 o 	   including reheat coils, VAV boxes, and baseboard heaters.  A TU has one
 o 	   or more CAPABILITIES; different combinations allow this common TU data
 o 	   structure to represent the many physically different terminal devices.
-o 
+o
 o        Capability       Description
 o        --------------   ---------------------------
 o        Local heating    Local heating (coil, baseboard)
 o        Air heating	Air heating (air from air handler)
 o        Air cooling      Air cooling (air from air handler) */
-o 
+o
 o #ifndef BCPP
 o     *hide DBN bn	// dummy
 o     *z ANAME name	// for LIKEing etc
@@ -5709,13 +5767,13 @@ o     			// ownTi (base class) is ZNI/R rcd subscript of owner zone
 o #endif
 o     TI tuxNxTu		// chain: 0 or ss of next TU in current zone chain
 o     TI tuxZhxx1		// chain head: ss of 1st ZHXX belonging to this TU
-o 
+o
 o     		// local heating (baseboard, coil, ...)
 o     *h TEMP tuxTLH   	// local heating set point
 o     *h POWER_GEZ tuxMxLH	// current capacity, as limited by plant capacity or zone conditions (Btuh)
 o     *h POWER_GEZ tuxMnLH	// current minimum output (Btuh)
 o     *s POWER_GEZ tuxQLh 	// actual output, current step (Btuh)
-o 
+o
 o     		// air heating/cooling (air from air handler)
 o     *i TI tuxAhi		// 0 or AHU ss for air handler serving this terminal
 o     *h TEMP tuxTH    	// air heating set point (F)
@@ -5724,7 +5782,7 @@ o     *h FLOAT_GEZ tuxCMn	// min cap flow rate (Btuh/F)
 o     *h FLOAT_GEZ tuxCMxH	// max cap flow rate, heating (Btuh/F)
 o     *h FLOAT_GEZ tuxCMxC	// max cap flow rate, cooling (Btuh/F)
 o     *s FLOAT_GEZ tuxC    	// actual cap flow rate, current step (Btu/F)
-o 
+o
 o *END		// TUX
 #endif
 //=============================================================================
@@ -5755,13 +5813,13 @@ o 			//   ZHX_TUACS	  terminal air cooling set output
 o 			//   ZHX_TUACC	  terminal air cooling tstat ctrl
 o 			// Note: local heating is coil or baseboard in zone; air heating/cooling uses air handler air.
 o     *h TEMP zhxxSp    	// tstat set point if heat xfer is controlled, else unused (hourly variability)
-o     *r SI zhxxSpPri   	// tstat set point priority; used determine order in which HVAC xfers are activated 
+o     *r SI zhxxSpPri   	// tstat set point priority; used determine order in which HVAC xfers are activated
 o     			//  in event of same .sp.  Allows, for example, air heating to ALWAYS
 o 			//  be pegged before coil is activated, even at same sp.  see cnhour:znMdSeq().
-o 
+o
 o 		// mbrs used internally during simulation
 o     *h SI zhxxMdi	// ZNR mdxSeq[] ss for mode corresponding to this ZHX set in cnhour:znMdSeq()
 o *END		// ZHXX
 #endif
-                                                                   
+
 // end of cnrecs.def

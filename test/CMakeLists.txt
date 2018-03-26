@@ -36,6 +36,7 @@ set(files
   # 2700x
   2zun
   1zattic
+  1ZKiva
   2zattic
   actest1bL
   ashptest2

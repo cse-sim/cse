@@ -305,11 +305,29 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  DELAYED_HOUR		"Delayed_hour"		// hourly simulated mass
 			  DELAYED_SUBHOUR  	"Delayed_subhour"	// subhourly simulated mass
   			  FD	"FD|!Forward_difference"		// subhourly forward difference
+			  KIVA	"Kiva"				// Kiva ground finite difference
 		        }
 *choicb GROUNDMODELCH {
 			  D2INP "DOE2_InputCoeffs"
 			  D2COR "DOE2_CorrelationCoeffs"
 			  }
+
+*choicb FBXREFCH {
+			  SYMMETRY "Symmetry"
+			  WALLINT "Wall_Int"
+			  WALLC "Wall_Center"
+			  WALLEXT "Wall_Ext"
+			  FARFIELD "Far_Field"
+			  }
+
+*choicb FBZREFCH {
+			  WALLTOP "Wall_Top"
+			  GRADE "Grade"
+			  SLABTOP "Slab_Top"
+			  SLABBOTTOM "Slab_Bottom"
+			  DEEPGROUND "Deep_Ground"
+			  }
+
 *choicb CONVMODELCH {
 			  INPUT "Input"
 			  ASHRAE "ASHRAE"

@@ -156,6 +156,7 @@ set(headers
   DTYPES.H
   ENVPAK.H
   EXMAN.H
+  Foundation.h
   GMPAK.H
   IMPF.H
   IRATS.H
