@@ -1769,6 +1769,8 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	if (wh_pMtrElec)
 	{	wh_pMtrElec->H.dhw   += mult * inElec;
 		wh_pMtrElec->H.dhwBU += mult * inElecBU;
+		if (wh_xBUEndUse)
+			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
 	}
 
 	return rc;
@@ -1938,6 +1940,8 @@ x				nColdStarts += min( 1., offMins / 30.);
 	if (wh_pMtrElec)
 	{	wh_pMtrElec->H.dhw   += mult * inElec;
 		wh_pMtrElec->H.dhwBU += mult * inElecBU;
+		if (wh_xBUEndUse)
+			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
 	}
 
 	return rc;
