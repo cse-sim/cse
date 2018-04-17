@@ -3513,7 +3513,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel; /*MTR* wh_pMtrPrim;*/"
 							// runtime pointers to meters, NULL if not accum'ing
   *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
-							//   default = none (note wh_HPWHxBU is always included in end use dhwBU)
+							//   default = none (include wh_HPWHxBU in end use dhwBU)
 
 							// energy inputs for current hour, Btu
 							// for single WH (wh_mult / ws_mult not applied)

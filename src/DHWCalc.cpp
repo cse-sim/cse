@@ -546,20 +546,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	VSet( ws_whDrawDurF, WHDRAWFDIM, -1.f);
 #endif
 
-#if 0
-	// temperature-dependent end uses
-	VSet( ws_whDrawDurF, WHDRAWFDIM, 1.f);
-	float whDrawF = ws_WF * max( 0.f, ws_DLM - ws_SSF);
-	ws_whDrawVolF[ 0]
-		= ws_whDrawVolF[ C_DHWEUCH_SHOWER]
-		= ws_whDrawVolF[ C_DHWEUCH_BATH] = whDrawF;
-	// temperature independent end uses
-	float whDrawFTempInd = 1.f - ws_SSF;
-	ws_whDrawVolF[ C_DHWEUCH_CWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_DWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_FAUCET]
-		= whDrawFTempInd;
-#else
 	// temperature-dependent end uses
 	float whDrawF = ws_WF * max( 0.f, ws_DLM - ws_SSF);
 	ws_whDrawVolF[ 0]
@@ -571,8 +557,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		= ws_whDrawVolF[ C_DHWEUCH_DWASHR]
 		= ws_whDrawVolF[ C_DHWEUCH_FAUCET]
 		= whDrawFTempInd;
-	VSet( ws_whDrawDurF, WHDRAWFDIM, 1.f);
-#endif
+	VSet( ws_whDrawDurF, WHDRAWFDIM, 1.f);	// TODO: derive duration factors
+
 
 #if defined( _DEBUG)
 	if (VMin( ws_whDrawVolF, WHDRAWFDIM) < 0.f
@@ -1786,22 +1772,9 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	wh_totOut += KWH_TO_BTU( qHW) + wh_HPWHxBU;
 
 	// energy use accounting, Btu (electricity only, assume no fuel)
-#if 1
 	wh_AccumElec( mult,
 		wh_HPWHUse[ 1] * BtuperkWh + wh_parElec * Top.subhrDur * BtuperWh,
 	    wh_HPWHUse[ 0] * BtuperkWh);
-#else
-	double inElec   = wh_HPWHUse[ 1] * BtuperkWh + wh_parElec * Top.subhrDur * BtuperWh,
-	double inElecBU = wh_HPWHUse[ 0] * BtuperkWh + wh_HPWHxBU;
-	wh_inElec += inElec;		// hour total
-	wh_inElecBU += inElecBU;
-	if (wh_pMtrElec)
-	{	wh_pMtrElec->H.dhw   += mult * inElec;
-		wh_pMtrElec->H.dhwBU += mult * inElecBU;
-		if (wh_xBUEndUse)
-			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
-	}
-#endif
 	return rc;
 }		// DHWHEATER::wh_HPWHDoSubhr
 //-----------------------------------------------------------------------------
@@ -1981,22 +1954,9 @@ x				nColdStarts += min( 1., offMins / 30.);
 	if (wh_pMtrFuel)
 		wh_pMtrFuel->H.dhw += mult * inFuel;
 
-#if 1
 	wh_AccumElec( mult,
 		rcovElec /*startElec*/ + (stbyElec + wh_parElec * Top.subhrDur) * BtuperWh,
 		0.);	// wh_HPWHxBU is only backup
-#else
-	double inElec   = rcovElec /*startElec*/ + (stbyElec + wh_parElec * Top.subhrDur) * BtuperWh;
-	double inElecBU = wh_HPWHxBU;
-	wh_inElec += inElec;		// hour total
-	wh_inElecBU += inElecBU;
-	if (wh_pMtrElec)
-	{	wh_pMtrElec->H.dhw   += mult * inElec;
-		wh_pMtrElec->H.dhwBU += mult * inElecBU;
-		if (wh_xBUEndUse)
-			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
-	}
-#endif
 
 	return rc;
 }			// DHWHEATER::whInstUEFDoSubhr
