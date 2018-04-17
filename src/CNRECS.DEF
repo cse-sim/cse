@@ -3370,14 +3370,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
-  *h *e *array 6 FLOAT ws_whDrawVolF;	// water heater draw volume factors by end use
-							// accounts for solar, warm-up waste, and pipe losses
-							// factor = water heater draw vol / point of use hot water draw vol
-							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
-							//   [1 ..] = per C_DHWUSETYCH_xxx
-  *h *e *array 6 FLOAT ws_whDrawDurF;	// water heater draw duration factors by end use
-							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
-							// factor = actual draw duration / nominal draw duration
+  *h *e *array 6 FLOAT ws_whDrawF;		// water heater draw factors by end use
+							// approx accounting for solar, warm-up waste, and pipe losses
+							// factor = water heater draw / point of use hot water draw
 							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
 							//   [1 ..] = per C_DHWUSETYCH_xxx
 
@@ -3431,7 +3426,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoHour( float HARL, int wsMult);"
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
-  *declare "void wh_AccumElec( int mult, double inElec, double inElecBU);"
 
   *i SI wh_mult;				// count of identical water heaters (default 1)
 								//   models as if repeated identical input
@@ -3512,8 +3506,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
   *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel; /*MTR* wh_pMtrPrim;*/"
 							// runtime pointers to meters, NULL if not accum'ing
-  *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
-							//   default = none (note wh_HPWHxBU is always included in end use dhwBU)
 
 							// energy inputs for current hour, Btu
 							// for single WH (wh_mult / ws_mult not applied)
@@ -3759,7 +3751,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//	 C_DHWEUCH_FAUCET, _SHOWER, _BATH, _CWASHR, _DWASHR
   *i SI_GEZ wu_eventID		// user-defined index that identifies DHWUSEs belonging to a single
 							//   event (e.g. all DHWUSEs of a clotheswasher cycle).
-							//   Used re allocation of DHWUSEs to multiple water heaters.
+							//   Use re allocation of DHWUSEs to multiple water heaters.
 							// Input values are *at fixture*
   *h FLOAT_GEZ wu_start		//   draw starting hour of day, 0 - 23.999
   *h FLOAT_GEZ wu_dur		//   flow duration, min

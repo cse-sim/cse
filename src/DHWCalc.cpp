@@ -538,46 +538,26 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// construct array of use factors by end use
 	//   whDrawF = water heater draw / fixture hot water draw
 	//   water heater draw includes SSF adjustment
-	static const int WHDRAWFDIM = sizeof( ws_whDrawVolF)/sizeof( ws_whDrawVolF[ 0]);
+	static const int WHDRAWFDIM = sizeof( ws_whDrawF)/sizeof( ws_whDrawF[ 0]);
 #if defined( _DEBUG)
 	if (WHDRAWFDIM != NDHWENDUSES)
-		err( PABT, "ws_whDrawXXXF array size error");
-	VSet( ws_whDrawVolF, WHDRAWFDIM, -1.f);
-	VSet( ws_whDrawDurF, WHDRAWFDIM, -1.f);
+		err( PABT, "ws_whDrawF array size error");
+	VSet( ws_whDrawF, WHDRAWFDIM, -1.f);
 #endif
-
-#if 0
-	// temperature-dependent end uses
-	VSet( ws_whDrawDurF, WHDRAWFDIM, 1.f);
-	float whDrawF = ws_WF * max( 0.f, ws_DLM - ws_SSF);
-	ws_whDrawVolF[ 0]
-		= ws_whDrawVolF[ C_DHWEUCH_SHOWER]
-		= ws_whDrawVolF[ C_DHWEUCH_BATH] = whDrawF;
-	// temperature independent end uses
-	float whDrawFTempInd = 1.f - ws_SSF;
-	ws_whDrawVolF[ C_DHWEUCH_CWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_DWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_FAUCET]
-		= whDrawFTempInd;
-#else
 	// temperature-dependent end uses
 	float whDrawF = ws_WF * max( 0.f, ws_DLM - ws_SSF);
-	ws_whDrawVolF[ 0]
-		= ws_whDrawVolF[ C_DHWEUCH_SHOWER]
-		= ws_whDrawVolF[ C_DHWEUCH_BATH] = whDrawF;
+	ws_whDrawF[ 0]
+		= ws_whDrawF[ C_DHWEUCH_SHOWER]
+		= ws_whDrawF[ C_DHWEUCH_BATH] = whDrawF;
 	// temperature independent end uses
 	float whDrawFTempInd = 1.f - ws_SSF;
-	ws_whDrawVolF[ C_DHWEUCH_CWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_DWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_FAUCET]
+	ws_whDrawF[ C_DHWEUCH_CWASHR]
+		= ws_whDrawF[ C_DHWEUCH_DWASHR]
+		= ws_whDrawF[ C_DHWEUCH_FAUCET]
 		= whDrawFTempInd;
-	VSet( ws_whDrawDurF, WHDRAWFDIM, 1.f);
-#endif
-
 #if defined( _DEBUG)
-	if (VMin( ws_whDrawVolF, WHDRAWFDIM) < 0.f
-	 || VMin( ws_whDrawDurF, WHDRAWFDIM) < 0.f)
-		err( PABT, "ws_whDrawXXXF fill error");
+	if (VMin( ws_whDrawF, WHDRAWFDIM) < 0.f)
+		err( PABT, "ws_whDrawF fill error");
 #endif
 
 	// ** Hot water use **
@@ -598,7 +578,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   wdu_DoHour accums add'l DHWDAYUSE draws to these values
 	ws_fxUseMix.wmt_AccumEU( 0, hwUseX);
 	ws_fxUseHot = hwUseX;
-	ws_whUse.wmt_AccumEU( 0, hwUseX*ws_whDrawVolF[ 0]);
+	ws_whUse.wmt_AccumEU( 0, hwUseX*ws_whDrawF[ 0]);
 
 	DHWDAYUSE* pWDU = WduR.GetAtSafe( ws_dayUsei);	// ref'd DHWDAYUSE can vary daily
 	if (pWDU)
@@ -854,20 +834,18 @@ static const double minPerDay = 24.*60.;
 			return rc;		// not current DHWSYS, do nothing
 	}
 
-	// derive adjusted duration
-	float durX = wu_dur * pWS->ws_whDrawDurF[ wu_hwEndUse];
-	if (durX > minPerDay)
+	if (wu_dur > minPerDay)
 	{	// duration longer than 1 day
 		// warn and limit
-		rc |= orMsg( WRN, "adjusted draw duration %0.1f min changed to maximum allowed 1440 min (24 hr)",
-			durX);
-		durX = minPerDay;
+		rc |= orMsg( WRN, "wuDuration=%0.1f min changed to maximum allowed 1440 min (24 hr)",
+			wu_dur);
+		wu_dur = minPerDay;
 	}
 
 	double begM = wu_start * 60.;	// beg time, min of day
 	roundNearest( begM, .05*Top.tp_subhrTickDur);	// round to avoid tiny amounts
 													//   in adjacent bins
-	double endM = begM + durX;	// end time, min of day
+	double endM = begM + wu_dur;	// end time, min of day
 	if (endM > minPerDay)
 	{	// period wraps over midnight
 		//   treat as 2 non-wrapping segments
@@ -949,7 +927,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 		double fxMixTick = fxFlow * (min( endBin, endX) - max( begBin, begX));
 		// note: fxMixTick rarely 0 due to tests above, not worth testing
 		double fxHotTick = fxMixTick * wu_hotF;
-		double whUseTick = fxHotTick * pWS->ws_whDrawVolF[ wu_hwEndUse];
+		double whUseTick = fxHotTick * pWS->ws_whDrawF[ wu_hwEndUse];
 		pWS->ws_whUseTick[ iB] += whUseTick;	// tick total at WH
 		pWS->ws_fxUseHot += fxHotTick;		// hour total hot at fixture
 		pWS->ws_whUse.wmt_AccumEU( wu_hwEndUse, whUseTick);
@@ -1583,7 +1561,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	double tHWOutF = 0.;	// accum re average hot water outlet temp, F
 
 	wh_HPWHUse[ 0] = wh_HPWHUse[ 1] = 0.;	// energy use totals, kWh
-	wh_HPWHxBU = 0.;	// add'l resistance backup this subhour, Btu
+	wh_HPWHxBU = 0.;	// add'l resistance backup, Btu
 						//   water is heated to ws_tUse if HPWH does not meet load
 
 	// setpoint and inletT: see wh_HPHWDoHour above
@@ -1648,29 +1626,27 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 		qEnv += wh_pHPWH->getEnergyRemovedFromEnvironment();
 		qLoss += wh_pHPWH->getStandbyLosses();
-		double tOut = wh_pHPWH->getOutletTemp();
-		float HPWHxBU = 0.f;		// add'l resistance backup, this tick, Btu
-		if (tOut)
-		{	double tOutF = DegCtoF( tOut);	// output temp, F
-			if (tOutF < pWS->ws_tUse)
+		double tO = wh_pHPWH->getOutletTemp();
+		if (tO)
+		{	double tOF = DegCtoF( tO);	// output temp, F
+			if (tOF < pWS->ws_tUse)
 			{	// load not met, add additional (unlimited) resistance heat
 				wh_mixDownF = 1.f;
-				HPWHxBU = 8.345 * drawForTick * (pWS->ws_tUse - tOutF);
-				wh_HPWHxBU += HPWHxBU;
-				tOutF = pWS->ws_tUse;
+				wh_HPWHxBU += 8.345 * drawForTick * (pWS->ws_tUse - tOF);
+				tOF = pWS->ws_tUse;
 			}
 			else
 				// mix mains water (not tInlet) to obtain ws_tUse
 				//   set wh_mixDownF for next tick
-				DHWMix( pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
-			tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
+				DHWMix( pWS->ws_tUse, tOF, pWS->ws_tInlet, wh_mixDownF);
+			tHWOutF += tOF;		// note tOF may have changed (but not tO)
 			nTickNZDraw++;		// this tick has draw
 			wh_stbyTicks = 0;	// reset standby duration
 			qHW += KJ_TO_KWH(
 				     GAL_TO_L( drawForTick)
 				   * HPWH::DENSITYWATER_kgperL
 				   * HPWH::CPWATER_kJperkgC
-				   * (tOut - DegFtoC( tInlet)));
+				   * (tO - DegFtoC( tInlet)));
 		}
 		else
 			wh_stbyTicks++;		// no draw: accum duration
@@ -1709,7 +1685,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #else
 					wh_pHPWH->WriteCSVHeading( pF, "month,day,hr,min,minDay,"
 						            "tOut (C),tEnv (C),tSrcAir (C),tInlet (C),tSetpoint (C),"
-						            "lossDraw (gal),RLDraw (gal),totDraw (gal),totDraw (L),tOut (C),XBU (Wh),");
+						            "lossDraw (gal),RLDraw (gal),totDraw (gal),totDraw (L),");
 #endif
 				}
 			}
@@ -1721,11 +1697,11 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 				fprintf( pF, "%0.2f,%0.3f\n", minYear, GAL_TO_L( drawForTick));
 #else
 				wh_pHPWH->WriteCSVRow( pF, strtprintf(
-						"%d,%d,%d,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f, %0.3f,%0.3f,%0.3f,%0.3f,%0.2f,%0.2f,",
+						"%d,%d,%d,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f, %0.3f,%0.3f,%0.3f,%0.3f,",
 						Top.tp_date.month, Top.tp_date.mday, Top.iHr+1, minHr, minDay,
 						DegFtoC( Top.tDbOSh),DegFtoC( wh_tEx),DegFtoC( wh_ashpTSrc),
 						DegFtoC( tInlet), DegFtoC( pWS->ws_tSetpoint),
-					    lossDraw, volRL, drawForTick, GAL_TO_L( drawForTick),tOut,HPWHxBU/BtuperWh));
+					    lossDraw, volRL, drawForTick, GAL_TO_L( drawForTick)));
 #endif
 			}
 		}
@@ -1786,43 +1762,17 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	wh_totOut += KWH_TO_BTU( qHW) + wh_HPWHxBU;
 
 	// energy use accounting, Btu (electricity only, assume no fuel)
-#if 1
-	wh_AccumElec( mult,
-		wh_HPWHUse[ 1] * BtuperkWh + wh_parElec * Top.subhrDur * BtuperWh,
-	    wh_HPWHUse[ 0] * BtuperkWh);
-#else
-	double inElec   = wh_HPWHUse[ 1] * BtuperkWh + wh_parElec * Top.subhrDur * BtuperWh,
+	double inElec   = wh_HPWHUse[ 1] * BtuperkWh + wh_parElec * Top.subhrDur * BtuperWh;
 	double inElecBU = wh_HPWHUse[ 0] * BtuperkWh + wh_HPWHxBU;
 	wh_inElec += inElec;		// hour total
 	wh_inElecBU += inElecBU;
 	if (wh_pMtrElec)
 	{	wh_pMtrElec->H.dhw   += mult * inElec;
 		wh_pMtrElec->H.dhwBU += mult * inElecBU;
-		if (wh_xBUEndUse)
-			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
 	}
-#endif
+
 	return rc;
 }		// DHWHEATER::wh_HPWHDoSubhr
-//-----------------------------------------------------------------------------
-void DHWHEATER::wh_AccumElec(		// electricity use accounting / meter accum
-	int mult,			// overall multiplier (generally ws_mult*wh_mult)
-	double inElec,		// substep primary electricity, kWh
-	double inElecBU)	// substep backup electricity, kWh (not including wh_HPWHxBU)
-// wh_HPWHxBU also used
-{
-	wh_inElec += inElec;		// hour totals
-	wh_inElecBU += inElecBU + wh_HPWHxBU;
-	if (wh_pMtrElec)
-	{	wh_pMtrElec->H.dhw += mult * inElec;
-		if (wh_xBUEndUse)
-		{	wh_pMtrElec->H.dhwBU += mult*inElecBU;
-			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
-		}
-		else
-			wh_pMtrElec->H.dhwBU += mult * (inElecBU + wh_HPWHxBU);
-	}
-}		// DHWHEATER::wh_AccumElec
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_InstUEFInit()		// one-time setup for UEF-based instantaneous model
 // returns RCOK on success
@@ -1981,11 +1931,6 @@ x				nColdStarts += min( 1., offMins / 30.);
 	if (wh_pMtrFuel)
 		wh_pMtrFuel->H.dhw += mult * inFuel;
 
-#if 1
-	wh_AccumElec( mult,
-		rcovElec /*startElec*/ + (stbyElec + wh_parElec * Top.subhrDur) * BtuperWh,
-		0.);	// wh_HPWHxBU is only backup
-#else
 	double inElec   = rcovElec /*startElec*/ + (stbyElec + wh_parElec * Top.subhrDur) * BtuperWh;
 	double inElecBU = wh_HPWHxBU;
 	wh_inElec += inElec;		// hour total
@@ -1993,10 +1938,7 @@ x				nColdStarts += min( 1., offMins / 30.);
 	if (wh_pMtrElec)
 	{	wh_pMtrElec->H.dhw   += mult * inElec;
 		wh_pMtrElec->H.dhwBU += mult * inElecBU;
-		if (wh_xBUEndUse)
-			wh_pMtrElec->H.mtr_Accum( wh_xBUEndUse, mult*wh_HPWHxBU);
 	}
-#endif
 
 	return rc;
 }			// DHWHEATER::whInstUEFDoSubhr
