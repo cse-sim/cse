@@ -219,12 +219,10 @@ ZONE Z1
         sfModel=SURFMODEL
         sfArea=516.68
         sfCon=FLOORCON
-        sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
-        sfExAbs=0                 //no solar on floor
-        sfExT=50                  //10 C ground temperature
+        sfExCnd=GROUND
         sfInAbs=INABSORP
+        sfFnd="Interior Slab Insulation"
         sfInHcModel = Unified             //floor inside film coefficient
-        sfExH=100000             //floor outside film coefficient
         sfExHcModel = Unified
 
     SURFACE North_Wall

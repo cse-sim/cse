@@ -516,10 +516,6 @@ x		printf( "Hit\n");
 	}
 
 	// topSf1: surface/door/window: determine surface model
-	SI fndSet = fs[SFI_SFFND] & FsSET;
-	SI fndFloorSet = fs[SFI_SFFNDFLOOR] & FsSET;
-
-	x.xs_modelr = C_SFMODELCH_QUICK;	// tentatively set resolved model to "quick"
 	switch (x.xs_model)
 	{
 	default:
@@ -533,7 +529,6 @@ x		printf( "Hit\n");
 		if (!conSet)          break;				// if no construction, must use quick (preset)
 		if (con->nLr <= 0)    break;				// if con has no layers (just uval), must use quick
 		if (tc <= TC_SHMASS)  break;				// if time const short (constant above), use quick
-		if (fndSet || fndFloorSet) x.xs_modelr = C_SFMODELCH_KIVA;
 		//if decision gets more complicated, change to fall thru to share code with AUTO.
 		x.xs_modelr = C_SFMODELCH_DELAYED_SUBHOUR;     		// use subhourly calculated mass. no auto hour case.
 		break;
@@ -542,6 +537,7 @@ x		printf( "Hit\n");
 	case C_SFMODELCH_DELAYED_SUBHOUR:
 	case C_SFMODELCH_DELAYED_HOUR:
 	case C_SFMODELCH_FD:
+	case C_SFMODELCH_KIVA:
 		// common checks
 		if (!conSet)				// if no constr specified
 		{	// checked in sfStarCkf; redundant insurance here.
@@ -1012,14 +1008,20 @@ RC FC topSf2()
 	for (int ib=0; SFIAncs[ ib]; ib++)
 	{	RLUP( *SFIAncs[ ib], sf)
 		{	if (sf->sf_IsFloorBG())
+			{
 				floorBGCount++;			// count / skip BG floors
+				sf->oInfo("Skipping BG Floor!");
+			}
 			else
-				E( sf->sf_TopSf2());	// quit immediately on error
+			{
+				E(sf->sf_TopSf2());	// quit immediately on error
+			}
 		}
 	}
 	if (floorBGCount)
 	{	// process below grade floors after all other surfaces
 		//   BG floor model uses info from zone's BG walls
+		// TODO: Do something similar for Kiva
 		RLUP( SfiB, sf)
 		{	if (sf->sf_IsFloorBG())
 				E( sf->sf_TopSf2());	// quit immediately on error
@@ -1070,6 +1072,9 @@ RC SFI::sf_TopSf2()
 	}
 
 	// translate door/surface SFI into traditional XSURF chain for zone or "mass" or ...
+	if (x.xs_modelr == C_SFMODELCH_KIVA) {
+		oInfo("Kiva Surface!");
+	}
 
 	if (x.xs_modelr==C_SFMODELCH_QUICK)	// conductance model chosen
 	{
@@ -1145,9 +1150,10 @@ RC SFI::sf_TopSf2()
 				// "Internal error in cncult.cpp:topSf2(): Bad exterior condition %d"
 		}
 	}
-	else if (SFI::sf_IsKiva(x.xs_modelr))
+	else if ( SFI::sf_IsKiva(x.xs_modelr))
 	{
-		rc |= sf_MakKIs();	// make KIVA record for finite difference foundation heat transfer
+		rc |= sf_SetupKiva();	// for floors, make KIVA records for finite difference foundation heat transfer
+								// for walls, add index to sf_sharedFndWalls
 	}
 	else
 		rc |= oer( (char *)MH_S0525, x.xs_modelr );
@@ -1501,20 +1507,24 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 }		// SFI::Validate
 //---------------------------------------------------------------------------
 int SFI::sf_IsWallBG() const	// TRUE iff below grade wall
-{	return x.sfExCnd == C_EXCNDCH_GROUND
-        && sfTy == C_OSTYCH_WALL
-		&& x.xs_depthBG > 0.f;		// not pseudo-slab (e.g. crawlspace edge)
+{
+	return x.sfExCnd == C_EXCNDCH_GROUND
+		&& sfTy == C_OSTYCH_WALL
+		&& (x.xs_depthBG > 0.f		// not pseudo-slab (e.g. crawlspace edge)
+			|| x.xs_modelr == C_SFMODELCH_KIVA);
 }		// SFI::sf_IsWallBG
 //---------------------------------------------------------------------------
 int SFI::sf_IsFloorBG() const	// TRUE iff below grade floor (not slab on grade)
 {	return x.sfExCnd == C_EXCNDCH_GROUND
         && sfTy == C_OSTYCH_FLR
-		&& x.xs_depthBG > 0.f;	// not slab on grade
+		&& (x.xs_depthBG > 0.f	// not slab on grade
+			|| x.xs_modelr == C_SFMODELCH_KIVA);
 }		// SFI::sf_IsFloorBG
 //---------------------------------------------------------------------------
 int SFI::sf_IsBG() const	// TRUE iff below grade surface
 {	return x.sfExCnd == C_EXCNDCH_GROUND
-        && x.xs_depthBG > 0.f;
+        && (x.xs_depthBG > 0.f
+			|| x.xs_modelr == C_SFMODELCH_KIVA);
 }		// SFI::sf_IsBG
 //---------------------------------------------------------------------------
 int SFI::sf_IsChild() const		// TRUE iff child surface
@@ -1594,25 +1604,30 @@ RC SFI::sf_MakMs()
 }		// SFI::sf_makMs
 
 		//---------------------------------------------------------------------------
-RC SFI::sf_MakKIs()
+RC SFI::sf_SetupKiva()
 
 // make kiva instances
 
 {
 	RC rc = RCOK;
 
-	// add mass run record.  Subscr previously assigned in topSf1().
-	SFI* sf;			// door, window, or surface
-	RLUP(SfiB, sf)		// loop through surfaces to see if any walls reference this floor
-	{
+	oInfo("Setting up Kiva...");
 
+	if (this->sf_IsWallBG()) {
+		auto flrSf = SfiB.GetAt(sfFndFloor);
+		flrSf->sf_sharedFndWalls.push_back(ss); // add Wall index to list in associated floor
+		oInfo("Adding wall to associated floor.");
 	}
-
-	KIVA* ki;
-	KvR.add(&ki, ABT, 0);
-
+	else // BG floor
+	{
+		// for each kiva instance
+		KIVA* ki;
+		KvR.add(&ki, ABT, 0);
+		oInfo("Adding Kiva Instance for floor.");
+	}
+	
 	return rc;
-}		// SFI::sf_makKIs
+}		// SFI::sf_SetupKiva
 
 
 

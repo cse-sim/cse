@@ -581,10 +581,6 @@ x								// not maintained, 12-12
 	*declare "int tp_PumbraAvailability() const;"
 	*declare "RC tp_PumbraSetModel();"
 
-// TOP: runtime: container for Kiva instances
-//      instantiated iff needed
-	*declare "class KivaInstances* kivaInstances;"
-
     *r SI ck5aa5		// stuffed with 0x5aa5 from topCult for verifying initialization & matching versions
 *END		// TOPRAT
 
@@ -1154,7 +1150,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 							//   quick/auto/delayed(massive)/delayed_hour/delayed_subhour/forward_difference/kiva
     *r SFMODELCH xs_modelr	// resolved to quick (runtime XSURF generated),
     						//    or to delayed_hour or _subhour (runtime MASS generated)
-                //    or to kiva (runtime KIVA generated)
+							//    or to kiva (runtime KIVA generated)
     *r FLOAT xs_lThkF		// thickness factor, adjusts max thickness allowed for mass sublayers
 							//    default = 0.5
 	*declare "class FENAW* xs_pFENAW[ 2];"	// re ASHWAT xs_fenModel: ASHWAT data shades open/closed
@@ -1245,7 +1241,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "RC sf_CkfWINDOW( int options);"
 	*declare "RC sf_TopSf2();"
 	*declare "RC sf_MakMs();"
-	*declare "RC sf_MakKIs();"	// Make Kiva Instances
+	*declare "RC sf_SetupKiva();"
 	*declare "int sf_IsWallBG() const;"
 	*declare "int sf_IsFloorBG() const;"
 	*declare "int sf_IsBG() const;"
@@ -1263,6 +1259,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "ZNR* sf_GetZone( int si) const;"
 	*declare "RC Validate( int options=0);"
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
+	*declare "std::vector<TI> sf_sharedFndWalls;"
 
  //surface/door/window
     // .ownTi (base class) is zone for surface, or surface for window or door.
@@ -1303,6 +1300,7 @@ RECORD XSRAT "xsurf" *RAT
 	*declare "void xr_SGFAccum( const double sgf[ sgcCOUNT]);"
 	*declare "void xr_SGIncTrans( int sunup, float verSun);"
 	*declare "void xr_SGMakeSGRATs();"
+	*declare "std::vector<TI> xr_kivaInstances;"
 
 				// .name: is that of of surface, door, window, perimeter, or mass (see x.ty) 1-92
 				// .ownTi: ZNR subscript
@@ -1434,11 +1432,14 @@ RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
 	*declare "RC kv_SetBCs();"
 	*declare "RC kv_Calculate();"
 
-	*declare "class Kiva::Ground* ground;"
-	*declare "class Kiva::BoundaryConditions* bcs;"
+	*declare "class Kiva::Ground* kv_ground;"
+	*declare "class Kiva::BoundaryConditions* kv_bcs;"
+	*declare "std::vector<TI> kv_walls;"
 
-	*r *nest MASSBC inside  // inside surface boundary conditions
-	*r FRAC_GZ kv_perimWeight  // weight of this kiva instance for results of corresponding floor
+	*r *nest MASSBC inside		// inside surface boundary conditions (is this deprecated?)
+	*r TI kv_floor				// floor reference
+	// list of wall references
+	*r FRAC_GZ kv_perimWeight	// weight of this kiva instance for results of corresponding floor
 
 *END			// KIVA
 

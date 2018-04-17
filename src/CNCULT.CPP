@@ -573,6 +573,7 @@ RC SFI::sf_CkfWINDOW(
 	options;
 	RC rc = RCOK;
 	sfClass = sfcWINDOW;
+	x.xs_modelr = C_SFMODELCH_QUICK;
 	return rc;
 }	// SFI::sf_ChkWINDOW
 //------------------------------------------------------------------------
@@ -650,6 +651,8 @@ RC SFI::sf_CkfDOOR(
 	else if (consSet && uSet)
 		rc |= oer( (char *)MH_S0406); 		// "Both drCon and drU given"
 	// getting uval from construction: defer to topCkf.
+
+	x.xs_modelr = C_SFMODELCH_QUICK;
 
 	return rc;
 }		// SFI::sf_CkfDOOR
@@ -843,6 +846,21 @@ dflInH:
 		oWarn( (char *)MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
 										//   Do an ooWarn: warn once?
 
+// sf_CkfSURF: Set xs_modelr and kiva related checks
+	if (IsSet(SFI_SFFND) || IsSet(SFI_SFFNDFLOOR))
+	{
+		x.xs_modelr = C_SFMODELCH_KIVA;
+		if (x.xs_modelr != x.xs_model && x.xs_model != C_SFMODELCH_AUTO)
+		{
+			oWarn("Surface reset to Model=Kiva"); // TODO add formatted string
+		}
+		// TODO Warn/ERR if not C_EXCNDCH_GROUND
+	}
+	else
+	{
+		x.xs_modelr = C_SFMODELCH_QUICK;	// tentatively set resolved model to "quick"
+	}
+
 // sf_CkfSURF: if GROUND, use separate processing (below)
 	if (xc == C_EXCNDCH_GROUND)
 		rc |= sf_CkfSURFGround( options);	// below grade or on grade floor, below grade wall
@@ -895,8 +913,8 @@ RC SFI::sf_CkfSURFGround(
 	// check for unresolved expressions
 	int allVals = IsValAll( SFX( DEPTHBG), SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
 					SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND), 0);
-	if (!allVals || x.xs_sbcO.sb_groundModel != 0)
-		return rc;	// can't check or already checked
+	if (!allVals || x.xs_sbcO.sb_groundModel != 0 || sf_IsKiva( x.xs_modelr))
+		return rc;	// can't check or already checked or not relevant
 
 	float cGrnd = x.xs_sbcO.sb_CGrnd();	// total conductance to ground, Btuh/ft2-F
 	float rGrnd = 0.f;

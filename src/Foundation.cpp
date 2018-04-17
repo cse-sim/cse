@@ -7,8 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
-#include "foundation.h"
 #include "ancrec.h"
-
 #include "rccn.h"
+
+#include "foundation.h"
+
+#include "mspak.h"
+
 
