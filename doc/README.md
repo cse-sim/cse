@@ -19,6 +19,17 @@ The source files including both manifest files (in YAML) and markdown files (end
 
 Pandoc version 1.17.2 can be downloaded from [here](https://github.com/jgm/pandoc/releases). If you do not have version 1.17.2 installed, the build tool will stop immediately with instructions on how to install Pandoc 1.17.2.
 
+One way to make it easier to set up Pandoc 1.17.2 (especially in the presence of potentially a newer Pandoc version), is to use the cross-platform [conda] package, dependency, and environment manager. To do this, install the [miniconda] tool and then create an environment called `cse-docs`:
+
+    conda create --name cse-docs --file env.txt
+
+This will install a managed [Pandoc] 1.17.2 on your computer. You can activate the [conda] environment and, therefore, the [Pandoc] version that comes with it by calling:
+
+    source activate cse-docs
+
+[conda]: https://conda.io/docs/
+[miniconda]: https://conda.io/miniconda.html
+
 For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For Windows, [MiKTeX] is recommended. For Mac OS and Linux, please follow the instructions for recommended (La)TeX systems at [Pandoc's Install] page. Note that to build the PDF, you must change the value of the "build-pdf?" key to true in the `config.yaml` file in this directory. This configuration file is discussed more below.
 
 [Pandoc]: http://pandoc.org/
