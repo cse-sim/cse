@@ -21,5 +21,6 @@ WASH    Clothes washing
 COOK    Cooking
 USER1   User-defined category 1
 USER2   User-defined category 2
+BT      Battery charge power 
 PV      Photovoltaic power generation
 ------- -------------------------------------------------------------
