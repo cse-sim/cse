@@ -113,6 +113,14 @@ We recommend looking at an [ERB Tutorial] to get up to speed on using [ERB].
 
 [ERB Tutorial]: http://www.stuartellis.name/articles/erb/
 
+## Inserting File Content
+
+A special directive is available that allows one to insert any file directly into markdown documents (to avoid repetition) by specifying the file's relative path from the repository root. For example, to add the file: `<cse-repo>\doc\src\enduses.md`, one would write:
+
+    <%= insert_file('doc/src/enduses.md') %>
+
+Note: the `insert_file` method could be replaced by a direct call to `File.read(path_to_read)`. However, direct calls to `File.read` are fragile since the absolute paths won't build between multiple machines and the question with relative paths is what directory will be used. In contrast, the `insert_file` method always uses a path relative to the repository root.
+
 ## Table Pre-processing Directives
 
 By setting the config variable "use-table-lang?" to `true` (note: it is `true` by default), we enable [ERB] to use a table pre-processing language. At the time of this writing, these table directives are used to transform imbedded CSV data (CSV = comma-separated value), in-file CSV data, or special tables to the "ascii-art" multi-line tables required by [Pandoc-flavored Markdown]. For general tables, external CSV files can be used (recommended). In this case, the source files may be edited with a spreadsheet program and saved to disk (in CSV format). By default, tables are stored in the directory relative to the `doc` directory as specified by the "table-path" variable specified in the `doc/config/defaults.yaml` file. At the time of this writing, that variable defaults to `doc/src/tables`.
