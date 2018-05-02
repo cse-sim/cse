@@ -60,9 +60,12 @@ table-path: "src/tables"
 # be deleted, too!
 delete-build-dir?: false
 # this variable holds various "flags" to pass into the ERB preprocessor
-# NOTE: only define variable keys as standard Ruby variables!
-#       for example, "some-variable: 10" would not work since "some-variable"
-#       is a valid Ruby name
+# NOTE: Only define variable keys that could be standard Ruby variables!
+#       For example, "some-variable: 10" would not work since "some-variable"
+#       is not a valid Ruby variable name. On a related note, all variables must
+#       be lower case due to a restriction of how we pass these variables into
+#       the ERB preprocessor and due to Ruby associating a semantics with upper
+#       case names.
 context:
   build_all: true
   test_erb: false
