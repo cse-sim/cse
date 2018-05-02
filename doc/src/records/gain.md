@@ -142,3 +142,7 @@ Optional to indicate the end of the GAIN definition. Alternatively, the end of t
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@gain](#p_gain)

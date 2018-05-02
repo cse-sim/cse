@@ -67,3 +67,7 @@ Indicates the end of the meter definition. Alternatively, the end of the meter d
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@meter](#p_meter)

@@ -46,7 +46,7 @@ Meter end use to which the BATTERY's charged/discharged energy should be accumul
   COOK    Cooking
   USER1   User-defined category 1
   USER2   User-defined category 2
-  BT      Battery charge power 
+  BT      Battery charge power
   PV      Photovoltaic power generation
   ------- -------------------------------------------------------------
 
@@ -146,3 +146,7 @@ Probes? Control strategies?
 SOE
 
 -->
+
+**Related Probes:**
+
+- [@battery](#p_battery)

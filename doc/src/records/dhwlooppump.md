@@ -41,3 +41,7 @@ Optionally indicates the end of the DHWPUMP definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- [@DHWLoopPump](#p_dhwlooppump)

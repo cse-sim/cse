@@ -72,3 +72,7 @@ Indicates the end of the DHWDAYUSE definition.  endDHWDAYUSE should follow all c
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@DHWDayUse](#p_dhwdayuse)

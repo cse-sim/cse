@@ -251,3 +251,7 @@ Optionally indicates the end of the PVARRAY definition. Alternatively, the end o
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@PVArray](#p_pvarray)

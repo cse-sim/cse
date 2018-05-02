@@ -167,3 +167,7 @@ Optionally indicates the end of the export definition. Alternatively, the end of
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@export](#p_export)

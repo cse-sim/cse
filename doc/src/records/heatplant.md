@@ -70,3 +70,6 @@ Optionally indicates the end of the HEATPLANT definition. Alternatively, the end
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
+
+- [@heatPlant](#p_heatplant)

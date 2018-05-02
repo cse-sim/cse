@@ -518,3 +518,7 @@ Optionally indicates the end of the RSYS definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@rsys](#p_rsys)

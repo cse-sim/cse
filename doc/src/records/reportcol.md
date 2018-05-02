@@ -76,3 +76,7 @@ Optionally indicates the end of the report column definition. Alternatively, the
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@reportCol](#p_reportcol)

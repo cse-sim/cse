@@ -148,3 +148,7 @@ If a particular default holiday is not desired, it can be removed with a DELETE 
         DELETE HOLIDAY "VETERANS DAY"  // No case-sensitivity
 
 Note that the name must be spelled *exactly* as listed above.
+
+**Related Probes:**
+
+- [@holiday](#p_holiday)

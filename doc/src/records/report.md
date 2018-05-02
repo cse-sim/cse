@@ -286,3 +286,7 @@ Optionally indicates the end of the report definition. Alternatively, the end of
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@report](#p_report)

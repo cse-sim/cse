@@ -42,4 +42,6 @@ Optionally indicates the end of the DHWPUMP definition.
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
 
+**Related Probes:**
 
+- [@DHWPump](#p_dhwpump)

@@ -219,3 +219,9 @@ Indicates the end of the door definition. Alternatively, the end of the door def
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@door](#p_door)
+- [@xsurf](#p_xsurf)
+- [@mass](#p_mass)

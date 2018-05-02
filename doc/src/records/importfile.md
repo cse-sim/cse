@@ -100,3 +100,8 @@ Optionally indicates the end of the import file definition. Alternatively, the e
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@importFile](#p_importfile)
+- [@impFileFldNames](#p_importfilefldnames)
