@@ -122,3 +122,7 @@ Probes? Control strategies?
 SOE
 
 -->
+
+**Related Probes:**
+
+- [@battery](#p_battery)

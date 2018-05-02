@@ -87,3 +87,7 @@ Optionally indicates the end of the DHWLOOPBRANCH definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- [@DHWLoopBranch](#p_dhwloopbranch)

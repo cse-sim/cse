@@ -144,4 +144,6 @@ Optional to indicates the end of the Glazetype. Alternatively, the end of the GL
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
 
+- [@glazeType](#p_glazetype)

@@ -92,4 +92,6 @@ Optionally indicates the end of the DHWLOOPSEG definition.
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
 
+**Related Probes:**
 
+- [@DHWLoopSeg](#p_dhwloopseg)

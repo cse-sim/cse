@@ -194,3 +194,7 @@ Optionally indicates the end of the DHWSYS definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- [@DHWSys](#p_dhwsys)

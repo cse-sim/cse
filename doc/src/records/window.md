@@ -287,3 +287,8 @@ Optionally indicates the end of the window definition. Alternatively, the end of
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- [@window](#p_window)
+- [@xsurf](#p_xsurf)

@@ -426,3 +426,9 @@ The following tables summarize the defaults and legal ranges of surface members 
   sfGrndRefl  optional, default to grndRefl
   -----------------------------------------------------------------------
   -->
+
+**Related Probes:**
+
+- [@surface](#p_surface)
+- [@xsurf](#p_xsurf)
+- [@mass](#p_mass)

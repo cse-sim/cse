@@ -76,4 +76,6 @@ Optional to indicate the end of the material. Alternatively, the end of the mate
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
 
+- [@material](#p_material)

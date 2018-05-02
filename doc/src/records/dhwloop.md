@@ -81,3 +81,7 @@ Optionally indicates the end of the DHWLOOP definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- [@DHWLoop](#p_dhwloop)
