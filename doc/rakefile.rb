@@ -16,6 +16,7 @@ require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/table'
 require_relative 'lib/toc'
+require_relative 'lib/def_parser'
 require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
 require_relative 'lib/coverage_check'
@@ -76,6 +77,7 @@ CONFIG = lambda do
   config
 end.call
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
+PROBES_DATA_DIR = File.join(THIS_DIR, 'config', 'reference')
 BUILD_DIR = CONFIG.fetch("build-dir")
 SRC_DIR = CONFIG.fetch("src-dir")
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
@@ -900,6 +902,42 @@ CompressHTML = lambda do |config|
       new_manifest
     end
   end
+end
+
+BuildProbesYaml = lambda do
+  dirs = [
+    PROBES_DATA_DIR
+  ]
+  EnsureAllExist[dirs]
+  out_path = File.join(PROBES_DATA_DIR, 'probes_input.yaml')
+  probes = DefParser::ParseProbesTxt[]
+  probes_alt = DefParser::ParseCnRecs[]
+  probes.keys.sort_by {|k| k.downcase}.each do |k|
+    rec_alt = nil
+    if probes_alt.include?(k.downcase)
+      rec_alt = probes_alt[k.downcase]
+    end
+    next if rec_alt.nil?
+    flds = probes[k][:fields]
+    next if flds.empty?
+    name = k
+    flds.each do |fld|
+      desc = nil
+      flds_alt = rec_alt[:fields].select do |f|
+        na = f[:name].downcase
+        n1a = na
+        n2a = na.gsub(/^[^_]*_/, '')
+        nb = fld[:name].downcase 
+        n1a == nb || n2a == nb
+      end
+      if flds_alt.length == 1
+        fld_alt = flds_alt[0]
+        desc = fld_alt.fetch(:description, desc)
+      end
+      fld[:description] = desc unless desc.nil?
+    end
+  end
+  File.write(out_path, probes.to_yaml)
 end
 
 BuildProbesAndCopyIntoManifest = lambda do |config|
@@ -1814,6 +1852,11 @@ task :coverage do
     puts("\nCoverage Check DONE!")
     puts("^"*60)
   end
+end
+
+desc "Generate probes yaml input"
+task :gen_probes_yaml do
+  BuildProbesYaml[]
 end
 
 Rake::TestTask.new(:test) do |t|
