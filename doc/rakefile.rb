@@ -10,7 +10,8 @@ require 'yaml'
 require 'set'
 require 'pathname'
 require 'time'
-require "rake/testtask"
+require 'rake/testtask'
+require 'irb'
 require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
@@ -797,9 +798,13 @@ GenTOC = lambda do |config|
       toc_out_path = File.join(out_dir, toc_name)
       new_manifest << toc_out_path
       if !FileUtils.uptodate?(toc_out_path, manifest)
+        lev_man = []
+        manifest.each_with_index do |path, idx|
+          lev_man << [levels[idx], path]
+        end
         toc_content = TOC::GenTableOfContentsFromFiles[
           max_level,
-          levels.zip(manifest)
+          lev_man
         ]
         File.write(toc_out_path, toc_content)
       end
@@ -1118,15 +1123,6 @@ BuildSinglePageHTML = lambda do |config|
       "context" => context
     ],
     PassThroughWithSideEffect[
-      "function" => GenerateSectionIndex[
-        "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
-        ),
-        "output-path" => section_index,
-        "merge-values" => {"#probe-definitions"=>"probes.html"}
-      ]
-    ],
-    PassThroughWithSideEffect[
       "function" => lambda do
         rec_dir = File.expand_path(
           File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
@@ -1174,6 +1170,16 @@ BuildSinglePageHTML = lambda do |config|
       ),
       "probes-in-one-file?" => false,
     ),
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          # File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
+    ],
     AddFiles[
       "paths" => [File.expand_path(
         File.join("config", "template", "site-template.html"), this_dir
@@ -1338,7 +1344,8 @@ BuildMultiPageHTML = lambda do |config|
     PassThroughWithSideEffect[
       "function" => GenerateSectionIndex[
         "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          # File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
         ),
         "output-path" => section_index,
         "merge-values" => {"#probe-definitions"=>"probes.html"}
@@ -1355,7 +1362,7 @@ BuildMultiPageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "toc"), this_dir
       ),
       "toc-name" => "index.md",
-      "levels" => (levels + (disable_probes ? [] : [1])).map do |lev|
+      "levels" => (levels + (disable_probes ? [] : [1]*100)).map do |lev|
         lev - 1
       end,
       "disable?" => disable_toc
@@ -1480,15 +1487,16 @@ BuildPDF = lambda do |config|
       "relative-root-path" => File.expand_path('src'),
       "context" => context
     ],
-    PassThroughWithSideEffect[
-      "function" => GenerateSectionIndex[
-        "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
-        ),
-        "output-path" => section_index,
-        "merge-values" => {"#probe-definitions"=>"probes.html"}
-      ]
-    ],
+    #PassThroughWithSideEffect[
+    #  "function" => GenerateSectionIndex[
+    #    "source-paths"=> File.expand_path(
+    #      File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+    #      # File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+    #    ),
+    #    "output-path" => section_index,
+    #    "merge-values" => {"#probe-definitions"=>"probes.html"}
+    #  ]
+    #],
     PassThroughWithSideEffect[
       "function" => lambda do
         rec_dir = File.expand_path(
@@ -1539,6 +1547,16 @@ BuildPDF = lambda do |config|
       ),
       "probes-in-one-file?" => false,
     ),
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          # File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
+    ],
     AddFiles[
       "paths" => [File.expand_path(
         File.join("config", "template", "template.tex"), this_dir
@@ -1867,6 +1885,11 @@ Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
+end
+
+desc "start an irb console in the rakefile context"
+task :irb do
+  binding.irb
 end
 
 task :default => [:build_all]

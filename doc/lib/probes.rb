@@ -15,11 +15,12 @@ module Probes
         @probes_input = config.fetch('path-to-probes-input')
         @probes = YAML.load_file(@probes_input)
         @probes_in_one_file = config.fetch('probes-in-one-file?', false)
+        probes_main = File.join(@probes_dir, 'probes.md')
         if @probes_in_one_file
-          @probes_paths = [[:all, File.join(@probes_dir, 'probes.md')]]
+          @probes_paths = [[nil, probes_main]]
           write_probes_to_one_file(@probes_paths[0][1])
         else
-          @probes_paths = []
+          @probes_paths = [[nil, probes_main]]
           @probes.keys.sort_by {|k| k.downcase}.each do |k|
             k_dc = k.downcase
             @probes_paths << [k, File.join(@probes_dir, "probe_#{k_dc}.md")]
@@ -40,11 +41,13 @@ module Probes
       return if flds.empty?
       name = k
       array_txt = if @probes[k][:array] then "[1..]" else "" end
-      title = "\\@#{name}#{array_txt}."
+      title = "#{name}"
+      full_title = "\\@#{name}#{array_txt}."
       owner = @probes[k][:owner]
       owner_txt = if owner == "--" then "" else " (owner: #{owner})" end
       tag = "\{#p_#{k.downcase}\}"
       f.write("## #{title}#{owner_txt} #{tag}\n\n")
+      f.write("#{full_title}\n\n")
       if @probes[k].include?(:description)
         f.write(@probes[k][:description] + "\n\n")
       end
@@ -83,7 +86,11 @@ module Probes
       keys_and_paths.each do |k_p|
         k, p = k_p
         File.open(p, 'w') do |f|
-          write_probe_table(k, f)
+          if k.nil?
+            f.write("# Probe Definitions\n\n")
+          else
+            write_probe_table(k, f)
+          end
         end
       end
     end
