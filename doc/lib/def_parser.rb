@@ -4,6 +4,7 @@
 require 'tmpdir'
 require 'tempfile'
 require 'yaml'
+require 'set'
 
 module DefParser
   # This is the starting state for the parser
