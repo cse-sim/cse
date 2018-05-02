@@ -93,4 +93,4 @@ Optionally indicates the end of the COOLPLANT definition. Alternatively, the end
 
 **Related Probes:**
 
-- [@coolPlant](#p_coolplant)
+- @[coolPlant](#p_coolplant)

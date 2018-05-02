@@ -305,4 +305,4 @@ Optionally indicates the end of the TOWERPLANT definition. Alternatively, the en
 
 **Related Probes:**
 
-- [@towerPlant](#p_towerplant)
+- @[towerPlant](#p_towerplant)

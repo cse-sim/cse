@@ -75,4 +75,4 @@ Indicates the end of the DHWDAYUSE definition.  endDHWDAYUSE should follow all c
 
 **Related Probes:**
 
-- [@DHWDayUse](#p_dhwdayuse)
+- @[DHWDayUse](#p_dhwdayuse)

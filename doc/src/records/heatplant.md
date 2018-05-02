@@ -72,4 +72,4 @@ Optionally indicates the end of the HEATPLANT definition. Alternatively, the end
 
 **Related Probes:**
 
-- [@heatPlant](#p_heatplant)
+- @[heatPlant](#p_heatplant)

@@ -44,4 +44,4 @@ Optionally indicates the end of the DHWPUMP definition.
 
 **Related Probes:**
 
-- [@DHWLoopPump](#p_dhwlooppump)
+- @[DHWLoopPump](#p_dhwlooppump)

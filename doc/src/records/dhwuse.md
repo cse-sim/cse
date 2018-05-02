@@ -91,4 +91,4 @@ Optionally indicates the end of the DHWUSE definition.
 
 **Related Probes:**
 
-- [@DHWUse](#p_dhwUse)
+- @[DHWUse](#p_dhwUse)

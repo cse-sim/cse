@@ -141,4 +141,4 @@ Optionally indicates the end of the boiler definition. Alternatively, the end of
 
 **Related Probes:**
 
-- [@boiler](#p_boiler)
+- @[boiler](#p_boiler)

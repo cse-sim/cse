@@ -79,4 +79,4 @@ Optionally indicates the end of the report column definition. Alternatively, the
 
 **Related Probes:**
 
-- [@reportCol](#p_reportcol)
+- @[reportCol](#p_reportcol)

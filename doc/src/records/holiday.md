@@ -151,4 +151,4 @@ Note that the name must be spelled *exactly* as listed above.
 
 **Related Probes:**
 
-- [@holiday](#p_holiday)
+- @[holiday](#p_holiday)

@@ -28,4 +28,4 @@ Name of meter: required for assigning water uses to the DHWMETER.
 
 **Related Probes:**
 
-- [@DHWmeter](#p_dhwmeter)
+- @[DHWmeter](#p_dhwmeter)

@@ -145,4 +145,4 @@ Optional to indicate the end of the GAIN definition. Alternatively, the end of t
 
 **Related Probes:**
 
-- [@gain](#p_gain)
+- @[gain](#p_gain)

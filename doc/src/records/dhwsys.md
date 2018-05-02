@@ -197,4 +197,4 @@ Optionally indicates the end of the DHWSYS definition.
 
 **Related Probes:**
 
-- [@DHWSys](#p_dhwsys)
+- @[DHWSys](#p_dhwsys)

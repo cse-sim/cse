@@ -125,4 +125,4 @@ SOE
 
 **Related Probes:**
 
-- [@battery](#p_battery)
+- @[battery](#p_battery)

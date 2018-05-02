@@ -90,4 +90,4 @@ Optionally indicates the end of the DHWLOOPBRANCH definition.
 
 **Related Probes:**
 
-- [@DHWLoopBranch](#p_dhwloopbranch)
+- @[DHWLoopBranch](#p_dhwloopbranch)

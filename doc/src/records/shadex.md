@@ -49,4 +49,4 @@ Optionally indicates the end of the SHADEX definition. Alternatively, the end of
 
 **Related Probes:**
 
-- [@SHADEX](#p_shadex)
+- @[SHADEX](#p_shadex)

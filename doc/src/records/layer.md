@@ -60,4 +60,4 @@ Optional end-of-LAYER indicator; LAYER definition may also be indicated by "END"
 
 **Related Probes:**
 
-- [@layer](#p_layer)
+- @[layer](#p_layer)

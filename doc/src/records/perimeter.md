@@ -36,5 +36,5 @@ Optionally indicates the end of the perimeter definition.
 
 **Related Probes:**
 
-- [@perimeter](#p_perimeter)
-- [@xsurf](#p_xsurf)
+- @[perimeter](#p_perimeter)
+- @[xsurf](#p_xsurf)

@@ -669,7 +669,7 @@ Hourly portion of debug reporting control (generally an expression that evaluate
 
 **Related Probes:**
 
-- [@top](#p_top)
-- [@weatherFile](#p_weatherfile)
-- [@weather](#p_weather)
-- [@weatherNextHour](#p_weathernexthour)
+- @[top](#p_top)
+- @[weatherFile](#p_weatherfile)
+- @[weather](#p_weather)
+- @[weatherNextHour](#p_weathernexthour)

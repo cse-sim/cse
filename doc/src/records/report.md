@@ -289,4 +289,4 @@ Optionally indicates the end of the report definition. Alternatively, the end of
 
 **Related Probes:**
 
-- [@report](#p_report)
+- @[report](#p_report)

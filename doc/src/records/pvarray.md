@@ -231,4 +231,4 @@ Optionally indicates the end of the PVARRAY definition. Alternatively, the end o
 
 **Related Probes:**
 
-- [@PVArray](#p_pvarray)
+- @[PVArray](#p_pvarray)

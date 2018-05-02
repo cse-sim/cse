@@ -83,4 +83,4 @@ Optionally indicates the end of the solar gain distribution definition. Alternat
 
 **Related Probes:**
 
-- [@sgdist](#p_sgdist)
+- @[sgdist](#p_sgdist)
