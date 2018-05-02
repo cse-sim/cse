@@ -522,3 +522,4 @@ Optionally indicates the end of the RSYS definition.
 **Related Probes:**
 
 - [@rsys](#p_rsys)
+- [@RSYSRes](#p_rsysres) (accumulated results)
