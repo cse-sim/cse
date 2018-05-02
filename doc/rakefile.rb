@@ -21,6 +21,7 @@ require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
 require_relative 'lib/coverage_check'
 require_relative 'lib/xlink'
+require_relative 'lib/probes'
 
 ########################################
 # Check Dependencies
@@ -658,7 +659,7 @@ NumberMd = lambda do |config|
           end
           next
         end
-        level_adjustment = levels ? (levels[idx] - 1) : 0
+        level_adjustment = (levels and levels[idx]) ? (levels[idx] - 1) : 0
         md = File.read(path, :encoding=>"UTF-8")
         if !FileUtils.uptodate?(out_path, [path])
           File.open(out_path, 'w') do |f|
@@ -1159,7 +1160,7 @@ BuildSinglePageHTML = lambda do |config|
       "output-dir" => File.join(build_dir, tag, md_dir, "adjusted-headers"),
       "levels" => levels
     ],
-    BuildProbesAndCopyIntoManifest[
+    Probes::BuildProbesAndCopyIntoManifest.new(
       "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
@@ -1170,8 +1171,9 @@ BuildSinglePageHTML = lambda do |config|
       "insert-after-file" => "output-reports.md",
       "path-to-probes-input" => File.expand_path(
         File.join("config", "reference", "probes_input.yaml"), this_dir
-      )
-    ],
+      ),
+      "probes-in-one-file?" => false,
+    ),
     AddFiles[
       "paths" => [File.expand_path(
         File.join("config", "template", "site-template.html"), this_dir
@@ -1290,15 +1292,6 @@ BuildMultiPageHTML = lambda do |config|
       "context" => context
     ],
     PassThroughWithSideEffect[
-      "function" => GenerateSectionIndex[
-        "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
-        ),
-        "output-path" => section_index,
-        "merge-values" => {"#probe-definitions"=>"probes.html"}
-      ]
-    ],
-    PassThroughWithSideEffect[
       "function" => lambda do
         rec_dir = File.expand_path(
           File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
@@ -1328,7 +1321,7 @@ BuildMultiPageHTML = lambda do |config|
       "log" => STDOUT,
       "disable?" => disable_xlink
     ],
-    BuildProbesAndCopyIntoManifest[
+    Probes::BuildProbesAndCopyIntoManifest.new(
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
       ),
@@ -1339,7 +1332,17 @@ BuildMultiPageHTML = lambda do |config|
       "path-to-probes-input" => File.expand_path(
         File.join("config", "reference", "probes_input.yaml"), this_dir
       ),
-      "disable?" => disable_probes
+      "disable?" => disable_probes,
+      "probes-in-one-file?" => false,
+    ),
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
     ],
     NumberMd[
       "output-dir" => File.join(build_dir, tag, md_dir, "number"),
@@ -1522,7 +1525,7 @@ BuildPDF = lambda do |config|
       ),
       "levels" => levels
     ],
-    BuildProbesAndCopyIntoManifest[
+    Probes::BuildProbesAndCopyIntoManifest.new(
       "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
@@ -1533,8 +1536,9 @@ BuildPDF = lambda do |config|
       "insert-after-file" => "output-reports.md",
       "path-to-probes-input" => File.expand_path(
         File.join("config", "reference", "probes_input.yaml"), this_dir
-      )
-    ],
+      ),
+      "probes-in-one-file?" => false,
+    ),
     AddFiles[
       "paths" => [File.expand_path(
         File.join("config", "template", "template.tex"), this_dir
