@@ -5,10 +5,14 @@ require 'tmpdir'
 require 'tempfile'
 require 'yaml'
 require 'set'
+require 'irb'
+
+require_relative 'command'
 
 module DefParser
   # This is the starting state for the parser
   THIS_DIR = File.expand_path(File.dirname(__FILE__))
+  IsWindows = !((ENV['OS'] =~ /win/i).nil?)
   LoadFromReference = lambda do |fname|
     ref_dir = File.expand_path(File.join(THIS_DIR, '..', 'config', 'reference'), THIS_DIR)
     path = File.join(ref_dir, fname)
@@ -23,19 +27,32 @@ module DefParser
   LoadCnRecsOrig = lambda {LoadFromSrc['CNRECS.DEF']}
   LoadCnFieldsOrig = lambda {LoadFromSrc['CNFIELDS.DEF']}
   LoadCndTypesOrig = lambda {LoadFromSrc['CNDTYPES.DEF']}
-  LoadViaCpp = lambda do |fname|
+  # String -> String
+  # Load via the C Pre-processor
+  LoadViaCpp = lambda do |fname, with_comments=false|
     output = nil
     Tempfile.open('temp_file') do |f|
       # Call the c preprocessor
       src_dir = File.expand_path(File.join(THIS_DIR, '..', '..', 'src'), THIS_DIR)
       path = File.join(src_dir, fname)
       tgt_path = f.path
-      `cpp -I#{src_dir} -xc++ #{path} #{tgt_path}`
-      output = File.read(f.path)
+      if IsWindows
+        opts = []
+        opts << "/I\"#{src_dir}\""
+        opts << "/C" if with_comments
+        opts << "/EP"
+        opts << "/TP"
+        opts << "\"#{path}\""
+        output = Command::Run["cl", opts, nil, false]
+      else
+        `cpp -I#{src_dir} -xc++ #{path} #{tgt_path}`
+        output = File.read(f.path)
+      end
     end
     output
   end
   LoadCnRecs = lambda {LoadViaCpp['CNRECS.DEF']}
+  LoadCnRecsWithComments = lambda{LoadViaCpp['CNRECS.DEF', true]}
   LoadCndTypes = lambda {LoadViaCpp['CNDTYPES.DEF']}
   MkRecord = lambda do |id, name, fields|
     {
@@ -119,6 +136,7 @@ module DefParser
     records
   end
   ParseProbesTxt = lambda {ParseCseDashP[LoadProbes[]]}
+  VERBOSE = false
   Parse = lambda do |input, reference=nil|
     in_record = false
     record_id = nil
@@ -139,6 +157,7 @@ module DefParser
       "i" ,# after input, before checking/setup
     ])
     ref_lines = reference.lines.map(&:chomp) if reference
+    current_ref_idx = 0
     input.lines.map(&:chomp).each_with_index do |line, idx|
       if line =~ /^\s*RECORD/
         m = line.match(/^\s*RECORD\s+([a-zA-Z_0-9-]*)\s*\"([^"]*)\"\s+\*(RAT|STRUCT).*$/)
@@ -160,9 +179,34 @@ module DefParser
           :name => name.gsub(/;/,'')
         }
         if reference
-          m = ref_lines[idx].match(/^.*?\/\/(.*)$/)
-          field[:description] = m[1].strip if m
-        else
+          # forward to the first line that matches
+          stripped_line = line.strip
+          ref_line = nil
+          ref_lines.each_with_index do |rl, ref_idx|
+            next if ref_idx < current_ref_idx
+            rl_ = rl.gsub(/\t/, ' ').gsub(/\/\//, '  ').gsub(/\/\*/, '  ') + " "
+            if rl_.include?(stripped_line + " ")
+              current_ref_idx = ref_idx
+              ref_line = rl
+              break
+            end
+          end
+          if ref_line
+            puts("matching:\n\t#{line.strip[0..40]}\n with\n\t#{ref_line.strip[0..40]}\n") if VERBOSE
+            m = ref_line.match(/^.*?\/\/(.*)$/)
+            if m
+              # match // ... lines
+              field[:description] = m[1].strip
+              puts("found field!: #{field[:description][0..40]}") if VERBOSE
+            else
+              # match /* ... lines
+              n = ref_line.match(/^.*?\/\*(.*)$/)
+              if n
+                field[:description] = n[1].strip.gsub(/\*\//, '')
+                puts("found field!: #{field[:description][0..40]}") if VERBOSE
+              end
+            end
+          end
         end
         toks = line.gsub(/#{spec}\s+#{name}\s*$/, '')
           .strip
@@ -195,7 +239,7 @@ module DefParser
           elsif t == "nest"
             hide = true
           else
-            puts("!!! Ignoring #{t}")
+            puts("!!! Ignoring #{t}; tok: #{tok}\n!!! line[#{idx}]: #{line}")
           end
         end
         record_fields << field unless hide
@@ -217,6 +261,9 @@ module DefParser
         else
           output[record_id.downcase] = MkRecord[record_id, record_name, record_fields]
         end
+        if record_id == "TOPRAT"
+          #binding.irb
+        end
         record_id = nil
         record_name = nil
         record_fields = []
@@ -224,7 +271,7 @@ module DefParser
     end
     output
   end
-  ParseCnRecs = lambda {Parse[LoadCnRecs[], LoadCnRecsOrig[]]}
+  ParseCnRecs = lambda {Parse[LoadCnRecs[], LoadCnRecsWithComments[]]}
   # String -> Nil
   # Given the path to an output file, write the output file in YAML format.
   ParseCnRecsToYaml = lambda {|p| File.write(p, ParseCnRecs[].to_yaml)}

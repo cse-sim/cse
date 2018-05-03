@@ -911,17 +911,35 @@ CompressHTML = lambda do |config|
 end
 
 BuildProbesYaml = lambda do
+  # Name in Probes => Name in CNRECS
+  # all mappings are downcased
+  mappings = {
+    'door'=>'surface',
+    'window'=>'surface',
+  }
   dirs = [
     PROBES_DATA_DIR
   ]
   EnsureAllExist[dirs]
   out_path = File.join(PROBES_DATA_DIR, 'probes_input.yaml')
   probes = DefParser::ParseProbesTxt[]
-  probes_alt = DefParser::ParseCnRecs[]
+  probes_alt_orig = DefParser::ParseCnRecs[]
+  probes_alt = {}
+  probes_alt_orig.keys.each do |k|
+    kdc = k.downcase
+    name = probes_alt_orig[k][:name]
+    probes_alt[name.downcase] = probes_alt_orig[k]
+  end
+  #puts("probes.keys: #{probes.keys}")
+  #puts("probes_alt.keys: #{probes_alt.keys}")
   probes.keys.sort_by {|k| k.downcase}.each do |k|
     rec_alt = nil
-    if probes_alt.include?(k.downcase)
+    k_dc = k.downcase
+    k_lookup = mappings.fetch(k_dc, k_dc)
+    if probes_alt.include?(k_lookup)
       rec_alt = probes_alt[k.downcase]
+    else
+      puts("Warning! No additional data found for #{k} (#{k_lookup})")
     end
     next if rec_alt.nil?
     flds = probes[k][:fields]
