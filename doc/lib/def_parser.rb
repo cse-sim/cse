@@ -137,6 +137,12 @@ module DefParser
   end
   ParseProbesTxt = lambda {ParseCseDashP[LoadProbes[]]}
   VERBOSE = false
+  CleanStr = lambda do |s|
+    s.encode('UTF-8',
+             :invalid => :replace,
+             :undef => :replace,
+             :replace => '')
+  end
   Parse = lambda do |input, reference=nil|
     in_record = false
     record_id = nil
@@ -196,13 +202,13 @@ module DefParser
             m = ref_line.match(/^.*?\/\/(.*)$/)
             if m
               # match // ... lines
-              field[:description] = m[1].strip
+              field[:description] = CleanStr[m[1].strip]
               puts("found field!: #{field[:description][0..40]}") if VERBOSE
             else
               # match /* ... lines
               n = ref_line.match(/^.*?\/\*(.*)$/)
               if n
-                field[:description] = n[1].strip.gsub(/\*\//, '')
+                field[:description] = CleanStr[n[1].strip.gsub(/\*\//, '')]
                 puts("found field!: #{field[:description][0..40]}") if VERBOSE
               end
             end
