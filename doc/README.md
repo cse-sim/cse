@@ -21,10 +21,15 @@ Pandoc version 1.17.2 can be downloaded from [here](https://github.com/jgm/pando
 
 One way to make it easier to set up Pandoc 1.17.2 (especially in the presence of potentially a newer Pandoc version), is to use the cross-platform [conda] package, dependency, and environment manager. To do this, install the [miniconda] tool and then create an environment called `cse-docs`:
 
+    # this only needs to be done once:
+    conda create --name cse-docs
+    # on   windows: activate cse-docs
+    # on mac/linux: source activate cse-docs
     conda install -c edurand pandoc=1.17.2
 
 This will install a managed [Pandoc] 1.17.2 on your computer. You can activate the [conda] environment and, therefore, the [Pandoc] version that comes with it by calling:
 
+    # this needs to be done each time you want to activate Pandoc
     source activate cse-docs
 
 [conda]: https://conda.io/docs/
