@@ -55,10 +55,10 @@ module Probes
         table << [
           fld[:name],
           if fld[:input] then "X" else "--" end,
-            if fld[:runtime] then "X" else "--" end,
-            fld[:type],
-            fld[:variability],
-            fld.fetch(:description, "--")
+          if fld[:runtime] then "X" else "--" end,
+          fld[:type],
+          fld[:variability],
+          fld.fetch(:description, "--").gsub(/\\/, "")
         ]
       end
       f.write(Tables::WriteTable[ table, true ])
