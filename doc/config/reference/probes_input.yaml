@@ -3164,111 +3164,133 @@ izXfer:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Effective vent area, ft2; function of vent type and iz_cd
   - :name: ad[0].AeLin
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Modified iz_ae, ft2; prevents discontinuity at delplinear
   - :name: ad[0].delP
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Pressure diff across element, lbf/sf (+ = pz1 > pz2)
   - :name: ad[0].mdotP
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Air mass flow rate, (lbm moist air)/sec (+ into z1)
   - :name: ad[0].dmdp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Derivative of iz_mdotp wrt pressure (0 for fix flow)
   - :name: ad[0].mdotB
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Add'l buoyancy-driven mass flow, (lbm moist air)/sec
   - :name: ad[0].mdotX
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Air mass exhaust flow, (lbm moist air)/sec (+ out of z2)
   - :name: ad[0].xDelpF
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Buoyancy flooding pressure factor
   - :name: ad[0].xMbm
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Buoyancy max possible flow factor
   - :name: ad[0].tdFan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Air stream temp rise across fan, f
   - :name: ad[0].pFan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Fan (electrical) power for meter, btuh (*not* w)
   - :name: ad[1].Ae
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Effective vent area, ft2; function of vent type and iz_cd
   - :name: ad[1].AeLin
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Modified iz_ae, ft2; prevents discontinuity at delplinear
   - :name: ad[1].delP
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Pressure diff across element, lbf/sf (+ = pz1 > pz2)
   - :name: ad[1].mdotP
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Air mass flow rate, (lbm moist air)/sec (+ into z1)
   - :name: ad[1].dmdp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Derivative of iz_mdotp wrt pressure (0 for fix flow)
   - :name: ad[1].mdotB
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Add'l buoyancy-driven mass flow, (lbm moist air)/sec
   - :name: ad[1].mdotX
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Air mass exhaust flow, (lbm moist air)/sec (+ out of z2)
   - :name: ad[1].xDelpF
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Buoyancy flooding pressure factor
   - :name: ad[1].xMbm
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Buoyancy max possible flow factor
   - :name: ad[1].tdFan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Air stream temp rise across fan, f
   - :name: ad[1].pFan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Fan (electrical) power for meter, btuh (*not* w)
   - :name: amfNom
     :input: true
     :runtime: true
@@ -3751,601 +3773,721 @@ meter:
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Total of following specific end uses.  code assumes precedes them.
   - :name: Y.clg
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Space cooling.  code assumes 1st member.
   - :name: Y.htg
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Space heating incl heat pump compressor
   - :name: Y.hp
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Heat pump auxiliary (backup) heat
   - :name: Y.dhw
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Domestic (service) hot water heating
   - :name: Y.dhwBU
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Domestic (service) hot water backup
   - :name: Y.dhwMFL
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Domestic (service) multi-family loop energy
   - :name: Y.fanC
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Fans - cooling and cooling ventilation
   - :name: Y.fanH
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Fans - heating
   - :name: Y.fanV
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Fans - iaq ventilation
   - :name: Y.fan
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Fans - other
   - :name: Y.aux
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Hvac auxiliaries and parasitics, not including fans
   - :name: Y.proc
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Process energy
   - :name: Y.lit
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Lighting
   - :name: Y.rcp
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Receptacles
   - :name: Y.ext
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: External -- outdoor lights, etc
   - :name: Y.refr
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Refrigeration
   - :name: Y.dish
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Dish washing
   - :name: Y.dry
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Clothes drying
   - :name: Y.wash
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Clothes washing
   - :name: Y.cook
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Cooking
   - :name: Y.usr1
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: User-defined end use 1
   - :name: Y.usr2
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: User-defined end use 2
   - :name: Y.bt
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Battery output (negative)
   - :name: Y.pv
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Photovoltaic array output (negative)
   - :name: Y.allEU
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Subtotal, clg .. usr2 (= load w/o bt and pv)
   - :name: Y.cost
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Accumulated  tot*rate
   - :name: Y.dmdCost
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Largest dmd*dmdrate to month level, then accumulates (cnguts.cpp:mtraccum)
   - :name: Y.dmd
     :input: true
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Peak use in interval; hourly value same as .tot.
   - :name: Y.dmdShoy
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: 'Peak time as subhour of year, subhr unused: 4*(hr+24*jday).'
   - :name: M.tot
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Total of following specific end uses.  code assumes precedes them.
   - :name: M.clg
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Space cooling.  code assumes 1st member.
   - :name: M.htg
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Space heating incl heat pump compressor
   - :name: M.hp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Heat pump auxiliary (backup) heat
   - :name: M.dhw
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Domestic (service) hot water heating
   - :name: M.dhwBU
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Domestic (service) hot water backup
   - :name: M.dhwMFL
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Domestic (service) multi-family loop energy
   - :name: M.fanC
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Fans - cooling and cooling ventilation
   - :name: M.fanH
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Fans - heating
   - :name: M.fanV
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Fans - iaq ventilation
   - :name: M.fan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Fans - other
   - :name: M.aux
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Hvac auxiliaries and parasitics, not including fans
   - :name: M.proc
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Process energy
   - :name: M.lit
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Lighting
   - :name: M.rcp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Receptacles
   - :name: M.ext
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: External -- outdoor lights, etc
   - :name: M.refr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Refrigeration
   - :name: M.dish
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Dish washing
   - :name: M.dry
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Clothes drying
   - :name: M.wash
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Clothes washing
   - :name: M.cook
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Cooking
   - :name: M.usr1
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: User-defined end use 1
   - :name: M.usr2
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: User-defined end use 2
   - :name: M.bt
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Battery output (negative)
   - :name: M.pv
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Photovoltaic array output (negative)
   - :name: M.allEU
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Subtotal, clg .. usr2 (= load w/o bt and pv)
   - :name: M.cost
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Accumulated  tot*rate
   - :name: M.dmdCost
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Largest dmd*dmdrate to month level, then accumulates (cnguts.cpp:mtraccum)
   - :name: M.dmd
     :input: true
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Peak use in interval; hourly value same as .tot.
   - :name: M.dmdShoy
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: end of each month
+    :description: 'Peak time as subhour of year, subhr unused: 4*(hr+24*jday).'
   - :name: D.tot
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Total of following specific end uses.  code assumes precedes them.
   - :name: D.clg
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Space cooling.  code assumes 1st member.
   - :name: D.htg
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Space heating incl heat pump compressor
   - :name: D.hp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Heat pump auxiliary (backup) heat
   - :name: D.dhw
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Domestic (service) hot water heating
   - :name: D.dhwBU
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Domestic (service) hot water backup
   - :name: D.dhwMFL
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Domestic (service) multi-family loop energy
   - :name: D.fanC
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Fans - cooling and cooling ventilation
   - :name: D.fanH
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Fans - heating
   - :name: D.fanV
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Fans - iaq ventilation
   - :name: D.fan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Fans - other
   - :name: D.aux
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Hvac auxiliaries and parasitics, not including fans
   - :name: D.proc
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Process energy
   - :name: D.lit
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Lighting
   - :name: D.rcp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Receptacles
   - :name: D.ext
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: External -- outdoor lights, etc
   - :name: D.refr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Refrigeration
   - :name: D.dish
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Dish washing
   - :name: D.dry
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Clothes drying
   - :name: D.wash
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Clothes washing
   - :name: D.cook
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Cooking
   - :name: D.usr1
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: User-defined end use 1
   - :name: D.usr2
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: User-defined end use 2
   - :name: D.bt
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Battery output (negative)
   - :name: D.pv
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Photovoltaic array output (negative)
   - :name: D.allEU
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Subtotal, clg .. usr2 (= load w/o bt and pv)
   - :name: D.cost
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Accumulated  tot*rate
   - :name: D.dmdCost
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Largest dmd*dmdrate to month level, then accumulates (cnguts.cpp:mtraccum)
   - :name: D.dmd
     :input: true
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Peak use in interval; hourly value same as .tot.
   - :name: D.dmdShoy
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: end of each day
+    :description: 'Peak time as subhour of year, subhr unused: 4*(hr+24*jday).'
   - :name: H.tot
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Total of following specific end uses.  code assumes precedes them.
   - :name: H.clg
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Space cooling.  code assumes 1st member.
   - :name: H.htg
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Space heating incl heat pump compressor
   - :name: H.hp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Heat pump auxiliary (backup) heat
   - :name: H.dhw
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Domestic (service) hot water heating
   - :name: H.dhwBU
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Domestic (service) hot water backup
   - :name: H.dhwMFL
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Domestic (service) multi-family loop energy
   - :name: H.fanC
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Fans - cooling and cooling ventilation
   - :name: H.fanH
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Fans - heating
   - :name: H.fanV
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Fans - iaq ventilation
   - :name: H.fan
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Fans - other
   - :name: H.aux
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Hvac auxiliaries and parasitics, not including fans
   - :name: H.proc
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Process energy
   - :name: H.lit
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Lighting
   - :name: H.rcp
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Receptacles
   - :name: H.ext
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: External -- outdoor lights, etc
   - :name: H.refr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Refrigeration
   - :name: H.dish
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Dish washing
   - :name: H.dry
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Clothes drying
   - :name: H.wash
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Clothes washing
   - :name: H.cook
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Cooking
   - :name: H.usr1
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: User-defined end use 1
   - :name: H.usr2
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: User-defined end use 2
   - :name: H.bt
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Battery output (negative)
   - :name: H.pv
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Photovoltaic array output (negative)
   - :name: H.allEU
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Subtotal, clg .. usr2 (= load w/o bt and pv)
   - :name: H.cost
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Accumulated  tot*rate
   - :name: H.dmdCost
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Largest dmd*dmdrate to month level, then accumulates (cnguts.cpp:mtraccum)
   - :name: H.dmd
     :input: true
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Peak use in interval; hourly value same as .tot.
   - :name: H.dmdShoy
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: end of each hour
+    :description: 'Peak time as subhour of year, subhr unused: 4*(hr+24*jday).'
 RSYS:
   :input: true
   :runtime: true
@@ -9322,11 +9464,14 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Average (not fan-on) output power level for subhour
   - :name: sfan.dT
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: How much warmer than outdoor temp crankcase oil is assumed to be,
+      in subhrs when compr does not run.
   - :name: sfan.qAround
     :input: true
     :runtime: true
@@ -9477,11 +9622,14 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Average (not fan-on) output power level for subhour
   - :name: rfan.dT
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: How much warmer than outdoor temp crankcase oil is assumed to be,
+      in subhrs when compr does not run.
   - :name: rfan.qAround
     :input: true
     :runtime: true
@@ -9492,31 +9640,42 @@ airHandler:
     :runtime: true
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Crankcase heater presence and control method choice. niles cchctlmtd.
   - :name: cch.pMx
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Crankcase resistance heater input power; maximum power if cchcm
+      is ptc or ptc_clo.
   - :name: cch.pMn
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Min cch input power. default .04kw. entered in kw, internally in
+      btuh.  niles pcchmn.
   - :name: cch.tMx
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Low temp (max power) setpoint...                            default
+      0 f.   niles tcchptcmx.
   - :name: cch.tMn
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: High temp (min power) setpoint for cchcm = ptc or ptc_clo.  default
+      150 f. niles tcchptcmn.
   - :name: cch.dt
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: How much warmer than outdoor temp crankcase oil is assumed to be,
+      in subhrs when compr does not run.
   - :name: cch.tOn
     :input: true
     :runtime: true
@@ -9537,16 +9696,22 @@ airHandler:
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Power input during off part of one cycle of ari 47 degree cycling
+      test, kwh.
   - :name: cch.p17
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Power input to crankcase heater in ari 17 degree continuous operation
+      test, kw. niles pcch17.
   - :name: cch.p47
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto 47 degree test. niles pcch47. p17 and p47 always the same;
+      p47 may be used in code as
   - :name: cch.frCprOn
     :input: true
     :runtime: true
@@ -9557,6 +9722,8 @@ airHandler:
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: 'Thermostat state for cchcm = tstat: must remember to implement
+      hysteresis'
   - :name: cch.p
     :input: true
     :runtime: true
@@ -9567,11 +9734,13 @@ airHandler:
     :runtime: true
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Coil type choice according to application, as follows.  constant.
   - :name: ahhc.sched
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: Avail when coil available, off when disabled, hourly, default avail.
   - :name: ahhc.captRat
     :input: true
     :runtime: true
@@ -9592,11 +9761,15 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Start-subhr captrat, to undo size increases not in use as converged
+      at end subhr (ahhc,ahcc).
   - :name: ahhc.eirRat
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Rated load energy input ratio===heat input ratio===input/output===1/efficiency
+      for dx,gas,oil at least.
   - :name: ahhc.mtri
     :input: true
     :runtime: true
@@ -9607,51 +9780,66 @@ airHandler:
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Additional input energy used in proportion to plr when coil on,
+      as for induced draft fan,
   - :name: ahhc.auxOnMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr to which to charge "auxon"
   - :name: ahhc.auxOff
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Addl input energy when off for part or all of subhr (proportional
+      to 1-plr), for unforseen uses.
   - :name: ahhc.auxOffMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr for "auxoff"
   - :name: ahhc.auxOnAtall
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Addl input energy used in toto when coil on for any part of subhour,
+      for unforseen uses.
   - :name: ahhc.auxOnAtallMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr for "auzonatall"
   - :name: ahhc.auxFullOff
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Additional input energy when off for entire subhour (as opposed
+      to in proportion to 1-plr).
   - :name: ahhc.auxFullOffMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr to which auxfulloff is charged
   - :name: ahhc.q
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Average (not fan-on) output power level for subhour
   - :name: ahhc.qPr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Output at which coil''s plant last computed, for call-flagging
+      plant. set: cnhp.cpp. used: cncoil.cpp'
   - :name: ahhc.p
     :input: true
     :runtime: true
@@ -9662,41 +9850,51 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Current fan-on (or furnace-on) relative load (part load ratio)
   - :name: ahhc.plrAv
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Current average relative load (plr * frfanon)
   - :name: ahhc.eir
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Energy input ratio: current input/output, fan on===average. rob''s
+      addition, for probes, 5-92.'
   - :name: ahhc.pAuxOn
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil-on proporotinal aux power this subhour
   - :name: ahhc.pAuxOff
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil-off proportional aux power this subhour
   - :name: ahhc.pAuxOnAtall
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil on-at-all aux power this subhour
   - :name: ahhc.pAuxFullOff
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Auxfulloff (doe2 pilot) power this subhour
   - :name: ahhc.effRat
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: 'Efficiency @ rated load: alternate eir input, converted into eirrat
+      in setup.'
   - :name: ahhc.pyEi.k[0]
     :input: true
     :runtime: true
@@ -9727,96 +9925,130 @@ airHandler:
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Fraction of unused capacity that must be used (increasing plr) to
+      make up for increased
   - :name: ahhc.hpi
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Subscript of heatplant serving hw coil
   - :name: ahhc.nxTu4hp
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Tub subscr of next tu with hw coil on same heatplant. 1st is heatplant.tu1.
   - :name: ahhc.nxAh4hp
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ahb subscr of next ah with hw coil on same heatplant. 1st is heatplant.ah1.
   - :name: ahhc.flueLoss
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Part-load flue loss this subhour, gas and oil only
   - :name: ahhc.qWant
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Hw:  desired output===input, dohwcoil to hpcompute, used in determining
+      capf.'
   - :name: ahhc.cap17
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Ari steady state rated cap @ 17 out, 70 indoor (return) air, btuh,
+      rqd for ahp, niles pcapss17.
   - :name: ahhc.cap47
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Ari steady state rated cap @ 47 out, 70 indoor (return) air, btuh,
+      rqd for ahp, niles pcapss47.
   - :name: ahhc.cap35
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ari steady state rated cap @ 35f outdoor, btuh, default per fd35df,
+      niles pcapss35.
   - :name: ahhc.fd35Df
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Default frost/defrost degradation factor at 35 f, default .85, niles
+      fdf35dft.
   - :name: ahhc.capIa
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Capacity correction factor for indoor (return) air temperature,
+      default .004, niles iaccap.
   - :name: ahhc.supRh
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Input (& output) of supplemental resistance reheat coil, kw, default
+      10, niles psuprh.
   - :name: ahhc.tFrMn
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Lowest  temp for frost buildup & defrost effects, default 17f, niles
+      tfrstmn.
   - :name: ahhc.tFrMx
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Highest temp for frost buildup & defrost effects, default 47f, niles
+      tfrstmx.
   - :name: ahhc.tFrPk
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Temp for peak frost buildup & defrost effects, default 42f, niles
+      tfrstpk.
   - :name: ahhc.dfrFMn
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Min frac time in reverse cycle cooling, default .0222 (2/90 min),
+      niles tmfrcdefmn.
   - :name: ahhc.dfrFMx
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Max frac time in reverse cycle cooling, default .0889 (8/90 min),
+      niles tmfrcdefmx.
   - :name: ahhc.dfrCap
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Cooling capacity (to ah supply air) during defrosting, default 2
+      * cap17, niles pdefcool.
   - :name: ahhc.dfrRh
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Input (& output) power of addl reheat coil run during defrost, default
+      5kw, niles pdefrh.
   - :name: ahhc.tOff
     :input: true
     :runtime: true
@@ -9832,46 +10064,61 @@ airHandler:
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Steady state power input @ 17 outdoor, 70 indoor (return). rqd for
+      ahp. niles pinss17.
   - :name: ahhc.in47
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Steady state power input @ 47 outdoor, 70 indoor (return). rqd for
+      ahp. niles pinss47.
   - :name: ahhc.inIa
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Indoor (return) air temp power input correction factor, default
+      .004, niles iacin.
   - :name: ahhc.cd
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Ari cycling degradation coefficient, default .25, niles cd.
   - :name: ahhc.in17c
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Compressor input power @ 17 degrees out, 70 in: in17 with cch power
+      removed. niles pinss17.'
   - :name: ahhc.in47c
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto 47 degrees.  niles pinss47.
   - :name: ahhc.cdm
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Modified cd: cycling degradation coefficient adjusted to remove
+      cch. niles cdm.'
   - :name: ahhc.tIa
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Indoor air temp: copy of tmix or whatever ah variable is chosen'
   - :name: ahhc.qSupLim
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Caller-set heat output limit for when suppl heat in use: kludge
+      when fan cycling'
   - :name: ahhc.frFanOn
     :input: true
     :runtime: true
@@ -9882,26 +10129,36 @@ airHandler:
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: True if compressor locked out due to low outdoor temp (see toff,
+      ton)
   - :name: ahhc.supOn
     :input: true
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: True if supplementary heat enabled (frfanon is ~1.0, with hysterisis
+      to keep ah stable).
   - :name: ahhc.capCon
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Continuous cpr capac incl frost/defrost @ actual indoor temp, excl
+      def & reg rh. niles pcapmx.
   - :name: ahhc.pDfrhCon
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Continuous avg power input to defrost heater @ outdoor temp (not
+      cycling). niles pdefrhmx.
   - :name: ahhc.cap
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Capacity this subhour incl suppl heaters. rob's addition, used by
+      doahpheatcoil re tpossh.
   - :name: ahhc.frCprOn
     :input: true
     :runtime: true
@@ -9912,11 +10169,14 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Power input to compressor (niles pincomp): copy to .p in coilsendsubhr.'
   - :name: ahhc.pRh
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Input===output of reg & dfr supplemental resistance heaters. included
+      in q, not in p. niles prh.
   - :name: ahccBypass
     :input: true
     :runtime: true
@@ -9929,11 +10189,13 @@ airHandler:
     :runtime: true
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Coil type choice according to application, as follows.  constant.
   - :name: ahcc.sched
     :input: true
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: Avail when coil available, off when disabled, hourly, default avail.
   - :name: ahcc.captRat
     :input: true
     :runtime: true
@@ -9954,11 +10216,15 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Start-subhr captrat, to undo size increases not in use as converged
+      at end subhr (ahhc,ahcc).
   - :name: ahcc.eirRat
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Rated load energy input ratio===heat input ratio===input/output===1/efficiency
+      for dx,gas,oil at least.
   - :name: ahcc.mtri
     :input: true
     :runtime: true
@@ -9969,51 +10235,66 @@ airHandler:
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Additional input energy used in proportion to plr when coil on,
+      as for induced draft fan,
   - :name: ahcc.auxOnMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr to which to charge "auxon"
   - :name: ahcc.auxOff
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Addl input energy when off for part or all of subhr (proportional
+      to 1-plr), for unforseen uses.
   - :name: ahcc.auxOffMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr for "auxoff"
   - :name: ahcc.auxOnAtall
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Addl input energy used in toto when coil on for any part of subhour,
+      for unforseen uses.
   - :name: ahcc.auxOnAtallMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr for "auzonatall"
   - :name: ahcc.auxFullOff
     :input: true
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Additional input energy when off for entire subhour (as opposed
+      to in proportion to 1-plr).
   - :name: ahcc.auxFullOffMtri
     :input: true
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Mtr to which auxfulloff is charged
   - :name: ahcc.q
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Average (not fan-on) output power level for subhour
   - :name: ahcc.qPr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Output at which coil''s plant last computed, for call-flagging
+      plant. set: cnhp.cpp. used: cncoil.cpp'
   - :name: ahcc.p
     :input: true
     :runtime: true
@@ -10024,41 +10305,51 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Current fan-on (or furnace-on) relative load (part load ratio)
   - :name: ahcc.plrAv
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Current average relative load (plr * frfanon)
   - :name: ahcc.eir
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Energy input ratio: current input/output, fan on===average. rob''s
+      addition, for probes, 5-92.'
   - :name: ahcc.pAuxOn
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil-on proporotinal aux power this subhour
   - :name: ahcc.pAuxOff
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil-off proportional aux power this subhour
   - :name: ahcc.pAuxOnAtall
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil on-at-all aux power this subhour
   - :name: ahcc.pAuxFullOff
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Auxfulloff (doe2 pilot) power this subhour
   - :name: ahcc.capsRat
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Dx: sensible rated capacity <= captrat btu/hr, const for input,
+      *s cuz varies during autosize.'
   - :name: ahcc.capsRat_As
     :input: true
     :runtime: true
@@ -10074,46 +10365,63 @@ airHandler:
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: 'Dx: min evaporator (effective surface) temp (below which compressor
+      cuts out), default 35f. (40f til 8-95)'
   - :name: ahcc.k1
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: 'Dx, chw: power of relative air flow to which outside number of
+      transfer units is proportional.'
   - :name: ahcc.dsTDbCnd
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Design (rating) (dx) condenser temp (outdoor temp pending water
+      option), default = ari = 95f.
   - :name: ahcc.dsTDbEn
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Design (rating) (dx,chw) entering air dry bulb temp, default = ari
+      = 80f.
   - :name: ahcc.dsTWbEn
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Design (rating) (dx) entering air wet bulb temp, default = ari =
+      67f.  replaces taylor's dseawb.
   - :name: ahcc.vfR
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Rating (dx,chw) air flow (cfm). default: dx: per vfrperton. chw:
+      sfan.vfds.'
   - :name: ahcc.vfRperTon
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Dx default vfr per ton (12000 btuh) of captrat. default: 400.'
   - :name: ahcc.minUnldPlr
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Part load ratio (fraction of full load) at/above which "compressor
+      unloading" is used. dfl 1.
   - :name: ahcc.minFsldPlr
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: 'Plr above which "false loading" is used (up to minunldplr). dfl
+      minunldplr: no false loading.'
   - :name: ahcc.pydxCaptT.k[0]
     :input: true
     :runtime: true
@@ -10179,6 +10487,7 @@ airHandler:
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Upper limit for value of pydxcaptf, 8-28-95
   - :name: ahcc.pydxEirT.k[0]
     :input: true
     :runtime: true
@@ -10244,56 +10553,73 @@ airHandler:
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Subscript of coolplant serving chw coil, rqd for chw.
   - :name: ahcc.gpmDs
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Design (i.e. maximum) chilled water flow, gpm, rqd for chw. niles
+      mwd[g].
   - :name: ahcc.ntuoDs
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Outside number of transfer units at design air flow (vfr), default
+      2. niles ntuod.
   - :name: ahcc.ntuiDs
     :input: true
     :runtime: true
     :type: number
     :variability: autosize and simulate phase start time
+    :description: Inside number of transfer units at design water flow (gpmds), default
+      2. niles ntuid.
   - :name: ahcc.wsatMinTEvap
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Hum ratio of saturated air at mintevap (minimum evaporator temp)
   - :name: ahcc.hsatMinTEvap
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Enthalpy of saturated air at mintevap
   - :name: ahcc.efecOR
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "(outside) effectiveness at rated conditions (in record for probing
+      only)"
   - :name: ahcc.ntuR
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Number of trasfer units (like time constants) at rated conditions
   - :name: ahcc.eirMinUnldPlr
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Pydxeirul(minunldplr): precomputed dx input correction for falseloading;
+      prorate for cycling.'
   - :name: ahcc.menR
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Chw/dx coil rating air flow (lb/hr) (for chw, niles 'mad')
   - :name: ahcc.nxAh4cp
     :input: true
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 0 or subscr of next ah with chw coil served by same coolplant. 1st
+      is coolplant.ah1.
   - :name: ahcc.mwDs
     :input: true
     :runtime: true
@@ -10304,6 +10630,8 @@ airHandler:
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Nz if cooling desired (texwant < ten) regardless of sched, etc.
+      docoils-->cpestimate.
   - :name: ahcc.tewd
     :input: true
     :runtime: true
@@ -10324,16 +10652,20 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Cp ts for which coil last computed, re compute-flagging coil from
+      plant
   - :name: ahcc.trPr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Coil tr at last coil compute, re call-flagging cp from coil model
   - :name: ahcc.fullLoadWet
     :input: true
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: True if chw coil wet @ full load,
   - :name: ahcc.frCprOn
     :input: true
     :runtime: true
@@ -10394,26 +10726,33 @@ airHandler:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Condensation heat added to air (const enthalpy) to fix supersaturated
+      wen, this subhr.
   - :name: ahcc.xLGainYr
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: ".. cumulative over run, for message at end run."
   - :name: ahcc.nSubhrsLX
     :input: true
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Number of subhours in which supersaturated entering air fixed
   - :name: ahcc.minTLtd
     :input: true
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Output limited by mintevap b4 reaching ahtsmn (dx, 7-95)
   - :name: ahcc.cfm2Few
     :input: true
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Too little flow to permit sizing coil to meet load at min temp (dx,
+      7-95)
   - :name: tu1
     :input: true
     :runtime: true
@@ -11367,6 +11706,8 @@ boiler:
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Subscript of mtr to which to charge boiler input power, default
+      none
   - :name: blrp.mw
     :input: true
     :runtime: true
@@ -11377,11 +11718,14 @@ boiler:
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Current output power level (excluding pump heat), share of total
+      of connected coils & hx's
   - :name: blrp.p
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Current input power
   - :name: auxOn
     :input: true
     :runtime: true
@@ -12367,6 +12711,8 @@ chiller:
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Meter name ("chmtr") for accumulating compressor energy used by
+      chiller,
   - :name: chpp.mw
     :input: true
     :runtime: true
@@ -12377,11 +12723,14 @@ chiller:
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: This chiller's current primary output power to pri loop
   - :name: chpp.p
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Compressor power input. also see chpp.p, chcp.p. (niles cndpmppwrin,
+      prmpmppwrin, totpwrin)
   - :name: chcp.gpm
     :input: true
     :runtime: true
@@ -12412,6 +12761,8 @@ chiller:
     :runtime: true
     :type: integer number
     :variability: autosize and simulate phase start time
+    :description: Meter name ("chmtr") for accumulating compressor energy used by
+      chiller,
   - :name: chcp.mw
     :input: true
     :runtime: true
@@ -12422,11 +12773,14 @@ chiller:
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: This chiller's current primary output power to pri loop
   - :name: chcp.p
     :input: true
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Compressor power input. also see chpp.p, chcp.p. (niles cndpmppwrin,
+      prmpmppwrin, totpwrin)
   - :name: auxOn
     :input: true
     :runtime: true
@@ -22379,161 +22733,205 @@ mass:
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Parent mass subscr
   - :name: inside.ty
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Bound cond type: msbcadiabatic, msbcambient, msbcground, msbczone,
+      or msbcspect.'
   - :name: inside.zi
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone sbscr if .bc_ty == msbczone.
   - :name: inside.exTa
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Adjacent air temp, f
   - :name: inside.exTr
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Adjacent radiant temp, f
   - :name: inside.rsurf
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Extra surf resis, from masstype, for "light" surf lyrs eg carpet:
+      res for solar to 1st hvy lyr.'
   - :name: inside.h
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Combined surface conductance, air to 1st "heavy" layer (btuh/ft2-f)
   - :name: inside.ha
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Bc_h * area, btuh/f
   - :name: inside.rIg
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: Radiant internal gain target (float) (btuh). pointed to by znr.rigdist;
+      set/used in cnloads. 11-95
   - :name: inside.qxhnet
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: 'Net heat xfer for hour (btu, + = into mass): signed sum of all
+      transfers.'
   - :name: inside.qxdnet
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... ditto current day"
   - :name: inside.qxmnet
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... ditto current month"
   - :name: inside.qxhtot
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: 'Total xfer for hour (btu): sum of abs(xfer).  used as divisor for
+      determining relative error.'
   - :name: inside.qxdtot
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... ditto current day"
   - :name: inside.qxmtot
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... ditto current month"
   - :name: inside.surfTemp
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Probe-able duplicate copy of inside or outside layer surface temp,
+      set in loadssurfaces.
   - :name: outside.msi
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Parent mass subscr
   - :name: outside.ty
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Bound cond type: msbcadiabatic, msbcambient, msbcground, msbczone,
+      or msbcspect.'
   - :name: outside.zi
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone sbscr if .bc_ty == msbczone.
   - :name: outside.exTa
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Adjacent air temp, f
   - :name: outside.exTr
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Adjacent radiant temp, f
   - :name: outside.rsurf
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Extra surf resis, from masstype, for "light" surf lyrs eg carpet:
+      res for solar to 1st hvy lyr.'
   - :name: outside.h
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Combined surface conductance, air to 1st "heavy" layer (btuh/ft2-f)
   - :name: outside.ha
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Bc_h * area, btuh/f
   - :name: outside.rIg
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: Radiant internal gain target (float) (btuh). pointed to by znr.rigdist;
+      set/used in cnloads. 11-95
   - :name: outside.qxhnet
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: 'Net heat xfer for hour (btu, + = into mass): signed sum of all
+      transfers.'
   - :name: outside.qxdnet
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... ditto current day"
   - :name: outside.qxmnet
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... ditto current month"
   - :name: outside.qxhtot
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: 'Total xfer for hour (btu): sum of abs(xfer).  used as divisor for
+      determining relative error.'
   - :name: outside.qxdtot
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... ditto current day"
   - :name: outside.qxmtot
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... ditto current month"
   - :name: outside.surfTemp
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Probe-able duplicate copy of inside or outside layer surface temp,
+      set in loadssurfaces.
   - :name: UNom
     :input: false
     :runtime: true
