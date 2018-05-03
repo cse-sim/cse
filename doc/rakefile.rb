@@ -950,15 +950,19 @@ BuildProbesYaml = lambda do
       flds_alt = rec_alt[:fields].select do |f|
         na = f[:name].downcase
         n1a = na
-        n2a = na.gsub(/^[^_]*_/, '')
-        nb = fld[:name].downcase 
+        n2a = na.gsub(/^[^_]*_/, '').gsub(/\[[^\]]*\]/, '')
+        nb = fld[:name].downcase.gsub(/^[^_]*_/, '').gsub(/\[[^\]]*\]/, '') 
         n1a == nb || n2a == nb
       end
       if flds_alt.length == 1
         fld_alt = flds_alt[0]
         desc = fld_alt.fetch(:description, desc)
       end
-      fld[:description] = desc unless desc.nil?
+      begin
+        fld[:description] = desc.capitalize unless desc.nil?
+      rescue
+        fld[:description] = desc unless desc.nil?
+      end
     end
   end
   File.write(out_path, probes.to_yaml)
