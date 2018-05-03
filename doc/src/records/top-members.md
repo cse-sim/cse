@@ -581,7 +581,7 @@ Characters per line for report headers and footers, user defined reports, and er
 
 **repTestPfx=*string***
 
-Report test prefix. Appears at beginning of report lines that are expected to differ from prior runs. This is useful for âhidingâ lines from text comparison utilities in automated testing schemes. Note: the value specified with command line -x takes precedence over this input.
+Report test prefix. Appears at beginning of report lines that are expected to differ from prior runs. This is useful for "hiding" lines from text comparison utilities in automated testing schemes. Note: the value specified with command line -x takes precedence over this input.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -647,7 +647,7 @@ Controls verbosity of screen remarks. Most possible remarks are generated during
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              0 â 5 ?           1             No             constant
+                0- 5 ?           1             No             constant
 
 The following dbgPrintMask values provide bitwise control of addition of semi-formated internal results to the run report file. The values and format of debugging reports are modified as required for testing purposes. <!-- TODO: document options -->
 

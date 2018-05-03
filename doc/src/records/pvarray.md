@@ -34,7 +34,7 @@ The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
-  kW          *x* &ge; 0          *none*        Yes            constant
+  kW          *x* $\geq$ 0          *none*        Yes            constant
 
 **pvModuleType=*choice***
 
@@ -65,7 +65,7 @@ The refraction index for the coating applied to the module cover. A value of 1.0
   ------------------------------------------------------------------------------
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
-              *x* &ge; 1.0        1.0           No             constant
+              *x* $\geq$ 1.0        1.0           No             constant
 
   ------------------------------------------------------------------------------
 
