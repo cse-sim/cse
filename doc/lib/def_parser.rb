@@ -136,7 +136,7 @@ module DefParser
     records
   end
   ParseProbesTxt = lambda {ParseCseDashP[LoadProbes[]]}
-  VERBOSE = true
+  VERBOSE = false
   CleanStr = lambda do |s|
     s.encode('UTF-8',
              :invalid => :replace,
