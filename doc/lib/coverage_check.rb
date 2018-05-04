@@ -18,7 +18,9 @@ module CoverageCheck
   DataItemHeader = lambda do |line|
     m = line.match(/^\*\*(.*)\*\*$/)
     if m
-      m[1].split(/=/)[0].gsub(/\*/,'').strip
+      header = m[1].split(/=/)[0].gsub(/\*/,'').strip
+      return nil if Ignore[header]
+      header
     else
       nil
     end
@@ -29,7 +31,7 @@ module CoverageCheck
   Ignore = lambda do |header|
     hdc = header.downcase
     IgnoredHeaders.each do |ih|
-      return true if hdc.include?(ih)
+      return true if hdc.include?(ih) or ih.include?(hdc)
     end
     false
   end
