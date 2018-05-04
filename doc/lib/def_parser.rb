@@ -136,12 +136,53 @@ module DefParser
     records
   end
   ParseProbesTxt = lambda {ParseCseDashP[LoadProbes[]]}
-  VERBOSE = false
+  VERBOSE = true
   CleanStr = lambda do |s|
     s.encode('UTF-8',
              :invalid => :replace,
              :undef => :replace,
              :replace => '')
+  end
+  # String (Array String) Int -> (Tuple (Or Nil String) Int)
+  # Given a line, an array of reference lines, and an integer for current
+  # position in reference lines, return a tuple of the comment description for
+  # the given line and the new position, or nil and the current position if
+  # nothing is found.
+  FindDescription = lambda do |line, ref_lines, current_ref_idx|
+    stripped_line = line.strip
+    next_ref_idx = current_ref_idx
+    ref_line = nil
+    ref_lines.each_with_index do |rl, ref_idx|
+      next if ref_idx < current_ref_idx
+      rl_ = rl.gsub(/\t/, ' ').gsub(/\/\//, '  ').gsub(/\/\*/, '  ') + " "
+      if rl_.include?(stripped_line + " ")
+        next_ref_idx = ref_idx
+        ref_line = rl
+        break
+      end
+    end
+    if ref_line
+      puts("matching:\n\t#{line.strip[0..40]}\n with\n\t#{ref_line.strip[0..40]}\n") if VERBOSE
+      m = ref_line.match(/^.*?\/\/(.*)$/)
+      if m
+        # match // ... lines
+        description = CleanStr[m[1].strip]
+        puts("found field!: #{description[0..40]}") if VERBOSE
+        [description, next_ref_idx]
+      else
+        # match /* ... lines
+        n = ref_line.match(/^.*?\/\*(.*)$/)
+        if n
+          description = CleanStr[n[1].strip.gsub(/\*\//, '')]
+          puts("found field!: #{description[0..40]}") if VERBOSE
+          [description, next_ref_idx]
+        else
+          [nil, current_ref_idx]
+        end
+      end
+    else
+      [nil, current_ref_idx]
+    end
   end
   Parse = lambda do |input, reference=nil|
     in_record = false
@@ -184,35 +225,13 @@ module DefParser
           :spec => spec,
           :name => name.gsub(/;/,'')
         }
+        if field[:name] = "nHrHeat" and record_name == "zone interval results sub"
+          binding.irb
+        end
         if reference
-          # forward to the first line that matches
-          stripped_line = line.strip
-          ref_line = nil
-          ref_lines.each_with_index do |rl, ref_idx|
-            next if ref_idx < current_ref_idx
-            rl_ = rl.gsub(/\t/, ' ').gsub(/\/\//, '  ').gsub(/\/\*/, '  ') + " "
-            if rl_.include?(stripped_line + " ")
-              current_ref_idx = ref_idx
-              ref_line = rl
-              break
-            end
-          end
-          if ref_line
-            puts("matching:\n\t#{line.strip[0..40]}\n with\n\t#{ref_line.strip[0..40]}\n") if VERBOSE
-            m = ref_line.match(/^.*?\/\/(.*)$/)
-            if m
-              # match // ... lines
-              field[:description] = CleanStr[m[1].strip]
-              puts("found field!: #{field[:description][0..40]}") if VERBOSE
-            else
-              # match /* ... lines
-              n = ref_line.match(/^.*?\/\*(.*)$/)
-              if n
-                field[:description] = CleanStr[n[1].strip.gsub(/\*\//, '')]
-                puts("found field!: #{field[:description][0..40]}") if VERBOSE
-              end
-            end
-          end
+          description, current_ref_idx = FindDescription[
+            line, ref_lines, current_ref_idx]
+          field[:description] = description if description
         end
         toks = line.gsub(/#{spec}\s+#{name}\s*$/, '')
           .strip
@@ -266,9 +285,6 @@ module DefParser
           output[record_id.downcase][:fields] += record_fields
         else
           output[record_id.downcase] = MkRecord[record_id, record_name, record_fields]
-        end
-        if record_id == "TOPRAT"
-          #binding.irb
         end
         record_id = nil
         record_name = nil
