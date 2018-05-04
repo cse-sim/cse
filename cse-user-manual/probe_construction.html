@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space:pre}</style>
+  <link rel="stylesheet" href="css/base.css">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">CSE User's Manual</h1>
+<h1 class="subtitle">California Simulation Engine</h1>
+<ul class="nav-bar">
+  <li><a href="probe_chiller.html">&larr; Previous</a></li>
+  <li><a href="../index.html">&uarr; Top &uarr;</a></li>
+  <li><a href="index.html">&lt;&lt; Contents &gt;&gt;</a></li>
+  <li><a href="probe_coolplant.html">Next &rarr;</a></li>
+</ul>
+</header>
+<div id="main-content">
+<h2 id="p_construction">6.6 construction</h2><p>@construction[1..].</p><table><colgroup><col style="width:10%"><col style="width:10%"><col style="width:14%"><col style="width:12%"><col style="width:24%"><col style="width:27%"></colgroup><thead><tr class="header"><th style="text-align:left">Name</th><th>Input?</th><th style="text-align:left">Runtime?</th><th style="text-align:left">Type</th><th style="text-align:left">Variability</th><th style="text-align:left">Description</th></tr></thead><tbody><tr class="odd"><td style="text-align:left">name</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">string</td><td style="text-align:left">constant</td><td style="text-align:left">–</td></tr><tr class="even"><td style="text-align:left">conU</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">number</td><td style="text-align:left">input time</td><td style="text-align:left">U-value. entered by user or calculated from associated layers (lrs). 0 allowed.</td></tr><tr class="odd"><td style="text-align:left">nLr</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">integer number</td><td style="text-align:left">run start time (of each phase, autoSize or simulate)</td><td style="text-align:left">0 or number of layers (in lr rat). layers are entered in order from inside out.</td></tr><tr class="even"><td style="text-align:left">nFrmLr</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">integer number</td><td style="text-align:left">run start time (of each phase, autoSize or simulate)</td><td style="text-align:left"># framed layers: error if &gt; 1; is-framed flag.</td></tr><tr class="odd"><td style="text-align:left">r</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">number</td><td style="text-align:left">run start time (of each phase, autoSize or simulate)</td><td style="text-align:left">Thermal resistance of layers accumulated here for conu</td></tr><tr class="even"><td style="text-align:left">hc</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">number</td><td style="text-align:left">run start time (of each phase, autoSize or simulate)</td><td style="text-align:left">Accumulated heat capacity per square foot</td></tr><tr class="odd"><td style="text-align:left">rNom</td><td>X</td><td style="text-align:left">–</td><td style="text-align:left">number</td><td style="text-align:left">run start time (of each phase, autoSize or simulate)</td><td style="text-align:left">Nominal r value</td></tr></tbody></table>
+</div>
+<p class="footer">Copyright (c) 1997-2018 The CSE Authors. All rights reserved.<br>Generated: 2018-05-04T09:32:52-06:00</p>
+</body>
+</html>
