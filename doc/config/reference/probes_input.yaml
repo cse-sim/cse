@@ -8255,6 +8255,8 @@ terminal:
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Heating max flow (cfm actual air) b4 ah limits, hourly, rqd if tuth
+      given else disallowed
   - :name: tuVfMxH_As
     :input: true
     :runtime: true
@@ -17381,6 +17383,8 @@ reportCol:
     :runtime: true
     :type: integer number
     :variability: constant
+    :description: 'For runtime: col subscript of next column in this report, 0 if
+      last one'
 exportCol:
   :input: true
   :runtime: true
@@ -17434,6 +17438,8 @@ exportCol:
     :runtime: true
     :type: integer number
     :variability: constant
+    :description: 'For runtime: col subscript of next column in this report, 0 if
+      last one'
 importFile:
   :input: true
   :runtime: true
@@ -18558,2101 +18564,2641 @@ znRes:
     :runtime: true
     :type: unrecognized
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Accumulate call count (to convert sums to averages)
   - :name: Y.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: Y.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Ditto cooling
   - :name: Y.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Ditto fan vent
   - :name: Y.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Ditto natural vent
   - :name: Y.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: Y.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "# of iterations"
   - :name: Y.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: Y.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Ditto cooling
   - :name: Y.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: Y.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Ditto heating
   - :name: Y.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: Y.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Subhour counter (convenience)
   - :name: Y.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: Y.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: Y.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: Y.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: Y.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: Y.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: Y.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: Y.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone air humidity ratio; last float to average
   - :name: Y.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: Y.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone infiltration sensible gain, btu
   - :name: Y.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone solar gain, btu
   - :name: Y.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone internal sensible gain, btu
   - :name: Y.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: Y.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Interzone gain to zone, btu
   - :name: Y.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: Y.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: Y.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone infiltration latent gain, btu
   - :name: Y.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone internal latent gain, btu
   - :name: Y.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: Y.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: Y.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: Y.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: Y.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: Y.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: Y.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone accumulated cooling (negative) ...
   - :name: Y.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: Y.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "... mechanical (oav) vent (negative)"
   - :name: Y.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: Zone lighting demand and energy use, ...
   - :name: Y.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: end of run (of each phase, autoSize or simulate)
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: M.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: end of each month
+    :description: Accumulate call count (to convert sums to averages)
   - :name: M.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each month
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: M.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each month
+    :description: Ditto cooling
   - :name: M.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each month
+    :description: Ditto fan vent
   - :name: M.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each month
+    :description: Ditto natural vent
   - :name: M.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each month
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: M.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "# of iterations"
   - :name: M.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: M.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Ditto cooling
   - :name: M.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: M.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Ditto heating
   - :name: M.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: M.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Subhour counter (convenience)
   - :name: M.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: M.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: M.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: M.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: M.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: M.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: M.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: M.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone air humidity ratio; last float to average
   - :name: M.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: M.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone infiltration sensible gain, btu
   - :name: M.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone solar gain, btu
   - :name: M.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone internal sensible gain, btu
   - :name: M.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: M.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Interzone gain to zone, btu
   - :name: M.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: M.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: M.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone infiltration latent gain, btu
   - :name: M.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone internal latent gain, btu
   - :name: M.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: M.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: M.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: M.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: M.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: M.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: M.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone accumulated cooling (negative) ...
   - :name: M.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: M.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... mechanical (oav) vent (negative)"
   - :name: M.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: Zone lighting demand and energy use, ...
   - :name: M.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: end of each month
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: D.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: end of each day
+    :description: Accumulate call count (to convert sums to averages)
   - :name: D.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each day
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: D.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each day
+    :description: Ditto cooling
   - :name: D.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each day
+    :description: Ditto fan vent
   - :name: D.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each day
+    :description: Ditto natural vent
   - :name: D.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each day
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: D.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "# of iterations"
   - :name: D.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: D.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Ditto cooling
   - :name: D.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: D.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Ditto heating
   - :name: D.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: D.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Subhour counter (convenience)
   - :name: D.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: D.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: D.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: D.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: D.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: D.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: D.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: D.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone air humidity ratio; last float to average
   - :name: D.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: D.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone infiltration sensible gain, btu
   - :name: D.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone solar gain, btu
   - :name: D.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone internal sensible gain, btu
   - :name: D.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: D.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Interzone gain to zone, btu
   - :name: D.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: D.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: D.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone infiltration latent gain, btu
   - :name: D.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone internal latent gain, btu
   - :name: D.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: D.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: D.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: D.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: D.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: D.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: D.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone accumulated cooling (negative) ...
   - :name: D.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: D.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... mechanical (oav) vent (negative)"
   - :name: D.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: Zone lighting demand and energy use, ...
   - :name: D.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: end of each day
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: H.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: end of each hour
+    :description: Accumulate call count (to convert sums to averages)
   - :name: H.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each hour
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: H.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each hour
+    :description: Ditto cooling
   - :name: H.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each hour
+    :description: Ditto fan vent
   - :name: H.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each hour
+    :description: Ditto natural vent
   - :name: H.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each hour
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: H.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "# of iterations"
   - :name: H.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: H.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Ditto cooling
   - :name: H.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: H.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Ditto heating
   - :name: H.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: H.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Subhour counter (convenience)
   - :name: H.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: H.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: H.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: H.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: H.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: H.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: H.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: H.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone air humidity ratio; last float to average
   - :name: H.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: H.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone infiltration sensible gain, btu
   - :name: H.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone solar gain, btu
   - :name: H.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone internal sensible gain, btu
   - :name: H.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: H.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Interzone gain to zone, btu
   - :name: H.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: H.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: H.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone infiltration latent gain, btu
   - :name: H.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone internal latent gain, btu
   - :name: H.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: H.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: H.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: H.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: H.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: H.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: H.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone accumulated cooling (negative) ...
   - :name: H.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: H.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "... mechanical (oav) vent (negative)"
   - :name: H.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: Zone lighting demand and energy use, ...
   - :name: H.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: end of each hour
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: S.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: end of each subhour
+    :description: Accumulate call count (to convert sums to averages)
   - :name: S.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: S.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Ditto cooling
   - :name: S.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Ditto fan vent
   - :name: S.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Ditto natural vent
   - :name: S.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: end of each subhour
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: S.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "# of iterations"
   - :name: S.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: S.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Ditto cooling
   - :name: S.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: S.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Ditto heating
   - :name: S.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: S.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Subhour counter (convenience)
   - :name: S.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: S.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: S.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: S.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: S.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: S.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: S.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: S.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone air humidity ratio; last float to average
   - :name: S.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: S.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone infiltration sensible gain, btu
   - :name: S.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone solar gain, btu
   - :name: S.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone internal sensible gain, btu
   - :name: S.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: S.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Interzone gain to zone, btu
   - :name: S.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: S.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: S.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone infiltration latent gain, btu
   - :name: S.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone internal latent gain, btu
   - :name: S.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: S.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: S.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: S.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: S.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: S.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: S.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone accumulated cooling (negative) ...
   - :name: S.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: S.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "... mechanical (oav) vent (negative)"
   - :name: S.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: Zone lighting demand and energy use, ...
   - :name: S.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: end of each subhour
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: prior.Y.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Accumulate call count (to convert sums to averages)
   - :name: prior.Y.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: prior.Y.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto cooling
   - :name: prior.Y.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto fan vent
   - :name: prior.Y.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto natural vent
   - :name: prior.Y.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: prior.Y.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "# of iterations"
   - :name: prior.Y.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: prior.Y.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto cooling
   - :name: prior.Y.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: prior.Y.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Ditto heating
   - :name: prior.Y.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: prior.Y.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Subhour counter (convenience)
   - :name: prior.Y.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: prior.Y.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: prior.Y.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: prior.Y.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: prior.Y.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: prior.Y.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: prior.Y.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: prior.Y.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone air humidity ratio; last float to average
   - :name: prior.Y.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: prior.Y.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone infiltration sensible gain, btu
   - :name: prior.Y.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone solar gain, btu
   - :name: prior.Y.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone internal sensible gain, btu
   - :name: prior.Y.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: prior.Y.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Interzone gain to zone, btu
   - :name: prior.Y.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: prior.Y.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: prior.Y.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone infiltration latent gain, btu
   - :name: prior.Y.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone internal latent gain, btu
   - :name: prior.Y.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: prior.Y.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: prior.Y.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: prior.Y.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: prior.Y.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: prior.Y.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: prior.Y.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone accumulated cooling (negative) ...
   - :name: prior.Y.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: prior.Y.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "... mechanical (oav) vent (negative)"
   - :name: prior.Y.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Zone lighting demand and energy use, ...
   - :name: prior.Y.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: prior.M.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: monthly
+    :description: Accumulate call count (to convert sums to averages)
   - :name: prior.M.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: monthly
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: prior.M.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: monthly
+    :description: Ditto cooling
   - :name: prior.M.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: monthly
+    :description: Ditto fan vent
   - :name: prior.M.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: monthly
+    :description: Ditto natural vent
   - :name: prior.M.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: monthly
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: prior.M.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "# of iterations"
   - :name: prior.M.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: prior.M.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Ditto cooling
   - :name: prior.M.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: prior.M.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Ditto heating
   - :name: prior.M.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: prior.M.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Subhour counter (convenience)
   - :name: prior.M.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: prior.M.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: prior.M.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: prior.M.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: prior.M.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: prior.M.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: prior.M.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: prior.M.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone air humidity ratio; last float to average
   - :name: prior.M.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: prior.M.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone infiltration sensible gain, btu
   - :name: prior.M.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone solar gain, btu
   - :name: prior.M.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone internal sensible gain, btu
   - :name: prior.M.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: prior.M.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Interzone gain to zone, btu
   - :name: prior.M.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: prior.M.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: prior.M.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone infiltration latent gain, btu
   - :name: prior.M.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone internal latent gain, btu
   - :name: prior.M.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: prior.M.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: prior.M.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: prior.M.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: prior.M.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: prior.M.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: prior.M.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone accumulated cooling (negative) ...
   - :name: prior.M.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: prior.M.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "... mechanical (oav) vent (negative)"
   - :name: prior.M.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: Zone lighting demand and energy use, ...
   - :name: prior.M.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: monthly
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: prior.D.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: daily
+    :description: Accumulate call count (to convert sums to averages)
   - :name: prior.D.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: daily
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: prior.D.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: daily
+    :description: Ditto cooling
   - :name: prior.D.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: daily
+    :description: Ditto fan vent
   - :name: prior.D.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: daily
+    :description: Ditto natural vent
   - :name: prior.D.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: daily
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: prior.D.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "# of iterations"
   - :name: prior.D.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: prior.D.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Ditto cooling
   - :name: prior.D.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: prior.D.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Ditto heating
   - :name: prior.D.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: prior.D.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Subhour counter (convenience)
   - :name: prior.D.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: prior.D.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: prior.D.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: prior.D.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: prior.D.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: prior.D.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: prior.D.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: prior.D.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone air humidity ratio; last float to average
   - :name: prior.D.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: prior.D.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone infiltration sensible gain, btu
   - :name: prior.D.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone solar gain, btu
   - :name: prior.D.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone internal sensible gain, btu
   - :name: prior.D.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: prior.D.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Interzone gain to zone, btu
   - :name: prior.D.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: prior.D.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: prior.D.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone infiltration latent gain, btu
   - :name: prior.D.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone internal latent gain, btu
   - :name: prior.D.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: prior.D.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: prior.D.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: prior.D.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: prior.D.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: prior.D.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: prior.D.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone accumulated cooling (negative) ...
   - :name: prior.D.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: prior.D.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "... mechanical (oav) vent (negative)"
   - :name: prior.D.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: Zone lighting demand and energy use, ...
   - :name: prior.D.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: daily
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: prior.H.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: Accumulate call count (to convert sums to averages)
   - :name: prior.H.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: prior.H.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Ditto cooling
   - :name: prior.H.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Ditto fan vent
   - :name: prior.H.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Ditto natural vent
   - :name: prior.H.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: prior.H.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "# of iterations"
   - :name: prior.H.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: prior.H.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Ditto cooling
   - :name: prior.H.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: prior.H.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Ditto heating
   - :name: prior.H.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: prior.H.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Subhour counter (convenience)
   - :name: prior.H.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: prior.H.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: prior.H.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: prior.H.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: prior.H.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: prior.H.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: prior.H.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: prior.H.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone air humidity ratio; last float to average
   - :name: prior.H.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: prior.H.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone infiltration sensible gain, btu
   - :name: prior.H.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone solar gain, btu
   - :name: prior.H.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone internal sensible gain, btu
   - :name: prior.H.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: prior.H.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Interzone gain to zone, btu
   - :name: prior.H.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: prior.H.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: prior.H.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone infiltration latent gain, btu
   - :name: prior.H.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone internal latent gain, btu
   - :name: prior.H.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: prior.H.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: prior.H.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: prior.H.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: prior.H.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: prior.H.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: prior.H.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone accumulated cooling (negative) ...
   - :name: prior.H.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: prior.H.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "... mechanical (oav) vent (negative)"
   - :name: prior.H.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Zone lighting demand and energy use, ...
   - :name: prior.H.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
   - :name: prior.S.n
     :input: false
     :runtime: true
     :type: unrecognized
     :variability: subhourly
+    :description: Accumulate call count (to convert sums to averages)
   - :name: prior.S.nHrHeat
     :input: false
     :runtime: true
     :type: integer number
     :variability: subhourly
+    :description: '# of hours in which any heating occurred; 1st "# of hours"'
   - :name: prior.S.nHrCool
     :input: false
     :runtime: true
     :type: integer number
     :variability: subhourly
+    :description: Ditto cooling
   - :name: prior.S.nHrFanv
     :input: false
     :runtime: true
     :type: integer number
     :variability: subhourly
+    :description: Ditto fan vent
   - :name: prior.S.nHrNatv
     :input: false
     :runtime: true
     :type: integer number
     :variability: subhourly
+    :description: Ditto natural vent
   - :name: prior.S.nHrCeilFan
     :input: false
     :runtime: true
     :type: integer number
     :variability: subhourly
+    :description: Ditto ceiling fan operation; last "# of hours"
   - :name: prior.S.nIter
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "# of iterations"
   - :name: prior.S.nShUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "# of substeps in this interval with unmet heating load"
   - :name: prior.S.nShUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Ditto cooling
   - :name: prior.S.nHrUnMetH
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "# of hours in this intervals having *any* unmet heating subhours"
   - :name: prior.S.nHrUnMetC
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Ditto heating
   - :name: prior.S.nShVentH
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "# of substeps int this interval when ventilation caused heating"
   - :name: prior.S.nSubhr
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Subhour counter (convenience)
   - :name: prior.S.nSubhrLX
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "# subhours with condensation (excess latent gain)"
   - :name: prior.S.tAir
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone air temp; must be 1st float, is first float to average (see
+      cnguts.h)
   - :name: prior.S.tRad
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone radiant temp; meaningful iff convective/radiant model active
+      for this zone
   - :name: prior.S.PMV7730
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Iso7730 predicted mean vote = predicted comfort per ashrae thermal
+      sensation scale
   - :name: prior.S.PPD7730
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Iso7730 predicted percent dissatisfied = % of people not satisfied
+      with conditions
   - :name: prior.S.ivAirX
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone air exchange rate not including hvac or ducts, ach
   - :name: prior.S.pz0
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone air pressure relative to patm at nominal z=0, lbf/sf (from
+      zn_pz0)
   - :name: prior.S.wAir
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone air humidity ratio; last float to average
   - :name: prior.S.qCond
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone wall conduction gain, btu; 1st heat flow and first float to
+      sum
   - :name: prior.S.qsInfil
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone infiltration sensible gain, btu
   - :name: prior.S.qSlr
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone solar gain, btu
   - :name: prior.S.qsIg
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone internal sensible gain, btu
   - :name: prior.S.qMass
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone net sensible transfer from mass, btu.  see qlair for moisture.
   - :name: prior.S.qsIz
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Interzone gain to zone, btu
   - :name: prior.S.qsMech
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone total sensible mechanical heat gain, btu
   - :name: prior.S.eqfVentHr
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Equivalent full vent hours = sum( zn_fvent)
   - :name: prior.S.qlInfil
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone infiltration latent gain, btu
   - :name: prior.S.qlIg
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone internal latent gain, btu
   - :name: prior.S.qlIz
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone izxfer latent gain (infil, vent, duct leakage)
   - :name: prior.S.qlAir
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: 'Latent heat of moisture removed from zone air: moisture analog
+      of zncair.'
   - :name: prior.S.qlMech
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone latent mechanical heat gain, btu; last heat flow and last float
+      to sum
   - :name: prior.S.qsBal
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: 'Sensible balance: sum of sensible heats, should be near 0. set
+      in cnguts.cpp.'
   - :name: prior.S.qlBal
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Latent balance similarly.  consider removing bals after development.
   - :name: prior.S.qlX
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Latent gain rejected to prevent zone supersaturation === heat of
+      condensation.
   - :name: prior.S.qcMech
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone accumulated cooling (negative) ...
   - :name: prior.S.qhMech
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "... and heating (positive) mechanical heat gains. latent & sensible
+      combined. 10-93."
   - :name: prior.S.qvMech
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "... mechanical (oav) vent (negative)"
   - :name: prior.S.litDmd
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: Zone lighting demand and energy use, ...
   - :name: prior.S.litEu
     :input: false
     :runtime: true
     :type: number
     :variability: subhourly
+    :description: "... from gains, in addition to posting eu to meter, re daylighting
+      for nrel. 9-94."
 RSYSRes:
   :input: false
   :runtime: true
