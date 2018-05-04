@@ -207,17 +207,21 @@ module DefParser
     current_ref_idx = 0
     input.lines.map(&:chomp).each_with_index do |line, idx|
       if line =~ /^\s*RECORD/
-        m = line.match(/^\s*RECORD\s+([a-zA-Z_0-9-]*)\s*\"([^"]*)\"\s+\*(RAT|STRUCT).*$/)
-        if m && (m[3] == "RAT")
+        m = line.match(/^\s*RECORD\s+([a-zA-Z_0-9-]*)\s*\"([^"]*)\"\s+\*(RAT|STRUCT|SUBSTRUCT).*$/)
+        if m and (m[3] == "RAT")
           in_record = true
           record_id = m[1]
           record_name = m[2]
+        elsif m and (m[1] == "ZNRES_IVL_SUB")
+          in_record = true
+          record_id = "ZNRES"
+          record_name = "znRes"
         end
       elsif line =~ /^\s*\*declare.*$/
         next
       elsif line =~ /^\s*$/
         next
-      elsif line =~ /^\s*\*.*$/ && !(line =~ /^\s*\*END.*$/)
+      elsif ((line =~ /^\s*\*.*$/) or (line.split(/\s+/).length >= 2 and in_record)) and !(line =~ /^\s*\*END.*$/)
         # take the last two items
         spec, name = line.split(/\s+/)[-2..-1]
         next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
@@ -265,7 +269,7 @@ module DefParser
           end
         end
         record_fields << field unless hide
-      elsif (line =~ /^\s*[a-zA-Z_0-9]+\s+[a-zA-Z_0-9]+\s*$/) && in_record
+      elsif (line =~ /^\s*[a-zA-Z_0-9]+\s+[a-zA-Z_0-9]+\s*$/) and in_record
         # we have a two token field
         spec, name = line.strip.split(/\s+/)
         field = {
@@ -273,15 +277,18 @@ module DefParser
           :name => name,
           :variability => ["constant"]
         }
-        next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
+        next if spec.nil? or name.nil? or spec.include?('*') or name.include?('*')
         record_fields << field
-      elsif (line =~ /^\s*\*END/) && in_record
+      elsif (line =~ /^\s*\*END/) and in_record
         in_record = false
-        if output.include?(record_id)
+        output_key = record_id.downcase
+        if output.include?(output_key)
           puts("Warning! Duplicate id found: #{record_id}")
-          output[record_id.downcase][:fields] += record_fields
+          output[output_key] = MkRecord[
+            record_id, record_name,
+            output[output_key][:fields] + record_fields]
         else
-          output[record_id.downcase] = MkRecord[record_id, record_name, record_fields]
+          output[output_key] = MkRecord[record_id, record_name, record_fields]
         end
         record_id = nil
         record_name = nil
