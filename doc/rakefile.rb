@@ -941,7 +941,7 @@ BuildProbesYaml = lambda do
     k_dc = k.downcase
     k_lookup = mappings.fetch(k_dc, k_dc)
     if probes_alt.include?(k_lookup)
-      rec_alt = probes_alt[k.downcase]
+      rec_alt = probes_alt[k_lookup]
     else
       puts("Warning! No additional data found for #{k} (#{k_lookup})")
     end
