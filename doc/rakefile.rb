@@ -919,7 +919,8 @@ BuildProbesYaml = lambda do
     'export'=>'report',
     'exportcol'=>'reportcol',
     'exportfile'=>'reportfile',
-    'weathernexthour'=>'weather'
+    'weathernexthour'=>'weather',
+    #'znres'=>'zone interval results sub',
   }
   dirs = [
     PROBES_DATA_DIR
@@ -954,10 +955,8 @@ BuildProbesYaml = lambda do
       flds_alt = rec_alt[:fields].select do |f|
         na = f[:name].downcase
         n1a = na
-        n2a = na.gsub(/^[^_]*_/, '').gsub(/\[[^\]]*\]/, '')
-        n2a = n2a.split(/\./)[-1]
-        nb = fld[:name].downcase.gsub(/^[^_]*_/, '').gsub(/\[[^\]]*\]/, '') 
-        nb = nb.split(/\./)[-1]
+        n2a = na.split(/_/)[-1].split(/\./)[-1].gsub(/\[[^\]]*\]/, '')
+        nb = fld[:name].downcase.split(/_/)[-1].split(/\./)[-1].gsub(/\[[^\]]*\]/, '')
         n1a == nb || n2a == nb
       end
       if flds_alt.length == 1
