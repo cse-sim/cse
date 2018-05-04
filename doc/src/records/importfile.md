@@ -104,4 +104,4 @@ Optionally indicates the end of the import file definition. Alternatively, the e
 **Related Probes:**
 
 - @[importFile](#p_importfile)
-- @[impFileFldNames](#p_importfilefldnames)
+- @[impFileFldNames](#p_impfilefldnames)
