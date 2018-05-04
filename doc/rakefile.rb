@@ -916,6 +916,10 @@ BuildProbesYaml = lambda do
   mappings = {
     'door'=>'surface',
     'window'=>'surface',
+    'export'=>'report',
+    'exportcol'=>'reportcol',
+    'exportfile'=>'reportfile',
+    'weathernexthour'=>'weather'
   }
   dirs = [
     PROBES_DATA_DIR
