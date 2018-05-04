@@ -225,9 +225,6 @@ module DefParser
           :spec => spec,
           :name => name.gsub(/;/,'')
         }
-        if field[:name] = "nHrHeat" and record_name == "zone interval results sub"
-          binding.irb
-        end
         if reference
           description, current_ref_idx = FindDescription[
             line, ref_lines, current_ref_idx]
