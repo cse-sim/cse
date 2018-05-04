@@ -1905,6 +1905,20 @@ task :coverage do
   end
 end
 
+# TODO: for task :cullist and :probes, generate the files from CSE if CSE.exe
+# is present. Note: may want to just sent them up as file tasks. Add as
+# prerequisites if cse.exe exists and is newer than the output files. Give
+# warning if cse.exe is not built.
+desc "regenerate cullist"
+task :cullist do
+
+end
+
+desc "regenerate probes list"
+task :probes do
+
+end
+
 desc "Generate probes yaml input"
 task :gen_probes_yaml do
   BuildProbesYaml[]
