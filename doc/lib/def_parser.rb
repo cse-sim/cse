@@ -213,6 +213,8 @@ module DefParser
           record_id = m[1]
           record_name = m[2]
         elsif m and (m[1] == "ZNRES_IVL_SUB")
+          # TODO: fix this special-casing to more generally handle parsing and
+          # association of substructs with their parent RAT objects.
           in_record = true
           record_id = "ZNRES"
           record_name = "znRes"
