@@ -15217,6 +15217,7 @@ door:
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 0 or msrat msr subscr which will be used if delayed model
   - :name: tLrB[0]
     :input: true
     :runtime: false
@@ -15437,51 +15438,61 @@ door:
     :runtime: false
     :type: unrecognized
     :variability: input time
+    :description: Sfcnul, sfcsurf, sfcdoor, sfcwindow
   - :name: sfArea
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: 'Surface: gross area, net in x.xs_area.'
   - :name: sfU
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: Uval input if no sfcon given (excl surf films)
   - :name: sfCon
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Surface construction (optional)
   - :name: sfTy
     :input: true
     :runtime: false
     :type: integer number
     :variability: constant
+    :description: 'Wall/floor/ceil/[intmass1/2]: for input cking.'
   - :name: width
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: 'Width and height: used to compute shading,'
   - :name: height
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: "... and to compute area b4 mutliplier."
   - :name: mult
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: Area multiplier (for multiple identical windows)
   - :name: xi
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Subscript in runtime xsrat, to facilitate access by probers 1-92
   - :name: msi
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 0 or msrat msr subscr which will be used if delayed model
 window:
   :input: true
   :runtime: false
@@ -16253,6 +16264,7 @@ window:
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 0 or msrat msr subscr which will be used if delayed model
   - :name: tLrB[0]
     :input: true
     :runtime: false
@@ -16473,51 +16485,61 @@ window:
     :runtime: false
     :type: unrecognized
     :variability: input time
+    :description: Sfcnul, sfcsurf, sfcdoor, sfcwindow
   - :name: sfArea
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: 'Surface: gross area, net in x.xs_area.'
   - :name: sfU
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: Uval input if no sfcon given (excl surf films)
   - :name: sfCon
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Surface construction (optional)
   - :name: sfTy
     :input: true
     :runtime: false
     :type: integer number
     :variability: constant
+    :description: 'Wall/floor/ceil/[intmass1/2]: for input cking.'
   - :name: width
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: 'Width and height: used to compute shading,'
   - :name: height
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: "... and to compute area b4 mutliplier."
   - :name: mult
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: Area multiplier (for multiple identical windows)
   - :name: xi
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Subscript in runtime xsrat, to facilitate access by probers 1-92
   - :name: msi
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: 0 or msrat msr subscr which will be used if delayed model
 shade:
   :input: true
   :runtime: true
@@ -17002,26 +17024,34 @@ exportFile:
     :runtime: false
     :type: string
     :variability: input time
+    :description: File name, path optional, in dm (or pseudocode, but not "text").  *i
+      cuz veoi in cncult.
   - :name: fileStat
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Fresh(overwrite,default)/new(err if exists)/append
   - :name: pageFmt
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Page formatting on no/yes
   - :name: fileStatChecked
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Check filestat only once to prevent "file exists" error or re-setting
+      "overwrite" on later run
   - :name: overWrite
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Append if 0.  set by filestat=fresh, cleared on use, so addl runs
+      do not erase earlier output.
 report:
   :input: true
   :runtime: false
@@ -17176,101 +17206,128 @@ export:
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Zone for zone-specific reports. can be ti_sum, ti_all.
   - :name: mtri
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Meter to report/export for meter-specific reports. can be ti_sum,
+      ti_all.
   - :name: ahi
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Air handler to report/export for air-handler-specific reports. can
+      be ti_sum, ti_all.
   - :name: tui
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Terminal to report/export for terminal-specific reports. can be
+      ti_all
   - :name: dhwMtri
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Dhw meter to report/export for dhw meter-specific reports. can be
+      ti_all.
   - :name: isExport
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: 1 if export not report, so same fcns can be used with rib and xib
+      records
   - :name: rpTy
     :input: true
     :runtime: false
     :type: integer number
     :variability: constant
+    :description: Report/export type c_rptych_eb etc
   - :name: rpFreq
     :input: true
     :runtime: false
     :type: integer number
     :variability: constant
+    :description: R/xport frequency c_ivlch_m etc
   - :name: rpDayBeg
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Start 1-based julian day of year, where applicable
   - :name: rpDayEnd
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: End ..
   - :name: rpBtuSf
     :input: true
     :runtime: false
     :type: number
     :variability: input time
+    :description: Energy (btu) scale factor
   - :name: rpCond
     :input: true
     :runtime: false
     :type: number
     :variability: end of each subhour
+    :description: 'Condition: if given, rpt lines omitted when false (si; li used
+      to hold nan) (li currently unprobeable)'
   - :name: rpTitle
     :input: true
     :runtime: false
     :type: string
     :variability: input time
+    :description: Title, for udt, in dm
   - :name: rpCpl
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Chars per line, inputtable re udt's
   - :name: rpHeader
     :input: true
     :runtime: false
     :type: unrecognized
     :variability: input time
+    :description: Table header or export header yes/no (default yes)
   - :name: rpFooter
     :input: true
     :runtime: false
     :type: integer number
     :variability: input time
+    :description: Table footer (summary line) or export footer (just blank line?)
+      yes/no (default yes)
   - :name: coli
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Rcolb/xcolb subscript of first column (thence linked by .nxcoli).
   - :name: nCol
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: "# columns"
   - :name: wid
     :input: true
     :runtime: false
     :type: integer number
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Total col width for user-defined report
   - :name: vrh
     :input: true
     :runtime: false
     :type: unrecognized
     :variability: run start time (of each phase, autoSize or simulate)
+    :description: Assigned virtual report handle, used from here to build unspoolinfo.
 reportCol:
   :input: true
   :runtime: true
@@ -17340,31 +17397,38 @@ exportCol:
     :runtime: true
     :type: string
     :variability: input time
+    :description: Column head string, in dm.  *i cuz veoi in cncult.cpp:rpcolt[].
   - :name: colGap
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Space to left of column, default 1
   - :name: colWid
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: Column width
   - :name: colDec
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: 'Coldecimals: max digits after point'
   - :name: colJust
     :input: true
     :runtime: true
     :type: integer number
     :variability: input time
+    :description: 'Justification: c_justch_l or _r'
   - :name: colVal
     :input: true
     :runtime: true
     :type: un-probe-able
     :variability: end of each subhour
+    :description: Value .val and data type .dt (tyfl/tystr in input, dtfloat/dtchp
+      in run), used at end report interval.
   - :name: nxColi
     :input: true
     :runtime: true
@@ -18163,266 +18227,321 @@ weatherNextHour:
     :runtime: true
     :type: unrecognized
     :variability: hourly
+    :description: Nz if sun is up for any portion of current hour
   - :name: slAzm
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Azimuth, radians (0=n, +clockwise)
   - :name: slAlt
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Altitude, radians (0=horizon, +upwards)
   - :name: db
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Air dry bulb temp, deg f
   - :name: bmrad
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Beam irradiance on tracking surface (integrated value for hour,
+      btu/ft2)
   - :name: dfrad
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Diffuse irradiance on a horiz surface (integrated value for hour,
+      btu/ft2)
   - :name: wb
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Air wet bulb temp, deg f
   - :name: wndDir
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Wind direction, deg, 0=n, 90=e
   - :name: wndSpd
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Wind speed, mph
   - :name: glrad
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Global irradiance on horizontal surface, for daylighting calculations
   - :name: cldCvr
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Total cloud cover in tenths, 0-11, or 15 for missing data
   - :name: tSky
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Sky temperature, f from weather file or calcskytemp() (berdahl-martin)
   - :name: tGrnd
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Ground temperature, f
   - :name: taDp
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Air dew point temp, f
   - :name: tMains
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Cold water mains temp, f
   - :name: tdvElec
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Electricity
   - :name: tdvFuel
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Fuel
   - :name: taDbPk
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Current day peak db (includes future hours), f
   - :name: taDbAvg
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Current day average db (includes future hours), f
   - :name: taDbPvPk
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Previous-day peak db, f
   - :name: taDbAvg01
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Previous-day avg db (not including current day), f
   - :name: taDbAvg07
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Trailing 7-day avg db (not including current day), f
   - :name: taDbAvg14
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Trailing 14-day avg db (not including current day), f
   - :name: taDbAvg31
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Trailing 31-day avg db (not including current day), f
   - :name: tdvElecPk
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Current day peak tdvelec (includes future hours)
   - :name: tdvElecAvg
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Current day avg tdvelec (includes future hours)
   - :name: tdvElecPvPk
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Previous-day peak tdvelec
   - :name: tdvElecAvg01
     :input: false
     :runtime: true
     :type: number
     :variability: hourly
+    :description: Previous-day avg tdvelec (not including current day)
   - :name: tdvElecHrRank[0]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[1]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[2]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[3]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[4]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[5]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[6]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[7]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[8]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[9]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[10]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[11]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[12]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[13]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[14]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[15]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[16]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[17]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[18]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[19]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[20]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[21]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[22]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[23]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
   - :name: tdvElecHrRank[24]
     :input: false
     :runtime: true
     :type: integer number
     :variability: hourly
+    :description: Hour ranking of tdv values
 znRes:
   :input: false
   :runtime: true
