@@ -336,3 +336,7 @@ Optionally indicates the end of the DHWHEATER definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- @[DHWHeater](#p_dhwheater)

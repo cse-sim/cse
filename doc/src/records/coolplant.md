@@ -91,3 +91,6 @@ Optionally indicates the end of the COOLPLANT definition. Alternatively, the end
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
+
+- @[coolPlant](#p_coolplant)

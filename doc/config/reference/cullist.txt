@@ -1,5 +1,5 @@
 
-CSE 0.831 for Win32 console
+CSE 0.850.0+docs-fix.f4a6a9b.24 for Win32 console
 Command line: -c
 
 Top
@@ -55,6 +55,7 @@ Top
    heatDsTWbO
    coolDsMo
    coolDsDay
+   coolDsCond
    runSerial
    runTitle
    repHdrL
@@ -401,6 +402,10 @@ rsys    Parent: Top
 
 ductSeg    Parent: rsys
    dsTy
+   dsBranchLen
+   dsBranchCount
+   dsBranchCFA
+   dsAirVelDs
    dsExArea
    dsInArea
    dsDiameter
@@ -470,7 +475,14 @@ dhwheater    Parent: dhwsys
    whASHPSrcT
    whASHPResUse
    whVol
+   whUAMult
    whEF
+   whUEF
+   whStbyElec
+   whRatedFlow
+   whLoadCFwdF
+   whAnnualFuel
+   whAnnualElec
    whResHtPwr
    whResHtPwr2
    whLDEF
@@ -508,6 +520,9 @@ dhwloop    Parent: dhwsys
    wlTIn1
    wlRunF
    wlFUA
+   wlLossMakeupPwr
+   wlLossMakeupEff
+   wlElecMtr
    endDHWLOOP
 
 
@@ -930,3 +945,17 @@ holiday    Parent: Top
    hdDow
    hdMon
    endHoliday
+
+
+descond    Parent: Top
+   dcDay
+   dcDB
+   dcMCDBR
+   dcMCWB
+   dcMCWBR
+   dcWindSpeed
+   dcTauB
+   dcTauD
+   dcEbnSlrNoon
+   dcEdhSlrNoon
+   endDesCond

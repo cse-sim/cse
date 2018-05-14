@@ -43,7 +43,7 @@ Name of meter by which this GAIN's gnPower is recorded. If omitted, gain is assi
 
 Meter end use to which the GAIN's energy use should be accumulated.
 
-<%= File.read("\\cse\\doc\\src\\enduses.md") %>
+<%= insert_file("doc/src/enduses.md") %>
 
 
   **Units**   **Legal Range**        **Default**   **Required**                   **Variability**
@@ -142,3 +142,7 @@ Optional to indicate the end of the GAIN definition. Alternatively, the end of t
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- @[gain](#p_gain)

@@ -371,3 +371,8 @@ Indicates the end of the zone definition. Alternatively, the end of the zone def
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- @[zone](#p_zone)
+- @[znRes](#p_znres) (accumulated results)

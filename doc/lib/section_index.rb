@@ -1,5 +1,7 @@
-require_relative "slug"
 require 'yaml'
+
+require_relative 'md'
+require_relative 'slug'
 
 module SectionIndex
   # (Array FilePath) -> (Map Tag File)
@@ -14,9 +16,9 @@ module SectionIndex
       content.lines.map(&:chomp).each do |line|
         if line =~ /^#+\s+(.*)$/
           m_ += 1
-          m = line.match(/^#+\s+(.*)$/)
-          slug = "#" + Slug::Slugify[m[1]]
-          idx[slug] = bn unless idx.include?(slug)
+          name, slug = MD::NameAndSlug[line]
+          final_slug = "#" + slug
+          idx[final_slug] = bn unless idx.include?(final_slug)
         end
       end
     end

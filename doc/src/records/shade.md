@@ -126,3 +126,6 @@ Optional to indicate the end of the SHADE definition. Alternatively, the end of 
                                 *N/A*         No             constant
 
 
+**Related Probes:**
+
+- @[shade](#p_shade)
