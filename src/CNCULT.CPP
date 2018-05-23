@@ -1497,8 +1497,8 @@ static CULT izxT[] = //------ IZXFER cmd RAT Entry table, used from cnTopCult
 // id                cs     fn            f   uc evf      ty     b      dfls                 p2   ckf
 //----------         -----  ------------  --- -- ------   -----  -----  -------------        ---- ----
 CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   izStarCkf),
-CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
-CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
+CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
+CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
 CULT( "izALo",       DAT,   IZXRAT_A1,    0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
@@ -1517,6 +1517,8 @@ CULT( "izASEF",		 DAT,   IZXRAT_ASEF,  0,   0, VSUBHRLY,TYFL, 0,	     0.f,				 N
 CULT( "izLEF",		 DAT,   IZXRAT_LEF,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
 CULT( "izVfExhRat",	 DAT,   IZXRAT_VFEXHRAT, 0,0, VSUBHRLY,TYFL, 0,      1.f,                N,   N),
 CULT( "izEATR",		 DAT,   IZXRAT_EATR,  0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izZnHERVSrc", DAT,   IZXRAT_ZIHERVSRC,0,0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
+CULT( "izZnHERVExh", DAT,   IZXRAT_ZIHERVEXH,0,0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
 
 // following iff fan
 CULT( "izFanVfDs",   DAT,   ZFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N), // 0 means no fan

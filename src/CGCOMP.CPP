@@ -371,12 +371,12 @@ AIRSTATE& AIRSTATE::as_MixF(			// fractional mix
 }		// AIRSTATE::as_MixF
 //-----------------------------------------------------------------------------
 int AIRSTATE::as_HX(			// heat exchange (re e.g. HERV)
-	const AIRSTATE& asSup,
-	float amfSup,
-	const AIRSTATE& asExh,
-	float amfExh,
-	float effS,		// sensible effectiveness
-	float effL)		// latent effectiveness
+	const AIRSTATE& asSup,		// supply entering condition
+	float amfSup,				// supply AMF, lbm/sec
+	const AIRSTATE& asExh,		// exhaust entering condition
+	float amfExh,				// exhaust AMF, lbm/sec
+	float effS,			// sensible effectiveness
+	float effL)			// latent effectiveness
 {
 	double amfMin = min( amfSup, amfExh);
 
@@ -386,8 +386,8 @@ int AIRSTATE::as_HX(			// heat exchange (re e.g. HERV)
 	}
 
 	double effX = amfMin / amfSup;
-	as_tdb = af_HXEff( asSup.as_tdb, asExh.as_tdb, effX*effS);
-	as_w = af_HXEff( asSup.as_w, asExh.as_w, effX*effL);
+	as_tdb = as_HXEff( asSup.as_tdb, asExh.as_tdb, effX*effS);
+	as_w = as_HXEff( asSup.as_w, asExh.as_w, effX*effL);
 	return 1;
 }		// AIRSTATE::as_HX
 //===============================================================================
@@ -438,6 +438,27 @@ void AIRFLOW::af_AccumDry(		// add mass flow
 		printf( "af_AccumDry: NAN amf!\n");
 #endif
 }		// AIRFLOW::af_AccumDry
+//-----------------------------------------------------------------------------
+int AIRFLOW::af_HEX(			// heat/energy exchange
+	AIRFLOW& af2,		// other air flow
+	double effS,
+	double effL,
+	double EATR,
+	int options)
+// returns *this
+{
+	double amfMin = min( af_amf, af2.af_amf);
+
+	if (amfMin < .00001)
+		return 0;
+
+	double effX = amfMin / af_amf;
+	as_tdb = as_HXEff( as_tdb, af2.as_tdb, effX*effS);
+	as_w = as_HXEff( as_w, af2.as_w, effX*effL);
+	return 1;
+
+}
+
 //=============================================================================
 
 
@@ -475,11 +496,7 @@ void ZNR::zn_AccumAirFlow(		// accumulate zone bal values due to air flow
 	double td /*=0.*/)	// additional temp rise (added to as_tdb), F
 						//   e.g. fan heat
 {
-#if 1	// 4-14-2014
 	if (mDot <= 0.f)
-#else
-x	if (mDot < 0.)
-#endif
 		return;		// insurance
 
 #if defined( AIRNET_COMPARE)
@@ -559,25 +576,12 @@ RC ANDAT::ad_MassFlow(
 	}
 	else
 	{	// delP not "small", use non-linear form
-#if 1	// recode to use single pow() call, 6-13-2014
 		double nx = ad_pIZXRAT->iz_exp;
 		double pnx = ad_Ae * srDen * pow( fabs( ad_delP), nx);
 		ad_mdotP = sp * pnx;
 		// ad_dmdp  = ad_Ae * srDen * nx * pow( fabs( ad_delP), nx-1.);
 		//   use division to get pow( p, nx-1) (avoids 2nd pow() call)
 		ad_dmdp  = nx * pnx / fabs( ad_delP);	// ad_delP != 0 always
-#if 0 && defined( _DEBUG)
-x		double mdotP = ad_Ae * srDen * sp * pow( fabs( ad_delP), nx);
-x		double dmdp  = ad_Ae * srDen * nx * pow( fabs( ad_delP), nx-1.);
-x		if (frDiff( mdotP, ad_mdotP) > 0.000001
-x		 || frDiff( dmdp, ad_dmdp)   > 0.000001)
-x			printf( "mdotP mismatch!");
-#endif
-#else
-x		double nx = ad_pIZXRAT->iz_exp;
-x		ad_mdotP = ad_Ae * srDen * sp * pow( fabs( ad_delP), nx);
-x		ad_dmdp  = ad_Ae * srDen * nx * pow( fabs( ad_delP), nx-1.);
-#endif
 	}
 	return RCOK;
 }		// ANDAT::ad_MassFlow
@@ -672,6 +676,50 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 		rc |= rer("IZXFER '%s': invalid HERV izEATR=%0.2f (must be < 1)",
 				name, iz_EATR);
 
+#if 1
+	// current operating supply AVF (into z1)
+	//  always >= 0 (checks just above)
+	double avfGross = rc == RCOK
+				? iz_vfMin / (1.f - iz_EATR)		// can be 0
+				: 0.;
+
+	ANDAT& ad = iz_ad[ 0];
+
+	ad.ad_mdotP = avfGross * iz_rho2 / 60.;	// mass flow into zone, lb/sec (use prior-step density)
+
+	// exhaust air source
+	//  may be same as z1
+	ZNR* zpx = ZrB.GetAt( iz_zi2);
+	AIRFLOW afX;
+	zpx->zn_GetAirStateLs( afX);
+	// exhaust AMF, lbm/s
+	afX.af_amf = avfGross * iz_vfExhRat * zpx->zn_rho0ls / 60.;
+	ad.ad_mdotX = afX.af_amf;
+
+#if defined( DEBUGDUMP)
+	if (DbDo( dbdAIRNET))
+		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
+			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, zpx->zn_rho0ls, ad.ad_mdotX);
+#endif
+
+	// iz_air2 / iz_rho2 = air state into z1
+	// Note: calc HX with moist air mass flow rates
+	//       some sources say dry AMF, not fully understood
+	//       minor difference in any case, 5-16-2013
+	// TODO: condensation and defrost, 5-16-2013
+	AIRFLOW afSrc;		// supply air source
+	ZNR* zpHERVSrc = NULL;
+	if (iz_ziHERVSrc > 0)
+	{	zpHERVSrc = ZrB.GetAt( iz_ziHERVSrc);
+		zpHERVSrc->zn_GetAirStateLs( afSrc);
+	}
+	else
+		afSrc.as_Set( Top.tDbOSh, Top.wOSh);
+	afSrc.af_amf = ad.ad_mdotP;
+	afSrc.af_HEX( afX, iz_ASEF, iz_LEF, iz_EATR, 0);
+	iz_air2 = afSrc;
+	iz_rho2 = iz_air2.as_RhoMoist();
+#else
 	// current operating supply AVF (into z1)
 	//  always >= 0 (checks just above)
 	double avfGross = rc == RCOK
@@ -687,26 +735,34 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	ZNR* zpx = ZrB.GetAt( iz_zi2);
 	AIRSTATE asX;
 	zpx->zn_GetAirStateLs( asX);
-	float rhoX = zpx->zn_rho0ls;
-	ad.ad_mdotX = avfGross * iz_vfExhRat * rhoX / 60.;
+	// exhaust AMF, lbm/s
+	ad.ad_mdotX = avfGross * iz_vfExhRat * zpx->zn_rho0ls / 60.;
 
 #if defined( DEBUGDUMP)
 	if (DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
-			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
+			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, zpx->zn_rho0ls, ad.ad_mdotX);
 #endif
-
 
 	// iz_air2 / iz_rho2 = air state into z1
 	// Note: calc HX with moist air mass flow rates
 	//       some sources say dry AMF, not fully understood
 	//       minor difference in any case, 5-16-2013
 	// TODO: condensation and defrost, 5-16-2013
-	AIRSTATE asIn( Top.tDbOSh, Top.wOSh);
-	iz_air2.as_HX( asIn, ad.ad_mdotP,	// supply air (=ambient)
+	AIRSTATE asSrc;		// supply air source
+	ZNR* zpHERVSrc = NULL;
+	if (iz_ziHERVSrc > 0)
+	{	zpHERVSrc = ZrB.GetAt( iz_ziHERVSrc);
+		zpHERVSrc->zn_GetAirStateLs( asSrc);
+	}
+	else
+		asSrc.as_Set( Top.tDbOSh, Top.wOSh);
+
+	iz_air2.as_HX( asSrc, ad.ad_mdotP,	// supply air (=HERVSrc or ambient)
 				   asX,  ad.ad_mdotX,	// exhaust air (=z1 or some other zone)
 				   iz_ASEF, iz_LEF);
 	iz_rho2 = iz_air2.as_RhoMoist();
+#endif
 
 	// HERV always has fan
 	double c = ad.ad_mdotP * Top.tp_airSH * 3600.;		// fan flow in heat cap units (Btuh/F)
@@ -766,6 +822,10 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 	// other zone
 	if (iz_IsIZ())
 		rc |= require( IZXRAT_ZI2, when);
+
+	// additional HERV zones
+	if (!iz_IsHERV())
+		rc |= disallowN( when, IZXRAT_ZIHERVEXH, IZXRAT_ZIHERVSRC, 0);
 
 	// UA coupling only
 	if (iz_nvcntrl == C_IZNVTYCH_NONE)
@@ -832,6 +892,12 @@ RC IZXRAT::iz_Setup(			// set up run record
 		{	iz_zi2 = iz_zi1;
 			zp2 = zp1;
 		}
+		// insurance recheck of "outside" connections
+		//   (probably cannot get here w/ bad refs due to check at input)
+		if (IsSet( IZXRAT_ZIHERVSRC))
+			rc |= ckRefPt( &ZrB, iz_ziHERVSrc, "izZnHERVSrc");
+		if (IsSet( IZXRAT_ZIHERVEXH))
+			rc |= ckRefPt( &ZrB, iz_ziHERVExh, "izZnHERVExh");
 		rc |= disallowN( "when izNVType is AirNetHERV", IZXRAT_VFMAX, 0);
 	}
 	else
@@ -890,13 +956,12 @@ x		}
 		{	rc |= disallowN( "when izNVType is fan AIRNET",
 						  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
 						  IZXRAT_CPR, IZXRAT_EXP, 0 );
-
 			float vfDsInp = iz_fan.vfDs;		// save input vfDs before possible alteration
 			if (iz_IsHERV())
 			{	// HERV: fan design flow input is net (= actual fresh air)
 				//   but fan flow is gross (= larger flow, compensates for exhaust air transfer)
 				//   no change if vfDs = 0
-				if (iz_EATR < 1.f)
+				if (IsVal( IZXRAT_EATR) && iz_EATR < 1.f)
 					iz_fan.vfDs *= 1.f/(1.f - iz_EATR);
 				// else iz_EATR limit check at runtime (subhourly variability)
 			}
@@ -1269,6 +1334,7 @@ RC IZXRAT::iz_ZoneXfers(		// calc transfers due to airnet mass flow
 	{	// flow is always into zone 1
 		// iz_air2 = zone entering condition
 		zp1->zn_AccumAirFlow( iV, ad.ad_mdotP, iz_air2, 0.f);
+		// TODO: exhaust to zone!
 	}
 	else if (!iz_IsSysOrDuct())	// system and duct heat gain handled by zone model
 	{	if (ad.ad_mdotP > 0.)
@@ -1366,6 +1432,20 @@ an_nz( 0)
 	an_didLast = NULL;
 }	// AIRNET::~AIRNET
 //-----------------------------------------------------------------------------
+static inline int SetMXIf(		// set solution values if zone specified
+	int iz,					// ZrB idx (1-based)
+	double mdot,			// flow, lbm/s	
+	double* rV,				// residual vector
+	double* mdotAbs)		// total abs flow
+{
+	int iz0 = iz - ZrB.GetSS0();		// change to 0-based
+	if (iz0 >= 0)
+	{	rV[ iz0] += mdot;
+		mdotAbs[ iz0] += fabs( mdot);
+	}
+	return iz0;
+}	// SetMXIf
+//-----------------------------------------------------------------------------
 RC AIRNET::an_Calc(			// airnet flow balance
 	int iV)			// vent mode
 					//  0 = minimum vent areas (generally infil only)
@@ -1432,31 +1512,26 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #endif
 		IZXRAT* ize;
 		RLUP( IzxR, ize)
-		{
-			int zi1 = ize->iz_zi1 - zi0;
-			if (ize->iz_IsFixedFlow())
-			{	rV[ zi1] += ize->iz_ad[ iV].ad_mdotP;
-				an_mdotAbs[ zi1] += fabs( ize->iz_ad[ iV].ad_mdotP);
-				if (ize->iz_zi2 >= 0)
-				{	// off-diagonal (if not outdoors)
-					int zi2 = ize->iz_zi2 - zi0;
-					rV[ zi2] -= ize->iz_ad[ iV].ad_mdotX;
-					an_mdotAbs[ zi2] += fabs( ize->iz_ad[ iV].ad_mdotX);
+		{	if (ize->iz_IsFixedFlow())
+			{	SetMXIf( ize->iz_zi1, ize->iz_ad[ iV].ad_mdotP, rV, an_mdotAbs);
+				if (ize->iz_zi2 > 0)
+					// off-diagonal (if not outdoors)
+					SetMXIf( ize->iz_zi2, -ize->iz_ad[ iV].ad_mdotX, rV, an_mdotAbs);
+				if (ize->iz_IsHERV())
+				{	SetMXIf( ize->iz_ziHERVSrc, -ize->iz_ad[ iV].ad_mdotP, rV, an_mdotAbs);
+					SetMXIf( ize->iz_ziHERVExh,  ize->iz_ad[ iV].ad_mdotX, rV, an_mdotAbs);
 				}
 			}
 			else if (ize->iz_MassFlow( iV) == RCOK)		// determine _mdot, _dmdp
 			{	// diagonal element
+				int zi1 = SetMXIf( ize->iz_zi1, ize->iz_ad[ iV].ad_mdotP, rV, an_mdotAbs);
 				an_JAC( zi1, zi1) += ize->iz_ad[ iV].ad_dmdp;
-				rV[ zi1] += ize->iz_ad[ iV].ad_mdotP;
-				an_mdotAbs[ zi1] += fabs( ize->iz_ad[ iV].ad_mdotP);
-				if (ize->iz_zi2 >= 0)
+				if (ize->iz_zi2 > 0)
 				{	// off-diagonal (if not outdoors)
-					int zi2 = ize->iz_zi2 - zi0;
+					int zi2 = SetMXIf( ize->iz_zi2, -ize->iz_ad[ iV].ad_mdotP, rV, an_mdotAbs);
 					an_JAC( zi2, zi2) += ize->iz_ad[ iV].ad_dmdp;
 					an_JAC( zi2, zi1) -= ize->iz_ad[ iV].ad_dmdp;
 					an_JAC( zi1, zi2) -= ize->iz_ad[ iV].ad_dmdp;
-					rV[ zi2] -= ize->iz_ad[ iV].ad_mdotP;
-					an_mdotAbs[ zi2] += fabs( ize->iz_ad[ iV].ad_mdotP);
 				}
 			}
 #if defined( DEBUGDUMP)

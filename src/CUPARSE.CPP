@@ -3043,7 +3043,7 @@ LOCAL RC FC NEAR var( UVST *f, USI wanTy)		// parse (poss future) variable refer
 LOCAL RC FC NEAR expSi( 	// get an integer expression for a condition.  accepts & fixes floats, konstizes, returns info.
 
 	SI toprec,		// precedence to which to parse -- eg PRCOM
-	// *pisK and *pv recieve info for code optimization by elminating conditional code when condition is constant.
+	// *pisK and *pv receive info for code optimization by elminating conditional code when condition is constant.
 	SI *pisK, 		// NULL or receives non-0 if is constant
 	SI *pv,		// NULL or receives value if constant
 	char *tx,		// text of preceding operator or fcn name, for errMsgs
@@ -3060,7 +3060,7 @@ LOCAL RC FC NEAR expSi( 	// get an integer expression for a condition.  accepts 
 //==========================================================================
 LOCAL RC FC NEAR convSi( 		// convert last expr to int, else issue error.  konstizes.
 
-	// *pisK and *pv recieve info for code optimization by elminating conditional code when condition is constant
+	// *pisK and *pv receive info for code optimization by elminating conditional code when condition is constant
 	SI *pisK, 	// NULL or receives non-0 if is constant
 	SI *pvPar,	// NULL or receives value if constant
 	SI b4,	// for errMsgs: 1 if expr b4 <tx>; 0 expr after; moot if aN.
@@ -4784,7 +4784,7 @@ void FC curLine( 	// re last token: return file line text and info
 	SI retokPar,	// nz for previous token even if have not cuUntok'd
 	USI *pFileIx,	// NULL or receives "file index" for current input file
 	USI *pline,		// NULL or receives line # in file
-	USI *pcol, 		// NULL or recieves column # (subscript) in line
+	USI *pcol, 		// NULL or receives column # (subscript) in line
 	char *s,  		// NULL or receives line text. must be 384+ chars.
 	USI sSize )		// sizeof(*s) for overwrite protection, 9-95
 

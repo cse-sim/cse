@@ -1812,7 +1812,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "int as_IsEqual( const AIRSTATE& as, double tol=.001) const;"
 *declare "int operator==( const AIRSTATE& as) const { return as_IsEqual( as); }"
 *declare "int operator!=( const AIRSTATE& as) const { return !as_IsEqual( as); }"
-*declare "static double af_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
+*declare "static double as_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
 *declare "int as_HX( const AIRSTATE& asSup, float amfSup, const AIRSTATE& asExh, float amfExh, float effS, float effL);"
 
 *s *e DBL as_tdb			// air dry-bulb temp, F
@@ -1838,7 +1838,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_AmfCp()  const { return af_amf*Top.tp_airSH; }"
 *declare "double af_AmfCpT() const { return af_amf*as_tdb*Top.tp_airSH; }"
 *declare "double af_QLat( double wx) const { return af_amf*(as_w - wx)*PsyHCondWtr; }"
-
+*declare "int af_HEX( AIRFLOW& af2, double effS, double effL, double EATR, int options=0);"
 *s *e DBL af_amf		// mass flow rate, lb/hr dry air
 // *s *e DBL as_tdb		// from AIRSTATE
 // *s *e DBL as_w
@@ -2714,7 +2714,12 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *s FLOAT iz_vfExhRat // exhaust ratio (for _ANHERV) = (vfGross exhaust)/(vfGross supply)
 						//  default = 1 (balanced)
 	*s FRAC iz_EATR		// exhaust air transfer ratio (for _ANHERV)
+						//  = fraction of supply air that comes from exhaust
 						//  vfGross = vfNet / (1.-EATR)
+	*i TI iz_ziHERVExh	// subscript of zone to which HERV exhausts (default=discard)
+						//   (for _ANHERV only)
+	*i TI iz_ziHERVSrc	// subscript of zone for HERV supply air source (default=ambient)
+						//   (for _ANHERV only)
     *i *nest FAN iz_fan	// vent fan characteristics (unused if not fan type)
 
   // derived / internal

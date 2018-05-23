@@ -4041,7 +4041,7 @@ LOCAL RC NEAR ratLuDefO(	// look up basAnc record by name, resolving ambiguities
 			   May be obtained with ratDefO (below). */
 	char *what, 	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
 	record **pE,	// NULL or receives ptr to record if found
-	const char** pMsg)	// NULL or recieves ptr to unissued Tmpstr error msg
+	const char** pMsg)	// NULL or receives ptr to unissued Tmpstr error msg
 
 /* If more than one record with name is present, if defO non-0, returns one with owner defO if any.
    If defO is 0 or no records with that owner are found, returns bad if there are multiple records for name. */
