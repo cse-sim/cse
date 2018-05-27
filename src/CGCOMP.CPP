@@ -710,10 +710,12 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	AIRFLOW afSrc;		// supply air source
 	ZNR* zpHERVSrc = NULL;
 	if (iz_ziHERVSrc > 0)
-	{	zpHERVSrc = ZrB.GetAt( iz_ziHERVSrc);
+	{	// supply air comes from a zone
+		zpHERVSrc = ZrB.GetAt( iz_ziHERVSrc);
 		zpHERVSrc->zn_GetAirStateLs( afSrc);
 	}
 	else
+		// supply air comes from ambient
 		afSrc.as_Set( Top.tDbOSh, Top.wOSh);
 	afSrc.af_amf = ad.ad_mdotP;
 	afSrc.af_HEX( afX, iz_ASEF, iz_LEF, iz_EATR, 0);
