@@ -355,15 +355,7 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 			jDay -= wuDays;			// set to warmup using days before run (neg fixed below)
 
 			// conditionally adjust warmup start forward to weather file start when known
-			if ( Wfile.jd1 > 0				// if weather file dates known
-					&&  Wfile.jd1 + 364 != Wfile.jdl		// if not a full year weather file (365-day file has all dates!)
-					&&  Wfile.jd1 - 1 != Wfile.jdl )		// .. (eg Jul 1..Jun 30 is full year)
-			{
-				if (tp_begDay < Wfile.jd1)		// eg if file starts in Nov and run starts in Feb
-					jDay += 365;			// add 365 to warmup start for comparability
-				setToMax( jDay, Wfile.jd1-1);		// move warmup start ahead to wthr file start if nec (-1 cuz ++ below)
-			}
-			jDay = (jDay + 365) % 365;		// adjust to 0-364 if negative or >= 365 (++'d b4 use)
+			Wfile.wf_FixJday(jDay, tp_begDay);
 		}
 		tp_DTInit();					// init daylight/standard time stuff.  Uses jDay.
 		int dayDownCount = isWarmup ? wuDays : nDays;	// number of days in warmup or run
@@ -2467,6 +2459,7 @@ void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 	tp_tmrAWTot = tmrCurTot( TMR_AWTOT);
 	tp_tmrAWCalc = tmrCurTot( TMR_AWCALC);
 	tp_tmrCond   = tmrCurTot( TMR_COND);
+	tp_tmrKiva   = tmrCurTot( TMR_KIVA);
 	tp_tmrBC     = tmrCurTot( TMR_BC);
 	tp_tmrZone   = tmrCurTot( TMR_ZONE);
 #endif

@@ -4437,8 +4437,11 @@ static RC loadsSurfaces( 		// surface runtime simulation
 		}
 		TMRSTOP( TMR_AWTOT);
 
-		RLUP (XsB, xr)
-			rc |= xr->x.xs_SubhrQS();
+		RLUP(XsB, xr)
+		{	if (xr->x.xs_ty != CTMXWALL)
+			{	rc |= xr->x.xs_SubhrQS();
+			}
+		}
 	}
 
 	float dur, tDbO;
@@ -4468,6 +4471,14 @@ static RC loadsSurfaces( 		// surface runtime simulation
 	TMRSTOP( TMR_COND);
 
 	// kiva instances
+	TMRSTART(TMR_KIVA);
+	KIVA* ki;
+	RLUP(KvR, ki)
+	{
+		ki->kv_Calculate();
+	}
+	TMRSTOP(TMR_KIVA);
+
 
 	return rc;
 }			 // loadsSurfaces
@@ -4511,22 +4522,21 @@ RC XSURF::xs_ASHWAT()		// subhour calcs for ASHWAT fenestration
 //-----------------------------------------------------------------------------
 RC XSURF::xs_SubhrQS()		// subhour quick surface
 {
+	// Only call for quick surfaces!
 	RC rc = RCOK;
 
-	if (xs_ty != CTMXWALL)
-	{	ZNR& z = ZrB[ xs_GetZi(0)];		// zone on inside of surface
-		if (xs_IsASHWAT())
-			xs_pFENAW[ 0]->fa_FrameQS();
-		else
-		{	z.zn_AccumBalTermsQS( xs_area, xs_sbcI, xs_sbcO);
-			if (xs_sbcO.sb_zi)
-			{	// interzone quick surface: handle adjacent zone
-				ZNR& zx = ZrB[ xs_sbcO.sb_zi];
-				zx.zn_AccumBalTermsQS( xs_area, xs_sbcO, xs_sbcI);
-			}
+	ZNR& z = ZrB[ xs_GetZi(0)];		// zone on inside of surface
+	if (xs_IsASHWAT())
+		xs_pFENAW[ 0]->fa_FrameQS();
+	else
+	{	z.zn_AccumBalTermsQS( xs_area, xs_sbcI, xs_sbcO);
+		if (xs_sbcO.sb_zi)
+		{	// interzone quick surface: handle adjacent zone
+			ZNR& zx = ZrB[ xs_sbcO.sb_zi];
+			zx.zn_AccumBalTermsQS( xs_area, xs_sbcO, xs_sbcI);
 		}
-
 	}
+	
 	FPCHECK;
 	return rc;
 }		// XSURF::xs_SubhrQS
@@ -4572,6 +4582,10 @@ RC XSURF::xs_EndSubhr()		// end-of-subhr calcs for surface
 			MASSMODEL* pMM = ms.ms_pMM;
 			pMM->mm_FillBoundaryTemps( xs_tLrB, XSMXTLRB);
 		}
+	}
+	else if (xs_IsKiva())
+	{
+		// Kiva accounting?
 	}
 	else
 		z.zn_EndSubhrQS( xs_area, uC, xs_sbcI, xs_sbcO);

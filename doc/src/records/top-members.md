@@ -431,9 +431,9 @@ Global ground reflectivity, used except where other value specified with sfGrndR
 
 The following values modify weather file data, permitting varying the simulation without making up special weather files. For example, to simulate without the effects of wind, use windF = 0; to halve the effects of diffuse solar radiation, use radDiffF = 0.5. Note that the default values for windSpeedMin and windF result in modification of weather file wind values unless other values are specified.
 
-**grndEmiss=*float*** <!-- TODO Emittance? Used elsewhere. -->
+**grndEmit=*float***
 
-Long-wave emissivity of the exterior grade surface used in two-dimensional finite difference calculations for FOUNDATIONs.
+Long-wave emittance of the exterior grade surface used in two-dimensional finite difference calculations for FOUNDATIONs.
 
 <%= member_table(
   units: "",
@@ -571,41 +571,44 @@ Far-field width. Distance from foundation to the lateral, zero-flux boundary con
 <%= member_table(
   units: "ft",
   legal_range: "*x* $>$ 0",
-  default: "40",
+  default: "130",
   required: "No",
   variability: "constant") %>
 
 
 **deepGrndCnd=*choice***
 
-Boundary condition type: Water table (constant T) or Zero-Flux (or Automatic?).
-
-Far-field width. Distance from foundation to the lateral, zero-flux boundary condition. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+Deep-ground boundary condition type. Choices are WATERTABLE (i.e., a defined temperature) or ZEROFLUX.
 
 <%= member_table(
-  legal_range: "WATER\_TABLE, ZERO\_FLUX",
-  default: "ZERO\_FLUX",
+  legal_range: "WATERTABLE, ZEROFLUX",
+  default: "ZEROFLUX",
   required: "No",
   variability: "constant") %>
 
 **deepGrndDepth=*float***
 
+Deep-ground depth. Distance from exterior grade to the deep-ground boundary. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+
 <%= member_table(
   units: "ft",
   legal_range: "*x* $>$ 0",
-  default: "40",
+  default: "130",
   required: "No",
   variability: "constant") %>
 
 
 **deepGrndT=*float***
 
+Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
+
 <%= member_table(
-  units: "ft",
+  units: "F",
   legal_range: "*x* $>$ 0",
-  default: "40",
+  default: "Annual average drybulb temperature",
   required: "No",
-  variability: "constant") %>
+  variability: "hourly") %>
 
 
 

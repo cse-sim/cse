@@ -182,10 +182,24 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *r LEN elevation		// site elevation (for determining air density) (ft). defaults from weather file 1-95.
     *f TEMP refTemp			// temp for computing the hum ratio (w) used in air-density calculations, default 70 F
     *f FRAC_GZ refRH		// relative humidity (as fraction) ditto, default .6 (60%).
-    *mh FRAC grndRefl    	// ground surface reflectivity, re solar gain.
-							//    dflt .2. Used: cgsolar.cpp. wnGrndRefl Overrides.
+
+    // ground properties
+    *mh FRAC grndRefl		// ground surface reflectivity, re solar gain.
+							//    dflt .2. Used: cgsolar.cpp and Kiva. wnGrndRefl Overrides.
+    *i FRAC tp_grndEmit		// ground surface emittance, re long wave exchange in Kiva. dflt .8.
+    *i FRAC tp_grndRf		// ground surface roughnes, ft, re exterior convection in Kiva. dflt 0.1.
     *i FLOAT_GZ tp_soilDiff	// local soil diffusivity, ft2/hr, re annual deep ground temp cycle estimation
 							//    see CalcGroundTemp().  dflt=0.025.
+    *i FLOAT_GZ tp_soilCond	// local soil conductivity, Btuh-ft/ft2-F, re Kiva calcs.  dflt=1.0.
+    *i FLOAT_GZ tp_soilSpHt	// local soil specific heat, Btu/lb-F, re Kiva calcs.  dflt=0.1.
+    *i FLOAT_GZ tp_soilDens	// local soil density, lb/ft3, re Kiva calcs.  dflt=115.
+    *i FLOAT_GZ tp_farFieldWidth	// far-field boundary distance, ft, re Kiva calcs.  dflt=130.
+    *i DGCH tp_deepGrndCnd	// deep ground boundary type
+							//   C_DGCH_WATERTABLE: Water Table
+							//   C_DGCH_ZEROFLUX: Zero-Flux (default)
+    *i FLOAT_GZ tp_deepGrndDepth	// deep-ground boundary distance, ft, re Kiva calcs.  dflt=130.
+    *i FLOAT tp_deepGrndT	// deep-ground boundary temperature, F, re Kiva calcs.  dflt=annual average db.
+
 
 //TOP: inputs: check tolerances and precisions
     *i FLOAT_GZ tp_tol		// (relative) tolerance used in many hvac calculations, default .001f or as changed
@@ -196,6 +210,15 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GZ ebTolSubhr	// subhourly ..
     *r *hide INT tp_ebErrCount	// count of short-interval (day/hour/subhour) overall energy balance errors;
 								// s/b 0; re suppression of excessive warnings
+
+//TOP: inputs: Kiva calculation settings
+    *i FLOAT_GZ tp_grndMinDim		// minimum cell dimension in Kiva, ft, default .066f
+    *i FLOAT_GZ tp_grndMaxGrthCoeff	// maximum cell growth in Kiva, default 1.5f
+    *i TSCH tp_grndTimeStep			// Kiva time step
+									//   C_TSCH_HOURLY: Hourly (default)
+									//   C_TSCH_SUBHOURLY: Sub-hourly
+
+
 //TOP: inputs: ASHWAT calculation trigger thresholds
 							//	 full ASHWAT calcs are performed when *any* of the following changes
 							//   by the the trigger amount
@@ -385,6 +408,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*d *e DBL tp_tmrAWTot;
 	*d *e DBL tp_tmrAWCalc;
 	*d *e DBL tp_tmrCond;
+	*d *e DBL tp_tmrKiva;
 	*d *e DBL tp_tmrBC;
 	*d *e DBL tp_tmrZone;
 
@@ -666,6 +690,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_TDVReadHdr( int erOp=WRN);"
 	*declare "RC wf_TDVPosHr1( int erOp=WRN);"
 	*declare "RC wf_TDVReadIf( int erOp, int jDay, int iHr, WDHR* pwd );"
+    *declare "RC wf_FixJday( DOY& jDay, int begDay );"
 
 	 // in base class: .name, .ownTi, more.
      *r WFileFormat wFileFormat	// file format enum: UNK, BSGS, ET1, etc.
@@ -1138,14 +1163,15 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*declare "void DbDump() const;"
 
 	*declare "record* xs_pParent;"	// pointer to parent record (SFI, XSRAT, PRI, )
-    *z SI xs_ty		// type CTEXTWALL, CTINTWALL, CTWINDOW, CTMXWALL, CTPERIM, set by cult or code.
+    *z SI xs_ty		// type CTEXTWALL, CTINTWALL, CTWINDOW, CTMXWALL, CTPERIM, CTKIVA set by cult or code.
 
 	// inputs.  *r's where set by topCkf in at least some cases.
     *r AREA_GZ xs_area	// (net) area, sf.  Reflects window multiplier.
     *r ANGLE azm 		// azimuth (radians, 0 = North, Pi/2 = East)
     *r ANGLE tilt 		// tilt (radians, 0 = horiz up, Pi/2 = vert.
     *r *array 3 FLOAT xs_dircos	// outward normal direction cosines for given azm/tilt
-    *r FLOAT_GZ xs_depthBG	// depth below grade of bottom of wall, ft
+    *r FLOAT_GEZ xs_depthBG	// depth below grade of bottom of wall, ft
+    *r FLOAT_GEZ xs_height	// height of surface, ft (currently only used for Kiva)
     *z SFMODELCH xs_model	// surface model: user input
 							//   quick/auto/delayed(massive)/delayed_hour/delayed_subhour/forward_difference/kiva
     *r SFMODELCH xs_modelr	// resolved to quick (runtime XSURF generated),
@@ -1427,16 +1453,19 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 //=======================================================================================================
 RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
 	*prefix kv_
+	*exdes				// d'tor
 	*declare "ZNR* kv_GetZone( int si) const;"
+	*declare "RC kv_Create( Kiva::Foundation fnd, TI flri, std::vector<TI> wallIDs, double weight);"
 	*declare "RC kv_InitGround();"
+	*declare "RC kv_SetInitBCs(DOY jDay);"
 	*declare "RC kv_SetBCs();"
 	*declare "RC kv_Calculate();"
 
+	*declare "class Kiva::Foundation* kv_fnd;"
 	*declare "class Kiva::Ground* kv_ground;"
 	*declare "class Kiva::BoundaryConditions* kv_bcs;"
 	*declare "std::vector<TI> kv_walls;"
 
-	*r *nest MASSBC inside		// inside surface boundary conditions (is this deprecated?)
 	*r TI kv_floor				// floor reference
 	// list of wall references
 	*r FRAC_GZ kv_perimWeight	// weight of this kiva instance for results of corresponding floor
@@ -1564,6 +1593,8 @@ RECORD MAT "material" *RAT	// material (for construction layer) input info
 //=============================================================================
 RECORD FOUNDATION "foundation" *RAT	// foundation input info
 *prefix fd_
+*declare "class Kiva::Foundation* fd_kivaFnd;"
+*declare "RC fd_SetupKiva();"
 
  //input
  *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade

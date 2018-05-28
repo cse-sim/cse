@@ -18,6 +18,7 @@
 #include "psychro.h"
 #include "cnguts.h"
 #include "mspak.h"
+#include "Foundation.h"
 #include "ashwface.h"
 
 #include <cuparse.h>	// perl
@@ -552,6 +553,10 @@ x		printf( "Hit\n");
 			con->name );
 			break;					// (is preset to quick)
 		}
+		if (x.xs_modelr == C_SFMODELCH_KIVA)	// if model is already set to Kiva, break
+		{
+			break;
+		}
 		switch (x.xs_model)	// nested switch for differences
 		{
 			//case C_SFMODELCH_AUTO:			if it gets here
@@ -893,7 +898,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		// may require change if target surface side can be in another zone.
 		// solar gain: if target not delayed model, warn & direct to zone air
 
-		if (!SFI::sf_IsDelayed( targSf->x.xs_modelr))
+		if (!SFI::sf_IsDelayed( targSf->x.xs_modelr) && !SFI::sf_IsKiva(targSf->x.xs_modelr))
 		{
 			sg->oWarn( (char *)MH_S0519,	// "Target surface '%s' is not delayed model.\n"
 											// "    Solar gain being directed to zone '%s' air."
@@ -1010,7 +1015,6 @@ RC FC topSf2()
 		{	if (sf->sf_IsFloorBG())
 			{
 				floorBGCount++;			// count / skip BG floors
-				sf->oInfo("Skipping BG Floor!");
 			}
 			else
 			{
@@ -1072,10 +1076,6 @@ RC SFI::sf_TopSf2()
 	}
 
 	// translate door/surface SFI into traditional XSURF chain for zone or "mass" or ...
-	if (x.xs_modelr == C_SFMODELCH_KIVA) {
-		oInfo("Kiva Surface!");
-	}
-
 	if (x.xs_modelr==C_SFMODELCH_QUICK)	// conductance model chosen
 	{
 		// apportion heat capacity, if any, of quick model surfaces, amoung adjacent zones.
@@ -1603,7 +1603,7 @@ RC SFI::sf_MakMs()
 	return rc;
 }		// SFI::sf_makMs
 
-		//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 RC SFI::sf_SetupKiva()
 
 // make kiva instances
@@ -1611,19 +1611,240 @@ RC SFI::sf_SetupKiva()
 {
 	RC rc = RCOK;
 
-	oInfo("Setting up Kiva...");
 
-	if (this->sf_IsWallBG()) {
+	if (sf_IsWallBG())	// This is done during the first surface loop...
+	{
 		auto flrSf = SfiB.GetAt(sfFndFloor);
 		flrSf->sf_sharedFndWalls.push_back(ss); // add Wall index to list in associated floor
-		oInfo("Adding wall to associated floor.");
 	}
-	else // BG floor
+	else // BG floor setup during second surface loop
 	{
-		// for each kiva instance
-		KIVA* ki;
-		KvR.add(&ki, ABT, 0);
-		oInfo("Adding Kiva Instance for floor.");
+		// Get pointer to associated FOUNDATION
+		FOUNDATION* pFnd;
+		if (ckRefPt(&FndiB, sfFnd, "sfFnd", NULL, (record **)&pFnd))
+		{
+			return RCBAD;
+		}
+
+		// Add Kiva instances until all remaining exposed perimeter is accounted for
+		auto remainingExpPerim = sfExpPerim;
+
+		// Create wall combinations
+		std::map<std::pair<TI, double>, KivaWallGroup> combinationMap;	// Map of construction index (TI) and wall height (double) to
+																		// KivaWallGroup (relative perimeter and vector of wall indices)
+
+		if (sf_sharedFndWalls.size() != 0)
+		{
+			for (auto wli : sf_sharedFndWalls)
+			{
+				auto wlSf = SfiB.GetAt(wli);
+				auto wlHt = wlSf->x.xs_height;
+				auto perimeter = wlSf->sfArea / wlHt;
+				auto coni = wlSf->sfCon;
+
+				if (combinationMap.count({ coni, wlHt }) == 0) {
+					// create new combination
+					std::vector<TI> walls = { wli };
+					combinationMap[{ coni, wlHt }] = KivaWallGroup(perimeter, walls);
+				}
+				else {
+					// add to existing combination
+					combinationMap[{ coni, wlHt }].perimeter += perimeter;
+					combinationMap[{ coni, wlHt }].wallIDs.push_back(wli);
+				}
+			}
+		}
+
+		// add XSURF for floor surface
+		XSRAT* xr;
+		rc = cnuCompAdd(&x, name, x.xs_sbcI.sb_zi, &xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
+		if (!rc)	// if added ok: insurance
+		{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
+			xr->x.xs_ty = CTKIVA;	// XSURF type: kiva surface
+			xr->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
+		}
+	
+		bool assignKivaInstances = true;
+		auto comb = combinationMap.begin();
+
+		while (assignKivaInstances)
+		{
+			// Set wall combination parameters (construction, height, perimeter, surface IDs)
+			TI coni;
+			double height, perimeter;
+			std::vector<TI> wallIDs;
+			if (comb != combinationMap.end())
+			{
+				// Loop through wall combinations first
+				coni = comb->first.first;
+				height = comb->first.second;
+				perimeter = comb->second.perimeter;
+				wallIDs = comb->second.wallIDs;
+			}
+			else
+			{
+				// Then assign remainign exposed perimeter to a slab instance
+				coni = pFnd->fd_ftWlConi; // Get construction from Foundation input
+				height = 0.0;
+				perimeter = remainingExpPerim;
+			}
+
+			double instanceWeight = sfExpPerim > 0.0001
+				? perimeter / sfExpPerim
+				: 1.0; // No exposre = 1D instance exchanging heat with deep ground
+
+			// Set weighted perimeter for this combination
+
+			// Copy foundation input from foundation object
+			Kiva::Foundation kFnd = *pFnd->fd_kivaFnd;
+
+			LR* pLR;
+			// Set wall construction in Kiva
+			CON* pCon = ConiB.GetAtSafe(coni);
+			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
+										// Kiva defines layers in oposite dir.
+										// Assumes order in anchor is consistent with order of construction.
+			{
+				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				{
+					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
+					Kiva::Layer tempLayer;
+					tempLayer.material = kivaMat(pMat->mt_cond,pMat->mt_dens,pMat->mt_spHt);
+					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
+
+					kFnd.wall.layers.push_back(tempLayer);
+				}
+			}
+
+			kFnd.wall.interiorEmissivity = x.xs_sbcI.sb_epsLW;
+			kFnd.wall.exteriorEmissivity = x.xs_sbcO.sb_epsLW;
+			kFnd.wall.exteriorAbsorptivity = x.xs_sbcO.sb_awAbsSlr; // TODO: Is this set yet? Should be normal abs?
+
+			// Set slab construction in Kiva
+			if (ckRefPt(&ConiB, sfCon, "sfCon", NULL, (record **)&pCon))
+				return RCBAD;
+			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
+										// Kiva defines layers in oposite dir.
+										// Assumes order in anchor is consistent with order of construction.
+			{
+				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				{
+					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
+					Kiva::Layer tempLayer;
+					tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
+
+					kFnd.slab.layers.push_back(tempLayer);
+				}
+			}
+			kFnd.slab.emissivity = x.xs_sbcI.sb_epsLW;
+
+			// Set other properties
+			kFnd.foundationDepth = LIPtoSI(height);
+			kFnd.hasPerimeterSurface = false;
+			kFnd.perimeterSurfaceWidth = 0.0;
+
+			kFnd.reductionStrategy = Kiva::Foundation::RS_CUSTOM;
+			kFnd.twoParameters = false;
+			kFnd.reductionLength2 = LIPtoSI(sfArea / sfExpPerim);	// A/P ratio
+
+			// Define X reference points
+			const double x_iwall = 0.0; // by definition
+			const double x_ewall = x_iwall + kFnd.wall.totalWidth();
+			const double x_cwall = x_iwall + (x_ewall - x_iwall) / 2.0;
+			const double x_sym = x_iwall - kFnd.reductionLength2;  // A/P
+			const double x_ff = x_ewall + kFnd.farFieldWidth;
+
+			std::map<unsigned short, double> xRefs =
+			{
+				{ C_FBXREFCH_WALLINT , x_iwall },
+				{ C_FBXREFCH_WALLEXT , x_ewall },
+				{ C_FBXREFCH_WALLC , x_cwall },
+				{ C_FBXREFCH_SYMMETRY , x_sym },
+				{ C_FBXREFCH_FARFIELD , x_ff }
+			};
+
+			// Define Z reference points
+			const double z_twall = 0.0; // by definition
+			const double z_tslab = z_twall + height;
+			const double z_bslab = z_tslab + kFnd.slab.totalWidth();
+			const double z_bwall = z_bslab + kFnd.wall.depthBelowSlab;
+			const double z_grd = z_twall + kFnd.wall.heightAboveGrade;
+			const double z_dg = z_grd + kFnd.deepGroundDepth;
+
+			std::map<unsigned short, double> zRefs =
+			{
+				{ C_FBZREFCH_WALLTOP , z_twall },
+				{ C_FBZREFCH_SLABTOP , z_tslab },
+				{ C_FBZREFCH_SLABBOTTOM , z_bslab },
+				{ C_FBZREFCH_WALLBOTTOM , z_bwall },
+				{ C_FBZREFCH_GRADE , z_grd },
+				{ C_FBZREFCH_DEEPGROUND , z_dg }
+			};
+
+			// Add blocks
+			FNDBLOCK* pBL;
+			RLUP(FbiB, pBL)			// loop over foundation block records
+			{
+				if (pBL->ownTi == pFnd->ss)		// if a block of given foundation
+				{
+					Kiva::InputBlock block;
+	
+					// Assign material
+					const MAT* pMat = MatiB.GetAt(pBL->fb_mati);
+					block.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+
+					// Place block in 2D context
+					const double x1 = xRefs[pBL->fb_x1Ref] + LIPtoSI(pBL->fb_x1);
+					const double x2 = xRefs[pBL->fb_x2Ref] + LIPtoSI(pBL->fb_x2);
+					const double z1 = zRefs[pBL->fb_z1Ref] + LIPtoSI(pBL->fb_z1);
+					const double z2 = zRefs[pBL->fb_z2Ref] + LIPtoSI(pBL->fb_z2);
+
+					block.x = x1;
+					block.width = x2 - x1;
+					block.z = z1;
+					block.depth = z2 - z1;
+					kFnd.inputBlocks.push_back(block);
+				}
+			}
+
+			// Create/add new kiva instance to runtime anchor
+			KIVA* ki;
+			TI kvi = 0;
+			KvR.add(&ki, ABT, kvi);
+			
+
+			// Add new index to list of kiva instances associated with floor
+			xr->xr_kivaInstances.push_back(kvi);
+
+			// create wall XSURFs and assign kiva instance
+			for (auto wli : wallIDs) 
+			{
+				auto wlSf = SfiB.GetAt(wli);
+
+				XSRAT* xrWl;
+				rc = cnuCompAdd(&wlSf->x, wlSf->name, wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
+				if (!rc)	// if added ok: insurance
+				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
+					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
+					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
+					xrWl->xr_kivaInstances.push_back(kvi);
+				}
+			}
+
+			// Increment wall combinations iterator
+			if (comb != combinationMap.end()) {
+				comb++;
+			}
+
+			remainingExpPerim -= perimeter;
+
+			if (remainingExpPerim < 0.001) {
+				assignKivaInstances = false;
+			}
+
+		}
+
 	}
 	
 	return rc;

@@ -2475,6 +2475,21 @@ x			printf( "mismatch\n");
 }		// WDHR::wd_EPWReadHr
 #undef _C
 
+RC WFILE::wf_FixJday(DOY& jDay, int begDay)
+{
+	if (jd1 > 0				// if weather file dates known
+		&& jd1 + 364 != jdl		// if not a full year weather file (365-day file has all dates!)
+		&&  jd1 - 1 != jdl)		// .. (eg Jul 1..Jun 30 is full year)
+	{
+		if (begDay < jd1)		// eg if file starts in Nov and run starts in Feb
+			jDay += 365;			// add 365 to warmup start for comparability
+		setToMax(jDay, jd1 - 1);		// move warmup start ahead to wthr file start if nec (-1 cuz ++ below)
+	}
+	jDay = (jDay + 365) % 365;		// adjust to 0-364 if negative or >= 365 (++'d b4 use)
+
+	return RCOK;
+}
+
 #if 0
 
 struct WFCSVMAP

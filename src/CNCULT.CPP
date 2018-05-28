@@ -330,11 +330,7 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 //------------- FNDBLOCK (for Foundation table) -------------
 
 //------------------------------------------------------------ FNDBLOCK check fcn
-RC FC fcStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
-
-																// called at end layer, to get error messages near source.
-																// recalled at run (believe unnecessary except when using a defined type, 12-94).
-
+RC FC fbStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
 {
 	RC rc = RCOK;
 
@@ -347,7 +343,7 @@ static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
 {
 	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
 	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
-	CULT("*",	     STAR, 0,         0,    0, 0,    0,     0,       N,      0.f,  N, fcStarCkf),
+	CULT("*",	     STAR, 0,         0,    0, 0,    0,     0,       N,      0.f,  N, fbStarCkf),
 	CULT("fbMat",    DAT,  FNDBLOCK_MATI,  RQD,  0, VEOI, TYREF, &MatiB,  N,      0.f,  N, N), 	// non-shade part of SHGC: normal xmvty
 	CULT("fbX1Ref",  DAT,  FNDBLOCK_X1REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
 	CULT("fbZ1Ref",  DAT,  FNDBLOCK_Z1REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
@@ -365,8 +361,6 @@ static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
 
 //------------------------------------------------------------ FOUNDATION check fcn
 RC FC fdStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
-
-
 {
 	RC rc = RCOK;
 
@@ -849,6 +843,17 @@ dflInH:
 // sf_CkfSURF: Set xs_modelr and kiva related checks
 	if (IsSet(SFI_SFFND) || IsSet(SFI_SFFNDFLOOR))
 	{
+		if (IsSet(SFI_SFFND) && sfTy != C_OSTYCH_FLR)
+		{
+			oer("Only floor surfaces are allowed to reference 'sfFnd'. <> Is not a floor."); // TODO add formatted string
+		}
+
+		if (IsSet(SFI_SFFNDFLOOR) && sfTy != C_OSTYCH_WALL)
+		{
+			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. <> Is not a wall."); // TODO add formatted string
+		}
+		// TODO: Checks for exposed perimeter...
+		// TODO: Check depthBG/height
 		x.xs_modelr = C_SFMODELCH_KIVA;
 		if (x.xs_modelr != x.xs_model && x.xs_model != C_SFMODELCH_AUTO)
 		{
@@ -968,6 +973,7 @@ CULT( "sfTilt",   DAT,  SFX( TILT),          0,             0, VEOI,   TYFL,   0
 CULT( "sfAzm",    DAT,  SFX( AZM),           0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfModel",  DAT,  SFX( MODEL),         0,             0, 0,      TYCH,   0,       C_SFMODELCH_AUTO,      N,   N),//sfStarCkf uses
 CULT( "sfDepthBG",DAT,  SFX( DEPTHBG),		 0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
+CULT( "sfHeight", DAT,  SFX( HEIGHT),		 0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfCon",    DAT,  SFI_SFCON,           0,             0, VEOI,   TYREF, &ConiB,   0.f,                   N,   N),
 CULT( "sfU",      DAT,  SFI_SFU,             0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfLThkF",  DAT,	SFX( LTHKF),		 0,				0, VEOI,   TYFL,   0,		.5f,				   N,   N),
@@ -2574,7 +2580,16 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "refTemp",     DAT,   TOPRAT_REFTEMP,    0,          0, VFAZLY, TYFL,  0,      N,   60.f,            N,   N),
 	CULT( "refRH",       DAT,   TOPRAT_REFRH,      0,          0, VFAZLY, TYFL,  0,      N,    .6f,            N,   N),
 	CULT( "grndRefl",    DAT,   TOPRAT_GRNDREFL,   0,          0, VMHLY,  TYFL,  0,      N,    .2f,            N,   N),
-	CULT( "soilDiff",    DAT,   TOPRAT_SOILDIFF,   0,          0, VMHLY,  TYFL,  0,      N,    .025f,          N,   N),
+	CULT( "grndEmit",    DAT,   TOPRAT_GRNDEMIT,   0,          0, VEOI,   TYFL,  0,      N,    .8f,            N,   N),
+	CULT( "grndRf",      DAT,   TOPRAT_GRNDRF,     0,          0, VEOI,   TYFL,  0,      N,    .1f,            N,   N),
+	CULT( "soilDiff",    DAT,   TOPRAT_SOILDIFF,   0,          0, VEOI,   TYFL,  0,      N,    .025f,          N,   N),
+	CULT( "soilCond",    DAT,   TOPRAT_SOILCOND,   0,          0, VEOI,   TYFL,  0,      N,   1.0f,            N,   N),
+	CULT( "soilSpHt",    DAT,   TOPRAT_SOILSPHT,   0,          0, VEOI,   TYFL,  0,      N,    .1f,            N,   N),
+	CULT( "soilDens",    DAT,   TOPRAT_SOILDENS,   0,          0, VEOI,   TYFL,  0,      N,   115.0f,          N,   N),
+	CULT( "farFieldWidth", DAT, TOPRAT_FARFIELDWIDTH, 0,       0, VEOI,   TYFL,  0,      N,   130.0f,          N,   N),
+	CULT( "deepGrndCnd", DAT,   TOPRAT_DEEPGRNDCND, 0,         0, VEOI,   TYCH,  0,     C_DGCH_ZEROFLUX,       N,   N),
+	CULT( "deepGrndDepth", DAT, TOPRAT_DEEPGRNDDEPTH, 0,       0, VEOI,   TYFL,  0,      N,   130.0f,          N,   N),
+	CULT( "deepGrndT",   DAT,   TOPRAT_DEEPGRNDT,  0,          0, VHRLY,  TYFL,  0,      N,   50.0f,           N,   N), // defaulted from wthr file by code
 
 // TOP check tolerances and precisions
 	CULT( "tol",         DAT,   TOPRAT_TOL,        0,          0, VEOI,   TYFL,  0,      N,    .001f,          N,   N),
@@ -2587,6 +2602,10 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "ebTolDay",    DAT,   TOPRAT_EBTOLDAY,   0,          0, VEOI,   TYFL,  0,      .0001f,         N,   N),
 	CULT( "ebTolHour",   DAT,   TOPRAT_EBTOLHOUR,  0,          0, VEOI,   TYFL,  0,      .0001f,         N,   N),
 	CULT( "ebTolSubhr",  DAT,   TOPRAT_EBTOLSUBHR, 0,          0, VEOI,   TYFL,  0,      .0001f,         N,   N),
+// TOP Kiva calc settings
+	CULT( "grndMinDim",  DAT,   TOPRAT_GRNDMINDIM, 0,          0, VEOI,   TYFL,  0,       .066f,         N,   N),
+	CULT( "grndMaxGrthCoeff", DAT, TOPRAT_GRNDMAXGRTHCOEFF, 0, 0, VEOI,   TYFL,  0,        1.5f,         N,   N),
+	CULT( "grndTimeStep", DAT,  TOPRAT_GRNDTIMESTEP, 0,        0, VEOI,   TYFL,  0,     C_TSCH_H,        N,   N),
 // TOP ASHWAT calc trigger thresholds (1-2015)
 	CULT( "AWTrigT",	 DAT,   TOPRAT_AWTRIGT,    0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "AWTrigSlr",   DAT,   TOPRAT_AWTRIGSLR,  0,          0, VEOI,   TYFL,  0,      .05f,           N,   N),

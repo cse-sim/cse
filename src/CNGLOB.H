@@ -488,7 +488,7 @@ inline void IncP( void **pp, int b) { *pp = (void *)((char*)(*pp) + b); }
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
 struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
-namespace Kiva { class Ground; class BoundaryConditions; }
+namespace Kiva { class Ground; class BoundaryConditions; class Foundation; }
 
 #ifdef WINorDLL
   // control of scattered code for returning file names used via a cne() argument.
@@ -607,6 +607,28 @@ inline double LIPtoSI( double l) { return l*cfL; }
 inline float LSItoIP( float l)	 { return float( l/cfL); }
 inline double LSItoIP( double l) { return l/cfL; }
 
+// Conductivity Btuh-ft/ft2-F <--> W/m-K
+const double cfK = cfU*cfL;		// W/m-K per Btuh-ft/ft2-F
+inline float KIPtoSI(float k) { return float(k*cfK); }
+inline double KIPtoSI(double k) { return k*cfK; }
+inline float KSItoIP(float k) { return float(k / cfK); }
+inline double KSItoIP(double k) { return k / cfK; }
+
+// Specific Heat Btu/lb-F <--> J/kg-K
+const double cfSH = 4186.8;		// W/m-K per Btuh-ft/ft2-F
+inline float SHIPtoSI(float sh) { return float(sh*cfSH); }
+inline double SHIPtoSI(double sh) { return sh*cfSH; }
+inline float SHSItoIP(float sh) { return float(sh / cfSH); }
+inline double SHSItoIP(double sh) { return sh / cfSH; }
+
+// Density lb/ft3 <--> kg/m3
+const double cfD = 16.0185;		// W/m-K per Btuh-ft/ft2-F
+inline float DIPtoSI(float d) { return float(d*cfD); }
+inline double DIPtoSI(double d) { return d*cfD; }
+inline float DSItoIP(float d) { return float(d / cfD); }
+inline double DSItoIP(double d) { return d / cfD; }
+
+
 // velocity mph <-> m/s
 const double cfV = 1./2.23694;		// m/s / mph
 template< typename T> inline T VIPtoSI(T mph) { return T( mph*cfV); }
@@ -619,8 +641,6 @@ inline double AMFtoAVF( double amf) { return amf / (60.*.075); }
 inline float  AMFtoAVF( float amf)  { return amf / (60.f*.075f); }
 inline double AVFtoAMF( double avf) { return avf * 60.*.075; }
 inline float  AVFtoAMF( float avf)  { return avf * 60.f*.075f; }
-
-// velocity mph <-> m/s
 
 
 // Powers of 10

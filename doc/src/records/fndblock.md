@@ -4,7 +4,7 @@ Foundation blocks are materials within the two-dimensional domain beyond those d
 
 <!-- TODO: Insert diagram of references -->
 
-The default reference is WALL_INT, WALL_TOP.
+The default reference is WALLINT, WALLTOP.
 
 **fcMat=*matName***
 
@@ -21,15 +21,15 @@ Name of MATERIAL of the foundation block.
 Relative X origin for *fcX1* point. Options are:
 
 - SYMMETRY
-- WALL_INT
-- WALL_CENTER
-- WALL_EXT
-- FAR_FIELD
+- WALLINT
+- WALLCENTER
+- WALLEXT
+- FARFIELD
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_INT",
+  default: "WALLINT",
   required: "No",
   variability: "constant") %>
 
@@ -37,17 +37,17 @@ Relative X origin for *fcX1* point. Options are:
 
 Relative Z origin for *fcZ1* point. Options are:
 
-- WALL_TOP
+- WALLTOP
 - GRADE
-- SLAB_TOP
-- SLAB_BOTTOM
-- WALL_BOTTOM
-- DEEP_GROUND
+- SLABTOP
+- SLABBOTTOM
+- WALLBOTTOM
+- DEEPGROUND
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_TOP",
+  default: "WALLTOP",
   required: "No",
   variability: "constant") %>
 
@@ -78,15 +78,15 @@ The Z position of the first corner of the block relative to *fcZ1Ref*.
 Relative X origin for *fcX2* point. Options are:
 
 - SYMMETRY
-- WALL_INT
-- WALL_CENTER
-- WALL_EXT
-- FAR_FIELD
+- WALLINT
+- WALLCENTER
+- WALLEXT
+- FARFIELD
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_INT",
+  default: "WALLINT",
   required: "No",
   variability: "constant") %>
 
@@ -94,17 +94,17 @@ Relative X origin for *fcX2* point. Options are:
 
 Relative Z origin for *fcZ2* point. Options are:
 
-- WALL_TOP
+- WALLTOP
 - GRADE
-- SLAB_TOP
-- SLAB_BOTTOM
-- WALL_BOTTOM
-- DEEP_GROUND
+- SLABTOP
+- SLABBOTTOM
+- WALLBOTTOM
+- DEEPGROUND
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_TOP",
+  default: "WALLTOP",
   required: "No",
   variability: "constant") %>
 

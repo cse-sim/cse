@@ -140,18 +140,18 @@ FOUNDATION "Interior Slab Insulation"
 
   FNDBLOCK "Gap Ins"
     fbMat = "Insulation"
-    fbX1Ref = "WALL_INT"
-    fbZ1Ref = "SLAB_TOP"
-    fbX2Ref = "WALL_INT"
-    fbZ2Ref = "SLAB_BOTTOM"
+    fbX1Ref = "WALLINT"
+    fbZ1Ref = "SLABTOP"
+    fbX2Ref = "WALLINT"
+    fbZ2Ref = "SLABBOTTOM"
     fbX2 = 2./12.
 
   FNDBLOCK "Interior Horiz Ins"
     fbMat = "Insulation"
-    fbX1Ref = "WALL_INT"
-    fbZ1Ref = "SLAB_BOTTOM"
-    fbX2Ref = "WALL_INT"
-    fbZ2Ref = "SLAB_BOTTOM"
+    fbX1Ref = "WALLINT"
+    fbZ1Ref = "SLABBOTTOM"
+    fbX2Ref = "WALLINT"
+    fbZ2Ref = "SLABBOTTOM"
     fbZ2 = 2./12.
     fbX2 = 2.
 

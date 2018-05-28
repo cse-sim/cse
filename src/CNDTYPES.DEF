@@ -227,6 +227,12 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 *choicb NOYESCH  {  NO     "No"				// #define C_NOYESCH_NO 1   <--- rcdef.exe generates these
 			  YES    "Yes"				// #define C_NOYESCH_YES 2	 .. in dtypes.h.
 		       }
+*choicb DGCH {  ZEROFLUX   "ZeroFlux"
+			    WATERTABLE "WaterTable"
+		       }
+*choicb TSCH {  H   "Hourly"
+			    SH "Subhourly"
+		       }
 *choicb SKYMODCH {  ISO   "Isotropic"
 			  ANISO "Anisotropic"
 		       }
@@ -314,18 +320,19 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 
 *choicb FBXREFCH {
 			  SYMMETRY "Symmetry"
-			  WALLINT "Wall_Int"
-			  WALLC "Wall_Center"
-			  WALLEXT "Wall_Ext"
-			  FARFIELD "Far_Field"
+			  WALLINT "WallInt"
+			  WALLC "WallCenter"
+			  WALLEXT "WallExt"
+			  FARFIELD "FarField"
 			  }
 
 *choicb FBZREFCH {
-			  WALLTOP "Wall_Top"
+			  WALLTOP "WallTop"
 			  GRADE "Grade"
-			  SLABTOP "Slab_Top"
-			  SLABBOTTOM "Slab_Bottom"
-			  DEEPGROUND "Deep_Ground"
+			  SLABTOP "SlabTop"
+			  SLABBOTTOM "SlabBottom"
+			  WALLBOTTOM "WallBottom"
+			  DEEPGROUND "DeepGround"
 			  }
 
 *choicb CONVMODELCH {
