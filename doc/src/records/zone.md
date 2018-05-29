@@ -132,7 +132,7 @@ Heating set point for znModel=CZM.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* $\geq$ 0                                   hourly
+  ^o^F        *x* $\geq$ 0                                    subhourly
 
 **znTD=*float***
 
@@ -140,7 +140,7 @@ Desired set point (temperature maintained with ventilation if possible) for znMo
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* $\geq$ 0                                   hourly
+  ^o^F        *x* $\geq$ 0                                    subhourly
 
 **znTC=*float***
 
@@ -148,7 +148,7 @@ Cooling set point for znModel=CZM.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* $\geq$ 0                                   Hourly
+  ^o^F        *x* $\geq$ 0                                    subhourly
 
 CZM zone heating and cooling is provided either via an RSYS HVAC system or by "magic" heat transfers specified by znQxxx items.
 
