@@ -2,7 +2,7 @@
 
 A GAIN object adds sensible and/or latent heat to the ZONE, and/or adds arbitrary energy use to a METER. GAINs may be subobjects of ZONEs and are normally given within the input for their ZONE.  As many GAINs as desired (or none) may be given for each ZONE.  Alternatively, GAINs may be subobjects of TOP and specify gnZone to specify their associate zone.
 
-Each gain has an amount of power (gnPower), which may optionally be accumulated to a METER (gnMeter). The power may be distributed to the zone, plenum, or return as sensible heat with an optionl fraction radiant, or to the zone as latent heat (moisture addition), or not.
+Each gain has an amount of power (gnPower), which may optionally be accumulated to a METER (gnMeter). The power may be distributed to the zone, plenum, or return as sensible heat with an optional fraction radiant, or to the zone as latent heat (moisture addition), or not.
 
 **gnName**
 

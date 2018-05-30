@@ -284,7 +284,7 @@ _DLLImpExp void cseCleanup()		// cse cleanup function to call at application exi
 #ifdef OUTPNAMS //cnglob.h
 
 // Free any previous run concatenated output file names memory block.
-// (This block must be left allocated at cne() return because cne returns a ptr to it via argument _outPNams.)
+// (This block must be left allocated at cne() return because cse returns a ptr to it via argument _outPNams.)
 // Does not free handles IN the block -- caller must do himself or use cneHansFree (next).
 
 	dmfree( DMPP( outPNams)); 	// free block if ptr not NULL, and set pointer to NULL.
@@ -294,7 +294,7 @@ _DLLImpExp void cseCleanup()		// cse cleanup function to call at application exi
 #ifdef BINRES //cnglob.h
 
 // Free any previous run binary results memory handles block.
-// (This block must be left allocated at cne() return because cne returns a ptr to it via argument _hans.)
+// (This block must be left allocated at cse() return because cse returns a ptr to it via argument _hans.)
 
 	dmfree( DMPP( hans));		// free block if ptr not NULL, set ptr NULL. lib\dmpak.cpp.
 
@@ -307,11 +307,11 @@ _DLLImpExp void cseCleanup()		// cse cleanup function to call at application exi
 //=====================================================================================================================
 #if defined( WINorDLL)	// currently 3-94 not used under DOS -- no outPNams nor hans.
 _DLLImpExp void cneHansFree(	// free memory whose handles previously returned to
-					 			// caller using optional "hans" argument to cne()
+					 			// caller using optional "hans" argument to cse()
 
 	struct BrHans *hans )	// pointer to Binary Results memory Handles structure (or NULL)
-// -- pointer returned by cne via "hans" argument,
-//    or pointer to copy you have made of storage pointed to by ptr returned *hans by cne.
+// -- pointer returned by cse via "hans" argument,
+//    or pointer to copy you have made of storage pointed to by ptr returned *hans by cse.
 {
 	if (hans)		// do nothing if NULL pointer given
 	{
@@ -747,7 +747,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	enkiinit(KICLEAR+KIBEEP);		/* init keyboard interrupt stuff, envpak.cpp.  (if omitted, enkichk()
     					   I think (and printf anyway) aborts on ^C -- so dummy enkichk.) */
 
-	cnClean(ENTRY);		// insurance-initialize everything in case left dirty on prior call to cne package, 10-93.
+	cnClean(ENTRY);		// insurance-initialize everything in case left dirty on prior call to cse package, 10-93.
 	// local fcn, below, may call fcns in other packages.
 	// corresponding exit call is done by caller to allow multiple returns here.
 
@@ -1287,7 +1287,7 @@ noHans:
 // close error message file
 	setWarnNoScrn(FALSE);			// restore warning display on screen, if it was disabled with -n. 5-97.
 	errFileOpen( NULL);				// erases it if empty, else (WINorDLL) calls saveAnOutPNam in this file.
-	//    note rmkerr:errClean is called last, from cne().
+	//    note rmkerr:errClean is called last, from cse().
 	DbFileOpen( NULL);				// ditto debug log file
 
 // exit
@@ -1427,7 +1427,7 @@ void saveAnOutPNam( const char* pNam)	// save an output pathName for return to c
 //===========================================================================================================
 // Global initialization/cleanup cleanup dept -- added for rerunnable subr 10-93
 //------------------------------------------------------------------------
-LOCAL void cnClean( 		// cne overall init/cleanup routine
+LOCAL void cnClean( 		// CSE overall init/cleanup routine
 
 	CLEANCASE cs )	// STARTUP (future), ENTRY, DONE, CRASH, or CLOSEDOWN (future). type in cnglob.h.
 {

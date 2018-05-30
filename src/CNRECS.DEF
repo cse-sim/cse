@@ -5580,7 +5580,7 @@ o			   Normally 0 to vent only if cooler outdoors.
 o			   < 0 lets allows vent even if heats zone: << 0 used for uncontrolled vents eg cr's CVCs.  
 o			   > 0 would hold zone warmer than out (CAUTION as now coded 1-90 wd also prevent fanvent). */
 o    /* note: addl historical nat vent input info that was never used (only _INDOOR strategy implemented), 
-o     * deleted 1-91 as have no choice type sharable between tk and cne.
+o     * deleted 1-91 as have no choice type sharable between tk and CSE.
 o     * CONTROL control	* Type of controls on vent, dt VENTCON, C_VENTCON_INDOOR, _SEASONAL, _OUTDOOR, _OPEN *
 o     * FLOAT topen 	* Open temp for _OUTDOOR *
 o     * FLOAT trange	* Throttling range for _OUTDOOR */

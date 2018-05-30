@@ -371,7 +371,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 			screen( NONL, " %s", Top.tp_AuszDoing());	// display month name or " heat"
 		}
 
-		// init cne for repetition of design day
+		// init cse for repetition of design day
 		EF( Top.tp_BegDesDay());	// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
 									// inits .tp_dsDay,.auszmon,.jDay,.isBegRun, etc. Uses Top.tp_dsDayI. local.
 		// init all AUSZ's to start a pass 1 design day
