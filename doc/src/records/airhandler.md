@@ -1331,7 +1331,7 @@ CAUTIONS: the simulated economizer is just as dumb as the hardware being simulat
 Second, the economizer will operate even if the air handler is heating, resulting in use of more than minimum outside air should the return air get above the supply temperature setpoint. Economizers are intended for cooling air handlers; if you heat and cool with the same air handler, consider disabling the economizer when heating by scheduling a very low *oaLimT* or *oaLimE*.
 
 <!--
-(ahEcoType includes the functionality of the Taylor coil_interlock variable??) 
+(ahEcoType includes the functionality of the Taylor coil_interlock variable??)
 -->
 **oaEcoType=*choice***
 
@@ -1460,7 +1460,7 @@ Crankcase heater presence and control method. Choice of:
                 crankcase heater does not operate if compressor runs at
                 all in subhour. See *cchTOn*, *cchTOff*.
 
-  CONSTANT\_CLO 
+  CONSTANT\_CLO
 
   PTC\_CLO      Same as corresponding choices above except zero
                 crankcase heater input during fraction of time
@@ -1544,4 +1544,7 @@ Indicates the end of the air handler definition. Alternatively, the end of the a
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
 
+- @[airHandler](#p_airhandler)
+- @[ahRes](#p_ahres) (accumulated results)

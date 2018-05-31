@@ -389,4 +389,7 @@ Optional to indicates the end of terminal definition. Alternatively, the end of 
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
 
+- @[terminal](#p_terminal)
+- @[zhx](#p_zhx)

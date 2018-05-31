@@ -24,31 +24,7 @@ Name of a meter by which the BATTERY's power input/output (i.e., charge/discharg
 
 Meter end use to which the BATTERY's charged/discharged energy should be accumulated. Note that the battery end use is seen from the standpoint of a "load" on the electric grid. That is, when the battery is being charged, the end use will show up as positive. When the battery is being discharged (i.e., when it is offsetting other loads), it is seen as negative.
 
-  ------- -------------------------------------------------------------
-  Clg     Cooling
-  Htg     Heating (includes heat pump compressor)
-  HPHTG   Heat pump backup heat
-  DHW     Domestic (service) hot water
-  DHWBU   Domestic (service) hot water heating backup (HPWH resistance)
-  FANC    Fans, AC and cooling ventilation
-  FANH    Fans, heating
-  FANV    Fans, IAQ venting
-  FAN     Fans, other purposes
-  AUX     HVAC auxiliaries such as pumps
-  PROC    Process
-  LIT     Lighting
-  RCP     Receptacles
-  EXT     Exterior lighting
-  REFR    Refrigeration
-  DISH    Dishwashing
-  DRY     Clothes drying
-  WASH    Clothes washing
-  COOK    Cooking
-  USER1   User-defined category 1
-  USER2   User-defined category 2
-  BT      Battery charge power 
-  PV      Photovoltaic power generation
-  ------- -------------------------------------------------------------
+<%= insert_file('doc/src/enduses.md') %>
 
 |**Units**|   **Legal Range**  |**Default**|**Required**|**Variability**|
 |---------|--------------------|-----------|------------|---------------|
@@ -146,3 +122,7 @@ Probes? Control strategies?
 SOE
 
 -->
+
+**Related Probes:**
+
+- @[battery](#p_battery)

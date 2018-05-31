@@ -4,7 +4,7 @@ A DHWMETER object is a user-defined "device" that records water consumption as s
 
 
 DHWMETERs account for water use in the following pre-defined end uses.  The abbreviations in parentheses are used in DHWMTR report headings.
-  
+
 - Total water use (Total)
 - Unknown end use (Unknown)
 - Miscellaneous draws (Faucet)
@@ -25,3 +25,7 @@ Name of meter: required for assigning water uses to the DHWMETER.
 
 
 **endDhwMeter**
+
+**Related Probes:**
+
+- @[DHWmeter](#p_dhwmeter)

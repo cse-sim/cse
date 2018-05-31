@@ -19,6 +19,22 @@ The source files including both manifest files (in YAML) and markdown files (end
 
 Pandoc version 1.17.2 can be downloaded from [here](https://github.com/jgm/pandoc/releases). If you do not have version 1.17.2 installed, the build tool will stop immediately with instructions on how to install Pandoc 1.17.2.
 
+One way to make it easier to set up Pandoc 1.17.2 (especially in the presence of potentially a newer Pandoc version), is to use the cross-platform [conda] package, dependency, and environment manager. To do this, install the [miniconda] tool and then create an environment called `cse-docs`:
+
+    # this only needs to be done once:
+    conda create --name cse-docs
+    # on   windows: activate cse-docs
+    # on mac/linux: source activate cse-docs
+    conda install -c edurand pandoc=1.17.2
+
+This will install a managed [Pandoc] 1.17.2 on your computer. You can activate the [conda] environment and, therefore, the [Pandoc] version that comes with it by calling:
+
+    # this needs to be done each time you want to activate Pandoc
+    source activate cse-docs
+
+[conda]: https://conda.io/docs/
+[miniconda]: https://conda.io/miniconda.html
+
 For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For Windows, [MiKTeX] is recommended. For Mac OS and Linux, please follow the instructions for recommended (La)TeX systems at [Pandoc's Install] page. Note that to build the PDF, you must change the value of the "build-pdf?" key to true in the `config.yaml` file in this directory. This configuration file is discussed more below.
 
 [Pandoc]: http://pandoc.org/
@@ -101,6 +117,14 @@ This will preprocess the file using [ERB] and write the results to `doc/erb-out.
 We recommend looking at an [ERB Tutorial] to get up to speed on using [ERB].
 
 [ERB Tutorial]: http://www.stuartellis.name/articles/erb/
+
+## Inserting File Content
+
+A special directive is available that allows one to insert any file directly into markdown documents (to avoid repetition) by specifying the file's relative path from the repository root. For example, to add the file: `<cse-repo>\doc\src\enduses.md`, one would write:
+
+    <%= insert_file('doc/src/enduses.md') %>
+
+Note: the `insert_file` method could be replaced by a direct call to `File.read(path_to_read)`. However, direct calls to `File.read` are fragile since the absolute paths won't build between multiple machines and the question with relative paths is what directory will be used. In contrast, the `insert_file` method always uses a path relative to the repository root.
 
 ## Table Pre-processing Directives
 
