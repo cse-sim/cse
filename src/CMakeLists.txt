@@ -13,13 +13,14 @@ set(defs
 macro(c_preprocess file)
   add_custom_command(
     OUTPUT "${file}.i"
-    COMMAND "${CMAKE_C_COMPILER}" -c -EP -nologo -I "${CMAKE_CURRENT_SOURCE_DIR}" -Tc "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def" > "${file}.i"
+    COMMAND "${CMAKE_C_COMPILER}" -c -EP -I "${CMAKE_CURRENT_SOURCE_DIR}" -Tc "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def" > "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def"
   )
 endmacro()
 
 foreach(defFile ${defs})
-  string(REGEX REPLACE "^(\\w).DEF$" "\\1" file "${defFile}")
+  string(TOLOWER "${defFile}" defFile)
+  string(REPLACE ".def" "" file "${defFile}")
   c_preprocess(${file})  
 endforeach()
 
@@ -33,7 +34,7 @@ add_custom_command(
     "${CMAKE_CURRENT_SOURCE_DIR}/UNTAB.CPP"
     "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
-  DEPENDS cndtypes.i cnunits.i dtlims.i cnfields.i cnrecs.i
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
