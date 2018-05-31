@@ -113,7 +113,7 @@ RC screenOpen( 	// open window to receive "console" output (screen() function) u
 	const char *caption )   		// title bar text
 {
 	/* CAUTION 10-95: screenOpen() is now called from cse.cpp b4 longjmp byebye() error exit set up
-	   --> probably should not call cne error functions, cuz an ABT would exit to op sys without cleanup.
+	   --> probably should not call CSE error functions, cuz an ABT would exit to op sys without cleanup.
 	   If must fix, put longjump setup outside multiple input files loop in cse.cpp. */
 
 	screenLs = begLine;
@@ -927,7 +927,7 @@ BOO erBox(		// display error message and wait for responce
 {
 // determine parent window handle:
 	// should be top window so clicking in wrong place cannot hide msg box with another child of same parent. works. 2-12-94.
-	HWND hPar = cneHPar;		// parent window supplied by cne caller (cnsimp.cpp public variable)
+	HWND hPar = cneHPar;		// parent window supplied by CSE caller (cnsimp.cpp public variable)
 	if (screenLogWin.isOpen())		// if our "console" window is open
 		hPar = screenLogWin.getHwnd();	// cneHPar is its parent, so use its handle
 

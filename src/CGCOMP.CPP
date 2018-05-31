@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// cgcomp.c: Utility functions for cne simulator component models
+// cgcomp.c: Utility functions for CSE simulator component models
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>

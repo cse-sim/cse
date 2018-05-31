@@ -9,9 +9,9 @@ the header present, the structure of an import file matches that of an [EXPORT](
   --------- -----------------------      --------------------------------------
   1         *runTitle*, *runNumber*      read but not checked
   2         *timestamp*                  in quotes, read but not checked
-  3         *title*, *freq*              should match imTitle and imFreq
-  4         *colName1*,*colName2*,...    comma separated column names in quotes
-  5 ..      *val1*,*val2*,...            comma separated values (string values in quotes)
+  3         *title*, *freq*              should match imTitle and imFreq (see below)
+  4         *colName1*,*colName2*,...    comma separated column names optionally in quotes
+  5 ..      *val1*,*val2*,...            comma separated values (string values optionally in quotes)
 
 
 Example import file imp1.csv
@@ -19,7 +19,7 @@ Example import file imp1.csv
         "Test run",001
         "Fri 04-Nov-16  10:54:37 am"
         "Daily Data","Day"
-        "Mon","Day","Tdb","Twb"
+        Mon,Day,Tdb,Twb
         1,1,62.2263,53.2278
         1,2,61.3115,52.8527
         1,3,60.4496,52.4993
@@ -47,6 +47,8 @@ Notes
  * As usual, file order is not important -- IMPORTFILEs can be referenced before they are defined.
  * Columns are referenced by 1-based index or column names (assuming file header is present).
  In the example above, "Tdb" could be replaced by 3.
+ * Column names should be case-insensitive unique.  CSE issues a warning for each non-unique name found. Reference to a non-unique name in import()/importStr() is treated as an error (no run).
+ * Heading or data string values generally do not need to be quoted except for values that include comma(s).
 
 
 

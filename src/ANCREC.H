@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// ancrec.h: record and record anchor base class definitions for cne, 2-92.
+// ancrec.h: record and record anchor base class definitions for cse
 
 
 // before #include, #define NEEDLIKECTOR if including file calls the anc<T> like-another constructor

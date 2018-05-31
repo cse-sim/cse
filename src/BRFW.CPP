@@ -68,7 +68,7 @@ RC ResfWriter::create( 	// get set to write binary results files:
 #else
 	SI nDlwv, char *dlwvName     	// number of weather variables being set (0 or 1) and its name
 #endif
-	/*,int erOp*/ )			// note from '93: add erOp if needed when error fcns cne-ized
+	/*,int erOp*/ )			// note from '93: add erOp if needed when error fcns cse-ized
 
 // returns bad if out of memory or cannot create file. Message issued.
 {

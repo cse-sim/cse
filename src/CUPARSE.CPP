@@ -2108,7 +2108,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 		fieldName = *(char **)pv;			// retreive pointer to field name text
 	else
 	{
-		fnr = *(SI *)pv;					// else must be TYSI. retreive field number value.
+		fnr = *(SI *)pv;					// else must be TYSI. retrieve field number value.
 		if (fnr <= 0 || fnr > FNRMAX)					// check range. FNRMAX: impf.h.
 			return perNx( (char *)MH_S0124, (INT)fnr, (INT)FNRMAX);	// "Import field number %d not in range 1 to %d"
 	}
