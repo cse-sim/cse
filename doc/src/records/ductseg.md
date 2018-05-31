@@ -154,3 +154,8 @@ Optionally indicates the end of the DUCTSEG definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- @[ductSeg](#p_ductseg)
+- @[izXfer](#p_izxfer) (generated as "\<Zone Name\>-DLkI" for supply or "\<Zone Name\>-DLkO" for return)

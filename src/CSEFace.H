@@ -119,12 +119,12 @@ x
 x
 x // MAIN FUNCTION DECLARATION
 x //
-x //  This is entry point called by a Windows program using CNE as a subroutine,
+x //  This is entry point called by a Windows program using CSE as a subroutine,
 x //  if the program can use the C main( argc, argv) argument convention and the
 x //  C calling convention. See also CNEZ(), below.
 x //
 x //  This declaration applies to both the static-linked version (obj files) and
-x //  Dynamic Link Library version (link with small CNE.LIB, use CNE.DLL at runtime).
+x //  Dynamic Link Library version (link with small CSE.LIB, use CSE.DLL at runtime).
 x //  This function's source code is in cse.cpp -- more description there.
 x //  Also applies to the client-server interface function (cnecl.cpp, new 3-94).
 x //
@@ -158,14 +158,14 @@ x //  This alternate entry point may be called by programs that can more
 x //  conveniently use the pascal calling convention and pass switch and
 x //  filename arguments as a single string.
 x //
-x //  cne subroutine or DLL. Its directory is searched for additional needed
+x //  cse subroutine or DLL. Its directory is searched for additional needed
 x //  files. The calling program can get this with GetModuleFileName().
 x //
 x //  "cmdLine" contains the (optional) switches and the input file name(s)
 x //  (an input file name is required!), separated by spaces, as would be
 x //  typed on the DOS command line.
 x //
-x //  The rest of the arguments are as described for cne() just above.
+x //  The rest of the arguments are as described for cse() just above.
 x //
 x //  The return value is the errorlevel; 0 indicates success.
 x
@@ -177,15 +177,15 @@ x
 x
 x // BrHans BINARY RESULTS MEMORY-FREEING FUNCTION
 x //
-x // Those who use cne's Binary Results memory handle returning feature
+x // Those who use cse's Binary Results memory handle returning feature
 x // (non-NULL "hans" argument and -z or -m flags) may use this function
 x // to free the memory when they are done with it.
 x //
-x // For example, call before each cne run unless you wish to keep the memory
+x // For example, call before each cse run unless you wish to keep the memory
 x // from the prior run and have copied the handles to your own storage.
 x // Also call at program exit.
 x //
-x // Argument is a pointer returned by cne via "hans" argument,
+x // Argument is a pointer returned by cse via "hans" argument,
 x // or pointer to copy you have made of storage pointed to thereby.
 x // Does nothing if argument is NULL, nor for 0 handles in given struct.
 x // Replaces free'd handles with 0s. Redundant calls harmless.
@@ -197,12 +197,12 @@ x // CLEANUP FUNCTION
 x //
 x// Call at application exit to:
 x //
-x // * free memory to which a pointer was returned via cne arguments outPNams
+x // * free memory to which a pointer was returned via cse arguments outPNams
 x //   and/or hans;
-x // * do any other cne cleanup added in the future.
+x // * do any other cse cleanup added in the future.
 x //
 x // Does NOT free the memory whose handles are IN returned Brhans struct
-x // -- use cneHansClean (just above) if you want cne to to that.
+x // -- use cneHansClean (just above) if you want cse to to that.
 x
 x extern "C" void _ExportIfDLL cneCleanup();
 #endif

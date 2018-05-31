@@ -6,12 +6,11 @@
 
 
 // largest field number to accept (expect far fewer fields in a file)
-#define FNRMAX 1024
-
+const int FNRMAX = 1024;
 
 // compile support functions, cncult4.cpp, used from cuparse.cpp
-RC impFcn( char *impfName, TI *iffnmi, USI fileIx, USI line, IVLCH *imFreq, char *fieldName, SI *fnmi);
-RC impFcn( char *impfName, TI *iffnmi, USI fileIx, USI line, IVLCH *imFreq, SI fnr);
+RC impFcn( char *impfName, TI *iffnmi, int fileIx, int line, IVLCH *imFreq, char *fieldName, SI *fnmi);
+RC impFcn( char *impfName, TI *iffnmi, int fileIx, int line, IVLCH *imFreq, SI fnr);
 
 // runtime import-file functions in impf.cpp, used from cnguts.cpp
 RC FC impfStart();
@@ -20,9 +19,9 @@ void FC impfEnd();
 void FC impfIvl(IVLCH ivl);
 
 // runtime import-field functions in impf.cpp, used from cueval.cpp.
-RC impFldNmN( SI iffnmi, SI fnmi, float *pv, USI fileIx, USI line, const char** pms);
-RC impFldNmS( SI iffnmi, SI fnmi, char **pv, USI fileIx, USI line, const char** pms);
-RC impFldNrN( SI iffnmi, SI fnr,  float *pv, USI fileIx, USI line, const char** pms);
-RC impFldNrS( SI iffnmi, SI fnr,  char **pv, USI fileIx, USI line, const char** pms);
+RC impFldNmN( int iffnmi, int fnmi, float *pv, int fileIx, int line, const char** pms);
+RC impFldNmS( int iffnmi, int fnmi, char **pv, int fileIx, int line, const char** pms);
+RC impFldNrN( int iffnmi, int fnr,  float *pv, int fileIx, int line, const char** pms);
+RC impFldNrS( int iffnmi, int fnr,  char **pv, int fileIx, int line, const char** pms);
 
 // end of impf.h

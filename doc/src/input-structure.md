@@ -909,8 +909,14 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
 
   \$dayOfMonth     Day of month, 1 - 31. **Variation**: daily.
 
-  \$hour           Hour of day, 1 - 24; 1 corresponds to midnight - 1 AM.
+  \$hour           Hour of day, 1 - 24, in local time; 1 corresponds to midnight - 1 AM.
                    **Variation**: hourly.
+
+  \$hourST         Hour of day, 1 - 24, in standard time; 1 corresponds to midnight - 1 AM.
+                   **Variation**: hourly.
+
+  \$subhour        Subhour of hour, 1 - N (number of subhours).
+                   **Variation**: subhourly.
 
   \$dayOfWeek      Day of week, 1 - 7; 1 corresponds to Sunday, 2 to
                    Monday, etc. **Variation:** daily.

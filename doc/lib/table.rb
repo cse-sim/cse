@@ -6,6 +6,7 @@ require 'set'
 require 'csv'
 
 module Table
+  ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
   CheckKeys = lambda do |expected_keys, args|
     unexpected_keys = Set.new(args.keys) - expected_keys
     if not unexpected_keys.empty?
@@ -70,6 +71,16 @@ module Table
       expected_keys = Set.new([:units,:legal_range,:default,:required,:variability])
       CheckKeys.(expected_keys, args)
       @writer.member_table(args)
+    end
+    def insert_file(file_path)
+      full_path = File.join(ROOT_DIR, file_path) 
+      if File.exists?(full_path)
+        File.read(full_path)
+      else
+        msg = ("Path '#{file_path}' doesn't exist. "
+               + "resolved full-path: '#{full_path}'")
+        raise IOError.new(msg)
+      end
     end
   end
 

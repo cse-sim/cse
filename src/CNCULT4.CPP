@@ -1623,8 +1623,8 @@ RC impFcn( 		// compile support for Import() of field by field number
 
 	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
 	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
-	USI fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
-	USI line,			// line number in srcFile ...  so errors can show location of first use.
+	int fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
+	int line,			// line number in srcFile ...  so errors can show location of first use.
 	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
 	SI /*fnr*/ )     		// requested field number
 
@@ -1647,10 +1647,10 @@ RC impFcn( 		// compile support for Import() of named field
 
 	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
 	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
-	USI fileIx,			// file name index of input file being compiled: put in IFFNM record when created ...
-	USI line,			// line number in srcFile ...  so errors can show location of first use.
+	int fileIx,			// file name index of input file being compiled: put in IFFNM record when created ...
+	int line,			// line number in srcFile ...  so errors can show location of first use.
 	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
-	char *fieldName,   		// requested field name: saved here in table in IFFNM record for resolution at file open
+	char *fieldName,   	// requested field name: saved here in table in IFFNM record for resolution at file open
 	SI *fnmi ) 			// receives find name index for use in pseudo-code
 
 // called from cuparse.cpp. May be declared in impf.h not cncult.h.

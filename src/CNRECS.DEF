@@ -1979,9 +1979,9 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 				// Alternate zone model inputs
 				//   used for some zone models only (e.g. CZM and thus UZM), else no effect
 					// thermostat set points, F (8-10)
-	*h TEMP_GZ znTH 	// heating
-	*h TEMP_GZ znTD		// desired (venting)
-    *h TEMP_GZ znTC    	// cooling
+	*s TEMP_GZ znTH 	// heating
+	*s TEMP_GZ znTD		// desired (venting)
+    *s TEMP_GZ znTC    	// cooling
 					// available nominal system capacity, Btuh (added 9-10)
     *h FLOAT znQMxH			// heating cap for current hour (>= 0)
     *r FLOAT znQMxHRated	// heating cap rated (>=0, constant for run)  TODO: s/b autosizable?
@@ -5585,7 +5585,7 @@ o			   Normally 0 to vent only if cooler outdoors.
 o			   < 0 lets allows vent even if heats zone: << 0 used for uncontrolled vents eg cr's CVCs.  
 o			   > 0 would hold zone warmer than out (CAUTION as now coded 1-90 wd also prevent fanvent). */
 o    /* note: addl historical nat vent input info that was never used (only _INDOOR strategy implemented), 
-o     * deleted 1-91 as have no choice type sharable between tk and cne.
+o     * deleted 1-91 as have no choice type sharable between tk and CSE.
 o     * CONTROL control	* Type of controls on vent, dt VENTCON, C_VENTCON_INDOOR, _SEASONAL, _OUTDOOR, _OPEN *
 o     * FLOAT topen 	* Open temp for _OUTDOOR *
 o     * FLOAT trange	* Throttling range for _OUTDOOR */

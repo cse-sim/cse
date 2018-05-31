@@ -490,7 +490,7 @@ struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 
 #ifdef WINorDLL
-  // control of scattered code for returning file names used via a cne() argument.
+  // control of scattered code for returning file names used via a cse() argument.
   #define OUTPNAMS	// expect to test this in cse.cpp, rmkerr.cpp, vrpak.cpp, etc. 10-6-93
 #endif
 

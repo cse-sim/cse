@@ -584,7 +584,7 @@ RC cufOpen(			// open and init CSE language input file
 	return ppOpen( fname, dflExt /*,logFname*/);	// open file for pp input
 }				// cufOpen
 //==========================================================================
-void cufClose() 		// close open cne user language input file
+void cufClose() 		// close open cse user language input file
 {
 	ppClose();   	// close input file at pp.cpp level
 }		// cufClose
