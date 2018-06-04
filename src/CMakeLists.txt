@@ -12,8 +12,14 @@ set(defs
 
 macro(c_preprocess file)
   add_custom_command(
-    OUTPUT "${file}.i"
-    COMMAND "${CMAKE_C_COMPILER}" -c -EP -I "${CMAKE_CURRENT_SOURCE_DIR}" -Tc "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def" > "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
+    COMMAND ${CMAKE_COMMAND}
+    ARGS
+      -Dcompiler=${CMAKE_C_COMPILER}
+      -Dsource_dir=${CMAKE_CURRENT_SOURCE_DIR}
+      -Dout_dir=${CMAKE_CURRENT_BINARY_DIR}
+      -Dfile=${file}
+      -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def"
   )
 endmacro()
@@ -21,7 +27,7 @@ endmacro()
 foreach(defFile ${defs})
   string(TOLOWER "${defFile}" defFile)
   string(REPLACE ".def" "" file "${defFile}")
-  c_preprocess(${file})  
+  c_preprocess(${file})
 endforeach()
 
 # Run RCDEF
