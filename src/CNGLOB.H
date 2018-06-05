@@ -491,7 +491,7 @@ namespace Pumbra { class Penumbra; }
 namespace Kiva { class Ground; class BoundaryConditions; class Foundation; }
 
 #ifdef WINorDLL
-  // control of scattered code for returning file names used via a cne() argument.
+  // control of scattered code for returning file names used via a cse() argument.
   #define OUTPNAMS	// expect to test this in cse.cpp, rmkerr.cpp, vrpak.cpp, etc. 10-6-93
 #endif
 

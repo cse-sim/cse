@@ -239,7 +239,7 @@ class ResfWriter : public ResfBase
 	    			   Member fcns of header are used to access other info in block. */
 
     float sumTOuts;		// sum and number of outdoor temps this month, so we can compute average,
-    SI nTOuts;   		// ... cuz cne does not average outdoor temps
+    SI nTOuts;   		// ... cuz cse does not average outdoor temps
 
 public:
     void FC clearThis();					// inits most members

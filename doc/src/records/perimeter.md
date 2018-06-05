@@ -34,4 +34,7 @@ Optionally indicates the end of the perimeter definition.
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
 
+**Related Probes:**
 
+- @[perimeter](#p_perimeter)
+- @[xsurf](#p_xsurf)

@@ -46,3 +46,7 @@ Optionally indicates the end of the SHADEX definition. Alternatively, the end of
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- @[SHADEX](#p_shadex)

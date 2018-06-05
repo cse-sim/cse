@@ -78,4 +78,6 @@ Optionally indicates the end of the DHWTANK definition.
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
 
+**Related Probes:**
 
+- @[DHWTank](#p_dhwtank)

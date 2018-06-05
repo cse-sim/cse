@@ -88,3 +88,7 @@ Optionally indicates the end of the DHWUSE definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No  
+
+**Related Probes:**
+
+- @[DHWUse](#p_dhwuse)

@@ -4653,6 +4653,7 @@ RC ZNR::zn_AfterSubhr()
 	//   prior AirNet solution
 	zn_rho0ls = zn_Rho0();		// last subhour moist air density at tz, wz, pz0
 	trls = tr;					// last subhour radiant temp
+	zn_relHumls = zn_relHum;	// lass subhour relative humdity
 
 #if 0	// unused, 9-12
 x	zn_dryAirMassls = zn_dryAirMass;	// last subhour dry air mass, lbm
@@ -4716,7 +4717,9 @@ RC ZNR::zn_AfterHour()
 	tzlh = tzls;		// air temp from final step of hour (NOT average here).
 	// needed? used in main eqn in loadsHourBeg, but .tzls cd be used directly 1-92.
 
-	trlh = trls;		// ditto radiant temp
+	trlh = trls;				// ditto radiant temp
+
+	zn_relHumlh = zn_relHumls;	// ditto relative humidity
 
 #if 0 // nHrCool is present but not set: no longer works.
 x   // zone shutter fraction for next hour: determine whether movable window shades open or closed next hour

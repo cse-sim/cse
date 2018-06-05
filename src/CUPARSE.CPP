@@ -430,6 +430,8 @@ static SVST itSvs[] =
 	SVST( "$dowh",      ROK|INC, EVFDAY,    SVREG,  TYSI,  &Top.dowh), 			// inc'd. main sim: holiday 8, else day of week 1-7.
 	//   autoSizing: heating 9, cooling 10. */
 	SVST( "$hour",      ROK|INC, EVFHR,     SVREG,  TYSI,  &Top.iHr),			// inc'd: 1-24.  iHr also used for hourval()
+	SVST( "$hourST",    ROK|INC, EVFHR,     SVREG,  TYSI,  &Top.iHrST),			// inc'd: 1-24
+	SVST( "$subhour",   ROK|INC, EVFSUBHR,  SVREG,  TYSI,  &Top.iSubhr),		// inc'd: 1-N (number of subhours)
 	SVST( "$isDT",      ROK,  EVFHR|EVFDAY, SVREG,  TYSI,  &Top.isDT),			// 1 if Daylight Saving time is in effect.  EVFDAY so can't make EVFMH with EVFHR, 9-95.
 	//SVST( "$year",      ROK,     EVFMON,    SVREG,  TYSI,  &Top.date.year),	// < 0: generic
 	//SVST( "$firstMon",  ROK,     EVFRUN,    SVREG,  TYSI,  &FirstMon),	// of run, 1-12
@@ -2106,7 +2108,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 		fieldName = *(char **)pv;			// retreive pointer to field name text
 	else
 	{
-		fnr = *(SI *)pv;					// else must be TYSI. retreive field number value.
+		fnr = *(SI *)pv;					// else must be TYSI. retrieve field number value.
 		if (fnr <= 0 || fnr > FNRMAX)					// check range. FNRMAX: impf.h.
 			return perNx( (char *)MH_S0124, (INT)fnr, (INT)FNRMAX);	// "Import field number %d not in range 1 to %d"
 	}

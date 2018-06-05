@@ -22,30 +22,7 @@ Name of meter by which this PVARRAY's AC power out is recorded. Generated power 
 
 Meter end use to which the PVARRAY's generated energy should be accumulated.
 
-  ------- -------------------------------------------------------------
-  Clg     Cooling
-  Htg     Heating (includes heat pump compressor)
-  HPHTG   Heat pump backup heat
-  DHW     Domestic (service) hot water
-  DHWBU   Domestic (service) hot water heating backup (HPWH resistance)
-  FANC    Fans, AC and cooling ventilation
-  FANH    Fans, heating
-  FANV    Fans, IAQ venting
-  FAN     Fans, other purposes
-  AUX     HVAC auxiliaries such as pumps
-  PROC    Process
-  LIT     Lighting
-  RCP     Receptacles
-  EXT     Exterior lighting
-  REFR    Refrigeration
-  DISH    Dishwashing
-  DRY     Clothes drying
-  WASH    Clothes washing
-  COOK    Cooking
-  USER1   User-defined category 1
-  USER2   User-defined category 2
-  PV      Photovoltaic power generation
-  ------- -------------------------------------------------------------
+<%= insert_file('doc/src/enduses.md') %>
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------
@@ -57,7 +34,7 @@ The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
-  kW          *x* &ge; 0          *none*        Yes            constant
+  kW          *x* $\geq$ 0          *none*        Yes            constant
 
 **pvModuleType=*choice***
 
@@ -88,7 +65,7 @@ The refraction index for the coating applied to the module cover. A value of 1.0
   ------------------------------------------------------------------------------
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
-              *x* &ge; 1.0        1.0           No             constant
+              *x* $\geq$ 1.0        1.0           No             constant
 
   ------------------------------------------------------------------------------
 
@@ -251,3 +228,7 @@ Optionally indicates the end of the PVARRAY definition. Alternatively, the end o
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- @[PVArray](#p_pvarray)

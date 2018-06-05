@@ -2,19 +2,33 @@
 add_subdirectory(RCDEF)
 
 # Run C Preprocessor on *.DEF files
+set(defs
+  CNDTYPES.DEF
+  CNUNITS.DEF
+  DTLIMS.DEF
+  CNFIELDS.DEF
+  CNRECS.DEF
+)
+
 macro(c_preprocess file)
   add_custom_command(
-    OUTPUT "${file}.i"
-    COMMAND "${CMAKE_C_COMPILER}" -c -EP -nologo -I "${CMAKE_CURRENT_SOURCE_DIR}" -Tc "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def" > "${file}.i"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
+    COMMAND ${CMAKE_COMMAND}
+    ARGS
+      -Dcompiler=${CMAKE_C_COMPILER}
+      -Dsource_dir=${CMAKE_CURRENT_SOURCE_DIR}
+      -Dout_dir=${CMAKE_CURRENT_BINARY_DIR}
+      -Dfile=${file}
+      -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def"
   )
 endmacro()
 
-c_preprocess(cndtypes)
-c_preprocess(cnunits)
-c_preprocess(dtlims)
-c_preprocess(cnfields)
-c_preprocess(cnrecs)
+foreach(defFile ${defs})
+  string(TOLOWER "${defFile}" defFile)
+  string(REPLACE ".def" "" file "${defFile}")
+  c_preprocess(${file})
+endforeach()
 
 # Run RCDEF
 add_custom_command(
@@ -26,7 +40,7 @@ add_custom_command(
     "${CMAKE_CURRENT_SOURCE_DIR}/UNTAB.CPP"
     "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
-  DEPENDS cndtypes.i cnunits.i dtlims.i cnfields.i cnrecs.i
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
@@ -237,6 +251,7 @@ set(libs
 
 source_group("Source Files" FILES ${source})
 source_group("Header Files" FILES ${headers})
+source_group("Def Files" FILES ${defs})
 
 target_link_libraries(CSE ${libs})
 
