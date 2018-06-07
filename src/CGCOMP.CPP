@@ -440,7 +440,8 @@ void AIRFLOW::af_AccumDry(		// add mass flow
 }		// AIRFLOW::af_AccumDry
 //-----------------------------------------------------------------------------
 int AIRFLOW::af_HEX(			// heat/energy exchange
-	AIRFLOW& af2,		// other air flow
+	AIRFLOW& af2,		// other side air flow
+						//  returned with leaving conditions
 	double effS,
 	double effL,
 	double EATR,
@@ -453,12 +454,15 @@ int AIRFLOW::af_HEX(			// heat/energy exchange
 		return 0;
 
 	double effX = amfMin / af_amf;
-	as_tdb = as_HXEff( as_tdb, af2.as_tdb, effX*effS);
-	as_w = as_HXEff( as_w, af2.as_w, effX*effL);
+	double amfRat = af_amf / af2.af_amf;
+	double tdb = as_HXEff( as_tdb, af2.as_tdb, effX*effS);
+	double w = as_HXEff( as_w, af2.as_w, effX*effL);
+	af2.as_tdb += (tdb - as_tdb) * amfRat;
+	af2.as_w += (w - as_w) * amfRat;
+	as_tdb = tdb;
+	as_w = w;
 	return 1;
-
-}
-
+}		// AIRFLOW::af_Hex
 //=============================================================================
 
 
