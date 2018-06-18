@@ -969,6 +969,16 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RLUP( MsR, mse)			// for gud masses 1 to n
 		mse->ms_RddInit( 70.);
 
+// Kiva initialization loop
+	KIVA *kv;
+	RLUP(KvR, kv)
+		kv->kv_RddInit();
+
+// Apply kiva results to initial boundary conditions
+	XSRAT* xr;
+	RLUP(XsB, xr)
+		rc |= xr->xr_ApplyKivaResults();
+
 // Air handler initialization loop, 4-20-95
 	AH *ah;
 	RLUP( AhB, ah)

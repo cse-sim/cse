@@ -58,7 +58,7 @@ dbgPrintMask = $dayofyear == 191 ? 64 : 0
  MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
  MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
  MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
- MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0       matDens=0
+ MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0.1       matDens=0.1
  MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
  MATERIAL   "OpaqueWin"       matCond=1/(1/.52817-1/WinInFilm-1/WINEXF)
                               matSpHt=0.239   matDens=87.399
@@ -222,6 +222,7 @@ ZONE Z1
         sfExCnd=GROUND
         sfInAbs=INABSORP
         sfFnd="Interior Slab Insulation"
+        sfExpPerim = sqrt(516.68)
         sfInHcModel = Unified             //floor inside film coefficient
         sfExHcModel = Unified
 

@@ -344,7 +344,8 @@ static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
 	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
 	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
 	CULT("*",	     STAR, 0,         0,    0, 0,    0,     0,       N,      0.f,  N, fbStarCkf),
-	CULT("fbMat",    DAT,  FNDBLOCK_MATI,  RQD,  0, VEOI, TYREF, &MatiB,  N,      0.f,  N, N), 	// non-shade part of SHGC: normal xmvty
+	CULT("fbFnd",    DAT,  FNDBLOCK_OWNTI, NO_INP | RDFLIN, 0, 0, TYIREF,&FndiB,  0.f,  N,   N),
+	CULT("fbMat",    DAT,  FNDBLOCK_MATI,  RQD,  0, VEOI, TYREF, &MatiB,  N,      0.f,  N, N),
 	CULT("fbX1Ref",  DAT,  FNDBLOCK_X1REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
 	CULT("fbZ1Ref",  DAT,  FNDBLOCK_Z1REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
 	CULT("fbX1",     DAT,  FNDBLOCK_X1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
@@ -376,8 +377,8 @@ static CULT fdT[] = //---------------------------------- FOUNDATIONCOMP Cmd Tabl
 	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
 	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N), 	// non-shade part of SHGC: normal xmvty
-	CULT("fndblock", RATE,  0,  0,  0, 0, 0, &FbiB,  0.f, fbT, N), 	// non-shade part of SHGC: normal xmvty
+	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
+	CULT("fndblock",     RATE, 0,                 0,            0, 0,      0,      &FbiB, 0.f,        fbT,   N),
 	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
 	CULT()
 };		// fdT
@@ -852,6 +853,12 @@ dflInH:
 		{
 			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. <> Is not a wall."); // TODO add formatted string
 		}
+
+		if (IsSet(SFI_SFFND) && !IsSet(SFI_SFEXPPERIM))
+		{
+			oer("'sfExpPerim' must be set for foundaiton floors (i.e., when 'sfFnd' is set)."); // TODO add formatted string
+		}
+
 		// TODO: Checks for exposed perimeter...
 		// TODO: Check depthBG/height
 		x.xs_modelr = C_SFMODELCH_KIVA;
@@ -991,7 +998,8 @@ CULT( "sfExHcModel",DAT,SFXO( HCMODEL),	     0,             0, 0,      TYCH,   0
 CULT( "sfExHcLChar",DAT,SFXO( HCLCHAR),	     0,             0, VEOI,   TYFL,   0,       10.f,                  N,   N),
 CULT( "sfExHcMult", DAT,SFXO( HCMULT),	     0,             0, VSUBHRLY,TYFL,  0,       1.f,                   N,   N),
 CULT( "sfFnd",    DAT,  SFI_SFFND,           0,             0, VEOI,   TYREF, &FndiB,   0.f,                   N,   N),
-CULT( "sfFndFloor", DAT,SFI_SFFNDFLOOR,      0,             0, VEOI,   TYREF, &SfiB,   0.f,                   N,   N),
+CULT( "sfExpPerim", DAT,SFI_SFEXPPERIM,      0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
+CULT( "sfFndFloor", DAT,SFI_SFFNDFLOOR,      0,             0, VEOI,   TYREF, &SfiB,   0.f,                    N,   N),
 CULT( "sfExCTaDbAvgYr",DAT, SFXO( CTADBAVGYR),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExCTaDbAvg31",DAT, SFXO( CTADBAVG31),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExCTaDbAvg14",DAT, SFXO( CTADBAVG14),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
@@ -2605,7 +2613,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP Kiva calc settings
 	CULT( "grndMinDim",  DAT,   TOPRAT_GRNDMINDIM, 0,          0, VEOI,   TYFL,  0,       .066f,         N,   N),
 	CULT( "grndMaxGrthCoeff", DAT, TOPRAT_GRNDMAXGRTHCOEFF, 0, 0, VEOI,   TYFL,  0,        1.5f,         N,   N),
-	CULT( "grndTimeStep", DAT,  TOPRAT_GRNDTIMESTEP, 0,        0, VEOI,   TYFL,  0,     C_TSCH_H,        N,   N),
+	CULT( "grndTimeStep", DAT,  TOPRAT_GRNDTIMESTEP, 0,        0, VEOI,   TYCH,  0,     C_TSCH_H,        N,   N),
 // TOP ASHWAT calc trigger thresholds (1-2015)
 	CULT( "AWTrigT",	 DAT,   TOPRAT_AWTRIGT,    0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "AWTrigSlr",   DAT,   TOPRAT_AWTRIGSLR,  0,          0, VEOI,   TYFL,  0,      .05f,           N,   N),

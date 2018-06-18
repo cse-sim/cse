@@ -4472,11 +4472,33 @@ static RC loadsSurfaces( 		// surface runtime simulation
 
 	// kiva instances
 	TMRSTART(TMR_KIVA);
-	KIVA* ki;
-	RLUP(KvR, ki)
+
+	BOO kivaIsSubhourly = Top.tp_grndTimeStep == C_TSCH_SH;
+
+	if (subhrly == kivaIsSubhourly) // Only enter if correct interval
 	{
-		ki->kv_Calculate();
+		KIVA* ki;
+		RLUP(KvR, ki)
+		{
+			ki->kv_Step(dur);
+		}
+
+		// Loop over surfaces to assign weighted values and accummulate to zone balance
+		XSRAT* xr;
+		RLUP(XsB, xr)
+		{
+			rc |= xr->xr_ApplyKivaResults();
+		}
+
 	}
+
+	// Loop over surfaces to accummulate to zone balance
+	XSRAT* xr;
+	RLUP(XsB, xr)
+	{
+		rc |= xr->xr_KivaZoneAccum();
+	}
+
 	TMRSTOP(TMR_KIVA);
 
 

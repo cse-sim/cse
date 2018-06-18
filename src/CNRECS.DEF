@@ -215,8 +215,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GZ tp_grndMinDim		// minimum cell dimension in Kiva, ft, default .066f
     *i FLOAT_GZ tp_grndMaxGrthCoeff	// maximum cell growth in Kiva, default 1.5f
     *i TSCH tp_grndTimeStep			// Kiva time step
-									//   C_TSCH_HOURLY: Hourly (default)
-									//   C_TSCH_SUBHOURLY: Sub-hourly
+									//   C_TSCH_H: Hourly (default)
+									//   C_TSCH_SH: Sub-hourly
 
 
 //TOP: inputs: ASHWAT calculation trigger thresholds
@@ -1327,6 +1327,8 @@ RECORD XSRAT "xsurf" *RAT
 	*declare "void xr_SGIncTrans( int sunup, float verSun);"
 	*declare "void xr_SGMakeSGRATs();"
 	*declare "std::vector<TI> xr_kivaInstances;"
+    *declare "RC xr_ApplyKivaResults();"
+    *declare "RC xr_KivaZoneAccum();"
 
 				// .name: is that of of surface, door, window, perimeter, or mass (see x.ty) 1-92
 				// .ownTi: ZNR subscript
@@ -1454,12 +1456,12 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
 	*prefix kv_
 	*exdes				// d'tor
-	*declare "ZNR* kv_GetZone( int si) const;"
-	*declare "RC kv_Create( Kiva::Foundation fnd, TI flri, std::vector<TI> wallIDs, double weight);"
-	*declare "RC kv_InitGround();"
+	*declare "ZNR* kv_GetZone() const;"
+	*declare "RC kv_Create();"
+	*declare "RC kv_RddInit();"
 	*declare "RC kv_SetInitBCs(DOY jDay);"
 	*declare "RC kv_SetBCs();"
-	*declare "RC kv_Calculate();"
+	*declare "RC kv_Step(float dur);"
 
 	*declare "class Kiva::Foundation* kv_fnd;"
 	*declare "class Kiva::Ground* kv_ground;"

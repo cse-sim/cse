@@ -1290,32 +1290,39 @@ LOCAL RC topFnd()		// foundations
 	FOUNDATION *fnd;
 	RC rc = RCOK;
 
-	RLUP(FndiB, fnd)			// loop CONstruction records
+	RLUP(FndiB, fnd)
 	{
 		// populate base Kiva foundation object (will be copied for specific instances of Kiva)
+		if (!fnd->fd_kivaFnd)
+		{
+			fnd->fd_kivaFnd = new Kiva::Foundation();
+			if (!fnd->fd_kivaFnd)
+				rc = RCBAD;		// not expected
+		}
+
 		Kiva::Foundation* kFnd = fnd->fd_kivaFnd;
 		kFnd->soil = kivaMat(Top.tp_soilCond, Top.tp_soilDens, Top.tp_soilSpHt);
 		kFnd->soilAbsorptivity = 1 - Top.grndRefl;
 		kFnd->soilEmissivity = Top.tp_grndEmit;
-		kFnd->surfaceRoughness = LSItoIP(Top.tp_grndRf);
-		kFnd->farFieldWidth = LSItoIP(Top.tp_farFieldWidth);
-		kFnd->deepGroundDepth = LSItoIP(Top.tp_deepGrndDepth);
+		kFnd->surfaceRoughness = LIPtoSI(Top.tp_grndRf);
+		kFnd->farFieldWidth = LIPtoSI(Top.tp_farFieldWidth);
+		kFnd->deepGroundDepth = LIPtoSI(Top.tp_deepGrndDepth);
 		
 		kFnd->deepGroundBoundary = Top.tp_deepGrndCnd == C_DGCH_ZEROFLUX ?
 			Kiva::Foundation::DGB_ZERO_FLUX :
 			Kiva::Foundation::DGB_CONSTANT_TEMPERATURE; // Not necessarily constant...can be re-defined at any point during simulation
 
-		kFnd->wall.heightAboveGrade = LSItoIP(fnd->fd_wlHtAbvGrd);
-		kFnd->wall.depthBelowSlab = LSItoIP(fnd->fd_wlDpBlwSlb);
+		kFnd->wall.heightAboveGrade = LIPtoSI(fnd->fd_wlHtAbvGrd);
+		kFnd->wall.depthBelowSlab = LIPtoSI(fnd->fd_wlDpBlwSlb);
 
-		kFnd->mesh.minCellDim = LSItoIP(Top.tp_grndMinDim);
+		kFnd->mesh.minCellDim = LIPtoSI(Top.tp_grndMinDim);
 		kFnd->mesh.maxNearGrowthCoeff = Top.tp_grndMaxGrthCoeff;
 		kFnd->mesh.maxDepthGrowthCoeff = Top.tp_grndMaxGrthCoeff;
 		kFnd->mesh.maxInteriorGrowthCoeff = Top.tp_grndMaxGrthCoeff;
 		kFnd->mesh.maxExteriorGrowthCoeff = Top.tp_grndMaxGrthCoeff;
 	}
 	return rc;
-}		// topCon2
+}		// topFnd
 		//===========================================================================
 LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run basAnc.
 {
