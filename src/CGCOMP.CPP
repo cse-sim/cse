@@ -457,6 +457,8 @@ int AIRFLOW::af_HEX(			// heat/energy exchange
 	double amfRat = af_amf / af2.af_amf;
 	double tdb = as_HXEff( as_tdb, af2.as_tdb, effX*effS);
 	double w = as_HXEff( as_w, af2.as_w, effX*effL);
+
+
 	af2.as_tdb += (tdb - as_tdb) * amfRat;
 	af2.as_w += (w - as_w) * amfRat;
 	as_tdb = tdb;
