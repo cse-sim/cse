@@ -1,13 +1,18 @@
-# Copyright (c) 1997-2016 The CSE Authors. All rights reserved.
+# Copyright (c) 1997-2018 The CSE Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file.
 require 'tmpdir'
 require 'tempfile'
 require 'yaml'
+require 'set'
+require 'irb'
+
+require_relative 'command'
 
 module DefParser
   # This is the starting state for the parser
   THIS_DIR = File.expand_path(File.dirname(__FILE__))
+  IsWindows = !((ENV['OS'] =~ /win/i).nil?)
   LoadFromReference = lambda do |fname|
     ref_dir = File.expand_path(File.join(THIS_DIR, '..', 'config', 'reference'), THIS_DIR)
     path = File.join(ref_dir, fname)
@@ -22,19 +27,32 @@ module DefParser
   LoadCnRecsOrig = lambda {LoadFromSrc['CNRECS.DEF']}
   LoadCnFieldsOrig = lambda {LoadFromSrc['CNFIELDS.DEF']}
   LoadCndTypesOrig = lambda {LoadFromSrc['CNDTYPES.DEF']}
-  LoadViaCpp = lambda do |fname|
+  # String -> String
+  # Load via the C Pre-processor
+  LoadViaCpp = lambda do |fname, with_comments=false|
     output = nil
     Tempfile.open('temp_file') do |f|
       # Call the c preprocessor
       src_dir = File.expand_path(File.join(THIS_DIR, '..', '..', 'src'), THIS_DIR)
       path = File.join(src_dir, fname)
       tgt_path = f.path
-      `cpp -I#{src_dir} -xc++ #{path} #{tgt_path}`
-      output = File.read(f.path)
+      if IsWindows
+        opts = []
+        opts << "/I\"#{src_dir}\""
+        opts << "/C" if with_comments
+        opts << "/EP"
+        opts << "/TP"
+        opts << "\"#{path}\""
+        output = Command::Run["cl", opts, nil, false]
+      else
+        `cpp -I#{src_dir} -xc++ #{path} #{tgt_path}`
+        output = File.read(f.path)
+      end
     end
     output
   end
   LoadCnRecs = lambda {LoadViaCpp['CNRECS.DEF']}
+  LoadCnRecsWithComments = lambda{LoadViaCpp['CNRECS.DEF', true]}
   LoadCndTypes = lambda {LoadViaCpp['CNDTYPES.DEF']}
   MkRecord = lambda do |id, name, fields|
     {
@@ -118,6 +136,54 @@ module DefParser
     records
   end
   ParseProbesTxt = lambda {ParseCseDashP[LoadProbes[]]}
+  VERBOSE = false
+  CleanStr = lambda do |s|
+    s.encode('UTF-8',
+             :invalid => :replace,
+             :undef => :replace,
+             :replace => '')
+  end
+  # String (Array String) Int -> (Tuple (Or Nil String) Int)
+  # Given a line, an array of reference lines, and an integer for current
+  # position in reference lines, return a tuple of the comment description for
+  # the given line and the new position, or nil and the current position if
+  # nothing is found.
+  FindDescription = lambda do |line, ref_lines, current_ref_idx|
+    stripped_line = line.strip
+    next_ref_idx = current_ref_idx
+    ref_line = nil
+    ref_lines.each_with_index do |rl, ref_idx|
+      next if ref_idx < current_ref_idx
+      rl_ = rl.gsub(/\t/, ' ').gsub(/\/\//, '  ').gsub(/\/\*/, '  ') + " "
+      if rl_.include?(stripped_line + " ")
+        next_ref_idx = ref_idx
+        ref_line = rl
+        break
+      end
+    end
+    if ref_line
+      puts("matching:\n\t#{line.strip[0..40]}\n with\n\t#{ref_line.strip[0..40]}\n") if VERBOSE
+      m = ref_line.match(/^.*?\/\/(.*)$/)
+      if m
+        # match // ... lines
+        description = CleanStr[m[1].strip]
+        puts("found field!: #{description[0..40]}") if VERBOSE
+        [description, next_ref_idx]
+      else
+        # match /* ... lines
+        n = ref_line.match(/^.*?\/\*(.*)$/)
+        if n
+          description = CleanStr[n[1].strip.gsub(/\*\//, '')]
+          puts("found field!: #{description[0..40]}") if VERBOSE
+          [description, next_ref_idx]
+        else
+          [nil, current_ref_idx]
+        end
+      end
+    else
+      [nil, current_ref_idx]
+    end
+  end
   Parse = lambda do |input, reference=nil|
     in_record = false
     record_id = nil
@@ -138,19 +204,26 @@ module DefParser
       "i" ,# after input, before checking/setup
     ])
     ref_lines = reference.lines.map(&:chomp) if reference
+    current_ref_idx = 0
     input.lines.map(&:chomp).each_with_index do |line, idx|
       if line =~ /^\s*RECORD/
-        m = line.match(/^\s*RECORD\s+([a-zA-Z_0-9-]*)\s*\"([^"]*)\"\s+\*(RAT|STRUCT).*$/)
-        if m && (m[3] == "RAT")
+        m = line.match(/^\s*RECORD\s+([a-zA-Z_0-9-]*)\s*\"([^"]*)\"\s+\*(RAT|STRUCT|SUBSTRUCT).*$/)
+        if m and (m[3] == "RAT")
           in_record = true
           record_id = m[1]
           record_name = m[2]
+        elsif m and (m[1] == "ZNRES_IVL_SUB")
+          # TODO: fix this special-casing to more generally handle parsing and
+          # association of substructs with their parent RAT objects.
+          in_record = true
+          record_id = "ZNRES"
+          record_name = "znRes"
         end
       elsif line =~ /^\s*\*declare.*$/
         next
       elsif line =~ /^\s*$/
         next
-      elsif line =~ /^\s*\*.*$/ && !(line =~ /^\s*\*END.*$/)
+      elsif ((line =~ /^\s*\*.*$/) or (line.split(/\s+/).length >= 2 and in_record)) and !(line =~ /^\s*\*END.*$/)
         # take the last two items
         spec, name = line.split(/\s+/)[-2..-1]
         next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
@@ -159,9 +232,9 @@ module DefParser
           :name => name.gsub(/;/,'')
         }
         if reference
-          m = ref_lines[idx].match(/^.*?\/\/(.*)$/)
-          field[:description] = m[1].strip if m
-        else
+          description, current_ref_idx = FindDescription[
+            line, ref_lines, current_ref_idx]
+          field[:description] = description if description
         end
         toks = line.gsub(/#{spec}\s+#{name}\s*$/, '')
           .strip
@@ -194,11 +267,11 @@ module DefParser
           elsif t == "nest"
             hide = true
           else
-            puts("!!! Ignoring #{t}")
+            puts("!!! Ignoring #{t}; tok: #{tok}\n!!! line[#{idx}]: #{line}")
           end
         end
         record_fields << field unless hide
-      elsif (line =~ /^\s*[a-zA-Z_0-9]+\s+[a-zA-Z_0-9]+\s*$/) && in_record
+      elsif (line =~ /^\s*[a-zA-Z_0-9]+\s+[a-zA-Z_0-9]+\s*$/) and in_record
         # we have a two token field
         spec, name = line.strip.split(/\s+/)
         field = {
@@ -206,15 +279,18 @@ module DefParser
           :name => name,
           :variability => ["constant"]
         }
-        next if spec.nil? || name.nil? || spec.include?('*') || name.include?('*')
+        next if spec.nil? or name.nil? or spec.include?('*') or name.include?('*')
         record_fields << field
-      elsif (line =~ /^\s*\*END/) && in_record
+      elsif (line =~ /^\s*\*END/) and in_record
         in_record = false
-        if output.include?(record_id)
+        output_key = record_id.downcase
+        if output.include?(output_key)
           puts("Warning! Duplicate id found: #{record_id}")
-          output[record_id.downcase][:fields] += record_fields
+          output[output_key] = MkRecord[
+            record_id, record_name,
+            output[output_key][:fields] + record_fields]
         else
-          output[record_id.downcase] = MkRecord[record_id, record_name, record_fields]
+          output[output_key] = MkRecord[record_id, record_name, record_fields]
         end
         record_id = nil
         record_name = nil
@@ -223,7 +299,7 @@ module DefParser
     end
     output
   end
-  ParseCnRecs = lambda {Parse[LoadCnRecs[], LoadCnRecsOrig[]]}
+  ParseCnRecs = lambda {Parse[LoadCnRecs[], LoadCnRecsWithComments[]]}
   # String -> Nil
   # Given the path to an output file, write the output file in YAML format.
   ParseCnRecsToYaml = lambda {|p| File.write(p, ParseCnRecs[].to_yaml)}

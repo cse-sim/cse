@@ -1473,7 +1473,7 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 #ifdef DEBUG //cnglob.h
 	else
 	{
-		rer( PWRN,(char *)MH_R1277,V oaLimT);    // "airHandler '%s': bad oaLimT 0x%lx"
+		rer( PWRN,(char *)MH_R1277,VD oaLimT);    // "airHandler '%s': bad oaLimT 0x%lx"
 		return;
 	}
 #endif
@@ -1490,7 +1490,7 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 #ifdef DEBUG
 	else
 	{
-		rer( PWRN,(char *)MH_R1278,V oaLimE);    // "airHandler '%s': bad oaLimE 0x%lx"
+		rer( PWRN,(char *)MH_R1278,VD oaLimE);    // "airHandler '%s': bad oaLimE 0x%lx"
 		return;
 	}
 #endif
@@ -2334,7 +2334,7 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 		{
 		default:
 			rer( PABT, (char *)MH_R1279,	// "Internal error: Airhandler '%s': unrecognized ts sp control method 0x%lx"
-				 name, V ahTsSp);
+				 name, VD ahTsSp);
 
 		case C_TSCMNC_RA:			// return air supply temp setpoint control
 

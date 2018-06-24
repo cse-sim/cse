@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// ancrec.h: record and record anchor base class definitions for cne, 2-92.
+// ancrec.h: record and record anchor base class definitions for cse
 
 
 // before #include, #define NEEDLIKECTOR if including file calls the anc<T> like-another constructor
@@ -304,6 +304,9 @@ template <class T>  class anc : public basAnc
 //=============================================================================
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 #define RLUP( B, rp) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->gud > 0)
+
+//----- macro to loop over records of given anchor (type known) in reverse (hook to change re skipping deleted records)
+#define RLUPR( B, rp) for (rp=(B).p+(B).n;  rp >= (B).p+(B).mn;  rp--) if (rp->gud > 0)
 
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 //-----  variant with condition

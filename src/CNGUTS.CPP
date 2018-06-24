@@ -5,7 +5,7 @@
 // cnguts.cpp  - Hourly simulation main routine for CSE
 
 //------------------------------- INCLUDES ----------------------------------
-#include <cnglob.h>	// cne global defines: USI LI ASSERT dtypes.h cndefns.h
+#include <cnglob.h>	// CSE global defines: USI LI ASSERT dtypes.h cndefns.h
 
 #include <ancrec.h>	// record: base class for rccn.h classes
 #include <rccn.h>	// WSHADRATstr ZNRstr
@@ -130,7 +130,7 @@ void FC cgClean( 		// cg overall init/cleanup routine
 	IffnmB.free();	   	/* Import File Field Names info: used for autosize & run & further compile support til CLEAR;
 				   may not be free'd in runFazDataFree(). 2-94. */
 
-// other cne simulator guts modules
+// other CSE simulator guts modules
 
 	// *** do other cg modules (all files in cnguts.h) from here ****
 
@@ -355,15 +355,7 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 			jDay -= wuDays;			// set to warmup using days before run (neg fixed below)
 
 			// conditionally adjust warmup start forward to weather file start when known
-			if ( Wfile.jd1 > 0				// if weather file dates known
-					&&  Wfile.jd1 + 364 != Wfile.jdl		// if not a full year weather file (365-day file has all dates!)
-					&&  Wfile.jd1 - 1 != Wfile.jdl )		// .. (eg Jul 1..Jun 30 is full year)
-			{
-				if (tp_begDay < Wfile.jd1)		// eg if file starts in Nov and run starts in Feb
-					jDay += 365;			// add 365 to warmup start for comparability
-				setToMax( jDay, Wfile.jd1-1);		// move warmup start ahead to wthr file start if nec (-1 cuz ++ below)
-			}
-			jDay = (jDay + 365) % 365;		// adjust to 0-364 if negative or >= 365 (++'d b4 use)
+			Wfile.wf_FixJday(jDay, tp_begDay);
 		}
 		tp_DTInit();					// init daylight/standard time stuff.  Uses jDay.
 		int dayDownCount = isWarmup ? wuDays : nDays;	// number of days in warmup or run
@@ -977,6 +969,16 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RLUP( MsR, mse)			// for gud masses 1 to n
 		mse->ms_RddInit( 70.);
 
+// Kiva initialization loop
+	KIVA *kv;
+	RLUP(KvR, kv)
+		kv->kv_RddInit();
+
+// Apply kiva results to initial boundary conditions
+	XSRAT* xr;
+	RLUP(XsB, xr)
+		rc |= xr->xr_ApplyKivaResults();
+
 // Air handler initialization loop, 4-20-95
 	AH *ah;
 	RLUP( AhB, ah)
@@ -1336,7 +1338,7 @@ RC GAIN::gn_CkF(
 RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 {
 	RC rc = RCOK;
-	ZNR* zp = ZrB.p + ownTi;		// gain's zone record
+	ZNR* zp = ownTi > 0 ? ZrB.p + ownTi : NULL;		// gain's zone record
 
 	// check that not more than 100% of gain is distributed.  runtime check needed as hourly expr input accepted.
 	if (gnFrZn + gnFrPl + gnFrRtn > 1.f)	// "For GAIN '%s': More than 100 percent of gnPower distributed:\n"
@@ -1350,8 +1352,8 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 				   name, gnFrRad, gnFrLat, gnFrRad + gnFrLat );
 
 	// accumulate zone lighting power before and after daylighting reduction, for binary results file and/or custom reports
-	double gnPX = gnPower;			// fetch gain power level for modification
-	if (gnEndUse==C_ENDUSECH_LIT)	// if gain has "lighting" end use
+	double gnPX = gnPower;				// fetch gain power level for modification
+	if (gnEndUse==C_ENDUSECH_LIT && zp)	// if gain has "lighting" end use
 		zp->znLitDmd += gnPX;		// accumulate zone total lighting "demand" -- b4 daylighting reduction.
           							// This is for binary results file and/or custom reports (via ZNRES).
 	if (gn_dhwsysi)
@@ -1365,33 +1367,38 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 	{
 #if defined( _DEBUG)
 		if (gnPX < 0.)
-			// neg gain allowed but not expected
+		{	// neg gain allowed but not expected
 			//  flag in debug build for investigation
-			printf( "\n%s:%s gn < 0", zp->name, name);
+			char* zname = zp ? strtprintf( "%s:", zp->name) : "";
+			printf( "\n%s%s gn < 0", zname, name);
+		}
 #endif
-		if (gnEndUse==C_ENDUSECH_LIT)		// if end use is "lighting", separately accumulate
-			zp->znLitEu += gnPX;			// dl-reduced zone lighting energy use (cuz meters not by zone).
-
-		// accumulate DL-reduced sensible/latent gain to zones
-		zp->znLGain += gnPX * gnFrZn * gnFrLat;			// total gain * fraction to zone * fraction latent
-		zp->znSGain += gnPX * gnFrZn * (1.f - gnFrRad - gnFrLat);	// sensible gain: non-radiant, non-latent part
-
 		// accumulate DL-reduced energy consumption by meter
 		if ( mtri > 0)				// if meter given
 			// add the gain to it, reduced by any daylighting fraction (dflt 1.0)
 			MtrB.p[ mtri].H.mtr_Accum( gnEndUse, gnPX);
 
-		// accumulate radiant power to zones and masses using distribution table generated at setup time, 11-95
-		DBL rIg = gnPX * gnFrZn * gnFrRad;	// radiant portion of fraction to zone
-		if ( rIg > 0.						// if any radiant gain
- 		 &&  zp->rIgDist )					// if gain's zone has distrubution table: insurance
-			for (int i = 0; i < zp->rIgDistN; i++)   // loop table entries
-			{
-				RIGDIST* p = zp->rIgDist + i; 		// point ith table entry
-				if (p->targP)				// insurance
-					*p->targP += RIGTARG( rIg * p->targFr);		// add fraction of gain to zone or mass member
-				// table contains much addl info for debugging, in case need to repoint here, etc. 11-95.
+		if (zp)		// if associated zone
+		{	if (gnEndUse==C_ENDUSECH_LIT)		// if end use is "lighting", separately accumulate
+				zp->znLitEu += gnPX;			// dl-reduced zone lighting energy use (cuz meters not by zone).
+
+			// accumulate DL-reduced sensible/latent gain to zones
+			zp->znLGain += gnPX * gnFrZn * gnFrLat;			// total gain * fraction to zone * fraction latent
+			zp->znSGain += gnPX * gnFrZn * (1.f - gnFrRad - gnFrLat);	// sensible gain: non-radiant, non-latent part
+
+
+			// accumulate radiant power to zones and masses using distribution table generated at setup time
+			if (zp->rIgDist)
+			{	DBL rIg = gnPX * gnFrZn * gnFrRad;	// radiant portion of fraction to zone
+				if ( rIg != 0.)					// if any radiant gain
+					for (int i = 0; i < zp->rIgDistN; i++)	// loop table entries
+					{	RIGDIST* p = zp->rIgDist + i;		// point ith table entry
+						if (p->targP)				// insurance
+							*p->targP += RIGTARG( rIg * p->targFr);		// add fraction of gain to zone or mass member
+						// table contains much addl info for debugging, in case need to repoint here, etc.
+					}
 			}
+		}
 	}
 	return rc;
 }		// GAIN::gn_DoHour
@@ -2467,6 +2474,7 @@ void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 	tp_tmrAWTot = tmrCurTot( TMR_AWTOT);
 	tp_tmrAWCalc = tmrCurTot( TMR_AWCALC);
 	tp_tmrCond   = tmrCurTot( TMR_COND);
+	tp_tmrKiva   = tmrCurTot( TMR_KIVA);
 	tp_tmrBC     = tmrCurTot( TMR_BC);
 	tp_tmrZone   = tmrCurTot( TMR_ZONE);
 #endif
@@ -2554,7 +2562,7 @@ static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) 
 					   Address saved by slinit for other slpak calls.
 				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
 //------------------------------------------------------------------------
-LOCAL RC FC NEAR locInit()		// location-initializer for cne
+LOCAL RC FC NEAR locInit()		// location-initializer for CSE
 // inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
 // returns RCOK if ok, else message already issued.
 {

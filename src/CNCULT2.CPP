@@ -42,6 +42,8 @@
 #include <irats.h>	// declarations of input record arrays (rats)
 #include <cnculti.h>	// cncult internal functions shared only amoung cncult,2,3,4.cpp
 
+#include <Foundation.h>	// access to Kiva objects
+
 
 /*-------------------------------- DEFINES --------------------------------*/
 
@@ -56,6 +58,7 @@ LOCAL RC topMat();
 LOCAL RC topCon1();
 LOCAL RC topLr();
 LOCAL RC topCon2();
+LOCAL RC topFnd();
 LOCAL RC topGt();
 LOCAL RC topMtr();
 LOCAL RC topGain();
@@ -312,6 +315,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topCon1() )			// constr pass 1: 0 accumulators.  local.
 	E( topLr() )			// layers, & accumulate to constructions.  local.
 	E( topCon2() )			// constructions pass 2.  local.
+	E( topFnd() )			// foundations 04-18. local.
 	E( topGt() )			// glazeTypes 12-94. local.
 	E( topSf1() )			// surfaces pass 1.  cks/dflts stuff used for doors/windows (azm,tilt,H's). cncult3.
 	E( topMsCon())			// mass & masstype stuff between topSf1 and 2.  cncult3.cpp
@@ -1280,7 +1284,46 @@ x       con->conClass = conClass(con);	// local fcn below
 	}
 	return rc;
 }		// topCon2
-//===========================================================================
+		//===========================================================================
+LOCAL RC topFnd()		// foundations
+{
+	FOUNDATION *fnd;
+	RC rc = RCOK;
+
+	RLUP(FndiB, fnd)
+	{
+		// populate base Kiva foundation object (will be copied for specific instances of Kiva)
+		if (!fnd->fd_kivaFnd)
+		{
+			fnd->fd_kivaFnd = new Kiva::Foundation();
+			if (!fnd->fd_kivaFnd)
+				rc = RCBAD;		// not expected
+		}
+
+		Kiva::Foundation* kFnd = fnd->fd_kivaFnd;
+		kFnd->soil = kivaMat(Top.tp_soilCond, Top.tp_soilDens, Top.tp_soilSpHt);
+		kFnd->soilAbsorptivity = 1 - Top.grndRefl;
+		kFnd->soilEmissivity = Top.tp_grndEmit;
+		kFnd->surfaceRoughness = LIPtoSI(Top.tp_grndRf);
+		kFnd->farFieldWidth = LIPtoSI(Top.tp_farFieldWidth);
+		kFnd->deepGroundDepth = LIPtoSI(Top.tp_deepGrndDepth);
+		
+		kFnd->deepGroundBoundary = Top.tp_deepGrndCnd == C_DGCH_ZEROFLUX ?
+			Kiva::Foundation::DGB_ZERO_FLUX :
+			Kiva::Foundation::DGB_CONSTANT_TEMPERATURE; // Not necessarily constant...can be re-defined at any point during simulation
+
+		kFnd->wall.heightAboveGrade = LIPtoSI(fnd->fd_wlHtAbvGrd);
+		kFnd->wall.depthBelowSlab = LIPtoSI(fnd->fd_wlDpBlwSlb);
+
+		kFnd->mesh.minCellDim = LIPtoSI(Top.tp_grndMinDim);
+		kFnd->mesh.maxNearGrowthCoeff = Top.tp_grndMaxGrthCoeff;
+		kFnd->mesh.maxDepthGrowthCoeff = Top.tp_grndMaxGrthCoeff;
+		kFnd->mesh.maxInteriorGrowthCoeff = Top.tp_grndMaxGrthCoeff;
+		kFnd->mesh.maxExteriorGrowthCoeff = Top.tp_grndMaxGrthCoeff;
+	}
+	return rc;
+}		// topFnd
+		//===========================================================================
 LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run basAnc.
 {
 	RC rc /*=RCOK*/;
@@ -1312,7 +1355,7 @@ LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run ba
 					 gti->gtSMSC, gti->gtSMSO );
 		}
 		else  						// optional gtSMSC not given
-			V gti->gtSMSC = V gti->gtSMSO;     		// default it to gtSMSO.  Move as NANDAT not FLOAT so won't FPE.
+			VD gti->gtSMSC = VD gti->gtSMSO;     		// default it to gtSMSO.  Move as NANDAT not FLOAT so won't FPE.
 #else
 x   // check or default shades-closed SHGC (Solar Heat Gain Coefficient)
 x

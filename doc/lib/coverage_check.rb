@@ -1,3 +1,5 @@
+require 'set'
+
 module CoverageCheck
   # String -> (Or Nil String)
   # Given a line of markdown, recognize an ATX header and return the header
@@ -16,10 +18,22 @@ module CoverageCheck
   DataItemHeader = lambda do |line|
     m = line.match(/^\*\*(.*)\*\*$/)
     if m
-      m[1].split(/=/)[0].gsub(/\*/,'').strip
+      header = m[1].split(/=/)[0].gsub(/\*/,'').strip
+      return nil if Ignore[header]
+      header
     else
       nil
     end
+  end
+  IgnoredHeaders = Set.new(["Related Probes"].map(&:downcase))
+  # String -> Bool
+  # Return true if the given header should be ignored
+  Ignore = lambda do |header|
+    hdc = header.downcase
+    IgnoredHeaders.each do |ih|
+      return true if hdc.include?(ih) or ih.include?(hdc)
+    end
+    false
   end
   # String -> (Map String (Set String))
   # Given the content of a markdown document of a record and its input, return
@@ -29,7 +43,7 @@ module CoverageCheck
     current_header = nil
     content.lines.map(&:chomp).each do |line|
       h = MdHeader[line]
-      if h
+      if h and not Ignore[h]
         current_header = h
         output[current_header] = Set.new unless output.include?(h)
       else
@@ -151,6 +165,8 @@ module CoverageCheck
     end
     n
   end
+  # RecordInputSet -> RecordInputSet
+  # Downcase a record input set
   DowncaseRecordInputSet = lambda do |ris|
     n = {}
     ris.each do |k, vs|

@@ -362,14 +362,23 @@ The items below give values associated with CSE's model for below grade surfaces
 
 **sfFnd=*fdName***
 
-Name of FOUNDATION applied to ground-contact surfaces; used only for Floor and Wall SURFACEs when sfExCnd is GROUND.
+Name of FOUNDATION applied to ground-contact Floor SURFACEs; used only for Floor SURFACEs when sfExCnd is GROUND.
 
 <%= member_table(
   legal_range: "Name of a *Foundation*",
   default: "*none*",
-  required: "when<br/>*sfExCnd* = GROUND",
+  required: "when<br/>*sfExCnd* = GROUND and <br/>*sfType* = Floor",
   variability: "constant") %>
 
+**sfFndFloor=*sfName***
+
+Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when sfExCnd is GROUND.
+
+<%= member_table(
+  legal_range: "Name of a *Surface*",
+  default: "*none*",
+  required: "when<br/>*sfExCnd* = GROUND and <br/>*sfType* = Wall",
+  variability: "constant") %>
 
 **sfHeight=*float***
 
@@ -476,3 +485,9 @@ The following tables summarize the defaults and legal ranges of surface members 
   sfGrndRefl  optional, default to grndRefl
   -----------------------------------------------------------------------
   -->
+
+**Related Probes:**
+
+- @[surface](#p_surface)
+- @[xsurf](#p_xsurf)
+- @[mass](#p_mass)

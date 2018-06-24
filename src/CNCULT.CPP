@@ -106,6 +106,8 @@ makAncWSHADRAT(ShiB);		// shades (fins, ovh's) input records basAnc
 makAncSGI(SgiB); 			// solar gain distributions input records basAnc
 // construction
 makAncGT(GtiB);  			// glazeTypes input info 12-94
+makAncFOUNDATION(FndiB);  			// foundations input info records basAnc
+makAncFNDBLOCK(FbiB);  			// foundation blocks input info records basAnc
 makAncCON(ConiB);  			// constructions input info records basAnc
 makAncLR(LriB);    			// layers input info records basAnc
 makAncMAT(MatiB);			// materials input info records basAnc
@@ -159,6 +161,8 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	ShiB.free();
 	SgiB.free();
 	GtiB.free();
+	FndiB.free();
+	FbiB.free();
 	ConiB.free();
 	LriB.free();
 	MatiB.free();
@@ -323,6 +327,62 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 	CULT()
 };		// conT
 
+//------------- FNDBLOCK (for Foundation table) -------------
+
+//------------------------------------------------------------ FNDBLOCK check fcn
+RC FC fbStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+{
+	RC rc = RCOK;
+
+
+	return rc;
+#undef P
+}		// fcStarCkf
+
+static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
+{
+	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
+	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
+	CULT("*",	     STAR, 0,         0,    0, 0,    0,     0,       N,      0.f,  N, fbStarCkf),
+	CULT("fbFnd",    DAT,  FNDBLOCK_OWNTI, NO_INP | RDFLIN, 0, 0, TYIREF,&FndiB,  0.f,  N,   N),
+	CULT("fbMat",    DAT,  FNDBLOCK_MATI,  RQD,  0, VEOI, TYREF, &MatiB,  N,      0.f,  N, N),
+	CULT("fbX1Ref",  DAT,  FNDBLOCK_X1REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
+	CULT("fbZ1Ref",  DAT,  FNDBLOCK_Z1REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
+	CULT("fbX1",     DAT,  FNDBLOCK_X1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fbZ1",     DAT,  FNDBLOCK_Z1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fbX2Ref",  DAT,  FNDBLOCK_X2REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
+	CULT("fbZ2Ref",  DAT,  FNDBLOCK_Z2REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
+	CULT("fbX2",     DAT,  FNDBLOCK_X2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fbZ2",     DAT,  FNDBLOCK_Z2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("endFoundationComp",ENDER,0, 0,    0, VEOI, 0,     0,       N,       0.f,  N, N),
+	CULT()
+};		// fbT
+
+//------------- FOUNDATION (for Top table; ref'd in surface,) -------------
+
+//------------------------------------------------------------ FOUNDATION check fcn
+RC FC fdStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+{
+	RC rc = RCOK;
+
+
+	return rc;
+#undef P
+}		// fdStarCkf
+
+static CULT fdT[] = //---------------------------------- FOUNDATIONCOMP Cmd Table
+{
+	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
+	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
+	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
+	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
+	CULT("fndblock",     RATE, 0,                 0,            0, 0,      0,      &FbiB, 0.f,        fbT,   N),
+	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
+	CULT()
+};		// fdT
+		
 //------------- GLAZETYPE (for Top table; ref'd in window,) -------------
 
 //------------------------------------------------------------ GLAZETYPE check fcn
@@ -508,6 +568,7 @@ RC SFI::sf_CkfWINDOW(
 	options;
 	RC rc = RCOK;
 	sfClass = sfcWINDOW;
+	x.xs_modelr = C_SFMODELCH_QUICK;
 	return rc;
 }	// SFI::sf_ChkWINDOW
 //------------------------------------------------------------------------
@@ -585,6 +646,8 @@ RC SFI::sf_CkfDOOR(
 	else if (consSet && uSet)
 		rc |= oer( (char *)MH_S0406); 		// "Both drCon and drU given"
 	// getting uval from construction: defer to topCkf.
+
+	x.xs_modelr = C_SFMODELCH_QUICK;
 
 	return rc;
 }		// SFI::sf_CkfDOOR
@@ -778,6 +841,38 @@ dflInH:
 		oWarn( (char *)MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
 										//   Do an ooWarn: warn once?
 
+// sf_CkfSURF: Set xs_modelr and kiva related checks
+	if (IsSet(SFI_SFFND) || IsSet(SFI_SFFNDFLOOR))
+	{
+		if (IsSet(SFI_SFFND) && sfTy != C_OSTYCH_FLR)
+		{
+			oer("Only floor surfaces are allowed to reference 'sfFnd'. <> Is not a floor."); // TODO add formatted string
+		}
+
+		if (IsSet(SFI_SFFNDFLOOR) && sfTy != C_OSTYCH_WALL)
+		{
+			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. <> Is not a wall."); // TODO add formatted string
+		}
+
+		if (IsSet(SFI_SFFND) && !IsSet(SFI_SFEXPPERIM))
+		{
+			oer("'sfExpPerim' must be set for foundaiton floors (i.e., when 'sfFnd' is set)."); // TODO add formatted string
+		}
+
+		// TODO: Checks for exposed perimeter...
+		// TODO: Check depthBG/height
+		x.xs_modelr = C_SFMODELCH_KIVA;
+		if (x.xs_modelr != x.xs_model && x.xs_model != C_SFMODELCH_AUTO)
+		{
+			oWarn("Surface reset to Model=Kiva"); // TODO add formatted string
+		}
+		// TODO Warn/ERR if not C_EXCNDCH_GROUND
+	}
+	else
+	{
+		x.xs_modelr = C_SFMODELCH_QUICK;	// tentatively set resolved model to "quick"
+	}
+
 // sf_CkfSURF: if GROUND, use separate processing (below)
 	if (xc == C_EXCNDCH_GROUND)
 		rc |= sf_CkfSURFGround( options);	// below grade or on grade floor, below grade wall
@@ -830,8 +925,8 @@ RC SFI::sf_CkfSURFGround(
 	// check for unresolved expressions
 	int allVals = IsValAll( SFX( DEPTHBG), SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
 					SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND), 0);
-	if (!allVals || x.xs_sbcO.sb_groundModel != 0)
-		return rc;	// can't check or already checked
+	if (!allVals || x.xs_sbcO.sb_groundModel != 0 || sf_IsKiva( x.xs_modelr))
+		return rc;	// can't check or already checked or not relevant
 
 	float cGrnd = x.xs_sbcO.sb_CGrnd();	// total conductance to ground, Btuh/ft2-F
 	float rGrnd = 0.f;
@@ -885,6 +980,7 @@ CULT( "sfTilt",   DAT,  SFX( TILT),          0,             0, VEOI,   TYFL,   0
 CULT( "sfAzm",    DAT,  SFX( AZM),           0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfModel",  DAT,  SFX( MODEL),         0,             0, 0,      TYCH,   0,       C_SFMODELCH_AUTO,      N,   N),//sfStarCkf uses
 CULT( "sfDepthBG",DAT,  SFX( DEPTHBG),		 0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
+CULT( "sfHeight", DAT,  SFX( HEIGHT),		 0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfCon",    DAT,  SFI_SFCON,           0,             0, VEOI,   TYREF, &ConiB,   0.f,                   N,   N),
 CULT( "sfU",      DAT,  SFI_SFU,             0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfLThkF",  DAT,	SFX( LTHKF),		 0,				0, VEOI,   TYFL,   0,		.5f,				   N,   N),
@@ -901,6 +997,9 @@ CULT( "sfInEpsLW",DAT,  SFXI( EPSLW),		 0,             0, VEOI,   TYFL,   0,    
 CULT( "sfExHcModel",DAT,SFXO( HCMODEL),	     0,             0, 0,      TYCH,   0,      C_CONVMODELCH_UNIFIED,  N,   N),
 CULT( "sfExHcLChar",DAT,SFXO( HCLCHAR),	     0,             0, VEOI,   TYFL,   0,       10.f,                  N,   N),
 CULT( "sfExHcMult", DAT,SFXO( HCMULT),	     0,             0, VSUBHRLY,TYFL,  0,       1.f,                   N,   N),
+CULT( "sfFnd",    DAT,  SFI_SFFND,           0,             0, VEOI,   TYREF, &FndiB,   0.f,                   N,   N),
+CULT( "sfExpPerim", DAT,SFI_SFEXPPERIM,      0,             0, VEOI,   TYFL,   0,       0.f,                   N,   N),
+CULT( "sfFndFloor", DAT,SFI_SFFNDFLOOR,      0,             0, VEOI,   TYREF, &SfiB,   0.f,                    N,   N),
 CULT( "sfExCTaDbAvgYr",DAT, SFXO( CTADBAVGYR),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExCTaDbAvg31",DAT, SFXO( CTADBAVG31),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExCTaDbAvg14",DAT, SFXO( CTADBAVG14),0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
@@ -1421,9 +1520,9 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znAzm",       DAT,   ZI(ZNAZM),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
-	CULT( "znTH",        DAT,   ZI(ZNTH),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
-	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
-	CULT( "znTC",        DAT,   ZI(ZNTC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
+	CULT( "znTH",        DAT,   ZI(ZNTH),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTC",        DAT,   ZI(ZNTC),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
@@ -1497,8 +1596,8 @@ static CULT izxT[] = //------ IZXFER cmd RAT Entry table, used from cnTopCult
 // id                cs     fn            f   uc evf      ty     b      dfls                 p2   ckf
 //----------         -----  ------------  --- -- ------   -----  -----  -------------        ---- ----
 CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   izStarCkf),
-CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
-CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
+CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
+CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
 CULT( "izALo",       DAT,   IZXRAT_A1,    0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
@@ -1517,6 +1616,8 @@ CULT( "izASEF",		 DAT,   IZXRAT_ASEF,  0,   0, VSUBHRLY,TYFL, 0,	     0.f,				 N
 CULT( "izLEF",		 DAT,   IZXRAT_LEF,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
 CULT( "izVfExhRat",	 DAT,   IZXRAT_VFEXHRAT, 0,0, VSUBHRLY,TYFL, 0,      1.f,                N,   N),
 CULT( "izEATR",		 DAT,   IZXRAT_EATR,  0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izZnHERVSrc", DAT,   IZXRAT_ZIHERVSRC,0,0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
+CULT( "izZnHERVExh", DAT,   IZXRAT_ZIHERVEXH,0,0, VEOI,   TYREF, &ZiB,   -1,                 N,   N),
 
 // following iff fan
 CULT( "izFanVfDs",   DAT,   ZFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N), // 0 means no fan
@@ -2489,7 +2590,16 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "refTemp",     DAT,   TOPRAT_REFTEMP,    0,          0, VFAZLY, TYFL,  0,      N,   60.f,            N,   N),
 	CULT( "refRH",       DAT,   TOPRAT_REFRH,      0,          0, VFAZLY, TYFL,  0,      N,    .6f,            N,   N),
 	CULT( "grndRefl",    DAT,   TOPRAT_GRNDREFL,   0,          0, VMHLY,  TYFL,  0,      N,    .2f,            N,   N),
-	CULT( "soilDiff",    DAT,   TOPRAT_SOILDIFF,   0,          0, VMHLY,  TYFL,  0,      N,    .025f,          N,   N),
+	CULT( "grndEmit",    DAT,   TOPRAT_GRNDEMIT,   0,          0, VEOI,   TYFL,  0,      N,    .8f,            N,   N),
+	CULT( "grndRf",      DAT,   TOPRAT_GRNDRF,     0,          0, VEOI,   TYFL,  0,      N,    .1f,            N,   N),
+	CULT( "soilDiff",    DAT,   TOPRAT_SOILDIFF,   0,          0, VEOI,   TYFL,  0,      N,    .025f,          N,   N),
+	CULT( "soilCond",    DAT,   TOPRAT_SOILCOND,   0,          0, VEOI,   TYFL,  0,      N,   1.0f,            N,   N),
+	CULT( "soilSpHt",    DAT,   TOPRAT_SOILSPHT,   0,          0, VEOI,   TYFL,  0,      N,    .1f,            N,   N),
+	CULT( "soilDens",    DAT,   TOPRAT_SOILDENS,   0,          0, VEOI,   TYFL,  0,      N,   115.0f,          N,   N),
+	CULT( "farFieldWidth", DAT, TOPRAT_FARFIELDWIDTH, 0,       0, VEOI,   TYFL,  0,      N,   130.0f,          N,   N),
+	CULT( "deepGrndCnd", DAT,   TOPRAT_DEEPGRNDCND, 0,         0, VEOI,   TYCH,  0,     C_DGCH_ZEROFLUX,       N,   N),
+	CULT( "deepGrndDepth", DAT, TOPRAT_DEEPGRNDDEPTH, 0,       0, VEOI,   TYFL,  0,      N,   130.0f,          N,   N),
+	CULT( "deepGrndT",   DAT,   TOPRAT_DEEPGRNDT,  0,          0, VHRLY,  TYFL,  0,      N,   50.0f,           N,   N), // defaulted from wthr file by code
 
 // TOP check tolerances and precisions
 	CULT( "tol",         DAT,   TOPRAT_TOL,        0,          0, VEOI,   TYFL,  0,      N,    .001f,          N,   N),
@@ -2502,6 +2612,10 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "ebTolDay",    DAT,   TOPRAT_EBTOLDAY,   0,          0, VEOI,   TYFL,  0,      .0001f,         N,   N),
 	CULT( "ebTolHour",   DAT,   TOPRAT_EBTOLHOUR,  0,          0, VEOI,   TYFL,  0,      .0001f,         N,   N),
 	CULT( "ebTolSubhr",  DAT,   TOPRAT_EBTOLSUBHR, 0,          0, VEOI,   TYFL,  0,      .0001f,         N,   N),
+// TOP Kiva calc settings
+	CULT( "grndMinDim",  DAT,   TOPRAT_GRNDMINDIM, 0,          0, VEOI,   TYFL,  0,       .066f,         N,   N),
+	CULT( "grndMaxGrthCoeff", DAT, TOPRAT_GRNDMAXGRTHCOEFF, 0, 0, VEOI,   TYFL,  0,        1.5f,         N,   N),
+	CULT( "grndTimeStep", DAT,  TOPRAT_GRNDTIMESTEP, 0,        0, VEOI,   TYCH,  0,     C_TSCH_H,        N,   N),
 // TOP ASHWAT calc trigger thresholds (1-2015)
 	CULT( "AWTrigT",	 DAT,   TOPRAT_AWTRIGT,    0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "AWTrigSlr",   DAT,   TOPRAT_AWTRIGSLR,  0,          0, VEOI,   TYFL,  0,      .05f,           N,   N),
@@ -2563,6 +2677,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP subclasses
 	CULT( "material",    RATE,  0,                 NM_RQD,     0, 0,      0,    &MatiB,  N,    0.f,          matT,  N),
 	CULT( "construction",RATE,  0,                 NM_RQD,     0, 0,      0,    &ConiB,  N,    0.f,          conT,  N),
+	CULT( "foundation",  RATE,  0,                 NM_RQD,     0, 0,      0,    &FndiB,  N,    0.f,           fdT,  N),
 	CULT( "glazeType",   RATE,  0,                 NM_RQD,     0, 0,      0,    &GtiB,   N,    0.f,           gtT,  N), // added 12-94
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),

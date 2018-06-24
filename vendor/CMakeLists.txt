@@ -18,19 +18,41 @@ download_project(PROJ                Penumbra
 
 add_subdirectory(${Penumbra_SOURCE_DIR})
 
+set_target_properties(awning PROPERTIES FOLDER Dependencies/Penumbra)
+set_target_properties(glfw PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
+set_target_properties(uninstall PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
+set_target_properties(glad PROPERTIES FOLDER Dependencies/Penumbra)
+set_target_properties(penumbra PROPERTIES FOLDER Dependencies/Penumbra)
+set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
+
 download_project(PROJ                Kiva
                  GIT_REPOSITORY      https://github.com/bigladder/kiva.git
-                 GIT_TAG             v0.4.0
+                 GIT_TAG             cse
                  DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/kiva-dl"
                  SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/kiva"
                  BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/kiva"
                  ${UPDATE_DISCONNECTED_IF_AVAILABLE}
 )
 
-option( BUILD_GROUND_PLOT "Build ground plotting library (for Kiva debugging only)" OFF )
-mark_as_advanced(FORCE BUILD_GROUND_PLOT)
+set(KIVA_TESTING OFF CACHE BOOL "" FORCE)
+set(KIVA_EXE_BUILD OFF CACHE BOOL "" FORCE)
+set(KIVA_COVERAGE OFF CACHE BOOL "" FORCE)
+
+option( KIVA_GROUND_PLOT "Build ground plotting library" OFF )
 
 add_subdirectory(${Kiva_SOURCE_DIR})
+
+set_target_properties(libkiva PROPERTIES FOLDER Dependencies/Kiva)
+
+if (KIVA_GROUND_PLOT)
+  set_target_properties(groundplot PROPERTIES FOLDER Dependencies/Kiva/GroundPlot)
+  set_target_properties(boost_filesystem PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(boost_system PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(mgl-static PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(png_static PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(genfiles PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(zlibstatic PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+endif()
 
 download_project(PROJ                HPWHsim
                  GIT_REPOSITORY      https://github.com/EcotopeResearch/HPWHsim.git
@@ -42,13 +64,6 @@ download_project(PROJ                HPWHsim
 )
 
 add_subdirectory(${HPWHsim_SOURCE_DIR})
-
-set_target_properties(awning PROPERTIES FOLDER Dependencies/Penumbra)
-set_target_properties(glfw PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
-set_target_properties(uninstall PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
-set_target_properties(glad PROPERTIES FOLDER Dependencies/Penumbra)
-set_target_properties(penumbra PROPERTIES FOLDER Dependencies/Penumbra)
-set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
 
 set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
 set_target_properties(testTool PROPERTIES FOLDER Dependencies/HPWHsim)

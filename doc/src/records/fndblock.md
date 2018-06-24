@@ -1,14 +1,14 @@
-# FOUNDATIONCOMP
+# FNDBLOCK
 
-Foundation components are materials within the two-dimensional domain beyond those defined by the slab and wall SURFACEs. Each component is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user.
+Foundation blocks are materials within the two-dimensional domain beyond those defined by the slab and wall SURFACEs. Each block is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user.
 
 <!-- TODO: Insert diagram of references -->
 
-The default reference is WALL_INT, WALL_TOP.
+The default reference is WALLINT, WALLTOP.
 
 **fcMat=*matName***
 
-Name of MATERIAL of the foundation component.
+Name of MATERIAL of the foundation block.
 
 <%= member_table(
   legal_range: "Name of a *Material*",
@@ -18,42 +18,42 @@ Name of MATERIAL of the foundation component.
 
 **fcX1Ref=*choice***
 
-Relative X origin for *frX1* point. Options are:
+Relative X origin for *fcX1* point. Options are:
 
 - SYMMETRY
-- WALL_INT
-- WALL_CENTER
-- WALL_EXT
-- FAR_FIELD
+- WALLINT
+- WALLCENTER
+- WALLEXT
+- FARFIELD
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_INT",
+  default: "WALLINT",
   required: "No",
   variability: "constant") %>
 
 **fcZ1Ref=*choice***
 
-Relative Z origin for *frZ1* point. Options are:
+Relative Z origin for *fcZ1* point. Options are:
 
-- WALL_TOP
+- WALLTOP
 - GRADE
-- SLAB_TOP
-- SLAB_BOTTOM
-- WALL_BOTTOM
-- DEEP_GROUND
+- SLABTOP
+- SLABBOTTOM
+- WALLBOTTOM
+- DEEPGROUND
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_TOP",
+  default: "WALLTOP",
   required: "No",
   variability: "constant") %>
 
 **fcX1=*float***
 
-The X position of the first corner of the component relative to *fcX1Ref*.
+The X position of the first corner of the block relative to *fcX1Ref*.
 
 <%= member_table(
   units: "ft",
@@ -64,7 +64,7 @@ The X position of the first corner of the component relative to *fcX1Ref*.
 
 **fcZ1=*float***
 
-The Z position of the first corner of the component relative to *fcZ1Ref*.
+The Z position of the first corner of the block relative to *fcZ1Ref*.
 
 <%= member_table(
   units: "ft",
@@ -75,42 +75,42 @@ The Z position of the first corner of the component relative to *fcZ1Ref*.
 
 **fcX2Ref=*choice***
 
-Relative X origin for *frX2* point. Options are:
+Relative X origin for *fcX2* point. Options are:
 
 - SYMMETRY
-- WALL_INT
-- WALL_CENTER
-- WALL_EXT
-- FAR_FIELD
+- WALLINT
+- WALLCENTER
+- WALLEXT
+- FARFIELD
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_INT",
+  default: "WALLINT",
   required: "No",
   variability: "constant") %>
 
 **fcZ2Ref=*choice***
 
-Relative Z origin for *frZ2* point. Options are:
+Relative Z origin for *fcZ2* point. Options are:
 
-- WALL_TOP
+- WALLTOP
 - GRADE
-- SLAB_TOP
-- SLAB_BOTTOM
-- WALL_BOTTOM
-- DEEP_GROUND
+- SLABTOP
+- SLABBOTTOM
+- WALLBOTTOM
+- DEEPGROUND
 
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALL_TOP",
+  default: "WALLTOP",
   required: "No",
   variability: "constant") %>
 
 **fcX2=*float***
 
-The X position of the second corner of the component relative to *fcX2Ref*.
+The X position of the second corner of the block relative to *fcX2Ref*.
 
 <%= member_table(
   units: "ft",
@@ -121,7 +121,7 @@ The X position of the second corner of the component relative to *fcX2Ref*.
 
 **fcZ2=*float***
 
-The Z position of the second corner of the component relative to *fcZ2Ref*.
+The Z position of the second corner of the block relative to *fcZ2Ref*.
 
 <%= member_table(
   units: "ft",

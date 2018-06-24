@@ -1,5 +1,5 @@
 
-CSE 0.813 for Win32 console
+CSE 0.850.0+docs-fix.f4a6a9b.24 for Win32 console
 Command line: -p
 @top.                 I   R 
                  name   I   R   string            constant
@@ -16,6 +16,7 @@ Command line: -p
          skipDayStart   I   R   integer number    input time
           skipDayStep   I   R   integer number    input time
                wfName   I   R   string            autosize and simulate phase start time
+             TDVfName   I   R   string            autosize and simulate phase start time
             elevation   I   R   number            run start time (of each phase, autoSize or simulate)
               refTemp   I   R   number            autosize and simulate phase start time
                 refRH   I   R   number            autosize and simulate phase start time
@@ -35,6 +36,7 @@ Command line: -p
               bldgAzm   I   R   number            input time
              skyModel   I   R   integer number    input time
            skyModelLW   I   R   unrecognized      input time
+         exShadeModel   I   R   unrecognized      input time
              dhwModel   I   R   unrecognized      input time
               humMeth   I   R   unrecognized      input time
                dflExH   I   R   number            input time
@@ -80,6 +82,19 @@ Command line: -p
         coolDsDay[10]   I   R   integer number    input time
         coolDsDay[11]   I   R   integer number    input time
         coolDsDay[12]   I   R   integer number    input time
+        coolDsCond[0]   I   R   integer number    input time
+        coolDsCond[1]   I   R   integer number    input time
+        coolDsCond[2]   I   R   integer number    input time
+        coolDsCond[3]   I   R   integer number    input time
+        coolDsCond[4]   I   R   integer number    input time
+        coolDsCond[5]   I   R   integer number    input time
+        coolDsCond[6]   I   R   integer number    input time
+        coolDsCond[7]   I   R   integer number    input time
+        coolDsCond[8]   I   R   integer number    input time
+        coolDsCond[9]   I   R   integer number    input time
+       coolDsCond[10]   I   R   integer number    input time
+       coolDsCond[11]   I   R   integer number    input time
+       coolDsCond[12]   I   R   integer number    input time
               exePath   I   R   string            run start time (of each phase, autoSize or simulate)
               exeInfo   I   R   string            run start time (of each phase, autoSize or simulate)
           exeCodeSize   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
@@ -100,6 +115,8 @@ Command line: -p
               repTopM   I   R   integer number    input time
               repBotM   I   R   integer number    input time
            repTestPfx   I   R   string            input time
+           exshNShade   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
+             exshNRec   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
              latitude   I   R   number            run start time (of each phase, autoSize or simulate)
             longitude   I   R   number            run start time (of each phase, autoSize or simulate)
              timeZone   I   R   number            run start time (of each phase, autoSize or simulate)
@@ -261,11 +278,6 @@ Command line: -p
                hcFrcF   I   R   number            hourly
                hcAirX   I   R   number            end of each subhour
           hcAirXIsSet   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
-            znComfClo   I   R   number            subhourly
-            znComfMet   I   R   number            subhourly
-           znComfAirV   I   R   number            subhourly
-             znComfRh   I   R   number            subhourly
-      znComfUseZoneRH   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
               xfanFOn   I   R   number            hourly
            xfan.fanTy   I   R   unrecognized      autosize and simulate phase start time
             xfan.vfDs   I   R   number            end of each subhour
@@ -436,8 +448,6 @@ Command line: -p
                fConvH       R   number            subhourly
                fConvC       R   number            subhourly
                 fConv       R   number            subhourly
-          comfPMV7730       R   number            end of each subhour
-          comfPPD7730       R   number            end of each subhour
                qsHvac       R   number            end of each subhour
                qlHvac       R   number            end of each subhour
                  qlIz       R   number            end of each subhour
@@ -457,6 +467,8 @@ Command line: -p
                   aTz       R   number            end of each subhour
                    wz       R   number            end of each subhour
                relHum       R   number            end of each subhour
+             relHumls       R   number            subhourly
+             relHumlh       R   number            hourly
                   twb       R   number            end of each subhour
                   aWz       R   number            end of each subhour
                  tzls       R   number            subhourly
@@ -589,6 +601,10 @@ Command line: -p
                exArea   I   R   number            input time
                  diam   I   R   number            input time
                   len   I   R   number            input time
+            branchLen   I   R   number            run start time (of each phase, autoSize or simulate)
+          branchCount   I   R   integer number    input time
+            branchCFA   I   R   number            input time
+             airVelDs   I   R   number            input time
                inArea   I   R   number            input time
                insulR   I   R   number            input time
             insulMati   I   R   integer number    input time
@@ -641,6 +657,7 @@ Command line: -p
                  Y.hp   I   R   number            end of run (of each phase, autoSize or simulate)
                 Y.dhw   I   R   number            end of run (of each phase, autoSize or simulate)
               Y.dhwBU   I   R   number            end of run (of each phase, autoSize or simulate)
+             Y.dhwMFL   I   R   number            end of run (of each phase, autoSize or simulate)
                Y.fanC   I   R   number            end of run (of each phase, autoSize or simulate)
                Y.fanH   I   R   number            end of run (of each phase, autoSize or simulate)
                Y.fanV   I   R   number            end of run (of each phase, autoSize or simulate)
@@ -657,7 +674,9 @@ Command line: -p
                Y.cook   I   R   number            end of run (of each phase, autoSize or simulate)
                Y.usr1   I   R   number            end of run (of each phase, autoSize or simulate)
                Y.usr2   I   R   number            end of run (of each phase, autoSize or simulate)
+                 Y.bt   I   R   number            end of run (of each phase, autoSize or simulate)
                  Y.pv   I   R   number            end of run (of each phase, autoSize or simulate)
+              Y.allEU   I   R   number            end of run (of each phase, autoSize or simulate)
                Y.cost   I   R   number            end of run (of each phase, autoSize or simulate)
             Y.dmdCost   I   R   number            end of run (of each phase, autoSize or simulate)
                 Y.dmd   I   R   number            end of run (of each phase, autoSize or simulate)
@@ -668,6 +687,7 @@ Command line: -p
                  M.hp   I   R   number            end of each month
                 M.dhw   I   R   number            end of each month
               M.dhwBU   I   R   number            end of each month
+             M.dhwMFL   I   R   number            end of each month
                M.fanC   I   R   number            end of each month
                M.fanH   I   R   number            end of each month
                M.fanV   I   R   number            end of each month
@@ -684,7 +704,9 @@ Command line: -p
                M.cook   I   R   number            end of each month
                M.usr1   I   R   number            end of each month
                M.usr2   I   R   number            end of each month
+                 M.bt   I   R   number            end of each month
                  M.pv   I   R   number            end of each month
+              M.allEU   I   R   number            end of each month
                M.cost   I   R   number            end of each month
             M.dmdCost   I   R   number            end of each month
                 M.dmd   I   R   number            end of each month
@@ -695,6 +717,7 @@ Command line: -p
                  D.hp   I   R   number            end of each day
                 D.dhw   I   R   number            end of each day
               D.dhwBU   I   R   number            end of each day
+             D.dhwMFL   I   R   number            end of each day
                D.fanC   I   R   number            end of each day
                D.fanH   I   R   number            end of each day
                D.fanV   I   R   number            end of each day
@@ -711,7 +734,9 @@ Command line: -p
                D.cook   I   R   number            end of each day
                D.usr1   I   R   number            end of each day
                D.usr2   I   R   number            end of each day
+                 D.bt   I   R   number            end of each day
                  D.pv   I   R   number            end of each day
+              D.allEU   I   R   number            end of each day
                D.cost   I   R   number            end of each day
             D.dmdCost   I   R   number            end of each day
                 D.dmd   I   R   number            end of each day
@@ -722,6 +747,7 @@ Command line: -p
                  H.hp   I   R   number            end of each hour
                 H.dhw   I   R   number            end of each hour
               H.dhwBU   I   R   number            end of each hour
+             H.dhwMFL   I   R   number            end of each hour
                H.fanC   I   R   number            end of each hour
                H.fanH   I   R   number            end of each hour
                H.fanV   I   R   number            end of each hour
@@ -738,7 +764,9 @@ Command line: -p
                H.cook   I   R   number            end of each hour
                H.usr1   I   R   number            end of each hour
                H.usr2   I   R   number            end of each hour
+                 H.bt   I   R   number            end of each hour
                  H.pv   I   R   number            end of each hour
+              H.allEU   I   R   number            end of each hour
                H.cost   I   R   number            end of each hour
             H.dmdCost   I   R   number            end of each hour
                 H.dmd   I   R   number            end of each hour
@@ -1027,6 +1055,8 @@ Command line: -p
       loadShareWS0[5]   I   R   unrecognized      end of each hour
                  HHWO   I   R   number            end of each hour
                   DLM   I   R   number            end of each hour
+                volRL   I   R   number            end of each hour
+                 HRBL   I   R   number            end of each hour
                  HRDL   I   R   number            end of each hour
                   HJL   I   R   number            end of each hour
                  HARL   I   R   number            end of each hour
@@ -1044,8 +1074,17 @@ Command line: -p
              ashpTSrc   I   R   number            subhourly
            ashpResUse   I   R   number            input time
                   vol   I   R   number            input time
+               UAMult   I   R   number            input time
                    EF   I   R   number            input time
                  LDEF   I   R   number            input time
+                  UEF   I   R   number            input time
+            ratedFlow   I   R   number            input time
+           annualFuel   I   R   number            input time
+           annualElec   I   R   number            input time
+          cycLossFuel   I   R   number            run start time (of each phase, autoSize or simulate)
+          cycLossElec   I   R   number            run start time (of each phase, autoSize or simulate)
+             maxFlowX   I   R   number            run start time (of each phase, autoSize or simulate)
+              maxInpX   I   R   number            run start time (of each phase, autoSize or simulate)
                   eff   I   R   number            input time
                  HPAF   I   R   number            input time
                   SBL   I   R   number            input time
@@ -1053,12 +1092,17 @@ Command line: -p
               parElec   I   R   number            hourly
                tHWOut   I   R   number            hourly
              mixDownF   I   R   number            hourly
+            stbyTicks   I   R   unrecognized      subhourly
+             loadCFwd   I   R   number            subhourly
+          loadCFwdMax   I   R   number            input time
+            loadCFwdF   I   R   number            input time
              elecMtri   I   R   integer number    input time
              fuelMtri   I   R   integer number    input time
                inElec   I   R   number            end of each hour
              inElecBU   I   R   number            end of each hour
                inFuel   I   R   number            end of each hour
-                input   I   R   number            input time
+             operElec   I   R   number            run start time (of each phase, autoSize or simulate)
+             stbyElec   I   R   number            run start time (of each phase, autoSize or simulate)
              resHtPwr   I   R   number            input time
             resHtPwr2   I   R   number            input time
           HPWHHSCount   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
@@ -1071,6 +1115,7 @@ Command line: -p
                totOut   I   R   number            hourly
               unMetSh   I   R   unrecognized      end of each hour
              unMetHrs   I   R   unrecognized      end of run (of each phase, autoSize or simulate)
+          balErrCount   I   R   unrecognized      end of each subhour
 
 @DHWTank[1..].        I   R                   owner: DHWSys
                  name   I   R   string            constant
@@ -1099,6 +1144,10 @@ Command line: -p
                  runF   I   R   number            hourly
                  tIn1   I   R   number            hourly
                   fUA   I   R   number            input time
+        lossMakeupPwr   I   R   number            hourly
+        lossMakeupEff   I   R   number            hourly
+             elecMtri   I   R   integer number    input time
+                volRL   I   R   number            end of each hour
                  HRLL   I   R   number            end of each hour
                  HRBL   I   R   number            end of each hour
 
@@ -1171,6 +1220,48 @@ Command line: -p
 
 @PVArray[1..].        I   R 
                  name   I   R   string            constant
+             mounting   I   R   unrecognized      input time
+                pnIdx   I   R   unrecognized      input time
+                 area   I   R   number            input time
+                fBeam   I   R   number            end of each hour
+        fBeamErrCount   I   R   unrecognized      end of each hour
+            vrtInp[0]   I   R   number            input time
+            vrtInp[1]   I   R   number            input time
+            vrtInp[2]   I   R   number            input time
+            vrtInp[3]   I   R   number            input time
+            vrtInp[4]   I   R   number            input time
+            vrtInp[5]   I   R   number            input time
+            vrtInp[6]   I   R   number            input time
+            vrtInp[7]   I   R   number            input time
+            vrtInp[8]   I   R   number            input time
+            vrtInp[9]   I   R   number            input time
+           vrtInp[10]   I   R   number            input time
+           vrtInp[11]   I   R   number            input time
+           vrtInp[12]   I   R   number            input time
+           vrtInp[13]   I   R   number            input time
+           vrtInp[14]   I   R   number            input time
+           vrtInp[15]   I   R   number            input time
+           vrtInp[16]   I   R   number            input time
+           vrtInp[17]   I   R   number            input time
+           vrtInp[18]   I   R   number            input time
+           vrtInp[19]   I   R   number            input time
+           vrtInp[20]   I   R   number            input time
+           vrtInp[21]   I   R   number            input time
+           vrtInp[22]   I   R   number            input time
+           vrtInp[23]   I   R   number            input time
+           vrtInp[24]   I   R   number            input time
+           vrtInp[25]   I   R   number            input time
+           vrtInp[26]   I   R   number            input time
+           vrtInp[27]   I   R   number            input time
+           vrtInp[28]   I   R   number            input time
+           vrtInp[29]   I   R   number            input time
+           vrtInp[30]   I   R   number            input time
+           vrtInp[31]   I   R   number            input time
+           vrtInp[32]   I   R   number            input time
+           vrtInp[33]   I   R   number            input time
+           vrtInp[34]   I   R   number            input time
+           vrtInp[35]   I   R   number            input time
+           vrtInp[36]   I   R   number            input time
              elecMtri   I   R   integer number    input time
                endUse   I   R   integer number    autosize and simulate phase start time
                 dcCap   I   R   number            input time
@@ -1200,6 +1291,73 @@ Command line: -p
            tGrndRatio   I   R   number            run start time (of each phase, autoSize or simulate)
                 poaPv   I   R   number            end of each hour
               tCellPv   I   R   number            end of each hour
+
+@Battery[1..].        I   R 
+                 name   I   R   string            constant
+                meter   I   R   integer number    input time
+               endUse   I   R   integer number    autosize and simulate phase start time
+            useUsrChg   I   R   integer number    run start time (of each phase, autoSize or simulate)
+               maxCap   I   R   number            run start time (of each phase, autoSize or simulate)
+              initSOE   I   R   number            run start time (of each phase, autoSize or simulate)
+           initCycles   I   R   number            run start time (of each phase, autoSize or simulate)
+               chgEff   I   R   number            hourly
+             dschgEff   I   R   number            hourly
+            maxChgPwr   I   R   number            hourly
+          maxDschgPwr   I   R   number            hourly
+               chgReq   I   R   number            end of each hour
+            soeBegIvl   I   R   number            hourly
+             loadSeen   I   R   number            end of each hour
+                  soe   I   R   number            end of each hour
+                soelh   I   R   number            hourly
+               cycles   I   R   number            end of each hour
+             cycleslh   I   R   number            hourly
+               energy   I   R   number            end of each hour
+             energylh   I   R   number            hourly
+
+@SHADEX[1..].         I   R 
+                 name   I   R   string            constant
+             mounting   I   R   unrecognized      input time
+                pnIdx   I   R   unrecognized      input time
+                 area   I   R   number            input time
+                fBeam   I   R   number            end of each hour
+        fBeamErrCount   I   R   unrecognized      end of each hour
+            vrtInp[0]   I   R   number            input time
+            vrtInp[1]   I   R   number            input time
+            vrtInp[2]   I   R   number            input time
+            vrtInp[3]   I   R   number            input time
+            vrtInp[4]   I   R   number            input time
+            vrtInp[5]   I   R   number            input time
+            vrtInp[6]   I   R   number            input time
+            vrtInp[7]   I   R   number            input time
+            vrtInp[8]   I   R   number            input time
+            vrtInp[9]   I   R   number            input time
+           vrtInp[10]   I   R   number            input time
+           vrtInp[11]   I   R   number            input time
+           vrtInp[12]   I   R   number            input time
+           vrtInp[13]   I   R   number            input time
+           vrtInp[14]   I   R   number            input time
+           vrtInp[15]   I   R   number            input time
+           vrtInp[16]   I   R   number            input time
+           vrtInp[17]   I   R   number            input time
+           vrtInp[18]   I   R   number            input time
+           vrtInp[19]   I   R   number            input time
+           vrtInp[20]   I   R   number            input time
+           vrtInp[21]   I   R   number            input time
+           vrtInp[22]   I   R   number            input time
+           vrtInp[23]   I   R   number            input time
+           vrtInp[24]   I   R   number            input time
+           vrtInp[25]   I   R   number            input time
+           vrtInp[26]   I   R   number            input time
+           vrtInp[27]   I   R   number            input time
+           vrtInp[28]   I   R   number            input time
+           vrtInp[29]   I   R   number            input time
+           vrtInp[30]   I   R   number            input time
+           vrtInp[31]   I   R   number            input time
+           vrtInp[32]   I   R   number            input time
+           vrtInp[33]   I   R   number            input time
+           vrtInp[34]   I   R   number            input time
+           vrtInp[35]   I   R   number            input time
+           vrtInp[36]   I   R   number            input time
 
 @terminal[1..].       I   R                   owner: zone
                  name   I   R   string            constant
@@ -3027,6 +3185,19 @@ Command line: -p
                 hdDow   I       integer number    input time
                 hdMon   I       unrecognized      input time
 
+@DESCOND[1..].        I   R 
+                 name   I   R   string            constant
+                  doy   I   R   integer number    input time
+                   DB   I   R   number            input time
+                MCDBR   I   R   number            input time
+                 MCWB   I   R   number            input time
+                MCWBR   I   R   number            input time
+               wndSpd   I   R   number            input time
+                 tauB   I   R   number            input time
+                 tauD   I   R   number            input time
+           ebnSlrNoon   I   R   number            input time
+           edhSlrNoon   I   R   number            input time
+
 @weatherFile.             R 
                  name       R   string            constant
           wFileFormat       R   integer number    run start time (of each phase, autoSize or simulate)
@@ -3057,54 +3228,121 @@ Command line: -p
               sum5TWb       R   integer number    run start time (of each phase, autoSize or simulate)
                 range       R   integer number    run start time (of each phase, autoSize or simulate)
              sumMonHi       R   integer number    run start time (of each phase, autoSize or simulate)
+     TDVFileTimeStamp       R   string            autosize and simulate phase start time
+         TDVFileTitle       R   string            autosize and simulate phase start time
+           TDVFileJHr       R   unrecognized      run start time (of each phase, autoSize or simulate)
 
 @weather.                 R 
                  name       R   string            constant
+                sunup       R   unrecognized      hourly
+                slAzm       R   number            hourly
+                slAlt       R   number            hourly
+                   db       R   number            hourly
                 bmrad       R   number            hourly
                 dfrad       R   number            hourly
-                   db       R   number            hourly
                    wb       R   number            hourly
-               wnddir       R   number            hourly
-               wndspd       R   number            hourly
+               wndDir       R   number            hourly
+               wndSpd       R   number            hourly
                 glrad       R   number            hourly
                cldCvr       R   number            hourly
                  tSky       R   number            hourly
                 tGrnd       R   number            hourly
                  taDp       R   number            hourly
                tMains       R   number            hourly
+              tdvElec       R   number            hourly
+              tdvFuel       R   number            hourly
+               taDbPk       R   number            hourly
+              taDbAvg       R   number            hourly
              taDbPvPk       R   number            hourly
             taDbAvg01       R   number            hourly
             taDbAvg07       R   number            hourly
             taDbAvg14       R   number            hourly
             taDbAvg31       R   number            hourly
-              taDbAvg       R   number            hourly
-              tdvElec       R   number            hourly
-            tdvNatGas       R   number            hourly
-           tdvPropane       R   number            hourly
+            tdvElecPk       R   number            hourly
+           tdvElecAvg       R   number            hourly
+          tdvElecPvPk       R   number            hourly
+         tdvElecAvg01       R   number            hourly
+     tdvElecHrRank[0]       R   integer number    hourly
+     tdvElecHrRank[1]       R   integer number    hourly
+     tdvElecHrRank[2]       R   integer number    hourly
+     tdvElecHrRank[3]       R   integer number    hourly
+     tdvElecHrRank[4]       R   integer number    hourly
+     tdvElecHrRank[5]       R   integer number    hourly
+     tdvElecHrRank[6]       R   integer number    hourly
+     tdvElecHrRank[7]       R   integer number    hourly
+     tdvElecHrRank[8]       R   integer number    hourly
+     tdvElecHrRank[9]       R   integer number    hourly
+    tdvElecHrRank[10]       R   integer number    hourly
+    tdvElecHrRank[11]       R   integer number    hourly
+    tdvElecHrRank[12]       R   integer number    hourly
+    tdvElecHrRank[13]       R   integer number    hourly
+    tdvElecHrRank[14]       R   integer number    hourly
+    tdvElecHrRank[15]       R   integer number    hourly
+    tdvElecHrRank[16]       R   integer number    hourly
+    tdvElecHrRank[17]       R   integer number    hourly
+    tdvElecHrRank[18]       R   integer number    hourly
+    tdvElecHrRank[19]       R   integer number    hourly
+    tdvElecHrRank[20]       R   integer number    hourly
+    tdvElecHrRank[21]       R   integer number    hourly
+    tdvElecHrRank[22]       R   integer number    hourly
+    tdvElecHrRank[23]       R   integer number    hourly
+    tdvElecHrRank[24]       R   integer number    hourly
 
 @weatherNextHour.           R 
                  name       R   string            constant
+                sunup       R   unrecognized      hourly
+                slAzm       R   number            hourly
+                slAlt       R   number            hourly
+                   db       R   number            hourly
                 bmrad       R   number            hourly
                 dfrad       R   number            hourly
-                   db       R   number            hourly
                    wb       R   number            hourly
-               wnddir       R   number            hourly
-               wndspd       R   number            hourly
+               wndDir       R   number            hourly
+               wndSpd       R   number            hourly
                 glrad       R   number            hourly
                cldCvr       R   number            hourly
                  tSky       R   number            hourly
                 tGrnd       R   number            hourly
                  taDp       R   number            hourly
                tMains       R   number            hourly
+              tdvElec       R   number            hourly
+              tdvFuel       R   number            hourly
+               taDbPk       R   number            hourly
+              taDbAvg       R   number            hourly
              taDbPvPk       R   number            hourly
             taDbAvg01       R   number            hourly
             taDbAvg07       R   number            hourly
             taDbAvg14       R   number            hourly
             taDbAvg31       R   number            hourly
-              taDbAvg       R   number            hourly
-              tdvElec       R   number            hourly
-            tdvNatGas       R   number            hourly
-           tdvPropane       R   number            hourly
+            tdvElecPk       R   number            hourly
+           tdvElecAvg       R   number            hourly
+          tdvElecPvPk       R   number            hourly
+         tdvElecAvg01       R   number            hourly
+     tdvElecHrRank[0]       R   integer number    hourly
+     tdvElecHrRank[1]       R   integer number    hourly
+     tdvElecHrRank[2]       R   integer number    hourly
+     tdvElecHrRank[3]       R   integer number    hourly
+     tdvElecHrRank[4]       R   integer number    hourly
+     tdvElecHrRank[5]       R   integer number    hourly
+     tdvElecHrRank[6]       R   integer number    hourly
+     tdvElecHrRank[7]       R   integer number    hourly
+     tdvElecHrRank[8]       R   integer number    hourly
+     tdvElecHrRank[9]       R   integer number    hourly
+    tdvElecHrRank[10]       R   integer number    hourly
+    tdvElecHrRank[11]       R   integer number    hourly
+    tdvElecHrRank[12]       R   integer number    hourly
+    tdvElecHrRank[13]       R   integer number    hourly
+    tdvElecHrRank[14]       R   integer number    hourly
+    tdvElecHrRank[15]       R   integer number    hourly
+    tdvElecHrRank[16]       R   integer number    hourly
+    tdvElecHrRank[17]       R   integer number    hourly
+    tdvElecHrRank[18]       R   integer number    hourly
+    tdvElecHrRank[19]       R   integer number    hourly
+    tdvElecHrRank[20]       R   integer number    hourly
+    tdvElecHrRank[21]       R   integer number    hourly
+    tdvElecHrRank[22]       R   integer number    hourly
+    tdvElecHrRank[23]       R   integer number    hourly
+    tdvElecHrRank[24]       R   integer number    hourly
 
 @znRes[1..].              R 
                  name       R   string            constant
@@ -3532,10 +3770,50 @@ Command line: -p
 @RSYSRes[1..].            R 
                  name       R   string            constant
                   Y.n       R   unrecognized      end of run (of each phase, autoSize or simulate)
+              Y.hrsOn       R   number            end of run (of each phase, autoSize or simulate)
+           Y.hrsOnAux       R   number            end of run (of each phase, autoSize or simulate)
+                 Y.qh       R   number            end of run (of each phase, autoSize or simulate)
+              Y.qcSen       R   number            end of run (of each phase, autoSize or simulate)
+              Y.qcLat       R   number            end of run (of each phase, autoSize or simulate)
+               Y.qFan       R   number            end of run (of each phase, autoSize or simulate)
+           Y.qDefrost       R   number            end of run (of each phase, autoSize or simulate)
+               Y.qAux       R   number            end of run (of each phase, autoSize or simulate)
                   M.n       R   unrecognized      end of each month
+              M.hrsOn       R   number            end of each month
+           M.hrsOnAux       R   number            end of each month
+                 M.qh       R   number            end of each month
+              M.qcSen       R   number            end of each month
+              M.qcLat       R   number            end of each month
+               M.qFan       R   number            end of each month
+           M.qDefrost       R   number            end of each month
+               M.qAux       R   number            end of each month
                   D.n       R   unrecognized      end of each day
+              D.hrsOn       R   number            end of each day
+           D.hrsOnAux       R   number            end of each day
+                 D.qh       R   number            end of each day
+              D.qcSen       R   number            end of each day
+              D.qcLat       R   number            end of each day
+               D.qFan       R   number            end of each day
+           D.qDefrost       R   number            end of each day
+               D.qAux       R   number            end of each day
                   H.n       R   unrecognized      end of each hour
+              H.hrsOn       R   number            end of each hour
+           H.hrsOnAux       R   number            end of each hour
+                 H.qh       R   number            end of each hour
+              H.qcSen       R   number            end of each hour
+              H.qcLat       R   number            end of each hour
+               H.qFan       R   number            end of each hour
+           H.qDefrost       R   number            end of each hour
+               H.qAux       R   number            end of each hour
                   S.n       R   unrecognized      end of each subhour
+              S.hrsOn       R   number            end of each subhour
+           S.hrsOnAux       R   number            end of each subhour
+                 S.qh       R   number            end of each subhour
+              S.qcSen       R   number            end of each subhour
+              S.qcLat       R   number            end of each subhour
+               S.qFan       R   number            end of each subhour
+           S.qDefrost       R   number            end of each subhour
+               S.qAux       R   number            end of each subhour
 
 @zhx[1..].                R                   owner: zone
                  name       R   string            constant

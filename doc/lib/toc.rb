@@ -16,8 +16,7 @@ module TOC
   TocReducer = lambda do |toc, line|
     if MD::SelectHeader[line]
       level = line.match(/^#+/).to_s.length
-      name = MD::NameFromHeader[line]
-      slug = Slug::Slugify[name]
+      name, slug = MD::NameAndSlug[line]
       final_slug = slug
       idx = 1
       while toc[:slug_set].include?(final_slug)

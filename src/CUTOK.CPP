@@ -584,7 +584,7 @@ RC cufOpen(			// open and init CSE language input file
 	return ppOpen( fname, dflExt /*,logFname*/);	// open file for pp input
 }				// cufOpen
 //==========================================================================
-void cufClose() 		// close open cne user language input file
+void cufClose() 		// close open cse user language input file
 {
 	ppClose();   	// close input file at pp.cpp level
 }		// cufClose
@@ -1053,7 +1053,7 @@ void cuCurLine( 		// re last token: return file line text and info
 	//  CAUTION: most callers should pass cuparse:reToke here, or use cuparse:curLine.
 	USI * pFileIx,	// NULL or receives file name index of current input file name. Get text with ancrec.cpp:getFileName().
 	USI *pline,		// NULL or receives line # in file
-	USI *pcol, 		// NULL or recieves column # (subscript) in line
+	USI *pcol, 		// NULL or receives column # (subscript) in line
 	char *s,		// NULL or receives line text. Should be 770+ chars.
 	USI sSize )		// sizeof(*s) for overwrite protection, 9-95
 

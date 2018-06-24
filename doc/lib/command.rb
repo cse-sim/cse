@@ -4,11 +4,11 @@
 require('open3')
 
 module Command
-  # Run :: String (Array String) ?String -> String
+  # Run :: String (Array String) ?String ?Bool -> String
   # Given a command (a String), an array of strings of options, and an optional
-  # input string to feed into the program, return program's output, erroring if
-  # the program errors
-  Run = lambda do |cmd, opts, input=nil|
+  # input string to feed into the program, and an optional flag to print if
+  # verbose, return program's output, erroring if the program errors
+  Run = lambda do |cmd, opts, input=nil, verbose=false|
     opts_str = if opts.instance_of?("".class)
                  opts
                else
@@ -23,6 +23,12 @@ module Command
       output = stdout.read
       error = stderr.read
       exit_status = wait_thr.value
+    end
+    if verbose
+      puts("cmd   : #{cmd}")
+      puts("input : #{input}")
+      puts("output: #{output}")
+      puts("error : #{error}")
     end
     raise error unless exit_status.success?
     output
