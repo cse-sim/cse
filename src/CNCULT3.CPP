@@ -18,6 +18,7 @@
 #include "psychro.h"
 #include "cnguts.h"
 #include "mspak.h"
+#include "Foundation.h"
 #include "ashwface.h"
 
 #include <cuparse.h>	// perl
@@ -202,7 +203,7 @@ RC SFI::sf_TopSf1()
 	{
 		// surface: default ground reflectance from Top, 5-95.
 		if (!IsSet( SFX( GRNDREFL)))	// if sfGrndRefl not given for this surface
-			V x.grndRefl = V Top.grndRefl;  	// get global value from Top object. m-h variable. default .2.
+			VD x.grndRefl = VD Top.grndRefl;  	// get global value from Top object. m-h variable. default .2.
 
 		// surface: get/check zone
 		if (ckOwnRefPt( &ZrB, this, (record **)&zp, &rc) )
@@ -231,14 +232,14 @@ RC SFI::sf_TopSf1()
 		x.tilt = ownSf->x.tilt;
 		x.azm = ownSf->x.azm;
 		x.sfExCnd = ownSf->x.sfExCnd;		// exterior condition
-		V x.sfExT = V ownSf->x.sfExT;		// exterior temp for SPECT. move as NANDAT: expr handle possible.
+		VD x.sfExT = VD ownSf->x.sfExT;		// exterior temp for SPECT. move as NANDAT: expr handle possible.
 		x.sfAdjZi = ownSf->x.sfAdjZi;		// adjacent zone for ADJZN.
 
 		if (!IsSet( SFX( UX)))	// exterior surface H
 			x.uX = ownSf->x.uX;			// default to owning surface's: drExH or wnExH = sfExH
 
 		if (!IsSet( SFX( GRNDREFL)))	// if wnGrndRefl not given for window, or if door (not inputtable)
-			V x.grndRefl = V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
+			VD x.grndRefl = VD ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
 		// inherit convective model
 		if (!IsSet( IsSet( SFXI( HCMODEL))))
@@ -251,7 +252,7 @@ RC SFI::sf_TopSf1()
 			if ( !IsSet( SFX( UI)))	// interior surface H
 				x.uI = ownSf->x.uI;			// default to owning surface's: drInH = sfInH
 			if ( !IsSet( SFXO( ABSSLR)))	// exterior absorptivity
-				V x.xs_AbsSlr( 1) = V ownSf->x.xs_AbsSlr( 1);	// default to owning surface's: drExAbs = sfExAbs
+				VD x.xs_AbsSlr( 1) = VD ownSf->x.xs_AbsSlr( 1);	// default to owning surface's: drExAbs = sfExAbs
 		}														// V (cnglob.h): don't move as float: (monthly-hourly) expr allowed. 4-92.
 
 
@@ -388,13 +389,13 @@ RC SFI::sf_TopSf1()
 			// Inputs are wnSMSO/C (placed in x.sco/c) else gtSMSO/C.
 			// Values are multiplied at runtime (cgsolar.cpp) by common part (normal transmissivity gtSHGC). */
 			if (!IsSet( SFX( SCO))) 	// if x.sco not given (as wnSMSO) for window
-				V x.sco = V gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
+				VD x.sco = VD gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
 			if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
 				if (IsSet( SFX( SCO)))	// if x.sco given (as wnSMSO) for window
-					V x.scc = V x.sco;  		// use window shades-open value, checked/defaulted just above
+					VD x.scc = VD x.sco;  		// use window shades-open value, checked/defaulted just above
 			// note that this makes shades inoperable even if gtSMSC != gtSMSO.
 				else
-					V x.scc = V gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
+					VD x.scc = VD gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
 
 			// default window values from GT
 			if (!IsSet( SFX( FMULT))) 	// if wnFMult (frame/mullion multplier) not given for window
@@ -445,7 +446,7 @@ RC SFI::sf_TopSf1()
 			{	x.xs_fenModel = C_FENMODELCH_ASHWAT;
 				// x.sco defaults to 1
 				if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
-					V x.scc = V x.sco;  		// use window shades-open value, checked/defaulted just above
+					VD x.scc = VD x.sco;  		// use window shades-open value, checked/defaulted just above
 			}
 		}
 		if (x.xs_IsASHWAT())
@@ -516,8 +517,6 @@ x		printf( "Hit\n");
 	}
 
 	// topSf1: surface/door/window: determine surface model
-
-	x.xs_modelr = C_SFMODELCH_QUICK;	// tentatively set resolved model to "quick"
 	switch (x.xs_model)
 	{
 	default:
@@ -539,6 +538,7 @@ x		printf( "Hit\n");
 	case C_SFMODELCH_DELAYED_SUBHOUR:
 	case C_SFMODELCH_DELAYED_HOUR:
 	case C_SFMODELCH_FD:
+	case C_SFMODELCH_KIVA:
 		// common checks
 		if (!conSet)				// if no constr specified
 		{	// checked in sfStarCkf; redundant insurance here.
@@ -552,6 +552,10 @@ x		printf( "Hit\n");
 			getChoiTx( SFX( MODEL)),
 			con->name );
 			break;					// (is preset to quick)
+		}
+		if (x.xs_modelr == C_SFMODELCH_KIVA)	// if model is already set to Kiva, break
+		{
+			break;
 		}
 		switch (x.xs_model)	// nested switch for differences
 		{
@@ -894,7 +898,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		// may require change if target surface side can be in another zone.
 		// solar gain: if target not delayed model, warn & direct to zone air
 
-		if (!SFI::sf_IsDelayed( targSf->x.xs_modelr))
+		if (!SFI::sf_IsDelayed( targSf->x.xs_modelr) && !SFI::sf_IsKiva(targSf->x.xs_modelr))
 		{
 			sg->oWarn( (char *)MH_S0519,	// "Target surface '%s' is not delayed model.\n"
 											// "    Solar gain being directed to zone '%s' air."
@@ -907,11 +911,11 @@ RC FC topSg()		// SGDIST processing at RUN
 		// solar gain: default shades closed target fraction to shades open
 
 		if (!(fs[SGI_D + SGDIST_FSC] & FsSET))		// if sd_FSC not entered by user
-			V sg->d.sd_FSC = V sg->d.sd_FSO;		// copy sd_FSO.  V: *(void**)&: don't copy possible NANDLE as a float
+			VD sg->d.sd_FSC = VD sg->d.sd_FSO;		// copy sd_FSO.  V: *(void**)&: don't copy possible NANDLE as a float
 
 		// solar gain: finally, add sgdist from window's XSURF to spec'd mass or quick surface side
 
-		cnuSgDist( &gz->x, targTy, targTi, V sg->d.sd_FSO, V sg->d.sd_FSC);	// V: clglob.h: *(void**)&
+		cnuSgDist( &gz->x, targTy, targTi, VD sg->d.sd_FSO, VD sg->d.sd_FSC);	// V: clglob.h: *(void**)&
 
 		// note: explicitly distributed solar gain is subtracted from that automatically distributed to zone's
 		// air and surfaces at run time, in cgsolar.cpp (can't do here as .sd_FSO/C may contain live exprs). 2-95.
@@ -1009,9 +1013,13 @@ RC FC topSf2()
 	for (int ib=0; SFIAncs[ ib]; ib++)
 	{	RLUP( *SFIAncs[ ib], sf)
 		{	if (sf->sf_IsFloorBG())
+			{
 				floorBGCount++;			// count / skip BG floors
+			}
 			else
-				E( sf->sf_TopSf2());	// quit immediately on error
+			{
+				E(sf->sf_TopSf2());	// quit immediately on error
+			}
 		}
 	}
 	if (floorBGCount)
@@ -1067,7 +1075,6 @@ RC SFI::sf_TopSf2()
 	}
 
 	// translate door/surface SFI into traditional XSURF chain for zone or "mass" or ...
-
 	if (x.xs_modelr==C_SFMODELCH_QUICK)	// conductance model chosen
 	{
 		// apportion heat capacity, if any, of quick model surfaces, amoung adjacent zones.
@@ -1141,6 +1148,11 @@ RC SFI::sf_TopSf2()
 			rc |= oer( (char *)MH_S0524, x.sfExCnd );
 				// "Internal error in cncult.cpp:topSf2(): Bad exterior condition %d"
 		}
+	}
+	else if ( SFI::sf_IsKiva(x.xs_modelr))
+	{
+		rc |= sf_SetupKiva();	// for floors, make KIVA records for finite difference foundation heat transfer
+								// for walls, add index to sf_sharedFndWalls
 	}
 	else
 		rc |= oer( (char *)MH_S0525, x.xs_modelr );
@@ -1465,6 +1477,9 @@ RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 /*static*/ int SFI::sf_IsFD( int m)
 {  return m == C_SFMODELCH_FD; }
 //---------------------------------------------------------------------------
+/*static*/ int SFI::sf_IsKiva(int m)
+{  return m == C_SFMODELCH_KIVA; }
+//---------------------------------------------------------------------------
 SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
 {
@@ -1491,20 +1506,24 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 }		// SFI::Validate
 //---------------------------------------------------------------------------
 int SFI::sf_IsWallBG() const	// TRUE iff below grade wall
-{	return x.sfExCnd == C_EXCNDCH_GROUND
-        && sfTy == C_OSTYCH_WALL
-		&& x.xs_depthBG > 0.f;		// not pseudo-slab (e.g. crawlspace edge)
+{
+	return x.sfExCnd == C_EXCNDCH_GROUND
+		&& sfTy == C_OSTYCH_WALL
+		&& (x.xs_depthBG > 0.f		// not pseudo-slab (e.g. crawlspace edge)
+			|| x.xs_modelr == C_SFMODELCH_KIVA);
 }		// SFI::sf_IsWallBG
 //---------------------------------------------------------------------------
 int SFI::sf_IsFloorBG() const	// TRUE iff below grade floor (not slab on grade)
 {	return x.sfExCnd == C_EXCNDCH_GROUND
         && sfTy == C_OSTYCH_FLR
-		&& x.xs_depthBG > 0.f;	// not slab on grade
+		&& (x.xs_depthBG > 0.f	// not slab on grade
+			|| x.xs_modelr == C_SFMODELCH_KIVA);
 }		// SFI::sf_IsFloorBG
 //---------------------------------------------------------------------------
 int SFI::sf_IsBG() const	// TRUE iff below grade surface
 {	return x.sfExCnd == C_EXCNDCH_GROUND
-        && x.xs_depthBG > 0.f;
+        && (x.xs_depthBG > 0.f
+			|| x.xs_modelr == C_SFMODELCH_KIVA);
 }		// SFI::sf_IsBG
 //---------------------------------------------------------------------------
 int SFI::sf_IsChild() const		// TRUE iff child surface
@@ -1582,6 +1601,290 @@ RC SFI::sf_MakMs()
 
 	return rc;
 }		// SFI::sf_makMs
+
+//---------------------------------------------------------------------------
+RC SFI::sf_SetupKiva()
+
+// make kiva instances
+
+{
+	RC rc = RCOK;
+
+
+	if (sf_IsWallBG())	// This is done during the first surface loop...
+	{
+		auto flrSf = SfiB.GetAt(sfFndFloor);
+		flrSf->sf_sharedFndWalls.push_back(ss); // add Wall index to list in associated floor
+	}
+	else // BG floor setup during second surface loop
+	{
+		// Get pointer to associated FOUNDATION
+		FOUNDATION* pFnd;
+		if (ckRefPt(&FndiB, sfFnd, "sfFnd", NULL, (record **)&pFnd))
+		{
+			return RCBAD;
+		}
+
+		// Add Kiva instances until all remaining exposed perimeter is accounted for
+		auto remainingExpPerim = sfExpPerim;
+
+		// Create wall combinations
+		std::map<std::pair<TI, double>, KivaWallGroup> combinationMap;	// Map of construction index (TI) and wall height (double) to
+																		// KivaWallGroup (relative perimeter and vector of wall indices)
+
+		if (sf_sharedFndWalls.size() != 0)
+		{
+			for (auto wli : sf_sharedFndWalls)
+			{
+				auto wlSf = SfiB.GetAt(wli);
+				auto wlHt = wlSf->x.xs_height;
+				auto perimeter = wlSf->sfArea / wlHt;
+				auto coni = wlSf->sfCon;
+
+				if (combinationMap.count({ coni, wlHt }) == 0) {
+					// create new combination
+					std::vector<TI> walls = { wli };
+					combinationMap[{ coni, wlHt }] = KivaWallGroup(perimeter, walls);
+				}
+				else {
+					// add to existing combination
+					combinationMap[{ coni, wlHt }].perimeter += perimeter;
+					combinationMap[{ coni, wlHt }].wallIDs.push_back(wli);
+				}
+			}
+		}
+
+		// add XSURF for floor surface
+		XSRAT* xr;
+		rc = cnuCompAdd(&x, name, x.xs_sbcI.sb_zi, &xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
+		if (!rc)	// if added ok: insurance
+		{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
+			xr->x.xs_ty = CTKIVA;	// XSURF type: kiva surface
+			xr->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
+		}
+	
+		bool assignKivaInstances = true;
+		auto comb = combinationMap.begin();
+
+		while (assignKivaInstances)
+		{
+			// Set wall combination parameters (construction, height, perimeter, surface IDs)
+			TI coni;
+			double height, perimeter;
+			std::vector<TI> wallIDs;
+			if (comb != combinationMap.end())
+			{
+				// Loop through wall combinations first
+				coni = comb->first.first;
+				height = comb->first.second;
+				perimeter = comb->second.perimeter;
+				wallIDs = comb->second.wallIDs;
+			}
+			else
+			{
+				// Then assign remainign exposed perimeter to a slab instance
+				coni = pFnd->fd_ftWlConi; // Get construction from Foundation input
+				height = 0.0;
+				perimeter = remainingExpPerim;
+			}
+
+			// Create/add new kiva instance to runtime anchor
+			KIVA* ki;
+			TI kvi = 0;
+			KvR.add(&ki, ABT, kvi);
+
+			ki->kv_floor = ss;
+
+			// Add new index to list of kiva instances associated with floor
+			xr->xr_kivaInstances.push_back(ki->ss);
+
+			// Set weighted perimeter for this combination
+			double instanceWeight = sfExpPerim > 0.0001
+				? perimeter / sfExpPerim
+				: 1.0; // No exposre = 1D instance exchanging heat with deep ground
+
+			ki->kv_perimWeight = instanceWeight;
+
+			// Copy foundation input from foundation object into KIVA runtime record
+			if (!ki->kv_fnd)
+			{
+				ki->kv_fnd = new Kiva::Foundation();
+				if (!ki->kv_fnd)
+					return RCBAD; // oer?
+				*ki->kv_fnd = *pFnd->fd_kivaFnd;
+			}
+
+			LR* pLR;
+			// Set wall construction in Kiva
+			CON* pCon = ConiB.GetAtSafe(coni);
+			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
+										// Kiva defines layers in oposite dir.
+										// Assumes order in anchor is consistent with order of construction.
+			{
+				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				{
+					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
+					Kiva::Layer tempLayer;
+					tempLayer.material = kivaMat(pMat->mt_cond,pMat->mt_dens,pMat->mt_spHt);
+					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
+
+					ki->kv_fnd->wall.layers.push_back(tempLayer);
+				}
+			}
+
+			ki->kv_fnd->wall.interiorEmissivity = x.xs_sbcI.sb_epsLW;
+			ki->kv_fnd->wall.exteriorEmissivity = x.xs_sbcO.sb_epsLW;
+			ki->kv_fnd->wall.exteriorAbsorptivity = x.xs_sbcO.sb_awAbsSlr;
+
+			// Set slab construction in Kiva
+			if (ckRefPt(&ConiB, sfCon, "sfCon", NULL, (record **)&pCon))
+				return RCBAD;
+			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
+										// Kiva defines layers in oposite dir.
+										// Assumes order in anchor is consistent with order of construction.
+			{
+				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				{
+					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
+					Kiva::Layer tempLayer;
+					tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
+
+					ki->kv_fnd->slab.layers.push_back(tempLayer);
+				}
+			}
+			ki->kv_fnd->slab.emissivity = x.xs_sbcI.sb_epsLW;
+
+			// Set other properties
+			ki->kv_fnd->foundationDepth = LIPtoSI(height);
+			ki->kv_fnd->hasPerimeterSurface = false;
+			ki->kv_fnd->perimeterSurfaceWidth = 0.0;
+
+			ki->kv_fnd->reductionStrategy = Kiva::Foundation::RS_AP;
+
+			// Build polygon and set exposed fraction to get correct A/P
+			const double sqrPerim = LIPtoSI(4 * sqrt(sfArea));
+			double l, w;
+			if (sqrPerim > sfExpPerim)
+			{
+				l = w = sqrPerim / 4;
+				ki->kv_fnd->exposedFraction = sfExpPerim / sqrPerim;
+			}
+			else
+			{
+				// Make a rectangle with the correct perimeter
+				l = (sfExpPerim + sqrt(sfExpPerim*sfExpPerim - 16*sfArea))/4.;
+				w = sfArea / l;
+				ki->kv_fnd->exposedFraction = 1.0;
+			}
+
+			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(0., 0.));
+			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(0., l ));
+			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(w,  l ));
+			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(w,  0.));
+
+
+			double halfWidth = LIPtoSI(sfArea / sfExpPerim);	// A/P ratio
+
+			// Define X reference points
+			const double x_iwall = 0.0; // by definition
+			const double x_ewall = x_iwall + ki->kv_fnd->wall.totalWidth();
+			const double x_cwall = x_iwall + (x_ewall - x_iwall) / 2.0;
+			const double x_sym = x_iwall - halfWidth;  // A/P
+			const double x_ff = x_ewall + ki->kv_fnd->farFieldWidth;
+
+			std::map<unsigned short, double> xRefs =
+			{
+				{ C_FBXREFCH_WALLINT , x_iwall },
+				{ C_FBXREFCH_WALLEXT , x_ewall },
+				{ C_FBXREFCH_WALLC , x_cwall },
+				{ C_FBXREFCH_SYMMETRY , x_sym },
+				{ C_FBXREFCH_FARFIELD , x_ff }
+			};
+
+			// Define Z reference points
+			const double z_twall = 0.0; // by definition
+			const double z_tslab = z_twall + height;
+			const double z_bslab = z_tslab + ki->kv_fnd->slab.totalWidth();
+			const double z_bwall = z_bslab + ki->kv_fnd->wall.depthBelowSlab;
+			const double z_grd = z_twall + ki->kv_fnd->wall.heightAboveGrade;
+			const double z_dg = z_grd + ki->kv_fnd->deepGroundDepth;
+
+			std::map<unsigned short, double> zRefs =
+			{
+				{ C_FBZREFCH_WALLTOP , z_twall },
+				{ C_FBZREFCH_SLABTOP , z_tslab },
+				{ C_FBZREFCH_SLABBOTTOM , z_bslab },
+				{ C_FBZREFCH_WALLBOTTOM , z_bwall },
+				{ C_FBZREFCH_GRADE , z_grd },
+				{ C_FBZREFCH_DEEPGROUND , z_dg }
+			};
+
+			// Add blocks
+			FNDBLOCK* pBL;
+			RLUP(FbiB, pBL)			// loop over foundation block records
+			{
+				if (pBL->ownTi == pFnd->ss)		// if a block of given foundation
+				{
+					Kiva::InputBlock block;
+	
+					// Assign material
+					const MAT* pMat = MatiB.GetAt(pBL->fb_mati);
+					block.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+
+					// Place block in 2D context
+					const double x1 = xRefs[pBL->fb_x1Ref] + LIPtoSI(pBL->fb_x1);
+					const double x2 = xRefs[pBL->fb_x2Ref] + LIPtoSI(pBL->fb_x2);
+					const double z1 = zRefs[pBL->fb_z1Ref] + LIPtoSI(pBL->fb_z1);
+					const double z2 = zRefs[pBL->fb_z2Ref] + LIPtoSI(pBL->fb_z2);
+
+					block.x = x1;
+					block.width = x2 - x1;
+					block.z = z1;
+					block.depth = z2 - z1;
+					ki->kv_fnd->inputBlocks.push_back(block);
+				}
+			}
+
+			// create wall XSURFs and assign kiva instance
+			for (auto wli : wallIDs) 
+			{
+				auto wlSf = SfiB.GetAt(wli);
+
+				XSRAT* xrWl;
+				rc = cnuCompAdd(&wlSf->x, wlSf->name, wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
+				ki->kv_walls.push_back(wlSf->xi);
+				if (!rc)	// if added ok: insurance
+				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
+					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
+					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
+					xrWl->xr_kivaInstances.push_back(kvi);
+				}
+			}
+
+			// Create Kiva instace
+			ki->kv_Create();
+
+			// Increment wall combinations iterator
+			if (comb != combinationMap.end()) {
+				comb++;
+			}
+
+			remainingExpPerim -= perimeter;
+
+			if (remainingExpPerim < 0.001) {
+				assignKivaInstances = false;
+			}
+
+		}
+
+	}
+	
+	return rc;
+}		// SFI::sf_SetupKiva
+
+
+
 //-----------------------------------------------------------------------------
 static RC BGDeriveCoeffs(
 	float depthBG,	// depth below grade of bottom of surface, ft
@@ -2318,9 +2621,12 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 	if (sb_zi)		// if exposed to zone
 	{	// boundary is adjacent to zone
 		//   sb_txa, sb_txr set at end of prior step
-		sb_HCZone();	// convection
-		sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
-		sb_hxr = sb_frRad*pow3( DegFtoR( 0.5*(sb_tSrf+sb_txr)));
+		if (sb_pXS->xs_ty != CTKIVA)
+		{
+			sb_HCZone();	// convection
+			sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
+			sb_hxr = sb_frRad*pow3(DegFtoR(0.5*(sb_tSrf + sb_txr)));
+		}
 		sb_qrAbs = area > 0. ? sb_sgTarg.st_tot / area : 0.;
 	}
 	else if (sb_pXS->sfExCnd==C_EXCNDCH_SPECT)
@@ -3053,8 +3359,8 @@ LOCAL void FC NEAR cnuSgDist(
 	SGDIST* sg = x->sgdist + x->nsgdist++;	// pt next sgdist / bump count
 	sg->sd_targTy = targTy;	// store type
 	sg->sd_targTi = targTi;	// subscript of target record within base/anchor's records
-	V sg->sd_FSO = fso;		// fracs of distribution (FLOAT or expr nandle: latter errors if moved as float)
-	V sg->sd_FSC = fsc;		// ... shades open and closed.  V: clglob.h: *(void**)&
+	VD sg->sd_FSO = fso;		// fracs of distribution (FLOAT or expr nandle: latter errors if moved as float)
+	VD sg->sd_FSC = fsc;		// ... shades open and closed.  V: clglob.h: *(void**)&
 }			// cnuSgDist
 
 // end of cncult3.cpp

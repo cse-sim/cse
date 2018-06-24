@@ -227,6 +227,12 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 *choicb NOYESCH  {  NO     "No"				// #define C_NOYESCH_NO 1   <--- rcdef.exe generates these
 			  YES    "Yes"				// #define C_NOYESCH_YES 2	 .. in dtypes.h.
 		       }
+*choicb DGCH {  ZEROFLUX   "ZeroFlux"
+			    WATERTABLE "WaterTable"
+		       }
+*choicb TSCH {  H   "Hourly"
+			    SH "Subhourly"
+		       }
 *choicb SKYMODCH {  ISO   "Isotropic"
 			  ANISO "Anisotropic"
 		       }
@@ -305,11 +311,30 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  DELAYED_HOUR		"Delayed_hour"		// hourly simulated mass
 			  DELAYED_SUBHOUR  	"Delayed_subhour"	// subhourly simulated mass
   			  FD	"FD|!Forward_difference"		// subhourly forward difference
+			  KIVA	"Kiva"				// Kiva ground finite difference
 		        }
 *choicb GROUNDMODELCH {
 			  D2INP "DOE2_InputCoeffs"
 			  D2COR "DOE2_CorrelationCoeffs"
 			  }
+
+*choicb FBXREFCH {
+			  SYMMETRY "Symmetry"
+			  WALLINT "WallInt"
+			  WALLC "WallCenter"
+			  WALLEXT "WallExt"
+			  FARFIELD "FarField"
+			  }
+
+*choicb FBZREFCH {
+			  WALLTOP "WallTop"
+			  GRADE "Grade"
+			  SLABTOP "SlabTop"
+			  SLABBOTTOM "SlabBottom"
+			  WALLBOTTOM "WallBottom"
+			  DEEPGROUND "DeepGround"
+			  }
+
 *choicb CONVMODELCH {
 			  INPUT "Input"
 			  ASHRAE "ASHRAE"

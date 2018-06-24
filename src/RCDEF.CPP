@@ -197,7 +197,7 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 const int MAXRCS=100;		// Record names.  80->100, 10-13
 							// Also max rec handle (prob unnec??).
 const int MAXFIELDS=160;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95. 600-->200 1-92. ->130 5-95.
-const int MAXDT=120;		// Data types.        160-->60 1-92. ->90 3-92. ->100 10-10 ->120 5-13
+const int MAXDT=130;		// Data types.        160-->60 1-92. ->90 3-92. ->100 10-10 ->120 5-13 -> 130 4-18
 const int MAXUN = 80;		// Units.              90-->60 1-92. ->80 3-92. ->60 5-95. ->80 7-13
 const int MAXUNSYS=2;		// Unit systems. 5-->2 5-95.
 

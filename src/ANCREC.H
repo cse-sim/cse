@@ -305,6 +305,9 @@ template <class T>  class anc : public basAnc
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 #define RLUP( B, rp) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->gud > 0)
 
+//----- macro to loop over records of given anchor (type known) in reverse (hook to change re skipping deleted records)
+#define RLUPR( B, rp) for (rp=(B).p+(B).n;  rp >= (B).p+(B).mn;  rp--) if (rp->gud > 0)
+
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 //-----  variant with condition
 #define RLUPC( B, rp, C) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->gud > 0 && (C))

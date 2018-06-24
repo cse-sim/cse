@@ -116,6 +116,41 @@ Sub-hourly energy balance error tolerance.
   ----------- ----------------- ------------- -------------- -----------------
               *x* $>$ 0         0.0001        No             constant
 
+**grndMinDim=*float***
+
+The minimum cell dimension used in the two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "0.066",
+  required: "No",
+  variability: "constant") %>
+
+**grndMaxGrthCoeff=*float***
+
+The maximum ratio of growth between neighboring cells in the direction away from the near-field area of interest. Used in the two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\geq$ 1.0",
+  default: "1.5",
+  required: "No",
+  variability: "constant") %>
+
+**grndTimeStep=*choice***
+
+Allows the user to choose whether to calculate foundation conduction on hourly or subhourly intervals. Hourly intervals require less overall computation time, but with less accuracy.
+
+<%= member_table(
+  units: "",
+  legal_range: "HOURLY, SUBHOURLY",
+  default: "HOURLY",
+  required: "No",
+  variability: "constant") %>
+
+<!--NOTE: Technically, this can probably change hourly -->
+
 **humMeth=*choice***
 
 Developmental zone humidity computation method choice for CNE models (no effect for CSE models).
@@ -155,7 +190,7 @@ Elevation of the building site. Used internally for the computation of barometri
 
   **Units**   **Legal Range**   **Default**     **Required**   **Variability**
   ----------- ----------------- --------------- -------------- -----------------
-  ft          *x* $\ge$ 0       0 (sea level)   No             constant
+  ft          *x* $\geq$ 0       0 (sea level)   No             constant
 
 **runTitle=*string***
 
@@ -387,13 +422,41 @@ Reference relative humidity (see above).
 
 **grndRefl=*float***
 
-Global ground reflectivity, used except where other value specified with sfGrndRefl or wnGrndRefl. This reflectivity is used in computing the reflected beam and diffuse radiation reaching the surface in question.
+Global ground reflectivity, used except where other value specified with sfGrndRefl or wnGrndRefl. This reflectivity is used in computing the reflected beam and diffuse radiation reaching the surface in question. It is also used to calculate the solar boundary conditions for the exterior grade surface in two-dimensional finite difference calculations for FOUNDATIONs.
+
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
               0 $\leq$ *x* $\leq$ 1   0.2           No             Monthly-Hourly
 
 The following values modify weather file data, permitting varying the simulation without making up special weather files. For example, to simulate without the effects of wind, use windF = 0; to halve the effects of diffuse solar radiation, use radDiffF = 0.5. Note that the default values for windSpeedMin and windF result in modification of weather file wind values unless other values are specified.
+
+**grndEmit=*float***
+
+Long-wave emittance of the exterior grade surface used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "",
+  legal_range: "0.0 $\le$ x $\le$ 1.0",
+  default: "0.8",
+  required: "No",
+  variability: "constant") %>
+
+<!--NOTE: Could vary more frequently -->
+
+
+**grndRf**
+
+Ground surface roughness. Used for convection and wind speed corrections in two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $\geq$ 0.0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
+
+<!--NOTE: [Use a better wind speed correction that accounts for this?] Could vary more frequently -->
 
 **windSpeedMin=*float***
 
@@ -454,11 +517,100 @@ Multiplier for diffuse horizonal irradiance.
 
 **soilDiff=*float***
 
+<!-- TODO Remove in light of asking for individual properties in Kiva? -->
+
 Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note that derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
     ft^2^/hr      x > 0          0.025             No             constant
+
+**soilCond=*float***
+
+Soil conductivity. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "Btuh-ft/ft^2^-^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "constant") %>
+
+<!--NOTE: Could be variable-->
+
+**soilSpHt=*float***
+
+Soil specific heat. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "Btu/lb-^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
+
+<!--NOTE: Could be variable-->
+
+**soilDens=*float***
+
+Soil density. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "lb/ft^3^",
+  legal_range: "*x* $>$ 0",
+  default: "115",
+  required: "No",
+  variability: "constant") %>
+
+<!--NOTE: Could be variable-->
+
+**farFieldWidth=*float***
+
+Far-field width. Distance from foundation to the lateral, zero-flux boundary condition. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "*x* $>$ 0",
+  default: "130",
+  required: "No",
+  variability: "constant") %>
+
+
+**deepGrndCnd=*choice***
+
+Deep-ground boundary condition type. Choices are WATERTABLE (i.e., a defined temperature) or ZEROFLUX.
+
+<%= member_table(
+  legal_range: "WATERTABLE, ZEROFLUX",
+  default: "ZEROFLUX",
+  required: "No",
+  variability: "constant") %>
+
+**deepGrndDepth=*float***
+
+Deep-ground depth. Distance from exterior grade to the deep-ground boundary. Used in two-dimensional finite difference calculations for FOUNDATIONs.
+
+
+<%= member_table(
+  units: "ft",
+  legal_range: "*x* $>$ 0",
+  default: "130",
+  required: "No",
+  variability: "constant") %>
+
+
+**deepGrndT=*float***
+
+Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
+
+<%= member_table(
+  units: "F",
+  legal_range: "*x* $>$ 0",
+  default: "Annual average drybulb temperature",
+  required: "No",
+  variability: "hourly") %>
+
+
 
 ## TOP TDV (Time Dependent Value) Items
 

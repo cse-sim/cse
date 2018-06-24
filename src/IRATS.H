@@ -18,6 +18,8 @@ extern TOPRAT Topi;    		// the single static Top input record. rccn.h typ
 
 // other input records basAncs, cncult.cpp, ref'd only in other cncult_.cpp files
 extern anc<GT>  GtiB;			// glazeTypes input records, 12-94
+extern anc<FOUNDATION> FndiB;  		// foundation input records
+extern anc<FNDBLOCK> FbiB;  		// foundation component input records
 extern anc<CON> ConiB;  		// constructions input records
 extern anc<LR>  LriB;    		// layers input records
 extern anc<MAT> MatiB;			// materials input records

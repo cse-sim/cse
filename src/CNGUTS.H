@@ -29,6 +29,7 @@ const int TMR_AWCALC = 7;	// ASHWAT calculations (included in AWTOT)
 const int TMR_COND = 8;		// opaque surface conduction
 const int TMR_BC = 9;		// boundary condition setup
 const int TMR_ZONE = 10;	// zone modeling
+const int TMR_KIVA = 11;	// kiva foundation modeling
 
 #if defined( DETAILED_TIMING)
 #define TMRSTART( tmr) tmrStart( tmr)
@@ -84,7 +85,8 @@ const int CTMXWALL  = 4;	// Massive exterior wall: XSURF for it targets solar ga
 							// Mass itself is represented in MSRAT.
 							// .uval is ambient to outer surface, re solar gain split, not ambient to zone.
 const int CTPERIM   = 5;	// Perimeter
-const int CTMAXVALID= 5;	// maximum legal value (re validation)
+const int CTKIVA    = 6;	// KIVA
+const int CTMAXVALID= 6;	// maximum legal value (re validation)
 
 // Component solar gain distribution target types.
 //		For SGRAT.targTy and XSURF.sgdist[].targTy.  Used 2-95 in cncult3,cgsolar,cgdebug,cnrecs.
@@ -152,6 +154,7 @@ extern anc<TOWERPLANT> TpB;   	// TOWERPLANT run info
 extern anc<XSRAT> XsB;			// XSURFs
 extern anc<WSHADRAT> WshadR;	// Window SHADing info for shaded windows
 extern anc<MSRAT> MsR;   		// Masses
+extern anc<KIVA> KvR;   		// Kiva Instances
 extern anc<SGRAT> SgR;    		// Solar gains
 // construction: CON,LR,MAT have input info only.
 extern anc<GT> GtB;		// GlazeTypes, 12-94
