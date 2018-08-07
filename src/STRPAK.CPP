@@ -367,7 +367,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 		bAddExt = IsBlank( curExt);
 	}
 
-	char* nu = strTrim( NULL, name);	// trim to TmpStr
+	char* nu = strtcat(name, NULL);
 	if (bAddExt)
 		nu = strtcat( nu, strTrim( NULL, ext), NULL);
 	return nu;
