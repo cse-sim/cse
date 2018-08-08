@@ -791,7 +791,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	brDiscardable = FALSE; 	// TRUE to return bin res in discardable memory blocks as well as files
 #endif
 	InputFileName = NULL;	// input file name: none yet. public variable.
-	char inputFileNameBuf[ _MAX_PATH];		// trimmed input file name put here
+	char inputFileNameBuf[ _MAX_PATH];		// input file name put here
 											//   InputFileName pts here when file name is known
 	RC rc = RCOK;			// return code from many fcns. init to "ok".
 	for (i = 1; i < argc; i++) 	// loop over cmd line args
@@ -884,7 +884,7 @@ noHans:
 			}
 		}
 		else if (InputFileName==NULL)	// else if no input file name yet
-			InputFileName = strTrim( inputFileNameBuf, arg);   	// take this arg as input file name
+			InputFileName = strcpy( inputFileNameBuf, arg);   	// take this arg as input file name
 		else						// dunno what to do with it. Should now be impossible -- see cse1() level 2-95.
 			err( ABT,				// issue msg, await keypress, abort program; does not return. rmkerr.cpp.
 				 (char *)MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
