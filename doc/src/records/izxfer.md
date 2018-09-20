@@ -89,15 +89,15 @@ Name of primary zone. Flow rates $>$ 0 are into the primary zone.
 Name of secondary zone.
 
   ---------------------------------------------------------------
-  **Units** **Legal** **Default** **Required**    **Variability**
+  **Units** **Legal** **Default**      **Required**    **Variability**
             **Range**
-  --------- --------- ----------- --------------- ---------------
-            name of a             required unless constant
-            ZONE                  izNVType =
-                                  AIRNETEXT,
-                                  AIRNETEXTFAN,
-                                  AIRNETEXTFLOW,
-                                  or AIRNETHERV
+  --------- --------- ---------------- ----------------- ---------------
+            name of a   izZn1          required unless   constant
+            ZONE        if AIRNETHERV     izNVType =
+                                          AIRNETEXT,
+                                          AIRNETEXTFAN,
+                                          AIRNETEXTFLOW,
+                                          or AIRNETHERV
   ---------------------------------------------------------------
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
@@ -206,6 +206,21 @@ Maximum volume flow rate (VentOn mode)
   ----------- ----------------- ------------- -------------- -----------------
   cfm         *x* $\ge$ 0       izVfMin             No             subhourly
 
+**izZnHERVSrc=*znName***
+
+Name of zone from which HERV supply air is taken.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+             name of a ZONE   (ambient)       No            constant
+
+**izZnHERVExh=*znName***
+
+Name of zone to which HERV exhaust is discharged.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+             name of a ZONE    (discard)      No            constant
 
 **izASEF=*float***
 
