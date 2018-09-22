@@ -241,7 +241,7 @@ char* strTrimE( char* d, const char* s)		// deblank end of string
 char* strTrimEX(	// deblank / clean end of string
 	char* d,			// destination (NULL = tmpstr)
 	const char* s,		// source
-	const char* ex)		// addition chars to drop
+	const char* ex)		// additional chars to drop
 //  if d == s, trims in place
 {
 	int l = strlen( s);
@@ -367,7 +367,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 		bAddExt = IsBlank( curExt);
 	}
 
-	char* nu = strTrim( NULL, name);	// trim to TmpStr
+	char* nu = strtcat(name, NULL);
 	if (bAddExt)
 		nu = strtcat( nu, strTrim( NULL, ext), NULL);
 	return nu;

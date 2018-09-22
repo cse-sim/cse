@@ -10,16 +10,19 @@ require 'yaml'
 require 'set'
 require 'pathname'
 require 'time'
-require "rake/testtask"
+require 'rake/testtask'
+require 'irb'
 require_relative 'lib/template'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/table'
 require_relative 'lib/toc'
+require_relative 'lib/def_parser'
 require_relative 'lib/section_index'
 require_relative 'lib/verify_links'
 require_relative 'lib/coverage_check'
 require_relative 'lib/xlink'
+require_relative 'lib/probes'
 
 ########################################
 # Check Dependencies
@@ -76,6 +79,7 @@ CONFIG = lambda do
   config
 end.call
 THIS_DIR = File.expand_path(File.dirname(__FILE__))
+PROBES_DATA_DIR = File.join(THIS_DIR, 'config', 'reference')
 BUILD_DIR = CONFIG.fetch("build-dir")
 SRC_DIR = CONFIG.fetch("src-dir")
 LOCAL_REPO = File.expand_path(File.join('..', '.git'), THIS_DIR)
@@ -91,7 +95,7 @@ DATE = nil # "February 23, 2016"
 DRAFT = CONFIG.fetch("draft?") # true means, it is a draft
 HEADER = "CSE User's Manual"
 FOOTER = "Generated: #{Time.now.strftime("%FT%T%:z")}"
-TOC_DEPTH = 4
+TOC_DEPTH = 3
 WEB_SITE_MANIFEST_PATH = File.join(SRC_DIR, "web-page.yaml")
 CSE_USER_MANUAL_MANIFEST_PATH = File.join(SRC_DIR, 'cse-user-manual.yaml')
 BUILD_PDF = CONFIG.fetch("build-pdf?")
@@ -656,7 +660,7 @@ NumberMd = lambda do |config|
           end
           next
         end
-        level_adjustment = levels ? (levels[idx] - 1) : 0
+        level_adjustment = (levels and levels[idx]) ? (levels[idx] - 1) : 0
         md = File.read(path, :encoding=>"UTF-8")
         if !FileUtils.uptodate?(out_path, [path])
           File.open(out_path, 'w') do |f|
@@ -794,9 +798,13 @@ GenTOC = lambda do |config|
       toc_out_path = File.join(out_dir, toc_name)
       new_manifest << toc_out_path
       if !FileUtils.uptodate?(toc_out_path, manifest)
+        lev_man = []
+        manifest.each_with_index do |path, idx|
+          lev_man << [levels[idx], path]
+        end
         toc_content = TOC::GenTableOfContentsFromFiles[
           max_level,
-          levels.zip(manifest)
+          lev_man
         ]
         File.write(toc_out_path, toc_content)
       end
@@ -900,6 +908,69 @@ CompressHTML = lambda do |config|
       new_manifest
     end
   end
+end
+
+BuildProbesYaml = lambda do
+  # Name in Probes => Name in CNRECS
+  # all mappings are downcased
+  mappings = {
+    'door'=>'surface',
+    'window'=>'surface',
+    'export'=>'report',
+    'exportcol'=>'reportcol',
+    'exportfile'=>'reportfile',
+    'weathernexthour'=>'weather',
+    #'znres'=>'zone interval results sub',
+  }
+  dirs = [
+    PROBES_DATA_DIR
+  ]
+  EnsureAllExist[dirs]
+  out_path = File.join(PROBES_DATA_DIR, 'probes_input.yaml')
+  probes = DefParser::ParseProbesTxt[]
+  probes_alt_orig = DefParser::ParseCnRecs[]
+  probes_alt = {}
+  probes_alt_orig.keys.each do |k|
+    kdc = k.downcase
+    name = probes_alt_orig[k][:name]
+    probes_alt[name.downcase] = probes_alt_orig[k]
+  end
+  #puts("probes.keys: #{probes.keys}")
+  #puts("probes_alt.keys: #{probes_alt.keys}")
+  probes.keys.sort_by {|k| k.downcase}.each do |k|
+    rec_alt = nil
+    k_dc = k.downcase
+    k_lookup = mappings.fetch(k_dc, k_dc)
+    if probes_alt.include?(k_lookup)
+      rec_alt = probes_alt[k_lookup]
+    else
+      puts("Warning! No additional data found for #{k} (#{k_lookup})")
+    end
+    next if rec_alt.nil?
+    flds = probes[k][:fields]
+    next if flds.empty?
+    name = k
+    flds.each do |fld|
+      desc = nil
+      flds_alt = rec_alt[:fields].select do |f|
+        na = f[:name].downcase
+        n1a = na
+        n2a = na.split(/_/)[-1].split(/\./)[-1].gsub(/\[[^\]]*\]/, '')
+        nb = fld[:name].downcase.split(/_/)[-1].split(/\./)[-1].gsub(/\[[^\]]*\]/, '')
+        n1a == nb || n2a == nb
+      end
+      if flds_alt.length == 1
+        fld_alt = flds_alt[0]
+        desc = fld_alt.fetch(:description, desc)
+      end
+      begin
+        fld[:description] = desc.capitalize unless desc.nil?
+      rescue
+        fld[:description] = desc unless desc.nil?
+      end
+    end
+  end
+  File.write(out_path, probes.to_yaml)
 end
 
 BuildProbesAndCopyIntoManifest = lambda do |config|
@@ -1079,15 +1150,6 @@ BuildSinglePageHTML = lambda do |config|
       "context" => context
     ],
     PassThroughWithSideEffect[
-      "function" => GenerateSectionIndex[
-        "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
-        ),
-        "output-path" => section_index,
-        "merge-values" => {"#probe-definitions"=>"probes.html"}
-      ]
-    ],
-    PassThroughWithSideEffect[
       "function" => lambda do
         rec_dir = File.expand_path(
           File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
@@ -1121,7 +1183,7 @@ BuildSinglePageHTML = lambda do |config|
       "output-dir" => File.join(build_dir, tag, md_dir, "adjusted-headers"),
       "levels" => levels
     ],
-    BuildProbesAndCopyIntoManifest[
+    Probes::BuildProbesAndCopyIntoManifest.new(
       "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
@@ -1132,7 +1194,18 @@ BuildSinglePageHTML = lambda do |config|
       "insert-after-file" => "output-reports.md",
       "path-to-probes-input" => File.expand_path(
         File.join("config", "reference", "probes_input.yaml"), this_dir
-      )
+      ),
+      "probes-in-one-file?" => false,
+    ),
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          # File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
     ],
     AddFiles[
       "paths" => [File.expand_path(
@@ -1159,6 +1232,7 @@ BuildSinglePageHTML = lambda do |config|
         "--smart",
         "--variable header=\"#{HEADER}\"",
         "--variable footer=\"#{FOOTER}\"",
+        "--variable current_year=#{DateTime.now.year}",
         "--variable do-nav=#{do_navigation}",
         "--variable top=\"index.html\"",
         "--template=site-template.html",
@@ -1252,15 +1326,6 @@ BuildMultiPageHTML = lambda do |config|
       "context" => context
     ],
     PassThroughWithSideEffect[
-      "function" => GenerateSectionIndex[
-        "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
-        ),
-        "output-path" => section_index,
-        "merge-values" => {"#probe-definitions"=>"probes.html"}
-      ]
-    ],
-    PassThroughWithSideEffect[
       "function" => lambda do
         rec_dir = File.expand_path(
           File.join(build_dir, tag, md_dir, "preprocessed", "records"), this_dir
@@ -1290,7 +1355,7 @@ BuildMultiPageHTML = lambda do |config|
       "log" => STDOUT,
       "disable?" => disable_xlink
     ],
-    BuildProbesAndCopyIntoManifest[
+    Probes::BuildProbesAndCopyIntoManifest.new(
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
       ),
@@ -1301,7 +1366,18 @@ BuildMultiPageHTML = lambda do |config|
       "path-to-probes-input" => File.expand_path(
         File.join("config", "reference", "probes_input.yaml"), this_dir
       ),
-      "disable?" => disable_probes
+      "disable?" => disable_probes,
+      "probes-in-one-file?" => false,
+    ),
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          # File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
     ],
     NumberMd[
       "output-dir" => File.join(build_dir, tag, md_dir, "number"),
@@ -1314,7 +1390,7 @@ BuildMultiPageHTML = lambda do |config|
         File.join(build_dir, tag, md_dir, "toc"), this_dir
       ),
       "toc-name" => "index.md",
-      "levels" => (levels + (disable_probes ? [] : [1])).map do |lev|
+      "levels" => (levels + (disable_probes ? [] : [1]*100)).map do |lev|
         lev - 1
       end,
       "disable?" => disable_toc
@@ -1340,6 +1416,7 @@ BuildMultiPageHTML = lambda do |config|
         "--template=site-template.html",
         "--variable header=\"#{HEADER}\"",
         "--variable footer=\"#{FOOTER}\"",
+        "--variable current_year=#{DateTime.now.year}",
         title ? "--variable title=\"#{title}\"" : "",
         subtitle ? "--variable subtitle=\"#{subtitle}\"" : "",
         date ? "--variable date=\"#{date}\"" : "",
@@ -1439,15 +1516,16 @@ BuildPDF = lambda do |config|
       "relative-root-path" => File.expand_path('src'),
       "context" => context
     ],
-    PassThroughWithSideEffect[
-      "function" => GenerateSectionIndex[
-        "source-paths"=> File.expand_path(
-          File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
-        ),
-        "output-path" => section_index,
-        "merge-values" => {"#probe-definitions"=>"probes.html"}
-      ]
-    ],
+    #PassThroughWithSideEffect[
+    #  "function" => GenerateSectionIndex[
+    #    "source-paths"=> File.expand_path(
+    #      File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+    #      # File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+    #    ),
+    #    "output-path" => section_index,
+    #    "merge-values" => {"#probe-definitions"=>"probes.html"}
+    #  ]
+    #],
     PassThroughWithSideEffect[
       "function" => lambda do
         rec_dir = File.expand_path(
@@ -1484,7 +1562,7 @@ BuildPDF = lambda do |config|
       ),
       "levels" => levels
     ],
-    BuildProbesAndCopyIntoManifest[
+    Probes::BuildProbesAndCopyIntoManifest.new(
       "disable?" => disable_probes,
       "probes-build-dir" => File.expand_path(
         File.join(build_dir, tag, md_dir, "probes"), this_dir
@@ -1495,7 +1573,18 @@ BuildPDF = lambda do |config|
       "insert-after-file" => "output-reports.md",
       "path-to-probes-input" => File.expand_path(
         File.join("config", "reference", "probes_input.yaml"), this_dir
-      )
+      ),
+      "probes-in-one-file?" => false,
+    ),
+    PassThroughWithSideEffect[
+      "function" => GenerateSectionIndex[
+        "source-paths"=> File.expand_path(
+          # File.join(build_dir, tag, md_dir, "preprocessed", "**", "*.md"), this_dir
+          File.join(build_dir, tag, md_dir, "all-with-probes", "**", "*.md"), this_dir
+        ),
+        "output-path" => section_index,
+        "merge-values" => {"#probe-definitions"=>"probes.html"}
+      ]
     ],
     AddFiles[
       "paths" => [File.expand_path(
@@ -1816,10 +1905,34 @@ task :coverage do
   end
 end
 
+# TODO: for task :cullist and :probes, generate the files from CSE if CSE.exe
+# is present. Note: may want to just sent them up as file tasks. Add as
+# prerequisites if cse.exe exists and is newer than the output files. Give
+# warning if cse.exe is not built.
+desc "regenerate cullist"
+task :cullist do
+
+end
+
+desc "regenerate probes list"
+task :probes do
+
+end
+
+desc "Generate probes yaml input"
+task :gen_probes_yaml do
+  BuildProbesYaml[]
+end
+
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
+end
+
+desc "start an irb console in the rakefile context"
+task :irb do
+  binding.irb
 end
 
 task :default => [:build_all]

@@ -141,7 +141,7 @@ I.  Top level
            a. delete nested objects,
            b. ITF of STAR entry of table containing CLEAR (main expected)
            c. default mbrs, member ITF's
-        3. PRF of CLEAR command (in cne, table uses topStarPrf here also)
+        3. PRF of CLEAR command (in CSE, table uses topStarPrf here also)
         4. CKF of CLEAR command
     D.  RUN command (code not restricted to top)
         a. CKF of RUN command

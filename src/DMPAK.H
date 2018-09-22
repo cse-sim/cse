@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// dmpak.h: declarations for heap (dynamic memory) functions for cne
+// dmpak.h: declarations for heap (dynamic memory) functions for cse
 
 	/* functions in dmpak.cpp;
 	   [also former near heap functions in nheap.cpp for compilers whose libraries don't have near heap (Borland)] */

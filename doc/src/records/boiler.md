@@ -139,3 +139,6 @@ Optionally indicates the end of the boiler definition. Alternatively, the end of
                                 *N/A*         No             constant
 
 
+**Related Probes:**
+
+- @[boiler](#p_boiler)

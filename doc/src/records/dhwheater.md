@@ -321,14 +321,6 @@ Name of METER object, if any, by which DHWHEATER electrical energy use is record
   ----------- ------------------- --------------------------- -------------- -----------------
               *name of a METER*   *Parent DHWSYS wsElecMtr*   No             constant
 
-**whxBUEndUse=*choice***
-
-Specifies the whElecMtr end use, if any, to which extra backup energy is accumulated. In some water heater types, extra backup energy is modeled to maintain output temperature at wsTUse.  This energy is included in end use dhwBU.  whxBUEndUse allows separate reporting of extra backup energy for testing purposes.
-
-**Units**   **Legal Range**     **Default**                 **Required**   **Variability**
------------ ------------------- --------------------------- -------------- -----------------
-            *end use code*            (no accumulation)             No             constant
-
 **whFuelMtr =*mtrName***
 
 Name of METER object, if any, by which DHWHEATER fuel energy use is recorded (under end use DHW).
@@ -344,3 +336,7 @@ Optionally indicates the end of the DHWHEATER definition.
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             
+
+**Related Probes:**
+
+- @[DHWHeater](#p_dhwheater)

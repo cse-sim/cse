@@ -1,4 +1,5 @@
 require 'net/http'
+# TODO: update verifylinks to check #target links in multi-page HTML.
 
 module VerifyLinks
   # Problem: links don't always work in generated documentation due to a large

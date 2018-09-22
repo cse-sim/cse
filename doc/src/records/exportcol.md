@@ -70,3 +70,7 @@ Optionally indicates the end of the EXPORTCOL. Alternatively, the end of the def
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
                                 *N/A*         No             constant
+
+**Related Probes:**
+
+- @[exportCol](#p_exportcol)

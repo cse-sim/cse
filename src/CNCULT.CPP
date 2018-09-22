@@ -1421,9 +1421,9 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znAzm",       DAT,   ZI(ZNAZM),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
-	CULT( "znTH",        DAT,   ZI(ZNTH),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
-	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
-	CULT( "znTC",        DAT,   ZI(ZNTC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
+	CULT( "znTH",        DAT,   ZI(ZNTH),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTC",        DAT,   ZI(ZNTC),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
@@ -1802,7 +1802,6 @@ CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      
 CULT( "whParElec",   DAT,   DHWHEATER_PARELEC, 0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whElecMtr",   DAT,   DHWHEATER_ELECMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "whFuelMtr",   DAT,   DHWHEATER_FUELMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N,   N),
-CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0,      0,	    N,   N),
 CULT( "endDHWHEATER",ENDER, 0,                 0,     0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwHeaterT
