@@ -2975,21 +2975,11 @@ static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
 				{	// outdoor conditions
 					rs_tdbOut = tdbO[ idbO];
 					rs_Cooling();
-#if 1
 					float capTot, capSen, pwrIn;
 					rs_GetPerfClg( capTot, capSen, pwrIn);
 					fprintf( f, "%.f,%.f,%.f,%.f,%.2f,%.2f,%.2f\n",
 						cfm, tdbI[ idbI], rs_twbIn, rs_tdbOut,
 							capTot, capSen, pwrIn);
-#else
-x					float pwrIn = (fabs( rs_capSenCt / rs_effCt)+ rs_fanHeatC)
-x									/ (3.413f * 1000.f);
-x					fprintf( f, "%.f,%.f,%.f,%.f,%.2f,%.2f,%.2f\n",
-x						cfm, tdbI[ idbI], rs_twbIn, rs_tdbOut,
-x							(fabs( rs_capTotCt)-rs_fanHeatC)/1000.f,
-x							(fabs( rs_capSenCt)-rs_fanHeatC)/1000.f,
-x							pwrIn);
-#endif
 				}
 			}
 		}
