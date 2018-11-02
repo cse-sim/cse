@@ -339,6 +339,10 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			FIXEDFLOW "FixedFlow"
 			VARFLOW   "VarFlow"
 		  }
+*choicb RSYSDEFROSTMODELCH {
+			REVCYCLE    "RevCycle"
+			REVCYCLEAUX "RevCycleAux"
+		  }
 
 // DHW choices
 *choicb WSCALCMODECH {
@@ -502,7 +506,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
 			  HTG		"Htg"	// space heating incl heat pump compressor
-			  HPHTG		"HPHtg"	// heat pump backup heat
+			  HPHTG		"HPHtg"	// heat pump backup and defrost heat
 			  DHW		"DHW"	// domestic (service) hot water heating
 			  DHWBU		"DHWBU"	// domestic (service) hot water heating backup
 			  DHWMFL	"DHWMFL"// domestic (service) hot water DHWLOOP energy
@@ -510,7 +514,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  FANH		"FanH"	// fan energy for heating
 			  FANV		"FanV"	// fan energy for IAQ venting
 			  FAN		"Fan"	// fan energy for other purposes
-			  AUX		"Aux"	// HVAC auxiliary, not inlcuding fans
+			  AUX		"Aux"	// HVAC auxiliary, not including fans
 			  PROC		"Proc"	// process energy
 			  LIT		"Lit"	// lighting
 			  RCP		"Rcp"	// receptacles

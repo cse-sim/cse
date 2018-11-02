@@ -155,15 +155,15 @@ Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, or RESIS
 
 **rsTdDesH=*float***
 
-Nominal heating temperature rise (across system, not zone) used during autosizing (when capacity is not yet known).
+Nominal heating temperature rise (across system, not at zone) used during autosizing (when capacity is not yet known) and to derive heating air flow rate from heating capacity.
 
-  **Units**   **Legal Range**   **Default**          **Required**   **Variability**
-  ----------- ----------------- -------------------- -------------- -----------------
-  ^o^F        *x* $>$ 0         30 if ASHP else 50   No             constant
+  **Units**   **Legal Range**   **Default**                                  **Required**   **Variability**
+  ----------- ----------------- -------------------------------------------- -------------- -----------------
+  ^o^F        *x* $>$ 0         30 ^o^F if ASHP or ASHPHYDRONIC else 50 ^o^F   No             constant
 
 **rsFxCapH=*float***
 
-Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 are set to rsFxCapH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
+Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 is set to rsFxCapH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -171,11 +171,8 @@ Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 are set to r
 
 **rsFanPwrH=*float***
 
-Heating fan power. Heating air flow is estimated based on a 50 ^o^F temperature rise.
+Heating fan power. Heating air flow is calculated from heating capacity and rsTdDesH.
 
-<!--
-  TODO – need input for temp rise?
--->
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
   W/cfm       *x* $\ge$ 0       .365          No             constant
@@ -200,7 +197,7 @@ If both rsCap47 and rsCapC are autosized, they are set to consistent values base
 
 **rsCap35=*float***
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^F.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^F.  rsCap35 typically reflects reduced capacity due to reverse (cooling) heat pump operation for defrost.
 
   **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
   ----------- ----------------- ------------------------------------ -------------- -----------------
@@ -247,11 +244,26 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 **rsCapAuxH=*float***
 
-For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If autosized, rsCapAuxH is set to the peak heating load in excess of heat pump capacity evaluated at the heating design temperature (Top.heatDsTDbO).
+For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
 
   **Units**   **Legal Range**             **Default**   **Required**   **Variability**
   ----------- --------------------------- ------------- -------------- -----------------
   Btu/hr      *AUTOSIZE* or *x* $\ge$ 0   0             no             constant
+
+**rsDefrostModel=*choice***
+
+  Selects modeling options for ASHP outdoor coil defrosting when 17 ^o^F < TDbO < 45 ^o^F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
+
+  ---------  ---------------------------------------------------------------------------
+  REVCYCLE   Reverse compressor (cooling) operation.  Net capacity and efficiency is derived from rsCap17/rsCOP17 and rsCap35/rsCOP35 using linear interpolation.  Auxiliary heat is not modeled.
+
+  REVCYCLEAUX  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.
+
+  ---------  ----------------------------------------------------------------------------
+
+  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
+  ----------- ----------------------- ------------- -------------- -----------------
+               *one of above choices* REVCYCLEAUX          No             constant
 
 **rsFxCapAuxH=*float***
 
@@ -317,7 +329,7 @@ Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak des
 
 **rsFChg=*float***
 
-Refrigerant charge adjustment factor.
+Cooling refrigerant charge adjustment factor.  See rsFSize (below).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -325,7 +337,7 @@ Refrigerant charge adjustment factor.
 
 **rsFSize=*float***
 
-Compressor sizing factor.
+Cooling compressor sizing factor.  The effective cooling capacity is adjusted by the factor (rsFChg*rsFSize) as specified by California Title 24 procedures.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
