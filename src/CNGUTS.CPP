@@ -996,15 +996,15 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	}
 	while (--i > 0);
 
-// Allocate RSYS results storage records for each zone and for sum of all RSYSs
+// Allocate RSYS results storage for each RSYS and for sum of all RSYSs
 
-	i = RsR.n /* + 1*/;			// need a results record for each RSYS, and one for sum of RSYSs
-	EF( RSysResR.al( i, WRN) )		// alloc RSYSRES recs, at once for less fragmentation. destroys old.
+	i = RsR.n + 1;				// need a results record for each RSYS, and one for sum of RSYSs
+	EF( RSysResR.al( i, WRN) )	// alloc RSYSRES recs, at once for less fragmentation. destroys old.
 	do							// (Note: may be no results accumulation during autoSize,
 	{							//  but alloc anyway cuz code several places stores into records)
 		RSYSRES* pRSR;
 		RSysResR.add( &pRSR, ABT, i);	// init (to 0) each zone results record, 1 thru i.
-		strcpy( pRSR->name, i <= RsR.n ? RsR.p[i].name : "sum_of_RSYS");	// results name for rpts: name of zone or "sum_of_RSYS"
+		strcpy( pRSR->name, i <= RsR.n ? RsR.p[i].name : "sum_of_RSYS");	// results name for rpts
 	}
 	while (--i > 0);
 
@@ -1525,10 +1525,14 @@ LOCAL void FC NEAR doIvlAccum()
 #endif
 	}
 
+	RSYSRES* pRSRSum = RSysResR.p + RSysResR.n;
 	RSYSRES* pRSR;
 	RLUP( RSysResR, pRSR)						// loop RSYSRES, last is sum
+	{	if (pRSR->ss < RSysResR.n)
+			pRSRSum->curr.S.rsr_Accum( &pRSR->curr.S, pRSR->ss == 1, (pRSR->ss == RSysResR.n-1)+0x100);
 		pRSR->curr.H.rsr_Accum( &pRSR->curr.S, Top.isBegHour, Top.isEndHour+0x100);	// accumulate subhr to hour
 																					//  0x100: limit hrsOn to 1
+	}
 
 	AHRES* ahres;
 	RLUP( AhresB, ahres)						// loop simulation results for air handlers. last is sum.
@@ -1662,14 +1666,9 @@ LOCAL void FC NEAR doIvlAccum()
 #endif
 	}
 
-	RSYSRES* allRsysRes = RSysResR.p + RSysResR.n;
+
 	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
-	{	pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate hour results to day. local
-#if 0
-0		if (pRSR->ss < RSysResR.n)						// if not the sum record (last)
-0			pRSR->H.rsr_Accum( &allRsysRes->H, pRSR->ss==1, pRSR->ss==RsR.n);	// also accumulate each hour to sum_of_RSYS
-#endif
-	}
+		pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
 
 	AHRES* allAhres = AhresB.p + AhresB.n;
 	RLUP( AhresB, ahres)							// loop air handers simulation results incl sum_of.
@@ -1688,6 +1687,8 @@ LOCAL void FC NEAR doIvlAccum()
 
 	RLUP( ZnresB, resp)								// loop sim results for each zone and sum-of-zones
 		accumZr( &resp->curr.D, &resp->curr.M, Top.isBegMonth, Top.isEndMonth);	// add day results to month's for each zone & sum-of-zones.
+	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
+		pRSR->curr.M.rsr_Accum( &pRSR->curr.D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
 		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);		// accumulate day ah results to month
 	mtrsAccum( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
@@ -1726,7 +1727,8 @@ LOCAL void FC NEAR doIvlAccum()
 	}
 	RLUP( AhresB, ahres)							// loop air handers simulation results
 		accumAhr( &ahres->M, &ahres->Y, Top.isFirstMon, Top.isLastDay);		// accumulate month ah results to run (year)
-
+	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
+		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
@@ -1877,7 +1879,7 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 	// not first: add source into destination
 	else
 	{
-		if (hrsOn != 0.f)					// if hrsOn is 0, skip floats: they will all be 0.
+		if (src->hrsOn != 0.f)					// if hrsOn is 0, skip floats: they will all be 0.
 			VAccum( &RRs1, RRnS, &src->RRs1); // float values not averages: add each to corress dest member
 	}
 
@@ -1885,7 +1887,7 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 	n++;					// used?
 
 	// last call
-	if (lastflg)
+	if (lastflg & 0xff)
 	{	if (lastflg & 0x100)	// limit hrsOn (for H record only)
 			if (hrsOn > 1.f)
 				hrsOn = 1.f;

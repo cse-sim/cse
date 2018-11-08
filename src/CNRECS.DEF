@@ -3181,9 +3181,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//    0 if not ASHP or if defrost not active
 *s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
 
-						// efficiency adjustment factors applied at final calc of input
-*s FLOAT rs_FEffH;		//   heating
-*s FLOAT rs_FEffC;		//   cooling
+						// efficiency adjustment factors applied to substep efficiency
+						// allows modification of input energy requirements. Default=1
+*s FLOAT_GZ rs_FEffH;	//   heating
+*s FLOAT_GZ rs_FEffC;	//   cooling
 
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
@@ -3198,36 +3199,18 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	*declare "void rsr_SetPrior() const;"
 
 	INT n			// number of intervals added together in this one (divisor for averages)
+					//  (maintained but unused)
 
-	// float members to add, hrsOn is first hrsOnAux is last
+	// float members to add, hrsOn is first, qAux is last (see code)
 	HOURS hrsOn		// operating hours
 	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
 					//   not including defrost
-	ENERGY qh		// heating output w/o fan, Btu
-	ENERGY qcSen	// cooling output w/o fan, Btu
-					//   not including defrost
-	ENERGY qcLat
-	ENERGY qFan
-	ENERGY qDefrost
-	ENERGY qAux
-
-#if 0
-
-	rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
-						//   (includes rs_runF, does not include fan, defrost, or aux heat)
-						//   used for both heating and cooling
-*s *e DBL rs_outLat		// ditto latent, Btuh
-*s *e DBL rs_outFan		// ditto fan heat added to air stream, Btuh
-*s *e DBL rs_outDefrost // ditto defrost heat, Btuh
-						//	  = typically resistance heat added to prevent cold supply air
-						//    0 if not ASHP or if defrost not active
-*s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
-
-*s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
-*s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
-*s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
-*s *e DBL rs_inAux		// auxiliary heating input, Btuh
-#endif
+	ENERGY qh		// heating output w/o fan, w/o defrost, Btu
+	ENERGY qcSen	// sensible cooling output w/o fan, Btu
+	ENERGY qcLat	// latent cooing output, Btu
+	ENERGY qFan		// fan heat, Btu
+	ENERGY qDefrost	// defrost (strip) heat output, Btu
+	ENERGY qAux		// auxiliary heat output, Btu
 
 *END		// RSYSRES_IVL_SUB
 //=============================================================================

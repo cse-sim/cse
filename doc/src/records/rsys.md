@@ -379,14 +379,29 @@ Cooling fan power.
                                      ASHP: derived from rsHSPF
   ---------------------------------------------------------------------------------------------
 
-  **rsCdC=*float***
+**rsCdC=*float***
 
-  Cooling cyclic degradation coefficient, valid for configurations having compressor-based cooling.
-
+Cooling cyclic degradation coefficient, valid for configurations having compressor-based cooling.
 
   **Units**   **Legal Range**       **Default**                **Required**   **Variability**
   ----------- --------------------- -------------------------- -------------- -----------------
                 0 $\le$ x $\le$ 0.5  0                          No             hourly
+
+**rsFEffH=*float***
+
+Heating efficiency factor.  At each time step, the heating efficiency is multiplied by rsFEffH.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+             *x* $>$ 0         1             no             subhourly
+
+**rsFEffC=*float***
+
+Cooling efficiency factor.  At each time step, the cooling efficiency is multiplied by rsEffC.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+                  *x* $>$ 0         1             no             subhourly
 
 
   **rsDSEH=*float***
