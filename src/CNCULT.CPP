@@ -1691,6 +1691,9 @@ CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VHRLY,  TYFL,  0,      0.f,    N,
 CULT( "rsDSEH",		 DAT,   RSYS_DSEH,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 CULT( "rsDSEC",		 DAT,   RSYS_DSEC,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 
+CULT( "rsCapNomH",   DAT,   RSYS_CAPNOMH,    0,       0, VDAILY, TYFL,  0,     0.f,    N,   N),
+CULT( "rsCapNomC",	 DAT,   RSYS_CAPNOMC,    0,       0, VDAILY, TYFL,  0,     0.f,    N,   N),
+
 CULT( "rsOAVType",	 DAT,   RSYS_OAVTYPE,    0,       0, VEOI,   TYCH,  0,    C_RSYSOAVTYCH_NONE, N, N),
 CULT( "rsOAVReliefZn",DAT,  RSYS_OAVRELIEFZI,0,       0, VEOI,   TYREF,  &ZiB, 0, N, N),
 CULT( "rsOAVTDbInlet",DAT,	RSYS_OAVTDBINLET,0,		  0, VHRLY,  TYFL,  0,      0.f,    N,   N),

@@ -7,6 +7,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>		// global defines
 
+#include "srd.h"
 #include <ancrec.h>		// record: base class for rccn.h classes
 #include <rccn.h>		// IZXRAT SGRAT ZNR
 #include "irats.h"
@@ -1508,12 +1509,18 @@ RC RSYS::rs_CkF()
 
 		// rsFanPwrC (W/cfm): error if >5, warn if >2
 		rc |= limitCheck( RSYS_FANPWRC, 0., 5., 0., 2.);
+
+		if (!IsAusz( RSYS_CAP95))
+			// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
+			FldCopyIf( RSYS_CAP95, RSYS_CAPNOMC);
 	}
 	else
 	{	when = strtprintf( "when rsType=%s (cooling not available)",
 			getChoiTx( RSYS_TYPE));
 		rc |= disallowN( when, RSYS_CAP95, RSYS_SEER, RSYS_EER95,
-				RSYS_FCHG, RSYS_FSIZE, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC, 0);
+				RSYS_FCHG, RSYS_FSIZE, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC,
+			    RSYS_CAPNOMC, 0);
+		FldSet( RSYS_CAPNOMC, 0.f);		// insurance
 	}
 
 	if (!rs_CanHeat())
@@ -1524,13 +1531,13 @@ RC RSYS::rs_CkF()
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAPAUXH, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
 				RSYS_FANPWRH, RSYS_CDH, 0);
+		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
 	else
 	{	// general heating checks
 		// rsFanPwrH (W/cfm): error if >5, warn if >2
 		rc |= limitCheck( RSYS_FANPWRH, 0., 5., 0., 2.);
 	}
-
 
 	if (rs_IsASHPHydronic())
 	{	// ASHPHydronic: air-to-water heat pump
@@ -1544,6 +1551,9 @@ RC RSYS::rs_CkF()
 			rs_CdH = 0.25f;			// hydronic: no HSPF source for default
 		if (!IsSet( RSYS_FANPWRH))
 			rs_fanPwrH = 0.f;		// hydronic: no fan power
+		if (!IsAusz( RSYS_CAP47))
+			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+			FldCopyIf( RSYS_CAP47, RSYS_CAPNOMH);
 	}
 	else if (rs_IsASHP())
 	{	// ASHP (non-hydronic): only HSPF required
@@ -1570,16 +1580,24 @@ x			rs_capAuxH = 100000.f;
 		if (IsAusz( RSYS_CAP47))
 			rc |= disallowN( "when rsCap47 is AUTOSIZE",
 					RSYS_CAP17, RSYS_CAP35, 0);
+		else
+			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+			//   see DefaultCapNomsIf()
+			FldCopyIf( RSYS_CAP47, RSYS_CAPNOMH);
 	}
 	else
-		rc |= disallowN( "when rsType is not ASHP",
+	{	rc |= disallowN( "when rsType is not ASHP",
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
 				RSYS_DEFROSTMODEL, RSYS_CDH, 0);
 
-	if (!IsSet( RSYS_AFUE))
-		rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
+		if (!IsSet( RSYS_AFUE))
+			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
+		if (!IsAusz( RSYS_CAPH))
+			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+			FldCopyIf( RSYS_CAPH, RSYS_CAPNOMH);
+	}
 
 	// parasitics -- issue info message if no associated meter
 	if (IsSet( RSYS_PARELEC) && !IsSet( RSYS_ELECMTRI))
@@ -1649,6 +1667,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			rs_zonesServed++;
 		}
 	}
+
 	return rc;
 }		// RSYS::rs_TopRSys1
 //-----------------------------------------------------------------------------
@@ -1939,6 +1958,10 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 	// insurance: rs_capH used during ASHP autosize but s/b 0 for simulation
 	if (rs_IsASHP())
 		rsi->rs_capH = rs_capH = 0.f;
+
+	rs_DefaultCapNomsIf();		// capture possible cap change(s)
+								//   insurance: no rs_auszX.final() changes expected
+								//      (coolOver = heatOver = 1)
 
 }		// rs_AuszFinal
 //-----------------------------------------------------------------------------
@@ -2409,6 +2432,8 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
 	rs_EERnfX =  inpX > 0.f /*&& rs_capnfX < 0.f*/ ? -rs_capnfX / inpX : rs_EER95;
+
+	rs_DefaultCapNomsIf();
 
 	return rc;
 
@@ -3592,9 +3617,29 @@ RC RSYS::rs_SizeASHP(			// size ASHP
 	}
 	rs_cap47 = cap47;		// redundant?
 
+	rs_DefaultCapNomsIf();
+
 	return rc;
 
 }	// RSYS::rs_SizeASHP
+//-------------------------------------------------------------------------------
+void RSYS::rs_DefaultCapNomsIf()
+// update nominal heating and cooling capacities
+// sets rs_capNomH and rs_capNomC if not fixed by user input
+{
+// uses non-NaN values if available, else arbitrary default
+// autosized rs_capXXX are initially NaN
+// does NOT set FsVAL field status, tricky to know when values are final.
+
+	if (!IsVal( RSYS_CAPNOMH))
+		rs_capNomH = rs_IsASHP()
+						? ifNotNaN( rs_cap47, 18000.f)
+						: ifNotNaN( rs_capH, 18000.f);
+
+	if (!IsVal( RSYS_CAPNOMC))
+		rs_capNomC = ifNotNaN( rs_cap95, 18000.f);
+
+}		// RSYS::rs_DefaultCapNomsIf()
 //-------------------------------------------------------------------------------
 void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 	int rsModeNew)

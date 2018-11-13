@@ -2948,6 +2948,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
+*declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 *declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
 *declare "static float rs_Cap95FromCap47ASHP( float cap47) { return max( cap47 - 180., 0.f) / 0.98f; }"
@@ -2969,6 +2970,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   appropriate meter; no thermal effect
 *h FLOAT rs_parElec			//		electrical parasitic power, W
 *h FLOAT rs_parFuel			//		fuel parasitic consumption, Btuh
+							
+							// nominal capacities, provide type-independent probe source for capacities.
+							// daily variability because default value changes during autosizing
+*d FLOAT rs_capNomH			//   nominal heating capacity, Btuh.  Default=rs_capH or rs_cap47
+*d FLOAT rs_capNomC			//   nominal cooling capacity, Btuh.  Default=rs_cap95
 
 *r *nest FAN rs_fan				// RSYS fan characteristics
 
@@ -3105,7 +3111,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_tdbCoilIn	// coil entering dry bulb, F (ditto)
 *s *e INT rs_wetCoil		// 1 = wet coil, 0 = dry coil
 
-*s *e FLOAT rs_SHR;			// cooling sensible heat ratio
+*s *e FLOAT rs_SHR;			// cooling sensible heat ratio (derived using coil model)
 
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 *f FRAC rs_fSize			// compressor sizing factor (default 1, 0.95 or 1 for CA compliance)
@@ -3128,7 +3134,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   (Btuh sensible)/(Btuh compressor electrical input)
 *s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions, Btuh (<0)
 *s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions, Btuh (<0)
-*s *e FLOAT rs_capSenCt;	// coil sensibgle cooling capacity at current conditions, Btuh (<0)
+*s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions, Btuh (<0)
 						
 						// Central outside air vent (aka OAV)
 *i RSYSOAVTYCH rs_OAVType	// type: NONE, FIXEDFLOW (aka SmartVent), VARFLOW (aka SmartBreeze)
