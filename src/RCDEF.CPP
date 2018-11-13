@@ -476,7 +476,7 @@ static SI FC strsndma(          /* add string to snake (if not there) in dm, ret
 	}
 
 	/* Not already there.  Determine size needed */
-	lstr = strlen(str) + 1;
+	lstr = (SI)strlen(str) + 1;
 	newsize = tail + lstr;
 
 	/* create or enlarge snake if necessary */
@@ -532,7 +532,7 @@ static SI FC strsnfnd(          /* find string in snake */
 	{
 		if (!strcmp( str, snp+off))
 			return off;
-		off += strlen(snp+off) + 1;
+		off += (SI)strlen(snp+off) + 1;
 	}
 	return 0;
 }               /* strsnfnd */

@@ -315,7 +315,7 @@ LOCAL RC FC msgCheck(			// check an unformatted message
 	RC rc=RCOK;
 	// could scan msg and look at all %X to get a better guess at fmtd length. FOR NOW, just check its length.
 	USI chkLen = MSG_MAXLEN/2;			// MSG_MAXLEN = 2000, messages.h.  Allow half this before formatting.
-	USI len = strlen(pMsg);
+	USI len = (USI)strlen(pMsg);
 	if (len > chkLen)
 	{
 		rc = errCrit( len > 3*MSG_MAXLEN/4 ? ABT : erOp, 			// if 3/4 buffer size, abort -- else crash likely

@@ -1691,7 +1691,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 		// get text to display, adjust position
 		text = colp->colHead ? colp->colHead		// use colHead member if nonNULL
 							 : colp->name;   		// else use reportCol record name
-		acWid = strlen(text);
+		acWid = (SI)strlen(text);
 		if (acWid > colWid)				// if overwide
 			p -= min( (SI)(acWid - colWid), (SI)(p - s));	// move left into any available space between columns
 		// truncate if acWid overlong?
@@ -1742,7 +1742,7 @@ LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column 
 
 		// store text in quotes, separating comma
 		*s++ = '"';
-		memcpyPass( (void **)&s, text, strlen(text));	// store text / point past
+		memcpyPass( (void **)&s, text, (USI)strlen(text));	// store text / point past
 		*s++ = '"';
 		if (colp->nxColi)				// separator char, if not last column:
 			*s++ = ',';		   			// export: separate items with comma
@@ -1836,7 +1836,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 						&&  colp->colJust <= 0					// only if justification not specified (dflt 0)
 						&&  strcspn( text, "Ee") >= strlen(text) )		// not if e format
 				{
-					SI dapp = strlen(text) - strcspn(text,".");		// chars at/after . (1 if ., +1 for each char after)
+					SI dapp = (SI)(strlen(text) - strcspn(text,"."));		// chars at/after . (1 if ., +1 for each char after)
 					// if no ., may here want to ++ dapp for trailing nonDigits eg k format chars
 					SI wanDapp = min( 4, colWid-5);		// desired #chars at/after .: 4, but keep 5 posns left of .,
 					ptAdj = max( 0, wanDapp - dapp);		// if < desired chars at/after . , set adjustment to use below
@@ -1852,7 +1852,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 				text = "<bad dt>";
 				break;
 			}
-		acWid = strlen(text);
+		acWid = (SI)strlen(text);
 
 		// adjust to justify or overhang left or right.  strings are not truncated.
 
@@ -1932,7 +1932,7 @@ LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval ro
 
 		if (dt==DTCHP)
 			*s++ = '"';
-		memcpyPass( (void **)&s, text, strlen(text) );  	// store text / point past
+		memcpyPass( (void **)&s, text, (USI)strlen(text) );  	// store text / point past
 		if (dt==DTCHP)
 			*s++ = '"';
 		if (colp->nxColi)			// if not last column

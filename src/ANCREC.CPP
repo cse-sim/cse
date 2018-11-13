@@ -878,7 +878,7 @@ USI getFileIx( 		// get file name index (fileIx) for file name
 // can receive NULL if table full.
 {
 	if (len < 0)
-		len = strlen(name);
+		len = (SI)strlen(name);
 
 // search saved names, return existing index if found
 	for (USI i = 1;  i < FNCACHESZ && fnCache[i];  i++)

@@ -285,7 +285,7 @@ LOCAL RC FC NEAR findMember( PROBEOBJECT *o)	// parse and look up probe member n
 	for ( ; ; )				// loop over input tokens until break or error return
 	{
 		SFIR *f1;						// fir entry for which preceding m chars match
-		l = strlen(cuToktx);					// length of the token to match now
+		l = (USI)strlen(cuToktx);					// length of the token to match now
 
 		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
 

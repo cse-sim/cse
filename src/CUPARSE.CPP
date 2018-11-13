@@ -3938,7 +3938,7 @@ twoBytes:
 			    	      (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
 			string:  text, with null, padded to whole word.*/
 			EE( emit( PSPKONN) )
-			EE( emit(~((strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
+			EE( emit(~(((PSOP)strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
 #ifndef EMIKONFIX
 			p1 = (char *)psp;			// where text will be
 #else//to fix apparent konstize bug
@@ -4141,7 +4141,7 @@ LOCAL RC FC NEAR emitStr( char *s)	// emit string in pseudo-code stream.  pad to
 
 	if (s != NULL)			// needed?
 	{
-		l = strlen(s) + 1;  				// length, bytes, incl \0
+		l = (USI)strlen(s) + 1;  				// length, bytes, incl \0
 		while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
 		{
 			E( emiBufFull() )				// realloc (future) or errmsg & return bad.

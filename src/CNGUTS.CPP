@@ -2113,9 +2113,9 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 #if	defined( _DEBUG)
 		if (1 || bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub2->clg, NENDUSES);
-			if (frDiff( xTot, mtrSub2->tot, 1.f) > .001)
-				printf( "\n    Bad sub2 after",
-					Top.jDay, Top.iHr);
+		if (frDiff(xTot, mtrSub2->tot, 1.f) > .001)
+			printf("\n    Bad sub2 after");// ,
+					//Top.jDay, Top.iHr);
 		}
 #endif
 	}

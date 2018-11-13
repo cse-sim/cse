@@ -2241,7 +2241,7 @@ setFsVAL:
 				NULL, NULL ) )     	// don't want type and evf: know would be TYSTR and 0.
 
 			// decode using string of form "value0/value1/value2 ..."
-			l = strlen(p);
+			l = (USI)strlen(p);
 			v = 0;				// value (count of /'s)
 			for (s = (char *)c->b; ; )
 			{
@@ -2712,7 +2712,7 @@ LOCAL RC NEAR ganame(
 		// allow high graphics characters 129-255.  Should we bother to disallow 127-128?  Embedded spaces ok.
 		// remove leading and trailing blanks from name
 		while (p[0]  &&  strchr( " \t", p[0]))  strcpy( p, p+1);			// copy back over leading spaces and tabs
-		USI len = strlen(p);
+		USI len = (USI)strlen(p);
 		while (len > 0  &&  strchr( " \t", p[len-1]) )   p[--len] = '\0';	// truncate trailing spaces and tabs
 		// in names, disallow control characters 1-31: escape, form feed, newline, etc
 		for (SI i = 0;  i < len;  i++)

@@ -1522,7 +1522,7 @@ LOCAL RC FC NEAR ppmScan()
 	USI span;
 
 #define SCANPAST(p,tx,label) \
-	{ span = strcspn(p,tx); p += span; if (*p==0) goto label; p++; }
+	{ span = (USI)strcspn(p,tx); p += span; if (*p==0) goto label; p++; }
 
 // note: file line counting is done by caller ppC().
 
@@ -1703,7 +1703,7 @@ LOCAL RC FC NEAR macOpen( 	// initiate expansion of macro or argument
 	isi->argV = argV;			// macro arg info or NULL
 	isi->bufSz =				// need we set buffer size?
 	isi->n =  					// # chars in "buffer"
-		strlen( text);			//   = entire macro body is in buf
+		(USI)strlen( text);			//   = entire macro body is in buf
 	// >>> otta store length at #define
 	isi->eofRead = 1;			// tell ppM & ppRead: entire body is in buf
 	isi->lineSent = 1;			// no #line command should be sent for macro
@@ -1752,7 +1752,7 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 				is->ech -= n;			// ..
 			}
 			n = min( USI(NREAD), USI(is->bufSz - is->n - BUFTAIL) );	// # to read: insrnce.
-			n = fread( is->buf+is->n, 1, n, is->file);		// c lib. n = # read.
+			n = (USI)fread( is->buf+is->n, 1, n, is->file);		// c lib. n = # read.
 			if (n==0)						// if end file
 			{
 				is->eofRead++;					// once only
@@ -2027,7 +2027,7 @@ LOCAL void FC NEAR lisBufAppend( 	// append given bytes to input listing buffer
 	USI n )		// # bytes to append, or 0xffff to append to \0
 {
 	if (n==0xffff)
-		n = strlen(p);
+		n = (USI)strlen(p);
 
 	if (lisBuf)						// if buffer allocated (autoallocates in lisToChar)
 	{
@@ -2196,7 +2196,7 @@ LOCAL SI FC NEAR lisCmp( 		// multi-line compare text to listing text
 
 		// compare this line
 		lis += 8;				// point after prefix part of listing line
-		lls = strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
+		lls = (USI)strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
 		if (strcspn( lis, "\r\f\n" ) != lls)
 			return 1;				// different line lengths, no match
 		if (lls)
@@ -2260,7 +2260,7 @@ LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
 {
 	USI place = *pPlace;
 	if (n==0xffff)
-		n = strlen(p);
+		n = (USI)strlen(p);
 
 	while (n)				// may need repeated insertions for long message
 	{
@@ -2778,7 +2778,7 @@ LOCAL RC FC NEAR ppErv(
 					glt++;			// count (say got) leading text
 			}
 			// length of file line: to first newline
-			USI n = strcspn( p, "\f\r\n");	// #chars to 1st \n (else all)
+			USI n = (USI)strcspn( p, "\f\r\n");	// #chars to 1st \n (else all)
 			char *q = p;  			// re (last) line, for figuring col
 			// and incl up to 2 preceding lines if nec for nonblank text b4 posn
 			// this logic also in cutok.cpp:cufCline().
@@ -2858,7 +2858,7 @@ x              	          (INT)isf->line, isf->name );
 				&&  col < sizeof(caret)-6	// if ^ position fits buffer
 				&&  *tex )  		// skip if not showing input line
 	{
-		USI lWhere = strlen(where);
+		USI lWhere = (USI)strlen(where);
 		if (shoFnLn && col >= lWhere + 3)		/* if col is right of end of "where" line,
 			           append ^ thereto: save line & avoid ugly gap. */
 		{
@@ -2868,7 +2868,7 @@ x              	          (INT)isf->line, isf->name );
 			{
 				strcat( where, cmsg);				// move caller's message into "where" to be before ^
 				cmsg[0] = 0;					// ..
-				lWhere = strlen(where);				// ..
+				lWhere = (USI)strlen(where);				// ..
 			}
 			memset( where + lWhere, ' ', col - lWhere);		// space over
 			strcpy( where + col, "^");				// append ^

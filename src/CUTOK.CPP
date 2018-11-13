@@ -808,7 +808,7 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 			glt++;			// got leading text
 		}
 		// length of line: to first newline
-		n = strcspn( p, "\f\r\n");  	// # chars to 1st \n (else all)
+		n = (USI)strcspn( p, "\f\r\n");  	// # chars to 1st \n (else all)
 		q = p;
 		m = n;			// start and length of (last) line, for figuring col
 
@@ -959,7 +959,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 	 &&  strlen(cmsg) + strlen(tex) + strlen(where) + col + 10
 	    <  MSG_MAXLEN )		// skip if would come close to exceeding max msg length (messages.h) 9-95
 	{
-		USI lWhere = strlen(where);
+		USI lWhere = (USI)strlen(where);
 		if (shoFnLn && col >= lWhere + 3)		/* if col is right of end of "where" line,
        							   append ^ thereto: save line & avoid ugly gap. */
 		{
@@ -969,7 +969,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 			{
 				strcat( where, cmsg);				// move caller's message into "where" to be before ^
 				cmsg[0] = 0;					// ..
-				lWhere = strlen(where);				// ..
+				lWhere = (USI)strlen(where);				// ..
 			}
 			memset( where + lWhere, ' ', col - lWhere);		// space over
 			strcpy( where + col, "^");				// append ^
@@ -993,7 +993,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // truncate file line text if would otherwise exceed MSG_MAXLEN (buffer size in rmkerr.cpp, vrpak.cpp, etc), 9-95
 
-	USI lenRest = strlen(cmsg) + strlen(where) + strlen(caret) + 6;		// +6 for "\n  " and paranoia
+	USI lenRest = (USI)(strlen(cmsg) + strlen(where) + strlen(caret) + 6);		// +6 for "\n  " and paranoia
 	if (shoTx)
 		if (lenRest + strlen(tex) > MSG_MAXLEN)			// if too long incl file line text
 			if (lenRest < MSG_MAXLEN)				// if the rest fits (believe assured by buf sizes if cmsg fits)

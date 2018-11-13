@@ -183,7 +183,7 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 	allocLen = mfw+3+2;				// +3: some paranoia space, at least 1 needed.
     								// +2: for FMTUNITS space or FMTPU ()'s
 	if (fmt & (FMTUNITS|FMTPU))			// if units to be appended
-		allocLen += strlen( UNIT::GetSymbol( units) );
+		allocLen += (SI)strlen( UNIT::GetSymbol( units) );
 	if (allocLen < 13)  allocLen = 13;		// always enuf for "<unset>\0" or "<expr 99999>\0" 2-27-92
 	str = strtemp( allocLen);				// strpak.c; strtempPop deallocates.
 
@@ -1089,7 +1089,7 @@ LOCAL SI FC NEAR cvttz( char *_str, SI trailChar, SI minWid)
 	if (trailChar)
 		*pend++ = (char)trailChar;       	// move " or other ending thing
 	*pend = (char)0;				// truncate
-	return strlen(_str);			// new length. another return above.
+	return (SI)strlen(_str);			// new length. another return above.
 }			// cvttz
 //======================================================================
 RC FC cvLmCk( 		// Check input data for being within limits for data and limit type
