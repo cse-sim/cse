@@ -403,19 +403,41 @@ Cooling efficiency factor.  At each time step, the cooling efficiency is multipl
 ----------- ----------------- ------------- -------------- -----------------
                   *x* $>$ 0         1             no             subhourly
 
+**rsCapNomH=*float***
 
-  **rsDSEH=*float***
+Heating nominal capacity.  Provides type-independent probe source for RSYS heating capacity.  Daily variability is specified to support value changes during AUTOSIZEing.  Values set via input are typically constant.
 
-  Heating distribution system efficiency.  If given, (1-rsDSEH) of RSYS heating output is discarded.  Cannot be combined with more detailed DUCTSEG model.
+---------------------------------------------------------------------------------------------
+**Units** **Legal Range**  **Default**                                **Required**  **Variability**
+--------- ---------------- ------------------------------------------ ------------ -----------------
+Btu/hr      *x* $\ge$ 0      no heating: 0\                              no          daily
+                             heat pump: rsCap47 (input or AUTOSIZEd)\
+                             other: rsCapH (input or AUTOSIZEd)
+---------------------------------------------------------------------------------------------
+
+**rsCapNomC=*float***
+
+Cooling nominal capacity.  Provides type-independent probe source for RSYS cooling capacity.  Daily variability is specified to support value changes during AUTOSIZEing.  Values set via input are typically constant.
+
+---------------------------------------------------------------------------------------------
+**Units** **Legal Range**  **Default**                                **Required**  **Variability**
+--------- ---------------- ------------------------------------------ ------------ -----------------
+Btu/hr      *x* $\ge$ 0      no cooling: 0\                              no          daily
+                             other: rsCap95 (input or AUTOSIZEd)
+---------------------------------------------------------------------------------------------
+
+**rsDSEH=*float***
+
+Heating distribution system efficiency.  If given, (1-rsDSEH) of RSYS heating output is discarded.  Cannot be combined with more detailed DUCTSEG model.
 
 
   **Units**   **Legal Range**       **Default**                **Required**   **Variability**
   ----------- --------------------- -------------------------- -------------- -----------------
                 0 < x < 1             (use DUCTSEG model)            No             hourly
 
-  **rsDSEC=*float***
+**rsDSEC=*float***
 
-  Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling output is discarded.  Cannot be combined with more detailed DUCTSEG model.
+Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling output is discarded.  Cannot be combined with more detailed DUCTSEG model.
 
 
   **Units**   **Legal Range**       **Default**                **Required**   **Variability**
