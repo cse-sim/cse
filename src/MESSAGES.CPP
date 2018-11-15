@@ -164,7 +164,7 @@ RC msgI(			// retrieve message text, format args: inner function
 	MH mh;
 	if (msgIsHan(mOrH))			// if mOrH is a char pointer to text, not a handle (local fcn, below)
 	{
-		mh = (SI)mOrH;			// handle value is value of mOrH with 0 HIWORD
+		mh = msgGetHan( mOrH);			// handle value is value of mOrH with 0 HIWORD
 		pMsg = msgFind( erOp, mh);	// find or read msg txt for handle, below.
 		// on error, issues message per erOp, then returns explanatory message.
 	}
@@ -241,12 +241,20 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 }	// msgSec
 
 //==============================================================================
-BOO FC msgIsHan( const char *mOrH)	// return TRUE if arg is msg handle (requiring retrieval) not char far * pointer
+BOO FC msgIsHan( const char *mOrH)	// return TRUE if arg is msg handle (requiring retrieval) not char* pointer
 {
-	return  mOrH != NULL  &&  (ULI)mOrH < 32768UL;		// 80x86 flat memory model: small value indicates handle
+	return  mOrH != NULL  &&  (unsigned int)mOrH <= 0xffff;
 	// ASSUMES PROGRAMS DATA NOT LOADED AT LOW ADDRESS!
-}						// msgIsHan
-
+}		// msgIsHan
+//-----------------------------------------------------------------------------
+MH msgGetHan(const char* mOrH)
+{
+#if defined( _DEBUG)
+	if (!msgIsHan( mOrH))
+		err(PERR, "msgGetHan() called for non-handle mOrH");
+#endif
+	return ((unsigned int)mOrH & 0xffff);
+}		// msgGetHan
 //==============================================================================
 LOCAL void FC NEAR msgSort()	// sort msgTbl[] by message handle
 {

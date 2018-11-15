@@ -1587,6 +1587,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *exdes
     *ovrcopy
     *declare "virtual record& CopyFrom( record *src, int copyName=1, int dupPtrs=0);"
+	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CHP colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].

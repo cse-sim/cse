@@ -98,7 +98,7 @@ struct COLDEF
 #endif
 #define NOCV 8	// print no value (dummy entry, eg to hold ptr to unprinted drybulb temp for following CVWB)
 // corresp datatypes:   CV1      CVK      CVM      BTU,     NBTU,    CVI   CVS   CVWB     NOCV
-static USI dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
+static int dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
 
 #define USE_ARG_HD  ((char *)-1L)  	// use for .colhd to take column head from variable arg list not table
 #define USE_NEXT_ARG (USI(-1))		// use for .offset to take data arg from variable argument list not record

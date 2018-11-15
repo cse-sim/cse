@@ -42,11 +42,11 @@ USI FC ppGet( char *p, USI n);			// get preprocessed text
 // pp.cpp...: input listing
 SI   FC openInpVr();
 void FC closeInpVr();
-void FC lisFlushThruLine( SI line);
-void FC lisThruLine( SI line);
-void FC lisMsg( char *p, SI dashB4, SI dashAf);
-SI   FC lisFind( USI  fileIx, SI line, const char* p, USI *pPlace);
-void FC lisInsertMsg( USI place, char *p, SI dashB4, SI dashAf);
+void FC lisFlushThruLine( int line);
+void FC lisThruLine( int line);
+void FC lisMsg( char *p, int dashB4, int dashAf);
+int  FC lisFind( int fileIx, int line, const char* p, int *pPlace);
+void FC lisInsertMsg( int place, char *p, int dashB4, int dashAf);
 
 void FC dumpDefines();		// debug aid
 

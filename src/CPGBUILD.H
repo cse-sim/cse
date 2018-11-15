@@ -124,20 +124,14 @@
 	/* MUST MATCH bit left free by pgpak; also def'd in pgpak.h to check.*/
 
 /* special .text/.pdata ptrs for PB_TEXT, _TEXTREC, _TEXTFILL, _DATA[L]: */
-#ifdef NEARTEXT
-  #define PBARGP ((void NEAR *)-2)	/* get ptr from pgbuildr arg list.
-					   One add'l ptr must be given after PBHEAD * and rp for each of these in table. 2-90. */
-  #define PBOMITP ((void NEAR *)-1)	/* omit: display no data and no label, but do move "cursor" (by displaying ""). 2-90. */
-#else
   #define PBARGP ((void *)-2L)	/* get ptr from pgbuildr arg list.
 				   One add'l ptr must be given after PBHEAD * and rp for each of these in table. 2-90. */
   #define PBOMITP ((void *)-1L)	/* omit: display no data and no label, but do move "cursor" (by displaying ""). 2-90. */
-#endif
 		/* CHANGE 2-28-90: OMITP and OMITSI suppress label */
 /* note: NULL pointer omits in some cases, prints "?" in other cases. */
 
 /* special .field values for PB_RECORD, _TEXTREC, _TABCOL, _FILLREC: */
-#define PBARGSI -2	/* get actual field # (or -1 to omit) from pgbuildr
+#define PBARGSI SI(-2)	/* get actual field # (or -1 to omit) from pgbuildr
 			   arg list.  (With multi-record methods, only one
 			   addl arg is fetched for each PBARGSI.)  Also
 			   for: PB_DATA: .dt, .units, .cvfmt, .cvfmt.  2-90.
@@ -145,7 +139,7 @@
 			   are in structure member order except PB_DATA data
 			   type precedes data value (but data not pointer).
 			   Make work for all SI args? */
-#define PBOMITSI   -1	/* omit (skip): do not display value nor label;
+#define PBOMITSI   SI(-1)	/* omit (skip): do not display value nor label;
 			   do display "" to move "cursor".
 			   CAUTION: explicit -1's still lurk in code. 2-90. */
 		/* CHANGE 2-28-90: OMITP and OMITSI suppress label */

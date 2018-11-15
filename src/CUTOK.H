@@ -114,9 +114,9 @@ void cuUntok( void);  				// unget token
 SI cuTok( void);					// get token
 RC cufOpen( const char* fname, char *dflExt);		// open file
 void cufClose( void);				// close file
-RC CDEC cuEr( SI retokPar, const char* message, ...);
-RC CDEC cuEr( SI shoTx, SI shoCaret, SI shoFnLn, SI retokPar, USI fileIx, USI line, SI isWarn, char *fmt, ... );
-RC cuErv( SI shoTx, SI shoCaret, SI shoFnLn, SI re, USI fileIx, USI line, SI isWarning, const char* msf, va_list ap=NULL);
-void cuCurLine( SI retokPar, USI * pFileIx, USI *pline, USI *pcol, char *s, USI sSize);
+RC CDEC cuEr( int retokPar, const char* message, ...);
+RC CDEC cuEr( int shoTx, int shoCaret, int shoFnLn, int retokPar, int fileIx, int line, int isWarn, char *fmt, ... );
+RC cuErv( int shoTx, int shoCaret, int shoFnLn, int re, int fileIx, int line, int isWarning, const char* msf, va_list ap=NULL);
+void cuCurLine( int retokPar, int* pFileIx, int* pline, int* pcol, char *s, size_t sSize);
 
 // end of cutok.h

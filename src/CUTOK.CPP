@@ -42,7 +42,7 @@ LOCAL SI   cuScanto( char *set);
 LOCAL void svFname( char *name, USI len);
 LOCAL void cufMark1();
 LOCAL void cufMark2();
-LOCAL void cufCline( SI flag, SI *pcol, char *s, USI sSize );
+LOCAL void cufCline( int flag, int* pcol, char *s, size_t sSize );
 
 
 /************************** TOKEN INPUT LEVEL *****************************/
@@ -770,18 +770,18 @@ LOCAL void cufMark2()		// copy "saved buffer position 1" to "saved position 2"
 //==========================================================================
 LOCAL void cufCline( 	// get current input file line text and col # to caller's storage
 
-	SI flag, 	/* 0: use last read position (uliBufi).
-		   1: use start current token (last "cufMark1" position)
-		   2: use start previous token ("cufMark2" position) */
-	SI *pcol, 	// NULL or receives column
+	int flag, 	// 0: use last read position (uliBufi).
+			    // 1: use start current token (last "cufMark1" position)
+				// 2: use start previous token ("cufMark2" position)
+	int* pcol, 	// NULL or receives column
 	char *s, 	// NULL or receives text
-	USI sSize )	// size of *s, added 9-95.
+	size_t sSize )	// size of *s
 
 /* and gets gets 1 or 2 preceding line(s) into buffer 's' if necessary
    to include nonblank text before position -- for example, to show
    pertinent text when ';' omitted at end preceding line. 11-90. */
 {
-	USI n, m, i, glt, nlnl, col;
+	int n, m;
 	char *p, *q;
 
 #define GLT 3	/* number of leading nonwhite chars that constitute sufficient text:
@@ -791,16 +791,16 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 	2->3  6-3-92 cuz GO is now RUN. */
 
 // starting subscript in buffer: a char somewhere in token in line
-	i = flag==0 ? uliBufi : flag==1 ? uliBufi1 : uliBufi2;
+	int i = flag==0 ? uliBufi : flag==1 ? uliBufi1 : uliBufi2;
 
 // line text
-	/* this code must fail softly if i is < 0 or > # chars in buf,
-	as uliBufi1,2 can be out of buffer if long comment separates tokens. */
+	// this code must fail softly if i is < 0 or > # chars in buf,
+	// as uliBufi1,2 can be out of buffer if long comment separates tokens.
 	if (i <= uliBufn)				// if i in text in buffer. rejects "i < 0" cuz USI.
 	{
 		// p = start of line: after last newline before ulibuf[i]
 		p = uliBuf + i;				// point into line
-		glt = 0;					// got-leading-text flag/count
+		int glt = 0;					// got-leading-text flag/count
 		while (p > uliBuf  &&  *(p-1) != '\n')	// find beginning
 		{
 			p--;
@@ -808,7 +808,7 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 			glt++;			// got leading text
 		}
 		// length of line: to first newline
-		n = (USI)strcspn( p, "\f\r\n");  	// # chars to 1st \n (else all)
+		n = strcspn( p, "\f\r\n");  	// # chars to 1st \n (else all)
 		q = p;
 		m = n;			// start and length of (last) line, for figuring col
 
@@ -816,7 +816,8 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 		// this logic also in pptok.cpp:ppErv().
 		if (glt < GLT)			// if don't have (enuf) leading text
 		{
-			for (nlnl = 0;  p > uliBuf  &&  n < sSize-2;  p--, n++)
+			int nlnl;
+			for (nlnl = 0;  p > uliBuf  &&  n < int( sSize)-2;  p--, n++)
 			{
 				if (*(p-1)=='\n')		// if on 1st char of a line
 				{
@@ -843,15 +844,15 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 		q = p = NULL;
 	}
 	if (s != NULL)
-	{
-		setToMin( n, sSize-1U); 		// truncate at buffer size: insurance, 9-95.
-		memmove( s, p, n);		// return line text
-		*(s+n) = '\0';			// terminate returned text
+	{	setToMin( n, int( sSize)-1); 	// truncate at buffer size: insurance, 9-95.
+		memmove( s, p, n);				// return line text
+		*(s+n) = '\0';					// terminate returned text
 	}
 	// p=start, n=length of text returned, conditionally including preceding lines.
 	// q=start, m=length of last line, for determining column
 
 	// determine column, with safety checks
+	int col;
 	if (!q  ||  uliBuf + i < q)
 		col = 0;
 	else
@@ -875,7 +876,7 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 // (error variables: see  errCount() in rmkerr.cpp.)
 
 //===========================================================================
-RC CDEC cuEr( SI retokPar, const char* message, ...)
+RC CDEC cuEr( int retokPar, const char* message, ...)
 
 // errmsg with file line text, caret, file name & line #, text retrieval for handle, printf formatting
 
@@ -889,11 +890,11 @@ RC CDEC cuEr( SI retokPar, const char* message, ...)
 //===========================================================================
 RC CDEC cuEr( 	// non-va_list interface to cuErv, next, for error message with all options
 
-	SI shoTx, SI shoCaret, SI shoFnLn, SI retokPar,	// see descriptions for cuErv, just below
-	USI fileIx, USI line, SI isWarn,
+	int shoTx, int shoCaret, int shoFnLn, int retokPar,	// see descriptions for cuErv, just below
+	int fileIx, int line, int isWarn,
 	char *fmt, ... )			// message (or handle) and args to insert like sprintf
 
-// returns RCBAD for convenience if isWarn is 0, else RCOK (a CHANGE 7-14-92)
+// returns RCBAD for convenience if isWarn is 0, else RCOK
 {
 	va_list ap;
 	va_start( ap, fmt);							// point args
@@ -902,21 +903,21 @@ RC CDEC cuEr( 	// non-va_list interface to cuErv, next, for error message with a
 //===========================================================================
 RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name & line #, and with vprintf formatting
 
-	SI shoTx, 			// nz to show text of current input line
-	SI shoCaret, 		// nz to put ^ under error position
-	SI shoFnLn, 		// nz to show CURRENT input file/line
-	SI retokPar,		// nz forces prior token (re shoTx/shoCaret) -- most callers must pass cuparse.cpp:reToke here.
+	int shoTx, 			// nz to show text of current input line
+	int shoCaret, 		// nz to put ^ under error position
+	int shoFnLn, 		// nz to show CURRENT input file/line
+	int retokPar,		// nz forces prior token (re shoTx/shoCaret) -- most callers must pass cuparse.cpp:reToke here.
 	// fileIx and line used only if shoTx, shoCaret, shoFnLn ALL 0: otherwise current input values are used.
-	USI fileIx,			// 0 or input file name index whose name to show
-	USI line,			// line # to show with fname
-	SI isWarn,  		// 0: "Error" (errCount++'s), 1: "Warning" (display suppressible), 2: "Info"
+	int fileIx,			// 0 or input file name index whose name to show
+	int line,			// line # to show with fname
+	int isWarn,  		// 0: "Error" (errCount++'s), 1: "Warning" (display suppressible), 2: "Info"
 	const char *fmt, va_list ap )	// message (or handle) and vsprintf args to insert
 
 // returns RCBAD for convenience if isWarn is 0, else RCOK (a CHANGE 7-14-92)
 {
 	char cmsg[750], tex[ULIBUFSZ+2], caret[139], where[139], 	// ULIBUFSZ (770, 9-95): above in this file.
 		whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
-	USI col;
+	int col;
 
 	caret[0] = where[0] = tex[0] = '\0';
 
@@ -959,17 +960,17 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 	 &&  strlen(cmsg) + strlen(tex) + strlen(where) + col + 10
 	    <  MSG_MAXLEN )		// skip if would come close to exceeding max msg length (messages.h) 9-95
 	{
-		USI lWhere = (USI)strlen(where);
+		int lWhere = strlen(where);
 		if (shoFnLn && col >= lWhere + 3)		/* if col is right of end of "where" line,
        							   append ^ thereto: save line & avoid ugly gap. */
 		{
 			if ( !strchr( cmsg, '\n')				// if callers message is all on one line
-			 &&  strlen(cmsg) + lWhere + 3 			// and it also will fit ...
-			   <= min(col,USI(getCpl()-8)) )		//  left of caret with plenty of space in line
+			 &&  int( strlen(cmsg) + lWhere + 3)	// and it also will fit ...
+			        <= min(col, getCpl()-8) )		//  left of caret with plenty of space in line
 			{
 				strcat( where, cmsg);				// move caller's message into "where" to be before ^
 				cmsg[0] = 0;					// ..
-				lWhere = (USI)strlen(where);				// ..
+				lWhere = strlen(where);				// ..
 			}
 			memset( where + lWhere, ' ', col - lWhere);		// space over
 			strcpy( where + col, "^");				// append ^
@@ -993,7 +994,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // truncate file line text if would otherwise exceed MSG_MAXLEN (buffer size in rmkerr.cpp, vrpak.cpp, etc), 9-95
 
-	USI lenRest = (USI)(strlen(cmsg) + strlen(where) + strlen(caret) + 6);		// +6 for "\n  " and paranoia
+	int lenRest = strlen(cmsg) + strlen(where) + strlen(caret) + 6;		// +6 for "\n  " and paranoia
 	if (shoTx)
 		if (lenRest + strlen(tex) > MSG_MAXLEN)			// if too long incl file line text
 			if (lenRest < MSG_MAXLEN)				// if the rest fits (believe assured by buf sizes if cmsg fits)
@@ -1023,19 +1024,19 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 	{
 		// variable(s)
-		USI place;
+		int place;
 		if ( shoTx					// if file line shown
 			&&  tex[0]					// and nonNull file line found
 			&&  lisFind( fileIx, line, tex, &place) )  	// and matching place found in listing spool buffer (pp.cpp)
 		{
 			// reassemble message without file line(s) text
 			sprintf( whole,
-			"%s"   		//     ^ (or not, or with 'where')
-			"%s%s"		// where (or not) and possible newline
-			"%s", 		// caller's message (or with where)
-			caret,
-			where,  *cmsg && strJoinLen( where, cmsg) > getCpl() - 8  ?  "\n  "  :  "",	//-8 for cols added in listing
-			cmsg );
+				"%s"   		//     ^ (or not, or with 'where')
+				"%s%s"		// where (or not) and possible newline
+				"%s", 		// caller's message (or with where)
+				caret,
+				where,  *cmsg && strJoinLen( where, cmsg) > getCpl() - 8  ?  "\n  "  :  "",	//-8 for cols added in listing
+				cmsg );
 			// insert message after found file line, with -------------- following and preceding (pp.cpp fcn)
 			lisInsertMsg( place, whole, 1, 1);
 		}
@@ -1049,13 +1050,13 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 //===========================================================================
 void cuCurLine( 		// re last token: return file line text and info
 
-	SI retokPar,	// nz for previous token even if have not cuUntok'd
+	int retokPar,	// nz for previous token even if have not cuUntok'd
 	//  CAUTION: most callers should pass cuparse:reToke here, or use cuparse:curLine.
-	USI * pFileIx,	// NULL or receives file name index of current input file name. Get text with ancrec.cpp:getFileName().
-	USI *pline,		// NULL or receives line # in file
-	USI *pcol, 		// NULL or receives column # (subscript) in line
+	int* pFileIx,	// NULL or receives file name index of current input file name. Get text with ancrec.cpp:getFileName().
+	int* pline,		// NULL or receives line # in file
+	int* pcol, 		// NULL or receives column # (subscript) in line
 	char *s,		// NULL or receives line text. Should be 770+ chars.
-	USI sSize )		// sizeof(*s) for overwrite protection, 9-95
+	size_t sSize )		// sizeof(*s) for overwrite protection, 9-95
 
 /* for caller issuing compile error message showing bad statement,
      and for obtaining file/line to put in each created object record --
@@ -1076,7 +1077,7 @@ void cuCurLine( 		// re last token: return file line text and info
 
 	if (pcol || s)			// if either requested
 		cufCline( re ? 2 : 1, 			// 1 start curr token, 2 previous tok.
-		(SI*)pcol, s, sSize );		// get col # & line text, local, above.
+			pcol, s, sSize );		// get col # & line text, local, above.
 
 }			// cuCurLine
 
