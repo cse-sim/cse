@@ -604,27 +604,31 @@ bad:
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
 			fnrt[nFieldsScanned].fieldName = strsave(nm);	// save field name for use in error msgs
 		}
-		// detect/warn duplicate field names
-		//   not error unless referenced (see below)
-		int ifn;
-		for (ifn=1; ifn<=nFieldsScanned; ifn++)
-		{	if (fnrt[ ifn].nDecoded < 0)
-				continue;		// previously seen duplicate name, don't re-msg
-			const char* nm = fnrt[ ifn].fieldName;
-			WStr colList;
-			for (int ifn2=ifn+1; ifn2<=nFieldsScanned; ifn2++)
-			{	if (!strcmpi( nm, fnrt[ ifn2].fieldName))
-				{	if (colList.size() == 0)
-						colList = strtprintf( "%d", ifn);		// start list with current col
-					colList += strtprintf( " %d", ifn2);		// add each add'l
-					fnrt[ ifn2].nDecoded = -1;	// is duplicate
-				}
-			}
-			if (colList.size() > 0)
-				warn( "Import file %s:\n    non-unique field name '%s' found in columns: %s",
-					  fileName, nm, colList.c_str());
-		}
-
+#if 0
+x only report duplicates if referenced (see below)
+x duplicate checks can occur due to autosize or multi-RUN
+x producing redundant warnings  11-17-18
+x		// detect/warn duplicate field names
+x		//   not error unless referenced (see below)
+x		int ifn;
+x		for (ifn=1; ifn<=nFieldsScanned; ifn++)
+x		{	if (fnrt[ ifn].nDecoded < 0)
+x				continue;		// previously seen duplicate name, don't re-msg
+x			const char* nm = fnrt[ ifn].fieldName;
+x			WStr colList;
+x			for (int ifn2=ifn+1; ifn2<=nFieldsScanned; ifn2++)
+x			{	if (!strcmpi( nm, fnrt[ ifn2].fieldName))
+x				{	if (colList.size() == 0)
+x						colList = strtprintf( "%d", ifn);		// start list with current col
+x					colList += strtprintf( " %d", ifn2);		// add each add'l
+x					fnrt[ ifn2].nDecoded = -1;	// is duplicate
+x				}
+x			}
+x			if (colList.size() > 0)
+x				warn( "Import file %s:\n    non-unique field name '%s' found in columns: %s",
+x					  fileName, nm, colList.c_str());
+x		}
+#endif
 		// find / bind refs from IMPORT()s
 		int fnmi;  				// for field name index (fnmt[] subscript)
 		IFFNM* iffnm = IffnmB.p + iffnmi;	// point to file's field names table record (or to record 0 if none)
@@ -632,16 +636,21 @@ bad:
 		if (iffnmi   		// if file has field names table record -- else skip
 		 && fnmt)   		// and names table record has allocated heap names table -- insurance
 		{	for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
-			{	for (ifn=1; ifn<=nFieldsScanned; ifn++)
+			{	for (int ifn=1; ifn<=nFieldsScanned; ifn++)
 				{	const char* nm = fnrt[ ifn].fieldName;
 					if (!strcmpi( nm, fnmt[fnmi].fieldName))	// if this entry matches
-					{	if (fnmt[ fnmi].fnr != 0)	// if name previously seen
-							rc = err( "Import file %s:\n    IMPORT()s refer to ambiguous field '%s'",
-								fileName, nm);
-						else
-							fnmt[fnmi].fnr = ifn;  		// store field number with name for use during run
-						// names are not added to table here
-						// table already contains all names used in imports in program
+					{	if (fnmt[ fnmi].fnr == 0)	// if name previously seen
+						{	fnmt[fnmi].fnr = ifn;  		// store field number with name for use during run
+							// break -- NO, check all to detect duplicate names
+						}
+						else if (fnmt[ fnmi].fnr != ifn)	// if different column already found
+						{	// note: duplicate header scans occur if autosize or multiple RUNs
+							//       so re-find of same column is OK
+							rc = err( "Import file %s:"
+								"\n    IMPORT()s refer to ambiguous (non-unique) field '%s'"
+								"\n    found in columns %d and %d.",
+								fileName, nm, fnmt[ fnmi].fnr, ifn);
+						}
 					}
 				}
 			}

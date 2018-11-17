@@ -1645,15 +1645,15 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
-    *f CHP fileName		// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
-    *f CHP imTitle		// title string. If given, file's must match.
+    *f CHP fileName			// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
+    *f CHP imTitle			// title string. If given, file's must match.
     *z SI imPhaseSpare		// for possible future AUTOSIZE/MAINSIM/BOTH choice 6-95
-    *i IVLCH imFreq		// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
-    *f NOYESCH hasHeader   	// file has header no/yes, default yes.
+    *i IVLCH imFreq			// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
+    *f NOYESCH hasHeader	// file has header no/yes, default yes.
     *i *hide NOYESCH imBinary	// possible future binary file option. default no.
  //derived during input processing
-    *r TI iffnmi		/* subscript of import file field record in IffnmB. Holds used names b4 file opened;
-    				   used for runtime access to IMPF record to handle forward references.*/
+    *r TI iffnmi			// subscript of import file field record in IffnmB. Holds used names b4 file opened;
+							// used for runtime access to IMPF record to handle forward references
  //runtime
     //file
     *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
@@ -1677,10 +1677,10 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
 // fnrt points to array of (cndtypes.def):
 //   struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
 //   {  CHP fieldName;		// NULL or field name (in heap) per file header, for error messages
-//      SI fnmi;		// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-//      CHP fp;			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+//      SI fnmi;			// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+//      CHP fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
 //      BOO nDecoded;		// TRUE if numeric value of field in current record has been decoded
-//      FLOAT fnv;		// if nDecoded, this is the numeric value -- don't decode twice
+//      FLOAT fnv;			// if nDecoded, this is the numeric value -- don't decode twice
 //   };
 *END		// IMPF
 //=============================================================================

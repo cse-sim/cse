@@ -1888,7 +1888,7 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 
 	// fields-by-number table
 	if (fnrt)					// if table allocated
-		for (SI fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
+		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
 		{
 			dmfree( DMPP( fnrt[fnr].fieldName));		// decref/free string member
 			//note member CHP fp points into buf, not to own heap block.
@@ -1926,7 +1926,7 @@ IFFNM::~IFFNM()		// IMPORT FILE FIELD NAMES table record destructor
 
 	// fields names table
 	if (fnmt)					// if table allocated
-		for (SI fnmi = 1; fnmi < fnmtNAl; fnmi++)	// loop over table entries. Entry 0 unused.
+		for (int fnmi = 1; fnmi < fnmtNAl; fnmi++)	// loop over table entries. Entry 0 unused.
 			dmfree( DMPP( fnmt[fnmi].fieldName));		// decref/free string member
 
 	dmfree( DMPP( fnmt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
