@@ -450,7 +450,10 @@ friend WFILE;
 	float wdd_tdvElecAvg;	//   avg for cur day
 	float wdd_tdvElecPvPk;	//   peak for prior day
 	float wdd_tdvElecAvg01;	//   avg for print day
-	SI wdd_tdvElecHrRank[ 25];//   hr rank
+	UCH wdd_tdvElecHrSTRank[ 24];	// TDV hr ranking (*standard time*)
+									//   [ 0] = hour (1-24) with highest TDVElec
+									//   [ 1] = hour (1-24) with 2nd highest TDVElec
+									//   [ 2 .. 23] etc								
 public:
 	void wdd_Init();
 	int wdd_Compare( const WDHR* wdHr) const;
@@ -459,7 +462,7 @@ public:
 //----------------------------------------------------------------------------
 struct VHR		// sort helper for wdy_Stats
 {	double v;		// value
-	SI iHr;		// hour when value occurs
+	int iHr;		// hour when value occurs (0 - 23)
 	static int Compare( const void* pV1, const void* pV2)
 	{	return LTEQGT( ((const VHR *)pV2)->v, ((const VHR *)pV1)->v); }
 };	// struct VHR
@@ -470,6 +473,8 @@ friend class WFILE;
 	int wdy_isLeap;				// nz: 366 day year
 	WDDAY wdy_day[ 366];		// daily statistics ([ 0] = jan-1)
 	WDHR wdy_hr[ 24*366];		// hourly data (read from weather file)
+								//   all standard time
+								//   DST adjustment applied in wdy_TransferHr
 	double wdy_taDbAvg[ 13];	// avg daily temp by month, [ 0] = year
 	double wdy_tMainsAvg[ 13];	// avg cold water temp by month, [ 0] = year
 
@@ -485,13 +490,15 @@ public:
 		return wdy_day[ iD0];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
+	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
 	void wdy_Stats( int jDay, double& taDbMean, double& taDbMax,
-		double& tdvElecMean, double& tdvElecMax, SI tdvElecHrRank[ 25]) const;
+		double& tdvElecMean, double& tdvElecMax, UCH tdvElecHrRank[ 24]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 };		// class WDYEAR
 //-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int erOp /*=WRN*/)
+// Note: not DST awareness / adjustment
 // returns RCOK on success
 {
 	RC rc = RCOK;
@@ -565,7 +572,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			for (int iHr=0; iHr<24; iHr++)
-			{	rc |= pWF->wf_Read( jDay, iHr, &wdy_Hr( jDay, iHr), erOp|WF_FORCEREAD);
+			{	rc |= pWF->wf_Read( &wdy_Hr( jDay, iHr), jDay, iHr, erOp|WF_FORCEREAD);
 				if (rc)
 					break;
 			}
@@ -574,7 +581,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			double taDbMean, taDbMax, tdvElecMean, tdvElecMax;
 			WDDAY& wdd = wdy_Day( jDay);
 			wdy_Stats( jDay, taDbMean, taDbMax, tdvElecMean, tdvElecMax, 
-				wdd.wdd_tdvElecHrRank);
+				wdd.wdd_tdvElecHrSTRank);
 
 			// current day values
 			// next day's previous day values = current day
@@ -640,7 +647,9 @@ void WDYEAR::wdy_Stats(			// statistics for day
 	double& taDbMax,		// returned: max dry-bulb, F
 	double& tdvElecMean,		// returned: mean TDV elec
 	double& tdvElecMax,			// returned: max TDV elec
-	SI tdvElecHrRank[ 25]) const	// returned: tdvElec ranked
+	UCH tdvElecHrSTRank[ 24]) const	// returned: hour ranking of tdvElec
+									//   [ 0] = 1-based hour of peak TDV
+									//   [ 1] = ditto, next highest
 // returns min, mean, and max dry-bulb for day
 {
 	VHR tdvElecHr[ 24];		// day's tdvElec for hour-rank sort
@@ -667,15 +676,11 @@ void WDYEAR::wdy_Stats(			// statistics for day
 	{	tdvElecMean /= 24.;
 		// sort the days tdvElec values is descending order
 		qsort( tdvElecHr, 24, sizeof( VHR), VHR::Compare);
-		// return hour ranking as 1-based
-		//   tdvElecHrRank[ 1] = 1-based hour of peak TDV
-		//                [ 2] = ditto, next highest
-		tdvElecHrRank[ 0] = 0;	// [ 0] is unused
 		for (iHr=0; iHr<24; iHr++)
-			tdvElecHrRank[ iHr+1] = tdvElecHr[ iHr].iHr+1;
+			tdvElecHrSTRank[ iHr] = tdvElecHr[ iHr].iHr+1;
 	}
 	else
-		VZero( tdvElecHrRank, 25);		// tdvElec values not complete
+		VZero( tdvElecHrSTRank, 24);		// tdvElec values not complete
 }		// WDYEAR::wdy_Stats
 //-----------------------------------------------------------------------------
 float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
@@ -687,6 +692,60 @@ float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
 		taDbSum += wdy_Day( jDay).wdd_taDbAvg;
 	return float( taDbSum / (jDay2 - jDay1 + 1));
 }		// WDYEAR::wdy_TaDbAvg
+//-----------------------------------------------------------------------------
+RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
+	int jDay,		// day sought (1-365/366)
+					//   caller handles leap year issues (see wf_Read() WF_USELEAP)
+	int iHr,		// standard time hour (0 - 23)
+	WDHR* pwd,		// returned: WDHR data for application use
+	int erOp)		// options
+					//  WF_DSTFIX: get previous-day values from jDay+1 if iHr==23
+					//      WHY: During daylight savings, prior hour data is used, resulting
+					//			 in prior day for iHrClock=0
+					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
+					//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
+					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
+{
+	pwd->Copy( wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
+#if 1
+	if (erOp&WF_DSTFIX)
+	{	if (iHr == 23)
+		{ 	// hr 23: clock time is beg of 1st hour of next day
+			//        use selected daily values from next day
+			WDDAY& wdd = wdy_Day( jDay+1);
+#if 1
+			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+#else
+			pwd->wd_SetDayValues( wdd);
+#endif
+		}
+		pwd->wd_ShiftTdvElecHrRankForDST();		// shift TDV rank hrs to DST
+												//   to be consistent with $hour
+												//   in expressions
+	}
+#elif 0
+	if ( iHr == 23 && (erOp&WF_DSTFIX))
+ 	{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
+		pwd->wd_taDbPk      = wdd.wdd_taDbPk;
+		pwd->wd_taDbAvg     = wdd.wdd_taDbAvg;
+		pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+		pwd->wd_taDbAvg01   = wdd.wdd_taDbAvg01;
+		pwd->wd_taDbAvg07   = wdd.wdd_taDbAvg07;
+		pwd->wd_taDbAvg14   = wdd.wdd_taDbAvg14;
+		pwd->wd_taDbAvg31   = wdd.wdd_taDbAvg31;
+		pwd->wd_tGrnd       = wdd.wdd_tGrnd;
+		pwd->wd_tMains      = wdd.wdd_tMains;
+#if 0
+		pwd->wd_tdvElecPk   = wdd.wdd_tdvElecPk;
+		pwd->wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
+		pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+		pwd->wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
+#endif
+ 	}
+#endif
+		return RCOK;
+}		// WDYEAR::wd_TransferHr
 //-----------------------------------------------------------------------------
 void WDDAY::wdd_Init()
 {	
@@ -704,7 +763,7 @@ void WDDAY::wdd_Init()
 	wdd_tdvElecAvg = 0.f;
 	wdd_tdvElecPvPk = 0.f;
 	wdd_tdvElecAvg01 = 0.f;
-	VZero( wdd_tdvElecHrRank, 25);
+	VZero( wdd_tdvElecHrSTRank, 24);
 
 	wdd_tGrnd = 0.f;
 	wdd_tMains = 0.f;
@@ -752,8 +811,9 @@ void WDDAY::wdd_Set24(		// set hourly values from daily
 #undef SETIF
 }		// WDDAY::wdd_Set24
 //-----------------------------------------------------------------------------
-void WDHR::wd_SetDayValues(		// set daily members
+void WDHR::wd_SetDayValues(		// set daily members for this hour
 	const WDDAY& wdd)			// source
+// note: no DST awareness / adjustment
 {
 	wd_taDbPk      = wdd.wdd_taDbPk;
 	wd_taDbAvg     = wdd.wdd_taDbAvg;
@@ -768,11 +828,12 @@ void WDHR::wd_SetDayValues(		// set daily members
 	wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
 	wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
 	wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
-	VCopy( wd_tdvElecHrRank, 25, wdd.wdd_tdvElecHrRank);
+	wd_SetTdvElecHrRank( wdd);
 }	// WDHR::wd_SetDayValues
 //-----------------------------------------------------------------------------
 void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 	const WDDAY& wdd)			// source
+// note: no DST awareness / adjustment
 {
 #define SETIF( d, s) if (IsMissing( d)) d = s;
 	SETIF( wd_taDbPk,		wdd.wdd_taDbPk)
@@ -788,9 +849,14 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 	SETIF( wd_tdvElecAvg,	wdd.wdd_tdvElecAvg)
 	SETIF( wd_tdvElecPvPk,	wdd.wdd_tdvElecPvPk)
 	SETIF( wd_tdvElecAvg01,	wdd.wdd_tdvElecAvg01)
-	VCopy( wd_tdvElecHrRank, 25, wdd.wdd_tdvElecHrRank);
+	wd_SetTdvElecHrRank( wdd);
 #undef SETIF
 }	// WDHR::wd_SetDayValuesIfMissing
+//----------------------------------------------------------------------------
+void WDHR::wd_SetTdvElecHrRank( const WDDAY& wdd)
+{	wd_tdvElecHrRank[ 0] = 0;	// unused
+	VCopy( wd_tdvElecHrRank+1, 24, wdd.wdd_tdvElecHrSTRank);
+}	/// WDHR::wd_SetTdvElecHrRank
 //----------------------------------------------------------------------------
 void WDHR::wd_ShiftTdvElecHrRankForDST()		// handle DST
 {
@@ -1526,9 +1592,9 @@ LOCAL RC FC NEAR decodeFld( 		// decode one by-column-number field to internal -
 }				// decodeFld
 //-----------------------------------------------------------------------------
 RC WFILE::wf_Read(	// read and unpack weather data for an hour
-	int jDay, 		// Julian date 1-365 (or 366 if leap year), or month 1-12 with WF_DSNDAY option
-	int iHr,		// Hour for which data is required (0 - 23)
 	WDHR* pwd,		// weather data structure to receive hourly data.
+	int jDay, 		// julian date 1-365 (or 366 if leap year), or month 1-12 with WF_DSNDAY option
+	int iHr,		// standard time hour for which data is required (0 - 23)
 	int erOp /*=WRN*/ )	// error reporting control: WRN, IGN, etc (notcne.h/cnglob.h); and
 	    				//  option bit(s)
 						//  WF_DSNDAY: read hour from design day for month 1-12 in "jDay" argument.
@@ -1536,9 +1602,9 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 						//  WF_USELEAP: use Feb 29 data if in file, else skip over it.
 						//		Added for poss future use. CSE does not do leap years, 10-94.
 						//		Caller may test isLeap to detect leap year file.
-						//  WF_DSTFIX: get previous-day values from jDay+1 if iHr==23
-						//      WHY: During daylight savings, prior hour data is used, resulting
-						//			 in prior day for iHrClock=0
+						//  WF_DSTFIX: adjust *pwd daily values for daylight savings
+						//      NOTE: alters WDHR *daily* values only, not hourly
+						//            does not alter hour read
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 						//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
@@ -1554,42 +1620,7 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//   NOTE: cached data assumes full annual weather file
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
-	{	pwd->Copy( wf_pWDY->wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
-#if 1
-		if ( iHr == 23 && (erOp&WF_DSTFIX))
- 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
-			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
-			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
-		}
-#elif 0
-		if ( iHr == 23 && (erOp&WF_DSTFIX))
- 		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
-			pwd->wd_taDbPk      = wdd.wdd_taDbPk;
-			pwd->wd_taDbAvg     = wdd.wdd_taDbAvg;
-			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
-			pwd->wd_taDbAvg01   = wdd.wdd_taDbAvg01;
-			pwd->wd_taDbAvg07   = wdd.wdd_taDbAvg07;
-			pwd->wd_taDbAvg14   = wdd.wdd_taDbAvg14;
-			pwd->wd_taDbAvg31   = wdd.wdd_taDbAvg31;
-			pwd->wd_tGrnd       = wdd.wdd_tGrnd;
-			pwd->wd_tMains      = wdd.wdd_tMains;
-#if 0
-			pwd->wd_tdvElecPk   = wdd.wdd_tdvElecPk;
-			pwd->wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
-			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
-			pwd->wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
-#endif
- 		}
-#else
-		if (erOp & WF_DSTFIX)
-		{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
-			if (iHr == 23)
-				pwd->wd_SetDayValues( wdd);
-			pwd->wd_ShiftTdvElecHrRankForDST();
-		}
-#endif
-		return RCOK;
-	}
+		return wf_pWDY->wdy_TransferHr( jDay, iHr, pwd, erOp);
 
 	RC rc = RCOK;
 
@@ -1602,13 +1633,13 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	}
 	else
 		rc |=
-		  wFileFormat==CSW    ? wf_CSWRead( erOp, jDay, iHr, pwd)
-		: wFileFormat==EPW    ? wf_EPWRead( erOp, jDay, iHr, pwd)
-		: wFileFormat==T24DLL ? wf_T24DLLRead( erOp, jDay, iHr, pwd)
+		  wFileFormat==CSW    ? wf_CSWRead( pwd, jDay, iHr, erOp)
+		: wFileFormat==EPW    ? wf_EPWRead( pwd, jDay, iHr, erOp)
+		: wFileFormat==T24DLL ? wf_T24DLLRead( pwd, jDay, iHr, erOp)
 		:                       RCBAD;
 
 	// read additional TDV data if requested and available
-	rc |= wf_TDVReadIf( erOp, jDay, iHr, pwd);
+	rc |= wf_TDVReadIf( pwd, jDay, iHr, erOp);
 
 	return rc;		// other returns above
 }		// WFILE::wf_Read
@@ -1828,11 +1859,11 @@ RC WFILE::wf_CSWPosHr1( int erOp)			// position file at beg of 1st hour
 }		// WFILE::wf_CSWPosHr1
 //----------------------------------------------------------------------------
 RC WFILE::wf_CSWRead(	// read and unpack data from CSW
-	int erOp,		// msg control: WRN, IGN, etc.
+	WDHR* pwd,		// weather data structure to receive hourly data.
+	int jDay,		// julian day for which data is expected (1 - 365)
+	int iHr,		// hour for which data is expected (0 - 23)
+	int erOp)		// msg control: WRN, IGN, etc.
 					// option bit WF_DSNDAY: causes error message here.
-	int jDay,		// Julian day for which data is expected (1 - 365)
-	int iHr,		// Hour for which data is expected (0 - 23)
-	WDHR* pwd )		// weather data structure to receive hourly data.
 
 // returns RCOK if OK, else other RC; msg issued per erOp
 {
@@ -1938,11 +1969,11 @@ RC WFILE::wf_TDVPosHr1( int erOp)			// position file at beg of 1st hour
 }		// WFILE::wf_TDVPosHr1
 //-----------------------------------------------------------------------------
 RC WFILE::wf_TDVReadIf(	// read TDV data
-	int erOp,		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: ignored here
-	int jDay,		// Julian day for which data is expected (1 - 365)
+	WDHR* pwd,		// weather data structure to receive hourly data.
+	int jDay,		// julian day for which data is expected (1 - 365)
 	int iHr,		// Hour for which data is expected (0 - 23)
-	WDHR* pwd )		// weather data structure to receive hourly data.
+	int erOp)		// msg control: WRN, IGN, etc.
+					// option bit WF_DSNDAY: ignored here
 
 // returns RCOK if OK or NOP
 //		else other RC; msg issued per erOp
@@ -2002,11 +2033,11 @@ RC WFILE::wf_T24DLLOpen(		// set up access to T24WTHR.DLL hourly data
 }	// WFILE::wf_T24DLLOpen
 //--------------------------------------------------------------------------
 RC WFILE::wf_T24DLLRead(	// read and unpack data from CSW
-	int erOp,		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: causes error message here.
+	WDHR* pwd,	// weather data structure to receive hourly data.
 	int jDay,		// Julian day for which data is expected (1 - 365)
 	int iHr,			// Hour for which data is expected (0 - 23)
-	WDHR* pwd )	// weather data structure to receive hourly data.
+	int erOp)		// msg control: WRN, IGN, etc.
+					// option bit WF_DSNDAY: causes error message here.
 {
 #if defined( WTHR_T24DLL)
 	IDATE iDate;
@@ -2106,11 +2137,11 @@ RC WFILE::wf_EPWPosHr1( int erOp)			// position EPW file at beg of 1st hour
 }		// WFILE::wf_EPWPosHr1
 //----------------------------------------------------------------------------
 RC WFILE::wf_EPWRead(	// read and unpack data from EPW
-	int erOp,		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: causes error message here.
+	WDHR* pwd,		// weather data structure to receive hourly data.
 	int jDay,		// Julian day for which data is expected (1 - 365)
 	int iHr,		// Hour for which data is expected (0 - 23)
-	WDHR* pwd )		// weather data structure to receive hourly data.
+	int erOp)		// msg control: WRN, IGN, etc.
+					// option bit WF_DSNDAY: causes error message here.
 
 	// returns RCOK if OK, else other RC; msg issued per erOp
 {

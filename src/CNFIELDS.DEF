@@ -135,8 +135,6 @@ COILUSED      COILUSED     LMNONE    UNNONE	// AH coil used 12-92
 
 WFLOC         WFLOC        LMNONE    UNNONE	// arrays used in WFILE record 1-94
 WFLID         WFLID        LMNONE    UNNONE	// ..
-FNRTP         FNRTP        LMNONE    UNNONE	// Import File fields-by-number table pointer 2-94
-FNMTP         FNMTP        LMNONE    UNNONE 	// Import File field names table pointer 2-94
 
 WFileFormat   WFileFormat  LMNONE    UNNONE	// open weather file type (see wfpak.h)
 WFLOC2	      WFLOC2       LMNONE    UNNONE	// "location 2" field in E10v1+ weather files

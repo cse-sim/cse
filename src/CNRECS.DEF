@@ -541,10 +541,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *s HUMRAT_GZ wOSh		// .. at end current subhour: used throughout zones and systems models in program
     *s FLOAT hOSh			// outdoor enthalpy at end subhour. used at in AH::doEco, TOWERPLANT::towModel. 9-92.
     *s FLOAT tp_airxOSh		// air flow heat transfer @tDbOSh (vhc*60) (Btuh/cfm-F).
-#if defined( CALC_DBOMM7)
-x    *d FLOAT tDbOMM7			// 7 day moving mean dry-bulb, to probe to simulate CALRES season change
-x								// not maintained, 12-12
-#endif
     *s FLOAT tp_rhoMoistOSh		// outdoor moist air density at end of subhour, lbm/ft3
     *s FLOAT tp_rhoDryOSh		// outdoor dry air density at end of subhour, lbm/ft3
  
@@ -648,24 +644,24 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_EtDecodeHdr( char* hdr, int erOp, float* clrnss, float* turbid, float* atmois);"
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
-	*declare "RC wf_Read( int jDay, int iHr, WDHR* pWd, int erOp = WRN);"
+	*declare "RC wf_Read( WDHR* pWd, int jDay, int iHr, int erOp = WRN);"
 	*declare "USI* wf_PackedHrRead( int jDay, int iHr, int erOp = WRN);"
 	*declare "LI wf_PackedHrOffset( int jDay, int iHr, int erOp = WRN);"
 	*declare "RC wf_CSWOpen( const char* wfName, int erOp );"
-	*declare "RC wf_CSWRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_CSWRead( WDHR* pwd, int jDay, int iHr, int erOp );"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, float& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, int& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWPosHr1( int erOp=WRN);"
 	*declare "RC wf_T24DLLOpen( const char* wfName, int erOp);"
-	*declare "RC wf_T24DLLRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_T24DLLRead( WDHR* pwd, int jDay, int iHr, int erOp);"
 	*declare "RC wf_EPWOpen( const char* wfName, int erOp );"
 	*declare "RC wf_EPWPosHr1( int erOp=WRN);"
-	*declare "RC wf_EPWRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_EPWRead( WDHR* pwd, int jDay, int iHr, int erOp );"
 	*declare "RC wf_TDVOpen( const char* TDVfName, int erOp);"
 	*declare "void wf_TDVInitHdrInfo();"
 	*declare "RC wf_TDVReadHdr( int erOp=WRN);"
 	*declare "RC wf_TDVPosHr1( int erOp=WRN);"
-	*declare "RC wf_TDVReadIf( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_TDVReadIf( WDHR* pwd, int erOp, int jDay, int iHr);"
 	 
 	 // in base class: .name, .ownTi, more.
      *r WFileFormat wFileFormat	// file format enum: UNK, BSGS, ET1, etc.
@@ -735,6 +731,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 	*declare "void wd_SetDayValues( const class WDDAY& wdd);"
 	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
+	*declare "void wd_SetTdvElecHrRank( const class WDDAY& wdd);"
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 
 						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
@@ -786,7 +783,8 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
 	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)
 									//     NOTE: code assumes wd_tdvElecAvg01 is last float
-	*h *ARRAY 25 SI wd_tdvElecHrRank	// hour ranking of TDV values
+	*h *ARRAY 25 SI wd_tdvElecHrRank	// hour ranking of TDV values for current day
+										//   hour values reflect DST status for current day
 										//   [ 0]=unused
 										//   [ 1]=hour of highest tdvElec, 1-24
 										//   [ 2]=hour of 2nd highest
@@ -1672,16 +1670,8 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *h *e BOO eorScanned	// non-0 if all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
-    *r *hide FNRTP fnrt		// ptr to heap array of info subscripted by 1-based field number. un*hide if becomes probe-able.
-    *r *hide USI fnrtNAl 	// allocated size of .fnrp[]. Max subscript fnrtNAl-1; [0] unused.
-// fnrt points to array of (cndtypes.def):
-//   struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-//   {  CHP fieldName;		// NULL or field name (in heap) per file header, for error messages
-//      SI fnmi;			// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-//      CHP fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-//      BOO nDecoded;		// TRUE if numeric value of field in current record has been decoded
-//      FLOAT fnv;			// if nDecoded, this is the numeric value -- don't decode twice
-//   };
+	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
+    *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
 *END		// IMPF
 //=============================================================================
 RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records
@@ -1697,15 +1687,9 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
     //fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
     // used at runtime to get fnr's to access fields. subscript: "fnmi", "field name index"
     *i SI fnmiN			// number of named fields seen for this file / max fnmi (+ 1 if 0-based)
+	*declare "struct FNMT* fnmt;"	// pointer to field names info array in heap
     *i *hide SI fnmtNAl		// allocated size of fnmt. Max subscript fnmtNAl-1. [0] unused.
-    *i *hide FNMTP fnmt    	// pointer to field names info array in heap
-// fnmt[] struct (cndtypes.def):
-//   struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
-//   {  CHP fieldName;		// field name used in Import() (no entry for fields not used by name in Import()s)
-//      SI fnr;			// field NUMBER established when file opened
-//   };
 *END		// IFFNM
-
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.

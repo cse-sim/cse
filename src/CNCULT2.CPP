@@ -16,12 +16,13 @@
 #include <msghans.h>	// MH_S0470
 
 #include <messages.h>	// msgIsHan
-#include <exman.h>	// addChafIf
-#include <tdpak.h>	// tdHoliDate tddtis tddyi
-#include <cvpak.h>	// getChoiTx
-#include <wfpak.h>	// wfOpen wfClose 1-95
+#include <exman.h>		// addChafIf
+#include <tdpak.h>		// tdHoliDate tddtis tddyi
+#include <cvpak.h>		// getChoiTx
+#include <wfpak.h>		// wfOpen wfClose 1-95
 #include <psychro.h>	// psyAltitude PsyRAir
-#include <envpak.h>	// ensystd
+#include <envpak.h>		// ensystd
+#include "impf.h"
 
 // #include "cse.h"
 #include "cnguts.h"	// Top ZrB Wfile
@@ -292,7 +293,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	}
 
 //--- other input data
-	E( topImpf() )			// IMPORTFILEs cncult4.cpp 2-94.
+	E( topImpf() )			// IMPORTFILEs
 	E( topHday() )			// holidays. cncult4.cpp.
 	topPr();				// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
 	E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
@@ -1055,8 +1056,7 @@ LOCAL RC topMat()
 	{
 		// verify RQD conductivity set, to prevent FPE in topCon1() --
 		// in case called even if messages before RUN encountered. */
-		rc |= ckSet( mat, MAT_COND);	// local fcn below; issues msg only
-       					                // if unset and msg count is 0.
+		rc |= mat->CkSet( MAT_COND);	// msg iff unset and msg count is 0.
 
 		// volumetric heat capacity = specific heat * density (0 defaults)
 		mat->mt_vhc = mat->mt_spHt * mat->mt_dens;
@@ -1790,6 +1790,7 @@ x   						   Errors issue messages but also return displayable value. */
 x}				// chTx
 #endif
 //===========================================================================
+#if 0
 RC ckSet( 	// verify that required member has been set
 
 	record *e, 	// pointer to record
@@ -1821,6 +1822,7 @@ RC ckSet( 	// verify that required member has been set
 							   "    and apparently no message about it appeared above" */
 				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
 }	// ckSet
+#endif
 //========================================================================
 RC ckOwnRefPt(	// check / access ref to owning record
 
