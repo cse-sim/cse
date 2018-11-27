@@ -67,10 +67,13 @@ void record::FldCopy(		// field-to-field copy (within record)
 // handles NaNs re expressions
 {
 	int dtS = DType( fnS);
-	int dtD = DType( fnD);
 #if defined( _DEBUG)
+	int dtD = DType( fnD);
 	if (dtD != dtS)
 		err( PWRN, "%s:%s FldCopy: DT mismatch",		// message, wait for keypress
+			b->what, name);
+	if (IsAusz( fnS))
+		err( PWRN, "%s:%s FldCopy: source is AUTOSIZEd",
 			b->what, name);
 #endif
 	int sz = GetDttab( dtS).size;
