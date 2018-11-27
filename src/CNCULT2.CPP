@@ -1316,7 +1316,7 @@ LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run ba
 #else
 x   // check or default shades-closed SHGC (Solar Heat Gain Coefficient)
 x
-x       if (ckSet( gti, GT_GTSHGCO)==RCOK)		// verify RQD gtSHGCO set (else FPE!) (SHGC, shades open)
+x       if (gti->ckSet( GT_GTSHGCO)==RCOK)		// verify RQD gtSHGCO set (else FPE!) (SHGC, shades open)
 x		{
 x          if (gti->sstat[GT_GTSHGCC] & FsSET)		// if optional gtSHGCC given (SHGC, shades closed)
 x          { if ( !ISNANDLE(gti->gtSHGCO)		// if expressions given,
@@ -1790,40 +1790,6 @@ x   						   Errors issue messages but also return displayable value. */
 x}				// chTx
 #endif
 //===========================================================================
-#if 0
-RC ckSet( 	// verify that required member has been set
-
-	record *e, 	// pointer to record
-	SI fn )	// field number
-
-// call only for RQD fields -- issues inappropriate msg for others
-
-/* uses field status byte array (at e + e->b->sOff)
-   also uses, in error message: class name (e->b->what); field name (e->b->fir[fn].mName) */
-
-// if not set, returns non-RCOK.  issues message only if errCount is 0 -- else assumes previously messaged.
-{
-	BP b;
-
-// return ok if has-been-set-by-user-input bit on in field's field status byte
-	if ( ((UCH*)e + e->b->sOff)[fn] & FsSET)
-		return RCOK;
-
-// not set.  Msg should have been issued at end of object; avoid repeating.
-	if (errCount()) 		// if there have been any messages at all (rmkerr.cpp fcn)
-		return RCBAD;		// return bad, no msg here
-
-	/* unset field but no messages at all have been issued this run.
-	   Unexpected, but issue msg here to prevent mysterious messageless non-runs.
-	   Devel aid.  Might occur, for example, if RQD flag removed on member and
-	   code that calls here not updated to match (defaults do not set FsSET). */
-	b = e->b;
-	return e->oer( (char *)MH_S0493,			/* "Required member '%s' has not been set,\n"
-							   "    and apparently no message about it appeared above" */
-				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
-}	// ckSet
-#endif
-//========================================================================
 RC ckOwnRefPt(	// check / access ref to owning record
 
 	BP toBase,			// ptr to BASE of RAT in which mbr is a subscript

@@ -42,7 +42,6 @@ RC FC topCkf( CULT* c, void *p, void *p2, void *p3);		// finish/check/set up for
 //RC FC topReCkf() -- see cncult.h
 
 // cncult2.cpp... supporting fcns called from other cncult files
-// RC   FC ckSet( record *e, SI fn); superceded by record::CkSet
 RC   FC ckOwnRefPt( BP toBase, record * fromRec, record **pp=NULL, RC *prc=NULL );
 
 // cncult3.cpp -- surfaces etc, called from cncult2.cpp
