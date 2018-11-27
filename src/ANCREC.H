@@ -187,6 +187,7 @@ class record		// base class for records
 	{ return ((UCH *)this + b->sOff)[fn]; }
 	inline int IsSet( int fn) const
 	{ return (fStat( fn)&FsSET) != 0; }
+	RC CkSet( int fn) const;
 	int IsSetCount( int fn, ...) const;
 	inline void ClrSet( int fn)
 	{ fStat( fn) &= ~FsSET; }

@@ -504,20 +504,33 @@ Example TDV file --
 
 Note: additional columns can be included and are ignored.
 
-The following probes are available for accessing TDV data in expressions --
+The table below shows probes available for accessing TDV data in expressions.  Except as noted, daily values are updated based on standard time, so they may be inaccurate by small amounts when daylight savings time is in effect.
 
- Probe                         Variability         Description
- --------------                ------------        ------------------
+------------------------------------------------------------------------------------------------------------------
+ Probe                          Variability      Description
+ -----------------------------  ------------     -----------------------------------------------------------
  @Weather.tdvElec               Hour               current hour electricity TDV
- @Weather.tdvFuel               Hour               current hour fuel TDV
- @Weather.tdvElecPk             Day                current day peak electricity TDV (includes future hours)
- @Weather.tdvElecAvg            Day                 current day average electricity TDV (includes future hours)
- @Weather.tdvElecPvPk           Day                previous day peak electricity TDV
- @Weather.tdvElecAvg01          Day                previous day average electricity TDV
- @weatherFile.tdvFileTimeStamp  Constant           TDV file timestamp (line 2 of header)
- @weatherFile.tdvFileTitle      Constant           TDV file title (line 3 of header)
- @Top.tdvFName                  Constant           TDV file full path
 
+ @Weather.tdvFuel               Hour               current hour fuel TDV
+
+ @Weather.tdvElecPk             Day                current day peak electricity TDV (includes future hours).  Updated
+                                                   at hour 23 during daylight savings.
+
+ @Weather.tdvElecAvg            Day                current day average electricity TDV (includes future hours)
+
+ @Weather.tdvElecPvPk           Day                previous day peak electricity TDV
+
+ @Weather.tdvElecAvg01          Day                previous day average electricity TDV
+
+ @weather.tdvElecHrRank[]       Day                hour ranking of TDVElec values.  tdvElecHrRank[ 1] is the hour
+                                                   having the highest TDVElec, tdvElecHrRank[ 2] is the next highest, etc.  The hour values are adjusted when dayight savings time is in effect, so they remain consistent with system variable $hour.
+
+ @weatherFile.tdvFileTimeStamp  Constant           TDV file timestamp (line 2 of header)
+
+ @weatherFile.tdvFileTitle      Constant           TDV file title (line 3 of header)
+
+ @Top.tdvFName                  Constant           TDV file full path
+------------------------------------------------------------------------------------------------------------------
 
 **TDVfName=*string***
 

@@ -8,11 +8,12 @@
 // largest field number to accept (expect far fewer fields in a file)
 const int FNRMAX = 1024;
 
-// compile support functions, cncult4.cpp, used from cuparse.cpp
+// compile support functions used from cuparse.cpp
 RC impFcn( char *impfName, TI *iffnmi, int fileIx, int line, IVLCH *imFreq, char *fieldName, SI *fnmi);
 RC impFcn( char *impfName, TI *iffnmi, int fileIx, int line, IVLCH *imFreq, SI fnr);
 
-// runtime import-file functions in impf.cpp, used from cnguts.cpp
+RC   FC clearImpf();		// Import stuff special clear function
+RC   FC topImpf();			// check/process ImportFiles at end of input
 RC FC impfStart();
 RC FC impfAfterWarmup();
 void FC impfEnd();
