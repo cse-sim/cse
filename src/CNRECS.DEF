@@ -766,8 +766,10 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_tdvFuel		//      fuel
 
 							// derived (computed) drybulb temp values
-							//   values change at day beg / same all day
+							//   values updated at standard time day beg / same all day
+							//   *except* wd_taDbPk is updated at hr=23 iff DST
 	*h float wd_taDbPk			// current day peak DB (includes future hours), F
+								//   updated at hr=23 iff DST
 	*h float wd_taDbAvg			// current day average DB (includes future hours), F
 	*h float wd_taDbPvPk		// previous-day peak DB, F
 	*h float wd_taDbAvg01		// previous-day avg DB (not including current day), F
@@ -777,8 +779,10 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 
 
 							// derived (computed) electricity TDV values
-							//   values change at day beg / same all day
+							//   values updated at standard time day beg / same all day
+							//   *except* wd_tdvElecPk is updated at hr=23 iff DST
 	*h float wd_tdvElecPk			// current day peak TDVelec (includes future hours)
+									//   updated at hr=23 iff DST
 	*h float wd_tdvElecAvg			// current day avg TDVelec (includes future hours)
 	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
 	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)
