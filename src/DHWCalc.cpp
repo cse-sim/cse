@@ -546,18 +546,22 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	VSet( ws_whDrawDurF, WHDRAWFDIM, -1.f);
 #endif
 
+	// Duration factor
+	float whDrawDurF = ws_WF * ws_DLM;
 	// temperature-dependent end uses
-	float whDrawF = ws_WF * max( 0.f, ws_DLM - ws_SSF);
-	ws_whDrawVolF[ 0]
-		= ws_whDrawVolF[ C_DHWEUCH_SHOWER]
-		= ws_whDrawVolF[ C_DHWEUCH_BATH] = whDrawF;
+	ws_whDrawDurF[ 0]
+		= ws_whDrawDurF[ C_DHWEUCH_SHOWER]
+		= ws_whDrawDurF[C_DHWEUCH_FAUCET]
+		= ws_whDrawDurF[ C_DHWEUCH_BATH] = whDrawDurF;
 	// temperature independent end uses
-	float whDrawFTempInd = 1.f - ws_SSF;
-	ws_whDrawVolF[ C_DHWEUCH_CWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_DWASHR]
-		= ws_whDrawVolF[ C_DHWEUCH_FAUCET]
-		= whDrawFTempInd;
-	VSet( ws_whDrawDurF, WHDRAWFDIM, 1.f);	// TODO: derive duration factors
+	float whDrawDurFTempInd = 1.f;
+	ws_whDrawDurF[ C_DHWEUCH_CWASHR]
+		= ws_whDrawDurF[ C_DHWEUCH_DWASHR]
+		= whDrawDurFTempInd;
+
+	// Flow factor
+	float whDrawVolF = 1.f - ws_SSF;
+	VSet(ws_whDrawVolF, WHDRAWFDIM, whDrawVolF);
 
 
 #if defined( _DEBUG)
