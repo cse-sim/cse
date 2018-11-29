@@ -344,7 +344,7 @@ RC DHWSYS::RunDup(		// copy input to run record; check and initialize
 	int options/*=0*/)
 {
 	RC rc = record::RunDup( pSrc, options);
-	ws_whCount = 0;		// insurance
+	ws_whCount = 0.f;		// insurance
 	return rc;
 }	// DHWSYS::RunDup
 //----------------------------------------------------------------------------
@@ -642,7 +642,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_HHWO = 8.345f * ws_whUse.total * (ws_tUse - ws_tInlet);
 	ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;
 
-	if (ws_whCount > 0)
+	if (ws_whCount > 0.f)
 	{	DHWHEATER* pWH;
 		RLUPC( WhR, pWH, pWH->ownTi == ss)
 			rc |= pWH->wh_DoHour( ws_HARL / ws_whCount, mult);
@@ -711,7 +711,7 @@ RC DHWSYS::ws_AccumCentralUse(		// accumulate central DHWSYS water use values
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {
 	RC rc = RCOK;
-	if (ws_whCount > 0 && ws_calcMode != C_WSCALCMODECH_PRERUN)
+	if (ws_whCount > 0.f && ws_calcMode != C_WSCALCMODECH_PRERUN)
 	{	
 		double* draw = ws_whUseTick + Top.iSubhr*Top.tp_nSubhrTicks;	// HW use bins for this subhr
 		double scaleWH = 1./ws_whCount;					// allocate per WH
@@ -746,7 +746,7 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 //----------------------------------------------------------------------------
 void DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
 {
-	if (ws_whCount > 0 && ivl == C_IVLCH_Y)
+	if (ws_whCount > 0.f && ivl == C_IVLCH_Y)
 	{	DHWHEATER* pWH;
 		RLUPC( WhR, pWH, pWH->ownTi == ss)
 		{	if (pWH->wh_unMetHrs > 0)
@@ -1298,7 +1298,7 @@ RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
 											//   (but not elec WH)
 
 	// accum consumption to meters (scaled by multipliers)
-	int mult = wh_mult * wsMult;	// overall multiplier = system * heater
+	float mult = wh_mult * wsMult;	// overall multiplier = system * heater
 	if (wh_pMtrElec)
 		wh_pMtrElec->H.dhw += mult * wh_inElec;
 	if (wh_pMtrFuel)
@@ -1553,7 +1553,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
-	int mult = pWS->ws_mult * wh_mult;	// overall multiplier
+	float mult = pWS->ws_mult * wh_mult;	// overall multiplier
 
 	// local totals
 	double qEnv = 0.;		// heat removed from environment, kWh
@@ -1779,7 +1779,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 }		// DHWHEATER::wh_HPWHDoSubhr
 //-----------------------------------------------------------------------------
 void DHWHEATER::wh_AccumElec(		// electricity use accounting / meter accum
-	int mult,			// overall multiplier (generally ws_mult*wh_mult)
+	float mult,			// overall multiplier (generally ws_mult*wh_mult)
 	double inElec,		// substep primary electricity, kWh
 	double inElecBU)	// substep backup electricity, kWh (not including wh_HPWHxBU)
 // wh_HPWHxBU also used
@@ -1948,7 +1948,7 @@ x				nColdStarts += min( 1., offMins / 30.);
 	double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks-nTickNZDraw) * tickDurHr;
 
 	// energy use accounting, Btu
-	int mult = pWS->ws_mult * wh_mult;	// overall multiplier
+	float mult = pWS->ws_mult * wh_mult;	// overall multiplier
 	double inFuel = rcovFuel + startFuel;
 	wh_inFuel += inFuel;
 	if (wh_pMtrFuel)
