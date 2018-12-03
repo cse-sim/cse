@@ -1247,6 +1247,9 @@ COL::~COL()
 //-----------------------------------------------------------------------------
 /*virtual*/ record& COL::CopyFrom( record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
 {
+#if defined( _DEBUG)
+	pSrc->Validate();
+#endif
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	cupfree( DMPP( colHead));
 	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  	// if contains a string, not a float
@@ -1274,7 +1277,7 @@ COL::~COL()
 			rc = RCBAD;	
 	}
 	return rc;
-}		// IZXRAT::Validate
+}		// COL::Validate
 //---------------------------------------------------------------------------------------
 DVRI::~DVRI()
 {
