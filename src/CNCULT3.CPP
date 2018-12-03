@@ -1858,7 +1858,7 @@ RC SFI::sf_SetupKiva()
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
 					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
-					xrWl->xr_kivaInstances.push_back(kvi);
+					xrWl->xr_kivaInstances.push_back(ki->ss);
 				}
 			}
 
