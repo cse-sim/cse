@@ -315,13 +315,13 @@ LOCAL RC   FC NEAR macOpen( char *id, char *text, DEFINE *theDef, char **argV, e
 LOCAL RC   FC NEAR ppRead( void);
 
 // input listing
-LOCAL void FC NEAR lisToChar( INSTK NEAR * _is, USI echTo, LISTY newTy, SI flush);
-LOCAL void FC NEAR lisBufAppend( char *p, USI n);
-LOCAL void FC NEAR lisBufOut( USI n);
-LOCAL void FC NEAR lisWrite( char *p, USI n);
-LOCAL SI   FC NEAR lisCmp( const char* s, USI i, USI *pPlace, SI *pnl);
-LOCAL SI   FC NEAR isFileLisLine( char *p);
-LOCAL void FC NEAR lisBufInsert( USI *pPlace, char *p, USI n);
+LOCAL void FC NEAR lisToChar( INSTK NEAR * _is, int echTo, LISTY newTy, int flush);
+LOCAL void FC NEAR lisBufAppend( char *p, int n=-1);
+LOCAL void FC NEAR lisBufOut( int n);
+LOCAL void FC NEAR lisWrite( char *p, int n);
+LOCAL int  FC NEAR lisCmp( const char* s, int i, int* pPlace, int* pnl);
+LOCAL int  FC NEAR isFileLisLine( char *p);
+LOCAL void FC NEAR lisBufInsert( int* pPlace, char *p, int n=-1);
 
 
 /*=================== COMMAND LINE INTERFACE department ===================*/
@@ -1522,7 +1522,7 @@ LOCAL RC FC NEAR ppmScan()
 	USI span;
 
 #define SCANPAST(p,tx,label) \
-	{ span = strcspn(p,tx); p += span; if (*p==0) goto label; p++; }
+	{ span = (USI)strcspn(p,tx); p += span; if (*p==0) goto label; p++; }
 
 // note: file line counting is done by caller ppC().
 
@@ -1703,7 +1703,7 @@ LOCAL RC FC NEAR macOpen( 	// initiate expansion of macro or argument
 	isi->argV = argV;			// macro arg info or NULL
 	isi->bufSz =				// need we set buffer size?
 	isi->n =  					// # chars in "buffer"
-		strlen( text);			//   = entire macro body is in buf
+		(USI)strlen( text);			//   = entire macro body is in buf
 	// >>> otta store length at #define
 	isi->eofRead = 1;			// tell ppM & ppRead: entire body is in buf
 	isi->lineSent = 1;			// no #line command should be sent for macro
@@ -1752,7 +1752,7 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 				is->ech -= n;			// ..
 			}
 			n = min( USI(NREAD), USI(is->bufSz - is->n - BUFTAIL) );	// # to read: insrnce.
-			n = fread( is->buf+is->n, 1, n, is->file);		// c lib. n = # read.
+			n = (USI)fread( is->buf+is->n, 1, n, is->file);		// c lib. n = # read.
 			if (n==0)						// if end file
 			{
 				is->eofRead++;					// once only
@@ -1805,7 +1805,7 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 #ifdef ECHO	// rest of file
 
 //-----------------------------------------------------------------------------------------------------------
-void FC lisFlushThruLine( SI line)	// list and FLUSH LISTING BUFFER thru specified line number
+void FC lisFlushThruLine( int line)	// list and FLUSH LISTING BUFFER thru specified line number
 
 // call when list report for a run is to be terminated.
 
@@ -1814,7 +1814,7 @@ void FC lisFlushThruLine( SI line)	// list and FLUSH LISTING BUFFER thru specifi
 {
 	// for cul.cpp:culRun
 
-	SI tLine;
+	int tLine;
 	char *lis;
 
 	lisThruLine(line);					// first, be sure all desired text is IN lisBuf
@@ -1838,19 +1838,19 @@ void FC lisFlushThruLine( SI line)	// list and FLUSH LISTING BUFFER thru specifi
 
 // write all characters in lisBuf up to found position
 
-	lisBufOut( (USI)(lis - lisBuf));				// local, below
+	lisBufOut( lis - lisBuf);				// local, below
 
 	// any remaining lisBuf text may be preprocessed-ahead commands for next run, and REMAINS IN LIST BUFFER.
 
 }		// lisFlushThruLine
 //-----------------------------------------------------------------------------------------------------------
-void FC lisThruLine( SI line)		// list thru specfied line number if possible
+void FC lisThruLine( int line)		// list thru specfied line number if possible
 
 // call before outputing an error message to listing
 
 {
 	// may be called locally, in ppErv, cutok.cpp:cuErv, .
-	SI tLine;
+	int tLine;
 	char *p;
 
 	if (inDepth <= 0)			// if no file open, do nothing
@@ -1870,7 +1870,7 @@ void FC lisThruLine( SI line)		// list thru specfied line number if possible
 			if (*(p-1)=='\n')		// if passed \n
 				tLine++;   		// count line
 		}
-		lisToChar( isf, (USI)(p - isf->buf), LtyNul, 0);	// list text UP TO start of LINE AFTER requested line # (next)
+		lisToChar( isf, p - isf->buf, LtyNul, 0);	// list text UP TO start of LINE AFTER requested line # (next)
 	}
 
 // list to after a newline -- insurance against inserting message in mid-line
@@ -1879,24 +1879,24 @@ void FC lisThruLine( SI line)		// list thru specfied line number if possible
 	{
 		p = isf->buf + isf->ech;				// point 1st unechoed character
 		p += strLineLen(p);				// advance past \n or to \0 (lib\strpak.cpp fcn)
-		lisToChar( isf, (USI)(p - isf->buf), LtyNul, 0);
+		lisToChar( isf, p - isf->buf, LtyNul, 0);
 	}
 }			// lisThruLine
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR lisToChar( 		// list input to given character position
 
 	INSTK NEAR * _is,	// input stack entry to list -- eg 'is' from ppC, 'isf' from lisToLine, etc.
-	USI echTo, 		// _is->buf subscript up to which to echo input
-	LISTY newTy, 	/* (line type (LtyNul, LtyBody, LtyIf0, LtyPpc), starting after last \n before buf[ech]
-   			   PRECEDING type applies to any preceding unlisted lines) */
-	SI flush )   	// nz to clear buffer: use when starting or ending include, so all lisBuf lines are same file
+	int echTo, 		// _is->buf subscript up to which to echo input
+	LISTY newTy, 	// (line type (LtyNul, LtyBody, LtyIf0, LtyPpc), starting after last \n before buf[ech]
+   					//   PRECEDING type applies to any preceding unlisted lines)
+	int flush )   	// nz to clear buffer: use when starting or ending include, so all lisBuf lines are same file
 
 {
 	/* called during preprocessing, in particular whenever there is a change of line type
 	   or a change of input file (flush buffer since line #'s change) */
 
 	char *tyChangeAt, *stopAt, *p, *tytx;
-	USI n;
+	int n;
 
 	// call to this fcn not expected with no input file open
 
@@ -1950,10 +1950,10 @@ LOCAL void FC NEAR lisToChar( 		// list input to given character position
 			// body of line -- or as much as precedes stopping point
 
 			n = strLineLen(p);				// line length, including \n (or to \0), strpak.cpp
-			if (p + n >= stopAt)				// if more than caller said to echo now
-				n = (USI)(stopAt - p);  			// reduce #
-			lisBufAppend( p, n);				// put these chars in listing
-			p += n;   					// point past
+			if (p + n >= stopAt)			// if more than caller said to echo now
+				n = stopAt - p;  			// reduce #
+			lisBufAppend( p, n);			// put these chars in listing
+			p += n;   						// point past
 			_is->ech += n;    				// keep track of next character to echo
 			if (*(p-1)=='\n')				// if \n is last char listed
 			{
@@ -1972,13 +1972,10 @@ LOCAL void FC NEAR lisToChar( 		// list input to given character position
 void FC lisMsg( 				// append message to end of listing
 
 	char *p,		// text. not expected to end in newline.
-	SI dashB4, 		// non-0 if ----------- line desired above text.  Newline always supplied if needed b4 text.
-	SI dashAf )		// ditto below.    Newline always supplied after text.
+	int dashB4, 		// non-0 if ----------- line desired above text.  Newline always supplied if needed b4 text.
+	int dashAf )		// ditto below.    Newline always supplied after text.
 
 {
-	// may be called by pptok:ppErv, 11-91.
-	USI n;
-
 	if (inDepth==0)  				// nop if no file open (eg command line error)
 		return;
 
@@ -1999,14 +1996,14 @@ void FC lisMsg( 				// append message to end of listing
 	if (lisLs==midLine)
 		lisBufAppend( "\n", 1);
 	if (dashB4  &&  lisLs != dashed)
-		lisBufAppend("-----------------------\n", 0xffff);	// 8 + 15 = 23 -'s
+		lisBufAppend("-----------------------\n");	// 8 + 15 = 23 -'s
 
 // message, with ???'s at start lines.  CAUTION: if ? in col 1 changed, check lisFind, lisInsertMsg
 
 	while (*p)
 	{
-		lisBufAppend( "???     ", 8);		// prefix each line.  Use 8 cols so tabs in message work right.
-		n = strLineLen(p);			// line length, including \n (or to \0), strpak.cpp
+		lisBufAppend( "???     ", 8);	// prefix each line.  Use 8 cols so tabs in message work right.
+		int n = strLineLen(p);			// line length, including \n (or to \0), strpak.cpp
 		lisBufAppend( p, n);
 		p += n;
 	}
@@ -2017,23 +2014,23 @@ void FC lisMsg( 				// append message to end of listing
 	lisLs = begLine;
 	if (dashAf)
 	{
-		lisBufAppend("-----------------------\n", 0xffff);
+		lisBufAppend("-----------------------\n");
 		lisLs = dashed;
 	}
 }			// lisMsg
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR lisBufAppend( 	// append given bytes to input listing buffer
 	char *p,
-	USI n )		// # bytes to append, or 0xffff to append to \0
+	int n /*=-1*/)		// # bytes to append, or <0 to append to \0
 {
-	if (n==0xffff)
+	if (n < 0)
 		n = strlen(p);
 
 	if (lisBuf)						// if buffer allocated (autoallocates in lisToChar)
 	{
 		while (n)					// until all bytes output
 		{
-			USI m = min( USI(LISBUFSZ - lisBufN), n);
+			int m = min( LISBUFSZ - lisBufN, n);
 			if (m)
 				memcpy( lisBuf + lisBufN, p, m);		// transfer all or what fits
 			lisBufN += m;
@@ -2046,7 +2043,7 @@ LOCAL void FC NEAR lisBufAppend( 	// append given bytes to input listing buffer
 	}
 }				// lisBufAppend
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisBufOut( USI n)		// output bytes from list buffer. n = large number for all.
+LOCAL void FC NEAR lisBufOut( int n)		// output bytes from list buffer. n = large number for all.
 
 {
 	// assume if lisBuf not allocated, lisBufN is 0.
@@ -2063,7 +2060,7 @@ LOCAL void FC NEAR lisBufOut( USI n)		// output bytes from list buffer. n = larg
 	lisBufN -= n;
 }			// lisBufOut
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisWrite( char *p, USI n)		// write to listing (echo) output if any
+LOCAL void FC NEAR lisWrite( char *p, int n)		// write to listing (echo) output if any
 {
 	char saveC;
 
@@ -2105,18 +2102,18 @@ LOCAL void FC NEAR lisWrite( char *p, USI n)		// write to listing (echo) output 
 //   b) cutok can run several hundred bytes behind preprocessor; matching line might be gone from buffer
 //      after many error messages, flush due to #include, etc.
 //-----------------------------------------------------------------------------------------------------------
-SI FC lisFind( 					// find matching file listing line
+int FC lisFind( 					// find matching file listing line
 
-	USI fileIx,				// input file name index
-	SI line, 				// line number
-	const char* p, 				// text to find, may be multiple lines, null-terminated
-	USI *pPlace )			/* receives subscript in listing buffer of 1st char of LINE AFTER
-    					   matching line and any already-inserted message lines following it */
-// returns FALSE if not found
+	int fileIx,				// input file name index
+	int line, 				// line number
+	const char* p, 			// text to find, may be multiple lines, null-terminated
+	int* pPlace )			// receives subscript in listing buffer of 1st char of LINE AFTER
+    						// matching line and any already-inserted message lines following it
+// returns 0 if not found
 {
 
-	USI place, place2;
-	SI tLine;
+	int place, place2;
+	int tLine;
 
 	if ( inDepth <= 0  ||  !isf		// if no file open (insurnace)
 			|| fileIx				// if 0 file index (check probably not needed)
@@ -2137,12 +2134,12 @@ SI FC lisFind( 					// find matching file listing line
 
 	for ( ; ; )
 	{
-		SI nl;
 		if (place2==0)					// if line end is beginning of buffer
 			return 0;					// done search, not found, return bad
 
 		while (place > 0  &&  lisBuf[place-1] != '\n')	// find line start: position after preceding newline
 			place--;
+		int nl;
 		if (!lisCmp( p, place, pPlace, &nl))
 		{
 			if ( tLine + nl - 1 == line			// if last line compared is requested line number
@@ -2164,22 +2161,20 @@ SI FC lisFind( 					// find matching file listing line
 	/*NOTREACHED */
 }			// lisFind
 //-----------------------------------------------------------------------------------------------------------
-LOCAL SI FC NEAR lisCmp( 		// multi-line compare text to listing text
+LOCAL int FC NEAR lisCmp( 		// multi-line compare text to listing text
 
 	const char* s,	// text to compare to listing
-	USI i,			// subscript of place in listing buffer, with 8-col prefixes and ---- and ? lines to skip over
-	USI *pPlace,	// if matches, receives subscr of place in listing buffer AFTER matched lines and any ? and ---- lines
-	SI *pnl )		// if matches, receives number of lines compared
+	int i,			// subscript of place in listing buffer, with 8-col prefixes and ---- and ? lines to skip over
+	int* pPlace,	// if matches, receives subscr of place in listing buffer AFTER matched lines and any ? and ---- lines
+	int* pnl )		// if matches, receives number of lines compared
 
 // returns 0 if matches
 {
 	char *lis = lisBuf + i;		// pointer to text in listing buffer
-	SI nl = 0;				// number of lines compared
+	int nl = 0;				// number of lines compared
 
 	for ( ; ; )
 	{
-		USI lls;
-
 		// find next listing line to test (or ptr to return): advance over '?' lines, ---- lines, and #line lines.
 		for ( ;  strlen(lis) > 8  &&  !isFileLisLine(lis);  lis += strLineLen(lis) )
 			;
@@ -2189,14 +2184,14 @@ LOCAL SI FC NEAR lisCmp( 		// multi-line compare text to listing text
 			s += strLineLen(s);			// pass #line command (> 1 unexpected).
 		if (!*s)   				// if no more string to test, done
 		{
-			*pPlace = (USI)(lis - lisBuf);  	// return subscript of place in listing buffer
+			*pPlace = lis - lisBuf;	// return subscript of place in listing buffer
 			*pnl = nl;				// return number of lines compared
 			return 0;				// say matches
 		}
 
 		// compare this line
 		lis += 8;				// point after prefix part of listing line
-		lls = strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
+		int lls = strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
 		if (strcspn( lis, "\r\f\n" ) != lls)
 			return 1;				// different line lengths, no match
 		if (lls)
@@ -2210,7 +2205,7 @@ LOCAL SI FC NEAR lisCmp( 		// multi-line compare text to listing text
 	}
 }		// lisCmp
 //-----------------------------------------------------------------------------------------------------------
-LOCAL SI FC NEAR isFileLisLine( char *p)	// 0 if listing line is error message, ----- separator, or #line
+LOCAL int FC NEAR isFileLisLine( char *p)	// 0 if listing line is error message, ----- separator, or #line
 {
 	return ( *p != '?'  				// is file line if not error message,
 			 &&  memcmp( p, "----", 4)			// not separator,
@@ -2219,20 +2214,20 @@ LOCAL SI FC NEAR isFileLisLine( char *p)	// 0 if listing line is error message, 
 //-----------------------------------------------------------------------------------------------------------
 void FC lisInsertMsg( 				// insert error message in listing buffer
 
-	USI place, 		// subscript of position. assumed to be after a \n.
+	int place, 		// subscript of position. assumed to be after a \n.
 	char *p,    	// text to insert.  assumed NOT to end with \n.
-	SI dashB4, 		// non-0 if ----------- line desired above text.  Newline always supplied if needed b4 text.
-	SI dashAf )		// ditto below.    Newline always supplied after text.
+	int dashB4, 		// non-0 if ----------- line desired above text.  Newline always supplied if needed b4 text.
+	int dashAf )		// ditto below.    Newline always supplied after text.
 
 {
 	// for ppErv, cutok.cpp:cuErv to use after finding place with lisFind and reformatting message
 
-	USI n  /*=strlen(p)*/;				// (redundant init removed 12-94 when BCC 32 4.5 warned)
+	int n  /*=strlen(p)*/;				// (redundant init removed 12-94 when BCC 32 4.5 warned)
 
 // optional dashes before message.  CAUTION: if use of -----'s changed, check lisFind.
 
 	if (dashB4  &&  lisLs != dashed)
-		lisBufInsert( &place, "-----------------------\n", 0xffff);	// 8 + 15 = 23 -'s
+		lisBufInsert( &place, "-----------------------\n");	// 8 + 15 = 23 -'s
 
 // message, with ???'s at start lines.  CAUTION: if ? in col 1 changed, check lisFind, lisMsg.
 
@@ -2248,25 +2243,25 @@ void FC lisInsertMsg( 				// insert error message in listing buffer
 
 	lisBufInsert( &place, "\n", 1);
 	if (dashAf)
-		lisBufInsert( &place, "-----------------------\n", 0xffff);
+		lisBufInsert( &place, "-----------------------\n");
 }				// lisInsertMsg
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
 
-	USI *pPlace, 		// subscript of place to insert, returned updated to end of inserted text
+	int* pPlace, 		// subscript of place to insert, returned updated to end of inserted text
 	char *p, 			// text
-	USI n )			// length, 0xffff to use strlen.
+	int n/*=-1*/)		// length, default = use strlen
 
 {
-	USI place = *pPlace;
-	if (n==0xffff)
+	int place = *pPlace;
+	if (n < 0)
 		n = strlen(p);
 
 	while (n)				// may need repeated insertions for long message
 	{
 		if (LISBUFSZ - lisBufN < n)		// write front of buffer if not enuf empty space for (remaining) message
 		{
-			USI m = min(place, (USI)LISBUFWRITE);	/* # bytes to write when write needed: up to LISBUFWRITE even if > n, cuz:
+			int m = min(place, LISBUFWRITE);	/* # bytes to write when write needed: up to LISBUFWRITE even if > n, cuz:
 						     a) each write moves buf (slow) (expect multiple calls from lisInsertMsg);
 						     b) if we write all text b4 'place', can write msg directly to listing. */
 			lisBufOut(m);				// output m bytes from front of buffer; checks for m==0.
@@ -2280,7 +2275,7 @@ LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
 		}
 		else					// move up tail of buffer and copy text into vacated space
 		{
-			USI hole = min( n, USI(LISBUFSZ - lisBufN));		// smaller of req'd space, space avail at end buffer
+			int hole = min( n, LISBUFSZ - lisBufN);		// smaller of req'd space, space avail at end buffer
 			if (hole)									// insurance
 			{
 				memmove( lisBuf + place + hole, lisBuf + place, lisBufN - place + 1);	// +1 to move \0 too
@@ -2778,7 +2773,7 @@ LOCAL RC FC NEAR ppErv(
 					glt++;			// count (say got) leading text
 			}
 			// length of file line: to first newline
-			USI n = strcspn( p, "\f\r\n");	// #chars to 1st \n (else all)
+			USI n = (USI)strcspn( p, "\f\r\n");	// #chars to 1st \n (else all)
 			char *q = p;  			// re (last) line, for figuring col
 			// and incl up to 2 preceding lines if nec for nonblank text b4 posn
 			// this logic also in cutok.cpp:cufCline().
@@ -2858,7 +2853,7 @@ x              	          (INT)isf->line, isf->name );
 				&&  col < sizeof(caret)-6	// if ^ position fits buffer
 				&&  *tex )  		// skip if not showing input line
 	{
-		USI lWhere = strlen(where);
+		USI lWhere = (USI)strlen(where);
 		if (shoFnLn && col >= lWhere + 3)		/* if col is right of end of "where" line,
 			           append ^ thereto: save line & avoid ugly gap. */
 		{
@@ -2868,7 +2863,7 @@ x              	          (INT)isf->line, isf->name );
 			{
 				strcat( where, cmsg);				// move caller's message into "where" to be before ^
 				cmsg[0] = 0;					// ..
-				lWhere = strlen(where);				// ..
+				lWhere = (USI)strlen(where);				// ..
 			}
 			memset( where + lWhere, ' ', col - lWhere);		// space over
 			strcpy( where + col, "^");				// append ^
@@ -2914,7 +2909,7 @@ x              	          (INT)isf->line, isf->name );
 
 	if (isf)						// insurance
 	{
-		USI place;
+		int place;
 		if ( shoTx & 1						// if file line shown
 				&&  *tex						// and nonNull file line found
 				&&  lisFind( isf->fileIx, isf->line, tex, &place) )	// and matching place found in listing spool buffer (pp.cpp)
@@ -3027,7 +3022,7 @@ LOCAL RC FC NEAR ppcDoI( SI ppCase)		// decode/execute preprocessor command inne
 		{
 			if (iff->elSeen)
 				return ppErr( (char *)MH_P0033,  	// "More than one #else for same #if (#if is at line %d of file %s)"
-				(INT)iff->line, getFileName(iff->fileIx) );
+					iff->line, getFileName(iff->fileIx) );
 			iff->elSeen = 1;				// say 'else' seen for this 'if'
 			value = (iff->thisOn | iff->hasBeenOn) == 0;	// goes on if off & has not been on
 elifJoins: ;			// set compile on or off per 'value'
@@ -3109,7 +3104,7 @@ ifsJoin:
 		}
 		if (iff->elSeen)
 			return ppErr( (char *)MH_P0037,		// "#elif after #else (for #if at line %d of file %s )"
-			(INT)iff->line, getFileName(iff->fileIx) );
+					iff->line, getFileName(iff->fileIx) );
 		if ( ifOn				// if compile on, it goes off
 		|| iff->hasBeenOn   		// if has been on, stays off
 		|| (iff-1)->allOn==0)		// if outer if is off, does not matter
@@ -3452,7 +3447,7 @@ void FC msgOpenIfs()	// issue diagnostic messages for any unclosed #if's
 {
 	for (SI i = ifDepth; --i >= 1; )
 		ppErn( (char *)MH_P0044,  		// "'#endif' corresponding to #if at line %d of file %s not found"
-		(INT)ifStk[i].line, getFileName(ifStk[i].fileIx) );
+				ifStk[i].line, getFileName(ifStk[i].fileIx) );
 }	// msgOpenIfs
 
 #if 0	// development aid

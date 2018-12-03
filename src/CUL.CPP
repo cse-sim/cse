@@ -109,8 +109,8 @@ struct DREF
 	BP toB;		// ptr to base of basAnc record being referenced
 	const char* toName;  	// name of basAnc record (entry) being referenced
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
-	USI fileIx;		// for err msgs: input file name index of referencing stmt
-	USI line;		// .. line number ..
+	int fileIx;		// for err msgs: input file name index of referencing stmt
+	int line;		// .. line number ..
 };
 // extern USI NEAR nDref;	// number of dref entries in use		when needed
 // extern DREF * NEAR dref;	// info on deferred references, array in heap
@@ -910,7 +910,7 @@ x     exEvEvf( EVEOI, 0xffff);		// evaluate end-input exprs, all use classes. er
 // be sure input listing report is complete to here, and not farther -- in report file, it is divided by run.
 	// intentionally done before eof check below.
 	// other listing stuff: pp.cpp; pptok.cpp & cutok.cpp re error messages.
-	USI line;
+	int line;
 	curLine(				// get input line #, etc (etc not used here), cuparse.cpp.
 		0,  			//  use start current token, or previous if have untok'd
 		NULL,			//  would rcv input file index
@@ -1093,11 +1093,9 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
             other:  non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
-	record *e;
-	char *name;
-	RC rc;
 
 // parse rest of statement
+	RC rc;
 	E( vFind( RATE) )		// get RATE verb for class name from input stream, look it up, msg if not found, do implicit ENDs
 	CULT *c = xSp->c;
 	BP b = (BP)c->b;
@@ -1106,11 +1104,13 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 	//   return perNx( (char *)MH_S0218, (char *)c->id );     	// err msg "cannot DELETE '%s's", ret RCBAD
 
 	// get Identifier, Quoted txt, or constant string eXpr for name, & get terminator.
-	E( ganame( 0,		/* disallow "all" and "sum" */
-	NULL,    	/* use xSp->c->id in error messages */
-	&name ) ) 	// rcvs dm string ptr.  gets terminator. local.
+	char* name;
+	E( ganame( 0,		// disallow "all" and "sum"
+			NULL,    	// use xSp->c->id in error messages
+			&name ) ) 	// rcvs dm string ptr.  gets terminator. local.
 
 // execute: find existing record to delete
+	record *e;
 	rc = ratLuCtx( b, name, c->id, &e);   	// look up basAnc record by name, resolve ambiguity per curr context. local.
 	dmfree( DMPP( name));			// free name string in dm (heap): avoid memory leak. dmpak.cpp.
 	if (rc)
@@ -1118,9 +1118,9 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 
 // execute...: delete record
 	rc = rateDuper( NULL, e, -1, 0, -1, (CULT *)c->CULTP2 );		// local.  returns RCOK/RCBAD?/RCFATAL.
-	/* Squeezes record out of basAnc's block, changing subscripts of hier records.
-	   Adjusts ownTi's of records in other basAncs owned by the moved records;
-	   other refs are resolved at handled at RUN. */
+	// Squeezes record out of basAnc's block, changing subscripts of hier records.
+	// Adjusts ownTi's of records in other basAncs owned by the moved records;
+	// other refs are resolved at handled at RUN.
 	return rc;
 }			// culDELETE
 //===========================================================================
@@ -1136,7 +1136,7 @@ LOCAL RC FC NEAR culRATE(	// do RATE cult entry
 {
 	DMHEAPCHK( "culRATE entry")
 	record *e;
-	USI fileIx, line;
+	int fileIx, line;
 	char *name=NULL, *likeName=NULL, *typeName=NULL;
 	SI xprD=0, copy=0, lity=0;
 	RC rc;
@@ -1455,14 +1455,14 @@ LOCAL RC FC NEAR nuCult(
 			UCH *fs = xSp->fs0 + c->fn;	// point field's data status byte
 			/* like/type fs flag init not fully clear yet, but at least clear "error msg issued",
 			   and "value has been entered" under type/uselike if type said "required" */
-			USI j = 0;			// element subscript in array field
+			int j = 0;			// element subscript in array field
 			do
 			{
 				fs[j] &= ~FsERR;		// say no msg issued for field: insure full checking. 12-91.
 				if (fs[0] & FsRQD)		// only set here via type (or like).  NB FsRQD[0] applies to all ARRAY elts.
 					fs[j] &= ~FsSET;    	// only set here via like or type.  can leave FsVAL on, as not used re rqd check, right?
 			}
-			while (c->f & ARRAY  &&  ++j < (USI)c->p2);		// if array field, loop over elements
+			while (c->f & ARRAY  &&  ++j < int( c->p2));		// if array field, loop over elements
 		}
 
 		// call init fcn for NODAT entry, if any.  Uses xSp->c.
@@ -1640,8 +1640,8 @@ LOCAL RC FC NEAR clearRat( CULT *c)
 				if ( cc->ty==TYSTR						// if data is string,
 				||  cc->ty==TYFLSTR && ((VALNDT*)p)->ty==TYSTR )		//  or float-or-string now set to string,
 				{
-					USI arSz = cc->f & ARRAY ? (USI)cc->p2 : 1;			// datPt() subset... # array elements: usually 1
-					USI j;
+					int arSz = cc->f & ARRAY ? int( cc->p2) : 1;			// datPt() subset... # array elements: usually 1
+					int j;
 					for (j = 0;  j < arSz;  j++, IncP( &p, sizeof(char *)) )	// loop array elements
 						if (ISNANDLE(*(void **)p))					// if UNSET, ASING, expr handle, etc (cnglob.h)
 							*(void **)p = NULL;				// just remove value, don't crash in dmfree, 11-95
@@ -2108,9 +2108,9 @@ LOCAL RC NEAR culDAT()	// do cul DAT case per xSp
 	// so non-culRATE-created objects eg Top will have file/line of 1st mbr=.
 	if ( ((record*)xSp->e)->fileIx == 0 )
 		curLine(	0,				// get fileIx, line, etc for errmsg, cuparse.cpp.
-		&((record*)xSp->e)->fileIx,	// rcvs index of file name: see ancrec:getFileName
-		&((record*)xSp->e)->line,	// rcvs line number
-		NULL, NULL, 0 );
+			&((record*)xSp->e)->fileIx,	// rcvs index of file name: see ancrec:getFileName
+			&((record*)xSp->e)->line,	// rcvs line number
+			NULL, NULL, 0 );
 
 // point to storage (of first element if array): set xSp->p & ->sz / return code if error
 	RC rc;
@@ -2241,7 +2241,7 @@ setFsVAL:
 				NULL, NULL ) )     	// don't want type and evf: know would be TYSTR and 0.
 
 			// decode using string of form "value0/value1/value2 ..."
-			l = strlen(p);
+			l = (USI)strlen(p);
 			v = 0;				// value (count of /'s)
 			for (s = (char *)c->b; ; )
 			{
@@ -2712,7 +2712,7 @@ LOCAL RC NEAR ganame(
 		// allow high graphics characters 129-255.  Should we bother to disallow 127-128?  Embedded spaces ok.
 		// remove leading and trailing blanks from name
 		while (p[0]  &&  strchr( " \t", p[0]))  strcpy( p, p+1);			// copy back over leading spaces and tabs
-		USI len = strlen(p);
+		USI len = (USI)strlen(p);
 		while (len > 0  &&  strchr( " \t", p[len-1]) )   p[--len] = '\0';	// truncate trailing spaces and tabs
 		// in names, disallow control characters 1-31: escape, form feed, newline, etc
 		for (SI i = 0;  i < len;  i++)
@@ -4041,7 +4041,7 @@ LOCAL RC NEAR ratLuDefO(	// look up basAnc record by name, resolving ambiguities
 			   May be obtained with ratDefO (below). */
 	char *what, 	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
 	record **pE,	// NULL or receives ptr to record if found
-	const char** pMsg)	// NULL or recieves ptr to unissued Tmpstr error msg
+	const char** pMsg)	// NULL or receives ptr to unissued Tmpstr error msg
 
 /* If more than one record with name is present, if defO non-0, returns one with owner defO if any.
    If defO is 0 or no records with that owner are found, returns bad if there are multiple records for name. */

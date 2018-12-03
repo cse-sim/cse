@@ -192,7 +192,7 @@ char* strncpy0(			// copy/truncate with 0 fill
 					// if 0, d is not altered
 {
 	if (!d)
-		d = strtemp( l-1);		// allocate l bytes in Tmpstr
+		d = strtemp( (SI)l-1);		// allocate l bytes in Tmpstr
 	if (l > 0)
 	{	for (size_t i=0,j=0; i<l-1; i++)
 		{	d[ i] = s[ j];		// copy char or 0 fill
@@ -212,7 +212,7 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 // Returns s1 (pointer to destination string)
 {
 	if (s1 == NULL)
-		s1 = strtemp( s2len < 999999 ? s2len : strlen( s2) );	// alloc n+1 Tmpstr[] bytes. local.
+		s1 = strtemp( s2len < 999999 ? (SI)s2len : (SI)strlen( s2) );	// alloc n+1 Tmpstr[] bytes. local.
 
 	char *p, *pend, c;
 	p = pend = s1;
@@ -301,8 +301,8 @@ char * FC strpad( 		// Pad a string to length n in place
 	register SI i, j;
 	SI lp;
 
-	i = strlen(s);
-	lp = strlen(pads);
+	i = (SI)strlen(s);
+	lp = (SI)strlen(pads);
 	j = -1;
 	while (i < n)
 		*(s + i++) = *(pads + (j = ++j < lp ? j : 0) );
@@ -367,7 +367,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 		bAddExt = IsBlank( curExt);
 	}
 
-	char* nu = strTrim( NULL, name);	// trim to TmpStr
+	char* nu = strtcat(name, NULL);
 	if (bAddExt)
 		nu = strtcat( nu, strTrim( NULL, ext), NULL);
 	return nu;
@@ -442,7 +442,7 @@ char * FC strtBsDouble( char *s)	// double any \'s in string, for displaying fil
 
 // copy to Tmpstr, doubling \'s
 
-	p = t = strtemp( strlen(s) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
+	p = t = strtemp( (SI)strlen(s) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
 	while ((c = *s++) != 0)
 	{
 		if (c=='\\')			// before each '\'
@@ -633,7 +633,7 @@ char * CDEC strtcat( const char *s, ... )	// concatenate variable number of stri
 	va_start(arg, s);			// set up to get subsequent args
 	while (padd)			// NULL arg terminates
 	{
-		len += strlen(padd);
+		len += (SI)strlen(padd);
 		padd = va_arg( arg, char *);
 	}
 
@@ -670,7 +670,7 @@ char * CDEC strntcat( SI n, ... )	// concatenate variable number of strings up t
 	while ((padd = va_arg( arg, char *)) != NULL)
 	{
 		strncat( p, padd, n);
-		if ((n -= strlen(padd)) <= 0)
+		if ((n -= (SI)strlen(padd)) <= 0)
 			break;
 	}
 	return p;

@@ -66,7 +66,7 @@ RC CDEC perNx( const char* msg, ...);
 RC CDEC pWarnNx( const char* msg, ...);
 RC FC   perNxV( int isWarn, const char* msg, va_list ap);
 
-void FC curLine( SI retokPar, USI *pFileIx, USI *pline, USI *pcol, char *s, USI sSize);
+void FC curLine( int retokPar, int* pFileIx, int* pline, int* pcol, char *s, size_t sSize);
 
 // cuprobe.cpp
 void FC showProbeNames(int showAll);

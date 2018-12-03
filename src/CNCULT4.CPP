@@ -216,7 +216,7 @@ RC topXf()   	// check EXPORTFILEs 11-91
 	return RCOK;
 }			// topXf
 //===========================================================================
-RC topCol( SI isExport)
+RC topCol( int isExport)
 
 // check REPORTCOLs or EXPORTCOLs / build run rat RcolB or XcolB / links columns for each report/export
 
@@ -266,6 +266,8 @@ RC topCol( SI isExport)
 	{
 		// copy data from input rat to run rat, same subscript (needed in this case?)
 		colB->add( &colp, ABT, colip->ss);		// add run COL record, ret ptr to it.  err unexpected cuz al'd.
+		if (colip->ss == 49)
+			printf("\nHit");
 		*colp = *colip;					/* copy entire entry incl name, and incr ref count of heap pointers
        							   (.colHead; colVal.val if constant (unlikely!)) */
 
@@ -1256,8 +1258,23 @@ COL::~COL()
 	cupIncRef( DMPP( colHead));
 	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
+#if defined( _DEBUG)
+	Validate();
+#endif
 	return *this;
 }			// COL::CopyFrom
+//-----------------------------------------------------------------------------
+/*virtual*/ RC COL::Validate(
+	int options/*=0*/)		// options bits
+{
+	RC rc = record::Validate(options);
+	if (rc == RCOK)
+	{
+		if (colHead && !dmIsGoodPtr(colHead, "COL::Validate", WRN))
+			rc = RCBAD;	
+	}
+	return rc;
+}		// IZXRAT::Validate
 //---------------------------------------------------------------------------------------
 DVRI::~DVRI()
 {
@@ -1613,7 +1630,7 @@ Import() function compiling: cuparse.cpp does syntax, calling code here to
 handle IFFNM records, cuparse.cpp emits pseudo-code.
 */
 
-LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, USI line, IVLCH *imFreq, IFFNM **ppIffnm);
+LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, int fileIx, int line, IVLCH *imFreq, IFFNM **ppIffnm);
 
 //--------------------------------------------------------------------------
 // Following 2 fcns make IFFNM record if new name, return its subscript.
@@ -1701,8 +1718,8 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 
 	char *impfName, 		// import file object name (1st arg in Import() fcn)
 	TI *pIffnmi,  		// receives IffnmB subscript of IFFNM record
-	USI fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
-	USI line,			// line number in srcFile ...  so errors can show location of (first) use.
+	int fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
+	int line,			// line number in srcFile ...  so errors can show location of (first) use.
 	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
 	IFFNM **ppIffnm )		// receives pointer to record
 

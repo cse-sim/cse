@@ -1901,6 +1901,7 @@ CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      
 CULT( "whParElec",   DAT,   DHWHEATER_PARELEC, 0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whElecMtr",   DAT,   DHWHEATER_ELECMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "whFuelMtr",   DAT,   DHWHEATER_FUELMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N,   N),
+CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0,      0,	    N,   N),
 CULT( "endDHWHEATER",ENDER, 0,                 0,     0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwHeaterT

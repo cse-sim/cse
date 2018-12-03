@@ -1388,12 +1388,12 @@ x #endif
 
 						   // default the dx polynomials.  Values are DOE2 "PTAC" values as shown in Niles' Program Spec Document.
 
-						   DFLBIQUAD( PYDXCAPTT, 1.1839345,  -.0081087,   .00021104, -.0061425,   .00000161, -.0000030  );
+						   DFLBIQUAD( PYDXCAPTT, 1.1839345f,  -.0081087f,   .00021104f, -.0061425f,   .00000161f, -.0000030f  );
 						   //DFLBIQUAD( PYDXCAPST, 6.3112709,  -.1129951,   .00043336,  .00377381, -.0000499,   .00006375 ); 	deleted 5-29-92
-						   DFLCUBIC(  PYDXCAPTF,  .8,         .2,        0.,         0.          );
+						   DFLCUBIC(  PYDXCAPTF,  .8f,         .2f,        0.f,         0.f          );
 						   //DFLCUBIC(  PYDXCAPSF,  .6,         .4,        0.,         0.          );           		deleted 5-29-92
-						   DFLBIQUAD( PYDXEIRT,  -.6550461,   .03889096, -.0001925,   .00130464,  .00013517, -.0002247  );
-						   DFLCUBIC(  PYDXEIRUL,  .125,       .875,      0.,         0.          );
+						   DFLBIQUAD( PYDXEIRT,  -.6550461f,   .03889096f, -.0001925f,   .00130464f,  .00013517f, -.0002247f  );
+						   DFLCUBIC(  PYDXEIRUL,  .125f,       .875f,      0.f,         0.f          );
 
 						   // maybe later optimize DX polynomials -- to code
 
@@ -1636,7 +1636,7 @@ x			   chTx( r->b, heatCoilFn+HEATCOIL_COILTY, ty),
 						 }
 
 			 // default and check polynomial for adjusting energy input for less than full load
-			 DFLCUBIC( PYEI, .01861, 1.094209, -.112819, 0. );	// store default coefficients if user gave none. DOE2 values.
+			 DFLCUBIC( PYEI, .01861f, 1.094209f, -.112819f, 0.f );	// store default coefficients if user gave none. DOE2 values.
 				 rc |= pyEi.normalize( r, heatCoilFn + HEATCOIL_PYEI, "relative load", 1.0);	// fix and/or msg if py(1.0) != 1.0
 
 	}

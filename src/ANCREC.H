@@ -144,8 +144,8 @@ class record		// base class for records
     SI gud;				// 0: free; > 0: good record; [<0, skip/retain]. bits 0x7ffe avail to appl.
 // overhead members for appl user language (ul).  CAUTION check record::CopyFrom if these members changed.
     TI ty, li;				// 0 or user language TYPE and LIKE subscripts
-    USI fileIx;   			// 0 or source file name index: see ancrecs:getFileName and getFileIx. 2-94.
-    USI line;				// 0 or 1-based file line # of object definition (for err msgs)
+    int fileIx;   			// 0 or source file name index: see ancrecs:getFileName and getFileIx. 2-94.
+    int line;				// 0 or 1-based file line # of object definition (for err msgs)
 // base class user members
     // rcdef.exe generates table entries and defines for the following as for derived class members;
     // they are here for uniformity & access via base class ptrs.  CHANGE from old ratpak 2-92: all records have name, ownTi:
@@ -197,7 +197,7 @@ class record		// base class for records
 	{ return (fStat( fn)&FsAS) != 0; }
     // override following for records with specific copying req'ts eg heap pointers to dup (dupPtrs does nothing here in base).
     // CAUTION dest's (this) must be init.
-    virtual record& CopyFrom( record* src, int copyName=1, int dupPtrs=0);	// copy user/ul data from another record or data
+    virtual record& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);	// copy user/ul data from another record or data
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
@@ -435,8 +435,8 @@ void FC cleanBasAncs( CLEANCASE cs); 	// destroy/free all basAnc records, and de
 
 // functions for saving file names for record.fileIx 2-94
 void clearFileIxs();
-USI getFileIx( const char* name, SI len=-1, char * * pFName4Ix=NULL);
-const char* getFileName( USI fileIx);
+int getFileIx( const char* name, int len=-1, char * * pFName4Ix=NULL);
+const char* getFileName( int fileIx);
 //=============================================================================
 
 

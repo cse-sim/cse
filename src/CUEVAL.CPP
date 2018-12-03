@@ -270,8 +270,8 @@ LOCAL RC FC NEAR cuEvalI(
 			record *e;
 #ifdef IMPORT
 			float fv;
-			USI fileIx;
-			SI line;
+			int fileIx;
+			int line;
 #endif
 
 			//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
