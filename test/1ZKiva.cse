@@ -216,7 +216,7 @@ ZONE Z1
 
     SURFACE Floor
         sfType=Floor
-        sfModel=SURFMODEL
+        sfModel=KIVA
         sfArea=516.68
         sfCon=FLOORCON
         sfExCnd=GROUND
