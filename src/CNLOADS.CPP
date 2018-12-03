@@ -2805,7 +2805,7 @@ x	rs_asOut = asSav;
 #endif
 
 							//          wet             dry
-	static const float ASEER[ 2] = {	0.f,	        0.0046103     };
+	static const float ASEER[ 2] = {	0.f,	        0.0046103f     };
 	static const float BSEER[ 2] = {   -0.0202256f,	    0.f			  };
 	static const float CSEER[ 2] = {	0.0236703f,	    0.0125598f	  };
 	static const float DSEER[ 2] = {   -0.0006638f,    -0.000512f	  };

@@ -90,13 +90,14 @@ static DMP dmralloc(	// Reallocate heap space using realloc()
     return pNu;
 }		// dmralloc
 //-----------------------------------------------------------------------------
-static BOO isGoodPtr(  	// return FALSE if p clearly not a malloc'd heap pointer
+int dmIsGoodPtr(  	// indentify bad heap pointer
    DMP p,			// app pointer
    const char* s,	// function name to insert in error messages
    int erOp ) 		// IGN/REG/WRN/ABT/PERR/PWRN/PABT (cnglob.h)
+// returns 0 iff p is definitely not a valid heap pointer
 {
     if (!p)
-       return FALSE;						// NULL pointers are nops, no error message
+       return 0;						// NULL pointers are nops, no error message
 #if 0	// debugging trap, 7-10
 x	RC rc = 0;
 x	if (p == Top.tp_wfName || p == Topi.tp_wfName)
@@ -108,21 +109,20 @@ x		rc = RCOK;
 
     if (!strCheckPtr( p))
     {	errCrit( erOp, "dmpak.cpp:%s: pointer %p points into temporary string storage Tmpstr[]", s, p);
-		return FALSE;
+		return 0;
     }
 #if defined( _DEBUG)
 #if 1
 	if (!_CrtIsMemoryBlock( dmMallocP( p), dmSize( p), NULL, NULL, NULL))
-
 #else
 	if (!_CrtIsValidHeapPointer( dmMallocP( p)))
 #endif
     {	errCrit( erOp, "dmpak.cpp:%s: _CrtIsMemoryBlock( %p) returned 0", s, p);
-		return FALSE;
+		return 0;
     }
 #endif
-    return TRUE;
-}			// isGoodPtr
+    return 1;
+}			// dmIsGoodPtr
 //------------------------------------------------------------------------------------------------
 RC dmCheckMemory(
 	const char* doing /*=NULL*/)
@@ -177,7 +177,7 @@ RC dmfree( DMP* pp)		// free dynamic memory via reference, NULL caller's pointer
 // nop if p already NULL; NULLs p.
 {
     RC rc=RCOK;
-    if (isGoodPtr( *pp, "dmfree", PERR))	// no free if NULL or obviously bad
+    if (dmIsGoodPtr( *pp, "dmfree", PERR))	// no free if NULL or obviously bad
 	{	dmRefCount( *pp)--;
 		if (dmRefCount( *pp) <= 0)
 		{	if (dmRefCount( *pp) < 0)
@@ -197,7 +197,7 @@ RC dmIncRef( DMP* pp, int erOp/*=ABT*/)	// duplicate block or ++ref count (as im
 	// note: to decrement reference count, use dmfree.
 {
 
-    if (isGoodPtr( *pp, "dmIncRef", erOp))
+    if (dmIsGoodPtr( *pp, "dmIncRef", erOp))
 		dmRefCount( *pp)++;
     return RCOK;
 }			// dmIncRef

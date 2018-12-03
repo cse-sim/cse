@@ -674,7 +674,7 @@ LOCAL USI NEAR pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
 	s = *ps;
 	nMax = *pnMax;	// fetch args
 	s0 = s;			// string start
-	l = strlen(s);		// string length
+	l = (USI)strlen(s);		// string length
 	if (nMax > l)		// give large nMax to use entire strlen
 		nMax = l;		// limit nMax to string length
 
@@ -719,7 +719,7 @@ LOCAL USI FC NEAR pgcStrWid( char *s, USI nMax, SI bsF)
 	USI l, n, wid;
 
 	s0 = s;			// save start of string
-	l = strlen(s);		// string length
+	l = (USI)strlen(s);		// string length
 	if (nMax > l)		// give large nMax to use entire strlen
 		nMax = l;		// limit nMax to string length
 	wid = nMax;			// width is length if no \ codes

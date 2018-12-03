@@ -553,6 +553,10 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 				warn( "Derived weather values (e.g. tGrnd and tMains) are missing when autosizing\n"
 					"   conditions are specified via 'coolDsMo' (as opposed to 'coolDsDay').");
 		}
+
+		if (!IsSet(TOPRAT_DEEPGRNDT)) {
+			Top.tp_deepGrndT = Wfile.taDbAvgYr;
+		}
 	}
 
 	// close
@@ -1302,15 +1306,15 @@ LOCAL RC topFnd()		// foundations
 
 		Kiva::Foundation* kFnd = fnd->fd_kivaFnd;
 		kFnd->soil = kivaMat(Top.tp_soilCond, Top.tp_soilDens, Top.tp_soilSpHt);
-		kFnd->soilAbsorptivity = 1 - Top.grndRefl;
-		kFnd->soilEmissivity = Top.tp_grndEmit;
-		kFnd->surfaceRoughness = LIPtoSI(Top.tp_grndRf);
+		kFnd->grade.absorptivity = 1 - Top.grndRefl;
+		kFnd->grade.emissivity = Top.tp_grndEmit;
+		kFnd->grade.roughness = LIPtoSI(Top.tp_grndRf);
 		kFnd->farFieldWidth = LIPtoSI(Top.tp_farFieldWidth);
 		kFnd->deepGroundDepth = LIPtoSI(Top.tp_deepGrndDepth);
 		
 		kFnd->deepGroundBoundary = Top.tp_deepGrndCnd == C_DGCH_ZEROFLUX ?
 			Kiva::Foundation::DGB_ZERO_FLUX :
-			Kiva::Foundation::DGB_CONSTANT_TEMPERATURE; // Not necessarily constant...can be re-defined at any point during simulation
+			Kiva::Foundation::DGB_FIXED_TEMPERATURE;
 
 		kFnd->wall.heightAboveGrade = LIPtoSI(fnd->fd_wlHtAbvGrd);
 		kFnd->wall.depthBelowSlab = LIPtoSI(fnd->fd_wlDpBlwSlb);

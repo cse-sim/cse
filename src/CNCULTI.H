@@ -61,7 +61,7 @@ RC   FC topPrfRep();		// make default reportfile, exportfile, and report rat ent
 RC   FC topRep();		// check rep___ members, set up header & footer 11-91
 RC   FC topRf();		// check REPORTFILEs 11-91
 RC   FC topXf();		// check EXPORTFILEs
-RC   FC topCol( SI isExport);
+RC   FC topCol( int isExport);
 RC   FC topRxp();		// check REPORTS and EXPORTS / build dvri info
 RC   FC buildUnspoolInfo();	// build unspooling specifications
 RC   FC clearImpf();		// Import stuff special clear function

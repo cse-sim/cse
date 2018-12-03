@@ -20,14 +20,14 @@ RC KIVA::kv_Create()
 	// create output map for ground instance. Calculate average temperature, flux, and convection for each surface
 	Kiva::GroundOutput::OutputMap outputMap;
 
-	outputMap[Kiva::Surface::ST_SLAB_CORE] = { Kiva::GroundOutput::OT_TEMP };
+	outputMap.push_back(Kiva::Surface::ST_SLAB_CORE);
 
 	if (kv_fnd->hasPerimeterSurface) {
-		outputMap[Kiva::Surface::ST_SLAB_PERIM] = { Kiva::GroundOutput::OT_TEMP };
+		outputMap.push_back(Kiva::Surface::ST_SLAB_PERIM);
 	}
 
 	if (kv_fnd->foundationDepth > 0.0) {
-		outputMap[Kiva::Surface::ST_WALL_INT] = { Kiva::GroundOutput::OT_TEMP };
+		outputMap.push_back(Kiva::Surface::ST_WALL_INT);
 	}
 
 	if (!kv_ground)
@@ -94,8 +94,8 @@ RC KIVA::kv_RddInit()
 	kv_ground->foundation.numericalScheme = Kiva::Foundation::NS_ADI;
 
 	// Reset emissivity to use CSE's IR model instead
-	kv_ground->foundation.slab.emissivity = 0.0;
-	kv_ground->foundation.wall.interiorEmissivity = 0.0;
+	kv_ground->foundation.slab.interior.emissivity = 0.0;
+	kv_ground->foundation.wall.interior.emissivity = 0.0;
 
 
 	return RCOK;
@@ -112,7 +112,7 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 	Wfile.wf_Read(jDay, 23, &iW, WRN);
 
 	kv_bcs->outdoorTemp = DegFtoK(iW.wd_db);
-	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_fnd->surfaceRoughness,0,Top.tp_terrainClass);
+	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_fnd->grade.roughness,0,Top.tp_terrainClass);
 	kv_bcs->skyEmissivity = pow4(DegFtoK(iW.wd_tSky)/ DegFtoK(iW.wd_db));
 	kv_bcs->solarAzimuth = 3.14;
 	kv_bcs->solarAltitude = 0.0;
@@ -120,11 +120,12 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 	kv_bcs->diffuseHorizontalFlux = 0.0;
 	kv_bcs->slabAbsRadiation = 0.0;
 	kv_bcs->wallAbsRadiation = 0.0;
+	kv_bcs->deepGroundTemperature = DegFtoK(Top.tp_deepGrndT);
 
 	// Asssumed indoor temperature during warm-up
 	// Could use zone setpoints? how to evaluate expressions outside of main simulation?
 	kv_bcs->indoorTemp = DegFtoK(70.0);
-	kv_bcs->indoorRadiantTemp = kv_bcs->indoorTemp;
+	kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = kv_bcs->indoorTemp;
 
 	return RCOK;
 }
@@ -133,14 +134,16 @@ RC KIVA::kv_SetBCs()
 {
 	ZNR* z = kv_GetZone();
 	kv_bcs->indoorTemp = DegFtoK(z->tz);
-	kv_bcs->indoorRadiantTemp = DegFtoK(z->tr); // TODO should be Tr of all other surfaces (excluding this surface)
+	kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = DegFtoK(z->tr); // TODO should be Tr of all other surfaces (excluding this surface)
 	kv_bcs->outdoorTemp = DegFtoK(Top.tDbOSh);
-	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_fnd->surfaceRoughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?
+	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_fnd->grade.roughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?
+	kv_bcs->windDirection = RAD(Top.windDirDegHr);
 	kv_bcs->skyEmissivity = pow4(DegFtoK(Top.tSkySh) / DegFtoK(Top.tDbOSh));
 	kv_bcs->solarAzimuth = Wthr.d.wd_slAzm; // TODO Set at Top? Make subhourly?
 	kv_bcs->solarAltitude = Wthr.d.wd_slAlt; // TODO Set at Top? Make subhourly?
 	kv_bcs->directNormalFlux = IrIPtoSI(Top.radBeamShAv);
 	kv_bcs->diffuseHorizontalFlux = IrIPtoSI(Top.radDiffShAv);
+	kv_bcs->deepGroundTemperature = DegFtoK(Top.tp_deepGrndT);
 
 	auto flrSf = XsB.GetAt(kv_floor);
 	kv_bcs->slabAbsRadiation = IrIPtoSI(flrSf->x.xs_sbcI.sb_qrAbs);

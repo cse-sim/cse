@@ -1076,7 +1076,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 	rc = RCOK;
 	do
 	{
-		sec = xfread( xfs, buf, bufsize);
+		sec = xfread( xfs, buf, (USI)bufsize);
 		if (sec != SECOK && sec != SECEOF)
 		{
 			rc = MH_I0026;	// "I0026: read error during copy from file '%s':\n    %s"

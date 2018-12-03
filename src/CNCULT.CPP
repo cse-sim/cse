@@ -864,7 +864,7 @@ dflInH:
 		x.xs_modelr = C_SFMODELCH_KIVA;
 		if (x.xs_modelr != x.xs_model && x.xs_model != C_SFMODELCH_AUTO)
 		{
-			oWarn("Surface reset to Model=Kiva"); // TODO add formatted string
+			oWarn("Surface reset to sfModel=Kiva"); // TODO add formatted string
 		}
 		// TODO Warn/ERR if not C_EXCNDCH_GROUND
 	}
@@ -918,7 +918,7 @@ RC SFI::sf_CkfSURFGround(
 		ignoreN( whenGROUND, SFX( UX), 0);	// notify user
 	x.uX = 0.f;		// overwrite default (1.5)
 
-	if (!sf_IsFD( x.xs_model))
+	if (!sf_IsFD( x.xs_model) && !sf_IsKiva(x.xs_modelr))
 		rc |= oer( "sfModel=%s not supported %s -- must be sfModel=FD",
 				getChoiTx( SFX( MODEL)), whenGROUND);
 
@@ -1903,6 +1903,7 @@ CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      
 CULT( "whParElec",   DAT,   DHWHEATER_PARELEC, 0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whElecMtr",   DAT,   DHWHEATER_ELECMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "whFuelMtr",   DAT,   DHWHEATER_FUELMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N,   N),
+CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0,      0,	    N,   N),
 CULT( "endDHWHEATER",ENDER, 0,                 0,     0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwHeaterT

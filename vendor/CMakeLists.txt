@@ -3,7 +3,7 @@ if (CMAKE_VERSION VERSION_LESS 3.2)
 else()
     # UPDATE_DISCONNECTED 1: Don't look for remote updates on sub-sequent builds (e.g., git pull)
     # Change to 0 to check for updates to branch
-    set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
+    set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 0")
 endif()
 
 include(DownloadProject)
@@ -27,7 +27,7 @@ set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
 
 download_project(PROJ                Kiva
                  GIT_REPOSITORY      https://github.com/bigladder/kiva.git
-                 GIT_TAG             cse
+                 GIT_TAG             v0.5.0
                  DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/kiva-dl"
                  SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/kiva"
                  BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/kiva"
@@ -37,6 +37,7 @@ download_project(PROJ                Kiva
 set(KIVA_TESTING OFF CACHE BOOL "" FORCE)
 set(KIVA_EXE_BUILD OFF CACHE BOOL "" FORCE)
 set(KIVA_COVERAGE OFF CACHE BOOL "" FORCE)
+set(KIVA_3D OFF CACHE BOOL "" FORCE)
 
 option( KIVA_GROUND_PLOT "Build ground plotting library" OFF )
 

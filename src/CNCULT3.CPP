@@ -1732,9 +1732,10 @@ RC SFI::sf_SetupKiva()
 				}
 			}
 
-			ki->kv_fnd->wall.interiorEmissivity = x.xs_sbcI.sb_epsLW;
-			ki->kv_fnd->wall.exteriorEmissivity = x.xs_sbcO.sb_epsLW;
-			ki->kv_fnd->wall.exteriorAbsorptivity = x.xs_sbcO.sb_awAbsSlr;
+			ki->kv_fnd->wall.interior.emissivity = x.xs_sbcI.sb_epsLW;
+			ki->kv_fnd->wall.exterior.emissivity = x.xs_sbcO.sb_epsLW;
+			ki->kv_fnd->wall.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
+			ki->kv_fnd->wall.exterior.absorptivity = x.xs_sbcO.sb_awAbsSlr;
 
 			// Set slab construction in Kiva
 			if (ckRefPt(&ConiB, sfCon, "sfCon", NULL, (record **)&pCon))
@@ -1753,7 +1754,8 @@ RC SFI::sf_SetupKiva()
 					ki->kv_fnd->slab.layers.push_back(tempLayer);
 				}
 			}
-			ki->kv_fnd->slab.emissivity = x.xs_sbcI.sb_epsLW;
+			ki->kv_fnd->slab.interior.emissivity = x.xs_sbcI.sb_epsLW;
+			ki->kv_fnd->slab.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
 
 			// Set other properties
 			ki->kv_fnd->foundationDepth = LIPtoSI(height);
@@ -1858,7 +1860,7 @@ RC SFI::sf_SetupKiva()
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
 					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
-					xrWl->xr_kivaInstances.push_back(kvi);
+					xrWl->xr_kivaInstances.push_back(ki->ss);
 				}
 			}
 

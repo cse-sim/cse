@@ -230,7 +230,7 @@ void FC pnTitle(
 		if (row > 0 && col > 0)		/* if have row & col */
 		{
 			pgw( ppp, PGLJ, row, col, s);  	/* put title text in page */
-			thConCol += strlen(s) + 1;    	/* put "continued"
+			thConCol += (SI)strlen(s) + 1;    	/* put "continued"
 	       					   1 column beyond title. */
 		}
 }			/* pnTitle */
