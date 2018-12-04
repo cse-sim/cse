@@ -148,7 +148,7 @@ RC FC impfAfterWarmup()		// import files stuff done after CSE warmup and after e
 	{
 		if (!impf->isOpen)			// if file not open (eg not used -- no imports seen)
 			continue;						// don't rewind
-		LI newPos = lseek( impf->fh, impf->posEndHdr, SEEK_SET);	// seek to end header / return new position or -1 if error
+		LI newPos = _lseek( impf->fh, impf->posEndHdr, SEEK_SET);	// seek to end header / return new position or -1 if error
 		if (newPos != impf->posEndHdr)				// if got wrong position or error
 			rc |= err( WRN,					// <--- apparently missing WRN added, rob 5-97
 					   (char *)MH_R1903, 				// "Seek error (%ld) on import file %s, handle %d"

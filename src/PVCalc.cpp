@@ -49,7 +49,7 @@ PVARRAY::~PVARRAY()
 }	// PVARRAY::Copy
 //-----------------------------------------------------------------------------
 /*virtual*/ PVARRAY& PVARRAY::CopyFrom(
-	record* src,
+	const record* src,
 	int copyName/*=1*/,
 	int dupPtrs/*=0*/)
 {
