@@ -3350,8 +3350,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs
 							//   wssimHOUR otherwise
-  *r INT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
-							//   = SUM( wh_mult)
+  *r FLOAT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
+							//   = SUM( wh_mult) (possibly non-integral)
   *r INT ws_wtCount;		// ditto DHWTANKs
   *r INT ws_wpCount;		// ditto DHWPUMPs
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
@@ -3397,10 +3397,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoHour( float HARL, int wsMult);"
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
-  *declare "void wh_AccumElec( int mult, double inElec, double inElecBU);"
+  *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
 
-  *i SI wh_mult;				// count of identical water heaters (default 1)
+  *i FLOAT wh_mult;				// count of identical water heaters (default 1)
 								//   models as if repeated identical input
+								//   non-integral values allowed re sizing methods
   *i WHHEATSRCCH wh_heatSrc;	// heat source
   								//   C_WHHEATSRCCH_ELRES: electric resistance
 								//     _FUEL: fuel-fired burner
@@ -3533,7 +3534,16 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//       any wh_unMetSh
   *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
 *END
+//=============================================================================
+#if 0
+RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
+  *prefix wr_
 
+  *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *declare "RC wr_CkF();"
+  *declare "DHWSYS* wr_GetDHWSYS() const;"
+*END
+#endif
 //=============================================================================
 RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *prefix wt_

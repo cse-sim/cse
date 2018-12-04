@@ -1781,7 +1781,7 @@ static CULT dhwHeaterT[] = //------ DHWHEATER cmd RAT Entry table, used from dhw
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   whStarCkf),
 CULT( "whDHWSYS",    DAT,   DHWHEATER_OWNTI,   NO_INP|RDFLIN,0,0, TYREF, &WSiB,  0,     N,   N),
-CULT( "whMult",		 DAT,	DHWHEATER_MULT,	   0,     0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "whMult",		 DAT,	DHWHEATER_MULT,	   0,     0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whType",	     DAT,   DHWHEATER_TYPE,    0,     0, VEOI,   TYCH,  0,      C_WHTYPECH_STRGSML, N, N),
 CULT( "whHeatSrc",	 DAT,   DHWHEATER_HEATSRC, 0,     0, VEOI,   TYCH,  0,      C_WHHEATSRCCH_FUEL, N, N),
 CULT( "whZone",      DAT,   DHWHEATER_ZNTI,    0,     0, VEOI,   TYREF, &ZiB,   0,                  N, N),
