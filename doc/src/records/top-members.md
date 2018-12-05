@@ -58,7 +58,7 @@ Number of "warm-up" days used to initialize the simulator. Simulator initializat
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              *x* $\geq$ 0      7             No             constant
+              *x* $\geq$ 0       7             No             constant
 
 **nSubSteps=*int***
 
@@ -133,7 +133,7 @@ The maximum ratio of growth between neighboring cells in the direction away from
 
 <%= member_table(
   units: "",
-  legal_range: "x $\geq$ 1.0",
+  legal_range: "x $\\geq$ 1.0",
   default: "1.5",
   required: "No",
   variability: "constant") %>
@@ -451,7 +451,7 @@ Ground surface roughness. Used for convection and wind speed corrections in two-
 
 <%= member_table(
   units: "ft",
-  legal_range: "x $\geq$ 0.0",
+  legal_range: "x $\\geq$ 0.0",
   default: "0.1",
   required: "No",
   variability: "constant") %>
@@ -517,9 +517,9 @@ Multiplier for diffuse horizonal irradiance.
 
 **soilDiff=*float***
 
-<!-- TODO Remove in light of asking for individual properties in Kiva? -->
+*Note: soilDiff is used as part of the simple ground model, which is no longer supported. Use soilCond, soilSpHt, and SoilDens instead.*
 
-Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note that derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
+Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note: derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -656,20 +656,33 @@ Example TDV file --
 
 Note: additional columns can be included and are ignored.
 
-The following probes are available for accessing TDV data in expressions --
+The table below shows probes available for accessing TDV data in expressions.  Except as noted, daily values are updated based on standard time, so they may be inaccurate by small amounts when daylight savings time is in effect.
 
- Probe                         Variability         Description
- --------------                ------------        ------------------
+------------------------------------------------------------------------------------------------------------------
+ Probe                          Variability      Description
+ -----------------------------  ------------     -----------------------------------------------------------
  @Weather.tdvElec               Hour               current hour electricity TDV
- @Weather.tdvFuel               Hour               current hour fuel TDV
- @Weather.tdvElecPk             Day                current day peak electricity TDV (includes future hours)
- @Weather.tdvElecAvg            Day                 current day average electricity TDV (includes future hours)
- @Weather.tdvElecPvPk           Day                previous day peak electricity TDV
- @Weather.tdvElecAvg01          Day                previous day average electricity TDV
- @weatherFile.tdvFileTimeStamp  Constant           TDV file timestamp (line 2 of header)
- @weatherFile.tdvFileTitle      Constant           TDV file title (line 3 of header)
- @Top.tdvFName                  Constant           TDV file full path
 
+ @Weather.tdvFuel               Hour               current hour fuel TDV
+
+ @Weather.tdvElecPk             Day                current day peak electricity TDV (includes future hours).  Updated
+                                                   at hour 23 during daylight savings.
+
+ @Weather.tdvElecAvg            Day                current day average electricity TDV (includes future hours)
+
+ @Weather.tdvElecPvPk           Day                previous day peak electricity TDV
+
+ @Weather.tdvElecAvg01          Day                previous day average electricity TDV
+
+ @weather.tdvElecHrRank[]       Day                hour ranking of TDVElec values.  tdvElecHrRank[ 1] is the hour
+                                                   having the highest TDVElec, tdvElecHrRank[ 2] is the next highest, etc.  The hour values are adjusted when dayight savings time is in effect, so they remain consistent with system variable $hour.
+
+ @weatherFile.tdvFileTimeStamp  Constant           TDV file timestamp (line 2 of header)
+
+ @weatherFile.tdvFileTitle      Constant           TDV file title (line 3 of header)
+
+ @Top.tdvFName                  Constant           TDV file full path
+------------------------------------------------------------------------------------------------------------------
 
 **TDVfName=*string***
 

@@ -61,9 +61,9 @@ void FC topPr()		// check perimeters
 
 		// perimeter: copy members for inclusion in zone UA in cnguts:cgRunInit (sep input mbrs used for correct units)
 
-		if (ckSet( pr, PRI_PRLEN)==RCOK)	// be sure set: insurance
+		if (pr->CkSet( PRI_PRLEN)==RCOK)	// be sure set: insurance
 			pr->x.xs_area = pr->prLen;  	// perim length goes in XSURF .area
-		if (ckSet( pr, PRI_PRF2)==RCOK)
+		if (pr->CkSet( PRI_PRF2)==RCOK)
 		{	pr->x.xs_uval = pr->prF2;   	// F2 factor goes in .uval
 			pr->x.xs_UNom = pr->prF2;
 		}
@@ -267,7 +267,7 @@ RC SFI::sf_TopSf1()
 			x.xs_model = C_SFMODELCH_QUICK;
 
 			// default area to hite*width; apply multiplier
-			rc1 = ckSet( this, SFI_HEIGHT) | ckSet( this, SFI_WIDTH);	// non-RCOK if RQD ht or wid unset (msgd at end of win object)
+			rc1 = CkSet( SFI_HEIGHT) | CkSet( SFI_WIDTH);	// non-RCOK if RQD ht or wid unset (msgd at end of win object)
 			if (rc1==RCOK)						// if ht & wid set (else FPE!)
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
@@ -279,7 +279,7 @@ RC SFI::sf_TopSf1()
 		// topSf1: door/window: subtract area from area of owning surface
 
 		if (sfc==sfcDOOR)			// rc1 set just above for window
-			rc1 = ckSet( this, SFI_SFAREA);	// verify RDQ member given
+			rc1 = CkSet( SFI_SFAREA);	// verify RDQ member given
 
 		// door/win area: sfArea
 		// surf net area: ownSf->x.area
@@ -323,7 +323,7 @@ RC SFI::sf_TopSf1()
 
 	// move .sfArea / init surface net area to gross
 	if (sfc==sfcWINDOW			// window: not nec user-given
-	 || ckSet( this, SFI_SFAREA)==RCOK)	// verify RQD mbr given (FPE protection)
+	 || CkSet( SFI_SFAREA)==RCOK)	// verify RQD mbr given (FPE protection)
 		x.xs_area = sfArea;	// move area to where used at run. For surface, b4 XSURF is added to zn,
 							// window and door areas are subtracted from .x.area,
     						// by code above in this fcn, on later call to this fcn.

@@ -47,7 +47,6 @@ char* getLogTitleText();			// access LOG report title text
 char* getInpTitleText();			// access INP report title text
 char* getHeaderText( int pageN);    // access header text
 char* getFooterText( int pageN);	// .. footer ..  inserts given page number
-// int getCpl( TOPRAT** pTp=NULL);	// get chars/line, default if Top not yet init & input value unavailable
 int getBodyLpp();					// get lines of report body per page, similarly
 void freeHdrFtr();					// free header, footer, report title texts
 RC   FC freeRepTexts();

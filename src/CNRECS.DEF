@@ -565,10 +565,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *s HUMRAT_GZ wOSh		// .. at end current subhour: used throughout zones and systems models in program
     *s FLOAT hOSh			// outdoor enthalpy at end subhour. used at in AH::doEco, TOWERPLANT::towModel. 9-92.
     *s FLOAT tp_airxOSh		// air flow heat transfer @tDbOSh (vhc*60) (Btuh/cfm-F).
-#if defined( CALC_DBOMM7)
-x    *d FLOAT tDbOMM7			// 7 day moving mean dry-bulb, to probe to simulate CALRES season change
-x								// not maintained, 12-12
-#endif
     *s FLOAT tp_rhoMoistOSh		// outdoor moist air density at end of subhour, lbm/ft3
     *s FLOAT tp_rhoDryOSh		// outdoor dry air density at end of subhour, lbm/ft3
 
@@ -672,25 +668,25 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_EtDecodeHdr( char* hdr, int erOp, float* clrnss, float* turbid, float* atmois);"
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
-	*declare "RC wf_Read( int jDay, int iHr, WDHR* pWd, int erOp = WRN);"
+	*declare "RC wf_Read( WDHR* pWd, int jDay, int iHr, int erOp = WRN);"
 	*declare "USI* wf_PackedHrRead( int jDay, int iHr, int erOp = WRN);"
 	*declare "LI wf_PackedHrOffset( int jDay, int iHr, int erOp = WRN);"
 	*declare "RC wf_CSWOpen( const char* wfName, int erOp );"
-	*declare "RC wf_CSWRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_CSWRead( WDHR* pwd, int jDay, int iHr, int erOp );"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, float& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, int& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWPosHr1( int erOp=WRN);"
 	*declare "RC wf_T24DLLOpen( const char* wfName, int erOp);"
-	*declare "RC wf_T24DLLRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_T24DLLRead( WDHR* pwd, int jDay, int iHr, int erOp);"
 	*declare "RC wf_EPWOpen( const char* wfName, int erOp );"
 	*declare "RC wf_EPWPosHr1( int erOp=WRN);"
-	*declare "RC wf_EPWRead( int erOp, int jDay, int iHr, WDHR* pwd );"
+	*declare "RC wf_EPWRead( WDHR* pwd, int jDay, int iHr, int erOp );"
 	*declare "RC wf_TDVOpen( const char* TDVfName, int erOp);"
 	*declare "void wf_TDVInitHdrInfo();"
 	*declare "RC wf_TDVReadHdr( int erOp=WRN);"
 	*declare "RC wf_TDVPosHr1( int erOp=WRN);"
-	*declare "RC wf_TDVReadIf( int erOp, int jDay, int iHr, WDHR* pwd );"
-    *declare "RC wf_FixJday( DOY& jDay, int begDay );"
+	*declare "RC wf_TDVReadIf( WDHR* pwd, int erOp, int jDay, int iHr);"
+	*declare "RC wf_FixJday( DOY& jDay, int begDay );"
 
 	 // in base class: .name, .ownTi, more.
      *r WFileFormat wFileFormat	// file format enum: UNK, BSGS, ET1, etc.
@@ -760,6 +756,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 	*declare "void wd_SetDayValues( const class WDDAY& wdd);"
 	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
+	*declare "void wd_SetTdvElecHrRank( const class WDDAY& wdd);"
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 
 						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
@@ -794,8 +791,10 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_tdvFuel		//      fuel
 
 							// derived (computed) drybulb temp values
-							//   values change at day beg / same all day
+							//   values updated at standard time day beg / same all day
+							//   *except* wd_taDbPk is updated at hr=23 iff DST
 	*h float wd_taDbPk			// current day peak DB (includes future hours), F
+								//   updated at hr=23 iff DST
 	*h float wd_taDbAvg			// current day average DB (includes future hours), F
 	*h float wd_taDbPvPk		// previous-day peak DB, F
 	*h float wd_taDbAvg01		// previous-day avg DB (not including current day), F
@@ -805,13 +804,16 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 
 
 							// derived (computed) electricity TDV values
-							//   values change at day beg / same all day
+							//   values updated at standard time day beg / same all day
+							//   *except* wd_tdvElecPk is updated at hr=23 iff DST
 	*h float wd_tdvElecPk			// current day peak TDVelec (includes future hours)
+									//   updated at hr=23 iff DST
 	*h float wd_tdvElecAvg			// current day avg TDVelec (includes future hours)
 	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
 	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)
 									//     NOTE: code assumes wd_tdvElecAvg01 is last float
-	*h *ARRAY 25 SI wd_tdvElecHrRank	// hour ranking of TDV values
+	*h *ARRAY 25 SI wd_tdvElecHrRank	// hour ranking of TDV values for current day
+										//   hour values reflect DST status for current day
 										//   [ 0]=unused
 										//   [ 1]=hour of highest tdvElec, 1-24
 										//   [ 2]=hour of 2nd highest
@@ -1678,7 +1680,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& CopyFrom( record *src, int copyName=1, int dupPtrs=0);"
+    *declare "virtual record& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
 	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
@@ -1738,15 +1740,15 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
-    *f CHP fileName		// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
-    *f CHP imTitle		// title string. If given, file's must match.
+    *f CHP fileName			// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
+    *f CHP imTitle			// title string. If given, file's must match.
     *z SI imPhaseSpare		// for possible future AUTOSIZE/MAINSIM/BOTH choice 6-95
-    *i IVLCH imFreq		// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
-    *f NOYESCH hasHeader   	// file has header no/yes, default yes.
+    *i IVLCH imFreq			// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
+    *f NOYESCH hasHeader	// file has header no/yes, default yes.
     *i *hide NOYESCH imBinary	// possible future binary file option. default no.
  //derived during input processing
-    *r TI iffnmi		/* subscript of import file field record in IffnmB. Holds used names b4 file opened;
-    				   used for runtime access to IMPF record to handle forward references.*/
+    *r TI iffnmi			// subscript of import file field record in IffnmB. Holds used names b4 file opened;
+							// used for runtime access to IMPF record to handle forward references
  //runtime
     //file
     *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
@@ -1765,16 +1767,8 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *h *e BOO eorScanned	// non-0 if all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
-    *r *hide FNRTP fnrt		// ptr to heap array of info subscripted by 1-based field number. un*hide if becomes probe-able.
-    *r *hide USI fnrtNAl 	// allocated size of .fnrp[]. Max subscript fnrtNAl-1; [0] unused.
-// fnrt points to array of (cndtypes.def):
-//   struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-//   {  CHP fieldName;		// NULL or field name (in heap) per file header, for error messages
-//      SI fnmi;		// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-//      CHP fp;			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-//      BOO nDecoded;		// TRUE if numeric value of field in current record has been decoded
-//      FLOAT fnv;		// if nDecoded, this is the numeric value -- don't decode twice
-//   };
+	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
+    *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
 *END		// IMPF
 //=============================================================================
 RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records
@@ -1790,15 +1784,9 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
     //fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
     // used at runtime to get fnr's to access fields. subscript: "fnmi", "field name index"
     *i SI fnmiN			// number of named fields seen for this file / max fnmi (+ 1 if 0-based)
+	*declare "struct FNMT* fnmt;"	// pointer to field names info array in heap
     *i *hide SI fnmtNAl		// allocated size of fnmt. Max subscript fnmtNAl-1. [0] unused.
-    *i *hide FNMTP fnmt    	// pointer to field names info array in heap
-// fnmt[] struct (cndtypes.def):
-//   struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
-//   {  CHP fieldName;		// field name used in Import() (no entry for fields not used by name in Import()s)
-//      SI fnr;			// field NUMBER established when file opened
-//   };
 *END		// IFFNM
-
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.
@@ -2673,7 +2661,7 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
 //=============================================================================
 RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
 	// holds zones or all-zones current or prior simulation results for all intervals
-    //CAUTION: code assumes these are in order matching IVLCH, so can add IVLCH-1 to ptr to .Y to access M,D,S. eg in cgresult.cpp.
+    // CAUTION: code assumes these are in order matching IVLCH, so can add IVLCH-1 to ptr to .Y to access M,D,S. eg in cgresult.cpp.
     *y *nest ZNRES_IVL_SUB Y	// run results, aka year or annual
     *m *nest ZNRES_IVL_SUB M	// month
     *d *nest ZNRES_IVL_SUB D	// day
@@ -3023,7 +3011,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_PerfMapAC();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
-*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float& capDefrostHt, float fanHAdj=0.f);"
+*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float& capDefrostHt, float fanHAdj=0.f, float COPAdjF=1.f);"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_IsASHPHydronic(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
 *declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
@@ -3042,10 +3030,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_Cap17RatioASHP() const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
 *declare "void rs_AuszFinalASHP();"
-*declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f);"
+*declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
+*declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 *declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
 *declare "static float rs_Cap95FromCap47ASHP( float cap47) { return max( cap47 - 180., 0.f) / 0.98f; }"
@@ -3067,6 +3056,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   appropriate meter; no thermal effect
 *h FLOAT rs_parElec			//		electrical parasitic power, W
 *h FLOAT rs_parFuel			//		fuel parasitic consumption, Btuh
+
+							// nominal capacities, provide type-independent probe source for capacities.
+							// daily variability because default value changes during autosizing
+*d FLOAT rs_capNomH			//   nominal heating capacity, Btuh.  Default=rs_capH or rs_cap47
+*d FLOAT rs_capNomC			//   nominal cooling capacity, Btuh.  Default=rs_cap95
 
 *r *nest FAN rs_fan				// RSYS fan characteristics
 
@@ -3137,7 +3131,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_inp35		// ditto 35 F
 *f *e FLOAT_GZ rs_inp17		// ditto 17 F
 
-								// ASHP constants [ 0]=non-defrost, [1]=defrost
+								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
 
@@ -3149,6 +3143,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *h FLOAT rs_ASHPLockOutT	// air source heat pump compressor lockout temp, F
 							//   compressor capacity assumed 0 if outdoor tdb < tLockOut
 							//   default is -999 (no lockout)
+*r RSYSDEFROSTMODELCH rs_defrostModel	// defrost model
+							//   REVCYCLE:    no additional aux heat (just capacity reduced per cap35)
+							//   REVCYCLEAUX: aux heat used to compensate for capacity reduction due to
+							//                reverse (cooling) operation
 
 							// non-ASHP heating
 *f FRAC_GZ rs_AFUE			//   heating system rated AFUE, 0 < AFUE <= 1
@@ -3199,7 +3197,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_tdbCoilIn	// coil entering dry bulb, F (ditto)
 *s *e INT rs_wetCoil		// 1 = wet coil, 0 = dry coil
 
-*s *e FLOAT rs_SHR;			// cooling sensible heat ratio
+*s *e FLOAT rs_SHR;			// cooling sensible heat ratio (derived using coil model)
 
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 *f FRAC rs_fSize			// compressor sizing factor (default 1, 0.95 or 1 for CA compliance)
@@ -3222,7 +3220,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   (Btuh sensible)/(Btuh compressor electrical input)
 *s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions, Btuh (<0)
 *s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions, Btuh (<0)
-*s *e FLOAT rs_capSenCt;	// coil sensibgle cooling capacity at current conditions, Btuh (<0)
+*s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions, Btuh (<0)
 
 						// Central outside air vent (aka OAV)
 *i RSYSOAVTYCH rs_OAVType	// type: NONE, FIXEDFLOW (aka SmartVent), VARFLOW (aka SmartBreeze)
@@ -3263,6 +3261,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 								//  [ 0] = main source (compressor or burner)
 								//	[ 1] = main+aux, ASHP heating only else 0
 *s *e FLOAT rs_runF		// run fraction
+*s FLOAT rs_runFLs		// last step run fraction (for probe access at step beg)
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
 						//   (includes rs_runF, does not include fan, defrost, or aux heat)
@@ -3274,6 +3273,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//    0 if not ASHP or if defrost not active
 *s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
 
+						// efficiency adjustment factors applied to substep efficiency
+						// allows modification of input energy requirements. Default=1
+*s FLOAT_GZ rs_FEffH;	//   heating
+*s FLOAT_GZ rs_FEffC;	//   cooling
+
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
 *s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
@@ -3283,79 +3287,41 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 //=============================================================================
 RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult substruct for RSYSRES
 
-	*declare "void rsr_Accum( RSYSRES_IVL_SUB* d, BOO firstFlg, BOO lastFlg) const;"
+	*declare "void rsr_Accum( const RSYSRES_IVL_SUB* src, int firstFlg, int lastFlg);"
+	*declare "void rsr_SetPrior() const;"
 
 	INT n			// number of intervals added together in this one (divisor for averages)
+					//  (maintained but unused)
 
-	// float members to add, hrsOn is first hrsOnAux is last
+	// float members to add, hrsOn is first, qAux is last (see code)
 	HOURS hrsOn		// operating hours
 	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
 					//   not including defrost
-	ENERGY qh		// heating output w/o fan, Btu
-	ENERGY qcSen	// cooling output w/o fan, Btu
-					//   not including defrost
-	ENERGY qcLat
-	ENERGY qFan
-	ENERGY qDefrost
-	ENERGY qAux
-
-#if 0
-
-	rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
-						//   (includes rs_runF, does not include fan, defrost, or aux heat)
-						//   used for both heating and cooling
-*s *e DBL rs_outLat		// ditto latent, Btuh
-*s *e DBL rs_outFan		// ditto fan heat added to air stream, Btuh
-*s *e DBL rs_outDefrost // ditto defrost heat, Btuh
-						//	  = typically resistance heat added to prevent cold supply air
-						//    0 if not ASHP or if defrost not active
-*s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
-
-*s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
-*s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
-*s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
-*s *e DBL rs_inAux		// auxiliary heating input, Btuh
-#endif
-
-#if 0
- //float members to average in results accumulation. cnguts.h defines assume tDbO is 1st, vf is last.
-    //pairs consisting of temperature & humidity (wetbulb temp may be generated when printing)
-    TEMP tDbO  HUMRAT wO	// outdoor temp (for convience for reporting; same for all ah) (Top.tDbO, .wO)
-    TEMP tr    HUMRAT wr	// return air (AH.tr,.wr)
-    TEMP tmix  HUMRAT wmix  	// mixed air (.tmix,.wmix)
-    TEMP ts    HUMRAT ws    	// supply air (.ts, .ws)
-    FRAC  po			// fraction outside air (.po)
-    FRAC  frFanOn		// fraction of time fan on if ahFanCycles, else 1.0
-    AFLOW vf			// flow (at supply fan) (.cmix)
- //float members to add: qh is first, hrsOn is last.  CAUTION: q's here are energy not power.
-    ENERGY qh    ENERGY qc	// heat and total cool load (at coils)
-    ENERGY qs    ENERGY ql	// cool sensible and latent loads (included in qc)
-    ENERGY qO	 ENERGY qFan 	// net energy taken from outside air (possible future impl); fan heat energy
-    ENERGY qLoss ENERGY qLoad	// leak/loss net energy; energy delivered to load.
-    ENERGY qBal			// unbalance, should be near 0: qh+qc+qO+qFan+qLoss+qLoad.
-    ENERGY ph    ENERGY pc   	// heat and cool coil input energy, from meter or (probably) from plant
-    ENERGY pAuxH ENERGY pAuxC	// heat and cool aux energy
-    ENERGY pFan			// fans input energy
-    HOURS  hrsOn    		// time air handler on: accumulated Top.subhrDur
- //long integer members to sum in accumulation.  cnguts.h defines assume nSubhr is 1st, nIterFan is last.
-    LI nSubhr  			// subhour counter: for convenience / possibly making cluster-dependent
-    LI nIter1			// iteration counter 1: # times called, including immediate exits
-    LI nIter2			// iteration counter 2: # times executed
-    LI nIter4			// iteration counter 4: # inner loops (calls to pute4Fs)
-    LI nIterFan			// # fan adjustment iterations, counting both ups and downs
-#endif
+	ENERGY qh		// heating output w/o fan, w/o defrost, Btu
+	ENERGY qcSen	// sensible cooling output w/o fan, Btu
+	ENERGY qcLat	// latent cooing output, Btu
+	ENERGY qFan		// fan heat, Btu
+	ENERGY qDefrost	// defrost (strip) heat output, Btu
+	ENERGY qAux		// auxiliary heat output, Btu
 
 *END		// RSYSRES_IVL_SUB
 //=============================================================================
-RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (later at subscript #RSYS + 1)
+RECORD RSYSRES_SUB "RSYS results sub" *SUBSTRUCT
     // name: same as corresponding RSYS, or sum_of_RSYS.
     // CAUTION: code assumes these are in order matching IVLCH
     //    so can add IVLCH-1 to ptr to .Y to access M,D,S. eg in cgresult.cpp.
-    *y *e *nest RSYSRES_IVL_SUB Y  	// run results, aka year or annual
-    *m *e *nest RSYSRES_IVL_SUB M  	// month
-    *d *e *nest RSYSRES_IVL_SUB D  	// day
-    *h *e *nest RSYSRES_IVL_SUB H  	// hour.  note no hour+subhour member here; must adjust IVL for C_IVLCH_HS.
-    *s *e *nest RSYSRES_IVL_SUB S  	// subhour, aka subStep or sub-time-step
+    *y *nest RSYSRES_IVL_SUB Y  	// run results, aka year or annual
+    *m *nest RSYSRES_IVL_SUB M  	// month
+    *d *nest RSYSRES_IVL_SUB D  	// day
+    *h *nest RSYSRES_IVL_SUB H  	// hour.  note no hour+subhour member here; must adjust IVL for C_IVLCH_HS.
+    *s *nest RSYSRES_IVL_SUB S  	// subhour, aka subStep or sub-time-step
+*END		// RSYSRES_SUB
+//=============================================================================
+RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (later at subscript #RSYS + 1)
+    // name: same as corresponding RSYS, or sum_of_RSYS.
+	*e *noname *nest RSYSRES_SUB curr 	// current year,month,day,hour,subhr results, stored at end each interval
+    *nest RSYSRES_SUB prior 			// prior year,month,day,hour,subhr results, available throughout interval
+    // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// RSYSRES
 //=============================================================================
 RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for DHW meter
@@ -3482,8 +3448,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs
 							//   wssimHOUR otherwise
-  *r INT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
-							//   = SUM( wh_mult)
+  *r FLOAT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
+							//   = SUM( wh_mult) (possibly non-integral)
   *r INT ws_wtCount;		// ditto DHWTANKs
   *r INT ws_wpCount;		// ditto DHWPUMPs
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
@@ -3529,10 +3495,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoHour( float HARL, int wsMult);"
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
-  *declare "void wh_AccumElec( int mult, double inElec, double inElecBU);"
+  *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
 
-  *i SI wh_mult;				// count of identical water heaters (default 1)
+  *i FLOAT wh_mult;				// count of identical water heaters (default 1)
 								//   models as if repeated identical input
+								//   non-integral values allowed re sizing methods
   *i WHHEATSRCCH wh_heatSrc;	// heat source
   								//   C_WHHEATSRCCH_ELRES: electric resistance
 								//     _FUEL: fuel-fired burner
@@ -3665,7 +3632,16 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//       any wh_unMetSh
   *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
 *END
+//=============================================================================
+#if 0
+RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
+  *prefix wr_
 
+  *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *declare "RC wr_CkF();"
+  *declare "DHWSYS* wr_GetDHWSYS() const;"
+*END
+#endif
 //=============================================================================
 RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *prefix wt_
@@ -3877,7 +3853,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *excon
   *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
-  *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
+  *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"

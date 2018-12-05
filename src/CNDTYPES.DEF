@@ -155,25 +155,6 @@ XFILEP  --     "XFILE *"                  4       none
 WFLOC   --     "char[32]"                32       none		// weather file location string (+ \0 + fill byte)
 WFLID   --     "char[18]"                18       none		// weather file location id string ( + \0 + fill byte)
 
-// Types for Import Files, 2-94
-//
-//   struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-//   {  CHP fieldName;		// 4  NULL or field name (in heap) per file header, for error messages
-//      SI fnmi;		// 2  0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-//      CHP fp;			// 4  NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-//      BOO nDecoded;		// 2  TRUE if numeric value of field in current record has been decoded
-//      FLOAT fnv;		// 4  if nDecoded, this is the numeric value -- don't decode twice
-//   };			// size = 16
-FNRT   --   "struct { CHP fieldName; SI fnmi; CHP fp; BOO nDecoded; FLOAT fnv; }"  16   none	// FNR table: heap block
-FNRTP  --   "FNRT *"                                                                4   none	// ptr to FNR table
-//
-//   struct FNMT	// field names table struct for IFFNM.fnmt[] in heap
-//   {  CHP fieldName;		// 4  field name used in Import() (no entry for fields not used by name in Import()s)
-//      SI fnr;			// 2  field NUMBER established when file opened
-//   }; 		// size =  6
-FNMT   --   "struct { CHP fieldName; SI fnr; }"         6    none	// field names table struct: heap block
-FNMTP  --   "FNMT *"                                    4    none	// pointer to FNMT: record field
-
 WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
 								2	none	// open wthr file type (comments: wfpak.h)
 WFLOC2  --      "char[22]"				22	none	// "location 2" field in ET1 weather files
@@ -364,6 +345,10 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			FIXEDFLOW "FixedFlow"
 			VARFLOW   "VarFlow"
 		  }
+*choicb RSYSDEFROSTMODELCH {
+			REVCYCLE    "RevCycle"
+			REVCYCLEAUX "RevCycleAux"
+		  }
 
 // DHW choices
 *choicb WSCALCMODECH {
@@ -527,7 +512,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
 			  HTG		"Htg"	// space heating incl heat pump compressor
-			  HPHTG		"HPHtg"	// heat pump backup heat
+			  HPHTG		"HPHtg"	// heat pump backup and defrost heat
 			  DHW		"DHW"	// domestic (service) hot water heating
 			  DHWBU		"DHWBU"	// domestic (service) hot water heating backup
 			  DHWMFL	"DHWMFL"// domestic (service) hot water DHWLOOP energy
@@ -535,7 +520,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  FANH		"FanH"	// fan energy for heating
 			  FANV		"FanV"	// fan energy for IAQ venting
 			  FAN		"Fan"	// fan energy for other purposes
-			  AUX		"Aux"	// HVAC auxiliary, not inlcuding fans
+			  AUX		"Aux"	// HVAC auxiliary, not including fans
 			  PROC		"Proc"	// process energy
 			  LIT		"Lit"	// lighting
 			  RCP		"Rcp"	// receptacles

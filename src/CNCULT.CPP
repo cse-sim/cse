@@ -370,7 +370,7 @@ RC FC fdStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
 #undef P
 }		// fdStarCkf
 
-static CULT fdT[] = //---------------------------------- FOUNDATIONCOMP Cmd Table
+static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 {
 	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
 	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
@@ -881,7 +881,7 @@ dflInH:
 		//   skip at RUN, avoid dup messages
 		ignoreN( "when sfExCnd not GROUND", SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
 			SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND),
-			SFX( DEPTHBG), 0);
+			SFX( DEPTHBG), SFX( HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
 	}
 
 // sf_CkfSURF: require sfAdjZn if ext cond is Zone else disallow
@@ -915,17 +915,31 @@ RC SFI::sf_CkfSURFGround(
 
 	// sfExH unused for GROUND
 	if (!bRun)
-		ignoreN( whenGROUND, SFX( UX), 0);	// notify user
+		ignoreN(whenGROUND, SFX(UX), 0);	// notify user
 	x.uX = 0.f;		// overwrite default (1.5)
 
-	if (!sf_IsFD( x.xs_model) && !sf_IsKiva(x.xs_modelr))
+	if (sf_IsKiva(x.xs_modelr)) {
+		ignoreN("when sfExCnd=GROUND and sfFnd or sfFndFloor are set.", SFX(DEPTHBG), 
+			SFXO(CTADBAVGYR), SFXO(CTADBAVG31),	SFXO(CTADBAVG14), SFXO(CTADBAVG07), 
+			SFXO(CTGRND), SFXO(RCONGRND), 0);
+		return rc;
+	}
+	else
+	{
+		oInfo("sfExCnd=GROUND without defining sfFnd or sfFndFloor for this surface.\n"
+			"    Using simple ground model instead of two-dimensional finite difference.");
+		ignoreN("when sfExCnd=GROUND and neither sfFnd or sfFndFloor is set.",
+			SFX(HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
+	}
+
+	if (!sf_IsFD( x.xs_model))
 		rc |= oer( "sfModel=%s not supported %s -- must be sfModel=FD",
 				getChoiTx( SFX( MODEL)), whenGROUND);
 
 	// check for unresolved expressions
 	int allVals = IsValAll( SFX( DEPTHBG), SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
 					SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND), 0);
-	if (!allVals || x.xs_sbcO.sb_groundModel != 0 || sf_IsKiva( x.xs_modelr))
+	if (!allVals || x.xs_sbcO.sb_groundModel != 0)
 		return rc;	// can't check or already checked or not relevant
 
 	float cGrnd = x.xs_sbcO.sb_CGrnd();	// total conductance to ground, Btuh/ft2-F
@@ -1767,6 +1781,7 @@ CULT( "rsCdH",       DAT,   RSYS_CDH,        0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPAuxH",	 DAT,   RSYS_COPAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
+CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
 
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
@@ -1782,11 +1797,17 @@ CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .3
 CULT( "rsParElec",	 DAT,   RSYS_PARELEC,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsParFuel",	 DAT,   RSYS_PARFUEL,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
+CULT( "rsFEffH",     DAT,   RSYS_FEFFH,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsDSEH",		 DAT,   RSYS_DSEH,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 CULT( "rsDSEC",		 DAT,   RSYS_DSEC,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
+
+CULT( "rsCapNomH",   DAT,   RSYS_CAPNOMH,    0,       0, VDAILY, TYFL,  0,     0.f,    N,   N),
+CULT( "rsCapNomC",	 DAT,   RSYS_CAPNOMC,    0,       0, VDAILY, TYFL,  0,     0.f,    N,   N),
 
 CULT( "rsOAVType",	 DAT,   RSYS_OAVTYPE,    0,       0, VEOI,   TYCH,  0,    C_RSYSOAVTYCH_NONE, N, N),
 CULT( "rsOAVReliefZn",DAT,  RSYS_OAVRELIEFZI,0,       0, VEOI,   TYREF,  &ZiB, 0, N, N),
@@ -1875,7 +1896,7 @@ static CULT dhwHeaterT[] = //------ DHWHEATER cmd RAT Entry table, used from dhw
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   whStarCkf),
 CULT( "whDHWSYS",    DAT,   DHWHEATER_OWNTI,   NO_INP|RDFLIN,0,0, TYREF, &WSiB,  0,     N,   N),
-CULT( "whMult",		 DAT,	DHWHEATER_MULT,	   0,     0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "whMult",		 DAT,	DHWHEATER_MULT,	   0,     0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whType",	     DAT,   DHWHEATER_TYPE,    0,     0, VEOI,   TYCH,  0,      C_WHTYPECH_STRGSML, N, N),
 CULT( "whHeatSrc",	 DAT,   DHWHEATER_HEATSRC, 0,     0, VEOI,   TYCH,  0,      C_WHHEATSRCCH_FUEL, N, N),
 CULT( "whZone",      DAT,   DHWHEATER_ZNTI,    0,     0, VEOI,   TYREF, &ZiB,   0,                  N, N),

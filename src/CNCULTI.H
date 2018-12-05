@@ -42,7 +42,6 @@ RC FC topCkf( CULT* c, void *p, void *p2, void *p3);		// finish/check/set up for
 //RC FC topReCkf() -- see cncult.h
 
 // cncult2.cpp... supporting fcns called from other cncult files
-RC   FC ckSet( record *e, SI fn);
 RC   FC ckOwnRefPt( BP toBase, record * fromRec, record **pp=NULL, RC *prc=NULL );
 
 // cncult3.cpp -- surfaces etc, called from cncult2.cpp
@@ -64,10 +63,8 @@ RC   FC topXf();		// check EXPORTFILEs
 RC   FC topCol( int isExport);
 RC   FC topRxp();		// check REPORTS and EXPORTS / build dvri info
 RC   FC buildUnspoolInfo();	// build unspooling specifications
-RC   FC clearImpf();		// Import stuff special clear function
-RC   FC topImpf();		// check/process ImportFiles at end of input
 RC   FC topPrfHday();		// make default HDAY (holiday) rat entries, before input
-RC   FC topHday();		// check HDAY input info / build run info
+RC   FC topHday();			// check HDAY input info / build run info
 
 // cncult5.cpp  terminals and air handlers
 RC   FC topAh1();
