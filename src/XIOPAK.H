@@ -103,7 +103,7 @@ SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );
 SEC    FC xfwrite( XFILE *, const char *, USI);
 SEC    FC xftell( XFILE *, LI *);
-SEC    FC xfseek( XFILE *, LI, SI);
+SEC    FC xfseek( XFILE *, LI, int mode);
 SEC    FC xfsize( XFILE *, LI*);
 SEC    FC xfchsize( XFILE *, LI);
 SEC    FC xfflush( XFILE *);

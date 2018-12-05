@@ -649,6 +649,9 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
 			dest.CopyFrom(&src);			// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
+#if defined( _DEBUG)
+			dest.Validate();
+#endif
 		}
 		else					// (not currently expected 2-92)
 			dest.gud = 0;				// nothing to copy from next slot, say this slot is free

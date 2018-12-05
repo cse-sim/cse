@@ -109,7 +109,7 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 
 	// Get weather data for last hour on day 
 	// should really be last subhour, but it's a good enough approx for Kiva initialization.
-	Wfile.wf_Read(jDay, 23, &iW, WRN);
+	Wfile.wf_Read(&iW, jDay, 23, WRN);
 
 	kv_bcs->outdoorTemp = DegFtoK(iW.wd_db);
 	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_fnd->grade.roughness,0,Top.tp_terrainClass);

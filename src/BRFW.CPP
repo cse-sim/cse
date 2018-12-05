@@ -1676,7 +1676,7 @@ BOO BinFile::close()
 //---------------------------------------------------------------------------
 BOO BinFile::seek( DWORD offset)
 {
-	if (lseek( fh, offset, SEEK_SET) < 0L)
+	if (_lseek( fh, offset, SEEK_SET) < 0L)
 		return !err( WRN, (char *)MH_R1982, pNam);	// "Seek failure, file \"%s\""
 	if (offset > DWORD( maxSeek))
 		maxSeek = offset;

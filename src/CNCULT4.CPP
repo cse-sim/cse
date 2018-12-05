@@ -266,10 +266,8 @@ RC topCol( int isExport)
 	{
 		// copy data from input rat to run rat, same subscript (needed in this case?)
 		colB->add( &colp, ABT, colip->ss);		// add run COL record, ret ptr to it.  err unexpected cuz al'd.
-		if (colip->ss == 49)
-			printf("\nHit");
-		*colp = *colip;					/* copy entire entry incl name, and incr ref count of heap pointers
-       							   (.colHead; colVal.val if constant (unlikely!)) */
+		*colp = *colip;					// copy entire entry incl name, and incr ref count of heap pointers
+       									// (.colHead; colVal.val if constant (unlikely!))
 
 		// check references
 		if (ckRefPt( rxB, colip, colip->ownTi,  isExport ? "colExport" : "colReport",  NULL, (record **)&rp ) )
@@ -1245,8 +1243,11 @@ COL::~COL()
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 }			// COL::Copy
 //-----------------------------------------------------------------------------
-/*virtual*/ record& COL::CopyFrom( record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
+/*virtual*/ record& COL::CopyFrom( const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
 {
+#if 0 && defined( _DEBUG)
+	pSrc->Validate();
+#endif
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	cupfree( DMPP( colHead));
 	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  	// if contains a string, not a float
@@ -1274,7 +1275,7 @@ COL::~COL()
 			rc = RCBAD;
 	}
 	return rc;
-}		// IZXRAT::Validate
+}		// COL::Validate
 //---------------------------------------------------------------------------------------
 DVRI::~DVRI()
 {

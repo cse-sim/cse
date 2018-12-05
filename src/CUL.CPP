@@ -3591,6 +3591,9 @@ LOCAL RC NEAR rateDuper(
 			// Do this basAnc's records (entries) owned by record oldE, recursively
 			for (i = 0; nxOwRec( srcOti, fromB, &i, &fromE); )
 			{
+#if defined( _DEBUG)
+				fromE->Validate();
+#endif
 				// loop fromB entries with ownTi==oldE's ti
 				if (move >= 0)		// not if delete
 				{
@@ -3601,12 +3604,16 @@ LOCAL RC NEAR rateDuper(
 					}
 					else
 						toB = b;
-					if (toB->add( &toE, WRN) )		// add record. CAN MOVE fromE.
+					if (toB->add( &toE, WRN) )	// add record. CAN MOVE fromE.
 						return RCFATAL;			// if out of memory, end session 1-8-92
+					fromE = &fromB->rec(i);		// repoint fromE
+#if defined( _DEBUG)
+					fromE->Validate();
+#endif
 				}
 				E( rateDuper(     		// CALL SELF: copy/move/delete record,
 					   toE,				// ... dref's, and subcults */
-					   &fromB->rec(i),		// repoint fromE
+					   fromE,			// repoint fromE
 					   move, 1,   		// do copy name in subs
 					   newE ? newE->ss : -1,	// owner subscr for subRat record copies made / illeg mem read protection */
 					   (CULT *)cc->CULTP2 ) )  	// subtbl drives subcult copy
