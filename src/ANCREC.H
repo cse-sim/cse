@@ -178,6 +178,20 @@ class record		// base class for records
 			FldCopy( fnS, fnD);
 		return ret;
 	}
+	template< typename T> void FldSet(		// set field value and status
+		int fn,		// field #
+		T v)		// value
+	{
+		int dt = DType( fn);
+		int sz = GetDttab( dt).size;
+#if defined( _DEBUG)
+		if (sz != sizeof( T))
+			err( PWRN, "%s:%s FldSet: size mismatch",	// message, wait for keypress
+				b->what, name);
+#endif
+		memcpy( field( fn), &v, sz);
+		fStat( fn) |= FsSET | FsVAL;
+	}	// record::FldSet
 	int DType( int fn) const;
 	inline UCH* fStat()	// access status byte array
 	{ return (UCH *)this + b->sOff; }
@@ -187,6 +201,7 @@ class record		// base class for records
 	{ return ((UCH *)this + b->sOff)[fn]; }
 	inline int IsSet( int fn) const
 	{ return (fStat( fn)&FsSET) != 0; }
+	RC CkSet( int fn) const;
 	int IsSetCount( int fn, ...) const;
 	inline void ClrSet( int fn)
 	{ fStat( fn) &= ~FsSET; }

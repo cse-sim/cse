@@ -55,10 +55,6 @@ inline int IsMSBCZone( int bcty) { return bcty==MSBCZONE || bcty==MSBCTNODE; }
 // constants for limits for avg and sum loops, cgnguts.cpp & cgenbal.cpp.  Note members are grouped by type.
 #define oRes(m) offsetof( ZNRES_IVL_SUB, m)
 
-//----- for RSYSRES_IVL_SUB: RSYS simulation results for 1 interval
-// constants for limits for avg and sum loops, Note members are grouped by type
-#define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
-
 //----- for AHRES_IVL_SUB: air handler simulation results for 1 interval
 // constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then LI's.
 #define oaRes(m) offsetof( AHRES_IVL_SUB, m)

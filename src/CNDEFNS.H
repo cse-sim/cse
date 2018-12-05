@@ -85,9 +85,6 @@
 #define OAVREV2			// define to enable revised Outside Air Vent modeling
 						//   3-25-2014
 
-#define FIXAUTOSIZE		// define to enable several modifications seeking to
-						//   improve autosizing stability, 2-22-2016
-
 //------------------------------------------------ DEFINES --------------------------------------------------
 
 #define HSMXSGDIST 8	// Max # of solar gain targets from one XSURF.
@@ -113,9 +110,6 @@
 							//   must be known in cnrecs.def
 							//   must be consistent the rsmXXX enum
 
-#undef ASHP_COMPAREMP		// define to enable Micropas comparison code for ASHP
-							//   experimental, 5-9-2013
-
 #define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
 
 #define ASHP_COPREG 6		// select COP17/47 regression model
@@ -125,8 +119,6 @@
 							//   4 = kwPerTon fit 6-4-2013
 							//   5 = force COP17=1.8 at HSPF=6.8 6-4-2013
 							//   6 = derive COP17 and COP35 so HSPF matches input
-
-#define ASHP_DEFROSTHT		// define to model heating during defrost, 8-7-2013
 
 #define DETAILED_TIMING		// define to enable fine-grain timing
 

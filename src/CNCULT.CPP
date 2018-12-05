@@ -1779,6 +1779,7 @@ CULT( "rsCdH",       DAT,   RSYS_CDH,        0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPAuxH",	 DAT,   RSYS_COPAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
+CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
 
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
@@ -1794,11 +1795,17 @@ CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .3
 CULT( "rsParElec",	 DAT,   RSYS_PARELEC,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsParFuel",	 DAT,   RSYS_PARFUEL,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
+CULT( "rsFEffH",     DAT,   RSYS_FEFFH,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsDSEH",		 DAT,   RSYS_DSEH,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 CULT( "rsDSEC",		 DAT,   RSYS_DSEC,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
+
+CULT( "rsCapNomH",   DAT,   RSYS_CAPNOMH,    0,       0, VDAILY, TYFL,  0,     0.f,    N,   N),
+CULT( "rsCapNomC",	 DAT,   RSYS_CAPNOMC,    0,       0, VDAILY, TYFL,  0,     0.f,    N,   N),
 
 CULT( "rsOAVType",	 DAT,   RSYS_OAVTYPE,    0,       0, VEOI,   TYCH,  0,    C_RSYSOAVTYCH_NONE, N, N),
 CULT( "rsOAVReliefZn",DAT,  RSYS_OAVRELIEFZI,0,       0, VEOI,   TYREF,  &ZiB, 0, N, N),
@@ -1887,7 +1894,7 @@ static CULT dhwHeaterT[] = //------ DHWHEATER cmd RAT Entry table, used from dhw
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   whStarCkf),
 CULT( "whDHWSYS",    DAT,   DHWHEATER_OWNTI,   NO_INP|RDFLIN,0,0, TYREF, &WSiB,  0,     N,   N),
-CULT( "whMult",		 DAT,	DHWHEATER_MULT,	   0,     0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "whMult",		 DAT,	DHWHEATER_MULT,	   0,     0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whType",	     DAT,   DHWHEATER_TYPE,    0,     0, VEOI,   TYCH,  0,      C_WHTYPECH_STRGSML, N, N),
 CULT( "whHeatSrc",	 DAT,   DHWHEATER_HEATSRC, 0,     0, VEOI,   TYCH,  0,      C_WHHEATSRCCH_FUEL, N, N),
 CULT( "whZone",      DAT,   DHWHEATER_ZNTI,    0,     0, VEOI,   TYREF, &ZiB,   0,                  N, N),

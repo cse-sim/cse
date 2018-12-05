@@ -274,8 +274,10 @@ template< typename T> inline void roundNearest( T &v, T rv)
 {	v = round( v/rv)*rv;  }
 // round double to integer (no overflow protection!)
 inline int iRound( double a) { return int( a > 0. ? a+.5 : a-.5 ); }
+// return v if not nan, else alternative value
+template< typename T> inline T ifNotNaN( T v, T vForNaN=0)
+{ return isnan( v) ? vForNaN : v; }
 //-----------------------------------------------------------------------------
-
 
 // access to interval data
 //   returns ref to array mbr for C_IVLCH_H/D/M/Y

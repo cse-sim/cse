@@ -152,55 +152,6 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 	windSpeedHrAv = .5f*(windSpeedPvHr + windSpeedHr);	// avg wind speed, used re $variable
 	wOHrAv = .5f*(wOPvHr + wOHr);				// avg humidity ratio, used re $variable
 
-#if defined( CALC_DBOMM7)
-x // maintain 7-day moving mean dryBulb. Restored 9-95 so tDbOMM7 can be probed to simulate CALRES seasons for CHEERS.
-x static MMEAN dbmm;
-x static float dbSumDay = 0.f;	// Sum of dry bulb temps for current day
-x static int dbSumN = 0;			// number of values in dbSumDay (23 or 25/day if DT starts or ends)
-x
-x	// at run start, init
-x	if (isBegRun)			// if first hour of warmup, or of run if no warmup, or of 1st rep of autoSize des day
-x	{
-x		// init current day avg temp info
-x		if (tp_dsDay==1)				// autosizing heating design day
-x		{
-x			dbSumDay = heatDsTDbO;
-x			dbSumN = 1;	// use the fixed heat design day outdoor temp
-x		}
-x		else						// cooling des day or main sim
-x		{
-x			dbSumDay = 0.f;
-x			dbSumN = 0;
-x			for (int tHr = 0; tHr < 24; tHr++)		// read 24 hours weather data
-x			{	if (tp_dsDay==2)							// for autoSize cooling des day
-x					rc = Wfile.wf_Read( auszMon, tHr, &Wthr.d, WRN|WF_DSNDAY);	// read hr's weather data
-x				else 								// main sim
-x					rc = Wfile.wf_Read( jDayST, tHr, &Wthr.d, WRN); 		// read hr's wthr data
-x				if (rc)  break;							// error check
-x				dbSumDay += Wthr.d.wd_db;
-x				dbSumN++;		// accumulate drybulb temp. Note hr end used as tho hr average.
-x			}
-x		}
-x		// init struct for maintaining 7-day moving mean
-x		dbmm.mm_Init( 7);					// mmpak.cpp.
-x	}
-x
-x	// at start of each day update the 7-preceding-day moving mean
-x	if (isBegDay)				// if first hour of a day
-x	{
-x		if (dbSumN)				// NULL ptr and divide by 0 protection
-x			tDbOMM7 = 				// moving mean dry bulb temp for previous (up to) 7 days
-x				dbmm.mm_Mean(		//  fcn in mmpak.cpp holds values and computes mean
-x					dbSumDay/dbSumN );	//  previous day's average dry bulb temp
-x		dbSumDay = 0.f;
-x		dbSumN = 0;			// reinit info for this days average
-x	}
-x
-x	// each hour, update info for this day's average temp
-x	dbSumDay += tDbOHrAv;  			// sum hourly temps (HrAv used -- 9-95)
-x	dbSumN++;					// count values summed: divisor for average
-#endif	// CALC_DBOMM7
-
 	return rc;
 }			// TOPRAT::tp_WthrBegHour
 //-----------------------------------------------------------------------------
@@ -340,7 +291,6 @@ x	tp_rhoDryOSh = psyDenDryAir2( tp_rhoMoistOSh, wOSh);
 	return RCOK;
 }			// TOPRAT::tp_WthrBegSubhr
 //---------------------------------------------------------------------------
-#if 1
 RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 						//   (or synthesize data, for heat design day case)
 	BOO nextHour,		// TRUE for next hour, FALSE for current hour (Top.jDayST, Top.iHrST)
@@ -413,7 +363,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	switch (Top.tp_dsDay)
 	{
 	case 1:			// autoSizing. heating design day. Synthesize no-solar weather, probably const temp.
-		rc = pWF->wf_Read( jDayST, iHrST, this, WRN|wfOp);	// Read data for midnight from weather file
+		rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read data for midnight from weather file
 															// WHY: sets ground temp to plausible winter values
 		wd_wndSpd = 15;
 		wd_wndDir = 0;  						// 15 mph north wind
@@ -433,11 +383,11 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	case 2:			// autoSizing. cooling. use wthr file design day data for month.
 		if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSMO)
 			// read month's design day
-			rc = pWF->wf_Read( Top.auszMon, iHrST, this, 	// Read hour's data from wthr file design day
+			rc = pWF->wf_Read( this, Top.auszMon, iHrST, 	// Read hour's data from wthr file design day
 					 WRN | WF_DSNDAY );			// option says 2nd arg is design day mon 1-12 not Julian date.
 		else
 		{	// read actual day
-			rc = pWF->wf_Read( jDayST, iHrST, this, WRN|wfOp);	// Read hour's data from weather file
+			rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read hour's data from weather file
 			if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
 			{	// DSCOND design day: overwrite/adjust weather file values with generated
 				int iDC = Top.tp_coolDsCond[ Top.tp_dsDayI-1];
@@ -448,7 +398,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		break;
 
 	case 0:			// main simulation day - not autoSizing
-		rc = pWF->wf_Read( jDayST, iHrST, this, WRN|wfOp);	// Read hour's data from weather file
+		rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read hour's data from weather file
 		break;
 	}
 	if (rc)			// if wfRead failed, eg date not in file or type without design days
@@ -475,119 +425,6 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 
 	return rc;
 }		// WDHR::wd_WfReader
-#else
-//---------------------------------------------------------------------------
-RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
-						//   (or synthesize data, for heat design day case)
-	BOO nextHour,		// TRUE for next hour, FALSE for current hour (Top.jDayST, Top.iHrST)
-	WFILE* pWF) 		// open weather file info object
-// also uses Top.jDayST, Top.iHrST;
-//               Top.tp_dsDay, .auszMon, heatDsTDbO, .heatDsTWbO, .isBegRun;
-//               Top.radBeamF, .readDiffF, .windF;
-// returns RCOK if successful
-{
-	DOY jDayST = Top.jDayST;  		// day of simulation 1-365, std time, appropriate value for autosize design days
-	int iHrST = Top.iHrST;  		// hour 0-23, standard time.
-	int wfOp = Top.isDT ? WF_DSTFIX : 0;	// re taDbPvPk during daylight savings
-	RC rc = RCOK;
-	switch (Top.tp_dsDay)
-	{
-	case 1:			// autoSizing. heating design day. Synthesize no-solar weather, probably const temp.
-		// same hour done each call, ignore minor waste
-		//  hourly variable conditions allowed but not currently used, 12-2012
-		iHrST = 0;
-		rc = pWF->wf_Read( jDayST, iHrST, this, WRN);	// Read data for midnight from weather file
-														// WHY: sets ground temp to plausible winter values
-		wd_wndSpd = 15;
-		wd_wndDir = 0;  		// 15 mph North wind
-		wd_bmrad = wd_dfrad = wd_glrad = 0;		// no insolation -- dark all day
-		wd_cldCvr = 0;							// no cloud cover (presumably moot)
-		wd_db = Top.heatDsTDbO;					// outdoor temperature as input or as dfl'd from wthr file hdr
-		if (Top.IsSet( TOPRAT_HEATDSTWBO))		// if user input the heat design day wetbulb
-			wd_wb = Top.heatDsTWbO;				// use input value. hourly variable allowed but not expected.
-		else
-		{	// calculate default wetbulb
-			float w = psyHumRat2( wd_db, .7);	// humidity ratio for drybulb & 70% rel hum
-			wd_wb = psyTWetBulb( wd_db, w);		// wetbulb for drybulb & humidity ratio
-		}
-		rc |= wd_EstimateMissingET1( 0);		// rederive wd_tSky, wd_taDp,
-		break;
-
-	case 2:			// autoSizing. cooling. use wthr file design day data for month.
-		if (nextHour)  				// if NEXT hour's data requested
-			if (++iHrST > 23)    		// if end of day
-				iHrST = 0;				// wrap to start SAME day cuz design day is simulated repeatedly
-		if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSMO)
-			// read month's design day
-			rc = pWF->wf_Read( Top.auszMon, iHrST, this, 	// Read hour's data from wthr file design day
-					 WRN | WF_DSNDAY );			// option says 2nd arg is design day mon 1-12 not Julian date.
-		else
-		{	// read actual day
-			rc = pWF->wf_Read( jDayST, iHrST, this, WRN|wfOp);	// Read hour's data from weather file
-			if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
-			{	int iDC = Top.tp_coolDsCond[ Top.tp_dsDayI-1];
-				const DESCOND& DC = DcR[ iDC];
-				DC.dc_GenerateTemps( iHrST, this);
-
-			}
-		}
-		break;
-
-	case 0:			// main simulation day - not autoSizing
-		if (nextHour)					// if caller wants next hour's weather data
-		{	if (++iHrST > 23)				// next hour / if was already last hour of day
-			{	iHrST = 0;					// next hour is first hour
-				if (++jDayST > 365)			// of next day / if was already last day of year
-					jDayST = 1;				// wrap back to jan 1 from Dec 31
-				// at end warmup, read ahead to 1st run day even if not next date (usually is next date, see cnguts:cgRunI)
-				// to have right data for run hour and to not require another day's data in short packed files
-				if (Top.isLastWarmupDay)		// if now last day of warmup (and hour 23 if here)
-					//if (!Top.tp_autoSizing)		// autoSizing doesn't get here
-					jDayST = Top.tp_begDay;   	// read hour 0 of first hour of run
-			}
-		}
-		rc = pWF->wf_Read( jDayST, iHrST, this, WRN|wfOp);	// Read hour's data from weather file
-		break;
-	}
-	if (rc)			// if wfRead failed, eg date not in file or type without design days
-		return rc;
-
-	if (iHrST==0)		// if start of new day
-		slday( jDayST, SLTMLST);	// set up curr SLLOCDAT struct for today:
-									// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
-									// used by slaniso & most other slpak calls.
-
-	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
-	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
-	float cosz;
-	wd_sunup = slsurfhr(dchoriz, Top.iHrST, &verSun, &wd_slAzm, &cosz);
-	if (!wd_sunup)
-		wd_slAzm = wd_slAlt = 0.f;
-	else
-		wd_slAlt = kPiOver2 - acos( cosz);
-
-// Optional anisotropic sky adjustment
-	if (Top.skyModel==C_SKYMODCH_ANISO)
-		slaniso( &wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
-			       								//   near sun, etc, while still computing with sun's
-												//	 beam and isotropic diffuse radiation. slpak.cpp. */
-
-// other adjustments
-	wd_bmrad *= Top.radBeamF; 	// Adjust radiation values for possible user input factors, defaults 1.0.
-	wd_dfrad *= Top.radDiffF; 	// ..
-	wd_wndSpd = Top.windF * max( wd_wndSpd, Top.windSpeedMin);
-					// apply wind speed min (user input, default = .5)
-					//   and adjust by factor (per user input, default .25)
-
-	// Ensure solar data values are not negative (as found in some CSW files)
-	wd_bmrad = max(wd_bmrad, 0.f);
-	wd_dfrad = max(wd_dfrad, 0.f);
-	wd_glrad = max(wd_glrad, 0.f);
-
-
-	return rc;
-}		// WDHR::wd_WfReader
-#endif
 //---------------------------------------------------------------------------
 void FC cgWfDone()   		// Close, clean up hourly simulator weather file
 {
