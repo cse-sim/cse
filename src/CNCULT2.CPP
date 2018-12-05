@@ -555,13 +555,25 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 		}
 
 		if (!IsSet(TOPRAT_DEEPGRNDT)) {
-			Top.tp_deepGrndT = Wfile.taDbAvgYr;
+			tp_deepGrndT = Wfile.taDbAvgYr;
 		}
 	}
 
 	// close
 	Wfile.wf_Close(); 	// close weather file if opened
 	// If all input ok, file will be reopened from cnguts.cpp for weather data access during run.
+
+	// Other site related top inputs
+	if (IsSet(TOPRAT_SOILDIFF)) {
+		oInfo("soilDiff is used as part of the simple ground model, which is no longer supported.\n"
+			  "    Use soilCond, soilSpHt, and soilDens instead.");
+		if (IsSet(TOPRAT_SOILCOND) || IsSet(TOPRAT_SOILSPHT) || IsSet(TOPRAT_SOILDENS)) {
+			ignore(TOPRAT_SOILDIFF, "when soilCond and/or soilSpHt and/or soilDens are set.\n"
+			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)");
+			tp_soilDiff = tp_soilCond / (tp_soilDens*tp_soilSpHt);
+		}
+	}
+
 	return rc;
 }			// TOPRAT::tp_Wfile
 //-----------------------------------------------------------------------------

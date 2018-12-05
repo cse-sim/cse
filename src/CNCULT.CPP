@@ -370,7 +370,7 @@ RC FC fdStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
 #undef P
 }		// fdStarCkf
 
-static CULT fdT[] = //---------------------------------- FOUNDATIONCOMP Cmd Table
+static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 {
 	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
 	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
@@ -881,7 +881,7 @@ dflInH:
 		//   skip at RUN, avoid dup messages
 		ignoreN( "when sfExCnd not GROUND", SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
 			SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND),
-			SFX( DEPTHBG), 0);
+			SFX( DEPTHBG), SFX( HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
 	}
 
 // sf_CkfSURF: require sfAdjZn if ext cond is Zone else disallow
@@ -915,17 +915,31 @@ RC SFI::sf_CkfSURFGround(
 
 	// sfExH unused for GROUND
 	if (!bRun)
-		ignoreN( whenGROUND, SFX( UX), 0);	// notify user
+		ignoreN(whenGROUND, SFX(UX), 0);	// notify user
 	x.uX = 0.f;		// overwrite default (1.5)
 
-	if (!sf_IsFD( x.xs_model) && !sf_IsKiva(x.xs_modelr))
+	if (sf_IsKiva(x.xs_modelr)) {
+		ignoreN("when sfExCnd=GROUND and sfFnd or sfFndFloor are set.", SFX(DEPTHBG), 
+			SFXO(CTADBAVGYR), SFXO(CTADBAVG31),	SFXO(CTADBAVG14), SFXO(CTADBAVG07), 
+			SFXO(CTGRND), SFXO(RCONGRND), 0);
+		return rc;
+	}
+	else
+	{
+		oInfo("sfExCnd=GROUND without defining sfFnd or sfFndFloor for this surface.\n"
+			"    Using simple ground model instead of two-dimensional finite difference.");
+		ignoreN("when sfExCnd=GROUND and neither sfFnd or sfFndFloor is set.",
+			SFX(HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
+	}
+
+	if (!sf_IsFD( x.xs_model))
 		rc |= oer( "sfModel=%s not supported %s -- must be sfModel=FD",
 				getChoiTx( SFX( MODEL)), whenGROUND);
 
 	// check for unresolved expressions
 	int allVals = IsValAll( SFX( DEPTHBG), SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
 					SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND), 0);
-	if (!allVals || x.xs_sbcO.sb_groundModel != 0 || sf_IsKiva( x.xs_modelr))
+	if (!allVals || x.xs_sbcO.sb_groundModel != 0)
 		return rc;	// can't check or already checked or not relevant
 
 	float cGrnd = x.xs_sbcO.sb_CGrnd();	// total conductance to ground, Btuh/ft2-F
