@@ -103,7 +103,7 @@ Provides user control over how CSE models conduction for this surface.
                                       model (used with short time steps
                                       and the CZM/UZM zone model).
 
-  2D_FND                              Uses a two-dimensional finite
+  KIVA                                Uses a two-dimensional finite
                                       difference model to simulate heat
                                       flow through foundation surfaces.
   ----------------------------------- -----------------------------------
@@ -397,15 +397,15 @@ Exposed perimeter of foundation floors.
 
 <%= member_table(
   units: "ft",
-  legal_range: "x $\geq$ 0",
+  legal_range: "x $\\geq$ 0",
   default: "*none*",
-  required: "when *sfType* is FLOOR and *sfExtCnd* is GROUND",
+  required: "when *sfType* is FLOOR, *sfFnd* is set, and *sfExtCnd* is GROUND",
   variability: "constant") %>
 
 
 **sfDepthBG=*float***
 
-<!-- TODO How does this change for Kiva? -->
+*Note: sfDepthBG is used as part of the simple ground model, which is no longer supported. Use sfHeight with sfFnd instead.*
 
 Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edge.  For floors, sfDepthBG is measured to the bottom face.
 
@@ -413,6 +413,8 @@ Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edg
 ----------- --------------   ------------- -------------- ------------------
 ft            x $\geq$ 0                      No                constant
 
+
+*Note: The following data members are part of the simple ground model, which is no longer supported. Use sfFnd instead.*
 
 **sfExCTGrnd=*float***
 

@@ -58,7 +58,7 @@ Number of "warm-up" days used to initialize the simulator. Simulator initializat
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              *x* $\geq$ 0      7             No             constant
+              *x* $\geq$ 0       7             No             constant
 
 **nSubSteps=*int***
 
@@ -133,7 +133,7 @@ The maximum ratio of growth between neighboring cells in the direction away from
 
 <%= member_table(
   units: "",
-  legal_range: "x $\geq$ 1.0",
+  legal_range: "x $\\geq$ 1.0",
   default: "1.5",
   required: "No",
   variability: "constant") %>
@@ -451,7 +451,7 @@ Ground surface roughness. Used for convection and wind speed corrections in two-
 
 <%= member_table(
   units: "ft",
-  legal_range: "x $\geq$ 0.0",
+  legal_range: "x $\\geq$ 0.0",
   default: "0.1",
   required: "No",
   variability: "constant") %>
@@ -517,9 +517,9 @@ Multiplier for diffuse horizonal irradiance.
 
 **soilDiff=*float***
 
-<!-- TODO Remove in light of asking for individual properties in Kiva? -->
+*Note: soilDiff is used as part of the simple ground model, which is no longer supported. Use soilCond, soilSpHt, and SoilDens instead.*
 
-Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note that derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
+Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note: derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------

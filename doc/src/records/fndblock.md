@@ -1,10 +1,20 @@
 # FNDBLOCK
 
-Foundation blocks are materials within the two-dimensional domain beyond those defined by the slab and wall SURFACEs. Each block is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user.
+Foundation blocks are materials within the two-dimensional domain beyond those defined by the slab and wall SURFACEs. Each block is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user. As a convention The positive X direction is away from the building, and the positive Z direction is down.
 
-<!-- TODO: Insert diagram of references -->
+Options for X and Z references are illustrated in the figure below.
+
+![Foundation block references](media/fd_refs.png)
 
 The default reference is WALLINT, WALLTOP.
+
+An example of defining a block for interior wall insulation is shown below. Here the two points defining the block (P1 and P2) are both shown relative to their reference points (Ref1 and Ref2, respectively).
+
+![Foundation block example](media/fd_block.png)
+
+Note: X and Z point values of zero imply that a point is the same as the reference point. The default for X and Z point values is zero since points will often align with one or both of the reference values.
+
+It does not matter which of the four corners of a block are used to define the two points as long as they are opposite corners.
 
 **fcMat=*matName***
 
