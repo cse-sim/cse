@@ -3292,7 +3292,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
 							// re support of multiple DHWSYSs in single unit
 
-  *i SI ws_mult;			// multiplier
+  *i SI_GEZ ws_mult;		// multiplier
 							//   modeled as ws_mult identical systems
   *i TI ws_elecMtri;		// meter for system electricity use
   *i TI ws_fuelMtri;		// meter for system fuel use
@@ -3358,7 +3358,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults
 							//    note may be non-integer
-  *r INT ws_loadShareCount;	// # of DHWSYSs sharing common load this group
+  *r INT ws_wrCount;		// ditto DHWHEATREC
+  *r SI_GEZ ws_showerCount;	// number of shower fixtures served by this DHWSYS
+							//   re DHWHEATREC (DWHR) modeling
+							//      non-central: user input, default 1
+							//      central: derived from child DHWSYSs
+  *r SI ws_loadShareCount;	// # of DHWSYSs sharing common load this group
 							//   (e.g # of DHWSYSs serving a dwelling unit)
 							//   NOT effected by ws_mult.
   *r INT ws_loadShareIdx;	// 0-based index of this DHWSYS in shared group
@@ -3540,6 +3545,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wr_CkF();"
+  *declare "RC wr_Init();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
   *declare "float wr_EffAdjusted();"
 

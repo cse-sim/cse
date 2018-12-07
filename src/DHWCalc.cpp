@@ -404,7 +404,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		//   see ws_AccumCentralUse() etc
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral->ws_HasCentralDHWSYS())
-			rc |= oer( "DHWSys '%s' (given by wsCentralDHWSYS) is not central",
+			rc |= oer( "DHWSYS '%s' (given by wsCentralDHWSYS) is not central",
 				pWSCentral->name);
 
 		// set or default some child values from parent
@@ -464,6 +464,12 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			if (Top.tp_subhrTickDur != 1.)
 				rc |= oer( "integral minute substep duration required");
 		}
+	}
+
+	DHWHEATREC* pWR;
+	RLUPC( WrR, pWR, pWR->ownTi == ss)
+	{	rc |= pWR->wr_Init();
+		ws_wrCount += pWR->wr_mult;		// total # of heat recovery devices in this system
 	}
 
 	return rc;
@@ -2057,15 +2063,18 @@ RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
 	return rc;
 }	// DHWHEATREC::wr_CkF
 //----------------------------------------------------------------------------
+RC DHWHEATREC::wr_Init()
+{	RC rc = RCOK;
+	return rc;
+}		// DHWHEATREC::wr_Init
+//----------------------------------------------------------------------------
 RC DHWHEATREC::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,
 	int options /*=0*/)
 {
 	RC rc = record::RunDup(pSrc, options);
-#if 0
 	DHWSYS* pWS = wr_GetDHWSYS();
 	pWS->ws_wrCount += wr_mult;		// count total # of heat rec devices in system
-#endif
 
 	return rc;
 }		// DHWHEATREC::RunDup
