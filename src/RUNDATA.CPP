@@ -84,7 +84,8 @@ makAncDUCTSEG( DsR);		// duct segments
 makAncDHWMTR( WMtrR);		// DHW meters
 makAncDHWSYS( WsR);			// DHW system
 makAncDHWHEATER( WhR);		// DHW heater
-makAncDHWTANK( WtR);		// DHW heater
+makAncDHWHEATREC( WrR);		// DHW heat recovery
+makAncDHWTANK( WtR);		// DHW tank
 makAncDHWPUMP( WpR);		// DHW pump
 makAncDHWLOOP( WlR);		// DHW loop
 makAncDHWLOOPSEG( WgR);		// DHW loop segment

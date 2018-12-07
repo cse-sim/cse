@@ -407,6 +407,8 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			2013 "2013"
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
+*choicb DHWHRTYCH { HORIZ "horizontal" VERT "vertical" }
+*choicb DHWHRCFGCH { NONE "none" EQFLOW "equalflow" }
 
 // PV choices
 *choicb PVMODCH {

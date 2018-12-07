@@ -3535,15 +3535,31 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
 *END
 //=============================================================================
-#if 0
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
   *prefix wr_
 
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wr_CkF();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
-*END
+  *declare "float wr_EffAdjusted();"
+
+  *i SI_GEZ wr_mult;		// multiplier
+							//   modeled as wr_mult identical heat recovery devices
+  *i DHWEUCH wr_hwEndUse	// end use source for this device
+							//   as of 12-18, only supports C_DHWEUCH_SHOWER
+  *i DHWHRTYCH wr_type		// type (C_DHWHRTYCH_HORIZ or _VERT)
+  *i DHWHRCFGCH wr_config	// plumbing configuration
+
+#if 0
+	wrPlumbingConfig. <None, FeedFixture, FeedHtr, FeedBoth>
+	wrType.  <Vertical, Horizontal>.  (Only vertical supported pending additional data.)
 #endif
+	*h FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
+
+	*s *e FLOAT wr_eff			// effectiveness under current conditions
+
+
+*END
 //=============================================================================
 RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *prefix wt_

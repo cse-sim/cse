@@ -2035,6 +2035,45 @@ RC DHWTANK::wt_DoHour(			// hourly unfired DHWTANK calcs
 }		// DHWTANK::wt_DoHour
 //=============================================================================
 
+///////////////////////////////////////////////////////////////////////////////
+// DHWHEATREC
+///////////////////////////////////////////////////////////////////////////////
+DHWSYS* DHWHEATREC::wr_GetDHWSYS() const
+{
+	DHWSYS* pWS = (b == &WrR ? WsR : WSiB).GetAtSafe( ownTi);
+	return pWS;
+}		// DHWHEATREC::wt_GetDHWSYS
+//----------------------------------------------------------------------------
+RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
+// called at end of each DHWHEATREC input
+{
+	DHWSYS* pWS = wr_GetDHWSYS();
+	RC rc = !pWS ? oer( "DHWSYS not found")	// insurance (unexpected)
+				 : pWS->ws_CheckSubObject( this);
+	if (wr_hwEndUse != C_DHWEUCH_SHOWER)
+		rc = ooer( DHWHEATREC_HWENDUSE, "wrHWEndUse=%s not supported (must be Shower)",
+			getChoiTx( DHWHEATREC_HWENDUSE));
+
+	return rc;
+}	// DHWHEATREC::wr_CkF
+//----------------------------------------------------------------------------
+RC DHWHEATREC::RunDup(		// copy input to run record; check and initialize
+	const record* pSrc,
+	int options /*=0*/)
+{
+	RC rc = record::RunDup(pSrc, options);
+#if 0
+	DHWSYS* pWS = wr_GetDHWSYS();
+	pWS->ws_wrCount += wr_mult;		// count total # of heat rec devices in system
+#endif
+
+	return rc;
+}		// DHWHEATREC::RunDup
+//----------------------------------------------------------------------------
+float DHWHEATREC::wr_EffAdjusted()
+{	return wr_effRated;
+}	// DHWHEATREC::wr_effAdjusted
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWPUMP

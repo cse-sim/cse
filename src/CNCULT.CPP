@@ -75,6 +75,7 @@ makAncDHWMTR( WMtriB);		// DHW meters
 makAncDHWSYS( WSiB);		// DHW system
 makAncDHWHEATER( WHiB);		// DHW heater
 makAncDHWTANK( WTiB);		// DHW tank
+makAncDHWHEATREC( WRiB);	// DHW heat recovery
 makAncDHWPUMP( WPiB);		// DHW pump
 makAncDHWLOOP( WLiB);		// DHW loop
 makAncDHWLOOPSEG( WGiB);	// DHW loop segment
@@ -137,6 +138,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WSiB.free();
 	WHiB.free();
 	WTiB.free();
+	WRiB.free();
 	WPiB.free();
 	WLiB.free();
 	WGiB.free();
@@ -1814,6 +1816,29 @@ CULT( "endDHWHEATER",ENDER, 0,                 0,     0, 0,      0,     0,      
 CULT()
 };	// dhwHeaterT
 
+//============================= DHWHEATREC command =============================
+LOCAL RC FC wrStarCkf( CULT* c, /*DHWTANK* */ void *p, void *p2, void *p3)
+// called at end of DHWHEATREC input, to get messages near source of error.
+{
+	return ((DHWHEATREC*)p)->wr_CkF();
+}		// wtStarCkf
+//=============================================================================
+static CULT dhwHeatRecT[] = //------ DHWHEATREC cmd RAT Entry table, used from dhwSysT
+{
+// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wrStarCkf),
+CULT( "wtDHWSYS",    DAT,   DHWHEATREC_OWNTI,  NO_INP|RDFLIN,0,0,  TYREF, &WSiB,  0,      N,   N),
+CULT( "wrMult",		 DAT,	DHWHEATREC_MULT,   0,        0, VEOI,  TYSI,  0,      1,      N,   N),
+CULT( "wrType",	     DAT,	DHWHEATREC_TYPE,   0,        0, VEOI,  TYCH,  0,      C_DHWHRTYCH_VERT, N,   N),
+CULT( "wrConfig",    DAT,	DHWHEATREC_CONFIG, 0,        0, VEOI,  TYCH,  0,      C_DHWHRCFGCH_EQFLOW, N,   N),
+CULT( "wrCSARatedEffectiveness",
+                     DAT,	DHWHEATREC_EFFRATED, RQD,    0, VEOI,  TYFL,  0,      .5f,    N,   N),
+CULT( "wrHWEndUse",	 DAT,	DHWHEATREC_HWENDUSE,0,       0, VEOI,  TYCH,  0,      C_DHWEUCH_SHOWER, N,   N),
+CULT( "endDHWHEATREC",  ENDER, 0,              0,        0, 0,     0,     0,      0,      N,   N),
+CULT()
+};	// dhwHeatRecT
+
 //============================= DHWTANK command =============================
 LOCAL RC FC wtStarCkf( CULT* c, /*DHWTANK* */ void *p, void *p2, void *p3)
 // called at end of DHWTANK input, to get messages near source of error.
@@ -1996,6 +2021,8 @@ CULT( "dhwheater",   RATE,  0,               0,       0, 0,      0,     &WHiB,  
 CULT( "dhwtank",     RATE,  0,               0,       0, 0,      0,     &WTiB,  N,      dhwTankT, N),
 CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  N,      dhwPumpT, N),
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
+CULT( "dhwheatrec",  RATE,  0,               0,       0, 0,      0,     &WRiB,  N,      dhwHeatRecT, N),
+
 CULT( "endDHWSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwSysT
