@@ -93,11 +93,6 @@ RC KIVA::kv_RddInit()
 	// Reset numerical scheme
 	kv_ground->foundation.numericalScheme = Kiva::Foundation::NS_ADI;
 
-	// Reset emissivity to use CSE's IR model instead
-	kv_ground->foundation.slab.interior.emissivity = 0.0;
-	kv_ground->foundation.wall.interior.emissivity = 0.0;
-
-
 	return RCOK;
 
 }
@@ -208,7 +203,7 @@ RC XSRAT::xr_ApplyKivaResults()
 		auto& sbc = x.xs_sbcI;
 
 		// Set surface temp and convection coeff
-		float hc = 0.0, hr = 0.0, q = 0.0;
+		float hc = 0.0, hr = 0.0, qt = 0.0, qc = 0.0;
 		float Tz = DegFtoK(sbc.sb_txa);
 		float Tr = DegFtoK(sbc.sb_txr);
 		for (auto ki : xr_kivaInstances)
@@ -224,6 +219,7 @@ RC XSRAT::xr_ApplyKivaResults()
 			float hci = k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_CONV });
 			float hri = k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_RAD });
 			float Ts = k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_TEMP });
+			float qi = -k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_FLUX });
 
 			if (!isfinite(Ts))
 			{
@@ -231,16 +227,17 @@ RC XSRAT::xr_ApplyKivaResults()
 				return RCBAD;
 			}
 
+			qc += p*hci*(Tz - Ts);
 			hc += p*hci;
 			hr += p*hri;
-			q += hc*(Tz - Ts) + hr*(Tr - Ts);
+			qt += p*qi;
 		}
 
 		// Set aggreagate surface properties
-		sbc.sb_tSrf = DegKtoF(Tz - q/hc);
+		sbc.sb_tSrf = DegKtoF(Tz - qc/hc);
 		sbc.sb_hxa = USItoIP(hc);
 		sbc.sb_hxr = USItoIP(hr);
-		sbc.sb_qSrf = IrSItoIP(q);
+		sbc.sb_qSrf = IrSItoIP(qt);
 
 	}
 
