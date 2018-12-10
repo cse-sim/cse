@@ -520,7 +520,7 @@ x	}
 	BOOL bDbPrint = DbDo( dbdZM);
 
 	RLUP( ZrB, zp)
-		rc |= zp->zn_InitSubhr();		// final zone init for loads clac
+		rc |= zp->zn_InitSubhr();		// final zone init for loads calc
 										//   sets values for all models
 
 	if (!Top.tp_bAllCR)
