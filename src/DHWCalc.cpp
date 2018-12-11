@@ -339,6 +339,17 @@ DHWSYS* DHWSYS::ws_GetCentralDHWSYS() const
 	return pWS;
 }		// DHWSYS::ws_GetCentralDHWSYS
 //-----------------------------------------------------------------------------
+int DHWSYS::ws_IsCentralDHWSYS() const
+{	// note: dicey for input records
+	//   ws_childSYSCount is derived in ws_Init() pass 1
+#if defined( _DEBUG)
+	if (b == &WSiB)
+		err( PERR, "ZNRES::ws_IsCentralDHWSYS '%s': called on input record",
+			name);
+#endif
+	return ws_childDHWSYSCount > 0;
+}		// DHWSYS::ws_IsCentralDHWSYS
+//-----------------------------------------------------------------------------
 RC DHWSYS::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
 	int options/*=0*/)
@@ -384,6 +395,13 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		// load sharing base state: assume no sharing
 		ws_loadShareCount = 1;
 		ws_loadShareIdx = 0;
+		ws_childDHWSYSCount = 0;
+		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
+		if (pWSCentral)
+		{	if (pWSCentral->IsSet( DHWSYS_SHOWERCOUNT))
+				pWSCentral->ooer( DHWSYS_SHOWERCOUNT, "wsShowerCount not allowed on central DHWSYS");
+			pWSCentral->ws_showerCount = 0;		// shower count derived from child DHWSYSs (see below)
+		}
 		return rc;
 	}
 
@@ -394,6 +412,28 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			if (pWS)	// insurance: NULL impossible?
 				ws_loadShareCount = pWS->ws_loadShareCount;
 		}
+
+		DHWHEATREC* pWR;
+		RLUPC( WrR, pWR, pWR->ownTi == ss)
+		{	rc |= pWR->wr_Init();		// init for run (sets wr_fWeight = 0)
+			if (pWR->wr_mult == 0)
+				continue;
+			ws_wrCount += pWR->wr_mult;		// count total # of heat recovery devices in this DHWSYS
+			// determine results weighting for this device
+			//   add weight to equivalent devices, if any (avoid dup calc)
+			//   see comments elsewhere re modeling multiple devices
+			DHWHEATREC* pWRX;
+			RLUPC( WrR, pWRX, pWRX->ownTi == ss)
+			{	if (pWRX == pWR || pWR->wr_IsEquiv( *pWRX))
+				{	pWRX->wr_fWeight += float( pWR->wr_mult) / ws_showerCount;
+					break;
+				}
+			}
+		}
+
+		if (ws_wrCount > ws_showerCount)
+			rc |= oer( "Invalid heat recovery arrangement: more DHWHEATREC devices (%d) than showers (%d)",
+					ws_wrCount, ws_showerCount);
 		return rc;
 	}
 
@@ -406,6 +446,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		if (pWSCentral->ws_HasCentralDHWSYS())
 			rc |= oer( "DHWSYS '%s' (given by wsCentralDHWSYS) is not central",
 				pWSCentral->name);
+
+		pWSCentral->ws_childDHWSYSCount += ws_mult;
+		pWSCentral->ws_showerCount += ws_showerCount*ws_mult;	// total # of shower fixtures served
 
 		// set or default some child values from parent
 		//   wsCalcMode, wsTSetpoint: not allowed
@@ -466,11 +509,6 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		}
 	}
 
-	DHWHEATREC* pWR;
-	RLUPC( WrR, pWR, pWR->ownTi == ss)
-	{	rc |= pWR->wr_Init();
-		ws_wrCount += pWR->wr_mult;		// total # of heat recovery devices in this system
-	}
 
 	return rc;
 }		// DHWSYS::ws_Init
@@ -1107,16 +1145,16 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	wh_SetDesc();
 	return rc;
 }	// DHWHEATER::wh_CkF
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
-	const record* pSrc,
-	int options /*=0*/)
+	const record* pSrc,		// input record
+	int options/*=0*/)
 {
 	RC rc = record::RunDup( pSrc, options);
 	DHWSYS* pWS = wh_GetDHWSYS();
 	pWS->ws_whCount += wh_mult;		// total # of water heaters in DHWSYS
 	return rc;
-}		// DHWHEATER::RunDup
+}	// DHWHEATER::RunDup
 //----------------------------------------------------------------------------
 void DHWHEATER::wh_SetDesc()		// build probable description
 // WHY: choice members cannot be probed
@@ -2053,9 +2091,13 @@ DHWSYS* DHWHEATREC::wr_GetDHWSYS() const
 RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
 // called at end of each DHWHEATREC input
 {
+	RC rc = RCOK;
 	DHWSYS* pWS = wr_GetDHWSYS();
-	RC rc = !pWS ? oer( "DHWSYS not found")	// insurance (unexpected)
-				 : pWS->ws_CheckSubObject( this);
+	if (!pWS)
+		oer( "DHWSYS not found");	// insurance (unexpected)
+	// else
+	//	pWS->ws_CheckSubObject( this);
+
 	if (wr_hwEndUse != C_DHWEUCH_SHOWER)
 		rc = ooer( DHWHEATREC_HWENDUSE, "wrHWEndUse=%s not supported (must be Shower)",
 			getChoiTx( DHWHEATREC_HWENDUSE));
@@ -2065,21 +2107,28 @@ RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
 //----------------------------------------------------------------------------
 RC DHWHEATREC::wr_Init()
 {	RC rc = RCOK;
+	wr_fWeight = 0.f;		// insurance
 	return rc;
 }		// DHWHEATREC::wr_Init
 //----------------------------------------------------------------------------
-RC DHWHEATREC::RunDup(		// copy input to run record; check and initialize
-	const record* pSrc,
-	int options /*=0*/)
+int DHWHEATREC::wr_IsEquiv(
+	const DHWHEATREC& wr) const
+// returns 1 iff *this and wr are equivalent (model only once)
 {
-	RC rc = record::RunDup(pSrc, options);
-	DHWSYS* pWS = wr_GetDHWSYS();
-	pWS->ws_wrCount += wr_mult;		// count total # of heat rec devices in system
+	int bEquiv =
+		     wr_effRated == wr.wr_effRated
+		  && wr_config == wr.wr_config
+		  && wr_type == wr.wr_type
+		  && wr_hwEndUse == wr.wr_hwEndUse;
 
-	return rc;
-}		// DHWHEATREC::RunDup
+	return bEquiv;
+}		// DHWHEATREC::wr_IsEquiv
 //----------------------------------------------------------------------------
-float DHWHEATREC::wr_EffAdjusted()
+float DHWHEATREC::wr_EffAdjusted(
+	float vp,
+	float tp,
+	float vd,
+	float td)
 {	return wr_effRated;
 }	// DHWHEATREC::wr_effAdjusted
 //=============================================================================

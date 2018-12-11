@@ -3289,6 +3289,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    but have no heaters etc
   *declare "int ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
   *declare "DHWSYS* ws_GetCentralDHWSYS() const;"
+  *declare "int ws_IsCentralDHWSYS() const;"
   *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
 							// re support of multiple DHWSYSs in single unit
 
@@ -3314,7 +3315,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
   *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
   *i TI ws_FXhwMtri;		// DHWMTR for hot water use at fixtures (= ws_fxUseMix), gal
-  *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolve DHWMTR pointers
+  *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolved DHWMTR pointers
 
 						// hot or mix water use for this DHWSYS (w/o ws_mult)
   *h *e DBL ws_fxUseHot;				// total hot water use at fixtures for hour, gal
@@ -3350,6 +3351,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs
 							//   wssimHOUR otherwise
+  *r INT ws_childDHWSYSCount; // # of child DHWSYSs iff central system (else 0) 
   *r FLOAT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
 							//   = SUM( wh_mult) (possibly non-integral)
   *r INT ws_wtCount;		// ditto DHWTANKs
@@ -3543,11 +3545,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
   *prefix wr_
 
-  *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
-  *declare "float wr_EffAdjusted();"
+  *declare "float wr_EffAdjusted( float vp, float tp, float vd, float td);"
+  *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
@@ -3560,9 +3563,14 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 	wrPlumbingConfig. <None, FeedFixture, FeedHtr, FeedBoth>
 	wrType.  <Vertical, Horizontal>.  (Only vertical supported pending additional data.)
 #endif
-	*h FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
+	*r FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
 
 	*s *e FLOAT wr_eff			// effectiveness under current conditions
+
+	*s FLOAT wr_fWeight			// weighting factor for results
+								//   0: don't model
+								//   else factor for combining multi-DHWHEATREC
+								//		results within parent DHWSYS
 
 
 *END
