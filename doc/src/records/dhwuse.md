@@ -47,18 +47,21 @@ Fraction of draw that is hot water.  Cannot be specified with wuTemp or wuHeatRe
 
 Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is given.   
 
+---------------------------------------------------------------------------------------------
   **Units**   **Legal Range**     **Default**   **Required**         **Variability**
   ---------- ------------------- ------------- ------------------    -------------------------
   ^o^F         0 $\le$ x          0             when wuHeatRecEF          hourly
                                                 is given
+---------------------------------------------------------------------------------------------
+
 
 **wuHeatRecEF=*float***
 
-Heat recovery effectiveness.  If non-0, wuHeatRecEF allows modeling of heat recovery devices such as drain water heat exchangers.  If given, wuTemp must also be specified.  
+Heat recovery effectiveness.  If non-0, wuHeatRecEF allows modeling of heat recovery devices such as drain water heat exchangers.  If given, wuTemp must also be specified. Not allowed when referencing DHWSYS includes DHWHEATREC(s). 
 
 **Units**   **Legal Range**        **Default**   **Required**  **Variability**
 ----------- --------------------- ------------- ------------- -------------------------
-  --         0 $\le$ x $\le$ 0.9          0      when wu          hourly
+  --         0 $\le$ x $\le$ 0.9          0          N          hourly
 
 
 **wuHWEndUse=*choice***

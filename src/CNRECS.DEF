@@ -3308,9 +3308,15 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input)
   *declare "double* ws_whUseTick;"	// array of tick-level (subsubtimestep) hot water
-							//         uses at water heater, gal w/o ws_mult
+							//         flow at water heater, gal w/o ws_mult
+							//         modified by ws_SSF, thus NOT same as feed water volume
 							//    refilled hourly from DHWDAYUSE re expression variability
 							//    used by e.g. HPWH (includes ws_hwUse)
+  *declare "struct DWHRUSETICK* ws_DWHRUseTick;"
+							// array of tick-level info about (shower) draws that
+							// may have DWHR
+  *declare "void ws_InitDWHRUseTick();"
+  *declare "RC ws_DoDWHR();"
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
   *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
@@ -3549,7 +3555,8 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
-  *declare "float wr_EffAdjusted( float vp, float tp, float vd, float td);"
+  *declare "float wr_HX( float vpI, float tpI, float vdI, float tdI, float& qDot);"
+  *declare "float wr_EffAdjusted( float vpI, float tpI, float vdI, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
 
   *i SI_GEZ wr_mult;		// multiplier
@@ -3759,6 +3766,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const;"
   *declare "RC wu_DoHour( DHWSYS* pWS, float mult, int iH);"
   *declare "RC wu_DoHour1( DHWSYS* pWS, float mult, int iH, double begM, double endM);"
+  *declare "RC wu_CalcHotF( float tHot, float tCold, float& hotF);"
 
   *i DHWEUCH wu_hwEndUse // hot water end use
 							//   0 = unknown
@@ -3771,13 +3779,15 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *h FLOAT_GEZ wu_dur		//   flow duration, min
   *h FLOAT_GEZ wu_flow		//   mixed flow rate, gpm
   *h FRAC wu_hotF			//   fraction hot water, default = 1
-							//       derived from wu_temp / wu_heatRecEF if given
-							//       else input
+							//       input value used iff wu_temp NOT given
   *h FLOAT_GZ wu_temp		//   use temperature, F.  If given, 
 							//      hot water draw is calculated assuming
-							//		mains (cold) water mixing
+							//		   cold water mixing (mains or from heat rec)
   *h FLOAT_GEZ wu_heatRecEF	//   heat recovery effectiveness
 							//      re local drain water heat exchange
+							//      Must be 0 for C_DHWEUCH_SHOWER if DHWSYS has DHWHEATREC.
+							//      Checked at runtime only since DHWDAYUSE use by DHWSYS
+							//        can change daily.
 *END	// DHWUSE
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
