@@ -3304,7 +3304,16 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_inFuel;	//	  fuel (for generality, always 0?)
   *declare "MTR* ws_pMtrElec; MTR* ws_pMtrFuel;"
 							// runtime pointers to meters, NULL if not accum'ing
-  *h *e FLOAT ws_tInlet;	// current hour inlet (cold water mains) temp, F
+  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F
+							//   as seen by this DHWSYS
+							//   user input or default Wthr.d.wd_tMains
+  *s *e FLOAT ws_tColdTick;	// cold feed water temp, F
+							//   cold-side input to water heaters and fixture mix
+							//   = ws_tInlet + DHWHEATREC increase, if any
+							//   changes by tick iff DHWHEATREC
+							//   else constant over hour
+  *h *e FLOAT ws_tCold;		// hour average cold feed water temp, F
+							//   used for hourly efficiency-based models
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input)
   *declare "double* ws_whUseTick;"	// array of tick-level (subsubtimestep) hot water
@@ -3312,9 +3321,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//         modified by ws_SSF, thus NOT same as feed water volume
 							//    refilled hourly from DHWDAYUSE re expression variability
 							//    used by e.g. HPWH (includes ws_hwUse)
+  *declare "double ws_whInletVol( int iTk) const;"
   *declare "struct DWHRUSETICK* ws_DWHRUseTick;"
-							// array of tick-level info about (shower) draws that
-							// may have DWHR
+							// array of tick-level info about about draws that
+							// may have DWHR (only shower supported, 12-18)
   *declare "void ws_InitDWHRUseTick();"
   *declare "RC ws_DoDWHR();"
 
@@ -3546,7 +3556,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *y *e INT wh_unMetHrs;	// HPHW: annual count of hrs having
 							//       any wh_unMetSh
   *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
-*END
+*END	// DHWHEATER
 //=============================================================================
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
   *prefix wr_
@@ -3558,23 +3568,26 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "float wr_HX( float vpI, float tpI, float vdI, float tdI, float& qDot);"
   *declare "float wr_EffAdjusted( float vpI, float tpI, float vdI, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
+  *declare "float wr_CalcTick( int iTk, struct DWHRUSE1& DWHRUse);"
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
   *i DHWEUCH wr_hwEndUse	// end use source for this device
 							//   as of 12-18, only supports C_DHWEUCH_SHOWER
-  *i DHWHRTYCH wr_type		// type (C_DHWHRTYCH_HORIZ or _VERT)
-  *i DHWHRCFGCH wr_config	// plumbing configuration
+  *i DWHRTYCH wr_type		// type (C_DHWHRTYCH_HORIZ or _VERT)
+  *i DWHRCFGCH wr_config	// plumbing configuration: what is fed by DWHR potable side output
+							// equal/unequal nomenclature derived
+							//    C_DWHRCFGCH_EQUAL: water heater and fixture
+							//    C_DWHRCFGCH_UNEQFX: fixture (shower) only
+							//    C_DWHRCFGCH_UNEQWH: water heater only
+  *declare "bool wr_FeedsFixture() const { return wr_config != C_DWHRCFGCH_UNEQWH; }"
+  *declare "bool wr_FeedsWaterHeater() const { return wr_config != C_DWHRCFGCH_UNEQFX; }"
 
-#if 0
-	wrPlumbingConfig. <None, FeedFixture, FeedHtr, FeedBoth>
-	wrType.  <Vertical, Horizontal>.  (Only vertical supported pending additional data.)
-#endif
-	*r FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
+  *r FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
 
-	*s *e FLOAT wr_eff			// effectiveness under current conditions
+  *s *e FLOAT wr_eff			// effectiveness under current conditions
 
-	*s FLOAT wr_fWeight			// weighting factor for results
+  *r FLOAT wr_fWeight			// weighting factor for results
 								//   0: don't model
 								//   else factor for combining multi-DHWHEATREC
 								//		results within parent DHWSYS

@@ -537,6 +537,14 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	return rc;
 }		// DHWSYS::ws_Init
 //----------------------------------------------------------------------------
+double DHWSYS::ws_whInletVol(
+	int iTk) const		// 0-based tick within hour
+// assumption: solar and conventional heater(s) share inlet source
+// returns inlet water volume for tick, gal
+{
+	return ws_whUseTick[ iTk] / (1.f - ws_SSF);
+}	// DHWSYS::ws_whInletVol
+//----------------------------------------------------------------------------
 int DHWSYS::ws_DetermineSimMeth() const
 {
 	int simMeth = wssimHR;
@@ -592,6 +600,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// mains temp
 	if (!IsSet( DHWSYS_TINLET))
 		ws_tInlet = Wthr.d.wd_tMains;
+	ws_tCold = ws_tColdTick = ws_tMains;	// cold feed water temp
+											// may be increased later re DHWHEATREC
 
 	// runtime checks of vals possibly set by expressions
 	rc |= ws_CheckVals( ERR);	// checks ws_SSF, ws_tUse, ws_tSetpoint
@@ -647,7 +657,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// here we combine these to derive consistent hourly total and tick-level (1 min) bins
 
 	// init tick bins to average of hourly (initializes for hour)
-	double hwUseX = ws_hwUse / ws_loadShareCount;	// hwUse per system
+	double hwUseX = ws_hwUse * whDrawVolF / ws_loadShareCount;	// hwUse per system
 	VSet( ws_whUseTick, Top.tp_NHrTicks(), hwUseX / Top.tp_NHrTicks());
 	// note ws_fxUseMixLH is set in ws_EndIvl()
 	ws_InitDWHRUseTick();		// clear DWHR info
@@ -715,7 +725,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_HRDL = float( HRLL + ws_HRBL);
 
 	// total recovery load
-	ws_HHWO = waterRhoCp * ws_whUse.total * (ws_tUse - ws_tInlet);
+	ws_HHWO = waterRhoCp * ws_whUse.total * (ws_tUse - ws_tCold);
 	ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;
 
 	if (ws_whCount > 0.f)
@@ -1026,7 +1036,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	else
 	{	// use temperature is specified
 		// const DHWSYS* pWS = wu_GetDHWSYS();
-		float tCold = pWS->ws_tInlet;	// cold water temp at fixture, F
+		float tCold = pWS->ws_tCold;	// cold water temp at fixture, F
 										//   assume same as mains temp
 		float tHot = pWS->ws_tUse;		// hot water temp at fixture, F
 										//   assume system tuse
@@ -2229,21 +2239,27 @@ int DHWHEATREC::wr_IsEquiv(
 	return bEquiv;
 }		// DHWHEATREC::wr_IsEquiv
 //----------------------------------------------------------------------------
-#if 0
 float DHWHEATREC::wr_CalcTick(
-	DHWSYS* pWS,
 	int iTk,
-	DWHRUSE1& DWHRUse
+	DWHRUSE1& DWHRUse)
 
-{	// calc hot water draw for this draw
+{	
+	DHWSYS* pWS = wr_GetDHWSYS();
+
+	// calc hot water draw for this draw
 	// heat added to feed water
 	const DHWUSE* pWU = DWHRUse.wdw_pDHWUSE;
 
-	float tpI = pWS->tInlet;		// potable inlet temp = mains
-	float vpI = 0; // flow for this device + others depending on plumbing
+	float tpI = pWS->ws_tInlet;		// potable inlet temp = mains
+
+	float vpI = 0.f;	// potable side flow
+	if (wr_FeedsWaterHeater())
+		vpI += pWS->ws_whInletVol( iTk);
+	if (wr_FeedsFixture())
+		vpI += 0.f;		// TODP
 
 	float tdI = pWU->wu_temp;		// drain entry temp = use temp
-	float vdI = pWU->wu_flow * DWHRUse.wdw_dur / Top.tp_subhrTickDur;
+	float vdI = pWU->wu_flow / Top.tp_subhrTickDur;
 
 	float qDot;
 	float tpO = wr_HX( vpI, tpI, vdI, tdI, qDot);
@@ -2251,7 +2267,7 @@ float DHWHEATREC::wr_CalcTick(
 	return 0.;
 	
 }
-#endif
+//-----------------------------------------------------------------------------
 float DHWHEATREC::wr_HX(
 	float vpI,	// potable water inlet flow, gpm
 	float tpI,	// potable water inlet temp, F (generally mains)
@@ -2267,7 +2283,7 @@ float DHWHEATREC::wr_HX(
 
 	return qDot;
 
-}	// DHWHEATREC::wr_Hx
+}	// DHWHEATREC::wr_HX
 
 //----------------------------------------------------------------------------
 float DHWHEATREC::wr_EffAdjusted(
@@ -2684,7 +2700,7 @@ RC DHWLOOPBRANCH::wb_DoHour(			// hourly DHWLOOPBRANCH calcs
 	wb_HBUL = ps_fvf * ps_fRhoCpX * (ps_tIn - ps_tOut);
 
 	// waste loss
-	wb_HBWL = wb_fWaste * ps_vol * (ps_fRhoCpX/60.f) * (ps_tIn - pWS->ws_tInlet);
+	wb_HBWL = wb_fWaste * ps_vol * (ps_fRhoCpX/60.f) * (ps_tIn - pWS->ws_tCold);
 
 	// note wb_mult applied by caller
 
