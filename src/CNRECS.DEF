@@ -3316,16 +3316,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   used for hourly efficiency-based models
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input)
-  *declare "double* ws_whUseTick;"	// array of tick-level (subsubtimestep) hot water
-							//         flow at water heater, gal w/o ws_mult
-							//         modified by ws_SSF, thus NOT same as feed water volume
-							//    refilled hourly from DHWDAYUSE re expression variability
-							//    used by e.g. HPWH (includes ws_hwUse)
   *declare "double ws_whInletVol( int iTk) const;"
-  *declare "struct DWHRUSETICK* ws_DWHRUseTick;"
-							// array of tick-level info about about draws that
-							// may have DWHR (only shower supported, 12-18)
-  *declare "void ws_InitDWHRUseTick();"
+  *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
+										//   draws, adjusted cold water temp, ...
+  *declare "void ws_InitTicks( double whUseHr);"
   *declare "RC ws_DoDWHR();"
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
@@ -3353,11 +3347,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
-  *h *e *array 6 FLOAT ws_whDrawVolF;	// water heater draw volume factors by end use
-							// accounts for solar, warm-up waste, and pipe losses
-							// factor = water heater draw vol / point of use hot water draw vol
-							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
-							//   [1 ..] = per C_DHWUSETYCH_xxx
   *h *e *array 6 FLOAT ws_whDrawDurF;	// water heater draw duration factors by end use
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
@@ -3417,7 +3406,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
   *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
-  *declare "RC wh_DoHour( float HARL, int wsMult);"
+  *declare "RC wh_DoHour( float HARL, float wsMult, float wsSSF);"
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
@@ -3471,7 +3460,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
   *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhr( double* draw,	double scale, double xLoss);"
+  *declare "RC wh_InstUEFDoSubhr( const struct DHWTICK* ticksSh, double scale, double xLoss);"
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
@@ -3541,7 +3530,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( double* draw, double scale, double qLossDraw, double qLossRL, double volRL);"
+  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scale, double qLossDraw, double qLossRL, double volRL);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -3568,7 +3557,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "float wr_HX( float vpI, float tpI, float vdI, float tdI, float& qDot);"
   *declare "float wr_EffAdjusted( float vpI, float tpI, float vdI, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
-  *declare "float wr_CalcTick( int iTk, struct DWHRUSE1& DWHRUse);"
+  *declare "float wr_CalcTick( int iTk, struct DWHRUSE& DWHRUse);"
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
