@@ -1087,7 +1087,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 		double fxMixTick = fxFlow * (min( tickEnd, endX) - max( tickBeg, begX));
 		// note: fxMixTick rarely 0 due to tests above, not worth testing
 		double whUseTick = fxMixTick * hotF;
-		pWS->ws_ticks[ iTk].wtk_whUseNoDWHR += whUseTick;	// tick use at WH
+		pWS->ws_ticks[ iTk].wtk_whUse += whUseTick;	// tick use at WH
 		pWS->ws_fxUseHot += whUseTick;			// hour total hot at fixture
 		pWS->ws_whUse.wmt_AccumEU( wu_hwEndUse, whUseTick);
 		pWS->ws_fxUseMix.wmt_AccumEU( wu_hwEndUse, fxMixTick);
