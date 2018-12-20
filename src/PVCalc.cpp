@@ -400,7 +400,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	// Calculate plane-of-array incidence
 	int sunupSrf;	// nz iff
-	float cosi, fBeam;
+	float cosi, fBeam; // cos(incidence) and unshaded fraction
 	if (pv_HasPenumbraShading() && Top.tp_PumbraAvailability() > 0)
 		sunupSrf = pv_CalcBeamShading( cosi, fBeam);
 	else
@@ -414,13 +414,13 @@ RC PVARRAY::pv_CalcPOA()
 	if (sunupSrf < 0)
 		return RCBAD;	// shading error
 
-	float poaBeam;
 	if (sunupSrf)	
-	{	poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
+	{	pv_poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
+		pv_poaBeamEff = max(Top.radBeamHrAv*cosi*(1.f - pv_sif * (1.f - fBeam)),0.f);
 		pv_aoi = acos(cosi);
 	}
 	else
-	{	poaBeam = 0.f;  // incident beam
+	{	pv_poaBeam = pv_poaBeamEff = 0.f;  // incident beam
 		pv_aoi = kPiOver2;
 	}
 
@@ -480,7 +480,8 @@ RC PVARRAY::pv_CalcPOA()
 
 	float poaDiff = Top.radDiffHrAv*(poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
 	float poaGrnd = Top.radBeamHrAv*pv_grndRefl*vfGrndDf*verSun;  // ground reflected beam
-	pv_poa = poaBeam + poaDiff + poaGrnd;
+	pv_poa = pv_poaBeam + poaDiff + poaGrnd;
+	pv_poaEff = pv_poaBeamEff + poaDiff + poaGrnd;
 
 	// Correct for off-normal transmittance
 	float theta1 = pv_aoi;
@@ -491,7 +492,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	float tauC = tauAR*tauGl;
 
-	pv_poaT = poaBeam*tauC / pv_tauNorm + poaDiff + poaGrnd;
+	pv_poaT = pv_poaBeamEff*tauC / pv_tauNorm + poaDiff + poaGrnd;
 
 	return rc;
 }

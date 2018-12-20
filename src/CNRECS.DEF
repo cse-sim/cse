@@ -3791,14 +3791,18 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *h FRAC pv_grndRefl		// ground reflectance
   *i FRAC pv_gcr			// ground coverage ratio (what fraction of the ground is covered by the array). 1.0 implies no spacing.
   *i FLOAT_GZ pv_dcacRat	// DC to AC ratio
+  *h FLOAT_GE1 pv_sif		// Shading Impact Factor
   *i FRAC pv_invEff			// inverter efficiency at rated power
   *h FRAC pv_sysLoss		// system losses
   *h *e FLOAT pv_tCell		// cell temperature, F
   *h *e FLOAT pv_aoi		// angle of incidence (radians)
   *h *e ANGLE pv_panelTilt	// tilt of pv panel (different from array tilt for tracking systems), radians
   *h *e ANGLE pv_panelAzm	// azimuth of pv panel (different from array tilt for tracking systems), radians
+  *h *e FLOAT pv_poaBeam	// plane of array beam incidence, Btu/h-ft2
+  *h *e FLOAT pv_poaBeamEff	// effective plane of array beam incidence (accounts for shading impact factor), Btu/h-ft2
   *h *e FLOAT pv_poa		// plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_poaT		// transmitted plane of array incidence, Btu/h-ft2
+  *h *e FLOAT pv_poaEff		// effective plane of array incidence, Btu/h-ft2
+  *h *e FLOAT pv_poaT		// transmitted plane of array incidence (after accounting for shading impact), Btu/h-ft2
   *h *e FLOAT pv_dcOut		// DC power output, Btu
   *h *e FLOAT pv_acOut		// AC power output, Btu
 

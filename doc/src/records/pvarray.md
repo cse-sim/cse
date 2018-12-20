@@ -135,7 +135,24 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
                                           values
   ------------------------------------------------------------------
 
-  **pvMounting=*choice***
+**pvSIF=*float***
+
+  Shading Impact Factor (SIF) of the array used to represent the disproportionate impact on array output of partially shaded modules at the sub-array level. This impact is applied to the effective beam irradiance on the array:
+
+  \[I_{poa,beam,eff} = \max\left(I_{poa,beam}\cdot\left(1-SIF\cdot f_{sh}\right),0\right)\]
+
+  where $f_{sh}$ is the fraction of the array that is shaded.
+
+  Default value is 1.2, which is representative of PV systems with sub-array microinverters or DC power optimizers. For systems without sub-array power electronics, values are closer to 2.0.
+
+<%= member_table(
+  legal_range: "*x* $\\geq$ 1.0",
+  default: "1.2",
+  required: "No",
+  variability: "constant") %>
+
+
+**pvMounting=*choice***
 
   Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm](#top-general-data-items), while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
@@ -200,16 +217,18 @@ Fraction of total DC energy lost. The total loss from a system is aggregated fro
   **Loss Type**             **Default Assumption**
   ------------------------- ----------------------
   Soiling                   0.02
-  Shading                   0.03
+  *Shading*                 *0 (handled explicitly)*
   Snow                      0
-  Mismatch                  0.02
+  *Mismatch*                *0 (to represent power-electronics)*
   Wiring                    0.02
   Connections               0.005
   Light-induced degradation 0.015
   Nameplate rating          0.01
-  Age                       0
+  *Age*                     *0.05 (estimated 0.5% degradation over 20 years)*
   Availability              0.03
   **Total**                 **0.14**
+
+*Italic* lines indicate differences from PVWatts assumptions.
 
   ------------------------------------------------------------
   **Units** **Legal** **Default** **Required** **Variability**
