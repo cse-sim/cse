@@ -238,6 +238,8 @@ struct DWHRUSE		// info about 1 (shower) draw that could have DWHR
 		: wdw_flow( flow), wdw_pDHWUSE( pDHWUSE)
 	{}
 	~DWHRUSE() {}
+	RC wdw_DoTick( DHWSYS& ws, DHWTICK& tk);
+
 	float wdw_flow;		// mixed flow rate, gpm
 						//   adjusted for draw interval overlap
 	float wdw_dflow;	// 
@@ -247,13 +249,15 @@ struct DWHRUSE		// info about 1 (shower) draw that could have DWHR
 struct DHWTICK	// per tick info
 {
 	DHWTICK() { wtk_Init(); }
+	WVect< DWHRUSE> wtk_dwhrDraws;	// all possible DWHR draws for this tick
 	double wtk_whUseNoDWHR;	// tick non-DWHR hot water draw at water heater(s), gal
 							//  accumulated in initial pass re determination of
 							//  DWHR potable water flow
-	WVect< DWHRUSE> wtk_dwhrDraws;	// all possible DWHR draws for this tick
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
-	void wtk_Init( double whUseTick=0.)
-	{	wtk_dwhrDraws.resize(0); wtk_whUseNoDWHR = 0.f; wtk_whUse = whUseTick; }
+	float wtk_tCold;		// cold water temperature for this tick, F
+							//   reflects DHWR if any
+	void wtk_Init( double whUseTick=0., float tCold=50.f)
+	{	wtk_dwhrDraws.resize(0); wtk_whUseNoDWHR = 0.f; wtk_whUse = whUseTick; wtk_tCold = tCold; }
 	void wtk_Accum( const DHWTICK& s, double mult);
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
@@ -679,7 +683,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	DHWDAYUSE* pWDU = WduR.GetAtSafe( ws_dayUsei);	// ref'd DHWDAYUSE can vary daily
 	if (pWDU)
 	{	// accumulation DHWDAYUSE input to tick bins and total use
-		rc |= pWDU->wdu_DoHour( this);		// accum DAYUSEs, returns nUse = # of ticks with use
+		rc |= pWDU->wdu_DoHour( this);		// accum DAYUSEs
 		rc |= ws_DoDWHR();
 	}
 
@@ -808,7 +812,7 @@ void DHWSYS::ws_InitTicks(			// initialize tick data for hour
 	int nTk = Top.tp_NHrTicks();
 	double whUseTick = whUseHr / nTk;
 	for (int iTk=0; iTk < nTk; iTk++)
-		ws_ticks[ iTk].wtk_Init( whUseTick);
+		ws_ticks[ iTk].wtk_Init( whUseTick, ws_tCold);
 }		// DHWSYS::ws_InitTicks
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoDWHR()
@@ -817,21 +821,29 @@ RC DHWSYS::ws_DoDWHR()
 	int nTk = Top.tp_NHrTicks();
 	for (int iTk=0; iTk < nTk; iTk++)
 	{	DHWTICK& tk = ws_ticks[ iTk];
-		int nDraw = tk.wtk_dwhrDraws.size();
-		if (nDraw)
-		{
-#if 0
-		for (WVect<DWHRUSE1>::iterator it = ws_DWHRUseTick[ iTk].wdw_draws.begin();
-			it != ws_DWHRUseTick[ iTk].wdw_draws.end(); ++it)
-		{
-
-		}
-#endif
+		int nD = tk.wtk_dwhrDraws.size();
+		for (int iD=0; iD<nD; iD++)
+		{	DWHRUSE& hru = tk.wtk_dwhrDraws[ iD];
+			rc |= hru.wdw_DoTick( *this, tk);
 		}
 		tk.wtk_whUse += tk.wtk_whUseNoDWHR;
 	}
 	return rc;
 }		// DHWSYS::ws_DoDWHR
+//----------------------------------------------------------------------------
+RC DWHRUSE::wdw_DoTick(
+	DHWSYS& ws,
+	DHWTICK& tk)
+
+{	RC rc = RCOK;
+
+
+
+
+	return rc;
+
+
+}		// DWHRUSE::wdw_DoTick
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {
@@ -1758,7 +1770,8 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 #define HPWH_QBAL		// define to include sub-hour energy balance check
 #if defined( HPWH_QBAL)
-	double qHCStart = wh_pHPWH->getTankHeatContent_kJ();
+	// tank heat content at start
+	double qHCStart = KJ_TO_KWH( wh_pHPWH->getTankHeatContent_kJ());
 #endif
 
 #define HPWH_DUMP		// define to include debug CSV file
@@ -1922,13 +1935,13 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 #if defined( HPWH_QBAL)
 	// form energy balance = sum of heat flows into water, all kWh
-	double deltaHC = KJ_TO_KWH( wh_pHPWH->getTankHeatContent_kJ() - qHCStart);
+	double deltaHC = KJ_TO_KWH( wh_pHPWH->getTankHeatContent_kJ()) - qHCStart;
 	double qBal = qEnv								// HP energy extracted from surround
 		        - qLoss								// tank loss
 				+ wh_HPWHUse[ 0] + wh_HPWHUse[ 1]	// electricity in
 				- qHW								// hot water energy
 				- deltaHC;							// change in tank stored energy
-	if (fabs( qBal) > .001)		// .0002 -> .001 3-30-2017
+	if (fabs( qBal)/max( qHCStart, 1.) > .001)		// added qHCStart normalization, 12-18
 	{	// energy balance error
 		static const int WHBALERRCOUNTMAX = 10;
 		wh_balErrCount++;

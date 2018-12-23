@@ -408,7 +408,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" }
-*choicb DWHRCFGCH { EQUAL "Equal" UNEQFX "UnequalShower" UNEQWH "UnequalWaterHeater" }
+*choicb DWHRCFGCH { EQUAL "Equal" UNEQFX "UnequalFX" UNEQWH "UnequalWH" }
 
 // PV choices
 *choicb PVMODCH {

@@ -57,7 +57,7 @@ Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is g
 
 **wuHeatRecEF=*float***
 
-Heat recovery effectiveness.  If non-0, wuHeatRecEF allows modeling of heat recovery devices such as drain water heat exchangers.  If given, wuTemp must also be specified. Not allowed when referencing DHWSYS includes DHWHEATREC(s). 
+Heat recovery effectiveness.  If non-0, wuHeatRecEF allows modeling of heat recovery devices such as drain water heat exchangers.  If given, wuTemp must also be specified. Not allowed when referencing DHWSYS includes DHWHEATREC(s).
 
 **Units**   **Legal Range**        **Default**   **Required**  **Variability**
 ----------- --------------------- ------------- ------------- -------------------------
@@ -66,7 +66,7 @@ Heat recovery effectiveness.  If non-0, wuHeatRecEF allows modeling of heat reco
 
 **wuHWEndUse=*choice***
 
-Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  whHWEndUse has two functions --
+Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  wuHWEndUse has two functions --
 
  * Allocation of hot water use among multiple DHWSYSs (if more than one DHWSYS references a given DHWDAYUSE).
  * DHWMETER end-use accounting (via DHWSYS).

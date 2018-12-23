@@ -3406,7 +3406,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
   *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
-  *declare "RC wh_DoHour( float HARL, float wsMult, float wsSSF);"
+  *declare "RC wh_DoHour( float HARL, float wsMult);"
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
@@ -3563,6 +3563,8 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 							//   modeled as wr_mult identical heat recovery devices
   *i DHWEUCH wr_hwEndUse	// end use source for this device
 							//   as of 12-18, only supports C_DHWEUCH_SHOWER
+  *i SI_GZ wr_fxServed		// number of fixtures (of type wr_hwEndUse) whose
+							//   drain water is routed through this DHWHEATREC
   *i DWHRTYCH wr_type		// type (C_DHWHRTYCH_HORIZ or _VERT)
   *i DWHRCFGCH wr_config	// plumbing configuration: what is fed by DWHR potable side output
 							// equal/unequal nomenclature derived
