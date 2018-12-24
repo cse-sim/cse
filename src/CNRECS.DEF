@@ -3304,21 +3304,19 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_inFuel;	//	  fuel (for generality, always 0?)
   *declare "MTR* ws_pMtrElec; MTR* ws_pMtrFuel;"
 							// runtime pointers to meters, NULL if not accum'ing
-  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F
-							//   as seen by this DHWSYS
-							//   user input or default Wthr.d.wd_tMains
-  *s *e FLOAT ws_tColdTick;	// cold feed water temp, F
-							//   cold-side input to water heaters and fixture mix
+  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
+							//   user expression or default Wthr.d.wd_tMains
+							//   Not modified by DWHR
+  *h *e FLOAT ws_tInletX;	// hour average post-DWHR cold water temp, F
 							//   = ws_tInlet + DHWHEATREC increase, if any
-							//   changes by tick iff DHWHEATREC
-							//   else constant over hour
-  *h *e FLOAT ws_tCold;		// hour average cold feed water temp, F
 							//   used for hourly efficiency-based models
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input)
   *declare "double ws_whInletVol( int iTk) const;"
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
+  *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
+  *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_InitTicks( double whUseHr);"
   *declare "RC ws_DoDWHR();"
 
@@ -3554,10 +3552,12 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
-  *declare "float wr_HX( float vpI, float tpI, float vdI, float tdI, float& qDot);"
-  *declare "float wr_EffAdjusted( float vpI, float tpI, float vdI, float tdI);"
+  *declare "float wr_HX( float vp, float tpI, float vd, float tdI, float& qDot);"
+  *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
   *declare "float wr_CalcTick( int iTk, struct DWHRUSE& DWHRUse);"
+  *declare "float DHWHEATREC::wr_CalcDraw( DWHRUSE& DWHRUse, float tHot, float tInlet, float tInletX, float& hxVPot);"
+
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
@@ -3571,8 +3571,8 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 							//    C_DWHRCFGCH_EQUAL: water heater and fixture
 							//    C_DWHRCFGCH_UNEQFX: fixture (shower) only
 							//    C_DWHRCFGCH_UNEQWH: water heater only
-  *declare "bool wr_FeedsFixture() const { return wr_config != C_DWHRCFGCH_UNEQWH; }"
-  *declare "bool wr_FeedsWaterHeater() const { return wr_config != C_DWHRCFGCH_UNEQFX; }"
+  *declare "bool wr_FeedsFX() const { return wr_config != C_DWHRCFGCH_UNEQWH; }"
+  *declare "bool wr_FeedsWH() const { return wr_config != C_DWHRCFGCH_UNEQFX; }"
 
   *r FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
 
@@ -3770,7 +3770,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const;"
   *declare "RC wu_DoHour( DHWSYS* pWS, float mult, int iH);"
   *declare "RC wu_DoHour1( DHWSYS* pWS, float mult, int iH, double begM, double endM);"
-  *declare "RC wu_CalcHotF( float tHot, float tCold, float& hotF);"
+  *declare "RC wu_CalcHotF( float tHot, float tCold, float& hotF) const;"
 
   *i DHWEUCH wu_hwEndUse // hot water end use
 							//   0 = unknown
