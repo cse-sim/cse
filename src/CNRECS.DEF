@@ -3278,6 +3278,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
+  *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
   *declare "void ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
@@ -3307,9 +3308,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by DWHR
-  *h *e FLOAT ws_tInletX;	// hour average post-DWHR cold water temp, F
-							//   = ws_tInlet + DHWHEATREC increase, if any
-							//   used for hourly efficiency-based models
+  *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
+							//   reflects ws_SSF and/or DHWHEATRED
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input)
   *declare "double ws_whInletVol( int iTk) const;"
@@ -3555,9 +3555,9 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "float wr_HX( float vp, float tpI, float vd, float tdI, float& qDot);"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
-  *declare "float wr_CalcTick( int iTk, struct DWHRUSE& DWHRUse);"
-  *declare "float DHWHEATREC::wr_CalcDraw( DWHRUSE& DWHRUse, float tHot, float tInlet, float tInletX, float& hxVPot);"
-
+  *declare "float wr_CalcTick( DWHRUSE& DWHRUse, float tHot, float tInlet, float whUseOther, float& tInletX, float& hxVPot);"
+  *declare "inline float wr_HX( float vp, float tpI, float vd, float td)"
+  *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
@@ -3565,7 +3565,10 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 							//   as of 12-18, only supports C_DHWEUCH_SHOWER
   *i SI_GZ wr_fxServed		// number of fixtures (of type wr_hwEndUse) whose
 							//   drain water is routed through this DHWHEATREC
-  *i DWHRTYCH wr_type		// type (C_DHWHRTYCH_HORIZ or _VERT)
+  *i DWHRTYCH wr_type		// type: C_DWHRTYCH_
+							//    _HORIZ or _VERT: effectiveness adjusted per CASE regressions
+							//          depending on flows and temps, same model for both
+							//    _SETEF: wr_effRated used w/o modification (testing aid)
   *i DWHRCFGCH wr_config	// plumbing configuration: what is fed by DWHR potable side output
 							// equal/unequal nomenclature derived
 							//    C_DWHRCFGCH_EQUAL: water heater and fixture
@@ -3574,7 +3577,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "bool wr_FeedsFX() const { return wr_config != C_DWHRCFGCH_UNEQWH; }"
   *declare "bool wr_FeedsWH() const { return wr_config != C_DWHRCFGCH_UNEQFX; }"
 
-  *r FLOAT_GZ wr_effRated		// rated effectiveness (generally CSA rating value)
+  *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
   *s *e FLOAT wr_eff			// effectiveness under current conditions
 
