@@ -219,7 +219,7 @@ Fraction of total DC energy lost. The total loss from a system is aggregated fro
   Soiling                   0.02
   *Shading*                 *0 (handled explicitly)*
   Snow                      0
-  *Mismatch*                *0 (to represent power-electronics)*
+  *Mismatch*                *0 (shading mismatch handled explicitly [see pvSIF])*
   Wiring                    0.02
   Connections               0.005
   Light-induced degradation 0.015
