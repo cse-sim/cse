@@ -84,6 +84,9 @@
 
 #include "cse.h"		// decls for this file
 
+#include <penumbra/penumbra.h>	// penumbraInit penumbraTerminate for GPU calculations
+
+
 // configuration defined on compiler command line (or inferred, see cnglob.h)
 #include "cseface.h"
 
@@ -644,6 +647,7 @@ LOCAL INT cse1( INT argc, const char* argv[])
 	}
 	while (argci < argc);		// repeat til all input args used
 
+	Pumbra::penumbraTerminate();	// Clean up GPU calculation memory
 	return errlvl;			// 0 ok, nz error, 255 if ^C, 1-95.
 }			// cse1run
 //------------------------------------------------------------------------

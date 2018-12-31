@@ -15,7 +15,6 @@ PVARRAY "Flat"
   pvTilt = 0
   pvAzm = 180
   pvGrndRefl = 0.2
-  pvUsePVWatts = No
 
 PVARRAY "S_30" LIKE "Flat"
   pvTilt = 30
@@ -52,7 +51,7 @@ PVARRAY "W_60" LIKE "Flat"
 PVARRAY "W_90" LIKE "Flat"
   pvTilt = 90
   pvAzm = 270
-  
+
 PVARRAY "N_30" LIKE "Flat"
   pvTilt = 30
   pvAzm = 0
@@ -67,7 +66,7 @@ PVARRAY "N_90" LIKE "Flat"
 
 PVARRAY "Premium" LIKE "S_30"
   pvModuleType = Premium
-  
+
 PVARRAY "ThinFilm" LIKE "S_30"
   pvModuleType = ThinFilm
 
@@ -83,7 +82,7 @@ PVARRAY "OneAxis" LIKE "S_30"
   pvArrayType = OneAxisTracking
 
 PVARRAY "OneAxisBT" LIKE "S_30"
-  pvArrayType = OneAxisBacktracking
+  pvArrayType = OneAxisTracking
 
 PVARRAY "TwoAxis" LIKE "S_30"
   pvArrayType = TwoAxisTracking
@@ -99,7 +98,7 @@ DELETE REPORT "EB"
 EXPORTFILE "PVout"
   xfFileName="PVout"
   xfFileStat=OVERWRITE
-  
+
 #define PVCols( n ) \
   ExportCol colhead=n colVal=@PVArray[n].acOut
 
@@ -132,72 +131,7 @@ EXPORT exExportFile="PVout" exType=UDT exFreq=HOUR exTitle="PV Output" exDayBeg=
   PVCols( "OneAxisBT" )
   PVCols( "TwoAxis" )
   PVCols( "HighRatio" )
-  
+
 REPORT     rpType=MTR     rpMeter=Elec0    rpFreq=Month
-
-RUN
-
-ALTER PVARRAY "Flat"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "S_30"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "S_60"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "S_90"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "E_30"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "E_60"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "E_90"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "W_30"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "W_60"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "W_90"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "N_30"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "N_60"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "N_90"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "Premium"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "ThinFilm"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "RoofMount"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "OneAxis"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "OneAxisBT"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "TwoAxis"
-  pvUsePVWatts = Yes
-
-ALTER PVARRAY "HighRatio"
-  pvUsePVWatts = Yes
-
-ALTER EXPORTFILE "PVout"
-  xfFileName="PVout_PVW"
 
 RUN
