@@ -66,6 +66,7 @@ dbgPrintMask = $dayofyear == 191 ? 64 : 0
    
    // pvTilt = 45                     // Array tilt (0=H, 90=V), deg
    // pvAzm = 180                          // Array azimuth (0=N, 90=E, ...), deg
+   pvSIF = 2.0
    pvInverterEff = 0.96                 // Inverter efficiency at full load, frac
    pvElecMtr = "MtrElec"                // Electric meter to report results to
 
@@ -86,6 +87,8 @@ REPORT rpType=UDT rpFreq=hour rpDayBeg = Jan 1    rpDayEnd = Dec 31 rpCPL=88
         reportcol colVal=@Top.radDiffHrAv  colHead="radDiff"
 		reportcol colVal=@PVARRAY[ 1].fBeam colHead="FBeam"
 		reportcol colVal=@PVARRAY[ 1].poa   colHead="POASlr"
+		reportcol colVal=@PVARRAY[ 1].radI   colHead="IncSlr"
+		reportcol colVal=@PVARRAY[ 1].radIEff   colHead="EffIncSlr"
 endReport
 
 

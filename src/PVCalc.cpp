@@ -236,7 +236,7 @@ RC PVARRAY::pv_DoHour()
 	if (Top.isBegRun)
 	{   // Set initial values for I/O type variables in SAM SDK
 		pv_tCellPv = Top.tDbOHrAv;
-		pv_poaPv = pv_poa;
+		pv_radIPv = pv_radI;
 	}
 
 	// Use top level grndRefl if not set for the PV array
@@ -254,7 +254,7 @@ RC PVARRAY::pv_DoHour()
 		const float tRef = DegCtoF(25.f);
 		const float iRef = IrSItoIP(1000.f);
 		float dcMax = pv_dcCap*Pten[3] * BtuperWh;  // Btu (fix if moving to subhour timesteps)
-		pv_dcOut = pv_poaT * dcMax / iRef*(1 + pv_tempCoeff*(pv_tCell - tRef));
+		pv_dcOut = pv_radTrans * dcMax / iRef*(1 + pv_tempCoeff*(pv_tCell - tRef));
 
 		// Apply system losses
 		pv_dcOut *= 1 - pv_sysLoss;
@@ -281,7 +281,7 @@ RC PVARRAY::pv_DoHour()
 		MtrB.p[pv_elecMtri].H.mtr_Accum(pv_endUse, -pv_acOut);
 
 	pv_tCellPv = pv_tCell;
-	pv_poaPv = pv_poa;
+	pv_radIPv = pv_radI;
 
 	return rc;
 }	// PVARRAY::pv_DoHour
@@ -339,8 +339,12 @@ RC PVARRAY::pv_CalcPOA()
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
 	{	pv_ClearShading();
-		pv_poa = 0.f;
-		pv_poaT = 0.f;
+		pv_poa = 
+		pv_radIBeam =
+		pv_radIBeamEff =
+		pv_radI =
+		pv_radIEff =
+		pv_radTrans = 0.f;
 		pv_aoi = kPiOver2;
 		return rc;
 	}
@@ -415,12 +419,14 @@ RC PVARRAY::pv_CalcPOA()
 		return RCBAD;	// shading error
 
 	if (sunupSrf)	
-	{	pv_poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
-		pv_poaBeamEff = max(Top.radBeamHrAv*cosi*(1.f - pv_sif * (1.f - fBeam)),0.f);
+	{
+		pv_poaBeam = Top.radBeamHrAv*cosi;
+		pv_radIBeam = pv_poaBeam*fBeam;  // incident beam (including shading)
+		pv_radIBeamEff = max(pv_poaBeam*(1.f - pv_sif * (1.f - fBeam)),0.f);
 		pv_aoi = acos(cosi);
 	}
 	else
-	{	pv_poaBeam = pv_poaBeamEff = 0.f;  // incident beam
+	{	pv_poaBeam = pv_radIBeam = pv_radIBeamEff = 0.f;  // incident beam
 		pv_aoi = kPiOver2;
 	}
 
@@ -481,7 +487,8 @@ RC PVARRAY::pv_CalcPOA()
 	float poaDiff = Top.radDiffHrAv*(poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
 	float poaGrnd = Top.radBeamHrAv*pv_grndRefl*vfGrndDf*verSun;  // ground reflected beam
 	pv_poa = pv_poaBeam + poaDiff + poaGrnd;
-	pv_poaEff = pv_poaBeamEff + poaDiff + poaGrnd;
+	pv_radI = pv_radIBeam + poaDiff + poaGrnd;
+	pv_radIEff = pv_radIBeamEff + poaDiff + poaGrnd;
 
 	// Correct for off-normal transmittance
 	float theta1 = pv_aoi;
@@ -492,7 +499,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	float tauC = tauAR*tauGl;
 
-	pv_poaT = pv_poaBeamEff*tauC / pv_tauNorm + poaDiff + poaGrnd;
+	pv_radTrans = pv_radIEff *tauC / pv_tauNorm + poaDiff + poaGrnd;
 
 	return rc;
 }
@@ -581,8 +588,8 @@ RC PVARRAY::pv_CalcCellTemp()
 	float tMod0 = DegFtoK(pv_tCellPv);  // K
 	float tAir = DegFtoK(Top.tDbOHrAv);  // K
 	float vWindWS = VIPtoSI(Top.windSpeedHrAv);  // m/s
-	float iSol0 = IrIPtoSI(pv_poaPv)*absorp;  // W/m2
-	float iSol = IrIPtoSI(pv_poa)*absorp;  // W/m2
+	float iSol0 = IrIPtoSI(pv_radIPv)*absorp;  // W/m2
+	float iSol = IrIPtoSI(pv_radI)*absorp;  // W/m2
 
 	float tMod = tMod0;  // initialize cell temperature, K
 	const float htMod = 5.f;  // m, assumed by PVWatts
@@ -726,7 +733,7 @@ RC XPVWATTS::xp_CalcAC(PVARRAY *pvArr)
 	ssc_data_set_number(pvArr->pv_ssc_data, "tilt", DEG(pvArr->pv_tilt));
 	ssc_data_set_number(pvArr->pv_ssc_data, "azimuth", DEG(pvArr->pv_azm));
 	ssc_data_set_number(pvArr->pv_ssc_data, "tcell", DegFtoC(pvArr->pv_tCellPv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "poa", IrIPtoSI(pvArr->pv_poaPv));
+	ssc_data_set_number(pvArr->pv_ssc_data, "poa", IrIPtoSI(pvArr->pv_radIPv));
 
 
 	// Call PV Watts calculation
@@ -741,7 +748,7 @@ RC XPVWATTS::xp_CalcAC(PVARRAY *pvArr)
 	rc |= !ssc_data_get_number(pvArr->pv_ssc_data, "tcell", &tcell);
 	rc |= !ssc_data_get_number(pvArr->pv_ssc_data, "poa", &poa);
 	pvArr->pv_tCell = DegCtoF(tcell);
-	pvArr->pv_poa = IrSItoIP(poa);
+	pvArr->pv_radI = pvArr->pv_poa = IrSItoIP(poa);
 	pvArr->pv_dcOut = dc*BtuperWh; // CAUTION: Only works for hourly timesteps. Change for sub-hour
 	pvArr->pv_acOut = ac*BtuperWh; // CAUTION: Only works for hourly timesteps. Change for sub-hour
 

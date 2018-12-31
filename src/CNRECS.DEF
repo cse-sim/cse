@@ -3798,11 +3798,13 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *h *e FLOAT pv_aoi		// angle of incidence (radians)
   *h *e ANGLE pv_panelTilt	// tilt of pv panel (different from array tilt for tracking systems), radians
   *h *e ANGLE pv_panelAzm	// azimuth of pv panel (different from array tilt for tracking systems), radians
-  *h *e FLOAT pv_poaBeam	// plane of array beam incidence, Btu/h-ft2
-  *h *e FLOAT pv_poaBeamEff	// effective plane of array beam incidence (accounts for shading impact factor), Btu/h-ft2
-  *h *e FLOAT pv_poa		// plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_poaEff		// effective plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_poaT		// transmitted plane of array incidence (after accounting for shading impact), Btu/h-ft2
+  *h *e FLOAT pv_poa		// plane of array incidence (before shading), Btu/h-ft2
+  *h *e FLOAT pv_poaBeam	// plane of array beam incidence (before shading), Btu/h-ft2
+  *h *e FLOAT pv_radIBeam	// beam radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_radIBeamEff	// effective beam radiation incident on array (accounts for shading impact factor), Btu/h-ft2
+  *h *e FLOAT pv_radI		// total radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_radIEff	// effective total radiation incident on array (accounts for shading impact factor), Btu/h-ft2
+  *h *e FLOAT pv_radTrans	// transmitted radiation (after accounting for shading impact), Btu/h-ft2
   *h *e FLOAT pv_dcOut		// DC power output, Btu
   *h *e FLOAT pv_acOut		// AC power output, Btu
 
@@ -3811,7 +3813,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *r FLOAT pv_convRatio		// ratio of back convection to front convection
   *r FLOAT pv_tGrndRatio	// ratio of ground-cell temperature diff. to air-cell temperature diff.
   *r *hide FLOAT_GEZ pv_thermCap  // thermal capacitance of the array, J/kg-m2
-  *h *e FLOAT pv_poaPv		// previous timestep plane of array incidence, Btu/h-ft2
+  *h *e FLOAT pv_radIPv		// previous timestep total radiation incident on array, Btu/h-ft2
   *h *e FLOAT pv_tCellPv	// previous timestep cell temperature, F
   *r *hide SI pv_modMap		// map to PVWatts module type input
   *r *hide SI pv_arrMap		// map to PVWatts array type input
