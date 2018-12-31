@@ -3753,7 +3753,6 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
-  *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
   *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
@@ -3781,7 +3780,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *i TI pv_elecMtri;		// meter for system electricity production
   *f ENDUSECH pv_endUse		// end use of energy. defataults to "PV"
   *i FLOAT_GEZ pv_dcCap		// system capacity/size (DC nameplate), kW
-  *i NOYESCH pv_usePVWattsDLL  // use PVWatts DLL instead of CSE calculations
   *i PVMODCH pv_moduleType	// type of module (Standard, Premium, ThinFilm)
   *i FLOAT pv_tempCoeff		// temperature coefficient, 1/F
   *i FLOAT_GE1 pv_covRefrInd  // refraction index for coating applied to cover

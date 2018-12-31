@@ -419,7 +419,6 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			FXDOR "FixedOpenRack"
 			FXDRF "FixedRoofMount"
 			1AXT "OneAxisTracking"
-			1AXBT "OneAxisBacktracking"
 			2AXT "TwoAxisTracking"
 		  }
 

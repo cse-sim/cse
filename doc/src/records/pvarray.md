@@ -91,8 +91,6 @@ The type of array describes mounting and tracking options. Roof mounted arrays h
             OneAxisTracking,
             TwoAxisTracking
 
-<!-- Hide              OneAxisBacktracking \ -->
-
 **pvTilt=*float***
 
 The tilt of the photovoltaic array from horizontal.  Values outside the range 0 to 360 are first normalized to that range. For one-axis tracking, defines the tilt of the rotation axis. Not used for two-axis tracking arrays.  Should be omitted if pvVertices is given.
