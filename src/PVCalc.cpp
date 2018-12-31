@@ -235,8 +235,8 @@ RC PVARRAY::pv_DoHour()
 
 	if (Top.isBegRun)
 	{   // Set initial values for I/O type variables in SAM SDK
-		pv_tCellPv = Top.tDbOHrAv;
-		pv_radIPv = pv_radI;
+		pv_tCellLs = Top.tDbOHrAv;
+		pv_radILs = pv_radI;
 	}
 
 	// Use top level grndRefl if not set for the PV array
@@ -280,8 +280,8 @@ RC PVARRAY::pv_DoHour()
 	if (pv_pMtrElec)
 		MtrB.p[pv_elecMtri].H.mtr_Accum(pv_endUse, -pv_acOut);
 
-	pv_tCellPv = pv_tCell;
-	pv_radIPv = pv_radI;
+	pv_tCellLs = pv_tCell;
+	pv_radILs = pv_radI;
 
 	return rc;
 }	// PVARRAY::pv_DoHour
@@ -585,10 +585,10 @@ RC PVARRAY::pv_CalcCellTemp()
 	const float absorp = 0.83f;
 	const float ts = 3600.f;  // s (change if moving to subhour timesteps)
 
-	float tMod0 = DegFtoK(pv_tCellPv);  // K
+	float tMod0 = DegFtoK(pv_tCellLs);  // K
 	float tAir = DegFtoK(Top.tDbOHrAv);  // K
 	float vWindWS = VIPtoSI(Top.windSpeedHrAv);  // m/s
-	float iSol0 = IrIPtoSI(pv_radIPv)*absorp;  // W/m2
+	float iSol0 = IrIPtoSI(pv_radILs)*absorp;  // W/m2
 	float iSol = IrIPtoSI(pv_radI)*absorp;  // W/m2
 
 	float tMod = tMod0;  // initialize cell temperature, K
@@ -732,8 +732,8 @@ RC XPVWATTS::xp_CalcAC(PVARRAY *pvArr)
 
 	ssc_data_set_number(pvArr->pv_ssc_data, "tilt", DEG(pvArr->pv_tilt));
 	ssc_data_set_number(pvArr->pv_ssc_data, "azimuth", DEG(pvArr->pv_azm));
-	ssc_data_set_number(pvArr->pv_ssc_data, "tcell", DegFtoC(pvArr->pv_tCellPv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "poa", IrIPtoSI(pvArr->pv_radIPv));
+	ssc_data_set_number(pvArr->pv_ssc_data, "tcell", DegFtoC(pvArr->pv_tCellLs));
+	ssc_data_set_number(pvArr->pv_ssc_data, "poa", IrIPtoSI(pvArr->pv_radILs));
 
 
 	// Call PV Watts calculation
