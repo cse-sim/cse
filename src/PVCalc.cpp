@@ -444,7 +444,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	float tauC = tauAR*tauGl;
 
-	pv_radTrans = pv_radIEff *tauC / pv_tauNorm + poaDiff + poaGrnd;
+	pv_radTrans = pv_radIBeamEff *tauC / pv_tauNorm + poaDiff + poaGrnd;
 
 	return rc;
 }
