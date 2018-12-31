@@ -3311,14 +3311,14 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
 							//   reflects ws_SSF and/or DHWHEATRED
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
-							//   (scheduled input)
-  *declare "double ws_whInletVol( int iTk) const;"
+							//   (scheduled input, does NOT include DHWDAYUSE draws)
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_InitTicks( double whUseHr);"
   *declare "RC ws_DoDWHR();"
+  *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
   *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
@@ -3342,6 +3342,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i FLOAT_GZ ws_DSM		// distribution system multiplier (AppE table RE-2)
   *h FLOAT_GEZ ws_SSF		// solar savings fraction
 							//  valid range 0 - 0.99, see code
+  *declare "float ws_AdjustTInletForSSF( float tInlet) const { return tInlet + ws_SSF*max(0.f, ws_tUse - tInlet); }"
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
@@ -3552,11 +3553,10 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
-  *declare "float wr_HX( float vp, float tpI, float vd, float tdI, float& qDot);"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
-  *declare "float wr_CalcTick( DWHRUSE& DWHRUse, float tHot, float tInlet, float whUseOther, float& tInletX, float& hxVPot);"
-  *declare "inline float wr_HX( float vp, float tpI, float vd, float td)"
+  *declare "float wr_CalcTick( struct DWHRUSE& DWHRUse, float tHot, float tInlet, float whUseOther, float& tInletX, float& hxVPot);"
+  *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
   *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
 
   *i SI_GEZ wr_mult;		// multiplier

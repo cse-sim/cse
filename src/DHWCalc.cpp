@@ -251,14 +251,11 @@ struct DHWTICK	// per tick info
 {
 	DHWTICK() { wtk_Init(); }
 	WVect< DWHRUSE> wtk_dwhrDraws;	// all possible DWHR draws for this tick
-	double wtk_whUseNoDWHR;	// tick non-DWHR hot water draw at water heater(s), gal
-							//  accumulated in initial pass re determination of
-							//  DWHR potable water flow
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR
 	void wtk_Init( double whUseTick=0., float tInlet=50.f)
-	{	wtk_dwhrDraws.resize(0); wtk_whUseNoDWHR = 0.f; wtk_whUse = whUseTick; wtk_tInletX = tInlet; }
+	{	wtk_dwhrDraws.resize(0); wtk_whUse = whUseTick; wtk_tInletX = tInlet; }
 	void wtk_Accum( const DHWTICK& s, double mult);
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
@@ -266,7 +263,6 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 	const DHWTICK& s,	// source
 	double mult)		// multiplier
 {
-	wtk_whUseNoDWHR += s.wtk_whUseNoDWHR * mult;
 	wtk_whUse += s.wtk_whUse * mult;
 	// wtk_dwhrDraws ??
 }		// DHWTICK::wtk_Accum
@@ -558,13 +554,6 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	return rc;
 }		// DHWSYS::ws_Init
 //----------------------------------------------------------------------------
-double DHWSYS::ws_whInletVol(
-	int iTk) const		// 0-based tick within hour
-// returns inlet water volume for tick, gal
-{
-	return ws_ticks[ iTk].wtk_whUse;
-}	// DHWSYS::ws_whInletVol
-//----------------------------------------------------------------------------
 int DHWSYS::ws_DetermineSimMeth() const
 {
 	int simMeth = wssimHR;
@@ -601,6 +590,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_inElec = 0.f;
 	// ws_inFuel = 0.f;	no DHWSYS fuel use
 
+	ws_qDWHR = 0.f;		// DWHR (DHWHEATREC) recovered heat
+
 	if (ivl <= C_IVLCH_D)	// if start of day (or longer)
 	{	if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
@@ -617,17 +608,17 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			ws_loadShareWS0[ iEU] = (seed+iEU)%ws_loadShareCount;
 	}
 
-	// mains temp
+	// inlet temp = feed water to cold side of WHs
 	if (!IsSet( DHWSYS_TINLET))
-		ws_tInlet = Wthr.d.wd_tMains;
-
-	// adjusted inlet temp
-	// assume solar preheats feed water
-	// further additions later re DHWR
-	ws_tInletX = ws_tInlet + ws_SSF*max(0.f, ws_tUse - ws_tInlet);
+		ws_tInlet = Wthr.d.wd_tMains;		// default=mains
 
 	// runtime checks of vals possibly set by expressions
 	rc |= ws_CheckVals( ERR);	// checks ws_SSF, ws_tUse, ws_tSetpoint
+
+	// adjusted inlet temp
+	// assume solar preheats feed water
+	// further changes later re DHWR
+	ws_tInletX = ws_AdjustTInletForSSF( ws_tInlet);
 
 	// distribution loss multiplier
 	//   SDLM = standard distribution loss multiplier
@@ -704,6 +695,22 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 	ws_fxUseMix.wmt_Finalize();
 	ws_whUse.wmt_Finalize();
+
+#if defined( _DEBUG)
+	// check: compare tick totals to full hour values
+	double whUseSum = 0.;
+	double tInletXAvg = 0.;
+	for (int iTk=0; iTk<Top.tp_NHrTicks(); iTk++)
+	{	const DHWTICK& tk = ws_ticks[ iTk];
+		whUseSum += tk.wtk_whUse;
+		tInletXAvg += tk.wtk_tInletX;
+	}
+	tInletXAvg /= Top.tp_NHrTicks();
+	if (fabs(whUseSum - ws_whUse.total) > .0001
+	 || fabs( tInletXAvg - ws_tInletX) > .0001)
+		printf( "Yak\n");
+#endif
+
 
 	// accumulate to DHWMTRs if defined
 	//   include DHWSYS.ws_mult multiplier
@@ -825,19 +832,24 @@ RC DHWSYS::ws_DoDWHR()
 	RC rc = RCOK;
 
 	// loop ticks that could include DWHR draws
+	// ws_qDWHR = 0.f; ... in ws_DoHour
 	double tInletXSum = 0.;
 	int nDHr = 0;
 	for (int iTk=ws_iTk0DWHR; iTk < ws_iTkNDWHR; iTk++)
 	{	DHWTICK& tk = ws_ticks[ iTk];
-		float tInletXBeg = tk.wtk_tInletX;
 		int nD = tk.wtk_dwhrDraws.size();
-		nDHr += nD;
+		if (nD == 0)
+		{	tInletXSum += ws_tInlet;
+			continue;
+		}
+		float tInletXWt = 0.f;
+		float whUseWt = 0.f;
+		float fxUse = 0.f;
 		for (int iD=0; iD<nD; iD++)
 		{	DWHRUSE& hru = tk.wtk_dwhrDraws[ iD];
 			const DHWUSE* pWU = hru.wdw_pDHWUSE;
+			fxUse += hru.wdw_vol;
 			float fWeightTot = 0.f;
-			float tInletXWt = 0.f;
-			float whUseWt = 0.f;
 			DHWHEATREC* pWR;
 			RLUPC( WrR, pWR, pWR->ownTi == ss)
 			{	if (pWR->wr_fWeight < .0001f)
@@ -856,55 +868,20 @@ RC DHWSYS::ws_DoDWHR()
 				whUseWt += (1.f - fWeightTot) * hru.wdw_vol * fHot;
 				tInletXWt += (1.f - fWeightTot)*ws_tInlet;
 			}
-			tk.wtk_tInletX = tInletXWt;		// ?SSF?
-			tInletXSum += tInletXWt;
-			tk.wtk_whUse += whUseWt;
-			ws_AccumUseTick( hru.wdw_pDHWUSE->wu_hwEndUse, iTk, hru.wdw_vol, whUseWt);
 		}	// end draw
+		tInletXSum += (tk.wtk_tInletX = ws_AdjustTInletForSSF( tInletXWt/nD));
+		ws_AccumUseTick(		// accum to ws_tick, ws_whUse, and ws_fxMixUse
+			C_DHWEUCH_SHOWER, iTk, fxUse, whUseWt);
 	}  // end tick
 
 	// calc hour average adjusted inlet temp
-	//  ?SSF?
 	if (tInletXSum > 0.)
-	{	// int nTk = ws_iTkNDWHR - ws_iTk0DWHR;
-		ws_tInletX = (tInletXSum + (Top.tp_NHrTicks()-nDHr)*ws_tInlet) / Top.tp_NHrTicks();
-#if 0
-		if (fabs( ws_tInletX - ws_tInlet) > .01f)
-		{	float nX = tInletXSum / ws_tInlet;
-			printf( "\nbarfX");
-		}
-#endif
+	{	// ws_tInletX SSF-adjused above for non-DWHR ticks
+		int nTk = ws_iTkNDWHR - ws_iTk0DWHR;
+		ws_tInletX = (tInletXSum + (Top.tp_NHrTicks()-nTk)*ws_tInletX) / Top.tp_NHrTicks();
 	}
-	else if (fabs( ws_tInletX - ws_tInlet) > .01f)
-			printf( "\nbarfX");
 	return rc;
 }		// DHWSYS::ws_DoDWHR
-//----------------------------------------------------------------------------
-#if 0
-RC DWHRUSE::wdw_DoTick(
-	float tHot,
-	float tCold1
-	float tCold2
-
-	DHWSYS& ws,
-	DHWTICK& tk)
-
-{	RC rc = RCOK;
-
-	// flow and heat recovered with known tCold
-	float fHot;
-	if (wr.wr_FeedsFX())
-	{	wdw_pDHWUSE->wu_CalcHotF( tHot, tCold, hotF);
-	}
-	else
-		
-	flow = wdw_flow * fHot;
-
-	return rc;
-
-
-}		// DWHRUSE::wdw_DoTick
-#endif
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {
@@ -1167,13 +1144,13 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 //-----------------------------------------------------------------------------
 void DHWSYS::ws_AccumUseTick(		// tick-level water use accounting
 	DHWEUCH hwEndUse,	// hot water end use for draw
-	int iTk,			// current tick idx
+	int iTk,			// current tick idx (within hour)
 	double fxUseMix,	// fixture mixed use, gal
 	double whUse)		// hot water use, gal
 {
-	ws_ticks[ iTk].wtk_whUse += whUse;	// tick use at WH
-	ws_fxUseHot += whUse;			// hour total hot at fixture
-	ws_whUse.wmt_AccumEU( hwEndUse, whUse);
+	ws_ticks[ iTk].wtk_whUse += whUse;	// tick hot use
+	ws_fxUseHot += whUse;				// hot use hour total
+	ws_whUse.wmt_AccumEU( hwEndUse, whUse);		// end-use accounting
 	ws_fxUseMix.wmt_AccumEU( hwEndUse, fxUseMix);
 }		// DHWSYS::ws_AccumUseTick
 //-----------------------------------------------------------------------------
@@ -2325,49 +2302,6 @@ int DHWHEATREC::wr_IsEquiv(
 	return bEquiv;
 }		// DHWHEATREC::wr_IsEquiv
 //----------------------------------------------------------------------------
-#if 0
-float DHWHEATREC::wr_CalcDraw(		// calculate water quantities for tick
-	DWHRUSE& DWHRUse,	// use conditions for tick
-	float tHot,			// hot water temp at fixture, F
-	float tInlet,		// unadjusted (mains) cold water temp, F
-	float whUseOther,	// WH hot water draws for other non-DWHR fixtures, gal
-	float& tInletX,		// returned: adjusted inlet temp to WH, F
-	float& hxVPot)	// returned: HX potable-side vol, gal
-					//    due to this draw only
-
-// returns hot water use at WH, gal
-
-{	
-	const DHWUSE* pWU = DWHRUse.wdw_pDHWUSE;
-
-	// cold water temp at fixture
-	float tColdFX = tInlet;
-	if (wr_FeedsFX())
-	{   tColdFX += wr_eff * (pWU->wu_temp - tInlet);
-
-
-	}
-
-	// fraction hot
-	float fHot;
-	pWU->wu_CalcHotF( tHot, tColdFX, fHot);
-
-	// hot water use, gal
-	float whUse = DWHRUse.wdw_vol * fHot;
-
-	// associated HX potable-water vol, gal
-	//   this draw only
-	hxVPot = 0.f;
-	if (wr_FeedsWH())
-		hxVPot = whUseOther + whUse;		// WH feed in = WH hot water out
-	if (wr_FeedsFX())
-		hxVPot += DWHRUse.wdw_vol - whUse;	// FX cold water vol
-
-	return whUse;
-}	// DHWHEATREC::wr_CalcDraw
-#endif
-
-
 float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 	DWHRUSE& DWHRUse,	// use conditions for tick
 	float tHotFX,		// hot water temp at fixture, F
@@ -2375,9 +2309,9 @@ float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 						//   = HX potable-side inlet
 	float whUseOther,	// WH hot water draws for other non-DWHR fixtures, gal
 	float& tInletX,		// returned: adjusted WH inlet temp, F
+						//     (= tpI if !wr_FeedsWH())
 	float& hxVPot)		// returned: HX potable-side vol, gal
 						//    due to this draw only
-
 // returns hot water use at WH, gal
 
 {	
@@ -2391,7 +2325,6 @@ float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 
 	if (wr_FeedsFX())
 	{	// HX feeds fixture and possibly WH
-	
 		vp = wr_FeedsWH() ? vd + whUseOther : vd/2.f;
 		int iL;
 		for (iL=0; iL<10; iL++)
@@ -2425,75 +2358,26 @@ float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 
 	return whUse;
 }	// DHWHEATREC::wr_CalcTick
-
-#if 0
-float DHWHEATREC::wr_CalcTick(
-	int iTk,
-	DWHRUSE& DWHRUse)
-
-{	
-	DHWSYS* pWS = wr_GetDHWSYS();
-
-	// calc hot water draw for this draw
-	// heat added to feed water
-	const DHWUSE* pWU = DWHRUse.wdw_pDHWUSE;
-
-	float tpI = pWS->ws_tInlet;		// potable inlet temp = mains
-
-	float vpI = 0.f;	// potable side flow
-	if (wr_FeedsWaterHeater())
-		vpI += pWS->ws_whInletVol( iTk);
-	if (wr_FeedsFixture())
-		vpI += 0.f;		// TODP
-
-	// drain side
-	float tdI = pWU->wu_temp;		// drain entry temp = use temp
-	float vdI = DWHRUse.wdw_vol/Top.tp_subhrTickDur;
-									// average flow rate for tick
-
-	float qDot;
-	float tpO = wr_HX( vpI, tpI, vdI, tdI, qDot);
-
-	return 0.;
-	
-}
-#endif
-
 //-----------------------------------------------------------------------------
-float DHWHEATREC::wr_HX(		// outlet temp and heat xfer (wr_eff known)
-	float vp,	// potable water flow, gpm
-	float tpI,	// potable water inlet temp, F (generally mains)
-	float vd,	// drain water flow, gpm
-	float tdI,	// drain water inlet temp, F
-	float &qDot)	// returned: heat transfer rate, Btuh
-// returns outlet temp
-{
-	float qX = wr_eff * min( vp, vd) * (tdI - tpI);
-
-	float tpO = tpI + qX/vp;
-
-	qDot = qX * 60.f * waterRhoCp;
-
-	return tpO;
-
-}	// DHWHEATREC::wr_HX
-//----------------------------------------------------------------------------
-float DHWHEATREC::wr_EffAdjusted(
-	float vp,	// potable water inlet flow, gpm
+float DHWHEATREC::wr_EffAdjusted(		// derive effectiveness for current conditions
+	float vp,	// potable water inlet flow, gal/tick
 	float tpI,	// potable water inlet temp, F
-	float vd,	// drain water inlet flow, gpm
+	float vd,	// drain water inlet flow, gal/tick
 	float tdI)	// drain water inlet temp, F
+// sets and returns wr_eff
 {
 	if (wr_type == C_DWHRTYCH_SETEF)
 		wr_eff = wr_effRated;		// use input value (may be expression)
 	else if (vp < 1.e-6f || vd < 1.e-6f)
-		wr_eff = 0.f;
+		wr_eff = 0.f;		// no flow
 	else
 	{	// temperature factor
 		double fT = (-3.06e-5*tpI*tpI + 4.96e-3*tpI + 0.281)/0.466;
 
 		// volume factor
-		double v = vp;		// assumed smaller flow
+		//   assume vp is smaller flow
+		//   convert vp to gpm
+		double v = vp/Top.tp_subhrTickDur;
 		double v2, v3;
 		double v4 = v*(v3=v*(v2=v*v));
 		double fV = -6.98484455e-4*v4 + 1.28561447e-2*v3
@@ -2501,11 +2385,11 @@ float DHWHEATREC::wr_EffAdjusted(
 
 		wr_eff = wr_effRated * fT * fV;
 
-		if (vd > v)
-			wr_eff *= 1. + 0.3452 * log( vd / v);
+		if (vd > vp)
+			wr_eff *= 1. + 0.3452 * log( vd / vp);
 	}
 	
-	return wr_eff = max( 0.f, min( wr_eff, 1.f));
+	return wr_eff = bracket( 0.f, wr_eff, 1.f);
 }	// DHWHEATREC::wr_effAdjusted
 //=============================================================================
 
