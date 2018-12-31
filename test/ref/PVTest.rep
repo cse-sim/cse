@@ -6,18 +6,6 @@
 
 
 
-Error Messages for Run 001:
-
----------------
-PVTEST.CSE(82): Warning: PVArray 'OneAxis': 
-    Shading is not calculated when pvArrayType=OneAxisTracking and pvUsePVWatts=No. Use pvUsePVWatts=Yes to capture effects of array self-shading.
----------------
-PVTEST.CSE(85): Warning: PVArray 'OneAxisBT': 
-    Shading is not calculated when pvArrayType=OneAxisBacktracking and pvUsePVWatts=No. Use pvUsePVWatts=Yes to utilize backtracking algorithm.
----------------
-
-
-
 Monthly Energy Use, meter "Elec0"
 
 Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -41,7 +29,19 @@ Yr  -455.1      0      0      0      0      0      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
+! CSE 0.852.0+pv-power-electronics.c04f8fb.7 for Win32 console
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -60,7 +60,7 @@ Yr  -455.1      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Mon 12-Feb-18   4:50:47 pm  Page  1
+! pvtest  001                              Mon 31-Dec-18   2:46:15 pm  Page  1
 
 
 
@@ -88,7 +88,6 @@ Input for Run 001:
           pvTilt = 0
           pvAzm = 180
           pvGrndRefl = 0.2
-          pvUsePVWatts = No
         
         PVARRAY "S_30" LIKE "Flat"
           pvTilt = 30
@@ -121,20 +120,20 @@ Input for Run 001:
         PVARRAY "W_60" LIKE "Flat"
           pvTilt = 60
           pvAzm = 270
+        
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Mon 12-Feb-18   4:50:47 pm  Page  2
+! pvtest  001                              Mon 31-Dec-18   2:46:15 pm  Page  2
 
 
 
 
 ------------------------------------------------------------------------------
 
-        
         PVARRAY "W_90" LIKE "Flat"
           pvTilt = 90
           pvAzm = 270
-          
+        
         PVARRAY "N_30" LIKE "Flat"
           pvTilt = 30
           pvAzm = 0
@@ -149,7 +148,7 @@ Input for Run 001:
         
         PVARRAY "Premium" LIKE "S_30"
           pvModuleType = Premium
-          
+        
         PVARRAY "ThinFilm" LIKE "S_30"
           pvModuleType = ThinFilm
         
@@ -165,17 +164,9 @@ Input for Run 001:
           pvArrayType = OneAxisTracking
         
         PVARRAY "OneAxisBT" LIKE "S_30"
------------------------
-???     PVTEST.CSE(82): Warning: PVArray 'OneAxis': 
-???         Shading is not calculated when pvArrayType=OneAxisTracking and pvUsePVWatts=No. Use pvUsePVWatts=Yes to capture effects of array self-shading.
------------------------
-          pvArrayType = OneAxisBacktracking
+          pvArrayType = OneAxisTracking
         
         PVARRAY "TwoAxis" LIKE "S_30"
------------------------
-???     PVTEST.CSE(85): Warning: PVArray 'OneAxisBT': 
-???         Shading is not calculated when pvArrayType=OneAxisBacktracking and pvUsePVWatts=No. Use pvUsePVWatts=Yes to utilize backtracking algorithm.
------------------------
           pvArrayType = TwoAxisTracking
           UNSET pvTilt
           UNSET pvAzm
@@ -184,24 +175,24 @@ Input for Run 001:
           pvDCtoACRatio = 1.5
         
         
+        DELETE REPORT "EB"
+        
+        EXPORTFILE "PVout"
+          xfFileName="PVout"
+          xfFileStat=OVERWRITE
+        
+#       #define PVCols( n ) \
+#         ExportCol colhead=n colVal=@PVArray[n].acOut
+        
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Mon 12-Feb-18   4:50:47 pm  Page  3
+! pvtest  001                              Mon 31-Dec-18   2:46:15 pm  Page  3
 
 
 
 
 ------------------------------------------------------------------------------
 
-        DELETE REPORT "EB"
-        
-        EXPORTFILE "PVout"
-          xfFileName="PVout"
-          xfFileStat=OVERWRITE
-          
-#       #define PVCols( n ) \
-#         ExportCol colhead=n colVal=@PVArray[n].acOut
-        
         
         EXPORT exExportFile="PVout" exType=UDT exFreq=HOUR exTitle="PV Output" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
           ExportCol colhead="Day" colVal=@Top.dateStr
@@ -231,7 +222,7 @@ Input for Run 001:
           PVCols( "OneAxisBT" )
           PVCols( "TwoAxis" )
           PVCols( "HighRatio" )
-          
+        
         REPORT     rpType=MTR     rpMeter=Elec0    rpFreq=Month
         
         RUN
@@ -248,8 +239,17 @@ Input for Run 001:
 
 
 
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! pvtest  001                              Mon 12-Feb-18   4:50:47 pm  Page  4
+! pvtest  001                              Mon 31-Dec-18   2:46:15 pm  Page  4
 
 
 
@@ -258,209 +258,20 @@ Input for Run 001:
 
 
 
-Monthly Energy Use, meter "Elec0"
-
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
---- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan -29.46      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.46
-Feb -30.05      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -30.05
-Mar -39.65      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.65
-Apr -44.34      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -44.34
-May -47.11      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -47.11
-Jun -45.85      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -45.85
-Jul -44.50      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -44.50
-Aug -42.57      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -42.57
-Sep -39.50      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.50
-Oct -35.55      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -35.55
-Nov -28.63      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.63
-Dec -28.42      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.42
-
-Yr  -455.6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -455.6
-
-
-
-! Log for Run 002:
-
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! pvtest  002                              Mon 12-Feb-18   4:50:49 pm  Page  5
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-Input for Run 002:
-
-        
-        ALTER PVARRAY "Flat"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "S_30"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "S_60"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "S_90"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "E_30"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "E_60"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "E_90"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "W_30"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "W_60"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "W_90"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "N_30"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "N_60"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "N_90"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "Premium"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "ThinFilm"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "RoofMount"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "OneAxis"
-
-------------------------------------------------------------------------------
-! pvtest  002                              Mon 12-Feb-18   4:50:49 pm  Page  6
-
-
-
-
-------------------------------------------------------------------------------
-
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "OneAxisBT"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "TwoAxis"
-          pvUsePVWatts = Yes
-        
-        ALTER PVARRAY "HighRatio"
-          pvUsePVWatts = Yes
-        
-        ALTER EXPORTFILE "PVout"
-          xfFileName="PVout_PVW"
-        
-        RUN
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! pvtest  002                              Mon 12-Feb-18   4:50:49 pm  Page  7
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console run(s) done: Mon 12-Feb-18   4:51:01 pm
-! Executable: d:\cse\msvc\csed.exe
-!             12-Feb-18   4:40 pm   (VS 12.0    2814976 bytes)  (HPWH 1.4.0)
-
-! Input file name:  D:\cse\test\pvtest.cse
-! Report file name: D:\cse\test\pvtest.rep
+! CSE 0.852.0+pv-power-electronics.c04f8fb.7 for Win32 console run(s) done: Mon 31-Dec-18   2:46:16 pm
+! Executable: c:\users\nkruis\projects\cse\msvc\cse.exe
+!             31-Dec-18   2:37 pm   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+
+! Input file name:  C:\Users\nkruis\projects\cse\test\pvtest.cse
+! Report file name: C:\Users\nkruis\projects\cse\test\pvtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0475   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0080   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 13.64    Calls = 2      T/C = 6.8195   
-!              Reports:  Time = 0.06     Calls = 2      T/C = 0.0310   
-!                Total:  Time = 13.80    Calls = 1      T/C = 13.7960  
+!           Simulation:  Time = 0.75     Calls = 1      T/C = 0.7510   
+!              Reports:  Time = 0.04     Calls = 1      T/C = 0.0430   
+!                Total:  Time = 0.80     Calls = 1      T/C = 0.8030   
 
 
 
@@ -501,5 +312,5 @@ Input for Run 002:
 
 
 ------------------------------------------------------------------------------
-! pvtest  002                              Mon 12-Feb-18   4:50:49 pm  Page  8
+! pvtest  001                              Mon 31-Dec-18   2:46:15 pm  Page  5
 
