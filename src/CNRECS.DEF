@@ -3800,7 +3800,6 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
-  *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
   *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
@@ -3828,7 +3827,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *i TI pv_elecMtri;		// meter for system electricity production
   *f ENDUSECH pv_endUse		// end use of energy. defataults to "PV"
   *i FLOAT_GEZ pv_dcCap		// system capacity/size (DC nameplate), kW
-  *i NOYESCH pv_usePVWattsDLL  // use PVWatts DLL instead of CSE calculations
   *i PVMODCH pv_moduleType	// type of module (Standard, Premium, ThinFilm)
   *i FLOAT pv_tempCoeff		// temperature coefficient, 1/F
   *i FLOAT_GE1 pv_covRefrInd  // refraction index for coating applied to cover
@@ -3838,14 +3836,20 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *h FRAC pv_grndRefl		// ground reflectance
   *i FRAC pv_gcr			// ground coverage ratio (what fraction of the ground is covered by the array). 1.0 implies no spacing.
   *i FLOAT_GZ pv_dcacRat	// DC to AC ratio
+  *h FLOAT_GE1 pv_sif		// Shading Impact Factor
   *i FRAC pv_invEff			// inverter efficiency at rated power
   *h FRAC pv_sysLoss		// system losses
   *h *e FLOAT pv_tCell		// cell temperature, F
   *h *e FLOAT pv_aoi		// angle of incidence (radians)
   *h *e ANGLE pv_panelTilt	// tilt of pv panel (different from array tilt for tracking systems), radians
   *h *e ANGLE pv_panelAzm	// azimuth of pv panel (different from array tilt for tracking systems), radians
-  *h *e FLOAT pv_poa		// plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_poaT		// transmitted plane of array incidence, Btu/h-ft2
+  *h *e FLOAT pv_poa		// plane of array incidence (before shading), Btu/h-ft2
+  *h *e FLOAT pv_poaBeam	// plane of array beam incidence (before shading), Btu/h-ft2
+  *h *e FLOAT pv_radIBeam	// beam radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_radIBeamEff	// effective beam radiation incident on array (accounts for shading impact factor), Btu/h-ft2
+  *h *e FLOAT pv_radI		// total radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_radIEff	// effective total radiation incident on array (accounts for shading impact factor), Btu/h-ft2
+  *h *e FLOAT pv_radTrans	// transmitted radiation (after accounting for shading impact), Btu/h-ft2
   *h *e FLOAT pv_dcOut		// DC power output, Btu
   *h *e FLOAT pv_acOut		// AC power output, Btu
 
@@ -3854,8 +3858,8 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *r FLOAT pv_convRatio		// ratio of back convection to front convection
   *r FLOAT pv_tGrndRatio	// ratio of ground-cell temperature diff. to air-cell temperature diff.
   *r *hide FLOAT_GEZ pv_thermCap  // thermal capacitance of the array, J/kg-m2
-  *h *e FLOAT pv_poaPv		// previous timestep plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_tCellPv	// previous timestep cell temperature, F
+  *h *e FLOAT pv_radILs		// last step (curently hour) total radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_tCellLs	// last step (curently hour) cell temperature, F
   *r *hide SI pv_modMap		// map to PVWatts module type input
   *r *hide SI pv_arrMap		// map to PVWatts array type input
 

@@ -609,6 +609,9 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 #endif
 				fBeam = 1.;		// limit to 1
 			}
+			// round to nearest thousandth to minimize pixel precision 
+			// errors for unshaded surfaces and differences among GPUs
+			roundNearest(fBeam, 0.001f);
 		}
 	}
 	gx_fBeam = fBeam;

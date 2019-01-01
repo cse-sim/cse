@@ -1,5 +1,5 @@
 
-CSE 0.850.0+docs-fix.f4a6a9b.24 for Win32 console
+CSE 0.853.0 for Win32 console
 Command line: -p
 @top.                 I   R 
                  name   I   R   string            constant
@@ -267,9 +267,9 @@ Command line: -p
                 znAzm   I   R   number            input time
             plenumRet   I   R   integer number    input time
                  znSC   I   R   number            hourly
-                 znTH   I   R   number            hourly
-                 znTD   I   R   number            hourly
-                 znTC   I   R   number            hourly
+                 znTH   I   R   number            subhourly
+                 znTD   I   R   number            subhourly
+                 znTC   I   R   number            subhourly
                znQMxH   I   R   number            hourly
           znQMxHRated   I   R   number            run start time (of each phase, autoSize or simulate)
                znQMxC   I   R   number            hourly
@@ -783,6 +783,8 @@ Command line: -p
              fuelMtri   I   R   integer number    input time
               parElec   I   R   number            hourly
               parFuel   I   R   number            hourly
+              capNomH   I   R   number            daily
+              capNomC   I   R   number            daily
             fan.fanTy   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
              fan.vfDs   I   R   number            end of each subhour
           fan.vfDs_As   I   R   number            run start time (of each phase, autoSize or simulate)
@@ -882,6 +884,7 @@ Command line: -p
            capAuxHInp   I   R   number            end of each phase (autosize or simulate)
               COPAuxH   I   R   number            autosize and simulate phase start time
          ASHPLockOutT   I   R   number            hourly
+         defrostModel   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
                  AFUE   I   R   number            autosize and simulate phase start time
                  capH   I   R   number            end of each phase (autosize or simulate)
               capH_As   I   R   number            end of each phase (autosize or simulate)
@@ -946,12 +949,15 @@ Command line: -p
             amfReq[0]   I   R   number            end of each subhour
             amfReq[1]   I   R   number            end of each subhour
                  runF   I   R   number            end of each subhour
+               runFLs   I   R   number            subhourly
               runFAux   I   R   number            end of each subhour
                outSen   I   R   number            end of each subhour
                outLat   I   R   number            end of each subhour
                outFan   I   R   number            end of each subhour
            outDefrost   I   R   number            end of each subhour
                outAux   I   R   number            end of each subhour
+                FEffH   I   R   number            subhourly
+                FEffC   I   R   number            subhourly
             inPrimary   I   R   number            end of each subhour
                 inFan   I   R   number            end of each subhour
             inDefrost   I   R   number            end of each subhour
@@ -1033,14 +1039,20 @@ Command line: -p
                   DSM   I   R   number            input time
                   SSF   I   R   number            hourly
                    WF   I   R   number            hourly
-           whDrawF[0]   I   R   number            end of each hour
-           whDrawF[1]   I   R   number            end of each hour
-           whDrawF[2]   I   R   number            end of each hour
-           whDrawF[3]   I   R   number            end of each hour
-           whDrawF[4]   I   R   number            end of each hour
-           whDrawF[5]   I   R   number            end of each hour
+        whDrawVolF[0]   I   R   number            end of each hour
+        whDrawVolF[1]   I   R   number            end of each hour
+        whDrawVolF[2]   I   R   number            end of each hour
+        whDrawVolF[3]   I   R   number            end of each hour
+        whDrawVolF[4]   I   R   number            end of each hour
+        whDrawVolF[5]   I   R   number            end of each hour
+        whDrawDurF[0]   I   R   number            end of each hour
+        whDrawDurF[1]   I   R   number            end of each hour
+        whDrawDurF[2]   I   R   number            end of each hour
+        whDrawDurF[3]   I   R   number            end of each hour
+        whDrawDurF[4]   I   R   number            end of each hour
+        whDrawDurF[5]   I   R   number            end of each hour
               simMeth   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
-              whCount   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
+              whCount   I   R   number            run start time (of each phase, autoSize or simulate)
               wtCount   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
               wpCount   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
               wlCount   I   R   unrecognized      run start time (of each phase, autoSize or simulate)
@@ -1063,7 +1075,7 @@ Command line: -p
 
 @DHWHeater[1..].      I   R                   owner: DHWSys
                  name   I   R   string            constant
-                 mult   I   R   integer number    input time
+                 mult   I   R   number            input time
               heatSrc   I   R   unrecognized      input time
                  type   I   R   unrecognized      input time
                  desc   I   R   string            input time
@@ -1098,6 +1110,7 @@ Command line: -p
             loadCFwdF   I   R   number            input time
              elecMtri   I   R   integer number    input time
              fuelMtri   I   R   integer number    input time
+            xBUEndUse   I   R   integer number    input time
                inElec   I   R   number            end of each hour
              inElecBU   I   R   number            end of each hour
                inFuel   I   R   number            end of each hour
@@ -1265,7 +1278,6 @@ Command line: -p
              elecMtri   I   R   integer number    input time
                endUse   I   R   integer number    autosize and simulate phase start time
                 dcCap   I   R   number            input time
-        usePVWattsDLL   I   R   integer number    input time
            moduleType   I   R   unrecognized      input time
             tempCoeff   I   R   number            input time
            covRefrInd   I   R   number            input time
@@ -1275,6 +1287,7 @@ Command line: -p
              grndRefl   I   R   number            hourly
                   gcr   I   R   number            input time
               dcacRat   I   R   number            input time
+                  sif   I   R   number            hourly
                invEff   I   R   number            input time
               sysLoss   I   R   number            hourly
                 tCell   I   R   number            end of each hour
@@ -1282,15 +1295,20 @@ Command line: -p
             panelTilt   I   R   number            end of each hour
              panelAzm   I   R   number            end of each hour
                   poa   I   R   number            end of each hour
-                 poaT   I   R   number            end of each hour
+              poaBeam   I   R   number            end of each hour
+             radIBeam   I   R   number            end of each hour
+          radIBeamEff   I   R   number            end of each hour
+                 radI   I   R   number            end of each hour
+              radIEff   I   R   number            end of each hour
+             radTrans   I   R   number            end of each hour
                 dcOut   I   R   number            end of each hour
                 acOut   I   R   number            end of each hour
               tauNorm   I   R   number            run start time (of each phase, autoSize or simulate)
                 inoct   I   R   number            run start time (of each phase, autoSize or simulate)
             convRatio   I   R   number            run start time (of each phase, autoSize or simulate)
            tGrndRatio   I   R   number            run start time (of each phase, autoSize or simulate)
-                poaPv   I   R   number            end of each hour
-              tCellPv   I   R   number            end of each hour
+               radILs   I   R   number            end of each hour
+              tCellLs   I   R   number            end of each hour
 
 @Battery[1..].        I   R 
                  name   I   R   string            constant
@@ -3814,6 +3832,51 @@ Command line: -p
                S.qFan       R   number            end of each subhour
            S.qDefrost       R   number            end of each subhour
                S.qAux       R   number            end of each subhour
+            prior.Y.n       R   unrecognized      run start time (of each phase, autoSize or simulate)
+        prior.Y.hrsOn       R   number            run start time (of each phase, autoSize or simulate)
+     prior.Y.hrsOnAux       R   number            run start time (of each phase, autoSize or simulate)
+           prior.Y.qh       R   number            run start time (of each phase, autoSize or simulate)
+        prior.Y.qcSen       R   number            run start time (of each phase, autoSize or simulate)
+        prior.Y.qcLat       R   number            run start time (of each phase, autoSize or simulate)
+         prior.Y.qFan       R   number            run start time (of each phase, autoSize or simulate)
+     prior.Y.qDefrost       R   number            run start time (of each phase, autoSize or simulate)
+         prior.Y.qAux       R   number            run start time (of each phase, autoSize or simulate)
+            prior.M.n       R   unrecognized      monthly
+        prior.M.hrsOn       R   number            monthly
+     prior.M.hrsOnAux       R   number            monthly
+           prior.M.qh       R   number            monthly
+        prior.M.qcSen       R   number            monthly
+        prior.M.qcLat       R   number            monthly
+         prior.M.qFan       R   number            monthly
+     prior.M.qDefrost       R   number            monthly
+         prior.M.qAux       R   number            monthly
+            prior.D.n       R   unrecognized      daily
+        prior.D.hrsOn       R   number            daily
+     prior.D.hrsOnAux       R   number            daily
+           prior.D.qh       R   number            daily
+        prior.D.qcSen       R   number            daily
+        prior.D.qcLat       R   number            daily
+         prior.D.qFan       R   number            daily
+     prior.D.qDefrost       R   number            daily
+         prior.D.qAux       R   number            daily
+            prior.H.n       R   unrecognized      hourly
+        prior.H.hrsOn       R   number            hourly
+     prior.H.hrsOnAux       R   number            hourly
+           prior.H.qh       R   number            hourly
+        prior.H.qcSen       R   number            hourly
+        prior.H.qcLat       R   number            hourly
+         prior.H.qFan       R   number            hourly
+     prior.H.qDefrost       R   number            hourly
+         prior.H.qAux       R   number            hourly
+            prior.S.n       R   unrecognized      subhourly
+        prior.S.hrsOn       R   number            subhourly
+     prior.S.hrsOnAux       R   number            subhourly
+           prior.S.qh       R   number            subhourly
+        prior.S.qcSen       R   number            subhourly
+        prior.S.qcLat       R   number            subhourly
+         prior.S.qFan       R   number            subhourly
+     prior.S.qDefrost       R   number            subhourly
+         prior.S.qAux       R   number            subhourly
 
 @zhx[1..].                R                   owner: zone
                  name       R   string            constant
