@@ -137,7 +137,7 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
   Shading Impact Factor (SIF) of the array used to represent the disproportionate impact on array output of partially shaded modules at the sub-array level. This impact is applied to the effective beam irradiance on the array:
 
-  \[I_{poa,beam,eff} = \max\left(I_{poa,beam}\cdot\left(1-SIF\cdot f_{sh}\right),0\right)\]
+  $$I_{poa,beam,eff} = \max\left(I_{poa,beam}\cdot\left(1-SIF\cdot f_{sh}\right),0\right)$$
 
   where $f_{sh}$ is the fraction of the array that is shaded.
 
