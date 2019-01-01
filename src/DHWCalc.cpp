@@ -844,6 +844,7 @@ RC DHWSYS::ws_DoDWHR()
 		}
 		float tInletXWt = 0.f;
 		float whUseWt = 0.f;
+		float qDWHRWt = 0.f;
 		float fxUse = 0.f;
 		for (int iD=0; iD<nD; iD++)
 		{	DWHRUSE& hru = tk.wtk_dwhrDraws[ iD];
@@ -853,14 +854,15 @@ RC DHWSYS::ws_DoDWHR()
 			DHWHEATREC* pWR;
 			RLUPC( WrR, pWR, pWR->ownTi == ss)
 			{	if (pWR->wr_fWeight < .0001f)
-					continue;		// no effect (duplicate, mult=0, ...)
-				float hxVPot;  // potable-side vol, gal (including other draws)
+					continue;	// no effect (duplicate, mult=0, ...)
+				float qDWHR;	// heat recovered, Btu
 				float tInletX;
 				float whUse = pWR->wr_CalcTick( hru, ws_tUse, ws_tInlet,
-								tk.wtk_whUse, tInletX, hxVPot);
+								tk.wtk_whUse, tInletX, qDWHR);
 				fWeightTot += pWR->wr_fWeight;
 				whUseWt += whUse * pWR->wr_fWeight;
 				tInletXWt += tInletX * pWR->wr_fWeight;
+				qDWHRWt += qDWHR * pWR->wr_fWeight;
 			}
 			if (fWeightTot < .9999f)
 			{	float fHot;
@@ -872,6 +874,7 @@ RC DHWSYS::ws_DoDWHR()
 		tInletXSum += (tk.wtk_tInletX = ws_AdjustTInletForSSF( tInletXWt/nD));
 		ws_AccumUseTick(		// accum to ws_tick, ws_whUse, and ws_fxMixUse
 			C_DHWEUCH_SHOWER, iTk, fxUse, whUseWt);
+		ws_qDWHR += qDWHRWt;
 	}  // end tick
 
 	// calc hour average adjusted inlet temp
@@ -2310,8 +2313,8 @@ float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 	float whUseOther,	// WH hot water draws for other non-DWHR fixtures, gal
 	float& tInletX,		// returned: adjusted WH inlet temp, F
 						//     (= tpI if !wr_FeedsWH())
-	float& hxVPot)		// returned: HX potable-side vol, gal
-						//    due to this draw only
+	float& qDWHR)		// returned: heat recovered DWHR, Btu
+
 // returns hot water use at WH, gal
 
 {	
@@ -2345,7 +2348,6 @@ float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 			if (fabs( wr_eff - effWas) < .01f)
 				break;
 		}
-		tInletX = wr_FeedsWH() ? wr_HX( vp, tpI, vd, td) : tpI;
 	}
 	else
 	{	// HX feeds WH only
@@ -2353,9 +2355,11 @@ float DHWHEATREC::wr_CalcTick(		// calculate water quantities for tick
 		whUse = vd * fHot;
 		vp = whUseOther + whUse;		// WH feed in = WH hot water out
 		wr_EffAdjusted( vp, tpI, vd, td);	// derive wr_eff
-		tInletX = wr_HX( vp, tpI, vd, td);	// apply wr_eff
 	}
 
+	float tpO = wr_HX( vp, tpI, vd, td);	// potable water
+	qDWHR = vp * waterRhoCp * (tpO - tpI);
+	tInletX = wr_FeedsWH() ? tpO : tpI;
 	return whUse;
 }	// DHWHEATREC::wr_CalcTick
 //-----------------------------------------------------------------------------
