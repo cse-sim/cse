@@ -1403,6 +1403,7 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E( WsR.RunDup( WSiB));
 	E( WhR.RunDup( WHiB, &WsR))
 	E( WtR.RunDup( WTiB, &WsR))
+	E( WrR.RunDup( WRiB, &WsR))
 	E( WpR.RunDup( WPiB, &WsR))
 	E( WlR.RunDup( WLiB, &WsR))
 	E( WgR.RunDup( WGiB, &WlR))

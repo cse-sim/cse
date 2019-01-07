@@ -121,6 +121,7 @@ extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
 extern anc<DHWHEATER> WhR;		// DHW heater
 extern anc<DHWTANK> WtR;		// DHW tank
+extern anc<DHWHEATREC> WrR;		// DHW heat recovery
 extern anc<DHWPUMP> WpR;		// DHW pump
 extern anc<DHWLOOP> WlR;		// DHW loop
 extern anc<DHWLOOPSEG> WgR;		// DHW loop segment
