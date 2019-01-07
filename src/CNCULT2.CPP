@@ -750,6 +750,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	cupIncRef( DMPP( tp_HPWHVersion));
 	cupIncRef( DMPP( tp_exePath));
 	cupIncRef( DMPP( tp_exeInfo));
+	cupIncRef( DMPP( tp_cmdLineArgs));
 #ifdef BINRES
 	cupIncRef( DMPP( tp_brFileName));
 #endif
@@ -776,6 +777,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 	cupfree( DMPP( tp_HPWHVersion));
 	cupfree( DMPP( tp_exePath));
 	cupfree( DMPP( tp_exeInfo));
+	cupfree( DMPP( tp_cmdLineArgs));
 	// monStr is not in heap.
 #ifdef BINRES
 	cupfree( DMPP(tp_brFileName));

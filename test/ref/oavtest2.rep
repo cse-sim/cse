@@ -186,7 +186,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -1492,17 +1492,18 @@ Input for Run 001:
 
 
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console run(s) done: Mon 12-Feb-18   4:47:03 pm
-! Executable: d:\cse\msvc\csed.exe
-!             12-Feb-18   4:40 pm   (VS 12.0    2814976 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:22:29 am
 
-! Input file name:  D:\cse\test\oavtest2.cse
-! Report file name: D:\cse\test\oavtest2.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 oavtest2
+! Input file:   D:\cse\test\oavtest2.cse
+! Report file:  D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.14     Calls = 1      T/C = 0.1390   
+!                Input:  Time = 0.02     Calls = 1      T/C = 0.0160   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 98.23    Calls = 1      T/C = 98.2310  
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0240   
-!                Total:  Time = 98.39    Calls = 1      T/C = 98.3950  
+!           Simulation:  Time = 15.26    Calls = 1      T/C = 15.2590  
+!              Reports:  Time = 0.04     Calls = 1      T/C = 0.0390   
+!                Total:  Time = 15.33    Calls = 1      T/C = 15.3300  

@@ -267,6 +267,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*r INT tp_exeCodeSize	// code size, bytes (from exe header)
 	*r CHP tp_progVersion	// program version identifier as string (for probing); set from ::ProgVersion
 	*r CHP tp_HPWHVersion	// Ecotope HPWH (heat pump water heater) model version
+	*r CHP tp_cmdLineArgs	// command line args for current input file
+							//   updated during session if multiple input files specified on command line
     *i SI runSerial   	// run #, 000-999, per (future 11-91) status file (meanwhile, see cnguts:cnRunSerial 7-92).
     *i CHP runTitle   	// user text for report titles, footers, export title 11-22-91.
     *r CHP runDateTime	// run date & time string, set by cncult2.cpp:topStarPrf2(), used in reports & bin res file, 9-94.
