@@ -60,11 +60,11 @@ Specifies the plumbing configuration:
 
 **wrCSARatedEF=*float***
 
-Specifies the heat recovery effectiveness determined using CSA xxx rating conditions.
+Specifies the heat recovery effectiveness determined using CSA B55.2 rating conditions.
 
   **Units**         **Legal Range**       **Default**   **Required**   **Variability**
   ----------------- -------------------- ------------- -------------- -----------------
-  --                   0 $\le$ x $\le$ 1         --          Yes             constant
+  --                   0 $\le$ x $\le$ 1         --          Yes             hourly
 
 
 **endDHWHEATREC**
@@ -76,5 +76,3 @@ Optionally indicates the end of the DHWHEATREC definition.
                                 *N/A*         No             
 
 **Related Probes:**
-
-- @[DHWHeatRec](#p_dhwtank)
