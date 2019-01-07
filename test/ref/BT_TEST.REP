@@ -39,7 +39,7 @@ Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
 ! Log for Run 001:
 
-! CSE 0.836b for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -60,7 +60,7 @@ Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
 
 ------------------------------------------------------------------------------
-! bt_test  001                             Thu 30-Nov-17   3:22:00 pm  Page  1
+! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
           ReportCol colhead="Day" colVal=@Top.dateStr
 
 ------------------------------------------------------------------------------
-! bt_test  001                             Thu 30-Nov-17   3:22:00 pm  Page  2
+! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! bt_test  001                             Thu 30-Nov-17   3:22:00 pm  Page  3
+! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  3
 
 
 
@@ -195,21 +195,21 @@ Input for Run 001:
 
 
 
-! CSE 0.836b for Win32 console run(s) done: Thu 30-Nov-17   3:22:00 pm
-! Executable: c:\users\nkruis\projects\cse\run\cse.exe
-!             29-Nov-17   3:39 pm   (VS 12.0    1360384 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:10:28 am
 
-! Input file name:  C:\Users\nkruis\projects\cse\test\bt_test.cse
-! Report file name: C:\Users\nkruis\projects\cse\test\bt_test.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 bt_test
+! Input file:   D:\cse\test\bt_test.cse
+! Report file:  D:\cse\test\bt_test.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0000   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.16     Calls = 1      T/C = 0.1640   
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0220   
-!                Total:  Time = 0.25     Calls = 1      T/C = 0.2470   
-
+!           Simulation:  Time = 0.10     Calls = 1      T/C = 0.0960   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0150   
+!                Total:  Time = 0.11     Calls = 1      T/C = 0.1110   
 
 
 
@@ -249,5 +249,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! bt_test  001                             Thu 30-Nov-17   3:22:00 pm  Page  4
+! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  4
 

@@ -60,7 +60,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  1
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  1
 
 
 
@@ -71,7 +71,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.836b for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  2
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  3
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         //Thermostats         
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  4
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             sfanVfMxF=1.00             //Max volume multiplier
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  5
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
         	WINDOW  Wfront; wnHeight=6.; wnWidth=105 / 6 wnGT="4040";       
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  6
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  7
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.836b for Win32 console run(s) done: Thu 30-Nov-17   3:18:53 pm
-! Executable: c:\users\nkruis\projects\cse\run\cse.exe
-!             29-Nov-17   3:39 pm   (VS 12.0    1360384 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:19:52 am
 
-! Input file name:  C:\Users\nkruis\projects\cse\test\Autosize.cse
-! Report file name: C:\Users\nkruis\projects\cse\test\Autosize.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 Autosize
+! Input file:   D:\cse\test\Autosize.cse
+! Report file:  D:\cse\test\Autosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.43     Calls = 2      T/C = 0.2165   
-!           AutoSizing:  Time = 0.30     Calls = 1      T/C = 0.3040   
-!           Simulation:  Time = 4.42     Calls = 1      T/C = 4.4230   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0120   
-!                Total:  Time = 5.20     Calls = 1      T/C = 5.2010   
-
+!                Input:  Time = 0.03     Calls = 2      T/C = 0.0165   
+!           AutoSizing:  Time = 0.19     Calls = 1      T/C = 0.1870   
+!           Simulation:  Time = 3.38     Calls = 1      T/C = 3.3770   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000   
+!                Total:  Time = 3.60     Calls = 1      T/C = 3.6000   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Autosize  001                            Thu 30-Nov-17   3:18:48 pm  Page  8
+! Autosize  001                            Mon 07-Jan-19   9:19:49 am  Page  8
 

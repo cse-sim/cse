@@ -161,6 +161,7 @@ extern anc<IFFNM> IffnmB;		// Import File Field Names compile support & runtime 
 extern anc<HDAY> HdayB;			// holidays. Default records supplied.
 
 //-- cnguts.cpp Input Globals: set externally
+extern const char* cmdLineArgs;			// invoking cmd line argv[ 1 ..]
 extern const char* exePath;				// path(s) to .exe file or dll;exe
 extern const char* InputDirPath;		// drive/dir path to input file
 extern const char* InputFileName;		// Input file name as given by user (ptr to argv[])

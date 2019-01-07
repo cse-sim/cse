@@ -185,7 +185,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -1749,17 +1749,18 @@ Input for Run 001:
 
 
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console run(s) done: Mon 12-Feb-18   4:45:18 pm
-! Executable: d:\cse\msvc\csed.exe
-!             12-Feb-18   4:40 pm   (VS 12.0    2814976 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:21:52 am
 
-! Input file name:  D:\cse\test\ashptest2.cse
-! Report file name: D:\cse\test\ashptest2.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 ashptest2
+! Input file:   D:\cse\test\ashptest2.cse
+! Report file:  D:\cse\test\ashptest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 2      T/C = 0.0555   
-!           AutoSizing:  Time = 7.57     Calls = 1      T/C = 7.5710   
-!           Simulation:  Time = 98.67    Calls = 1      T/C = 98.6650  
-!              Reports:  Time = 0.07     Calls = 1      T/C = 0.0660   
-!                Total:  Time = 106.41   Calls = 1      T/C = 106.4130 
+!                Input:  Time = 0.03     Calls = 2      T/C = 0.0160   
+!           AutoSizing:  Time = 1.36     Calls = 1      T/C = 1.3600   
+!           Simulation:  Time = 15.91    Calls = 1      T/C = 15.9100  
+!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0620   
+!                Total:  Time = 17.37    Calls = 1      T/C = 17.3670  

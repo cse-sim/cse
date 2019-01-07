@@ -60,7 +60,7 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  1
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  1
 
 
 
@@ -108,7 +108,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ Annual Cooling Energy Report
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  2
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  3
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  4
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  5
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  6
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  7
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console run(s) done: Mon 12-Feb-18   4:41:20 pm
-! Executable: d:\cse\msvc\csed.exe
-!             12-Feb-18   4:40 pm   (VS 12.0    2814976 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:19:48 am
 
-! Input file name:  D:\cse\test\Fresno.cse
-! Report file name: D:\cse\test\Fresno.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 Fresno
+! Input file:   D:\cse\test\Fresno.cse
+! Report file:  D:\cse\test\Fresno.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.03     Calls = 1      T/C = 0.0310   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0150   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.59     Calls = 1      T/C = 2.5880   
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0160   
-!                Total:  Time = 2.64     Calls = 1      T/C = 2.6350   
-
+!           Simulation:  Time = 0.95     Calls = 1      T/C = 0.9470   
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0210   
+!                Total:  Time = 0.98     Calls = 1      T/C = 0.9840   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 12-Feb-18   4:41:17 pm  Page  8
+! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  8
 
