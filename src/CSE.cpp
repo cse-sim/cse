@@ -1347,7 +1347,6 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 	WStr tExePath = enExePath();
 	strsave( tp_exePath, tExePath.c_str());
 
-	// dmfree( DMPP( tp_HPWHVersion));
 	strsave( tp_HPWHVersion, DHWHEATER::wh_GetHPWHVersion().c_str());
 
 	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
