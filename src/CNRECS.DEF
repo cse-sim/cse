@@ -3327,6 +3327,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolved DHWMTR pointers
 
 						// mixed and hot water use for this DHWSYS (w/o ws_mult)
+  *h *e FLOAT ws_whUseNoHR;				// current hour virtual hot water use w/o heat recovery, gal
+										//    re verification / accounting of DWHR results
   *h *e *nest DHWMTR_IVL ws_fxUseMix	// current hour total (mixed) water use at fixtures, gal
   *h    *nest DHWMTR_IVL ws_fxUseMixLH	// prior hour total (mixed) water use at fixtures, gal
   *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use (at ws_tUse), gal
@@ -3582,6 +3584,9 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 
   *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
+  *h FLOAT wr_dTDrain			// water temp drop from fixture use to drain, F
+								//    td = tUse - dTDrain;  default = 4.6 F
+						
   *s *e FLOAT wr_eff			// effectiveness under current conditions
 
   *r FLOAT wr_fWeight			// weighting factor for results
