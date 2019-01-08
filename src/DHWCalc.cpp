@@ -683,7 +683,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   wdu_DoHour accums add'l DHWDAYUSE draws to these values
 	ws_fxUseMix.wmt_AccumEU( 0, hwUseX);
 	ws_whUse.wmt_AccumEU( 0, hwUseX);
-	ws_whUseNoHR = ws_whUse.total;
 
 	DHWDAYUSE* pWDU = WduR.GetAtSafe( ws_dayUsei);	// ref'd DHWDAYUSE can vary daily
 	if (pWDU)
@@ -703,6 +702,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			rc |= ws_AccumCentralUse( pWSChild);
 		}
 	}
+
+	// ws_whUseNoHR ??
 
 #if defined( _DEBUG)
 	// check: compare tick totals to full hour values

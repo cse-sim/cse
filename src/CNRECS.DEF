@@ -3584,8 +3584,8 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 
   *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
-  *h FLOAT wr_dTDrain			// water temp drop from fixture use to drain, F
-								//    td = tUse - dTDrain;  default = 4.6 F
+  *h FLOAT wr_dTDrain			// water temp drop from fixture mixed temp to drain, F
+								//    td = tFxMix - dTDrain;  default = 4.6 F
 						
   *s *e FLOAT wr_eff			// effectiveness under current conditions
 
