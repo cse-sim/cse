@@ -711,9 +711,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		}
 	}
 
-	// ws_whUseNoHR ??
-
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	// check: compare tick totals to full hour values
 	float whUseSum = 0.f;
 	float tInletXAvg = 0.f;
