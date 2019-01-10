@@ -271,8 +271,16 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 	const DHWTICK& s,	// source
 	double mult)		// multiplier
 {
-	wtk_whUse += s.wtk_whUse * mult;
-	// wtk_dwhrDraws ??
+	double sWhUse = s.wtk_whUse * mult;		// source use
+	double tWhUse = wtk_whUse + sWhUse;		// new total use
+	if (tWhUse > 0.)
+	{	wtk_tInletX = (wtk_whUse*wtk_tInletX + sWhUse*s.wtk_tInletX)
+						/ tWhUse;
+		wtk_whUse = tWhUse;
+	}
+	// else leave wtk_tInletX
+
+	// wtk_dwhrDraws: not needed (DWHR results are in wtk_Use and wtk_tInletX
 }		// DHWTICK::wtk_Accum
 //-----------------------------------------------------------------------------
 DHWSYS::~DHWSYS()
@@ -703,9 +711,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		}
 	}
 
-	// ws_whUseNoHR ??
-
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	// check: compare tick totals to full hour values
 	float whUseSum = 0.f;
 	float tInletXAvg = 0.f;
@@ -823,6 +829,8 @@ RC DHWSYS::ws_AccumCentralUse(		// accumulate central DHWSYS water use values
 
 	// == water use ==
 	// ws_hwUse: do not accum (input)
+	ws_whUseNoHR += pWSChild->ws_whUseNoHR * mult;
+	ws_qDWHR += pWSChild->ws_qDWHR * mult;
 	int nTk = Top.tp_NHrTicks();
 	for (int iTk=0; iTk<nTk; iTk++)
 		ws_ticks[ iTk].wtk_Accum( pWSChild->ws_ticks[ iTk], mult);
