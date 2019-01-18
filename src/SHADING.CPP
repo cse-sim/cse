@@ -590,6 +590,8 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 		else
 		{	float PSSF = PUMBRA( calculatePSSF)( gx_pnIdx);
 			fBeam = PSSF / (cosi*gx_area);
+			// PUMBRA(renderScene)(gx_pnIdx);
+
 			if (fBeam > 1.f)
 			{	
 #if 1
@@ -603,7 +605,7 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 									: "";
 						rWarn( "%s: calculated sunlit fraction (=%0.4f) s/b <= 1.%s",
 							gx_pParent->classObjTx( 1), fBeam, noMore);
-            PUMBRA(renderScene)(gx_pnIdx);
+						PUMBRA(renderScene)(gx_pnIdx);
 					}
 				}
 #endif
@@ -700,7 +702,7 @@ static void PenumbraMessageHandler(
 RC TOPRAT::tp_PumbraInit()
 {	RC rc = RCOK;
 	if (!tp_pPumbra)
-	{	const int size = 512;	// context size (=# of pixels)
+	{	const int size = 2048;	// context size (=# of x and y pixels of gpu buffer)
 		tp_pPumbra = new Pumbra::Penumbra( PenumbraMessageHandler, this, size);
 		if (!tp_pPumbra)
 			rc = RCBAD;		// not expected
