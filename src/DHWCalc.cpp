@@ -477,6 +477,10 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			if (pWR->wr_mult == 0)
 				continue;
 			ws_wrCount += pWR->wr_mult;		// count total # of heat recovery devices in this DHWSYS
+
+			if (!IsSet( DHWSYS_DAYUSENAME))
+				pWR->oInfo( "DHWSys has no wsDayUse, heat recovery not modeled.");
+
 			// determine results weighting for this device
 			//   add weight to equivalent devices, if any (avoid dup calc)
 			//   see comments elsewhere re modeling multiple devices
@@ -492,6 +496,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		if (ws_wrCount > ws_showerCount)
 			rc |= oer( "Invalid heat recovery arrangement: more DHWHEATREC devices (%d) than showers (%d)",
 					ws_wrCount, ws_showerCount);
+
 		return rc;
 	}
 
@@ -691,17 +696,17 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   wdu_DoHour accums add'l DHWDAYUSE draws to these values
 	ws_fxUseMix.wmt_AccumEU( 0, hwUseX);
 	ws_whUse.wmt_AccumEU( 0, hwUseX);
+	ws_whUseNoHR = ws_whUse.total;	// water use w/o heat recovery
+									//   more added in wdu_DoHour
 
 	DHWDAYUSE* pWDU = WduR.GetAtSafe( ws_dayUsei);	// ref'd DHWDAYUSE can vary daily
 	if (pWDU)
 	{	// accumulation DHWDAYUSE input to tick bins and total use
 		rc |= pWDU->wdu_DoHour( this);		// accum DAYUSEs
-		ws_whUseNoHR = ws_whUse.total;		// more added in ws_DoDWHR()
 		if (ws_wrCount && ws_iTk0DWHR < ws_iTkNDWHR)
 			rc |= ws_DoDWHR();		// modify tick values re DWHR
 	}
 	else
-		ws_whUseNoHR = ws_whUse.total;
 
 	if (!ws_HasCentralDHWSYS())
 	{	DHWSYS* pWSChild;
@@ -1148,6 +1153,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	double tickDur = Top.tp_subhrTickDur;	// tick duration, min
 	double fxFlow = wu_flow * mult;			// total (mixed) flow at fixture, gpm
 											//   (with multiplier)
+	double fxVol = fxFlow * (endX - begX);	// total vol at fixture, gal
 	int iTk0 = begX / tickDur;			// draw's first tick idx
 	double tickBeg = iTk0*tickDur;		// start time of 1st tick
 	double tickEnd;
@@ -1176,8 +1182,9 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	}
 	
 	float hotF;		// hot water fraction
+	float hotFNoHR;	// hot water fraction w/o heat recovery
 	if (!IsSet( DHWUSE_TEMP))
-		hotF = wu_hotF;		// no mixing, use input value
+		hotFNoHR = hotF = wu_hotF;		// no mixing, use input value
 	else
 	{	// use temperature is specified
 		// const DHWSYS* pWS = wu_GetDHWSYS();
@@ -1185,34 +1192,40 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 										//   (*not* ws_tInletX: mix is with mains water)
 		float tHot = pWS->ws_tUse;		// hot water temp at fixture, F
 										//   assume system tuse
-		if (wu_heatRecEF > 0.f)
-		{
+		rc |= wu_CalcHotF( tHot, tCold, hotFNoHR);
+
+		if (wu_heatRecEF < 0.001f)
+			hotF = hotFNoHR;		// no heat recovery
 #if 0
-			if (pWS->ws_wrCount > 0)
-			// DHWUSE heat recovery cannot be combined with DHWHEATREC.
+		else if (pWS->ws_wrCount > 0)
+		{	// DHWUSE heat recovery cannot be combined with DHWHEATREC.
 			//   tCold may not be known here if DHWHEATREC present
 			//   Check is done during simulation cuz DHWSYS<->DHWUSE
 			//      linkage is established only at runtime.
-				ooer( DHWUSE_HEATRECEF, "wuHeatRecEF=%0.2f is not valid (must be 0).\n"
-					   "  wuHeatRecEF cannot be used because parent DHWSYS '%s' includes DHWHEATREC(s).",
-						wu_heatRecEF, pWS->name);
-			else
+			ooer( DHWUSE_HEATRECEF, "wuHeatRecEF=%0.2f is not valid (must be 0).\n"
+				   "  wuHeatRecEF cannot be used because parent DHWSYS '%s' includes DHWHEATREC(s).",
+					wu_heatRecEF, pWS->name);
+			hotF = hotFNoHR;
 #endif
-			{	// local legacy-model heat recovery available and legal
-				if (wu_heatRecEF > 0.9f)
-				{	// warn and limit
-					rc |= orMsg( WRN, "wuHeatRecEF=%0.2f not in valid range 0 - 0.90",
+		else
+		{	// local legacy-model heat recovery available and legal
+			if (wu_heatRecEF > 0.9f)
+			{	// warn and limit
+				rc |= orMsg( WRN, "wuHeatRecEF=%0.2f not in valid range 0 - 0.90",
 							wu_heatRecEF);
-					wu_heatRecEF = 0.9f;
-				}
-				// assume drain temp = use temp
-				tCold = wu_heatRecEF*wu_temp + (1.f - wu_heatRecEF)*tCold;
+				wu_heatRecEF = 0.9f;
 			}
+			// assume drain temp = use temp
+			float deltaT = wu_heatRecEF * (wu_temp - tCold);
+			tCold += deltaT;
+			rc |= wu_CalcHotF( tHot, tCold, hotF);	// hotF with heat rec
+			pWS->ws_qDWHR += (1.f - hotF) * fxVol * deltaT * waterRhoCp;
 		}
 
-		// determine hotF (= hot water mix fraction)
-		rc |= wu_CalcHotF( tHot, tCold, hotF);
 	}
+
+	// hot water use assuming no heat recovery, gal
+	pWS->ws_whUseNoHR += hotFNoHR * fxVol;
 
 	// allocate to tick bins
 	// accumulate total uses by end use
@@ -2073,7 +2086,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 				+ wh_HPWHUse[ 0] + wh_HPWHUse[ 1]	// electricity in
 				- qHW								// hot water energy
 				- deltaHC;							// change in tank stored energy
-	if (fabs( qBal)/max( qHCStart, 1.) > .001)		// added qHCStart normalization, 12-18
+	if (fabs( qBal)/max( qHCStart, 1.) > .002)		// added qHCStart normalization, 12-18
 	{	// energy balance error
 		static const int WHBALERRCOUNTMAX = 10;
 		wh_balErrCount++;

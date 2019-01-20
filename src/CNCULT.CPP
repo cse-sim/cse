@@ -127,7 +127,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 
 // added for DLL version that must always free all its storage.
 // calling this is safer than walking the tables for error exits
-// beleived redundant but harmless for normal exits.
+// believed redundant but harmless for normal exits.
 {
 	ZiB.free();
 	IzxiB.free();
