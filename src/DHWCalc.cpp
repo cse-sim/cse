@@ -472,11 +472,14 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		}
 
 		DHWHEATREC* pWR;
+		ws_wrCount = ws_wrFxDrainCount = 0;
 		RLUPC( WrR, pWR, pWR->ownTi == ss)
 		{	rc |= pWR->wr_Init();		// init for run (sets wr_fWeight = 0)
 			if (pWR->wr_mult == 0)
 				continue;
-			ws_wrCount += pWR->wr_mult;		// count total # of heat recovery devices in this DHWSYS
+			ws_wrCount += pWR->wr_mult;
+			ws_wrFxDrainCount += pWR->wr_NFxServedTot() * pWR->wr_mult;	// # of fixture drains
+																		// connected to DHWHEATREC
 
 			if (!IsSet( DHWSYS_DAYUSENAME))
 				pWR->oInfo( "DHWSys has no wsDayUse, heat recovery not modeled.");
@@ -487,15 +490,17 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			DHWHEATREC* pWRX;
 			RLUPC( WrR, pWRX, pWRX->ownTi == ss)
 			{	if (pWRX == pWR || pWR->wr_IsEquiv( *pWRX))
-				{	pWRX->wr_fWeight += float( pWR->wr_mult*pWR->wr_fxServed) / ws_showerCount;
+				{	pWRX->wr_fWeight += float( pWR->wr_mult*pWR->wr_NFxServedTot()) / ws_showerCount;
 					break;
 				}
 			}
 		}
 
-		if (ws_wrCount > ws_showerCount)
-			rc |= oer( "Invalid heat recovery arrangement: more DHWHEATREC devices (%d) than showers (%d)",
-					ws_wrCount, ws_showerCount);
+		// check total number of DHWHEATREC drains
+		//   do not need ws_mult, applies to both values
+		if (ws_wrFxDrainCount > ws_showerCount)
+			rc |= oer( "Invalid heat recovery arrangement: more DHWHEATREC drain connections (%d) than showers (%d)",
+					ws_wrFxDrainCount, ws_showerCount);
 
 		return rc;
 	}
@@ -2376,6 +2381,10 @@ RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
 		rc = ooer( DHWHEATREC_HWENDUSE, "wrHWEndUse=%s not supported (must be Shower)",
 			getChoiTx( DHWHEATREC_HWENDUSE));
 
+	if (wr_NFxServedTot() <= 0)
+		rc = oer( "No connections defined -- cannot model\n"
+		          "    (wrCountEqual + wrCountUnequalFX + wrCountUnequalWH is 0)");
+
 	return rc;
 }	// DHWHEATREC::wr_CkF
 //----------------------------------------------------------------------------
@@ -2389,9 +2398,10 @@ int DHWHEATREC::wr_IsEquiv(
 	const DHWHEATREC& wr) const
 // returns 1 iff *this and wr are equivalent (model only once)
 {
-	int bEquiv = wr_config == wr.wr_config
+	int bEquiv = wr_nEqual == wr.wr_nEqual
+			  && wr_nUneqFX == wr.wr_nUneqFX
+			  && wr_nUneqWH == wr.wr_nUneqWH
 		      && wr_type == wr.wr_type
-			  && wr_fxServed == wr_fxServed
 		      && wr_hwEndUse == wr.wr_hwEndUse	// future proof
 			  && !ISNANDLE( wr_effRated) && !ISNANDLE( wr.wr_effRated)
 			  && wr_effRated == wr.wr_effRated

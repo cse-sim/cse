@@ -4481,6 +4481,7 @@ ReportCol colhead="qDWHR"  colVal=@DhwSys[s].qDWHR colDec=2 colWid=6 \
 ReportCol colhead="O+HR"  colVal=@DhwSys[s].qDWHR+@DhwSys[s].HHWO colDec=2 colWid=6 \
 ReportCol colhead="Elec" colVal=@Meter[ me].H.dhw colDec=2 colWid = 6
 
+#if 0
 #define DO1( sName, me, wuFX, wuWH, hxCfg,hxEF) \
 METER me DHWMETER wufx DHWMETER wuwh \
 DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsTSetpoint=130  wsTUse=120  wsDayUse=DHW5BRa wsSSF = 0 wsWF = 1 \
@@ -4495,6 +4496,24 @@ DO1( "DS0", "Elec0", FX0, WH0, Equal, 0)
 DO1( "DSEQ",  ElecEQ, FXEQ, WHEQ, Equal, .5)
 DO1( "DSUSH", ElecUSH, FXUSH, WHUSH, UnEqualFX, .5)
 DO1( "DSUWH", ElecUWH, FXUWH, WHUWH, UnEqualWH, .5)
+
+#else
+#define DO1( sName, me, wuFX, wuWH, eq, neqFX, neqWH, hxEF) \
+METER me DHWMETER wufx DHWMETER wuwh \
+DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsTSetpoint=130  wsTUse=120  wsDayUse=DHW5BRa wsSSF = 0 wsWF = 1 \
+DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance \
+DHWHEATREC DWHR wrCountEqual = eq wrCountUnequalFX = neqFX  wrCountUnequalWH = neqWH wrCSARatedEF = hxEF wrDTDrain=0 \
+REPORT rpType=MTR rpMeter = me rpFreq=MONTH \
+REPORT rpType=DHWMTR rpDHWMeter = wuFX rpFreq=MONTH \
+REPORT rpType=DHWMTR rpDHWMeter = wuWH rpFreq=MONTH \
+WSREP2( sName, me, apr 1)
+
+DO1( "DS0", "Elec0", FX0, WH0, 1, 0, 0, 0)
+DO1( "DSEQ",  ElecEQ, FXEQ, WHEQ, 1, 0, 0, .5)
+DO1( "DSUSH", ElecUSH, FXUSH, WHUSH, 0, 1, 0, .5)
+DO1( "DSUWH", ElecUWH, FXUWH, WHUWH, 0, 0, 1, .5)
+
+#endif
 
 
 //==============================================================

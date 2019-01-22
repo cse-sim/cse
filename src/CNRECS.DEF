@@ -3369,7 +3369,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults
 							//    note may be non-integer
-  *r INT ws_wrCount;		// ditto DHWHEATREC
+  *r INT ws_wrCount;		// total child DHWHEATREC devices
+  *r INT ws_wrFxDrainCount;	// total fixture drains feeding (possibly shared) DHWHEATREC
   *r SI_GEZ ws_showerCount;	// number of shower fixtures served by this DHWSYS
 							//   re DHWHEATREC (DWHR) modeling
 							//      non-central: user input, default 1
@@ -3568,19 +3569,20 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 							//   modeled as wr_mult identical heat recovery devices
   *i DHWEUCH wr_hwEndUse	// end use source for this device
 							//   as of 12-18, only supports C_DHWEUCH_SHOWER
-  *i SI_GZ wr_fxServed		// number of fixtures (of type wr_hwEndUse) whose
-							//   drain water is routed through this DHWHEATREC
   *i DWHRTYCH wr_type		// type: C_DWHRTYCH_
 							//    _HORIZ or _VERT: effectiveness adjusted per CASE regressions
 							//          depending on flows and temps, same model for both
 							//    _SETEF: wr_effRated used w/o modification (testing aid)
-  *i DWHRCFGCH wr_config	// plumbing configuration: what is fed by DWHR potable side output
-							// equal/unequal nomenclature derived
-							//    C_DWHRCFGCH_EQUAL: water heater and fixture
-							//    C_DWHRCFGCH_UNEQFX: fixture (shower) only
-							//    C_DWHRCFGCH_UNEQWH: water heater only
-  *declare "bool wr_FeedsFX() const { return wr_config != C_DWHRCFGCH_UNEQWH; }"
-  *declare "bool wr_FeedsWH() const { return wr_config != C_DWHRCFGCH_UNEQFX; }"
+  *i SI_GEZ wr_nEqual		// number of fixtures served (of type wr_whEndUse) with
+							//   "equal" flow plumbing configuration
+							//   (potable side feeds both FX and WH)
+  *i SI_GEZ wr_nUneqFX		// number of served fixtures (of type wr_whEndUse) with
+							//   potable side serving only the fixture
+  *i SI_GEZ wr_nUneqWH		// number of served fixtures (of type wr_whEndUse) with
+							//   potable side serving only the water heater
+  *declare "bool wr_FeedsFX() const { return wr_nEqual + wr_nUneqFX > 0; }"
+  *declare "bool wr_FeedsWH() const { return wr_nEqual + wr_nUneqWH > 0; }"
+  *declare "int wr_NFxServedTot() const { return wr_nEqual + wr_nUneqFX + wr_nUneqWH; }"
 
   *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
