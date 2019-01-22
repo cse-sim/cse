@@ -884,6 +884,7 @@ RC DHWSYS::ws_DoDWHR()
 	// ws_whUseNoHR = 0.;		// check value: hour total hot water use w/o HR, gal
 								//  init'd by caller
 	int nTk = Top.tp_NHrTicks();
+	int nDMulti=0;
 	for (int iTk=0; iTk < nTk; iTk++)
 	{	DHWTICK& tk = ws_ticks[ iTk];
 		int nD = tk.wtk_dwhrDraws.size();
@@ -891,9 +892,14 @@ RC DHWSYS::ws_DoDWHR()
 		if (nD == 0)
 			continue;
 #endif
-#if 0
+#if defined( _DEBUG)
 		if (nD > 1)
-			printf( "\nMultiple draws");
+		{	if (nDMulti++ == 0)
+				printf( "\nMultiple draws: jDay=%d  iH=%d  iTk=%d",
+					Top.jDay, Top.iHr, iTk);
+		}
+		else
+			nDMulti=0;
 #endif
 		float whUseWt = 0.f;
 		float qRWt = 0.f;
@@ -939,8 +945,11 @@ RC DHWSYS::ws_DoDWHR()
 		float tO = ws_tInlet;
 		if (tk.wtk_whUse > 0.)
 			tO += qRWHWt / (waterRhoCp * tk.wtk_whUse);
+#if defined( _DEBUG)
 		else if (qRWHWt > 0.f)
-			printf("\nWhat?");
+			printf("\nInconsistency: wtk_whUse=%0.3f  qRWHWt=%0.3f",
+					tk.wtk_whUse, qRWHWt);
+#endif
 
 		tk.wtk_tInletX = ws_AdjustTInletForSSF( tO);
 		qRWHSum += qRWHWt;
