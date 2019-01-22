@@ -146,6 +146,9 @@ PSDBWB2W,	// Humrat (w) from drybulb & wetbulb temps
 PSDBRH2W,	// Humrat (w) from drybulb temp & relative humidity
 PSDBW2H,	// Enthalpy (h) from drybulb temp & humrat
 
+// file operations
+PSFILEINFO,	// return info about file
+
 PSNOP,	// no-operation (place holder)
 
 /* (future) string operations note:

@@ -474,7 +474,9 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 
 *choicb RPTHDCH  { NO     "No"
                    YES    "Yes"
+				   YESIF  "YesIfNew"
                    COL    "ColumnsOnly"
+                   COLIF  "ColumnsOnlyIfNew"
                   }
 
 
