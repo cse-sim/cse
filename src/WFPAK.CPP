@@ -1085,7 +1085,7 @@ float CalcSkyTemp(		// sky temp model
 			float e0 = .711 + (0.56f/100.f)*taDpC + (.73f/10000.f)*taDpC*taDpC
 						+ hrConst[ iHr] + .12f * (presAtm/29.53f - 1.f);
 
-			eSky = e0 + 0.467f*(1.f - e0)*cldCvr/10.f;
+			eSky = e0 + 0.784f*(1.f - e0)*cldCvr/10.f;  // equation 76 from 2013 ACM
 		}
 		else
 		{	err( ABT, "CalcSkyTemp: Invalid skyModelLW=%d", skyModelLW);
