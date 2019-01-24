@@ -709,7 +709,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	{	// accumulation DHWDAYUSE input to tick bins and total use
 		rc |= pWDU->wdu_DoHour( this);		// accum DAYUSEs
 		if (ws_wrCount && ws_iTk0DWHR < ws_iTkNDWHR)
-			rc |= ws_DoDWHR();		// modify tick values re DWHR
+			rc |= ws_DoHourDWHR();		// modify tick values re DWHR
 	}
 	else
 
@@ -869,7 +869,7 @@ void DHWSYS::ws_InitTicks(			// initialize tick data for hour
 	ws_iTkNDWHR = -1;
 }		// DHWSYS::ws_InitTicks
 //----------------------------------------------------------------------------
-RC DHWSYS::ws_DoDWHR()
+RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling
 {
 	RC rc = RCOK;
 
@@ -909,6 +909,14 @@ RC DHWSYS::ws_DoDWHR()
 		if (Top.iHr == 19 && iTk == 17)
 			printf( "\nHit");
 #endif
+		float fxUseMixT = 0.;
+		for (int iD=0; iD<nD; iD++)
+		{	DWHRUSE& hru = tk.wtk_dwhrDraws[ iD];
+			const DHWUSE* pWU = hru.wdw_pDHWUSE;
+			fxUseMix += hru.wdw_vol;
+			fxUseMixT += hru.wdw_vol*pWU->wu_temp;
+		}
+		float tDrain = fxUseMixT / max( fxUseMix, .0001f);
 		for (int iD=0; iD<nD; iD++)
 		{	DWHRUSE& hru = tk.wtk_dwhrDraws[ iD];
 			const DHWUSE* pWU = hru.wdw_pDHWUSE;
@@ -976,7 +984,7 @@ RC DHWSYS::ws_DoDWHR()
 #endif
 	
 	return rc;
-}		// DHWSYS::ws_DoDWHR
+}		// DHWSYS::ws_DoHourDWHR
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {

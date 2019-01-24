@@ -3318,7 +3318,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_InitTicks( double whUseHr);"
-  *declare "RC ws_DoDWHR();"
+  *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
