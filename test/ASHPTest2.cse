@@ -5,7 +5,7 @@
  #define  CD1  Jul 10
  #define  HD1  Dec 03
    repHdrL = "12 P21 G20 TILE"
-   wfName = "CTZ12S13b.CSW"
+   wfname = "USA_CA_Sacramento.Exec.AP.724830_CTZ2010.epw"
    ebTolHour = 0.001
    ebTolDay = 0.001
    ebTolMon = 0.001
