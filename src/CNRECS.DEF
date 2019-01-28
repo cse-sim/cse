@@ -338,6 +338,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   airRhoK*tp_airSH  dfl ~9.535  NEEDS UNITS
     *r float airXK			// divide by abs temp for specific heat of flow (Btuh/cfm-F)
 							//   airVshK, times 60 to match time units. dfl ~572.1
+    *r NOYESCH convMod		// enable/disable convection convective coefficient pressure modification factor (below)
 	*r float tp_hConvF		// convective coefficient pressure modification factor
 							//   =(.24 * .76*PresAtm/PresAtmSeaLevel)
 							//   used in some surface transfer models, reduces convection as function of elevation
@@ -1052,6 +1053,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *r DBL sb_lenCharNat	//	 characteristic length for some natural convection models, ft
   *r DBL sb_lenEffWink	//   effective length for Winkelmann forced convection model, ft
   
+  *r DBL sb_cosTilt		// cos( Tilt )
   *r DBL sb_atvDeg		// angle-to-vertical, deg (inside: 90-tilt; outside: tilt-90)
   *r DBL sb_cosAtv		// cos( angle to vertical) 0 - 1 (never < 0)
   *i CONVMODELCH sb_hcModel // surface convective coefficient model
