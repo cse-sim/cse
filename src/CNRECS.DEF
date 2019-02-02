@@ -3279,6 +3279,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
+  *declare "RC ws_AssignDrawsToDHWHEATRECs();"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
   *declare "void ws_EndIvl( int ivl);"
@@ -3561,7 +3562,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "DHWSYS* wr_GetDHWSYS() const;"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
-  *declare "float wr_CalcTick( float vd, float tUseFX, float tHotFX, float tInlet, float whUseOther, float& qR, float& qRWH);"
+  *declare "float wr_CalcTick( float vd, float tdI, float vFX, float tUseFX, float tHotFX, float tpI, float vOther, float& qR, float& qRWH);"
   *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
   *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
 
@@ -3767,12 +3768,21 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wdu_CkF();"
+  *declare "RC wdu_Init();"
   // Note: DHWSYS linkage handled *only* via wdu_DoHour() args
   //       A given DHWDayUse can be ref'd by multiple DHWSYSs
   *declare "RC wdu_DoHour( DHWSYS* pWS) const;"
 
   *h FLOAT_GEZ wdu_mult		// multiplier applied to all child DHWUSE wuFlows
 							//   note FLOAT (not integer)
+
+						// runtime (see wdu_RunInit()): range of ss values
+						//    for DHWUSEs belonging to this DHWDAYUSE
+						//    Typically all DHWUSEs in range will be
+						//    children of this DHWDAYUSE, but not guaranteed.
+						//    ownership should be checked within loops.
+  *r SI wdu_wuSsBeg;	//	initial ss
+  *r SI wdu_wuSsEnd;	//  last ss+1
 *END		// DHWDAYUSE
 //=============================================================================
 RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
@@ -3805,6 +3815,9 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//      Must be 0 for C_DHWEUCH_SHOWER if DHWSYS has DHWHEATREC.
 							//      Checked at runtime only since DHWDAYUSE use by DHWSYS
 							//        can change daily.
+  *r SI wu_drawSeqN			// sequence number of draw within day by ws_hwEndUse
+							//    assigned at runtime, see wdu_RunInit()
+							//    used re random assignment of draws to DHWHEATRECs
 *END	// DHWUSE
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array

@@ -1401,18 +1401,23 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	RC rc = RCOK;
 	E( WMtrR.RunDup( WMtriB));
 	E( WsR.RunDup( WSiB));
-	E( WhR.RunDup( WHiB, &WsR))
-	E( WtR.RunDup( WTiB, &WsR))
-	E( WrR.RunDup( WRiB, &WsR))
-	E( WpR.RunDup( WPiB, &WsR))
-	E( WlR.RunDup( WLiB, &WsR))
-	E( WgR.RunDup( WGiB, &WlR))
-	E( WbR.RunDup( WBiB, &WgR))
-	E( WlpR.RunDup( WLPiB, &WlR))
-	E( WduR.RunDup( WDUiB, &WsR))
-	E( WuR.RunDup( WUiB, &WduR))
+	E(WhR.RunDup(WHiB, &WsR))
+	E(WtR.RunDup(WTiB, &WsR))
+	E(WrR.RunDup(WRiB, &WsR))
+	E(WpR.RunDup(WPiB, &WsR))
+	E(WlR.RunDup(WLiB, &WsR))
+	E(WgR.RunDup(WGiB, &WlR))
+	E(WbR.RunDup(WBiB, &WgR))
+	E(WlpR.RunDup(WLPiB, &WlR))
+	E(WduR.RunDup(WDUiB, &WsR))
+	E(WuR.RunDup(WUiB, &WduR))
 
-	// initialization -- do *last* -- all children in place
+	// DHWDAYUSE one-time inits
+	DHWDAYUSE* pWDU;
+	RLUP(WduR, pWDU)
+		rc |= pWDU->wdu_Init();
+
+	// DHWSYS initialization -- do *last* -- all children in place
 	//   multiple passes re e.g. wsLoadShareDHWSYS
 	DHWSYS* pWS;
 	RLUP( WsR, pWS)
