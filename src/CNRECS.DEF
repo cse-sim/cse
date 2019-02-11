@@ -3279,7 +3279,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
-  *declare "RC ws_AssignDrawsToDHWHEATRECs();"
+  *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
   *declare "void ws_EndIvl( int ivl);"
@@ -3311,7 +3311,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by DWHR
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
-							//   reflects ws_SSF and/or DHWHEATRED
+							//   reflects ws_SSF and/or DHWHEATREC
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input, does NOT include DHWDAYUSE draws)
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
@@ -3370,12 +3370,16 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults
 							//    note may be non-integer
-  *r INT ws_wrCount;		// total child DHWHEATREC devices
-  *r INT ws_wrFxDrainCount;	// total fixture drains feeding (possibly shared) DHWHEATREC
+  *r INT ws_wrCount;		// total child DHWHEATRECs
+  *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
+							//    feed (cold) water to DHWHEATERs
+							//    DHWHEATRECs may feed fixtures or WH or both
+  *r INT ws_wrFxDrainCount;	// count of fixture drains feeding (possibly shared) DHWHEATRECs
   *r SI_GEZ ws_showerCount;	// number of shower fixtures served by this DHWSYS
 							//   re DHWHEATREC (DWHR) modeling
 							//      non-central: user input, default 1
 							//      central: derived from child DHWSYSs
+  *declare "struct DHWFX* ws_fxList;"
   *r SI ws_loadShareCount;	// # of DHWSYSs sharing common load this group
 							//   (e.g # of DHWSYSs serving a dwelling unit)
 							//   NOT effected by ws_mult.
@@ -3556,15 +3560,22 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
   *prefix wr_
 
+  *exdes	// *declare "~DHWHEATREC"
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
+  *declare "void wr_InitTicks();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
-  *declare "float wr_CalcTick( float vd, float tdI, float vFX, float tUseFX, float tHotFX, float tpI, float vOther, float& qR, float& qRWH);"
+  *declare "float wr_CalcTick( DHWSYS* pWS, struct DHWHRTICK& wrtk, float vOther, float& whUseNoHR, float& fxUseMix, float& qR, float& qRWH);"
+  *declare "float wr_CalcTickX( float vd, float tdI, float vFX, float tUseFX, float tHotFX, float tpI, float vOther, float& qR, float& qRWH);"
   *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
   *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
+  *declare "RC wr_SetFXConnections( DHWSYS* pWS, int& iFx);"
+
+  *declare "struct DHWHRTICK* wr_ticks;" // runtime tick info for this DHWHEATREC for current hour
+										//   all draws allocated by tick so total flows are known
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
@@ -3574,6 +3585,10 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 							//    _HORIZ or _VERT: effectiveness adjusted per CASE regressions
 							//          depending on flows and temps, same model for both
 							//    _SETEF: wr_effRated used w/o modification (testing aid)
+#if 0
+  *i NOYESCH wr_feedsWH;	// iff C_NOYESCH_YES, potable output is plumbed to water heater
+							//    cold water inlet
+#endif
   *i SI_GEZ wr_nEqual		// number of fixtures served (of type wr_whEndUse) with
 							//   "equal" flow plumbing configuration
 							//   (potable side feeds both FX and WH)
@@ -3591,12 +3606,6 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 								//    td = tFxMix - dTDrain;  default = 4.6 F
 						
   *s *e FLOAT wr_eff			// effectiveness under current conditions
-
-  *r FLOAT wr_fWeight			// weighting factor for results
-								//   0: don't model
-								//   else factor for combining multi-DHWHEATREC
-								//		results within parent DHWSYS
-
 
 *END
 //=============================================================================
