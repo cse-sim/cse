@@ -17,53 +17,28 @@
 
 RC KIVA::kv_Create()
 {
-	// create output map for ground instance. Calculate average temperature, flux, and convection for each surface
-	Kiva::GroundOutput::OutputMap outputMap;
-
-	outputMap.push_back(Kiva::Surface::ST_SLAB_CORE);
-
-	if (kv_fnd->hasPerimeterSurface) {
-		outputMap.push_back(Kiva::Surface::ST_SLAB_PERIM);
-	}
-
-	if (kv_fnd->foundationDepth > 0.0) {
-		outputMap.push_back(Kiva::Surface::ST_WALL_INT);
-	}
-
-	if (!kv_ground)
+	if (!kv_instance->bcs)
 	{
-		kv_ground = new Kiva::Ground(*kv_fnd, outputMap);
-		if (!kv_ground)
-		{
-			return RCBAD; // oer?
-		}
-		kv_ground->buildDomain();
-	}
-
-	if (!kv_bcs)
-	{
-		kv_bcs = new Kiva::BoundaryConditions;
-		if (!kv_bcs)
+		kv_instance->bcs = std::make_shared<Kiva::BoundaryConditions>();
+		if (!kv_instance->bcs)
 		{
 			return RCBAD; // oer?
 		}
 	}
 
+	kv_instance->create();
 	return RCOK;
 }
 
 KIVA::~KIVA()
 {
-	delete kv_fnd;
-	kv_fnd = NULL;
-	delete kv_ground;
-	kv_ground = NULL;
-	delete kv_bcs;
-	kv_bcs = NULL;
+	delete kv_instance;
+	kv_instance = NULL;
 }
 
 RC KIVA::kv_RddInit()
 {
+	// Initialize ground temperatures
 	int numAccTimeSteps = 3;
 	int accTimeStep = 30;	// days
 	DOY accDate = Top.tp_begDay - Top.wuDays - accTimeStep*(numAccTimeSteps + 1) - 1; // date of initial conditions (last time step from the day before)
@@ -71,27 +46,29 @@ RC KIVA::kv_RddInit()
 	Wfile.wf_FixJday(accDate, Top.tp_begDay);
 	
 	// Initialize with steady state before accelerated timestepping
-	kv_ground->foundation.numericalScheme = Kiva::Foundation::NS_STEADY_STATE;
+	std::shared_ptr<Kiva::Foundation> fnd = kv_instance->foundation;
+
+	fnd->numericalScheme = Kiva::Foundation::NS_STEADY_STATE;
 	kv_SetInitBCs(accDate);
-	kv_ground->calculate(*kv_bcs);
+	kv_instance->calculate();
 	accDate += accTimeStep;
 	accDate %= 365;		// adjust to 0-364 if >= 365
 
 	// Accelerated timestepping
 	for (int i = 0; i < numAccTimeSteps; i++)
 	{
-		kv_ground->foundation.numericalScheme = Kiva::Foundation::NS_STEADY_STATE;
+		fnd->numericalScheme = Kiva::Foundation::NS_IMPLICIT;
 		kv_SetInitBCs(accDate);
-		kv_ground->calculate(*kv_bcs);
+		kv_instance->calculate(accTimeStep * 24 * 60 * 60);
 		accDate += accTimeStep;
 		accDate %= 365;		// adjust to 0-364 if >= 365
 	}
 
 	// Calculate averages so they can be used by CSE surfaces
-	kv_ground->calculateSurfaceAverages();
+	kv_instance->calculate_surface_averages();
 
 	// Reset numerical scheme
-	kv_ground->foundation.numericalScheme = Kiva::Foundation::NS_ADI;
+	fnd->numericalScheme = Kiva::Foundation::NS_ADI;
 
 	return RCOK;
 
@@ -106,8 +83,10 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 	// should really be last subhour, but it's a good enough approx for Kiva initialization.
 	Wfile.wf_Read(&iW, jDay, 23, WRN);
 
+	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance->bcs;
+
 	kv_bcs->outdoorTemp = DegFtoK(iW.wd_db);
-	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_fnd->grade.roughness,0,Top.tp_terrainClass);
+	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_instance->foundation->grade.roughness,0,Top.tp_terrainClass);
 	kv_bcs->skyEmissivity = pow4(DegFtoK(iW.wd_tSky)/ DegFtoK(iW.wd_db));
 	kv_bcs->solarAzimuth = 3.14;
 	kv_bcs->solarAltitude = 0.0;
@@ -128,10 +107,11 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 RC KIVA::kv_SetBCs() 
 {
 	ZNR* z = kv_GetZone();
+	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance->bcs;
 	kv_bcs->indoorTemp = DegFtoK(z->tz);
 	kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = DegFtoK(z->tr); // TODO should be Tr of all other surfaces (excluding this surface)
 	kv_bcs->outdoorTemp = DegFtoK(Top.tDbOSh);
-	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_fnd->grade.roughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?
+	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_instance->foundation->grade.roughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?
 	kv_bcs->windDirection = RAD(Top.windDirDegHr);
 	kv_bcs->skyEmissivity = pow4(DegFtoK(Top.tSkySh) / DegFtoK(Top.tDbOSh));
 	kv_bcs->solarAzimuth = Wthr.d.wd_slAzm; // TODO Set at Top? Make subhourly?
@@ -169,8 +149,8 @@ RC KIVA::kv_SetBCs()
 RC KIVA::kv_Step(float dur)
 {
 	kv_SetBCs();
-	kv_ground->calculate(*kv_bcs, dur*3600.f);
-	kv_ground->calculateSurfaceAverages();
+	kv_instance->calculate(dur*3600.f);
+	kv_instance->calculate_surface_averages();
 
 	return RCOK;
 }
@@ -189,56 +169,18 @@ RC XSRAT::xr_ApplyKivaResults()
 {
 	if (x.xs_ty == CTKIVA)
 	{
-		Kiva::Surface::SurfaceType st;
-
-		if (fAboutEqual(DEG(x.tilt), 180.f))
-		{
-			st = Kiva::Surface::ST_SLAB_CORE;
-		}
-		else
-		{
-			st = Kiva::Surface::ST_WALL_INT;
-		}
-
 		auto& sbc = x.xs_sbcI;
 
-		// Set surface temp and convection coeff
-		float hc = 0.0, hr = 0.0, qt = 0.0, qc = 0.0;
-		float Tz = DegFtoK(sbc.sb_txa);
-		float Tr = DegFtoK(sbc.sb_txr);
-		for (auto ki : xr_kivaInstances)
-		{
-			KIVA* k = KvR.GetAt(ki);
-			if (!k->kv_ground)
-			{
-				oer("Invalid kiva instance!");
-				return RCBAD;
-			}
+		// Aggregate results across all kiva instances representing this surface
+		xr_kivaAggregator->calc_weighted_results();
 
-			float p = k->kv_perimWeight;
-			float hci = k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_CONV });
-			float hri = k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_RAD });
-			float Ts = k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_TEMP });
-			float qi = -k->kv_ground->getSurfaceAverageValue({ st, Kiva::GroundOutput::OT_FLUX });
-
-			if (!isfinite(Ts))
-			{
-				oer("Kiva is not giving realistic results!");
-				return RCBAD;
-			}
-
-			qc += p*hci*(Tz - Ts);
-			hc += p*hci;
-			hr += p*hri;
-			qt += p*qi;
-		}
+		auto &r = xr_kivaAggregator->results;
 
 		// Set aggreagate surface properties
-		sbc.sb_tSrf = DegKtoF(Tz - qc/hc);
-		sbc.sb_hxa = USItoIP(hc);
-		sbc.sb_hxr = USItoIP(hr);
-		sbc.sb_qSrf = IrSItoIP(qt);
-
+		sbc.sb_tSrf = DegKtoF(r.Tconv);
+		sbc.sb_hxa = USItoIP(r.hconv);
+		sbc.sb_hxr = USItoIP(r.hrad);
+		sbc.sb_qSrf = IrSItoIP(r.qtot);
 	}
 
 	return RCOK;

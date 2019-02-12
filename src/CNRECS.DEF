@@ -1320,6 +1320,7 @@ RECORD XSRAT "xsurf" *RAT
 	// Each XSURF represents conductive/radiant coupling to ambient of exterior surface(s).  More comments above.
 
 	*excon		// explicit constructor
+	*exdes				// d'tor
 	*ovrcopy
 	*declare "RC Validate( int options=0);"
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
@@ -1328,7 +1329,7 @@ RECORD XSRAT "xsurf" *RAT
 	*declare "void xr_SGFAccum( const double sgf[ sgcCOUNT]);"
 	*declare "void xr_SGIncTrans( int sunup, float verSun);"
 	*declare "void xr_SGMakeSGRATs();"
-	*declare "std::vector<TI> xr_kivaInstances;"
+	*declare "class Kiva::Aggregator* xr_kivaAggregator;"
     *declare "RC xr_ApplyKivaResults();"
     *declare "RC xr_KivaZoneAccum();"
 
@@ -1465,9 +1466,7 @@ RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
 	*declare "RC kv_SetBCs();"
 	*declare "RC kv_Step(float dur);"
 
-	*declare "class Kiva::Foundation* kv_fnd;"
-	*declare "class Kiva::Ground* kv_ground;"
-	*declare "class Kiva::BoundaryConditions* kv_bcs;"
+	*declare "class Kiva::Instance* kv_instance;"
 	*declare "std::vector<TI> kv_walls;"
 
 	*r TI kv_floor				// floor reference

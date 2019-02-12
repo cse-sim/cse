@@ -1661,6 +1661,7 @@ RC SFI::sf_SetupKiva()
 		{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 			xr->x.xs_ty = CTKIVA;	// XSURF type: kiva surface
 			xr->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
+			xr->xr_kivaAggregator = new Kiva::Aggregator(Kiva::Surface::ST_SLAB_CORE);
 		}
 	
 		bool assignKivaInstances = true;
@@ -1695,9 +1696,6 @@ RC SFI::sf_SetupKiva()
 
 			ki->kv_floor = ss;
 
-			// Add new index to list of kiva instances associated with floor
-			xr->xr_kivaInstances.push_back(ki->ss);
-
 			// Set weighted perimeter for this combination
 			double instanceWeight = sfExpPerim > 0.0001
 				? perimeter / sfExpPerim
@@ -1706,13 +1704,15 @@ RC SFI::sf_SetupKiva()
 			ki->kv_perimWeight = instanceWeight;
 
 			// Copy foundation input from foundation object into KIVA runtime record
-			if (!ki->kv_fnd)
+			if (!ki->kv_instance)
 			{
-				ki->kv_fnd = new Kiva::Foundation();
-				if (!ki->kv_fnd)
+				ki->kv_instance = new Kiva::Instance();
+				if (!ki->kv_instance)
 					return RCBAD; // oer?
-				*ki->kv_fnd = *pFnd->fd_kivaFnd;
+				ki->kv_instance->foundation = std::make_shared<Kiva::Foundation>(*pFnd->fd_kivaFnd);
 			}
+
+			std::shared_ptr<Kiva::Foundation> fnd = ki->kv_instance->foundation;
 
 			LR* pLR;
 			// Set wall construction in Kiva
@@ -1728,14 +1728,14 @@ RC SFI::sf_SetupKiva()
 					tempLayer.material = kivaMat(pMat->mt_cond,pMat->mt_dens,pMat->mt_spHt);
 					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
 
-					ki->kv_fnd->wall.layers.push_back(tempLayer);
+					fnd->wall.layers.push_back(tempLayer);
 				}
 			}
 
-			ki->kv_fnd->wall.interior.emissivity = x.xs_sbcI.sb_epsLW;
-			ki->kv_fnd->wall.exterior.emissivity = x.xs_sbcO.sb_epsLW;
-			ki->kv_fnd->wall.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
-			ki->kv_fnd->wall.exterior.absorptivity = x.xs_sbcO.sb_awAbsSlr;
+			fnd->wall.interior.emissivity = x.xs_sbcI.sb_epsLW;
+			fnd->wall.exterior.emissivity = x.xs_sbcO.sb_epsLW;
+			fnd->wall.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
+			fnd->wall.exterior.absorptivity = x.xs_sbcO.sb_awAbsSlr;
 
 			// Set slab construction in Kiva
 			if (ckRefPt(&ConiB, sfCon, "sfCon", NULL, (record **)&pCon))
@@ -1751,18 +1751,18 @@ RC SFI::sf_SetupKiva()
 					tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
 					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
 
-					ki->kv_fnd->slab.layers.push_back(tempLayer);
+					fnd->slab.layers.push_back(tempLayer);
 				}
 			}
-			ki->kv_fnd->slab.interior.emissivity = x.xs_sbcI.sb_epsLW;
-			ki->kv_fnd->slab.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
+			fnd->slab.interior.emissivity = x.xs_sbcI.sb_epsLW;
+			fnd->slab.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
 
 			// Set other properties
-			ki->kv_fnd->foundationDepth = LIPtoSI(height);
-			ki->kv_fnd->hasPerimeterSurface = false;
-			ki->kv_fnd->perimeterSurfaceWidth = 0.0;
+			fnd->foundationDepth = LIPtoSI(height);
+			fnd->hasPerimeterSurface = false;
+			fnd->perimeterSurfaceWidth = 0.0;
 
-			ki->kv_fnd->reductionStrategy = Kiva::Foundation::RS_AP;
+			fnd->reductionStrategy = Kiva::Foundation::RS_AP;
 
 			// Build polygon and set exposed fraction to get correct A/P
 			const double sqrPerim = LIPtoSI(4 * sqrt(sfArea));
@@ -1770,30 +1770,30 @@ RC SFI::sf_SetupKiva()
 			if (sqrPerim > sfExpPerim)
 			{
 				l = w = sqrPerim / 4;
-				ki->kv_fnd->exposedFraction = sfExpPerim / sqrPerim;
+				fnd->exposedFraction = sfExpPerim / sqrPerim;
 			}
 			else
 			{
 				// Make a rectangle with the correct perimeter
 				l = (sfExpPerim + sqrt(sfExpPerim*sfExpPerim - 16*sfArea))/4.;
 				w = sfArea / l;
-				ki->kv_fnd->exposedFraction = 1.0;
+				fnd->exposedFraction = 1.0;
 			}
 
-			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(0., 0.));
-			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(0., l ));
-			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(w,  l ));
-			ki->kv_fnd->polygon.outer().push_back(Kiva::Point(w,  0.));
+			fnd->polygon.outer().push_back(Kiva::Point(0., 0.));
+			fnd->polygon.outer().push_back(Kiva::Point(0., l ));
+			fnd->polygon.outer().push_back(Kiva::Point(w,  l ));
+			fnd->polygon.outer().push_back(Kiva::Point(w,  0.));
 
 
 			double halfWidth = LIPtoSI(sfArea / sfExpPerim);	// A/P ratio
 
 			// Define X reference points
 			const double x_iwall = 0.0; // by definition
-			const double x_ewall = x_iwall + ki->kv_fnd->wall.totalWidth();
+			const double x_ewall = x_iwall + fnd->wall.totalWidth();
 			const double x_cwall = x_iwall + (x_ewall - x_iwall) / 2.0;
 			const double x_sym = x_iwall - halfWidth;  // A/P
-			const double x_ff = x_ewall + ki->kv_fnd->farFieldWidth;
+			const double x_ff = x_ewall + fnd->farFieldWidth;
 
 			std::map<unsigned short, double> xRefs =
 			{
@@ -1807,10 +1807,10 @@ RC SFI::sf_SetupKiva()
 			// Define Z reference points
 			const double z_twall = 0.0; // by definition
 			const double z_tslab = z_twall + height;
-			const double z_bslab = z_tslab + ki->kv_fnd->slab.totalWidth();
-			const double z_bwall = z_bslab + ki->kv_fnd->wall.depthBelowSlab;
-			const double z_grd = z_twall + ki->kv_fnd->wall.heightAboveGrade;
-			const double z_dg = z_grd + ki->kv_fnd->deepGroundDepth;
+			const double z_bslab = z_tslab + fnd->slab.totalWidth();
+			const double z_bwall = z_bslab + fnd->wall.depthBelowSlab;
+			const double z_grd = z_twall + fnd->wall.heightAboveGrade;
+			const double z_dg = z_grd + fnd->deepGroundDepth;
 
 			std::map<unsigned short, double> zRefs =
 			{
@@ -1844,11 +1844,14 @@ RC SFI::sf_SetupKiva()
 					block.width = x2 - x1;
 					block.z = z1;
 					block.depth = z2 - z1;
-					ki->kv_fnd->inputBlocks.push_back(block);
+					fnd->inputBlocks.push_back(block);
 				}
 			}
 
-			// create wall XSURFs and assign kiva instance
+			// Create Kiva instace
+			ki->kv_Create();
+
+			// create wall XSURFs and assign kiva aggregator
 			for (auto wli : wallIDs) 
 			{
 				auto wlSf = SfiB.GetAt(wli);
@@ -1860,12 +1863,13 @@ RC SFI::sf_SetupKiva()
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
 					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
-					xrWl->xr_kivaInstances.push_back(ki->ss);
+					xrWl->xr_kivaAggregator = new Kiva::Aggregator(Kiva::Surface::ST_WALL_INT);
+					xrWl->xr_kivaAggregator->add_instance(ki->kv_instance->ground.get(), 1.0);
 				}
 			}
 
-			// Create Kiva instace
-			ki->kv_Create();
+			// add instance to floor aggregator
+			xr->xr_kivaAggregator->add_instance(ki->kv_instance->ground.get(), instanceWeight);
 
 			// Increment wall combinations iterator
 			if (comb != combinationMap.end()) {
@@ -2082,6 +2086,12 @@ XSRAT::XSRAT( basAnc* b, TI i, SI noZ /*=0*/)
 {
 	FixUp();
 }	// XSRAT::XSRAT
+//---------------------------------------------------------------------------
+/*virtual*/ XSRAT::~XSRAT()
+{
+	delete xr_kivaAggregator;
+	xr_kivaAggregator = NULL;
+}	// XSRAT::~XSRAT
 //---------------------------------------------------------------------------
 /*virtual*/ void XSRAT::Copy( const record* pSrc, int options/*=0*/)
 {	record::Copy( pSrc, options);

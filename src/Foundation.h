@@ -9,7 +9,8 @@
 #if !defined( _FOUNDATION_H)
 #define _FOUNDATION_H
 
-#include "libkiva/Ground.hpp"
+#include "libkiva/Instance.hpp"
+#include "libkiva/Aggregator.hpp"
 
 inline Kiva::Material kivaMat(float k, float rho, float cp) {
 	if (rho == 0.f || cp == 0.f)

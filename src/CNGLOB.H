@@ -490,7 +490,7 @@ inline void IncP( void **pp, int b) { *pp = (void *)((char*)(*pp) + b); }
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
 struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
-namespace Kiva { class Ground; class BoundaryConditions; class Foundation; }
+namespace Kiva { class Instance; class Aggregator; class Foundation; }
 
 #ifdef WINorDLL
   // control of scattered code for returning file names used via a cse() argument.
