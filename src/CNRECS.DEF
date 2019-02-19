@@ -3569,7 +3569,6 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
   *declare "float wr_CalcTick( DHWSYS* pWS, struct DHWHRTICK& wrtk, float vOther, float& whUseNoHR, float& fxUseMix, float& qR, float& qRWH);"
-  *declare "float wr_CalcTickX( float vd, float tdI, float vFX, float tUseFX, float tHotFX, float tpI, float vOther, float& qR, float& qRWH);"
   *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
   *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
   *declare "RC wr_SetFXConnections( DHWSYS* pWS, int& iFx);"
@@ -3602,8 +3601,11 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 
   *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
-  *h FLOAT wr_dTDrain			// water temp drop from fixture mixed temp to drain, F
-								//    td = tFxMix - dTDrain;  default = 4.6 F
+  *h FLOAT_GEZ wr_tdInDiff		// drain-side inlet water temp drop from fixture mixed temp, F
+								//    tdIn = tFxMix - tdInDiff;  default = 4.6 F
+
+  *h FLOAT_GEZ wr_tdInWarmup	// drain-side inlet temp during warmup portion of draw
+								//    default = 65.
 						
   *s *e FLOAT wr_eff			// effectiveness under current conditions
 
@@ -3777,7 +3779,7 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wdu_CkF();"
-  *declare "RC wdu_Init();"
+  *declare "RC wdu_Init( int pass);"
   // Note: DHWSYS linkage handled *only* via wdu_DoHour() args
   //       A given DHWDayUse can be ref'd by multiple DHWSYSs
   *declare "RC wdu_DoHour( DHWSYS* pWS) const;"
@@ -3792,6 +3794,7 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 						//    ownership should be checked within loops.
   *r SI wdu_wuSsBeg;	//	initial ss
   *r SI wdu_wuSsEnd;	//  last ss+1
+  *r INT wdu_wuCount;	// count of child DHWUSEs
 *END		// DHWDAYUSE
 //=============================================================================
 RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
@@ -3824,7 +3827,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//      Must be 0 for C_DHWEUCH_SHOWER if DHWSYS has DHWHEATREC.
 							//      Checked at runtime only since DHWDAYUSE use by DHWSYS
 							//        can change daily.
-  *r SI wu_drawSeqN			// sequence number of draw within day by ws_hwEndUse
+  *r INT wu_drawSeqN		// sequence number of draw by ws_hwEndUse
 							//    assigned at runtime, see wdu_RunInit()
 							//    used re random assignment of draws to DHWHEATRECs
 *END	// DHWUSE

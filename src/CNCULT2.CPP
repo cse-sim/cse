@@ -1415,7 +1415,9 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	// DHWDAYUSE one-time inits
 	DHWDAYUSE* pWDU;
 	RLUP(WduR, pWDU)
-		rc |= pWDU->wdu_Init();
+		rc |= pWDU->wdu_Init( 0);
+	RLUP(WduR, pWDU)
+		rc |= pWDU->wdu_Init( 1);
 
 	// DHWSYS initialization -- do *last* -- all children in place
 	//   multiple passes re e.g. wsLoadShareDHWSYS

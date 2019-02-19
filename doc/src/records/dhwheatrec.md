@@ -12,11 +12,11 @@ Optional name of device; give after the word “DHWHEATREC” if desired.
 
 **wrMult=*integer***
 
-Number of identical heat recovery devices of this type. Any value $>1$ is equivalent to repeated entry of the same DHWHEATREC.
+Number of identical heat recovery devices of this type. Any value >1 is equivalent to repeated entry of the same DHWHEATREC.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              $>$ 0             1             No             constant
+              $>$ 0                1             No             constant
 
 **wrHWEndUse=*choice***
 
@@ -39,11 +39,19 @@ Hot water end use to which this DHWHEATREC is applied: one of Shower, Bath, CWas
 
 **wrType=*choice***
 
-Specifies the type of heat recovery device: Vertical or Horizontal.  Currently, wrType has no effect on model results.
+Specifies the type of heat recovery device: Vertical, Horizontal, or SetEF.  Horizontal and Vertical derive effectiveness from wrCSARatedEF, flow rates, and water temperatures.  As of Feb. 2019, the same correlation is used for both Horizontal and Vertical, so these choices have effect on results.  Choice SetEF uses wrCSARatedEF without modification as the effectiveness (note hourly variability).
 
-  **Units**   **Legal Range**      **Default**       *Required**    **Variability**
+  **Units**   **Legal Range**      **Default**       **Required**    **Variability**
   ----------- -------------------- ---------------- -------------- -----------------
   --          one of above choices  Vertical            No           constant
+
+  **wrCSARatedEF=*float***
+
+Specifies the heat recovery effectiveness, generally determined using CSA B55.2 rating conditions.  This value is modified during simulation based on water flow rates and temperatures.  If wrType=SetEF, wsCSARatedEF is used without modification. 
+
+  **Units**         **Legal Range**       **Default**   **Required**   **Variability**
+  ----------------- -------------------- ------------- -------------- -----------------
+  --                   0 $\le$ x $\le$ 1         --          Yes             hourly
 
 **wrConfig=*choice***
 
@@ -58,14 +66,22 @@ Specifies the plumbing configuration:
   ----------- ---------------------- ------------- -------------- -----------------
                 one of above choices    Equal              No             constant
 
-**wrCSARatedEF=*float***
 
-Specifies the heat recovery effectiveness determined using CSA B55.2 rating conditions.
+**wrTDInDiff=*float***
 
-  **Units**         **Legal Range**       **Default**   **Required**   **Variability**
+Temperature drop between the fixture drain and DHWHEATREC drain-side inlet.  The drain-side inlet temperature is thus DHWUSE wuTemp - wrTDInDiff.
+
+  **Units**          **Legal Range**      **Default**   **Required**   **Variability**
   ----------------- -------------------- ------------- -------------- -----------------
-  --                   0 $\le$ x $\le$ 1         --          Yes             hourly
+    ^o^F                 $\ge$ 0            4.6 ^o^F            N             hourly
 
+**wrTDInWarmup=*float***
+
+Drain-side inlet water temperature during warmup.  During the warmup portion of a draw (if any), the drain-side inlet temperature will initially be lower than that based on DHWUSE wuTemp.  wrTDInWarmup allows input of user estimates for this temperature.  Note wrTDInWarmup is *not* adjusted by wrTDInDiff.
+
+  **Units**          **Legal Range**      **Default**   **Required**   **Variability**
+  ----------------- -------------------- ------------- -------------- -----------------
+    ^o^F                 $\gt$ 0            65 ^o^F            N             hourly
 
 **endDHWHEATREC**
 

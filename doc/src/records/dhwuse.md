@@ -29,7 +29,7 @@ Durations that extend beyond midnight are included in the current day.
 
 **wuFlow=*float***
 
-Draw flow rate at the point of use (in other words, the mixed-water flow rate).  wuFlow = 0 is equivalent to omitting the DHWUSE.  There is no enforced upper limit on wuFlow, however, unrealistically large values will cause runtime errors.
+Draw flow rate at the point of use (in other words, the mixed-water flow rate).  wuFlow = 0 is equivalent to omitting the DHWUSE.  There is no enforced upper limit on wuFlow, however, unrealistically large values can cause runtime errors.
 
 **Units**   **Legal Range**      **Default**   **Required**  **Variability**
 ----------- -------------------  ----------- ------------- -------------------------
