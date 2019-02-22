@@ -3567,6 +3567,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "void wr_InitTicks();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
+  *declare "bool wr_IsEffFlowIndependent() const { return wr_type == C_DWHRTYCH_SETEF || wr_effRated < .00001f; }"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
   *declare "float wr_CalcTick( DHWSYS* pWS, struct DHWHRTICK& wrtk, float vOther, float& whUseNoHR, float& fxUseMix, float& qR, float& qRWH);"
   *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
@@ -3584,20 +3585,18 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 							//    _HORIZ or _VERT: effectiveness adjusted per CASE regressions
 							//          depending on flows and temps, same model for both
 							//    _SETEF: wr_effRated used w/o modification (testing aid)
-#if 0
-  *i NOYESCH wr_feedsWH;	// iff C_NOYESCH_YES, potable output is plumbed to water heater
+  *i SI_GZ wr_nFXDrain		// number of fixtures (of type wr_whEndUse) draining
+							//    via this DHWHEATREC
+  *i SI_GEZ wr_nFXColdHR	// number of fixtures (of type wr_whEndUse) draining
+							//    via this DHWHEATREC with cold source = this DHWHEATREC
+							//    default = wr_nFXDrain
+							//    if < wr_nFXDrain, remainder have cold source = mains
+							//    Note: wr_feedsWH = No and wr_nFXColdHR=0 is illegal
+  *i NOYESCH wr_feedsWH		// iff C_NOYESCH_YES, potable output is plumbed to water heater
 							//    cold water inlet
-#endif
-  *i SI_GEZ wr_nEqual		// number of fixtures served (of type wr_whEndUse) with
-							//   "equal" flow plumbing configuration
-							//   (potable side feeds both FX and WH)
-  *i SI_GEZ wr_nUneqFX		// number of served fixtures (of type wr_whEndUse) with
-							//   potable side serving only the fixture
-  *i SI_GEZ wr_nUneqWH		// number of served fixtures (of type wr_whEndUse) with
-							//   potable side serving only the water heater
-  *declare "bool wr_FeedsFX() const { return wr_nEqual + wr_nUneqFX > 0; }"
-  *declare "bool wr_FeedsWH() const { return wr_nEqual + wr_nUneqWH > 0; }"
-  *declare "int wr_NFxServedTot() const { return wr_nEqual + wr_nUneqFX + wr_nUneqWH; }"
+
+  *declare "bool wr_FeedsFX() const { return wr_nFXColdHR > 0; }"
+  *declare "bool wr_FeedsWH() const { return wr_feedsWH==C_NOYESCH_YES; }"
 
   *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
@@ -3608,6 +3607,8 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 								//    default = 65.
 						
   *s *e FLOAT wr_eff			// effectiveness under current conditions
+  *s *e FLOAT wr_tpO			// most recent potable-side output temp, F
+  *s *e FLOAT wr_vp				// most recent potable-side flow, gpm
 
 *END
 //=============================================================================
