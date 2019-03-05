@@ -3279,6 +3279,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
+  *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
   *declare "void ws_EndIvl( int ivl);"
@@ -3310,7 +3311,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by DWHR
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
-							//   reflects ws_SSF and/or DHWHEATRED
+							//   reflects ws_SSF and/or DHWHEATREC
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
 							//   (scheduled input, does NOT include DHWDAYUSE draws)
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
@@ -3318,7 +3319,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_InitTicks( double whUseHr);"
-  *declare "RC ws_DoDWHR();"
+  *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
@@ -3369,11 +3370,16 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults
 							//    note may be non-integer
-  *r INT ws_wrCount;		// ditto DHWHEATREC
+  *r INT ws_wrCount;		// total child DHWHEATRECs
+  *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
+							//    feed (cold) water to DHWHEATERs
+							//    DHWHEATRECs may feed fixtures or WH or both
+  *r INT ws_wrFxDrainCount;	// count of fixture drains feeding (possibly shared) DHWHEATRECs
   *r SI_GEZ ws_showerCount;	// number of shower fixtures served by this DHWSYS
 							//   re DHWHEATREC (DWHR) modeling
 							//      non-central: user input, default 1
 							//      central: derived from child DHWSYSs
+  *declare "struct DHWFX* ws_fxList;"
   *r SI ws_loadShareCount;	// # of DHWSYSs sharing common load this group
 							//   (e.g # of DHWSYSs serving a dwelling unit)
 							//   NOT effected by ws_mult.
@@ -3554,46 +3560,55 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
   *prefix wr_
 
+  *exdes	// *declare "~DHWHEATREC"
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
+  *declare "void wr_InitTicks();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
+  *declare "bool wr_IsEffFlowIndependent() const { return wr_type == C_DWHRTYCH_SETEF || wr_effRated < .00001f; }"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
-  *declare "float wr_CalcTick( float vd, float tUseFX, float tHotFX, float tInlet, float whUseOther, float& qR, float& qRWH);"
+  *declare "float wr_CalcTick( DHWSYS* pWS, struct DHWHRTICK& wrtk, float vOther, float& whUseNoHR, float& fxUseMix, float& qR, float& qRWH);"
   *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
   *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
+  *declare "RC wr_SetFXConnections( DHWSYS* pWS, int& iFx);"
+
+  *declare "struct DHWHRTICK* wr_ticks;" // runtime tick info for this DHWHEATREC for current hour
+										//   all draws allocated by tick so total flows are known
 
   *i SI_GEZ wr_mult;		// multiplier
 							//   modeled as wr_mult identical heat recovery devices
   *i DHWEUCH wr_hwEndUse	// end use source for this device
 							//   as of 12-18, only supports C_DHWEUCH_SHOWER
-  *i SI_GZ wr_fxServed		// number of fixtures (of type wr_hwEndUse) whose
-							//   drain water is routed through this DHWHEATREC
   *i DWHRTYCH wr_type		// type: C_DWHRTYCH_
 							//    _HORIZ or _VERT: effectiveness adjusted per CASE regressions
 							//          depending on flows and temps, same model for both
 							//    _SETEF: wr_effRated used w/o modification (testing aid)
-  *i DWHRCFGCH wr_config	// plumbing configuration: what is fed by DWHR potable side output
-							// equal/unequal nomenclature derived
-							//    C_DWHRCFGCH_EQUAL: water heater and fixture
-							//    C_DWHRCFGCH_UNEQFX: fixture (shower) only
-							//    C_DWHRCFGCH_UNEQWH: water heater only
-  *declare "bool wr_FeedsFX() const { return wr_config != C_DWHRCFGCH_UNEQWH; }"
-  *declare "bool wr_FeedsWH() const { return wr_config != C_DWHRCFGCH_UNEQFX; }"
+  *i SI_GEZ wr_nFXDrain		// number of fixtures (of type wr_whEndUse) draining
+							//    via this DHWHEATREC
+  *i SI_GEZ wr_nFXCold		// number of fixtures (of type wr_whEndUse) draining
+							//    via this DHWHEATREC with cold source = this DHWHEATREC
+							//    default = wr_nFXDrain
+							//    if < wr_nFXDrain, remainder have cold source = mains
+							//    Note: wr_feedsWH = No and wr_nFXCold=0 is illegal
+  *i NOYESCH wr_feedsWH		// iff C_NOYESCH_YES, potable output is plumbed to water heater
+							//    cold water inlet
+
+  *declare "bool wr_FeedsFX() const { return wr_nFXCold > 0; }"
+  *declare "bool wr_FeedsWH() const { return wr_feedsWH==C_NOYESCH_YES; }"
 
   *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
 
-  *h FLOAT wr_dTDrain			// water temp drop from fixture mixed temp to drain, F
-								//    td = tFxMix - dTDrain;  default = 4.6 F
+  *h FLOAT_GEZ wr_tdInDiff		// drain-side inlet water temp drop from fixture mixed temp, F
+								//    tdIn = tFxMix - tdInDiff;  default = 4.6 F
+
+  *h FLOAT_GEZ wr_tdInWarmup	// drain-side inlet temp during warmup portion of draw
+								//    default = 65.
 						
   *s *e FLOAT wr_eff			// effectiveness under current conditions
-
-  *r FLOAT wr_fWeight			// weighting factor for results
-								//   0: don't model
-								//   else factor for combining multi-DHWHEATREC
-								//		results within parent DHWSYS
-
+  *s *e FLOAT wr_tpO			// most recent potable-side output temp, F
+  *s *e FLOAT wr_vp				// most recent potable-side flow, gpm
 
 *END
 //=============================================================================
@@ -3765,12 +3780,22 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wdu_CkF();"
+  *declare "RC wdu_Init( int pass);"
   // Note: DHWSYS linkage handled *only* via wdu_DoHour() args
   //       A given DHWDayUse can be ref'd by multiple DHWSYSs
   *declare "RC wdu_DoHour( DHWSYS* pWS) const;"
 
   *h FLOAT_GEZ wdu_mult		// multiplier applied to all child DHWUSE wuFlows
 							//   note FLOAT (not integer)
+
+						// runtime (see wdu_RunInit()): range of ss values
+						//    for DHWUSEs belonging to this DHWDAYUSE
+						//    Typically all DHWUSEs in range will be
+						//    children of this DHWDAYUSE, but not guaranteed.
+						//    ownership should be checked within loops.
+  *r SI wdu_wuSsBeg;	//	initial ss
+  *r SI wdu_wuSsEnd;	//  last ss+1
+  *r INT wdu_wuCount;	// count of child DHWUSEs
 *END		// DHWDAYUSE
 //=============================================================================
 RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
@@ -3803,6 +3828,9 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//      Must be 0 for C_DHWEUCH_SHOWER if DHWSYS has DHWHEATREC.
 							//      Checked at runtime only since DHWDAYUSE use by DHWSYS
 							//        can change daily.
+  *r INT wu_drawSeqN		// sequence number of draw by ws_hwEndUse
+							//    assigned at runtime, see wdu_RunInit()
+							//    used re random assignment of draws to DHWHEATRECs
 *END	// DHWUSE
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array

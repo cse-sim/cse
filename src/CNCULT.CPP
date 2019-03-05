@@ -127,7 +127,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 
 // added for DLL version that must always free all its storage.
 // calling this is safer than walking the tables for error exits
-// beleived redundant but harmless for normal exits.
+// believed redundant but harmless for normal exits.
 {
 	ZiB.free();
 	IzxiB.free();
@@ -1831,10 +1831,12 @@ CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,    
 CULT( "wrDHWSYS",    DAT,   DHWHEATREC_OWNTI,  NO_INP|RDFLIN,0,0,  TYREF, &WSiB,  0,      N,   N),
 CULT( "wrMult",		 DAT,	DHWHEATREC_MULT,   0,        0, VEOI,  TYSI,  0,      1,      N,   N),
 CULT( "wrType",	     DAT,	DHWHEATREC_TYPE,   0,        0, VEOI,  TYCH,  0,      C_DWHRTYCH_VERT, N,   N),
-CULT( "wrConfig",    DAT,	DHWHEATREC_CONFIG, 0,        0, VEOI,  TYCH,  0,      C_DWHRCFGCH_EQUAL, N,   N),
 CULT( "wrCSARatedEF",DAT,	DHWHEATREC_EFFRATED,RQD,     0, VHRLY, TYFL,  0,      .5f,    N,   N),
-CULT( "wrDTDrain",   DAT,   DHWHEATREC_DTDRAIN, 0,       0, VHRLY, TYFL,  0,     4.6f,    N,   N),
-CULT( "wrFxServed",  DAT,	DHWHEATREC_FXSERVED,0,       0, VEOI,  TYSI,  0,      1,      N,   N),
+CULT( "wrCountFXDrain",DAT, DHWHEATREC_NFXDRAIN,0,       0, VEOI,  TYSI,  0,      1,      N,   N),
+CULT( "wrCountFXCold",DAT,  DHWHEATREC_NFXCOLD, 0,       0, VEOI,  TYSI,  0,      0,      N,   N),
+CULT( "wrFeedsWH",   DAT,	DHWHEATREC_FEEDSWH, 0,       0, VEOI,  TYCH,  0,      C_NOYESCH_NO,  N,   N),
+CULT( "wrTDInDiff",  DAT,   DHWHEATREC_TDINDIFF,0,       0, VHRLY, TYFL,  0,     4.6f,    N,   N),
+CULT( "wrTDInWarmup",DAT,   DHWHEATREC_TDINWARMUP, 0,    0, VHRLY, TYFL,  0,     65.f,    N,   N),
 CULT( "wrHWEndUse",	 DAT,	DHWHEATREC_HWENDUSE,0,       0, VEOI,  TYCH,  0,      C_DHWEUCH_SHOWER, N,   N),
 CULT( "endDHWHEATREC",  ENDER, 0,              0,        0, 0,     0,     0,      0,      N,   N),
 CULT()

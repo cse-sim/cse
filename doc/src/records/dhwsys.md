@@ -78,9 +78,9 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
   Note that while DHWDAYUSE selection is updated daily, the DHWUSE values within the DHWDAYUSE can be altered hourly, providing additional scheduling flexibility.
 
-  **Units**   **Legal Range**   **Default**            **Required**   **Variability**
-  ----------- ----------------- ---------------------- -------------- -----------------
-    gal         $\ge$ 0           (no scheduled draws)        No             daily
+  **Units**   **Legal Range**        **Default**            **Required**   **Variability**
+  ---------- ---------------------- ---------------------- -------------- -----------------
+              *name of a DHWDAYUSE*   (no scheduled draws)        No             daily
 
 **wsTUse=*float***
 
@@ -102,9 +102,9 @@ Hot water delivery temperature (at the point of use).  Note that draws defined v
 
 Specifies electrical parasitic power to represent recirculation pumps or other system-level electrical devices. Calculated energy use is accumulated to the METER specified by wsElecMtr (end use DHW). No other effect, such as heat gain to surroundings, is modeled.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  W           $>$ 0             0             No             hourly
+  **Units**   **Legal Range**   **Default**   **Required**    **Variability**
+----------- ------------------ ------------- --------------- -----------------
+   W            $\ge$ 0             0             No             hourly
 
 **wsSDLM=*float***
 

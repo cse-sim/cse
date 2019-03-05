@@ -408,7 +408,6 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
-*choicb DWHRCFGCH { EQUAL "Equal" UNEQFX "UnequalFX" UNEQWH "UnequalWH" }
 
 // PV choices
 *choicb PVMODCH {
