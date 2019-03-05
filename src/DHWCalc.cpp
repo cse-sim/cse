@@ -535,9 +535,6 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// check DHWHEATREC configuration
 		//   do not need ws_mult, applies to both values
-		if (ws_wrCount > ws_showerCount)
-			rc |= oer("Invalid heat recovery arrangement: more DHWHEATRECs (%d) than showers (%d)",
-				ws_wrFxDrainCount, ws_showerCount);
 		if (ws_wrFxDrainCount > ws_showerCount)
 			rc |= oer( "Invalid heat recovery arrangement: more DHWHEATREC drain connections (%d) than showers (%d)",
 					ws_wrFxDrainCount, ws_showerCount);
@@ -778,8 +775,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (ws_wrCount && ws_iTk0DWHR < ws_iTkNDWHR)
 			rc |= ws_DoHourDWHR();		// modify tick values re DWHR
 	}
-	else
-	// TODO ???
+
 	if (!ws_HasCentralDHWSYS())
 	{	DHWSYS* pWSChild;
 		RLUPC( WsR, pWSChild, pWSChild->ws_centralDHWSYSi == ss)
@@ -2622,18 +2618,21 @@ RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
 		rc |= ooer( DHWHEATREC_HWENDUSE, "wrHWEndUse=%s not supported (must be Shower)",
 			getChoiTx( DHWHEATREC_HWENDUSE));
 
-	if (!IsSet(DHWHEATREC_NFXCOLDHR))
-		wr_nFXColdHR = wr_nFXDrain;
-	else if (wr_nFXColdHR > wr_nFXDrain)
-		rc |= oer("Invalid configuration: wrCountFXColdHR (%d) must be <= wrCountFXDrain (%d)",
-			wr_nFXColdHR, wr_nFXDrain);
-
-	if (!wr_FeedsWH() && !wr_FeedsFX())
-		rc |= oer("Potable-side outlet not connected -- cannot model\n"
-			"    (wrFeedsWH=NO and wrCountFXColdHR = 0)");
-
 	if (wr_nFXDrain <= 0)
-		rc |= oer("No connections defined -- cannot model");
+	{	// no drain connections -- treat as not present
+		wr_nFXCold = 0;
+		wr_feedsWH = C_NOYESCH_NO;
+	}
+
+	if (!IsSet(DHWHEATREC_NFXCOLD))
+		wr_nFXCold = wr_nFXDrain;
+	else if (wr_nFXCold > wr_nFXDrain)
+		rc |= oer("Invalid configuration: wrCountFXCold (%d) must be <= wrCountFXDrain (%d)",
+			wr_nFXCold, wr_nFXDrain);
+
+	if (wr_nFXDrain > 0 && !wr_FeedsWH() && !wr_FeedsFX())
+		rc |= oer("Potable-side outlet not connected -- cannot model\n"
+			"    (wrFeedsWH=NO and wrCountFXCold = 0)");
 
 	return rc;
 }	// DHWHEATREC::wr_CkF
@@ -2694,7 +2693,7 @@ RC DHWHEATREC::wr_SetFXConnections(
 		pWS->ws_fxList[iFx++].fx_Set(
 			C_DHWEUCH_SHOWER,		// end use
 			ss,						// drain = this DHWHEATREC
-			iCx < wr_nFXColdHR);	// cold: 0 = mains
+			iCx < wr_nFXCold);		// cold: 0 = mains
 									//       1 = this DHWHEATREC
 	return rc;
 
@@ -2811,8 +2810,10 @@ float DHWHEATREC::wr_CalcTick(		// calculate performance for 1 tick
 			if (!wr_FeedsWH())
 				vp = vMixHR - vHotFX;	// cold side flow
 
+#if 0 && defined( _DEBUG)
 			if (iL > 7)
 				printf("\nSlow converge  iL=%d  wr_eff=%.5f  tpO=%.2f", iL, wr_eff, tpO);
+#endif
 			if (fabs(tpO - tpOwas) < .1f)
 				break;
 			wr_EffAdjusted(vp, tpI, vd, tdI);		// update efficiency
