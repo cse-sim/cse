@@ -137,9 +137,11 @@ Title for use in export header of User-Defined export. Disallowed if *exType* is
 
 Use NO to suppress the export header which gives the export type, zone, meter, or air handler being exported, time interval, column headings, etc. You might do this if the export is to be subsequently imported to a program that is confused by the header information. Alternatively, one may use COLUMNSONLY to print only the column headings. This can be useful when plotting CSV data in a spreadsheet tool or [DView](https://beopt.nrel.gov/downloadDView).
 
+The choices YESIFNEW and COLUMNSONLYIFNEW cause header generation when the associated EXPORTFILE is being created but suppress headers when appending to an existing file.  This is useful for accumulating results from a set of runs where typically column headings are desired only once.
+
 If not suppressed, the export header shows, in four lines:
 
-*runTitle* and *runSerial* (see Section 5.1);the run date and timethe export type ("Energy Balance", "Statistics", etc., or *exTitle* if given)and frequency ("year", "day", etc.)a list of field names in the order they will be shown in the data rows("Mon", "Day", "Tair", etc.)
+*runTitle* and *runSerial* (see Section 5.1);the run date and time the export type ("Energy Balance", "Statistics", etc., or *exTitle* if given)and frequency ("year", "day", etc.)a list of field names in the order they will be shown in the data rows("Mon", "Day", "Tair", etc.)
 
 The *specific* month, day, etc. is NOT shown in the export header (as it is shown in the report header), because it is shown in each export row.
 
@@ -147,7 +149,7 @@ The field names may be used by a program reading the export to identify the data
 
 <%= member_table(
   units: "",
-  legal_range: "YES, NO, COLUMNSONLY",
+  legal_range: "YES, YESIFNEW, NO, COLUMNSONLY, COLUMNSONLYIFNEW",
   default: "YES",
   required: "No",
   variability: "constant") %>
