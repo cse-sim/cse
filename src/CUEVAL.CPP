@@ -35,6 +35,7 @@
 #include <cuevf.h>
 #include <exman.h>		// whatEx whatNio exInfo
 #endif
+#include "xiopak.h"
 
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -964,7 +965,7 @@ unsExprH:
 #endif	// IMPORT
 
 		case PSCONTIN:			// continuous lighting controller with minimum power @ minimum light.
-			// does not go off. returns float fraction power requred on stack.
+								// does not go off. returns float fraction power requred on stack.
 		{
 			float il = *SPF++;	// arguments on stack, in reverse order, are float illuminance,
 			float sp = *SPF++;	//  float setpoint (same units as illuminance),
@@ -1001,6 +1002,13 @@ unsExprH:
 				else    fp = ceil( ns*(sp - il)/sp) / ns;	// next step >= fraction of lighting power needed
 			}
 			*--SPF = fp;		// push result: fraction of lighting power required
+		}
+		break;
+
+		case PSFILEINFO:
+		{	// 0=not found, 1=empty file, 2=non-empty file, 3=dir, -1=err
+			SI fiRet = xfExist( (const char*)*SPP++);
+			*--SPI = fiRet;
 		}
 		break;
 

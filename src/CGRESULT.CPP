@@ -807,7 +807,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 			// conditional report footer
 
 			if (doFoot || isAll)  			// if foot needed per flag set in init (all- reports footed every time)
-			vpRxFooter( dvrip);	  		// virtual print report or export footer, below.
+				vpRxFooter( dvrip);	  		// virtual print report or export footer, below.
 
 		}  // for i=
 

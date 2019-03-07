@@ -1551,13 +1551,15 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
  //derived
     *r SI fileStatChecked	// check fileStat only once to prevent "file exists" error or re-setting "overWrite" on later run
     *r SI overWrite			// append if 0.  set by fileStat=fresh, cleared on use, so addl runs do not erase earlier output.
+	*r SI wasNotEmpty			// nz if existed and size > 0 at fileStat check
 *END		// RFI
 //=============================================================================
 RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
     *prefix ri_
     *exdes						// cncult4.cpp: frees .rpTitle
     *ovrcopy
-	*declare "RC oneRxp();"
+	*declare "RC ri_CkF();"
+	*declare "RC ri_oneRxp();"
  //input                .ownTi is owning reportFile or exportFile subscript
     *i TI zi 		// zone for zone-specific reports. Can be TI_SUM, TI_ALL.
     *i TI mtri		// meter to report/export for meter-specific reports. Can be TI_SUM, TI_ALL.
@@ -1625,17 +1627,17 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
     *r SI rpCondGiven	// nz if user-given condition: may be reflected in title (when 0, rpCond is TRUE).
     *r CHP rpTitle 	// title, for UDT, in dm
     *r SI rpCpl		// chars per line, inputtable for UDT's
-    *r RPTHDCH rpHeader	// table header or export header yes/no (default yes)
-    *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line?) yes/no (default yes)
+    *r RPTHDCH rpHeader	// table header or export header yes/no/col (default yes)
+    *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line) yes/no (default yes)
   // user-defined reports columns
     *r TI coli		// RcolB/XcolB subscript of first column (thence linked by .nxColi).
     *r SI nCol		// # columns
     *r SI wid		// total col width for user-defined report, including colGaps.
-  // generated
+					// generated
     *r INT vrh		// virtual report handle, used from here for runtime output
-  // linking
-    *d TI nextNow  	/* 0 or subscript of next report/export of this type that is active today
-    			   (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly) */
+					//   linking
+    *d TI nextNow  	// 0 or subscript of next report/export of this type that is active today
+    				//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
 RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records

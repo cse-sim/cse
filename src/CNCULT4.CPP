@@ -58,7 +58,6 @@ LOCAL char* footerPageN = NULL;	// NULL or ptr into footer at which to store cur
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
 LOCAL RC   addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd);
-LOCAL RC   oneRxp( RI * rp);					// process one report or export for topRxp
 LOCAL void addTx( const char* s, int spc, char **pp, int* pr, int rReserve=0);
 LOCAL void addHdayDate( char *name, DOY date);
 LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, MONTH mon);
@@ -110,7 +109,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 		xfp->fileName = strsave( strffix2( InputFilePathNoExt, ".csv", 1));
 												// file name: use input file name & path
 												//   InputFilePathNoExt known to not have extension, always add ".csv"
-		xfp->fileStat = C_FILESTATCH_OVERWRITE;  	// overwriting existing file. xfStarCkf changes to APPEND if not 1st run.
+		xfp->fileStat = C_FILESTATCH_OVERWRITE;	// overwriting existing file. xfStarCkf changes to APPEND if not 1st run.
 		fs[RFI_FILENAME] |= FsSET|FsVAL; 		// flag set field as "set", so no error message in topXf.
 		//fs[RFI_FILESTAT] |= FsSET|FsVAL; 		do not flag: would get warning on OVERWRITE-->APPEND if not 1st run.
 	}
@@ -347,7 +346,137 @@ RC topCol( SI isExport)
 	}	// RLUP coliB
 	return RCOK;			// also each E macro contains conditional error return
 }			// topCol
+//=======================================================================================
+RC RI::ri_CkF()
+// check function automatically called at end of REPORT and EXPORT object entry (per tables * lines).
+// also called by code in TopCkf.
+{
+	RC rc=RCOK;
+	UCH* fs = fStat();			// ptr to field status byte array
+	int isEx = isExport;		// 0 for report, nz for export: prefetch for several uses
+	const char * exrp = isEx ? "ex" : "rp"; 		// to insert in member names in error messages
+	const char * exrePort = isEx ? "export" : "report";	// to insert in errmsgs
+// get field texts for errMsgs, issue no errmsg (except in returned text) if value out of range.
+	const char* tyTx = getChoiTx( RI_RPTY, 1);	// rpTy/exTy as text
+	const char* fqTx = getChoiTx( RI_RPFREQ, 1);	// rpFreq/exFreq
 
+// note: file, zone, meter references not checked here as not stored till input complete (to permit forward references)
+
+// check: type ok for export (all types ok for report)
+//        rpFreq given or not per rpType.
+//	  immediately return errors that would cause additional spurious messages in this function.
+
+	switch (rpTy)			// a TYCH with evf==0 (no deferred exprs) member
+	{
+	case 0:
+		break;			// if omitted, let cul.cpp do its msg (RQD field; calls here first)
+
+		// types not allowing rpFreq nor dates and also not allowed as exports.
+	case C_RPTYCH_ERR:		// "Err" (error messages)
+	case C_RPTYCH_LOG:		// "Log" (run messages)
+	case C_RPTYCH_INP:		// "Inp" (input echo, with some or all error messages)
+	case C_RPTYCH_SUM:		// "Summary"
+	case C_RPTYCH_ZDD:		// "Zone Data Dump"
+		if (isEx)
+			return ooer( RI_RPTY, "Invalid exType '%s'", tyTx);		// bad type for export
+		// fall thru
+		// types not allowing rpFreq nor dates but as exports
+	case C_RPTYCH_AHSIZE:					// 6-95
+	case C_RPTYCH_AHLOAD:					// 6-95
+	case C_RPTYCH_TUSIZE:					// 6-95
+	case C_RPTYCH_TULOAD:					// 6-95
+		if (fs[ RI_RPFREQ ] & FsSET)
+			rc = ooer( RI_RPFREQ, (char *)MH_S0428, exrp, exrp, tyTx);	// "%sFreq may not be given with %sType=%s"
+		if (fs[ RI_RPDAYBEG ] & FsSET)
+			rc = ooer( RI_RPDAYBEG, (char *)MH_S0429, exrp, exrp, tyTx);  	// "%sDayBeg may not be given with %sType=%s"
+		if (fs[ RI_RPDAYEND ] & FsSET)
+			rc = ooer( RI_RPDAYEND, (char *)MH_S0430, exrp, exrp, tyTx);  	// "%sDayEnd may not be given with %sType=%s"
+		break;
+
+		// types requiring rpFreq and allowing or requiring start and end day depending on rpFreq
+
+	case C_RPTYCH_ZST:		// "Zone Statistics"
+	case C_RPTYCH_ZEB:		// "Zone Energy Balance"
+	case C_RPTYCH_MTR:  	// "Meter"
+	case C_RPTYCH_DHWMTR:  	// "DHWMeter"
+	case C_RPTYCH_AH:		// "Air Handler"
+	case C_RPTYCH_UDT:		// "User-defined Table"
+		switch (rpFreq)		// rpFreq is TYCH with evf==0 ---> no exprs
+		{
+		case 0:
+			return oer( (char *)MH_S0431, exrp, exrp, tyTx);    // "No %sFreq given: required with %sType=%s"
+
+			// dates not allowed: year
+		case C_IVLCH_Y:
+			if (fs[ RI_RPDAYBEG ] & FsSET)
+				rc = ooer( RI_RPDAYBEG, (char *)MH_S0432, 	// "%sDayBeg may not be given with %sFreq=%s"
+						   exrp, exrp, fqTx);
+			if (fs[ RI_RPDAYEND ] & FsSET)
+				rc = ooer( RI_RPDAYEND, (char *)MH_S0433, 	// "%sDayEnd may not be given with %sFreq=%s"
+						   exrp, exrp, fqTx);
+			break;
+			// date optional: month
+		case C_IVLCH_M:
+			break;
+
+			// start date required: day, hour, both, subhour
+		case C_IVLCH_HS:
+		case C_IVLCH_S:
+			if ( rpTy==C_RPTYCH_MTR			// have no subhourly meter info
+			 ||  rpTy==C_RPTYCH_DHWMTR		// have no subhourly DHW meter info
+			 ||  rpTy==C_RPTYCH_ZST )		// have no subhourly statistics info, right?
+				return ooer( RI_RPFREQ, (char *)MH_S0434, 		// "%sFreq=%s not allowed with %sty=%s"
+							 exrp, fqTx, exrp, tyTx );
+			{
+				char *badSumOf=NULL;			// check for types without subhour sum info
+				if      (rpTy==C_RPTYCH_ZEB  &&  (fs[RI_ZI] & FsSET) && zi==TI_SUM)   badSumOf = "zones";
+				else if (rpTy==C_RPTYCH_AH  &&  (fs[RI_AHI] & FsSET) && ahi==TI_SUM)  badSumOf = "ahs";
+				if (badSumOf)
+					return ooer( RI_RPFREQ, (char *)MH_S0435, 	// "%sFreq=%s not allowed in Sum-of-%s %s"
+								 exrp, fqTx, badSumOf, exrePort );
+			}
+			/*lint -e616 fall thru */
+		case C_IVLCH_H:
+		case C_IVLCH_D:
+			if (!rpDayBeg)
+				rc = oer( (char *)MH_S0436, 	// "No %sDayBeg given: required with %sFreq=%s"
+						  exrp, exrp, fqTx );
+			break;
+			/*lint +e616 */
+
+		default:
+			return ooer( RI_RPFREQ, (char *)MH_S0437,  // "Internal error in RI::ri_CkF: bad rpFreq %d"
+						 (INT)rpFreq);
+		}
+		break;
+
+	default:
+		return ooer( RI_RPTY, (char *)MH_S0438, 	// "Internal error in RI::ri_CkF: bad rpTy %d"
+					 (INT)rpTy);
+	}  // switch (rpTy)
+
+
+// disallow title and cpl if not UDT
+
+	if (rpTy != C_RPTYCH_UDT)
+	{
+		if (fs[RI_RPCPL] & FsSET)
+			rc = ooer( RI_RPCPL, (char *)MH_S0439, exrp, exrp);	// "%sCpl cannot be given unless %sTy is UDT"
+		if (fs[RI_RPTITLE] & FsSET)
+			rc = ooer( RI_RPTITLE, (char *)MH_S0440, exrp, exrp);	// "%sTitle cannot be given unless %sTy is UDT"
+	}
+
+	// disallow export-only header options for report
+	if (!isEx && (   rpHeader == C_RPTHDCH_COL
+		          || rpHeader == C_RPTHDCH_COLIF
+		          || rpHeader == C_RPTHDCH_YESIF))
+	{	const char* rpHdTyTx = getChoiTx(RI_RPHEADER, 1);
+		rc |= oWarn("Reports cannot have rpHeader=%s, using rpHeader=Yes instead", rpHdTyTx);
+		rpHeader = C_RPTHDCH_YES;
+	}
+
+	return rc;				// and several error returns above
+}		// RI::ri_CkF
 //===========================================================================
 RC topRxp()			// check REPORTS and EXPORTS / build dvri info
 
@@ -377,15 +506,15 @@ RC topRxp()			// check REPORTS and EXPORTS / build dvri info
 // process each requested report and export
 
 	RLUP( RiB, rp)		// loop reports input records
-		rp->oneRxp();		// just below
+		rp->ri_oneRxp();		// just below
 
 	RLUP( XiB, rp)		// loop exports input records
-		rp->oneRxp();
+		rp->ri_oneRxp();
 
 	return RCOK;
 }			// topRxp
 //===========================================================================
-RC RI::oneRxp()		// process one report or export for topRxp
+RC RI::ri_oneRxp()		// process one report or export for topRxp
 
 // checks record, and sets vrh in a global, in a zone, or in Top,
 // or builds DvriB entry, as pertinent for each report or export type.
@@ -411,10 +540,10 @@ RC RI::oneRxp()		// process one report or export for topRxp
 // recall entry time check function 1) as it has not been called for pre-stuffed default reports entries;
 // 2) to recheck references (DELETE given after entry?)(if it checks any); and 3) general paranoia.
 
-	if (errCount())					/* but if already have errors (hence no run), do not recall:
-    							   would issue duplicate messages for any errors it detected. */
-		if (rpStarCkf( NULL, this, NULL, NULL))		// note this is the ckf for exports as well as reports
-			return RCBAD;					// bad. done with entry.
+	if (!errCount())	// but if already have errors (hence no run), do not recall:
+    					//   would issue duplicate messages for any errors it detected.
+		if (ri_CkF())	// note this is the ckf for exports as well as reports
+			return RCBAD;			// bad. done with entry.
 
 // default start and/or end days of report.  Don't set nz b4 other checks as not allowed with some rpt types & freq's.
 //					     and, doing here sets dates for monthly default reports.
@@ -802,6 +931,17 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 			optn |= VR_FINEWL;				// option to add newline to end of report/export at unspool
 		if (!isEx && rfp->pageFmt==C_NOYESCH_YES)	// if a report to a formatted report file
 			optn |= VR_FMT;				// spool with formatting; else unformatted for speed.
+		SI rpHeaderLocal = rpHeader;	// modifiable copy of rpHeader
+		if (isEx)
+		{	// export file conditional header options
+			//   write header only when destination file is empty
+			int bAddToExisting = !rfp->overWrite && rfp->wasNotEmpty;
+			if (rpHeader == C_RPTHDCH_COLIF)
+				rpHeaderLocal = bAddToExisting ? C_RPTHDCH_NO : C_RPTHDCH_COL;
+			else if (rpHeader == C_RPTHDCH_YESIF)
+				rpHeaderLocal = bAddToExisting ? C_RPTHDCH_NO : C_RPTHDCH_YES;
+			// else unconditional yes/no/col, do not alter
+		}
 		int found = 0;
 		DVRI* dvrip;
 		RLUP (DvriB, dvrip)					// seek matching DVRI record
@@ -809,7 +949,7 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 			if ( isExport==dvrip->isExport   &&  rpTy==dvrip->rpTy  &&  rpFreq==dvrip->rpFreq
 					&&  rpDayBeg==dvrip->rpDayBeg   &&  rpDayEnd==dvrip->rpDayEnd
 					&&  rpCondGiven==dvrip->rpCondGiven &&  rpCond==dvrip->rpCond 	// (expect != if rpCond exprs given. ok.)
-					&&  rpHeader==dvrip->rpHeader   &&  rpFooter==dvrip->rpFooter
+					&&  rpHeaderLocal==dvrip->rpHeader   &&  rpFooter==dvrip->rpFooter
 					&&  zi==dvrip->ownTi &&  mtri==dvrip->mtri  && ri_dhwMtri == dvrip->dv_dhwMtri
 					&&  tui==dvrip->tui	&&  ahi==dvrip->ahi
 					&&  rpBtuSf==dvrip->rpBtuSf
@@ -817,8 +957,8 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 			{
 				found++;
 				vrh = dvrip->vrh;				// use existing vrh
-				vrChangeOptn( vrh, optn, optn);   		/* if page-formatted file, set formatted option bit for vr.
-		   						   (if also in unformatted file, unspool will de-format) */
+				vrChangeOptn( vrh, optn, optn);	// if page-formatted file, set formatted option bit for vr.
+		   										// (if also in unformatted file, unspool will de-format)
 				break;
 			}
 		}
@@ -881,7 +1021,7 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 				cupIncRef( DMPP( rpTitle));				/* ++ ref count for copied pointer unless UNSET
 	        								   or ptr to inline constant in pseudo-code */
 				dvrip->rpCpl    = rpCpl ? rpCpl : getCpl();		// default characters per line now
-				dvrip->rpHeader = rpHeader;
+				dvrip->rpHeader = rpHeaderLocal;
 				dvrip->rpFooter = rpFooter;
 				dvrip->coli     = coli;
 				dvrip->nCol     = nCol;
@@ -900,7 +1040,7 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 	}  // switch (rpTy)
 
 	return rc;				// also 4+ error returns above
-}			// oneRxp
+}			// RI::ri_oneRxp
 //===========================================================================
 RC buildUnspoolInfo()
 
@@ -943,14 +1083,14 @@ RC buildUnspoolInfo()
 				 &&  rp->vrh )						// if report has non-0 virt rpt handle (insurance)
 					p->vrhs[nVrh++] = rp->vrh;  	// add report's vrh to those to put in this file
 		/*lint +e731 */
-		p->vrhs[nVrh] = 0;					/* 0 after last vrh terminates list (vbl length array)
-								   note no ++nVrh as sizeof(VROUTOUT) includes .vrhs[1]. */
+		p->vrhs[nVrh] = 0;				// 0 after last vrh terminates list (vbl length array)
+										// note no ++nVrh as sizeof(VROUTOUT) includes .vrhs[1].
 		// complete entry only if vrh's found, or if overwrite
 		if (nVrh						// if any reports were found for file
-		 || p->optn & VR_OVERWRITE )     			// or file is to be overwritten: erase even if no reports.
+		 || p->optn & VR_OVERWRITE )	// or file is to be overwritten: erase even if no reports.
 		{
 			p->fName = rfp->fileName;				// copy fileName pointer
-			cupIncRef( DMPP( rfp->fileName));			// dmIncRef unless ptr into pseudocode (or NANDLE), cueval.cpp.
+			cupIncRef( DMPP( rfp->fileName));		// dmIncRef unless ptr into pseudocode (or NANDLE), cueval.cpp.
 			p->optn = (rfp->pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 			        | (rfp->overWrite ? VR_OVERWRITE : 0); 	// translate erase existing file flag to vrpak optn bit
 			rfp->overWrite = 0;					// only overWrite once in session, then append!
@@ -963,21 +1103,22 @@ RC buildUnspoolInfo()
 	{
 		// find and get the vrh's for file, if any
 		nVrh = 0;
-		RLUP( XiB, rp)   					// loop exports, find those for this file
-		if ( rp->ownTi==rfp->ss   				// if export is for this file
-		&&  rp->vrh )					// if export has non-0 virt rpt handle (insurance)
-			p->vrhs[nVrh++] = rp->vrh;  			// add export's vrh to those to put in this output file
-		p->vrhs[nVrh] = 0;					/* 0 after last vrh terminates list (vbl length array)
-								   note no ++nVrh as sizeof(VROUTOUT) includes .vrhs[1]. */
+		RLUP( XiB, rp)   			// loop exports, find those for this file
+		if (rp->ownTi==rfp->ss  	// if export is for this file
+		 && rp->vrh )				// if export has non-0 virt rpt handle (insurance)
+			p->vrhs[nVrh++] = rp->vrh;		// add export's vrh to those to put in this output file
+		p->vrhs[nVrh] = 0;			// 0 after last vrh terminates list (vbl length array)
+									// note no ++nVrh as sizeof(VROUTOUT) includes .vrhs[1].
 		// complete entry only if vrh's found, or if overwrite
 		if ( nVrh						// if any exports were found for file
 		||  p->optn & VR_OVERWRITE )    			// or file is to be overwritten
 		{
-			p->fName = rfp->fileName;				// copy fileName pointer
-			cupIncRef( DMPP( rfp->fileName));		// dmIncRef unless ptr into in pseudocode (or NANDLE), cueval.cpp.
-			p->optn = 						// page formatting option bit off for exports
-			(rfp->overWrite ? VR_OVERWRITE : 0)     	// translate erase existing file flag to vrpak optn bit
-			| VR_ISEXPORT;   				// is this tested?
+			p->fName = rfp->fileName;			// copy fileName pointer
+			cupIncRef( DMPP( rfp->fileName));	// dmIncRef unless ptr into in pseudocode (or NANDLE), cueval.cpp.
+			p->optn = 							// page formatting option bit off for exports
+				(rfp->overWrite ? VR_OVERWRITE : 0)     // translate erase existing file flag to vrpak optn bit
+				| VR_ISEXPORT;   						// is this tested?
+			rfp->overWrite = 0;					// only overWrite once in session, then append!
 			IncP( DMPP( p), sizeof(VROUTINFO) + nVrh * sizeof(int));	// point past file output info incl vbl # vrh's
 		}
 		// no-report overwrite files are transmitted so unspooler can erase them unless input error supresses run.
@@ -1062,8 +1203,8 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 						   "    were written to that file in an earlier run this session",
 						   was, what);
 			}
-			fileStat = C_FILESTATCH_APPEND;			// change fileStat of previously used file to "append":
-			// fix after warning or silently change default.
+			fileStat = C_FILESTATCH_APPEND;		// change fileStat of previously used file to "append":
+												// fix after warning or silently change default.
 		}
 	}
 	return RCOK;
@@ -1086,22 +1227,24 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	// (after CLEAR, this mechanism does not work to cause append;
 	// instead fileStat of previously used files is forced to APPEND via isUsedVrFile() tests)
 
-	if ( !fileStatChecked				// not if checked before this run or this session
+	int xfx = xfExist( fileName);	// 0=not found, 1=empty file, 2=non-empty file, 3=dir, -1=err
+	wasNotEmpty = xfx == 2;
+	if (!fileStatChecked				// not if checked before this run or this session
 	 && fileStat != C_FILESTATCH_APPEND )		// append requires no check nor processing
-	{
-		if (xfExist( fileName))				// 0=not found, 1=file, 2=dir, -1=err
-											//    dir overwrite detected later
-			if (fileStat==C_FILESTATCH_OVERWRITE)
+	{	if (xfx)
+		{	if (fileStat==C_FILESTATCH_OVERWRITE)
 				overWrite++;		// say overwrite when opening (cleared when
 	        						// passed to vrPak, so any addl uses append)
+									// note: dir overwrite detected later
 			else				// assume C_FILESTATCH_NEW
 				oer( (char *)MH_S0544, fileName);	// "File %s exists". Text also used below. Message stops run.
 		}
 		fileStatChecked++;   		// say don't repeat: don't issue error due to prior run's output;
-		// don't set overwrite again (would erase prior output).
+									// don't set overwrite again (would erase prior output).
+	}
 
-		if (!isExport)
-		{	// capture info on "Primary" report output file in global variable.
+	if (!isExport)
+	{	// capture info on "Primary" report output file in global variable.
 			//	cse.cpp may append final info eg timing or addl error msgs at end session
 			//       after reg unspool, poss even after input error.
 			//  cse.cpp may pre-init this to <name>.REP in case input error prevents getting here.
@@ -1114,9 +1257,9 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 				PriRep.f.fName = fileName;		// set cnguts.cpp global to file name
 				cupIncRef( DMPP( fileName));	// dmIncRef unless ptr into pscode (or NANDLE), cueval.cpp.
 				PriRep.f.optn = (pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
-							| (overWrite ? VR_OVERWRITE : 0);		// translate erase existing file flag to vrpak optn bit
+								| (overWrite ? VR_OVERWRITE : 0);		// translate erase existing file flag to vrpak optn bit
+			}
 			// vrUnspool clears PriRep overwrite bit upon unspooling to this file.
-		}
 		// note: info is propogated to runtime data structures in topRp and buildUnspoolInfo
 	}
 
