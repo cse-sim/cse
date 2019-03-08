@@ -1091,7 +1091,7 @@ CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,     
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,  0.f,     N,   N),
 CULT( "colVal",      DAT,   COL_COLVAL,    RQD,     0, VSUBHRLY|EVPSTIVL,			// ok to evaluate at post interval
-TYFLSTR,			// float or string, struct w/ dt.
+														         TYFLSTR,			// float or string, struct w/ dt.
 0,      N,  0.f,     N,   N),
 CULT( "endExportcol",ENDER, 0,             0,       0, 0,     0,         0,      N,  0.f,     N,   N),
 CULT()
@@ -1100,142 +1100,17 @@ CULT()
 
 //===================================== REPORT command ============================================
 
-/* re/exports and re/exportfiles persist through autosize and main sim phases;
-   they are not reinitialized and thus cannot have any VFAZLY members. 6-95. */
+// re/exports and re/exportfiles persist through autosize and main sim phases;
+// they are not reinitialized and thus cannot have any VFAZLY members. 6-95.
 
-RC FC rpStarCkf( CULT *c, /*RI* */ void *p, void *p2, void *p3) /*ARGSUSED*/  //---------------------------------
-
+static RC FC rpStarCkf( CULT *c, /*RI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
 // check function automatically called at end of REPORT and EXPORT object entry (per tables * lines).
 // also called by code in TopCkf.
 // ONLY argument 'p' is used.
 {
-	RI* P = (RI *)p;
-	RC rc=RCOK;
-	UCH *fs = (UCH *)p + P->b->sOff;		// ptr to field status byte array
-	SI isEx = P->isExport;				// 0 for report, nz for export: prefetch for several uses
-	char * exrp = isEx ? "ex" : "rp"; 		// to insert in member names in error messages
-	char * exrePort = isEx ? "export" : "report";	// to insert in errmsgs
-// get field texts for errMsgs, issue no errmsg (except in returned text) if value out of range.
-	const char* tyTx = P->getChoiTx( RI_RPTY, 1);	// rpTy/exTy as text
-	const char* fqTx = P->getChoiTx( RI_RPFREQ, 1);	// rpFreq/exFreq
-
-
-// note: file, zone, meter references not checked here as not stored till input complete (to permit forward references)
-
-// check: type ok for export (all types ok for report)
-//        rpFreq given or not per rpType.
-//	  immediately return errors that would cause additional spurious messages in this function.
-
-	switch (P->rpTy)			// a TYCH with evf==0 (no deferred exprs) member
-	{
-	case 0:
-		break;			// if omitted, let cul.cpp do its msg (RQD field; calls here first)
-
-		// types not allowing rpFreq nor dates and also not allowed as exports.
-	case C_RPTYCH_ERR:		// "Err" (error messages)
-	case C_RPTYCH_LOG:		// "Log" (run messages)
-	case C_RPTYCH_INP:		// "Inp" (input echo, with some or all error messages)
-	case C_RPTYCH_SUM:		// "Summary"
-	case C_RPTYCH_ZDD:		// "Zone Data Dump"
-		if (isEx)
-			return P->ooer( RI_RPTY, "Invalid exType '%s'", tyTx);		// bad type for export
-		// fall thru
-		// types not allowing rpFreq nor dates but as exports
-	case C_RPTYCH_AHSIZE:					// 6-95
-	case C_RPTYCH_AHLOAD:					// 6-95
-	case C_RPTYCH_TUSIZE:					// 6-95
-	case C_RPTYCH_TULOAD:					// 6-95
-		if (fs[ RI_RPFREQ ] & FsSET)
-			rc = P->ooer( RI_RPFREQ, (char *)MH_S0428, exrp, exrp, tyTx);	// "%sFreq may not be given with %sType=%s"
-		if (fs[ RI_RPDAYBEG ] & FsSET)
-			rc = P->ooer( RI_RPDAYBEG, (char *)MH_S0429, exrp, exrp, tyTx);  	// "%sDayBeg may not be given with %sType=%s"
-		if (fs[ RI_RPDAYEND ] & FsSET)
-			rc = P->ooer( RI_RPDAYEND, (char *)MH_S0430, exrp, exrp, tyTx);  	// "%sDayEnd may not be given with %sType=%s"
-		break;
-
-		// types requiring rpFreq and allowing or requiring start and end day depending on rpFreq
-
-	case C_RPTYCH_ZST:		// "Zone Statistics"
-	case C_RPTYCH_ZEB:		// "Zone Energy Balance"
-	case C_RPTYCH_MTR:  	// "Meter"
-	case C_RPTYCH_DHWMTR:  	// "DHWMeter"
-	case C_RPTYCH_AH:		// "Air Handler"
-	case C_RPTYCH_UDT:		// "User-defined Table"
-		switch (P->rpFreq)		// rpFreq is TYCH with evf==0 ---> no exprs
-		{
-		case 0:
-			return P->oer( (char *)MH_S0431, exrp, exrp, tyTx);    // "No %sFreq given: required with %sType=%s"
-
-			// dates not allowed: year
-		case C_IVLCH_Y:
-			if (fs[ RI_RPDAYBEG ] & FsSET)
-				rc = P->ooer( RI_RPDAYBEG, (char *)MH_S0432, 	// "%sDayBeg may not be given with %sFreq=%s"
-						   exrp, exrp, fqTx);
-			if (fs[ RI_RPDAYEND ] & FsSET)
-				rc = P->ooer( RI_RPDAYEND, (char *)MH_S0433, 	// "%sDayEnd may not be given with %sFreq=%s"
-						   exrp, exrp, fqTx);
-			break;
-			// date optional: month
-		case C_IVLCH_M:
-			break;
-
-			// start date required: day, hour, both, subhour
-		case C_IVLCH_HS:
-		case C_IVLCH_S:
-			if ( P->rpTy==C_RPTYCH_MTR			// have no subhourly meter info
-			 ||  P->rpTy==C_RPTYCH_DHWMTR		// have no subhourly DHW meter info
-			 ||  P->rpTy==C_RPTYCH_ZST )		// have no subhourly statistics info, right?
-				return P->ooer( RI_RPFREQ, (char *)MH_S0434, 		// "%sFreq=%s not allowed with %sty=%s"
-							 exrp, fqTx, exrp, tyTx );
-			{
-				char *badSumOf=NULL;			// check for types without subhour sum info
-				if      (P->rpTy==C_RPTYCH_ZEB  &&  (fs[RI_ZI] & FsSET) && P->zi==TI_SUM)   badSumOf = "zones";
-				else if (P->rpTy==C_RPTYCH_AH  &&  (fs[RI_AHI] & FsSET) && P->ahi==TI_SUM)  badSumOf = "ahs";
-				if (badSumOf)
-					return P->ooer( RI_RPFREQ, (char *)MH_S0435, 	// "%sFreq=%s not allowed in Sum-of-%s %s"
-								 exrp, fqTx, badSumOf, exrePort );
-			}
-			/*lint -e616 fall thru */
-		case C_IVLCH_H:
-		case C_IVLCH_D:
-			if (!P->rpDayBeg)
-				rc = P->oer( (char *)MH_S0436, 	// "No %sDayBeg given: required with %sFreq=%s"
-						  exrp, exrp, fqTx );
-			break;
-			/*lint +e616 */
-
-		default:
-			return P->ooer( RI_RPFREQ, (char *)MH_S0437,  // "Internal error in cncult:rpStarCkf: bad rpFreq %d"
-						 (INT)P->rpFreq);
-		}
-		break;
-
-	default:
-		return P->ooer( RI_RPTY, (char *)MH_S0438, 	// "Internal error in cncult:rpStarCkf: bad rpTy %d"
-					 (INT)P->rpTy);
-	}  // switch (P->rpTy)
-
-
-// disallow title and cpl if not UDT
-
-	if (P->rpTy != C_RPTYCH_UDT)
-	{
-		if (fs[RI_RPCPL] & FsSET)
-			rc = P->ooer( RI_RPCPL, (char *)MH_S0439, exrp, exrp);	// "%sCpl cannot be given unless %sTy is UDT"
-		if (fs[RI_RPTITLE] & FsSET)
-			rc = P->ooer( RI_RPTITLE, (char *)MH_S0440, exrp, exrp);	// "%sTitle cannot be given unless %sTy is UDT"
-	}
-
-	// disallow columns only for report file
-	if (!isEx && P->rpHeader == C_RPTHDCH_COL) {
-		const char* rpHdTyTx = P->getChoiTx(RI_RPHEADER, 1);
-		rc |= P->oWarn("Reports cannot have rpHeader=%s, using rpHeader=Yes instead", rpHdTyTx);
-		P->rpHeader = C_RPTHDCH_YES;
-	}
-
-	return rc;				// and several error returns above
+	return ((RI *)p)->ri_CkF();
 }		// rpStarCkf
-
+//-------------------------------------------------------------------------------------------------
 static CULT rpT[] = //----------- REPORT cmd table, used from cnTopCult and rpfT
 {
 // id         cs    fn             f                uc evf       ty     b        dfls          p2  ckf
@@ -1280,30 +1155,30 @@ x		     Exports/exportFiles likewise.  rob 11-29-91. */
 
 static CULT exT[] = //----------- EXPORT cmd table, used from cnTopCult and exfT
 {
-	// id         cs    fn             f                uc evf       ty      b       dfls         p2   ckf
-	//----------  ----- -------------  ---------------  -- -----     -----  -----    ----------   ---- ----
-	CULT( "*",           STAR, 0,             0,               0, 0,        0,      0,      N,   0.f,    N,   rpStarCkf),	// Ckf fcn shared with REPORT *****
-	CULT( "exExportfile",DAT,  RI_OWNTI,      DFLIN,           0, VEOI,     TYIREF, &XfiB,  N,   0.f,    N,   N), // also dflt'd in cncult4. TYREF->TYIREF 10-9-92
-	CULT( "exZone",      DAT,  RI_ZI,     DFLIN|SUM_OK|ALL_OK, 0, VEOI,     TYREF,  &ZiB,   N,   0.f,    N,   N), // rqd/disallowed per rpTy
-	CULT( "exMeter",     DAT,  RI_MTRI,       SUM_OK|ALL_OK,   0, VEOI,     TYREF,  &MtriB, N,   0.f,    N,   N),
-	CULT( "exAh",        DAT,  RI_AHI,        SUM_OK|ALL_OK,   0, VEOI,     TYREF,  &AhiB,  N,   0.f,    N,   N),
-	CULT( "exDHWMeter",  DAT,  RI_DHWMTRI,    ALL_OK,          0, VEOI,     TYREF,  &WMtriB, N,  0.f,    N, N),
-	CULT( "exTu",        DAT,  RI_TUI,        ALL_OK,          0, VEOI,     TYREF,  &TuiB,  N,   0.f,    N,   N), // 6-95
-	CULT( "exType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
-	CULT( "exFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
-	CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
-	CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
-	CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      v 0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
-	CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
-	                                                                        TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
-	                                                                                0,      v 1L,0.f,    N,   N),
-	CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
-	CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0, v C_RPTHDCH_YES,0.f, N, N),
-	CULT( "exFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,   0, v C_NOYESCH_YES,0.f, N, N),
-	CULT( "exportCol",   RATE, 0,             0,               0, 0,        0,      &XcoliB, N,   0.f, exColT, N),
-	CULT( "isExport",    DAT,  RI_ISEXPORT,   NO_INP,          0, 0,        TYSI,   0,      v 1, 0.f,    N,   N), // set 1 for export
-	CULT( "endExport",  ENDER, 0,             0,               0, 0,        0,      0,      N,   0.f,    N,   N),
-	CULT()
+// id         cs    fn             f                uc evf       ty      b       dfls         p2   ckf
+//----------  ----- -------------  ---------------  -- -----     -----  -----    ----------   ---- ----
+CULT( "*",           STAR, 0,             0,               0, 0,        0,      0,      N,   0.f,    N,   rpStarCkf),	// Ckf fcn shared with REPORT *****
+CULT( "exExportfile",DAT,  RI_OWNTI,      DFLIN,           0, VEOI,     TYIREF, &XfiB,  N,   0.f,    N,   N), // also dflt'd in cncult4. TYREF->TYIREF 10-9-92
+CULT( "exZone",      DAT,  RI_ZI,     DFLIN|SUM_OK|ALL_OK, 0, VEOI,     TYREF,  &ZiB,   N,   0.f,    N,   N), // rqd/disallowed per rpTy
+CULT( "exMeter",     DAT,  RI_MTRI,       SUM_OK|ALL_OK,   0, VEOI,     TYREF,  &MtriB, N,   0.f,    N,   N),
+CULT( "exAh",        DAT,  RI_AHI,        SUM_OK|ALL_OK,   0, VEOI,     TYREF,  &AhiB,  N,   0.f,    N,   N),
+CULT( "exDHWMeter",  DAT,  RI_DHWMTRI,    ALL_OK,          0, VEOI,     TYREF,  &WMtriB, N,  0.f,    N, N),
+CULT( "exTu",        DAT,  RI_TUI,        ALL_OK,          0, VEOI,     TYREF,  &TuiB,  N,   0.f,    N,   N), // 6-95
+CULT( "exType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
+CULT( "exFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
+CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
+CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
+CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      v 0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
+CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
+	                                                                    TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
+	                                                                            0,      v 1L,0.f,    N,   N),
+CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
+CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0, v C_RPTHDCH_YES,0.f, N, N),
+CULT( "exFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,   0, v C_NOYESCH_YES,0.f, N, N),
+CULT( "exportCol",   RATE, 0,             0,               0, 0,        0,      &XcoliB, N,   0.f, exColT, N),
+CULT( "isExport",    DAT,  RI_ISEXPORT,   NO_INP,          0, 0,        TYSI,   0,      v 1, 0.f,    N,   N), // set 1 for export
+CULT( "endExport",  ENDER, 0,             0,               0, 0,        0,      0,      N,   0.f,    N,   N),
+CULT()
 };	// exT
 
 

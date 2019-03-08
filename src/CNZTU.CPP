@@ -1046,8 +1046,8 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 	zrs->nSubhrLX = (zrs->qlX != 0.f);			// 1 if non-0, 0 if 0: accumulates to # subhrs with condensation.
 
 // subhour results: unmet load (meaningful for ConvRad only 10-2012)
-	zrs->nShUnMetH = zn_unMetH != 0;
-	zrs->nShUnMetC = zn_unMetC != 0;
+	zrs->unMetHDH = zn_unMetHDH;
+	zrs->unMetCDH = zn_unMetCDH;
 
 #if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97
 x// excess latent gain... accumulate to a zone member for reporting during autoSizing, when ZNRES accumulation isn't done
