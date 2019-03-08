@@ -255,7 +255,7 @@ int CPV3D::AzmTilt(		// normal -> azm/tilt (radians)
 	}
 
 	if (fabs( z/d) > 1.-1e-9)
-	{	tiltR = z>0. ? kPi : -kPi;
+	{	tiltR = z>0. ? 0. : -kPi;
 		azmR = 0.;
 	}
 	else
