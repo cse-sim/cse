@@ -1513,8 +1513,8 @@ LOCAL void FC NEAR doIvlAccum()
 				  Top.isEndHour );			//   non-0 if last call of hour: compute averages
 		if (Top.isEndHour)
 		{	// hour has unmet if more than 0 subhours unmet
-			resp->curr.H.nHrUnMetH = resp->curr.H.nShUnMetH != 0;
-			resp->curr.H.nHrUnMetC = resp->curr.H.nShUnMetC != 0;
+			resp->curr.H.nHrUnMetH = resp->curr.H.unMetHDH != 0.f;
+			resp->curr.H.nHrUnMetC = resp->curr.H.unMetCDH != 0.f;
 		}
 #ifdef SHSZ	// if keeping sum-of-subhours results. cnguts.h. untested. undef 6-92 for speed, flexibility.
 *     if (resp->ss < ZnresB.n)							// except for last (sum-of-zones) record
