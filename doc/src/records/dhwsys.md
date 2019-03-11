@@ -35,6 +35,10 @@ Optional name of system; give after the word “DHWSYS” if desired.
 
  Name of a DHWSYS that serves the same loads as this DHWSYS, allowing representation of multiple water heating systems within a unit. If given, wsUse and wsDayUse are not allowed, hot water requirements are derived from the referenced DHWSYS.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
+ Loads are shared by assigning DHWUSE events sequentially to all DHWSYSs in a group.  This algorithm approximately divides the load by the number of DHWSYSs in the group.
+
+ For example, two DHWSYSs should be defined to model two water heating systems serving a load represented by wsDayUse DayUseTyp.  Each DHWSYS should include DHWHEATER(s) and other components as needed.  DHWSYS Sys1 should specify wsDayUse=DayUseTyp and DHWSYS Sys2 should have wsLoadShareDHWSYS=Sys1 in place of wsDayUse.
+
  **Units**   **Legal Range**      **Default**            **Required**   **Variability**
  ----------- ------------------- ---------------------- -------------- -----------------
               *name of a DHWSYS*   No shared loads                 No           constant
@@ -110,23 +114,23 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
 
 Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplicate CEC 2016 methods, this value should be set according to the value derived with App B Eqn 5.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              $>$ 0             1             No             constant
+               $>$ 0             1             No             constant
 
 **wsDSM=*float***
 
 Distribution system multiplier. See RACM App B Eqn 4. To duplicate CEC 2016 methods, wsDSM should be set to the appropriate value from App B Table B-2. Note the NCF (non-compliance factor) included in App B Eqn 4 is *not* a CSE input and thus must be applied externally to wsDSM.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              $>$ 0             1             No             constant
+               $>$ 0             1             No             constant
 
 **wsWF=*float***
 
 Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The default value (1) reflects the inclusion of waste in draw amounts.  App B specifies wsWF=0.9 when the system has a within-unit pumped loop that reduces waste due to immediate availability of hot water at fixtures.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
               $>$ 0             1             No             hourly
 
@@ -134,7 +138,7 @@ Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The def
 
 Specifies the solar savings fraction.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
               $\ge$ 0           0             No             hourly
 
@@ -142,7 +146,7 @@ Specifies the solar savings fraction.
 
 Name of METER object, if any, to which DHWSYS electrical energy use is recorded (under end use DHW). In addition, wsElecMtr provides the default whElectMtr selection for all DHWHEATERs and DHWPUMPs in this DHWSYS.
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
+  **Units**    **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 

@@ -4538,7 +4538,6 @@ DHWHEATREC DWHR wrFeedsWH=fWH wrCountFXDrain = fxDr wrCountFXCold = fxHR  wrCSAR
 //////////////////////////////////////////////////////////////////////
 // Test cases
 //////////////////////////////////////////////////////////////////////
-
 // No heat recovery variants -- all should get same results
 //   - no DHWHEATREC
 //   - DHWHEATREC with EF=0
@@ -4547,13 +4546,20 @@ DO0( "DS0",   "Elec0",   FX0,    WH0,    1)
 DO1( "DS0a",  "Elec0a",  FX0a,   WH0a,   1, 1, 0, Yes,  0)
 DO1( "DS0b",  "Elec0b",  FX0b,   WH0b,   0, 0, 0, No,  0)
 
-// fixed heat recovery -- these 2 should get same results
+// fixed heat recovery -- should get same results
 DO0DU( "DSX0",   "ElecX0",   FXX0,   WHX0,    "4D7FixedHR", 1)
 DO1DU( "DSX0a",  "ElecX0a",  FXX0a,  WHX0a,   "4D7",        1, SetEF, 1, 1, No,  .5)
 
 DO1( "DSEQ",  ElecEQ,  FXEQ,  WHEQ,  1, 1, 1, Yes, .5)
 DO1( "DSUSH", ElecUSH, FXUSH, WHUSH, 1, 1, 1,  No, .5)
 DO1( "DSUWH", ElecUWH, FXUWH, WHUWH, 1, 1, 0, Yes, .5)
+
+// 2 showers, 1 DHWHEATREC
+DO1( "DS2S0Y", Elec2S0Y,  FX2S0Y,  WH2S0Y, 2, 2, 0, Yes, .6)
+DO1( "DS2S1N", Elec2S1N,  FX2S1N,  WH2S1N, 2, 2, 1, No,  .6)
+DO1( "DS2S1Y", Elec2S1Y,  FX2S1Y,  WH2S1Y, 2, 2, 1, Yes, .6)
+DO1( "DS2S2N", Elec2S2N,  FX2S2N,  WH2S2N, 2, 2, 2, No,  .6)
+DO1( "DS2S2Y", Elec2S2Y,  FX2S2Y,  WH2S2Y, 2, 2, 2, Yes, .6)
 
 // todo -- drain TD
 //////////////////////////////////////////////////////////////////////
@@ -4581,25 +4587,19 @@ endDHWSYS
 DO0Base0( "DSK1a",   "ElecK1a",   FXK1a,    WHK1a) wsCentralDHWSYS=DSC1 DSLOAD
 DO0Base0( "DSK1b",   "ElecK1b",   FXK1b,    WHK1b) wsCentralDHWSYS=DSC1 DSLOAD
 
-
 //=====================================================================
-// multi-heater system
-//   DSMH0: 1 heater / 2 DHWHEATREC / 2 showers
-//   DSMH: 2 subsystems w/ 1 shower, 1 heater, 1 shower
+// multi-heater systems
 // should get same results
 
-#if 0
+// DSMH0: 1 heater / 2 DHWHEATREC / 2 showers
 DO2( "DSMH0",  ElecMH0,  FXMH0,  WHMH0,  2, 1, 1, Yes, .6)
 
-DO0Base0( "DSMH", ElecMH, FXMH, WHMH) wsDayUse = DHW5BRa endDHWSYS
+// DSMH: 2 systems each w/ 1 shower, 1 heater, 1 DHWHEATREC
+DO0Base( "DSMH", ElecMH, FXMH, WHMH,1) wsDayUse = DHW5BRa
+DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedEF = .6 wrTDInDiff=0
 
 DO0Base( "DSMHKa", ElecMKa, FXMKa, WHMKa, 1) wsLoadShareDHWSYS="DSMH"
 DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedEF = .6 wrTDInDiff=0
-
-DO0Base( "DSMHKb", ElecMKb, FXMKb, WHMKb, 1) wsLoadShareDHWSYS="DSMH"
-DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedEF = .6 wrTDInDiff=0
-#endif
-
 
 //////////////////////////////////////////////////////////////////////
 

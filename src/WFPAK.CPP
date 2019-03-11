@@ -2511,9 +2511,9 @@ x			printf( "mismatch\n");
 		{
 			const char* fName = "tSky.csv";
 			pF = fopen(fName, "wt");
-			fprintf(pF, "mon,day,hr,tSky_CSE,tSky_IR\n");
+			fprintf(pF, "yr,mon,day,hr,osc,tsc,tSky_CSE,tSky_IR\n");
 		}
-		fprintf(pF, "%d,%d,%d,%0.1f,%0.1f\n", m, d, h, wd_tSky, tSkyIR);
+		fprintf(pF, "%d,%d,%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n", yr, m, d, h, osc, tsc, wd_tSky, tSkyIR);
 #endif
 	}
 	return rc;
