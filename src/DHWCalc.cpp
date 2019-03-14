@@ -2665,6 +2665,13 @@ RC DHWHEATREC::wr_Init()		// runtime init
 {	RC rc = RCOK;
 	delete[] wr_ticks;
 	wr_ticks = new DHWHRTICK[Top.tp_NHrTicks()];
+#if 0 && defined( _DEBUG)
+	static int testDone = 0;
+	if (!testDone)
+	{	wr_EffAdjustedTest();
+		testDone++;
+	}
+#endif
 	return rc;
 }		// DHWHEATREC::wr_Init
 //-----------------------------------------------------------------------------
@@ -2870,7 +2877,9 @@ float DHWHEATREC::wr_EffAdjusted(		// derive effectiveness for current condition
 		wr_eff = 0.f;		// no flow
 	else
 	{	// temperature factor
-		double fT = (-3.06e-5*tpI*tpI + 4.96e-3*tpI + 0.281)/0.466;
+		float tpIX = min(tpI, 81.f);	// limit tpI to 81 F
+										//   fT slope is <0 above that
+		double fT = (-3.06e-5*tpIX*tpIX + 4.96e-3*tpIX + 0.281)/0.466;
 
 		// volume factor
 		//   assume vp is smaller flow
@@ -2883,12 +2892,93 @@ float DHWHEATREC::wr_EffAdjusted(		// derive effectiveness for current condition
 
 		wr_eff = wr_effRated * fT * fV;
 
-		if (vd > vp)
-			wr_eff *= 1. + 0.3452 * log( min( 3.f, vd / vp));
+		if (vd != vp)
+		{	double fD = 1. + 0.3452 * log(vd / vp);
+			wr_eff *= fD;
+		}
 	}
 	
 	return wr_eff = bracket( 0.f, wr_eff, 0.95f);
 }	// DHWHEATREC::wr_effAdjusted
+//-----------------------------------------------------------------------------
+#if 0
+x CASE report unequal flow regression
+x   unused, not fully tested
+x static double effAdjustedX(
+x	float vp,	// potable water inlet flow, gal/tick
+x	float tpI,	// potable water inlet temp, F
+x	float vd,	// drain water inlet flow, gal/tick
+x	float tdI)	// drain water inlet temp, F
+x {
+x	if (vp < 1.e-6f || vd < 1.e-6f)
+x		return 0.;
+x
+x	// temperature factor
+x	double fT = (-3.06e-5*tpI*tpI + 4.96e-3*tpI + 0.281) / 0.466;
+x
+x	double vp2 = vp * vp;
+x	double vp3 = vp * vp2;
+x	double vd2 = vd * vd;
+x	double vd3 = vd * vd2;
+x
+x	double fV =
+x		1.50240798
+x - 1.54775844    * vp
+x + 7.71878873e-1 * vp2
+x - 1.21373939e-1 * vp3
+x + 1.01401103    *       vd
+x - 1.98860634e-1 * vp  * vd
+x - 1.29877294e-1 * vp2 * vd
+x + 3.56076077e-2 * vp3 * vd
+x - 2.21066737e-1 *       vd2
+x + 9.21985918e-2 * vp  * vd2
+x + 1.06956686e-3 * vp2 * vd2
+x - 3.51465197e-3 * vp3 * vd2
+x + 1.38862333e-2 *       vd3
+x - 6.82229011e-3 * vp  * vd3
+x + 5.86661087e-4 * vp2 * vd3
+x + 1.09840430e-4 * vp3 * vd3;
+x
+x	return bracket(0., fT * fV, 0.95);
+x
+x}
+#endif
+//-----------------------------------------------------------------------------
+#if defined( _DEBUG)
+void DHWHEATREC::wr_EffAdjustedTest()
+{
+static float vdX[] = { 0.f, 0.1f, 0.3f, 0.5f, 1.f, 1.5f, 2.f, 2.5f, 3.f, 4.f, 7.f, 10.f, 13.f, 16.f, 20.f, -1.f };
+static float tdIX[] = { 100.f, -1.f };
+static float vpX[] = { 0.f, 0.1f, 0.3f, 0.5f, 1.f, 1.5f, 2.f, 2.5f, 3.f, 4.f, 7.f, 10.f, 13.f, 16.f, 20.f, -1.f };
+static float tpIX[] = { 40.f, 50.f, 60.f, 70.f, -1.f };
+
+	float effRatedSave = wr_effRated;
+	wr_effRated = 0.46f;
+
+	FILE* pF = fopen("DWHREff.csv", "wt");
+	if (!pF)
+		return;
+	// headings
+	fprintf(pF, "DWHR efficiency,%s\n", Top.runDateTime);
+	fprintf(pF, "effRated,%0.2f\n", wr_effRated);
+
+	fprintf(pF, "tdI, tpI, vd, vp, ef\n");
+
+	for (int iTdI = 0; tdIX[iTdI] >= 0.f; iTdI++)
+	for (int iTpI = 0; tpIX[ iTpI] >= 0.f; iTpI++)
+	for (int iVd = 0; vdX[iVd] >= 0.f; iVd++)
+	for (int iVp = 0; vpX[iVp] >= 0.f; iVp++)
+	{
+		float ef = wr_EffAdjusted(vpX[iVp], tpIX[iTpI], vdX[iVd], tdIX[iTdI]);
+		// float fX = effAdjustedX(vpX[iVp], tpIX[iTpI], vdX[iVd], tdIX[iTdI]);
+		fprintf(pF, "%.1f,%.1f,%.2f,%.2f,%.3f\n",
+			tdIX[iTdI], tpIX[iTpI], vdX[iVd], vpX[iVp], ef);
+
+	}
+	wr_effRated = effRatedSave;
+
+}	// DHWHEATREC::wr_EffAdjustedTest
+#endif
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
