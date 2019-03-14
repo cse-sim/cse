@@ -2665,7 +2665,7 @@ RC DHWHEATREC::wr_Init()		// runtime init
 {	RC rc = RCOK;
 	delete[] wr_ticks;
 	wr_ticks = new DHWHRTICK[Top.tp_NHrTicks()];
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	static int testDone = 0;
 	if (!testDone)
 	{	wr_EffAdjustedTest();
