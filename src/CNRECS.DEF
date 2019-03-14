@@ -3567,6 +3567,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "void wr_InitTicks();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
+  *declare "void wr_EffAdjustedTest();"
   *declare "bool wr_IsEffFlowIndependent() const { return wr_type == C_DWHRTYCH_SETEF || wr_effRated < .00001f; }"
   *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
   *declare "float wr_CalcTick( DHWSYS* pWS, struct DHWHRTICK& wrtk, float vOther, float& whUseNoHR, float& fxUseMix, float& qR, float& qRWH);"
