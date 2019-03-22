@@ -514,6 +514,11 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				ws_loadShareCount = pWS->ws_loadShareCount;
 		}
 
+		// check that water heating is possible
+		if (!ws_HasCentralDHWSYS()		// if central or stand-alone
+		 && ws_whCount == 0)			// and no water heaters
+			oInfo("no DHWHEATER(s), water heating energy use not modeled.");
+
 		DHWHEATREC* pWR;
 		ws_wrCount = 0;			// count of child DHWHEATRECs
 		ws_wrFeedWHCount = 0;	// count of child DHWHEATRECs feeding DHWHEATER cold inlet
@@ -529,7 +534,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				ws_wrFxDrainCount += pWR->wr_nFXDrain * pWR->wr_mult;	// # of fixture drains
 																			// connected to DHWHEATREC
 				if (!IsSet(DHWSYS_DAYUSENAME))
-					pWR->oInfo("DHWSys has no wsDayUse, heat recovery not modeled.");
+					pWR->oInfo("no wsDayUse, DHWHEATREC heat recovery not modeled.");
 			}
 		}
 
@@ -1205,45 +1210,6 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 
 	// pass == 1
 
-#if 0
-	// local structure re assignment of draw sequence #s
-	int eventIDmax[NDHWENDUSES];
-	static int drawSeqNNext[NDHWENDUSES] = { 0 };
-
-	VSet(eventIDmax, NDHWENDUSES, -1);
-
-	for (int iWU = wdu_wuSsBeg; iWU < wdu_wuSsEnd; iWU++)
-	{
-		pWU = WuR.GetAt(iWU);
-		if (!pWU->gud || pWU->ownTi != ss)
-			continue;
-		// draw sequence numbers
-		if (pWU->wu_eventID > eventIDmax[pWU->wu_hwEndUse])
-		{	// as yet unseen eventID
-			eventIDmax[ pWU->wu_hwEndUse] = pWU->wu_eventID;
-			pWU->wu_drawSeqN = drawSeqNNext[pWU->wu_hwEndUse]++;
-		}
-		else
-		{	// DHWUSE may be part of previously seen draw
-			// search backwards for matching eventID
-			int iWU;
-			for (iWU = pWU->ss - 1; iWU > 0; iWU--)
-			{
-				const DHWUSE* pWUX = (const DHWUSE*)pWU->b->GetAtSafe(iWU);
-				if (pWUX && pWUX->gud && pWUX->ownTi == ss
-					&& pWUX->wu_hwEndUse == pWU->wu_hwEndUse
-					&& pWUX->wu_eventID == pWU->wu_eventID)
-				{
-					pWU->wu_drawSeqN = pWUX->wu_drawSeqN;	// part of previous event, use same seq #
-					break;
-				}
-			}
-			if (iWU == 0)
-				// unexpected (could happen for if eventID skipped)
-				pWU->wu_drawSeqN = drawSeqNNext[pWU->wu_hwEndUse]++;
-		}
-	}
-#else
 	// local structure re assignment of draw sequence #s
 	int eventIDmax[NDHWENDUSES];
 	int drawSeqNNext[NDHWENDUSES] = { 0 };
@@ -1278,7 +1244,6 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 				pWU->wu_drawSeqN = drawSeqNNext[pWU->wu_hwEndUse]++;
 		}
 	}
-#endif
 	return rc;
 
 }		// DHWDAYUSE::wdu_Init
