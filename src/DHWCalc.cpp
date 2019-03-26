@@ -448,7 +448,7 @@ int DHWSYS::ws_IsCentralDHWSYS() const
 		err( PERR, "ZNRES::ws_IsCentralDHWSYS '%s': called on input record",
 			name);
 #endif
-	return ws_childDHWSYSCount > 0;
+	return ws_childDHWSYSCount > 0.f;
 }		// DHWSYS::ws_IsCentralDHWSYS
 //-----------------------------------------------------------------------------
 RC DHWSYS::RunDup(		// copy input to run record; check and initialize
@@ -494,24 +494,32 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		ws_SetMTRPtrs();
 
 		// load sharing base state: assume no sharing
-		ws_loadShareCount = 1;
+		static_assert(_countof( ws_loadShareCount) == C_DHWEUCH_COUNT, "DHWSYS ws_loadShareCount bad size");
+		VSet(ws_loadShareCount, C_DHWEUCH_COUNT, 1);
+		ws_fxCount[0] = 1;
 		ws_loadShareIdx = 0;
 		ws_childDHWSYSCount = 0;
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral)
-		{	if (pWSCentral->IsSet( DHWSYS_SHOWERCOUNT))
-				pWSCentral->ooer( DHWSYS_SHOWERCOUNT, "wsShowerCount not allowed on central DHWSYS");
-			pWSCentral->ws_showerCount = 0;		// shower count derived from child DHWSYSs (see below)
+		{	for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
+			{	int iFn = DHWSYS_FXCOUNT + iEU;
+				if (pWSCentral->IsSet(iFn))
+					pWSCentral->ooer(iFn, "%s not allowed on central DHWSYS",
+						pWSCentral->mbrIdTx(iFn));
+				pWSCentral->ws_fxCount[iEU] = 0;		// counts derived from child DHWSYSs (see below)
+			}
 		}
 		return rc;
 	}
 
 	if (pass == 2)
-	{	// final pass: set ws_loadShareCount to group value
+	{	// final pass: all mbrs of loadShare group get identical ws_loadShareCount[]
 		if (ws_loadShareDHWSYSi > 0)
 		{	DHWSYS* pWS = WsR.GetAtSafe( ws_loadShareDHWSYSi);
 			if (pWS)	// insurance: NULL impossible?
-				ws_loadShareCount = pWS->ws_loadShareCount;
+			{	VCopy(ws_loadShareCount, C_DHWEUCH_COUNT, pWS->ws_loadShareCount);
+				VCopy(ws_loadShareIdxRange, 2 * C_DHWEUCH_COUNT, pWS->ws_loadShareIdxRange);
+			}
 		}
 
 		// check that water heating is possible
@@ -540,9 +548,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// check DHWHEATREC configuration
 		//   do not need ws_mult, applies to both values
-		if (ws_wrFxDrainCount > ws_showerCount)
+		if (ws_wrFxDrainCount > ws_ShowerCount())
 			rc |= oer( "Invalid heat recovery arrangement: more DHWHEATREC drain connections (%d) than showers (%d)",
-					ws_wrFxDrainCount, ws_showerCount);
+					ws_wrFxDrainCount, ws_ShowerCount());
 		
 		// set up DHWSYS fixture list
 		//    associates each fixture with DHWHEATREC (or not)
@@ -550,9 +558,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		//    order does not matter: scrambled when used (see ws_AssignDHWUSEtoFX())
 		delete ws_fxList;
 		ws_fxList = NULL;
-		if (!rc && ws_showerCount > 0)
+		if (!rc && ws_ShowerCount() > 0)
 		{
-			ws_fxList = new DHWFX[ws_showerCount];
+			ws_fxList = new DHWFX[ws_ShowerCount()];
 
 			// set up linkage to DHWHEATRECs
 			//   assign for each DHWHEATREC in order
@@ -577,7 +585,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				pWSCentral->name);
 
 		pWSCentral->ws_childDHWSYSCount += ws_mult;
-		pWSCentral->ws_showerCount += ws_showerCount*ws_mult;	// total # of shower fixtures served
+		VAccum( pWSCentral->ws_fxCount, C_DHWEUCH_COUNT, ws_fxCount, double( ws_mult));	// total # of fixtures served
 
 		// set or default some child values from parent
 		//   wsCalcMode, wsTSetpoint: not allowed
@@ -603,9 +611,19 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
 					pWS->name);
 			else
-			{	ws_loadShareIdx = pWS->ws_loadShareCount;
-				pWS->ws_loadShareCount++;
+			{	ws_loadShareIdx = pWS->ws_loadShareCount[ 0];
+				// pWS->ws_loadShareCount[ 0]++;
+				// ws_? = pWS->ws_loadShareCount
+				for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
+				{
+					pWS->ws_LSR(iEU, 0) = pWS->ws_loadShareCount[iEU];
+					pWS->ws_loadShareCount[iEU] += ws_fxCount[iEU];
+					pWS->ws_LSR(iEU, 1) = pWS->ws_loadShareCount[iEU];
+
+				}
 				// this->ws_loadShareCount set in pass 2 (above)
+
+
 				RRFldCopy( pWS, DHWSYS_DAYUSENAME);
 				RRFldCopy( pWS, DHWSYS_HWUSE);
 			}
@@ -685,7 +703,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (Top.tp_isBegMainSim)
 		{	// reset annual values after autosize / warmup
 			if (ws_fxList)
-				for (int iFx = 0; iFx < ws_showerCount; iFx++)
+				for (int iFx = 0; iFx < ws_ShowerCount(); iFx++)
 					ws_fxList[iFx].fx_hitCount = 0;
 		}
 		
@@ -700,7 +718,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		// basing on jDay yields consistent results for part-year short runs
 		int seed = Top.jDay;
 		for (int iEU=1; iEU<NDHWENDUSES; iEU++)
-			ws_loadShareWS0[ iEU] = (seed+iEU)%ws_loadShareCount;
+			ws_loadShareWS0[ iEU] = (seed+iEU)%ws_loadShareCount[ 0];
 	}
 
 	// inlet temp = feed water to cold side of WHs
@@ -759,7 +777,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// here we combine these to derive consistent hourly total and tick-level (1 min) bins
 
 	// init tick bins to average of hourly (initializes for hour)
-	double hwUseX = ws_hwUse / ws_loadShareCount;	// hwUse per system
+	double hwUseX = ws_hwUse / ws_loadShareCount[ 0];	// hwUse per system
 	// note ws_fxUseMixLH is set in ws_EndIvl()
 	ws_InitTicks( hwUseX);
 	ws_fxUseMix.wmt_Clear();
@@ -807,6 +825,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		printf( "\nDHWSYS '%s': tick average inconsistency", name);
 #endif
 
+	// write draw info to CSV file
+	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
+		ws_WriteDrawCSV();
 
 	// accumulate to DHWMTRs if defined
 	//   include DHWSYS.ws_mult multiplier
@@ -939,7 +960,7 @@ int DHWSYS::ws_AssignDHWUSEtoFX(	// assign draw to fixture re DHWHEATREC
 	 || pWU->wu_heatRecEF > 0.f					// draw uses fixed heat recovery
 	 || !pWU->IsSet(DHWUSE_TEMP)				// draw does not specify a use temp
 	 || pWU->IsSet( DHWUSE_HOTF)				// draw has specified hot fraction
-	 || ws_showerCount <= 0)					// no showers
+	 || ws_ShowerCount() <= 0)					// no showers
 		return -1;			// no fixture / no DWHR via DHWHEATREC
 
 // result must be stable for same wu_drawSeqN
@@ -964,14 +985,14 @@ int DHWSYS::ws_AssignDHWUSEtoFX(	// assign draw to fixture re DHWHEATREC
 		{
 			// iRands[i] = dist(gen);
 			iRands[i] = i;
-			// counts[iRands[i] % ws_showerCount]++;
+			// counts[iRands[i] % ws_ShowerCount()]++;
 		}
 		bSetup++;
 	}
 	drawSeqCount[pWU->wu_drawSeqN]++;
 	seq = (pWU->wu_drawSeqN * 97 + Top.jDay*7) % 41;
 	d2Count[seq]++;
-	counts[seq%ws_showerCount]++;
+	counts[seq%ws_ShowerCount()]++;
 
 	// seq = iRands[((pWU->wu_drawSeqN+1)*Top.jDay) % 101];
 #elif 0
@@ -986,11 +1007,11 @@ int DHWSYS::ws_AssignDHWUSEtoFX(	// assign draw to fixture re DHWHEATREC
 #endif
 	static int d2Count[ 1000] = { 0 };
 	d2Count[seq]++;
-	int iFx = seq % ws_showerCount;
+	int iFx = seq % ws_ShowerCount();
 
 #if 0
-	if (Top.jDay == 365 && Top.iHr==23 && !Top.isWarmup)
-		printf("\nHit");
+0	if (Top.jDay == 365 && Top.iHr==23 && !Top.isWarmup)
+0		printf("\nHit");
 #endif
 
 	return iFx;
@@ -1148,6 +1169,49 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 	return rc;
 }	// DHWSYS::ws_DoSubhr
 //----------------------------------------------------------------------------
+RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
+{
+
+	if (!ws_pFDrawCSV)
+	{
+		// dump file name = <cseFile>_draws.csv
+		char* nameNoWS = strDeWS(strtmp(name));
+		const char* fName =
+			strsave(strffix2(strtprintf("%s_%s_draws", InputFilePathNoExt,nameNoWS), ".csv", 1));
+		ws_pFDrawCSV = fopen(fName, "wt");
+		if (!ws_pFDrawCSV)
+		{	ws_drawCSV = C_NOYESCH_NO;	// don't try again
+			return err(PERR, "Draw CSV open failure for '%s'", fName);
+		}
+		else
+		{	// headings
+			fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime);
+			fprintf(ws_pFDrawCSV, "%s %s\n", ProgName, ProgVersion);
+			fprintf(ws_pFDrawCSV, "Mon,Day,DOW,Hr,MinHr,MinDay,tIn (F),tInHR (F),tHot (F),vHot (gal)\n");
+		}
+	}
+
+	// loop ticks (typical tick duration = 1 min)
+	int nTk = Top.tp_NHrTicks();
+	for (int iTk = 0; iTk < nTk; iTk++)
+	{	// standard time?
+		int iHr = Top.iHrST;		// report in standard time
+		fprintf(ws_pFDrawCSV, "%d,%d,%d,%d,",
+			Top.tp_date.month, Top.tp_date.mday, Top.dowh+1, iHr+1);
+		if (nTk == 60)
+			fprintf(ws_pFDrawCSV, "%d,%d,", iTk+1, 60*iHr+iTk+1);
+		else
+		{	double minHr = iTk*Top.tp_subhrTickDur + 1;
+			double minDay = double(60 * iHr) + minHr;
+			fprintf(ws_pFDrawCSV, "%0.2f,%0.2f,", minHr, minDay);
+		}
+		const DHWTICK& tk = ws_ticks[iTk];
+		fprintf(ws_pFDrawCSV, "%0.2f,%0.2f,%0.2f,%0.4f\n",
+			tk.wtk_tInletX, ws_tInlet, ws_tUse, tk.wtk_whUse);
+	}
+	return RCOK;
+}		// DHWSYS::ws_WriteDrawCSV
+//----------------------------------------------------------------------------
 void DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
 {
 	if (ws_whCount > 0.f && ivl == C_IVLCH_Y)
@@ -1188,7 +1252,6 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 // done once at run start
 {
 	RC rc = RCOK;
-
 
 	DHWUSE* pWU;
 	if (pass == 0)
@@ -1310,14 +1373,21 @@ static const double minPerDay = double( 24*60);
 	if (wu_dur == 0. || wu_flow*mult == 0.)
 		return rc;		// nothing to do
 
-	if (pWS->ws_loadShareCount > 1)
+	if (pWS->ws_loadShareCount[ 0] > 1)
 	{	// if load is being shared by more than 1 DHWSYS
 		//   allocate by eventID to rotate DHWUSEs
 		//   starting DHWSYS depends on jDay
 		int EID = wu_eventID + pWS->ws_loadShareWS0[ wu_hwEndUse];
-		int iWS = EID % pWS->ws_loadShareCount;		// target DHWSYS
+#if 1
+		int iX = EID % pWS->ws_loadShareCount[wu_hwEndUse]+1;
+		if (!pWS->ws_IsLSR( wu_hwEndUse, iX))
+			return rc;		// not current DHWSYS, do nothing
+#else
+		int iWS = EID % pWS->ws_loadShareCount[ 0];		// target DHWSYS
+		// if (iWS >= ws_lsxMin[ wu_])
 		if (iWS != pWS->ws_loadShareIdx)
 			return rc;		// not current DHWSYS, do nothing
+#endif
 	}
 
 	// derive adjusted duration
@@ -2678,7 +2748,7 @@ RC DHWHEATREC::wr_SetFXConnections(
 
 	// first call: init all to "no DHWHEATREC"
 	if (iFx == 0)
-		for (int iF2=0; iF2 < pWS->ws_showerCount; iF2++)
+		for (int iF2=0; iF2 < pWS->ws_ShowerCount(); iF2++)
 			pWS->ws_fxList[iF2].fx_Set(
 				C_DHWEUCH_SHOWER,	// end use
 				0,			// drain: discard (no DHWHEATREC
