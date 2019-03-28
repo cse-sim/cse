@@ -3293,8 +3293,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "int ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
   *declare "DHWSYS* ws_GetCentralDHWSYS() const;"
   *declare "int ws_IsCentralDHWSYS() const;"
-  *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
-							// re support of multiple DHWSYSs in single unit
 
   *i FLOAT_GEZ ws_mult;		// multiplier: model as ws_mult identical systems
 							//   fractional values supported
@@ -3376,25 +3374,34 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    feed (cold) water to DHWHEATERs
 							//    DHWHEATRECs may feed fixtures or WH or both
   *r INT ws_wrFxDrainCount;	// count of fixture drains feeding (possibly shared) DHWHEATRECs
-  *r *array 6 SI_GEZ ws_fxCount;	// end-use count of fixtures served by this DHWSYS
-									//   non-central: user input, default 1
-									//   central: derived from child DHWSYSs
-									// used re allocation of shared loads
+  *r *array NDHWENDUSESPP SI_GEZ ws_fxCount;
+							// end-use count of fixtures served by this DHWSYS
+							//   non-central: user input, default 1
+							//   central: derived from child DHWSYSs
+							// used re allocation of shared loads
   *declare "int ws_ShowerCount() const { return ws_fxCount[ C_DHWEUCH_SHOWER]; }"
 							// number of shower fixtures served by this DHWSYS
 							//   re DHWHEATREC (DWHR) modeling
-  *declare "struct DHWFX* ws_fxList;"
-  *r *array 6 INT ws_loadShareCount;
+  *declare "struct DHWFX* ws_fxList;"	// fixture info list (re DHWHEATREC assignment)
+
+							// Load sharing -- support of multiple DHWSYSs in single unit
+							//   draws are distributed among DHWSYSs having suitable fixtures
+							//   aka "deal-em-out" algorithm
+  *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
+  *r *array NDHWENDUSESPP INT ws_loadShareCount;
 							// # of DHWSYSs sharing group load by end use
 							//   ([ 0] = # of DHWSYSs in group)
 							//   NOT effected by ws_mult.
-  *r INT ws_loadShareIdx;	// 0-based index of this DHWSYS in shared group
-  *r *array 12 INT ws_loadShareIdxRange;
-  *declare "int& ws_LSR( int iEU, int lh) { return ws_loadShareIdxRange[ 2*iEU+lh]; }"
-  *declare "bool ws_IsLSR( int iEU, int idx) { return idx>=ws_LSR( iEU,0) && idx<ws_LSR( iEU,1); }"
-  *h *e *array 6 INT ws_loadShareWS0;	// re allocation of shared load
-							// DHWSYS to be used for DHWUSE ws_eventID=0 by end use
-							//   set daily based on jDay
+							//   All DHWSYSs in group have same ws_loadShareCounts
+  *declare "int ws_loadShareIdxRange[ NDHWENDUSESPP][ 2];"
+							// draw (eventID%loadShareCount[ iEU]) yields idx
+							// if idx is within this DHWSYS's range, draw is assigned
+  *declare "int& ws_LSR( int iEU, int lh) { return ws_loadShareIdxRange[ iEU][lh]; }"
+  *declare "void ws_LSRSet( int iEU, int fx0, int nFx) { ws_LSR( iEU,0) = nFx>0 ? fx0 : -1; ws_LSR( iEU,1) = nFx>0 ? fx0+nFx-1 : -1; }"
+  *declare "bool ws_IsLSR( int iEU, int idx) { return idx>=ws_LSR( iEU,0) && idx<=ws_LSR( iEU,1); }"
+  *d *e *array NDHWENDUSESPP INT ws_loadShareWS0;	// re allocation of shared load
+							// idx for ws_eventID=0 by end use, set daily based on jDay
+
   *i NOYESCH ws_drawCSV		// if C_YESNOCH_YES, write tick-level draw data to
 							//    <inputFile>_<DHWSYS.name>_draws.csv
   *declare "FILE* ws_pFDrawCSV;"	// draw export file

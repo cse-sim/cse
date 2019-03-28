@@ -14,8 +14,9 @@
 #include "irats.h"
 #include "cuparse.h"
 #include "cueval.h"
+#include "cvpak.h"
 
-#include <random>
+// #include <random>
 
 #include "cnguts.h"
 #include "exman.h"
@@ -492,12 +493,14 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	if (pass == 0)
 	{	// pass 0: init things that have no inter-DHWSYS effect
 		ws_SetMTRPtrs();
-
+	
 		// load sharing base state: assume no sharing
-		static_assert(_countof( ws_loadShareCount) == C_DHWEUCH_COUNT, "DHWSYS ws_loadShareCount bad size");
-		VSet(ws_loadShareCount, C_DHWEUCH_COUNT, 1);
+		//   modified in later passes iff ws_loadShareDHWSYSi
 		ws_fxCount[0] = 1;
-		ws_loadShareIdx = 0;
+		VCopy(ws_loadShareCount, C_DHWEUCH_COUNT, ws_fxCount);
+		for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
+			ws_LSRSet(iEU, 0, ws_fxCount[iEU]);
+
 		ws_childDHWSYSCount = 0;
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral)
@@ -517,8 +520,20 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		if (ws_loadShareDHWSYSi > 0)
 		{	DHWSYS* pWS = WsR.GetAtSafe( ws_loadShareDHWSYSi);
 			if (pWS)	// insurance: NULL impossible?
-			{	VCopy(ws_loadShareCount, C_DHWEUCH_COUNT, pWS->ws_loadShareCount);
-				VCopy(ws_loadShareIdxRange, 2 * C_DHWEUCH_COUNT, pWS->ws_loadShareIdxRange);
+			{	// ensure that at least one end use target is included in group.
+				//   No effect if no draws of that end use are given
+				//   But all draws will be handled
+				for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
+				{	if (pWS->ws_loadShareCount[iEU] < 1)
+					{	if (iEU > 0)
+							pWS->oInfo("1 %s has been added for load sharing purposes -- none found in input.",
+								getChoiTxI(DTDHWEUCH, iEU));
+						pWS->ws_loadShareCount[iEU] = 1;
+						pWS->ws_LSRSet(iEU, 0, 1);
+					}
+				}
+				// all members of group have identical counts
+				VCopy(ws_loadShareCount, C_DHWEUCH_COUNT, pWS->ws_loadShareCount);
 			}
 		}
 
@@ -556,7 +571,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		//    associates each fixture with DHWHEATREC (or not)
 		//    only C_DHWEUCH_SHOWER supported as of 2-19
 		//    order does not matter: scrambled when used (see ws_AssignDHWUSEtoFX())
-		delete ws_fxList;
+		delete[] ws_fxList;
 		ws_fxList = NULL;
 		if (!rc && ws_ShowerCount() > 0)
 		{
@@ -585,7 +600,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				pWSCentral->name);
 
 		pWSCentral->ws_childDHWSYSCount += ws_mult;
-		VAccum( pWSCentral->ws_fxCount, C_DHWEUCH_COUNT, ws_fxCount, double( ws_mult));	// total # of fixtures served
+		VAccum( pWSCentral->ws_fxCount, C_DHWEUCH_COUNT, ws_fxCount, ws_mult);	// total # of fixtures served
 
 		// set or default some child values from parent
 		//   wsCalcMode, wsTSetpoint: not allowed
@@ -611,18 +626,13 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
 					pWS->name);
 			else
-			{	ws_loadShareIdx = pWS->ws_loadShareCount[ 0];
+			{	// ws_loadShareIdx = pWS->ws_loadShareCount[ 0];
 				// pWS->ws_loadShareCount[ 0]++;
-				// ws_? = pWS->ws_loadShareCount
 				for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
-				{
-					pWS->ws_LSR(iEU, 0) = pWS->ws_loadShareCount[iEU];
+				{	ws_LSRSet(iEU, pWS->ws_loadShareCount[iEU], ws_fxCount[iEU]);
 					pWS->ws_loadShareCount[iEU] += ws_fxCount[iEU];
-					pWS->ws_LSR(iEU, 1) = pWS->ws_loadShareCount[iEU];
-
 				}
 				// this->ws_loadShareCount set in pass 2 (above)
-
 
 				RRFldCopy( pWS, DHWSYS_DAYUSENAME);
 				RRFldCopy( pWS, DHWSYS_HWUSE);
@@ -1375,19 +1385,14 @@ static const double minPerDay = double( 24*60);
 
 	if (pWS->ws_loadShareCount[ 0] > 1)
 	{	// if load is being shared by more than 1 DHWSYS
-		//   allocate by eventID to rotate DHWUSEs
+		//   allocate by eventID to rotate DHWUSEs with suitable fixtures
 		//   starting DHWSYS depends on jDay
-		int EID = wu_eventID + pWS->ws_loadShareWS0[ wu_hwEndUse];
-#if 1
-		int iX = EID % pWS->ws_loadShareCount[wu_hwEndUse]+1;
-		if (!pWS->ws_IsLSR( wu_hwEndUse, iX))
-			return rc;		// not current DHWSYS, do nothing
-#else
-		int iWS = EID % pWS->ws_loadShareCount[ 0];		// target DHWSYS
-		// if (iWS >= ws_lsxMin[ wu_])
-		if (iWS != pWS->ws_loadShareIdx)
-			return rc;		// not current DHWSYS, do nothing
-#endif
+		int iEU = wu_hwEndUse;
+		int nFx = pWS->ws_loadShareCount[ iEU];
+		int EID = wu_eventID + pWS->ws_loadShareWS0[iEU];
+		int iX = EID % nFx;
+		if (!pWS->ws_IsLSR( iEU, iX))
+			return rc;		// not handled by this DHWSYS, do nothing
 	}
 
 	// derive adjusted duration

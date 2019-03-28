@@ -1061,11 +1061,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_V0032, "V0032: value must be in the range 0 < v <= 1" },
 	{ MH_V0033, "V0033: value must in the range 0 <= v <= 100" },
 	{ MH_V0034, "V0034: value must be in range 1 (Jan 1) to 365 (Dec 31)" },
-#if defined( ANAMELENGTH64)
 	{ MH_V0035, "V0035: name must be 1 to 63 characters" },
-#else
-	{ MH_V0035, "V0035: name must be 1 to 15 characters" },
-#endif
 	{ MH_V0036, "V0036: cvpak:getChoiTxI(): choice %d out of range for dt 0x%x" },
 	{ MH_V0037, "V0037: cvpak:getChoiTxI(): given data type 0x%x not a choice type" },
 	{ MH_V0038, "V0038: cvpak:cvS2Choi(): given data type 0x%x not a choice type" },
