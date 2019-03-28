@@ -43,13 +43,13 @@ Optional name of system; give after the word “DHWSYS” if desired.
  ----------- ------------------- ---------------------- -------------- -----------------
               *name of a DHWSYS*   No shared loads                 No           constant
 
-**wsMult=*integer***
+**wsMult=*float***
 
-Number of identical systems of this type (including all child objects). Any value $> 1$ is equivalent to repeated entry of the same DHWSYSs.
+Number of identical systems of this type (including all child objects). Any value $> 1$ is equivalent to repeated entry of the same DHWSYS.  A value of 0 is equivalent to omitting the DHWSYS.  Non-integral values scale all results; this may be useful in parameterized models, for example.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              $>$ 0             1             No             constant
+              $\ge$ 0             1             No             constant
 
 **wsTInlet=*float***
 

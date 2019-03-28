@@ -79,11 +79,7 @@ CHP      --		"char *"		4	none
 UCH      --		"unsigned char"		1	none
 TI      --		"SI"			2	none		// (rat) table index (subscript); 0 means unset.
 
-#if defined( ANAMELENGTH64)	// longer names, 2-17-2012
 ANAME   -- 		"char[64]"		64	63		// name string for use in RATs:
-#else
-ANAME   -- 		"char[16]"		16	15		// name string for use in RATs:
-#endif
 IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
 								8	none
 ITIME    --     "struct {SI hour;SI min;SI sec;}"

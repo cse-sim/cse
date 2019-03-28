@@ -1867,6 +1867,7 @@ LOCAL RC FC wsStarCkf( CULT* c, /*DHWSYS* */ void *p, void *p2, void *p3)
 	return ((DHWSYS*)p)->ws_CkF();
 }		// wsStarCkf
 //=============================================================================
+#define FXC( eu) (DHWSYS_FXCOUNT+eu)
 static CULT dhwSysT[] = //------ DHWSYS cmd RAT Entry table, used from cnTopCult
 {
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
@@ -1875,7 +1876,7 @@ CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      
 CULT( "wsCentralDHWSYS",DAT,DHWSYS_CENTRALDHWSYSI,0,  0, VEOI,   TYREF, &WSiB,  N,      N, N),
 CULT( "wsLoadShareDHWSYS",DAT,DHWSYS_LOADSHAREDHWSYSI,0, 0,VEOI, TYREF, &WSiB,  N,      N, N),
 CULT( "wsCalcMode",  DAT,   DHWSYS_CALCMODE, 0,       0, VEOI,   TYCH,  0,      C_WSCALCMODECH_SIM, N, N),
-CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYSI,  0,      1,	    N, N),
+CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsTInlet",	 DAT,   DHWSYS_TINLET,	 0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "wsUse",		 DAT,   DHWSYS_HWUSE,	 0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
 CULT( "wsTUse",		 DAT,   DHWSYS_TUSE,	 0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
@@ -1888,9 +1889,14 @@ CULT( "wsSDLM",      DAT,   DHWSYS_SDLM,     0,       0, VEOI,   TYFL,  0,      
 CULT( "wsDSM",       DAT,   DHWSYS_DSM,      0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsSSF",       DAT,   DHWSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "wsWF",        DAT,   DHWSYS_WF,       0,       0, VHRLY,  TYFL,  0,      1.f,    N, N),
-CULT( "wsShowerCount",DAT,  DHWSYS_SHOWERCOUNT,0,     0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsFaucetCount",DAT,  FXC(C_DHWEUCH_FAUCET), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsShowerCount",DAT,  FXC(C_DHWEUCH_SHOWER), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsBathCount", DAT,   FXC(C_DHWEUCH_BATH),   0, 0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsCWashrCount",DAT,  FXC(C_DHWEUCH_CWASHR), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsDWashrCount",DAT,  FXC(C_DHWEUCH_DWASHR), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsElecMtr",   DAT,   DHWSYS_ELECMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
+CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 
 CULT( "dhwheater",   RATE,  0,               0,       0, 0,      0,     &WHiB,  N,      dhwHeaterT, N),
 CULT( "dhwtank",     RATE,  0,               0,       0, 0,      0,     &WTiB,  N,      dhwTankT, N),
@@ -1898,9 +1904,11 @@ CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
 CULT( "dhwheatrec",  RATE,  0,               0,       0, 0,      0,     &WRiB,  N,      dhwHeatRecT, N),
 
+
 CULT( "endDHWSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwSysT
+#undef FXC
 
 //============================== PVARRAY command ===============================
 LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)

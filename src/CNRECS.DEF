@@ -463,7 +463,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *d BOO isWarmup      	// TRUE if main sim warmup. set/used: cgMainsimI. used: doBegIvl,doEndIvl,doIvlAccum,doIvlReports; exman,impf.
 							// autoSizing: keep moot for now; may be on except for (future 6-95) extra last day eg for reports.
     *d SI dowh				// autoSizing: 8 heat 9 cool, else 7 if observed holiday, else day of week 0-6, for $dowh.
-    //weekend/holiday flags for probes / $variables (ul/cuparse.cpp).  Set in cnguts.cpp.
+							//   weekend/holiday flags for probes / $variables (ul/cuparse.cpp).  Set in cnguts.cpp.
     *d BOO isHoliday		// TRUE on observed holiday: Monday after certain true holidays on weekend. Same as old isHoliObs, 7-92.
     *d BOO isHoliTrue		// TRUE (non-0) on true date of holiday
     *d BOO isWeHol		// weekend or holiday
@@ -3293,11 +3293,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "int ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
   *declare "DHWSYS* ws_GetCentralDHWSYS() const;"
   *declare "int ws_IsCentralDHWSYS() const;"
-  *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
-							// re support of multiple DHWSYSs in single unit
 
-  *i SI_GEZ ws_mult;		// multiplier
-							//   modeled as ws_mult identical systems
+  *i FLOAT_GEZ ws_mult;		// multiplier: model as ws_mult identical systems
+							//   fractional values supported
   *i TI ws_elecMtri;		// meter for system electricity use
   *i TI ws_fuelMtri;		// meter for system fuel use
 
@@ -3361,7 +3359,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs
 							//   wssimHOUR otherwise
-  *r INT ws_childDHWSYSCount; // # of child DHWSYSs iff central system (else 0) 
+  *r FLOAT ws_childDHWSYSCount; // # of child DHWSYSs iff central system (else 0)
+								//    note may not be integral
   *r FLOAT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
 							//   = SUM( wh_mult) (possibly non-integral)
   *r INT ws_wtCount;		// ditto DHWTANKs
@@ -3375,18 +3374,38 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    feed (cold) water to DHWHEATERs
 							//    DHWHEATRECs may feed fixtures or WH or both
   *r INT ws_wrFxDrainCount;	// count of fixture drains feeding (possibly shared) DHWHEATRECs
-  *r SI_GEZ ws_showerCount;	// number of shower fixtures served by this DHWSYS
+  *r *array NDHWENDUSESPP SI_GEZ ws_fxCount;
+							// end-use count of fixtures served by this DHWSYS
+							//   non-central: user input, default 1
+							//   central: derived from child DHWSYSs
+							// used re allocation of shared loads
+  *declare "int ws_ShowerCount() const { return ws_fxCount[ C_DHWEUCH_SHOWER]; }"
+							// number of shower fixtures served by this DHWSYS
 							//   re DHWHEATREC (DWHR) modeling
-							//      non-central: user input, default 1
-							//      central: derived from child DHWSYSs
-  *declare "struct DHWFX* ws_fxList;"
-  *r SI ws_loadShareCount;	// # of DHWSYSs sharing common load this group
-							//   (e.g # of DHWSYSs serving a dwelling unit)
+  *declare "struct DHWFX* ws_fxList;"	// fixture info list (re DHWHEATREC assignment)
+
+							// Load sharing -- support of multiple DHWSYSs in single unit
+							//   draws are distributed among DHWSYSs having suitable fixtures
+							//   aka "deal-em-out" algorithm
+  *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
+  *r *array NDHWENDUSESPP INT ws_loadShareCount;
+							// # of DHWSYSs sharing group load by end use
+							//   ([ 0] = # of DHWSYSs in group)
 							//   NOT effected by ws_mult.
-  *r INT ws_loadShareIdx;	// 0-based index of this DHWSYS in shared group
-  *h *e *array 6 INT ws_loadShareWS0;	// re allocation of shared load
-							// DHWSYS to be used for DHWUSE ws_eventID=0 by end use
-							//   set daily based on jDay
+							//   All DHWSYSs in group have same ws_loadShareCounts
+  *declare "int ws_loadShareIdxRange[ NDHWENDUSESPP][ 2];"
+							// draw (eventID%loadShareCount[ iEU]) yields idx
+							// if idx is within this DHWSYS's range, draw is assigned
+  *declare "int& ws_LSR( int iEU, int lh) { return ws_loadShareIdxRange[ iEU][lh]; }"
+  *declare "void ws_LSRSet( int iEU, int fx0, int nFx) { ws_LSR( iEU,0) = nFx>0 ? fx0 : -1; ws_LSR( iEU,1) = nFx>0 ? fx0+nFx-1 : -1; }"
+  *declare "bool ws_IsLSR( int iEU, int idx) { return idx>=ws_LSR( iEU,0) && idx<=ws_LSR( iEU,1); }"
+  *d *e *array NDHWENDUSESPP INT ws_loadShareWS0;	// re allocation of shared load
+							// idx for ws_eventID=0 by end use, set daily based on jDay
+
+  *i NOYESCH ws_drawCSV		// if C_YESNOCH_YES, write tick-level draw data to
+							//    <inputFile>_<DHWSYS.name>_draws.csv
+  *declare "FILE* ws_pFDrawCSV;"	// draw export file
+  *declare "RC ws_WriteDrawCSV();"
 
   *h *e FLOAT ws_HHWO;		// hourly hot water output (at water heater), Btu
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
