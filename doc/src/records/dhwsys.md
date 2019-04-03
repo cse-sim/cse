@@ -20,15 +20,15 @@ No actual controls are modeled. For example, if several DHWHEATERs are included 
 
 Optional name of system; give after the word “DHWSYS” if desired.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+  **Units**    **Legal Range**   **Default**    **Required**   **Variability**
+  ----------- ----------------- ------------- --------------- -----------------
+               *63 characters*     *none*          No             constant
 
 **wsCentralDHWSYS=*dhwsysName***
 
   Name of the central DHWSYS that serves this DHWSYS, allowing representation of multiple units having distinct distribution configurations and/or water use patterns but served by a central DHWSYS.  The child DHWSYS(s) may not include DHWHEATERs -- they are "loads only" systems.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
-  **Units**   **Legal Range**     **Default**             **Required**   **Variability**
+  **Units**    **Legal Range**     **Default**             **Required**   **Variability**
   ----------- ------------------- ----------------------- -------------- -----------------
                *name of a DHWSYS*    DHWSYS is standalone          No           constant
 
@@ -68,7 +68,7 @@ Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), the
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ----------- ----------------- ------------- -------------- -----------------
-            $\ge$ 0             1             No             constant
+              $\ge$ 0             1             No             constant
 
 
 **wsTInlet=*float***
@@ -77,15 +77,15 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
 
   **Units**   **Legal Range**   **Default**                    **Required**   **Variability**
   ----------- ----------------- ------------------------------ -------------- -----------------
-  ^o^F        $>$ 32 ^o^F       Mains temp from weather file   No             hourly
+  ^o^F         $>$ 32 ^o^F       Mains temp from weather file   No             hourly
 
 **wsUse=*float***
 
 Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  gal         $\ge$ 0            0             No             hourly
+  gal           $\ge$ 0            0             No             hourly
 
 **wsDayUse=*dhwdayuseName***
 
@@ -157,7 +157,8 @@ Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The def
 **wsSSF=*float***
 
 Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions.  The contributions are modeled by deriving an increased water heater feed temperature --
-<center>$$tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)$$</center>\
+
+$$tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)$$
 
 where tInletAdj is the source cold water temperature *including any DHWHEATREC tempering* (that is, wsTInlet + heat recovery temperature increase, if any).  This model approximates the diminishing returns associated with combined preheat strategies such as drain water heat recovery and solar.
 
@@ -220,17 +221,17 @@ Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quant
   If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.          
 
 
-  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------
-              *Yes or No*                No           No             constant
+               *Yes or No*                No           No             constant
 
 **endDHWSys**
 
 Optionally indicates the end of the DHWSYS definition.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             
+  --------- ------------------ ------------- -------------- -----------------
+    *n/a*        *n/a*                 *n/a*         No             *n/a*
 
 **Related Probes:**
 
