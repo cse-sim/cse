@@ -4455,6 +4455,25 @@ DHWDAYUSE "6H3"
   SHWR( 22.71, 13.667, 1.218,   9)
 ENDDHWDAYUSE
 
+// variant with fixed heat recovery
+#redefine ShwrDRAINHREFF .5
+DHWDAYUSE "4D7FixedHR"
+  CWSH(  8.13,  5.500, 1.128,   0) CWSH(  8.46,  0.333, 0.661,   0) CWSH(  8.55,  5.167, 1.205,   0) CWSH( 20.54,  5.500, 1.175,   1)
+  CWSH( 20.92,  0.500, 0.465,   1) CWSH( 20.97,  7.833, 0.760,   1) FAUC(  7.14,  1.119, 0.890,   0) FAUC(  7.18,  0.249, 0.749,   1)
+  FAUC(  7.21,  0.746, 0.835,   2) FAUC(  7.26,  0.995, 0.655,   3) FAUC(  7.52,  0.373, 0.979,   4) FAUC(  7.71,  0.124, 0.461,   5)
+  FAUC(  7.74,  0.497, 0.792,   6) FAUC(  7.92,  0.249, 0.806,   7) FAUC(  8.04,  0.124, 0.461,   8) FAUC(  8.28,  0.497, 0.778,   9)
+  FAUC(  8.36,  0.124, 1.267,  10) FAUC(  9.09,  0.124, 0.518,  11) FAUC(  9.37,  0.124, 0.461,  12) FAUC(  9.39,  0.249, 0.720,  13)
+  FAUC(  9.41,  0.373, 0.902,  14) FAUC( 12.44,  0.373, 0.749,  15) FAUC( 16.45,  0.497, 1.238,  16) FAUC( 17.71,  0.373, 0.653,  17)
+  FAUC( 17.74,  0.124, 0.518,  18) FAUC( 18.93,  0.124, 0.806,  19) FAUC( 20.04,  0.497, 1.267,  20) FAUC( 20.07,  1.989, 0.983,  21)
+  FAUC( 20.30,  0.373, 0.326,  22) FAUC( 21.21,  0.622, 1.117,  23) FAUC( 21.24,  0.373, 0.960,  24) FAUC( 21.25,  0.124, 0.806,  25)
+  FAUC( 21.48,  0.746, 0.893,  26) FAUC( 21.54,  0.124, 0.634,  27) FAUC( 21.55,  3.979, 1.264,  28) FAUC( 21.67,  0.746, 1.190,  29)
+  FAUC( 21.72,  2.114, 1.179,  30) FAUC( 21.79,  0.249, 0.922,  31) FAUC( 21.81,  3.357, 1.235,  32) FAUC( 21.89,  0.497, 0.994,  33)
+  FAUC( 21.92,  0.249, 0.749,  34) FAUC( 22.01,  0.124, 1.094,  35) FAUC( 22.07,  0.995, 0.662,  36) FAUC( 22.54,  0.746, 0.701,  37)
+  FAUC( 22.57,  0.373, 0.922,  38) SHWR(  6.37,  9.325, 1.597,   0) SHWR(  8.51,  1.865, 2.000,   1) SHWR(  8.64, 10.568, 1.544,   2)
+  SHWR( 20.16,  3.730, 1.544,   3)
+ENDDHWDAYUSE
+
+
 
 #undef SHWR
 #undef CWSH
@@ -4481,344 +4500,110 @@ ReportCol colhead="qDWHR"  colVal=@DhwSys[s].qDWHR colDec=2 colWid=6 \
 ReportCol colhead="O+HR"  colVal=@DhwSys[s].qDWHR+@DhwSys[s].HHWO colDec=2 colWid=6 \
 ReportCol colhead="Elec" colVal=@Meter[ me].H.dhw colDec=2 colWid = 6
 
-#define DO1( sName, me, wuFX, wuWH, hxCfg,hxEF) \
-METER me DHWMETER wufx DHWMETER wuwh \
-DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsTSetpoint=130  wsTUse=120  wsDayUse=DHW5BRa wsSSF = 0 wsWF = 1 \
-DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance \
-DHWHEATREC DWHR wrConfig = hxCfg wrFXServed = 1 wrCSARatedEF = hxEF wrDTDrain=0 \
+#define DO0Base0( sName, me, wuFX, wuWH) \
 REPORT rpType=MTR rpMeter = me rpFreq=MONTH \
 REPORT rpType=DHWMTR rpDHWMeter = wuFX rpFreq=MONTH \
 REPORT rpType=DHWMTR rpDHWMeter = wuWH rpFreq=MONTH \
-WSREP2( sName, me, apr 1)
+WSREP2( sName, me, apr 1) \
+METER me DHWMETER wufx DHWMETER wuwh \
+DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsTUse=120  wsWF = 1
 
-DO1( "DS0", "Elec0", FX0, WH0, Equal, 0)
-DO1( "DSEQ",  ElecEQ, FXEQ, WHEQ, Equal, .5)
-DO1( "DSUSH", ElecUSH, FXUSH, WHUSH, UnEqualFX, .5)
-DO1( "DSUWH", ElecUWH, FXUWH, WHUWH, UnEqualWH, .5)
+#define DO0Base( sName, me, wuFX, wuWH, shrs) \
+DO0Base0( sName, me, wuFX, wuWH) wsTSetPoint=130 wsShowerCount = shrs \
+DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER
 
+// DHWSYS with no DHWHEATREC
+#define DO0( sName, me, wuFX, wuWH, shrs) \
+DO0Base( sName, me, wuFX, wuWH, shrs) wsDayUse=DHW5BRa
+
+// DHWSYS with no DHWHEATREC + specified wsDayUse
+#define DO0DU( sName, me, wuFX, wuWH, wsDu, shrs) \
+DO0Base( sName, me, wuFX, wuWH, shrs) wsDayUse=wsDu
+
+// DHWSYS with 1 DWHHEATREC
+#define DO1( sName, me, wuFX, wuWH, shrs, fxDr, fxHR, fWH, hxEF) \
+DO0Base( sName, me, wuFX, wuWH, shrs) wsDayUse=DHW5BRa \
+DHWHEATREC DWHR wrFeedsWH=fWH wrCountFXDrain = fxDr wrCountFXCold = fxHR  wrCSARatedEF = hxEF wrTDInDiff=0
+
+// DHWSYS with 2 DWHHEATREC (same connections on each)
+#define DO2( sName, me, wuFX, wuWH, shrs, fxDr, fxHR, fWH, hxEF) \
+DO1( sName, me, wuFX, wuWH, shrs, fxDr, fxHR, fWH, hxEF) \
+DHWHEATREC DWHR2 wrFeedsWH=fWH wrCountFXDrain = fxDr wrCountFXCold = fxHR  wrCSARatedEF = hxEF wrTDInDiff=0
+
+// DHWSYS with 1 DWHHEATREC + specified wsDayUse and wrTy
+#define DO1DU( sName, me, wuFX, wuWH, wsDu, shrs, wrTy, fxDr, fxHR, fWH, hxEF) \
+DO0Base( sName, me, wuFX, wuWH, shrs) wsDayUse=wsDu \
+DHWHEATREC DWHR wrFeedsWH=fWH wrCountFXDrain = fxDr wrCountFXCold = fxHR  wrCSARatedEF = hxEF wrTDInDiff=0 wrType=wrTy
+
+//////////////////////////////////////////////////////////////////////
+// Test cases
+//////////////////////////////////////////////////////////////////////
+// No heat recovery variants -- all should get same results
+//   - no DHWHEATREC
+//   - DHWHEATREC with EF=0
+//   - DHWHEATREC with no connected drains
+DO0( "DS0",   "Elec0",   FX0,    WH0,    1)
+DO1( "DS0a",  "Elec0a",  FX0a,   WH0a,   1, 1, 0, Yes,  0)
+DO1( "DS0b",  "Elec0b",  FX0b,   WH0b,   0, 0, 0, No,  0)
+
+// fixed heat recovery -- should get same results
+DO0DU( "DSX0",   "ElecX0",   FXX0,   WHX0,    "4D7FixedHR", 1)
+DO1DU( "DSX0a",  "ElecX0a",  FXX0a,  WHX0a,   "4D7",        1, SetEF, 1, 1, No,  .5)
+
+DO1( "DSEQ",  ElecEQ,  FXEQ,  WHEQ,  1, 1, 1, Yes, .5)
+DO1( "DSUSH", ElecUSH, FXUSH, WHUSH, 1, 1, 1,  No, .5)
+DO1( "DSUWH", ElecUWH, FXUWH, WHUWH, 1, 1, 0, Yes, .5)
+
+// 2 showers, 1 DHWHEATREC
+DO1( "DS2S0Y", Elec2S0Y,  FX2S0Y,  WH2S0Y, 2, 2, 0, Yes, .6)
+DO1( "DS2S1N", Elec2S1N,  FX2S1N,  WH2S1N, 2, 2, 1, No,  .6)
+DO1( "DS2S1Y", Elec2S1Y,  FX2S1Y,  WH2S1Y, 2, 2, 1, Yes, .6)
+DO1( "DS2S2N", Elec2S2N,  FX2S2N,  WH2S2N, 2, 2, 2, No,  .6)
+DO1( "DS2S2Y", Elec2S2Y,  FX2S2Y,  WH2S2Y, 2, 2, 2, Yes, .6)
+
+// todo -- drain TD
+//////////////////////////////////////////////////////////////////////
 
 //==============================================================
+// Central system -- 2 children, no heat recovery
+//   Should get same results for DHWDAYUSE at central or child
 
+#define DSLOAD wsUse = 2.5 * HWUSE1( 1900) * select( $isWeekend, HWUSEF_WE, default HWUSEF_WD) wsDayUse = DHW3BR
 
-#if 0
-//==============================================================
-// Central system, 2 DHWSYSs
-//   energy and water use should match DS0
-METER Elec1
-METER Fuel1
-DHWMETER FX1
-DHWMETER WH1
-DHWMETER FX1a
-DHWMETER WH1a
-DHWMETER FX1b
-DHWMETER WH1b
-
-DHWSYS "DS1"
-  wsElecMtr = Elec1
-  wsFuelMtr = Fuel1
-  wsFXHWMTR = FX1
-  wsWHHWMTR = WH1
-  wsTSetpoint = 130
-  wsTUse = 123
-  wsDSM = 1.4
-  wsSDLM = HWSDLM( 1900)
-
-DHWHEATER "WH1"
-  whMult = 2
-  whType = SmallStorage
-  whHeatSrc = ASHPX
-  whASHPType = GE2014
-  whASHPSrcT = $TDbO
-  whParElec = $month
-
+// load applied to central and 1 child
+DO0Base0( "DSC0",   "ElecC0",   FXC0,    WHC0)
+DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER wsTSetPoint=130
+DSLOAD
 endDHWSYS
 
-DHWSYS "DS1a"
-  wsCentralDHWSYS = DS1
-  wsFXHWMTR = FX1
-  wsWHHWMTR = WH1
-  wsDayUse = DHW2BR
-  wsUse = 2.5 * HWUSE1( 1900) * select( $isWeekend, HWUSEF_WE, default HWUSEF_WD)
-  wsParElec = (fix($hour+12)%12)
+DO0Base0( "DSK0a",   "ElecK0a",   FXK0a,    WHK0a) wsCentralDHWSYS=DSC0 DSLOAD
+DO0Base0( "DSK0b",   "ElecK0b",   FXK0b,    WHK0b) wsCentralDHWSYS=DSC0
+
+// load applied to 2 children
+DO0Base0( "DSC1",   "ElecC1",   FXC1,    WHC1)
+DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER wsTSetPoint=130
 endDHWSYS
 
- DHWSYS "DS1b"
-  wsCentralDHWSYS = DS1
-  wsFXHWMTR = FX1
-  wsWHHWMTR = WH1
-  wsDayUse = DHW2BR
-  wsUse = 2.5 * HWUSE1( 1900) * select( $isWeekend, HWUSEF_WE, default HWUSEF_WD)
-  wsParElec = (fix($hour+12)%12)
-endDHWSYS
+DO0Base0( "DSK1a",   "ElecK1a",   FXK1a,    WHK1a) wsCentralDHWSYS=DSC1 DSLOAD
+DO0Base0( "DSK1b",   "ElecK1b",   FXK1b,    WHK1b) wsCentralDHWSYS=DSC1 DSLOAD
 
-REPORT rpType=MTR rpMeter = Elec1 rpFreq=MONTH
-REPORT rpType=MTR rpMeter = Fuel1 rpFreq=MONTH
-// REPORT rpType=MTR rpMeter = Elec1 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-// REPORT rpType=MTR rpMeter = Fuel1 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-REPORT rpType=DHWMTR rpDHWMeter = FX1 rpFreq=MONTH
-REPORT rpType=DHWMTR rpDHWMeter = WH1 rpFreq=MONTH
-REPORT rpType=DHWMTR rpDHWMeter = FX1a rpFreq=MONTH
-REPORT rpType=DHWMTR rpDHWMeter = WH1a rpFreq=MONTH
-REPORT rpType=DHWMTR rpDHWMeter = FX1b rpFreq=MONTH
-REPORT rpType=DHWMTR rpDHWMeter = WH1b rpFreq=MONTH
+//=====================================================================
+// multi-heater systems
+// should get same results
 
+// DSMH0: 1 heater / 2 DHWHEATREC / 2 showers
+DO2( "DSMH0",  ElecMH0,  FXMH0,  WHMH0,  2, 1, 1, Yes, .6)
 
+// DSMH: 2 systems each w/ 1 shower, 1 heater, 1 DHWHEATREC
+DO0Base( "DSMH", ElecMH, FXMH, WHMH,1) wsDayUse = DHW5BRa
+DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedEF = .6 wrTDInDiff=0
 
-DHWSYS "Child"
-  wsCentralDHWSYS = DS1
-  wsTUse = 130
-  wsUse = 1		// NUnit * HWWF * HWUSE1( CFAi) * select( $isWeekend, HWUSEF_WE, default HWUSEF_WD)
-  wsDSM = 1.6
-  // wsSDLM = HWSDLM( CFAi)
+DO0Base( "DSMHKa", ElecMKa, FXMKa, WHMKa, 1) wsLoadShareDHWSYS="DSMH"
+DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedEF = .6 wrTDInDiff=0
 
-DHWSYS "DS1"
-  wsElecMtr = Elec1
-  wsFuelMtr = Fuel1
-  wsSSF = 0
-  wsParElec = 0
-  wsTUse = 130
-  wsDSM = 1.6
-  wsWF = 1 + $hour/24
-  wsSDLM = HWSDLM( CFAi)
-
-#if 1
-  DHWHEATER "WH1E"  whHeatSrc = Resistance  whType = SmallInstantaneous whEF = 1
-#else
-
-  DHWHEATER "WH1A"  whHeatSrc = Fuel  whType = SmallInstantaneous whEF = .65
-
-  DHWHEATER "WH1B" whHeatSrc = Fuel  whType = SmallStorage whLDEF = .9
-
-  DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750
-
-  DHWHEATER "WH1D"  whHeatSrc = Fuel   whType = LargeStorage whEFF = .80 whSBL = 1200
-
-  DHWHEATER "WH1E"  whHeatSrc = Resistance  whType = SmallInstantaneous whEF = .65
-
-  DHWHEATER "WH1F" whHeatSrc = Resistance  whType = SmallStorage whLDEF = .83
-
-  DHWHEATER "WH1G"  whHeatSrc = Resistance  whType = LargeInstantaneous whEFF = .80 whParElec = 3
-  
-  DHWHEATER "WH1H"  whHeatSrc = Resistance  whType = LargeStorage whEFF = .80 whVol = 100 whSBL = 0.6768239*3413
-  
-  DHWHEATER "WH1I" whHeatSrc = ASHP whType = SmallStorage	whHPAF = .92 whLDEF = 3.3909
-
-  DHWTANK "Tank1" wtMult = 2  wtVol = 100 wtXLoss = 61.4 wtTTank = 124 wtInsulR = 12 wtTEx = 75
-
-  DHWLOOP "Loop1" wlMult = 1 wlRunF = .2 wlFUA = 2
-
-	DHWLOOPSEG "Seg1"  wgTy=Supply wgLength = 18 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.2
-
-	   DHWLOOPBRANCH "Br1" wbMult = 20 wbLength = 14 wbSize = 1 wbInsulK = 0.26/12 wbInsulThk = 1.5 wbFlow=2
-	    wbfWaste = 1.4 * 19.84 * exp( -0.544 * NUnitB) * hourval( 0.01, 0.02, 0.05, 0.22, 0.25, 0.22, 0.06, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
-
-	DHWLOOPSEG "Seg2"  wgTy=Supply wgLength = 86.6025 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.4
-
-	DHWLOOPSEG "Seg3"  wgTy=Supply wgLength = 86.6025 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.6
-
-	DHWLOOPSEG "Seg4"  wgTy=Return wgLength = 86.6025 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
-
-	DHWLOOPSEG "Seg5"  wgTy=Return wgLength = 86.6025 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
-
-	DHWLOOPSEG "Seg6"  wgTy=Return wgLength = 18 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
-
-	DHWLOOPPUMP "LP1"  wlpPwr = 746 * 0.5 / 0.9
-#endif
-
-endDHWSYS
-
-DHWSYS "DS2"
-  wsElecMtr = Elec2
-  wsFuelMtr = Fuel2
-  wsTUse = 130
-  wsUse = 1	// NUnit * HWWF * HWUSE1( CFAi) * select( $isWeekend, HWUSEF_WE, default HWUSEF_WD)
-  wsDSM = 1.6
-  wsSDLM = HWSDLM( CFAi)
-  wsSSF = 0
-  wsParElec = 0
-
-#if 1
-  DHWHEATER "WH2E"  whHeatSrc = Resistance  whType = SmallInstantaneous whEF = 1
-#else
-  DHWHEATER "WH2A"  whHeatSrc = Fuel  whType = SmallInstantaneous whEF = .65
-
-  DHWHEATER "WH2B" whHeatSrc = Fuel  whType = SmallStorage whLDEF = .9
-
-  DHWHEATER "WH2C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750
-
-  DHWHEATER "WH2D"  whHeatSrc = Fuel   whType = LargeStorage whEFF = .80 whSBL = 1200
-
-  DHWHEATER "WH2E"  whHeatSrc = Resistance  whType = SmallInstantaneous whEF = .65
-
-  DHWHEATER "WH2F" whHeatSrc = Resistance  whType = SmallStorage whLDEF = .83
-
-  DHWHEATER "WH2G"  whHeatSrc = Resistance  whType = LargeInstantaneous whEFF = .80 whParElec = 3
-  
-  DHWHEATER "WH2H"  whHeatSrc = Resistance  whType = LargeStorage whEFF = .80 whVol = 100 whSBL = 0.6768239*3413
-  
-  DHWHEATER "WH2I" whHeatSrc = ASHP whType = SmallStorage	whHPAF = .92 whLDEF = 3.3909
-
-  DHWTANK "Tank1" wtMult = 2  wtVol = 100 wtXLoss = 61.4 wtTTank = 124 wtInsulR = 12 wtTEx = 75
-
-  DHWLOOP "Loop1" wlMult = 1 wlRunF = .2 wlFUA = 2
-
-	DHWLOOPSEG "Seg1"  wgTy=Supply wgLength = 18 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.2
-
-	   DHWLOOPBRANCH "Br1" wbMult = 20 wbLength = 14 wbSize = 1 wbInsulK = 0.26/12 wbInsulThk = 1.5 wbFlow=2
-	    wbfWaste = 1.4 * 19.84 * exp( -0.544 * NUnitB) * hourval( 0.01, 0.02, 0.05, 0.22, 0.25, 0.22, 0.06, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
-
-	DHWLOOPSEG "Seg2"  wgTy=Supply wgLength = 86.6025 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.4
-
-	DHWLOOPSEG "Seg3"  wgTy=Supply wgLength = 86.6025 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.6
-
-	DHWLOOPSEG "Seg4"  wgTy=Return wgLength = 86.6025 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
-
-	DHWLOOPSEG "Seg5"  wgTy=Return wgLength = 86.6025 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
-
-	DHWLOOPSEG "Seg6"  wgTy=Return wgLength = 18 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
-
-	DHWLOOPPUMP "LP1"  wlpPwr = 746 * 0.5 / 0.9
-#endif
-
-
-endDHWSYS
-
-#endif
-
-// DHW report definitions
-
-// DHWSYS
-#define WSREP( s, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = s rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="Tinlet" colVal=@DhwSys[s].tInlet colWid=6 \
-ReportCol colhead="HWUse"  colVal=@DhwSys[s].hwUse colDec=2 colWid=6 \
-ReportCol colhead="HSEU" colVal=@DhwSys[s].HSEU colWid = 7 \
-ReportCol colhead="DLM" colVal=@DhwSys[s].DLM colWid = 7 \
-ReportCol colhead="SSF" colVal=@DhwSys[s].SSF colDec=3 colWid = 7 \
-ReportCol colhead="HRDL" colVal=@DhwSys[s].HRDL colWid = 7 \
-ReportCol colhead="HJL" colVal=@DhwSys[s].HJL colWid = 7 \
-ReportCol colhead="HARL" colVal=@DhwSys[s].HARL colWid = 7 \
-ReportCol colhead="Elec" colVal=@DhwSys[s].inElec colDec=2 colWid = 6
-
-
-// DHWHEATER
-#define WHREP( h, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = @DhwHeater[h].desc rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="LDEF" colVal=@DhwHeater[h].LDEF colDec=2 colWid = 6 \
-ReportCol colhead="Elec" colVal=@DhwHeater[h].inElec colDec=2 colWid = 6 \
-ReportCol colhead="Fuel" colVal=@DhwHeater[h].inFuel colDec=2 colWid = 6
-
-// DHWTANK
-#define WTREP( t, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = t rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="UA" colVal=@DhwTank[t].UA colDec=3 colWid = 6 \
-ReportCol colhead="Ttank" colVal=@DhwTank[t].ttank colDec=2 colWid=6 \
-ReportCol colhead="TEx" colVal=@DhwTank[t].tEx colDec=2 colWid=6 \
-ReportCol colhead="XLoss" colVal=@DhwTank[t].xloss colDec=2 colWid=6 \
-ReportCol colhead="QLoss" colVal=@DhwTank[t].qloss colDec=2 colWid=6
-
-
-// DHWLOOP
-#define WLREP( l, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = l rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="HRLL" colVal=@DhwLoop[l].HRLL colWid = 7 \
-ReportCol colhead="HRBL" colVal=@DhwLoop[l].HRBL colWid = 7
-
-// DHWLOOPSEG
-#define WGREP( g, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = g rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="UA" colVal=@DhwLoopSeg[g].UA colDec=3 colWid = 6 \
-ReportCol colhead="vol" colVal=@DhwLoopSeg[g].vol colDec=3 colWid = 6 \
-ReportCol colhead="Flow" colVal=@DhwLoopSeg[g].fvf colDec=2 colWid = 6 \
-ReportCol colhead="Tex" colVal=@DhwLoopSeg[g].ExT colDec=2 colWid = 6 \
-ReportCol colhead="Tin" colVal=@DhwLoopSeg[g].tIn colDec=3 colWid = 7 \
-ReportCol colhead="Tout" colVal=@DhwLoopSeg[g].tOut colDec=3 colWid = 7 \
-ReportCol colhead="PLWF" colVal=@DhwLoopSeg[g].PLWF colWid = 7 \
-ReportCol colhead="PLCD" colVal=@DhwLoopSeg[g].PLCD colWid = 7
-
-// DHWLOOPBRANCH
-#define WBREP( b, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = b rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="UA" colVal=@DhwLoopBranch[b].UA colDec=3 colWid = 6 \
-ReportCol colhead="vol" colVal=@DhwLoopBranch[b].vol colDec=3 colWid = 6 \
-ReportCol colhead="Flow" colVal=@DhwLoopBranch[b].fvf colDec=2 colWid = 6 \
-ReportCol colhead="Tex" colVal=@DhwLoopBranch[b].ExT colDec=2 colWid = 6 \
-ReportCol colhead="Tin" colVal=@DhwLoopBranch[b].tIn colDec=2 colWid = 6 \
-ReportCol colhead="Tout" colVal=@DhwLoopBranch[b].tOut colDec=2 colWid = 6 \
-ReportCol colhead="HBUL" colVal=@DhwLoopBranch[b].HBUL colWid = 7 \
-ReportCol colhead="HBWL" colVal=@DhwLoopBranch[b].HBWL colWid = 7
-
-// DHWLOOPPUMP
-#define WLPREP( p, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = p rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="Pwr" colVal=@DhwLoopPump[p].pwr colDec=1 colWid = 5 \
-ReportCol colhead="Elec" colVal=@DhwLoopPump[p].inElec colDec=2 colWid = 6
-
-
-// Weather
-#define WTHRREP( d) REPORT rpType=UDT rpFreq=Day rpTitle = "Weather" rpDayBeg=d rpDayEnd=d \
-ReportCol colhead="Day" colVal=@Top.dateStr colWid = 12 \
-ReportCol colhead="DOY" colVal=$dayOfYear colWid = 3 \
-ReportCol colhead="Tavg31" colVal=@weather.taDbAvg31 colDec = 3 colWid = 6 \
-ReportCol colhead="tMains" colVal=@weather.tMains  colDec=3  colWid=6
+//////////////////////////////////////////////////////////////////////
 
 DELETE REPORT EB
-
-#if 0
-
-WTHRREP( apr 1)
-
-REPORT rpType=MTR rpMeter = Elec0 rpFreq=MONTH
-REPORT rpType=MTR rpMeter = Fuel0 rpFreq=MONTH
-// REPORT rpType=MTR rpMeter = Elec0 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-// REPORT rpType=MTR rpMeter = Fuel0 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-REPORT rpType=DHWMTR rpDHWMeter = FX0 rpFreq=MONTH
-REPORT rpType=DHWMTR rpDHWMeter = WH0 rpFreq=MONTH
-
-
-WSREP( "DS0", apr 1)
-WHREP( "WH0", apr 1)
-
-REPORT rpType=MTR rpMeter = Elec1 rpFreq=MONTH
-REPORT rpType=MTR rpMeter = Fuel1 rpFreq=MONTH
-
-REPORT rpType=MTR rpMeter = Elec2 rpFreq=MONTH
-REPORT rpType=MTR rpMeter = Fuel2 rpFreq=MONTH
-
-REPORT rpType=MTR rpMeter = Elec1 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-REPORT rpType=MTR rpMeter = Fuel1 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-
-REPORT rpType=MTR rpMeter = Elec2 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-REPORT rpType=MTR rpMeter = Fuel2 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
-
-
-WSREP( "DS1", apr 1)
-
-WHREP( "WH1A", apr 1)
-WHREP( "WH1B", apr 1)
-WHREP( "WH1C", apr 1)
-WHREP( "WH1D", apr 1)
-WHREP( "WH1E", apr 1)
-WHREP( "WH1F", apr 1)
-WHREP( "WH1G", apr 1)
-WHREP( "WH1H", apr 1)
-WHREP( "WH1I", apr 1)
-
-
-WTREP( "Tank1", apr 1)
-
-WLREP( "Loop1", apr 1)
-WLPREP( "LP1", apr 1)
-
-WGREP( "Seg1", apr 1)
-WGREP( "Seg2", apr 1)
-WGREP( "Seg3", apr 1)
-WGREP( "Seg4", apr 1)
-WGREP( "Seg5", apr 1)
-WGREP( "Seg6", apr 1)
-WBREP( "Br1", apr 1)
-#endif
-
 
  
 RUN

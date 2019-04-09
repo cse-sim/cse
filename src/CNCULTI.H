@@ -31,7 +31,6 @@ RC FC drStarCkf( CULT* c, /*SFI* */ void *p, void *p2, void *p3);
 RC FC sfStarCkf( CULT* c, /*SFI* */ void *p, void *p2, void *p3);
 RC FC rfStarCkf( CULT* c, /*RFI* */ void *p, void *p2, void *p3);
 RC FC xfStarCkf( CULT* c, /*RFI* */ void *p, void *p2, void *p3);
-RC FC rpStarCkf( CULT* c, /*RI*  */ void *p, void *p2, void *p3);
 
 // cncult2.cpp -- fcns called by top table
 RC FC topStarItf( CULT* c, void *p, void *p2, void *p3);
