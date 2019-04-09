@@ -2445,6 +2445,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "windF",       DAT,   TOPRAT_WINDF,      0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "radBeamF",    DAT,   TOPRAT_RADBEAMF,   0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "radDiffF",    DAT,   TOPRAT_RADDIFFF,   0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
+	CULT( "hConvMod",    DAT,   TOPRAT_HCONVMOD,   0,          0, VEOI,   TYCH,  0,   C_NOYESCH_YES,     N,   N),
 	CULT( "verbose",     DAT,   TOPRAT_VERBOSE,    0,          0, VEOI,   TYSI,  0,      1,			     N,   N),
 	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYLLI, 0,      0,              N,   N),
 	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYLLI, 0,      0,              N,   N),

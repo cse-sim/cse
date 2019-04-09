@@ -2192,8 +2192,8 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 		}
 		int iFaceUp = sb_atvDeg > 0.;		// 1 iff surface faces upward
 		// Top.tp_hConvF: elevation factor for convection
-		sb_hcConst[ iFaceUp]   = Top.tp_hConvF * hcNatConstHtFlowReduced;		// const for ta > ts
-		sb_hcConst[ 1-iFaceUp] = Top.tp_hConvF * hcNatConstHtFlowEnhanced;		// const for ta <= ts
+		sb_hcConst[ iFaceUp]   = Top.tp_hConvF * hcNatConstHtFlowReduced;		// const for ta > ts (when face up)
+		sb_hcConst[ 1-iFaceUp] = Top.tp_hConvF * hcNatConstHtFlowEnhanced;		// const for ta <= ts (when face up)
 	}
 
 	if (sb_zi)
@@ -2469,7 +2469,7 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 
 		auto parentZone = sb_pXS->xs_sbcI.sb_zi;  // Get surface parent zone
 		float windSpeedModifier = 0;
-		if (parentZone < 1) {
+		if (parentZone != 0) {
 			windSpeedModifier = ZrB[parentZone].i.zn_windFLkg;
 		}
 
@@ -2478,6 +2478,7 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 		float hcGlass = std::sqrt(sb_hcNat*sb_hcNat + hfGlass*hfGlass);
 
 		sb_hcFrc = sb_fcWind *(hcGlass - sb_hcNat);
+		break;
 	}
 	case C_CONVMODELCH_UNIFIED:
 	{
