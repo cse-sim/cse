@@ -2459,15 +2459,21 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 		float angleDiff = std::fmod(std::abs(Top.windDirDegHr - DEG(sb_pXS->azm)),360.f);
 		bool windward = std::abs(sb_cosTilt) > 0.98 || (angleDiff < 100 || angleDiff > 260);
 
+		// From "Identifying and Resolving Issues in EnergyPlus and DOE-2 Window Heat Transfer Calculations" by Booten, Kruis, and Christensen (2012)
+		// Using DOE-2 coefficients (correlated to local windspeed at zone hight--change if we ever use surface hight).
 		const float mowittCoeffs[2][2] =
 		{   // a     b
-			0.2804, 0.89,  // Windward 0.2804 = 3.26 W/m2-K-(m/s)^0.89
-			0.3804, 0.617  // Leeward 0.2804 = 3.55 W/m2-K-(m/s)^0.617
+			0.2639, 0.89,  // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
+			0.3659, 0.617  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
 		};
 
-		// TODO: Correct for local windSpeed
+		auto parentZone = sb_pXS->xs_sbcI.sb_zi;  // Get surface parent zone
+		float windSpeedModifier = 0;
+		if (parentZone < 1) {
+			windSpeedModifier = ZrB[parentZone].i.zn_windFLkg;
+		}
 
-		float hfGlass = mowittCoeffs[windward][0]* pow(Top.windSpeedSh, mowittCoeffs[windward][1]);
+		float hfGlass = mowittCoeffs[windward][0]* pow(Top.windSpeedSh*windSpeedModifier, mowittCoeffs[windward][1]);
 		
 		float hcGlass = std::sqrt(sb_hcNat*sb_hcNat + hfGlass*hfGlass);
 
