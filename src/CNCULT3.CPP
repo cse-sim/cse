@@ -2149,7 +2149,7 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 	if (sb_si && sb_atvDeg != 0.)
 		sb_atvDeg = -sb_atvDeg;		// outside
 	double absAtvDeg = abs( sb_atvDeg);
-	sb_cosTilt = cos(x.tilt);
+	sb_cosTilt = sb_si ? cos(x.tilt) : -cos(x.tilt);
 	sb_cosAtv = cos( RAD( sb_atvDeg));	// 0 <= cos( theta) <= 1 always (never < 0)
 	snapTrig( sb_cosAtv);
 	int xsty = x.xs_TyFromTilt();		// tilt-type: xstyCEILING, xstyWALL, xstyFLOOR
@@ -2187,8 +2187,8 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 		else 
 		{
 			// Used for C_CONVMODELCH_TARP and C_CONVMODELCH_DOE2 (unused for others)
-			hcNatConstHtFlowEnhanced = 1.670f / (7.238 - std::abs(sb_cosTilt));  // 1.670 = 9.482 W/m^2-K^4/3
-			hcNatConstHtFlowReduced = 0.262f / (1.382 + std::abs(sb_cosTilt));  // 0.262 = 1.810 W/m^2-K^4/3
+			hcNatConstHtFlowEnhanced = 1.670f / (7.238f - std::abs(sb_cosTilt));  // 1.670 = 9.482 W/m^2-K^4/3
+			hcNatConstHtFlowReduced = 0.262f / (1.382f + std::abs(sb_cosTilt));  // 0.262 = 1.810 W/m^2-K^4/3
 		}
 		int iFaceUp = sb_atvDeg > 0.;		// 1 iff surface faces upward
 		// Top.tp_hConvF: elevation factor for convection
@@ -2461,10 +2461,10 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 
 		// From "Identifying and Resolving Issues in EnergyPlus and DOE-2 Window Heat Transfer Calculations" by Booten, Kruis, and Christensen (2012)
 		// Using DOE-2 coefficients (correlated to local windspeed at zone hight--change if we ever use surface hight).
-		const float mowittCoeffs[2][2] =
+		static const float mowittCoeffs[2][2] =
 		{   // a     b
-			0.2639, 0.89,  // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
-			0.3659, 0.617  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
+			0.2639f, 0.89f,  // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
+			0.3659f, 0.617f  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
 		};
 
 		auto parentZone = sb_pXS->xs_sbcI.sb_zi;  // Get surface parent zone

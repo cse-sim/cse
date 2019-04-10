@@ -1055,7 +1055,8 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *r DBL sb_lenCharNat	//	 characteristic length for some natural convection models, ft
   *r DBL sb_lenEffWink	//   effective length for Winkelmann forced convection model, ft
   
-  *r DBL sb_cosTilt		// cos( Tilt )
+  *r DBL sb_cosTilt		// cos( Tilt ) for the boundary -- note parent surface tilt is defined
+						// relative to outside normal (sbcO), so inside sb_cosTilt is oposite (+180 deg)
   *r DBL sb_atvDeg		// angle-to-vertical, deg (inside: 90-tilt; outside: tilt-90)
   *r DBL sb_cosAtv		// cos( angle to vertical) 0 - 1 (never < 0)
   *i CONVMODELCH sb_hcModel // surface convective coefficient model
