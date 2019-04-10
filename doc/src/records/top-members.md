@@ -452,6 +452,16 @@ Multiplier for diffuse horizonal irradiance.
   ----------- ----------------- ------------- -------------- -----------------
               *x* $\geq$ 0      1             No             constant
 
+**hConvMod=*choice***
+
+Enable/disable convection convective coefficient pressure modification factor.
+
+$$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+              YES, NO           YES           No             constant
+
 **soilDiff=*float***
 
 Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note that derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
@@ -660,7 +670,7 @@ Controls verbosity of screen remarks. Most possible remarks are generated during
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-                0- 5 ?           1             No             constant
+                0 - 5            1             No             constant
 
 The following dbgPrintMask values provide bitwise control of addition of semi-formated internal results to the run report file. The values and format of debugging reports are modified as required for testing purposes. <!-- TODO: document options -->
 
