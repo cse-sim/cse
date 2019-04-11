@@ -67,10 +67,13 @@ void record::FldCopy(		// field-to-field copy (within record)
 // handles NaNs re expressions
 {
 	int dtS = DType( fnS);
-	int dtD = DType( fnD);
 #if defined( _DEBUG)
+	int dtD = DType( fnD);
 	if (dtD != dtS)
 		err( PWRN, "%s:%s FldCopy: DT mismatch",		// message, wait for keypress
+			b->what, name);
+	if (IsAusz( fnS))
+		err( PWRN, "%s:%s FldCopy: source is AUTOSIZEd",
 			b->what, name);
 #endif
 	int sz = GetDttab( dtS).size;
@@ -372,6 +375,30 @@ o                          what );
 // else just class name
 	return what;
 }		// record::classObjTx
+//-----------------------------------------------------------------------------
+RC record::CkSet( 	// verify that required member has been set
+	int fn)	const // field number
+
+// call only for RQD fields -- issues inappropriate msg for others
+
+// if not set, returns non-RCOK.  issues message only if errCount is 0 -- else assumes previously messaged.
+{
+// return ok if has-been-set-by-user-input bit on in field's field status byte
+	if (IsSet( fn))
+		return RCOK;
+
+// not set.  Msg should have been issued at end of object; avoid repeating.
+	if (errCount()) 		// if there have been any messages at all (rmkerr.cpp fcn)
+		return RCBAD;		// return bad, no msg here
+
+	// unset field but no messages at all have been issued this run.
+	// Unexpected, but issue msg here to prevent mysterious messageless non-runs.
+	// Devel aid.  Might occur, for example, if RQD flag removed on member and
+	// code that calls here not updated to match (defaults do not set FsSET).
+	return oer( (char *)MH_S0493,	// "Required member '%s' has not been set,\n"
+										// "    and apparently no message about it appeared above"
+				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
+}	// record::CkSet
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

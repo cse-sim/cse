@@ -63,12 +63,9 @@
 					//   FAN object historically in ZNISUB.xfan but previously not simulated
 
 
-#define ANAMELENGTH64	// define to change max name length to 63 (ANAME = char[ 64])
-						//   2-17-2012
-
 #undef BUG_COLTYPECOPY	// define to include object trap code re memcpy bug
 						//   associated with copying COL objects
-						//   File coltypebug.cse crashes if ANAMELENGTH64 defined.
+						//   File coltypebug.cse crashes.
 						//   Fixed (maybe) by overriding COL::CopyFrom().
 						//   Further research needed: why both Copy() and CopyFrom()?
 						//      (both use memcpy(), dangerous when object contains heap ptrs)
@@ -84,9 +81,6 @@
 
 #define OAVREV2			// define to enable revised Outside Air Vent modeling
 						//   3-25-2014
-
-#define FIXAUTOSIZE		// define to enable several modifications seeking to
-						//   improve autosizing stability, 2-22-2016
 
 //------------------------------------------------ DEFINES --------------------------------------------------
 
@@ -104,7 +98,6 @@
 							//      + 2 per additional mode (e.g.nat vent) + 1 (low end floating)
 							//   = 2 * MAX_TUKS * MAX_ZONETUS + 3
 
-// re interval data tracking
 #define IVLDATADIM 4		// dimension of interval data arrays
 							//    4 = Y, M, D, H
 							// see IvlData() template function, cnglobl.h
@@ -113,8 +106,9 @@
 							//   must be known in cnrecs.def
 							//   must be consistent the rsmXXX enum
 
-#undef ASHP_COMPAREMP		// define to enable Micropas comparison code for ASHP
-							//   experimental, 5-9-2013
+#define NDHWENDUSESPP 6		// # of DHW end uses (for use in cnrecs.def)
+							//   must be same as C_DHWEUCH_COUNT
+							//   see also cnglob.h const int NDHWENDUSES
 
 #define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
 
@@ -125,8 +119,6 @@
 							//   4 = kwPerTon fit 6-4-2013
 							//   5 = force COP17=1.8 at HSPF=6.8 6-4-2013
 							//   6 = derive COP17 and COP35 so HSPF matches input
-
-#define ASHP_DEFROSTHT		// define to model heating during defrost, 8-7-2013
 
 #define DETAILED_TIMING		// define to enable fine-grain timing
 

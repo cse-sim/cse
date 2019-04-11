@@ -84,7 +84,8 @@ makAncDUCTSEG( DsR);		// duct segments
 makAncDHWMTR( WMtrR);		// DHW meters
 makAncDHWSYS( WsR);			// DHW system
 makAncDHWHEATER( WhR);		// DHW heater
-makAncDHWTANK( WtR);		// DHW heater
+makAncDHWHEATREC( WrR);		// DHW heat recovery
+makAncDHWTANK( WtR);		// DHW tank
 makAncDHWPUMP( WpR);		// DHW pump
 makAncDHWLOOP( WlR);		// DHW loop
 makAncDHWLOOPSEG( WgR);		// DHW loop segment
@@ -134,6 +135,8 @@ makAncHDAY( HdayB);		// holidays. default records supplied
 
 // ---- Input Globals: set externally in cse.cpp
 
+const char* cmdLineArgs = NULL;			// command line arguments (argv[ 1 ..]) (in dm)
+										//   suitable for display (wrapped if long)
 const char* exePath = NULL;				// path(s) to .exe file or dll;exe in dm
 const char* InputFileName = NULL;		// input file name as entered by user: no added path nor defaulted ext.
 										//   = pts into cne3

@@ -79,11 +79,7 @@ CHP      --		"char *"		4	none
 UCH      --		"unsigned char"		1	none
 TI      --		"SI"			2	none		// (rat) table index (subscript); 0 means unset.
 
-#if defined( ANAMELENGTH64)	// longer names, 2-17-2012
 ANAME   -- 		"char[64]"		64	63		// name string for use in RATs:
-#else
-ANAME   -- 		"char[16]"		16	15		// name string for use in RATs:
-#endif
 IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
 								8	none
 ITIME    --     "struct {SI hour;SI min;SI sec;}"
@@ -154,25 +150,6 @@ XFILEP  --     "XFILE *"                  4       none
 // arrays used in WFILE record, 1-94
 WFLOC   --     "char[32]"                32       none		// weather file location string (+ \0 + fill byte)
 WFLID   --     "char[18]"                18       none		// weather file location id string ( + \0 + fill byte)
-
-// Types for Import Files, 2-94
-//
-//   struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-//   {  CHP fieldName;		// 4  NULL or field name (in heap) per file header, for error messages
-//      SI fnmi;		// 2  0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-//      CHP fp;			// 4  NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-//      BOO nDecoded;		// 2  TRUE if numeric value of field in current record has been decoded
-//      FLOAT fnv;		// 4  if nDecoded, this is the numeric value -- don't decode twice
-//   };			// size = 16
-FNRT   --   "struct { CHP fieldName; SI fnmi; CHP fp; BOO nDecoded; FLOAT fnv; }"  16   none	// FNR table: heap block
-FNRTP  --   "FNRT *"                                                                4   none	// ptr to FNR table
-//
-//   struct FNMT	// field names table struct for IFFNM.fnmt[] in heap
-//   {  CHP fieldName;		// 4  field name used in Import() (no entry for fields not used by name in Import()s)
-//      SI fnr;			// 2  field NUMBER established when file opened
-//   }; 		// size =  6
-FNMT   --   "struct { CHP fieldName; SI fnr; }"         6    none	// field names table struct: heap block
-FNMTP  --   "FNMT *"                                    4    none	// pointer to FNMT: record field
 
 WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
 								2	none	// open wthr file type (comments: wfpak.h)
@@ -317,6 +294,8 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  WINKELMANN "Winkelmann"
 			  WALTON "Walton"
 			  MILLS "Mills"
+			  TARP "TARP"
+			  DOE2 "DOE2"
 			  UNIFIED "Unified"
 			  }
 *choicb RSYSMODECTRLCH {
@@ -338,6 +317,10 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			NONE "None"
 			FIXEDFLOW "FixedFlow"
 			VARFLOW   "VarFlow"
+		  }
+*choicb RSYSDEFROSTMODELCH {
+			REVCYCLE    "RevCycle"
+			REVCYCLEAUX "RevCycleAux"
 		  }
 
 // DHW choices
@@ -422,6 +405,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			2013 "2013"
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
+*choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
 
 // PV choices
 *choicb PVMODCH {
@@ -434,7 +418,6 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			FXDOR "FixedOpenRack"
 			FXDRF "FixedRoofMount"
 			1AXT "OneAxisTracking"
-			1AXBT "OneAxisBacktracking"
 			2AXT "TwoAxisTracking"
 		  }
 
@@ -488,7 +471,9 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 
 *choicb RPTHDCH  { NO     "No"
                    YES    "Yes"
+				   YESIF  "YesIfNew"
                    COL    "ColumnsOnly"
+                   COLIF  "ColumnsOnlyIfNew"
                   }
 
 
@@ -502,7 +487,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
 			  HTG		"Htg"	// space heating incl heat pump compressor
-			  HPHTG		"HPHtg"	// heat pump backup heat
+			  HPHTG		"HPHtg"	// heat pump backup and defrost heat
 			  DHW		"DHW"	// domestic (service) hot water heating
 			  DHWBU		"DHWBU"	// domestic (service) hot water heating backup
 			  DHWMFL	"DHWMFL"// domestic (service) hot water DHWLOOP energy
@@ -510,7 +495,7 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  FANH		"FanH"	// fan energy for heating
 			  FANV		"FanV"	// fan energy for IAQ venting
 			  FAN		"Fan"	// fan energy for other purposes
-			  AUX		"Aux"	// HVAC auxiliary, not inlcuding fans
+			  AUX		"Aux"	// HVAC auxiliary, not including fans
 			  PROC		"Proc"	// process energy
 			  LIT		"Lit"	// lighting
 			  RCP		"Rcp"	// receptacles

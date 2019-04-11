@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
-#include "PVCalc.h"
 #include "ancrec.h" 	// record: base class for rccn.h classes
 #include "tdpak.h"
 
@@ -16,9 +15,6 @@
 #include "exman.h"
 #include "slpak.h"
 
-
-bool pvWattsLoaded = false;
-static XPVWATTS PVWATTS; // public PVWATTS Library object
 
 static const float airRefrInd = 1.f;
 static const float glRefrInd = 1.526f;
@@ -29,13 +25,6 @@ PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 {
 	FixUp();
 }	// PVARRAY::PVARRAY
-//-----------------------------------------------------------------------------
-PVARRAY::~PVARRAY()
-{
-	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
-		PVWATTS.xp_ClearData(this);
-	}
-}	// PVARRAY::~PVARRAY
 //-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
 {	pv_g.gx_SetParent( this);
@@ -88,22 +77,9 @@ int PVARRAY::pv_AxisCount() const
 RC PVARRAY::pv_CkF()
 {
 	RC rc = RCOK;
-	if (pv_usePVWattsDLL == C_NOYESCH_YES && !pvWattsLoaded) {
-		PVWATTS.xp_Setup("SSC.DLL");
-		pvWattsLoaded = true;
-	}
 
 	const char* pvArrTyTx = getChoiTx(PVARRAY_ARRAYTYPE, 1);
 	const char* whenAT = strtprintf("when pvArrayType=%s", pvArrTyTx);
-	const char* pvUsePVWTyTx = getChoiTx(PVARRAY_USEPVWATTSDLL, 1);
-	const char* whenPVW = strtprintf("pvUsePVWatts=%s", pvUsePVWTyTx);
-
-	if (pv_usePVWattsDLL == C_NOYESCH_NO) {
-		if (pv_arrayType == C_PVARRCH_1AXT)
-			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to capture effects of array self-shading.", whenAT, whenPVW);
-		else if (pv_arrayType == C_PVARRCH_1AXBT)
-			rc |= oWarn("Shading is not calculated %s and %s. Use pvUsePVWatts=Yes to utilize backtracking algorithm.", whenAT, whenPVW);
-	}
 
 	int axisCount = pv_AxisCount();		// 0 (fixed), 1, or 2
 
@@ -151,9 +127,6 @@ RC PVARRAY::pv_CkF()
 	}
 	else {
 		rc |= requireN(whenMT, PVARRAY_TEMPCOEFF, PVARRAY_COVREFRIND, 0);
-		if (pv_usePVWattsDLL == C_NOYESCH_YES) {
-			rc |= oer("Cannot use %s %s", whenPVW, whenMT);
-		}
 		if (pv_tempCoeff > 0.f) {
 			rc |= oWarn("Temperature coefficient (%0.4f) is positive. Values are typically negative.", pv_tempCoeff);
 		}
@@ -203,26 +176,6 @@ RC PVARRAY::pv_Init()		// init for run
 
 	pv_tauNorm = tauARNorm*tauGlNorm;
 
-	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
-		switch (pv_moduleType)
-		{
-		case C_PVMODCH_STD: pv_modMap = 0; break;
-		case C_PVMODCH_PRM: pv_modMap = 1; break;
-		case C_PVMODCH_THF: pv_modMap = 2; break;
-		}
-
-		switch (pv_arrayType)
-		{
-		case C_PVARRCH_FXDOR: pv_arrMap = 0; break;
-		case C_PVARRCH_FXDRF: pv_arrMap = 1; break;
-		case C_PVARRCH_1AXT: pv_arrMap = 2; break;
-		case C_PVARRCH_1AXBT: pv_arrMap = 3; break;
-		case C_PVARRCH_2AXT: pv_arrMap = 4; break;
-		}
-
-		PVWATTS.xp_InitData(this);
-	}
-
 	return rc;
 }	// PVARRAY::pv_Init
 
@@ -234,54 +187,49 @@ RC PVARRAY::pv_DoHour()
 	rc |= pv_CalcPOA();
 
 	if (Top.isBegRun)
-	{   // Set initial values for I/O type variables in SAM SDK
-		pv_tCellPv = Top.tDbOHrAv;
-		pv_poaPv = pv_poa;
+	{
+		pv_tCellLs = Top.tDbOHrAv;
+		pv_radILs = pv_radI;
 	}
 
 	// Use top level grndRefl if not set for the PV array
 	if (!IsSet( PVARRAY_GRNDREFL ))
 		pv_grndRefl = Top.grndRefl;
 
-	if (pv_usePVWattsDLL == C_NOYESCH_YES) {
-		rc |= PVWATTS.xp_CalcAC(this);
+	// Calculate cell temperture
+	rc |= pv_CalcCellTemp();
+
+	// Calculate DC output
+	const float tRef = DegCtoF(25.f);
+	const float iRef = IrSItoIP(1000.f);
+	float dcMax = pv_dcCap*Pten[3] * BtuperWh;  // Btu (fix if moving to subhour timesteps)
+	pv_dcOut = pv_radTrans * dcMax / iRef*(1 + pv_tempCoeff*(pv_tCell - tRef));
+
+	// Apply system losses
+	pv_dcOut *= 1 - pv_sysLoss;
+
+	// Apply inverter efficiency
+	float plf = pv_dcOut / dcMax;
+	const float effRef = 0.9637f;
+	float acMax = dcMax / pv_dcacRat;
+	float eff;
+	if (plf <= 0.f) {
+		eff = 0.f;
 	}
 	else {
-		// Calculate cell temperture
-		rc |= pv_CalcCellTemp();
-
-		// Calculate DC output
-		const float tRef = DegCtoF(25.f);
-		const float iRef = IrSItoIP(1000.f);
-		float dcMax = pv_dcCap*Pten[3] * BtuperWh;  // Btu (fix if moving to subhour timesteps)
-		pv_dcOut = pv_poaT * dcMax / iRef*(1 + pv_tempCoeff*(pv_tCell - tRef));
-
-		// Apply system losses
-		pv_dcOut *= 1 - pv_sysLoss;
-
-		// Apply inverter efficiency
-		float plf = pv_dcOut / dcMax;
-		const float effRef = 0.9637f;
-		float acMax = dcMax / pv_dcacRat;
-		float eff;
-		if (plf <= 0.f) {
-			eff = 0.f;
-		}
-		else {
-			eff = pv_invEff / effRef*(-0.0162f*plf - 0.0059f / plf + 0.9858f);
-		}
-
-		eff = min(1.f, max(0.f, eff));  // bound efficiency between 0 and 1
-
-		pv_acOut = eff*pv_dcOut;
-		pv_acOut = min(acMax, pv_acOut);  // clip output if it exceeds AC nameplate
+		eff = pv_invEff / effRef*(-0.0162f*plf - 0.0059f / plf + 0.9858f);
 	}
+
+	eff = min(1.f, max(0.f, eff));  // bound efficiency between 0 and 1
+
+	pv_acOut = eff*pv_dcOut;
+	pv_acOut = min(acMax, pv_acOut);  // clip output if it exceeds AC nameplate
 
 	if (pv_pMtrElec)
 		MtrB.p[pv_elecMtri].H.mtr_Accum(pv_endUse, -pv_acOut);
 
-	pv_tCellPv = pv_tCell;
-	pv_poaPv = pv_poa;
+	pv_tCellLs = pv_tCell;
+	pv_radILs = pv_radI;
 
 	return rc;
 }	// PVARRAY::pv_DoHour
@@ -339,18 +287,19 @@ RC PVARRAY::pv_CalcPOA()
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
 	{	pv_ClearShading();
-		pv_poa = 0.f;
-		pv_poaT = 0.f;
+		pv_poa = 
+		pv_radIBeam =
+		pv_radIBeamEff =
+		pv_radI =
+		pv_radIEff =
+		pv_radTrans = 0.f;
 		pv_aoi = kPiOver2;
 		return rc;
 	}
 
-	// TODO Calculate shading and backtracking for single-axis tracking and fixed arrays
-
 	switch (pv_arrayType)
 	{
 	case C_PVARRCH_1AXT:
-	case C_PVARRCH_1AXBT:
 	{
 		float sinz = sin(acos(cosz));
 		float x = (sinz*sin(azm - pv_azm)) / (sinz*cos(azm - pv_azm)*sin(pv_tilt) + cosz*cos(pv_tilt));
@@ -400,7 +349,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	// Calculate plane-of-array incidence
 	int sunupSrf;	// nz iff
-	float cosi, fBeam;
+	float cosi, fBeam; // cos(incidence) and unshaded fraction
 	if (pv_HasPenumbraShading() && Top.tp_PumbraAvailability() > 0)
 		sunupSrf = pv_CalcBeamShading( cosi, fBeam);
 	else
@@ -414,13 +363,15 @@ RC PVARRAY::pv_CalcPOA()
 	if (sunupSrf < 0)
 		return RCBAD;	// shading error
 
-	float poaBeam;
 	if (sunupSrf)	
-	{	poaBeam = Top.radBeamHrAv*cosi*fBeam;  // incident beam (including shading)
+	{
+		pv_poaBeam = Top.radBeamHrAv*cosi;
+		pv_radIBeam = pv_poaBeam*fBeam;  // incident beam (including shading)
+		pv_radIBeamEff = max(pv_poaBeam*(1.f - pv_sif * (1.f - fBeam)),0.f);
 		pv_aoi = acos(cosi);
 	}
 	else
-	{	poaBeam = 0.f;  // incident beam
+	{	pv_poaBeam = pv_radIBeam = pv_radIBeamEff = 0.f;  // incident beam
 		pv_aoi = kPiOver2;
 	}
 
@@ -480,7 +431,9 @@ RC PVARRAY::pv_CalcPOA()
 
 	float poaDiff = Top.radDiffHrAv*(poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
 	float poaGrnd = Top.radBeamHrAv*pv_grndRefl*vfGrndDf*verSun;  // ground reflected beam
-	pv_poa = poaBeam + poaDiff + poaGrnd;
+	pv_poa = pv_poaBeam + poaDiff + poaGrnd;
+	pv_radI = pv_radIBeam + poaDiff + poaGrnd;
+	pv_radIEff = pv_radIBeamEff + poaDiff + poaGrnd;
 
 	// Correct for off-normal transmittance
 	float theta1 = pv_aoi;
@@ -491,7 +444,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	float tauC = tauAR*tauGl;
 
-	pv_poaT = poaBeam*tauC / pv_tauNorm + poaDiff + poaGrnd;
+	pv_radTrans = pv_radIBeamEff *tauC / pv_tauNorm + poaDiff + poaGrnd;
 
 	return rc;
 }
@@ -577,11 +530,11 @@ RC PVARRAY::pv_CalcCellTemp()
 	const float absorp = 0.83f;
 	const float ts = 3600.f;  // s (change if moving to subhour timesteps)
 
-	float tMod0 = DegFtoK(pv_tCellPv);  // K
+	float tMod0 = DegFtoK(pv_tCellLs);  // K
 	float tAir = DegFtoK(Top.tDbOHrAv);  // K
 	float vWindWS = VIPtoSI(Top.windSpeedHrAv);  // m/s
-	float iSol0 = IrIPtoSI(pv_poaPv)*absorp;  // W/m2
-	float iSol = IrIPtoSI(pv_poa)*absorp;  // W/m2
+	float iSol0 = IrIPtoSI(pv_radILs)*absorp;  // W/m2
+	float iSol = IrIPtoSI(pv_radI)*absorp;  // W/m2
 
 	float tMod = tMod0;  // initialize cell temperature, K
 	const float htMod = 5.f;  // m, assumed by PVWatts
@@ -620,136 +573,3 @@ RC PVARRAY::pv_CalcCellTemp()
 
 	return rc;
 }
-
-LOCAL ssc_bool_t CSE_PVWatts_Handler(ssc_module_t p_mod,
-	ssc_handler_t p_handler,
-	int action,
-	float f0,
-	float f1,
-	const char *s0,
-	const char *s1,
-	void *user_data)
-{
-	if (action == SSC_LOG)
-	{
-		switch ((int)f0)
-		{
-		case SSC_NOTICE: rInfo("PVARRAY '%s': PVWatts notice \"%s\"", ((PVARRAY*)user_data)->name, s0); break;
-		case SSC_WARNING: rWarn("PVARRAY '%s': PVWatts warning \"%s\"", ((PVARRAY*)user_data)->name, s0); break;
-		case SSC_ERROR: rer("PVARRAY '%s': PVWatts error \"%s\"", ((PVARRAY*)user_data)->name, s0); break;
-		}
-		return 1;
-	}
-	else
-		return 1;
-}	// CSE_PVWatts_Handler
-
-///////////////////////////////////////////////////////////////////////////////
-// class XPVWATTS: interface to PVWATTS (photovoltaic array module)
-///////////////////////////////////////////////////////////////////////////////
-//=============================================================================
-XPVWATTS::XPVWATTS(const char* moduleName)		// c'tor
-	: XMODULE(moduleName)
-{
-	xp_Setup(moduleName);
-}	// XPVWATTS::XPVWATTS
-
-//-----------------------------------------------------------------------------
-XPVWATTS::~XPVWATTS()
-{
-	if (pv_mod)
-		ssc_module_free(pv_mod);
-}	// XPVWATTS::~XPVWATTS
-//-----------------------------------------------------------------------------
-RC XPVWATTS::xp_Setup(const char* moduleName)
-{
-	xm_SetModule(moduleName);
-	if (!xm_hModule)
-	{
-		if (xm_LoadLibrary() == RCOK)
-		{
-			ssc_data_create = (ssc_data_create_fn)xm_GetProcAddress("ssc_data_create");
-			ssc_data_set_number = (ssc_data_set_number_fn)xm_GetProcAddress("ssc_data_set_number");
-			ssc_module_create = (ssc_module_create_fn)xm_GetProcAddress("ssc_module_create");
-			ssc_module_exec_simple = (ssc_module_exec_simple_fn)xm_GetProcAddress("ssc_module_exec_simple");
-			ssc_data_get_number = (ssc_data_get_number_fn)xm_GetProcAddress("ssc_data_get_number");
-			ssc_data_free = (ssc_data_free_fn)xm_GetProcAddress("ssc_data_free");
-			ssc_module_free = (ssc_module_free_fn)xm_GetProcAddress("ssc_module_free");
-			ssc_module_exec_with_handler = (ssc_module_exec_with_handler_fn)xm_GetProcAddress("ssc_module_exec_with_handler");
-		}
-	}
-	RC rc = xm_RC;
-	pv_mod = ssc_module_create("pvwattsv5_1ts");
-	return rc;
-}	// XPVWATTS::xp_Setup
-
-void XPVWATTS::xp_InitData(PVARRAY *pvArr)
-{
-	// Set pointer to SAM SDK data container
-	pvArr->pv_ssc_data = ssc_data_create();
-
-	// Set static PV Watts inputs
-	ssc_data_set_number(pvArr->pv_ssc_data, "year", 1970);  // Replace with variable? (has tiny effect on sun position)
-	ssc_data_set_number(pvArr->pv_ssc_data, "lat", Top.latitude);
-	ssc_data_set_number(pvArr->pv_ssc_data, "lon", Top.longitude);
-	ssc_data_set_number(pvArr->pv_ssc_data, "tz", Top.timeZone);
-	ssc_data_set_number(pvArr->pv_ssc_data, "time_step", 1);  // timestep of input data (hourly weather data)
-
-	ssc_data_set_number(pvArr->pv_ssc_data, "system_capacity", pvArr->pv_dcCap);
-	ssc_data_set_number(pvArr->pv_ssc_data, "module_type", pvArr->pv_modMap);
-	ssc_data_set_number(pvArr->pv_ssc_data, "array_type", pvArr->pv_arrMap);
-	ssc_data_set_number(pvArr->pv_ssc_data, "dc_ac_ratio", pvArr->pv_dcacRat);
-	ssc_data_set_number(pvArr->pv_ssc_data, "gcr", pvArr->pv_gcr);
-	ssc_data_set_number(pvArr->pv_ssc_data, "inv_eff", pvArr->pv_invEff * 100);  // input in %
-	ssc_data_set_number(pvArr->pv_ssc_data, "losses", pvArr->pv_sysLoss * 100);  // input in %
-
-}	// XPVWATTS::xp_InitData
-
-RC XPVWATTS::xp_CalcAC(PVARRAY *pvArr)
-{
-
-	RC rc = RCOK;
-
-	// Set PV Watts hourly input data
-	ssc_data_set_number(pvArr->pv_ssc_data, "month", Top.tp_date.month);
-	ssc_data_set_number(pvArr->pv_ssc_data, "day", Top.tp_date.mday);
-	ssc_data_set_number(pvArr->pv_ssc_data, "hour", Top.iHrST);  // PVWatts assumes standard time. This may have implications when CSE is using daylight savings.
-	ssc_data_set_number(pvArr->pv_ssc_data, "minute", 30);  // minute of the hour (typically 30 min for midpoint calculation)
-
-	ssc_data_set_number(pvArr->pv_ssc_data, "beam", IrIPtoSI(Top.radBeamHrAv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "diffuse", IrIPtoSI(Top.radDiffHrAv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "tamb", DegFtoC(Top.tDbOHrAv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "wspd", VIPtoSI(Top.windSpeedHrAv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "alb", pvArr->pv_grndRefl);
-
-	ssc_data_set_number(pvArr->pv_ssc_data, "tilt", DEG(pvArr->pv_tilt));
-	ssc_data_set_number(pvArr->pv_ssc_data, "azimuth", DEG(pvArr->pv_azm));
-	ssc_data_set_number(pvArr->pv_ssc_data, "tcell", DegFtoC(pvArr->pv_tCellPv));
-	ssc_data_set_number(pvArr->pv_ssc_data, "poa", IrIPtoSI(pvArr->pv_poaPv));
-
-
-	// Call PV Watts calculation
-	//rc |= !ssc_module_exec_simple("pvwattsv5_1ts", pvArr->pv_ssc_data); // Simple method
-	rc |= !ssc_module_exec_with_handler(pv_mod, pvArr->pv_ssc_data, CSE_PVWatts_Handler, pvArr);
-
-	ssc_number_t dc, ac, tcell, poa;
-
-	// Read PV Watts output
-	rc |= !ssc_data_get_number(pvArr->pv_ssc_data, "dc", &dc);
-	rc |= !ssc_data_get_number(pvArr->pv_ssc_data, "ac", &ac);
-	rc |= !ssc_data_get_number(pvArr->pv_ssc_data, "tcell", &tcell);
-	rc |= !ssc_data_get_number(pvArr->pv_ssc_data, "poa", &poa);
-	pvArr->pv_tCell = DegCtoF(tcell);
-	pvArr->pv_poa = IrSItoIP(poa);
-	pvArr->pv_dcOut = dc*BtuperWh; // CAUTION: Only works for hourly timesteps. Change for sub-hour
-	pvArr->pv_acOut = ac*BtuperWh; // CAUTION: Only works for hourly timesteps. Change for sub-hour
-
-	return rc;
-}	// XPVWATTS::xp_CalcAC
-
-void XPVWATTS::xp_ClearData(PVARRAY *pvArr)
-{
-	if (pvArr->pv_ssc_data)
-		ssc_data_free(pvArr->pv_ssc_data);
-	pvArr->pv_ssc_data = NULL;
-}	// XPVWATTS::xp_ClearData

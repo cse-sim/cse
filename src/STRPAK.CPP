@@ -680,11 +680,11 @@ const char* FC scWrapIf( const char* s1, const char* s2, const char* tweenIf)
 
 // concatenate strings to Tmpstr, with text "tweenIf" between them if overlong line would otherwise result
 {
-	USI maxll = getCpl() - 3;
+	int maxll = getCpl() - 3;
 	// -3: leave some space for adding punctuation, indent, etc.
 	return strtcat( s1,
 					strJoinLen( s1, s2) 		// length of line if joined
-					> maxll  ?  tweenIf  :  "",
+					     > maxll  ?  tweenIf  :  "",
 					s2,
 					NULL );
 }	// scWrapIf

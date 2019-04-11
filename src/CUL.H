@@ -184,8 +184,8 @@ III. Member Input
  #define DAT	   6	// cmd sets single record member datum to expr
  #define KDAT	   7	// cmd sets datum to constant in .dfpi/.dff
  #define NODAT	   8	// none of the above -- cmd just calls .prf, .ckf.
- #define CLEAR	   9	/* CLEAR command: defaults all data, removes entries from RATs & arrays per cult.
- 			   Use its fcns to re-do other init as required. */
+ #define CLEAR	   9	// CLEAR command: defaults all data, removes entries from RATs & arrays per cult.
+ 						//   Use its fcns to re-do other init as required.
  #define RUN	  12	// start-execution command (returns 2 from cul.c)
  #define ENDER	  13	// .id is word that ends input for table & pops
  #define END      15	// generic ENDER "end", accepted even if not in table (used in cul.c table "stdVrbs")

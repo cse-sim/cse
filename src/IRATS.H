@@ -51,6 +51,7 @@ extern anc<DUCTSEG> DsiB;		// duct segment input records
 extern anc<DHWMTR> WMtriB;		// DHW meters
 extern anc<DHWSYS> WSiB;		// DHW system input records
 extern anc<DHWHEATER> WHiB;		// DHW heater input records
+extern anc<DHWHEATREC> WRiB;	// DHW heat rec input records
 extern anc<DHWTANK> WTiB;		// DHW tank input records
 extern anc<DHWPUMP> WPiB;		// DHW pump input records
 extern anc<DHWLOOP> WLiB;		// DHW loop input records

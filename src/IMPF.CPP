@@ -2,9 +2,27 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// impf.cpp  Imports runtime code for CSE 2-94
+// impf.cpp  Imports compile and runtime code for CSE
 
-// see also: Imports compile code in cncult4 and cuparse.cpp.
+
+/*------------------------------- INCLUDES --------------------------------*/
+#include <cnglob.h>	// cse global header. ASSERT.
+#include <io.h>		// open read close
+#include <fcntl.h>	// O_RDONLY O_BINARY
+
+#include <ancrec.h>	// record: base class for rccn.h classes
+#include <rccn.h>	// IMPF IFFNM
+#include "pp.h"
+#include "cutok.h"
+#include "irats.h"
+#include "cueval.h"
+#include <msghans.h>	// MH_1901
+
+#include <rmkerr.h>	// warn
+
+#include <cnguts.h>	// ImpfB IffnmB
+
+#include <impf.h>	// declarations for fcns in this file
 
 /*
 "Imports" covers:
@@ -48,7 +66,7 @@ IFFNM strange status:
    The Import File Field NaMe table records in IffnmB communicate from the
    expression compiler mainly to runtime.
 
-   They are not created via cul.c/CULT stuff, but out of cuparse.cpp (tho code may be in cncult4.cpp).
+   They are not created via cul.c/CULT stuff, but out of cuparse.cpp
 
    They cannot be deleted after setup like most input records;
    they must be preserved thru run and successive runs till CLEAR.
@@ -58,167 +76,24 @@ TODO 11-2016 (when documentation written)
   (or add subhour support to import capabilities
 * Use common tokenizing code?
 * Improve messages
-
-
-
 */
 
-
-/*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// cse global header. ASSERT.
-#include <io.h>		// open read close
-#include <fcntl.h>	// O_RDONLY O_BINARY
-
-#include <ancrec.h>	// record: base class for rccn.h classes
-#include <rccn.h>	// IMPF IFFNM
-#include <msghans.h>	// MH_1901
-
-#include <rmkerr.h>	// warn
-
-#include <cnguts.h>	// ImpfB IffnmB
-
-#include <impf.h>	// declarations for fcns in this file
-
-
-//===========================================================================
-//  Import File Reading Functions
-//===========================================================================
-RC FC impfStart()		// import files stuff done at start run
-
-// returns non-RCOK with message issued on serious error that should prevent run.
-{
-	RC rc = RCOK;
-	IMPF * impf;
-	RLUP( ImpfB, impf)			// loop good import file run records
-	{	if (!impf->iffnmi)			// if file not used (no imports seen)
-			continue;				// don't open unused files. leave .isOpen 0 to prevents close.
-
-		// allocate buffer
-#define BUFSZ (1024+2)			// buffer size = absolute max record size, +2 for \r\n
-		if ( dmal( DMPP( impf->buf),	// dmpak.cpp. returns RCOK (which is 0) if ok.
-				   BUFSZ+1, 			// 1 extra byte for \0 always stored after data.
-				   DMZERO				// zero buffer - debug aid
-				   | WRN ) )			// warn & continue if can't get memory
-		{	rc = RCBAD;				// if failed, say return bad. caller should prevent run else many Import() errors.
-			continue;				// don't open file if no buffer
-		}   						// CODE ASSUMES BUFFER OK IF .isOpen NON-0.
-		impf->bufSz = BUFSZ;		// ok, store buffer size for readBuf.
-
-		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
-
-		impf->fh = open( impf->fileName, O_RDONLY|O_BINARY);
-		if (impf->fh < 0)
-		{	rc = err( WRN, 		 	// general error msg, errCount++. WRN: await keypress. rmkerr.cpp.
-					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
-					  impf->fileName );
-			continue;
-		}
-		impf->isOpen = TRUE;		// say open & buffer allocated: enable read and close
-
-		// scan header
-		if (impf->scanHdr())		// scan file header, nop if none, get field names, non-RCOK (non-0) if error.
-		{	impf->close();  		// after bad header, close now to avoid impfEnd's "too few lines" warning
-			rc = RCBAD;				// return bad. expected to stop run.
-			continue;
-		}
-
-		// save file postition after header to seek back to after warmup.
-		LI temPos = tell(impf->fh);		// get file position
-		if (temPos < 0L)				// -1L if error
-		{	rc = err( PWRN, 			// general error message (rmkerr.cpp), count error (errCount++), return RCBAD.
-					  (char *)MH_R1902, 		// "Tell error (%ld) on import file %s. No run."
-					  impf->fileName );
-			continue;
-		}
-		USI unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
-		impf->posEndHdr = temPos - (LI)(ULI)unused;	// store position at start of data
-		impf->lineNoEndHdr = impf->lineNo;			// store corresponding line number for error messages
-	}
-	return rc;
-}		// impfStart
-//---------------------------------------------------------------------------
-RC FC impfAfterWarmup()		// import files stuff done after CSE warmup and after each repetition of each autosizing day
-
-// resets import files to start so they do not have to contain extra data at beginning for warmup.
-// Each file must however be long enough for warmup even if run is shorter. Default warmup is 7 days, 2-94.
-{
-	RC rc = RCOK;
-	IMPF* impf;
-	RLUP( ImpfB, impf)				// loop good import file run records
-	{
-		if (!impf->isOpen)			// if file not open (eg not used -- no imports seen)
-			continue;						// don't rewind
-		LI newPos = _lseek( impf->fh, impf->posEndHdr, SEEK_SET);	// seek to end header / return new position or -1 if error
-		if (newPos != impf->posEndHdr)				// if got wrong position or error
-			rc |= err( WRN,					// <--- apparently missing WRN added, rob 5-97
-					   (char *)MH_R1903, 				// "Seek error (%ld) on import file %s, handle %d"
-					   newPos, impf->fileName, (INT)impf->fh );
-
-		impf->bufI1 = impf->bufI2 = impf->bufN = 0;	// set buffer empty -- force reread
-		impf->eofRead = impf->eof = FALSE;		// ..
-		impf->buf[0] = '\0';				// ..
-		impf->lineNo = impf->lineNoEndHdr;		// restore file line number used in error messages
-	}
-	return rc;
-}		// impfAfterWarmup
-//---------------------------------------------------------------------------
-void FC impfEnd()			// import files stuff done at end run
-
-// redundant calls ok.
-{
-	IMPF* impf;
-	RLUP( ImpfB, impf)				// loop import files
-	{	if (impf->isOpen) 			// if this file is open
-		{	// warn if not all of file used unless warmup required longer file (short run)
-			int nlnfwud;				// number of lines needed for warmup days
-			int wud = max( Top.wuDays, 7);		// # warmup days, not less than default of 7 (2-94)
-			switch (impf->imFreq)
-			{
-			case C_IVLCH_H:
-				nlnfwud = 24 * wud;
-				break;
-			case C_IVLCH_D:
-				nlnfwud = wud;
-				break;
-			case C_IVLCH_M:
-				nlnfwud = 2;
-				break;	// 1 usually, 2 if crosses month end
-			default:
-				nlnfwud = 1;
-				break;	// incl C_IVLCH_Y
-			}
-			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
-				if (impf->readRec())			// read next record from file / TRUE if successful
-					warn( (char *)MH_R1904,			// "Import File %s has too many lines. \n"
-						  impf->fileName, 			// "    Text at at/after line %d not used." */
-						  (INT)impf->lineNo );		// use warn to display message without incrementing error counter
-
-			// close file and free buffer
-			impf->close();		// mbr fcn also called in destructor. clears .isOpen.
-		}
-		dmfree( DMPP( impf->buf));	// free buffer and NULL .buf. if redundant here, harmless.
-	}
-}		// impfEnd
-//---------------------------------------------------------------------------
-void FC impfIvl( 		// import files stuff done at start interval: get new record
-	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, or _H
-// D implies H, M implies H and D, etc.
-{
-	IMPF* impf;
-	RLUP( ImpfB, impf)			// loop import files
-	if ( impf->imFreq >= ivl		// if this file has frequency we are doing, or hier
-			&&  impf->isOpen )		// if this file is open and buffer allocated
-	{
-		impf->readRec();		// get first / next record in buffer, init to scan fields.
-		// no eof error here, only when a field actually accessed.
-	}
-}		// impfIvl
-//---------------------------------------------------------------------------
-
-
-//===========================================================================
-//  declaration of local class for decoding import fields
-//===========================================================================
+///////////////////////////////////////////////////////////////////////////////
+// local classes
+///////////////////////////////////////////////////////////////////////////////
+struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
+{  CHP fieldName;		// NULL or field name (in heap) per file header, for error messages
+   SI fnmi;			// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+   CHP fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+   BOO nDecoded;		// TRUE if numeric value of field in current record has been decoded
+   FLOAT fnv;			// if nDecoded, this is the numeric value -- don't decode twice
+};
+//=============================================================================
+struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
+{  CHP fieldName;		// field name used in Import() (no entry for fields not used by name in Import()s)
+   SI fnr;			// field NUMBER established when file opened
+};
+//=============================================================================
 class ImpFldDcdr
 {
 	// the import file
@@ -250,8 +125,6 @@ public:
 	{	return fnrt ? fnrt->fnv : 0.f;    // numeric value, 0 if error
 	}
 };			// class ImpFldDcdr
-//===========================================================================
-//  member functions of local class for decoding import files
 //===========================================================================
 ImpFldDcdr::ImpFldDcdr( 		// constructor: initializes
 	int fileIx,			// cse input file name index for file in which import() occurred, for use in error messages
@@ -438,8 +311,394 @@ subErr:	// error using subtext "sub", eg "non-numeric value"
 					msg( NULL, sub), 					/* gets text for msg handle, 6-95 */
 					start ));
 }				// ImpFldDcdr::decNum
-//---------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+// IMPORT() function compile support
+// called from cuparse.cpp
+///////////////////////////////////////////////////////////////////////////////
+
+/* Import function story, 2-94:
+
+Import() fcn is unique in CSE as of 2-94 in that compiling this expression
+element requires compile-time setting and use of info in a record array table:
+IFFNM is used to remember Import File names (permitting forward references)
+and field names (resolved to numbers at file open).
+
+(Usually, only final expression value goes in record array table
+member; other accesses in expression (probes) are done at run time.)
+
+Import() function compiling: cuparse.cpp does syntax, calling code here to
+handle IFFNM records, cuparse.cpp emits pseudo-code.
+*/
+
+LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, USI line, IVLCH *imFreq, IFFNM **ppIffnm);
+
+//--------------------------------------------------------------------------
+// Following 2 fcns make IFFNM record if new name, return its subscript.
+// Name version enters field name and returns field name index.
+//--------------------------------------------------------------------------
+RC impFcn( 		// compile support for Import() of field by field number
+
+	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
+	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
+	int fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
+	int line,			// line number in srcFile ...  so errors can show location of first use.
+	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	SI /*fnr*/ )     		// requested field number
+
+// called from cuparse.cpp. May be declared in impf.h not cncult.h.
+{
+// find or add IFFNM record for this IMPORTFILE object name. (IMPORTFILE record created only when IMPORTFILE seen.)
+	IFFNM *iffnm;
+	if (impFcnFile( impfName, pIffnmi, fileIx, line, imFreq, &iffnm) != RCOK)	// find or add IFFNM record
+		return RCBAD;								// if failure retured (ABT expected)
+
+// record max field number seen
+//    * if member retained -- used?
+//    if (fnr > iffnm->maxFnrSeen)
+//       iffnm->maxFnrSeen = fnr;
+
+	return RCOK;
+}				// impFcn (numbered field)
+//---------------------------------------------------------------------------------------------------------------------------
+RC impFcn( 		// compile support for Import() of named field
+
+	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
+	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
+	int fileIx,			// file name index of input file being compiled: put in IFFNM record when created ...
+	int line,			// line number in srcFile ...  so errors can show location of first use.
+	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	char *fieldName,   	// requested field name: saved here in table in IFFNM record for resolution at file open
+	SI *fnmi ) 			// receives find name index for use in pseudo-code
+
+// called from cuparse.cpp. May be declared in impf.h not cncult.h.
+{
+// find or add IFFNM record for this IMPORTFILE object name. (IMPORTFILE record created only when IMPORTFILE seen.)
+
+	IFFNM *iffnm;
+	if (impFcnFile( impfName, pIffnmi, fileIx, line, imFreq, &iffnm) != RCOK)	// find or add IFFNM record
+		return RCBAD;								// if failure retured (ABT expected)
+
+// find or add entry in field names table
+
+	// Names in table will be resolved to field number at open; runtime accesses get fnr from table by fnmi.
+	SI tfnmi;
+	BOO found = FALSE;
+	if (iffnm->fnmt)		// insurance
+		for (tfnmi = 1;  tfnmi <= iffnm->fnmiN;  tfnmi++)		// 1-based subscript
+			if (!strcmpi( fieldName, iffnm->fnmt[tfnmi].fieldName))
+			{
+				found = TRUE;
+				break;
+			}
+	if (!found)			// if must add
+	{
+		// assign table position === field name index
+		tfnmi = ++iffnm->fnmiN;		// assign next 1-based field name index
+
+		// allocate or enlarge table if necessary
+		if ( tfnmi >= iffnm->fnmtNAl  	// if table needs to be bigger (>= like +1 for 1-based field numbers)
+				||  !iffnm->fnmt )		// or table not allocated yet (insurance)
+		{
+#define CHUNK 32			// number of field names to allocate at a time
+			SI toAl = iffnm->fnmtNAl + CHUNK;				// # slots to allocate
+			if (dmral( DMPP( iffnm->fnmt), toAl * sizeof(FNMT), ABT|DMZERO))	// (re)alloc, dmpak.cpp. abort (no return) if fails.
+				return RCBAD;						// if failure returned (not expected)
+			iffnm->fnmtNAl = toAl;    		// ok, store new size
+		}
+
+		// fill new IFFNM.fnmt[] entry
+		iffnm->fnmt[tfnmi].fieldName = strsave(fieldName);
+		iffnm->fnmt[tfnmi].fnr = 0;			// believed redundant
+	}
+	*fnmi = tfnmi;			// return field name index from local variable
+	return RCOK;
+}			// impFcn (named field)
+//---------------------------------------------------------------------------------------------------------------------------
+LOCAL RC impFcnFile( 			// find or add IFFNM record
+
+	char *impfName, 		// import file object name (1st arg in Import() fcn)
+	TI *pIffnmi,  		// receives IffnmB subscript of IFFNM record
+	USI fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
+	USI line,			// line number in srcFile ...  so errors can show location of (first) use.
+	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	IFFNM **ppIffnm )		// receives pointer to record
+
+// this is common part of named and numbered field impFcn() fcns.
+{
+// IFFNM record is used for Imports from numbered as well as named fields, for getting to IMPF at runtime so fwd ref ok.
+
+// find else add Import file field names record for this IMPORTFILE name.
+
+	IFFNM *iffnm;
+	if (IffnmB.findRecByNmU( impfName, pIffnmi, (record **)&iffnm) != RCOK)	// find record / if not found (ancrec.cpp)
+	{
+		// returns RCBAD not found or RCBAD2 not unique, but latter is not expected.
+
+		// not found, add.
+		if (IffnmB.add( &iffnm, ABT) != RCOK)			// add record, abort program if out of memory
+			return RCBAD;						// if failure returned (unexpected)
+		*pIffnmi = iffnm->ss;					// return added record subscript
+
+		// use IMPORTFILE given object name as record name, for later association with IMPORTFILEs.
+		strncpy( iffnm->name, impfName, sizeof(ANAME)-1 );
+
+		// put source file index and line in record so (first) use can be reported in errmsg eg if no IMPF for IFFNM.
+		iffnm->fileIx = fileIx;
+		iffnm->line = line;
+	}
+	*ppIffnm = iffnm;						// return pointer to found or added record
+
+// get frequency or return safe assumption
+
+	IMPF* iimpf;
+	if ( ImpfiB.findRecByNmU( iffnm->name, NULL, (record**)&iimpf )==RCOK	// look for IMPF record / if found
+			&& iimpf->sstat[IMPF_IMFREQ] & FsVAL )					// and frequency has been specified
+		*imFreq = iimpf->imFreq;						// return user-specified frequency
+	else
+		*imFreq = C_IVLCH_H;					// else assume the worst case: hourly
+
+	return RCOK;
+}			// impFcnFile
+//---------------------------------------------------------------------------------------------------------------------------
+
+
+
+RC topImpf()		// check/process ImportFiles at end of input
+
+// called from cncult2.cpp:topCkf.
+{
+	RC rc /*=RCOK*/;			// (redundant init removed 12-94 when BCC 32 4.5 warned)
+
+	/* IffnmB story. An IFFNM record is created when in the first Import() function
+	   is seen by cuparse.cpp expression compiler code for a given Import File.
+	   IFFNM purposes:
+
+	    1) Handle forward references to IMPF's (associated here by name,
+	       indirect access thru IFFNM to IMPF used during run), and
+
+	    2) Handle field references by name (associated when file is opened at
+	       start of run, indirect reference thru IFFNM.fnmt[] to IMPF.fnrt[] used
+	       during run) */
+
+// check Import File Field Name Tables and assocate with ImportFiles
+
+	IFFNM* iffnm;
+	IMPF* iimpf;
+	RLUP (IffnmB, iffnm)	// loop over IFFNM records (ancrec.h macro). One anc used for expr compile support and run.
+	{
+		// find ImportFile else error
+		if (ImpfiB.findRecByNmU( iffnm->name, &iffnm->impfi, (record**)&iimpf )!= RCOK)	// look for IMPF record, lib\ancrec.cpp
+		{
+			// return is RCBAD not found, RCBAD2 ambiguous, but latter not expected.
+			// note: don't use oer cuz it would show IFFNM object type name "ImpFileFldNames".
+			cuEr( 0, 0, 0, 1, iffnm->fileIx, iffnm->line, 0, 	// cutok.cpp
+				  (char *)MH_S0574, 				// "No IMPORTFILE \"\s\" found for IMPORT(%s,...)"
+				  iffnm->name, iffnm->name );
+			continue;					// error message prevents run.
+			// iffnm->impfi remains 0 to indicate no ImportFile for Import()(s) that created this IFFNM.
+		}
+
+		// associate importfile with iffnm. Other-way association, iffnm->impfi, was set by findRecByNmU call just above.
+		iimpf->iffnmi = iffnm->ss;			// store IffnmB record subscript in ImpfiB record member
+		// is iffnmi ever used?
+	}
+
+// check IMPORTFILES and make run records
+
+	E( ImpfB.al( ImpfiB.n, WRN) )		// delete old importfile run records, alloc needed # now for min fragmentation.
+	// E: return if error.  CAUTION: ratCre may not errCount++ on error.
+	RLUP (ImpfiB, iimpf)		// loop over good IMPF input records (ancrec.h macro)
+	{
+		// be sure all required members are set. Believed redundant; extra protection against FPE bomb-out on NAN (4-byte mbrs).
+		E( iimpf->CkSet( IMPF_FILENAME))			// if not set, no run, terminate checking now
+		E( iimpf->CkSet( IMPF_IMFREQ))			// if not set, no run, terminate checking now
+
+		// find file & save full path. Search same paths as for #include files. 2-95.
+		ppFindFile( iimpf->fileName);
+		// if not found, no message here... let old code issue message at runtime attempt to open.
+
+		// warn if unused (no Imports)
+		if (!iimpf->iffnmi)				// if no IFFNM found above for this IMPF, then it has no IMPORTs.
+		{
+			iimpf->oWarn( (char *)MH_S0575);		// "Unused IMPORTFILE: there are no IMPORT()s from it."
+			continue;					// need no run record if unused
+		}
+
+		// access IFFNM, error if named imports but no file header. No IFFNM is ok -- normal if no Imports by field name.
+		else
+		{
+			iffnm = IffnmB.p + iimpf->iffnmi;
+			if (iimpf->hasHeader != C_NOYESCH_YES)	// if user said no header on file
+				if (iffnm->fnmiN)				// if have name table entries --> IMPORT()s by name seen
+				{
+					iimpf->oer( (char *)MH_S0576);		// "imHeader=NO but IMPORT()s by field name (not number) used"
+					continue;
+				}
+		}
+
+		// ok, copy data to run record for this IMPORTFILE
+		IMPF *impf;
+		ImpfB.add( &impf, ABT, iimpf->ss);			// add IMPF run record, ret ptr to it.  err unexpected cuz al'd.
+		*impf = *iimpf;						// copy entire record including name; incRefs any heap pointers.
+
+		// runtime init is done in impf.cpp: allocate buffer, open file, get field names from header, etc.
+	}
+	return rc;
+}		// topImpf
+//---------------------------------------------------------------------------------------------------------------------------
+RC clearImpf()	// Import stuff clear function to call at CLEAR and before initial data entry
+
+// called from cncult2:topStarPrf, cncult2:cncultClean.
+{
+// clear the Import File Field NaMes table records.
+
+	/* These differ from most CSE records in that they are used both at compile
+	   time (from cuparse.cpp, not via CULT tables) and at run time,
+	   and thus cannot be cleared before last run (as input records normally are),
+	   nor after run if there is no clear (as run records normally are). 2-94 */
+
+	IffnmB.free();	// destroy and free all IFFNM records
+
+	return RCOK;
+}			// clearImpf
+////////////////////////////////////////////////////////////////////////////////////
+
+//===========================================================================
+//  Import File Reading Functions
+//===========================================================================
+RC FC impfStart()		// import files stuff done at start run
+
+// returns non-RCOK with message issued on serious error that should prevent run.
+{
+	RC rc = RCOK;
+	IMPF * impf;
+	RLUP( ImpfB, impf)			// loop good import file run records
+	{	if (!impf->iffnmi)			// if file not used (no imports seen)
+			continue;				// don't open unused files. leave .isOpen 0 to prevents close.
+
+		// allocate buffer
+#define BUFSZ (1024+2)			// buffer size = absolute max record size, +2 for \r\n
+		if ( dmal( DMPP( impf->buf),	// dmpak.cpp. returns RCOK (which is 0) if ok.
+				   BUFSZ+1, 			// 1 extra byte for \0 always stored after data.
+				   DMZERO				// zero buffer - debug aid
+				   | WRN ) )			// warn & continue if can't get memory
+		{	rc = RCBAD;				// if failed, say return bad. caller should prevent run else many Import() errors.
+			continue;				// don't open file if no buffer
+		}   						// CODE ASSUMES BUFFER OK IF .isOpen NON-0.
+		impf->bufSz = BUFSZ;		// ok, store buffer size for readBuf.
+
+		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
+
+		impf->fh = open( impf->fileName, O_RDONLY|O_BINARY);
+		if (impf->fh < 0)
+		{	rc = err( WRN, 		 	// general error msg, errCount++. WRN: await keypress. rmkerr.cpp.
+					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
+					  impf->fileName );
+			continue;
+		}
+		impf->isOpen = TRUE;		// say open & buffer allocated: enable read and close
+
+		// scan header
+		if (impf->scanHdr())		// scan file header, nop if none, get field names, non-RCOK (non-0) if error.
+		{	impf->close();  		// after bad header, close now to avoid impfEnd's "too few lines" warning
+			rc = RCBAD;				// return bad. expected to stop run.
+			continue;
+		}
+
+		// save file postition after header to seek back to after warmup.
+		LI temPos = tell(impf->fh);		// get file position
+		if (temPos < 0L)				// -1L if error
+		{	rc = err( PWRN, 			// general error message (rmkerr.cpp), count error (errCount++), return RCBAD.
+					  (char *)MH_R1902, 		// "Tell error (%ld) on import file %s. No run."
+					  impf->fileName );
+			continue;
+		}
+		USI unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
+		impf->posEndHdr = temPos - (LI)(ULI)unused;	// store position at start of data
+		impf->lineNoEndHdr = impf->lineNo;			// store corresponding line number for error messages
+	}
+	return rc;
+}		// impfStart
+//---------------------------------------------------------------------------
+RC FC impfAfterWarmup()		// import files stuff done after CSE warmup and after each repetition of each autosizing day
+
+// resets import files to start so they do not have to contain extra data at beginning for warmup.
+// Each file must however be long enough for warmup even if run is shorter. Default warmup is 7 days, 2-94.
+{
+	RC rc = RCOK;
+	IMPF* impf;
+	RLUP( ImpfB, impf)				// loop good import file run records
+	{
+		if (!impf->isOpen)			// if file not open (eg not used -- no imports seen)
+			continue;						// don't rewind
+		LI newPos = lseek( impf->fh, impf->posEndHdr, SEEK_SET);	// seek to end header / return new position or -1 if error
+		if (newPos != impf->posEndHdr)				// if got wrong position or error
+			rc |= err( WRN,					// <--- apparently missing WRN added, rob 5-97
+					   (char *)MH_R1903, 				// "Seek error (%ld) on import file %s, handle %d"
+					   newPos, impf->fileName, (INT)impf->fh );
+
+		impf->bufI1 = impf->bufI2 = impf->bufN = 0;	// set buffer empty -- force reread
+		impf->eofRead = impf->eof = FALSE;		// ..
+		impf->buf[0] = '\0';				// ..
+		impf->lineNo = impf->lineNoEndHdr;		// restore file line number used in error messages
+	}
+	return rc;
+}		// impfAfterWarmup
+//---------------------------------------------------------------------------
+void FC impfEnd()			// import files stuff done at end run
+
+// redundant calls ok.
+{
+	IMPF* impf;
+	RLUP( ImpfB, impf)				// loop import files
+	{	if (impf->isOpen) 			// if this file is open
+		{	// warn if not all of file used unless warmup required longer file (short run)
+			int nlnfwud;				// number of lines needed for warmup days
+			int wud = max( Top.wuDays, 7);		// # warmup days, not less than default of 7 (2-94)
+			switch (impf->imFreq)
+			{
+			case C_IVLCH_H:
+				nlnfwud = 24 * wud;
+				break;
+			case C_IVLCH_D:
+				nlnfwud = wud;
+				break;
+			case C_IVLCH_M:
+				nlnfwud = 2;
+				break;	// 1 usually, 2 if crosses month end
+			default:
+				nlnfwud = 1;
+				break;	// incl C_IVLCH_Y
+			}
+			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
+				if (impf->readRec())			// read next record from file / TRUE if successful
+					warn( (char *)MH_R1904,			// "Import File %s has too many lines. \n"
+						  impf->fileName, 			// "    Text at at/after line %d not used." */
+						  (INT)impf->lineNo );		// use warn to display message without incrementing error counter
+
+			// close file and free buffer
+			impf->close();		// mbr fcn also called in destructor. clears .isOpen.
+		}
+		dmfree( DMPP( impf->buf));	// free buffer and NULL .buf. if redundant here, harmless.
+	}
+}		// impfEnd
+//---------------------------------------------------------------------------
+void FC impfIvl( 		// import files stuff done at start interval: get new record
+	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, or _H
+// D implies H, M implies H and D, etc.
+{
+	IMPF* impf;
+	RLUP( ImpfB, impf)			// loop import files
+	if ( impf->imFreq >= ivl		// if this file has frequency we are doing, or hier
+			&&  impf->isOpen )		// if this file is open and buffer allocated
+	{
+		impf->readRec();		// get first / next record in buffer, init to scan fields.
+		// no eof error here, only when a field actually accessed.
+	}
+}		// impfIvl
+//---------------------------------------------------------------------------
 
 //===========================================================================
 //  functions for decoding import fields, called from cueval.cpp
@@ -510,10 +769,99 @@ RC impFldNrS( 		// import string value of field by number
 }			// impFldNrS
 //---------------------------------------------------------------------------
 
+///////////////////////////////////////////////////////////////////////////////
+// class IFFNM: IMPORTFILE field names table
+///////////////////////////////////////////////////////////////////////////////
+IFFNM::~IFFNM()		// record destructor
+{
+// free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
 
-//===========================================================================
-//  Import File Support Functions
-//===========================================================================
+	// input strings -- none
+	//cupfree( DMPP( ..));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+
+	// fields names table
+	if (fnmt)					// if table allocated
+		for (int fnmi = 1; fnmi < fnmtNAl; fnmi++)	// loop over table entries. Entry 0 unused.
+			dmfree( DMPP( fnmt[fnmi].fieldName));		// decref/free string member
+
+	dmfree( DMPP( fnmt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
+	fnmtNAl = 0;				// say none allocated
+
+	//record::~record() (call supplied by compiler) zeroes .gud to mark space unused.
+}			// IFFNM::~IFFNM
+//---------------------------------------------------------------------------------------------------------------------------
+/*virtual*/ void IFFNM::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
+// IFFNM = believed unused 2-94, but should be defined for link as is virtual fcn in base class.
+{
+	err( PWRN, (char *)MH_S0578);	// "Unexpected call to IFFNM::Copy". if occurs, add code to do .fnmt or verify NULL.
+
+// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
+	//#define THIS ((IFFNM *)this)
+	//cupfree( DMPP( THIS->..));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	// .fnmt not handled -- must dmfree .fieldNames before dmfree'ing table.
+
+// use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED.
+	record::Copy( pSrc, options);	// verfies that src and this are same record type. lib\ancrec.cpp.
+
+// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
+	//cupIncRef( DMPP( THIS->..));   		// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	// .fnmt not handled -- if non-NULL must copy block and incref .fieldNames.
+}				// IFFNM::Copy
+//---------------------------------------------------------------------------
+
+///////////////////////////////////////////////////////////////////////////////
+//  class IMPF
+///////////////////////////////////////////////////////////////////////////////
+IMPF::~IMPF()		// IMPORTFILE destructor
+{
+// close file if open -- might be possible during error cleanup
+	close();				// member function in impf.cpp.
+
+// free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
+
+	// input strings
+	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	cupfree( DMPP( imTitle));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+
+	// buffer
+	dmfree( DMPP( buf));		// (decr ref count or) free heap block & NULL ptr, subset of cupfree, dmpak.cpp.
+	bufSz = 0;				// say no buffer: insurance: beleived unnecessary but harmless at destruction
+
+	// fields-by-number table
+	if (fnrt)					// if table allocated
+		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
+		{
+			dmfree( DMPP( fnrt[fnr].fieldName));		// decref/free string member
+			//note member CHP fp points into buf, not to own heap block.
+		}
+	dmfree( DMPP( fnrt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
+	fnrtNAl = 0;				// say none allocated
+
+	//record::~record() (call supplied by compiler) zeroes .gud to mark space unused.
+}			// IMPF::~IMPF
+//-----------------------------------------------------------------------------
+/*virtual*/ void IMPF::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
+// IMPF = beleived used only to copy input records to run, before .fnrt[] allocated in heap, 2-94.
+{
+	if (fnrt || buf)	// if pointers expected to be NULL are not
+		err( PWRN, (char *)MH_S0577);	// "Unexpected call to IMPF::Copy". if msg occurs, complete code re .fnrt, .buf
+
+// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
+	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	cupfree( DMPP( imTitle));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	// field numbers table .fnrt[] not handled: if non-NULL, must dmfree .fieldNames. before dmfree'ing table pointer.
+	// buffer .buf not handled. if non-NULL, must free.
+
+// use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED.
+	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
+
+// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
+	cupIncRef( DMPP( fileName));   	// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	cupIncRef( DMPP( imTitle));    	// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	// field numbers table .fnrt[] not handled: if non-NULL, must copy and incref .fieldNames.
+	// buffer .buf not handled. if non-NULL, must copy.
+}			// IMPF::Copy
+//-----------------------------------------------------------------------------
 RC FC IMPF::scanHdr()	// read and decode import file header
 
 // returns non-RCOK on serious error that should stop run, message already issued.
@@ -604,27 +952,31 @@ bad:
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
 			fnrt[nFieldsScanned].fieldName = strsave(nm);	// save field name for use in error msgs
 		}
-		// detect/warn duplicate field names
-		//   not error unless referenced (see below)
-		int ifn;
-		for (ifn=1; ifn<=nFieldsScanned; ifn++)
-		{	if (fnrt[ ifn].nDecoded < 0)
-				continue;		// previously seen duplicate name, don't re-msg
-			const char* nm = fnrt[ ifn].fieldName;
-			WStr colList;
-			for (int ifn2=ifn+1; ifn2<=nFieldsScanned; ifn2++)
-			{	if (!strcmpi( nm, fnrt[ ifn2].fieldName))
-				{	if (colList.size() == 0)
-						colList = strtprintf( "%d", ifn);		// start list with current col
-					colList += strtprintf( " %d", ifn2);		// add each add'l
-					fnrt[ ifn2].nDecoded = -1;	// is duplicate
-				}
-			}
-			if (colList.size() > 0)
-				warn( "Import file %s:\n    non-unique field name '%s' found in columns: %s",
-					  fileName, nm, colList.c_str());
-		}
-
+#if 0
+x only report duplicates if referenced (see below)
+x duplicate checks can occur due to autosize or multi-RUN
+x producing redundant warnings  11-17-18
+x		// detect/warn duplicate field names
+x		//   not error unless referenced (see below)
+x		int ifn;
+x		for (ifn=1; ifn<=nFieldsScanned; ifn++)
+x		{	if (fnrt[ ifn].nDecoded < 0)
+x				continue;		// previously seen duplicate name, don't re-msg
+x			const char* nm = fnrt[ ifn].fieldName;
+x			WStr colList;
+x			for (int ifn2=ifn+1; ifn2<=nFieldsScanned; ifn2++)
+x			{	if (!strcmpi( nm, fnrt[ ifn2].fieldName))
+x				{	if (colList.size() == 0)
+x						colList = strtprintf( "%d", ifn);		// start list with current col
+x					colList += strtprintf( " %d", ifn2);		// add each add'l
+x					fnrt[ ifn2].nDecoded = -1;	// is duplicate
+x				}
+x			}
+x			if (colList.size() > 0)
+x				warn( "Import file %s:\n    non-unique field name '%s' found in columns: %s",
+x					  fileName, nm, colList.c_str());
+x		}
+#endif
 		// find / bind refs from IMPORT()s
 		int fnmi;  				// for field name index (fnmt[] subscript)
 		IFFNM* iffnm = IffnmB.p + iffnmi;	// point to file's field names table record (or to record 0 if none)
@@ -632,16 +984,21 @@ bad:
 		if (iffnmi   		// if file has field names table record -- else skip
 		 && fnmt)   		// and names table record has allocated heap names table -- insurance
 		{	for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
-			{	for (ifn=1; ifn<=nFieldsScanned; ifn++)
+			{	for (int ifn=1; ifn<=nFieldsScanned; ifn++)
 				{	const char* nm = fnrt[ ifn].fieldName;
 					if (!strcmpi( nm, fnmt[fnmi].fieldName))	// if this entry matches
-					{	if (fnmt[ fnmi].fnr != 0)	// if name previously seen
-							rc = err( "Import file %s:\n    IMPORT()s refer to ambiguous field '%s'",
-								fileName, nm);
-						else
-							fnmt[fnmi].fnr = ifn;  		// store field number with name for use during run
-						// names are not added to table here
-						// table already contains all names used in imports in program
+					{	if (fnmt[ fnmi].fnr == 0)	// if name previously seen
+						{	fnmt[fnmi].fnr = ifn;  		// store field number with name for use during run
+							// break -- NO, check all to detect duplicate names
+						}
+						else if (fnmt[ fnmi].fnr != ifn)	// if different column already found
+						{	// note: duplicate header scans occur if autosize or multiple RUNs
+							//       so re-find of same column is OK
+							rc = err( "Import file %s:"
+								"\n    IMPORT()s refer to ambiguous (non-unique) field '%s'"
+								"\n    found in columns %d and %d.",
+								fileName, nm, fnmt[ fnmi].fnr, ifn);
+						}
 					}
 				}
 			}

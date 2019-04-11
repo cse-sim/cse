@@ -54,10 +54,6 @@ inline int IsMSBCZone( int bcty) { return bcty==MSBCZONE || bcty==MSBCTNODE; }
 // constants for limits for avg and sum loops, cgnguts.cpp & cgenbal.cpp.  Note members are grouped by type.
 #define oRes(m) offsetof( ZNRES_IVL_SUB, m)
 
-//----- for RSYSRES_IVL_SUB: RSYS simulation results for 1 interval
-// constants for limits for avg and sum loops, Note members are grouped by type
-#define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
-
 //----- for AHRES_IVL_SUB: air handler simulation results for 1 interval
 // constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then LI's.
 #define oaRes(m) offsetof( AHRES_IVL_SUB, m)
@@ -125,6 +121,7 @@ extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
 extern anc<DHWHEATER> WhR;		// DHW heater
 extern anc<DHWTANK> WtR;		// DHW tank
+extern anc<DHWHEATREC> WrR;		// DHW heat recovery
 extern anc<DHWPUMP> WpR;		// DHW pump
 extern anc<DHWLOOP> WlR;		// DHW loop
 extern anc<DHWLOOPSEG> WgR;		// DHW loop segment
@@ -165,6 +162,7 @@ extern anc<IFFNM> IffnmB;		// Import File Field Names compile support & runtime 
 extern anc<HDAY> HdayB;			// holidays. Default records supplied.
 
 //-- cnguts.cpp Input Globals: set externally
+extern const char* cmdLineArgs;			// invoking cmd line argv[ 1 ..]
 extern const char* exePath;				// path(s) to .exe file or dll;exe
 extern const char* InputDirPath;		// drive/dir path to input file
 extern const char* InputFileName;		// Input file name as given by user (ptr to argv[])

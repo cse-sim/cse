@@ -14,7 +14,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(vendor)
 add_subdirectory(src)
-add_subdirectory(bin)
 
 include(ctest)
 

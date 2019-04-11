@@ -1,5 +1,5 @@
 
-CSE 0.850.0+docs-fix.f4a6a9b.24 for Win32 console
+CSE 0.853.0 for Win32 console
 Command line: -c
 
 Top
@@ -375,6 +375,7 @@ rsys    Parent: Top
    rsCapAuxH
    rsCOPAuxH
    rsASHPLockOutT
+   rsDefrostModel
    rsFanPwrH
    rsSEER
    rsEER
@@ -386,10 +387,14 @@ rsys    Parent: Top
    rsFanPwrC
    rsParElec
    rsParFuel
+   rsFEffH
+   rsFEffC
    rsRhIn
    rsTdbOut
    rsDSEH
    rsDSEC
+   rsCapNomH
+   rsCapNomC
    rsOAVType
    rsOAVReliefZn
    rsOAVTDbInlet
@@ -493,6 +498,7 @@ dhwheater    Parent: dhwsys
    whParElec
    whElecMtr
    whFuelMtr
+   whxBUEndUse
    endDHWHEATER
 
 
@@ -572,8 +578,8 @@ pvarray    Parent: Top
    pvGCR
    pvDCtoACRatio
    pvInverterEff
+   pvSIF
    pvSysLosses
-   pvUsePVWatts
    pvMounting
    pvVertices
    endPVARRAY
