@@ -1,6 +1,10 @@
 image: Visual Studio 2017
-version: {build}
+version: '{build}'
 clone_depth: 100
 
 build_script:
   - build.bat
+
+test_script:
+  - cd msvc/build
+  - ctest -C Release
