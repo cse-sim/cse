@@ -1,10 +1,15 @@
 image: Visual Studio 2017
 version: '{build}'
 clone_depth: 100
+skip_branch_with_pr: true
+
+# For debugging
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 build_script:
   - build.bat no-pause
 
 test_script:
   - cd msvc/build
-  - ctest -C Release
+  - ctest -C Release --output-on-failure
