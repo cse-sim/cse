@@ -3,7 +3,7 @@ version: '{build}'
 clone_depth: 100
 
 build_script:
-  - build.bat
+  - build.bat no-pause
 
 test_script:
   - cd msvc/build
