@@ -3,7 +3,7 @@ add_subdirectory(wcmp)
 macro(run_test case)
 set(test_comment "! ")
   add_test(NAME ${case}.Run
-    COMMAND $<TARGET_FILE:CSE> -x${test_comment} -t1 "${case}"
+    COMMAND $<TARGET_FILE:CSE> -x${test_comment} -b -t1 "${case}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 endmacro()
