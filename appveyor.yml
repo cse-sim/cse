@@ -3,6 +3,9 @@ version: '{build}'
 clone_depth: 100
 skip_branch_with_pr: true
 
+cache:
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+
 # For debugging
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
@@ -17,7 +20,15 @@ build_script:
   - cd doc
   - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - rake
+  - cd ..
 
 test_script:
   - cd msvc/build
   - ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time
+  - cd ../..
+
+artifacts:
+  - path: msvc/build/CSE.exe
+    name: CSE.exe
+  - path: doc/output
+    name: Documentation.zip
