@@ -59,6 +59,7 @@ after_deploy:
   - git config --global user.email "ci@cse.org"
   - git config --global user.name "cse-ci"
   - git add -A
+  - git commit -m "Update docs for %APPVEYOR_REPO_TAG_NAME%."
   - git push
 
 # Debugging
