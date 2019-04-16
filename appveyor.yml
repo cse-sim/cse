@@ -3,6 +3,10 @@ version: '{build}'
 clone_depth: 100
 skip_branch_with_pr: true
 
+environment:
+  GH_TOKEN:
+    secure: gcwQCLzmCp4imjUjTEHrk4HRbEySN8GvDR9LYIstjhPjwBaWEgUZCc0/701b3iU0
+
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
@@ -27,8 +31,28 @@ test_script:
   - ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time
   - cd ../..
 
+
 artifacts:
-  - path: msvc/build/CSE.exe
+  - path: msvc/CSE.exe
     name: CSE.exe
   - path: doc/output
-    name: Documentation.zip
+    name: Documentation
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: gcwQCLzmCp4imjUjTEHrk4HRbEySN8GvDR9LYIstjhPjwBaWEgUZCc0/701b3iU0
+  force_update: true
+  artifact: CSE.exe
+  on:
+    appveyor_repo_tag: true
+
+after_deploy:
+  # Push docs to GitHub Pages
+  - cd doc/output
+  - git config --global credential.helper store
+  - ps: Add-Content "$HOME\.git-credentials" "https://$($env:GH_TOKEN):x-oauth-basic@github.com`n"
+  - git config --global user.email "ci@cse.org"
+  - git config --global user.name "cse-ci"
+  - git add -A
+  - git push
