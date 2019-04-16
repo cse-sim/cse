@@ -4420,7 +4420,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.860.0+new-convection.8e17ba6.3 for Win32 console   Tue 09-Apr-19   5:20:49 pm
+! CSE 0.851.0+update-toolset.3146d04.18 for Win32 console   Thu 11-Apr-19  10:33:12 am
 
 
 ================
@@ -53381,7 +53381,7 @@ Single CZ: anMCp/T[ 0]=34.47/4170.7  anMCp/T[ 1]=0.00/0.0  ventUt=-99999
      Nair=8389261.20  Dair=107027.43  Nrad=205608.91  Drad=2437.95  CX=1169.53  airX=20.121
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=14261  amfSup=12978   tSup=63.37
      ta=78.00  tr=82.28  qIzSh=1482  fvent=0.000  pz0=0.0018  qsHvac=-46130
-! CSE 0.860.0+new-convection.8e17ba6.3 for Win32 console
+! CSE 0.851.0+update-toolset.3146d04.18 for Win32 console
 
 
 
@@ -54040,18 +54040,18 @@ Input for Run 001:
 
 
 
-! CSE 0.860.0+new-convection.8e17ba6.3 for Win32 console run(s) done: Tue 09-Apr-19   5:20:54 pm
+! CSE 0.851.0+update-toolset.3146d04.18 for Win32 console run(s) done: Thu 11-Apr-19  10:33:16 am
 
 ! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               09-Apr-19   2:04 pm   (VS 14.12    1666560 bytes)  (HPWH 1.4.1)
+!               11-Apr-19  10:30 am   (VS 14.16    1656832 bytes)  (HPWH 1.4.1)
 ! Command line: -x!  -t1 actest1bL
 ! Input file:   C:\Users\nkruis\projects\cse\test\actest1bL.cse
 ! Report file:  C:\Users\nkruis\projects\cse\test\actest1bL.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0610   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0440   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.00     Calls = 1      T/C = 4.0000   
-!              Reports:  Time = 1.12     Calls = 1      T/C = 1.1200   
-!                Total:  Time = 5.18     Calls = 1      T/C = 5.1830   
+!           Simulation:  Time = 3.57     Calls = 1      T/C = 3.5720   
+!              Reports:  Time = 0.92     Calls = 1      T/C = 0.9210   
+!                Total:  Time = 4.54     Calls = 1      T/C = 4.5380   

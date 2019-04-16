@@ -22,12 +22,12 @@
 /*-------------------------------- DEFINES --------------------------------*/
 
 // member offset macros, to cnglob.h or pgbuildr.h when debugged ???
-// signed version of msc\include\stddef.h:offsetof
+// signed version of stddef.h:offsetof
 //   (for less lintCasting, because PBDATOFF/L.off is SI, because
 //   special values are negative, because PBDATA.field is SI).
-#define off(s,m)	(SI)&(((s *)0L)->m)
+#define off(s,m)	SI(int(&(((s *)0L)->m)))
 //  array member version of above: & removed for no "& ignored" warning
-#define ofa(s,m)	(SI)/*&*/(((s *)0L)->m)
+#define ofa(s,m)	SI(int(/*&*/(((s *)0L)->m)))
 
 /*lint -e507	suppress "Size incompatibility" in every use of off(s,m) */
 

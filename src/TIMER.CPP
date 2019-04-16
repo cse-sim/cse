@@ -10,19 +10,19 @@
 #include <vrpak.h>		// vrPrintf
 #include <timer.h>
 
-/*-------------------------------- DEFINES --------------------------------*/
+#pragma optimize( "", off)
 
-const int TMRMAX=10;	// Number of timers allowed
-const int TMRNMSZ=20;	// Length of timer name string
-
-/*---------------------------- LOCAL VARIABLES ----------------------------*/
-static struct
+// local data
+struct TMRDATA
 {
 	int tcalls;		// # of calls
 	LLI tbeg;		// time at beg of current timing, ticks
 	LLI ttot;		// total time for timer, ticks
-	char tname[TMRNMSZ+1];
-} tmrtab[TMRMAX];
+	WStr tname;	// name of timer
+	TMRDATA(const char* _tname = "") : tcalls(0), tbeg(0), ttot(0), tname(_tname)
+	{}
+};
+static WVect< TMRDATA> tmrtab;
 //------------------------------------------------------------------------------
 static double tmrSecsPerTick = -1.;
 //-----------------------------------------------------------------------------
@@ -115,9 +115,9 @@ void tmrInit( 	// Initialize (but do *NOT* start) a timer
 	const char* tmrName,	// Timer name -- 20 char max string to identify timer values on printouts etc.
 	int tmr)				// Timer number.  Must be 0 < tmr < TMRMAX
 {
-	tmrtab[tmr].tcalls = 0;
-	tmrtab[tmr].tbeg = tmrtab[tmr].ttot = 0LL;
-	strncpy0( tmrtab[tmr].tname, tmrName, TMRNMSZ);
+	if (size_t( tmr) >= tmrtab.size())
+		tmrtab.resize(tmr+5);
+	new (&tmrtab[ tmr]) TMRDATA(tmrName);
 	tmrSetupIf();		// constants etc if needed
 }		// tmrInit
 //========================================================================
@@ -180,7 +180,7 @@ RC vrTmrDisp( 		// Display current data for a timer
 	double nc = max( (double)tmrtab[tmr].tcalls, 1.);
 	double t  = tmrTicksToSecs( tmrtab[tmr].ttot) - nc * delta;
 	return vrPrintf( vrh, "%s%20s:  Time = %-7.2f  Calls = %-5ld  T/C = %-9.4f\n",
-					 pfx, tmrtab[tmr].tname, t, tmrtab[tmr].tcalls, t/nc );
+					 pfx, tmrtab[tmr].tname.c_str(), t, tmrtab[tmr].tcalls, t/nc );
 
 }			// vrTmrDisp
 

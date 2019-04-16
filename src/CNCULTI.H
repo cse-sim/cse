@@ -56,11 +56,11 @@ RC   FC topSg2();
 
 // cncult4.cpp...  report/export and holiday input setup/checking fcns, called by cncult2.cpp
 RC   FC topPrfRep();		// make default reportfile, exportfile, and report rat entries, before input
-RC   FC topRep();			// check rep___ members, set up header & footer 11-91
-RC   FC topRf();			// check REPORTFILEs 11-91
-RC   FC topXf();			// check EXPORTFILEs
-RC   FC topCol( SI isExport);
-RC   FC topRxp();			// check REPORTS and EXPORTS / build dvri info
+RC   FC topRep();		// check rep___ members, set up header & footer 11-91
+RC   FC topRf();		// check REPORTFILEs 11-91
+RC   FC topXf();		// check EXPORTFILEs
+RC   FC topCol( int isExport);
+RC   FC topRxp();		// check REPORTS and EXPORTS / build dvri info
 RC   FC buildUnspoolInfo();	// build unspooling specifications
 RC   FC topPrfHday();		// make default HDAY (holiday) rat entries, before input
 RC   FC topHday();			// check HDAY input info / build run info

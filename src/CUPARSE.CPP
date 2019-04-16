@@ -2063,7 +2063,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 	RC rc /*=RCOK*/;
 
 // get source file name and line: these are put into IFFNM record and into pseudo-code for use in runtime error messages.
-	USI fileIx, line;
+	int fileIx, line;
 	curLine( 0, &fileIx, &line, NULL, NULL, 0);		// function below in cuparse.cpp
 
 // argument list. Both arguments are constant arguments whose values are used now.
@@ -3940,7 +3940,7 @@ twoBytes:
 			    	      (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
 			string:  text, with null, padded to whole word.*/
 			EE( emit( PSPKONN) )
-			EE( emit(~((strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
+			EE( emit(~(((PSOP)strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
 #ifndef EMIKONFIX
 			p1 = (char *)psp;			// where text will be
 #else//to fix apparent konstize bug
@@ -4143,7 +4143,7 @@ LOCAL RC FC NEAR emitStr( char *s)	// emit string in pseudo-code stream.  pad to
 
 	if (s != NULL)			// needed?
 	{
-		l = strlen(s) + 1;  				// length, bytes, incl \0
+		l = (USI)strlen(s) + 1;  				// length, bytes, incl \0
 		while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
 		{
 			E( emiBufFull() )				// realloc (future) or errmsg & return bad.
@@ -4785,19 +4785,17 @@ LOCAL RC FC NEAR perI( int showTx, int showFnLn, int isWarn, const char* ms, va_
 //===========================================================================
 void FC curLine( 	// re last token: return file line text and info
 
-	SI retokPar,	// nz for previous token even if have not cuUntok'd
-	USI *pFileIx,	// NULL or receives "file index" for current input file
-	USI *pline,		// NULL or receives line # in file
-	USI *pcol, 		// NULL or receives column # (subscript) in line
+	int retokPar,	// nz for previous token even if have not cuUntok'd
+	int* pFileIx,	// NULL or receives "file index" for current input file
+	int* pline,		// NULL or receives line # in file
+	int* pcol, 		// NULL or receives column # (subscript) in line
 	char *s,  		// NULL or receives line text. must be 384+ chars.
-	USI sSize )		// sizeof(*s) for overwrite protection, 9-95
+	size_t sSize )	// sizeof(*s) for overwrite protection, 9-95
 
-/* for caller issuing compile error message showing bad statement, etc.
-	Adjusts for ungotten token.  Intended to respond "right" to
-	newlines between tokens;  newlines within tokens not expected. */
+// for caller issuing compile error message showing bad statement, etc.
+// Adjusts for ungotten token.  Intended to respond "right" to
+// newlines between tokens;  newlines within tokens not expected.
 {
-	// caller 11-91: cul.cpp (about 4 calls)
-	// 2-94: fcnImport().
 
 // merge local "token has been ungotten" flag into arguments and call cutok.cpp:cuCurLine.
 

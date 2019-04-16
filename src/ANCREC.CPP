@@ -147,7 +147,7 @@ x	return strMatch( _name, name);
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ record& record::CopyFrom(
-	record *src,
+	const record* src,
 	int copyName/*=1*/,
 	int dupPtrs/*=0*/)
 
@@ -166,21 +166,28 @@ x	return strMatch( _name, name);
 		err( PABT, (char *)MH_X0050);	// error msg "record::CopyFrom: unconstructed destination (b is 0)" and abort program.
 #ifdef DEBUG2							// message not occuring (1-95) so omit from release version.
 	b->validate("record::CopyFrom");	// abort if record 'this' not associated with valid anchor
+	((record *)src)->Validate();
 #endif
 
 // use shorter record length
-	USI eSz = b->eSz;				// get dest derived class rec length from anchor
+	int eSz = b->eSz;				// get dest derived class rec length from anchor
 	if ( src->b  &&  src->b->rt==src->rt   	// if source has anchor (could be just init data)
 			&&  eSz != src->b->eSz )			// and source record length is different
 		eSz = min( b->sOff, src->b->sOff);	// use the shorter length and do not copy status bytes (3-12-92).
 	//  calls exist (ZNI->ZNR) where source is start of dest record (ug!)
 	//  add logic to copy status bytes to correct place if need found
 
-// copy data after front
-	USI rfSz = sizeof(record) - sizeof(TI);	// do not copy base class except ownTi
-	if (copyName)
-		rfSz -= sizeof(ANAME);				// copy name on option (defaults ON)
-	memcpy( (char *)this + rfSz,  (char *)src + rfSz,  eSz - rfSz );
+// copy data after front (bitwise)
+#if 1	// fix re packing, 11-14-2018
+	// copy start offset: do not copy base class except ownTi and optionally name
+	int offBeg = copyName ? offsetof(record, name) : offsetof(record, ownTi);
+	memcpy( (char *)this + offBeg,  (char *)src + offBeg,  eSz - offBeg );
+#else
+0	int rfSz = sizeof(record) - sizeof(TI);	// do not copy base class except ownTi
+0	if (copyName)
+0		rfSz -= sizeof(ANAME);				// copy name on option (defaults ON)
+0	memcpy((char *)this + rfSz, (char *)src + rfSz, eSz - rfSz);
+#endif
 
 // copy user language front members. another arg option?
 	li = src->li;			// if nz, is subscript of entry it is LIKE
@@ -213,10 +220,16 @@ x	return strMatch( _name, name);
 #ifdef DEBUG2
 	pSrc->b->validate("right arg to record::operator=");
 #endif
-	const USI rfSz = offsetof(record,rt)   				// don't copy: anything C++ put in front of 1st member,
-					 + sizeof(RCT) + sizeof(TI)			// internal overhead members, at front: rt, ss,
-					 + sizeof(BP) /* + sizeof(SI)*/;   	// ... b;  do copy 'gud' (semi-user member).
-	memcpy( (char *)this + rfSz, (char *)pSrc + rfSz, b->eSz - rfSz);	// copy everthing after that stuff.
+#if 1	// fix re packing, 11-14-2018
+	// copy start offset: don't copy internal members
+	int offBeg = offsetof(record, gud);
+	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);
+#else
+0	const USI rfSz = offsetof(record,rt)   				// don't copy: anything C++ put in front of 1st member,
+0					 + sizeof(RCT) + sizeof(TI)			// internal overhead members, at front: rt, ss,
+0					 + sizeof(BP) /* + sizeof(SI)*/;   	// ... b;  do copy 'gud' (semi-user member).
+0	memcpy( (char *)this + rfSz, (char *)pSrc + rfSz, b->eSz - rfSz);	// copy everthing after that stuff.
+#endif
 	FixUp();		// virtual: record can e.g. fix ptrs
 #if defined( _DEBUG)
 	Validate();		// virtual
@@ -623,9 +636,10 @@ x		setToMin( sz, 0x0000FFF0UL);				// don't go over 64K to get the 1K+1.  Allow 
 //---------------------------------------------------------------------------------------------------------------------------
 RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 {
-	if (validate("basAnc::del", erOp))  return RCBAD;	// check anchor ('this') vs its record block
-	desRec(i);						// conditionally destroy the record being deleted
-	for (  ;  i < n;  i++)  				// loop over following records except last
+	if (validate("basAnc::del", erOp))	// check anchor ('this') vs its record block
+		return RCBAD;
+	desRec(i);							// conditionally destroy the record being deleted
+	for (  ;  i < n;  i++)  			// loop over following records except last
 	{
 		record& dest = rec(i);
 		record& src = rec(i+1);
@@ -635,6 +649,9 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
 			dest.CopyFrom(&src);			// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
+#if defined( _DEBUG)
+			dest.Validate();
+#endif
 		}
 		else					// (not currently expected 2-92)
 			dest.gud = 0;				// nothing to copy from next slot, say this slot is free
@@ -897,20 +914,21 @@ void clearFileIxs()
 	tmfemFlag = FALSE;				// issue error message only once
 }
 //---------------------------------------------------------------------------
-USI getFileIx( 		// get file name index (fileIx) for file name
+int getFileIx( 		// get file name index (fileIx) for file name
 
-	const char* name, 		// name, not necessarily null-terminated
-	SI len /*=-1*/,			// length, or -1 if null-terminated
+	const char* name, 				// name, not necessarily null-terminated
+	int len /*=-1*/,				// length, or -1 if null-terminated
 	char * * pFName4Ix /*=NULL*/ )	// NULL or receives pointer to null-terminated name in heap.
-// can receive NULL if table full.
+									// can receive NULL if table full.
 {
 	if (len < 0)
 		len = strlen(name);
 
 // search saved names, return existing index if found
-	for (USI i = 1;  i < FNCACHESZ && fnCache[i];  i++)
-		if ( strlen(fnCache[i])==size_t( len)
-		 &&  memicmp( name, (void *)fnCache[i], size_t( len))==0 )
+	int i;
+	for (i = 1;  i < FNCACHESZ && fnCache[i];  i++)
+		if ( strlen(fnCache[i])== len
+		 &&  memicmp( name, (void *)fnCache[i], len)==0 )
 			break;  						// found. i is index to return.
 
 // i is index of found name, free slot, or off end table if full
@@ -926,8 +944,7 @@ USI getFileIx( 		// get file name index (fileIx) for file name
 
 // add to table
 	else							// did not run off end of table
-	{
-		if (!fnCache[i])						// if found free slot (not match)
+	{	if (!fnCache[i])						// if found free slot (not match)
 			if (!dmal( DMPP( fnCache[i]), len+1, WRN|DMZERO))	// allocate space for name and null, dmpak.cpp.
 				memcpy( fnCache[i], name, len);			// if ok, store name text
 		p = fnCache[i];						// pointer to name text for optional return
@@ -935,15 +952,14 @@ USI getFileIx( 		// get file name index (fileIx) for file name
 
 // optionally return heap text pointer
 	if (pFName4Ix)
-	{
-		dmfree( DMPP( *pFName4Ix));	// decrement ref count of prior value we are about to overwrite
+	{	dmfree( DMPP( *pFName4Ix));	// decrement ref count of prior value we are about to overwrite
 		dmIncRef( DMPP( p));		// NOP if NULL
 		*pFName4Ix = p;
 	}
 	return i;
 }		// getFileIx
 //---------------------------------------------------------------------------
-const char* getFileName( USI fileIx)		// get text for file name index
+const char* getFileName( int fileIx)		// get text for file name index
 {
 	if (fileIx > 0  &&  fileIx < FNCACHESZ  &&  fnCache[fileIx])
 	{	const char* p = fnCache[fileIx];	// NOT INCREF'd: only for transitory use in error messages, etc.
