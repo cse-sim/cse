@@ -10,9 +10,9 @@ include(DownloadProject)
 download_project(PROJ                Penumbra
                  GIT_REPOSITORY      https://github.com/bigladder/penumbra.git
                  GIT_TAG             v0.2.0
-                 DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/Penumbra-dl"
-                 SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/Penumbra"
-                 BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/Penumbra"
+                 DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/penumbra-dl"
+                 SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/penumbra"
+                 BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/penumbra"
                  ${UPDATE_DISCONNECTED_IF_AVAILABLE}
 )
 
