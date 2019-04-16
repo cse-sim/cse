@@ -8,6 +8,7 @@ environment:
     secure: gcwQCLzmCp4imjUjTEHrk4HRbEySN8GvDR9LYIstjhPjwBaWEgUZCc0/701b3iU0
 
 cache:
+  - basic-miktex-x64.exe -> appveyor.yml
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 # For debugging
@@ -17,7 +18,7 @@ init:
 install:
   - ps: Invoke-WebRequest "https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-2.9.7031-x64.exe" -OutFile basic-miktex-x64.exe
   - ps: $miktexinstall = "--unattended --auto-install=yes --shared --package-set=basic"
-  - ps: Start-Process -FilePath ..\basic-miktex-x64.exe -ArgumentList $miktexinstall -NoNewWindow -Wait
+  - ps: Start-Process -FilePath basic-miktex-x64.exe -ArgumentList $miktexinstall -NoNewWindow -Wait
   - ps: $env:PATH = 'C:\Program Files\MiKTeX 2.9\miktex\bin\x64;' + $env:PATH
   - pdflatex --version
   - xelatex --version
