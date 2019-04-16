@@ -268,6 +268,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
 	*declare "ULI tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
+
+    *r NOYESCH tp_hConvMod	// enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)
+							//   mostly for debugging.
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
     *h LI tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
@@ -290,6 +293,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*r INT tp_exeCodeSize	// code size, bytes (from exe header)
 	*r CHP tp_progVersion	// program version identifier as string (for probing); set from ::ProgVersion
 	*r CHP tp_HPWHVersion	// Ecotope HPWH (heat pump water heater) model version
+	*r CHP tp_cmdLineArgs	// command line args for current input file
+							//   updated during session if multiple input files specified on command line
     *i SI runSerial   	// run #, 000-999, per (future 11-91) status file (meanwhile, see cnguts:cnRunSerial 7-92).
     *i CHP runTitle   	// user text for report titles, footers, export title 11-22-91.
     *r CHP runDateTime	// run date & time string, set by cncult2.cpp:topStarPrf2(), used in reports & bin res file, 9-94.
@@ -360,7 +365,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *r float airXK			// divide by abs temp for specific heat of flow (Btuh/cfm-F)
 							//   airVshK, times 60 to match time units. dfl ~572.1
 	*r float tp_hConvF		// convective coefficient pressure modification factor
-							//   =(.24 * .76*PresAtm/PresAtmSeaLevel)
+							//   =(.24 + .76*PresAtm/PresAtmSeaLevel)
 							//   used in some surface transfer models, reduces convection as function of elevation
 							//   source = ASHRAE 1199-RP Barnaby et al. 2004
     // and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)
@@ -485,7 +490,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *d BOO isWarmup      	// TRUE if main sim warmup. set/used: cgMainsimI. used: doBegIvl,doEndIvl,doIvlAccum,doIvlReports; exman,impf.
 							// autoSizing: keep moot for now; may be on except for (future 6-95) extra last day eg for reports.
     *d SI dowh				// autoSizing: 8 heat 9 cool, else 7 if observed holiday, else day of week 0-6, for $dowh.
-    //weekend/holiday flags for probes / $variables (ul/cuparse.cpp).  Set in cnguts.cpp.
+							//   weekend/holiday flags for probes / $variables (ul/cuparse.cpp).  Set in cnguts.cpp.
     *d BOO isHoliday		// TRUE on observed holiday: Monday after certain true holidays on weekend. Same as old isHoliObs, 7-92.
     *d BOO isHoliTrue		// TRUE (non-0) on true date of holiday
     *d BOO isWeHol		// weekend or holiday
@@ -1075,6 +1080,8 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *r DBL sb_lenCharNat	//	 characteristic length for some natural convection models, ft
   *r DBL sb_lenEffWink	//   effective length for Winkelmann forced convection model, ft
 
+  *r DBL sb_cosTilt		// cos( Tilt ) for the boundary -- note parent surface tilt is defined
+						// relative to outside normal (sbcO), so inside sb_cosTilt is oposite (+180 deg)
   *r DBL sb_atvDeg		// angle-to-vertical, deg (inside: 90-tilt; outside: tilt-90)
   *r DBL sb_cosAtv		// cos( angle to vertical) 0 - 1 (never < 0)
   *i CONVMODELCH sb_hcModel // surface convective coefficient model
@@ -1640,13 +1647,15 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
  //derived
     *r SI fileStatChecked	// check fileStat only once to prevent "file exists" error or re-setting "overWrite" on later run
     *r SI overWrite			// append if 0.  set by fileStat=fresh, cleared on use, so addl runs do not erase earlier output.
+	*r SI wasNotEmpty			// nz if existed and size > 0 at fileStat check
 *END		// RFI
 //=============================================================================
 RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
     *prefix ri_
     *exdes						// cncult4.cpp: frees .rpTitle
     *ovrcopy
-	*declare "RC oneRxp();"
+	*declare "RC ri_CkF();"
+	*declare "RC ri_oneRxp();"
  //input                .ownTi is owning reportFile or exportFile subscript
     *i TI zi 		// zone for zone-specific reports. Can be TI_SUM, TI_ALL.
     *i TI mtri		// meter to report/export for meter-specific reports. Can be TI_SUM, TI_ALL.
@@ -1715,17 +1724,17 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
     *r SI rpCondGiven	// nz if user-given condition: may be reflected in title (when 0, rpCond is TRUE).
     *r CHP rpTitle 	// title, for UDT, in dm
     *r SI rpCpl		// chars per line, inputtable for UDT's
-    *r RPTHDCH rpHeader	// table header or export header yes/no (default yes)
-    *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line?) yes/no (default yes)
+    *r RPTHDCH rpHeader	// table header or export header yes/no/col (default yes)
+    *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line) yes/no (default yes)
   // user-defined reports columns
     *r TI coli		// RcolB/XcolB subscript of first column (thence linked by .nxColi).
     *r SI nCol		// # columns
     *r SI wid		// total col width for user-defined report, including colGaps.
-  // generated
+					// generated
     *r INT vrh		// virtual report handle, used from here for runtime output
-  // linking
-    *d TI nextNow  	/* 0 or subscript of next report/export of this type that is active today
-    			   (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly) */
+					//   linking
+    *d TI nextNow  	// 0 or subscript of next report/export of this type that is active today
+    				//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
 RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
@@ -2453,9 +2462,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e SI zn_hcMode			// heating / cooling mode required per set point (rsmHEAT, rsmCOOL, )
 								//   (may not match RSYS.rs_mode due to e.g. RSYS availability or
 								//    conflicting zone requests)
-								// flag ument heating/cooling requirements (zn_tzsp not held)
-	*s *e INT zn_unMetH			//   nz iff current step heating load not met
-	*s *e INT zn_unMetC			//   nz iff currend step cooling load not met
+								// flag unmet heating/cooling requirements (zn_tzsp not held)
+	*s *e FLOAT zn_unMetHDH		//   tz - znTH at end of hour, deg-hr
+	*s *e FLOAT zn_unMetCDH		//   tz - znTC at end of hour, deg-hr
 
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating
@@ -2609,8 +2618,6 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     SI nHrCeilFan	//    ditto ceiling fan operation; last "# of hours"
 //LIs. code in cnguts.h and .cpp assumes LI members together, first is nIter, last is nSubhrLX.
     LI nIter		// # of iterations
-    LI nShUnMetH	// # of substeps in this interval with unmet heating load
-    LI nShUnMetC	//   ditto cooling
     LI nHrUnMetH	// # of hours in this intervals having *any* unmet heating subhours
     LI nHrUnMetC	//   ditto heating
     LI nShVentH		// # of substeps int this interval when ventilation caused heating
@@ -2649,13 +2656,13 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qlBal  	// latent balance similarly.  Consider removing Bals after development.
     float qlX		// latent gain rejected to prevent zone supersaturation === heat of condensation.
 					//   - added to next subr sens gain. Btu.
-    // following are accessible only via binary results files generated for NREL design tool (ET or E10),
-    // or probes & custom report, as of 9-94. CSE accumulates to H-D-M-Y.
-     float qcMech	// zone accumulated cooling (negative) ...
-     float qhMech	// ... and heating (positive) mechanical heat gains. Latent & sensible combined. 10-93.
-     float qvMech	// ... mechanical (OAV) vent (negative)
-     float litDmd	// zone lighting demand and Energy Use, ...
-     float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
+    float unMetHDH	// zone end-of-hour air temp excursion below heating set point, deg-hr (<=0)
+	float unMetCDH	// zone end-of-hour air temp excursion above cooling set point, deg-hr (>=0)
+    float qcMech	// zone accumulated cooling (negative) ...
+    float qhMech	// ... and heating (positive) mechanical heat gains. Latent & sensible combined. 10-93.
+    float qvMech	// ... mechanical (OAV) vent (negative)
+    float litDmd	// zone lighting demand and Energy Use, ...
+    float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
 *END		// ZNRES_IVL_SUB
 //=============================================================================
 RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
@@ -3325,9 +3332,8 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 	*declare "void wmt_Clear() { memset( this, 0, sizeof( DHWMTR_IVL));}"
 	*declare "void wmt_Copy( const DHWMTR_IVL* s, float mult=1.f);"
 	*declare "float wmt_GetByEUX( DHWEUXCH eux) { return (&total)[ eux-1]; };"
- 	*declare "void wmt_AccumEU( DHWEUCH eu, FLOAT v) { (&unknown)[ eu] += v; }"
+ 	*declare "void wmt_AccumEU( DHWEUCH eu, FLOAT v) { (&unknown)[ eu] += v; total += v; }"
 	*declare "void wmt_Accum( const DHWMTR_IVL* sIvl, int options=0, float mult=1.f);"
-	*declare "void wmt_Finalize() { total = VSum( &unknown, NDHWENDUSES); }"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.
     // Use by purpose (end use), water use, gal:
@@ -3370,6 +3376,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
+  *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
+  *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
   *declare "void ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
@@ -3381,11 +3389,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    but have no heaters etc
   *declare "int ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
   *declare "DHWSYS* ws_GetCentralDHWSYS() const;"
-  *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
-							// re support of multiple DHWSYSs in single unit
+  *declare "int ws_IsCentralDHWSYS() const;"
 
-  *i SI ws_mult;			// multiplier
-							//   modeled as ws_mult identical systems
+  *i FLOAT_GEZ ws_mult;		// multiplier: model as ws_mult identical systems
+							//   fractional values supported
   *i TI ws_elecMtri;		// meter for system electricity use
   *i TI ws_fuelMtri;		// meter for system fuel use
 
@@ -3395,24 +3402,35 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_inFuel;	//	  fuel (for generality, always 0?)
   *declare "MTR* ws_pMtrElec; MTR* ws_pMtrFuel;"
 							// runtime pointers to meters, NULL if not accum'ing
-  *h *e FLOAT ws_tInlet;	// current hour inlet (cold water mains) temp, F
+  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
+							//   user expression or default Wthr.d.wd_tMains
+							//   Not modified by DWHR
+  *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
+							//   reflects ws_SSF and/or DHWHEATREC
   *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
-							//   (scheduled input)
-  *declare "double* ws_whUseTick;"	// array of tick-level (subsubtimestep) hot water
-							//         uses at water heater, gal w/o ws_mult
-							//    refilled hourly from DHWDAYUSE re expression variability
-							//    used by e.g. HPWH (includes ws_hwUse)
+							//   (scheduled input, does NOT include DHWDAYUSE draws)
+  *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
+										//   draws, adjusted cold water temp, ...
+  *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
+  *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
+  *declare "void ws_InitTicks( double whUseHr);"
+  *declare "RC ws_DoHourDWHR();"
+  *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
   *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
   *i TI ws_FXhwMtri;		// DHWMTR for hot water use at fixtures (= ws_fxUseMix), gal
-  *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolve DHWMTR pointers
+  *declare "DHWMTR* ws_pWHhwMtr; DHWMTR* ws_pFXhwMtr;"	// resolved DHWMTR pointers
 
-						// hot or mix water use for this DHWSYS (w/o ws_mult)
-  *h *e DBL ws_fxUseHot;				// total hot water use at fixtures for hour, gal
+						// mixed and hot water use for this DHWSYS (w/o ws_mult)
+  *h *e FLOAT ws_whUseNoHR;				// current hour virtual hot water use w/o heat recovery, gal
+										//    re verification / accounting of DWHR results
   *h *e *nest DHWMTR_IVL ws_fxUseMix	// current hour total (mixed) water use at fixtures, gal
   *h    *nest DHWMTR_IVL ws_fxUseMixLH	// prior hour total (mixed) water use at fixtures, gal
-  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use at water heater(s), gal
+  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use (at ws_tUse), gal
+										//    water heater out = fixture hot in
+										//    Also frequently assumed water heater in = water heater out
+										//    BUT this is only approx due to e.g. mixdown and XBU.
 
   *h FLOAT ws_tUse;			// hot water use temp, F
   *h FLOAT ws_tSetpoint;	// water heater set point, F
@@ -3425,14 +3443,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i FLOAT_GZ ws_DSM		// distribution system multiplier (AppE table RE-2)
   *h FLOAT_GEZ ws_SSF		// solar savings fraction
 							//  valid range 0 - 0.99, see code
+  *declare "float ws_AdjustTInletForSSF( float tInlet) const { return tInlet + ws_SSF*max(0.f, ws_tUse - tInlet); }"
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
-  *h *e *array 6 FLOAT ws_whDrawVolF;	// water heater draw volume factors by end use
-							// accounts for solar, warm-up waste, and pipe losses
-							// factor = water heater draw vol / point of use hot water draw vol
-							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
-							//   [1 ..] = per C_DHWUSETYCH_xxx
   *h *e *array 6 FLOAT ws_whDrawDurF;	// water heater draw duration factors by end use
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
@@ -3442,6 +3456,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs
 							//   wssimHOUR otherwise
+  *r FLOAT ws_childDHWSYSCount; // # of child DHWSYSs iff central system (else 0)
+								//    note may not be integral
   *r FLOAT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
 							//   = SUM( wh_mult) (possibly non-integral)
   *r INT ws_wtCount;		// ditto DHWTANKs
@@ -3450,13 +3466,43 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults
 							//    note may be non-integer
-  *r INT ws_loadShareCount;	// # of DHWSYSs sharing common load this group
-							//   (e.g # of DHWSYSs serving a dwelling unit)
+  *r INT ws_wrCount;		// total child DHWHEATRECs
+  *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
+							//    feed (cold) water to DHWHEATERs
+							//    DHWHEATRECs may feed fixtures or WH or both
+  *r INT ws_wrFxDrainCount;	// count of fixture drains feeding (possibly shared) DHWHEATRECs
+  *r *array NDHWENDUSESPP SI_GEZ ws_fxCount;
+							// end-use count of fixtures served by this DHWSYS
+							//   non-central: user input, default 1
+							//   central: derived from child DHWSYSs
+							// used re allocation of shared loads
+  *declare "int ws_ShowerCount() const { return ws_fxCount[ C_DHWEUCH_SHOWER]; }"
+							// number of shower fixtures served by this DHWSYS
+							//   re DHWHEATREC (DWHR) modeling
+  *declare "struct DHWFX* ws_fxList;"	// fixture info list (re DHWHEATREC assignment)
+
+							// Load sharing -- support of multiple DHWSYSs in single unit
+							//   draws are distributed among DHWSYSs having suitable fixtures
+							//   aka "deal-em-out" algorithm
+  *i TI ws_loadShareDHWSYSi	// index of DHWSYS with which this DHWSYS shares load
+  *r *array NDHWENDUSESPP INT ws_loadShareCount;
+							// # of DHWSYSs sharing group load by end use
+							//   ([ 0] = # of DHWSYSs in group)
 							//   NOT effected by ws_mult.
-  *r INT ws_loadShareIdx;	// 0-based index of this DHWSYS in shared group
-  *h *e *array 6 INT ws_loadShareWS0;	// re allocation of shared load
-							// DHWSYS to be used for DHWUSE ws_eventID=0 by end use
-							//   set daily based on jDay
+							//   All DHWSYSs in group have same ws_loadShareCounts
+  *declare "int ws_loadShareIdxRange[ NDHWENDUSESPP][ 2];"
+							// draw (eventID%loadShareCount[ iEU]) yields idx
+							// if idx is within this DHWSYS's range, draw is assigned
+  *declare "int& ws_LSR( int iEU, int lh) { return ws_loadShareIdxRange[ iEU][lh]; }"
+  *declare "void ws_LSRSet( int iEU, int fx0, int nFx) { ws_LSR( iEU,0) = nFx>0 ? fx0 : -1; ws_LSR( iEU,1) = nFx>0 ? fx0+nFx-1 : -1; }"
+  *declare "bool ws_IsLSR( int iEU, int idx) { return idx>=ws_LSR( iEU,0) && idx<=ws_LSR( iEU,1); }"
+  *d *e *array NDHWENDUSESPP INT ws_loadShareWS0;	// re allocation of shared load
+							// idx for ws_eventID=0 by end use, set daily based on jDay
+
+  *i NOYESCH ws_drawCSV		// if C_YESNOCH_YES, write tick-level draw data to
+							//    <inputFile>_<DHWSYS.name>_draws.csv
+  *declare "FILE* ws_pFDrawCSV;"	// draw export file
+  *declare "RC ws_WriteDrawCSV();"
 
   *h *e FLOAT ws_HHWO;		// hourly hot water output (at water heater), Btu
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
@@ -3486,7 +3532,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
   *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
-  *declare "RC wh_DoHour( float HARL, int wsMult);"
+  *declare "RC wh_DoHour( float HARL, float wsMult);"
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
@@ -3540,7 +3586,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
   *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhr( double* draw,	double scale, double xLoss);"
+  *declare "RC wh_InstUEFDoSubhr( const struct DHWTICK* ticksSh, double scale, double xLoss);"
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
@@ -3610,7 +3656,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( double* draw, double scale, double qLossDraw, double qLossRL, double volRL);"
+  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scale, double qLossDraw, double qLossRL, double volRL);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -3625,17 +3671,63 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *y *e INT wh_unMetHrs;	// HPHW: annual count of hrs having
 							//       any wh_unMetSh
   *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
-*END
+*END	// DHWHEATER
 //=============================================================================
-#if 0
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
   *prefix wr_
 
-  *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+  *exdes	// *declare "~DHWHEATREC"
+  // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wr_CkF();"
+  *declare "RC wr_Init();"
+  *declare "void wr_InitTicks();"
   *declare "DHWSYS* wr_GetDHWSYS() const;"
+  *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
+  *declare "void wr_EffAdjustedTest();"
+  *declare "bool wr_IsEffFlowIndependent() const { return wr_type == C_DWHRTYCH_SETEF || wr_effRated < .00001f; }"
+  *declare "int wr_IsEquiv( const DHWHEATREC& wr) const;"
+  *declare "float wr_CalcTick( DHWSYS* pWS, struct DHWHRTICK& wrtk, float vOther, float& whUseNoHR, float& fxUseMix, float& qR, float& qRWH);"
+  *declare "inline float wr_HX( float vp, float tpI, float vd, float td) const"
+  *declare "{ if (vp<=0.f) return tpI; float f=wr_eff*min(vp, vd)/vp; return f*td+(1.f-f)*tpI;}"
+  *declare "RC wr_SetFXConnections( DHWSYS* pWS, int& iFx);"
+
+  *declare "struct DHWHRTICK* wr_ticks;" // runtime tick info for this DHWHEATREC for current hour
+										//   all draws allocated by tick so total flows are known
+
+  *i SI_GEZ wr_mult;		// multiplier
+							//   modeled as wr_mult identical heat recovery devices
+  *i DHWEUCH wr_hwEndUse	// end use source for this device
+							//   as of 12-18, only supports C_DHWEUCH_SHOWER
+  *i DWHRTYCH wr_type		// type: C_DWHRTYCH_
+							//    _HORIZ or _VERT: effectiveness adjusted per CASE regressions
+							//          depending on flows and temps, same model for both
+							//    _SETEF: wr_effRated used w/o modification (testing aid)
+  *i SI_GEZ wr_nFXDrain		// number of fixtures (of type wr_whEndUse) draining
+							//    via this DHWHEATREC
+  *i SI_GEZ wr_nFXCold		// number of fixtures (of type wr_whEndUse) draining
+							//    via this DHWHEATREC with cold source = this DHWHEATREC
+							//    default = wr_nFXDrain
+							//    if < wr_nFXDrain, remainder have cold source = mains
+							//    Note: wr_feedsWH = No and wr_nFXCold=0 is illegal
+  *i NOYESCH wr_feedsWH		// iff C_NOYESCH_YES, potable output is plumbed to water heater
+							//    cold water inlet
+
+  *declare "bool wr_FeedsFX() const { return wr_nFXCold > 0; }"
+  *declare "bool wr_FeedsWH() const { return wr_feedsWH==C_NOYESCH_YES; }"
+
+  *h FRAC wr_effRated			// rated effectiveness (generally CSA rating value)
+
+  *h FLOAT_GEZ wr_tdInDiff		// drain-side inlet water temp drop from fixture mixed temp, F
+								//    tdIn = tFxMix - tdInDiff;  default = 4.6 F
+
+  *h FLOAT_GEZ wr_tdInWarmup	// drain-side inlet temp during warmup portion of draw
+								//    default = 65.
+
+  *s *e FLOAT wr_eff			// effectiveness under current conditions
+  *s *e FLOAT wr_tpO			// most recent potable-side output temp, F
+  *s *e FLOAT wr_vp				// most recent potable-side flow, gpm
+
 *END
-#endif
 //=============================================================================
 RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *prefix wt_
@@ -3805,12 +3897,22 @@ RECORD DHWDAYUSE "DHWDayUse" *RAT	// input / runtime DHW daily draw schedule
 
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wdu_CkF();"
+  *declare "RC wdu_Init( int pass);"
   // Note: DHWSYS linkage handled *only* via wdu_DoHour() args
   //       A given DHWDayUse can be ref'd by multiple DHWSYSs
   *declare "RC wdu_DoHour( DHWSYS* pWS) const;"
 
   *h FLOAT_GEZ wdu_mult		// multiplier applied to all child DHWUSE wuFlows
 							//   note FLOAT (not integer)
+
+						// runtime (see wdu_RunInit()): range of ss values
+						//    for DHWUSEs belonging to this DHWDAYUSE
+						//    Typically all DHWUSEs in range will be
+						//    children of this DHWDAYUSE, but not guaranteed.
+						//    ownership should be checked within loops.
+  *r SI wdu_wuSsBeg;	//	initial ss
+  *r SI wdu_wuSsEnd;	//  last ss+1
+  *r INT wdu_wuCount;	// count of child DHWUSEs
 *END		// DHWDAYUSE
 //=============================================================================
 RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
@@ -3820,7 +3922,8 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *declare "RC wu_CkF();"
   *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const;"
   *declare "RC wu_DoHour( DHWSYS* pWS, float mult, int iH);"
-  *declare "RC wu_DoHour1( DHWSYS* pWS, float mult, int iH, double begM, double endM);"
+  *declare "RC wu_DoHour1( DHWSYS* pWS, float mult, int iH, double begM, double begMHot, double endM);"
+  *declare "RC wu_CalcHotF( float tHot, float tCold, float& hotF) const;"
 
   *i DHWEUCH wu_hwEndUse // hot water end use
 							//   0 = unknown
@@ -3833,19 +3936,23 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
   *h FLOAT_GEZ wu_dur		//   flow duration, min
   *h FLOAT_GEZ wu_flow		//   mixed flow rate, gpm
   *h FRAC wu_hotF			//   fraction hot water, default = 1
-							//       derived from wu_temp / wu_heatRecEF if given
-							//       else input
+							//       input value used iff wu_temp NOT given
   *h FLOAT_GZ wu_temp		//   use temperature, F.  If given,
 							//      hot water draw is calculated assuming
-							//		mains (cold) water mixing
+							//		   cold water mixing (mains or from heat rec)
   *h FLOAT_GEZ wu_heatRecEF	//   heat recovery effectiveness
 							//      re local drain water heat exchange
+							//      Must be 0 for C_DHWEUCH_SHOWER if DHWSYS has DHWHEATREC.
+							//      Checked at runtime only since DHWDAYUSE use by DHWSYS
+							//        can change daily.
+  *r INT wu_drawSeqN		// sequence number of draw by ws_hwEndUse
+							//    assigned at runtime, see wdu_RunInit()
+							//    used re random assignment of draws to DHWHEATRECs
 *END	// DHWUSE
 //=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
-  *exdes			// define destructor in pvwatts.cpp to free SSC data container
   *ovrcopy
   *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
@@ -3873,7 +3980,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *i TI pv_elecMtri;		// meter for system electricity production
   *f ENDUSECH pv_endUse		// end use of energy. defataults to "PV"
   *i FLOAT_GEZ pv_dcCap		// system capacity/size (DC nameplate), kW
-  *i NOYESCH pv_usePVWattsDLL  // use PVWatts DLL instead of CSE calculations
   *i PVMODCH pv_moduleType	// type of module (Standard, Premium, ThinFilm)
   *i FLOAT pv_tempCoeff		// temperature coefficient, 1/F
   *i FLOAT_GE1 pv_covRefrInd  // refraction index for coating applied to cover
@@ -3883,14 +3989,20 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *h FRAC pv_grndRefl		// ground reflectance
   *i FRAC pv_gcr			// ground coverage ratio (what fraction of the ground is covered by the array). 1.0 implies no spacing.
   *i FLOAT_GZ pv_dcacRat	// DC to AC ratio
+  *h FLOAT_GE1 pv_sif		// Shading Impact Factor
   *i FRAC pv_invEff			// inverter efficiency at rated power
   *h FRAC pv_sysLoss		// system losses
   *h *e FLOAT pv_tCell		// cell temperature, F
   *h *e FLOAT pv_aoi		// angle of incidence (radians)
   *h *e ANGLE pv_panelTilt	// tilt of pv panel (different from array tilt for tracking systems), radians
   *h *e ANGLE pv_panelAzm	// azimuth of pv panel (different from array tilt for tracking systems), radians
-  *h *e FLOAT pv_poa		// plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_poaT		// transmitted plane of array incidence, Btu/h-ft2
+  *h *e FLOAT pv_poa		// plane of array incidence (before shading), Btu/h-ft2
+  *h *e FLOAT pv_poaBeam	// plane of array beam incidence (before shading), Btu/h-ft2
+  *h *e FLOAT pv_radIBeam	// beam radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_radIBeamEff	// effective beam radiation incident on array (accounts for shading impact factor), Btu/h-ft2
+  *h *e FLOAT pv_radI		// total radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_radIEff	// effective total radiation incident on array (accounts for shading impact factor), Btu/h-ft2
+  *h *e FLOAT pv_radTrans	// transmitted radiation (after accounting for shading impact), Btu/h-ft2
   *h *e FLOAT pv_dcOut		// DC power output, Btu
   *h *e FLOAT pv_acOut		// AC power output, Btu
 
@@ -3899,8 +4011,8 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *r FLOAT pv_convRatio		// ratio of back convection to front convection
   *r FLOAT pv_tGrndRatio	// ratio of ground-cell temperature diff. to air-cell temperature diff.
   *r *hide FLOAT_GEZ pv_thermCap  // thermal capacitance of the array, J/kg-m2
-  *h *e FLOAT pv_poaPv		// previous timestep plane of array incidence, Btu/h-ft2
-  *h *e FLOAT pv_tCellPv	// previous timestep cell temperature, F
+  *h *e FLOAT pv_radILs		// last step (curently hour) total radiation incident on array, Btu/h-ft2
+  *h *e FLOAT pv_tCellLs	// last step (curently hour) cell temperature, F
   *r *hide SI pv_modMap		// map to PVWatts module type input
   *r *hide SI pv_arrMap		// map to PVWatts array type input
 

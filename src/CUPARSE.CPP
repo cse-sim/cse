@@ -266,10 +266,10 @@ OPTBL opTbl[] =
 #define VA    2048	// variable number of arguments, .nA or more
 #define MA    1024	// match args: all are type a1Ty; if TYNUM or TYANY, convert to same if types vary, else error
 #define VC     512	// emit code after every arg but 1st: min, max. [Cannot be used with both LOK and ROK.]
-// VC + MA: result not arg is converted if code already emitted.
+					// VC + MA: result not arg is converted if code already emitted.
 #define INC    256	// system variables: increment on load, -- on store
 #define F2       2	// may make FSCHOO do select(),
-#define F1	 1	// makes FSCHOO do hourval(),
+#define F1		 1	// makes FSCHOO do hourval(),
 
 /*----- Verbs: moved to caller (test prog cumain.cpp; cul.cpp) 10-8-90 */
 
@@ -388,6 +388,8 @@ static SFST itSfs[] =
 #endif
 	SFST( "contin",    ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
 	SFST( "stepped",   ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
+	SFST( "fileInfo",  ROK,       0,   FCREG, TYSI,   1, TYSTR,  0, 0,    PSFILEINFO, 0),  // file info
+	
 #ifdef LOCFCN
 	*  SFST( "abcd",   LOK|ROK|SA,   0,   FCREG, TYSI,   1, TYSI,  0, 0,     0, 0),  // poss test >>fill in codes
 #endif

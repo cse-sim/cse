@@ -60,7 +60,7 @@ MySys Characteristics
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  1
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Yr  15.248  1.614 12.603      0      0      0      0  0.386  0.336      0  0.308
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  2
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  3
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  4
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -312,7 +312,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  5
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  6
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
         		layer lrThk = .1 lrMat = FoamInsul
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  7
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  8
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Input for Run 001:
             znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page  9
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page  9
 
 
 
@@ -627,7 +627,7 @@ Input for Run 001:
         	rsFChg = 1		//ACM charge factor (default = 1)
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page 10
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page 10
 
 
 
@@ -690,7 +690,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page 11
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page 11
 
 
 
@@ -699,21 +699,21 @@ Input for Run 001:
 
 
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console run(s) done: Mon 12-Feb-18   4:45:24 pm
-! Executable: d:\cse\msvc\csed.exe
-!             12-Feb-18   4:40 pm   (VS 12.0    2814976 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:22:14 am
 
-! Input file name:  D:\cse\test\herv.cse
-! Report file name: D:\cse\test\herv.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 herv
+! Input file:   D:\cse\test\herv.cse
+! Report file:  D:\cse\test\herv.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0390   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0000   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 5.74     Calls = 1      T/C = 5.7430   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0100   
-!                Total:  Time = 5.79     Calls = 1      T/C = 5.7930   
-
+!           Simulation:  Time = 1.29     Calls = 1      T/C = 1.2870   
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0240   
+!                Total:  Time = 1.31     Calls = 1      T/C = 1.3110   
 
 
 
@@ -753,5 +753,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Mon 12-Feb-18   4:45:18 pm  Page 12
+! herv  001                                Mon 07-Jan-19   9:22:12 am  Page 12
 

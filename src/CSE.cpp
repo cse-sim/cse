@@ -84,6 +84,9 @@
 
 #include "cse.h"		// decls for this file
 
+#include <penumbra/penumbra.h>	// penumbraInit penumbraTerminate for GPU calculations
+
+
 // configuration defined on compiler command line (or inferred, see cnglob.h)
 #include "cseface.h"
 
@@ -120,7 +123,7 @@ const char ProgVariant[] = 	// text showing platform
 
 int TestOptions = 0;	// test option bits, set via -t command line argument
 						//   1: hide directory paths in error messages (show file name only)
-						//      allows location independent reference report files, 1-2016
+						//      allows location-independent reference report files, 1-2016
 
 #ifdef WINorDLL
 HINSTANCE cneHInstApp = 0;	// application instance handle: needed eg for registering window classes eg in rmkerr.cpp.
@@ -644,6 +647,7 @@ LOCAL INT cse1( INT argc, const char* argv[])
 	}
 	while (argci < argc);		// repeat til all input args used
 
+	Pumbra::penumbraTerminate();	// Clean up GPU calculation memory
 	return errlvl;			// 0 ok, nz error, 255 if ^C, 1-95.
 }			// cse1run
 //------------------------------------------------------------------------
@@ -748,12 +752,14 @@ LOCAL INT cse3( INT argc, const char* argv[])
     					   I think (and printf anyway) aborts on ^C -- so dummy enkichk.) */
 
 	cnClean(ENTRY);		// insurance-initialize everything in case left dirty on prior call to cse package, 10-93.
-	// local fcn, below, may call fcns in other packages.
-	// corresponding exit call is done by caller to allow multiple returns here.
+						// local fcn, below, may call fcns in other packages.
+						// corresponding exit call is done by caller to allow multiple returns here.
 
 	doControlFP();
 
 	setbuf(stdout, NULL);	// disable buffering on stdout, 6/12/2014
+
+
 	/*----- Command line -----*/
 
 // check # command line args; conditionally display help and exit
@@ -772,9 +778,15 @@ LOCAL INT cse3( INT argc, const char* argv[])
 // display command line -- eg to confirm flags with multiple input files
 
 	screen( NONL, "Command line:");			// note signon ended with \n
-	SI i;
+	int i;
+	const char* tArgs = "";		// assemble args in tmpstr
 	for (i = 1;  i < argc;  i++)
-		screen( NONL, " %s", argv[i]);
+		tArgs = scWrapIf(
+					tArgs,
+					strtprintf(" %s", argv[ i]),
+					"\n             ");
+	cmdLineArgs = strsave( tArgs);	// copy to dm
+	screen( NONL, cmdLineArgs);
 
 // decode command line
 
@@ -1247,11 +1259,12 @@ noHans:
 		ensystd( &idt);								// ret system date & time, envpak.cpp
 		vrPrintf( vrTimes, "\n\n%s%s %s %s run(s) done: %s",
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
-		vrPrintf (vrTimes, "\n%sExecutable: %s\n%s            %s  (HPWH %s)",
-			pfx, Top.tp_exePath, pfx,Top.tp_exeInfo, Top.tp_HPWHVersion);
-		vrPrintf( vrTimes, "\n\n%sInput file name:  %s",
+		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
+			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
+		vrPrintf( vrTimes, "\n%sCommand line:%s", pfx, Top.tp_cmdLineArgs);
+		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
-		vrPrintf( vrTimes, "\n%sReport file name: %s",
+		vrPrintf( vrTimes, "\n%sReport file:  %s",
 			pfx, PriRep.f.fName ? PriRep.f.fName : "NULL");
 		vrPrintf( vrTimes, "\n\n%sTiming info --\n\n", pfx);
 		for (i = 0;  i <= TMR_TOTAL;  i++)
@@ -1334,10 +1347,11 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 	WStr tExePath = enExePath();
 	strsave( tp_exePath, tExePath.c_str());
 
-	// dmfree( DMPP( tp_HPWHVersion));
 	strsave( tp_HPWHVersion, DHWHEATER::wh_GetHPWHVersion().c_str());
 
 	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
+
+	strsave( tp_cmdLineArgs, cmdLineArgs);
 
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages

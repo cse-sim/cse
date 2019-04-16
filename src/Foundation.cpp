@@ -98,8 +98,7 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 
 	// Asssumed indoor temperature during warm-up
 	// Could use zone setpoints? how to evaluate expressions outside of main simulation?
-	kv_bcs->indoorTemp = DegFtoK(70.0);
-	kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = kv_bcs->indoorTemp;
+	kv_bcs->slabConvectiveTemp = kv_bcs->wallConvectiveTemp = kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = DegFtoK(70.0);
 
 	return RCOK;
 }
@@ -108,7 +107,7 @@ RC KIVA::kv_SetBCs()
 {
 	ZNR* z = kv_GetZone();
 	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance->bcs;
-	kv_bcs->indoorTemp = DegFtoK(z->tz);
+	kv_bcs->slabConvectiveTemp = kv_bcs->wallConvectiveTemp = DegFtoK(z->tz);
 	kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = DegFtoK(z->tr); // TODO should be Tr of all other surfaces (excluding this surface)
 	kv_bcs->outdoorTemp = DegFtoK(Top.tDbOSh);
 	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_instance->foundation->grade.roughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?

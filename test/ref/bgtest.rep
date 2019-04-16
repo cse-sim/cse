@@ -457,7 +457,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -1747,17 +1747,18 @@ Input for Run 001:
 
 
 
-! CSE 0.849.0+CommonASHWAT.3cb2d74.34 for Win32 console run(s) done: Mon 12-Feb-18   4:47:54 pm
-! Executable: d:\cse\msvc\csed.exe
-!             12-Feb-18   4:40 pm   (VS 12.0    2814976 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:22:49 am
 
-! Input file name:  D:\cse\test\bgtest.cse
-! Report file name: D:\cse\test\bgtest.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 bgtest
+! Input file:   D:\cse\test\bgtest.cse
+! Report file:  D:\cse\test\bgtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 1      T/C = 0.1250   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0000   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 50.80    Calls = 1      T/C = 50.8020  
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0210   
-!                Total:  Time = 50.95    Calls = 1      T/C = 50.9500  
+!           Simulation:  Time = 9.47     Calls = 1      T/C = 9.4730   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0150   
+!                Total:  Time = 9.50     Calls = 1      T/C = 9.5030   

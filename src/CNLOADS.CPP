@@ -369,7 +369,7 @@ x	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls, 0.f), 0.8f);
 	if (!nMd)				// if zone has no modes (eg startup with no terminals)
 		spCf++;				// tell ztuCompute to build zone mode sequence
 
-	zn_unMetC = zn_unMetH = 0;		// clear unmet load flags
+	zn_unMetCDH = zn_unMetHDH = 0.f;	// unmet temp diffs
 
 	// initialize DHW heat transfer totals
 	//   TODO: could be done in DHW code iff needed
@@ -1086,7 +1086,7 @@ x						printf( "1B\n");
 				{	zn_qsHvac = qcCap;
 					tz = zn_TAirCR( zn_qsHvac*zn_fConv, 0., zn_qsHvac*(1.f-zn_fConv));
 					if (Top.isEndHour)
-						zn_unMetC++;
+						zn_unMetCDH = tz - i.znTC;		// temp excursion above setpoint
 				}
 				// else capacity sufficient
 			}
@@ -1101,7 +1101,7 @@ x						printf( "1B\n");
 					zn_qsHvac = qhCap;
 					tz = zn_TAirCR( zn_qsHvac*zn_fConv, 0., zn_qsHvac*(1.f-zn_fConv));
 					if (Top.isEndHour)
-						zn_unMetH++;
+						zn_unMetHDH = tz - i.znTH;	// temp excursion below setpoint (< 0)
 				}
 				// else capacity sufficient
 			}
@@ -1185,7 +1185,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 		{	if (zn_hcMode == RSYS::rsmHEAT)
 			{	if (tz < zn_tzsp-.001)
 				{	if (Top.isEndHour)
-						zn_unMetH++;		// give system whole hour to hold temp
+						zn_unMetHDH = tz - zn_tzsp;		// hour end temp excursion below set point
 #if 0 && defined( _DEBUG)
 					if (zn_rsFSize > .9999)
 						// air request received: temp should hold
@@ -1200,7 +1200,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			else if (zn_hcMode == RSYS::rsmCOOL)
 			{	if (tz > zn_tzsp+.001)
 				{	if (Top.isEndHour)
-						zn_unMetC++;		// give system whole hour to hold temp
+						zn_unMetCDH = tz - zn_tzsp;		// hour end temp excursion above set point
 #if 0 && defined( _DEBUG)
 					if (zn_rsFSize > .9999)
 						// air request received: temp should hold

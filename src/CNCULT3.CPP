@@ -2464,6 +2464,7 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 	if (sb_si && sb_atvDeg != 0.)
 		sb_atvDeg = -sb_atvDeg;		// outside
 	double absAtvDeg = abs( sb_atvDeg);
+	sb_cosTilt = sb_si ? cos(x.tilt) : -cos(x.tilt);
 	sb_cosAtv = cos( RAD( sb_atvDeg));	// 0 <= cos( theta) <= 1 always (never < 0)
 	snapTrig( sb_cosAtv);
 	int xsty = x.xs_TyFromTilt();		// tilt-type: xstyCEILING, xstyWALL, xstyFLOOR
@@ -2473,7 +2474,7 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 
 	if (sb_HasHcNat())
 	{	// natural convection occurs at surface
-		double hcNatConstHtFlowUp, hcNatConstHtFlowDn;
+		double hcNatConstHtFlowEnhanced, hcNatConstHtFlowReduced;
 		if (sb_hcModel == C_CONVMODELCH_ASHRAE)
 		{	// ASHRAE zone-side still air values used by e.g. 1199-RP
 			// Table order assumed consistent with xstyCEILING etc
@@ -2485,23 +2486,29 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 			};
 			// TODO: generalize for arbitrary tilt?
 			// TODO: handle non-canonical tilts (e.g. -5, 190, ...)?
-			hcNatConstHtFlowDn = hcNatASHRAE[ xsty][ 0];
-			hcNatConstHtFlowUp = hcNatASHRAE[ xsty][ 1];
+			hcNatConstHtFlowReduced = hcNatASHRAE[ xsty][ 0];
+			hcNatConstHtFlowEnhanced = hcNatASHRAE[ xsty][ 1];
 			sb_hcConst[ 2] = Top.tp_hConvF * 0.88;
 		}
-		else
-		{	// values for C_CONVMODELCH_UNIFIED
+		else if (sb_hcModel == C_CONVMODELCH_UNIFIED)
+		{	
 			// set up but not used for other
 			double hcNatConstBase = 0.185 * pow( sb_cosAtv, 1./3.);
-			hcNatConstHtFlowUp = absAtvDeg > 60.
+			hcNatConstHtFlowEnhanced = absAtvDeg > 60.
 									? 0.00377*absAtvDeg - 0.079
 									: hcNatConstBase;
-			hcNatConstHtFlowDn = max( hcNatConstBase, .08);
+			hcNatConstHtFlowReduced = max( hcNatConstBase, .08);
+		}
+		else 
+		{
+			// Used for C_CONVMODELCH_TARP and C_CONVMODELCH_DOE2 (unused for others)
+			hcNatConstHtFlowEnhanced = 1.670f / (7.238f - std::abs(sb_cosTilt));  // 1.670 = 9.482 W/m^2-K^4/3
+			hcNatConstHtFlowReduced = 0.262f / (1.382f + std::abs(sb_cosTilt));  // 0.262 = 1.810 W/m^2-K^4/3
 		}
 		int iFaceUp = sb_atvDeg > 0.;		// 1 iff surface faces upward
 		// Top.tp_hConvF: elevation factor for convection
-		sb_hcConst[ iFaceUp]   = Top.tp_hConvF * hcNatConstHtFlowDn;		// const for ta > ts
-		sb_hcConst[ 1-iFaceUp] = Top.tp_hConvF * hcNatConstHtFlowUp;		// const for ta <= ts
+		sb_hcConst[ iFaceUp]   = Top.tp_hConvF * hcNatConstHtFlowReduced;		// const for ta > ts (when face up)
+		sb_hcConst[ 1-iFaceUp] = Top.tp_hConvF * hcNatConstHtFlowEnhanced;		// const for ta <= ts (when face up)
 	}
 
 	if (sb_zi)
@@ -2559,6 +2566,10 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 			//   safe for eaveZ < 0
 			lf = 1. / sqrt( max( z.i.zn_HeightZ( 1.f)/4.f, 1.));
 			sb_fcWind = 0.447 * wf * x.xs_Rf * uf * vf * lf;	// x.xs_Rf = roughness factor
+		}
+		else if (sb_hcModel == C_CONVMODELCH_DOE2)
+		{
+			sb_fcWind = Top.tp_hConvF * x.xs_Rf;
 		}
 		else
 		{
@@ -2757,6 +2768,36 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 		sb_hcFrc = sb_fcWind * Top.windSpeedSqrtSh;
 		break;
 
+	case C_CONVMODELCH_DOE2:
+	{
+		// MoWitt forced + TARP natural
+		sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1. / 3.);
+
+		// Windward/Leeward
+		float angleDiff = std::fmod(std::abs(Top.windDirDegHr - DEG(sb_pXS->azm)),360.f);
+		bool windward = std::abs(sb_cosTilt) > 0.98 || (angleDiff < 100 || angleDiff > 260);
+
+		// From "Identifying and Resolving Issues in EnergyPlus and DOE-2 Window Heat Transfer Calculations" by Booten, Kruis, and Christensen (2012)
+		// Using DOE-2 coefficients (correlated to local windspeed at zone hight--change if we ever use surface hight).
+		static const float mowittCoeffs[2][2] =
+		{   // a     b
+			0.2639f, 0.89f,  // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
+			0.3659f, 0.617f  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
+		};
+
+		auto parentZone = sb_pXS->xs_sbcI.sb_zi;  // Get surface parent zone
+		float windSpeedModifier = 0;
+		if (parentZone != 0) {
+			windSpeedModifier = ZrB[parentZone].i.zn_windFLkg;
+		}
+
+		float hfGlass = mowittCoeffs[windward][0]* pow(Top.windSpeedSh*windSpeedModifier, mowittCoeffs[windward][1]);
+		
+		float hcGlass = std::sqrt(sb_hcNat*sb_hcNat + hfGlass*hfGlass);
+
+		sb_hcFrc = sb_fcWind *(hcGlass - sb_hcNat);
+		break;
+	}
 	case C_CONVMODELCH_UNIFIED:
 	{
 #if 0 && defined( _DEBUG)
@@ -2914,6 +2955,14 @@ x			printf( "Hit\n");
 #endif
 		sb_hcNat = sb_hcConst[ TD>0.] * pow( fabs( TD), 1./3.);
 		sb_hcFrc = z.zn_hcFrc;		// all surfaces in zone use same value
+		break;
+	}
+
+	case C_CONVMODELCH_TARP:
+	{
+
+		sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1. / 3.);
+		sb_hcFrc = 0.f;
 		break;
 	}
 

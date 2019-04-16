@@ -695,6 +695,7 @@ x const int zanSYSAIRUB  = 0x00000010;
 const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 									// (and # choices in enum endUses if used)
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
+static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
 #if 0
 x not used / not maintained 6-5-2012
 x //--- data type for subscripting of ResEgy.endUse (for callers, not used here)

@@ -1,6 +1,6 @@
 # DHWUSE
 
-Defines a single hot water draw as part of a DHWDAYUSE.  See discussion and examples under DHWDAYUSE. As noted there, most DHWUSE values have hourly variability, allowing flexible representation
+Defines a single hot water draw as part of a DHWDAYUSE.  See discussion and examples under DHWDAYUSE. As noted there, most DHWUSE values have hourly variability, allowing flexible representation.
 
 **wuName**
 
@@ -29,7 +29,7 @@ Durations that extend beyond midnight are included in the current day.
 
 **wuFlow=*float***
 
-Draw flow rate at the point of use (in other words, the mixed-water flow rate).  wuFlow = 0 is equivalent to omitting the DHWUSE.  There is no enforced upper limit on wuFlow, however, unrealistically large values will cause runtime errors.
+Draw flow rate at the point of use (in other words, the mixed-water flow rate).  wuFlow = 0 is equivalent to omitting the DHWUSE.  There is no enforced upper limit on wuFlow, however, unrealistically large values can cause runtime errors.
 
 **Units**   **Legal Range**      **Default**   **Required**  **Variability**
 ----------- -------------------  ----------- ------------- -------------------------
@@ -47,26 +47,35 @@ Fraction of draw that is hot water.  Cannot be specified with wuTemp or wuHeatRe
 
 Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is given.   
 
-  **Units**   **Legal Range**     **Default**   **Required**         **Variability**
-  ---------- ------------------- ------------- ------------------    -------------------------
-  ^o^F         0 $\le$ x          0             when wuHeatRecEF          hourly
-                                                is given
+---------------------------------------------------------------------------------------------
+  **Units**   **Legal Range**     **Default**   **Required**                  **Variability**
+  ---------- ------------------- ------------- ----------------------------   ---------------
+  ^o^F         0 $\le$ x          0             when wuHeatRecEF is given           hourly
+                                                or parent DHWSYS includes
+                                                DHWHEATREC(s)
+---------------------------------------------------------------------------------------------
+
 
 **wuHeatRecEF=*float***
 
-Heat recovery effectiveness.  If non-0, wuHeatRecEF allows modeling of heat recovery devices such as drain water heat exchangers.  If given, wuTemp must also be specified.  
+Heat recovery effectiveness, allows simple modeling of heat recovery devices such as drain water heat exchangers.
+
+If non-0 (evaluated hourly), hot water use is reduced based on wuTemp, DHWSYS wsTUse, and DHWSYS wsTInlet.  DHWHEATREC(s), if any, are ignored for this use.  wuTemp must be specified.
+
+If 0, detailed heat recovery modeling *may* apply, see [DHWHEATREC](#dhwheatrec).
 
 **Units**   **Legal Range**        **Default**   **Required**  **Variability**
 ----------- --------------------- ------------- ------------- -------------------------
-  --         0 $\le$ x $\le$ 0.9          0      when wu          hourly
+  --         0 $\le$ x $\le$ 0.9          0          N          hourly
 
 
 **wuHWEndUse=*choice***
 
-Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  whHWEndUse has two functions --
+Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  wuHWEndUse has the following functions --
 
  * Allocation of hot water use among multiple DHWSYSs (if more than one DHWSYS references a given DHWDAYUSE).
  * DHWMETER end-use accounting (via DHWSYS).
+ * Activation of the detailed heat recovery model (available for end use Shower when wuHeatRecEF=0 and the parent DHWSYS includes DHWHEATREC(s)).
 
 **Units**   **Legal Range**       **Default**                 **Required**  **Variability**
 ----------- --------------------  --------------------------- ------------- -------------------------

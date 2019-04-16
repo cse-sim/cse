@@ -108,6 +108,7 @@ void FC cgClean( 		// cg overall init/cleanup routine
 		dmfree( DMPP( exePath));		// free exe/dll;exe path, 2-95.
 	dmfree( DMPP( InputFilePathNoExt));	// free input file name with any .ext removed. sets NULL, NOP if already NULL. dmpak.cpp.
 	dmfree( DMPP( InputDirPath));		// free drive/dir path to input file, 2-95.
+	dmfree( DMPP( cmdLineArgs));
 
 	vrInfoClean((VROUTINFO*)&PriRep);	// clean primary report file virt rpt info. Depends on NULL terminator.
 	memset(&PriRep, 0, sizeof(PriRep));	// code assumes PriRep starts all 0.
@@ -127,8 +128,8 @@ void FC cgClean( 		// cg overall init/cleanup routine
 	brfw.clean();			// clean the only ResfWriter object. local object, brfw.cpp code.
 #endif
 
-	IffnmB.free();	   	/* Import File Field Names info: used for autosize & run & further compile support til CLEAR;
-				   may not be free'd in runFazDataFree(). 2-94. */
+	IffnmB.free();	   	// Import File Field Names info: used for autosize & run & further compile support til CLEAR;
+						// may not be free'd in runFazDataFree(). 2-94.
 
 // other CSE simulator guts modules
 
@@ -1514,8 +1515,8 @@ LOCAL void FC NEAR doIvlAccum()
 				  Top.isEndHour );			//   non-0 if last call of hour: compute averages
 		if (Top.isEndHour)
 		{	// hour has unmet if more than 0 subhours unmet
-			resp->curr.H.nHrUnMetH = resp->curr.H.nShUnMetH != 0;
-			resp->curr.H.nHrUnMetC = resp->curr.H.nShUnMetC != 0;
+			resp->curr.H.nHrUnMetH = resp->curr.H.unMetHDH != 0.f;
+			resp->curr.H.nHrUnMetC = resp->curr.H.unMetCDH != 0.f;
 		}
 #ifdef SHSZ	// if keeping sum-of-subhours results. cnguts.h. untested. undef 6-92 for speed, flexibility.
 *     if (resp->ss < ZnresB.n)							// except for last (sum-of-zones) record

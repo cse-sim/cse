@@ -288,8 +288,10 @@ INPUT            hc = sfExHcMult                 hc = sfxxHcMult
 AKBARI           Akbari model                    n/a
 WALTON           Walton model                    n/a
 WINKELMANN       Winkelmann model                n/a
+DOE2             DOE2 model                      n/a
 MILLS            n/a                             Mills model
 ASHRAE           n/a                             ASHRAE handbook values
+TARP             n/a                             TARP model
 --------------- ------------------------------- ----------------------------
 
 **sfExHcModel=*choice***

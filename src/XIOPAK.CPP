@@ -769,22 +769,23 @@ int xfExist(	// determine file existence
 	const char* fPath,				// pathname
 	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ _MAX_PATH]
 									//  returns trimmed fPath as checked
-// Returns 2 if dir
-//         1 if "regular" file
-//         0 not found or not dir or "regular" file
+// Returns 3 if dir
+//         2 if non-empty "regular" file
+//		   1 if empty "regular" file
+//         0 not found or not dir or "regular" file (e.g. "C:")
 //        -1 error
 {
 	int ret = 0;
 	// trim whitespace from beg and ws + \ from end (insurance)
 	// return to caller or use tmpstr
 	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
-	struct _stat stat;
 	if (!IsBlank( tPath))
-	{	int statRet = _stat( tPath, &stat);
+	{	struct _stat stat;
+		int statRet = _stat( tPath, &stat);
 		if (statRet == 0)		// if file found
-			ret = (stat.st_mode & _S_IFDIR) ? 2
-			    : (stat.st_mode & _S_IFREG) ? 1
-				:                             0;
+			ret = (stat.st_mode & _S_IFDIR)  ? 3
+			    : (stat.st_mode & _S_IFREG)  ? 1 + int( stat.st_size > 0)
+				:                              0;	// other (e.g. volume "C:")
 		else if (statRet==-1 && errno == ENOENT)
 			ret = 0;	// clean not found
 		else
@@ -799,8 +800,9 @@ int fileFind1(			// check existence of a single file
 	const char* fName,		// simple file name (with or w/o ext) check
 	char* fPath /*=NULL*/)	// ptr to buffer [ _MAX_PATH] to receive
 							//   assembled path that was checked
-// returns 1 if file
-//         2 if dir
+// returns 3 if dir
+//         2 if non-empty file
+//		   1 if empty file
 //		   0 if not found or volume (C:)
 //        -1 error (unexpected return from _stat)
 

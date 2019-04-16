@@ -1085,7 +1085,7 @@ float CalcSkyTemp(		// sky temp model
 			float e0 = .711 + (0.56f/100.f)*taDpC + (.73f/10000.f)*taDpC*taDpC
 						+ hrConst[ iHr] + .12f * (presAtm/29.53f - 1.f);
 
-			eSky = e0 + 0.467f*(1.f - e0)*cldCvr/10.f;
+			eSky = e0 + 0.784f*(1.f - e0)*cldCvr/10.f;  // equation 76 from 2013 ACM
 		}
 		else
 		{	err( ABT, "CalcSkyTemp: Invalid skyModelLW=%d", skyModelLW);
@@ -2440,13 +2440,13 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 	int yr, m, d, h, minute;
 	char sSink[ 100];
 	// temporaries for SI values
-	float db, dp, rh, prs, glrad, bmrad, dfrad, wndDir, wndSpd, tsc, osc;
+	float db, dp, rh, prs, irhoriz, glrad, bmrad, dfrad, wndDir, wndSpd, tsc, osc;
 	RC rc = RCOK;
 	while (1)
 	{	char wfLine[ WFMAXLNLEN];
 		pWF->yac->line( wfLine, sizeof( wfLine));
 		rc = pWF->yac->getLineCSV( erOp|YAC_NOREAD, pWF->isLeap,
-			"LLLLLCFFFFXXXFFFXXXXFFFF",
+			"LLLLLCFFFFXXFFFFXXXXFFFF",
 			wfLine,
 			&yr, &m, &d, &h, &minute,	// year, month / day / hour / minute (all 1-based)
 			_C( sSink),				// data sources and uncertainty flags
@@ -2454,6 +2454,7 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 			&dp,					// dew point temp, degC
 			&rh,					// relative humidity, %
 			&prs,					// atmospheric station pressure, Pa
+			&irhoriz,				// sky radiation, Wh/m2
 			&glrad,					// global horizontal irradiation, Wh/m2
 			&bmrad,					// direct normal irradiation, Wh/m2
 			&dfrad,					// diffuse horizonal irradiation, Wh/m2
@@ -2501,6 +2502,19 @@ x			printf( "mismatch\n");
 		wd_cldCvr = tsc;
 
 		wd_tSky = wd_CalcSkyTemp( C_SKYMODLWCH_BERDAHLMARTIN, h-1);
+
+#if 0
+// sky temp experiment
+		float tSkyIR = DegRtoF(pow( IrSItoIP( irhoriz)/sigmaSB, 0.25));
+		static FILE* pF = NULL;		// file
+		if (!pF)
+		{
+			const char* fName = "tSky.csv";
+			pF = fopen(fName, "wt");
+			fprintf(pF, "yr,mon,day,hr,osc,tsc,tSky_CSE,tSky_IR\n");
+		}
+		fprintf(pF, "%d,%d,%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n", yr, m, d, h, osc, tsc, wd_tSky, tSkyIR);
+#endif
 	}
 	return rc;
 }		// WDHR::wd_EPWReadHr

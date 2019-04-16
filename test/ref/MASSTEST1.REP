@@ -60,7 +60,7 @@ Yr  60.15 52.35      0      0     0     0  9.439      0 -9.439    0      0     0
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  1
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
  16 90.00 63.64      0      0     0     0 -7.005      0  7.005    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  2
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
   6 90.00 63.64      0      0     0     0 -3.388      0  3.388    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  3
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Day 90.00 63.64      0      0     0     0 -63.12      0 63.118    0      0     0
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  4
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
  18 90.00 63.64      0      0     0     0 -2.272      0  2.272    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  5
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
   8 90.00 63.64      0      0     0     0 -2.224      0  2.224    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  6
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hourly Energy Balance, zone "Single", Sat 10-Oct
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  7
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ Day 90.00 63.64      0      0     0     0 -53.04      0 53.035    0      0     0
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  8
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Day 63.0 55.6 50.2 48.0   0 50.2 48.0 50.0 47.9 24.00 1.0 10000     0 52.43     
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page  9
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page  9
 
 
 
@@ -627,7 +627,7 @@ Day  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
  29 90.00 63.64      0      0     0     0 -52.97      0 52.966    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 10
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 10
 
 
 
@@ -690,7 +690,7 @@ Day  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL
   6 90.00 63.64      0      0     0     0 -52.97      0 52.966    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 11
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 11
 
 
 
@@ -753,7 +753,7 @@ Mon 90.00 63.64      0      0     0     0  -1642      0 1641.9    0      0     0
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 12
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 12
 
 
 
@@ -816,7 +816,7 @@ Mass Wall2              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
  Outside: SpecifiedT 70   rsurf=0.00  h=1.500                                 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 13
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 13
 
 
 
@@ -879,7 +879,7 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 14
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 14
 
 
 
@@ -890,7 +890,7 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
 
 ! Log for Run 001:
 
-! CSE 0.836b for Win32 console
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
 
 
 
@@ -942,7 +942,7 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 15
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Input for Run 001:
         CONSTRUCTION ExpSlabfloor 				
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 16
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Input for Run 001:
          	TERMINAL HeatTerm TuTlh=Heat_mo tuQMxLH = HeatCap tuhcCaptRat = HeatCap 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 17
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 18
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 18
 
 
 
@@ -1140,21 +1140,21 @@ Input for Run 001:
 
 
 
-! CSE 0.836b for Win32 console run(s) done: Thu 30-Nov-17   3:18:56 pm
-! Executable: c:\users\nkruis\projects\cse\run\cse.exe
-!             29-Nov-17   3:39 pm   (VS 12.0    1360384 bytes)  (HPWH 1.4.0)
+! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:19:54 am
 
-! Input file name:  C:\Users\nkruis\projects\cse\test\masstest1.cse
-! Report file name: C:\Users\nkruis\projects\cse\test\masstest1.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
+! Command line: -x!  -t1 masstest1
+! Input file:   D:\cse\test\masstest1.cse
+! Report file:  D:\cse\test\masstest1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1      T/C = 0.0710   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0000   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.81     Calls = 1      T/C = 1.8150   
-!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0560   
-!                Total:  Time = 1.96     Calls = 1      T/C = 1.9620   
-
+!           Simulation:  Time = 1.44     Calls = 1      T/C = 1.4390   
+!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0310   
+!                Total:  Time = 1.47     Calls = 1      T/C = 1.4700   
 
 
 
@@ -1194,5 +1194,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Thu 30-Nov-17   3:18:54 pm  Page 19
+! masstest1  001                           Mon 07-Jan-19   9:19:52 am  Page 19
 

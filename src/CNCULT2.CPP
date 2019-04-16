@@ -682,7 +682,7 @@ RC TOPRAT::tp_Psychro()		// initialize air properties members of top
 	airXK = airVshK*60.f;			// divide by abs temp for heat transfer of flow: Btuh/cfm-F. 60: min/hr.
 
 //
-	tp_hConvF = 0.24f + 0.76f * tp_presAtm / PsyPBarSeaLvl;
+	tp_hConvF = tp_hConvMod ? 0.24f + 0.76f * tp_presAtm / PsyPBarSeaLvl : 1.0;
 						//   convection coefficient modification factor
 						//   used in some surface transfer models; reduces convection as function of elevation
 						//   source = ASHRAE 1199-RP Barnaby et al. 2004
@@ -770,6 +770,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	cupIncRef( DMPP( tp_HPWHVersion));
 	cupIncRef( DMPP( tp_exePath));
 	cupIncRef( DMPP( tp_exeInfo));
+	cupIncRef( DMPP( tp_cmdLineArgs));
 #ifdef BINRES
 	cupIncRef( DMPP( tp_brFileName));
 #endif
@@ -796,6 +797,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 	cupfree( DMPP( tp_HPWHVersion));
 	cupfree( DMPP( tp_exePath));
 	cupfree( DMPP( tp_exeInfo));
+	cupfree( DMPP( tp_cmdLineArgs));
 	// monStr is not in heap.
 #ifdef BINRES
 	cupfree( DMPP(tp_brFileName));
@@ -1458,17 +1460,25 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	RC rc = RCOK;
 	E( WMtrR.RunDup( WMtriB));
 	E( WsR.RunDup( WSiB));
-	E( WhR.RunDup( WHiB, &WsR))
-	E( WtR.RunDup( WTiB, &WsR))
-	E( WpR.RunDup( WPiB, &WsR))
-	E( WlR.RunDup( WLiB, &WsR))
-	E( WgR.RunDup( WGiB, &WlR))
-	E( WbR.RunDup( WBiB, &WgR))
-	E( WlpR.RunDup( WLPiB, &WlR))
-	E( WduR.RunDup( WDUiB, &WsR))
-	E( WuR.RunDup( WUiB, &WduR))
+	E(WhR.RunDup(WHiB, &WsR))
+	E(WtR.RunDup(WTiB, &WsR))
+	E(WrR.RunDup(WRiB, &WsR))
+	E(WpR.RunDup(WPiB, &WsR))
+	E(WlR.RunDup(WLiB, &WsR))
+	E(WgR.RunDup(WGiB, &WlR))
+	E(WbR.RunDup(WBiB, &WgR))
+	E(WlpR.RunDup(WLPiB, &WlR))
+	E(WduR.RunDup(WDUiB, &WsR))
+	E(WuR.RunDup(WUiB, &WduR))
 
-	// initialization -- do *last* -- all children in place
+	// DHWDAYUSE one-time inits
+	DHWDAYUSE* pWDU;
+	RLUP(WduR, pWDU)
+		rc |= pWDU->wdu_Init( 0);
+	RLUP(WduR, pWDU)
+		rc |= pWDU->wdu_Init( 1);
+
+	// DHWSYS initialization -- do *last* -- all children in place
 	//   multiple passes re e.g. wsLoadShareDHWSYS
 	DHWSYS* pWS;
 	RLUP( WsR, pWS)
