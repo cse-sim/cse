@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/cw2gsrtb7i2kwn7x/branch/master?svg=true)](https://ci.appveyor.com/project/cse/cse/branch/master)
+
 ## California Simulation Engine (CSE)
 
 CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings ([CBECC-Res](http://www.bwilcox.com/BEES/BEES.html)) software.
