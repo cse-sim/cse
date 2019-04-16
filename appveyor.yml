@@ -18,6 +18,8 @@ install:
   - ps: cinst -y miktex.portable
   - ps: cinst -y pandoc --version 1.17.2
   - cmd:  refreshenv
+  - pdflatex --version
+  - xelatex --version
 
 build_script:
   - build.bat no-pause

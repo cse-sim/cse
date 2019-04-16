@@ -356,6 +356,7 @@ Run = lambda do |cmd, working_dir=nil|
         LOG.write("X")
         LOG.flush
       end
+      raise "Error running command"
     end
   end
 end
