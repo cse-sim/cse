@@ -928,8 +928,8 @@ RC SFI::sf_CkfSURFGround(
 	}
 	else
 	{
-		oInfo("sfExCnd=GROUND without defining sfFnd or sfFndFloor for this surface.\n"
-			"    Using simple ground model instead of two-dimensional finite difference.");
+		//oInfo("sfExCnd=GROUND without defining sfFnd or sfFndFloor for this surface.\n"
+		//	"    Using simple ground model instead of two-dimensional finite difference.");
 		ignoreN("when sfExCnd=GROUND and neither sfFnd or sfFndFloor is set.",
 			SFX(HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
 	}
