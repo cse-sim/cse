@@ -13,6 +13,7 @@ require 'time'
 require 'rake/testtask'
 require 'irb'
 require_relative 'lib/template'
+require_relative 'lib/cse'
 require_relative 'lib/pandoc'
 require_relative 'lib/tables'
 require_relative 'lib/table'
@@ -355,6 +356,7 @@ Run = lambda do |cmd, working_dir=nil|
         LOG.write("X")
         LOG.flush
       end
+      raise "Error running command"
     end
   end
 end
@@ -926,6 +928,7 @@ BuildProbesYaml = lambda do
     PROBES_DATA_DIR
   ]
   EnsureAllExist[dirs]
+  CSE::ProbesList[]
   out_path = File.join(PROBES_DATA_DIR, 'probes_input.yaml')
   probes = DefParser::ParseProbesTxt[]
   probes_alt_orig = DefParser::ParseCnRecs[]
@@ -1675,7 +1678,7 @@ task :build_html_single => [:setup] do
     )
     manifest = doc["sections"]
     levels = manifest.map {|level, _| level}
-    files = manifest.map {|_, path| path} 
+    files = manifest.map {|_, path| path}
     BuildSinglePageHTML[
       "tag" => tag,
       "levels" => levels,
@@ -1713,7 +1716,7 @@ task :build_html_multi => [:setup] do
     )
     manifest = doc["sections"]
     levels = manifest.map {|level, _| level}
-    files = manifest.map {|_, path| path} 
+    files = manifest.map {|_, path| path}
     BuildMultiPageHTML[
       "tag" => tag,
       "levels" => levels,
@@ -1750,7 +1753,7 @@ task :build_pdf => [:setup] do
     )
     manifest = doc["sections"]
     levels = manifest.map {|level, _| level}
-    files = manifest.map {|_, path| path} 
+    files = manifest.map {|_, path| path}
     BuildPDF[
       "tag" => tag,
       "levels" => levels,
@@ -1784,7 +1787,7 @@ task :build_site => [:setup] do
     )
     manifest = doc["sections"]
     levels = manifest.map {|level, _| level}
-    files = manifest.map {|_, path| path} 
+    files = manifest.map {|_, path| path}
     BuildMultiPageHTML[
       "tag" => tag,
       "levels" => levels,
@@ -1805,7 +1808,7 @@ task :build_site => [:setup] do
   end
 end
 
-all_builds = [:build_html_single, :build_html_multi, :build_site]
+all_builds = [:probes, :build_html_single, :build_html_multi, :build_site]
 all_builds << :build_pdf if BUILD_PDF
 all_builds << :verify_links if VERIFY_LINKS
 all_builds << :coverage if RUN_COVERAGE
@@ -1867,6 +1870,7 @@ task :coverage do
   time_it do
     puts("#"*60)
     puts("Check CSE User Manual's Documentation Coverage")
+    CSE::CullList[] # Run CSE to produce input list (cullist.txt)
     tag = "cse-user-manual-coverage"
     processed_manifest_path = File.join(BUILD_DIR, tag, 'md', 'preprocessed')
     context = PREPROCESSOR_CONTEXT.merge({'build_type'=>'build_html_single'})
@@ -1881,7 +1885,7 @@ task :coverage do
       )
     )
     manifest = doc["sections"]
-    files = manifest.map {|_, path| path} 
+    files = manifest.map {|_, path| path}
     CheckCoverage[
       "tag" => tag,
       "context" => context,
@@ -1905,22 +1909,8 @@ task :coverage do
   end
 end
 
-# TODO: for task :cullist and :probes, generate the files from CSE if CSE.exe
-# is present. Note: may want to just sent them up as file tasks. Add as
-# prerequisites if cse.exe exists and is newer than the output files. Give
-# warning if cse.exe is not built.
-desc "regenerate cullist"
-task :cullist do
-
-end
-
-desc "regenerate probes list"
-task :probes do
-
-end
-
 desc "Generate probes yaml input"
-task :gen_probes_yaml do
+task :probes do
   BuildProbesYaml[]
 end
 

@@ -1,3 +1,5 @@
 @echo off
 cmake -P cmake/build.cmake
-PAUSE
+IF "%1"=="" (
+  PAUSE
+)

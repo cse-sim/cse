@@ -86,7 +86,7 @@ module DefParser
   end
   ParseCnFields = lambda {ParseUnits[LoadCnFieldsOrig[]]}
   ParseTypes = lambda do |input|
-    
+
   end
   ParseCnTypes = lambda {ParseTypes[LoadCndTypes[]]}
   ParseCseDashP = lambda do |input|
@@ -123,7 +123,7 @@ module DefParser
       else
         field = {
           :name => line[0..20].strip,
-          :input => line[21..24].strip == "I", 
+          :input => line[21..24].strip == "I",
           :runtime => line[25..28].strip == "R",
           :type => line[29..49].strip,
           :variability => line[50..-1].strip
@@ -192,6 +192,7 @@ module DefParser
     output = {}
     variability = Set.new([
       "e" ,# field varies at end of interval.
+      "p" ,# with above, field varies at post-calc stage, not start (intermediate results)
       "f" ,# value available after input, before setup; before re-setup after autosize.
       "r" ,# runly (start of run) variability, including things set by input check/setup
       "y" ,# runly (end of run) variability, including things set by input check/setup
@@ -285,7 +286,9 @@ module DefParser
         in_record = false
         output_key = record_id.downcase
         if output.include?(output_key)
-          puts("Warning! Duplicate id found: #{record_id}")
+          if output_key != "znres"  # See exception above.
+            puts("Warning! Duplicate id found: #{record_id}--line[#{idx}]")
+          end
           output[output_key] = MkRecord[
             record_id, record_name,
             output[output_key][:fields] + record_fields]
