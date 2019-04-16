@@ -15,8 +15,10 @@ init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
-  - ps: cinst -y miktex.install --version 2.9.7031
-  - cmd:  refreshenv
+  - ps: curl -s -o basic-miktex-x64.exe -L https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-2.9.7031-x64.exe
+  - ps: $miktexinstall = "--unattended --auto-install=yes --shared --package-set=basic"
+  - ps: Start-Process -FilePath ..\basic-miktex-x64.exe -ArgumentList $miktexinstall -NoNewWindow -Wait
+  - ps: $env:PATH = 'C:\Program Files\MiKTeX 2.9\miktex\bin\x64;' + $env:PATH
   - pdflatex --version
   - xelatex --version
   - ps: cinst -y pandoc --version 1.17.2
