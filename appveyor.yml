@@ -15,11 +15,12 @@ init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
-  - ps: cinst -y miktex.portable
-  - ps: cinst -y pandoc --version 1.17.2
+  - ps: cinst -y miktex.install --version 2.9.7031
   - cmd:  refreshenv
   - pdflatex --version
   - xelatex --version
+  - ps: cinst -y pandoc --version 1.17.2
+  - cmd:  refreshenv
 
 build_script:
   - build.bat no-pause
