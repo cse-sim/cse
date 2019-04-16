@@ -27,7 +27,7 @@ set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
 
 download_project(PROJ                Kiva
                  GIT_REPOSITORY      https://github.com/bigladder/kiva.git
-                 GIT_TAG             develop
+                 GIT_TAG             v0.6.0
                  DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/kiva-dl"
                  SOURCE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/kiva"
                  BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/kiva"
