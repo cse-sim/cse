@@ -1766,18 +1766,18 @@ RC SFI::sf_SetupKiva()
 			fnd->reductionStrategy = Kiva::Foundation::RS_AP;
 
 			// Build polygon and set exposed fraction to get correct A/P
-			const double sqrPerim = LIPtoSI(4 * sqrt(sfArea));
+			const double sqrPerim = 4 * sqrt(sfArea);
 			double l, w;
-			if (sqrPerim > sfExpPerim)
+			if (Kiva::isGreaterOrEqual(sqrPerim, sfExpPerim))
 			{
-				l = w = sqrPerim / 4;
+				l = w = LIPtoSI(sqrPerim / 4);
 				fnd->exposedFraction = sfExpPerim / sqrPerim;
 			}
 			else
 			{
 				// Make a rectangle with the correct perimeter
-				l = (sfExpPerim + sqrt(sfExpPerim*sfExpPerim - 16*sfArea))/4.;
-				w = sfArea / l;
+				l = LIPtoSI((sfExpPerim + sqrt(sfExpPerim*sfExpPerim - 16*sfArea))/4.);
+				w = LIPtoSI(sfArea / l);
 				fnd->exposedFraction = 1.0;
 			}
 
