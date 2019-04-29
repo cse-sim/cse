@@ -1041,7 +1041,7 @@ x						printf( "1B\n");
 #if 1 && defined( _DEBUG)
 						if ((zn_hcMode==RSYS::rsmCOOL && tSup0 >= zn_tzsp)
 						|| (zn_hcMode==RSYS::rsmHEAT && tSup0 <= zn_tzsp))
-						{	printf( "Zone '%s': Flipped tSup  RSYS='%s'\n", name, rs->name);
+						{	printf( "Zone '%s': Flipped tSup  RSYS='%s', tOut=%f, tSup=%f, tSP=%f, tZone=%f\n", name, rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 							rs->rs_SupplyAirState( zn_hcMode);	// debug aid
 						}
 #endif
