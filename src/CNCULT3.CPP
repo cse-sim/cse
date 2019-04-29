@@ -1481,7 +1481,7 @@ RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 {  return m == C_SFMODELCH_KIVA; }
 //---------------------------------------------------------------------------
 SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
-	: record( b, i, noZ)
+	: record( b, i, noZ), sf_sharedFndWalls()
 {
 	FixUp();
 }	// SFI::SFI
@@ -1489,6 +1489,7 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 /*virtual*/ void SFI::Copy( const record* pSrc, int options/*=0*/)
 {	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
+	sf_sharedFndWalls = ((SFI*)pSrc)->sf_sharedFndWalls;
 }		// SFI::Copy
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links
