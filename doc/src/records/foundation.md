@@ -82,3 +82,11 @@ Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foun
   default: "*none*",
   required: "if a slab foundation",
   variability: "constant") %>
+
+**endFoundation**
+
+Indicates the end of the foundation definition. Alternatively, the end of the foundation definition can be indicated by the declaration of another object or by END.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+                                *N/A*         No             constant

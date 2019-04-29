@@ -356,7 +356,7 @@ static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
 	CULT("fbZ2Ref",  DAT,  FNDBLOCK_Z2REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
 	CULT("fbX2",     DAT,  FNDBLOCK_X2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("fbZ2",     DAT,  FNDBLOCK_Z2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("endFoundationComp",ENDER,0, 0,    0, VEOI, 0,     0,       N,       0.f,  N, N),
+	CULT("endFndBlock",ENDER,0, 0,    0, VEOI, 0,     0,       N,       0.f,  N, N),
 	CULT()
 };		// fbT
 

@@ -16,7 +16,7 @@ Note: X and Z point values of zero imply that a point is the same as the referen
 
 It does not matter which of the four corners of a block are used to define the two points as long as they are opposite corners.
 
-**fcMat=*matName***
+**fbMat=*matName***
 
 Name of MATERIAL of the foundation block.
 
@@ -26,9 +26,9 @@ Name of MATERIAL of the foundation block.
   required: "Yes",
   variability: "constant") %>
 
-**fcX1Ref=*choice***
+**fbX1Ref=*choice***
 
-Relative X origin for *fcX1* point. Options are:
+Relative X origin for *fbX1* point. Options are:
 
 - SYMMETRY
 - WALLINT
@@ -43,9 +43,9 @@ Relative X origin for *fcX1* point. Options are:
   required: "No",
   variability: "constant") %>
 
-**fcZ1Ref=*choice***
+**fbZ1Ref=*choice***
 
-Relative Z origin for *fcZ1* point. Options are:
+Relative Z origin for *fbZ1* point. Options are:
 
 - WALLTOP
 - GRADE
@@ -61,20 +61,9 @@ Relative Z origin for *fcZ1* point. Options are:
   required: "No",
   variability: "constant") %>
 
-**fcX1=*float***
+**fbX1=*float***
 
-The X position of the first corner of the block relative to *fcX1Ref*.
-
-<%= member_table(
-  units: "ft",
-  legal_range: "",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
-
-**fcZ1=*float***
-
-The Z position of the first corner of the block relative to *fcZ1Ref*.
+The X position of the first corner of the block relative to *fbX1Ref*.
 
 <%= member_table(
   units: "ft",
@@ -83,9 +72,20 @@ The Z position of the first corner of the block relative to *fcZ1Ref*.
   required: "No",
   variability: "constant") %>
 
-**fcX2Ref=*choice***
+**fbZ1=*float***
 
-Relative X origin for *fcX2* point. Options are:
+The Z position of the first corner of the block relative to *fbZ1Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fbX2Ref=*choice***
+
+Relative X origin for *fbX2* point. Options are:
 
 - SYMMETRY
 - WALLINT
@@ -100,9 +100,9 @@ Relative X origin for *fcX2* point. Options are:
   required: "No",
   variability: "constant") %>
 
-**fcZ2Ref=*choice***
+**fbZ2Ref=*choice***
 
-Relative Z origin for *fcZ2* point. Options are:
+Relative Z origin for *fbZ2* point. Options are:
 
 - WALLTOP
 - GRADE
@@ -118,9 +118,20 @@ Relative Z origin for *fcZ2* point. Options are:
   required: "No",
   variability: "constant") %>
 
-**fcX2=*float***
+**fbX2=*float***
 
-The X position of the second corner of the block relative to *fcX2Ref*.
+The X position of the second corner of the block relative to *fbX2Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fbZ2=*float***
+
+The Z position of the second corner of the block relative to *fbZ2Ref*.
 
 <%= member_table(
   units: "ft",
@@ -129,13 +140,10 @@ The X position of the second corner of the block relative to *fcX2Ref*.
   required: "No",
   variability: "constant") %>
 
-**fcZ2=*float***
+**endFndBlock**
 
-The Z position of the second corner of the block relative to *fcZ2Ref*.
+Indicates the end of the foundation block definition. Alternatively, the end of the foundation block definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+                                *N/A*         No             constant
