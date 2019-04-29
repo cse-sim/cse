@@ -67,8 +67,13 @@ RC KIVA::kv_RddInit()
 	// Calculate averages so they can be used by CSE surfaces
 	kv_instance->calculate_surface_averages();
 
-	// Reset numerical scheme
-	fnd->numericalScheme = Kiva::Foundation::NS_ADI;
+	// Set numerical scheme appropriate for design days vs. main sim
+	if (Top.tp_autoSizing) {
+		fnd->numericalScheme = Kiva::Foundation::NS_STEADY_STATE;
+	}
+	else {
+		fnd->numericalScheme = Kiva::Foundation::NS_ADI;
+	}
 
 	return RCOK;
 
