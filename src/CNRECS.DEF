@@ -1268,7 +1268,9 @@ RECORD PRI "perimeter" *RAT	// perimeter input RAT
 RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*prefix sf_
 	*excon		// explicit constructor
+	*exdes		// explicit d'tor
 	*ovrcopy
+	*declare "virtual SFI& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
 	*declare "RC sf_TopSf1();"
 	*declare "RC sf_CkfSURF( int options);"
 	*declare "RC sf_CkfSURFGround( int options);"

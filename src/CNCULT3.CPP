@@ -1481,16 +1481,32 @@ RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 {  return m == C_SFMODELCH_KIVA; }
 //---------------------------------------------------------------------------
 SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
-	: record( b, i, noZ), sf_sharedFndWalls()
+	: record( b, i, noZ)
+	// sf_sharedFndWalls() called *after* record()
 {
 	FixUp();
 }	// SFI::SFI
 //---------------------------------------------------------------------------
+/*virtual*/ SFI::~SFI()
+{
+}		// SFI::~SFI
+//---------------------------------------------------------------------------
 /*virtual*/ void SFI::Copy( const record* pSrc, int options/*=0*/)
-{	record::Copy( pSrc, options);
+{
+	sf_sharedFndWalls.vector::~vector<TI>();
+	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
-	sf_sharedFndWalls = ((SFI*)pSrc)->sf_sharedFndWalls;
+	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
 }		// SFI::Copy
+//----------------------------------------------------------------------------
+/*virtual*/ SFI& SFI::CopyFrom(const record* src, int copyName/*= 1*/, int dupPtrs/*= 0*/)
+{
+	sf_sharedFndWalls.vector::~vector<TI>();
+	record::CopyFrom(src, copyName, dupPtrs);
+	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)src)->sf_sharedFndWalls);
+
+	return *this;
+}		// SFI::CopyFrom
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links
 // called from basAnc::reAl() and this c'tor, Copy()
