@@ -556,7 +556,7 @@ SEC FC xfseek(		// Reposition file pointer
 
 	XFILE *xf,	/* Pointer to extended IO packet for file */
 	LI disp,	/* Byte displacement */
-	SI mode )	/* Mode (these are C library constants in stdio.h) --
+	int mode )	/* Mode (these are C library constants in stdio.h) --
 	      SEEK_SET:  disp is offset from beg of file
 	      SEEK_CUR:  disp is offset from current position
 	      SEEK_END:  disp is offset from end of file */
@@ -576,11 +576,10 @@ SEC FC xfseek(		// Reposition file pointer
 	    UPDATE: msc 6.0 documentation states that lseek clears a ^Z eof
 	    but I did not test. (chip, 8-19-90) */
 
-/* Returns   SECOK if lseek() call was successful, sets xf->xflsterr to SECOK
-	     else other SEC (xf->xflsterr set)
-	 PRIOR xf->xflsterr lost */
+// Returns   SECOK iff _lseek() call was successful, sets xf->xflsterr to SECOK
+//	     else other SEC (xf->xflsterr set, PRIOR xf->xflsterr lost)
 {
-	if (lseek( xf->han, disp, mode) == -1L)
+	if (_lseek( xf->han, disp, mode) == -1L)
 		xf->xflsterr = xioerr(xf);	/* report and post error */
 	else
 	{
@@ -636,7 +635,7 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 		if ( (fpos = tell(xf->han)) != -1
 				&& close(xf->han) != -1
 				&& (xf->han = _open( xf->xfname, acc, S_IREAD|S_IWRITE)) != -1
-				&& lseek( xf->han, fpos, SEEK_SET) != -1 )
+				&& _lseek( xf->han, fpos, SEEK_SET) != -1 )
 			return SECOK;
 		xf->xflsterr = xioerr(xf);		// report error
 	}
@@ -1078,7 +1077,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 	rc = RCOK;
 	do
 	{
-		sec = xfread( xfs, buf, bufsize);
+		sec = xfread( xfs, buf, (USI)bufsize);
 		if (sec != SECOK && sec != SECEOF)
 		{
 			rc = MH_I0026;	// "I0026: read error during copy from file '%s':\n    %s"

@@ -533,7 +533,7 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 	BOO capTdf=FALSE /*, eirTdf=FALSE*/;
 	if (!(sstat[CHILLER_CHPYCAPT+PYBIQUAD_K] & FsSET))					// default chPyCapT coeffs
 	{
-		static float dat[] = {-1.742040f,.029292f,-.000067f,.048054f,-.000291f,-.000106};
+		static float dat[] = {-1.742040f,.029292f,-.000067f,.048054f,-.000291f,-.000106f};
 		memcpy( chPyCapT.k, dat, sizeof(dat));
 		capTdf = TRUE;
 	}
@@ -545,7 +545,7 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 	}
 	if (!(sstat[CHILLER_CHPYEIRUL+PYCUBIC_K] & FsSET))					// default chPyEirUl coeffs
 	{
-		static float dat[] = {.222903,.313387,.463710};
+		static float dat[] = {.222903f,.313387f,.463710f};
 		memcpy( chPyEirUl.k, dat, sizeof(dat));
 	}
 

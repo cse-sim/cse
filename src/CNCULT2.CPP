@@ -662,7 +662,7 @@ RC TOPRAT::tp_Psychro()		// initialize air properties members of top
 	airXK = airVshK*60.f;			// divide by abs temp for heat transfer of flow: Btuh/cfm-F. 60: min/hr.
 
 //
-	tp_hConvF = 0.24f + 0.76f * tp_presAtm / PsyPBarSeaLvl;
+	tp_hConvF = tp_hConvMod == C_NOYESCH_YES ? 0.24f + 0.76f * tp_presAtm / PsyPBarSeaLvl : 1.0;
 						//   convection coefficient modification factor
 						//   used in some surface transfer models; reduces convection as function of elevation
 						//   source = ASHRAE 1199-RP Barnaby et al. 2004

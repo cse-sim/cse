@@ -245,6 +245,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
 	*declare "ULI tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
+
+    *r NOYESCH tp_hConvMod	// enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)
+							//   mostly for debugging.
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
     *h LI tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
@@ -339,7 +342,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *r float airXK			// divide by abs temp for specific heat of flow (Btuh/cfm-F)
 							//   airVshK, times 60 to match time units. dfl ~572.1
 	*r float tp_hConvF		// convective coefficient pressure modification factor
-							//   =(.24 * .76*PresAtm/PresAtmSeaLevel)
+							//   =(.24 + .76*PresAtm/PresAtmSeaLevel)
 							//   used in some surface transfer models, reduces convection as function of elevation
 							//   source = ASHRAE 1199-RP Barnaby et al. 2004
     // and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)
@@ -1052,6 +1055,8 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *r DBL sb_lenCharNat	//	 characteristic length for some natural convection models, ft
   *r DBL sb_lenEffWink	//   effective length for Winkelmann forced convection model, ft
   
+  *r DBL sb_cosTilt		// cos( Tilt ) for the boundary -- note parent surface tilt is defined
+						// relative to outside normal (sbcO), so inside sb_cosTilt is oposite (+180 deg)
   *r DBL sb_atvDeg		// angle-to-vertical, deg (inside: 90-tilt; outside: tilt-90)
   *r DBL sb_cosAtv		// cos( angle to vertical) 0 - 1 (never < 0)
   *i CONVMODELCH sb_hcModel // surface convective coefficient model
@@ -1592,7 +1597,8 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& CopyFrom( record *src, int copyName=1, int dupPtrs=0);"
+    *declare "virtual record& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
+	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CHP colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
@@ -3857,7 +3863,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
   *ovrcopy
-  *declare "virtual PVARRAY& CopyFrom( record* src, int copyName=1, int dupPtrs=0);"
+  *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"

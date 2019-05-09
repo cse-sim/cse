@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/cw2gsrtb7i2kwn7x/branch/master?svg=true)](https://ci.appveyor.com/project/cse/cse/branch/master)
+
 ## California Simulation Engine (CSE)
 
 CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings ([CBECC-Res](http://www.bwilcox.com/BEES/BEES.html)) software.
@@ -30,7 +32,7 @@ from the **msvc\\build** directory.
 
 #### Dependencies
 
-- Microsoft Visual Studio with Visual C++ and [v120_xp toolset](https://www.microsoft.com/en-us/download/details.aspx?id=40760)
+- Microsoft Visual Studio 2017 with Visual C++ and Support for Windows XP (v141_xp toolset)
 - CMake 3.10 or later
 
 Note: Generating the documentation requires additional tools. See [doc\\README.md](doc/README.md).

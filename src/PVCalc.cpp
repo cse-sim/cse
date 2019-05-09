@@ -38,7 +38,7 @@ PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 }	// PVARRAY::Copy
 //-----------------------------------------------------------------------------
 /*virtual*/ PVARRAY& PVARRAY::CopyFrom(
-	record* src,
+	const record* src,
 	int copyName/*=1*/,
 	int dupPtrs/*=0*/)
 {

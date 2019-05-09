@@ -163,7 +163,7 @@ RC YACAM::rewind( int erOp /*=WRN*/)
 {
 	RC rc = clrBufIf();
 	if (mFh >= 0)
-	{	if (lseek( mFh, 0, SEEK_SET) == -1L)
+	{	if (_lseek( mFh, 0, SEEK_SET) == -1L)
 			rc = errFl("Seek error on");
 	}
 	mFilSz = mFilO = -1L;
@@ -181,8 +181,8 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 			&&  bufN )				// if buffer contains any data
 	{
 		if ( mFilO >= 0					// if have file offset for buffer contents
-				?  lseek( mFh, mFilO, SEEK_SET)==-1L	//  seek to file postition
-				:  lseek( mFh, 0, SEEK_END)==-1L )		//  else seek to end file
+				?  _lseek( mFh, mFilO, SEEK_SET)==-1L	//  seek to file postition
+				:  _lseek( mFh, 0, SEEK_END)==-1L )		//  else seek to end file
 			rc = errFl((const char *)MH_I0104);			// seek failed, conditionally issue error msg containing "Seek error on"
 
 		int nw = ::write( mFh, buf, bufN); 	// write buffer contents, return -1 or # bytes written. C library function.
@@ -215,7 +215,7 @@ int YACAM::read( 		// read to caller's buffer
 
 // seek if requested
 	if (filO >= 0L)
-		if (lseek( mFh, filO, SEEK_SET)==-1L)
+		if (_lseek( mFh, filO, SEEK_SET)==-1L)
 		{
 			errFl((const char *)MH_I0104);	// conditional msg. "Seek error on" 2nd use.
 			return -1;
@@ -249,7 +249,7 @@ RC YACAM::write( 		// write from caller's buffer
 
 // seek if requested
 	if (filO >= 0L)
-		if (lseek( mFh, filO, SEEK_SET)==-1L)
+		if (_lseek( mFh, filO, SEEK_SET)==-1L)
 			return errFl((const char *)MH_I0104);	// cond'l msg containing "Seek error on" (3rd use)
 
 // write

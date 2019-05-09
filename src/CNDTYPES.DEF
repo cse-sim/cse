@@ -294,6 +294,8 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			  WINKELMANN "Winkelmann"
 			  WALTON "Walton"
 			  MILLS "Mills"
+			  TARP "TARP"
+			  DOE2 "DOE2"
 			  UNIFIED "Unified"
 			  }
 *choicb RSYSMODECTRLCH {
