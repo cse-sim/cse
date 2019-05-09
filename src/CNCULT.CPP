@@ -1904,7 +1904,6 @@ CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
 CULT( "dhwheatrec",  RATE,  0,               0,       0, 0,      0,     &WRiB,  N,      dhwHeatRecT, N),
 
-
 CULT( "endDHWSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwSysT
