@@ -1216,8 +1216,12 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 			fprintf(ws_pFDrawCSV, "%0.2f,%0.2f,", minHr, minDay);
 		}
 		const DHWTICK& tk = ws_ticks[iTk];
-		fprintf(ws_pFDrawCSV, "%0.2f,%0.2f,%0.2f,%0.4f\n",
-			tk.wtk_tInletX, ws_tInlet, ws_tUse, tk.wtk_whUse);
+		// write to CSV w/o trailing 0s (many draws are 0, don't write 0.0000)
+		fprintf(ws_pFDrawCSV, "%s,%s,%s,%s\n",
+			WStrFmtFloatDTZ( tk.wtk_tInletX,2).c_str(),
+			WStrFmtFloatDTZ( ws_tInlet, 2).c_str(),
+			WStrFmtFloatDTZ( ws_tUse, 2).c_str(),
+			WStrFmtFloatDTZ( tk.wtk_whUse, 4).c_str());
 	}
 	return RCOK;
 }		// DHWSYS::ws_WriteDrawCSV
