@@ -35,9 +35,9 @@ RC BATTERY::bt_Init()
 	return rc;
 }	// BATTERY::bt_Init
 //-----------------------------------------------------------------------------
-float BATTERY::bt_CalcAdjLoad(		// default load
+float BATTERY::bt_CalcAdjLoad(		// default load for current hour
 	const MTR& m) const	// source meter
-// returns sum of all end uses, kW
+// returns sum of all end uses (including PV), kW
 {
 	return float( m.H.mtr_NetBldgLoad() / 3412.142);
 }		// bt_CalcAdjLoad

@@ -3947,10 +3947,12 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *h FRAC bt_chgEff				// battery efficiency while charging
   *h FRAC bt_dschgEff			// battery efficiency while discharging (Fraction)
   *h FLOAT_GEZ bt_maxChgPwr		// maximum allowable charging power (kW)
-  *h FLOAT_GEZ bt_maxDschgPwr	//maximum discharge power (kW)
+  *h FLOAT_GEZ bt_maxDschgPwr	// maximum discharge power (kW)
   *h *e FLOAT bt_chgReq			// battery charge request (kW) +=charge;-=discharge
   *h FRAC bt_soeBegIvl			// battery SOE at beginning of interval
-  *h *e FLOAT bt_loadSeen		// the adjusted load seen by the battery that step (kW)
+  *h *e FLOAT bt_loadSeen		// the adjusted load seen by the battery for current hour (kW)
+								//   = net power from bt_meter (including PV)
+								//   0 if bt_meter not specified
   *h *p FRAC bt_soe				// battery state of energy (SOE) (0 <= SOE <= 1)
 								// represents the end of interval SOE.
   *h FLOAT bt_soelh;			// battery state of energy (SOE) at end of prior hour
