@@ -40,7 +40,7 @@ Fraction of hour that loop circulation operates.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  --          $\ge$ 0           1             No             hourly
+  --          $\ge$ 0             1             No             hourly
 
 **wlFUA=*float***
 

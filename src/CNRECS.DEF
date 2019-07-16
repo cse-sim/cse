@@ -3753,7 +3753,7 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
   *declare "RC wg_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wg_Init();"
-  *declare "DHWLOOPSEG* wg_GetDHWLOOPSEG() const;"
+  *declare "DHWLOOPSEG* wg_GetInputDHWLOOPSEG() const;"
   *declare "DHWLOOP* wg_GetDHWLOOP() const;"
   *declare "DHWSYS* wg_GetDHWSYS() const;"
   *declare "float wg_CalcUA();"

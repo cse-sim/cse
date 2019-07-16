@@ -12,7 +12,7 @@ Optional name of segment; give after the word “DHWLOOPSEG” if desired.
 
 **wgTy=*choice***
 
-Specifies the type of segment
+Specifies the type of segment.  RETURN segments, if any, must follow SUPPLY segments.
 
   --------- ---------------------------------------
   SUPPLY    Indicates a supply segment (flow is sum
@@ -58,7 +58,7 @@ Pipe insulation thickness
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  in          $\ge$ 0           1             No             constant
+  in           $\ge$ 0           1             No             constant
 
 **wgExH=*float***
 

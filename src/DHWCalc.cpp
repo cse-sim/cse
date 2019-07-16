@@ -3255,6 +3255,17 @@ RC DHWLOOPSEG::wg_CkF()		// DHW loop segment input check / default
 // called at end of each DHWLOOPSEG input
 {
 	RC rc = RCOK;
+
+	DHWLOOPSEG* pWGin = wg_GetInputDHWLOOPSEG();
+	bool badOrder = false;
+	if (wg_ty == C_DHWLSEGTYCH_SUP)
+		badOrder = pWGin && pWGin->wg_ty != C_DHWLSEGTYCH_SUP;
+	else if (wg_ty == C_DHWLSEGTYCH_RET)
+		badOrder = pWGin == nullptr;
+	if (badOrder)
+		rc = ooer(DHWLOOPSEG_TY, "Bad segment order: wgTy=RETURN DHWLOOPSEGs\n"
+			"    must follow wgTy=SUPPLY DHWLOOPSEGs");
+
 	return rc;
 }	// DHWLOOPSEG::wg_CkF
 //----------------------------------------------------------------------------
@@ -3266,6 +3277,21 @@ RC DHWLOOPSEG::RunDup(		// copy input to run record; check and initialize
 
 	return rc;
 }		// DHWLOOPSEG::RunDup
+//----------------------------------------------------------------------------
+DHWLOOPSEG* DHWLOOPSEG::wg_GetInputDHWLOOPSEG() const
+// relies on input order (revise if network generalized)
+// return ss of DHWLOOPSEG that feeds this
+//        -1 if none (head segment)
+{
+	// search backwards for prior loop with same owner
+	const anc< DHWLOOPSEG>* B = static_cast< const anc< DHWLOOPSEG>*> ( b);
+	if (B) for (int ix = ss-1; ix >= B->mn; ix--)
+	{	DHWLOOPSEG* pWG = B->GetAtSafe(ix);
+		if (pWG && pWG->gud > 0 && pWG->ownTi == ownTi)
+			return pWG;
+	}
+	return NULL;
+}		// DHWLOOPSEG::wg_GetInputDHWLOOPSEG
 //----------------------------------------------------------------------------
 RC DHWLOOPSEG::wg_Init()		// init for run
 {
