@@ -653,7 +653,8 @@ enum {			// irrad components
 };
 
 // surface classes e.g. for argument to topSf1(), topSf2()
-enum SFCLASS { sfcNUL, sfcSURF, sfcDOOR, sfcWINDOW, sfcDUCT };
+//  NOTE: code depends on value order, change with care
+enum SFCLASS { sfcNUL, sfcSURF, sfcDOOR, sfcWINDOW, sfcDUCT, sfcPIPE};
 
 // zone air flow indices
 #if 0	// unused, 2-20-2013

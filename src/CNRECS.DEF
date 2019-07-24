@@ -3720,6 +3720,21 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 						//    (reflects wl_mult)
 *END	// DWHLOOP
 //=============================================================================
+RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
+*prefix sb_
+*declare "void sb_Init( PIPESEG* pPS);"
+*declare "virtual int sb_Class() const;"
+#if 0
+*declare "virtual double sb_AreaNet() const;"
+*declare "virtual const char* sb_ParentName() const;"
+*declare "void sb_SetRunConstants( ZNR* zpx);"
+*declare "void sb_SetCoeffs( ZNR* zpx);"
+#endif
+
+*i PIPESEGP sb_pPS			// pointer to parent PIPESEG
+
+*END // PBC
+//=============================================================================
 RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH)
     *prefix ps_
 	*excon
@@ -3727,11 +3742,17 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*declare "float ps_CalcTOut( float tIn, float flow) const;"
 	*declare "float ps_CalcVol();"
 	*declare "float ps_GetOD( int bInsul) const;"
+
+	*s *noname *nest DBC ps_sbcO // (outside) surface boundary conditions
+								//   represents coupling(s) between pipe exterior
+								//   surface and adjacent zone or ambient
 	*i FLOAT_GEZ ps_len			// segment length, ft
-	*i FLOAT_GZ ps_size			// nominal pipe size, in
+	*i FLOAT_GZ ps_size			// nominal pipe size (diameter), in
+								//   pipe actual OD = ps_size + 0.125
 	*i FLOAT_GZ ps_insulK		// insulation conductivity, Btuh-ft/ft2-F
 	*i FLOAT_GEZ ps_insulThk	// insulation thickness, in
 	*i FLOAT_GZ ps_exH			// combined exterior surface coefficient, Btuh/ft2-F
+	*i EXCNDCH ps_exCnd			// adjacent cond: adiabatic/ambient/specT/adjZn.
 	*h FLOAT ps_exT				// surround temperature, F
 
 	*r FLOAT ps_vol;			// pipe segment volume, gal
@@ -3744,6 +3765,7 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*h *e FLOAT ps_PLWF			// current hour heat loss when flowing, Btu
 	*h *e FLOAT ps_PLCD			// current hour standing (noflow) heat loss, Btu
 	*h *e FLOAT ps_PL			// ps_PLWF + ps_PLCD
+
 *END	// PipeSeg
 //=============================================================================
 RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW recirc loop segment
@@ -3789,7 +3811,7 @@ RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime 
   *h *e FLOAT wb_HBWL	//  ... waste loss
 
  *END		// DHWLOOPBRANCH
-  //=============================================================================
+//=============================================================================
 RECORD DHWLOOPPUMP "DHWLoopPump" *RAT *BASECLASS DHWPUMP // input / runtime DHW loop pump
   *prefix wlp_
 

@@ -1186,6 +1186,8 @@ RC topZn2()			// accumulate surface totals etc
 			zp->zn_AccumSurfTotals( ds->ds_sbcO);
 	}
 
+	// ?PIPE?
+
 	RLUP( ZrB, zp)
 	{	zp->zn_FinalizeSurfTotals();
 		zp->zn_RadX();			// set F and Fp values for air and surfaces
@@ -1236,8 +1238,9 @@ void ZNR::zn_AccumSurfTotals(
 
 	if (S.sb_Class() == sfcDUCT)
 		zn_ductA += A;		// subtotal duct area
-	else if (S.sb_Class() != sfcWINDOW)
-		zn_surfASlr += A;		//   non-window, non-duct area
+	else if (S.sb_Class() < sfcWINDOW)
+		zn_surfASlr += A;		// opaque space surface area
+								//   non-window, non-duct, non-pipe
 
 }		// ZNR::AccumSurfTotals
 //---------------------------------------------------------------------------
@@ -1365,13 +1368,14 @@ RC ZNR::zn_RadX()
 	zn_FAir = 1.;			// initial value, updated below
 	zn_SetAirRadXArea();
 
-	int nSNoDucts = 0;
+	int nSSpace = 0;	// # of space definition surfaces (info only)
+						//  not sfcDUCT, not sfcPIPE
 	int iS;
 	for (iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
 		tArea[ iS] = S.sb_AreaNet();
-		if (S.sb_Class() != sfcDUCT)
-			nSNoDucts++;		// duct surfaces are at end
+		if (S.sb_Class() < sfcDUCT)
+			nSSpace++;
 	}
 
 	// long wave: include air by adding additional surface to array
@@ -1398,8 +1402,8 @@ RC ZNR::zn_RadX()
 	int iSX = 0;
 	for (iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
-		if (S.sb_Class() != sfcDUCT)
-			tArea[ iSX++] = S.sb_AreaNet();		// include only non-ducts
+		if (S.sb_Class() < sfcDUCT)
+			tArea[ iSX++] = S.sb_AreaNet();		// include only non-ducts, non-pipes
 	}
 
 	rc1 = FFactors( iSX, tArea.data(), F.data(), errTxt);
@@ -1409,7 +1413,7 @@ RC ZNR::zn_RadX()
 	}
 	for (iSX=0,iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
-		S.sb_F = S.sb_Class() != sfcDUCT
+		S.sb_F = S.sb_Class() < sfcDUCT
 					? F[ iSX++]
 					: 0.;
 	}

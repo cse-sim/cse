@@ -182,6 +182,8 @@ RIGDISTP  --  "RIGDIST *"		 4	    none	// (array) ptr, for ZNR.rIgDist
 ZNRP		--	"class ZNR *"	 4		none
 XSURFP	--	"struct XSURF *"	 4		none
 DUCTSEGP -- "class DUCTSEG*"	 4	    none
+PIPESEGP -- "class PIPESEG*"	 4	    none
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Choices: text <-> constant mapping

@@ -981,7 +981,7 @@ int DHWSYS::ws_AssignDHWUSEtoFX(	// assign draw to fixture re DHWHEATREC
 	unsigned int seq;
 #if 0
 	static int bSetup = 0;
-	static int iRands[101];+		this	0x0012d71e {ws_calcMode=2 ws_centralDHWSYSi=0 ws_loadShareDHWSYSi=0 ...}	DHWSYS *
+	static int iRands[101];
 
 	static int counts[20] = { 0 };
 	static int drawSeqCount[200] = { 0 };
@@ -3179,9 +3179,34 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
+// PBC: pipe boundary condition
 // PIPESEG: base class for DHWLOOPSEG and DHWLOOPBRANCH
 //          implements common methods
 ///////////////////////////////////////////////////////////////////////////////
+void PBC::sb_Init(PIPESEG* pPS)
+{
+	sb_pPS = pPS;
+}		// DBC::sb_Init
+//-----------------------------------------------------------------------------
+#if 0
+/*virtual*/ double DBC::sb_AreaNet() const		// *outside* duct area
+// returns exposed (heat transfer) area
+{
+	return sb_pDS ? sb_pDS->ds_exArea : 0.;
+}	// DBC::sb_Area
+//-----------------------------------------------------------------------------
+/*virtual*/ const char* DBC::sb_ParentName() const
+{
+	return sb_pDS ? sb_pDS->name : "?";
+}		// SBC::sb_ParentName
+//-----------------------------------------------------------------------------
+#endif
+/*virtual*/ int PBC::sb_Class() const
+{
+	return sfcPIPE;
+}	// PBC::sb_Class
+//=============================================================================
+
 PIPESEG::PIPESEG( basAnc *b, TI i, SI noZ)		// c'tor
 	: record( b, i, noZ)
 {	ps_fRhoCpX =

@@ -16,6 +16,12 @@
 // shorthand member offsets into DUCTSEG.ds_sbcO
 #define DSBC( m) (DUCTSEG_SBCO+DBC_##m)
 
+// shorthand member offsets into PIPESEG.ps_sbcO
+#define WBBC( m) (DHWLOOPBRANCH_SBCO+PBC_##m)
+#define WGBC( m) (DHWLOOPSEG_SBCO+PBC_##m)
+
+
+
 /*---------------------------- OTHER VARIABLES ----------------------------*/
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
