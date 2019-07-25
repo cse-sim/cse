@@ -36,7 +36,7 @@ The charging efficiency of storing electricity into the BATTERY system. A value 
 
 |**Units**|**Legal Range**  |**Default**|**Required**|**Variability**|
 |---------|-----------------|-----------|------------|---------------|
-|         |0 $\le$ x $\le$ 1|0.975      |No          |subhourly      |
+|         |0 $\lt$ x $\le$ 1|0.975      |No          |hourly      |
 
 **btDschgEff=*float***
 
@@ -44,7 +44,7 @@ The discharge efficiency for when the BATTERY system is discharging power. A val
 
 |**Units**| **Legal Range**   |**Default**|**Required**|**Variability**|
 |---------|-------------------|-----------|------------|---------------|
-|         | 0 $\le$ x $\le$ 1 |0.975      |     No     |subhourly      |
+|         | 0 $\lt$ x $\le$ 1 |0.975      |     No     |hourly      |
 
 **btMaxCap=*float***
 
@@ -82,7 +82,7 @@ The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy 
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| kW      | x $\ge$ 0     | 4         |No          |subhourly      |
+| kW      | x $\ge$ 0     | 4         |No          |hourly      |
 
 **btMaxDschgPwr=*float***
 
@@ -90,15 +90,17 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| kW      | x $\ge$ 0     | 4         |No          |subhourly      |
+| kW      | x $\ge$ 0     | 4         |No          |hourly      |
 
 **btChgReq=*float***
 
-The power request to charge (or discharge if negative) the battery in kilowatts. The value of this parameter gets limited by the physical limitations of the battery and can be set by an expression to allow complex energy management/dispatch strategies.
+The power request to charge (or discharge if negative) the battery. If omitted, the default strategy is used (attempt to satisfy all loads and absorb all available excess power).  btChgReq and the default strategy requested power are literally *requests*: that is, more power will not be delivered than is available; more power will not be absorbed than capacity exits to store; and the battery's power limits will be respected.
 
-|**Units**|**Legal Range** |**Default**|**Required**|**Variability**|
-|---------|----------------|-----------|------------|---------------|
-| kW      |                | 0         |No          |subhourly      |
+btChgReq can be set by an expression to allow complex energy management/dispatch strategies.
+
+|**Units**|**Legal Range** |**Default**       |**Required**|**Variability**|
+|---------|----------------|------------------|------------|---------------|
+| kW      |                | btMeter net load |No          |hourly      |
 
 **btUseUsrChg=*bool***
 
