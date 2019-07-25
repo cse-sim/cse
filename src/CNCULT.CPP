@@ -1966,7 +1966,6 @@ CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VHRLY,  TYFL, 0,      
 CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VHRLY,  TYFL, 0,      4.f,    N,   N),
 CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VHRLY|EVENDIVL,  TYFL, 0,      0.f,    N,   N),
 CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
-// CULT("ventAvail",   DAT,   TOPRAT_VENTAVAIL, 0,     0, VHRLY,  TYCH,  0,  nc(C_VENTAVAILVC_WHOLEBLDG), 0.f, N,   N),
 CULT( "btControlAlg", DAT,   BATTERY_CONTROLALG,0,     0, VHRLY,  TYCH,  0,  nc( C_BATCTRLALGVC_DEFAULT), 0.f, N, N),
 CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
