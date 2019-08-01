@@ -12,6 +12,8 @@ include(BuildFlags)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+find_package(Git QUIET)
+
 add_subdirectory(vendor)
 add_subdirectory(src)
 
