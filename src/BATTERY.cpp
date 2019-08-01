@@ -6,6 +6,7 @@
 
 #include "ancrec.h"
 #include "rccn.h"
+#include "exman.h"
 
 #include "cnguts.h"
 
@@ -83,6 +84,15 @@ RC BATTERY::bt_DoHour(
 
 		// battery requested discharge power[ kW]
 		ULI controlAlg = CHN(bt_controlAlg);	// choicn stored as nan float
+		if (controlAlg == C_BATCTRLALGVC_TDVPEAKSAVE)
+		{
+			if (!Wthr.d.wd_HasTdvData())
+			{
+				rer(ABT, "BATTERY '%s': No TDV values available for bt_ControlAlg=TDVPeakSave.\n"
+					"    Use Top.tdvFName to specify TDV data file.", name);
+				controlAlg = 0;
+			}
+		}
 		float P_bt_req =
 			controlAlg == C_BATCTRLALGVC_TDVPEAKSAVE ? bt_ChgReqTDVPeakSave()
 		  : IsSet( BATTERY_CHGREQ)	                 ? bt_chgReq
@@ -137,9 +147,10 @@ RC BATTERY::bt_DoHour(
 }	// BATTERY::bt_DoHour
 //-----------------------------------------------------------------------------
 float BATTERY::bt_ChgReqTDVPeakSave()
-// returns current hour charge request
-//   using the TDVPeakSave control algorithm
+// Implements the California TDVPeakSave battery control algorithm
+// Do not call if TDV data not present (per !WDHR.wd_HasTdvData())
 // Assumes 1 hour time step
+// returns current hour charge request
 {
 	int iHr1 = Top.iHr + 1;		// 1-based hour of day
 

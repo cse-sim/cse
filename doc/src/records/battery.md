@@ -100,15 +100,18 @@ btChgReq can be set by an expression to allow complex energy management/dispatch
 
 |**Units**|**Legal Range** |**Default**       |**Required**|**Variability**|
 |---------|----------------|------------------|------------|---------------|
-| kW      |                | btMeter net load |No          |hourly      |
+| kW      |                | btMeter net load |No          |hourly         |
 
-**btUseUsrChg=*bool***
+**btControlAlg=*choice***
 
-A boolean choice (YES/NO) that defaults to NO. If YES, then the user specified `btChgReq` will be used to set the battery's charge request; if false, the default strategy (i.e., to attempt to satisfy all loads and absorb all available excess power), will be used. Both the `btChgReq` and the default strategy requested power are literally *requests*: that is, more power will not be delivered than is available; more power will not be absorbed than capacity exits to store; and the battery's power limits will be respected.
+Selects charge/discharge control algorithm.
+DEFAULT
+TDVPEAKSAVE
 
-|**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
-|---------|---------------|-----------|------------|---------------|
-|         | YES, NO       | NO        | No         |runly          |
+|**Units**|**Legal Range**     |**Default**       |**Required**|**Variability**|
+|---------|--------------------|------------------|------------|---------------|
+|      | DEFAULT or TDVPEAKSAVE| DEFAULT          |No          |hourly         |
+
 
 **endBATTERY**
 
