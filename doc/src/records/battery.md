@@ -36,7 +36,7 @@ The charging efficiency of storing electricity into the BATTERY system. A value 
 
 |**Units**|**Legal Range**  |**Default**|**Required**|**Variability**|
 |---------|-----------------|-----------|------------|---------------|
-|         |0 $\lt$ x $\le$ 1|0.975      |No          |hourly      |
+|         |0 < x $\le$ 1|0.975      |No          |hourly      |
 
 **btDschgEff=*float***
 
@@ -44,7 +44,7 @@ The discharge efficiency for when the BATTERY system is discharging power. A val
 
 |**Units**| **Legal Range**   |**Default**|**Required**|**Variability**|
 |---------|-------------------|-----------|------------|---------------|
-|         | 0 $\lt$ x $\le$ 1 |0.975      |     No     |hourly      |
+|         | 0 < x $\le$ 1 |0.975      |     No     |hourly      |
 
 **btMaxCap=*float***
 
@@ -90,7 +90,27 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 
 |**Units**|**Legal Range**|**Default**|**Required**|**Variability**|
 |---------|---------------|-----------|------------|---------------|
-| kW      | x $\ge$ 0     | 4         |No          |hourly      |
+| kW      | x $\ge$ 0     | 4         |No          |hourly         |
+
+**btControlAlg=*choice***
+
+Selects charge/discharge control algorithm.  btChgReq (next) specifies the desired battery charge or discharge rate.  btControlAlg allows selection of alternative algorithms for deriving btChgReq.
+
+-------------- -----------------------------------------------------------------------------------------
+DEFAULT        btChgReq is used as input or defaulted (see below)
+
+TDVPEAKSAVE    btChgReq input (if any) is ignored.  Instead, a California-specific algorithm is used
+               that saves battery charge until peak TDV (Time Dependant Valuation) hours of the day,
+               shifting energy generated on site (e.g. PV) to supply feed the grid during critical
+               periods.  The algorithm requires availability of hourly TDV data, see Top.tdvFName.
+-------------- -----------------------------------------------------------------------------------------
+
+Note btControlAlg has hourly variability, allowing dynamic algorithm selection.  In California compliance applications, TDVPEAKSAVE is typically used only on days with high TDV peaks.
+
+|**Units**|**Legal Range**     |**Default**       |**Required**|**Variability**|
+|---------|--------------------|------------------|------------|---------------|
+|      | DEFAULT or TDVPEAKSAVE| DEFAULT          |No          |hourly         |
+
 
 **btChgReq=*float***
 
@@ -102,24 +122,18 @@ btChgReq can be set by an expression to allow complex energy management/dispatch
 |---------|----------------|------------------|------------|---------------|
 | kW      |                | btMeter net load |No          |hourly         |
 
-**btControlAlg=*choice***
+**btUseUsrChg=*choice***
 
-Selects charge/discharge control algorithm.
-DEFAULT
-TDVPEAKSAVE
-
-|**Units**|**Legal Range**     |**Default**       |**Required**|**Variability**|
-|---------|--------------------|------------------|------------|---------------|
-|      | DEFAULT or TDVPEAKSAVE| DEFAULT          |No          |hourly         |
-
+Former yes/no choice that currently has no effect.  Deprecated, will be removed in a future version.
 
 **endBATTERY**
 
 Optionally indicates the end of the BATTERY definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+
+|**Units**|**Legal Range** |**Default**       |**Required**|**Variability**|
+|---------|----------------|------------------|------------|---------------|
+|         |                | *N/A*            | No         | constant      |
 
 <!--
 Probes? Control strategies?
