@@ -645,6 +645,11 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			RSYSOAV   "RSYSOAV"
 		  }
 
+*choicn BATCTRLALGVC {
+		    DEFAULT "Default"
+			TDVPEAKSAVE "TDVPeakSave"
+			}
+
 
 /**********************************************************************************************************************
 ** === CHOICN types: can hold these choices (as NAN), or float number 

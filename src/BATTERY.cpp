@@ -6,8 +6,19 @@
 
 #include "ancrec.h"
 #include "rccn.h"
+#include "exman.h"
 
 #include "cnguts.h"
+
+static const float kW_to_btuh = 3412.142f;
+
+// Note: a more robust life model will need not only cycle counts but
+// cycles by depth of discharge to capture "shallow cycling" vs
+// "deep cycling".
+// A further enhancement is to capture "time at temperature".
+// We may want to look into the battery literature and also more into
+// this application to better understand what kind of life model may
+// be a good fit in terms of information requirements vs fidelity.
 
 //----------------------------------------------------------------------------
 RC BATTERY::bt_CkF()
@@ -35,9 +46,9 @@ RC BATTERY::bt_Init()
 	return rc;
 }	// BATTERY::bt_Init
 //-----------------------------------------------------------------------------
-float BATTERY::bt_CalcAdjLoad(		// default load
+float BATTERY::bt_CalcAdjLoad(		// default load for current hour
 	const MTR& m) const	// source meter
-// returns sum of all end uses, kW
+// returns sum of all end uses (including PV), kW
 {
 	return float( m.H.mtr_NetBldgLoad() / 3412.142);
 }		// bt_CalcAdjLoad
@@ -47,7 +58,7 @@ RC BATTERY::bt_DoHour(
 					// 1: calcs
 					// 2: after reports
 {
-	static const float kW_to_btuh = 3412.142f;
+	
 	static const float dt = 1.f;	// timestep duration, hr
 
 	RC rc = RCOK;
@@ -72,17 +83,28 @@ RC BATTERY::bt_DoHour(
 											//  used to prevent underflow issues
 
 		// battery requested discharge power[ kW]
-		float P_bt_req 	= bt_useUsrChg == C_NOYESCH_YES
-				? bt_chgReq			// user-specified discharge request
-				: -bt_loadSeen;		// default control strategy
-
+		ULI controlAlg = CHN(bt_controlAlg);	// choicn stored as nan float
+		if (controlAlg == C_BATCTRLALGVC_TDVPEAKSAVE)
+		{
+			if (!Wthr.d.wd_HasTdvData())
+			{
+				rer(ABT, "BATTERY '%s': No TDV values available for bt_ControlAlg=TDVPeakSave.\n"
+					"    Use Top.tdvFName to specify TDV data file.", name);
+				controlAlg = 0;
+			}
+		}
+		float P_bt_req =
+			controlAlg == C_BATCTRLALGVC_TDVPEAKSAVE ? bt_ChgReqTDVPeakSave()
+		  : IsSet( BATTERY_CHGREQ)	                 ? bt_chgReq
+		  :                                            -bt_loadSeen;
+		
 		// battery maximum (charge) power based on capacity [kW]
 		float P_bt_max_cap = (bt_maxCap * (1.f - bt_soe)) / (dt * bt_chgEff);
 		if (P_bt_max_cap < tolerance)
 			P_bt_max_cap = 0.f;
 
 		// battery minimum (discharge) power based on capacity [kW]
-		float P_bt_min_cap = -1.0 * (bt_maxCap * bt_soe * bt_dschgEff) / dt;
+		float P_bt_min_cap = -(bt_maxCap * bt_soe * bt_dschgEff) / dt;
 		if (P_bt_min_cap > (-tolerance))
 			P_bt_min_cap = 0.f;
 
@@ -123,5 +145,50 @@ RC BATTERY::bt_DoHour(
 	}
 	return rc;
 }	// BATTERY::bt_DoHour
+//-----------------------------------------------------------------------------
+float BATTERY::bt_ChgReqTDVPeakSave()
+// Implements the California TDVPeakSave battery control algorithm
+// Do not call if TDV data not present (per !WDHR.wd_HasTdvData())
+// Assumes 1 hour time step
+// returns current hour charge request
+{
+	int iHr1 = Top.iHr + 1;		// 1-based hour of day
+
+	// available PV (0 if no meter specified)
+	float pv = bt_meter
+		? MtrB.p[bt_meter].H.pv / kW_to_btuh
+		: 0.f;
+
+	// non-peak hour default request: charge from PV
+	float chgReq = -pv;
+
+	// available energy not committed to future peak hours
+	float uncommitted_energy = bt_energy * bt_dschgEff;
+
+	// max number of peak hours to check
+	//   = time to discharge full capacity
+	int nRMax = int(bt_maxCap * bt_dschgEff / bt_maxDschgPwr) + 1;
+
+	// check hours in TDV rank order
+	for (int iR = 1; iR<=nRMax; iR++)
+	{	int iHrRank = Wthr.d.wd_tdvElecHrRank[iR];	// 1-based hour of this rank
+		if (iHrRank == iHr1)
+		{	chgReq = -uncommitted_energy;	// current hour: uncommitted is available
+											//   will be limited by bt_maxDschgPwr
+			break;
+		}
+		else if (iHrRank > iHr1)	// if peak hour not passed
+		{	uncommitted_energy -= bt_maxDschgPwr;	// save enough for it
+			if (uncommitted_energy <= 0.f)
+				break;				// all committed, stop
+		}
+	}
+
+	return chgReq;
+
+}		// BATTERY::bt_ChgReqTDVPeakSave
+//==============================================================================
+
+
 
 // battery.cpp end
