@@ -593,7 +593,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	if (ws_HasCentralDHWSYS())
 	{	// check that central DHWSYS tree is only one deep
 		//   additional levels could be allowed if needed
-		//   see ws_AccumCentralUse() etc
+		//   see ws_AccumCentralUse() etc.
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral->ws_HasCentralDHWSYS())
 			rc |= oer( "DHWSYS '%s' (given by wsCentralDHWSYS) is not central",
