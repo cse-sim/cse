@@ -1682,6 +1682,9 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_ASHPTY,
 			DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI, DHWHEATER_ASHPRESUSE, 0);
 		rc |= requireN( whenHs, DHWHEATER_EF, DHWHEATER_VOL, 0);
+		if (wh_EF > 0.98f)
+			rc |= oer("whEF (%0.3f) must be <= 0.98 %s",
+				wh_EF, whenHs);
 		if (!IsSet( DHWHEATER_RESHTPWR2))
 			wh_resHtPwr2 = wh_resHtPwr;		// lower element power defaults from upper
 	}
