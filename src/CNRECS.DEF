@@ -738,6 +738,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
 	*declare "void wd_SetTdvElecHrRank( const class WDDAY& wdd);"
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
+	*declare "bool wd_HasTdvData() const;"
 
 						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
 						// wd_db assumed 1st non-solar geometry mbr
@@ -3957,22 +3958,28 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "RC bt_Init();"
   *declare "RC bt_DoHour( int stage);"
   *declare "float bt_CalcAdjLoad(const MTR& m) const;"
+  *declare "float bt_ChgReqTDVPeakSave();"
 
   *i TI bt_meter;				// meter for system electricity production
   *f ENDUSECH bt_endUse			// end use of energy. defaults to "BT"
   *r NOYESCH bt_useUsrChg		// YES: user specifies charge request;
 								// NO (default): calculate charge request via
 								//               default strategy
+  *h BATCTRLALGVC bt_controlAlg	// control algorithm choice
+								//    _DEFAULT: per bt_chgReq
+								//    _TDVPEAKSAVE: strive to reduce demand during peak TDV hours
   *r FLOAT_GEZ bt_maxCap		// maximum (usable) battery capacity in kWh
   *r FRAC bt_initSOE			// initial state of energy (0 <= SOE <= 1)
   *r FLOAT_GEZ bt_initCycles	// initial number of cycles on battery (>= 0)
-  *h FRAC bt_chgEff				// battery efficiency while charging
-  *h FRAC bt_dschgEff			// battery efficiency while discharging (Fraction)
+  *h FRAC_GZ bt_chgEff			// battery efficiency while charging
+  *h FRAC_GZ bt_dschgEff		// battery efficiency while discharging (Fraction)
   *h FLOAT_GEZ bt_maxChgPwr		// maximum allowable charging power (kW)
-  *h FLOAT_GEZ bt_maxDschgPwr	//maximum discharge power (kW)
+  *h FLOAT_GEZ bt_maxDschgPwr	// maximum discharge power (kW)
   *h *e FLOAT bt_chgReq			// battery charge request (kW) +=charge;-=discharge
   *h FRAC bt_soeBegIvl			// battery SOE at beginning of interval
-  *h *e FLOAT bt_loadSeen		// the adjusted load seen by the battery that step (kW)
+  *h *e FLOAT bt_loadSeen		// the adjusted load seen by the battery for current hour (kW)
+								//   = net power from bt_meter (including PV)
+								//   0 if bt_meter not specified
   *h *p FRAC bt_soe				// battery state of energy (SOE) (0 <= SOE <= 1)
 								// represents the end of interval SOE.
   *h FLOAT bt_soelh;			// battery state of energy (SOE) at end of prior hour

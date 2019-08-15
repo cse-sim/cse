@@ -1,7 +1,6 @@
 image: Visual Studio 2017
 version: '{build}'
 clone_depth: 100
-skip_branch_with_pr: true
 
 environment:
   GH_TOKEN:
@@ -15,11 +14,11 @@ init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
-  - if not exist basic-miktex-x64.exe curl -s -o basic-miktex-x64.exe -L https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-2.9.7031-x64.exe
+  - if not exist basic-miktex-x64.exe curl -s -o basic-miktex-x64.exe -L https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-2.9.7100-x64.exe
   - basic-miktex-x64.exe --unattended --auto-install=yes --shared --package-set=basic
   - ps: $env:PATH = 'C:\Program Files\MiKTeX 2.9\miktex\bin\x64;' + $env:PATH
-  - pdflatex --version
-  - xelatex --version
+  - mpm --find-updates
+  - mpm --update
   - ps: cinst -y pandoc --version 1.17.2
   - cmd:  refreshenv
 

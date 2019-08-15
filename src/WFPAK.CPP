@@ -865,6 +865,15 @@ void WDHR::wd_ShiftTdvElecHrRankForDST()		// handle DST
 			wd_tdvElecHrRank[ iHr] = 1;		// wrap
 	}
 }		// WDHR::wd_ShiftTdvElecHrRankForDST
+//----------------------------------------------------------------------------
+bool WDHR::wd_HasTdvData() const	// true iff TDV data is present
+// California hourly "Time-Dependent Valuation" data are optionally read,
+//   see Top.tp_TDVfName
+// returns true iff this hour has populated TDV values
+{
+	return !ISUNSET( wd_tdvElec);
+
+}	// WDHR::wd_HasTdvData
 //============================================================================
 
 //////////////////////////////////////////////////////////////////////////////
