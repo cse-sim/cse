@@ -285,14 +285,17 @@ struct DWHRUSE		// info about 1 (shower) draw that could have DWHR
 struct DHWTICK	// per tick info for DHWSYS
 {
 	DHWTICK() { wtk_Init(); }
-	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
+	float wtk_whUse;		// total tick hot water draw at all water heaters, gal
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR
 	int wtk_nHRDraws;		// # of DHWHEATREC draws during this tick
-	void wtk_Init( double whUseTick=0., float tInlet=50.f)
+	float wtk_loopFlow;		// loop flow for this tick, gal
+	float wtk_loopTRet;		// loop return temp, F
+	void wtk_Init( float whUseTick=0.f, float tInlet=50.f)
 	{
 		wtk_nHRDraws = 0;
 		wtk_whUse = whUseTick; wtk_tInletX = tInlet;
+		wtk_loopFlow = wtk_loopTRet = 0.f;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
 };	// struct DHWTICK
@@ -1161,7 +1164,7 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 		RLUPC( WhR, pWH, pWH->ownTi == ss)
 		{	if (pWH->wh_IsHPWHModel())
 				rc |= pWH->wh_HPWHDoSubhr(
-					ticksSh,			// draws etc. by tick
+					ticksSh,		// draws etc. by tick
 					scaleWH,		// draw scale factor (allocates draw if ws_whCount > 1)
 					qLossNoRL,		// non-recirc loss, Btu/WH-tick
 					qLossRL,		// recirc loop loss, Btu/WH-tick
