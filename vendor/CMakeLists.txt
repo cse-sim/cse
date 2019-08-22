@@ -1,7 +1,7 @@
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodules as needed
-    option(GIT_SUBMODULE "Check submodules during build" ON)
-    if(GIT_SUBMODULE)
+    option(${PROJECT_NAME}_GIT_SUBMODULE "Check submodules during build" ON)
+    if(${PROJECT_NAME}_GIT_SUBMODULE)
         message(STATUS "${PROJECT_NAME} submodule update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
           WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
