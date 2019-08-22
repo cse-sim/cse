@@ -11,8 +11,7 @@
 #define MAKE_LIT2(s) #s
 #define MAKE_LIT(s) MAKE_LIT2(s)
 
-// version # for current build
-// change ONLY here
+// version # for current build (derived from git repo tags)
 #define CSEVRSN_MAJOR @CSEVRSN_MAJOR@
 #define CSEVRSN_MINOR @CSEVRSN_MINOR@
 #define CSEVRSN_PATCH @CSEVRSN_PATCH@
