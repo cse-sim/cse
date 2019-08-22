@@ -289,13 +289,13 @@ struct DHWTICK	// per tick info for DHWSYS
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR
 	int wtk_nHRDraws;		// # of DHWHEATREC draws during this tick
-	float wtk_loopFlow;		// loop flow for this tick, gal
-	float wtk_loopTRet;		// loop return temp, F
+	float wtk_volRL;		// loop flow, for this tick, gal
+	float wtk_tRL;			// loop return temp, F
 	void wtk_Init( float whUseTick=0.f, float tInlet=50.f)
 	{
 		wtk_nHRDraws = 0;
 		wtk_whUse = whUseTick; wtk_tInletX = tInlet;
-		wtk_loopFlow = wtk_loopTRet = 0.f;
+		wtk_volRL = wtk_tRL = 0.f;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
 };	// struct DHWTICK
@@ -869,12 +869,14 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	{	DHWLOOP* pWL;
 		RLUPC( WlR, pWL, pWL->ownTi == ss)
 		{	rc |= pWL->wl_DoHour( mult);		// also calcs child DHWLOOPSEGs and DHWLOOPPUMPs
-			HRLL += pWL->wl_HRLL;	// loop loss
+			HRLL += pWL->wl_HRLL;		// loop loss
 			ws_HRBL += pWL->wl_HRBL;	// branch loss
 			ws_volRL += pWL->wl_volRL;
+			tVolRet += pWL->wl_volRL * pWL->wl_tRL;
 		}
+		ws_tRL = tVolRet / ws_volRL;
 	}
-
+	ws_tRL = ws_volRL > 0.f ? tVolRet / ws_volRL : 0.f;
 	ws_HRDL = float( HRLL + ws_HRBL);
 
 	// total recovery load
@@ -1047,6 +1049,37 @@ void DHWSYS::ws_InitTicks(			// initialize tick data for hour
 	ws_iTk0DWHR = 9999;		// 1st/nth tick with possible DWHR
 	ws_iTkNDWHR = -1;
 }		// DHWSYS::ws_InitTicks
+//-----------------------------------------------------------------------------
+RC DHWSYS::ws_AddLossesToDraws()
+{
+	RC rc = RCOK;
+
+#if 0
+	int iTkSh = Top.iSubhr*Top.tp_nSubhrTicks;	// initial tick for this subhour
+	const DHWTICK* ticksSh = ws_ticks + iTkSh;		// 1st tick info for this subhour
+	double scaleWH = 1. / ws_whCount;					// allocate per WH
+	double scaleTick = scaleWH / Top.tp_NHrTicks();	// allocate per WH-tick
+	// non-draw losses imposed on DHWHEATER(s), Btu/WH-tick
+	double qLoss = (ws_HRDL + ws_HJL) * scaleTick;	// total: DHWLOOP + jacket
+	double qLossNoRL = (ws_HRBL + ws_HJL) * scaleTick;	// w/o recirc: DHWLOOP branch + jacket
+	double qLossRL = qLoss - qLossNoRL;					// recirc only
+	double volRL = ws_volRL * scaleTick;				// recirc vol/WH-tick, gal
+#endif
+
+	int nTk = Top.tp_NHrTicks();
+	for (int iTk = 0; iTk < nTk; iTk++)
+	{
+		DHWTICK& tk = ws_ticks[iTk];
+		tk.wtk_volRL = 0.f;
+		tk.wtk_tRL = 0.f;
+
+
+	}
+
+	return rc;
+
+
+}	// DHWSYS::ws_AddLossesToDraws
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs)
 {
@@ -1685,7 +1718,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_ASHPTY,
 			DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI, DHWHEATER_ASHPRESUSE, 0);
 		rc |= requireN( whenHs, DHWHEATER_EF, DHWHEATER_VOL, 0);
-		if (wh_EF > 0.98f)
+ 		if (wh_EF > 0.98f)
 			rc |= oer("whEF (%0.3f) must be <= 0.98 %s",
 				wh_EF, whenHs);
 		if (!IsSet( DHWHEATER_RESHTPWR2))
@@ -1993,7 +2026,8 @@ RC DHWHEATER::wh_DoEndPreRun()
 //-----------------------------------------------------------------------------
 void DHWHEATER::wh_HPWHReceiveMessage( const std::string message)
 {
-	pInfo( "DHWHEATER '%s' HPWH message (%s): %s", name, Top.When( C_IVLCH_S), message.c_str());
+	pInfo( "DHWHEATER '%s' HPWH message (%s):\n  %s",
+		name, Top.When( C_IVLCH_S), message.c_str());
 }		// DHWHEATER::wh_HPWHReceiveMessage
 //-----------------------------------------------------------------------------
 int DHWHEATER::wh_HPWHHasCompressor() const
@@ -2242,9 +2276,13 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	//     i.e. assume loop entering temp = ws_tUse
 	//       tRetRL = tUse - qLossRL/(waterRhoCp * volRL)
 	//     vol*temp product: tRetRL * volRL = tUse*volRL - qLossRL/waterRhoCp
-	double tVolRL = volRL > 0. && qLossRL > 0.
-				? pWS->ws_tUse * volRL - qLossRL / waterRhoCp
-		        : 0.;		// skip tInlet mix below
+	double tVolRL = 0.;
+	float tRetRL = 0.f;
+	if (volRL > 0.)
+	{
+		tRetRL = pWS->ws_tUse - qLossRL / (waterRhoCp*volRL);
+		tVolRL = volRL * tRetRL;
+	}
 
 	int nTickNZDraw = 0;		// count of ticks with draw > 0
 	for (int iTk=0; !rc && iTk<Top.tp_nSubhrTicks; iTk++)
@@ -2260,8 +2298,12 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		double tInlet = ticksSh[ iTk].wtk_tInletX;
 		if (tVolRL > 0.)		// if loop flow
 		{	// ?tInlet?
+			double vX = pWS->ws_volRL / 60.;
+			double tIX = (vX*pWS->ws_tRL + drawForTick * tInlet)
+				/ (vX + drawForTick);
 			tInlet = (tVolRL + drawForTick*tInlet)
 						/ (volRL+drawForTick);
+		
 			drawForTick += volRL;
 		}
 		wh_pHPWH->setInletT( DegFtoC( tInlet));		// mixed inlet temp
@@ -3154,7 +3196,7 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	RLUPC( WgR, pWG, pWG->ownTi == ss)
 	{	// note: segment chain relies on input order
 		rc |= pWG->wg_DoHour( tIn);
-		wl_HRLL += pWG->ps_PL;	// flow + noflow loop losses
+		wl_HRLL += pWG->wg_LL;	// flow + noflow loop losses
 		wl_HRBL += pWG->wg_BL;	// branch losses
 		tIn = pWG->ps_tOut;
 	}
@@ -3171,6 +3213,13 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	wl_HRLL  *= wl_mult;
 	wl_HRBL  *= wl_mult;
 	wl_volRL = wl_flow * 60.f * wl_runF * wl_mult;
+
+	// return water conditions
+	//  ? pump power ?
+	//  ? interation with HRLLMakeUp
+	wl_tRL = wl_volRL > 0.f		// return temp
+				? wl_tIn1 - wl_HRLL / (wl_volRL*waterRhoCp)
+				: 0.f;
 
 	if (wl_wlpCount > 0)		// if any loop pumps
 	{	DHWLOOPPUMP* pWLP;
@@ -3371,10 +3420,16 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 
 	// flow rate, gpm
 	float fNoFlow = (1.f - pWL->wl_runF) * wg_fNoDraw;
+	float fDraw = 0.f;	// fraction of loop flow due to draws
 	if (fNoFlow < 1.f)
-	{	ps_fvf = pWL->wl_flow;					// recirc, gpm
+	{	ps_fvf = pWL->wl_flow;
 		if (wg_ty == C_DHWLSEGTYCH_SUP)			// if supply segment
-			ps_fvf += pWS->ws_whUse.total / (pWS->ws_wlCount * 60.f);	// draw, gpm
+		{	float drawFlow = pWS->ws_whUse.total / (pWS->ws_wlCount * 60.f);	// draw, gpm
+			if (drawFlow > 0.f)
+			{	fDraw = drawFlow / (ps_fvf + drawFlow);
+				ps_fvf += drawFlow;
+			}
+		}
 	}
 	else
 		ps_fvf = 0.f;
@@ -3383,12 +3438,13 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 	ps_tIn = tIn;
 	ps_tOut = ps_CalcTOut( tIn, ps_fvf);
 
-	// heat loss
+	// heat loss (flow)
 	if (fNoFlow < 1.f)
 		ps_PLWF = ps_fvf * (1.f - fNoFlow) * ps_fRhoCpX * (ps_tIn - ps_tOut);
 	else
 		ps_PLWF = 0.f;
 
+	// heat loss (noflow)
 	if (fNoFlow > 0.f)
 	{	float tStart = (ps_tIn + ps_tOut) / 2.f;
 		float volX = ps_vol / 60.f;
@@ -3398,10 +3454,13 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 	else
 		ps_PLCD = 0.f;
 
-	ps_PL = ps_PLWF + ps_PLCD;
+	// totals
+	ps_PL = ps_PLWF + ps_PLCD;		// total DHWLOOPSEG loss
+	wg_LL = ps_PL * (1.f - fDraw);	// losses seen in loop return
 
 	// branch losses
-	wg_BL = 0.f;
+	wg_BL = ps_PL*fDraw;			// allocate draw-induced loop loss
+									//   to branch
 	if (wg_wbCount > 0.f)
 	{	DHWLOOPBRANCH* pWB;
 		RLUPC( WbR, pWB, pWB->ownTi == ss)

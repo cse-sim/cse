@@ -3324,6 +3324,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_InitTicks( double whUseHr);"
+  *declare "RC ws_AddLossesToDraws();"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
 
@@ -3417,6 +3418,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_HHWO;		// hourly hot water output (at water heater), Btu
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
   *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
+  *h *e FLOAT ws_tRL;		// current hour all-DHWLOOP return temp, F
   *h *e FLOAT ws_HRBL;		// current hour all-DHWLOOPBRANCH losses, Btu
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
@@ -3715,10 +3717,14 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 
   *h *e FLOAT wl_volRL; // current hour volume returned, gal
 						//    (reflects wl_mult)
+  *h *e FLOAT wl_tRL;	// current hour average return temp, F
+						//    derived from flow and loss
+						//    *not* ps_tOut of last segment
   *h *e FLOAT wl_HRLL;	// current hour loop seg pipe loss, Btu
 						//    (reflects wl_mult and reduction by wl_lossMakeupPwr)
-  *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, But
-						//    (reflects wl_mult)
+  *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, Btu
+						//    (reflects wl_mult)s
+  
 *END	// DWHLOOP
 //=============================================================================
 RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
@@ -3786,7 +3792,10 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
   *r FLOAT wg_wbCount		// total # of child DHWLOOPBRANCHs
 							//   note: may be non-integer
   *h FLOAT wg_fNoDraw		// fraction of hour when there is no draw
+  *h FLOAT wg_LL			// current hour loop loss, Btu
+							//   = ps_PL - loss attributed to draw flow
   *h FLOAT wg_BL			// current hour child DHWLOOPBRANCH losses, Btu
+							//   includes loss from loop during draws
  *END		// DHWLOOPSEG
 //=============================================================================
 RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime DHW branch
