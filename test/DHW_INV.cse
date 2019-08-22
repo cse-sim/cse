@@ -1,0 +1,68 @@
+// DHW_INV.cse -- HPWH tank temperature inversion test case
+
+// CTZ12 Weather
+WfName="CTZ12S13b.CSW"
+dbgPrintMask = $dayofyear == 15 ? 256 : 0
+repHdrL = "Inversion test case"
+
+wuDays=30
+nSubSteps=6 
+
+// Hourly use schedules
+#define WHUSE01 hourval( \
+  0,   0,   0,   0,   0,   0,   0,   0, \
+  1,   1,   1,   1,   1,   0,   1,   0, \
+  0,   0,   0,   0,   0,   0,   0,   0 )
+
+ #define TSUP01 hourval( \
+ 50,  50,  50,  50,  50,  50,  50,  50, \
+ 50,  50,  50,  50, 113,  50,  50,  50, \
+ 50,  50,  50,  50,  50,  50,  50,  50 )
+
+
+//====================================================================
+// single system
+
+METER mtrElec
+METER Fuel0
+DHWMETER FX0
+DHWMETER WH0
+
+DHWSYS "DS0"
+  wsMult = 1
+  wsElecMtr = mtrElec
+  wsFXHWMTR = FX0
+  wsWHHWMTR = WH0
+  wsTInlet = TSUP01
+  wsTSetpoint = 131	// 55 C
+  wsTUse = 122		// 50 C	
+  wsUse = 15.8503 * WHUSE01	// 1 l/min
+  wsDSM = 1
+  wsSDLM = 1
+
+DHWHEATER "ResTank"
+  whType = SmallStorage
+  whHeatSrc = ResistanceX
+  whTEx = 68		// 20 C
+  whVol = 52.83		// 200 l		
+  whEF = .92
+  whResHtPwr = 1000
+
+
+DELETE REPORT EB
+
+REPORT rpType=MTR rpMeter = mtrElec rpFreq=MONTH rpBtuSf = 3413
+REPORT rpType=MTR rpMeter = mtrElec rpFreq=HOUR rpDayBeg=jan 15 rpDayEnd = jan 15 rpBtuSf = 3413
+
+REPORT rpType=DHWMTR rpDHWMeter = WH0 rpFreq=MONTH
+REPORT rpType=DHWMTR rpDHWMeter = WH0 rpFreq=HOUR rpDayBeg=jan 15 rpDayEnd = jan 15
+
+//==============================================================
+
+
+RUN
+
+
+
+
+
