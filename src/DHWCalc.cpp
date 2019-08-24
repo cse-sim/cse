@@ -2360,6 +2360,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #if defined( HPWH_DUMP)
 		// tick level CSV report for testing
 		static FILE* pF = NULL;		// file
+		static int csvOptions = HPWH::CSVOPT_IPUNITS;
 		if (bWriteCSV)
 		{	if (!pF)
 			{
@@ -2378,9 +2379,13 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #if defined( HPWH_DUMPSMALL)
 					fprintf( pF, "minYear,draw( L)\n");
 #else
-					wh_pHPWH->WriteCSVHeading( pF, "month,day,hr,min,minDay,"
-						            "tOut (C),tEnv (C),tSrcAir (C),tInlet (C),tSetpoint (C),"
-						            "lossDraw (gal),RLDraw (gal),totDraw (gal),totDraw (L),tOut (C),XBU (Wh),");
+					WStr s("month, day, hr, min, minDay,");
+					s += csvOptions & HPWH::CSVOPT_IPUNITS
+						? "tOut(F),tEnv(F),tSrcAir(F),tInlet(F),tSetpoint(F),"
+						  "lossDraw (gal),RLDraw (gal),totDraw(gal),tOut (F),XBU (Wh),"
+						: "tOut(C),tEnv(C),tSrcAir(C),tInlet(C),tSetpoint(C),"
+						  "lossDraw(L),RLDraw(L),totDraw (L),tOut (C),XBU (Wh),";
+					wh_pHPWH->WriteCSVHeading(pF, s.c_str(), csvOptions);
 #endif
 				}
 			}
@@ -2391,12 +2396,23 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #if defined( HPWH_DUMPSMALL)
 				fprintf( pF, "%0.2f,%0.3f\n", minYear, GAL_TO_L( drawForTick));
 #else
-				wh_pHPWH->WriteCSVRow( pF, strtprintf(
-						"%d,%d,%d,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.2f, %0.3f,%0.3f,%0.3f,%0.3f,%0.2f,%0.2f,",
-						Top.tp_date.month, Top.tp_date.mday, Top.iHr+1, minHr, minDay,
-						DegFtoC( Top.tDbOSh),DegFtoC( wh_tEx),DegFtoC( wh_ashpTSrc),
-						DegFtoC( tInlet), DegFtoC( pWS->ws_tSetpoint),
-					    lossDraw, volRL, drawForTick, GAL_TO_L( drawForTick),tOut,HPWHxBU/BtuperWh));
+				// unit independent info
+				WStr s1 = strtprintf("%d,%d,%d,%0.2f,%0.2f,",
+					Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1, minHr, minDay);
+
+				// data with unit conversions
+				const char* fmt = "%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.3f,%0.3f,%0.3f,%0.3f,%0.2f,%0.2f,";
+				WStr s2 = csvOptions & HPWH::CSVOPT_IPUNITS
+					? strtprintf(fmt,
+						Top.tDbOSh, wh_tEx, wh_ashpTSrc,
+						tInlet, pWS->ws_tSetpoint,
+						lossDraw, volRL, drawForTick, tOut, HPWHxBU / BtuperWh)
+					: strtprintf(fmt,
+						DegFtoC(Top.tDbOSh), DegFtoC(wh_tEx), DegFtoC(wh_ashpTSrc),
+						DegFtoC(tInlet), DegFtoC(pWS->ws_tSetpoint),
+						lossDraw, volRL, GAL_TO_L(drawForTick), DegFtoC( tOut), HPWHxBU / BtuperWh);
+
+				wh_pHPWH->WriteCSVRow(pF, (s1+s2).c_str(), csvOptions);
 #endif
 			}
 		}
