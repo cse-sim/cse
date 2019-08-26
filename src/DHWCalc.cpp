@@ -15,6 +15,7 @@
 #include "cuparse.h"
 #include "cueval.h"
 #include "cvpak.h"
+#include "srd.h"
 
 // #include <random>
 
@@ -285,13 +286,13 @@ struct DWHRUSE		// info about 1 (shower) draw that could have DWHR
 struct DHWTICK	// per tick info for DHWSYS
 {
 	DHWTICK() { wtk_Init(); }
-	float wtk_whUse;		// total tick hot water draw at all water heaters, gal
+	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR
 	int wtk_nHRDraws;		// # of DHWHEATREC draws during this tick
 	float wtk_volRL;		// loop flow, for this tick, gal
 	float wtk_tRL;			// loop return temp, F
-	void wtk_Init( float whUseTick=0.f, float tInlet=50.f)
+	void wtk_Init( double whUseTick=0., float tInlet=50.f)
 	{
 		wtk_nHRDraws = 0;
 		wtk_whUse = whUseTick; wtk_tInletX = tInlet;
@@ -2143,6 +2144,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			if (ret || wh_pHPWH->setUA( UAdflt*wh_UAMult) != 0)
 				rc = RCBAD;
 		}
+		if (wh_pHPWH->isSetpointFixed() && pWS->IsSet(DHWSYS_TSETPOINT))
+			pWS->oInfo("wsTSetpoint ignored for fixed-setpoint HPWH DHWHEATER '%s'.",
+				name);
 	}
 
 	if (!rc)
@@ -2209,6 +2213,71 @@ RC DHWHEATER::wh_HPWHDoHour()		// hourly HPWH calcs
 	return rc;
 
 }	// DHWHEATER::wh_HPWHDoHour
+//-----------------------------------------------------------------------------
+struct CSVItem
+{
+	const char* ci_hdg;
+	double ci_v;
+	int ci_iUn;	// units
+	int ci_dfw;	// sig figs (re FMTSQ)
+	// int ci_iUx -- fixed unit system for this item
+
+	static const double ci_UNSET;	// flag for unset value (writes 0)
+
+	const char* ci_Hdg( int iUx);
+	const char* ci_Value();
+};
+//-----------------------------------------------------------------------------
+/*static*/ const double CSVItem::ci_UNSET = -99999999.;
+//-----------------------------------------------------------------------------
+const char* CSVItem::ci_Hdg(int iUx)
+{
+	return strtprintf( ci_iUn != UNNONE ? "%s(%s)" : "%s",
+		ci_hdg, UNIT::GetSymbol(ci_iUn, iUx));
+}		// CSVItem::ci_Hdg
+//-----------------------------------------------------------------------------
+const char* CSVItem::ci_Value()
+{
+	return ci_v != ci_UNSET
+		? cvin2s(&ci_v, DTDBL, ci_iUn, 20, FMTSQ | FMTOVFE | FMTRTZ + ci_dfw)
+		: "0";
+}		// CSVItem::ci_Value
+//-----------------------------------------------------------------------------
+class CSVGen
+{
+	CSVItem* cg_pCI;	// array of CSVItems
+	int cg_iUx;			// unit system
+
+public:
+	CSVGen(CSVItem* pCI) : cg_pCI( pCI) {}
+	WStr cg_Hdgs( int iUx);
+	WStr cg_Values(int iUx);
+};
+//-----------------------------------------------------------------------------
+WStr CSVGen::cg_Hdgs(int iUx)
+{
+	WStr s;
+	for (int i = 0; cg_pCI[i].ci_hdg; i++)
+	{
+		s += cg_pCI[i].ci_Hdg(iUx);
+		s += ",";
+	}
+	return s;
+}
+//-----------------------------------------------------------------------------
+WStr CSVGen::cg_Values(int iUx)
+{
+	int UnsysextSave = Unsysext;
+	Unsysext = iUx;
+	WStr s;
+	for (int i = 0; cg_pCI[i].ci_hdg; i++)
+	{
+		s += cg_pCI[i].ci_Value();
+		s += ",";
+	}
+	Unsysext = UnsysextSave;
+	return s;
+}
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	const DHWTICK* ticksSh,		// tick info for subhour (draw, cold water temp, )
@@ -2294,7 +2363,8 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		  && Top.iSubhr == 3)
 			wh_pHPWH->setVerbosity( HPWH::VRB_emetic);
 #endif
-		double drawForTick = ticksSh[ iTk].wtk_whUse*scale*wh_mixDownF + lossDraw;
+		double useDraw = ticksSh[iTk].wtk_whUse*scale*wh_mixDownF;
+		double drawForTick = useDraw + lossDraw;
 		double tInlet = ticksSh[ iTk].wtk_tInletX;
 		if (tVolRL > 0.)		// if loop flow
 		{	// ?tInlet?
@@ -2319,7 +2389,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 		qEnv += wh_pHPWH->getEnergyRemovedFromEnvironment();
 		qLoss += wh_pHPWH->getStandbyLosses();
-		double tOut = wh_pHPWH->getOutletTemp();
+		double tOut = wh_pHPWH->getOutletTemp();	// output temp, C
 		float HPWHxBU = 0.f;		// add'l resistance backup, this tick, Btu
 		if (tOut)
 		{	double tOutF = DegCtoF( tOut);	// output temp, F
@@ -2360,9 +2430,43 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #if defined( HPWH_DUMP)
 		// tick level CSV report for testing
 		static FILE* pF = NULL;		// file
-		static int csvOptions = HPWH::CSVOPT_IPUNITS;
+		int dumpUx = UNSYSSI;		// unit system for CSV values
+		int hpwhOptions = dumpUx == UNSYSIP ? HPWH::CSVOPT_IPUNITS : HPWH::CSVOPT_NONE;
+		static const int nTCouples = 12;		// # of storage layers reported by HPWH
+		
 		if (bWriteCSV)
-		{	if (!pF)
+		{
+			double minHr = double(Top.iSubhr)*Top.subhrDur*60. + iTk * Top.tp_subhrTickDur + 1;
+			double minDay = double(60 * Top.iHr) + minHr;
+			// double minYear = double( (int(Top.jDayST-1)*24+Top.iHrST)*60) + minHr;
+
+			CSVItem CI[] =
+			{ "minHr",	   minHr,               UNNONE, 4,	
+			  "minDay",	   minDay,              UNNONE, 4,
+			  "tDbO",      Top.tDbOSh,			UNTEMP, 5,
+			  "tEnv",      wh_tEx,				UNTEMP, 5,
+			  "tSrcAir",   wh_ashpTSrc,			UNTEMP, 5,
+			  "vUse",	   useDraw,				UNLVOLUME2, 5,
+			  "vLoss",     lossDraw,			UNLVOLUME2, 5,
+			  "vRL",       volRL,				UNLVOLUME2, 5,
+			  "vTot",	   drawForTick,			UNLVOLUME2, 5,
+			  "tMains",    pWS->ws_tInlet,		UNTEMP, 5,
+			  "tDWHR",     pWS->ws_tInletX,		UNTEMP, 5,
+			  "tRL",       volRL > 0. ? ticksSh[iTk].wtk_tRL : CSVItem::ci_UNSET,
+												UNTEMP,	5,
+			  "tIn",       tInlet,				UNTEMP,	5,
+			  "tSP",	   DegCtoF( wh_pHPWH->getSetpoint()),
+												UNTEMP,	5,
+			  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
+												UNTEMP,  5,
+			  "XBU",       HPWHxBU,				UNENERGY3,	5,
+			  "tUse",      pWS->ws_tUse,		UNTEMP,  5,	
+			  NULL
+			};
+ 			CSVGen csvGen(CI);
+
+
+			if (!pF)
 			{
 				// dump file name = <cseFile>_hpwh.csv
 				const char* fName =
@@ -2379,40 +2483,21 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #if defined( HPWH_DUMPSMALL)
 					fprintf( pF, "minYear,draw( L)\n");
 #else
-					WStr s("month, day, hr, min, minDay,");
-					s += csvOptions & HPWH::CSVOPT_IPUNITS
-						? "tOut(F),tEnv(F),tSrcAir(F),tInlet(F),tSetpoint(F),"
-						  "lossDraw (gal),RLDraw (gal),totDraw(gal),tOut (F),XBU (Wh),"
-						: "tOut(C),tEnv(C),tSrcAir(C),tInlet(C),tSetpoint(C),"
-						  "lossDraw(L),RLDraw(L),totDraw (L),tOut (C),XBU (Wh),";
-					wh_pHPWH->WriteCSVHeading(pF, s.c_str(), csvOptions);
+					WStr s("mon,day,hr,");
+					s += csvGen.cg_Hdgs(dumpUx);
+					wh_pHPWH->WriteCSVHeading(pF, s.c_str(), nTCouples, hpwhOptions);
 #endif
 				}
 			}
 			if (pF)
-			{	double minHr = double( Top.iSubhr)*Top.subhrDur*60. + iTk*Top.tp_subhrTickDur + 1;
-				double minDay = double( 60*Top.iHr) + minHr;
-				// double minYear = double( (int(Top.jDayST-1)*24+Top.iHrST)*60) + minHr;
+			{	
 #if defined( HPWH_DUMPSMALL)
 				fprintf( pF, "%0.2f,%0.3f\n", minYear, GAL_TO_L( drawForTick));
 #else
-				// unit independent info
-				WStr s1 = strtprintf("%d,%d,%d,%0.2f,%0.2f,",
-					Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1, minHr, minDay);
-
-				// data with unit conversions
-				const char* fmt = "%0.2f,%0.2f,%0.2f,%0.2f,%0.2f,%0.3f,%0.3f,%0.3f,%0.3f,%0.2f,%0.2f,";
-				WStr s2 = csvOptions & HPWH::CSVOPT_IPUNITS
-					? strtprintf(fmt,
-						Top.tDbOSh, wh_tEx, wh_ashpTSrc,
-						tInlet, pWS->ws_tSetpoint,
-						lossDraw, volRL, drawForTick, tOut, HPWHxBU / BtuperWh)
-					: strtprintf(fmt,
-						DegFtoC(Top.tDbOSh), DegFtoC(wh_tEx), DegFtoC(wh_ashpTSrc),
-						DegFtoC(tInlet), DegFtoC(pWS->ws_tSetpoint),
-						lossDraw, volRL, GAL_TO_L(drawForTick), DegFtoC( tOut), HPWHxBU / BtuperWh);
-
-				wh_pHPWH->WriteCSVRow(pF, (s1+s2).c_str(), csvOptions);
+				WStr s = strtprintf("%d,%d,%d,",
+					Top.tp_date.month, Top.tp_date.mday, Top.iHr+1);
+				s += csvGen.cg_Values(dumpUx);
+				wh_pHPWH->WriteCSVRow(pF, s.c_str(), nTCouples, hpwhOptions);
 #endif
 			}
 		}
@@ -3429,6 +3514,7 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 // returns RCOK on success
 //    else results unusable
 {
+#define MATCHOLD
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wg_GetDHWSYS();
@@ -3443,6 +3529,9 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 		{	float drawFlow = pWS->ws_whUse.total / (pWS->ws_wlCount * 60.f);	// draw, gpm
 			if (drawFlow > 0.f)
 			{	fDraw = drawFlow / (ps_fvf + drawFlow);
+#if defined( MATCHOLD)
+				fDraw = 0.f;
+#endif
 				ps_fvf += drawFlow;
 			}
 		}
