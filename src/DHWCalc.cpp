@@ -2374,17 +2374,19 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		  && Top.iSubhr == 3)
 			wh_pHPWH->setVerbosity( HPWH::VRB_emetic);
 #endif
-		double drawUse = tk.wtk_whUse*scaleWH*wh_mixDownF;
+		float mixDownFWas = wh_mixDownF;
+		double scaleX = scaleWH * wh_mixDownF;
+		double drawUse = tk.wtk_whUse*scaleX;
 
 		// pseudo-draw (gal) to represent e.g. central system branch losses
 		//  ?tInlet?
-		double drawLoss = tk.wtk_qLossNoRL / (waterRhoCp * max(1., wh_tHWOut - pWS->ws_tInlet));
+		double drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., wh_tHWOut - pWS->ws_tInlet));
 
 		double drawForTick = drawUse + drawLoss;
 		double tInlet = tk.wtk_tInletX;
 
 		// mix loop return into inlet
-		double drawRL = tk.wtk_volRL*scaleWH;  // wh_mixDownF?
+		double drawRL = tk.wtk_volRL*scaleX;
 		if (drawRL > 0.)
 		{	tInlet = (drawRL*tk.wtk_tRL + drawForTick*tInlet) / (drawRL + drawForTick);
 			drawForTick += drawRL;
@@ -2416,7 +2418,8 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			else
 				// mix mains water (not tInletX) to obtain ws_tUse
 				//   set wh_mixDownF for next tick
-				DHWMix( pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
+				DHWMix( pWS->ws_tUse, tOutF, tInlet, wh_mixDownF);
+
 			tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
 			nTickNZDraw++;		// this tick has draw
 			wh_stbyTicks = 0;	// reset standby duration
@@ -2473,7 +2476,8 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
 												UNTEMP,  5,
 			  "XBU",       HPWHxBU,				UNENERGY3,	5,
-			  "tUse",      pWS->ws_tUse,		UNTEMP,  5,	
+			  "tUse",      pWS->ws_tUse,		UNTEMP,  5,
+			  "qLoss",     KWH_TO_BTU( wh_pHPWH->getStandbyLosses()), UNENERGY3, 5,
 			  NULL
 			};
 
@@ -2549,20 +2553,26 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 #if defined( HPWH_QBAL)
 	// form energy balance = sum of heat flows into water, all kWh
 	double deltaHC = KJ_TO_KWH( wh_pHPWH->getTankHeatContent_kJ()) - qHCStart;
-	double qBal = qEnv								// HP energy extracted from surround
-		        - qLoss								// tank loss
-				+ wh_HPWHUse[ 0] + wh_HPWHUse[ 1]	// electricity in
-				- qHW								// hot water energy
-				- deltaHC;							// change in tank stored energy
-	if (fabs( qBal)/max( qHCStart, 1.) > .002)		// added qHCStart normalization, 12-18
+	double elecIn = wh_HPWHUse[0] + wh_HPWHUse[1];
+	double qBal = qEnv			// HP energy extracted from surround
+		        - qLoss			// tank loss
+				+ elecIn		// electricity in
+				- qHW			// hot water energy
+				- deltaHC;		// change in tank stored energy
+	double fBal = fabs(qBal) / max(qHCStart, 1.);
+	if (fBal > .002)		// added qHCStart normalization, 12-18
 	{	// energy balance error
 		static const int WHBALERRCOUNTMAX = 10;
 		wh_balErrCount++;
+#if 0
+		if (elecIn == 0.f)
+			printf("\nNot elec");
+#endif
 		if (wh_balErrCount < WHBALERRCOUNTMAX)
-			warn( "DHWHEATER '%s': HPWH energy balance error for %s (%1.6f kWh)",
+			warn( "DHWHEATER '%s': HPWH energy balance error for %s (%1.6f kWh  f=%1.6f)",
 				name,
 				Top.When( C_IVLCH_S),	// date, hr, subhr
-				qBal);   				// unbalance calc'd just above
+				qBal, fBal);			// unbalance calc'd just above
 		else if (wh_balErrCount == WHBALERRCOUNTMAX)
 				warn( "DHWHEATER '%s': Skipping further energy balance warning messages.",
 					name);
@@ -3315,7 +3325,8 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 
 	DHWSYS* pWS = wl_GetDHWSYS();
 
-	float tIn = IsSet( DHWLOOP_TIN1) ? wl_tIn1 : pWS->ws_tUse;
+	float tIn1 = IsSet( DHWLOOP_TIN1) ? wl_tIn1 : pWS->ws_tUse;
+	float tIn = tIn1;
 	DHWLOOPSEG* pWG;
 	RLUPC( WgR, pWG, pWG->ownTi == ss)
 	{	// note: segment chain relies on input order
@@ -3351,7 +3362,7 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	// return water conditions
 	float volHr = wl_flow * wl_runF * 60.;	// total flow for hour, gal
 	wl_tRL = volHr > 0.f		// return temp
-		? wl_tIn1 - wl_HRLLnet / (volHr*waterRhoCp)
+		? tIn1 - wl_HRLLnet / (volHr*waterRhoCp)	// not wl_tIn1! (see above)
 		: 0.f;
 
 	// energy and flow results: for wl_mult DHWLOOPs
