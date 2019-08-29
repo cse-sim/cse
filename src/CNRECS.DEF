@@ -3324,7 +3324,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_InitTicks( double whUseHr);"
-  *declare "RC ws_AddLossesToDraws();"
+  *declare "RC ws_AddLossesToDraws( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
 
@@ -3374,9 +3374,14 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;		// ditto DHWTANKs
   *r INT ws_wpCount;		// ditto DHWPUMPs
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
+  *r FLOAT ws_wlUA;			// DHWLOOP total UA, Btu/F
+  *r FLOAT ws_wlVol;		// DHWLOOP total volume (including pipe wall thickness), gal
+  *r FLOAT ws_wlLen;		// DHWLOOP total length, ft
+  *r FLOAT ws_wlExArea;		// DHWLOOP total exterior area (at insul surface), ft2
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults
 							//    note may be non-integer
+
   *r INT ws_wrCount;		// total child DHWHEATRECs
   *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
 							//    feed (cold) water to DHWHEATERs
@@ -3448,6 +3453,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
+  *declare "FILE* wh_pFCSV;"	// file for debugging CSV file
 
   *i FLOAT wh_mult;				// count of identical water heaters (default 1)
 								//   models as if repeated identical input
@@ -3498,7 +3504,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
   *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhr( const struct DHWTICK* ticksSh, double scale, double xLoss);"
+  *declare "RC wh_InstUEFDoSubhr( const struct DHWTICK* ticksSh, double scaleWH);"
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
@@ -3568,7 +3574,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scale, double qLossDraw, double qLossRL, double volRL);"
+  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scaleWH);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -3583,6 +3589,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *y *e INT wh_unMetHrs;	// HPHW: annual count of hrs having
 							//       any wh_unMetSh
   *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
+
 *END	// DHWHEATER
 //=============================================================================
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
@@ -3671,7 +3678,7 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
   *declare "RC wp_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "DHWSYS* wp_GetDHWSYS() const;"
-  *declare "RC wp_DoHour( int mult, float runF=1.f);"
+  *declare "float wp_DoHour( int mult, float runF=1.f);"
   
   *i SI wp_mult;				// count of identical DHW pumps (default 1)
 								//   models as if repeated identical input
@@ -3680,6 +3687,9 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
   *declare "MTR* wp_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
   
   *h FLOAT_GEZ wp_pwr;			// pump power, W
+  *h FRAC wp_liqHeatF;			// fraction of wp_pwr added to liquid stream
+								//   remainder is discarded
+								//   used only for DHWLOOPPUMP
 
   								// energy inputs for current hour, Btu
   *h *e FLOAT wp_inElec;		//    electricity (note not kWh)
@@ -3715,15 +3725,26 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 								//   loss makeup DHWLOOPPUMP electricity accumulated to end use dhwMFL
   *declare "MTR* wl_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
 
-  *h *e FLOAT wl_volRL; // current hour volume returned, gal
+						// derived values (all-segment totals)
+  *r FLOAT wl_UA;		//    UA, Btu/F
+  *r FLOAT wl_len;		//	  length, ft
+  *r FLOAT wl_exArea;	//	  exterior surface area (includes insulation thk), ft2
+  *r FLOAT wl_vol;		//    volume including pipe wall thickness (not insulation), gal
+
+  *h *e FLOAT wl_volRL; // current hour volume returned to water heater, gal
+						//    (reflects wl_mult)
+						//    reduced by loss makeup
+  *h *e FLOAT wl_qLiqLP; // heat added to liquid by DHWLOOPPUMP(s), Btu
+  *h *e FLOAT wl_HRLL;	// current hour loop seg pipe losses, Btu
+						//    (reflects wl_mult and reduction by wl_lossMakeupPwr)
+  *h *e FLOAT wl_HRLLnet; // wl_HRLL adjusted for pump by pump heat and
+						//   wl_lossMakeUp, Btu (reflects wl_mult)
+  *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, Btu
 						//    (reflects wl_mult)
   *h *e FLOAT wl_tRL;	// current hour average return temp, F
-						//    derived from flow and loss
-						//    *not* ps_tOut of last segment
-  *h *e FLOAT wl_HRLL;	// current hour loop seg pipe loss, Btu
-						//    (reflects wl_mult and reduction by wl_lossMakeupPwr)
-  *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, Btu
-						//    (reflects wl_mult)s
+						//    derived from flow, loss, and wl_qLiqLP
+						//    can be > wl_tIn1
+						//    may not be same as ps_tOut of last segment
   
 *END	// DWHLOOP
 //=============================================================================
@@ -3747,7 +3768,7 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*excon
 	*declare "float ps_CalcUA( float fUA=1.f);"
 	*declare "float ps_CalcTOut( float tIn, float flow) const;"
-	*declare "float ps_CalcVol();"
+	*declare "void ps_CalcGeom();"
 	*declare "float ps_GetOD( int bInsul) const;"
 
 	*s *noname *nest DBC ps_sbcO // (outside) surface boundary conditions
@@ -3762,7 +3783,8 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*i EXCNDCH ps_exCnd			// adjacent cond: adiabatic/ambient/specT/adjZn.
 	*h FLOAT ps_exT				// surround temperature, F
 
-	*r FLOAT ps_vol;			// pipe segment volume, gal
+	*r FLOAT ps_vol;			// pipe segment volume calc'd using OD, gal
+	*r FLOAT ps_exArea;			// pipe segment outside surface area (at insulation surface), ft2
 	*r FLOAT ps_UA;				// fluid-to-surround loss, Btuh/F-hr
 	*r FLOAT_GZ ps_fRhoCpX;		// fluid volumetric heat flow factor, Btuh/gpm-F
 								//    initialized for water, code otherwise general

@@ -30,9 +30,9 @@ Loop flow rate (when operating).
 
 Inlet temperature of first DHWLOOPSEG.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F          $>$ 0             130           No             hourly
+  **Units**   **Legal Range**   **Default**     **Required**   **Variability**
+  ----------- ----------------- --------------- -------------- -----------------
+  ^o^F          $>$ 0             DHWSYS wsTUse           No             hourly
 
 **wlRunF=*float***
 

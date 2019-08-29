@@ -1829,10 +1829,11 @@ static CULT dhwLoopPumpT[] = //------ DHWLOOPPUMP cmd RAT Entry table, used from
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wlpStarCkf),
 CULT( "wlpDHWLOOP",  DAT,   DHWLOOPPUMP_OWNTI, NO_INP|RDFLIN,0,0,  TYREF, &WLiB,  0,      N,   N),
-CULT( "wlpMult",	 DAT,	DHWLOOPPUMP_MULT,	   0,     0, VEOI,   TYSI,    0,      1,      N, N),
-CULT( "wlpElecMtr",  DAT,   DHWLOOPPUMP_ELECMTRI,  0,     0, VEOI,	 TYREF,   &MtriB, N,      N, N),
-CULT( "wlpPwr",		 DAT,	DHWLOOPPUMP_PWR,	   0,     0, VHRLY,  TYFL,    0,      0.f,    N, N),
-CULT( "endDHWLOOPPUMP", ENDER, 0,              0,     0, 0,        0,       0,   0.f,    N,   N),
+CULT( "wlpMult",	 DAT,	DHWLOOPPUMP_MULT,	  0,     0, VEOI,  TYSI,    0,      1,      N, N),
+CULT( "wlpElecMtr",  DAT,   DHWLOOPPUMP_ELECMTRI, 0,     0, VEOI,  TYREF,   &MtriB, N,      N, N),
+CULT( "wlpPwr",		 DAT,	DHWLOOPPUMP_PWR,	  0,     0, VHRLY, TYFL,    0,      0.f,    N, N),
+CULT( "wlpLiqHeatF",  DAT,	DHWPUMP_LIQHEATF,     0,     0, VHRLY, TYFL,    0,      1.f,    N, N),
+CULT( "endDHWLOOPPUMP", ENDER, 0,                 0,     0, 0,     0,       0,   0.f,    N,   N),
 CULT()
 };	// dhwLoopPumpT
 
@@ -1883,7 +1884,7 @@ CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYFL,  0,      1.f,	N
 CULT( "wsTInlet",	 DAT,   DHWSYS_TINLET,	 0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "wsUse",		 DAT,   DHWSYS_HWUSE,	 0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
 CULT( "wsTUse",		 DAT,   DHWSYS_TUSE,	 0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
-CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
+CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      N,      N, N),
 CULT( "wsWHhwMtr",   DAT,   DHWSYS_WHHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsFXhwMtr",   DAT,   DHWSYS_FXHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
