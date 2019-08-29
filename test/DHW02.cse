@@ -112,7 +112,7 @@ DHWSYS "DS1"
 
 	DHWLOOPSEG "Seg6"  wgTy=Return wgLength = 18 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
 
-	DHWLOOPPUMP "LP1"  wlpPwr = 746 * 0.5 / 0.9
+	DHWLOOPPUMP "LP1"  wlpPwr = 746 * 0.5 / 0.9  wlpLiqHeatF = 0.6
 
 
 endDHWSYS
