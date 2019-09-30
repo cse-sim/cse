@@ -475,11 +475,7 @@ void ZNR::zn_AccumAirFlow(		// accumulate zone bal values due to air flow
 	double td /*=0.*/)	// additional temp rise (added to as_tdb), F
 						//   e.g. fan heat
 {
-#if 1	// 4-14-2014
 	if (mDot <= 0.f)
-#else
-x	if (mDot < 0.)
-#endif
 		return;		// insurance
 
 #if defined( AIRNET_COMPARE)
@@ -705,14 +701,22 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	AIRSTATE asIn( Top.tDbOSh, Top.wOSh);
 	iz_air2.as_HX( asIn, ad.ad_mdotP,	// supply air (=ambient)
 				   asX,  ad.ad_mdotX,	// exhaust air (=z1 or some other zone)
-				   iz_ASEF, iz_LEF);
+				   iz_SRE > 0.f ? iz_SRE : iz_ASEF, 
+				   iz_LEF);
 	iz_rho2 = iz_air2.as_RhoMoist();
 
 	// HERV always has fan
 	double c = ad.ad_mdotP * Top.tp_airSH * 3600.;		// fan flow in heat cap units (Btuh/F)
-	iz_fan.fn_pute( c, iz_air2.as_tdb);
-	ad.ad_tdFan = 0.f;			// fan heat is included in iz_ASEF
-	ad.ad_pFan  = iz_fan.p;		// fan power (for meter), Btuh
+	float tdFan = iz_fan.fn_pute(c, iz_air2.as_tdb);
+	ad.ad_pFan = iz_fan.p;		// fan power (for meter), Btuh
+	if (iz_SRE > 0.f)
+	{
+		float tdX = (iz_ASEF - iz_SRE) * 42.f;
+ 		ad.ad_tdFan = tdX;
+
+	}
+	else
+		ad.ad_tdFan = iz_RVFanHeatF * tdFan;
 
 	// HERV non-vent / vent are the same
 	iz_ad[ 1].ad_DupHERV( ad);
@@ -836,7 +840,8 @@ RC IZXRAT::iz_Setup(			// set up run record
 	}
 	else
 		rc |= disallowN( "when izNVType is not AirNetHERV",
-				IZXRAT_ASEF, IZXRAT_LEF, IZXRAT_VFEXHRAT, IZXRAT_EATR, 0);
+				IZXRAT_ASEF, IZXRAT_LEF, IZXRAT_VFEXHRAT, IZXRAT_EATR,
+				IZXRAT_RVFANHEATF, 0);
 
 	if (!zp2)
 		iz_zi2 = -1;	// insurance
@@ -1268,7 +1273,7 @@ RC IZXRAT::iz_ZoneXfers(		// calc transfers due to airnet mass flow
 	if (iz_IsHERV())
 	{	// flow is always into zone 1
 		// iz_air2 = zone entering condition
-		zp1->zn_AccumAirFlow( iV, ad.ad_mdotP, iz_air2, 0.f);
+		zp1->zn_AccumAirFlow( iV, ad.ad_mdotP, iz_air2, ad.ad_tdFan);
 	}
 	else if (!iz_IsSysOrDuct())	// system and duct heat gain handled by zone model
 	{	if (ad.ad_mdotP > 0.)

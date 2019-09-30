@@ -2707,7 +2707,10 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 						//      (*net* supply flow for _ANHERV)
     *s AFLOW iz_vfMax	//    max vent flow rate, cfm (for fixed flow types)
     *s FRAC iz_ASEF		// apparent sensible effectiveness (for _ANHERV)
-    *s FLOAT iz_LEF		// latent effectiveness (for _ANHERV)
+    *s FRAC iz_LEF		// latent effectiveness (for _ANHERV)
+	*s FRAC iz_SRE		// sensible effectiveness (core only) (for _ANHERV)
+	*s FRAC iz_RVFanHeatF	// fraction of HERV fan power that heats supply air (experimental)
+							//   default 0
     *s FLOAT iz_vfExhRat // exhaust ratio (for _ANHERV) = (vfGross exhaust)/(vfGross supply)
 						//  default = 1 (balanced)
 	*s FRAC iz_EATR		// exhaust air transfer ratio (for _ANHERV)
