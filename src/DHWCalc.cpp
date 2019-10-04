@@ -1175,7 +1175,7 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 	// compared to ws_tRL??
 #endif
 
-
+	// loop return conditions
 	for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
 	{	DHWTICK& tk = ticksSh[iTk];
 		tk.wtk_volRL = volRL;
@@ -1779,8 +1779,21 @@ RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	int options/*=0*/)
 {
 	RC rc = record::RunDup( pSrc, options);
-	DHWSYS* pWS = wh_GetDHWSYS();
-	pWS->ws_whCount += wh_mult;		// total # of water heaters in DHWSYS
+	int whfcn = wh_GetFunction();
+	whfcn = 0;
+	if (whfcn == whfcnPRIMARY)
+	{
+		DHWSYS* pWS = wh_GetDHWSYS();
+		pWS->ws_whCount += wh_mult;		// total # of water heaters in DHWSYS
+	}
+	else if (whfcn == whfcnLOOPHEATER)
+	{
+		DHWLOOP* pWL = wh_GetDHWLOOP();
+		pWL->wl_wlhCount += wh_mult;
+	}
+	else
+		orMsg(PERR, "Invalid wh_GetFunction() return");
+
 	return rc;
 }	// DHWHEATER::RunDup
 //----------------------------------------------------------------------------
@@ -1845,9 +1858,37 @@ RC DHWHEATER::wh_Init()		// init for run
 //----------------------------------------------------------------------------
 DHWSYS* DHWHEATER::wh_GetDHWSYS() const
 {
-	DHWSYS* pWS = (b == &WhR ? WsR : WSiB).GetAtSafe( ownTi);
+	DHWSYS* pWS = NULL;
+	if (b == &WhR)
+		pWS = WsR.GetAtSafe(ownTi);
+	else if (b == &WHiB)
+		pWS = WSiB.GetAtSafe(ownTi);
+	else
+	{	DHWLOOP* pWL = wh_GetDHWLOOP();
+		if (pWL)
+			pWS = pWL->wl_GetDHWSYS();
+	}
 	return pWS;
 }		// DHWHEATER::wh_GetDHWSYS
+//----------------------------------------------------------------------------
+DHWLOOP* DHWHEATER::wh_GetDHWLOOP() const
+// returns parent DHWLOOP iff this DHWHEATER is a loop heater
+{
+	DHWLOOP* pWL =
+		  b == &WlhR  ? WlR.GetAtSafe(ownTi)	// run record
+		: b == &WLHiB ? WLiB.GetAtSafe(ownTi)	// input record
+		:               NULL;
+	return pWL;
+}		// DHWHEATER::wh_GetDHWLOOP
+//----------------------------------------------------------------------------
+int DHWHEATER::wh_GetFunction() const
+{
+	int whfcn =
+		  b == &WhR || b == &WHiB ? whfcnPRIMARY
+		: b != NULL               ? whfcnLOOPHEATER
+		:                           whfcnUNKNOWN;
+	return whfcn;
+}		// DHWHEATER::wh_GetFunction
 //----------------------------------------------------------------------------
 int DHWHEATER::wh_UsesDerivedLDEF() const
 // returns nz iff wh_LDEF needs to be derived via PreRun
@@ -1924,7 +1965,7 @@ RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
 	{	// this DHWHEATER uses subhour model
 		//   cannot simply loop subhour model at this point
 		//   Must include calcs at subhour level re e.g. zone coupling
-		//   See wh_DoSubhr()
+		//   See ws_DoSubhr()
 		if (wh_IsHPWHModel())
 			wh_HPWHDoHour();		// hourly portions of HPWH calc
 		else if (wh_IsInstUEFModel())
@@ -3304,6 +3345,14 @@ RC DHWLOOP::wl_Init()		// DHWLOOP init for run
 		wl_len += pWG->ps_len;
 		wl_exArea += pWG->ps_exArea;
 	}
+
+	// loop heater(s)
+	wl_wlhCount = 0;
+	DHWHEATER* pLH;
+	RLUPC(WlhR, pLH, pLH->ownTi == ss)
+	{	wl_wlhCount++;
+		pLH->wh_Init();
+	}
 	return rc;
 }		// DHWLOOP::wl_Init
 //----------------------------------------------------------------------------
@@ -3350,13 +3399,23 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	wl_HRLLnet = wl_HRLL - wl_qLiqLP;	// cancel loop losses with pump power
 										//  NOTE: wl_HRLLnet < 0 is possible
 
-	float fMakeUp = 0.f;	// fraction of loss handled by wl_lossMakeup
-	if (wl_lossMakeupPwr > 0.f && wl_HRLLnet > 0.f)
-	{	float HRLLMakeUp = min( wl_HRLLnet, wl_lossMakeupPwr * BtuperWh);
-		fMakeUp = HRLLMakeUp / wl_HRLLnet;
-		wl_HRLLnet -= HRLLMakeUp;
-		if (wl_pMtrElec)
-			wl_pMtrElec->H.dhwMFL += HRLLMakeUp * mult / wl_lossMakeupEff;
+	float fMakeUp = 0.f;	// fraction of loss handled by loop heater
+	if (wl_HRLLnet > 0.f)
+	{	// meter hookup
+		DHWHEATER* pLH;
+		RLUPC(WlhR, pLH, pLH->ownTi == ss)
+		{
+			printf("\nHeater!");
+
+		}
+		if (wl_lossMakeupPwr > 0.f)
+		{
+			float HRLLMakeUp = min(wl_HRLLnet, wl_lossMakeupPwr * BtuperWh);
+			fMakeUp = HRLLMakeUp / wl_HRLLnet;
+			wl_HRLLnet -= HRLLMakeUp;
+			if (wl_pMtrElec)
+				wl_pMtrElec->H.dhwMFL += HRLLMakeUp * mult / wl_lossMakeupEff;
+		}
 	}
 
 	// return water conditions
@@ -3369,8 +3428,8 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	wl_HRLL  *= wl_mult;
 	wl_HRLLnet *= wl_mult;
 	wl_HRBL  *= wl_mult;
-	wl_volRL = (1.f - fMakeUp) * volHr * wl_mult;	// flow returning to DHWHEATER(s)
-													//   makeup heat fraction skips heater
+	wl_volRL = (1.f - fMakeUp) * volHr * wl_mult;	// flow returning to primary DHWHEATER(s)
+													//   makeup heat fraction skips primary
 	return rc;
 }		// DHWLOOP::wl_DoHour
 //=============================================================================

@@ -127,6 +127,7 @@ extern anc<DHWLOOP> WlR;		// DHW loop
 extern anc<DHWLOOPSEG> WgR;		// DHW loop segment
 extern anc<DHWLOOPBRANCH> WbR;	// DHW loop branch
 extern anc<DHWLOOPPUMP> WlpR;	// DHW loop pump
+extern anc<DHWHEATER> WlhR;		// DHW loop heater
 extern anc<DHWDAYUSE> WduR;		// DHW day use
 extern anc<DHWUSE> WuR;			// DHW use (single draw)
 

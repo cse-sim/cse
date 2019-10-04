@@ -58,6 +58,7 @@ extern anc<DHWLOOP> WLiB;		// DHW loop input records
 extern anc<DHWLOOPSEG> WGiB;	// DHW loop segement input records
 extern anc<DHWLOOPBRANCH> WBiB;	// DHW loop branch input records
 extern anc<DHWLOOPPUMP> WLPiB;	// DHW loop pump input records
+extern anc<DHWHEATER> WLHiB;	// DHW loop heater input records
 extern anc<DHWDAYUSE> WDUiB;	// DHW daily use input records
 extern anc<DHWUSE> WUiB;		// DHW use input records
 

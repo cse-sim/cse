@@ -81,6 +81,7 @@ makAncDHWLOOP( WLiB);		// DHW loop
 makAncDHWLOOPSEG( WGiB);	// DHW loop segment
 makAncDHWLOOPBRANCH( WBiB);	// DHW loop branch
 makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
+makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
@@ -144,6 +145,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WGiB.free();
 	WBiB.free();
 	WLPiB.free();
+	WLHiB.free();
 	PViB.free();
 	BTiB.free();
 	SXiB.free();
@@ -1859,7 +1861,8 @@ CULT( "wlLossMakeupPwr",DAT,DHWLOOP_LOSSMAKEUPPWR, 0,   0, VHRLY,  TYFL,  0,    
 CULT( "wlLossMakeupEff",DAT,DHWLOOP_LOSSMAKEUPEFF, 0,   0, VHRLY,  TYFL,  0,      1.f,    N,   N),
 CULT( "wlElecMtr",   DAT,   DHWLOOP_ELECMTRI,  0,       0, VEOI,   TYREF,   &MtriB, N,      N, N),
 CULT( "dhwloopSeg",  RATE,  0,                 0,       0, 0,      0,     &WGiB,  N,      dhwLoopSegT, N),
-CULT( "dhwloopPump", RATE,0,                   0,       0, 0,      0,     &WLPiB, N,      dhwLoopPumpT, N),
+CULT( "dhwloopPump", RATE,  0,                 0,       0, 0,      0,     &WLPiB, N,      dhwLoopPumpT, N),
+CULT( "dhwloopHeater", RATE,0,                 0,       0, 0,      0,     &WLHiB, N,      dhwHeaterT, N),
 CULT( "endDHWLOOP",  ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwLoopT
