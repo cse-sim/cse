@@ -20,9 +20,10 @@ install:
   - initexmf --update-fndb
   - initexmf --mkmaps
   - initexmf --mklinks --force
+  - mpm --update-db
+  - mpm --install=l3backend
   - mpm --find-updates
   - mpm --update
-  - mpm --update-db
   - ps: cinst -y pandoc --version 1.17.2
   - cmd:  refreshenv
 
