@@ -726,6 +726,10 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			if (ws_fxList)
 				for (int iFx = 0; iFx < ws_ShowerCount(); iFx++)
 					ws_fxList[iFx].fx_hitCount = 0;
+			// intialize run totals for all child water heaters
+			DHWHEATER* pWH;
+			RLUPC(WhR, pWH, pWH->ownTi == ss)
+				pWH->wh_InitTotals();
 		}
 		
 		if (IsSet( DHWSYS_DAYUSENAME))
@@ -1426,7 +1430,7 @@ static const double minPerDay = double( 24*60);
 	if (wu_dur == 0. || wu_flow*mult == 0.)
 		return rc;		// nothing to do
 
-	if (pWS->ws_loadShareCount[ 0] > 1)
+ 	if (pWS->ws_loadShareCount[ 0] > 1)
 	{	// if load is being shared by more than 1 DHWSYS
 		//   allocate by eventID to rotate DHWUSEs with suitable fixtures
 		//   starting DHWSYS depends on jDay
@@ -1780,7 +1784,6 @@ RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 {
 	RC rc = record::RunDup( pSrc, options);
 	int whfcn = wh_GetFunction();
-	whfcn = 0;
 	if (whfcn == whfcnPRIMARY)
 	{
 		DHWSYS* pWS = wh_GetDHWSYS();
@@ -1816,12 +1819,11 @@ RC DHWHEATER::wh_Init()		// init for run
 
 	wh_pFCSV = NULL;
 
-	wh_totHARL = 0.;
-	wh_hrCount = 0;
-	wh_totOut = 0.;
-	wh_unMetHrs = 0;
+	// one-time inits
 	wh_balErrCount = 0;
-	wh_stbyTicks = 0;
+
+	// per run totals (also called on 1st main sim day)
+	wh_InitTotals();
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
@@ -1855,6 +1857,19 @@ RC DHWHEATER::wh_Init()		// init for run
 
 	return rc;
 }		// DHWHEATER::wh_Init
+//----------------------------------------------------------------------------
+void DHWHEATER::wh_InitTotals()
+// start-of-run initialization totals, error counts, ...
+// called at beg of warmup and run
+{
+	wh_totHARL = 0.;
+	wh_hrCount = 0;
+	wh_totOut = 0.;
+	wh_unMetHrs = 0;
+	wh_stbyTicks = 0;
+	wh_mixDownF = 1.f;
+
+}		// DHWHEATER::wh_InitTotals
 //----------------------------------------------------------------------------
 DHWSYS* DHWHEATER::wh_GetDHWSYS() const
 {
@@ -1959,7 +1974,6 @@ RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
 	wh_inElec = 0.f;
 	wh_inElecBU = 0.f;
 	wh_inFuel = 0.f;
-	wh_mixDownF = 1.f;
 
 	if (wh_IsSubhrModel())
 	{	// this DHWHEATER uses subhour model
@@ -2192,6 +2206,13 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (wh_pHPWH->isSetpointFixed() && pWS->IsSet(DHWSYS_TSETPOINT))
 			pWS->oInfo("wsTSetpoint ignored for fixed-setpoint HPWH DHWHEATER '%s'.",
 				name);
+
+		// inlet fractional heights
+		//  set iff user input given -- HPWH may have non-0 defaults
+		if (IsSet( DHWHEATER_INHTSUPPLY))
+			wh_pHPWH->setInletByFraction(wh_inHtSupply);
+		if (IsSet( DHWHEATER_INHTLOOPRET))
+			wh_pHPWH->setInlet2ByFraction(wh_inHtLoopRet);
 	}
 
 	if (!rc)
@@ -2357,10 +2378,11 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 	double qHW = 0.;		// total hot water heating, kWh
 							//   always >= 0
-							//   includes loopFlow heating
+							//   includes loop heating
 							//   does not include wh_HPWHxBU
 
 	double tHWOutF = 0.;	// accum re average hot water outlet temp, F
+	// wh_mixDownF initialized in wh_InitTotals(); value retained hour-to-hour
 
 	wh_HPWHUse[ 0] = wh_HPWHUse[ 1] = 0.;	// energy use totals, kWh
 	wh_HPWHxBU = 0.;	// add'l resistance backup this subhour, Btu
@@ -2415,7 +2437,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		  && Top.iSubhr == 3)
 			wh_pHPWH->setVerbosity( HPWH::VRB_emetic);
 #endif
-		float mixDownFWas = wh_mixDownF;
+		// float mixDownFWas = wh_mixDownF;
 		double scaleX = scaleWH * wh_mixDownF;
 		double drawUse = tk.wtk_whUse*scaleX;
 
@@ -2423,23 +2445,34 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		//  ?tInlet?
 		double drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., wh_tHWOut - pWS->ws_tInlet));
 
-		double drawForTick = drawUse + drawLoss;
-		double tInlet = tk.wtk_tInletX;
-
-		// mix loop return into inlet
 		double drawRL = tk.wtk_volRL*scaleX;
-		if (drawRL > 0.)
-		{	tInlet = (drawRL*tk.wtk_tRL + drawForTick*tInlet) / (drawRL + drawForTick);
-			drawForTick += drawRL;
-		}
+		double drawForTick = drawUse + drawLoss + drawRL;
+		double tInlet = tk.wtk_tInletX;		// cold-water inlet temp = mains + DWHR
+		double tRL = tk.wtk_tRL;			// loop return temp
+
+#define MIX 0
+#if MIX == 1
+		// mixed all to inlet 1
+		tInlet = (drawRL*tRL + (drawForTick - drawRL)* tInlet) / drawForTick;
+		drawRL = 0.;
+		tRL = 0.;
+#elif MIX==2
+		// mixed all to inlet 2
+		tRL = (drawRL*tRL + (drawForTick - drawRL)* tInlet) / drawForTick;
+		drawRL = drawForTick;
+		tInlet = 0.;
+#endif
+
 		wh_pHPWH->setInletT( DegFtoC( tInlet));		// mixed inlet temp
 
 		int hpwhRet = wh_pHPWH->runOneStep(
-						GAL_TO_L( drawForTick),	// draw volume, L
-						DegFtoC( wh_tEx),		// ambient T (=tank surround), C
-						DegFtoC( wh_ashpTSrc),	// heat source T, C
-												//   aka HPWH "external temp"
-						HPWH::DR_ALLOW);		// DRstatus: no demand response modeled
+			GAL_TO_L(drawForTick),	// draw volume, L
+			DegFtoC(wh_tEx),		// ambient T (=tank surround), C
+			DegFtoC(wh_ashpTSrc),	// heat source T, C
+									//   aka HPWH "external temp"
+			HPWH::DR_ALLOW,			// DRstatus: no demand response modeled
+			GAL_TO_L( drawRL), DegFtoC(tRL));
+
 		if (hpwhRet)	// 0 means success
 			rc |= RCBAD;
 
@@ -2459,16 +2492,17 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			else
 				// mix mains water (not tInletX) to obtain ws_tUse
 				//   set wh_mixDownF for next tick
-				DHWMix( pWS->ws_tUse, tOutF, tInlet, wh_mixDownF);
+				DHWMix( pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
 
 			tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
 			nTickNZDraw++;		// this tick has draw
 			wh_stbyTicks = 0;	// reset standby duration
-			qHW += KJ_TO_KWH(
-				     GAL_TO_L( drawForTick)
-				   * HPWH::DENSITYWATER_kgperL
-				   * HPWH::CPWATER_kJperkgC
-				   * (tOut - DegFtoC( tInlet)));
+			qHW += KJ_TO_KWH(		// heat added to water, kWh 
+				(GAL_TO_L(drawForTick)*tOut
+					- GAL_TO_L(drawForTick-drawRL)*DegFtoC(tInlet)
+					- GAL_TO_L(drawRL)*DegFtoC(tRL))
+				* HPWH::DENSITYWATER_kgperL
+				* HPWH::CPWATER_kJperkgC);
 		}
 		else
 			wh_stbyTicks++;		// no draw: accum duration
@@ -2509,9 +2543,10 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			  "vTot",	   drawForTick,			UNLVOLUME2, 5,
 			  "tMains",    pWS->ws_tInlet,		UNTEMP, 5,
 			  "tDWHR",     pWS->ws_tInletX,		UNTEMP, 5,
-			  "tRL",       drawRL > 0. ? ticksSh[iTk].wtk_tRL : CSVItem::ci_UNSET,
+			  "tRL",       drawRL > 0. ? tRL : CSVItem::ci_UNSET,
 												UNTEMP,	5,
-			  "tIn",       tInlet,				UNTEMP,	5,
+			  "tIn",       drawRL< drawForTick ? tInlet : CSVItem::ci_UNSET,
+												UNTEMP,	5,
 			  "tSP",	   DegCtoF( wh_pHPWH->getSetpoint()),
 												UNTEMP,	5,
 			  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
@@ -2592,31 +2627,33 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	}
 
 #if defined( HPWH_QBAL)
-	// form energy balance = sum of heat flows into water, all kWh
-	double deltaHC = KJ_TO_KWH( wh_pHPWH->getTankHeatContent_kJ()) - qHCStart;
-	double elecIn = wh_HPWHUse[0] + wh_HPWHUse[1];
-	double qBal = qEnv			// HP energy extracted from surround
-		        - qLoss			// tank loss
-				+ elecIn		// electricity in
-				- qHW			// hot water energy
-				- deltaHC;		// change in tank stored energy
-	double fBal = fabs(qBal) / max(qHCStart, 1.);
-	if (fBal > .002)		// added qHCStart normalization, 12-18
-	{	// energy balance error
-		static const int WHBALERRCOUNTMAX = 10;
-		wh_balErrCount++;
+	if (!Top.isWarmup && !Top.tp_autoSizing)
+	{	// form energy balance = sum of heat flows into water, all kWh
+		double deltaHC = KJ_TO_KWH( wh_pHPWH->getTankHeatContent_kJ()) - qHCStart;
+		double elecIn = wh_HPWHUse[0] + wh_HPWHUse[1];
+		double qBal = qEnv			// HP energy extracted from surround
+					- qLoss			// tank loss
+					+ elecIn		// electricity in
+					- qHW			// hot water energy
+					- deltaHC;		// change in tank stored energy
+		double fBal = fabs(qBal) / max(qHCStart, 1.);
+		if (fBal > .002)		// added qHCStart normalization, 12-18
+		{	// energy balance error
+			static const int WHBALERRCOUNTMAX = 10;
+			wh_balErrCount++;
 #if 0
-		if (elecIn == 0.f)
-			printf("\nNot elec");
+			if (elecIn == 0.f)
+				printf("\nNot elec");
 #endif
-		if (wh_balErrCount < WHBALERRCOUNTMAX)
-			warn( "DHWHEATER '%s': HPWH energy balance error for %s (%1.6f kWh  f=%1.6f)",
-				name,
-				Top.When( C_IVLCH_S),	// date, hr, subhr
-				qBal, fBal);			// unbalance calc'd just above
-		else if (wh_balErrCount == WHBALERRCOUNTMAX)
-				warn( "DHWHEATER '%s': Skipping further energy balance warning messages.",
+			if (wh_balErrCount < WHBALERRCOUNTMAX)
+				warn("DHWHEATER '%s': HPWH energy balance error for %s (%1.6f kWh  f=%1.6f)",
+					name,
+					Top.When(C_IVLCH_S),	// date, hr, subhr
+					qBal, fBal);			// unbalance calc'd just above
+			else if (wh_balErrCount == WHBALERRCOUNTMAX)
+				warn("DHWHEATER '%s': Skipping further energy balance warning messages.",
 					name);
+		}
 	}
 #endif
 

@@ -3440,6 +3440,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
+  *declare "void wh_InitTotals();"
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const;"
   *declare "DHWLOOP* wh_GetDHWLOOP() const;"
@@ -3499,6 +3500,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_UAMult;		// storage tank UA multiplier, default=1
 								//    applied to implicit tank UA re e.g. tank blanket
 								//    used only re HPWH ASHPX and ResistanceX
+  *i FRAC wh_inHtSupply;		// fractional tank height of supply inlet (0=bottom, 1=top)
+								//    default 0, HPWH models only
+  *i FRAC wh_inHtLoopRet;		// fractional tank height of loop return inlet(s) (0=bottom, 1=top)
+								//    default 0, HPWH models only
   *i FLOAT_GZ wh_EF;			// rated energy factor
   *i FLOAT_GZ wh_LDEF;			// load-dependent energy factor
   *i FLOAT_GZ wh_UEF;			// rated uniform energy factor
@@ -3530,9 +3535,15 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   draws are reduced to balance load at ws_tUse.
   *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
 								//   re startup (cyclic) loss model
-  *s DBL wh_loadCFwd;
-  *i DBL wh_loadCFwdMax;
-  *i FLOAT_GEZ wh_loadCFwdF;
+
+  *i FLOAT_GEZ wh_loadCFwdF;	// load carry-forward allowed (user input frac of capacity)
+								// = approx # of hours DHWHEATER is allowed to meet
+								//       load that is unmet on 1 min basis
+								// default = 1; only for C_WHTYPECH_INSTUEF
+  *i DBL wh_loadCFwdMax;		// max load carry-forward energy (from wh_loadCFwdF), Btu
+								//   any excess load met via wh_HPWHxBU
+  *s DBL wh_loadCFwd;			// current load carry forward, Btu
+								//   see wh_InstUEFDoSubhr()
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
   *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)

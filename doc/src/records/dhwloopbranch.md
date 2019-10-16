@@ -2,7 +2,9 @@
 
 DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceeding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
 
-wbNameOptional name of segment; give after the word “DHWLOOPBRANCH” if desired.
+**wbName**
+
+Optional name of segment; give after the word “DHWLOOPBRANCH” if desired.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------

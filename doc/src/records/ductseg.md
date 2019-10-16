@@ -113,11 +113,10 @@ Air dry-bulb temperature surrounding duct segment. <!-- TODO: what is humidity? 
   ----------- ----------------- ------------- ------------------------------------ -----------------
   ^o^F        *unrestricted*    *none*        Required if *sfExCnd* = SPECIFIEDT   hourly
 
-Duct insulation is modeled as a pure conductance (no mass).
 
 **dsInsulR=*float***
 
-Insulation thermal resistance *not including*surface conductances. dsInsulR and dsInsulMat are used to calculate insulation thickness (see below).
+Insulation thermal resistance *not including* surface conductances. dsInsulR and dsInsulMat are used to calculate insulation thickness (see below).  Duct insulation is modeled as a pure conductance (no mass).
 
   **Units**          **Legal Range**   **Default**   **Required**   **Variability**
   ------------------ ----------------- ------------- -------------- -----------------
@@ -125,7 +124,7 @@ Insulation thermal resistance *not including*surface conductances. dsInsulR and 
 
 **dsInsulMat=*matName***
 
-Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 ^o^F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature.
+Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 ^o^F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature.  As noted with dsInsulR, duct insulation is modeled as pure conductance -- MATERIAL matDens and matSpHt are ignored.
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------
