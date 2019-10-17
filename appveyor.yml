@@ -23,6 +23,7 @@ install:
   - mpm --update-db
   - mpm --install=l3backend
   - mpm --install=fancyhdr
+  - mpm --install=url
   - mpm --find-updates
   - mpm --update
   - ps: cinst -y pandoc --version 1.17.2
