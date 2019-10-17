@@ -1062,7 +1062,6 @@ void DHWSYS::ws_InitTicks(			// initialize tick data for hour
 	ws_iTkNDWHR = -1;
 }		// DHWSYS::ws_InitTicks
 //-----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs)
 {
 	RC rc = RCOK;
@@ -1201,7 +1200,7 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 
 		rc |= ws_AddLossesToDraws( ticksSh);
 
-		double scaleWH = 1. / ws_whCount;					// allocate per WH
+		double scaleWH = 1. / ws_whCount;		// allocate per WH
 
 		DHWHEATER* pWH;
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -1217,6 +1216,17 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 			// else missing case
 			if (Top.isEndHour)
 				pWH->wh_unMetHrs += pWH->wh_unMetSh > 0;
+		}
+		// swing heaters
+		DHWLOOP* pWL;
+		if (ws_wlCount > 0) RLUPC(WlR, pWL, pWL->ownTi == ss)
+		{	if (pWL->wl_wlhCount > 0) RLUPC(WlhR, pWH, pWH->ownTi == pWL->ss)
+			{	if (pWH->wh_IsHPWHModel())
+					rc |= pWH->wh_HPWHDoSubhr(
+						ticksSh,		// draws etc. by tick
+						scaleWH);		// draw scale factor (allocates draw if ws_whCount > 1)
+
+			}
 		}
 	}
 	return rc;
@@ -2350,18 +2360,12 @@ WStr CSVGen::cg_Values(int iUx)
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	const DHWTICK* ticksSh,		// tick info for subhour (draw, cold water temp, )
-	double scaleWH)		// draw scale factor
+	double scaleWH,		// draw scale factor
 						//   re DHWSYSs with >1 DHWHEATER
 						//   *not* including wh_mixDownF;
-
-	// double qLossDraw)	// additional losses for DHWSYS, Btu/WH-tick
-						//   modeled as pseudo-draw
-						//   note: scale applied by caller
-#if 0
-	double qLossRL,		// recirc loop loss, Btu/WH-tick
-	double volRL)		// recirc loop flow gal/WH-tick
-						//   modeled as flow with return to inlet
-#endif
+	double fToSwing /*=0.*/,		// fraction of output volume that goes
+									//    to swing heater
+	DHWTICK* ticksToSwing /*=NULL*/)// tick info to be passed to swing heater
 // calls HPWH tp_nSubhrTicks times, totals results
 // returns RCOK iff success
 {
@@ -2478,25 +2482,36 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 		qEnv += wh_pHPWH->getEnergyRemovedFromEnvironment();
 		qLoss += wh_pHPWH->getStandbyLosses();
-		double tOut = wh_pHPWH->getOutletTemp();	// output temp, C
 		float HPWHxBU = 0.f;		// add'l resistance backup, this tick, Btu
-		if (tOut)
-		{	double tOutF = DegCtoF( tOut);	// output temp, F
-			if (tOutF < pWS->ws_tUse)
-			{	// load not met, add additional (unlimited) resistance heat
-				wh_mixDownF = 1.f;
-				HPWHxBU = waterRhoCp * drawForTick * (pWS->ws_tUse - tOutF);
-				wh_HPWHxBU += HPWHxBU;
-				tOutF = pWS->ws_tUse;
+		double tOut = wh_pHPWH->getOutletTemp();	// output temp, C
+		if (tOut < .01)
+			wh_stbyTicks++;		// no draw: accum duration
+								//   (info only)
+		else
+		{	nTickNZDraw++;		// this tick has draw
+			wh_stbyTicks = 0;	// reset standby duration
+			double tOutF = DegCtoF( tOut);	// output temp, F
+			if (fToSwing < 1.)
+			{
+				if (tOutF < pWS->ws_tUse)
+				{	// load not met, add additional (unlimited) resistance heat
+					wh_mixDownF = 1.f;
+					HPWHxBU = waterRhoCp * drawForTick * (pWS->ws_tUse - tOutF);
+					wh_HPWHxBU += HPWHxBU;
+					tOutF = pWS->ws_tUse;
+				}
+				else
+					// mix mains water (not tInletX) to obtain ws_tUse
+					//   set wh_mixDownF for next tick
+					DHWMix(pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
 			}
-			else
-				// mix mains water (not tInletX) to obtain ws_tUse
-				//   set wh_mixDownF for next tick
-				DHWMix( pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
+			if (fToSwing > 0.)
+			{	// send load onward
+
+			}
 
 			tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
-			nTickNZDraw++;		// this tick has draw
-			wh_stbyTicks = 0;	// reset standby duration
+
 			qHW += KJ_TO_KWH(		// heat added to water, kWh 
 				(GAL_TO_L(drawForTick)*tOut
 					- GAL_TO_L(drawForTick-drawRL)*DegFtoC(tInlet)
@@ -2504,9 +2519,6 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 				* HPWH::DENSITYWATER_kgperL
 				* HPWH::CPWATER_kJperkgC);
 		}
-		else
-			wh_stbyTicks++;		// no draw: accum duration
-								//   (info only)
 
 		// energy use by heat source, kWh
 		// accumulate by backup resistance [ 0] vs primary (= compressor or all resistance) [ 1]

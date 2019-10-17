@@ -3588,7 +3588,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scaleWH);"
+  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scaleWH, double fToSwing=0., struct DHWTICK* ticksToSwing=NULL);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
