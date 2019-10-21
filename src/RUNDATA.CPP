@@ -91,7 +91,7 @@ makAncDHWLOOP( WlR);		// DHW loop
 makAncDHWLOOPSEG( WgR);		// DHW loop segment
 makAncDHWLOOPBRANCH( WbR);	// DHW loop branch
 makAncDHWLOOPPUMP( WlpR);	// DHW loop pump
-makAncDHWHEATER2( WlhR, "DHWLoopHeater");		// DHW heater
+makAncDHWHEATER2( WshR, "DHWSwingHeater");		// DHW "swing tank" heater
 makAncDHWDAYUSE( WduR);		// DHW day use
 makAncDHWUSE( WuR);			// DHW use
 

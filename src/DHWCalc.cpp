@@ -294,6 +294,7 @@ struct DHWTICK	// per tick info for DHWSYS
 							//   iff loop returns to water heater
 	float wtk_tRL;			// DHWLOOP loop return temp, F
 	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu
+
 	void wtk_Init( double whUseTick=0., float tInlet=50.f)
 	{
 		wtk_nHRDraws = 0;
@@ -301,6 +302,7 @@ struct DHWTICK	// per tick info for DHWSYS
 		wtk_volRL = wtk_tRL = wtk_qLossNoRL = 0.f;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
+	void wtk_AllocateToSwingHeater(DHWTICK& tkSwing, double f);
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
 void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
@@ -318,6 +320,20 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 
 	// wtk_dwhrDraws: not needed (DWHR results are in wtk_Use and wtk_tInletX
 }		// DHWTICK::wtk_Accum
+//-----------------------------------------------------------------------------
+void DHWTICK::wtk_AllocateToSwingHeater(
+	DHWTICK& tkSwing,	// returned: conditions seen by swing heater
+	double f)			// fraction of load served via swing heater
+// returns *this modified to reflect
+{	tkSwing.wtk_whUse = f*wtk_whUse;
+	// wtk_whUse: do not change (entire flow goes through primary heater)
+	tkSwing.wtk_tInletX = -1.f;		// will be primary heater tOut
+	tkSwing.wtk_nHRDraws = wtk_nHRDraws;	// not used for DHWHEATER calcs
+	tkSwing.wtk_volRL = f * wtk_volRL;
+	wtk_volRL *= (1. - f);
+	tkSwing.wtk_tRL = wtk_tRL;
+	tkSwing.wtk_qLossNoRL = 0.f;
+}	// DHWTICK::wtk_AllocateToSwingHeater
 //-----------------------------------------------------------------------------
 struct DHWHRTICK	// per tick info for DHWHEATREC
 {
@@ -464,6 +480,7 @@ RC DHWSYS::RunDup(		// copy input to run record; check and initialize
 {
 	RC rc = record::RunDup( pSrc, options);
 	ws_whCount = 0.f;		// insurance
+	ws_wshCount = 0.f;		// insurance
 	return rc;
 }	// DHWSYS::RunDup
 //----------------------------------------------------------------------------
@@ -650,9 +667,11 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	delete[] ws_ticks;	// insurance (generally NULL already)
 	ws_ticks = new DHWTICK[ Top.tp_NHrTicks()];
 
-	// ws_whCount set in DHWHEATER::RunDup
+	// ws_whCount / ws_wshCount set in DHWHEATER::RunDup
 	DHWHEATER* pWH;
-	RLUPC( WhR, pWH, pWH->ownTi == ss)
+	RLUPC( WhR, pWH, pWH->ownTi == ss)	// primary heaters
+		rc |= pWH->wh_Init();
+	RLUPC(WshR, pWH, pWH->ownTi == ss)	// swing tank heaters
 		rc |= pWH->wh_Init();
 
 	ws_wbCount = 0.f;	// branch count can be non-integer
@@ -1197,8 +1216,19 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 	if (ws_whCount > 0.f && ws_calcMode != C_WSCALCMODECH_PRERUN)
 	{	int iTkSh = Top.iSubhr*Top.tp_nSubhrTicks;	// initial tick for this subhour
 		DHWTICK* ticksSh = ws_ticks + iTkSh;		// 1st tick info for this subhour
+		rc |= ws_AddLossesToDraws(ticksSh);
 
-		rc |= ws_AddLossesToDraws( ticksSh);
+		// modify draws re swing tank
+		double fSwing = 0.;
+		DHWTICK ticksSwing[60];		// todo
+		if (ws_wshCount > 0.f)
+		{
+			fSwing = 1.;
+			for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+				ticksSh[iTk].wtk_AllocateToSwingHeater(ticksSwing[iTk], fSwing);
+
+		}
+
 
 		double scaleWH = 1. / ws_whCount;		// allocate per WH
 
@@ -1208,7 +1238,9 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 			if (pWH->wh_IsHPWHModel())
 				rc |= pWH->wh_HPWHDoSubhr(
 					ticksSh,		// draws etc. by tick
-					scaleWH);		// draw scale factor (allocates draw if ws_whCount > 1)
+					scaleWH,		// draw scale factor (allocates draw if ws_whCount > 1)
+					fSwing,
+					ticksSwing);
 			else if (pWH->wh_IsInstUEFModel())
 				rc |= pWH->wh_InstUEFDoSubhr(
 					ticksSh,
@@ -1218,15 +1250,12 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 				pWH->wh_unMetHrs += pWH->wh_unMetSh > 0;
 		}
 		// swing heaters
-		DHWLOOP* pWL;
-		if (ws_wlCount > 0) RLUPC(WlR, pWL, pWL->ownTi == ss)
-		{	if (pWL->wl_wlhCount > 0) RLUPC(WlhR, pWH, pWH->ownTi == pWL->ss)
-			{	if (pWH->wh_IsHPWHModel())
+ 		if (ws_wshCount > 0) RLUPC(WshR, pWH, pWH->ownTi == ss)
+		{	if (pWH->wh_IsHPWHModel())
 					rc |= pWH->wh_HPWHDoSubhr(
-						ticksSh,		// draws etc. by tick
-						scaleWH);		// draw scale factor (allocates draw if ws_whCount > 1)
+						ticksSwing,		// draws etc. by tick
+						1./ws_wshCount); // draw scale factor (allocates draw if ws_whCount > 1)
 
-			}
 		}
 	}
 	return rc;
@@ -1793,19 +1822,9 @@ RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	int options/*=0*/)
 {
 	RC rc = record::RunDup( pSrc, options);
+	DHWSYS* pWS = wh_GetDHWSYS();
 	int whfcn = wh_GetFunction();
-	if (whfcn == whfcnPRIMARY)
-	{
-		DHWSYS* pWS = wh_GetDHWSYS();
-		pWS->ws_whCount += wh_mult;		// total # of water heaters in DHWSYS
-	}
-	else if (whfcn == whfcnLOOPHEATER)
-	{
-		DHWLOOP* pWL = wh_GetDHWLOOP();
-		pWL->wl_wlhCount += wh_mult;
-	}
-	else
-		orMsg(PERR, "Invalid wh_GetFunction() return");
+	(whfcn==whfcnPRIMARY ? pWS->ws_whCount : pWS->ws_wshCount) += wh_mult;	// total # of water heaters in DHWSYS
 
 	return rc;
 }	// DHWHEATER::RunDup
@@ -1883,34 +1902,15 @@ void DHWHEATER::wh_InitTotals()
 //----------------------------------------------------------------------------
 DHWSYS* DHWHEATER::wh_GetDHWSYS() const
 {
-	DHWSYS* pWS = NULL;
-	if (b == &WhR)
-		pWS = WsR.GetAtSafe(ownTi);
-	else if (b == &WHiB)
-		pWS = WSiB.GetAtSafe(ownTi);
-	else
-	{	DHWLOOP* pWL = wh_GetDHWLOOP();
-		if (pWL)
-			pWS = pWL->wl_GetDHWSYS();
-	}
+	DHWSYS* pWS = (b == &WhR || b == &WshR ? WsR : WSiB).GetAtSafe(ownTi);
 	return pWS;
 }		// DHWHEATER::wh_GetDHWSYS
-//----------------------------------------------------------------------------
-DHWLOOP* DHWHEATER::wh_GetDHWLOOP() const
-// returns parent DHWLOOP iff this DHWHEATER is a loop heater
-{
-	DHWLOOP* pWL =
-		  b == &WlhR  ? WlR.GetAtSafe(ownTi)	// run record
-		: b == &WLHiB ? WLiB.GetAtSafe(ownTi)	// input record
-		:               NULL;
-	return pWL;
-}		// DHWHEATER::wh_GetDHWLOOP
 //----------------------------------------------------------------------------
 int DHWHEATER::wh_GetFunction() const
 {
 	int whfcn =
 		  b == &WhR || b == &WHiB ? whfcnPRIMARY
-		: b != NULL               ? whfcnLOOPHEATER
+		: b != NULL               ? whfcnSWINGHEATER
 		:                           whfcnUNKNOWN;
 	return whfcn;
 }		// DHWHEATER::wh_GetFunction
@@ -2363,9 +2363,9 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	double scaleWH,		// draw scale factor
 						//   re DHWSYSs with >1 DHWHEATER
 						//   *not* including wh_mixDownF;
-	double fToSwing /*=0.*/,		// fraction of output volume that goes
-									//    to swing heater
-	DHWTICK* ticksToSwing /*=NULL*/)// tick info to be passed to swing heater
+	double fSwing /*=0.*/,		// fraction of output volume that goes
+								//    to swing heater
+	DHWTICK* ticksSwing /*=NULL*/)// tick info to be passed to swing heater
 // calls HPWH tp_nSubhrTicks times, totals results
 // returns RCOK iff success
 {
@@ -2491,12 +2491,12 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		{	nTickNZDraw++;		// this tick has draw
 			wh_stbyTicks = 0;	// reset standby duration
 			double tOutF = DegCtoF( tOut);	// output temp, F
-			if (fToSwing < 1.)
-			{
+			if (fSwing < 1.)
+			{	// at least some output goes to load
 				if (tOutF < pWS->ws_tUse)
 				{	// load not met, add additional (unlimited) resistance heat
 					wh_mixDownF = 1.f;
-					HPWHxBU = waterRhoCp * drawForTick * (pWS->ws_tUse - tOutF);
+					HPWHxBU = (1.-fSwing) * waterRhoCp * drawForTick * (pWS->ws_tUse - tOutF);
 					wh_HPWHxBU += HPWHxBU;
 					tOutF = pWS->ws_tUse;
 				}
@@ -2505,9 +2505,9 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 					//   set wh_mixDownF for next tick
 					DHWMix(pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
 			}
-			if (fToSwing > 0.)
-			{	// send load onward
-
+			if (fSwing > 0.)
+			{
+				ticksSwing[iTk].wtk_tInletX = DegCtoF(tOut);
 			}
 
 			tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
@@ -2532,7 +2532,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		}
 #if defined( HPWH_DUMP)
 		// tick level CSV report for testing
-		int dumpUx = UNSYSSI;		// unit system for CSV values
+		int dumpUx = UNSYSIP;		// unit system for CSV values
 		int hpwhOptions = dumpUx == UNSYSIP ? HPWH::CSVOPT_IPUNITS : HPWH::CSVOPT_NONE;
 		static const int nTCouples = 12;		// # of storage layers reported by HPWH
 		
@@ -2549,6 +2549,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			  "tDbO",      Top.tDbOSh,			UNTEMP, 5,
 			  "tEnv",      wh_tEx,				UNTEMP, 5,
 			  "tSrcAir",   wh_ashpTSrc,			UNTEMP, 5,
+			  "mixDn",	   wh_mixDownF,		    UNNONE, 5,
 			  "vUse",	   drawUse,				UNLVOLUME2, 5,
 			  "vLoss",     drawLoss,			UNLVOLUME2, 5,
 			  "vRL",       drawRL,				UNLVOLUME2, 5,
@@ -2557,8 +2558,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			  "tDWHR",     pWS->ws_tInletX,		UNTEMP, 5,
 			  "tRL",       drawRL > 0. ? tRL : CSVItem::ci_UNSET,
 												UNTEMP,	5,
-			  "tIn",       drawRL< drawForTick ? tInlet : CSVItem::ci_UNSET,
-												UNTEMP,	5,
+			  "tIn",       tInlet,				UNTEMP,	5,
 			  "tSP",	   DegCtoF( wh_pHPWH->getSetpoint()),
 												UNTEMP,	5,
 			  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
@@ -2570,7 +2570,6 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			};
 
  			CSVGen csvGen(CI);
-
 
 			if (!wh_pFCSV)
 			{
@@ -3395,13 +3394,6 @@ RC DHWLOOP::wl_Init()		// DHWLOOP init for run
 		wl_exArea += pWG->ps_exArea;
 	}
 
-	// loop heater(s)
-	wl_wlhCount = 0;
-	DHWHEATER* pLH;
-	RLUPC(WlhR, pLH, pLH->ownTi == ss)
-	{	wl_wlhCount++;
-		pLH->wh_Init();
-	}
 	return rc;
 }		// DHWLOOP::wl_Init
 //----------------------------------------------------------------------------
@@ -3451,15 +3443,8 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	float fMakeUp = 0.f;	// fraction of loss handled by loop heater
 	if (wl_HRLLnet > 0.f)
 	{	// meter hookup
-		DHWHEATER* pLH;
-		RLUPC(WlhR, pLH, pLH->ownTi == ss)
-		{
-			printf("\nHeater!");
-
-		}
 		if (wl_lossMakeupPwr > 0.f)
-		{
-			float HRLLMakeUp = min(wl_HRLLnet, wl_lossMakeupPwr * BtuperWh);
+		{	float HRLLMakeUp = min(wl_HRLLnet, wl_lossMakeupPwr * BtuperWh);
 			fMakeUp = HRLLMakeUp / wl_HRLLnet;
 			wl_HRLLnet -= HRLLMakeUp;
 			if (wl_pMtrElec)

@@ -81,7 +81,7 @@ makAncDHWLOOP( WLiB);		// DHW loop
 makAncDHWLOOPSEG( WGiB);	// DHW loop segment
 makAncDHWLOOPBRANCH( WBiB);	// DHW loop branch
 makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
-makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater
+makAncDHWHEATER2(WSHiB,"DHWSwingHeater");		// DHW "swing tank" heater
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
@@ -138,6 +138,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WMtriB.free();
 	WSiB.free();
 	WHiB.free();
+	WSHiB.free();
 	WTiB.free();
 	WRiB.free();
 	WPiB.free();
@@ -145,7 +146,6 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WGiB.free();
 	WBiB.free();
 	WLPiB.free();
-	WLHiB.free();
 	PViB.free();
 	BTiB.free();
 	SXiB.free();
@@ -1864,7 +1864,6 @@ CULT( "wlLossMakeupEff",DAT,DHWLOOP_LOSSMAKEUPEFF, 0,   0, VHRLY,  TYFL,  0,    
 CULT( "wlElecMtr",   DAT,   DHWLOOP_ELECMTRI,  0,       0, VEOI,   TYREF,   &MtriB, N,      N, N),
 CULT( "dhwloopSeg",  RATE,  0,                 0,       0, 0,      0,     &WGiB,  N,      dhwLoopSegT, N),
 CULT( "dhwloopPump", RATE,  0,                 0,       0, 0,      0,     &WLPiB, N,      dhwLoopPumpT, N),
-CULT( "dhwloopHeater", RATE,0,                 0,       0, 0,      0,     &WLHiB, N,      dhwHeaterT, N),
 CULT( "endDHWLOOP",  ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwLoopT
@@ -1908,6 +1907,7 @@ CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N
 CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 
 CULT( "dhwheater",   RATE,  0,               0,       0, 0,      0,     &WHiB,  N,      dhwHeaterT, N),
+CULT( "dhwswingheater",RATE,  0,               0,       0, 0,      0,   &WSHiB, N,      dhwHeaterT, N),
 CULT( "dhwtank",     RATE,  0,               0,       0, 0,      0,     &WTiB,  N,      dhwTankT, N),
 CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  N,      dhwPumpT, N),
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
