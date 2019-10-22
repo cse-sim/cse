@@ -247,6 +247,14 @@ Latent heat recovery effectiveness for AIRNETHERV ventilator.  The default value
   ----------- ----------------- ------------- -------------- -----------------
               0 $\le$ x $\le$ 1       0             No             subhourly
 
+**izRVFanHeatF=*float***
+
+Fraction of fan heat added to supply air stream for AIRNETHERV ventilator.  Used only when when izSRE is 0 (that is, when izASEF specifies the sensible effectiveness).
+
+**Units**   **Legal Range**       **Default**   **Required**   **Variability**
+----------- --------------------- ------------- -------------- -----------------
+            0 $\le$ x $\le$ 1      0             No             subhourly
+
 **izVfExhRat=*float***
 
 Exhaust volume flow ratio for AIRNETHERV ventilator = (exhaust flow) / (supply flow).  Any
