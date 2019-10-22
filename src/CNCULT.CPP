@@ -1392,6 +1392,10 @@ CULT( "izVfMin",	 DAT,   IZXRAT_VFMIN, 0,   0, VSUBHRLY,TYFL, 0,      0.f,      
 CULT( "izVfMax",	 DAT,   IZXRAT_VFMAX, 0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 CULT( "izASEF",		 DAT,   IZXRAT_ASEF,  0,   0, VSUBHRLY,TYFL, 0,	     0.f,				 N,   N),
 CULT( "izLEF",		 DAT,   IZXRAT_LEF,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+CULT( "izSRE",		 DAT,   IZXRAT_SRE,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+CULT( "izASRE",		 DAT,   IZXRAT_ASRE,  0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+CULT( "izRVFanHeatF",DAT,   IZXRAT_RVFANHEATF,0,0,VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+
 CULT( "izVfExhRat",	 DAT,   IZXRAT_VFEXHRAT, 0,0, VSUBHRLY,TYFL, 0,      1.f,                N,   N),
 CULT( "izEATR",		 DAT,   IZXRAT_EATR,  0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 
