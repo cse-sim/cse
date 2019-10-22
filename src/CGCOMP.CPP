@@ -667,6 +667,9 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	if (iz_EATR >= 1.f)
 		rc |= rer("IZXFER '%s': invalid HERV izEATR=%0.2f (must be < 1)",
 				name, iz_EATR);
+	if (iz_ASRE < iz_SRE)
+		rc |= rer("IZXFER '%s': invalid HERV izASRE (%0.2f) must be >= izSRE (%0.2f)",
+			name, iz_ASRE,iz_SRE);
 
 	// current operating supply AVF (into z1)
 	//  always >= 0 (checks just above)
@@ -710,11 +713,7 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	float tdFan = iz_fan.fn_pute(c, iz_air2.as_tdb);
 	ad.ad_pFan = iz_fan.p;		// fan power (for meter), Btuh
 	if (iz_SRE > 0.f)
-	{
-		float tdX = (iz_ASEF - iz_SRE) * 42.f;
- 		ad.ad_tdFan = tdX;
-
-	}
+ 		ad.ad_tdFan = (iz_ASRE - iz_SRE) * 38.f;
 	else
 		ad.ad_tdFan = iz_RVFanHeatF * tdFan;
 
@@ -729,7 +728,7 @@ void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 //      Duplicate values so both modes get same result
 {	ad_mdotP = ad.ad_mdotP;
 	ad_mdotX = ad.ad_mdotX;
-	ad_tdFan = ad.ad_tdFan;	// s/b 0 (HERV fan heat included in iz_ASEF)
+	ad_tdFan = ad.ad_tdFan;
 	ad_pFan = ad.ad_pFan;
 }	// ANDAT::ad_DupHERV
 //===============================================================================

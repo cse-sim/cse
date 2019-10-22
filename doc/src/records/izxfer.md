@@ -209,11 +209,27 @@ Maximum volume flow rate (VentOn mode)
 
 **izASEF=*float***
 
-Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-reported HERV rating and is calculated as (supplyT - sourceT) / (returnT - sourceT).  This formulation includes fan heat (in supplyT), hence the term "apparent".
+Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-reported HERV rating and is calculated as (supplyT - sourceT) / (returnT - sourceT).  This formulation includes fan heat (in supplyT), hence the term "apparent".  Ignored if izSRE is given.  CSE does not HRV exhaust-side condensation, so this model is approximate.
+
+**Units**   **Legal Range**    **Default**   **Required**   **Variability**
+----------- ------------------ ------------- -------------- -----------------
+             0 $\le$ x $\le$ 1  0             No             subhourly
+
+**izSRE=*float***
+
+Sensible recovery efficiency (SRE) for AIRNETHERV ventilator.  Used as the sensible effectiveness in calculation of the supply air temperature.  Note that values of SRE greater than approximately 0.6 imply exhaust-side condensation under HVI rating conditions.  CSE does not adjust for these effects.  High values of izSRE will produce unrealistic results under mild outdoor conditions and/or dry indoor conditions.
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ----------- ----------------- ------------- -------------- -----------------
-                                     0             No             subhourly
+            0 $\le$ x $\le$ 1  0                No             subhourly
+
+**izASRE=*float***
+
+Adjusted sensible recovery efficiency (ASRE) for AIRNETHERV ventilator.  The difference izASRE - izSRE is used to calculate fan heat added to the supply air stream.  See izSRE notes.  No effect when izSRE is 0.
+
+**Units**   **Legal Range**       **Default**   **Required**   **Variability**
+----------- --------------------- ------------- -------------- -----------------
+            0 $\le$ x $\le$ izSRE   0             No             subhourly
 
 **izEATR=*float***
 
