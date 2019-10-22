@@ -52,7 +52,6 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
   # /Ob0        #*Controls inline expansion (level 0 -- disabled).
     /Od         #*Disables optimization.
     /RTC1       #*Enables run-time error checking.
-    /Gm         # Enables minimal rebuild.
   )
   string(REPLACE ";" " " CMAKE_CXX_FLAGS_DEBUG "${CompileDebug}")
 

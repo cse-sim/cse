@@ -263,10 +263,10 @@ LOCAL RC FC NEAR cuEvalI(
 		{
 			register SI siTem;
 			register void *v;
-			SI n,i,defO;
+			SI n, i, defO;
 			RC trc;
 			USI h;
-			void *tIp,*tSp,*p;
+			void *tIp, *tSp, *p;
 			BP b;
 			record *e;
 #ifdef IMPORT
@@ -283,8 +283,8 @@ LOCAL RC FC NEAR cuEvalI(
 			*--SPL = *IPL++;
 			break; 	// 4 bytes
 		case PSPKONN: // PSPKONN nwords literal: load ptr to inline const
-			*--SPP = (char *)(IPOP+1);		// push ptr to literal
-			IPOP += (~*(SI *)IPOP)+1;		// evIp: pass ~nwords & lit.
+			*--SPP = (char *)(IPOP + 1);		// push ptr to literal
+			IPOP += (~*(SI *)IPOP) + 1;		// evIp: pass ~nwords & lit.
 			break;					// ... (SI *) so 32-bit version sign-extends b4 ~.
 
 			//--- load constants or variables from memory locations
@@ -301,11 +301,11 @@ LOCAL RC FC NEAR cuEvalI(
 			goto evFck;
 		case PSRLOD4:
 			*--SPL = *(LI*)((SI *)evFp + *IPI++);
-evFck:
-			if (evFp==NULL)				// late no-frame check
+		evFck:
+			if (evFp == NULL)				// late no-frame check
 			{
-				ms = strtprintf( (char *)MH_R0206, evIp);	/* "cuEvalI internal error: \n"
-	                  						   "    arg access thru NULL frame ptr at ip=%p" */
+				ms = strtprintf((char *)MH_R0206, evIp);	/* "cuEvalI internal error: \n"
+											   "    arg access thru NULL frame ptr at ip=%p" */
 				goto breakbreak;
 			}
 			break;
@@ -337,11 +337,11 @@ evFck:
 			//--- duplicate stack top
 		case PSDUP2:
 			--SPI;
-			*SPI = *(SPI+1);
+			*SPI = *(SPI + 1);
 			break; 	// 2 bytes
 		case PSDUP4:
 			--SPL;
-			*SPL = *(SPL+1);
+			*SPL = *(SPL + 1);
 			break;  	// 4 bytes. CAUTION string ptrs now need cupIncRef, 7-92
 
 			//--- conversions
@@ -362,18 +362,18 @@ evFck:
 			break;	// make any non-0 a 1
 
 		case PSSCH:			// string (stack) to choice (stack) per data type (inline) 2-92
-			if (cvS2Choi( (char*)*SPP++, *IPU++, (void *)&v, &h, &ms)==RCBAD)  	// cvpak.cpp
+			if (cvS2Choi((char*)*SPP++, *IPU++, (void *)&v, &h, &ms) == RCBAD)  	// cvpak.cpp
 				goto breakbreak;							// if error (ms set)
 			ms = NULL;		// insurance, drop possible info msg
-			if (h==4)  *--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
+			if (h == 4)  *--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
 			else       *--SPI = *(SI*)&v;		// assume 2 bytes: choicb
 			break;
 
 		case PSNCN:			// number-choice to number 'conversion'
-			if (ISNUM(v=*SPP))  break;			// if stack top is a number (cnglob.h), ok, done
+			if (ISNUM(v = *SPP))  break;			// if stack top is a number (cnglob.h), ok, done
 			//note that if 2-byte choice gets here (shouldn't) it is taken as a number.
 			if (ISNCHOICE(v))
-				ms = strtprintf( (char *)MH_R0207, (INT)CHN(v) & ~NCNAN);	// "Choice (%d) value used where number needed"
+				ms = strtprintf((char *)MH_R0207, (INT)CHN(v) & ~NCNAN);	// "Choice (%d) value used where number needed"
 			else if (ISNANDLE(v))
 				if (ISUNSET(v))
 					ms = (char *)MH_R0208;			// "Unexpected UNSET value where number neeeded"
@@ -382,7 +382,7 @@ evFck:
 					ms = (char *)MH_R0231;			// "Unexpected being-autosized value where number needed"
 #endif
 				else
-					ms = strtprintf( (char *)MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
+					ms = strtprintf((char *)MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
 			else
 				ms = (char *)MH_R0210;			// "Unexpected mystery nan" (text retreived below)
 			goto breakbreak;
@@ -395,9 +395,9 @@ evFck:
 		case PSIDOY:  			// day of month to day of year.
 			// Month known at compile time. Stack top: day of month.
 			// inline: # days in month, 1st day of month less 1.
-			if (*SPI < 1  ||  *SPI > *(SI*)evIp)					// check DOM
+			if (*SPI < 1 || *SPI > *(SI*)evIp)					// check DOM
 			{
-				ms = strtprintf( (char *)MH_R0211, (INT)*SPI, (INT)*(SI*)evIp);	// "Day of month %d is out of range 1 to %d"
+				ms = strtprintf((char *)MH_R0211, (INT)*SPI, (INT)*(SI*)evIp);	// "Day of month %d is out of range 1 to %d"
 				goto breakbreak;
 			}
 			IPI++;		// point past # days in month
@@ -412,24 +412,24 @@ evFck:
 			*SPI = -*SPI;
 			break;			// negate
 		case PSIADD:
-			*(SPI+1) += *SPI;
+			*(SPI + 1) += *SPI;
 			goto sipop;		// add
 		case PSISUB:
-			*(SPI+1) -= *SPI;
+			*(SPI + 1) -= *SPI;
 			goto sipop;		// sub
 		case PSIMUL:
-			*(SPI+1) *= *SPI;
+			*(SPI + 1) *= *SPI;
 			goto sipop;		// mul
 		case PSIDIV:
-			if (*SPI==0)
+			if (*SPI == 0)
 			{
 				ms = (char *)MH_R0212;     // "Division by 0"
 				goto breakbreak;
 			}
-			*(SPI+1) /= *SPI;
+			*(SPI + 1) /= *SPI;
 			goto sipop;		// div
 		case PSIMOD:
-			*(SPI+1) %= *SPI;
+			*(SPI + 1) %= *SPI;
 			goto sipop;		// mod
 		case PSIDEC:
 			(*SPI)--;
@@ -444,58 +444,58 @@ evFck:
 			*SPU = ~*SPU;
 			break;		// 1's compl
 		case PSIEQ:
-			siTem = (*(SPI+1) == *SPI);
+			siTem = (*(SPI + 1) == *SPI);
 			goto si21;	// ==
 		case PSINE:
-			siTem = (*(SPI+1) != *SPI);
+			siTem = (*(SPI + 1) != *SPI);
 			goto si21;	// !=
 		case PSILT:
-			siTem = (*(SPI+1) <  *SPI);
+			siTem = (*(SPI + 1) < *SPI);
 			goto si21;	// <
 		case PSILE:
-			siTem = (*(SPI+1) <= *SPI);
+			siTem = (*(SPI + 1) <= *SPI);
 			goto si21;	// <=
 		case PSIGE:
-			siTem = (*(SPI+1) >= *SPI);
+			siTem = (*(SPI + 1) >= *SPI);
 			goto si21;	// >=
 		case PSIGT:
-			siTem = (*(SPI+1) >  *SPI);  		// >
-si21:
+			siTem = (*(SPI + 1) > *SPI);  		// >
+		si21:
 			SPI++;
 			*SPI = siTem;
 			break;		// binary int result
 		case PSILSH:
-			*(SPU+1) <<= *SPU;
+			*(SPU + 1) <<= *SPU;
 			goto sipop;	// << lsh
 		case PSIRSH:
-			*(SPU+1) >>= *SPU;
+			*(SPU + 1) >>= *SPU;
 			goto sipop;	// >> rsh
 		case PSIBOR:
-			*(SPI+1) |= *SPI;
+			*(SPI + 1) |= *SPI;
 			goto sipop;	// bit or
 		case PSIXOR:
-			*(SPI+1) ^= *SPI;
+			*(SPI + 1) ^= *SPI;
 			goto sipop;	// bit xor
 		case PSIBAN:
-			*(SPI+1) &= *SPI;
+			*(SPI + 1) &= *SPI;
 			goto sipop;	// bit and
 		case PSIBRKT:
-			if (*(SPI+1) > *SPI)	// bracket (lo, val, hi)
-				*(SPI+1) = *SPI;	//  value > hi: use hi
+			if (*(SPI + 1) > *SPI)	// bracket (lo, val, hi)
+				*(SPI + 1) = *SPI;	//  value > hi: use hi
 			SPI++;			//  discard
 			// fall thru to use max(lo, val)
 		case PSIMAX:
-			if (*(SPI+1) > *SPI)	// max( a, b)
+			if (*(SPI + 1) > *SPI)	// max( a, b)
 				goto sipop;
 			goto siyank;
 		case PSIMIN:
-			if (*(SPI+1) < *SPI)	// min( a, b)
+			if (*(SPI + 1) < *SPI)	// min( a, b)
 				goto sipop;
 			//goto siyank;
-siyank:
-			*(SPI+1) = *SPI; 	// discard next to top value
+		siyank:
+			*(SPI + 1) = *SPI; 	// discard next to top value
 		case PSPOP2:
-sipop:
+		sipop:
 			SPI++;
 			break;   	// pop 1 int
 
@@ -506,23 +506,23 @@ sipop:
 		case PSFNEG:
 			*SPF = -*SPF;
 			break;		// negate
-psfAdd:       ;				// PSFINCHES joins
+		psfAdd:;				// PSFINCHES joins
 		case PSFADD:
-			*(SPF+1) += *SPF;
+			*(SPF + 1) += *SPF;
 			goto flpop;		// add
 		case PSFSUB:
-			*(SPF+1) -= *SPF;
+			*(SPF + 1) -= *SPF;
 			goto flpop;		// sub
 		case PSFMUL:
-			*(SPF+1) *= *SPF;
+			*(SPF + 1) *= *SPF;
 			goto flpop;		// mul
 		case PSFDIV:
-			if (*SPF==0.)
+			if (*SPF == 0.)
 			{
 				ms = (char *)MH_R0213;     // "Division by 0."
 				goto breakbreak;
 			}
-			*(SPF+1) /= *SPF;
+			*(SPF + 1) /= *SPF;
 			goto flpop;		// div
 		case PSFDEC:
 			(*SPF)--;
@@ -531,64 +531,71 @@ psfAdd:       ;				// PSFINCHES joins
 			(*SPF)++;
 			break;		// ++
 		case PSFBRKT:
-			if (*(SPF+1) > *SPF)		// bracket (lo, val, hi)
-				*(SPF+1) = *SPF;		//  value > hi: use hi
+			if (*(SPF + 1) > *SPF)		// bracket (lo, val, hi)
+				*(SPF + 1) = *SPF;		//  value > hi: use hi
 			SPF++;				//  discard
 			// fall thru to use max(lo, val)
 		case PSFMAX:
-			if (*(SPF+1) > *SPF)		// max( a, b)
+			if (*(SPF + 1) > *SPF)		// max( a, b)
 				goto flpop;
 			goto flyank;
 		case PSFMIN:
-			if (*(SPF+1) < *SPF)		// min( a, b)
+			if (*(SPF + 1) < *SPF)		// min( a, b)
 				goto flpop;
 			//goto flyank;
-flyank:
-			*(SPF+1) = *SPF; 		// discard next to top value
+		flyank:
+			*(SPF + 1) = *SPF; 		// discard next to top value
 		case PSPOP4:
-flpop:
+		flpop:
 			SPF++;
 			break;				// pop 1 float
 		case PSFEQ:
-			siTem = (*(SPF+1) == *SPF);
+			siTem = (*(SPF + 1) == *SPF);
 			goto fl2i1; 	// ==
 		case PSFNE:
-			siTem = (*(SPF+1) != *SPF);
+			siTem = (*(SPF + 1) != *SPF);
 			goto fl2i1; 	// !=
 		case PSFLT:
-			siTem = (*(SPF+1) <  *SPF);
+			siTem = (*(SPF + 1) < *SPF);
 			goto fl2i1; 	// <
 		case PSFLE:
-			siTem = (*(SPF+1) <= *SPF);
+			siTem = (*(SPF + 1) <= *SPF);
 			goto fl2i1; 	// <=
 		case PSFGE:
-			siTem = (*(SPF+1) >= *SPF);
+			siTem = (*(SPF + 1) >= *SPF);
 			goto fl2i1; 	// >=
 		case PSFGT:
-			siTem = (*(SPF+1) >  *SPF);			// >
-fl2i1:
-			SPC += 2*sizeof(float) - sizeof(SI);	// here to pop 2 floats, push SI in siTem
+			siTem = (*(SPF + 1) > *SPF);			// >
+		fl2i1:
+			SPC += 2 * sizeof(float) - sizeof(SI);	// here to pop 2 floats, push SI in siTem
 			*SPI = siTem;
 			break;
 
 			//--- float math function
 		case PSFSQRT:
-			if (*SPF < 0.)
-			{
-				ms = (char *)MH_R0214;     // "SQRT of a negative number"
+			if (*SPF < 0.f)
+			{	ms = (char *)MH_R0214;     // "SQRT of a negative number"
 				goto breakbreak;
 			}
 			*SPF = sqrt(*SPF);
 			break;			// square root, to support ahhcStackEffect, 7-4-92.
 		case PSFEXP:
+			if (*SPF < -87.f)	// exp( -87) = 1.656e-38 approx (slightly > FLT_MIN)
+			{	ms = "exp( x) underflow, x < -87";	// NEWMS
+				goto breakbreak;
+			}
+			if (*SPF > 88.5f)	// exp( 88.5) = 2.723e38 approx (slightly < FLT_MAX)
+			{	ms = "exp( x) overflow, x > 88.5";	// NEWMS
+				goto breakbreak;
+			}
 			*SPF = exp(*SPF);
 			break;			// exp: e^x
 		case PSFPOW:
-			if (*SPF==0. && *(SPF+1)==0.) 			// pow(x,y): x^y: raise x to the y power
-			{	ms = "zero to the zeroth power";     // NEWMS
+			if (*SPF==0.f && *(SPF+1)==0.f) 		// pow(x,y): x^y: raise x to the y power
+			{	ms = "zero to the zeroth power";	// NEWMS
 				goto breakbreak;
 			}
-			if (*(SPF+1) < 0.  &&  float(int(*SPF)) != *SPF)
+			if (*(SPF+1) < 0.f  &&  float(int(*SPF)) != *SPF)
 			{	ms = "negative number to non-integral power";     // NEWMS
 				goto breakbreak;
 			}
