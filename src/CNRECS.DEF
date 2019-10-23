@@ -3535,9 +3535,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h FLOAT wh_tHWOut;			// average hot water temp, F (at water heater)
 								//   HPWH: as delivered by model (subhr average of tick calls)
 								//   other: DHWSYS.ws_tUse
-  *h FLOAT wh_mixDownF;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
+  *h FLOAT wh_fMixUse;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
 								//   draws are reduced to balance load at ws_tUse.
+  *h FLOAT wh_fMixRL;			// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
+								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+								//   Loop return flow is reduced to balance load at ws_tUse.
   *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
 								//   re startup (cyclic) loss model
 

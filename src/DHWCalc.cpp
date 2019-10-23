@@ -289,6 +289,8 @@ struct DHWTICK	// per tick info for DHWSYS
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR
+	float wtk_tInletX2;		// water heater inlet temp for this tick, F
+							//   same as wtk_inletX except for swing heaters
 	int wtk_nHRDraws;		// # of DHWHEATREC draws during this tick
 	float wtk_volRL;		// DHWLOOP return flow for this tick, gal
 							//   iff loop returns to water heater
@@ -298,7 +300,7 @@ struct DHWTICK	// per tick info for DHWSYS
 	void wtk_Init( double whUseTick=0., float tInlet=50.f)
 	{
 		wtk_nHRDraws = 0;
-		wtk_whUse = whUseTick; wtk_tInletX = tInlet;
+		wtk_whUse = whUseTick; wtk_tInletX = wtk_tInletX2 = tInlet;
 		wtk_volRL = wtk_tRL = wtk_qLossNoRL = 0.f;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
@@ -327,7 +329,8 @@ void DHWTICK::wtk_AllocateToSwingHeater(
 // returns *this modified to reflect
 {	tkSwing.wtk_whUse = f*wtk_whUse;
 	// wtk_whUse: do not change (entire flow goes through primary heater)
-	tkSwing.wtk_tInletX = -1.f;		// will be primary heater tOut
+	tkSwing.wtk_tInletX = tkSwing.wtk_tInletX2 = wtk_tInletX;
+		// tkSwing.wtk_tInletX2 will be changed to primary output temp for swing heater
 	tkSwing.wtk_nHRDraws = wtk_nHRDraws;	// not used for DHWHEATER calcs
 	tkSwing.wtk_volRL = f * wtk_volRL;
 	wtk_volRL *= (1. - f);
@@ -928,16 +931,24 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;
 
 	if (ws_whCount > 0.f)
-	{	DHWHEATER* pWH;
-		RLUPC( WhR, pWH, pWH->ownTi == ss)
-			rc |= pWH->wh_DoHour( ws_HARL / ws_whCount, mult);
+	{
+		DHWHEATER* pWH;
+		RLUPC(WhR, pWH, pWH->ownTi == ss)
+			rc |= pWH->wh_DoHour(ws_HARL / ws_whCount, mult);
 
-		if (ws_calcMode==C_WSCALCMODECH_PRERUN && Top.tp_IsLastHour())
-		{	RLUPC( WhR, pWH, pWH->ownTi == ss)
+		if (ws_calcMode == C_WSCALCMODECH_PRERUN && Top.tp_IsLastHour())
+		{
+			RLUPC(WhR, pWH, pWH->ownTi == ss)
 				rc |= pWH->wh_DoEndPreRun();
-			DHWSYS* pWSi = WSiB.GetAtSafe( ss);
+			DHWSYS* pWSi = WSiB.GetAtSafe(ss);
 			if (pWSi)
 				pWSi->ws_calcMode = C_WSCALCMODECH_SIM;
+		}
+
+		// swing heaters
+		if (ws_wshCount > 0) RLUPC(WshR, pWH, pWH->ownTi == ss)
+		{	if (pWH->wh_IsHPWHModel())
+				pWH->wh_DoHour(0.f, mult);
 		}
 	}
 
@@ -1137,7 +1148,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 		float tO = ws_tInlet;
 		if (tk.wtk_whUse > 0.)
 			tO += qRWH / (waterRhoCp * tk.wtk_whUse);
-		tk.wtk_tInletX = ws_AdjustTInletForSSF(tO);
+		tk.wtk_tInletX = tk.wtk_tInletX2 = ws_AdjustTInletForSSF(tO);
 
 #if defined( _DEBUG)
 		// tick energy balance
@@ -1896,7 +1907,7 @@ void DHWHEATER::wh_InitTotals()
 	wh_totOut = 0.;
 	wh_unMetHrs = 0;
 	wh_stbyTicks = 0;
-	wh_mixDownF = 1.f;
+	wh_fMixUse = wh_fMixRL = 1.f;
 
 }		// DHWHEATER::wh_InitTotals
 //----------------------------------------------------------------------------
@@ -2362,7 +2373,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	const DHWTICK* ticksSh,		// tick info for subhour (draw, cold water temp, )
 	double scaleWH,		// draw scale factor
 						//   re DHWSYSs with >1 DHWHEATER
-						//   *not* including wh_mixDownF;
+						//   *not* including wh_fMixUse or wh_fMixRL;
 	double fSwing /*=0.*/,		// fraction of output volume that goes
 								//    to swing heater
 	DHWTICK* ticksSwing /*=NULL*/)// tick info to be passed to swing heater
@@ -2386,7 +2397,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 							//   does not include wh_HPWHxBU
 
 	double tHWOutF = 0.;	// accum re average hot water outlet temp, F
-	// wh_mixDownF initialized in wh_InitTotals(); value retained hour-to-hour
+	// wh_fMixUse, wh_fMixRL: initialized in wh_InitTotals(); value retained hour-to-hour
 
 	wh_HPWHUse[ 0] = wh_HPWHUse[ 1] = 0.;	// energy use totals, kWh
 	wh_HPWHxBU = 0.;	// add'l resistance backup this subhour, Btu
@@ -2441,17 +2452,16 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		  && Top.iSubhr == 3)
 			wh_pHPWH->setVerbosity( HPWH::VRB_emetic);
 #endif
-		// float mixDownFWas = wh_mixDownF;
-		double scaleX = scaleWH * wh_mixDownF;
+		double scaleX = scaleWH * wh_fMixUse;
 		double drawUse = tk.wtk_whUse*scaleX;
 
 		// pseudo-draw (gal) to represent e.g. central system branch losses
 		//  ?tInlet?
 		double drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., wh_tHWOut - pWS->ws_tInlet));
 
-		double drawRL = tk.wtk_volRL*scaleX;
+		double drawRL = tk.wtk_volRL * scaleWH * wh_fMixRL;
 		double drawForTick = drawUse + drawLoss + drawRL;
-		double tInlet = tk.wtk_tInletX;		// cold-water inlet temp = mains + DWHR
+		double tInlet = tk.wtk_tInletX2;		// cold-water inlet temp = mains + DWHR
 		double tRL = tk.wtk_tRL;			// loop return temp
 
 #define MIX 0
@@ -2495,19 +2505,21 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			{	// at least some output goes to load
 				if (tOutF < pWS->ws_tUse)
 				{	// load not met, add additional (unlimited) resistance heat
-					wh_mixDownF = 1.f;
+					wh_fMixUse = wh_fMixRL = 1.f;
 					HPWHxBU = (1.-fSwing) * waterRhoCp * drawForTick * (pWS->ws_tUse - tOutF);
 					wh_HPWHxBU += HPWHxBU;
 					tOutF = pWS->ws_tUse;
 				}
 				else
-					// mix mains water (not tInletX) to obtain ws_tUse
-					//   set wh_mixDownF for next tick
-					DHWMix(pWS->ws_tUse, tOutF, pWS->ws_tInlet, wh_mixDownF);
+				{	// mix to obtain ws_tUse
+					//   set wh_fMixUse and wh_fMixRL for next tick
+					DHWMix(pWS->ws_tUse, tOutF, tk.wtk_tInletX, wh_fMixUse);
+					DHWMix(pWS->ws_tUse, tOutF, tRL, wh_fMixRL);
+				}
 			}
 			if (fSwing > 0.)
 			{
-				ticksSwing[iTk].wtk_tInletX = DegCtoF(tOut);
+				ticksSwing[iTk].wtk_tInletX2 = DegCtoF(tOut);
 			}
 
 			tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
@@ -2549,13 +2561,14 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 			  "tDbO",      Top.tDbOSh,			UNTEMP, 5,
 			  "tEnv",      wh_tEx,				UNTEMP, 5,
 			  "tSrcAir",   wh_ashpTSrc,			UNTEMP, 5,
-			  "mixDn",	   wh_mixDownF,		    UNNONE, 5,
+			  "fMixUse",   wh_fMixUse,		    UNNONE, 5,
+			  "fMixRL",    wh_fMixRL,		    UNNONE, 5,
 			  "vUse",	   drawUse,				UNLVOLUME2, 5,
 			  "vLoss",     drawLoss,			UNLVOLUME2, 5,
 			  "vRL",       drawRL,				UNLVOLUME2, 5,
 			  "vTot",	   drawForTick,			UNLVOLUME2, 5,
 			  "tMains",    pWS->ws_tInlet,		UNTEMP, 5,
-			  "tDWHR",     pWS->ws_tInletX,		UNTEMP, 5,
+			  "tDWHR",     tk.wtk_tInletX,		UNTEMP, 5,
 			  "tRL",       drawRL > 0. ? tRL : CSVItem::ci_UNSET,
 												UNTEMP,	5,
 			  "tIn",       tInlet,				UNTEMP,	5,
