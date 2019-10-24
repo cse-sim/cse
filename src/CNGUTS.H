@@ -120,7 +120,7 @@ extern anc<DUCTSEG> DsR;		// duct segments
 extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
 extern anc<DHWHEATER> WhR;		// DHW heater
-extern anc<DHWHEATER> WshR;		// DHW swing heater
+extern anc<DHWHEATER> WlhR;		// DHW loop heater
 extern anc<DHWTANK> WtR;		// DHW tank
 extern anc<DHWHEATREC> WrR;		// DHW heat recovery
 extern anc<DHWPUMP> WpR;		// DHW pump

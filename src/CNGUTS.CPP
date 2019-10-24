@@ -830,9 +830,9 @@ x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 				if (wh->wh_balErrCount > 0)
 					warn( "DHWHEATER '%s': Energy balance errors occurred in %d subhours.",
 						wh->name, wh->wh_balErrCount);
-			RLUP(WshR, wh)
+			RLUP(WlhR, wh)
 				if (wh->wh_balErrCount > 0)
-					warn("DHWSWINGHEATER '%s': Energy balance errors occurred in %d subhours.",
+					warn("DHWLOOPHEATER '%s': Energy balance errors occurred in %d subhours.",
 						wh->name, wh->wh_balErrCount);
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.

@@ -3375,8 +3375,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 								//    note may not be integral
   *r FLOAT ws_whCount;		// # of DHWHEATERs serving this DHWSYS
 							//   = SUM( DHWHEATER.wh_mult) (possibly non-integral)
-  *r FLOAT ws_wshCount;		// # of DHWSWINGHEATERs in this DHWSYS
-							//   = SUM( DHWSWINGHEATER.wh_mult) (possibly non-integral?)
+  *r FLOAT ws_wlhCount;		// # of DHWLOOPHEATERs in this DHWSYS
+							//   = SUM( DHWLOOPHEATER.wh_mult) (possibly non-integral?)
   *r INT ws_wtCount;		// ditto DHWTANKs
   *r INT ws_wpCount;		// ditto DHWPUMPs
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
@@ -3450,7 +3450,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const;"
   *declare "int wh_GetFunction() const;"
-  *declare "enum { whfcnUNKNOWN, whfcnPRIMARY, whfcnSWINGHEATER };"
+  *declare "enum { whfcnUNKNOWN, whfcnPRIMARY, whfcnLOOPHEATER };"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
   *declare "int wh_UsesDerivedLDEF() const;"
@@ -3596,7 +3596,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scaleWH, double fSwing=0., struct DHWTICK* ticksSwing=NULL);"
+  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scaleWH, double fLH=0., struct DHWTICK* ticksShLH=NULL);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)

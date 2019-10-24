@@ -81,7 +81,7 @@ makAncDHWLOOP( WLiB);		// DHW loop
 makAncDHWLOOPSEG( WGiB);	// DHW loop segment
 makAncDHWLOOPBRANCH( WBiB);	// DHW loop branch
 makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
-makAncDHWHEATER2(WSHiB,"DHWSwingHeater");		// DHW "swing tank" heater
+makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater (aka "swing tank")
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
@@ -138,7 +138,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WMtriB.free();
 	WSiB.free();
 	WHiB.free();
-	WSHiB.free();
+	WLHiB.free();
 	WTiB.free();
 	WRiB.free();
 	WPiB.free();
@@ -1911,7 +1911,7 @@ CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N
 CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 
 CULT( "dhwheater",   RATE,  0,               0,       0, 0,      0,     &WHiB,  N,      dhwHeaterT, N),
-CULT( "dhwswingheater",RATE,  0,               0,       0, 0,      0,   &WSHiB, N,      dhwHeaterT, N),
+CULT( "dhwloopheater",RATE, 0,               0,       0, 0,      0,     &WLHiB, N,      dhwHeaterT, N),
 CULT( "dhwtank",     RATE,  0,               0,       0, 0,      0,     &WTiB,  N,      dhwTankT, N),
 CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  N,      dhwPumpT, N),
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
