@@ -593,7 +593,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	if (ws_HasCentralDHWSYS())
 	{	// check that central DHWSYS tree is only one deep
 		//   additional levels could be allowed if needed
-		//   see ws_AccumCentralUse() etc
+		//   see ws_AccumCentralUse() etc.
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral->ws_HasCentralDHWSYS())
 			rc |= oer( "DHWSYS '%s' (given by wsCentralDHWSYS) is not central",
@@ -1216,8 +1216,12 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 			fprintf(ws_pFDrawCSV, "%0.2f,%0.2f,", minHr, minDay);
 		}
 		const DHWTICK& tk = ws_ticks[iTk];
-		fprintf(ws_pFDrawCSV, "%0.2f,%0.2f,%0.2f,%0.4f\n",
-			tk.wtk_tInletX, ws_tInlet, ws_tUse, tk.wtk_whUse);
+		// write to CSV w/o trailing 0s (many draws are 0, don't write 0.0000)
+		fprintf(ws_pFDrawCSV, "%s,%s,%s,%s\n",
+			WStrFmtFloatDTZ( tk.wtk_tInletX,2).c_str(),
+			WStrFmtFloatDTZ( ws_tInlet, 2).c_str(),
+			WStrFmtFloatDTZ( ws_tUse, 2).c_str(),
+			WStrFmtFloatDTZ( tk.wtk_whUse, 4).c_str());
 	}
 	return RCOK;
 }		// DHWSYS::ws_WriteDrawCSV
@@ -1678,6 +1682,9 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_ASHPTY,
 			DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI, DHWHEATER_ASHPRESUSE, 0);
 		rc |= requireN( whenHs, DHWHEATER_EF, DHWHEATER_VOL, 0);
+		if (wh_EF > 0.98f)
+			rc |= oer("whEF (%0.3f) must be <= 0.98 %s",
+				wh_EF, whenHs);
 		if (!IsSet( DHWHEATER_RESHTPWR2))
 			wh_resHtPwr2 = wh_resHtPwr;		// lower element power defaults from upper
 	}

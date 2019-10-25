@@ -50,6 +50,7 @@ add_custom_target(version_header
   COMMAND ${CMAKE_COMMAND}
    ARGS -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
    -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+   -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
  -P "${PROJECT_SOURCE_DIR}/cmake/CSEVersion.cmake"
 )
 
@@ -201,8 +202,6 @@ set(headers
 
 
 include_directories(
-  SYSTEM "${kiva_SOURCE_DIR}/vendor/boost-1.61.0"
-  "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
 )
 
 
@@ -211,6 +210,9 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor"
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
+  "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
+  SYSTEM "${kiva_SOURCE_DIR}/vendor/boost-1.61.0"
+  "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
   "${kiva_SOURCE_DIR}/src"
   "${kiva_BINARY_DIR}/src/libkiva"
 )

@@ -14,11 +14,19 @@ init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
-  - if not exist basic-miktex-x64.exe curl -s -o basic-miktex-x64.exe -L https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-2.9.7031-x64.exe
+  - if not exist basic-miktex-x64.exe curl -s -o basic-miktex-x64.exe -L https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-2.9.7219-x64.exe
   - basic-miktex-x64.exe --unattended --auto-install=yes --shared --package-set=basic
   - ps: $env:PATH = 'C:\Program Files\MiKTeX 2.9\miktex\bin\x64;' + $env:PATH
-  - pdflatex --version
-  - xelatex --version
+  - initexmf --update-fndb
+  - initexmf --mkmaps
+  - initexmf --mklinks --force
+  - mpm --update-db
+  - mpm --install=l3backend
+  - mpm --install=fancyhdr
+  - mpm --install=url
+  - mpm --install=booktabs
+  - mpm --find-updates
+  - mpm --update
   - ps: cinst -y pandoc --version 1.17.2
   - cmd:  refreshenv
 

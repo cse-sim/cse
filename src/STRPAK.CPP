@@ -741,31 +741,45 @@ WStr WStrDTZ(		// drop trailing 0s
 	int minPrec /*=0*/)		// min precision, if 0, '.' deleted also
 // returns s w/o trailing 0s
 {
-	WStr sx;
+#if 0 && defined( _DEBUG)
+	// test code, 5-2019
+	static int tested = 0;
+	if (!tested++)
+	{	printf("\nWStrDTZ test\n");
+		const char* t[] = { "0", ".0", "0.0010", "3.010200", "1230", "1205", "01.", "1.324", "" };
+		for (int mp = 5; mp >= 0; mp--)
+		{	printf("minPrec = %d\n", mp);
+			for (int it = 0; it < sizeof(t) / sizeof(t[0]); it++)
+			{	WStr tx = t[it];
+				WStr txDTZ = WStrDTZ(tx, mp);
+				printf("  %10s   %10s\n", t[it], txDTZ.c_str());
+			}
+		}
+		printf("\n");
+	}
+#endif
 	int len = s.length();
 	int newLen = len;	// candidate new length
 	for (int i = len; --i >= 0; )
-	{	if (s[ i] == '0')
-		{	if (newLen == i+1)
+	{	if (s[i] == '0')
+		{	if (newLen == i + 1)
 				newLen = i;
 		}
-		else if (s[ i] == '.')
+		else if (s[i] == '.')
 		{	if (newLen <= i + minPrec)
 				newLen = i + minPrec + 1;
-			else if (!minPrec && newLen == i+1)
+			else if (!minPrec && newLen == i + 1)
 				newLen = i;		// drop decimal too
-			if (newLen == 0)
-				sx = "0";	// string was ".0000"
-			else
-				sx = s.substr( 0, newLen);
-			break;
+			return newLen == 0
+						? "0"	// string was ".0000"
+						: s.substr(0, newLen);
 		}
 		else if (newLen == len)
 			break;		// no trailing 0s, give up
 		// else keep scanning
 	}
 	// never hit decimal point, do nothing
-	return sx;
+	return s;
 }			// WStrDTZ
 // ======================================================================
 SI FC strlstin(			// case insensitive search for string in list

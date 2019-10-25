@@ -1505,6 +1505,10 @@ CULT( "izVfMin",	 DAT,   IZXRAT_VFMIN, 0,   0, VSUBHRLY,TYFL, 0,      0.f,      
 CULT( "izVfMax",	 DAT,   IZXRAT_VFMAX, 0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 CULT( "izASEF",		 DAT,   IZXRAT_ASEF,  0,   0, VSUBHRLY,TYFL, 0,	     0.f,				 N,   N),
 CULT( "izLEF",		 DAT,   IZXRAT_LEF,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+CULT( "izSRE",		 DAT,   IZXRAT_SRE,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+CULT( "izASRE",		 DAT,   IZXRAT_ASRE,  0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+CULT( "izRVFanHeatF",DAT,   IZXRAT_RVFANHEATF,0,0,VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
+
 CULT( "izVfExhRat",	 DAT,   IZXRAT_VFEXHRAT, 0,0, VSUBHRLY,TYFL, 0,      1.f,                N,   N),
 CULT( "izEATR",		 DAT,   IZXRAT_EATR,  0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 
@@ -2017,7 +2021,6 @@ CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
 CULT( "dhwheatrec",  RATE,  0,               0,       0, 0,      0,     &WRiB,  N,      dhwHeatRecT, N),
 
-
 CULT( "endDHWSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwSysT
@@ -2080,6 +2083,7 @@ CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VHRLY,  TYFL, 0,      
 CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VHRLY,  TYFL, 0,      4.f,    N,   N),
 CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VHRLY|EVENDIVL,  TYFL, 0,      0.f,    N,   N),
 CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
+CULT( "btControlAlg", DAT,   BATTERY_CONTROLALG,0,     0, VHRLY,  TYCH,  0,  nc( C_BATCTRLALGVC_DEFAULT), 0.f, N, N),
 CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// btT

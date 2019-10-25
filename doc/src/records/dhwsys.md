@@ -6,6 +6,7 @@ The parent-child structure of DHWSYS components is determined by input order. Fo
 
 -   DHWSYS
     -   DHWHEATER
+    -   DHWHEATREC
     -   DHWTANK
     -   DHWPUMP
     -   DHWLOOP
@@ -19,15 +20,15 @@ No actual controls are modeled. For example, if several DHWHEATERs are included 
 
 Optional name of system; give after the word “DHWSYS” if desired.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+  **Units**    **Legal Range**   **Default**    **Required**   **Variability**
+  ----------- ----------------- ------------- --------------- -----------------
+               *63 characters*     *none*          No             constant
 
 **wsCentralDHWSYS=*dhwsysName***
 
   Name of the central DHWSYS that serves this DHWSYS, allowing representation of multiple units having distinct distribution configurations and/or water use patterns but served by a central DHWSYS.  The child DHWSYS(s) may not include DHWHEATERs -- they are "loads only" systems.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
-  **Units**   **Legal Range**     **Default**             **Required**   **Variability**
+  **Units**    **Legal Range**     **Default**             **Required**   **Variability**
   ----------- ------------------- ----------------------- -------------- -----------------
                *name of a DHWSYS*    DHWSYS is standalone          No           constant
 
@@ -35,9 +36,10 @@ Optional name of system; give after the word “DHWSYS” if desired.
 
  Name of a DHWSYS that serves the same loads as this DHWSYS, allowing representation of multiple water heating systems within a unit. If given, wsUse and wsDayUse are not allowed, hot water requirements are derived from the referenced DHWSYS.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
- Loads are shared by assigning DHWUSE events sequentially to all DHWSYSs in a group.  This algorithm approximately divides the load by the number of DHWSYSs in the group.
-
  For example, two DHWSYSs should be defined to model two water heating systems serving a load represented by wsDayUse DayUseTyp.  Each DHWSYS should include DHWHEATER(s) and other components as needed.  DHWSYS Sys1 should specify wsDayUse=DayUseTyp and DHWSYS Sys2 should have wsLoadShareDHWSYS=Sys1 in place of wsDayUse.
+
+ Loads are shared by assigning DHWUSE events sequentially by end use to all DHWSYS with compatible fixtures (determined by wsFaucetCount, wsShowerCount etc., see below) in the group.  This algorithm approximately divides load for each end use by the number of compatible fixtures in the group.  In addition, assigning 0 to a fixture type prevents assignment of an end use load to a DHWSYS -- for example, wsDWashrCount=0 could be provided for a DHWSYS that does not serve a kitchen.
+
 
  **Units**   **Legal Range**      **Default**            **Required**   **Variability**
  ----------- ------------------- ---------------------- -------------- -----------------
@@ -51,21 +53,39 @@ Number of identical systems of this type (including all child objects). Any valu
   ----------- ----------------- ------------- -------------- -----------------
               $\ge$ 0             1             No             constant
 
+
+**wsFaucetCount=*integer***\
+**wsShowerCount=*integer***\
+**wsBathCount=*integer***\
+**wsCWashrCount=*integer***\
+**wsDWashrCount=*integer***
+
+Specifies the count of fixtures served by this DHWSYS that can accommodate draws of each end use (see DHWUSE).  These counts are used for distributing draws in shared load configurations (multiple DHWSYSs serving the same loads, see wsLoadShareDHWSYS above).
+
+In addition, wsShowerCount participates in assignment of Shower draws to DHWHEATRECs (if any).
+
+Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), these counts have no effect and need not be specified.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+              $\ge$ 0             1             No             constant
+
+
 **wsTInlet=*float***
 
-Specifies cold (mains) water temperature supplied to DHWHEATERs in this DHWSYS.
+Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER supply water temperature wsTInlet adjusted (increased) by any DHWHEATREC recovered heat and application of wsSSF (approximating solar preheating).
 
   **Units**   **Legal Range**   **Default**                    **Required**   **Variability**
   ----------- ----------------- ------------------------------ -------------- -----------------
-  ^o^F        $>$ 32 ^o^F       Mains temp from weather file   No             hourly
+  ^o^F         $>$ 32 ^o^F       Mains temp from weather file   No             hourly
 
 **wsUse=*float***
 
 Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  gal         $\ge$ 0            0             No             hourly
+  gal           $\ge$ 0            0             No             hourly
 
 **wsDayUse=*dhwdayuseName***
 
@@ -136,11 +156,16 @@ Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The def
 
 **wsSSF=*float***
 
-Specifies the solar savings fraction.
+Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions.  The contributions are modeled by deriving an increased water heater feed temperature --
 
-  **Units**    **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              $\ge$ 0           0             No             hourly
+$$tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)$$
+
+where tInletAdj is the source cold water temperature *including any DHWHEATREC tempering* (that is, wsTInlet + heat recovery temperature increase, if any).  This model approximates the diminishing returns associated with combined preheat strategies such as drain water heat recovery and solar.
+
+
+  **Units**    **Legal Range**         **Default**   **Required**   **Variability**
+  ----------- ----------------------- ------------- -------------- -----------------
+                0 $\le$ x $\le$ 0.99           0             No             hourly
 
 **wsElecMtr=*mtrName***
 
@@ -191,13 +216,22 @@ Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quant
   ----------- ---------------------- ------------- -------------- -----------------
               *Codes listed above*   SIMULATE      No             
 
+  **wsWriteDrawCSV=*choice***
+
+  If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.          
+
+
+  **Units**    **Legal Range**        **Default**   **Required**   **Variability**
+  ----------- ---------------------- ------------- -------------- -----------------
+               *Yes or No*                No           No             constant
+
 **endDHWSys**
 
 Optionally indicates the end of the DHWSYS definition.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             
+  --------- ------------------ ------------- -------------- -----------------
+    *n/a*        *n/a*                 *n/a*         No             *n/a*
 
 **Related Probes:**
 

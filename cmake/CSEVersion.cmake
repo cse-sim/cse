@@ -16,7 +16,7 @@ else()
 endif()
 
 execute_process(
-  COMMAND git rev-parse --verify --short HEAD
+  COMMAND ${GIT_EXECUTABLE} rev-parse --verify --short HEAD
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   RESULT_VARIABLE git_sha_exit_status
   OUTPUT_VARIABLE GIT_SHA
@@ -28,7 +28,7 @@ if (NOT ${git_sha_exit_status} MATCHES "0")
 endif()
 
 execute_process(
-  COMMAND git describe --tags --abbrev=0
+  COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   RESULT_VARIABLE git_tag_exit_status
   OUTPUT_VARIABLE GIT_TAG
@@ -55,7 +55,7 @@ else()
 endif()
 
 execute_process(
-  COMMAND git rev-list --count HEAD ^${GIT_TAG}
+  COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD ^${GIT_TAG}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   RESULT_VARIABLE git_build_exit_status
   OUTPUT_VARIABLE GIT_BUILD
