@@ -693,7 +693,7 @@ x enum endUses { euClg=0, euHtg, euHPHtg, euSHW, euFan, euAux, euProc, euLit, eu
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code
 #endif
-BOOL DbDo( DWORD oMsk);
+BOOL DbDo( DWORD oMsk, int options=0);
 
 // debugging option bits
 //   re control of conditional DbPrintf()s

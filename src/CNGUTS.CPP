@@ -246,10 +246,12 @@ void FC runFazDataFree()
 }				// runFazDataFree
 //-----------------------------------------------------------------------------
 BOOL DbDo(				// handy DbShouldPrint + headings
-	DWORD oMsk)		// dbdXXX debug category
+	DWORD oMsk,		// dbdXXX debug category
 					// or special values
 					//    dbdSTARTRUN: init at run beg
 					//    dbdSTARTSTEP: init at timestep beg
+	int options /*=0*/)		// options
+							//   dbdoptNOHDGS: suppress headings
 // WHY: triggers headings upon 1st actual print
 // return nz iff caller should print
 {
@@ -257,19 +259,20 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 #if defined( DEBUGDUMP)
 	static int dbgDoneRunHdg = FALSE;
 	static int dbgDoneStepHdg = FALSE;
+	bool bDoHdgs = !(options & dbdoptNOHDGS);
 	if (oMsk == dbdSTARTRUN)
 		dbgDoneRunHdg = dbgDoneStepHdg = FALSE;
 	else if (oMsk == dbdSTARTSTEP)
 		dbgDoneStepHdg = FALSE;
 	else if (DbShouldPrint( oMsk))
 	{	// this debug category is selected
-		if (!dbgDoneRunHdg)
+		if (bDoHdgs && !dbgDoneRunHdg)
 		{	DbPrintf( "################\n%s%s %s %s   %s\n",
 				  Top.tp_RepTestPfx(),
 				  ProgName, ProgVersion, ProgVariant, Top.runDateTime );
 			dbgDoneRunHdg = TRUE;
 		}
-		if (!dbgDoneStepHdg)
+		if (bDoHdgs && !dbgDoneStepHdg)
 		{	const char* tAusz="";
 			if (Top.tp_autoSizing)
 			{	const char* tPass =
@@ -280,9 +283,9 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 				tAusz = strtprintf( " pass=%s itr=%d", tPass, Top.dsDayNIt);
 			}
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
-				Top.dateStr ? Top.dateStr : "(No date)",
-				tAusz,
-				Top.iHr, Top.iSubhr);
+					Top.dateStr ? Top.dateStr : "(No date)",
+					tAusz,
+					Top.iHr, Top.iSubhr);
 			dbgDoneStepHdg = TRUE;
 		}
 		ret = 1;	// yes, caller should print

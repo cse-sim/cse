@@ -3286,6 +3286,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
+  *declare "float ws_GetTSetpoint( int whfcn) const;"
   *declare "int ws_DetermineSimMeth() const;"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
@@ -3348,7 +3349,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 										//    BUT this is only approx due to e.g. mixdown and XBU.
 
   *h FLOAT ws_tUse;			// hot water use temp, F
-  *h FLOAT ws_tSetpoint;	// water heater set point, F
+							//   = temp water is delivered to fixtures or DHWLOOP(s)
+							//   default = 120 F
+  *h FLOAT ws_tSetpoint;	// DHWHEATER set point (for all DHWHEATERs using HPWH model), F
+							//   default = ws_tUse
+  *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
+							//   default = ws_tUse
   *d TI ws_dayUsei;			// idx of DHWDAYUSE
   *d CHP ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
   *h FLOAT_GEZ ws_parElec;	// electrical parasitic power, W
@@ -3380,13 +3386,18 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;		// ditto DHWTANKs
   *r INT ws_wpCount;		// ditto DHWPUMPs
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
+
   *r FLOAT ws_wlUA;			// DHWLOOP total UA, Btu/F
   *r FLOAT ws_wlVol;		// DHWLOOP total volume (including pipe wall thickness), gal
   *r FLOAT ws_wlLen;		// DHWLOOP total length, ft
   *r FLOAT ws_wlExArea;		// DHWLOOP total exterior area (at insul surface), ft2
+
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
-							//    reflects all wx_mults
-							//    note may be non-integer
+							//    reflects all wx_mults, may be non-integer
+  *r FLOAT ws_wbUA;			// DHWLOOPBRANCH total UA, Btu/F
+  *r FLOAT ws_wbVol;		// DHWLOOPBRANC total volume (including pipe wall thickness), gal
+  *r FLOAT ws_wbLen;		// DHWLOOPBRANC total length, ft
+  *r FLOAT ws_wbExArea;		// DHWLOOPBRANC total exterior area (at insul surface), ft2
 
   *r INT ws_wrCount;		// total child DHWHEATRECs
   *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
@@ -3450,7 +3461,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const;"
   *declare "int wh_GetFunction() const;"
-  *declare "enum { whfcnUNKNOWN, whfcnPRIMARY, whfcnLOOPHEATER };"
+  *declare "enum { whfcnUNKNOWN=-1, whfcnPRIMARY=0, whfcnLOOPHEATER, whfcnCOUNT };"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
   *declare "int wh_UsesDerivedLDEF() const;"
@@ -3596,7 +3607,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHInit();"
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( const struct DHWTICK* ticksSh, double scaleWH, double fLH=0., struct DHWTICK* ticksShLH=NULL);"
+  *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
 
   *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -3747,11 +3758,18 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 								//   loss makeup DHWLOOPPUMP electricity accumulated to end use dhwMFL
   *declare "MTR* wl_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
 
-						// derived values (all-segment totals)
+						// Child segment total derived values
   *r FLOAT wl_UA;		//    UA, Btu/F
   *r FLOAT wl_len;		//	  length, ft
   *r FLOAT wl_exArea;	//	  exterior surface area (includes insulation thk), ft2
   *r FLOAT wl_vol;		//    volume including pipe wall thickness (not insulation), gal
+
+						// Child branch total derived values
+  *r FLOAT wl_wbUA;		//    UA, Btu/F
+  *r FLOAT wl_wbLen;	//	  length, ft
+  *r FLOAT wl_wbExArea;	//	  exterior surface area (includes insulation thk), ft2
+  *r FLOAT wl_wbVol;	//    volume including pipe wall thickness (not insulation), gal
+
 
   *h *e FLOAT wl_volRL; // current hour volume returned to water heater, gal
 						//    (reflects wl_mult)
@@ -3854,7 +3872,6 @@ RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime 
   *declare "DHWSYS* wb_GetDHWSYS() const;"
   *declare "float wb_CalcUA();"
   *declare "RC wb_DoHour( float tIn);"
-
 
   *i FLOAT wb_mult;		// # of identical branches
 						//  (note non-integral values allowed)

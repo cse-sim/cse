@@ -84,15 +84,15 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 
 **whVol=*float***
 
-Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used in the detailed HPWH model when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC (other whASHPTypes implicitly determine tank volume).  For all other configurations, whVol is documentation-only.
+Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.  ?Update?
 
   -----------------------------------------------------------------------
-  **Units**   **Legal Range**   **Default**   **Required**       **Variability**
-  ----------- ----------------- ------------- ------------------ -----------------
-  gal         $\ge$ 0.1          50 (when not   When used by     constant
-              (caution: small    required)      detailed HPWH
-              values may cause                  model, see above
-              runtime errors)
+  **Units**   **Legal Range**   **Default**     **Required**       **Variability**
+  ----------- ----------------- --------------- ------------------ -----------------
+  gal         $\ge$ 0.1          per whASHPType  For some HPWH       constant
+              (caution: small    if HPWH         configurations,
+              values may cause   else 50         see above
+              runtime errors) 
   -----------------------------------------------------------------------
 
 **whEF=*float***

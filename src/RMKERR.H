@@ -97,6 +97,7 @@ const DWORD dbdALWAYS = 1;				// print always (even if dbgMask = 0)
 const DWORD dbdANY = 0xfffffff0;		// print if any dbgMask bit enabled
 const DWORD dbdSTARTRUN =  0xfffffff1;	// special run-start value (see tp_DbHdgsIf())
 const DWORD dbdSTARTSTEP = 0xfffffff2;	// special timestep start value (ditto)
+const DWORD dbdoptNOHDGS = 0x1;			// DbDo options: don't write headings
 BOOL DbShouldPrint( DWORD oMsk);
 DWORD DbSetMask( DWORD newMsk);
 RC DbFileOpen( const char *_dbFName);
