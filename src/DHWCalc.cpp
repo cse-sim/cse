@@ -691,21 +691,15 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)	// loop ("swing") heaters
 		rc |= pWH->wh_Init();
 
-	ws_wbCount = 0.f;	// branch count can be non-integer
-	ws_wlUA = ws_wlVol = ws_wlLen = ws_wlExArea = 0.f;
-	ws_wbUA = ws_wbVol = ws_wbLen = ws_wbExArea = 0.f;
+	// all-child totals
+	ws_loopSegTotals.st_Init();		// DHWLOOPSEGs
+	ws_branchTotals.st_Init();		// DHWLOOPBRANCHs
+
 	DHWLOOP* pWL;
 	RLUPC( WlR, pWL, pWL->ownTi == ss)
 	{	rc |= pWL->wl_Init();
-		ws_wbCount  += pWL->wl_mult * pWL->wl_wbCount;	// total branches served by this system
-		ws_wlUA     += pWL->wl_mult * pWL->wl_UA;			// DHWLOOP total UA, Btu/F
-		ws_wlVol    += pWL->wl_mult * pWL->wl_vol;			// DHWLOOP total volume (including pipe wall thickness), gal
-		ws_wlLen    += pWL->wl_mult * pWL->wl_len;			// DHWLOOP total length, ft
-		ws_wlExArea += pWL->wl_mult * pWL->wl_exArea;		// DHWLOOP total exterior area (at insul surface), ft2
-		ws_wbUA     += pWL->wl_mult * pWL->wl_wbUA;			// DHWLOOPBRANCH total UA, Btu/F
-		ws_wbVol    += pWL->wl_mult * pWL->wl_wbVol;		// DHWLOOPBRANC total volume (including pipe wall thickness), gal
-		ws_wbLen    += pWL->wl_mult * pWL->wl_wbLen;		// DHWLOOPBRANC total length, ft
-		ws_wbExArea += pWL->wl_mult * pWL->wl_wbExArea;		// DHWLOOPBRANC total exterior area (at insul surface), ft2
+		ws_loopSegTotals.st_Accum(pWL->wl_segTotals, pWL->wl_mult);
+		ws_branchTotals.st_Accum(pWL->wl_branchTotals, pWL->wl_mult);
 	}
 
 	ws_simMeth = ws_DetermineSimMeth();
@@ -738,8 +732,8 @@ int DHWSYS::ws_DetermineSimMeth() const
 float DHWSYS::ws_BranchFlow() const		// average branch flow rate
 // returns nominal branch flow, gpm
 {
-	float brVF = ws_wbCount > 0.f
-					? ws_whUse.total / (ws_wbCount * 60.f)
+	float brVF = ws_branchTotals.st_count > 0.f
+					? ws_whUse.total / (ws_branchTotals.st_count * 60.f)
 					: 0.f;
 
 	return brVF;
@@ -3405,24 +3399,17 @@ RC DHWLOOP::RunDup(		// copy input to run record; check and initialize
 RC DHWLOOP::wl_Init()		// DHWLOOP init for run
 {
 	RC rc = RCOK;
-	wl_wbCount = 0.f;		// branch count (may be non-integer)
-	wl_UA = wl_vol = wl_len = wl_exArea = 0.f;
-	wl_wbUA = wl_wbVol = wl_wbLen = wl_wbExArea = 0.f;
+
+	// compute totals
+	wl_segTotals.st_Init();
+	wl_branchTotals.st_Init();
 	DHWLOOPSEG* pWG;
 	RLUPC( WgR, pWG, pWG->ownTi == ss)
 	{	rc |= pWG->wg_Init();
-		wl_UA += pWG->ps_UA;
-		wl_vol += pWG->ps_vol;
-		wl_len += pWG->ps_len;
-		wl_exArea += pWG->ps_exArea;
-		wl_wbCount += pWG->wg_wbCount;
+		wl_segTotals.st_Accum(pWG->ps_totals);
 		DHWLOOPBRANCH* pWB;
 		RLUPC(WbR, pWB, pWB->ownTi == pWG->ss)
-		{	wl_wbUA     += pWB->wb_mult * pWB->ps_UA;
-			wl_wbVol    += pWB->wb_mult * pWB->ps_vol;
-			wl_wbLen    += pWB->wb_mult * pWB->ps_len;
-			wl_wbExArea += pWB->wb_mult * pWB->ps_exArea;
-		}
+			wl_branchTotals.st_Accum(pWB->ps_totals, pWB->wb_mult);
 	}
 
 	return rc;
@@ -3500,10 +3487,31 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
+// SEGTOTS: segment aggregated info
 // PBC: pipe boundary condition
 // PIPESEG: base class for DHWLOOPSEG and DHWLOOPBRANCH
 //          implements common methods
 ///////////////////////////////////////////////////////////////////////////////
+SEGTOTS::SEGTOTS()
+{
+	st_Init();
+}
+//-----------------------------------------------------------------------------
+void SEGTOTS::st_Init()
+{	st_count = st_len = st_vol = st_exArea = st_UA = 0.;
+}
+//-----------------------------------------------------------------------------
+void SEGTOTS::st_Accum(
+	const SEGTOTS& src,
+	double count /*=1.*/)
+{
+	st_count += src.st_count*count;
+	st_len += src.st_len*count;
+	st_vol += src.st_vol*count;
+	st_exArea += src.st_exArea*count;
+	st_UA += src.st_UA*count;
+}		// SEGTOTS::st_Accum
+//=============================================================================
 void PBC::sb_Init(PIPESEG* pPS)
 {
 	sb_pPS = pPS;
@@ -3549,12 +3557,17 @@ float PIPESEG::ps_GetOD(
 void PIPESEG::ps_CalcGeom()		// pipe seg derived geometric values
 // sets ps_exArea (ft2) and ps_vol (gal)
 {
+	// initialize SEGTOTS re accum to parents
+	//   other members set below
+	ps_totals.st_count = 1.;
+	ps_totals.st_len = ps_len;
+
 	float r = ps_GetOD( 0) / 24.f;	// pipe radius, ft
 	// include tube wall in vol, approximates heat cap of tubing
-	ps_vol = 7.48f * kPi * r * r * ps_len;
+	ps_totals.st_vol = 7.48 * kPi * r * r * ps_len;
 	
-	float d = ps_GetOD(1) / 12.f;
-	ps_exArea = d * kPi * ps_len;
+	double d = ps_GetOD(1) / 12.;
+	ps_totals.st_exArea = d * kPi * ps_len;
 }		// PIPESEG::ps_CalcGeom
 //----------------------------------------------------------------------------
 float PIPESEG::ps_CalcUA(
@@ -3578,8 +3591,8 @@ float PIPESEG::ps_CalcUA(
 0		float Uflat = 1.f/(ps_insulThk/12.f/ps_insulK + 1.f/ps_exH);
 #endif
 	}
-	ps_UA = ps_len * min( Ubare, fUA*Uinsul);
-	return ps_UA;
+	ps_totals.st_UA = ps_len * min( Ubare, fUA*Uinsul);
+	return ps_totals.st_UA;
 }		// PIPESEG::ps_CalcUA
 //----------------------------------------------------------------------------
 float PIPESEG::ps_CalcTOut(		// calc outlet or ending temp
@@ -3589,7 +3602,7 @@ float PIPESEG::ps_CalcTOut(		// calc outlet or ending temp
 {
 	float tOut = ps_exT;
 	if (flow > .00001f)		// if flow
-	{	double f = exp( - double( ps_UA / (flow * ps_fRhoCpX)));
+	{	double f = exp( - double( ps_totals.st_UA / (flow * ps_fRhoCpX)));
 		tOut += float( f * (tIn - ps_exT));
 	}
 	return tOut;
@@ -3719,7 +3732,7 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 	// heat loss (noflow)
 	if (fNoFlow > 0.f)
 	{	float tStart = (ps_tIn + ps_tOut) / 2.f;
-		float volX = ps_vol / 60.f;
+		float volX = ps_totals.st_vol / 60.f;
 		float tEnd = ps_CalcTOut( tStart, volX/fNoFlow);
 		ps_PLCD = volX * ps_fRhoCpX * (tStart - tEnd);
 	}
@@ -3819,7 +3832,7 @@ RC DHWLOOPBRANCH::wb_DoHour(			// hourly DHWLOOPBRANCH calcs
 
 	// waste loss
 	// ?tInlet?
-	wb_HBWL = wb_fWaste * ps_vol * (ps_fRhoCpX/60.f) * (ps_tIn - pWS->ws_tInlet);
+	wb_HBWL = wb_fWaste * ps_totals.st_vol * (ps_fRhoCpX/60.f) * (ps_tIn - pWS->ws_tInlet);
 
 	// note wb_mult applied by caller
 

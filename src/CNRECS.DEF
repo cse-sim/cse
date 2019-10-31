@@ -3277,6 +3277,23 @@ RECORD DHWMTR "DHWmeter" *RAT 	// DHWMTR: hot water consumption
     *h *e *nest DHWMTR_IVL H   	// hour's use
 *END		// DHWMTR
 //=============================================================================
+RECORD SEGTOTS "segment totals" *SUBSTRUCT  // aggregated segment info substruct 
+// retains / accumulates PIPESEG info
+// used in DHWSYS, DHWLOOP, DHWLOOPSEG, DHWBRANCH
+	*prefix st_
+
+	*excon
+	*declare "void st_Init();"
+	*declare "void st_Accum( const SEGTOTS& src, double count=1.);"
+	
+	*r DBL st_count		// # of segments included in totals
+	*r DBL st_len		// length, ft
+	*r DBL st_vol		// volume, gal
+	*r DBL st_exArea	// outside surface area (at insulation surface), ft2
+	*r DBL st_UA		// fluid-to-surround loss, Btuh/F-hr
+
+*END	// SEGTOTS
+//=============================================================================
 RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
@@ -3387,17 +3404,23 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wpCount;		// ditto DHWPUMPs
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
 
+  *r *nest SEGTOTS ws_loopSegTotals;	// aggregated totals, all child loop segments
+#if 0
   *r FLOAT ws_wlUA;			// DHWLOOP total UA, Btu/F
   *r FLOAT ws_wlVol;		// DHWLOOP total volume (including pipe wall thickness), gal
   *r FLOAT ws_wlLen;		// DHWLOOP total length, ft
   *r FLOAT ws_wlExArea;		// DHWLOOP total exterior area (at insul surface), ft2
+#endif
 
+  *r *nest SEGTOTS ws_branchTotals;	// aggregated totals, all child branches
+#if 0
   *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
 							//    reflects all wx_mults, may be non-integer
   *r FLOAT ws_wbUA;			// DHWLOOPBRANCH total UA, Btu/F
   *r FLOAT ws_wbVol;		// DHWLOOPBRANC total volume (including pipe wall thickness), gal
   *r FLOAT ws_wbLen;		// DHWLOOPBRANC total length, ft
   *r FLOAT ws_wbExArea;		// DHWLOOPBRANC total exterior area (at insul surface), ft2
+#endif
 
   *r INT ws_wrCount;		// total child DHWHEATRECs
   *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
@@ -3741,9 +3764,6 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
   *declare "RC wl_DoHour( int wsMult);"
 
   *i SI wl_mult			// multiplier: number of identical loops
-  *r FLOAT wl_wbCount	// total # of DHWLOOPBRANCHs on all DHWLOOPSEGs
-						//   note may be non-integer
-						//   does NOT include wl_mult
   *r SI wl_wlpCount		// total # of child DHWLOOPPUMPs
   *h FLOAT_GEZ wl_flow	// current loop recirculation max flow, gpm
   *h FLOAT_GEZ wl_runF	// current hour recirculation operation fraction
@@ -3757,20 +3777,12 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
   *i TI wl_elecMtri;			// meter for loop electricity use (default = parent ws_elecMtri)
 								//   loss makeup DHWLOOPPUMP electricity accumulated to end use dhwMFL
   *declare "MTR* wl_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
-
-						// Child segment total derived values
-  *r FLOAT wl_UA;		//    UA, Btu/F
-  *r FLOAT wl_len;		//	  length, ft
-  *r FLOAT wl_exArea;	//	  exterior surface area (includes insulation thk), ft2
-  *r FLOAT wl_vol;		//    volume including pipe wall thickness (not insulation), gal
-
-						// Child branch total derived values
-  *r FLOAT wl_wbUA;		//    UA, Btu/F
-  *r FLOAT wl_wbLen;	//	  length, ft
-  *r FLOAT wl_wbExArea;	//	  exterior surface area (includes insulation thk), ft2
-  *r FLOAT wl_wbVol;	//    volume including pipe wall thickness (not insulation), gal
-
-
+  *r *nest SEGTOTS wl_segTotals;	// Aggregated totals for all child DHWLOOPSEGs
+									//   count, len, vol, exArea, UA
+									//   values DO NOT reflect wl_mult
+  *r *nest SEGTOTS wl_branchTotals;	// Aggregated totals for all child DHWLOOPBRANCHs
+									//   count, len, vol, exArea, UA
+									//   values DO NOT reflect wl_mult
   *h *e FLOAT wl_volRL; // current hour volume returned to water heater, gal
 						//    (reflects wl_mult)
 						//    reduced by loss makeup
@@ -3787,7 +3799,8 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 						//    may not be same as ps_tOut of last segment
   
 *END	// DWHLOOP
-//=============================================================================
+
+//============================================================================
 RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
 *prefix sb_
 *declare "void sb_Init( PIPESEG* pPS);"
@@ -3823,9 +3836,8 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*i EXCNDCH ps_exCnd			// adjacent cond: adiabatic/ambient/specT/adjZn.
 	*h FLOAT ps_exT				// surround temperature, F
 
-	*r FLOAT ps_vol;			// pipe segment volume calc'd using OD, gal
-	*r FLOAT ps_exArea;			// pipe segment outside surface area (at insulation surface), ft2
-	*r FLOAT ps_UA;				// fluid-to-surround loss, Btuh/F-hr
+	*r *nest SEGTOTS ps_totals;	// segment totals (re st_Accum() to parents)
+								//   also retains vol, UA, exArea used in calcs
 	*r FLOAT_GZ ps_fRhoCpX;		// fluid volumetric heat flow factor, Btuh/gpm-F
 								//    initialized for water, code otherwise general
 	*h *e FLOAT ps_fvf;			// fluid volumetric flow rate, gpm (note: not ft3/hr)
