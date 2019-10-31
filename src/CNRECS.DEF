@@ -3389,7 +3389,11 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
 							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
-							//   [1 ..] = per C_DHWUSETYCH_xxx
+							//   [1 ..] = per C_DHWEUCH_xxx
+  *h *array 6 FLOAT ws_whDrawWaste;	// water waste per draw, gal
+							// converts to time added to draw duration
+							// [ 0] (unused)
+							// [ 1..] = per C_DHWEUCH_xxx
 
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs

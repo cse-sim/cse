@@ -808,6 +808,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (WHDRAWFDIM != NDHWENDUSES)
 		err( PABT, "ws_whDrawDurF array size error");
 	VSet( ws_whDrawDurF, WHDRAWFDIM, -1.f);
+	if (sizeof(ws_whDrawWaste)/sizeof( ws_whDrawWaste[ 0]) != NDHWENDUSES)
+		err(PABT, "ws_whDrawWaste array size error");
 #endif
 
 	// Duration factor
@@ -1493,8 +1495,9 @@ static const double minPerDay = double( 24*60);
 	}
 
 	// derive adjusted duration
-	//   warmup losses are represented by extending draw
-	float durX = wu_dur * pWS->ws_whDrawDurF[ wu_hwEndUse];
+	//   losses are represented by extended draw
+	float durX = wu_dur * pWS->ws_whDrawDurF[wu_hwEndUse]
+			  + pWS->ws_whDrawWaste[wu_hwEndUse] / wu_flow;		// warmup waste
 	if (durX > minPerDay)
 	{	// duration longer than 1 day
 		// warn and limit
