@@ -50,6 +50,7 @@ set(files
   dwhr
   dhwls
   DHW_INV 
+  dhw_uef
   pvtest
   pv_bt_test
   bt_test

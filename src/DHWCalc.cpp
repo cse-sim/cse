@@ -314,6 +314,7 @@ struct DHWTICK	// per tick info for DHWSYS
 	double wtk_TOutPrimAvg() const
 	{	return wtk_tOutCount > 0.f ? wtk_tOutSum / wtk_tOutCount : wtk_tInletX;
 	}
+	double wtk_DrawTot(float tOut, float& tInletMix) const;
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
 void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
@@ -329,8 +330,30 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 	}
 	// else leave wtk_tInletX
 
-	// wtk_dwhrDraws: not needed (DWHR results are in wtk_Use and wtk_tInletX
+	// TODO: other members?
+
 }		// DHWTICK::wtk_Accum
+//-----------------------------------------------------------------------------
+double DHWTICK::wtk_DrawTot(
+	float tOut,				// assumed heater output temp
+	float& tInletMix) const	// returned: mixed inlet temp
+							//   (combined loop return and inletX)
+// returns draw volume for tick, gal
+{
+	float drawUse = wtk_whUse;
+	if (wtk_qLossNoRL != 0.f)
+	{	float deltaT = max(1., tOut - wtk_tInletX);
+				// temp rise, F max( 1, dT) to prevent x/0
+		drawUse += wtk_qLossNoRL / (waterRhoCp * deltaT);
+	}
+
+	double drawTot = drawUse + wtk_volRL;
+	tInletMix = drawTot <= 0.
+		? wtk_tInletX
+		: (drawUse * wtk_tInletX + wtk_volRL * wtk_tRL) / drawTot;
+	return drawTot;
+
+}		// DHWTICK::wtk_DrawTot
 //-----------------------------------------------------------------------------
 struct DHWHRTICK	// per tick info for DHWHEATREC
 {
@@ -758,6 +781,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	{
 		if (Top.tp_isBegMainSim)
 		{	// reset annual values after autosize / warmup
+			VZero(ws_drawCount, NDHWENDUSES);
+
 			if (ws_fxList)
 				for (int iFx = 0; iFx < ws_ShowerCount(); iFx++)
 					ws_fxList[iFx].fx_hitCount = 0;
@@ -1213,11 +1238,10 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 	RC rc = RCOK;
 
 	double scaleTick = 1. / Top.tp_NHrTicks();	// allocate per tick
-	// non-draw losses imposed on DHWHEATER(s), Btu/tick
-	double qLossNoRL = (ws_HRBL + ws_HJL) * scaleTick;	// w/o recirc: DHWLOOP branch + jacket
-	double volRL = ws_volRL * scaleTick;				// recirc vol/WH-tick, gal
+	double qLossNoRL = (ws_HRBL + ws_HJL) * scaleTick;	// w/o recirc: DHWLOOPBRANCH + jacket
+	double volRL = ws_volRL * scaleTick;				// DHWLOOP recirc vol/tick, gal
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	double qLossTot = (ws_HRDL + ws_HJL) * scaleTick;		// total: DHWLOOP + jacket
 	double qLossRL = qLossTot - qLossNoRL;					// recirc only
 	// compared to ws_tRL??
@@ -1232,7 +1256,6 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 	}
 
 	return rc;
-
 
 }	// DHWSYS::ws_AddLossesToDraws
 //----------------------------------------------------------------------------
@@ -1494,6 +1517,7 @@ static const double minPerDay = double( 24*60);
 			return rc;		// not handled by this DHWSYS, do nothing
 	}
 
+
 	// derive adjusted duration
 	//   losses are represented by extended draw
 	float durX = wu_dur * pWS->ws_whDrawDurF[wu_hwEndUse]
@@ -1547,7 +1571,16 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	if (endX <= begX || wu_flow < 1.e-6)
 		return RCOK;		// no overlap with hour or no flow
 
-	// some use in current hour
+	// >> some use in current hour <<
+
+	// count draw
+	//   Note: counts are (slightly) approx
+	//     1. draws that span midnight are counted twice (these are rare in typical input)
+	//     2. draws that have same eventID (e.g. DWSHR) are counted individually
+	if (wu_hwEndUse > 0)
+		pWS->ws_drawCount[wu_hwEndUse]++;
+	pWS->ws_drawCount[0]++;
+
 	// compute actual flow re e.g. mixing
 	double tickDur = Top.tp_subhrTickDur;	// tick duration, min
 	double fxFlow = wu_flow * mult;			// total (mixed) flow at fixture, gpm
@@ -1993,7 +2026,7 @@ RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
 	RC rc = RCOK;
 
 	// accumulate load (re LDEF derivation)
-	wh_totHARL += HARL;
+	wh_totHARL += HARL;		// annual total
 	wh_hrCount++;
 
 	wh_inElec = 0.f;
@@ -2796,9 +2829,6 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 	const DHWTICK* ticksSh,	// subhour tick info (draw, cold water temp, ...)
 	double scaleWH)		// draw scale factor
 						//   re DHWSYSs with >1 DHWHEATER
-	// double xLoss)		// additional losses for DHWSYS, Btu/tick
-						//   re e.g. central loop losses
-						//   note: scale applied by caller
 {
 	RC rc = RCOK;
 
@@ -2814,12 +2844,13 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 	double nColdStarts = 0.;	// # of cold startups
 	for (int iTk=0; !rc && iTk<Top.tp_nSubhrTicks; iTk++)
 	{	const DHWTICK& tk = ticksSh[iTk];
-		float deltaT = max( 1., pWS->ws_tUse - tk.wtk_tInletX);
+		float tInletMix;
+		double drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletMix)*scaleWH;
+
+		float deltaT = max( 1., pWS->ws_tUse - tInletMix);
 										// temp rise, F max( 1, dT) to prevent x/0
-		double qPerGal = waterRhoCp * deltaT;	
-		double drawForTick =
-				tk.wtk_whUse*scaleWH
-			  + (tk.wtk_qLossNoRL*scaleWH + wh_loadCFwd) / qPerGal;	// xLoss and carry-forward
+		double qPerGal = waterRhoCp * deltaT;
+		drawForTick += wh_loadCFwd / qPerGal;
 		wh_loadCFwd= 0.;	// clear carry-forward, if not met, reset just below
 		if (drawForTick > 0.)
 		{	nTickNZDraw++;
@@ -2856,6 +2887,10 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 	// double startElec = wh_cycLossElec * nTickStart;	// unused in revised model
 	// standby in ticks w/o draw
 	double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks-nTickNZDraw) * tickDurHr;
+
+	// output accounting = heat delivered to water
+	double qHW = nTickFullLoad * wh_maxFlowX / 67.;
+	wh_totOut += qHW + wh_HPWHxBU;
 
 	// energy use accounting, Btu
 	float mult = pWS->ws_mult * wh_mult;	// overall multiplier

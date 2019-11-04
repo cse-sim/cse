@@ -3385,12 +3385,20 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
-  *h *e *array 6 FLOAT ws_whDrawDurF;	// water heater draw duration factors by end use
+  *h *e *array NDHWENDUSESPP INT ws_drawCount;	
+							// (approx) total # of draws in run (generally full year) by end use
+							//   draws spanning midnight double counted
+							//   draws with same eventID counted individually
+							//  [ 0]: total (including unknown end use)
+							//  [ 1..]: per C_DHWEUCH_xxx
+  *r *array NDHWENDUSESPP FLOAT ws_drawsPerDay;
+
+  *h *e *array NDHWENDUSESPP FLOAT ws_whDrawDurF;	// water heater draw duration factors by end use
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
 							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
-  *h *array 6 FLOAT ws_whDrawWaste;	// water waste per draw, gal
+  *h *array NDHWENDUSESPP FLOAT ws_whDrawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
 							// [ 0] (unused)
 							// [ 1..] = per C_DHWEUCH_xxx
@@ -3409,22 +3417,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wlCount;		// ditto DHWLOOPs (aka NLOOPk)
 
   *r *nest SEGTOTS ws_loopSegTotals;	// aggregated totals, all child loop segments
-#if 0
-  *r FLOAT ws_wlUA;			// DHWLOOP total UA, Btu/F
-  *r FLOAT ws_wlVol;		// DHWLOOP total volume (including pipe wall thickness), gal
-  *r FLOAT ws_wlLen;		// DHWLOOP total length, ft
-  *r FLOAT ws_wlExArea;		// DHWLOOP total exterior area (at insul surface), ft2
-#endif
 
-  *r *nest SEGTOTS ws_branchTotals;	// aggregated totals, all child branches
-#if 0
-  *r FLOAT ws_wbCount;		// total DHWLOOPBRANCHs, all loops
-							//    reflects all wx_mults, may be non-integer
-  *r FLOAT ws_wbUA;			// DHWLOOPBRANCH total UA, Btu/F
-  *r FLOAT ws_wbVol;		// DHWLOOPBRANC total volume (including pipe wall thickness), gal
-  *r FLOAT ws_wbLen;		// DHWLOOPBRANC total length, ft
-  *r FLOAT ws_wbExArea;		// DHWLOOPBRANC total exterior area (at insul surface), ft2
-#endif
+  *r *nest SEGTOTS ws_branchTotals;		// aggregated totals, all child branches
 
   *r INT ws_wrCount;		// total child DHWHEATRECs
   *r INT ws_wrFeedWHCount;	// count of child DHWHEATRECs that provide
@@ -3636,7 +3630,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_HPWHDoHour();"
   *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
 
-  *h DBL wh_totHARL;		// cumumlative recovery load at heater, Btu
+  *h DBL wh_totHARL;		// cumulative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
 							//   for single heater (wh_mult not applied)
   *h INT wh_hrCount;		// # of hourly values included in wh_totHARL
