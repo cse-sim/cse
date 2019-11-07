@@ -406,6 +406,10 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			T24DHW "T24DWH"
 			2013 "2013"
 		  }
+*choicb DHWBRANCHMODELCH {
+			T24DHW "T24DHW"
+			DRAWWASTE "DRAWWASTE"
+		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
 

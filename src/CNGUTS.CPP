@@ -752,8 +752,8 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	// probed at end interval (might happen in expr also ref'ing cur results? )
 	if (Top.ivl <= C_IVLCH_H)
 	{	DHWSYS* pWS;
-		RLUP( WsR, pWS)
-			pWS->ws_EndIvl( Top.ivl);
+		RLUP(WsR, pWS)
+			EF( pWS->ws_EndIvl(Top.ivl));
 	}
 	doIvlPrior();					// local fcn, below
 

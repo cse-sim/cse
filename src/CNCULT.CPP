@@ -1787,10 +1787,11 @@ CULT( "wbLength",	 DAT,	DHWLOOPBRANCH_LEN,	  0,       0, VEOI,   TYFL,  0,      
 CULT( "wbSize",		 DAT,	DHWLOOPBRANCH_SIZE,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "wbInsulK",	 DAT,	DHWLOOPBRANCH_INSULK, 0,       0, VEOI,   TYFL,  0,    0.02167f, N,   N),
 CULT( "wbInsulThk",	 DAT,	DHWLOOPBRANCH_INSULTHK,0,      0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "wbFUA",	     DAT,	DHWLOOPBRANCH_FUA,     0,      0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "wbExH",		 DAT,	DHWLOOPBRANCH_EXH,     0,      0, VHRLY,  TYFL,  0,     1.5f,    N,   N),
 CULT( "wbExCnd",     DAT,   DHWLOOPBRANCH_EXCND,   0,      0, VEOI,   TYCH,  0,      C_EXCNDCH_SPECT,    N,   N),
 CULT( "wbAdjZn",     DAT,   WBBC(ZI),              0,      0, VEOI,   TYREF, &ZiB,   0,      N,   N),
-CULT( "wbExTX",       DAT,  WBBC(TXA),             0,      0, VSUBHRLY,TYFL, 0,     70.f,    N,   N),
+CULT( "wbExTX",      DAT,   WBBC(TXA),             0,      0, VSUBHRLY,TYFL, 0,     70.f,    N,   N),
 CULT( "wbExT",		 DAT,	DHWLOOPBRANCH_EXT,     0,      0, VHRLY,  TYFL,  0,     70.f,    N,   N),
 CULT( "wbFlow",		 DAT,	DHWLOOPBRANCH_FLOW,    0,      0, VHRLY,  TYFL,  0,      2.f,    N,   N),
 CULT( "wbFWaste",	 DAT,	DHWLOOPBRANCH_FWASTE,  0,      0, VHRLY,  TYFL,  0,      0.f,    N,   N),
@@ -1880,7 +1881,9 @@ LOCAL RC FC wsStarCkf( CULT* c, /*DHWSYS* */ void *p, void *p2, void *p3)
 }		// wsStarCkf
 //=============================================================================
 #define FXC( eu) (DHWSYS_FXCOUNT+eu)
-#define FDX( eu) (DHWSYS_WHDRAWWASTE+eu)
+#define FDX( eu) (DHWSYS_DRAWWASTE+eu)
+#define DWF( eu) (DHWSYS_DAYWASTEDRAWF+eu)
+
 static CULT dhwSysT[] = //------ DHWSYS cmd RAT Entry table, used from cnTopCult
 {
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
@@ -1903,16 +1906,30 @@ CULT( "wsSDLM",      DAT,   DHWSYS_SDLM,     0,       0, VEOI,   TYFL,  0,      
 CULT( "wsDSM",       DAT,   DHWSYS_DSM,      0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsSSF",       DAT,   DHWSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "wsWF",        DAT,   DHWSYS_WF,       0,       0, VHRLY,  TYFL,  0,      1.f,    N, N),
+
 CULT( "wsFaucetCount",DAT,  FXC(C_DHWEUCH_FAUCET), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsShowerCount",DAT,  FXC(C_DHWEUCH_SHOWER), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
-CULT( "wsBathCount", DAT,   FXC(C_DHWEUCH_BATH),   0, 0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsBathCount",  DAT,  FXC(C_DHWEUCH_BATH),   0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsCWashrCount",DAT,  FXC(C_DHWEUCH_CWASHR), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsDWashrCount",DAT,  FXC(C_DHWEUCH_DWASHR), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
-CULT( "wsFaucetDrawWaste",DAT,FDX(C_DHWEUCH_FAUCET), 0, 0, VHRLY,TYFL,  0,      0.f,    N, N),
-CULT( "wsShowerDrawWaste",DAT,FDX(C_DHWEUCH_SHOWER), 0, 0, VHRLY,TYFL,  0,      0.f,    N, N),
-CULT( "wsBathDrawWaste",  DAT,FDX(C_DHWEUCH_BATH),   0, 0, VHRLY,TYFL,  0,      0.f,    N, N),
-CULT( "wsCWashrDrawWaste",DAT,FDX(C_DHWEUCH_CWASHR), 0, 0, VHRLY,TYFL,  0,      0.f,    N, N),
-CULT( "wsDWashrDrawWaste",DAT,FDX(C_DHWEUCH_DWASHR), 0, 0, VHRLY,TYFL,  0,      0.f,    N, N),
+
+CULT( "wsBranchModel",DAT,  DHWSYS_BRANCHMODEL,    0, 0, VEOI,   TYCH,  0, C_DHWBRANCHMODELCH_T24DHW, N, N),
+
+CULT("wsFaucetWaste", DAT,  FDX(C_DHWEUCH_FAUCET), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerWaste", DAT,  FDX(C_DHWEUCH_SHOWER), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathWaste",   DAT,  FDX(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrWaste" ,DAT,  FDX(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsDWashrWaste", DAT,  FDX(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+
+CULT( "wsDayWasteFaucetF",DAT,DWF(C_DHWEUCH_FAUCET), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "wsDayWasteShowerF",DAT,DWF(C_DHWEUCH_SHOWER), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "wsDayWasteBathF",  DAT,DWF(C_DHWEUCH_BATH),   0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "wsDayWasteCWashrF",DAT,DWF(C_DHWEUCH_CWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "wsDayWasteDWashrF",DAT,DWF(C_DHWEUCH_DWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+
+CULT( "wsDayWasteVol",    DAT, DHWSYS_DAYWASTEVOL,   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "wsDayWasteBranchVolF",DAT,DHWSYS_DAYWASTEBRANCHVOLF,
+												   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "wsElecMtr",   DAT,   DHWSYS_ELECMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),

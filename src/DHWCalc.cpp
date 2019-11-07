@@ -678,6 +678,10 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		RRFldCopyIf( pWSCentral, DHWSYS_TINLET);
 		RRFldCopyIf( pWSCentral, DHWSYS_TUSE);
 		RRFldCopyIf( pWSCentral, DHWSYS_TSETPOINT);
+
+		RRFldCopyIf( pWSCentral, DHWSYS_DAYWASTESCALE);
+		for (int iEU=0; iEU<NDHWENDUSES; iEU++)
+			RRFldCopyIf( pWSCentral, DHWSYS_DAYWASTEDRAWF+iEU);
 	}
 
 	else if (ws_loadShareDHWSYSi > 0)
@@ -724,6 +728,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		ws_loopSegTotals.st_Accum(pWL->wl_segTotals, pWL->wl_mult);
 		ws_branchTotals.st_Accum(pWL->wl_branchTotals, pWL->wl_mult);
 	}
+
+	// total target warmup water waste, gal/day
+	ws_dayWaste = ws_dayWasteVol + ws_dayWasteBranchVolF * ws_branchTotals.st_vol;
 
 	ws_simMeth = ws_DetermineSimMeth();
 	if (ws_simMeth == wssimSUBHR)
@@ -828,33 +835,33 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// construct array of use factors by end use
 	//   whDrawF = water heater draw / fixture hot water draw
 	//   water heater draw includes SSF adjustment
-	static const int WHDRAWFDIM = sizeof( ws_whDrawDurF)/sizeof( ws_whDrawDurF[ 0]);
+	static const int WHDRAWFDIM = sizeof( ws_drawDurF)/sizeof( ws_drawDurF[ 0]);
 #if defined( _DEBUG)
 	if (WHDRAWFDIM != NDHWENDUSES)
-		err( PABT, "ws_whDrawDurF array size error");
-	VSet( ws_whDrawDurF, WHDRAWFDIM, -1.f);
-	if (sizeof(ws_whDrawWaste)/sizeof( ws_whDrawWaste[ 0]) != NDHWENDUSES)
-		err(PABT, "ws_whDrawWaste array size error");
+		err( PABT, "ws_drawDurF array size error");
+	VSet( ws_drawDurF, WHDRAWFDIM, -1.f);
+	if (sizeof(ws_drawWaste)/sizeof( ws_drawWaste[ 0]) != NDHWENDUSES)
+		err(PABT, "ws_drawWaste array size error");
 #endif
 
 	// Duration factor
-	float whDrawDurF = ws_WF * ws_DLM;
+	float drawDurF = ws_WF * ws_DLM;
 	// temperature-dependent end uses
 	//   losses modeled by extending draw
-	ws_whDrawDurF[ 0]
-		= ws_whDrawDurF[ C_DHWEUCH_SHOWER]
-		= ws_whDrawDurF[C_DHWEUCH_FAUCET]
-		= ws_whDrawDurF[ C_DHWEUCH_BATH] = whDrawDurF;
+	ws_drawDurF[ 0]
+		= ws_drawDurF[ C_DHWEUCH_SHOWER]
+		= ws_drawDurF[C_DHWEUCH_FAUCET]
+		= ws_drawDurF[ C_DHWEUCH_BATH] = drawDurF;
 	// temperature independent end uses
 	//   losses do not effect draw
-	float whDrawDurFTempInd = 1.f;
-	ws_whDrawDurF[ C_DHWEUCH_CWASHR]
-		= ws_whDrawDurF[ C_DHWEUCH_DWASHR]
-		= whDrawDurFTempInd;
+	float drawDurFTempInd = 1.f;
+	ws_drawDurF[ C_DHWEUCH_CWASHR]
+		= ws_drawDurF[ C_DHWEUCH_DWASHR]
+		= drawDurFTempInd;
 
 #if defined( _DEBUG)
-	if (VMin( ws_whDrawDurF, WHDRAWFDIM) < 0.f)
-		err( PABT, "ws_whDrawDurF fill error");
+	if (VMin( ws_drawDurF, WHDRAWFDIM) < 0.f)
+		err( PABT, "ws_drawDurF fill error");
 #endif
 
 	// ** Hot water use **
@@ -976,15 +983,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
 			rc |= pWH->wh_DoHour(ws_HARL / ws_whCount, mult);
 
-		if (ws_calcMode == C_WSCALCMODECH_PRERUN && Top.tp_IsLastHour())
-		{
-			RLUPC(WhR, pWH, pWH->ownTi == ss)
-				rc |= pWH->wh_DoEndPreRun();
-			DHWSYS* pWSi = WSiB.GetAtSafe(ss);
-			if (pWSi)
-				pWSi->ws_calcMode = C_WSCALCMODECH_SIM;
-		}
-
 		// loop heaters
 		if (ws_wlhCount > 0) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		{	if (pWH->wh_IsHPWHModel())
@@ -1010,6 +1008,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		ws_pMtrElec->H.dhw += mult * ws_inElec;
 	if (ws_pMtrFuel)
 		ws_pMtrFuel->H.dhw += mult * ws_inFuel;
+
+#if 1
+	if (ws_calcMode == C_WSCALCMODECH_PRERUN && Top.tp_IsLastHour())
+		printf("\nEnd prerun");	//  rc |= ws_DoEndPreRun();
+#endif
 
 	return rc;
 }	// DHWSYS::ws_DoHour
@@ -1344,20 +1347,65 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 	return RCOK;
 }		// DHWSYS::ws_WriteDrawCSV
 //----------------------------------------------------------------------------
-void DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
+RC DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
 {
-	if (ws_whCount > 0.f && ivl == C_IVLCH_Y)
-	{	DHWHEATER* pWH;
-		RLUPC( WhR, pWH, pWH->ownTi == ss)
-		{	if (pWH->wh_unMetHrs > 0)
-				warn( "%s: Output temperature below use temperature during %d hours of run.",
-					pWH->objIdTx(), pWH->wh_unMetHrs);
+	RC rc = RCOK;
+	if (ivl == C_IVLCH_Y)
+	{	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
+			rc |= ws_DoEndPreRun();
+		if (ws_whCount > 0.f)
+		{
+			DHWHEATER* pWH;
+			RLUPC(WhR, pWH, pWH->ownTi == ss)
+			{
+				if (pWH->wh_unMetHrs > 0)
+					warn("%s: Output temperature below use temperature during %d hours of run.",
+						pWH->objIdTx(), pWH->wh_unMetHrs);
+			}
 		}
 	}
 	if (ivl == C_IVLCH_H)
 		ws_fxUseMixLH.wmt_Copy( &ws_fxUseMix);
 
+	return rc;
+
 }		// DHWSYS::ws_EndIvl
+//-----------------------------------------------------------------------------
+RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
+// call after last hour of PRERUN
+{
+	RC rc = RCOK;
+
+	DHWHEATER* pWH;
+	RLUPC(WhR, pWH, pWH->ownTi == ss)
+		rc |= pWH->wh_DoEndPreRun();
+
+	DHWSYS* pWSi = WSiB.GetAtSafe(ss);	// source input record
+	if (!pWSi)
+		return orMsg(ERR, "Bad input record linkage in ws_DoEndPreRun");
+
+
+	if (!ws_HasCentralDHWSYS())		// if central or stand-alone
+	{
+		DHWSYS* pWSChild;
+		RLUPC(WsR, pWSChild, pWSChild->ws_centralDHWSYSi == ss)
+			VAccum(ws_drawCount, NDHWENDUSES, pWSChild->ws_drawCount);
+
+		VCopy(ws_drawsPerDay, NDHWENDUSES, ws_drawCount, 1. / Top.nDays);
+
+		// unadjusted total waste
+		//  do not include [ 0] = total
+		double drawWasteTot = VIProd< float, double>(ws_drawsPerDay + 1, NDHWENDUSES - 1, ws_dayWasteDrawF + 1);
+
+		pWSi->ws_dayWasteScale = ws_dayWasteScale = drawWasteTot > 0. ? ws_dayWaste / drawWasteTot : 0.f;
+
+	}
+
+	// reset input record ws_calcMode
+	pWSi->ws_calcMode = C_WSCALCMODECH_SIM;
+
+	return rc;
+}	// DHWSYS::ws_DoEndPreRun
 //============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1520,8 +1568,8 @@ static const double minPerDay = double( 24*60);
 
 	// derive adjusted duration
 	//   losses are represented by extended draw
-	float durX = wu_dur * pWS->ws_whDrawDurF[wu_hwEndUse]
-			  + pWS->ws_whDrawWaste[wu_hwEndUse] / wu_flow;		// warmup waste
+	float durX = wu_dur * pWS->ws_drawDurF[wu_hwEndUse]
+			  + pWS->ws_DrawWaste(wu_hwEndUse) / wu_flow;		// warmup waste
 	if (durX > minPerDay)
 	{	// duration longer than 1 day
 		// warn and limit
@@ -3732,7 +3780,6 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 // returns RCOK on success
 //    else results unusable
 {
-#define MATCHOLD
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wg_GetDHWSYS();
@@ -3740,18 +3787,12 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 
 	// flow rate, gpm
 	float fNoFlow = (1.f - pWL->wl_runF) * wg_fNoDraw;
-	float fDraw = 0.f;	// fraction of loop flow due to draws
 	if (fNoFlow < 1.f)
 	{	ps_fvf = pWL->wl_flow;
 		if (wg_ty == C_DHWLSEGTYCH_SUP)			// if supply segment
 		{	float drawFlow = pWS->ws_whUse.total / (pWS->ws_wlCount * 60.f);	// draw, gpm
 			if (drawFlow > 0.f)
-			{	fDraw = drawFlow / (ps_fvf + drawFlow);
-#if defined( MATCHOLD)
-				fDraw = 0.f;
-#endif
 				ps_fvf += drawFlow;
-			}
 		}
 	}
 	else
@@ -3779,12 +3820,12 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 
 	// totals
 	ps_PL = ps_PLWF + ps_PLCD;		// total DHWLOOPSEG loss
-	wg_LL = ps_PL * (1.f - fDraw);	// losses seen in loop return
+	wg_LL = ps_PL;					// losses seen in loop return
 
 	// branch losses
-	wg_BL = ps_PL*fDraw;			// allocate draw-induced loop loss
-									//   to branch
-	if (wg_wbCount > 0.f)
+	wg_BL = 0.f;
+	if (pWS->ws_branchModel == C_DHWBRANCHMODELCH_T24DHW
+	 && wg_wbCount > 0.f)
 	{	DHWLOOPBRANCH* pWB;
 		RLUPC( WbR, pWB, pWB->ownTi == ss)
 		{	rc |= pWB->wb_DoHour( ps_tIn);		// TODO: inlet temp?
@@ -3848,7 +3889,7 @@ DHWSYS* DHWLOOPBRANCH::wb_GetDHWSYS() const
 //----------------------------------------------------------------------------
 float DHWLOOPBRANCH::wb_CalcUA()
 {
-	return ps_CalcUA();		// loop wl_fUA not applied to branches
+	return ps_CalcUA( wb_fUA);		// note: loop wl_fUA not applied to branches
 }		// DHWLOOPBRANCH::wb_CalcUA
 //-----------------------------------------------------------------------------
 RC DHWLOOPBRANCH::wb_DoHour(			// hourly DHWLOOPBRANCH calcs

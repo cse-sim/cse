@@ -3307,11 +3307,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "int ws_DetermineSimMeth() const;"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
+  *declare "RC ws_DoEndPreRun();"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
   *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
-  *declare "void ws_EndIvl( int ivl);"
+  *declare "RC ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
   *declare "float ws_BranchFlow() const;"
 
@@ -3393,15 +3394,28 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//  [ 1..]: per C_DHWEUCH_xxx
   *r *array NDHWENDUSESPP FLOAT ws_drawsPerDay;
 
-  *h *e *array NDHWENDUSESPP FLOAT ws_whDrawDurF;	// water heater draw duration factors by end use
+  *h *e *array NDHWENDUSESPP FLOAT ws_drawDurF;	// water heater draw duration factors by end use
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
 							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
-  *h *array NDHWENDUSESPP FLOAT ws_whDrawWaste;	// water waste per draw, gal
+ *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
+							//  _T24DHW: prior ACM App-B
+							//  _DRAWWASTE: draw duration increase per ws_drawWaste
+  *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
 							// [ 0] (unused)
 							// [ 1..] = per C_DHWEUCH_xxx
+  *i *array NDHWENDUSESPP FLOAT ws_dayWasteDrawF;	// relative draw for day waste scheme
+							// [ 0] (unused)
+							// [ 1..] = per C_DHWEUCH_xxx
+  *i FLOAT_GEZ ws_dayWasteVol			// base daily total draw waste, gal/day
+  *i FLOAT_GEZ ws_dayWasteBranchVolF	// additional daily draw waste, discards/day
+										//    DHWLOOPBRANCH volume multiplier
+  *r FLOAT_GEZ ws_dayWaste		// daily draw waste, gal/day
+								// ws_dayWasteVol + ws_dayWasteBranchVolF * (total DHWLOOPBRANCH volume)
+  *r *e FLOAT_GEZ ws_dayWasteScale
+  *declare "double ws_DrawWaste( int iEU) const { return ws_drawWaste[ iEU] + ws_dayWasteDrawF[ iEU]*ws_dayWasteScale; }"
 
   *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
 							//   wssimSUBHR if *any* component needs subhrly calcs
@@ -3885,7 +3899,9 @@ RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime 
 
   *i FLOAT wb_mult;		// # of identical branches
 						//  (note non-integral values allowed)
-  *h FLOAT wb_fWaste	// waste fraction
+  *i FLOAT_GEZ wb_fUA	// UA adjustment factor for this branch
+						//    fudge factor re imperfect insulation
+  *h FLOAT_GEZ wb_fWaste	// waste fraction
   *h FLOAT_GEZ wb_flow	// assumed flow during use, gpm
 						// current hour losses, Btu for one loop (no wb_mult)
   *h *e FLOAT wb_HBUL	//  ... when water in use
