@@ -409,6 +409,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 *choicb DHWBRANCHMODELCH {
 			T24DHW "T24DHW"
 			DRAWWASTE "DRAWWASTE"
+			DAYWASTE "DAYWASTE"
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }

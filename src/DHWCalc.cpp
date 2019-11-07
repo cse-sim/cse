@@ -1009,7 +1009,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (ws_pMtrFuel)
 		ws_pMtrFuel->H.dhw += mult * ws_inFuel;
 
-#if 1
+#if 0
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN && Top.tp_IsLastHour())
 		printf("\nEnd prerun");	//  rc |= ws_DoEndPreRun();
 #endif
@@ -1624,7 +1624,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	// count draw
 	//   Note: counts are (slightly) approx
 	//     1. draws that span midnight are counted twice (these are rare in typical input)
-	//     2. draws that have same eventID (e.g. DWSHR) are counted individually
+	//     2. draws that have same eventID (e.g. DWASHR) are counted individually
 	if (wu_hwEndUse > 0)
 		pWS->ws_drawCount[wu_hwEndUse]++;
 	pWS->ws_drawCount[0]++;
@@ -1721,7 +1721,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	return rc;
 }	// DHWUSE::wu_DoHour1
 //-----------------------------------------------------------------------------
-void DHWSYS::ws_AccumUseTick(		// tick-level water use accounting
+void DHWSYS::ws_AccumUseTick(		// tick-level water use DHWMTR accounting
 	DHWEUCH hwEndUse,	// hot water end use for draw
 	int iTk,			// current tick idx (within hour)
 	double fxUseMix,	// fixture mixed use, gal
