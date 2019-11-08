@@ -3477,6 +3477,11 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
   *h *e FLOAT ws_tRL;		// current hour all-DHWLOOP return temp, F
   *h *e FLOAT ws_HRBL;		// current hour all-DHWLOOPBRANCH losses, Btu
+  *h *e FLOAT ws_t24WL;		// current hour all-DHWLOOPBRANCH waste loss volume, gal
+							//    per T24DHW branch model
+							//    info only: associated energy is included in ws_HRBL
+  *y *e DBL ws_t24WLTot		// annual total ws_t24WL
+
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
 							//     (adjusted re DHWLOOP wl_lossMakeupPwr)
@@ -3805,6 +3810,9 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
 						//   wl_lossMakeUp, Btu (reflects wl_mult)
   *h *e FLOAT wl_HRBL;	// current hour branch pipe loss, Btu
 						//    (reflects wl_mult)
+  *h *e FLOAT wl_t24WL;	// current hour branch waste loss volume, gal
+						//    per T24DHW model; reflects wl_mult
+						//    info only: associated energy is included in wl_HRBL
   *h *e FLOAT wl_tRL;	// current hour average return temp, F
 						//    derived from flow, loss, and wl_qLiqLP
 						//    can be > wl_tIn1
@@ -3878,10 +3886,12 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
   *r FLOAT wg_wbCount		// total # of child DHWLOOPBRANCHs
 							//   note: may be non-integer
   *h FLOAT wg_fNoDraw		// fraction of hour when there is no draw
-  *h FLOAT wg_LL			// current hour loop loss, Btu
+  *h *e FLOAT wg_LL			// current hour loop loss, Btu
 							//   = ps_PL - loss attributed to draw flow
-  *h FLOAT wg_BL			// current hour child DHWLOOPBRANCH losses, Btu
-							//   includes loss from loop during draws
+							
+  *h *e FLOAT wg_BL			// current hour child DHWLOOPBRANCH losses, Btu
+  *h *e FLOAT wg_t24WL		// current hour child DHWLOOPBRANCH waste loss volume, gal
+							//    associated energy is in wg_BL
  *END		// DHWLOOPSEG
 //=============================================================================
 RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime DHW branch
@@ -3903,9 +3913,10 @@ RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime 
 						//    fudge factor re imperfect insulation
   *h FLOAT_GEZ wb_fWaste	// waste fraction
   *h FLOAT_GEZ wb_flow	// assumed flow during use, gpm
-						// current hour losses, Btu for one loop (no wb_mult)
+						// current hour losses, Btu for one branch (no wb_mult)
   *h *e FLOAT wb_HBUL	//  ... when water in use
   *h *e FLOAT wb_HBWL	//  ... waste loss
+  *h *e FLOAT wb_t24WL	//  ... waste loss volume, gal
 
  *END		// DHWLOOPBRANCH
 //=============================================================================

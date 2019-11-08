@@ -783,6 +783,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// ws_inFuel = 0.f;	no DHWSYS fuel use
 
 	ws_qDWHR = 0.f;		// DWHR (DHWHEATREC) recovered heat hour total
+	static double wlVolTot = 0.;
 
 	if (ivl <= C_IVLCH_D)	// if start of day (or longer)
 	{
@@ -797,6 +798,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			DHWHEATER* pWH;
 			RLUPC(WhR, pWH, pWH->ownTi == ss)
 				pWH->wh_InitTotals();
+
+			ws_t24WLTot = 0.;
 		}
 		
 		if (IsSet( DHWSYS_DAYUSENAME))
@@ -812,7 +815,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		for (int iEU=1; iEU<NDHWENDUSES; iEU++)
 			ws_loadShareWS0[ iEU] = (seed+iEU)%ws_loadShareCount[ 0];
 	}
-
+	
 	// inlet temp = feed water to cold side of WHs
 	if (!IsSet( DHWSYS_TINLET))
 		ws_tInlet = Wthr.d.wd_tMains;		// default=mains
@@ -944,6 +947,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// multi-unit distribution losses
 	double HRLL = 0.;
 	ws_HRBL = 0.f;
+	ws_t24WL = 0.f;
 	ws_volRL = 0.f;
 	double tVolRet = 0.;
 	if (ws_wlCount > 0)		// if any loops
@@ -952,16 +956,24 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		{	rc |= pWL->wl_DoHour( mult);		// also calcs child DHWLOOPSEGs and DHWLOOPPUMPs
 			HRLL += pWL->wl_HRLLnet;	// loop loss
 			ws_HRBL += pWL->wl_HRBL;	// branch loss
+			ws_t24WL += pWL->wl_t24WL;	// branch waste loss volume
 			ws_volRL += pWL->wl_volRL;
 			tVolRet += pWL->wl_volRL * pWL->wl_tRL;
 		}
 		ws_tRL = tVolRet / ws_volRL;
 	}
 	ws_tRL = ws_volRL > 0.f ? tVolRet / ws_volRL : 0.f;
-	ws_HRDL = float( HRLL + ws_HRBL);
+
+	ws_t24WLTot += ws_t24WL;
+
+	// distribution losses
+	ws_HRDL = float(HRLL);
+	if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
+		ws_HRDL += ws_HRBL;		// conditionally include branch losses
 
 	// total recovery load
 	ws_HHWO = waterRhoCp * ws_whUse.total * (ws_tUse - ws_tInletX);
+
 #if 0 && defined( _DEBUG)
 	if (ws_fxUseMix.shower > 0.f)
 	{	float fHotSHNoHR;
@@ -1008,11 +1020,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		ws_pMtrElec->H.dhw += mult * ws_inElec;
 	if (ws_pMtrFuel)
 		ws_pMtrFuel->H.dhw += mult * ws_inFuel;
-
-#if 0
-	if (ws_calcMode == C_WSCALCMODECH_PRERUN && Top.tp_IsLastHour())
-		printf("\nEnd prerun");	//  rc |= ws_DoEndPreRun();
-#endif
 
 	return rc;
 }	// DHWSYS::ws_DoHour
@@ -1241,7 +1248,9 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 	RC rc = RCOK;
 
 	double scaleTick = 1. / Top.tp_NHrTicks();	// allocate per tick
-	double qLossNoRL = (ws_HRBL + ws_HJL) * scaleTick;	// w/o recirc: DHWLOOPBRANCH + jacket
+	double qLossNoRL = ws_HJL * scaleTick;	// w/o recirc: jacket
+	if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
+		qLossNoRL += ws_HRBL * scaleTick;	// conditionally include branch losses 
 	double volRL = ws_volRL * scaleTick;				// DHWLOOP recirc vol/tick, gal
 
 #if 0 && defined( _DEBUG)
@@ -1393,11 +1402,29 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 
 		VCopy(ws_drawsPerDay, NDHWENDUSES, ws_drawCount, 1. / Top.nDays);
 
+		float wasteUnscaledTot = 0.f;
+		for (int iEU = 1; iEU < NDHWENDUSES; iEU++)
+		{
+			if (ws_dayWasteDrawF[iEU] > 0.f)
+			{
+				float fxWHRatio = ws_pWHhwMtr->Y.wmt_GetByEUX(iEU + 2) / ws_pFXhwMtr->Y.wmt_GetByEUX(iEU + 2);
+
+				float wasteUnscaled = ws_drawsPerDay[iEU] * fxWHRatio * ws_dayWasteDrawF[iEU];
+
+				wasteUnscaledTot += wasteUnscaled;
+			}
+
+
+		}
+
+#if 0
+
 		// unadjusted total waste
 		//  do not include [ 0] = total
 		double drawWasteTot = VIProd< float, double>(ws_drawsPerDay + 1, NDHWENDUSES - 1, ws_dayWasteDrawF + 1);
+#endif
 
-		pWSi->ws_dayWasteScale = ws_dayWasteScale = drawWasteTot > 0. ? ws_dayWaste / drawWasteTot : 0.f;
+		pWSi->ws_dayWasteScale = ws_dayWasteScale = wasteUnscaledTot > 0. ? ws_dayWaste / wasteUnscaledTot : 0.f;
 
 	}
 
@@ -1566,7 +1593,7 @@ static const double minPerDay = double( 24*60);
 	}
 
 
-	// derive adjusted duration
+	// derive adjusted duration, min
 	//   losses are represented by extended draw
 	float durX = wu_dur * pWS->ws_drawDurF[wu_hwEndUse]
 			  + pWS->ws_DrawWaste(wu_hwEndUse) / wu_flow;		// warmup waste
@@ -2538,12 +2565,12 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 		// inlet temp, F
 		double tInlet = iwhfcn == whfcnLOOPHEATER
-			? tk.wtk_TOutPrimAvg()	// average outlet temp of primary heaters
-			: tk.wtk_tInletX;		// inlet temp: mains + DWHR
+			? tk.wtk_TOutPrimAvg()	// loopheater: average outlet temp of primary heaters
+			: tk.wtk_tInletX;		// primary: inlet temp( mains + DWHR)
 		
 		// pseudo-draw (gal) to represent e.g. central system branch losses
 		//  ?tInlet?
-		double drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., wh_tHWOut - pWS->ws_tInlet));
+		double drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., pWS->ws_tUse - pWS->ws_tInlet));
 		
 		// loop flow
 		double drawRL;	// volume
@@ -3516,6 +3543,7 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 
 	wl_HRLL = 0.f;
 	wl_HRBL = 0.f;
+	wl_t24WL = 0.f;
 
 	DHWSYS* pWS = wl_GetDHWSYS();
 
@@ -3527,6 +3555,7 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 		rc |= pWG->wg_DoHour( tIn);
 		wl_HRLL += pWG->wg_LL;	// flow + noflow loop losses
 		wl_HRBL += pWG->wg_BL;	// branch losses
+		wl_t24WL += pWG->wg_t24WL;	// branch waste loss vol
 		tIn = pWG->ps_tOut;
 	}
 
@@ -3824,12 +3853,13 @@ RC DHWLOOPSEG::wg_DoHour(			// hourly DHWLOOPSEG calcs
 
 	// branch losses
 	wg_BL = 0.f;
-	if (pWS->ws_branchModel == C_DHWBRANCHMODELCH_T24DHW
-	 && wg_wbCount > 0.f)
+	wg_t24WL = 0.f;
+	if (wg_wbCount > 0.f)
 	{	DHWLOOPBRANCH* pWB;
 		RLUPC( WbR, pWB, pWB->ownTi == ss)
 		{	rc |= pWB->wb_DoHour( ps_tIn);		// TODO: inlet temp?
  			wg_BL += pWB->wb_mult * (pWB->wb_HBUL + pWB->wb_HBWL);
+			wg_t24WL += pWB->wb_mult * pWB->wb_t24WL;
 		}
 	}
 
@@ -3900,7 +3930,7 @@ RC DHWLOOPBRANCH::wb_DoHour(			// hourly DHWLOOPBRANCH calcs
 	RC rc = RCOK;
 	ps_tIn = tIn;
 	DHWSYS* pWS = wb_GetDHWSYS();
-	DHWLOOP* pWL = wb_GetDHWLOOP();
+	// DHWLOOP* pWL = wb_GetDHWLOOP();
 
 	// loss while water in use
 	//   outlet temp found assuming use flow rate
@@ -3911,9 +3941,10 @@ RC DHWLOOPBRANCH::wb_DoHour(			// hourly DHWLOOPBRANCH calcs
 
 	// waste loss
 	// ?tInlet?
-	wb_HBWL = wb_fWaste * ps_totals.st_vol * (ps_fRhoCpX/60.f) * (ps_tIn - pWS->ws_tInlet);
+	wb_t24WL = wb_fWaste * ps_totals.st_vol;
+	wb_HBWL = wb_t24WL * (ps_fRhoCpX/60.f) * (ps_tIn - pWS->ws_tInlet);
 
-	// note wb_mult applied by caller
+	// note: wb_mult applied by caller
 
 	return rc;
 }		// DHWLOOPBRANCH::wb_DoHour
