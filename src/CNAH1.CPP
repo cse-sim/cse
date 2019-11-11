@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -1052,13 +1052,13 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 // estimate new ts from ahTsSp -- or leave same
 	DBL tsNu = ts;
 	{
-		if (V ahTsSp != V ahTsSpPr)				// if ahTsSp changed (numerical tolerance applied just below)
+		if (VD ahTsSp != VD ahTsSpPr)				// if ahTsSp changed (numerical tolerance applied just below)
 		{
 			if (ISNUM(ahTsSp))						// if numeric (or 0 for none given (no eco/coil))
 			{
 				if ( ISNUM(ahTsSpPr)  &&  fabs(ahTsSp-ahTsSpPr) < 4.f   	// if numeric before and little changed
-						&&  (V ahhc.sched==V hcSchPr || !(ahMode & ahHEATBIT))  	// and applicable coil sched(s) unchanged
-						&&  (V ahcc.sched==V ccSchPr || !(ahMode & ahCOOLBIT)) )
+						&&  (VD ahhc.sched==VD hcSchPr || !(ahMode & ahHEATBIT))  	// and applicable coil sched(s) unchanged
+						&&  (VD ahcc.sched==VD ccSchPr || !(ahMode & ahCOOLBIT)) )
 					tsNu += (ahTsSp - ahTsSpPr);   		/* TRACK sp changes in estimated ts: assume any prior difference
 	  						   eg due to fan overload is a good estimate of any new difference. */
 				else             		// much changed numeric ts sp, or not numeric before, or applicable coil(s) went on or off
@@ -1280,9 +1280,9 @@ x					   TRUE may enable some autoSizing stuff eg in ztuMode. 7-20-95. */
 	wOShPr = Top.wOSh;
 	upPriors();				// update TU -Pr's for tests in ZNR.ztuMdSets
 	tsAhPr = ts;
-	V hcSchPr = V ahhc.sched;
-	V ccSchPr = V ahcc.sched;  	// used in AH::estimate; also input-monitored by chaf's
-	V ahTsSpPr = V ahTsSp;					// update comparator used in AH::estimate
+	VD hcSchPr = VD ahhc.sched;
+	VD ccSchPr = VD ahcc.sched;  	// used in AH::estimate; also input-monitored by chaf's
+	VD ahTsSpPr = VD ahTsSp;					// update comparator used in AH::estimate
 
 // clear flags, at exit to not stay on when set by hpEstimate from HW coil model (cncoil.cpp), 9-92.
 	ahClf = FALSE;			// call-flag: set to call & test whether to compute

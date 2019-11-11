@@ -102,6 +102,7 @@ set(source
   DTTAB.CPP
   ENVPAK.CPP
   EXMAN.CPP
+  Foundation.cpp
   GMUTIL.CPP
   hpwhwrap.cpp
   IMPF.CPP
@@ -170,6 +171,7 @@ set(headers
   DTYPES.H
   ENVPAK.H
   EXMAN.H
+  Foundation.h
   GMPAK.H
   IMPF.H
   IRATS.H
@@ -198,12 +200,21 @@ set(headers
   YACAM.H
 )
 
+
+include_directories(
+)
+
+
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/vendor"
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
+  SYSTEM "${kiva_SOURCE_DIR}/vendor/boost-1.61.0"
+  "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
+  "${kiva_SOURCE_DIR}/src"
+  "${kiva_BINARY_DIR}/src/libkiva"
 )
 
 # Precompiled Headers
@@ -236,6 +247,7 @@ set(libs
   glfw
   tess2
   libHPWHsim
+  libkiva
 )
 
 source_group("Source Files" FILES ${source})

@@ -36,6 +36,7 @@ set(files
   # 2700x
   2zun
   1zattic
+  1ZKiva
   2zattic
   actest1bL
   ashptest2
@@ -61,5 +62,6 @@ foreach(file ${files})
 endforeach()
 
 configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
+configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.bat")
 
 set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
