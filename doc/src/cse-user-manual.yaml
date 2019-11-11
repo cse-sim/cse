@@ -59,6 +59,7 @@ sections:
   - [2, "records/dhwuse.md"]
   - [2, "records/dhwsys.md"]
   - [2, "records/dhwheater.md"]
+  - [2, "records/dhwheatrec.md"]
   - [2, "records/dhwtank.md"]
   - [2, "records/dhwpump.md"]
   - [2, "records/dhwloop.md"]
