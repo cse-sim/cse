@@ -84,7 +84,7 @@ Drain-side inlet water temperature during warmup.  During the warmup portion of 
 
   **Units**          **Legal Range**      **Default**   **Required**   **Variability**
   ----------------- -------------------- ------------- -------------- -----------------
-    ^o^F                 $\gt$ 0            65 ^o^F            N             hourly
+    ^o^F                  > 0            65 ^o^F            N             hourly
 
 **endDHWHEATREC**
 
