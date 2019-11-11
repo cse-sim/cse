@@ -235,6 +235,7 @@ void DHWMTR_IVL::wmt_Accum(			// accumulate
 		VAccum( &total, NDHWENDUSES+1, &sIvl->total, mult);
 }		// DHWMTR_IVL
 //=============================================================================
+//=============================================================================
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -799,7 +800,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			RLUPC(WhR, pWH, pWH->ownTi == ss)
 				pWH->wh_InitTotals();
 
+			// various run totals
 			ws_t24WLTot = 0.;
+			VZero(ws_fxUseMixTot, NDHWENDUSESXPP);
+			VZero(ws_whUseTot, NDHWENDUSESXPP);
+
 		}
 		
 		if (IsSet( DHWSYS_DAYUSENAME))
@@ -926,13 +931,18 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
 		ws_WriteDrawCSV();
 
-	// accumulate to DHWMTRs if defined
+	// accumulate water use to DHWMTRs if defined
 	//   include DHWSYS.ws_mult multiplier
 	float mult = ws_mult*centralMult;	// overall multiplier
 	if (ws_pFXhwMtr)
 		ws_pFXhwMtr->H.wmt_Accum( &ws_fxUseMix, 0, mult);
 	if (ws_pWHhwMtr)
 		ws_pWHhwMtr->H.wmt_Accum( &ws_whUse, 0, mult);
+
+	// accumulate water use to annual totals
+	//    redundant if DHWMTRs are defined
+	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
+	ws_whUse.wmt_AccumTo(ws_whUseTot);
 
 	// jacket loss
 	ws_HJL = 0.f;
@@ -1409,6 +1419,8 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 			{
 				float fxWHRatio = ws_pWHhwMtr->Y.wmt_GetByEUX(iEU + 2) / ws_pFXhwMtr->Y.wmt_GetByEUX(iEU + 2);
 
+				double fxWHRatio2 = ws_whUseTot[iEU + 1] / ws_fxUseMixTot[iEU + 1];
+
 				float wasteUnscaled = ws_drawsPerDay[iEU] * fxWHRatio * ws_dayWasteDrawF[iEU];
 
 				wasteUnscaledTot += wasteUnscaled;
@@ -1416,13 +1428,6 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 
 
 		}
-
-#if 0
-
-		// unadjusted total waste
-		//  do not include [ 0] = total
-		double drawWasteTot = VIProd< float, double>(ws_drawsPerDay + 1, NDHWENDUSES - 1, ws_dayWasteDrawF + 1);
-#endif
 
 		pWSi->ws_dayWasteScale = ws_dayWasteScale = wasteUnscaledTot > 0. ? ws_dayWaste / wasteUnscaledTot : 0.f;
 

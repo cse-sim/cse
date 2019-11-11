@@ -400,6 +400,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			BATH "Bath"
 			CWASHR "CWashr"
 			DWASHR "DWashr"
+			COUNT "*Count"
 		  }
 
 *choicb DHWMODELCH {
