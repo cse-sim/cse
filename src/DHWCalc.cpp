@@ -1412,24 +1412,21 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 
 		VCopy(ws_drawsPerDay, NDHWENDUSES, ws_drawCount, 1. / Top.nDays);
 
-		float wasteUnscaledTot = 0.f;
+		double wasteUnscaledTot = 0.;
 		for (int iEU = 1; iEU < NDHWENDUSES; iEU++)
 		{
 			if (ws_dayWasteDrawF[iEU] > 0.f)
-			{
-				float fxWHRatio = ws_pWHhwMtr->Y.wmt_GetByEUX(iEU + 2) / ws_pFXhwMtr->Y.wmt_GetByEUX(iEU + 2);
-
-				double fxWHRatio2 = ws_whUseTot[iEU + 1] / ws_fxUseMixTot[iEU + 1];
-
-				float wasteUnscaled = ws_drawsPerDay[iEU] * fxWHRatio * ws_dayWasteDrawF[iEU];
-
+			{	// average daily waste = average # of draws * waste per draw
+				double wasteUnscaled = ws_drawsPerDay[iEU] * ws_dayWasteDrawF[iEU];
+				if (ws_fxUseMixTot[ iEU+1] > 0.)
+					// adjust to waste at fixture
+					wasteUnscaled *= ws_whUseTot[iEU + 1] / ws_fxUseMixTot[iEU + 1];
 				wasteUnscaledTot += wasteUnscaled;
 			}
-
-
 		}
-
-		pWSi->ws_dayWasteScale = ws_dayWasteScale = wasteUnscaledTot > 0. ? ws_dayWaste / wasteUnscaledTot : 0.f;
+		// draw scaling factor: cause draw waste to (approx) equal target waste per day
+		pWSi->ws_dayWasteScale = ws_dayWasteScale
+			= wasteUnscaledTot > 0. ? float( ws_dayWaste / wasteUnscaledTot) : 0.f;
 
 	}
 
