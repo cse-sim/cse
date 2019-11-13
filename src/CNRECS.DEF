@@ -3659,7 +3659,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_EF;			// rated energy factor
   *i FLOAT_GZ wh_LDEF;			// load-dependent energy factor
   *i FLOAT_GZ wh_UEF;			// rated uniform energy factor
-								//   documentation only re C_WHTYPECH_INSTUEF
+								//    re C_WHTYPECH_INSTUEF
   *i FLOAT_GZ wh_ratedFlow;		// max rated flow per UEF test, gpm
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
@@ -3847,13 +3847,7 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
   *declare "RC wp_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "DHWSYS* wp_GetDHWSYS() const;"
-<<<<<<< HEAD
   *declare "float wp_DoHour( int mult, float runF=1.f);"
-  
-=======
-  *declare "RC wp_DoHour( int mult, float runF=1.f);"
-
->>>>>>> master
   *i SI wp_mult;				// count of identical DHW pumps (default 1)
 								//   models as if repeated identical input
 

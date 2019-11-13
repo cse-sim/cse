@@ -52,11 +52,14 @@ Type of water heater.  This categorization is based on CEC and federal rating st
                         SMALLINSTANTANEOUS, an indirect
                         fuel-fired water heater, or a hot water
                         supply boiler.
+
+  INSTANTANEOUSUEF      An instantaneous water heater having
+                        a UEF rating (as opposed to EF).
   --------------------- ---------------------------------------
 
   **Units**   **Legal Range**        **Default**    **Required**   **Variability**
   ----------- ---------------------- -------------- -------------- -----------------
-              *Codes listed above*   SMALLSTORAGE   No             constant
+               *Codes listed above*   SMALLSTORAGE   No             constant
 
 **whHeatSrc=*choice***
 
@@ -80,11 +83,11 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 
   **Units**   **Legal Range**        **Default**   **Required**   **Variability**
   ----------- ---------------------- ------------- -------------- -----------------
-              *Codes listed above*   FUEL          No             constant
+               *Codes listed above*   FUEL          No             constant
 
 **whVol=*float***
 
-Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.  ?Update?
+Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.
 
   -----------------------------------------------------------------------
   **Units**   **Legal Range**   **Default**     **Required**       **Variability**
@@ -145,16 +148,66 @@ Load-dependent energy factor for DHWHEATERs with whType=SMALLSTORAGE and whHeatS
 or whHeatSrc=RESISTANCE.  If not given, whLDEF is derived using a preliminary simulation
 activated via DHWSYS wsCalcMode=PRERUN.  See RACM Appendix B.
 
-  ------------------------------------------------------------------
+  -------------------------------------------------------------------
   **Units** **Legal** **Default**    **Required**    **Variability**
             **Range**
-  --------- --------- -------------- -------------- ----------------
-            $>$ 0     Calculated via When whType =   constant
+  --------- --------- -------------- --------------- ----------------
+            $>$ 0     Calculated via When whType =      constant
                       DHWSYS PreRun  SMALLSTORAGE   
                       mechanism      and PreRun not
                                      used           
 
-  ------------------------------------------------------------------
+  -------------------------------------------------------------------
+
+**whUEF=*float***
+
+Water heater Uniform Energy Factor efficiency rating, used when whType=INSTANTANEOUSUEF.
+
+  **Units**   **Legal Range**   **Default**     **Required**                    **Variability**
+  ----------- ----------------- --------------- ------------------------------- -----------------
+                 $\ge$ 0            --            when whType=INSTANTANEOUSUEF   constant
+
+
+**whAnnualElec=*float***
+
+Annual electricity use assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.
+
+  **Units**   **Legal Range**   **Default**     **Required**                    **Variability**
+  ----------- ----------------- --------------- ------------------------------- -----------------
+    kWh           $\ge$ 0               --         when whType=INSTANTANEOUSUEF   constant
+
+**whAnnualFuel=*float***
+
+Annual fuel use assumd in UEF rating derivation, used when whType=INSTANTANEOUSUEF.
+
+  **Units**   **Legal Range**   **Default**     **Required**                    **Variability**
+  ----------- ----------------- --------------- ------------------------------- -----------------
+    therms         $\ge$ 0             --          when whType=INSTANTANEOUSUEF   constant
+
+**whRatedFlow=*float***
+
+Maximum flow rate assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.
+
+  **Units**   **Legal Range**   **Default**     **Required**                    **Variability**
+  ----------- ----------------- --------------- ------------------------------- -----------------
+     gpm          >0             --                when whType=INSTANTANEOUSUEF   constant
+
+**whStbyElec=*float***
+
+Instantaneous water heater standby power (electricity consumed when heater is not operating).  Used when whType=INSTANTANEOUSUEF.
+
+  **Units**   **Legal Range**   **Default**     **Required**                    **Variability**
+  ----------- ----------------- --------------- ------------------------------- -----------------
+      W           $\ge$ 0            4             No                             constant
+
+**whLoadCFwdF=*float***
+
+Instanteous water heater load carry forward factor -- approximate number of hours the heater is allowed to meet water heating demand that is unmet on a 1 minute basis, used when whType=INSTANTANEOUSUEF.
+
+  **Units**   **Legal Range**   **Default**     **Required**                    **Variability**
+  ----------- ----------------- --------------- ------------------------------- -----------------
+                 $\ge$ 0             1            No                              Constant
+
 
 **whZone=*znName***
 
@@ -271,7 +324,25 @@ Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from t
 
   **Units**   **Legal Range**   **Default**   **Required**  **Variability**
   ----------- ----------------- ------------- ------------- -------------------------
-      W             $\ge$ 0       whResHtPwr           N          constant
+    W             $\ge$ 0         whResHtPwr           N          constant
+
+**whUAMult=*float***
+
+Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e.g. tank wrap insulation.  Note that tank UA is derived from whEF and cannot be directly set.
+
+  **Units**   **Legal Range**   **Default**   **Required**  **Variability**
+  ----------- ----------------- ------------- ------------- -------------------------
+                   > 0              1           N            constant
+
+
+**whInHtSupply=*float***\
+**whInHtLoopRet=*float***
+
+  Fractional tank height of inlets for supply water and DHWLOOP return, used only with HPWH types (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX).  0 indicates the bottom of the water heater tank and 1 specifies the top.  Inlet height influences tank layer mixing and can impact heat pump COP and/or heating activation frequency.
+
+  **Units**   **Legal Range**     **Default**   **Required**  **Variability**
+  ----------- -----------------   ------------- ------------- -------------------------
+      -        0 $\le$ x $\le$ 1     0              N          constant
 
 **whHPAF=*float***
 
@@ -279,7 +350,7 @@ Heat pump adjustment factor, applied to whLDEF when modeling whType=SMALLSTORAGE
 
   **Units**   **Legal Range**   **Default**   **Required**                                    **Variability**
   ----------- ----------------- ------------- ----------------------------------------------- -----------------
-              $>$ 0             1             When whType=SMALLSTORAGE and whHeatSrc=ASHP   constant
+              $>$ 0             1             When whType=SMALLSTORAGE and whHeatSrc=ASHP       constant
 
 **whEff=*float***
 

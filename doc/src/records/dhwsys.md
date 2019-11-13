@@ -1,11 +1,12 @@
 # DHWSYS
 
-DHWSYS constructs an object representing a domestic hot water system consisting of one or more hot water heaters, storage tanks, loops, and pumps (DHWHEATER, DHWTANK, DHWLOOP, and DHWPUMP, see below) and a distribution system characterized by loss parameters. This model is based on Appendix B of the 2016 Residential ACM Reference Manual. This version is preliminary, revisions are expected.
+DHWSYS constructs an object representing a domestic hot water system consisting of one or more hot water heaters, storage tanks, loops, and pumps (DHWHEATER, DHWTANK, DHWLOOP, and DHWPUMP, see below) and a distribution system characterized by loss parameters. This model is based on Appendix B of the 2019 Residential ACM Reference Manual and the Ecotope HPWHSim air source heat pump water heater model (called HPWH herein).
 
 The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to the DHWSYS that precedes them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
 
 -   DHWSYS
     -   DHWHEATER
+    -   DHWLOOPHEATER
     -   DHWHEATREC
     -   DHWTANK
     -   DHWPUMP
@@ -14,7 +15,7 @@ The parent-child structure of DHWSYS components is determined by input order. Fo
         -   DHWLOOPSEG
             -   DHWLOOPBRANCH
 
-No actual controls are modeled. For example, if several DHWHEATERs are included in a DHWSYS, an equal fraction of the required hot water is assumed to be produced by each heater, even if they are different types or sizes. Thus a DHWSYS is in some ways just a collection of components, rather than a physically realistic system.
+Minimal modeling is included for physically realistic controls. For example, if several DHWHEATERs are included in a DHWSYS, an equal fraction of the required hot water is assumed to be produced by each heater, even if they are different types or sizes. Thus a DHWSYS is in some ways a collection of components as opposed to an explicitly connected system.  This approach avoids requiring detailed input that would impose impractical user burden, especially in compliance applications.
 
 **dhwsysName**
 
@@ -23,6 +24,40 @@ Optional name of system; give after the word “DHWSYS” if desired.
   **Units**    **Legal Range**   **Default**    **Required**   **Variability**
   ----------- ----------------- ------------- --------------- -----------------
                *63 characters*     *none*          No             constant
+
+**wsCalcMode=*choice***
+
+Enables preliminary simulation that derives values needed for simulation.
+
+  ----------- ---------------------------------------
+  PRERUN      Calculate hot water heating load; at
+              end of run, derive whLDEF for all child
+              DHWHEATERs for which that value is
+              required and defaulted (this emulates
+              methods used in the T24DHW.DLL
+              implementation of CEC DHW procedures).
+              Also derived are average number of
+              draws per day by end use (used in
+              the wsDayWaste scheme).
+
+  SIMULATE    Perform full modeling calculations
+  ----------- ---------------------------------------
+
+To use PRERUN efficiently, the recommended input file structure is:
+
+- General input
+- DHWSYS(s) and child objects
+- RUN
+- ALTER DHWSYS input (as needed)
+- Building input
+- RUN
+
+This order avoids duplicate time-consuming simulation of the full building model.
+
+
+  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
+  ----------- ---------------------- ------------- -------------- -----------------
+              *Codes listed above*   SIMULATE      No         
 
 **wsCentralDHWSYS=*dhwsysName***
 
@@ -89,7 +124,7 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
 **wsDayUse=*dhwdayuseName***
 
-  Name of DHWDAYUSE object that specifies a detailed schedule of hot water use (at point of use).
+  Name of DHWDAYUSE object that specifies a detailed schedule of mixed water use at points of hot water use (that is, "at the tap").  The mixed water amounts are used to derive hot water requirements based on specified mixing fractions or mixed water temperature (see DHWDAYUSE and DHWUSE).
 
   The total water use modeled by CSE is the sum of amounts given by wsUse and the DWHDAYUSE schedule.  DHWDAYUSE draws are resolved to minute-by-minute bins compatible with the HPWH model and wsUse/60 is added to each minute bin.  Conversely, the hour total of the DHWDAYUSE amounts is included in the draw applied to non-HPWH DHWHEATERs.
 
@@ -106,6 +141,60 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   ---------- ---------------------- ---------------------- -------------- -----------------
               *name of a DHWDAYUSE*   (no scheduled draws)        No             daily
 
+**wsFaucetWaste=*float***\
+**wsShowerWaste=*float***\
+**wsBathWaste=*float***\
+**wsCWashrWaste=*float***\
+**wsDWashrWaste=*float***
+
+Water quantity assumed to be wasted at each draw due to the hot water arrival delay.  The amounts are used to extend the duration of DHWDAYUSE / DHWUSE draws. No effect if DHWDAYUSE is not given.
+
+ **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+  gal/draw        $\ge$ 0          0           No             subhourly
+
+
+**wsBranchModel=*choice***
+
+ToDo
+
+**wsDayWasteVol=*float***
+
+Average amount of waste per day.
+
+---------------------------------------------------------------------------------------------------
+  **Units**   **Legal Range**   **Default**                       **Required**   **Variability**
+  ----------- ----------------- -------------------------------  -------------- -----------------
+    gal/day       $\ge$ 0         wsDayWasteBranchVolF *
+                                      (Total DHWLOOPBRANCH vol)           No      constant
+  ----------- ----------------- -------------------------------  -------------- -----------------
+
+
+
+**wsDayWasteBranchVolF=*float***
+
+Day waste scaling factor.
+
+  **Units**   **Legal Range**   **Default**                    **Required**   **Variability**
+  ----------- ----------------- ------------------------------ -------------- -----------------
+     --        $\ge$ 0             1                               No            constant
+
+
+
+**wsDayWasteFaucetF=*float***\
+**wsDayWasteShowerF=*float***\
+**wsDayWasteBathF=*float***\
+**wsDayWasteCWashrF=*float***\
+**wsDayWasteDWashrF=*float***
+
+ToDo
+
+ **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+                $\ge$ 0          0           No             subhourly
+
+
+
 **wsTUse=*float***
 
 Hot water delivery temperature (at the point of use).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
@@ -116,23 +205,25 @@ Hot water delivery temperature (at the point of use).  Note that draws defined v
 
 **wsTSetPoint=*float***
 
-  Specifies the hot water setpoint temperature.
+  Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
     ^o^F        $>$ 32 ^o^F         wsTUse           No             hourly
 
-**wsParElec=*float***
 
-Specifies electrical parasitic power to represent recirculation pumps or other system-level electrical devices. Calculated energy use is accumulated to the METER specified by wsElecMtr (end use DHW). No other effect, such as heat gain to surroundings, is modeled.
+**wsTSetPointLH=*float***
 
-  **Units**   **Legal Range**   **Default**   **Required**    **Variability**
------------ ------------------ ------------- --------------- -----------------
-   W            $\ge$ 0             0             No             hourly
+  Specifies the hot water setpoint temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+    ^o^F        $>$ 32 ^o^F         wsTUse           No             hourly
+
 
 **wsSDLM=*float***
 
-Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplicate CEC 2016 methods, this value should be set according to the value derived with App B Eqn 5.
+Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplicate CEC 2019 methods, this value should be set according to the value derived with App B Eqn 5.
 
   **Units**    **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -167,6 +258,14 @@ where tInletAdj is the source cold water temperature *including any DHWHEATREC t
   ----------- ----------------------- ------------- -------------- -----------------
                 0 $\le$ x $\le$ 0.99           0             No             hourly
 
+**wsParElec=*float***
+
+Specifies electrical parasitic power to represent recirculation pumps or other system-level electrical devices. Calculated energy use is accumulated to the METER specified by wsElecMtr (end use DHW). No other effect, such as heat gain to surroundings, is modeled.
+
+  **Units**   **Legal Range**   **Default**   **Required**    **Variability**
+----------- ------------------ ------------- --------------- -----------------
+   W            $\ge$ 0             0             No             hourly
+
 **wsElecMtr=*mtrName***
 
 Name of METER object, if any, to which DHWSYS electrical energy use is recorded (under end use DHW). In addition, wsElecMtr provides the default whElectMtr selection for all DHWHEATERs and DHWPUMPs in this DHWSYS.
@@ -199,26 +298,10 @@ Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quant
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 
-**wsCalcMode=*choice***
-
-  ----------- ---------------------------------------
-  PRERUN      Calculate hot water heating load; at
-              end of run, derive whLDEF for all child
-              DHWHEATERs for which that value is
-              required and defaulted. This procedure
-              emulates methods used in the T24DHW.DLL
-              implementation of CEC DHW procedures.
-
-  SIMULATE    Perform full modeling calculations
-  ----------- ---------------------------------------
-
-  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
-  ----------- ---------------------- ------------- -------------- -----------------
-              *Codes listed above*   SIMULATE      No             
 
   **wsWriteDrawCSV=*choice***
 
-  If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.          
+  If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.
 
 
   **Units**    **Legal Range**        **Default**   **Required**   **Variability**

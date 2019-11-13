@@ -44,7 +44,7 @@ Fraction of hour that loop circulation operates.
 
 **wlFUA=*float***
 
-DHWLOOPSEG pipe heat loss adjustment factor.
+DHWLOOPSEG pipe heat loss adjustment factor.  DHWLOOPSEG UA is derived (from wgSize, wgLength, wgInsulK, wgInsulThk, and wgExH) and multiplied by wlFUA.  Note: does not apply to child DHWLOOPBRANCHs (see wbFUA).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------

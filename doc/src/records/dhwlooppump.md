@@ -26,6 +26,15 @@ Pump power.
   ----------- ----------------- ------------- -------------- -----------------
   W           $>$ 0             0             No             hourly
 
+**wlpLiqHeatF=*float***
+
+Fraction of pump power that heats circulating liquid.  The remainder is discarded.
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ------------------ ------------- -------------- -----------------
+                0 $\le$ x $\le$    1             No             hourly
+
+
 **wlpElecMtr=*mtrName***
 
 Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is recorded (under end use dhwMFL).
