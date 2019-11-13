@@ -12,9 +12,8 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
+# Penumbra
 add_subdirectory(penumbra)
-
-add_subdirectory(HPWHsim)
 
 set_target_properties(awning PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(glfw PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
@@ -23,5 +22,31 @@ set_target_properties(glad PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(penumbra PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
 
+# Kiva
+set(KIVA_TESTING OFF CACHE BOOL "" FORCE)
+set(KIVA_EXE_BUILD OFF CACHE BOOL "" FORCE)
+set(KIVA_COVERAGE OFF CACHE BOOL "" FORCE)
+set(KIVA_3D OFF CACHE BOOL "" FORCE)
+
+option( KIVA_GROUND_PLOT "Build ground plotting library" OFF )
+
+add_subdirectory(kiva)
+
+set_target_properties(libkiva PROPERTIES FOLDER Dependencies/Kiva)
+
+if (KIVA_GROUND_PLOT)
+  set_target_properties(groundplot PROPERTIES FOLDER Dependencies/Kiva/GroundPlot)
+  set_target_properties(boost_filesystem PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(boost_system PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(mgl-static PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(png_static PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(genfiles PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+  set_target_properties(zlibstatic PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
+endif()
+
+# HPWHsim
+add_subdirectory(HPWHsim)
+
 set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
 set_target_properties(testTool PROPERTIES FOLDER Dependencies/HPWHsim)
+

@@ -17,6 +17,6 @@ find_package(Git QUIET)
 add_subdirectory(vendor)
 add_subdirectory(src)
 
-include(ctest)
+enable_testing()
 
 add_subdirectory(test)

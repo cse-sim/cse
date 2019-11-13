@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -1879,7 +1879,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		{	// default ASHP src from heater location zone
 			//   (heat source is typically heater location zone)
 			// wh_ashpSrcZnTi = wh_znTi done in wh_Init() (after deferred ref resolution)
-			V wh_ashpTSrc = V wh_tEx;		// default ashpTSrc to tEx
+			VD wh_ashpTSrc = VD wh_tEx;		// default ashpTSrc to tEx
 											//   V handles NANDLES
 		}
 	}

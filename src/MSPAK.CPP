@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -739,7 +739,7 @@ RC MASSBC::bc_Setup(
 										// trial showed 0 nec for simulator
 		bc_rsurf = pMS->ms_pMM->mm_rsurfo;			// outside addl surface r
 
-		V bc_exTa = V sf->x.sfExT;			// outside air temp if MSBCSPECT. Hourly expr allowed; move as NANDAT.
+		VD bc_exTa = VD sf->x.sfExT;			// outside air temp if MSBCSPECT. Hourly expr allowed; move as NANDAT.
 	}
 
 	bc_h = msrsurf( bc_h, bc_rsurf);		// combine rsurf with surface conductance

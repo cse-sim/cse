@@ -68,6 +68,13 @@ typedef enum { tldMIN, tldSP, tldMAX } TOWLOADCASE;
 typedef XFILE * XFILEP;
 typedef char WFLOC[32];
 typedef char WFLID[18];
+<<<<<<< HEAD
+=======
+typedef struct { CHP fieldName; SI fnmi; CHP fp; BOO nDecoded; FLOAT fnv; } FNRT;
+typedef FNRT * FNRTP;
+typedef struct { CHP fieldName; SI fnr; } FNMT;
+typedef FNMT * FNMTP;
+>>>>>>> master
 typedef enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW } WFILEFORMAT;
 typedef char WFLOC2[22];
 typedef class YACAM * YACAMP;
@@ -92,6 +99,8 @@ typedef SI IZNVTYCH;
 typedef SI EXCNDCH;
 typedef SI SFMODELCH;
 typedef SI GROUNDMODELCH;
+typedef SI FCXREFCH;
+typedef SI FCZREFCH;
 typedef SI CONVMODELCH;
 typedef SI RSYSMODECTRLCH;
 typedef SI RSYSTYCH;
@@ -232,6 +241,7 @@ typedef float RANC;
 #define DTXFILEP 0x25
 #define DTWFLOC 0x26
 #define DTWFLID 0x27
+<<<<<<< HEAD
 #define DTWFILEFORMAT 0x28
 #define DTWFLOC2 0x29
 #define DTYACAMP 0x2a
@@ -280,6 +290,58 @@ typedef float RANC;
 #define DTIVLCH 0x2106
 #define DTRPTYCH 0x210d
 #define DTRPTHDCH 0x211d
+=======
+#define DTFNRT 0x28
+#define DTFNRTP 0x29
+#define DTFNMT 0x2a
+#define DTFNMTP 0x2b
+#define DTWFILEFORMAT 0x2c
+#define DTWFLOC2 0x2d
+#define DTYACAMP 0x2e
+#define DTWDYEARP 0x2f
+#define DTRIGTARGTY 0x30
+#define DTRIGTARG 0x31
+#define DTRIGDIST 0x32
+#define DTRIGDISTP 0x33
+#define DTZNRP 0x34
+#define DTXSURFP 0x35
+#define DTDUCTSEGP 0x36
+#define DTNOYESCH 0x2037
+#define DTSKYMODCH 0x203a
+#define DTSKYMODLWCH 0x203d
+#define DTEXSHMODELCH 0x2042
+#define DTDOWCH 0x2045
+#define DTMONCH 0x204d
+#define DTOSTYCH 0x205a
+#define DTZNMODELCH 0x2061
+#define DTIZNVTYCH 0x2065
+#define DTEXCNDCH 0x2074
+#define DTSFMODELCH 0x207a
+#define DTGROUNDMODELCH 0x2081
+#define DTFCXREFCH 0x2084
+#define DTFCZREFCH 0x208a
+#define DTCONVMODELCH 0x2090
+#define DTRSYSMODECTRLCH 0x2098
+#define DTRSYSTYCH 0x209d
+#define DTRSYSOAVTYCH 0x20a5
+#define DTWSCALCMODECH 0x20a9
+#define DTWHHEATSRCCH 0x20ac
+#define DTWHTYPECH 0x20b2
+#define DTWHASHPTYCH 0x20b8
+#define DTDHWEUCH 0x20db
+#define DTDHWEUXCH 0x20e2
+#define DTDHWMODELCH 0x20ea
+#define DTDHWLSEGTYCH 0x20ed
+#define DTPVMODCH 0x20f0
+#define DTPVARRCH 0x20f5
+#define DTMOUNTCH 0x20fb
+#define DTFENMODELCH 0x20fe
+#define DTSIDECH 0x2101
+#define DTFILESTATCH 0x2104
+#define DTIVLCH 0x2108
+#define DTRPTYCH 0x210f
+#define DTRPTHDCH 0x211f
+>>>>>>> master
 #define DTJUSTCH 0x2123
 #define DTENDUSECH 0x2126
 #define DTHDAYCASECH 0x213f
@@ -308,9 +370,14 @@ typedef float RANC;
 #define DTNOYESVC 0x41a6
 #define DTOFFAVAILONVC 0x41a9
 #define DTVENTAVAILVC 0x41ad
+<<<<<<< HEAD
 #define DTBATCTRLALGVC 0x41b1
 #define DTTSCMNC 0x41b4
 #define DTRANC 0x41ba
+=======
+#define DTTSCMNC 0x41b1
+#define DTRANC 0x41b7
+>>>>>>> master
 
 
 
@@ -403,6 +470,16 @@ typedef float RANC;
 #define C_SFMODELCH_FD 6
 #define C_GROUNDMODELCH_D2INP 1
 #define C_GROUNDMODELCH_D2COR 2
+#define C_FCXREFCH_SYMMETRY 1
+#define C_FCXREFCH_WALLINT 2
+#define C_FCXREFCH_WALLC 3
+#define C_FCXREFCH_WALLEXT 4
+#define C_FCXREFCH_FARFIELD 5
+#define C_FCZREFCH_WALLTOP 1
+#define C_FCZREFCH_GRADE 2
+#define C_FCZREFCH_SLABTOP 3
+#define C_FCZREFCH_SLABBOTTOM 4
+#define C_FCZREFCH_DEEPGROUND 5
 #define C_CONVMODELCH_INPUT 1
 #define C_CONVMODELCH_ASHRAE 2
 #define C_CONVMODELCH_AKBARI 3
@@ -843,6 +920,7 @@ typedef float RANC;
 #define RTCON	0x201c
 #define RTLR	0x201d
 #define RTMAT	0x201e
+<<<<<<< HEAD
 #define RTRFI	0x201f
 #define RTRI	0x2020
 #define RTCOL	0x2021
@@ -907,6 +985,9 @@ typedef float RANC;
 #define RTCOOLPLANT	0x205c
 #define RTCHILLER	0x205d
 #define RTTOWERPLANT	0x205e
+=======
+#define RTFND	0x201f
+>>>>>>> master
 
 // end of record type definitions
 
@@ -951,6 +1032,7 @@ class GT;
 class CON;
 class LR;
 class MAT;
+<<<<<<< HEAD
 class RFI;
 class RI;
 class COL;
@@ -1015,5 +1097,8 @@ class BOILER;
 class COOLPLANT;
 class CHILLER;
 class TOWERPLANT;
+=======
+class FND;
+>>>>>>> master
 
 // end of dtypes.h

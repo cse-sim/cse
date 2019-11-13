@@ -4,3 +4,6 @@
 [submodule "vendor/HPWHsim"]
 	path = vendor/HPWHsim
 	url = https://github.com/EcotopeResearch/HPWHsim.git
+[submodule "vendor/kiva"]
+	path = vendor/kiva
+	url = https://github.com/bigladder/kiva.git

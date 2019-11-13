@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -322,7 +322,7 @@ void WDHR::wd_Init(	// initialize all members
 	else
 	{	static const NANDAT unset( UNSET);
 		float unsetf;
-		V unsetf = V unset;
+		VD unsetf = VD unset;
 		float* pF0 = &wd_slAzm;
 		float* pFN = &wd_tdvElecAvg01;
 		int szFloat = pFN - pF0 + 1;
@@ -2528,6 +2528,21 @@ x			printf( "mismatch\n");
 	return rc;
 }		// WDHR::wd_EPWReadHr
 #undef _C
+
+RC WFILE::wf_FixJday(DOY& jDay, int begDay)
+{
+	if (jd1 > 0				// if weather file dates known
+		&& jd1 + 364 != jdl		// if not a full year weather file (365-day file has all dates!)
+		&&  jd1 - 1 != jdl)		// .. (eg Jul 1..Jun 30 is full year)
+	{
+		if (begDay < jd1)		// eg if file starts in Nov and run starts in Feb
+			jDay += 365;			// add 365 to warmup start for comparability
+		setToMax(jDay, jd1 - 1);		// move warmup start ahead to wthr file start if nec (-1 cuz ++ below)
+	}
+	jDay = (jDay + 365) % 365;		// adjust to 0-364 if negative or >= 365 (++'d b4 use)
+
+	return RCOK;
+}
 
 #if 0
 

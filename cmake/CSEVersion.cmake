@@ -1,15 +1,18 @@
 # Generate CSE Version header
 
-execute_process(
-  COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  RESULT_VARIABLE git_branch_exit_status
-  OUTPUT_VARIABLE GIT_BRANCH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-if (NOT ${git_branch_exit_status} MATCHES "0")
-  set(GIT_BRANCH "unknown-branch")
+if(DEFINED ENV{APPVEYOR_REPO_BRANCH})
+  set(GIT_BRANCH "$ENV{APPVEYOR_REPO_BRANCH}")
+else()
+  execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    RESULT_VARIABLE git_branch_exit_status
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if (NOT ${git_branch_exit_status} MATCHES "0")
+    set(GIT_BRANCH "unknown-branch")
+  endif()
 endif()
 
 execute_process(

@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2017 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -319,6 +319,9 @@ template <class T>  class anc : public basAnc
 //=============================================================================
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 #define RLUP( B, rp) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->gud > 0)
+
+//----- macro to loop over records of given anchor (type known) in reverse (hook to change re skipping deleted records)
+#define RLUPR( B, rp) for (rp=(B).p+(B).n;  rp >= (B).p+(B).mn;  rp--) if (rp->gud > 0)
 
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 //-----  variant with condition
