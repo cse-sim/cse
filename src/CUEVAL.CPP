@@ -1216,7 +1216,8 @@ static inline int IsDM( DMP p)		// return nz iff string block "looks like" it is
 // Strings in dm blocks are preceded by the 32 bit (positive) block size
 // in bytes, which will have 0's in hi bits of lo 16 bits for reasonable string lengths
 //  (see dmpak.cpp; IMPLEMENTATION DEPENDENT).
-{	return (*((USI*)(p)-1) & 0xc000) != 0xc000;
+{
+	return (*((USI*)(p)-1) & 0xc000) != 0xc000;
 }		// IsDM
 //----------------------------------------------------------------------------
 RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string constant in code
@@ -1233,11 +1234,9 @@ RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string const
 #endif
 		if (IsDM( p))
 			dmfree( pp);// free memory and NULL ptr
-#if 1	// 3-3-2016
 		else
 			*pp = NULL;	// probably a PSPKONN constant in code; don't free
 						// but do NULL pointer in all cases
-#endif
 	}
 	return RCOK;
 }			// cupfree

@@ -151,7 +151,7 @@ Water quantity assumed to be wasted at each draw due to the hot water arrival de
 
  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  gal/draw        $\ge$ 0          0           No             subhourly
+  gal/draw        $\ge$ 0          0           No             hourly
 
 
 **wsBranchModel=*choice***
@@ -197,7 +197,7 @@ ToDo
 
 **wsTUse=*float***
 
-Hot water delivery temperature (at the point of use).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
+Hot water delivery temperature (at output of water heater(s) and at point of use).  Delivered water is mixed down to wsTUSe (with cold water) or heated to wsTUse (with extra electric resistance backup, see DHWHEATER whXBUEndUse).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -214,11 +214,11 @@ Hot water delivery temperature (at the point of use).  Note that draws defined v
 
 **wsTSetPointLH=*float***
 
-  Specifies the hot water setpoint temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
+  Specifies the hot water setpoint temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-    ^o^F        $>$ 32 ^o^F         wsTUse           No             hourly
+    ^o^F        $>$ 32 ^o^F      wsTSetPoint        No             hourly
 
 
 **wsSDLM=*float***

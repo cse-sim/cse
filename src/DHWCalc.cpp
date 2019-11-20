@@ -395,7 +395,7 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 	{	// if served by central DHWSYS, msg disallowed inputs
 		// can't use ws_HasCentral(), ref may not be resolved yet
 		rc = disallowN( "when wsCentralDHWSYS is given",
-				DHWSYS_SSF, DHWSYS_CALCMODE, DHWSYS_TSETPOINT,
+				DHWSYS_SSF, DHWSYS_CALCMODE, DHWSYS_TSETPOINT, DHWSYS_TUSE, DHWSYS_TINLET,
 				DHWSYS_LOADSHAREDHWSYSI, 0);
 	}
 	else if (IsSet( DHWSYS_LOADSHAREDHWSYSI))
@@ -477,6 +477,22 @@ float DHWSYS::ws_GetTSetpoint(		// resolve setpoint
 	return tSetpoint;
 }		// DHWSYS::ws_GetTSetpoint
 //-----------------------------------------------------------------------------
+int DHWSYS::ws_GetTSetpointFN(		// resolve setpoint source field
+	int whfcn) const	// water heating function
+						//   whfcnPRIMARY, whfcnLOOPHEATER
+{
+	// cascading defaults
+	//    tSetpoint defaults to tUse
+	//    tSetpointLH defaults to tSetpoint
+	int fn = 0;
+	if (IsSet(DHWSYS_TSETPOINT))
+		fn = DHWSYS_TSETPOINT;
+	if (whfcn == DHWHEATER::whfcnLOOPHEATER
+	 && IsSet(DHWSYS_TSETPOINTLH))
+		fn = DHWSYS_TSETPOINTLH;
+	return fn;
+}		// DHWSYS::ws_GetTSetpointFN
+//-----------------------------------------------------------------------------
 RC DHWSYS::ws_CheckSubObject(		// check that sub-object is acceptable
 	record* r)		// subobject record (DHWHEATER, DHWPUMP, ...)
 // WHY: child DHWSYSs have only HW use, not full set of components
@@ -488,8 +504,12 @@ RC DHWSYS::ws_CheckSubObject(		// check that sub-object is acceptable
 	{	// don't report error if both wsLoadShareDHWSYS and wsCentralDHWSYS are given.
 		//   checked/errored in ws_CkF()
 		//   msg here is confusing
-		if (IsSet( DHWSYS_CENTRALDHWSYSI))
-			rc = r->oer( "Not allowed here, this DHWSYS is served by a central DHWSYS.");
+		if (IsSet(DHWSYS_CENTRALDHWSYSI))
+		{	const DHWSYS* pWSX = ws_GetCentralDHWSYS();
+			rc |= r->oer("Not allowed here, this DHWSYS is served by %s",
+				pWSX ? strtprintf("central DHWSYS '%s'", pWSX->name)
+				     : "a central DHWSYS.");
+		}
 	}
 	return rc;
 }	// DHWSYS::ws_CheckSubObject
@@ -568,7 +588,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		{	for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
 			{	int iFn = DHWSYS_FXCOUNT + iEU;
 				if (pWSCentral->IsSet(iFn))
-					pWSCentral->ooer(iFn, "%s not allowed on central DHWSYS",
+					rc |= pWSCentral->ooer(iFn, "%s not allowed on central DHWSYS",
 						pWSCentral->mbrIdTx(iFn));
 				pWSCentral->ws_fxCount[iEU] = 0;		// counts derived from child DHWSYSs (see below)
 			}
@@ -650,6 +670,25 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			// any remaining showers are linked to "no DHWHEATREC"
 		}
 
+		// additional config checks
+		if (!ws_configChecked)
+		{	if (ws_whCountUseTS == 0.f)
+				ignore( DHWSYS_TSETPOINT,
+					"-- no setpoint-aware DHWHEATERs in this DHWSYS.");
+			if (ws_wlhCountUseTS == 0.f)
+				ignore(DHWSYS_TSETPOINTLH,
+					"-- no setpoint-aware DHWLOOPHEATERs in this DHWSYS.");
+		}
+
+		// set checked flag in both run and input DHWSYSs
+		// WHY: suppresses duplicate info msgs when >1 RUN
+		// side-effect: does not re-check after ALTER
+		ws_configChecked++;
+		DHWSYS* pWSi = WSiB.GetAtSafe( ss);
+		if (pWSi)
+			pWSi->ws_configChecked++;	// set in input record
+										// carries to subsequent WsR copies
+
 		return rc;
 	}	// pass == 2
 
@@ -676,9 +715,12 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		RRFldCopyIf( pWSCentral, DHWSYS_SDLM);
 		RRFldCopyIf( pWSCentral, DHWSYS_WF);
 		RRFldCopyIf( pWSCentral, DHWSYS_DSM);
+
+#if 0
 		RRFldCopyIf( pWSCentral, DHWSYS_TINLET);
 		RRFldCopyIf( pWSCentral, DHWSYS_TUSE);
 		RRFldCopyIf( pWSCentral, DHWSYS_TSETPOINT);
+#endif
 
 		RRFldCopyIf( pWSCentral, DHWSYS_DAYWASTESCALE);
 		for (int iEU=0; iEU<NDHWENDUSES; iEU++)
@@ -1456,7 +1498,7 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 //     (re faster looping in e.g. wdu_DoHour())
 // - assigns draw sequence #s to child DHWUSEs
 //     done for all hwEndUses
-//     only 2-2019 use = random assignment of
+//     only use (2/19) = random assignment of
 //       C_DHWEUCH_SHOWER draws to DHWHEATRECs
 // done once at run start
 {
@@ -1816,12 +1858,15 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	const char* whenHs = strtprintf( "when whHeatSrc=%s", whHsTx);
 
 	DHWSYS* pWS = wh_GetDHWSYS();
-	RC rc = !pWS ? oer( "DHWSYS not found")	// insurance (unexpected)
-				 : pWS->ws_CheckSubObject( this);
+	RC rc = !pWS ? oer("DHWSYS not found")	// insurance (unexpected)
+			     : RCOK;
+	// rc |= pWS->ws_CheckSubObject() done in wh_Init()
+
 	if (rc)
 		return rc;	// give up
 
 	int bIsPreRun = pWS->ws_calcMode == C_WSCALCMODECH_PRERUN;
+	int whfcn = wh_GetFunction();
 
 	// surrounding zone or temp: zone illegal if temp given
 	//   used only re HPWH 2-16, enforce for all
@@ -1833,6 +1878,10 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		if (wh_heatSrc != C_WHHEATSRCCH_ASHPX)
 			ignore( DHWHEATER_UAMULT, whenHs);
 	}
+
+	if (whfcn == whfcnLOOPHEATER && !wh_CanHaveLoopReturn())
+		rc |= oer("DHWLOOPHEATER must be whType=SmallStorage with whHeatSrc=ASPX or whHeatSrc=ResistanceX.");
+
 
 	if (wh_type != C_WHTYPECH_STRGSML)
 	{	if (wh_type == C_WHTYPECH_INSTUEF)
@@ -1916,6 +1965,9 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		}
 	}
 
+	if (!wh_CanHaveLoopReturn())
+		ignoreN(whenHs, DHWHEATER_INHTSUPPLY, DHWHEATER_INHTLOOPRET, 0);
+
 	if (wh_IsStorage())
 	{	// note wh_vol is required in some cases
         //   see above
@@ -1948,8 +2000,15 @@ RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	RC rc = record::RunDup( pSrc, options);
 	DHWSYS* pWS = wh_GetDHWSYS();
 	int whfcn = wh_GetFunction();
-	(whfcn==whfcnPRIMARY ? pWS->ws_whCount : pWS->ws_wlhCount) += wh_mult;	// total # of water heaters in DHWSYS
-
+	int usesTSetpoint = wh_UsesTSetpoint();
+	if (whfcn == whfcnPRIMARY)
+	{	pWS->ws_whCount += wh_mult;
+		pWS->ws_whCountUseTS += usesTSetpoint * wh_mult;
+	}
+	else
+	{	pWS->ws_wlhCount += wh_mult;
+		pWS->ws_wlhCountUseTS += usesTSetpoint * wh_mult;
+	}
 	return rc;
 }	// DHWHEATER::RunDup
 //----------------------------------------------------------------------------
@@ -1980,6 +2039,21 @@ RC DHWHEATER::wh_Init()		// init for run
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
+	rc |= pWS->ws_CheckSubObject(this);		// check system config
+											//   DHWHEATER not allows on child DHWSYS
+
+	int whfcn = wh_GetFunction();
+	if (wh_CanHaveLoopReturn() && pWS->ws_calcMode == C_WSCALCMODECH_SIM)
+	{	// no info msgs on PRERUN -- else duplicates
+		if (pWS->ws_wlCount == 0)
+		{	ignore(DHWHEATER_INHTLOOPRET, "when DHWSYS includes no DHWLOOP(s).");
+			if (whfcn == whfcnLOOPHEATER)
+				oInfo("treated as series heater only when DHWSYS includes no DHWLOOP(s).");
+		}
+		else if (whfcn == whfcnPRIMARY && pWS->ws_wlhCount > 0)
+			ignore(DHWHEATER_INHTLOOPRET, "when DHWSYS includes DHWLOOPHEATER(s).");
+	}
+
 	// default meters from parent system
 	if (!IsSet( DHWHEATER_ELECMTRI))
 		wh_elecMtri = pWS->ws_elecMtri;
@@ -1997,16 +2071,14 @@ RC DHWHEATER::wh_Init()		// init for run
 	wh_pAshpSrcZn = ZrB.GetAtSafe( wh_ashpSrcZnTi);
 
 // set up Ecotope heat pump water heater model
-// free (impossible?) pre-existing HPWH data
-	delete wh_pHPWH; wh_pHPWH = NULL;
+	delete wh_pHPWH; wh_pHPWH = NULL;	// free pre-existing HPWH data (insurance)
 	delete[] wh_HPWHHSMap; wh_HPWHHSMap = NULL;
 
 	if (wh_IsHPWHModel())
 		rc |= wh_HPWHInit();	// set up from DHWHEATER inputs
 
-// UEF-based instantaneous water heater model 5-2017
-	if (wh_type == C_WHTYPECH_INSTUEF)
-		rc |= wh_InstUEFInit();
+	else if (wh_type == C_WHTYPECH_INSTUEF)
+		rc |= wh_InstUEFInit();		// UEF-based instantaneous water heater model 5-2017
 
 	return rc;
 }		// DHWHEATER::wh_Init
@@ -2039,6 +2111,14 @@ int DHWHEATER::wh_GetFunction() const
 		:                           whfcnUNKNOWN;
 	return whfcn;
 }		// DHWHEATER::wh_GetFunction
+//----------------------------------------------------------------------------
+DHWHEATER* DHWHEATER::wh_GetInputDHWHEATER() const
+// returns ptr to source input record
+{
+	anc< DHWHEATER>*bpi = b == &WhR ? &WHiB : b == &WlhR ? &WLHiB : NULL;
+	DHWHEATER* pWH = bpi ? bpi->GetAtSafe(ss) : NULL;
+	return pWH;
+}		// DHWHEATER::wh_GetInputDHWHEATER
 //----------------------------------------------------------------------------
 int DHWHEATER::wh_UsesDerivedLDEF() const
 // returns nz iff wh_LDEF needs to be derived via PreRun
@@ -2189,7 +2269,7 @@ RC DHWHEATER::wh_DoEndPreRun()
 		// "Load-dependent energy factor"
 		float LDEF = wh_CalcLDEF( arl);
 		// update input record with derived value
-		DHWHEATER* pWHi = WHiB.GetAtSafe( ss);
+		DHWHEATER* pWHi = wh_GetInputDHWHEATER();
 		if (pWHi && !pWHi->IsSet( DHWHEATER_LDEF))
 		{	pWHi->wh_LDEF = LDEF;
 			pWHi->fStat( DHWHEATER_LDEF) |= FsSET | FsVAL;
@@ -2249,6 +2329,8 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	wh_HPWHTankTempSet = 0;		// force tank temp init (insurance)
 								//   (see DHWHEATER::wh_HPWHDoHour)
+
+	int whfcn = wh_GetFunction();
 
 	wh_pHPWH = new( HPWH);
 
@@ -2341,9 +2423,16 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			if (ret || wh_pHPWH->setUA( UAdflt*wh_UAMult) != 0)
 				rc = RCBAD;
 		}
-		if (wh_pHPWH->isSetpointFixed() && pWS->IsSet(DHWSYS_TSETPOINT))
-			pWS->oInfo("wsTSetpoint ignored for fixed-setpoint HPWH DHWHEATER '%s'.",
-				name);
+
+		// config checks -- report only once
+		if (!pWS->ws_configChecked)
+		{	if (wh_pHPWH->isSetpointFixed())
+			{	int fn = pWS->ws_GetTSetpointFN(whfcn);
+				if (fn)
+					pWS->ignore(fn,
+						strtprintf("-- HPWH '%s' has a fixed setpoint.", name));
+			}
+		}
 
 		// inlet fractional heights
 		//  set iff user input given -- HPWH may have non-0 defaults
@@ -2489,9 +2578,9 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 	float mult = pWS->ws_mult * wh_mult;	// overall multiplier
-	int iwhfcn = wh_GetFunction();
+	int whfcn = wh_GetFunction();
 	bool bLastWH	// true iff this is last heater (output goes to loop and draws)
-		= iwhfcn == whfcnLOOPHEATER || pWS->ws_wlhCount == 0.f;
+		= whfcn == whfcnLOOPHEATER || pWS->ws_wlhCount == 0.f;
 
 	// local totals
 	double qEnv = 0.;		// heat removed from environment, kWh
@@ -2566,7 +2655,7 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 		double drawUse = tk.wtk_whUse*scaleX;		// use draw same for primary and loop heater
 
 		// inlet temp, F
-		double tInlet = iwhfcn == whfcnLOOPHEATER
+		double tInlet = whfcn == whfcnLOOPHEATER
 			? tk.wtk_TOutPrimAvg()	// loopheater: average outlet temp of primary heaters
 			: tk.wtk_tInletX;		// primary: inlet temp( mains + DWHR)
 		

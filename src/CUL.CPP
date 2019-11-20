@@ -1182,9 +1182,9 @@ LOCAL RC FC NEAR culRATE(	// do RATE cult entry
 		{
 			// get Identifier, Quoted txt, or constant string eXpression for name. local fcn.
 			if ( ganame( 0,		// disallow "all" and "sum"
-			NULL,		// use xSp->c->id in error messages
-			&name )		// rcvs string ptr. ganame gets terminator.
-			!= RCOK )
+			   NULL,		// use xSp->c->id in error messages
+			   &name )		// rcvs string ptr. ganame gets terminator.
+			     != RCOK )
 				return RCSKIP2END;		// on error in name, skip stmt blk (ganame already perNx'd).
 			// duplicate name check is below
 			xprD++;			// say terminator already gotten (by xpr from ganame)
@@ -4349,28 +4349,20 @@ LOCAL void FC NEAR drefRes()
 		BP b = drfp->b;
 		if (b->ba_flags & RFTYS)	// don't fill ref's in TYPE rat entries
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
-#if 1
 		record* e = b->GetAtSafe( drfp->i);		// record location
 		if (!e)
 		{	per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
 			continue;
 		}
-#else
-x		if (drfp->i <= 0 || drfp->i > b->n)
-		{	// allow 0 due to Top
-			per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
-			continue;
-		}
-		record* e = &b->rec(drfp->i);		// record location
-#endif
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
 				+ b->fir[drfp->fn].off);	//  plus field offset
 		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
-		const char* ms;
+		const char* ms=NULL;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
 				NULL,
-				&e, &ms ) != RCOK )		// local.  Note e reuse.
-			// look up name in basAnc's records, resolving eg same surf name in 2 zones by dflt owner.
+				&e, &ms ) != RCOK )	// local.  Note e reuse.
+									// look up name in basAnc's records
+									//   resolving eg same surf name in 2 zones by dflt owner.
 		{
 			*p = 0;				// not found. store 0.
 			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.

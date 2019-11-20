@@ -430,7 +430,7 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 		rc |= pNew->RunDup( p);		// virtual, base class Copy()s
 	}
 	return rc;
-}		// CopyAndInit
+}		// anc<T>::RunDup
 //-----------------------------------------------------------------------------
 #if defined( _DEBUG)
 template <class T> T* anc<T>::GetAt( int i) const

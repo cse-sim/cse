@@ -1473,20 +1473,24 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E(WuR.RunDup(WUiB, &WduR))
 
 	// DHWDAYUSE one-time inits
+	//   2 passes req'd (see wdu_Init())
 	DHWDAYUSE* pWDU;
 	RLUP(WduR, pWDU)
 		rc |= pWDU->wdu_Init( 0);
 	RLUP(WduR, pWDU)
 		rc |= pWDU->wdu_Init( 1);
+	// if (!rc)
+	//    return rc	 ... no, keep going ws_Init() checks are independent
 
 	// DHWSYS initialization -- do *last* -- all children in place
 	//   multiple passes re e.g. wsLoadShareDHWSYS
+	//   give up at end of pass if error
 	DHWSYS* pWS;
 	RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 0);
-	RLUP( WsR, pWS)
+	if (!rc) RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 1);
-	RLUP( WsR, pWS)
+	if (!rc) RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 2);
 
 	return rc;
