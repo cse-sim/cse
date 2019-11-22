@@ -4509,7 +4509,7 @@ METER me DHWMETER wufx DHWMETER wuwh \
 DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsTUse=120  wsWF = 1
 
 #define DO0Base( sName, me, wuFX, wuWH) \
-DO0Base0( sName, me, wuFX, wuWH) wsTSetPoint=130 \
+DO0Base0( sName, me, wuFX, wuWH) \
 DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER
 
 // DHWSYS with no DHWHEATREC

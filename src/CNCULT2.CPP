@@ -2003,6 +2003,30 @@ RC record::limitCheck(		// range check, issue warning or error msg
 	}
 	return rc;
 }		// record::limitCheck
+//-----------------------------------------------------------------------------
+RC record::limitCheckFix(	// range check, msg, set to min/max
+	int fn,			// field
+	float vMin,		// min allowed value
+	float vMax,		// max allowed value
+	int erOp /*=ERR*/)		// WRN/ERR/IGN etc
+							// note IGNX bit: limit only (don't msg)
+// return RCOK if field not set or value is in range or warning msg
+//        else RCxx if value out of range (msg issued)
+{
+	RC rc = RCOK;
+	void* p = field(fn);
+	if (!ISNANDLEP( p))
+	{	float* pV = (float *)p;
+		float v = *pV;
+		if (v < vMin || v > vMax)
+		{	rc = orMsg(erOp, "%s (%g) must be in range %g - %g",
+					mbrIdTx(fn), v, vMin, vMax);
+			*pV = bracket(vMin, v, vMax);
+		}
+	}
+	return rc;
+}		// record::limitCheck
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 //   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)

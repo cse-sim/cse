@@ -1198,7 +1198,6 @@ DHWHEATER WH_UEF2
 
 
 DHWSYS "DS1"
-  wsTSetpoint = 130
   wsTUse = 125
   wsDayUse = DHW4BR
   wsElecMtr = ElecINST

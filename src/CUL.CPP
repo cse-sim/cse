@@ -4549,15 +4549,20 @@ RC CDEC record::oInfo( const char *message, ... ) const
 	return oerI( 1, 1, 2, message, ap);
 }						// oInfo
 //-----------------------------------------------------------------------------
-RC record::orMsg( int erOp, const char *message, ... ) const
-// runtime error message pertaining to an object
+RC record::orMsg(			// flexible object-specific msg
+	int erOp,		// 
+	const char *message, ... ) const
+
 // puts eg 'surface "fum" of zone "north"' in front of caller's message;
 // optionally shows input file line text, caret, file name, line in INPUT phase;
-// object's file & line (from rat record) in CHECK or RUN phases. */
+// object's file & line (from rat record) in CHECK or RUN phases.
 
-// returns RCBAD
-
+// returns RCOK iff erOp&IGNX
+//    else RCBAD
 {
+	if (erOp & IGNX)
+		return RCOK;	// "extra ignore", do nothing
+
 	va_list ap;
 	va_start( ap, message);
 	int shoTx = 1;
@@ -4567,14 +4572,14 @@ RC record::orMsg( int erOp, const char *message, ... ) const
 		       : erAct == INF ? 2
 			   :                0;
 
-	return oerI( shoTx, shoFnLn, isWarn+0x100, message, ap);
+	return oerI( shoTx, shoFnLn, isWarn | (erOp & RTMSG), message, ap);
 }	// record::orMsg
 //-----------------------------------------------------------------------------
 RC record::oerI(    		// object error message, inner function
 	int shoTx,			// 1 to show input file line and caret if input phase
 	int shoFnLn,		// 1 to show input file name and line number if input phase
 	int isWarn,			// 1 for Warning, 2 for Info, 0 for Error
-						//   + 0x100 = report as runtime error (via rerIV)
+						//   + RTMSG = report as runtime error (via rerIV)
 						//             shows date/time in simulation
 	const char* fmt,	// body of error message (a la printf format)(CSE message handle ok)
 	va_list ap) const	// ptr to argument ptrs if any (as for vprintf)
@@ -4585,7 +4590,7 @@ RC record::oerI(    		// object error message, inner function
 
 // returns RCBAD if error (for convenience), RCOK if warning/info
 {
-	int bIsRuntime = (isWarn & 0x100) != 0;
+	int bIsRuntime = (isWarn & RTMSG) != 0;
 	isWarn &= 0x7;
 
 	// verify basAnc record arg

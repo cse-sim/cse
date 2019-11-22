@@ -309,6 +309,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
 #define ISASING(nandat)  ((ULI)*(void**)&(nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
 #define ISNANDLE(nandat) (((ULI)*(void**)&(nandat) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) (((ULI)*(void**)(pNandat) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(nandle)  ((USI)(ULI)*(void**)&(nandle))				// extract expression # from nandle
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
@@ -325,7 +326,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define VD *(void **)&			// usage:  V x = V y;  if (V x == V y) ..  where x and y are floats such as CHOICN's.
+#define VD *(void **)&			// usage:  VD x = VD y;  if (VD x == VD y) ..  where x and y are floats such as CHOICN's.
 
 // macro to test if n has an NCHOICE value:
 #define ISNCHOICE(n)  (((ULI)VD(n) & 0xff800000L)==0x7f800000L)
@@ -400,13 +401,17 @@ const int PWRN   = WRN|PROGERR;	// program error WRN
 const int PABT   = ABT|PROGERR;	// program error ABT
 const int NOPREF = 0x0010;	// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
 const int SYSMSG = 0x0020;	// Do GetLastError(), add system error msg
-const int SHOFNLN  = 0x0040;	// show input file name and line # (orMsg)
+const int SHOFNLN= 0x0040;	// show input file name and line # (orMsg)
+const int RTMSG  = 0x0080;		// runtime format (include day/hour info in msg) (orMsg)
+const int IGNX   = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMsg)
+const int ERRRT = ERR | RTMSG;
+const int WRNRT = WRN | RTMSG;
 
 // options for rmkErr:screen() and :logit() remark display
-const int NONL   = 0x0100;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
-const int DASHES = 0x0200;	// separate this remark from preceding & following message with ------------
-const int NOSCRN = 0x0400;	// logit: do not also display on screen
-const int QUIETIF= 0x0800;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
+const int NONL   = 0x1000;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
+const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------
+const int NOSCRN = 0x4000;	// logit: do not also display on screen
+const int QUIETIF= 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
 
 
 // application option bits in same argument word as error action.

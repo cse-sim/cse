@@ -243,6 +243,7 @@ class record		// base class for records
 
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
+	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
 
 	RC CDEC ooer( int fn, const char* message, ... );
 	RC CDEC ooerV( int fn, const char* message, va_list ap);

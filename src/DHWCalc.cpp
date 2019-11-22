@@ -395,8 +395,8 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 	{	// if served by central DHWSYS, msg disallowed inputs
 		// can't use ws_HasCentral(), ref may not be resolved yet
 		rc = disallowN( "when wsCentralDHWSYS is given",
-				DHWSYS_SSF, DHWSYS_CALCMODE, DHWSYS_TSETPOINT, DHWSYS_TUSE, DHWSYS_TINLET,
-				DHWSYS_LOADSHAREDHWSYSI, 0);
+				DHWSYS_SSF, DHWSYS_CALCMODE, DHWSYS_TSETPOINT, DHWSYS_TSETPOINTLH,
+				DHWSYS_TUSE, DHWSYS_TINLET, DHWSYS_LOADSHAREDHWSYSI, 0);
 	}
 	else if (IsSet( DHWSYS_LOADSHAREDHWSYSI))
 	{	// if DHWSYS shares load, msg disallowed inputs
@@ -407,7 +407,7 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 	// ws_tSetpoint defaults to tUse, handled during simulation
 	//  due to interaction with fixed setpoints in some HPWH models
 
-	rc |= ws_CheckVals( ERR|SHOFNLN);
+	rc |= ws_CheckVals( ERR);
 
 #if 0 && defined( _DEBUG)
 0   temporary data conversion code
@@ -422,40 +422,14 @@ RC DHWSYS::ws_CheckVals(		// check value ranges
 {
 	RC rc = RCOK;
 
-	if (!ISNANDLE( ws_SSF))
-	{	float SSFsave = ws_SSF;
-		if (ifBracket( 0.f, ws_SSF, 0.99f))
-		{	rc |= oer( "Bad wsSSF=%0.3f: value must be in the range 0 - 0.99",
-				SSFsave);
-		    // calc may continue until rc checked
-		}
-	}
+	if (Top.isWarmup)
+		erOp |= IGNX;	// limit-only during warmup
 
-	if (!ISNANDLE( ws_tUse))
-	{	if (ws_tUse <= 32.f || ws_tUse >= 212.f)
-		{	if (!Top.isWarmup)
-				rc |= orMsg( erOp, "unreasonable wsTUse = %0.1f F", ws_tUse);
-			ws_tUse = bracket( 32.1f, ws_tUse, 211.9f);
-		}
-	}
-	if (IsSet( DHWSYS_TSETPOINT) && !ISNANDLE( ws_tSetpoint))
-	{	if (ws_tSetpoint <= 32.f || ws_tSetpoint >= 212.f)
-		{	if (!Top.isWarmup)
-				rc |= orMsg( erOp, "unreasonable wsTSetpoint = %0.1f F", ws_tSetpoint);
-			ws_tSetpoint = bracket( 32.1f, ws_tSetpoint, 211.9f);
-		}
-#if 0	// bug fix, 1-14-16
-x No: do not change ws_tUse (extra backup provided if needed)
-x		else if (!rc && !ISNANDLE( ws_tUse))
-x		{	if (ws_tUse > ws_tSetpoint)
-x			{	if (!Top.isWarmup)
-x					rc |= orMsg( erOp, "wstUse (%0.1f F) > wsTSetpoint (%0.1f F)",
-x						ws_tUse, ws_tSetpoint);
-x				ws_tUse = ws_tSetpoint;
-x			}
-x		}
-#endif
-	}
+	rc |= limitCheckFix(DHWSYS_SSF, 0.f, .99f, erOp);
+	rc |= limitCheckFix(DHWSYS_TUSE, 33.f, 211.f, erOp);
+	rc |= limitCheckFix(DHWSYS_TSETPOINT, 33.f, 210.f, erOp);
+	rc |= limitCheckFix(DHWSYS_TSETPOINTLH, 33.f, 210.f, erOp);
+
 	return rc;
 
 }	// DHWSYS::ws_CheckVals
@@ -672,22 +646,25 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// additional config checks
 		if (!ws_configChecked)
-		{	if (ws_whCountUseTS == 0.f)
-				ignore( DHWSYS_TSETPOINT,
-					"-- no setpoint-aware DHWHEATERs in this DHWSYS.");
-			if (ws_wlhCountUseTS == 0.f)
-				ignore(DHWSYS_TSETPOINTLH,
-					"-- no setpoint-aware DHWLOOPHEATERs in this DHWSYS.");
-		}
+		{	// don't bother with ignore msgs if not RCOK (no run)
+			if (!rc && !ws_HasCentralDHWSYS())
+			{	if (ws_whCountUseTS == 0.f)
+					ignore(DHWSYS_TSETPOINT,
+						"-- no setpoint-aware DHWHEATERs in this DHWSYS.");
+				if (ws_wlhCountUseTS == 0.f)
+					ignore(DHWSYS_TSETPOINTLH,
+						"-- no setpoint-aware DHWLOOPHEATERs in this DHWSYS.");
+			}
 
-		// set checked flag in both run and input DHWSYSs
-		// WHY: suppresses duplicate info msgs when >1 RUN
-		// side-effect: does not re-check after ALTER
-		ws_configChecked++;
-		DHWSYS* pWSi = WSiB.GetAtSafe( ss);
-		if (pWSi)
-			pWSi->ws_configChecked++;	// set in input record
-										// carries to subsequent WsR copies
+			// set checked flag in both run and input DHWSYSs
+			// WHY: suppresses duplicate info msgs when >1 RUN
+			// side-effect: does not re-check after ALTER
+			ws_configChecked++;
+			DHWSYS* pWSi = WSiB.GetAtSafe(ss);
+			if (pWSi)
+				pWSi->ws_configChecked++;	// set in input record
+											// carries to subsequent WsR copies
+		}
 
 		return rc;
 	}	// pass == 2
@@ -715,12 +692,10 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		RRFldCopyIf( pWSCentral, DHWSYS_SDLM);
 		RRFldCopyIf( pWSCentral, DHWSYS_WF);
 		RRFldCopyIf( pWSCentral, DHWSYS_DSM);
-
-#if 0
-		RRFldCopyIf( pWSCentral, DHWSYS_TINLET);
 		RRFldCopyIf( pWSCentral, DHWSYS_TUSE);
+		RRFldCopyIf( pWSCentral, DHWSYS_TINLET);
 		RRFldCopyIf( pWSCentral, DHWSYS_TSETPOINT);
-#endif
+		RRFldCopyIf( pWSCentral, DHWSYS_TSETPOINTLH);
 
 		RRFldCopyIf( pWSCentral, DHWSYS_DAYWASTESCALE);
 		for (int iEU=0; iEU<NDHWENDUSES; iEU++)
@@ -852,7 +827,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
 			if (WduR.findRecByNm1( ws_dayUseName, &ws_dayUsei, NULL))
-				return orMsg( ERR+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName);
+				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName);
 		}
 
 		// re load share -- init starting DHWSYS for each end use
@@ -868,7 +843,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		ws_tInlet = Wthr.d.wd_tMains;		// default=mains
 
 	// runtime checks of vals possibly set by expressions
-	rc |= ws_CheckVals( ERR);	// checks ws_SSF, ws_tUse, ws_tSetpoint
+	rc |= ws_CheckVals( ERRRT | SHOFNLN);	// checks ws_SSF, ws_tUse, ws_tSetpoint
 
 	// adjusted inlet temp
 	// assume solar preheats feed water
@@ -1644,7 +1619,7 @@ static const double minPerDay = double( 24*60);
 	if (durX > minPerDay)
 	{	// duration longer than 1 day
 		// warn and limit
-		rc |= orMsg( WRN, "adjusted draw duration %0.1f min changed to maximum allowed 1440 min (24 hr)",
+		rc |= orMsg( WRNRT, "adjusted draw duration %0.1f min changed to maximum allowed 1440 min (24 hr)",
 			durX);
 		durX = minPerDay;
 	}
@@ -1763,7 +1738,7 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 		{	// local legacy-model heat recovery available and legal
 			if (wu_heatRecEF > 0.9f)
 			{	// warn and limit
-				rc |= orMsg( WRN, "wuHeatRecEF=%0.2f not in valid range 0 - 0.90",
+				rc |= orMsg( WRNRT, "wuHeatRecEF=%0.2f not in valid range 0 - 0.90",
 							wu_heatRecEF);
 				wu_heatRecEF = 0.9f;
 			}
@@ -1814,14 +1789,14 @@ RC DHWUSE::wu_CalcHotF(
 	RC rc = RCOK;
 	if (mixRet)
 	{	if (mixRet == -2)
-			rc |= orMsg( WRN, "Cold water temp (%0.1f F) >= hot water temp (%0.1f F).  "
+			rc |= orMsg( WRNRT, "Cold water temp (%0.1f F) >= hot water temp (%0.1f F).  "
 					"Cannot mix to wuTemp (%0.1f F).",
 					tCold, tHot, wu_temp);
 		else if (mixRet == -1)
-			rc |= orMsg( WRN, "wuTemp (%0.1f F) < cold water temp (%0.1f F).  "
+			rc |= orMsg( WRNRT, "wuTemp (%0.1f F) < cold water temp (%0.1f F).  "
 					"Cannot mix to wuTemp.", wu_temp, tCold);
 		else if (mixRet == 1)
-			rc |= orMsg( WRN, "wuTemp (%0.1f F) > hot water temp (%0.1f F).  "
+			rc |= orMsg( WRNRT, "wuTemp (%0.1f F) > hot water temp (%0.1f F).  "
 					"Cannot mix to wuTemp.", wu_temp, tHot);
 	}
 	return rc;
@@ -1929,7 +1904,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			//   (heat source is typically heater location zone)
 			// wh_ashpSrcZnTi = wh_znTi done in wh_Init() (after deferred ref resolution)
 			VD wh_ashpTSrc = VD wh_tEx;		// default ashpTSrc to tEx
-											//   V handles NANDLES
+											//   VD handles NANDLES
 		}
 	}
 	else if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
@@ -2458,6 +2433,10 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 									// all other (compressor) -> wh_HPWHUse[ 1]
 		}
 		wh_pHPWH->setMinutesPerStep(Top.tp_subhrTickDur);	// minutesPerStep
+
+		// TODO
+		wh_tankHCNominal = 0.;	// 40. * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC 
+								// * wh_pHPWH->tankVolume_L;
 	}
 
 	return rc;

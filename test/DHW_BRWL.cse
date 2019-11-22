@@ -4836,10 +4836,62 @@ ReportCol colhead = "Ws Tot" colVal=@DhwSys[s].daywaste colDec=2 colWid=6 \
 ReportCol colhead = "Ws Scl" colVal=@DhwSys[s].daywasteScale colDec=2 colWid=6 \
 ReportCol colhead = "T24 WL" colVal=@DhwSys[s].t24WLTot colDec=2 colWid=6
 
+#define WSREP2( s, me, db, de) REPORT rpType=UDT rpFreq=HOUR rpTitle = s rpDayBeg=db rpDayEnd=de \
+ReportCol colhead="Hr" colVal=$hour colWid = 2 \
+ReportCol colhead="Tinlet" colVal=@DhwSys[s].tInlet colWid=6 \
+ReportCol colhead="TinletX" colVal=@DhwSys[s].tInletX colWid=7 \
+ReportCol colhead="whUseTot"  colVal=@DhwSys[s].whUse.total colDec=2 colWid=8 \
+ReportCol colhead="whUseShwr"  colVal=@DhwSys[s].whUse.shower colDec=2 colWid=9 \
+ReportCol colhead="whUseNoHR"  colVal=@DhwSys[s].whUseNoHR colDec=2 colWid=9 \
+ReportCol colhead="HHWO"  colVal=@DhwSys[s].HHWO colDec=2 colWid=6 \
+ReportCol colhead="qDWHR"  colVal=@DhwSys[s].qDWHR colDec=2 colWid=6 \
+ReportCol colhead="O+HR"  colVal=@DhwSys[s].qDWHR+@DhwSys[s].HHWO colDec=2 colWid=6 \
+ReportCol colhead="Elec" colVal=@Meter[ me].H.dhw colDec=2 colWid = 6
+
+// DHWLOOP
+#define WLREP( l, db, de) REPORT rpType=UDT rpFreq=HOUR rpTitle = l rpDayBeg=db rpDayEnd=de \
+ReportCol colhead="Hr" colVal=$hour colWid = 2 \
+ReportCol colhead="HRLL" colVal=@DhwLoop[l].HRLL colWid = 7 \
+ReportCol colhead="HRLLn" colVal=@DhwLoop[l].HRLLnet colWid = 7 \
+ReportCol colhead="HRBL" colVal=@DhwLoop[l].HRBL colWid = 7 \
+ReportCol colhead="t24WL" colVal=@DhwLoop[l].t24WL colWid = 7 \
+ReportCol colhead="qLiqLP" colVal=@DhwLoop[l].qLiqLP colWid = 7 \
+ReportCol colhead="volRL" colVal=@DhwLoop[l].volRL colWid = 7 \
+ReportCol colhead="tRL" colVal=@DhwLoop[l].tRL colWid = 7
+
+// DHWLOOPSEG
+#define WGREP( g, db, de) REPORT rpType=UDT rpFreq=HOUR rpTitle = g rpDayBeg=db rpDayEnd=de \
+ReportCol colhead="Hr" colVal=$hour colWid = 2 \
+ReportCol colhead="UA" colVal=@DhwLoopSeg[g].totals.UA colDec=3 colWid = 6 \
+ReportCol colhead="vol" colVal=@DhwLoopSeg[g].totals.vol colDec=3 colWid = 6 \
+ReportCol colhead="Flow" colVal=@DhwLoopSeg[g].fvf colDec=2 colWid = 6 \
+ReportCol colhead="Tex" colVal=@DhwLoopSeg[g].ExT colDec=2 colWid = 6 \
+ReportCol colhead="Tin" colVal=@DhwLoopSeg[g].tIn colDec=3 colWid = 7 \
+ReportCol colhead="Tout" colVal=@DhwLoopSeg[g].tOut colDec=3 colWid = 7 \
+ReportCol colhead="PLWF" colVal=@DhwLoopSeg[g].PLWF colWid = 7 \
+ReportCol colhead="PLCD" colVal=@DhwLoopSeg[g].PLCD colWid = 7
+
+
+
 WSCHAR( "dhwsysC")
 REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=3413.  rpFreq=MONTH
 REPORT rpType=DHWMTR rpDHWMeter = FXMixC  rpFreq=MONTH
 REPORT rpType=DHWMTR rpDHWMeter = WHC  rpFreq=MONTH
+
+REPORT rpType=DHWMTR rpDHWMeter = FXMixC  rpFreq=HOUR  rpDayBeg=jan 10  rpDayEnd=jan 15
+REPORT rpType=DHWMTR rpDHWMeter = WHC  rpFreq=HOUR     rpDayBeg=jan 10  rpDayEnd=jan 15
+
+WSREP2("dhwsysC", "MtrElec", jan 10, jan 15 )
+
+WLREP("dhwlp", jan 10, jan 15 )
+
+WGREP("dhwlpseg1", jan 10, jan 15 )
+WGREP("dhwlpseg2", jan 10, jan 15 )
+WGREP("dhwlpseg3", jan 10, jan 15 )
+WGREP("dhwlpseg4", jan 10, jan 15 )
+WGREP("dhwlpseg5", jan 10, jan 15 )
+WGREP("dhwlpseg6", jan 10, jan 15 )
+
 
 RUN
 
