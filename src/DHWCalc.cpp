@@ -2434,9 +2434,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		}
 		wh_pHPWH->setMinutesPerStep(Top.tp_subhrTickDur);	// minutesPerStep
 
-		// TODO
-		wh_tankHCNominal = 0.;	// 40. * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC 
-								// * wh_pHPWH->tankVolume_L;
+		// nominal tank heat content, kJ
+		wh_tankHCNominal = KJ_TO_KWH(40. * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC
+			* wh_pHPWH->getTankSize());
 	}
 
 	return rc;
@@ -2848,11 +2848,16 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 					+ elecIn		// electricity in
 					- qHW			// hot water energy
 					- deltaHC;		// change in tank stored energy
-		double fBal = fabs(qBal) / max(qHCStart, 1.);
-		if (fBal > .004)		// added qHCStart normalization, 12-18
+		double fBal = fabs(qBal) / max( wh_tankHCNominal, 1.);
+		if (fBal >
+#if defined( _DEBUG)
+				.002)
+#else
+				.004)		// higher msg threshold in release
+#endif
 		{	// energy balance error
 			static const int WHBALERRCOUNTMAX = 10;
-			wh_balErrCount++;
+ 			wh_balErrCount++;
 			if (wh_balErrCount <= WHBALERRCOUNTMAX || fBal > 0.01)
 			{	warn("DHWHEATER '%s': HPWH energy balance error for %s (%1.6f kWh  f=%1.6f)",
 					name,

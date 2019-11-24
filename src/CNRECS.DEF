@@ -3749,9 +3749,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
   *h *e INT wh_HPWHTankTempSet;		// nz iff tank temp has been initialized
-  *r FLOAT wh_tankHCNominal;		// nominal HPWH tank heat capacity, kJ
+  *r FLOAT wh_tankHCNominal;		// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
-									//   based on 40 C
 
   *declare "static void wh_HPWHMessageCallback( const std::string message, void* contextPtr);"
   *declare "void wh_HPWHReceiveMessage( const std::string message);"
