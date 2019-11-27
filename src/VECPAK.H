@@ -384,11 +384,50 @@ template< typename T,typename TR=T> TR VIProd(	// inner product w/ stride
 	return t;
 }		// VIProd< T>
 //=============================================================================
-
+template< typename T> class VMovingSum
+{
+	double* vals;	// value history (ring buffer)
+	int nSiz;		// active size of vals[]
+	double vSum;	// current sum of vals[0..nCur-1]
+	int iOld;		// idx of oldest value in vals[]
+	int nCur;		// # of vals[] currently set
+public:
+	VMovingSum() : vals( nullptr), nSiz( 0),vSum( 0),iOld(0),nCur(0) {}
+	~VMovingSum() { delete[] vals; vals = nullptr; }
+	bool vm_Init(int _nSiz)
+	{	delete[] vals;
+		vals = nullptr;
+		iOld = nCur = 0;
+		vSum = 0.;
+		if (_nSiz < 0)
+			_nSiz = 1;
+		vals = new double[_nSiz];
+		if (!vals)
+			return false;
+		nSiz = _nSiz;
+		VZero(vals, nSiz);
+		return true;
+	}
+	T vm_Sum(T val, T* pSumMax=nullptr)
+	{
+		if (nCur < nSiz) 		// if don't yet have nSiz
+		{	vals[nCur++] = val;	// add new value to end of array, increment # values in sub
+		}
+		else 					// already have n values
+		{	vSum -= vals[ iOld];
+			vals[iOld++] = val; // store new value over old. Next value is now oldest,
+			if (iOld == nSiz) 	// with wrap at end array
+				iOld = 0;		// .. .
+		}
+		vSum += val;			// add new value to sum
+		// vMean = sum / nCur;	// if needed
+		if (pSumMax && vSum > *pSumMax)
+			*pSumMax = vSum;
+		return vSum;
+	}
+};		// class VMovingSum
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
-
-
 
 #if 0
 // vecpak.cpp -- Integer functions

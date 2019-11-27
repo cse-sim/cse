@@ -566,7 +566,16 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 						pWSCentral->mbrIdTx(iFn));
 				pWSCentral->ws_fxCount[iEU] = 0;		// counts derived from child DHWSYSs (see below)
 			}
+			if (IsSet(DHWSYS_DAYUSENAME))
+				pWSCentral->ws_childDHWDAYUSEFlag++;
 		}
+
+		// moving sums re sizing values
+		//   retain recent draw / load values during C_WSCALCMODECH_PRERUN
+		//   else left 0
+		ws_drawMaxMS.vm_Init(ws_drawMaxDur);
+		ws_loadMaxMS.vm_Init(ws_loadMaxDur);
+
 		return rc;
 	}
 
@@ -750,6 +759,14 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	// total target warmup water waste, gal/day
 	ws_dayWaste = ws_dayWasteVol + ws_dayWasteBranchVolF * ws_branchTotals.st_vol;
 
+	if (!ws_HasDHWDAYUSEDraws())
+	{	// no DHWDAYUSE (on this or any child): info msgs re draw-related input
+		const char* when = "-- there are no wsDayUse draws.";
+		ignoreN(when, DHWSYS_DAYWASTEVOL, DHWSYS_DAYWASTEBRANCHVOLF, 0);
+		for (int iEU=1; iEU<NDHWENDUSES; iEU++)
+			ignoreN(when, DHWSYS_DRAWWASTE + iEU, DHWSYS_DAYWASTEDRAWF + iEU, 0);
+	}
+
 	ws_simMeth = ws_DetermineSimMeth();
 	if (ws_simMeth == wssimSUBHR)
 	{	if (!Top.tp_subhrWSCount++)
@@ -761,7 +778,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		}
 	}
 
-	return rc;
+	return rc;	// pass 1 return
 }		// DHWSYS::ws_Init
 //----------------------------------------------------------------------------
 int DHWSYS::ws_DetermineSimMeth() const
@@ -944,6 +961,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		printf( "\nDHWSYS '%s': tick average inconsistency", name);
 #endif
 
+	// draws now known -- maintain meters, totals, etc
+	float mult = ws_mult * centralMult;	// overall multiplier
+	rc |= ws_DoHourDrawAccounting( mult);
+
+#if 0
 	// write draw info to CSV file
 	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
 		ws_WriteDrawCSV();
@@ -958,8 +980,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 	// accumulate water use to annual totals
 	//    redundant if DHWMTRs are defined
-	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
-	ws_whUse.wmt_AccumTo(ws_whUseTot);
+	ws_fxUseMix.wmt_AccumTo( ws_fxUseMixTot);
+	ws_whUse.wmt_AccumTo( ws_whUseTot);
+#endif
 
 	// jacket loss
 	ws_HJL = 0.f;
@@ -1079,6 +1102,50 @@ RC DHWSYS::ws_AccumCentralUse(		// accumulate central DHWSYS water use values
 
 	return rc;
 }		// DHWSYS::ws_AccumCentralUse
+//-----------------------------------------------------------------------------
+RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
+	float mult)		// overall multiplier
+					//    ws_mult * centralMult
+// call *after* basic draw info is known for hour
+//   ws_fxUseMix
+//   ws_whUse
+//   ws_ticks
+// tick-level loop modeling done later
+
+// returns RCOK iff no runtime error
+{
+	RC rc = RCOK;
+
+	// write ws_ticks draw info to CSV file
+	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
+		ws_WriteDrawCSV();
+
+	// accumulate water use to DHWMTRs if defined
+	//   include DHWSYS.ws_mult multiplier
+	if (ws_pFXhwMtr)
+		ws_pFXhwMtr->H.wmt_Accum(&ws_fxUseMix, 0, mult);
+	if (ws_pWHhwMtr)
+		ws_pWHhwMtr->H.wmt_Accum(&ws_whUse, 0, mult);
+
+	// accumulate water use to annual totals
+	//    redundant if DHWMTRs are defined
+	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
+	ws_whUse.wmt_AccumTo(ws_whUseTot);
+	
+	// track peaks for sizing
+	//   = max draw in ws_drawMaxDur
+	//   = max load in ws_loadMaxDur
+	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
+	{
+		if (ws_whUse.total > 100.f)
+			printf("\nBig!");
+		ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
+		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
+		ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
+	}
+
+	return rc;
+}		// DHWSYS::ws_DoHourDrawAccounting
 //----------------------------------------------------------------------------
 int DHWSYS::ws_AssignDHWUSEtoFX(	// assign draw to fixture re DHWHEATREC
 	const DHWUSE* pWU)	// draw
@@ -1310,8 +1377,7 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 
 		DHWHEATER* pWH;
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
-		{
-			if (pWH->wh_IsHPWHModel())
+		{	if (pWH->wh_IsHPWHModel())
 				rc |= pWH->wh_HPWHDoSubhr(
 					ticksSh,		// draws etc. by tick
 					scaleWH);		// draw scale factor (allocates draw if ws_whCount > 1)
@@ -1325,11 +1391,11 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 		}
 		// loop heaters
 		if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		{
-			if (pWH->wh_IsHPWHModel())
+		{	if (pWH->wh_IsHPWHModel())
 				rc |= pWH->wh_HPWHDoSubhr(
 					ticksSh,		// draws etc. by tick
-					1. / ws_wlhCount); // draw scale factor (allocates draw if ws_whCount > 1)
+					1. / ws_wlhCount); // draw scale factor (allocates draw if ws_wlhCount > 1)
+			// else missing case
 
 		}
 	}
@@ -1338,7 +1404,6 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 {
-
 	if (!ws_pFDrawCSV)
 	{
 		// dump file name = <cseFile>_draws.csv
@@ -1423,10 +1488,12 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 
 	if (!ws_HasCentralDHWSYS())		// if central or stand-alone
 	{
+		// accum any child drawCounts to central		
 		DHWSYS* pWSChild;
 		RLUPC(WsR, pWSChild, pWSChild->ws_centralDHWSYSi == ss)
 			VAccum(ws_drawCount, NDHWENDUSES, pWSChild->ws_drawCount);
 
+		// draws per day by end use
 		VCopy(ws_drawsPerDay, NDHWENDUSES, ws_drawCount, 1. / Top.nDays);
 
 		double wasteUnscaledTot = 0.;
@@ -1444,6 +1511,11 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 		// draw scaling factor: cause draw waste to (approx) equal target waste per day
 		pWSi->ws_dayWasteScale = ws_dayWasteScale
 			= wasteUnscaledTot > 0. ? float( ws_dayWaste / wasteUnscaledTot) : 0.f;
+
+		// copy sizing info to input record
+		//   available for use in DHWHEATER sizing expressions at start of C_WSCALCMODECH_SIM
+		pWSi->ws_drawMax = ws_drawMax;
+		pWSi->ws_loadMax = ws_loadMax;
 
 	}
 
@@ -2977,8 +3049,8 @@ static const UEFPARAMS UEFParams[] = {
 //----------------------------------------------------------------------------
 RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water heater
 	const DHWTICK* ticksSh,	// subhour tick info (draw, cold water temp, ...)
-	double scaleWH)		// draw scale factor
-						//   re DHWSYSs with >1 DHWHEATER
+	double scaleWH)			// draw scale factor
+							//   re DHWSYSs with >1 DHWHEATER
 {
 	RC rc = RCOK;
 
@@ -3058,7 +3130,7 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// DHWTANK
+// DHWTANK -- CEC T24DHW tank model (heat loss only, no storage)
 ///////////////////////////////////////////////////////////////////////////////
 static FLOAT TankSurfArea_CEC(		// calc tank surface area per CEC methods
 	float vol)	// tank volume, gal

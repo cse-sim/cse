@@ -3402,8 +3402,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "int ws_DetermineSimMeth() const;"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
-  *declare "RC ws_DoEndPreRun();"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
+  *declare "RC ws_DoHourDrawAccounting( float mult);"
+  *declare "RC ws_DoEndPreRun();"
   *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
@@ -3462,6 +3463,19 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 										//    Also frequently assumed water heater in = water heater out
 										//    BUT this is only approx due to e.g. mixdown and XBU.
   *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use (at ws_tUse), gal
+							
+							// sizing info derived during C_WSCALCMODECH_PRERUN (only)
+  *i SI ws_drawMaxDur					// draw duration window, hr (user input, default 4)
+  *declare "VMovingSum< float> ws_drawMaxMS;"	// retains recent draw history
+  *i FLOAT ws_drawMax					// largest draw total in any conseq ws_drawMaxDur hrs, gal
+										//   copied to input record in ws_DoEndPreRun()
+										//   avail for use in sizing expressions during C_WSCALCMODECH_SIM input
+
+  *i SI ws_loadMaxDur					// load duration window, hr (user input, default 12)
+  *declare "VMovingSum< float> ws_loadMaxMS;"	// retains recent load history
+  *i FLOAT ws_loadMax					// largest load total in any conseq ws_loadMaxDur hrs, Btu
+										//   copied to input record in ws_DoEndPreRun()
+										//   avail for use in sizing expressions during C_WSCALCMODECH_SIM input
   
   *h FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp water is delivered to fixtures or DHWLOOP(s)
@@ -3472,6 +3486,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   default = ws_tUse
   *d TI ws_dayUsei;			// idx of DHWDAYUSE
   *d CHP ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
+  *r INT ws_childDHWDAYUSEFlag;	// nz iff at least one child DHWSYS has specified ws_dayUseName
+  *declare "bool ws_HasDHWDAYUSEDraws() const { return ws_dayUseName != NULL || ws_childDHWDAYUSEFlag; }"
   *h FLOAT_GEZ ws_parElec;	// electrical parasitic power, W
 							//    for e.g. unmodeled recirculation pumps
   *i FLOAT_GZ ws_SDLM;		// standard distribution loss multiplier
@@ -3622,7 +3638,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
   *declare "FILE* wh_pFCSV;"	// file for debugging CSV file
 
-  *i FLOAT wh_mult;				// count of identical water heaters (default 1)
+  *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
 								//   non-integral values allowed re sizing methods
   *i WHHEATSRCCH wh_heatSrc;	// heat source
