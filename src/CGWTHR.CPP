@@ -10,7 +10,6 @@
 #include <ancrec.h>		// record: base class for rccn.h classes
 #include <rccn.h>		// TOPRAT .. class declarations
 #include <msghans.h>	// MH_R0168
-#include <mmpak.h>		// mminit mmean. restored 9-95.
 
 #include <psychro.h>	// psyHumRat1
 #include <slpak.h>		// slday, slaniso
