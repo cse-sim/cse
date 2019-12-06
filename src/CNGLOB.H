@@ -232,7 +232,7 @@ template< typename T, typename TX> inline T setToMinOrMax( T &a, TX b, int doMin
 // return -1, 0, or 1 per value of v
 template< typename T> T xsign( T v) { return v==0 ? 0 : v>0 ? 1 : -1; }
 // return -1 if <, 0 if == , or 1 if >
-template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : -0; }
+template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : 0; }
 
 // bracket: limit value betw vMin and vMax
 template< typename T> inline T bracket( T vMin, T v, T vMax)

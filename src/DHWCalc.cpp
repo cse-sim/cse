@@ -739,11 +739,20 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	ws_ticks = new DHWTICK[ Top.tp_NHrTicks()];
 
 	// ws_whCount / ws_wshCount set in DHWHEATER::RunDup
+	float noLHCount = 0.f;	// count of primary heaters that cannot
+							//   support DHWLOOPHEATER
 	DHWHEATER* pWH;
-	RLUPC( WhR, pWH, pWH->ownTi == ss)	// primary heaters
-		rc |= pWH->wh_Init();
+	RLUPC(WhR, pWH, pWH->ownTi == ss)	// primary heaters
+	{	rc |= pWH->wh_Init();
+		if (!pWH->wh_CanHaveDHWLOOPHEATER())
+			noLHCount += pWH->wh_mult;
+	}
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)	// loop ("swing") heaters
+	{	if (noLHCount > 0.f)
+			rc |= pWH->oer("Unsupported configuration --\n"
+				   "      primary DHWHEATER(s) not whHeatSrc=ASHPX or RESISTANCEX");
 		rc |= pWH->wh_Init();
+	}
 
 	// all-child totals
 	ws_loopSegTotals.st_Init();		// DHWLOOPSEGs
@@ -1136,10 +1145,7 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	//   = max draw in ws_drawMaxDur
 	//   = max load in ws_loadMaxDur
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-	{
-		if (ws_whUse.total > 100.f)
-			printf("\nBig!");
-		ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
+	{	ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
 		ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
 	}
@@ -1344,8 +1350,9 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 	double scaleTick = 1. / Top.tp_NHrTicks();	// allocate per tick
 	double qLossNoRL = ws_HJL * scaleTick;	// w/o recirc: jacket
 	if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
-		qLossNoRL += ws_HRBL * scaleTick;	// conditionally include branch losses 
-	double volRL = ws_volRL * scaleTick;				// DHWLOOP recirc vol/tick, gal
+		qLossNoRL += ws_HRBL * scaleTick;	// T24DHW: branches losses modeled as heat
+											// else: branch losses included in draws
+	double volRL = ws_volRL * scaleTick;	// DHWLOOP recirc vol/tick, gal
 
 #if 0 && defined( _DEBUG)
 	double qLossTot = (ws_HRDL + ws_HJL) * scaleTick;		// total: DHWLOOP + jacket
@@ -2095,7 +2102,7 @@ RC DHWHEATER::wh_Init()		// init for run
 		if (pWS->ws_wlCount == 0)
 		{	ignore(DHWHEATER_INHTLOOPRET, "when DHWSYS includes no DHWLOOP(s).");
 			if (whfcn == whfcnLOOPHEATER)
-				oInfo("treated as series heater only when DHWSYS includes no DHWLOOP(s).");
+				oInfo("modeled as a series heater because DHWSYS includes no DHWLOOP(s).");
 		}
 		else if (whfcn == whfcnPRIMARY && pWS->ws_wlhCount > 0)
 			ignore(DHWHEATER_INHTLOOPRET, "when DHWSYS includes DHWLOOPHEATER(s).");
@@ -2311,15 +2318,17 @@ RC DHWHEATER::wh_DoEndPreRun()
 		return rc;		// no adjustments required
 
 	if (wh_type == C_WHTYPECH_STRGSML)
-	{	// average hourly load
-		float arl = wh_totHARL / wh_hrCount;
-		// "Load-dependent energy factor"
-		float LDEF = wh_CalcLDEF( arl);
-		// update input record with derived value
-		DHWHEATER* pWHi = wh_GetInputDHWHEATER();
-		if (pWHi && !pWHi->IsSet( DHWHEATER_LDEF))
-		{	pWHi->wh_LDEF = LDEF;
-			pWHi->fStat( DHWHEATER_LDEF) |= FsSET | FsVAL;
+	{	if (wh_EF < 1.f)		// if not ideal efficiency (testing)
+		{	// average hourly load
+			float arl = wh_totHARL / wh_hrCount;
+			// "Load-dependent energy factor"
+			float LDEF = wh_CalcLDEF(arl);
+			// update input record with derived value
+			DHWHEATER* pWHi = wh_GetInputDHWHEATER();
+			if (pWHi && !pWHi->IsSet(DHWHEATER_LDEF))
+			{	pWHi->wh_LDEF = LDEF;
+				pWHi->fStat(DHWHEATER_LDEF) |= FsSET | FsVAL;
+			}
 		}
 	}
 	else if (wh_type == C_WHTYPECH_STRGLRG && Top.tp_dhwModel == C_DHWMODELCH_T24DHW)

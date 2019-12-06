@@ -17,6 +17,7 @@
 #include <cgwthr.h>		// Wthr.nZ .zD
 
 #include "cueval.h"
+#include "exman.h"
 #include "cse.h"
 #include "cnguts.h"
 #include "mspak.h"
@@ -991,16 +992,14 @@ x	}
 #if defined( _DEBUG)
 		if (!bUZ)
 		{	// check conditioned zone outcome
-			if (tz < i.znTD-.001f)
+			if (tz < i.znTD - .001f)
 			{	if (fVent > .001 && zn_anAmfCpTVent > .001)
-					printf( "Zone '%s': vent below TD\n", name);
+					rWarn("Zone '%s': vent tz (%.1f F) below TD (%.1f F)\n", name, tz, i.znTD);
 				if (tz < i.znTH)
-					printf( "Zone '%s': float below TH\n", name);
+					rWarn("Zone '%s': floating tz (%.1f F) below TH (%.1f F)\n", name, tz, i.znTH);
 			}
-			else if (tz > i.znTC)
-			{	if (tz > i.znTC+.1f)
-					printf( "Zone '%s': float above TC\n", name);
-			}
+			else if (tz > i.znTC + .1f)
+				rWarn("Zone '%s': floating tz (%.1f F) above TC (%.1f F)\n", name, tz, i.znTC);
 		}
 #endif
 		zn_fVent = fVent;		// zone vent fraction = building fraction
@@ -3756,10 +3755,9 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 				// return grille temp = zone air temp from last step
 				afRet.af_AccumDry( amfX, zp->tzls, zp->wzls);
 #if defined( _DEBUG)
-				if (afRet.as_tdb < 30.)
-					printf( "Dubious low return tdb\n");
-				else if (afRet.as_tdb > 110.f)
-					printf( "Dubious high return tdb\n");
+				if ( afRet.as_tdb < 30. || afRet.as_tdb > 110.f)
+					rWarn("RSYS '%s': dubious return temp (%.1f F)",
+						name, afRet.as_tdb);
 #endif
 			}
 		}
