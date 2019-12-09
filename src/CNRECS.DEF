@@ -3621,8 +3621,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const;"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
-  *declare "int wh_GetFunction() const;"
-  *declare "enum { whfcnUNKNOWN=-1, whfcnPRIMARY=0, whfcnLOOPHEATER, whfcnCOUNT };"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
   *declare "int wh_UsesDerivedLDEF() const;"
@@ -3637,7 +3635,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoEndPreRun();"
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
-  *declare "FILE* wh_pFCSV;"	// file for debugging CSV file
 
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
@@ -3652,6 +3649,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG,
 								//    _INSTUEF
   *i ANAME wh_desc;				// probe-able description text
+  *r INT wh_fcn;				// function see
+  *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnCOUNT=whfcnLOOPHEATER, whfcnLASTHEATER=0x100 };"
+  *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
+  *declare "int wh_SetFunction();"
+  *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
   *i WHASHPTYCH wh_ashpTy;		// air source heat pump type, required iff ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
@@ -3765,9 +3767,26 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 									//   [1]=primary(=compressor or non-HP resistance) + misc
   *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
-  *h *e INT wh_HPWHTankTempSet;		// nz iff tank temp has been initialized
+  *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, kWh
+									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
+  *s *e DBL wh_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
+									//   for 1 DHWHEATER (no wh_mult)
+  *s *e DBL wh_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
+									//   for 1 DHWHEATER (no wh_mult)
+									//   includes heat to DHWLOOP, does not include wh_HPWHxBU
+  *s *e DBL wh_tankHCStart;			// current step starting tank heat content, kWh
+
+  *h *e INT wh_HPWHTankTempSet;		// nz iff HPWH tank temp has been initialized
   *r FLOAT wh_tankHCNominal;		// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
+  *s *e DBL wh_tHWOutF;				// current substep working total re calc of HPWH wh_tHWOut
+  *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
+
+  *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz
+  *declare "FILE* wh_pFCSV;"		// file for debugging CSV (opened on 1st use)
+
+
+
 
   *declare "static void wh_HPWHMessageCallback( const std::string message, void* contextPtr);"
   *declare "void wh_HPWHReceiveMessage( const std::string message);"
@@ -3775,7 +3794,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_HPWHHasCompressor() const;"
   *declare "RC wh_HPWHDoHour();"
   *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
-
+  *declare "RC wh_HPWHDoSubhrStart();"
+  *declare "RC wh_HPWHDoSubhrTick( struct DHWTICK& tk, double scaleWH);"
+  *declare "RC wh_HPWHDoSubhrEnd();"
+   
   *h DBL wh_totHARL;		// cumulative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
 							//   for single heater (wh_mult not applied)
