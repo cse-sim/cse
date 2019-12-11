@@ -3484,6 +3484,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   default = ws_tUse
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
 							//   default = ws_tUse
+  *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
+  *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
+								//   for HPWH only, re DHWLOOPHEATER entering temp
+								//   best estimate for prior 1-min tick
   *d TI ws_dayUsei;			// idx of DHWDAYUSE
   *d CHP ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
   *r INT ws_childDHWDAYUSEFlag;	// nz iff at least one child DHWSYS has specified ws_dayUseName
@@ -3535,7 +3539,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   wssimHOUR otherwise
   *r FLOAT_GEZ ws_childDHWSYSCount; // # of child DHWSYSs iff central system (else 0)
 									//    note may not be integral
-  *r FLOAT_GEZ ws_whCount;		// # of DHWHEATERs serving this DHWSYS
+  *r FLOAT_GEZ ws_whCount;		// # of (primary) DHWHEATERs serving this DHWSYS
 								//   = SUM( DHWHEATER.wh_mult) (possibly non-integral)
   *r FLOAT_GEZ ws_wlhCount;		// # of DHWLOOPHEATERs in this DHWSYS
 								//   = SUM( DHWLOOPHEATER.wh_mult) (possibly non-integral?)

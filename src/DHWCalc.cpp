@@ -287,7 +287,7 @@ struct DWHRUSE		// info about 1 (shower) draw that could have DWHR
 struct DHWTICK	// per tick info for DHWSYS
 {
 	DHWTICK() { wtk_Init(); }
-	float wtk_startMin;	// tick start time (minutes from hour beg)
+	float wtk_startMin;		// tick start time (minutes from hour beg)
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR
@@ -296,26 +296,17 @@ struct DHWTICK	// per tick info for DHWSYS
 							//   iff loop returns to water heater
 	float wtk_tRL;			// DHWLOOP loop return temp, F
 	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu
-	double wtk_tOutSum;		// this tick primary output temp sum, F
-							//   primary output = loop heater inlet
-	float wtk_tOutCount;	// # of primary heaters contributing to wtk_tOutSum
+	double wtk_volIn;		// total tick inlet vol, gal (not including wtk_volRL)
+							//   = non-loop draws reduced per mixdown
+							//   = primary heater draw when DHWLOOPHEATER is present
 
-	void wtk_Init( double whUseTick=0., float tInlet=50.f)
-	{	wtk_startMin = 0.f;
+	void wtk_Init( float startMin=0.f, double whUseTick=0., float tInlet=50.f)
+	{	wtk_startMin = startMin;
 		wtk_nHRDraws = 0;
 		wtk_whUse = whUseTick; wtk_tInletX = tInlet;
-		wtk_volRL = wtk_tRL = wtk_qLossNoRL = 0.f;
-		wtk_tOutSum = 0.;
-		wtk_tOutCount = 0.f;
+		wtk_volRL = wtk_tRL = wtk_qLossNoRL = wtk_volIn = 0.f;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
-	void wtk_TOutPrimAccum(double tOut, float tOutCount)
-	{	wtk_tOutSum += tOutCount * tOut;
-		wtk_tOutCount += tOutCount;
-	}	
-	double wtk_TOutPrimAvg() const
-	{	return wtk_tOutCount > 0.f ? wtk_tOutSum / wtk_tOutCount : wtk_tInletX;
-	}
 	double wtk_DrawTot(float tOut, float& tInletMix) const;
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
@@ -336,7 +327,7 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 
 }		// DHWTICK::wtk_Accum
 //-----------------------------------------------------------------------------
-double DHWTICK::wtk_DrawTot(
+double DHWTICK::wtk_DrawTot(		// tick draw (for InstUEF)
 	float tOut,				// assumed heater output temp
 	float& tInletMix) const	// returned: mixed inlet temp
 							//   (combined loop return and inletX)
@@ -1233,7 +1224,7 @@ void DHWSYS::ws_InitTicks(			// initialize tick data for hour
 	int nTk = Top.tp_NHrTicks();
 	double whUseTick = whUseHr / nTk;
 	for (int iTk=0; iTk < nTk; iTk++)
-		ws_ticks[ iTk].wtk_Init( whUseTick, ws_tInletX);
+		ws_ticks[ iTk].wtk_Init( iTk*Top.tp_subhrTickDur, whUseTick, ws_tInletX);
 
 	DHWHEATREC* pWR;
 	RLUPC(WrR, pWR, pWR->ownTi == ss)
@@ -1376,6 +1367,65 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {
 	RC rc = RCOK;
+#if 1
+	if (ws_whCount > 0.f && ws_calcMode != C_WSCALCMODECH_PRERUN)
+	{
+		int iTkSh = Top.iSubhr*Top.tp_nSubhrTicks;	// initial tick for this subhour
+		DHWTICK* ticksSh = ws_ticks + iTkSh;		// 1st tick info for this subhour
+		rc |= ws_AddLossesToDraws(ticksSh);
+
+		double scaleWH = 1. / ws_whCount;		// allocate per WH
+
+		DHWHEATER* pWH;
+
+		if (ws_wlhCount == 0.f)		// if no loop heaters
+		{
+			RLUPC(WhR, pWH, pWH->ownTi == ss)
+			{
+				if (pWH->wh_IsHPWHModel())
+					rc |= pWH->wh_HPWHDoSubhr(ticksSh, scaleWH);
+				else if (pWH->wh_IsInstUEFModel())
+					rc |= pWH->wh_InstUEFDoSubhr(ticksSh, scaleWH);
+				else
+					continue;
+				// else missing case
+				if (Top.isEndHour)
+					pWH->wh_unMetHrs += pWH->wh_unMetSh > 0;
+			}
+			return rc;
+		}
+		
+
+		// DHWSYS includes DHWLOOPHEATER(s) -- interleave primary/loop heater tick calcs
+		//   all HPWH (enforced by input check)
+		RLUPC(WhR, pWH, pWH->ownTi == ss)
+			rc |= pWH->wh_HPWHDoSubhrStart();
+		RLUPC(WlhR, pWH, pWH->ownTi == ss)
+			rc |= pWH->wh_HPWHDoSubhrStart();
+
+		for (int iTk = 0; !rc && iTk < Top.tp_nSubhrTicks; iTk++)
+		{
+			DHWTICK& tk = ticksSh[iTk];		// handy ref to current tick
+			tk.wtk_volIn = 0.;
+			RLUPC(WlhR, pWH, pWH->ownTi == ss)
+				rc |= pWH->wh_HPWHDoSubhrTick(tk, 1./ws_wlhCount);
+
+			ws_tOutPrimSum = 0.;
+			RLUPC(WhR, pWH, pWH->ownTi == ss)
+				rc |= pWH->wh_HPWHDoSubhrTick(tk, scaleWH);
+			if (ws_tOutPrimSum != 0.)
+				ws_tOutPrimLT = ws_tOutPrimSum;
+		}
+
+		RLUPC(WhR, pWH, pWH->ownTi == ss)
+		{	rc |= pWH->wh_HPWHDoSubhrEnd();
+			if (Top.isEndHour)
+				pWH->wh_unMetHrs += pWH->wh_unMetSh > 0;
+		}
+		RLUPC(WlhR, pWH, pWH->ownTi == ss)
+			rc |= pWH->wh_HPWHDoSubhrEnd();
+	}
+#else
 	if (ws_whCount > 0.f && ws_calcMode != C_WSCALCMODECH_PRERUN)
 	{	int iTkSh = Top.iSubhr*Top.tp_nSubhrTicks;	// initial tick for this subhour
 		DHWTICK* ticksSh = ws_ticks + iTkSh;		// 1st tick info for this subhour
@@ -1407,6 +1457,7 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 
 		}
 	}
+#endif
 	return rc;
 }	// DHWSYS::ws_DoSubhr
 //----------------------------------------------------------------------------
@@ -2028,7 +2079,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
         //   see above
         if (!IsSet( DHWHEATER_VOL))
 			wh_vol = 50.f;
-		rc |= limitCheck( DHWHEATER_VOL, .1, 10000., 2., 500.);
+		rc |= limitCheck( DHWHEATER_VOL, .1, 20000.);
 	}
 	else if (wh_vol > 0.f)
 		// tolerate specified whVol==0 for instantaneous
@@ -2476,8 +2527,10 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	{	// set additional parameters if needed
 		if (volX > 0.f && wh_pHPWH->setTankSize( volX, HPWH::UNITS_GAL) != 0)
 			rc = RCBAD;
+		wh_vol = wh_pHPWH->getTankSize(HPWH::UNITS_GAL);	// force force probe-able value
+
 		if (UAX > 0.f && wh_pHPWH->setUA( UAX, HPWH::UNITS_BTUperHrF) != 0)
-				rc = RCBAD;
+			rc = RCBAD;
 		if (wh_UAMult != 1.f)
 		{	// apply user-specified adjustment to implicit UA
 			//    approximates effect of e.g. tank wrap insulation
@@ -2553,6 +2606,8 @@ RC DHWHEATER::wh_HPWHDoHour()		// hourly HPWH calcs
 	if (wh_tHWOut == 0.f)
 		wh_tHWOut = tHPWHSetpoint;		// initial guess for HW output temp
 										//   updated every substep with nz draw
+	if (pWS->ws_tOutPrimLT == 0.f)
+		pWS->ws_tOutPrimLT = tHPWHSetpoint;		// initial guess for primary heater outlet temp
 
 	if (!wh_HPWHTankTempSet)
 	{	// initialize tank temp on 1st call
@@ -2986,12 +3041,10 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 {
 	RC rc = wh_HPWHDoSubhrStart();
 
-	int nzDrawCount = 0;		// count of ticks with draw > 0
 	for (int iTk = 0; !rc && iTk < Top.tp_nSubhrTicks; iTk++)
 	{
 		DHWTICK& tk = ticksSh[iTk];		// handy ref to current tick
 
-		int minHr = Top.iSubhr*Top.tp_nSubhrTicks + iTk;
 		rc |= wh_HPWHDoSubhrTick( tk, scaleWH);
 
 	}		// tick (1 min) loop
@@ -3056,7 +3109,7 @@ RC DHWHEATER::wh_HPWHDoSubhrStart()		// HPWH subhour start
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_HPWHDoSubhrTick(
 	DHWTICK& tk,	// current tick
-	double scaleWH)	// draw scale factor
+	double scaleWH) // draw scale factor
 					//   re DHWSYSs with >1 DHWHEATER
 					//   *not* including wh_fMixUse or wh_fMixRL;
 {
@@ -3070,28 +3123,29 @@ RC DHWHEATER::wh_HPWHDoSubhrTick(
 #endif
 	DHWSYS* pWS = wh_GetDHWSYS();
 
-	double scaleX = scaleWH * wh_fMixUse;
-	double drawUse = tk.wtk_whUse*scaleX;		// use draw same for primary and loop heater
-
 	// inlet temp, F
 	double tInlet = wh_GetFunction() == whfcnLOOPHEATER
-		? tk.wtk_TOutPrimAvg()	// loopheater: average outlet temp of primary heaters
+		? pWS->ws_tOutPrimLT	// loopheater: average outlet temp of primary heaters
 		: tk.wtk_tInletX;		// primary: inlet temp( mains + DWHR)
 
-	// pseudo-draw (gal) to represent e.g. central system branch losses
-	//  ?tInlet?
-	double drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., pWS->ws_tUse - pWS->ws_tInlet));
-
-	// loop flow
-	double drawRL;	// volume
+	// draw components
+	double scaleX = scaleWH * wh_fMixUse;
+	double drawUse;	// use draw
+	double drawLoss;// pseudo-draw (gal) to represent e.g. central system branch losses
+	double drawRL;	// loop flow vol for tick
 	double tRL;		// loop return temp
 	if (wh_IsLastHeater())
-	{
+	{	drawUse = tk.wtk_whUse*scaleX;
+		drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., pWS->ws_tUse - pWS->ws_tInlet));
+		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;
 		drawRL = tk.wtk_volRL * scaleWH * wh_fMixRL;
 		tRL = tk.wtk_tRL;
 	}
 	else
-		drawRL = tRL = 0.f;
+	{
+		drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
+		drawLoss = drawRL = tRL = 0.f;
+	}
 
 	double drawForTick = drawUse + drawLoss + drawRL;
 
@@ -3130,11 +3184,11 @@ RC DHWHEATER::wh_HPWHDoSubhrTick(
 		wh_stbyTicks++;		// no draw: accum duration
 							//   (info only)
 	else
-	{
-		wh_nzDrawCount++;	// this tick has draw
+	{	wh_nzDrawCount++;	// this tick has draw
 		wh_stbyTicks = 0;	// reset standby duration
 		double tOutF = DegCtoF(tOut);	// output temp, F
-		tk.wtk_TOutPrimAccum(tOutF, scaleWH);
+		if (wh_GetFunction() == whfcnPRIMARY)
+			pWS->ws_tOutPrimSum += tOutF * wh_mult * scaleWH;
 		if (wh_IsLastHeater())
 		{	// output goes to load
 			if (tOutF < pWS->ws_tUse)
@@ -3179,8 +3233,7 @@ RC DHWHEATER::wh_HPWHDoSubhrTick(
 	static const int nTCouples = 12;		// # of storage layers reported by HPWH
 
 	if (wh_bWriteCSV)
-	{
-		double minHrD = tk.wtk_startMin + 1.;
+	{	double minHrD = tk.wtk_startMin + 1.;
 		double minDay = double(60 * Top.iHr) + minHrD;
 		double minYr = double((int(Top.jDayST - 1) * 24 + Top.iHrST) * 60) + minHrD;
 
