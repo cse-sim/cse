@@ -2634,7 +2634,7 @@ struct CSVItem
 
 	const char* ci_Hdg( int iUx);
 	const char* ci_Value();
-};
+}; // struct CSVItem
 //-----------------------------------------------------------------------------
 /*static*/ const double CSVItem::ci_UNSET = -99999999.;
 //-----------------------------------------------------------------------------
@@ -2660,7 +2660,7 @@ public:
 	CSVGen(CSVItem* pCI) : cg_pCI( pCI) {}
 	WStr cg_Hdgs( int iUx);
 	WStr cg_Values(int iUx);
-};
+};	// class CSVGen
 //-----------------------------------------------------------------------------
 WStr CSVGen::cg_Hdgs(int iUx)
 {
@@ -2671,7 +2671,7 @@ WStr CSVGen::cg_Hdgs(int iUx)
 		s += ",";
 	}
 	return s;
-}
+}	// CSVGen::cg_Hdgs
 //-----------------------------------------------------------------------------
 WStr CSVGen::cg_Values(int iUx)
 {
@@ -2685,7 +2685,7 @@ WStr CSVGen::cg_Values(int iUx)
 	}
 	Unsysext = UnsysextSave;
 	return s;
-}
+}	// CSVGen::cg_Values
 //-----------------------------------------------------------------------------
 #if 0
 RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
