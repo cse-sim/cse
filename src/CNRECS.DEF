@@ -3748,6 +3748,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h *e FLOAT wh_inElecBU;	//    backup electricity (>0 only for HPWH resistance heat)
 							//       (includes wh_HPWHxBU)
   *h *e FLOAT wh_inFuel;	//	  fuel (including wh_pilotPwr)
+  *r *e DBL wh_inElecTot;
+  *r *e DBL wh_inFuelTot;
 
   *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
 							//   never input, derived for INSTUEF

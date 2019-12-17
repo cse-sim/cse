@@ -24,8 +24,11 @@
 
 #include "hpwh.hh"	// decls/defns for Ecotope heat pump water heater model
 
-const float waterRhoCp = 8.345f;		// water volumetric weight, lb/gal
+#if 0
+const float waterRhoCp = 8.3171686f;		// water volumetric weight, lb/gal
 										//    = volumetric heat capacity, Btu/gal-F
+const float waterRhoCp = 8.345f;
+#endif
 
 
 #if 0 && defined( _DEBUG)
@@ -1117,9 +1120,13 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 {
 	RC rc = RCOK;
 
+#define ALTDRAWCSV
+
+#if !defined( ALTDRAWCSV)
 	// write ws_ticks draw info to CSV file
 	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
 		ws_WriteDrawCSV();
+#endif
 
 	// accumulate water use to DHWMTRs if defined
 	//   include DHWSYS.ws_mult multiplier
@@ -1137,9 +1144,34 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	//   = max draw in ws_drawMaxDur
 	//   = max load in ws_loadMaxDur
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-	{	ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
+	{	float drawSum = ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
-		ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
+		float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
+#if defined( ALTDRAWCSV)
+		if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
+		{
+			if (ws_pFDrawCSV == NULL)
+			{	// dump file name = <cseFile>_draws_ddll.csv
+				const char* nameNoWS = strDeWS(strtmp(name));
+				const char* fName =
+					strsave(strffix2(strtprintf("%s_%s_draws_%2.2d%2.2d", InputFilePathNoExt, nameNoWS, ws_drawMaxDur, ws_loadMaxDur), ".csv", 1));
+				ws_pFDrawCSV = fopen(fName, "wt");
+				if (!ws_pFDrawCSV)
+				{
+					ws_drawCSV = C_NOYESCH_NO;	// don't try again
+					err(PERR, "Draw CSV open failure for '%s'", fName);
+				}
+				else
+				{	// headings
+					fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime);
+					fprintf(ws_pFDrawCSV, "Draw=,%d,,Load=,%d\n", ws_drawMaxDur, ws_loadMaxDur);
+					fprintf(ws_pFDrawCSV, "Mon,Day,Hr,Draw,Load\n");
+				}
+			}
+			fprintf(ws_pFDrawCSV, "%d,%d,%d,%0.1f,%0.1f\n",
+				Top.tp_date.month, Top.tp_date.mday, Top.iHrST + 1, drawSum, loadSum);
+		}
+#endif
 	}
 
 	return rc;
@@ -2204,6 +2236,8 @@ void DHWHEATER::wh_InitTotals()
 	wh_unMetHrs = 0;
 	wh_stbyTicks = 0;
 	wh_fMixUse = wh_fMixRL = 1.f;
+	wh_inElecTot = 0.;
+	wh_inFuelTot = 0.;
 
 }		// DHWHEATER::wh_InitTotals
 //----------------------------------------------------------------------------
@@ -2363,6 +2397,9 @@ RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
 		wh_pMtrElec->H.dhw += mult * wh_inElec;
 	if (wh_pMtrFuel)
 		wh_pMtrFuel->H.dhw += mult * wh_inFuel;
+
+	wh_inElecTot += wh_inElec;
+	wh_inFuelTot += wh_inFuel;
 
 	return rc;
 
@@ -3129,13 +3166,13 @@ RC DHWHEATER::wh_HPWHDoSubhrTick(
 		: tk.wtk_tInletX;		// primary: inlet temp( mains + DWHR)
 
 	// draw components
-	double scaleX = scaleWH * wh_fMixUse;
 	double drawUse;	// use draw
 	double drawLoss;// pseudo-draw (gal) to represent e.g. central system branch losses
 	double drawRL;	// loop flow vol for tick
 	double tRL;		// loop return temp
 	if (wh_IsLastHeater())
-	{	drawUse = tk.wtk_whUse*scaleX;
+	{	double scaleX = scaleWH * wh_fMixUse;
+		drawUse = tk.wtk_whUse*scaleX;
 		drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., pWS->ws_tUse - pWS->ws_tInlet));
 		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;
 		drawRL = tk.wtk_volRL * scaleWH * wh_fMixRL;
@@ -3207,12 +3244,25 @@ RC DHWHEATER::wh_HPWHDoSubhrTick(
 		}
 		wh_tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
 
-		wh_qHW += KJ_TO_KWH(		// heat added to water, kWh 
+		double qHWTick = KJ_TO_KWH(		// heat added to water, kWh 
 			(GAL_TO_L(drawForTick)*tOut
 				- GAL_TO_L(drawForTick - drawRL)*DegFtoC(tInlet)
 				- GAL_TO_L(drawRL)*DegFtoC(tRL))
 			* HPWH::DENSITYWATER_kgperL
 			* HPWH::CPWATER_kJperkgC);
+		wh_qHW += qHWTick;		// total heat added to water for substep
+
+#if 0
+		double waterRhoCpX = KWH_TO_BTU(
+			KJ_TO_KWH(
+				GAL_TO_L(1.) * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC / 1.8));
+
+		double qX = drawForTick * (tOutF - tInlet) * waterRhoCp;
+		double qHWTickBtu = KWH_TO_BTU(qHWTick) + HPWHxBU;
+		double qDiff = fabs(qX - qHWTickBtu);
+		if (qDiff > .001)
+			printf("\nDiff");
+#endif
 	}
 
 	// energy use by heat source, kWh
@@ -3408,6 +3458,9 @@ void DHWHEATER::wh_AccumElec(		// electricity use accounting / meter accum
 		else
 			wh_pMtrElec->H.dhwBU += mult * (inElecBU + wh_HPWHxBU);
 	}
+	if (Top.isEndHour)
+		wh_inElecTot += wh_inElec + wh_inElecBU;
+
 }		// DHWHEATER::wh_AccumElec
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_InstUEFInit()		// one-time setup for UEF-based instantaneous model

@@ -622,7 +622,7 @@ inline float KSItoIP(float k) { return float(k / cfK); }
 inline double KSItoIP(double k) { return k / cfK; }
 
 // Specific Heat Btu/lb-F <--> J/kg-K
-const double cfSH = 4186.8;		// W/m-K per Btuh-ft/ft2-F
+const double cfSH = 4186.8;		// W/m-K per Btuh-ft/ft2-F (exact)
 inline float SHIPtoSI(float sh) { return float(sh*cfSH); }
 inline double SHIPtoSI(double sh) { return sh*cfSH; }
 inline float SHSItoIP(float sh) { return float(sh / cfSH); }
@@ -659,9 +659,19 @@ const double NPten[NPTENSIZE] = {1.,.1,.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e
 const float FHuge = float(1.E38);	// Handy large (not strictly largest) value used for x/0,
 									// search initializations, etc.  Single defn for portability and code clarity.
 
-// Other constants
-const float BtuperWh    =  3.413f;	// Btu per Wh
-const float BtuperkWh   =  3413.f;	// Btu per kWh
+// Physical constants
+#if 1
+const float BtuperWh    =  3.41214f;	// Btu per Wh
+const float BtuperkWh   =  3412.14f;	// Btu per kWh
+const float waterRhoCp = 8.29018282f;	// water volumetric weight, lb/gal
+										//    = volumetric heat capacity, Btu/gal-F
+										// 30 C (85 F) value used, appropriate for DHW calcs
+#else
+const float BtuperWh = 3.413f;	// Btu per Wh
+const float BtuperkWh = 3413.f;	// Btu per kWh
+const float waterRhoCp = 8.345f;
+#endif
+
 #if 0	// obsolete
 x const float SrcMultElect = 3.f;	// Source multiplier for electrical energy (California CEC value)
 x const float BtuSrcperWh = 10.239f;	/* Btu (source energy) per Wh.  Includes California electric
