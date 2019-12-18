@@ -48,6 +48,7 @@ set(files
   dhwX
   dhwDU
   dhw_C
+  dhw_zone
   dwhr
   dhwls
   DHW_INV 

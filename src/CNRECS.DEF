@@ -427,7 +427,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//    = 1 min or as generalized
 							//    used for e.g. HPWH simulation
 	*declare "int tp_NHrTicks() const { return nSubSteps*tp_nSubhrTicks; }"
-	*r INT tp_subhrWSCount;	// # of DHWSYSs requiring subhr (tick-level) simulation
 
 //TOP: runtime: simulation date/time variables
     *m CHP monStr    	// Month being simulated as (non-heap) string
@@ -2383,6 +2382,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s *e DBL zn_qDHWLossAir	//	to ta (convection)
     *s *e DBL zn_qDHWLossRad	//  to tr (radiation)
     *s *e DBL zn_qDHWLoss		//  sum
+	*declare "void zn_CoupleDHWLossSubhr( double qLoss, float fR=0.5f);"
 	*s *e DBL zn_qHPWH			//  heat extracted from zone by heat pump DHWHEATER(s)
 								//     assumed from ta (convective) (always <=0)
 								//     Included in zone balance as heat, not air flow,
@@ -3392,14 +3392,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
-  *declare "enum { wssimUNK, wssimHR, wssimSUBHR};"
   *declare "RC ws_CkF();"
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
   *declare "float ws_GetTSetpoint( int whfcn) const;"
   *declare "int ws_GetTSetpointFN( int whfcn) const;"
-  *declare "int ws_DetermineSimMeth() const;"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
@@ -3534,9 +3532,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r *e FLOAT_GEZ ws_dayWasteScale
   *declare "double ws_DrawWaste( int iEU) const { return ws_drawWaste[ iEU] + ws_dayWasteDrawF[ iEU]*ws_dayWasteScale; }"
 
-  *r INT ws_simMeth;		// simulation method (see ws_DetermineSimMeth())
-							//   wssimSUBHR if *any* component needs subhrly calcs
-							//   wssimHOUR otherwise
   *r FLOAT_GEZ ws_childDHWSYSCount; // # of child DHWSYSs iff central system (else 0)
 									//    note may not be integral
   *r FLOAT_GEZ ws_whCount;		// # of (primary) DHWHEATERs serving this DHWSYS
@@ -3662,7 +3657,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//	  C_WHASHPTYCH_xxx, etc
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
-								//	  heat losses go to zone air (TODO: radiant?)
+								//	  heat losses go to half to zone air / half radiant
   *declare "ZNR* wh_pZn;"		// pointer to location zone, use wh_tEx if NULL
   *s FLOAT wh_tEx;				// surrounding temperature, F for tank loss
 								//    when wh_tEx set
@@ -3882,7 +3877,9 @@ RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wt_CkF();"
   *declare "DHWSYS* wt_GetDHWSYS() const;"
+  *declare "RC wt_Init();"
   *declare "RC wt_DoHour( float tUse);"
+  *declare "RC wt_DoSubhr();"
 
   *i SI wt_mult;				// count of identical DHW tanks (default 1)
 								//   models as if repeated identical input
@@ -3893,7 +3890,14 @@ RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
 								//   = built-in + exterior wrap
   *h FLOAT wt_tTank;			// assumed tank water temperature, F
 								//   default = DHWSYS ws_tUse
-  *h FLOAT wt_tEx;				// tank surrounding air temp, F
+  *i TI wt_znTi;				// DHWTANK location zone re tank loss
+								//    0 iff wt_tEx being used
+								//	  heat losses go to half to zone air / half radiant
+  *declare "ZNR* wt_pZn;"		// pointer to location zone, use wt_tEx if NULL
+  *h FLOAT wt_tEx;				// surrounding temperature, F for tank loss
+								//    when wt_tEx set
+								//    - wt_znTi ignored
+								//    - heat loss discarded
   *h FLOAT wt_xLoss;			// other tank temp-independent losses, Btuh
 								//   for e.g. T24 fitting losses
   *h *e FLOAT wt_qLoss;			// current hour's total loss, Btu

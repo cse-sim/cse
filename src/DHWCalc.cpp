@@ -543,6 +543,12 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	if (pass == 0)
 	{	// pass 0: init things that have no inter-DHWSYS effect
 		ws_SetMTRPtrs();
+
+		if (ws_wtCount > 0)
+		{	DHWTANK* pWT;
+			RLUPC(WtR, pWT, pWT->ownTi == ss)
+				rc |= pWT->wt_Init();
+		}
 	
 		// load sharing base state: assume no sharing
 		//   modified in later passes iff ws_loadShareDHWSYSi
@@ -771,32 +777,16 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			ignoreN(when, DHWSYS_DRAWWASTE + iEU, DHWSYS_DAYWASTEDRAWF + iEU, 0);
 	}
 
-	ws_simMeth = ws_DetermineSimMeth();
-	if (ws_simMeth == wssimSUBHR)
-	{	if (!Top.tp_subhrWSCount++)
-		{	// check ticks on first DHWSYS needing subhr sim
-			// Initially require 1 min ticks
-			// TODO: generalize to allow other durations
-			if (Top.tp_subhrTickDur != 1.)
-				rc |= oer( "integral minute substep duration required");
-		}
+	if (ss == 1)
+	{	// check ticks on first DHWSYS
+		// Initially require 1 min ticks
+		// TODO: generalize to allow other durations
+		if (Top.tp_subhrTickDur != 1.)
+			rc |= oer( "integral minute substep duration required");
 	}
 
 	return rc;	// pass 1 return
 }		// DHWSYS::ws_Init
-//----------------------------------------------------------------------------
-int DHWSYS::ws_DetermineSimMeth() const
-{
-	int simMeth = wssimHR;
-	DHWHEATER* pWH;
-	RLUPC( WhR, pWH, pWH->ownTi == ss)
-	{	if (pWH->wh_IsSubhrModel())
-		{	simMeth = wssimSUBHR;
-			break;
-		}
-	}
-	return simMeth;
-}	// DHWSYS::ws_DetermineSimMeth
 //----------------------------------------------------------------------------
 float DHWSYS::ws_BranchFlow() const		// average branch flow rate
 // returns nominal branch flow, gpm
@@ -1398,9 +1388,21 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {
-	RC rc = RCOK;
+
 #if 1
-	if (ws_whCount > 0.f && ws_calcMode != C_WSCALCMODECH_PRERUN)
+	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
+		return RCOK;
+
+	RC rc = RCOK;
+
+	// DHWTANKs
+	if (ws_wtCount > 0)
+	{	DHWTANK* pWT;
+		RLUPC(WtR, pWT, pWT->ownTi == ss)
+			pWT->wt_DoSubhr();
+	}
+
+	if (ws_whCount > 0.f)
 	{
 		int iTkSh = Top.iSubhr*Top.tp_nSubhrTicks;	// initial tick for this subhour
 		DHWTICK* ticksSh = ws_ticks + iTkSh;		// 1st tick info for this subhour
@@ -3376,13 +3378,7 @@ RC DHWHEATER::wh_HPWHDoSubhrEnd()
 
 	// link zone heat transfers
 	if (wh_pZn)
-	{
-		double qLPwr = wh_qLoss * mult * BtuperkWh / Top.subhrDur;	// power to zone, Btuh
-		wh_pZn->zn_qDHWLoss += qLPwr;
-		// TODO: HPWH 50/50 conc/rad split is approx at best
-		wh_pZn->zn_qDHWLossAir += qLPwr * 0.5;
-		wh_pZn->zn_qDHWLossRad += qLPwr * 0.5;
-	}
+		wh_pZn->zn_CoupleDHWLossSubhr(wh_qLoss * mult * BtuperkWh / Top.subhrDur);
 
 	if (wh_pAshpSrcZn && wh_qEnv > 0.)
 	{	// heat extracted from zone
@@ -3638,9 +3634,14 @@ static FLOAT TankSurfArea_CEC(		// calc tank surface area per CEC methods
 RC DHWTANK::wt_CkF()		// DHWTANK input check / default
 // called at end of each DHWTANK input
 {
+	RC rc = RCOK;
 	DHWSYS* pWS = wt_GetDHWSYS();
-	RC rc = !pWS ? oer( "DHWSYS not found")	// insurance (unexpected)
+	rc |= !pWS ? oer( "DHWSYS not found")	// insurance (unexpected)
 				 : pWS->ws_CheckSubObject( this);
+
+	// surrounding zone or temp: zone illegal if temp given
+	if (IsSet(DHWTANK_TEX))
+		rc |= disallowN("when 'wtTEx' is specified", DHWTANK_ZNTI, 0);
 
 	if (!rc)
 	{	if (!IsSet( DHWTANK_UA))
@@ -3672,6 +3673,12 @@ DHWSYS* DHWTANK::wt_GetDHWSYS() const
 	return pWS;
 }		// DHWTANK::wt_GetDHWSYS
 //-----------------------------------------------------------------------------
+RC DHWTANK::wt_Init()			// init for run
+{	RC rc = RCOK;
+	wt_pZn = ZrB.GetAtSafe(wt_znTi);
+	return rc;
+}		// DHWTANK::wtInit
+//-----------------------------------------------------------------------------
 RC DHWTANK::wt_DoHour(			// hourly unfired DHWTANK calcs
 	float tUse)		// system water use temp, F
 					// provides default iff wt_tTank not set
@@ -3683,10 +3690,22 @@ RC DHWTANK::wt_DoHour(			// hourly unfired DHWTANK calcs
 	float tTank = IsSet( DHWTANK_TTANK)
 					? wt_tTank
 					: tUse;
+	if (wt_pZn)
+		wt_tEx = wt_pZn->tzlh;
+
 	// total loss (aka HJL in ACM App B)
 	wt_qLoss = wt_UA * (tTank - wt_tEx) + wt_xLoss;
+
 	return rc;
 }		// DHWTANK::wt_DoHour
+//-----------------------------------------------------------------------------
+RC DHWTANK::wt_DoSubhr()			// subhour DHWTANK calcs
+{
+	RC rc = RCOK;
+	if (wt_pZn)
+		wt_pZn->zn_CoupleDHWLossSubhr( wt_qLoss * wt_mult);
+	return rc;
+}		// DHWTANK::wt_DoSubhr
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

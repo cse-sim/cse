@@ -632,7 +632,7 @@ x	}
 
 	return rc;
 }			// loadsSubhr
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 RC ZNR::zn_InitSubhr()
 {
 	// subhr's Infil UA (Btuh/F)
@@ -742,7 +742,20 @@ x		znXLGainLs +		// excess latent gain last subhr == heat of condensation
 #endif
 	return RCOK;
 }		// ZNR::zn_InitSubhr
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void ZNR::zn_CoupleDHWLossSubhr(
+	double qLoss,		// loss rate from DHWHEATER, DHWTANK, etc., Btuh 
+	float fR /*=0.5f*/)	// fraction radiant
+// incorporates zone heat gain (calc'd by DHW models) into heat balance terms
+{
+	// TODO: 50/50 conc/rad split is approx at best
+	zn_qDHWLossRad += qLoss * fR;
+	zn_qDHWLossAir += qLoss * (1.f - fR);
+	
+	zn_qDHWLoss = zn_qDHWLossRad + zn_qDHWLossAir;
+
+}		// ZNR::zn_CoupleDHWLossSubhr
+//-----------------------------------------------------------------------------
 void ZNR::zn_DbDump() const
 {
 	// int nhour = (Top.jDay-1)*24 + Top.iHr;

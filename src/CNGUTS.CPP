@@ -440,8 +440,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		TU* tu; RLUP( TuB, tu)   EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
 		ZNR* zp; RLUP( ZrB, zp)   EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
 		IZXRAT* ize; RLUP( IzxR, ize) EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
-		if (tp_subhrWSCount)
-		{	DHWSYS* pWS; RLUP( WsR, pWS) EF( pWS->ws_DoSubhr() ) }
+		DHWSYS* pWS; RLUP( WsR, pWS) EF( pWS->ws_DoSubhr() )
 		RLUP( ZrB, zp)   EF( zp->zn_BegSubhr2() )
 		DUCTSEG* ds; RLUP( DsR, ds) EF( ds->ds_BegSubhr() )		// start-subhour duct segments
 		RSYS* rs; RLUP( RsR, rs) EF( rs->rs_BegSubhr() )		// start-subhour RSYS HVAC systems
