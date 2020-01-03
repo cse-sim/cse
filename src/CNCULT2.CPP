@@ -1471,6 +1471,7 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E(WlpR.RunDup(WLPiB, &WlR))
 	E(WduR.RunDup(WDUiB, &WsR))
 	E(WuR.RunDup(WUiB, &WduR))
+	E(SwhR.RunDup(SWHiB))
 
 	// DHWDAYUSE one-time inits
 	//   2 passes req'd (see wdu_Init())

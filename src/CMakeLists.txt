@@ -98,6 +98,7 @@ set(source
   CVPAK.CPP
   DATFCNS.CPP
   DHWCalc.cpp
+  DHWSolar.cpp
   DMPAK.CPP
   DTTAB.CPP
   ENVPAK.CPP

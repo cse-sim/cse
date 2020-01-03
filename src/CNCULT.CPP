@@ -85,6 +85,9 @@ makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater (aka "swing tank")
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
+makAncDHWSOLARSYS(SWHiB);	// DHW Solar System
+
+
 makAncPVARRAY(PViB);		// PV array
 makAncBATTERY(BTiB);		// Battery
 
@@ -148,6 +151,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WGiB.free();
 	WBiB.free();
 	WLPiB.free();
+	SWHiB.free();
 	PViB.free();
 	BTiB.free();
 	SXiB.free();
@@ -2062,6 +2066,24 @@ CULT()
 #undef FXC
 #undef FDX
 
+//============================== DHWSOLARSYS command ===============================
+LOCAL RC FC swStarCkf(CULT* c, /*DHWSOLARSYS* */ void *p, void *p2, void *p3)
+// called at end of DHWSOLARSYS input, to get messages near source of error.
+{
+	return ((DHWSOLARSYS*)p)->sw_CkF();
+}		// swStarCkf
+//=============================================================================
+
+static CULT dhwSolSysT[] = //------ DHWSOLARSYS cmd RAT Entry table, used from cnTopCult
+{
+	// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N, swStarCkf),
+	CULT("swSSF",       DAT,   DHWSOLARSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+	CULT("endDHWSOLARSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+	CULT()
+};	// dhwSOLSysT
+
 //============================== PVARRAY command ===============================
 LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
 // called at end of PVARRAY input, to get messages near source of error.
@@ -2656,6 +2678,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
+	CULT( "dhwsolarsys", RATE,  0,                 0,          0, 0,      0,    &SWHiB,  N,    0.f,    dhwSolSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
 	CULT( "shadex",      RATE,  0,                 0,          0, 0,      0,    &SXiB,   N,    0.f,       shadexT,  N),

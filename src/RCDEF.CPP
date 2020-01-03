@@ -194,7 +194,7 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 							1. Allocation of front members at proper offsets not verified.
 							2. Space waste by duplicate sstat[] not prevented.  Does it make errors? */
 
-const int MAXRCS=100;		// Record names.  80->100, 10-13
+const int MAXRCS=110;		// Record names.  80->100, 10-13. 100->110, 01-20
 							// Also max rec handle (prob unnec??).
 const int MAXFIELDS=200;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95.
 							//   600-->200 1-92. ->130 5-95.   160->200 11-19

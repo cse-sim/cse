@@ -4147,6 +4147,14 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//    used re random assignment of draws to DHWHEATRECs
 *END	// DHWUSE
 //=============================================================================
+RECORD DHWSOLARSYS "DHWSolarSys" *RAT		// input / runtime DHW solar system
+  *prefix sw_
+  *declare "RC sw_CkF();"
+  *h FLOAT_GEZ sw_SSF		// solar savings fraction
+							//  valid range 0 - 0.99, see code
+
+*END		// DHWSOLARSYS
+//=============================================================================
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon

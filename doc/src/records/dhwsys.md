@@ -4,16 +4,16 @@ DHWSYS constructs an object representing a domestic hot water system consisting 
 
 The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to the DHWSYS that precedes them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
 
--   DHWSYS
-    -   DHWHEATER
-    -   DHWLOOPHEATER
-    -   DHWHEATREC
-    -   DHWTANK
-    -   DHWPUMP
-    -   DHWLOOP
-        -   DHWLOOPPUMP
-        -   DHWLOOPSEG
-            -   DHWLOOPBRANCH
+- DHWSYS
+    - DHWHEATER
+    - DHWLOOPHEATER
+    - DHWHEATREC
+    - DHWTANK
+    - DHWPUMP
+    - DHWLOOP
+        - DHWLOOPPUMP
+        - DHWLOOPSEG
+            - DHWLOOPBRANCH
 
 Minimal modeling is included for physically realistic controls. For example, if several DHWHEATERs are included in a DHWSYS, an equal fraction of the required hot water is assumed to be produced by each heater, even if they are different types or sizes. Thus a DHWSYS is in some ways a collection of components as opposed to an explicitly connected system.  This approach avoids requiring detailed input that would impose impractical user burden, especially in compliance applications.
 
@@ -247,6 +247,8 @@ Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The def
 
 **wsSSF=*float***
 
+NOTE: Deprecated. Use wsSolarSys instead.
+
 Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions.  The contributions are modeled by deriving an increased water heater feed temperature --
 
 $$tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)$$
@@ -257,6 +259,14 @@ where tInletAdj is the source cold water temperature *including any DHWHEATREC t
   **Units**    **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
                 0 $\le$ x $\le$ 0.99           0             No             hourly
+
+**wsSolarSys=*dhwSolarSys***
+
+Name of DHWSOLARSYS object, if any, that supplies pre-heated water to this DHWSYS.
+
+  **Units**    **Legal Range**          **Default**      **Required**   **Variability**
+  ----------- ------------------------ ---------------- -------------- -----------------
+              *name of a DHWSOLARSYS*   *not recorded*   No             constant
 
 **wsParElec=*float***
 
