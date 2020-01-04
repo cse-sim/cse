@@ -365,7 +365,12 @@ struct DHWHRTICK	// per tick info for DHWHEATREC
 //-----------------------------------------------------------------------------
 DHWSYS::~DHWSYS()
 {
-	cupfree( DMPP( ws_dayUseName));
+	// omit cupfree(DMPP(ws_dayUseName));
+	//  WHY: causes access exception if ws_dayUseName is string expression
+	//       when there is a runtime error (works OK on normal termination).
+	//       Something to do with cleanup order?
+	//       Suspect general problem with string expressions?
+	ws_dayUseName = NULL;
 	delete[] ws_ticks;
 	ws_ticks = NULL;
 	delete[] ws_fxList;
@@ -716,22 +721,20 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	{	DHWSYS* pWS = WsR.GetAtSafe( ws_loadShareDHWSYSi);
 		if (!pWS)
 			rc |= rer( "wsLoadShareDHWSYS not found.");		// impossible?
-		else
-		{	if (pWS->ws_loadShareDHWSYSi > 0)
-				rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
+		else if (pWS->ws_loadShareDHWSYSi > 0)
+			rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
 					pWS->name);
-			else
-			{	// ws_loadShareIdx = pWS->ws_loadShareCount[ 0];
-				// pWS->ws_loadShareCount[ 0]++;
-				for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
-				{	ws_LSRSet(iEU, pWS->ws_loadShareCount[iEU], ws_fxCount[iEU]);
-					pWS->ws_loadShareCount[iEU] += ws_fxCount[iEU];
-				}
-				// this->ws_loadShareCount set in pass 2 (above)
-
-				RRFldCopy( pWS, DHWSYS_DAYUSENAME);
-				RRFldCopy( pWS, DHWSYS_HWUSE);
+		else
+		{	// note ws_fxCount[ 0] is 1
+			//   thus ws_loadShareCount[ 0] is # of DHWSYSs in group
+			for (int iEU = 0; iEU < C_DHWEUCH_COUNT; iEU++)
+			{	ws_LSRSet(iEU, pWS->ws_loadShareCount[iEU], ws_fxCount[iEU]);
+				pWS->ws_loadShareCount[iEU] += ws_fxCount[iEU];
 			}
+			// this->ws_loadShareCount set in pass 2 (above)
+
+			RRFldCopy( pWS, DHWSYS_DAYUSENAME);
+			RRFldCopy( pWS, DHWSYS_HWUSE);
 		}
 	}
 
@@ -907,6 +910,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// here we combine these to derive consistent hourly total and tick-level (1 min) bins
 
 	// init tick bins to average of hourly (initializes for hour)
+	//   ws_loadShareCount[ 0] = # of DHWSYSs in group (always >= 1)
 	double hwUseX = ws_hwUse / ws_loadShareCount[ 0];	// hwUse per system
 	// note ws_fxUseMixLH is set in ws_EndIvl()
 	ws_InitTicks( hwUseX);
@@ -1804,8 +1808,6 @@ static const double minPerDay = double( 24*60);
 	else
 		rc |= wu_DoHour1( pWS, mult, iH, begM, begMHot, endM);
 
-	// if (any on the list)
-
 	return rc;
 }	// DHWUSE::wu_DoHour
 //-----------------------------------------------------------------------------
@@ -2566,7 +2568,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	{	// set additional parameters if needed
 		if (volX > 0.f && wh_pHPWH->setTankSize( volX, HPWH::UNITS_GAL) != 0)
 			rc = RCBAD;
-		wh_vol = wh_pHPWH->getTankSize(HPWH::UNITS_GAL);	// force force probe-able value
+		wh_vol = wh_pHPWH->getTankSize(HPWH::UNITS_GAL);	// force consistent probable value
 
 		if (UAX > 0.f && wh_pHPWH->setUA( UAX, HPWH::UNITS_BTUperHrF) != 0)
 			rc = RCBAD;

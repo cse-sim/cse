@@ -2755,8 +2755,8 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 													//   with linear form to avoid undounded dmdp
 													//	 = .000001
   // inputs
-    *i TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
-    *i TI iz_zi2		//   iz_zi2 = -1 iff not interzone
+    *r TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
+    *r TI iz_zi2		//   iz_zi2 = -1 iff not interzone
     *h UA iz_ua   		// air-to-air coupling const (Btuh/F) thru walls etc.
     *i IZNVTYCH iz_nvcntrl	// Control type for nat vents:
 						//   C_IZNVTYCH_NONE: no venting (iz_ua only)
@@ -3674,7 +3674,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  *i FLOAT_GEZ wh_vol;			// storage tank vol, gal
+  *r FLOAT_GEZ wh_vol;			// storage tank vol, gal
 								//    applicable to STRGxx types
 								//    used only for HPWH ResistanceX, 5-2016
 								//    default=50 if STRGxx else 0
