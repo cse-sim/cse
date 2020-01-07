@@ -94,7 +94,9 @@ makAncDHWLOOPPUMP( WlpR);	// DHW loop pump
 makAncDHWHEATER2( WlhR, "DHWLoopHeater");		// DHW loop heater (aka "swing tank")
 makAncDHWDAYUSE( WduR);		// DHW day use
 makAncDHWUSE( WuR);			// DHW use
+
 makAncDHWSOLARSYS(SwhR);	// DHW solar system
+makAncDHWSOLARCOLLECTOR(ScR);	// DHW solar collector
 
 makAncPVARRAY(PvR);			// PV array
 makAncBATTERY(BtR);			// Battery

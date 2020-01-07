@@ -63,7 +63,9 @@ extern anc<DHWLOOPBRANCH> WBiB;	// DHW loop branch input records
 extern anc<DHWLOOPPUMP> WLPiB;	// DHW loop pump input records
 extern anc<DHWDAYUSE> WDUiB;	// DHW daily use input records
 extern anc<DHWUSE> WUiB;		// DHW use input records
+
 extern anc<DHWSOLARSYS> SWHiB;  // DHW solar system input records
+extern anc<DHWSOLARCOLLECTOR> SCiB;  // DHW solar collector input records
 
 extern anc<PVARRAY> PViB;		// PV array input records
 extern anc<BATTERY> BTiB;		// Battery input records
