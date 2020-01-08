@@ -871,37 +871,28 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//         depends on distribution system configuration
 	ws_DLM = 1.f + (ws_SDLM-1.f)*ws_DSM;
 
-	// construct array of use factors by end use
-	//   whDrawF = water heater draw / fixture hot water draw
-	//   water heater draw includes SSF adjustment
-	static const int WHDRAWFDIM = sizeof( ws_drawDurF)/sizeof( ws_drawDurF[ 0]);
+
+	// Draw duration factors
 #if defined( _DEBUG)
-	if (WHDRAWFDIM != NDHWENDUSES)
-		err( PABT, "ws_drawDurF array size error");
-	VSet( ws_drawDurF, WHDRAWFDIM, -1.f);
-	if (sizeof(ws_drawWaste)/sizeof( ws_drawWaste[ 0]) != NDHWENDUSES)
+	static const int WSDRAWDURFDIM = sizeof(ws_drawDurF) / sizeof(ws_drawDurF[0]);
+	if (WSDRAWDURFDIM != NDHWENDUSES)
+		err(PABT, "ws_drawDurF array size error");
+	if (sizeof(ws_drawWaste) / sizeof(ws_drawWaste[0]) != NDHWENDUSES)
 		err(PABT, "ws_drawWaste array size error");
 #endif
-
-	// Duration factor
-	float drawDurF = ws_WF * ws_DLM;
 	// temperature-dependent end uses
 	//   losses modeled by extending draw
-	ws_drawDurF[ 0]
-		= ws_drawDurF[ C_DHWEUCH_SHOWER]
-		= ws_drawDurF[C_DHWEUCH_FAUCET]
-		= ws_drawDurF[ C_DHWEUCH_BATH] = drawDurF;
-	// temperature independent end uses
-	//   losses do not effect draw
-	float drawDurFTempInd = 1.f;
-	ws_drawDurF[ C_DHWEUCH_CWASHR]
-		= ws_drawDurF[ C_DHWEUCH_DWASHR]
-		= drawDurFTempInd;
-
-#if defined( _DEBUG)
-	if (VMin( ws_drawDurF, WHDRAWFDIM) < 0.f)
-		err( PABT, "ws_drawDurF fill error");
-#endif
+	float drawDurFDflt = ws_WF * ws_DLM;	// can vary hourly
+	static const int dhwEUList[] =
+	{ 0, C_DHWEUCH_SHOWER, C_DHWEUCH_FAUCET, C_DHWEUCH_BATH, -1 };
+	for (int i = 0; dhwEUList[i] >= 0; i++)
+	{	int iEU = dhwEUList[i];
+		if (!IsSet(DHWSYS_DRAWDURF + iEU))
+			ws_drawDurF[iEU] = drawDurFDflt;
+	}
+	// temperature independent end uses (_CWASHR, _DWASHR)
+	//   losses do not effect draw duration by default
+	//   use input value or default (= 1) (see CULT)
 
 	// ** Hot water use **
 	//   2 types of user input
@@ -1764,15 +1755,18 @@ RC DHWUSE::wu_DoHour(		// accumulate 1 DHWUSE to tick-level bins
 //         else error (stop run)
 {
 static const double minPerDay = double( 24*60);
+
 	RC rc = RCOK;
-	if (wu_dur == 0. || wu_flow*mult == 0.)
+
+	int iEU = wu_hwEndUse;
+	float durX = pWS->ws_drawDurF[iEU] * wu_dur;
+	if (durX == 0.f || wu_flow == 0.f || mult == 0.f)
 		return rc;		// nothing to do
 
  	if (pWS->ws_loadShareCount[ 0] > 1)
 	{	// if load is being shared by more than 1 DHWSYS
 		//   allocate by eventID to rotate DHWUSEs with suitable fixtures
 		//   starting DHWSYS depends on jDay
-		int iEU = wu_hwEndUse;
 		int nFx = pWS->ws_loadShareCount[ iEU];
 		int EID = wu_eventID + pWS->ws_loadShareWS0[iEU];
 		int iX = EID % nFx;
@@ -1782,8 +1776,7 @@ static const double minPerDay = double( 24*60);
 	
 	// derive adjusted duration, min
 	//   losses are represented by extended draw
-	float durX = wu_dur * pWS->ws_drawDurF[wu_hwEndUse]
-			  + pWS->ws_DrawWaste(wu_hwEndUse) / wu_flow;		// warmup waste
+	durX += pWS->ws_DrawWaste(iEU) / wu_flow;		// warmup waste
 	if (durX <= 0.f)
 		return rc;		// no draw (adjustment can be <0)
 	if (durX > minPerDay)

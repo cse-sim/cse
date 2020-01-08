@@ -3509,20 +3509,20 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//  [ 1..]: per C_DHWEUCH_xxx
   *r *array NDHWENDUSESPP FLOAT ws_drawsPerDay;
 
-  *h *e *array NDHWENDUSESPP FLOAT ws_drawDurF;	// water heater draw duration factors by end use
+  *h *e *array NDHWENDUSESPP FLOAT_GEZ ws_drawDurF;	// water heater draw duration factors by end use
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
-							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
+							//   [ 0] = unknown end use (DHWUSEs w/o wu_hwEndUse) (*not* ws_hwUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
   *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
 							//  _T24DHW: prior ACM App-B
 							//  _DRAWWASTE: draw duration increase per ws_drawWaste
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
-							// [ 0] (unused)
+							// [ 0] unknown end use
 							// [ 1..] = per C_DHWEUCH_xxx
   *i *array NDHWENDUSESPP FLOAT ws_dayWasteDrawF;	// relative draw for day waste scheme
-							// [ 0] (unused)
+							// [ 0] unknown end use
 							// [ 1..] = per C_DHWEUCH_xxx
   *i FLOAT_GEZ ws_dayWasteVol			// base daily total draw waste, gal/day
   *i FLOAT_GEZ ws_dayWasteBranchVolF	// additional daily draw waste, discards/day

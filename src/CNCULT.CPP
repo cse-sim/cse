@@ -1996,6 +1996,7 @@ LOCAL RC FC wsStarCkf( CULT* c, /*DHWSYS* */ void *p, void *p2, void *p3)
 //=============================================================================
 #define FXC( eu) (DHWSYS_FXCOUNT+eu)
 #define FDX( eu) (DHWSYS_DRAWWASTE+eu)
+#define FDF( eu) (DHWSYS_DRAWDURF+eu)
 #define DWF( eu) (DHWSYS_DAYWASTEDRAWF+eu)
 
 static CULT dhwSysT[] = //------ DHWSYS cmd RAT Entry table, used from cnTopCult
@@ -2029,23 +2030,41 @@ CULT( "wsDWashrCount",DAT,  FXC(C_DHWEUCH_DWASHR), 0, 0, VEOI,   TYSI,  0,      
 
 CULT( "wsBranchModel",DAT,  DHWSYS_BRANCHMODEL,    0, 0, VEOI,   TYCH,  0, C_DHWBRANCHMODELCH_T24DHW, N, N),
 
-CULT("wsFaucetWaste", DAT,  FDX(C_DHWEUCH_FAUCET), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT("wsShowerWaste", DAT,  FDX(C_DHWEUCH_SHOWER), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT("wsBathWaste",   DAT,  FDX(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT("wsCWashrWaste" ,DAT,  FDX(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT("wsDWashrWaste", DAT,  FDX(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsUnkDrawDurF",    DAT, FDF( 0),                0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsFaucetDrawDurF", DAT, FDF(C_DHWEUCH_FAUCET), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerDrawDurF", DAT, FDF(C_DHWEUCH_SHOWER), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathDrawDurF",   DAT, FDF(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrDrawDurF", DAT, FDF(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      1.f,    N, N),
+CULT("wsDWashrDurF",     DAT, FDF(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      1.f,    N, N),
 
+CULT("wsUnkDrawWaste",    DAT,  FDX(0),                0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsFaucetDrawWaste", DAT,  FDX(C_DHWEUCH_FAUCET), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerDrawWaste", DAT,  FDX(C_DHWEUCH_SHOWER), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathDrawWaste",   DAT,  FDX(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrDrawWaste" ,DAT,  FDX(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsDWashrDrawWaste", DAT,  FDX(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+
+#if 1
+CULT("wsUnkDayWasteF",   DAT,   DWF( 0),               0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsFaucetDayWasteF",DAT,   DWF(C_DHWEUCH_FAUCET), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerDayWasteF",DAT,   DWF(C_DHWEUCH_SHOWER), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathDayWasteF",  DAT,   DWF(C_DHWEUCH_BATH),   0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrDayWasteF",DAT,   DWF(C_DHWEUCH_CWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsDWashrDayWasteF",DAT,   DWF(C_DHWEUCH_DWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+#else
 CULT( "wsDayWasteFaucetF",DAT,DWF(C_DHWEUCH_FAUCET), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "wsDayWasteShowerF",DAT,DWF(C_DHWEUCH_SHOWER), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "wsDayWasteBathF",  DAT,DWF(C_DHWEUCH_BATH),   0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "wsDayWasteCWashrF",DAT,DWF(C_DHWEUCH_CWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "wsDayWasteDWashrF",DAT,DWF(C_DHWEUCH_DWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+#endif
 
 CULT( "wsDayWasteVol",    DAT, DHWSYS_DAYWASTEVOL,   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "wsDayWasteBranchVolF",DAT,DHWSYS_DAYWASTEBRANCHVOLF,
 												   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT("wsDrawMaxDur", DAT,   DHWSYS_DRAWMAXDUR,     0, 0, VEOI,  TYSI,  0,      4,    N, N),
 CULT("wsLoadMaxDur", DAT,   DHWSYS_LOADMAXDUR,     0, 0, VEOI,  TYSI,  0,     12,    N, N),
+
 CULT( "wsElecMtr",   DAT,   DHWSYS_ELECMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
@@ -2061,6 +2080,8 @@ CULT()
 };	// dhwSysT
 #undef FXC
 #undef FDX
+#undef FDF
+#undef DWF
 
 //============================== PVARRAY command ===============================
 LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
