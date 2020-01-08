@@ -3514,7 +3514,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							// factor = actual draw duration / nominal draw duration
 							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
- *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
+  *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
 							//  _T24DHW: prior ACM App-B
 							//  _DRAWWASTE: draw duration increase per ws_drawWaste
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal

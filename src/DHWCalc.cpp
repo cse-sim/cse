@@ -1779,12 +1779,13 @@ static const double minPerDay = double( 24*60);
 		if (!pWS->ws_IsLSR( iEU, iX))
 			return rc;		// not handled by this DHWSYS, do nothing
 	}
-
-
+	
 	// derive adjusted duration, min
 	//   losses are represented by extended draw
 	float durX = wu_dur * pWS->ws_drawDurF[wu_hwEndUse]
 			  + pWS->ws_DrawWaste(wu_hwEndUse) / wu_flow;		// warmup waste
+	if (durX <= 0.f)
+		return rc;		// no draw (adjustment can be <0)
 	if (durX > minPerDay)
 	{	// duration longer than 1 day
 		// warn and limit
