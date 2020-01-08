@@ -4656,8 +4656,8 @@ DHWSYS   "dhwsysC"
    wsTInlet = 50
    wsTSetpoint = 135
    wsTUse = 120                         // Water use temperature (at the point of use), °F
-   wsDayWasteShowerF = 1
-   wsDayWasteFaucetF = .3 
+   wsShowerDayWasteF = 1
+   wsFaucetDayWasteF = .3 
    wsDayWasteVol = 0
    wsDayWasteBranchVolF = 1.4 * 19.84 * exp( -0.544 * 1 )
    wsCalcMode = "PreRun"              // specifies PreRun vs. Simulate
