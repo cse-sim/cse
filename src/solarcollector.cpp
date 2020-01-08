@@ -1,6 +1,7 @@
 #include "solarcollector.h"
 #include "CNGLOB.H"
 #include "slpak.h"
+#include "rccn.h"
 
 namespace
 {
@@ -36,11 +37,13 @@ double SolarCollector::transmitted_radiance_perez(double tilt,
 	{
 		poaBeam = Top.radBeamHrAv*cosi;
 		radIBeam = poaBeam*fBeam;  // incident beam (including shading)
-		radIBeamEff = max(poaBeam*(1.f - pv_sif * (1.f - fBeam)),0.f);
+    float const sif = 0.0f; // shading impact factor used in PV, but not here yet
+		radIBeamEff = max(poaBeam*(1.f - sif * (1.f - fBeam)), 0.f);
 		aoi = acos(cosi);
 	}
 	else
-	{	poaBeam = radIBeam = radIBeamEff = 0.f;  // incident beam
+	{
+  	poaBeam = radIBeam = radIBeamEff = 0.f;  // incident beam
 		aoi = kPiOver2;
 	}
 
@@ -90,15 +93,15 @@ double SolarCollector::transmitted_radiance_perez(double tilt,
 		poaDiffH = 0.f;
 	}
 
-	poaDiffG = pv_grndRefl*vfGrndDf;
+	poaDiffG = Top.grndRefl * vfGrndDf;
 
-	float poaDiff = Top.radDiffHrAv*(poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
-	float poaGrnd = Top.radBeamHrAv*pv_grndRefl*vfGrndDf*verSun;  // ground reflected beam
+	float poaDiff = Top.radDiffHrAv * (poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
+	float poaGrnd = Top.radBeamHrAv * Top.grndRefl * vfGrndDf * verSun;  // ground reflected beam
 	auto poa = poaBeam + poaDiff + poaGrnd;
 	auto radI = radIBeam + poaDiff + poaGrnd;
 	auto radIEff = radIBeamEff + poaDiff + poaGrnd;
 
-	//// Correct for off-normal transmittance
+	//// Correct for off-normal transmittance - IF we have refractive indices for the collector!!
 	//float theta1 = pv_aoi;
 	//float theta2, tauAR, theta3, tauGl;
 
@@ -109,7 +112,8 @@ double SolarCollector::transmitted_radiance_perez(double tilt,
 
 	//pv_radTrans = pv_radIBeamEff *tauC / pv_tauNorm + poaDiff + poaGrnd;
 
-  return radIBeamEff;
+  //What's sensible to return here, assuming we didn't have refractive indices available
+  return radIEff; // Btu/hr-ft^2
 }
 
 void SolarCollector::simple_solar_collector(double tilt, 
@@ -118,7 +122,8 @@ void SolarCollector::simple_solar_collector(double tilt,
                                             double intercept,
                                             double gross_area,
                                             double &gain,
-                                            double &efficiency)
+                                            double &efficiency,
+                                            double &outlet_temp)
 {
   double Q_inc = transmitted_radiance_perez(tilt, azimuth);
   double t_amb = outdoor_drybulb_temp_;
@@ -130,6 +135,9 @@ void SolarCollector::simple_solar_collector(double tilt,
   // instantaneous solar gain, [W]
   auto calc_gain =  Q_inc * gross_area * efficiency;
   gain = (calc_gain > 0) ? calc_gain : 0.0;
+
+  auto Cp = CollectorFluidProperties::get_specific_heat_glycol(inlet_temp_); // Btu/lb-F (?)
+  outlet_temp = inlet_temp_ + gain / (mass_flow_rate_ * Cp); // Watch your units...
 }
 
 

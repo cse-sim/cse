@@ -36,7 +36,8 @@ public:
                               double intercept,
                               double gross_area,
                               double &gain,
-                              double &efficiency);
+                              double &efficiency,
+                              double &outlet_temp);
 
 #if 0
   void init_solar_collector();
