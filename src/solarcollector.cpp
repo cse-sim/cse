@@ -8,10 +8,12 @@ namespace
   double deg_to_rad(3.1415 / 180.0); // Conversion for Degrees to Radians
 }
 
-SolarCollector::SolarCollector()
+SolarCollector::SolarCollector() :
+  mass_flow_rate_(0.0),
+  inlet_temp_(0.0), 
+  outdoor_drybulb_temp_(0.0)
 {
 }
-
 
 double SolarCollector::transmitted_radiance_perez(double tilt,
                                                   double azimuth)
