@@ -1472,6 +1472,7 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E(WduR.RunDup(WDUiB, &WsR))
 	E(WuR.RunDup(WUiB, &WduR))
 	E(SwhR.RunDup(SWHiB))
+	E(ScR.RunDup(SCiB))
 
 	// DHWDAYUSE one-time inits
 	//   2 passes req'd (see wdu_Init())
@@ -1493,6 +1494,16 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 		rc |= pWS->ws_Init( 1);
 	if (!rc) RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 2);
+
+	// DHWSOLARCOLLECTOR
+	DHWSOLARCOLLECTOR* pSC;
+	RLUP(ScR, pSC)
+		rc |= pSC->sc_Init();
+
+	// DHWSOLARSYS
+	DHWSOLARSYS* pSW;
+	RLUP(SwhR, pSW)
+		rc |= pSW->sw_Init();
 
 	return rc;
 }	// ::topDHW

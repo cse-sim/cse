@@ -132,7 +132,9 @@ extern anc<DHWLOOPBRANCH> WbR;	// DHW loop branch
 extern anc<DHWLOOPPUMP> WlpR;	// DHW loop pump
 extern anc<DHWDAYUSE> WduR;		// DHW day use
 extern anc<DHWUSE> WuR;			// DHW use (single draw)
+
 extern anc<DHWSOLARSYS> SwhR;   // DHW solar system
+extern anc<DHWSOLARCOLLECTOR> ScR;   // DHW solar system
 
 extern anc<PVARRAY> PvR;        // PV array
 extern anc<BATTERY> BtR;		// Battery

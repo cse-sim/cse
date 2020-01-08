@@ -532,6 +532,10 @@ void DHWSYS::ws_SetMTRPtrs()		// set runtime pointers to meters
 		CKDBLCOUNT( ws_pWHhwMtr)
 		#undef CKDBLCOUNT
 	}
+
+	// solar water heating
+	ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
+
 }		// DHWSYS::ws_SetMTRPtrs
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_Init(		// init for run (including children)
@@ -925,8 +929,16 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (pWDU)
 	{	// accumulation DHWDAYUSE input to tick bins and total use
 		rc |= pWDU->wdu_DoHour( this);		// accum DAYUSEs
+		// Account for drain water heat recovery
 		if (ws_wrCount && ws_iTk0DWHR < ws_iTkNDWHR)
 			rc |= ws_DoHourDWHR();		// modify tick values re DWHR
+	}
+
+	// Account for solar pre-heating
+	if (ws_pDHWSOLARSYS)
+	{
+		rc |= ws_pDHWSOLARSYS->sw_DoHour();
+		ws_tInletX = ws_pDHWSOLARSYS->sw_tOutlet;
 	}
 
 	if (!ws_HasCentralDHWSYS())
@@ -1449,6 +1461,12 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 				rc |= pWH->wh_HPWHDoSubhrTick(tk, scaleWH);
 			if (ws_tOutPrimSum != 0.)
 				ws_tOutPrimLT = ws_tOutPrimSum;
+
+			// TODO: Solar ticks
+			if (ws_pDHWSOLARSYS)
+			{
+				;
+			}
 		}
 
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -1975,19 +1993,22 @@ DHWDAYUSE* DHWUSE::wu_GetDHWDAYUSE() const
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// DHWHEATER
+// HPWHTANK
 ///////////////////////////////////////////////////////////////////////////////
-DHWHEATER::~DHWHEATER()		// d'tor
+HPWHTANK::~HPWHTANK()		// d'tor
 {
 	delete wh_pHPWH;
 	wh_pHPWH = NULL;
 	delete[] wh_HPWHHSMap;
 	wh_HPWHHSMap = NULL;
-}		// DHWHEATER::DHWHEATER()
+}		// HPWHTANK::HPWHTANK()
 //-----------------------------------------------------------------------------
-/*static*/ WStr DHWHEATER::wh_GetHPWHVersion()	// return HPWH version string
+/*static*/ WStr HPWHTANK::wh_GetHPWHVersion()	// return HPWH version string
 {	return HPWH::getVersion();
-}		// DHWHEATER::wh_GetHPWHVersion
+}		// HPWHTANK::wh_GetHPWHVersion
+///////////////////////////////////////////////////////////////////////////////
+// DHWHEATER
+///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_CkF()		// water heater input check / default
 // called at end of each DHWHEATER input
@@ -2446,13 +2467,13 @@ RC DHWHEATER::wh_DoEndPreRun()
 	return rc;
 }		// DHWHEATER::wh_DoEndPreRun
 //-----------------------------------------------------------------------------
-/*static*/ void DHWHEATER::wh_HPWHMessageCallback(
+/*static*/ void HPWHTANK::wh_HPWHMessageCallback(
 	const std::string message,
 	void* contextPtr)
 {	((DHWHEATER *)contextPtr)->wh_HPWHReceiveMessage( message);
 }		// DHWHEATER::wh_HPWHMessageCallback
 //-----------------------------------------------------------------------------
-void DHWHEATER::wh_HPWHReceiveMessage( const std::string message)
+void HPWHTANK::wh_HPWHReceiveMessage( const std::string message)
 {
 	pInfo( "DHWHEATER '%s' HPWH message (%s):\n  %s",
 		name, Top.When( C_IVLCH_S), message.c_str());

@@ -86,7 +86,7 @@ makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
 
 makAncDHWSOLARSYS(SWHiB);	// DHW Solar System
-
+makAncDHWSOLARCOLLECTOR(SCiB);	// DHW Solar Collector
 
 makAncPVARRAY(PViB);		// PV array
 makAncBATTERY(BTiB);		// Battery
@@ -152,6 +152,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WBiB.free();
 	WLPiB.free();
 	SWHiB.free();
+	SCiB.free();
 	PViB.free();
 	BTiB.free();
 	SXiB.free();
@@ -2020,6 +2021,7 @@ CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      
 CULT( "wsWHhwMtr",   DAT,   DHWSYS_WHHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsFXhwMtr",   DAT,   DHWSYS_FXHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsParElec",	 DAT,   DHWSYS_PARELEC,  0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "wsSolarSys",  DAT,   DHWSYS_SWTI,     0,       0, VEOI,	 TYREF, &SWHiB,	N,      N, N),
 CULT( "wsSDLM",      DAT,   DHWSYS_SDLM,     0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsDSM",       DAT,   DHWSYS_DSM,      0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsSSF",       DAT,   DHWSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
@@ -2066,6 +2068,32 @@ CULT()
 #undef FXC
 #undef FDX
 
+//============================== DHWSOLARCOLLECTOR command ===============================
+LOCAL RC FC scStarCkf(CULT* c, /*DHWSOLARCOLLECTOR* */ void *p, void *p2, void *p3)
+// called at end of DHWSOLARSYS input, to get messages near source of error.
+{
+	return ((DHWSOLARCOLLECTOR*)p)->sc_CkF();
+}		// scStarCkf
+//=============================================================================
+
+static CULT dhwSolColT[] = //------ DHWSOLARCOLLECTOR cmd RAT Entry table, used from cnTopCult
+{
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,  0,               0,       0, 0,      0,      0,      0.f,    N, scStarCkf),
+CULT( "scArea",      DAT,   DHWSOLARCOLLECTOR_AREA,   RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scMult",      DAT,   DHWSOLARCOLLECTOR_MULT,    0,       0, VEOI,  TYFL,  0,      1.f,    N, N),
+CULT( "scTilt",      DAT,   DHWSOLARCOLLECTOR_TILT,    0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scAzm",       DAT,   DHWSOLARCOLLECTOR_AZM,     0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scFRUL",      DAT,   DHWSOLARCOLLECTOR_FRUL,    0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scFRTA",      DAT,   DHWSOLARCOLLECTOR_FRTA,    0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPFLOW, 0,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpLiqHeatF",   DAT, DHWSOLARCOLLECTOR_PUMPLIQHEATF, 0, 0, VEOI, TYFL, 0,      1.f,    N, N),
+CULT( "scPumpFlow",   DAT,   DHWSOLARCOLLECTOR_PUMPPWR, 0,       0, VEOI,  TYFL, 0,      0.f,    N, N),
+CULT( "endDHWSOLARCOLLECTOR",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// dhwSolColT
+
 //============================== DHWSOLARSYS command ===============================
 LOCAL RC FC swStarCkf(CULT* c, /*DHWSOLARSYS* */ void *p, void *p2, void *p3)
 // called at end of DHWSOLARSYS input, to get messages near source of error.
@@ -2076,13 +2104,23 @@ LOCAL RC FC swStarCkf(CULT* c, /*DHWSOLARSYS* */ void *p, void *p2, void *p3)
 
 static CULT dhwSolSysT[] = //------ DHWSOLARSYS cmd RAT Entry table, used from cnTopCult
 {
-	// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
-	//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
-	CULT("*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N, swStarCkf),
-	CULT("swSSF",       DAT,   DHWSOLARSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
-	CULT("endDHWSOLARSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
-	CULT()
-};	// dhwSOLSysT
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N, swStarCkf),
+CULT( "swElecMtr",   DAT,   DHWSOLARSYS_ELECMTRI, 0,  0, VEOI,   TYREF, &MtriB, N,      N, N),
+CULT( "swEndUse",    DAT,   DHWSOLARSYS_ENDUSE, 0,    0, VEOI,   TYCH,  0,      C_ENDUSECH_DHW, N, N),
+CULT( "swParElec",   DAT,   DHWSOLARSYS_PARELEC, 0,   0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "swTankMult",  DAT,   DHWSOLARSYS_TANKMULT, 0,  0, VEOI,   TYFL,  0,      1.f,    N, N),
+CULT( "swTankUA",    DAT,   DHWSOLARSYS_TANKUA, 0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "swTankVol",   DAT,   DHWSOLARSYS_TANKVOL, 0,   0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "swTankInsR",  DAT,   DHWSOLARSYS_TANKINSULR, 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "swTankZn",    DAT,   DHWSOLARSYS_TANKZNTI,   0, 0, VEOI,  TYREF, &ZiB,   N,      N, N),
+CULT( "swTankTEx",   DAT,   DHWSOLARSYS_TANKTEX, 0,   0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "dhwsolarcollector", RATE, 0,               0,       0, 0,      0,     &SCiB,  N,      dhwSolColT, N),
+CULT( "endDHWSOLARSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// dhwSolSysT
+
 
 //============================== PVARRAY command ===============================
 LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
