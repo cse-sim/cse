@@ -4,95 +4,16 @@
 
 namespace
 {
-double deg_to_rad(3.1415 / 180.0); // Conversion for Degrees to Radians
+  double deg_to_rad(3.1415 / 180.0); // Conversion for Degrees to Radians
 }
 
-SolarCollector::SolarCollector() : 
-  iam1_(0.0), 
-  iam2_(0.0) {
-}
-
-#if 0
-void SolarCollector::sim_solar_collector(int const EquipTypeNum, 
-                                         std::string const &CompName,
-                                         int &CompIndex, 
-                                         bool const InitLoopEquip,
-                                         bool const FirstHVACIteration)
+SolarCollector::SolarCollector()
 {
-  using DataPlant::TypeOf_SolarCollectorFlatPlate;
-  using DataPlant::TypeOf_SolarCollectorICS;
-  using General::TrimSigDigits;
-
-  // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-  int CollectorNum;
-
-  // FLOW:
-  if (GetInputFlag)
-  {
-    GetSolarCollectorInput();
-    GetInputFlag = false;
-  }
-
-  if (CompIndex == 0)
-  {
-    CollectorNum = UtilityRoutines::FindItemInList(CompName, Collector);
-    if (CollectorNum == 0)
-    {
-      ShowFatalError("SimSolarCollector: Specified solar collector not Valid =" + CompName);
-    }
-    CompIndex = CollectorNum;
-  }
-  else
-  {
-    CollectorNum = CompIndex;
-    if (CollectorNum > NumOfCollectors || CollectorNum < 1)
-    {
-      ShowFatalError("SimSolarCollector: Invalid CompIndex passed=" + TrimSigDigits(CollectorNum) +
-                     ", Number of Units=" + TrimSigDigits(NumOfCollectors) +
-                     ", Entered Unit name=" + CompName);
-    }
-    if (CheckEquipName(CollectorNum))
-    {
-      if (CompName != Collector(CollectorNum).Name)
-      {
-        ShowFatalError("SimSolarCollector: Invalid CompIndex passed=" +
-                       TrimSigDigits(CollectorNum) + ", Unit name=" + CompName +
-                       ", stored Unit Name for that index=" + Collector(CollectorNum).Name);
-      }
-      CheckEquipName(CollectorNum) = false;
-    }
-  }
-
-  InitSolarCollector(CollectorNum);
-
-  {
-    auto const SELECT_CASE_var(Collector(CollectorNum).TypeNum);
-    // Select and CALL models based on collector type
-    if (SELECT_CASE_var == TypeOf_SolarCollectorFlatPlate)
-    {
-
-      CalcSolarCollector(CollectorNum);
-    }
-    else if (SELECT_CASE_var == TypeOf_SolarCollectorICS)
-    {
-
-      CalcICSSolarCollector(CollectorNum);
-    }
-    else
-    {
-    }
-  }
-
-  UpdateSolarCollector(CollectorNum);
-
-  ReportSolarCollector(CollectorNum);
 }
-#endif
 
-#define TBD 1.0 // Vars yet to be decided
 
-double transmitted_radiance_perez(double tilt,
-                                  double azimuth)
+double SolarCollector::transmitted_radiance_perez(double tilt,
+                                                  double azimuth)
 {
 	// Calculate horizontal incidence
 	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
@@ -200,8 +121,8 @@ void SolarCollector::simple_solar_collector(double tilt,
                                             double &efficiency)
 {
   double Q_inc = transmitted_radiance_perez(tilt, azimuth);
-  double t_inlet = TBD;
   double t_amb = outdoor_drybulb_temp_;
+  double t_inlet = inlet_temp_;
   // instantaneous collector efficiency, [-]
   efficiency = (Q_inc != 0) ? slope * ((t_inlet - t_amb) / Q_inc) + intercept
                               : slope * ((t_inlet - t_amb) / Q_inc);
@@ -211,6 +132,8 @@ void SolarCollector::simple_solar_collector(double tilt,
   gain = (calc_gain > 0) ? calc_gain : 0.0;
 }
 
+
+#if 0
  void SolarCollector::init_solar_collector()
 {
   double const BigNumber(9999.9); // Component desired mass flow rate
@@ -433,3 +356,5 @@ double SolarCollector::incident_angle_modifier(double incident_angle_rad)
 
   return IAM;
 }
+
+#endif // #if 0

@@ -24,7 +24,7 @@ class SolarCollector
 {
 public:
   SolarCollector();
-  ~SolarCollector();
+  ~SolarCollector() = default;
 
   // Units??
   double transmitted_radiance_perez(double tilt, 
@@ -38,19 +38,24 @@ public:
                               double &gain,
                               double &efficiency);
 
+#if 0
   void init_solar_collector();
 
   void calc_solar_collector(double q_incident, // W/m^2
                             double theta,      // solar incidence angle
                             double surface_tilt_deg);
+#endif
 
 private:
+#if 0
   double incident_angle_modifier(double incident_angle_rad);
 
   double glycol_density_; // rho
+#endif
   double mass_flow_rate_; // m_dot
   double inlet_temp_;
   double outdoor_drybulb_temp_;
+#if 0
   double power_; // Q
   double efficiency_;
 
@@ -61,7 +66,7 @@ private:
   double iam1_;
   double iam2_;
 
-  // Tilt, slope, intercept, area
+#endif
 };
 
 #endif SOLAR_COLLECTOR_H_
