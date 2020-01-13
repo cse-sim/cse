@@ -11,12 +11,14 @@ public:
   void calculate(double Q_incident, double mass_flow_rate, double t_amb, double t_inlet);
 
   //Setters
-  //double tilt;         ///< radians
-  //double azimuth;      ///< radians
-  //double FR_tau_alpha; ///< Slope
-  //double FR_UL;        ///< Intercept: W/m^2-K
-  //double gross_area;   ///< m^2
+  inline double set_tilt(double tilt) { tilt_ = tilt; }
+  inline double set_azimuth(double azm) { azimuth_ = azm; }
+  inline double set_FR_tau_alpha(double tau_alpha) { FR_tau_alpha_ = tau_alpha; }
+  inline double set_FR_UL(double FRUL) {FR_UL_ = FRUL; }
+  inline double set_gross_area(double area) { gross_area_ = area; }
   // Fluid properties (Cp, density)
+  inline double set_specific_heat_fluid(double Cp) { specific_heat_fluid_ = Cp; }
+  inline double set_density_fluid(double density) { density_fluid_ = density; }
 
   double outlet_temp() { return outlet_temp_; }
 
