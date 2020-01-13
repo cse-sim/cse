@@ -1462,10 +1462,10 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 			if (ws_tOutPrimSum != 0.)
 				ws_tOutPrimLT = ws_tOutPrimSum;
 
-			// TODO: Solar ticks
+			// Solar ticks
 			if (ws_pDHWSOLARSYS)
 			{
-				;
+				ws_pDHWSOLARSYS->sw_DoSubhrTick(tk.wtk_whUse, tk.wtk_tInletX);
 			}
 		}
 
@@ -3105,7 +3105,17 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	{
 		DHWTICK& tk = ticksSh[iTk];		// handy ref to current tick
 
+		DHWSYS* pWS = wh_GetDHWSYS();
+		float old_tInletX = tk.wtk_tInletX;
+		if (pWS->ws_pDHWSOLARSYS) {
+			tk.wtk_tInletX = pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp();
+		}
+
 		rc |= wh_HPWHDoSubhrTick( tk, scaleWH);
+
+		if (pWS->ws_pDHWSOLARSYS) {
+			pWS->ws_pDHWSOLARSYS->sw_DoSubhrTick(tk.wtk_whUse, old_tInletX);
+		}
 
 	}		// tick (1 min) loop
 
@@ -3640,7 +3650,7 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 ///////////////////////////////////////////////////////////////////////////////
 // DHWTANK -- CEC T24DHW tank model (heat loss only, no storage)
 ///////////////////////////////////////////////////////////////////////////////
-static FLOAT TankSurfArea_CEC(		// calc tank surface area per CEC methods
+FLOAT DHWTANK::TankSurfArea_CEC(		// calc tank surface area per CEC methods
 	float vol)	// tank volume, gal
 // source: RACM 2016 App B, eqns 42; Table B8
 

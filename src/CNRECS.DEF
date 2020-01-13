@@ -3888,6 +3888,7 @@ RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *declare "RC wt_Init();"
   *declare "RC wt_DoHour( float tUse);"
   *declare "RC wt_DoSubhr();"
+  *declare "static FLOAT TankSurfArea_CEC(float vol);"
 
   *i SI wt_mult;				// count of identical DHW tanks (default 1)
 								//   models as if repeated identical input
@@ -4160,14 +4161,13 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
   *declare "RC sw_DoHour();"
+  *declare "RC sw_DoSubhrTick(double vol, float tInlet);"
+  *declare "FLOAT sw_GetAvailableTemp();"
 
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
   *declare "MTR* sw_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
   *h FLOAT sw_parElec;
-
-  *declare "struct DHWTICK* sw_ticks;"	// array of runtime tick-level info
-										//   draws, adjusted cold water temp, ...
 
   // Tank (from DHWTANK)
   *i SI sw_tankMult;			// count of identical tanks (default 1)
@@ -4187,9 +4187,11 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
 								//    - heat loss discarded
   *h *e FLOAT sw_tankQLoss;		// current hour's total loss, Btu
 								//   for 1 tank (no sw_tankMult)
+  *i FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
 
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
   *h *e FLOAT sw_tankTOutlet	// tank outlet temperature, F
+  *h *e FLOAT sw_tankT			// tank temperature, F
 
   // Collector Fluid
   // sw_fluidType				// Assume water for now
@@ -4203,6 +4205,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *declare "RC sc_CkF();"
   *declare "RC sc_Init();"
   *declare "RC sc_DoHour();"
+  *declare "RC sc_DoSubhrTick();"
 
   *i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
   *i FLOAT_GZ sc_mult		// multiplier (for multiple panels). Default 1.
@@ -4223,6 +4226,15 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 
   								// energy inputs for current hour, Btu
   *i FLOAT_GEZ sc_pumpFlow		// rated flow rate, gpm
+  *i FLOAT sc_pumpOnDeltaT		// temperature difference between the 
+								// tank and collector outlet where pump
+								// turns on, F
+
+  *i FLOAT sc_pumpOffDeltaT		// temperature difference between the 
+								// tank and collector outlet where pump
+								// turns off, F
+
+
   *h *e FLOAT_GEZ sc_mdot		// actual mass flow rate, lb/hr
   *h *e FLOAT sc_pumpInElec;	// actual electricity use (note not kWh)
 
