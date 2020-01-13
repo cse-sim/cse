@@ -614,26 +614,40 @@ inline double LIPtoSI( double l) { return l*cfL; }
 inline float LSItoIP( float l)	 { return float( l/cfL); }
 inline double LSItoIP( double l) { return l/cfL; }
 
+// area ft^2 <--> m^2
+const double cfA = cfL*cfL; // m2/ft2
+inline float AIPtoSI(float a) { return float(a * cfA); }
+inline double AIPtoSI(double a) { return a * cfA; }
+inline float ASItoIP(float a) { return float(a / cfA); }
+inline double ASItoIP(double a) { return a / cfA; }
+
 // Conductivity Btuh-ft/ft2-F <--> W/m-K
-const double cfK = cfU*cfL;		// W/m-K per Btuh-ft/ft2-F
-inline float KIPtoSI(float k) { return float(k*cfK); }
-inline double KIPtoSI(double k) { return k*cfK; }
+const double cfK = cfU * cfL; // W/m-K per Btuh-ft/ft2-F
+inline float KIPtoSI(float k) { return float(k * cfK); }
+inline double KIPtoSI(double k) { return k * cfK; }
 inline float KSItoIP(float k) { return float(k / cfK); }
 inline double KSItoIP(double k) { return k / cfK; }
 
 // Specific Heat Btu/lb-F <--> J/kg-K
-const double cfSH = 4186.8;		// W/m-K per Btuh-ft/ft2-F (exact)
-inline float SHIPtoSI(float sh) { return float(sh*cfSH); }
-inline double SHIPtoSI(double sh) { return sh*cfSH; }
+const double cfSH = 4186.8; // W/m-K per Btuh-ft/ft2-F (exact)
+inline float SHIPtoSI(float sh) { return float(sh * cfSH); }
+inline double SHIPtoSI(double sh) { return sh * cfSH; }
 inline float SHSItoIP(float sh) { return float(sh / cfSH); }
 inline double SHSItoIP(double sh) { return sh / cfSH; }
 
 // Density lb/ft3 <--> kg/m3
-const double cfD = 16.0185;		// W/m-K per Btuh-ft/ft2-F
-inline float DIPtoSI(float d) { return float(d*cfD); }
-inline double DIPtoSI(double d) { return d*cfD; }
+const double cfD = 16.0185; // W/m-K per Btuh-ft/ft2-F
+inline float DIPtoSI(float d) { return float(d * cfD); }
+inline double DIPtoSI(double d) { return d * cfD; }
 inline float DSItoIP(float d) { return float(d / cfD); }
 inline double DSItoIP(double d) { return d / cfD; }
+
+// mass flow rate lb/hr <--> kg/s
+const double cfMFR = 0.000126; //
+inline float MFRIPtoSI(float mfr) { return float(mfr * cfMFR); }
+inline float MFRSItoIP(float mfr) { return mfr * cfMFR; }
+inline double MFRIPtoSI(double mfr) { return float(mfr / cfMFR); }
+inline double MFRSItoIP(double mfr) { return mfr / cfMFR; }
 
 
 // velocity mph <-> m/s

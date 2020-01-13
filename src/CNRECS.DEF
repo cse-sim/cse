@@ -4202,10 +4202,13 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
 //=============================================================================
 RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar collector
   *prefix sc_
+  *exdes // declare ~DHWSOLARCOLLECTOR
   *declare "RC sc_CkF();"
   *declare "RC sc_Init();"
   *declare "RC sc_DoHour();"
   *declare "RC sc_DoSubhrTick();"
+  *declare "FLOAT sc_CalculateOutletTemp();"
+  *declare "class SolarFlatPlateCollector* sc_collector;"
 
   *i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
   *i FLOAT_GZ sc_mult		// multiplier (for multiple panels). Default 1.

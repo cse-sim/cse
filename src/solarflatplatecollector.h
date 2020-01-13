@@ -18,6 +18,8 @@ public:
   //double gross_area;   ///< m^2
   // Fluid properties (Cp, density)
 
+  double outlet_temp() { return outlet_temp_; }
+
 private:
   // Collector properties
   double tilt_;         ///< radians

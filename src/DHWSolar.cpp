@@ -13,6 +13,8 @@
 #include "rccn.h"
 #include "irats.h"
 #include "cnguts.h"
+#include "SLPAK.H"
+#include "solarflatplatecollector.h"
 
 RC DHWSOLARSYS::sw_CkF() {
 	RC rc = RCOK;
@@ -134,6 +136,10 @@ RC DHWSOLARSYS::sw_DoSubhrTick(
 	return rc;
 }
 
+DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR() {
+	delete sc_collector;
+	sc_collector = NULL;
+}
 
 RC DHWSOLARCOLLECTOR::sc_CkF() {
 	RC rc = RCOK;
@@ -143,7 +149,11 @@ RC DHWSOLARCOLLECTOR::sc_CkF() {
 RC DHWSOLARCOLLECTOR::sc_Init() {
 	RC rc = RCOK;
 	
-	// 
+	sc_collector = new SolarFlatPlateCollector(AIPtoSI(sc_area), 
+		                                         sc_tilt, 
+		                                         sc_azm, 
+		                                         sc_FRTA, 
+		                                         UIPtoSI(sc_FRUL));
 
 	return rc;
 }
@@ -170,9 +180,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 	float tInlet = pSWHSys->sw_tankT; // TODO: Calculate using real tank
 
 	// Calculate potential outlet temperature
-	float potentialToutlet;
-
-	potentialToutlet = 90.f;  // Change this to calculate for the specific collector
+	float potentialToutlet = sc_CalculateOutletTemp();
 
 	// If collector will heat water, run pump
 	if (potentialToutlet > tInlet) {
@@ -189,4 +197,12 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 	}
 
 	return rc;
+}
+
+FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp() { 
+	double plane_incidence {0.0f};
+	slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
+	double tInlet = SwhR.GetAtSafe(ownTi)->sw_tankT; // TODO: Calculate using real tank
+  sc_collector->calculate(IrIPtoSI(plane_incidence), MFRIPtoSI(sc_mdot), DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
+  return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
 }
