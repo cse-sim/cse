@@ -237,6 +237,12 @@ endmacro()
 
 addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
+# Solar Collector Lib
+add_library(libFlatPlateCollector
+    solarflatplatecollector.h 
+    solarflatplatecollector.cpp 
+    )
+
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
 
@@ -247,6 +253,7 @@ set(libs
   tess2
   libHPWHsim
   libkiva
+  libFlatPlateCollector
 )
 
 source_group("Source Files" FILES ${source})
