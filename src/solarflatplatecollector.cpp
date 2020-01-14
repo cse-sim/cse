@@ -42,8 +42,8 @@ void SolarFlatPlateCollector::calculate(double Q_incident,
     efficiency_ = FR_UL_ * ((inlet_temp - ambient_temp) / Q_incident) + FR_tau_alpha_;
     efficiency_ = std::min(1.0, efficiency_);
     // instantaneous solar gain, [W]
-    auto heat_gain = Q_incident * gross_area_ * efficiency_;
-    outlet_temp_ = inlet_temp + heat_gain / (mass_flow_rate * specific_heat_fluid_);
+    heat_gain_ = Q_incident * gross_area_ * efficiency_;
+    outlet_temp_ = inlet_temp + heat_gain_ / (mass_flow_rate * specific_heat_fluid_);
   }
   else
   {
