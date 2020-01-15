@@ -340,9 +340,9 @@ Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e
 
   Fractional tank height of inlets for supply water and DHWLOOP return, used only with HPWH types (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX).  0 indicates the bottom of the water heater tank and 1 specifies the top.  Inlet height influences tank layer mixing and can impact heat pump COP and/or heating activation frequency.
 
-  **Units**   **Legal Range**     **Default**   **Required**  **Variability**
-  ----------- -----------------   ------------- ------------- -------------------------
-      -        0 $\le$ x $\le$ 1     0              N          constant
+  **Units**   **Legal Range**     **Default**          **Required**  **Variability**
+  ----------- -----------------   -------------------- -------------- -------------------------
+      -        0 $\le$ x $\le$ 1    HPWH default (0?)           N          constant
 
 **whHPAF=*float***
 

@@ -159,6 +159,8 @@ class record		// base class for records
     virtual ~record()  { gud = 0; }     		// base destructor: say record space is free
 	virtual void DelSubOjects( int /*options*/=0) {}	// override to delete records heap objects
 	virtual RC RunDup(const record* pSrc, int options=0) { Copy(pSrc, options); return RCOK;  }
+	virtual void ReceiveRuntimeMessage( const char* /*msg*/) { }
+	virtual const char* GetDescription(int /*options*/ = 0) { return ""; }
   private:
     record::record() {}					// cannot construct record without basAnc and subscript
   public:

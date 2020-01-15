@@ -3,15 +3,11 @@
 // that can be found in the LICENSE file.
 
 // yacam.h  header for yacam.cpp  Yet Another Character Access Method
+//          plus related CSV functions
 
-/* This file access code uses no other code but rmkerr.cpp or errdmy.cpp
-   and C library; It is intended to be portable, eg for weather file utilities
-   and LBL weather file reader; It provides an adequate subset of xiopak/
-   xiochar/xiogetvl functionality without linking the rest of the BSG world. */
-
-//============================================================================
-//  YACAM class declaration
-//----------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+// class YACAM: efficient read/write of delimited text files
+///////////////////////////////////////////////////////////////////////////////
 class YACAM
 { public:
     char* mPathName;	// pathName. We copy to heap.
@@ -92,16 +88,44 @@ class YACAM
 
     int mErOp;	// communicates erOp from entry points to error fcns
 				// note need a data mbr at end due to rcdef.exe deficiency 10-94.
-};			// YACAM
-
+};			// class YACAM
 //----------------------------------------------------------------------------
 //-- option bits used with YACAM functions. EROPn defined in cnglob.h or notcne.h.
 const int YAC_EOFOK = EROP6;	// no error message (RCBAD2 returned) at clean eof in toke(), get() or any eof in read().
 const int YAC_NOREAD = EROP7;	// getLineCSV: don't call line()
 
 const size_t YACAM_MAXLINELEN = 2000;		// max line length accomodated in some fcns
+//=============================================================================
 
-				// may also be used with wthr\wufcns.cpp fcns.
+///////////////////////////////////////////////////////////////////////////////
+// CSVGen / CSVItem: helpers for generating CSV files
+//                   supports column headings and some unit conversion
+///////////////////////////////////////////////////////////////////////////////
+struct CSVItem		// one item (column)
+{
+	const char* ci_hdg;		// heading text
+	double ci_v;			// value
+	int ci_iUn;	// units	// units
+	int ci_dfw;	// sig figs (re FMTSQ)
+	// int ci_iUx -- fixed unit system for this item
+
+	static const double ci_UNSET;	// flag for unset value (writes 0)
+
+	const char* ci_Hdg(int iUx);
+	const char* ci_Value();
+}; // struct CSVItem
+//-----------------------------------------------------------------------------
+class CSVGen
+{
+	CSVItem* cg_pCI;	// array of CSVItems
+	int cg_iUx;			// unit system
+
+public:
+	CSVGen(CSVItem* pCI) : cg_pCI(pCI) {}
+	WStr cg_Hdgs(int iUx);
+	WStr cg_Values(int iUx);
+};	// class CSVGen
+
 //----------------------------------------------------------------------------
 
 // end of yacam.h

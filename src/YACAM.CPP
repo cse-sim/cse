@@ -8,6 +8,8 @@
 //   do random and sequential file i/o, and also read ascii files by
 //   token and decode tokens of several types
 
+// Also CSVItem / CSVGen helpers for CSV file export
+
 #include "cnglob.h"	// CSE global definitions, data types, etc, etc.
 
 #include <io.h>			// _rtl_creat open close read
@@ -16,6 +18,9 @@
 
 #include "msghans.h"	// MH_xxxx defns: disk message text handles
 #include "messages.h"	// msgI: gets disk texts
+
+#include "srd.h"
+#include "cvpak.h"
 
 #include "datfcns.h"
 
@@ -1033,6 +1038,51 @@ RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathNam
 			   (char *)MH_I0118,		// "%s '%s' (near line %d):\n  %s"
 			   mWhat,  mPathName ? mPathName : "bug",  mLineNo,  buf );
 }
-//----------------------------------------------------------------------------
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// CSVGen / CSVItem: helpers for generating CSV files
+//                   supports column headings and some unit conversion
+///////////////////////////////////////////////////////////////////////////////
+/*static*/ const double CSVItem::ci_UNSET = -99999999.;
+//-----------------------------------------------------------------------------
+const char* CSVItem::ci_Hdg(int iUx)
+{
+	return strtprintf(ci_iUn != UNNONE ? "%s(%s)" : "%s",
+		ci_hdg, UNIT::GetSymbol(ci_iUn, iUx));
+}		// CSVItem::ci_Hdg
+//-----------------------------------------------------------------------------
+const char* CSVItem::ci_Value()
+{
+	return ci_v != ci_UNSET
+		? cvin2s(&ci_v, DTDBL, ci_iUn, 20, FMTSQ | FMTOVFE | FMTRTZ + ci_dfw)
+		: "0";
+}		// CSVItem::ci_Value
+//-----------------------------------------------------------------------------
+WStr CSVGen::cg_Hdgs(int iUx)
+{
+	WStr s;
+	for (int i = 0; cg_pCI[i].ci_hdg; i++)
+	{
+		s += cg_pCI[i].ci_Hdg(iUx);
+		s += ",";
+	}
+	return s;
+}	// CSVGen::cg_Hdgs
+//-----------------------------------------------------------------------------
+WStr CSVGen::cg_Values(int iUx)
+{
+	int UnsysextSave = Unsysext;
+	Unsysext = iUx;
+	WStr s;
+	for (int i = 0; cg_pCI[i].ci_hdg; i++)
+	{
+		s += cg_pCI[i].ci_Value();
+		s += ",";
+	}
+	Unsysext = UnsysextSave;
+	return s;
+}	// CSVGen::cg_Values
+//=============================================================================
 
 // end of yacam.cpp
