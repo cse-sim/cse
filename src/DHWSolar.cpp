@@ -44,22 +44,45 @@ RC DHWSOLARSYS::sw_Init() {
 
 	sw_pMtrElec = MtrB.GetAtSafe(sw_elecMtri);
 
-	DHWSYS* pDHW;
+	sw_tankT = 60.f;  // F initial guess
+	sw_tankTInlet = sw_tankT;
+	sw_tankTOutlet = sw_tankT;
+	sw_tInlet = sw_tankT;
+	sw_tOutlet = sw_tankT;
 
-	float sumT = 0.f;
-	unsigned count = 0u;
+	sw_tickVol = 0.f;
+	sw_tickVolT = 0.f;
 
-	RLUPC(WsR, pDHW, pDHW->ws_swTi == ss)
+	DHWSYS* pWS;
+	DHWHEATER* pWH;
+	RLUPC(WsR, pWS, pWS->ws_pDHWSOLARSYS)
 	{
-		sumT += pDHW->ws_tInletX;
-		count += 1;
+		if (pWS->ws_pDHWSOLARSYS->ss == ss)
+		{
+			sw_lastWS = pWS->ss;
+			RLUPC(WhR, pWH, pWH->ownTi == pWS->ss)
+			{
+				sw_lastWH = pWH->ss;
+			}
+		}
 	}
-	sw_tankT = sumT / count;
 
 	return rc;
 }
 
 RC DHWSOLARSYS::sw_DoHour()
+{
+	RC rc = RCOK;
+
+	DHWSOLARCOLLECTOR* pSC;
+	RLUPC(ScR, pSC, pSC->ownTi == ss)
+	{
+		rc |= pSC->sc_DoHour();
+	}
+	return rc;
+}
+
+RC DHWSOLARSYS::sw_DoHourEnd()
 {
 	RC rc = RCOK;
 
@@ -69,7 +92,11 @@ RC DHWSOLARSYS::sw_DoHour()
 		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec);
 	}
 
-
+	DHWSOLARCOLLECTOR* pSC;
+	RLUPC(ScR, pSC, pSC->ownTi == ss)
+	{
+		rc |= pSC->sc_DoHourEnd();
+	}
 	return rc;
 }
 
@@ -81,48 +108,58 @@ FLOAT DHWSOLARSYS::sw_GetAvailableTemp()
 
 RC DHWSOLARSYS::sw_DoSubhrTick(
 	double vol,  // Volume of draw, gal
-	float tInlet)  // inlet temperature (after DWHR), F
+	float tInlet,  // inlet temperature (after DWHR), F
+	TI ws_ss,  // subscript of calling DHWSYS
+	TI wh_ss,  // subscript of calling DHWHEATER
+	float& tOutlet)  // calculated outlet temperature, F
 {
 	RC rc = RCOK;
 
-	// Get inlet from all DHWSYS using this DHWSOLARSYS
-	DHWSYS* pDHW;
+	sw_tickVol += vol;
+	sw_tickVolT += vol * tInlet;
 
-	float sumMDotT = 0.f;
-	float sumMDot = 0.f;
-
-	RLUPC(WsR, pDHW, pDHW->ws_swTi == ss)
-	{
-		sumMDotT += pDHW->ws_tInletX;
-		sumMDot += 1.0;  // TODO: Fix
+	// if not the last DHWSYS and DHWHEATER calling, just aggregate
+	if (ws_ss != sw_lastWS || wh_ss != sw_lastWH) {
+		return rc;
 	}
-	sw_tankTInlet = sumMDotT / sumMDot;
 
 	// Calculate outlet temperature of all collectors
+	// Using volume weighted average
 	DHWSOLARCOLLECTOR* pSC;
 
-	sumMDotT = 0.f;
-	sumMDot = 0.f;
+	float sumVolT = 0.f;
+	float sumVol = 0.f;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
 	{
 		rc |= pSC->sc_DoSubhrTick();
-		sumMDotT += pSC->sc_mdot*pSC->sc_tOutlet;
-		sumMDot += pSC->sc_mdot;
+		sumVolT += pSC->sc_tickVol*pSC->sc_tOutlet;
+		sumVol += pSC->sc_tickVol;
 	}
 
-	if (sumMDot > 0.f) {
-		sw_tOutlet = sumMDotT / sumMDot;
+	if (sumVol > 0.f) {
+		sw_tOutlet = sumVolT / sumVol;
+		float heat_gain = sw_tankHXEff * sumVol*sw_fluidSpHtVol*(sw_tOutlet - sw_tankT); // Btu
+		sw_tankT = sw_tankT + heat_gain / (sw_tankVol*waterRhoCp);
+		sw_tInlet = sw_tOutlet - heat_gain / (sumVol*sw_fluidSpHtVol);
 	}
 	else
 	{
-		sw_tOutlet = sw_tInlet;
+		sw_tOutlet = sw_tankT;
+		sw_tInlet = sw_tankT;
 	}
 
+	// Calculate tank changes
+	if (sw_tickVolT > 0)
+	{
+		sw_tankTInlet = sw_tickVolT / sw_tickVol;
+	}
+
+
 	// First order tank approximation:
-	if (vol > sw_tankVol)
+	if (sw_tickVol > sw_tankVol)
 	{
 		// Entire tank contents (plus some)
-		sw_tankT = (sw_tankT * sw_tankVol + tInlet * (vol - sw_tankVol))/vol;
+		sw_tankT = (sw_tankT * sw_tankVol + sw_tankTInlet * (sw_tickVol - sw_tankVol))/ sw_tickVol;
 		sw_tankTOutlet = sw_tankT;
 	}
 	else
@@ -130,8 +167,12 @@ RC DHWSOLARSYS::sw_DoSubhrTick(
 		// skimming off the top
 		sw_tankTOutlet = sw_tankT;
 		// then mix for next tick
-		sw_tankT = (sw_tankT * (sw_tankVol - vol) + tInlet * vol)/ sw_tankVol;
+		sw_tankT = (sw_tankT * (sw_tankVol - sw_tickVol) + sw_tankTInlet * sw_tickVol)/ sw_tankVol;
 	}
+
+	tOutlet = sw_tankTOutlet;
+	sw_tickVol = 0.f;
+	sw_tickVolT = 0.f;
 
 	return rc;
 }
@@ -143,6 +184,15 @@ DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR() {
 
 RC DHWSOLARCOLLECTOR::sc_CkF() {
 	RC rc = RCOK;
+	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
+	{
+		sc_pumpFlow = 0.04*sc_area;  // initial rule of thumb: 0.04 gpm per ft2s
+	}
+	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
+	{
+		sc_pumpPwr = 400.f*sc_pumpFlow;  // roughly 120 W / gpm -- don't know how good this assumption is
+	}
+
 	return rc;
 }
 
@@ -155,10 +205,18 @@ RC DHWSOLARCOLLECTOR::sc_Init() {
 		                                         sc_FRTA, 
 		                                         UIPtoSI(sc_FRUL));
 
+	sc_tickOp = false;
+
 	return rc;
 }
 
 RC DHWSOLARCOLLECTOR::sc_DoHour() {
+	RC rc = RCOK;
+	sc_pumpInElec = 0.f;
+	return rc;
+}
+
+RC DHWSOLARCOLLECTOR::sc_DoHourEnd() {
 	RC rc = RCOK;
 
 	DHWSOLARSYS* pSWHSys = SwhR.GetAtSafe(ownTi);
@@ -172,37 +230,60 @@ RC DHWSOLARCOLLECTOR::sc_DoHour() {
 	return rc;
 }
 
+
 RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 	RC rc = RCOK;
 
 	DHWSOLARSYS* pSWHSys = SwhR.GetAtSafe(ownTi);
 
-	float tInlet = pSWHSys->sw_tankT; // TODO: Calculate using real tank
+	float tInlet = pSWHSys->sw_tInlet;
+
+	float pump_energy = sc_pumpPwr * Top.tp_subhrTickDur / 60.f;  // Btu/h * min / 60 min/h
+	float pump_vol = sc_pumpFlow * Top.tp_subhrTickDur;  // gal
+	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_fluidSpHtVol);  // delta F
 
 	// Calculate potential outlet temperature
-	float potentialToutlet = sc_CalculateOutletTemp();
 
-	// If collector will heat water, run pump
-	if (potentialToutlet > tInlet) {
-		sc_mdot = 1.0;
-		sc_pumpInElec = sc_pumpPwr; // TODO: *convert to energy
-		// TODO: Add pump heat to fluid stream
-		sc_tOutlet = potentialToutlet;
+	sc_tOutletP = sc_CalculateOutletTemp(pump_dt);
+
+	// Collector status
+
+	// Already running
+	bool runningAboveShutOff = sc_tickOp && (sc_tOutletP > tInlet + sc_pumpOffDeltaT);
+	bool offAboveTurnOn = !sc_tickOp && (sc_tOutletP > tInlet + sc_pumpOnDeltaT);
+
+	if (runningAboveShutOff || offAboveTurnOn) {
+		sc_tickVol = pump_vol;
+		sc_pumpInElec += pump_energy;
+		sc_tOutlet = sc_tOutletP;
+		sc_tickOp = true;
 	}
 	else
 	{
-		sc_mdot = 0.f;
+		sc_tickVol = 0.f;
 		sc_pumpInElec = 0.f;
 		sc_tOutlet = tInlet;
+		sc_tickOp = false;
 	}
 
 	return rc;
 }
 
-FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp() { 
+FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(float pump_dt) {
+	// Calculate incidence
 	double plane_incidence {0.0f};
 	slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
-	double tInlet = SwhR.GetAtSafe(ownTi)->sw_tankT; // TODO: Calculate using real tank
-  sc_collector->calculate(IrIPtoSI(plane_incidence), MFRIPtoSI(sc_mdot), DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
-  return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
+	sc_poa = static_cast<FLOAT>(plane_incidence);
+
+	// Collector inlet temperature (from tank heat exchanger)
+	double tInlet = SwhR.GetAtSafe(ownTi)->sw_tInlet + pump_dt;
+	
+	// Mass flow rate
+	static const double gpmTom3ps = 0.00006309;
+	static const double m3tokg = 1000;
+	double m_dot_SI = sc_pumpFlow * gpmTom3ps* m3tokg;
+
+	// Calculate outlet temperature
+	sc_collector->calculate(IrIPtoSI(plane_incidence), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
+	return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
 }

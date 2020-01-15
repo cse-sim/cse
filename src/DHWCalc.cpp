@@ -934,13 +934,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			rc |= ws_DoHourDWHR();		// modify tick values re DWHR
 	}
 
-	// Account for solar pre-heating
-	if (ws_pDHWSOLARSYS)
-	{
-		rc |= ws_pDHWSOLARSYS->sw_DoHour();
-		ws_tInletX = ws_pDHWSOLARSYS->sw_tOutlet;
-	}
-
 	if (!ws_HasCentralDHWSYS())
 	{	DHWSYS* pWSChild;
 		RLUPC( WsR, pWSChild, pWSChild->ws_centralDHWSYSi == ss)
@@ -948,6 +941,13 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			rc |= ws_AccumCentralUse( pWSChild);
 		}
 	}
+
+	// Solar system power
+	if (ws_pDHWSOLARSYS)
+	{
+		rc |= ws_pDHWSOLARSYS->sw_DoHour();
+	}
+
 
 #if 0 && defined( _DEBUG)
 	// check: compare tick totals to full hour values
@@ -1461,12 +1461,6 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 				rc |= pWH->wh_HPWHDoSubhrTick(tk, scaleWH);
 			if (ws_tOutPrimSum != 0.)
 				ws_tOutPrimLT = ws_tOutPrimSum;
-
-			// Solar ticks
-			if (ws_pDHWSOLARSYS)
-			{
-				ws_pDHWSOLARSYS->sw_DoSubhrTick(tk.wtk_whUse, tk.wtk_tInletX);
-			}
 		}
 
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -3100,12 +3094,12 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 // returns RCOK iff success
 {
 	RC rc = wh_HPWHDoSubhrStart();
+	DHWSYS* pWS = wh_GetDHWSYS();
 
 	for (int iTk = 0; !rc && iTk < Top.tp_nSubhrTicks; iTk++)
 	{
 		DHWTICK& tk = ticksSh[iTk];		// handy ref to current tick
 
-		DHWSYS* pWS = wh_GetDHWSYS();
 		float old_tInletX = tk.wtk_tInletX;
 		if (pWS->ws_pDHWSOLARSYS) {
 			tk.wtk_tInletX = pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp();
@@ -3113,11 +3107,20 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 		rc |= wh_HPWHDoSubhrTick( tk, scaleWH);
 
+		// Reset before calculating actual value
+		tk.wtk_tInletX = old_tInletX;
 		if (pWS->ws_pDHWSOLARSYS) {
-			pWS->ws_pDHWSOLARSYS->sw_DoSubhrTick(tk.wtk_whUse, old_tInletX);
+			pWS->ws_pDHWSOLARSYS->sw_DoSubhrTick(tk.wtk_whUse, old_tInletX, pWS->ss, ss, tk.wtk_tInletX);
 		}
 
 	}		// tick (1 min) loop
+
+	if (pWS->ws_pDHWSOLARSYS) {
+		if (Top.isEndHour)
+		{
+			rc |= pWS->ws_pDHWSOLARSYS->sw_DoHourEnd();
+		}
+	}
 
 	rc |= wh_HPWHDoSubhrEnd();
 
@@ -3566,7 +3569,7 @@ static const UEFPARAMS UEFParams[] = {
 }		// DHWHEATER::wh_InstUEFInit
 //----------------------------------------------------------------------------
 RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water heater
-	const DHWTICK* ticksSh,	// subhour tick info (draw, cold water temp, ...)
+	DHWTICK* ticksSh,	// subhour tick info (draw, cold water temp, ...)
 	double scaleWH)			// draw scale factor
 							//   re DHWSYSs with >1 DHWHEATER
 {
@@ -3583,7 +3586,13 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 	double nTickFullLoad = 0.;	// fractional ticks of equiv full load
 	double nColdStarts = 0.;	// # of cold startups
 	for (int iTk=0; !rc && iTk<Top.tp_nSubhrTicks; iTk++)
-	{	const DHWTICK& tk = ticksSh[iTk];
+	{	
+		DHWTICK& tk = ticksSh[iTk];
+		float old_tInletX = tk.wtk_tInletX;
+		if (pWS->ws_pDHWSOLARSYS) {
+			tk.wtk_tInletX = pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp();
+		}
+
 		float tInletMix;
 		double drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletMix)*scaleWH;
 
@@ -3616,8 +3625,23 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 			}
 		}
 		else
+		{
 			// standby
 			wh_stbyTicks++;		// count conseq ticks w/o draw
+		}
+
+		// Reset before calculating actual value
+		tk.wtk_tInletX = old_tInletX;
+		if (pWS->ws_pDHWSOLARSYS) {
+			pWS->ws_pDHWSOLARSYS->sw_DoSubhrTick(tk.wtk_whUse, old_tInletX, pWS->ss, ss, tk.wtk_tInletX);
+		}
+	}
+
+	if (pWS->ws_pDHWSOLARSYS) {
+		if (Top.isEndHour)
+		{
+			rc |= pWS->ws_pDHWSOLARSYS->sw_DoHourEnd();
+		}
 	}
 
 	double tickDurHr = Top.tp_subhrTickDur / 60.;	// tick duration, hr

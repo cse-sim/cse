@@ -3750,7 +3750,7 @@ RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW hea
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
   *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhr( const struct DHWTICK* ticksSh, double scaleWH);"
+  *declare "RC wh_InstUEFDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
@@ -4161,8 +4161,15 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
   *declare "RC sw_DoHour();"
-  *declare "RC sw_DoSubhrTick(double vol, float tInlet);"
+  *declare "RC sw_DoHourEnd();"
+  *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
+
+  *declare "TI sw_lastWS;"
+  *declare "TI sw_lastWH;"
+  *declare "FLOAT sw_tickVol;"  // volume fed to water heaters
+  *declare "FLOAT sw_tickVolT;"  // volume fed to water heaters
+
 
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
@@ -4194,7 +4201,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
   *h *e FLOAT sw_tankT			// tank temperature, F
 
   // Collector Fluid
-  // sw_fluidType				// Assume water for now
+  *i FLOAT sw_fluidSpHtVol		// Fluid volumetric specific heat, Btu/gal-F
   *h *e FLOAT sw_tInlet			// mixed collector inlet temperature, F
   *h *e FLOAT sw_tOutlet		// mixed collector outlet temperature, F
 
@@ -4202,28 +4209,36 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
 //=============================================================================
 RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar collector
   *prefix sc_
-  *exdes // declare ~DHWSOLARCOLLECTOR
+  *exdes // *declare "~DHWSOLARCOLLECTOR""
   *declare "RC sc_CkF();"
   *declare "RC sc_Init();"
   *declare "RC sc_DoHour();"
+  *declare "RC sc_DoHourEnd();"
   *declare "RC sc_DoSubhrTick();"
-  *declare "FLOAT sc_CalculateOutletTemp();"
+  *declare "FLOAT sc_CalculateOutletTemp(float pump_dt);"
   *declare "class SolarFlatPlateCollector* sc_collector;"
 
-  *i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
+  //*i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
   *i FLOAT_GZ sc_mult		// multiplier (for multiple panels). Default 1.
 
   // sc_type ?
 
+  // Collector
   *i FLOAT_GZ sc_area		// SRCC collector Area
-  *i FLOAT_GZ sc_FRUL		// SRCC slope
+  *i FLOAT sc_FRUL			// SRCC slope
   *i FLOAT_GZ sc_FRTA		// SRCC intercept
 
   *i ANGLE sc_tilt			// Array tilt, radians (input as degrees)
   *i ANGLE sc_azm			// Array azimuth, radians (input as degrees)
 
+  // Calculated values
+  *h *e FRAC sc_poa			// plane of array incidence, Btu/h-ft2
+  *h *e FRAC sc_effciency	// fraction of incident heat added to the fluid
+  *h *e FLOAT sc_tOutlet	// outlet temperature, F
+  *h *e FLOAT sc_tOutletP	// potential outlet temperature, F
+
   // Pump
-  *i FLOAT_GEZ sc_pumpPwr;		// pump power, W
+  *i FLOAT_GEZ sc_pumpPwr;		// pump power, Btu/h
   *i FRAC sc_pumpLiqHeatF;		// fraction of sc_pumpPwr added to liquid stream
 								//   remainder is discarded
 
@@ -4237,12 +4252,12 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 								// tank and collector outlet where pump
 								// turns off, F
 
+  *declare "float sc_tickVol;"	// volume moved during this tick
+  *declare "bool sc_tickOp;"	// pump is operating last tick
 
   *h *e FLOAT_GEZ sc_mdot		// actual mass flow rate, lb/hr
   *h *e FLOAT sc_pumpInElec;	// actual electricity use (note not kWh)
 
-  // Calculated values
-  *h *e FLOAT sc_tOutlet		// outlet temperature, F
 
 *END		// DHWSOLARCOLLECTOR
 //=============================================================================
