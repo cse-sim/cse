@@ -186,7 +186,7 @@ RC DHWSOLARCOLLECTOR::sc_CkF() {
 	RC rc = RCOK;
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
 	{
-		sc_pumpFlow = 0.04*sc_area;  // initial rule of thumb: 0.04 gpm per ft2s
+		sc_pumpFlow = 0.04*sc_area*sc_mult;  // initial rule of thumb: 0.04 gpm per ft2s
 	}
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
 	{
@@ -199,7 +199,7 @@ RC DHWSOLARCOLLECTOR::sc_CkF() {
 RC DHWSOLARCOLLECTOR::sc_Init() {
 	RC rc = RCOK;
 	
-	sc_collector = new SolarFlatPlateCollector(AIPtoSI(sc_area), 
+	sc_collector = new SolarFlatPlateCollector(AIPtoSI(sc_area*sc_mult),
 		                                         sc_tilt, 
 		                                         sc_azm, 
 		                                         sc_FRTA, 
