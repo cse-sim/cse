@@ -2088,11 +2088,10 @@ CULT( "scTilt",      DAT,   DHWSOLARCOLLECTOR_TILT,    0,       0, VEOI,  TYFL, 
 CULT( "scAzm",       DAT,   DHWSOLARCOLLECTOR_AZM,     0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "scFRUL",      DAT,   DHWSOLARCOLLECTOR_FRUL,    0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "scFRTA",      DAT,   DHWSOLARCOLLECTOR_FRTA,    0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPFLOW, 0,      0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPFLOW, 0,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPPWR, 0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpFlow",   DAT,   DHWSOLARCOLLECTOR_PUMPFLOW, 0,     0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT( "scPumpOnDeltaT", DAT, DHWSOLARCOLLECTOR_PUMPONDELTAT, 0, 0, VEOI, TYFL,   0,      10.f,   N, N),
 CULT( "scPumpOffDeltaT", DAT, DHWSOLARCOLLECTOR_PUMPOFFDELTAT, 0, 0, VEOI, TYFL, 0,      5.f,    N, N),
-CULT( "scPumpFlow",   DAT,   DHWSOLARCOLLECTOR_PUMPPWR, 0,       0, VEOI,  TYFL, 0,      0.f,    N, N),
 CULT( "endDHWSOLARCOLLECTOR",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwSolColT
