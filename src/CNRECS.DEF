@@ -4201,7 +4201,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
   *h *e FLOAT sw_tankT			// tank temperature, F
 
   // Collector Fluid
-  *i FLOAT sw_fluidSpHtVol		// Fluid volumetric specific heat, Btu/gal-F
+  *i FLOAT sw_fluidVolSpHt		// Fluid volumetric specific heat, Btu/gal-F
   *h *e FLOAT sw_tInlet			// mixed collector inlet temperature, F
   *h *e FLOAT sw_tOutlet		// mixed collector outlet temperature, F
 

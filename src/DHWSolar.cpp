@@ -138,9 +138,9 @@ RC DHWSOLARSYS::sw_DoSubhrTick(
 
 	if (sumVol > 0.f) {
 		sw_tOutlet = sumVolT / sumVol;
-		float heat_gain = sw_tankHXEff * sumVol*sw_fluidSpHtVol*(sw_tOutlet - sw_tankT); // Btu
+		float heat_gain = sw_tankHXEff * sumVol*sw_fluidVolSpHt*(sw_tOutlet - sw_tankT); // Btu
 		sw_tankT = sw_tankT + heat_gain / (sw_tankVol*waterRhoCp);
-		sw_tInlet = sw_tOutlet - heat_gain / (sumVol*sw_fluidSpHtVol);
+		sw_tInlet = sw_tOutlet - heat_gain / (sumVol*sw_fluidVolSpHt);
 	}
 	else
 	{
@@ -240,7 +240,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 
 	float pump_energy = sc_pumpPwr * Top.tp_subhrTickDur / 60.f;  // Btu/h * min / 60 min/h
 	float pump_vol = sc_pumpFlow * Top.tp_subhrTickDur;  // gal
-	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_fluidSpHtVol);  // delta F
+	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_fluidVolSpHt);  // delta F
 
 	// Calculate potential outlet temperature
 
