@@ -636,7 +636,7 @@ inline float SHSItoIP(float sh) { return float(sh / cfSH); }
 inline double SHSItoIP(double sh) { return sh / cfSH; }
 
 // Density lb/ft3 <--> kg/m3
-const double cfD = 16.0185; // W/m-K per Btuh-ft/ft2-F
+const double cfD = 16.0185; // kg/m3 per lb/ft3
 inline float DIPtoSI(float d) { return float(d * cfD); }
 inline double DIPtoSI(double d) { return d * cfD; }
 inline float DSItoIP(float d) { return float(d / cfD); }

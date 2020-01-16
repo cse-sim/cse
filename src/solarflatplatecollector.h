@@ -9,7 +9,9 @@ public:
                           double tilt,
                           double azimuth,
                           double FR_tau_alpha = 0.6,
-                          double FR_UL = -4.0);
+                          double FR_UL = -4.0,
+                          double specific_heat_fluid_ = 2394.0,
+                          double density_fluid_ = 1113.0);
   ~SolarFlatPlateCollector() = default;
 
   void calculate(double Q_incident, double mass_flow_rate, double t_amb, double t_inlet);

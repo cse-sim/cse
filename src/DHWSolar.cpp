@@ -206,11 +206,15 @@ RC DHWSOLARCOLLECTOR::sc_CkF() {
 RC DHWSOLARCOLLECTOR::sc_Init() {
 	RC rc = RCOK;
 	
+	DHWSOLARSYS* pSS = SwhR.GetAtSafe(ownTi);
+
 	sc_collector = new SolarFlatPlateCollector(AIPtoSI(sc_area*sc_mult),
 		                                         sc_tilt, 
 		                                         sc_azm, 
 		                                         sc_FRTA, 
-		                                         UIPtoSI(sc_FRUL));
+		                                         UIPtoSI(sc_FRUL),
+		                                         SHIPtoSI(pSS->sw_fluidVolSpHt)/DSItoIP(1000.0) * 7.48,  // Btu/gal-F * J/kg-K * lb-F/Btu * m3 / kg * ft3 / lb * kg / m3 * gal / ft3 = J/kg-K
+		                                         1000.0);  // Split doesn't really matter
 
 	sc_tickOp = false;
 

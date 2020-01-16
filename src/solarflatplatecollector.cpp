@@ -18,14 +18,16 @@ SolarFlatPlateCollector::SolarFlatPlateCollector(double gross_area,
                                                  double tilt,
                                                  double azimuth,
                                                  double FR_tau_alpha,
-                                                 double FR_UL)
+                                                 double FR_UL,
+                                                 double specific_heat,
+                                                 double density)
   : tilt_(tilt),
     azimuth_(azimuth),
     FR_tau_alpha_(FR_tau_alpha),
     FR_UL_(FR_UL),
     gross_area_(gross_area),
-    specific_heat_fluid_(4181.6),
-    density_fluid_(1000.0),
+    specific_heat_fluid_(specific_heat),
+    density_fluid_(density),
     efficiency_(1.0),
     outlet_temp_(283)
 {
