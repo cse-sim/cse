@@ -535,6 +535,10 @@ void DHWSYS::ws_SetMTRPtrs()		// set runtime pointers to meters
 
 	// solar water heating
 	ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
+	if (ws_pDHWSOLARSYS)
+	{
+		ws_SSFAnnual = ws_SSFAnnualSolar = ws_SSFAnnualReq = 0.f;
+	}
 
 }		// DHWSYS::ws_SetMTRPtrs
 //----------------------------------------------------------------------------
@@ -1557,7 +1561,8 @@ RC DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
 {
 	RC rc = RCOK;
 	if (ivl == C_IVLCH_Y)
-	{	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
+	{	
+		if (ws_calcMode == C_WSCALCMODECH_PRERUN)
 			rc |= ws_DoEndPreRun();
 		if (ws_whCount > 0.f)
 		{
@@ -1568,6 +1573,10 @@ RC DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
 					warn("%s: Output temperature below use temperature during %d hours of run.",
 						pWH->objIdTx(), pWH->wh_unMetHrs);
 			}
+		}
+		if (ws_pDHWSOLARSYS)
+		{
+			ws_SSFAnnual = ws_SSFAnnualSolar / ws_SSFAnnualReq;
 		}
 	}
 	if (ivl == C_IVLCH_H)

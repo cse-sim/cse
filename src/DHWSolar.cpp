@@ -118,6 +118,13 @@ RC DHWSOLARSYS::sw_DoSubhrTick(
 	sw_tickVol += vol;
 	sw_tickVolT += vol * tInlet;
 
+	if (vol > 0.f)
+	{
+		DHWSYS* pWS = WsR.GetAtSafe(ws_ss);
+		pWS->ws_SSFAnnualSolar += vol * (sw_tankTOutlet - sw_tankTInlet);
+		pWS->ws_SSFAnnualReq += vol * (pWS->ws_tUse - sw_tankTInlet);
+	}
+
 	// if not the last DHWSYS and DHWHEATER calling, just aggregate
 	if (ws_ss != sw_lastWS || wh_ss != sw_lastWH) {
 		return rc;

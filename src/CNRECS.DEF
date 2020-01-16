@@ -3433,6 +3433,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i TI ws_swTi;			// DHWSOLARSYS serving preheated water to this system
 							//    0 iff no solar connected
   *declare "DHWSOLARSYS* ws_pDHWSOLARSYS;"	// pointer to connected solar system
+  *y *e FLOAT ws_SSFAnnualSolar; // Annual solar heat added (numerator to calculate SSF), gal-F
+  *y *e FLOAT ws_SSFAnnualReq; // Annual heat required (denominator to calculate SSF), gal-F
+  *y *e FLOAT ws_SSFAnnual; // Annual sollar savings fraction
 
   *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
 							//   user expression or default Wthr.d.wd_tMains

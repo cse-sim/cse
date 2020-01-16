@@ -705,19 +705,36 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 // energy balance check.  After results accumulation.
 	if (Top.isEndHour)					// not if end of subhour interval only
+	{
 		if (!Top.isWarmup)    				// if not warming up (may also exclude autoSizing)
+		{
 			if (!Top.tp_autoSizing)				// tentatively no energy balance checks during autoSize
 			{
 				if (Top.ebTolHour > 0.f)			// if tolerance given for hourly check 3-92
-					cgenbal( C_IVLCH_H, Top.ebTolHour);    	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
+				{
+					cgenbal(C_IVLCH_H, Top.ebTolHour);    	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
+				}
 				if (Top.isEndDay)				// if last hour of day
 				{
 					if (Top.ebTolDay > 0.f)			// if tolerance given for daily check
-						cgenbal( C_IVLCH_D, Top.ebTolDay);	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
+					{
+						cgenbal(C_IVLCH_D, Top.ebTolDay);	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
+					}
 					if (Top.isEndMonth)    			// if last day of month (probably never set for autoSizing 6-95)
-						cgenbal( C_IVLCH_M, Top.ebTolMon);	// monthly check.
+					{
+						cgenbal(C_IVLCH_M, Top.ebTolMon);	// monthly check.
+					}
 				}
 			}
+		}
+	}
+
+	if (Top.ivl <= C_IVLCH_H)
+	{
+		DHWSYS* pWS;
+		RLUP(WsR, pWS)
+			EF(pWS->ws_EndIvl(Top.ivl));
+	}
 
 // now evaluate and stuff exprs from user input that are used in reports -- may show results.  Others done at interval start.
 	EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
@@ -741,11 +758,6 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	// copy interval results to prior interval results.
 	// Do after end-interval exprs & reports, so 'prior' shows prior even if
 	// probed at end interval (might happen in expr also ref'ing cur results? )
-	if (Top.ivl <= C_IVLCH_H)
-	{	DHWSYS* pWS;
-		RLUP(WsR, pWS)
-			EF( pWS->ws_EndIvl(Top.ivl));
-	}
 	doIvlPrior();					// local fcn, below
 
 // loads/hvac subhour-after-reports stuff, such as setting prior-value variables, that must be deferred cuz of probes.
