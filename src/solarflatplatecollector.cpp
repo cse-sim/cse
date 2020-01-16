@@ -51,5 +51,6 @@ void SolarFlatPlateCollector::calculate(double Q_incident,
   {
     efficiency_ = 0.0;
     outlet_temp_ = inlet_temp;
+	heat_gain_ = 0.0;
   }
 }

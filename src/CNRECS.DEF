@@ -4197,6 +4197,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
 								//   for 1 tank (no sw_tankMult)
   *i FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
 
+  *h *e FLOAT sw_tankQGain;		// current hour's total gain from solar HX, Btu
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
   *h *e FLOAT sw_tankTOutlet	// tank outlet temperature, F
   *h *e FLOAT sw_tankT			// tank temperature, F
@@ -4234,7 +4235,9 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 
   // Calculated values
   *h *e FRAC sc_poa			// plane of array incidence, Btu/h-ft2
-  *h *e FRAC sc_effciency	// fraction of incident heat added to the fluid
+  *h *e FRAC sc_Qpoa		// plane of array incident heat, Btu
+  *h *e FRAC sc_eff			// fraction of incident heat added to the fluid
+  *h *e FRAC sc_Qfluid		// heat added to the fluid, Btu
   *h *e FLOAT sc_tOutlet	// outlet temperature, F
   *h *e FLOAT sc_tOutletP	// potential outlet temperature, F
 

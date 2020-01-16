@@ -3127,7 +3127,11 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 	if (pWS->ws_pDHWSOLARSYS) {
 		if (Top.isEndHour)
 		{
-			rc |= pWS->ws_pDHWSOLARSYS->sw_DoHourEnd();
+			DHWSOLARSYS* pSS = pWS->ws_pDHWSOLARSYS;
+			if (pWS->ss == pSS->sw_lastWS && ss == pSS->sw_lastWH)
+			{
+				rc |= pSS->sw_DoHourEnd();
+			}
 		}
 	}
 
@@ -3649,7 +3653,11 @@ RC DHWHEATER::wh_InstUEFDoSubhr(	// subhour simulation of instantaneous water he
 	if (pWS->ws_pDHWSOLARSYS) {
 		if (Top.isEndHour)
 		{
-			rc |= pWS->ws_pDHWSOLARSYS->sw_DoHourEnd();
+			DHWSOLARSYS* pSS = pWS->ws_pDHWSOLARSYS;
+			if (pWS->ss == pSS->sw_lastWS && ss == pSS->sw_lastWH)
+			{
+				rc |= pSS->sw_DoHourEnd();
+			}
 		}
 	}
 
