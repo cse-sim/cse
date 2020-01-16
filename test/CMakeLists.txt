@@ -54,6 +54,7 @@ set(files
   DHW_INV 
   dhw_uef
   dhw_brwl
+  dhwloop32U
   pvtest
   pv_bt_test
   bt_test

@@ -3677,10 +3677,6 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
   *declare "FILE* hw_pFCSV;"		// file for debugging CSV (opened on 1st use)
 
 
-  *h *e INT hw_unMetSh;		// count of subhrs in this hour
-							//       when wh_tHWOut < wh_tUse
-  *y *e INT hw_unMetHrs;	// annual count of hrs having
-							//       any wh_unMetSh
   *s *e INT hw_balErrCount;	// annual count of energy balance errors
 
 *END // HPWHLINK

@@ -2228,9 +2228,6 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 {
 	RC rc = RCOK;
 
-	hw_unMetSh = 0;		// count of current subhr
-						//   having insufficient ouput temp
-
 	// setpoint temp: ws_tUse has hourly variability
 	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
 	if (!hw_pHPWH->isSetpointFixed())
@@ -2390,10 +2387,13 @@ RC HPWHLINK::hw_DoSubhrTick(
 	hw_qLoss += hw_pHPWH->getStandbyLosses();
 	float HPWHxBU = 0.f;		// add'l resistance backup, this tick, Btu
 	double tOut = hw_pHPWH->getOutletTemp();	// output temp, C (0 if no draw)
-	double tOutF = DegCtoF(tOut);	// output temp, F
-	tOutNoMix = tOutF;
-	if (tOut > .01)
-	{
+	if (tOut < .01)
+	{	// no draw / output temp not known
+		tOutNoMix = 0.;
+	}
+	else
+	{	double tOutF = DegCtoF(tOut);	// output temp, F
+		tOutNoMix = tOutF;
 		hw_nzDrawCount++;	// this tick has draw
 		if (bDoMix)
 		{	// output goes to load
@@ -3323,6 +3323,9 @@ RC DHWHEATER::wh_HPWHDoHour()		// hourly HPWH calcs
 {
 	RC rc = RCOK;
 
+	wh_unMetSh = 0;		// count of this hrs subhrs
+						//   having wh_tHOut < wh_tUse
+
 	int whfcn = wh_GetFunction();
 
 	DHWSYS* pWS = wh_GetDHWSYS();
@@ -3339,8 +3342,6 @@ RC DHWHEATER::wh_HPWHDoHour()		// hourly HPWH calcs
 
 #if defined( OLD_HPWH)
 
-	wh_unMetSh = 0;		// count of this hrs subhrs
-						//   having wh_tHOut < wh_tUse
 
 	// setpoint temp: ws_tUse has hourly variability
 	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
@@ -3486,7 +3487,7 @@ RC DHWHEATER::wh_HPWHDoSubhrTick(
 
 	wh_HPWH.hw_DoSubhrTick(tk, tInlet, pWS->ws_tInlet, tMix, scaleWH, tOutNoMix);
 
-	if (whfcn = whfcnPRIMARY)
+	if (whfcn == whfcnPRIMARY)
 	{
 		pWS->ws_tOutPrimSum += tOutNoMix * scaleWH * wh_mult;
 
