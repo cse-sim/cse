@@ -1055,7 +1055,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// ws_inFuel += 0.f;	// no DHWSYS-level fuel use
 
 	// accum consumption to meters
-	//   note: each DHWHEATER and DHWPUMP accums also
+	//   note: child DHWHEATERs, DHWPUMPs, etc. accum also
 	if (ws_pMtrElec)
 		ws_pMtrElec->H.dhw += mult * ws_inElec;
 	if (ws_pMtrFuel)
@@ -1384,8 +1384,6 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 {
-
-#if 1
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
 		return RCOK;
 
@@ -1455,39 +1453,6 @@ RC DHWSYS::ws_DoSubhr()		// subhourly calcs
 		RLUPC(WlhR, pWH, pWH->ownTi == ss)
 			rc |= pWH->wh_HPWHDoSubhrEnd();
 	}
-#else
-	if (ws_whCount > 0.f && ws_calcMode != C_WSCALCMODECH_PRERUN)
-	{	int iTkSh = Top.iSubhr*Top.tp_nSubhrTicks;	// initial tick for this subhour
-		DHWTICK* ticksSh = ws_ticks + iTkSh;		// 1st tick info for this subhour
-		rc |= ws_AddLossesToDraws(ticksSh);
-
-		double scaleWH = 1. / ws_whCount;		// allocate per WH
-
-		DHWHEATER* pWH;
-		RLUPC(WhR, pWH, pWH->ownTi == ss)
-		{	if (pWH->wh_IsHPWHModel())
-				rc |= pWH->wh_HPWHDoSubhr(
-					ticksSh,		// draws etc. by tick
-					scaleWH);		// draw scale factor (allocates draw if ws_whCount > 1)
-			else if (pWH->wh_IsInstUEFModel())
-				rc |= pWH->wh_InstUEFDoSubhr(
-					ticksSh,
-					scaleWH);
-			// else missing case
-			if (Top.isEndHour)
-				pWH->wh_unMetHrs += pWH->wh_unMetSh > 0;
-		}
-		// loop heaters
-		if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		{	if (pWH->wh_IsHPWHModel())
-				rc |= pWH->wh_HPWHDoSubhr(
-					ticksSh,		// draws etc. by tick
-					1. / ws_wlhCount); // draw scale factor (allocates draw if ws_wlhCount > 1)
-			// else missing case
-
-		}
-	}
-#endif
 	return rc;
 }	// DHWSYS::ws_DoSubhr
 //----------------------------------------------------------------------------
@@ -2299,8 +2264,7 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 
 
 	return rc;
-}	// HPWHLINK::wh_DoSubhrStart
-
+}	// HPWHLINK::hw_DoSubhrStart
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoSubhrTick(
 	DHWTICK& tk,	// current tick
@@ -3187,8 +3151,6 @@ RC DHWHEATER::wh_HPWHDoSubhr(		// HPWH subhour
 
 	return rc;
 }
-
-
 // ---------------------------------------------------------------------------- -
 RC DHWHEATER::wh_HPWHDoSubhrStart()		// HPWH subhour start
 //
