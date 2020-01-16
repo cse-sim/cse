@@ -4180,8 +4180,6 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW
   *h FLOAT sw_parElec;
 
   // Tank (from DHWTANK)
-  *i SI sw_tankMult;			// count of identical tanks (default 1)
-								//   models as if repeated identical input
   *i FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F
 								//   default: derived from sw_tankVol and sw_tankInsulR
   *i FLOAT_GZ sw_tankVol;		// tank volume, gal
