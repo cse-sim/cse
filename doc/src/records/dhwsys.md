@@ -106,6 +106,7 @@ Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), the
               $\ge$ 0             1             No             constant
 
 
+
 **wsTInlet=*float***
 
 Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER supply water temperature wsTInlet adjusted (increased) by any DHWHEATREC recovered heat and application of wsSSF (approximating solar preheating).
@@ -113,6 +114,8 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
   **Units**   **Legal Range**   **Default**                    **Required**   **Variability**
   ----------- ----------------- ------------------------------ -------------- -----------------
   ^o^F         $>$ 32 ^o^F       Mains temp from weather file   No             hourly
+
+Hot water demand determination
 
 **wsUse=*float***
 
@@ -147,11 +150,15 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 **wsCWashrWaste=*float***\
 **wsDWashrWaste=*float***
 
-Water quantity assumed to be wasted at each draw due to the hot water arrival delay.  The amounts are used to extend the duration of DHWDAYUSE / DHWUSE draws. No effect if DHWDAYUSE is not given.
+Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
- **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  gal/draw        $\ge$ 0          0           No             hourly
+Note that DHWUSE draws can be referenced by multiple DHWSYSs; these adjustments apply only to the current DHWSYS.
+
+These adjustments have not impact on draw specifified by wsUse.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+  gal/draw        --             0             No          hourly
 
 
 **wsBranchModel=*choice***

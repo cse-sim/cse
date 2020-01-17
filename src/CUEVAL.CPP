@@ -914,11 +914,11 @@ badExprH:
 			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
 			{
 unsExprH:
-				ms = strtprintf( (char *)MH_R0230,		// "%s has not been evaluated yet." 11-92
-				whatEx(h) );    		// describes expr origin, exman.cpp
-				rc = RCUNSET;    				// specific "uneval'd expr" error code, callers test.
-				if (pBadH)					// if info return ptr given
-					*pBadH = h;				// return uneval'd expr # (0 if UNSET)
+				ms = strtprintf( (char *)MH_R0230,	// "%s has not been evaluated yet." 11-92
+					whatEx(h) );    				// describes expr origin, exman.cpp
+				rc = RCUNSET;    					// specific "uneval'd expr" error code, callers test.
+				if (pBadH)							// if info return ptr given
+					*pBadH = h;						// return uneval'd expr # (0 if UNSET)
 				goto breakbreak;
 			}
 			*--SPP = p ? p : strsave("");			//   stack pointer, supplying dm "" for NULL ptr
@@ -1208,7 +1208,7 @@ LOCAL const char* FC NEAR ivlTx( IVLCH ivl)	// text for interval.  general use f
 #endif
 
 //============================================================================
-static inline int IsDM( DMP p)		// return nz iff string block "looks like" it is on heap
+static inline bool IsDM( DMP p)		// return nz iff string block "looks like" it is on heap
 // Constants in pseudo-code (see PSPKONN) are preceded by
 // 16 bit ONES COMPLEMENT of length in words, recognized here by TWO
 // hi order 1 bits (change to 1 bit to support strings > 16K).

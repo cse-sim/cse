@@ -845,6 +845,10 @@ RC IZXRAT::iz_Setup(			// set up run record
 	if (!zp2)
 		iz_zi2 = -1;	// insurance
 
+	// say both ZI1 and ZI2 are known (allows probing)
+	fStat( IZXRAT_ZI1) |= FsSET | FsVAL;
+	fStat( IZXRAT_ZI2) |= FsSET | FsVAL;
+
 	// add'l check members by type
 	switch (iz_nvcntrl)
 	{

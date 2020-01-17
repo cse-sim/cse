@@ -2755,8 +2755,8 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 													//   with linear form to avoid undounded dmdp
 													//	 = .000001
   // inputs
-    *i TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
-    *i TI iz_zi2		//   iz_zi2 = -1 iff not interzone
+    *r TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
+    *r TI iz_zi2		//   iz_zi2 = -1 iff not interzone
     *h UA iz_ua   		// air-to-air coupling const (Btuh/F) thru walls etc.
     *i IZNVTYCH iz_nvcntrl	// Control type for nat vents:
 						//   C_IZNVTYCH_NONE: no venting (iz_ua only)
@@ -3493,7 +3493,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
 								//   for HPWH only, re DHWLOOPHEATER entering temp
-								//   best estimate for prior 1-min tick
+								//   best estimate from prior 1-min tick
   *d TI ws_dayUsei;			// idx of DHWDAYUSE
   *d CHP ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
   *r INT ws_childDHWDAYUSEFlag;	// nz iff at least one child DHWSYS has specified ws_dayUseName
@@ -3517,20 +3517,20 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//  [ 1..]: per C_DHWEUCH_xxx
   *r *array NDHWENDUSESPP FLOAT ws_drawsPerDay;
 
-  *h *e *array NDHWENDUSESPP FLOAT ws_drawDurF;	// water heater draw duration factors by end use
+  *h *e *array NDHWENDUSESPP FLOAT_GEZ ws_drawDurF;	// water heater draw duration factors by end use
 							// accounts for warm-up waste and pipe losses for DHWDAYUSE draws
 							// factor = actual draw duration / nominal draw duration
-							//   [ 0] = unknown end use (applied to ws_hwUse and DHWUSEs w/o wu_hwEndUse)
+							//   [ 0] = unknown end use (DHWUSEs w/o wu_hwEndUse) (*not* ws_hwUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
- *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
+  *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
 							//  _T24DHW: prior ACM App-B
 							//  _DRAWWASTE: draw duration increase per ws_drawWaste
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
-							// [ 0] (unused)
+							// [ 0] unknown end use
 							// [ 1..] = per C_DHWEUCH_xxx
   *i *array NDHWENDUSESPP FLOAT ws_dayWasteDrawF;	// relative draw for day waste scheme
-							// [ 0] (unused)
+							// [ 0] unknown end use
 							// [ 1..] = per C_DHWEUCH_xxx
   *i FLOAT_GEZ ws_dayWasteVol			// base daily total draw waste, gal/day
   *i FLOAT_GEZ ws_dayWasteBranchVolF	// additional daily draw waste, discards/day
@@ -3616,55 +3616,84 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_HARL;		// hourly adjusted recovery load, Btu
 
 *END		// DHWSYS
-//=============================================================================
-RECORD HPWHTANK "HPWHTank" *RAT	// Ecotope's HPWH tank and heater
-*prefix wh_
-  *exdes	// *declare "~HPWHTANK;"
 
-  *declare "class HPWH* wh_pHPWH;"	// pointer HPWH data else NULL
-  *r INT wh_HPWHHSCount;			// # of HPWH heatsources in use for
-									//   current config
-  *declare "int* wh_HPWHHSMap;"		// runtime map by heat source (allocated at runtime)
+//=============================================================================
+RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
+*prefix hw_
+*exdes
+
+*declare "static WStr hw_GetHPWHVersion();"
+*declare "static void hw_HPWHMessageCallback( const std::string message, void* contextPtr);"
+*declare "void hw_HPWHReceiveMessage( const std::string message);"
+*declare "void hw_Cleanup();"
+*declare "RC hw_Init( record* pOwner);"
+*declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
+*declare "RC hw_InitPreset( WHASHPTYCH ashpTy, float volX);"
+*declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
+*declare "RC hw_InitTank();"
+*declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
+*declare "void hw_InitTotals();"
+*declare "bool hw_HasCompressor();"
+*declare "bool hw_IsSetpointFixed() const;"
+*declare "float hw_GetTankVol() const;"
+*declare "RC hw_DoHour( float& tSetpoint);"
+*declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float tMains, float tMix, double scaleWH, double& tOutNoMix);"
+*declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc, double& totOut);"
+
+
+*declare "record* hw_pOwner;"		// owner (DHWHEATER, DHWSOLARSYS, ...)
+*declare "class HPWH* hw_pHPWH;"	// pointer HPWH object
+
+*r INT hw_HSCount;					// # of HPWH heatsources in use for current config
+*declare "int* hw_HSMap;"			// runtime map by heat source (allocated at runtime)
 									//   0=resistance, 1=compressor
-  *s *e *array 2 DBL wh_HPWHUse;	// current step HPWH energy use, kWh
+*s FLOAT hw_tEx;					// tank surround temp, F
+*s FLOAT hw_tASHPSrc;				// temp of heat pump air source, F
+
+  *h FLOAT hw_fMixUse;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
+								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+								//   draws are reduced to balance load at ws_tUse.
+  *h FLOAT hw_fMixRL;			// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
+								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+								//   Loop return flow is reduced to balance load at ws_tUse.
+
+
+*s *e *array 2 DBL hw_inElec;		// current step HPWH electricity use, kWh
 									//   [0]=resistance backup (iff HP) (not including wh_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
-  *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
+  *r FLOAT hw_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
-  *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, kWh
+  *s *e DBL hw_qEnv;				// current step heat removed by HPWH from environment, kWh
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
-  *s *e DBL wh_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
+  *s *e DBL hw_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-  *s *e DBL wh_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
+  *s *e DBL hw_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
 									//   includes heat to DHWLOOP, does not include wh_HPWHxBU
-  *s *e DBL wh_tankHCStart;			// current step starting tank heat content, kWh
 
-  *h *e INT wh_HPWHTankTempSet;		// nz iff HPWH tank temp has been initialized
-  *r FLOAT wh_tankHCNominal;		// nominal HPWH tank heat content, kWh (at 40 C)
+  *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
+  *r FLOAT hw_tankHCNominal;		// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
-  *s *e DBL wh_tHWOutF;				// current substep working total re calc of HPWH wh_tHWOut
-  *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
+  *s *e DBL hw_tankHCStart;			// current step starting tank heat content, kWh
 
-  *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz
-  *declare "FILE* wh_pFCSV;"		// file for debugging CSV (opened on 1st use)
-
-  *declare "static void wh_HPWHMessageCallback( const std::string message, void* contextPtr);"
-  *declare "void wh_HPWHReceiveMessage( const std::string message);"
-  *declare "static WStr wh_GetHPWHVersion();"
-
-  *h *e INT wh_unMetSh;		// HPWH: count of subhrs in this hour
-							//       when wh_tHWOut < wh_tUse
-  *y *e INT wh_unMetHrs;	// HPHW: annual count of hrs having
-							//       any wh_unMetSh
-  *s *e INT wh_balErrCount;	// HPWH: annual count of energy balance errors
+  *s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
+  *s *e INT hw_nzDrawCount;			// current substep # of draws > 0
+  *h *e FLOAT hw_tHWOut;			// average hot water temp, F (at water heater)
+  
+  *h *e INT hw_bWriteCSV;			// write HPWH debugging CSV iff nz
+  *declare "FILE* hw_pFCSV;"		// file for debugging CSV (opened on 1st use)
 
 
-*END // HPWHTANK
+  *s *e INT hw_balErrCount;	// annual count of energy balance errors
+
+*END // HPWHLINK
+
 //=============================================================================
-RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW heater
+RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *prefix wh_
 
+  *exdes	// *declare "~DHWHEATER;"
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
@@ -3684,16 +3713,9 @@ RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW hea
   *declare "float wh_CalcLDEF( float arl, int options=0);"
   *declare "RC wh_DoHour( float HARL, float wsMult);"
   *declare "RC wh_DoEndPreRun();"
+  *declare "static WStr wh_GetHPWHVersion();"
   *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
-
-  *declare "RC wh_HPWHInit();"
-  *declare "int wh_HPWHHasCompressor() const;"
-  *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
-  *declare "RC wh_HPWHDoSubhrStart();"
-  *declare "RC wh_HPWHDoSubhrTick( struct DHWTICK& tk, double scaleWH);"
-  *declare "RC wh_HPWHDoSubhrEnd();"
-
+  *declare "int wh_ReportBalErrorsIf() const;"
 
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
@@ -3708,7 +3730,8 @@ RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW hea
   								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG,
 								//    _INSTUEF
   *i ANAME wh_desc;				// probe-able description text
-  *r INT wh_fcn;				// function see
+  *declare "virtual const char* GetDescription( int options=0) { options; return wh_desc; }"
+  *r INT wh_fcn;				// function of this DHWHEATER per whfcnXXX enum
   *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnCOUNT=whfcnLOOPHEATER, whfcnLASTHEATER=0x100 };"
   *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
   *declare "int wh_SetFunction();"
@@ -3734,7 +3757,7 @@ RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW hea
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  *i FLOAT_GEZ wh_vol;			// storage tank vol, gal
+  *r FLOAT_GEZ wh_vol;			// storage tank vol, gal
 								//    applicable to STRGxx types
 								//    used only for HPWH ResistanceX, 5-2016
 								//    default=50 if STRGxx else 0
@@ -3771,12 +3794,6 @@ RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW hea
   *h FLOAT wh_tHWOut;			// average hot water temp, F (at water heater)
 								//   HPWH: as delivered by model (subhr average of tick calls)
 								//   other: DHWSYS.ws_tUse
-  *h FLOAT wh_fMixUse;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
-								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
-								//   draws are reduced to balance load at ws_tUse.
-  *h FLOAT wh_fMixRL;			// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
-								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
-								//   Loop return flow is reduced to balance load at ws_tUse.
   *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
 								//   re startup (cyclic) loss model
 
@@ -3817,6 +3834,41 @@ RECORD DHWHEATER "DHWHeater" *RAT *BASECLASS HPWHTANK	// input / runtime DHW hea
   *i FLOAT_GZ wh_resHtPwr2;	// lower element resistance heating power, W
 							//   default = wh_resPwr
 
+  *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
+									//    also used for resistance electric heaters
+
+  *h *e INT wh_unMetSh;				// count of subhrs in this hour
+									//   when wh_tHWOut < wh_tUse
+									//   HPWH only?
+  *y *e INT wh_unMetHrs;			// annual count of hrs having any wh_unMetSh
+									//   HPWH only?
+  *s *e INT wh_balErrCount;			// annual count of energy balance errors
+									//   HPWH only?
+
+
+  *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
+									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
+  *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, kWh
+									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
+  *s *e DBL wh_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
+									//   for 1 DHWHEATER (no wh_mult)
+  *s *e DBL wh_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
+									//   for 1 DHWHEATER (no wh_mult)
+									//   includes heat to DHWLOOP, does not include wh_HPWHxBU
+  *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
+
+  *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz
+  *declare "FILE* wh_pFCSV;"		// file for debugging CSV (opened on 1st use)
+
+  
+  *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
+  *declare "RC wh_HPWHInit();"
+  *declare "RC wh_HPWHDoHour();"
+  *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
+  *declare "RC wh_HPWHDoSubhrStart();"
+  *declare "RC wh_HPWHDoSubhrTick( struct DHWTICK& tk, double scaleWH);"
+  *declare "RC wh_HPWHDoSubhrEnd();"
+   
   *h DBL wh_totHARL;		// cumulative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
 							//   for single heater (wh_mult not applied)
@@ -4159,7 +4211,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 							//    used re random assignment of draws to DHWHEATRECs
 *END	// DHWUSE
 //=============================================================================
-RECORD DHWSOLARSYS "DHWSolarSys" *RAT *BASECLASS HPWHTANK	// input / runtime DHW solar system
+RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *prefix sw_
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
