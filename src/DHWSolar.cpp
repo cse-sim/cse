@@ -255,8 +255,8 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 
 	float tInlet = pSWHSys->sw_tInlet;
 
-	float pump_energy = sc_pumpPwr * Top.tp_subhrTickDur / 60.f;  // Btu/h * min / 60 min/h
-	float pump_vol = sc_pumpFlow * Top.tp_subhrTickDur;  // gal
+	float pump_energy = sc_pumpPwr * Top.tp_tickDurHr;  // Btuh * hr
+	float pump_vol = sc_pumpFlow * Top.tp_tickDurMin;  // gal
 	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_fluidVolSpHt);  // delta F
 
 	// Calculate potential outlet temperature
@@ -275,7 +275,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 		sc_tOutlet = sc_tOutletP;
 		sc_tickOp = true;
 		sc_eff += sc_collector->efficiency();
-		sc_Qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_subhrTickDur / 60.f; // W * Btu/W-h * min * h/min = Btu
+		sc_Qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
 	}
 	else
 	{
@@ -293,7 +293,7 @@ FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(float pump_dt) {
 	slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
 	sc_poa = static_cast<FLOAT>(plane_incidence);
 
-	sc_Qpoa += sc_poa * sc_area *sc_mult*Top.tp_subhrTickDur / 60.f;  // Btu/h-ft2 * ft2 * min * h/min = Btu
+	sc_Qpoa += sc_poa * sc_area *sc_mult*Top.tp_tickDurHr;  // Btu/h-ft2 * ft2 * h = Btu
 
 	// Collector inlet temperature (from tank heat exchanger)
 	double tInlet = SwhR.GetAtSafe(ownTi)->sw_tInlet + pump_dt;

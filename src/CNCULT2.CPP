@@ -367,7 +367,8 @@ RC TOPRAT::tp_SetDerived()
 
 	// substep ticks = even shorter steps for e.g. HPWH simulation
 	tp_nSubhrTicks = max( 1, 60 / nSubSteps);
-	tp_subhrTickDur = 60. / (tp_nSubhrTicks * nSubSteps);
+	tp_tickDurHr = 1. / (tp_nSubhrTicks * nSubSteps);
+	tp_tickDurMin = tp_tickDurHr * 60.;
 
 	//# days in run
 	nDays = tp_endDay - tp_begDay + 1;

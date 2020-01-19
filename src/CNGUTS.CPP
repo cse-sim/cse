@@ -392,15 +392,6 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 {
 	RC rc = RCOK;
 
-	// abbreviated run experiment, 1-2015
-	//   tp_skipDay nz iff this day should not be simulated
-	if (isWarmup || tp_autoSizing)
-		tp_skipDay = 0;
-	else
-		// use mod( jDay+start, step) to determine if day s/b run
-		// (use 100*step to ensure all values >0
-		tp_skipDay = (jDay-1-tp_skipDayStart+100*tp_skipDayStep)%tp_skipDayStep != 0;
-
 // simulate 24 hours
 	for (iHr = 0;  iHr < 24;  iHr++)	// loop over (Daylight Time) hours 0 to 23
 	{
@@ -434,13 +425,11 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		// start subhour, and start coincident hour,day,month,run.
 		EF( doBegIvl())			// start-interval ( Top.ivl) processing, next.
 								// sets much, wthr data, exprs, solar calcs, etc.
-		if (!tp_skipDay)
-		{
 		AH* ah; RLUP( AhB, ah)   EF( ah->begSubhr() )			// start-subhour air handler stuff.  cnah.cpp
 		TU* tu; RLUP( TuB, tu)   EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
 		ZNR* zp; RLUP( ZrB, zp)   EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
 		IZXRAT* ize; RLUP( IzxR, ize) EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
-		DHWSYS* pWS; RLUP( WsR, pWS) EF( pWS->ws_DoSubhr() )
+		EF( DHWSubhr())			// all DHW (including solar water heating)
 		RLUP( ZrB, zp)   EF( zp->zn_BegSubhr2() )
 		DUCTSEG* ds; RLUP( DsR, ds) EF( ds->ds_BegSubhr() )		// start-subhour duct segments
 		RSYS* rs; RLUP( RsR, rs) EF( rs->rs_BegSubhr() )		// start-subhour RSYS HVAC systems
@@ -463,7 +452,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		//RLUP( CpB, cp)   EF( cp->endSubhr() )		// coolplants end-subhour stuff.  cncp.cpp.
 		RLUP( ChB, ch)   EF( ch->endSubhr() )		// chillers end-subhour stuff.  cncp.cpp.
 		RLUP( TpB, tp)   EF( tp->endSubhr() )		// towerplants end-subhour stuff.  cntp.cpp.
-		}
+
 		E( doEndIvl());		// end interval stuff: update Top.ivl, results accum, reports,etc. local.
 							// Also ends hour,day,month,run ending with this subhour.
 							// On error, return exact code re ^C detection (rc = MH_C0100)
@@ -596,14 +585,11 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		RLUP( WMtrR, pWM)
 			EF( pWM->wmt_Init( Top.ivl) )	// 0s hour values
 
-		// domestic water heating
-		//   calcs done hourly, heat xfers applied to zones at subhours
+		// domestic water heating (including solar water heating)
+		//   draws and other setup done hourly
+		//   most calcs done subhour / subhourtick
 		//   must be done before gains due to possible DHW linkage
-		DHWSYS* pWS;
-		RLUPC( WsR, pWS, !pWS->ws_HasCentralDHWSYS())
-		{	// loop central systems (child systems handled within ws_DoHour)
-			EF( pWS->ws_DoHour( Top.ivl) )
-		}
+		EF( DHWBegIvl( Top.ivl))
 
 		// distrubute GAINs to zones and meters
 		EF( doHourGains() )    	// sets hour's znSGain's and znLGain's and accumulates hour's metered energy use from GAIN records.
@@ -687,12 +673,16 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 	}
 
+// finalize water heating
+	if (Top.ivl <= C_IVLCH_H)
+		EF(DHWEndIvl(Top.ivl));
+
+
 // Mass end-of-interval enthalpy accounting
 	msEndIvl( Top.ivl);
 
 // results accumulation for interval: simulation and meters
-	if (!Top.tp_skipDay)
-		doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
+	doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
 
 	if (Top.ivl < C_IVLCH_S)
 	{	// battery stage 0 hourly
@@ -729,12 +719,6 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		}
 	}
 
-	if (Top.ivl <= C_IVLCH_H)
-	{
-		DHWSYS* pWS;
-		RLUP(WsR, pWS)
-			EF(pWS->ws_EndIvl(Top.ivl));
-	}
 
 // now evaluate and stuff exprs from user input that are used in reports -- may show results.  Others done at interval start.
 	EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
@@ -794,11 +778,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 			{	if (zr->curr.Y.nSubhrLX)
 					warn( 			// not rWarn: no day/hour etc (at least not til also done for ausz) 5-97
 						"Zone '%s': Condensation occurred in %d subhours of run.\n"
-#if 1	// vaguer message (heat not added to zone for CR model)  5-15-12
 						"    Total condensation heat = %g kBtu.",
-#else
-						"    A total of %g kBtu of condensation heat was added to the zone.",
-#endif
 						zr->name, zr->curr.Y.nSubhrLX,
 						zr->curr.Y.qlX/1000 );				// convert Btu to kBtu
 				if (zr->curr.Y.nHrUnMetH)
@@ -1228,7 +1208,7 @@ w	}  /*lint +e616 */
 	Top.isBegOf = Top.isEndOf = 0;		// no longer start nor end of an interval
 	return RCOK;
 }			// doIvlExprs
-//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 LOCAL RC FC NEAR doHourGains()	// set hour's zone & mass gains & daylighting stuff and metered energy use from GAIN records
 // call AFTER expression evaluation as zone gain input members accept hourly expressions
 {
@@ -1780,16 +1760,16 @@ LOCAL void FC NEAR doIvlFinalize()
 	if (Top.ivl > C_IVLCH_D)					// if hour call, done
 		return;
 
-	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
+	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);	// accum metered energy: day to month. local,below.
 
-	if (Top.ivl > C_IVLCH_M)							// if day call, done.
+	if (Top.ivl > C_IVLCH_M)					// if day call, done.
 		return;
 
 	// accumulate month results to year
 
-	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
+	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);	// accumulate metered energy use: month to year
 
-	//if (Top.ivl > C_IVLCH_Y)							// if month call, done
+	//if (Top.ivl > C_IVLCH_Y)					// if month call, done
 	//   return;
 	// year (end of run) accumulation: nothing to do
 }							// doIvlFinalize
