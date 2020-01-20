@@ -1619,6 +1619,7 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 	RC rc = RCOK;
 
 	DHWTICK& tk = ws_ticks[iTk];
+	tk.wtk_volIn = 0.;
 
 	DHWHEATER* pWH;
 
@@ -1626,8 +1627,11 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount);
 
+	ws_tOutPrimSum = 0.;
 	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrTick(tk, 1. / ws_whCount);
+	if (ws_tOutPrimSum != 0.)
+ 		ws_tOutPrimLT = ws_tOutPrimSum;
 
 	return rc;
 
@@ -1693,11 +1697,12 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 	return RCOK;
 }		// DHWSYS::ws_WriteDrawCSV
 //----------------------------------------------------------------------------
-RC DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
+RC DHWSYS::ws_EndIvl(		// end-of-hour
+	int ivl)		// C_IVLCH_Y, _M, _D, _H: what interval is next
+// called at end of hour
 {
 	RC rc = RCOK;
-#if 1
-	if (ivl <= C_IVLCH_H)
+	if (ivl <= C_IVLCH_H)		// insurance: should not be called subhourly
 	{
 		ws_fxUseMixLH.wmt_Copy(&ws_fxUseMix);
 
@@ -1707,55 +1712,22 @@ RC DHWSYS::ws_EndIvl( int ivl)		// end-of-interval
 		if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 			rc |= pWH->wh_EndIvl(ivl, ws_mult);
 
-		// note: DHWSYS meter accum is in ws_DoHour
+		// note: DHWSYS energy/water meter accum is in ws_DoHour
+		//       values do not vary subhrly
 
 		if (ivl == C_IVLCH_Y)
 		{
 			if (ws_calcMode == C_WSCALCMODECH_PRERUN)
 				rc |= ws_DoEndPreRun();
-			if (ws_whCount > 0.f)
-			{
-				DHWHEATER* pWH;
-				RLUPC(WhR, pWH, pWH->ownTi == ss)
-				{
-					if (pWH->wh_unMetHrs > 0)
-						warn("%s: Output temperature below use temperature during %d hours of run.",
-							pWH->objIdTx(), pWH->wh_unMetHrs);
-				}
-			}
-#if 0
-			// TODO -- solar
-			if (ws_pDHWSOLARSYS)
-			{
-				ws_SSFAnnual = ws_SSFAnnualSolar / ws_SSFAnnualReq;
-			}
-#endif
-		}
-	}
-#else
-	if (ivl == C_IVLCH_Y)
-	{	
-		if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-			rc |= ws_DoEndPreRun();
-		if (ws_whCount > 0.f)
-		{
-			DHWHEATER* pWH;
-			RLUPC(WhR, pWH, pWH->ownTi == ss)
-			{
-				if (pWH->wh_unMetHrs > 0)
-					warn("%s: Output temperature below use temperature during %d hours of run.",
-						pWH->objIdTx(), pWH->wh_unMetHrs);
-			}
-		}
-		if (ws_pDHWSOLARSYS)
-		{
-			ws_SSFAnnual = ws_SSFAnnualSolar / ws_SSFAnnualReq;
-		}
-	}
-	if (ivl == C_IVLCH_H)
-		ws_fxUseMixLH.wmt_Copy( &ws_fxUseMix);
-#endif
 
+			// solar savings fraction
+			if (ws_pDHWSOLARSYS)
+				ws_SSFAnnual = ws_SSFAnnualReq > 0.f
+						? ws_SSFAnnualSolar / ws_SSFAnnualReq
+						: 0.f;
+			
+		}
+	}
 	return rc;
 
 }		// DHWSYS::ws_EndIvl
@@ -3265,6 +3237,14 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 
 	if (wh_pMtrFuel)
 		wh_pMtrFuel->H.dhw += mult * wh_inFuel;
+
+	if (ivl == C_IVLCH_Y)
+	{	// definition of "unmet" depends on heater specifics
+		//   generally unexpected due to XBU
+		if (wh_unMetHrs > 0)
+			warn("%s: Output temperature too low during %d hours of run.",
+				objIdTx(), wh_unMetHrs);
+	}
 #endif
 
 	return rc;

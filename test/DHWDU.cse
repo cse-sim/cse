@@ -3496,6 +3496,9 @@ DUCTSEG   "ReturnDuct-rsys-HVAC System 1"
    dsInsulR = 7.093555
    dsLeakF = 0.02905
 
+REPORT  "MtrElecY"    rpType = "MTR" rpFreq = "MONTH" rpMeter = "MtrElec" rpBtuSf = 1000
+REPORT  "MtrNatGasY"  rpType = "MTR" rpFreq = "MONTH" rpMeter = "MtrNatGas" rpBtuSf = 1000
+
 REPORT   "MtrElec"  
    rpType = "MTR"
    rpFreq = "HOUR"
@@ -3518,7 +3521,6 @@ DELETE GAIN   "Conditioned-znDishwasher"
 DELETE GAIN   "Conditioned-znWasher"
 DELETE GAIN   "Conditioned-znDryerNGas"   
  
-
 GAIN   "Conditioned-znDishwasherx" 
    gnPower = 0.14507 * 3412   //kWh/gal =0.14507 * BTU/kWh 
    gnCtrlDHWSYS = "dhwsys-DHW"         // name of DHWSYS
@@ -3535,7 +3537,7 @@ GAIN   "Conditioned-znWasherx"
    gnMeter = "MtrElec"
    gnEndUse = "Wash"
    gnFrRad = 0
-   
+
 GAIN   "Conditioned-znDryerNGasx"   
    gnPower = 299.9102065 * @DHWSYS["dhwsys-DHW"].FxUseMixLH.CWashr    //Therm/gal	0.002999102
    gnMeter = "MtrNatGas"
