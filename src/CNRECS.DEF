@@ -3710,21 +3710,15 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoHour( float HARL, float wsMult);"
   *declare "RC wh_DoSubhrStart();"
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, double scaleWH);"
+  *declare "RC wh_InstUEFInit();"
   *declare "RC wh_InstUEFDoSubhrTick( DHWTICK& tk, float tInlet, float tMains, float tMix, double scaleWH, double& tOutNoMix);"
   *declare "RC wh_DoSubhrEnd();"
   *declare "RC wh_DoEndPreRun();"
   *declare "RC wh_EndIvl( IVLCH ivl, float wsMult);"
   *declare "static WStr wh_GetHPWHVersion();"
-  *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
   *declare "int wh_ReportBalErrorsIf() const;"
   *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
   *declare "RC wh_HPWHInit();"
-  *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
-  *declare "RC wh_HPWHDoSubhrStart();"
-  *declare "RC wh_HPWHDoSubhrTick( struct DHWTICK& tk, double scaleWH);"
-  *declare "RC wh_HPWHDoSubhrEnd();"
-
   
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
@@ -3784,8 +3778,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ratedFlow;		// max rated flow per UEF test, gpm
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
-  *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
