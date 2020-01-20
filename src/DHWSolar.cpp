@@ -84,14 +84,15 @@ RC DHWSOLARSYS::sw_DoHour()
 	return rc;
 }
 
-RC DHWSOLARSYS::sw_DoHourEnd()
+RC DHWSOLARSYS::sw_EndIvl(
+	IVLCH ivl)	// C_IVLCH_Y, _M, _D, _H (do not call for _S)
 {
 	RC rc = RCOK;
 
 	// Add parasitics to meter
 	if (sw_pMtrElec)
 	{
-		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec);
+		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
 	}
 
 	DHWSOLARCOLLECTOR* pSC;
@@ -107,6 +108,85 @@ FLOAT DHWSOLARSYS::sw_GetAvailableTemp()
 	return sw_tankTOutlet;
 }
 
+//-----------------------------------------------------------------------------
+void DHWSOLARSYS::sw_TickStart()
+{
+	sw_tickVol = 0.f;
+	sw_tickVolT = 0.f;
+}
+//------------------------------------------------------------------------------
+RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
+	DHWSYS* pWS,	// source DHWSYS
+	float vol,
+	float tInlet)
+{
+	RC rc = RCOK;
+	sw_tickVol += vol;
+	sw_tickVolT += vol * tInlet;
+
+	if (vol > 0.f && pWS)
+	{	pWS->ws_SSFAnnualSolar += vol * (sw_tankTOutlet - sw_tankTInlet);
+		pWS->ws_SSFAnnualReq += vol * (pWS->ws_tUse - sw_tankTInlet);
+	}
+
+	return rc;
+}	// DHWSOLARSYS::sw_TickAccumDraw
+//------------------------------------------------------------------------------
+RC DHWSOLARSYS::sw_TickCalc()
+{
+	RC rc = RCOK;
+
+	// Calculate outlet temperature of all collectors
+	// Using volume weighted average
+	DHWSOLARCOLLECTOR* pSC;
+
+	float sumVolT = 0.f;
+	float sumVol = 0.f;
+	RLUPC(ScR, pSC, pSC->ownTi == ss)
+	{
+		rc |= pSC->sc_DoSubhrTick();
+		sumVolT += pSC->sc_tickVol*pSC->sc_tOutlet;
+		sumVol += pSC->sc_tickVol;
+	}
+
+	if (sumVol > 0.f) {
+		sw_tOutlet = sumVolT / sumVol;
+		float heat_gain = sw_tankHXEff * sumVol*sw_fluidVolSpHt*(sw_tOutlet - sw_tankT); // Btu
+		sw_tankQGain += heat_gain;
+		sw_tankT = sw_tankT + heat_gain / (sw_tankVol*waterRhoCp);
+		sw_tInlet = sw_tOutlet - heat_gain / (sumVol*sw_fluidVolSpHt);
+	}
+	else
+	{
+		sw_tOutlet = sw_tankT;
+		sw_tInlet = sw_tankT;
+	}
+
+	// Calculate tank changes
+	if (sw_tickVolT > 0)
+	{
+		sw_tankTInlet = sw_tickVolT / sw_tickVol;
+	}
+
+
+	// First order tank approximation:
+	if (sw_tickVol > sw_tankVol)
+	{
+		// Entire tank contents (plus some)
+		sw_tankT = (sw_tankT * sw_tankVol + sw_tankTInlet * (sw_tickVol - sw_tankVol)) / sw_tickVol;
+		sw_tankTOutlet = sw_tankT;
+	}
+	else
+	{
+		// skimming off the top
+		sw_tankTOutlet = sw_tankT;
+		// then mix for next tick
+		sw_tankT = (sw_tankT * (sw_tankVol - sw_tickVol) + sw_tankTInlet * sw_tickVol) / sw_tankVol;
+	}
+
+	return rc;
+}
+//------------------------------------------------------------------------------
 
 RC DHWSOLARSYS::sw_DoSubhrTick(
 	double vol,  // Volume of draw, gal

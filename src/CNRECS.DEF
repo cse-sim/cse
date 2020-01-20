@@ -4235,7 +4235,10 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
   *declare "RC sw_DoHour();"
-  *declare "RC sw_DoHourEnd();"
+  *declare "RC sw_EndIvl( IVLCH ivl);"
+  *declare "void sw_TickStart();"
+  *declare "RC sw_TickAccumDraw( DHWSYS* pWS, float vol, float tInlet);"
+  *declare "RC sw_TickCalc();"
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
 
@@ -4248,7 +4251,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
   *declare "MTR* sw_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
-  *h FLOAT sw_parElec;
+  *h FLOAT_GEZ sw_parElec;		// parasitic electricity use, W
 
   // Tank (from DHWTANK)
   *i FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F
