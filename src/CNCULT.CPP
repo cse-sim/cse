@@ -1805,7 +1805,6 @@ CULT( "whAnnualElec",DAT,   DHWHEATER_ANNUALELEC,0,   0, VEOI,   TYFL,  0,      
 CULT( "whResHtPwr",	 DAT,   DHWHEATER_RESHTPWR,0,     0, VEOI,   TYFL,  0,     4500.f,  N, N),
 CULT( "whResHtPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whLDEF",		 DAT,   DHWHEATER_LDEF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
-CULT( "whHPAF",		 DAT,   DHWHEATER_HPAF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whEff",		 DAT,   DHWHEATER_EFF,     0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whSBL",		 DAT,   DHWHEATER_SBL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
@@ -2634,8 +2633,6 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "jan1DoW",     DAT,   TOPRAT_JAN1DOW,    0,          0, VEOI,   TYCH,  0,     C_DOWCH_THU,      N,   N),
 	CULT( "wuDays",      DAT,   TOPRAT_WUDAYS,     0,          0, VEOI,   TYSI,  0,     7,                N,   N),
 	CULT( "nSubSteps",   DAT,   TOPRAT_NSUBSTEPS,  0,          0, VEOI,   TYSI,  0,     4,                N,   N),
-	CULT( "skipDayStart",DAT,   TOPRAT_SKIPDAYSTART,0,         0, VEOI,   TYSI,  0,     0,                N,   N),
-	CULT( "skipDayStep", DAT,   TOPRAT_SKIPDAYSTEP,0,          0, VEOI,   TYSI,  0,     1,                N,   N),
 
 // TOP location
 	CULT( "wfName",      DAT,   TOPRAT_WFNAME,     RQD,        0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),

@@ -257,4 +257,10 @@ void FC cgzndump( SI vrh, TI zi);
 // shading.cpp
 float FC shadwin( const WSHADRAT *p, float gamma, float cosz);
 
+// dhwcalc.cpp
+RC DHWBegIvl(IVLCH ivl);
+RC DHWSubhr();
+RC DHWEndIvl(IVLCH ivl);
+
+
 // end of cnguts.h

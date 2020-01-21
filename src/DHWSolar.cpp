@@ -84,14 +84,15 @@ RC DHWSOLARSYS::sw_DoHour()
 	return rc;
 }
 
-RC DHWSOLARSYS::sw_DoHourEnd()
+RC DHWSOLARSYS::sw_EndIvl(
+	IVLCH ivl)	// C_IVLCH_Y, _M, _D, _H (do not call for _S)
 {
 	RC rc = RCOK;
 
 	// Add parasitics to meter
 	if (sw_pMtrElec)
 	{
-		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec);
+		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
 	}
 
 	DHWSOLARCOLLECTOR* pSC;
@@ -107,6 +108,85 @@ FLOAT DHWSOLARSYS::sw_GetAvailableTemp()
 	return sw_tankTOutlet;
 }
 
+//-----------------------------------------------------------------------------
+void DHWSOLARSYS::sw_TickStart()
+{
+	sw_tickVol = 0.f;
+	sw_tickVolT = 0.f;
+}
+//------------------------------------------------------------------------------
+RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
+	DHWSYS* pWS,	// source DHWSYS
+	float vol,
+	float tInlet)
+{
+	RC rc = RCOK;
+	sw_tickVol += vol;
+	sw_tickVolT += vol * tInlet;
+
+	if (vol > 0.f && pWS)
+	{	pWS->ws_SSFAnnualSolar += vol * (sw_tankTOutlet - sw_tankTInlet);
+		pWS->ws_SSFAnnualReq += vol * (pWS->ws_tUse - sw_tankTInlet);
+	}
+
+	return rc;
+}	// DHWSOLARSYS::sw_TickAccumDraw
+//------------------------------------------------------------------------------
+RC DHWSOLARSYS::sw_TickCalc()
+{
+	RC rc = RCOK;
+
+	// Calculate outlet temperature of all collectors
+	// Using volume weighted average
+	DHWSOLARCOLLECTOR* pSC;
+
+	float sumVolT = 0.f;
+	float sumVol = 0.f;
+	RLUPC(ScR, pSC, pSC->ownTi == ss)
+	{
+		rc |= pSC->sc_DoSubhrTick();
+		sumVolT += pSC->sc_tickVol*pSC->sc_tOutlet;
+		sumVol += pSC->sc_tickVol;
+	}
+
+	if (sumVol > 0.f) {
+		sw_tOutlet = sumVolT / sumVol;
+		float heat_gain = sw_tankHXEff * sumVol*sw_fluidVolSpHt*(sw_tOutlet - sw_tankT); // Btu
+		sw_tankQGain += heat_gain;
+		sw_tankT = sw_tankT + heat_gain / (sw_tankVol*waterRhoCp);
+		sw_tInlet = sw_tOutlet - heat_gain / (sumVol*sw_fluidVolSpHt);
+	}
+	else
+	{
+		sw_tOutlet = sw_tankT;
+		sw_tInlet = sw_tankT;
+	}
+
+	// Calculate tank changes
+	if (sw_tickVolT > 0)
+	{
+		sw_tankTInlet = sw_tickVolT / sw_tickVol;
+	}
+
+
+	// First order tank approximation:
+	if (sw_tickVol > sw_tankVol)
+	{
+		// Entire tank contents (plus some)
+		sw_tankT = (sw_tankT * sw_tankVol + sw_tankTInlet * (sw_tickVol - sw_tankVol)) / sw_tickVol;
+		sw_tankTOutlet = sw_tankT;
+	}
+	else
+	{
+		// skimming off the top
+		sw_tankTOutlet = sw_tankT;
+		// then mix for next tick
+		sw_tankT = (sw_tankT * (sw_tankVol - sw_tickVol) + sw_tankTInlet * sw_tickVol) / sw_tankVol;
+	}
+
+	return rc;
+}
+//------------------------------------------------------------------------------
 
 RC DHWSOLARSYS::sw_DoSubhrTick(
 	double vol,  // Volume of draw, gal
@@ -255,8 +335,8 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 
 	float tInlet = pSWHSys->sw_tInlet;
 
-	float pump_energy = sc_pumpPwr * Top.tp_subhrTickDur / 60.f;  // Btu/h * min / 60 min/h
-	float pump_vol = sc_pumpFlow * Top.tp_subhrTickDur;  // gal
+	float pump_energy = sc_pumpPwr * Top.tp_tickDurHr;  // Btuh * hr
+	float pump_vol = sc_pumpFlow * Top.tp_tickDurMin;  // gal
 	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_fluidVolSpHt);  // delta F
 
 	// Calculate potential outlet temperature
@@ -275,7 +355,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 		sc_tOutlet = sc_tOutletP;
 		sc_tickOp = true;
 		sc_eff += sc_collector->efficiency();
-		sc_Qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_subhrTickDur / 60.f; // W * Btu/W-h * min * h/min = Btu
+		sc_Qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
 	}
 	else
 	{
@@ -293,7 +373,7 @@ FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(float pump_dt) {
 	slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
 	sc_poa = static_cast<FLOAT>(plane_incidence);
 
-	sc_Qpoa += sc_poa * sc_area *sc_mult*Top.tp_subhrTickDur / 60.f;  // Btu/h-ft2 * ft2 * min * h/min = Btu
+	sc_Qpoa += sc_poa * sc_area *sc_mult*Top.tp_tickDurHr;  // Btu/h-ft2 * ft2 * h = Btu
 
 	// Collector inlet temperature (from tank heat exchanger)
 	double tInlet = SwhR.GetAtSafe(ownTi)->sw_tInlet + pump_dt;

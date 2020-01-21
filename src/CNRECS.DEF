@@ -172,10 +172,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//    some models require substep duration to be integral minutes
 							//       (e.g. HPWH)
 
-							// abbreviated simulation scheme (unsuccesful experiment 1-2015)
-    *i SI_GEZ tp_skipDayStart	// # of days to skip at beg of year (not beg of run), default 0
-    *i SI_GZ tp_skipDayStep		// # of days in each step through year, default 1
-
 //TOP: inputs: location/air properties/ground properties
     *f CHP tp_wfName    	// weather file path string
 	*f CHP tp_TDVfName		// TDV (time dependent value) file path string
@@ -423,9 +419,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *s float subhrDur		// duration of subhour, hr (= 1/nSubSteps)
 	*r SI_GZ tp_nSubhrTicks	// # of subhour ticks for e.g. HPWH simulation
 							//    1 per minute or as generalized
-	*r DBL tp_subhrTickDur	// duration of subhr tick, min (not hr)
+	*r DBL tp_tickDurMin	// duration of subhr tick, min
 							//    = 1 min or as generalized
 							//    used for e.g. HPWH simulation
+	*r DBL tp_tickDurHr		// duration of subhr tick, hr
 	*declare "int tp_NHrTicks() const { return nSubSteps*tp_nSubhrTicks; }"
 
 //TOP: runtime: simulation date/time variables
@@ -437,10 +434,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 						// autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.
     *d DOY jDay			// Day of year now simulating, 1..365. set: tp_MainSimI; used:cnguts;cuparse;cgwthr;cgsolar;cgresult.
     *d DOY xJDay		// extended jDay: same for main sim, 512 heat autosizing, 529-540 cooling autosizing.
-    *d BOO tp_skipDay	// during simulation: nz iff current day should not be simulated
-						//   (2015 experiment re simulation speed-up, not successful.)
-						//   tp_skipDay = ((jDay + tp_skipDayStart)%tp_skipDayStep) != 0
-						//   never nz during warmup or autosize
 
     *h SI iHr		// Hour of day, 0-23.  set/used: tp_MainSim()
     *s SI iSubhr	// subhour of hour being simulated, 0.. .  set cnguts.cpp, used cnztu,cnvhac,cnguts,cgresult.cpp.
@@ -3399,13 +3392,16 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "float ws_GetTSetpoint( int whfcn) const;"
   *declare "int ws_GetTSetpointFN( int whfcn) const;"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
-  *declare "RC ws_DoHour( int ivl, float centralMult=1.f);"
+  *declare "RC ws_DoHour( IVLCH ivl, float centralMult=1.f);"
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
   *declare "RC ws_DoHourDrawAccounting( float mult);"
   *declare "RC ws_DoEndPreRun();"
   *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
+  *declare "RC ws_DoSubhrStart( int iTk0);"
+  *declare "RC ws_DoSubhrTick( int iTk);"
+  *declare "RC ws_DoSubhrEnd();"
   *declare "RC ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
   *declare "float ws_BranchFlow() const;"
@@ -3697,7 +3693,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
-  *declare "void wh_InitTotals();"
+  *declare "void wh_InitRunTotals();"
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const;"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
@@ -3712,11 +3708,18 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
   *declare "RC wh_DoHour( float HARL, float wsMult);"
+  *declare "RC wh_DoSubhrStart();"
+  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, double scaleWH);"
+  *declare "RC wh_InstUEFInit();"
+  *declare "RC wh_InstUEFDoSubhrTick( DHWTICK& tk, float tInlet, float tMains, float tMix, double scaleWH, double& tOutNoMix);"
+  *declare "RC wh_DoSubhrEnd();"
   *declare "RC wh_DoEndPreRun();"
+  *declare "RC wh_EndIvl( IVLCH ivl, float wsMult);"
   *declare "static WStr wh_GetHPWHVersion();"
-  *declare "void wh_AccumElec( float mult, double inElec, double inElecBU);"
   *declare "int wh_ReportBalErrorsIf() const;"
-
+  *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
+  *declare "RC wh_HPWHInit();"
+  
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
 								//   non-integral values allowed re sizing methods
@@ -3775,8 +3778,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ratedFlow;		// max rated flow per UEF test, gpm
   *i FLOAT_GEZ wh_annualFuel;	// annual fuel use per UEF method, therms/yr
   *i FLOAT_GEZ wh_annualElec;	// annual electricity use per UEF method, kWh/yr
-  *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
 
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
@@ -3785,8 +3786,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r FLOAT wh_maxInpX;			// input at max flow, Btu/tick
 
   *i FLOAT_GZ wh_eff;			// efficiency (aka recovery efficiency)
-  *i FLOAT_GZ wh_HPAF;			// heat pump adjustment factor
-								//   used for small storage ASHP only
   *i FLOAT_GEZ wh_SBL;			// standby loss, Btuh
   *h FLOAT_GEZ wh_pilotPwr;		// pilot light power, Btuh
 								//   included in wh_inFuel
@@ -3805,23 +3804,13 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   any excess load met via wh_HPWHxBU
   *s DBL wh_loadCFwd;			// current load carry forward, Btu
 								//   see wh_InstUEFDoSubhr()
+  *s FLOAT wh_nTickFullLoad;	// INSTUEF: current subhour equiv full load ticks (fractional)
+  *s DBL wh_nColdStarts;		// INSTUEF: current subhour # of cold startups 
 
-  *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
-  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
-  *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel; /*MTR* wh_pMtrPrim;*/"
-							// runtime pointers to meters, NULL if not accum'ing
-  *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
-							//   default = none (include wh_HPWHxBU in end use dhwBU)
+  *s *e FLOAT wh_effSh;			// current subhour efficiency, used to support former hourly
+								//   models within tick calcs
+								//   unset for full tick models (HPWH and INSTUEF)
 
-							// energy inputs for current hour, Btu
-							// for single WH (wh_mult / ws_mult not applied)
-  *h *e FLOAT wh_inElec;	//    primary electricity (including wh_parElec) (note not kWh)
-							//		 for HPWH, includes compressor + misc (not resistance)
-  *h *e FLOAT wh_inElecBU;	//    backup electricity (>0 only for HPWH resistance heat)
-							//       (includes wh_HPWHxBU)
-  *h *e FLOAT wh_inFuel;	//	  fuel (including wh_pilotPwr)
-  *r *e DBL wh_inElecTot;
-  *r *e DBL wh_inFuelTot;
 
   *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
 							//   never input, derived for INSTUEF
@@ -3837,13 +3826,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
 
-  *h *e INT wh_unMetSh;				// count of subhrs in this hour
-									//   when wh_tHWOut < wh_tUse
-									//   HPWH only?
-  *y *e INT wh_unMetHrs;			// annual count of hrs having any wh_unMetSh
-									//   HPWH only?
-  *s *e INT wh_balErrCount;			// annual count of energy balance errors
-									//   HPWH only?
+ 
 
 
   *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
@@ -3861,14 +3844,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "FILE* wh_pFCSV;"		// file for debugging CSV (opened on 1st use)
 
   
-  *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
-  *declare "RC wh_HPWHInit();"
-  *declare "RC wh_HPWHDoHour();"
-  *declare "RC wh_HPWHDoSubhr( struct DHWTICK* ticksSh, double scaleWH);"
-  *declare "RC wh_HPWHDoSubhrStart();"
-  *declare "RC wh_HPWHDoSubhrTick( struct DHWTICK& tk, double scaleWH);"
-  *declare "RC wh_HPWHDoSubhrEnd();"
-   
+
   *h DBL wh_totHARL;		// cumulative recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
 							//   for single heater (wh_mult not applied)
@@ -3876,6 +3852,49 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//   re calc of avg
   *h DBL wh_totOut;			// total heat delivered to hot water, Btu
 							//   includes wh_HPWHxBU
+
+
+							// energy inputs for current subhour, Btu
+							//   subhour results accumulated here
+							// for single WH (wh_mult / ws_mult not applied)
+  *s *e FLOAT wh_inElecSh;		//    primary electricity (including wh_parElec) (note not kWh)
+								//		 for HPWH, includes compressor + misc (not resistance)
+  *s *e FLOAT wh_inElecBUSh;	//    backup electricity (>0 only for HPWH resistance heat)
+								//       (includes wh_HPWHxBU)
+  *s *e FLOAT wh_inElecXBUSh;	//    "extra" backup (reheating to maintain ws_tUse)
+  *s *e FLOAT wh_inFuelSh;		//	  fuel (including wh_pilotPwr)
+    
+
+							// energy inputs for current hour, Btu
+							//   set from analogous subhour values
+								// for single WH (wh_mult / ws_mult not applied)
+  *h *e FLOAT wh_inElec;		//    primary electricity (including wh_parElec) (note not kWh)
+								//		 for HPWH, includes compressor + misc (not resistance)
+  *h *e FLOAT wh_inElecBU;		//    backup electricity (>0 only for HPWH resistance heat)
+								//       (includes wh_HPWHxBU)
+  *h *e FLOAT wh_inElecXBU;		//    "extra" backup (reheating to maintain ws_tUse)
+  *h *e FLOAT wh_inFuel;		//	  fuel (including wh_pilotPwr)
+
+							// annual total energy inputs, Btu (check figures)
+  *r *e DBL wh_inElecTot;	//    annual total electricity, Btu
+  *r *e DBL wh_inFuelTot;	//    annual total fuel, Btu
+
+  *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
+  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
+  *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
+							//   default = none (include wh_HPWHxBU in end use dhwBU)
+  *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel; /*MTR* wh_pMtrPrim;*/"
+							// runtime pointers to meters, NULL if not accum'ing
+
+  *h *e INT wh_unMetSh;				// count of subhrs in this hour
+									//   when wh_tHWOut < wh_tUse
+									//   HPWH only?
+  *y *e INT wh_unMetHrs;			// annual count of hrs having any wh_unMetSh
+									//   HPWH only?
+  *s *e INT wh_balErrCount;			// annual count of energy balance errors
+									//   HPWH only?
+
+
 *END	// DHWHEATER
 //=============================================================================
 RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery (DWHR)
@@ -4216,7 +4235,10 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
   *declare "RC sw_DoHour();"
-  *declare "RC sw_DoHourEnd();"
+  *declare "RC sw_EndIvl( IVLCH ivl);"
+  *declare "void sw_TickStart();"
+  *declare "RC sw_TickAccumDraw( DHWSYS* pWS, float vol, float tInlet);"
+  *declare "RC sw_TickCalc();"
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
 
@@ -4229,7 +4251,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
   *declare "MTR* sw_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
-  *h FLOAT sw_parElec;
+  *h FLOAT_GEZ sw_parElec;		// parasitic electricity use, W
 
   // Tank (from DHWTANK)
   *i FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F

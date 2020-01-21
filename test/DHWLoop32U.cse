@@ -5081,6 +5081,13 @@ REPORT rpType=DHWMTR rpDHWMeter=DHWMtrWH  rpFreq=MONTH
 
 REPORT rpType = MTR rpFreq = DAY  rpMeter = MtrElec rpBtuSf = 3412  rpDayBeg = Apr 1 rpDayEnd = Apr 30
 REPORT rpType = MTR rpFreq = HOUR  rpMeter = MtrElec rpBtuSf = 3412 rpDayBeg = Apr 1 rpDayEnd = Apr 4
+
+REPORT rpType = MTR rpFreq = DAY  rpMeter = MtrElecLoop rpBtuSf = 3412  rpDayBeg = Apr 1 rpDayEnd = Apr 30
+REPORT rpType = MTR rpFreq = HOUR  rpMeter = MtrElecLoop rpBtuSf = 3412 rpDayBeg = Apr 1 rpDayEnd = Apr 4
+
+REPORT rpType = MTR rpFreq = DAY  rpMeter = MtrElecPrim rpBtuSf = 3412  rpDayBeg = Apr 1 rpDayEnd = Apr 30
+REPORT rpType = MTR rpFreq = HOUR  rpMeter = MtrElecPrim rpBtuSf = 3412 rpDayBeg = Apr 1 rpDayEnd = Apr 4
+
 REPORT rpType = DHWMTR rpFreq = DAY  rpDHWMeter = DHWMtrWH          rpDayBeg = Apr 1 rpDayEnd = Apr 30
 REPORT rpType = DHWMTR rpFreq = HOUR  rpDHWMeter = DHWMtrWH         rpDayBeg = Apr 1 rpDayEnd = Apr 4
 
