@@ -266,7 +266,7 @@ RC DHWSOLARCOLLECTOR::sc_CkF() {
 	RC rc = RCOK;
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
 	{
-		sc_pumpFlow = 0.04*sc_area*sc_mult;  // initial rule of thumb: 0.04 gpm per ft2
+		sc_pumpFlow = 0.03*sc_area*sc_mult;  // initial rule of thumb: 0.03 gpm per ft2
 	}
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
 	{
