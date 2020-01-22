@@ -3660,18 +3660,19 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
 									//   Loop return flow is reduced to balance load at ws_tUse.
 
-*s *e *array 2 DBL hw_inElec;		// current step HPWH electricity use, kWh
+*s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
 									//   [0]=resistance backup (iff HP) (not including wh_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
-*r FLOAT hw_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
+*r FLOAT hw_HPWHxBU;				// current subhr HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
-*s *e DBL hw_qEnv;					// current step heat removed by HPWH from environment, kWh
+*s *e DBL hw_qEnv;					// current subhr heat removed by HPWH from environment, kWh
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
-*s *e DBL hw_qLoss;					// current step HPWH standby losses, kWh.  + = to surround 
+*s *e DBL hw_qLoss;					// current subhr HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-*s *e DBL hw_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
+*s *e DBL hw_qHW;					// current subhr HPWHtotal hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
 									//   includes heat to DHWLOOP, does not include wh_HPWHxBU
+*s *e DBL hw_nxQSh;					// current subhr extra heat added to tank, kWh
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)

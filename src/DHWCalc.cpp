@@ -2206,6 +2206,8 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 		rc |= RCBAD;
 	if (hw_pHPWH->setUA(UA, HPWH::UNITS_BTUperHrF) != 0)
 		rc |= RCBAD;
+	if (hw_pHPWH->setSetpoint( 200., HPWH::UNITS_F) != 0)
+		rc |= RCBAD;
 	
 	return rc;
 }		// HPWHLINK::hw_InitTank
@@ -2353,6 +2355,8 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_qHW = 0.;		// total hot water heating, kWh; always >= 0
 						//   includes heat to DHWLOOP;  does not include wh_HPWHxBU
 
+	hw_nxQSh = 0.;		// total "extra" heat (e.g. re solar tank)
+
 	hw_tHWOutF = 0.;	// accum re average hot water outlet temp, F
 	// wh_fMixUse, wh_fMixRL: initialized in wh_InitRunTotals(); value retained hour-to-hour
 
@@ -2465,11 +2469,12 @@ RC HPWHLINK::hw_DoSubhrTick(
 
 
 	std::vector< double>* pNxQ = NULL;
-	std::vector< double> nxQ(12, 0.);
+	std::vector< double> nxQ;
 	if (hw_nxQ != 0.)
-	{
-		double nxQ1 = (hw_nxQ / hw_nxqNodes) / (Top.tp_tickDurHr * BtuperWh);
-		VSet(&nxQ[0], hw_nxqNodes, nxQ1);
+	{	double nxQkWh = hw_nxQ / BtuperkWh;
+		hw_nxQSh += nxQkWh;
+		double nxQ1 = nxQkWh * 1000. / (hw_nxqNodes * Top.tp_tickDurHr);
+		nxQ.assign(hw_nxqNodes, nxQ1);
 		pNxQ = &nxQ;
 	}
 
