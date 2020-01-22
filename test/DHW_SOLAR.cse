@@ -1289,20 +1289,21 @@ ReportCol colhead="Eff" colVal =  8.345*@DhwSys[s].whUse.total*(@DhwSys[s].tUse-
 // DHWSYS / DHWSSOLARSYS / DHWSOLARCOLLECTOR
 #define WSSOLREP( t, dhw, ss, sc, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = t rpDayBeg=d rpDayEnd=d \
 ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="Mains T" colVal=@DhwSys[dhw].tInlet colWid=7 \
-ReportCol colhead="Mains T X" colVal=@DhwSys[dhw].tInletX colWid=9 \
-ReportCol colhead="Tank Tinlet" colVal=@DhwSolarSys[ss].tankTInlet colWid=11 \
-ReportCol colhead="Tank T" colVal=@DhwSolarSys[ss].tankT colWid=6 \
-ReportCol colhead="Tank Toutlet" colVal=@DhwSolarSys[ss].tankTOutlet colWid=12 \
-ReportCol colhead="SC Tin" colVal=@DhwSolarSys[ss].sctInlet colWid=7 \
-ReportCol colhead="SC Tout" colVal=@DhwSolarSys[ss].scTOutlet colWid=7 \
+ReportCol colhead="T Mains" colVal=@DhwSys[dhw].tInlet colWid=8 \
+ReportCol colhead="Tnk Tin" colVal=@DhwSolarSys[ss].tankTInlet colWid=8 \
+ReportCol colhead="Draw" colVal=@DhwSolarSys[ss].drawVol colWid=8 \
+ReportCol colhead="Tnk Thx" colVal=@DhwSolarSys[ss].tankHxT colWid=8 \
+ReportCol colhead="Tnk Tout" colVal=@DhwSolarSys[ss].tankTOutlet colWid=8 \
+ReportCol colhead="Tnk QLs" colVal=@DhwSolarSys[ss].tankQLoss colWid=8 \
+ReportCol colhead="SC Tin" colVal=@DhwSolarSys[ss].sctInlet colWid=8 \
+ReportCol colhead="SC Tout" colVal=@DhwSolarSys[ss].scTOutlet colWid=8 \
 ReportCol colhead="SC ToutP" colVal=@DhwSolarCollector[sc].tOutletP colWid=9 \
+ReportCol colhead="SCP El" colVal=@DhwSolarCollector[sc].pumpInElec colWid=8 \
 ReportCol colhead="SC IncPOA" colVal=@DhwSolarCollector[sc].poa colWid=9 \
-ReportCol colhead="SC Pump" colVal=@DhwSolarCollector[sc].pumpInElec colWid=9 \
-ReportCol colhead="SC Eff" colVal=@DhwSolarCollector[sc].eff colWid=9 \
-ReportCol colhead="SC POA Q" colVal=@DhwSolarCollector[sc].Qpoa colWid=9 \
+ReportCol colhead="SC QPoa" colVal=@DhwSolarCollector[sc].Qpoa colWid=8 \
+ReportCol colhead="SC Eff" colVal=@DhwSolarCollector[sc].eff colWid=8 \
 ReportCol colhead="SC QFluid" colVal=@DhwSolarCollector[sc].Qfluid colWid=9 \
-ReportCol colhead="SC QTank" colVal=@DhwSolarSys[ss].tankQGain colWid=18 \
+ReportCol colhead="Tnk QGn" colVal=@DhwSolarSys[ss].tankQGain colWid=9 \
 
 
 // DHWTANK
