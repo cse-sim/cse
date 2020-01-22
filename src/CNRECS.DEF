@@ -3626,17 +3626,20 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
 *declare "RC hw_InitPreset( WHASHPTYCH ashpTy, float volX);"
 *declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
-*declare "RC hw_InitTank();"
+*declare "RC hw_InitTank( float vol, float UA);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
 *declare "void hw_InitTotals();"
 *declare "bool hw_HasCompressor();"
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
+*declare "void hw_SetNXQNodes( int nxQNodes);"
+*declare "float hw_GetTankNXQTemp() const;"
+*declare "void hw_SetNXQ( float nxQ);"
 *declare "RC hw_DoHour( float& tSetpoint);"
-*declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc);"
-*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float tMains, float tMix, double scaleWH, double& tOutNoMix);"
+*declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL);"
+*declare "RC hw_DoSubhrTick( float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc, double& totOut);"
-
 
 *declare "record* hw_pOwner;"		// owner (DHWHEATER, DHWSOLARSYS, ...)
 *declare "class HPWH* hw_pHPWH;"	// pointer HPWH object
@@ -3647,41 +3650,42 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s FLOAT hw_tEx;					// tank surround temp, F
 *s FLOAT hw_tASHPSrc;				// temp of heat pump air source, F
 
-  *h FLOAT hw_fMixUse;			// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
-								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
-								//   draws are reduced to balance load at ws_tUse.
-  *h FLOAT hw_fMixRL;			// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
-								//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
-								//   Loop return flow is reduced to balance load at ws_tUse.
+*r INT hw_nxqNodes					// # of nodes used in node extra heat scheme
+*s *e FLOAT hw_nxQ;					// current tick heat to be added, Btu
 
+*h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
+									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+									//   draws are reduced to balance load at ws_tUse.
+*h FLOAT hw_fMixRL;					// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
+									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+									//   Loop return flow is reduced to balance load at ws_tUse.
 
 *s *e *array 2 DBL hw_inElec;		// current step HPWH electricity use, kWh
 									//   [0]=resistance backup (iff HP) (not including wh_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
-  *r FLOAT hw_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
+*r FLOAT hw_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
-  *s *e DBL hw_qEnv;				// current step heat removed by HPWH from environment, kWh
+*s *e DBL hw_qEnv;					// current step heat removed by HPWH from environment, kWh
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
-  *s *e DBL hw_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
+*s *e DBL hw_qLoss;					// current step HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-  *s *e DBL hw_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
+*s *e DBL hw_qHW;					// current step HPWHtotal hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
 									//   includes heat to DHWLOOP, does not include wh_HPWHxBU
 
-  *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
-  *r FLOAT hw_tankHCNominal;		// nominal HPWH tank heat content, kWh (at 40 C)
+*h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
+*r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
-  *s *e DBL hw_tankHCStart;			// current step starting tank heat content, kWh
+*s *e DBL hw_tankHCStart;			// current step starting tank heat content, kWh
 
-  *s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
-  *s *e INT hw_nzDrawCount;			// current substep # of draws > 0
-  *h *e FLOAT hw_tHWOut;			// average hot water temp, F (at water heater)
+*s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
+*s *e INT hw_nzDrawCount;			// current substep # of draws > 0
+*h *e FLOAT hw_tHWOut;				// average hot water temp, F (at water heater)
   
-  *h *e INT hw_bWriteCSV;			// write HPWH debugging CSV iff nz
-  *declare "FILE* hw_pFCSV;"		// file for debugging CSV (opened on 1st use)
+*h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
+*declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
 
-
-  *s *e INT hw_balErrCount;	// annual count of energy balance errors
+*s *e INT hw_balErrCount;			// annual count of energy balance errors
 
 *END // HPWHLINK
 
@@ -3709,9 +3713,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "float wh_CalcLDEF( float arl, int options=0);"
   *declare "RC wh_DoHour( float HARL, float wsMult);"
   *declare "RC wh_DoSubhrStart();"
-  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, double scaleWH);"
+  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
   *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhrTick( DHWTICK& tk, float tInlet, float tMains, float tMix, double scaleWH, double& tOutNoMix);"
+  *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInlet, float scaleWH, float tUse);"
   *declare "RC wh_DoSubhrEnd();"
   *declare "RC wh_DoEndPreRun();"
   *declare "RC wh_EndIvl( IVLCH ivl, float wsMult);"
@@ -3825,9 +3829,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
-
- 
-
 
   *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
@@ -4232,35 +4233,34 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 //=============================================================================
 RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *prefix sw_
+
+  *declare "virtual void ReceiveRuntimeMessage(const char* msg);"
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
   *declare "RC sw_DoHour();"
   *declare "RC sw_EndIvl( IVLCH ivl);"
+  *declare "RC sw_DoSubhrStart( int iTk0);"
+  *declare "RC sw_DoSubhrEnd();"
   *declare "void sw_TickStart();"
   *declare "RC sw_TickAccumDraw( DHWSYS* pWS, float vol, float tInlet);"
   *declare "RC sw_TickCalc();"
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
-
-  *declare "TI sw_lastWS;"
-  *declare "TI sw_lastWH;"
-  *declare "FLOAT sw_tickVol;"  // volume fed to water heaters
-  *declare "FLOAT sw_tickVolT;"  // volume fed to water heaters
-
-
+  
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
   *declare "MTR* sw_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
   *h FLOAT_GEZ sw_parElec;		// parasitic electricity use, W
 
   // Tank (from DHWTANK)
+  *s *e *nest HPWHLINK sw_tank;	// interface to Ecotope HPWH model (used as tank)
   *i FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F
 								//   default: derived from sw_tankVol and sw_tankInsulR
   *i FLOAT_GZ sw_tankVol;		// tank volume, gal
   *i FLOAT_GZ sw_tankInsulR;	// total tank insulation resistance, hr-F/Btuh
 								//   = built-in + exterior wrap
   *i TI sw_tankZnTi;			// Tank location zone re tank loss
-								//    0 iff wt_tEx being used
+								//    0 iff sw_tankTEx being used
 								//	  heat losses go to half to zone air / half radiant
   *declare "ZNR* sw_tankpZn;"	// pointer to tank zone location, use sw_tankTEx if NULL
   *h FLOAT sw_tankTEx;			// surrounding temperature, F for tank loss
@@ -4271,15 +4271,21 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 								//   for 1 tank (no sw_tankMult)
   *i FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
 
+  *s *e FLOAT sw_tickVol;		// current tick draw to DHWSYSs, gal
+  *s *e FLOAT sw_tickVolT;		// current tick (vol * inlet temp), gal-F
+
+  *h *e FLOAT sw_drawVol;		// current hour total draw, gal
   *h *e FLOAT sw_tankQGain;		// current hour's total gain from solar HX, Btu
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
   *h *e FLOAT sw_tankTOutlet	// tank outlet temperature, F
-  *h *e FLOAT sw_tankT			// tank temperature, F
+  *h *e FLOAT sw_tankHxT		// nominal tank heat exchange temp, F
+								//   = avg of bottom several tank node temps
+								//   used re heat exchange from collector loop
 
   // Collector Fluid
-  *i FLOAT sw_fluidVolSpHt		// Fluid volumetric specific heat, Btu/gal-F
-  *h *e FLOAT sw_tInlet			// mixed collector inlet temperature, F
-  *h *e FLOAT sw_tOutlet		// mixed collector outlet temperature, F
+  *i FLOAT sw_scFluidVolSpHt	// Fluid volumetric specific heat, Btu/gal-F
+  *h *e FLOAT sw_scTInlet		// mixed collector inlet temperature, F
+  *h *e FLOAT sw_scTOutlet		// mixed collector outlet temperature, F
 
 *END		// DHWSOLARSYS
 //=============================================================================

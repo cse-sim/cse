@@ -2049,20 +2049,12 @@ CULT("wsBathDrawWaste",   DAT,  FDX(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,  
 CULT("wsCWashrDrawWaste" ,DAT,  FDX(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT("wsDWashrDrawWaste", DAT,  FDX(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
 
-#if 1
 CULT("wsUnkDayWasteF",   DAT,   DWF( 0),               0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT("wsFaucetDayWasteF",DAT,   DWF(C_DHWEUCH_FAUCET), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT("wsShowerDayWasteF",DAT,   DWF(C_DHWEUCH_SHOWER), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT("wsBathDayWasteF",  DAT,   DWF(C_DHWEUCH_BATH),   0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT("wsCWashrDayWasteF",DAT,   DWF(C_DHWEUCH_CWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
 CULT("wsDWashrDayWasteF",DAT,   DWF(C_DHWEUCH_DWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-#else
-CULT( "wsDayWasteFaucetF",DAT,DWF(C_DHWEUCH_FAUCET), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "wsDayWasteShowerF",DAT,DWF(C_DHWEUCH_SHOWER), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "wsDayWasteBathF",  DAT,DWF(C_DHWEUCH_BATH),   0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "wsDayWasteCWashrF",DAT,DWF(C_DHWEUCH_CWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "wsDayWasteDWashrF",DAT,DWF(C_DHWEUCH_DWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-#endif
 
 CULT( "wsDayWasteVol",    DAT, DHWSYS_DAYWASTEVOL,   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "wsDayWasteBranchVolF",DAT,DHWSYS_DAYWASTEBRANCHVOLF,
@@ -2132,7 +2124,7 @@ CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      
 CULT( "swElecMtr",   DAT,   DHWSOLARSYS_ELECMTRI, 0,  0, VEOI,   TYREF, &MtriB, N,      N, N),
 CULT( "swEndUse",    DAT,   DHWSOLARSYS_ENDUSE, 0,    0, VEOI,   TYCH,  0,      C_ENDUSECH_DHW, N, N),
 CULT( "swParElec",   DAT,   DHWSOLARSYS_PARELEC, 0,   0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT( "swFluidVolSpHt", DAT, DHWSOLARSYS_FLUIDVOLSPHT, 0,  0, VEOI, TYFL, 0,    5.31f,  N, N),  // Ethylene Glycol
+CULT( "swSCFluidVolSpHt", DAT, DHWSOLARSYS_SCFLUIDVOLSPHT, 0,  0, VEOI, TYFL, 0,    5.31f,  N, N),  // Ethylene Glycol
 CULT( "swTankHXEff", DAT,   DHWSOLARSYS_TANKHXEFF, 0, 0, VEOI,   TYFL,  0,      0.7f,   N, N),
 CULT( "swTankUA",    DAT,   DHWSOLARSYS_TANKUA, 0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "swTankVol",   DAT,   DHWSOLARSYS_TANKVOL, 0,   0, VEOI,   TYFL,  0,      0.f,    N, N),

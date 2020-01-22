@@ -1294,15 +1294,15 @@ ReportCol colhead="Mains T X" colVal=@DhwSys[dhw].tInletX colWid=9 \
 ReportCol colhead="Tank Tinlet" colVal=@DhwSolarSys[ss].tankTInlet colWid=11 \
 ReportCol colhead="Tank T" colVal=@DhwSolarSys[ss].tankT colWid=6 \
 ReportCol colhead="Tank Toutlet" colVal=@DhwSolarSys[ss].tankTOutlet colWid=12 \
-ReportCol colhead="Collectors Tinlet" colVal=@DhwSolarSys[ss].tInlet colWid=18 \
-ReportCol colhead="Collectors Toutlet" colVal=@DhwSolarSys[ss].tOutlet colWid=18 \
-ReportCol colhead="Collector Toutlet P" colVal=@DhwSolarCollector[sc].tOutletP colWid=20 \
-ReportCol colhead="Collector POA Inc" colVal=@DhwSolarCollector[sc].poa colWid=18 \
-ReportCol colhead="Collector Pump" colVal=@DhwSolarCollector[sc].pumpInElec colWid=18 \
-ReportCol colhead="Collector Eff" colVal=@DhwSolarCollector[sc].eff colWid=18 \
-ReportCol colhead="Collector POA Q" colVal=@DhwSolarCollector[sc].Qpoa colWid=18 \
-ReportCol colhead="Collector Fluid Q" colVal=@DhwSolarCollector[sc].Qfluid colWid=18 \
-ReportCol colhead="Collectors Tank Q" colVal=@DhwSolarSys[ss].tankQGain colWid=18 \
+ReportCol colhead="SC Tin" colVal=@DhwSolarSys[ss].sctInlet colWid=7 \
+ReportCol colhead="SC Tout" colVal=@DhwSolarSys[ss].scTOutlet colWid=7 \
+ReportCol colhead="SC ToutP" colVal=@DhwSolarCollector[sc].tOutletP colWid=9 \
+ReportCol colhead="SC IncPOA" colVal=@DhwSolarCollector[sc].poa colWid=9 \
+ReportCol colhead="SC Pump" colVal=@DhwSolarCollector[sc].pumpInElec colWid=9 \
+ReportCol colhead="SC Eff" colVal=@DhwSolarCollector[sc].eff colWid=9 \
+ReportCol colhead="SC POA Q" colVal=@DhwSolarCollector[sc].Qpoa colWid=9 \
+ReportCol colhead="SC QFluid" colVal=@DhwSolarCollector[sc].Qfluid colWid=9 \
+ReportCol colhead="SC QTank" colVal=@DhwSolarSys[ss].tankQGain colWid=18 \
 
 
 // DHWTANK
