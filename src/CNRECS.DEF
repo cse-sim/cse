@@ -3632,9 +3632,9 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "bool hw_HasCompressor();"
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
-*declare "void hw_SetNXQNodes( int nxQNodes);"
-*declare "float hw_GetTankNXQTemp() const;"
-*declare "void hw_SetNXQ( float nxQ);"
+*declare "void hw_SetNQTXNodes( int nQTXNodes);"
+*declare "float hw_GetTankQTXTemp() const;"
+*declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL);"
@@ -3650,9 +3650,12 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s FLOAT hw_tEx;					// tank surround temp, F
 *s FLOAT hw_tASHPSrc;				// temp of heat pump air source, F
 
-*r INT hw_nxqNodes					// # of nodes used in node extra heat scheme
-*s *e FLOAT hw_nxQ;					// current tick heat to be added, Btu
-
+*s *e FLOAT_GEZ hw_qTXTick;			// current tick extra tank heat added lower tank nodes, Btu
+									//   used re e.g. solar water heating tanks
+									//   note <0 (tank cooling) not supported
+*r INT hw_nQTXNodes					// # of tank 1/12s used in hw_qTX extra tank heat
+									//   corresponds to nodes for HPWH default 12 node setup
+*declare "std::vector< double>* hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
 *h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
 									//   draws are reduced to balance load at ws_tUse.
@@ -3672,7 +3675,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e DBL hw_qHW;					// current subhr HPWHtotal hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
 									//   includes heat to DHWLOOP, does not include wh_HPWHxBU
-*s *e DBL hw_nxQSh;					// current subhr extra heat added to tank, kWh
+*s *e DBL hw_qTX;					// current subhr extra heat tank heat, kWh (not Btu)
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
@@ -3963,7 +3966,8 @@ RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *declare "DHWSYS* wt_GetDHWSYS() const;"
   *declare "RC wt_Init();"
   *declare "RC wt_DoHour( float tUse);"
-  *declare "RC wt_DoSubhr();"
+  *declare "RC wt_DoSubhr( float tUse);"
+
   *declare "static FLOAT TankSurfArea_CEC(float vol);"
 
   *i SI wt_mult;				// count of identical DHW tanks (default 1)
@@ -4253,11 +4257,15 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "MTR* sw_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
   *h FLOAT_GEZ sw_parElec;		// parasitic electricity use, W
 
+  *r FLOAT sw_scAreaTot;		// total of child DHWSOLARCOLLECTORS, ft2
+  *r INT sw_scCount;			// # of child DHWSOLARCOLLECTORS (not necessarily # of panels)
+
   // Tank (from DHWTANK)
   *s *e *nest HPWHLINK sw_tank;	// interface to Ecotope HPWH model (used as tank)
   *i FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F
 								//   default: derived from sw_tankVol and sw_tankInsulR
-  *i FLOAT_GZ sw_tankVol;		// tank volume, gal
+  *r FLOAT_GZ sw_tankVol;		// tank volume, gal
+								//   default: 1.5 gal/ft2 collector area
   *i FLOAT_GZ sw_tankInsulR;	// total tank insulation resistance, hr-F/Btuh
 								//   = built-in + exterior wrap
   *i TI sw_tankZnTi;			// Tank location zone re tank loss
@@ -4302,12 +4310,15 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *declare "class SolarFlatPlateCollector* sc_collector;"
 
   //*i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
+
   *i FLOAT_GZ sc_mult		// multiplier (for multiple panels). Default 1.
+  *r *e FLOAT_GZ sc_multLR	// last run multiplier, re probing in chained runs
 
   // sc_type ?
 
   // Collector
-  *i FLOAT_GZ sc_area		// SRCC collector Area
+  *i FLOAT_GZ sc_area		// SRCC collector area, ft2
+  *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
   *i FLOAT sc_FRUL			// SRCC slope
   *i FLOAT_GZ sc_FRTA		// SRCC intercept
 

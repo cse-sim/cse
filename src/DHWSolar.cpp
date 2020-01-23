@@ -50,12 +50,24 @@ RC DHWSOLARSYS::sw_CkF() {
 	}
 	return rc;
 }
-
-RC DHWSOLARSYS::sw_Init() {
+//---------------------------------------------------------------------------------------------
+RC DHWSOLARSYS::sw_Init()
+{
 	RC rc = RCOK;
 
 	sw_pMtrElec = MtrB.GetAtSafe(sw_elecMtri);
 
+	// DHWSOLARCOLLECTOR
+	sw_scCount = 0;
+	sw_scAreaTot = 0.f;
+	DHWSOLARCOLLECTOR* pSC;
+	RLUPC(ScR, pSC, pSC->ss == ss)
+	{	rc |= pSC->sc_Init();
+		sw_scCount++;
+		sw_scAreaTot += pSC->sc_areaTot;
+	}
+	if (!IsSet(DHWSOLARSYS_TANKVOL))
+		sw_tankVol = 1.5f * sw_scAreaTot;		// default 1.5 gal/ft2
 
 	sw_tankHxT = 60.f;  // F initial guess
 	sw_tankTInlet = sw_tankHxT;
@@ -73,7 +85,7 @@ RC DHWSOLARSYS::sw_Init() {
 	rc |= sw_tank.hw_InitTank( sw_tankVol, sw_tankUA);
 	// finalize tank, -1 = don't set inlet height
 	rc |= sw_tank.hw_InitFinalize( -1.f, -1.f);
-	sw_tank.hw_SetNXQNodes( 3);		// use bottom 3 nodes
+	sw_tank.hw_SetNQTXNodes( 3);	// use bottom 3 nodes
 									//   solar collector HX
 
 	return rc;
@@ -202,7 +214,7 @@ RC DHWSOLARSYS::sw_TickCalc()
 	}
 
 	// tank heat exchange temp
-	sw_tankHxT = sw_tank.hw_GetTankNXQTemp();
+	sw_tankHxT = sw_tank.hw_GetTankQTXTemp();
 
 	float scQGain = 0.f;		// collector heat to be added to tank, Btu
 	if (sumVol > 0.f)
@@ -218,7 +230,7 @@ RC DHWSOLARSYS::sw_TickCalc()
 		sw_scTOutlet = sw_scTInlet;
 	}
 
-	sw_tank.hw_SetNXQ( scQGain);
+	sw_tank.hw_SetQTX( scQGain);	// pass gain to tank model
 
 	if (sw_tickVol > 0.f)
 	{
@@ -232,23 +244,6 @@ RC DHWSOLARSYS::sw_TickCalc()
 	if (tOut > 0.f)
 		sw_tankTOutlet = tOut;
 
-#if 0
-	// First order tank approximation:
-	if (sw_tickVol > sw_tankVol)
-	{
-		// Entire tank contents (plus some)
-		sw_tankT = (sw_tankT * sw_tankVol + sw_tankTInlet * (sw_tickVol - sw_tankVol)) / sw_tickVol;
-		sw_tankTOutlet = sw_tankT;
-	}
-	else
-	{
-		// skimming off the top
-		sw_tankTOutlet = sw_tankT;
-		// then mix for next tick
-		sw_tankT = (sw_tankT * (sw_tankVol - sw_tickVol) + sw_tankTInlet * sw_tickVol) / sw_tankVol;
-	}
-#endif
-
 	return rc;
 }
 //=============================================================================
@@ -261,48 +256,63 @@ DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR() {
 	delete sc_collector;
 	sc_collector = NULL;
 }
-
+//-----------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_CkF() {
 	RC rc = RCOK;
+
+	sc_areaTot = sc_area * sc_mult;
+
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
 	{
-		sc_pumpFlow = 0.03*sc_area*sc_mult;  // initial rule of thumb: 0.03 gpm per ft2
+		sc_pumpFlow = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
 	}
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
 	{
 		sc_pumpPwr = 34.1f*sc_pumpFlow;  // roughly 10 W / gpm -- don't know how good this assumption is
 	}
 
+
 	return rc;
 }
 //-----------------------------------------------------------------------------------
-RC DHWSOLARCOLLECTOR::sc_Init() {
+RC DHWSOLARCOLLECTOR::sc_Init()
+{
 	RC rc = RCOK;
 	
-	DHWSOLARSYS* pSS = SwhR.GetAtSafe(ownTi);
+	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
 
 	delete sc_collector;		// insurance: delete prior, if any
 
-	sc_collector = new SolarFlatPlateCollector(AIPtoSI(sc_area*sc_mult),
-		                                         sc_tilt, 
-		                                         sc_azm, 
-		                                         sc_FRTA, 
-		                                         UIPtoSI(sc_FRUL),
-		                                         SHIPtoSI(pSS->sw_scFluidVolSpHt)/DSItoIP(1000.0) * 7.48,  // Btu/gal-F * J/kg-K * lb-F/Btu * m3 / kg * ft3 / lb * kg / m3 * gal / ft3 = J/kg-K
-		                                         1000.0);  // Split doesn't really matter
+	sc_collector = new SolarFlatPlateCollector(
+		AIPtoSI( sc_areaTot),
+		sc_tilt, 
+		sc_azm, 
+		sc_FRTA, 
+		UIPtoSI(sc_FRUL),
+		SHIPtoSI(pSW->sw_scFluidVolSpHt)/DSItoIP(1000.0) * 7.48,  // Btu/gal-F * J/kg-K * lb-F/Btu * m3 / kg * ft3 / lb * kg / m3 * gal / ft3 = J/kg-K
+		1000.0);  // Split doesn't really matter
 
 	sc_tickOp = false;
 
 	return rc;
 }
-
-RC DHWSOLARCOLLECTOR::sc_DoHour() {
+//--------------------------------------------------------------------------------------
+RC DHWSOLARCOLLECTOR::sc_DoHour()
+{
 	RC rc = RCOK;
 	sc_pumpInElec = 0.f;
-	sc_Qpoa = sc_Qfluid = sc_eff = 0.0;
-	return rc;
-}
+	sc_Qfluid = sc_eff = 0.0;
 
+	// plane incidence: use hourly values
+	double plane_incidence;
+	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
+
+	sc_poa = static_cast<FLOAT>(plane_incidence);
+	sc_Qpoa = sc_poa * sc_areaTot;  // Btu/h-ft2 * ft2 = Btu
+
+	return rc;
+}		// DHWSOLARCOLLECTOR::sc_DoHour
+//--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoHourEnd() {
 	RC rc = RCOK;
 
@@ -318,8 +328,7 @@ RC DHWSOLARCOLLECTOR::sc_DoHourEnd() {
 
 	return rc;
 }
-
-
+//--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 	RC rc = RCOK;
 
@@ -358,15 +367,10 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 
 	return rc;
 }
-
-FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(float pump_dt) {
-	// Calculate incidence
-	double plane_incidence {0.0f};
-	slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
-	sc_poa = static_cast<FLOAT>(plane_incidence);
-
-	sc_Qpoa += sc_poa * sc_area *sc_mult*Top.tp_tickDurHr;  // Btu/h-ft2 * ft2 * h = Btu
-
+//------------------------------------------------------------------------------------------
+FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(
+	float pump_dt)	// pump temp rise, R
+{
 	// Collector inlet temperature (from tank heat exchanger)
 	double tInlet = SwhR.GetAtSafe(ownTi)->sw_scTInlet + pump_dt;
 	
@@ -376,7 +380,9 @@ FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(float pump_dt) {
 	double m_dot_SI = sc_pumpFlow * gpmTom3ps* m3tokg;
 
 	// Calculate outlet temperature
-	sc_collector->calculate(IrIPtoSI(plane_incidence), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
+	sc_collector->calculate(IrIPtoSI( sc_poa), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
 
 	return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
 }
+
+//=============================================================================

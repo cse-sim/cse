@@ -1480,7 +1480,7 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 
 	DHWTANK* pWT;
 	if (ws_wtCount > 0) RLUPC(WtR, pWT, pWT->ownTi == ss)
-		pWT->wt_DoSubhr();
+		rc |= pWT->wt_DoSubhr( ws_tUse);
 
 	ws_AddLossesToDraws(ws_ticks + iTk0);
 
@@ -1603,7 +1603,7 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 			// solar savings fraction
 			if (ws_pDHWSOLARSYS)
 				ws_SSFAnnual = ws_SSFAnnualReq > 0.f
-						? ws_SSFAnnualSolar / ws_SSFAnnualReq
+						? min( ws_SSFAnnualSolar / ws_SSFAnnualReq, 1.f)
 						: 0.f;
 			
 		}
@@ -2038,6 +2038,8 @@ void HPWHLINK::hw_Cleanup()
 	hw_pHPWH = NULL;
 	delete[] hw_HSMap;
 	hw_HSMap = NULL;
+	delete hw_pNodePowerExtra_W;
+	hw_pNodePowerExtra_W = NULL;
 
 }	// HPWHLINK::hw_Cleanup
 //-----------------------------------------------------------------------------
@@ -2206,9 +2208,11 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 		rc |= RCBAD;
 	if (hw_pHPWH->setUA(UA, HPWH::UNITS_BTUperHrF) != 0)
 		rc |= RCBAD;
-	if (hw_pHPWH->setSetpoint( 200., HPWH::UNITS_F) != 0)
+#if 0
+	// preset default setpoint is 800 C (= no temp limit)
+	if (hw_pHPWH->setSetpoint(200., HPWH::UNITS_F) != 0)
 		rc |= RCBAD;
-	
+#endif
 	return rc;
 }		// HPWHLINK::hw_InitTank
 //-----------------------------------------------------------------------------
@@ -2283,27 +2287,27 @@ float HPWHLINK::hw_GetTankVol() const	// returns current tank size, gal
 	return hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
 }		// HPWHLINK::hw_GetTankVol
 //-----------------------------------------------------------------------------
-void HPWHLINK::hw_SetNXQNodes(int nxqNodes)
+void HPWHLINK::hw_SetNQTXNodes(int nQTXNodes)
 {
-	hw_nxqNodes = nxqNodes;
+	hw_nQTXNodes = nQTXNodes;
 
-}		// HPWHLINK::hw_SetNXQNodes
+}		// HPWHLINK::hw_SetNQTXNodes
 //-----------------------------------------------------------------------------
-float HPWHLINK::hw_GetTankNXQTemp() const
+float HPWHLINK::hw_GetTankQTXTemp() const
 {
-	float tNXQ = 0.f;
-	for (int iNXQ = 0; iNXQ < hw_nxqNodes; iNXQ++)
-		tNXQ += hw_pHPWH->getTankNodeTemp(iNXQ, HPWH::UNITS_F);
-	tNXQ /= hw_nxqNodes;
-	return tNXQ;
-}		// HPWHLINK::hw_GetTankNXQTemp
+	float tQTX = 0.f;
+	for (int iQTX = 0; iQTX < hw_nQTXNodes; iQTX++)
+		tQTX += hw_pHPWH->getTankNodeTemp(iQTX, HPWH::UNITS_F);
+	tQTX /= hw_nQTXNodes;
+	return tQTX;
+}		// HPWHLINK::hw_GetTankQTXTemp
 //-----------------------------------------------------------------------------
-void HPWHLINK::hw_SetNXQ(
-	float nxQ)		// additional heat to be added for current tick
+void HPWHLINK::hw_SetQTX(
+	float qTX)		// additional heat to be added for current tick
 {
-	hw_nxQ = nxQ;
+	hw_qTXTick = qTX;
 
-}		// HPWHLINK::hw_SetNXQ
+}		// HPWHLINK::hw_SetQTX
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	// DHWSYS* pWS,		// parent DHWSYS
@@ -2355,7 +2359,7 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_qHW = 0.;		// total hot water heating, kWh; always >= 0
 						//   includes heat to DHWLOOP;  does not include wh_HPWHxBU
 
-	hw_nxQSh = 0.;		// total "extra" heat (e.g. re solar tank)
+	hw_qTX = 0.;		// total extra tank heat (e.g. re solar tank)
 
 	hw_tHWOutF = 0.;	// accum re average hot water outlet temp, F
 	// wh_fMixUse, wh_fMixRL: initialized in wh_InitRunTotals(); value retained hour-to-hour
@@ -2451,34 +2455,21 @@ RC HPWHLINK::hw_DoSubhrTick(
 
 	double drawForTick = drawUse + drawLoss + drawRL;
 
-
-#define MIX 0
-#if MIX == 1
-	// mixed all to inlet 1
-	tInlet = (drawRL*tRL + (drawForTick - drawRL)* tInlet) / drawForTick;
-	drawRL = 0.;
-	tRL = 0.;
-#elif MIX==2
-	// mixed all to inlet 2
-	tRL = (drawRL*tRL + (drawForTick - drawRL)* tInlet) / drawForTick;
-	drawRL = drawForTick;
-	tInlet = 0.;
-#endif
-
 	hw_pHPWH->setInletT(DegFtoC(tInlet));		// mixed inlet temp
 
-
-	std::vector< double>* pNxQ = NULL;
-	std::vector< double> nxQ;
-	if (hw_nxQ != 0.)
-	{	double nxQkWh = hw_nxQ / BtuperkWh;
-		hw_nxQSh += nxQkWh;
-		double nxQ1 = nxQkWh * 1000. / (hw_nxqNodes * Top.tp_tickDurHr);
-		nxQ.assign(hw_nxqNodes, nxQ1);
-		pNxQ = &nxQ;
+	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
+	std::vector< double>* pNPX = NULL;
+	if (hw_qTXTick > 0.)		// ignore tank "cooling"
+	{	if (hw_pNodePowerExtra_W == NULL)
+			hw_pNodePowerExtra_W = new std::vector< double>;
+		double qTXkWh = hw_qTXTick / BtuperkWh;
+		hw_qTX += qTXkWh;		// subhour total (kWh)
+		double qTXPwr	// tick power per node, W
+			= qTXkWh * 1000. / (hw_nQTXNodes * Top.tp_tickDurHr);
+		hw_pNodePowerExtra_W->assign(hw_nQTXNodes, qTXPwr);
+		pNPX = hw_pNodePowerExtra_W;
 	}
-
-
+	
 	int hpwhRet = hw_pHPWH->runOneStep(
 		GAL_TO_L(drawForTick),	// draw volume, L
 		DegFtoC(hw_tEx),		// ambient T (=tank surround), C
@@ -2487,7 +2478,7 @@ RC HPWHLINK::hw_DoSubhrTick(
 		HPWH::DR_ALLOW,			// DRstatus: no demand response modeled
 		GAL_TO_L(drawRL), DegFtoC(tRL),	// 2ndary draw for DHWLOOP
 										//   note drawForTick includes drawRL
-		pNxQ);					// additional node heat (re e.g. solar tanks)
+		pNPX);					// additional node power (re e.g. solar tanks)
 
 	if (hpwhRet)	// 0 means success
 		rc |= RCBAD;
@@ -2677,6 +2668,7 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 		double qBal = hw_qEnv		// HP energy extracted from surround
 			- hw_qLoss		// tank loss
 			+ inElec		// electricity in
+			+ hw_qTX		// extra tank heat in
 			- hw_qHW		// hot water energy
 			- deltaHC;		// change in tank stored energy
 		double fBal = fabs(qBal) / max(hw_tankHCNominal, 1.);
@@ -3603,6 +3595,7 @@ RC DHWTANK::wt_DoHour(			// hourly unfired DHWTANK calcs
 //    else results unusable
 {
 	RC rc = RCOK;
+#if 1
 	// resolve tank temp each hour (DHWSYS.wsTUse can vary hourly)
 	float tTank = IsSet( DHWTANK_TTANK)
 					? wt_tTank
@@ -3612,15 +3605,41 @@ RC DHWTANK::wt_DoHour(			// hourly unfired DHWTANK calcs
 
 	// total loss (aka HJL in ACM App B)
 	wt_qLoss = wt_UA * (tTank - wt_tEx) + wt_xLoss;
+#else
+	wt_qLoss = 0.f;
+#endif
 
 	return rc;
 }		// DHWTANK::wt_DoHour
 //-----------------------------------------------------------------------------
-RC DHWTANK::wt_DoSubhr()			// subhour DHWTANK calcs
+RC DHWTANK::wt_DoSubhr(			// subhour DHWTANK calcs
+	float tUse)		// system water use temp, F
+					// provides default iff wt_tTank not set
 {
 	RC rc = RCOK;
+
+#if 0
+	// resolve tank temp each hour (DHWSYS.wsTUse can vary hourly)
+	float tTank = IsSet(DHWTANK_TTANK)
+		? wt_tTank
+		: tUse;
+
+	if (wt_pZn)
+		wt_tEx = wt_pZn->tzlh;
+
+	// loss rate, Btuh
+	float qLoss = wt_UA * (tTank - wt_tEx) + wt_xLoss;
+
+	// total loss (aka HJL in ACM App B)
+	wt_qLoss += qLoss * Top.subhrDur;
+
+	if (wt_pZn)
+		wt_pZn->zn_CoupleDHWLossSubhr(qLoss * wt_mult);
+#else
 	if (wt_pZn)
 		wt_pZn->zn_CoupleDHWLossSubhr( wt_qLoss * wt_mult);
+#endif
+
 	return rc;
 }		// DHWTANK::wt_DoSubhr
 //=============================================================================

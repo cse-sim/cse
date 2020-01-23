@@ -1496,12 +1496,9 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	if (!rc) RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 2);
 
-	// DHWSOLARCOLLECTOR
-	DHWSOLARCOLLECTOR* pSC;
-	RLUP(ScR, pSC)
-		rc |= pSC->sc_Init();
 
 	// DHWSOLARSYS
+	//   sw_Init() calls child DHWSOLARCOLLECTOR sc_Init
 	DHWSOLARSYS* pSW;
 	RLUP(SwhR, pSW)
 		rc |= pSW->sw_Init();
