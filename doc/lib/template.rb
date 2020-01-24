@@ -24,7 +24,16 @@ module Template
   # context passed in by the second parameter.
   # See http://stackoverflow.com/a/5462069
   RenderWithErb = lambda do |template, b|
-    ERB.new(template,0,'>').result(b)
+    result = nil
+    begin
+      # Ruby 2.6+
+      # the rescue block form is deprecated...
+      result = ERB.new(template,trim_mode:'>').result(b)
+    rescue
+      # Ruby prior to 2.6
+      result = ERB.new(template,0,'>').result(b)
+    end
+    result
   end
 
   # String String Int (Map String String) -> nil
