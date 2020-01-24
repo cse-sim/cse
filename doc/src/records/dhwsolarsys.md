@@ -10,22 +10,107 @@ May have any number of solar collectors, but only one tank.
 
 May have no tank for direct system? What if system has multiple primary tanks?
 
-**swName**
+**swElecMtr=*mtrName***
 
-**swFluid**
+Name of METER object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use ???).
 
-Fluid used in the water heater system.
+<%= member_table(
+  units: "F",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
-**swSSF=*float***
+**swEndUse**
 
-Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions.  The contributions are modeled by deriving an increased water heater feed temperature of any DHWSYS that references this DHWSOLARSYS --
+End use of pump energy; defaults to "DHW".
+  
+**swParElec=*float***
 
-$$tWHFeed = tInletAdj + swSSF*(wsTUse-tInletAdj)$$
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+			 x $\ge$ 0         0             No             hourly
 
-where tInletAdj is the source cold water temperature *including any DHWHEATREC tempering* (that is, wsTInlet + heat recovery temperature increase, if any).  This model approximates the diminishing returns associated with combined preheat strategies such as drain water heat recovery and solar.
+**swFluidVolSpHt=*float***
+ 
+Default specific heat for Ethylene Glycol.
 
-  **Units**    **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-                0 $\le$ x $\le$ 0.99           0             No             hourly
+<%= member_table(
+  units: "Btu/gal-^o^F",
+  legal_range: "",
+  default: "5.31",
+  required: "No",
+  variability: "constant") %>
+
+**swTankHXEff=*float***
+
+Tank heat exchanger effectiveness.
+
+**Units**   **Legal Range**         **Default**   **Required**   **Variability**
+----------- ---------------------   ------------- -------------- -----------------
+			 0 $\le$ x $\le$ 0.99    0             No             hourly
+
+**swTankUA=*float***
+
+Heat transfer coefficient for the tank multiplied by area.
+  
+<%= member_table(
+  units: "Btuh/^o^F",
+  legal_range: "",
+  default: "",
+  required: "No",
+  variability: "constant") %>
+
+**swTankVol=*float***
+
+<%= member_table(
+  units: "gal",
+  legal_range: "",
+  default: "",
+  required: "No",
+  variability: "constant") %>
+
+**swTankInsulR=*float***
+
+Total tank insulation resistance, built-in plus exterior wrap.
+  
+<%= member_table(
+  units: "ft^2^-^o^F/Btuh",
+  legal_range: "",
+  default: "",
+  required: "No",
+  variability: "constant") %>
+
+**swTankZn**
+
+Pointer to tank zone location, use sw_tankTEx if NULL
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "",
+  required: "No",
+  variability: "constant") %>
+
+**swTankTEx=*float***
+
+Surrounding temperature.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "",
+  required: "No",
+  variability: "hourly") %>
 
 **endDHWSOLARSYS**
+
+Optionally indicates the end of the DHWSOLARSYS definition.
+
+<%= member_table(
+  units: "*n/a*",
+  legal_range: "*n/a*",
+  default: "*n/a*",
+  required: "No",
+  variability: "*n/a*") %>
+
