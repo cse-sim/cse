@@ -13,7 +13,7 @@ The source files including both manifest files (in YAML) and markdown files (end
 - the [Pandoc] markup language converter (use Pandoc version 1.17.2; other versions are not supported)
 - (optional) for PDF output, you will need to install a LaTeX system (see below)
 - (optional) for compression of HTML/CSS, a recent version of [Node.js]
-- a recent version of the [Ruby] programming language (we are using Ruby 2.0.0p648)
+- a recent version of the [Ruby] programming language (use any Ruby NOT at end-of-life, currently Ruby 2.4+)
 - (optional) an internet connection (for installing node dependencies)
 - the git version control manager (we are using 2.10.2)
 
