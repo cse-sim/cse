@@ -903,8 +903,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_inElec = 0.f;
 	// ws_inFuel = 0.f;	no DHWSYS fuel use
 
+	ws_HJL = 0.f;	// jacket losses, Btu
+
 	ws_qDWHR = 0.f;		// DWHR (DHWHEATREC) recovered heat hour total
-	static double wlVolTot = 0.;
 
 	if (ivl <= C_IVLCH_D)	// if start of day (or longer)
 	{
@@ -1046,6 +1047,10 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	float mult = ws_mult * centralMult;	// overall multiplier
 	rc |= ws_DoHourDrawAccounting( mult);
 
+	DHWTANK* pWT;
+	if (ws_wtCount > 0) RLUPC(WtR, pWT, pWT->ownTi == ss)
+		rc |= pWT->wt_DoHour();
+
 #if 0
 	// write draw info to CSV file
 	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
@@ -1064,16 +1069,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_fxUseMix.wmt_AccumTo( ws_fxUseMixTot);
 	ws_whUse.wmt_AccumTo( ws_whUseTot);
 #endif
-
-	// jacket loss
-	ws_HJL = 0.f;
-	if (ws_wtCount > 0)		// if any child tanks
-	{	DHWTANK* pWT;
-		RLUPC( WtR, pWT, pWT->ownTi == ss)
-		{	rc |= pWT->wt_DoHour( ws_tUse);
-			ws_HJL += pWT->wt_mult * pWT->wt_qLoss;
-		}
-	}
 
 	// multi-unit distribution losses
 	double HRLL = 0.;
@@ -1119,7 +1114,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	}
 #endif
 	
-	ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;
 	if (ws_wpCount > 0)		// if any child pumps
 	{	DHWPUMP* pWP;
 		RLUPC(WpR, pWP, pWP->ownTi == ss)
@@ -1128,14 +1122,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (ws_whCount > 0.f)
 	{	DHWHEATER* pWH;
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
-			rc |= pWH->wh_DoHour(ws_HARL / ws_whCount, mult);
+			rc |= pWH->wh_DoHour();
 
 		// loop heaters
 		if (ws_wlhCount > 0) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		{
-			if (pWH->wh_IsHPWHModel())
-				pWH->wh_DoHour(0.f, mult);
-		}
+			rc |= pWH->wh_DoHour();
 	}
 	// DHWSYS energy use
 	ws_inElec += ws_parElec * BtuperWh;	// parasitics for e.g. circulation pumping
@@ -1441,21 +1432,21 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 }		// DHWSYS::ws_DoHourDWHR
 //-----------------------------------------------------------------------------
 RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
-	DHWTICK* ticksSh)	// draws by tick
+	DHWTICK* ticksSh)	// initial tick draw for subhr
 // updates tick info re loop and other losses
 // results are for DHWSYS, allocated later per DHWHEATER
 {
 	RC rc = RCOK;
 
 	double scaleTick = 1. / Top.tp_NHrTicks();	// allocate per tick
-	double qLossNoRL = ws_HJL * scaleTick;	// w/o recirc: jacket
+	double qLossNoRL = ws_HJLsh * scaleTick;	// w/o recirc: jacket
 	if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
 		qLossNoRL += ws_HRBL * scaleTick;	// T24DHW: branches losses modeled as heat
 											// else: branch losses included in draws
 	double volRL = ws_volRL * scaleTick;	// DHWLOOP recirc vol/tick, gal
 
 #if 0 && defined( _DEBUG)
-	double qLossTot = (ws_HRDL + ws_HJL) * scaleTick;		// total: DHWLOOP + jacket
+	double qLossTot = (ws_HRDL + ws_HJLsh) * scaleTick;		// total: DHWLOOP + jacket
 	double qLossRL = qLossTot - qLossNoRL;					// recirc only
 	// compared to ws_tRL??
 #endif
@@ -1478,9 +1469,13 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	RC rc = RCOK;
 	DHWHEATER* pWH;
 
+	ws_HJLsh = 0.f;		// subhr jacket losses
 	DHWTANK* pWT;
 	if (ws_wtCount > 0) RLUPC(WtR, pWT, pWT->ownTi == ss)
-		rc |= pWT->wt_DoSubhr( ws_tUse);
+	{	rc |= pWT->wt_DoSubhr(ws_tUse);
+		ws_HJLsh += pWT->wt_mult * pWT->wt_qLossSh;
+	}
+	ws_HJL += ws_HJLsh * Top.subhrDur;	// accumulate to hour, Btu
 
 	ws_AddLossesToDraws(ws_ticks + iTk0);
 
@@ -1586,11 +1581,13 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 	{
 		ws_fxUseMixLH.wmt_Copy(&ws_fxUseMix);
 
+		ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;		// total recovery load
+
 		DHWHEATER* pWH;
 		if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
-			rc |= pWH->wh_EndIvl(ivl, ws_mult);
+			rc |= pWH->wh_EndIvl(ivl, ws_HARL / ws_whCount, ws_mult);
 		if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-			rc |= pWH->wh_EndIvl(ivl, ws_mult);
+			rc |= pWH->wh_EndIvl(ivl, 0.f, ws_mult);
 
 		// note: DHWSYS energy/water meter accum is in ws_DoHour
 		//       values do not vary subhrly
@@ -3054,18 +3051,13 @@ static const float LDtab[][6] =
 
 }	// DHWHEATER::wh_CalcLDEF
 //----------------------------------------------------------------------------
-RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
-	float HARL,		// hourly adjusted recovery load, Btu
-	float wsMult)	// system multiplier
+RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 {
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
 	int whfcn = wh_GetFunction();
-
-	// accumulate load (re LDEF derivation)
-	wh_totHARL += HARL;		// annual total
 
 	wh_hrCount++;
 
@@ -3090,6 +3082,7 @@ RC DHWHEATER::wh_DoHour(			// DHWHEATER hour calcs
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 	IVLCH ivl,		// C_IVLCH_Y etc
+	float HARL,		// single heater recovery load for hour, Btu
 	float wsMult)	// DHWSYS multiplier
 
 // DHWHEATER subhour models accum to wh_inElec, wh_inElecBu, wh_inElecXBU, and wh_inFuel
@@ -3098,6 +3091,9 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 
 {
 	RC rc = RCOK;
+
+	// accumulate load (re LDEF derivation)
+	wh_totHARL += HARL;		// annual total
 
 	// check figure
 	wh_inElecTot += wh_inElec + wh_inElecBU + wh_inElecXBU;
@@ -3588,27 +3584,12 @@ RC DHWTANK::wt_Init()			// init for run
 	return rc;
 }		// DHWTANK::wtInit
 //-----------------------------------------------------------------------------
-RC DHWTANK::wt_DoHour(			// hourly unfired DHWTANK calcs
-	float tUse)		// system water use temp, F
-					// provides default iff wt_tTank not set
+RC DHWTANK::wt_DoHour()			// hourly unfired DHWTANK calcs
 // returns RCOK on success, wt_qLoss set
 //    else results unusable
 {
 	RC rc = RCOK;
-#if 1
-	// resolve tank temp each hour (DHWSYS.wsTUse can vary hourly)
-	float tTank = IsSet( DHWTANK_TTANK)
-					? wt_tTank
-					: tUse;
-	if (wt_pZn)
-		wt_tEx = wt_pZn->tzlh;
-
-	// total loss (aka HJL in ACM App B)
-	wt_qLoss = wt_UA * (tTank - wt_tEx) + wt_xLoss;
-#else
 	wt_qLoss = 0.f;
-#endif
-
 	return rc;
 }		// DHWTANK::wt_DoHour
 //-----------------------------------------------------------------------------
@@ -3618,7 +3599,6 @@ RC DHWTANK::wt_DoSubhr(			// subhour DHWTANK calcs
 {
 	RC rc = RCOK;
 
-#if 0
 	// resolve tank temp each hour (DHWSYS.wsTUse can vary hourly)
 	float tTank = IsSet(DHWTANK_TTANK)
 		? wt_tTank
@@ -3628,17 +3608,13 @@ RC DHWTANK::wt_DoSubhr(			// subhour DHWTANK calcs
 		wt_tEx = wt_pZn->tzlh;
 
 	// loss rate, Btuh
-	float qLoss = wt_UA * (tTank - wt_tEx) + wt_xLoss;
+	wt_qLossSh = wt_UA * (tTank - wt_tEx) + wt_xLoss;
 
 	// total loss (aka HJL in ACM App B)
-	wt_qLoss += qLoss * Top.subhrDur;
+	wt_qLoss += wt_qLossSh * Top.subhrDur;
 
 	if (wt_pZn)
-		wt_pZn->zn_CoupleDHWLossSubhr(qLoss * wt_mult);
-#else
-	if (wt_pZn)
-		wt_pZn->zn_CoupleDHWLossSubhr( wt_qLoss * wt_mult);
-#endif
+		wt_pZn->zn_CoupleDHWLossSubhr(wt_qLossSh * wt_mult);
 
 	return rc;
 }		// DHWTANK::wt_DoSubhr
