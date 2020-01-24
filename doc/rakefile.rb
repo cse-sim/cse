@@ -28,8 +28,13 @@ require_relative 'lib/probes'
 ########################################
 # Check Dependencies
 ########################################
-PANDOC_VERSION = `pandoc --version`.split(/\n/)[0].gsub(/pandoc\s*/,'')
-if PANDOC_VERSION != "1.17.2"
+PANDOC_VERSION = nil
+begin
+  PANDOC_VERSION = `pandoc --version`.split(/\n/)[0].gsub(/pandoc\s*/,'')
+rescue
+  # pandoc isn't available
+end
+if PANDOC_VERSION.nil? or PANDOC_VERSION != "1.17.2"
   puts "This build tool requires pandoc 1.17.2"
   puts "Please uninstall your current pandoc via Windows"
   puts "'Add and Remove Programs' and then install"
