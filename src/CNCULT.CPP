@@ -62,6 +62,9 @@ makAncTOPRAT( TopiR);   		// "Top" info input record's basAnc. rccn.h macro, anc
 TOPRAT Topi( (anc<TOPRAT> *)&TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
 // pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
 
+// inverse objects
+makAncINVERSE(IvB);
+
 // zones, transfers, gains, meters
 makAncZNI(ZiB);				// zones input info records basAnc
 makAncIZXRAT( IzxiB);		// interzone transfer input records basAnc
@@ -2604,7 +2607,29 @@ CULT( "endDesCond", ENDER, 0,           0,        0, 0,      0,      0,    0.f, 
 CULT()
 };	// dcT
 
-
+//================== INVERSE ===================================================
+LOCAL RC FC ivStarCkf(CULT* c, /*DESCOND* */ void *p, void *p2, void *p3)
+// called at end of DESCOND input, to get messages near source of error.
+{
+	return ((INVERSE*)p)->iv_CkF();
+}		// dsStarCkf
+//-----------------------------------------------------------------------------------------------
+static CULT inverseT[] =
+{
+// id           cs    fn               f        uc evf     ty      b     dfls        p2   ckf
+//----------    ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
+CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,        N,   ivStarCkf),
+CULT("ivFREQ",	DAT,  INVERSE_FREQ,	   RQD,     0, VEOI,   TYCH,   0,    -1,         N,   N),
+CULT("ivX0",    DAT,  INVERSE_X0,      0,       0, VEOI,   TYFL,   0,    0.f,        N,   N),
+CULT("ivY0",    DAT,  INVERSE_Y0,      0,       0, VEOI,   TYFL,   0,    0.f,        N,   N),
+CULT("ivYTarg", DAT,  INVERSE_YTARG,   RQD,     0, VEOI,   TYFL,   0,    0.f,        N,   N),
+CULT("ivX",     DAT,  INVERSE_X,       RQD,     0, VSUBHRLY | EVPSTIVL,
+                                                           TYFL,   0,    0.f,        N,   N),
+CULT("ivY",     DAT,  INVERSE_Y,       RQD,     0, VSUBHRLY | EVPSTIVL,
+                                                           TYFL,   0,    0.f,        N,   N),
+CULT("endInverse",ENDER, 0,            0,       0, 0,      0,      0,    0.f,        N,   N),
+CULT()
+};		// inverseT
 
 //================== TOP LEVEL COMMANDS, used to access all other tables. ==================
 
@@ -2748,6 +2773,8 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "towerPlant",  RATE,  0,                 NM_RQD,     0, 0,      0,    &TpiB,   N,    0.f,           tpT,  N),
 	CULT( "holiday",     RATE,  0,                 NM_RQD,     0, 0,      0,    &HdayiB, N,    0.f,         hdayT,  N),
 	CULT( "descond",     RATE,  0,                 NM_RQD,     0, 0,      0,    &DCiB,   N,    0.f,           dcT,  N),
+	CULT( "inverse",     RATE,  0,                 NM_RQD,     0, 0,      0,    &IvB,    N,    0.f,      inverseT,  N),
+
 // TOP commands
 	CULT( "run",         RUN,   0,                 0,          0, 0,      0,     0,      N,    0.f,            N,   topCkf),
 	CULT( "clear",       CLEAR, 0,                 PRFP,       0, 0,      0,     0,   v topClearItf,0.f,   v topStarPrf, N), // note topStarPrf reuse

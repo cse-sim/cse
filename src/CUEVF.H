@@ -22,7 +22,7 @@ const int EVFRUN   =    32;   	// at start of autosize and run, after check/setu
 								// interval stages: beg, end, post
 const int EVPSTIVL =     8;		// set for values available after post-processing calcs for their intervals
 								//   (eg load management)
-const int EVENDIVL =     4;		// set for values available at END of ther calcs for intervals (results rather than inputs)
+const int EVENDIVL =     4;		// set for values available at END of their calcs for intervals (results rather than inputs)
 const int EVBEGIVL =     0;		// implicit for values available at beg of interval (inputs)
 const int EVXBEGIVL = EVENDIVL | EVPSTIVL;	// all non-beg stages
 

@@ -645,7 +645,25 @@ RECORD PY4 "4th power poly sub" *SUBSTRUCT	// 4th power polynomial. for GT, whic
 
     *f *ARRAY 6 FLOAT k			// FLOAT k[6].  One extra member needed as terminator by cul.cpp array input logic.
 *END		// PY4
+//==================================================================================================================
+RECORD INVERSE "Inverse" *RAT	// function inverter
 
+  *prefix iv_
+  *declare "RC iv_CkF();"
+  *declare "RC iv_Init();"
+  *declare "RC iv_Calc( IVLCH ivl);"
+
+  *r IVLCH iv_freq
+  *r FLOAT iv_X0
+  *r FLOAT iv_Y0
+  *r FLOAT iv_YTarg
+
+  *s *p FLOAT iv_X
+  *s *p FLOAT iv_Y
+
+  *i FLOAT iv_XEst
+
+*END // INVERSE
 //==================================================================================================================
 RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile", made a record 1-94 so probe-able
 
@@ -3429,9 +3447,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i TI ws_swTi;			// DHWSOLARSYS serving preheated water to this system
 							//    0 iff no solar connected
   *declare "DHWSOLARSYS* ws_pDHWSOLARSYS;"	// pointer to connected solar system
-  *y *e FLOAT ws_SSFAnnualSolar; // Annual solar heat added (numerator to calculate SSF), gal-F
-  *y *e FLOAT ws_SSFAnnualReq; // Annual heat required (denominator to calculate SSF), gal-F
-  *y *e FLOAT ws_SSFAnnual; // Annual sollar savings fraction
+  *y *e DBL ws_SSFAnnualSolar; // Annual solar heat added (numerator to calculate SSF), gal-F
+  *y *e DBL ws_SSFAnnualReq; // Annual heat required (denominator to calculate SSF), gal-F
+  *y *e FLOAT ws_SSFAnnual; // Annual solar savings fraction
 
   *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
 							//   user expression or default Wthr.d.wd_tMains
@@ -4298,6 +4316,10 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *h *e FLOAT sw_scTInlet		// mixed collector inlet temperature, F
   *h *e FLOAT sw_scTOutlet		// mixed collector outlet temperature, F
 
+  // annual results
+  *y *e FLOAT sw_SSFAnnual		// annual solar savings fraction
+								//   derived from all DHWSYSs served
+
 *END		// DHWSOLARSYS
 //=============================================================================
 RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar collector
@@ -4336,7 +4358,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *h *e FLOAT sc_tOutletP	// potential outlet temperature, F
 
   // Pump
-  *i FLOAT_GEZ sc_pumpPwr;		// pump power, Btu/h
+  *i FLOAT_GEZ sc_pumpPwr;		// pump power, W
   *i FRAC sc_pumpLiqHeatF;		// fraction of sc_pumpPwr added to liquid stream
 								//   remainder is discarded
 

@@ -16,6 +16,8 @@
 extern anc<TOPRAT> TopiR;	// basAnc for Topi.  ancrec.h template class type.
 extern TOPRAT Topi;    		// the single static Top input record. rccn.h typ
 
+extern anc<INVERSE> IvB;
+
 // other input records basAncs, cncult.cpp, ref'd only in other cncult_.cpp files
 extern anc<GT>  GtiB;			// glazeTypes input records, 12-94
 extern anc<FOUNDATION> FndiB;  		// foundation input records

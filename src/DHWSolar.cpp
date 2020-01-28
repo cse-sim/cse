@@ -157,14 +157,25 @@ RC DHWSOLARSYS::sw_EndIvl(
 
 	// Add parasitics to meter
 	if (sw_pMtrElec)
-	{
 		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
-	}
 
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
-	{
 		rc |= pSC->sc_DoHourEnd();
+
+	if (ivl == C_IVLCH_Y)
+	{
+		double SSFNum = 0.;
+		double SSFDen = 0.;
+
+		DHWSYS* pWS;
+		RLUPC(WsR, pWS, pWS->ws_pDHWSOLARSYS == this)
+		{
+			SSFNum += pWS->ws_SSFAnnualSolar;
+			SSFDen += pWS->ws_SSFAnnualReq;
+		}
+		sw_SSFAnnual = SSFDen > 0. ? float( SSFNum / SSFDen) : 0.f;
+				
 	}
 	return rc;
 }
@@ -182,16 +193,18 @@ void DHWSOLARSYS::sw_TickStart()
 //------------------------------------------------------------------------------
 RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
 	DHWSYS* pWS,	// source DHWSYS
-	float vol,
-	float tInlet)
+	float vol,		// volume, gal
+	float tInlet)	// solar tank inlet temp from source DHWSYS, F
+					//   after e.g. DWHR
 {
 	RC rc = RCOK;
-	sw_tickVol += vol;
-	sw_tickVolT += vol * tInlet;
-
-	if (vol > 0.f && pWS)
-	{	pWS->ws_SSFAnnualSolar += vol * (sw_tankTOutlet - sw_tankTInlet);
-		pWS->ws_SSFAnnualReq += vol * (pWS->ws_tUse - sw_tankTInlet);
+	if (vol > 0.f)
+	{	sw_tickVol += vol;
+		sw_tickVolT += vol * tInlet;
+		if (pWS)
+		{	pWS->ws_SSFAnnualSolar += vol * (sw_tankTOutlet - tInlet);
+			pWS->ws_SSFAnnualReq += vol * (pWS->ws_tUse - tInlet);
+		}
 	}
 
 	return rc;
@@ -257,20 +270,12 @@ DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR() {
 	sc_collector = NULL;
 }
 //-----------------------------------------------------------------------------
-RC DHWSOLARCOLLECTOR::sc_CkF() {
+RC DHWSOLARCOLLECTOR::sc_CkF()
+{
 	RC rc = RCOK;
-
-	sc_areaTot = sc_area * sc_mult;
-
-	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
-	{
-		sc_pumpFlow = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
-	}
-	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
-	{
-		sc_pumpPwr = 34.1f*sc_pumpFlow;  // roughly 10 W / gpm -- don't know how good this assumption is
-	}
-
+	
+	// defaults are derived in sc_Init()
+	// later derivation better supports input expressions with probes
 
 	return rc;
 }
@@ -280,6 +285,14 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 	RC rc = RCOK;
 	
 	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
+
+	sc_areaTot = sc_area * sc_mult;
+
+	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
+		sc_pumpFlow = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
+	
+	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
+		sc_pumpPwr = 10.f*sc_pumpFlow;  // don't know how good this assumption is
 
 	delete sc_collector;		// insurance: delete prior, if any
 
@@ -336,7 +349,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
 
 	float tInlet = pSWHSys->sw_scTInlet;
 
-	float pump_energy = sc_pumpPwr * Top.tp_tickDurHr;  // Btuh * hr
+	float pump_energy = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;  // Btuh * hr
 	float pump_vol = sc_pumpFlow * Top.tp_tickDurMin;  // gal
 	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_scFluidVolSpHt);  // delta F
 

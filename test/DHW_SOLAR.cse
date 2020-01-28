@@ -1331,9 +1331,11 @@ WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", oct 1)
 
 REPORT rpType=UDT rpFreq=YEAR rpTitle = "Overall SSF"
   ReportCol colhead="Area" colVal=@DhwSolarSys["Solar System"].scAreaTot colDec=1 colWid = 10
-  ReportCol colhead="Vol" colVal=@DhwSolarSys["Solar System"].tankVol colDec=3 colWid = 10
-  ReportCol colhead="SSF" colVal=@DhwSys["DS_UEF"].SSFAnnual colDec=3 colWid = 10
-
+  ReportCol colhead="Vol" colVal=@DhwSolarSys["Solar System"].tankVol colDec=1 colWid = 10
+  ReportCol colhead="SSF 1" colVal=@DhwSolarSys["Solar System"].SSFAnnual colDec=3 colWid = 10
+  ReportCol colhead="SSF Num" colVal=@DhwSys["DS_UEF"].SSFAnnualSolar colDec=1 colWid = 10
+  ReportCol colhead="SSF Den" colVal=@DhwSys["DS_UEF"].SSFAnnualReq colDec=1 colWid = 10
+  ReportCol colhead="SSF 2" colVal=@DhwSys["DS_UEF"].SSFAnnual colDec=3 colWid = 10
  
 RUN
 

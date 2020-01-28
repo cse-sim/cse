@@ -694,31 +694,20 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	}
 
 // energy balance check.  After results accumulation.
-	if (Top.isEndHour)					// not if end of subhour interval only
-	{
-		if (!Top.isWarmup)    				// if not warming up (may also exclude autoSizing)
-		{
-			if (!Top.tp_autoSizing)				// tentatively no energy balance checks during autoSize
-			{
-				if (Top.ebTolHour > 0.f)			// if tolerance given for hourly check 3-92
-				{
+	if (Top.isEndHour) 					// not if end of subhour interval only
+	{	if (!Top.isWarmup)    				// if not warming up (may also exclude autoSizing)
+		{	if (!Top.tp_autoSizing)				// tentatively no energy balance checks during autoSize
+			{	if (Top.ebTolHour > 0.f)			// if tolerance given for hourly check 3-92
 					cgenbal(C_IVLCH_H, Top.ebTolHour);    	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
-				}
 				if (Top.isEndDay)				// if last hour of day
-				{
-					if (Top.ebTolDay > 0.f)			// if tolerance given for daily check
-					{
+				{	if (Top.ebTolDay > 0.f)			// if tolerance given for daily check
 						cgenbal(C_IVLCH_D, Top.ebTolDay);	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
-					}
 					if (Top.isEndMonth)    			// if last day of month (probably never set for autoSizing 6-95)
-					{
 						cgenbal(C_IVLCH_M, Top.ebTolMon);	// monthly check.
-					}
 				}
 			}
 		}
 	}
-
 
 // now evaluate and stuff exprs from user input that are used in reports -- may show results.  Others done at interval start.
 	EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
@@ -729,7 +718,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		//   *AFTER* EVENDIVL function eval
 		BATTERY* bt;
 		RLUP(BtR, bt)
-			EF(bt->bt_DoHour( 1))
+			EF(bt->bt_DoHour(1))
 	}
 
 	doIvlFinalize();				// finalize meters etc
@@ -764,6 +753,10 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		RLUP(BtR, bt)
 			bt->bt_DoHour( 2);		// battery wrap-up
 
+		INVERSE* pI;
+		RLUP(IvB, pI)
+			EF(pI->iv_Calc(Top.ivl))
+		
 		// interval-dependent stuff after reports
 
 		switch (Top.ivl)				/*lint -e616  cases fall thru */
@@ -2467,6 +2460,41 @@ void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 	tp_tmrZone   = tmrCurTot( TMR_ZONE);
 #endif
 }		// TOPRAT::tp_tmrSnapshot
+
+///////////////////////////////////////////////////////////////////////////////
+// class INVERSE: function inverter
+///////////////////////////////////////////////////////////////////////////////
+RC INVERSE::iv_CkF()
+{
+	RC rc = RCOK;
+
+	return rc;
+
+}		// INVERSE::iv_CkF
+//----------------------------------------------------------------------------
+RC INVERSE::iv_Init()
+{
+	RC rc = RCOK;
+
+	return rc;
+
+}		// INVERSE::iv_Init
+//----------------------------------------------------------------------------
+RC INVERSE::iv_Calc(
+	IVLCH ivl)
+{
+	static int nCall = 1;
+	RC rc = RCOK;
+	if (ivl == C_IVLCH_Y)
+	{
+		nCall++;
+		iv_XEst = nCall * 1.f;
+	}
+
+	return rc;
+
+}		// INVERSE::iv_Calc
+//============================================================================
 #ifdef BINRES
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run

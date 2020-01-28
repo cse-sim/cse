@@ -66,6 +66,7 @@ LOCAL RC topGain();
 LOCAL RC topRSys1();
 LOCAL RC topRSys2();
 LOCAL RC topDHW();
+LOCAL RC topInverse();
 LOCAL RC topPV();
 LOCAL RC topBT();
 LOCAL RC topSX();
@@ -337,6 +338,8 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topSX() )			// ShadeX external shading
 
 	E( topZn3() )			// zones: add generated IZXFERs,
+
+	E( topInverse())		// inverse objects
 
 
 #ifdef AUTOSIZE
@@ -1505,6 +1508,17 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 
 	return rc;
 }	// ::topDHW
+//=============================================================================
+LOCAL RC topInverse()		// inverses
+{
+	RC rc = RCOK;
+	INVERSE* pI;
+	RLUP(IvB, pI)
+		rc |= pI->iv_Init();
+
+	return rc;
+
+}	// ::topInverse
 //=============================================================================
 LOCAL RC topPV()		// check PVARRAY ... copy to run rat
 {

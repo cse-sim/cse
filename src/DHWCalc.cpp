@@ -191,7 +191,7 @@ RC DHWSubhr()		// DHW (including solar DHW) subhr calcs
 		// solar water heating systems
 		//   draw and inlet temp are accum'd during DHWSYS calcs
 		RLUP(SwhR, pSW)
-			pSW->sw_TickCalc();
+			rc |= pSW->sw_TickCalc();
 	}
 
 	RLUP(WsR, pWS)
@@ -621,11 +621,6 @@ void DHWSYS::ws_SetMTRPtrs()		// set runtime pointers to meters
 		CKDBLCOUNT( ws_pWHhwMtr)
 		#undef CKDBLCOUNT
 	}
-
-	// solar water heating
-	ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
-	ws_SSFAnnual = ws_SSFAnnualSolar = ws_SSFAnnualReq = 0.f;
-
 }		// DHWSYS::ws_SetMTRPtrs
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_Init(		// init for run (including children)
@@ -637,6 +632,11 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	if (pass == 0)
 	{	// pass 0: init things that have no inter-DHWSYS effect
 		ws_SetMTRPtrs();
+
+		// solar water heating
+		ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
+		ws_SSFAnnual = 0.f;
+		ws_SSFAnnualSolar = ws_SSFAnnualReq = 0.;
 
 		if (ws_wtCount > 0)
 		{	DHWTANK* pWT;
@@ -1599,8 +1599,8 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 
 			// solar savings fraction
 			if (ws_pDHWSOLARSYS)
-				ws_SSFAnnual = ws_SSFAnnualReq > 0.f
-						? min( ws_SSFAnnualSolar / ws_SSFAnnualReq, 1.f)
+				ws_SSFAnnual = ws_SSFAnnualReq > 0.
+						? min( float( ws_SSFAnnualSolar / ws_SSFAnnualReq), 1.f)
 						: 0.f;
 			
 		}
