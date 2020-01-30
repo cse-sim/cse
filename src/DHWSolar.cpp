@@ -174,8 +174,9 @@ RC DHWSOLARSYS::sw_EndIvl(
 			SSFNum += pWS->ws_SSFAnnualSolar;
 			SSFDen += pWS->ws_SSFAnnualReq;
 		}
-		sw_SSFAnnual = SSFDen > 0. ? float( SSFNum / SSFDen) : 0.f;
-				
+		sw_SSFAnnual = SSFDen > 0.
+				? min( 1.f, float( SSFNum / SSFDen)) 
+			    : 0.f;				
 	}
 	return rc;
 }

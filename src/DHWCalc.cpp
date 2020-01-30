@@ -1600,7 +1600,7 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 			// solar savings fraction
 			if (ws_pDHWSOLARSYS)
 				ws_SSFAnnual = ws_SSFAnnualReq > 0.
-						? min( float( ws_SSFAnnualSolar / ws_SSFAnnualReq), 1.f)
+						? min( 1.f, float( ws_SSFAnnualSolar / ws_SSFAnnualReq))
 						: 0.f;
 			
 		}
