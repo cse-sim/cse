@@ -48,6 +48,21 @@ class CoverageCheckTest < TC
     actual = DataItemHeader[line]
     assert_nil(actual)
   end
+  def test_DataItemHeader_parses_grouped_items
+    # see https://github.com/cse-sim/cse/issues/65
+    # and https://github.com/cse-sim/cse/issues/81
+    items = [
+      ["**wsFaucetCount=*integer***\\", "wsFaucetCount"],
+      ["**wsShowerCount=*integer***\\", "wsShowerCount"],
+      ["**wsBathCount=*integer***\\", "wsBathCount"],
+      ["**wsCWashrCount=*integer***\\", "wsCWashrCount"],
+      ["**wsDWashrCount=*integer***", "wsDWashrCount"]]
+    items.each do |item|
+      line, expected = item
+      actual = DataItemHeader[line]
+      assert_equal(expected, actual)
+    end
+  end
   def test_ParseRecordDocument
     content = File.read(@coolplant_path)
     expected = {
