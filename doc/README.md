@@ -1,6 +1,6 @@
 # CSE User Manual Build Scripts
 
-The files in this folder are concerned with building the documentation and website for CSE; specifically, the CSE User Manual. The build process heavily leverages the [Ruby] programming language, the [Pandoc] documentation processing tool, and, optionally, [Node.js] for doing compression of html/css. The majority of the build process is contained in the `rakefile.rb` located in this directory with supporting code in the `lib` subdirectory. The "source code" for the documentation is written in [Pandoc-flavored Markdown] with the manifest of files located in [YAML] files, both in the `src` directory. Additional support files are located in the `config` directory. The `test` directory is test code specifically for the documentation build system -- it can be run using `rake test` from the command line.
+The files in this folder are concerned with building the documentation and website for CSE; specifically, the CSE User Manual. The build process heavily leverages the [Ruby] programming language, the [Pandoc] documentation processing tool, and, [Node.js] for doing compression of html/css. The majority of the build process is contained in the `rakefile.rb` located in this directory with supporting code in the `lib` subdirectory. The "source code" for the documentation is written in [Pandoc-flavored Markdown] with the manifest of files located in [YAML] files, both in the `src` directory. Additional support files are located in the `config` directory. The `test` directory is test code specifically for the documentation build system -- it can be run using `rake test` from the command line.
 
 The source files including both manifest files (in YAML) and markdown files (ending with a `.md` extension) are preprocessed by "embedded Ruby" or [ERB] prior to running through the rest of the documentation build pipeline.
 
@@ -16,6 +16,7 @@ The source files including both manifest files (in YAML) and markdown files (end
 - a recent version of the [Ruby] programming language (use any Ruby NOT at end-of-life, currently Ruby 2.4+)
 - (optional) an internet connection (for installing node dependencies)
 - the git version control manager (we are using 2.10.2)
+- Microsoft C++ Build Tools (for Visual Studio 2017 or 2019)
 
 Pandoc version 1.17.2 can be downloaded from [here](https://github.com/jgm/pandoc/releases). If you do not have version 1.17.2 installed, the build tool will stop immediately with instructions on how to install Pandoc 1.17.2.
 
@@ -46,6 +47,16 @@ For PDF generation, Pandoc creates LaTeX which is further processed to PDF. For 
 With the above installed, the scripts in this directory should be able to download and install all other dependencies.
 
 The specific dependencies for [Node.js] are listed in the `package.json` file.
+
+With regard to the Microsoft Build Tools, the C++ preprocessor is required in the full build process to parse parameter names from the CSE source code.
+This is accomplished with the `cl` program.
+If you type `where cl` at your prompt, then `cl` is installed and reachable.
+If not, the best way to get this is to set up your Visual Studio with C++ tools (you should have this if you are able to build CSE).
+Then, to get a shell with `cl` and other tools on the path, go to `Start > Visual Studio 20XX > Developer Command Prompt for VS XX`.
+You should have access to `cl` from that prompt.
+If not, please check this [cl] article from Microsoft.
+
+[cl]: https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019
 
 ## Instructions for Building the Documentation
 
