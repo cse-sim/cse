@@ -55,7 +55,8 @@ class CoverageCheckTest < TC
       ["**wsFaucetCount=*integer***\\", "wsFaucetCount"],
       ["**wsShowerCount=*integer***\\", "wsShowerCount"],
       ["**wsBathCount=*integer***\\", "wsBathCount"],
-      ["**wsCWashrCount=*integer***\\", "wsCWashrCount"],
+      # introduce whitespace at the end of the line; should still work
+      ["**wsCWashrCount=*integer***\\  ", "wsCWashrCount"],
       ["**wsDWashrCount=*integer***", "wsDWashrCount"]]
     items.each do |item|
       line, expected = item

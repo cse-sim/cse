@@ -16,7 +16,7 @@ module CoverageCheck
   # Given a line of markdown, recognize a data item header and return it, or
   # return nil.
   DataItemHeader = lambda do |line|
-    m = line.match(/^\*\*(.*)\*\*\\?$/)
+    m = line.match(/^\*\*(.*)\*\*\\?\s*$/)
     if m
       header = m[1].split(/=/)[0].gsub(/\*/,'').strip
       if Ignore[header]
