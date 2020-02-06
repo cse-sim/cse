@@ -14,13 +14,16 @@ module CoverageCheck
   end
   # String -> (Or Nil String)
   # Given a line of markdown, recognize a data item header and return it, or
-  # return nil
+  # return nil.
   DataItemHeader = lambda do |line|
-    m = line.match(/^\*\*(.*)\*\*$/)
+    m = line.match(/^\*\*(.*)\*\*\\?\s*$/)
     if m
       header = m[1].split(/=/)[0].gsub(/\*/,'').strip
-      return nil if Ignore[header]
-      header
+      if Ignore[header]
+        nil
+      else
+        header
+      end
     else
       nil
     end

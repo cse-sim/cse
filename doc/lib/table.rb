@@ -13,7 +13,7 @@ module Table
       raise "Unexpected keys: #{unexpected_keys.to_a}"
     end
   end
-  # (Map String String) -> Binding
+  # String -> (Map String String) -> Binding
   MakeBinding = lambda do |base_path=nil|
     lambda do |ctxt|
       Main.new(:context => ctxt, :base_path => base_path).get_binding
