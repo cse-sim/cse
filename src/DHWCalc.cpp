@@ -2067,6 +2067,7 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 							//   (see ??)
 
 	hw_balErrCount = 0;
+	hw_balErrMax = 0.;
 
 	hw_pHPWH = new(HPWH);
 
@@ -2668,6 +2669,8 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 			+ hw_qTX		// extra tank heat in
 			- hw_qHW		// hot water energy
 			- deltaHC;		// change in tank stored energy
+		if (fabs(qBal) > hw_balErrMax)
+			hw_balErrMax = fabs(qBal);
 		double fBal = fabs(qBal) / max(hw_tankHCNominal, 1.);
 		if (fBal >
 #if defined( _DEBUG)

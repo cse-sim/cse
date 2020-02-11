@@ -3709,6 +3709,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
 
 *s *e INT hw_balErrCount;			// annual count of energy balance errors
+*r *e DBL hw_balErrMax;				// maximum substep energy balance error for run, kWh
 
 *END // HPWHLINK
 
