@@ -242,6 +242,7 @@ add_library(libFlatPlateCollector
     solarflatplatecollector.h 
     solarflatplatecollector.cpp 
     )
+set_target_properties(libFlatPlateCollector PROPERTIES FOLDER Dependencies/FlatPlateCollector)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
