@@ -1153,6 +1153,7 @@ DHWSOLARSYS "Solar System"
   swElecMtr = ElecUEF
   swTankVol = 50
   swTankInsulR = 10
+  swTankTEx = $tdbO + 10
   //swTankHXEff = 1.0
 
   DHWSOLARCOLLECTOR "Array 1"
@@ -1290,9 +1291,10 @@ ReportCol colhead="Eff" colVal =  8.345*@DhwSys[s].whUse.total*(@DhwSys[s].tUse-
 #define WSSOLREP( t, dhw, ss, sc, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = t rpDayBeg=d rpDayEnd=d \
 ReportCol colhead="Hr" colVal=$hour colWid = 2 \
 ReportCol colhead="T Mains" colVal=@DhwSys[dhw].tInlet colWid=8 \
+ReportCol colhead="T Ex" colVal=@DhwSolarSys[ss].tankTEx colWid=8 \
 ReportCol colhead="Tnk Tin" colVal=@DhwSolarSys[ss].tankTInlet colWid=8 \
 ReportCol colhead="Draw" colVal=@DhwSolarSys[ss].drawVol colWid=8 \
-ReportCol colhead="Tnk Thx" colVal=@DhwSolarSys[ss].tankHxT colWid=8 \
+ReportCol colhead="Tnk Thx" colVal=@DhwSolarSys[ss].tankTHx colWid=8 \
 ReportCol colhead="Tnk Tout" colVal=@DhwSolarSys[ss].tankTOutlet colWid=8 \
 ReportCol colhead="Tnk QLs" colVal=@DhwSolarSys[ss].tankQLoss colWid=8 \
 ReportCol colhead="SC Tin" colVal=@DhwSolarSys[ss].sctInlet colWid=8 \
@@ -1336,6 +1338,13 @@ REPORT rpType=UDT rpFreq=YEAR rpTitle = "Overall SSF"
   ReportCol colhead="SSF Num" colVal=@DhwSys["DS_UEF"].SSFAnnualSolar colDec=1 colWid = 10
   ReportCol colhead="SSF Den" colVal=@DhwSys["DS_UEF"].SSFAnnualReq colDec=1 colWid = 10
   ReportCol colhead="SSF 2" colVal=@DhwSys["DS_UEF"].SSFAnnual colDec=3 colWid = 10
+
+#define SWINFO( h) REPORT rpType=UDT rpFreq=YEAR rpTitle = @Dhwsolarsys[h].name \
+ReportCol colhead="vol" colVal=@Dhwsolarsys[h].tankvol colDec=2 colWid = 6 \
+ReportCol colhead="UA" colVal=@Dhwsolarsys[h].tankUA colDec=2 colWid = 6 \
+ReportCol colhead="insulR" colVal=@Dhwsolarsys[h].tankinsulR colDec=2 colWid = 6
+
+SWINFO( "Solar System")
  
 RUN
 

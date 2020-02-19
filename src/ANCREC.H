@@ -161,6 +161,7 @@ class record		// base class for records
 	virtual RC RunDup(const record* pSrc, int options=0) { Copy(pSrc, options); return RCOK;  }
 	virtual void ReceiveRuntimeMessage( const char* /*msg*/) { }
 	virtual const char* GetDescription(int /*options*/ = 0) { return ""; }
+	virtual int ReportBalErrorsIf( int balErrCount, const char* ivlText) const;
   private:
     record::record() {}					// cannot construct record without basAnc and subscript
   public:
@@ -209,6 +210,8 @@ class record		// base class for records
 	{ fStat( fn) &= ~FsSET; }
 	inline int IsVal( int fn) const
 	{ return (fStat( fn)&FsVAL) != 0; }
+	inline void ClrVal( int fn)
+	{ fStat(fn) &= ~FsVAL; }
 	int IsValAll( int fn, ...) const;
 	inline int IsAusz( int fn) const
 	{ return (fStat( fn)&FsAS) != 0; }

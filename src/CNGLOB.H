@@ -629,7 +629,7 @@ inline float KSItoIP(float k) { return float(k / cfK); }
 inline double KSItoIP(double k) { return k / cfK; }
 
 // Specific Heat Btu/lb-F <--> J/kg-K
-const double cfSH = 4186.8; // W/m-K per Btuh-ft/ft2-F (exact)
+const double cfSH = 4186.8; // J/kg-K per Btu/lb-F (exact)
 inline float SHIPtoSI(float sh) { return float(sh * cfSH); }
 inline double SHIPtoSI(double sh) { return sh * cfSH; }
 inline float SHSItoIP(float sh) { return float(sh / cfSH); }

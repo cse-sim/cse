@@ -3643,10 +3643,12 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_Cleanup();"
 *declare "RC hw_Init( record* pOwner);"
 *declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
-*declare "RC hw_InitPreset( WHASHPTYCH ashpTy, float volX);"
+*declare "RC hw_InitPreset( WHASHPTYCH ashpTy);"
 *declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
-*declare "RC hw_InitTank( float vol, float UA);"
+*declare "RC hw_InitTank( float vol);"
+*declare "RC hw_AdjustUAIf( float UA, float insulR);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
+*declare "RC hw_GetInfo( float& vol, float& UA, float& insulR) const;"
 *declare "void hw_InitTotals();"
 *declare "bool hw_HasCompressor();"
 *declare "bool hw_IsSetpointFixed() const;"
@@ -3788,13 +3790,14 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  *r FLOAT_GEZ wh_vol;			// storage tank vol, gal
+  *r FLOAT_GEZ wh_vol;			// actual storage tank vol, gal (not rated)
 								//    applicable to STRGxx types
-								//    used only for HPWH ResistanceX, 5-2016
-								//    default=50 if STRGxx else 0
-  *i FLOAT_GZ wh_UAMult;		// storage tank UA multiplier, default=1
-								//    applied to implicit tank UA re e.g. tank blanket
-								//    used only re HPWH ASHPX and ResistanceX
+								//    HPWH types: sets vol (default from preset)
+								//    other types: documentation only (default 50)
+  *r FLOAT_GEZ wh_UA;			// HPWH-type tank UA, Btuh/F
+								//    default from HPWH preset
+  *r FLOAT_GZ wh_insulR;		// HPWH-type tank insulation resistance, hr-F/Btuh
+								//    default from preset or wh_UA and wh_vol
   *i FRAC wh_inHtSupply;		// fractional tank height of supply inlet (0=bottom, 1=top)
 								//    default 0, HPWH models only
   *i FRAC wh_inHtLoopRet;		// fractional tank height of loop return inlet(s) (0=bottom, 1=top)
@@ -4272,6 +4275,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "RC sw_TickCalc();"
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
+  *declare "int sw_ReportBalErrorsIf() const;"
   
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
@@ -4283,11 +4287,11 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 
   // Tank (from DHWTANK)
   *s *e *nest HPWHLINK sw_tank;	// interface to Ecotope HPWH model (used as tank)
-  *i FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F
-								//   default: derived from sw_tankVol and sw_tankInsulR
   *r FLOAT_GZ sw_tankVol;		// tank volume, gal
 								//   default: 1.5 gal/ft2 collector area
-  *i FLOAT_GZ sw_tankInsulR;	// total tank insulation resistance, hr-F/Btuh
+  *r FLOAT_GEZ sw_tankUA;		// tank water-to-air UA, Btuh/F
+								//   default: derived from sw_tankVol and sw_tankInsulR
+  *r FLOAT_GZ sw_tankInsulR;	// total tank insulation resistance, hr-F/Btuh
 								//   = built-in + exterior wrap
   *i TI sw_tankZnTi;			// Tank location zone re tank loss
 								//    0 iff sw_tankTEx being used
@@ -4297,9 +4301,12 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 								//    when sw_tankTEx set
 								//    - sw_tankZnTi ignored
 								//    - heat loss discarded
-  *h *e FLOAT sw_tankQLoss;		// current hour's total loss, Btu
-								//   for 1 tank (no sw_tankMult)
-  *i FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
+  *h *e FLOAT sw_tankQLoss;		// current hour's total tank loss, Btu
+								//   for 1 tank
+  *h FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
+  *i FLOAT_GZ sw_tankTHxLimit	// tank temp limit, F; collector heat
+								//   discarded when sw_tankTHx > sw_tankTHxLimit
+								//   default = 180 F
 
   *s *e FLOAT sw_tickVol;		// current tick draw to DHWSYSs, gal
   *s *e FLOAT sw_tickVolT;		// current tick (vol * inlet temp), gal-F
@@ -4308,7 +4315,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *h *e FLOAT sw_tankQGain;		// current hour's total gain from solar HX, Btu
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
   *h *e FLOAT sw_tankTOutlet	// tank outlet temperature, F
-  *h *e FLOAT sw_tankHxT		// nominal tank heat exchange temp, F
+  *h *e FLOAT sw_tankTHx		// nominal tank heat exchange temp, F
 								//   = avg of bottom several tank node temps
 								//   used re heat exchange from collector loop
 
@@ -4373,8 +4380,8 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 								// tank and collector outlet where pump
 								// turns off, F
 
-  *declare "float sc_tickVol;"	// volume moved during this tick
-  *declare "bool sc_tickOp;"	// pump is operating last tick
+  *s *e FLOAT sc_tickVol		// volume moved during this tick, gal
+  *s *e INT sc_tickOp			// nz iff pump is operating during prior tick
 
   *h *e FLOAT_GEZ sc_mdot		// actual mass flow rate, lb/hr
   *h *e FLOAT sc_pumpInElec;	// actual electricity use (note not kWh)

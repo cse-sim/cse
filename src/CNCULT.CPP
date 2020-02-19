@@ -1795,7 +1795,8 @@ CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
-CULT( "whUAMult",	 DAT,   DHWHEATER_UAMULT,  0,     0, VEOI,   TYFL,  0,      1.f,    N, N),
+CULT( "whUA",		 DAT,   DHWHEATER_UA,      0,     0, VEOI,   TYFL,  0,     -1.f,    N, N),
+CULT( "whInsulR",    DAT,   DHWHEATER_INSULR,  0,     0, VEOI,   TYFL,  0,     -1.f,    N, N),
 CULT( "whInHtSupply", DAT,  DHWHEATER_INHTSUPPLY, 0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whInHtLoopRet",DAT,  DHWHEATER_INHTLOOPRET,0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whEF",		 DAT,   DHWHEATER_EF,      0,     0, VEOI,   TYFL,  0,      0.82f,  N, N),
@@ -1859,9 +1860,9 @@ static CULT dhwTankT[] = //------ DHWTANK cmd RAT Entry table, used from dhwSysT
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wtStarCkf),
 CULT( "wtDHWSYS",    DAT,   DHWTANK_OWNTI,     NO_INP|RDFLIN,0,0,  TYREF, &WSiB,  0,      N,   N),
 CULT( "wtMult",		 DAT,	DHWTANK_MULT,	   0,     0, VEOI,     TYSI,  0,      1,      N,   N),
-CULT( "wtUA",		 DAT,	DHWTANK_UA,	       0,     0, VEOI,     TYFL,  0,      0.f,    N,   N),
 CULT( "wtVol",		 DAT,	DHWTANK_VOL,	   0,     0, VEOI,     TYFL,  0,      0.f,    N,   N),
-CULT( "wtInsulR",    DAT,	DHWTANK_INSULR,    0,     0, VEOI,     TYFL,  0,      0.f,    N,   N),
+CULT( "wtUA",		 DAT,	DHWTANK_UA,	       0,     0, VEOI,     TYFL,  0,     -1.f,    N,   N),
+CULT( "wtInsulR",    DAT,	DHWTANK_INSULR,    0,     0, VEOI,     TYFL,  0,     12.f,    N,   N),
 CULT( "wtZone",      DAT,   DHWTANK_ZNTI,      0,     0, VEOI,     TYREF, &ZiB,   0,      N, N),
 CULT( "wtTEx",		 DAT,	DHWTANK_TEX,	   0,     0, VHRLY,    TYFL,  0,      0.f,    N,   N),
 CULT( "wtTTank",     DAT,	DHWTANK_TTANK,     0,     0, VHRLY,    TYFL,  0,      0.f,    N,   N),
@@ -2121,21 +2122,22 @@ LOCAL RC FC swStarCkf(CULT* c, /*DHWSOLARSYS* */ void *p, void *p2, void *p3)
 
 static CULT dhwSolSysT[] = //------ DHWSOLARSYS cmd RAT Entry table, used from cnTopCult
 {
-// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
-//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
-CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N, swStarCkf),
-CULT( "swElecMtr",   DAT,   DHWSOLARSYS_ELECMTRI, 0,  0, VEOI,   TYREF, &MtriB, N,      N, N),
-CULT( "swEndUse",    DAT,   DHWSOLARSYS_ENDUSE, 0,    0, VEOI,   TYCH,  0,      C_ENDUSECH_DHW, N, N),
-CULT( "swParElec",   DAT,   DHWSOLARSYS_PARELEC, 0,   0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT( "swSCFluidVolSpHt", DAT, DHWSOLARSYS_SCFLUIDVOLSPHT, 0,  0, VEOI, TYFL, 0,    5.31f,  N, N),  // Ethylene Glycol
-CULT( "swTankHXEff", DAT,   DHWSOLARSYS_TANKHXEFF, 0, 0, VEOI,   TYFL,  0,      0.7f,   N, N),
-CULT( "swTankUA",    DAT,   DHWSOLARSYS_TANKUA, 0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
-CULT( "swTankVol",   DAT,   DHWSOLARSYS_TANKVOL, 0,   0, VEOI,   TYFL,  0,      0.f,    N, N),
-CULT( "swTankInsulR", DAT,  DHWSOLARSYS_TANKINSULR, 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "swTankZn",    DAT,   DHWSOLARSYS_TANKZNTI,   0, 0, VEOI,  TYREF, &ZiB,   N,      N, N),
-CULT( "swTankTEx",   DAT,   DHWSOLARSYS_TANKTEX, 0,   0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT( "dhwsolarcollector", RATE, 0,               0,       0, 0,      0,     &SCiB,  N,      dhwSolColT, N),
-CULT( "endDHWSOLARSYS",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+// id                cs        fn                         f    uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----     ---------------            ---- -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,     0,                          0,  0, 0,      0,     0,      0.f,    N, swStarCkf),
+CULT( "swElecMtr",   DAT,      DHWSOLARSYS_ELECMTRI,       0,  0, VEOI,   TYREF, &MtriB, N,      N, N),
+CULT( "swEndUse",    DAT,      DHWSOLARSYS_ENDUSE,         0,  0, VEOI,   TYCH,  0,      C_ENDUSECH_DHW, N, N),
+CULT( "swParElec",   DAT,      DHWSOLARSYS_PARELEC,        0,  0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "swSCFluidVolSpHt", DAT, DHWSOLARSYS_SCFLUIDVOLSPHT, 0,  0, VEOI,   TYFL,  0,    5.31f,    N, N),  // Ethylene Glycol
+CULT( "swTankHXEff", DAT,      DHWSOLARSYS_TANKHXEFF,      0,  0, VEOI,   TYFL,  0,      0.7f,   N, N),
+CULT( "swTankTHxLimit", DAT,   DHWSOLARSYS_TANKTHXLIMIT,   0,  0, VEOI,   TYFL,  0,     180.f,   N, N),
+CULT( "swTankVol",   DAT,      DHWSOLARSYS_TANKVOL,        0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "swTankUA",    DAT,      DHWSOLARSYS_TANKUA,         0,  0, VEOI,   TYFL,  0,     -1.f,    N, N),
+CULT( "swTankInsulR", DAT,     DHWSOLARSYS_TANKINSULR,     0,  0, VEOI,   TYFL,  0,     12.f,    N, N),
+CULT( "swTankZn",    DAT,      DHWSOLARSYS_TANKZNTI,       0,  0, VEOI,   TYREF, &ZiB,   N,      N, N),
+CULT( "swTankTEx",   DAT,      DHWSOLARSYS_TANKTEX,        0,  0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "dhwsolarcollector",RATE,0,                          0,  0, 0,         0,  &SCiB,  N,     dhwSolColT, N),
+CULT( "endDHWSOLARSYS", ENDER, 0,                          0,  0, 0,         0,  0,      0.f,    N,   N),
 CULT()
 };	// dhwSolSysT
 

@@ -399,6 +399,20 @@ RC record::CkSet( 	// verify that required member has been set
 										// "    and apparently no message about it appeared above"
 				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
 }	// record::CkSet
+//-----------------------------------------------------------------------------
+/*virtual*/ int record::ReportBalErrorsIf(
+	int balErrCount,			// error count
+	const char* ivlTxt) const	// interval text (plural), e.g. "subhours"
+// report energy balance error
+// returns # of balance error count
+{
+	if (balErrCount > 0)
+	{	const char* what = objIdTx();
+		warn("%s: Energy balance errors occurred in %d %s.",
+			what, balErrCount, ivlTxt);
+	}
+	return balErrCount;
+}		// record::ReportBalErrorsIf
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

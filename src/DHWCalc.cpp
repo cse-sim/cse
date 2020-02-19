@@ -2069,7 +2069,7 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 	hw_balErrCount = 0;
 	hw_balErrMax = 0.;
 
-	hw_pHPWH = new(HPWH);
+	hw_pHPWH = new HPWH();
 
 	hw_pHPWH->setMessageCallback(hw_HPWHMessageCallback, this);
 	hw_pHPWH->setVerbosity(HPWH::VRB_reluctant);		// messages only for fatal errors
@@ -2098,7 +2098,6 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	float EF,		// rated EF
 	float resHtPwr,	// upper resistance heat element power, W
 	float resHtPwr2)// lower resistance heat element power, W
-// tank UA defaulted from EF
 // returns RCOK iff success
 {
 	RC rc = RCOK;
@@ -2106,45 +2105,38 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	if (hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
 		resHtPwr, resHtPwr2) != 0)
 		rc |= RCBAD;
-
 	return rc;
 }		// HPWHLINK::hw_InitResistance
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
-	WHASHPTYCH ashpTy,		// type choice (C_WHASHPTYCH_xxx)
+	WHASHPTYCH ashpTy)		// type choice (C_WHASHPTYCH_xxx)
 							//   maps to HPWH preset
-	float volX)				// alternative volume, gal
-							//   if <0, use default
-
 // returns RCOK iff success
-
 {
 	if (!hw_pHPWH)
 		return RCBAD;	// must call hw_Init() first
 
 	RC rc = RCOK;
 	
-	float UAX = -1.f;		// alternative UA
+	float volX = -1.f;		// alternative volume
+	float UAX = -1.f;		// alternative UA, Btuh/F
 
 	HPWH::MODELS preset = HPWH::MODELS(-1);	// HPWH "preset"
 							// predefined type that determines most model parameters
 
 	if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT50)
 	{	preset = HPWH::MODELS_GE2012;	// AO Smith SHPT models: base on GE2012
-		if (volX < 0.f)
-			volX = 45.f;			// ... and change vol / UA
+		volX = 45.f;			// ... and change vol / UA
 		UAX = 2.9f;
 	}
 	else if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT66)
 	{	preset = HPWH::MODELS_GE2012;
-		if (volX < 0.f)
-			volX = 63.9f;
+		volX = 63.9f;
 		UAX = 3.4f;
 	}
 	else if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT80)
 	{	preset = HPWH::MODELS_GE2012;
-		if (volX < 0.f)
-			volX = 80.7f;
+		volX = 80.7f;
 		UAX = 4.7f;
 	}
 	else
@@ -2186,15 +2178,18 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 		rc |= RCBAD;
 	if (volX > 0.f && hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL) != 0)
 		rc |= RCBAD;
-	if (UAX > 0.f && hw_pHPWH->setUA(UAX, HPWH::UNITS_BTUperHrF) != 0)
+	if (UAX >= 0.f && hw_pHPWH->setUA(UAX, HPWH::UNITS_BTUperHrF) != 0)
 		rc |= RCBAD;
 
 	return rc;
 }		// HPWHLINK::hw_InitPreset
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
-	float vol,		// tank volume, gal
-	float UA)		// tank UA, Btuh/F
+	float vol)		// tank volume, gal
+// inits HPWH tank of specified size
+// note UA defaults to constant value, probably wrong
+// use hw_AdjustUAIf() to set UA
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 
@@ -2204,15 +2199,29 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 		rc |= RCBAD;
 	if (hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL) != 0)
 		rc |= RCBAD;
-	if (hw_pHPWH->setUA(UA, HPWH::UNITS_BTUperHrF) != 0)
-		rc |= RCBAD;
-#if 0
-	// preset default setpoint is 800 C (= no temp limit)
-	if (hw_pHPWH->setSetpoint(200., HPWH::UNITS_F) != 0)
-		rc |= RCBAD;
-#endif
 	return rc;
 }		// HPWHLINK::hw_InitTank
+//-----------------------------------------------------------------------------
+RC HPWHLINK::hw_AdjustUAIf(	// adjust tank UA
+	float UA,			// tank UA, Btuh/F; derived from insulR if < 0
+	float insulR)		// overall tank insulation resistance, ft2-F/Btuh
+						//    includes surface resistance
+						//    ignored if <0
+// NOP if UA and insulR both < 0
+// uses current tank surface area (derived from volume)
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+	if (insulR >= 0.f && UA < 0.f)
+	{	float surfA = hw_pHPWH->getTankSurfaceArea(HPWH::UNITS_FT2);
+		UA = surfA / max(insulR, .68f);
+	}
+	if (UA >= 0.f)
+	{	if (hw_pHPWH->setUA(UA, HPWH::UNITS_BTUperHrF) != 0)
+			rc |= RCBAD;
+	}
+	return rc;
+}		// HPWHLINK::hw_AdjustUAIf
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 	float inHtSupply,	// supply fractional height, -1 = don't set
@@ -2253,7 +2262,27 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 
 	return rc;
 
-}	// HPWHLINK::hw_InitFinalize()
+}	// HPWHLINK::hw_InitFinalize
+//-----------------------------------------------------------------------------
+RC HPWHLINK::hw_GetInfo(		// return HPWH tank values
+	float& vol,		// vol, gal
+	float& UA,		// UA, Btuh/F
+	float& insulR) const	// insulR, ft2-F/Btuh
+// returns RC iff success
+{
+	RC rc = RCOK;
+	vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+	double UAd;
+	if (hw_pHPWH->getUA(UAd, HPWH::UNITS_BTUperHrF) != 0)
+		rc |= RCBAD;
+	UA = float(UAd);
+
+	double surfA = hw_pHPWH->getTankSurfaceArea(HPWH::UNITS_FT2);
+	insulR = UAd > 0. ? surfA / UAd : 1.e6;
+
+	return rc;
+
+}		// hw_GetInfo
 //-----------------------------------------------------------------------------
 void HPWHLINK::hw_InitTotals()		// run init
 // start-of-run initialization totals, error counts, ...
@@ -2628,7 +2657,6 @@ RC HPWHLINK::hw_DoSubhrTick(
 #endif	// HPWH_DUMP
 	return rc;
 }		// HPWHLINK::hw_DoSubhrTick
-
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 	float mult,			// overall multiplier (e.g. DHWSYS * DHWHEATER)
@@ -2732,20 +2760,23 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	int bIsPreRun = pWS->ws_calcMode == C_WSCALCMODECH_PRERUN;
 	int whfcn = wh_SetFunction();		// sets wh_fcn
 
-	// surrounding zone or temp: zone illegal if temp given
+	// tank surrounding temp -- one of whTEx or whZone, not both
 	//   used only re HPWH 2-16, enforce for all
-	if (IsSet( DHWHEATER_TEX))
-		rc |= disallowN( "when 'whTEx' is specified", DHWHEATER_ZNTI, 0);
+#if 0
+	int nVal = IsSetCount(DHWHEATER_TEX, DHWHEATER_ZNTI, 0);
+	if (nVal == 0)
+		rc |= oer("one of 'whTEx' and 'whZone' must be specified.");
+	else if (nVal == 2)
+		rc |= disallowN("when 'whTEx' is specified", DHW_ZNTI, 0);
+#endif
+	if (IsSet(DHWHEATER_TEX))
+		rc |= disallow( DHWHEATER_ZNTI, "when 'whTEx' is specified");
 
 	if (wh_heatSrc != C_WHHEATSRCCH_ELRESX)
-	{	ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
-		if (wh_heatSrc != C_WHHEATSRCCH_ASHPX)
-			ignore( DHWHEATER_UAMULT, whenHs);
-	}
+		ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
 
 	if (whfcn == whfcnLOOPHEATER && !wh_CanHaveLoopReturn())
 		rc |= oer("DHWLOOPHEATER must be whType=SmallStorage with whHeatSrc=ASPX or whHeatSrc=ResistanceX.");
-
 
 	if (wh_type != C_WHTYPECH_STRGSML)
 	{	if (wh_type == C_WHTYPECH_INSTUEF)
@@ -2829,6 +2860,13 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		}
 	}
 
+	if (wh_IsHPWHModel())
+	{	if (IsSetCount(DHWHEATER_UA, DHWHEATER_INSULR, 0) == 2)
+			rc |= disallow(DHWHEATER_INSULR, "when 'whUA' is specified");
+	}
+	else
+		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, 0);
+
 	if (!wh_CanHaveLoopReturn())
 		ignoreN(whenHs, DHWHEATER_INHTSUPPLY, DHWHEATER_INHTLOOPRET, 0);
 
@@ -2887,13 +2925,7 @@ int DHWHEATER::wh_ReportBalErrorsIf() const
 // end-of-run water heater energy balance error check / report
 // returns # of balance errors during run
 {
-	if (wh_balErrCount > 0)
-	{
-		const char* what = objIdTx();
-		warn("%s: Energy balance errors occurred in %d subhours.",
-			what, wh_balErrCount);
-	}
-	return wh_balErrCount;
+	return record::ReportBalErrorsIf(wh_balErrCount, "subhours");
 }		// DHWHEATER::wh_ReportBalErrorsIf
 //----------------------------------------------------------------------------
 RC DHWHEATER::wh_Init()		// init for run
@@ -3186,18 +3218,22 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 	{	// resistance tank (no preset)
-		rc |= wh_HPWH.hw_InitResistance( wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2);
+		rc |= wh_HPWH.hw_InitResistance(
+			wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2);
 	}
 	else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
 	{	// generic HPWH (no preset)
 		rc |= wh_HPWH.hw_InitGeneric(wh_vol, wh_EF, wh_ashpResUse);
 	}
 	else
-	{	float volX = IsSet(DHWHEATER_VOL) ? wh_vol : -1.f;		// alternative volume
-		rc |= wh_HPWH.hw_InitPreset(wh_ashpTy, volX);
+	{	rc |= wh_HPWH.hw_InitPreset(wh_ashpTy);
+		if (IsSet(DHWHEATER_VOL))
+			wh_HPWH.hw_pHPWH->setTankSize_adjustUA(wh_vol, HPWH::UNITS_GAL);
 	}
 
-	// adjust UA and vol?
+	// at this point, HPWH has known size and default UA
+	//   if additional UA or insulR is provided, adjust UA
+	rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR);
 
 	if (rc == RCOK)
 	{	// tank inlet fractional heights
@@ -3207,7 +3243,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	}
 
 	// make probe-able volume consistent with HPWH value
-	wh_vol = wh_HPWH.hw_GetTankVol();
+	// wh_vol = wh_HPWH.hw_GetTankVol();
+
+	wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR);
 
 	// config checks -- report only once
 	if (!pWS->ws_configChecked)
@@ -3328,11 +3366,10 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	}
 
 	if (whfcn == whfcnPRIMARY && pWS->ws_pDHWSOLARSYS)
-	{
-		float drawSolarSys		// draw: does not include loop flow
+	{	float drawSolarSys		// draw: does not include loop flow
 			= wh_IsLastHeater() ? tk.wtk_whUse : tk.wtk_volIn;
 		drawSolarSys *= scaleWH * wh_mult * pWS->ws_mult;
-		pWS->ws_pDHWSOLARSYS->sw_TickAccumDraw(
+		rc |= pWS->ws_pDHWSOLARSYS->sw_TickAccumDraw(
 			pWS,
 			drawSolarSys,		// tick draw from DHWSOLARSYS, gal
 			tk.wtk_tInletX);	// solar system inlet water temp
@@ -3341,7 +3378,8 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	return rc;
 }		// DHWHEATER::wh_DoSubhrTick
 //--------------------------------------------------------------------------------------
-RC DHWHEATER::wh_DoSubhrEnd()
+RC DHWHEATER::wh_DoSubhrEnd()		// end-of-subhour
+// returns RCOK iff simulation should continue
 {
 	RC rc = RCOK;
 
@@ -3547,19 +3585,18 @@ RC DHWTANK::wt_CkF()		// DHWTANK input check / default
 	rc |= !pWS ? oer( "DHWSYS not found")	// insurance (unexpected)
 				 : pWS->ws_CheckSubObject( this);
 
-	// surrounding zone or temp: zone illegal if temp given
-	if (IsSet(DHWTANK_TEX))
+	// tank surrounding temp -- one of wtTEx or wtZone, not both
+	int nVal = IsSetCount(DHWTANK_TEX, DHWTANK_ZNTI, 0);
+	if (nVal == 0)
+		rc |= oer("one of 'wtTEx' and 'wtZone' must be specified.");
+	else if (nVal == 2)
 		rc |= disallowN("when 'wtTEx' is specified", DHWTANK_ZNTI, 0);
 
-	if (!rc)
-	{	if (!IsSet( DHWTANK_UA))
-		{	float tsa = TankSurfArea_CEC( wt_vol);
-			if (wt_insulR < 0.01f)
-			{	rc |= ooer( DHWTANK_INSULR, "wtInsulR must be >= 0.01 so valid wtUA can be calculated");
-				wt_insulR = 0.01;
-			}
-			wt_UA = tsa / wt_insulR;
-		}
+	if (IsSet( DHWTANK_UA))
+		rc |= disallow( DHWSOLARSYS_TANKINSULR, "when 'wtUA' is specified");
+	else
+	{	float tsa = TankSurfArea_CEC( wt_vol);
+		wt_UA = tsa / max(0.68f, wt_insulR);
 	}
 	return rc;
 }	// DHWTANK::wt_CkF

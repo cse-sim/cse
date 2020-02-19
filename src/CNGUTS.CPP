@@ -805,10 +805,13 @@ x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 					  ah->name, (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
 
 			DHWHEATER* wh;
-			RLUP(WhR, wh)
+			RLUP(WhR, wh)		// primary heaters
 				wh->wh_ReportBalErrorsIf();
-			RLUP(WlhR, wh)
+			RLUP(WlhR, wh)		// loop heaters
 				wh->wh_ReportBalErrorsIf();
+			DHWSOLARSYS* pSW;
+			RLUP(SwhR, pSW)
+				pSW->sw_ReportBalErrorsIf();
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.
 

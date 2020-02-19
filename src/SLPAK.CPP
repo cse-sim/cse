@@ -29,9 +29,9 @@
 /* solar constant (Btuh/sf): solar extraterrestial beam radiation before
    variations during year. */
 #ifdef SERI
-double SOLCON = 433.33; // SERI value: 1367 w/m2 ( 1 Btuh/sf = 3.1546 w/m2
+const double SOLCON = 433.33; // SERI value: 1367 w/m2 ( 1 Btuh/sf = 3.1546 w/m2
 #else
-double SOLCON = 434.; // previous value, source unknown
+const double SOLCON = 434.; // previous value, source unknown
 #endif
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
