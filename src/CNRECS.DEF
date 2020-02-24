@@ -4283,10 +4283,14 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "MTR* sw_pMtrElec;"	// runtime pointers to meter, NULL if not accum'ing
   *h FLOAT_GEZ sw_parElec;		// parasitic electricity use, W
 
-  *r FLOAT sw_scAreaTot;		// total of child DHWSOLARCOLLECTORS, ft2
-  *r INT sw_scCount;			// # of child DHWSOLARCOLLECTORS (not necessarily # of panels)
+  *r INT sw_wsCount				// # of DHWSYSs supplied by this DHWSOLARSYS
+								//   (re detection of orphan DHWSOLARSYSs)
 
-  // Tank (from DHWTANK)
+  *r FLOAT sw_scAreaTot;		// total of child DHWSOLARCOLLECTORS, ft2
+  *r FLOAT sw_scCount;			// # of child DHWSOLARCOLLECTORS (not necessarily # of panels)
+								//   = SUM( sc_mult)
+
+  // Tank
   *s *e *nest HPWHLINK sw_tank;	// interface to Ecotope HPWH model (used as tank)
   *r FLOAT_GZ sw_tankVol;		// tank volume, gal
 								//   default: 1.5 gal/ft2 collector area
@@ -4308,6 +4312,8 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *i FLOAT_GZ sw_tankTHxLimit	// tank temp limit, F; collector heat
 								//   discarded when sw_tankTHx > sw_tankTHxLimit
 								//   default = 180 F
+  *h *e INT sw_overHeatTkCount	// # of ticks in this hour when collector did not run
+								//   due to swtankTHx > sw_tankTHxLimit 
 
   *s *e FLOAT sw_tickVol;		// current tick draw to DHWSYSs, gal
   *s *e FLOAT sw_tickVolT;		// current tick (vol * inlet temp), gal-F
@@ -4329,6 +4335,9 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *h *e FLOAT sw_scTOutlet		// mixed collector outlet temperature, F
 
   // annual results
+  *y *e INT sw_overHeatHrCount	// number of hours during which collector did not
+								//   run (for 1 tick or more)
+								//   due to swtankTHx > sw_tankTHxLimit
   *y *e FLOAT sw_SSFAnnual		// annual solar savings fraction
 								//   derived from all DHWSYSs served
 

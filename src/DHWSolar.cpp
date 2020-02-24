@@ -15,7 +15,6 @@
 #include "cnguts.h"
 #include "cuparse.h"
 #include "SLPAK.H"
-#include "solarflatplatecollector.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARSYS: represents a solar water heating system
@@ -57,23 +56,26 @@ RC DHWSOLARSYS::sw_Init()		// init for run
 {
 	RC rc = RCOK;
 
+	if (sw_wsCount == 0)		// incremented in DHWSYS::ws_Init()
+		oWarn("Not referenced by any DHWSYS; no useful energy output.");
+
 	sw_pMtrElec = MtrB.GetAtSafe(sw_elecMtri);
 
 	// collector loop fluid volumetric heat capacity, Btu/gal-F
 	sw_scFluidVHC = sw_scFluidSpHt * sw_scFluidDens / galPerFt3;
-	double densSI = DIPtoSI(sw_scFluidDens);
 
 	// DHWSOLARCOLLECTOR
-	sw_scCount = 0;
+	sw_scCount = 0.f;
 	sw_scAreaTot = 0.f;
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ss == ss)
 	{	rc |= pSC->sc_Init();
-		sw_scCount++;
-		sw_scAreaTot += pSC->sc_areaTot;
+		sw_scCount += pSC->sc_mult;
+		sw_scAreaTot += pSC->sc_areaTot;		// sc_areaTot includes sc_mult
 	}
-	if (sw_scAreaTot < .01f)
-		rc |= oer("Must have solar collector area");
+	if (sw_scCount < .01f		// if no collectors found
+	 || sw_scAreaTot < .01f)	// unexpected: sc_area and sc_mult are FLOAT_GZ
+		rc |= oer("No DHWSOLARCOLLECTORs found -- cannot model.");
 
 	if (!IsSet(DHWSOLARSYS_TANKVOL))
 		sw_tankVol = 1.5f * sw_scAreaTot;		// default 1.5 gal/ft2
@@ -116,6 +118,10 @@ RC DHWSOLARSYS::sw_DoHour()
 	sw_tankQLoss = 0.f;
 	sw_drawVol = 0.f;
 
+	sw_overHeatTkCount = 0;
+	if (Top.tp_isBegMainSim)
+		sw_overHeatHrCount = 0;
+	
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
 	{	rc |= pSC->sc_DoHour();
@@ -154,6 +160,9 @@ RC DHWSOLARSYS::sw_EndIvl(
 {
 	RC rc = RCOK;
 
+	if (sw_overHeatTkCount > 0)
+		sw_overHeatHrCount++;
+
 	// Add parasitics to meter
 	if (sw_pMtrElec)
 		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
@@ -184,6 +193,10 @@ int DHWSOLARSYS::sw_ReportBalErrorsIf() const
 // end-of-run tank energy balance error check / report
 // returns # of balance errors during run
 {
+	if (sw_overHeatHrCount > 0)
+		warn("%s: Tank temperature exceeded swTankTHxLimit during %d hrs.",
+			objIdTx(), sw_overHeatHrCount);
+
 	return record::ReportBalErrorsIf(sw_tank.hw_balErrCount, "subhour");
 }		// DHWSOLARSYS::sw_ReportBalErrorsIf
 //-----------------------------------------------------------------------------
@@ -239,8 +252,10 @@ RC DHWSOLARSYS::sw_TickCalc()
 	float sumVol = 0.f;			// all-collector total fluid volume for tick, gal
 	float sumVolT = 0.f;		// all-collector SUM( vol * outletTemp), gal-F
 
-	if (sw_tankTHx < sw_tankTHxLimit)	// if tank below max allow temp
-										//   (else collector not run (details not modeled)
+	if (sw_tankTHx >= sw_tankTHxLimit)	// if tank temp >= max allow temp
+										//   collector not run (details not modeled)
+		sw_overHeatTkCount++;
+	else
 	{
 		// Calculate outlet temperature of all collectors
 		// Using volume weighted average
@@ -286,6 +301,111 @@ RC DHWSOLARSYS::sw_TickCalc()
 
 	return rc;
 }		// DHWSOLARSYS::sw_TickCalc
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// class SolarFlatPlateCollector -- simple FR/tauAlpha collector model
+//   (local class)
+///////////////////////////////////////////////////////////////////////////////
+
+class SolarFlatPlateCollector
+{
+public:
+	SolarFlatPlateCollector();
+	SolarFlatPlateCollector(double gross_area,
+		double tilt,
+		double azimuth,
+		double FR_tau_alpha = 0.6,
+		double FR_UL = -4.0,
+		double specific_heat_fluid_ = 2394.0,
+		double density_fluid_ = 1113.0);
+	~SolarFlatPlateCollector() = default;
+
+	void calculate(double Q_incident, double mass_flow_rate, double t_amb, double t_inlet);
+
+	// Setters
+	inline double set_tilt(double tilt) { tilt_ = tilt; }
+	inline double set_azimuth(double azm) { azimuth_ = azm; }
+	inline double set_FR_tau_alpha(double tau_alpha) { FR_tau_alpha_ = tau_alpha; }
+	inline double set_FR_UL(double FRUL) { FR_UL_ = FRUL; }
+	inline double set_gross_area(double area) { gross_area_ = area; }
+	// Fluid properties (Cp, density)
+	inline double set_specific_heat_fluid(double Cp) { specific_heat_fluid_ = Cp; }
+	inline double set_density_fluid(double density) { density_fluid_ = density; }
+
+	double outlet_temp() { return outlet_temp_; }
+	double efficiency() { return efficiency_; }
+	double heat_gain() { return heat_gain_; }
+
+private:
+	// Collector properties
+	double tilt_;                ///< radians
+	double azimuth_;             ///< radians
+	double FR_UL_;               ///< Slope, W/m^2-K
+	double FR_tau_alpha_;        ///< Intercept, dimensionless
+	double gross_area_;          ///< m^2
+	double specific_heat_fluid_; ///< J / kg-K
+	double density_fluid_;       ///< kg / m^3
+
+	// Collector state
+	double heat_gain_;   ///< W
+	double efficiency_;  ///< fraction in [0.0, 1.0]
+	double outlet_temp_; ///< Kelvin
+};		// class SolarFlatPlateCollector
+//-----------------------------------------------------------------------------
+SolarFlatPlateCollector::SolarFlatPlateCollector()
+	: tilt_(0.0),
+	azimuth_(0.0),
+	FR_tau_alpha_(0.6),
+	FR_UL_(-4),
+	gross_area_(1.0),
+	specific_heat_fluid_(4181.6),
+	density_fluid_(1000.0),
+	efficiency_(1.0),
+	outlet_temp_(283)
+{
+}
+//-----------------------------------------------------------------------------
+SolarFlatPlateCollector::SolarFlatPlateCollector(double gross_area,
+	double tilt,
+	double azimuth,
+	double FR_tau_alpha,
+	double FR_UL,
+	double specific_heat,
+	double density)
+	: tilt_(tilt),
+	azimuth_(azimuth),
+	FR_tau_alpha_(FR_tau_alpha),
+	FR_UL_(FR_UL),
+	gross_area_(gross_area),
+	specific_heat_fluid_(specific_heat),
+	density_fluid_(density),
+	efficiency_(1.0),
+	outlet_temp_(283)
+{
+}
+//-----------------------------------------------------------------------------
+void SolarFlatPlateCollector::calculate(double Q_incident,
+	double mass_flow_rate,
+	double ambient_temp,
+	double inlet_temp)
+{
+	// instantaneous collector efficiency, [-]
+	if (Q_incident != 0.0)
+	{
+		efficiency_ = FR_UL_ * ((inlet_temp - ambient_temp) / Q_incident) + FR_tau_alpha_;
+		efficiency_ = std::min(1.0, efficiency_);
+		// instantaneous solar gain, [W]
+		heat_gain_ = Q_incident * gross_area_ * efficiency_;
+		outlet_temp_ = inlet_temp + heat_gain_ / (mass_flow_rate * specific_heat_fluid_);
+	}
+	else
+	{
+		efficiency_ = 0.0;
+		outlet_temp_ = inlet_temp;
+		heat_gain_ = 0.0;
+	}
+}
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

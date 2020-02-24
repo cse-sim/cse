@@ -635,6 +635,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// solar water heating
 		ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
+		if (ws_pDHWSOLARSYS)
+			ws_pDHWSOLARSYS->sw_wsCount++;
+
 		ws_SSFAnnual = 0.f;
 		ws_SSFAnnualSolar = ws_SSFAnnualReq = 0.;
 
@@ -751,14 +754,17 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		// additional config checks
 		if (!ws_configChecked)
 		{	// don't bother with ignore msgs if not RCOK (no run)
-			if (!rc && !ws_HasCentralDHWSYS())
-			{	if (ws_whCountUseTS == 0.f)
-					ignore(DHWSYS_TSETPOINT,
-						"-- no setpoint-aware DHWHEATERs in this DHWSYS.");
-				if (ws_wlhCountUseTS == 0.f)
-					ignore(DHWSYS_TSETPOINTLH,
-						"-- no setpoint-aware DHWLOOPHEATERs in this DHWSYS.");
-			}
+#if 0
+0			// info message deemed unnecessary, 2-20
+0			if (!rc && !ws_HasCentralDHWSYS())
+0			{	if (ws_whCountUseTS == 0.f)
+0					ignore(DHWSYS_TSETPOINT,
+0						"-- no setpoint-aware DHWHEATERs in this DHWSYS.");
+0				if (ws_wlhCountUseTS == 0.f)
+0					ignore(DHWSYS_TSETPOINTLH,
+0						"-- no setpoint-aware DHWLOOPHEATERs in this DHWSYS.");
+0			}
+#endif
 
 			// set checked flag in both run and input DHWSYSs
 			// WHY: suppresses duplicate info msgs when >1 RUN
@@ -2346,6 +2352,9 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 {
 	RC rc = RCOK;
 
+	if (Top.tp_isBegMainSim)
+		hw_balErrCount = 0;
+
 	// setpoint temp: ws_tUse has hourly variability
 	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
 	if (!hw_pHPWH->isSetpointFixed())
@@ -2710,15 +2719,15 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 			.004)		// higher msg threshold in release
 #endif
 		{	// energy balance error
-			static const int WHBALERRCOUNTMAX = 10;
+			static const int HWBALERRCOUNTMAX = 10;
 			hw_balErrCount++;
-			if (hw_balErrCount <= WHBALERRCOUNTMAX || fBal > 0.01)
+			if (hw_balErrCount <= HWBALERRCOUNTMAX || fBal > 0.01)
 			{	const char* what = hw_pOwner->objIdTx();
 				warn("%s: HPWH energy balance error for %s (%1.6f kWh  f=%1.6f)",
 					what,
 					Top.When(C_IVLCH_S),	// date, hr, subhr
 					qBal, fBal);			// unbalance calc'd just above
-				if (hw_balErrCount == WHBALERRCOUNTMAX)
+				if (hw_balErrCount == HWBALERRCOUNTMAX)
 					warn("%s: Skipping further messages for minor energy balance errors.",
 						what);
 			}
