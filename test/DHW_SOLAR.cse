@@ -1154,6 +1154,10 @@ DHWSOLARSYS "Solar System"
   swTankVol = 50
   swTankInsulR = 10
   swTankTEx = $tdbO + 10
+#if 1
+  swSCFluidSpHt = .6363
+  swSCFluidDens = 62.4278
+#endif
   //swTankHXEff = 1.0
 
   DHWSOLARCOLLECTOR "Array 1"
@@ -1163,8 +1167,13 @@ DHWSOLARSYS "Solar System"
     scTilt = 30
     scFRTA = 0.6
     scFRUL = -0.7
-    //scPumpOnDeltaT = 0
-    //scPumpOffDeltaT = 0
+#if 0
+	scPumpFlow = 0.3
+#endif
+#if 0
+    scPumpOnDeltaT = 2
+    scPumpOffDeltaT = 1
+#endif
 
 DHWSYS DS_UEF
   wsFXHWMTR = FX_UEF

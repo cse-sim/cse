@@ -4276,6 +4276,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
   *declare "int sw_ReportBalErrorsIf() const;"
+  *declare "double sw_MassFlowSI( double vfr) const;"
   
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
@@ -4320,7 +4321,10 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 								//   used re heat exchange from collector loop
 
   // Collector Fluid
-  *i FLOAT sw_scFluidVolSpHt	// Fluid volumetric specific heat, Btu/gal-F
+  *i FLOAT_GZ sw_scFluidSpHt	// collector working fluid specific heat, Btu/lbm-F
+  *i FLOAT_GZ sw_scFluidDens	// collector working fluid density, lb/ft3
+  *r FLOAT_GZ sw_scFluidVHC		// collector working fluid volumetric heat capacity, Btu/gal-F
+								//    derived from sw_scFluidSpHt and scFluidDens
   *h *e FLOAT sw_scTInlet		// mixed collector inlet temperature, F
   *h *e FLOAT sw_scTOutlet		// mixed collector outlet temperature, F
 

@@ -674,11 +674,18 @@ const float FHuge = float(1.E38);	// Handy large (not strictly largest) value us
 									// search initializations, etc.  Single defn for portability and code clarity.
 
 // Physical constants
+#if 1
 const float BtuperWh    =  3.41214f;	// Btu per Wh
 const float BtuperkWh   =  3412.14f;	// Btu per kWh
 const float waterRhoCp = 8.29018282f;	// water volumetric weight, lb/gal
 										//    = volumetric heat capacity, Btu/gal-F
 										// 30 C (85 F) value used, appropriate for DHW calcs
+#else
+const float BtuperWh = 3.413f;	// Btu per Wh
+const float BtuperkWh = 3413.f;	// Btu per kWh
+const float waterRhoCp = 8.345f;
+#endif
+const float galPerFt3 = 7.48052f;		// gal per cubic foot
 
 #if 0	// obsolete
 x const float SrcMultElect = 3.f;	// Source multiplier for electrical energy (California CEC value)

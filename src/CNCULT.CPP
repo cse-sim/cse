@@ -2128,7 +2128,8 @@ CULT( "*",           STAR,     0,                          0,  0, 0,      0,    
 CULT( "swElecMtr",   DAT,      DHWSOLARSYS_ELECMTRI,       0,  0, VEOI,   TYREF, &MtriB, N,      N, N),
 CULT( "swEndUse",    DAT,      DHWSOLARSYS_ENDUSE,         0,  0, VEOI,   TYCH,  0,      C_ENDUSECH_DHW, N, N),
 CULT( "swParElec",   DAT,      DHWSOLARSYS_PARELEC,        0,  0, VHRLY,  TYFL,  0,      0.f,    N, N),
-CULT( "swSCFluidVolSpHt", DAT, DHWSOLARSYS_SCFLUIDVOLSPHT, 0,  0, VEOI,   TYFL,  0,    5.31f,    N, N),  // Ethylene Glycol
+CULT( "swSCFluidSpHt",DAT,     DHWSOLARSYS_SCFLUIDSPHT,    0,  0, VEOI,   TYFL,  0,     0.9f,    N, N),  // default = 35% (vol)
+CULT( "swSCFluidDens",DAT,     DHWSOLARSYS_SCFLUIDDENS,    0,  0, VEOI,   TYFL,  0,     64.f,    N, N),  //   ethylene glycol
 CULT( "swTankHXEff", DAT,      DHWSOLARSYS_TANKHXEFF,      0,  0, VEOI,   TYFL,  0,      0.7f,   N, N),
 CULT( "swTankTHxLimit", DAT,   DHWSOLARSYS_TANKTHXLIMIT,   0,  0, VEOI,   TYFL,  0,     180.f,   N, N),
 CULT( "swTankVol",   DAT,      DHWSOLARSYS_TANKVOL,        0,  0, VEOI,   TYFL,  0,      0.f,    N, N),

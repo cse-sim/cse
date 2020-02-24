@@ -2389,7 +2389,7 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_qTX = 0.;		// total extra tank heat (e.g. re solar tank)
 
 	hw_tHWOutF = 0.;	// accum re average hot water outlet temp, F
-	// wh_fMixUse, wh_fMixRL: initialized in wh_InitRunTotals(); value retained hour-to-hour
+	// hw_fMixUse, hw_fMixRL: initialized in wh_InitRunTotals(); value retained hour-to-hour
 
 	hw_nzDrawCount = 0;		// count of ticks with draw > 0
 
@@ -2440,7 +2440,7 @@ RC HPWHLINK::hw_DoSubhrTick(
 							//   same as tMains if no upstream mods
 	float scaleWH /*=1*/,	// draw scale factor
 							//   re DHWSYSs with >1 DHWHEATER
-							//   *not* including wh_fMixUse or wh_fMixRL;
+							//   *not* including hw_fMixUse or hw_fMixRL;
 	float tMix /*=-1.f*/,	// target mixed water temp, F
 							//   if >0, mix/XBU maintains tMix
 							//   else no mix
@@ -2535,7 +2535,7 @@ RC HPWHLINK::hw_DoSubhrTick(
 			}
 			else
 			{	// mix to obtain ws_tUse
-				//   set wh_fMixUse and wh_fMixRL for next tick
+				//   set hw_fMixUse and hw_fMixRL for next tick
 				DHWMix(tMix, tOutF, tMains, hw_fMixUse);
 				DHWMix(tMix, tOutF, tRL, hw_fMixRL);
 			}
@@ -2576,7 +2576,7 @@ RC HPWHLINK::hw_DoSubhrTick(
 	}
 #if defined( HPWH_DUMP)
 	// tick level CSV report for testing
-	int dumpUx = UNSYSIP;		// unit system for CSV values
+	int dumpUx = UNSYSSI;		// unit system for CSV values
 	int hpwhOptions = dumpUx == UNSYSIP ? HPWH::CSVOPT_IPUNITS : HPWH::CSVOPT_NONE;
 	static const int nTCouples = 12;		// # of storage layers reported by HPWH
 
@@ -2611,7 +2611,10 @@ RC HPWHLINK::hw_DoSubhrTick(
 											UNTEMP,  5,
 		  "XBU",       HPWHxBU,				UNENERGY3,	5,
 		  "tUse",      tMix,				UNTEMP,  5,
-		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()), UNENERGY3, 5,
+		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
+											UNENERGY3, 5,
+		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
+											UNENERGY3, 5,
 		  NULL
 		};
 
@@ -3312,7 +3315,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	DHWTICK& tk,	// current tick
 	float scaleWH)	// draw scale factor
 					//   re DHWSYSs with >1 DHWHEATER
-					//   *not* including wh_fMixUse or wh_fMixRL;
+					//   *not* including hw_fMixUse or hw_fMixRL;
 {
 	RC rc = RCOK;
 
@@ -3515,7 +3518,7 @@ RC DHWHEATER::wh_InstUEFDoSubhrTick(
 					//   also includes mixed-in DHWLOOP return, if any
 	float scaleWH,	// draw scale factor
 					//   re DHWSYSs with >1 DHWHEATER
-					//   *not* including wh_fMixUse or wh_fMixRL;
+					//   *not* including hw_fMixUse or hw_fMixRL;
 	float tUse)		// assumed output temp, F
 	
 {
@@ -3590,10 +3593,10 @@ RC DHWTANK::wt_CkF()		// DHWTANK input check / default
 	if (nVal == 0)
 		rc |= oer("one of 'wtTEx' and 'wtZone' must be specified.");
 	else if (nVal == 2)
-		rc |= disallowN("when 'wtTEx' is specified", DHWTANK_ZNTI, 0);
+		rc |= disallow( DHWTANK_ZNTI, "when 'wtTEx' is specified");
 
 	if (IsSet( DHWTANK_UA))
-		rc |= disallow( DHWSOLARSYS_TANKINSULR, "when 'wtUA' is specified");
+		rc |= disallow( DHWTANK_INSULR, "when 'wtUA' is specified");
 	else
 	{	float tsa = TankSurfArea_CEC( wt_vol);
 		wt_UA = tsa / max(0.68f, wt_insulR);
@@ -4260,12 +4263,12 @@ void PBC::sb_Init(PIPESEG* pPS)
 }	// PBC::sb_Class
 //=============================================================================
 
-PIPESEG::PIPESEG( basAnc *b, TI i, SI noZ)		// c'tor
-	: record( b, i, noZ)
-{	ps_fRhoCpX =
-		8.33f	// lb/gal
-		* 60.f	// min / hr
-		* 1.f;	// Btu/lb-F
+PIPESEG::PIPESEG(basAnc *b, TI i, SI noZ)		// c'tor
+	: record(b, i, noZ)
+{
+	ps_fRhoCpX =		// Btuh/gpm-F
+		waterRhoCp	// Btu/gal-F
+		* 60.f;		// min / hr
 }	// PIPESEG::PIPESEG
 //----------------------------------------------------------------------------
 float PIPESEG::ps_GetOD(
@@ -4288,7 +4291,7 @@ void PIPESEG::ps_CalcGeom()		// pipe seg derived geometric values
 
 	float r = ps_GetOD( 0) / 24.f;	// pipe radius, ft
 	// include tube wall in vol, approximates heat cap of tubing
-	ps_totals.st_vol = 7.48 * kPi * r * r * ps_len;
+	ps_totals.st_vol = galPerFt3 * kPi * r * r * ps_len;
 	
 	double d = ps_GetOD(1) / 12.;
 	ps_totals.st_exArea = d * kPi * ps_len;
