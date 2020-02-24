@@ -246,10 +246,12 @@ void FC runFazDataFree()
 }				// runFazDataFree
 //-----------------------------------------------------------------------------
 BOOL DbDo(				// handy DbShouldPrint + headings
-	DWORD oMsk)		// dbdXXX debug category
+	DWORD oMsk,		// dbdXXX debug category
 					// or special values
 					//    dbdSTARTRUN: init at run beg
 					//    dbdSTARTSTEP: init at timestep beg
+	int options /*=0*/)		// options
+							//   dbdoptNOHDGS: suppress headings
 // WHY: triggers headings upon 1st actual print
 // return nz iff caller should print
 {
@@ -257,19 +259,20 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 #if defined( DEBUGDUMP)
 	static int dbgDoneRunHdg = FALSE;
 	static int dbgDoneStepHdg = FALSE;
+	bool bDoHdgs = !(options & dbdoptNOHDGS);
 	if (oMsk == dbdSTARTRUN)
 		dbgDoneRunHdg = dbgDoneStepHdg = FALSE;
 	else if (oMsk == dbdSTARTSTEP)
 		dbgDoneStepHdg = FALSE;
 	else if (DbShouldPrint( oMsk))
 	{	// this debug category is selected
-		if (!dbgDoneRunHdg)
+		if (bDoHdgs && !dbgDoneRunHdg)
 		{	DbPrintf( "################\n%s%s %s %s   %s\n",
 				  Top.tp_RepTestPfx(),
 				  ProgName, ProgVersion, ProgVariant, Top.runDateTime );
 			dbgDoneRunHdg = TRUE;
 		}
-		if (!dbgDoneStepHdg)
+		if (bDoHdgs && !dbgDoneStepHdg)
 		{	const char* tAusz="";
 			if (Top.tp_autoSizing)
 			{	const char* tPass =
@@ -280,9 +283,9 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 				tAusz = strtprintf( " pass=%s itr=%d", tPass, Top.dsDayNIt);
 			}
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
-				Top.dateStr ? Top.dateStr : "(No date)",
-				tAusz,
-				Top.iHr, Top.iSubhr);
+					Top.dateStr ? Top.dateStr : "(No date)",
+					tAusz,
+					Top.iHr, Top.iSubhr);
 			dbgDoneStepHdg = TRUE;
 		}
 		ret = 1;	// yes, caller should print
@@ -389,15 +392,6 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 {
 	RC rc = RCOK;
 
-	// abbreviated run experiment, 1-2015
-	//   tp_skipDay nz iff this day should not be simulated
-	if (isWarmup || tp_autoSizing)
-		tp_skipDay = 0;
-	else
-		// use mod( jDay+start, step) to determine if day s/b run
-		// (use 100*step to ensure all values >0
-		tp_skipDay = (jDay-1-tp_skipDayStart+100*tp_skipDayStep)%tp_skipDayStep != 0;
-
 // simulate 24 hours
 	for (iHr = 0;  iHr < 24;  iHr++)	// loop over (Daylight Time) hours 0 to 23
 	{
@@ -431,14 +425,11 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		// start subhour, and start coincident hour,day,month,run.
 		EF( doBegIvl())			// start-interval ( Top.ivl) processing, next.
 								// sets much, wthr data, exprs, solar calcs, etc.
-		if (!tp_skipDay)
-		{
 		AH* ah; RLUP( AhB, ah)   EF( ah->begSubhr() )			// start-subhour air handler stuff.  cnah.cpp
 		TU* tu; RLUP( TuB, tu)   EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
 		ZNR* zp; RLUP( ZrB, zp)   EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
 		IZXRAT* ize; RLUP( IzxR, ize) EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
-		if (tp_subhrWSCount)
-		{	DHWSYS* pWS; RLUP( WsR, pWS) EF( pWS->ws_DoSubhr() ) }
+		EF( DHWSubhr())			// all DHW (including solar water heating)
 		RLUP( ZrB, zp)   EF( zp->zn_BegSubhr2() )
 		DUCTSEG* ds; RLUP( DsR, ds) EF( ds->ds_BegSubhr() )		// start-subhour duct segments
 		RSYS* rs; RLUP( RsR, rs) EF( rs->rs_BegSubhr() )		// start-subhour RSYS HVAC systems
@@ -461,7 +452,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		//RLUP( CpB, cp)   EF( cp->endSubhr() )		// coolplants end-subhour stuff.  cncp.cpp.
 		RLUP( ChB, ch)   EF( ch->endSubhr() )		// chillers end-subhour stuff.  cncp.cpp.
 		RLUP( TpB, tp)   EF( tp->endSubhr() )		// towerplants end-subhour stuff.  cntp.cpp.
-		}
+
 		E( doEndIvl());		// end interval stuff: update Top.ivl, results accum, reports,etc. local.
 							// Also ends hour,day,month,run ending with this subhour.
 							// On error, return exact code re ^C detection (rc = MH_C0100)
@@ -594,14 +585,11 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		RLUP( WMtrR, pWM)
 			EF( pWM->wmt_Init( Top.ivl) )	// 0s hour values
 
-		// domestic water heating
-		//   calcs done hourly, heat xfers applied to zones at subhours
+		// domestic water heating (including solar water heating)
+		//   draws and other setup done hourly
+		//   most calcs done subhour / subhourtick
 		//   must be done before gains due to possible DHW linkage
-		DHWSYS* pWS;
-		RLUPC( WsR, pWS, !pWS->ws_HasCentralDHWSYS())
-		{	// loop central systems (child systems handled within ws_DoHour)
-			EF( pWS->ws_DoHour( Top.ivl) )
-		}
+		EF( DHWBegIvl( Top.ivl))
 
 		// distrubute GAINs to zones and meters
 		EF( doHourGains() )    	// sets hour's znSGain's and znLGain's and accumulates hour's metered energy use from GAIN records.
@@ -685,12 +673,16 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 	}
 
+// finalize water heating
+	if (Top.ivl <= C_IVLCH_H)
+		EF(DHWEndIvl(Top.ivl));
+
+
 // Mass end-of-interval enthalpy accounting
 	msEndIvl( Top.ivl);
 
 // results accumulation for interval: simulation and meters
-	if (!Top.tp_skipDay)
-		doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
+	doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
 
 	if (Top.ivl < C_IVLCH_S)
 	{	// battery stage 0 hourly
@@ -702,20 +694,20 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	}
 
 // energy balance check.  After results accumulation.
-	if (Top.isEndHour)					// not if end of subhour interval only
-		if (!Top.isWarmup)    				// if not warming up (may also exclude autoSizing)
-			if (!Top.tp_autoSizing)				// tentatively no energy balance checks during autoSize
-			{
-				if (Top.ebTolHour > 0.f)			// if tolerance given for hourly check 3-92
-					cgenbal( C_IVLCH_H, Top.ebTolHour);    	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
+	if (Top.isEndHour) 					// not if end of subhour interval only
+	{	if (!Top.isWarmup)    				// if not warming up (may also exclude autoSizing)
+		{	if (!Top.tp_autoSizing)				// tentatively no energy balance checks during autoSize
+			{	if (Top.ebTolHour > 0.f)			// if tolerance given for hourly check 3-92
+					cgenbal(C_IVLCH_H, Top.ebTolHour);    	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
 				if (Top.isEndDay)				// if last hour of day
-				{
-					if (Top.ebTolDay > 0.f)			// if tolerance given for daily check
-						cgenbal( C_IVLCH_D, Top.ebTolDay);	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
+				{	if (Top.ebTolDay > 0.f)			// if tolerance given for daily check
+						cgenbal(C_IVLCH_D, Top.ebTolDay);	// check zone and mass energy balance, msg if bad.  cgenbal.cpp.
 					if (Top.isEndMonth)    			// if last day of month (probably never set for autoSizing 6-95)
-						cgenbal( C_IVLCH_M, Top.ebTolMon);	// monthly check.
+						cgenbal(C_IVLCH_M, Top.ebTolMon);	// monthly check.
 				}
 			}
+		}
+	}
 
 // now evaluate and stuff exprs from user input that are used in reports -- may show results.  Others done at interval start.
 	EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
@@ -726,7 +718,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		//   *AFTER* EVENDIVL function eval
 		BATTERY* bt;
 		RLUP(BtR, bt)
-			EF(bt->bt_DoHour( 1))
+			EF(bt->bt_DoHour(1))
 	}
 
 	doIvlFinalize();				// finalize meters etc
@@ -739,11 +731,6 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	// copy interval results to prior interval results.
 	// Do after end-interval exprs & reports, so 'prior' shows prior even if
 	// probed at end interval (might happen in expr also ref'ing cur results? )
-	if (Top.ivl <= C_IVLCH_H)
-	{	DHWSYS* pWS;
-		RLUP( WsR, pWS)
-			pWS->ws_EndIvl( Top.ivl);
-	}
 	doIvlPrior();					// local fcn, below
 
 // loads/hvac subhour-after-reports stuff, such as setting prior-value variables, that must be deferred cuz of probes.
@@ -766,6 +753,10 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		RLUP(BtR, bt)
 			bt->bt_DoHour( 2);		// battery wrap-up
 
+		INVERSE* pI;
+		RLUP(IvB, pI)
+			EF(pI->iv_Calc(Top.ivl))
+		
 		// interval-dependent stuff after reports
 
 		switch (Top.ivl)				/*lint -e616  cases fall thru */
@@ -780,11 +771,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 			{	if (zr->curr.Y.nSubhrLX)
 					warn( 			// not rWarn: no day/hour etc (at least not til also done for ausz) 5-97
 						"Zone '%s': Condensation occurred in %d subhours of run.\n"
-#if 1	// vaguer message (heat not added to zone for CR model)  5-15-12
 						"    Total condensation heat = %g kBtu.",
-#else
-						"    A total of %g kBtu of condensation heat was added to the zone.",
-#endif
 						zr->name, zr->curr.Y.nSubhrLX,
 						zr->curr.Y.qlX/1000 );				// convert Btu to kBtu
 				if (zr->curr.Y.nHrUnMetH)
@@ -818,11 +805,13 @@ x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 					  ah->name, (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
 
 			DHWHEATER* wh;
-			RLUP( WhR, wh)
-				if (wh->wh_balErrCount > 0)
-					warn( "DHWHEATER '%s': Energy balance errors occurred in %d subhours.",
-						wh->name, wh->wh_balErrCount);
-
+			RLUP(WhR, wh)		// primary heaters
+				wh->wh_ReportBalErrorsIf();
+			RLUP(WlhR, wh)		// loop heaters
+				wh->wh_ReportBalErrorsIf();
+			DHWSOLARSYS* pSW;
+			RLUP(SwhR, pSW)
+				pSW->sw_ReportBalErrorsIf();
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.
 
@@ -1215,7 +1204,7 @@ w	}  /*lint +e616 */
 	Top.isBegOf = Top.isEndOf = 0;		// no longer start nor end of an interval
 	return RCOK;
 }			// doIvlExprs
-//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 LOCAL RC FC NEAR doHourGains()	// set hour's zone & mass gains & daylighting stuff and metered energy use from GAIN records
 // call AFTER expression evaluation as zone gain input members accept hourly expressions
 {
@@ -1767,16 +1756,16 @@ LOCAL void FC NEAR doIvlFinalize()
 	if (Top.ivl > C_IVLCH_D)					// if hour call, done
 		return;
 
-	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
+	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);	// accum metered energy: day to month. local,below.
 
-	if (Top.ivl > C_IVLCH_M)							// if day call, done.
+	if (Top.ivl > C_IVLCH_M)					// if day call, done.
 		return;
 
 	// accumulate month results to year
 
-	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
+	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);	// accumulate metered energy use: month to year
 
-	//if (Top.ivl > C_IVLCH_Y)							// if month call, done
+	//if (Top.ivl > C_IVLCH_Y)					// if month call, done
 	//   return;
 	// year (end of run) accumulation: nothing to do
 }							// doIvlFinalize
@@ -2474,6 +2463,41 @@ void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 	tp_tmrZone   = tmrCurTot( TMR_ZONE);
 #endif
 }		// TOPRAT::tp_tmrSnapshot
+
+///////////////////////////////////////////////////////////////////////////////
+// class INVERSE: function inverter
+///////////////////////////////////////////////////////////////////////////////
+RC INVERSE::iv_CkF()
+{
+	RC rc = RCOK;
+
+	return rc;
+
+}		// INVERSE::iv_CkF
+//----------------------------------------------------------------------------
+RC INVERSE::iv_Init()
+{
+	RC rc = RCOK;
+
+	return rc;
+
+}		// INVERSE::iv_Init
+//----------------------------------------------------------------------------
+RC INVERSE::iv_Calc(
+	IVLCH ivl)
+{
+	static int nCall = 1;
+	RC rc = RCOK;
+	if (ivl == C_IVLCH_Y)
+	{
+		nCall++;
+		iv_XEst = nCall * 1.f;
+	}
+
+	return rc;
+
+}		// INVERSE::iv_Calc
+//============================================================================
 #ifdef BINRES
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run

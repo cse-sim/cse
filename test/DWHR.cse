@@ -4506,10 +4506,10 @@ REPORT rpType=DHWMTR rpDHWMeter = wuFX rpFreq=MONTH \
 REPORT rpType=DHWMTR rpDHWMeter = wuWH rpFreq=MONTH \
 WSREP2( sName, me, apr 1) \
 METER me DHWMETER wufx DHWMETER wuwh \
-DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsTUse=120  wsWF = 1
+DHWSYS sName wsMult=1  wsElecMtr=me wsFXHWMTR=wufx  wsWHHWMTR=wuwh  wsWF = 1
 
 #define DO0Base( sName, me, wuFX, wuWH, shrs) \
-DO0Base0( sName, me, wuFX, wuWH) wsTSetPoint=130 wsShowerCount = shrs \
+DO0Base0( sName, me, wuFX, wuWH) wsShowerCount = shrs \
 DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER
 
 // DHWSYS with no DHWHEATREC
@@ -4572,7 +4572,7 @@ DO1( "DS2S2Y", Elec2S2Y,  FX2S2Y,  WH2S2Y, 2, 2, 2, Yes, .6)
 
 // load applied to central and 1 child
 DO0Base0( "DSC0",   "ElecC0",   FXC0,    WHC0)
-DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER wsTSetPoint=130
+DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER
 DSLOAD
 endDHWSYS
 
@@ -4581,7 +4581,7 @@ DO0Base0( "DSK0b",   "ElecK0b",   FXK0b,    WHK0b) wsCentralDHWSYS=DSC0
 
 // load applied to 2 children
 DO0Base0( "DSC1",   "ElecC1",   FXC1,    WHC1)
-DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER wsTSetPoint=130
+DHWHEATER "WH" whType = SmallStorage whEF=1 whHeatSrc=Resistance endDHWHEATER
 endDHWSYS
 
 DO0Base0( "DSK1a",   "ElecK1a",   FXK1a,    WHK1a) wsCentralDHWSYS=DSC1 DSLOAD

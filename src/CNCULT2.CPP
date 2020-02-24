@@ -66,6 +66,7 @@ LOCAL RC topGain();
 LOCAL RC topRSys1();
 LOCAL RC topRSys2();
 LOCAL RC topDHW();
+LOCAL RC topInverse();
 LOCAL RC topPV();
 LOCAL RC topBT();
 LOCAL RC topSX();
@@ -338,6 +339,8 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 
 	E( topZn3() )			// zones: add generated IZXFERs,
 
+	E( topInverse())		// inverse objects
+
 
 #ifdef AUTOSIZE
 	//--- message if input check only
@@ -367,7 +370,8 @@ RC TOPRAT::tp_SetDerived()
 
 	// substep ticks = even shorter steps for e.g. HPWH simulation
 	tp_nSubhrTicks = max( 1, 60 / nSubSteps);
-	tp_subhrTickDur = 60. / (tp_nSubhrTicks * nSubSteps);
+	tp_tickDurHr = 1. / (tp_nSubhrTicks * nSubSteps);
+	tp_tickDurMin = tp_tickDurHr * 60.;
 
 	//# days in run
 	nDays = tp_endDay - tp_begDay + 1;
@@ -1461,6 +1465,7 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E( WMtrR.RunDup( WMtriB));
 	E( WsR.RunDup( WSiB));
 	E(WhR.RunDup(WHiB, &WsR))
+	E(WlhR.RunDup(WLHiB, &WsR))
 	E(WtR.RunDup(WTiB, &WsR))
 	E(WrR.RunDup(WRiB, &WsR))
 	E(WpR.RunDup(WPiB, &WsR))
@@ -1470,26 +1475,50 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 	E(WlpR.RunDup(WLPiB, &WlR))
 	E(WduR.RunDup(WDUiB, &WsR))
 	E(WuR.RunDup(WUiB, &WduR))
+	E(SwhR.RunDup(SWHiB))
+	E(ScR.RunDup(SCiB, &SWHiB))
 
 	// DHWDAYUSE one-time inits
+	//   2 passes req'd (see wdu_Init())
 	DHWDAYUSE* pWDU;
 	RLUP(WduR, pWDU)
 		rc |= pWDU->wdu_Init( 0);
 	RLUP(WduR, pWDU)
 		rc |= pWDU->wdu_Init( 1);
+	// if (!rc)
+	//    return rc	 ... no, keep going ws_Init() checks are independent
 
 	// DHWSYS initialization -- do *last* -- all children in place
 	//   multiple passes re e.g. wsLoadShareDHWSYS
+	//   give up at end of pass if error
 	DHWSYS* pWS;
 	RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 0);
-	RLUP( WsR, pWS)
+	if (!rc) RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 1);
-	RLUP( WsR, pWS)
+	if (!rc) RLUP( WsR, pWS)
 		rc |= pWS->ws_Init( 2);
+
+
+	// DHWSOLARSYS
+	//   sw_Init() calls child DHWSOLARCOLLECTOR sc_Init
+	DHWSOLARSYS* pSW;
+	RLUP(SwhR, pSW)
+		rc |= pSW->sw_Init();
 
 	return rc;
 }	// ::topDHW
+//=============================================================================
+LOCAL RC topInverse()		// inverses
+{
+	RC rc = RCOK;
+	INVERSE* pI;
+	RLUP(IvB, pI)
+		rc |= pI->iv_Init();
+
+	return rc;
+
+}	// ::topInverse
 //=============================================================================
 LOCAL RC topPV()		// check PVARRAY ... copy to run rat
 {
@@ -1998,6 +2027,30 @@ RC record::limitCheck(		// range check, issue warning or error msg
 	}
 	return rc;
 }		// record::limitCheck
+//-----------------------------------------------------------------------------
+RC record::limitCheckFix(	// range check, msg, set to min/max
+	int fn,			// field
+	float vMin,		// min allowed value
+	float vMax,		// max allowed value
+	int erOp /*=ERR*/)		// WRN/ERR/IGN etc
+							// note IGNX bit: limit only (don't msg)
+// return RCOK if field not set or value is in range or warning msg
+//        else RCxx if value out of range (msg issued)
+{
+	RC rc = RCOK;
+	void* p = field(fn);
+	if (!ISNANDLEP( p))
+	{	float* pV = (float *)p;
+		float v = *pV;
+		if (v < vMin || v > vMax)
+		{	rc = orMsg(erOp, "%s (%g) must be in range %g - %g",
+					mbrIdTx(fn), v, vMin, vMax);
+			*pV = bracket(vMin, v, vMax);
+		}
+	}
+	return rc;
+}		// record::limitCheck
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 //   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)

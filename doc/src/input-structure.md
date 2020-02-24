@@ -48,7 +48,9 @@ TODO: review hierarchy
             DHWLOOPPUMP
             DHWLOOPSEG
                 DHWLOOPBRANCH
-       ZONE
+		DHWSOLARSYS
+			DHWSOLARCOLLECTOR
+        ZONE
             GAIN
             SURFACE
                 WINDOW

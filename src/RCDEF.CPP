@@ -194,9 +194,10 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 							1. Allocation of front members at proper offsets not verified.
 							2. Space waste by duplicate sstat[] not prevented.  Does it make errors? */
 
-const int MAXRCS=100;		// Record names.  80->100, 10-13
+const int MAXRCS=120;		// Record names.  80->100, 10-13
 							// Also max rec handle (prob unnec??).
-const int MAXFIELDS=160;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95. 600-->200 1-92. ->130 5-95.
+const int MAXFIELDS=200;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95.
+							//   600-->200 1-92. ->130 5-95.   160->200 11-19
 const int MAXDT=130;		// Data types.        160-->60 1-92. ->90 3-92. ->100 10-10 ->120 5-13 -> 130 4-18
 const int MAXUN = 80;		// Units.              90-->60 1-92. ->80 3-92. ->60 5-95. ->80 7-13
 const int MAXUNSYS=2;		// Unit systems. 5-->2 5-95.
@@ -400,7 +401,7 @@ LOCAL void   wSrfd4( FILE *f);
 LOCAL void   sumry( void);
 LOCAL FILE * rcfopen( char *, char **, SI);
 LOCAL SI     gtoks( char * );
-LOCAL void   rcderr( char *s, ...);
+LOCAL void   rcderr( const char *s, ...);
 LOCAL void   update( const char *, const char *);
 LOCAL void   newsec( char *);
 LOCAL char * stashSval( SI i);
@@ -2512,6 +2513,7 @@ LOCAL void rec_fds()
 
 		while (*Sval[0] == '*')                 // if *word
 		{
+			int wasDeclare = 0;		// set nz iff handling *declare
 			SI val;
 			val = looksw( Sval[0]+1, fdirtab);  // look up word after '*'
 			switch (val)                        // returns bit or spec value
@@ -2591,6 +2593,7 @@ LOCAL void rec_fds()
 
 			case 32762:                 // *declare "text": spit text thru immediately into record class definition.
 				// intended uses include declarations of record-specific C++ member functions. 3-4-92.
+				wasDeclare++;
 				if (gtoks("q"))
 					rcderr("Error getting \"text\" after '*declare'");
 				else
@@ -2602,7 +2605,11 @@ LOCAL void rec_fds()
 			/* get next token: next * directive else processed after *word loop */
 			// BUG: get error here if *declare is last thing in record, 10-94.
 			if (gtoks("s"))
-				rcderr("Error getting token after field * directive");
+			{	const char* msg = wasDeclare
+					? "Error getting token after *declare (note *declare CANNOT be last in RECORD)"
+					: "Error getting token after field * directive";
+				rcderr(msg);
+			}
 
 		}   // while (*Sval[0] == '*') "*" directive
 		// on fallthru have a token
@@ -3500,7 +3507,7 @@ ueof:
 	return (gtokRet = GTOK);            // multiple error returns above
 }                       // gtoks
 //======================================================================
-LOCAL void rcderr( char *s, ...)                // Print an error message with optional arguments and count error
+LOCAL void rcderr( const char *s, ...)                // Print an error message with optional arguments and count error
 
 // s is Error message, with optional %'s as for printf; any necessary arguments follow.
 {
@@ -3901,7 +3908,7 @@ the abbreviation), and adding a 2nd hash byte for the abbrev. */
 
 
 /*-------------------------------- DEFINES --------------------------------*/
-#define MAXSYML 50	// Maximum lookup length -- used for declaring temporary strings
+#define MAXSYML 100	// Maximum lookup length -- used for declaring temporary strings
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SI FC NEAR lusetup( char * sym, char * canonicl);

@@ -1,0 +1,1296 @@
+// Test DHW tank losses to zone
+
+#redefine INFILM (1.461-.903)        //interior film, e = 0.9, convective only
+                                     //see appendix D
+#define WinINFILM (1.461)            //window interior film
+#redefine WALEXF 5.158               //wall exterior film, emissivity = 0.9
+#redefine WINEXF 3.697               //window exterior film, emissivity = 0.9
+#define INABSORP 0.9
+#define ABSORP 0.5
+#define SURFMODEL forward_difference
+#define WINH 4
+#define WINW 3
+#define OHDPTH 2
+#define COOLTEMP 75
+#define JAN4REP  0                 //1 for hourly reports, 0 otherwise
+#define JAN4NAME "600jan4.csv"
+#define MAR5REP  0                 //1 for hourly reports, 0 otherwise
+#define MAR5NAME "mar5s.csv"
+#define JUL27REP 0                 //1 for hourly reports, 0 otherwise
+#define JUL27NAME "600jul27s.csv"
+dbgPrintMaskC = 8
+dbgPrintMask = $dayofyear == 191 ? 64 : 0
+
+#define  IntLight_WEH  hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)
+#define  IntLight_WD   hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)
+#define  Other_SM   choose1( $month,  1.19,1.11,1.02,.93,.84,.8,.82,.88,.98,1.07,1.16,1.2)
+
+
+ repHdrL="1Z Test"
+ repHdrR=""
+ repTestPfx = "?"
+ WfName="CTZ12S13B.CSW"
+ BEGDay=Jan 1                     //
+ ENDDay=Dec 31                    //
+ ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ Jan1DOW=Tue
+ wuDays=30                        //
+ nSubSteps=6                     //
+ skyModel=anisotropic             //
+ dflExH=WALEXF                    //Exterior combined surface coefficient for
+                                  //regular walls
+                                  
+ windf = .25
+ 
+ bldgAzm=0.0                      //don't adjust surface azimuths
+ elevation=5297                   //1609 m
+ DT=NO                            //No daylight savings per BESTEST p.9
+
+ DELETE HOLIDAY "New Year's Day"  //No holidays per BESTEST p.9
+ DELETE HOLIDAY "M L King Day"
+ DELETE HOLIDAY "President's Day"
+ DELETE HOLIDAY "Memorial Day"
+ DELETE HOLIDAY "Fourth of July"
+ DELETE HOLIDAY "Labor Day"
+ DELETE HOLIDAY "Columbus Day"
+ DELETE HOLIDAY "Veterans Day"
+ DELETE HOLIDAY "Thanksgiving"
+ DELETE HOLIDAY "Christmas"
+
+//------ MATERIALS ------
+  
+ MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDens=59.375
+ MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
+ MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+ MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
+ MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0       matDens=0
+ MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
+ MATERIAL   "OpaqueWin"       matCond=1/(1/.52817-1/WinInFilm-1/WINEXF)
+                              matSpHt=0.239   matDens=87.399
+ MATERIAL   "SoftWood"  matCond=0.0842   	matSpHt=.33   	matDens=32.
+MATERIAL   "UZMWood"   matCond=0.08   	   matSpHt=.3825   	matDens=34.
+MATERIAL   "UZMCeilIns"  	matCond=0.025   matSpHt=0.2   matDens=1.5  matCondCT =0.00418
+MATERIAL   "UZMDeck"  	    matCond=0.052   matSpHt=0.2  matDens=10.7/0.2
+MATERIAL   "UZMShingle"  	matCond=1       matSpHt=0.2  matDens=24/0.2
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+
+ MATERIAL   "ConcreteBlock"     matCond=0.2946   matSpHt=0.239   matDens=87.5
+ MATERIAL   "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+ MATERIAL   "ConcreteSlab"  matCond=0.6528   matSpHt=0.239   matDens=87.5
+
+ MATERIAL   "m-SoftWood"  
+   matDens = 35                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Steel"  
+   matDens = 489                        // Density, lb/ft3
+   matSpHt = 0.12                       // Specific heat of material, Btu/lb-°F
+   matCond = 26.2                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-SIPSskin"  
+   matDens = 41                         // Density, lb/ft3
+   matSpHt = 0.45                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Gypsum Board"  
+   matDens = 40                         // Density, lb/ft3
+   matSpHt = 0.27                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Insul-R7.5-D1.5-SH0.35-C0.01111"  
+   matDens = 1.5                        // Density, lb/ft3
+   matSpHt = 0.35                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.011111                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Synthetic Stucco"  
+   matDens = 58                         // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.2                        // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-Carpet"  
+   matDens = 12.3                       // Density, lb/ft3
+   matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-Wood layer"  
+   matDens = 41                         // Density, lb/ft3
+   matSpHt = 0.45                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-TileGap"  
+   matDens = 0.075                      // Density, lb/ft3
+   matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.07353                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-10 PSF Roof"  
+   matDens = 120                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-VertWallCavity"  
+   matDens = 0.075                      // Density, lb/ft3
+   matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.314                      // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.00397                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-3 Coat Stucco"  
+   matDens = 116                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.4167                     // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-Ins-R21-D1.5-SH0.2-C0.02183"  
+   matDens = 1.5                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.021825                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Ins-R9.1-D1.5-SH0.2-C0.03205"  
+   matDens = 1.5                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.032051                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.00418                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Ins-R13-D1.5-SH0.2-C0.02244"  
+   matDens = 1.5                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.022438                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Ins-R19-D1.5-SH0.2-C0.01535"  
+   matDens = 1.5                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.015351                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-Ins-R18-D1.5-SH0.2-C0.02546"  
+   matDens = 1.5                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 0.025463                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-SNEICConcrete"  
+   matDens = 144                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-SNEICEarth"  
+   matDens = 115                        // Density, lb/ft3
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-SNEICCarpet"  
+   matDens = 12.3                       // Density, lb/ft3
+   matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-Zone1DoorFront-dr"  
+   matThk = 0.041667                    // Thickness (feet), ft
+   matDens = 41                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-Zone1ToGarageDoorFront-dr"  
+   matThk = 0.041667                    // Thickness (feet), ft
+   matDens = 41                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-GarageCarDoorFront-dr"  
+   matThk = 0.041667                    // Thickness (feet), ft
+   matDens = 41                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "m-AtticTruss"  
+   matDens = 35                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "m-AtticTruss 25"  
+   matDens = 35                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "IntMassMat-SoftWood"  
+   matDens = 35                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "IntMassMat-Carpet"  
+   matDens = 12.3                       // Density, lb/ft3
+   matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+
+MATERIAL   "IntMassMat-WoodLayer"  
+   matDens = 35                         // Density, lb/ft3
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+MATERIAL   "IntMassMat-Gypsum"  
+   matDens = 40                         // Density, lb/ft3
+   matSpHt = 0.27                       // Specific heat of material, Btu/lb-°F
+   matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+
+
+
+// ----- CONSTRUCTION section for lightweight case -----
+ CONSTRUCTION opaque_window     // air-to-air U = .528
+            layer     lrThk=1.0      lrMat="OpaqueWin"
+  
+ CONSTRUCTION lw_wall
+            layer     lrThk=0.03937
+                      lrMat="Plasterboard"
+            layer     lrThk=0.2165     lrMat="FiberQuilt"
+            layer     lrThk=0.02953    lrMat="WoodSiding"
+  
+ CONSTRUCTION lw_floor
+            layer     lrThk=0.08202    lrMat="TimberFloor"
+            layer     lrThk=3.291    lrMat="Insulation"
+
+ CONSTRUCTION roofcon
+            layer     lrThk=0.03937 lrMat="Plasterboard"
+//          layer     lrThk=.7      lrMat="FiberQuilt"
+            layer     lrThk=0.06234    lrMat="WoodSiding"
+
+ CONSTRUCTION sunwall
+//            layer     lrThk=(0.656-(2*.295/INFILM))
+//                      lrMat="SunWallMat"
+            layer     lrThk=0.656
+                      lrMat="SunWallMat"
+
+// ----- CONSTRUCTION section for heavyweight case -----
+  
+ CONSTRUCTION hw_wall
+            layer     lrThk=0.3281
+                      lrMat="ConcreteBlock"
+            layer     lrThk=(0.2018-(.02311/INFILM)+(.02311/1.461))
+                      lrMat="FoamInsul"
+            layer     lrThk=0.02953   lrMat="WoodSiding"
+  
+ CONSTRUCTION hw_floor
+            layer     lrThk=0.2625
+                      lrMat="ConcreteSlab"
+            layer     lrThk=3.304
+                      lrMat="Insulation"
+                      
+CONSTRUCTION CFrm2x4 // 3.5"      
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+ 	layer 	lrMat="SoftWood" lrThk=3.5/12.              // 2x4 joist
+   	layer 	lrMat="UZMCeilIns" lrThk=(9.794251-3.5)/12. //insulation above the joist
+
+CONSTRUCTION CIns //    
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+   	layer 	lrMat="UZMCeilIns" lrThk=9.794251/12. //insulation between joists
+
+
+CONSTRUCTION   "cc-Exterior Wall Cons"  
+
+   LAYER   "cl1-Exterior Wall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Exterior Wall Cons"  
+      lrMat = "m-Ins-R21-D1.5-SH0.2-C0.02183"    // Layer material
+      lrThk = 0.458333                  // Thickness (feet), ft
+
+   LAYER   "cl3-Exterior Wall Cons"  
+      lrMat = "m-Insul-R7.5-D1.5-SH0.35-C0.01111"    // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+   LAYER   "cl4-Exterior Wall Cons"  
+      lrMat = "m-Synthetic Stucco"      // Layer material
+      lrThk = 0.03125                   // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Exterior Wall Cons"  
+
+   LAYER   "fl1-Exterior Wall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Exterior Wall Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.458333                  // Thickness (feet), ft
+
+   LAYER   "fl3-Exterior Wall Cons"  
+      lrMat = "m-Insul-R7.5-D1.5-SH0.35-C0.01111"    // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+   LAYER   "fl4-Exterior Wall Cons"  
+      lrMat = "m-Synthetic Stucco"      // Layer material
+      lrThk = 0.03125                   // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Ceiling Below Attic Cons"  
+
+   LAYER   "cl1-Ceiling Below Attic Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Ceiling Below Attic Cons"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Ceiling Below Attic Cons"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.926282                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Ceiling Below Attic Cons"  
+
+   LAYER   "fl1-Ceiling Below Attic Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Ceiling Below Attic Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Ceiling Below Attic Cons"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.926282                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Interior Floor Cons"  
+
+   LAYER   "cl1-Interior Floor Cons"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Interior Floor Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl4-Interior Floor Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Interior Floor Cons"  
+
+   LAYER   "fl1-Interior Floor Cons"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Interior Floor Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Interior Floor Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.9375                    // Thickness (feet), ft
+
+   LAYER   "fl4-Interior Floor Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Attic Roof Cons"  
+
+   LAYER   "cl1-Attic Roof Cons"  
+      lrMat = "m-Ins-R13-D1.5-SH0.2-C0.02244"    // Layer material
+      lrThk = 0.134648                  // Thickness (feet), ft
+
+   LAYER   "cl2-Attic Roof Cons"  
+      lrMat = "m-Ins-R13-D1.5-SH0.2-C0.02244"    // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Attic Roof Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl4-Attic Roof Cons"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "cl5-Attic Roof Cons"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Attic Roof Cons"  
+
+   LAYER   "fl2-Attic Roof Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Attic Roof Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl4-Attic Roof Cons"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "fl5-Attic Roof Cons"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Attic Roof Cons"  
+
+   LAYER   "cl2-Garage Attic Roof Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Garage Attic Roof Cons"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "cl4-Garage Attic Roof Cons"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Attic Roof Cons"  
+
+   LAYER   "fl1-Garage Attic Roof Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Attic Roof Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Garage Attic Roof Cons"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "fl4-Garage Attic Roof Cons"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Ext Floor Cons"  
+
+   LAYER   "cl1-Ext Floor Cons"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Ext Floor Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Ext Floor Cons"  
+      lrMat = "m-Ins-R19-D1.5-SH0.2-C0.01535"    // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Ext Floor Cons"  
+
+   LAYER   "fl1-Ext Floor Cons"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Ext Floor Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Ext Floor Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Ext Wall Cons"  
+
+   LAYER   "cl1-Garage Ext Wall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Garage Ext Wall Cons"  
+      lrMat = "m-VertWallCavity"        // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Garage Ext Wall Cons"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Ext Wall Cons"  
+
+   LAYER   "fl1-Garage Ext Wall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Ext Wall Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Garage Ext Wall Cons"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Ceiling Below Attic Cons"  
+
+   LAYER   "cl1-Garage Ceiling Below Attic Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Ceiling Below Attic Cons"  
+
+   LAYER   "fl1-Garage Ceiling Below Attic Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Ceiling Below Attic Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-R19 IntFloor Cons"  
+
+   LAYER   "cl1-R19 IntFloor Cons"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-R19 IntFloor Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl3-R19 IntFloor Cons"  
+      lrMat = "m-Ins-R18-D1.5-SH0.2-C0.02546"    // Layer material
+      lrThk = 0.458333                  // Thickness (feet), ft
+
+   LAYER   "cl4-R19 IntFloor Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-R19 IntFloor Cons"  
+
+   LAYER   "fl1-R19 IntFloor Cons"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-R19 IntFloor Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl3-R19 IntFloor Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.458333                  // Thickness (feet), ft
+
+   LAYER   "fl4-R19 IntFloor Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-IntWall Cons"  
+
+   LAYER   "cl1-IntWall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-IntWall Cons"  
+      lrMat = "m-Ins-R21-D1.5-SH0.2-C0.02183"    // Layer material
+      lrThk = 0.458333                  // Thickness (feet), ft
+
+   LAYER   "cl3-IntWall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-IntWall Cons"  
+
+   LAYER   "fl1-IntWall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-IntWall Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.458333                  // Thickness (feet), ft
+
+   LAYER   "fl3-IntWall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Interior Floor"  
+
+   LAYER   "cl1-Interior Floor"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Interior Floor"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl4-Interior Floor"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Interior Floor"  
+
+   LAYER   "fl1-Interior Floor"  
+      lrMat = "m-Carpet"                // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Interior Floor"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Interior Floor"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.9375                    // Thickness (feet), ft
+
+   LAYER   "fl4-Interior Floor"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Ext Wall"  
+
+   LAYER   "cl1-Garage Ext Wall"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Garage Ext Wall"  
+      lrMat = "m-VertWallCavity"        // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Garage Ext Wall"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Ext Wall"  
+
+   LAYER   "fl1-Garage Ext Wall"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Ext Wall"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Garage Ext Wall"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Zone1ToAtticCeiling-AtcEdgWA"  
+
+   LAYER   "cl1-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.449653                  // Thickness (feet), ft
+
+   LAYER   "cl3-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl4-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "cl5-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Zone1ToAtticCeiling-AtcEdgWA"  
+
+   LAYER   "fl1-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.449653                  // Thickness (feet), ft
+
+   LAYER   "fl3-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl4-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "fl5-Zone1ToAtticCeiling-AtcEdgWA"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Zone1ToAtticCeiling-AtcEdgWB"  
+
+   LAYER   "cl1-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.635016                  // Thickness (feet), ft
+
+   LAYER   "cl4-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.607639                  // Thickness (feet), ft
+
+   LAYER   "cl5-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl6-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "cl7-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Zone1ToAtticCeiling-AtcEdgWB"  
+
+   LAYER   "fl1-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Ins-R9.1-D1.5-SH0.2-C0.03205"    // Layer material
+      lrThk = 0.635016                  // Thickness (feet), ft
+
+   LAYER   "fl4-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.607639                  // Thickness (feet), ft
+
+   LAYER   "fl5-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl6-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "fl7-Zone1ToAtticCeiling-AtcEdgWB"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "scn-SlabConsCarpet"  
+
+   LAYER   "cl1-SNEICCCarpet"  
+      lrMat = "m-SNEICCarpet"           // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-SNEICCConcrete"  
+      lrMat = "m-SNEICConcrete"         // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-SNEICCEarth"  
+      lrMat = "m-SNEICEarth"            // Layer material
+      lrThk = 2                         // Thickness (feet), ft
+
+CONSTRUCTION   "scn-SlabConsExposed"  
+
+   LAYER   "cl1-SNEIXCConcrete"  
+      lrMat = "m-SNEICConcrete"         // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl2-SNEIXCEarth"  
+      lrMat = "m-SNEICEarth"            // Layer material
+      lrThk = 2                         // Thickness (feet), ft
+
+CONSTRUCTION   "c-Zone1DoorFront-dr"  
+
+   LAYER   "l-Zone1DoorFront-dr"  
+      lrMat = "m-Zone1DoorFront-dr"     // Layer material
+
+CONSTRUCTION   "c-Zone1ToGarageDoorFront-dr"  
+
+   LAYER   "l-Zone1ToGarageDoorFront-dr"  
+      lrMat = "m-Zone1ToGarageDoorFront-dr"    // Layer material
+
+CONSTRUCTION   "c-GarageCarDoorFront-dr"  
+
+   LAYER   "l-GarageCarDoorFront-dr"  
+      lrMat = "m-GarageCarDoorFront-dr"    // Layer material
+
+CONSTRUCTION   "con-AtticTruss"  
+
+   LAYER   "lyr-AtticTruss"  
+      lrMat = "m-AtticTruss"            // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+CONSTRUCTION   "con-AtticTruss 35"  
+
+   LAYER   "lyr-AtticTruss 113"  
+      lrMat = "m-AtticTruss 25"         // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+CONSTRUCTION   "con-FurnIMass"  
+
+   LAYER   "cl1-FurnIMass"  
+      lrMat = "IntMassMat-SoftWood"     // Layer material
+      lrThk = 0.208333                  // Thickness (feet), ft
+
+CONSTRUCTION   "con-FloorFrmIMass"  
+
+   LAYER   "cl1-FloorFrmIMass"  
+      lrMat = "IntMassMat-Carpet"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-FloorFrmIMass"  
+      lrMat = "IntMassMat-WoodLayer"    // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl3-FloorFrmIMass"  
+      lrMat = "IntMassMat-SoftWood"     // Layer material
+      lrThk = 0.770833                  // Thickness (feet), ft
+
+   LAYER   "cl4-FloorFrmIMass"  
+      lrMat = "IntMassMat-Gypsum"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "con-FloorCavIMass"  
+
+   LAYER   "cl1-FloorCavIMass"  
+      lrMat = "IntMassMat-Carpet"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-FloorCavIMass"  
+      lrMat = "IntMassMat-WoodLayer"    // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl3-FloorCavIMass"  
+      lrMat = "IntMassMat-Carpet"       // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+   LAYER   "cl4-FloorCavIMass"  
+      lrMat = "IntMassMat-Carpet"       // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+   LAYER   "cl5-FloorCavIMass"  
+      lrMat = "IntMassMat-Gypsum"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "con-WallFrmIMass"  
+
+   LAYER   "cl1-WallFrmIMass"  
+      lrMat = "IntMassMat-Gypsum"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-WallFrmIMass"  
+      lrMat = "IntMassMat-SoftWood"     // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-WallFrmIMass"  
+      lrMat = "IntMassMat-Gypsum"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "con-WallCavIMass"  
+
+   LAYER   "cl1-WallCavIMass"  
+      lrMat = "IntMassMat-Gypsum"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-WallCavIMass"  
+      lrMat = "IntMassMat-Gypsum"       // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+
+  
+// ----- CONSTRUCTION section for R 1000 high resistance test case ---
+  
+ CONSTRUCTION styro
+            layer     lrThk=23       lrMat="FoamInsul"
+
+// ----- GLAZETYPES --------------------------------------------------
+
+ GLAZETYPE  Best_Double
+            gtu=1/(1/.52817-1/WinInFilm-1/WINEXF)        //air-to air u = .52817 without films
+            gtSHGC=0.787
+            gtSMSO= 1
+            gtSMSC= 1
+            gtFMult=1
+            gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+            gtDMSHGC=0.686/0.787
+            gtDMRBSol=0.686/0.787
+
+//----- METERS section -----                              
+  
+ METER MtrElec               //Mtr name
+ METER MtrFuel
+  
+//----- ZONE SECTION -----
+
+#define GLASSTYPE Best_Double
+#define WALLCON lw_wall
+#define FLOORCON lw_floor
+
+#define ACEIL 516.68
+#define CEILFF .1
+
+ZONE Z1
+	znModel = CZM
+
+    znArea=ACEIL
+    znVol=ACEIL*8                  //zone Area * zone wall height (2.7 m)
+    znSC=0                        //shades always open
+    znAzm=0
+    infAC=0
+    znCair=1000                //from Bestest specs
+    znEaveZ = 20
+    znWindFLkg = 1
+    
+    znTH = 65 - $hour/24
+    znTD = 68
+    znTC = 74 + $hour/24
+    znQMxH = 20000
+	znQMxC = -34000
+       
+    xfanVfDs = 1000
+    xfanMtr = mtrElec
+
+    GAIN Internal
+        gnMeter=mtrElec
+        gnEndUse=Lit
+        gnPower=1000*.4
+
+	SURFACE Ceiling  sfType=Ceiling sfCon=Cins sfArea=ACEIL
+		sfModel = forward_difference sfExHcModel = Unified sfInHcModel = Unified
+
+    SURFACE Floor
+        sfType=Floor
+        sfModel=SURFMODEL
+        sfArea=516.68
+        sfCon=FLOORCON
+        sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
+        sfExAbs=0                 //no solar on floor
+        sfExT=50                  //10 C ground temperature
+        sfInAbs=INABSORP
+        sfInHcModel = Unified             //floor inside film coefficient
+        sfExH=100000             //floor outside film coefficient
+        sfExHcModel = Unified
+
+    SURFACE North_Wall
+        sfType=Wall
+        sfModel=SURFMODEL
+        sfArea=232.51             //21.6 sq meters
+        sfAzm=0                   //north wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfExHcModel = Unified
+        sfInHcModel = Unified
+        
+    SURFACE East_Wall
+        sfType=Wall
+        sfModel=SURFMODEL
+        sfArea=174.38             //16.2 sq meters
+        sfAzm=90                  //east wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfExHcModel = Unified
+        sfInHcModel = Unified             //wall inside film coefficient
+
+        WINDOW East_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=WINH         //window height
+            wnWidth=WINW          //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+            SHADE East_OH
+                ohDepth=OHDPTH    //overhang depth
+                ohDistUp=1.64     //distance from top of window
+                ohExL=0           //distance:left edge of win to left edge of oh
+                ohExR=0           //distance:rght edge of win to rght edge of oh
+                lfDepth=OHDPTH    //fin depth
+                lfTopUp=1.64      //distance:top of window to top of fin
+                lfDistL=0         //distance:edge of window to fin
+                lfBotUp=0.656     //distance:bottom of window to bottom of fin
+                rfDepth=OHDPTH    //fin depth
+                rfTopUp=1.64      //distance:top of window to top of fin
+                rfDistR=0         //distance:edge of window to fin
+                rfBotUp=0.656     //distance:bottom of window to bottom of fin
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+  SURFACE West_Wall
+      sfType=Wall
+      sfModel=SURFMODEL
+      sfArea=174.38             //16.2 sq meters
+      sfAzm=270                 //west wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfExHcModel = Unified
+      sfInHcModel = Unified             //wall inside film coefficient
+
+      WINDOW West_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF           //window exterior film coefficient
+            wnInH=WinInFilm        //window interior film coefficient
+            wnHeight=WINH          //window height
+            wnWidth=WINW           //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+          SHADE West_OH
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //distance from top of window
+              ohExL=0           //distance:left edge of win to left edge of oh
+              ohExR=0           //distance:rght edge of win to rght edge of oh
+              lfDepth=OHDPTH    //fin depth
+              lfTopUp=1.64      //distance:top of window to top of fin
+              lfDistL=0         //distance:edge of window to fin
+              lfBotUp=0.656     //distance:bottom of window to bottom of fin
+              rfDepth=OHDPTH    //findepth
+              rfTopUp=1.64      //distance:top of window to top of fin
+              rfDistR=0         //distance:edge of window to fin
+              rfBotUp=0.656     //distance:bottom of window to bottom of fin
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+SURFACE South_Wall
+      sfType=Wall
+      sfModel=SURFMODEL
+     #ifdef OPQWIN
+      sfArea=232.51-(2*WINH*WINW)             //wall area 21.6 sq meters
+     #else
+      sfArea=232.51                           //wall area 21.6 sq meters
+     #endif
+      sfAzm=180                 //south wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfExHcModel = Unified
+      sfInHcModel = Unified             //wall inside film coefficient
+
+      WINDOW South_Win1
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=WINH        //window height
+            wnWidth=WINW         //window width
+            wnVfSkyDf=OHDPTH?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+           SHADE South_OH1
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //dance from top of window
+              ohExL=1.64        //distance:left edge of win to left edge of oh
+              ohExR=14.76       //distance:rght edge of win to rght edge of oh
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+      WINDOW South_Win2
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm          //window interior film coefficient
+            wnHeight=WINH        //window height
+            wnWidth=WINW         //window width
+            wnVfSkyDf=OHDPTH ?0.3936:0.5                 //view factor reduced to infinite overhang otherwise .5
+
+      SHADE South_OH2
+              ohDepth=OHDPTH    //overhang depth
+              ohDistUp=1.64     //distance from top of window .5m
+              ohExL=14.76       //distance:left edge of win to left edge of oh 4.5m
+              ohExR=1.64        //distance:rght edge of win to rght edge of oh .5m
+
+          SGDIST
+              sgSurf=Floor
+              sgSide=INTERIOR
+              sgFSO=1.0
+
+ENDzone // Z1
+
+
+ZONE   "Garage"  
+   znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
+   znArea = 440                         // Zone area, ft2
+   znVol = 3960                         // Zone volume, ft3
+   znEaveZ = 9.7                        // Height of top of the wall in this zone above the ground, ft
+   znFloorZ = 0.7                       // Nominal zone floor height relative to arbitrary 0 level, ft
+   znCAir = 0.01                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+   infAC = 0                            // Zone infiltration air changes per hour, 1/hr
+   infELA = 0                           // Zone effective leakage area (ELA), in2
+
+   GAIN   "Garage-Ltg"  
+      gnMeter = "MtrElec"               // Meter that tracks internal gain
+      gnEndUse = "User1"                  // Internal gain enduse
+      gnPower = ((20 + (.0063 * 2700)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, IntLight_WEH, Default IntLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
+      gnFrRad = 0.2
+
+   SURFACE   "GarageCeiling"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "fc-Garage Ceiling Below Attic Cons"    // Surface construction
+      sfArea = 440                     // Wall area, ft2
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = Ambient
+
+   SURFACE   "GarageWallFront-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 40                       // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageWallLeft-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 27                       // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 90                        // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+	  sfExCnd = AdjZn
+	  sfAdjZn = Z1
+
+   SURFACE   "GarageWallRight-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 49.5                     // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 270                       // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageWallFront-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 167                      // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+      DOOR   "GarageCarDoorFront-Sim"  
+         drArea = 128                   // Area, ft2
+         drModel = "Forward_Difference"    // Modeling option
+         drCon = "c-GarageCarDoorFront-dr"    // Door construction
+
+   SURFACE   "GarageWallLeft-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 81                       // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 90                        // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+	  sfExCnd = AdjZn
+	  sfAdjZn = Z1
+
+   SURFACE   "GarageWallRight-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 148.5                    // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 270                       // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageSlab-Prm"  
+      sfType = "Floor"                  // Type of opaque surface
+      sfCon = "scn-SlabConsExposed"     // Surface construction
+      sfArea = 108                      // Wall area, ft2
+      sfTilt = 180                      // Surface tilt, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Ground"                // Exterior condition description
+      sfExCTGrnd = 0.0737               // Surface ???
+      sfExCTaDbAvgYr = 0.0014           // Surface ???
+      sfExCTaDbAvg14 = 0.1692           // Surface ???
+      sfExRConGrnd = 3.187              // Surface ???
+      sfInHcModel = "Unified"           // Surface ???
+
+   SURFACE   "GarageSlab-Int"  
+      sfType = "Floor"                  // Type of opaque surface
+      sfCon = "scn-SlabConsExposed"     // Surface construction
+      sfArea = 332                      // Wall area, ft2
+      sfTilt = 180                      // Surface tilt, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Ground"                // Exterior condition description
+      sfExCTGrnd = 0.0521               // Surface ???
+      sfExCTaDbAvgYr = 0.0251           // Surface ???
+      sfExRConGrnd = 3.187              // Surface ???
+      sfInHcModel = "Unified"           // Surface ???
+
+
+IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65
+IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
+
+
+#define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )
+#define  HWUSEF_WE  hourval( 0.018, 0.010, 0.009, 0.008, 0.015, 0.023, 0.026, 0.047, 0.077, 0.083, 0.074, 0.061, 0.051, 0.043, 0.039, 0.039, 0.052, 0.058, 0.056, 0.052, 0.047, 0.044, 0.040, 0.028 )
+#define HWUSE1(cfa) (21.4+0.00679*min( cfa, 2500))
+
+DHWSYS "DS0"
+  wsMult = 2
+  wsElecMtr = MtrElec
+  wsFuelMtr = MtrFuel
+  wsTSetpoint = 130
+  wsTUse = 125
+  wsUse = 2.5 * HWUSE1( 1900) * select( $isWeekend, HWUSEF_WE, default HWUSEF_WD)
+
+DHWHEATER "WH0"
+  whType = SmallStorage
+  whHeatSrc = ASHPX
+  whASHPType = GE2014
+  whASHPSrcZn = Garage
+  whZone = Z1
+
+DHWTANK WT1
+  wtInsulR = 5
+  wtVol = 400
+  wtXLoss = 0.6 * $TDbO
+  wtZone = Garage
+
+endDHWSYS
+
+
+ //--------- REPORTS ------------
+ DELETE REPORT "eb"
+
+ REPORT  rpType=MTR rpMETER = mtrElec rpFreq=MONTH
+ REPORT  rpType=MTR rpMETER = mtrFuel rpFreq=MONTH
+ REPORT  rpType=MTR rpMETER = SUM rpFreq=MONTH
+
+ REPORT	 rpType=ZEB   rpFreq=MONTH rpZone="Z1" 
+ REPORT	 rpType=ZEB   rpFreq=MONTH rpZone="Garage" 
+  
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jan 4 rpDayEnd=Jan 10 rpFreq=Hour rpBtuSf=1000
+ REPORT  rpType=ZEB rpZone=Garage rpDayBeg=Jan 4 rpDayEnd=Jan 10 rpFreq=Hour rpBtuSf=1000
+ 
+ REPORT
+        rpType=UDT  rpFreq=SUBHOUR rpBtuSf = 1000
+        rpDayBeg=Jun 10 rpDayEnd=Jun 12
+        reportcol colVal=@Top.iHr colHead="Hr"
+        reportcol colVal=@Top.tDbOSh       colHead="Tdb"
+        reportcol colVal=@Top.windSpeedSh       colHead="WndSpd"
+        reportcol colVal=@Zone[ 1].tz colHead="Ta1"
+        reportcol colVal=@Zone[ 1].tr colHead="Tr1"
+        reportcol colVal=@Zone[ 1].fVent colHead="fVent" colDec=3
+        reportcol colVal=@Zone[ 1].airX colHead="airX" colDec=3
+		reportcol colVal=@Zone[ 1].qsHvac colHead = "QHvac"
+		reportcol colVal=@Zone[ 2].tz colHead="TaG"
+        reportcol colVal=@Zone[ 2].tr colHead="TrG"
+   endReport
+
+// DHWTANK
+#define WTREP( t, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = t rpDayBeg=d rpDayEnd=d \
+ReportCol colhead="Hr" colVal=$hour colWid = 2 \
+ReportCol colhead="UA" colVal=@DhwTank[t].UA colDec=3 colWid = 6 \
+ReportCol colhead="Ttank" colVal=@DhwTank[t].ttank colDec=2 colWid=6 \
+ReportCol colhead="TEx" colVal=@DhwTank[t].tEx colDec=2 colWid=6 \
+ReportCol colhead="XLoss" colVal=@DhwTank[t].xloss colDec=2 colWid=6 \
+ReportCol colhead="QLoss" colVal=@DhwTank[t].qloss colDec=2 colWid=6
+WTREP( "WT1", apr 10)
+
+   
+
+        
+ REPORT     rpType=ZDD   rpZone="Z1"
+ REPORT     rpType=ZDD   rpZone="Garage"
+
+
+ RUN
+ //--------- END OF RUN ------------
+
+ $EOF

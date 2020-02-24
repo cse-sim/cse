@@ -109,6 +109,8 @@
 #define NDHWENDUSESPP 6		// # of DHW end uses (for use in cnrecs.def)
 							//   must be same as C_DHWEUCH_COUNT
 							//   see also cnglob.h const int NDHWENDUSES
+#define NDHWENDUSESXPP 8	// # of extended DHW end uses
+							//   must be same as C_DHWEUXCH_COUNT
 
 #define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
 

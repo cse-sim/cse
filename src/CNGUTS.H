@@ -122,6 +122,7 @@ extern anc<DUCTSEG> DsR;		// duct segments
 extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
 extern anc<DHWHEATER> WhR;		// DHW heater
+extern anc<DHWHEATER> WlhR;		// DHW loop heater
 extern anc<DHWTANK> WtR;		// DHW tank
 extern anc<DHWHEATREC> WrR;		// DHW heat recovery
 extern anc<DHWPUMP> WpR;		// DHW pump
@@ -131,6 +132,9 @@ extern anc<DHWLOOPBRANCH> WbR;	// DHW loop branch
 extern anc<DHWLOOPPUMP> WlpR;	// DHW loop pump
 extern anc<DHWDAYUSE> WduR;		// DHW day use
 extern anc<DHWUSE> WuR;			// DHW use (single draw)
+
+extern anc<DHWSOLARSYS> SwhR;   // DHW solar system
+extern anc<DHWSOLARCOLLECTOR> ScR;   // DHW solar collector
 
 extern anc<PVARRAY> PvR;        // PV array
 extern anc<BATTERY> BtR;		// Battery
@@ -252,5 +256,11 @@ void FC cgzndump( SI vrh, TI zi);
 
 // shading.cpp
 float FC shadwin( const WSHADRAT *p, float gamma, float cosz);
+
+// dhwcalc.cpp
+RC DHWBegIvl(IVLCH ivl);
+RC DHWSubhr();
+RC DHWEndIvl(IVLCH ivl);
+
 
 // end of cnguts.h

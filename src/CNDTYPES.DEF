@@ -182,6 +182,8 @@ RIGDISTP  --  "RIGDIST *"		 4	    none	// (array) ptr, for ZNR.rIgDist
 ZNRP		--	"class ZNR *"	 4		none
 XSURFP	--	"struct XSURF *"	 4		none
 DUCTSEGP -- "class DUCTSEG*"	 4	    none
+PIPESEGP -- "class PIPESEG*"	 4	    none
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Choices: text <-> constant mapping
@@ -423,11 +425,17 @@ DUCTSEGP -- "class DUCTSEG*"	 4	    none
 			BATH "Bath"
 			CWASHR "CWashr"
 			DWASHR "DWashr"
+			COUNT "*Count"
 		  }
 
 *choicb DHWMODELCH {
 			T24DHW "T24DWH"
 			2013 "2013"
+		  }
+*choicb DHWBRANCHMODELCH {
+			T24DHW "T24DHW"
+			DRAWWASTE "DRAWWASTE"
+			DAYWASTE "DAYWASTE"
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }

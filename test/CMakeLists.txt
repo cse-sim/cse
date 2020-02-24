@@ -48,8 +48,14 @@ set(files
   dhwX
   dhwDU
   dhw_C
+  dhw_solar
+  dhw_zone
   dwhr
+  dhwls
   DHW_INV 
+  dhw_uef
+  dhw_brwl
+  dhwloop32U
   pvtest
   pv_bt_test
   bt_test

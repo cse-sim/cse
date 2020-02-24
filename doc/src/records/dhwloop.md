@@ -30,9 +30,9 @@ Loop flow rate (when operating).
 
 Inlet temperature of first DHWLOOPSEG.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F          $>$ 0             130           No             hourly
+  **Units**   **Legal Range**   **Default**     **Required**   **Variability**
+  ----------- ----------------- --------------- -------------- -----------------
+  ^o^F          $>$ 0             DHWSYS wsTUse           No             hourly
 
 **wlRunF=*float***
 
@@ -40,11 +40,11 @@ Fraction of hour that loop circulation operates.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-  --          $\ge$ 0           1             No             hourly
+  --          $\ge$ 0             1             No             hourly
 
 **wlFUA=*float***
 
-DHWLOOPSEG pipe heat loss adjustment factor.
+DHWLOOPSEG pipe heat loss adjustment factor.  DHWLOOPSEG UA is derived (from wgSize, wgLength, wgInsulK, wgInsulThk, and wgExH) and multiplied by wlFUA.  Note: does not apply to child DHWLOOPBRANCHs (see wbFUA).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------

@@ -1182,9 +1182,9 @@ LOCAL RC FC NEAR culRATE(	// do RATE cult entry
 		{
 			// get Identifier, Quoted txt, or constant string eXpression for name. local fcn.
 			if ( ganame( 0,		// disallow "all" and "sum"
-			NULL,		// use xSp->c->id in error messages
-			&name )		// rcvs string ptr. ganame gets terminator.
-			!= RCOK )
+			   NULL,		// use xSp->c->id in error messages
+			   &name )		// rcvs string ptr. ganame gets terminator.
+			     != RCOK )
 				return RCSKIP2END;		// on error in name, skip stmt blk (ganame already perNx'd).
 			// duplicate name check is below
 			xprD++;			// say terminator already gotten (by xpr from ganame)
@@ -4349,28 +4349,20 @@ LOCAL void FC NEAR drefRes()
 		BP b = drfp->b;
 		if (b->ba_flags & RFTYS)	// don't fill ref's in TYPE rat entries
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
-#if 1
 		record* e = b->GetAtSafe( drfp->i);		// record location
 		if (!e)
 		{	per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
 			continue;
 		}
-#else
-x		if (drfp->i <= 0 || drfp->i > b->n)
-		{	// allow 0 due to Top
-			per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
-			continue;
-		}
-		record* e = &b->rec(drfp->i);		// record location
-#endif
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
 				+ b->fir[drfp->fn].off);	//  plus field offset
 		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
-		const char* ms;
+		const char* ms=NULL;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
 				NULL,
-				&e, &ms ) != RCOK )		// local.  Note e reuse.
-			// look up name in basAnc's records, resolving eg same surf name in 2 zones by dflt owner.
+				&e, &ms ) != RCOK )	// local.  Note e reuse.
+									// look up name in basAnc's records
+									//   resolving eg same surf name in 2 zones by dflt owner.
 		{
 			*p = 0;				// not found. store 0.
 			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
@@ -4557,15 +4549,20 @@ RC CDEC record::oInfo( const char *message, ... ) const
 	return oerI( 1, 1, 2, message, ap);
 }						// oInfo
 //-----------------------------------------------------------------------------
-RC record::orMsg( int erOp, const char *message, ... ) const
-// runtime error message pertaining to an object
+RC record::orMsg(			// flexible object-specific msg
+	int erOp,		// 
+	const char *message, ... ) const
+
 // puts eg 'surface "fum" of zone "north"' in front of caller's message;
 // optionally shows input file line text, caret, file name, line in INPUT phase;
-// object's file & line (from rat record) in CHECK or RUN phases. */
+// object's file & line (from rat record) in CHECK or RUN phases.
 
-// returns RCBAD
-
+// returns RCOK iff erOp&IGNX
+//    else RCBAD
 {
+	if (erOp & IGNX)
+		return RCOK;	// "extra ignore", do nothing
+
 	va_list ap;
 	va_start( ap, message);
 	int shoTx = 1;
@@ -4575,14 +4572,14 @@ RC record::orMsg( int erOp, const char *message, ... ) const
 		       : erAct == INF ? 2
 			   :                0;
 
-	return oerI( shoTx, shoFnLn, isWarn+0x100, message, ap);
+	return oerI( shoTx, shoFnLn, isWarn | (erOp & RTMSG), message, ap);
 }	// record::orMsg
 //-----------------------------------------------------------------------------
 RC record::oerI(    		// object error message, inner function
 	int shoTx,			// 1 to show input file line and caret if input phase
 	int shoFnLn,		// 1 to show input file name and line number if input phase
 	int isWarn,			// 1 for Warning, 2 for Info, 0 for Error
-						//   + 0x100 = report as runtime error (via rerIV)
+						//   + RTMSG = report as runtime error (via rerIV)
 						//             shows date/time in simulation
 	const char* fmt,	// body of error message (a la printf format)(CSE message handle ok)
 	va_list ap) const	// ptr to argument ptrs if any (as for vprintf)
@@ -4593,7 +4590,7 @@ RC record::oerI(    		// object error message, inner function
 
 // returns RCBAD if error (for convenience), RCOK if warning/info
 {
-	int bIsRuntime = (isWarn & 0x100) != 0;
+	int bIsRuntime = (isWarn & RTMSG) != 0;
 	isWarn &= 0x7;
 
 	// verify basAnc record arg

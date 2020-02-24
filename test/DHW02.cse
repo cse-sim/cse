@@ -91,7 +91,7 @@ DHWSYS "DS1"
   
   DHWHEATER "WH1H"  whHeatSrc = Resistance  whType = LargeStorage whEFF = .80 whVol = 100 whSBL = 0.6768239*3413
   
-  DHWHEATER "WH1I" whHeatSrc = ASHP whType = SmallStorage	whHPAF = .92 whLDEF = 3.3909
+  DHWHEATER "WH1I" whHeatSrc = ASHP whType = SmallStorage	whLDEF = 3.3909
 
   DHWTANK "Tank1" wtMult = 2  wtVol = 100 wtXLoss = 61.4 wtTTank = 124 wtInsulR = 12 wtTEx = 75
 
@@ -112,7 +112,7 @@ DHWSYS "DS1"
 
 	DHWLOOPSEG "Seg6"  wgTy=Return wgLength = 18 wgSize = .75 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw = 1
 
-	DHWLOOPPUMP "LP1"  wlpPwr = 746 * 0.5 / 0.9
+	DHWLOOPPUMP "LP1"  wlpPwr = 746 * 0.5 / 0.9  wlpLiqHeatF = 0.6
 
 
 endDHWSYS
@@ -158,8 +158,8 @@ ReportCol colhead="HRBL" colVal=@DhwLoop[l].HRBL colWid = 7
 // DHWLOOPSEG
 #define WGREP( g, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = g rpDayBeg=d rpDayEnd=d \
 ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="UA" colVal=@DhwLoopSeg[g].UA colDec=3 colWid = 6 \
-ReportCol colhead="vol" colVal=@DhwLoopSeg[g].vol colDec=3 colWid = 6 \
+ReportCol colhead="UA" colVal=@DhwLoopSeg[g].totals.UA colDec=3 colWid = 6 \
+ReportCol colhead="vol" colVal=@DhwLoopSeg[g].totals.vol colDec=3 colWid = 6 \
 ReportCol colhead="Flow" colVal=@DhwLoopSeg[g].fvf colDec=2 colWid = 6 \
 ReportCol colhead="Tex" colVal=@DhwLoopSeg[g].ExT colDec=2 colWid = 6 \
 ReportCol colhead="Tin" colVal=@DhwLoopSeg[g].tIn colDec=3 colWid = 7 \
@@ -170,8 +170,8 @@ ReportCol colhead="PLCD" colVal=@DhwLoopSeg[g].PLCD colWid = 7
 // DHWLOOPBRANCH
 #define WBREP( b, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = b rpDayBeg=d rpDayEnd=d \
 ReportCol colhead="Hr" colVal=$hour colWid = 2 \
-ReportCol colhead="UA" colVal=@DhwLoopBranch[b].UA colDec=3 colWid = 6 \
-ReportCol colhead="vol" colVal=@DhwLoopBranch[b].vol colDec=3 colWid = 6 \
+ReportCol colhead="UA" colVal=@DhwLoopBranch[b].totals.UA colDec=3 colWid = 6 \
+ReportCol colhead="vol" colVal=@DhwLoopBranch[b].totals.vol colDec=3 colWid = 6 \
 ReportCol colhead="Flow" colVal=@DhwLoopBranch[b].fvf colDec=2 colWid = 6 \
 ReportCol colhead="Tex" colVal=@DhwLoopBranch[b].ExT colDec=2 colWid = 6 \
 ReportCol colhead="Tin" colVal=@DhwLoopBranch[b].tIn colDec=2 colWid = 6 \

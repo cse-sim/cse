@@ -16,6 +16,8 @@
 extern anc<TOPRAT> TopiR;	// basAnc for Topi.  ancrec.h template class type.
 extern TOPRAT Topi;    		// the single static Top input record. rccn.h typ
 
+extern anc<INVERSE> IvB;
+
 // other input records basAncs, cncult.cpp, ref'd only in other cncult_.cpp files
 extern anc<GT>  GtiB;			// glazeTypes input records, 12-94
 extern anc<FOUNDATION> FndiB;  		// foundation input records
@@ -53,6 +55,7 @@ extern anc<DUCTSEG> DsiB;		// duct segment input records
 extern anc<DHWMTR> WMtriB;		// DHW meters
 extern anc<DHWSYS> WSiB;		// DHW system input records
 extern anc<DHWHEATER> WHiB;		// DHW heater input records
+extern anc<DHWHEATER> WLHiB;	// DHW loop heater input records
 extern anc<DHWHEATREC> WRiB;	// DHW heat rec input records
 extern anc<DHWTANK> WTiB;		// DHW tank input records
 extern anc<DHWPUMP> WPiB;		// DHW pump input records
@@ -62,6 +65,9 @@ extern anc<DHWLOOPBRANCH> WBiB;	// DHW loop branch input records
 extern anc<DHWLOOPPUMP> WLPiB;	// DHW loop pump input records
 extern anc<DHWDAYUSE> WDUiB;	// DHW daily use input records
 extern anc<DHWUSE> WUiB;		// DHW use input records
+
+extern anc<DHWSOLARSYS> SWHiB;  // DHW solar system input records
+extern anc<DHWSOLARCOLLECTOR> SCiB;  // DHW solar collector input records
 
 extern anc<PVARRAY> PViB;		// PV array input records
 extern anc<BATTERY> BTiB;		// Battery input records

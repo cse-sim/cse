@@ -232,7 +232,7 @@ template< typename T, typename TX> inline T setToMinOrMax( T &a, TX b, int doMin
 // return -1, 0, or 1 per value of v
 template< typename T> T xsign( T v) { return v==0 ? 0 : v>0 ? 1 : -1; }
 // return -1 if <, 0 if == , or 1 if >
-template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : -0; }
+template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : 0; }
 
 // bracket: limit value betw vMin and vMax
 template< typename T> inline T bracket( T vMin, T v, T vMax)
@@ -309,6 +309,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
 #define ISASING(nandat)  ((ULI)*(void**)&(nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
 #define ISNANDLE(nandat) (((ULI)*(void**)&(nandat) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) (((ULI)*(void**)(pNandat) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(nandle)  ((USI)(ULI)*(void**)&(nandle))				// extract expression # from nandle
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
@@ -325,7 +326,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define VD *(void **)&			// usage:  V x = V y;  if (V x == V y) ..  where x and y are floats such as CHOICN's.
+#define VD *(void **)&			// usage:  VD x = VD y;  if (VD x == VD y) ..  where x and y are floats such as CHOICN's.
 
 // macro to test if n has an NCHOICE value:
 #define ISNCHOICE(n)  (((ULI)VD(n) & 0xff800000L)==0x7f800000L)
@@ -400,13 +401,17 @@ const int PWRN   = WRN|PROGERR;	// program error WRN
 const int PABT   = ABT|PROGERR;	// program error ABT
 const int NOPREF = 0x0010;	// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
 const int SYSMSG = 0x0020;	// Do GetLastError(), add system error msg
-const int SHOFNLN  = 0x0040;	// show input file name and line # (orMsg)
+const int SHOFNLN= 0x0040;	// show input file name and line # (orMsg)
+const int RTMSG  = 0x0080;		// runtime format (include day/hour info in msg) (orMsg)
+const int IGNX   = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMsg)
+const int ERRRT = ERR | RTMSG;
+const int WRNRT = WRN | RTMSG;
 
 // options for rmkErr:screen() and :logit() remark display
-const int NONL   = 0x0100;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
-const int DASHES = 0x0200;	// separate this remark from preceding & following message with ------------
-const int NOSCRN = 0x0400;	// logit: do not also display on screen
-const int QUIETIF= 0x0800;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
+const int NONL   = 0x1000;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
+const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------
+const int NOSCRN = 0x4000;	// logit: do not also display on screen
+const int QUIETIF= 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
 
 
 // application option bits in same argument word as error action.
@@ -609,26 +614,40 @@ inline double LIPtoSI( double l) { return l*cfL; }
 inline float LSItoIP( float l)	 { return float( l/cfL); }
 inline double LSItoIP( double l) { return l/cfL; }
 
+// area ft^2 <--> m^2
+const double cfA = cfL*cfL; // m2/ft2
+inline float AIPtoSI(float a) { return float(a * cfA); }
+inline double AIPtoSI(double a) { return a * cfA; }
+inline float ASItoIP(float a) { return float(a / cfA); }
+inline double ASItoIP(double a) { return a / cfA; }
+
 // Conductivity Btuh-ft/ft2-F <--> W/m-K
-const double cfK = cfU*cfL;		// W/m-K per Btuh-ft/ft2-F
-inline float KIPtoSI(float k) { return float(k*cfK); }
-inline double KIPtoSI(double k) { return k*cfK; }
+const double cfK = cfU * cfL; // W/m-K per Btuh-ft/ft2-F
+inline float KIPtoSI(float k) { return float(k * cfK); }
+inline double KIPtoSI(double k) { return k * cfK; }
 inline float KSItoIP(float k) { return float(k / cfK); }
 inline double KSItoIP(double k) { return k / cfK; }
 
 // Specific Heat Btu/lb-F <--> J/kg-K
-const double cfSH = 4186.8;		// W/m-K per Btuh-ft/ft2-F
-inline float SHIPtoSI(float sh) { return float(sh*cfSH); }
-inline double SHIPtoSI(double sh) { return sh*cfSH; }
+const double cfSH = 4186.8; // J/kg-K per Btu/lb-F (exact)
+inline float SHIPtoSI(float sh) { return float(sh * cfSH); }
+inline double SHIPtoSI(double sh) { return sh * cfSH; }
 inline float SHSItoIP(float sh) { return float(sh / cfSH); }
 inline double SHSItoIP(double sh) { return sh / cfSH; }
 
 // Density lb/ft3 <--> kg/m3
-const double cfD = 16.0185;		// W/m-K per Btuh-ft/ft2-F
-inline float DIPtoSI(float d) { return float(d*cfD); }
-inline double DIPtoSI(double d) { return d*cfD; }
+const double cfD = 16.0185; // kg/m3 per lb/ft3
+inline float DIPtoSI(float d) { return float(d * cfD); }
+inline double DIPtoSI(double d) { return d * cfD; }
 inline float DSItoIP(float d) { return float(d / cfD); }
 inline double DSItoIP(double d) { return d / cfD; }
+
+// mass flow rate lb/hr <--> kg/s
+const double cfMFR = 0.000126; //
+inline float MFRIPtoSI(float mfr) { return float(mfr * cfMFR); }
+inline float MFRSItoIP(float mfr) { return mfr * cfMFR; }
+inline double MFRIPtoSI(double mfr) { return float(mfr / cfMFR); }
+inline double MFRSItoIP(double mfr) { return mfr / cfMFR; }
 
 
 // velocity mph <-> m/s
@@ -654,9 +673,20 @@ const double NPten[NPTENSIZE] = {1.,.1,.01,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e
 const float FHuge = float(1.E38);	// Handy large (not strictly largest) value used for x/0,
 									// search initializations, etc.  Single defn for portability and code clarity.
 
-// Other constants
-const float BtuperWh    =  3.413f;	// Btu per Wh
-const float BtuperkWh   =  3413.f;	// Btu per kWh
+// Physical constants
+#if 1
+const float BtuperWh    =  3.41214f;	// Btu per Wh
+const float BtuperkWh   =  3412.14f;	// Btu per kWh
+const float waterRhoCp = 8.29018282f;	// water volumetric weight, lb/gal
+										//    = volumetric heat capacity, Btu/gal-F
+										// 30 C (85 F) value used, appropriate for DHW calcs
+#else
+const float BtuperWh = 3.413f;	// Btu per Wh
+const float BtuperkWh = 3413.f;	// Btu per kWh
+const float waterRhoCp = 8.345f;
+#endif
+const float galPerFt3 = 7.48052f;		// gal per cubic foot
+
 #if 0	// obsolete
 x const float SrcMultElect = 3.f;	// Source multiplier for electrical energy (California CEC value)
 x const float BtuSrcperWh = 10.239f;	/* Btu (source energy) per Wh.  Includes California electric
@@ -674,7 +704,8 @@ enum {			// irrad components
 };
 
 // surface classes e.g. for argument to topSf1(), topSf2()
-enum SFCLASS { sfcNUL, sfcSURF, sfcDOOR, sfcWINDOW, sfcDUCT };
+//  NOTE: code depends on value order, change with care
+enum SFCLASS { sfcNUL, sfcSURF, sfcDOOR, sfcWINDOW, sfcDUCT, sfcPIPE};
 
 // zone air flow indices
 #if 0	// unused, 2-20-2013
@@ -696,6 +727,7 @@ const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 									// (and # choices in enum endUses if used)
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
 static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
+static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
 #if 0
 x not used / not maintained 6-5-2012
 x //--- data type for subscripting of ResEgy.endUse (for callers, not used here)
@@ -713,7 +745,7 @@ x enum endUses { euClg=0, euHtg, euHPHtg, euSHW, euFan, euAux, euProc, euLit, eu
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code
 #endif
-BOOL DbDo( DWORD oMsk);
+BOOL DbDo( DWORD oMsk, int options=0);
 
 // debugging option bits
 //   re control of conditional DbPrintf()s

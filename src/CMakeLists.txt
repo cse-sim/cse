@@ -98,6 +98,7 @@ set(source
   CVPAK.CPP
   DATFCNS.CPP
   DHWCalc.cpp
+  DHWSolar.cpp
   DMPAK.CPP
   DTTAB.CPP
   ENVPAK.CPP
@@ -108,7 +109,6 @@ set(source
   IMPF.CPP
   LOOKUP.CPP
   MESSAGES.CPP
-  MMPAK.CPP
   MSGTBL.CPP
   MSPAK.CPP
   nummeth.cpp
@@ -177,7 +177,6 @@ set(headers
   IRATS.H
   LOOKUP.H
   MESSAGES.H
-  MMPAK.H
   MSGHANS.H
   mspak.h
   NUMMETH.H

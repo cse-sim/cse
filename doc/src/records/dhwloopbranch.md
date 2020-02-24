@@ -2,7 +2,9 @@
 
 DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceeding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
 
-wbNameOptional name of segment; give after the word “DHWLOOPBRANCH” if desired.
+**wbName**
+
+Optional name of segment; give after the word “DHWLOOPBRANCH” if desired.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -55,6 +57,14 @@ Combined radiant/convective exterior surface conductance between insulation (or 
   **Units**       **Legal Range**   **Default**   **Required**   **Variability**
   --------------- ----------------- ------------- -------------- -----------------
   Btuh/ft^2^-^o^F   $>$ 0             1.5           No             hourly
+
+**wbFUA=*float***
+
+Adjustment factor applied to branch UA.  UA is derived (from wbSize, wbLength, wbInsulK, wbInsulThk, and wbExH) and then multiplied by wbFUA.  Used to represent e.g. imperfect insulation.  Note that parent DHWLOOP wlFUA does not apply to DHWLOOPBRANCH (only DHWLOOPSEG)
+
+  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
+  ----------- ----------------- ------------- -------------- -----------------
+               $\ge$ 0             1             No            constant
 
 **wbExT=*float***
 

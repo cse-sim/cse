@@ -52,6 +52,12 @@ UNENERGY1	"kBtu"		0.001		// Medium energy
 UNENERGY2	"MBtu"		0.000001	// Large energy
 			"GJ"		0.000001055
 
+UNENERGY3	"Wh"		0.293		// Small energy (electrical) (internal Btu)
+			"Wh"		0.293
+
+UNENERGY4	"kWh"		0.000293	// Energy (electrical) (internal Btu)
+			"kWh"		0.000293
+
 UNENERGYDEN	"Btu/ft2"	1.00		// Energy per area
 			"kJ/m2"		11.3559
 			
@@ -139,14 +145,14 @@ UNHEATCAP_AREA	"Btu/F-ft2"	1.00		// Heat capacity per unit area
 UNHEATCAP_VOL	"Btu/F-ft3"	1.00		// Volumetric heat capacity
 			"kJ/K/m3"		67.10
 
-UNENTH		"Btu/lb"	1.00		// Enthalpy, rob 3-92
+UNENTH		"Btu/lb"	1.00		// Enthalpy
 			"kJ/kg"		2.32444	 	// 1.05435 * 2.20462
 
-UNUVAL		"Btuh/ft2-F"	1.00		// U-value (Conductance; per area)
-			"W/m2-C"	5.68		  // was also UNCOND2, 2-91
+UNUVAL		"Btuh/ft2-F"	1.00	// U-value (Conductance; per area)
+			"W/m2-C"	5.68		  
 
-UNCNDVY		"Btuh-ft/ft2-F"	1.00		// Conductivity
-			"W/m-C"		1.731		  // was UNCOND, 2-91
+UNCNDVY		"Btuh-ft/ft2-F"	1.00	// Conductivity
+			"W/m-C"		1.731		  
 
 UNUA		"Btuh/F"	1.00		// UA.    Also heat capacity flow rate (CFLOW) rob 3-92.
 			"W/C"		0.5277
@@ -199,8 +205,11 @@ UNPITCH		"in 12"		12.00		// Pitch
 UNWINDVEL	"mph"		1.00		// Wind speed
 			"km/h"		1.61
 
-UNLVOLUME	"gal"		7.47943		// Liquid volume
-			"l"			28.32
+UNLVOLUME	"gal"		7.47943		// Liquid volume (internal ft3)
+			"l"			28.2821
+
+UNLVOLUME2	"gal"		1.00		// Liquid volume (internal gal)
+			"l"			3.78541
 
 UNTON		"ton"		0.000083333	// Refrigeration rate
 			"kW"		0.000293	// 12000 Btuh

@@ -62,6 +62,9 @@ makAncTOPRAT( TopiR);   		// "Top" info input record's basAnc. rccn.h macro, anc
 TOPRAT Topi( (anc<TOPRAT> *)&TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
 // pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
 
+// inverse objects
+makAncINVERSE(IvB);
+
 // zones, transfers, gains, meters
 makAncZNI(ZiB);				// zones input info records basAnc
 makAncIZXRAT( IzxiB);		// interzone transfer input records basAnc
@@ -81,8 +84,12 @@ makAncDHWLOOP( WLiB);		// DHW loop
 makAncDHWLOOPSEG( WGiB);	// DHW loop segment
 makAncDHWLOOPBRANCH( WBiB);	// DHW loop branch
 makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
+makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater (aka "swing tank")
 makAncDHWDAYUSE( WDUiB);	// DHW daily use
 makAncDHWUSE( WUiB);		// DHW use (single draw)
+
+makAncDHWSOLARSYS(SWHiB);	// DHW Solar System
+makAncDHWSOLARCOLLECTOR(SCiB);	// DHW Solar Collector
 
 makAncPVARRAY(PViB);		// PV array
 makAncBATTERY(BTiB);		// Battery
@@ -139,6 +146,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WMtriB.free();
 	WSiB.free();
 	WHiB.free();
+	WLHiB.free();
 	WTiB.free();
 	WRiB.free();
 	WPiB.free();
@@ -146,6 +154,8 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	WGiB.free();
 	WBiB.free();
 	WLPiB.free();
+	SWHiB.free();
+	SCiB.free();
 	PViB.free();
 	BTiB.free();
 	SXiB.free();
@@ -1785,7 +1795,10 @@ CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
-CULT( "whUAMult",	 DAT,   DHWHEATER_UAMULT,  0,     0, VEOI,   TYFL,  0,      1.f,    N, N),
+CULT( "whUA",		 DAT,   DHWHEATER_UA,      0,     0, VEOI,   TYFL,  0,     -1.f,    N, N),
+CULT( "whInsulR",    DAT,   DHWHEATER_INSULR,  0,     0, VEOI,   TYFL,  0,     -1.f,    N, N),
+CULT( "whInHtSupply", DAT,  DHWHEATER_INHTSUPPLY, 0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "whInHtLoopRet",DAT,  DHWHEATER_INHTLOOPRET,0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whEF",		 DAT,   DHWHEATER_EF,      0,     0, VEOI,   TYFL,  0,      0.82f,  N, N),
 CULT( "whUEF",		 DAT,   DHWHEATER_UEF,     0,     0, VEOI,   TYFL,  0,        0.f,  N, N),
 CULT( "whStbyElec",  DAT,   DHWHEATER_STBYELEC,  0,   0, VEOI,   TYFL,  0,        4.f,  N, N),
@@ -1796,7 +1809,6 @@ CULT( "whAnnualElec",DAT,   DHWHEATER_ANNUALELEC,0,   0, VEOI,   TYFL,  0,      
 CULT( "whResHtPwr",	 DAT,   DHWHEATER_RESHTPWR,0,     0, VEOI,   TYFL,  0,     4500.f,  N, N),
 CULT( "whResHtPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whLDEF",		 DAT,   DHWHEATER_LDEF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
-CULT( "whHPAF",		 DAT,   DHWHEATER_HPAF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whEff",		 DAT,   DHWHEATER_EFF,     0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whSBL",		 DAT,   DHWHEATER_SBL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
@@ -1848,9 +1860,10 @@ static CULT dhwTankT[] = //------ DHWTANK cmd RAT Entry table, used from dhwSysT
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wtStarCkf),
 CULT( "wtDHWSYS",    DAT,   DHWTANK_OWNTI,     NO_INP|RDFLIN,0,0,  TYREF, &WSiB,  0,      N,   N),
 CULT( "wtMult",		 DAT,	DHWTANK_MULT,	   0,     0, VEOI,     TYSI,  0,      1,      N,   N),
-CULT( "wtUA",		 DAT,	DHWTANK_UA,	       0,     0, VEOI,     TYFL,  0,      0.f,    N,   N),
 CULT( "wtVol",		 DAT,	DHWTANK_VOL,	   0,     0, VEOI,     TYFL,  0,      0.f,    N,   N),
-CULT( "wtInsulR",    DAT,	DHWTANK_INSULR,    0,     0, VEOI,     TYFL,  0,      0.f,    N,   N),
+CULT( "wtUA",		 DAT,	DHWTANK_UA,	       0,     0, VEOI,     TYFL,  0,     -1.f,    N,   N),
+CULT( "wtInsulR",    DAT,	DHWTANK_INSULR,    0,     0, VEOI,     TYFL,  0,     12.f,    N,   N),
+CULT( "wtZone",      DAT,   DHWTANK_ZNTI,      0,     0, VEOI,     TYREF, &ZiB,   0,      N, N),
 CULT( "wtTEx",		 DAT,	DHWTANK_TEX,	   0,     0, VHRLY,    TYFL,  0,      0.f,    N,   N),
 CULT( "wtTTank",     DAT,	DHWTANK_TTANK,     0,     0, VHRLY,    TYFL,  0,      0.f,    N,   N),
 CULT( "wtXLoss",     DAT,	DHWTANK_XLOSS,     0,     0, VHRLY,    TYFL,  0,      0.f,    N,   N),
@@ -1896,7 +1909,11 @@ CULT( "wbLength",	 DAT,	DHWLOOPBRANCH_LEN,	  0,       0, VEOI,   TYFL,  0,      
 CULT( "wbSize",		 DAT,	DHWLOOPBRANCH_SIZE,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "wbInsulK",	 DAT,	DHWLOOPBRANCH_INSULK, 0,       0, VEOI,   TYFL,  0,    0.02167f, N,   N),
 CULT( "wbInsulThk",	 DAT,	DHWLOOPBRANCH_INSULTHK,0,      0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "wbFUA",	     DAT,	DHWLOOPBRANCH_FUA,     0,      0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "wbExH",		 DAT,	DHWLOOPBRANCH_EXH,     0,      0, VHRLY,  TYFL,  0,     1.5f,    N,   N),
+CULT( "wbExCnd",     DAT,   DHWLOOPBRANCH_EXCND,   0,      0, VEOI,   TYCH,  0,      C_EXCNDCH_SPECT,    N,   N),
+CULT( "wbAdjZn",     DAT,   WBBC(ZI),              0,      0, VEOI,   TYREF, &ZiB,   0,      N,   N),
+CULT( "wbExTX",      DAT,   WBBC(TXA),             0,      0, VSUBHRLY,TYFL, 0,     70.f,    N,   N),
 CULT( "wbExT",		 DAT,	DHWLOOPBRANCH_EXT,     0,      0, VHRLY,  TYFL,  0,     70.f,    N,   N),
 CULT( "wbFlow",		 DAT,	DHWLOOPBRANCH_FLOW,    0,      0, VHRLY,  TYFL,  0,      2.f,    N,   N),
 CULT( "wbFWaste",	 DAT,	DHWLOOPBRANCH_FWASTE,  0,      0, VHRLY,  TYFL,  0,      0.f,    N,   N),
@@ -1943,10 +1960,11 @@ static CULT dhwLoopPumpT[] = //------ DHWLOOPPUMP cmd RAT Entry table, used from
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wlpStarCkf),
 CULT( "wlpDHWLOOP",  DAT,   DHWLOOPPUMP_OWNTI, NO_INP|RDFLIN,0,0,  TYREF, &WLiB,  0,      N,   N),
-CULT( "wlpMult",	 DAT,	DHWLOOPPUMP_MULT,	   0,     0, VEOI,   TYSI,    0,      1,      N, N),
-CULT( "wlpElecMtr",  DAT,   DHWLOOPPUMP_ELECMTRI,  0,     0, VEOI,	 TYREF,   &MtriB, N,      N, N),
-CULT( "wlpPwr",		 DAT,	DHWLOOPPUMP_PWR,	   0,     0, VHRLY,  TYFL,    0,      0.f,    N, N),
-CULT( "endDHWLOOPPUMP", ENDER, 0,              0,     0, 0,        0,       0,   0.f,    N,   N),
+CULT( "wlpMult",	 DAT,	DHWLOOPPUMP_MULT,	  0,     0, VEOI,  TYSI,    0,      1,      N, N),
+CULT( "wlpElecMtr",  DAT,   DHWLOOPPUMP_ELECMTRI, 0,     0, VEOI,  TYREF,   &MtriB, N,      N, N),
+CULT( "wlpPwr",		 DAT,	DHWLOOPPUMP_PWR,	  0,     0, VHRLY, TYFL,    0,      0.f,    N, N),
+CULT( "wlpLiqHeatF",  DAT,	DHWPUMP_LIQHEATF,     0,     0, VHRLY, TYFL,    0,      1.f,    N, N),
+CULT( "endDHWLOOPPUMP", ENDER, 0,                 0,     0, 0,     0,       0,   0.f,    N,   N),
 CULT()
 };	// dhwLoopPumpT
 
@@ -1972,7 +1990,7 @@ CULT( "wlLossMakeupPwr",DAT,DHWLOOP_LOSSMAKEUPPWR, 0,   0, VHRLY,  TYFL,  0,    
 CULT( "wlLossMakeupEff",DAT,DHWLOOP_LOSSMAKEUPEFF, 0,   0, VHRLY,  TYFL,  0,      1.f,    N,   N),
 CULT( "wlElecMtr",   DAT,   DHWLOOP_ELECMTRI,  0,       0, VEOI,   TYREF,   &MtriB, N,      N, N),
 CULT( "dhwloopSeg",  RATE,  0,                 0,       0, 0,      0,     &WGiB,  N,      dhwLoopSegT, N),
-CULT( "dhwloopPump", RATE,0,                   0,       0, 0,      0,     &WLPiB, N,      dhwLoopPumpT, N),
+CULT( "dhwloopPump", RATE,  0,                 0,       0, 0,      0,     &WLPiB, N,      dhwLoopPumpT, N),
 CULT( "endDHWLOOP",  ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwLoopT
@@ -1985,6 +2003,10 @@ LOCAL RC FC wsStarCkf( CULT* c, /*DHWSYS* */ void *p, void *p2, void *p3)
 }		// wsStarCkf
 //=============================================================================
 #define FXC( eu) (DHWSYS_FXCOUNT+eu)
+#define FDX( eu) (DHWSYS_DRAWWASTE+eu)
+#define FDF( eu) (DHWSYS_DRAWDURF+eu)
+#define DWF( eu) (DHWSYS_DAYWASTEDRAWF+eu)
+
 static CULT dhwSysT[] = //------ DHWSYS cmd RAT Entry table, used from cnTopCult
 {
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
@@ -1997,25 +2019,58 @@ CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYFL,  0,      1.f,	N
 CULT( "wsTInlet",	 DAT,   DHWSYS_TINLET,	 0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "wsUse",		 DAT,   DHWSYS_HWUSE,	 0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
 CULT( "wsTUse",		 DAT,   DHWSYS_TUSE,	 0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
-CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
+CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
+CULT( "wsTSetpointLH",DAT,  DHWSYS_TSETPOINTLH,0,     0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      N,      N, N),
 CULT( "wsWHhwMtr",   DAT,   DHWSYS_WHHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsFXhwMtr",   DAT,   DHWSYS_FXHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsParElec",	 DAT,   DHWSYS_PARELEC,  0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "wsSolarSys",  DAT,   DHWSYS_SWTI,     0,       0, VEOI,	 TYREF, &SWHiB,	N,      N, N),
 CULT( "wsSDLM",      DAT,   DHWSYS_SDLM,     0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsDSM",       DAT,   DHWSYS_DSM,      0,       0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "wsSSF",       DAT,   DHWSYS_SSF,      0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "wsWF",        DAT,   DHWSYS_WF,       0,       0, VHRLY,  TYFL,  0,      1.f,    N, N),
+
 CULT( "wsFaucetCount",DAT,  FXC(C_DHWEUCH_FAUCET), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsShowerCount",DAT,  FXC(C_DHWEUCH_SHOWER), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
-CULT( "wsBathCount", DAT,   FXC(C_DHWEUCH_BATH),   0, 0, VEOI,   TYSI,  0,      1,      N, N),
+CULT( "wsBathCount",  DAT,  FXC(C_DHWEUCH_BATH),   0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsCWashrCount",DAT,  FXC(C_DHWEUCH_CWASHR), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
 CULT( "wsDWashrCount",DAT,  FXC(C_DHWEUCH_DWASHR), 0, 0, VEOI,   TYSI,  0,      1,      N, N),
+
+CULT( "wsBranchModel",DAT,  DHWSYS_BRANCHMODEL,    0, 0, VEOI,   TYCH,  0, C_DHWBRANCHMODELCH_T24DHW, N, N),
+
+CULT("wsUnkDrawDurF",    DAT, FDF( 0),                0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsFaucetDrawDurF", DAT, FDF(C_DHWEUCH_FAUCET), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerDrawDurF", DAT, FDF(C_DHWEUCH_SHOWER), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathDrawDurF",   DAT, FDF(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrDrawDurF", DAT, FDF(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      1.f,    N, N),
+CULT("wsDWashrDurF",     DAT, FDF(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      1.f,    N, N),
+
+CULT("wsUnkDrawWaste",    DAT,  FDX(0),                0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsFaucetDrawWaste", DAT,  FDX(C_DHWEUCH_FAUCET), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerDrawWaste", DAT,  FDX(C_DHWEUCH_SHOWER), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathDrawWaste",   DAT,  FDX(C_DHWEUCH_BATH),   0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrDrawWaste" ,DAT,  FDX(C_DHWEUCH_CWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT("wsDWashrDrawWaste", DAT,  FDX(C_DHWEUCH_DWASHR), 0, 0, VHRLY,  TYFL,  0,      0.f,    N, N),
+
+CULT("wsUnkDayWasteF",   DAT,   DWF( 0),               0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsFaucetDayWasteF",DAT,   DWF(C_DHWEUCH_FAUCET), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsShowerDayWasteF",DAT,   DWF(C_DHWEUCH_SHOWER), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsBathDayWasteF",  DAT,   DWF(C_DHWEUCH_BATH),   0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsCWashrDayWasteF",DAT,   DWF(C_DHWEUCH_CWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT("wsDWashrDayWasteF",DAT,   DWF(C_DHWEUCH_DWASHR), 0, 0, VEOI,  TYFL,  0,      0.f,    N, N),
+
+CULT( "wsDayWasteVol",    DAT, DHWSYS_DAYWASTEVOL,   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "wsDayWasteBranchVolF",DAT,DHWSYS_DAYWASTEBRANCHVOLF,
+												   0, 0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT("wsDrawMaxDur", DAT,   DHWSYS_DRAWMAXDUR,     0, 0, VEOI,  TYSI,  0,      4,    N, N),
+CULT("wsLoadMaxDur", DAT,   DHWSYS_LOADMAXDUR,     0, 0, VEOI,  TYSI,  0,     12,    N, N),
+
 CULT( "wsElecMtr",   DAT,   DHWSYS_ELECMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
-
 CULT( "dhwheater",   RATE,  0,               0,       0, 0,      0,     &WHiB,  N,      dhwHeaterT, N),
+CULT( "dhwloopheater",RATE, 0,               0,       0, 0,      0,     &WLHiB, N,      dhwHeaterT, N),
 CULT( "dhwtank",     RATE,  0,               0,       0, 0,      0,     &WTiB,  N,      dhwTankT, N),
 CULT( "dhwpump",     RATE,  0,               0,       0, 0,      0,     &WPiB,  N,      dhwPumpT, N),
 CULT( "dhwloop",     RATE,  0,               0,       0, 0,      0,     &WLiB,  N,      dhwLoopT, N),
@@ -2025,6 +2080,68 @@ CULT( "endDHWSYS",   ENDER, 0,               0,       0, 0,      0,     0,      
 CULT()
 };	// dhwSysT
 #undef FXC
+#undef FDX
+#undef FDF
+#undef DWF
+
+//============================== DHWSOLARCOLLECTOR command ===============================
+LOCAL RC FC scStarCkf(CULT* c, /*DHWSOLARCOLLECTOR* */ void *p, void *p2, void *p3)
+// called at end of DHWSOLARSYS input, to get messages near source of error.
+{
+	return ((DHWSOLARCOLLECTOR*)p)->sc_CkF();
+}		// scStarCkf
+//=============================================================================
+
+static CULT dhwSolColT[] = //------ DHWSOLARCOLLECTOR cmd RAT Entry table, used from cnTopCult
+{
+// id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,  0,               0,       0, 0,      0,      0,      0.f,    N, scStarCkf),
+CULT( "scDHWSOLARSYS", DAT,   DHWSOLARCOLLECTOR_OWNTI,   NO_INP|RDFLIN,0,0, TYREF, &SWHiB,  0,     N,   N),
+CULT( "scArea",      DAT,   DHWSOLARCOLLECTOR_AREA,   RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scMult",      DAT,   DHWSOLARCOLLECTOR_MULT,    0,       0, VEOI,  TYFL,  0,      1.f,    N, N),
+CULT( "scTilt",      DAT,   DHWSOLARCOLLECTOR_TILT,   RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scAzm",       DAT,   DHWSOLARCOLLECTOR_AZM,    RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scFRUL",      DAT,   DHWSOLARCOLLECTOR_FRUL,    0,       0, VEOI,  TYFL,  0,     -0.727f,    N, N),
+CULT( "scFRTA",      DAT,   DHWSOLARCOLLECTOR_FRTA,    0,       0, VEOI,  TYFL,  0,      0.758f,    N, N),
+CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPPWR, 0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpFlow",   DAT,   DHWSOLARCOLLECTOR_PUMPFLOW, 0,     0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpOnDeltaT", DAT, DHWSOLARCOLLECTOR_PUMPONDELTAT, 0, 0, VEOI, TYFL,   0,      10.f,   N, N),
+CULT( "scPumpOffDeltaT", DAT, DHWSOLARCOLLECTOR_PUMPOFFDELTAT, 0, 0, VEOI, TYFL, 0,      5.f,    N, N),
+CULT( "endDHWSOLARCOLLECTOR",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// dhwSolColT
+
+//============================== DHWSOLARSYS command ===============================
+LOCAL RC FC swStarCkf(CULT* c, /*DHWSOLARSYS* */ void *p, void *p2, void *p3)
+// called at end of DHWSOLARSYS input, to get messages near source of error.
+{
+	return ((DHWSOLARSYS*)p)->sw_CkF();
+}		// swStarCkf
+//=============================================================================
+
+static CULT dhwSolSysT[] = //------ DHWSOLARSYS cmd RAT Entry table, used from cnTopCult
+{
+// id                cs        fn                         f    uc evf     ty     b       dfls    p2   ckf
+//-----------------  -----     ---------------            ---- -- ------  -----  ------  ------  ---- ----
+CULT( "*",           STAR,     0,                          0,  0, 0,      0,     0,      0.f,    N, swStarCkf),
+CULT( "swElecMtr",   DAT,      DHWSOLARSYS_ELECMTRI,       0,  0, VEOI,   TYREF, &MtriB, N,      N, N),
+CULT( "swEndUse",    DAT,      DHWSOLARSYS_ENDUSE,         0,  0, VEOI,   TYCH,  0,      C_ENDUSECH_DHW, N, N),
+CULT( "swParElec",   DAT,      DHWSOLARSYS_PARELEC,        0,  0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "swSCFluidSpHt",DAT,     DHWSOLARSYS_SCFLUIDSPHT,    0,  0, VEOI,   TYFL,  0,     0.9f,    N, N),  // default = 35% (vol)
+CULT( "swSCFluidDens",DAT,     DHWSOLARSYS_SCFLUIDDENS,    0,  0, VEOI,   TYFL,  0,     64.f,    N, N),  //   ethylene glycol
+CULT( "swTankHXEff", DAT,      DHWSOLARSYS_TANKHXEFF,      0,  0, VEOI,   TYFL,  0,      0.7f,   N, N),
+CULT( "swTankTHxLimit", DAT,   DHWSOLARSYS_TANKTHXLIMIT,   0,  0, VEOI,   TYFL,  0,     180.f,   N, N),
+CULT( "swTankVol",   DAT,      DHWSOLARSYS_TANKVOL,        0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "swTankUA",    DAT,      DHWSOLARSYS_TANKUA,         0,  0, VEOI,   TYFL,  0,     -1.f,    N, N),
+CULT( "swTankInsulR", DAT,     DHWSOLARSYS_TANKINSULR,     0,  0, VEOI,   TYFL,  0,     12.f,    N, N),
+CULT( "swTankZn",    DAT,      DHWSOLARSYS_TANKZNTI,       0,  0, VEOI,   TYREF, &ZiB,   N,      N, N),
+CULT( "swTankTEx",   DAT,      DHWSOLARSYS_TANKTEX,        0,  0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "dhwsolarcollector",RATE,0,                          0,  0, 0,         0,  &SCiB,  N,     dhwSolColT, N),
+CULT( "endDHWSOLARSYS", ENDER, 0,                          0,  0, 0,         0,  0,      0.f,    N,   N),
+CULT()
+};	// dhwSolSysT
+
 
 //============================== PVARRAY command ===============================
 LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
@@ -2493,7 +2610,29 @@ CULT( "endDesCond", ENDER, 0,           0,        0, 0,      0,      0,    0.f, 
 CULT()
 };	// dcT
 
-
+//================== INVERSE ===================================================
+LOCAL RC FC ivStarCkf(CULT* c, /*DESCOND* */ void *p, void *p2, void *p3)
+// called at end of DESCOND input, to get messages near source of error.
+{
+	return ((INVERSE*)p)->iv_CkF();
+}		// dsStarCkf
+//-----------------------------------------------------------------------------------------------
+static CULT inverseT[] =
+{
+// id           cs    fn               f        uc evf     ty      b     dfls        p2   ckf
+//----------    ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
+CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,        N,   ivStarCkf),
+CULT("ivFREQ",	DAT,  INVERSE_FREQ,	   RQD,     0, VEOI,   TYCH,   0,    -1,         N,   N),
+CULT("ivX0",    DAT,  INVERSE_X0,      0,       0, VEOI,   TYFL,   0,    0.f,        N,   N),
+CULT("ivY0",    DAT,  INVERSE_Y0,      0,       0, VEOI,   TYFL,   0,    0.f,        N,   N),
+CULT("ivYTarg", DAT,  INVERSE_YTARG,   RQD,     0, VEOI,   TYFL,   0,    0.f,        N,   N),
+CULT("ivX",     DAT,  INVERSE_X,       RQD,     0, VSUBHRLY | EVPSTIVL,
+                                                           TYFL,   0,    0.f,        N,   N),
+CULT("ivY",     DAT,  INVERSE_Y,       RQD,     0, VSUBHRLY | EVPSTIVL,
+                                                           TYFL,   0,    0.f,        N,   N),
+CULT("endInverse",ENDER, 0,            0,       0, 0,      0,      0,    0.f,        N,   N),
+CULT()
+};		// inverseT
 
 //================== TOP LEVEL COMMANDS, used to access all other tables. ==================
 
@@ -2514,8 +2653,6 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "jan1DoW",     DAT,   TOPRAT_JAN1DOW,    0,          0, VEOI,   TYCH,  0,     C_DOWCH_THU,      N,   N),
 	CULT( "wuDays",      DAT,   TOPRAT_WUDAYS,     0,          0, VEOI,   TYSI,  0,     7,                N,   N),
 	CULT( "nSubSteps",   DAT,   TOPRAT_NSUBSTEPS,  0,          0, VEOI,   TYSI,  0,     4,                N,   N),
-	CULT( "skipDayStart",DAT,   TOPRAT_SKIPDAYSTART,0,         0, VEOI,   TYSI,  0,     0,                N,   N),
-	CULT( "skipDayStep", DAT,   TOPRAT_SKIPDAYSTEP,0,          0, VEOI,   TYSI,  0,     1,                N,   N),
 
 // TOP location
 	CULT( "wfName",      DAT,   TOPRAT_WFNAME,     RQD,        0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),
@@ -2620,6 +2757,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
+	CULT( "dhwsolarsys", RATE,  0,                 NM_RQD,     0, 0,      0,    &SWHiB,  N,    0.f,    dhwSolSysT,  N),
 	CULT( "pvarray",     RATE,  0,                 0,          0, 0,      0,    &PViB,   N,    0.f,        pvArrT,  N),
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
 	CULT( "shadex",      RATE,  0,                 0,          0, 0,      0,    &SXiB,   N,    0.f,       shadexT,  N),
@@ -2638,6 +2776,8 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "towerPlant",  RATE,  0,                 NM_RQD,     0, 0,      0,    &TpiB,   N,    0.f,           tpT,  N),
 	CULT( "holiday",     RATE,  0,                 NM_RQD,     0, 0,      0,    &HdayiB, N,    0.f,         hdayT,  N),
 	CULT( "descond",     RATE,  0,                 NM_RQD,     0, 0,      0,    &DCiB,   N,    0.f,           dcT,  N),
+	CULT( "inverse",     RATE,  0,                 NM_RQD,     0, 0,      0,    &IvB,    N,    0.f,      inverseT,  N),
+
 // TOP commands
 	CULT( "run",         RUN,   0,                 0,          0, 0,      0,     0,      N,    0.f,            N,   topCkf),
 	CULT( "clear",       CLEAR, 0,                 PRFP,       0, 0,      0,     0,   v topClearItf,0.f,   v topStarPrf, N), // note topStarPrf reuse
