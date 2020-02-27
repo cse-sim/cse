@@ -163,15 +163,9 @@ ZNR* KIVA::kv_GetZone() const
 {
 	return ZrB.GetAt(XsB.GetAt(kv_floor)->x.xs_sbcI.sb_zi); // Zone at inside surface
 }
-
-int XSURF::xs_IsKiva() const
-{
-	return xs_ty == CTKIVA;
-}
-
 RC XSRAT::xr_ApplyKivaResults()
 {
-	if (x.xs_ty == CTKIVA)
+	if (x.xs_IsKiva())
 	{
 		auto& sbc = x.xs_sbcI;
 
@@ -192,7 +186,7 @@ RC XSRAT::xr_ApplyKivaResults()
 
 RC XSRAT::xr_KivaZoneAccum()
 {
-	if (x.xs_ty == CTKIVA)
+	if (x.xs_IsKiva())
 	{
 		auto& sbc = x.xs_sbcI;
 		ZNR& z = ZrB[sbc.sb_zi];

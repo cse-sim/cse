@@ -580,6 +580,10 @@ RC SFI::sf_CkfWINDOW(
 	options;
 	RC rc = RCOK;
 	sfClass = sfcWINDOW;
+	FixUp();
+#if defined( _DEBUG)
+	Validate();
+#endif
 	x.xs_modelr = C_SFMODELCH_QUICK;
 	return rc;
 }	// SFI::sf_ChkWINDOW
@@ -647,6 +651,11 @@ RC SFI::sf_CkfDOOR(
 {
 	options;
 	sfClass = sfcDOOR;		// assign class
+	FixUp();
+#if defined( _DEBUG)
+	Validate(0x100);
+#endif
+
 	RC rc = RCOK;
 
 // sf_Ckf: require construction or u value, not both
@@ -716,9 +725,13 @@ RC SFI::sf_CkfSURF(		// surface checker
 {
 	BOOL bRunCheck = (options&1) != 0;
 	sfClass = sfcSURF;
+	if (options & 1)
+	{
+		FixUp();
 #if defined( _DEBUG)
-	Validate();
+		Validate(0x100);
 #endif
+	}
 
 	RC rc = RCOK;
 	BOO xcSet = IsSet( SFX( SFEXCND)); // nz if sfExCnd given by user (a choice type: no exprs
@@ -1045,14 +1058,27 @@ CULT()
 
 
 /*------------------------ PERIM command (for zone) ------------------------
+  Any number allowed.
+  Input now to PRI; later XSURFs are chained to ZNR record. */
+//-----------------------------------------------------------------------------
+RC prStarCkf(CULT *c, /*SFI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
 
-     Any number allowed.
-     Input now to PRI; later XSURFs are chained to ZNR record. */
+// called at end of surface object entry.
+//	ALSO called from sf_topSf1() at RUN, to issue msgs otherwise lost
+//  if surface is part of DEFTYPE ZONE and not ALTERed at TYPE use
+//  (suppress msgs here during deftype if correctible at TYPE use).
 
-static CULT perT[] = //------------------------------------ PERIM command table
+// ONLY argument 'p' is used.
+{
+	int options = c == NULL;	// sf_topSf1 call has no CULT
+	return ((PRI*)p)->pr_Ckf(options);
+}		// sfStarCkf
+//-----------------------------------------------------------------------------
+static CULT perT[] =
 {
 // id       cs    fn                   f              uc evf     ty      b      dfls                 p2  ckf
 //--------  ----  -------------------  -------------  -- ------  -----  ------  -------------------- --- ----
+CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,   prStarCkf),
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,  N),
 CULT( "prZone",    DAT,  PRI_OWNTI,           NO_INP|RDFLIN, 0, 0,      TYREF,  &ZiB,  0.f,                 N,  N), //TYIREF-->TYREF 10-9-92
 CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v CTPERIM,0.f,        N,  N), //CTPERIM: cnguts.h.
