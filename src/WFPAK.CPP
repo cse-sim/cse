@@ -1887,7 +1887,7 @@ RC WFILE::wf_CSWRead(	// read and unpack data from CSW
 	return rc;
 }			// WFILE::wf_CSWRead
 //------------------------------------------------------------------------------
-RC WFILE::wf_TDVOpen(	// open California CSW weather file
+RC WFILE::wf_TDVOpen(	// open California Time of Day Valuation (TDV) file
 	const char* TDVfName,	// pathName of file to open
 	int erOp)
 
@@ -1918,7 +1918,7 @@ RC WFILE::wf_TDVOpen(	// open California CSW weather file
 //----------------------------------------------------------------------------
 void WFILE::wf_TDVInitHdrInfo()
 {	memset(  wf_TDVFileTimeStamp, 0, sizeof( wf_TDVFileTimeStamp));
-	memset(  wf_TDVFileTitle, 0, sizeof( wf_TDVFileTimeStamp));
+	memset(  wf_TDVFileTitle, 0, sizeof( wf_TDVFileTitle));
 }	// WFILE::wf_TDVInitHdrInfo
 //----------------------------------------------------------------------------
 RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
