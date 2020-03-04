@@ -334,42 +334,6 @@ void WDHR::wd_Init(	// initialize all members
 	}
 }			// WDHR::wd_Init
 //------------------------------------------------------------------------------
-#if 0
-void WDHR::wd_ClearDerived(		// init derived values
-	int options /*=0*/)		// options
-							//  0: init to 0.
-							//  1: init all to "missing" (-999.f)
-							//  2: init all to UNSET
-{
-	float unsetf;
-	NANDAT unset( UNSET);
-	V unsetf = V unset;
-	int bUnset = ISUNSET( unset);
-	int bUnsetf = ISUNSET( unsetf);
-	float v;
-	if (options == 2)
-		v = unsetf;
-	else
-		v = options==0 ? 0.f : -999.f;
-	
-	wd_taDbPk =
-	wd_taDbAvg =
-	wd_taDbPvPk =
-	wd_taDbAvg01 =
-	wd_taDbAvg07 =
-	wd_taDbAvg14 =
-	wd_taDbAvg31 =
-
-	wd_tdvElecPk =
-	wd_tdvElecAvg =
-	wd_tdvElecPvPk =
-	wd_tdvElecAvg01 =
-
-	wd_tGrnd     = 
-	wd_tMains	 = v;
-}		// WDHR::wd_ClearDerived
-#endif
-//----------------------------------------------------------------------------
 WDHR& WDHR::Copy(
 	const WDHR& wdhr,	// source
 	int options /*=0*/)	// option bits
@@ -447,6 +411,7 @@ friend WFILE;
 
 							// TDV elect statistics
 	float wdd_tdvElecPk;	//   peak for cur day
+	int wdd_tdvElecPkRank;	//   rank within year of wdd_tdvElecPk (1-366)
 	float wdd_tdvElecAvg;	//   avg for cur day
 	float wdd_tdvElecPvPk;	//   peak for prior day
 	float wdd_tdvElecAvg01;	//   avg for print day
@@ -458,6 +423,11 @@ public:
 	void wdd_Init();
 	int wdd_Compare( const WDHR* wdHr) const;
 	void wdd_Set24( WDHR* wdHr, int options=0) const;
+	static int wdd_TdvPkCompare(const void* p1, const void* p2)
+	{	const WDDAY* pD1 = *(WDDAY **)p1;
+		const WDDAY* pD2 = *(WDDAY **)p2;
+		return -1*LTEQGT( pD1->wdd_tdvElecPk, pD2->wdd_tdvElecPk);
+	}
 };	// class WDDAY
 //----------------------------------------------------------------------------
 struct VHR		// sort helper for wdy_Stats
@@ -510,12 +480,8 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 		taDbAvgYr = wf_pWDY->wdy_taDbAvg[ 0];
 	tMainsAvgYr = wf_pWDY->wdy_tMainsAvg[ 0];
 
-#if 1	// always fill, 3-5-2014
-	int options = 0;
-#else
-x	int options = wFileFormat == CSW;		// CSW: fill missing only
-x											// others: fill always
-#endif
+	// fill hour values from daily
+	int options = 0;		// wdd_Set24: fill always
 	int yrLen = wf_pWDY->wdy_isLeap ? 366 : 365;
 	int jD;
 	for (jD=1; jD <= yrLen; jD++)
@@ -608,11 +574,14 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	float taDbRngYr				// range based on monthly means
 			= VMax( wdy_taDbAvg+1, 12) - VMin( wdy_taDbAvg+1, 12);
 	jDay = 0;
+	WDDAY* wddRank[366];	// pointers to days re rank sort
+	wddRank[365] = NULL;	// insurance, unused unless leap year
 	for (iMon=1; iMon<=12; iMon++)
 	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			WDDAY& wdd = wdy_Day( jDay);
+			wddRank[ jDay-1] = &wdd;
 			// lagged average dry-bulb temps: values do not include current day
 			// wdd.wdd_taDbAvg01 = wdy_TaDbAvg( jDay-1, jDay-1) -- see above
 			wdd.wdd_taDbAvg07 = wdy_TaDbAvg( jDay-7, jDay-1);
@@ -637,6 +606,13 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 		wdy_tMainsAvg[ iMon] /= monLen;
 	}
 	wdy_tMainsAvg[ 0] /= yrLen;
+
+	// sort wddRank pointers by decreasing wdd_tdvElecPk
+	qsort( wddRank, yrLen, sizeof(const WDDAY*), WDDAY::wdd_TdvPkCompare);
+
+	// set wdy_day ranks via now-rank-ordered pointers
+	for (int i = 1; i <= yrLen; i++)
+		wddRank[ i-1]->wdd_tdvElecPkRank = i;
 
 	return rc;
 }	// WDYEAR::wdy_Fill
@@ -707,46 +683,21 @@ RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 {
 	pwd->Copy( wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
-#if 1
 	if (erOp&WF_DSTFIX)
 	{	if (iHr == 23)
 		{ 	// hr 23: clock time is beg of 1st hour of next day
 			//        use selected daily values from next day
 			WDDAY& wdd = wdy_Day( jDay+1);
-#if 1
 			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
 			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
-#else
-			pwd->wd_SetDayValues( wdd);
-#endif
 		}
 		pwd->wd_ShiftTdvElecHrRankForDST();		// shift TDV rank hrs to DST
 												//   to be consistent with $hour
 												//   in expressions
 	}
-#elif 0
-	if ( iHr == 23 && (erOp&WF_DSTFIX))
- 	{	WDDAY& wdd = wf_pWDY->wdy_Day( jDay+1);
-		pwd->wd_taDbPk      = wdd.wdd_taDbPk;
-		pwd->wd_taDbAvg     = wdd.wdd_taDbAvg;
-		pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
-		pwd->wd_taDbAvg01   = wdd.wdd_taDbAvg01;
-		pwd->wd_taDbAvg07   = wdd.wdd_taDbAvg07;
-		pwd->wd_taDbAvg14   = wdd.wdd_taDbAvg14;
-		pwd->wd_taDbAvg31   = wdd.wdd_taDbAvg31;
-		pwd->wd_tGrnd       = wdd.wdd_tGrnd;
-		pwd->wd_tMains      = wdd.wdd_tMains;
-#if 0
-		pwd->wd_tdvElecPk   = wdd.wdd_tdvElecPk;
-		pwd->wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
-		pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
-		pwd->wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
-#endif
- 	}
-#endif
-		return RCOK;
-}		// WDYEAR::wd_TransferHr
-//-----------------------------------------------------------------------------
+	return RCOK;
+}		// WDYEAR::wdy_TransferHr
+//=============================================================================
 void WDDAY::wdd_Init()
 {	
 	wdd_taDbPk = 0.f;
@@ -760,6 +711,7 @@ void WDDAY::wdd_Init()
 	wdd_taDbAvg31 = 0.f;
 	
 	wdd_tdvElecPk = 0.f;
+	wdd_tdvElecPkRank = 0;
 	wdd_tdvElecAvg = 0.f;
 	wdd_tdvElecPvPk = 0.f;
 	wdd_tdvElecAvg01 = 0.f;
@@ -825,6 +777,7 @@ void WDHR::wd_SetDayValues(		// set daily members for this hour
 	wd_tGrnd       = wdd.wdd_tGrnd;
 	wd_tMains      = wdd.wdd_tMains;
 	wd_tdvElecPk   = wdd.wdd_tdvElecPk;
+	wd_tdvElecPkRank = wdd.wdd_tdvElecPkRank;
 	wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
 	wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
 	wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;

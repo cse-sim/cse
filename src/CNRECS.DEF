@@ -821,9 +821,11 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 
 							// derived (computed) electricity TDV values
 							//   values updated at standard time day beg / same all day
-							//   *except* wd_tdvElecPk is updated at hr=23 iff DST
+							//   *except* at hr=23 iff DST
 	*h float wd_tdvElecPk			// current day peak TDVelec (includes future hours)
 									//   updated at hr=23 iff DST
+    *h SI wd_tdvElecPkRank			//   current day wd_tdvElecPk rank within year (1-365/366)
+									//       (largest wd_tdvElecPk=1, next=2, etc.)
 	*h float wd_tdvElecAvg			// current day avg TDVelec (includes future hours)
 	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
 	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)

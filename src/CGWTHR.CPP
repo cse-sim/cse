@@ -469,9 +469,9 @@ void WDHR::wd_FillFromDESCOND(		// overwrite/adjust hourly data for design condi
 	else
 		wd_glrad = wd_bmrad = wd_dfrad = 0.f;
 
-	// Remaining items: use weather file values
-    //    wd_tGrnd, wd_tMains, wd_tdvElec, wd_tdvFuel, wd_tdvElecPk, wd_tdvElecAvg,
-	//    wd_tdvElecPvPk, wd_tdvElecAvg01
+	// Remaining items: use weather/tdv file values
+    //    wd_tGrnd, wd_tMains, wd_tdvElec, wd_tdvFuel, wd_tdvElecPk, wd_tdvElecPkRank,
+	//	  wd_tdvElecAvg, wd_tdvElecPvPk, wd_tdvElecAvg01
 
 }		// WDHR::wd_FillFromDESCOND
 //===========================================================================
