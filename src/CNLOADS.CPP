@@ -4418,17 +4418,12 @@ static RC loadsSurfaces( 		// surface runtime simulation
 
 		TMRSTART( TMR_AWTOT);	// total ASHWAT time (incl setup)
 								// see also TMR_AWCALC
-		RLUP (XsB, xr)
-		{	if (xr->x.xs_IsASHWAT())
-				rc |= xr->x.xs_ASHWAT();
-		}
+		RLUPC(XsB, xr, xr->x.xs_IsASHWAT())
+			rc |= xr->x.xs_ASHWAT();
 		TMRSTOP( TMR_AWTOT);
 
-		RLUP(XsB, xr)
-		{	if (xr->x.xs_ty != CTMXWALL)
-			{	rc |= xr->x.xs_SubhrQS();
-			}
-		}
+		RLUPC(XsB, xr, xr->x.xs_ty != CTMXWALL)
+			rc |= xr->x.xs_SubhrQS();
 	}
 
 	float dur, tDbO;
@@ -4444,16 +4439,11 @@ static RC loadsSurfaces( 		// surface runtime simulation
 	// masses
 	TMRSTART( TMR_COND);
 	MSRAT* mse;
-	RLUP( MsR, mse)				// for mse = MSRAT record 1 to n (cnglob.h)
-	{
-		if (subhrly != mse->isSubhrly)
-			continue;	// skip masses for wrong interval
-
-		if (mse->ms_isFD)
+	RLUPC( MsR, mse, subhrly == mse->isSubhrly)	// do matching interval
+	{	if (mse->ms_isFD)
 			mse->ms_StepFD();		// FD (forward_difference) model is only subhourly
 		else
 			mse->ms_StepMX( dur, tDbO);
-
 	} // mass loop
 	TMRSTOP( TMR_COND);
 

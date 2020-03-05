@@ -821,9 +821,11 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 
 							// derived (computed) electricity TDV values
 							//   values updated at standard time day beg / same all day
-							//   *except* wd_tdvElecPk is updated at hr=23 iff DST
+							//   *except* at hr=23 iff DST
 	*h float wd_tdvElecPk			// current day peak TDVelec (includes future hours)
 									//   updated at hr=23 iff DST
+    *h SI wd_tdvElecPkRank			//   current day wd_tdvElecPk rank within year (1-365/366)
+									//       (largest wd_tdvElecPk=1, next=2, etc.)
 	*h float wd_tdvElecAvg			// current day avg TDVelec (includes future hours)
 	*h float wd_tdvElecPvPk			// previous-day peak TDVelec
 	*h float wd_tdvElecAvg01		// previous-day avg TDVelec (not including current day)
@@ -1177,6 +1179,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*declare "int xs_HasControlledShade() const;"
 	*declare "int xs_IsDelayed() const { return xs_msi != 0; }"
 	*declare "int xs_IsKiva() const;"
+	*declare "int xs_IsPerim() const;"
 	*declare "int xs_CanBeSGTarget() const;"
 	*declare "int xs_Class() const;"
 	*declare "int xs_TyFromTilt() const;"
@@ -1267,6 +1270,7 @@ RECORD PRI "perimeter" *RAT	// perimeter input RAT
 
 	*excon
 	*ovrcopy
+	*declare "RC pr_Ckf( int options);"
 	*declare "void FixUp();"	// virtual fixup after basAnc reAl
 								// .ownTi (base class) is zone subscript
     *r *hide *noname *nest XSURF x	// hs info (struct above).

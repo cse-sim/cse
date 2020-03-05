@@ -405,6 +405,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHSHPT50 "AOSmithSHPT50"		// AOSmith add'l models (added 3-24-2017)
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
+			COLMACCXA20 "ColmacCxA20"			// Colmac CxA-20 modular HPWH
 		}
 
 *choicb DHWEUCH {			// hot end uses

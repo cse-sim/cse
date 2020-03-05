@@ -2101,6 +2101,17 @@ PRI::PRI( basAnc* b, TI i, SI noZ /*=0*/)
 // called from basAnc::reAl() and this c'tor, Copy()
 {	x.xs_Init( this);
 }		// PRI::FixUp
+//-----------------------------------------------------------------------------
+RC PRI::pr_Ckf(
+	int options)	// 1
+{
+	RC rc = RCOK;
+	FixUp();
+
+	return rc;
+}		// PRI::pr_Ckf
+///////////////////////////////////////////////////////////////////////////////
+
 //=============================================================================
 XSRAT::XSRAT( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
@@ -2133,7 +2144,7 @@ XSRAT::XSRAT( basAnc* b, TI i, SI noZ /*=0*/)
 			rc |= errCrit( WRN, "XSRAT::Validate: Bad XSURF pParent");
 	}
 	if (rc == RCOK)
-		RC rc = x.xs_Validate( options);
+		rc = x.xs_Validate( options);
 	return rc;
 }		// XSRAT::Validate
 //=============================================================================
@@ -2239,8 +2250,6 @@ RC XSURF::xs_Validate(
 		{	if (xs_msi)
 				rc |= errCrit( WRN, "XSURF '%s': Unexpected mass %d for non-CTMXWALL", xs_Name(), xs_msi);
 		}
-
-
 	}
 	// ASHWAT back pointer should always be good if present
 	for (int iFA=0; iFA<2; iFA++)
@@ -2407,8 +2416,10 @@ void XSURF::xs_SetRunConstants()
 	}
 #endif
 
-	xs_sbcI.sb_SetRunConstants( dbPrint);
-	xs_sbcO.sb_SetRunConstants( dbPrint);
+	if (!xs_IsPerim())
+	{	xs_sbcI.sb_SetRunConstants(dbPrint);
+		xs_sbcO.sb_SetRunConstants(dbPrint);
+	}
 
 	xs_DeleteFENAW();		// insurance
 	if (xs_IsASHWAT())
@@ -2661,15 +2672,16 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 
 // NOTE: Some values pre-set in sb_SetRunConstants for some cases.
 //       Do not add general inits here w/o review
-
-	if (sb_zi)		// if exposed to zone
+	if (sb_pXS->xs_IsPerim())
+		sb_qrAbs = 0.;
+	else if (sb_zi)		// if exposed to zone
 	{	// boundary is adjacent to zone
 		//   sb_txa, sb_txr set at end of prior step
-		if (sb_pXS->xs_ty != CTKIVA)
+		if (!sb_pXS->xs_IsKiva())
 		{
 			sb_HCZone();	// convection
 			sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
-			sb_hxr = sb_frRad*pow3(DegFtoR(0.5*(sb_tSrf + sb_txr)));
+			sb_hxr = sb_frRad * pow3(DegFtoR(0.5*(sb_tSrf + sb_txr)));
 		}
 		sb_qrAbs = area > 0. ? sb_sgTarg.st_tot / area : 0.;
 	}
@@ -2693,7 +2705,7 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 				  + sb_cTGrnd * Wthr.d.wd_tGrnd) * sb_rGrnd;
 		sb_txr = sb_txa;	// no radiation, set sb_txr as insurance
 	}
-	else if (sb_pXS->sfExCnd==C_EXCNDCH_ADIABATIC)
+	else if (sb_pXS->sfExCnd==C_EXCNDCH_ADIABATIC || sb_pXS->xs_IsPerim())
 	{	sb_hcNat = sb_hcFrc = sb_hxr = sb_hxa = 0.;
 	}
 	else
@@ -2980,16 +2992,13 @@ x			printf( "Hit\n");
 	}
 
 	case C_CONVMODELCH_TARP:
-	{
-
-		sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1. / 3.);
+	{	sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1. / 3.);
 		sb_hcFrc = 0.f;
 		break;
 	}
 
 	case C_CONVMODELCH_MILLS:
 	  {
-
 		// get nat conv h for underside of roof construction:
 		// Ref: A.F. Mills, "Heat Transfer", '92; Eq 4.85 & 4.86.
 		//  applied to hot all roofs facing downward, and to cold roof facing downward if Theta < 60 deg.
@@ -3042,7 +3051,6 @@ x			printf( "Hit\n");
 		}
 		break;
 	  }
-
 
 	case C_CONVMODELCH_INPUT:
 		sb_hcNat = 1.f;
@@ -3245,6 +3253,16 @@ TI XSURF::xs_GetZi(			// get zone idx
 		zi = xs_pParent->ownTi;
 	return zi;
 }		// XSURF::xs_GetZi
+//-----------------------------------------------------------------------------
+int XSURF::xs_IsPerim() const		// nz iff this is a PERIMETER
+{
+	return xs_ty == CTPERIM;
+}		// XSURF::xs_IsPerim
+//-----------------------------------------------------------------------------
+int XSURF::xs_IsKiva() const		// nz iff surface uses Kiva ground conduction
+{
+	return xs_ty == CTKIVA;
+}	// XSURF::xs_IsKiva
 //-----------------------------------------------------------------------------
 int XSURF::xs_IsASHWAT() const		// nz iff this is an ASHWAT window
 {
