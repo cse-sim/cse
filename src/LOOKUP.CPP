@@ -34,7 +34,7 @@ SI FC lookw( 	// word table searcher
 SI FC lookww( 	// word-word table searcher -- general use routine
 
 	SI key,
-	WWTABLE *table )	// table is key, value pairs, ended by 32767, default
+	const WWTABLE *table )	// table is key, value pairs, ended by 32767, default
 
 // fcn value is table value for key, or default (last entry) if not found
 {
@@ -46,10 +46,10 @@ SI FC lookww( 	// word-word table searcher -- general use routine
 	}
 }               // lookww
 //===========================================================================
-char * FC lookws( 	// word-string table searcher
+const char* FC lookws( 	// word-string table searcher
 
 	SI key,
-	WSTABLE *table )	// key, string pairs, ended by 32767, default
+	const WSTABLE *table )	// key, string pairs, ended by 32767, default
 
 // fcn value is table value for key, or default (last entry) if not found
 {
@@ -62,7 +62,7 @@ char * FC lookws( 	// word-string table searcher
 }               // lookws
 
 //===========================================================================
-SI FC lookswl( SI index, SWLTAB* table)
+SI FC lookswl( SI index, const SWLTAB* table)
 
 // retrieve member from subscripted word with limits table (lookup.h)
 
@@ -79,8 +79,8 @@ SI FC lookswl( SI index, SWLTAB* table)
 //=========================================================================
 SI FC looksw(			// string/word table lookup
 
-	char *string,	// String sought
-	SWTABLE *swtab )	// Table in which to look, terminated with NULL
+	const char *string,	// String sought
+	const SWTABLE *swtab )	// Table in which to look, terminated with NULL
 
 /* Returns value in table corresponding to name.  If not found,
    returns entry corresponding to NULL in table */

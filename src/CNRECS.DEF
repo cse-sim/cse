@@ -3448,12 +3448,15 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "MTR* ws_pMtrElec; MTR* ws_pMtrFuel;"
 							// runtime pointers to meters, NULL if not accum'ing
 
-  *i TI ws_swTi;			// DHWSOLARSYS serving preheated water to this system
+  *i TI ws_swTi;			// DHWSOLARSYS providing preheated water to this system
 							//    0 iff no solar connected
   *declare "DHWSOLARSYS* ws_pDHWSOLARSYS;"	// pointer to connected solar system
-  *y *e DBL ws_SSFAnnualSolar; // Annual solar heat added (numerator to calculate SSF), gal-F
-  *y *e DBL ws_SSFAnnualReq; // Annual heat required (denominator to calculate SSF), gal-F
-  *y *e FLOAT ws_SSFAnnual; // Annual solar savings fraction
+  *y *e DBL ws_SSFAnnualSolar;	// Annual solar heat added (numerator to calculate SSF), Btu
+  *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
+  *y *e FLOAT ws_SSFAnnual;		// Annual solar savings fraction
+
+  *h *e FLOAT ws_SSFReqHr;
+  // *h *e FLOAT ws_SSFHr;	?		// solar savings fraction for current hour
 
   *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
 							//   user expression or default Wthr.d.wd_tMains
@@ -3488,18 +3491,17 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 										//    BUT this is only approx due to e.g. mixdown and XBU.
   *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use (at ws_tUse), gal
 							
-							// sizing info derived during C_WSCALCMODECH_PRERUN (only)
+							// draw and load sizing info derived during C_WSCALCMODECH_PRERUN (only)
+							//   copied to assocated input records in ws_DoEndPreRun()
+							//   thus avail for use in sizing expressions during C_WSCALCMODECH_SIM input
+							//   >> no direct uses in calcs <<
   *i SI ws_drawMaxDur					// draw duration window, hr (user input, default 4)
   *declare "VMovingSum< float> ws_drawMaxMS;"	// retains recent draw history
   *i FLOAT ws_drawMax					// largest draw total in any conseq ws_drawMaxDur hrs, gal
-										//   copied to input record in ws_DoEndPreRun()
-										//   avail for use in sizing expressions during C_WSCALCMODECH_SIM input
 
   *i SI ws_loadMaxDur					// load duration window, hr (user input, default 12)
   *declare "VMovingSum< float> ws_loadMaxMS;"	// retains recent load history
   *i FLOAT ws_loadMax					// largest load total in any conseq ws_loadMaxDur hrs, Btu
-										//   copied to input record in ws_DoEndPreRun()
-										//   avail for use in sizing expressions during C_WSCALCMODECH_SIM input
   
   *h FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp water is delivered to fixtures or DHWLOOP(s)
@@ -3521,8 +3523,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i FLOAT_GZ ws_SDLM;		// standard distribution loss multiplier
 							//   see ACM AppE Eqn RE-5
   *i FLOAT_GZ ws_DSM		// distribution system multiplier (AppE table RE-2)
-  *h FLOAT_GEZ ws_SSF		// solar savings fraction
+  *h FLOAT_GEZ ws_SSF		// user input solar savings fraction
 							//  valid range 0 - 0.99, see code
+							//  approximates savings by modifyng inlet water temp
+							//  not allowed (and set 0) when DHWSOLARSYS is specified
   *declare "float ws_AdjustTInletForSSF( float tInlet) const { return tInlet + ws_SSF*max(0.f, ws_tUse - tInlet); }"
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
@@ -3633,6 +3637,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *s *e FLOAT ws_HJLsh;		// current subhour jacket losses (from DHWTANKs), Btu
   *h *e FLOAT ws_HJL;		// hour total jacket losses (from DHWTANKs), Btu
   *h *e FLOAT ws_HARL;		// hour total adjusted recovery load, Btu
+  *h *e FLOAT ws_HARLtk;	// hour total adjusted recovery load, Btu
+							//    check figure derived from ticks
 
 *END		// DHWSYS
 
@@ -3745,7 +3751,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoSubhrStart();"
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
   *declare "RC wh_InstUEFInit();"
-  *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInlet, float scaleWH, float tUse);"
+  *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInletWH, float scaleWH, float tUse);"
   *declare "RC wh_DoSubhrEnd();"
   *declare "RC wh_DoEndPreRun();"
   *declare "RC wh_EndIvl( IVLCH ivl, float HARL, float wsMult);"
@@ -3817,7 +3823,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r FLOAT wh_cycLossFuel;		// derived startup fuel use (=cyclic loss) for INSTUEF, Btu/cycle
   *r FLOAT wh_cycLossElec;		// derived startup electricity use (=cyclic loss) for INSTUEF, Btu/cycle
 								//   unused in revised model, 5-25-2017
-  *r FLOAT wh_maxFlowX;			// derived max flow for INSTUEF, gal/tick-F
+  *r FLOAT wh_maxFlowX;			// derived max flow for INSTUEF, gal-F/tick
   *r FLOAT wh_maxInpX;			// input at max flow, Btu/tick
 
   *i FLOAT_GZ wh_eff;			// efficiency (aka recovery efficiency)
@@ -3839,12 +3845,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   any excess load met via wh_HPWHxBU
   *s DBL wh_loadCFwd;			// current load carry forward, Btu
 								//   see wh_InstUEFDoSubhr()
-  *s FLOAT wh_nTickFullLoad;	// INSTUEF: current subhour equiv full load ticks (fractional)
+  *s *e FLOAT wh_nTickFullLoad;	// INSTUEF: current subhour equiv full load ticks (fractional)
   *s DBL wh_nColdStarts;		// INSTUEF: current subhour # of cold startups 
 
   *s *e FLOAT wh_effSh;			// current subhour efficiency, used to support former hourly
 								//   models within tick calcs
-								//   unset for full tick models (HPWH and INSTUEF)
+								//   unset (= 0) for full tick models (HPWH and INSTUEF)
 
 
   *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
@@ -3861,7 +3867,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
 
-  *r FLOAT wh_HPWHxBU;				// current step HPWH add'l backup resistance heat, Btu
+  *s *e FLOAT wh_HPWHxBU;			// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
   *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, kWh
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
@@ -3877,12 +3883,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 
   
 
-  *h DBL wh_totHARL;		// cumulative recovery load at heater, Btu
+  *h *e DBL wh_totHARL;		// cumulative (year to date) recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
 							//   for single heater (wh_mult not applied)
-  *h INT wh_hrCount;		// # of hourly values included in wh_totHARL
+  *h *e INT wh_hrCount;		// # of hourly values included in wh_totHARL
 							//   re calc of avg
-  *h DBL wh_totOut;			// total heat delivered to hot water, Btu
+  *h *e DBL wh_totOut;		// total heat delivered to hot water, Btu
 							//   includes wh_HPWHxBU
 
 
@@ -4323,7 +4329,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *s *e FLOAT sw_tickVolT;		// current tick (vol * inlet temp), gal-F
 
   *h *e FLOAT sw_drawVol;		// current hour total draw, gal
-  *h *e FLOAT sw_tankQGain;		// current hour's total gain from solar HX, Btu
+  *h *e FLOAT sw_tankQGain;		// current hour total gain from solar HX (all collectors), Btu
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
   *h *e FLOAT sw_tankTOutlet	// tank outlet temperature, F
   *h *e FLOAT sw_tankTHx		// nominal tank heat exchange temp, F
@@ -4378,7 +4384,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *h *e FRAC sc_poa			// plane of array incidence, Btu/h-ft2
   *h *e FRAC sc_Qpoa		// plane of array incident heat, Btu
   *h *e FRAC sc_eff			// fraction of incident heat added to the fluid
-  *h *e FRAC sc_Qfluid		// heat added to the fluid, Btu
+  *h *e FLOAT sc_Qfluid		// heat added to the fluid, Btu
   *h *e FLOAT sc_tOutlet	// outlet temperature, F
   *h *e FLOAT sc_tOutletP	// potential outlet temperature, F
 
