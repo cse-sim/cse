@@ -1640,12 +1640,12 @@ RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
  *i TI fb_mati				// Material (MAT subscript) for this component
  *i FBXREFCH fb_x1Ref		// Point 1 X reference
  *i FBZREFCH fb_z1Ref		// Point 1 Z reference
- *i LEN fb_x1				// Point 1 X value (relative to reference)
- *i LEN fb_z1				// Point 1 X value (relative to reference)
+ *i FLOAT fb_x1				// Point 1 X value (relative to reference)
+ *i FLOAT fb_z1				// Point 1 X value (relative to reference)
  *i FBXREFCH fb_x2Ref		// Point 2 X reference
  *i FBZREFCH fb_z2Ref		// Point 2 Z reference
- *i LEN fb_x2				// Point 2 X value (relative to reference)
- *i LEN fb_z2				// Point 2 X value (relative to reference)
+ *i FLOAT fb_x2				// Point 2 X value (relative to reference)
+ *i FLOAT fb_z2				// Point 2 X value (relative to reference)
 
 *END		// FDC
 
