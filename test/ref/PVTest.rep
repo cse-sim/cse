@@ -10,26 +10,26 @@ Monthly Energy Use, meter "Elec0"
 
 Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan -29.27      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.27
-Feb -29.87      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.87
-Mar -39.56      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.56
-Apr -44.32      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -44.32
-May -47.11      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -47.11
-Jun -45.88      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -45.88
-Jul -44.56      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -44.56
-Aug -42.65      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -42.65
-Sep -39.56      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.56
-Oct -35.50      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -35.50
-Nov -28.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.49
-Dec -28.18      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.18
+Jan -29.15      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.15
+Feb -29.76      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.76
+Mar -39.38      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.38
+Apr -44.38      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -44.38
+May -47.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -47.49
+Jun -46.53      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -46.53
+Jul -45.34      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -45.34
+Aug -43.30      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -43.30
+Sep -40.05      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -40.05
+Oct -35.77      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -35.77
+Nov -28.48      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.48
+Dec -28.05      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.05
 
-Yr  -455.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -455.0
+Yr  -457.7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -457.7
 
 
 
 ! Log for Run 001:
 
-! CSE 0.865.0+dhwloop.0337ae8.92 for Win32 console
+! CSE 0.868.1+pvwatts-update.f2edea6.2 for Win32 console
 
 
 
@@ -60,7 +60,7 @@ Yr  -455.0      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 17-Dec-19   4:22:15 pm  Page  1
+! pvtest  001                              Thu 23-Apr-20  10:36:03 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 17-Dec-19   4:22:15 pm  Page  2
+! pvtest  001                              Thu 23-Apr-20  10:36:03 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 17-Dec-19   4:22:15 pm  Page  3
+! pvtest  001                              Thu 23-Apr-20  10:36:03 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 17-Dec-19   4:22:15 pm  Page  4
+! pvtest  001                              Thu 23-Apr-20  10:36:03 am  Page  4
 
 
 
@@ -258,21 +258,21 @@ Input for Run 001:
 
 
 
-! CSE 0.865.0+dhwloop.0337ae8.92 for Win32 console run(s) done: Tue 17-Dec-19   4:22:15 pm
+! CSE 0.868.1+pvwatts-update.f2edea6.2 for Win32 console run(s) done: Thu 23-Apr-20  10:36:04 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               17-Dec-19   4:19 pm   (VS 14.16    2570752 bytes)  (HPWH 1.7.0+master.719f34a.13)
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               23-Apr-20  10:35 am   (VS 14.16    2605056 bytes)  (HPWH 1.9.0+HEAD.2b1d587.11)
 ! Command line: -x!  -b -t1 pvtest
-! Input file:   D:\cse\test\pvtest.cse
-! Report file:  D:\cse\test\pvtest.rep
+! Input file:   C:\Users\nkruis\projects\cse\test\pvtest.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\pvtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 1      T/C = 0.0190   
+!                Input:  Time = 0.03     Calls = 1      T/C = 0.0270   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.54     Calls = 1      T/C = 0.5440   
-!              Reports:  Time = 0.04     Calls = 1      T/C = 0.0360   
-!                Total:  Time = 0.60     Calls = 1      T/C = 0.5990   
+!           Simulation:  Time = 0.69     Calls = 1      T/C = 0.6880   
+!              Reports:  Time = 0.05     Calls = 1      T/C = 0.0470   
+!                Total:  Time = 0.76     Calls = 1      T/C = 0.7620   
 
 
 
@@ -312,5 +312,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 17-Dec-19   4:22:15 pm  Page  5
+! pvtest  001                              Thu 23-Apr-20  10:36:03 am  Page  5
 
