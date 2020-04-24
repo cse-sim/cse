@@ -143,16 +143,16 @@ RC PVARRAY::pv_Init()		// init for run
 	switch (pv_moduleType)
 	{
 	case C_PVMODCH_STD:
-		pv_tempCoeff = -0.47f*NPten[2] * 0.5556f;  // convert %/C to frac/F
-		pv_covRefrInd = 1.f;  // same as air (i.e. no coating)
+		pv_tempCoeff = -0.37f*NPten[2] * 0.5556f;  // convert %/C to frac/F
+		pv_covRefrInd = 1.3f;  // same as air (i.e. no coating)
 		break;
 	case C_PVMODCH_PRM:
 		pv_tempCoeff = -0.35f*NPten[2] * 0.5556f;  // convert %/C to frac/F
 		pv_covRefrInd = 1.3f;
 		break;
 	case C_PVMODCH_THF:
-		pv_tempCoeff = -0.20f*NPten[2] * 0.5556f;  // convert %/C to frac/F
-		pv_covRefrInd = 1.f;  // same as air (i.e. no coating)
+		pv_tempCoeff = -0.32f*NPten[2] * 0.5556f;  // convert %/C to frac/F
+		pv_covRefrInd = 1.3f;  // same as air (i.e. no coating)
 		break;
 	case C_PVMODCH_CST:
 		break;  // Set by input
