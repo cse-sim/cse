@@ -3451,12 +3451,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i TI ws_swTi;			// DHWSOLARSYS providing preheated water to this system
 							//    0 iff no solar connected
   *declare "DHWSOLARSYS* ws_pDHWSOLARSYS;"	// pointer to connected solar system
+  *h *e FLOAT ws_qSlr		// hour total water heating energy provided by
+							//   DHWSOLARSYS, Btu
   *y *e DBL ws_SSFAnnualSolar;	// Annual solar heat added (numerator to calculate SSF), Btu
+								//   = SUM( ws_qSlr)
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
   *y *e FLOAT ws_SSFAnnual;		// Annual solar savings fraction
-
-  *h *e FLOAT ws_SSFReqHr;
-  // *h *e FLOAT ws_SSFHr;	?		// solar savings fraction for current hour
 
   *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
 							//   user expression or default Wthr.d.wd_tMains
@@ -3621,7 +3621,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "FILE* ws_pFDrawCSV;"	// draw export file
   *declare "RC ws_WriteDrawCSV();"
 
-  *h *e FLOAT ws_HHWO;		// hourly hot water output (at water heater), Btu
+  *h *e FLOAT ws_HHWO;		// current total recovery load (at water heater), Btu
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
   *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
   *h *e FLOAT ws_tRL;		// current hour all-DHWLOOP return temp, F
@@ -3888,7 +3888,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 							//   for single heater (wh_mult not applied)
   *h *e INT wh_hrCount;		// # of hourly values included in wh_totHARL
 							//   re calc of avg
-  *h *e DBL wh_totOut;		// total heat delivered to hot water, Btu
+  *h *e DBL wh_totOut;		// cumulative (year to date) total heat delivered to hot water, Btu
 							//   includes wh_HPWHxBU
 
 
@@ -4317,7 +4317,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 								//    - sw_tankZnTi ignored
 								//    - heat loss discarded
   *h *e FLOAT sw_tankQLoss;		// current hour's total tank loss, Btu
-								//   for 1 tank
+								//   for 1 tank (sw_mult)
   *h FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
   *i FLOAT_GZ sw_tankTHxLimit	// tank temp limit, F; collector heat
 								//   discarded when sw_tankTHx > sw_tankTHxLimit
@@ -4335,6 +4335,8 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *h *e FLOAT sw_tankTHx		// nominal tank heat exchange temp, F
 								//   = avg of bottom several tank node temps
 								//   used re heat exchange from collector loop
+  *h *e FLOAT sw_totOut			// current hour total DHWSOLARSYS output, Btu
+								//   = heat delivered to primary heater
 
   // Collector Fluid
   *i FLOAT_GZ sw_scFluidSpHt	// collector working fluid specific heat, Btu/lbm-F

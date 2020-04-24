@@ -117,6 +117,7 @@ RC DHWSOLARSYS::sw_DoHour()
 	sw_tankQGain = 0.f; // restart accumulator for new hour
 	sw_tankQLoss = 0.f;
 	sw_drawVol = 0.f;
+	sw_totOut = 0.f;
 
 	sw_overHeatTkCount = 0;
 	if (Top.tp_isBegMainSim)
@@ -222,8 +223,10 @@ RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
 	RC rc = RCOK;
 	sw_tickVol += vol;
 	sw_tickVolT += vol * tInlet;
+	float qOut = vol * waterRhoCp * (sw_tankTOutlet - tInlet);
+	sw_totOut += qOut;	// hourly total
 	if (pWS)
-		pWS->ws_SSFAnnualSolar += vol * waterRhoCp * (sw_tankTOutlet - tInlet);
+		pWS->ws_qSlr += qOut;
 
 	return rc;
 }	// DHWSOLARSYS::sw_TickAccumDraw

@@ -971,6 +971,8 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 	ws_qDWHR = 0.f;		// DWHR (DHWHEATREC) recovered heat hour total
 
+	ws_qSlr = 0.f;		// DHWSOLARSYS heat contribution, this hour
+
 
 	if (ivl <= C_IVLCH_D)	// if start of day (or longer)
 	{
@@ -1256,7 +1258,8 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 {
 	RC rc = RCOK;
 
-#define ALTDRAWCSV
+#undef ALTDRAWCSV		// define to enable alternative draw export format
+						//   (re PRERUN testing, not generally useful)
 
 #if !defined( ALTDRAWCSV)
 	// write ws_ticks draw info to CSV file
@@ -1284,6 +1287,8 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
 		float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
 #if defined( ALTDRAWCSV)
+		// alternative format draw export
+		//   supports testing of ws_drawMaxDur and ws_loadMaxDur
 		if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
 		{
 			if (ws_pFDrawCSV == NULL)
@@ -1633,8 +1638,8 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 		const DHWTICK& tk = ws_ticks[iTk];
 		// write to CSV w/o trailing 0s (many draws are 0, don't write 0.0000)
 		fprintf(ws_pFDrawCSV, "%s,%s,%s,%s\n",
-			WStrFmtFloatDTZ( tk.wtk_tInletX,2).c_str(),
 			WStrFmtFloatDTZ( ws_tInlet, 2).c_str(),
+			WStrFmtFloatDTZ( tk.wtk_tInletX,2).c_str(),
 			WStrFmtFloatDTZ( ws_tUse, 2).c_str(),
 			WStrFmtFloatDTZ( tk.wtk_whUse, 4).c_str());
 	}
@@ -1651,6 +1656,8 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 		ws_fxUseMixLH.wmt_Copy(&ws_fxUseMix);
 
 		ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;		// total recovery load
+
+		ws_SSFAnnualSolar += ws_qSlr;				// annual total solar contribution
 
 #if 0
 		if (frDiff(ws_HARL, ws_HARLtk) > .001f)
