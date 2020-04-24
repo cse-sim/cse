@@ -42,9 +42,9 @@ Type of module to model. The module type determines the refraction index and tem
 
   **Module Type** **pvCoverRefrInd** **pvTempCoeff**
   --------------- ------------------ ---------------
-  Standard        1.0                -0.0026
-  Premium         1.3                -0.0019
-  ThinFilm        1.0                -0.0011
+  Standard        1.3                -0.00206
+  Premium         1.3                -0.00194
+  ThinFilm        1.3                -0.00178
   Custom          User-defined       User-defined
 
   --------------------------------------------------------------
@@ -65,7 +65,7 @@ The refraction index for the coating applied to the module cover. A value of 1.0
   ------------------------------------------------------------------------------
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
-              *x* $\geq$ 1.0        1.0           No             constant
+              *x* $\geq$ 1.0        1.3           No             constant
 
   ------------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ The temperature coefficient how the efficiency of the module varies with the cel
   ------------------------------------------------------------------------------
   **Units**   **Legal Range**     **Default**   **Required**   **Variability**
   ----------- ------------------- ------------- -------------- -----------------
-  1/^o^F      *no restrictions*   -0.0026       No             constant
+  1/^o^F      *no restrictions*   -0.00206       No             constant
 
   ------------------------------------------------------------------------------
 
@@ -191,7 +191,7 @@ DC-to-AC ratio used to intentionally undersize the AC inverter. This is used to 
   ------------------------------------------------------------------
   **Units** **Legal Range** **Default** **Required** **Variability**
   --------- --------------- ----------- ------------ ---------------
-            *x* &gt; 0.0       1.1         No           constant
+            *x* &gt; 0.0       1.2         No           constant
 
   ------------------------------------------------------------------
 
