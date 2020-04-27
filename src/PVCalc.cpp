@@ -283,9 +283,20 @@ RC PVARRAY::pv_CalcPOA()
 0	if (sunup != Wthr.d.wd_sunup || azm != Wthr.d.wd_slAzm)
 0		printf( "Solar ismatch");
 #endif
+	float DNI, DHI;
+	if (pv_anisoFix == C_NOYESCH_NO)
+	{
+		DNI = Top.radBeamHrAv;
+		DHI = Top.radDiffHrAv;
+	}
+	else
+	{
+		DNI = Wthr.d.wd_DNI;
+		DHI = Wthr.d.wd_DHI;
+	}
 
-	// Don't bother if sun down or no solar from weather
-	if (!sunup || (Top.radBeamHrAv <= 0.f && Top.radDiffHrAv <= 0.f))
+	// Don't bother if sun down or no solar from weather;
+	if (!sunup || (DNI <= 0.f && DHI <= 0.f))
 	{	pv_ClearShading();
 		pv_poa = 
 		pv_radIBeam =
@@ -365,7 +376,7 @@ RC PVARRAY::pv_CalcPOA()
 
 	if (sunupSrf)	
 	{
-		pv_poaBeam = Top.radBeamHrAv*cosi;
+		pv_poaBeam = DNI*cosi;
 		pv_radIBeam = pv_poaBeam*fBeam;  // incident beam (including shading)
 		pv_radIBeamEff = max(pv_poaBeam*(1.f - pv_sif * (1.f - fBeam)),0.f);
 		pv_aoi = acos(cosi);
@@ -387,9 +398,9 @@ RC PVARRAY::pv_CalcPOA()
 		float a = max(0.f, cosi);
 		float b = max(cos(RAD(85.f)), cosz);
 		const float kappa = 5.534e-6f;
-		float e = ((Top.radDiffHrAv + Top.radBeamHrAv) / (Top.radDiffHrAv + 0.0001f) + kappa*pow3(zDeg)) / (1 + kappa*pow3(zDeg));
+		float e = ((DHI + DNI) / (DHI + 0.0001f) + kappa*pow3(zDeg)) / (1 + kappa*pow3(zDeg));
 		float am0 = 1 / (cosz + 0.15f*pow(93.9f - zDeg, -1.253f));  // Kasten 1966 air mass model
-		float delt = Top.radDiffHrAv*am0 / IrSItoIP(1367.f);
+		float delt = DHI*am0 / IrSItoIP(1367.f);
 
 		int bin = e < 1.065f ? 0 :
 			e >= 1.065f && e < 1.23f ? 1 :
@@ -429,8 +440,8 @@ RC PVARRAY::pv_CalcPOA()
 
 	poaDiffG = pv_grndRefl*vfGrndDf;
 
-	float poaDiff = Top.radDiffHrAv*(poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
-	float poaGrnd = Top.radBeamHrAv*pv_grndRefl*vfGrndDf*verSun;  // ground reflected beam
+	float poaDiff = DHI*(poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
+	float poaGrnd = DNI*pv_grndRefl*vfGrndDf*verSun;  // ground reflected beam
 	pv_poa = pv_poaBeam + poaDiff + poaGrnd;
 	pv_radI = pv_radIBeam + poaDiff + poaGrnd;
 	pv_radIEff = pv_radIBeamEff + poaDiff + poaGrnd;
