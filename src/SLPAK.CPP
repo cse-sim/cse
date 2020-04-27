@@ -1014,6 +1014,8 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 	float direct_normal_beam,		// solar beam irradiance, any pwr/area
 	float horizontal_diffuse,		// solar diffuse irradiance
 	float ground_reflectivity,		// ground reflectivity (0 - 1)
+	float& angle_of_incidence,		// beam angle of incidence, radians
+									//   pi/2 if no beam
 	float& plane_beam,				// returned: plane beam
 	float& plane_diffuse_sky,		// returned: plane diffuse from sky
 	float& plane_diffuse_ground)	// returned: plane diffuse from ground
@@ -1030,8 +1032,8 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 		slsurfhr(dchoriz, iHrST, &verSun, &solar_azm, &cosz);
 
 	plane_beam = plane_diffuse_sky = plane_diffuse_ground = 0.f;
+	angle_of_incidence = kPiOver2;  // radians
 
-	double angle_of_incidence{ kPiOver2 };  // radians
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (direct_normal_beam <= 0.f && horizontal_diffuse <= 0.f))
 	{
