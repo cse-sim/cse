@@ -366,7 +366,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 															// WHY: sets ground temp to plausible winter values
 		wd_wndSpd = 15;
 		wd_wndDir = 0;  						// 15 mph north wind
-		wd_bmrad = wd_dfrad = wd_glrad = 0;		// no insolation -- dark all day
+		wd_DNI = wd_bmrad = wd_DHI = wd_dfrad = wd_glrad = 0;		// no insolation -- dark all day
 		wd_cldCvr = 0;							// no cloud cover (impacts tSky)
 		wd_db = Top.heatDsTDbO;					// outdoor temperature as input or as dfl'd from wthr file hdr
 		if (Top.IsSet( TOPRAT_HEATDSTWBO))		// if user input the heat design day wetbulb
@@ -404,6 +404,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		return rc;
 
 // Optional anisotropic sky adjustment
+// Do NOT adjust wd_DNI, wd_DHI
 	if (Top.skyModel==C_SKYMODCH_ANISO)
 		slaniso( &wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
 			       								//   near sun, etc, while still computing with sun's
@@ -468,6 +469,8 @@ void WDHR::wd_FillFromDESCOND(		// overwrite/adjust hourly data for design condi
 			wd_bmrad, wd_dfrad);
 	else
 		wd_glrad = wd_bmrad = wd_dfrad = 0.f;
+	wd_DNI = wd_bmrad;
+	wd_DHI = wd_dfrad;
 
 	// Remaining items: use weather/tdv file values
     //    wd_tGrnd, wd_tMains, wd_tdvElec, wd_tdvFuel, wd_tdvElecPk, wd_tdvElecPkRank,

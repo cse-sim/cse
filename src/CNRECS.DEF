@@ -785,8 +785,10 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
-    *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
-    *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
+	*h float wd_DNI			// direct normal irradiance from weather file (integrated value for hour, Btu/ft2)
+	*h float wd_DHI			// diffuse horizontal irradiance from weather file (integrated value for hour, Btu/ft2)
+    *h float wd_bmrad		// DNI as adjusted per anisotropic sky, Top.radBeamF, etc (integrated value for hour, Btu/ft2)
+    *h float wd_dfrad		// DHI as adjusted per anisotropic sky, Top.radDiffF, etc (integrated value for hour, Btu/ft2)
     *h float wd_wb			// air wet bulb temp, deg F
     *h float wd_wndDir		// wind direction, deg, 0=N, 90=E
     *h float wd_wndSpd		// wind speed, mph
@@ -4383,12 +4385,16 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *i ANGLE sc_azm			// Array azimuth, radians (input as degrees)
 
   // Calculated values
-  *h *e FRAC sc_poa			// plane of array incidence, Btu/h-ft2
-  *h *e FRAC sc_Qpoa		// plane of array incident heat, Btu
-  *h *e FRAC sc_eff			// fraction of incident heat added to the fluid
-  *h *e FLOAT sc_Qfluid		// heat added to the fluid, Btu
-  *h *e FLOAT sc_tOutlet	// outlet temperature, F
-  *h *e FLOAT sc_tOutletP	// potential outlet temperature, F
+								// plane of array irradiance, Btu/ft2
+  *h *e FLOAT sc_beam			//   beam
+  *h *e FLOAT sc_diffuse_sky	//   diffuse from sky
+  *h *e FLOAT sc_diffuse_ground	//   diffuse from ground
+  *h *e FLOAT sc_poa			//   total
+  *h *e FLOAT sc_Qpoa			// plane of array incident heat, Btu
+  *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
+  *h *e FLOAT sc_Qfluid			// heat added to the fluid, Btu
+  *h *e FLOAT sc_tOutlet		// outlet temperature, F
+  *h *e FLOAT sc_tOutletP		// potential outlet temperature, F
 
   // Pump
   *i FLOAT_GEZ sc_pumpPwr;		// pump power, W

@@ -1007,19 +1007,16 @@ RC slPerezSkyModel(
 	return rc;
 }		// slPerezSkyModel
 //-----------------------------------------------------------------------------
-#if 0
-
 RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 	float tilt,				// surface tilt, radians (0=horiz, pi/2=vert)
 	float azimuth,			// surface azm, radians, (0=N, pi/2=E, pi=S)
 	int iHrST,				// hour of day
-	float direct_normal_beam,
-	float horizontal_diffuse,
-	float ground_reflectivity,
-	float& plane_beam,
-	float& plane_sky_diffuse,
-	float& plane_ground_diffuse,
-	double& plane_incidence)
+	float direct_normal_beam,		// solar beam irradiance, any pwr/area
+	float horizontal_diffuse,		// solar diffuse irradiance
+	float ground_reflectivity,		// ground reflectivity (0 - 1)
+	float& plane_beam,				// returned: plane beam
+	float& plane_diffuse_sky,		// returned: plane diffuse from sky
+	float& plane_diffuse_ground)	// returned: plane diffuse from ground
 {
 	RC rc = RCOK;
 
@@ -1032,8 +1029,8 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 	int sunup = 					// nz if sun above horizon this hour
 		slsurfhr(dchoriz, iHrST, &verSun, &solar_azm, &cosz);
 
-	plane_incidence = 0.0;              // W/m^2
-	double plane_beam{ 0.0 };          // W/m^2
+	plane_beam = plane_diffuse_sky = plane_diffuse_ground = 0.f;
+
 	double angle_of_incidence{ kPiOver2 };  // radians
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (direct_normal_beam <= 0.f && horizontal_diffuse <= 0.f))
@@ -1064,11 +1061,6 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 		// No change from default values if sun is up but not incident
 	}
 
-	// Components of diffuse solar (isotropic, circumsolar, horizon, ground reflected)
-	float poaDiffI{ vfSkyDf };
-	float poaDiffC{ 0.0f };
-	float poaDiffH{ 0.0f };
-	float poaDiffG{ 0.0f };
 
 	// Modified Perez sky model
 	float zRad = acos(cosz);
@@ -1080,13 +1072,14 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 	float am0 = 1 / (cosz + 0.15f*pow(93.9f - zDeg, -1.253f));  // Kasten 1966 air mass model
 	float delt = horizontal_diffuse * am0 / IrSItoIP(1367.f);
 
-	unsigned short bin = e < 1.065f ? 0 :
-		e >= 1.065f && e < 1.23f ? 1 :
-		e >= 1.23f && e < 1.5f ? 2 :
-		e >= 1.5f && e < 1.95f ? 3 :
-		e >= 1.95f && e < 2.8f ? 4 :
-		e >= 2.8f && e < 4.5f ? 5 :
-		e >= 4.5f && e < 6.2f ? 6 : 7;
+	int bin = e < 1.065f ? 0
+		: e < 1.23f ? 1
+		: e < 1.5f ? 2
+		: e < 1.95f ? 3
+		: e < 2.8f ? 4
+		: e < 4.5f ? 5
+		: e < 6.2f ? 6
+		:            7;
 
 	// Perez sky model factors
 	static const float f11[8] = { -0.0083117f, 0.1299457f, 0.3296958f, 0.5682053f, 0.873028f, 1.1326077f, 1.0601591f, 0.677747f };
@@ -1099,22 +1092,24 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 	float F1 = max(0.f, f11[bin] + delt * f12[bin] + zRad * f13[bin]);
 	float F2 = f21[bin] + delt * f22[bin] + zRad * f23[bin];
 
+	// Components of diffuse solar (isotropic, circumsolar, horizon, ground reflected)
+	float poaDiffI{ vfSkyDf };
+	float poaDiffC{ 0.0f };
+	float poaDiffH{ 0.0f };
+	
 	if (zDeg >= 0.f && zDeg <= 87.5f) {
 		poaDiffI = (1.f - F1)*vfSkyDf;
 		poaDiffC = F1 * a / b;
 		poaDiffH = F2 * sin(tilt);
 	}
 
-	poaDiffG = ground_reflectivity * vfGrndDf;
+	float poaDiffG = ground_reflectivity * vfGrndDf;
 
-	plane_diffuse_sky = horizontal_diffuse * (poaDiffI + poaDiffC + poaDiffH + poaDiffG);  // sky diffuse and ground reflected diffuse
-	float plane_ground_beam = direct_normal_beam * ground_reflectivity*vfGrndDf*verSun; 
-	// ground reflected beam
-	plane_incidence = plane_beam + plane_diffuse + plane_ground_beam; // W/m^2
+	plane_diffuse_sky = horizontal_diffuse * (poaDiffI + poaDiffC + poaDiffH);  // sky diffuse and ground reflected diffuse
+	plane_diffuse_ground = horizontal_diffuse * poaDiffG + direct_normal_beam * ground_reflectivity*vfGrndDf*verSun; 
 
 	return rc;
 }	// slPerezSkyModel2
-#endif
 
 //==========================================================================
 

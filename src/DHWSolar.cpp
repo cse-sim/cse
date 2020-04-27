@@ -479,6 +479,19 @@ RC DHWSOLARCOLLECTOR::sc_DoHour()
 	sc_poa = static_cast<FLOAT>(plane_incidence);
 	sc_Qpoa = sc_poa * sc_areaTot;  // Btu/h-ft2 * ft2 = Btu
 
+	RC rcx = slPerezSkyModel2(sc_tilt, sc_azm, Top.iHrST,
+#if 1
+	   Wthr.d.wd_DNI, Wthr.d.wd_DHI,
+#else
+	   Top.radBeamHrAv, Top.radDiffHrAv,
+#endif
+	   Top.grndRefl,
+	   sc_beam, sc_diffuse_sky, sc_diffuse_ground);
+
+	float plane_incidence2 = sc_beam + sc_diffuse_sky + sc_diffuse_ground;
+
+	if (frDiff(sc_poa, plane_incidence2) > .001f)
+		printf("\nPOA diff");
 	return rc;
 }		// DHWSOLARCOLLECTOR::sc_DoHour
 //--------------------------------------------------------------------------------------
