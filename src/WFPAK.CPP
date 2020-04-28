@@ -251,8 +251,8 @@ RC XT24WTHR::xw_GetHr(
 		return RCBAD;
 
 #if 0
-    wd_bmrad = 0.f;
-    wd_dfrad = 0.f;
+    wd_DNI = wd_bmrad = 0.f;
+    wd_DHI = wd_dfrad = 0.f;
     wd_db	 = 0.f;
     wd_wb = 0.f;
     wd_wndDir = 0.f;
@@ -363,12 +363,12 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 	wd_wb = (float)(t-(w & 0x3F));		// lo 6 bits is drybulb - wetbulb
 
 	w = phour[i++];				// word 1, or 2 if scrambled
-	wd_bmrad   = (float)((USI)w >> 4);
+	wd_bmrad = wd_DNI = (float)((USI)w >> 4);
 	wd_wndDir  = (float)(w & 0xF) * 22.5f;
 
 	i = i % 3;					// for demo format change i from 3 to 0; normally moot
 	w = phour[i /*++*/ ]; 			// word 2, or 0 if scrambled
-	wd_dfrad  = (float)((USI)w >> 7);
+	wd_dfrad  = wd_DHI = (float)((USI)w >> 7);
 	wd_wndSpd = (float)(w & 0x7F);
 
 	// additional values for ET1 weather file
@@ -886,9 +886,11 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 			&wd_tSky,				// "T sky"
 			&wd_wndDir, &wd_wndSpd,	// "Wind direction", "Wind speed"
 			&wd_glrad,				// "Global Horizontal Radiation",
-			&wd_bmrad, &wd_dfrad,	// "Direct Normal Radiation", "Diffuse Horiz Radiation"
+			&wd_DNI, &wd_DHI,	// "Direct Normal Radiation", "Diffuse Horiz Radiation"
 			&wd_cldCvr,				// "Total Sky Cover"
 			NULL);
+		wd_bmrad = wd_DNI;
+		wd_dfrad = wd_DHI;
 
  		if (rc != RCBAD2)
 		{	if (rc)
@@ -2455,8 +2457,8 @@ x			printf( "mismatch\n");
 #endif
 
 		wd_glrad = IrSItoIP( glrad);
-		wd_bmrad = IrSItoIP( bmrad);
-		wd_dfrad = IrSItoIP( dfrad);
+		wd_bmrad = wd_DNI = IrSItoIP( bmrad);
+		wd_dfrad = wd_DHI = IrSItoIP( dfrad);
 
 		wd_wndDir = wndDir;
 		wd_wndSpd = VSItoIP( wndSpd);

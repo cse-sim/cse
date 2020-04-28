@@ -785,9 +785,11 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
-    *h float wd_bmrad		// beam irradiance on tracking surface (integrated value for hour, Btu/ft2)
-    *h float wd_dfrad		// diffuse irradiance on a horiz surface (integrated value for hour, Btu/ft2)
-    *h float wd_wb			// air wet bulb temp, deg F
+    *h float wd_DNI			// direct normal irradiance from weather file (integrated value for hour, Btu/ft2)
+    *h float wd_DHI			// diffuse horizontal irradiance from weather file (integrated value for hour, Btu/ft2)
+    *h float wd_bmrad		// DNI as adjusted per anisotropic sky, Top.radBeamF, etc (integrated value for hour, Btu/ft2)
+    *h float wd_dfrad		// DHI as adjusted per anisotropic sky, Top.radDiffF, etc (integrated value for hour, Btu/ft2)
+    *h float wd_wb		// air wet bulb temp, deg F
     *h float wd_wndDir		// wind direction, deg, 0=N, 90=E
     *h float wd_wndSpd		// wind speed, mph
 
@@ -3612,7 +3614,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *d *e *array NDHWENDUSESPP INT ws_loadShareWS0;	// re allocation of shared load
 							// idx for ws_eventID=0 by end use, set daily based on jDay
 
-  *i NOYESCH ws_drawCSV		// if C_YESNOCH_YES, write tick-level draw data to
+  *i NOYESCH ws_drawCSV		// iff C_NOYESCH_YES, write tick-level draw data to
 							//    <inputFile>_<DHWSYS.name>_draws.csv
   *declare "FILE* ws_pFDrawCSV;"	// draw export file
   *declare "RC ws_WriteDrawCSV();"
