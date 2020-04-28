@@ -331,14 +331,16 @@ RC PVARRAY::pv_CalcPOA()
 		if (pv_panelTilt == 0.f) {
 			pv_panelAzm = pv_azm;
 		}
-		else if (r >= -kPiOver2 && r <= kPiOver2) {
-			pv_panelAzm = pv_azm + asin(sin(r) / sin(pv_panelTilt));
-		}
-		else if (r >= -kPi && r < -kPiOver2) {
-			pv_panelAzm = pv_azm - asin(sin(r) / sin(pv_panelTilt)) - kPi;
-		}
-		else {// if (r > kPiOver2 && r <= kPi) {
-			pv_panelAzm = pv_azm - asin(sin(r) / sin(pv_panelTilt)) + kPi;
+		else
+		{
+			float rx = bracket(-1.f, sin(r) / sin(pv_panelTilt), 1.f);
+			float asrx = asin(rx);
+			if (r >= -kPiOver2 && r <= kPiOver2)
+				pv_panelAzm = pv_azm + asrx;
+			else if (r >= -kPi && r < -kPiOver2)
+				pv_panelAzm = pv_azm - asrx - kPi;
+			else // if (r > kPiOver2 && r <= kPi)
+				pv_panelAzm = pv_azm - asrx + kPi;
 		}
 	}
 		break;

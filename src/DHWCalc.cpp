@@ -3215,6 +3215,8 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 	wh_inElecXBU = 0.f;
 	wh_inFuel = 0.f;
 	wh_unMetSh = 0;
+	wh_tInlet = 0.f;
+	wh_draw = 0.f;
 
 	float tSetpoint = pWS->ws_GetTSetpoint(whfcn);
 
@@ -3240,6 +3242,10 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 
 {
 	RC rc = RCOK;
+
+	// hour average inlet temp
+	if (wh_tInlet > 0.f)
+		wh_tInlet /= wh_draw;
 
 	// accumulate load (re LDEF derivation)
 	wh_totHARL += HARL;		// annual total
@@ -3448,6 +3454,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	float tMix = wh_IsLastHeater() ? pWS->ws_tUse : -1.f;
 
 #define SLRXT_FIX
+	double drawForTick = 0.;
 
 	if (wh_IsHPWHModel())
 	{
@@ -3455,11 +3462,12 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 		if (whfcn == whfcnPRIMARY)
 			pWS->ws_tOutPrimSum += tOutNoMix * scaleWH * wh_mult;
+		drawForTick = tk.wtk_whUse;		// ??
 	}
 	else 
 	{	// inlet temp: combine use and any DHWLOOP return
 		float tInletMix;
-		double drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletMix, tInletWH)*scaleWH;
+		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletMix, tInletWH)*scaleWH;
 		float tInletMixX;
 		double drawForTickX = tk.wtk_DrawTotX(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMixX)*scaleWH;
 #if 0
@@ -3469,6 +3477,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 #if defined( SLRXT_FIX)
 		drawForTick = drawForTickX;
 		tInletMix = tInletMixX;
+		tInletWH = tInletMix;
 #endif
 		
 		if (wh_IsInstUEFModel())
@@ -3533,6 +3542,10 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 }
 
 #endif
+	if (drawForTick > 0.)
+	{	wh_tInlet += tInletWH * drawForTick;
+		wh_draw += drawForTick;
+	}
 
 	return rc;
 }		// DHWHEATER::wh_DoSubhrTick

@@ -88,6 +88,7 @@ RC DHWSOLARSYS::sw_Init()		// init for run
 
 	sw_tickVol = 0.f;
 	sw_tickVolT = 0.f;
+	sw_tickTankTOutlet = sw_tankTOutlet;
 
 	// tank setup
 	//   use HPWH multi-node tank model w/o heater
@@ -118,6 +119,7 @@ RC DHWSOLARSYS::sw_DoHour()
 	sw_tankQLoss = 0.f;
 	sw_drawVol = 0.f;
 	sw_totOut = 0.f;
+	sw_tankTOutlet = 0.f;
 
 	sw_overHeatTkCount = 0;
 	if (Top.tp_isBegMainSim)
@@ -172,6 +174,9 @@ RC DHWSOLARSYS::sw_EndIvl(
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
 		rc |= pSC->sc_DoHourEnd();
 
+	if (sw_drawVol > 0.f)
+		sw_tankTOutlet /= sw_drawVol;
+
 	if (ivl == C_IVLCH_Y)
 	{
 		double SSFNum = 0.;
@@ -204,7 +209,7 @@ int DHWSOLARSYS::sw_ReportBalErrorsIf() const
 FLOAT DHWSOLARSYS::sw_GetAvailableTemp()
 // returns available tank outlet water temp, F
 {
-	return sw_tankTOutlet;
+	return sw_tickTankTOutlet;
 }	// DHWSOLARSYS::sw_GetAvailableTemp
 //-----------------------------------------------------------------------------
 void DHWSOLARSYS::sw_TickStart()		// init for tick calcs
@@ -223,7 +228,7 @@ RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
 	RC rc = RCOK;
 	sw_tickVol += vol;
 	sw_tickVolT += vol * tInlet;
-	float qOut = vol * waterRhoCp * (sw_tankTOutlet - tInlet);
+	float qOut = vol * waterRhoCp * (sw_tickTankTOutlet - tInlet);
 	sw_totOut += qOut;	// hourly total
 	if (pWS)
 		pWS->ws_qSlr += qOut;
@@ -251,7 +256,7 @@ RC DHWSOLARSYS::sw_TickCalc()
 	float sumVol = 0.f;			// all-collector total fluid volume for tick, gal
 	float sumVolT = 0.f;		// all-collector SUM( vol * outletTemp), gal-F
 
-	if (sw_tankTHx >= sw_tankTHxLimit)	// if tank temp >= max allow temp
+	if (sw_tickTankTOutlet /*sw_tankTHx*/ >= sw_tankTHxLimit)	// if tank temp >= max allow temp
 										//   collector not run (details not modeled)
 		sw_overHeatTkCount++;
 	else
@@ -300,7 +305,11 @@ RC DHWSOLARSYS::sw_TickCalc()
 	rc |= sw_tank.hw_DoSubhrTick( sw_tickVol, sw_tankTInlet, &tOut);
 
 	if (tOut > 0.f)
-		sw_tankTOutlet = tOut;
+	{
+		sw_tickTankTOutlet = tOut;
+		sw_tankTOutlet += tOut * sw_tickVol;
+	}
+
 	// else leave outlet temp unchanged
 
 	return rc;

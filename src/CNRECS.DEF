@@ -3936,6 +3936,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e INT wh_balErrCount;			// annual count of energy balance errors
 									//   HPWH only?
 
+  *h *e FLOAT wh_tInlet				// hour avg inlet temp, F
+									//   reflects solar, DWHR, mixdown, ...
+  *h *e FLOAT wh_draw				// hour total draw seen by this DHWHEATER, gal
+									//   check figure
+
 
 *END	// DHWHEATER
 //=============================================================================
@@ -4331,11 +4336,12 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 
   *s *e FLOAT sw_tickVol;		// current tick draw to DHWSYSs, gal
   *s *e FLOAT sw_tickVolT;		// current tick (vol * inlet temp), gal-F
+  *s *e FLOAT sw_tickTankTOutlet	// current tick tank outlet temp
 
   *h *e FLOAT sw_drawVol;		// current hour total draw, gal
   *h *e FLOAT sw_tankQGain;		// current hour total gain from solar HX (all collectors), Btu
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
-  *h *e FLOAT sw_tankTOutlet	// tank outlet temperature, F
+  *h *e FLOAT sw_tankTOutlet	// current hour average tank outlet temperature, F
   *h *e FLOAT sw_tankTHx		// nominal tank heat exchange temp, F
 								//   = avg of bottom several tank node temps
 								//   used re heat exchange from collector loop
