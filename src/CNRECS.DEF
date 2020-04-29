@@ -4465,7 +4465,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *i FLOAT pv_tempCoeff		// temperature coefficient, 1/F
   *i FLOAT_GE1 pv_covRefrInd  // refraction index for coating applied to cover
   *i PVARRCH pv_arrayType	// type of array (Fixed, FixedRoof, 1Axis, Backtracked, 2Axis)
-  *i NOYESCH pv_anisoFix	// Yes: use corrected Perez model
   *h ANGLE pv_tilt			// Array tilt, radians (input as degrees)
   *h ANGLE pv_azm			// Array azimuth, radians (input as degrees)
   *h FRAC pv_grndRefl		// ground reflectance

@@ -283,17 +283,8 @@ RC PVARRAY::pv_CalcPOA()
 0	if (sunup != Wthr.d.wd_sunup || azm != Wthr.d.wd_slAzm)
 0		printf( "Solar ismatch");
 #endif
-	float DNI, DHI;
-	if (pv_anisoFix == C_NOYESCH_NO)
-	{
-		DNI = Top.radBeamHrAv;
-		DHI = Top.radDiffHrAv;
-	}
-	else
-	{
-		DNI = Wthr.d.wd_DNI;
-		DHI = Wthr.d.wd_DHI;
-	}
+	float DNI = Wthr.d.wd_DNI;	// use unmodified irradiance
+	float DHI = Wthr.d.wd_DHI;	//    (else potentially double aniso)
 
 	// Don't bother if sun down or no solar from weather;
 	if (!sunup || (DNI <= 0.f && DHI <= 0.f))
