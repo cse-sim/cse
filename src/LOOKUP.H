@@ -4,12 +4,23 @@
 
 // lookup.h -- declarations associated with table lookup functions in lookup.c
 
+/* ---------------------------- FUNCTIONS -------------------------------- */
+extern SI     FC lookw(SI, SI *);   								// word table searcher
+extern SI     FC lookww(SI, const struct WWTABLE *);   				// word-word table lookup
+extern const char* FC lookws(SI, const struct WSTABLE *);   		// word-string table lookup
+extern SI     FC lookswl(SI index, const struct SWLTAB* table);		// subscript-word-limits table lookup
+extern SI     FC looksw(const char *, const struct SWTABLE *);		// string-word table lookup
+
 /*-------------------------------- TYPES ----------------------------------*/
 
 // word key, word value table struct for lookww
 struct WWTABLE		// terminate w/ last array entry of 32767, default/not found indicator
 {
    SI key, value;
+   SI lookup( SI key) const
+   {
+	   return lookww(key, this);
+   }
 
 };
 
@@ -40,11 +51,5 @@ struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indic
 };
 
 
-/* ---------------------------- FUNCTIONS -------------------------------- */
-extern SI     FC lookw( SI, SI *);   			// word table searcher
-extern SI     FC lookww( SI, WWTABLE *);   		// word-word table lookup
-extern char * FC lookws( SI, WSTABLE *);   		// word-string table lookup
-extern SI     FC lookswl( SI index, SWLTAB* table);	// subscript-word-limits table lookup
-extern SI     FC looksw(char *, SWTABLE *);		// string-word table lookup
 
 // end of lookup.h
