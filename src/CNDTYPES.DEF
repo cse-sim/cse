@@ -387,7 +387,6 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			GE2014_80DR "GE2014_80DR"		// 2014 80 gal GE model run in the efficiency mode (demand reduction variant)
 			GE2014STDMODE "GE2014StdMode"	// 2014 50 gal GE run in standard mode
 			GE2014STDMODE_80 "GE2014StdMode80"	// 2014 80 gal GE run in standard mode
-
 			RHEEMHB50 "RheemHB50"			// newish Rheem (2014 model?)
 			RHEEMHBDR2250 "RheemHBDR2250"	// 50 gallon, 2250 W resistance Rheem HB Duct Ready
 			RHEEMHBDR4550 "RheemHBDR4550"	// 50 gallon, 4500 W resistance Rheem HB Duct Ready
@@ -405,7 +404,9 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHSHPT50 "AOSmithSHPT50"		// AOSmith add'l models (added 3-24-2017)
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
-			COLMACCXA20 "ColmacCxA20"			// Colmac CxA-20 modular HPWH
+			COLMACCXA20 "ColmacCxA20"		// Colmac CxA-20 modular HPWH
+			NYLEC185A "NyleC185A"			// Nyle C185A external
+			NYLEC250A "NyleC250A"			// Nyle C250A external
 		}
 
 *choicb DHWEUCH {			// hot end uses

@@ -12,6 +12,7 @@
 #include "ancrec.h" 	// record: base class for rccn.h classes
 #include "rccn.h"
 #include "irats.h"
+#include "lookup.h"
 #include "cuparse.h"
 #include "cueval.h"
 #include "cvpak.h"
@@ -478,15 +479,18 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 	if (IsSet( DHWSYS_CENTRALDHWSYSI))
 	{	// if served by central DHWSYS, msg disallowed inputs
 		// can't use ws_HasCentral(), ref may not be resolved yet
-		rc = disallowN( "when wsCentralDHWSYS is given",
+		rc |= disallowN( "when wsCentralDHWSYS is given",
 				DHWSYS_SSF, DHWSYS_CALCMODE, DHWSYS_TSETPOINT, DHWSYS_TSETPOINTLH,
 				DHWSYS_TUSE, DHWSYS_TINLET, DHWSYS_LOADSHAREDHWSYSI, 0);
 	}
 	else if (IsSet( DHWSYS_LOADSHAREDHWSYSI))
 	{	// if DHWSYS shares load, msg disallowed inputs
-		rc = disallowN( "when wsLoadShareDHWSYS is given",
+		rc |= disallowN( "when wsLoadShareDHWSYS is given",
 				DHWSYS_CENTRALDHWSYSI, DHWSYS_DAYUSENAME, DHWSYS_HWUSE, 0);
 	}
+
+	if (IsSet(DHWSYS_SWTI))
+		rc |= disallow( DHWSYS_SSF, "when wsDHWSOLARSYS is given");
 
 	// ws_tSetpoint defaults to tUse, handled during simulation
 	//  due to interaction with fixed setpoints in some HPWH models
@@ -503,6 +507,8 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 //-----------------------------------------------------------------------------
 RC DHWSYS::ws_CheckVals(		// check value ranges
 	int erOp)
+// used during input and at runtime (re expressions)
+// returns RCOK iff simulation should continue
 {
 	RC rc = RCOK;
 
@@ -1193,7 +1199,8 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 {
 	RC rc = RCOK;
 
-#define ALTDRAWCSV
+#undef ALTDRAWCSV		// define to enable alternative draw export format
+						//   (re PRERUN testing, not generally useful)
 
 #if !defined( ALTDRAWCSV)
 	// write ws_ticks draw info to CSV file
@@ -1221,6 +1228,8 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
 		float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
 #if defined( ALTDRAWCSV)
+		// alternative format draw export
+		//   supports testing of ws_drawMaxDur and ws_loadMaxDur
 		if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
 		{
 			if (ws_pFDrawCSV == NULL)
@@ -1570,8 +1579,8 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 		const DHWTICK& tk = ws_ticks[iTk];
 		// write to CSV w/o trailing 0s (many draws are 0, don't write 0.0000)
 		fprintf(ws_pFDrawCSV, "%s,%s,%s,%s\n",
-			WStrFmtFloatDTZ( tk.wtk_tInletX,2).c_str(),
 			WStrFmtFloatDTZ( ws_tInlet, 2).c_str(),
+			WStrFmtFloatDTZ( tk.wtk_tInletX,2).c_str(),
 			WStrFmtFloatDTZ( ws_tUse, 2).c_str(),
 			WStrFmtFloatDTZ( tk.wtk_whUse, 4).c_str());
 	}
@@ -2147,39 +2156,44 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 	}
 	else
 	{	// known heat pump type
-		preset =
-			  ashpTy == C_WHASHPTYCH_BASICINT ? HPWH::MODELS_basicIntegrated
-			: ashpTy == C_WHASHPTYCH_RESTANK ? HPWH::MODELS_restankRealistic
-			: ashpTy == C_WHASHPTYCH_RESTANKNOUA ? HPWH::MODELS_restankNoUA
-			: ashpTy == C_WHASHPTYCH_AOSMITHPHPT60 ? HPWH::MODELS_AOSmithPHPT60
-			: ashpTy == C_WHASHPTYCH_AOSMITHPHPT80 ? HPWH::MODELS_AOSmithPHPT80
-			: ashpTy == C_WHASHPTYCH_AOSMITHHPTU50 ? HPWH::MODELS_AOSmithHPTU50
-			: ashpTy == C_WHASHPTYCH_AOSMITHHPTU66 ? HPWH::MODELS_AOSmithHPTU66
-			: ashpTy == C_WHASHPTYCH_AOSMITHHPTU80 ? HPWH::MODELS_AOSmithHPTU80
-			: ashpTy == C_WHASHPTYCH_AOSMITHHPTU80DR ? HPWH::MODELS_AOSmithHPTU80_DR
-			: ashpTy == C_WHASHPTYCH_SANDEN40 ? HPWH::MODELS_Sanden40
-			: ashpTy == C_WHASHPTYCH_SANDEN80 ? HPWH::MODELS_Sanden80
-			: ashpTy == C_WHASHPTYCH_COLMACCXA20 ? HPWH::MODELS_CxA_20
-			: ashpTy == C_WHASHPTYCH_GE2012 ? HPWH::MODELS_GE2012
-			: ashpTy == C_WHASHPTYCH_GE2014 ? HPWH::MODELS_GE2014
-			: ashpTy == C_WHASHPTYCH_GE2014_80 ? HPWH::MODELS_GE2014_80
-			: ashpTy == C_WHASHPTYCH_GE2014_80DR ? HPWH::MODELS_GE2014_80DR
-			: ashpTy == C_WHASHPTYCH_GE2014STDMODE ? HPWH::MODELS_GE2014STDMode
-			: ashpTy == C_WHASHPTYCH_GE2014STDMODE_80 ? HPWH::MODELS_GE2014STDMode_80
-			: ashpTy == C_WHASHPTYCH_RHEEMHB50 ? HPWH::MODELS_RheemHB50
-			: ashpTy == C_WHASHPTYCH_RHEEMHBDR2250 ? HPWH::MODELS_RheemHBDR2250
-			: ashpTy == C_WHASHPTYCH_RHEEMHBDR4550 ? HPWH::MODELS_RheemHBDR4550
-			: ashpTy == C_WHASHPTYCH_RHEEMHBDR2265 ? HPWH::MODELS_RheemHBDR2265
-			: ashpTy == C_WHASHPTYCH_RHEEMHBDR4565 ? HPWH::MODELS_RheemHBDR4565
-			: ashpTy == C_WHASHPTYCH_RHEEMHBDR2280 ? HPWH::MODELS_RheemHBDR2280
-			: ashpTy == C_WHASHPTYCH_RHEEMHBDR4580 ? HPWH::MODELS_RheemHBDR4580
-			: ashpTy == C_WHASHPTYCH_STIEBEL220E ? HPWH::MODELS_Stiebel220E
-			: ashpTy == C_WHASHPTYCH_GENERIC1 ? HPWH::MODELS_Generic1
-			: ashpTy == C_WHASHPTYCH_GENERIC2 ? HPWH::MODELS_Generic2
-			: ashpTy == C_WHASHPTYCH_GENERIC3 ? HPWH::MODELS_Generic3
-			: ashpTy == C_WHASHPTYCH_UEF2GENERIC ? HPWH::MODELS_UEF2generic
-			: ashpTy == C_WHASHPTYCH_WORSTCASEMEDIUM ? HPWH::MODELS_UEF2generic	// alias (testing aid)
-			: HPWH::MODELS(-1);	// HPWHInit_presets will reject
+			static const WWTABLE /* { SI key, value; } */ presetTbl[] = {
+				{ C_WHASHPTYCH_BASICINT,         HPWH::MODELS_basicIntegrated },
+				{ C_WHASHPTYCH_RESTANK,          HPWH::MODELS_restankRealistic },
+				{ C_WHASHPTYCH_RESTANKNOUA,      HPWH::MODELS_restankNoUA },
+				{ C_WHASHPTYCH_AOSMITHPHPT60,	 HPWH::MODELS_AOSmithPHPT60 },
+				{ C_WHASHPTYCH_AOSMITHPHPT80,	 HPWH::MODELS_AOSmithPHPT80 },
+				{ C_WHASHPTYCH_AOSMITHHPTU50,	 HPWH::MODELS_AOSmithHPTU50 },
+				{ C_WHASHPTYCH_AOSMITHHPTU66,	 HPWH::MODELS_AOSmithHPTU66 },
+				{ C_WHASHPTYCH_AOSMITHHPTU80,	 HPWH::MODELS_AOSmithHPTU80 },
+				{ C_WHASHPTYCH_AOSMITHHPTU80DR,  HPWH::MODELS_AOSmithHPTU80_DR },
+				{ C_WHASHPTYCH_SANDEN40,         HPWH::MODELS_Sanden40 },
+				{ C_WHASHPTYCH_SANDEN80,         HPWH::MODELS_Sanden80 },
+				{ C_WHASHPTYCH_COLMACCXA20,      HPWH::MODELS_CxA_20 },
+				{ C_WHASHPTYCH_NYLEC185A,        HPWH::MODELS_NG1 },
+				{ C_WHASHPTYCH_NYLEC250A,        HPWH::MODELS_NG2 },
+				{ C_WHASHPTYCH_GE2012,           HPWH::MODELS_GE2012 },
+				{ C_WHASHPTYCH_GE2014,           HPWH::MODELS_GE2014 },
+				{ C_WHASHPTYCH_GE2014_80,        HPWH::MODELS_GE2014_80 },
+				{ C_WHASHPTYCH_GE2014_80DR,      HPWH::MODELS_GE2014_80DR },
+				{ C_WHASHPTYCH_GE2014STDMODE,    HPWH::MODELS_GE2014STDMode },
+				{ C_WHASHPTYCH_GE2014STDMODE_80, HPWH::MODELS_GE2014STDMode_80 },
+				{ C_WHASHPTYCH_RHEEMHB50,        HPWH::MODELS_RheemHB50 },
+				{ C_WHASHPTYCH_RHEEMHBDR2250,    HPWH::MODELS_RheemHBDR2250 },
+				{ C_WHASHPTYCH_RHEEMHBDR4550,    HPWH::MODELS_RheemHBDR4550 },
+				{ C_WHASHPTYCH_RHEEMHBDR2265,    HPWH::MODELS_RheemHBDR2265 },
+				{ C_WHASHPTYCH_RHEEMHBDR4565,    HPWH::MODELS_RheemHBDR4565 },
+				{ C_WHASHPTYCH_RHEEMHBDR2280,    HPWH::MODELS_RheemHBDR2280 },
+				{ C_WHASHPTYCH_RHEEMHBDR4580,    HPWH::MODELS_RheemHBDR4580 },
+				{ C_WHASHPTYCH_STIEBEL220E,      HPWH::MODELS_Stiebel220E },
+				{ C_WHASHPTYCH_GENERIC1,         HPWH::MODELS_Generic1 },
+				{ C_WHASHPTYCH_GENERIC2,         HPWH::MODELS_Generic2 },
+				{ C_WHASHPTYCH_GENERIC3,         HPWH::MODELS_Generic3 },
+				{ C_WHASHPTYCH_UEF2GENERIC,      HPWH::MODELS_UEF2generic },
+				{ C_WHASHPTYCH_WORSTCASEMEDIUM,  HPWH::MODELS_UEF2generic },	// alias (testing aid)
+				{ 32767,                         HPWH::MODELS(-1) }				// HPWHInit_presets will reject
+			};	
+
+		preset = HPWH::MODELS(presetTbl->lookup(ashpTy));
 	}
 	if (hw_pHPWH->HPWHinit_presets(preset) != 0)
 		rc |= RCBAD;
@@ -2620,7 +2634,8 @@ RC HPWHLINK::hw_DoSubhrTick(
 		  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
 											UNTEMP,  5,
 		  "XBU",       HPWHxBU,				UNENERGY3,	5,
-		  "tUse",      tMix,				UNTEMP,  5,
+		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
+											UNTEMP,  5,
 		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
 											UNENERGY3, 5,
 		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
@@ -3021,6 +3036,13 @@ void DHWHEATER::wh_InitRunTotals()
 DHWSYS* DHWHEATER::wh_GetDHWSYS() const
 {
 	DHWSYS* pWS = (b == &WhR || b == &WlhR ? WsR : WSiB).GetAtSafe(ownTi);
+#if 0
+	// ToDo: OwnB not set for loopheater?
+	record* pWSX = b->ownB->GetAtSafe(ownTi);
+	if (pWS != pWSX)
+		printf("\nMismatch");
+#endif
+
 	return pWS;
 }		// DHWHEATER::wh_GetDHWSYS
 //----------------------------------------------------------------------------
@@ -3428,8 +3450,10 @@ RC DHWHEATER::wh_DoSubhrEnd()		// end-of-subhour
 		double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks - wh_nzDrawCount) * Top.tp_tickDurHr;
 
 		// output accounting = heat delivered to water
+#if 0
 		double qHW = wh_nTickFullLoad * wh_maxFlowX / 67.;
-		wh_totOut += qHW + wh_HPWHxBU;
+#endif
+		wh_totOut += wh_qHW + wh_HPWHxBU;
 
 		// energy use accounting, Btu
 		wh_inElecSh += rcovElec /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
@@ -3514,7 +3538,7 @@ static const UEFPARAMS UEFParams[] = {
 		       * Top.tp_tickDurMin;		// scale to actual tick duration
 
 	// no electricity use pending model development
-	wh_operElec = Pe * BtuperWh;	// electrical power during opration, Btuh
+	wh_operElec = Pe * BtuperWh;	// electrical power during operation, Btuh
 	// wh_cycLossElec = 0.f;		// electricity use per start, Btu
 									//    unused in revised model 5-24-2017
 
