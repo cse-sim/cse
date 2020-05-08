@@ -210,14 +210,16 @@ RC DHWEndIvl(			// end-of-hour
 // called at end of each hour
 {
 	RC rc = RCOK;
-	DHWSYS* pWS;
-	RLUP(WsR, pWS)
-		rc |= pWS->ws_EndIvl(ivl);
 
 	// solar water heating systems
 	DHWSOLARSYS* pSW;
 	RLUP(SwhR, pSW)
-		rc |= pSW->sw_EndIvl( ivl);
+		rc |= pSW->sw_EndIvl(ivl);
+
+	DHWSYS* pWS;
+	RLUP(WsR, pWS)
+		rc |= pWS->ws_EndIvl(ivl);
+
 
 	return rc;
 
@@ -298,7 +300,7 @@ void DHWMTR::wmt_Accum(
 	int firstflg)	// iff TRUE, destination will be initialized before values are accumulated into it
 {
 	DHWMTR_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
-												// ASSUMES MTR interval members ordered like DTIVLCH choices
+												// ASSUMES interval members ordered like DTIVLCH choices
 	DHWMTR_IVL* sIvl = dIvl + 1;				// source: next shorter interval
 
 	// accumulate: copy on first call (in lieu of 0'ing dIvl).
@@ -319,6 +321,60 @@ void DHWMTR_IVL::wmt_Accum(			// accumulate
 	else
 		VAccum( &total, NDHWENDUSES+1, &sIvl->total, mult);
 }		// DHWMTR_IVL
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// DHWSYSRES_IVL / DHWSYSRES: accumulates various DHWSYS results by interval
+///////////////////////////////////////////////////////////////////////////////
+RC DHWSYSRES::wsu_Init(IVLCH ivl)
+// not called for C_IVLCH_SUBHOUR
+{
+	(&Y + (ivl - C_IVLCH_Y))->wsui_Clear();
+
+	return RCOK;
+
+}		// DHWSYSRES::wmt_Init
+//-----------------------------------------------------------------------------
+void DHWSYSRES::wsu_Accum(
+	IVLCH ivl,		// destination interval: hour/day/month/year.
+					//   Accumulates from subhour/hour/day/month.  Not Top.ivl!
+	int firstflg)	// iff TRUE, source copied to destination
+{
+	DHWSYSRES_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
+												// ASSUMES interval members ordered like DTIVLCH choices
+	DHWSYSRES_IVL* sIvl = dIvl + 1;				// source: next shorter interval
+
+	// accumulate: copy on first call (in lieu of 0'ing dIvl).
+	//   Note: wmt_Init() call in doBegIvl 0s H values
+	dIvl->wsui_Accum(sIvl, firstflg != 0);
+}		// DHWSYSRES::wmt_Accum
+//-----------------------------------------------------------------------------
+/*static*/ const size_t DHWSYSRES_IVL::wusi_NFLOAT
+	= 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, total)) / sizeof(float);
+//-----------------------------------------------------------------------------
+void DHWSYSRES_IVL::wsui_Copy(
+	const DHWSYSRES_IVL* s,
+	float mult/*=1.f*/)
+{
+	if (mult == 1.f)
+		memcpy(this, s, sizeof(DHWSYSRES_IVL));
+	else
+		VCopy(&total, wusi_NFLOAT, &s->total, mult);
+}	// DHWMTR_IVL::wsui_Copy
+//-----------------------------------------------------------------------------
+void DHWSYSRES_IVL::wsui_Accum(			// accumulate
+	const DHWSYSRES_IVL* sIvl,		// source
+	int options/*=0*/,				// options
+									//   1: copy rather than add (re first call)
+	float mult/*=1.f*/)				// multiplier
+{
+	if (options & 1)
+		wsui_Copy(sIvl, mult);
+	else if (mult == 1.f)
+		VAccum(&total, wusi_NFLOAT, &sIvl->total);
+	else
+		VAccum(&total, wusi_NFLOAT, &sIvl->total, mult);
+}		// DHWSYSRES_IVL::wsui_Accum
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1541,7 +1597,10 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	int iTk0)		// initial tick idx for subhr
 {
 	RC rc = RCOK;
-	DHWHEATER* pWH;
+
+	ws_res.S.wsui_Clear();	// subhour results
+							//   tick calcs accum here
+							//   accum'd to hour in ws_DoSubhrEnd
 
 	ws_HJLsh = 0.f;		// subhr jacket losses
 	DHWTANK* pWT;
@@ -1553,6 +1612,7 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 
 	ws_AddLossesToDraws(ws_ticks + iTk0);
 
+	DHWHEATER* pWH;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrStart();
 
@@ -1586,20 +1646,6 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 
 }		// DHWSYS::ws_DoSubhrTick
 //-----------------------------------------------------------------------------
-RC DHWSYS::ws_DoSubhrEnd()
-{
-	RC rc = RCOK;
-	DHWHEATER* pWH;
-	RLUPC(WhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrEnd();
-
-	RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrEnd();
-
-	return rc;
-
-}		// DHWSYS::ws_DoSubhrEnd
-//----------------------------------------------------------------------------
 RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 {
 	if (!ws_pFDrawCSV)
@@ -1646,59 +1692,79 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 	return RCOK;
 }		// DHWSYS::ws_WriteDrawCSV
 //----------------------------------------------------------------------------
+RC DHWSYS::ws_DoSubhrEnd()
+{
+	RC rc = RCOK;
+	DHWHEATER* pWH;
+	RLUPC(WhR, pWH, pWH->ownTi == ss)
+		rc |= pWH->wh_DoSubhrEnd();
+
+	RLUPC(WlhR, pWH, pWH->ownTi == ss)
+		rc |= pWH->wh_DoSubhrEnd();
+
+	// accum DHWSYS results: subhour -> hour
+	ws_res.wsu_Accum( C_IVLCH_S, Top.isBegHour);
+
+	return rc;
+
+}		// DHWSYS::ws_DoSubhrEnd
+//----------------------------------------------------------------------------
 RC DHWSYS::ws_EndIvl(		// end-of-hour
 	int ivl)		// C_IVLCH_Y, _M, _D, _H: what interval is next
 // called at end of hour
 {
 	RC rc = RCOK;
-	if (ivl <= C_IVLCH_H)		// insurance: should not be called subhourly
+	if (ivl > C_IVLCH_H)		// insurance: should not be called subhourly
+		return rc;
+
+	ws_fxUseMixLH.wmt_Copy(&ws_fxUseMix);
+
+	ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;		// total recovery load
+
+	ws_SSFAnnualSolar += ws_qSlr;				// annual total solar contribution
+
+#if 0
+	if (frDiff(ws_HARL, ws_HARLtk) > .001f)
+		printf("\nMismatch!");
+#endif
+
+	DHWHEATER* pWH;
+	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
 	{
-		ws_fxUseMixLH.wmt_Copy(&ws_fxUseMix);
-
-		ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;		// total recovery load
-
-		ws_SSFAnnualSolar += ws_qSlr;				// annual total solar contribution
-
+		rc |= pWH->wh_EndIvl(ivl, ws_HARL / ws_whCount, ws_mult);
 #if 0
-		if (frDiff(ws_HARL, ws_HARLtk) > .001f)
-			printf("\nMismatch!");
+		double diff = pWH->wh_totHARL - ws_SSFAnnualReq / ws_whCount;
+		if (fabs( diff) > 1.)
+			printf("\nTot mismatch");
 #endif
-
-		DHWHEATER* pWH;
-		if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
-		{
-			rc |= pWH->wh_EndIvl(ivl, ws_HARL / ws_whCount, ws_mult);
-#if 0
-			double diff = pWH->wh_totHARL - ws_SSFAnnualReq / ws_whCount;
-			if (fabs( diff) > 1.)
-				printf("\nTot mismatch");
-#endif
-		}
-		if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-			rc |= pWH->wh_EndIvl(ivl, 0.f, ws_mult);
-
-		// note: DHWSYS energy/water meter accum is in ws_DoHour
-		//       values do not vary subhrly
-
-		if (ivl == C_IVLCH_Y)
-		{
-			if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-				rc |= ws_DoEndPreRun();
-
-			double totHARLCk = 0.;
-			if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
-				totHARLCk = pWH->wh_totHARL;
-
-			float fTotHARLCk = float(totHARLCk);
-
-			// solar savings fraction
-			if (ws_pDHWSOLARSYS)
-				ws_SSFAnnual = ws_SSFAnnualReq > 0.
-						? min( 1.f, float( ws_SSFAnnualSolar / ws_SSFAnnualReq))
-						: 0.f;
-			
-		}
 	}
+	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
+		rc |= pWH->wh_EndIvl(ivl, 0.f, ws_mult);
+
+	// note: DHWSYS energy/water meter accum is in ws_DoHour
+	//       values do not vary subhrly
+
+	if (ivl == C_IVLCH_Y)
+	{
+		if (ws_calcMode == C_WSCALCMODECH_PRERUN)
+			rc |= ws_DoEndPreRun();
+
+		double totHARLCk = 0.;
+		if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
+			totHARLCk = pWH->wh_totHARL;
+
+		float fTotHARLCk = float(totHARLCk);
+
+		// solar savings fraction
+		if (ws_pDHWSOLARSYS)
+			ws_SSFAnnual = ws_SSFAnnualReq > 0.
+					? min( 1.f, float( ws_SSFAnnualSolar / ws_SSFAnnualReq))
+					: 0.f;	
+	}
+
+	// firstflag?
+	ws_res.wsu_Accum(ivl, 0);
+
 	return rc;
 
 }		// DHWSYS::ws_EndIvl
@@ -2420,14 +2486,19 @@ void HPWHLINK::hw_SetNQTXNodes(int nQTXNodes)
 
 }		// HPWHLINK::hw_SetNQTXNodes
 //-----------------------------------------------------------------------------
-float HPWHLINK::hw_GetTankQTXTemp() const
+double HPWHLINK::hw_GetTankAvgTemp(		// tank temp
+	int iNode0 /*=0*/,			// lowest node
+	int iNodeN /*=-1*/) const	// last+1 node
+// returns average tank temp, F for node range
 {
-	float tQTX = 0.f;
-	for (int iQTX = 0; iQTX < hw_nQTXNodes; iQTX++)
-		tQTX += hw_pHPWH->getTankNodeTemp(iQTX, HPWH::UNITS_F);
-	tQTX /= hw_nQTXNodes;
-	return tQTX;
-}		// HPWHLINK::hw_GetTankQTXTemp
+	if (iNodeN < 0)
+		iNodeN = hw_pHPWH->getNumNodes();
+	double T = 0.;
+	for (int iN = iNode0; iN < iNodeN; iN++)
+		T += hw_pHPWH->getTankNodeTemp( iN, HPWH::UNITS_C);
+	T /= max(1, iNodeN - iNode0);
+	return DegCtoF(T);
+}		// HPWHLINK::hw_GetTankAvgTemp
 //-----------------------------------------------------------------------------
 void HPWHLINK::hw_SetQTX(
 	float qTX)		// additional heat to be added for current tick

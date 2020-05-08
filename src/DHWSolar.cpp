@@ -461,6 +461,21 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 	double fluidSpHt = SHIPtoSI(pSW->sw_scFluidSpHt);		// specific heat, J/kg-K
 	double fluidDens = DIPtoSI(pSW->sw_scFluidDens);		// density, kg/m3
 
+	// incident angle multiplier (IAM)
+	// sc_Kta60 <= 0 says no IAM
+	if (sc_Kta60 > 0.f)
+		// check sc_Kta value here rather than rc_CkF() re possible expressions
+		rc |= limitCheckFix(DHWSOLARCOLLECTOR_KTA60, 0.2, 1.);
+	sc_b0 = sc_Deriveb0(sc_Kta60, 60.f);
+
+	// constant Kta values for diffuse
+	//   per Duffie/Beckman section 5.4
+	float tiltD = DEG(sc_tilt);
+	float incA_diffuse_sky = RAD(59.7f - 0.1388f*tiltD + 0.001497*tiltD*tiltD);
+	sc_Kta_diffuse_sky = sc_Kta( incA_diffuse_sky);
+	float incA_diffuse_ground = RAD(90.f - 0.5788*tiltD + 0.002693f*tiltD*tiltD);
+	sc_Kta_diffuse_ground = sc_Kta(incA_diffuse_ground);
+
 	sc_collector = new SolarFlatPlateCollector(
 		AIPtoSI(sc_areaTot),
 		sc_tilt,
@@ -473,7 +488,35 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 	sc_tickOp = FALSE;
 
 	return rc;
-}
+}	// DHWSOLARCOLLECTOR::sc_Init
+//--------------------------------------------------------------------------------------
+/*static*/ float DHWSOLARCOLLECTOR::sc_Deriveb0(
+	float KtaX,		// Kta for given incidence angle
+					//   0 < KtaX < 1
+	float incA)		// incidence angle, degs
+					//   0 <= incA < 90
+// return b0 = incidence angle modifier coefficient
+//   Kta( ang) = 1 - b0( 1/cos( ang) - 1)
+{
+
+	float b0 = 0.f;		// no modifier
+	if (KtaX > 0.f && KtaX < 1.f)
+	{	float cosIncA = cos(RAD(incA));
+		if (cosIncA > 0.f)
+			b0 = (1.f - KtaX) / (1.f / cosIncA - 1.f);
+	}
+	return b0;
+
+}	// DHWSOLARCOLLECTOR::sc_Deriveb0
+//--------------------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_Kta(
+	float incA) const	// incident angle, rad
+{
+	float Kta = incA > 0.f
+		? 1.f - sc_b0 * (1.f / cos(incA) - 1.f)
+		: 1.f;
+	return Kta;
+}	// DHWSOLARCOLLECTOR::sc_Kta
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoHour()
 {
@@ -482,26 +525,26 @@ RC DHWSOLARCOLLECTOR::sc_DoHour()
 	sc_Qfluid = sc_eff = 0.0;
 
 	// plane incidence: use hourly values
-	double plane_incidence;
-	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
-
-	sc_poaOld = static_cast<FLOAT>(plane_incidence);
-
-	RC rcx = slPerezSkyModel2(sc_tilt, sc_azm, Top.iHrST,
-#if 1
-	   Wthr.d.wd_DNI, Wthr.d.wd_DHI,
-#else
-	   Top.radBeamHrAv, Top.radDiffHrAv,
+#if 0	// 5-1-2020
+x aniso fix / return separate diffuse, beam, ground
+x	double plane_incidence;
+x	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
+x
+x	sc_poaOld = static_cast<FLOAT>(plane_incidence);
 #endif
+
+	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST,
+	   Wthr.d.wd_DNI, Wthr.d.wd_DHI,
 	   Top.grndRefl,
 	   sc_incA, sc_beam, sc_diffuse_sky, sc_diffuse_ground);
 
-	sc_poa = sc_beam + sc_diffuse_sky + sc_diffuse_ground;
+	if (sc_b0 > 0.f)
+	{	sc_beam *= sc_Kta(sc_incA);
+		sc_diffuse_sky *= sc_Kta_diffuse_sky;
+		sc_diffuse_ground *= sc_Kta_diffuse_ground;
+	}
 
-#if 0
-	if (frDiff(sc_poa, plane_incidence2) > .001f)
-		printf("\nPOA diff");
-#endif
+	sc_poa = sc_beam + sc_diffuse_sky + sc_diffuse_ground;
 
 	sc_Qpoa = sc_poa * sc_areaTot;  // Btu/h-ft2 * ft2 = Btu
 

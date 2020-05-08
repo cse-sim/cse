@@ -903,8 +903,9 @@ bool slASHRAETauModelInv( // ASHRAE tau model inverse
 	tauD = float(tauDd);
 	return bRet;
 } // slASHRAETauModelInv
-
 //--------------------------------------------------------------------------
+#if 0
+// revised interface below
 RC slPerezSkyModel(
 	double tilt, 
 	double azimuth, 
@@ -1006,8 +1007,9 @@ RC slPerezSkyModel(
 
 	return rc;
 }		// slPerezSkyModel
+#endif
 //-----------------------------------------------------------------------------
-RC slPerezSkyModel2(			// Perez transposition model (alt interface)
+RC slPerezSkyModel(			// Perez transposition model (alt interface)
 	float tilt,				// surface tilt, radians (0=horiz, pi/2=vert)
 	float azimuth,			// surface azm, radians, (0=N, pi/2=E, pi=S)
 	int iHrST,				// hour of day
@@ -1058,11 +1060,6 @@ RC slPerezSkyModel2(			// Perez transposition model (alt interface)
 		plane_beam = direct_normal_beam * cosi;
 		angle_of_incidence = acos(cosi);
 	}
-	else
-	{
-		// No change from default values if sun is up but not incident
-	}
-
 
 	// Modified Perez sky model
 	float zRad = acos(cosz);

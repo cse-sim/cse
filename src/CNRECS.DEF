@@ -3381,7 +3381,7 @@ RECORD DHWMTR "DHWmeter" *RAT 	// DHWMTR: hot water consumption
 	*declare "RC wmt_Init( IVLCH ivl);"
 	*declare "void wmt_Accum( IVLCH ivl, int firstflg);"
 
- //results: accumulated useage and cost for this meter (record subscript),
+ // results: accumulated water use for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
  //CAUTION: ordered for subscripting by IVLCH-1.
     *y *e *nest DHWMTR_IVL Y   	// run (aka year or annual)
@@ -3389,6 +3389,40 @@ RECORD DHWMTR "DHWmeter" *RAT 	// DHWMTR: hot water consumption
     *d *e *nest DHWMTR_IVL D   	// day's use
     *h *e *nest DHWMTR_IVL H   	// hour's use
 *END		// DHWMTR
+//=============================================================================
+RECORD DHWSYSRES_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
+ // use results
+
+	*declare "void wsui_Clear() { memset( this, 0, sizeof( DHWSYSRES_IVL));}"
+	*declare "void wsui_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
+	*declare "void wsui_Accum( const DHWSYSRES_IVL* sIvl, int options=0, float mult=1.f);"
+	*declare "static const size_t wusi_NFLOAT;"
+
+	// water heating energy (not fuel)
+    *e FLOAT total		// 
+	*e FLOAT qDWHR		// drain water heat recovery
+    *e FLOAT qSolar	// DHWSOLARSYS
+    *e FLOAT qWaterHeater		// DHWHEATER
+    *e FLOAT qLoopHeater		
+    *e FLOAT qXBU	
+
+*END		// DHWMTR_IVL
+//=============================================================================
+RECORD DHWSYSRES "DHWSYSRES" *SUBSTRUCT 	// DHWSYSRES: interval results for DHWSYS
+
+	*declare "RC wsu_Init( IVLCH ivl);"
+	*declare "void wsu_Accum( IVLCH ivl, int firstflg);"
+
+ // results: accumulated values for parent DHWSYS
+ //     for each interval (member here)
+ // CAUTION: ordered for subscripting by IVLCH-1.
+    *y *e *nest DHWSYSRES_IVL Y   	// run (aka year or annual)
+    *m *e *nest DHWSYSRES_IVL M   	// month's use
+    *d *e *nest DHWSYSRES_IVL D   	// day's use
+    *h *e *nest DHWSYSRES_IVL H   	// hour's use
+    *s *e *nest DHWSYSRES_IVL S   	// subhour's use
+
+*END		// DHWSYSRES
 //=============================================================================
 RECORD SEGTOTS "segment totals" *SUBSTRUCT  // aggregated segment info substruct 
 // retains / accumulates PIPESEG info
@@ -3644,6 +3678,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_HARLtk;	// hour total adjusted recovery load, Btu
 							//    check figure derived from ticks
 
+  *s *e *nest DHWSYSRES ws_res		// results
+
 *END		// DHWSYS
 
 //=============================================================================
@@ -3668,7 +3704,8 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
 *declare "void hw_SetNQTXNodes( int nQTXNodes);"
-*declare "float hw_GetTankQTXTemp() const;"
+*declare "float hw_GetTankQTXTemp() const { return float( hw_GetTankAvgTemp( 0, hw_nQTXNodes)); }"
+*declare "double hw_GetTankAvgTemp( int iNode0=0, int iNodeN=-1) const;"
 *declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
@@ -3857,16 +3894,16 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   unset (= 0) for full tick models (HPWH and INSTUEF)
 
 
-  *r FLOAT wh_operElec;		// electrical power during operation at rating conditions, Btuh
-							//   never input, derived for INSTUEF
-  *r FLOAT_GEZ wh_stbyElec;	// electrical power during standby, W
-							//   default=4, used for INSTUEF
+  *r FLOAT wh_operElec;			// electrical power during operation at rating conditions, Btuh
+								//   never input, derived for INSTUEF
+  *r FLOAT_GEZ wh_stbyElec;		// electrical power during standby, W
+								//   default=4, used for INSTUEF
 
-  *i FLOAT_GZ wh_resHtPwr;	// upper element resistance heating power, W
-							//   used for some models only
-							//   default = 4500
-  *i FLOAT_GZ wh_resHtPwr2;	// lower element resistance heating power, W
-							//   default = wh_resPwr
+  *i FLOAT_GZ wh_resHtPwr;		// upper element resistance heating power, W
+								//   used for some models only
+								//   default = 4500
+  *i FLOAT_GZ wh_resHtPwr2;		// lower element resistance heating power, W
+								//   default = wh_resPwr
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
@@ -4325,6 +4362,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 								//    when sw_tankTEx set
 								//    - sw_tankZnTi ignored
 								//    - heat loss discarded
+  *h *e FLOAT sw_tankTAvg;		// hour average tank temp, F (check figure)
   *h *e FLOAT sw_tankQLoss;		// current hour's total tank loss, Btu
 								//   for 1 tank (sw_mult)
   *h FRAC sw_tankHXEff;			// tank heat exchanger effectiveness
@@ -4370,6 +4408,8 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *exdes // *declare "~DHWSOLARCOLLECTOR""
   *declare "RC sc_CkF();"
   *declare "RC sc_Init();"
+  *declare "static float sc_Deriveb0( float ktaX, float incA);"
+  *declare "float sc_Kta( float incA) const;"
   *declare "RC sc_DoHour();"
   *declare "RC sc_DoHourEnd();"
   *declare "RC sc_DoSubhrTick();"
@@ -4385,22 +4425,28 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 
   // Collector
   *i FLOAT_GZ sc_area		// SRCC collector area, ft2
+  *i ANGLE sc_tilt			// Array tilt, radians (input as degrees)
+  *i ANGLE sc_azm			// Array azimuth, radians (input as degrees)
   *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
   *i FLOAT sc_FRUL			// SRCC slope
   *i FLOAT_GZ sc_FRTA		// SRCC intercept
-
-  *i ANGLE sc_tilt			// Array tilt, radians (input as degrees)
-  *i ANGLE sc_azm			// Array azimuth, radians (input as degrees)
+  *i FLOAT sc_Kta60			// incidence angle modifier at 60 deg
+							//   default 0.85
+							//   <= 0: IAM not applied
+  *r FLOAT sc_b0			// incidence angle modifier coefficient
+							//   (derived from sc_Kta60)
+  *r FLOAT sc_Kta_diffuse_sky	// Kta for diffuse radiation from sky
+  *r FLOAT sc_Kta_diffuse_ground // Kta for diffuse radiation from ground
 
   // Calculated values
   *h *e FLOAT sc_incA		// beam angle of incidence, radians (PI/2 if no beam)
 
 								// plane of array irradiance, Btu/ft2
+								// (adjusted by IAM if active)
   *h *e FLOAT sc_beam			//   beam
   *h *e FLOAT sc_diffuse_sky	//   diffuse from sky
   *h *e FLOAT sc_diffuse_ground	//   diffuse from ground
   *h *e FLOAT sc_poa			//   total
-  *h *e FLOAT sc_poaOld			//   pre aniso fix POA
   *h *e FLOAT sc_Qpoa			// plane of array incident heat, Btu
   *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
   *h *e FLOAT sc_Qfluid			// heat added to the fluid, Btu
