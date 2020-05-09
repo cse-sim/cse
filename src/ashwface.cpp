@@ -691,9 +691,10 @@ RC FENAW::fa_EndSubhr(			// ASHWAT end-of-subhour (accounting etc)
 
 	// glazed area
 	double Ag = fActive * fa_pXS->xs_AreaGlazed();
-	double cond = Ag * (  fa_awO.aw_cc*(sbcO.sb_txe - sbcI.sb_txa)
-		                + fa_awO.aw_cr*(sbcO.sb_txe - sbcI.sb_txr));
-	z.zn_qCondQS += cond;		// glazing conduction
+	sbcO.sb_qSrf =  fa_awO.aw_cc*(sbcO.sb_txe - sbcI.sb_txa)
+		                + fa_awO.aw_cr*(sbcO.sb_txe - sbcI.sb_txr);
+	sbcI.sb_qSrf = -sbcO.sb_qSrf;
+	z.zn_qCondQS += Ag * sbcO.sb_qSrf;		// glazing conduction
 
 #if defined( ASHWAT_STATS)
 	if (!Top.isWarmup)
