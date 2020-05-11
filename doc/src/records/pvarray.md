@@ -102,6 +102,16 @@ The tilt of the photovoltaic array from horizontal.  Values outside the range 0 
                             else 0
   ------------------------------------------------------------------
 
+The following figures illustrate the use of both pvTilt and pvAzm for various configurations:
+
+![Fixed, south facing, tilted at 40^o^](media/pv_fixed.png)
+
+![One-axis tracker, south facing, tilted at 20^o^](media/pv_tilted_tracker_south.png)
+
+![One-axis tracker, horizontal aligned North/South (more common)](media/pv_horiz_tracker_east.png)
+
+![One-axis tracker, horizontal aligned East/West (less common)](media/pv_horiz_tracker_south.png)
+
 **pvAzm=*float***
 
 Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
