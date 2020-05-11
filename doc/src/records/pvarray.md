@@ -108,9 +108,9 @@ The following figures illustrate the use of both pvTilt and pvAzm for various co
 
 ![One-axis tracker, south facing, tilted at 20^o^](media/pv_tilted_tracker_south.png)
 
-![One-axis tracker, horizontal aligned North/South (more common)](media/pv_horiz_tracker_east.png)
+![One-axis tracker, horizontal aligned North/South (more common)](media/pv_horiz_tracker_south.png)
 
-![One-axis tracker, horizontal aligned East/West (less common)](media/pv_horiz_tracker_south.png)
+![One-axis tracker, horizontal aligned East/West (less common)](media/pv_horiz_tracker_east.png)
 
 **pvAzm=*float***
 
