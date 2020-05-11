@@ -133,7 +133,7 @@ RC DHWSOLARSYS::sw_DoHour()
 }	// DHWSOLARSYS::sw_DoHour
 //-----------------------------------------------------------------------------
 RC DHWSOLARSYS::sw_DoSubhrStart(
-	int iTk0)
+	int iTk0)		// subhr starting tick within hr (0 .. Top.tp_nHrTicks()-1)
 {
 	RC rc = RCOK;
 
@@ -245,16 +245,17 @@ double DHWSOLARSYS::sw_MassFlowSI(		// derive mass flow rate for collector calcs
 	return mDot;
 }		// DHWSOLARSYS::sw_MassFlowSI
 //------------------------------------------------------------------------------
-RC DHWSOLARSYS::sw_TickCalc()
+RC DHWSOLARSYS::sw_TickCalc(
+	int iTk)		// tick within hour, 0 - Top.tp_nHrTicks()-1
 {
 	RC rc = RCOK;
-
-	// tank heat exchange temp
-	sw_tankTHx = sw_tank.hw_GetTankQTXTemp();
 
 	float scQGain = 0.f;		// collector heat to be added to tank, Btu
 	float sumVol = 0.f;			// all-collector total fluid volume for tick, gal
 	float sumVolT = 0.f;		// all-collector SUM( vol * outletTemp), gal-F
+
+	// tank heat exchange temp
+	sw_tankTHx = sw_tank.hw_GetTankQTXTemp();
 
 	if (sw_tickTankTOutlet /*sw_tankTHx*/ >= sw_tankTHxLimit)	// if tank temp >= max allow temp
 										//   collector not run (details not modeled)
@@ -302,15 +303,17 @@ RC DHWSOLARSYS::sw_TickCalc()
 	}
 	
 	float tOut;
-	rc |= sw_tank.hw_DoSubhrTick( sw_tickVol, sw_tankTInlet, &tOut);
+	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, sw_tankTInlet, &tOut);
 
 	if (tOut > 0.f)
-	{
-		sw_tickTankTOutlet = tOut;
+	{	sw_tickTankTOutlet = tOut;
 		sw_tankTOutlet += tOut * sw_tickVol;
+		if (tOut > sw_tankTHxLimit && scQGain == 0.f)
+			printf("\nhot");
 	}
-
-	// else leave outlet temp unchanged
+	else
+		// estimate possible outlet temp = top node temp
+		sw_tickTankTOutlet = sw_tank.hw_GetEstimatedTOut();
 
 	return rc;
 }		// DHWSOLARSYS::sw_TickCalc
@@ -379,9 +382,10 @@ SolarFlatPlateCollector::SolarFlatPlateCollector()
 {
 }
 //-----------------------------------------------------------------------------
-SolarFlatPlateCollector::SolarFlatPlateCollector(double gross_area,
-	double tilt,
-	double azimuth,
+SolarFlatPlateCollector::SolarFlatPlateCollector(
+	double gross_area,		// total panel area, m2
+	double tilt,			// tilt from horiz, 0=facing up, 90=vert
+	double azimuth,			// 
 	double FR_tau_alpha,
 	double FR_UL,
 	double specific_heat,
@@ -450,7 +454,7 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 
 	sc_areaTot = sc_area * sc_mult;
 
-	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
+	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW_TEST))
 		sc_pumpFlow = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
 	
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
@@ -480,8 +484,8 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 		AIPtoSI(sc_areaTot),
 		sc_tilt,
 		sc_azm,
-		sc_FRTA,
-		UIPtoSI(sc_FRUL),
+		sc_FRTA_opr,
+		UIPtoSI(sc_FRUL_opr),
 		fluidSpHt,
 		fluidDens);
 
@@ -517,6 +521,32 @@ float DHWSOLARCOLLECTOR::sc_Kta(
 		: 1.f;
 	return Kta;
 }	// DHWSOLARCOLLECTOR::sc_Kta
+
+//--------------------------------------------------------------------------
+RC DHWSOLARCOLLECTOR::sc_FlowCorrection()
+{
+	float r = 1.f;		// correction factor
+	// work per unit area
+	float mDotCp_test =
+	float mDotCp_opr =
+	if (mDotCp_opr != mDotCp_test)
+	{
+		float fPUL = -mDotCp * log(1.f - sc_FRUL_test / mDotCp_test);
+
+		float tOpr = mDotCp_opr / fPUL;
+		float num = tOpr * (1.f - exp(-tOpr));
+		float tTest = mDotCp_test / fPUL;
+		float denom = tTest * (1.f - exp(-tTest));
+		
+		r = num / denom;
+
+	}
+	sc_FRUL_opr = sc_FRUL_test * r;
+	sc_FRTA_opr = sc_FRTA_test * r;
+
+
+
+}		// DHWSOLARCOLLECTOR::sc_FlowCorrection
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoHour()
 {

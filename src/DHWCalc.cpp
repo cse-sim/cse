@@ -192,7 +192,7 @@ RC DHWSubhr()		// DHW (including solar DHW) subhr calcs
 		// solar water heating systems
 		//   draw and inlet temp are accum'd during DHWSYS calcs
 		RLUP(SwhR, pSW)
-			rc |= pSW->sw_TickCalc();
+			rc |= pSW->sw_TickCalc( iTk);
 	}
 
 	RLUP(WsR, pWS)
@@ -425,7 +425,6 @@ struct DWHRUSE		// info about 1 (shower) draw that could have DWHR
 //-----------------------------------------------------------------------------
 struct DHWTICK	// per tick info for DHWSYS
 {
-	DHWTICK() { wtk_Init(); }
 	float wtk_startMin;		// tick start time (minutes from hour beg)
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
 	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
@@ -439,6 +438,8 @@ struct DHWTICK	// per tick info for DHWSYS
 							//   = non-loop draws reduced per mixdown
 							//   = primary heater draw when DHWLOOPHEATER is present
 
+	DHWTICK() { wtk_Init(); }
+	DHWTICK(int iTk) { wtk_Init( float( iTk*Top.tp_tickDurMin)); }
 	void wtk_Init( float startMin=0.f, double whUseTick=0., float tInlet=50.f)
 	{	wtk_startMin = startMin;
 		wtk_nHRDraws = 0;
@@ -2486,19 +2487,31 @@ void HPWHLINK::hw_SetNQTXNodes(int nQTXNodes)
 
 }		// HPWHLINK::hw_SetNQTXNodes
 //-----------------------------------------------------------------------------
-double HPWHLINK::hw_GetTankAvgTemp(		// tank temp
-	int iNode0 /*=0*/,			// lowest node
-	int iNodeN /*=-1*/) const	// last+1 node
+double HPWHLINK::hw_GetTankAvgTemp(		// average temp of range of tank nodes
+	int iNode0 /*=0*/,			// starting node
+	int nNodes /*=999*/) const	// # of nodes to include
+								//   if <0, include nodes below iNode0
 // returns average tank temp, F for node range
 {
-	if (iNodeN < 0)
-		iNodeN = hw_pHPWH->getNumNodes();
+	int nodeCount = hw_pHPWH->getNumNodes();
+	iNode0 = bracket(0, iNode0, nodeCount - 1);			// 1st node
+	int iNodeN = bracket(-1, iNode0 + nNodes, nodeCount);	// 1 beyond last node
+	int incr = nNodes < 0 ? -1 : 1;
+
 	double T = 0.;
-	for (int iN = iNode0; iN < iNodeN; iN++)
-		T += hw_pHPWH->getTankNodeTemp( iN, HPWH::UNITS_C);
-	T /= max(1, iNodeN - iNode0);
+	for (int iN=iNode0; iN != iNodeN; iN+=incr)
+		T += hw_pHPWH->getTankNodeTemp(iN, HPWH::UNITS_C);
+	T /= max(1, abs(iNodeN - iNode0));
 	return DegCtoF(T);
 }		// HPWHLINK::hw_GetTankAvgTemp
+//-----------------------------------------------------------------------------
+double HPWHLINK::hw_GetEstimatedTOut() const
+// returns estimate of tank output temp, F
+//   = current top node temp (no consideration of draw etc.)
+{
+	int iNodeTop = hw_pHPWH->getNumNodes() - 1;
+	return hw_pHPWH->getTankNodeTemp(iNodeTop, HPWH::UNITS_F);
+}		// HPWHLINK::hw_GetEstimatedTOut
 //-----------------------------------------------------------------------------
 void HPWHLINK::hw_SetQTX(
 	float qTX)		// additional heat to be added for current tick
@@ -2595,19 +2608,19 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	return rc;
 }	// HPWHLINK::hw_DoSubhrStart
 //-----------------------------------------------------------------------------
-RC HPWHLINK::hw_DoSubhrTick(
-	float draw,		// draw for tick, gal
-	float tInlet,	// inlet temp
-	float* tOut,
-	float scaleWH /*=1.f*/)
+RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick, simplified call
+	int iTk,		// tick within hour, 0 .. Top.nHRTicks()-1
+	float draw,		// draw for tick, gal (not gpm)
+	float tInlet,	// water inlet temp, F
+	float* tOut,	// returned: water outlet temp, F (0 if no draw)
+	float scaleWH /*=1.f*/)	// draw scale factor
 {
-	DHWTICK tk;
+	DHWTICK tk(iTk);
 	tk.wtk_volIn = draw;
-
 	return hw_DoSubhrTick(tk, tInlet, scaleWH, -1.f, -1.f, tOut);
 }		// HPWHLINK::hw_DoSubhrTick
 //-----------------------------------------------------------------------------
-RC HPWHLINK::hw_DoSubhrTick(
+RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	DHWTICK& tk,			// current tick
 	float tInlet,			// current inlet water temp, F
 							//   includes upstream heat recovery, solar, etc.
@@ -2659,6 +2672,7 @@ RC HPWHLINK::hw_DoSubhrTick(
 	hw_pHPWH->setInletT(DegFtoC(tInlet));		// mixed inlet temp
 
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
+	//   used to model e.g. heat addition via solar DHW heat exchanger
 	std::vector< double>* pNPX = NULL;
 	if (hw_qTXTick > 0.)		// ignore tank "cooling"
 	{	if (hw_pNodePowerExtra_W == NULL)
@@ -2763,17 +2777,19 @@ RC HPWHLINK::hw_DoSubhrTick(
 		CSVItem CI[] =
 		{ "minHr",	   minHrD,              UNNONE, 4,
 		  "minDay",	   minDay,              UNNONE, 4,
-		  "minYr",	   minYr,               UNNONE, 4,
+		  "minYr",	   minYr,               UNNONE, 7,
 		  "tDbO",      Top.tDbOSh,			UNTEMP, 5,
 		  "tEnv",      hw_tEx,				UNTEMP, 5,
-		  "tSrcAir",   hw_tASHPSrc,			UNTEMP, 5,
+		  "tSrcAir",   hw_tASHPSrc > 0.f ? hw_tASHPSrc : CSVItem::ci_UNSET,
+											UNTEMP, 5,
 		  "fMixUse",   hw_fMixUse,		    UNNONE, 5,
 		  "fMixRL",    hw_fMixRL,		    UNNONE, 5,
 		  "vUse",	   drawUse,				UNLVOLUME2, 5,
 		  "vLoss",     drawLoss,			UNLVOLUME2, 5,
 		  "vRL",       drawRL,				UNLVOLUME2, 5,
 		  "vTot",	   drawForTick,			UNLVOLUME2, 5,
-		  "tMains",    tMains,				UNTEMP, 5,
+		  "tMains",    tMains > 0. ? tMains : CSVItem::ci_UNSET,
+											UNTEMP, 5,
 		  "tDWHR",     tk.wtk_tInletX,		UNTEMP, 5,
 		  "tRL",       drawRL > 0. ? tRL : CSVItem::ci_UNSET,
 											UNTEMP,	5,
@@ -2783,13 +2799,15 @@ RC HPWHLINK::hw_DoSubhrTick(
 											UNTEMP,	5,
 		  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
 											UNTEMP,  5,
-		  "XBU",       HPWHxBU,				UNENERGY3,	5,
 		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
 											UNTEMP,  5,
+		  "qTX",	   hw_qTXTick,			UNENERGY3, 5,
 		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
 											UNENERGY3, 5,
 		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
 											UNENERGY3, 5,
+		  "XBU",       HPWHxBU,				UNENERGY3,	5,
+
 		  NULL
 		};
 

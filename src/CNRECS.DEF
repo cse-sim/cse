@@ -3705,12 +3705,13 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "float hw_GetTankVol() const;"
 *declare "void hw_SetNQTXNodes( int nQTXNodes);"
 *declare "float hw_GetTankQTXTemp() const { return float( hw_GetTankAvgTemp( 0, hw_nQTXNodes)); }"
-*declare "double hw_GetTankAvgTemp( int iNode0=0, int iNodeN=-1) const;"
+*declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
+*declare "double hw_GetEstimatedTOut() const;"
 *declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL);"
-*declare "RC hw_DoSubhrTick( float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
+*declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc, double& totOut);"
 
 *declare "record* hw_pOwner;"		// owner (DHWHEATER, DHWSOLARSYS, ...)
@@ -4328,7 +4329,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "RC sw_DoSubhrEnd();"
   *declare "void sw_TickStart();"
   *declare "RC sw_TickAccumDraw( DHWSYS* pWS, float vol, float tInlet);"
-  *declare "RC sw_TickCalc();"
+  *declare "RC sw_TickCalc( int iTk);"
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
   *declare "int sw_ReportBalErrorsIf() const;"
@@ -4421,18 +4422,21 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *i FLOAT_GZ sc_mult		// multiplier (for multiple panels). Default 1.
   *r *e FLOAT_GZ sc_multLR	// last run multiplier, re probing in chained runs
 
-  // sc_type ?
-
   // Collector
   *i FLOAT_GZ sc_area		// SRCC collector area, ft2
   *i ANGLE sc_tilt			// Array tilt, radians (input as degrees)
   *i ANGLE sc_azm			// Array azimuth, radians (input as degrees)
-  *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
-  *i FLOAT sc_FRUL			// SRCC slope
-  *i FLOAT_GZ sc_FRTA		// SRCC intercept
+  *i FLOAT sc_FRUL_test		// SRCC rated slope, Btuh/F-ft2
+  *i FLOAT_GZ sc_FRTA_test	// SRCC rated intercept
+  *i FLOAT_GZ sc_pumpFlow_test	// collector loop rating flow rate, gpm
+  *i FLOAT_GZ sc_pumpFlow_opr	// collector loop operating flow rate, gpm
   *i FLOAT sc_Kta60			// incidence angle modifier at 60 deg
-							//   default 0.85
+							//   default 0.72
 							//   <= 0: IAM not applied
+  // derived constants
+  *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
+  *r FLOAT sc_FRUL_opr		// operating collector slope in operation
+  *r FLOAT_GZ sc_FRTA_opr	// operating collector intercept
   *r FLOAT sc_b0			// incidence angle modifier coefficient
 							//   (derived from sc_Kta60)
   *r FLOAT sc_Kta_diffuse_sky	// Kta for diffuse radiation from sky
@@ -4459,7 +4463,6 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 								//   remainder is discarded
 
   								// energy inputs for current hour, Btu
-  *i FLOAT_GEZ sc_pumpFlow		// rated flow rate, gpm
   *i FLOAT sc_pumpOnDeltaT		// temperature difference between the 
 								// tank and collector outlet where pump
 								// turns on, F
