@@ -455,10 +455,10 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 	sc_areaTot = sc_area * sc_mult;
 
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW_TEST))
-		sc_pumpFlow = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
+		sc_pumpFlow_test = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
 	
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
-		sc_pumpPwr = 10.f*sc_pumpFlow;  // don't know how good this assumption is
+		sc_pumpPwr = 10.f*sc_pumpFlow_test;  // don't know how good this assumption is
 
 	delete sc_collector;		// insurance: delete prior, if any
 
@@ -523,6 +523,7 @@ float DHWSOLARCOLLECTOR::sc_Kta(
 }	// DHWSOLARCOLLECTOR::sc_Kta
 
 //--------------------------------------------------------------------------
+#if 0
 RC DHWSOLARCOLLECTOR::sc_FlowCorrection()
 {
 	float r = 1.f;		// correction factor
@@ -547,6 +548,7 @@ RC DHWSOLARCOLLECTOR::sc_FlowCorrection()
 
 
 }		// DHWSOLARCOLLECTOR::sc_FlowCorrection
+#endif
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoHour()
 {
@@ -607,7 +609,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 	float tInlet = pSWHSys->sw_scTInlet;
 
 	float pump_energy = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;  // Btuh * hr
-	float pump_vol = sc_pumpFlow * Top.tp_tickDurMin;  // gal
+	float pump_vol = sc_pumpFlow_test * Top.tp_tickDurMin;  // gal
 	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_scFluidVHC);  // delta F
 
 	// Calculate potential outlet temperature
@@ -646,7 +648,7 @@ FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(
 	double tInlet = pSW->sw_scTInlet + pump_dt;		// degF
 	
 	// Mass flow rate, kg/s
-	double m_dot_SI = pSW->sw_MassFlowSI( sc_pumpFlow);
+	double m_dot_SI = pSW->sw_MassFlowSI( sc_pumpFlow_test);
 
 	// Calculate outlet temperature
 	sc_collector->calculate(IrIPtoSI( sc_poa), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));

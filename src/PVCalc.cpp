@@ -303,35 +303,44 @@ RC PVARRAY::pv_CalcPOA()
 	{
 	case C_PVARRCH_1AXT:
 	{
-		float sinz = sin(acos(cosz));
-		float x = (sinz*sin(azm - pv_azm)) / (sinz*cos(azm - pv_azm)*sin(pv_tilt) + cosz*cos(pv_tilt));
-		float psi;
-		if (x < 0.f && (azm - pv_azm) > 0.f) {
+		// Based on Rotation Angle for the Optimum Tracking of One-Axis Trackers by William F.Marion and Aron P.Dobos
+		const float sinz = sin(acos(cosz));  // sin of zenith angle
+		float azm_delta = azm - pv_azm;
+
+		// normalize azm_delta between -Pi and Pi
+		if (azm_delta >= kPi)
+			azm_delta = azm_delta - k2Pi;
+
+		if (azm_delta <= -kPi)
+			azm_delta = azm_delta + k2Pi;
+
+		const float x = (sinz*sin(azm_delta)) / (sinz*cos(azm_delta)*sin(pv_tilt) + cosz*cos(pv_tilt));  // from Equation #7
+		float psi = 0.f;
+
+		if (x < 0.f && azm_delta > 0.f) {
 			psi = kPi;
 		}
-		else if (x > 0.f && (azm - pv_azm) < 0.f){
+		else if (x > 0.f && azm_delta < 0.f){
 			psi = -kPi;
 		}
-		else {
-			psi = 0.f;
-		}
-		float r = atan(x) + psi;
+		
+		pv_panelRot = atan(x) + psi;  // Equation #7
+
 		const float rlim = 0.25f*kPi;
-		r = max(-rlim, min(rlim, r));
-		pv_panelTilt = acos(cos(r)*cos(pv_tilt));
+		pv_panelRot = max(-rlim, min(rlim, pv_panelRot));
+		pv_panelTilt = acos(cos(pv_panelRot)*cos(pv_tilt));  // Equation #1
 		if (pv_panelTilt == 0.f) {
 			pv_panelAzm = pv_azm;
 		}
 		else
 		{
-			float rx = bracket(-1.f, sin(r) / sin(pv_panelTilt), 1.f);
-			float asrx = asin(rx);
-			if (r >= -kPiOver2 && r <= kPiOver2)
-				pv_panelAzm = pv_azm + asrx;
-			else if (r >= -kPi && r < -kPiOver2)
-				pv_panelAzm = pv_azm - asrx - kPi;
-			else // if (r > kPiOver2 && r <= kPi)
-				pv_panelAzm = pv_azm - asrx + kPi;
+			float const asrx = asin(bracket(-1.f, sin(pv_panelRot) / sin(pv_panelTilt), 1.f));
+			if (pv_panelRot >= -kPiOver2 && pv_panelRot <= kPiOver2)
+				pv_panelAzm = pv_azm + asrx;        // Equation #2
+			else if (pv_panelRot >= -kPi && pv_panelRot < -kPiOver2)
+				pv_panelAzm = pv_azm - asrx - kPi;  // Equation #3
+			else // if (pv_panelRot > kPiOver2 && pv_panelRot <= kPi)
+				pv_panelAzm = pv_azm - asrx + kPi;  // Equation #4
 		}
 	}
 		break;

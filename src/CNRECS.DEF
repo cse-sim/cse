@@ -4526,6 +4526,7 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *h *e FLOAT pv_aoi		// angle of incidence (radians)
   *h *e ANGLE pv_panelTilt	// tilt of pv panel (different from array tilt for tracking systems), radians
   *h *e ANGLE pv_panelAzm	// azimuth of pv panel (different from array tilt for tracking systems), radians
+  *h *e ANGLE pv_panelRot	// rotation of pv panel for 1-axis tracking systems, radians clockwise from vertical
   *h *e FLOAT pv_poa		// plane of array incidence (before shading), Btu/h-ft2
   *h *e FLOAT pv_poaBeam	// plane of array beam incidence (before shading), Btu/h-ft2
   *h *e FLOAT pv_radIBeam	// beam radiation incident on array, Btu/h-ft2
