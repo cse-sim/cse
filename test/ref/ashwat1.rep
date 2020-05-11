@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.869.1+single-axis-tracker.c14b0e5.4 for Win32 console   Mon 11-May-20   7:55:34 am
+! CSE 0.869.1+window-conduction.8a551e4.1 for Win32 console   Mon 11-May-20   9:50:53 am
 
 
 ================
@@ -13267,7 +13267,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.869.1+single-axis-tracker.c14b0e5.4 for Win32 console
+! CSE 0.869.1+window-conduction.8a551e4.1 for Win32 console
 
 
 
@@ -14823,18 +14823,18 @@ Input for Run 001:
 
 
 
-! CSE 0.869.1+single-axis-tracker.c14b0e5.4 for Win32 console run(s) done: Mon 11-May-20   7:55:53 am
+! CSE 0.869.1+window-conduction.8a551e4.1 for Win32 console run(s) done: Mon 11-May-20   9:51:06 am
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               11-May-20   7:55 am   (VS 14.16    2607616 bytes)  (HPWH 1.9.0+HEAD.6ded143.16)
-! Command line: -x!  -b -t1 ashwat1
+! Executable:   d:\cse\msvc\cse.exe
+!               11-May-20   9:43 am   (VS 14.16    2607616 bytes)  (HPWH 1.9.0+master.796508b.20)
+! Command line: -x!  -t1 ashwat1
 ! Input file:   C:\Users\nkruis\projects\cse\test\ashwat1.cse
 ! Report file:  C:\Users\nkruis\projects\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 2      T/C = 0.0240   
-!           AutoSizing:  Time = 1.99     Calls = 1      T/C = 1.9930   
-!           Simulation:  Time = 16.62    Calls = 1      T/C = 16.6160  
-!              Reports:  Time = 0.38     Calls = 1      T/C = 0.3840   
-!                Total:  Time = 19.04    Calls = 1      T/C = 19.0430  
+!                Input:  Time = 0.01     Calls = 2      T/C = 0.0055   
+!           AutoSizing:  Time = 1.14     Calls = 1      T/C = 1.1420   
+!           Simulation:  Time = 11.53    Calls = 1      T/C = 11.5310  
+!              Reports:  Time = 0.12     Calls = 1      T/C = 0.1190   
+!                Total:  Time = 12.81    Calls = 1      T/C = 12.8070  
