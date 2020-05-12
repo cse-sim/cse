@@ -174,8 +174,11 @@ RC DHWSOLARSYS::sw_EndIvl(
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
 		rc |= pSC->sc_DoHourEnd();
 
+	// hour average tank outlet temp
 	if (sw_drawVol > 0.f)
-		sw_tankTOutlet /= sw_drawVol;
+		sw_tankTOutlet /= sw_drawVol;		// draws: average by vol
+	else
+		sw_tankTOutlet = sw_tickTankTOutlet;	// no draws: use last tick
 
 	if (ivl == C_IVLCH_Y)
 	{
@@ -308,8 +311,10 @@ RC DHWSOLARSYS::sw_TickCalc(
 	if (tOut > 0.f)
 	{	sw_tickTankTOutlet = tOut;
 		sw_tankTOutlet += tOut * sw_tickVol;
+#if 0
 		if (tOut > sw_tankTHxLimit && scQGain == 0.f)
 			printf("\nhot");
+#endif
 	}
 	else
 		// estimate possible outlet temp = top node temp
@@ -464,6 +469,11 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 
 	double fluidSpHt = SHIPtoSI(pSW->sw_scFluidSpHt);		// specific heat, J/kg-K
 	double fluidDens = DIPtoSI(pSW->sw_scFluidDens);		// density, kg/m3
+
+	// flow modification
+	//   TODO
+	sc_FRUL_opr = sc_FRUL_test;
+	sc_FRTA_opr = sc_FRTA_test;
 
 	// incident angle multiplier (IAM)
 	// sc_Kta60 <= 0 says no IAM

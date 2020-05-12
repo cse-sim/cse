@@ -3678,7 +3678,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_HARLtk;	// hour total adjusted recovery load, Btu
 							//    check figure derived from ticks
 
+#if 0
   *s *e *nest DHWSYSRES ws_res		// results
+#endif
 
 *END		// DHWSYS
 

@@ -1599,9 +1599,11 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 {
 	RC rc = RCOK;
 
+#if 0
 	ws_res.S.wsui_Clear();	// subhour results
 							//   tick calcs accum here
 							//   accum'd to hour in ws_DoSubhrEnd
+#endif
 
 	ws_HJLsh = 0.f;		// subhr jacket losses
 	DHWTANK* pWT;
@@ -1703,8 +1705,10 @@ RC DHWSYS::ws_DoSubhrEnd()
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrEnd();
 
+#if 0
 	// accum DHWSYS results: subhour -> hour
 	ws_res.wsu_Accum( C_IVLCH_S, Top.isBegHour);
+#endif
 
 	return rc;
 
@@ -1763,8 +1767,10 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 					: 0.f;	
 	}
 
+#if 0
 	// firstflag?
 	ws_res.wsu_Accum(ivl, 0);
+#endif
 
 	return rc;
 
