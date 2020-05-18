@@ -4412,7 +4412,10 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *declare "RC sc_CkF();"
   *declare "RC sc_Init();"
   *declare "static float sc_Deriveb0( float ktaX, float incA);"
+  *declare "RC sc_InitIAM();"
   *declare "float sc_Kta( float incA) const;"
+  *declare "float sc_FlowCorrection() const;"
+  *declare "float sc_MDotCpTest() const;"
   *declare "RC sc_DoHour();"
   *declare "RC sc_DoHourEnd();"
   *declare "RC sc_DoSubhrTick();"
@@ -4428,34 +4431,38 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *i FLOAT_GZ sc_area		// SRCC collector area, ft2
   *i ANGLE sc_tilt			// Array tilt, radians (input as degrees)
   *i ANGLE sc_azm			// Array azimuth, radians (input as degrees)
-  *i FLOAT sc_FRUL_test		// SRCC rated slope, Btuh/F-ft2
-  *i FLOAT_GZ sc_FRTA_test	// SRCC rated intercept
-  *i FLOAT_GZ sc_pumpFlow_test	// collector loop rating flow rate, gpm
-  *i FLOAT_GZ sc_pumpFlow_opr	// collector loop operating flow rate, gpm
-  *i FLOAT sc_Kta60			// incidence angle modifier at 60 deg
+  *i FLOAT sc_testFRUL		// SRCC test (rated) slope, Btuh/F-ft2
+  *i FLOAT_GZ sc_testFRTA	// SRCC test (rated) intercept
+  *i FLOAT_GZ sc_testMassFlow	// collector loop SRCC rating mass flow rate, lb/h-ft2
+  *i FLOAT_GZ sc_oprMassFlow	// collector loop operating mass flow rate, lb/h-ft2
+  *i FLOAT sc_kta60			// incidence angle modifier at 60 deg (from SRCC rating)
 							//   default 0.72
 							//   <= 0: IAM not applied
   // derived constants
   *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
-  *r FLOAT sc_FRUL_opr		// operating collector slope in operation
-  *r FLOAT_GZ sc_FRTA_opr	// operating collector intercept
+  *r FLOAT sc_oprFRUL		// operating (flow-modified) collector slope, Btuh/F-ft2
+  *r FLOAT_GZ sc_oprFRTA	// operating (flow-modified) collector intercept
+  *r FLOAT sc_oprVolFlow	// nominal collector loop volume flow rate, gpm
+							//    derived from sc_oprMassFlow
   *r FLOAT sc_b0			// incidence angle modifier coefficient
 							//   (derived from sc_Kta60)
-  *r FLOAT sc_Kta_diffuse_sky	// Kta for diffuse radiation from sky
-  *r FLOAT sc_Kta_diffuse_ground // Kta for diffuse radiation from ground
+  *r FLOAT sc_ktaDS			// tau-alpha modifier (kta) for sky diffuse radiation
+							//    (constant, depends on sc_tilt only)
+  *r FLOAT sc_ktaDG			// tau-alpha modifier (kta) ground-reflected diffuse radiation
+							//    (constant, depends on sc_tilt only)
 
   // Calculated values
   *h *e FLOAT sc_incA		// beam angle of incidence, radians (PI/2 if no beam)
+  *h *e FLOAT sc_ktaDB		// tau-alpha modifier (kta) for beam (varies by hour)
 
 								// plane of array irradiance, Btu/ft2
-								// (adjusted by IAM if active)
-  *h *e FLOAT sc_beam			//   beam
-  *h *e FLOAT sc_diffuse_sky	//   diffuse from sky
-  *h *e FLOAT sc_diffuse_ground	//   diffuse from ground
-  *h *e FLOAT sc_poa			//   total
-  *h *e FLOAT sc_Qpoa			// plane of array incident heat, Btu
+								// adjusted by sc_ktaXX if incidence angle modifier (IAM) active
+  *h *e FLOAT sc_poaRadDB			//   beam
+  *h *e FLOAT sc_poaRadDS			//   diffuse from sky
+  *h *e FLOAT sc_poaRadDG			//   diffuse from ground
+  *h *e FLOAT sc_poaRadTot			//   total
   *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
-  *h *e FLOAT sc_Qfluid			// heat added to the fluid, Btu
+  *h *e FLOAT sc_qfluid			// heat added to the fluid, Btu
   *h *e FLOAT sc_tOutlet		// outlet temperature, F
   *h *e FLOAT sc_tOutletP		// potential outlet temperature, F
 

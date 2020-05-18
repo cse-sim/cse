@@ -316,9 +316,11 @@ RC DHWSOLARSYS::sw_TickCalc(
 			printf("\nhot");
 #endif
 	}
+#if 1
 	else
 		// estimate possible outlet temp = top node temp
 		sw_tickTankTOutlet = sw_tank.hw_GetEstimatedTOut();
+#endif
 
 	return rc;
 }		// DHWSOLARSYS::sw_TickCalc
@@ -459,43 +461,41 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 
 	sc_areaTot = sc_area * sc_mult;
 
-	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW_TEST))
-		sc_pumpFlow_test = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
-	
+	float r;
+	if (!IsSet(DHWSOLARCOLLECTOR_OPRMASSFLOW))
+	{	sc_oprMassFlow = sc_testMassFlow;
+		r = 1.f;
+	}
+	else
+		r = sc_FlowCorrection();	// operating and test mass flow rates given
+
+	sc_oprFRUL = r * sc_testFRUL;
+	sc_oprFRTA = r * sc_testFRTA;
+
+	sc_oprVolFlow = sc_areaTot * sc_oprMassFlow / pSW->sw_scFluidDens * galPerFt3 / 60.f;
+
+
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
-		sc_pumpPwr = 10.f*sc_pumpFlow_test;  // don't know how good this assumption is
+		sc_pumpPwr = 10.f * sc_oprVolFlow;
+	
+	// incident angle multiplier (IAM)
+	// sc_kta60 <= 0 says no IAM
+	if (sc_kta60 > 0.f)
+		// check sc_Kta value here rather than rc_CkF() re possible expressions
+		rc |= limitCheckFix(DHWSOLARCOLLECTOR_KTA60, 0.2, 1.);
+	rc |= sc_InitIAM();		// set up IAM run constants
 
 	delete sc_collector;		// insurance: delete prior, if any
 
 	double fluidSpHt = SHIPtoSI(pSW->sw_scFluidSpHt);		// specific heat, J/kg-K
 	double fluidDens = DIPtoSI(pSW->sw_scFluidDens);		// density, kg/m3
 
-	// flow modification
-	//   TODO
-	sc_FRUL_opr = sc_FRUL_test;
-	sc_FRTA_opr = sc_FRTA_test;
-
-	// incident angle multiplier (IAM)
-	// sc_Kta60 <= 0 says no IAM
-	if (sc_Kta60 > 0.f)
-		// check sc_Kta value here rather than rc_CkF() re possible expressions
-		rc |= limitCheckFix(DHWSOLARCOLLECTOR_KTA60, 0.2, 1.);
-	sc_b0 = sc_Deriveb0(sc_Kta60, 60.f);
-
-	// constant Kta values for diffuse
-	//   per Duffie/Beckman section 5.4
-	float tiltD = DEG(sc_tilt);
-	float incA_diffuse_sky = RAD(59.7f - 0.1388f*tiltD + 0.001497*tiltD*tiltD);
-	sc_Kta_diffuse_sky = sc_Kta( incA_diffuse_sky);
-	float incA_diffuse_ground = RAD(90.f - 0.5788*tiltD + 0.002693f*tiltD*tiltD);
-	sc_Kta_diffuse_ground = sc_Kta(incA_diffuse_ground);
-
 	sc_collector = new SolarFlatPlateCollector(
 		AIPtoSI(sc_areaTot),
 		sc_tilt,
 		sc_azm,
-		sc_FRTA_opr,
-		UIPtoSI(sc_FRUL_opr),
+		sc_oprFRTA,
+		UIPtoSI(sc_oprFRUL),
 		fluidSpHt,
 		fluidDens);
 
@@ -526,69 +526,90 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 float DHWSOLARCOLLECTOR::sc_Kta(
 	float incA) const	// incident angle, rad
 {
-	float Kta = incA > 0.f
-		? 1.f - sc_b0 * (1.f / cos(incA) - 1.f)
-		: 1.f;
-	return Kta;
+	static const float incALim = RAD(89.f);
+	float kta =
+		  incA > incALim ? 0.f
+		: incA > 0.f     ? max( 0.f, 1.f - sc_b0 * (1.f / cos(incA) - 1.f))
+		:                  1.f;
+	return kta;
 }	// DHWSOLARCOLLECTOR::sc_Kta
+//---------------------------------------------------------------------------------------
+RC DHWSOLARCOLLECTOR::sc_InitIAM()
 
-//--------------------------------------------------------------------------
-#if 0
-RC DHWSOLARCOLLECTOR::sc_FlowCorrection()
 {
-	float r = 1.f;		// correction factor
-	// work per unit area
-	float mDotCp_test =
-	float mDotCp_opr =
-	if (mDotCp_opr != mDotCp_test)
-	{
-		float fPUL = -mDotCp * log(1.f - sc_FRUL_test / mDotCp_test);
-
-		float tOpr = mDotCp_opr / fPUL;
-		float num = tOpr * (1.f - exp(-tOpr));
-		float tTest = mDotCp_test / fPUL;
-		float denom = tTest * (1.f - exp(-tTest));
-		
-		r = num / denom;
-
+	RC rc = RCOK;
+	if (sc_kta60 <= 0.f)
+	{	sc_ktaDS = sc_ktaDG = sc_ktaDB = 1.f;
+		sc_b0 = 0.f;
 	}
-	sc_FRUL_opr = sc_FRUL_test * r;
-	sc_FRTA_opr = sc_FRTA_test * r;
+	else
+	{	sc_b0 = sc_Deriveb0(sc_kta60, 60.f);
 
+		// constant kta values for diffuse
+		//   per Duffie/Beckman section 5.4
+		float tiltD = DEG(sc_tilt);
+		float incA_diffuse_sky = RAD(59.7f - 0.1388f*tiltD + 0.001497*tiltD*tiltD);
+		sc_ktaDS = sc_Kta(incA_diffuse_sky);
+		float incA_diffuse_ground = RAD(90.f - 0.5788*tiltD + 0.002693f*tiltD*tiltD);
+		sc_ktaDG = sc_Kta(incA_diffuse_ground);
+	}
+	return rc;
 
+}		// DHWSOLARCOLLECTOR::sc_InitIAM
+//--------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_FlowCorrection() const
+// calc flow correction ratio
+// apply to test FRUL and FRTA values to calc operating values
+{
+	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
+
+	float mDotCpTest = sc_MDotCpTest();
+	float mDotCpOpr = sc_oprMassFlow * pSW->sw_scFluidSpHt;
+
+	float fPUL = -mDotCpTest * log(1.f + sc_testFRUL / mDotCpTest);
+
+	float tOpr = mDotCpOpr / fPUL;
+	float num = tOpr * (1.f - exp(-1.f/tOpr));
+	float tTest = mDotCpTest / fPUL;
+	float denom = tTest * (1.f - exp(-1.f/tTest));
+		
+	float r = num / denom;
+
+	return r;
 
 }		// DHWSOLARCOLLECTOR::sc_FlowCorrection
-#endif
+//--------------------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_MDotCpTest() const
+// return mDotCp for SRCC conditions, Btu/hr-F
+//   assume test fluid is water
+{
+	static const float spHt = 0.2388458966f * 4.182f;	// TRNSYS assumption
+	float mDotCpTest = spHt * sc_testMassFlow;
+
+	return mDotCpTest;
+	
+}		// sc_MDotCpTest
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoHour()
 {
 	RC rc = RCOK;
 	sc_pumpInElec = 0.f;
-	sc_Qfluid = sc_eff = 0.0;
+	sc_qfluid = sc_eff = 0.0;
 
 	// plane incidence: use hourly values
-#if 0	// 5-1-2020
-x aniso fix / return separate diffuse, beam, ground
-x	double plane_incidence;
-x	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
-x
-x	sc_poaOld = static_cast<FLOAT>(plane_incidence);
-#endif
-
 	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST,
 	   Wthr.d.wd_DNI, Wthr.d.wd_DHI,
 	   Top.grndRefl,
-	   sc_incA, sc_beam, sc_diffuse_sky, sc_diffuse_ground);
+	   sc_incA, sc_poaRadDB, sc_poaRadDS, sc_poaRadDG);
 
 	if (sc_b0 > 0.f)
-	{	sc_beam *= sc_Kta(sc_incA);
-		sc_diffuse_sky *= sc_Kta_diffuse_sky;
-		sc_diffuse_ground *= sc_Kta_diffuse_ground;
+	{	sc_ktaDB = sc_Kta(sc_incA);
+		sc_poaRadDB *= sc_ktaDB;
+		sc_poaRadDS *= sc_ktaDS;
+		sc_poaRadDG *= sc_ktaDG;
 	}
 
-	sc_poa = sc_beam + sc_diffuse_sky + sc_diffuse_ground;
-
-	sc_Qpoa = sc_poa * sc_areaTot;  // Btu/h-ft2 * ft2 = Btu
+	sc_poaRadTot = sc_poaRadDB + sc_poaRadDS + sc_poaRadDG;
 
 	return rc;
 }		// DHWSOLARCOLLECTOR::sc_DoHour
@@ -619,7 +640,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 	float tInlet = pSWHSys->sw_scTInlet;
 
 	float pump_energy = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;  // Btuh * hr
-	float pump_vol = sc_pumpFlow_test * Top.tp_tickDurMin;  // gal
+	float pump_vol = sc_oprVolFlow * Top.tp_tickDurMin;  // gal
 	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_scFluidVHC);  // delta F
 
 	// Calculate potential outlet temperature
@@ -639,7 +660,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 		sc_pumpInElec += pump_energy;
 		sc_tOutlet = sc_tOutletP;
 		sc_eff += sc_collector->efficiency();
-		sc_Qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
+		sc_qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
 	}
 	else
 	{	sc_tickVol = 0.f;		// not operating
@@ -658,10 +679,14 @@ FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(
 	double tInlet = pSW->sw_scTInlet + pump_dt;		// degF
 	
 	// Mass flow rate, kg/s
-	double m_dot_SI = pSW->sw_MassFlowSI( sc_pumpFlow_test);
+	double m_dot_SI = sc_areaTot * 0.000125998 * sc_oprMassFlow;
+#if 0
+	double m_dot_SI2 = pSW->sw_MassFlowSI( sc_oprVolFlow);
+	double omfX = m_dot_SI / (sc_areaTot * 0.000125998);
+#endif
 
 	// Calculate outlet temperature
-	sc_collector->calculate(IrIPtoSI( sc_poa), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
+	sc_collector->calculate(IrIPtoSI( sc_poaRadTot), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
 
 	return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
 }	// DHWSOLARCOLLECTOR::sc_CalculateOutletTemp
