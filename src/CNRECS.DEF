@@ -4440,8 +4440,10 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 							//   <= 0: IAM not applied
   // derived constants
   *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
-  *r FLOAT sc_oprFRUL		// operating (flow-modified) collector slope, Btuh/F-ft2
-  *r FLOAT_GZ sc_oprFRTA	// operating (flow-modified) collector intercept
+  *r FLOAT sc_flowCorrection	// flow correction factor
+							// sc_oprFRxx = sc_testFRxx * sc_flowCorrection
+  *r FLOAT sc_oprFRUL		// operating (flow-corrected) collector slope, Btuh/F-ft2
+  *r FLOAT_GZ sc_oprFRTA	// operating (flow-corrected) collector intercept
   *r FLOAT sc_oprVolFlow	// nominal collector loop volume flow rate, gpm
 							//    derived from sc_oprMassFlow
   *r FLOAT sc_b0			// incidence angle modifier coefficient
@@ -4461,6 +4463,8 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *h *e FLOAT sc_poaRadDS			//   diffuse from sky
   *h *e FLOAT sc_poaRadDG			//   diffuse from ground
   *h *e FLOAT sc_poaRadTot			//   total
+  *h *e FLOAT sc_poaRadIAM			//   component-weighted IAM factor
+									//    = sc_poaRadTot / radTot_unadjusted
   *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
   *h *e FLOAT sc_qfluid			// heat added to the fluid, Btu
   *h *e FLOAT sc_tOutlet		// outlet temperature, F

@@ -461,16 +461,15 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 
 	sc_areaTot = sc_area * sc_mult;
 
-	float r;
 	if (!IsSet(DHWSOLARCOLLECTOR_OPRMASSFLOW))
 	{	sc_oprMassFlow = sc_testMassFlow;
-		r = 1.f;
+		sc_flowCorrection = 1.f;
 	}
 	else
-		r = sc_FlowCorrection();	// operating and test mass flow rates given
+		sc_flowCorrection = sc_FlowCorrection();	// operating and test mass flow rates given
 
-	sc_oprFRUL = r * sc_testFRUL;
-	sc_oprFRTA = r * sc_testFRTA;
+	sc_oprFRUL = sc_flowCorrection * sc_testFRUL;
+	sc_oprFRTA = sc_flowCorrection * sc_testFRTA;
 
 	sc_oprVolFlow = sc_areaTot * sc_oprMassFlow / pSW->sw_scFluidDens * galPerFt3 / 60.f;
 
@@ -534,8 +533,8 @@ float DHWSOLARCOLLECTOR::sc_Kta(
 	return kta;
 }	// DHWSOLARCOLLECTOR::sc_Kta
 //---------------------------------------------------------------------------------------
-RC DHWSOLARCOLLECTOR::sc_InitIAM()
-
+RC DHWSOLARCOLLECTOR::sc_InitIAM()		// IAM one-time init
+// sets up run constants for incidence angle modifier
 {
 	RC rc = RCOK;
 	if (sc_kta60 <= 0.f)
@@ -548,10 +547,10 @@ RC DHWSOLARCOLLECTOR::sc_InitIAM()
 		// constant kta values for diffuse
 		//   per Duffie/Beckman section 5.4
 		float tiltD = DEG(sc_tilt);
-		float incA_diffuse_sky = RAD(59.7f - 0.1388f*tiltD + 0.001497*tiltD*tiltD);
-		sc_ktaDS = sc_Kta(incA_diffuse_sky);
-		float incA_diffuse_ground = RAD(90.f - 0.5788*tiltD + 0.002693f*tiltD*tiltD);
-		sc_ktaDG = sc_Kta(incA_diffuse_ground);
+		float incADS = RAD(59.7f - 0.1388f*tiltD + 0.001497*tiltD*tiltD);
+		sc_ktaDS = sc_Kta(incADS);
+		float incADG = RAD(90.f - 0.5788*tiltD + 0.002693f*tiltD*tiltD);
+		sc_ktaDG = sc_Kta(incADG);
 	}
 	return rc;
 
@@ -602,14 +601,22 @@ RC DHWSOLARCOLLECTOR::sc_DoHour()
 	   Top.grndRefl,
 	   sc_incA, sc_poaRadDB, sc_poaRadDS, sc_poaRadDG);
 
-	if (sc_b0 > 0.f)
-	{	sc_ktaDB = sc_Kta(sc_incA);
+	// total incident w/o incidence angle modifier
+	float poaRadTotNoIAM = sc_poaRadDB + sc_poaRadDS + sc_poaRadDG;
+
+	if (sc_b0 > 0.f && poaRadTotNoIAM > 0.f)
+	{	// apply IAM factors
+		sc_ktaDB = sc_Kta(sc_incA);
 		sc_poaRadDB *= sc_ktaDB;
 		sc_poaRadDS *= sc_ktaDS;
 		sc_poaRadDG *= sc_ktaDG;
+		sc_poaRadTot = sc_poaRadDB + sc_poaRadDS + sc_poaRadDG;
+		sc_poaRadIAM = sc_poaRadTot / poaRadTotNoIAM;
 	}
-
-	sc_poaRadTot = sc_poaRadDB + sc_poaRadDS + sc_poaRadDG;
+	else
+	{	sc_poaRadTot = poaRadTotNoIAM;
+		sc_poaRadIAM = 1.f;
+	}
 
 	return rc;
 }		// DHWSOLARCOLLECTOR::sc_DoHour
