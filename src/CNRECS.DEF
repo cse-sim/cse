@@ -236,9 +236,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i EXSHMODELCH tp_exShadeModel;	// exterior shading model (other than overhang/fins)
 									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
 									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
-    *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)
-								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs
-								//   C_DHWMODELCH_2013: corrected 2013 implementation (default)
 
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
@@ -3649,12 +3646,15 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_Cleanup();"
 *declare "RC hw_Init( record* pOwner);"
 *declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
+*declare "enum HPWHATTR { hwatSMALL=0x1000, hwatLARGE=0x2000, hwatMASK=0xf000 };"
+*declare "static int hw_HPWHInfo( WHASHPTYCH ashpTy, int& attrs);"
+*declare "static int hw_IsAttr( WHASHPTYCH ashpTy, int attr) { int attrs; return hw_HPWHInfo( ashpTy, attrs) >= 0 ? (attr & attrs) != 0 : -1; }"
 *declare "RC hw_InitPreset( WHASHPTYCH ashpTy);"
 *declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
 *declare "RC hw_InitTank( float vol);"
 *declare "RC hw_AdjustUAIf( float UA, float insulR);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
-*declare "RC hw_GetInfo( float& vol, float& UA, float& insulR) const;"
+*declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
 *declare "void hw_InitTotals();"
 *declare "bool hw_HasCompressor();"
 *declare "bool hw_IsSetpointFixed() const;"
@@ -3775,7 +3775,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
   *declare "int wh_SetFunction();"
   *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
-  *i WHASHPTYCH wh_ashpTy;		// air source heat pump type, required iff ASHPX, else ignored
+  *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
@@ -3796,11 +3796,14 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  *r FLOAT_GEZ wh_vol;			// actual storage tank vol, gal (not rated)
-								//    applicable to STRGxx types
+  *r FLOAT_GZ wh_tankCount		// # of storage tanks, re built-up heater systems
+								//    default 1
+  *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)
-  *r FLOAT_GEZ wh_UA;			// HPWH-type tank UA, Btuh/F
+  *r FLOAT_GEZ wh_UAPerTank;	// HPWH-type UA per tank, Btuh/F
+								//    default from HPWH preset
+  *r FLOAT_GEZ wh_UA;			// HPWH-type total UA, Btuh/F
 								//    default from HPWH preset
   *r FLOAT_GZ wh_insulR;		// HPWH-type tank insulation resistance, hr-F/Btuh
 								//    default from preset or wh_UA and wh_vol

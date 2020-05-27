@@ -2123,6 +2123,99 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	return rc;
 }		// HPWHLINK::hw_InitResistance
 //-----------------------------------------------------------------------------
+/*static*/ int HPWHLINK::hw_HPWHInfo(
+	WHASHPTYCH ashpTy,
+	int& attrs)		// returned: attribute bits
+					//   hwatSMALL, hwatLARGE,
+// return HPWH preset, -1 if ashpTy not found
+{
+
+// table of known HPHWs 1) maps to HPWH preset  2) holds attributes
+	static const WWTABLE /* { SI key, value; } */ presetTbl[] = {
+	// small storage
+	{ C_WHASHPTYCH_BASICINT,         hwatSMALL | HPWH::MODELS_basicIntegrated },
+	{ C_WHASHPTYCH_RESTANK,          hwatSMALL | HPWH::MODELS_restankRealistic },
+	{ C_WHASHPTYCH_RESTANKNOUA,      hwatSMALL | HPWH::MODELS_restankNoUA },
+	{ C_WHASHPTYCH_AOSMITHSHPT50,    hwatSMALL | HPWH::MODELS_GE2012 },	// AO Smith SHPT models: base on GE2012
+	{ C_WHASHPTYCH_AOSMITHSHPT66,    hwatSMALL | HPWH::MODELS_GE2012 },	//  caller must modify UA and vol
+	{ C_WHASHPTYCH_AOSMITHSHPT80,    hwatSMALL | HPWH::MODELS_GE2012 },
+	{ C_WHASHPTYCH_AOSMITHPHPT60,	 hwatSMALL | HPWH::MODELS_AOSmithPHPT60 },
+	{ C_WHASHPTYCH_AOSMITHPHPT80,	 hwatSMALL | HPWH::MODELS_AOSmithPHPT80 },
+	{ C_WHASHPTYCH_AOSMITHHPTU50,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU50 },
+	{ C_WHASHPTYCH_AOSMITHHPTU66,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU66 },
+	{ C_WHASHPTYCH_AOSMITHHPTU80,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU80 },
+	{ C_WHASHPTYCH_AOSMITHHPTU80DR,  hwatSMALL | HPWH::MODELS_AOSmithHPTU80_DR },
+	{ C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
+	{ C_WHASHPTYCH_GE2012,           hwatSMALL | HPWH::MODELS_GE2012 },
+	{ C_WHASHPTYCH_GE2014,           hwatSMALL | HPWH::MODELS_GE2014 },
+	{ C_WHASHPTYCH_GE2014_80,        hwatSMALL | HPWH::MODELS_GE2014_80 },
+	{ C_WHASHPTYCH_GE2014_80DR,      hwatSMALL | HPWH::MODELS_GE2014_80DR },
+	{ C_WHASHPTYCH_GE2014STDMODE,    hwatSMALL | HPWH::MODELS_GE2014STDMode },
+	{ C_WHASHPTYCH_GE2014STDMODE_80, hwatSMALL | HPWH::MODELS_GE2014STDMode_80 },
+	{ C_WHASHPTYCH_RHEEMHB50,        hwatSMALL | HPWH::MODELS_RheemHB50 },
+	{ C_WHASHPTYCH_RHEEMHBDR2250,    hwatSMALL | HPWH::MODELS_RheemHBDR2250 },
+	{ C_WHASHPTYCH_RHEEMHBDR4550,    hwatSMALL | HPWH::MODELS_RheemHBDR4550 },
+	{ C_WHASHPTYCH_RHEEMHBDR2265,    hwatSMALL | HPWH::MODELS_RheemHBDR2265 },
+	{ C_WHASHPTYCH_RHEEMHBDR4565,    hwatSMALL | HPWH::MODELS_RheemHBDR4565 },
+	{ C_WHASHPTYCH_RHEEMHBDR2280,    hwatSMALL | HPWH::MODELS_RheemHBDR2280 },
+	{ C_WHASHPTYCH_RHEEMHBDR4580,    hwatSMALL | HPWH::MODELS_RheemHBDR4580 },
+	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | HPWH::MODELS_Stiebel220E },
+	{ C_WHASHPTYCH_GENERIC1,         hwatSMALL | HPWH::MODELS_Generic1 },
+	{ C_WHASHPTYCH_GENERIC2,         hwatSMALL | HPWH::MODELS_Generic2 },
+	{ C_WHASHPTYCH_GENERIC3,         hwatSMALL | HPWH::MODELS_Generic3 },
+	{ C_WHASHPTYCH_UEF2GENERIC,      hwatSMALL | HPWH::MODELS_UEF2generic },
+	{ C_WHASHPTYCH_WORSTCASEMEDIUM,  hwatSMALL | HPWH::MODELS_UEF2generic },	// alias (testing aid)
+    { C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
+	{ C_WHASHPTYCH_SANDEN80,         hwatSMALL | HPWH::MODELS_Sanden80 },
+
+
+// large
+	{ C_WHASHPTYCH_SANDENGS3,       hwatLARGE | HPWH::MODELS_Sanden_GS3_45HPA_US_SP },
+	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
+	{ C_WHASHPTYCH_COLMACCXA10_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_SP },
+	{ C_WHASHPTYCH_COLMACCXA15_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_SP },
+	{ C_WHASHPTYCH_COLMACCXA20_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_SP },
+	{ C_WHASHPTYCH_COLMACCXA25_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_SP },
+	{ C_WHASHPTYCH_COLMACCXA30_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_SP },
+
+#if 0
+	{ C_WHASHPTYCH_COLMACCXV5_MP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_MP },
+	{ C_WHASHPTYCH_COLMACCXA10_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_MP },
+	{ C_WHASHPTYCH_COLMACCXA15_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_MP },
+	{ C_WHASHPTYCH_COLMACCXA20_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_MP },
+	{ C_WHASHPTYCH_COLMACCXA25_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_MP },
+	{ C_WHASHPTYCH_COLMACCXA30_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_MP },
+#endif
+	{ C_WHASHPTYCH_NYLEC25A_SP,     hwatLARGE | HPWH::MODELS_NyleC25A_SP },
+	{ C_WHASHPTYCH_NYLEC60A_SP,     hwatLARGE | HPWH::MODELS_NyleC60A_SP  },
+	{ C_WHASHPTYCH_NYLEC90A_SP,     hwatLARGE | HPWH::MODELS_NyleC90A_SP  },
+	{ C_WHASHPTYCH_NYLEC125A_SP,    hwatLARGE | HPWH::MODELS_NyleC125A_SP },
+	{ C_WHASHPTYCH_NYLEC185A_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_SP  },
+	{ C_WHASHPTYCH_NYLEC250A_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_SP },
+#if 0
+	{ C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | HPWH::MODELS_NyleC25A_MP },
+	{ C_WHASHPTYCH_NYLEC60A_MP,     hwatLARGE | HPWH::MODELS_NyleC60A_MP },
+	{ C_WHASHPTYCH_NYLEC90A_MP,     hwatLARGE | HPWH::MODELS_NyleC90A_MP },
+	{ C_WHASHPTYCH_NYLEC125A_MP,    hwatLARGE | HPWH::MODELS_NyleC125A_MP },
+	{ C_WHASHPTYCH_NYLEC185A_MP,    hwatLARGE | HPWH::MODELS_NyleC185A_MP },
+	{ C_WHASHPTYCH_NYLEC250A_MP,    hwatLARGE | HPWH::MODELS_NyleC250A_MP },
+#endif
+	{ 32767,                         HPWH::MODELS(-1) }  };
+
+	SI tableVal = presetTbl->lookup(ashpTy);
+	int preset;
+	if (tableVal < 0)
+	{	attrs = 0;
+		preset = -1;
+	}
+	else
+	{	attrs = tableVal & hwatMASK;
+		preset = tableVal & ~hwatMASK;
+	}
+
+	return preset;
+}		// HPWHLINK::hw_HPWHInfo
+//-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 	WHASHPTYCH ashpTy)		// type choice (C_WHASHPTYCH_xxx)
 							//   maps to HPWH preset
@@ -2136,64 +2229,25 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 	float volX = -1.f;		// alternative volume
 	float UAX = -1.f;		// alternative UA, Btuh/F
 
-	HPWH::MODELS preset = HPWH::MODELS(-1);	// HPWH "preset"
-							// predefined type that determines most model parameters
+	int attrs;
+	HPWH::MODELS preset = HPWH::MODELS( hw_HPWHInfo( ashpTy, attrs));	// HPWH "preset"
+										// predefined type that determines most model parameters
 
+	// alternative values for some special cases
 	if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT50)
-	{	preset = HPWH::MODELS_GE2012;	// AO Smith SHPT models: base on GE2012
+	{	// preset = HPWH::MODELS_GE2012;	// AO Smith SHPT models: base on GE2012
 		volX = 45.f;			// ... and change vol / UA
 		UAX = 2.9f;
 	}
 	else if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT66)
-	{	preset = HPWH::MODELS_GE2012;
+	{	// preset = HPWH::MODELS_GE2012;
 		volX = 63.9f;
 		UAX = 3.4f;
 	}
 	else if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT80)
-	{	preset = HPWH::MODELS_GE2012;
+	{	// preset = HPWH::MODELS_GE2012;
 		volX = 80.7f;
 		UAX = 4.7f;
-	}
-	else
-	{	// known heat pump type
-			static const WWTABLE /* { SI key, value; } */ presetTbl[] = {
-				{ C_WHASHPTYCH_BASICINT,         HPWH::MODELS_basicIntegrated },
-				{ C_WHASHPTYCH_RESTANK,          HPWH::MODELS_restankRealistic },
-				{ C_WHASHPTYCH_RESTANKNOUA,      HPWH::MODELS_restankNoUA },
-				{ C_WHASHPTYCH_AOSMITHPHPT60,	 HPWH::MODELS_AOSmithPHPT60 },
-				{ C_WHASHPTYCH_AOSMITHPHPT80,	 HPWH::MODELS_AOSmithPHPT80 },
-				{ C_WHASHPTYCH_AOSMITHHPTU50,	 HPWH::MODELS_AOSmithHPTU50 },
-				{ C_WHASHPTYCH_AOSMITHHPTU66,	 HPWH::MODELS_AOSmithHPTU66 },
-				{ C_WHASHPTYCH_AOSMITHHPTU80,	 HPWH::MODELS_AOSmithHPTU80 },
-				{ C_WHASHPTYCH_AOSMITHHPTU80DR,  HPWH::MODELS_AOSmithHPTU80_DR },
-				{ C_WHASHPTYCH_SANDEN40,         HPWH::MODELS_Sanden40 },
-				{ C_WHASHPTYCH_SANDEN80,         HPWH::MODELS_Sanden80 },
-				{ C_WHASHPTYCH_COLMACCXA20,      HPWH::MODELS_CxA_20 },
-				{ C_WHASHPTYCH_NYLEC185A,        HPWH::MODELS_NG1 },
-				{ C_WHASHPTYCH_NYLEC250A,        HPWH::MODELS_NG2 },
-				{ C_WHASHPTYCH_GE2012,           HPWH::MODELS_GE2012 },
-				{ C_WHASHPTYCH_GE2014,           HPWH::MODELS_GE2014 },
-				{ C_WHASHPTYCH_GE2014_80,        HPWH::MODELS_GE2014_80 },
-				{ C_WHASHPTYCH_GE2014_80DR,      HPWH::MODELS_GE2014_80DR },
-				{ C_WHASHPTYCH_GE2014STDMODE,    HPWH::MODELS_GE2014STDMode },
-				{ C_WHASHPTYCH_GE2014STDMODE_80, HPWH::MODELS_GE2014STDMode_80 },
-				{ C_WHASHPTYCH_RHEEMHB50,        HPWH::MODELS_RheemHB50 },
-				{ C_WHASHPTYCH_RHEEMHBDR2250,    HPWH::MODELS_RheemHBDR2250 },
-				{ C_WHASHPTYCH_RHEEMHBDR4550,    HPWH::MODELS_RheemHBDR4550 },
-				{ C_WHASHPTYCH_RHEEMHBDR2265,    HPWH::MODELS_RheemHBDR2265 },
-				{ C_WHASHPTYCH_RHEEMHBDR4565,    HPWH::MODELS_RheemHBDR4565 },
-				{ C_WHASHPTYCH_RHEEMHBDR2280,    HPWH::MODELS_RheemHBDR2280 },
-				{ C_WHASHPTYCH_RHEEMHBDR4580,    HPWH::MODELS_RheemHBDR4580 },
-				{ C_WHASHPTYCH_STIEBEL220E,      HPWH::MODELS_Stiebel220E },
-				{ C_WHASHPTYCH_GENERIC1,         HPWH::MODELS_Generic1 },
-				{ C_WHASHPTYCH_GENERIC2,         HPWH::MODELS_Generic2 },
-				{ C_WHASHPTYCH_GENERIC3,         HPWH::MODELS_Generic3 },
-				{ C_WHASHPTYCH_UEF2GENERIC,      HPWH::MODELS_UEF2generic },
-				{ C_WHASHPTYCH_WORSTCASEMEDIUM,  HPWH::MODELS_UEF2generic },	// alias (testing aid)
-				{ 32767,                         HPWH::MODELS(-1) }				// HPWHInit_presets will reject
-			};	
-
-		preset = HPWH::MODELS(presetTbl->lookup(ashpTy));
 	}
 	if (hw_pHPWH->HPWHinit_presets(preset) != 0)
 		rc |= RCBAD;
@@ -2288,15 +2342,16 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 RC HPWHLINK::hw_GetInfo(		// return HPWH tank values
 	float& vol,		// vol, gal
 	float& UA,		// UA, Btuh/F
-	float& insulR) const	// insulR, ft2-F/Btuh
+	float& insulR,	// insulR, ft2-F/Btuh
+	float tankCount /*=1.f*/) const		// # of tanks
 // returns RC iff success
 {
 	RC rc = RCOK;
-	vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+	vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL) / tankCount;
 	double UAd;
 	if (hw_pHPWH->getUA(UAd, HPWH::UNITS_BTUperHrF) != 0)
 		rc |= RCBAD;
-	UA = float(UAd);
+	UA = float(UAd) / tankCount;
 
 	double surfA = hw_pHPWH->getTankSurfaceArea(HPWH::UNITS_FT2);
 	insulR = UAd > 0. ? surfA / UAd : 1.e6;
@@ -2776,6 +2831,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	const char* whenTy = strtprintf( "when whType=%s", whTyTx);
 	const char* whHsTx = getChoiTx( DHWHEATER_HEATSRC, 1);
 	const char* whenHs = strtprintf( "when whHeatSrc=%s", whHsTx);
+	const char* whenTyHs = strtprintf("when whType=%s and whHeatSrc=%s", whTyTx, whHsTx);
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 	RC rc = !pWS ? oer("DHWSYS not found")	// insurance (unexpected)
@@ -2790,23 +2846,17 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 
 	// tank surrounding temp -- one of whTEx or whZone, not both
 	//   used only re HPWH 2-16, enforce for all
-#if 0
-	int nVal = IsSetCount(DHWHEATER_TEX, DHWHEATER_ZNTI, 0);
-	if (nVal == 0)
-		rc |= oer("one of 'whTEx' and 'whZone' must be specified.");
-	else if (nVal == 2)
-		rc |= disallowN("when 'whTEx' is specified", DHW_ZNTI, 0);
-#endif
 	if (IsSet(DHWHEATER_TEX))
 		rc |= disallow( DHWHEATER_ZNTI, "when 'whTEx' is specified");
 
-	if (wh_heatSrc != C_WHHEATSRCCH_ELRESX)
+	// redundant ... see below
+	if (!wh_IsHPWHModel())
 		ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
 
 	if (whfcn == whfcnLOOPHEATER && !wh_CanHaveLoopReturn())
-		rc |= oer("DHWLOOPHEATER must be whType=SmallStorage with whHeatSrc=ASPX or whHeatSrc=ResistanceX.");
+		rc |= oer("DHWLOOPHEATER must have whHeatSrc=ASPX or whHeatSrc=ResistanceX.");
 
-	if (wh_type != C_WHTYPECH_STRGSML)
+	if (wh_type != C_WHTYPECH_STRGSML && wh_type != C_WHTYPECH_BUILTUP)
 	{	if (wh_type == C_WHTYPECH_INSTUEF)
 		{	if (IsSet( DHWHEATER_HEATSRC) && wh_heatSrc != C_WHHEATSRCCH_FUEL)
 				rc |= ooer( DHWHEATER_HEATSRC,
@@ -2822,7 +2872,8 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			// note wh_vol check below (wh_vol=0 OK, else error)
 		}
 		else if (wh_heatSrc == C_WHHEATSRCCH_ASHP
-	          || wh_heatSrc == C_WHHEATSRCCH_ASHPX)
+	          || wh_heatSrc == C_WHHEATSRCCH_ASHPX
+			  || wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 			rc |= ooer( DHWHEATER_HEATSRC,
 					"whHeatSrc=%s is not allowed %s", whHsTx, whenTy);
 
@@ -2833,13 +2884,22 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		ignoreN( whenTy, DHWHEATER_LDEF, DHWHEATER_ASHPRESUSE, 0);
 	}
 	else if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
-	{	// small storage HPWH model
+	{	// STRGSML or BUILTUP HPWH model
 		// TODO: more specific checking for ASHPX
-		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
+		ignoreN( whenHs, DHWHEATER_LDEF, 0);
 		RC rc1 = requireN( whenHs, DHWHEATER_ASHPTY, 0);
 		rc |= rc1;
 		if (!rc1)
-		{	if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
+		{
+			int reqdAttr = wh_type == C_WHTYPECH_BUILTUP
+				? HPWHLINK::hwatLARGE
+				: HPWHLINK::hwatSMALL;
+
+			const char* whAshpTyTx = getChoiTx(DHWHEATER_ASHPTY, 1);
+			if (!wh_HPWH.hw_IsAttr(wh_ashpTy, reqdAttr))
+				rc |= ooer(DHWHEATER_ASHPTY, "whAshpType=%s not supported %s", whAshpTyTx, whenTy);
+
+			if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
 				rc |= requireN( "when whASHPType=Generic", DHWHEATER_EF, DHWHEATER_VOL, 0);
 			else
 				ignoreN( whenHs, DHWHEATER_EF, DHWHEATER_ASHPRESUSE, 0);
@@ -2859,10 +2919,19 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	{	// small storage electric resistance (HPWH model)
 		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_ASHPTY,
 			DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI, DHWHEATER_ASHPRESUSE, 0);
-		rc |= requireN( whenHs, DHWHEATER_EF, DHWHEATER_VOL, 0);
- 		if (wh_EF > 0.98f)
-			rc |= oer("whEF (%0.3f) must be <= 0.98 %s",
-				wh_EF, whenHs);
+		rc |= requireN(whenHs, DHWHEATER_VOL, 0);
+		if (wh_type == C_WHTYPECH_BUILTUP)
+		{
+			ignoreN(whenTyHs, DHWHEATER_EF, 0);
+
+		}
+		else
+		{
+			rc |= requireN(whenTyHs, DHWHEATER_EF, 0);
+			if (wh_EF > 0.98f)
+				rc |= oer("whEF (%0.3f) must be <= 0.98 %s",
+					wh_EF, whenHs);
+		}
 		if (!IsSet( DHWHEATER_RESHTPWR2))
 			wh_resHtPwr2 = wh_resHtPwr;		// lower element power defaults from upper
 	}
@@ -2906,7 +2975,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		rc |= limitCheck( DHWHEATER_VOL, .1, 20000.);
 	}
 	else if (wh_vol > 0.f)
-		// tolerate specified whVol==0 for instantaneous
+		// tolerate specified whVolPerTank==0 for instantaneous
 		rc |= disallow( DHWHEATER_VOL, whenTy);
 
 	// if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
@@ -3074,9 +3143,6 @@ int DHWHEATER::wh_UsesDerivedLDEF() const
 	      && (wh_heatSrc != C_WHHEATSRCCH_ELRES || wh_EF != 1.f))
 			ret = 1;		// ELRES + EF=1 means ideal heater
 	}
-	else if (wh_type == C_WHTYPECH_STRGLRG)
-		// T24DHW.DLL erroneously uses LDEF for large
-		ret = Top.tp_dhwModel == C_DHWMODELCH_T24DHW;
 	return ret;
 }		// DHWHEATER::wh_UsesDerivedLDEF
 //----------------------------------------------------------------------------
@@ -3099,7 +3165,7 @@ static const float LDtab[][6] =
 	{   0.44189f,-0.28361f,	-0.71673f,	  1.13480f,	 0.947f,  4.f }		// heat pump
 };
 
-	if (wh_type != C_WHTYPECH_STRGSML && Top.tp_dhwModel != C_DHWMODELCH_T24DHW)
+	if (wh_type != C_WHTYPECH_STRGSML)
 		return -1.f;		// LDEF applicable only for small storage
 							//  don't enforce for T24DHW mode due to
 							//    erroneous use of LDEF for Large Storage
@@ -3217,19 +3283,6 @@ RC DHWHEATER::wh_DoEndPreRun()
 			}
 		}
 	}
-	else if (wh_type == C_WHTYPECH_STRGLRG && Top.tp_dhwModel == C_DHWMODELCH_T24DHW)
-	{	// T24DHW.DLL erroneously uses small storage model for large storage
-		//   (for electric resistance only)
-		//   derive LDEF from Eff
-		float arl = wh_totHARL / wh_hrCount;
-		wh_EF = wh_eff;
-		float LDEF = wh_CalcLDEF( arl);
-		DHWHEATER* pWHi = WHiB.GetAtSafe( ss);
-		if (pWHi && !pWHi->IsSet( DHWHEATER_LDEF))
-		{	pWHi->wh_LDEF = LDEF;
-			pWHi->fStat( DHWHEATER_LDEF) |= FsSET | FsVAL;
-		}
-	}
 	// else nothing needed
 
 	return rc;
@@ -3277,10 +3330,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		rc |= wh_HPWH.hw_InitFinalize(inHtSupply, inHtLoopRet);
 	}
 
-	// make probe-able volume consistent with HPWH value
-	// wh_vol = wh_HPWH.hw_GetTankVol();
-
-	wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR);
+	// make probe-able values consistent with HPWH
+	//   note hw_GetInfo() call uses tankCount=1: get totals from HPWH
+	wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
 
 	// config checks -- report only once
 	if (!pWS->ws_configChecked)
