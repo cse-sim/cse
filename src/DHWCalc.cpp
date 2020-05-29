@@ -2347,18 +2347,35 @@ RC HPWHLINK::hw_GetInfo(		// return HPWH tank values
 // returns RC iff success
 {
 	RC rc = RCOK;
-	vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL) / tankCount;
+	vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
 	double UAd;
 	if (hw_pHPWH->getUA(UAd, HPWH::UNITS_BTUperHrF) != 0)
 		rc |= RCBAD;
-	UA = float(UAd) / tankCount;
+	UA = float(UAd);
 
-	double surfA = hw_pHPWH->getTankSurfaceArea(HPWH::UNITS_FT2);
-	insulR = UAd > 0. ? surfA / UAd : 1.e6;
+	// surface area: account for multiple tanks
+	float surfA = hw_GetTankSurfaceArea( tankCount, vol);
+
+	insulR = UA > 0. ? surfA / UA : 1.e6f;
 
 	return rc;
 
-}		// hw_GetInfo
+}		// HPWHLINK::hw_GetInfo
+//-----------------------------------------------------------------------------
+float HPWHLINK::hw_GetTankSurfaceArea(		// tank surface area
+	float tankCount /*=-1.f*/,	// # of tanks
+	float vol /*=-1*/) const	// tank volume, gal
+								//   if < 0, use HPWH getTankVol
+// returns total tank surface area, ft2
+//   (accounting for possible multiple tanks)
+{
+	if (vol < 0)
+		vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+	float volPerTank = vol / tankCount;
+	double surfAPerTank = HPWH::getTankSurfaceArea(volPerTank, HPWH::UNITS_GAL, HPWH::UNITS_FT2);
+	float surfA = surfAPerTank * tankCount;
+	return surfA;
+}		// HPWHLINK::hw_GetTankSurfaceArea
 //-----------------------------------------------------------------------------
 void HPWHLINK::hw_InitTotals()		// run init
 // start-of-run initialization totals, error counts, ...
@@ -2898,8 +2915,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			const char* whAshpTyTx = getChoiTx(DHWHEATER_ASHPTY, 1);
 			if (!wh_HPWH.hw_IsAttr(wh_ashpTy, reqdAttr))
 				rc |= ooer(DHWHEATER_ASHPTY, "whAshpType=%s not supported %s", whAshpTyTx, whenTy);
-
-			if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
+			else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
 				rc |= requireN( "when whASHPType=Generic", DHWHEATER_EF, DHWHEATER_VOL, 0);
 			else
 				ignoreN( whenHs, DHWHEATER_EF, DHWHEATER_ASHPRESUSE, 0);
@@ -2919,15 +2935,12 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	{	// small storage electric resistance (HPWH model)
 		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_ASHPTY,
 			DHWHEATER_ASHPTSRC, DHWHEATER_ASHPSRCZNTI, DHWHEATER_ASHPRESUSE, 0);
-		rc |= requireN(whenHs, DHWHEATER_VOL, 0);
 		if (wh_type == C_WHTYPECH_BUILTUP)
-		{
+		{	rc |= requireN(whenTyHs, DHWHEATER_VOL, 0);
 			ignoreN(whenTyHs, DHWHEATER_EF, 0);
-
 		}
 		else
-		{
-			rc |= requireN(whenTyHs, DHWHEATER_EF, 0);
+		{	rc |= requireN(whenTyHs, DHWHEATER_EF, 0);
 			if (wh_EF > 0.98f)
 				rc |= oer("whEF (%0.3f) must be <= 0.98 %s",
 					wh_EF, whenHs);
@@ -2958,8 +2971,12 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	}
 
 	if (wh_IsHPWHModel())
-	{	if (IsSetCount(DHWHEATER_UA, DHWHEATER_INSULR, 0) == 2)
+	{	// need sufficient info to determine tank UA
+		int argCount = IsSetCount(DHWHEATER_UA, DHWHEATER_INSULR, 0);
+		if (argCount == 2)
 			rc |= disallow(DHWHEATER_INSULR, "when 'whUA' is specified");
+		else if (argCount == 0 && wh_type == C_WHTYPECH_BUILTUP)
+			rc |= oer("whUA or whInsulR is required %s", whenTy);
 	}
 	else
 		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, 0);

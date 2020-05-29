@@ -3655,6 +3655,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "RC hw_AdjustUAIf( float UA, float insulR);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
 *declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
+*declare "float hw_GetTankSurfaceArea( float tankCount=1.f, float vol=-1.f) const;"
 *declare "void hw_InitTotals();"
 *declare "bool hw_HasCompressor();"
 *declare "bool hw_IsSetpointFixed() const;"
@@ -3734,7 +3735,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "DHWSYS* wh_GetDHWSYS() const;"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
-  *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
+  *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
   *declare "int wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
@@ -3798,12 +3799,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//    default = 7.22, units / meaning unknown
   *r FLOAT_GZ wh_tankCount		// # of storage tanks, re built-up heater systems
 								//    default 1
-  *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated)
+  *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated; not per tank)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)
-  *r FLOAT_GEZ wh_UAPerTank;	// HPWH-type UA per tank, Btuh/F
-								//    default from HPWH preset
-  *r FLOAT_GEZ wh_UA;			// HPWH-type total UA, Btuh/F
+  *r FLOAT_GEZ wh_UA;			// HPWH-type total UA, Btuh/F (not per tank)
 								//    default from HPWH preset
   *r FLOAT_GZ wh_insulR;		// HPWH-type tank insulation resistance, hr-F/Btuh
 								//    default from preset or wh_UA and wh_vol
