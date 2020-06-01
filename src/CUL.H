@@ -216,9 +216,6 @@ III. Member Input
 #define ARRAY     128	// array of DATs, size in p2, input at once as comma-separated list, 3-92.  may control code in cul.c.
 #define SUM_OK    256	// TYREF: ok to enter "sum" (TI_SUM (cnglob.h) stored).
 #define ALL_OK    512	// TYREF: ok to enter "all" (TI_ALL stored), also "all_but" (TI_ALLBUT) if ARRAY.
-#ifdef TI_ELECTRIC		// definition removed from cnglob.h, 1-93
-x #define ELECTRIC_OK ????	// TYREF: ok to enter "electric" (TI_ELECTRIC stored)
-#endif
 #ifdef AUTOSIZE	// cnglob.h
  #define AS_OK    1024	// AUTOSIZE name ok for this member. 6-95.
 #endif

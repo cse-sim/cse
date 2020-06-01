@@ -3652,7 +3652,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "RC hw_InitPreset( WHASHPTYCH ashpTy);"
 *declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
 *declare "RC hw_InitTank( float vol);"
-*declare "RC hw_AdjustUAIf( float UA, float insulR);"
+*declare "RC hw_AdjustUAIf( float UA, float insulR, float tankCount=1.f);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
 *declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
 *declare "float hw_GetTankSurfaceArea( float tankCount=1.f, float vol=-1.f) const;"
@@ -3797,8 +3797,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  *r FLOAT_GZ wh_tankCount		// # of storage tanks, re built-up heater systems
-								//    default 1
+  *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
+								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
   *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated; not per tank)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)

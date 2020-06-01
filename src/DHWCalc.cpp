@@ -2279,16 +2279,18 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_AdjustUAIf(	// adjust tank UA
 	float UA,			// tank UA, Btuh/F; derived from insulR if < 0
-	float insulR)		// overall tank insulation resistance, ft2-F/Btuh
+	float insulR,		// overall tank insulation resistance, ft2-F/Btuh
 						//    includes surface resistance
 						//    ignored if <0
+	float tankCount /*=1.f*/)		// # of tanks
 // NOP if UA and insulR both < 0
 // uses current tank surface area (derived from volume)
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 	if (insulR >= 0.f && UA < 0.f)
-	{	float surfA = hw_pHPWH->getTankSurfaceArea(HPWH::UNITS_FT2);
+	{	// get total surface area
+		float surfA = hw_GetTankSurfaceArea( tankCount);
 		UA = surfA / max(insulR, .68f);
 	}
 	if (UA >= 0.f)
@@ -2907,11 +2909,9 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		RC rc1 = requireN( whenHs, DHWHEATER_ASHPTY, 0);
 		rc |= rc1;
 		if (!rc1)
-		{
-			int reqdAttr = wh_type == C_WHTYPECH_BUILTUP
+		{	int reqdAttr = wh_type == C_WHTYPECH_BUILTUP
 				? HPWHLINK::hwatLARGE
 				: HPWHLINK::hwatSMALL;
-
 			const char* whAshpTyTx = getChoiTx(DHWHEATER_ASHPTY, 1);
 			if (!wh_HPWH.hw_IsAttr(wh_ashpTy, reqdAttr))
 				rc |= ooer(DHWHEATER_ASHPTY, "whAshpType=%s not supported %s", whAshpTyTx, whenTy);
@@ -2938,6 +2938,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		if (wh_type == C_WHTYPECH_BUILTUP)
 		{	rc |= requireN(whenTyHs, DHWHEATER_VOL, 0);
 			ignoreN(whenTyHs, DHWHEATER_EF, 0);
+			wh_EF = 0.95f;		// dummy default
 		}
 		else
 		{	rc |= requireN(whenTyHs, DHWHEATER_EF, 0);
@@ -3122,12 +3123,10 @@ void DHWHEATER::wh_InitRunTotals()
 DHWSYS* DHWHEATER::wh_GetDHWSYS() const
 {
 	DHWSYS* pWS = (b == &WhR || b == &WlhR ? WsR : WSiB).GetAtSafe(ownTi);
-#if 0
-	// ToDo: OwnB not set for loopheater?
+	// ToDo: ownB not set for loopheater?
 	record* pWSX = b->ownB->GetAtSafe(ownTi);
 	if (pWS != pWSX)
 		printf("\nMismatch");
-#endif
 
 	return pWS;
 }		// DHWHEATER::wh_GetDHWSYS
@@ -3338,7 +3337,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	// at this point, HPWH has known size and default UA
 	//   if additional UA or insulR is provided, adjust UA
-	rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR);
+	rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR, wh_tankCount);
 
 	if (rc == RCOK)
 	{	// tank inlet fractional heights
