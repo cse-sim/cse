@@ -170,9 +170,6 @@ NB return this BEFORE making xStk entry for command that fails. */
 #define RC_SUM      16386	// "sum" was input in place of name (and enabled). for xpr, ganame,
 #define RC_ALL      16387	// "all" was input in place of name (and enabled). for xpr, ganame,
 #define RC_ALLBUT   16388	// "all_but" was input in place of name (and enabled). for xpr, ganame,
-#ifdef TI_ELECTRIC		// definition removed from cnglob.h, 1-93
-x #define RC_ELECTRIC 16389	// "electric" ditto
-#endif
 
 //  restore when used:
 //#define Z(f) { rv=(f); if (rv) return rv; }	// call f; if non-0, return it
@@ -232,6 +229,10 @@ LOCAL SI NEAR culNClears = 0;		// counts valid Clear commands re errmsgs
 //--- variables that would be statics inside fcns except we need to clean them.
 LOCAL BOO NEAR addVrbsDone = 0; 	// non-0 when CULT verbs have been added to symbol table (don't repeat, for speed). 10-93.
 LOCAL SI NEAR addVrbsLvl = 0;		// addVrbs nesting level
+
+// options for nxRat()
+const int nxropIGNORE_BEEN_HERE = 1;	// ignore BEEN_HERE flags, allows handling multiple sub-RATEs with same CULT table
+										//   example: DHWHEATER and DHWLOOPHEATER both owned by DHWSYS
 
 /*---------------------------- INITIALIZED DATA ---------------------------*/
 
@@ -305,7 +306,7 @@ LOCAL SI NEAR nxOwRat( BP ownB, CULT *c, CULT **pc, BP *prTyIf, BP *pr);
 LOCAL SI NEAR nxOwRec( TI ownTi, BP b, TI *pi, record **pe);
 LOCAL SI FC NEAR xnxDatMbr( SI bads, void **pp);
 LOCAL SI FC NEAR xnxC( CULT **pp);
-LOCAL SI FC NEAR nxRat( BP * pr);
+LOCAL SI FC NEAR nxRat( BP * pr, int options=0);
 LOCAL SI FC NEAR nxRec( SI bads, void **pe);
 LOCAL SI FC NEAR nxDatMbr( void **pp);
 LOCAL SI FC NEAR nxC( CULT **pp);
@@ -2200,12 +2201,8 @@ haveFieldRc:		// preceding similar cases joins here; rc, gotEvf set.
 					specVal = TI_ALL;
 					goto special;		// "all" (eg rpZone, or list of records)
 				case RC_ALLBUT:
-					specVal = TI_ALLBUT;
-					goto special;		// "all_but" in list of records
-#ifdef TI_ELECTRIC		// definition removed from cnglob.h, 1-93
-x               case RC_ELECTRIC:
-x					specVal = TI_ELECTRIC;  //goto special;		// "electric" [for coils]
-#endif
+					specVal = TI_ALLBUT;	// "all_but" in list of records
+					// goto special .. fall-thru;		
 special:
 					if (xSp->sz==2)
 						*(SI *)xSp->p = specVal;	// negative value is not a possible record subscript
@@ -2830,11 +2827,6 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 			else if (!strcmpi( p, "all_but"))
 				if (f & ALL_OK && f & ARRAY)  rc = RC_ALLBUT;
 				else rc = perNx( (char *)MH_S0252);	// "'ALL_BUT' cannot be used here"
-#ifdef TI_ELECTRIC		// definition removed from cnglob.h, 1-93
-x        else if (!strcmpi( p, "electric"))
-x           if (f & ELECTRIC_OK)  rc = RC_ELECTRIC;
-x			else rc = perNx( (char *)MH_S0253);	// "'ELECTRIC' cannot be used here"
-#endif
 		if (rc)					// if sum or all (whether error or ok)
 			dmfree( DMPP( *pp));			// discard the string
 	}
@@ -3870,7 +3862,9 @@ reenter:
 //===========================================================================
 LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
 
-	BP *pr )		// basAnc * *.  init *pr NULL on 1st call; rcvs basAnc ptr (same as xSp->b).
+	BP *pr,		// basAnc * *.  init *pr NULL on 1st call; rcvs basAnc ptr (same as xSp->b).
+	int options /*=0*/)		// option bits
+							//   nxropIGNORE_BEEN_HERE: ignore BEEN_HERE flags
 
 // also uses: xSp->b, xSp->cult (current/top level)
 // sets: xSp->b, xSp->cult (nested levels) (adds to xStk for nested tbls)
@@ -3895,10 +3889,10 @@ LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
 		{
 			xSp->b = xSp->b->tyB;  	// do that now. (limitation: this
 			*pr = xSp->b;			// .. sequence does not permit deleting
-			return 1;			// .. the sub-basAncs in same pass)
+			return 1;				// .. the sub-basAncs in same pass)
 		}
-		if (xSp <= xSpSave)		// if at entry xStk level
-			return 0;			// table tree walk is complete, say done
+		if (xSp <= xSpSave)			// if at entry xStk level
+			return 0;				// table tree walk is complete, say done
 		--xSp;   			// else continue at embedding level
 	}
 // loop to find next basAnc to return to caller
@@ -3907,10 +3901,20 @@ LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
 		++xSp->c;
 		// first, do any nested basAncs
 		if ( xSp->c->cs==RATE 					// if CULT tbl entry is for basAnc record
-				&& !(((CULT *)xSp->c->CULTP2)->IFLAGS & BEEN_HERE) ) 	// if not done yet
+				&& (!(((CULT *)xSp->c->CULTP2)->IFLAGS & BEEN_HERE) 	// if not done yet
+			       || (options&nxropIGNORE_BEEN_HERE)) )
 		{
-			((CULT *)xSp->c->CULTP2)->IFLAGS |= BEEN_HERE;   	/* say done.  CAUTION: ratCultO may clear this bit
-	  							      where rescan desired.  Coordinate changes. */
+#if 0 && defined( _DEBUG)
+			if ((((CULT *)xSp->c->CULTP2)->IFLAGS & BEEN_HERE) 	// if done before
+				&& (options & nxropIGNORE_BEEN_HERE))			// but caller sez ignore
+			{
+				CULT* pC = xSp->c;
+				CULT* pCX = (CULT *)pC->CULTP2;
+				printf("\nWould have skipped");
+			}
+#endif
+			((CULT *)xSp->c->CULTP2)->IFLAGS |= BEEN_HERE;   	// say done.  CAUTION: ratCultO may clear this bit
+	  															// where rescan desired.  Coordinate changes.
 			if (xSp >= xStk + sizeof(xStk)/sizeof(XSTK) - 1 - 1)
 				perl((char *)MH_S0270);	//"cul.cpp:nxRat: Too much nesting in tables: Increase size of context stack xStk[] in cul.cpp"
 			else				// room for another xStk entry
@@ -3919,8 +3923,8 @@ LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
 				xSp->b = (BP)(xSp-1)->c->b;     		// the basAnc
 				xSp->cult = (CULT *)(xSp-1)->c->CULTP2;  	// the CULT table
 				xSp->c = xSp->cult-1;			// init CULT entry ptr
-				continue;			/* go to top loop to check this tbl for RATEs.
-             				   When there are no more levels with basAncs, control will get to break in next 'if'. */
+				continue;		// go to top loop to check this tbl for RATEs.
+             					// When there are no more levels with basAncs, control will get to break in next 'if'.
 			}
 		}
 		// then, do this basAnc
@@ -4123,19 +4127,22 @@ LOCAL void FC NEAR ratCultO( void)
 // call at top xStk level (to do all basAncs).
 // uses xSp->b and xSp->cult; and uses more xStk entries internally.
 {
-	for (BP b = 0;  nxRat(&b);  )  	 	/* loop basAncs by looping tables, adding xStk entries per table
-    						   nesting (ie ownership).  Uses xSp->cult, xSp->b.  above. */
+	for (BP b = 0;  nxRat(&b, nxropIGNORE_BEEN_HERE);  )
+										// loop basAncs by looping tables, adding xStk entries per table
+    									// nesting (ie ownership).  Uses xSp->cult, xSp->b.  above.
+										//   ignore BEEN_HERE so multiple sub-RATEs of same type are handled
+										//     eg DHWHEATER and DHWLOOPHEATER from DHWSYS
 	{
-		//if (b->isOwnable())       		if an ownable-record basAnc: all are, 7-92.
+		//if (b->isOwnable())       if an ownable-record basAnc: all are, 7-92.
 		if (xSp > xStk )  			// if nested (not top: no owner)
-			if ((xSp-1)->c->f & NOTOWNED)  	// if embedding table entry flagged as "not indicating ownership" 11-91
-				xSp->cult->IFLAGS &= ~BEEN_HERE;	/* clear nxRat's flag so this cult will be returned again when
-             					   accessed by another entry -- may indicate its owner 12-10-91 */
+			if ((xSp-1)->c->f & NOTOWNED)  			// if embedding table entry flagged as "not indicating ownership" 11-91
+				xSp->cult->IFLAGS &= ~BEEN_HERE;	// clear nxRat's flag so this cult will be returned again when
+             										//  accessed by another entry -- may indicate its owner 12-10-91
 			else
 			{
 				BP ownB = (xSp-1)->b;			// owner here is embedding basAnc
-				if ( b->ownB != 0   			// if owner already set
-				&& b->ownB != ownB )  			// to another owner
+				if (b->ownB != 0   				// if owner already set
+				 && b->ownB != ownB )  			// to another owner
 					per( (char *)MH_S0202,			// error message, cuparse.cpp
 					//"cul.cpp:ratCultO: internal error: bad tables: \n"
 					//"    '%s' rat at %p is 'owned' by '%s' rat at %p and also '%s' rat at %p",
