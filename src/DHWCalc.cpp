@@ -2026,12 +2026,6 @@ RC DHWUSE::wu_CalcHotF(
 	}
 	return rc;
 }		// DHWUSE::wu_CalcHotF
-//----------------------------------------------------------------------------
-DHWDAYUSE* DHWUSE::wu_GetDHWDAYUSE() const
-{
-	DHWDAYUSE* pWDU = (b == &WuR ? WduR : WDUiB).GetAtSafe( ownTi);
-	return pWDU;
-}		// DHWUSE::wu_GetDHWDAYUSE
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2171,7 +2165,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 // large
 	{ C_WHASHPTYCH_SANDENGS3,       hwatLARGE | HPWH::MODELS_Sanden_GS3_45HPA_US_SP },
+#if 0
 	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
+#endif
 	{ C_WHASHPTYCH_COLMACCXA10_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_SP },
 	{ C_WHASHPTYCH_COLMACCXA15_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_SP },
 	{ C_WHASHPTYCH_COLMACCXA20_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_SP },
@@ -2868,15 +2864,21 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	if (IsSet(DHWHEATER_TEX))
 		rc |= disallow( DHWHEATER_ZNTI, "when 'whTEx' is specified");
 
-	// redundant ... see below
-	if (!wh_IsHPWHModel())
-		ignoreN( whenHs, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
-
 	if (whfcn == whfcnLOOPHEATER && !wh_CanHaveLoopReturn())
 		rc |= oer("DHWLOOPHEATER must have whHeatSrc=ASPX or whHeatSrc=ResistanceX.");
 
 	if (wh_type != C_WHTYPECH_STRGSML && wh_type != C_WHTYPECH_BUILTUP)
-	{	if (wh_type == C_WHTYPECH_INSTUEF)
+	{	// wh_type: _STRGLRG, _INSTSML, _INSTLRG, _INSTUEF
+		if (wh_heatSrc == C_WHHEATSRCCH_ASHP
+			|| wh_heatSrc == C_WHHEATSRCCH_ASHPX
+			|| wh_heatSrc == C_WHHEATSRCCH_ELRESX)
+			rc |= ooer(DHWHEATER_HEATSRC,
+				"whHeatSrc=%s is not allowed %s", whHsTx, whenTy);
+
+		ignoreN(whenTy, DHWHEATER_LDEF, DHWHEATER_ASHPRESUSE, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2,
+			DHWHEATER_TANKCOUNT, 0);
+
+		if (wh_type == C_WHTYPECH_INSTUEF)
 		{	if (IsSet( DHWHEATER_HEATSRC) && wh_heatSrc != C_WHHEATSRCCH_FUEL)
 				rc |= ooer( DHWHEATER_HEATSRC,
 					"whHeatSrc=%s is not allowed %s (use whHeatSrc=Fuel or omit)",
@@ -2890,22 +2892,15 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 							wh_eff, wh_UEF);
 			// note wh_vol check below (wh_vol=0 OK, else error)
 		}
-		else if (wh_heatSrc == C_WHHEATSRCCH_ASHP
-	          || wh_heatSrc == C_WHHEATSRCCH_ASHPX
-			  || wh_heatSrc == C_WHHEATSRCCH_ELRESX)
-			rc |= ooer( DHWHEATER_HEATSRC,
-					"whHeatSrc=%s is not allowed %s", whHsTx, whenTy);
-
-		if (wh_type == C_WHTYPECH_STRGLRG || wh_type == C_WHTYPECH_INSTLRG)
-			rc |= require( DHWHEATER_EFF, whenTy);
+		else if (wh_type == C_WHTYPECH_STRGLRG || wh_type == C_WHTYPECH_INSTLRG)
+			rc |= require(DHWHEATER_EFF, whenTy);
 		else if (wh_type == C_WHTYPECH_INSTSML)
-			rc |= require( DHWHEATER_EF, whenTy);
-		ignoreN( whenTy, DHWHEATER_LDEF, DHWHEATER_ASHPRESUSE, 0);
+			rc |= require(DHWHEATER_EF, whenTy);
 	}
 	else if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	// STRGSML or BUILTUP HPWH model
 		// TODO: more specific checking for ASHPX
-		ignoreN( whenHs, DHWHEATER_LDEF, 0);
+		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
 		RC rc1 = requireN( whenHs, DHWHEATER_ASHPTY, 0);
 		rc |= rc1;
 		if (!rc1)
@@ -2993,7 +2988,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		rc |= limitCheck( DHWHEATER_VOL, .1, 20000.);
 	}
 	else if (wh_vol > 0.f)
-		// tolerate specified whVolPerTank==0 for instantaneous
+		// tolerate specified whVol==0 for instantaneous
 		rc |= disallow( DHWHEATER_VOL, whenTy);
 
 	// if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
@@ -3119,17 +3114,6 @@ void DHWHEATER::wh_InitRunTotals()
 	wh_HPWH.hw_InitTotals();
 
 }		// DHWHEATER::wh_InitRunTotals
-//----------------------------------------------------------------------------
-DHWSYS* DHWHEATER::wh_GetDHWSYS() const
-{
-	DHWSYS* pWS = (b == &WhR || b == &WlhR ? WsR : WSiB).GetAtSafe(ownTi);
-	// ToDo: ownB not set for loopheater?
-	record* pWSX = b->ownB->GetAtSafe(ownTi);
-	if (pWS != pWSX)
-		printf("\nMismatch");
-
-	return pWS;
-}		// DHWHEATER::wh_GetDHWSYS
 //----------------------------------------------------------------------------
 int DHWHEATER::wh_SetFunction()		// determine function
 // returns whfcnXXXX
@@ -3717,12 +3701,6 @@ RC DHWTANK::RunDup(		// copy input to run record; check and initialize
 	return rc;
 }		// DHWTANK::RunDup
 //----------------------------------------------------------------------------
-DHWSYS* DHWTANK::wt_GetDHWSYS() const
-{
-	DHWSYS* pWS = (b == &WtR ? WsR : WSiB).GetAtSafe( ownTi);
-	return pWS;
-}		// DHWTANK::wt_GetDHWSYS
-//-----------------------------------------------------------------------------
 RC DHWTANK::wt_Init()			// init for run
 {	RC rc = RCOK;
 	wt_pZn = ZrB.GetAtSafe(wt_znTi);
@@ -3774,12 +3752,6 @@ DHWHEATREC::~DHWHEATREC()		// d'tor
 	wr_ticks = NULL;
 }	// DHWHEATREC::~DHWHEATREC
 //-----------------------------------------------------------------------------
-DHWSYS* DHWHEATREC::wr_GetDHWSYS() const
-{
-	DHWSYS* pWS = (b == &WrR ? WsR : WSiB).GetAtSafe( ownTi);
-	return pWS;
-}		// DHWHEATREC::wt_GetDHWSYS
-//----------------------------------------------------------------------------
 RC DHWHEATREC::wr_CkF()		// DHW heat rec input check / default
 // called at end of each DHWHEATREC input
 {
@@ -4163,12 +4135,6 @@ RC DHWPUMP::RunDup(		// copy input to run record; check and initialize
 	return rc;
 }		// DHWPUMP::RunDup
 //----------------------------------------------------------------------------
-DHWSYS* DHWPUMP::wp_GetDHWSYS() const
-{
-	DHWSYS* pWS = (b == &WpR ? WsR : WSiB).GetAtSafe( ownTi);
-	return pWS;
-}		// DHWPUMP::wp_GetDHWSYS
-//-----------------------------------------------------------------------------
 float DHWPUMP::wp_DoHour(			// hourly DHWPUMP/DHWLOOPPUMP calcs
 	int mult,		// system multiplier
 					//    DHWPUMP = ws_mult
@@ -4242,12 +4208,6 @@ RC DHWLOOP::wl_Init()		// DHWLOOP init for run
 	return rc;
 }		// DHWLOOP::wl_Init
 //----------------------------------------------------------------------------
-DHWSYS* DHWLOOP::wl_GetDHWSYS() const
-{
-	DHWSYS* pWS = (b == &WlR ? WsR : WSiB).GetAt( ownTi);
-	return pWS;
-}		// DHWLOOP::wl_GetDHWSYS
-//-----------------------------------------------------------------------------
 RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 	int wsMult)		// system multiplier
 // returns RCOK on success
@@ -4499,12 +4459,6 @@ RC DHWLOOPSEG::wg_Init()		// init for run
 	return rc;
 }		// DHWLOOPSEG::wl_Init
 //----------------------------------------------------------------------------
-DHWLOOP* DHWLOOPSEG::wg_GetDHWLOOP() const
-{
-	DHWLOOP* pWL = (b == &WgR ? WlR : WLiB).GetAtSafe( ownTi);
-	return pWL;
-}		// DHWLOOPSEG::wg_GetDHWLOOP
-//----------------------------------------------------------------------------
 DHWSYS* DHWLOOPSEG::wg_GetDHWSYS() const
 {
 	DHWLOOP* pWL = wg_GetDHWLOOP();
@@ -4611,12 +4565,6 @@ RC DHWLOOPBRANCH::wb_Init()		// init for run
 	return rc;
 }		// DHWLOOPBRANCH::wb_Init
 //----------------------------------------------------------------------------
-DHWLOOPSEG* DHWLOOPBRANCH::wb_GetDHWLOOPSEG() const
-{
-	DHWLOOPSEG* pWG = (b == &WbR ? WgR : WGiB).GetAtSafe( ownTi);
-	return pWG;
-}		// DHWLOOPBRANCH::wb_GetDHWSYS
-//----------------------------------------------------------------------------
 DHWLOOP* DHWLOOPBRANCH::wb_GetDHWLOOP() const
 {
 	DHWLOOPSEG* pWG = wb_GetDHWLOOPSEG();
@@ -4692,12 +4640,6 @@ RC DHWLOOPPUMP::RunDup(		// copy input to run record; check and initialize
 
 	return rc;
 }		// DHWLOOPPUMP::RunDup
-//----------------------------------------------------------------------------
-DHWLOOP* DHWLOOPPUMP::wlp_GetDHWLOOP() const
-{
-	DHWLOOP* pWL = (b == &WlpR ? WlR : WLiB).GetAtSafe( ownTi);
-	return pWL;
-}		// DHWLOOPPUMP::wlp_GetDHWSYS
 //----------------------------------------------------------------------------
 DHWSYS* DHWLOOPPUMP::wlp_GetDHWSYS() const
 {

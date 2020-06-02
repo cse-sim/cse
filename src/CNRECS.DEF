@@ -3732,7 +3732,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_Init();"
   *declare "void wh_InitRunTotals();"
   *declare "void wh_SetDesc();"
-  *declare "DHWSYS* wh_GetDHWSYS() const;"
+  *declare "DHWSYS* wh_GetDHWSYS() const { return (DHWSYS *)getOwner();}"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
@@ -3941,7 +3941,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
   *declare "void wr_InitTicks();"
-  *declare "DHWSYS* wr_GetDHWSYS() const;"
+  *declare "DHWSYS* wr_GetDHWSYS() const { return (DHWSYS *)getOwner(); }"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "void wr_EffAdjustedTest();"
   *declare "bool wr_IsEffFlowIndependent() const { return wr_type == C_DWHRTYCH_SETEF || wr_effRated < .00001f; }"
@@ -3994,7 +3994,7 @@ RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
 
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wt_CkF();"
-  *declare "DHWSYS* wt_GetDHWSYS() const;"
+  *declare "DHWSYS* wt_GetDHWSYS() const { return (DHWSYS*)getOwner();}"
   *declare "RC wt_Init();"
   *declare "RC wt_DoHour();"
   *declare "RC wt_DoSubhr( float tUse);"
@@ -4030,7 +4030,7 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
 
   *declare "RC wp_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
-  *declare "DHWSYS* wp_GetDHWSYS() const;"
+  *declare "DHWSYS* wp_GetDHWSYS() const { return (DHWSYS*)getOwner(); }"
   *declare "float wp_DoHour( int mult, float runF=1.f);"
   *i SI wp_mult;				// count of identical DHW pumps (default 1)
 								//   models as if repeated identical input
@@ -4056,7 +4056,7 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
   *declare "RC wl_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wl_Init();"
-  *declare "DHWSYS* wl_GetDHWSYS() const;"
+  *declare "DHWSYS* wl_GetDHWSYS() const { return(DHWSYS*)getOwner(); }"
   *declare "RC wl_DoHour( int wsMult);"
 
   *i SI wl_mult			// multiplier: number of identical loops
@@ -4156,7 +4156,7 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wg_Init();"
   *declare "DHWLOOPSEG* wg_GetInputDHWLOOPSEG() const;"
-  *declare "DHWLOOP* wg_GetDHWLOOP() const;"
+  *declare "DHWLOOP* wg_GetDHWLOOP() const { return (DHWLOOP*)getOwner(); }"
   *declare "DHWSYS* wg_GetDHWSYS() const;"
   *declare "float wg_CalcUA();"
   *declare "RC wg_DoHour( float tIn);"
@@ -4180,7 +4180,7 @@ RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime 
   *declare "RC wb_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wb_Init();"
-  *declare "DHWLOOPSEG* wb_GetDHWLOOPSEG() const;"
+  *declare "DHWLOOPSEG* wb_GetDHWLOOPSEG() const { return (DHWLOOPSEG *)getOwner();}"
   *declare "DHWLOOP* wb_GetDHWLOOP() const;"
   *declare "DHWSYS* wb_GetDHWSYS() const;"
   *declare "float wb_CalcUA();"
@@ -4204,7 +4204,7 @@ RECORD DHWLOOPPUMP "DHWLoopPump" *RAT *BASECLASS DHWPUMP // input / runtime DHW 
 
   *declare "RC wlp_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
-  *declare "DHWLOOP* wlp_GetDHWLOOP() const;"
+  *declare "DHWLOOP* wlp_GetDHWLOOP() const { return (DHWLOOP*)getOwner(); }"
   *declare "DHWSYS* wlp_GetDHWSYS() const;"
 
   *i *hide SI wlp_dummy		// RCDEF objects to RECORD with no members
@@ -4238,7 +4238,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wu_CkF();"
-  *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const;"
+  *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const { return (DHWDAYUSE*)getOwner();}"
   *declare "RC wu_DoHour( DHWSYS* pWS, float mult, int iH);"
   *declare "RC wu_DoHour1( DHWSYS* pWS, float mult, int iH, double begM, double begMHot, double endM);"
   *declare "RC wu_CalcHotF( float tHot, float tCold, float& hotF) const;"

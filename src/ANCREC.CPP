@@ -39,6 +39,25 @@
 //  class record: base class for application records.
 //		destructor: inline, ancrec.h.
 //***************************************************************************************************************************
+record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, zero all members unless noZ
+{
+	/* possible conditional statSetup elimination:
+	   if (i==0  (and at least b->rt matches if no validate()) and  b->p==0 and b->n < b->mn,
+					set b->p=this, mn/n/nAl 1 record, RFSTAT.   BE SURE to override mn: 1-->0.
+	   if (i > 0 and b RFSTAT and b->p consistent and b->n==i-1,
+					b->n++ : additional record in static array.
+	   CAUTION can be called from statSetup (til eliminated). */
+
+	_b->validate("record::record");		// abort if base bad -- we depend on it for size
+	if (!noZ)							// can be suppressed for data-init (static) records
+		memset((char *)this + SZVFTP, 0, _b->eSz - SZVFTP);	/* zero all members of DERIVED CLASS record
+								   except virtFcnTblPtr in 1st 2 or 4 bytes (ancrec.h define) */
+	b = _b;
+	rt = _b->rt;
+	ss = i;  			// set base class members, for appl and anchor class use
+	gud = 1; 						// say space in use and record good
+}			// record::record
+//---------------------------------------------------------------------------------------------------------------------------
 void* record::field( int fn) 				// point to member in record by FIELD #
 {	return (void *)((char *)this + b->fir[fn].off);  }
 //-----------------------------------------------------------------------------
@@ -87,63 +106,10 @@ int record::DType( int fn) const
 	return dt;
 }		// record::DType
 //-----------------------------------------------------------------------------
-record::record( BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, zero all members unless noZ
-{
-	/* possible conditional statSetup elimination:
-	   if (i==0  (and at least b->rt matches if no validate()) and  b->p==0 and b->n < b->mn,
-	   				set b->p=this, mn/n/nAl 1 record, RFSTAT.   BE SURE to override mn: 1-->0.
-	   if (i > 0 and b RFSTAT and b->p consistent and b->n==i-1,
-	   				b->n++ : additional record in static array.
-	   CAUTION can be called from statSetup (til eliminated). */
-
-	_b->validate("record::record");		// abort if base bad -- we depend on it for size
-	if (!noZ)							// can be suppressed for data-init (static) records
-		memset( (char *)this+SZVFTP, 0, _b->eSz-SZVFTP);	/* zero all members of DERIVED CLASS record
-						           except virtFcnTblPtr in 1st 2 or 4 bytes (ancrec.h define) */
-	b = _b;
-	rt = _b->rt;
-	ss = i;  			// set base class members, for appl and anchor class use
-	gud = 1; 						// say space in use and record good
-}			// record::record
-//---------------------------------------------------------------------------------------------------------------------------
-#if 0
-x 		// 7-20-92: NOT COMPLETED: believe nothing would set virt fcn tbl ptr.
-x
-x not completed, believe won't work without further changes cuz virtual fcn table pointer of record won't get set.
-x Instead, do same thing as record::record in record::init.
-x User derived class constructors won't work (none anyway).  Tested here, ancrec.h. 7-20-92. */
-x // failed cuz our operator= does not copy front members; = probably never copies vft.
-x construct-in-place thoughts:
-x 1.  won't work as now cuz virt fcn tbl ptr not init since not constructed.
-x 2.  would be constructed if alloc'd with 'new'..  .p = new BLAHRAT[n].
-x --> interface  record::new to dmAl( , WRN | DMZERO)
-x then set .b, .i, etc on return (maybe at add(), in .init)?
-x problem: no way to add records, unless we copy the virt fcn tbl ptr?
-x		  x3.  make = non-virtual, init on stack and copy.  maybe provide an afterCopy virt fcn to dup ptrs. failed (above).
-x 4.  init on stack and memcpy!
-x
-x record::init( BP _b, TI i, SI noZ/*=0*/)  	// pseudo-construct record i of basAnc b, zero all members unless noZ.
-x
-x 		/* used to 'construct' previously-allocated record in place at use (when .add()'d) under BC 3.1,
-x 		   cuz couldn't get compiler to recognize call to constructor for method used under BC 3.0 (see ancrec.h).
-x 		   ***** --> derived class constructors won't override (but derived class init() should). 7-20-92. */
-x{
-x     _b->validate("record::init");		// abort if base bad -- we depend on it for size
-x     if (!noZ)					// can be suppressed for data-init (static) records
-x        memset( (char *)this+2, 0, _b->eSz-2);	// zero all members of DERIVED CLASS record except virtFcnTblPtr in 1st 2 bytes
-x     b = _b;  rt = _b->rt; ss = i;  		// set base class members, for appl and anchor class use
-x     gud = 1; 					// say space in use and record good
-x}			// record::init
-#endif
-//-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
-#if 0	// 7-2-2013
-x	return strMatch( _name, name);
-#else
 	// Note: prior (1994) version disregarded unexpected excess chars
 	return !_strnicmp( _name, name, sizeof(ANAME)-1);
-#endif
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ record& record::CopyFrom(
@@ -256,6 +222,17 @@ const char* record::getChoiTx(
 	return text;
 
 }		// record::getChoiTx
+//-----------------------------------------------------------------------------
+record* record::getOwner() const
+// return ptr to owner record
+//  NULL if linkage bad
+{
+	BP bOf = b->ownB;
+	record* r = bOf ? bOf->GetAtSafe(ownTi) : NULL;
+	if (!r)
+		oer("getOwner() fail for %s", objIdTx());
+	return r;
+}	// record::getOwner
 //-----------------------------------------------------------------------------
 const char* record::whatIn() const 	// return basAnc record owner text
 // e.g.  "zone 'Z1'"  or  "sgdist 'foo' of glazing 'gl1' of zone 'Z1'"

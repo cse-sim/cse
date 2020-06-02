@@ -262,6 +262,7 @@ class record		// base class for records
 
 	RC oerI( int shoTx, int shoFnLn, int isWarn, const char* fmt, va_list ap) const;
 
+	record* getOwner() const;
 	const char* whatIn() const;
 	const char* objIdTx( int op=0) const;
 	const char* classObjTx( int op=0) const;
