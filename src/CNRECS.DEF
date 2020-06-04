@@ -4446,7 +4446,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 							// sc_oprFRxx = sc_testFRxx * sc_flowCorrection
   *r FLOAT sc_oprFRUL		// operating (flow-corrected) collector slope, Btuh/F-ft2
   *r FLOAT_GZ sc_oprFRTA	// operating (flow-corrected) collector intercept
-  *r FLOAT sc_oprVolFlow	// nominal collector loop volume flow rate, gpm
+  *r FLOAT sc_oprVolFlow	// nominal collector loop volume flow rate, gpm (not gpm/ft2)
 							//    derived from sc_oprMassFlow
   *r FLOAT sc_b0			// incidence angle modifier coefficient
 							//   (derived from sc_Kta60)

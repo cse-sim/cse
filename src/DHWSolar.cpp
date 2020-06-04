@@ -326,6 +326,7 @@ RC DHWSOLARSYS::sw_TickCalc(
 }		// DHWSOLARSYS::sw_TickCalc
 //=============================================================================
 
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 // class SolarFlatPlateCollector -- simple FR/tauAlpha collector model
 //   (local class)
@@ -433,14 +434,18 @@ void SolarFlatPlateCollector::calculate(
 	}
 }
 //=============================================================================
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARCOLLECTOR: represents a solar collector
 //                    child of DHWSOLARSYS
 ///////////////////////////////////////////////////////////////////////////////
 DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR()
-{	delete sc_collector;
+{	
+#if 0
+	delete sc_collector;
 	sc_collector = NULL;
+#endif
 }
 //-----------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_CkF()
@@ -484,11 +489,12 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 		rc |= limitCheckFix(DHWSOLARCOLLECTOR_KTA60, 0.2, 1.);
 	rc |= sc_InitIAM();		// set up IAM run constants
 
-	delete sc_collector;		// insurance: delete prior, if any
+#if 0
 
 	double fluidSpHt = SHIPtoSI(pSW->sw_scFluidSpHt);		// specific heat, J/kg-K
 	double fluidDens = DIPtoSI(pSW->sw_scFluidDens);		// density, kg/m3
 
+	delete sc_collector;		// insurance: delete prior, if any
 	sc_collector = new SolarFlatPlateCollector(
 		AIPtoSI(sc_areaTot),
 		sc_tilt,
@@ -497,6 +503,7 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 		UIPtoSI(sc_oprFRUL),
 		fluidSpHt,
 		fluidDens);
+#endif
 
 	sc_tickOp = FALSE;
 
@@ -650,9 +657,24 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 	float pump_vol = sc_oprVolFlow * Top.tp_tickDurMin;  // gal
 	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_scFluidVHC);  // delta F
 
-	// Calculate potential outlet temperature
-
-	sc_tOutletP = sc_CalculateOutletTemp(pump_dt);
+#if 1
+	float tInletX = tInlet + pump_dt;
+	float effTick;
+	float heat_gain;
+	float outlet_temp;
+	if (sc_poaRadTot > 0.f)
+	{
+		effTick = sc_oprFRUL * ((tInletX - Top.tDbOHrAv) / sc_poaRadTot) + sc_oprFRTA;
+		effTick = min(1.f, effTick);
+		heat_gain = sc_poaRadTot * effTick;		// heat collected, Btuh/ft2
+		sc_tOutletP = tInletX + heat_gain / (sc_oprMassFlow * pSWHSys->sw_scFluidSpHt);
+	}
+	else
+	{
+		effTick = 0.f;
+		sc_tOutletP = tInletX;
+		heat_gain = 0.f;
+	}
 
 	// Collector status
 	if (sc_tickOp)
@@ -666,13 +688,43 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 	{	sc_tickVol = pump_vol;
 		sc_pumpInElec += pump_energy;
 		sc_tOutlet = sc_tOutletP;
-		sc_eff += sc_collector->efficiency();
-		sc_qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
+		sc_eff += effTick;
+		sc_qfluid += heat_gain*sc_areaTot*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
 	}
 	else
 	{	sc_tickVol = 0.f;		// not operating
 		sc_tOutlet = tInlet;
 	}
+
+
+#else
+
+	// Calculate potential outlet temperature
+	sc_tOutletP = sc_CalculateOutletTemp(pump_dt);
+
+	// Collector status
+	if (sc_tickOp)
+	{
+		if (sc_tOutletP <= tInlet + sc_pumpOffDeltaT)
+			sc_tickOp = FALSE;
+	}
+	else if (sc_tOutletP > tInlet + sc_pumpOnDeltaT)
+		sc_tickOp = TRUE;
+
+	if (sc_tickOp)
+	{
+		sc_tickVol = pump_vol;
+		sc_pumpInElec += pump_energy;
+		sc_tOutlet = sc_tOutletP;
+		sc_eff += sc_collector->efficiency();
+		sc_qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
+	}
+	else
+	{
+		sc_tickVol = 0.f;		// not operating
+		sc_tOutlet = tInlet;
+	}
+#endif
 
 	return rc;
 }	// DHWSOLARCOLLECTOR::sc_DoSubhrTick()
@@ -692,10 +744,14 @@ FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(
 	double omfX = m_dot_SI / (sc_areaTot * 0.000125998);
 #endif
 
+#if 0
 	// Calculate outlet temperature
 	sc_collector->calculate(IrIPtoSI( sc_poaRadTot), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
 
 	return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
+#else
+	return 0;
+#endif
 }	// DHWSOLARCOLLECTOR::sc_CalculateOutletTemp
 
 //=============================================================================
