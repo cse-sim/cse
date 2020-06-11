@@ -4452,6 +4452,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *declare "float sc_MCpTest() const;"
   *declare "RC sc_DoHour();"
   *declare "RC sc_DoHourEnd();"
+  *declare "float sc_CalcTRet( float tSup, float& colEff) const;"
   *declare "RC sc_DoSubhrTick();"
 
   //*i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
@@ -4472,7 +4473,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 							//   <= 0: IAM not applied
 
   *r *nest PIPERUN sc_piping	// collector piping info (length, insul, UA, ...)
-  *h *e FLOAT sc_pipingTEx			// collector piping surround temp
+  *h *e FLOAT sc_pipingTEx		// collector piping surround temp
 
   // derived constants
   *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
@@ -4502,11 +4503,6 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *h *e FLOAT sc_poaRadTot			//   total
   *h *e FLOAT sc_poaRadIAM			//   component-weighted IAM factor
 									//    = sc_poaRadTot / radTot_unadjusted
-  *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
-  *h *e FLOAT sc_qfluid			// heat added to the fluid, Btu
-  *y *e DBL sc_qfluidTot		// sc_qfluid annual total, Btu
-  *h *e FLOAT sc_tOutlet		// outlet temperature, F
-  *h *e FLOAT sc_tOutletP		// potential outlet temperature, F
 
   // Pump
   *r FLOAT_GEZ sc_pumpPwr;	// pump power, W
@@ -4514,14 +4510,29 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *r FRAC sc_pumpLiqHeatF;	// fraction of sc_pumpPwr added to liquid stream
 							//   remainder is discarded
   *r FLOAT sc_pumpDT		// fluid temp increase due to pump, F
-  *i FLOAT sc_pumpOnDeltaT		// temperature difference between the 
+  *r FLOAT sc_pumpOnDeltaT		// temperature difference between the 
 								// tank and collector outlet where pump
 								// turns on, F
-
-  *i FLOAT sc_pumpOffDeltaT		// temperature difference between the 
+  *r FLOAT sc_pumpOffDeltaT		// temperature difference between the 
 								// tank and collector outlet where pump
 								// turns off, F
 
+							// this hour linear coefficients
+							//   tOutlet = sc_tOutletM*tSup + sc_tOutletB
+							//   eff = sc_effM*tSup + sc_effB
+  *h *e FLOAT sc_tOutletM
+  *h *e FLOAT sc_tOutletB
+  *h *e FLOAT sc_effM
+  *h *e FLOAT sc_effB
+
+  *s *e FLOAT sc_tInlet			// tick inlet temp, F (at tank / before to-collector piping)
+  *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
+  *h *e FLOAT sc_qfluid			// tick heat added to the fluid, Btu
+  *y *e DBL sc_qfluidTot		// sc_qfluid annual total, Btu
+  *h *e FLOAT sc_tOutletP		// tick potential outlet temp, F
+								//    used to determine if collector should run
+  *h *e FLOAT sc_tOutlet		// tick outlet temp, F (at tank / after from-collector piping)
+  
   *s *e FLOAT sc_tickVol		// volume moved during this tick, gal
   *s *e INT sc_tickOp			// nz iff pump is operating during prior tick
 

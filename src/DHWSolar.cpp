@@ -258,12 +258,14 @@ RC DHWSOLARSYS::sw_TickCalc(
 	RC rc = RCOK;
 
 	float sumVol = 0.f;			// all-collector total fluid volume for tick, gal
-	float sumVolT = 0.f;		// all-collector SUM( vol * outletTemp), gal-F
+	float sumVolTInlet = 0.f;	// all-collector SUM( vol * inlet temp), gal-F
+	float sumVolTOutlet = 0.f;	// all-collector SUM( vol * outlet temp), gal-F
+	float scQGain = 0.f;		// gain to tank, Btu
 
 	// tank heat exchange temp
 	sw_tankTHx = sw_tank.hw_GetTankQTXTemp();
 
-	if (sw_tickTankTOutlet /*sw_tankTHx*/ >= sw_tankTHxLimit)	// if tank temp >= max allow temp
+	if (sw_tickTankTOutlet >= sw_tankTHxLimit)	// if tank temp >= max allow temp
 										//   collector not run (details not modeled)
 		sw_overHeatTkCount++;
 	else
@@ -273,32 +275,32 @@ RC DHWSOLARSYS::sw_TickCalc(
 
 		DHWSOLARCOLLECTOR* pSC;
 		RLUPC(ScR, pSC, pSC->ownTi == ss)
-		{
-			rc |= pSC->sc_DoSubhrTick();
+		{	rc |= pSC->sc_DoSubhrTick();
 			if (pSC->sc_tickVol > 0.f)
 			{	sumVol += pSC->sc_tickVol;
-				sumVolT += pSC->sc_tickVol*pSC->sc_tOutlet;
+				sumVolTOutlet += pSC->sc_tickVol*pSC->sc_tOutlet;
+				sumVolTInlet += pSC->sc_tickVol*pSC->sc_tInlet;
+				scQGain += pSC->sc_qfluid;
 			}
 		}
 	}
 
-	float scQGain;	 	// collector heat to be added to tank, Btu
-
 	if (sumVol > 0.f)			// if there is collector flow
 	{	// collector flow > 0
-		sw_scTOutlet = sumVolT / sumVol;
+		sw_scTOutlet = sumVolTOutlet / sumVol;
+#if 0
+		sw_scTInlet = sumVolTInlet / sumVol;
+		sw_tankQGain += scQGain;
+#else
 		float deltaT = sw_scTOutlet - sw_tankTHx;
 		float mCp = sumVol * sw_scFluidVHC;	// Btu/F
 		scQGain = sw_tankHXEff * mCp * deltaT;	// Btu
 		sw_tankQGain += scQGain;
-#if 0
-		DHWSOLARCOLLECTOR* pSC = ScR.GetAt(1);
-#endif
 		sw_scTInlet = sw_scTOutlet - sw_tankHXEff * deltaT;	// collector inlet temp for next tick
+#endif
 	}
 	else
-	{	scQGain = 0.f;
-		sw_scTInlet = sw_tankTHx;		// no flow
+	{	sw_scTInlet = sw_tankTHx;		// no flow
 		sw_scTOutlet = sw_scTInlet;
 	}
 
@@ -541,6 +543,23 @@ RC DHWSOLARCOLLECTOR::sc_DoHour()
 	if (!IsSet(DHWSOLARCOLLECTOR_PIPINGTEX))
 		sc_pipingTEx = Top.tDbOHrAv;
 
+	float eff050, eff150;
+	float tOutlet050 = sc_CalcTRet( 50.f, eff050);
+	float tOutlet150 = sc_CalcTRet(150.f, eff150);
+
+	sc_tOutletM = (tOutlet150 - tOutlet050) / 100.f;
+	sc_tOutletB = tOutlet050 - sc_tOutletM * 50.f;
+
+	sc_effM = (eff150 - eff050) / 100.f;
+	sc_effB = eff050 - sc_effM * 50.f;
+
+#if 0
+	float tRet100 = tM * 100.f + tA;
+	float eff100;
+	float tRet100X = sc_CalcTRet(100.f, eff100);
+	float tRet150X = tM * 150.f + tA;
+#endif
+
 	return rc;
 }		// DHWSOLARCOLLECTOR::sc_DoHour
 //--------------------------------------------------------------------------------------
@@ -560,6 +579,26 @@ RC DHWSOLARCOLLECTOR::sc_DoHourEnd()
 
 	return rc;
 }	// DHWSOLARCOLLECTOR::sc_DoHourEnd()
+//-----------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_CalcTRet(		// calc return temp for current conditions
+	float tSup,				// supply temp from tank hx, F
+	float& colEff)	const	// collector efficiency (w/o piping)
+// calculates temp returned to tank from collector, including piping losses
+// returns return temp, 0 if no sun
+{
+	float tRet = 0.f;
+	colEff = 0.f;
+	if (sc_poaRadTot > 0.f)
+	{	float tColIn = sc_piping.pr_TempOutlet(tSup + sc_pumpDT, sc_pipingTEx);
+		colEff = sc_oprFRUL * ((tColIn - Top.tDbOHrAv) / sc_poaRadTot) + sc_oprFRTA;
+		// colEff = min(1.f, colEff);
+
+		float heat_gain = sc_areaTot * sc_poaRadTot * colEff;		// heat collection power, Btuh
+		float tColOut = tColIn + heat_gain / sc_oprMCp;
+		tRet = sc_piping.pr_TempOutlet(tColOut, sc_pipingTEx);
+	}
+	return tRet;
+}		// DHWSOLARCOLLECTOR::sc_CalcTRet
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 {
@@ -567,49 +606,92 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 
 	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
 
-	float tInlet = pSW->sw_scTInlet;
+#if 1
+	float tInletX = pSW->sw_scTInlet;
 
-#if 0
-	float pump_energy = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;  // Btu per tick
-	float pump_vol = sc_oprVolFlow * Top.tp_tickDurMin;  // gal per tick
-	float pump_dt2 = pump_energy / (sc_oprMCp * Top.tp_tickDurHr);  // delta F
-	float pump_dt = pump_energy / (pump_vol * pSW->sw_scFluidVHC);  // delta F
+	sc_tInlet = (sc_tOutletB + pSW->sw_tankHXEff *(pSW->sw_tankTHx - sc_tOutletB))
+		/ (1.f - (1.f - pSW->sw_tankHXEff)*sc_tOutletM);
+
+	float tOutlet = sc_tOutletM * sc_tInlet + sc_tOutletB;
+	float eff = sc_effM * sc_tInlet + sc_effB;
+
+#if defined( _DEBUG)
+	float effX;
+	float tRetX = sc_CalcTRet( sc_tInlet, effX);
+	if (frDiff(tOutlet, tRetX) > .001f || frDiff(eff, effX) > 0.001f)
+		printf("\nLinear fubar");
 #endif
-	
-	if (sc_poaRadTot <= 0.f)
+	if (tOutlet <= 0.f)
 		sc_tickOp = FALSE;	// no sun, pump is off
 	else
 	{
-		float tInletX = sc_piping.pr_TempOutlet(tInlet + sc_pumpDT, sc_pipingTEx);
-		float effTick = sc_oprFRUL * ((tInletX - Top.tDbOHrAv) / sc_poaRadTot) + sc_oprFRTA;
-		effTick = min(1.f, effTick);
-
-		float heat_gain = sc_areaTot * sc_poaRadTot * effTick;		// heat collection power, Btuh
-		float tColOut = tInletX + heat_gain / sc_oprMCp;
-		sc_tOutletP = sc_piping.pr_TempOutlet( tColOut, sc_pipingTEx);
+		sc_tOutletP = tOutlet;
 
 		// Collector operating status
 		if (sc_tickOp)
-		{	if (sc_tOutletP <= tInlet + sc_pumpOffDeltaT)
+		{
+			if (sc_tOutletP <= sc_tInlet + sc_pumpOffDeltaT)
+				sc_tickOp = FALSE;
+		}
+		else if (sc_tOutletP > sc_tInlet + sc_pumpOnDeltaT)
+			sc_tickOp = TRUE;
+
+		if (sc_tickOp)
+		{
+			sc_tickVol = sc_oprVolFlow * Top.tp_tickDurMin;
+			sc_pumpInElec += sc_tickPumpQ;
+			sc_tOutlet = sc_tOutletP;
+			sc_eff += eff;
+			sc_qfluid += (sc_tOutlet - sc_tInlet) * Top.tp_tickDurHr * sc_oprMCp;
+		}
+	}
+#else
+
+	float tInlet = pSW->sw_scTInlet;
+
+	float effTick;
+	float tRet = sc_tRetM * tInlet + sc_tRetB;
+	float eff = sc_effM * tInlet + sc_effB;
+
+#if defined( _DEBUG)
+	float effX;
+	float tRetX = sc_CalcTRet(tInlet, effX);
+	if (frDiff(tRet, tRetX) > .001f || frDiff(eff, effX) > 0.001f)
+		printf("\nLinear fubar");
+#endif
+	if (tOutlet <= 0.f)
+		sc_tickOp = FALSE;	// no sun, pump is off
+	else
+	{
+		sc_tOutletP = tOutlet;
+
+		// Collector operating status
+		if (sc_tickOp)
+		{
+			if (sc_tOutletP <= tInlet + sc_pumpOffDeltaT)
 				sc_tickOp = FALSE;
 		}
 		else if (sc_tOutletP > tInlet + sc_pumpOnDeltaT)
 			sc_tickOp = TRUE;
 
 		if (sc_tickOp)
-		{	sc_tickVol = sc_oprVolFlow * Top.tp_tickDurMin;
+		{
+			sc_tickVol = sc_oprVolFlow * Top.tp_tickDurMin;
 			sc_pumpInElec += sc_tickPumpQ;
 			sc_tOutlet = sc_tOutletP;
-			sc_eff += effTick;
-			sc_qfluid += (sc_tOutlet - tInlet) * Top.tp_tickDurHr * sc_oprMCp;
+			sc_eff += eff;
+			sc_qfluid += (sc_tOutlet - sc_tInlet) * Top.tp_tickDurHr * sc_oprMCp;
 		}
 
 	}
+#endif
+
+
 
 	if (!sc_tickOp)
 	{	// not operating
 		// sc_tOutletP: don't 0, might have reporting interest
-		sc_tOutlet = sc_tickVol = 0.f;
+		sc_tOutlet = sc_tickVol = sc_tInlet = 0.f;
 	}
 
 	return rc;
