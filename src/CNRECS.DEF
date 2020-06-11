@@ -236,9 +236,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i EXSHMODELCH tp_exShadeModel;	// exterior shading model (other than overhang/fins)
 									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
 									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
-    *i DHWMODELCH tp_dhwModel;	// runtime DHW model selection (debug aid)
-								//   C_DHWMODELCH_T24DHW: match T24DHW.DLL calcs
-								//   C_DHWMODELCH_2013: corrected 2013 implementation (default)
 
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
@@ -3649,12 +3646,16 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_Cleanup();"
 *declare "RC hw_Init( record* pOwner);"
 *declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
+*declare "enum HPWHATTR { hwatSMALL=0x1000, hwatLARGE=0x2000, hwatMASK=0xf000 };"
+*declare "static int hw_HPWHInfo( WHASHPTYCH ashpTy, int& attrs);"
+*declare "static int hw_IsAttr( WHASHPTYCH ashpTy, int attr) { int attrs; return hw_HPWHInfo( ashpTy, attrs) >= 0 ? (attr & attrs) != 0 : -1; }"
 *declare "RC hw_InitPreset( WHASHPTYCH ashpTy);"
 *declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
 *declare "RC hw_InitTank( float vol);"
-*declare "RC hw_AdjustUAIf( float UA, float insulR);"
+*declare "RC hw_AdjustUAIf( float UA, float insulR, float tankCount=1.f);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
-*declare "RC hw_GetInfo( float& vol, float& UA, float& insulR) const;"
+*declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
+*declare "float hw_GetTankSurfaceArea( float tankCount=1.f, float vol=-1.f) const;"
 *declare "void hw_InitTotals();"
 *declare "bool hw_HasCompressor();"
 *declare "bool hw_IsSetpointFixed() const;"
@@ -3731,10 +3732,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_Init();"
   *declare "void wh_InitRunTotals();"
   *declare "void wh_SetDesc();"
-  *declare "DHWSYS* wh_GetDHWSYS() const;"
+  *declare "DHWSYS* wh_GetDHWSYS() const { return (DHWSYS *)getOwner();}"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
-  *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG; }"
+  *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
   *declare "int wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
@@ -3775,7 +3776,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
   *declare "int wh_SetFunction();"
   *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
-  *i WHASHPTYCH wh_ashpTy;		// air source heat pump type, required iff ASHPX, else ignored
+  *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
@@ -3796,11 +3797,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
-  *r FLOAT_GEZ wh_vol;			// actual storage tank vol, gal (not rated)
-								//    applicable to STRGxx types
+  *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
+								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
+  *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated; not per tank)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)
-  *r FLOAT_GEZ wh_UA;			// HPWH-type tank UA, Btuh/F
+  *r FLOAT_GEZ wh_UA;			// HPWH-type total UA, Btuh/F (not per tank)
 								//    default from HPWH preset
   *r FLOAT_GZ wh_insulR;		// HPWH-type tank insulation resistance, hr-F/Btuh
 								//    default from preset or wh_UA and wh_vol
@@ -3939,7 +3941,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
   *declare "RC wr_CkF();"
   *declare "RC wr_Init();"
   *declare "void wr_InitTicks();"
-  *declare "DHWSYS* wr_GetDHWSYS() const;"
+  *declare "DHWSYS* wr_GetDHWSYS() const { return (DHWSYS *)getOwner(); }"
   *declare "float wr_EffAdjusted( float vp, float tpI, float vd, float tdI);"
   *declare "void wr_EffAdjustedTest();"
   *declare "bool wr_IsEffFlowIndependent() const { return wr_type == C_DWHRTYCH_SETEF || wr_effRated < .00001f; }"
@@ -3992,7 +3994,7 @@ RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
 
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wt_CkF();"
-  *declare "DHWSYS* wt_GetDHWSYS() const;"
+  *declare "DHWSYS* wt_GetDHWSYS() const { return (DHWSYS*)getOwner();}"
   *declare "RC wt_Init();"
   *declare "RC wt_DoHour();"
   *declare "RC wt_DoSubhr( float tUse);"
@@ -4028,7 +4030,7 @@ RECORD DHWPUMP "DHWPump" *RAT	// input / runtime DHW pump
 
   *declare "RC wp_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
-  *declare "DHWSYS* wp_GetDHWSYS() const;"
+  *declare "DHWSYS* wp_GetDHWSYS() const { return (DHWSYS*)getOwner(); }"
   *declare "float wp_DoHour( int mult, float runF=1.f);"
   *i SI wp_mult;				// count of identical DHW pumps (default 1)
 								//   models as if repeated identical input
@@ -4054,7 +4056,7 @@ RECORD DHWLOOP "DHWLoop" *RAT // input / runtime DHW recirc loop
   *declare "RC wl_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wl_Init();"
-  *declare "DHWSYS* wl_GetDHWSYS() const;"
+  *declare "DHWSYS* wl_GetDHWSYS() const { return(DHWSYS*)getOwner(); }"
   *declare "RC wl_DoHour( int wsMult);"
 
   *i SI wl_mult			// multiplier: number of identical loops
@@ -4154,7 +4156,7 @@ RECORD DHWLOOPSEG "DHWLoopSeg" *RAT *BASECLASS PIPESEG // input / runtime DHW re
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wg_Init();"
   *declare "DHWLOOPSEG* wg_GetInputDHWLOOPSEG() const;"
-  *declare "DHWLOOP* wg_GetDHWLOOP() const;"
+  *declare "DHWLOOP* wg_GetDHWLOOP() const { return (DHWLOOP*)getOwner(); }"
   *declare "DHWSYS* wg_GetDHWSYS() const;"
   *declare "float wg_CalcUA();"
   *declare "RC wg_DoHour( float tIn);"
@@ -4178,7 +4180,7 @@ RECORD DHWLOOPBRANCH "DHWLoopBranch" *RAT *BASECLASS PIPESEG // input / runtime 
   *declare "RC wb_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wb_Init();"
-  *declare "DHWLOOPSEG* wb_GetDHWLOOPSEG() const;"
+  *declare "DHWLOOPSEG* wb_GetDHWLOOPSEG() const { return (DHWLOOPSEG *)getOwner();}"
   *declare "DHWLOOP* wb_GetDHWLOOP() const;"
   *declare "DHWSYS* wb_GetDHWSYS() const;"
   *declare "float wb_CalcUA();"
@@ -4202,7 +4204,7 @@ RECORD DHWLOOPPUMP "DHWLoopPump" *RAT *BASECLASS DHWPUMP // input / runtime DHW 
 
   *declare "RC wlp_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
-  *declare "DHWLOOP* wlp_GetDHWLOOP() const;"
+  *declare "DHWLOOP* wlp_GetDHWLOOP() const { return (DHWLOOP*)getOwner(); }"
   *declare "DHWSYS* wlp_GetDHWSYS() const;"
 
   *i *hide SI wlp_dummy		// RCDEF objects to RECORD with no members
@@ -4236,7 +4238,7 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 
   // *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wu_CkF();"
-  *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const;"
+  *declare "DHWDAYUSE* wu_GetDHWDAYUSE() const { return (DHWDAYUSE*)getOwner();}"
   *declare "RC wu_DoHour( DHWSYS* pWS, float mult, int iH);"
   *declare "RC wu_DoHour1( DHWSYS* pWS, float mult, int iH, double begM, double begMHot, double endM);"
   *declare "RC wu_CalcHotF( float tHot, float tCold, float& hotF) const;"

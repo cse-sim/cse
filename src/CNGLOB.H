@@ -523,7 +523,6 @@ enum CLEANCASE		// caution code assumes STARTUP < ENTRY < others.
 #define TI_SUM    -3	// "sum" entered: use sum of all (zones, etc), not a specific one.
 #define TI_ALL    -4	// "all" entered: do report, warmest zone control, etc for all records (zones, meters, etc).
 #define TI_ALLBUT  -5	// "all_but" entered (at start of list of TI's).
-//#define TI_ELECTRIC -6	// "electric" entered. Never used, deleted 1-93; may control cul.h/cpp code.
 
 /*------------------------- COMMONLY USED FUNCTIONS ------------------------*/
 
