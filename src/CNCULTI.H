@@ -20,6 +20,9 @@
 #define WBBC( m) (DHWLOOPBRANCH_SBCO+PBC_##m)
 #define WGBC( m) (DHWLOOPSEG_SBCO+PBC_##m)
 
+// shorthand member offsets into DHWSOLARCOLLETER.sc_piping
+#define SCPIPE( m) (DHWSOLARCOLLECTOR_PIPING+PIPERUN_##m)
+
 
 
 /*---------------------------- OTHER VARIABLES ----------------------------*/

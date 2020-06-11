@@ -1454,7 +1454,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxCRated", DAT,   ZI(ZNQMXCRATED), 0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
-	CULT( "znRsys",	     DAT,   ZI( RSI),        0,        0, VEOI,   TYREF, &RSiB,  N,      N,   N),
+	CULT( "znRsys",	     DAT,   ZI( RSI),        0,        0, VEOI,   TYREF, &RSiB,  N,        N,   N),
 
 // convection
 	CULT( "znHcFrcF",    DAT,   ZI( HCFRCF),     0,        0, VHRLY,   TYFL, 0,      0.2f,     N,   N),
@@ -2124,20 +2124,26 @@ static CULT dhwSolColT[] = //------ DHWSOLARCOLLECTOR cmd RAT Entry table, used 
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,      0,      0.f,    N, scStarCkf),
-CULT( "scDHWSOLARSYS", DAT, DHWSOLARCOLLECTOR_OWNTI,   NO_INP|RDFLIN,0,0, TYREF, &SWHiB,  0,     N,   N),
-CULT( "scArea",      DAT,   DHWSOLARCOLLECTOR_AREA,   RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "scMult",      DAT,   DHWSOLARCOLLECTOR_MULT,    0,       0, VEOI,  TYFL,  0,      1.f,    N, N),
-CULT( "scTilt",      DAT,   DHWSOLARCOLLECTOR_TILT,   RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "scAzm",       DAT,   DHWSOLARCOLLECTOR_AZM,    RQD,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scDHWSOLARSYS", DAT, DHWSOLARCOLLECTOR_OWNTI,   NO_INP|RDFLIN,0,0,TYREF, &SWHiB,  0,     N,   N),
+CULT( "scArea",      DAT,   DHWSOLARCOLLECTOR_AREA,   RQD,      0, VEOI, TYFL,  0,      0.f,    N, N),
+CULT( "scMult",      DAT,   DHWSOLARCOLLECTOR_MULT,    0,       0, VEOI, TYFL,  0,      1.f,    N, N),
+CULT( "scTilt",      DAT,   DHWSOLARCOLLECTOR_TILT,   RQD,      0, VEOI, TYFL,  0,      0.f,    N, N),
+CULT( "scAzm",       DAT,   DHWSOLARCOLLECTOR_AZM,    RQD,      0, VEOI, TYFL,  0,      0.f,    N, N),
 CULT( "scFRUL",      DAT,   DHWSOLARCOLLECTOR_TESTFRUL, 0,     0, VEOI,  TYFL,  0,     -0.727f, N, N),
 CULT( "scFRTA",      DAT,   DHWSOLARCOLLECTOR_TESTFRTA, 0,     0, VEOI,  TYFL,  0,      0.758f, N, N),
-CULT( "scTestMassFlow", DAT,DHWSOLARCOLLECTOR_TESTMASSFLOW, 0, 0, VEOI,  TYFL,  0,        14.79f,    N, N),
-CULT( "scKta60",     DAT,   DHWSOLARCOLLECTOR_KTA60,   0,       0, VEOI,  TYFL,  0,      0.72f,   N, N),
-CULT( "scOprMassFlow",DAT,  DHWSOLARCOLLECTOR_OPRMASSFLOW, 0,  0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPPWR, 0,       0, VEOI,  TYFL,  0,      0.f,    N, N),
-CULT( "scPumpOnDeltaT",DAT, DHWSOLARCOLLECTOR_PUMPONDELTAT, 0,  0, VEOI,  TYFL,  0,      2.f,    N, N),
-CULT( "scPumpOffDeltaT",DAT,DHWSOLARCOLLECTOR_PUMPOFFDELTAT, 0, 0, VEOI,  TYFL,  0,      1.f,     N, N),
-CULT( "endDHWSOLARCOLLECTOR",   ENDER, 0,               0,      0, 0,      0,    0,      0.f,  N,   N),
+CULT( "scTestMassFlow", DAT,DHWSOLARCOLLECTOR_TESTMASSFLOW, 0, 0, VEOI,  TYFL,  0,      14.79f, N, N),
+CULT( "scKta60",     DAT,   DHWSOLARCOLLECTOR_KTA60,   0,      0, VEOI,  TYFL,  0,      0.72f,  N, N),
+CULT( "scOprMassFlow",DAT,  DHWSOLARCOLLECTOR_OPRMASSFLOW, 0,  0, VEOI,  TYFL,  0,       0.f,   N, N),
+CULT( "scPipingLength",	 DAT, SCPIPE( LEN),	           0,      0, VEOI,  TYFL,  0,      0.f,    N,   N),
+CULT( "scPipingInsulK",	 DAT, SCPIPE( INSULK),         0,      0, VEOI,  TYFL,  0,    0.02167f, N,   N),
+CULT( "scPipingInsulThk",DAT, SCPIPE( INSULTHK),       0,      0, VEOI,  TYFL,  0,      1.f,    N,   N),
+CULT( "scPipingExH",	 DAT, SCPIPE( EXH),            0,      0, VEOI,  TYFL,  0,     1.5f,    N,   N),
+CULT( "scPipingExT", DAT,   DHWSOLARCOLLECTOR_PIPINGTEX, 0,    0, VSUBHRLY,TYFL, 0,     70.f,   N,   N),
+CULT( "scPumpPwr",   DAT,   DHWSOLARCOLLECTOR_PUMPPWR, 0,      0, VEOI,  TYFL,  0,      0.f,    N, N),
+CULT( "scPumpOnDeltaT",DAT, DHWSOLARCOLLECTOR_PUMPONDELTAT, 0, 0, VEOI,  TYFL,  0,      2.f,    N, N),
+CULT( "scPumpLiqHeatF",DAT, DHWSOLARCOLLECTOR_PUMPLIQHEATF, 0, 0, VEOI,  TYFL,  0,      1.f,    N, N),
+CULT( "scPumpOffDeltaT",DAT,DHWSOLARCOLLECTOR_PUMPOFFDELTAT, 0,0, VEOI,  TYFL,  0,      1.f,     N, N),
+CULT( "endDHWSOLARCOLLECTOR",   ENDER, 0,               0,     0, 0,      0,    0,      0.f,  N,   N),
 CULT()
 };	// dhwSolColT
 

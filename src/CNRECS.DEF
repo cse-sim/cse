@@ -2868,7 +2868,7 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 x RECORD DUCTMODE "DuctMode" *SUBSTRUCT *hideall
 x *prefix dsm_
 x
-x *r DBL dsm_mCp		// air capacitance flow rate, Btuh/F
+x *r DBL dsm_mCp		// air heat capacity flow rate, Btuh/F
 x
 x *r DBL dsm_beta		// segment loss parameter
 x   					//  = 1 - effectiveness
@@ -4157,9 +4157,9 @@ RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
 *prefix sb_
 *declare "void sb_Init( PIPESEG* pPS);"
 *declare "virtual int sb_Class() const;"
-#if 0
 *declare "virtual double sb_AreaNet() const;"
 *declare "virtual const char* sb_ParentName() const;"
+#if 0
 *declare "void sb_SetRunConstants( ZNR* zpx);"
 *declare "void sb_SetCoeffs( ZNR* zpx);"
 #endif
@@ -4168,7 +4168,37 @@ RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
 
 *END // PBC
 //=============================================================================
-RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH)
+RECORD PIPERUN "PipeRun" *SUBSTRUCT	// simple pipe run (TODO: make into PIPESEG mixin)
+*prefix pr_
+*excon
+
+#if 0
+*declare "virtual double sb_AreaNet() const;"
+*declare "virtual const char* sb_ParentName() const;"
+*declare "void sb_SetRunConstants( ZNR* zpx);"
+*declare "void sb_SetCoeffs( ZNR* zpx);"
+#endif
+    *declare "float pr_DeriveSizeFromFlow( float flow, float desVel);"
+	*declare "float pr_GetOD( int bInsul) const;"
+	*declare "float pr_CalcUA( float fUA=1.f);"
+	*declare "float pr_SetBeta( float mCp, float fUA=1.f);"
+	*declare "float pr_TempOutlet( float tIn, float tEx) const { return pr_beta*tIn + (1.f-pr_beta)*tEx;}"
+	*declare "void pr_CalcGeom();"
+	*declare "float pr_CalcTOut( float tIn, float flow) const;"
+
+	*i FLOAT_GEZ pr_len			// segment length, ft
+	*i FLOAT_GZ pr_size			// nominal pipe size (diameter), in
+								//   pipe actual OD = ps_size + 0.125
+	*i FLOAT_GZ pr_insulK		// insulation conductivity, Btuh-ft/ft2-F
+	*i FLOAT_GEZ pr_insulThk	// insulation thickness, in
+	*i FLOAT_GZ pr_exH			// combined exterior surface coefficient, Btuh/ft2-F
+	*r *noname *nest SEGTOTS pr_totals;	// run totals (re st_Accum() to parents)
+										//   also retains vol, UA, exArea used in calcs
+
+	*s FLOAT pr_beta			// temperature loss (1 - approach-to-surround) factor
+*END // PIPERUN
+//=============================================================================
+RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG, DHWLOOPBRANCH, ...)
     *prefix ps_
 	*excon
 	*declare "float ps_CalcUA( float fUA=1.f);"
@@ -4176,15 +4206,16 @@ RECORD PIPESEG "PipeSeg" *RAT	// pipe segement (for DHWLOOPSEG and DHWLOOPBRANCH
 	*declare "void ps_CalcGeom();"
 	*declare "float ps_GetOD( int bInsul) const;"
 
-	*s *noname *nest DBC ps_sbcO // (outside) surface boundary conditions
-								//   represents coupling(s) between pipe exterior
-								//   surface and adjacent zone or ambient
 	*i FLOAT_GEZ ps_len			// segment length, ft
 	*i FLOAT_GZ ps_size			// nominal pipe size (diameter), in
 								//   pipe actual OD = ps_size + 0.125
 	*i FLOAT_GZ ps_insulK		// insulation conductivity, Btuh-ft/ft2-F
 	*i FLOAT_GEZ ps_insulThk	// insulation thickness, in
 	*i FLOAT_GZ ps_exH			// combined exterior surface coefficient, Btuh/ft2-F
+
+	*s *noname *nest PBC ps_sbcO // (outside) surface boundary conditions
+								//   represents coupling(s) between pipe exterior
+								//   surface and adjacent zone or ambient
 	*i EXCNDCH ps_exCnd			// adjacent cond: adiabatic/ambient/specT/adjZn.
 	*h FLOAT ps_exT				// surround temperature, F
 
@@ -4337,7 +4368,6 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *declare "RC sw_DoSubhrTick(double vol, float tInlet, TI ws_ss, TI wh_ss, float& tOutlet);"
   *declare "FLOAT sw_GetAvailableTemp();"
   *declare "int sw_ReportBalErrorsIf() const;"
-  *declare "double sw_MassFlowSI( double vfr) const;"
   
   *i TI sw_elecMtri;		// meter for pump and parasitic electricity use
   *i ENDUSECH sw_endUse		// end use of pump energy. defaults to "DHW"
@@ -4383,6 +4413,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
 
   *h *e FLOAT sw_drawVol;		// current hour total draw, gal
   *h *e FLOAT sw_tankQGain;		// current hour total gain from solar HX (all collectors), Btu
+  *y *e DBL   sw_tankQGainTot;	// sw_tankQGain annual total, Btu
   *h *e FLOAT sw_tankTInlet		// tank inlet temperature, F
   *h *e FLOAT sw_tankTOutlet	// current hour average tank outlet temperature, F
   *h *e FLOAT sw_tankTHx		// nominal tank heat exchange temp, F
@@ -4400,7 +4431,7 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *h *e FLOAT sw_scTOutlet		// mixed collector outlet temperature, F
 
   // annual results
-  *y *e INT sw_overHeatHrCount	// number of hours during which collector did not
+  *y *e SI sw_overHeatHrCount	// number of hours during which collector did not
 								//   run (for 1 tick or more)
 								//   due to swtankTHx > sw_tankTHxLimit
   *y *e FLOAT sw_SSFAnnual		// annual solar savings fraction
@@ -4417,12 +4448,11 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *declare "RC sc_InitIAM();"
   *declare "float sc_Kta( float incA) const;"
   *declare "float sc_FlowCorrection() const;"
-  *declare "float sc_MDotCpTest() const;"
+  *declare "RC sc_InitPiping();"
+  *declare "float sc_MCpTest() const;"
   *declare "RC sc_DoHour();"
   *declare "RC sc_DoHourEnd();"
   *declare "RC sc_DoSubhrTick();"
-  *declare "FLOAT sc_CalculateOutletTemp(float pump_dt);"
-  *declare "class SolarFlatPlateCollector* sc_collector;"
 
   //*i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
 
@@ -4440,12 +4470,17 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *i FLOAT sc_kta60			// incidence angle modifier at 60 deg (from SRCC rating)
 							//   default 0.72
 							//   <= 0: IAM not applied
+
+  *r *nest PIPERUN sc_piping	// collector piping info (length, insul, UA, ...)
+  *h *e FLOAT sc_pipingTEx			// collector piping surround temp
+
   // derived constants
   *r FLOAT_GZ sc_areaTot	// total area, ft2 (=sc_area*sc_mult)
   *r FLOAT sc_flowCorrection	// flow correction factor
-							// sc_oprFRxx = sc_testFRxx * sc_flowCorrection
+								//   sc_oprFRxx = sc_testFRxx * sc_flowCorrection
   *r FLOAT sc_oprFRUL		// operating (flow-corrected) collector slope, Btuh/F-ft2
   *r FLOAT_GZ sc_oprFRTA	// operating (flow-corrected) collector intercept
+  *r FLOAT sc_oprMCp		// operating heat capacity flow rate, Btuh/F (not per ft2)
   *r FLOAT sc_oprVolFlow	// nominal collector loop volume flow rate, gpm (not gpm/ft2)
 							//    derived from sc_oprMassFlow
   *r FLOAT sc_b0			// incidence angle modifier coefficient
@@ -4469,15 +4504,16 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 									//    = sc_poaRadTot / radTot_unadjusted
   *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
   *h *e FLOAT sc_qfluid			// heat added to the fluid, Btu
+  *y *e DBL sc_qfluidTot		// sc_qfluid annual total, Btu
   *h *e FLOAT sc_tOutlet		// outlet temperature, F
   *h *e FLOAT sc_tOutletP		// potential outlet temperature, F
 
   // Pump
-  *i FLOAT_GEZ sc_pumpPwr;		// pump power, W
-  *i FRAC sc_pumpLiqHeatF;		// fraction of sc_pumpPwr added to liquid stream
-								//   remainder is discarded
-
-  								// energy inputs for current hour, Btu
+  *r FLOAT_GEZ sc_pumpPwr;	// pump power, W
+  *r FLOAT sc_tickPumpQ		// pump input energy per tick, Btu 
+  *r FRAC sc_pumpLiqHeatF;	// fraction of sc_pumpPwr added to liquid stream
+							//   remainder is discarded
+  *r FLOAT sc_pumpDT		// fluid temp increase due to pump, F
   *i FLOAT sc_pumpOnDeltaT		// temperature difference between the 
 								// tank and collector outlet where pump
 								// turns on, F
@@ -4489,9 +4525,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *s *e FLOAT sc_tickVol		// volume moved during this tick, gal
   *s *e INT sc_tickOp			// nz iff pump is operating during prior tick
 
-  *h *e FLOAT_GEZ sc_mdot		// actual mass flow rate, lb/hr
   *h *e FLOAT sc_pumpInElec;	// actual electricity use (note not kWh)
-
 
 *END		// DHWSOLARCOLLECTOR
 //=============================================================================

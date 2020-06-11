@@ -4528,6 +4528,7 @@ RC DHWLOOP::wl_DoHour(		// hourly DHWLOOP calcs
 
 ///////////////////////////////////////////////////////////////////////////////
 // SEGTOTS: segment aggregated info
+// PIPERUN: simple pipe run (TODO: merge with PIPESEG)
 // PBC: pipe boundary condition
 // PIPESEG: base class for DHWLOOPSEG and DHWLOOPBRANCH
 //          implements common methods
@@ -4551,25 +4552,124 @@ void SEGTOTS::st_Accum(
 	st_exArea += src.st_exArea*count;
 	st_UA += src.st_UA*count;
 }		// SEGTOTS::st_Accum
+//============================================================================
+PIPERUN::PIPERUN()		// c'tor
+{
+	memset(this, 0, sizeof(*this));
+
+}	// PIPERUN::PIPERUN
+//----------------------------------------------------------------------------
+float PIPERUN::pr_DeriveSizeFromFlow(
+	float flow,		// flow rate, gpm
+	float desVel)	// design fluid velocity, fps
+{
+	float flowFt3PerMin = flow / galPerFt3;
+	float faceArea = flowFt3PerMin / (60.f * max(0.01f, desVel));
+	static const float wallThkns = 0.05;	// guesstimate wall thickness, in
+											//   typical value for type L copper
+	pr_size = 2.f * (12.f * sqrt(faceArea / kPi) + wallThkns);
+
+	return pr_size;
+
+}		// PIPERUN::pr_DeriveSizeFromFlow
+//----------------------------------------------------------------------------
+float PIPERUN::pr_GetOD(
+	// returns outside diameter of pipe (w/o or w/ insulation), in
+	int bInsul) const	// 0: get bare pipe OD
+						// 1: get insulation OD
+{
+	float OD = pr_size + 0.125f;
+	if (bInsul)
+		OD += 2.f * pr_insulThk;
+	return OD;
+}		// PIPERUN::pr_GetOD
+//----------------------------------------------------------------------------
+void PIPERUN::pr_CalcGeom()		// pipe seg derived geometric values
+// sets pr_exArea (ft2) and pr_vol (gal)
+{
+	// initialize SEGTOTS re accum to parents
+	//   other members set below
+	pr_totals.st_count = 1.;
+	pr_totals.st_len = pr_len;
+
+	float r = pr_GetOD(0) / 24.f;	// pipe radius, ft
+	// include tube wall in vol, approximates heat cap of tubing
+	pr_totals.st_vol = galPerFt3 * kPi * r * r * pr_len;
+
+	double d = pr_GetOD(1) / 12.;
+	pr_totals.st_exArea = d * kPi * pr_len;
+}		// PIPERUN::pr_CalcGeom
+//----------------------------------------------------------------------------
+float PIPERUN::pr_CalcUA(		// derive UA
+	float fUA /*=1.f*/)		// UA adjustment factor (re e.g. imperfect insul)
+// returns UA, Btuh/F
+{
+	float diaO = pr_GetOD(0);	// bare pipe OD, in
+	float Ubare = pr_exH * kPi * diaO / 12.f;
+
+	float Uinsul;
+	if (pr_insulThk < .001f)
+		Uinsul = Ubare;
+	else
+	{
+		float diaX = pr_GetOD(1);	// insulation OD, in
+		double rIns = log(diaX / diaO) / (2.* pr_insulK);	// insulation resistance (per ft thk)
+															// pr_insulK units = Btuh-ft/ft2-F
+		double rSrf = 12. / (pr_exH * diaX);			// surface restance
+		Uinsul = float(kPi / (rIns + rSrf));
+#if 0 && defined( _DEBUG)
+0		// test code : for diaX >> insulThk, Uround == Uflat approx
+0		float Uround = Uinsul / (kPi * diaX / 12.f);
+0		float Uflat = 1.f / (pr_insulThk / 12.f / pr_insulK + 1.f / pr_exH);
+0		float Udiff = Uround - Uflat;
+#endif
+	}
+	pr_totals.st_UA = pr_len * min(Ubare, fUA*Uinsul);
+	return pr_totals.st_UA;
+}		// PIPERUN::pr_CalcUA
+//----------------------------------------------------------------------------
+float PIPERUN::pr_SetBeta(
+	float mCp,			// heat capacity rate, Btuh/F
+	float fUA /*=1.f*/)		// UA adjustment factor
+// beta = (1 - approach to surround) for pipe loss
+// sets pr_beta (and returns it)
+{
+	pr_beta = mCp > .1f
+		? exp(max(-80.f, -pr_totals.st_UA * fUA / mCp))
+		: 0.f;		// very small air flow
+	return pr_beta;
+}		// PIPERUN::pr_SetBeta
+//----------------------------------------------------------------------------
+float PIPERUN::pr_CalcTOut(		// calc outlet or ending temp
+	float tIn,			// inlet / beginning temp, F
+	float flow)	const	// flow, gpm
+// returns outlet / cooldown temp
+{
+	float tOut = 0.f;  // pr_exT;
+	if (flow > .00001f)		// if flow
+	{
+		double f = exp(-double(pr_totals.st_UA / (flow)));
+		tOut += float(f * (tIn - 0.f /* pr_exT*/));
+	}
+	return tOut;
+}		// PIPERUN::ps_CalcTOut
 //=============================================================================
 void PBC::sb_Init(PIPESEG* pPS)
 {
 	sb_pPS = pPS;
-}		// DBC::sb_Init
+}		// PBC::sb_Init
 //-----------------------------------------------------------------------------
-#if 0
-/*virtual*/ double DBC::sb_AreaNet() const		// *outside* duct area
+/*virtual*/ double PBC::sb_AreaNet() const		// *outside* duct area
 // returns exposed (heat transfer) area
 {
-	return sb_pDS ? sb_pDS->ds_exArea : 0.;
-}	// DBC::sb_Area
+	return sb_pPS ? sb_pPS->ps_totals.st_exArea : 0.;
+}	// PBC::sb_Area
 //-----------------------------------------------------------------------------
-/*virtual*/ const char* DBC::sb_ParentName() const
+/*virtual*/ const char* PBC::sb_ParentName() const
 {
-	return sb_pDS ? sb_pDS->name : "?";
-}		// SBC::sb_ParentName
+	return sb_pPS ? sb_pPS->name : "?";
+}		// PBC::sb_ParentName
 //-----------------------------------------------------------------------------
-#endif
 /*virtual*/ int PBC::sb_Class() const
 {
 	return sfcPIPE;
