@@ -389,6 +389,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			GE2014_80DR "GE2014_80DR"		// 2014 80 gal GE model run in the efficiency mode (demand reduction variant)
 			GE2014STDMODE "GE2014StdMode"	// 2014 50 gal GE run in standard mode
 			GE2014STDMODE_80 "GE2014StdMode80"	// 2014 80 gal GE run in standard mode
+			BWC202065  "BWC202065"			//  2020 Bradford White 65 gallon unit
 			RHEEMHB50 "RheemHB50"			// newish Rheem (2014 model?)
 			RHEEMHBDR2250 "RheemHBDR2250"	// 50 gallon, 2250 W resistance Rheem HB Duct Ready
 			RHEEMHBDR4550 "RheemHBDR4550"	// 50 gallon, 4500 W resistance Rheem HB Duct Ready
@@ -396,6 +397,16 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			RHEEMHBDR4565 "RheemHBDR4565"	// 65 gallon, 4500 W resistance Rheem HB Duct Ready
 			RHEEMHBDR2280 "RheemHBDR2280"	// 80 gallon, 2250 W resistance Rheem HB Duct Ready
 			RHEEMHBDR4580 "RheemHBDR4580"	// 80 gallon, 4500 W resistance Rheem HB Duct Ready
+
+			RHEEM2020PREM40 "Rheem2020Prem40"      // 40 gallon, Rheem 2020 Premium
+			RHEEM2020PREM50 "Rheem2020Prem50"	   // 50 gallon, Rheem 2020 Premium
+			RHEEM2020PREM65 "Rheem2020Prem65"	   // 65 gallon, Rheem 2020 Premium
+			RHEEM2020PREM80 "Rheem2020Prem80"	   // 80 gallon, Rheem 2020 Premium
+			RHEEM2020BUILD40  "Rheem2020Build40"   // 40 gallon, Rheem 2020 Builder
+			RHEEM2020BUILD50  "Rheem2020Build50"   // 50 gallon, Rheem 2020 Builder
+			RHEEM2020BUILD65  "Rheem2020Build65"   // 65 gallon, Rheem 2020 Builder
+			RHEEMHBDRBUILD80  "Rheem2020Build80"   // 80 gallon, Rheem 2020 Builder
+
 			STIEBEL220E "Stiebel220E"		// Stiebel Eltron (2014 model?)
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2
