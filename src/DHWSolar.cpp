@@ -200,12 +200,12 @@ RC DHWSOLARSYS::sw_EndIvl(
 				? min( 1.f, float( SSFNum / SSFDen)) 
 			    : 0.f;	
 
-		double scQFluidTotAll = 0.;
+		double scTotQFluidAll = 0.;
 		DHWSOLARCOLLECTOR* pSC;
 		RLUPC(ScR, pSC, pSC->ownTi == ss)
-		{	scQFluidTotAll += pSC->sc_qfluidTot;
+		{	scTotQFluidAll += pSC->sc_totQFluid;
 		}
-		if (frDiff(scQFluidTotAll, sw_tankQGainTot) > .001)
+		if (frDiff(scTotQFluidAll, sw_tankQGainTot) > .001)
 			printf("\nDHWSOLARSYS energy balance trouble");
 	}
 	return rc;
@@ -280,7 +280,7 @@ RC DHWSOLARSYS::sw_TickCalc(
 			{	sumVol += pSC->sc_tickVol;
 				sumVolTOutlet += pSC->sc_tickVol*pSC->sc_tOutlet;
 				sumVolTInlet += pSC->sc_tickVol*pSC->sc_tInlet;
-				scQGain += pSC->sc_qfluid;
+				scQGain += pSC->sc_tickQFluid;
 			}
 		}
 	}
@@ -288,7 +288,7 @@ RC DHWSOLARSYS::sw_TickCalc(
 	if (sumVol > 0.f)			// if there is collector flow
 	{	// collector flow > 0
 		sw_scTOutlet = sumVolTOutlet / sumVol;
-#if 0
+#if 1
 		sw_scTInlet = sumVolTInlet / sumVol;
 		sw_tankQGain += scQGain;
 #else
@@ -296,6 +296,7 @@ RC DHWSOLARSYS::sw_TickCalc(
 		float mCp = sumVol * sw_scFluidVHC;	// Btu/F
 		scQGain = sw_tankHXEff * mCp * deltaT;	// Btu
 		sw_tankQGain += scQGain;
+		float scTInletX = sumVolTInlet / sumVol;
 		sw_scTInlet = sw_scTOutlet - sw_tankHXEff * deltaT;	// collector inlet temp for next tick
 #endif
 	}
@@ -512,10 +513,10 @@ RC DHWSOLARCOLLECTOR::sc_InitPiping()		// init collector loop piping params
 RC DHWSOLARCOLLECTOR::sc_DoHour()
 {
 	RC rc = RCOK;
-	sc_pumpInElec = sc_qfluid = sc_eff = sc_tOutletP = 0.f;
+	sc_pumpInElec = sc_hrQFluid = sc_eff = sc_tOutletP = 0.f;
 
 	if (Top.tp_isBegMainSim)
-		sc_qfluidTot = 0.;
+		sc_totQFluid = 0.;
 
 	// plane incidence: use hourly values
 	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST,
@@ -544,21 +545,14 @@ RC DHWSOLARCOLLECTOR::sc_DoHour()
 		sc_pipingTEx = Top.tDbOHrAv;
 
 	float eff050, eff150;
-	float tOutlet050 = sc_CalcTRet( 50.f, eff050);
-	float tOutlet150 = sc_CalcTRet(150.f, eff150);
+	float tOutlet050 = sc_TempOutlet( 50.f, eff050);
+	float tOutlet150 = sc_TempOutlet(150.f, eff150);
 
 	sc_tOutletM = (tOutlet150 - tOutlet050) / 100.f;
 	sc_tOutletB = tOutlet050 - sc_tOutletM * 50.f;
 
 	sc_effM = (eff150 - eff050) / 100.f;
 	sc_effB = eff050 - sc_effM * 50.f;
-
-#if 0
-	float tRet100 = tM * 100.f + tA;
-	float eff100;
-	float tRet100X = sc_CalcTRet(100.f, eff100);
-	float tRet150X = tM * 150.f + tA;
-#endif
 
 	return rc;
 }		// DHWSOLARCOLLECTOR::sc_DoHour
@@ -569,7 +563,7 @@ RC DHWSOLARCOLLECTOR::sc_DoHourEnd()
 
 	sc_eff = sc_eff / Top.tp_NHrTicks();
 
-	sc_qfluidTot += sc_qfluid;
+	sc_totQFluid += sc_hrQFluid;
 
 	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
 
@@ -580,7 +574,7 @@ RC DHWSOLARCOLLECTOR::sc_DoHourEnd()
 	return rc;
 }	// DHWSOLARCOLLECTOR::sc_DoHourEnd()
 //-----------------------------------------------------------------------------
-float DHWSOLARCOLLECTOR::sc_CalcTRet(		// calc return temp for current conditions
+float DHWSOLARCOLLECTOR::sc_TempOutlet(		// col+piping outlet temp for current conditions
 	float tSup,				// supply temp from tank hx, F
 	float& colEff)	const	// collector efficiency (w/o piping)
 // calculates temp returned to tank from collector, including piping losses
@@ -598,7 +592,7 @@ float DHWSOLARCOLLECTOR::sc_CalcTRet(		// calc return temp for current condition
 		tRet = sc_piping.pr_TempOutlet(tColOut, sc_pipingTEx);
 	}
 	return tRet;
-}		// DHWSOLARCOLLECTOR::sc_CalcTRet
+}		// DHWSOLARCOLLECTOR::sc_TempOutlet
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 {
@@ -606,9 +600,8 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 
 	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
 
-#if 1
-	float tInletX = pSW->sw_scTInlet;
-
+	// inlet temp: use linear representation to balance against last-tick tank tHx
+	//   (not exact for multiple collectors)
 	sc_tInlet = (sc_tOutletB + pSW->sw_tankHXEff *(pSW->sw_tankTHx - sc_tOutletB))
 		/ (1.f - (1.f - pSW->sw_tankHXEff)*sc_tOutletM);
 
@@ -617,7 +610,7 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 
 #if defined( _DEBUG)
 	float effX;
-	float tRetX = sc_CalcTRet( sc_tInlet, effX);
+	float tRetX = sc_TempOutlet( sc_tInlet, effX);
 	if (frDiff(tOutlet, tRetX) > .001f || frDiff(eff, effX) > 0.001f)
 		printf("\nLinear fubar");
 #endif
@@ -642,51 +635,10 @@ RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
 			sc_pumpInElec += sc_tickPumpQ;
 			sc_tOutlet = sc_tOutletP;
 			sc_eff += eff;
-			sc_qfluid += (sc_tOutlet - sc_tInlet) * Top.tp_tickDurHr * sc_oprMCp;
+			sc_tickQFluid = (sc_tOutlet - sc_tInlet) * Top.tp_tickDurHr * sc_oprMCp;
+			sc_hrQFluid += sc_tickQFluid;
 		}
 	}
-#else
-
-	float tInlet = pSW->sw_scTInlet;
-
-	float effTick;
-	float tRet = sc_tRetM * tInlet + sc_tRetB;
-	float eff = sc_effM * tInlet + sc_effB;
-
-#if defined( _DEBUG)
-	float effX;
-	float tRetX = sc_CalcTRet(tInlet, effX);
-	if (frDiff(tRet, tRetX) > .001f || frDiff(eff, effX) > 0.001f)
-		printf("\nLinear fubar");
-#endif
-	if (tOutlet <= 0.f)
-		sc_tickOp = FALSE;	// no sun, pump is off
-	else
-	{
-		sc_tOutletP = tOutlet;
-
-		// Collector operating status
-		if (sc_tickOp)
-		{
-			if (sc_tOutletP <= tInlet + sc_pumpOffDeltaT)
-				sc_tickOp = FALSE;
-		}
-		else if (sc_tOutletP > tInlet + sc_pumpOnDeltaT)
-			sc_tickOp = TRUE;
-
-		if (sc_tickOp)
-		{
-			sc_tickVol = sc_oprVolFlow * Top.tp_tickDurMin;
-			sc_pumpInElec += sc_tickPumpQ;
-			sc_tOutlet = sc_tOutletP;
-			sc_eff += eff;
-			sc_qfluid += (sc_tOutlet - sc_tInlet) * Top.tp_tickDurHr * sc_oprMCp;
-		}
-
-	}
-#endif
-
-
 
 	if (!sc_tickOp)
 	{	// not operating

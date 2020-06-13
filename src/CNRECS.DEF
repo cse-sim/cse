@@ -4452,7 +4452,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
   *declare "float sc_MCpTest() const;"
   *declare "RC sc_DoHour();"
   *declare "RC sc_DoHourEnd();"
-  *declare "float sc_CalcTRet( float tSup, float& colEff) const;"
+  *declare "float sc_TempOutlet( float tInlet, float& colEff) const;"
   *declare "RC sc_DoSubhrTick();"
 
   //*i *noname *nest SURFGEOM sc_g;	// array geometry (re shading)
@@ -4527,8 +4527,9 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 
   *s *e FLOAT sc_tInlet			// tick inlet temp, F (at tank / before to-collector piping)
   *h *e FRAC sc_eff				// fraction of incident heat added to the fluid
-  *h *e FLOAT sc_qfluid			// tick heat added to the fluid, Btu
-  *y *e DBL sc_qfluidTot		// sc_qfluid annual total, Btu
+  *s *e FLOAT sc_tickQFluid		// tick heat added to the fluid, Btu
+  *h *e FLOAT sc_hrQFluid		// hour total heat added to fluid, Btu
+  *y *e DBL sc_totQFluid		// run total sc_qFluid total, Btu
   *h *e FLOAT sc_tOutletP		// tick potential outlet temp, F
 								//    used to determine if collector should run
   *h *e FLOAT sc_tOutlet		// tick outlet temp, F (at tank / after from-collector piping)

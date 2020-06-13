@@ -1169,13 +1169,11 @@ DHWSOLARSYS "Solar System"
     scFRUL = -0.7
 	sckta60 = -1
 	scTestMassFlow = 14.79*1.008912
+#if 1
 	scPipingLength = 0
-#if 0
-	scPumpFlow = 0.3
 #endif
 #if 0
-    scPumpOnDeltaT = 2
-    scPumpOffDeltaT = 1
+	scPumpFlow = 0.3
 #endif
 
 DHWSYS DS_UEF
@@ -1316,7 +1314,7 @@ ReportCol colhead="SCP El" colVal=@DhwSolarCollector[sc].pumpInElec colWid=8 \
 ReportCol colhead="SC IncPOA" colVal=@DhwSolarCollector[sc].poaRadTot colWid=9 \
 ReportCol colhead="SC QPoa" colVal=@DhwSolarCollector[sc].poaRadTot*@DhwSolarCollector[sc].areaTot colWid=8 \
 ReportCol colhead="SC Eff" colVal=@DhwSolarCollector[sc].eff colWid=8 \
-ReportCol colhead="SC QFluid" colVal=@DhwSolarCollector[sc].Qfluid colWid=9 \
+ReportCol colhead="SC QFluid" colVal=@DhwSolarCollector[sc].hrQfluid colWid=9 \
 ReportCol colhead="Tnk QGn" colVal=@DhwSolarSys[ss].tankQGain colWid=9 \
 
 
@@ -1339,6 +1337,7 @@ ReportCol colhead="tMains" colVal=@weather.tMains  colDec=3  colWid=6
 DELETE REPORT EB
 
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", jan 1)
+WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", jan 3)
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", apr 1)
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", jul 1)
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", oct 1)
