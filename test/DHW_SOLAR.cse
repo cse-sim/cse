@@ -1154,11 +1154,9 @@ DHWSOLARSYS "Solar System"
   swTankVol = 50
   swTankInsulR = 10
   swTankTEx = $tdbO + 10
-#if 1
+  swParElec = $month
   swSCFluidSpHt = .6363
   swSCFluidDens = 62.4278
-#endif
-  //swTankHXEff = 1.0
 
   DHWSOLARCOLLECTOR "Array 1"
     scArea = 24
@@ -1167,14 +1165,10 @@ DHWSOLARSYS "Solar System"
     scTilt = 30
     scFRTA = 0.6
     scFRUL = -0.7
-	sckta60 = -1
+	sckta60 = .69
 	scTestMassFlow = 14.79*1.008912
-#if 1
-	scPipingLength = 0
-#endif
-#if 0
-	scPumpFlow = 0.3
-#endif
+	scOprMassFlow = 17
+	scPipingLength = 23
 
 DHWSYS DS_UEF
   wsFXHWMTR = FX_UEF
