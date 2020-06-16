@@ -77,12 +77,13 @@ makAncMTR( MtrB);			// meters (energy use) run records basAnc
 
 // hvac: residential system model
 makAncRSYS( RsR);			// compliance-oriented simple residential system model
-makAncRSYSRES( RSysResR);	// RSYS results
+makAncRSYSRES( RsResR);		// RSYS results
 makAncDUCTSEG( DsR);		// duct segments
 
 // DHW: California compliance-oriented water heating
 makAncDHWMTR( WMtrR);		// DHW meters
 makAncDHWSYS( WsR);			// DHW system
+makAncDHWSYSRES(WsResR);	// DHWSYS results
 makAncDHWHEATER( WhR);		// DHW heater
 makAncDHWHEATREC( WrR);		// DHW heat recovery
 makAncDHWTANK( WtR);		// DHW tank

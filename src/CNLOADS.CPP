@@ -2538,8 +2538,8 @@ RC RSYS::rs_EndSubhr()
 	}
 
 	// populate results
-	RSYSRES_IVL_SUB& R = RSysResR[ ss].curr.S;
-	// RSYSRES_IVL_SUB& RH = RSysResR[ ss].curr.H;
+	RSYSRES_IVL_SUB& R = RsResR[ ss].curr.S;
+	// RSYSRES_IVL_SUB& RH = RsResR[ ss].curr.H;
 	R.hrsOn = rs_runF * Top.subhrDur;
 	if (R.hrsOn == 0.f)
 	{	R.qh = R.qcSen = R.qcLat = R.qFan = R.qDefrost = R.qAux = 0.f;

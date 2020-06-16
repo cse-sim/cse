@@ -326,16 +326,23 @@ void DHWMTR_IVL::wmt_Accum(			// accumulate
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSYSRES_IVL / DHWSYSRES: accumulates various DHWSYS results by interval
 ///////////////////////////////////////////////////////////////////////////////
-RC DHWSYSRES::wsu_Init(IVLCH ivl)
-// not called for C_IVLCH_SUBHOUR
+RC DHWSYSRES::wsr_Init(		// init (set to 0)
+	IVLCH ivl /*=-1*/)	// interval to init
+						//   default = all
+// do not call for C_IVLCH_S
 {
-	(&Y + (ivl - C_IVLCH_Y))->wsui_Clear();
+	if (ivl < 0)
+	{	for (ivl = C_IVLCH_Y; ivl <= C_IVLCH_H; ivl++)
+			wsr_Init( ivl);
+		S.wsr_Clear();	// special case
+	}
+	else if (ivl <= C_IVLCH_H)
+		(&Y + (ivl - C_IVLCH_Y))->wsr_Clear();
 
 	return RCOK;
-
-}		// DHWSYSRES::wmt_Init
+}		// DHWSYSRES::wsr_Init
 //-----------------------------------------------------------------------------
-void DHWSYSRES::wsu_Accum(
+void DHWSYSRES::wsr_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year.
 					//   Accumulates from subhour/hour/day/month.  Not Top.ivl!
 	int firstflg)	// iff TRUE, source copied to destination
@@ -346,35 +353,35 @@ void DHWSYSRES::wsu_Accum(
 
 	// accumulate: copy on first call (in lieu of 0'ing dIvl).
 	//   Note: wmt_Init() call in doBegIvl 0s H values
-	dIvl->wsui_Accum(sIvl, firstflg != 0);
+	dIvl->wsr_Accum(sIvl, firstflg != 0);
 }		// DHWSYSRES::wmt_Accum
 //-----------------------------------------------------------------------------
-/*static*/ const size_t DHWSYSRES_IVL::wusi_NFLOAT
+/*static*/ const size_t DHWSYSRES_IVL::wsr_NFLOAT
 	= 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, total)) / sizeof(float);
 //-----------------------------------------------------------------------------
-void DHWSYSRES_IVL::wsui_Copy(
+void DHWSYSRES_IVL::wsr_Copy(
 	const DHWSYSRES_IVL* s,
 	float mult/*=1.f*/)
 {
 	if (mult == 1.f)
 		memcpy(this, s, sizeof(DHWSYSRES_IVL));
 	else
-		VCopy(&total, wusi_NFLOAT, &s->total, mult);
-}	// DHWMTR_IVL::wsui_Copy
+		VCopy(&total, wsr_NFLOAT, &s->total, mult);
+}	// DHWMTR_IVL::wsr_Copy
 //-----------------------------------------------------------------------------
-void DHWSYSRES_IVL::wsui_Accum(			// accumulate
+void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 	const DHWSYSRES_IVL* sIvl,		// source
 	int options/*=0*/,				// options
 									//   1: copy rather than add (re first call)
 	float mult/*=1.f*/)				// multiplier
 {
 	if (options & 1)
-		wsui_Copy(sIvl, mult);
+		wsr_Copy(sIvl, mult);
 	else if (mult == 1.f)
-		VAccum(&total, wusi_NFLOAT, &sIvl->total);
+		VAccum(&total, wsr_NFLOAT, &sIvl->total);
 	else
-		VAccum(&total, wusi_NFLOAT, &sIvl->total, mult);
-}		// DHWSYSRES_IVL::wsui_Accum
+		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
+}		// DHWSYSRES_IVL::wsr_Accum
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -702,6 +709,10 @@ int DHWSYS::ws_IsCentralDHWSYS() const
 #endif
 	return ws_childDHWSYSCount > 0.f;
 }		// DHWSYS::ws_IsCentralDHWSYS
+//-----------------------------------------------------------------------------
+DHWSYSRES* DHWSYS::ws_GetDHWSYSRES() const
+{	return WsResR.GetAt(ss);
+}	// DHWSYS::ws_GetDHWSYSRES
 //-----------------------------------------------------------------------------
 RC DHWSYS::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
@@ -1034,7 +1045,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (ivl <= C_IVLCH_D)	// if start of day (or longer)
 	{
 		if (Top.tp_isBegMainSim)
-		{	// reset annual values after autosize / warmup
+		{
+			DHWSYSRES* pWSR = ws_GetDHWSYSRES();
+			pWSR->wsr_Init();
+
+			// reset annual values after autosize / warmup
 			VZero(ws_drawCount, NDHWENDUSES);
 
 			if (ws_fxList)
@@ -1599,11 +1614,9 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 {
 	RC rc = RCOK;
 
-#if 0
-	ws_res.S.wsui_Clear();	// subhour results
+	DHWSYSRES* pWSR = ws_GetDHWSYSRES();
+	pWSR->S.wsr_Clear();	// subhour results
 							//   tick calcs accum here
-							//   accum'd to hour in ws_DoSubhrEnd
-#endif
 
 	ws_HJLsh = 0.f;		// subhr jacket losses
 	DHWTANK* pWT;
@@ -1707,7 +1720,7 @@ RC DHWSYS::ws_DoSubhrEnd()
 
 #if 0
 	// accum DHWSYS results: subhour -> hour
-	ws_res.wsu_Accum( C_IVLCH_S, Top.isBegHour);
+	ws_res.wsr_Accum( C_IVLCH_S, Top.isBegHour);
 #endif
 
 	return rc;
@@ -1769,7 +1782,7 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 
 #if 0
 	// firstflag?
-	ws_res.wsu_Accum(ivl, 0);
+	ws_res.wsr_Accum(ivl, 0);
 #endif
 
 	return rc;
