@@ -884,6 +884,35 @@ char* strFill(			// fill string IN PLACE
 	return d;
 }		// strFill
 //---------------------------------------------------------------------------
+const char* strSuffix(   // generate string suffix
+	int n,				// index
+	int options /*=0*/)	// options
+						//   future: might control style
+// returns (in Tmpstr) "a", "b" ..."aa", ...
+{
+#if 0
+0	static int testMe = 1;
+0	if (testMe)
+0	{	testMe = 0;
+0		printf("\n");
+0		for (int i = 0; i < 1200; i++)
+0		{	const char* t = strSuffix(i);
+0			printf("%s%s", i % 26 ? " " : "\n", t);
+0		}
+0	}
+#endif
+	const char* sfx = "";
+	int iX = 0;
+	do
+	{	int idx = n % 26 - iX;
+		sfx = strtprintf("%c%s", 'a' + idx, sfx);
+		n /= 26;
+		iX = 1;
+	} while (n > 0);
+
+	return sfx;
+}	// strSuffix
+//---------------------------------------------------------------------------
 char* strDeBar( 						// translate '_' to ' '
 	char* d,					// destination string
 	const char* s /*=NULL*/)	// source; if NULL, deBar d in place

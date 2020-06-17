@@ -393,10 +393,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
       *d TI dvriY   	  // 0 or DvriB subscript of 1st rpFreq=YEAR report or export
       *d TI dvriM   	  // .. MONTH report/export currently active
       *d TI dvriD   	  // .. DAY report/export to write to today
-      *d TI dvriH   	  // .. Hourly ..
-      *d TI dvriHS   	  // .. Hourly and Subhourly.  A vr can only be in one list, so this list is
-       					  //    checked at hourly and subhourly intervals in addition to -H or -S. */
+      *d TI dvriH   	  // .. Hourly ..   
       *d TI dvriS   	  // .. Subhourly ..
+	  *d TI dvriHS   	  // .. Hourly and Subhourly.  A vr can only be in one list, so this list is
+       					  //    checked at hourly and subhourly intervals in addition to -H or -S. */
     *d SI hrxFlg    	// nz if any hour reporting or exporting today:    dvriH | -HS
     *d SI shrxFlg   	// nz if any subhour reporting or exporting today: dvriS | -HS
 
@@ -2691,7 +2691,7 @@ RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
     *y *nest ZNRES_IVL_SUB Y	// run results, aka year or annual
     *m *nest ZNRES_IVL_SUB M	// month
     *d *nest ZNRES_IVL_SUB D	// day
-    *h *nest ZNRES_IVL_SUB H	// hour.  note no hour+subhour member here; must adjust IVL for C_IVLCH_HS.
+    *h *nest ZNRES_IVL_SUB H	// hour.
     *s *nest ZNRES_IVL_SUB S	// subhour, aka subStep or sub-time-step
 *END		// ZNRES_SUB
 //=============================================================================
@@ -3338,7 +3338,7 @@ RECORD RSYSRES_SUB "RSYS results sub" *SUBSTRUCT
     *y *nest RSYSRES_IVL_SUB Y  	// run results, aka year or annual
     *m *nest RSYSRES_IVL_SUB M  	// month
     *d *nest RSYSRES_IVL_SUB D  	// day
-    *h *nest RSYSRES_IVL_SUB H  	// hour.  note no hour+subhour member here; must adjust IVL for C_IVLCH_HS.
+    *h *nest RSYSRES_IVL_SUB H  	// hour.
     *s *nest RSYSRES_IVL_SUB S  	// subhour, aka subStep or sub-time-step
 *END		// RSYSRES_SUB
 //=============================================================================
@@ -5467,7 +5467,7 @@ RECORD AHRES "ahRes" *RAT		// holds air handler and all-ahs simulation results (
     *y *e *nest AHRES_IVL_SUB Y  	// ah run results, aka year or annual
     *m *e *nest AHRES_IVL_SUB M  	// month
     *d *e *nest AHRES_IVL_SUB D  	// day
-    *h *e *nest AHRES_IVL_SUB H  	// hour.  note no hour+subhour member here; must adjust IVL for C_IVLCH_HS.
+    *h *e *nest AHRES_IVL_SUB H  	// hour.
     *s *e *nest AHRES_IVL_SUB S  	// subhour, aka subStep or sub-time-step
 *END		// AHRES
 

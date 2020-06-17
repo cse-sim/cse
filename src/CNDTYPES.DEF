@@ -483,8 +483,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                     M	"Month"
                     D	"Day"
                     H	"Hour"
-                    HS	"HourAndSub"		// report frequency only
                     S	"Subhour"
+                    HS	"HourAndSub"		// report frequency only
 			}
 // report/export type
 *choicb RPTYCH    { ERR     "ERR" 		// "Error Messages"

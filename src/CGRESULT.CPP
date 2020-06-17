@@ -36,9 +36,6 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-#define WB	/* define for wetbulb temp conversion & printing feature. requires linking lib\psychro2.cpp.
-undefine for portable linking and to print w instead of wb. 6-9-92. */
-
 #define QBAL	// show debugging/check info: ZEB report, AH report Qbal, .  Undefine to remove later.  6-9-92.
 
 #define ZFILTER 0	// 2-->0  7-17-95
@@ -93,9 +90,7 @@ struct COLDEF
 #define NBTU 4	// value is float, display -val/rxt->btuSf (ie divide by -user-inputable rpBtuSf): negative scaled Btu's
 #define CVI  5	// value is SI,    display w/ no scaling
 #define CVS  6	// value is string ONLY FOR offsets < 0 (variable arg list). Quotes are supplied if exporting
-#ifdef WB
 #define CVWB 7	// print wetbulb temp per float drybulb temp per PREVIOUS TABLE ENTRY & float hum rat per this entry
-#endif
 #define NOCV 8	// print no value (dummy entry, eg to hold ptr to unprinted drybulb temp for following CVWB)
 // corresp datatypes:   CV1      CVK      CVM      BTU,     NBTU,    CVI   CVS   CVWB     NOCV
 static int dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
@@ -112,18 +107,14 @@ static COLDEF ebColDef[] =				// (far cuz init data won't drive Borland data thr
 	/*		                     offset       cvflag  */
 	/* colhd           flags  wid dfw (cnguts.h)   (above) */
 {
-	{ USE_ARG_HD,    8|2|1,  3, 0, USE_NEXT_ARG,  CVS },	// report-only "time" column: "Mon", "Day", or "Hr", etc.
+	{ USE_ARG_HD,    8|2|1,  4, 0, USE_NEXT_ARG,  CVS },	// report-only "time" column: "Mon", "Day", or "Hr", etc.
 	{ USE_ARG_HD, 128|16|1, 17, 0, USE_NEXT_ARG,  CVS },	// report/export "name" column. 128: left justify
 	{ "Mon",           8|4,  2, 0, USE_NEXT_ARG,  CVI },	// export-only time columns
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS },	// ..
 	{ "Tair",            0,  5, 2, oRes(tAir),    CV1 },	// average air temp.   oRes: ZNRES_IVL_SUB offset, cnguts.h
-#ifdef WB
 	{ "WBair",           0,  5, 2, oRes(wAir),    CVWB },	// wetbulb for average t (previous entry) and w
-#else
-	{ "Wair",            0,  5, 2, oRes(wAir),    CV1 },	// average air humidity ratio
-#endif
 	{ "Cond",            0,  6, 3, oRes(qCond),   BTU },	// wall conduction gain
 	{ "InfS",            0,  6, 3, oRes(qsInfil), BTU },	// infiltration sensible gain. was "Infil".
 	{ "Slr",             0,  5, 3, oRes(qSlr),    BTU },	// solar gain
@@ -140,9 +131,7 @@ static COLDEF ebColDef[] =				// (far cuz init data won't drive Borland data thr
 #endif
 	{ "InfL",            0,  6, 3, oRes(qlInfil), BTU },	// latent infiltration gain
 	{ "IgnL",            0,  5, 3, oRes(qlIg),    BTU },	// latent internal gain (from GAIN records)
-#if 1	// improved latent accounting, 9-12
 	{ "IzoneL",          0,  6, 3, oRes(qlIz),    BTU },	// latent gain from IZXFER (vent, infil, duct leaks)
-#endif
 	{ "AirL",            0,  6, 3, oRes(qlAir),   BTU },	// latent q of w removed from zn air (neg when w rises)
 	{ "MechL",           0,  6, 3, oRes(qlMech),  BTU },	// latent mechanical gain, usually <0
 #ifdef QBAL //if showing unbalances
@@ -259,32 +248,16 @@ static COLDEF ahColdef[] =
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI  },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS  },  	// ..
 	{ "Tout",            0, TW, 1, oAhr(tDbO),    CV1  },  	// outdoor drybulb temp
-#ifdef WB
 	{ "WBout",           0, TW, 1, oAhr(wO),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
 	//^^^  shouldn't this be 1, all temps in columns of width 4?
 	//  presume left from showing W; 2 changed to 1 7-18-95.
-#else
-	{ "Wout",            0,  5, 2, oAhr(wO),      CV1  },  	// .. and hum rat
-#endif
 	{ "Tret",            0, TW, 1, oAhr(tr),      CV1  },  	// return air temp
-#ifdef WB
 	{ "WBret",           0, TW, 1, oAhr(wr),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-#else
-	{ "Wret",            0,  5, 2, oAhr(wr),      CV1  },  	// .. and hum rat
-#endif
 	{ "po",              0,  3, 2, oAhr(po),      CV1  },	// part outside air (fraction)
 	{ "Tmix",            0, TW, 1, oAhr(tmix),    CV1  },  	// mixed air temp
-#ifdef WB
 	{ "WBmix",           0, TW, 1, oAhr(wmix),    CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-#else
-	{ "Wmix",            0,  5, 2, oAhr(wmix),    CV1  },  	// .. and hum rat
-#endif
 	{ "Tsup",            0, TW, 1, oAhr(ts),      CV1  },  	// supply temp
-#ifdef WB
 	{ "WBsup",           0, TW, 1, oAhr(ws),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-#else
-	{ "Wsup",            0,  5, 2, oAhr(ws),      CV1  },  	// .. and hum rat
-#endif
 	{ "HrsOn",           0,  5, 2, oAhr(hrsOn),   CV1  },	// hours on
 	{ "FOn",             0,  3, 2, oAhr(frFanOn), CV1  },	// fraction of time fan on
 	{ "VF",              0,  5, 0, oAhr(vf),      CV1  },	// volumetric flow (cfm)
@@ -431,7 +404,7 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 	IVLCH fqr;		// interval's results to use: remains H or S when doing rows in HS (hourly+subhourly) reports
 
 // re time of report
-	char col1[4];			// for ZEB report and ZST report: "time" column 1: month, day, or hour
+	char col1[5];			// for ZEB report and ZST report: "time" column 1: month, day, or hour
 	SI xebM, xebD, xebH;
 	char xebS[2];	// for ZEB and ZST export: month-day-hour-subhour
 
@@ -443,7 +416,7 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
-static char * NEAR shortIvlTexts[] = { "bg0", "Yr ", "Mon", "Day", "Hr ", "s/h", "sHr" }; 	// subscript is IVLCH value
+static char * NEAR shortIvlTexts[] = { "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
@@ -471,14 +444,14 @@ LOCAL char * CDEC NEAR fmtExColhd( COLDEF *colDef, char *buf, USI flags, ...);
 //==========================================================================================================
 void FC cgReportsDaySetup()	// Init all zns re day/hour/subhour reports this day. Uses Top.jDay.
 
-// sets Top members .dvriY, -M, -D, -H, -HS, -S to head of lists
+// sets Top members .dvriY, -M, -D, -H, -S, -HS to head of lists
 // (in DvriB) of vr's in category that should receive output today
 {
 	DVRI *dvrip;
 	RLUP( DvriB, dvrip)			// initial dvrip loop
 		dvrip->nextNow = 0;		// clear all today's-reports list pointers
 
-	Top.dvriY = Top.dvriM = Top.dvriD = Top.dvriH = Top.dvriHS = Top.dvriS = 0;  	// init vr interval lists empty
+	Top.dvriY = Top.dvriM = Top.dvriD = Top.dvriH = Top.dvriS = Top.dvriHS = 0;  	// init vr interval lists empty
 
 // form linked lists by time interval of active "Date-dependent Virtual Report Info" records
 
@@ -499,7 +472,7 @@ void FC cgReportsDaySetup()	// Init all zns re day/hour/subhour reports this day
 		if (jDay >= rpDayBeg  &&  jDay <= rpDayEnd)					// if report active
 		{
 			// put report on active linked list for its frequency
-			TI *dvri = &Top.dvriY + dvrip->rpFreq - 1;	// subscript by rpFreq to point at list head Top.dvriY,M,D,H,HS,or S.
+			TI *dvri = &Top.dvriY + dvrip->rpFreq - 1;	// subscript by rpFreq to point at list head Top.dvriY,M,D,H,S,or HS.
 			dvrip->nextNow = *dvri;				// set active report's next-active ptr to current head of list
 			*dvri = dvrip->ss;					// replace list head with report's subscript
 		}
@@ -540,13 +513,11 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 	IVLCH freq,  		// interval desired: C_IVLCH_Y, M, D, H, S.
 	// HS generated internally when H or S given. HS cannot be given by caller.
-#if 1 // 5-97
 	BOO auszOnly/*=FALSE*/ )	/* non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
 				   used after autosize when main sim will not be performed.
 				   Experiment 5-97 to fix oversight in original ausz implementation;
 				   possibly autosize results reports should always be (have been) done this way
 				     (always call after autosize, then exclude then when auszOnly FALSE). */
-#endif
 {
 	SI i;
 	SI reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
@@ -561,8 +532,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 	switch (rxt.fq)
 	{
 	case C_IVLCH_S:
-		sprintf( rxt.col1, "%2d%c", Top.iHr+1, 'a' + Top.iSubhr);
-		reHead = (Top.isBegDay && Top.iSubhr==0);		// subhrly and HS rpts get title/colHeads once day
+		sprintf(rxt.col1, "%2d%s", Top.iHr + 1, strSuffix( Top.iSubhr));
+		reHead = (Top.isBegDay && Top.iSubhr == 0);		// subhrly and HS rpts get title/colHeads once day
 		doFoot = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_H:
@@ -625,7 +596,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 				| ( isExport ? (16|8) 			// exports show BOTH name and the 4 export time columns
 					: (isAll ? 16 : 8) ); 		// all- reports show name, others rpts show time column
 			rxt.flags = (rxt.flags &~(64|32))			// include shutter frac * (64) and Mode (32) columns
-				| ( rxt.fq >= C_IVLCH_HS	  		// .. in _HS and _S reports
+				| ( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
 				    && (dvrip->ownTi > 0 || isAll )   	// .. for a single zone or all zones
 				|| isExport 				// .. and in all exports (keep format constant)
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
@@ -1233,7 +1204,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			TI resi = dvrip->ownTi > 0 ? dvrip->ownTi : ZnresB.n;		// results subscript for zone or sum-of-all-zones
 			ZNRES_IVL_SUB *res = &ZnresB.p[resi].curr.Y + (rxt.fq - 1);  	// .M is after .Y, etc; no _S or _HS gets here
 			rxt.colDef = dvrip->rpTy==C_RPTYCH_ZST ? stColdef : ebColDef; 	// columns definition table for vpRxRow
-			if (rpFreq >= C_IVLCH_HS)   					// if for _HS or _S report, include (blank) ..
+			if (rpFreq >= C_IVLCH_S)   					// if for _HS or _S report, include (blank) ..
 				rxt.flags |= (64|32);   					// .. * and M columns for alignment
 			vpRxRow( dvrip, &rxt, res,  				// do ZEB/ZST rpt row.  Uses rxt.flags, colDef.
 				shortIvlTexts[rxt.fq], "", "","","","",	// time. for ebColDef, no name, no export times,
@@ -1262,7 +1233,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 				ZNRES_IVL_SUB *res = &ZnresB.p[ZnresB.n].curr.Y + rpFreq - 1;	// pt zn sum results (last record) for same ivl
 				rxt.colDef = dvrip->rpTy==C_RPTYCH_ZST ? stColdef 		// columns definition table for vpRxRow
 							 : ebColDef;
-				if (rpFreq >= C_IVLCH_HS)   				// insurance: H, HS, S currently 1-92 don't get here
+				if (rpFreq >= C_IVLCH_S)   				// insurance: H, HS, S currently 1-92 don't get here
 					rxt.flags |= (64|32);   				// .. include * and M columns so columns align
 				vrStr( dvrip->vrh, "\n");   				// blank separating line
 				vpRxRow( dvrip, &rxt, res,  				// do ZEB/ZST rpt row.  Uses rxt.flags, colDef.
@@ -1380,11 +1351,11 @@ LOCAL void FC NEAR vpEbStRow( 			// virtual print zone ZEB or ZST row for zone o
 
 {
 	TI resi = (zi==TI_SUM ? ZnresB.n : zi);   			// results record subscr: sum of zones is in last record
-	SI resSubi = rxt->fqr - (rxt->fqr >= C_IVLCH_HS ? 2 : 1);	/* results substr offset from .Y: M, D, H, S follow .Y, no HS.
-    								   .fqr is H or S when .fq is HS for hourly+subhourly reports.*/
+	SI resSubi = rxt->fqr - 1;	// results substr offset from .Y: M, D, H, S follow .Y, no HS.
+    							//   .fqr is H or S when .fq is HS for hourly+subhourly reports
 	ZNRES_IVL_SUB *res = &ZnresB.p[resi].curr.Y + resSubi;   	// point results substructure for interval to be reported
 	SI xMode = 0;						// for ZEB export: CSE zone mode as integer
-	char *znSC = "";						// for ZEB report and export: shutter fraction, "" or "*"
+	char *znSC = "";					// for ZEB report and export: shutter fraction, "" or "*"
 	char mode[10];						// for ZEB report: CSE zone mode as text
 	mode[0] = 0;
 
@@ -1440,9 +1411,9 @@ LOCAL void FC NEAR vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 
 // virtual print AH report/export Row for one air handler or sum (caller iterates for all)
 {
-	AHRES *ahr = AhresB.p + (ahi==TI_SUM ? AhresB.n : ahi);   	// point ah results record: sum is in last record.
-	SI ahrsi = rxt->fqr - (rxt->fqr >= C_IVLCH_HS ? 2 : 1);	/* results substr offset from .Y: M, D, H, S follow .Y, no HS.
-    								   .fqr is H or S when .fq is HS for hourly+subhourly reports.*/
+	AHRES* ahr = AhresB.p + (ahi==TI_SUM ? AhresB.n : ahi);   	// point ah results record: sum is in last record.
+	SI ahrsi = rxt->fqr - 1;	// results substr offset from .Y: M, D, H, S follow .Y, no HS.
+    							//  .fqr is H or S when .fq is HS for hourly+subhourly reports
 	AHRES_IVL_SUB *ahrs = (&ahr->Y) + ahrsi;			// point substruct for interval in question
 
 	vpRxRow( dvrip, rxt, ahrs,  rxt->col1, ahr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
@@ -1560,28 +1531,18 @@ LOCAL void CDEC NEAR vpRxRow(	// virtual print report or export row given COLDEF
 					ftemp = *(float *)p;  				// fetch data, so we can scale it
 					p = &ftemp;  					// point to where data now is
 					break;
-#ifdef WB//if including feature
 				case CVWB:   				// wetbulb temp for drybulb per PREVIOUS ENTRY & hum rat per this entry
-#if 0 // gets error messages for values out of range
-x					void *prevP = (char *)zr + (colDef-1)->offset;	// point data of preceding table entry
-x					ftemp = psyTWetBulb( *(float *)prevP, *(float *)p);	/* wetbulb for drybulb & w, lib\psychro2.cpp. looks slow:
-x                 							   faster to accum & average t,w, convert only now. */
-#else // 4-19-95; 5-17-95 #defined limits PSYCHROMIN/MAXT
 					ftemp = *(float *)((char *)zr + (colDef-1)->offset);	// fetch data of preceding table entry: drybulb
 					ftemp =
-#if 1 // added 7-9-95
 					ftemp==0.f && (*(float *)p)==0.f	// if drybulb and hum rat (w) both exactly 0
 						?  0.f 						// then no data has been stored, show 0 rather than -3.x.
-#endif
 						:  ftemp >= PSYCHROMINT && ftemp <= PSYCHROMAXT	// check for temp in psyTWetBulb's range 4,5-95
 							?  psyTWetBulb( ftemp, *(float *)p)	/* wetbulb for drybulb & w, lib\psychro2.cpp. looks slow:
                    												   faster to accum & average t,w, convert only now. */
 						:  0.f;					// out of range: fall thru and print 0
 												// (would prefer 9's or *'s, but wd require addl code). */
-#endif
 					p = &ftemp;  					// point to where data now is
 					break;
-#endif
 				}
 			}
 

@@ -17,22 +17,22 @@ Warning: Zone 'Z3': Condensation occurred in 32 subhours of run.
 
 Monthly Energy Balance, Sum of Zones
 
-Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
-Jan 62.50 52.48      0      0     0 0.744 0.0125 -1.437  0.681    0      0     0      0      0      0    0
-Feb 64.08 53.08      0      0     0 0.672 -.0132 -1.041  0.382    0      0     0      0      0      0    0
-Mar 66.65 54.12      0      0     0 0.743 -.0889 -0.834  0.179    0      0     0      0      0      0    0
-Apr 68.31 54.80      0      0     0 0.720 -.0504 -0.829  0.160    0      0     0      0      0      0    0
-May 75.02 57.41      0      0     0 0.744 -.0415 -0.476 -0.226    0      0     0      0      0      0    0
-Jun 79.59 59.13      0      0     0 0.720 -.0248 -0.160 -0.535    0      0     0      0      0      0    0
-Jul 81.62 59.90      0      0     0 0.744 .00729 0.0788 -0.830    0      0     0      0      0      0    0
-Aug 80.66 59.54      0      0     0 0.744 -.0037 -.0444 -0.696    0      0     0      0      0      0    0
-Sep 79.24 59.00      0      0     0 0.720 0.0752 -0.288 -0.507    0      0     0      0      0      0    0
-Oct 73.79 56.95      0      0     0 0.744 0.0636 -0.737 -.0704    0      0     0      0      0      0    0
-Nov 64.67 53.32      0      0     0 0.721 0.0979 -1.192  0.373    0      0     0      0      0      0    0
-Dec 62.29 52.33      0      0     0 0.744 -.0333 -1.448  0.737    0      0     0      0      0      0    0
+ Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
+---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
+ Jan 62.50 52.48      0      0     0 0.744 0.0125 -1.437  0.681    0      0     0      0      0      0    0
+ Feb 64.08 53.08      0      0     0 0.672 -.0132 -1.041  0.382    0      0     0      0      0      0    0
+ Mar 66.65 54.12      0      0     0 0.743 -.0889 -0.834  0.179    0      0     0      0      0      0    0
+ Apr 68.31 54.80      0      0     0 0.720 -.0504 -0.829  0.160    0      0     0      0      0      0    0
+ May 75.02 57.41      0      0     0 0.744 -.0415 -0.476 -0.226    0      0     0      0      0      0    0
+ Jun 79.59 59.13      0      0     0 0.720 -.0248 -0.160 -0.535    0      0     0      0      0      0    0
+ Jul 81.62 59.90      0      0     0 0.744 .00729 0.0788 -0.830    0      0     0      0      0      0    0
+ Aug 80.66 59.54      0      0     0 0.744 -.0037 -.0444 -0.696    0      0     0      0      0      0    0
+ Sep 79.24 59.00      0      0     0 0.720 0.0752 -0.288 -0.507    0      0     0      0      0      0    0
+ Oct 73.79 56.95      0      0     0 0.744 0.0636 -0.737 -.0704    0      0     0      0      0      0    0
+ Nov 64.67 53.32      0      0     0 0.721 0.0979 -1.192  0.373    0      0     0      0      0      0    0
+ Dec 62.29 52.33      0      0     0 0.744 -.0333 -1.448  0.737    0      0     0      0      0      0    0
 
-Yr  71.53 56.10      0      0     0 8.760 .00067 -8.408 -0.353    0      0     0      0      0      0    0
+ Yr  71.53 56.10      0      0     0 8.760 .00067 -8.408 -0.353    0      0     0      0      0      0    0
 
 
 
@@ -60,7 +60,7 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  1
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  1
 
 
 
@@ -108,7 +108,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
+! CSE 0.870.0 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ Annual Cooling Energy Report
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  2
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  3
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  4
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  5
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  6
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  7
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:19:48 am
+! CSE 0.870.0 for Win32 console run(s) done: Wed 17-Jun-20   4:25:26 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
-! Command line: -x!  -t1 Fresno
-! Input file:   D:\cse\test\Fresno.cse
-! Report file:  D:\cse\test\Fresno.rep
+!               17-Jun-20   4:02 pm   (VS 14.16    2623488 bytes)  (HPWH 1.9.0+master.6ae38ca.38)
+! Command line: -x!  -t1 fresno
+! Input file:   D:\cse\test\fresno.cse
+! Report file:  D:\cse\test\fresno.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0150   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0040   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.95     Calls = 1      T/C = 0.9470   
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0210   
-!                Total:  Time = 0.98     Calls = 1      T/C = 0.9840   
+!           Simulation:  Time = 0.60     Calls = 1      T/C = 0.6010   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
+!                Total:  Time = 0.62     Calls = 1      T/C = 0.6170   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! Fresno  001                              Mon 07-Jan-19   9:19:47 am  Page  8
+! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  8
 

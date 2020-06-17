@@ -135,6 +135,7 @@ inline BOOL IsInteger( const char* s)
 {	int v; return strDecode( s, v) == 1; }
 BOOL IsBlank( const char* s, int len=999999);
 char* strFill( char* d, const char* s, int len=-1);
+const char* strSuffix(int n, int options = 0);
 char* strTranslateEscapes( char* d, const char* s=NULL);
 char* strCatIf( char* d, size_t dSize, const char* brk, const char* s);
 char* strDeBar( char* d, const char* s=NULL);
