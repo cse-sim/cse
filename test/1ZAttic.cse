@@ -450,7 +450,7 @@ MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA T
  REPORT	    rpType=ZEB   rpFreq=MONTH rpZone="Attic" 
  
  REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=Hour
- REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HourAndSub
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=Hourandsub
  REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Oct 16 rpDayEnd= Oct 16 rpFreq=Hour
  
  REPORT     rpType=MTR     rpMeter=GAINMETER    rpFreq=Month
