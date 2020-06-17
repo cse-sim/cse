@@ -433,6 +433,12 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC125A_SP "NyleC125A_SP"
 			NYLEC185A_SP "NyleC185A_SP"
 			NYLEC250A_SP "NyleC250A_SP"
+
+			NYLEC60AC_SP  "NyleC60A_CWP_SP"	// Nyle Cxx external HPWHs with cold weather package)
+			NYLEC90AC_SP  "NyleC90A_CWP_SP"
+			NYLEC125AC_SP "NyleC125A_CWP_SP"
+			NYLEC185AC_SP "NyleC185A_CWP_SP"
+			NYLEC250AC_SP "NyleC250A_CWP_SP"
 		}
 
 *choicb DHWEUCH {			// hot end uses
