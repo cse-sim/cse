@@ -329,17 +329,20 @@ void DHWMTR_IVL::wmt_Accum(			// accumulate
 RC DHWSYSRES::wsr_Init(		// init (set to 0)
 	IVLCH ivl /*=-1*/)	// interval to init
 						//   default = all
-// do not call for C_IVLCH_S
 {
-	if (ivl < 0)
-	{	for (ivl = C_IVLCH_Y; ivl <= C_IVLCH_H; ivl++)
+	RC rc = RCOK;
+	if (ivl < C_IVLCH_Y)
+	{	for (ivl = C_IVLCH_Y; ivl <= C_IVLCH_S; ivl++)
 			wsr_Init( ivl);
-		S.wsr_Clear();	// special case
 	}
-	else if (ivl <= C_IVLCH_H)
+	else if (ivl <= C_IVLCH_S)
 		(&Y + (ivl - C_IVLCH_Y))->wsr_Clear();
+#if defined( _DEBUG)
+	else
+		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", name, ivl);
+#endif
 
-	return RCOK;
+	return rc;
 }		// DHWSYSRES::wsr_Init
 //-----------------------------------------------------------------------------
 void DHWSYSRES::wsr_Accum(
@@ -2371,9 +2374,6 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_NYLEC125AC_SP,    hwatLARGE | HPWH::MODELS_NyleC125A_C_SP },
 	{ C_WHASHPTYCH_NYLEC185AC_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_C_SP  },
 	{ C_WHASHPTYCH_NYLEC250AC_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_C_SP },
-
-
-
 
 #if 0
 	{ C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | HPWH::MODELS_NyleC25A_MP },
