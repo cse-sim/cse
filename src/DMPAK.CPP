@@ -90,7 +90,7 @@ static DMP dmralloc(	// Reallocate heap space using realloc()
     return pNu;
 }		// dmralloc
 //-----------------------------------------------------------------------------
-int dmIsGoodPtr(  	// indentify bad heap pointer
+int dmIsGoodPtr(  	// identify bad heap pointer
    DMP p,			// app pointer
    const char* s,	// function name to insert in error messages
    int erOp ) 		// IGN/REG/WRN/ABT/PERR/PWRN/PABT (cnglob.h)

@@ -1543,8 +1543,8 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP(WsResR, pWSR)						// loop RSYSRES, last is sum
 	{
 		if (pWSR->ss < WsResR.n)
-			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, (pWSR->ss == WsResR.n - 1) + 0x100);
-		pWSR->H.wsr_Accum(&pWSR->S, Top.isBegHour, Top.isEndHour + 0x100);	// 0x100: limit hrsOn to 1
+			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
+		pWSR->H.wsr_Accum(&pWSR->S, Top.isBegHour, Top.isEndHour);
 	}
 
 	AHRES* ahres;
@@ -1554,7 +1554,7 @@ LOCAL void FC NEAR doIvlAccum()
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
 
-// accumulate zone and air handler hour results to day, and to hour sum_of's, and peaks, and output to binary results files
+// hour -> day
 
 #ifdef BINRES
 #ifdef TWOWV//bfr.h 9-94
@@ -1683,6 +1683,9 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
 
+	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
+		pWSR->D.wsr_Accum(&pWSR->H, Top.isBegDay, Top.isEndDay);
+
 	AHRES* allAhres = AhresB.p + AhresB.n;
 	RLUP( AhresB, ahres)							// loop air handers simulation results incl sum_of.
 	{
@@ -1717,7 +1720,7 @@ LOCAL void FC NEAR doIvlAccum()
 	if (Top.ivl > C_IVLCH_M)							// if day call, done.
 		return;
 
-// accumulate month results to year, and do monthly output to binary results files
+// Month -> year
 
 	RLUP( ZnresB, pZR)							// loop over sim results for zones and sum-of-zones
 	{
@@ -1743,6 +1746,8 @@ LOCAL void FC NEAR doIvlAccum()
 		accumAhr( &ahres->M, &ahres->Y, Top.isFirstMon, Top.isLastDay);		// accumulate month ah results to run (year)
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
+	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
+		pWSR->Y.wsr_Accum(&pWSR->D, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
@@ -2334,7 +2339,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		if (isBegMonth)
 		{	if (auszMon)
 			{
-				monStr = (CHP)tddMonAbbrev( tp_date.month);		// eg "Jan"
+				strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr));		// eg "Jan"
 				const char* t;
 				if (tp_AuszWthrSource() != TOPRAT_COOLDSMO)		// if autosizing specific day
 					t = strtprintf( "%2.2d-%s", 		// format dd-mon
@@ -2345,7 +2350,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 			}
 			else									// heating design day. Not month-specific.
 			{
-				monStr = "heating design day";					// inconsistent with cooling just above
+				strncpy0( monStr, "heating design day", sizeof( monStr));		// inconsistent with cooling just above
 				strcpy( dateStr, "heating design day");
 			}
 		}
@@ -2369,7 +2374,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		isBegMonth = (tp_date.mday==1 || jDay==tp_begDay || isBegRun);	// true if 1st day of month, run, or warmup
 		if (isBegMonth)						// do on 1st day of mon or run incl warmup, after setting date.
 		{
-			monStr = (CHP)tddMonAbbrev( tp_date.month);	// month name string
+			strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr)); // month name string
 			jdMend = tddDoyMonEnd( tp_date.month);   		// month's last day
 			if (tp_endDay < jdMend && tp_endDay >= jDay) 	// if sooner
 				jdMend = tp_endDay;   						// run's last day

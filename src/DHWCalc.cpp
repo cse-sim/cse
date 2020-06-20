@@ -324,70 +324,6 @@ void DHWMTR_IVL::wmt_Accum(			// accumulate
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// DHWSYSRES_IVL / DHWSYSRES: accumulates various DHWSYS results by interval
-///////////////////////////////////////////////////////////////////////////////
-RC DHWSYSRES::wsr_Init(		// init (set to 0)
-	IVLCH ivl /*=-1*/)	// interval to init
-						//   default = all
-{
-	RC rc = RCOK;
-	if (ivl < C_IVLCH_Y)
-	{	for (ivl = C_IVLCH_Y; ivl <= C_IVLCH_S; ivl++)
-			wsr_Init( ivl);
-	}
-	else if (ivl <= C_IVLCH_S)
-		(&Y + (ivl - C_IVLCH_Y))->wsr_Clear();
-#if defined( _DEBUG)
-	else
-		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", name, ivl);
-#endif
-
-	return rc;
-}		// DHWSYSRES::wsr_Init
-//-----------------------------------------------------------------------------
-void DHWSYSRES::wsr_Accum(
-	IVLCH ivl,		// destination interval: hour/day/month/year.
-					//   Accumulates from subhour/hour/day/month.  Not Top.ivl!
-	int firstflg)	// iff TRUE, source copied to destination
-{
-	DHWSYSRES_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
-												// ASSUMES interval members ordered like DTIVLCH choices
-	DHWSYSRES_IVL* sIvl = dIvl + 1;				// source: next shorter interval
-
-	// accumulate: copy on first call (in lieu of 0'ing dIvl).
-	//   Note: wmt_Init() call in doBegIvl 0s H values
-	dIvl->wsr_Accum(sIvl, firstflg != 0);
-}		// DHWSYSRES::wmt_Accum
-//-----------------------------------------------------------------------------
-/*static*/ const size_t DHWSYSRES_IVL::wsr_NFLOAT
-	= 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, total)) / sizeof(float);
-//-----------------------------------------------------------------------------
-void DHWSYSRES_IVL::wsr_Copy(
-	const DHWSYSRES_IVL* s,
-	float mult/*=1.f*/)
-{
-	if (mult == 1.f)
-		memcpy(this, s, sizeof(DHWSYSRES_IVL));
-	else
-		VCopy(&total, wsr_NFLOAT, &s->total, mult);
-}	// DHWMTR_IVL::wsr_Copy
-//-----------------------------------------------------------------------------
-void DHWSYSRES_IVL::wsr_Accum(			// accumulate
-	const DHWSYSRES_IVL* sIvl,		// source
-	int options/*=0*/,				// options
-									//   1: copy rather than add (re first call)
-	float mult/*=1.f*/)				// multiplier
-{
-	if (options & 1)
-		wsr_Copy(sIvl, mult);
-	else if (mult == 1.f)
-		VAccum(&total, wsr_NFLOAT, &sIvl->total);
-	else
-		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
-}		// DHWSYSRES_IVL::wsr_Accum
-//=============================================================================
-
-///////////////////////////////////////////////////////////////////////////////
 // DHWSYS
 ///////////////////////////////////////////////////////////////////////////////
 // local structures
@@ -437,8 +373,8 @@ struct DHWTICK	// per tick info for DHWSYS
 {
 	float wtk_startMin;		// tick start time (minutes from hour beg)
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
-	float wtk_tInletX;		// post-DWHR cold water temperature for this tick, F
-							//   = DHWSYS.ws_tInlet if no DWHR
+	float wtk_tInletX;		// post-DWHR / post SSF cold water temperature for this tick, F
+							//   = DHWSYS.ws_tInlet if no DWHR and ws_SSF = 0
 	int wtk_nHRDraws;		// # of DHWHEATREC draws during this tick
 	float wtk_volRL;		// DHWLOOP return flow for this tick, gal
 							//   iff loop returns to water heater
@@ -447,14 +383,17 @@ struct DHWTICK	// per tick info for DHWSYS
 	double wtk_volIn;		// total tick inlet vol, gal (not including wtk_volRL)
 							//   = non-loop draws reduced per mixdown
 							//   = primary heater draw when DHWLOOPHEATER is present
+	float wtk_qDWHR;		// DWHR heat added, Btu
+	float wtk_qSSF;			// ws_SSF heat added, Btu
+
 
 	DHWTICK() { wtk_Init(); }
 	DHWTICK(int iTk) { wtk_Init( float( iTk*Top.tp_tickDurMin)); }
 	void wtk_Init( float startMin=0.f, double whUseTick=0., float tInlet=50.f)
-	{	wtk_startMin = startMin;
-		wtk_nHRDraws = 0;
-		wtk_whUse = whUseTick; wtk_tInletX = tInlet;
-		wtk_volRL = wtk_tRL = wtk_qLossNoRL = wtk_volIn = 0.f;
+	{	memset(this, 0, sizeof(DHWTICK));	// 0 everything
+		wtk_startMin = startMin;			// set specific mbrs
+		wtk_whUse = whUseTick;
+		wtk_tInletX = tInlet;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
 	double wtk_DrawTot(float tOut, float& tInletMix, float tInlet=-1.f) const;
@@ -1050,7 +989,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (Top.tp_isBegMainSim)
 		{
 			DHWSYSRES* pWSR = ws_GetDHWSYSRES();
-			pWSR->wsr_Init();
+			rc |= pWSR->wsr_Init();
 
 			// reset annual values after autosize / warmup
 			VZero(ws_drawCount, NDHWENDUSES);
@@ -1537,7 +1476,9 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 		// water heater inlet temp
 		float tO = ws_tInlet;
 		if (tk.wtk_whUse > 0.)
-			tO += qRWH / (waterRhoCp * tk.wtk_whUse);
+		{	tO += qRWH / (waterRhoCp * tk.wtk_whUse);
+			tk.wtk_qDWHR += qRWH;
+		}
 		tk.wtk_tInletX = ws_AdjustTInletForSSF(tO);
 
 #if defined( _DEBUG)
@@ -1659,7 +1600,11 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount);
 	if (ws_tOutPrimSum != 0.)
- 		ws_tOutPrimLT = ws_tOutPrimSum;
+		ws_tOutPrimLT = ws_tOutPrimSum;
+
+	// accumulate tick info to DHWSYSRES
+	DHWSYSRES* pWSR = ws_GetDHWSYSRES();
+	pWSR->S.wsr_AccumTick(tk);
 
 	return rc;
 
@@ -1721,11 +1666,6 @@ RC DHWSYS::ws_DoSubhrEnd()
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrEnd();
 
-#if 0
-	// accum DHWSYS results: subhour -> hour
-	ws_res.wsr_Accum( C_IVLCH_S, Top.isBegHour);
-#endif
-
 	return rc;
 
 }		// DHWSYS::ws_DoSubhrEnd
@@ -1782,11 +1722,6 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 					? min( 1.f, float( ws_SSFAnnualSolar / ws_SSFAnnualReq))
 					: 0.f;	
 	}
-
-#if 0
-	// firstflag?
-	ws_res.wsr_Accum(ivl, 0);
-#endif
 
 	return rc;
 
@@ -1845,6 +1780,88 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 	return rc;
 }	// DHWSYS::ws_DoEndPreRun
 //============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// DHWSYSRES_IVL / DHWSYSRES: accumulates various DHWSYS results by interval
+///////////////////////////////////////////////////////////////////////////////
+RC DHWSYSRES::wsr_Init(		// init (set to 0)
+	IVLCH ivl /*=-1*/)	// interval to init
+						//   default = all
+{
+	RC rc = RCOK;
+	if (ivl < C_IVLCH_Y)
+	{
+		for (ivl = C_IVLCH_Y; ivl <= C_IVLCH_S; ivl++)
+			wsr_Init(ivl);
+	}
+	else if (ivl <= C_IVLCH_S)
+		(&Y + (ivl - C_IVLCH_Y))->wsr_Clear();
+#if defined( _DEBUG)
+	else
+		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", name, ivl);
+#endif
+
+	return rc;
+}		// DHWSYSRES::wsr_Init
+//-----------------------------------------------------------------------------
+#if 0
+void DHWSYSRES::wsr_Accum(
+	IVLCH ivl,		// destination interval: hour/day/month/year.
+					//   Accumulates from subhour/hour/day/month.  Not Top.ivl!
+	int firstflg)	// iff TRUE, source copied to destination
+{
+	DHWSYSRES_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
+												// ASSUMES interval members ordered like DTIVLCH choices
+	DHWSYSRES_IVL* sIvl = dIvl + 1;				// source: next shorter interval
+
+	// accumulate: copy on first call (in lieu of 0'ing dIvl).
+	//   Note: wmt_Init() call in doBegIvl 0s H values
+	dIvl->wsr_Accum(sIvl, firstflg != 0);
+}		// DHWSYSRES::wmt_Accum
+#endif
+//-----------------------------------------------------------------------------
+/*static*/ const size_t DHWSYSRES_IVL::wsr_NFLOAT
+    = 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, total)) / sizeof(float);
+//-----------------------------------------------------------------------------
+void DHWSYSRES_IVL::wsr_Copy(
+	const DHWSYSRES_IVL* s,
+	float mult/*=1.f*/)
+{
+	if (mult == 1.f)
+		memcpy(this, s, sizeof(DHWSYSRES_IVL));
+	else
+		VCopy(&total, wsr_NFLOAT, &s->total, mult);
+}	// DHWMTR_IVL::wsr_Copy
+//-----------------------------------------------------------------------------
+void DHWSYSRES_IVL::wsr_Accum(			// accumulate
+	const DHWSYSRES_IVL* sIvl,		// source
+	int firstFlg,					// options
+									//   1: copy rather than add (re first call)
+	int lastFlg)					// multiplier
+{
+	float mult = 1.f;
+	if (firstFlg)
+		wsr_Copy(sIvl, mult);
+	else
+		VAccum(&total, wsr_NFLOAT, &sIvl->total);
+#if 0
+	else
+		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
+#endif
+}		// DHWSYSRES_IVL::wsr_Accum
+//-----------------------------------------------------------------------------
+void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
+	const DHWTICK& tk)		// source tick
+//  accum values (generally subhr) from tick
+//  WHY: some tick values are derived hourly (e.g. DHWR)
+//       (not with subhr loop)
+//       Here tick values are accumed to subhr
+{
+	qDWHR += tk.wtk_qDWHR;
+	qSSF += tk.wtk_qSSF;
+
+}	// DHWSYSRES_IVL::wsr_AccumTick
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWDAYUSE -- detailed daily water use
@@ -3620,6 +3637,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
+	DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
 	int whfcn = wh_GetFunction();
 
 	float tInletWH =
@@ -3698,6 +3716,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		
 		float dhwLoadTk2 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);;
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
+		pWSR->S.total += 1.f;
 		
 		if (pWS->ws_pDHWSOLARSYS)
 		{	float drawSolarSys = tk.wtk_volIn;	// draw from solar: does not include loop flow

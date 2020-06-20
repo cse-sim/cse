@@ -778,7 +778,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 #ifdef BINRES
 	cupIncRef( DMPP( tp_brFileName));
 #endif
-	//CHP monStr does not point into dm.
+	// monStr does not point into dm.
 
 }				// TOPRAT::Copy
 //===========================================================================
@@ -811,7 +811,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 
 	tp_PumbraDestroy();		// cleanup / delete Penumbra shading machinery
 
-	//CHP monStr does not point into dm.
+	// monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------
 const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error messages
