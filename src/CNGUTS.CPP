@@ -2056,6 +2056,11 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 
 		if (ivl==C_IVLCH_D)
 		{
+#if defined( _DEBUG)
+			if (mtrSub1->clg < .01f && mtrSub1->fanC > 0.01f)
+				printf("\nMtr fanC > 0");
+#endif
+
 			// compute hour's total use in each record.  .tot then propogates to D, M, Y.
 			mtrSub1->tot = mtrSub1->allEU + mtrSub1->pv + mtrSub1->bt;
 

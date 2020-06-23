@@ -1069,7 +1069,7 @@ x						printf( "1B\n");
 							double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
 							double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
 							if (frDiff( qHt0, qHt1) > .001)
-								printf( "qHt mismatch\n");
+								printf( "\nqHt mismatch");
 #endif
 						}
 						// zone temp calc'd in zn_CondixCR2()
@@ -1206,7 +1206,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 				}
 #if defined( _DEBUG)
 				else if (tz > zn_tzsp + .001)
-					printf( "Overheat\n");
+					printf( "\nOverheat");
 #endif
 			}
 			else if (zn_hcMode == RSYS::rsmCOOL)
@@ -1221,7 +1221,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 				}
 #if defined( _DEBUG)
 				else if (tz < zn_tzsp - .001)
-					printf( "Overcool\n");
+					printf( "\nOvercool");
 #endif
 			}
 		}
@@ -1506,21 +1506,9 @@ RC RSYS::rs_CkF()
 		if (rs_IsPkgRoom())
 		{	rc |= requireN(when, RSYS_EER95, 0);
 			rc |= disallowN(when, RSYS_SEER, 0);
-			rc |= rs_DerivePkgRoomValues( 2);
-
 		}
 		else
-		{	rc |= requireN(when, RSYS_SEER, 0);
-
-			// estimate missing EER from SEER
-			//   California ACM method
-			if (!IsSet(RSYS_EER95))
-				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
-				: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
-				: 13.f;
-			if (rs_SEER <= rs_EER95)
-				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
-		}
+			rc |= requireN(when, RSYS_SEER, 0);
 
 		// cooling model air flow correlations have limited validity range
 		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
@@ -1596,13 +1584,10 @@ RC RSYS::rs_CkF()
 			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
 
 		if (rs_IsPkgRoom())
-		{
-			rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
+		{	rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAP35, RSYS_COP35, 0);
 			rc |= requireN(when, RSYS_COP47, 0);
-	
-			rc |= rs_DerivePkgRoomValues(1);
-
+			// defaults derived in rs_TopRSys1()
 		}
 		else
 		{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
@@ -1674,11 +1659,39 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
-	if (!IsSet( RSYS_TDDESH))
-		rs_tdDesH = rs_IsASHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
+	if (rs_IsASHP())
+	{
+		if (!IsSet(RSYS_TDDESH))
+			rs_tdDesH = 30.f;	// lower default temp rise for ASHP
 
-	if (rs_IsASHPPkgRoom() && !IsSet(rs_ASHPLockOutT))
-		rs_ASHPLockOutT = 45.f;		// packaged room ASHP: use resistance at lower temps
+		if (!IsSet(rs_ASHPLockOutT))
+			if (rs_IsASHPPkgRoom())
+				rs_ASHPLockOutT = 45.f;		// pkg room ASHP: use resistance at lower temps
+
+		rc |= rs_SetupASHP();
+	}
+	else
+	{	// not ASHP
+		if (!IsSet(RSYS_TDDESH))
+			rs_tdDesH = 50.f;	// default temp rise
+	}
+
+	if (rs_CanCool())
+	{	if (rs_IsPkgRoom())
+			// pkg: derive SEER from EER
+			//   abram conant fit, 6-20
+			rs_SEER = 1.07f * rs_EER95;
+		else
+		{	// estimate missing EER from SEER
+			//   California ACM method
+			if (!IsSet(RSYS_EER95))
+				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
+				: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
+				: 13.f;
+			if (rs_SEER <= rs_EER95)
+				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
+		}
+	}
 
 	if (IsAusz( RSYS_CAP95))
 	{	rs_auszC.az_active = TRUE;
@@ -1692,6 +1705,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 									//   capacities derived in rs_AuszFinal
 		rs_fxCapHAsF = 1.2f;		// working oversize factor
 	}
+
+	// 
 
 	else if (IsAusz( RSYS_CAPH))
 		// other checking?
@@ -1934,11 +1949,13 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{	if (IsAusz( RSYS_CAP47))
 			{	// find cap47 that produces required output
 				// (re-derives dependent values)
-				rs_SizeASHP( rs_capH*rs_fxCapHTarg, Top.heatDsTDbO);
+				// size at higher of lockout temp and outdoor design temp
+				float tDsH = max(Top.heatDsTDbO, rs_ASHPLockOutT);
+				rs_SizeASHP( rs_capH*rs_fxCapHTarg, tDsH);
 #if defined( _DEBUG)
-				float capCheck = rs_CapEffASHP( Top.heatDsTDbO);
+				float capCheck = rs_CapEffASHP( tDsH);
 				if (fabs( capCheck - rs_capH*rs_fxCapHTarg) > 1.f)
-					printf( "ASHP capacity mismatch\n");
+					printf( "\nASHP capacity mismatch");
 #endif
 			}
 			if (IsAusz( RSYS_CAPAUXH))
@@ -2006,22 +2023,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 								//      (coolOver = heatOver = 1)
 
 }		// RSYS::rs_AuszFinal
-//-----------------------------------------------------------------------------
-RC RSYS::rs_DerivePkgRoomValues(
-	int options)	// 0x1: do heating; 0x2 do cooling
-{
-	RC rc = RCOK;
-	if (options & 1)
-	{
-		rs_COP17 = 0.6870 * rs_COP47;
-		rs_cap17 = rs_cap47 * rs_Cap17RatioASHP();
-	}
 
-	if (options & 2)
-		rs_SEER = 1.07f * rs_EER95;
-
-	return rc;
-}	// RSYS::rs_DerivePkgRoomValues
 //-----------------------------------------------------------------------------
 float RSYS::rs_ClgCapNomTons(	// nominal cooling capacity
 	float nearest /*=-1.f*/)		// if >0, round to nearest specified increment
@@ -3131,6 +3133,7 @@ void RSYS::rs_PerfDataASHP1(		// test aid: ASHP performance from alt models
 float RSYS::rs_PerfASHP(		// ASHP performance
 	int ashpModel,		// 0=CSE, 1=MP, 2=ESL, 3=Cutler
 						//  + 0x100: do NOT model defrost heating
+						//           else model defrost if available
 	float tdbOut,		// outdoor dry bulb, F
 	float& COP,			// returned: compressor-only COP at tdbOut
 	float& capDefrostHt,// returned: defrost heat output
@@ -3150,12 +3153,12 @@ float RSYS::rs_PerfASHP(		// ASHP performance
 	if (ashpModel == 0)
 	{	// CSE AHRI 210/240 model
 		// input power and heating capacity at current conditions (Btuh)
-		int iDefrost = tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
+		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
 		float tdbM17 = tdbOut - 17.f;
 		inpHt = rs_inp17 + rs_ASHPInpF[ iDefrost]*tdbM17 - fanHAdj;
 		capHt = rs_cap17 + rs_ASHPCapF[ iDefrost]*tdbM17 - fanHAdj;
 		if (iDefrost && bDoDefrost)
-		{	// C_RSYSDEFROSTMODELCH_MKUPCLG
+		{	// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
 			// include sufficient aux heat to make up for ASHP cooling
 			// limit to available aux heat capacity
 			// Note: does NOT over-commit aux because compressor
@@ -3298,14 +3301,13 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 					? 0.f
 					: rs_FanHRtdPerTon( rs_cap47 / 12000.f);
 
-	if (!IsSet( RSYS_CAP17))
+	if (!IsSet( RSYS_CAP17) || rs_IsPkgRoom())
 		rs_cap17 = max( rs_Cap17RatioASHP()*rs_cap47, 1.f);
 
 	if (!IsSet(RSYS_CAP35))
 	{	rs_cap35 = rs_cap17 + 0.6f * (rs_cap47 - rs_cap17);
-		if (!rs_IsPkgRoom())
+		if (rs_HasDefrost())
 			rs_cap35 *= 0.9f;	// capacity reduction for defrost
-								//   pkgRoom: no defrost
 	}
 
 #if ASHP_COPREG == 1
@@ -3407,9 +3409,8 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 
 	if (!IsSet( RSYS_COP35))
 	{	rs_inp35 = rs_inp17 + 0.6f * (rs_inp47 - rs_inp17);
-		if (!rs_IsPkgRoom())
+		if (rs_HasDefrost())
 			rs_inp35 *= 0.985f;		// defrost power reduction
-									//  pkgRoom: no defrost
 		rs_COP35 = rs_cap35 / max( rs_inp35, .1f);
 	}
 	else
@@ -3665,8 +3666,9 @@ RC RSYS::rs_SizeASHP(			// size ASHP
 	float tdbM17 = tdbOut - 17.f;
 	float tF;
 	float d;
-	if (tdbOut > 17.f && tdbOut < 45.f)
+	if (rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f)
 	{	// defrost regime: cap based on 17 - 35 slope
+		//   pkg ASHP does not defrost
 		tF = tdbM17 / (35.f - 17.f);
 		float r35 = 0.9f * (r17 + 0.6f*(1.f - r17));	// cap35/cap47
 		d = (r17 + tF * (r35 - r17));
@@ -4259,6 +4261,10 @@ RC RSYS::rs_FinalizeSh()
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.subhrDur;	// compressor energy for step, Btu
 			rs_pMtrElec->H.fanC += rs_inFan * Top.subhrDur;
+#if defined( _DEBUG)
+			if (rs_pMtrElec->H.clg < .01f && rs_pMtrElec->H.fanC > .01f)
+				printf("\nFanC > 0");
+#endif
 		}
 	}
 	else if (rs_mode == rsmHEAT)

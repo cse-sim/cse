@@ -348,6 +348,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			VARFLOW   "VarFlow"
 		  }
 *choicb RSYSDEFROSTMODELCH {
+            NONE        "None"
 			REVCYCLE    "RevCycle"
 			REVCYCLEAUX "RevCycleAux"
 		  }

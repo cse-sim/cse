@@ -3041,6 +3041,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
 *declare "int rs_IsPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ASHPPKGRM; }"
 *declare "int rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "int rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
 *declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
 *declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
 *declare "int rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
@@ -3061,7 +3062,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
-*declare "RC rs_DerivePkgRoomValues( int options);"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 *declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
 *declare "static float rs_Cap95FromCap47ASHP( float cap47) { return max( cap47 - 180., 0.f) / 0.98f; }"
@@ -3171,6 +3171,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   compressor capacity assumed 0 if outdoor tdb < tLockOut
 							//   default is -999 (no lockout)
 *r RSYSDEFROSTMODELCH rs_defrostModel	// defrost model
+							//   NONE:        defrost ignored (no capacity reduction, no aux heat)
 							//   REVCYCLE:    no additional aux heat (just capacity reduced per cap35)
 							//   REVCYCLEAUX: aux heat used to compensate for capacity reduction due to
 							//                reverse (cooling) operation
@@ -3201,8 +3202,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   Thus input = output / (rs_effHt * rs_PLF)
 
 					// compression cooling
-*f FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
-*f FLOAT_GZ rs_EER95;		// cooling AHRI rated EER at 95 F, Btuh/W
+*f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
+*f *e FLOAT_GZ rs_EER95;	// cooling AHRI rated EER at 95 F, Btuh/W
 *f *e FLOAT rs_cap95;		// rated total cooling capacity at 95 F, Btuh TODO: decide on sign
 *f *e FLOAT_GEZ rs_cap95_As;	//     ... as autoSized
 *f *e FLOAT_GEZ rs_cap95_AsNov;	// ... raw autoSized w/o oversizing
