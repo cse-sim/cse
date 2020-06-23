@@ -1052,7 +1052,7 @@ x						printf( "1B\n");
 						double tSup0 = rs->rs_asSup.as_tdb;
 #if 1 && defined( _DEBUG)
 						if ((zn_hcMode==RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-						|| (zn_hcMode==RSYS::rsmHEAT && tSup0 <= zn_tzsp))
+						 || (zn_hcMode==RSYS::rsmHEAT && tSup0 <= zn_tzsp && !rs->rs_IsASHP()))
 						{	printf( "Zone '%s': Flipped tSup  RSYS='%s', tOut=%f, tSup=%f, tSP=%f, tZone=%f\n", name, rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 							rs->rs_SupplyAirState( zn_hcMode);	// debug aid
 						}
@@ -1500,18 +1500,27 @@ RC RSYS::rs_CkF()
 	const char* when;
 	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
 	if (rs_CanCool())
-	{	when = strtprintf( "when rsType=%s (cooling is available)",
+	{	when = strtprintf( "when rsType=%s",
 			getChoiTx( RSYS_TYPE));
-		rc |= requireN( when, RSYS_SEER, 0);
+		
+		if (rs_IsPkgRoom())
+		{	rc |= requireN(when, RSYS_EER95, 0);
+			rc |= disallowN(when, RSYS_SEER, 0);
+			rc |= rs_DerivePkgRoomValues( 2);
 
-		// estimate missing EER from SEER
-		//   California ACM method
-		if (!IsSet( RSYS_EER95))
-			rs_EER95 = rs_SEER < 13.f ? 10.f  + 0.84f * (rs_SEER - 11.5)
-				     : rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
-					 :                  13.f;
-		if (rs_SEER <= rs_EER95)
-			rc |= oer( "rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
+		}
+		else
+		{	rc |= requireN(when, RSYS_SEER, 0);
+
+			// estimate missing EER from SEER
+			//   California ACM method
+			if (!IsSet(RSYS_EER95))
+				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
+				: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
+				: 13.f;
+			if (rs_SEER <= rs_EER95)
+				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
+		}
 
 		// cooling model air flow correlations have limited validity range
 		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
@@ -1568,37 +1577,55 @@ RC RSYS::rs_CkF()
 			FldCopyIf( RSYS_CAP47, RSYS_CAPNOMH);
 	}
 	else if (rs_IsASHP())
-	{	// ASHP (non-hydronic): only HSPF required
-		//   capacities defaulted from cooling cap95
-		//   COPs defaulted from HSPF
-		//   if both COP47 and COP17 are specified, HSPF is not used
-		when = "when rsType=ASHP";
-		rc |= requireN( when, RSYS_HSPF, 0);
+	{	
+		when = strtprintf("when rsType=%s",	getChoiTx(RSYS_TYPE));
+
 		rc |= disallowN( when, RSYS_CAPH, RSYS_AFUE, 0);
 		if (!IsSet( RSYS_CAP47) && !IsSet( RSYS_CAP95))
 			rc |= oer( "at least one of rsCap47 and rsCapC must be specified %s", when);
-		if (!IsSet( RSYS_CDH))
-			rs_CdH = bracket( .05f, .25f - 0.2f*(rs_HSPF-6.8f)/(10.f-6.8f), .25f);
-		rc |= limitCheck( RSYS_CDH, 0., .5);
-#if 0 && defined( _DEBUG)	// provide default backup (testing aid), 3-28-2013
-x		if (!IsSet( RSYS_CAPAUXH))
-x			rs_capAuxH = 100000.f;
-#endif
+
 		// save input value of rs_capAuxH
 		//   estimated rs_capAuxH used during autosize
 		rs_capAuxHInp = rs_capAuxH;
-		if (IsAusz( RSYS_CAPAUXH))
+		if (IsAusz(RSYS_CAPAUXH))
 			rs_capAuxH = 0.f;		// overwrite NANDLE
-		if (IsAusz( RSYS_CAP47))
-			rc |= disallowN( "when rsCap47 is AUTOSIZE",
-					RSYS_CAP17, RSYS_CAP35, 0);
-		else
+
+		if (!IsAusz(RSYS_CAP47))
 			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
 			//   see DefaultCapNomsIf()
-			FldCopyIf( RSYS_CAP47, RSYS_CAPNOMH);
+			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
+
+		if (rs_IsPkgRoom())
+		{
+			rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
+				RSYS_CAP35, RSYS_COP35, 0);
+			rc |= requireN(when, RSYS_COP47, 0);
+	
+			rc |= rs_DerivePkgRoomValues(1);
+
+		}
+		else
+		{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
+			//   capacities defaulted from cooling cap95
+			//   COPs defaulted from HSPF
+			//   if both COP47 and COP17 are specified, HSPF is not used
+
+			rc |= requireN(when, RSYS_HSPF, 0);
+
+			if (!IsSet(RSYS_CDH))
+				rs_CdH = bracket(.05f, .25f - 0.2f*(rs_HSPF - 6.8f) / (10.f - 6.8f), .25f);
+			rc |= limitCheck(RSYS_CDH, 0., .5);
+#if 0 && defined( _DEBUG)	// provide default backup (testing aid), 3-28-2013
+x		if (!IsSet(RSYS_CAPAUXH))
+x			rs_capAuxH = 100000.f;
+#endif
+			if (IsAusz(RSYS_CAP47))
+				rc |= disallowN("when rsCap47 is AUTOSIZE",
+					RSYS_CAP17, RSYS_CAP35, 0);
+		}
 	}
 	else
-	{	rc |= disallowN( "when rsType is not ASHP",
+	{	rc |= disallowN( "when rsType is not ASHP, ASHPHydronic, or ASHPPkgRoom",
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
@@ -1649,6 +1676,9 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 	if (!IsSet( RSYS_TDDESH))
 		rs_tdDesH = rs_IsASHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
+
+	if (rs_IsASHPPkgRoom() && !IsSet(rs_ASHPLockOutT))
+		rs_ASHPLockOutT = 45.f;		// packaged room ASHP: use resistance at lower temps
 
 	if (IsAusz( RSYS_CAP95))
 	{	rs_auszC.az_active = TRUE;
@@ -1975,7 +2005,23 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 								//   insurance: no rs_auszX.final() changes expected
 								//      (coolOver = heatOver = 1)
 
-}		// rs_AuszFinal
+}		// RSYS::rs_AuszFinal
+//-----------------------------------------------------------------------------
+RC RSYS::rs_DerivePkgRoomValues(
+	int options)	// 0x1: do heating; 0x2 do cooling
+{
+	RC rc = RCOK;
+	if (options & 1)
+	{
+		rs_COP17 = 0.6870 * rs_COP47;
+		rs_cap17 = rs_cap47 * rs_Cap17RatioASHP();
+	}
+
+	if (options & 2)
+		rs_SEER = 1.07f * rs_EER95;
+
+	return rc;
+}	// RSYS::rs_DerivePkgRoomValues
 //-----------------------------------------------------------------------------
 float RSYS::rs_ClgCapNomTons(	// nominal cooling capacity
 	float nearest /*=-1.f*/)		// if >0, round to nearest specified increment
@@ -2473,6 +2519,7 @@ int RSYS::rs_IsAutoSizing() const
 //----------------------------------------------------------------------------
 RC RSYS::rs_BegHour()
 {	RC rc = RCOK;
+
 	if (Top.isBegDay)
 	{	// init capacity ratios for day
 		//   track smallest fxCap for heating and cooling
@@ -2543,8 +2590,11 @@ RC RSYS::rs_EndSubhr()
 	R.hrsOn = rs_runF * Top.subhrDur;
 	if (R.hrsOn == 0.f)
 	{	R.qh = R.qcSen = R.qcLat = R.qFan = R.qDefrost = R.qAux = 0.f;
-		if (rs_runFAux > 0.f)
-			printf( "\nUnexpected Aux!");
+#if 0
+x No ... believed possible when e.g. compressor is locked out
+x		if (rs_runFAux > 0.f)
+x			printf( "\nUnexpected Aux!");
+#endif
 	}
 	else
 	{	R.hrsOnAux = rs_runFAux * Top.subhrDur;
@@ -3251,8 +3301,12 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	if (!IsSet( RSYS_CAP17))
 		rs_cap17 = max( rs_Cap17RatioASHP()*rs_cap47, 1.f);
 
-	if (!IsSet( RSYS_CAP35))
-		rs_cap35 = 0.9f   * (rs_cap17 + 0.6f * (rs_cap47 - rs_cap17));
+	if (!IsSet(RSYS_CAP35))
+	{	rs_cap35 = rs_cap17 + 0.6f * (rs_cap47 - rs_cap17);
+		if (!rs_IsPkgRoom())
+			rs_cap35 *= 0.9f;	// capacity reduction for defrost
+								//   pkgRoom: no defrost
+	}
 
 #if ASHP_COPREG == 1
 	// "traditional" model
@@ -3292,7 +3346,11 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 					? 0.5183f * rs_HSPF - 1.7244
 			        : 0.2186f * rs_HSPF + 0.6734f;
 #elif ASHP_COPREG == 6
-	if (!rs_IsASHPHydronic())
+	if (rs_IsPkgRoom())
+	{	rs_COP17 = 0.6870 * rs_COP47;
+		// rs_cap17 set above
+	}
+	else if (!rs_IsASHPHydronic())
 	{	// COP47: default as per ASHP_COPREG == 2
 		// COP17 / COP35: adjust so HSPF is matched
 		if (!IsSet( RSYS_COP47))
@@ -3324,7 +3382,8 @@ float RSYS::rs_Cap17RatioASHP() const
 	// multi-segment model from Abram Conant, 5-31-2013
 	//  includes HSPF < 7.5
 	float capRat =
-				   rs_IsASHPHydronic() ? .63f		// plausible result when HSPF not known
+		           rs_IsPkgRoom()      ? .6184f		// per Abram Conant, 6-4-2020
+				 : rs_IsASHPHydronic() ? .63f		// plausible result when HSPF not known
 				 : rs_HSPF < 7.5f    ? .1113f * rs_HSPF - .22269
 				 : rs_HSPF < 9.5567f ? .017f  * rs_HSPF + .4804f
 		         : rs_HSPF < 10.408f ? .0982f * rs_HSPF - .2956f
@@ -3347,7 +3406,10 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 	rs_inp17 = rs_cap17 / max( rs_COP17, .1f);
 
 	if (!IsSet( RSYS_COP35))
-	{	rs_inp35 = 0.985f * (rs_inp17 + 0.6f * (rs_inp47 - rs_inp17));
+	{	rs_inp35 = rs_inp17 + 0.6f * (rs_inp47 - rs_inp17);
+		if (!rs_IsPkgRoom())
+			rs_inp35 *= 0.985f;		// defrost power reduction
+									//  pkgRoom: no defrost
 		rs_COP35 = rs_cap35 / max( rs_inp35, .1f);
 	}
 	else

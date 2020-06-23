@@ -3036,10 +3036,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
 *declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float& capDefrostHt, float fanHAdj=0.f, float COPAdjF=1.f);"
-*declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_IsASHPHydronic(); }"
+*declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
 *declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
-*declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC; }"
+*declare "int rs_IsPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "int rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
 *declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
 *declare "int rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
@@ -3059,6 +3061,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
+*declare "RC rs_DerivePkgRoomValues( int options);"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 *declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
 *declare "static float rs_Cap95FromCap47ASHP( float cap47) { return max( cap47 - 180., 0.f) / 0.98f; }"
@@ -3284,7 +3287,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = main source (compressor or burner)
 								//	[ 1] = main+aux, ASHP heating only else 0
-*s *e FLOAT rs_runF		// run fraction
+*s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s FLOAT rs_runFLs		// last step run fraction (for probe access at step beg)
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh

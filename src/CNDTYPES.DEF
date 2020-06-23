@@ -339,6 +339,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
+			ACPKGRM "ACPkgRoom"
+			ASHPPKGRM "ASHPPkgRoom"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
