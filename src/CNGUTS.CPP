@@ -2056,11 +2056,6 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 
 		if (ivl==C_IVLCH_D)
 		{
-#if defined( _DEBUG)
-			if (mtrSub1->clg < .01f && mtrSub1->fanC > 0.01f)
-				printf("\nMtr fanC > 0");
-#endif
-
 			// compute hour's total use in each record.  .tot then propogates to D, M, Y.
 			mtrSub1->tot = mtrSub1->allEU + mtrSub1->pv + mtrSub1->bt;
 
@@ -2127,6 +2122,17 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 #endif
 	}
 }		// mtrsFinalize
+//-----------------------------------------------------------------------------------------------------------
+RC MTR_IVL_SUB::mtr_Validate() const
+// for ad hoc tests of meter validity
+// used only in development _DEBUG builds
+// not called in RELEASE, 6-20
+{
+	if (clg < 0.01f && fanC > 0.01f)
+		printf("\nMTR_IVl_SUB:Validate bad");
+
+	return RCOK;
+}		// MTR_IVL_SUB::mtr_Validate
 //-----------------------------------------------------------------------------------------------------------
 void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
 

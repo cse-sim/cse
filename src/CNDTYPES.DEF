@@ -334,13 +334,15 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 *choicb RSYSTYCH {
 			ACFURN "ACFurnace"
 			ACRES  "ACResistance"
+			ACPKGRM "ACPkgRoom"
+			ACPKGRMFURN "ACPkgRoomFurnace"
+			ACPKGRMRES "ACPkgRoomResistance"
 			ASHP   "ASHP"
 			ASHPHYD "ASHPHydronic"
+			ASHPPKGRM "ASHPPkgRoom"
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
-			ACPKGRM "ACPkgRoom"
-			ASHPPKGRM "ASHPPkgRoom"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"

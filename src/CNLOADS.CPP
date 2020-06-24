@@ -1068,7 +1068,9 @@ x						printf( "1B\n");
 #if defined( _DEBUG)
 							double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
 							double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
-							if (frDiff( qHt0, qHt1) > .001)
+							// zn_AmfHvacCR can return DBL_MAX
+							if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
+								&& frDiff( qHt0, qHt1) > .001)
 								printf( "\nqHt mismatch");
 #endif
 						}
@@ -1506,6 +1508,8 @@ RC RSYS::rs_CkF()
 		if (rs_IsPkgRoom())
 		{	rc |= requireN(when, RSYS_EER95, 0);
 			rc |= disallowN(when, RSYS_SEER, 0);
+			if (!IsSet(RSYS_FANPWRC))
+				rs_fanPwrC = 0.f;	// fan power included in primary by default
 		}
 		else
 			rc |= requireN(when, RSYS_SEER, 0);
@@ -1587,7 +1591,11 @@ RC RSYS::rs_CkF()
 		{	rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAP35, RSYS_COP35, 0);
 			rc |= requireN(when, RSYS_COP47, 0);
-			// defaults derived in rs_TopRSys1()
+
+			if (!IsSet(RSYS_FANPWRH))
+				rs_fanPwrH = 0.f;	// fan power included in primary by default
+
+			// other defaults derived in rs_TopRSys1()
 		}
 		else
 		{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
@@ -1637,13 +1645,7 @@ x			rs_capAuxH = 100000.f;
 				0);
 	else
 	{	when = "when rsOAVType is given";
-#if defined( OAVREV2)
 		rc |= requireN( when, RSYS_OAVRELIEFZI, RSYS_OAVAVFDS, 0);
-#else
-		rc |= requireN( when, RSYS_OAVRELIEFZI, 0);
-		if (rs_OAVType == C_RSYSOAVTYCH_FIXEDFLOW)
-			rc |= requireN( "when rsOAVType is FIXEDFLOW", RSYS_OAVAVFDS, 0);
-#endif
 		if (IsVal( RSYS_OAVTDIFF) && rs_OAVTdiff < 2.f)
 			oWarn( "Dubious rsOAVTdiff (%0.2f F) may cause inadvertent vent heating."
 				   "\n    rsOAVTdiff is typically >= 5 F to allow for fan heat and duct gains",
@@ -1659,21 +1661,13 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
-	if (rs_IsASHP())
-	{
-		if (!IsSet(RSYS_TDDESH))
-			rs_tdDesH = 30.f;	// lower default temp rise for ASHP
+	if (!IsSet(RSYS_TDDESH))
+		rs_tdDesH = rs_IsASHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
 
-		if (!IsSet(rs_ASHPLockOutT))
-			if (rs_IsASHPPkgRoom())
-				rs_ASHPLockOutT = 45.f;		// pkg room ASHP: use resistance at lower temps
-
+	if (rs_IsASHPPkgRoom())
+	{	if (!IsSet(rs_ASHPLockOutT))
+			rs_ASHPLockOutT = 45.f;		// pkg room ASHP: use resistance at lower temps
 		rc |= rs_SetupASHP();
-	}
-	else
-	{	// not ASHP
-		if (!IsSet(RSYS_TDDESH))
-			rs_tdDesH = 50.f;	// default temp rise
 	}
 
 	if (rs_CanCool())
@@ -1686,8 +1680,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			//   California ACM method
 			if (!IsSet(RSYS_EER95))
 				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
-				: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
-				: 13.f;
+				: rs_SEER < 16.f          ? 11.3f + 0.57f * (rs_SEER - 13)
+				:                           13.f;
 			if (rs_SEER <= rs_EER95)
 				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
 		}
@@ -1949,13 +1943,15 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{	if (IsAusz( RSYS_CAP47))
 			{	// find cap47 that produces required output
 				// (re-derives dependent values)
-				// size at higher of lockout temp and outdoor design temp
-				float tDsH = max(Top.heatDsTDbO, rs_ASHPLockOutT);
-				rs_SizeASHP( rs_capH*rs_fxCapHTarg, tDsH);
+				rs_SizeASHP( rs_capH*rs_fxCapHTarg, Top.heatDsTDbO);
 #if defined( _DEBUG)
-				float capCheck = rs_CapEffASHP( tDsH);
-				if (fabs( capCheck - rs_capH*rs_fxCapHTarg) > 1.f)
-					printf( "\nASHP capacity mismatch");
+				// capacity consistency check
+				float capCheck = rs_CapEffASHP(Top.heatDsTDbO);
+				float capExpected = Top.heatDsTDbO >= rs_ASHPLockOutT
+											? rs_capH * rs_fxCapHTarg
+											: 0.f;
+				if (fabs(capCheck - capExpected) > 1.f)
+					printf("\nASHP capacity mismatch");
 #endif
 			}
 			if (IsAusz( RSYS_CAPAUXH))
@@ -2095,7 +2091,6 @@ void RSYS::rs_OAVSetup()			// 1 time setup for OAV
 	else
 	{
 		ZNR* zp = rs_GetOAVReliefZn();
-#if defined( OAVREV2)
 		if (rs_OAVType == C_RSYSOAVTYCH_VARFLOW)
 		{	// variable flow (aka "NightBreeze")
 
@@ -2116,35 +2111,6 @@ void RSYS::rs_OAVSetup()			// 1 time setup for OAV
 			if (!IsSet( RSYS_OAVFANPWR))
 				rs_OAVFanPwr = rs_fanPwrC;		// same as cooling
 		}
-#else
-		if (rs_OAVType == C_RSYSOAVTYCH_VARFLOW)
-		{	// variable flow (aka "NightBreeze")
-
-			if (!IsSet( RSYS_OAVAVFDS))
-				rs_OAVAvfDs = 0.6f * rs_areaServed;
-
-			if (!IsSet( RSYS_OAVFANPWR))
-			{	// DEG Eq 1
-				// * written in terms of CFA, but real independent var is AVF
-				// * clearly screwy below 1000 ft2
-				float cfaX = max( 1000.f, rs_OAVAvfDs / 0.6f);	// fictious floor area
-																//   back-derived from avf
-				float E1 = 616.47f - 0.6159*cfaX + .000246f*cfaX*cfaX;	// power, W
-
-				rs_OAVFanPwr = rs_OAVAvfDs > 0.f		// fan power, W/cfm
-								? E1 / rs_OAVAvfDs
-								: 0.f;
-			}
-		}
-		else
-		{	// fixed flow (aka "SmartVent")
-
-			// rs_OAVAvfDs is required
-
-			if (!IsSet( RSYS_OAVFANPWR))
-				rs_OAVFanPwr = rs_fanPwrC;		// same as cooling
-		}
-#endif		// OAVREV2
 	}
 }		// RSYS::rs_OAVSetup
 //-----------------------------------------------------------------------------
@@ -2159,7 +2125,6 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 		//   "Method for Developing Fan Energy Use For a Variable
 		//    Speed Ventilation Cooling Title 24 Measure"
 		//    Davis Energy Group
-#if defined( OAVREV2)
 		// 11/20/2013 "Updated" version
 		// Air flow and fan power based on prior days average tDb
 		//  use double due to potentially huge exp( x)
@@ -2178,18 +2143,6 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 		float d = af - afOld;
 		if (rs_fanHeatOAV > 4000.f)
 			printf( "Excess OAV fan heat\n");
-#endif
-
-#else
-		// 9/29/2010 "Revised" method
-		// Air flow and fan power based on prior days max tDb
-		float tMax = Wthr.d.wd_taDbPvPk;
-		if (tMax > .0000001f)
-		{	double d = 17.91554 - 3.67538*log( tMax);
-			double af = 1./max( 1., d);
-			rs_avfOAV = rs_OAVAvfDs * af;
-			rs_fanHeatOAV = rs_OAVAvfDs * rs_OAVFanPwr * pow( af, 2.825) * 3.413f;
-		}
 #endif
 	}
 	else if (rs_OAVType == C_RSYSOAVTYCH_FIXEDFLOW)
@@ -2418,9 +2371,10 @@ float RSYS::rs_FanHRtdPerTon(		// fan heat included in ratings
 // returns fan heat included in ratings, Btuh
 {
 	float fanHRtdPerTon =
-		rs_fan.fn_motTy == C_MOTTYCH_PSC
-			? 500.f		// PSC = Permanent Split Capacitor
-			: 283.f;	// BPM = Brushless Permanent Magnet (aka ECM)
+		rs_IsPkgRoom()  ?  0.f			// PkgRoom: no fan adjustment
+	  : rs_fan.fn_motTy == C_MOTTYCH_PSC
+		                ? 500.f			// PSC = Permanent Split Capacitor
+	  :                   283.f;		// BPM = Brushless Permanent Magnet (aka ECM)
 
 	return capNomTons * fanHRtdPerTon;
 
@@ -3832,7 +3786,7 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 				// return grille temp = zone air temp from last step
 				afRet.af_AccumDry( amfX, zp->tzls, zp->wzls);
 #if defined( _DEBUG)
-				if ( afRet.as_tdb < 30. || afRet.as_tdb > 110.f)
+				if ((afRet.as_tdb < 30. || afRet.as_tdb > 110.f) && !rs_IsAutoSizing())
 					rWarn("RSYS '%s': dubious return temp (%.1f F)",
 						name, afRet.as_tdb);
 #endif

@@ -3038,9 +3038,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float& capDefrostHt, float fanHAdj=0.f, float COPAdjF=1.f);"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
-*declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
-*declare "int rs_IsPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
+*declare "int rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
 *declare "int rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "int rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
 *declare "int rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
 *declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
 *declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
@@ -4689,6 +4690,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
  	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
 	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
 	*declare "double mtr_NetBldgLoad() const;"
+	*declare "RC mtr_Validate() const;"
 
     *p float tot		// total of following specific end uses.  Code assumes precedes them.
 						//  = allEU + bt + pv
