@@ -725,7 +725,7 @@ ZONE   "Conditioned-zn"
    znCeilingHt = 9
    znCAir = 4200
    znSC = select( $radDiff >1., 0.5, default 0.8 )
-   znTH = select( $dsDay==1, 70, $dsDay==2, 60, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)) 
+   znTH = select( $dsDay==1, 70, $dsDay==2, 60, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,66.5,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)) 
    znTC = select( $dsDay==1, 83, $dsDay==2, 78, default hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78))
    znTD = select( $dsDay==1, 77, $dsDay==2, 99, @weather.taDbAvg07 >60., 68, default 77 )
    infAC = 0
@@ -1255,7 +1255,7 @@ RSYS RSYS1
 #if 1
    AUTOSIZE rsCap47
    AUTOSIZE rsCapAuxH
-   rsFxCapAuxH = 1.6
+   rsFxCapAuxH = 2
    rsFxCapH = 1.5
 #else
    rsCap47 = 20000
@@ -1363,7 +1363,7 @@ Reportcol colVal=@Meter[MtrNatGas].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid
 
 
 //Coldest Day
-      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=HD1 rpCPL=134
+      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=(HD1)+5 rpCPL=134
     rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -1386,7 +1386,9 @@ Reportcol colVal=@Meter[MtrNatGas].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid
     Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5
     Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Htgl"  colDec=1 colWid=5  
     Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
-    Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Rsys[1].runf colHead="RFPrm" colDec=3 colWid=5
+    Reportcol colVal=@Rsys[1].runfAux colHead="RFAux" colDec=3 colWid=5
+    Reportcol colVal=@ZnRes["Conditioned-zn"].H.unMetHDH colHead="UMDH" colDec=1 colWid=5
     Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
     Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
     

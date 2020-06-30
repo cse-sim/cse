@@ -1515,7 +1515,7 @@ LOCAL void FC NEAR doIvlAccum()
 				  Top.isBegHour,    		//   non-0 if 1st call of hour: init: copy don't add.
 				  Top.isEndHour );			//   non-0 if last call of hour: compute averages
 		if (Top.isEndHour)
-		{	// hour has unmet if more than 0 subhours unmet
+		{	// hour has unmet if temp not held at end of hour
 			pZR->curr.H.nHrUnMetH = pZR->curr.H.unMetHDH != 0.f;
 			pZR->curr.H.nHrUnMetC = pZR->curr.H.unMetCDH != 0.f;
 		}

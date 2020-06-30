@@ -2482,8 +2482,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								//   (may not match RSYS.rs_mode due to e.g. RSYS availability or
 								//    conflicting zone requests)
 								// flag unmet heating/cooling requirements (zn_tzsp not held)
-	*s *e FLOAT zn_unMetHDH		//   tz - znTH at end of hour, deg-hr
-	*s *e FLOAT zn_unMetCDH		//   tz - znTC at end of hour, deg-hr
+	*h *e FLOAT zn_unMetHDH		//   tz - znTH at end of hour, deg-hr
+	*h *e FLOAT zn_unMetCDH		//   tz - znTC at end of hour, deg-hr
 
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating

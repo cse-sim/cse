@@ -266,28 +266,14 @@ void SGRAT::sg_DbDump() const
 //-----------------------------------------------------------------------------
 RC ZNR::zn_BegHour()		// beginning-of-hour calcs for zone
 {
-#if 1	// added hourly call 5-2-2012
 	zn_SetAirRadXArea();	// update air temp/relHum dependent radiant exchange values
 							//   for convective/radiant zone model;
 							//   small impact, not worth substep cost
-#endif
 
 	// hour's sensible internal gain: scheduled value, if any.
 	//      Used for znaqLdHr, zp->qsIg, and to apportion to subhr results.
-#if 1		// code out STDF, 3-2-2012
 	qsIgHr = znSGain;	// sensible gain totalled from GAIN records
 						// also: qrIgAir: NOT included here0
-#else
-x	// hour's sensible internal gain: value from Sim Test Data File (STDF), if any
-x	//                                + scheduled value, if any.     Used for znaqLdHr, zp->qsIg, and to apportion to subhr results.
-x	int zss0 = ss - 1;			// 0-based zone subscript, for STDF file array access
-x	znWfSGain = 				// member added gratuitously so ig breakdown more probe-able, rob 11-95
-x		zss0 < Wthr.wd_nZ		// if STDF has data for zn
-x			?  Wthr.wd_zD[ zss0].ig  :  0.f;  	// use data, else 0
-x	qsIgHr = znWfSGain			// weather file sensible gain if any
-x				 + znSGain;   	// sensible gain totalled from GAIN records in cnguts.cpp:doHourGains.
-x	// also: qrIgAir: NOT included here.
-#endif
 
 	// Non-hvac hour-constant portions of MAIN EQUATION "Tz = (a + q)/b" (story at start file)
 
@@ -2445,7 +2431,7 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 							: rs_SEER;
 
 	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
-	rs_EERnfX =  inpX > 0.f /*&& rs_capnfX < 0.f*/ ? -rs_capnfX / inpX : rs_EER95;
+	rs_EERnfX =  inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;
 
 	rs_DefaultCapNomsIf();
 
@@ -2836,7 +2822,6 @@ x	rs_asOut = asSav;
 
 	if (rs_tdbOut > 82.f)
 	{
-#if 1	// inverted defn of fCondEER; add fCondCap, 1/12/2013
 		rs_fCondEER = 1. /
 		  ( AEER[ iDry] * rs_tdbCoilIn +
 			BEER[ iDry] * rs_twbCoilIn +
@@ -2851,22 +2836,6 @@ x	rs_asOut = asSav;
 			KEER[ iDry] / rs_vfPerTon +
 			LEER[ iDry]);
 		rs_EERnf  = rs_EERnfX * rs_fCondEER * rs_fCondCap;
-#else
-		rs_fCondEER =
-			AEER[ iDry] * rs_tdbCoilIn +
-			BEER[ iDry] * rs_twbCoilIn +
-			CEER[ iDry] * rs_tdbOut +
-			DEER[ iDry] * rs_vfPerTon +
-			EEER[ iDry] * rs_tdbCoilIn * rs_tdbOut +
-			FEER[ iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			GEER[ iDry] * rs_twbCoilIn * rs_tdbOut +
-			HEER[ iDry] * rs_twbCoilIn * rs_vfPerTon +
-			IEER[ iDry] * rs_tdbOut * rs_vfPerTon +
-			JEER[ iDry] * twbCoilIn2 +
-			KEER[ iDry] / rs_vfPerTon +
-			LEER[ iDry];
-		rs_EERnf  = rs_EERnfX / rs_fCondEER;
-#endif
 		rs_EERt = rs_tdbOut < 95.f
 						? rs_SEERnf + (rs_tdbOut-82.f)*(rs_EERnf - rs_SEERnf) / 13.f
 			            : rs_EERnf;
@@ -3683,7 +3652,7 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 	if (rs_mode == rsModeNew)
 		return;
 
-	if (rs_mode == rsmCOOL)
+	if (rsModeNew == rsmCOOL)
 	{	rs_tdbCoilIn = 0.f;
 		rs_twbCoilIn = 0.f;
 		rs_SHR = 0.f;
@@ -3692,7 +3661,7 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 		rs_fCondSEER = rs_fCondEER  = 0.f;
 		rs_SEERnf = rs_EERnf = rs_EERt = rs_effCt = 0.f;
 	}
-	else if (rs_mode == rsmHEAT)
+	else if (rsModeNew == rsmHEAT)
 	{	rs_asOutAux.as_Init();
 		rs_asSupAux.as_Init();
 	}
@@ -4017,7 +3986,12 @@ RC RSYS::rs_AllocateZoneAir()
 
 	// bAux: aux possible and needed
 	//   note: rs_capAuxH>0 possible for ASHP *only* (but can be =0 for ASHP)
+#if 0
 	BOOL bAux = rs_mode == rsmHEAT && fSize > 0. && fSize < 1. && rs_capAuxH > 0.f;
+#else
+	BOOL bAux = rs_mode == rsmHEAT && rs_capAuxH > 0.f
+		     && (rs_effHt == 0.f || (fSize > 0. && fSize < 1.));
+#endif
 
 	ZNR* zp;
 	if (!bAux)
@@ -4144,6 +4118,7 @@ x					rs_asSupAux.as_tdb, 1./rs_amfReq[ 1]);
 //----------------------------------------------------------------------------
 /*static*/ double RSYS::rs_CallAmfRequired( void* pO, double& tSup)
 // callback function for secant()
+// returns 1/reqAMF, 1.e10 iff reqAMF = 0
 {
 #if defined( RSYSITERCOUNT)
 	rsysIterCount++;
@@ -4175,7 +4150,8 @@ x			rsAmf += zp->zn_AmfHvacCR( zp->zn_tzsp, tSup, 0.);
 #endif
 
 	}
-	return rsAmf / rs_ducts[ rs_DsHC()].ductLkXF[ 0];
+	float ductLkXF = rs_ducts[rs_DsHC()].ductLkXF[0];
+	return rsAmf / ductLkXF;
 }		// RSYS::rs_AmfRequired
 //----------------------------------------------------------------------------
 float RSYS::rs_ACReqCap95(		// required rated capacity to meet sensible load
