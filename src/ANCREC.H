@@ -70,7 +70,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
   // members set at construction only
     SFIR* fir;				// pointer to record type's "small fields-in-record table" (in srfd.cpp)
     USI nFlds;				// number of fields excluding base-class members (front overhead)
-    char* what;				// name of the record group (for probes, error messages)
+    const char* what;		// name of the record group (for probes, error messages)
     USI eSz;				// record size
     USI sOff;				// offset in record to "status byte" array at end
     USI ancN;				// anchor number
@@ -262,6 +262,7 @@ class record		// base class for records
 
 	RC oerI( int shoTx, int shoFnLn, int isWarn, const char* fmt, va_list ap) const;
 
+	record* getOwner() const;
 	const char* whatIn() const;
 	const char* objIdTx( int op=0) const;
 	const char* classObjTx( int op=0) const;
@@ -306,6 +307,7 @@ template <class T>  class anc : public basAnc
     virtual void * recMbr(TI i, USI off)    { return (void *)((char *)(p + i) + off); }		// point record i member by offset
 	RC add( T **r, int erOp, TI i = 0) { return basAnc::add((record * *)r, erOp, i); }
 	RC RunDup( const anc< T> &src, BP _ownB=NULL, int erOp=ABT);
+	RC AllocResultsRecs(basAnc& src);
     void statSetup( T &r, TI n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, n, noZ, inHeap); }
 	int GetCount( int options=0) const;
 
@@ -437,6 +439,32 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 	}
 	return rc;
 }		// anc<T>::RunDup
+//-----------------------------------------------------------------------------
+template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results records
+	basAnc& src)	// Source run records
+// allocates N+1 results record< T>s (1..N paired with run recs; N+1 = sum)
+// sets names to match src; 0s all values
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+	int i = src.n + 1;
+	rc = al(i, WRN); // alloc all recs at once for less fragmentation. destroys old.
+	T* pR;
+	if (!rc) do							
+	{	rc |= add(&pR, WRN, i);	// init (to 0) results record, 1 thru i.
+		const char* name;
+		if (i > src.n)
+			name = strtprintf("sum_of_%s", src.what);
+		else
+		{	name = src.rec(i).name;
+			if (IsBlank(name))
+				name = strtprintf("%s_%d", src.what, i);
+			pR->SetName(name);	// results records have same name as their source
+		}
+	} while (--i > 0);
+
+	return rc;
+}		// anc< T>::AllocResultsRecs
 //-----------------------------------------------------------------------------
 #if defined( _DEBUG)
 template <class T> T* anc<T>::GetAt( int i) const

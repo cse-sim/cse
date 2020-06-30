@@ -117,10 +117,12 @@ extern anc<ZNR> ZrB;			// zones runtime info
 extern anc<ZNRES> ZnresB;      	// Zones simulation results info
 extern anc<IZXRAT> IzxR;		// interzone transfers
 extern anc<RSYS> RsR;			// residential system
-extern anc<RSYSRES> RSysResR;	// residential system results
+extern anc<RSYSRES> RsResR;		// residential system results
 extern anc<DUCTSEG> DsR;		// duct segments
 extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
+extern anc<DHWSYSRES> WsResR;	// DHW system results
+
 extern anc<DHWHEATER> WhR;		// DHW heater
 extern anc<DHWHEATER> WlhR;		// DHW loop heater
 extern anc<DHWTANK> WtR;		// DHW tank

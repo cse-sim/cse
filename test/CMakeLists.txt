@@ -40,6 +40,7 @@ set(files
   2zattic
   actest1bL
   ashptest2
+  ashpPkgRoom
   herv
   oavtest2
   bgtest

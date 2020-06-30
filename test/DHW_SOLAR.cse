@@ -1154,11 +1154,9 @@ DHWSOLARSYS "Solar System"
   swTankVol = 50
   swTankInsulR = 10
   swTankTEx = $tdbO + 10
-#if 1
+  swParElec = $month
   swSCFluidSpHt = .6363
   swSCFluidDens = 62.4278
-#endif
-  //swTankHXEff = 1.0
 
   DHWSOLARCOLLECTOR "Array 1"
     scArea = 24
@@ -1167,13 +1165,10 @@ DHWSOLARSYS "Solar System"
     scTilt = 30
     scFRTA = 0.6
     scFRUL = -0.7
-#if 0
-	scPumpFlow = 0.3
-#endif
-#if 0
-    scPumpOnDeltaT = 2
-    scPumpOffDeltaT = 1
-#endif
+	sckta60 = .69
+	scTestMassFlow = 14.79*1.008912
+	scOprMassFlow = 17
+	scPipingLength = 23
 
 DHWSYS DS_UEF
   wsFXHWMTR = FX_UEF
@@ -1310,10 +1305,10 @@ ReportCol colhead="SC Tin" colVal=@DhwSolarSys[ss].sctInlet colWid=8 \
 ReportCol colhead="SC Tout" colVal=@DhwSolarSys[ss].scTOutlet colWid=8 \
 ReportCol colhead="SC ToutP" colVal=@DhwSolarCollector[sc].tOutletP colWid=9 \
 ReportCol colhead="SCP El" colVal=@DhwSolarCollector[sc].pumpInElec colWid=8 \
-ReportCol colhead="SC IncPOA" colVal=@DhwSolarCollector[sc].poa colWid=9 \
-ReportCol colhead="SC QPoa" colVal=@DhwSolarCollector[sc].Qpoa colWid=8 \
+ReportCol colhead="SC IncPOA" colVal=@DhwSolarCollector[sc].poaRadTot colWid=9 \
+ReportCol colhead="SC QPoa" colVal=@DhwSolarCollector[sc].poaRadTot*@DhwSolarCollector[sc].areaTot colWid=8 \
 ReportCol colhead="SC Eff" colVal=@DhwSolarCollector[sc].eff colWid=8 \
-ReportCol colhead="SC QFluid" colVal=@DhwSolarCollector[sc].Qfluid colWid=9 \
+ReportCol colhead="SC QFluid" colVal=@DhwSolarCollector[sc].hrQfluid colWid=9 \
 ReportCol colhead="Tnk QGn" colVal=@DhwSolarSys[ss].tankQGain colWid=9 \
 
 
@@ -1336,6 +1331,7 @@ ReportCol colhead="tMains" colVal=@weather.tMains  colDec=3  colWid=6
 DELETE REPORT EB
 
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", jan 1)
+WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", jan 3)
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", apr 1)
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", jul 1)
 WSSOLREP( "DHW SOLAR", "DS_UEF", "Solar System", "Array 1", oct 1)
@@ -1347,13 +1343,17 @@ REPORT rpType=UDT rpFreq=YEAR rpTitle = "Overall SSF"
   ReportCol colhead="SSF Num" colVal=@DhwSys["DS_UEF"].SSFAnnualSolar colDec=1 colWid = 10
   ReportCol colhead="SSF Den" colVal=@DhwSys["DS_UEF"].SSFAnnualReq colDec=1 colWid = 10
   ReportCol colhead="SSF 2" colVal=@DhwSys["DS_UEF"].SSFAnnual colDec=3 colWid = 10
+  ReportCol colhead="OvrHt Hrs"  colVal=@DhwSolarSys[ "Solar System"].overHeatHrCount colDec=0 colWid=10
 
-#define SWINFO( h) REPORT rpType=UDT rpFreq=YEAR rpTitle = @Dhwsolarsys[h].name \
+#define SWINFO( h,c) REPORT rpType=UDT rpFreq=YEAR rpTitle = @Dhwsolarsys[h].name \
 ReportCol colhead="vol" colVal=@Dhwsolarsys[h].tankvol colDec=2 colWid = 6 \
 ReportCol colhead="UA" colVal=@Dhwsolarsys[h].tankUA colDec=2 colWid = 6 \
-ReportCol colhead="insulR" colVal=@Dhwsolarsys[h].tankinsulR colDec=2 colWid = 6
+ReportCol colhead="insulR" colVal=@Dhwsolarsys[h].tankinsulR colDec=2 colWid = 6 \
+ReportCol colhead="PipL"  colVal=@Dhwsolarcollector[ c].piping.len colDec=2 colWid = 8 \
+ReportCol colhead="PipUA"  colVal=@Dhwsolarcollector[ c].piping.UA colDec=2 colWid = 8 \
+ReportCol colhead="PipBeta"  colVal=@Dhwsolarcollector[ c].piping.beta colDec=3 colWid = 8
 
-SWINFO( "Solar System")
+SWINFO( "Solar System",1)
  
 RUN
 

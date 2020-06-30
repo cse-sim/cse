@@ -211,7 +211,8 @@ void FC runFazDataFree()
 
 	ZrB.free(); 	// Zones runtime info
 	ZnresB.free();	// zone simulation results
-	RSysResR.free();	// RSYS results
+	RsResR.free();	// RSYS results
+	WsResR.free();	// DHWSYS results
 	IzxR.free();	// interzone transfers
 	GnB.free();   	// (zone) gains
 	MtrB.free();  	// meters
@@ -974,8 +975,23 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RLUP( AhB, ah)
 		rc |= ah->rddInit( isAusz);	// do run-or-design-day init for each air handler
 
-// Allocate zone results storage records for each zone and for sum of all zones (Top)
+#if 1
+	// allocate results records paired with run records
+	//   do for both autoSize and run
+	//      no accum for autoSize, but code does incidental stores into xxRES
+	EF(ZnresB.AllocResultsRecs(ZrB));	// ZNRES <-> ZNR
+	ZNRES* pZR;
+	RLUP(ZnresB, pZR)
+		pZR->zr_InitPrior();	// provide plausible ZNRES.prior values for use in
+								// possible expressions that are evaluated at step beg
 
+	EF(RsResR.AllocResultsRecs(RsR));	// RSYSRES <-> RSYS
+
+	EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
+
+	EF(AhresB.AllocResultsRecs(AhB));	// AHRES <-> AH
+
+#else
 	int i = ZrB.n + 1;				// need a results record for each zone, and one for sum of zones
 	EF( ZnresB.al( i, WRN) )		// alloc ZNRES recs, at once for less fragmentation. destroys old.
 	do							// (Note: may be no results accumulation during autoSize,
@@ -988,20 +1004,15 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	}
 	while (--i > 0);
 
-// Allocate RSYS results storage for each RSYS and for sum of all RSYSs
-
 	i = RsR.n + 1;				// need a results record for each RSYS, and one for sum of RSYSs
-	EF( RSysResR.al( i, WRN) )	// alloc RSYSRES recs, at once for less fragmentation. destroys old.
+	EF( RsResR.al( i, WRN) )	// alloc RSYSRES recs, at once for less fragmentation. destroys old.
 	do							// (Note: may be no results accumulation during autoSize,
 	{							//  but alloc anyway cuz code several places stores into records)
 		RSYSRES* pRSR;
-		RSysResR.add( &pRSR, ABT, i);	// init (to 0) each zone results record, 1 thru i.
+		RsResR.add( &pRSR, ABT, i);	// init (to 0) each zone results record, 1 thru i.
 		strcpy( pRSR->name, i <= RsR.n ? RsR.p[i].name : "sum_of_RSYS");	// results name for rpts
 	}
 	while (--i > 0);
-
-
-// Allocate air handler results storage records for each air handler and for sum of all air handlers
 
 	i = AhB.n + 1;				// need a results record for each ah, and one for sum of ahs
 	EF( AhresB.al( i, WRN) )			// alloc AHRES recs, all at once for less mem frag. destroys any old.
@@ -1012,6 +1023,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 		strcpy( ahr->name, i <= AhB.n ? AhB.p[i].name : "sum_of_ahs");	// ah results name for rpts: name of ah or "sum_of_ahs"
 	}
 	while (--i > 0);
+#endif
 
 #ifdef BINRES
 // Init re binary results output files
@@ -1073,9 +1085,9 @@ LOCAL RC FC NEAR cgAfterWarmup()
 #if 0	// 7-19-2016
 x ? Clear results accumulated during warmup
 x Believed unnecessary due to firstflg initialization scheme in accumZr
-x	ZNRES* resp;
-x	RLUP( ZnresB, resp)
-x		resp->zr_InitCurr();	// 0 ZNRES.curr
+x	ZNRES* pZR;
+x	RLUP( ZnresB, pZR)
+x		pZR->zr_InitCurr();	// 0 ZNRES.curr
 #endif
 
 	return rc;
@@ -1477,39 +1489,39 @@ LOCAL void FC NEAR doIvlAccum()
 
 // accumulate subhour zone and ah results to hour [and subhour sum_of_zones].  There are no subhour meter results nor sums.
 
-	ZNRES* resp;
-	RLUP( ZnresB, resp)				// loop sim results for zones; last record is for sum of zones.  ancrec.h macro.
+	ZNRES* pZR;
+	RLUP( ZnresB, pZR)				// loop sim results for zones; last record is for sum of zones.  ancrec.h macro.
 	{
 #if 0 && defined( _DEBUG)
-		if (resp->curr.H.tAir == 0.)
-			printf( "\n'%s' tAir == 0", resp->name);
+		if (pZR->curr.H.tAir == 0.)
+			printf( "\n'%s' tAir == 0", pZR->name);
 #endif
 		// generate subhour "balance" sums: these are accumulated, and checked for near 0 by cgenbal.cpp at longer intervals.
-		resp->curr.S.qsBal = VSum<float, double>( &resp->curr.S.ZRq1, ZRnQ);  	// net sens heat: sum sensible heats. cnguts.h defines.
-		resp->curr.S.qlBal = VSum<float, double>( &resp->curr.S.ZRw1, ZRnW);  	// net latent heat: sum latent heats.
+		pZR->curr.S.qsBal = VSum<float, double>( &pZR->curr.S.ZRq1, ZRnQ);  	// net sens heat: sum sensible heats. cnguts.h defines.
+		pZR->curr.S.qlBal = VSum<float, double>( &pZR->curr.S.ZRw1, ZRnW);  	// net latent heat: sum latent heats.
 
 #if defined( _DEBUG)
 		// debug aid -- check latent balance
-		if (fabs( resp->curr.S.qlBal) > .02f)	// if unbal > 0.02 Btu
-		{	ZNR* zp = resp->zr_GetZone();
+		if (fabs( pZR->curr.S.qlBal) > .02f)	// if unbal > 0.02 Btu
+		{	ZNR* zp = pZR->zr_GetZone();
 			if (zp->zn_IsConvRad())
 				printf( "\n'%s' latent unbal: %.2f (case=%d)\n", zp->name,
-					resp->curr.S.qlBal, zp->zn_wCase);
+					pZR->curr.S.qlBal, zp->zn_wCase);
 		}
 #endif
 
 		// accumulate zone sim results subhr to hr: add one ZNRES_IVL_SUB into another. fcn below.
-		accumZr(  &resp->curr.S, &resp->curr.H,	//   src & dest ZNRES substrs: accumulate zone's subhr to same zone's hour
+		accumZr(  &pZR->curr.S, &pZR->curr.H,	//   src & dest ZNRES substrs: accumulate zone's subhr to same zone's hour
 				  Top.isBegHour,    		//   non-0 if 1st call of hour: init: copy don't add.
 				  Top.isEndHour );			//   non-0 if last call of hour: compute averages
 		if (Top.isEndHour)
-		{	// hour has unmet if more than 0 subhours unmet
-			resp->curr.H.nHrUnMetH = resp->curr.H.unMetHDH != 0.f;
-			resp->curr.H.nHrUnMetC = resp->curr.H.unMetCDH != 0.f;
+		{	// hour has unmet if temp not held at end of hour
+			pZR->curr.H.nHrUnMetH = pZR->curr.H.unMetHDH != 0.f;
+			pZR->curr.H.nHrUnMetC = pZR->curr.H.unMetCDH != 0.f;
 		}
 #ifdef SHSZ	// if keeping sum-of-subhours results. cnguts.h. untested. undef 6-92 for speed, flexibility.
-*     if (resp->ss < ZnresB.n)							// except for last (sum-of-zones) record
-*        accumZr( &resp->curr.S, &azResp->curr.S, resp->ss==1, resp->ss==ZrB.n);	// add zone's subhr results to sum of zones
+*     if (pZR->ss < ZnresB.n)							// except for last (sum-of-zones) record
+*        accumZr( &pZR->curr.S, &azResp->curr.S, pZR->ss==1, pZR->ss==ZrB.n);	// add zone's subhr results to sum of zones
 *	       // note use of regular accum fcn to get unweighted average temp/humidity values.
 *	       /* CAUTION: above first-last detection could fail if input language could leave
 *	          unused zone subscripts, perhaps after deletion, etc.  If nec, preset a last-zone
@@ -1517,13 +1529,22 @@ LOCAL void FC NEAR doIvlAccum()
 #endif
 	}
 
-	RSYSRES* pRSRSum = RSysResR.p + RSysResR.n;
+	RSYSRES* pRSRSum = RsResR.p + RsResR.n;
 	RSYSRES* pRSR;
-	RLUP( RSysResR, pRSR)						// loop RSYSRES, last is sum
-	{	if (pRSR->ss < RSysResR.n)
-			pRSRSum->curr.S.rsr_Accum( &pRSR->curr.S, pRSR->ss == 1, (pRSR->ss == RSysResR.n-1)+0x100);
+	RLUP( RsResR, pRSR)						// loop RSYSRES, last is sum
+	{	if (pRSR->ss < RsResR.n)
+			pRSRSum->curr.S.rsr_Accum( &pRSR->curr.S, pRSR->ss == 1, (pRSR->ss == RsResR.n-1)+0x100);
 		pRSR->curr.H.rsr_Accum( &pRSR->curr.S, Top.isBegHour, Top.isEndHour+0x100);	// accumulate subhr to hour
 																					//  0x100: limit hrsOn to 1
+	}
+
+	DHWSYSRES* pWSRSum = WsResR.p + WsResR.n;
+	DHWSYSRES* pWSR;
+	RLUP(WsResR, pWSR)						// loop RSYSRES, last is sum
+	{
+		if (pWSR->ss < WsResR.n)
+			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
+		pWSR->H.wsr_Accum(&pWSR->S, Top.isBegHour, Top.isEndHour);
 	}
 
 	AHRES* ahres;
@@ -1533,7 +1554,7 @@ LOCAL void FC NEAR doIvlAccum()
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
 
-// accumulate zone and air handler hour results to day, and to hour sum_of's, and peaks, and output to binary results files
+// hour -> day
 
 #ifdef BINRES
 #ifdef TWOWV//bfr.h 9-94
@@ -1575,23 +1596,23 @@ LOCAL void FC NEAR doIvlAccum()
 	}
 #endif
 	ZNRES* azResp = ZnresB.p + ZnresB.n;   	// last results record is for sum_of record
-	RLUP( ZnresB, resp)				// loop sim results for zones; last record is for sum of zones.  ancrec.h macro.
+	RLUP( ZnresB, pZR)				// loop sim results for zones; last record is for sum of zones.  ancrec.h macro.
 	{
-		ZNRES_IVL_SUB *rh = &resp->curr.H;
+		ZNRES_IVL_SUB *rh = &pZR->curr.H;
 		accumZr(  				// accumulate zone sim results: add one ZNRES_IVL_SUB into another. next.
-			rh, &resp->curr.D,		//   src & dest ZNRES_IVL_SUB substrs: accumulate zone's hour to same zone's day
+			rh, &pZR->curr.D,		//   src & dest ZNRES_IVL_SUB substrs: accumulate zone's hour to same zone's day
 			Top.isBegDay,    		//   non-0 if 1st call: init (ie copy don't add)
 			Top.isEndDay );   		//   last call: compute averages.  Next call is a new "first call".
 #ifndef SHSZ	// unless doing via subhours
-		if (resp->ss < ZnresB.n)							// except for last (sum-of-zones) record
-			accumZr( rh, &azResp->curr.H, resp->ss==1, resp->ss==ZrB.n);   	// add zone's hour results to sum of zones
+		if (pZR->ss < ZnresB.n)							// except for last (sum-of-zones) record
+			accumZr( rh, &azResp->curr.H, pZR->ss==1, pZR->ss==ZrB.n);   	// add zone's hour results to sum of zones
 		/* CAUTION: above first-last detection could fail if input language could leave
 		   unused zone subscripts, perhaps after deletion, etc.  If nec, preset a last-zone
 		   flag in zone record during setup, and use a first-iteration flag in loop. */
 		else									// last (sum-of-zones) record
 #else
 *       // do this subhrly too?
-*       if (resp->ss==ZnresB.n)							// for last (sum-of-zones) record
+*       if (pZR->ss==ZnresB.n)							// for last (sum-of-zones) record
 #endif
 		{
 			// determine peak heating and cooling hours for entire building. Get results with probes. Rob 12-2-93.
@@ -1619,8 +1640,8 @@ LOCAL void FC NEAR doIvlAccum()
 			if (dtStart)			// if daylight saving time just went on (see tp_DoDTStuff())
 			{
 				// DUPLICATE this hour's data for preceding non-existent hour:
-				if (resp->ss < ZnresB.n)				// output as below but using iHr-1.
-					brfw.setHourZoneInfo( resp->ss-1,
+				if (pZR->ss < ZnresB.n)				// output as below but using iHr-1.
+					brfw.setHourZoneInfo( pZR->ss-1,
 										  Top.tp_date.month-1, Top.tp_date.mday-1, Top.iHr-1,
 										  Top.shoy, rh->tAir, rh->qSlr, rh->qsIg + rh->qlIg, rh->qcMech, rh->qhMech,
 										  rh->litDmd, rh->litEu );
@@ -1635,9 +1656,9 @@ LOCAL void FC NEAR doIvlAccum()
 									  rh->qcMech, rh->qhMech,
 									  rh->litDmd, rh->litEu );
 			}
-			if (resp->ss < ZnresB.n)				// except for last (sum-of-zones) record
+			if (pZR->ss < ZnresB.n)				// except for last (sum-of-zones) record
 				brfw.setHourZoneInfo( 		// output hourly zone info
-					resp->ss-1, 				// 0-based zone number
+					pZR->ss-1, 				// 0-based zone number
 					Top.tp_date.month-1, Top.tp_date.mday-1, Top.iHr, 	// when
 					Top.shoy,					// when as subhour-of-year
 					rh->tAir, rh->qSlr,			// data: avg temp, rest are sums
@@ -1659,8 +1680,11 @@ LOCAL void FC NEAR doIvlAccum()
 	}
 
 
-	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
+	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
+
+	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
+		pWSR->D.wsr_Accum(&pWSR->H, Top.isBegDay, Top.isEndDay);
 
 	AHRES* allAhres = AhresB.p + AhresB.n;
 	RLUP( AhresB, ahres)							// loop air handers simulation results incl sum_of.
@@ -1675,12 +1699,13 @@ LOCAL void FC NEAR doIvlAccum()
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
 
-// accumulate day results to month, and daily binary results output
-
-	RLUP( ZnresB, resp)								// loop sim results for each zone and sum-of-zones
-		accumZr( &resp->curr.D, &resp->curr.M, Top.isBegMonth, Top.isEndMonth);	// add day results to month's for each zone & sum-of-zones.
-	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
+	// day -> month
+	RLUP( ZnresB, pZR)								// loop sim results for each zone and sum-of-zones
+		accumZr( &pZR->curr.D, &pZR->curr.M, Top.isBegMonth, Top.isEndMonth);	// add day results to month's for each zone & sum-of-zones.
+	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.M.rsr_Accum( &pRSR->curr.D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
+	RLUP(WsResR, pWSR)							// loop DHWSYS simulation results incl sum_of.
+		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
 		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);		// accumulate day ah results to month
 	mtrsAccum( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
@@ -1695,17 +1720,17 @@ LOCAL void FC NEAR doIvlAccum()
 	if (Top.ivl > C_IVLCH_M)							// if day call, done.
 		return;
 
-// accumulate month results to year, and do monthly output to binary results files
+// Month -> year
 
-	RLUP( ZnresB, resp)							// loop over sim results for zones and sum-of-zones
+	RLUP( ZnresB, pZR)							// loop over sim results for zones and sum-of-zones
 	{
-		ZNRES_IVL_SUB *rm = &resp->curr.M;
-		accumZr( rm, &resp->curr.Y, Top.isFirstMon, Top.isLastDay);	// add month to year for each zone and sum-of-zones
+		ZNRES_IVL_SUB *rm = &pZR->curr.M;
+		accumZr( rm, &pZR->curr.Y, Top.isFirstMon, Top.isLastDay);	// add month to year for each zone and sum-of-zones
 #ifdef BINRES
 		if (brf)						// if outputting any binary results this run
-			if (resp->ss < ZnresB.n)				// except for last (sum-of-zones) record
+			if (pZR->ss < ZnresB.n)				// except for last (sum-of-zones) record
 				brfw.setMonZoneInfo(				// output monthly zone info
-					resp->ss-1, 					// 0-based zone number
+					pZR->ss-1, 					// 0-based zone number
 					Top.tp_date.month-1,  			// 0-based month number
 					rm->tAir, rm->qSlr, 			// data: avg temp, rest are sums
 					rm->qsIg + rm->qlIg,			// .. combine latent & sens internal gain
@@ -1719,8 +1744,10 @@ LOCAL void FC NEAR doIvlAccum()
 	}
 	RLUP( AhresB, ahres)							// loop air handers simulation results
 		accumAhr( &ahres->M, &ahres->Y, Top.isFirstMon, Top.isLastDay);		// accumulate month ah results to run (year)
-	RLUP( RSysResR, pRSR)							// loop RSYS simulation results incl sum_of.
+	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
+	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
+		pWSR->Y.wsr_Accum(&pWSR->D, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
@@ -2096,6 +2123,17 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 	}
 }		// mtrsFinalize
 //-----------------------------------------------------------------------------------------------------------
+RC MTR_IVL_SUB::mtr_Validate() const
+// for ad hoc tests of meter validity
+// used only in development _DEBUG builds
+// not called in RELEASE, 6-20
+{
+	if (clg < 0.01f && fanC > 0.01f)
+		printf("\nMTR_IVl_SUB:Validate bad");
+
+	return RCOK;
+}		// MTR_IVL_SUB::mtr_Validate
+//-----------------------------------------------------------------------------------------------------------
 void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
 
 	const MTR_IVL_SUB* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
@@ -2173,40 +2211,40 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 // re possible expression use during warmup / autosize
 
 	// subhour results -> prior subhour results
-	ZNRES *resp;
-	RLUP( ZnresB, resp)			// loop over results records for zones; last is for all-zones
+	ZNRES *pZR;
+	RLUP( ZnresB, pZR)			// loop over results records for zones; last is for all-zones
 #ifdef SHSZ				// if have subhr sum-of-zones results. cnguts.h. undefined 6-92, for speed/flexibility.
-*       if (resp->ss < ZnresB.n)    	// skip last record: keeping no all-zones subhour results
+*       if (pZR->ss < ZnresB.n)    	// skip last record: keeping no all-zones subhour results
 #endif
-		setPriorRes( &resp->curr.S);	// copy zone's subhour results to prior subhour results, for probing during next subhour
+		setPriorRes( &pZR->curr.S);	// copy zone's subhour results to prior subhour results, for probing during next subhour
 
 	RSYSRES* pRSR;
-	RLUP( RSysResR, pRSR)
+	RLUP( RsResR, pRSR)
 		pRSR->curr.S.rsr_SetPrior();
 
 	if (Top.ivl > C_IVLCH_H)
 		return;				// if subhour call, done
 
 // copy sum-of-zones and each zone's hour results to prior hour results
-	RLUP( ZnresB, resp)			// loop over results records for zones; last is for sum-of-zones
-		setPriorRes( &resp->curr.H);	// copy zone's current hour results to prior hour results
-	RLUP( RSysResR, pRSR)
+	RLUP( ZnresB, pZR)			// loop over results records for zones; last is for sum-of-zones
+		setPriorRes( &pZR->curr.H);	// copy zone's current hour results to prior hour results
+	RLUP( RsResR, pRSR)
 		pRSR->curr.H.rsr_SetPrior();
 	if (Top.ivl > C_IVLCH_D)
 		return;				// if hour call, done
 
 // copy sum-of-zones and each zone's day results to prior day results.
-	RLUP( ZnresB, resp)			// loop over results records for zones; last is for sum-of-zones
-		setPriorRes( &resp->curr.D);	// copy this zone's, or sum-of-zones, current day results to prior day results
-	RLUP( RSysResR, pRSR)
+	RLUP( ZnresB, pZR)			// loop over results records for zones; last is for sum-of-zones
+		setPriorRes( &pZR->curr.D);	// copy this zone's, or sum-of-zones, current day results to prior day results
+	RLUP( RsResR, pRSR)
 		pRSR->curr.D.rsr_SetPrior();
 	if (Top.ivl > C_IVLCH_M)
 		return;				// if day call, done
 
 // copy sum-of-zones and each zone's month results to prior month results.
-	RLUP( ZnresB, resp)			// loop over results records for zones; last is for sum-of-zones
-		setPriorRes( &resp->curr.M);	// copy this zone's month results to prior month results
-	RLUP( RSysResR, pRSR)
+	RLUP( ZnresB, pZR)			// loop over results records for zones; last is for sum-of-zones
+		setPriorRes( &pZR->curr.M);	// copy this zone's month results to prior month results
+	RLUP( RsResR, pRSR)
 		pRSR->curr.M.rsr_SetPrior();
 	// if (Top.ivl > C_IVLCH_Y)
 	//  return;				// if month call, done
@@ -2312,7 +2350,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		if (isBegMonth)
 		{	if (auszMon)
 			{
-				monStr = (CHP)tddMonAbbrev( tp_date.month);		// eg "Jan"
+				strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr));		// eg "Jan"
 				const char* t;
 				if (tp_AuszWthrSource() != TOPRAT_COOLDSMO)		// if autosizing specific day
 					t = strtprintf( "%2.2d-%s", 		// format dd-mon
@@ -2323,7 +2361,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 			}
 			else									// heating design day. Not month-specific.
 			{
-				monStr = "heating design day";					// inconsistent with cooling just above
+				strncpy0( monStr, "heating design day", sizeof( monStr));		// inconsistent with cooling just above
 				strcpy( dateStr, "heating design day");
 			}
 		}
@@ -2347,7 +2385,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		isBegMonth = (tp_date.mday==1 || jDay==tp_begDay || isBegRun);	// true if 1st day of month, run, or warmup
 		if (isBegMonth)						// do on 1st day of mon or run incl warmup, after setting date.
 		{
-			monStr = (CHP)tddMonAbbrev( tp_date.month);	// month name string
+			strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr)); // month name string
 			jdMend = tddDoyMonEnd( tp_date.month);   		// month's last day
 			if (tp_endDay < jdMend && tp_endDay >= jDay) 	// if sooner
 				jdMend = tp_endDay;   						// run's last day

@@ -8,22 +8,22 @@
 
 Monthly Energy Balance, Sum of Zones
 
-Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
-Jan 76.01 58.58      0      0     0     0 .00013 -68.62 68.619    0      0     0      0      0      0    0
-Feb 76.80 58.88      0      0     0     0 -.0002 -51.06 51.059    0      0     0      0      0      0    0
-Mar 78.24 59.42      0      0     0     0 -.0012 -44.46 44.459    0      0     0      0      0      0    0
-Apr 78.44 59.50      0      0     0     0 -.0004 -38.85 38.847    0      0     0      0      0      0    0
-May 81.04 60.44      0      0     0     0 -.0025 -19.43 19.431    0      0     0      0      0      0    0
-Jun 83.56 61.32      0      0     0     0 -.0071 -7.092  7.099    0      0     0      0      0      0    0
-Jul 86.96 62.49      0      0     0     0 .00589 -3.014  3.009    0      0     0      0      0      0    0
-Aug 85.00 61.82      0      0     0     0 -.0025 -4.536  4.539    0      0     0      0      0      0    0
-Sep 83.27 61.21      0      0     0     0 .00648 -8.608  8.602    0      0     0      0      0      0    0
-Oct 79.36 59.84      0      0     0     0 .00063 -24.00 24.000    0      0     0      0      0      0    0
-Nov 77.20 59.03      0      0     0     0 0.0116 -54.19 54.174    0      0     0      0      0      0    0
-Dec 74.91 58.17      0      0     0     0 -.0108 -66.77 66.778    0      0     0      0      0      0    0
+ Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
+---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
+ Jan 76.01 58.58      0      0     0     0 .00013 -68.62 68.619    0      0     0      0      0      0    0
+ Feb 76.80 58.88      0      0     0     0 -.0002 -51.06 51.059    0      0     0      0      0      0    0
+ Mar 78.24 59.42      0      0     0     0 -.0012 -44.46 44.459    0      0     0      0      0      0    0
+ Apr 78.44 59.50      0      0     0     0 -.0004 -38.85 38.847    0      0     0      0      0      0    0
+ May 81.04 60.44      0      0     0     0 -.0025 -19.43 19.431    0      0     0      0      0      0    0
+ Jun 83.56 61.32      0      0     0     0 -.0071 -7.092  7.099    0      0     0      0      0      0    0
+ Jul 86.96 62.49      0      0     0     0 .00589 -3.014  3.009    0      0     0      0      0      0    0
+ Aug 85.00 61.82      0      0     0     0 -.0025 -4.536  4.539    0      0     0      0      0      0    0
+ Sep 83.27 61.21      0      0     0     0 .00648 -8.608  8.602    0      0     0      0      0      0    0
+ Oct 79.36 59.84      0      0     0     0 .00063 -24.00 24.000    0      0     0      0      0      0    0
+ Nov 77.20 59.03      0      0     0     0 0.0116 -54.19 54.174    0      0     0      0      0      0    0
+ Dec 74.91 58.17      0      0     0     0 -.0108 -66.77 66.778    0      0     0      0      0      0    0
 
-Yr  80.07 60.10      0      0     0     0      0 -390.6 390.61    0      0     0      0      0      0    0
+ Yr  80.07 60.10      0      0     0     0      0 -390.6 390.61    0      0     0      0      0      0    0
 
 
 
@@ -60,7 +60,7 @@ Hourly User-defined Report, Thu 10-Jan
 
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  1
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  1
 
 
 
@@ -71,7 +71,7 @@ Hourly User-defined Report, Thu 10-Jan
 
 ! Log for Run 001:
 
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
+! CSE 0.870.0 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ Hourly User-defined Report, Thu 10-Jan
 
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  2
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
             reportCol colVal=$hour  colHead="Hour"
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  3
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
 0               tuAh="MainAH"
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  4
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
 0           ahccType=ELECTRIC
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  5
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  6
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  6
 
 
 
@@ -384,21 +384,21 @@ Input for Run 001:
 
 
 
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:19:44 am
+! CSE 0.870.0 for Win32 console run(s) done: Wed 17-Jun-20   4:23:55 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
-! Command line: -x!  -t1 3ZoneAirNet
-! Input file:   D:\cse\test\3ZoneAirNet.cse
-! Report file:  D:\cse\test\3ZoneAirNet.rep
+!               17-Jun-20   4:02 pm   (VS 14.16    2623488 bytes)  (HPWH 1.9.0+master.6ae38ca.38)
+! Command line: -x!  -t1 3zoneairnet
+! Input file:   D:\cse\test\3zoneairnet.cse
+! Report file:  D:\cse\test\3zoneairnet.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0000   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0030   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.97     Calls = 1      T/C = 2.9740   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000   
-!                Total:  Time = 2.99     Calls = 1      T/C = 2.9900   
+!           Simulation:  Time = 2.38     Calls = 1      T/C = 2.3830   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
+!                Total:  Time = 2.40     Calls = 1      T/C = 2.3950   
 
 
 
@@ -438,5 +438,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! 3ZoneAirNet  001                         Mon 07-Jan-19   9:19:41 am  Page  7
+! 3zoneairnet  001                         Wed 17-Jun-20   4:23:52 pm  Page  7
 

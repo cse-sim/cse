@@ -14,7 +14,8 @@
 #include "irats.h"
 #include "cnguts.h"
 #include "cuparse.h"
-#include "SLPAK.H"
+#include "cnculti.h"
+#include "slpak.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARSYS: represents a solar water heating system
@@ -88,6 +89,7 @@ RC DHWSOLARSYS::sw_Init()		// init for run
 
 	sw_tickVol = 0.f;
 	sw_tickVolT = 0.f;
+	sw_tickTankTOutlet = sw_tankTOutlet;
 
 	// tank setup
 	//   use HPWH multi-node tank model w/o heater
@@ -117,10 +119,14 @@ RC DHWSOLARSYS::sw_DoHour()
 	sw_tankQGain = 0.f; // restart accumulator for new hour
 	sw_tankQLoss = 0.f;
 	sw_drawVol = 0.f;
+	sw_totOut = 0.f;
+	sw_tankTOutlet = 0.f;
 
 	sw_overHeatTkCount = 0;
 	if (Top.tp_isBegMainSim)
-		sw_overHeatHrCount = 0;
+	{	sw_overHeatHrCount = 0;
+		sw_tankQGainTot = 0.;
+	}
 	
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
@@ -130,7 +136,7 @@ RC DHWSOLARSYS::sw_DoHour()
 }	// DHWSOLARSYS::sw_DoHour
 //-----------------------------------------------------------------------------
 RC DHWSOLARSYS::sw_DoSubhrStart(
-	int iTk0)
+	int iTk0)		// subhr starting tick within hr (0 .. Top.tp_nHrTicks()-1)
 {
 	RC rc = RCOK;
 
@@ -150,7 +156,7 @@ RC DHWSOLARSYS::sw_DoSubhrEnd()
 
 	double totOut = 0.;		// substep total heat added to water
 	sw_tank.hw_DoSubhrEnd(1.f, sw_tankpZn, NULL, totOut);
-	sw_tankQLoss += sw_tank.hw_qLoss;
+	sw_tankQLoss += BtuperkWh * sw_tank.hw_qLoss;
 
 	return rc;
 }		// DHWSOLARSYS::sw_DoSubhrEnd
@@ -163,6 +169,8 @@ RC DHWSOLARSYS::sw_EndIvl(
 	if (sw_overHeatTkCount > 0)
 		sw_overHeatHrCount++;
 
+	sw_tankQGainTot += sw_tankQGain;
+
 	// Add parasitics to meter
 	if (sw_pMtrElec)
 		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
@@ -170,6 +178,12 @@ RC DHWSOLARSYS::sw_EndIvl(
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
 		rc |= pSC->sc_DoHourEnd();
+
+	// hour average tank outlet temp
+	if (sw_drawVol > 0.f)
+		sw_tankTOutlet /= sw_drawVol;		// draws: average by vol
+	else
+		sw_tankTOutlet = sw_tickTankTOutlet;	// no draws: use last tick
 
 	if (ivl == C_IVLCH_Y)
 	{
@@ -184,7 +198,15 @@ RC DHWSOLARSYS::sw_EndIvl(
 		}
 		sw_SSFAnnual = SSFDen > 0.
 				? min( 1.f, float( SSFNum / SSFDen)) 
-			    : 0.f;				
+			    : 0.f;	
+
+		double scTotQFluidAll = 0.;
+		DHWSOLARCOLLECTOR* pSC;
+		RLUPC(ScR, pSC, pSC->ownTi == ss)
+		{	scTotQFluidAll += pSC->sc_totQFluid;
+		}
+		if (frDiff(scTotQFluidAll, sw_tankQGainTot) > .001)
+			printf("\nDHWSOLARSYS energy balance trouble");
 	}
 	return rc;
 }	// DHWSOLARSYS::sw_EndIvl
@@ -203,7 +225,7 @@ int DHWSOLARSYS::sw_ReportBalErrorsIf() const
 FLOAT DHWSOLARSYS::sw_GetAvailableTemp()
 // returns available tank outlet water temp, F
 {
-	return sw_tankTOutlet;
+	return sw_tickTankTOutlet;
 }	// DHWSOLARSYS::sw_GetAvailableTemp
 //-----------------------------------------------------------------------------
 void DHWSOLARSYS::sw_TickStart()		// init for tick calcs
@@ -214,45 +236,36 @@ void DHWSOLARSYS::sw_TickStart()		// init for tick calcs
 //------------------------------------------------------------------------------
 RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
 	DHWSYS* pWS,	// source DHWSYS
-	float vol,		// volume, gal
+	float vol,		// volume drawn from DHWSOLARSYS, gal
 	float tInlet)	// solar tank inlet temp from source DHWSYS, F
 					//   after e.g. DWHR
 // returns RCOK iff simulation should proceed
 {
 	RC rc = RCOK;
-	if (vol > 0.f)
-	{	sw_tickVol += vol;
-		sw_tickVolT += vol * tInlet;
-		if (pWS)
-		{	pWS->ws_SSFAnnualSolar += vol * (sw_tankTOutlet - tInlet);
-			pWS->ws_SSFAnnualReq += vol * (pWS->ws_tUse - tInlet);
-		}
-	}
+	sw_tickVol += vol;
+	sw_tickVolT += vol * tInlet;
+	float qOut = vol * waterRhoCp * (sw_tickTankTOutlet - tInlet);
+	sw_totOut += qOut;	// hourly total
+	if (pWS)
+		pWS->ws_qSlr += qOut;
 
 	return rc;
 }	// DHWSOLARSYS::sw_TickAccumDraw
 //------------------------------------------------------------------------------
-double DHWSOLARSYS::sw_MassFlowSI(		// derive mass flow rate for collector calcs
-	double vfr) const		// flow rate, gpm
-// returns mass flow rate kg/s
-{
-	static const double gpmTom3ps = 0.00006309;
-	double mDot = vfr * gpmTom3ps * DIPtoSI(sw_scFluidDens);
-	return mDot;
-}		// DHWSOLARSYS::sw_MassFlowSI
-//------------------------------------------------------------------------------
-RC DHWSOLARSYS::sw_TickCalc()
+RC DHWSOLARSYS::sw_TickCalc(
+	int iTk)		// tick within hour, 0 - Top.tp_nHrTicks()-1
 {
 	RC rc = RCOK;
+
+	float sumVol = 0.f;			// all-collector total fluid volume for tick, gal
+	float sumVolTInlet = 0.f;	// all-collector SUM( vol * inlet temp), gal-F
+	float sumVolTOutlet = 0.f;	// all-collector SUM( vol * outlet temp), gal-F
+	float scQGain = 0.f;		// gain to tank, Btu
 
 	// tank heat exchange temp
 	sw_tankTHx = sw_tank.hw_GetTankQTXTemp();
 
-	float scQGain = 0.f;		// collector heat to be added to tank, Btu
-	float sumVol = 0.f;			// all-collector total fluid volume for tick, gal
-	float sumVolT = 0.f;		// all-collector SUM( vol * outletTemp), gal-F
-
-	if (sw_tankTHx >= sw_tankTHxLimit)	// if tank temp >= max allow temp
+	if (sw_tickTankTOutlet >= sw_tankTHxLimit)	// if tank temp >= max allow temp
 										//   collector not run (details not modeled)
 		sw_overHeatTkCount++;
 	else
@@ -262,21 +275,30 @@ RC DHWSOLARSYS::sw_TickCalc()
 
 		DHWSOLARCOLLECTOR* pSC;
 		RLUPC(ScR, pSC, pSC->ownTi == ss)
-		{
-			rc |= pSC->sc_DoSubhrTick();
-			sumVolT += pSC->sc_tickVol*pSC->sc_tOutlet;
-			sumVol += pSC->sc_tickVol;
+		{	rc |= pSC->sc_DoSubhrTick();
+			if (pSC->sc_tickVol > 0.f)
+			{	sumVol += pSC->sc_tickVol;
+				sumVolTOutlet += pSC->sc_tickVol*pSC->sc_tOutlet;
+				sumVolTInlet += pSC->sc_tickVol*pSC->sc_tInlet;
+				scQGain += pSC->sc_tickQFluid;
+			}
 		}
 	}
 
 	if (sumVol > 0.f)			// if there is collector flow
 	{	// collector flow > 0
-		sw_scTOutlet = sumVolT / sumVol;
+		sw_scTOutlet = sumVolTOutlet / sumVol;
+#if 1
+		sw_scTInlet = sumVolTInlet / sumVol;
+		sw_tankQGain += scQGain;
+#else
 		float deltaT = sw_scTOutlet - sw_tankTHx;
 		float mCp = sumVol * sw_scFluidVHC;	// Btu/F
 		scQGain = sw_tankHXEff * mCp * deltaT;	// Btu
 		sw_tankQGain += scQGain;
+		float scTInletX = sumVolTInlet / sumVol;
 		sw_scTInlet = sw_scTOutlet - sw_tankHXEff * deltaT;	// collector inlet temp for next tick
+#endif
 	}
 	else
 	{	sw_scTInlet = sw_tankTHx;		// no flow
@@ -293,129 +315,31 @@ RC DHWSOLARSYS::sw_TickCalc()
 	}
 	
 	float tOut;
-	rc |= sw_tank.hw_DoSubhrTick( sw_tickVol, sw_tankTInlet, &tOut);
+	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, sw_tankTInlet, &tOut);
 
 	if (tOut > 0.f)
-		sw_tankTOutlet = tOut;
-	// else leave outlet temp unchanged
+	{	sw_tickTankTOutlet = tOut;
+		sw_tankTOutlet += tOut * sw_tickVol;
+#if 0
+		if (tOut > sw_tankTHxLimit && scQGain == 0.f)
+			printf("\nhot");
+#endif
+	}
+	else
+		// estimate possible outlet temp = top node temp
+		sw_tickTankTOutlet = sw_tank.hw_GetEstimatedTOut();
 
 	return rc;
 }		// DHWSOLARSYS::sw_TickCalc
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// class SolarFlatPlateCollector -- simple FR/tauAlpha collector model
-//   (local class)
-///////////////////////////////////////////////////////////////////////////////
-
-class SolarFlatPlateCollector
-{
-public:
-	SolarFlatPlateCollector();
-	SolarFlatPlateCollector(double gross_area,
-		double tilt,
-		double azimuth,
-		double FR_tau_alpha = 0.6,
-		double FR_UL = -4.0,
-		double specific_heat_fluid_ = 2394.0,
-		double density_fluid_ = 1113.0);
-	~SolarFlatPlateCollector() = default;
-
-	void calculate(double Q_incident, double mass_flow_rate, double t_amb, double t_inlet);
-
-	// Setters
-	inline double set_tilt(double tilt) { tilt_ = tilt; }
-	inline double set_azimuth(double azm) { azimuth_ = azm; }
-	inline double set_FR_tau_alpha(double tau_alpha) { FR_tau_alpha_ = tau_alpha; }
-	inline double set_FR_UL(double FRUL) { FR_UL_ = FRUL; }
-	inline double set_gross_area(double area) { gross_area_ = area; }
-	// Fluid properties (Cp, density)
-	inline double set_specific_heat_fluid(double Cp) { specific_heat_fluid_ = Cp; }
-	inline double set_density_fluid(double density) { density_fluid_ = density; }
-
-	double outlet_temp() { return outlet_temp_; }
-	double efficiency() { return efficiency_; }
-	double heat_gain() { return heat_gain_; }
-
-private:
-	// Collector properties
-	double tilt_;                ///< radians
-	double azimuth_;             ///< radians
-	double FR_UL_;               ///< Slope, W/m^2-K
-	double FR_tau_alpha_;        ///< Intercept, dimensionless
-	double gross_area_;          ///< m^2
-	double specific_heat_fluid_; ///< J / kg-K
-	double density_fluid_;       ///< kg / m^3
-
-	// Collector state
-	double heat_gain_;   ///< W
-	double efficiency_;  ///< fraction in [0.0, 1.0]
-	double outlet_temp_; ///< Kelvin
-};		// class SolarFlatPlateCollector
-//-----------------------------------------------------------------------------
-SolarFlatPlateCollector::SolarFlatPlateCollector()
-	: tilt_(0.0),
-	azimuth_(0.0),
-	FR_tau_alpha_(0.6),
-	FR_UL_(-4),
-	gross_area_(1.0),
-	specific_heat_fluid_(4181.6),
-	density_fluid_(1000.0),
-	efficiency_(1.0),
-	outlet_temp_(283)
-{
-}
-//-----------------------------------------------------------------------------
-SolarFlatPlateCollector::SolarFlatPlateCollector(double gross_area,
-	double tilt,
-	double azimuth,
-	double FR_tau_alpha,
-	double FR_UL,
-	double specific_heat,
-	double density)
-	: tilt_(tilt),
-	azimuth_(azimuth),
-	FR_tau_alpha_(FR_tau_alpha),
-	FR_UL_(FR_UL),
-	gross_area_(gross_area),
-	specific_heat_fluid_(specific_heat),
-	density_fluid_(density),
-	efficiency_(1.0),
-	outlet_temp_(283)
-{
-}
-//-----------------------------------------------------------------------------
-void SolarFlatPlateCollector::calculate(double Q_incident,
-	double mass_flow_rate,
-	double ambient_temp,
-	double inlet_temp)
-{
-	// instantaneous collector efficiency, [-]
-	if (Q_incident != 0.0)
-	{
-		efficiency_ = FR_UL_ * ((inlet_temp - ambient_temp) / Q_incident) + FR_tau_alpha_;
-		efficiency_ = std::min(1.0, efficiency_);
-		// instantaneous solar gain, [W]
-		heat_gain_ = Q_incident * gross_area_ * efficiency_;
-		outlet_temp_ = inlet_temp + heat_gain_ / (mass_flow_rate * specific_heat_fluid_);
-	}
-	else
-	{
-		efficiency_ = 0.0;
-		outlet_temp_ = inlet_temp;
-		heat_gain_ = 0.0;
-	}
-}
-//=============================================================================
-
-///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARCOLLECTOR: represents a solar collector
 //                    child of DHWSOLARSYS
 ///////////////////////////////////////////////////////////////////////////////
-DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR() {
-	delete sc_collector;
-	sc_collector = NULL;
-}
+DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR()
+{	
+}		// DHWSOLARCOLLECTOR::~DHWSOLARCOLLECTOR
 //-----------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_CkF()
 {
@@ -425,7 +349,7 @@ RC DHWSOLARCOLLECTOR::sc_CkF()
 	// later derivation better supports input expressions with probes
 
 	return rc;
-}
+}	// DHWSOLARCOLLECTOR::sc_CkF
 //-----------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_Init()
 {
@@ -435,116 +359,294 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 
 	sc_areaTot = sc_area * sc_mult;
 
-	if (!IsSet(DHWSOLARCOLLECTOR_PUMPFLOW))
-		sc_pumpFlow = 0.03*sc_areaTot;  // initial rule of thumb: 0.03 gpm per ft2
-	
+	if (!IsSet(DHWSOLARCOLLECTOR_OPRMASSFLOW))
+	{	sc_oprMassFlow = sc_testMassFlow;
+		sc_flowCorrection = 1.f;
+	}
+	else
+		sc_flowCorrection = sc_FlowCorrection();	// operating and test mass flow rates given
+
+	sc_oprFRUL = sc_flowCorrection * sc_testFRUL;
+	sc_oprFRTA = sc_flowCorrection * sc_testFRTA;
+
+	// collector loop operating heat capacity flow rate, Btuh-/F
+	sc_oprMCp = sc_areaTot * sc_oprMassFlow * pSW->sw_scFluidSpHt;
+
+	// collector loop total operating volume flow, gpm
+	sc_oprVolFlow = sc_areaTot * sc_oprMassFlow / pSW->sw_scFluidDens * galPerFt3 / 60.f;
+
+#if defined( _DEBUG)
+	float mCp2 = sc_oprVolFlow * pSW->sw_scFluidVHC * 60.f;
+	if (frDiff(sc_oprMCp, mCp2) > .0001f)
+		printf("\nSolarCollector mCp inconsistency");
+#endif
+
+	// pump power, W
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
-		sc_pumpPwr = 10.f*sc_pumpFlow;  // don't know how good this assumption is
+		sc_pumpPwr = 10.f * sc_oprVolFlow;
 
-	delete sc_collector;		// insurance: delete prior, if any
+	sc_tickPumpQ = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;			// pump energy per tick, Btu
+	sc_pumpDT = sc_pumpLiqHeatF * sc_pumpPwr * BtuperWh / sc_oprMCp;	// temp rise through pump
 
-	double fluidSpHt = SHIPtoSI(pSW->sw_scFluidSpHt);		// specific heat, J/kg-K
-	double fluidDens = DIPtoSI(pSW->sw_scFluidDens);		// density, kg/m3
-
-	sc_collector = new SolarFlatPlateCollector(
-		AIPtoSI(sc_areaTot),
-		sc_tilt,
-		sc_azm,
-		sc_FRTA,
-		UIPtoSI(sc_FRUL),
-		fluidSpHt,
-		fluidDens);
+	// piping (sc_oprVolFlow must be known)
+	rc |= sc_InitPiping();
+	
+	// incident angle multiplier (IAM)
+	// sc_kta60 <= 0 says no IAM
+	if (sc_kta60 > 0.f)
+		// check sc_Kta value here rather than rc_CkF() re possible expressions
+		rc |= limitCheckFix(DHWSOLARCOLLECTOR_KTA60, 0.2, 1.);
+	rc |= sc_InitIAM();		// set up IAM run constants
 
 	sc_tickOp = FALSE;
 
 	return rc;
-}
+}	// DHWSOLARCOLLECTOR::sc_Init
+//--------------------------------------------------------------------------------------
+/*static*/ float DHWSOLARCOLLECTOR::sc_Deriveb0(
+	float KtaX,		// Kta for given incidence angle
+					//   0 < KtaX < 1
+	float incA)		// incidence angle, degs
+					//   0 <= incA < 90
+// return b0 = incidence angle modifier coefficient
+//   Kta( ang) = 1 - b0( 1/cos( ang) - 1)
+{
+
+	float b0 = 0.f;		// no modifier
+	if (KtaX > 0.f && KtaX < 1.f)
+	{	float cosIncA = cos(RAD(incA));
+		if (cosIncA > 0.f)
+			b0 = (1.f - KtaX) / (1.f / cosIncA - 1.f);
+	}
+	return b0;
+
+}	// DHWSOLARCOLLECTOR::sc_Deriveb0
+//--------------------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_Kta(
+	float incA) const	// incident angle, rad
+{
+	static const float incALim = RAD(89.f);
+	float kta =
+		  incA > incALim ? 0.f
+		: incA > 0.f     ? max( 0.f, 1.f - sc_b0 * (1.f / cos(incA) - 1.f))
+		:                  1.f;
+	return kta;
+}	// DHWSOLARCOLLECTOR::sc_Kta
+//---------------------------------------------------------------------------------------
+RC DHWSOLARCOLLECTOR::sc_InitIAM()		// IAM one-time init
+// sets up run constants for incidence angle modifier
+{
+	RC rc = RCOK;
+	if (sc_kta60 <= 0.f)
+	{	sc_ktaDS = sc_ktaDG = sc_ktaDB = 1.f;
+		sc_b0 = 0.f;
+	}
+	else
+	{	sc_b0 = sc_Deriveb0(sc_kta60, 60.f);
+
+		// constant kta values for diffuse
+		//   per Duffie/Beckman section 5.4
+		float tiltD = DEG(sc_tilt);
+		float incADS = RAD(59.7f - 0.1388f*tiltD + 0.001497*tiltD*tiltD);
+		sc_ktaDS = sc_Kta(incADS);
+		float incADG = RAD(90.f - 0.5788*tiltD + 0.002693f*tiltD*tiltD);
+		sc_ktaDG = sc_Kta(incADG);
+	}
+	return rc;
+
+}		// DHWSOLARCOLLECTOR::sc_InitIAM
+//--------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_FlowCorrection() const
+// calc flow correction ratio
+// apply to test FRUL and FRTA values to calc operating values
+{
+	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
+
+	float mCpTest = sc_MCpTest();
+	float mCpOpr = sc_oprMassFlow * pSW->sw_scFluidSpHt;
+
+	float fPUL = -mCpTest * log(1.f + sc_testFRUL / mCpTest);
+
+	float tOpr = mCpOpr / fPUL;
+	float num = tOpr * (1.f - exp(-1.f/tOpr));
+	float tTest = mCpTest / fPUL;
+	float denom = tTest * (1.f - exp(-1.f/tTest));
+		
+	float r = num / denom;
+
+	return r;
+
+}		// DHWSOLARCOLLECTOR::sc_FlowCorrection
+//--------------------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_MCpTest() const
+// return mCp for SRCC conditions, Btu/hr-F
+//   assume test fluid is water
+{
+	static const float spHt = 0.2388458966f * 4.182f;	// TRNSYS assumption
+	float mCpTest = spHt * sc_testMassFlow;
+
+	return mCpTest;
+	
+}		// DHWSOLARCOLLECTOR::sc_MCpTest
+//-----------------------------------------------------------------------------
+RC DHWSOLARCOLLECTOR::sc_InitPiping()		// init collector loop piping params
+{
+	RC rc = RCOK;
+
+	// default total length (supply + return)
+	//   approx same as CSI-Thermal assumption (=50 ft + 5 ft per collector module)
+	if (!IsSet(SCPIPE(LEN)))
+		sc_piping.pr_len = 50.f + sc_areaTot / 5.f;
+
+	// size pipe based on 4 fps
+	sc_piping.pr_DeriveSizeFromFlow( sc_oprVolFlow, 4.f);
+
+	sc_piping.pr_CalcUA();
+
+	sc_piping.pr_SetBeta(sc_oprMCp, 0.5f);	// 0.5 = supply/return split
+
+	sc_piping.pr_CalcGeom();		// fill pr_totals
+
+	return rc;
+}		// DHWSOLARCOLLECTOR::sc_InitPiping
 //--------------------------------------------------------------------------------------
 RC DHWSOLARCOLLECTOR::sc_DoHour()
 {
 	RC rc = RCOK;
-	sc_pumpInElec = 0.f;
-	sc_Qfluid = sc_eff = 0.0;
+	sc_pumpInElec = sc_hrQFluid = sc_eff = sc_tOutletP = 0.f;
+
+	if (Top.tp_isBegMainSim)
+		sc_totQFluid = 0.;
 
 	// plane incidence: use hourly values
-	double plane_incidence;
-	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST, Top.radBeamHrAv, Top.radDiffHrAv, Top.grndRefl, plane_incidence);
+	rc |= slPerezSkyModel(sc_tilt, sc_azm, Top.iHrST,
+	   Wthr.d.wd_DNI, Wthr.d.wd_DHI,
+	   Top.grndRefl,
+	   sc_incA, sc_poaRadDB, sc_poaRadDS, sc_poaRadDG);
 
-	sc_poa = static_cast<FLOAT>(plane_incidence);
-	sc_Qpoa = sc_poa * sc_areaTot;  // Btu/h-ft2 * ft2 = Btu
+	// total incident w/o incidence angle modifier
+	float poaRadTotNoIAM = sc_poaRadDB + sc_poaRadDS + sc_poaRadDG;
+
+	if (sc_b0 > 0.f && poaRadTotNoIAM > 0.f)
+	{	// apply IAM factors
+		sc_ktaDB = sc_Kta(sc_incA);
+		sc_poaRadDB *= sc_ktaDB;
+		sc_poaRadDS *= sc_ktaDS;
+		sc_poaRadDG *= sc_ktaDG;
+		sc_poaRadTot = sc_poaRadDB + sc_poaRadDS + sc_poaRadDG;
+		sc_poaRadIAM = sc_poaRadTot / poaRadTotNoIAM;
+	}
+	else
+	{	sc_poaRadTot = poaRadTotNoIAM;
+		sc_poaRadIAM = sc_ktaDB = 0.f;
+	}
+
+	if (!IsSet(DHWSOLARCOLLECTOR_PIPINGTEX))
+		sc_pipingTEx = Top.tDbOHrAv;
+
+	float eff050, eff150;
+	float tOutlet050 = sc_TempOutlet( 50.f, eff050);
+	float tOutlet150 = sc_TempOutlet(150.f, eff150);
+
+	sc_tOutletM = (tOutlet150 - tOutlet050) / 100.f;
+	sc_tOutletB = tOutlet050 - sc_tOutletM * 50.f;
+
+	sc_effM = (eff150 - eff050) / 100.f;
+	sc_effB = eff050 - sc_effM * 50.f;
 
 	return rc;
 }		// DHWSOLARCOLLECTOR::sc_DoHour
 //--------------------------------------------------------------------------------------
-RC DHWSOLARCOLLECTOR::sc_DoHourEnd() {
+RC DHWSOLARCOLLECTOR::sc_DoHourEnd()
+{
 	RC rc = RCOK;
 
 	sc_eff = sc_eff / Top.tp_NHrTicks();
 
-	DHWSOLARSYS* pSWHSys = SwhR.GetAtSafe(ownTi);
+	sc_totQFluid += sc_hrQFluid;
+
+	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
 
 	// Add pump energy to meter
-	if (pSWHSys->sw_pMtrElec)
-	{
-		pSWHSys->sw_pMtrElec->H.mtr_Accum(pSWHSys->sw_endUse, sc_pumpInElec);
-	}
+	if (pSW->sw_pMtrElec)
+		pSW->sw_pMtrElec->H.mtr_Accum(pSW->sw_endUse, sc_pumpInElec);
 
 	return rc;
-}
+}	// DHWSOLARCOLLECTOR::sc_DoHourEnd()
+//-----------------------------------------------------------------------------
+float DHWSOLARCOLLECTOR::sc_TempOutlet(		// col+piping outlet temp for current conditions
+	float tSup,				// supply temp from tank hx, F
+	float& colEff)	const	// collector efficiency (w/o piping)
+// calculates temp returned to tank from collector, including piping losses
+// returns return temp, 0 if no sun
+{
+	float tRet = 0.f;
+	colEff = 0.f;
+	if (sc_poaRadTot > 0.f)
+	{	float tColIn = sc_piping.pr_TempOutlet(tSup + sc_pumpDT, sc_pipingTEx);
+		colEff = sc_oprFRUL * ((tColIn - Top.tDbOHrAv) / sc_poaRadTot) + sc_oprFRTA;
+		// colEff = min(1.f, colEff);
+
+		float heat_gain = sc_areaTot * sc_poaRadTot * colEff;		// heat collection power, Btuh
+		float tColOut = tColIn + heat_gain / sc_oprMCp;
+		tRet = sc_piping.pr_TempOutlet(tColOut, sc_pipingTEx);
+	}
+	return tRet;
+}		// DHWSOLARCOLLECTOR::sc_TempOutlet
 //--------------------------------------------------------------------------------------
-RC DHWSOLARCOLLECTOR::sc_DoSubhrTick() {
+RC DHWSOLARCOLLECTOR::sc_DoSubhrTick()
+{
 	RC rc = RCOK;
 
-	DHWSOLARSYS* pSWHSys = SwhR.GetAtSafe(ownTi);
+	DHWSOLARSYS* pSW = SwhR.GetAtSafe(ownTi);
 
-	float tInlet = pSWHSys->sw_scTInlet;
+	// inlet temp: use linear representation to balance against last-tick tank tHx
+	//   (not exact for multiple collectors)
+	sc_tInlet = (sc_tOutletB + pSW->sw_tankHXEff *(pSW->sw_tankTHx - sc_tOutletB))
+		/ (1.f - (1.f - pSW->sw_tankHXEff)*sc_tOutletM);
 
-	float pump_energy = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;  // Btuh * hr
-	float pump_vol = sc_pumpFlow * Top.tp_tickDurMin;  // gal
-	float pump_dt = pump_energy / (pump_vol * pSWHSys->sw_scFluidVHC);  // delta F
+	float tOutlet = sc_tOutletM * sc_tInlet + sc_tOutletB;
+	float eff = sc_effM * sc_tInlet + sc_effB;
 
-	// Calculate potential outlet temperature
-
-	sc_tOutletP = sc_CalculateOutletTemp(pump_dt);
-
-	// Collector status
-	if (sc_tickOp)
-	{	if (sc_tOutletP <= tInlet + sc_pumpOffDeltaT)
-			sc_tickOp = FALSE;
-	}
-	else if (sc_tOutletP > tInlet + sc_pumpOnDeltaT)
-		sc_tickOp = TRUE;
-
-	if (sc_tickOp)
-	{	sc_tickVol = pump_vol;
-		sc_pumpInElec += pump_energy;
-		sc_tOutlet = sc_tOutletP;
-		sc_eff += sc_collector->efficiency();
-		sc_Qfluid += sc_collector->heat_gain()*BtuperWh*Top.tp_tickDurHr; // W * Btu/W-h * hr = Btu
-	}
+#if defined( _DEBUG)
+	float effX;
+	float tRetX = sc_TempOutlet( sc_tInlet, effX);
+	if (frDiff(tOutlet, tRetX) > .001f || frDiff(eff, effX) > 0.001f)
+		printf("\nLinear fubar");
+#endif
+	if (tOutlet <= 0.f)
+		sc_tickOp = FALSE;	// no sun, pump is off
 	else
-	{	sc_tickVol = 0.f;
-		sc_tOutlet = tInlet;
+	{
+		sc_tOutletP = tOutlet;
+
+		// Collector operating status
+		if (sc_tickOp)
+		{
+			if (sc_tOutletP <= sc_tInlet + sc_pumpOffDeltaT)
+				sc_tickOp = FALSE;
+		}
+		else if (sc_tOutletP > sc_tInlet + sc_pumpOnDeltaT)
+			sc_tickOp = TRUE;
+
+		if (sc_tickOp)
+		{
+			sc_tickVol = sc_oprVolFlow * Top.tp_tickDurMin;
+			sc_pumpInElec += sc_tickPumpQ;
+			sc_tOutlet = sc_tOutletP;
+			sc_eff += eff;
+			sc_tickQFluid = (sc_tOutlet - sc_tInlet) * Top.tp_tickDurHr * sc_oprMCp;
+			sc_hrQFluid += sc_tickQFluid;
+		}
+	}
+
+	if (!sc_tickOp)
+	{	// not operating
+		// sc_tOutletP: don't 0, might have reporting interest
+		sc_tOutlet = sc_tickVol = sc_tInlet = 0.f;
 	}
 
 	return rc;
+
 }	// DHWSOLARCOLLECTOR::sc_DoSubhrTick()
-//------------------------------------------------------------------------------------------
-FLOAT DHWSOLARCOLLECTOR::sc_CalculateOutletTemp(
-	float pump_dt)	// pump temp rise, R
-{
-	DHWSOLARSYS* pSW = SwhR.GetAtSafe( ownTi);
-
-	// Collector inlet temperature (from tank heat exchanger)
-	double tInlet = pSW->sw_scTInlet + pump_dt;
-	
-	// Mass flow rate, kg/s
-	double m_dot_SI = pSW->sw_MassFlowSI( sc_pumpFlow);
-
-	// Calculate outlet temperature
-	sc_collector->calculate(IrIPtoSI( sc_poa), m_dot_SI, DegFtoK(Top.tDbOHrAv), DegFtoK(tInlet));
-
-	return static_cast<FLOAT>(DegKtoF(sc_collector->outlet_temp()));
-}	// DHWSOLARCOLLECTOR::sc_CalculateOutletTemp
-
 //=============================================================================

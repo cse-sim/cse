@@ -87,11 +87,12 @@ float slASTCor();
 float slASHRAETauModel(	float sunZen, float tauB, float tauD, float& radDirN, float& radDifH);
 bool slASHRAETauModelInv( double sunZen, double Ebn, double Edh, float& tauB, float& tauD);
 
-RC slPerezSkyModel(double tilt, 
-                   double azimuth,
-                   short iHrST,
-                   double direct_normal_beam, 
-                   double horizontal_diffuse,
-                   double ground_reflectivity, 
-                   double& plane_incidence);
+#if 0
+x RC slPerezSkyModel(double tilt, double azimuth, short iHrST, double direct_normal_beam, double horizontal_diffuse,
+x	double ground_reflectivity, double& plane_incidence);
+#else
+RC slPerezSkyModel(float tilt, float azimuth, int iHrST, float direct_normal_beam, float horizontal_diffuse,
+	float ground_reflectivity, float& incA, float& plane_beam, float& plane_diffuse_sky, float& plane_diffuse_ground);
+#endif
+
   // end of slpak.h

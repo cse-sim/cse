@@ -334,8 +334,12 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 *choicb RSYSTYCH {
 			ACFURN "ACFurnace"
 			ACRES  "ACResistance"
+			ACPKGRM "ACPkgRoom"
+			ACPKGRMFURN "ACPkgRoomFurnace"
+			ACPKGRMRES "ACPkgRoomResistance"
 			ASHP   "ASHP"
 			ASHPHYD "ASHPHydronic"
+			ASHPPKGRM "ASHPPkgRoom"
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
@@ -346,6 +350,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			VARFLOW   "VarFlow"
 		  }
 *choicb RSYSDEFROSTMODELCH {
+            NONE        "None"
 			REVCYCLE    "RevCycle"
 			REVCYCLEAUX "RevCycleAux"
 		  }
@@ -368,6 +373,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			INSTSML "SmallInstantaneous"
 			INSTLRG "LargeInstantaneous"
 			INSTUEF "InstantaneousUEF"
+			BUILTUP "BuiltUp"
           }
 *choicb WHASHPTYCH {					// comments from Ecotope, see hphw.hh
 			RESTANKNOUA "ResTankNoUA"		// a simple resistance tank, but with no tank losses
@@ -381,12 +387,14 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
 			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
 			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
+			SANDENGS3 "SandenGS3"			// Sanden GS3 compressor CO2 external
 			GE2012 "GE2012"					// 2012 era GeoSpring
 			GE2014 "GE2014"					// 2014 50 gal GE run in the efficiency mode
 			GE2014_80 "GE2014_80"			// 2014 80 gal GE model run in the efficiency mode
 			GE2014_80DR "GE2014_80DR"		// 2014 80 gal GE model run in the efficiency mode (demand reduction variant)
 			GE2014STDMODE "GE2014StdMode"	// 2014 50 gal GE run in standard mode
 			GE2014STDMODE_80 "GE2014StdMode80"	// 2014 80 gal GE run in standard mode
+			BWC202065  "BWC202065"			//  2020 Bradford White 65 gallon unit
 			RHEEMHB50 "RheemHB50"			// newish Rheem (2014 model?)
 			RHEEMHBDR2250 "RheemHBDR2250"	// 50 gallon, 2250 W resistance Rheem HB Duct Ready
 			RHEEMHBDR4550 "RheemHBDR4550"	// 50 gallon, 4500 W resistance Rheem HB Duct Ready
@@ -394,6 +402,16 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			RHEEMHBDR4565 "RheemHBDR4565"	// 65 gallon, 4500 W resistance Rheem HB Duct Ready
 			RHEEMHBDR2280 "RheemHBDR2280"	// 80 gallon, 2250 W resistance Rheem HB Duct Ready
 			RHEEMHBDR4580 "RheemHBDR4580"	// 80 gallon, 4500 W resistance Rheem HB Duct Ready
+
+			RHEEM2020PREM40 "Rheem2020Prem40"      // 40 gallon, Rheem 2020 Premium
+			RHEEM2020PREM50 "Rheem2020Prem50"	   // 50 gallon, Rheem 2020 Premium
+			RHEEM2020PREM65 "Rheem2020Prem65"	   // 65 gallon, Rheem 2020 Premium
+			RHEEM2020PREM80 "Rheem2020Prem80"	   // 80 gallon, Rheem 2020 Premium
+			RHEEM2020BUILD40  "Rheem2020Build40"   // 40 gallon, Rheem 2020 Builder
+			RHEEM2020BUILD50  "Rheem2020Build50"   // 50 gallon, Rheem 2020 Builder
+			RHEEM2020BUILD65  "Rheem2020Build65"   // 65 gallon, Rheem 2020 Builder
+			RHEEMHBDRBUILD80  "Rheem2020Build80"   // 80 gallon, Rheem 2020 Builder
+
 			STIEBEL220E "Stiebel220E"		// Stiebel Eltron (2014 model?)
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2
@@ -404,9 +422,28 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHSHPT50 "AOSmithSHPT50"		// AOSmith add'l models (added 3-24-2017)
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
-			COLMACCXA20 "ColmacCxA20"		// Colmac CxA-20 modular HPWH
-			NYLEC185A "NyleC185A"			// Nyle C185A external
-			NYLEC250A "NyleC250A"			// Nyle C250A external
+
+#if 0
+			COLMACCXV5_SP  "ColmacCxV5_SP"	// Colmac CxA-xx modular external HPWHs (single pass mode)
+#endif
+			COLMACCXA10_SP "ColmacCxA10_SP"
+			COLMACCXA15_SP "ColmacCxA15_SP"
+			COLMACCXA20_SP "ColmacCxA20_SP"
+			COLMACCXA25_SP "ColmacCxA25_SP"
+			COLMACCXA30_SP "ColmacCxA30_SP"
+					   
+			NYLEC25A_SP  "NyleC25A_SP"		// Nyle Cxx external HPWHs (single pass mode)
+			NYLEC60A_SP  "NyleC60A_SP"
+			NYLEC90A_SP  "NyleC90A_SP"
+			NYLEC125A_SP "NyleC125A_SP"
+			NYLEC185A_SP "NyleC185A_SP"
+			NYLEC250A_SP "NyleC250A_SP"
+
+			NYLEC60AC_SP  "NyleC60A_CWP_SP"	// Nyle Cxx external HPWHs with cold weather package)
+			NYLEC90AC_SP  "NyleC90A_CWP_SP"
+			NYLEC125AC_SP "NyleC125A_CWP_SP"
+			NYLEC185AC_SP "NyleC185A_CWP_SP"
+			NYLEC250AC_SP "NyleC250A_CWP_SP"
 		}
 
 *choicb DHWEUCH {			// hot end uses
@@ -430,10 +467,6 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			COUNT "*Count"
 		  }
 
-*choicb DHWMODELCH {
-			T24DHW "T24DWH"
-			2013 "2013"
-		  }
 *choicb DHWBRANCHMODELCH {
 			T24DHW "T24DHW"
 			DRAWWASTE "DRAWWASTE"
@@ -483,8 +516,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                     M	"Month"
                     D	"Day"
                     H	"Hour"
-                    HS	"HourAndSub"		// report frequency only
                     S	"Subhour"
+                    HS	"HourAndSub"		// report frequency only
 			}
 // report/export type
 *choicb RPTYCH    { ERR     "ERR" 		// "Error Messages"

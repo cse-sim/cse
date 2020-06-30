@@ -79,9 +79,6 @@
 #undef AUSZ_REPORTS		// define to enable hourly reports during autosizing
 						//   Note: crude at best, use for testing only, 12-31-2012
 
-#define OAVREV2			// define to enable revised Outside Air Vent modeling
-						//   3-25-2014
-
 //------------------------------------------------ DEFINES --------------------------------------------------
 
 #define HSMXSGDIST 8	// Max # of solar gain targets from one XSURF.

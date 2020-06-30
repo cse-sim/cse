@@ -810,33 +810,33 @@ void FC slaniso(/* Adjust beam and diffuse radiation values
 #include "ASHRAE/solar.cpp"
 
 float slASHRAETauModel( // ASHRAE "tau" clear sky model
-  float sunZen,         // solar zenith angle, radians
-  float tauB,           // ASHRAE beam "pseudo optical depth"
-  float tauD,           // ditto diffuse
-  float &radDirN,       // returned: direct normal irradiance, units per extBm
-  float &radDifH)       // returned: diffuse horizontal irradiance, units per extBm
+	float sunZen,         // solar zenith angle, radians
+	float tauB,           // ASHRAE beam "pseudo optical depth"
+	float tauD,           // ditto diffuse
+	float &radDirN,       // returned: direct normal irradiance, units per extBm
+	float &radDifH)       // returned: diffuse horizontal irradiance, units per extBm
 
 // returns radGlbH, units per extBm
 {
-  float extBm = slloccur->extbm;
+	float extBm = slloccur->extbm;
 
-  return ASHRAETauModel( // ASHRAE "tau" clear sky model
-    1,
-    extBm,
-    sunZen,
-    tauB,
-    tauD,
-    radDirN,
-    radDifH);
+	return ASHRAETauModel( // ASHRAE "tau" clear sky model
+		1,
+		extBm,
+		sunZen,
+		tauB,
+		tauD,
+		radDirN,
+		radDifH);
 } // slASHRAETauModel
 //-----------------------------------------------------------------------------
 static bool slASHRAETauModelInv( // derive tauB/tauD from irradiance
-  double Ebn,                    // beam normal irradiance (at m)
-  double Edh,                    // diffuse horizontal irradiance (at m)
-  double E0,                     // exterrestrial normal irradiance
-  double m,                      // air mass, dimless
-  double &tauB,                  // returned
-  double &tauD)                  // returned
+	double Ebn,                    // beam normal irradiance (at m)
+	double Edh,                    // diffuse horizontal irradiance (at m)
+	double E0,                     // exterrestrial normal irradiance
+	double m,                      // air mass, dimless
+	double &tauB,                  // returned
+	double &tauD)                  // returned
 // Ebn, Edh, and E0 should have same units
 // Based on Python implementation by Michael Roth
 // ASHRAE 2017 coefficients implicit
@@ -853,65 +853,67 @@ static bool slASHRAETauModelInv( // derive tauB/tauD from irradiance
   tauB = 0.75;
   tauD = 1.5;
 
-  bool bConverge = false;
-  for (int iT = 0; iT < 20 && !bConverge; iT++)
-  { // update ab & ad
-    double ab = 1.454 - 0.406 * tauB - 0.268 * tauD + 0.021 * tauB * tauD;
-    double ad = 0.507 + 0.205 * tauB - 0.080 * tauD - 0.190 * tauB * tauD;
+	bool bConverge = false;
+	for (int iT = 0; iT < 20 && !bConverge; iT++)
+	{ // update ab & ad
+		double ab = 1.454 - 0.406 * tauB - 0.268 * tauD + 0.021 * tauB * tauD;
+		double ad = 0.507 + 0.205 * tauB - 0.080 * tauD - 0.190 * tauB * tauD;
 
-    // Calculate F
-    // Note: Took log twice of equations (17) and (18). F is the
-    // difference between LHS & RHS.  We want F to approach zero.
-    double Fb = log(tauB) + ab * logm - loglogKb;
-    double Fd = log(tauD) + ad * logm - loglogKd;
+		// Calculate F
+		// Note: Took log twice of equations (17) and (18). F is the
+		// difference between LHS & RHS.  We want F to approach zero.
+		double Fb = log(tauB) + ab * logm - loglogKb;
+		double Fd = log(tauD) + ad * logm - loglogKd;
 
-    // calculate Jacobian
-    double Jbb = 1.0 / tauB + logm * (-0.406 + 0.021 * tauD);
-    double Jbd = logm * (-0.268 + 0.021 * tauB);
-    double Jdb = logm * (+0.205 - 0.190 * tauD);
-    double Jdd = 1.0 / tauD + logm * (-0.080 - 0.190 * tauB);
+		// calculate Jacobian
+		double Jbb = 1.0 / tauB + logm * (-0.406 + 0.021 * tauD);
+		double Jbd = logm * (-0.268 + 0.021 * tauB);
+		double Jdb = logm * (+0.205 - 0.190 * tauD);
+		double Jdd = 1.0 / tauD + logm * (-0.080 - 0.190 * tauB);
 
-    // solve system {-F} = [J]{dtau} using Cramer's rule
-    double detJ = Jbb * Jdd - Jdb * Jbd;
-    double dtauB = (-Fb * Jdd + Fd * Jbd) / detJ;
-    double dtauD = (-Jbb * Fd + Jdb * Fb) / detJ;
+		// solve system {-F} = [J]{dtau} using Cramer's rule
+		double detJ = Jbb * Jdd - Jdb * Jbd;
+		double dtauB = (-Fb * Jdd + Fd * Jbd) / detJ;
+		double dtauD = (-Jbb * Fd + Jdb * Fb) / detJ;
 
-    // update taus
-    tauB += dtauB;
-    tauD += dtauD;
+		// update taus
+		tauB += dtauB;
+		tauD += dtauD;
 
-    bConverge = abs(dtauB) <= tol && abs(dtauD) <= tol;
-  }
-  return bConverge;
+		bConverge = abs(dtauB) <= tol && abs(dtauD) <= tol;
+	}
+	return bConverge;
 } // slASHRAETauModelInv
 //--------------------------------------------------------------------------
 bool slASHRAETauModelInv( // ASHRAE tau model inverse
-  double sunZen,          // solar zenith angle, radians
-  double Ebn,             // beam normal irradiance (typically solar noon)
-  double Edh,             // diffuse horizontal irradiance (ditto)
-  float &tauB,            // returned
-  float &tauD)            // returned
+	double sunZen,          // solar zenith angle, radians
+	double Ebn,             // beam normal irradiance (typically solar noon)
+	double Edh,             // diffuse horizontal irradiance (ditto)
+	float &tauB,            // returned
+	float &tauD)            // returned
 {
 
-  float extBm = slloccur->extbm;
+	float extBm = slloccur->extbm;
 
-  double m = AirMass(kPiOver2 - sunZen);
+	double m = AirMass(kPiOver2 - sunZen);
 
-  double tauBd, tauDd;
-  bool bRet = slASHRAETauModelInv(Ebn, Edh, extBm, m, tauBd, tauDd);
-  tauB = float(tauBd);
-  tauD = float(tauDd);
-  return bRet;
+	double tauBd, tauDd;
+	bool bRet = slASHRAETauModelInv(Ebn, Edh, extBm, m, tauBd, tauDd);
+	tauB = float(tauBd);
+	tauD = float(tauDd);
+	return bRet;
 } // slASHRAETauModelInv
-
 //--------------------------------------------------------------------------
-RC slPerezSkyModel(double tilt, 
-                   double azimuth, 
-                   short iHrST,
-                   double direct_normal_beam, 
-                   double horizontal_diffuse,
-                   double ground_reflectivity, 
-                   double& plane_incidence)
+#if 0
+// revised interface below
+RC slPerezSkyModel(
+	double tilt, 
+	double azimuth, 
+	short iHrST,
+	double direct_normal_beam, 
+	double horizontal_diffuse,
+	double ground_reflectivity, 
+	double& plane_incidence)
 {
 	RC rc = RCOK;
 
@@ -924,9 +926,9 @@ RC slPerezSkyModel(double tilt,
 	int sunup = 					// nz if sun above horizon this hour
 		slsurfhr(dchoriz, iHrST, &verSun, &solar_azm, &cosz);
 
-  plane_incidence = 0.0;              // W/m^2
-  double plane_beam { 0.0 };          // W/m^2
-  double angle_of_incidence { kPiOver2 };  // radians
+	plane_incidence = 0.0;              // W/m^2
+	double plane_beam { 0.0 };          // W/m^2
+	double angle_of_incidence { kPiOver2 };  // radians
 	// Don't bother if sun down or no solar from weather
 	if (!sunup || (direct_normal_beam <= 0.f && horizontal_diffuse <= 0.f))
 	{
@@ -939,7 +941,7 @@ RC slPerezSkyModel(double tilt,
 	float vfSkyDf = .5 + .5*cosTilt;  // view factor to sky
 
 	// Calculate plane-of-array incidence
-  float dcos[3]; // direction cosines
+	float dcos[3]; // direction cosines
 	slsdc( azimuth, tilt, dcos);
 	float cosi; // cos(incidence)
 	int sunupSrf = slsurfhr( dcos, iHrST, &cosi);
@@ -957,10 +959,10 @@ RC slPerezSkyModel(double tilt,
 	}
 
 	// Components of diffuse solar (isotropic, circumsolar, horizon, ground reflected)
-  float poaDiffI { vfSkyDf };
-  float poaDiffC { 0.0f };
-  float poaDiffH { 0.0f };
-  float poaDiffG { 0.0f };
+	float poaDiffI { vfSkyDf };
+	float poaDiffC { 0.0f };
+	float poaDiffH { 0.0f };
+	float poaDiffG { 0.0f };
 
 	// Modified Perez sky model
 	float zRad = acos(cosz);
@@ -1004,33 +1006,136 @@ RC slPerezSkyModel(double tilt,
 	plane_incidence = plane_beam + plane_diffuse + plane_ground_beam; // W/m^2
 
 	return rc;
-} 
+}		// slPerezSkyModel
+#endif
+//-----------------------------------------------------------------------------
+RC slPerezSkyModel(			// Perez transposition model (alt interface)
+	float tilt,				// surface tilt, radians (0=horiz, pi/2=vert)
+	float azimuth,			// surface azm, radians, (0=N, pi/2=E, pi=S)
+	int iHrST,				// hour of day
+	float direct_normal_beam,		// solar beam irradiance, any pwr/area
+	float horizontal_diffuse,		// solar diffuse irradiance
+	float ground_reflectivity,		// ground reflectivity (0 - 1)
+	float& angle_of_incidence,		// beam angle of incidence, radians
+									//   pi/2 if no beam
+	float& plane_beam,				// returned: plane beam
+	float& plane_diffuse_sky,		// returned: plane diffuse from sky
+	float& plane_diffuse_ground)	// returned: plane diffuse from ground
+{
+	RC rc = RCOK;
+
+	// Some routines borrowed from elsewhere in code. Should be updated to share routines with XSURF and SBC.
+
+	// Calculate horizontal incidence
+	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
+	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz); init 0 for when sun down.
+	float solar_azm, cosz;
+	int sunup = 					// nz if sun above horizon this hour
+		slsurfhr(dchoriz, iHrST, &verSun, &solar_azm, &cosz);
+
+	plane_beam = plane_diffuse_sky = plane_diffuse_ground = 0.f;
+	angle_of_incidence = kPiOver2;  // radians
+
+	// Don't bother if sun down or no solar from weather
+	if (!sunup || (direct_normal_beam <= 0.f && horizontal_diffuse <= 0.f))
+	{
+		return rc;
+	}
+
+	// Set up properties of array
+	double cosTilt = cos(tilt);
+	float vfGrndDf = .5 - .5*cosTilt;  // view factor to ground
+	float vfSkyDf = .5 + .5*cosTilt;  // view factor to sky
+
+	// Calculate plane-of-array incidence
+	float dcos[3]; // direction cosines
+	slsdc(azimuth, tilt, dcos);
+	float cosi; // cos(incidence)
+	int sunupSrf = slsurfhr(dcos, iHrST, &cosi);
+	if (sunupSrf < 0)
+		return RCBAD;	// shading error
+
+	if (sunupSrf)
+	{
+		plane_beam = direct_normal_beam * cosi;
+		angle_of_incidence = acos(cosi);
+	}
+
+	// Modified Perez sky model
+	float zRad = acos(cosz);
+	float zDeg = DEG(zRad);
+	float a = max(0.f, cosi);
+	float b = max(cos(RAD(85.f)), cosz);
+	const float kappa = 5.534e-6f;
+	float e = ((horizontal_diffuse + direct_normal_beam) / (horizontal_diffuse + 0.0001f) + kappa * pow3(zDeg)) / (1 + kappa * pow3(zDeg));
+	float am0 = 1 / (cosz + 0.15f*pow(93.9f - zDeg, -1.253f));  // Kasten 1966 air mass model
+	float delt = horizontal_diffuse * am0 / IrSItoIP(1367.f);
+
+	int bin = e < 1.065f ? 0
+		: e < 1.23f ? 1
+		: e < 1.5f ? 2
+		: e < 1.95f ? 3
+		: e < 2.8f ? 4
+		: e < 4.5f ? 5
+		: e < 6.2f ? 6
+		:            7;
+
+	// Perez sky model factors
+	static const float f11[8] = { -0.0083117f, 0.1299457f, 0.3296958f, 0.5682053f, 0.873028f, 1.1326077f, 1.0601591f, 0.677747f };
+	static const float f12[8] = { 0.5877285f, 0.6825954f, 0.4868735f, 0.1874525f, -0.3920403f, -1.2367284f, -1.5999137f, -0.3272588f };
+	static const float f13[8] = { -0.0620636f, -0.1513752f, -0.2210958f, -0.295129f, -0.3616149f, -0.4118494f, -0.3589221f, -0.2504286f };
+	static const float f21[8] = { -0.0596012f, -0.0189325f, 0.055414f, 0.1088631f, 0.2255647f, 0.2877813f, 0.2642124f, 0.1561313f };
+	static const float f22[8] = { 0.0721249f, 0.065965f, -0.0639588f, -0.1519229f, -0.4620442f, -0.8230357f, -1.127234f, -1.3765031f };
+	static const float f23[8] = { -0.0220216f, -0.0288748f, -0.0260542f, -0.0139754f, 0.0012448f, 0.0558651f, 0.1310694f, 0.2506212f };
+
+	float F1 = max(0.f, f11[bin] + delt * f12[bin] + zRad * f13[bin]);
+	float F2 = f21[bin] + delt * f22[bin] + zRad * f23[bin];
+
+	// Components of diffuse solar (isotropic, circumsolar, horizon, ground reflected)
+	float poaDiffI{ vfSkyDf };
+	float poaDiffC{ 0.0f };
+	float poaDiffH{ 0.0f };
+	
+	if (zDeg >= 0.f && zDeg <= 87.5f) {
+		poaDiffI = (1.f - F1)*vfSkyDf;
+		poaDiffC = F1 * a / b;
+		poaDiffH = F2 * sin(tilt);
+	}
+
+	float poaDiffG = ground_reflectivity * vfGrndDf;
+
+	plane_diffuse_sky = horizontal_diffuse * (poaDiffI + poaDiffC + poaDiffH);  // sky diffuse and ground reflected diffuse
+	plane_diffuse_ground = horizontal_diffuse * poaDiffG + direct_normal_beam * ground_reflectivity*vfGrndDf*verSun; 
+
+	return rc;
+}	// slPerezSkyModel2
+
 //==========================================================================
 
   /************************ rest of file is if-outs *************************/
 
 #ifdef WANTED /* no calls 6-12-88 rob */
-  x           //======================================================================
-    x float FC slcosinc(sdircos, fhour)
-      x x /* Return instantaneous cosine of solar angle of incidence on a surface */
-        x x float sdircos[3]; /* Direction cosines for surface */
-  x float fhour;              /* Hour of day.  0. = midnight, 12.5 = 12:30 pm etc.
-        x                        This is taken to be solar time, local standard time
-        x                        or local daylight time depending on last call to
-        x                        slday() */
-  x x                         /* Returns 0. if the sun is down relative to the surface or to the
-                            x    world.  In other words, the return value can be safely multiplied
-                            x    times the current beam intensity without fear of trouble. */
-    x
-  {
-    x float ha, dcos[3], cosinc;
-    x x ha = slha(fhour);
-    x if (fabs(ha) > slloccur->hasunset) x return 0.f;
-    x sldircos(slha(fhour), dcos);
-    x cosinc = DotProd(dcos, sdircos);
-    x return (cosinc > 0.f ? cosinc : 0.f);
-    x x
-  }    /* slcosinc */
+x //======================================================================
+x float FC slcosinc(sdircos, fhour)
+x x /* Return instantaneous cosine of solar angle of incidence on a surface */
+x x float sdircos[3]; /* Direction cosines for surface */
+x float fhour;              /* Hour of day.  0. = midnight, 12.5 = 12:30 pm etc.
+x                        This is taken to be solar time, local standard time
+x                        or local daylight time depending on last call to
+x                        slday() */
+x x  /* Returns 0. if the sun is down relative to the surface or to the
+x    world.  In other words, the return value can be safely multiplied
+x    times the current beam intensity without fear of trouble. */
+x
+{
+x float ha, dcos[3], cosinc;
+x x ha = slha(fhour);
+x if (fabs(ha) > slloccur->hasunset) x return 0.f;
+x sldircos(slha(fhour), dcos);
+x cosinc = DotProd(dcos, sdircos);
+x return (cosinc > 0.f ? cosinc : 0.f);
+x x
+}    /* slcosinc */
 #endif /* WANTED */
 
 #if 0 /* before 10-23-88 recode to return azimuth and cos(zenith) */
