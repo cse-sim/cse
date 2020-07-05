@@ -528,6 +528,15 @@ x	}
 	// * Better estimate of available vent supply temp.
 	//     Use prior step? (run vent at substep 0 even if not needed?)
 
+#if 1 && defined( _DEBUG)
+	static bool bReportVent = false;
+	if (Top.isBegDay && !Top.isWarmup && Top.jDay > 177)
+	{	printf("\n%s", Top.dateStr);
+		bReportVent = true;
+	}
+
+#endif
+
 	int nVentUseful = 0;	// ventilation usefulness
 							//   >0: vent potentially useful for 1 or more zones
 							//   =0: vent not useful
@@ -547,9 +556,15 @@ x	}
 							//   <0: vent forbidden by conditions in 1 or more zones
 							//       e.g. heating or cooling required
 		RLUP( ZrB, zp)
-		{	nVentUseful += zp->zn_AssessVentUtility();
-			// if (nVentUseful < 0)
-			//	   break;	// NO! zn_AssessVentUtility() needed for all zones
+		{	int nVU1 = zp->zn_AssessVentUtility();
+#if 1 && defined(_DEBUG)
+			if (nVU1 < 0)
+			{	if (bReportVent)
+					printf("\nHr=%d, Zone '%s': Vent not useful", Top.iHr, zp->name);
+				// break NO: zn_AssessVentUtility() needed for all zones
+			}
+#endif	
+			nVentUseful += nVU1;
 		}
 
 		int bAllNoVent = 1;
