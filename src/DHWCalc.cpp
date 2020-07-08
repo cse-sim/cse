@@ -2362,9 +2362,7 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 // large
 	{ C_WHASHPTYCH_SANDENGS3,       hwatLARGE | HPWH::MODELS_Sanden_GS3_45HPA_US_SP },
-#if 0
 	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
-#endif
 	{ C_WHASHPTYCH_COLMACCXA10_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_SP },
 	{ C_WHASHPTYCH_COLMACCXA15_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_SP },
 	{ C_WHASHPTYCH_COLMACCXA20_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_SP },

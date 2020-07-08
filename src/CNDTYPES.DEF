@@ -423,9 +423,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
 
-#if 0
 			COLMACCXV5_SP  "ColmacCxV5_SP"	// Colmac CxA-xx modular external HPWHs (single pass mode)
-#endif
 			COLMACCXA10_SP "ColmacCxA10_SP"
 			COLMACCXA15_SP "ColmacCxA15_SP"
 			COLMACCXA20_SP "ColmacCxA20_SP"
