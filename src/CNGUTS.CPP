@@ -577,6 +577,11 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		   			   Sets SGRAT entries, valid for a month (has hourly storage slots).
 		   			   Returns cos solar incidence angle for hour for month via arg. cgsolar.cpp. */
 
+		// zone "early" inits -- zone gains etc.
+		ZNR* zp;
+		RLUP(ZrB, zp)
+			EF( zp->zn_BegHour1())
+
 		// zero meters for hour
 		//  must precede DHW
 		MTR* mtr;
@@ -1221,13 +1226,6 @@ LOCAL RC FC NEAR doHourGains()	// set hour's zone & mass gains & daylighting stu
 // call AFTER expression evaluation as zone gain input members accept hourly expressions
 {
 	RC rc = RCOK;
-
-// zero zone gains
-	ZNR* zp;
-	RLUP( ZrB, zp)
-	{	zp->qrIgTot = zp->qrIgTotO = zp->qrIgTotIz = zp->qrIgAir = 0.f;
-		zp->znSGain = zp->znLGain = zp->znLitDmd = zp->znLitEu = 0.;
-	}
 
 // zero mass (radiant) gains
 	MSRAT* mse;
