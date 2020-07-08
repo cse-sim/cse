@@ -971,7 +971,6 @@ int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
 		else
 		{	double qVent = zn_QAirCR( i.znTD, 0.); // q required to keep tz at i.znTD.
 			zn_fVent = qVent/(anAmfCpT - anAmfCp*i.znTD);
-			ret = 1;
 			if (zn_fVent < 0.f)
 			{
 #if defined( _DEBUG)
@@ -979,6 +978,7 @@ int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
 #endif
 				zn_fVent = 0.f;
 			}
+			ret = 1;
 		}
 	}
 	return ret;
@@ -1011,7 +1011,7 @@ x	}
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 
 	int bUZ = zn_IsUZ();
-	int znfVent = C_VENTAVAILVC_ZONAL ? zn_fVent : fVent;
+	float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zn_fVent : fVent;
 	if (bUZ || znfVent > 0.)
 	{	// float temp
 		// * unconditioned: HVAC not possible
