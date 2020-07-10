@@ -944,7 +944,7 @@ int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
 //          0: no effect / don't care
 //          1: useful
 {
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay == 178)
 		printf("\nzn_FVentCR '%s'", name);
 #endif
@@ -973,7 +973,7 @@ int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
 			zn_fVent = qVent/(anAmfCpT - anAmfCp*i.znTD);
 			if (zn_fVent < 0.f)
 			{
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 				warn( "Zone '%s': fVent < 0\n", name);
 #endif
 				zn_fVent = 0.f;
@@ -2815,18 +2815,18 @@ x	rs_asOut = asSav;
 
 #if defined( _DEBUG)
 	if (!Top.isWarmup)
-	{
-		if (rs_asOut.as_tdb > 70.)
-			rWarn("RSYS '%s': high cooling supply temp (%0.1f)", name, rs_asOut.as_tdb);
+	{	double tSup = rs_asOut.as_tdb;
+		if (tSup < 20. || tSup > 200.)
+			rWarn("RSYS '%s': unreasonable cooling supply temp %.2f F", name, tSup);
+		if (rs_asIn.as_tdb - tSup < 10.)
+			rWarn("RSYS '%s': low cooling deltaT -- tRet=%.2f F, tSup=%.2f",
+				name, rs_asIn.as_tdb, tSup);
 		float hOut = rs_asOut.as_Enthalpy();
 		float hDelta = rs_amfC * (hOut - hIn);
 		float capTot = rs_capSenCt + rs_capLatCt + rs_fanHeatC;
 		float fDiff = frDiff( hDelta, capTot);
 		if (fDiff > .0002f)
-			warn( "RSYS '%s': coil enthalpy mismatch (%.5f)", name, fDiff);
-		double tSup = rs_asOut.as_tdb;
-		if (tSup < 20. || tSup > 200.)
-			warn( "RSYS '%s': unreasonable cooling supply temp %.2f", name, tSup);
+			rWarn( "RSYS '%s': coil enthalpy mismatch (%.5f)", name, fDiff);	
 	}
 #endif
 
