@@ -257,6 +257,9 @@ class record		// base class for records
 	RC CDEC oer( const char* message, ... ) const;
 	RC CDEC oWarn( const char* message, ... ) const;
 	RC CDEC oInfo( const char* message, ... ) const;
+	RC CDEC orer(const char* message, ...) const;
+	RC CDEC orWarn(const char* message, ...) const;
+	RC CDEC orInfo(const char* message, ...) const;
 
 	RC orMsg( int erOp, const char* message, ...) const;
 

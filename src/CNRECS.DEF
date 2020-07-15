@@ -263,6 +263,11 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
 	*declare "ULI tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
 
+	*s *e FLOAT tp_fVent	// consensus whole building vent fraction (if not RSYSOAV)
+							//     = fraction of full vent flow to use
+							//       determined by zone that wants the least vent
+							//  or -1 for zonal vent control
+
     *r NOYESCH tp_hConvMod	// enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)
 							//   mostly for debugging.
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
@@ -2424,10 +2429,12 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "double zn_AnAmf() const;"			// returns actual
     *declare "double zn_NonAnIVAmf() const;"
 
-   	*s *e FLOAT zn_fVent				// vent fraction; venting used to hold zone at znTD
-										//    = (actual mCp) / (possible mCp)
+	*s *e FLOAT zn_fVentPrf				// preferred vent fraction for this zone in isolation
+										//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)
 	*s *e FLOAT zn_tzVent				// zone air temp with full vent, F (debug aid)
 										//    0 if vent not possible
+   	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at znTD
+										//    = (actual mCp) / (possible mCp)
     *s *e DBL zn_anAmfCpVent			// vent flow (in excess of zn_airNetI[ 0])
     *s *e DBL zn_anAmfCpTVent			// vent flow*temp (in excess of zn_airNetI[ 0])
 
