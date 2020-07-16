@@ -1388,6 +1388,18 @@ Built-in functions perform a number of useful scheduling and conditional operati
   **Syntax**   *float* **wFromDbRh**( *float tDb, float rh*)
   ------------ -----------------------------------------------------------
 
+  #### rhFromDbW
+
+  ------------ -----------------------------------------------------------
+  **Function** Returns relative humidity (0 – 1) of moist air from dry bulb
+               temperature (F) and humidity ratio (lb/lb).  
+
+  **Syntax**   *float* **rhFromDbW**( *float tDb, float w*)
+
+  **Remark**    The return value is constrained to 0 <= rh <= 1
+               (that is, physically impossible combinations of tDb and w are silently tolerated).
+  ------------ -----------------------------------------------------------
+
 <!--
 TODO: test psychrometric functions 7-22-2011
 -->
