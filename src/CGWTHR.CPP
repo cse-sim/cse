@@ -184,18 +184,18 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 // interpolate values for data with instantenous end-hour values in weather file
 	tDbOSh = h * tDbOPvHr + g * tDbOHr;			// end-subhour drybulb temp
 	tWbOSh = h * tWbOPvHr + g * tWbOHr;			// end-subhour wetbulb temp
-	tDpOSh = h * tDpOPvHr + g * tDpOHr;			// end-subhour dewpoint temp
 	tSkySh = h * tSkyPvHr + g * tSkyHr;			// end-subhour sky temp
 	windSpeedSh = h * windSpeedPvHr + g * windSpeedHr;	// end-subhour wind speed
 
 	// subhourly derived weather data
-	wOSh = psyHumRat1(tDbOSh, tWbOSh);		// humidity ratio at end subhour
-	hOSh = psyEnthalpy(tDbOSh, wOSh);		// outdoor enthalpy at end subhour
-	windSpeedSquaredSh = windSpeedSh * windSpeedSh;	// windspeed squared (mph^2) at end subhour, re infiltration.
-	windSpeedSqrtSh = sqrt(windSpeedSh);			// sqrt( windspeed), mph^.5, at end of subhour, re outside surf convection
-	windSpeedPt8Sh = pow(windSpeedSh, 0.8f);		// mph^.8 at end of subhour, re outside surf convection
+	wOSh = psyHumRat1(tDbOSh, tWbOSh);				// end-subhour humidity ratio
+	hOSh = psyEnthalpy(tDbOSh, wOSh);				// end-subhour outdoor enthalpy
+	tDpOSh = psyTDewPoint(wOSh);					// end-subhour outdoor dew point
+	windSpeedSquaredSh = windSpeedSh * windSpeedSh;	// end-subhour windspeed squared (mph^2), re infiltration.
+	windSpeedSqrtSh = sqrt(windSpeedSh);			// end-subhour sqrt( windspeed), mph^.5, re outside surf convection
+	windSpeedPt8Sh = pow(windSpeedSh, 0.8f);		// end-subhour mph^.8, re outside surf convection
 
-	tp_airxOSh = airX(tDbOSh);					// heat capacity of air flow @ temp (Btuh/cfm-F): vhc * 60 min/hr.
+	tp_airxOSh = airX(tDbOSh);							// heat capacity of air flow @ temp (Btuh/cfm-F): vhc * 60 min/hr.
 	tp_rhoDryOSh = psyDenDryAir(tDbOSh, wOSh);				// outdoor dry air density at end of subhour, lbm/ft3
 	tp_rhoMoistOSh = psyDenMoistAir2(tp_rhoDryOSh, wOSh);	// outdoor moist air density at end of subhour, lbm/ft3
 #if 0
