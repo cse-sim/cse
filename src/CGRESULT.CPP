@@ -1689,7 +1689,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 {
 	COL* colp = NULL;
-	char buf[ 2000];
+	char buf[ 5000];
 
 // output row of quoted, comma-separated column head texts
 

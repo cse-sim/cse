@@ -126,6 +126,7 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 	// instantaneous values at end of hour
 	tDbOHr = Wthr.d.wd_db;				// dry bulb temp, deg F
 	tWbOHr = Wthr.d.wd_wb;				// wet bulb temp, deg F
+	tDpOHr = Wthr.d.wd_taDp;			// dew point temp, deg F
 	// sky temp: select value per user model choice
 	//   default = from weather file or as estimated (generally Berdahl-Martin)
 	tSkyHr = skyModelLW == C_SKYMODLWCH_DEFAULT
@@ -148,6 +149,7 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 // hourly averages for instantaneous wthr data (bmrad, dfrad come from wthr file as averages)
 	tDbOHrAv = .5f*(tDbOPvHr + tDbOHr);			// avg drybulb temp, used re hrly masses & $variable
 	tWbOHrAv = .5f*(tWbOPvHr + tWbOHr);			// avg wetbulb temp, used re $variable
+	tDpOHrAv = .5f*(tDpOPvHr + tDpOHr);			// avg dewpoint temp (for completeness, no uses?)
 	windSpeedHrAv = .5f*(windSpeedPvHr + windSpeedHr);	// avg wind speed, used re $variable
 	wOHrAv = .5f*(wOPvHr + wOHr);				// avg humidity ratio, used re $variable
 
@@ -160,6 +162,7 @@ void TOPRAT::tp_SetPvHrWthr()		// copy current hour wthr mbrs to previous
 	radDiffPvHrAv = radDiffHrAv;
 	tDbOPvHr = tDbOHr;
 	tWbOPvHr = tWbOHr;
+	tDpOPvHr = tDpOHr;
 	tSkyPvHr = tSkyHr;
 	windSpeedPvHr = windSpeedHr;
 	wOPvHr = wOHr;
@@ -174,7 +177,6 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 	tDbOPvSh = tDbOSh;
 
 // common setup
-	float dur = 1.f/nSubSteps;			// duration of subhour
 	float f = float(iSubhr)/nSubSteps;    	// fraction of hour passed at start this subhour
 	float g = float(iSubhr+1)/nSubSteps;	// fraction of hour passed at end this subhour
 	float h = 1.f - g;					// fraction of hour remaining after this subhour
@@ -184,18 +186,50 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 	tWbOSh = h * tWbOPvHr + g * tWbOHr;			// end-subhour wetbulb temp
 	tSkySh = h * tSkyPvHr + g * tSkyHr;			// end-subhour sky temp
 	windSpeedSh = h * windSpeedPvHr + g * windSpeedHr;	// end-subhour wind speed
-	// windPresVSh calculated below
 
-	/* setup for interpolating subhour average value for data with average (integrated) values in file:
-	   Determine a = fraction previous hour, b = fraction current hour, c = fraction next hour  even if subhr overlaps middle hour.
-	   The simple cases are:
-	      subhr in 1st half hour: use part prev, part curr hour:   a = .5 - m;  b = .5 + m;   c = 0;
-	      subhr in 2nd half hour: use part curr, part next hour:   a = 0;       b = 1.5 - m;  c = m - .5;
-	   where  m = (f + g)/2. Use weighted sum when subhr overlaps middle of hour. */
+	// subhourly derived weather data
+	wOSh = psyHumRat1(tDbOSh, tWbOSh);				// end-subhour humidity ratio
+	hOSh = psyEnthalpy(tDbOSh, wOSh);				// end-subhour outdoor enthalpy
+	tDpOSh = psyTDewPoint(wOSh);					// end-subhour outdoor dew point
+	windSpeedSquaredSh = windSpeedSh * windSpeedSh;	// end-subhour windspeed squared (mph^2), re infiltration.
+	windSpeedSqrtSh = sqrt(windSpeedSh);			// end-subhour sqrt( windspeed), mph^.5, re outside surf convection
+	windSpeedPt8Sh = pow(windSpeedSh, 0.8f);		// end-subhour mph^.8, re outside surf convection
+
+	tp_airxOSh = airX(tDbOSh);							// heat capacity of air flow @ temp (Btuh/cfm-F): vhc * 60 min/hr.
+	tp_rhoDryOSh = psyDenDryAir(tDbOSh, wOSh);				// outdoor dry air density at end of subhour, lbm/ft3
+	tp_rhoMoistOSh = psyDenMoistAir2(tp_rhoDryOSh, wOSh);	// outdoor moist air density at end of subhour, lbm/ft3
+#if 0
+x	float rhoMoistX = psyDensity(tDbOSh, wOSh);	// density at end of subhour, lb/ft3
+x	float dif = fabs(tp_rhoMoistOSh - rhoMoistX);
+x	if (dif > 0.)
+x	{ if (dif > .000001)
+x			printf("rhoMoist mismatch\n");
+x	}
+x	float rhoDryX = psyDenDryAir2(rhoMoistX, wOSh);
+x	dif = fabs(tp_rhoDryOSh - rhoDryX);
+x	if (dif > 0.)
+x	{	if (dif > .000001)
+x			printf("rhoDry mismatch\n");
+x	}
+#endif
+
+// first time, init previous-subhr value(s) to current-subhour value
+	if (isBegRun)		// if 1st subhour of run. else, same sets were done at entry.
+		tDbOPvSh = tDbOSh;
+
+	// form subhour average(s) for data with instantenous values in weather file
+	tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
+
+/* setup for interpolating subhour average value for data with average (integrated) values in file:
+	Determine a = fraction previous hour, b = fraction current hour, c = fraction next hour  even if subhr overlaps middle hour.
+	The simple cases are:
+	    subhr in 1st half hour: use part prev, part curr hour:   a = .5 - m;  b = .5 + m;   c = 0;
+	    subhr in 2nd half hour: use part curr, part next hour:   a = 0;       b = 1.5 - m;  c = m - .5;
+	where  m = (f + g)/2. Use weighted sum when subhr overlaps middle of hour. */
 
 	float f1 = min( f, .5f), g1 = min( g, .5f);		// start and end of portion of subhr in 1st half of hour
 	float f2 = max( f, .5f), g2 = max( g, .5f);		// .. in 2nd half of hour
-	float fr1 = (g1 - f1)/dur, fr2 = (g2 - f2)/dur; 	// fractions of subhr in 1st and 2nd halves of hour
+	float fr1 = (g1 - f1)/subhrDur, fr2 = (g2 - f2)/subhrDur; 	// fractions of subhr in 1st and 2nd halves of hour
 	float m1 = .5f*(f1 + g1), m2 = .5f*(f2 + g2);	// middle of portions of subhr in 1st and 2nd halves of hour
 
 	float a = (.5f - m1)*fr1;				// fraction of previous hour avg value to use in forming subhr avg value
@@ -248,44 +282,6 @@ o*      #undef CEH
 o*}
 o#endif
 #endif
-
-// subhourly derived weather data
-	wOSh = psyHumRat1( tDbOSh, tWbOSh);		// humidity ratio at end subhour. psychro1.cpp.
-	hOSh = psyEnthalpy( tDbOSh, wOSh);		// outdoor enthalpy at end subhour. psychro2.cpp
-	windSpeedSquaredSh = windSpeedSh * windSpeedSh;	// windspeed squared (mph^2) at end subhour, re infiltration.
-	windSpeedSqrtSh = sqrt( windSpeedSh);			// sqrt( windspeed), mph^.5, at end of subhour, re outside surf convection
-	windSpeedPt8Sh = pow( windSpeedSh, 0.8f);		// mph^.8 at end of subhour, re outside surf convection
-
-	tp_airxOSh = airX( tDbOSh);					// heat capacity of air flow @ temp (Btuh/cfm-F): vhc * 60 min/hr.
-#if 1	// density rework, 10-18-2012
-	tp_rhoDryOSh = psyDenDryAir( tDbOSh, wOSh);				// outdoor dry air density at end of subhour, lbm/ft3
-	tp_rhoMoistOSh = psyDenMoistAir2( tp_rhoDryOSh, wOSh);	// outdoor moist air density at end of subhour, lbm/ft3
-#if 0
-x	float rhoMoistX = psyDensity( tDbOSh, wOSh);	// density at end of subhour, lb/ft3
-x	float dif = fabs( tp_rhoMoistOSh-rhoMoistX);
-x	if (dif > 0.)
-x	{	if (dif > .000001)
-x			printf( "rhoMoist mismatch\n");
-x	}
-x	float rhoDryX = psyDenDryAir2( rhoMoistX, wOSh);
-x	dif = fabs( tp_rhoDryOSh-rhoDryX);
-x	if (dif > 0.)
-x	{	if (dif > .000001)
-x			printf( "rhoDry mismatch\n");
-x	}
-#endif
-#else
-x	tp_rhoMoistOSh = psyDensity( tDbOSh, wOSh);	// density at end of subhour, lb/ft3
-x	tp_rhoDryOSh = psyDenDryAir2( tp_rhoMoistOSh, wOSh);
-#endif
-
-// first time, init previous-subhr value(s) to current-subhour value
-	if (isBegRun)					// if 1st subhour of run. else, same sets were done at entry.
-	{	tDbOPvSh = tDbOSh;
-	}
-
-// form subhour average(s) for data with instantenous values in weather file
-	tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
 
 	return RCOK;
 }			// TOPRAT::tp_WthrBegSubhr

@@ -543,6 +543,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h TEMP tWbOPvHr		// .. previous hour (used to compute -HrAv, -Sh)
     *h TEMP tWbOHrAv		// .. hour average (for $ variable)
     *s TEMP tWbOSh			// .. end subhour, interpolated (used re zone temp heat balance)
+	*h TEMP tDpOHr			// outdoor dew point temp at END OF hour, from wthr file
+    *h TEMP tDpOPvHr		// .. previous hour (used to compute -HrAv)
+    *h TEMP tDpOHrAv		// .. hour average
+    *s TEMP tDpOSh			// .. end subhour (derived from tDbOSh and wOSh)
     *h TEMP tSkyHr			// sky temperature, F
     *h TEMP tSkyPvHr		// .. previous hour (used to compute -Sh)
     *s TEMP tSkySh			// .. end subhr, interpolated)

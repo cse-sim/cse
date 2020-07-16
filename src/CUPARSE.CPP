@@ -366,9 +366,10 @@ static SFST itSfs[] =
 	SFST( "acosd",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOSD, 0),
 	SFST( "atand",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAND, 0),
 	SFST( "atan2d",      ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2D,0),
-	SFST( "wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 10-95
-	SFST( "wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation. 10-95
-	SFST( "enthalpy",    ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2H,  0),	// enthalpy from drybulb, humrat 10-95
+	SFST( "wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 
+	SFST( "wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation.
+	SFST( "rhFromDbW",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2RH, 0),	// rel hum from tdb, w
+	SFST( "enthalpy",    ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2H,  0),	// enthalpy from drybulb, humrat
 	SFST( "choose",    ROK|MA|VA, 0,   FCCHU, TYANY,  1, TYANY, 0, 0,     PSDISP, PSCHUFAI),
 	SFST( "choose1",   ROK|MA|VA, 0,   FCCHU, TYANY,  1, TYANY, 0, 0,     PSDISP1,PSCHUFAI), //??
 	SFST( "select", ROK|MA|VA|F2, 0,   FCCHU, TYANY,  2, TYANY, 0, 0,     0,      PSSELFAI),
