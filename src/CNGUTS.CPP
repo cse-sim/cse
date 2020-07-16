@@ -1369,8 +1369,11 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 		if (gnPX < 0.)
 		{	// neg gain allowed but not expected
 			//  flag in debug build for investigation
+#if 0
 			char* zname = zp ? strtprintf( "%s:", zp->name) : "";
 			printf( "\n%s%s gn < 0", zname, name);
+#endif
+			orWarn( "gain < 0 (%0.1f)", gnPX);
 		}
 #endif
 		// accumulate DL-reduced energy consumption by meter
@@ -1500,11 +1503,17 @@ LOCAL void FC NEAR doIvlAccum()
 
 #if defined( _DEBUG)
 		// debug aid -- check latent balance
-		if (fabs( pZR->curr.S.qlBal) > .02f)	// if unbal > 0.02 Btu
-		{	ZNR* zp = pZR->zr_GetZone();
-			if (zp->zn_IsConvRad())
-				printf( "\n'%s' latent unbal: %.2f (case=%d)\n", zp->name,
-					pZR->curr.S.qlBal, zp->zn_wCase);
+		if (fabs(pZR->curr.S.qlBal) > .02f)
+		{	float qlAbsSum = VAbsSum<float, double>(&pZR->curr.S.ZRw1, ZRnW);
+			if (qlAbsSum > 1.f)
+			{	float qlErrF = pZR->curr.S.qlBal / qlAbsSum;
+				if (fabs( qlErrF) > 0.0001f)
+				{	ZNR* zp = pZR->zr_GetZone();
+					if (zp->zn_IsConvRad())
+						zp->orWarn("latent unbal = %.2f Btu (%.5f, case=%d)",
+							pZR->curr.S.qlBal, qlErrF, zp->zn_wCase);
+				}
+			}
 		}
 #endif
 

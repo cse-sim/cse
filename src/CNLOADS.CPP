@@ -559,7 +559,6 @@ x	}
 						//       determined by zone that wants the least vent
 						//  or -1 for zonal vent control
 
-#if 1
 	if (ventAvail == C_VENTAVAILVC_WHOLEBLDG || ventAvail == C_VENTAVAILVC_ZONAL)
 	{
 		int nVentUseful = 0;	// ventilation usefulness
@@ -591,7 +590,7 @@ x	}
 			{
 				if (!zp->zn_IsUZ())
 				{
-					int vRet = zp->zn_FVentCR(ventAvail);
+					int vRet = zp->zn_FVentCR();
 					if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
 					{	// whole building control
 						//   if vent bad for any zone, all off
@@ -619,79 +618,12 @@ x	}
 		if (bAllNoVent)
 			Top.tp_fVent = 0.f;		// whole-building vent fraction
 
+#if 1 && defined( _DEBUG)
 		if (bReportVent && !Top.isWarmup)
 			printf("\n%s Hr=%d: NVU=%d  ANV=%d  TFvnt=%0.3f", Top.dateStr, Top.iHr, nVentUseful, bAllNoVent, Top.tp_fVent);
-
-	}
-#else
-
-	if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
-	{	int nVentUseful = 0;	// ventilation usefulness
-							//   >0: vent potentially useful for 1 or more zones
-							//   =0: vent not useful
-							//   <0: vent forbidden by conditions in 1 or more zones
-							//       e.g. heating or cooling required
-		RLUP( ZrB, zp)
-		{	int nVU1 = zp->zn_AssessVentUtility();
-#if 1 && defined(_DEBUG)
-			if (bReportVent)
-			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr, Top.iHr, zp->name, nVU1);
-				if (nVU1 < 0)
-					zp->zn_AssessVentUtility();		// call again for debug
-			}
-			// break NO: zn_AssessVentUtility() needed for all zones
-#endif	
-			nVentUseful += nVU1;
-		}
-
-		int bAllNoVent = 1;
-		if (nVentUseful > 0)
-		{	loadsIzxSh2();			// AirNet "vents open"
-			Top.tp_fVent = 1.f;			// try full vent and limit
-			RLUP( ZrB, zp)
-			{	if (!zp->zn_IsUZ())
-				{	int vRet = zp->zn_FVentCR( ventAvail);
-					if (vRet < 0)
-					{	Top.tp_fVent = 0.f;	// vent is harmful for this zone: off for all
-						break;
-					}
-					if (vRet > 0)
-					{	if (zp->zn_fVent < Top.tp_fVent)
-							Top.tp_fVent = zp->zn_fVent;
-						bAllNoVent = 0;
-					}
-					// else vRet == 0
-					//   this zone does not care, do nothing
-				}
-			}
-		}
-		if (bAllNoVent)
-			Top.tp_fVent = 0.f;		// whole-building vent fraction
-
-		if (bReportVent)
-			printf("\n%s Hr=%d: NVU=%d  ANV=%d  TFvnt=%d", Top.dateStr, Top.iHr, nVentUseful, bAllNoVent, Top.tp_fVent);
-
-	}
-	else if (ventAvail == C_VENTAVAILVC_ZONAL)
-	{
-		int nVentUseful = 0;	// ventilation usefulness
-							//   >0: vent potentially useful for 1 or more zones
-							//   =0: vent not useful
-		RLUP(ZrB, zp)
-		{	int nVU1 = zp->zn_AssessVentUtility();
-			if (nVU1 > 0)
-				nVentUseful += nVU1;
-		}
-		if (nVentUseful > 0)
-		{	loadsIzxSh2();			// AirNet "vents open"
-			RLUP(ZrB, zp)
-			{	if (!zp->zn_IsUZ())
-					zp->zn_FVentCR( ventAvail);
-			}
-		}
-		Top.tp_fVent = -1.f;	// whole building vent fraction: say zonal
-	}
 #endif
+
+	}
 
 #if defined( DEBUGDUMP)
 	if (bDbPrint)
@@ -708,8 +640,8 @@ x	}
 	}
 
 	RLUP( ZrB, zp)
-		rc |= zp->zn_CondixCR( ventAvail, Top.tp_fVent);	// duct leakage can add cross-zone air
-															//   do all zones before zn_AirX() etc.
+		rc |= zp->zn_CondixCR( ventAvail);	// duct leakage can add cross-zone air
+											//   do all zones before zn_AirX() etc.
 
 	RLUP( RsR, rs)
 		rc |= rs->rs_AllocateZoneAir();		// NOP if OAV
@@ -1002,9 +934,7 @@ const int vForbid = -9999;
 	return ventUt;
 }	// ZNR::zn_AssessVentUtility
 //-----------------------------------------------------------------------------
-int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
-	ULI ventAvail)		// vent availability
-						//   C_VENTAVAILVC_WHOLEBLDG, C_VENTAVAILVC_ZONAL
+int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 // assume tz is at floating temp
 // sets zn_fVentPrf = best vent fraction for this zone in isolation (0 - 1)
 // returns -1: vent is harmful
@@ -1035,14 +965,19 @@ int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
 			ret = 1;
 		}
 		else
-		{	double qVent = zn_QAirCR( i.znTD, 0.); // q required to keep tz at i.znTD.
-			zn_fVentPrf = qVent/(anAmfCpT - anAmfCp*i.znTD);
-			if (zn_fVentPrf < 0.f)
-			{
+		{	double amfDT = anAmfCpT - anAmfCp * i.znTD;
+			if (amfDT != 0.)
+			{	double qVent = zn_QAirCR( i.znTD, 0.); // q required to keep tz at i.znTD
+				zn_fVentPrf = qVent / amfDT;
+				if (zn_fVentPrf < 0.f)
+				{
 #if 0 && defined( _DEBUG)
-				warn( "Zone '%s': fVent < 0\n", name);
+					orWarn("fVent < 0\n");
 #endif
-				zn_fVentPrf = 0.f;
+					zn_fVentPrf = 0.f;
+				}
+				else if (zn_fVentPrf > 1.f)
+					zn_fVentPrf = 1.f;
 			}
 			ret = 1;
 		}
@@ -1051,9 +986,8 @@ int ZNR::zn_FVentCR(			// find zone's preferred vent fraction
 }	// ZNR::zn_FVentCR
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
-	ULI ventAvail,		// vent availability
+	ULI ventAvail)		// vent availability
 						//   C_VENTAVAILVC_WHOLEBLDG, C_VENTAVAILVC_ZONAL
-	float fVent)		// whole-building vent fraction (0 - 1)
 
 // determines tz, tr, zn_qsHvac, zn_qIzSh
 // returns RCOK or ...
@@ -1115,8 +1049,9 @@ x	}
 		}
 
 #if defined( _DEBUG)
-		if (!bUZ)
+		if (!bUZ && zn_anVentEffect > 0)
 		{	// check conditioned zone outcome
+			//   don't complain about zones with no vents
 			if (tz < i.znTD - .001f)
 			{	if (znfVent > .001 && zn_anAmfCpTVent > .001)
 					orWarn("vent tz (%.1f F) below TD (%.1f F)", tz, i.znTD);
