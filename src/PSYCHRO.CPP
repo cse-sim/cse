@@ -562,7 +562,11 @@ float psyRelHum2(	// Relative humidity from dry bulb and wet bulb
 float psyRelHum3(	// relative humidity from w and wSat
 	float w,		// humidty ratio
 	float wSat)		// saturation humidity ratio
+// w is constrained herein to 0 - wSat (no msg)
+// wSat not checked
+// returns RH (0 - 1)
 {
+	w = bracket(0.f, w, wSat);
 	double wws = w*wSat/PsyMwRatio;
 	return float( wws > 0. ? (w + wws) / (wSat + wws) : 0.);
 }		// psyRelHum3
@@ -570,6 +574,7 @@ float psyRelHum3(	// relative humidity from w and wSat
 float psyRelHum4(	// Relative humidity from dry bulb and wet bulb
 	float ta, 	// dry bulb temperature, F
 	float w )	// humidity ratio
+// Note psyRelHum3 limits w to valid range
 // Returns: RH as a fraction (0 to 1)
 {
 	float wSat = psyHumRat3( ta);

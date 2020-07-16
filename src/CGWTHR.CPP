@@ -126,6 +126,7 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 	// instantaneous values at end of hour
 	tDbOHr = Wthr.d.wd_db;				// dry bulb temp, deg F
 	tWbOHr = Wthr.d.wd_wb;				// wet bulb temp, deg F
+	tDpOHr = Wthr.d.wd_taDp;			// dew point temp, deg F
 	// sky temp: select value per user model choice
 	//   default = from weather file or as estimated (generally Berdahl-Martin)
 	tSkyHr = skyModelLW == C_SKYMODLWCH_DEFAULT
@@ -148,6 +149,7 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 // hourly averages for instantaneous wthr data (bmrad, dfrad come from wthr file as averages)
 	tDbOHrAv = .5f*(tDbOPvHr + tDbOHr);			// avg drybulb temp, used re hrly masses & $variable
 	tWbOHrAv = .5f*(tWbOPvHr + tWbOHr);			// avg wetbulb temp, used re $variable
+	tDpOHrAv = .5f*(tDpOPvHr + tDpOHr);			// avg dewpoint temp (for completeness, no uses?)
 	windSpeedHrAv = .5f*(windSpeedPvHr + windSpeedHr);	// avg wind speed, used re $variable
 	wOHrAv = .5f*(wOPvHr + wOHr);				// avg humidity ratio, used re $variable
 
@@ -160,6 +162,7 @@ void TOPRAT::tp_SetPvHrWthr()		// copy current hour wthr mbrs to previous
 	radDiffPvHrAv = radDiffHrAv;
 	tDbOPvHr = tDbOHr;
 	tWbOPvHr = tWbOHr;
+	tDpOPvHr = tDpOHr;
 	tSkyPvHr = tSkyHr;
 	windSpeedPvHr = windSpeedHr;
 	wOPvHr = wOHr;
@@ -182,6 +185,7 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 // interpolate values for data with instantenous end-hour values in weather file
 	tDbOSh = h * tDbOPvHr + g * tDbOHr;			// end-subhour drybulb temp
 	tWbOSh = h * tWbOPvHr + g * tWbOHr;			// end-subhour wetbulb temp
+	tDpOSh = h * tDpOPvHr + g * tDpOHr;			// end-subhour dewpoint temp
 	tSkySh = h * tSkyPvHr + g * tSkyHr;			// end-subhour sky temp
 	windSpeedSh = h * windSpeedPvHr + g * windSpeedHr;	// end-subhour wind speed
 	// windPresVSh calculated below

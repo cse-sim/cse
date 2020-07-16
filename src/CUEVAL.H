@@ -144,6 +144,7 @@ PSFATAN2D,	// atan2
 // float psychrometric functions
 PSDBWB2W,	// Humrat (w) from drybulb & wetbulb temps
 PSDBRH2W,	// Humrat (w) from drybulb temp & relative humidity
+PSDBW2RH,	// relative humidity from drybulb temp and humrat (w)
 PSDBW2H,	// Enthalpy (h) from drybulb temp & humrat
 
 // file operations
