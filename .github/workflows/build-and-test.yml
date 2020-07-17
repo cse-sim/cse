@@ -29,7 +29,7 @@ jobs:
       - name: Install pandoc
         run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
       - name: Add pandoc to path
-        run: $ENV:PATH += ";C:\Program Files (x86)\Pandoc"
+        run: echo "::add-path::C:\Program Files (x86)\Pandoc"
       - name: Check PATH
         run: echo $Env:Path
       - name: Check pandoc location
