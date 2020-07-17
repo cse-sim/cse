@@ -30,6 +30,9 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: 'install -y pandoc --version=1.17.2'
+      - name: Refresh environment
+        shell: cmd
+        run: refreshenv
       - name: Build docs
         run: rake
         working-directory: doc
