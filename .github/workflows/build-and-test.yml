@@ -4,15 +4,13 @@ on: push
 
 jobs:
   build-cse:
-    name: Build and Test CSE exxecutable
+    name: Build and Test CSE executable
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Build
         shell: cmd
-        run: build.bat no-pause
-      - name: Build
         run: build.bat no-pause
       - name: Test
         run: ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time
@@ -29,9 +27,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install pandoc
-        uses: r-lib/actions/setup-pandoc@v1
+        uses: crazy-max/ghaction-chocolatey@v1
         with:
-          pandoc-version: '1.17.2'
+          args: 'install -y pandoc --version 1.17.2'
       - name: Build docs
         run: rake
         working-directory: doc
