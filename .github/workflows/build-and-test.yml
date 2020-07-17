@@ -10,6 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Build
+        shell: cmd
         run: build.bat no-pause
       - name: Build
         run: build.bat no-pause
@@ -30,7 +31,7 @@ jobs:
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v1
         with:
-          pandoc-version: '1.17.2' # The pandoc version to download (if necessary) and use.
+          pandoc-version: '1.17.2'
       - name: Build docs
         run: rake
         working-directory: doc
