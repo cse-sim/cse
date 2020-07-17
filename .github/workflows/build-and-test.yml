@@ -20,23 +20,10 @@ jobs:
         with:
           name: CSE.exe
           path: msvc/CSE.exe
-  build-docs:
-    name: Build documentation
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
       - name: Install pandoc
         run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
       - name: Add pandoc to path
         run: echo "::add-path::C:\Program Files (x86)\Pandoc"
-      - name: Check PATH
-        run: echo $Env:Path
-      - name: Check pandoc location
-        shell: cmd
-        run: where pandoc
-      - name: Check pandoc version
-        run: pandoc --version
       - name: Build docs
         run: rake
         working-directory: doc
