@@ -30,13 +30,15 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: 'install -y pandoc --version=1.17.2'
-      - name: Refresh environment
+      - name: Check pandoc location
         shell: cmd
-        run: refreshenv
+        run: where pandoc
+      - name: Check pandoc version
+        run: pandoc --version
       - name: Build docs
         run: rake
         working-directory: doc
-      - name: Upload Executable
+      - name: Upload documentation
         uses: actions/upload-artifact@v2
         with:
           name: Documentation
