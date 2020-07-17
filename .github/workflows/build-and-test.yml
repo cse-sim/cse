@@ -27,9 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install pandoc
-        uses: crazy-max/ghaction-chocolatey@v1
-        with:
-          args: 'install -y pandoc --version=1.17.2'
+        run: 'cinst -y pandoc --version=1.17.2'
       - name: Check pandoc location
         shell: cmd
         run: where pandoc
