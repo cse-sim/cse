@@ -30,6 +30,8 @@ jobs:
         run: 'cinst -y pandoc --version=1.17.2'
       - name: Refresh environment
         run: refreshenv
+      - name: Check PATH
+        run: echo %PATH%
       - name: Check pandoc location
         shell: cmd
         run: where pandoc
