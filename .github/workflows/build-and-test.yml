@@ -1,0 +1,23 @@
+name: Build and Test
+
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Build
+        run: build.bat no-pause
+      - name: Build
+        run: build.bat no-pause
+      - name: Test
+        run: ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time
+        working-directory: msvc/build
+      - name: Upload Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: CSE.exe
+          path: msvc/CSE.exe
