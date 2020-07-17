@@ -684,6 +684,9 @@ LOCAL RC FC NEAR cuEvalI(
 		case PSDBRH2W:
 			*(SPF+1) = psyHumRat2( *(SPF+1), *SPF);		// humrat (w) from drybulb temp & relative humidity
 			goto flpop;
+		case PSDBW2RH:
+			*(SPF + 1) = psyRelHum4(*(SPF + 1), *SPF);	// rel hum (0 - 1) from drybulb temp & humrat
+			goto flpop;
 		case PSDBW2H:
 			*(SPF+1) = psyEnthalpy( *(SPF+1), *SPF);	// enthalpy (h) from drybulb temp & humrat
 			goto flpop;
