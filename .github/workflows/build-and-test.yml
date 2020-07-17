@@ -31,7 +31,7 @@ jobs:
       - name: Refresh environment
         run: refreshenv
       - name: Check PATH
-        run: echo %PATH%
+        run: echo $Env:Path
       - name: Check pandoc location
         shell: cmd
         run: where pandoc
