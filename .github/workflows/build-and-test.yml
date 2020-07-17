@@ -3,8 +3,8 @@ name: Build and Test
 on: push
 
 jobs:
-  build:
-    name: Build
+  build-cse:
+    name: Build and Test CSE exxecutable
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -21,3 +21,21 @@ jobs:
         with:
           name: CSE.exe
           path: msvc/CSE.exe
+  build-docs:
+    name: Build documentation
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install pandoc
+        uses: r-lib/actions/setup-pandoc@v1
+        with:
+          pandoc-version: '1.17.2' # The pandoc version to download (if necessary) and use.
+      - name: Build docs
+        run: rake
+        working-directory: doc
+      - name: Upload Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: Documentation
+          path: doc/output
