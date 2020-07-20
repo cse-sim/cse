@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build-cse:
-    name: Build and Test CSE executable
+    name: Build CSE executable
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -12,11 +12,39 @@ jobs:
       - name: Build
         shell: cmd
         run: build.bat no-pause
+      - name: Upload Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: CSE.exe
+          path: msvc/CSE.exe
+  test-cse:
+    name: Test CSE
+    needs: build-cse
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Configure CMake
+        run: cmake -P cmake/configure.cmake
+      - name: Download Executable
+        uses: actions/download-artifact@v2
+        with:
+          name: CSE.exe
+          path: msvc/CSE.exe
       - name: Test
         run: ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time
         working-directory: msvc/build
-      - name: Upload Executable
-        uses: actions/upload-artifact@v2
+  build-doc:
+    name: Build CSE documentation
+    needs: build-cse
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Configure CMake
+        run: cmake -P cmake/configure.cmake
+      - name: Download Executable
+        uses: actions/download-artifact@v2
         with:
           name: CSE.exe
           path: msvc/CSE.exe
@@ -26,6 +54,8 @@ jobs:
         run: echo "::add-path::C:\Program Files (x86)\Pandoc"
       - name: Setup LaTeX
         uses: r-lib/actions/setup-tinytex@v1
+      - name: Add LaTeX packages
+        uses: tlmgr install mathspec
       - name: Add MSVC developer commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs
