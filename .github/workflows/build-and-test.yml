@@ -33,7 +33,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: CSE.exe
-          path: msvc/CSE.exe
+          path: msvc
       - name: Test
         run: ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time
         working-directory: msvc/build
@@ -50,11 +50,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: CSE.exe
-          path: msvc/CSE.exe
-      - name: Current Working Directory
-        run: pwd
-      - name: Test CSE
-        run: ./msvc/CSE.exe --version
+          path: msvc
       - name: Install pandoc
         run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
       - name: Add pandoc to path
