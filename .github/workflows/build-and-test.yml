@@ -24,8 +24,10 @@ jobs:
         run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
       - name: Add pandoc to path
         run: echo "::add-path::C:\Program Files (x86)\Pandoc"
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.0
+      - name: Setup LaTeX
+        uses: r-lib/actions/setup-tinytex@v1
+      - name: Add MSVC developer commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs
         run: rake
         working-directory: doc
