@@ -58,7 +58,7 @@ jobs:
       - name: Setup LaTeX
         uses: r-lib/actions/setup-tinytex@v1
       - name: Add LaTeX packages
-        run: tlmgr install mathspec
+        run: tlmgr install mathspec fancyhdr url booktabs
       - name: Add MSVC developer commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs
