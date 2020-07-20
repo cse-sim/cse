@@ -26,6 +26,9 @@ jobs:
         uses: actions/checkout@v1
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
+      - name: Build wcmp
+        run: cmake --build . --target wcmp
+        working-directory: msvc/build
       - name: Download Executable
         uses: actions/download-artifact@v2
         with:
@@ -48,6 +51,8 @@ jobs:
         with:
           name: CSE.exe
           path: msvc/CSE.exe
+      - name: Test CSE
+        run: msvc/CSE.exe --version
       - name: Install pandoc
         run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
       - name: Add pandoc to path
