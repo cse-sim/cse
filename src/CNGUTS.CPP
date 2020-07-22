@@ -1747,7 +1747,7 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
-		pWSR->Y.wsr_Accum(&pWSR->D, Top.isFirstMon, Top.isLastDay);
+		pWSR->Y.wsr_Accum(&pWSR->M, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run

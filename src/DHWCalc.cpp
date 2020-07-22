@@ -1572,6 +1572,8 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 
 	ws_AddLossesToDraws(ws_ticks + iTk0);
 
+	
+
 	DHWHEATER* pWH;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrStart();
@@ -1850,7 +1852,7 @@ void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 #endif
 }		// DHWSYSRES_IVL::wsr_Accum
 //-----------------------------------------------------------------------------
-void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
+void DHWSYSRES_IVL::wsr_AccumTick(		// accum from tick values
 	const DHWTICK& tk)		// source tick
 //  accum values (generally subhr) from tick
 //  WHY: some tick values are derived hourly (e.g. DHWR)
@@ -3714,7 +3716,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		
 		float dhwLoadTk2 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);;
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
-		pWSR->S.total += 1.f;
+		pWSR->S.total += dhwLoadTk2;
 		
 		if (pWS->ws_pDHWSOLARSYS)
 		{	float drawSolarSys = tk.wtk_volIn;	// draw from solar: does not include loop flow

@@ -411,7 +411,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	wd_dfrad *= Top.radDiffF; 	// ..
 	wd_wndSpd = Top.windF * max( wd_wndSpd, Top.windSpeedMin);
 					// apply wind speed min (user input, default = .5)
-					//   and adjust by factor (per user input, default .25)
+					//   and adjust by factor (per user input, default 1)
 
 	// Ensure solar data values are not negative (as found in some CSW files)
 	wd_bmrad = max(wd_bmrad, 0.f);
