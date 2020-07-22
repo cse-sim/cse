@@ -17,6 +17,12 @@ jobs:
         with:
           name: CSE.exe
           path: msvc/CSE.exe
+      - name: Upload release on tag
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: msvc/CSE.exe
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
   test-cse:
     name: Test CSE
     needs: build-cse
@@ -58,7 +64,7 @@ jobs:
       - name: Setup LaTeX
         uses: r-lib/actions/setup-tinytex@v1
       - name: Add LaTeX packages
-        run: tlmgr install mathspec fancyhdr url booktabs
+        run: tlmgr install mathspec fancyhdr
       - name: Add MSVC developer commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs
@@ -69,3 +75,18 @@ jobs:
         with:
           name: Documentation
           path: doc/output
+      - name: Prepare tag
+        id: prepare_tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG_NAME="${GITHUB_REF##refs/tags/}"
+          echo "::set-output name=tag_name::${TAG_NAME}"
+      - name: Update gh-pages on tag
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: doc/output
+          user_name: 'cse-ci'
+          user_email: 'ci@cse.org'
+          full_commit_message: "Update docs for ${{ steps.prepare_tag.outputs.tag_name }}."
