@@ -543,7 +543,16 @@ x	}
 	//     Use prior step? (run vent at substep 0 even if not needed?)
 
 #if 1 && defined( _DEBUG)
+<<<<<<< HEAD
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
+=======
+	static bool bReportVent = false;
+	if (Top.isBegDay && !Top.isWarmup && Top.jDay > 177)
+	{	printf("\n%s", Top.dateStr);
+		bReportVent = true;
+	}
+
+>>>>>>> solarinterp
 #endif
 
 	int nVentUseful = 0;	// ventilation usefulness
@@ -567,9 +576,8 @@ x	}
 						//   <0: vent forbidden by conditions in 1 or more zones
 						//       e.g. heating or cooling required
 		RLUP(ZrB, zp)
-		{
-			int nVU1 = zp->zn_AssessVentUtility();
-#if 1 && defined(_DEBUG)
+		{	int nVU1 = zp->zn_AssessVentUtility();
+#if 0 && defined(_DEBUG)
 			if (bReportVent)
 			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr, Top.iHr, zp->name, nVU1);
 				if (nVU1 < 0)
