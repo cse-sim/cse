@@ -34,11 +34,10 @@ jobs:
         run: rake
         working-directory: doc
       - name: Update gh-pages
-        uses: JamesIves/github-pages-deploy-action@3.5.7
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: doc/output # The folder the action should deploy.
-          GIT_CONFIG_NAME: 'cse-ci'
-          GIT_CONFIG_EMAIL: 'ci@cse.org'
-          COMMIT_MESSAGE: "Update docs for ${{ github.events.release.tag_name }}."
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: doc/output
+          user_name: 'cse-ci'
+          user_email: 'ci@cse.org'
+          full_commit_message: "Update docs for ${{ github.events.release.tag_name }}."
