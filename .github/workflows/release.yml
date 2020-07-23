@@ -6,8 +6,8 @@ on:
       - created
 
 jobs:
-  build-cse:
-    name: Build CSE executable
+  release-cse:
+    name: Deploy CSE release
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -40,4 +40,4 @@ jobs:
           publish_dir: doc/output
           user_name: 'cse-ci'
           user_email: 'ci@cse.org'
-          full_commit_message: "Update docs for ${{ github.events.release.tag_name }}."
+          full_commit_message: "Update docs for ${{ github.event.release.tag_name }}."
