@@ -818,6 +818,10 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		if ( isf->lineSent==0		// if #line has not been sent
 		  && ifOn != 0)			// and compilation is on (#if's)
 		{
+#if 1
+			if (isf->line < 0)
+				printf("\nNeg line %d", isf->line);
+#endif
 			const char* s =
 				strtprintf( "\n#line %d \"%s\"\n", isf->line, getFileName( isf->fileIx) );
 			int m = strlen( s);

@@ -915,15 +915,11 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // returns RCBAD for convenience if isWarn is 0, else RCOK (a CHANGE 7-14-92)
 {
-	char cmsg[750], tex[ULIBUFSZ+2], caret[139], where[139], 	// ULIBUFSZ (770, 9-95): above in this file.
-		whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
-	int col;
-
+	char tex[ULIBUFSZ + 2], caret[139], where[139];
 	caret[0] = where[0] = tex[0] = '\0';
 
-
 // format caller's msg and args
-
+	char cmsg[750];
 	msgI( WRN, cmsg, sizeof( cmsg), NULL, fmt, ap);		// retrive text for handle (if given), vsprintf.  messages.cpp.
 
 
@@ -931,7 +927,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 	/* note: this gets preprocessor output (decommented, macro'd) --
 	         different from text shown by pp.cpp:ppErv(); macro expansions can make very long lines. */
 
-
+	int col;
 	if (shoTx|shoCaret|shoFnLn)					// else leave fileIx/line args unchanged
 	{
 		cuCurLine( retokPar, &fileIx, &line, &col, tex, sizeof(tex)-1 );	// just below. -1: room for \n.
@@ -1002,7 +998,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 
 // assemble complete text
-
+	char whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
 	sprintf( whole,
 		"%s"		// line text (or not)
 		"%s"		//     ^ (or not, or with 'where')
