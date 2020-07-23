@@ -332,7 +332,7 @@ Import() function compiling: cuparse.cpp does syntax, calling code here to
 handle IFFNM records, cuparse.cpp emits pseudo-code.
 */
 
-LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, USI line, IVLCH *imFreq, IFFNM **ppIffnm);
+LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *imFreq, IFFNM **ppIffnm);
 
 //--------------------------------------------------------------------------
 // Following 2 fcns make IFFNM record if new name, return its subscript.
@@ -421,7 +421,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 	char *impfName, 		// import file object name (1st arg in Import() fcn)
 	TI *pIffnmi,  		// receives IffnmB subscript of IFFNM record
 	USI fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
-	USI line,			// line number in srcFile ...  so errors can show location of (first) use.
+	int line,			// line number in srcFile ...  so errors can show location of (first) use.
 	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
 	IFFNM **ppIffnm )		// receives pointer to record
 
