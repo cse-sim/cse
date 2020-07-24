@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/cw2gsrtb7i2kwn7x/branch/master?svg=true)](https://ci.appveyor.com/project/cse/cse/branch/master)
+[![Build and Test](https://github.com/cse-sim/cse/workflows/Build%20and%20Test/badge.svg)](https://github.com/cse-sim/cse/actions?query=branch%3Amaster)
 
 ## California Simulation Engine (CSE)
 

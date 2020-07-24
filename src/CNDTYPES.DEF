@@ -705,9 +705,10 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                        ON         "on"		// 
                      }
                      
-*choicn VENTAVAILVC {			// all-zone vent availability
+*choicn VENTAVAILVC {			// vent availability
 			NONE "None"
 			WHOLEBLDG "WholeBuilding"
+			ZONAL "Zonal"
 			RSYSOAV   "RSYSOAV"
 		  }
 

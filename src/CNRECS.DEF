@@ -259,8 +259,14 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEHOUSE)
 							//   C_VENTAVAILCH_NONE: none
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
+							//   C_VENTAVAILCH_ZONAL: airnet windows / fans (controlled by zone)
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
 	*declare "ULI tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
+
+	*s *e FLOAT tp_fVent	// consensus whole building vent fraction (if not RSYSOAV)
+							//     = fraction of full vent flow to use
+							//       determined by zone that wants the least vent
+							//  or -1 for zonal vent control
 
     *r NOYESCH tp_hConvMod	// enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)
 							//   mostly for debugging.
@@ -2175,7 +2181,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_RadX();"
     *declare "RC zn_FFactors( struct SFPLIST& sfpList);"
     *declare "RC zn_RddInit();"
-    *declare "RC zn_BegHour();"
+	*declare "RC zn_BegHour1();"
+    *declare "RC zn_BegHour2();"
     *declare "RC zn_XFan();"
     *declare "RC zn_BegSubhr1();"
     *declare "RC zn_BegSubhr2();"
@@ -2200,7 +2207,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_AssessVentUtility();"
     *declare "int zn_OAVAttempt( double tSup);"
     *declare "int zn_FVentCR();"
-    *declare "RC zn_CondixCR( float fVent);"
+    *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirX();"
     *declare "RC zn_MoistureBalCR();"
     *declare "RC zn_ComfortCR();"
@@ -2380,8 +2387,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 									//  [ 0]=infil only; [ 1]=infil+vent
   	*s *e DBL zn_pz0				// final zone pressure relative to patm at nominal z=0, lbf/sf
   									//    = zn_fVent-weighted avg of zn_pz0W[ 0] and zn_pz0W[ 1]
-	*s *e INT zn_ventUt				// vent utility for this substep
-									//  <0=bad (no zone should vent), 0=don't care, 1=maybe helpful
+	*s *e SI zn_ventUt				// vent utility for this substep
+									//  <0=bad (don't vent), 0=don't care, 1=maybe helpful
 	*declare "void zn_AccumAirFlow( int iV, double mDot, const AIRSTATE& as, double td=0.);"
 
     *s *e *hide DBL zn_aqLdSh	// non-hvac portion of a+q for subhr:
@@ -2413,6 +2420,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								//   affects zn_hcFrc but not pressure balance
 
 
+	*h *e SI zn_anVentEffect;				// # of IZXRATs that could impact airnet
+											//   zone vent flow. Derived from ad_Ae/ad_mdotP,
+											//   ok whether zn_airNetI[ 1] is calc'd or not
  	*array 2 *s *e *nest AIRFLOW zn_airNetI		// total *possible* airnet flow into zone
  												// note actual flow depends of zn_fVent
  												//   [ 0]=infil only
@@ -2423,12 +2433,14 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "double zn_AnAmf() const;"			// returns actual
     *declare "double zn_NonAnIVAmf() const;"
 
-   	*s *e FLOAT zn_fVent						// vent fraction; venting used to hold zone at znTD
-												//    = (actual mCp) / (possible mCp)
-	*s *e FLOAT zn_tzVent						// zone air temp with full vent, F (debug aid)
-												//    0 if vent not possible
-    *s *e DBL zn_anAmfCpVent					// vent flow (in excess of zn_airNetI[ 0])
-    *s *e DBL zn_anAmfCpTVent					// ditto *temp
+	*s *e FLOAT zn_fVentPrf				// preferred vent fraction for this zone in isolation
+										//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)
+	*s *e FLOAT zn_tzVent				// zone air temp with full vent, F (debug aid)
+										//    0 if vent not possible
+   	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at znTD
+										//    = (actual mCp) / (possible mCp)
+    *s *e DBL zn_anAmfCpVent			// vent flow (in excess of zn_airNetI[ 0])
+    *s *e DBL zn_anAmfCpTVent			// vent flow*temp (in excess of zn_airNetI[ 0])
 
 										// total HVAC-related air flows for step
 										//  includes run fract (i.e. =0 when system off)
@@ -2745,6 +2757,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *declare "RC iz_CkfIZXFER();"
     *declare "RC iz_Setup( IZXRAT* izie);"
 	*declare "RC iz_SetupNonAirNet();"
+	*declare "bool iz_HasVentEffect() const;"
 	*declare "RC iz_BegHour();"
 	*declare "RC iz_BegSubhr();"
 	*declare "void iz_SetupPresDep();"

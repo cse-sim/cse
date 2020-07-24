@@ -1013,6 +1013,17 @@ RC IZXRAT::iz_SetupNonAirNet()		// interzone transfer one-time initialization
 	return RCOK;
 }           // IZXRAT::iz_SetupNonAirNet
 //-----------------------------------------------------------------------------
+bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent"
+// returns 1 iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
+{
+	bool bVentEffect =
+		  iz_IsFixedFlow() ? iz_ad[1].ad_mdotP != iz_ad[0].ad_mdotP
+		:                    iz_ad[1].ad_Ae != iz_ad[0].ad_Ae;
+
+	return bVentEffect;
+
+}	// IZXRAT::iz_HasVentEffect
+//-----------------------------------------------------------------------------
 void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 {
 	if (!zn_IsConvRad())
@@ -1090,6 +1101,18 @@ RC IZXRAT::iz_BegHour()		// set hour constants
 								//   update coefficients
 	// else
 	//   nothing needed
+
+	if (iz_HasVentEffect())		// if this IZXRAT can "vent"
+	{	ZNR* zp;
+		if (iz_zi1 > 0)
+		{	zp = ZrB.GetAt(iz_zi1);
+			zp->zn_anVentEffect++;
+		}
+		if (iz_zi2 > 0)
+		{	zp = ZrB.GetAt(iz_zi2);
+			zp->zn_anVentEffect++;
+		}
+	}
 	return RCOK;
 }		// IZXRAT::iz_BegHour
 //-----------------------------------------------------------------------------
