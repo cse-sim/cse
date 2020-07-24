@@ -4556,6 +4556,35 @@ RC CDEC record::oInfo( const char *message, ... ) const
 	return oerI( 1, 1, 2, message, ap);
 }						// oInfo
 //-----------------------------------------------------------------------------
+RC CDEC record::orer(const char* message, ...) const	// addl args like printf
+// runtime error message pertaining to an object
+// puts eg 'surface "fum" of zone "north"' in front of caller's message;
+// shows date / time of simulation
+// returns RCBAD
+{
+	va_list ap;
+	va_start(ap, message);
+	return oerI(1, 0, 0 | RTMSG, message, ap);
+}						// orer
+//-----------------------------------------------------------------------------
+RC CDEC record::orWarn(const char* message, ...) const
+// runtime warning message pertaining to an object (rat record r)
+// returns RCOK
+{
+	va_list ap;
+	va_start(ap, message);
+	return oerI(1, 0, 1 | RTMSG, message, ap);
+}						// orWarn
+//-----------------------------------------------------------------------------
+RC CDEC record::orInfo(const char *message, ...) const
+// info message pertaining to an object (rat record r)
+// returns RCOK
+{
+	va_list ap;
+	va_start(ap, message);
+	return oerI(1, 0, 2 | RTMSG, message, ap);
+}						// orInfo
+//-----------------------------------------------------------------------------
 RC record::orMsg(			// flexible object-specific msg
 	int erOp,		// 
 	const char *message, ... ) const

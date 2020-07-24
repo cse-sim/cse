@@ -82,25 +82,25 @@ struct INSTK
 	char* mName;	// macro name (or arg name )text: NULL or pointer into theDef. Used?
 	FILE* file;		// NULL or FILE pointer for fopen/fread/fclose
 	SI nlsNotRet;	// # \n's skipped (in mac ref), macArgs() to ppC()
-	SI line;		// line # in file at char isf->i (ppC()) (file only)
+	int line;		// line # in file at char isf->i (ppC()) (file only)
 	SI lineSent;	// 0 if #line command needs to be sent (file only)
 	SI eofRead;		// non-0 if end file has been read
-	SI noMX;		/* suppresses macro expansion, ppC to ppmId */
+	SI noMX;		// suppresses macro expansion, ppC to ppmId
 	// comment flags: 0 no, 1 /-/ comment, 2 /-* comment, -1 "text"
 	SI inCmt;		// comment flag for text returned by ppM (i..j-1)
 	SI cmtNx;		// cmt flag for text at .j (ppM() state for next call)
 	SI isId;		// identifier flag, ppM to ppC
 	USI bufSz;		// buffer allocated size (BUFSZ define above)
-	USI n;		// #data bytes in buffer (subscript of last+1)
-	USI i;		// subscr of next data byte for ppC() input
-	USI j;		// last+1 byte avail to ppC(), next byte for ppM()
+	USI n;			// #data bytes in buffer (subscript of last+1)
+	USI i;			// subscr of next data byte for ppC() input
+	USI j;			// last+1 byte avail to ppC(), next byte for ppM()
 	USI ech;		// subscr of 1st byte NOT yet echoed to input listing
 	char *buf;		// NULL or buffer location (in heap): file buffer, theDef->text, or argV[i].
 	SI echLine;			// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
 	void /*DEFINE*/ *theDef;	// NULL or macro DEFINE block, from symol table, in heap (for arg names)
 	char **argV;		// NULL or ptr to nA macro arg value ptrs + NULL
 };
-#define INDEPTH 11				// max nested sum: in_file+#includes+macros+args. Overflow (macOpen) is messy.
+#define INDEPTH 20				// max nested sum: in_file+#includes+macros+args. Overflow (macOpen) is messy.
 static INSTK inStk[ INDEPTH] = { { tyNul } };  	// the source stack
 static INSTK* is = 0; 				// &inStk[inDepth-1]: curr inStk entry
 static INSTK* isf = 0;				// curr inStk FILE (not macro) entry
@@ -157,7 +157,7 @@ struct IFSTK	// each member non-zero if --
 	SI hasBeenOn;	// has been on: additional elif's go off
 	SI elSeen;		// #else seen: another else or elif is error
 	USI fileIx;		// input file name index ...
-	SI line;		// and line # of #if, for error messages
+	int line;		// and line # of #if, for error messages
 };
 const int IFDEPTH = 1+20;		// 1 + # nested #if levels allowed
 static IFSTK ifStk[ IFDEPTH] = 	// stack of nested #if info
@@ -1245,11 +1245,7 @@ LOCAL RC FC NEAR macArgs(
 // allocate array for pointers to argument values
 
 	// note one extra pointer is allocated and left NULL
-#if 1
 	E( dmal( (DMP *)pArgV, sizeof( char **) * (theDef->nA+1), WRN|DMZERO ) )
-#else
-	E( dmal( (void **)*pArgV, sizeof( char **) * (theDef->nA+1), WRN|DMZERO ) )
-#endif
 
 // deblank between macro name and argument list
 

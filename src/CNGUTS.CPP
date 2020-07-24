@@ -577,6 +577,11 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		   			   Sets SGRAT entries, valid for a month (has hourly storage slots).
 		   			   Returns cos solar incidence angle for hour for month via arg. cgsolar.cpp. */
 
+		// zone "early" inits -- zone gains etc.
+		ZNR* zp;
+		RLUP(ZrB, zp)
+			EF( zp->zn_BegHour1())
+
 		// zero meters for hour
 		//  must precede DHW
 		MTR* mtr;
@@ -1222,13 +1227,6 @@ LOCAL RC FC NEAR doHourGains()	// set hour's zone & mass gains & daylighting stu
 {
 	RC rc = RCOK;
 
-// zero zone gains
-	ZNR* zp;
-	RLUP( ZrB, zp)
-	{	zp->qrIgTot = zp->qrIgTotO = zp->qrIgTotIz = zp->qrIgAir = 0.f;
-		zp->znSGain = zp->znLGain = zp->znLitDmd = zp->znLitEu = 0.;
-	}
-
 // zero mass (radiant) gains
 	MSRAT* mse;
 	RLUP( MsR, mse)
@@ -1371,8 +1369,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 		if (gnPX < 0.)
 		{	// neg gain allowed but not expected
 			//  flag in debug build for investigation
-			char* zname = zp ? strtprintf( "%s:", zp->name) : "";
-			printf( "\n%s%s gn < 0", zname, name);
+			orWarn( "gain < 0 (%0.1f)", gnPX);
 		}
 #endif
 		// accumulate DL-reduced energy consumption by meter
@@ -1502,11 +1499,17 @@ LOCAL void FC NEAR doIvlAccum()
 
 #if defined( _DEBUG)
 		// debug aid -- check latent balance
-		if (fabs( pZR->curr.S.qlBal) > .02f)	// if unbal > 0.02 Btu
-		{	ZNR* zp = pZR->zr_GetZone();
-			if (zp->zn_IsConvRad())
-				printf( "\n'%s' latent unbal: %.2f (case=%d)\n", zp->name,
-					pZR->curr.S.qlBal, zp->zn_wCase);
+		if (fabs(pZR->curr.S.qlBal) > .02f)
+		{	float qlAbsSum = VAbsSum<float, double>(&pZR->curr.S.ZRw1, ZRnW);
+			if (qlAbsSum > 1.f)
+			{	float qlErrF = pZR->curr.S.qlBal / qlAbsSum;
+				if (fabs( qlErrF) > 0.0001f)
+				{	ZNR* zp = pZR->zr_GetZone();
+					if (zp->zn_IsConvRad())
+						zp->orWarn("latent unbal = %.2f Btu (%.5f, case=%d)",
+							pZR->curr.S.qlBal, qlErrF, zp->zn_wCase);
+				}
+			}
 		}
 #endif
 
