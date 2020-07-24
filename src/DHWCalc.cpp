@@ -3024,7 +3024,7 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 		double fBal = fabs(qBal) / max(hw_tankHCNominal, 1.);
 		if (fBal >
 #if defined( _DEBUG)
-			.002)
+			.0025)
 #else
 			.004)		// higher msg threshold in release
 #endif
@@ -3032,14 +3032,11 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 			static const int HWBALERRCOUNTMAX = 10;
 			hw_balErrCount++;
 			if (hw_balErrCount <= HWBALERRCOUNTMAX || fBal > 0.01)
-			{	const char* what = hw_pOwner->objIdTx();
-				warn("%s: HPWH energy balance error for %s (%1.6f kWh  f=%1.6f)",
-					what,
-					Top.When(C_IVLCH_S),	// date, hr, subhr
-					qBal, fBal);			// unbalance calc'd just above
-				if (hw_balErrCount == HWBALERRCOUNTMAX)
-					warn("%s: Skipping further messages for minor energy balance errors.",
-						what);
+			{	hw_pOwner->orWarn("HPWH energy balance error (%1.6f kWh  f=%1.6f)%s",
+					qBal, fBal,
+			        hw_balErrCount == HWBALERRCOUNTMAX
+						? "\n    Skipping further messages for minor energy balance errors."
+						: "");
 			}
 		}
 	}

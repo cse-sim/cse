@@ -1369,10 +1369,6 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 		if (gnPX < 0.)
 		{	// neg gain allowed but not expected
 			//  flag in debug build for investigation
-#if 0
-			char* zname = zp ? strtprintf( "%s:", zp->name) : "";
-			printf( "\n%s%s gn < 0", zname, name);
-#endif
 			orWarn( "gain < 0 (%0.1f)", gnPX);
 		}
 #endif

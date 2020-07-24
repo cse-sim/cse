@@ -542,17 +542,8 @@ x	}
 	// * Better estimate of available vent supply temp.
 	//     Use prior step? (run vent at substep 0 even if not needed?)
 
-#if 1 && defined( _DEBUG)
-<<<<<<< HEAD
+#if 0 && defined( _DEBUG)
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
-=======
-	static bool bReportVent = false;
-	if (Top.isBegDay && !Top.isWarmup && Top.jDay > 177)
-	{	printf("\n%s", Top.dateStr);
-		bReportVent = true;
-	}
-
->>>>>>> solarinterp
 #endif
 
 	int nVentUseful = 0;	// ventilation usefulness
@@ -618,7 +609,6 @@ x	}
 					else 
 					{	// zonal control: each zone gets preferred
 						zp->zn_fVent = zp->zn_fVentPrf;
-
 					}
 				}
 			}
@@ -626,7 +616,7 @@ x	}
 		if (bAllNoVent)
 			Top.tp_fVent = 0.f;		// whole-building vent fraction
 
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		if (bReportVent && !Top.isWarmup)
 			printf("\n%s Hr=%d: NVU=%d  ANV=%d  TFvnt=%0.3f", Top.dateStr, Top.iHr, nVentUseful, bAllNoVent, Top.tp_fVent);
 #endif
@@ -2827,8 +2817,8 @@ x	rs_asOut = asSav;
 		if (tSup < 20. || tSup > 200.)
 			orWarn("unreasonable cooling supply temp %.2f F", tSup);
 		if (rs_asIn.as_tdb - tSup < 10.)
-			orWarn("low cooling deltaT -- tRet=%.2f F, tSup=%.2f",
-				rs_asIn.as_tdb, tSup);
+			orWarn("low cooling deltaT -- tRet=%.2f F, tSup=%.2f, SHR=%.3f",
+				rs_asIn.as_tdb, tSup, rs_SHR);
 		float hOut = rs_asOut.as_Enthalpy();
 		float hDelta = rs_amfC * (hOut - hIn);
 		float capTot = rs_capSenCt + rs_capLatCt + rs_fanHeatC;
