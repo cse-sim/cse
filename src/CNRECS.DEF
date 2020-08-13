@@ -2141,7 +2141,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *z SI_GZ zn_infStories	// # stories in zone (1-3); provides default for zn_eaveZ else unused
     *r LEN_GZ zn_eaveZ		// zone nominal eave Z above ground, ft re wind speed adjustment
 							//   default = zn_floorZ + zn_infStories * 8.f;
-	*s FLOAT zn_windFLkg	// wind factor for infiltration and airnet
+	*s FLOAT zn_windFLkg	// wind factor for infiltration and airnet, dimless
 							//   default derived from zn_infShld and zn_eaveZ
 							//   else input
 							// Note: Top.windF also applied
@@ -2439,8 +2439,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 										//    0 if vent not possible
    	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at znTD
 										//    = (actual mCp) / (possible mCp)
-    *s *e DBL zn_anAmfCpVent			// vent flow (in excess of zn_airNetI[ 0])
-    *s *e DBL zn_anAmfCpTVent			// vent flow*temp (in excess of zn_airNetI[ 0])
+    *s *e DBL zn_anAmfCpVent			// vent flow (in excess of zn_airNetI[ 0]), Btuh/F
+    *s *e DBL zn_anAmfCpTVent			// vent flow*temp (in excess of zn_airNetI[ 0]), Btuh
 
 										// total HVAC-related air flows for step
 										//  includes run fract (i.e. =0 when system off)
@@ -2724,6 +2724,7 @@ RECORD ZNRES "znRes" *RAT		// holds zones and all-zones simulation results (late
 //=============================================================================
 RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *prefix ad_
+   *declare "void ad_ClearResults();"
    *declare "void ad_Setup( IZXRAT* pIZXRAT);"
    *declare "void ad_SetupPresDep();"
    *declare "RC ad_MassFlow( double delP);"
@@ -2755,6 +2756,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
    	*declare "void FixUp();"	// virtual
     *declare "RC Validate( int options=0);"
     *declare "RC iz_CkfIZXFER();"
+	*declare "void iz_ClearResults( int iV);"
     *declare "RC iz_Setup( IZXRAT* izie);"
 	*declare "RC iz_SetupNonAirNet();"
 	*declare "bool iz_HasVentEffect() const;"
@@ -2763,6 +2765,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupPresDep();"
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
+	*declare "void iz_GetExteriorConditions( float windPresV);"
 	*declare "RC iz_SetupHERV();"
 	*declare "RC iz_Calc();"
 	*declare "RC iz_MassFlow( int iV);"
@@ -2870,6 +2873,7 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC an_Calc( int vMode);"
+*declare "void an_ClearResults( int vMode);"
 *declare "inline double& an_JAC(int i, int j) { return *(an_jac + i*an_nz + j); }"
 
 *r DBLP an_jac		// jacobian matrix (nz x nz)
@@ -2878,6 +2882,8 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 *r DBLP an_mdotAbs	// total abs flow by zone (nz)
 *r INTP an_didLast	// re relax scheme (see code) (nz)
 *r INT an_nz		// # of zones
+*r *ARRAY 2 INT an_resultsClear	// flag: nz iff mode results have been cleared
+								//   (avoid repeated clear in an_ClearResults())
 
 *END	// AIRNET
 //=============================================================================

@@ -581,8 +581,12 @@ x	}
 		}
 
 		int bAllNoVent = 1;
-		if (nVentUseful > 0)	// if vent might be useful for at least 1 zone
-		{
+		if (nVentUseful <= 0)
+		{	if (Top.tp_pAirNet)
+				Top.tp_pAirNet->an_ClearResults(1);
+		}
+		else
+		{	// vent might be useful for at least 1 zone
 			loadsIzxSh2();			// AirNet "vents open"
 			Top.tp_fVent = 1.f;		// try full vent and limit
 			RLUP(ZrB, zp)
