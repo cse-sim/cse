@@ -2097,14 +2097,4 @@ void DUCTSEG::ds_DbDump() const
 }		// DUCTSEG::ds_DbDump
 //=============================================================================
 
-typedef int XInt;
-static int xFunc(int x)
-{
-	return x;
-}
-static int xFunc(XInt x)
-{	return x;
-}
-
-
 // end of cgcomp.cpp
