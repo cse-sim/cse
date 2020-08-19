@@ -131,6 +131,7 @@ set(source
   XIOPAK.CPP
   XMODULE.CPP
   YACAM.CPP
+  A205FACE.CPP
 )
 
 set(precomp

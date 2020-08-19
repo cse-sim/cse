@@ -1531,6 +1531,7 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 #endif
 	return rc;
 }		// ZNR::zn_ComfortCR
+
 //=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
@@ -1768,6 +1769,18 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			rs_zonesServed++;
 		}
 	}
+
+#if 1
+	extern RC TestCBOR(const char* filePath);
+	   
+	TestCBOR
+#if 1
+		("Unitary-Constant-Efficiency.RS0002.a205.json");
+#else
+		("Unitary-Constant-Efficiency.RS0002.a205.cbor");
+#endif
+#endif
+
 
 	return rc;
 }		// RSYS::rs_TopRSys1
@@ -4804,5 +4817,6 @@ x	// ?? This is *NOT* the full CEC current algorithm. Where is the 1 degF hyster
 #endif
 	return RCOK;
 }		// ZNR::zn_AfterHour
+
 
 // end of cnloads.cpp
