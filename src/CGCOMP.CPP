@@ -506,6 +506,18 @@ const double G0STDX = g0Std;	// CSE accel. of gravity, ft/sec2
 #endif
 //===============================================================================
 // class ANDAT -- airnet data
+void ANDAT::ad_ClearResults()
+{
+	ad_delP = 0.;
+	ad_mdotP = ad_mdotB = ad_mdotX = 0.;
+	ad_dmdp = 0.;
+	ad_xDelpF = 0.;
+	ad_xMbm = 0.;
+	ad_tdFan = 0.;
+	ad_pFan = 0.;
+
+}	// ANDAT::ad_ClearResults
+//-----------------------------------------------------------------------------
 void ANDAT::ad_Setup(			// one-time setup at run beg
 	IZXRAT* pIZXRAT)		// parent pointer
 {
@@ -653,6 +665,7 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 }	// ANDAT::ad_SetFromFixedAVF
 //-------------------------------------------------------------------------------
 RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
+// call subhourly
 // sets iz_ad[ 0] and iz_ad[ 1] + fan members
 {
 //  TODO: dry-air vs. moist air, 5-17-2013
@@ -835,6 +848,8 @@ RC IZXRAT::iz_Setup(			// set up run record
 		{	iz_zi2 = iz_zi1;
 			zp2 = zp1;
 		}
+		iz_rho2 = .075f;	// HERV model uses prior-step iz_rho2
+							//  init to plausible nz value
 		rc |= disallowN( "when izNVType is AirNetHERV", IZXRAT_VFMAX, 0);
 	}
 	else
@@ -1173,17 +1188,11 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 		rc |= iz_SetupHERV();
 	else
 	{	if (iz_IsExterior())
-		{	// zone 2 is exterior
-			iz_air2.as_Set( Top.tDbOSh, Top.wOSh);
-			iz_rho2 = Top.tp_rhoMoistOSh;
-			iz_pres2 =		// exterior pressure constant for subhr
-					iz_cpr * zp1->zn_windPresV	// pressure coeff * velocity pressure
-					- iz_hz * iz_rho2;			// plus stack
-		}
+			// zone 2 is exterior
+			iz_GetExteriorConditions( zp1->zn_windPresV);
 		else if (iz_IsAirNetIZ())
-		{	// zone 2 is zone
+			// zone 2 is zone
 			iz_GetZn2Conditions();
-		}
 	#if defined( _DEBUG)
 		else
 			errCrit( ABT, "Missing IZXRAT::iz_BegSubhr() code");
@@ -1222,6 +1231,24 @@ void IZXRAT::iz_ClearZn2Conditions()
 	iz_rho2 = 0.f;
 	iz_pres2 = 0.f;
 }		// IZXRAT::iz_ClearZn2Conditions
+//------------------------------------------------------------------------------
+void IZXRAT::iz_ClearResults(
+	int iV)	// mode: 0=infil 1=infil+vent
+{
+	iz_ad[iV].ad_ClearResults();
+}		// IZXRAT::iz_ClearResults
+//-----------------------------------------------------------------------------
+void IZXRAT::iz_GetExteriorConditions(
+	float windPresV)		// wind velocity pressure, lbf/ft2
+							//   if relevant
+// set source conditions to ambient
+{
+	iz_air2.as_Set(Top.tDbOSh, Top.wOSh);
+	iz_rho2 = Top.tp_rhoMoistOSh;
+	iz_pres2 =		// exterior pressure constant for subhr
+		iz_cpr * windPresV	// pressure coeff * velocity pressure
+		- iz_hz * iz_rho2;	// plus stack
+}	// IZXRAT::iz_GetExteriorConditions
 //------------------------------------------------------------------------------
 RC IZXRAT::iz_Calc()
 // pre-2010 hi-low vent
@@ -1380,8 +1407,8 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 ///////////////////////////////////////////////////////////////////////////////
 AIRNET::AIRNET()
 : an_jac( NULL), an_V1( NULL), an_V2( NULL), an_mdotAbs( NULL), an_didLast( NULL),
-an_nz( 0)
-{
+an_nz(0)
+{	an_resultsClear[0] = an_resultsClear[1] = 0;
 }	// AIRNET::AIRNET
 //-----------------------------------------------------------------------------
 /*virtual*/ AIRNET::~AIRNET()
@@ -1396,6 +1423,19 @@ an_nz( 0)
 	delete[] an_didLast;
 	an_didLast = NULL;
 }	// AIRNET::~AIRNET
+//-----------------------------------------------------------------------------
+void AIRNET::an_ClearResults(			// airnet clear results
+	int iV)			// vent mode
+					//  0 = minimum vent areas (generally infil only)
+					//  1 = maximum (e.g. all vents open)
+{
+	if (!an_resultsClear[iV])
+	{	IZXRAT* ize;
+		RLUP(IzxR, ize)
+			ize->iz_ClearResults(iV);
+		an_resultsClear[iV]++;
+	}
+}		// AIRNET::an_ClearResults
 //-----------------------------------------------------------------------------
 RC AIRNET::an_Calc(			// airnet flow balance
 	int iV)			// vent mode
@@ -1426,6 +1466,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 
 	TMRSTART( TMR_AIRNET);
 	RC rc = RCBAD;
+	an_resultsClear[iV] = 0;	// set flag for an_ClearResults()
 
 	if (!an_jac)
 	{	// allocate working arrays
