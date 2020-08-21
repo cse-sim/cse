@@ -81,6 +81,14 @@ RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error message
 	return rc;
 }		// TOPRAT::tp_WthrInit
 //---------------------------------------------------------------------------
+RC TOPRAT::tp_WthrBegDay()
+{
+	RC rc = RCOK;
+
+
+	return rc;
+}		// TOPRAT::tp_WthrBegDay
+//---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up public Wthr and Top members.
 // tp_WthrBegSubhr must also be called, after this function.
 

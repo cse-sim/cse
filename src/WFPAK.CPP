@@ -429,6 +429,25 @@ public:
 		return -1*LTEQGT( pD1->wdd_tdvElecPk, pD2->wdd_tdvElecPk);
 	}
 };	// class WDDAY
+//-----------------------------------------------------------------------------
+struct WDSUBHRFACTORS		// constant factors for weather data interpolation
+{
+	float f;	// fraction of hour passed at start this subhour
+	float g;	// fraction of hour passed at end this subhour
+	float h;	// fraction of hour remaining after this subhour
+	float slrF[3];	// [ 0] = fraction of previous hour avg value to use in forming subhr avg value
+					// [ 1] = .. current ..
+					// [ 2] = .. next ..
+
+	void wds_Setup(int iSh, int nSh);
+}; // struct WDSUBHRFACTORS
+//----------------------------------------------------------------------------
+class WDSUBHR		// derived subhourly weather data
+{
+public:
+	float wsh_radBeam;
+	float wsh_radDiff;
+};		// class WDSUBHR
 //----------------------------------------------------------------------------
 struct VHR		// sort helper for wdy_Stats
 {	double v;		// value
@@ -437,7 +456,7 @@ struct VHR		// sort helper for wdy_Stats
 	{	return LTEQGT( ((const VHR *)pV2)->v, ((const VHR *)pV1)->v); }
 };	// struct VHR
 //----------------------------------------------------------------------------
-class WDYEAR
+class WDYEAR		// caches year of weather data re calc of daily stats etc
 {
 friend class WFILE;
 	int wdy_isLeap;				// nz: 366 day year
@@ -445,26 +464,68 @@ friend class WFILE;
 	WDHR wdy_hr[ 24*366];		// hourly data (read from weather file)
 								//   all standard time
 								//   DST adjustment applied in wdy_TransferHr
+	WDSUBHRFACTORS* wdy_wShF;	// array [nSubhr] of constants re subhr upsampling
+	WDSUBHR* wdy_shDay;			// current day subhour data
+#if 0
+	WDSLRHR wdy_slrHr[ 24*366];	// hourly derived solar data (interpolated subhr, )
+								//   all standard time
+								//   DST adjustment applied in wdy_TransferHr
+#endif
 	double wdy_taDbAvg[ 13];	// avg daily temp by month, [ 0] = year
 	double wdy_tMainsAvg[ 13];	// avg cold water temp by month, [ 0] = year
 
 public:
-	WDYEAR() { wdy_Init(); }
+	WDYEAR();
+	~WDYEAR();
 	void wdy_Init( int options=0);
-	WDHR& wdy_Hr( int jDay, int iHr) { return wdy_hr[ 24*(jDay-1)+iHr]; }
-	const WDHR& wdy_Hr( int jDay, int iHr) const { return wdy_hr[ 24*(jDay-1)+iHr]; }
-	WDDAY& wdy_Day( int jDay)		// 1-based day-of-year (<1 OK)
+	int wdy_YrDays() const { return wdy_isLeap ? 366 : 365; }
+	int wdy_DayIdx(int jDay) const	// day idx with wrap (1-based day-of-year (<1 OK))
 	{	// jDay=-1: Dec-30; jDay=0: Dec-31; jDay=1: Jan-1; jDay=2: Jan-2
-		int yrLen = wdy_isLeap ? 366 : 365;
-		int iD0 = (jDay - 1 + yrLen)%yrLen;
-		return wdy_day[ iD0];
+		int yrDays = wdy_YrDays();
+		return (jDay - 1 + yrDays) % yrDays;
+	}
+	int wdy_HrIdx(int jDay, int iHr) const	// hr idx with wrap (jDay 1 based; iHr 0 based)
+	{	int yrHrs = wdy_YrDays() * 24;
+		return (24 * (jDay - 1) + iHr + yrHrs) % yrHrs;
+	}
+	WDHR& wdy_Hr( int jDay, int iHr) { return wdy_hr[ wdy_HrIdx(jDay, iHr)]; }
+	WDHR& wdy_HrNoWrap(int jDay, int iHr) { return wdy_hr[ 24*(jDay-1)+iHr]; }
+	const WDHR& wdy_Hr( int jDay, int iHr) const { return wdy_hr[ wdy_HrIdx(jDay, iHr)]; }
+	WDDAY& wdy_Day( int jDay)		// 1-based day-of-year (<1 OK)
+	{	return wdy_day[ wdy_DayIdx( jDay)];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
 	void wdy_Stats( int jDay, double& taDbMean, double& taDbMax,
 		double& tdvElecMean, double& tdvElecMax, UCH tdvElecHrRank[ 24]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
+	RC wdy_UpSampleSetup(int nSh);
+	RC wdy_UpSampleDay(int jDay, int nSh);
+	RC wdy_UpSampleHr(int jDay, int nSh);
 };		// class WDYEAR
+//-----------------------------------------------------------------------------
+WDYEAR::WDYEAR()			// c'tor
+	: wdy_wShF(NULL)
+{
+	wdy_Init();
+}		// WDYEAR::WDYEAR
+//-----------------------------------------------------------------------------
+WDYEAR::~WDYEAR()			// d'tor
+{
+	delete[] wdy_wShF;
+}		// WDYEAR::~WDYEAR
+//-----------------------------------------------------------------------------
+void WDYEAR::wdy_Init(
+	int options /*=0*/)
+{
+	wdy_isLeap = 0;		// TODO: handle leap year
+	VZero(wdy_taDbAvg, 13);
+	VZero(wdy_tMainsAvg, 13);
+	for (int iD = 0; iD < 366; iD++)
+		wdy_day[iD].wdd_Init();	// note: access via [], not wdy_Day()
+									//   avoid wrapping etc so all init'ed()
+	// don't init wdy_hr[]: very big and will be filled by read
+}		// WDYEAR::wdy_Init
 //-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int erOp /*=WRN*/)
@@ -482,9 +543,8 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 
 	// fill hour values from daily
 	int options = 0;		// wdd_Set24: fill always
-	int yrLen = wf_pWDY->wdy_isLeap ? 366 : 365;
 	int jD;
-	for (jD=1; jD <= yrLen; jD++)
+	for (jD=1; jD <= wf_pWDY->wdy_YrDays(); jD++)
 		wf_pWDY->wdy_Day( jD).wdd_Set24( &wf_pWDY->wdy_Hr( jD, 0), options);
 #if 0 && defined( _DEBUG)
 	if (wFileFormat == CSW)
@@ -492,7 +552,7 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 		if (fabs( wf_pWDY->wdy_taDbAvg[ 0] - taDbAvgYr) > .01)
 			printf( "Mismatch AvgYr\n");
 		int errCount = 0;
-		for (jD=1; jD<=yrLen; jD++)
+		for (jD=1; jD<=yrDays(); jD++)
 		{	if (wf_pWDY->wdy_Day( jD).wdd_Compare( &wf_pWDY->wdy_Hr( jD, 0)))
 			{	printf( "Mismatch jDay=%d\n", jD);
 				if (++errCount > 5)
@@ -501,20 +561,12 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 		}
 	}
 #endif
+
+	// interpolate hourly data to get subhour values
+	rc |= wf_pWDY->wdy_UpSampleSetup( Top.nSubSteps);
+
 	return rc;
 }	// WFILE::wf_FillWDYEAR
-//-----------------------------------------------------------------------------
-void WDYEAR::wdy_Init(
-	int options /*=0*/)
-{
-	wdy_isLeap = 0;		// TODO: handle leap year
-	VZero( wdy_taDbAvg, 13);
-	VZero( wdy_tMainsAvg, 13);
-	for (int iD=0; iD<366; iD++)
-		wdy_day[ iD].wdd_Init();	// note: access via [], not wdy_Day()
-									//   avoid wrapping etc so all init'ed()
-	// don't init wdy_hr[]: very big and will be filled by read
-}		// WDYEAR::wdy_Init
 //------------------------------------------------------------------------------
 RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	WFILE* pWF,
@@ -529,7 +581,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 		wdy_tMainsAvg[ iMon] = 0.;
 	}
 
-	int yrLen = wdy_isLeap ? 366 : 365;			// TODO: handle leap year
+	int yrDays = wdy_YrDays();			// TODO: handle leap year
 	static const int monLens[ 13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
 	int iDay;
 	int jDay = 0;
@@ -566,11 +618,12 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 
 	if (!wdy_isLeap)
 	{	// 365 day year: set unused day to UNSET (insurance)
+		//   do NOT use wdy_Hr() cuz it wraps
 		for (int iHr=0; iHr<24; iHr++)
-			wdy_Hr( 366, iHr).wd_Init( 1);
+			wdy_HrNoWrap(366, iHr).wd_Init( 1);
 	}
 
-	wdy_taDbAvg[ 0] /= yrLen;	// mean of daily means
+	wdy_taDbAvg[ 0] /= yrDays;	// mean of daily means
 	float taDbRngYr				// range based on monthly means
 			= VMax( wdy_taDbAvg+1, 12) - VMin( wdy_taDbAvg+1, 12);
 	jDay = 0;
@@ -605,13 +658,13 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 		wdy_tMainsAvg[ 0] += wdy_tMainsAvg[ iMon];
 		wdy_tMainsAvg[ iMon] /= monLen;
 	}
-	wdy_tMainsAvg[ 0] /= yrLen;
+	wdy_tMainsAvg[ 0] /= yrDays;
 
 	// sort wddRank pointers by decreasing wdd_tdvElecPk
-	qsort( wddRank, yrLen, sizeof(const WDDAY*), WDDAY::wdd_TdvPkCompare);
+	qsort( wddRank, yrDays, sizeof(const WDDAY*), WDDAY::wdd_TdvPkCompare);
 
 	// set wdy_day ranks via now-rank-ordered pointers
-	for (int i = 1; i <= yrLen; i++)
+	for (int i = 1; i <= yrDays; i++)
 		wddRank[ i-1]->wdd_tdvElecPkRank = i;
 
 	return rc;
@@ -697,6 +750,135 @@ RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 	}
 	return RCOK;
 }		// WDYEAR::wdy_TransferHr
+//-----------------------------------------------------------------------------
+void WDSUBHRFACTORS::wds_Setup(		// constant subhr factors
+	int iSh,
+	int nSh)		// number of subhrs in run
+// factors derived here vary by subhr only
+//   (independent of day, hr, ...)
+
+{
+	float subhrDur = 1.f / nSh;			// subhour duration, hr
+	f = float(iSh) / nSh;		// fraction of hour passed at start this subhour
+	g = float(iSh + 1) / nSh;	// fraction of hour passed at end this subhour
+	h = 1.f - g;	// fraction of hour remaining after this subhour
+
+	// setup for interpolating subhour average value for data with average (integrated) values in file:
+	//  Determine a = fraction previous hour, b = fraction current hour, c = fraction next hour  even if subhr overlaps middle hour.
+	// The simple cases are:
+	//   subhr in 1st half hour: use part prev, part curr hour:   a = .5 - m;  b = .5 + m;   c = 0;
+	//   subhr in 2nd half hour: use part curr, part next hour:   a = 0;       b = 1.5 - m;  c = m - .5;
+	// where  m = (f + g)/2. Use weighted sum when subhr overlaps middle of hour. */
+
+	float f1 = min(f, .5f), g1 = min(g, .5f);		// start and end of portion of subhr in 1st half of hour
+	float f2 = max(f, .5f), g2 = max(g, .5f);		// .. in 2nd half of hour
+	float fr1 = (g1 - f1) / subhrDur, fr2 = (g2 - f2) / subhrDur; 	// fractions of subhr in 1st and 2nd halves of hour
+	float m1 = .5f*(f1 + g1), m2 = .5f*(f2 + g2);	// middle of portions of subhr in 1st and 2nd halves of hour
+
+	slrF[0] = (.5f - m1)*fr1;						// fraction of previous hour avg value to use in forming subhr avg value
+	slrF[1] = (.5f + m1)*fr1 + (1.5f - m2)*fr2;		// .. current ..
+	slrF[2] = (m2 - .5f)*fr2;						// .. next ..
+
+	ASSERT(fabs(slrF[0] + slrF[1] + slrF[2] - 1.f) < 1.e-5f);			// a + b + c should be 1.0 within limits of float arithmetic
+
+}	// WDSUBHRFACTORS::wds_Setup
+//-----------------------------------------------------------------------------
+RC WDYEAR::wdy_UpSampleSetup(
+	int nSh)	// # of subhours per hour
+{
+	RC rc = RCOK;
+
+	delete[] wdy_wShF;
+	wdy_wShF = new WDSUBHRFACTORS[nSh];
+
+	for (int iSh = 0; iSh < nSh; iSh++)
+		wdy_wShF[iSh].wds_Setup(iSh, nSh);
+
+	return rc;
+
+}		// WDYEAR::wdy_UpSampleSetup
+//-----------------------------------------------------------------------------
+RC WDYEAR::wdy_UpSampleDay(
+	int jDay,	// day of year (1-365/366)
+	int nSh)
+{
+
+	for (int iHr = 0; iHr < 24; iHr++)
+	{
+	}
+}		// WDYEAR::wdy_UpSampleDay
+//-----------------------------------------------------------------------------
+RC WDYEAR::wdy_UpSampleHr(
+	XXX wdSh,
+	int jDay,		// day of year (1-365/366)
+	int iHr,		// hour of day, 0-23
+	int nSh)		// # of subhrs per hour
+{
+	RC rc = RCOK;
+	
+	const WDHR* pWD[3];		// hourly data, prev hr, this hr, next hr
+	float radBeam[3];		//   beam
+	float radDiff[3];		//   diffuse
+	for (int id = 0; id < 3; id++)
+	{
+		pWD[id] = &wdy_Hr(jDay, iHr + id - 1);
+		radBeam[id] = pWD[id]->wd_bmrad;
+		radDiff[id] = pWD[id]->wd_dfrad;
+	}
+
+	if (radBeam[1] < .1f && radDiff[1] < .1f)
+	{	// substep 0
+		continue;
+	}
+
+	// Compute adjustment factors (constant over hour) to make subhour values add up to given hour value.
+	// See Rob's NILES106.TXT, 1-95.
+	double beamAdj = radBeam[1] == 0.f ? 0.f : 							// prevents /0
+		8 * radBeam[1] / (radBeam[0] + 6 * radBeam[1] + radBeam[2]);
+
+	double diffAdj = radDiff[1] == 0.f ? 0.f :
+		8 * radDiff[1] / (radDiff[0] + 6 * radDiff[1] + radDiff[2]);
+
+	for (int iSh = 0; iSh < nSh; iSh++)
+	{
+
+#if 0
+		// interpolate values for data with instantenous end-hour values in weather file
+		tDbOSh = h * tDbOPvHr + g * tDbOHr;			// end-subhour drybulb temp
+		tWbOSh = h * tWbOPvHr + g * tWbOHr;			// end-subhour wetbulb temp
+		tSkySh = h * tSkyPvHr + g * tSkyHr;			// end-subhour sky temp
+		windSpeedSh = h * windSpeedPvHr + g * windSpeedHr;	// end-subhour wind speed
+
+		// subhourly derived weather data
+		wOSh = psyHumRat1(tDbOSh, tWbOSh);				// end-subhour humidity ratio
+		hOSh = psyEnthalpy(tDbOSh, wOSh);				// end-subhour outdoor enthalpy
+		tDpOSh = psyTDewPoint(wOSh);					// end-subhour outdoor dew point
+		windSpeedSquaredSh = windSpeedSh * windSpeedSh;	// end-subhour windspeed squared (mph^2), re infiltration.
+		windSpeedSqrtSh = sqrt(windSpeedSh);			// end-subhour sqrt( windspeed), mph^.5, re outside surf convection
+		windSpeedPt8Sh = pow(windSpeedSh, 0.8f);		// end-subhour mph^.8, re outside surf convection
+
+		tp_airxOSh = airX(tDbOSh);							// heat capacity of air flow @ temp (Btuh/cfm-F): vhc * 60 min/hr.
+		tp_rhoDryOSh = psyDenDryAir(tDbOSh, wOSh);				// outdoor dry air density at end of subhour, lbm/ft3
+		tp_rhoMoistOSh = psyDenMoistAir2(tp_rhoDryOSh, wOSh);	// outdoor moist air density at end of subhour, lbm/ft3
+
+			// first time, init previous-subhr value(s) to current-subhour value
+		if (isBegRun)		// if 1st subhour of run. else, same sets were done at entry.
+			tDbOPvSh = tDbOSh;
+
+		// form subhour average(s) for data with instantenous values in weather file
+		tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
+#endif
+
+		// Interpolate subhour average power values for data with average values in file.
+		//   Multiply by subhrDur for energy.
+		wdSh[ iSh].radBeamAv = VIProd(radBeam, 3, wf[iSh].slrF) * beamAdj;
+		wdSh[ iSh].radDiffAv = VIProd(radDiff, 3, wf[iSh].slrF) * diffAdj;
+
+	}
+
+	return rc;
+
+}		// WDYEAR::wdy_UpSampleHr
 //=============================================================================
 void WDDAY::wdd_Init()
 {	
@@ -950,9 +1132,9 @@ float CalcGroundTemp(			// ground temperature model
 // uses kusuda and Achenbach (1965) method
 // returns ground temp for day of year at specified depth, F
 {
-	int yrLen = isLeapYr ? 366 : 365;
+	int yrDays = isLeapYr ? 366 : 365;
 
-	double beta = depth * sqrt( kPi / (max( soilDiff, .001) * yrLen*24.));
+	double beta = depth * sqrt( kPi / (max( soilDiff, .001) * yrDays*24.));
 
 	double cosB = cos( beta);
 	double sinB = sin( beta);
@@ -960,7 +1142,7 @@ float CalcGroundTemp(			// ground temperature model
 
 	double gm = sqrt( (expMB*expMB - 2.*expMB*cosB + 1.) / (2.*beta*beta));
 	double phi = atan2( 1.-expMB*(cosB+sinB), 1.-expMB*(cosB-sinB));
-	double ang = k2Pi * (jD-1)/yrLen	// time of year, 0 - 2Pi
+	double ang = k2Pi * (jD-1)/yrDays	// time of year, 0 - 2Pi
 				 - 0.6		// phase angle for ground surf temp (Kusuda)
 				 - phi;		// phase angle for depth averaged ground temp
 	double tGrnd = taDbAvYr - gm * taDbRngYr * cos( ang) / 2.;
@@ -2045,7 +2227,7 @@ RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 
 #if 0
 	if (!rc)
-		wf.lid = srcWBAN;
+		lid = srcWBAN;
 #endif
 
 
@@ -2142,32 +2324,32 @@ RC WFILE::wf_EPWRead(	// read and unpack data from EPW
 	InitWF();
 	rc = EPWfile.GetValCR(5, 0, srcWBAN, 17);	//	WMO
 	if (!rc)
-		wf.lid = srcWBAN;
+		lid = srcWBAN;
 	//				col row
 	if (!rc)
-		rc = EPWfile.GetValCR(1, 0, wf.loc, 20);
+		rc = EPWfile.GetValCR(1, 0, loc, 20);
 	if (!rc)
-		rc = EPWfile.GetValCR(3, 0, wf.loc2, 20);
-	if (!rc & strMatch(wf.loc2, "USA"))	//	state only if not USA
-		rc = EPWfile.GetValCR(2, 0, wf.loc2, 20);
+		rc = EPWfile.GetValCR(3, 0, loc2, 20);
+	if (!rc & strMatch(loc2, "USA"))	//	state only if not USA
+		rc = EPWfile.GetValCR(2, 0, loc2, 20);
 	if (!rc)
-		rc = EPWfile.GetValCR(8, 0, &wf.tz);
+		rc = EPWfile.GetValCR(8, 0, &tz);
 	if (!rc)
-		rc = EPWfile.GetValCR(6, 0, &wf.lat);
+		rc = EPWfile.GetValCR(6, 0, &lat);
 	if (!rc)
-		rc =EPWfile.GetValCR(7, 0, &wf.lon);
+		rc =EPWfile.GetValCR(7, 0, &lon);
 	if (!rc)
 		rc = EPWfile.GetValCR(9, 0, &elev);
 	if (!rc)
 	{	elev = (float)Units.UnitConvert(elev, unLenM, unLenFt);
-		wf.elev = elev;
+		elev = elev;
 		psyElevation(elev);			// set atmospheric pressure for psychro fcns. psychro1.cpp
 	}
 
 	//	assemble target filename if not in cmd file (ends with backslash)
 	if (!destPNam.Right(1).Compare("\\"))
 	{
-//		CWString tmpPNam = wf.loc2;
+//		CWString tmpPNam = loc2;
 		CWString tmpPNam = srcPNam;
 		int	start = srcPNam.ReverseFind('\\') + 1;
 		int len = srcPNam.ReverseFind('.') - start;
@@ -2186,39 +2368,39 @@ RC WFILE::wf_EPWRead(	// read and unpack data from EPW
 	if (!rc)
 		rc = EPWfile.GetValCR(1, 4, sBuf, 3);
 	if (!rc)
-		wf.isLeap = destIsLeap = (sBuf.CompareNoCase("YES") == 0);
+		isLeap = destIsLeap = (sBuf.CompareNoCase("YES") == 0);
 	sourceDate.Empty();
-	wf.yr = -1;	//	fabricated year
+	yr = -1;	//	fabricated year
 	if (!rc)
 		rc = EPWfile.GetValCR(5, 7, sBuf, 5);	// month (1-12) of first monthly design day in file
 	if (!rc)
-	{	wf.firstDdm = atoi(sBuf.Piece(0,"/"));
-		wf.jd1 = doyBeg = Calendar.GetDoy(atoi(sBuf.Piece(0,"/")), atoi(sBuf.Piece(1,"/")));
+	{	firstDdm = atoi(sBuf.Piece(0,"/"));
+		jd1 = doyBeg = Calendar.GetDoy(atoi(sBuf.Piece(0,"/")), atoi(sBuf.Piece(1,"/")));
 	}
 	if (!rc)
 		rc = EPWfile.GetValCR(6, 7, sBuf, 5);	// month (1-12) of last monthly design day in file, 0 if none
 	if (!rc)
-	{	wf.lastDdm = atoi(sBuf.Piece(0,"/"));
-		wf.jdl = doyEnd = Calendar.GetDoy(atoi(sBuf.Piece(0,"/")), atoi(sBuf.Piece(1,"/")));
+	{	lastDdm = atoi(sBuf.Piece(0,"/"));
+		jdl = doyEnd = Calendar.GetDoy(atoi(sBuf.Piece(0,"/")), atoi(sBuf.Piece(1,"/")));
 	}
-	wf.winMOE	= -99;	// winter median of extremes (deg F)
+	winMOE	= -99;	// winter median of extremes (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+ 6, 1, &wf.win99TDb	);	// winter 99% design temp (deg F)
+		rc = EPWfile.iGetFTempCR(6+ 6, 1, &win99TDb	);	// winter 99% design temp (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+ 7, 1, &wf.win97TDb	);	// winter 97.5% design temp (deg F)
+		rc = EPWfile.iGetFTempCR(6+ 7, 1, &win97TDb	);	// winter 97.5% design temp (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+10, 1, &wf.sum1TDb	);	// summer 1% design temp (deg F)
+		rc = EPWfile.iGetFTempCR(6+10, 1, &sum1TDb	);	// summer 1% design temp (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+11, 1, &wf.sum1TWb	);	// summer 1% design coincident WB (deg F)
+		rc = EPWfile.iGetFTempCR(6+11, 1, &sum1TWb	);	// summer 1% design coincident WB (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+12, 1, &wf.sum2TDb	);	// summer 2.5% design temp (deg F)
+		rc = EPWfile.iGetFTempCR(6+12, 1, &sum2TDb	);	// summer 2.5% design temp (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+13, 1, &wf.sum2TWb	);	// summer 2.5% design coincident WB (deg F)
-	wf.sum5TDb	= -99;							// summer 5% design temp (deg F)
-	wf.sum5TWb	= -99;							// summer 5% design coincident WB (deg F)
+		rc = EPWfile.iGetFTempCR(6+13, 1, &sum2TWb	);	// summer 2.5% design coincident WB (deg F)
+	sum5TDb	= -99;							// summer 5% design temp (deg F)
+	sum5TWb	= -99;							// summer 5% design coincident WB (deg F)
 	if (!rc)
-		rc = EPWfile.iGetFTempCR(6+23, 1, &wf.range	);	// mean daily temperature range (deg F)
-	wf.sumMonHi = 0;								// month of hottest design day, 1-12
+		rc = EPWfile.iGetFTempCR(6+23, 1, &range	);	// mean daily temperature range (deg F)
+	sumMonHi = 0;								// month of hottest design day, 1-12
 	for (int i = 0;  i < 12;  i++)			// format three optional vectors of 12 mothly floats
 	{
 		clearness[i] = 0.f;	// clearness numbers, for design day solar

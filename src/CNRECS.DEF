@@ -517,8 +517,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *s POWER radBeamShAv	// .. current beam subhour average power, interpolated, Btuh/ft2
   #ifdef SOLAVNEND // cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
   o  *s POWER radBeamSh		// .. end subhour instantaneous value, interpolated
-  #else
-    FLOAT radBeamShSpare
   #endif
     *h POWER radDiffHrAv 	// diffuse irradiance on horizontal surface, hour energy = average power, from weather file
     *h POWER radDiffPvHrAv	// .. flavors as for radBeam
@@ -526,11 +524,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *s POWER radDiffShAv	// .. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2
   #ifdef SOLAVNEND // cndefns.h
   o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
-  #else
-    FLOAT radDiffShSpare
   #endif
 
     // other weather: weather file contains instantaneous values for END OF HOUR; program needs only end-interval values.
+	*declare "RC tp_WthrBegDay();"
     *declare "RC tp_WthrBegHour();"
     *declare "RC tp_WthrBegSubhr();"
     *h TEMP tDbOHr			// outdoor dry bulb temp at end of hour, from wthr file, deg F.
