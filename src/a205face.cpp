@@ -28,7 +28,18 @@ RC TestCBOR(
 		isCBOR ? json::from_cbor( fileStream)
 			   : json::parse(fileStream);
 
-	std::string rs_id = x.value("RS_ID", "?");
+#if 0
+	MYLOADER L( x, otherstuff)
+
+	std::string rs_id = L.get("RS_ID", "?");
+
+	fluidType = L.getEnum("Fluid", enumTable)
+
+	timeStamp = L.getTimeStamp()
+
+	string z = x.value("name")
+#endif
+
 
 	for (auto it = x.begin(); it != x.end(); ++it)
 	{
