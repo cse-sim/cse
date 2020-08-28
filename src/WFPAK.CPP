@@ -12,6 +12,7 @@
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRAT WFILE WFDATA
 #include "psychro.h"
+#include "slpak.h"
 
 #include "yacam.h"	// class YACAM
 #include "tdpak.h"
@@ -445,8 +446,10 @@ struct WDSUBHRFACTORS		// constant factors for weather data interpolation
 class WDSUBHR		// derived subhourly weather data
 {
 public:
-	float wsh_radBeam;
-	float wsh_radDiff;
+	void wsh_ClearSolar()
+	{	wsh_radBeamAv = wsh_radDiffAv = 0;	}
+	float wsh_radBeamAv;
+	float wsh_radDiffAv;
 };		// class WDSUBHR
 //----------------------------------------------------------------------------
 struct VHR		// sort helper for wdy_Stats
@@ -501,11 +504,11 @@ public:
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 	RC wdy_UpSampleSetup(int nSh);
 	RC wdy_UpSampleDay(int jDay, int nSh);
-	RC wdy_UpSampleHr(int jDay, int nSh);
+	RC wdy_UpSampleHr(WDSUBHR wdsh[], int jDay, int iHr, int nSh);
 };		// class WDYEAR
 //-----------------------------------------------------------------------------
 WDYEAR::WDYEAR()			// c'tor
-	: wdy_wShF(NULL)
+	: wdy_wShF(NULL), wdy_shDay(NULL)
 {
 	wdy_Init();
 }		// WDYEAR::WDYEAR
@@ -513,6 +516,7 @@ WDYEAR::WDYEAR()			// c'tor
 WDYEAR::~WDYEAR()			// d'tor
 {
 	delete[] wdy_wShF;
+	delete[] wdy_shDay;
 }		// WDYEAR::~WDYEAR
 //-----------------------------------------------------------------------------
 void WDYEAR::wdy_Init(
@@ -589,10 +593,18 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
+#if 1
+			slday(jDay, SLTMLST);
+#endif
 			for (int iHr=0; iHr<24; iHr++)
-			{	rc |= pWF->wf_Read( &wdy_Hr( jDay, iHr), jDay, iHr, erOp|WF_FORCEREAD);
+			{	WDHR* pWd = &wdy_Hr(jDay, iHr);
+				rc |= pWF->wf_Read( pWd, jDay, iHr, erOp|WF_FORCEREAD);
 				if (rc)
 					break;
+#if defined( SOLARFIX)
+				pWd->wd_Adjust( iHr);	// apply adjusments per user input
+										//   aniso, solar factors, wind factor
+#endif
 			}
 			if (rc)
 				break;
@@ -790,6 +802,8 @@ RC WDYEAR::wdy_UpSampleSetup(
 
 	delete[] wdy_wShF;
 	wdy_wShF = new WDSUBHRFACTORS[nSh];
+	delete[] wdy_shDay;
+	wdy_shDay = new WDSUBHR[ 24*nSh];
 
 	for (int iSh = 0; iSh < nSh; iSh++)
 		wdy_wShF[iSh].wds_Setup(iSh, nSh);
@@ -798,18 +812,39 @@ RC WDYEAR::wdy_UpSampleSetup(
 
 }		// WDYEAR::wdy_UpSampleSetup
 //-----------------------------------------------------------------------------
+RC WFILE::wf_UpSampleDay(
+	int jDay)
+{
+	return wf_pWDY ? wf_pWDY->wdy_UpSampleDay(jDay, Top.nSubSteps)
+		           : RCBAD;
+}		// WFILE::wf_UpSampleDay
+//-----------------------------------------------------------------------------
+void WFILE::wf_GetSubhrSolar(
+	int iHr,
+	int iSh,
+	float& radBeam,
+	float& radDiff) const
+{
+	const WDSUBHR* pWDSH = wf_pWDY->wdy_shDay + iHr*Top.nSubSteps + iSh;
+	radBeam = pWDSH->wsh_radBeamAv;
+	radDiff = pWDSH->wsh_radDiffAv;
+}
+//-----------------------------------------------------------------------------
 RC WDYEAR::wdy_UpSampleDay(
 	int jDay,	// day of year (1-365/366)
 	int nSh)
 {
-
+	RC rc = RCOK;
 	for (int iHr = 0; iHr < 24; iHr++)
 	{
+		WDSUBHR* pWDSH = wdy_shDay + iHr * nSh;
+		rc |= wdy_UpSampleHr(pWDSH, jDay, iHr, nSh);
 	}
+	return rc;
 }		// WDYEAR::wdy_UpSampleDay
 //-----------------------------------------------------------------------------
 RC WDYEAR::wdy_UpSampleHr(
-	XXX wdSh,
+	WDSUBHR wdSh[],	// returned: subhour values
 	int jDay,		// day of year (1-365/366)
 	int iHr,		// hour of day, 0-23
 	int nSh)		// # of subhrs per hour
@@ -827,8 +862,10 @@ RC WDYEAR::wdy_UpSampleHr(
 	}
 
 	if (radBeam[1] < .1f && radDiff[1] < .1f)
-	{	// substep 0
-		continue;
+	{
+		for (int iSh = 0; iSh < nSh; iSh++)
+			wdSh[iSh].wsh_ClearSolar();
+		return rc;
 	}
 
 	// Compute adjustment factors (constant over hour) to make subhour values add up to given hour value.
@@ -871,8 +908,9 @@ RC WDYEAR::wdy_UpSampleHr(
 
 		// Interpolate subhour average power values for data with average values in file.
 		//   Multiply by subhrDur for energy.
-		wdSh[ iSh].radBeamAv = VIProd(radBeam, 3, wf[iSh].slrF) * beamAdj;
-		wdSh[ iSh].radDiffAv = VIProd(radDiff, 3, wf[iSh].slrF) * diffAdj;
+		const float* slrF = wdy_wShF[iSh].slrF;
+		wdSh[ iSh].wsh_radBeamAv = VIProd( radBeam, 3, slrF) * beamAdj;
+		wdSh[ iSh].wsh_radDiffAv = VIProd( radDiff, 3, slrF) * diffAdj;
 
 	}
 
@@ -1278,7 +1316,7 @@ WFILE::WFILE( basAnc *b, TI i, SI noZ /*=0*/)	// c'tor to help insure init is ca
 }		// WFILE::WFILE
 //----------------------------------------------------------------------------
 WFILE::WFILE()			// default c'tor (insurance)
-	: record( NULL, 0, 1), yac( NULL), yacTDV( NULL)
+	: record( NULL, 0, 1), yac( NULL), yacTDV( NULL), wf_pWDY( NULL)
 {	wf_Init();
 }		// WFILE::WFILE
 //----------------------------------------------------------------------------
@@ -2665,7 +2703,7 @@ x			printf( "mismatch\n");
 	return rc;
 }		// WDHR::wd_EPWReadHr
 #undef _C
-
+//-----------------------------------------------------------------------------
 RC WFILE::wf_FixJday(DOY& jDay, int begDay)
 {
 	if (jd1 > 0				// if weather file dates known
