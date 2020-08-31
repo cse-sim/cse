@@ -1,0 +1,498 @@
+// weather test
+
+wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+nSubSteps = 4
+DT = No
+bldgAzm = 0
+terrainClass = 2
+wuDays = 15
+skyModel = ANISOTROPIC
+skyModelLW = BERDAHLMARTIN
+grndRefl = 0
+
+// Constructions
+
+MATERIAL "Plasterboard" matCond = 0.09 matSpHt = 0.2 matDens = 59
+MATERIAL "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+MATERIAL "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+
+
+CONSTRUCTION "Exterior Surface"
+  LAYER lrMat="Plasterboard" lrThk=0.04
+  LAYER lrMat="FoamInsul" lrThk=0.5
+  LAYER lrMat="WoodSiding" lrThk=0.75/12
+
+GLAZETYPE Double gtUNFRC=.5 gtSHGC=.4 gtU=.8
+	gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+    gtDMSHGC=.8
+    gtDMRBSol=.8
+
+// Zone
+ZONE "Main"
+  znModel = CZM
+  znArea = 473.6120886464
+  znVol = 6289.542746893183
+  znCAir = 116.23074996258602
+  znHcAirX = 0.0 // Remove +4.8 ACH assumed for non-RSYS zones
+  infAC = 0.0
+  znFloorZ = 0.0
+  znCeilingHt = 12.631234000000001
+  znEaveZ = 12.631234000000001
+  znTH = 68 znTD = 70  znTC = 74
+  znQMxH = 200000  znQMxC=-200000
+
+
+  SURFACE "Horizontal Roof"
+    sfCon = "Exterior Surface"
+	sfType = Ceiling
+	sfArea = 172.2225776896
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "South Vertical Wall"
+    sfCon = "Exterior Surface"
+	sfTilt = 90
+    sfType = Wall
+    sfAzm = 180
+    sfArea = 116.25023994048001
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+	WINDOW SouthWin wnHeight=5 wnWidth=4 wnModel=SHGC wnGT="Double"
+
+  SURFACE "East Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 90
+    sfArea = 116.25023994048001
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "North Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 0
+    sfArea = 306.77146650960003
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "West Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 270
+    sfArea = 116.25023994048001
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southeast Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 135
+    sfArea = 82.20133297647665
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southwest Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 225
+    sfArea = 82.20133297647665
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "East Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 90
+    sfArea = 99.33171386698861
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "South Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 180
+    sfArea = 99.33171386698861
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "West Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 270
+    sfArea = 99.33171386698861
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southwest Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 225
+	sfArea = 35.11906423111473
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southeast Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 135
+    sfArea = 35.11906423111473
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Floor"
+    sfCon = "Exterior Surface"
+    sfType = Floor
+    sfArea = 473.6120886464
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+
+// Output
+
+DELETE REPORT EB
+
+REPORT rpType = UDT  rpFreq = YEAR rpCPL=116
+  REPORTCOL colHead="WF Name" colVal=@Top.wfname colwid=50
+  REPORTCOL colHead="WF lat" colVal=@weatherFile.lat colDec=3 colWid=6
+  REPORTCOL colHead="TOP lat" colVal=@top.latitude colDec=3 colWid=7
+  REPORTCOL colHead="WF lon" colVal=@weatherFile.lon colDec=2 colWid=8
+  REPORTCOL colHead="TOP lon" colVal=@top.longitude colDec=2 colWid=8
+  REPORTCOL colHead="WF TZ" colVal=@weatherFile.tz colDec=2 colWid=6
+  REPORTCOL colHead="TOP TZ" colVal=@top.timeZone colDec=2 colWid=6
+  REPORTCOL colHead="WF elev" colVal=@weatherFile.elev colDec=1 colWid=8
+  REPORTCOL colHead="TOP elev" colVal=@top.elevation  colDec=1 colWid=8
+
+
+#define CSEBtuSF 1000
+#define ZNCOLS( Z, X) \
+Reportcol colVal=@znRes[Z].X.tAir colHead="Tin" colWid=4 colDec=1 \
+Reportcol colVal=@znRes[Z].X.tRad colHead="Trad" colWid=4 colDec=1 \
+Reportcol colVal=@znRes[Z].X.qSlr/CSEBtuSF colHead="Slr" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qsIg/CSEBtuSF colHead="IntGs" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qlIg/CSEBtuSF colHead="IntGl" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qCond/CSEBtuSF colHead="Cond" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qMass/CSEBtuSF colHead="Surf" colDec=0 \
+Reportcol colVal=@znRes[Z].X.eqfVentHr colHead = "VntHr" colDec=0 colWid=5 \
+Reportcol colVal=@znRes[Z].X.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7 \
+Reportcol colVal=@znRes[Z].X.qhMech/CSEBtuSF colHead="Hload" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qcMech/CSEBtuSF colHead="Cload" colDec=0
+
+// Report for 1st zone
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month rpCPL=104
+rpTitle="Conditioned-zn Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$month  colHead="mo"      colWid=2
+ZNCOLS(1, M)
+
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year rpHeader=No rpCPL=104   //Annual Summary
+Reportcol colVal="Yr"       colWid=2
+ZNCOLS(1, Y)
+
+#define SHREP1(db, de) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=db rpDayEnd=de rpCPL=118 \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="Shr" colVal=$subhour colWid=3 \
+  REPORTCOL colHead="FHr" colVal= $hour + ($subhour - 1.)/ @Top.nsubsteps colDec=3 colWid=5\
+  REPORTCOL colHead="TdbHr" colVal=@Top.tDbOHr colDec=2 colWid=6 \
+  REPORTCOL colHead="TdbHrAv" colVal=@Top.tDbOHrAv colDec=2 colWid=7 \
+  REPORTCOL colHead="TdbSh" colVal=@Top.tDbOSh colDec=2 colWid=6 \
+  REPORTCOL colHead="TdpSh" colVal=@Top.tDpOSh colDec=2 colWid=6 \
+  REPORTCOL colHead="TwbSh" colVal=@Top.tWbOSh colDec=2 colWid=6 \
+  REPORTCOL colHead="wSh" colVal=@Top.woSh colWid=7 \
+  REPORTCOL colHead="rhSh" colVal=rhFromDbW( @Top.tDbOSh, @Top.woSh) colDec=3 colWid=6 \
+  REPORTCOL colHead="rhoDSh" colVal=@Top.rhoDryOSh colDec=5 colWid=8 \
+  REPORTCOL colHead="rhoMSh" colVal=@Top.rhoMoistOSh colDec=5 colWid=8 \
+  REPORTCOL colHead="tSkySh" colVal=@Top.tSkySh colDec=2 colWid=6 \
+  REPORTCOL colHead="Pres" colVal=@Top.presAtm colDec=2 colWid=6 \
+  REPORTCOL colHead="WD" colVal=@Top.windDirDegHr colWid=3 \
+  REPORTCOL colHead="TSC" colVal=@weather.cldCvr colWid=3
+
+
+#define SHREP2(db, de) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=db rpDayEnd=de rpCPL=90 \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="Shr" colVal=$subhour colWid=3 \
+  REPORTCOL colHead="FHr" colVal= $hour + ($subhour - 1.)/ @Top.nsubsteps colDec=3 colWid=5\
+  REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=6 \
+  REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="RBHrAv" colVal=@top.radBeamHrAv colDec=1 colWid=6 \
+  REPORTCOL colHead="RDHrAv" colVal=@top.radDiffHrAv colDec=1 colWid=6 \
+  REPORTCOL colHead="RBShAv" colVal=@top.radBeamShAv colDec=1 colWid=6 \
+  REPORTCOL colHead="RDShAv" colVal=@top.radDiffShAv colDec=1 colWid=6 \
+  REPORTCOL colHead="IHBeam" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.bm colDec=1 colWid=6 \
+  REPORTCOL colHead="IHDiff" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.df colDec=1 colWid=6 \
+  REPORTCOL colHead="IHTot" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.tot colDec=1 colWid=6
+
+SHREP1( Feb 1, Feb 3)
+SHREP2( Feb 1, Feb 3)
+
+SHREP1( Mar 5, Mar 10)
+SHREP2( Mar 5, Mar 10)
+
+SHREP1( Aug 1, Aug 3)
+SHREP2( Aug 1, Aug 3)
+
+
+
+#if 0
+
+EXPORTFILE "Subhourly"
+  xfFileName = "Subhourly.csv"
+  xfFileStat = OVERWRITE
+
+EXPORT
+  exExportfile = "Subhourly"
+  exHeader = ColumnsOnly
+  exFooter = No
+  exType = UDT
+  exFreq = SUBHOUR
+  exDayBeg = JAN 1
+  exDayEnd = DEC 31
+
+  REPORTCOL colHead="Month" colVal=$month
+  REPORTCOL colHead="Day" colVal=$dayOfMonth
+  REPORTCOL colHead="Hour" colVal=$hour
+  REPORTCOL colHead="Subhour" colVal=$subhour
+
+  // Weather Data
+  REPORTCOL colHead="Dry Bulb Temperature (F)" colVal=(@Top.tDbOSh - 32)*0.5555555555555556
+//  REPORTCOL colHead="Relative Humidity [%]" colVal=(@Top.tDbOSh - 32)*0.5555555555555556
+
+  // Incident Solar
+// TODO: Check if proper probes for correct parameter and instantaneous vs. summed/averaged
+
+
+  REPORTCOL colHead="Total Horizontal Radiation" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Beam Horizontal Radiation" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Diffuse Horizontal Radiation" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on S Azimuth and 90° Slope" colVal=@xsurf["South Vertical Wall"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on S Azimuth and 90° Slope" colVal=@xsurf["South Vertical Wall"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on S Azimuth and 90° Slope" colVal=@xsurf["South Vertical Wall"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on E Azimuth and 90° Slope" colVal=@xsurf["East Vertical Wall"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on E Azimuth and 90° Slope" colVal=@xsurf["East Vertical Wall"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on E Azimuth and 90° Slope" colVal=@xsurf["East Vertical Wall"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on N Azimuth and 90° Slope" colVal=@xsurf["North Vertical Wall"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on N Azimuth and 90° Slope" colVal=@xsurf["North Vertical Wall"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on N Azimuth and 90° Slope" colVal=@xsurf["North Vertical Wall"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on W Azimuth and 90° Slope" colVal=@xsurf["West Vertical Wall"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on W Azimuth and 90° Slope" colVal=@xsurf["West Vertical Wall"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on W Azimuth and 90° Slope" colVal=@xsurf["West Vertical Wall"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on 45° E of S Azimuth and 90° Slope" colVal=@xsurf["Southeast Vertical Wall"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on 45° E of S Azimuth and 90° Slope" colVal=@xsurf["Southeast Vertical Wall"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on 45° E of S Azimuth and 90° Slope" colVal=@xsurf["Southeast Vertical Wall"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on 45° W of S Azimuth and 90° Slope" colVal=@xsurf["Southwest Vertical Wall"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on 45° W of S Azimuth and 90° Slope" colVal=@xsurf["Southwest Vertical Wall"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on 45° W of S Azimuth and 90° Slope" colVal=@xsurf["Southwest Vertical Wall"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on E Azimuth and 30° from H Slope" colVal=@xsurf["East Sloped Roof"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on E Azimuth and 30° from H Slope" colVal=@xsurf["East Sloped Roof"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on E Azimuth and 30° from H Slope" colVal=@xsurf["East Sloped Roof"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on S Azimuth and 30° from H Slope" colVal=@xsurf["South Sloped Roof"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on S Azimuth and 30° from H Slope" colVal=@xsurf["South Sloped Roof"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on S Azimuth and 30° from H Slope" colVal=@xsurf["South Sloped Roof"].sbcO.sgTarg.df*3.1547218949589686
+
+
+  REPORTCOL colHead="Total Radiation on W Azimuth and 30° from H Slope" colVal=@xsurf["West Sloped Roof"].sbcO.sgTarg.tot*3.1547218949589686
+  REPORTCOL colHead="Total Beam Radiation on W Azimuth and 30° from H Slope" colVal=@xsurf["West Sloped Roof"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="Total Diffuse Radiation on W Azimuth and 30° from H Slope" colVal=@xsurf["West Sloped Roof"].sbcO.sgTarg.df*3.1547218949589686
+
+
+EXPORTFILE "Hourly"
+  xfFileName = "Hourly.csv"
+  xfFileStat = OVERWRITE
+
+EXPORT
+  exExportfile = "Hourly"
+  exHeader = ColumnsOnly
+  exFooter = No
+  exType = UDT
+  exFreq = HOUR
+  exDayBeg = JAN 1
+  exDayEnd = DEC 31
+
+  REPORTCOL colHead="Month" colVal=$month
+  REPORTCOL colHead="Day" colVal=$dayOfMonth
+  REPORTCOL colHead="Hour" colVal=$hour
+
+  // Weather Data
+  REPORTCOL colHead="Dry Bulb Temperature (F)" colVal=(@Top.tDbOHr - 32)*0.5555555555555556
+//  REPORTCOL colHead="Relative Humidity [%]" colVal=(@Top.tDbOSh - 32)*0.5555555555555556
+  REPORTCOL colHead="Dewpoint Temperature (F)" colVal=(@weather.taDp - 32)*0.5555555555555556
+  REPORTCOL colHead="Humidity Ratio (kg moisture/kg dry air)" colVal=@Top.wOHr
+  REPORTCOL colHead="Wet Bulb Temperature (F)" colVal=(@Top.tWbOHr - 32)*0.5555555555555556
+  REPORTCOL colHead="Windspeed (m/s)" colVal=(@Top.windSpeedHr)*0.4470399856947205
+  REPORTCOL colHead="Wind Direction (degrees from North)" colVal=@Top.windDirDegHr
+  REPORTCOL colHead="Station Pressure (mbar)" colVal=@Top.presAtm*33.8639
+  REPORTCOL colHead="Total Cloud Cover (tenths of sky)" colVal=@weather.cldCvr
+//  REPORTCOL colHead="Opaque Cloud Cover [tenths of sky]" colVal=(@Top.tDbOSh - 32)*0.5555555555555556
+  REPORTCOL colHead="Sky Temperature (F)" colVal=(@Top.tSkyHr - 32)*0.5555555555555556
+
+  // Incident Solar
+  REPORTCOL colHead="Beam Horiz. Solar $radBeam (W/m2)" colVal=$radBeam*3.1547218949589686
+  REPORTCOL colHead="Beam Horiz. Solar @weather.bmrad (W/m2)" colVal=@weather.bmrad*3.1547218949589686
+  REPORTCOL colHead="Diffuse Horiz. Solar $radDiff (W/m2)" colVal=$radDiff*3.1547218949589686
+  REPORTCOL colHead="Diffuse Horiz. Solar @weather.dfrad (W/m2)" colVal=@weather.dfrad*3.1547218949589686
+
+// Use to generate a CSV of location data
+EXPORTFILE "Location"
+  xfFileName = "Location.csv"
+  xfFileStat = APPEND
+
+EXPORT
+ 	exExportfile = "Location"
+  exHeader = NO // Columns only
+  exFooter = NO
+  exType = UDT
+  exFreq = YEAR
+  REPORTCOL colHead="Run Timestamp" colVal=@Top.runDateTime
+  REPORTCOL colHead="Case" colVal="WD100"
+
+  // Location
+  REPORTCOL colHead="Weather File Latitude [deg]" colVal=@weatherFile.lat
+  REPORTCOL colHead="TOP Latitude [deg]" colVal=@top.latitude
+  REPORTCOL colHead="Weather File Longitude [deg]" colVal=@weatherFile.lon
+  REPORTCOL colHead="TOP Longitude [deg]" colVal=@top.longitude
+  REPORTCOL colHead="Weather File Time Zone [hr]" colVal=@weatherFile.tz
+  REPORTCOL colHead="TOP Time Zone [hr]" colVal=@top.timeZone
+  REPORTCOL colHead="Weather File Elevation [feet]" colVal=@weatherFile.elev
+  REPORTCOL colHead="TOP Elevation [feet]" colVal=@top.elevation
+
+// Confirmed that weather data and TOP data are equal
+
+// Use to generate a CSV of test probes for dry bulb
+EXPORTFILE "Dry Bulb Test"
+  xfFileName = "Dry Bulb Test.csv"
+  xfFileStat = APPEND
+
+EXPORT
+ 	exExportfile = "Dry Bulb Test"
+  exHeader = NO // Columns only
+  exFooter = NO
+  exType = UDT
+  exFreq = HOUR
+  exDayBeg = JAN 1
+  exDayEnd = DEC 31
+
+  REPORTCOL colHead="Month" colVal=$month
+  REPORTCOL colHead="Day" colVal=$dayOfMonth
+  REPORTCOL colHead="Hour" colVal=$hour
+
+  // Dry Bulb Probes
+  REPORTCOL colHead="@Top.tDbOHr (F)" colVal=(@Top.tDbOHr - 32)*0.5555555555555556
+  REPORTCOL colHead="$tDbO (F)" colVal=($tDbO - 32)*0.5555555555555556
+  REPORTCOL colHead="@Top.tDbOHrAv (F)" colVal=(@Top.tDbOHrAv - 32)*0.5555555555555556
+
+// Use to generate a CSV of test probes for hourly horizontal solar gains
+EXPORTFILE "Hourly Horizontal Solar Test"
+  xfFileName = "Hourly Horizontal Solar Test.csv"
+
+EXPORT
+ 	exExportfile = "Hourly Horizontal Solar Test"
+  exHeader = YES
+  exFooter = NO
+  exType = UDT
+  exFreq = HOUR
+  exDayBeg = JAN 1
+  exDayEnd = JAN 1
+
+  REPORTCOL colHead="Month" colVal=$month
+  REPORTCOL colHead="Day" colVal=$dayOfMonth
+  REPORTCOL colHead="Hour" colVal=$hour
+
+  // Weather File Probe
+  REPORTCOL colHead="@weather.bmrad (W/m2)" colVal=@weather.bmrad*3.1547218949589686
+  REPORTCOL colHead="$radBeam (W/m2)" colVal=$radBeam*3.1547218949589686
+  REPORTCOL colHead="@weather.dfrad (W/m2)" colVal=@weather.dfrad*3.1547218949589686
+  REPORTCOL colHead="$radDiff (W/m2)" colVal=$radDiff*3.1547218949589686
+  REPORTCOL colHead="@weather.DNI (W/m2)" colVal=@weather.DNI*3.1547218949589686
+  REPORTCOL colHead="@weather.DHI (W/m2)" colVal=@weather.DHI*3.1547218949589686
+
+// Use to generate a CSV of test probes for hourly horizontal solar gains
+EXPORTFILE "Subhourly Horizontal Solar Test"
+  xfFileName = "Subhourly Horizontal Solar Test.csv"
+
+EXPORT
+ 	exExportfile = "Subhourly Horizontal Solar Test"
+  exHeader = YES
+  exFooter = NO
+  exType = UDT
+  exFreq = SUBHOUR
+  exDayBeg = JAN 1
+  exDayEnd = JAN 1
+
+  REPORTCOL colHead="Month" colVal=$month
+  REPORTCOL colHead="Day" colVal=$dayOfMonth
+  REPORTCOL colHead="Hour" colVal=$hour
+  REPORTCOL colHead="Subhour" colVal=$subhour
+
+  // Weather File Probe
+  REPORTCOL colHead="@top.radBeamShAv (W/m2)" colVal=@top.radBeamShAv*3.1547218949589686
+  REPORTCOL colHead="@top.radDiffShAv (W/m2)" colVal=@top.radDiffShAv*3.1547218949589686
+  REPORTCOL colHead="@xsurf[Horiz. Roof].sbcO.sgTarg.bm (W/m2)" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.bm*3.1547218949589686
+  REPORTCOL colHead="@xsurf[Horiz. Roof].sbcO.sgTarg.df (W/m2)" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.df*3.1547218949589686
+
+  DELETE EXPORTFILE Primary
+#endif
+
+RUN
+
+UNSET DT
+DT = Yes
+
+RUN
+

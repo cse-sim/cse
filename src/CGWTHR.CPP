@@ -415,6 +415,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		break;
 	}
 #if defined( SOLARFIX)
+#if defined( _DEBUG)
 	float bmrad = wd_DNI;
 	float dfrad = wd_DHI;
 	if (Top.skyModel == C_SKYMODCH_ANISO)
@@ -422,6 +423,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	if (frDiff(bmrad, wd_bmrad) > .0001f
 	 || frDiff(dfrad, wd_dfrad) > 0.0001f)
 		printf("\nDiff");
+#endif
 #else
 	if (!rc)			// if wfRead failed, eg date not in file or type without design days
 		wd_Adjust(iHrST);
