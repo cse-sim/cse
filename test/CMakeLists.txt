@@ -17,6 +17,7 @@ macro(regress_test case)
 endmacro()
 
 set(files
+  wthr01
   600
   930
   960

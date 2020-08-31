@@ -504,6 +504,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		Top.tp_DoDateDowStuff();
 		// CAUTION: Top.iHr may be --'d or ++'d in tp_DoDTStuff in C_IVLCH_H case if DT starts or ends.
 		Top.isSolarCalcDay = Top.isBegMonth;     		// do solar calcs on warmup/run/mon 1st day and dsn day 1st rep.
+		Top.tp_WthrBegDay();
 		cgReportsDaySetup();		// init zones & Top re date-dependent reports and exports.
 				     				// set zp-> lists; may print heads.  Uses jDay. cgresult.cpp.
 

@@ -33,7 +33,7 @@ Monthly Energy Balance, Sum of Zones
  Aug 76.52 64.70 -.0997 -.0140 3.507     0  4.897 -.0296 -8.261    0 -.0021     0      0 .00206      0    0
  Sep 73.72 63.10 -0.300 -.0093 3.182     0  0.780 0.0120 -3.665    0 .00122     0      0 -.0012      0    0
  Oct 65.94 56.18 -1.272 -.0214 3.491     0 -11.89 -0.218  9.914    0 -.0012     0      0 .00114      0    0
- Nov 59.46 51.06 -2.520 -.0315 2.898     0 -29.45 -0.529 29.627    0 0.0117     0      0 -.0117      0    0
+ Nov 59.46 51.06 -2.520 -.0315 2.898     0 -29.44 -0.529 29.627    0 0.0117     0      0 -.0117      0    0
  Dec 55.51 48.05 -3.718 -.0072 2.600     0 -46.27 -0.509 47.899    0 0.0239     0      0 -.0239      0    0
 
  Yr  65.97 56.37 -20.03 -0.161 38.87     0 -203.9 -2.991 188.24    0 0.0580     0      0 -.0580      0    0
@@ -44,7 +44,7 @@ Air Handler Sizing, air handler "MainAH"
 
  PkVf  VfDs   PkQH hCapt  PkMo Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
- 5112 10000i     0     0     7 18 91.0 73.0 78.0 59.2 50.0 47.9 0.155     0 0.155 .997 0.155a 0.155a
+ 5136 10000i     0     0     7 18 91.0 73.0 78.0 59.2 50.0 47.9 0.156     0 0.156 .997 0.156a 0.156a
 
 
 
@@ -60,7 +60,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  1
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  1
 
 
 
@@ -71,7 +71,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.870.0 for Win32 console
+! CSE 0.874.0+solarinterp.05da792.3 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  2
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  3
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         //Thermostats         
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  4
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             sfanVfMxF=1.00             //Max volume multiplier
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  5
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
         	WINDOW  Wfront; wnHeight=6.; wnWidth=105 / 6 wnGT="4040";       
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  6
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  7
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.870.0 for Win32 console run(s) done: Wed 17-Jun-20   4:26:08 pm
+! CSE 0.874.0+solarinterp.05da792.3 for Win32 console run(s) done: Fri 28-Aug-20   3:46:29 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-Jun-20   4:02 pm   (VS 14.16    2623488 bytes)  (HPWH 1.9.0+master.6ae38ca.38)
+!               28-Aug-20   3:21 pm   (VS 14.16    2640896 bytes)  (HPWH 1.10.1+HEAD.5950964.2)
 ! Command line: -x!  -t1 autosize
 ! Input file:   D:\cse\test\autosize.cse
 ! Report file:  D:\cse\test\autosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 2      T/C = 0.0100   
-!           AutoSizing:  Time = 0.14     Calls = 1      T/C = 0.1450   
-!           Simulation:  Time = 2.55     Calls = 1      T/C = 2.5510   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
-!                Total:  Time = 2.73     Calls = 1      T/C = 2.7260   
+!                Input:  Time = 0.01     Calls = 2      T/C = 0.0065   
+!           AutoSizing:  Time = 0.35     Calls = 1      T/C = 0.3520   
+!           Simulation:  Time = 2.69     Calls = 1      T/C = 2.6880   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
+!                Total:  Time = 3.07     Calls = 1      T/C = 3.0670   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Wed 17-Jun-20   4:26:05 pm  Page  8
+! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  8
 
