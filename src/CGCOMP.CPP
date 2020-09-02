@@ -508,13 +508,10 @@ const double G0STDX = g0Std;	// CSE accel. of gravity, ft/sec2
 // class ANDAT -- airnet data
 void ANDAT::ad_ClearResults()
 {
-	ad_delP = 0.;
+	ad_delP = ad_dmdp = 0.;
 	ad_mdotP = ad_mdotB = ad_mdotX = 0.;
-	ad_dmdp = 0.;
-	ad_xDelpF = 0.;
-	ad_xMbm = 0.;
-	ad_tdFan = 0.;
-	ad_pFan = 0.;
+	// ad_xDelpF = ad_xMbm = 0.;	do not clear (values retained throughout hour)
+	ad_tdFan = ad_pFan = 0.;
 
 }	// ANDAT::ad_ClearResults
 //-----------------------------------------------------------------------------

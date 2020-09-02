@@ -81,6 +81,14 @@ RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error message
 	return rc;
 }		// TOPRAT::tp_WthrInit
 //---------------------------------------------------------------------------
+RC TOPRAT::tp_WthrBegDay()
+{
+	RC rc = RCOK;
+	rc = Wfile.wf_UpSampleDay(jDay);
+
+	return rc;
+}		// TOPRAT::tp_WthrBegDay
+//---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up public Wthr and Top members.
 // tp_WthrBegSubhr must also be called, after this function.
 
@@ -259,6 +267,16 @@ o   else { aes = 0.f; bes = 1.5f - g; ces = g - .5f; }
 	radBeamShAv = (a * radBeamPvHrAv + b * radBeamHrAv + c * radBeamNxHrAv) * beamAdj;
 	radDiffShAv = (a * radDiffPvHrAv + b * radDiffHrAv + c * radDiffNxHrAv) * diffAdj;
 
+#if 0
+	float radBeamX, radDiffX;
+	Wfile.wf_GetSubhrSolar(iHr, iSubhr, radBeamX, radDiffX);
+	if (frDiff(radBeamShAv, radBeamX) > .001f || frDiff(radDiffShAv, radDiffX) > .001f)
+	{
+		printf("\nSolar mismatch");
+		Wfile.wf_UpSampleDay(jDay);
+	}
+#endif
+
 // Interpolate end-subhour instantaneous values for same data
 
 #ifdef SOLAVNEND // undef in cndefns.h
@@ -396,31 +414,46 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read hour's data from weather file
 		break;
 	}
-	if (rc)			// if wfRead failed, eg date not in file or type without design days
-		return rc;
-
-// Optional anisotropic sky adjustment
-// Do NOT adjust wd_DNI, wd_DHI
-	if (Top.skyModel==C_SKYMODCH_ANISO)
-		slaniso( &wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
-			       								//   near sun, etc, while still computing with sun's
-												//	 beam and isotropic diffuse radiation. slpak.cpp. */
-
-// other adjustments
-	wd_bmrad *= Top.radBeamF; 	// Adjust radiation values for possible user input factors, defaults 1.0.
-	wd_dfrad *= Top.radDiffF; 	// ..
-	wd_wndSpd = Top.windF * max( wd_wndSpd, Top.windSpeedMin);
-					// apply wind speed min (user input, default = .5)
-					//   and adjust by factor (per user input, default .25)
-
-	// Ensure solar data values are not negative (as found in some CSW files)
-	wd_bmrad = max(wd_bmrad, 0.f);
-	wd_dfrad = max(wd_dfrad, 0.f);
-	wd_glrad = max(wd_glrad, 0.f);
-
+#if defined( SOLARFIX)
+#if defined( _DEBUG)
+	float bmrad = wd_DNI;
+	float dfrad = wd_DHI;
+	if (Top.skyModel == C_SKYMODCH_ANISO)
+		slaniso(&bmrad, &dfrad,iHrST);
+	if (frDiff(bmrad, wd_bmrad) > .0001f
+	 || frDiff(dfrad, wd_dfrad) > 0.0001f)
+		printf("\nDiff");
+#endif
+#else
+	if (!rc)			// if wfRead failed, eg date not in file or type without design days
+		wd_Adjust(iHrST);
+#endif
 
 	return rc;
 }		// WDHR::wd_WfReader
+//-----------------------------------------------------------------------------
+void WDHR::wd_Adjust(		// apply adjustments to weather data
+	int iHrST)		// standard time hour of day (0-23)
+{
+
+	// Optional anisotropic sky adjustment
+	// Do NOT adjust wd_DNI, wd_DHI
+	if (Top.skyModel == C_SKYMODCH_ANISO)
+		slaniso(&wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
+												//   near sun, etc, while still computing with sun's
+												//	 beam and isotropic diffuse radiation. slpak.cpp. */
+
+	// other solar adjustments
+	//   ensure solar data values are not negative (as found in some CSW files)
+	wd_bmrad = max( Top.radBeamF*wd_bmrad, 0.f); 	// Adjust radiation values by possible user input factors, defaults 1.0.
+	wd_dfrad = max( Top.radDiffF*wd_dfrad, 0.f); 	// ..
+	wd_glrad = max(wd_glrad, 0.f);		// TODO: re-derive from adjusted wd_bmrad and wd_dfrad?
+
+	wd_wndSpd = Top.windF * max(wd_wndSpd, Top.windSpeedMin);
+	// apply wind speed min (user input, default = .5)
+	//   and adjust by factor (per user input, default .25)
+
+}		// WDHR::wd_Adjust
 //---------------------------------------------------------------------------
 void FC cgWfDone()   		// Close, clean up hourly simulator weather file
 {

@@ -418,8 +418,9 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 	// Re-initialize slpak for current day as assumed by cgwfread() called from cnguts.cpp each hour b4 this fcn.
 	// Don't know a) if other parts of program depend on it (else do in wswfread each call)
 	//            b) if would be faster to push & pop the data it sets.
-	slday( Top.jDayST,		// julian date of simulation (standard time), cnguts.cpp.  Use of ST matches call in cgwthr.cpp.
-		   SLTMLST );		// say use local standard time
+	slday(Top.jDayST,		// julian date of simulation (standard time), cnguts.cpp.  Use of ST matches call in cgwthr.cpp.
+			SLTMLST,		// say use local standard time
+			1);				// skip if no day change
 		// slpak.cpp: set up curr SLLOCDAT struct (which is cse.cpp:Locsolar) for given day:
 		// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 		// Used by most other slpak calls.
@@ -873,7 +874,7 @@ void SgThruWin::tw_Doit()
 
 		// target gain for SGDISTs
 
-		for (sgi = 0; sgi < tw_xr->x.nsgdist; sgi++)	// explicit user-entered targets
+		for (int sgi = 0; sgi < tw_xr->x.nsgdist; sgi++)	// explicit user-entered targets
 		{
 			SGDIST* sgd = tw_xr->x.sgdist + sgi; 		// point to sgdist
 			if (sgd->sd_targTy == SGDTTSURFI || sgd->sd_targTy == SGDTTSURFO)

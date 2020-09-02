@@ -352,10 +352,6 @@ void FC slday( // set up daily data in current SLLOCDAT
   if ((options & 1) && slloccur->doy == doy && slloccur->timetype == timetype)
     return; // already set for doy
 
-#if 0 && defined(_DEBUG)
-	printf("\nslday %d %d", doy, timetype);
-#endif
-
   slloccur->doy = doy;
 
   float dec;
@@ -746,35 +742,35 @@ void FC slaltazm(/* Calculate solar altitude and azimuth for hour */
 } /* slaltazm */
 //======================================================================
 void FC slaniso(/* Adjust beam and diffuse radiation values
-       according to Hay anisotropic sky model */
+	   according to Hay anisotropic sky model */
 
-                float *pbeam, /* Pointer to beam value (Btu/sf): used/replaced. */
-                float *pdiff, /* Pointer to diffuse value (Btu/sf): used/replaced.*/
-                SI ihr)       /* Hour of day (0 - 23, 0 = midnight to 1 AM).
-                           Meaning of hour (LST, solar time, etc.)
-                           depends on how SLLOCDAT was set up by slday(). */
+	float *pbeam, /* Pointer to beam value (Btu/sf): used/replaced. */
+	float *pdiff, /* Pointer to diffuse value (Btu/sf): used/replaced.*/
+	SI ihr)       /* Hour of day (0 - 23, 0 = midnight to 1 AM).
+			   Meaning of hour (LST, solar time, etc.)
+			   depends on how SLLOCDAT was set up by slday(). */
 
-/* must call slday() for day first (uses slloccur members) */
+			   /* must call slday() for day first (uses slloccur members) */
 
-/* Adjusted values of beam and diffuse *REPLACE* the current values */
+			   /* Adjusted values of beam and diffuse *REPLACE* the current values */
 
-/* Story: Code assumes sky is modelled as istropic (uniform) hemisphere of
-   sky radiation plus direct sun beam.  But actually, sky is brighter
-   near sun, near horizon, etc.  Hay model approximates reality better
-   with old code by increasing beam to approximate some of the extra sky
-   brightness near sun.  Rob per Chip, 12-89. */
+			   /* Story: Code assumes sky is modelled as istropic (uniform) hemisphere of
+				  sky radiation plus direct sun beam.  But actually, sky is brighter
+				  near sun, near horizon, etc.  Hay model approximates reality better
+				  with old code by increasing beam to approximate some of the extra sky
+				  brightness near sun.  Rob per Chip, 12-89. */
 
-/* Recoded 2-10-89 based on cp4sim equivalent function.  Features --
-  1.  Doesn't bother unless there is a little beam
-  2.  Constrains fb to be .8 max.  This prevents wild values from
-      early morning observations.
-  3.  Derives fd (diffuse factor) from fb rather than from basic
-      Hay formula, giving same result unless fb hit .8 limit.  In all
-      cases, total horiz is preserved */
+				  /* Recoded 2-10-89 based on cp4sim equivalent function.  Features --
+					1.  Doesn't bother unless there is a little beam
+					2.  Constrains fb to be .8 max.  This prevents wild values from
+						early morning observations.
+					3.  Derives fd (diffuse factor) from fb rather than from basic
+						Hay formula, giving same result unless fb hit .8 limit.  In all
+						cases, total horiz is preserved */
 {
-  SI pos1, pos2;
-  SI ihx;
-  float c1, c2, cosi, f, fb, fd;
+	SI pos1, pos2;
+	SI ihx;
+	float c1, c2, cosi, f, fb, fd;
 
   if (*pbeam > 5.f) /* if a little beam */
   {
