@@ -566,7 +566,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 
 	// close
 	Wfile.wf_Close(); 	// close weather file if opened
-	// If all input ok, file will be reopened from cnguts.cpp for weather data access during run.
+	// If all input ok, file will be reopened for weather data access during run
 
 	// Other site related top inputs
 	if (IsSet(TOPRAT_SOILDIFF)) {

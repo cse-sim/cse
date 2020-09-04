@@ -478,7 +478,7 @@ MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA T
  REPORT     rpType=MTR     rpMeter=GAINMETER    rpFreq=Month
 
   REPORT
-        rpType=UDT  rpFreq=SUBHOUR rpCPL=200
+        rpType=UDT  rpFreq=SUBHOUR rpCPL=-1
         rpDayBeg=Jun 10 rpDayEnd=Jun 12
         reportcol colVal=@Top.iHr colHead="Hr"
         reportcol colVal=@Top.tDbOSh       colHead="Tdb"
@@ -487,29 +487,21 @@ MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA T
         reportcol colVal=@Zone[ 1].tr colHead="Tr1"
         reportcol colVal=@Zone[ 1].fVent colHead="fVent" colDec=3
         reportcol colVal=@Zone[ 1].airX colHead="airX" colDec=3
-				reportcol colVal=@Zone[ 1].qsHvac colHead = "QHvac"
+		reportcol colVal=@Zone[ 1].qsHvac colWid = 7 colDec=0 colHead = "QHvac"
    endReport
 
 
- REPORT
-        rpType=UDT
-        rpCpl = 200
+ REPORT rpType=UDT rpCpl = -1  rpFreq=HOUR  rpDayBeg=Mar 5 rpDayEnd=Mar 8
         reportcol colVal=$Month   colHead="Month"
-        reportcol colVal=@Top.tDbOHr       colHead="Top.tDbOHr"
-        reportcol colVal=@Weather.db       colHead="Weather.db"
-        reportcol colVal=@Weather.tgrnd    colHead="T Grnd"
-        reportcol colVal=@Top.radBeamHrAv  colHead="radBeam"
-        reportcol colVal=@Top.radDiffHrAv  colHead="radDiff"
-        reportcol colVal=0
-        reportcol colVal=@ahRes[1].H.ts    colHead="ahRes[1].ts"
-        reportcol colval=@ahRes[1].H.tmix  colHead="ahres.tmix"
-        reportcol colVal=@zone[1].qMsSg    colHead="MassSolar"
-        reportcol colval=@zone[1].qSgAir   colHead="AirSolar"
-        reportcol colval=@zone[1].qSgTotSh colHead="TotalSolar"
-        rpFreq=HOUR
-        rpDayBeg=Mar 5
-        rpDayEnd=Mar 8
-        endreport
+        reportcol colVal=@Top.tDbOHr       colDec=2 colHead="Top.tDbOHr"
+        reportcol colVal=@Weather.db       colDec=2 colHead="Weather.db"
+        reportcol colVal=@Weather.tgrnd    colDec=2 colHead="T Grnd"
+        reportcol colVal=@Top.radBeamHrAv  colDec=2 colHead="radBeam"
+        reportcol colVal=@Top.radDiffHrAv  colDec=2 colHead="radDiff"
+        reportcol colVal=@zone[1].qMsSg    colDec=2 colHead="MassSolar"
+        reportcol colval=@zone[1].qSgAir   colDec=2 colHead="AirSolar"
+        reportcol colval=@zone[1].qSgTotSh colDec=2 colHead="TotalSolar"
+endreport
 
  REPORT     rpType=ZDD   rpZone="Z1"
  REPORT     rpType=ZDD   rpZone="Attic"

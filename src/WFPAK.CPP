@@ -467,13 +467,11 @@ friend class WFILE;
 	WDHR wdy_hr[ 24*366];		// hourly data (read from weather file)
 								//   all standard time
 								//   DST adjustment applied in wdy_TransferHr
+	int wdy_nSubhr;				// # of subhrs per hour
+								//   local copy of Top.nSubSteps
 	WDSUBHRFACTORS* wdy_wShF;	// array [nSubhr] of constants re subhr upsampling
+								//   constant for run (depends on nSubhr only)
 	WDSUBHR* wdy_shDay;			// current day subhour data
-#if 0
-	WDSLRHR wdy_slrHr[ 24*366];	// hourly derived solar data (interpolated subhr, )
-								//   all standard time
-								//   DST adjustment applied in wdy_TransferHr
-#endif
 	double wdy_taDbAvg[ 13];	// avg daily temp by month, [ 0] = year
 	double wdy_tMainsAvg[ 13];	// avg cold water temp by month, [ 0] = year
 
@@ -497,14 +495,17 @@ public:
 	WDDAY& wdy_Day( int jDay)		// 1-based day-of-year (<1 OK)
 	{	return wdy_day[ wdy_DayIdx( jDay)];
 	}
+	WDSUBHR& wdy_Subhr(int iHrST, int iSh=0)
+	{	return wdy_shDay[iHrST * wdy_nSubhr + iSh];
+	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
 	void wdy_Stats( int jDay, double& taDbMean, double& taDbMax,
 		double& tdvElecMean, double& tdvElecMax, UCH tdvElecHrRank[ 24]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 	RC wdy_UpSampleSetup(int nSh);
-	RC wdy_UpSampleDay(int jDay, int nSh);
-	RC wdy_UpSampleHr(WDSUBHR wdsh[], int jDay, int iHr, int nSh);
+	RC wdy_UpSampleDay(int jDay);
+	RC wdy_UpSampleHr(WDSUBHR wdsh[], int jDay, int iHr);
 };		// class WDYEAR
 //-----------------------------------------------------------------------------
 WDYEAR::WDYEAR()			// c'tor
@@ -761,17 +762,34 @@ RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 	return RCOK;
 }		// WDYEAR::wdy_TransferHr
 //-----------------------------------------------------------------------------
-void WDSUBHRFACTORS::wds_Setup(		// constant subhr factors
-	int iSh,
-	int nSh)		// number of subhrs in run
+RC WDYEAR::wdy_UpSampleSetup(		// one-time init for solar upsample
+	int nSh)	// # of subhours per hour
+{
+	RC rc = RCOK;
+
+	wdy_nSubhr = nSh;
+	delete[] wdy_wShF;
+	wdy_wShF = new WDSUBHRFACTORS[nSh];
+	delete[] wdy_shDay;
+	wdy_shDay = new WDSUBHR[ 24*nSh];
+
+	for (int iSh = 0; iSh < nSh; iSh++)
+		wdy_wShF[iSh].wds_Setup(iSh, nSh);
+
+	return rc;
+
+}		// WDYEAR::wdy_UpSampleSetup
+//-----------------------------------------------------------------------------
+void WDSUBHRFACTORS::wds_Setup(		// constant factors re upsampling interpolation
+	int iSh,		// subhr, 0 - nSh-1
+	int nSh)		// number of subhrs per hour (*must* = Top.nSubSteps)
 // factors derived here vary by subhr only
 //   (independent of day, hr, ...)
-
 {
 	float subhrDur = 1.f / nSh;			// subhour duration, hr
 	f = float(iSh) / nSh;		// fraction of hour passed at start this subhour
 	g = float(iSh + 1) / nSh;	// fraction of hour passed at end this subhour
-	h = 1.f - g;	// fraction of hour remaining after this subhour
+	h = 1.f - g;				// fraction of hour remaining after this subhour
 
 	// setup for interpolating subhour average value for data with average (integrated) values in file:
 	//  Determine a = fraction previous hour, b = fraction current hour, c = fraction next hour  even if subhr overlaps middle hour.
@@ -793,59 +811,28 @@ void WDSUBHRFACTORS::wds_Setup(		// constant subhr factors
 
 }	// WDSUBHRFACTORS::wds_Setup
 //-----------------------------------------------------------------------------
-RC WDYEAR::wdy_UpSampleSetup(
-	int nSh)	// # of subhours per hour
+RC WFILE::wf_UpSampleDay(		// generate subhr solar values
+	int jDay)	// day of year, 1-365/366
 {
-	RC rc = RCOK;
-
-	delete[] wdy_wShF;
-	wdy_wShF = new WDSUBHRFACTORS[nSh];
-	delete[] wdy_shDay;
-	wdy_shDay = new WDSUBHR[ 24*nSh];
-
-	for (int iSh = 0; iSh < nSh; iSh++)
-		wdy_wShF[iSh].wds_Setup(iSh, nSh);
-
-	return rc;
-
-}		// WDYEAR::wdy_UpSampleSetup
-//-----------------------------------------------------------------------------
-RC WFILE::wf_UpSampleDay(
-	int jDay)
-{
-	return wf_pWDY ? wf_pWDY->wdy_UpSampleDay(jDay, Top.nSubSteps)
+	return wf_pWDY ? wf_pWDY->wdy_UpSampleDay( jDay)
 		           : RCBAD;
 }		// WFILE::wf_UpSampleDay
 //-----------------------------------------------------------------------------
-void WFILE::wf_GetSubhrSolar(
-	int iHr,
-	int iSh,
-	float& radBeam,
-	float& radDiff) const
-{
-	const WDSUBHR* pWDSH = wf_pWDY->wdy_shDay + iHr*Top.nSubSteps + iSh;
-	radBeam = pWDSH->wsh_radBeamAv;
-	radDiff = pWDSH->wsh_radDiffAv;
-}
-//-----------------------------------------------------------------------------
-RC WDYEAR::wdy_UpSampleDay(
-	int jDay,	// day of year (1-365/366)
-	int nSh)
+RC WDYEAR::wdy_UpSampleDay(		// generate subhr values for day
+	int jDay)	// day of year (1-365/366)
 {
 	RC rc = RCOK;
 	for (int iHr = 0; iHr < 24; iHr++)
-	{
-		WDSUBHR* pWDSH = wdy_shDay + iHr * nSh;
-		rc |= wdy_UpSampleHr(pWDSH, jDay, iHr, nSh);
+	{	WDSUBHR* pWDSH = &wdy_Subhr(iHr, 0);
+		rc |= wdy_UpSampleHr(pWDSH, jDay, iHr);
 	}
 	return rc;
 }		// WDYEAR::wdy_UpSampleDay
 //-----------------------------------------------------------------------------
-RC WDYEAR::wdy_UpSampleHr(
+RC WDYEAR::wdy_UpSampleHr(		// generate solar subhr values for hour
 	WDSUBHR wdSh[],	// returned: subhour values
 	int jDay,		// day of year (1-365/366)
-	int iHr,		// hour of day, 0-23
-	int nSh)		// # of subhrs per hour
+	int iHr)		// hour of day, 0-23
 {
 	RC rc = RCOK;
 	
@@ -853,68 +840,51 @@ RC WDYEAR::wdy_UpSampleHr(
 	float radBeam[3];		//   beam
 	float radDiff[3];		//   diffuse
 	for (int id = 0; id < 3; id++)
-	{
-		pWD[id] = &wdy_Hr(jDay, iHr + id - 1);
+	{	pWD[id] = &wdy_Hr(jDay, iHr + id - 1);
 		radBeam[id] = pWD[id]->wd_bmrad;
 		radDiff[id] = pWD[id]->wd_dfrad;
 	}
 
 	if (radBeam[1] < .1f && radDiff[1] < .1f)
-	{
-		for (int iSh = 0; iSh < nSh; iSh++)
+	{	for (int iSh = 0; iSh < wdy_nSubhr; iSh++)
 			wdSh[iSh].wsh_ClearSolar();
-		return rc;
 	}
+	else
+	{	// Compute adjustment factors (constant over hour)
+		//  make subhour values add up to given hour value.
+		// See Rob's NILES106.TXT, 1-95.
+		double beamAdj = radBeam[1] == 0.f ? 0.f : 							// prevents /0
+			8 * radBeam[1] / (radBeam[0] + 6 * radBeam[1] + radBeam[2]);
 
-	// Compute adjustment factors (constant over hour) to make subhour values add up to given hour value.
-	// See Rob's NILES106.TXT, 1-95.
-	double beamAdj = radBeam[1] == 0.f ? 0.f : 							// prevents /0
-		8 * radBeam[1] / (radBeam[0] + 6 * radBeam[1] + radBeam[2]);
+		double diffAdj = radDiff[1] == 0.f ? 0.f :
+			8 * radDiff[1] / (radDiff[0] + 6 * radDiff[1] + radDiff[2]);
 
-	double diffAdj = radDiff[1] == 0.f ? 0.f :
-		8 * radDiff[1] / (radDiff[0] + 6 * radDiff[1] + radDiff[2]);
+		for (int iSh = 0; iSh < wdy_nSubhr; iSh++)
+		{	// note: see also TOPRAT::tp_WthrBegSubhr()
+			//  interpolation of data with instantenous end-hour values (e.g. temperatures)
+			//  is done there
 
-	for (int iSh = 0; iSh < nSh; iSh++)
-	{
-
-#if 0
-		// interpolate values for data with instantenous end-hour values in weather file
-		tDbOSh = h * tDbOPvHr + g * tDbOHr;			// end-subhour drybulb temp
-		tWbOSh = h * tWbOPvHr + g * tWbOHr;			// end-subhour wetbulb temp
-		tSkySh = h * tSkyPvHr + g * tSkyHr;			// end-subhour sky temp
-		windSpeedSh = h * windSpeedPvHr + g * windSpeedHr;	// end-subhour wind speed
-
-		// subhourly derived weather data
-		wOSh = psyHumRat1(tDbOSh, tWbOSh);				// end-subhour humidity ratio
-		hOSh = psyEnthalpy(tDbOSh, wOSh);				// end-subhour outdoor enthalpy
-		tDpOSh = psyTDewPoint(wOSh);					// end-subhour outdoor dew point
-		windSpeedSquaredSh = windSpeedSh * windSpeedSh;	// end-subhour windspeed squared (mph^2), re infiltration.
-		windSpeedSqrtSh = sqrt(windSpeedSh);			// end-subhour sqrt( windspeed), mph^.5, re outside surf convection
-		windSpeedPt8Sh = pow(windSpeedSh, 0.8f);		// end-subhour mph^.8, re outside surf convection
-
-		tp_airxOSh = airX(tDbOSh);							// heat capacity of air flow @ temp (Btuh/cfm-F): vhc * 60 min/hr.
-		tp_rhoDryOSh = psyDenDryAir(tDbOSh, wOSh);				// outdoor dry air density at end of subhour, lbm/ft3
-		tp_rhoMoistOSh = psyDenMoistAir2(tp_rhoDryOSh, wOSh);	// outdoor moist air density at end of subhour, lbm/ft3
-
-			// first time, init previous-subhr value(s) to current-subhour value
-		if (isBegRun)		// if 1st subhour of run. else, same sets were done at entry.
-			tDbOPvSh = tDbOSh;
-
-		// form subhour average(s) for data with instantenous values in weather file
-		tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
-#endif
-
-		// Interpolate subhour average power values for data with average values in file.
-		//   Multiply by subhrDur for energy.
-		const float* slrF = wdy_wShF[iSh].slrF;
-		wdSh[ iSh].wsh_radBeamAv = VIProd( radBeam, 3, slrF) * beamAdj;
-		wdSh[ iSh].wsh_radDiffAv = VIProd( radDiff, 3, slrF) * diffAdj;
-
+			// Interpolate subhour average power values for data with average values in file.
+			//   Multiply by subhrDur for energy.
+			const float* slrF = wdy_wShF[iSh].slrF;
+			wdSh[iSh].wsh_radBeamAv = VIProd(radBeam, 3, slrF) * beamAdj;
+			wdSh[iSh].wsh_radDiffAv = VIProd(radDiff, 3, slrF) * diffAdj;
+		}
 	}
-
 	return rc;
 
 }		// WDYEAR::wdy_UpSampleHr
+//-----------------------------------------------------------------------------
+void WFILE::wf_GetSubhrSolar(		// retrieve subhr solar values
+	int iHrST,	// standard time hour of day, 0 - 23
+	int iSh,	// substep, 0 - nSubSteps-1
+	float& radBeamAv,		// returned: avg DNI for subhr, Btuh/ft2
+	float& radDiffAv) const	// returned: avg DHI for subhr, Btuh/ft2
+{
+	const WDSUBHR& wdsh = wf_pWDY->wdy_Subhr(iHrST, iSh);
+	radBeamAv = wdsh.wsh_radBeamAv;
+	radDiffAv = wdsh.wsh_radDiffAv;
+}	// WFILE::wf_GetSubhrSolar
 //=============================================================================
 void WDDAY::wdd_Init()
 {	

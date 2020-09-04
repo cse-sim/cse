@@ -512,19 +512,19 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     // program needs [both] interval average [and end-interval (subhour only)] values. SOLAVNEND.
     // power (Btuh/ft2)===energy (Btu/ft2) for 1 hour.
     *h POWER radBeamHrAv  	// beam irradiance on tracking surface, hour energy = average power, from weather file
+    *h POWER radDiffHrAv 	// diffuse irradiance on horizontal surface, hour energy = average power, from weather file
+    *s POWER radBeamShAv	// .. current beam subhour average power, interpolated, Btuh/ft2
+    *s POWER radDiffShAv	// .. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2
+#if !defined( SOLARFIX)
     *h POWER radBeamPvHrAv	// .. previous hour (used to generate -SHAv)
     *h POWER radBeamNxHrAv	// .. next hour (wthr file read ahead) (used to generate -ShAv)
-    *s POWER radBeamShAv	// .. current beam subhour average power, interpolated, Btuh/ft2
-  #ifdef SOLAVNEND // cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
-  o  *s POWER radBeamSh		// .. end subhour instantaneous value, interpolated
-  #endif
-    *h POWER radDiffHrAv 	// diffuse irradiance on horizontal surface, hour energy = average power, from weather file
     *h POWER radDiffPvHrAv	// .. flavors as for radBeam
     *h POWER radDiffNxHrAv	// ..
-    *s POWER radDiffShAv	// .. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2
-  #ifdef SOLAVNEND // cndefns.h
-  o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
-  #endif
+#endif
+#ifdef SOLAVNEND // cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
+o  *s POWER radBeamSh		// .. end subhour instantaneous value, interpolated
+o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
+#endif
 
     // other weather: weather file contains instantaneous values for END OF HOUR; program needs only end-interval values.
 	*declare "RC tp_WthrBegDay();"
@@ -688,7 +688,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
 	*declare "RC wf_UpSampleDay( int jDay);"
-	*declare "void wf_GetSubhrSolar( int iHr, int iSh, float& radBeam, float& radDiff) const;"
+	*declare "void wf_GetSubhrSolar( int iHrST, int iSh, float& radBeamAv, float& radDiffAv) const;"
 	*declare "RC wf_Read( WDHR* pWd, int jDay, int iHr, int erOp = WRN);"
 	*declare "USI* wf_PackedHrRead( int jDay, int iHr, int erOp = WRN);"
 	*declare "LI wf_PackedHrOffset( int jDay, int iHr, int erOp = WRN);"
@@ -769,6 +769,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
     *declare "WDHR& Copy( const WDHR& wd, int options=0);"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "void wd_Adjust( int iHrST);"
+	*declare "void wd_SetSolarValues( int jDayST, int iHrST);"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
     *declare "float wd_CalcSkyTemp( int skyModelLW, int iHr);"

@@ -84,7 +84,7 @@ RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error message
 RC TOPRAT::tp_WthrBegDay()
 {
 	RC rc = RCOK;
-	rc = Wfile.wf_UpSampleDay(jDay);
+	rc = Wfile.wf_UpSampleDay(jDay);	// generate subhr weather values
 
 	return rc;
 }		// TOPRAT::tp_WthrBegDay
@@ -127,10 +127,13 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 
 // set top members from weather data
 	// integrated-over-hour values
-	radBeamNxHrAv = WthrNxHr.d.wd_bmrad;	// next hour beam irradiance
-	radDiffNxHrAv = WthrNxHr.d.wd_dfrad;	// next hour diffuse irradiance
 	radBeamHrAv = Wthr.d.wd_bmrad;		// beam irradiance
 	radDiffHrAv = Wthr.d.wd_dfrad;		// diffuse irradiance
+#if !defined( SOLARFIX)
+	radBeamNxHrAv = WthrNxHr.d.wd_bmrad;	// next hour beam irradiance
+	radDiffNxHrAv = WthrNxHr.d.wd_dfrad;	// next hour diffuse irradiance
+#endif
+
 	// instantaneous values at end of hour
 	tDbOHr = Wthr.d.wd_db;				// dry bulb temp, deg F
 	tWbOHr = Wthr.d.wd_wb;				// wet bulb temp, deg F
@@ -166,8 +169,10 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 //-----------------------------------------------------------------------------
 void TOPRAT::tp_SetPvHrWthr()		// copy current hour wthr mbrs to previous
 {
+#if !defined( SOLARFIX)
 	radBeamPvHrAv = radBeamHrAv;
 	radDiffPvHrAv = radDiffHrAv;
+#endif
 	tDbOPvHr = tDbOHr;
 	tWbOPvHr = tWbOHr;
 	tDpOPvHr = tDpOHr;
@@ -228,6 +233,16 @@ x	}
 	// form subhour average(s) for data with instantenous values in weather file
 	tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
 
+#if defined( SOLARFIX)
+	// subhr solar values precalculated for entire day
+	//   see tp_WthrBegDay
+	if (Top.tp_dsDay == 1)
+		radBeamShAv = radDiffShAv = 0.f;	// heating design day: no solar
+	else if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
+		err(PABT, "Cooling design conditions not supported.");
+	else
+		Wfile.wf_GetSubhrSolar(iHrST, iSubhr, radBeamShAv, radDiffShAv);
+#else
 /* setup for interpolating subhour average value for data with average (integrated) values in file:
 	Determine a = fraction previous hour, b = fraction current hour, c = fraction next hour  even if subhr overlaps middle hour.
 	The simple cases are:
@@ -246,14 +261,6 @@ x	}
 
 	ASSERT( fabs(a+b+c-1.) < 1.e-5);			// a + b + c should be 1.0 within limits of float arithmetic
 
-#ifdef SOLAVNEND // undef in cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
-o// setup for end-subhour instantaneous values
-o
-o   float aes, bes, ces;		// fractions of prev, curr, next hr avg to use in end-subhour value
-o   if (g < .5) { aes = .5f - g; bes = .5f + g; ces = 0.f; }
-o   else { aes = 0.f; bes = 1.5f - g; ces = g - .5f; }
-#endif
-
 // Compute adjustment factors (constant over hour) to make subhour values add up to given hour value. See Rob's NILES106.TXT, 1-95.
 
 	double beamAdj = radBeamHrAv==0.f  ?  0.f  : 							// prevents /0
@@ -269,17 +276,23 @@ o   else { aes = 0.f; bes = 1.5f - g; ces = g - .5f; }
 
 #if 0
 	float radBeamX, radDiffX;
-	Wfile.wf_GetSubhrSolar(iHr, iSubhr, radBeamX, radDiffX);
+	Wfile.wf_GetSubhrSolar(iHrST, iSubhr, radBeamX, radDiffX);
 	if (frDiff(radBeamShAv, radBeamX) > .001f || frDiff(radDiffShAv, radDiffX) > .001f)
-	{
-		printf("\nSolar mismatch");
+	{	printf("\nSolar mismatch");
 		Wfile.wf_UpSampleDay(jDay);
 	}
 #endif
 
-// Interpolate end-subhour instantaneous values for same data
+#endif
 
 #ifdef SOLAVNEND // undef in cndefns.h
+o // Interpolate end-subhour instantaneous values for same data
+o // only if computing & using end-ivl as well as ivl avg solar values
+o // setup for end-subhour instantaneous values
+o
+o   float aes, bes, ces;		// fractions of prev, curr, next hr avg to use in end-subhour value
+o   if (g < .5) { aes = .5f - g; bes = .5f + g; ces = 0.f; }
+o   else { aes = 0.f; bes = 1.5f - g; ces = g - .5f; }
 o   radBeamSh = (aes * radBeamPvHrAv + bes * radBeamHrAv + ces * radBeamNxHrAv) * beamAdj;
 o   radDiffSh = (aes * radDiffPvHrAv + bes * radDiffHrAv + ces * radDiffNxHrAv) * diffAdj;
 o
@@ -352,6 +365,10 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	}
 
 	// set up solar conditions
+#if 1
+	wd_SetSolarValues(jDayST, iHrST);
+	// NOTE: wfOp includes WF_SAVESLRGEOM -- wd_sunup, wd_slAzm, wd_slAlt survive wf_Read()
+#else
 #if defined( SOLARFIX)
 	slday( jDayST, SLTMLST, 1);	// set up curr SLLOCDAT struct for today if needed
 								// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
@@ -371,6 +388,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	else
 		wd_slAlt = kPiOver2 - acos( cosz);
 	// NOTE: wfOp includes WF_SAVESLRGEOM -- wd_sunup, wd_slAzm, wd_slAlt survive wf_Read()
+#endif
 	
 	// read or generate data
 	switch (Top.tp_dsDay)
@@ -415,7 +433,7 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		break;
 	}
 #if defined( SOLARFIX)
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	float bmrad = wd_DNI;
 	float dfrad = wd_DHI;
 	if (Top.skyModel == C_SKYMODCH_ANISO)
@@ -435,7 +453,6 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 void WDHR::wd_Adjust(		// apply adjustments to weather data
 	int iHrST)		// standard time hour of day (0-23)
 {
-
 	// Optional anisotropic sky adjustment
 	// Do NOT adjust wd_DNI, wd_DHI
 	if (Top.skyModel == C_SKYMODCH_ANISO)
@@ -454,6 +471,26 @@ void WDHR::wd_Adjust(		// apply adjustments to weather data
 	//   and adjust by factor (per user input, default .25)
 
 }		// WDHR::wd_Adjust
+//---------------------------------------------------------------------------
+void WDHR::wd_SetSolarValues(
+	int jDayST,		// standard time day of year, 1 - 365
+	int iHrST)		// standard time hr of day (0-23)
+
+{
+	slday(jDayST, SLTMLST, 1);	// set up curr SLLOCDAT struct for today if needed
+								// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
+								// used by slaniso & most other slpak calls.
+
+	static float dchoriz[3] = { 0.f, 0.f, 1.f };	// dir cos of a horiz surface
+	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz)
+									// init 0 for when sun down.
+	float cosz;
+	wd_sunup = slsurfhr(dchoriz, iHrST, &verSun, &wd_slAzm, &cosz);
+	if (!wd_sunup)
+		wd_slAzm = wd_slAlt = 0.f;
+	else
+		wd_slAlt = kPiOver2 - acos(cosz);
+}	// WDHR::wd_SetSolarValues
 //---------------------------------------------------------------------------
 void FC cgWfDone()   		// Close, clean up hourly simulator weather file
 {
