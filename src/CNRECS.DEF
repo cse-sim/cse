@@ -528,6 +528,7 @@ o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
 
     // other weather: weather file contains instantaneous values for END OF HOUR; program needs only end-interval values.
 	*declare "RC tp_WthrBegDay();"
+	*declare "RC tp_WthrFillDsDay( WFILE* pWF);"
     *declare "RC tp_WthrBegHour();"
     *declare "RC tp_WthrBegSubhr();"
     *h TEMP tDbOHr			// outdoor dry bulb temp at end of hour, from wthr file, deg F.
@@ -687,8 +688,11 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_EtDecodeHdr( char* hdr, int erOp, float* clrnss, float* turbid, float* atmois);"
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
-	*declare "RC wf_UpSampleDay( int jDay);"
-	*declare "void wf_GetSubhrSolar( int iHrST, int iSh, float& radBeamAv, float& radDiffAv) const;"
+	*declare "enum { gshrFILEDAY, gshrDSDAY, gshrZERO };"
+	*declare "RC wf_GenSubhrRad( int doWhat, int jDay);"
+	*declare "RC wf_GetSubhrRad( int jDay, int iHrST, int iSh, float& radBeamAv, float& radDiffAv);"
+	*declare "WDHR& wf_GetDsDayWDHR( int iHr);"
+	*declare "RC wf_GetDsDayHr( WDHR* pWd, int iHr, int erOp = WRN);"
 	*declare "RC wf_Read( WDHR* pWd, int jDay, int iHr, int erOp = WRN);"
 	*declare "USI* wf_PackedHrRead( int jDay, int iHr, int erOp = WRN);"
 	*declare "LI wf_PackedHrOffset( int jDay, int iHr, int erOp = WRN);"
@@ -776,6 +780,8 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
     *declare "RC wd_CSWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_TDVReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
     *declare "RC wd_EPWReadHr( WFILE* pWF, int jHr, int erOp=WRN);"
+	*declare "RC wd_GenDesCondHeating( WFILE* pWF, int jDayST, int iHrST);"
+	*declare "RC wd_UpdateDesCondHeating();"
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 	*declare "void wd_SetDayValues( const class WDDAY& wdd);"
 	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
