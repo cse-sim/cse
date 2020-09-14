@@ -84,18 +84,16 @@ RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error message
 RC TOPRAT::tp_WthrBegDay()
 {
 	RC rc = RCOK;
-	int doWhat;		// where wf_GenSubhrRad() gets data
+	int dayTy = WFILE::gshrFILEDAY;		// type of day for wf_GenSubrRad
 	if (tp_dsDay)	// if this is a design day
 	{	rc |= tp_WthrFillDsDay(&Wfile);
-		doWhat = tp_dsDay == 1 ? WFILE::gshrZERO
+		dayTy = tp_dsDay == 1 ? WFILE::gshrDSDAY0
 			   : Top.tp_AuszWthrSource() == TOPRAT_COOLDSDAY
 			                   ? WFILE::gshrFILEDAY
 			   :                 WFILE::gshrDSDAY;
 	}
-	else
-		doWhat = WFILE::gshrFILEDAY;
 
-	rc |= Wfile.wf_GenSubhrRad( doWhat, jDay);
+	rc |= Wfile.wf_GenSubhrRad( dayTy, jDay);
 
 	return rc;
 }		// TOPRAT::tp_WthrBegDay
