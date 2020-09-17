@@ -61,7 +61,7 @@
    specifies row of data from interval results structure, including column heads. */
 struct COLDEF
 {
-	char *colhd;		// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
+	const char* colhd;	// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
 	UCH flags;			// format and column inclusion control bits, just below
 	char width;			// report column width; export max width excluding (CVS) quotes
 	char dfw;			// decimal places
@@ -209,7 +209,7 @@ static COLDEF mtrColdef[] =
 #undef D
 #undef oMtr
 
-// columns definition for "meter" (MTR) report/export
+// columns definition for "DHW meter" (DHWMTR) report/export
 #define oWMtr(m)  offsetof( DHWMTR_IVL, m)
 #define D 3		// decimal digits: 1 s/b enough for water use, gal
 static COLDEF wMtrColdef[] =
@@ -233,6 +233,35 @@ static COLDEF wMtrColdef[] =
 };
 #undef D
 #undef oWMtr
+
+// columns definition for "Airflow meter" (AFMTR) report/export
+#define oAFMtr(m)  offsetof( AFMTR_IVL, m)
+#define D 3		// decimal digits
+static COLDEF afMtrColdef[] =
+/*		             max     offset       cvflag  */
+/* colhd           flags  wid dfw (cnguts.h)   (above) */
+{
+	{ USE_ARG_HD,    8 | 2 | 1,  3, 0, USE_NEXT_ARG,  CVS },  	// report-only "time" column: "Mon", "Day", or "Hr", etc.
+	{ "Meter",    128 | 16 | 1, 17, 0, USE_NEXT_ARG,  CVS },  	// report/export "name" column. 128: left justify
+	{ "Mon",           8 | 4,  2, 0, USE_NEXT_ARG,  CVI },  	// export-only time columns
+	{ "Day",           8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
+	{ "Hr",            8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
+	{ "Subhr",         8 | 4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
+	{ "Total",           0,    7, D, oAFMtr(amt_total),  CV1 },
+	{ "Unknown",         0,    7, D, oAFMtr(amt_unknown),CV1 },
+	{ "InfilEx",         0,    7, D, oAFMtr(amt_infilEx),CV1 },
+	{ "VentEx",          0,    7, D, oAFMtr(amt_ventEx), CV1 },
+	{ "FanEx",           0,    7, D, oAFMtr(amt_fanEx), CV1 },
+	{ "InfilIz",         0,    7, D, oAFMtr(amt_infilIz),CV1 },
+	{ "VentIz",          0,    7, D, oAFMtr(amt_ventIz), CV1 },
+	{ "FanIz",           0,    7, D, oAFMtr(amt_fanIz), CV1 },
+	{ "DuctLk",          0,    7, D, oAFMtr(amt_ductLk), CV1 },
+	{ "HVAC",            0,    7, D, oAFMtr(amt_hvac),   CV1 },
+	{ 0,                 0,    0, 0, 0,                  CV1 }
+};
+#undef D
+#undef oAFMtr
+
 
 // columns definition for "air handler" (AH) report/export
 #define oAhr(m)  offsetof( AHRES_IVL_SUB, m)
@@ -650,6 +679,10 @@ o					vrChangeOptn( vrh, VR_NEEDFOOT, VR_NEEDFOOT);	// (need a way to print last
 				rxt.colDef = wMtrColdef;
 				break;  	// DHW meter report or export
 
+			case C_RPTYCH_AFMTR:
+				rxt.colDef = afMtrColdef;
+				break;		// Airflow meter report or export
+
 			case C_RPTYCH_AH:
 				rxt.colDef = ahColdef;
 				break;  	// Air handler report or export
@@ -729,6 +762,16 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 						dvrip->dv_vpDHWMtrRow( &rxt);	// print specified one
 					break;
 
+				case C_RPTYCH_AFMTR:						// DHW meter report
+					if (isAll)
+					{	AFMTR* pAM;
+						RLUP(AfMtrR, pAM)			// loop over records
+							dvrip->dv_vpAfMtrRow(&rxt, pAM->ss);	// print row of text for this meter
+					}
+					else
+						dvrip->dv_vpAfMtrRow(&rxt);	// print specified one
+					break;
+
 				case C_RPTYCH_AH:						// air handler report
 					if (isAll)
 					{
@@ -802,7 +845,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for type and frequency
 
 	DVRI *dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
-	RXPORTINFO *rxt )	// addl report/export info struct set in vpRxports
+	RXPORTINFO *rxt)	// addl report/export info struct set in vpRxports
 
 // called at first output and first hour each day if daily, first day each month if monthly, etc
 {
@@ -823,8 +866,8 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	SI hour = 0;				// 0 or hour 1-24 to show in report heading (all- reports)
 	SI subHour = -1;			// -1 or subhour 0.. to show in report heading (all- reports)
 
-	vrChangeOptn( vrh, VR_NEEDHEAD, 0); 		// clear "heading request pending" flag
-	if (dvrip->rpHeader==C_RPTHDCH_NO)			// if header suppressed for this report/export by input command
+	vrChangeOptn(vrh, VR_NEEDHEAD, 0); 		// clear "heading request pending" flag
+	if (dvrip->rpHeader == C_RPTHDCH_NO)			// if header suppressed for this report/export by input command
 		return;						// done
 
 // get rpFreq-dependent title substrings.  Note All- reports (no date col), get one more time subdivision in title.
@@ -833,28 +876,28 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	switch (rpFreq)
 	{
 	case C_IVLCH_S:
-		fqTx= "Subhourly ";
-		ivlTx= "Subhour";
-		when= Top.dateStr;
+		fqTx = "Subhourly ";
+		ivlTx = "Subhour";
+		when = Top.dateStr;
 		break;
 	case C_IVLCH_HS:
-		fqTx= "Hourly and Subhourly ";
-		ivlTx= "Hour + Subhour";
-		when= Top.dateStr;
+		fqTx = "Hourly and Subhourly ";
+		ivlTx = "Hour + Subhour";
+		when = Top.dateStr;
 		break;
 	case C_IVLCH_H:
-		fqTx= "Hourly ";
-		ivlTx= "Hour";
-		when= Top.dateStr;
+		fqTx = "Hourly ";
+		ivlTx = "Hour";
+		when = Top.dateStr;
 		break;
 	case C_IVLCH_D:
-		fqTx= "Daily ";
-		ivlTx= "Day";
-		when= Top.monStr;
+		fqTx = "Daily ";
+		ivlTx = "Day";
+		when = Top.monStr;
 		break;
 	case C_IVLCH_M:
-		fqTx= "Monthly ";
-		ivlTx= "Month";
+		fqTx = "Monthly ";
+		ivlTx = "Month";
 		break;
 	case C_IVLCH_Y:
 		switch (rpTy)
@@ -863,13 +906,13 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		case C_RPTYCH_AHLOAD: 	// for these non-date-dependent reports,
 		case C_RPTYCH_TUSIZE:
 		case C_RPTYCH_TULOAD:  	// in their expected frequency,
-			fqTx= "";
+			fqTx = "";
 			break;		// omit "Annual" from header, 6-95.
 		default:
-			fqTx= "Annual ";
+			fqTx = "Annual ";
 			break;
 		}
-		ivlTx= "Year";   /* ?? hd1 = "";*/
+		ivlTx = "Year";   /* ?? hd1 = "";*/
 		break;
 	default:
 		;
@@ -881,7 +924,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 			subHour = Top.iSubhr;		// show subhour
 			/*lint -e616			case falls thru */
 		case C_IVLCH_H:
-			hour = Top.iHr+1;
+			hour = Top.iHr + 1;
 			break;	// show hour as well as date
 		case C_IVLCH_D:
 			when = Top.dateStr;
@@ -889,10 +932,10 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		case C_IVLCH_M:
 			when = Top.monStr;
 			break;
-		default: ;	 /*lint +e616 */
+		default:;	 /*lint +e616 */
 		}
 
-// get texts describing object(s) report/export is for
+	// get texts describing object(s) report/export is for
 
 	if (dvrip->ownTi)			// if zone-based report (ZEB, ZST, )
 	{
@@ -938,7 +981,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		{
 			DHWMTR* pWM;
 		default:
-			pWM = WMtrR.GetAt( dvrip->dv_dhwMtri);   	// specific DHW meter
+			pWM = WMtrR.GetAt(dvrip->dv_dhwMtri);   	// specific DHW meter
 			objTx = isExport ? pWM->name : strtprintf("DHW meter \"%s\"", pWM->name);
 			break;
 		case TI_ALL:
@@ -947,6 +990,24 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 			break;			// 1st col is object name not time
 		}
 		xhd1 = "DHW Meter";					// export 1st col always name (and 4 time cols always present)
+	}
+	else if (dvrip->dv_afMtri)
+	{	switch (dvrip->dv_afMtri)
+		{
+			AFMTR *mtr1;
+		default:
+			mtr1 = AfMtrR.p + dvrip->dv_afMtri;   // one specific afmeter
+			objTx = isExport ? mtr1->name : strtprintf("AFMETER \"%s\"", mtr1->name);
+			break;
+		case TI_ALL:
+			objTx = "All AFMETERs";
+			hd1 = "Air Flow Meter";
+			break;			// 1st col is object name not time
+		case TI_SUM:
+			objTx = "Sum of AFMETERs";
+			break;
+		}
+		xhd1 = "Air Flow Meter";
 	}
 	else if (dvrip->ahi)			// if airHandler-based report (AH)
 	{
@@ -1005,6 +1066,10 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 
 	case C_RPTYCH_DHWMTR:
 		what = "Hot Water Use";
+		break;
+
+	case C_RPTYCH_AFMTR:
+		what = "Air Flow (avg CFM)";
 		break;
 
 	case C_RPTYCH_AH:
@@ -1142,6 +1207,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		case C_RPTYCH_ZST:
 		case C_RPTYCH_MTR:
 		case C_RPTYCH_DHWMTR:
+		case C_RPTYCH_AFMTR:
 		case C_RPTYCH_AH:
 
 			/* omit total line if report ends b4 month or year it shows is complete: partial results wd be misleading.
@@ -1190,6 +1256,14 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			DHWMTR_IVL* pIvl = &WMtrR[ dhwMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
 			rxt.colDef = wMtrColdef;					 			// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
+		}
+
+		else if (dvrip->rpTy == C_RPTYCH_AFMTR)		// if DHW meter report
+		{
+			TI afMtri = dvrip->dv_afMtri;    		// subscript
+			AFMTR_IVL* pIvl = &AfMtrR[afMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
+			rxt.colDef = afMtrColdef;					 			// columns definition table for vpRxRow
+			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
 
 		else if (dvrip->rpTy==C_RPTYCH_AH)   	// if Air handler report
@@ -1252,9 +1326,9 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			break;
 		}
 		// case C_RPTYCH_DHWMTR: no Sum
+		// case C_RPTYCH_AFMTR: no Sum
 		case C_RPTYCH_AH:
-		{
-			AHRES_IVL_SUB *ahrs = &AhresB.p[AhresB.n].Y + rpFreq - 1;   	// point substruct for interval in question
+		{	AHRES_IVL_SUB* ahrs = &AhresB.p[AhresB.n].Y + rpFreq - 1;   	// point substruct for interval in question
 			rxt.colDef = ahColdef;
 			// rxt.flags set above
 			vrStr( dvrip->vrh, "\n");   				// blank separating line
@@ -1405,6 +1479,18 @@ void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
     												// subhr not allowed for DHWMTR --> fq==fqr; no extra -1 needed.
 
 	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+}		// dv_vpDHWMtrRow
+//-----------------------------------------------------------------------------
+void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
+
+// virtual print AFMTR report/export Row for one meter (caller iterates for all)
+{
+	if (afMtri < 0)
+		afMtri = dv_afMtri;
+	AFMTR* pM = AfMtrR.GetAt(afMtri);		// record
+	AFMTR_IVL* pIvl = (&pM->Y) + (rxt->fq - 1);	// interval
+
+	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //=================================================================
 LOCAL void FC NEAR vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
@@ -1915,7 +2001,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 
 // Rets ptr to null-terminated heading string in head[]. Generates 2 rows: second is ----'s underlining the text.
 {
-	register SI i, l, blankit = 0;   char *colhd, *underline;   va_list ap;
+	register SI i, l, blankit = 0;   char *underline;   va_list ap;
 
 	va_start( ap, flags);
 
@@ -1948,7 +2034,9 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 		blankit = (BLANKFLAGS & colDef->flags &~flags);   	// BLANK OUT column with BLANKFLAGS bit that caller did not give
 #endif
 
-		colhd =  (colDef->colhd==(char *)-1L)  ?  va_arg( ap, char *)  :  colDef->colhd; 	// for pointer -1L, use next arg
+		const char *colhd =  (colDef->colhd==(const char *)-1L)
+				?  va_arg( ap, const char *)
+			    :  colDef->colhd; 	// for pointer -1L, use next arg
 
 		cvin2sBuf( head+i, 					// format col head text (lib\cvpak.cpp)
 		blankit ? "" : colhd,
@@ -1977,7 +2065,7 @@ LOCAL char * CDEC NEAR fmtExColhd( 		// format export file columns heading per C
 
 // Returns pointer to null-terminated heading string in head.
 {
-	char *s, *colhd;   va_list ap;
+	char *s;   va_list ap;
 
 	va_start( ap, flags);
 
@@ -1989,7 +2077,9 @@ LOCAL char * CDEC NEAR fmtExColhd( 		// format export file columns heading per C
 			*s++ = ',';				// separating comma
 		*s++ = '"';				// enclose in quotes
 
-		colhd =  (colDef->colhd==(char *)-1L)  ?  va_arg( ap, char *)  :  colDef->colhd; 	// for "pointer" -1L use next arg
+		const char* colhd =  (colDef->colhd==(const char *)-1L)
+			  ?  va_arg( ap, char *)
+			  :  colDef->colhd; 	// for "pointer" -1L use next arg
 
 #if BLANKFLAGS  // omit code if no such bits
 		if (!(BLANKFLAGS & colDef->flags &~flags))	// just "" if col has BLANKFLAGS 64 bit that caller did not give

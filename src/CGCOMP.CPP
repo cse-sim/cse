@@ -257,6 +257,76 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 }	// TOPRAT::tp_WindPresV
 //===============================================================================
 
+///////////////////////////////////////////////////////////////////////////////
+// AFMTR_IVL, AFMTR: accumulates air mass flow by category
+///////////////////////////////////////////////////////////////////////////////
+/*static*/ const int AFMTR_IVL::NAFCATS
+	= (sizeof(AFMTR_IVL) - offsetof( AFMTR_IVL, amt_total)) / sizeof(float);
+// NAFCATS s/b same as AFCAT choices + 1 (for total)
+static_assert(AFMTR_IVL::NAFCATS == C_AFCAT_COUNT+1, "Inconsistent AFMTR constants");
+//-----------------------------------------------------------------------------
+void AFMTR_IVL::amt_Copy(
+	const AFMTR_IVL* s)
+{
+	memcpy(this, s, sizeof(AFMTR_IVL));
+}	// AFMTR_IVL::amt_Copy
+//-----------------------------------------------------------------------------
+void AFMTR_IVL::amt_Accum(			// accumulate
+	const AFMTR_IVL* sIvl,		// source
+	int firstFlg,				// true iff first accum into this (beg of ivl)
+	int lastFlg)				// true iff last accum into this (end of ivl)
+
+{
+	if (firstFlg)
+	{	amt_Copy(sIvl);
+		amt_count = 1;
+	}
+	else
+	{	VAccum(&amt_total, NAFCATS, &sIvl->amt_total);
+		amt_count++;
+	}
+	if (lastFlg)
+		VMul1(&amt_total, NAFCATS, 1.f / amt_count);
+}		// AFMTR_IVL
+//-----------------------------------------------------------------------------
+RC AFMTR::amt_CkF()
+{
+	return RCOK;
+}
+//-----------------------------------------------------------------------------
+RC AFMTR::amt_BegSubhr()		// init at beg of subhr
+{
+	S.amt_Clear();
+	return RCOK;
+}		// AFMTR::amt_BegSubhr
+//-----------------------------------------------------------------------------
+void AFMTR::amt_AccumCat(		// accumulate air flow value for current subhour
+	AFCAT afCat,	// air flow category
+	float amf)		// air mass flow, lbm/sec
+{
+	if (amf > 0.f)		// record only flow into zone
+	{	// convert lbm/s -> cfm std air
+		S.amt_AccumCat(afCat, AMFtoAVF2( amf));
+	}
+}		// AFMTR::amt_AccumCat
+//-----------------------------------------------------------------------------
+void AFMTR::amt_Accum(
+	IVLCH ivl,		// destination interval: hour/day/month/year
+					// Accumulates from subhour/day/month.  Not Top.ivl!
+	int firstFlg,	// iff TRUE, destination will be initialized before values are accumulated into it
+	int lastFlg)	// iff TRUE, destination averages will be computed as needed
+{
+	AFMTR_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
+												// ASSUMES interval members ordered like DTIVLCH choices
+	AFMTR_IVL* sIvl = dIvl + 1;				// source: next shorter interval
+
+	// accumulate: copy on first call (in lieu of 0'ing dIvl).
+	//   Note: amt_Init() call in doBegIvl 0s H values
+	dIvl->amt_Accum(sIvl, firstFlg, lastFlg);
+}		// AFMTR::amt_Accum
+//=============================================================================
+
+
 /////////////////////////////////////////////////////////////////////////////////
 // AIRSTATE
 /////////////////////////////////////////////////////////////////////////////////
@@ -704,8 +774,7 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
-
-
+	
 	// iz_air2 / iz_rho2 = air state into z1
 	// Note: calc HX with moist air mass flow rates
 	//       some sources say dry AMF, not fully understood
@@ -951,9 +1020,54 @@ x		}
 
 	iz_SetupNonAirNet();		// calc izxfer derived values
 
+	iz_SetupAfMtrs();			// AFMETER (air flow meter) setup
+
 	return rc;
-}	// IZXRAT::iz_Setup()
+}	// IZXRAT::iz_Setup
 #undef ZFAN
+//-------------------------------------------------------------------
+void IZXRAT::iz_SetupAfMtrs()
+{
+	// Air flow category
+	if (iz_afCat == 0)
+		iz_afCat = iz_AfCatDefault();
+
+	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
+	//  one pointer for positive flows, one for negative
+	const ZNR* zp;
+	if (iz_zi1 > 0)
+	{	zp = ZrB.GetAt(iz_zi1);
+		iz_pPosAfMtr = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+	}
+	if (iz_zi2 > 0)
+	{	zp = ZrB.GetAt(iz_zi2);
+		iz_pNegAfMtr = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+	}
+}		// IZXRAT::iz_SetupAfMtrs
+//-----------------------------------------------------------------------------
+AFCAT IZXRAT::iz_AfCatDefault() const
+{
+	AFCAT afCat;
+	if (iz_IsSysAir())
+		afCat = C_AFCAT_HVAC;
+	else if (iz_IsDuctLk())
+		afCat = C_AFCAT_DUCTLK;
+	else if (iz_IsExterior())
+	{	if (iz_IsFixedFlow())
+			afCat = C_AFCAT_FANEX;
+		else
+			afCat = C_AFCAT_INFILEX;
+	}
+	else
+	{	if (iz_IsFixedFlow())
+			afCat = C_AFCAT_FANIZ;
+		else
+			afCat = C_AFCAT_INFILIZ;
+	}
+
+	return afCat;
+
+}		// IZXRAT::iz_AfcatDefault
 //-----------------------------------------------------------------------------
 RC IZXRAT::iz_SetupNonAirNet()		// interzone transfer one-time initialization
 
@@ -1095,6 +1209,8 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	}
 	else
 		ize->iz_zi2 = -1;		// no other zone
+
+	ize->iz_SetupAfMtrs();		// default iz_afCat, set up AFMTR linkage
 
 	// more init?
 
@@ -1255,7 +1371,6 @@ RC IZXRAT::iz_Calc()
 	ZNR* zp1 = ZrB.GetAt( iz_zi1);
 	ZNR* zp2 = ZrB.GetAt( iz_zi2);
 	float tdif = zp1->tzls - zp2->tzls;   	// temp diff between zones
-#if 1
 	if (iz_nvcntrl != C_IZNVTYCH_ONEWAY || tdif > 0.f)
 	{	double hx = iz_ua;
 		if (iz_nvcntrl != C_IZNVTYCH_NONE)
@@ -1264,15 +1379,6 @@ RC IZXRAT::iz_Calc()
 		zp1->zn_qIzXAnSh -= qx;		// accumulate heat/hour to zone
 		zp2->zn_qIzXAnSh += qx;		// same for other zone, opposite sign: positive into zone.
 	}
-#else
-x	float hx = iz_ua;						// coupling coeff: init to constant (conduction) portion
-x	if (iz_nvcntrl==C_IZNVTYCH_TWOWAY)   	// if nat vent tween zones
-x		hx += iz_nvcoeff * sqrt( fabs( tdif));   	// it is proportional to sqrt temp difference
-x	float qx = hx * tdif;   		// heat xfer per hour (power): coupling * temp diff.
-x									//   positive for xfer from zn1 to zn2
-x	zp1->zn_qIzXAnSh -= qx;			// accumulate heat/hour to zone
-x	zp2->zn_qIzXAnSh += qx;			// same for other zone, opposite sign: positive into zone.
-#endif
 	return RCOK;
 }	// IZXRAT::iz_Calc
 //--------------------------------------------------------------------------------
@@ -1380,7 +1486,6 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 {
 	ZNR* zp = ZrB.GetAt( iz_zi1);	// zone
 	float fVent = zp->zn_fVent;
-	iz_amfNom = (1.f-fVent)*iz_ad[ 0].ad_mdotP + fVent*iz_ad[ 1].ad_mdotP;
 	if (iz_HasFan() && iz_fan.fn_mtri)
 	{	// calc fan electricity and accum to meter
 		// need venting fraction to determine fan operation
@@ -1393,9 +1498,25 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 			iz_fan.fn_endUse,			// user-specified end use (default = "fan")
 			fanPwr * Top.subhrDur);		// electrical energy, Btu (*not* Wh)
 	}
+
+	// air flow accounting
+	iz_amfNom // nominal flow, lbm/sec
+		= (1.f - fVent)*iz_ad[0].ad_mdotP + fVent * iz_ad[1].ad_mdotP;
+	if (iz_nvcntrl == C_IZNVTYCH_ANHORIZ)
+		iz_amfNom
+			+= (1.f - fVent)*iz_ad[0].ad_mdotB + fVent * iz_ad[1].ad_mdotB;
+	if (iz_amfNom > 0.f)
+	{	if (iz_pPosAfMtr)
+			iz_pPosAfMtr->amt_AccumCat(iz_afCat, iz_amfNom);
+	}
+	else if (iz_amfNom < 0.f)
+	{	// flow is out of zn1 = into zn2
+		if (iz_pNegAfMtr)
+			iz_pNegAfMtr->amt_AccumCat(iz_afCat, -iz_amfNom);
+	}
+
 	return RCOK;
 }		// IZXRAT::iz_EndSubhr
-
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1403,8 +1524,8 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 AIRNET::AIRNET()
-: an_jac( NULL), an_V1( NULL), an_V2( NULL), an_mdotAbs( NULL), an_didLast( NULL),
-an_nz(0)
+   : an_jac( NULL), an_V1( NULL), an_V2( NULL), an_mdotAbs( NULL), an_didLast( NULL),
+     an_nz(0)
 {	an_resultsClear[0] = an_resultsClear[1] = 0;
 }	// AIRNET::AIRNET
 //-----------------------------------------------------------------------------

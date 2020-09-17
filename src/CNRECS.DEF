@@ -1696,7 +1696,8 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *i TI mtri		// meter to report/export for meter-specific reports. Can be TI_SUM, TI_ALL.
     *i TI ahi		// air handler to report/export for air-handler-specific reports. Can be TI_SUM, TI_ALL.
     *i TI tui		// terminal to report/export for terminal-specific reports. Can be TI_ALL
-    *i TI ri_dhwMtri	// DHW meter to report/export for DHW meter-specific reports. Can be TI_ALL.
+    *i TI ri_dhwMtri// DHW meter to report/export for DHW meter-specific reports. Can be TI_ALL.
+    *i TI ri_afMtri	// Air flow meter to report/export for AF meter-specific reports. Can be TI_ALL.
     *i BOO isExport	// 1 if export not report, so same fcns can be used with RiB and XiB records
     *z RPTYCH rpTy 	// report/export type C_RPTYCH_EB etc
     *z IVLCH rpFreq	// r/xport frequency C_IVLCH_M etc
@@ -1742,34 +1743,36 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
     *exdes		// cncult4.cpp. frees rpTitle
 	*ovrcopy
 	*declare "void dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri=-1);"
+	*declare "void dv_vpAfMtrRow( RXPORTINFO *rxt, TI afMtri=-1);"
 
   // from inputs to RiB/XiB		.ownTi is zone subscript or TI_SUM or ?TI_ALL.
-    *r TI mtri		// meter to report/export. can be TI_SUM, TI_ALL.
+    *r TI mtri			// meter to report/export. can be TI_SUM, TI_ALL.
 	*r TI dv_dhwMtri	// DHW meter to report/export.  can be TI_ALL.
-    *r TI ahi		// air handler to report/export. can be TI_SUM, TI_ALL.
-    *i TI tui		// terminal to report/export for terminal-specific reports. Can be TI_ALL. 6-95.
+	*r TI dv_afMtri		// AF meter to report/export.  can be TI_ALL.
+    *r TI ahi			// air handler to report/export. can be TI_SUM, TI_ALL.
+    *i TI tui			// terminal to report/export for terminal-specific reports. Can be TI_ALL. 6-95.
     *r BOO isExport 	// non-0 if export not report (rpTy values are shared)
-    *r BOO isAll	// non-0 if All- (zones, meters, etc) report
-    *r RPTYCH rpTy 	// report/export type: C_RPTYCH_EB, _UDT, etc
-    *r IVLCH rpFreq	// r/xport frequency C_IVLCH_MON etc
-    *r DOY rpDayBeg	// start 1-based Julian day of year
-    *r DOY rpDayEnd	// end ..
+    *r BOO isAll		// non-0 if All- (zones, meters, etc) report
+    *r RPTYCH rpTy 		// report/export type: C_RPTYCH_EB, _UDT, etc
+    *r IVLCH rpFreq		// r/xport frequency C_IVLCH_MON etc
+    *r DOY rpDayBeg		// start 1-based Julian day of year
+    *r DOY rpDayEnd		// end ..
     *r float rpBtuSf	// energy (Btu) scale factor
-    *s LI rpCond 	// condition: if given, report lines omitted when FALSE (SI; LI used to hold NAN for expression)
+    *s LI rpCond 		// condition: if given, report lines omitted when FALSE (SI; LI used to hold NAN for expression)
     *r SI rpCondGiven	// nz if user-given condition: may be reflected in title (when 0, rpCond is TRUE).
-    *r CHP rpTitle 	// title, for UDT, in dm
-    *r SI rpCpl		// chars per line, inputtable for UDT's
+    *r CHP rpTitle 		// title, for UDT, in dm
+    *r SI rpCpl			// chars per line, inputtable for UDT's
     *r RPTHDCH rpHeader	// table header or export header yes/no/col (default yes)
     *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line) yes/no (default yes)
   // user-defined reports columns
-    *r TI coli		// RcolB/XcolB subscript of first column (thence linked by .nxColi).
-    *r SI nCol		// # columns
-    *r SI wid		// total col width for user-defined report, including colGaps.
-					// generated
-    *r INT vrh		// virtual report handle, used from here for runtime output
-					//   linking
-    *d TI nextNow  	// 0 or subscript of next report/export of this type that is active today
-    				//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
+    *r TI coli			// RcolB/XcolB subscript of first column (thence linked by .nxColi).
+    *r SI nCol			// # columns
+    *r SI wid			// total col width for user-defined report, including colGaps.
+						// generated
+    *r INT vrh			// virtual report handle, used from here for runtime output
+						//   linking
+    *d TI nextNow  		// 0 or subscript of next report/export of this type that is active today
+    					//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
 RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
@@ -2152,6 +2155,9 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 							//   default derived from zn_infShld and zn_eaveZ
 							//   else input
 							// Note: Top.windF also applied
+	*r TI zn_afMtri			// AFMTR (air flow meter) idx, 0 if none
+							//   provides default for IZXRAT.iz_afMtri in this zone
+							//   perhaps additional?
 
 // ZNISUB setup time: reports.  (Most zone report info is in DvriB, accessed by interval via list heads in Top.)
     *r INT vrZdd	// 0 (report not requested) or vrh (virtual report handle) for zone description (ZDD report).
@@ -2765,6 +2771,8 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *declare "RC iz_CkfIZXFER();"
 	*declare "void iz_ClearResults( int iV);"
     *declare "RC iz_Setup( IZXRAT* izie);"
+	*declare "AFCAT iz_AfCatDefault() const;"
+	*declare "void iz_SetupAfMtrs();"
 	*declare "RC iz_SetupNonAirNet();"
 	*declare "bool iz_HasVentEffect() const;"
 	*declare "RC iz_BegHour();"
@@ -2819,7 +2827,15 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 						//   C_IZNVTYCH_ANSYSAIR: system air flow
 						//   C_IZNVTYCH_ANOAVRLF: RSYS OAV relief air
 						//                        ( = interzone hole sized per flow)
-						//
+	*r AFCAT iz_afCat	// air flow category (accounting only)
+						//   C_AFCAT_xxx
+						// AFMTR pointers, derived from zone zn_afMtri
+						//    one for pos flows, one for neg
+						//    WHY: AFMTRs track flow into zone
+						//         IZ transfers have different zones per size
+    *declare "AFMTR* iz_pPosAfMtr;"
+    *declare "AFMTR* iz_pNegAfMtr;"
+
     *h AREA_GEZ iz_a1  	// vent area 1, ft2
 						//   _TWOWAY = low vent area
 						//   AirNet = minimum vent area ("infil only")
@@ -3383,6 +3399,51 @@ RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (lat
     // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// RSYSRES
 //=============================================================================
+RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct for AIRFLOWMETER
+
+    *prefix amt_
+	*declare "void amt_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
+	*declare "void amt_Copy( const AFMTR_IVL* s);"
+ 	*declare "void amt_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
+	*declare "void amt_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg);"
+
+	*declare "static const int NAFCATS;"
+
+	INT amt_count		// # of accums
+
+    FLOAT amt_total		// total of following specific categories
+						//   code assumes amt_total is 1st float
+    //   Use by airflow category (C_AFCAT_xxx)
+    //   CAUTION: order of members MATCHES DTAFCAT
+    //      for subscripting (in cgcomp,cgresult.cpp) by category
+	FLOAT amt_unknown		// unknown (= AFCAT 0, no associated choice)
+	FLOAT amt_infilEx		// air flow by category
+	FLOAT amt_ventEx
+	FLOAT amt_fanEx
+	FLOAT amt_infilIz
+	FLOAT amt_ventIz
+	FLOAT amt_fanIz
+	FLOAT amt_ductLk
+	FLOAT amt_hvac
+*END		// AFMTR_IVL
+//=============================================================================
+RECORD AFMTR "AFMETER" *RAT 	// Airflow meter
+
+    *declare "RC amt_CkF();"
+	*declare "RC amt_BegSubhr();"
+	*declare "void amt_AccumCat( AFCAT afCat, float amf);"
+	*declare "void amt_Accum( IVLCH ivl, int firstflg, int lastFlg);"
+
+ // results: average cfm std air
+ //     for each interval (member here), usage by end use (substruct member):
+ // CAUTION: ordered for subscripting by IVLCH-1.
+    *y *e *nest AFMTR_IVL Y   	// run (aka year or annual)
+    *m *e *nest AFMTR_IVL M   	// month
+    *d *e *nest AFMTR_IVL D   	// day
+    *h *e *nest AFMTR_IVL H   	// hour
+	*s *e *nest AFMTR_IVL S		// subhour
+*END		// AFMETER
+//=============================================================================
 RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for DHW meter
  // use results
 
@@ -3407,7 +3468,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 
 *END		// DHWMTR_IVL
 //=============================================================================
-RECORD DHWMTR "DHWmeter" *RAT 	// DHWMTR: hot water consumption
+RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
 
     *declare "RC wmt_CkF();"
 	*declare "RC wmt_Init( IVLCH ivl);"
@@ -4006,7 +4067,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
   *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
 							//   default = none (include wh_HPWHxBU in end use dhwBU)
-  *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel; /*MTR* wh_pMtrPrim;*/"
+  *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel;"
 							// runtime pointers to meters, NULL if not accum'ing
 
   *h *e INT wh_unMetSh;				// count of subhrs in this hour

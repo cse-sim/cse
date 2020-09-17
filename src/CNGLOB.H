@@ -661,6 +661,8 @@ inline double AMFtoAVF( double amf) { return amf / (60.*.075); }
 inline float  AMFtoAVF( float amf)  { return amf / (60.f*.075f); }
 inline double AVFtoAMF( double avf) { return avf * 60.*.075; }
 inline float  AVFtoAMF( float avf)  { return avf * 60.f*.075f; }
+// amf in lbm/s
+inline float AMFtoAVF2( float amf) { return amf * 60.f / .075f;  }
 
 
 // Powers of 10

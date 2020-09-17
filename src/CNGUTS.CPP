@@ -68,7 +68,7 @@ LOCAL RC   FC NEAR cgAfterWarmup();
 LOCAL RC   FC NEAR doHourGains();
 LOCAL RC   FC NEAR doIvlExprs( int ivlStage);
 LOCAL void FC NEAR doIvlAccum();
-LOCAL void FC NEAR mtrsAccum( IVLCH ivl, int firstflg);
+LOCAL void FC NEAR mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
 LOCAL void FC NEAR doIvlFinalize();
 LOCAL void FC NEAR mtrsFinalize( IVLCH ivl, int firstflg);
 LOCAL void FC NEAR accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
@@ -553,6 +553,11 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 #endif
 		EF( Top.tp_WthrBegSubhr() ); 	// set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
 		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
+
+		// clear subhour values in air flow meters
+		AFMTR* pAM;
+		RLUP(AfMtrR, pAM)
+			EF(pAM->amt_BegSubhr());
 	}
 
 // import files: read next record as appropriate
@@ -1544,7 +1549,7 @@ LOCAL void FC NEAR doIvlAccum()
 
 	DHWSYSRES* pWSRSum = WsResR.p + WsResR.n;
 	DHWSYSRES* pWSR;
-	RLUP(WsResR, pWSR)						// loop RSYSRES, last is sum
+	RLUP(WsResR, pWSR)						// loop DHWSYSRES, last is sum
 	{
 		if (pWSR->ss < WsResR.n)
 			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
@@ -1554,6 +1559,14 @@ LOCAL void FC NEAR doIvlAccum()
 	AHRES* ahres;
 	RLUP( AhresB, ahres)						// loop simulation results for air handlers. last is sum.
 		accumAhr( &ahres->S, &ahres->H, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour ah sim results, local, below.
+
+	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
+	AFMTR* pAM;
+	RLUP(AfMtrR, pAM)						// loop AFMTRs
+	{	if (pAM->ss < AfMtrR.n)
+			pAMSum->S.amt_Accum(&pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
+		pAM->amt_Accum( C_IVLCH_H, Top.isBegHour, Top.isEndHour);
+	}
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
@@ -1698,7 +1711,7 @@ LOCAL void FC NEAR doIvlAccum()
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
 
-	mtrsAccum( C_IVLCH_D, Top.isBegDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
 
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
@@ -1712,7 +1725,7 @@ LOCAL void FC NEAR doIvlAccum()
 		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
 		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);		// accumulate day ah results to month
-	mtrsAccum( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
+	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum metered energy: day to month. local,below.
 #ifdef BINRES
 	if (brf)									// if outputting binary results for this run
 		//if (!Top.tp_autoSizing)						// not for ausz yet 6-95: tested above, and brf is off.
@@ -1752,7 +1765,7 @@ LOCAL void FC NEAR doIvlAccum()
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
 		pWSR->Y.wsr_Accum(&pWSR->D, Top.isFirstMon, Top.isLastDay);
-	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
+	mtrsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
 	{
@@ -1991,10 +2004,12 @@ LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
 	}
 }               // accumAhr
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add interval to next, + tot and sum.
-
+LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
+								// acts on METERs, DHWMETERs, and AFMETERs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-	int firstflg) 	// If TRUE, destination will be initialized before values are accumulated into it
+	int firstflg, 	// iff TRUE, destination will be initialized before values are accumulated into it
+	int lastflg)	// iff TRUE, destination will be finalized (e.g. averages computed)
+					//   Note also mtrsFinalize()
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
@@ -2035,6 +2050,11 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add int
 	DHWMTR* pWM;
 	RLUP( WMtrR, pWM)
 		pWM->wmt_Accum( ivl, firstflg);
+
+	// AFMETERs
+	AFMTR* pAM;
+	RLUP(AfMtrR, pAM)
+		pAM->amt_Accum(ivl, firstflg, lastflg);
 }               // mtrsAccum
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)

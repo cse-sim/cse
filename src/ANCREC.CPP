@@ -592,14 +592,18 @@ RC FC basAnc::free()				// free (non-static) record memory block for anchor
 	return RCOK;
 }					// basAnc::free
 //---------------------------------------------------------------------------------------------------------------------------
-RC basAnc::add( record **_r, int erOp, TI i/*=0*/)	// construct record i (0 = next). Allocs if nec.
+RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
+	record **_r,	// returned: ptr to add record
+	int erOp,		// error handling
+	TI i/*=0*/,		// where to add
+	const char* _name /*=NULL*/)	// optional name for added record
 {
 #ifdef DEBUG2
-	if (validate("basAnc::add", erOp))  return RCBAD;	// check anchor
+	if (validate("basAnc::add", erOp))	// check anchor
+		return RCBAD;
 #endif
 	if (!i)						// if we are to choose record number
-	{
-		i = mn;						// 1: record # 0 is not used
+	{	i = mn;						// 1: record # 0 is not used
 		if (ptr())
 		{
 			while (i <= n && rec(i).gud) i++;    // find record space with gud==0 else 1 more than last used.
@@ -611,15 +615,14 @@ RC basAnc::add( record **_r, int erOp, TI i/*=0*/)	// construct record i (0 = ne
 	 ||  !ptr() )   				// insurance
 	{
 		ULI sz = (ULI)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
-#if 0	// eliminate 64K limit, 9-10
-x		setToMin( sz, 0x0000FFF0UL);				// don't go over 64K to get the 1K+1.  Allow a few overhead bytes.
-#endif
 		register TI _n = max( (USI)(sz/eSz), (USI)i);	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
 		if (reAl(_n, erOp))
 			return RCBAD; 		// (re)alloc rec spaces 1.._n, init nAl, ptr(), space[0], etc. above.
 	}
 	conRec(i);				// construct record i: mark in use, zero, init std base members, do specific record init.
 	*_r = &rec(i);			// return pointer to the added record
+	if (_name)
+		(*_r)->SetName(_name);
 	if (i > n)
 		n = i;				// increase max in-use subscript (loop limit) to that just allocated
 	return RCOK;			// error returns above
@@ -638,7 +641,7 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 		{
 			if (!dest.gud)
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
-			dest.CopyFrom(&src);			// copy record i+1 to i without dup'ing heap ptrs
+			dest.CopyFrom(&src);	// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
 #if defined( _DEBUG)
 			dest.Validate();

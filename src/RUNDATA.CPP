@@ -74,6 +74,7 @@ makAncZNRES( ZnresB);		// Month and year simulation results for zones
 makAncIZXRAT( IzxR);		// interZone transfers -- conductions / ventilations between zones
 makAncGAIN( GnB);			// (zone) gains run records basAnc
 makAncMTR( MtrB);			// meters (energy use) run records basAnc
+makAncAFMTR(AfMtrR);		// air flow meters run basAnc
 
 // hvac: residential system model
 makAncRSYS( RsR);			// compliance-oriented simple residential system model

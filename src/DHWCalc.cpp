@@ -1835,9 +1835,8 @@ void DHWSYSRES_IVL::wsr_Copy(
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 	const DHWSYSRES_IVL* sIvl,		// source
-	int firstFlg,					// options
-									//   1: copy rather than add (re first call)
-	int lastFlg)					// multiplier
+	int firstFlg,					// true iff first accum into this (beg of ivl)
+	int lastFlg)					// true iff last accum into this (end of ivl)
 {
 	float mult = 1.f;
 	if (firstFlg)

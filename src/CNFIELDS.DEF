@@ -192,6 +192,7 @@ RPTHDCH       RPTHDCH      LMNONE    UNNONE		// report header (yes, no, columnon
 JUSTCH        JUSTCH       LMNONE    UNNONE		// justification left or right
 VALNDT        VALNDT       LMNONE    UNNONE		// value 'n data type struct for reportCol
 ENDUSECH      ENDUSECH     LMNONE    UNNONE		// energy end use choice clg/htg/hp/shw etc
+AFCAT	      AFCAT        LMNONE    UNNONE     // air flow categories
 MONCH	      MONCH        LMNONE    UNNONE		// month jan..dec
 HDAYCASECH    HDAYCASECH   LMNONE    UNNONE		// holiday case: first,,,fourth,last <weekday> of <month>
 FANTYCH       FANTYCH      LMNONE    UNNONE

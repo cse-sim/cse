@@ -533,6 +533,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                     TUSIZE	"TUSIZE"	// "Terminal Size"
                     TULOAD	"TULOAD"	// "Terminal Load"
 					DHWMTR  "DHWMTR"	// "DHW Meter (hot water use, gal)"
+					AFMTR   "AFMTR"		// "Airflow Meter"
                    }
 
 *choicb RPTHDCH  { NO     "No"
@@ -548,7 +549,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                     R             "Right"		// 
                   }
 
-// Energy end use.  CAUTION: MTR_IVL_SUB record (cnrecs.def) member ordering MATCHES order of choices.
+// Energy end use
+// CAUTION: MTR_IVL_SUB record (cnrecs.def) member ordering MATCHES order of choices.
 *choicb ENDUSECH	{
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
@@ -576,6 +578,21 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  BT		"BT"	// battery energy
               PV        "PV"	// CAUTION: code (cnguts,cgresult.cpp) assumes C_ENDUSECH_PV is largest.
 			}
+
+// air flow categories
+// CAUTION: AFMTR_IVL record (cnrecs.def) member ordering MATCHES order of choices.
+*choicb AFCAT	{
+    // UNKNOWN = 0
+    INFILEX "InfilEx"
+	VENTEX  "VentEx"
+	FANEX   "FanEx"
+	INFILIZ "InfilIz"
+	VENTIZ  "VentIz"
+	FANIZ   "FanIz"
+	DUCTLK  "DuctLk"
+	HVAC    "HVAC"
+	COUNT   "*Count"
+	}
 
 // holiday case -- nth <weekday> of <month> (tdpak:tdHoliDate)
 *choicb HDAYCASECH { 
