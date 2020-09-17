@@ -206,8 +206,8 @@ const int MAXLM=12;			// Limits. 25->12 5-95.
 const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-92.
 
 
-const int MAXDTH=500;	// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
-						//   352->400, 1-16; 400->500, 4-16
+const int MAXDTH=600;	// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
+						//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
 const int MAXDTC=80;	// maximum number of choices for choice data type.
 //#define MAXARRAY  20	// largest number of record array structure members * NOT checked, but should be.
 #define MAXNAMEL  40    // Max length of name, etc ("s" token)

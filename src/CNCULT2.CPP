@@ -278,7 +278,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topZn( re) )			// do zones. E: returns if error.
 
 //--- do meters early: ref'd by reports and maybe many other future things.
-	E( topMtr() )			// check meters / copy data to run rat.  local fcn.
+	E( topMtr() )			// check/dup all types of meters (energy, dhw, air flow)
 
 //--- do stuff re reports next -- much used even if error suppresses run. cncult4.cpp.
 	if (!re)			// report/exports persist from autosize thru main simulation 6-95.
@@ -566,7 +566,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 
 	// close
 	Wfile.wf_Close(); 	// close weather file if opened
-	// If all input ok, file will be reopened from cnguts.cpp for weather data access during run.
+	// If all input ok, file will be reopened for weather data access during run
 
 	// Other site related top inputs
 	if (IsSet(TOPRAT_SOILDIFF)) {
@@ -1404,31 +1404,24 @@ x		}
 	return rc;
 }		// topGt
 //===========================================================================
-LOCAL RC topMtr()	// check METERs / copy to run rat.  Create sum-of-meters record.
+LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
+// copy to run rat.  Create sum-of-meters records as needed
 {
-	MTR *mtri, *mtr;
-	RC rc /*=RCOK*/;
+	RC rc;
 
-// clear run RAT, alloc to needed size, allocate an extra record to hold sum-of-meters
-
-	E( MtrB.al( MtriB.n+1, WRN) )		// delete old records, alloc at once to needed size for min fragmentation.
-	// Meters are unOwned, leave .ownB 0.  If changed, also change cnguts:cgPreInit.
-
-// copy meter input rat MtriB entries to runtime rat MtrB [and check/init]
-
-	RLUP( MtriB, mtri)			// loop input meter RAT records (cnglob.h macro, skips not-guds)
-	{
-		// copy data from input rat, same subscript
-
-		MtrB.add( &mtr, ABT, mtri->ss);   		// add Meter run record.  error not expected due to preceding al.
-		*mtr = *mtri;					// copy entire entry incl name, ancrec.cpp
-	}
+	E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
 
 // initialize sum-of-meters record -- last record in meters run RAT.
+	MTR* mtr;
+	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
-	MtrB.add( &mtr, ABT, MtriB.n+1);     		// error not expected due to preceding MtrB.al.
-	strcpy( mtr->name, "sum_of_meters");   		// set name
-	// leave rest of record zeroes.
+// DHW meters
+	E(WMtrR.RunDup(WMtriB, NULL, 1));
+
+// Air flow meters
+	E( AfMtrR.RunDup(AfMtriB, NULL, 1));
+	AFMTR* pAM;
+	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
 
 	return rc;
 }		// topMtr
@@ -1462,7 +1455,7 @@ LOCAL RC topRSys2()	// additional RSYS check / setup
 LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 {
 	RC rc = RCOK;
-	E( WMtrR.RunDup( WMtriB));
+
 	E( WsR.RunDup( WSiB));
 	E(WhR.RunDup(WHiB, &WsR))
 	E(WlhR.RunDup(WLHiB, &WsR))

@@ -86,7 +86,6 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     BP ownB;			// 0 or ptr to anchor whose objects own this anchor's objects (record.ownTi)
 	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
-
     basAnc();
     basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, int dontRegister=0 );
     void FC regis();
@@ -101,7 +100,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     RC FC al( TI n, int erOp=ABT, BP _ownB=NULL);				// allocate records block. destroys old recs.
     RC FC reAl( TI n, int erOp=ABT);							// (re)allocate records block. keeps old recs <= n.
     RC FC free();												// free block
-    RC add( record **r, int erOp, TI i=0);						// add record to block
+    RC add( record **r, int erOp, TI i=0, const char* _name=NULL);		// add record to block
     RC FC del( TI i, int erOp=ABT);								// delete record i
     void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);  // set up with static record(s)
     int isNamed() const { return ba_flags & RFNAMED; }		// records have .name[]: always on, coding out 7-92
@@ -308,8 +307,9 @@ template <class T>  class anc : public basAnc
 	virtual void setPtr( record* r) { p = (T*)r; }
     virtual record& rec(TI i)	{ return p[i]; }		// access record i in base/generic code
     virtual void * recMbr(TI i, USI off)    { return (void *)((char *)(p + i) + off); }		// point record i member by offset
-	RC add( T **r, int erOp, TI i = 0) { return basAnc::add((record * *)r, erOp, i); }
-	RC RunDup( const anc< T> &src, BP _ownB=NULL, int erOp=ABT);
+	RC add( T **r, int erOp, TI i = 0, const char* name=NULL)
+	{	return basAnc::add((record **)r, erOp, i, name); }
+	RC RunDup( const anc< T> &src, BP _ownB=NULL, int nxRecs=0, int erOp=ABT);
 	RC AllocResultsRecs(basAnc& src);
     void statSetup( T &r, TI n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, n, noZ, inHeap); }
 	int GetCount( int options=0) const;
@@ -421,6 +421,8 @@ template <class T> int anc<T>::GetCount( int options /*=0*/) const
 template <class T> RC anc<T>::RunDup(		// duplicate records for run
 	const anc<T> &src,		// source array (e.g. input data)
 	BP _ownB /*= NULL*/,	// owner (if any)
+	int nxRecs /*=0*/,		// # of extra run records to allocate
+							//    (e.g. for "sum-of-all")
 	int erOp /*=ABT*/)		// error action re alloc fail
 							//   typically ABT, no remedy
 // typical use = input -> run
@@ -429,7 +431,7 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 //   allows record-level run cancel
 {
 	// delete old records, alloc to needed size for min fragmentation
-	RC rc = al(src.n, erOp, _ownB);
+	RC rc = al(src.n+nxRecs, erOp, _ownB);
 
 	an_pCULT = src.an_pCULT;	// assume same associated CULT
 

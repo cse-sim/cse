@@ -71,6 +71,7 @@ makAncIZXRAT( IzxiB);		// interzone transfer input records basAnc
 makAncDUCTSEG( DsiB);		// duct segment input records basAnc
 makAncGAIN(GniB);			// (zone) gains input records basAnc
 makAncMTR(MtriB);			// Meters input records basAnc
+makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
 
 // simple HVAC and DHW (for CSE T24 residential compliance)
 makAncRSYS( RSiB);			// residential HVAC system
@@ -140,6 +141,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 {
 	ZiB.free();
 	IzxiB.free();
+	AfMtriB.free();
 	GniB.free();
 	MtriB.free();
 	RSiB.free();
@@ -1270,6 +1272,7 @@ CULT( "rpZone",      DAT,  RI_ZI,         SUM_OK|ALL_OK,   0, VEOI,     TYREF, &
 CULT( "rpMeter",     DAT,  RI_MTRI,       SUM_OK|ALL_OK,   0, VEOI,     TYREF, &MtriB,  N,   0.f,      N, N),
 CULT( "rpAh",        DAT,  RI_AHI,        SUM_OK|ALL_OK,   0, VEOI,     TYREF, &AhiB,   N,   0.f,      N, N),
 CULT( "rpDHWMeter",  DAT,  RI_DHWMTRI,    ALL_OK,          0, VEOI,     TYREF, &WMtriB, N,   0.f,      N, N),
+CULT( "rpAFMeter",   DAT,  RI_AFMTRI,     SUM_OK|ALL_OK,   0, VEOI,     TYREF, &AfMtriB,N,   0.f,      N, N),
 CULT( "rpTu",        DAT,  RI_TUI,        ALL_OK,          0, VEOI,     TYREF, &TuiB,   N,   0.f,      N, N), // 6-95
 CULT( "rpType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,  0,       v 0, 0.f,      N, N), // used in rpStarCkf: no VEOI
 CULT( "rpFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,  0,       v 0, 0.f,      N, N), // used in rpStarCkf: no VEOI
@@ -1312,6 +1315,7 @@ CULT( "exZone",      DAT,  RI_ZI,     DFLIN|SUM_OK|ALL_OK, 0, VEOI,     TYREF,  
 CULT( "exMeter",     DAT,  RI_MTRI,       SUM_OK|ALL_OK,   0, VEOI,     TYREF,  &MtriB, N,   0.f,    N,   N),
 CULT( "exAh",        DAT,  RI_AHI,        SUM_OK|ALL_OK,   0, VEOI,     TYREF,  &AhiB,  N,   0.f,    N,   N),
 CULT( "exDHWMeter",  DAT,  RI_DHWMTRI,    ALL_OK,          0, VEOI,     TYREF,  &WMtriB, N,  0.f,    N, N),
+CULT( "exAFMeter",   DAT,  RI_AFMTRI,     ALL_OK,          0, VEOI,     TYREF,  &AfMtriB,N,  0.f,    N, N),
 CULT( "exTu",        DAT,  RI_TUI,        ALL_OK,          0, VEOI,     TYREF,  &TuiB,  N,   0.f,    N,   N), // 6-95
 CULT( "exType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
 CULT( "exFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
@@ -1475,6 +1479,8 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "infStories",  DAT,   ZI(INFSTORIES),  0,        0, VEOI,   TYSI,  0,      1,      N,   infStoriesCkf),
 	CULT( "znEaveZ",	 DAT,	ZI( EAVEZ),		 0,		   0, VEOI,   TYFL,  0,      8.f,              N,   N),
 	CULT( "znWindFLkg",  DAT,   ZI( WINDFLKG),   0,        0, VSUBHRLY, TYFL,  0,    1.f,           N,   N),
+	CULT( "znAFMtr",     DAT,   ZI( AFMTRI),     0,        0, VEOI,   TYREF, &AfMtriB, 0.f,              N,   N),
+
 #if 0
 x idea, not implemented, 2-2012
 x	CULT( "znWindFCnv",  DAT,   ZI( WINDFCNV),   0,        0, VSUBHRLY, TYFL,  0,    1.f,           N,   N),
@@ -1527,6 +1533,7 @@ CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   0.f,   
 CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
+CULT( "izAFCat",     DAT,   IZXRAT_AFCAT,  0,  0, VEOI,   TYCH,  0,      0,                  N,   N),
 CULT( "izALo",       DAT,   IZXRAT_A1,    0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izAHi",       DAT,   IZXRAT_A2,    0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izL1",        DAT,   IZXRAT_L1,    0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
@@ -1753,6 +1760,22 @@ CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,    
 CULT( "endDHWMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwMeterT
+
+//============================= AFMETER command =============================
+LOCAL RC amtStarCkf(CULT* c, /*AFMTR* */ void *p, void *p2, void *p3)
+// called at end of AFMETER input, to get messages near source of error.
+{
+	return ((AFMTR*)p)->amt_CkF();
+}		// amtStarCkf
+//=============================================================================
+static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
+{
+	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   amtStarCkf),
+	CULT("endAFMETER",  ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	CULT()
+};	// afMeterT
 
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf( CULT* c, /*DHWUSE* */ void *p, void *p2, void *p3)
@@ -2787,6 +2810,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "glazeType",   RATE,  0,                 NM_RQD,     0, 0,      0,    &GtiB,   N,    0.f,           gtT,  N), // added 12-94
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),
+	CULT("afmeter",      RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),

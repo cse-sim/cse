@@ -194,7 +194,7 @@ struct ET1Hdr
 #define WFHDRSZ (WFHDRSZ_BSGS)			// LARGEST header size for all file types, for buffer sizing
 
 
-//-- Defines for option bits for erOp's in wfpak function calls. EROPn defined in cnglob.h/notcne.h.
+//-- Defines for option bits for erOp's in wfpak function calls. EROPn defined in cnglob.h
 const int WF_USELEAP = EROP3;	// wf_Read: use Feb 29 if in file, else Feb 29 if present (not, 10-94) is skipped over.
 const int WF_DSNDAY = EROP4;	// wf_Read & callees: read hour from design day for month 1-12 specified in jDay argument
 const int WF_FORCEREAD = EROP5;	// wf_Read: always read from file (don't use cached data)

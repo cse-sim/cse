@@ -60,7 +60,7 @@ Yr  40.355      0      0      0 18.974  4.571      0      0      0      0 13.180
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  1
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Yr  40.355      0      0      0 18.974  4.571      0      0      0      0 13.180
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  2
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Monthly Energy Balance, zone "Garage"
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  3
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Hourly Energy Balance, zone "Z1", Sat 05-Jan
   16 65.08 49.75 -0.155      0 2.441 0.400 -0.602 -2.083      0    0      0     0 .00494 -.0049      0    0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  4
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hourly Energy Balance, zone "Z1", Mon 07-Jan
    6 64.75 51.81 -0.154      0     0 0.400 -2.790 -3.097  5.642    0      0     0 -.0039 .00390      0    0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  5
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Hourly Energy Balance, zone "Z1", Tue 08-Jan
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  6
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hourly Energy Balance, zone "Z1", Thu 10-Jan
   18 67.39 57.49 -.0229      0     0 0.400  0.548 -0.925      0    0      0     0 -.0033 .00332      0    0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  7
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Hourly Energy Balance, zone "Z1", Thu 10-Jan
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  8
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Hourly Energy Balance, zone "Garage", Sat 05-Jan
   16 40.36 36.19  1.595      0     0 .0107  2.746      0 -4.352    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page  9
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ Hourly Energy Balance, zone "Garage", Mon 07-Jan
    6 36.28 34.03  1.657      0     0 .0128  2.093      0 -3.763    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 10
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 10
 
 
 
@@ -690,7 +690,7 @@ Hourly Energy Balance, zone "Garage", Tue 08-Jan
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 11
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ Hourly Energy Balance, zone "Garage", Thu 10-Jan
   18 44.03 38.00  1.514      0     0 .0181  3.259      0 -4.792    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 12
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 12
 
 
 
@@ -816,7 +816,7 @@ Hourly Energy Balance, zone "Garage", Thu 10-Jan
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 13
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 13
 
 
 
@@ -879,7 +879,7 @@ Subhourly User-defined Report, Mon 10-Jun
       7         68.54       4.137     70.915     71.747      1.000      2.184      0         59.026     62.96
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 14
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 14
 
 
 
@@ -942,7 +942,7 @@ Subhourly User-defined Report, Mon 10-Jun
      16         87.62       3.188     74.708     76.708          0      2.317     -7.34k     71.438     77.119
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 15
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Subhourly User-defined Report, Tue 11-Jun
       0         68.9        0.168     73.716     73.631      1.000      3.663      0         70.293     69.468
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 16
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Subhourly User-defined Report, Tue 11-Jun
       9         79.52       1.51      73.766     74.788          0      1.388      0         61.004     65.057
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 17
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Subhourly User-defined Report, Tue 11-Jun
      18         92.84       1.51      74.792     76.185          0      2.586     -6.78k     81.17      80.51
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 18
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ Subhourly User-defined Report, Wed 12-Jun
       2         55.76       1.51      67.335     67.316          0      2.000      0         67.911     67.357
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 19
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ Subhourly User-defined Report, Wed 12-Jun
      11         76.1        2.517     72.021     72.879          0      1.307      0         61.869     65.872
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 20
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ Subhourly User-defined Report, Wed 12-Jun
      20         68.54       3.075     74.627     74.615      1.000      3.201      0         75.575     74.739
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 21
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ WT1 for Wed 10-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 22
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ Mass Floor              Area: 516.680   UNom: 0.006928    tc: 0.72   subhrly:
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 23
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ IzXfer ZX2              Zn1: Z1  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetE
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 24
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ Mass GarageWallLeft-F   Area: 27.000    UNom: 0.1798      tc: 4.08   subhrly:
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 25
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ Mass GarageSlab-Prm     Area: 108.000   UNom: 0.2428      tc: 41.21  subhrly:
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 26
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ Mass GarageCarDoorFro   Area: 128.000   UNom: 1.0000      tc: 0.44   subhrly:
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 27
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 27
 
 
 
@@ -1710,7 +1710,7 @@ Mass GarageCarDoorFro   Area: 128.000   UNom: 1.0000      tc: 0.44   subhrly:
 ! Log for Run 001:
 
 ################
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console   Fri 28-Aug-20   4:54:11 pm
+! CSE 0.875.0 for Win32 console   Thu 03-Sep-20   4:09:55 pm
 
 
 ================
@@ -1761,7 +1761,7 @@ tilt theta ta<=ts  ta>ts   theta ta<=ts  ta>ts
   60   -30  0.153  0.153      30  0.153  0.153
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 28
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 28
 
 
 
@@ -1824,7 +1824,7 @@ Surface 'GarageWallFront-Cav': tilt=90
 Surface 'GarageWallLeft-Cav': tilt=90
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 29
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 29
 
 
 
@@ -1887,7 +1887,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 30
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 30
 
 
 
@@ -1950,7 +1950,7 @@ Wed 10-Jul  hr=0 subhr=4
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 31
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 31
 
 
 
@@ -2013,7 +2013,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.242  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=60.24/4226.6  anMCp/T[ 1]=188.53/13226.9  ventUt=1
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 32
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 32
 
 
 
@@ -2076,7 +2076,7 @@ Z1 CZ: anMCp/T[ 0]=66.69/4606.8  anMCp/T[ 1]=209.06/14442.0  ventUt=1
      ta=73.65  tr=73.56  qIzSh=-956  fvent=1.000  pz0=-0.0032  qsHvac=0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 33
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 33
 
 
 
@@ -2139,7 +2139,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 34
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 34
 
 
 
@@ -2202,7 +2202,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 35
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 35
 
 
 
@@ -2265,7 +2265,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=3 subhr=2
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 36
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 36
 
 
 
@@ -2328,7 +2328,7 @@ Wed 10-Jul  hr=3 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.074  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 37
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 37
 
 
 
@@ -2391,7 +2391,7 @@ Z1 CZ: anMCp/T[ 0]=86.48/5561.3  anMCp/T[ 1]=272.20/17505.2  ventUt=1
      Nair=499311.37  Dair=7038.50  Nrad=108101.60  Drad=1523.24  CX=526.98  airX=4.476
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 38
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 38
 
 
 
@@ -2454,7 +2454,7 @@ Z1 CZ: anMCp/T[ 0]=85.86/5482.7  anMCp/T[ 1]=270.26/17259.0  ventUt=1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 39
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 39
 
 
 
@@ -2517,7 +2517,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=23586.95  Dair=444.20  Nrad=88805.49  Drad=1253.81  CX=229.40  airX=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 40
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 40
 
 
 
@@ -2580,7 +2580,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 41
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 41
 
 
 
@@ -2643,7 +2643,7 @@ Wed 10-Jul  hr=6 subhr=3
 ----------------
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 42
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 42
 
 
 
@@ -2706,7 +2706,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.047  mwDuctLk=0.000  mwSys=0.000
      tdb=70.38  airX=1.276  dryAirMass=249.49  XLGain=0.00  W=0.012605  twb=61.99  rh=0.6493
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 43
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 43
 
 
 
@@ -2769,7 +2769,7 @@ Z1 CZ: anMCp/T[ 0]=41.76/3052.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.67  TD=68.00  TC=74.33  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 44
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 44
 
 
 
@@ -2814,7 +2814,7 @@ Z1 CZ: anMCp/T[ 0]=63.60/4816.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=63.14  airX=0.000  dryAirMass=245.44  XLGain=0.00  W=0.004513  twb=46.70  rh=0.3027
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=62969.40  Dair=1016.63  Nrad=79273.64  Drad=1162.84  CX=305.77  airX=0.000
+     Nair=62969.41  Dair=1016.63  Nrad=79273.64  Drad=1162.84  CX=305.77  airX=0.000
      ta=63.14  tr=67.12  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -2832,7 +2832,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=62.97  airX=0.000  dryAirMass=245.52  XLGain=0.00  W=0.004513  twb=46.63  rh=0.3044
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 45
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 45
 
 
 
@@ -2840,7 +2840,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 ------------------------------------------------------------------------------
 
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=62855.49  Dair=1017.66  Nrad=79133.08  Drad=1162.97  CX=306.09  airX=0.000
+     Nair=62855.49  Dair=1017.66  Nrad=79133.09  Drad=1162.97  CX=306.09  airX=0.000
      ta=62.97  tr=66.99  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -2895,7 +2895,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=63.12  tr=67.13  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 46
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 46
 
 
 
@@ -2917,7 +2917,7 @@ Z1 CZ: anMCp/T[ 0]=91.99/7422.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=63.23  airX=0.000  dryAirMass=245.40  XLGain=0.00  W=0.004513  twb=46.74  rh=0.3018
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=63087.14  Dair=1017.27  Nrad=79436.74  Drad=1162.53  CX=306.50  airX=0.000
+     Nair=63087.15  Dair=1017.27  Nrad=79436.74  Drad=1162.53  CX=306.50  airX=0.000
      ta=63.23  tr=67.27  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -2958,7 +2958,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 47
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 47
 
 
 
@@ -3021,7 +3021,7 @@ Wed 10-Jul  hr=9 subhr=4
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 48
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 48
 
 
 
@@ -3071,7 +3071,7 @@ Z1 CZ: anMCp/T[ 0]=134.24/11879.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=65.07  airX=0.000  dryAirMass=244.54  XLGain=0.00  W=0.004513  twb=47.52  rh=0.2829
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=64522.22  Dair=1011.23  Nrad=82369.93  Drad=1172.00  CX=309.37  airX=0.000
+     Nair=64522.23  Dair=1011.23  Nrad=82369.93  Drad=1172.00  CX=309.37  airX=0.000
      ta=65.07  tr=69.19  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -3084,7 +3084,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.817  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=139.56/12471.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 49
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 49
 
 
 
@@ -3147,7 +3147,7 @@ Z1 CZ: anMCp/T[ 0]=154.64/14222.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.46  tr=76.07  qIzSh=2708  fvent=0.000  pz0=0.0157  qsHvac=-7306
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 50
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 50
 
 
 
@@ -3210,7 +3210,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 51
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 51
 
 
 
@@ -3228,7 +3228,7 @@ Wed 10-Jul  hr=11 subhr=2
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.928  mwDuctLk=0.000  mwSys=0.000
      tdb=74.50  airX=2.888  dryAirMass=246.59  XLGain=0.00  W=0.015224  twb=66.48  rh=0.6797
 Z1 CZ: anMCp/T[ 0]=173.45/16665.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=569486.05  Dair=7542.31  Nrad=113624.36  Drad=1476.31  CX=677.32  airX=7.688
+     Nair=569486.05  Dair=7542.31  Nrad=113624.37  Drad=1476.31  CX=677.32  airX=7.688
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=76.19  qIzSh=3743  fvent=0.000  pz0=0.0186  qsHvac=-8728
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
@@ -3273,7 +3273,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 52
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 52
 
 
 
@@ -3294,7 +3294,7 @@ Z1 CZ: anMCp/T[ 0]=187.73/18645.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=69.08  airX=0.000  dryAirMass=242.68  XLGain=0.00  W=0.004513  twb=49.13  rh=0.2463
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=65481.73  Dair=966.64  Nrad=88959.49  Drad=1197.26  CX=312.14  airX=0.000
+     Nair=65481.73  Dair=966.64  Nrad=88959.48  Drad=1197.26  CX=312.14  airX=0.000
      ta=69.08  tr=73.22  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -3336,7 +3336,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=12 subhr=2
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 53
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 53
 
 
 
@@ -3354,7 +3354,7 @@ Z1 CZ: anMCp/T[ 0]=193.22/19503.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=70.37  airX=0.000  dryAirMass=242.09  XLGain=0.00  W=0.004513  twb=49.64  rh=0.2356
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=63810.48  Dair=924.68  Nrad=91180.48  Drad=1207.85  CX=309.67  airX=0.000
+     Nair=63810.47  Dair=924.68  Nrad=91180.48  Drad=1207.85  CX=309.67  airX=0.000
      ta=70.37  tr=74.45  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -3371,7 +3371,7 @@ Z1 CZ: anMCp/T[ 0]=195.37/19826.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=70.85  airX=0.000  dryAirMass=241.87  XLGain=0.00  W=0.004513  twb=49.83  rh=0.2318
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=62873.95  Dair=904.95  Nrad=91997.95  Drad=1212.01  CX=308.41  airX=0.000
+     Nair=62873.94  Dair=904.95  Nrad=91997.95  Drad=1212.01  CX=308.41  airX=0.000
      ta=70.85  tr=74.88  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -3399,7 +3399,7 @@ Wed 10-Jul  hr=12 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.026  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 54
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 54
 
 
 
@@ -3414,7 +3414,7 @@ Z1 CZ: anMCp/T[ 0]=199.75/20486.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=77.27  airX=0.000  dryAirMass=238.98  XLGain=0.00  W=0.004513  twb=52.33  rh=0.1869
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=56620.91  Dair=731.60  Nrad=95394.18  Drad=1240.56  CX=281.19  airX=0.000
+     Nair=56620.90  Dair=731.60  Nrad=95394.18  Drad=1240.56  CX=281.19  airX=0.000
      ta=77.27  tr=76.97  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -3462,7 +3462,7 @@ Z1 CZ: anMCp/T[ 0]=208.28/21735.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=581067.34  Dair=7643.22  Nrad=113639.09  Drad=1465.00  CX=687.16  airX=8.262
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 55
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 55
 
 
 
@@ -3525,7 +3525,7 @@ Z1 CZ: anMCp/T[ 0]=215.33/22859.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 56
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 56
 
 
 
@@ -3545,13 +3545,13 @@ Wed 10-Jul  hr=14 subhr=0
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.096  mwDuctLk=0.000  mwSys=0.000
      tdb=74.63  airX=3.570  dryAirMass=246.56  XLGain=0.00  W=0.014940  twb=66.17  rh=0.6646
 Z1 CZ: anMCp/T[ 0]=214.41/22800.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=584383.34  Dair=7672.50  Nrad=113840.82  Drad=1461.84  CX=705.28  airX=8.370
+     Nair=584383.34  Dair=7672.50  Nrad=113840.81  Drad=1461.84  CX=705.28  airX=8.370
      TH=64.38  TD=68.00  TC=74.63  qhCap=20000  qcCap=-34000
      ta=74.63  tr=76.82  qIzSh=6800  fvent=0.000  pz0=0.0246  qsHvac=-13369
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=84.83  airX=0.000  dryAirMass=235.66  XLGain=0.00  W=0.004513  twb=55.07  rh=0.1462
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=17904.87  Dair=207.63  Nrad=113466.69  Drad=1365.43  CX=192.91  airX=0.000
+     Nair=17904.86  Dair=207.63  Nrad=113466.69  Drad=1365.43  CX=192.91  airX=0.000
      ta=84.83  tr=83.31  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 
@@ -3588,7 +3588,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=18373.08  Dair=210.04  Nrad=115669.32  Drad=1372.25  CX=194.33  airX=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 57
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 57
 
 
 
@@ -3651,7 +3651,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 58
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 58
 
 
 
@@ -3714,7 +3714,7 @@ Wed 10-Jul  hr=15 subhr=3
 ----------------
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 59
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 59
 
 
 
@@ -3777,7 +3777,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.827  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=3.759  dryAirMass=247.03  XLGain=0.00  W=0.013782  twb=64.80  rh=0.6125
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 60
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 60
 
 
 
@@ -3840,7 +3840,7 @@ Z1 CZ: anMCp/T[ 0]=225.43/24553.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 61
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 61
 
 
 
@@ -3903,7 +3903,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
      tdb=81.37  airX=0.000  dryAirMass=237.17  XLGain=0.00  W=0.004513  twb=53.81  rh=0.1634
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 62
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 62
 
 
 
@@ -3966,7 +3966,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=85.25  tr=86.95  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 63
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 63
 
 
 
@@ -4029,7 +4029,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 64
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 64
 
 
 
@@ -4092,7 +4092,7 @@ Wed 10-Jul  hr=18 subhr=4
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 65
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 65
 
 
 
@@ -4155,7 +4155,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.884  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=213.04/22373.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 66
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 66
 
 
 
@@ -4218,7 +4218,7 @@ Z1 CZ: anMCp/T[ 0]=202.69/20830.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.83  tr=76.17  qIzSh=5663  fvent=0.000  pz0=0.0252  qsHvac=-10007
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 67
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 67
 
 
 
@@ -4281,7 +4281,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 68
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 68
 
 
 
@@ -4344,7 +4344,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 69
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 69
 
 
 
@@ -4407,7 +4407,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=21 subhr=2
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 70
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 70
 
 
 
@@ -4470,7 +4470,7 @@ Wed 10-Jul  hr=21 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=6.527  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 71
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 71
 
 
 
@@ -4533,7 +4533,7 @@ Z1 CZ: anMCp/T[ 0]=115.38/9860.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=553767.99  Dair=7353.95  Nrad=113330.93  Drad=1498.36  CX=624.31  airX=6.715
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 72
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 72
 
 
 
@@ -4596,7 +4596,7 @@ Z1 CZ: anMCp/T[ 0]=102.88/8588.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 73
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 73
 
 
 
@@ -4659,7 +4659,7 @@ Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12187.81  Dair=146.83  Nrad=110435.04  Drad=1365.33  CX=180.72  airX=0.000
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 74
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 74
 
 
 
@@ -4718,11 +4718,11 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12192.12  Dair=147.98  Nrad=109260.20  Drad=1361.41  CX=180.33  airX=0.000
      ta=81.28  tr=80.38  qIzSh=0  fvent=0.000  pz0=0.0000  qsHvac=0
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console
+! CSE 0.875.0 for Win32 console
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 75
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 75
 
 
 
@@ -4785,7 +4785,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 76
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 76
 
 
 
@@ -4848,7 +4848,7 @@ Input for Run 001:
         MATERIAL   "m-Insul-R7.5-D1.5-SH0.35-C0.01111"  
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 77
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 77
 
 
 
@@ -4911,7 +4911,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 78
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 78
 
 
 
@@ -4974,7 +4974,7 @@ Input for Run 001:
            matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 79
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 79
 
 
 
@@ -5037,7 +5037,7 @@ Input for Run 001:
          CONSTRUCTION sunwall
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 80
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 80
 
 
 
@@ -5100,7 +5100,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 81
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 81
 
 
 
@@ -5163,7 +5163,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 82
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 82
 
 
 
@@ -5226,7 +5226,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 83
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 83
 
 
 
@@ -5289,7 +5289,7 @@ Input for Run 001:
               lrMat = "m-Carpet"                // Layer material
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 84
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 84
 
 
 
@@ -5352,7 +5352,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 85
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 85
 
 
 
@@ -5415,7 +5415,7 @@ Input for Run 001:
               lrMat = "m-Gypsum Board"          // Layer material
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 86
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 86
 
 
 
@@ -5478,7 +5478,7 @@ Input for Run 001:
               lrMat = "m-3 Coat Stucco"         // Layer material
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 87
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 87
 
 
 
@@ -5541,7 +5541,7 @@ Input for Run 001:
               lrMat = "m-TileGap"               // Layer material
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 88
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 88
 
 
 
@@ -5604,7 +5604,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 89
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 89
 
 
 
@@ -5667,7 +5667,7 @@ Input for Run 001:
            LAYER   "lyr-AtticTruss"  
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 90
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 90
 
 
 
@@ -5730,7 +5730,7 @@ Input for Run 001:
               lrThk = 0.041667                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 91
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 91
 
 
 
@@ -5793,7 +5793,7 @@ Input for Run 001:
 #       #define FLOORCON lw_floor
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 92
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 92
 
 
 
@@ -5856,7 +5856,7 @@ Input for Run 001:
                 sfInAbs=INABSORP
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 93
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 93
 
 
 
@@ -5919,7 +5919,7 @@ Input for Run 001:
                     wnGT=GLASSTYPE
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 94
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 94
 
 
 
@@ -5982,7 +5982,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 95
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 95
 
 
 
@@ -6045,7 +6045,7 @@ Input for Run 001:
               sfArea = 40                       // Wall area, ft2
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 96
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 96
 
 
 
@@ -6108,7 +6108,7 @@ Input for Run 001:
               sfArea = 148.5                    // Wall area, ft2
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 97
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 97
 
 
 
@@ -6171,7 +6171,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 98
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 98
 
 
 
@@ -6234,7 +6234,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 99
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 99
 
 
 
@@ -6297,7 +6297,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 100
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 100
 
 
 
@@ -6306,21 +6306,21 @@ Input for Run 001:
 
 
 
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console run(s) done: Fri 28-Aug-20   4:54:12 pm
+! CSE 0.875.0 for Win32 console run(s) done: Thu 03-Sep-20   4:09:57 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               28-Aug-20   3:21 pm   (VS 14.16    2640896 bytes)  (HPWH 1.10.1+HEAD.5950964.2)
+!               03-Sep-20   3:53 pm   (VS 14.16    2640384 bytes)  (HPWH 1.10.2)
 ! Command line: -x!  -t1 dhw_zone
 ! Input file:   D:\cse\test\dhw_zone.cse
 ! Report file:  D:\cse\test\dhw_zone.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.03     Calls = 1      T/C = 0.0250   
+!                Input:  Time = 0.02     Calls = 1      T/C = 0.0180   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.12     Calls = 1      T/C = 1.1210   
-!              Reports:  Time = 0.05     Calls = 1      T/C = 0.0530   
-!                Total:  Time = 1.20     Calls = 1      T/C = 1.2030   
+!           Simulation:  Time = 1.05     Calls = 1      T/C = 1.0520   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
+!                Total:  Time = 1.08     Calls = 1      T/C = 1.0830   
 
 
 
@@ -6360,5 +6360,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! dhw_zone  001                            Fri 28-Aug-20   4:54:11 pm  Page 101
+! dhw_zone  001                            Thu 03-Sep-20   4:09:55 pm  Page 101
 

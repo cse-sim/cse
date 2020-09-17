@@ -399,6 +399,7 @@ RC RI::ri_CkF()
 	case C_RPTYCH_ZEB:		// "Zone Energy Balance"
 	case C_RPTYCH_MTR:  	// "Meter"
 	case C_RPTYCH_DHWMTR:  	// "DHWMeter"
+	case C_RPTYCH_AFMTR:	// "Airflow meter"
 	case C_RPTYCH_AH:		// "Air Handler"
 	case C_RPTYCH_UDT:		// "User-defined Table"
 		switch (rpFreq)		// rpFreq is TYCH with evf==0 ---> no exprs
@@ -585,12 +586,17 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	{
 	case C_RPTYCH_MTR:							// "Meter" report/export requires rp/exMeter
 		rc |= require( RI_MTRI, whenTy);
-		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_DHWMTRI, 0);
+		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_DHWMTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_DHWMTR:							// "DHWMTR" report/export requires rp/exDHWMeter
 		rc |= require( RI_DHWMTRI, whenTy);
-		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, 0);
+		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_AFMTRI, 0);
+		break;
+
+	case C_RPTYCH_AFMTR:							// "AFMTR" report/export requires rp/exAFMeter
+		rc |= require(RI_AFMTRI, whenTy);
+		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_AHSIZE:	// AH-specific reports
@@ -727,7 +733,7 @@ badMtr4ty:
 
 	if (ri_dhwMtri > 0)						// if specific meter given (error'd above if omitted when rqd)
 	{
-		if (ckRefPt( &WMtriB, ri_dhwMtri, isEx ? "exMeter" : "rpMeter" ) )
+		if (ckRefPt( &WMtriB, ri_dhwMtri, isEx ? "exDHWMeter" : "rpDHWMeter" ) )
 			return RCBAD;
 	}
 	else							// no DHW meter given, or ALL
@@ -750,6 +756,37 @@ badDHWMtr4ty:
 								mtrTx, exrp, tyTx );
 			}
 		//else: ri_dhwMtri is 0 (or negative garbage).  error'd above if omitted when rqd.
+	}
+
+	// check AF meter reference or ALL
+
+	if (ri_afMtri > 0)						// if specific meter given (error'd above if omitted when rqd)
+	{
+		if (ckRefPt(&AfMtriB, ri_afMtri, isEx ? "exAFMeter" : "rpAFMeter"))
+			return RCBAD;
+	}
+	else							// no DHW meter given, or ALL
+	{
+		char *mtrTx /*=""*/;
+		if (ri_afMtri == TI_SUM)
+		{
+			mtrTx = "sum";
+			goto badAFMtr4ty;
+		}
+		else if (ri_afMtri == TI_ALL)
+			switch (rpTy)
+			{
+			case 0:						// rpTy 0: not set, no message here
+			case C_RPTYCH_AFMTR:
+				isAll++;
+				break;		// AFMTR: ALL allowed
+			default:
+				mtrTx = "all";
+			badAFMtr4ty:
+				return ooer(RI_RPTY, "rpAFMeter=='%s' cannot be used with %sType '%s'",
+					mtrTx, exrp, tyTx);
+			}
+		//else: ri_afMtri is 0 (or negative garbage).  error'd above if omitted when rqd.
 	}
 
 // check air handler reference or ALL or SUM
@@ -846,22 +883,15 @@ badTu4ty:
 				oer( (char *)MH_S0563, exrp, exrePort);   	// "no %sCols given for user-defined %s"
 
 			if (!isEx  &&  coli)			// no width check for exports or if no columns
-			{
-				int cpl = rpCpl ? rpCpl : getCpl();		// line width
-#if 1	// rpCpl<0 -> "as wide as needed", 11-28-2016
+			{	int cpl = rpCpl ? rpCpl : getCpl();		// line width
 				if (wid > cpl)
 				{	if (cpl > 0)
 						oInfo( "%s width %d is greater than line width %d.\n"
 							"    Line width has been adjusted.",
 							exrePort, wid, cpl);
+				    // else cpl <= 0 -> "as wide as needed" (w/o message)
 					rpCpl = wid;
 				}
-#else
-x				if (wid > cpl )
-x					oer( (char *)MH_S0564,
-x						exrePort, wid, cpl,		// "%s width %d greater than line width %d.\n"
-x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
-#endif
 			}
 		}
 
@@ -923,6 +953,7 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 	case C_RPTYCH_ZEB:
 	case C_RPTYCH_MTR:
 	case C_RPTYCH_DHWMTR:
+	case C_RPTYCH_AFMTR:
 	case C_RPTYCH_AH:
 	case C_RPTYCH_UDT:
 	  {
@@ -951,6 +982,7 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 					&&  rpCondGiven==dvrip->rpCondGiven &&  rpCond==dvrip->rpCond 	// (expect != if rpCond exprs given. ok.)
 					&&  rpHeaderLocal==dvrip->rpHeader   &&  rpFooter==dvrip->rpFooter
 					&&  zi==dvrip->ownTi &&  mtri==dvrip->mtri  && ri_dhwMtri == dvrip->dv_dhwMtri
+				    &&  ri_afMtri == dvrip->dv_afMtri
 					&&  tui==dvrip->tui	&&  ahi==dvrip->ahi
 					&&  rpBtuSf==dvrip->rpBtuSf
 					&&  rpTy != C_RPTYCH_UDT )						// don't combine UDTs: many addl details
@@ -985,6 +1017,9 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 			case C_RPTYCH_DHWMTR:
 				sname = "DHW Meter";
 				break;
+			case C_RPTYCH_AFMTR:
+				sname = "Airflow Meter";
+				break;
 			case C_RPTYCH_AH:
 				sname = "Air Handler";
 				break;
@@ -1006,6 +1041,7 @@ x						exrp, wid );			// "    Override this message if desired with %sCpl = %d."
 				dvrip->ownTi    = zi;
 				dvrip->mtri     = mtri;
 				dvrip->dv_dhwMtri = ri_dhwMtri;
+				dvrip->dv_afMtri = ri_afMtri;
 				dvrip->ahi      = ahi;
 				dvrip->tui      = tui;					// 6-95
 				dvrip->isExport = isExport;
