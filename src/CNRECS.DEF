@@ -3403,9 +3403,9 @@ RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct 
 
     *prefix amt_
 	*declare "void amt_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
-	*declare "void amt_Copy( const AFMTR_IVL* s);"
+	*declare "void amt_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
  	*declare "void amt_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
-	*declare "void amt_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg);"
+	*declare "void amt_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
 
 	*declare "static const int NAFCATS;"
 
@@ -3430,6 +3430,8 @@ RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct 
 RECORD AFMTR "AFMETER" *RAT 	// Airflow meter
 
     *declare "RC amt_CkF();"
+	// *declare "void amt_Clear();"
+	*declare "bool amt_IsSumOf() const { return ss == b->n; }"
 	*declare "RC amt_BegSubhr();"
 	*declare "void amt_AccumCat( AFCAT afCat, float amf);"
 	*declare "void amt_Accum( IVLCH ivl, int firstflg, int lastFlg);"

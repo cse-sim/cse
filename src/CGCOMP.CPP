@@ -265,27 +265,40 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 // NAFCATS s/b same as AFCAT choices + 1 (for total)
 static_assert(AFMTR_IVL::NAFCATS == C_AFCAT_COUNT+1, "Inconsistent AFMTR constants");
 //-----------------------------------------------------------------------------
-void AFMTR_IVL::amt_Copy(
-	const AFMTR_IVL* s)
+void AFMTR_IVL::amt_Copy(			// copy 
+	const AFMTR_IVL* sIvl,	// source
+	float mult /*=1.f*/)	// optional multiplier
 {
-	memcpy(this, s, sizeof(AFMTR_IVL));
+	if (mult == 1.f)
+		memcpy(this, sIvl, sizeof(AFMTR_IVL));
+	else
+	{	amt_count = sIvl->amt_count;
+		VCopy(&amt_total, NAFCATS, &sIvl->amt_total, double(mult));
+	}
 }	// AFMTR_IVL::amt_Copy
 //-----------------------------------------------------------------------------
 void AFMTR_IVL::amt_Accum(			// accumulate
 	const AFMTR_IVL* sIvl,		// source
 	int firstFlg,				// true iff first accum into this (beg of ivl)
-	int lastFlg)				// true iff last accum into this (end of ivl)
-
+	int lastFlg,				// true iff last accum into this (end of ivl)
+	int options /*=0*/)			// option bits
+								//   1: use sIvl.amt_count to scale totals
+								//      effectively averages by day for annual values
+								//   2: sum only (do not average)
 {
+	int count = (options & 1) ? sIvl->amt_count : 1;
 	if (firstFlg)
-	{	amt_Copy(sIvl);
-		amt_count = 1;
+	{	amt_Copy(sIvl, float( count));
+		amt_count = count;
 	}
 	else
-	{	VAccum(&amt_total, NAFCATS, &sIvl->amt_total);
-		amt_count++;
+	{	VAccum(&amt_total, NAFCATS, &sIvl->amt_total, float( count));
+		amt_count += count;
 	}
-	if (lastFlg)
+
+	// average unless caller says don't
+	//  Note: VMul1() nops if amt_count==1
+	if (lastFlg && !(options & 2))
 		VMul1(&amt_total, NAFCATS, 1.f / amt_count);
 }		// AFMTR_IVL
 //-----------------------------------------------------------------------------
@@ -320,9 +333,25 @@ void AFMTR::amt_Accum(
 												// ASSUMES interval members ordered like DTIVLCH choices
 	AFMTR_IVL* sIvl = dIvl + 1;				// source: next shorter interval
 
-	// accumulate: copy on first call (in lieu of 0'ing dIvl).
-	//   Note: amt_Init() call in doBegIvl 0s H values
-	dIvl->amt_Accum(sIvl, firstFlg, lastFlg);
+	int options = 0;	// default: track average
+#if 0
+	if (amt_IsSumOf())
+	{	if (ivl < C_IVLCH_H)
+			options = 2;
+	}
+	else
+#endif
+		if (ivl == C_IVLCH_Y)
+		options = 1;	// average by day for non-sum-of year values
+						//   handles diffs due to month length
+	dIvl->amt_Accum(sIvl, firstFlg, lastFlg, options);
+
+	if (lastFlg)
+	{
+		AFMTR* pAM = AfMtrR.p + AfMtrR.n;
+		AFMTR_IVL* dIvlSum = &pAM->Y + (ivl - C_IVLCH_Y);
+		dIvlSum->amt_Accum(dIvl, ss == 1, 0);
+	}
 }		// AFMTR::amt_Accum
 //=============================================================================
 
@@ -518,7 +547,6 @@ double ZNR::zn_Rho0() const		// zone air density
 // returns moist air density lb/ft3 at nominal z=0 for current zone conditions
 //   Note: not *dry* air
 {
-#if 1	// air density rework, 10-18-2012
 	double rho = psyDenMoistAir( tz, wz, LbSfToInHg( zn_pz0));
 	if (rho < .0001)
 	{	err( WRN, "Zone '%s', %s: moist air density <= 0\n",
@@ -526,15 +554,6 @@ double ZNR::zn_Rho0() const		// zone air density
 		rho = 0.01;		// set to small but physically possible value
 	}
 	return rho;
-#elif 1
-x	double rho1 = psyDenMoistAir( tz, wz, LbSfToInHg( zn_pz0));
-x	double rho2 = psyDensity( tz, wz, LbSfToInHg( zn_pz0));
-x	if (FEQX( rho1, rho2) > .001)
-x		printf( "Mismatch\n");
-x	return rho2;
-#else
-x	return psyDensity( tz, wz, LbSfToInHg( zn_pz0));
-#endif
 }	// ZNR::zn_Rho0
 //------------------------------------------------------------------------------
 void ZNR::zn_AccumAirFlow(		// accumulate zone bal values due to air flow
@@ -1035,13 +1054,18 @@ void IZXRAT::iz_SetupAfMtrs()
 	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
 	//  one pointer for positive flows, one for negative
 	const ZNR* zp;
+	iz_pPosAfMtr = iz_pNegAfMtr = NULL;	// insurance
 	if (iz_zi1 > 0)
 	{	zp = ZrB.GetAt(iz_zi1);
 		iz_pPosAfMtr = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
 	}
+
 	if (iz_zi2 > 0)
-	{	zp = ZrB.GetAt(iz_zi2);
-		iz_pNegAfMtr = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+	{	// interzone transfers recorded iff to a different meter
+		zp = ZrB.GetAt(iz_zi2);
+		AFMTR* pAM = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+		if (pAM && pAM != iz_pPosAfMtr)
+			iz_pNegAfMtr = pAM;		// z2 meter specified and differs from z1
 	}
 }		// IZXRAT::iz_SetupAfMtrs
 //-----------------------------------------------------------------------------

@@ -336,8 +336,9 @@ template< typename T1, typename T2> void VMul1(	// vector * constant
 	T1* v,				// vector
 	int n,				// dim of v
 	T2 f)				// factor
-{	for (int i=0; i < n; i++)
-		v[ i] = T1( v[ i] * f);
+{	if (f != T2( 1))
+		for (int i=0; i < n; i++)
+			v[ i] = T1( v[ i] * f);
 }		// VMul1< T1, T2>
 //-------------------------------------------------------------------------
 template< typename T> T DotProd3(			// 3-vector dot product

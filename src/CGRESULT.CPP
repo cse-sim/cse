@@ -1258,9 +1258,9 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			vpRxRow( dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
 
-		else if (dvrip->rpTy == C_RPTYCH_AFMTR)		// if DHW meter report
+		else if (dvrip->rpTy == C_RPTYCH_AFMTR)		// if AFDHW meter report
 		{
-			TI afMtri = dvrip->dv_afMtri;    		// subscript
+			TI afMtri = dvrip->dv_afMtri > 0 ? dvrip->dv_afMtri : AfMtrR.n;   		// subscript
 			AFMTR_IVL* pIvl = &AfMtrR[afMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
 			rxt.colDef = afMtrColdef;					 			// columns definition table for vpRxRow
 			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
@@ -1487,6 +1487,8 @@ void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
 {
 	if (afMtri < 0)
 		afMtri = dv_afMtri;
+	if (afMtri == TI_SUM)
+		afMtri = AfMtrR.n;					// handle "sum"
 	AFMTR* pM = AfMtrR.GetAt(afMtri);		// record
 	AFMTR_IVL* pIvl = (&pM->Y) + (rxt->fq - 1);	// interval
 
