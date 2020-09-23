@@ -235,8 +235,9 @@ static COLDEF wMtrColdef[] =
 #undef oWMtr
 
 // columns definition for "Airflow meter" (AFMTR) report/export
-#define oAFMtr(m)  offsetof( AFMTR_IVL, m)
-#define D 3		// decimal digits
+#define oAFMt0(m)  offsetof( AFMTR_IVL, m)
+#define oAFMt1(m)  (offsetof( AFMTR_IVL, m)+sizeof( AFMTR_IVL))
+#define D 1		// decimal digits
 static COLDEF afMtrColdef[] =
 /*		             max     offset       cvflag  */
 /* colhd           flags  wid dfw (cnguts.h)   (above) */
@@ -247,21 +248,31 @@ static COLDEF afMtrColdef[] =
 	{ "Day",           8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8 | 4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
-	{ "Total",           0,    7, D, oAFMtr(amt_total),  CV1 },
-	{ "Unknown",         0,    7, D, oAFMtr(amt_unknown),CV1 },
-	{ "InfilEx",         0,    7, D, oAFMtr(amt_infilEx),CV1 },
-	{ "VentEx",          0,    7, D, oAFMtr(amt_ventEx), CV1 },
-	{ "FanEx",           0,    7, D, oAFMtr(amt_fanEx), CV1 },
-	{ "InfilIz",         0,    7, D, oAFMtr(amt_infilIz),CV1 },
-	{ "VentIz",          0,    7, D, oAFMtr(amt_ventIz), CV1 },
-	{ "FanIz",           0,    7, D, oAFMtr(amt_fanIz), CV1 },
-	{ "DuctLk",          0,    7, D, oAFMtr(amt_ductLk), CV1 },
-	{ "HVAC",            0,    7, D, oAFMtr(amt_hvac),   CV1 },
+	{ "Tot+",           0,    5, D, oAFMt0(amt_total),  CV1 },
+	{ "Unkn+",          0,    5, D, oAFMt0(amt_unknown),CV1 },
+	{ "InfX+",          0,    5, D, oAFMt0(amt_infilEx),CV1 },
+	{ "VntX+",          0,    5, D, oAFMt0(amt_ventEx), CV1 },
+	{ "FanX+",          0,    5, D, oAFMt0(amt_fanEx), CV1 },
+	{ "InfZ+",          0,    5, D, oAFMt0(amt_infilIz),CV1 },
+	{ "VntZ+",          0,    5, D, oAFMt0(amt_ventIz), CV1 },
+	{ "FanZ+",          0,    5, D, oAFMt0(amt_fanIz), CV1 },
+	{ "Duct+",          0,    5, D, oAFMt0(amt_ductLk), CV1 },
+	{ "HVAC+",          0,    5, D, oAFMt0(amt_hvac),   CV1 },
+	{ "Tot-",           0,    5, D, oAFMt1(amt_total),  CV1 },
+	{ "Unkn-",          0,    5, D, oAFMt1(amt_unknown),CV1 },
+	{ "InfX-",          0,    5, D, oAFMt1(amt_infilEx),CV1 },
+	{ "VntX-",          0,    5, D, oAFMt1(amt_ventEx), CV1 },
+	{ "FanX-",          0,    5, D, oAFMt1(amt_fanEx), CV1 },
+	{ "InfZ-",          0,    5, D, oAFMt1(amt_infilIz),CV1 },
+	{ "VntZ-",          0,    5, D, oAFMt1(amt_ventIz), CV1 },
+	{ "FanZ-",          0,    5, D, oAFMt1(amt_fanIz), CV1 },
+	{ "Duct-",          0,    5, D, oAFMt1(amt_ductLk), CV1 },
+	{ "HVAC-",          0,    5, D, oAFMt1(amt_hvac),   CV1 },
 	{ 0,                 0,    0, 0, 0,                  CV1 }
 };
 #undef D
-#undef oAFMtr
-
+#undef oAFMt0
+#undef oAFMt1
 
 // columns definition for "air handler" (AH) report/export
 #define oAhr(m)  offsetof( AHRES_IVL_SUB, m)
@@ -1258,10 +1269,10 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			vpRxRow( dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
 
-		else if (dvrip->rpTy == C_RPTYCH_AFMTR)		// if DHW meter report
+		else if (dvrip->rpTy == C_RPTYCH_AFMTR)		// if AFMETER report
 		{
-			TI afMtri = dvrip->dv_afMtri;    		// subscript
-			AFMTR_IVL* pIvl = &AfMtrR[afMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
+			TI afMtri = dvrip->dv_afMtri > 0 ? dvrip->dv_afMtri : AfMtrR.n;   		// subscript
+			AFMTR_IVL* pIvl = AfMtrR[afMtri].amt_GetAFMTR_IVL( rxt.fq);
 			rxt.colDef = afMtrColdef;					 			// columns definition table for vpRxRow
 			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
@@ -1487,8 +1498,10 @@ void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
 {
 	if (afMtri < 0)
 		afMtri = dv_afMtri;
+	if (afMtri == TI_SUM)
+		afMtri = AfMtrR.n;					// handle "sum"
 	AFMTR* pM = AfMtrR.GetAt(afMtri);		// record
-	AFMTR_IVL* pIvl = (&pM->Y) + (rxt->fq - 1);	// interval
+	AFMTR_IVL* pIvl = pM->amt_GetAFMTR_IVL( rxt->fq);	// interval
 
 	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow

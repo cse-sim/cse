@@ -695,8 +695,7 @@ badZn4ty:
 // check meter reference or ALL or SUM
 
 	if (mtri > 0)						// if specific meter given (error'd above if omitted when rqd)
-	{
-		if (ckRefPt( &MtrB, mtri, isEx ? "exMeter" : "rpMeter" ) )
+	{	if (ckRefPt( &MtrB, mtri, isEx ? "exMeter" : "rpMeter" ) )
 			return RCBAD;
 	}
 	else							// no meter given, or ALL or SUM.
@@ -769,10 +768,15 @@ badDHWMtr4ty:
 	{
 		char *mtrTx /*=""*/;
 		if (ri_afMtri == TI_SUM)
-		{
-			mtrTx = "sum";
-			goto badAFMtr4ty;
-		}
+			switch (rpTy)
+			{
+			case 0:					// rpTy 0: not set, no message here
+			case C_RPTYCH_AFMTR:
+				break;   			// AFMTR (air flow meter): SUM allowed.
+			default:
+				mtrTx = "sum";
+				goto badAFMtr4ty;
+			}
 		else if (ri_afMtri == TI_ALL)
 			switch (rpTy)
 			{

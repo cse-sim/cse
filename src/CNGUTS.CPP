@@ -547,12 +547,13 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
+		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
+
 #if defined( DEBUGDUMP)
 		DbDo( dbdSTARTSTEP);		// nothing yet debug-printed for this subhour
 									//   (sets flag re on-demand heading printing
 #endif
 		EF( Top.tp_WthrBegSubhr() ); 	// set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
-		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
 
 		// clear subhour values in air flow meters
 		AFMTR* pAM;
@@ -1563,9 +1564,12 @@ LOCAL void FC NEAR doIvlAccum()
 	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)						// loop AFMTRs
-	{	if (pAM->ss < AfMtrR.n)
-			pAMSum->S.amt_Accum(&pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
-		pAM->amt_Accum( C_IVLCH_H, Top.isBegHour, Top.isEndHour);
+	{
+		if (pAM->ss < AfMtrR.n)
+		{	pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
+			pAMSum->S[1].amt_Accum(pAM->S+1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
+			pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
+		}
 	}
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
@@ -1724,8 +1728,8 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP(WsResR, pWSR)							// loop DHWSYS simulation results incl sum_of.
 		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
-		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);		// accumulate day ah results to month
-	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum metered energy: day to month. local,below.
+		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);	// accumulate day ah results to month
+	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum METERs, DHWMETERs, AFMETERS: day to month
 #ifdef BINRES
 	if (brf)									// if outputting binary results for this run
 		//if (!Top.tp_autoSizing)						// not for ausz yet 6-95: tested above, and brf is off.
@@ -2054,7 +2058,9 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to ne
 	// AFMETERs
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)
-		pAM->amt_Accum(ivl, firstflg, lastflg);
+	{	if (pAM->ss < AfMtrR.n)
+			pAM->amt_Accum(ivl, firstflg, lastflg);
+	}
 }               // mtrsAccum
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)
