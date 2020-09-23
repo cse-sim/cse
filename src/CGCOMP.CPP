@@ -309,7 +309,8 @@ RC AFMTR::amt_CkF()
 //-----------------------------------------------------------------------------
 RC AFMTR::amt_BegSubhr()		// init at beg of subhr
 {
-	S.amt_Clear();
+	S[ 0].amt_Clear();
+	S[ 1].amt_Clear();
 	return RCOK;
 }		// AFMTR::amt_BegSubhr
 //-----------------------------------------------------------------------------
@@ -317,11 +318,16 @@ void AFMTR::amt_AccumCat(		// accumulate air flow value for current subhour
 	AFCAT afCat,	// air flow category
 	float amf)		// air mass flow, lbm/sec
 {
-	if (amf > 0.f)		// record only flow into zone
-	{	// convert lbm/s -> cfm std air
-		S.amt_AccumCat(afCat, AMFtoAVF2( amf));
-	}
+	int iNeg = amf < 0.f;
+	S[ iNeg].amt_AccumCat(afCat, AMFtoAVF2(amf));
 }		// AFMTR::amt_AccumCat
+//-----------------------------------------------------------------------------
+AFMTR_IVL* AFMTR::amt_GetAFMTR_IVL(
+	IVLCH ivl,		// interval
+	int iPN /*=0*/)	// flow direction 0: pos (in), 1: neg (out)
+{
+	return Y + 2 * (ivl - C_IVLCH_Y) + iPN;
+}
 //-----------------------------------------------------------------------------
 void AFMTR::amt_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year
@@ -329,28 +335,24 @@ void AFMTR::amt_Accum(
 	int firstFlg,	// iff TRUE, destination will be initialized before values are accumulated into it
 	int lastFlg)	// iff TRUE, destination averages will be computed as needed
 {
-	AFMTR_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
-												// ASSUMES interval members ordered like DTIVLCH choices
-	AFMTR_IVL* sIvl = dIvl + 1;				// source: next shorter interval
+	AFMTR_IVL* dIvl0 = amt_GetAFMTR_IVL( ivl);	// point destination substruct for interval
+													// ASSUMES interval members ordered like DTIVLCH choices
+	AFMTR_IVL* sIvl0 = amt_GetAFMTR_IVL(ivl + 1);	// source: next shorter interval
 
 	int options = 0;	// default: track average
-#if 0
-	if (amt_IsSumOf())
-	{	if (ivl < C_IVLCH_H)
-			options = 2;
-	}
-	else
-#endif
-		if (ivl == C_IVLCH_Y)
+
+	if (ivl == C_IVLCH_Y)
 		options = 1;	// average by day for non-sum-of year values
 						//   handles diffs due to month length
-	dIvl->amt_Accum(sIvl, firstFlg, lastFlg, options);
+	for (int iPN=0; iPN<2; iPN++)
+		dIvl0[ iPN].amt_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
 
 	if (lastFlg)
 	{
-		AFMTR* pAM = AfMtrR.p + AfMtrR.n;
-		AFMTR_IVL* dIvlSum = &pAM->Y + (ivl - C_IVLCH_Y);
-		dIvlSum->amt_Accum(dIvl, ss == 1, 0);
+		AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
+		AFMTR_IVL* dIvlSum0 = pAMSum->amt_GetAFMTR_IVL( ivl);
+		for (int iPN = 0; iPN < 2; iPN++)
+			dIvlSum0[ iPN].amt_Accum(dIvl0+iPN, ss == 1, 0);
 	}
 }		// AFMTR::amt_Accum
 //=============================================================================
@@ -1053,20 +1055,28 @@ void IZXRAT::iz_SetupAfMtrs()
 
 	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
 	//  one pointer for positive flows, one for negative
-	const ZNR* zp;
-	iz_pPosAfMtr = iz_pNegAfMtr = NULL;	// insurance
-	if (iz_zi1 > 0)
-	{	zp = ZrB.GetAt(iz_zi1);
-		iz_pPosAfMtr = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+	iz_pAfMtr1 = iz_pAfMtr2 = NULL;	// insurance
+	if (iz_afCat > 0)
+	{	// set up ptrs to AFMTR(s)
+		const ZNR* zp;
+		if (iz_zi1 > 0)
+		{	zp = ZrB.GetAt(iz_zi1);
+			iz_pAfMtr1 = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+		}
+		if (iz_zi2 > 0)
+		{	// interzone transfers recorded iff to a different meter
+			zp = ZrB.GetAt(iz_zi2);
+			AFMTR* pAM = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+			if (pAM == iz_pAfMtr1)
+				iz_pAfMtr1 = NULL;		// same meter on both sides of IZ
+										//   don't record IZ within meter
+			else
+				iz_pAfMtr2 = pAM;		// z2 meter specified and differs from z1
+		}
 	}
-
-	if (iz_zi2 > 0)
-	{	// interzone transfers recorded iff to a different meter
-		zp = ZrB.GetAt(iz_zi2);
-		AFMTR* pAM = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
-		if (pAM && pAM != iz_pPosAfMtr)
-			iz_pNegAfMtr = pAM;		// z2 meter specified and differs from z1
-	}
+	iz_doingAfMtr					// say this IZXRAT has AFMTR (speedier test)
+		= iz_pAfMtr1 != NULL || iz_pAfMtr2 != NULL;	
+				
 }		// IZXRAT::iz_SetupAfMtrs
 //-----------------------------------------------------------------------------
 AFCAT IZXRAT::iz_AfCatDefault() const
@@ -1085,8 +1095,10 @@ AFCAT IZXRAT::iz_AfCatDefault() const
 	else
 	{	if (iz_IsFixedFlow())
 			afCat = C_AFCAT_FANIZ;
-		else
+		else if (iz_IsAirNet())
 			afCat = C_AFCAT_INFILIZ;
+		else
+			afCat = 0;
 	}
 
 	return afCat;
@@ -1529,14 +1541,12 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 	if (iz_nvcntrl == C_IZNVTYCH_ANHORIZ)
 		iz_amfNom
 			+= (1.f - fVent)*iz_ad[0].ad_mdotB + fVent * iz_ad[1].ad_mdotB;
-	if (iz_amfNom > 0.f)
-	{	if (iz_pPosAfMtr)
-			iz_pPosAfMtr->amt_AccumCat(iz_afCat, iz_amfNom);
-	}
-	else if (iz_amfNom < 0.f)
-	{	// flow is out of zn1 = into zn2
-		if (iz_pNegAfMtr)
-			iz_pNegAfMtr->amt_AccumCat(iz_afCat, -iz_amfNom);
+	if (iz_doingAfMtr && iz_amfNom != 0.f)
+	{	if (iz_pAfMtr1)
+			iz_pAfMtr1->amt_AccumCat(iz_afCat, iz_amfNom);
+		if (iz_pAfMtr2)
+			// flow is opposite direction from z2 POV
+			iz_pAfMtr2->amt_AccumCat(iz_afCat, -iz_amfNom);
 	}
 
 	return RCOK;

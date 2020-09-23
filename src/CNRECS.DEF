@@ -2827,14 +2827,13 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 						//   C_IZNVTYCH_ANSYSAIR: system air flow
 						//   C_IZNVTYCH_ANOAVRLF: RSYS OAV relief air
 						//                        ( = interzone hole sized per flow)
-	*r AFCAT iz_afCat	// air flow category (accounting only)
-						//   C_AFCAT_xxx
+	*r AFCAT iz_afCat	// air flow category (accounting only) C_AFCAT_xxx
+
 						// AFMTR pointers, derived from zone zn_afMtri
-						//    one for pos flows, one for neg
-						//    WHY: AFMTRs track flow into zone
-						//         IZ transfers have different zones per size
-    *declare "AFMTR* iz_pPosAfMtr;"
-    *declare "AFMTR* iz_pNegAfMtr;"
+						//   NULL if not specified or same on both sides of IZ type
+    *declare "AFMTR* iz_pAfMtr1;"	// for iz_zn1
+    *declare "AFMTR* iz_pAfMtr2;"	// for iz_zn2
+	*declare "bool iz_doingAfMtr;"	// true iff iz_pAfMtr1 or iz_pAfMtr2 != NULL
 
     *h AREA_GEZ iz_a1  	// vent area 1, ft2
 						//   _TWOWAY = low vent area
@@ -3428,22 +3427,24 @@ RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct 
 *END		// AFMTR_IVL
 //=============================================================================
 RECORD AFMTR "AFMETER" *RAT 	// Airflow meter
-
+    *prefix amt_
     *declare "RC amt_CkF();"
 	// *declare "void amt_Clear();"
 	*declare "bool amt_IsSumOf() const { return ss == b->n; }"
 	*declare "RC amt_BegSubhr();"
 	*declare "void amt_AccumCat( AFCAT afCat, float amf);"
 	*declare "void amt_Accum( IVLCH ivl, int firstflg, int lastFlg);"
+	*declare "AFMTR_IVL* amt_GetAFMTR_IVL( IVLCH ivl, int iPN=0);"
+
 
  // results: average cfm std air
  //     for each interval (member here), usage by end use (substruct member):
  // CAUTION: ordered for subscripting by IVLCH-1.
-    *y *e *nest AFMTR_IVL Y   	// run (aka year or annual)
-    *m *e *nest AFMTR_IVL M   	// month
-    *d *e *nest AFMTR_IVL D   	// day
-    *h *e *nest AFMTR_IVL H   	// hour
-	*s *e *nest AFMTR_IVL S		// subhour
+    *y *e *array 2 *nest AFMTR_IVL Y   	// run (aka year or annual)
+    *m *e *array 2 *nest AFMTR_IVL M   	// month
+    *d *e *array 2 *nest AFMTR_IVL D   	// day
+    *h *e *array 2 *nest AFMTR_IVL H   	// hour
+	*s *e *array 2 *nest AFMTR_IVL S	// subhour
 *END		// AFMETER
 //=============================================================================
 RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for DHW meter

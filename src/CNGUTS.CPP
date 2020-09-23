@@ -1563,19 +1563,12 @@ LOCAL void FC NEAR doIvlAccum()
 
 	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
 	AFMTR* pAM;
-	int iM = 0;
 	RLUP(AfMtrR, pAM)						// loop AFMTRs
 	{
-		if (++iM != pAM->ss)
-			printf("\nMismatch");
 		if (pAM->ss < AfMtrR.n)
-		{
-			pAMSum->S.amt_Accum(&pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
-			if (iM != pAM->ss)
-				printf("\nMismatch");
+		{	pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
+			pAMSum->S[1].amt_Accum(pAM->S+1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
 			pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
-			if (iM != pAM->ss)
-				printf("\nMismatch");
 		}
 	}
 
@@ -2064,15 +2057,9 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to ne
 
 	// AFMETERs
 	AFMTR* pAM;
-	int iM = 0;
 	RLUP(AfMtrR, pAM)
-	{
-		if (++iM != pAM->ss)
-			printf("\nMismatch");
-		if (pAM->ss < AfMtrR.n)
+	{	if (pAM->ss < AfMtrR.n)
 			pAM->amt_Accum(ivl, firstflg, lastflg);
-		if (iM != pAM->ss)
-			printf("\nMismatch");
 	}
 }               // mtrsAccum
 //-----------------------------------------------------------------------------------------------------------

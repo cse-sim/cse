@@ -57,7 +57,6 @@
 #include "cnglob.h"
 
 #include <process.h>	// exit
-#include <setjmp.h>		// jmp_buf setjmp longjmp
 
 #include <ancrec.h>		// record: base class for rccn.h classes
 #include <rccn.h>		// TOPRATstr
