@@ -232,10 +232,8 @@ static float fShield[ 5][ 2] =
 					//   within two house heights
 };
 
-#if 1	// insurance, 11-18-2014
 	if (Z <= 0.f)
 		return 0.f;
-#endif
 
 	float SC = fShield[ bracket( 1, shieldClass, 5)-1][ 1];
 	if (terrainClass <= 0)
@@ -339,17 +337,15 @@ void AFMTR::amt_Accum(
 													// ASSUMES interval members ordered like DTIVLCH choices
 	AFMTR_IVL* sIvl0 = amt_GetAFMTR_IVL(ivl + 1);	// source: next shorter interval
 
-	int options = 0;	// default: track average
-
-	if (ivl == C_IVLCH_Y)
-		options = 1;	// average by day for non-sum-of year values
-						//   handles diffs due to month length
+	int options =
+		ivl == C_IVLCH_Y ? 1	// average by day for non-sum-of year values
+								//   handles diffs due to month length
+		:                  0;	// default: track average
 	for (int iPN=0; iPN<2; iPN++)
 		dIvl0[ iPN].amt_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
 
 	if (lastFlg)
-	{
-		AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
+	{	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
 		AFMTR_IVL* dIvlSum0 = pAMSum->amt_GetAFMTR_IVL( ivl);
 		for (int iPN = 0; iPN < 2; iPN++)
 			dIvlSum0[ iPN].amt_Accum(dIvl0+iPN, ss == 1, 0);
@@ -1050,13 +1046,13 @@ x		}
 void IZXRAT::iz_SetupAfMtrs()
 {
 	// Air flow category
-	if (iz_afCat == 0)
-		iz_afCat = iz_AfCatDefault();
+	if (!IsSet(IZXRAT_AFCAT))
+		iz_afCat = iz_AfCatDefault();	// default category (may return -1)
 
 	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
 	//  one pointer for positive flows, one for negative
 	iz_pAfMtr1 = iz_pAfMtr2 = NULL;	// insurance
-	if (iz_afCat > 0)
+	if (iz_afCat >= 0)
 	{	// set up ptrs to AFMTR(s)
 		const ZNR* zp;
 		if (iz_zi1 > 0)
@@ -1067,9 +1063,10 @@ void IZXRAT::iz_SetupAfMtrs()
 		{	// interzone transfers recorded iff to a different meter
 			zp = ZrB.GetAt(iz_zi2);
 			AFMTR* pAM = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
-			if (pAM == iz_pAfMtr1)
+			if (pAM == iz_pAfMtr1  && !iz_IsHERV())
 				iz_pAfMtr1 = NULL;		// same meter on both sides of IZ
 										//   don't record IZ within meter
+										//   EXCEPT for HERV
 			else
 				iz_pAfMtr2 = pAM;		// z2 meter specified and differs from z1
 		}
@@ -1082,24 +1079,18 @@ void IZXRAT::iz_SetupAfMtrs()
 AFCAT IZXRAT::iz_AfCatDefault() const
 {
 	AFCAT afCat;
-	if (iz_IsSysAir())
+	if (!iz_IsAirNet())
+		afCat = -1;		// track only airnet flows
+	else if (iz_IsSysAir())
 		afCat = C_AFCAT_HVAC;
 	else if (iz_IsDuctLk())
 		afCat = C_AFCAT_DUCTLK;
+	else if (iz_IsHERV())
+		afCat = iz_IsHERVIZ() ? C_AFCAT_FANIZ : C_AFCAT_FANEX;
 	else if (iz_IsExterior())
-	{	if (iz_IsFixedFlow())
-			afCat = C_AFCAT_FANEX;
-		else
-			afCat = C_AFCAT_INFILEX;
-	}
+		afCat = iz_IsFixedFlow() ? C_AFCAT_FANEX : C_AFCAT_INFILEX;
 	else
-	{	if (iz_IsFixedFlow())
-			afCat = C_AFCAT_FANIZ;
-		else if (iz_IsAirNet())
-			afCat = C_AFCAT_INFILIZ;
-		else
-			afCat = 0;
-	}
+		afCat = iz_IsFixedFlow() ? C_AFCAT_FANIZ : C_AFCAT_INFILIZ;
 
 	return afCat;
 
@@ -1536,7 +1527,7 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 	}
 
 	// air flow accounting
-	iz_amfNom // nominal flow, lbm/sec
+	iz_amfNom // incoming nominal flow, lbm/sec
 		= (1.f - fVent)*iz_ad[0].ad_mdotP + fVent * iz_ad[1].ad_mdotP;
 	if (iz_nvcntrl == C_IZNVTYCH_ANHORIZ)
 		iz_amfNom
@@ -1545,8 +1536,12 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 	{	if (iz_pAfMtr1)
 			iz_pAfMtr1->amt_AccumCat(iz_afCat, iz_amfNom);
 		if (iz_pAfMtr2)
-			// flow is opposite direction from z2 POV
-			iz_pAfMtr2->amt_AccumCat(iz_afCat, -iz_amfNom);
+		{	// flow is opposite direction from z2 POV
+			// HERV: iz_pAfMtr2 points to exhaust source zone (may be z1)
+			//       HERV same for vent / no vent (use iz_ad[ 0] w/o fVent)
+			iz_pAfMtr2->amt_AccumCat(iz_afCat, 
+					iz_IsHERV() ? -iz_ad[0].ad_mdotX : -iz_amfNom);
+		}
 	}
 
 	return RCOK;
@@ -1696,6 +1691,8 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		for (zi=0; zi < an_nz; zi++)
 		{	// Net mass flow to each zone s/b 0
 			// Solution not converged if netAMF > max( ResAbs, totAMF*ResRel)
+			//  Using larger of the two tolerances means zones with small abs flow converge loosely.
+			//  This avoids extra iterations to converge zones that have minor impact.
 			if (fabs( rV[ zi]) > ResAbs && fabs( rV[ zi]) > ResRel*an_mdotAbs[ zi])
 			{	bConverge = FALSE;
 				break;		// this zone not balanced, no need to check further

@@ -2275,6 +2275,7 @@ IZXFER   "Conditioned-WnLU"
    izHD = 5.37
    izNVEff = 0.5
    izCpr = 0.6
+   izAfCat = VentEx
 
 IZXFER   "Conditioned-WnLS"  
    izNVType = "AIRNETEXT"
@@ -2284,6 +2285,7 @@ IZXFER   "Conditioned-WnLS"
    izHD = 5.37
    izNVEff = 0.5
    izCpr = -0.65
+   izAfCat = VentEx
 
 IZXFER   "Conditioned-WnLD"  
    izNVType = "AIRNETEXT"
@@ -2293,6 +2295,7 @@ IZXFER   "Conditioned-WnLD"
    izHD = 5.37
    izNVEff = 0.5
    izCpr = -0.3
+   izAfCat = VentEx
 
 IZXFER   "Conditioned-WnHU"  
    izNVType = "AIRNETEXT"
@@ -2302,6 +2305,7 @@ IZXFER   "Conditioned-WnHU"
    izHD = 7.37
    izNVEff = 0.5
    izCpr = 0.6
+   izAfCat = VentEx
 
 IZXFER   "Conditioned-WnHS"  
    izNVType = "AIRNETEXT"
@@ -2311,6 +2315,7 @@ IZXFER   "Conditioned-WnHS"
    izHD = 7.37
    izNVEff = 0.5
    izCpr = -0.65
+   izAfCat = VentEx
 
 IZXFER   "Conditioned-WnHD"  
    izNVType = "AIRNETEXT"
@@ -2320,6 +2325,7 @@ IZXFER   "Conditioned-WnHD"
    izHD = 7.37
    izNVEff = 0.5
    izCpr = -0.3
+   izAfCat = VentEx
 
 IZXFER   "Conditioned-xGarageH"  
    izNVType = "AIRNETIZ"
@@ -2475,6 +2481,7 @@ ZONE   "Conditioned-zn"
    infELA = 0
    infShld = 4
    znRSys = "rsys-HVAC System 1"
+   znAFMTR = AFMTR1
 
 GAIN   "Conditioned-znLtg"  
    gnMeter = "MtrElec"
@@ -3566,7 +3573,10 @@ Alter DHWSYS "dhwsys-DHW"
   wsFXHwMtr = DHWMtrFXMix
   wsWHHwMtr = DHWMtrWH
 
-
+AFMETER AFMTR1
+REPORT "AFCondH" rpType=AFMTR rpFreq=hour rpAFMETER=AFMTR1 rpFooter=NO rpDayBeg=May 1 rpDayEnd=May 1
+REPORT "AFCondD" rpType=AFMTR rpFreq=day rpAFMETER=AFMTR1 rpDayBeg=May 1 rpDayEnd=May 1
+REPORT "AFCondM" rpType=AFMTR rpFreq=month rpAFMETER=AFMTR1 rpDayBeg=Jan 1 rpDayEnd=dec 31
 
 REPORT "Fixture" rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=hour rpDayBeg=jan 1 rpDayEnd=dec 31 rpBtuSf=3412
 REPORT "Heater" rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=hour rpDayBeg=jan 1 rpDayEnd=dec 31 rpBtuSf=3412
