@@ -258,17 +258,17 @@ static COLDEF afMtrColdef[] =
 	{ "FanZ+",          0,    5, D, oAFMt0(amt_fanIz), CV1 },
 	{ "Duct+",          0,    5, D, oAFMt0(amt_ductLk), CV1 },
 	{ "HVAC+",          0,    5, D, oAFMt0(amt_hvac),   CV1 },
-	{ "Tot-",           0,    5, D, oAFMt1(amt_total),  CV1 },
-	{ "Unkn-",          0,    5, D, oAFMt1(amt_unknown),CV1 },
-	{ "InfX-",          0,    5, D, oAFMt1(amt_infilEx),CV1 },
-	{ "VntX-",          0,    5, D, oAFMt1(amt_ventEx), CV1 },
-	{ "FanX-",          0,    5, D, oAFMt1(amt_fanEx), CV1 },
-	{ "InfZ-",          0,    5, D, oAFMt1(amt_infilIz),CV1 },
-	{ "VntZ-",          0,    5, D, oAFMt1(amt_ventIz), CV1 },
-	{ "FanZ-",          0,    5, D, oAFMt1(amt_fanIz), CV1 },
-	{ "Duct-",          0,    5, D, oAFMt1(amt_ductLk), CV1 },
-	{ "HVAC-",          0,    5, D, oAFMt1(amt_hvac),   CV1 },
-	{ 0,                 0,    0, 0, 0,                  CV1 }
+	{ "Tot-",           0,    6, D, oAFMt1(amt_total),  CV1 },
+	{ "Unkn-",          0,    6, D, oAFMt1(amt_unknown),CV1 },
+	{ "InfX-",          0,    6, D, oAFMt1(amt_infilEx),CV1 },
+	{ "VntX-",          0,    6, D, oAFMt1(amt_ventEx), CV1 },
+	{ "FanX-",          0,    6, D, oAFMt1(amt_fanEx), CV1 },
+	{ "InfZ-",          0,    6, D, oAFMt1(amt_infilIz),CV1 },
+	{ "VntZ-",          0,    6, D, oAFMt1(amt_ventIz), CV1 },
+	{ "FanZ-",          0,    6, D, oAFMt1(amt_fanIz), CV1 },
+	{ "Duct-",          0,    6, D, oAFMt1(amt_ductLk), CV1 },
+	{ "HVAC-",          0,    6, D, oAFMt1(amt_hvac),   CV1 },
+	{ 0,                0,    0, 0, 0,                  CV1 }
 };
 #undef D
 #undef oAFMt0
@@ -552,19 +552,18 @@ o          vpRxFooter(dvrip);				// do the footer, below.  clears VR_NEEDFOOT.
 void FC vpRxports( 	// virtual print reports and exports of given frequency for current interval
 
 	IVLCH freq,  		// interval desired: C_IVLCH_Y, M, D, H, S.
-	// HS generated internally when H or S given. HS cannot be given by caller.
-	BOO auszOnly/*=FALSE*/ )	/* non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
-				   used after autosize when main sim will not be performed.
-				   Experiment 5-97 to fix oversight in original ausz implementation;
-				   possibly autosize results reports should always be (have been) done this way
-				     (always call after autosize, then exclude then when auszOnly FALSE). */
+						// HS generated internally when H or S given. HS cannot be given by caller.
+	BOO auszOnly/*=FALSE*/ )	// non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
+						// used after autosize when main sim will not be performed.
+						// Experiment 5-97 to fix oversight in original ausz implementation;
+						// possibly autosize results reports should always be (have been) done this way
+						// (always call after autosize, then exclude then when auszOnly FALSE). */
 {
-	SI i;
-	SI reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
-	SI doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
+	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
+	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
 	RXPORTINFO rxt;					// much info to pass to/amoung callees
 
-	memset( &rxt, 0, sizeof(rxt));					// default all info members to 0
+	memset( &rxt, 0, sizeof(rxt));			// default all info members to 0
 	rxt.fqr = rxt.fq = freq;  				// store args
 
 // init by frequency; each case breaks; stuff used by more than one report type
@@ -602,7 +601,6 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 	switch (rxt.fq)
 	{
-		/*lint -e616 cases fall thru */
 	case C_IVLCH_S:
 		rxt.xebS[0] = 'a' + (char)Top.iSubhr; 	// ZEB export subhour: leave "" if not subhourly
 	case C_IVLCH_H:
@@ -613,32 +611,28 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 		rxt.xebM = Top.tp_date.month;
 	case C_IVLCH_Y:
 		;
-	default: ;	    /*lint +e616 */
+	default: ;
 	}
 
 // loop over reports active for given frequency
 
 	for ( ; ; )						// repeats to do HS if rpfreq==H or S.
-	{
-		DVRI *dvrip /*=NULL*/;
-		RPTYCH rpTy;
-		SI vrh, isAll, isExport;
-
-		for (i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
+	{	DVRI *dvrip /*=NULL*/;
+		for (int i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
 		{
 			dvrip = DvriB.p + i;				// point Date-dependent Virtual Report Info record
-			rpTy = dvrip->rpTy;    				// fetch report type
-			vrh = dvrip->vrh;					// fetch output destination
-			isExport = dvrip->isExport;   			// true if export (not report)
-			isAll = dvrip->isAll;  				// true if zi or mtri or ... is TI_ALL
+			RPTYCH rpTy = dvrip->rpTy;    		// fetch report type
+			int vrh = dvrip->vrh;				// fetch output destination
+			int isExport = dvrip->isExport; 	// true if export (not report)
+			int isAll = dvrip->isAll;  			// true if zi or mtri or ... is TI_ALL
 			rxt.flags = (rxt.flags &~(4|2)) | (isExport ? 4 : 2);	// set export (4) or report (2) flag bit; clear prior.
 			rxt.flags = (rxt.flags &~(16|8))			// set name (16) & time (8) col flags r/xport
 				| ( isExport ? (16|8) 			// exports show BOTH name and the 4 export time columns
 					: (isAll ? 16 : 8) ); 		// all- reports show name, others rpts show time column
-			rxt.flags = (rxt.flags &~(64|32))			// include shutter frac * (64) and Mode (32) columns
+			rxt.flags = (rxt.flags &~(64|32))	// include shutter frac * (64) and Mode (32) columns
 				| ( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
 				    && (dvrip->ownTi > 0 || isAll )   	// .. for a single zone or all zones
-				|| isExport 				// .. and in all exports (keep format constant)
+				|| isExport 					// .. and in all exports (keep format constant)
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
 			// footer line: also on last day of day, month, or year report
@@ -836,8 +830,8 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 
 		}  // for i=
 
-	/* if hourly or subhourly specified, repeat for hourly+subhourly: hourly+subhourly reports are in a separate list
-								     as there is only one .nextNow in DVRI. */
+	// if hourly or subhourly specified, repeat for hourly+subhourly
+	//   hourly+subhourly reports are in a separate list as there is only one .nextNow in DVRI.
 		if (rxt.fq==C_IVLCH_H)			// if caller said do hour hourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do the hourly lines of the HS reports/exports too
 			reHead = 0;					// no header at hrly line of HS's: header happened at subHour 0.
@@ -1501,7 +1495,9 @@ void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
 	if (afMtri == TI_SUM)
 		afMtri = AfMtrR.n;					// handle "sum"
 	AFMTR* pM = AfMtrR.GetAt(afMtri);		// record
-	AFMTR_IVL* pIvl = pM->amt_GetAFMTR_IVL( rxt->fq);	// interval
+	AFMTR_IVL* pIvl = pM->amt_GetAFMTR_IVL( rxt->fqr);	// interval
+								// results substr offset from .Y: M, D, H, S follow .Y, no HS.
+								//  .fqr is H or S when .fq is HS for hourly+subhourly reports
 
 	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow

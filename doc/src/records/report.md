@@ -94,6 +94,8 @@ Choice indicating report type. Report types may be described at greater length, 
 
   DHWMTR  DHW meter report.  Requires *rpDHWMeter*
 
+  AFMTR   Air flow meter report.  Requires *rpAFMeter*
+
 <% if inactive_CNE_records %>
   AH      Air handler report. Requires *rpAh*.
 
@@ -201,6 +203,15 @@ Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
 **Units** **Legal Range**                **Default**   **Required**                 **Variability**
 --------- ------------------------------ ------------- ---------------------------- ---------------
           name of a *DHWMETER*, ALL, SUM               Required for *rpType*=DHWMTR constant
+
+**rpAFMeter=*afMtrName***
+
+Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
+
+**Units** **Legal Range**                **Default**   **Required**                 **Variability**
+--------- ------------------------------ ------------- ---------------------------- ---------------
+          name of a *DHWMETER*, ALL, SUM               Required for *rpType*=AFMTR  constant
+
 
 <% if inactive_CNE_records %>
 **rpAh=*ahName***

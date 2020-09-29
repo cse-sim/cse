@@ -279,11 +279,22 @@ Number of stories in zone, used in ELA model.
   ----------- ----------------------- ------------- -------------- -----------------
               1 $\leq$ *x* $\leq$ 3   1             No             constant
 
-**znWindFLkg=*floatTODO***
+**znWindFLkg=*float***
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                1             No             constant
+Wind speed modifier factor.  The weather file wind speed is multiplied by this factor to yield a local wind speed for use in infiltration and convection models.
+
+  **Units**   **Legal Range**   **Default**                           **Required**   **Variability**
+  ----------- ----------------- ------------------------------------ -------------- -----------------
+                  $\geq$ 0       derived from zn_eaveZ and infShld           No             constant
+
+**znAFMtr=*afMtrName***
+
+Name of AFMETER object, if any, to which zone AirNet air flows are recorded.  *ZnAFMtr* defines a pressure boundary for accounting purposes.  Multiple zones having the same AFMETER are treated as a single volume -- interzone flows within that volume are not recorded.  For example, to obtain "building total" flow data, a common AFMETER could be assigned to several conditioned zones but not to adjacent unconditioned zones such as attic spaces.
+
+  **Units**    **Legal Range**       **Default**      **Required**   **Variability**
+  ----------- --------------------- ---------------- -------------- -----------------
+              *name of an AFMETER*   *not recorded*   No             constant
+
 
 ## ZONE Exhaust Fan
 

@@ -2791,6 +2791,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "BOOL iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
 	*declare "BOOL iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ; }"
 	*declare "BOOL iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
+	*declare "BOOL iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi1 != iz_zi2; }"
 	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
 	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
 	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
@@ -2828,6 +2829,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 						//   C_IZNVTYCH_ANOAVRLF: RSYS OAV relief air
 						//                        ( = interzone hole sized per flow)
 	*r AFCAT iz_afCat	// air flow category (accounting only) C_AFCAT_xxx
+						//    or 0 = unknown or -1 = not tracked
 
 						// AFMTR pointers, derived from zone zn_afMtri
 						//   NULL if not specified or same on both sides of IZ type
