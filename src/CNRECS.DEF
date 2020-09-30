@@ -2788,6 +2788,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "RC iz_EndSubhr();"
 	// CAUTION: the following depend on C_IZNVTYCH_xxx values
 	*declare "BOOL iz_IsAirNet() const { return iz_nvcntrl > C_IZNVTYCH_TWOWAY; }"
+	*declare "BOOL iz_CanHaveAFCat() const { return iz_IsAirNet(); }"
 	*declare "BOOL iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
 	*declare "BOOL iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ; }"
 	*declare "BOOL iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
