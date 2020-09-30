@@ -876,6 +876,9 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 		iz_exp = 0.f;
 	}
 
+	if (!iz_CanHaveAFCat())
+		ignore(IZXRAT_AFCAT, when);
+
 	// horizontal opening
 	//   stairangle defaults
 	//   L1 and L2 required else disallowed
@@ -1046,7 +1049,9 @@ x		}
 void IZXRAT::iz_SetupAfMtrs()
 {
 	// Air flow category
-	if (!IsSet(IZXRAT_AFCAT))
+	if (!iz_CanHaveAFCat())
+		iz_afCat = -1;
+	else if (!IsSet(IZXRAT_AFCAT))
 		iz_afCat = iz_AfCatDefault();	// default category (may return -1)
 
 	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
@@ -1079,8 +1084,8 @@ void IZXRAT::iz_SetupAfMtrs()
 AFCAT IZXRAT::iz_AfCatDefault() const
 {
 	AFCAT afCat;
-	if (!iz_IsAirNet())
-		afCat = -1;		// track only airnet flows
+	if (!iz_CanHaveAFCat())
+		afCat = -1;		// not trackable
 	else if (iz_IsSysAir())
 		afCat = C_AFCAT_HVAC;
 	else if (iz_IsDuctLk())
@@ -1608,7 +1613,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 	const int ANDBZMAX = 5;
 	double rVSave[ ANDBZMAX];
 	double jacSave[ ANDBZMAX*ANDBZMAX];
-	int bDbPrint = DbDo( dbdAIRNET);
+	bool bDbPrint = DbDo( dbdAIRNET);
 #endif
 
 	TMRSTART( TMR_AIRNET);
@@ -1714,9 +1719,11 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		}
 #if defined( DEBUGDUMP)
 		// save info for debug print (changed by gaussjb())
-		VCopy( rVSave, nzDb, rV);
-		for (zi=0; zi < nzDb; zi++)
-			VCopy( &jacSave[ zi*nzDb], nzDb, &an_jac[ zi*an_nz]);
+		if (bDbPrint)
+		{	VCopy(rVSave, nzDb, rV);
+			for (zi = 0; zi < nzDb; zi++)
+				VCopy(&jacSave[zi*nzDb], nzDb, &an_jac[zi*an_nz]);
+		}
 #endif
 		// solve for pressure corrections
 		int gjRet = gaussjb( an_jac, an_nz, rV, 1);
