@@ -583,14 +583,18 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 // CAUTION: AFMTR_IVL record (cnrecs.def) member ordering MATCHES order of choices.
 *choicb AFCAT	{
     // UNKNOWN = 0
-    INFILEX "InfilEx"
-	VENTEX  "VentEx"
+    INFEX   "InfilEx"
+	VNTEX   "VentEx"
 	FANEX   "FanEx"
-	INFILIZ "InfilIz"
-	VENTIZ  "VentIz"
-	FANIZ   "FanIz"
+	INFUZ   "InfilUz"
+	VNTUZ   "VentUz"
+	FANUZ   "FanUz"
+	INFCZ   "InfilCz"
+	VNTCZ   "VentCz"
+	FANCZ   "FanCz"
 	DUCTLK  "DuctLk"
 	HVAC    "HVAC"
+	NONE    "None"
 	COUNT   "*Count"
 	}
 

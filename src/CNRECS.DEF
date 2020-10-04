@@ -2775,6 +2775,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupAfMtrs();"
 	*declare "RC iz_SetupNonAirNet();"
 	*declare "bool iz_HasVentEffect() const;"
+	*declare "bool iz_MightBeNatVent() const;"
 	*declare "RC iz_BegHour();"
 	*declare "RC iz_BegSubhr();"
 	*declare "void iz_SetupPresDep();"
@@ -2790,9 +2791,10 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "BOOL iz_IsAirNet() const { return iz_nvcntrl > C_IZNVTYCH_TWOWAY; }"
 	*declare "BOOL iz_CanHaveAFCat() const { return iz_IsAirNet(); }"
 	*declare "BOOL iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
-	*declare "BOOL iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ; }"
+	*declare "BOOL iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
 	*declare "BOOL iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
-	*declare "BOOL iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi1 != iz_zi2; }"
+	*declare "BOOL iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
+	*declare "BOOL iz_IsIZUZ() const;"
 	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
 	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
 	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
@@ -3419,12 +3421,15 @@ RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct 
     //   CAUTION: order of members MATCHES DTAFCAT
     //      for subscripting (in cgcomp,cgresult.cpp) by category
 	FLOAT amt_unknown		// unknown (= AFCAT 0, no associated choice)
-	FLOAT amt_infilEx		// air flow by category
-	FLOAT amt_ventEx
+	FLOAT amt_infEx		    // air flow by category
+	FLOAT amt_vntEx
 	FLOAT amt_fanEx
-	FLOAT amt_infilIz
-	FLOAT amt_ventIz
-	FLOAT amt_fanIz
+	FLOAT amt_infUz
+	FLOAT amt_vntUz
+	FLOAT amt_fanUz
+	FLOAT amt_infCz
+	FLOAT amt_vntCz
+	FLOAT amt_fanCz
 	FLOAT amt_ductLk
 	FLOAT amt_hvac
 *END		// AFMTR_IVL
