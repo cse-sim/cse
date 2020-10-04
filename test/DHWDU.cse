@@ -2275,7 +2275,7 @@ IZXFER   "Conditioned-WnLU"
    izHD = 5.37
    izNVEff = 0.5
    izCpr = 0.6
-   izAfCat = VentEx
+   // izAfCat = VentEx
 
 IZXFER   "Conditioned-WnLS"  
    izNVType = "AIRNETEXT"
