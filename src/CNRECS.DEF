@@ -2771,7 +2771,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *declare "RC iz_CkfIZXFER();"
 	*declare "void iz_ClearResults( int iV);"
     *declare "RC iz_Setup( IZXRAT* izie);"
-	*declare "AFCAT iz_AfCatDefault() const;"
+	*declare "void iz_AfMtrCats();"
 	*declare "void iz_SetupAfMtrs();"
 	*declare "RC iz_SetupNonAirNet();"
 	*declare "bool iz_HasVentEffect() const;"
@@ -2794,7 +2794,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "BOOL iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
 	*declare "BOOL iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
 	*declare "BOOL iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
-	*declare "BOOL iz_IsIZUZ() const;"
+	*declare "int iz_IsCZ( int iZn) const;"
 	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
 	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
 	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
@@ -2831,14 +2831,18 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 						//   C_IZNVTYCH_ANSYSAIR: system air flow
 						//   C_IZNVTYCH_ANOAVRLF: RSYS OAV relief air
 						//                        ( = interzone hole sized per flow)
-	*r AFCAT iz_afCat	// air flow category (accounting only) C_AFCAT_xxx
-						//    or 0 = unknown or -1 = not tracked
+	*r AFCAT iz_afCatI	// air flow input category (accounting only) C_AFCAT_xxx
+						//    or 0 = unknown
+						//    resolved to iz_afMtrCat1 and iz_afMtrCat2 for runtime
 
 						// AFMTR pointers, derived from zone zn_afMtri
 						//   NULL if not specified or same on both sides of IZ type
     *declare "AFMTR* iz_pAfMtr1;"	// for iz_zn1
     *declare "AFMTR* iz_pAfMtr2;"	// for iz_zn2
 	*declare "bool iz_doingAfMtr;"	// true iff iz_pAfMtr1 or iz_pAfMtr2 != NULL
+						// runtime air flow categories re UZ/CZ distinction for IZ flow
+	*r SI iz_afMtrCat1	//   ... for iz_pAfMtr1
+	*r SI iz_afMtrCat2	//   ... for iz_pAfMtr2
 
     *h AREA_GEZ iz_a1  	// vent area 1, ft2
 						//   _TWOWAY = low vent area
