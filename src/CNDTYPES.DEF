@@ -472,6 +472,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
+*choicb DHWDRMETH { NONE "none" SCHED "schedule" /* TDV */ }
 
 // PV choices
 *choicb PVMODCH {

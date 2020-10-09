@@ -3660,6 +3660,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   default = ws_tUse
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
 							//   default = ws_tUse
+  *r DHWDRMETH ws_drMethod	// DHW demand response control method
+							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, 
+  *h LI ws_drSignal;		// DHW demand response control signal
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
 								//   for HPWH only, re DHWLOOPHEATER entering temp
@@ -3828,7 +3831,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
-*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drMode=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc, double& totOut);"
 

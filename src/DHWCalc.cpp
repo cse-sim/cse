@@ -2759,8 +2759,9 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	float tMains /*=-1.f*/,	// current mains temp, F
 							//   from weather file or user expression
 							//   needed iff tMix is specified
-	float* pTOutNoMix/*=NULL*/)	// unmixed output temp accumulated here re DHWLOOPHEATER
+	float* pTOutNoMix/*=NULL*/,	// unmixed output temp accumulated here re DHWLOOPHEATER
 								// average inlet temp
+	int drMode /*=0*/)		// demand response control signal
 {
 	RC rc = RCOK;
 
@@ -2811,11 +2812,12 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	}
 	
 	int hpwhRet = hw_pHPWH->runOneStep(
+		DegFtoC(tInlet),		// inlet temp, C
 		GAL_TO_L(drawForTick),	// draw volume, L
 		DegFtoC(hw_tEx),		// ambient T (=tank surround), C
 		DegFtoC(hw_tASHPSrc),	// heat source T, C
 								//   aka HPWH "external temp"
-		HPWH::DR_ALLOW,			// DRstatus: no demand response modeled
+		HPWH::DRMODES( drMode),	// DRstatus: no demand response modeled
 		GAL_TO_L(drawRL), DegFtoC(tRL),	// 2ndary draw for DHWLOOP
 										//   note drawForTick includes drawRL
 		pNPX);					// additional node power (re e.g. solar tanks)
@@ -3639,6 +3641,11 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	  : pWS->ws_pDHWSOLARSYS     ? pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp()
 	  :                            tk.wtk_tInletX;
 
+	int drMode = 0;
+	if (pWS->ws_drMethod == C_DHWDRMETH_SCHED)
+	{	drMode = pWS->ws_drSignal;
+	}
+
 #if 0 && defined( _DEBUG)
 	if (tInletWH > pWS->ws_tUse)
 		printf("\nHot!");
@@ -3652,7 +3659,8 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 	if (wh_IsHPWHModel())
 	{
-		rc |= wh_HPWH.hw_DoSubhrTick(tk, tInletWH, scaleWH, tMix, pWS->ws_tInlet, &tOutNoMix);
+		rc |= wh_HPWH.hw_DoSubhrTick(tk, tInletWH, scaleWH, tMix, pWS->ws_tInlet,
+					&tOutNoMix, drMode);
 
 		if (whfcn == whfcnPRIMARY)
 			pWS->ws_tOutPrimSum += tOutNoMix * scaleWH * wh_mult;
