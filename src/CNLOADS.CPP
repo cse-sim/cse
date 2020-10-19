@@ -3790,7 +3790,7 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 // rsMode determines assumed air source
 //   rsmOAV: outdoor air (as modified via rs_OAVTdbInlet)
 //   else: mixes air from zones plus return duct leakage
-// then addes return duct conduction and leakage
+// then adds return duct conduction and leakage
 
 // returns
 //  rs_asIn = state of air entering RSYS (after return ducts)

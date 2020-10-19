@@ -987,7 +987,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RLUP( AhB, ah)
 		rc |= ah->rddInit( isAusz);	// do run-or-design-day init for each air handler
 
-#if 1
 	// allocate results records paired with run records
 	//   do for both autoSize and run
 	//      no accum for autoSize, but code does incidental stores into xxRES
@@ -1002,40 +1001,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
 
 	EF(AhresB.AllocResultsRecs(AhB));	// AHRES <-> AH
-
-#else
-	int i = ZrB.n + 1;				// need a results record for each zone, and one for sum of zones
-	EF( ZnresB.al( i, WRN) )		// alloc ZNRES recs, at once for less fragmentation. destroys old.
-	do							// (Note: may be no results accumulation during autoSize,
-	{	//  but alloc anyway cuz code several places stores into records)
-		ZNRES *zp;
-		ZnresB.add( &zp, ABT, i);	// init (to 0) each zone results record, 1 thru i. ancrec.cpp.
-		strcpy( zp->name, i <= ZrB.n ? ZrB.p[i].name : "sum_of_zones");	// results name for rpts: name of zone or "sum_of_zones"
-		zp->zr_InitPrior();		// provide plausible ZNRES.prior values for use in
-								// possible expressions that are evaluated at step beg
-	}
-	while (--i > 0);
-
-	i = RsR.n + 1;				// need a results record for each RSYS, and one for sum of RSYSs
-	EF( RsResR.al( i, WRN) )	// alloc RSYSRES recs, at once for less fragmentation. destroys old.
-	do							// (Note: may be no results accumulation during autoSize,
-	{							//  but alloc anyway cuz code several places stores into records)
-		RSYSRES* pRSR;
-		RsResR.add( &pRSR, ABT, i);	// init (to 0) each zone results record, 1 thru i.
-		strcpy( pRSR->name, i <= RsR.n ? RsR.p[i].name : "sum_of_RSYS");	// results name for rpts
-	}
-	while (--i > 0);
-
-	i = AhB.n + 1;				// need a results record for each ah, and one for sum of ahs
-	EF( AhresB.al( i, WRN) )			// alloc AHRES recs, all at once for less mem frag. destroys any old.
-	do
-	{
-		AHRES *ahr;
-		AhresB.add( &ahr, ABT, i);    					// initialize each ah results record, 1 thru i. ancrec.cpp.
-		strcpy( ahr->name, i <= AhB.n ? AhB.p[i].name : "sum_of_ahs");	// ah results name for rpts: name of ah or "sum_of_ahs"
-	}
-	while (--i > 0);
-#endif
 
 #ifdef BINRES
 // Init re binary results output files

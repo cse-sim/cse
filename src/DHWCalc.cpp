@@ -653,7 +653,7 @@ int DHWSYS::ws_IsCentralDHWSYS() const
 }		// DHWSYS::ws_IsCentralDHWSYS
 //-----------------------------------------------------------------------------
 DHWSYSRES* DHWSYS::ws_GetDHWSYSRES() const
-{	return WsResR.GetAt(ss);
+{	return WsResR.GetAtSafe(ss);
 }	// DHWSYS::ws_GetDHWSYSRES
 //-----------------------------------------------------------------------------
 RC DHWSYS::RunDup(		// copy input to run record; check and initialize
@@ -983,9 +983,18 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 	ws_qSlr = 0.f;		// DHWSOLARSYS heat contribution, this hour
 
-
 	if (ivl <= C_IVLCH_D)	// if start of day (or longer)
 	{
+		if (Top.isBegRun || Top.tp_isBegMainSim)
+		{	// intialize run totals for all child water heaters
+			//  also sets up DHWHEATER -> DHWSYSRES linkage
+			DHWHEATER* pWH;
+			RLUPC(WhR, pWH, pWH->ownTi == ss)
+				pWH->wh_InitRunTotals();
+			RLUPC(WlhR, pWH, pWH->ownTi == ss)
+				pWH->wh_InitRunTotals();
+		}
+
 		if (Top.tp_isBegMainSim)
 		{
 			DHWSYSRES* pWSR = ws_GetDHWSYSRES();
@@ -998,12 +1007,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 				for (int iFx = 0; iFx < ws_ShowerCount(); iFx++)
 					ws_fxList[iFx].fx_hitCount = 0;
 
-			// intialize run totals for all child water heaters
-			DHWHEATER* pWH;
-			RLUPC(WhR, pWH, pWH->ownTi == ss)
-				pWH->wh_InitRunTotals();
-			RLUPC(WlhR, pWH, pWH->ownTi == ss)
-				pWH->wh_InitRunTotals();
 
 			// various run totals
 			ws_t24WLTot = 0.;
@@ -1502,8 +1505,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	// hour average adjusted inlet and hot water temps
 	float tInletXNoSSF;
 	if (qRWHSum > 0.)
-	{
-		tInletXNoSSF = ws_tInlet + qRWHSum / (waterRhoCp * ws_whUse.total);
+	{	tInletXNoSSF = ws_tInlet + qRWHSum / (waterRhoCp * ws_whUse.total);
 		ws_tInletX = ws_AdjustTInletForSSF(tInletXNoSSF);
 	}
 	else
@@ -1663,11 +1665,11 @@ RC DHWSYS::ws_DoSubhrEnd()
 
 	// water heaters
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrEnd();
+		rc |= pWH->wh_DoSubhrEnd( false);
 
 	// loop heaters
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrEnd();
+		rc |= pWH->wh_DoSubhrEnd( true);
 
 	return rc;
 
@@ -1687,9 +1689,10 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 
 	ws_SSFAnnualSolar += ws_qSlr;				// annual total solar contribution
 
-#if 0
+#if 0 && defined( _DEBUG)
 	if (frDiff(ws_HARL, ws_HARLtk) > .001f)
-		printf("\nMismatch!");
+		orWarn("HARL (%0.1f) mismatches HARLtk (%0.1f)",
+			ws_HARL, ws_HARLtk);
 #endif
 
 	DHWHEATER* pWH;
@@ -3263,6 +3266,7 @@ RC DHWHEATER::wh_Init()		// init for run
 {
 	RC rc = RCOK;
 
+	DHWSYS* pWS = wh_GetDHWSYS();
 	wh_pFCSV = NULL;
 
 	// one-time inits
@@ -3270,8 +3274,6 @@ RC DHWHEATER::wh_Init()		// init for run
 
 	// per run totals (also called on 1st main sim day)
 	wh_InitRunTotals();
-
-	DHWSYS* pWS = wh_GetDHWSYS();
 
 	rc |= pWS->ws_CheckSubObject(this);		// check system config
 											//   DHWHEATER not allows on child DHWSYS
@@ -3325,6 +3327,12 @@ void DHWHEATER::wh_InitRunTotals()
 // start-of-run initialization totals, error counts, ...
 // called at beg of warmup and run
 {
+	// linkage to DHWSYSRES subhour totals
+	//   skip if DHWSYSRES not yet allocated 
+	DHWSYS* pWS = wh_GetDHWSYS();
+	DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
+	wh_pResSh = pWSR ? &(pWSR->S) : NULL;
+
 	wh_totHARL = 0.;
 	wh_hrCount = 0;
 	wh_totOut = 0.;
@@ -3749,16 +3757,14 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	return rc;
 }		// DHWHEATER::wh_DoSubhrTick
 //--------------------------------------------------------------------------------------
-RC DHWHEATER::wh_DoSubhrEnd()		// end-of-subhour
+RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
+	bool bIsLH)		// true iff this is a DHWLOOPHEATER
 // returns RCOK iff simulation should continue
 {
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
-	DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
-
-	bool bIsLH = wh_GetFunction() == whfcnLOOPHEATER;
-
+	
 	float mult = pWS->ws_mult * wh_mult;	// overall multiplier
 
 	if (wh_IsHPWHModel())
@@ -3800,7 +3806,7 @@ RC DHWHEATER::wh_DoSubhrEnd()		// end-of-subhour
 	//     wh_qXBU = 0
 	//  }
 
-	// totals for hour
+	// energy totals for hour
 	wh_inElec += wh_inElecSh;
 	wh_inElecBU += wh_inElecBUSh;
 	wh_inElecXBU += wh_inElecXBUSh;
@@ -3811,10 +3817,9 @@ RC DHWHEATER::wh_DoSubhrEnd()		// end-of-subhour
 
 	// DHWSYSRES accumulation
 	if (wh_qHW > 0.f)
-		// units?
-		bIsLH ? pWSR->S.qLH : pWSR->S.qWH += wh_qHW * wh_mult;
+		bIsLH ? wh_pResSh->qLH : wh_pResSh->qWH += wh_qHW * wh_mult;
 	if (wh_qXBU > 0.f)
-		pWSR->S.qXBU += wh_qXBU * wh_mult;
+		wh_pResSh->qXBU += wh_qXBU * wh_mult;
 	
 	return rc;
 }		// DHWHEATER::wh_DoSubhrEnd

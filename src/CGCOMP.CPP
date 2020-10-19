@@ -1053,6 +1053,10 @@ void IZXRAT::iz_SetupAfMtrs()
 
 	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
 	//  one pointer for positive flows, one for negative
+#if defined( _DEBUG)
+	if (iz_pAfMtr1 != NULL)
+		printf("\nTrouble");
+#endif
 	iz_pAfMtr1 = iz_pAfMtr2 = NULL;	// insurance
 	if (iz_afMtrCat1 != C_AFCAT_NONE)
 	{	// set up ptrs to AFMTR(s)
