@@ -1202,6 +1202,17 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	}
 #endif
 	
+	// Demand response (DR) hourly setup
+	ws_drModeHPWH = HPWH::DR_ALLOW;
+	if (!ws_HasCentralDHWSYS())
+	{	int drSig = CHN(ws_drSignal);	// decode variable choice
+		ws_drModeHPWH = ws_drMethod == C_DHWDRMETH_SCHED
+			? DHWHEATER::wh_MapDRSigToDRModeHPWH( drSig)
+			: HPWH::DR_ALLOW;
+	}
+	else
+		ws_drModeHPWH = HPWH::DR_ALLOW;		// no DR for child DHWSYSs (no DHWHEATERs)
+	
 	if (ws_wpCount > 0)		// if any child pumps
 	{	DHWPUMP* pWP;
 		RLUPC(WpR, pWP, pWP->ownTi == ss)
@@ -1216,6 +1227,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (ws_wlhCount > 0) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 			rc |= pWH->wh_DoHour();
 	}
+
 	// DHWSYS energy use
 	ws_inElec += ws_parElec * BtuperWh;	// parasitics for e.g. circulation pumping
 										//   associated heat gain is ignored
@@ -2921,6 +2933,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		  "vLoss",     drawLoss,			UNLVOLUME2, 5,
 		  "vRL",       drawRL,				UNLVOLUME2, 5,
 		  "vTot",	   drawForTick,			UNLVOLUME2, 5,
+		  "DR",        double(drMode),      UNNONE, 1,
 		  "tMains",    tMains > 0. ? tMains : CSVItem::ci_UNSET,
 											UNTEMP, 5,
 		  "tDWHR",     tk.wtk_tInletX,		UNTEMP, 5,
@@ -3578,9 +3591,54 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 				pWS->ignore(fn,
 					strtprintf("-- HPWH '%s' has a fixed setpoint.", name));
 		}
+		wh_MapDRSigToDRModeHPWH(-1);	// validate DRMODE mapping
 	}
 	return rc;
 }		// DHWHEATER::wh_HPWHInit
+//-----------------------------------------------------------------------------
+/* static*/ int DHWHEATER::wh_MapDRSigToDRModeHPWH(
+	DHWDRSIG drSig)		// CSE DR choice value
+						//   -1: validate table
+// returns HPWH-compatible DRMODES value corresponding to CSE choice
+{
+struct DRMAP
+{	int drSig;
+	int drModeHPWH;
+};
+static const DRMAP drMap[] =
+{   C_DHWDRSIG_ON,  HPWH::DR_ALLOW,
+	C_DHWDRSIG_TOO, HPWH::DR_TOO,
+	C_DHWDRSIG_TXO, HPWH::DR_TOO | HPWH::DR_LOR,
+	C_DHWDRSIG_TOT, HPWH::DR_TOT,
+	C_DHWDRSIG_TXT, HPWH::DR_TOT | HPWH::DR_LOR,
+	C_DHWDRSIG_LOC, HPWH::DR_LOC,
+	C_DHWDRSIG_LOR, HPWH::DR_LOR,
+	C_DHWDRSIG_LOX, HPWH::DR_LOR | HPWH::DR_LOC,
+	-1,				-1
+};
+	
+	if (drSig < 0)
+	{	// validate table
+		//   correct table allows access by idx, avoids search
+		bool bMunge = false;
+		int ix;
+		for (ix = 0; !bMunge && drMap[ix].drSig >= 0; ix++)
+		{	if (drMap[ix].drSig != ix + C_DHWDRSIG_ON)
+				bMunge = true;
+		}
+		if (bMunge || ix != C_DHWDRSIG_COUNT - C_DHWDRSIG_ON)
+			// table out of order or wrong # of entries
+			errCrit(PABT, "DHWHEATER::wh_MapDRSigToDRModeHPWH() validation failure.");
+		return 0;
+	}
+
+	int ixDrSig = drSig - C_DHWDRSIG_ON;	// choice values assigned sequencially
+
+	int drMode = drMap[ixDrSig].drModeHPWH;
+
+	return drMode;
+
+}	// DHWHEATER::wh_MapDRSigToDRModeHPWH
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_DoSubhrStart()
 {
@@ -3648,10 +3706,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	  : pWS->ws_pDHWSOLARSYS     ? pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp()
 	  :                            tk.wtk_tInletX;
 
-	int drMode = 0;
-	if (pWS->ws_drMethod == C_DHWDRMETH_SCHED)
-	{	drMode = pWS->ws_drSignal;
-	}
+
 
 #if 0 && defined( _DEBUG)
 	if (tInletWH > pWS->ws_tUse)
@@ -3665,7 +3720,18 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	double drawForTick = 0.;
 
 	if (wh_IsHPWHModel())
-	{
+	{	// demand response (DR)
+		//   use DHWSYS hourly base value
+		//   turn off hour-start one-shot signals if not hour start
+		int drMode;
+		if (whfcn == whfcnPRIMARY)
+		{	drMode = pWS->ws_drModeHPWH;
+			if (tk.wtk_startMin > 0.f)
+				drMode &= ~(HPWH::DR_TOO | HPWH::DR_TOT);
+		}
+		else
+			drMode = HPWH::DR_ALLOW;
+
 		rc |= wh_HPWH.hw_DoSubhrTick(tk, tInletWH, scaleWH, tMix, pWS->ws_tInlet,
 					&tOutNoMix, drMode);
 

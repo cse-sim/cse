@@ -3663,7 +3663,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   default = ws_tUse
   *r DHWDRMETH ws_drMethod	// DHW demand response control method
 							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, 
-  *h LI ws_drSignal;		// DHW demand response control signal
+  *h DHWDRSIG ws_drSignal;	// DHW demand response control signal
+  *h *e INT ws_drModeHPWH;	// DHW demand response HPWHsim base mode for hour
+							//   may be modified at subhour or tick ivl
+
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
 								//   for HPWH only, re DHWLOOPHEATER entering temp
@@ -3918,6 +3921,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_ReportBalErrorsIf() const;"
   *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
   *declare "RC wh_HPWHInit();"
+  *declare "static int wh_MapDRSigToDRModeHPWH( DHWDRSIG drSig);"
   
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
