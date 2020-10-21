@@ -3664,7 +3664,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r DHWDRMETH ws_drMethod	// DHW demand response control method
 							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, 
   *h DHWDRSIG ws_drSignal;	// DHW demand response control signal
-  *h *e INT ws_drModeHPWH;	// DHW demand response HPWHsim base mode for hour
+  *h *e INT ws_drStatusHPWH;// DHW demand response HPWHsim base drStatus for hour
 							//   may be modified at subhour or tick ivl
 
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
@@ -3830,7 +3830,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
-*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drMode=0);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc);"
 
@@ -3922,7 +3922,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
   *declare "RC wh_HPWHInit();"
   *declare "static void wh_DRMapValidate();"
-  *declare "static int wh_DRMapSigToDRMode( DHWDRSIG drSig);"
+  *declare "static int wh_DRMapSigToDRStatus( DHWDRSIG drSig);"
   
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input
