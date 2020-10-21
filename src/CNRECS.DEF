@@ -3921,7 +3921,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_ReportBalErrorsIf() const;"
   *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
   *declare "RC wh_HPWHInit();"
-  *declare "static int wh_MapDRSigToDRModeHPWH( DHWDRSIG drSig);"
+  *declare "static void wh_DRMapValidate();"
+  *declare "static int wh_DRMapSigToDRMode( DHWDRSIG drSig);"
   
   *r FLOAT_GEZ wh_mult;			// count of identical water heaters (default 1)
 								//   models as if repeated identical input

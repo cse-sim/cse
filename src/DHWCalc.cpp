@@ -1207,7 +1207,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (!ws_HasCentralDHWSYS())
 	{	int drSig = CHN(ws_drSignal);	// decode variable choice
 		ws_drModeHPWH = ws_drMethod == C_DHWDRMETH_SCHED
-			? DHWHEATER::wh_MapDRSigToDRModeHPWH( drSig)
+			? DHWHEATER::wh_DRMapSigToDRMode( drSig)
 			: HPWH::DR_ALLOW;
 	}
 	else
@@ -2793,27 +2793,25 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 
 	bool bDoMix = tMix > 0.f;
 
-	// draw components
-	double drawUse;	// use draw
+	// draw components for tick
+	double drawUse;	// use draw, gal
 	double drawLoss;// pseudo-draw (gal) to represent e.g. central system branch losses
-	double drawRL;	// loop flow vol for tick
-	double tRL;		// loop return temp
+	double drawRL;	// loop flow vol for tick, gal
+	double tRL;		// loop return temp, F
+	double drawForTick;		// total draw, gal
 	if (bDoMix)
 	{	double scaleX = scaleWH * hw_fMixUse;
 		drawUse = tk.wtk_whUse*scaleX;
 		drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., tMix - tMains));
 		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;
 		drawRL = tk.wtk_volRL * scaleWH * hw_fMixRL;
+		drawForTick = drawUse + drawLoss + drawRL;
 		tRL = tk.wtk_tRL;
 	}
 	else
-	{	drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
+	{	drawForTick = drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
 		drawLoss = drawRL = tRL = 0.f;
 	}
-
-	double drawForTick = drawUse + drawLoss + drawRL;
-
-	hw_pHPWH->setInletT(DegFtoC(tInlet));		// mixed inlet temp
 
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
 	//   used to model e.g. heat addition via solar DHW heat exchanger
@@ -3591,22 +3589,19 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 				pWS->ignore(fn,
 					strtprintf("-- HPWH '%s' has a fixed setpoint.", name));
 		}
-		wh_MapDRSigToDRModeHPWH(-1);	// validate DRMODE mapping
+		wh_DRMapValidate();	// validate DRMODE mapping (ABT if bad)
 	}
 	return rc;
 }		// DHWHEATER::wh_HPWHInit
+
 //-----------------------------------------------------------------------------
-/* static*/ int DHWHEATER::wh_MapDRSigToDRModeHPWH(
-	DHWDRSIG drSig)		// CSE DR choice value
-						//   -1: validate table
-// returns HPWH-compatible DRMODES value corresponding to CSE choice
-{
+// Demand reduction (DR) stuff
 struct DRMAP
-{	int drSig;
-	int drModeHPWH;
+{	DHWDRSIG drSig;		// CSE signal choice
+	int drModeHPWH;		// corresponding HPWH drMode
 };
 static const DRMAP drMap[] =
-{   C_DHWDRSIG_ON,  HPWH::DR_ALLOW,
+{ C_DHWDRSIG_ON,  HPWH::DR_ALLOW,
 	C_DHWDRSIG_TOO, HPWH::DR_TOO,
 	C_DHWDRSIG_TXO, HPWH::DR_TOO | HPWH::DR_LOR,
 	C_DHWDRSIG_TOT, HPWH::DR_TOT,
@@ -3616,29 +3611,37 @@ static const DRMAP drMap[] =
 	C_DHWDRSIG_LOX, HPWH::DR_LOR | HPWH::DR_LOC,
 	-1,				-1
 };
-	
-	if (drSig < 0)
-	{	// validate table
-		//   correct table allows access by idx, avoids search
-		bool bMunge = false;
-		int ix;
-		for (ix = 0; !bMunge && drMap[ix].drSig >= 0; ix++)
-		{	if (drMap[ix].drSig != ix + C_DHWDRSIG_ON)
-				bMunge = true;
-		}
-		if (bMunge || ix != C_DHWDRSIG_COUNT - C_DHWDRSIG_ON)
-			// table out of order or wrong # of entries
-			errCrit(PABT, "DHWHEATER::wh_MapDRSigToDRModeHPWH() validation failure.");
-		return 0;
+//-----------------------------------------------------------------------------
+/* static*/ void DHWHEATER::wh_DRMapValidate()	// one-time DRMAP checks
+// Detects misconfigured code
+// Aborts execution on fail
+{
+	//   correct table allows access by idx, avoids search
+	bool bMunge = false;
+	int ix;
+	for (ix = 0; !bMunge && drMap[ix].drSig >= 0; ix++)
+	{
+		if (drMap[ix].drSig != ix + C_DHWDRSIG_ON)
+			bMunge = true;
 	}
+	if (bMunge || ix != C_DHWDRSIG_COUNT - C_DHWDRSIG_ON)
+		// table out of order or wrong # of entries
+		errCrit(PABT, "DHWHEATER::wh_DRMapValidate() failure.");
 
+}		// DHWHEATER::wh_DRMapValidate
+//-----------------------------------------------------------------------------
+/* static*/ int DHWHEATER::wh_DRMapSigToDRMode(
+	DHWDRSIG drSig)		// CSE DR choice value
+						//   -1: validate table
+// returns HPWH-compatible DRMODES value corresponding to CSE choice
+{
 	int ixDrSig = drSig - C_DHWDRSIG_ON;	// choice values assigned sequencially
 
 	int drMode = drMap[ixDrSig].drModeHPWH;
 
 	return drMode;
 
-}	// DHWHEATER::wh_MapDRSigToDRModeHPWH
+}	// DHWHEATER::wh_DRMapSigToDRMode
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_DoSubhrStart()
 {
