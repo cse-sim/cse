@@ -1203,15 +1203,15 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 #endif
 	
 	// Demand response (DR) hourly setup
-	ws_drModeHPWH = HPWH::DR_ALLOW;
+	ws_drStatusHPWH = HPWH::DR_ALLOW;
 	if (!ws_HasCentralDHWSYS())
 	{	int drSig = CHN(ws_drSignal);	// decode variable choice
-		ws_drModeHPWH = ws_drMethod == C_DHWDRMETH_SCHED
-			? DHWHEATER::wh_DRMapSigToDRMode( drSig)
+		ws_drStatusHPWH = ws_drMethod == C_DHWDRMETH_SCHED
+			? DHWHEATER::wh_DRMapSigToDRStatus( drSig)
 			: HPWH::DR_ALLOW;
 	}
 	else
-		ws_drModeHPWH = HPWH::DR_ALLOW;		// no DR for child DHWSYSs (no DHWHEATERs)
+		ws_drStatusHPWH = HPWH::DR_ALLOW;		// no DR for child DHWSYSs (no DHWHEATERs)
 	
 	if (ws_wpCount > 0)		// if any child pumps
 	{	DHWPUMP* pWP;
@@ -2779,7 +2779,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 							//   needed iff tMix is specified
 	float* pTOutNoMix/*=NULL*/,	// unmixed output temp accumulated here re DHWLOOPHEATER
 								// average inlet temp
-	int drMode /*=0*/)		// demand response control signal
+	int drStatus /*=0*/)		// demand response control signal
 {
 	RC rc = RCOK;
 
@@ -2833,7 +2833,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		DegFtoC(hw_tEx),		// ambient T (=tank surround), C
 		DegFtoC(hw_tASHPSrc),	// heat source T, C
 								//   aka HPWH "external temp"
-		HPWH::DRMODES( drMode),	// DRstatus: demand response signal
+		HPWH::DRMODES( drStatus), // DRstatus: demand response signal
 		GAL_TO_L(drawRL), DegFtoC(tRL),	// 2ndary draw for DHWLOOP
 										//   note drawForTick includes drawRL
 		pNPX);					// additional node power (re e.g. solar tanks)
@@ -2907,7 +2907,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	}
 #if defined( HPWH_DUMP)
 	// tick level CSV report for testing
-	int dumpUx = UNSYSSI;		// unit system for CSV values
+	int dumpUx = UNSYSIP;		// unit system for CSV values
 	int hpwhOptions = dumpUx == UNSYSIP ? HPWH::CSVOPT_IPUNITS : HPWH::CSVOPT_NONE;
 	static const int nTCouples = 12;		// # of storage layers reported by HPWH
 
@@ -2931,7 +2931,6 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		  "vLoss",     drawLoss,			UNLVOLUME2, 5,
 		  "vRL",       drawRL,				UNLVOLUME2, 5,
 		  "vTot",	   drawForTick,			UNLVOLUME2, 5,
-		  "DR",        double(drMode),      UNNONE, 1,
 		  "tMains",    tMains > 0. ? tMains : CSVItem::ci_UNSET,
 											UNTEMP, 5,
 		  "tDWHR",     tk.wtk_tInletX,		UNTEMP, 5,
@@ -2950,8 +2949,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 											UNENERGY3, 5,
 		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
 											UNENERGY3, 5,
-		  "XBU",       HPWHxBU,				UNENERGY3,	5,
-
+		  "XBU",       HPWHxBU,				UNENERGY3, 5,
 		  NULL
 		};
 
@@ -3589,7 +3587,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 				pWS->ignore(fn,
 					strtprintf("-- HPWH '%s' has a fixed setpoint.", name));
 		}
-		wh_DRMapValidate();	// validate DRMODE mapping (ABT if bad)
+		wh_DRMapValidate();	// validate drStatus mapping (ABT if bad)
 	}
 	return rc;
 }		// DHWHEATER::wh_HPWHInit
@@ -3598,7 +3596,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 // Demand reduction (DR) stuff
 struct DRMAP
 {	DHWDRSIG drSig;		// CSE signal choice
-	int drModeHPWH;		// corresponding HPWH drMode
+	int drStatusHPWH;	// corresponding HPWH drStatus
 };
 static const DRMAP drMap[] =
 { C_DHWDRSIG_ON,  HPWH::DR_ALLOW,
@@ -3630,18 +3628,18 @@ static const DRMAP drMap[] =
 
 }		// DHWHEATER::wh_DRMapValidate
 //-----------------------------------------------------------------------------
-/* static*/ int DHWHEATER::wh_DRMapSigToDRMode(
+/* static*/ int DHWHEATER::wh_DRMapSigToDRStatus(
 	DHWDRSIG drSig)		// CSE DR choice value
 						//   -1: validate table
 // returns HPWH-compatible DRMODES value corresponding to CSE choice
 {
 	int ixDrSig = drSig - C_DHWDRSIG_ON;	// choice values assigned sequencially
 
-	int drMode = drMap[ixDrSig].drModeHPWH;
+	int drStatus = drMap[ixDrSig].drStatusHPWH;
 
-	return drMode;
+	return drStatus;
 
-}	// DHWHEATER::wh_DRMapSigToDRMode
+}	// DHWHEATER::wh_DRMapSigToDRStatus
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_DoSubhrStart()
 {
@@ -3726,17 +3724,17 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	{	// demand response (DR)
 		//   use DHWSYS hourly base value
 		//   turn off hour-start one-shot signals if not hour start
-		int drMode;
+		int drStatus;
 		if (whfcn == whfcnPRIMARY)
-		{	drMode = pWS->ws_drModeHPWH;
+		{	drStatus = pWS->ws_drStatusHPWH;
 			if (tk.wtk_startMin > 0.f)
-				drMode &= ~(HPWH::DR_TOO | HPWH::DR_TOT);
+				drStatus &= ~(HPWH::DR_TOO | HPWH::DR_TOT);
 		}
 		else
-			drMode = HPWH::DR_ALLOW;
+			drStatus = HPWH::DR_ALLOW;
 
 		rc |= wh_HPWH.hw_DoSubhrTick(tk, tInletWH, scaleWH, tMix, pWS->ws_tInlet,
-					&tOutNoMix, drMode);
+					&tOutNoMix, drStatus);
 
 		if (whfcn == whfcnPRIMARY)
 			pWS->ws_tOutPrimSum += tOutNoMix * scaleWH * wh_mult;
