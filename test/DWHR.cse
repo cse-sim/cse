@@ -4601,7 +4601,32 @@ DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedE
 DO0Base( "DSMHKa", ElecMKa, FXMKa, WHMKa, 1) wsLoadShareDHWSYS="DSMH"
 DHWHEATREC DWHRa wrFeedsWH=Yes wrCountFXDrain = 1 wrCountFXCold = 1  wrCSARatedEF = .6 wrTDInDiff=0
 
-//////////////////////////////////////////////////////////////////////
+#define WSRREPCOLS( s, IVL) \
+ReportCol colhead = "Total" colVal=@DHWSYSRES[ s].IVL.total/1000 colWid=8 \
+ReportCol colhead = "DWHR" colVal=@DHWSYSRES[ s].IVL.qDWHR/1000 colWid=8 \
+ReportCol colhead = "SSF" colVal=@DHWSYSRES[ s].IVL.qSSF/1000 colWid=8 \
+ReportCol colhead = "Solar" colVal=@DHWSYSRES[ s].IVL.qSolar /1000 colWid=8 \
+ReportCol colhead = "WH" colVal=@DHWSYSRES[ s].IVL.qWH/1000 colWid=8 \
+ReportCol colhead = "LH" colVal=@DHWSYSRES[ s].IVL.qLH/1000 colWid=8 \
+ReportCol colhead = "XBU" colVal=@DHWSYSRES[ s].IVL.qXBU/1000 colWid=8 \
+
+#define WSRREP_H( s, jday) REPORT rpType=UDT rpFreq=HOUR rpTitle = s rpDayBeg=jday rpDayEnd=jday \
+ReportCol colhead="Hr" colVal=$hour colWid = 3 \
+WSRREPCOLS( s, H)
+
+#define WSRREP_D( s, dBeg, dEnd) REPORT rpType=UDT rpFreq=DAY rpTitle = s rpDayBeg=dBeg rpDayEnd=dEnd \
+ReportCol colhead="Day" colVal=@Top.dateStr colWid = 10 \
+WSRREPCOLS( s, D)
+
+#define WSRREP_M( s) REPORT rpType=UDT rpFreq=MONTH rpTitle = s rpDayBeg=jan 1 rpDayEnd=dec 31 \
+ReportCol colhead="Mon" colVal=@Top.monStr colWid = 3 \
+WSRREPCOLS( s, M) \
+REPORT rpType=UDT rpFreq=YEAR rpHeader=No \
+ReportCol colVal="Yr" colWid = 3 \
+WSRREPCOLS( s, Y)
+
+WSRREP_M( "DSMH")
+
 
 DELETE REPORT EB
 

@@ -356,6 +356,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 		  }
 
 // DHW choices
+
 *choicb WSCALCMODECH {
 			PRERUN "PreRun"
 			SIM "Simulate"
@@ -472,6 +473,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
+*choicb DHWDRMETH { NONE "none" SCHED "schedule" /* TDV */ }
 
 // PV choices
 *choicb PVMODCH {
@@ -738,6 +740,17 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			TDVPEAKSAVE "TDVPeakSave"
 			}
 
+*choicn DHWDRSIG {
+	ON "On"
+	TOO "TOO"
+	TXO "TXO"
+	TOT "TOT"
+	TXT "TXT"
+	LOC "LOC"
+	LOR "LOR"
+	LOX "LOX"
+	COUNT "*Count"	// hidden
+  }
 
 /**********************************************************************************************************************
 ** === CHOICN types: can hold these choices (as NAN), or float number 

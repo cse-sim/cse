@@ -154,8 +154,7 @@ RC DHWSOLARSYS::sw_DoSubhrEnd()
 {
 	RC rc = RCOK;
 
-	double totOut = 0.;		// substep total heat added to water
-	sw_tank.hw_DoSubhrEnd(1.f, sw_tankpZn, NULL, totOut);
+	sw_tank.hw_DoSubhrEnd(1.f, sw_tankpZn, NULL);
 	sw_tankQLoss += BtuperkWh * sw_tank.hw_qLoss;
 
 	return rc;
