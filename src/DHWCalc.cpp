@@ -962,6 +962,26 @@ float DHWSYS::ws_BranchFlow() const		// average branch flow rate
 	return brVF;
 }		// DHWSYS::ws_BranchFlow
 //----------------------------------------------------------------------------
+float DHWSYS::ws_ApplySSF(
+	float tIn,
+	float flow,
+	float& qAdd) const
+{
+	float tOut;
+	if (ws_SSF == 0.f)
+	{
+		tOut = tIn;
+		qAdd = 0.f;
+	}
+	else
+	{
+		tOut = tIn + ws_SSF * max(0.f, ws_tUse - tIn);
+		qAdd = 0.f;
+	}
+	return tOut;
+
+}	// DHWSYS::ws_ApplySSF
+//----------------------------------------------------------------------------
 RC DHWSYS::ws_DoHour(		// hourly calcs
 	IVLCH ivl,	// C_IVLCH_Y, _M, _D, _H, (_S)
 	float centralMult /*=1.f*/)	// central system multiplier
@@ -3785,11 +3805,10 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	{	
 		float dhwLoadTk1 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
 		pWS->ws_HARLtk += dhwLoadTk1;
-
+		pWSR->S.total += dhwLoadTk1;
 		
-		float dhwLoadTk2 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);;
+		float dhwLoadTk2 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
-		pWSR->S.total += dhwLoadTk2;
 		
 		if (pWS->ws_pDHWSOLARSYS)
 		{	float drawSolarSys = tk.wtk_volIn;	// draw from solar: does not include loop flow

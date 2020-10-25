@@ -3685,6 +3685,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//  approximates savings by modifyng inlet water temp
 							//  not allowed (and set 0) when DHWSOLARSYS is specified
   *declare "float ws_AdjustTInletForSSF( float tInlet) const { return tInlet + ws_SSF*max(0.f, ws_tUse - tInlet); }"
+  *declare "float ws_ApplySSF( float tIn, float flow, float& qAdd) const;"
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
