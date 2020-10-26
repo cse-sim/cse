@@ -2396,6 +2396,7 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_WORSTCASEMEDIUM,  hwatSMALL | HPWH::MODELS_UEF2generic },	// alias (testing aid)
     { C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
 	{ C_WHASHPTYCH_SANDEN80,         hwatSMALL | HPWH::MODELS_Sanden80 },
+	{ C_WHASHPTYCH_SANDEN120,        hwatSMALL | HPWH::MODELS_Sanden120 },
 
 // large
 	{ C_WHASHPTYCH_SANDENGS3,       hwatLARGE | HPWH::MODELS_Sanden_GS3_45HPA_US_SP },
