@@ -387,6 +387,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
 			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
 			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
+			SANDEN120 "Sanden120"			// Sanden 120 gallon CO2 external heat pump
 			SANDENGS3 "SandenGS3"			// Sanden GS3 compressor CO2 external
 			GE2012 "GE2012"					// 2012 era GeoSpring
 			GE2014 "GE2014"					// 2014 50 gal GE run in the efficiency mode
