@@ -373,8 +373,9 @@ struct DHWTICK	// per tick info for DHWSYS
 {
 	float wtk_startMin;		// tick start time (minutes from hour beg)
 	double wtk_whUse;		// total tick hot water draw at all water heaters, gal
-	float wtk_tInletX;		// post-DWHR / post SSF cold water temperature for this tick, F
+	float wtk_tInletX;		// post-DWHR / post-SSF cold water temperature for this tick, F
 							//   = DHWSYS.ws_tInlet if no DWHR and ws_SSF = 0
+							//   inlet temp for DHWSOLARSYS if any
 	int wtk_nHRDraws;		// # of DHWHEATREC draws during this tick
 	float wtk_volRL;		// DHWLOOP return flow for this tick, gal
 							//   iff loop returns to water heater
@@ -396,8 +397,8 @@ struct DHWTICK	// per tick info for DHWSYS
 		wtk_tInletX = tInlet;
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
-	double wtk_DrawTot(float tOut, float& tInletMix, float tInlet=-1.f) const;
-	double wtk_DrawTotX(float tOut, float tInlet, float tMains, float& tInletMix);
+	float wtk_DrawTot(float tOut, float tInlet, float tMains, float& tInletMix);
+	void wtk_ApplySSF(float SSF, float tUse);
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
 void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
@@ -416,45 +417,16 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 	// TODO: other members?
 
 }		// DHWTICK::wtk_Accum
-//-----------------------------------------------------------------------------
-double DHWTICK::wtk_DrawTot(		// tick draw
-	float tOut,						// assumed heater output temp, F
-	float& tInletMix,				// returned: mixed inlet temp
-									//   (combined loop return and inletX)
-	float tInlet /*=-1.f*/) const	// inlet temp, F
-									//   if <0, use wtk_tInletX
-									//   else from e.g. solar or primary heater
-// returns draw volume for tick, gal
-{
-	if (tInlet < 0.f)
-		tInlet = wtk_tInletX;
-
-	float drawUse = wtk_whUse;
-
-
-	if (wtk_qLossNoRL != 0.f)
-	{	float deltaT = max(1., tOut - tInlet);
-				// temp rise, F max( 1, dT) to prevent x/0
-		drawUse += wtk_qLossNoRL / (waterRhoCp * deltaT);
-	}
-
-	double drawTot = drawUse + wtk_volRL;
-	tInletMix = drawTot <= 0.
-		? tInlet
-		: (drawUse * tInlet + wtk_volRL * wtk_tRL) / drawTot;
-	return drawTot;
-
-}		// DHWTICK::wtk_DrawTot
 //=============================================================================
-double DHWTICK::wtk_DrawTotX(		// tick draw
-	float tOut,						// assumed heater output temp, F
+float DHWTICK::wtk_DrawTot(		// tick draw
+	float tOut,				// assumed heater output temp, F
 	float tInletWH, 		// water heater inlet temp, F
 							//   from e.g. mains, DWHR, solar
 	float tMains,			// current mains temp, F
 							//   from weather file or user expression
 							//   needed iff mixdown occurs due to tInlet > tOut
-	float& tInletMix)				// returned: mixed inlet temp, F
-									//   (combined loop return and inlet)
+	float& tInletMix)		// returned: mixed inlet temp, F
+							//   (combined loop return and inlet)
 
 // sets wtk_volIn = inlet flow (not including loop)
 
@@ -462,10 +434,11 @@ double DHWTICK::wtk_DrawTotX(		// tick draw
 {
 
 	wtk_volIn = wtk_whUse;	// use at WH due to fixture draw
+							//  (already modified re any DWHR)
 
 	// additional draws to represent jacket losses, T24DHW branch losses
 	if (wtk_qLossNoRL > 0.f)
-	{	float deltaT = max(1., tOut - tMains);	// temp rise, F (prevent x/0)
+	{	float deltaT = max(1., tOut - wtk_tInletX);	// temp rise, F (prevent x/0)
 		wtk_volIn += wtk_qLossNoRL / (waterRhoCp * deltaT);
 	}
 
@@ -490,8 +463,20 @@ double DHWTICK::wtk_DrawTotX(		// tick draw
 		return wtk_volIn;
 
 }		// DHWTICK::wtk_DrawTotX
-
 //-----------------------------------------------------------------------------
+void DHWTICK::wtk_ApplySSF(		// apply external solar savings fraction
+	float SSF,	// solar savings fraction	
+	float tUse)	// use temp, F (nominal system output temp)
+// Adjusts inlet temp per assumed solar savings fraction.
+// Independent of DHWSOLARSYS model
+{
+	if (wtk_whUse > 0.f)
+	{	float deltaT = SSF * max(0.f, tUse - wtk_tInletX);
+		wtk_qSSF = wtk_whUse * deltaT * waterRhoCp;
+		wtk_tInletX += deltaT;
+	}
+}		// DHWTICK::wtk_ApplySSF
+//=============================================================================
 struct DHWHRTICK	// per tick info for DHWHEATREC
 {
 	DHWHRTICK()
@@ -962,26 +947,6 @@ float DHWSYS::ws_BranchFlow() const		// average branch flow rate
 	return brVF;
 }		// DHWSYS::ws_BranchFlow
 //----------------------------------------------------------------------------
-float DHWSYS::ws_ApplySSF(
-	float tIn,
-	float flow,
-	float& qAdd) const
-{
-	float tOut;
-	if (ws_SSF == 0.f)
-	{
-		tOut = tIn;
-		qAdd = 0.f;
-	}
-	else
-	{
-		tOut = tIn + ws_SSF * max(0.f, ws_tUse - tIn);
-		qAdd = 0.f;
-	}
-	return tOut;
-
-}	// DHWSYS::ws_ApplySSF
-//----------------------------------------------------------------------------
 RC DHWSYS::ws_DoHour(		// hourly calcs
 	IVLCH ivl,	// C_IVLCH_Y, _M, _D, _H, (_S)
 	float centralMult /*=1.f*/)	// central system multiplier
@@ -996,10 +961,10 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	// ws_inFuel = 0.f;	no DHWSYS fuel use
 
 	ws_HJL = 0.f;	// jacket losses, Btu
-	ws_HARLtk = 0.f;	// adjusted load back calc'd from ticks, Btu
-						//   check figure, should = ws_HARL					
 
 	ws_qDWHR = 0.f;		// DWHR (DHWHEATREC) recovered heat hour total
+						//   (to WHs and to fixtures)
+	ws_qDWHRWH = 0.f;	// DHWR (DHWHEATREC) recovered heat hour total to WHs
 
 	ws_qSlr = 0.f;		// DHWSOLARSYS heat contribution, this hour
 
@@ -1051,18 +1016,16 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			ws_loadShareWS0[ iEU] = (seed+iEU)%ws_loadShareCount[ 0];
 	}
 	
-	// inlet temp = feed water to cold side of WHs
+	// inlet temp = source cold water
 	if (!IsSet( DHWSYS_TINLET))
 		ws_tInlet = Wthr.d.wd_tMains;		// default=mains
 
+	// adjusted inlet temp: initially same as mains temp
+	//   modified later re DWHR, SSF, ...
+	ws_tInletX = ws_tInlet;
+
 	// runtime checks of vals possibly set by expressions
 	rc |= ws_CheckVals( ERRRT | SHOFNLN);	// checks ws_SSF, ws_tUse, ws_tSetpoint
-
-	// adjusted inlet temp
-	// assume ws_SSF solar preheats feed water
-	//   (note ws_
-	// further changes later re DHWR
-	ws_tInletX = ws_AdjustTInletForSSF( ws_tInlet);
 
 	// distribution loss multiplier
 	//   SDLM = standard distribution loss multiplier
@@ -1070,7 +1033,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   DSM = distribution system multiplier
 	//         depends on distribution system configuration
 	ws_DLM = 1.f + (ws_SDLM-1.f)*ws_DSM;
-
 
 	// Draw duration factors
 #if defined( _DEBUG)
@@ -1104,7 +1066,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	//   ws_loadShareCount[ 0] = # of DHWSYSs in group (always >= 1)
 	double hwUseX = ws_hwUse / ws_loadShareCount[ 0];	// hwUse per system
 	// note ws_fxUseMixLH is set in ws_EndIvl()
-	ws_InitTicks( hwUseX);
+
+	ws_TickInit( hwUseX);		// initialize ticks
+
 	ws_fxUseMix.wmt_Clear();
 	ws_whUse.wmt_Clear();
 
@@ -1124,6 +1088,14 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (ws_wrCount && ws_iTk0DWHR < ws_iTkNDWHR)
 			rc |= ws_DoHourDWHR();		// modify tick values re DWHR
 	}
+	
+	// externally-determined solar savings fraction
+	if (ws_SSF > 0.f)
+		ws_TickApplySSF();	// apply SSF (increase tick inlet temps)
+
+	// derived hour average inlet temp from ticks
+	float whUseTot = 0.f;	// total WH use per ticks (check figure)
+	ws_tInletX = ws_TickAvgTInletX( whUseTot);
 
 	if (!ws_HasCentralDHWSYS())
 	{	DHWSYS* pWSChild;
@@ -1132,24 +1104,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 			rc |= ws_AccumCentralUse( pWSChild);
 		}
 	}
-
-#if 0 && defined( _DEBUG)
-	// check: compare tick totals to full hour values
-	float whUseSum = 0.f;
-	float tInletXAvg = 0.f;
-	for (int iTk=0; iTk<Top.tp_NHrTicks(); iTk++)
-	{	const DHWTICK& tk = ws_ticks[ iTk];
-		whUseSum += tk.wtk_whUse;
-		tInletXAvg += tk.wtk_tInletX * tk.wtk_whUse;
-	}
-	if (whUseSum > 0.)
-		tInletXAvg /= whUseSum;
-	else
-		tInletXAvg = ws_tInletX;
-	if (frDiff( whUseSum, ws_whUse.total) > .001
-	 || frDiff( tInletXAvg, ws_tInletX) > .001)
-		printf( "\nDHWSYS '%s': tick average inconsistency", name);
-#endif
 
 	// draws now known -- maintain meters, totals, etc
 	float mult = ws_mult * centralMult;	// overall multiplier
@@ -1278,6 +1232,7 @@ RC DHWSYS::ws_AccumCentralUse(		// accumulate central DHWSYS water use values
 	// ws_hwUse: do not accum (input)
 	ws_whUseNoHR += pWSChild->ws_whUseNoHR * mult;
 	ws_qDWHR += pWSChild->ws_qDWHR * mult;
+	ws_qDWHRWH += pWSChild->ws_qDWHRWH * mult;
 	int nTk = Top.tp_NHrTicks();
 	for (int iTk=0; iTk<nTk; iTk++)
 		ws_ticks[ iTk].wtk_Accum( pWSChild->ws_ticks[ iTk], mult);
@@ -1439,7 +1394,7 @@ int DHWSYS::ws_AssignDHWUSEtoFX(	// assign draw to fixture re DHWHEATREC
 
 }	// DHWSYS::ws_AssignDHWUSEtoFX
 //----------------------------------------------------------------------------
-void DHWSYS::ws_InitTicks(			// initialize tick data for hour
+void DHWSYS::ws_TickInit(			// initialize tick data for hour
 	double whUseHr)		// base hw use (at water heater(s)) for hour, gal
 						//   supports non-DHWUSE draws
 {	
@@ -1454,24 +1409,50 @@ void DHWSYS::ws_InitTicks(			// initialize tick data for hour
 
 	ws_iTk0DWHR = 9999;		// 1st/nth tick with possible DWHR
 	ws_iTkNDWHR = -1;
-}		// DHWSYS::ws_InitTicks
+}		// DHWSYS::ws_TickInit
+//-----------------------------------------------------------------------------
+void DHWSYS::ws_TickApplySSF()		// adjust tick values per ws_SSF
+// does nothing if ws_SSF = 0
+{
+	int nTk = Top.tp_NHrTicks();
+	for (int iTk = 0; iTk < nTk; iTk++)
+		ws_ticks[iTk].wtk_ApplySSF(ws_SSF, ws_tUse);
+
+}		// DHWSYS::ws_TickApplySSF
+//-----------------------------------------------------------------------------
+float DHWSYS::ws_TickAvgTInletX(	// average inlet temp
+	float& whUseTot) const	// returned: total use
+// returns all-tick average of wtk_tInletX
+{
+	RC rc = RCOK;
+	whUseTot = 0.f;
+	float tUseSum = 0.f;
+	float tSum = 0.f;
+	int nTk = Top.tp_NHrTicks();
+	for (int iTk = 0; iTk < nTk; iTk++)
+	{	DHWTICK& tk = ws_ticks[iTk];
+		tSum += tk.wtk_tInletX;
+		if (tk.wtk_whUse > 0.f)
+		{	whUseTot += tk.wtk_whUse;
+			tUseSum += tk.wtk_whUse * tk.wtk_tInletX;
+		}
+	}
+	return whUseTot > 0.f
+		? tUseSum / whUseTot
+		: tSum / nTk;		// use tick average if no flow
+
+}		// DHWSYS::ws_TickAvgTInletX
 //-----------------------------------------------------------------------------
 RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs)
+// called iff there are DWHRs and/or events that might recover heat
 {
 	RC rc = RCOK;
 
-#if 0
-	if (Top.jDay == 91 && Top.iHr == 20)
-		printf( "\nHit");
-	if (Top.iHr == 19 && iTk == 17)
-		printf( "\nHit");
-#endif
-
-	// loop ticks that could include DWHR draws
+	// hour totals (init'd at beg of ws_DoHour())
 	// ws_qDWHR = 0.f;			// total heat recovered by all DHWHEATREC devices, Btu
+	// ws_qDWHRWH = 0.f;		// heat recovered to water heater inlet, Btu
 	// ws_whUseNoHR = 0.;		// check value: hour total hot water use w/o HR, gal
 								//  init'd by caller
-	double qRWHSum = 0.;		// hour total recovered heat to WH inlet, Btu
 	int multiDraw = 0;
 	// int nTk = Top.tp_NHrTicks();
 	for (int iTk=ws_iTk0DWHR; iTk < ws_iTkNDWHR; iTk++)
@@ -1508,45 +1489,36 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 			ws_AccumUseTick(		// accum to ws_tick, ws_whUse, and ws_fxMixUse
 				C_DHWEUCH_SHOWER, iTk, fxUseMix, whUse);
 
-		// water heater inlet temp
-		float tO = ws_tInlet;
-		if (tk.wtk_whUse > 0.)
-		{	tO += qRWH / (waterRhoCp * tk.wtk_whUse);
+		// adjusted inlet temp
+		if (qRWH > 0.f && tk.wtk_whUse > 0.)
+		{	tk.wtk_tInletX += qRWH / (waterRhoCp * tk.wtk_whUse);
 			tk.wtk_qDWHR += qRWH;
 		}
-		tk.wtk_tInletX = ws_AdjustTInletForSSF(tO);
 
 #if defined( _DEBUG)
 		// tick energy balance
 		float qXNoHR = (whUseNoHR+whUseOther) * waterRhoCp * (ws_tUse - ws_tInlet);
-		float qX     = tk.wtk_whUse           * waterRhoCp * (ws_tUse - tO);
+		float qX     = tk.wtk_whUse           * waterRhoCp * (ws_tUse - tk.wtk_tInletX);
 		float qXHR = qX + qR;
 		if (frDiff(qXHR, qXNoHR, 1.f) > .001f)
-		{
-			printf("\nDHWSYS '%s': ws_DoHourDWHR tick balance error (md=%d)", name, multiDraw);
+		{	printf("\nDHWSYS '%s': ws_DoHourDWHR tick balance error (md=%d)", name, multiDraw);
 			if (nReDo++ < 2)
 				goto reDo;		// repeat calc (debugging aid)
 		}
 #endif
 		ws_qDWHR += qR;		// hour total heat recovered
-		qRWHSum += qRWH;	// hour total heat to WH inlet
+		ws_qDWHRWH += qRWH;	// hour total heat to WH inlet
 		ws_whUseNoHR += whUseNoHR;		// hour total WH use w/o HR
 
 	}  // end tick
 
-	// hour average adjusted inlet and hot water temps
-	float tInletXNoSSF;
-	if (qRWHSum > 0.)
-	{	tInletXNoSSF = ws_tInlet + qRWHSum / (waterRhoCp * ws_whUse.total);
-		ws_tInletX = ws_AdjustTInletForSSF(tInletXNoSSF);
-	}
-	else
-		tInletXNoSSF = ws_tInlet;
-
 #if defined( _DEBUG)
+	// hour average adjusted inlet and hot water temps
+	float tInletX = ws_tInlet + ws_qDWHRWH / (waterRhoCp * ws_whUse.total);
+
 	// hour energy balance
 	float qXNoHR = ws_whUseNoHR * waterRhoCp * (ws_tUse - ws_tInlet);
-	float qX =     ws_whUse.total * waterRhoCp * (ws_tUse - tInletXNoSSF);
+	float qX =     ws_whUse.total * waterRhoCp * (ws_tUse - tInletX);
 	float qXHR = qX + ws_qDWHR;
 	if (frDiff(qXHR, qXNoHR, 1.f) > .001f)
 		printf("\nDHWSYS '%s': ws_DoHourDWHR balance error (md=%d)", name, multiDraw);
@@ -1638,7 +1610,7 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 
 	// accumulate tick info to DHWSYSRES
 	DHWSYSRES* pWSR = ws_GetDHWSYSRES();
-	pWSR->S.wsr_AccumTick(tk);
+	pWSR->S.wsr_AccumTick(tk, ws_tUse);
 
 	return rc;
 
@@ -1720,12 +1692,6 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 	ws_HARL = ws_HHWO + ws_HRDL + ws_HJL;		// total recovery load
 
 	ws_SSFAnnualSolar += ws_qSlr;				// annual total solar contribution
-
-#if 0 && defined( _DEBUG)
-	if (frDiff(ws_HARL, ws_HARLtk) > .001f)
-		orWarn("HARL (%0.1f) mismatches HARLtk (%0.1f)",
-			ws_HARL, ws_HARLtk);
-#endif
 
 	DHWHEATER* pWH;
 	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -1859,7 +1825,7 @@ void DHWSYSRES::wsr_Accum(
 #endif
 //-----------------------------------------------------------------------------
 /*static*/ const size_t DHWSYSRES_IVL::wsr_NFLOAT
-    = 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, total)) / sizeof(float);
+    = 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, qLoad)) / sizeof(float);
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Copy(
 	const DHWSYSRES_IVL* s,
@@ -1868,7 +1834,7 @@ void DHWSYSRES_IVL::wsr_Copy(
 	if (mult == 1.f)
 		memcpy(this, s, sizeof(DHWSYSRES_IVL));
 	else
-		VCopy(&total, wsr_NFLOAT, &s->total, mult);
+		VCopy(&qLoad, wsr_NFLOAT, &s->qLoad, mult);
 }	// DHWMTR_IVL::wsr_Copy
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Accum(			// accumulate
@@ -1880,7 +1846,7 @@ void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 	if (firstFlg)
 		wsr_Copy(sIvl, mult);
 	else
-		VAccum(&total, wsr_NFLOAT, &sIvl->total);
+		VAccum(&qLoad, wsr_NFLOAT, &sIvl->qLoad);
 #if 0
 	else
 		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
@@ -1888,12 +1854,15 @@ void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 }		// DHWSYSRES_IVL::wsr_Accum
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
-	const DHWTICK& tk)		// source tick
+	const DHWTICK& tk,		// source tick
+	float tLpIn)			// loop inlet temp, F
 //  accum values (generally subhr) from tick
 //  WHY: some tick values are derived hourly (e.g. DHWR)
 //       (not with subhr loop)
 //       Here tick values are accumed to subhr
 {
+	qLoop += tk.wtk_volRL * waterRhoCp * (tLpIn - tk.wtk_tRL);
+	qLoss += tk.wtk_qLossNoRL;
 	qDWHR += tk.wtk_qDWHR;
 	qSSF += tk.wtk_qSSF;
 
@@ -3713,9 +3682,9 @@ RC DHWHEATER::wh_DoSubhrStart()
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	DHWTICK& tk,	// current tick
-	float scaleWH)	// draw scale factor
+	float scaleWH)	// draw scale factor = 1/ws_whCount or 1/ws_wlhCount
 					//   re DHWSYSs with >1 DHWHEATER
-					//   *not* including hw_fMixUse or hw_fMixRL;
+					//   *not* including any mixdown factors (e.g. hw_fMixUse or hw_fMixRL)
 {
 	RC rc = RCOK;
 
@@ -3723,12 +3692,13 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
 	int whfcn = wh_GetFunction();
 
+	// inlet (supply water) temp for this heater w/o loop returns
+	//   HPWH types: loop flow handled internally
+	//   non-HPWH: adjusted below for any loop returns
 	float tInletWH =
 		whfcn == whfcnLOOPHEATER ? pWS->ws_tOutPrimLT
 	  : pWS->ws_pDHWSOLARSYS     ? pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp()
 	  :                            tk.wtk_tInletX;
-
-
 
 #if 0 && defined( _DEBUG)
 	if (tInletWH > pWS->ws_tUse)
@@ -3738,8 +3708,8 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	float tOutNoMix = 0.f;
 	float tMix = wh_IsLastHeater() ? pWS->ws_tUse : -1.f;
 
-#define SLRXT_FIX
-	double drawForTick = 0.;
+	float drawForTick = 0.f;	// total draw for this tick, gal
+								//   includes loop flow and loss draws
 
 	if (wh_IsHPWHModel())
 	{	// demand response (DR)
@@ -3764,24 +3734,14 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	else 
 	{	// inlet temp: combine use and any DHWLOOP return
 		float tInletMix;
-		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletMix, tInletWH)*scaleWH;
-		float tInletMixX;
-		double drawForTickX = tk.wtk_DrawTotX(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMixX)*scaleWH;
-#if 0
-		if (frDiff( drawForTick, drawForTickX) > .001 || frDiff( tInletMix, tInletMixX)>.001)
-			printf("\nDraw diff");
-#endif
-#if defined( SLRXT_FIX)
-		drawForTick = drawForTickX;
-		tInletMix = tInletMixX;
+		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMix)*scaleWH;
 		tInletWH = tInletMix;
-#endif
 		
 		if (wh_IsInstUEFModel())
 			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, tMix);
 
 		else
-		{	float deltaT = max(1., pWS->ws_tUse - tInletMix);
+		{	float deltaT = max(1.f, pWS->ws_tUse - tInletMix);
 
 			float HARL = drawForTick * waterRhoCp * deltaT;		// load on this heater, Btu
 
@@ -3800,19 +3760,18 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		}
 	}
 
-#if defined( SLRXT_FIX)
-
 	if (whfcn == whfcnPRIMARY)
-	{	
-		float dhwLoadTk1 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
-		pWS->ws_HARLtk += dhwLoadTk1;
-		pWSR->S.total += dhwLoadTk1;
+	{
+		float drawTot = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult;
+		float dhwLoadTk1 = drawTot * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
+		pWSR->S.qLoad += dhwLoadTk1;
 		
-		float dhwLoadTk2 = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
+		float dhwLoadTk2 = drawTot * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
 		
 		if (pWS->ws_pDHWSOLARSYS)
-		{	float drawSolarSys = tk.wtk_volIn;	// draw from solar: does not include loop flow
+		{	// accumulate solar draws for next tick
+			float drawSolarSys = tk.wtk_volIn;	// draw from solar: does not include loop flow
 			if (drawSolarSys > 0.f)
 				rc |= pWS->ws_pDHWSOLARSYS->sw_TickAccumDraw(
 					pWS,
@@ -3820,23 +3779,8 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 					tk.wtk_tInletX);	// solar system inlet water temp
 		}
 	}
-#else
-	if (whfcn == whfcnPRIMARY && pWS->ws_pDHWSOLARSYS)
-	{
-		float drawSolarSys		// draw: does not include loop flow
-			= wh_IsLastHeater() ? tk.wtk_whUse : tk.wtk_volIn;
-		if (drawSolarSys > 0.f)
-		{
-			rc |= pWS->ws_pDHWSOLARSYS->sw_TickAccumDraw(
-				pWS,
-				drawSolarSys * scaleWH * wh_mult * pWS->ws_mult,
-				// tick draw from DHWSOLARSYS, gal
-				tk.wtk_tInletX);	// solar system inlet water temp
-		}
-}
 
-#endif
-	if (drawForTick > 0.)
+	if (drawForTick > 0.f)
 	{	wh_tInlet += tInletWH * drawForTick;
 		wh_draw += drawForTick;
 	}

@@ -54,7 +54,7 @@
  WindF=0.25                       //site located exactly at weather station with
                                   //wind at 0.2m below top of building
  bldgAzm=0.0                      //don't adjust surface azimuths
- elevation=0
+ // elevation defaults from weather file
  DT=NO                            // no DST
 
 

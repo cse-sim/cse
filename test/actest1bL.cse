@@ -25,7 +25,7 @@ RSYS MySys
 	rsAFUE =.71
 	rsFanPwrH = 0.58		//W/cfm (default = 0.365)	
 
-DUCTSEG MySysSup  //No ducts for now
+DUCTSEG MySysSup
 	dsTy=Supply				// "supply" or "return"
 	// dsExCnd = Ambient / AdjZn / SpecifiedT (default AdjZn)
 	dsAdjZn = "SDuctZone"		// duct location
@@ -43,12 +43,12 @@ DUCTSEG MySysSup  //No ducts for now
 DUCTSEG MySysRet 
 	dsExArea = 100
 	dsLeakF =  0.08
-	
 	dsTy=Return dsAdjZn = "RDuctZone" dsInsulMat = DuctWrap dsInsulR = 4    
-		ENDRSYS
+ENDRSYS
+
 #define CaseNo "Simple Default, no latent"
 runTitle=CaseNo
-WfName="ACtest.CSW"
+WfName="CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 
 #Define reports
 //#UnDef reports

@@ -3504,12 +3504,14 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_Clear() { memset( this, 0, sizeof( DHWSYSRES_IVL));}"
 	*declare "void wsr_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
 	*declare "void wsr_Accum( const DHWSYSRES_IVL* sIvl, int firstFlg, int lastFlg);"
-	*declare "void wsr_AccumTick( const struct DHWTICK& tk);"
+	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn);"
 	*declare "static const size_t wsr_NFLOAT;"
 
 	// water heating energy (not fuel), Btu
 	//    values are for associated DHWSYS (wh_mult include, ws_mult not included)
-    *e FLOAT total		// 
+    *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
+	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
+	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
 	*e FLOAT qDWHR		// drain water heat recovery
 	*e FLOAT qSSF		// implied energy contribution from ws_SSF
     *e FLOAT qSolar		// DHWSOLARSYS
@@ -3538,7 +3540,7 @@ RECORD DHWSYSRES "DHWSYSRES" *RAT 	// DHWSYSRES: interval results for DHWSYS
 //=============================================================================
 RECORD SEGTOTS "segment totals" *SUBSTRUCT  // aggregated segment info substruct 
 // retains / accumulates PIPESEG info
-// used in DHWSYS, DHWLOOP, DHWLOOPSEG, DHWBRANCH
+// used in DHWSYS, DHWLOOP, DHWLOOPSEG, DHWLOOPBRANCH
 	*prefix st_
 
 	*excon
@@ -3603,7 +3605,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    0 iff no solar connected
   *declare "DHWSOLARSYS* ws_pDHWSOLARSYS;"	// pointer to connected solar system
   *h *e FLOAT ws_qSlr		// hour total water heating energy provided by
-							//   DHWSOLARSYS, Btu
+							//   DHWSOLARSYS (not via ws_SSF), Btu
   *y *e DBL ws_SSFAnnualSolar;	// Annual solar heat added (numerator to calculate SSF), Btu
 								//   = SUM( ws_qSlr)
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
@@ -3620,10 +3622,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
-  *declare "void ws_InitTicks( double whUseHr);"
+  *declare "void ws_TickInit( double whUseHr);"
+  *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
   *declare "RC ws_AddLossesToDraws( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
-  *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
+  *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
+  *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
   *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
@@ -3684,8 +3688,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//  valid range 0 - 0.99, see code
 							//  approximates savings by modifyng inlet water temp
 							//  not allowed (and set 0) when DHWSOLARSYS is specified
-  *declare "float ws_AdjustTInletForSSF( float tInlet) const { return tInlet + ws_SSF*max(0.f, ws_tUse - tInlet); }"
-  *declare "float ws_ApplySSF( float tIn, float flow, float& qAdd) const;"
+  *declare "void ws_TickApplySSF();"
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
@@ -3795,8 +3798,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *s *e FLOAT ws_HJLsh;		// current subhour jacket losses (from DHWTANKs), Btu
   *h *e FLOAT ws_HJL;		// hour total jacket losses (from DHWTANKs), Btu
   *h *e FLOAT ws_HARL;		// hour total adjusted recovery load, Btu
-  *h *e FLOAT ws_HARLtk;	// hour total adjusted recovery load, Btu
-							//    check figure derived from ticks
 *END		// DHWSYS
 
 //=============================================================================
