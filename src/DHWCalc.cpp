@@ -398,6 +398,8 @@ struct DHWTICK	// per tick info for DHWSYS
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
 	float wtk_DrawTot(float tOut, float tInlet, float tMains, float& tInletMix);
+	double wtk_DrawTotM(float tOut, float& tInletMix, float tInlet = -1.f) const;
+	double wtk_DrawTotMX(float tOut, float tInlet, float tMains, float& tInletMix) const;
 	void wtk_ApplySSF(float SSF, float tUse);
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
@@ -462,7 +464,86 @@ float DHWTICK::wtk_DrawTot(		// tick draw
 	else
 		return wtk_volIn;
 
-}		// DHWTICK::wtk_DrawTotX
+}		// DHWTICK::wtk_DrawTot
+//-----------------------------------------------------------------------------
+double DHWTICK::wtk_DrawTotM(		// tick draw
+	float tOut,						// assumed heater output temp, F
+	float& tInletMix,				// returned: mixed inlet temp
+									//   (combined loop return and inletX)
+	float tInlet /*=-1.f*/) const	// inlet temp, F
+									//   if <0, use wtk_tInletX
+									//   else from e.g. solar or primary heater
+// returns draw volume for tick, gal
+{
+	if (tInlet < 0.f)
+		tInlet = wtk_tInletX;
+
+	float drawUse = wtk_whUse;
+
+
+	if (wtk_qLossNoRL != 0.f)
+	{
+		float deltaT = max(1., tOut - tInlet);
+		// temp rise, F max( 1, dT) to prevent x/0
+		drawUse += wtk_qLossNoRL / (waterRhoCp * deltaT);
+	}
+
+	double drawTot = drawUse + wtk_volRL;
+	tInletMix = drawTot <= 0.
+		? tInlet
+		: (drawUse * tInlet + wtk_volRL * wtk_tRL) / drawTot;
+	return drawTot;
+
+}		// DHWTICK::wtk_DrawTotM
+//=============================================================================
+double DHWTICK::wtk_DrawTotMX(		// tick draw
+	float tOut,						// assumed heater output temp, F
+	float tInletWH, 		// water heater inlet temp, F
+							//   from e.g. mains, DWHR, solar
+	float tMains,			// current mains temp, F
+							//   from weather file or user expression
+							//   needed iff mixdown occurs due to tInlet > tOut
+	float& tInletMix) const				// returned: mixed inlet temp, F
+									//   (combined loop return and inlet)
+
+// sets wtk_volIn = inlet flow (not including loop)
+
+// returns total WH draw volume for tick (including any loop flow), gal
+{
+
+	float volIn = wtk_whUse;	// use at WH due to fixture draw
+
+	// additional draws to represent jacket losses, T24DHW branch losses
+	if (wtk_qLossNoRL > 0.f)
+	{
+		float deltaT = max(1., tOut - tMains);	// temp rise, F (prevent x/0)
+		volIn += wtk_qLossNoRL / (waterRhoCp * deltaT);
+	}
+
+	// mix entering water down to tOut
+	//  solar source can be too hot
+	if (tInletWH > tOut)
+	{
+		float fMix = DHWMixF(tOut, tInletWH, tMains);
+		volIn *= fMix;
+		tInletMix = tOut;
+	}
+	else
+		tInletMix = tInletWH;
+
+	// mix loop return flow
+	//  loops losses cannot be met by solar
+	if (wtk_volRL > 0.)
+	{
+		float drawTot = volIn + wtk_volRL;
+		tInletMix = (volIn * tInletMix + wtk_volRL * wtk_tRL) / drawTot;
+		return drawTot;
+	}
+	else
+		return volIn;
+
+}		// DHWTICK::wtk_DrawTotMX
+
 //-----------------------------------------------------------------------------
 void DHWTICK::wtk_ApplySSF(		// apply external solar savings fraction
 	float SSF,	// solar savings fraction	
@@ -3733,10 +3814,23 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	}
 	else 
 	{	// inlet temp: combine use and any DHWLOOP return
+#if 0
+		float tInletMixM;
+		float drawForTickM = tk.wtk_DrawTotM(pWS->ws_tUse, tInletMixM, tInletWH)*scaleWH;
+		float tInletMixMX;
+		double drawForTickMX = tk.wtk_DrawTotMX(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMixMX)*scaleWH;
+		drawForTick = drawForTickMX;
+		float tInletMix = tInletMixMX;
+		tInletWH = tInletMixM;
+#else
 		float tInletMix;
 		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMix)*scaleWH;
 		tInletWH = tInletMix;
-		
+#if 0
+		if (frDiff(tInletMix, tInletMixMX) > .001)
+			printf("\nDraw diff");
+#endif
+#endif
 		if (wh_IsInstUEFModel())
 			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, tMix);
 
@@ -3946,7 +4040,7 @@ RC DHWHEATER::wh_InstUEFDoSubhrTick(
 	RC rc = RCOK;
 
 	float deltaT = tUse - tInletWH;		// temp rise
-	if (deltaT < 0.f)	// should not be <0 due to wtk_DrawTotX
+	if (deltaT < 0.f)	// should not be <0 due to wtk_DrawTot
 	{
 #if defined(_DEBUG)
 		printf("\nUEFInst deltaT = %02.f", deltaT);
