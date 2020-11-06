@@ -744,12 +744,14 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 *choicn DHWDRSIG {
 	ON "On"
 	TOO "TOO"
-	TXO "TXO"
+	TOOLOR "TOOLOR"
+	TOOLOC "TOOLOC"
 	TOT "TOT"
-	TXT "TXT"
+	TOTLOR "TOTLOR"
+	TOTLOC "TOTLOC"
 	LOC "LOC"
 	LOR "LOR"
-	LOX "LOX"
+	LOCLOR "LOCLOR"
 	COUNT "*Count"	// hidden
   }
 
