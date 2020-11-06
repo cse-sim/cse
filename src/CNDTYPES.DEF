@@ -340,6 +340,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			ASHP   "ASHP"
 			ASHPHYD "ASHPHydronic"
 			ASHPPKGRM "ASHPPkgRoom"
+			ASHPVC  "VCHP2"
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
