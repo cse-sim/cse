@@ -2713,7 +2713,7 @@ LOCAL RC FC NEAR ppErv(
 
 // rets RCBAD for convenience, even if isWarn.
 {
-	char cmsg[750], caret[139], where[139], whole[1300], txBuf[256+3];
+	char cmsg[750], caret[139], where[139], whole[2000], txBuf[256+3];
 	USI col;
 
 #define GLT 2	/* number of leading nonwhite (file) chars that constitute

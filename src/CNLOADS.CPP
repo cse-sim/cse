@@ -1593,7 +1593,7 @@ RC RSYS::rs_CkF()
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAPAUXH, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
-				RSYS_FANPWRH, RSYS_CDH, 0);
+				RSYS_FANPWRH, RSYS_CDH, RSYS_RUNFMIN, RSYS_CAPRAT1747, 0);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
 	else
@@ -1663,12 +1663,13 @@ RC RSYS::rs_CkF()
 			if (IsAusz(RSYS_CAP47))
 				rc |= disallowN("when rsCap47 is AUTOSIZE",
 					RSYS_CAP17, RSYS_CAP35, 0);
+			if (IsSet(RSYS_CAP17))
+				rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+
 			if (!rs_IsASHPVC())
-			{
-				rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
+			{	rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
 					RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47, RSYS_RUNFMIN, 0);
 				rs_runFMin = 1.f;
-
 			}
 		}
 	}
@@ -3432,7 +3433,8 @@ float RSYS::rs_Cap17RatioASHP() const
 	// multi-segment model from Abram Conant, 5-31-2013
 	//  includes HSPF < 7.5
 	float capRat =
-		           rs_IsPkgRoom()      ? .6184f		// per Abram Conant, 6-4-2020
+		           IsSet( RSYS_CAPRAT1747) ? rs_capRat1747
+		         : rs_IsPkgRoom()      ? .6184f		// per Abram Conant, 6-4-2020
 				 : rs_IsASHPHydronic() ? .63f		// plausible result when HSPF not known
 				 : rs_HSPF < 7.5f    ? .1113f * rs_HSPF - .22269
 				 : rs_HSPF < 9.5567f ? .017f  * rs_HSPF + .4804f
@@ -4382,8 +4384,29 @@ RC RSYS::rs_FinalizeSh()
 				rs_outSen = outTot - rs_outFan - rs_outDefrost;		// compressor output
 
 #if 1
-				float effHt = rs_RunFAdjustedEffHtASHP();
-				rs_inPrimary = rs_outSen / effHt;
+				if (!rs_IsASHPVC())
+				{	rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
+					rs_COPHtAdj = rs_effHt * rs_PLF;	// full load efficiency modified by PLF
+					rs_inPrimary = rs_outSen / rs_COPHtAdj;
+				}
+				else if (rs_runF < rs_runFMin)
+				{	// variable capacity: cycling at min speed
+					float runFx = rs_outSen / rs_capHtMin;
+					rs_PLF = 1.f - rs_CdH * (1.f - runFx);
+					rs_COPHtAdj = rs_inpHtMin <= 0.f
+								? 2.5f		// rs_inpHtMin can be 0 during autosize
+							    : rs_capHtMin * rs_PLF / rs_inpHtMin;
+					rs_inPrimary = rs_capHtMin / rs_COPHtAdj;
+				}
+				else
+				{	// variable capacity: intermediate speed
+					float runFx = (rs_runF - rs_runFMin) / (1.f - rs_runFMin);
+					rs_inPrimary = rs_inpHt * runFx + rs_inpHtMin * (1.f - runFx);
+					rs_COPHtAdj = rs_inPrimary <= 0.f
+									? 2.5f		// rs_inPrimary can be 0 during autosize
+									: rs_outSen / rs_inPrimary;
+					rs_PLF = 1.f;
+				}
 #else
 				rs_PLF = 1.f - rs_CdH * ( 1.f - rs_runF);
 

@@ -3210,6 +3210,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_COP35
 *f *e FLOAT_GZ rs_cap17		// ditto 17 F
 *f *e FLOAT_GZ rs_COP17
+*r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+							//   default based on HSPF or other correlations
+
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_runFMin;	// minimum run fraction fraction
 							//   (cycles below this)
@@ -3271,7 +3274,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
 *s *e FLOAT rs_PLF			// efficiency degradation due to cycling
 							//   PLF = PartLoadEfficiency / FullLoadEfficency
-							//   Thus input = output / (rs_effHt * rs_PLF)
+*s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 
 					// compression cooling
 *f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W

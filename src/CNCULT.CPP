@@ -1699,6 +1699,7 @@ CULT( "rsCap35",	 DAT,   RSYS_CAP35,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT( "rsCOP35",	 DAT,   RSYS_COP35,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCap17",	 DAT,   RSYS_CAP17,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOP17",	 DAT,   RSYS_COP17,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsRunFMin",   DAT,   RSYS_RUNFMIN,    0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPMin47",	 DAT,   RSYS_COPMIN47,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPMin35",	 DAT,   RSYS_COPMIN35,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
