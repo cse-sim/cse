@@ -551,7 +551,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 
 #if defined( DEBUGDUMP)
 		DbDo( dbdSTARTSTEP);		// nothing yet debug-printed for this subhour
-									//   (sets flag re on-demand heading printing
+									//   (sets flag re on-demand heading printing)
 #endif
 		EF( Top.tp_WthrBegSubhr() ); 	// set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
 
@@ -1337,7 +1337,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 
 	if (gnPX != 0.)		// do accounting iff nz result
 	{
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		if (gnPX < 0.)
 		{	// neg gain allowed but not expected
 			//  flag in debug build for investigation

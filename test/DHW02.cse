@@ -132,10 +132,41 @@ ReportCol colhead="HJL" colVal=@DhwSys[s].HJL colWid = 7 \
 ReportCol colhead="HARL" colVal=@DhwSys[s].HARL colWid = 7 \
 ReportCol colhead="Elec" colVal=@DhwSys[s].inElec colDec=2 colWid = 6
 
+#define CX(s,IVL,c) (@DHWSYSRES[ s].IVL.c/1000)
+#define CXBal( s, IVL) CX(s,IVL,qLoad)+CX(s,IVL,qLoss)+CX(s,IVL,qLoop)-CX(s,IVL,qDWHR)-CX(s,IVL,qSSF)-CX(s,IVL,qSolar)-CX(s,IVL,qWH)-CX(s,IVL,qLH)-CX(s,IVL,qXBU)
+#define WSRREPCOLS( s, IVL) \
+ReportCol colhead = "Load" colVal=CX(s,IVL,qLoad) colWid=8 \
+ReportCol colhead = "Loss" colVal=CX(s,IVL,qLoss) colWid=8 \
+ReportCol colhead = "Loop" colVal=CX(s,IVL,qLoop) colWid=8 \
+ReportCol colhead = "DWHR" colVal=CX(s,IVL,qDWHR) colWid=8 \
+ReportCol colhead = "SSF" colVal=CX(s,IVL,qSSF) colWid=8 \
+ReportCol colhead = "Solar" colVal=CX(s,IVL,qSolar) colWid=8 \
+ReportCol colhead = "WH" colVal=CX(s,IVL,qWH) colWid=8 \
+ReportCol colhead = "LH" colVal=CX(s,IVL,qLH) colWid=8 \
+ReportCol colhead = "XBU" colVal=CX(s,IVL,qXBU) colWid=8 \
+ReportCol colhead = "Bal" colVal = CXBal(s,IVL) colWid=8
+
+#define WSRREP_H( s, dBeg, dEnd) REPORT rpType=UDT rpFreq=HOUR rpTitle = s rpDayBeg=dBeg rpDayEnd=dEnd rpCPL=-1 \
+ReportCol colhead="Hr" colVal=$hour colWid = 3 \
+WSRREPCOLS( s, H)
+
+#define WSRREP_D( s, dBeg, dEnd) REPORT rpType=UDT rpFreq=DAY rpTitle = s rpDayBeg=dBeg rpDayEnd=dEnd rpCPL=-1 \
+ReportCol colhead="Day" colVal=@Top.dateStr colWid = 10 \
+WSRREPCOLS( s, D)
+
+#define WSRREP_M( s) REPORT rpType=UDT rpFreq=MONTH rpTitle = s rpDayBeg=jan 1 rpDayEnd=dec 31 rpCPL=-1 \
+ReportCol colhead="Mon" colVal=@Top.monStr colWid = 3 \
+WSRREPCOLS( s, M) \
+REPORT rpType=UDT rpFreq=YEAR rpHeader=No rpCPL=-1 \
+ReportCol colVal="Yr" colWid = 3 \
+WSRREPCOLS( s, Y)
+
+
 // DHWHEATER
 #define WHREP( h, d) REPORT rpType=UDT rpFreq=HOUR rpTitle = @DhwHeater[h].desc rpDayBeg=d rpDayEnd=d \
 ReportCol colhead="Hr" colVal=$hour colWid = 2 \
 ReportCol colhead="LDEF" colVal=@DhwHeater[h].LDEF colDec=2 colWid = 6 \
+ReportCol colhead="tIn" colVal=@DhwHeater[h].tInlet colDec=2 colWid = 6 \
 ReportCol colhead="Elec" colVal=@DhwHeater[h].inElec colDec=2 colWid = 6 \
 ReportCol colhead="Fuel" colVal=@DhwHeater[h].inFuel colDec=2 colWid = 6
 
@@ -202,7 +233,11 @@ REPORT rpType=MTR rpMeter = Fuel0 rpFreq=MONTH
 REPORT rpType=MTR rpMeter = Elec0 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
 REPORT rpType=MTR rpMeter = Fuel0 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
 
+WSRREP_M( "DS0")
+
 WSREP( "DS0", apr 1)
+WSRREP_H( "DS0", apr 1, apr 1)
+
 WHREP( "WH0", apr 1)
 
 REPORT rpType=MTR rpMeter = Elec1 rpFreq=MONTH
@@ -211,7 +246,10 @@ REPORT rpType=MTR rpMeter = Fuel1 rpFreq=MONTH
 REPORT rpType=MTR rpMeter = Elec1 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
 REPORT rpType=MTR rpMeter = Fuel1 rpFreq=HOUR rpDayBeg=apr 1  rpDayEnd=apr 1  rpBtuSf = 1
 
+WSRREP_M( "DS1")
+
 WSREP( "DS1", apr 1)
+WSRREP_H( "DS0", apr 1, apr 1)
 
 WHREP( "WH1A", apr 1)
 WHREP( "WH1B", apr 1)

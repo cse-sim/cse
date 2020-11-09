@@ -487,7 +487,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 		longitude = Wfile.lon;			// ..
 		timeZone = Wfile.tz;				// .. used re solar init from cse.cpp.
 		if (!(sstat[TOPRAT_ELEVATION] & FsSET))	// if elevation not given by user
-			elevation = Wfile.elev;			// fetch elevation from weather file. Used in topPsychro.
+			elevation = Wfile.elev;			// fetch elevation from weather file
 
 		// check that weather file includes all run dates
 		if (!tp_autoSizing)				// don't need run date data for autosizing

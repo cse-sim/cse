@@ -246,7 +246,9 @@ RC DHWSOLARSYS::sw_TickAccumDraw(			// accumulate draw for current tick
 	float qOut = vol * waterRhoCp * (sw_tickTankTOutlet - tInlet);
 	sw_totOut += qOut;	// hourly total
 	if (pWS)
-		pWS->ws_qSlr += qOut;
+	{	pWS->ws_qSlr += qOut;
+		pWS->ws_GetDHWSYSRES()->S.qSolar += qOut;
+	}
 
 	return rc;
 }	// DHWSOLARSYS::sw_TickAccumDraw

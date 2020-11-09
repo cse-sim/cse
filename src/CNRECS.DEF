@@ -3089,9 +3089,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_PerfMapAC();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
-*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float& capDefrostHt, float fanHAdj=0.f, float COPAdjF=1.f);"
-*declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic(); }"
+*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj);"
+*declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
+*declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
+*declare "int rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
 *declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
 *declare "int rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
 *declare "int rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
@@ -3116,6 +3118,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
+*declare "float rs_RunFAdjustedEffHtASHP();"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 *declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
@@ -3199,7 +3202,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *nest AUSZ rs_auszH			// autoSizing working data members re heating
 *nest AUSZ rs_auszC			// ditto cooling
 
-						// ASHP heating (all value net (including rated fan heat / power)
+						// ASHP heating (all values net = include rated fan heat / power)
 *r FLOAT_GZ rs_HSPF			// rated HSPF, Btuh/W
 *f *e FLOAT_GZ rs_cap47		// full speed heating capacity at ODB=47 F
 *f *e FLOAT_GZ rs_COP47		// COP at ODB=47 F
@@ -3207,15 +3210,27 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_COP35
 *f *e FLOAT_GZ rs_cap17		// ditto 17 F
 *f *e FLOAT_GZ rs_COP17
+*r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+							//   default based on HSPF or other correlations
+
+						// re ASHPVC (variable capacity)
+*f *e FRAC_GZ rs_runFMin;	// minimum run fraction fraction
+							//   (cycles below this)
+*f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
+*f *e FLOAT_GZ rs_COPMin35	// ditto 35 F
+*f *e FLOAT_GZ rs_COPMin17	// ditto 17 F
+
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
 
-*f *e FLOAT_GZ rs_inp47		// input power at outdoor dry-bulb = 47 F (Btuh (not W))
+*f *e FLOAT_GZ rs_inp47		// input power at ODB = 47 F, Btuh (not W)
+							//   (includes rated fan power)
 *f *e FLOAT_GZ rs_inp35		// ditto 35 F
 *f *e FLOAT_GZ rs_inp17		// ditto 17 F
 
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
+*array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
 
 *f *e FLOAT_GEZ rs_capAuxH	// auxiliary heating capacity (NOT including fan heat), Btuh
 							//   *always* 0 if !rs_IsASHP()
@@ -3249,12 +3264,17 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   0 = ASHP compressor is unavailable (due to lockout, )
 *s *e FLOAT rs_capHt		// current step heating capacity (including fan and ASHP defrost heat), Btuh
 							//   = fan heat only if compressor unavailable
-*s *e FLOAT rs_capDefrostHt	// current step defrost heating capacity, Btuh
+*s *e FLOAT rs_inpHt		// current step full speed compressor input power
+*s *e FLOAT rs_capDfHt		// current step defrost heating capacity, Btuh
 							//   = typically resistance heat activated to prevent cold supply air
 							//   0 if not ASHP or no defrost active
+*s *e FLOAT rs_capHtMin		// current step min speed heating capacity (including fan and ASHP defrost heat), Btuh
+							//   = fan heat only if compressor unavailable
+*s *e FLOAT rs_inpHtMin		// current min full speed compressor input power
+*s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
 *s *e FLOAT rs_PLF			// efficiency degradation due to cycling
 							//   PLF = PartLoadEfficiency / FullLoadEfficency
-							//   Thus input = output / (rs_effHt * rs_PLF)
+*s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 
 					// compression cooling
 *f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
@@ -3504,12 +3524,14 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_Clear() { memset( this, 0, sizeof( DHWSYSRES_IVL));}"
 	*declare "void wsr_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
 	*declare "void wsr_Accum( const DHWSYSRES_IVL* sIvl, int firstFlg, int lastFlg);"
-	*declare "void wsr_AccumTick( const struct DHWTICK& tk);"
+	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn);"
 	*declare "static const size_t wsr_NFLOAT;"
 
 	// water heating energy (not fuel), Btu
 	//    values are for associated DHWSYS (wh_mult include, ws_mult not included)
-    *e FLOAT total		// 
+    *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
+	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
+	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
 	*e FLOAT qDWHR		// drain water heat recovery
 	*e FLOAT qSSF		// implied energy contribution from ws_SSF
     *e FLOAT qSolar		// DHWSOLARSYS
@@ -3538,7 +3560,7 @@ RECORD DHWSYSRES "DHWSYSRES" *RAT 	// DHWSYSRES: interval results for DHWSYS
 //=============================================================================
 RECORD SEGTOTS "segment totals" *SUBSTRUCT  // aggregated segment info substruct 
 // retains / accumulates PIPESEG info
-// used in DHWSYS, DHWLOOP, DHWLOOPSEG, DHWBRANCH
+// used in DHWSYS, DHWLOOP, DHWLOOPSEG, DHWLOOPBRANCH
 	*prefix st_
 
 	*excon
@@ -3603,7 +3625,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    0 iff no solar connected
   *declare "DHWSOLARSYS* ws_pDHWSOLARSYS;"	// pointer to connected solar system
   *h *e FLOAT ws_qSlr		// hour total water heating energy provided by
-							//   DHWSOLARSYS, Btu
+							//   DHWSOLARSYS (not via ws_SSF), Btu
   *y *e DBL ws_SSFAnnualSolar;	// Annual solar heat added (numerator to calculate SSF), Btu
 								//   = SUM( ws_qSlr)
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
@@ -3620,10 +3642,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
-  *declare "void ws_InitTicks( double whUseHr);"
+  *declare "void ws_TickInit( double whUseHr);"
+  *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
   *declare "RC ws_AddLossesToDraws( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
-  *h *e FLOAT ws_qDWHR;		// hour total heat recovered by all DHWHEATREC devices, Btu
+  *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
+  *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu
 
 						// DHWMTRs -- accumulates H/D/M/Y water use *with* ws_mult
   *i TI ws_WHhwMtri;		// DHWMTR for hot water use at water heater(s) (= ws_whUse), gal
@@ -3684,7 +3708,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//  valid range 0 - 0.99, see code
 							//  approximates savings by modifyng inlet water temp
 							//  not allowed (and set 0) when DHWSOLARSYS is specified
-  *declare "float ws_AdjustTInletForSSF( float tInlet) const { return tInlet + ws_SSF*max(0.f, ws_tUse - tInlet); }"
+  *declare "void ws_TickApplySSF();"
   *h FLOAT_GEZ ws_WF		// waste factor applied to ws_hwUse and DHWUSEs
 							//   default=1.  CEC procedures use 0.9 for
 							//   systems having within unit recirc.
@@ -3794,8 +3818,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *s *e FLOAT ws_HJLsh;		// current subhour jacket losses (from DHWTANKs), Btu
   *h *e FLOAT ws_HJL;		// hour total jacket losses (from DHWTANKs), Btu
   *h *e FLOAT ws_HARL;		// hour total adjusted recovery load, Btu
-  *h *e FLOAT ws_HARLtk;	// hour total adjusted recovery load, Btu
-							//    check figure derived from ticks
 *END		// DHWSYS
 
 //=============================================================================
