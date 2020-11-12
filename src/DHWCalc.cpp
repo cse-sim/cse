@@ -3798,11 +3798,12 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	{	// demand response (DR)
 		//   use DHWSYS hourly base value
 		//   turn off hour-start one-shot signals if not hour start
+		//     TOO (Top off once) is sent on tick 0 only
 		int drStatus;
 		if (whfcn == whfcnPRIMARY)
 		{	drStatus = pWS->ws_drStatusHPWH;
 			if (tk.wtk_startMin > 0.f)
-				drStatus &= ~(HPWH::DR_TOO | HPWH::DR_TOT);
+				drStatus &= ~(HPWH::DR_TOO);
 		}
 		else
 			drStatus = HPWH::DR_ALLOW;
