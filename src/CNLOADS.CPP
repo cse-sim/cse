@@ -3134,13 +3134,15 @@ float RSYS::rs_PerfASHP(		// ASHP performance (simplified call)
 						//           else model defrost if available
 	float tdbOut,		// outdoor dry bulb, F
 	float& COP,			// returned: compressor-only full speed COP at tdbOut
-	float fanHAdj)		// fan power adjustment, Btuh
+	float fanHAdj /*=0.f*/)		// fan power adjustment, Btuh
 						// removed from capacity and input (before COP calc)
 // returns total heating capacity (compressor + capDefrostHt), Btuh
 {
 	float capHt, inpHt, capDfHt, capHtMin, inpHtMin, capDfHtMin;
 	float what = rs_PerfASHP2(ashpModel, tdbOut, fanHAdj,
 		capHt, inpHt, capDfHt, capHtMin, inpHtMin, capDfHtMin);
+
+	COP = inpHt > 0.f ? capHt / inpHt : 0.f;
 
 	return capHt;
 
@@ -3347,10 +3349,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 		rs_cap17 = max( rs_Cap17RatioASHP()*rs_cap47, 1.f);
 
 	if (!IsSet(RSYS_CAP35))
-	{	rs_cap35 = rs_cap17 + 0.6f * (rs_cap47 - rs_cap17);
-		if (rs_HasDefrost())
-			rs_cap35 *= 0.9f;	// capacity reduction for defrost
-	}
+		rs_cap35 = rs_Cap35Default(rs_cap47, rs_cap17);
 
 #if ASHP_COPREG == 1
 	// "traditional" model
@@ -3418,9 +3417,10 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	rs_CalcInputsAndSlopesASHP();
 
 #if 1 && defined( _DEBUG)
+	// back-calc checks
 	float COP;
-	float capHt = rs_PerfASHP(0, 47.f, COP, 0.f);
-	capHt = rs_PerfASHP(0, 17.f, COP, 0.f);
+	float capHt = rs_PerfASHP(0, 47.f, COP);
+	capHt = rs_PerfASHP(0, 17.f, COP);
 #endif
 
 	return rc;
@@ -3450,6 +3450,28 @@ x	float capRat = 0.6280951f;
 	return capRat;
 }		// RSYS::rs_Cap17RatioASHP
 //-----------------------------------------------------------------------------
+float RSYS::rs_Cap35Default(		// default 35 F heating capacity
+	float cap47,		// 47 F heating capacity, any power units
+	float cap17) const	// 17 F heating capacity
+// returns 35 F heating capacity, consistent units
+{
+	float cap35 = cap17 + 0.6f * (cap47 - cap17);
+	if (rs_HasDefrost())
+		cap35 *= 0.9f;	// capacity reduction for defrost
+	return cap35;
+}	// RSYS::rs_Cap35Default
+//-----------------------------------------------------------------------------
+float RSYS::rs_Inp35Default(		// default 35 F input power
+	float inp47,		// 47 F input power, any power units
+	float inp17) const	// 17 F input power
+// returns 35 F input power, consistent units
+{
+	float inp35 = inp17 + 0.6f * (inp47 - inp17);
+	if (rs_HasDefrost())
+		inp35 *= 0.985f;		// defrost power reduction
+	return inp35;
+}	// RSYS::rs_Inp35Default
+//-----------------------------------------------------------------------------
 float RSYS::rs_RunFAdjustedEffHtASHP()
 {
 	float effHt;
@@ -3476,9 +3498,7 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 	rs_inp17 = rs_cap17 / max( rs_COP17, .1f);
 
 	if (!IsSet( RSYS_COP35))
-	{	rs_inp35 = rs_inp17 + 0.6f * (rs_inp47 - rs_inp17);
-		if (rs_HasDefrost())
-			rs_inp35 *= 0.985f;		// defrost power reduction
+	{	rs_inp35 = rs_Inp35Default( rs_inp47, rs_inp17);
 		rs_COP35 = rs_cap35 / max( rs_inp35, .1f);
 	}
 	else
@@ -3492,17 +3512,28 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 
 	// similar setup for variable capacity (ASHPVC)
 	//   unused if not ASHPVC
-	if (rs_runFMin < 1.f)
-	{	if (!IsSet(RSYS_COPMIN47))
+	if (rs_IsASHPVC())
+	{	// min spd capacities
+		float capMin47 = rs_CapMin47();
+		float capMin17 = rs_CapMin17();
+		float capMin35 = rs_Cap35Default(capMin47, capMin17);
+				
+		// min spd COP and input
+		if (!IsSet(RSYS_COPMIN47))
 			rs_COPMin47 = rs_COP47;
-		if (!IsSet(RSYS_COPMIN35))
-			rs_COPMin35 = rs_COP35;
 		if (!IsSet(RSYS_COPMIN17))
 			rs_COPMin17 = rs_COP17;
 
-		float inpMin47 = rs_cap47 * rs_runFMin / max(rs_COPMin47, .1f);
-		float inpMin35 = rs_cap35 * rs_runFMin / max(rs_COPMin35, .1f);
-		float inpMin17 = rs_cap17 * rs_runFMin / max(rs_COPMin17, .1f);
+		float inpMin47 = capMin47 / max(rs_COPMin47, .1f);
+
+		float inpMin35;
+		if (!IsSet(RSYS_COPMIN35))
+		{	inpMin35 = rs_Inp35Default(inp47, inp17);
+			rs_COPMin35 = capMin35 / max(inpMin35, .1f);
+		}
+		else
+			inpMin35 = capMin35 / max(rs_COPMin35, .1f);
+		float inpMin17 = capMin17 / max(rs_COPMin17, .1f);
 
 		rs_ASHPInpMinF[0] = (inpMin47 - inpMin17) / (47.f - 17.f);
 		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);

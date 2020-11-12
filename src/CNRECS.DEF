@@ -3089,7 +3089,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_PerfMapAC();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
-*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj);"
+*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj=0.f);"
 *declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
@@ -3112,6 +3112,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
 *declare "float rs_Cap17RatioASHP() const;"
+*declare "float rs_Cap35Default( float cap47, float cap17) const;"
+*declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
@@ -3216,6 +3218,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_runFMin;	// minimum run fraction fraction
 							//   (cycles below this)
+*declare "float rs_CapMin47() const { return rs_cap47*rs_runFMin; }"
+*declare "float rs_CapMin17() const { return rs_cap17*rs_runFMin; }"
 *f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
 *f *e FLOAT_GZ rs_COPMin35	// ditto 35 F
 *f *e FLOAT_GZ rs_COPMin17	// ditto 17 F
