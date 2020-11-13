@@ -3139,10 +3139,8 @@ float RSYS::rs_PerfASHP(		// ASHP performance (simplified call)
 // returns total heating capacity (compressor + capDefrostHt), Btuh
 {
 	float capHt, inpHt, capDfHt, capHtMin, inpHtMin, capDfHtMin;
-	float what = rs_PerfASHP2(ashpModel, tdbOut, fanHAdj,
+	COP = rs_PerfASHP2(ashpModel, tdbOut, fanHAdj,
 		capHt, inpHt, capDfHt, capHtMin, inpHtMin, capDfHtMin);
-
-	COP = inpHt > 0.f ? capHt / inpHt : 0.f;
 
 	return capHt;
 
@@ -3169,7 +3167,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 
 	float COPAdjF /*=1.f*/)	// COP adjustment factor
 							//   multiplies final COP result
-// returns heating capacity (including defrost if any), Btuh
+// returns compressor-only full-speed COP (as adjusted by COPAdjF)
 {
 	capDfHt = 0.f;
 	BOOL bDoDefrost = (ashpModel & 0x100) == 0
@@ -3386,11 +3384,11 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 		rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
 	if (!IsSet( RSYS_COP17))
 		rs_COP17 = rs_HSPF < 8
-					? 0.5183f * rs_HSPF - 1.7244
+					? 0.5183f * rs_HSPF - 1.7244f
 			        : 0.2186f * rs_HSPF + 0.6734f;
 #elif ASHP_COPREG == 6
 	if (rs_IsPkgRoom())
-	{	rs_COP17 = 0.6870 * rs_COP47;
+	{	rs_COP17 = 0.6870f * rs_COP47;
 		// rs_cap17 set above
 	}
 	else if (!rs_IsASHPHydronic())
@@ -3400,13 +3398,19 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 			rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
 		if (!IsSet( RSYS_COP17))
 		{	rs_COP17 = 0.2186f * rs_HSPF + 0.6734f;
-			RC rc1 = rs_HSPFMatchASHP();		// adjust COP17 to be
-												//   consistent with rs_HSPF
-			if (rc1 != RCOK						// if fail
-			  || (!rs_isAuszH && rs_COP17 > rs_COP47))	// or unreasonable
-														//  (allow during ausz)
-				rc = err( "RSYS '%s': No reasonable value found for rsCOP17."
-				     "\n   Check rsHSPF and other heating inputs.", name);
+			int iTry;
+			RC rc1;
+			const int nTry = 40;
+			for (iTry=0; iTry<nTry; iTry++)
+			{	rc1 = rs_HSPFMatchASHP();	// adjust COP17 to be
+											//   consistent with rs_HSPF
+				if (rc1 || rs_COP17 < rs_COP47 || IsSet( RSYS_COP47))
+					break;	// accept rs_COP17 if < rs_COP47 or rs_COP47 is fixed
+				rs_COP47 += 0.1f;	// try again with higher rs_COP47
+			}
+			if ((rc1 || iTry==nTry) && !rs_isAuszH)
+				rc |= err("RSYS '%s': No reasonable value found for rsCOP17 and/or rsCOP47."
+					      "\n   Check rsHSPF and other heating inputs.", name);
 		}
 	}
 
@@ -3472,6 +3476,7 @@ float RSYS::rs_Inp35Default(		// default 35 F input power
 	return inp35;
 }	// RSYS::rs_Inp35Default
 //-----------------------------------------------------------------------------
+#if 0
 float RSYS::rs_RunFAdjustedEffHtASHP()
 {
 	float effHt;
@@ -3489,6 +3494,7 @@ float RSYS::rs_RunFAdjustedEffHtASHP()
 	}
 	return effHt;
 }	// RSYS::rs_RunFAdjustedEffHtASHP
+#endif
 //-----------------------------------------------------------------------------
 RC RSYS::rs_CalcInputsAndSlopesASHP()
 // uses: rs_cap/COP 47/17
@@ -3525,19 +3531,18 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 			rs_COPMin17 = rs_COP17;
 
 		float inpMin47 = capMin47 / max(rs_COPMin47, .1f);
-
+		float inpMin17 = capMin17 / max(rs_COPMin17, .1f);
+	
 		float inpMin35;
 		if (!IsSet(RSYS_COPMIN35))
-		{	inpMin35 = rs_Inp35Default(inp47, inp17);
+		{	inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
 			rs_COPMin35 = capMin35 / max(inpMin35, .1f);
 		}
 		else
 			inpMin35 = capMin35 / max(rs_COPMin35, .1f);
-		float inpMin17 = capMin17 / max(rs_COPMin17, .1f);
 
 		rs_ASHPInpMinF[0] = (inpMin47 - inpMin17) / (47.f - 17.f);
-		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);
-		
+		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);	
 	}
 
 	return RCOK;
@@ -3905,7 +3910,7 @@ int RSYS::rs_IsModeAvailable(
 			// set mode-specific air flow
 			rs_amf = rsMode == rsmHEAT ? rs_amfH
 				   : rsMode == rsmCOOL ? rs_amfC
-				   : rsMode == rsmOAV ? rs_amfOAV
+				   : rsMode == rsmOAV  ? rs_amfOAV
 				   :                     0.;
 			if (rs_amf < .0001)
 				ret = -1;		// no air available
@@ -4030,8 +4035,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 		else if (rs_mode == rsmHEAT)
 		{	rs_asOut = rs_asIn;		// init to entering state
 			if (auszMode == rsmHEAT && Top.tp_pass1A)
-			{
-				// autosize warmup: assume fixed temp rise
+			{	// autosize warmup: assume fixed temp rise
 				rs_asOut.as_tdb = rs_asRet.as_tdb + rs_tdDesH;
 				rs_effHt = 1.;		// need nz value, else ASHP assumes compressor off
 			}
@@ -4426,13 +4430,13 @@ RC RSYS::rs_FinalizeSh()
 					rs_PLF = 1.f - rs_CdH * (1.f - runFx);
 					rs_COPHtAdj = rs_inpHtMin <= 0.f
 								? 2.5f		// rs_inpHtMin can be 0 during autosize
-							    : rs_capHtMin * rs_PLF / rs_inpHtMin;
+							    : rs_FEffH * rs_capHtMin * rs_PLF / rs_inpHtMin;
 					rs_inPrimary = rs_capHtMin / rs_COPHtAdj;
 				}
 				else
 				{	// variable capacity: intermediate speed
 					float runFx = (rs_runF - rs_runFMin) / (1.f - rs_runFMin);
-					rs_inPrimary = rs_inpHt * runFx + rs_inpHtMin * (1.f - runFx);
+					rs_inPrimary = (rs_inpHt * runFx + rs_inpHtMin * (1.f - runFx)) / rs_FEffH;
 					rs_COPHtAdj = rs_inPrimary <= 0.f
 									? 2.5f		// rs_inPrimary can be 0 during autosize
 									: rs_outSen / rs_inPrimary;
