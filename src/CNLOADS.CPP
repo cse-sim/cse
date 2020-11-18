@@ -1568,17 +1568,18 @@ RC RSYS::rs_CkF()
 		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
 		rc |= limitCheck( RSYS_VFPERTON, 150., 550.);
 
-		rc |= limitCheck( RSYS_CDC, 0., .5);
-
 		// rsFanPwrC (W/cfm): error if >5, warn if >2
 		rc |= limitCheck( RSYS_FANPWRC, 0., 5., 0., 2.);
+
+		rc |= rs_CdDefaultAndCheck(rsmCOOL);
 
 		if (!IsAusz( RSYS_CAP95))
 			// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
 			FldCopyIf( RSYS_CAP95, RSYS_CAPNOMC);
 	}
 	else
-	{	when = strtprintf( "when rsType=%s (cooling not available)",
+	{	// no cooling capability
+		when = strtprintf( "when rsType=%s (cooling not available)",
 			getChoiTx( RSYS_TYPE));
 		rc |= disallowN( when, RSYS_CAP95, RSYS_SEER, RSYS_EER95,
 				RSYS_FCHG, RSYS_FSIZE, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC,
@@ -1601,80 +1602,84 @@ RC RSYS::rs_CkF()
 		// rsFanPwrH (W/cfm): error if >5, warn if >2
 		rc |= limitCheck( RSYS_FANPWRH, 0., 5., 0., 2.);
 	}
-
-	if (rs_IsASHPHydronic())
-	{	// ASHPHydronic: air-to-water heat pump
-		//   approximated with air-to-air model
-		when = "when rsType=ASHPHydronic";
-		rc |= requireN( when, RSYS_COP47, RSYS_COP17, 0);
-		rc |= disallowN( when, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
-		if (!IsSet( RSYS_CAP47) && !IsSet( RSYS_CAP95))
-			rc |= oer( "at least one of rsCap47 and rsCapC must be specified %s", when);
-		if (!IsSet( RSYS_CDH))
-			rs_CdH = 0.25f;			// hydronic: no HSPF source for default
-		if (!IsSet( RSYS_FANPWRH))
-			rs_fanPwrH = 0.f;		// hydronic: no fan power
-		if (!IsAusz( RSYS_CAP47))
-			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
-			FldCopyIf( RSYS_CAP47, RSYS_CAPNOMH);
-	}
-	else if (rs_IsASHP())
-	{	
+		
+	if (rs_IsASHP())
+	{
 		when = strtprintf("when rsType=%s",	getChoiTx(RSYS_TYPE));
-
-		rc |= disallowN( when, RSYS_CAPH, RSYS_AFUE, 0);
-		if (!IsSet( RSYS_CAP47) && !IsSet( RSYS_CAP95))
-			rc |= oer( "at least one of rsCap47 and rsCapC must be specified %s", when);
 
 		rs_AFUE = 0.f;		// drop possibly confusing default
 
-		// save input value of rs_capAuxH
-		//   estimated rs_capAuxH used during autosize
-		rs_capAuxHInp = rs_capAuxH;
-		if (IsAusz(RSYS_CAPAUXH))
-			rs_capAuxH = 0.f;		// overwrite NANDLE
-
-		if (!IsAusz(RSYS_CAP47))
-			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
-			//   see DefaultCapNomsIf()
-			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
-
-		if (rs_IsPkgRoom())
-		{	rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
-				RSYS_CAP35, RSYS_COP35, 0);
-			rc |= requireN(when, RSYS_COP47, 0);
-
+		rc |= rs_CdDefaultAndCheck( rsmHEAT);		// heating Cd
+		
+		if (rs_IsASHPHydronic())
+		{	// ASHPHydronic: air-to-water heat pump
+			//   approximated with air-to-air model
+			when = "when rsType=ASHPHydronic";
+			rc |= requireN(when, RSYS_COP47, RSYS_COP17, 0);
+			rc |= disallowN(when, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
+			if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
+				rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
 			if (!IsSet(RSYS_FANPWRH))
-				rs_fanPwrH = 0.f;	// fan power included in primary by default
-
-			// other defaults derived in rs_TopRSys1()
+				rs_fanPwrH = 0.f;		// hydronic: no fan power
+			if (!IsAusz(RSYS_CAP47))
+				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+				FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
 		}
 		else
-		{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
-			//   capacities defaulted from cooling cap95
-			//   COPs defaulted from HSPF
-			//   if both COP47 and COP17 are specified, HSPF is not used
+		{	// ASHP other than ASHPHydronic
 
-			rc |= requireN(when, RSYS_HSPF, 0);
+			rc |= disallowN(when, RSYS_CAPH, RSYS_AFUE, 0);
+			if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
+				rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
 
-			if (!IsSet(RSYS_CDH))
-				rs_CdH = bracket(.05f, .25f - 0.2f*(rs_HSPF - 6.8f) / (10.f - 6.8f), .25f);
-			rc |= limitCheck(RSYS_CDH, 0., .5);
-			if (IsAusz(RSYS_CAP47))
-				rc |= disallowN("when rsCap47 is AUTOSIZE",
-					RSYS_CAP17, RSYS_CAP35, 0);
-			if (IsSet(RSYS_CAP17))
-				rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+			// save input value of rs_capAuxH
+			//   estimated rs_capAuxH used during autosize
+			rs_capAuxHInp = rs_capAuxH;
+			if (IsAusz(RSYS_CAPAUXH))
+				rs_capAuxH = 0.f;		// overwrite NANDLE
 
-			if (!rs_IsASHPVC())
-			{	rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
-					RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47, RSYS_RUNFMIN, 0);
-				rs_runFMin = 1.f;
+			if (!IsAusz(RSYS_CAP47))
+				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+				//   see DefaultCapNomsIf()
+				FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
+
+			if (rs_IsPkgRoom())
+			{
+				rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
+					RSYS_CAP35, RSYS_COP35, 0);
+				rc |= requireN(when, RSYS_COP47, 0);
+
+				if (!IsSet(RSYS_FANPWRH))
+					rs_fanPwrH = 0.f;	// fan power included in primary by default
+
+				// other defaults derived in rs_TopRSys1()
+			}
+			else
+			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
+				//   capacities defaulted from cooling cap95
+				//   COPs defaulted from HSPF
+				//   if both COP47 and COP17 are specified, HSPF is not used
+
+				rc |= requireN(when, RSYS_HSPF, 0);
+
+				if (IsAusz(RSYS_CAP47))
+					rc |= disallowN("when rsCap47 is AUTOSIZE",
+						RSYS_CAP17, RSYS_CAP35, 0);
+				if (IsSet(RSYS_CAP17))
+					rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+
+				if (!rs_IsASHPVC())
+				{
+					rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
+						RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47, RSYS_RUNFMIN, 0);
+					rs_runFMin = 1.f;
+				}
 			}
 		}
 	}
 	else
-	{	rc |= disallowN( "when rsType is not ASHP, ASHPHydronic, or ASHPPkgRoom",
+	{	// not ASHP of any type
+		rc |= disallowN( "when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC",
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
@@ -1713,6 +1718,31 @@ RC RSYS::rs_CkF()
 
 	return rc;
 }	// RSYS::rs_CkF
+//-----------------------------------------------------------------------------
+RC RSYS::rs_CdDefaultAndCheck(	// default and check Cd values
+	int mode)	// rsmCOOL or rsmHEAT
+// returns RCOK iff rs_CdX is acceptable
+//    else !RCOK (user input out of range)
+{
+	RC rc = RCOK;
+	if (mode == rsmCOOL)
+	{	if (!IsSet(RSYS_CDC))
+			rs_CdC = rs_IsASHPVC() ? 0.25f : 0.f;
+		else
+			rc |= limitCheckFix(RSYS_CDC, 0.f, .5f);
+	}
+	else
+	{	// not rsmCOOL, assume rsmHEAT
+		if (!IsSet(RSYS_CDH))
+			rs_CdH = rs_IsASHPHydronic() || rs_IsASHPPkgRoom() || rs_IsASHPVC()
+				? 0.25f		// hydronic / pkgRoom: no HSPF source for default
+							// ASHPVC: relationship to HSPF not known
+				: bracket(.05f, .25f - 0.2f*(rs_HSPF - 6.8f) / (10.f - 6.8f), .25f);
+		else
+			rc |= limitCheckFix(RSYS_CDH, 0.f, .5f);
+	}
+	return rc;
+}		// RSYS::rs_CdDefaultAndCheck
 //-----------------------------------------------------------------------------
 RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
