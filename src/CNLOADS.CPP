@@ -3338,7 +3338,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 			        : 0.2186f * rs_HSPF + 0.6734f;
 #elif ASHP_COPREG == 6
 	if (rs_IsPkgRoom())
-	{	rs_COP17 = 0.6870 * rs_COP47;
+	{	rs_COP17 = 0.6870f * rs_COP47;
 		// rs_cap17 set above
 	}
 	else if (!rs_IsASHPHydronic())
@@ -3348,13 +3348,19 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 			rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
 		if (!IsSet( RSYS_COP17))
 		{	rs_COP17 = 0.2186f * rs_HSPF + 0.6734f;
-			RC rc1 = rs_HSPFMatchASHP();		// adjust COP17 to be
-												//   consistent with rs_HSPF
-			if (rc1 != RCOK						// if fail
-			  || (!rs_isAuszH && rs_COP17 > rs_COP47))	// or unreasonable
-														//  (allow during ausz)
-				rc = err( "RSYS '%s': No reasonable value found for rsCOP17."
-				     "\n   Check rsHSPF and other heating inputs.", name);
+			int iTry;
+			RC rc1;
+			const int nTry = 40;
+			for (iTry=0; iTry<nTry; iTry++)
+			{	rc1 = rs_HSPFMatchASHP();	// adjust COP17 to be
+											//   consistent with rs_HSPF
+				if (rc1 || rs_COP17 < rs_COP47 || IsSet( RSYS_COP47))
+					break;	// accept rs_COP17 if < rs_COP47 or rs_COP47 is fixed
+				rs_COP47 += 0.1f;	// try again with higher rs_COP47
+			}
+			if ((rc1 || iTry==nTry) && !rs_isAuszH)
+				rc |= err("RSYS '%s': No reasonable value found for rsCOP17 and/or rsCOP47."
+					      "\n   Check rsHSPF and other heating inputs.", name);
 		}
 	}
 #else
