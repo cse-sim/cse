@@ -1594,7 +1594,7 @@ RC RSYS::rs_CkF()
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_CAPAUXH, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
-				RSYS_FANPWRH, RSYS_CDH, RSYS_RUNFMIN, RSYS_CAPRAT1747, 0);
+				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMINH, RSYS_CAPRAT1747, 0);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
 	else
@@ -1669,10 +1669,9 @@ RC RSYS::rs_CkF()
 					rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
 
 				if (!rs_IsASHPVC())
-				{
-					rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
-						RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47, RSYS_RUNFMIN, 0);
-					rs_runFMin = 1.f;
+				{	rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
+						RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47, RSYS_LOADFMINH, 0);
+					rs_loadFMinH = 1.f;
 				}
 			}
 		}
@@ -2661,7 +2660,7 @@ RC RSYS::rs_AfterSubhr()
 // set 'prior interval' variables etc: if done sooner, probes come out wrong.
 {
 	rs_modeLs = rs_mode;
-	rs_runFLs = rs_runF;
+	rs_loadFLs = rs_loadF;
 	return RCOK;
 }	// RSYS::rs_AfterSubhr
 //-----------------------------------------------------------------------------
@@ -3222,10 +3221,10 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 				capDfHt = rs_capAuxH;
 		}
 		if (rs_IsASHPVC())
-		{	capHtMin = rs_runFMin * capHt;
-			float inpMin17 = rs_cap17 * rs_runFMin / rs_COPMin17;
-			inpHtMin = inpMin17 + rs_ASHPInpMinF[iDefrost] * tdbM17 - rs_runFMin* fanHAdj;
-			capDfHtMin = rs_runFMin * capDfHt;
+		{	capHtMin = rs_loadFMinH * capHt;
+			float inpMin17 = rs_CapMin17() / rs_COPMin17;
+			inpHtMin = inpMin17 + rs_ASHPInpMinF[iDefrost] * tdbM17 - rs_loadFMinH * fanHAdj;
+			capDfHtMin = rs_loadFMinH * capDfHt;
 	   	}
 		// else single speed, see code at return below
 	}
@@ -3505,26 +3504,6 @@ float RSYS::rs_Inp35Default(		// default 35 F input power
 		inp35 *= 0.985f;		// defrost power reduction
 	return inp35;
 }	// RSYS::rs_Inp35Default
-//-----------------------------------------------------------------------------
-#if 0
-float RSYS::rs_RunFAdjustedEffHtASHP()
-{
-	float effHt;
-	if (!rs_IsASHPVC() || rs_runF < rs_runFMin)
-	{	rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
-		effHt = rs_effHt * rs_PLF;
-	}
-	else
-	{
-		// input power w/o fan, Btuh
-		float inpX = rs_inpHt * rs_runF + rs_inpHtMin * (1.f - rs_runF);
-
-		effHt = rs_runF * rs_capHt / inpX;
-		rs_PLF = 1.f;
-	}
-	return effHt;
-}	// RSYS::rs_RunFAdjustedEffHtASHP
-#endif
 //-----------------------------------------------------------------------------
 RC RSYS::rs_CalcInputsAndSlopesASHP()
 // uses: rs_cap/COP 47/17
@@ -3877,7 +3856,7 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 	int rsModeNew)
 // uses rs_mode to skip unneeded
 {
-	rs_runF = rs_runFAux = rs_PLF = 0.f;
+	rs_loadF = rs_runF = rs_runFAux = rs_PLF = 0.f;
 	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost = 0.;
 	rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 	rs_amfReq[ 0] = rs_amfReq[ 1] = 0.;
@@ -4407,7 +4386,7 @@ RC RSYS::rs_FinalizeSh()
 		// rs_runF = 0.f;		// in rs_SetModeAndClear
 	else if (rs_amf > 0.)
 		// rs_SetModeAndClear() called in rs_SupplyAirState
-		rs_runF = amfRun / rs_amf;
+		rs_loadF = amfRun / rs_amf;
 	// else rs_runF = 0.f
 
 	// record peaks or calc energy
@@ -4415,10 +4394,10 @@ RC RSYS::rs_FinalizeSh()
 	//   TODO: could skip accounting if autoSizing
 	//       BUT may be side effects
 	if (rs_mode == rsmCOOL)
-	{	rs_outSen = rs_runF * rs_capSenCt;		// average output w/o fan, Btuh (< 0)
-		rs_outLat = rs_runF * rs_capLatCt;
-		rs_outFan = rs_inFan = rs_runF * rs_fanHeatC;	// all fan heat to air
-		rs_PLF = 1.f - rs_CdC * ( 1.f - rs_runF);
+	{	rs_outSen = rs_loadF * rs_capSenCt;		// average output w/o fan, Btuh (< 0)
+		rs_outLat = rs_loadF * rs_capLatCt;
+		rs_outFan = rs_inFan = rs_loadF * rs_fanHeatC;	// all fan heat to air
+		rs_PLF = 1.f - rs_CdC * ( 1.f - rs_loadF);
 		rs_inPrimary = fabs( rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.subhrDur;	// compressor energy for step, Btu
@@ -4434,27 +4413,27 @@ RC RSYS::rs_FinalizeSh()
 		{	if (rs_effHt == 0.f)		// if compressor is off
 			{	// rs_inPrimary = 0.;
 				rs_outFan = rs_runFAux * rs_fanHeatH;
-				rs_runF = 0.f;
+				rs_loadF = 0.f;
 				rs_PLF = 0.f;
 			}
 			else
 			{
 #if 1
-				double outTot = rs_runF * rs_capHt;		// total output (incl fan and defrost), Btuh
+				double outTot = rs_loadF * rs_capHt;		// total output (incl fan and defrost), Btuh
 				// rs_outLat = 0.;						// total latent output
-				rs_outFan = min( outTot, rs_runF * rs_fanHeatH);	// fan output, Btuh
+				rs_outFan = min( outTot, rs_loadF * rs_fanHeatH);	// fan output, Btuh
 														// insurance: limit to total output
-				rs_outDefrost = rs_runF * rs_capDfHt;
+				rs_outDefrost = rs_loadF * rs_capDfHt;
 
 				rs_outSen = outTot - rs_outFan - rs_outDefrost;		// compressor output
 
 #if 1
 				if (!rs_IsASHPVC())
-				{	rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
+				{	rs_PLF = 1.f - rs_CdH * (1.f - rs_loadF);
 					rs_COPHtAdj = rs_effHt * rs_PLF;	// full load efficiency modified by PLF
 					rs_inPrimary = rs_outSen / rs_COPHtAdj;
 				}
-				else if (rs_runF < rs_runFMin)
+				else if (rs_loadF < rs_loadFMinH)
 				{	// variable capacity: cycling at min speed
 					float runFx = rs_outSen / rs_capHtMin;
 					rs_PLF = 1.f - rs_CdH * (1.f - runFx);
@@ -4465,7 +4444,7 @@ RC RSYS::rs_FinalizeSh()
 				}
 				else
 				{	// variable capacity: intermediate speed
-					float runFx = (rs_runF - rs_runFMin) / (1.f - rs_runFMin);
+					float runFx = (rs_loadF - rs_loadFMinH) / (1.f - rs_loadFMinH);
 					rs_inPrimary = (rs_inpHt * runFx + rs_inpHtMin * (1.f - runFx)) / rs_FEffH;
 					rs_COPHtAdj = rs_inPrimary <= 0.f
 									? 2.5f		// rs_inPrimary can be 0 during autosize
@@ -4511,9 +4490,9 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 		}
 		else
 		{	// non-ASHP
-			double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
+			double outTot = rs_loadF * rs_capHt;		// total output (incl fan), Btuh
 			// rs_outLat = 0.;						// total latent output
-			rs_outFan = min( outTot, rs_runF * rs_fanHeatH);	// fan output, Btuh
+			rs_outFan = min( outTot, rs_loadF * rs_fanHeatH);	// fan output, Btuh
 																// insurance: limit to total output
 			rs_outSen = outTot - rs_outFan;
 			rs_PLF = 1.f;
@@ -4540,12 +4519,12 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 	if (rs_pMtrFuel)
 		rs_pMtrFuel->H.aux += rs_parFuel * Top.subhrDur;
 
-	if (rs_runF > 0.f)
+	if (rs_loadF > 0.f)
 	{	// duct conduction and leakage to adjacent zones
 		for (int iSR=0; iSR<2; iSR++)
 		{	int iDS = rs_Dsi( iSR);
 			if  (iDS>0)
-				DsR[ iDS].ds_FinalizeSh( rs_runF);
+				DsR[ iDS].ds_FinalizeSh(rs_loadF);
 		}
 	}
 
