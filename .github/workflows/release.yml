@@ -20,8 +20,20 @@ jobs:
         with:
           files: msvc/CSE.exe
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build documentation
-        uses: ./.github/workflows/build-docs/
+      - name: Install pandoc
+        run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
+        shell: bash
+      - name: Add pandoc to path
+        run: echo "C:\Program Files (x86)\Pandoc" >> $GITHUB_PATH
+      - name: Setup LaTeX
+        uses: r-lib/actions/setup-tinytex@v1
+      - name: Add LaTeX packages
+        run: tlmgr install mathspec fancyhdr
+      - name: Add MSVC developer commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Build docs
+        run: rake
+        working-directory: doc
       - name: Update gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
