@@ -21,7 +21,7 @@ jobs:
           files: msvc/CSE.exe
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build documentation
-        uses: .github/workflows/
+        uses: ./.github/workflows/build-docs/
       - name: Update gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:

@@ -52,7 +52,7 @@ jobs:
           name: CSE.exe
           path: msvc
       - name: Build documentation
-        uses: .github/workflows/
+        uses: ./.github/workflows/build-docs/
       - name: Upload documentation
         uses: actions/upload-artifact@v2
         with:
