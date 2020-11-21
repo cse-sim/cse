@@ -51,19 +51,8 @@ jobs:
         with:
           name: CSE.exe
           path: msvc
-      - name: Install pandoc
-        run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
-      - name: Add pandoc to path
-        run: echo "::add-path::C:\Program Files (x86)\Pandoc"
-      - name: Setup LaTeX
-        uses: r-lib/actions/setup-tinytex@v1
-      - name: Add LaTeX packages
-        run: tlmgr install mathspec fancyhdr
-      - name: Add MSVC developer commands to PATH
-        uses: ilammy/msvc-dev-cmd@v1
-      - name: Build docs
-        run: rake
-        working-directory: doc
+      - name: Build documentation
+        uses: .github/workflows/
       - name: Upload documentation
         uses: actions/upload-artifact@v2
         with:
