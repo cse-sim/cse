@@ -4398,6 +4398,7 @@ RC RSYS::rs_FinalizeSh()
 		rs_outLat = rs_loadF * rs_capLatCt;
 		rs_outFan = rs_inFan = rs_loadF * rs_fanHeatC;	// all fan heat to air
 		rs_PLF = 1.f - rs_CdC * ( 1.f - rs_loadF);
+		rs_runF = rs_loadF;
 		rs_inPrimary = fabs( rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.subhrDur;	// compressor energy for step, Btu
@@ -4414,6 +4415,7 @@ RC RSYS::rs_FinalizeSh()
 			{	// rs_inPrimary = 0.;
 				rs_outFan = rs_runFAux * rs_fanHeatH;
 				rs_loadF = 0.f;
+				rs_runF = 0.f;
 				rs_PLF = 0.f;
 			}
 			else
@@ -4432,6 +4434,7 @@ RC RSYS::rs_FinalizeSh()
 				{	rs_PLF = 1.f - rs_CdH * (1.f - rs_loadF);
 					rs_COPHtAdj = rs_effHt * rs_PLF;	// full load efficiency modified by PLF
 					rs_inPrimary = rs_outSen / rs_COPHtAdj;
+					rs_runF = rs_loadF;
 				}
 				else if (rs_loadF < rs_loadFMinH)
 				{	// variable capacity: cycling at min speed
@@ -4506,10 +4509,10 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			rs_pMtrElec->H.fanH += rs_inFan * Top.subhrDur;
 	}
 	else if (rs_mode == rsmOAV)
-	{	rs_outFan = rs_inFan = rs_fanHeatOAV * rs_runF;
+	{	rs_runF = rs_loadF;
+		rs_outFan = rs_inFan = rs_fanHeatOAV * rs_runF;
 		if (rs_pMtrElec)
 			rs_pMtrElec->H.fanC += rs_inFan * Top.subhrDur;
-
 	}
 	// else if (rs_Mode == rsmOFF)
 

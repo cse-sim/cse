@@ -1283,7 +1283,7 @@ CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,
 																		TYLLI, 				// SI condition, dflt TRUE, in LI for NAN
 																		       0,       v 1L,0.f,      N, N),
 CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0, 0.f,      N, N),
-CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       v 0, 0.f,      N, N),
+CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       -1,            N, N),
 CULT( "rpHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,  0, v C_RPTHDCH_YES,0.f, N, N),
 CULT( "rpFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,  0, v C_NOYESCH_YES,0.f, N, N),
 CULT( "reportCol",   RATE, 0,             0,               0, 0,        0,    &RcoliB,  N,   0.f, rpColT, N),

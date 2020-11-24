@@ -1706,7 +1706,7 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *i FLOAT_GZ rpBtuSf	// energy (Btu) scale factor
     *s *e LI rpCond	// condition: if given, rpt lines omitted when FALSE (SI; LI used to hold NAN) (LI currently unprobeable)
     *i CHP rpTitle 	// title, for UDT, in dm
-    *i SI rpCpl		// chars per line, inputtable re UDT's
+    *i SI rpCpl		// chars per line, inputtable re UDT's (default -1="as wide as needed")
     *i RPTHDCH rpHeader	// table header or export header yes/no (default yes)
     *i NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line?) yes/no (default yes)
     *hide *r SI putAtEnd	// used internally to make pre-stuffed LOG report follow user reports

@@ -893,7 +893,7 @@ badTu4ty:
 						oInfo( "%s width %d is greater than line width %d.\n"
 							"    Line width has been adjusted.",
 							exrePort, wid, cpl);
-				    // else cpl <= 0 -> "as wide as needed" (w/o message)
+				    // else cpl < 0 -> "as wide as needed" (w/o message)
 					rpCpl = wid;
 				}
 			}
@@ -1058,9 +1058,9 @@ badTu4ty:
 				dvrip->rpCond   = rpCond;
 				dvrip->rpCondGiven = rpCondGiven; 				// may change report title
 				dvrip->rpTitle  = rpTitle;
-				cupIncRef( DMPP( rpTitle));				/* ++ ref count for copied pointer unless UNSET
-	        								   or ptr to inline constant in pseudo-code */
-				dvrip->rpCpl    = rpCpl ? rpCpl : getCpl();		// default characters per line now
+				cupIncRef( DMPP( rpTitle));		// ++ ref count for copied pointer unless UNSET
+	        									//  or ptr to inline constant in pseudo-code
+				dvrip->rpCpl    = rpCpl>0 ? rpCpl : getCpl();		// default characters per line now
 				dvrip->rpHeader = rpHeaderLocal;
 				dvrip->rpFooter = rpFooter;
 				dvrip->coli     = coli;

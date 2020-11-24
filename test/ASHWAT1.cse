@@ -1308,7 +1308,7 @@ ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting w
 #Define CSEBtuSF 1000  //reports in kBtu
 
 //AC
-Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
+Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=-1
    Reportcol colVal=@Rsys["rsys-Central HVAC"].CapH colHead="CapH" colDec=0 colWid=6
    
    Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap47 colHead="Cap47" colDec=0 colWid=6
@@ -1331,7 +1331,7 @@ Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
 
 // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
 //Monthly
-Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=132
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=-1
 rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
 Reportcol colVal=$month  colHead="mo"      colWid=2
 Reportcol colVal=@znRes["Attic-atc"].M.tAir colHead="Tatt" colWid=4 colDec=1
@@ -1350,7 +1350,7 @@ Reportcol colVal=(@Meter[MtrElec].M.fanc+@Meter[MtrElec].m.fanh)/CSEBtuSF colHea
 Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
 Reportcol colVal=@Meter[MtrNatGas].m.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
 
-Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=132  rpHeader=No    //Annual Summary
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=-1  rpHeader=No    //Annual Summary
 Reportcol colVal="Yr"       colWid=2
 Reportcol colVal=@znRes["Attic-atc"].Y.tAir colHead="Tatt" colWid=4 colDec=1
 Reportcol colVal=@znRes["Conditioned-zn"].Y.tAir colHead="Tin" colWid=4 colDec=1
@@ -1374,7 +1374,7 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
 
 
 //Coldest Day
-      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=HD1 rpCPL=134
+      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=HD1 rpCPL=-1
     rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -1397,12 +1397,12 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
     Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5
     Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Htgl"  colDec=1 colWid=5  
     Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
-    Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Rsys[1].loadf colHead="loadF" colDec=2 colWid=5   
     Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
     Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
     
  //Coldest totals 
-    Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1	 //Day Summary
+    Report rpType=UDT rpFreq=Day   rpCPL=-1  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1	 //Day Summary
     Reportcol colVal="Dy"    colWid=2
     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
@@ -1430,7 +1430,7 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
 
  
 //Cooling Design Day
-      Report rpType=UDT rpFreq=HOUR  rpDayBeg= DD1; rpDayEnd=DD1 rpCPL=134
+      Report rpType=UDT rpFreq=HOUR  rpDayBeg= DD1; rpDayEnd=DD1 rpCPL=-1
     rpTitle="Energy Balance (F, kBtu, + into the zone)"
     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -1459,7 +1459,7 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
 
     
  //Cooling Design Day Totals 
-    Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= DD1; rpDayEnd=DD1	 //Day Summary
+    Report rpType=UDT rpFreq=Day   rpCPL=-1  rpHeader=No rpDayBeg= DD1; rpDayEnd=DD1	 //Day Summary
     Reportcol colVal="Dy"    colWid=2
     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
@@ -1486,7 +1486,7 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
        Reportcol colVal=@Meter[MtrElec].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
        
        //Hottest Day
-		       Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=134
+		       Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=-1
 		     rpTitle="Energy Balance (F, kBtu, + into the zone)"
 		     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
 		     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -1515,7 +1515,7 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
 		 
 		     
 		  //Hottest Day Totals 
-		     Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
+		     Report rpType=UDT rpFreq=Day   rpCPL=-1  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
 		     Reportcol colVal="Dy"    colWid=2
 		     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
 		     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.

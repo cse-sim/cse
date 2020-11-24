@@ -1865,7 +1865,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
 		dec = colp->colDec;				// decimals, defaulted to -1 if not given
 		ptAdj = 0;					// rob's decimal point position adjustment
-		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
+		if (ISNANDLE(colp->colVal.val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
 						   Only place in language where run with excess evf intentionally permitted, 12-91.

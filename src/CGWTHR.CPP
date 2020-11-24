@@ -472,9 +472,9 @@ void WDHR::wd_Adjust(		// apply adjustments to weather data
 	wd_dfrad = max( Top.radDiffF*wd_dfrad, 0.f); 	// ..
 	wd_glrad = max(wd_glrad, 0.f);		// TODO: re-derive from adjusted wd_bmrad and wd_dfrad?
 
-	wd_wndSpd = Top.windF * max(wd_wndSpd, Top.windSpeedMin);
 	// apply wind speed min (user input, default = .5)
-	//   and adjust by factor (per user input, default .25)
+	//   and adjust by factor (per user input, default 1)
+	wd_wndSpd = Top.windF * max(wd_wndSpd, Top.windSpeedMin);
 
 }		// WDHR::wd_Adjust
 //---------------------------------------------------------------------------
