@@ -664,6 +664,16 @@ x	}
 			zp->zn_DbDump();
 #endif
 	}
+#if defined( DEBUGDUMP)
+	if (DbDo(dbdAIRNET | dbdIZ) && ZrB.GetCount() > 0)
+	{	DbPrintf("\nZone airnet results\n"
+			"Zone                  pz0W[0]  pz0W[1]      pz0      qIzSh    AmfCp     AmfCpT\n");
+		RLUP(ZrB, zp)
+			DbPrintf("%-20.20s %8.5f %8.5f %8.5f %10.2f %8.2f %10.1f\n",
+				zp->name, zp->zn_pz0W[0], zp->zn_pz0W[1], zp->zn_pz0, zp->zn_qIzSh,
+				zp->zn_AnAmfCp(0), zp->zn_AnAmfCpT(0));
+	}
+#endif
 
 	TMRSTOP( TMR_ZONE);
 
@@ -4562,16 +4572,6 @@ static RC loadsIzxSh1()  	// interzone transfers, part 1
 		// else zn_qIzXAnSh used in CR heat balance eqns elsewhere
 	}
 
-#if defined( DEBUGDUMP)
-	if (DbDo( dbdAIRNET|dbdIZ))
-	{	ZNR* zp;
-		DbPrintf("\n");
-		RLUP( ZrB, zp)
-			DbPrintf( "%s IZ:  zn_qIzSh=%0.f  MCpInf=%.2f   MCpTInf=%.1f\n",
-				zp->name, zp->zn_qIzSh,
-				zp->zn_AnAmfCp( 0), zp->zn_AnAmfCpT( 0));
-	}
-#endif
 	return rc;
 }		// ::loadsIzxSh1
 //-----------------------------------------------------------------------------

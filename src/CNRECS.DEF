@@ -2751,7 +2751,7 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *s *e DBL ad_mdotP		// air mass flow rate, (lbm moist air)/sec (+ into z1)
 							//   pressure driven: derived via pressure balance
 							//   fixed flow: as set
-   *s *e DBL ad_dmdp		// derivative of iz_mdotP wrt pressure (0 for fix flow)
+   *s *e DBL ad_dmdp		// derivative of ad_mdotP wrt pressure (0 for fix flow)
    *s *e DBL ad_mdotB		// add'l buoyancy-driven mass flow, (lbm moist air)/sec
 							//   balanced flow z1 <-> z2, used only for _ANHORIZ
    *s *e DBL ad_mdotX		// air mass exhaust flow, (lbm moist air)/sec (+ out of z2)

@@ -787,7 +787,7 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	ad.ad_mdotX = avfGross * iz_vfExhRat * rhoX / 60.;
 
 #if defined( DEBUGDUMP)
-	if (DbDo( dbdAIRNET))
+	if (0 && DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
@@ -1461,9 +1461,15 @@ RC IZXRAT::iz_MassFlow(		// airnet mass flow for this vent
 
 	int rc = RCOK;
 
-#if 0 && defined( _DEBUG)
-x	if (iz_IsOAVRelief())
-x		rc = rc;
+#if 1 && defined( _DEBUG)
+	ZNR* zp2 = NULL;
+	if (ZrB.GetAt(iz_zi1)->IsNameMatch("F5 Res Zn-zn")
+		&& !Top.isWarmup && !iz_IsExterior() && Top.iHr == 18)
+	{
+		zp2 = ZrB.GetAt(iz_zi2);
+		if (zp2->tzls > 90.f)
+			rc = rc;
+	}
 #endif
 	if (!iz_IsFixedFlow() && iz_ad[ iV].ad_Ae > 0.)
 	{	// pressure-dependent flow
@@ -1542,10 +1548,10 @@ RC IZXRAT::iz_ZoneXfers(		// calc transfers due to airnet mass flow
 		if (DbDo( dbdAIRNET))
 		{	if (!dbgDoneHorizHdg[ iV])
 			{	DbPrintf( "\nAirNet horiz  mode = %d\n"
-						  "vent               delRho      delpF       mDotB\n", iV);
+						  "vent                   delRho      delpF       mDotB\n", iV);
 				dbgDoneHorizHdg[ iV]++;
 			}
-			DbPrintf( "%-15s  %10.5f  %10.5f  %10.5f\n", name, delRho, delpF, ad.ad_mdotB);
+			DbPrintf( "%-20.20s %10.5f  %10.5f  %10.5f\n", name, delRho, delpF, ad.ad_mdotB);
 		}
 #endif
 	}
@@ -1688,7 +1694,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #if defined( DEBUGDUMP)
 		if (bDbPrint)
 			DbPrintf( "%s\nAirNet mode = %d   iter = %d\n"
-				  "vent                delP         mDotP        mDotX        dmdp\n",
+				"vent                     rho1      rho2       delP       mDotP       mDotX         dmdp\n",
 				  iter==0 ? "\n-------------" : "",
 				  iV, iter);
 #endif
@@ -1724,8 +1730,8 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #if defined( DEBUGDUMP)
 			if (bDbPrint)
 			{	const ANDAT& ad = ize->iz_ad[ iV];
-				DbPrintf( "%-15s %d %10.6f  %10.5f  %10.5f  %11.5f\n",
-					ize->name, iV, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
+				DbPrintf( "%-20.20s %d %6.4f %9.4f %10.6f  %10.5f  %10.5f  %11.5f\n",
+					ize->name, iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
 			}
 #endif
 		}
@@ -1746,10 +1752,10 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #if defined( DEBUGDUMP)
 			if (bDbPrint)
 			{	DbPrintf( "\nAirNet mode = %d converged (%d iter)\n"
-					  "zone            znPres        mDotP\n", iV, iter+1);
-				for (zi=0; zi < nzDb; zi++)
+					  "zone                 znPres        mDotP\n", iV, iter+1);
+				for (zi=0; zi < an_nz; zi++)
 				{	ZNR* zp = ZrB.GetAt( zi+zi0);
-					DbPrintf( "%-15s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[ iV], rV[ zi]);
+					DbPrintf( "%-20.20s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[ iV], rV[ zi]);
 				}
 			}
 #endif
@@ -1771,11 +1777,11 @@ RC AIRNET::an_Calc(			// airnet flow balance
 					gjRet == 1 ? "singular" : "too large");
 
 #if defined( DEBUGDUMP)
-		if (bDbPrint)
-		{	DbPrintf( "\nzone            znPres       mDotP    corr     jac ...\n");
+		if (0 && bDbPrint)
+		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
-				DbPrintf( "%-15s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[ iV], rVSave[ zi], rV[ zi]);
+				DbPrintf( "%-20.20s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[ iV], rVSave[ zi], rV[ zi]);
 				VDbPrintf( NULL, &jacSave[ zi*nzDb], nzDb, " %10.3f");
 			}
 		}
