@@ -355,7 +355,11 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			REVCYCLE    "RevCycle"
 			REVCYCLEAUX "RevCycleAux"
 		  }
-
+*choicb AUXHEATTY {
+		NONE  "None"
+		RES   "Resistance"
+		FURN  "Furnace"
+		}
 // DHW choices
 
 *choicb WSCALCMODECH {

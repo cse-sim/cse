@@ -1581,7 +1581,7 @@ RC RSYS::rs_CkF()
 		// rsFanPwrC (W/cfm): error if >5, warn if >2
 		rc |= limitCheck( RSYS_FANPWRC, 0., 5., 0., 2.);
 
-		rc |= rs_CdDefaultAndCheck(rsmCOOL);
+		rc |= rs_CkFCd(rsmCOOL);
 
 		if (!IsAusz( RSYS_CAP95))
 			// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
@@ -1597,13 +1597,15 @@ RC RSYS::rs_CkF()
 		FldSet( RSYS_CAPNOMC, 0.f);		// insurance
 	}
 
+	rc |= rs_CkFAuxHeat();		// check aux heat inputs
+	
 	if (!rs_CanHeat())
 	{	when = strtprintf( "when rsType=%s (heating not available)",
 			getChoiTx( RSYS_TYPE));
 		rc |= disallowN( when, RSYS_CAPH, RSYS_AFUE,
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
-				RSYS_CAPAUXH, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
+				RSYS_ASHPLOCKOUTT,
 				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMINH, RSYS_CAPRAT1747, 0);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
@@ -1611,6 +1613,8 @@ RC RSYS::rs_CkF()
 	{	// general heating checks
 		// rsFanPwrH (W/cfm): error if >5, warn if >2
 		rc |= limitCheck( RSYS_FANPWRH, 0., 5., 0., 2.);
+
+
 	}
 		
 	if (rs_IsASHP())
@@ -1619,7 +1623,7 @@ RC RSYS::rs_CkF()
 
 		rs_AFUE = 0.f;		// drop possibly confusing default
 
-		rc |= rs_CdDefaultAndCheck( rsmHEAT);		// heating Cd
+		rc |= rs_CkFCd( rsmHEAT);		// heating Cd
 		
 		if (rs_IsASHPHydronic())
 		{	// ASHPHydronic: air-to-water heat pump
@@ -1642,11 +1646,13 @@ RC RSYS::rs_CkF()
 			if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
 				rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
 
+#if 0
 			// save input value of rs_capAuxH
 			//   estimated rs_capAuxH used during autosize
 			rs_capAuxHInp = rs_capAuxH;
 			if (IsAusz(RSYS_CAPAUXH))
 				rs_capAuxH = 0.f;		// overwrite NANDLE
+#endif
 
 			if (!IsAusz(RSYS_CAP47))
 				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
@@ -1692,8 +1698,7 @@ RC RSYS::rs_CkF()
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
-				RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_COPAUXH, RSYS_ASHPLOCKOUTT,
-				RSYS_DEFROSTMODEL, RSYS_CDH, 0);
+				RSYS_ASHPLOCKOUTT, RSYS_DEFROSTMODEL, RSYS_CDH, 0);
 
 		if (!IsSet( RSYS_AFUE))
 			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
@@ -1728,7 +1733,7 @@ RC RSYS::rs_CkF()
 	return rc;
 }	// RSYS::rs_CkF
 //-----------------------------------------------------------------------------
-RC RSYS::rs_CdDefaultAndCheck(	// default and check Cd values
+RC RSYS::rs_CkFCd(	// default and check Cd values
 	int mode)	// rsmCOOL or rsmHEAT
 // returns RCOK iff rs_CdX is acceptable
 //    else !RCOK (user input out of range)
@@ -1751,7 +1756,39 @@ RC RSYS::rs_CdDefaultAndCheck(	// default and check Cd values
 			rc |= limitCheckFix(RSYS_CDH, 0.f, .5f);
 	}
 	return rc;
-}		// RSYS::rs_CdDefaultAndCheck
+}		// RSYS::rs_CkFCd
+//-----------------------------------------------------------------------------
+RC RSYS::rs_CkFAuxHeat()	// check aux heat
+{
+	RC rc = RCOK;
+	rs_effAuxH = 1.f;		// insurance
+	if (!rs_CanHaveAuxHeat())
+	{	rc |= disallowN("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or VCHP2",
+			RSYS_TYPEAUXH, RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_AFUEAUXH, 0);
+		rs_AFUEAuxH = 0.f;		// clear possibly confusing default
+	}
+	else if (rs_typeAuxH == C_AUXHEATTY_NONE)
+	{	rc |= disallowN("when rsTypeAuxH = None",
+			RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_AFUEAUXH, 0);
+		rs_capAuxH = 0.f;
+	}
+	else if (!IsAusz(RSYS_CAPAUXH) && rs_capAuxH == 0.f)
+	{	// no auxiliary
+		rs_typeAuxH = C_AUXHEATTY_NONE;
+	}
+	else
+	{	// save input value of rs_capAuxH
+		//   WHY: rs_capAuxH changed during rs_cap47 autosize
+		//        saved value used to restore original
+		rs_capAuxHInp = rs_capAuxH;
+		if (IsAusz(RSYS_CAPAUXH))
+			rs_capAuxH = 0.f;		// overwrite NANDLE
+		if (rs_typeAuxH == C_AUXHEATTY_FURN)
+			rs_effAuxH = rs_AFUEAuxH;
+	}
+
+	return rc;
+}		// RSYS::rs_CkFAuxHeat
 //-----------------------------------------------------------------------------
 RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
@@ -2045,7 +2082,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 				float capCheck = rs_CapEffASHP(Top.heatDsTDbO);
 				float capExpected = Top.heatDsTDbO >= rs_ASHPLockOutT
 											? rs_capH * rs_fxCapHTarg
-											: 0.f;
+											: rs_fanHeatH;	// fan heat only when lockout
 				if (frDiff(capCheck, capExpected, 1.f) > .001f)
 					oWarn("ASHP heating capacity (%.1f) autosize mismatch (expected %.1f)",
 						capCheck, capExpected);
@@ -2408,6 +2445,7 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pMtrElec = MtrB.GetAtSafe( rs_elecMtri);			// elec mtr or NULL
 	rs_pMtrFuel = MtrB.GetAtSafe( rs_fuelMtri);			// fuel mtr or NULL
 	rs_pMtrHeat = rs_IsElecHeat() ? rs_pMtrElec : rs_pMtrFuel;	// heat mtr or NULL
+	rs_pMtrAux = rs_typeAuxH == C_AUXHEATTY_FURN ? rs_pMtrFuel : rs_pMtrElec;
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -3866,9 +3904,9 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 	int rsModeNew)
 // uses rs_mode to skip unneeded
 {
-	rs_loadF = rs_runF = rs_runFAux = rs_PLF = 0.f;
-	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost = 0.;
-	rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
+	rs_loadF = rs_runF = rs_speedF = rs_runFAux = rs_PLF = 0.f;
+	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost
+	  = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 	rs_amfReq[ 0] = rs_amfReq[ 1] = 0.;
 
 	if (rs_mode == rsModeNew)
@@ -4441,10 +4479,12 @@ RC RSYS::rs_FinalizeSh()
 
 #if 1
 				if (!rs_IsASHPVC())
-				{	rs_PLF = 1.f - rs_CdH * (1.f - rs_loadF);
+				{	// single speed
+					rs_PLF = 1.f - rs_CdH * (1.f - rs_loadF);
 					rs_COPHtAdj = rs_effHt * rs_PLF;	// full load efficiency modified by PLF
 					rs_inPrimary = rs_outSen / rs_COPHtAdj;
 					rs_runF = rs_loadF;
+					rs_speedF = 1.f;
 				}
 				else if (rs_loadF < rs_loadFMinH)
 				{	// variable capacity: cycling at min speed
@@ -4496,10 +4536,10 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			}
 
 			rs_outAux = rs_runFAux * rs_capAuxH;
-			rs_inDefrost = rs_outDefrost / rs_COPAuxH;
-			rs_inAux = rs_outAux / rs_COPAuxH;
-			if (rs_pMtrElec)
-				rs_pMtrElec->H.hp += (rs_inAux + rs_inDefrost) * Top.subhrDur;
+			rs_inDefrost = rs_outDefrost / rs_effAuxH;
+			rs_inAux = rs_outAux / rs_effAuxH;
+			if (rs_pMtrAux)
+				rs_pMtrAux->H.hp += (rs_inAux + rs_inDefrost) * Top.subhrDur;
 		}
 		else
 		{	// non-ASHP

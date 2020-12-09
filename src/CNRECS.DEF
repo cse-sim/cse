@@ -3041,7 +3041,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC rs_CkF();"
-*declare "RC rs_CdDefaultAndCheck( int mode);"
+*declare "RC rs_CkFCd( int mode);"
+*declare "RC rs_CkFAuxHeat();"
 *declare "RC rs_TopRSys1();"
 *declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
@@ -3103,6 +3104,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
 *declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
 *declare "int rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
+*declare "int rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
 *declare "void rs_OAVSetup();"
 *declare "void rs_OAVAirFlow();"
@@ -3136,8 +3138,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *i TI rs_elecMtri			// meter for system electricity use
 *i TI rs_fuelMtri			// meter for system fuel use
-*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat;"
+*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux;"
 							// runtime pointers to meters, NULL if not accum'ing
+							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
 
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect
@@ -3238,11 +3241,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
 
+*r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
 *f *e FLOAT_GEZ rs_capAuxH	// auxiliary heating capacity (NOT including fan heat), Btuh
 							//   *always* 0 if !rs_IsASHP()
 *f *e FLOAT rs_capAuxHInp	// rs_capAuxH as input (may be AUTOSIZE)
 							// allows use of estimated rs_capAuxH during ASHP autosize
-*f FLOAT_GZ rs_COPAuxH		// auxiliary heating COP (assumed constant), default 1
+*f FLOAT_GZ rs_AFUEAuxH		// auxiliary furnace heating AFUE (assumed constant), default 0.9
+*f FLOAT_GZ rs_effAuxH		// aux heat efficiency (= rs_AFUEAuxH or 1)
 *h FLOAT rs_ASHPLockOutT	// air source heat pump compressor lockout temp, F
 							//   compressor capacity assumed 0 if outdoor tdb < tLockOut
 							//   default is -999 (no lockout)
