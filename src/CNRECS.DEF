@@ -1706,7 +1706,7 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *i FLOAT_GZ rpBtuSf	// energy (Btu) scale factor
     *s *e LI rpCond	// condition: if given, rpt lines omitted when FALSE (SI; LI used to hold NAN) (LI currently unprobeable)
     *i CHP rpTitle 	// title, for UDT, in dm
-    *i SI rpCpl		// chars per line, inputtable re UDT's
+    *i SI rpCpl		// chars per line, inputtable re UDT's (default -1="as wide as needed")
     *i RPTHDCH rpHeader	// table header or export header yes/no (default yes)
     *i NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line?) yes/no (default yes)
     *hide *r SI putAtEnd	// used internally to make pre-stuffed LOG report follow user reports
@@ -2751,7 +2751,7 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *s *e DBL ad_mdotP		// air mass flow rate, (lbm moist air)/sec (+ into z1)
 							//   pressure driven: derived via pressure balance
 							//   fixed flow: as set
-   *s *e DBL ad_dmdp		// derivative of iz_mdotP wrt pressure (0 for fix flow)
+   *s *e DBL ad_dmdp		// derivative of ad_mdotP wrt pressure (0 for fix flow)
    *s *e DBL ad_mdotB		// add'l buoyancy-driven mass flow, (lbm moist air)/sec
 							//   balanced flow z1 <-> z2, used only for _ANHORIZ
    *s *e DBL ad_mdotX		// air mass exhaust flow, (lbm moist air)/sec (+ out of z2)
@@ -3041,6 +3041,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC rs_CkF();"
+*declare "RC rs_CkFCd( int mode);"
+*declare "RC rs_CkFAuxHeat();"
 *declare "RC rs_TopRSys1();"
 *declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
@@ -3102,6 +3104,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
 *declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
 *declare "int rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
+*declare "int rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
 *declare "void rs_OAVSetup();"
 *declare "void rs_OAVAirFlow();"
@@ -3120,7 +3123,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
-*declare "float rs_RunFAdjustedEffHtASHP();"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 *declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
@@ -3136,8 +3138,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *i TI rs_elecMtri			// meter for system electricity use
 *i TI rs_fuelMtri			// meter for system fuel use
-*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat;"
+*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux;"
 							// runtime pointers to meters, NULL if not accum'ing
+							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
 
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect
@@ -3216,10 +3219,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   default based on HSPF or other correlations
 
 						// re ASHPVC (variable capacity)
-*f *e FRAC_GZ rs_runFMin;	// minimum run fraction fraction
+*f *e FRAC_GZ rs_loadFMinH;	// heating minimum load fraction
 							//   (cycles below this)
-*declare "float rs_CapMin47() const { return rs_cap47*rs_runFMin; }"
-*declare "float rs_CapMin17() const { return rs_cap17*rs_runFMin; }"
+*f *e FRAC_GZ rs_loadFMinC;	// cooling minimum load fraction
+							//   (cycles below this)
+*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMinH; }"
+*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMinH; }"
 *f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
 *f *e FLOAT_GZ rs_COPMin35	// ditto 35 F
 *f *e FLOAT_GZ rs_COPMin17	// ditto 17 F
@@ -3236,11 +3241,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
 
+*r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
 *f *e FLOAT_GEZ rs_capAuxH	// auxiliary heating capacity (NOT including fan heat), Btuh
 							//   *always* 0 if !rs_IsASHP()
 *f *e FLOAT rs_capAuxHInp	// rs_capAuxH as input (may be AUTOSIZE)
 							// allows use of estimated rs_capAuxH during ASHP autosize
-*f FLOAT_GZ rs_COPAuxH		// auxiliary heating COP (assumed constant), default 1
+*f FLOAT_GZ rs_AFUEAuxH		// auxiliary furnace heating AFUE (assumed constant), default 0.9
+*f FLOAT_GZ rs_effAuxH		// aux heat efficiency (= rs_AFUEAuxH or 1)
 *h FLOAT rs_ASHPLockOutT	// air source heat pump compressor lockout temp, F
 							//   compressor capacity assumed 0 if outdoor tdb < tLockOut
 							//   default is -999 (no lockout)
@@ -3369,11 +3376,14 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = main source (compressor or burner)
 								//	[ 1] = main+aux, ASHP heating only else 0
+*s *e FLOAT rs_loadF	// current step load fraction = sensible load / current capacity
+*s FLOAT rs_loadFLs		// last step load fraction (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
-*s FLOAT rs_runFLs		// last step run fraction (for probe access at step beg)
+*s *e FLOAT rs_speedF	// primary (compressor) speed fraction
+						//    1 for fixed speed, <=1 for var spd
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
-						//   (includes rs_runF, does not include fan, defrost, or aux heat)
+						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
 						//   used for both heating and cooling
 *s *e DBL rs_outLat		// ditto latent, Btuh
 *s *e DBL rs_outFan		// ditto fan heat added to air stream, Btuh

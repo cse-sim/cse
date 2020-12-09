@@ -256,11 +256,11 @@ Conditional reporting flag. If given, report rows are printed only when value of
 
 **rpCPL=*int***
 
-Characters per line for a User-Defined report. If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCpl = -1, the report width determined based on required space with a single between each column.  Not allowed if *rpType* is not UDT.
+Characters per line for a UDT (user-defined report). If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCPL = -1, the report width determined based on required space with a single between each column.  rpCPL=0 uses the Top level *repCPL*. rpCPL is Not allowed if *rpType* is not UDT.
 
   **Units**   **Legal Range**          **Default**          **Required**   **Variability**
   ----------- ------------------------ -------------------- -------------- -----------------
-               x = -1 or x > 78                    top level *repCPL*   No             constant
+                *x* $\ge$ -1              as wide as needed     No             constant
 
 **rpTitle=*string***
 

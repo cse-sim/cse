@@ -86,32 +86,32 @@ Yr   29709      0  24458      0      0      0      0      0      0      0      0
 
 Energy (kBtu + into the zone, except E = Energy Consumed) for Thu 03-Dec
 
- Hr Tout  WBo    Wo Tatt  Tin Trad   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL sInfVnt ACH Htgs  Htgl  Htgt RunF  FfanE   HtgE
- -- ---- ---- ----- ---- ---- ---- ----- --- ---- ------ ----- ----- ----- ----- ----- ----- ---- ----- ----- ----- ---- ------ ------
-  1 41.7 36.1 .0032 46.3 66.7 66.7 .0065  47 54.9      0 -3.64  3.51  2.15  0.60  0.20 -2.03 0.16     0     0     0    0      0      0
-  2 38.8 34.8 .0033 44.5 66.2 66.3 .0064  47 54.4      0 -3.71  3.78  2.04  0.59  0.18 -2.11 0.16     0     0     0    0      0      0
-  3 36.5 33.3 .0033 42.8 65.7 65.9 .0063  47 54.1      0 -3.95  4.30  1.97  0.58  0.17 -2.32 0.17     0     0     0    0      0      0
-  4 32.9 30.9 .0032 40.8 65.3 65.5 .0062  47 53.6      0 -4.23  4.84  1.99  0.58  0.20 -2.60 0.17     0     0     0    0      0      0
-  5 30.9 29.4 .0030 38.8 65.0 65.1 .0060  46 53.3      0 -4.52  2.74  1.98  0.57  0.28 -2.91 0.18   2.7 -0.02   2.7 0.16    0.1    4.5
-  6 30.0 28.8 .0030 36.7 65.0 64.9 .0060  45 53.2      0 -4.70  0.61  2.55  0.85 0.028 -3.12 0.19   4.7 -0.04   4.6 0.22    0.2    7.7
-  7 28.2 27.5 .0029 34.8 65.0 64.8 .0061  46 53.5      0 -4.87 -0.81  3.18  1.12 -0.19 -3.32 0.19   5.8 -0.04   5.8 0.26    0.3    9.7
-  8 28.4 27.7 .0029 35.7 66.3 65.2 .0059  42 54.0   1.78 -5.29 -20.9  2.86  0.86  0.24 -3.59 0.20  25.1  -0.2  25.0 1.00    1.3   42.2
-  9 30.2 29.1 .0031 37.3 67.6 66.2 .0057  39 53.9   5.56 -5.38 -23.5  2.17  0.52  0.43 -3.60 0.20  24.8  -0.1  24.6 0.78    1.2   41.6
- 10 38.3 35.7 .0038 39.7 68.0 66.8 .0055  38 53.6   7.17 -4.79 -15.3  1.78  0.35  0.26 -3.02 0.18  14.2 -0.04  14.1 0.42    0.7   23.7
- 11 41.5 37.5 .0038 44.3 68.0 67.1 .0054  37 53.5   6.89 -4.08 -11.2  1.79  0.36 0.069 -2.39 0.17   9.0 -0.02   9.0 0.29    0.4   14.8
- 12 46.2 40.0 .0038 49.4 68.0 67.2 .0054  37 53.4   6.53 -3.57 -9.13  1.76  0.36 0.038 -1.96 0.17   6.4 -0.02   6.3 0.20    0.3   10.2
- 13 48.4 40.8 .0037 54.3 68.0 67.4 .0054  37 53.4   6.48 -3.18 -7.75  1.68  0.35 0.034 -1.55 0.17   4.3 -0.01   4.3 0.13    0.2    6.8
- 14 51.3 42.6 .0038 59.0 68.0 67.5 .0054  37 53.4   6.75 -2.92 -6.76  1.71  0.36 .0079 -1.20 0.16   2.4 -.007   2.4 .067    0.1    3.7
- 15 53.2 43.2 .0036 61.5 68.0 67.6 .0054  37 53.4   6.60 -2.64 -5.91  1.85  0.42 -.051 -0.96 0.16   1.1 -.004   1.1 .038   0.05    1.6
- 16 54.9 43.8 .0036 62.2 68.0 67.6 .0055  38 53.6   4.45 -2.46 -4.45  2.08  0.52 -0.11 -0.83 0.16   1.2 -.005   1.2 .066   0.06    1.9
- 17 54.1 43.6 .0036 61.1 68.0 67.5 .0057  39 53.9   0.90 -2.47 -2.91  2.55  0.71 -0.25 -0.86 0.16   2.8 -0.01   2.8 0.13    0.1    4.3
- 18 51.4 42.3 .0037 58.6 68.0 67.4 .0059  41 54.4      0 -2.62 -3.40  3.17  0.91 -0.39 -1.06 0.16   3.9 -0.02   3.9 0.16    0.2    6.0
- 19 49.1 41.2 .0037 56.2 68.0 67.4 .0062  43 54.9      0 -2.91 -3.96  3.98  1.08 -0.48 -1.30 0.17   4.2 -0.03   4.2 0.17    0.2    6.5
- 20 42.8 38.2 .0038 53.6 68.0 67.4 .0066  45 55.6      0 -3.39 -4.38  4.63  1.24 -0.55 -1.65 0.17   4.8 -0.04   4.7 0.20    0.2    7.5
- 21 41.9 38.1 .0040 50.9 68.0 67.4 .0069  48 56.2      0 -3.74 -4.74  4.64  1.25 -0.49 -1.97 0.17   5.8 -0.05   5.8 0.23    0.3    9.2
- 22 40.1 37.2 .0040 48.7 68.0 67.3 .0071  49 56.5      0 -3.88 -4.98  4.21  1.12 -0.29 -2.14 0.17   6.8 -0.07   6.7 0.27    0.3   10.8
- 23 42.1 38.5 .0041 47.1 68.0 67.3 .0072  49 56.5      0 -3.85 -5.16  3.34  0.89 -.036 -2.19 0.17   7.9 -0.08   7.8 0.30    0.4   12.7
- 24 41.9 38.3 .0041 45.3 67.4 67.0 .0071  50 56.1      0 -3.60  3.12  2.58  0.66 0.073 -2.09 0.16     0     0     0    0      0      0
+ Hr Tout  WBo    Wo Tatt  Tin Trad   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL sInfVnt ACH Htgs  Htgl  Htgt loadF  FfanE   HtgE
+ -- ---- ---- ----- ---- ---- ---- ----- --- ---- ------ ----- ----- ----- ----- ----- ----- ---- ----- ----- ----- ----- ------ ------
+  1 41.7 36.1 .0032 46.3 66.7 66.7 .0065  47 54.9      0 -3.64  3.51  2.15  0.60  0.20 -2.03 0.16     0     0     0     0      0      0
+  2 38.8 34.8 .0033 44.5 66.2 66.3 .0064  47 54.4      0 -3.71  3.78  2.04  0.59  0.18 -2.11 0.16     0     0     0     0      0      0
+  3 36.5 33.3 .0033 42.8 65.7 65.9 .0063  47 54.1      0 -3.95  4.30  1.97  0.58  0.17 -2.32 0.17     0     0     0     0      0      0
+  4 32.9 30.9 .0032 40.8 65.3 65.5 .0062  47 53.6      0 -4.23  4.84  1.99  0.58  0.20 -2.60 0.17     0     0     0     0      0      0
+  5 30.9 29.4 .0030 38.8 65.0 65.1 .0060  46 53.3      0 -4.52  2.74  1.98  0.57  0.28 -2.91 0.18   2.7 -0.02   2.7  0.16    0.1    4.5
+  6 30.0 28.8 .0030 36.7 65.0 64.9 .0060  45 53.2      0 -4.70  0.61  2.55  0.85 0.028 -3.12 0.19   4.7 -0.04   4.6  0.22    0.2    7.7
+  7 28.2 27.5 .0029 34.8 65.0 64.8 .0061  46 53.5      0 -4.87 -0.81  3.18  1.12 -0.19 -3.32 0.19   5.8 -0.04   5.8  0.26    0.3    9.7
+  8 28.4 27.7 .0029 35.7 66.3 65.2 .0059  42 54.0   1.78 -5.29 -20.9  2.86  0.86  0.24 -3.59 0.20  25.1  -0.2  25.0  1.00    1.3   42.2
+  9 30.2 29.1 .0031 37.3 67.6 66.2 .0057  39 53.9   5.56 -5.38 -23.5  2.17  0.52  0.43 -3.60 0.20  24.8  -0.1  24.6  0.78    1.2   41.6
+ 10 38.3 35.7 .0038 39.7 68.0 66.8 .0055  38 53.6   7.17 -4.79 -15.3  1.78  0.35  0.26 -3.02 0.18  14.2 -0.04  14.1  0.42    0.7   23.7
+ 11 41.5 37.5 .0038 44.3 68.0 67.1 .0054  37 53.5   6.89 -4.08 -11.2  1.79  0.36 0.069 -2.39 0.17   9.0 -0.02   9.0  0.29    0.4   14.8
+ 12 46.2 40.0 .0038 49.4 68.0 67.2 .0054  37 53.4   6.53 -3.57 -9.13  1.76  0.36 0.038 -1.96 0.17   6.4 -0.02   6.3  0.20    0.3   10.2
+ 13 48.4 40.8 .0037 54.3 68.0 67.4 .0054  37 53.4   6.48 -3.18 -7.75  1.68  0.35 0.034 -1.55 0.17   4.3 -0.01   4.3  0.13    0.2    6.8
+ 14 51.3 42.6 .0038 59.0 68.0 67.5 .0054  37 53.4   6.75 -2.92 -6.76  1.71  0.36 .0079 -1.20 0.16   2.4 -.007   2.4 0.067    0.1    3.7
+ 15 53.2 43.2 .0036 61.5 68.0 67.6 .0054  37 53.4   6.60 -2.64 -5.91  1.85  0.42 -.051 -0.96 0.16   1.1 -.004   1.1 0.038   0.05    1.6
+ 16 54.9 43.8 .0036 62.2 68.0 67.6 .0055  38 53.6   4.45 -2.46 -4.45  2.08  0.52 -0.11 -0.83 0.16   1.2 -.005   1.2 0.066   0.06    1.9
+ 17 54.1 43.6 .0036 61.1 68.0 67.5 .0057  39 53.9   0.90 -2.47 -2.91  2.55  0.71 -0.25 -0.86 0.16   2.8 -0.01   2.8  0.13    0.1    4.3
+ 18 51.4 42.3 .0037 58.6 68.0 67.4 .0059  41 54.4      0 -2.62 -3.40  3.17  0.91 -0.39 -1.06 0.16   3.9 -0.02   3.9  0.16    0.2    6.0
+ 19 49.1 41.2 .0037 56.2 68.0 67.4 .0062  43 54.9      0 -2.91 -3.96  3.98  1.08 -0.48 -1.30 0.17   4.2 -0.03   4.2  0.17    0.2    6.5
+ 20 42.8 38.2 .0038 53.6 68.0 67.4 .0066  45 55.6      0 -3.39 -4.38  4.63  1.24 -0.55 -1.65 0.17   4.8 -0.04   4.7  0.20    0.2    7.5
+ 21 41.9 38.1 .0040 50.9 68.0 67.4 .0069  48 56.2      0 -3.74 -4.74  4.64  1.25 -0.49 -1.97 0.17   5.8 -0.05   5.8  0.23    0.3    9.2
+ 22 40.1 37.2 .0040 48.7 68.0 67.3 .0071  49 56.5      0 -3.88 -4.98  4.21  1.12 -0.29 -2.14 0.17   6.8 -0.07   6.7  0.27    0.3   10.8
+ 23 42.1 38.5 .0041 47.1 68.0 67.3 .0072  49 56.5      0 -3.85 -5.16  3.34  0.89 -.036 -2.19 0.17   7.9 -0.08   7.8  0.30    0.4   12.7
+ 24 41.9 38.3 .0041 45.3 67.4 67.0 .0071  50 56.1      0 -3.60  3.12  2.58  0.66 0.073 -2.09 0.16     0     0     0     0      0      0
 
  Dy                 47.9 67.2 66.7                 53.10 -90.4  -112 62.62 16.87 -0.63 -50.8 0.17 137.8  -0.8 137.0    0    6.8  225.4
 
@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.875.0 for Win32 console   Thu 03-Sep-20   4:06:59 pm
+! CSE 0.884.0+vsashp.522e37f.10 for Win32 console   Tue 24-Nov-20   9:46:45 am
 
 
 ================
@@ -13267,7 +13267,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.875.0 for Win32 console
+! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
 
 
 
@@ -14583,7 +14583,7 @@ Input for Run 001:
 #       #Define CSEBtuSF 1000  //reports in kBtu
         
         //AC
-        Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
+        Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=-1
            Reportcol colVal=@Rsys["rsys-Central HVAC"].CapH colHead="CapH" colDec=0 colWid=6
            
            Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap47 colHead="Cap47" colDec=0 colWid=6
@@ -14606,7 +14606,7 @@ Input for Run 001:
         
         // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
         //Monthly
-        Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=132
+        Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=-1
         rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
         Reportcol colVal=$month  colHead="mo"      colWid=2
         Reportcol colVal=@znRes["Attic-atc"].M.tAir colHead="Tatt" colWid=4 colDec=1
@@ -14625,7 +14625,7 @@ Input for Run 001:
         Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
         Reportcol colVal=@Meter[MtrNatGas].m.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
         
-        Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=132  rpHeader=No    //Annual Summary
+        Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=-1  rpHeader=No    //Annual Summary
         Reportcol colVal="Yr"       colWid=2
         Reportcol colVal=@znRes["Attic-atc"].Y.tAir colHead="Tatt" colWid=4 colDec=1
         Reportcol colVal=@znRes["Conditioned-zn"].Y.tAir colHead="Tin" colWid=4 colDec=1
@@ -14649,7 +14649,7 @@ Input for Run 001:
         
         
         //Coldest Day
-              Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=HD1 rpCPL=134
+              Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=HD1 rpCPL=-1
             rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
             Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
             Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -14672,12 +14672,12 @@ Input for Run 001:
             Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5
             Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Htgl"  colDec=1 colWid=5  
             Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
-            Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+            Reportcol colVal=@Rsys[1].loadf colHead="loadF" colDec=2 colWid=5   
             Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
             Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
             
          //Coldest totals 
-            Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1	 //Day Summary
+            Report rpType=UDT rpFreq=Day   rpCPL=-1  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1	 //Day Summary
             Reportcol colVal="Dy"    colWid=2
             Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
             Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
@@ -14705,7 +14705,7 @@ Input for Run 001:
         
          
         //Cooling Design Day
-              Report rpType=UDT rpFreq=HOUR  rpDayBeg= DD1; rpDayEnd=DD1 rpCPL=134
+              Report rpType=UDT rpFreq=HOUR  rpDayBeg= DD1; rpDayEnd=DD1 rpCPL=-1
             rpTitle="Energy Balance (F, kBtu, + into the zone)"
             Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
             Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -14734,7 +14734,7 @@ Input for Run 001:
         
             
          //Cooling Design Day Totals 
-            Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= DD1; rpDayEnd=DD1	 //Day Summary
+            Report rpType=UDT rpFreq=Day   rpCPL=-1  rpHeader=No rpDayBeg= DD1; rpDayEnd=DD1	 //Day Summary
             Reportcol colVal="Dy"    colWid=2
             Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
             Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
@@ -14761,7 +14761,7 @@ Input for Run 001:
                Reportcol colVal=@Meter[MtrElec].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
                
                //Hottest Day
-        		       Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=134
+        		       Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=-1
         		     rpTitle="Energy Balance (F, kBtu, + into the zone)"
         		     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
         		     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
@@ -14790,7 +14790,7 @@ Input for Run 001:
         		 
         		     
         		  //Hottest Day Totals 
-        		     Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
+        		     Report rpType=UDT rpFreq=Day   rpCPL=-1  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
         		     Reportcol colVal="Dy"    colWid=2
         		     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
         		     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
@@ -14823,18 +14823,18 @@ Input for Run 001:
 
 
 
-! CSE 0.875.0 for Win32 console run(s) done: Thu 03-Sep-20   4:07:13 pm
+! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   9:46:58 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               03-Sep-20   3:53 pm   (VS 14.16    2640384 bytes)  (HPWH 1.10.2)
+!               23-Nov-20   3:43 pm   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
 ! Command line: -x!  -t1 ashwat1
 ! Input file:   D:\cse\test\ashwat1.cse
 ! Report file:  D:\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2      T/C = 0.0045   
-!           AutoSizing:  Time = 1.17     Calls = 1      T/C = 1.1710   
-!           Simulation:  Time = 12.05    Calls = 1      T/C = 12.0470  
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0100   
-!                Total:  Time = 13.24    Calls = 1      T/C = 13.2430  
+!                Input:  Time = 0.01     Calls = 2      T/C = 0.0070   
+!           AutoSizing:  Time = 1.18     Calls = 1      T/C = 1.1770   
+!           Simulation:  Time = 11.59    Calls = 1      T/C = 11.5850  
+!              Reports:  Time = 0.05     Calls = 1      T/C = 0.0490   
+!                Total:  Time = 12.83    Calls = 1      T/C = 12.8330  
