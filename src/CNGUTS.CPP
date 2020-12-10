@@ -1882,10 +1882,9 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 
 	// not first: add source into destination
 	else
-	{	if (src->hrsOn != 0.f)				// if hrsOn is 0, skip floats: they will all be 0.
-			VAccum( &RRs1, RRnS, &src->RRs1); // float values not averages: add each to corress dest member
-	}
-
+		VAccum( &RRs1, RRnS, &src->RRs1);	// float values not averages
+											// add each to corress dest member
+	
 	// count call in destination
 	n++;					// used?
 
