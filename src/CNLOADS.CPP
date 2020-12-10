@@ -2676,30 +2676,29 @@ RC RSYS::rs_EndSubhr()
 	// populate results
 	RSYSRES_IVL_SUB& R = RsResR[ ss].curr.S;
 	// RSYSRES_IVL_SUB& RH = RsResR[ ss].curr.H;
-	R.hrsOn = rs_runF * Top.subhrDur;
-	if (R.hrsOn == 0.f)
-	{	R.qh = R.qcSen = R.qcLat = R.qFan = R.qDefrost = R.qAux = 0.f;
-#if 0
-x No ... believed possible when e.g. compressor is locked out
-x		if (rs_runFAux > 0.f)
-x			printf( "\nUnexpected Aux!");
-#endif
-	}
+	if (rs_runF == 0.f)		// if no primary
+		R.hrsOn = R.qh = R.qcSen = R.qcLat = R.qDefrost = 0.f;
 	else
-	{	R.hrsOnAux = rs_runFAux * Top.subhrDur;
+	{	R.hrsOn = rs_runF * Top.subhrDur;
 		if (rs_outSen >= 0.)
 		{	R.qh = rs_outSen * Top.subhrDur;
 			R.qDefrost = rs_outDefrost * Top.subhrDur;
-			R.qAux = rs_outAux * Top.subhrDur;
 			R.qcSen = R.qcLat = 0.f;
 		}
 		else
-		{	R.qh = R.qAux = R.qDefrost = 0.f;
-			R.qcSen = rs_outSen * Top.subhrDur;
+		{	R.qcSen = rs_outSen * Top.subhrDur;
 			R.qcLat = rs_outLat * Top.subhrDur;
+			R.qh = R.qDefrost = 0.f;
 		}
-		R.qFan = rs_outFan * Top.subhrDur;
 	}
+	if (rs_runFAux == 0.f)	// if no aux
+		R.hrsOnAux = R.qAux = 0.f;
+	else
+	{	R.hrsOnAux = rs_runFAux * Top.subhrDur;
+		R.qAux = rs_outAux * Top.subhrDur;
+	}
+
+	R.qFan = rs_outFan * Top.subhrDur;	// fan can operate either prim or aux
 	return rc;
 }		// RSYS::rs_EndSubhr
 //-----------------------------------------------------------------------------
