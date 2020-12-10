@@ -1876,15 +1876,13 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 {
 	// first call: copy source into destination
 	if (firstflg)
-	{
-		memcpy( this, src, sizeof( RSYSRES_IVL_SUB) );
+	{	memcpy(this, src, sizeof(RSYSRES_IVL_SUB));
 		n = 0;				// reset call count. used?
 	}
 
 	// not first: add source into destination
 	else
-	{
-		if (src->hrsOn != 0.f)					// if hrsOn is 0, skip floats: they will all be 0.
+	{	if (src->hrsOn != 0.f)				// if hrsOn is 0, skip floats: they will all be 0.
 			VAccum( &RRs1, RRnS, &src->RRs1); // float values not averages: add each to corress dest member
 	}
 
