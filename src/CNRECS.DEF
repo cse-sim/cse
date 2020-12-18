@@ -3162,8 +3162,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e *nest AIRSTATE rs_asOut	// leaving air state at plenum
 								//    NOT including any aux heat
 								//	  NOT including any DSE or supply duct losses
-*s *e *nest AIRSTATE rs_asOutAux // leaving air state at plenum for ASHP heating (else 0)
-								//    *including* aux heat
+*s *e *nest AIRSTATE rs_asOutAux // aux heat leaving air state at plenum for ASHP heating (else 0)
+								//    includes fan heat
+								//    may include primary heat per rs_ctrlAuxH
 								//	  NOT including any DSE or supply duct losses
 
 								// supply air state (at registers)
@@ -3189,7 +3190,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   autosizing, F.  default -25 F
 *array 2 *s *e FLOAT rs_fxCap	// current step excess capacity factor = amfAvailable / max( amfRequest)
 								//     >1 = excess capacity
-								// [ 0]=main   [1]=main+aux
+								// [ 0]=primary   [1]=prim+aux or aux alone (per rs_ctrlAuxH)
 *h *e FLOAT rs_fxCapCDay	// current day excess cooling capacity factor
 							//   evaluated at last time step of hour
 							//     >1 = excess capacity
@@ -3242,6 +3243,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
 
 *r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
+*r AUXHEATCTRL rs_ctrlAuxH	// auxiliary heating control
+							//   C_AUXHEATCTRL_LO    Compressor locked out if any aux
+							//   C_AUXHEATCTRL_CYCLE Compressor runs continuously, aux cycles
+							//   C_AUXHEATCTRL_ALT   Compressor/aux alternate
 *f *e FLOAT_GEZ rs_capAuxH	// auxiliary heating capacity (NOT including fan heat), Btuh
 							//   *always* 0 if !rs_IsASHP()
 *f *e FLOAT rs_capAuxHInp	// rs_capAuxH as input (may be AUTOSIZE)
@@ -3273,7 +3278,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
 							//   0 = ASHP compressor is unavailable (due to lockout, )
-*s *e FLOAT rs_capHt		// current step heating capacity (including fan and ASHP defrost heat), Btuh
+*s *e FLOAT rs_capHt		// current step primary heating capacity, Btuh
+							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
 *s *e FLOAT rs_inpHt		// current step full speed compressor input power
 *s *e FLOAT rs_capDfHt		// current step defrost heating capacity, Btuh
@@ -3374,15 +3380,16 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//   = flow at blower / coil / furnace HX etc.
 						//   set per rsMode from rs_amfH, rs_amfC, or OAV algorithm
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
-								//  [ 0] = main source (compressor or burner)
-								//	[ 1] = main+aux, ASHP heating only else 0
+								//  [ 0] = primary source (compressor or burner)
+								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
+								//         ASHP heating only else 0
 *s *e FLOAT rs_loadF	// current step load fraction = sensible load / current capacity
 *s FLOAT rs_loadFLs		// last step load fraction (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) speed fraction
 						//    1 for fixed speed, <=1 for var spd
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
-*s *e DBL rs_outSen		// average primary sensible heat delivery rate for last subhr, Btuh
+*s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
 						//   used for both heating and cooling
 *s *e DBL rs_outLat		// ditto latent, Btuh
@@ -3391,6 +3398,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//	  = typically resistance heat added to prevent cold supply air
 						//    0 if not ASHP or if defrost not active
 *s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
+*s *e DBL rs_outSenTot	// average total sensible heat delivery rate for last subhr, Btuh
+						//   = rs_outSen + rs_outFan + rs_outDefrost + rs_outAux
 
 						// efficiency adjustment factors applied to substep efficiency
 						// allows modification of input energy requirements. Default=1

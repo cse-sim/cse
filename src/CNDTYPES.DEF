@@ -360,6 +360,12 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 		RES   "Resistance"
 		FURN  "Furnace"
 		}
+*choicb AUXHEATCTRL {
+        LO  "Lockout"
+		CYCLE "Cycle"
+		ALT  "Alternate"
+	    }
+
 // DHW choices
 
 *choicb WSCALCMODECH {
