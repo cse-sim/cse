@@ -4371,7 +4371,11 @@ x					rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);
 		double qAux;
 		if (rs_ctrlAuxH == C_AUXHEATCTRL_ALT)
 		{	// aux alternates with primary
-			rs_runFAux = (tSup - asOutNoAux.as_tdb) / (rs_asSupAux.as_tdb - asOutNoAux.as_tdb);
+			rs_runFAux = (rs_asOut.as_tdb - asOutNoAux.as_tdb) / (rs_asOutAux.as_tdb - asOutNoAux.as_tdb);
+			if (rs_runFAux < 0.f)
+				printf("\nrs_runFAux < 0");
+			if (rs_runFAux > 1.f)
+				printf("\nrs_runFAux > 1");
 			float fFan = rs_capAuxH / (rs_capAuxH + rs_fanHeatH);
 			qAux = rs_runFAux * rs_capAuxH * fFan;
 		}
