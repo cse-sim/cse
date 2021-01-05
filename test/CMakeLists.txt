@@ -42,6 +42,7 @@ set(files
   actest1bL
   ashptest2
   ashpPkgRoom
+  ashp_dfng
   herv
   oavtest2
   bgtest

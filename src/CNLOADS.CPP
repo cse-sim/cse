@@ -4294,9 +4294,10 @@ RC RSYS::rs_AllocateZoneAir()
 				zp->zn_SetRSYSAmf( rs_fxCap[ 1], 1);	// tell zones how much they get
 		}
 	}
-	else if (rs_effHt == 0. || rs_ctrlAuxH == C_AUXHEATCTRL_LO)
+	else if (rs_effHt == 0.f || rs_ctrlAuxH == C_AUXHEATCTRL_LO)
 	{	// compressor is unavailable
 		// meet load with aux alone
+		rs_effHt = 0.f;		// force compressor off (for _LO case)
 		rs_fxCap[ 1] = rs_amf / rs_amfReq[ 1];	// x/0 impossible
 		rs_runFAux = 1.f / rs_fxCap[ 1];
 #if defined( _DEBUG)
@@ -4372,10 +4373,12 @@ x					rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);
 		if (rs_ctrlAuxH == C_AUXHEATCTRL_ALT)
 		{	// aux alternates with primary
 			rs_runFAux = (rs_asOut.as_tdb - asOutNoAux.as_tdb) / (rs_asOutAux.as_tdb - asOutNoAux.as_tdb);
+#if defined( _DEBUG)
 			if (rs_runFAux < 0.f)
 				printf("\nrs_runFAux < 0");
 			if (rs_runFAux > 1.f)
 				printf("\nrs_runFAux > 1");
+#endif
 			float fFan = rs_capAuxH / (rs_capAuxH + rs_fanHeatH);
 			qAux = rs_runFAux * rs_capAuxH * fFan;
 		}
