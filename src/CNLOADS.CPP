@@ -4029,10 +4029,6 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 
 	// adjust state for return duct
 	int iDS = rs_Dsi( 1);	// idx of ductseg
-#if 0
-	if (DsR[ iDS].ds_amfFL > 4000.)
-		printf( "hit\n");
-#endif
 	rs_asIn = iDS > 0
 				? DsR[ iDS].ds_CalcFL( rs_asRet, rs_amf)
 				: rs_asRet;

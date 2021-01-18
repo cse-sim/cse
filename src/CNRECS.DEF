@@ -419,7 +419,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     // many TOP working globals set/used comments are old, 12-91.
 
 //TOP: runtime: re subHour and sub-subhour (aka ticks)
-    *s float subhrDur		// duration of subhour, hr (= 1/nSubSteps)
+    *r float subhrDur		// duration of subhour, hr (= 1/nSubSteps)
 	*r SI_GZ tp_nSubhrTicks	// # of subhour ticks for e.g. HPWH simulation
 							//    1 per minute or as generalized
 	*r DBL tp_tickDurMin	// duration of subhr tick, min
@@ -3026,11 +3026,23 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 									//  [ 3]=leaving
 
 *s *e DBL ds_amfFL			// dry air mass flow rate at full load, lbm/hr
+#if 1
+*s *e DBL ds_qCondFL		// full load total conduction losses to surround (+ = out of duct), Btuh
+							//   (may be old: from last calc when rsMode != rsmOFF)
+*s *e DBL ds_qCond			// total conduction loss rate to surround (+ = out of duct), Btuh
+							//   (may be old: from last calc when rsMode != rsmOFF)
+*s *e DBL ds_qCondAir		//  ... to txa (air)
+*s *e DBL ds_qCondRad		//  ... to txr (radiant)
+							//  ds_qCond = ds_qCondAir + ds_qCondRad
+*s *e DBL ds_qLeakSen		// leakage sensible heat loss rate, Btuh (+ = out of duct)
+*s *e DBL ds_qLeakLat		// leakage latent heat loss rate, Btuh (+ = out of duct)
+#else
 *s *e DBL ds_qCondFL		// full load total conduction losses to surround (+ = out of duct), Btuh
 							//   (may be old: from last calc when rsMode != rsmOFF)
 *s *e DBL ds_qCondAirFL		//  ... to txa (air)
 *s *e DBL ds_qCondRadFL		//  ... to txr (radiant)
 							// ds_qCondAirFL + ds_qCondRadFL = ds_qCondFL
+#endif
 
 *END	// DUCTSEG
 //=============================================================================

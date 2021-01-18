@@ -546,9 +546,8 @@ double ZNR::zn_Rho0() const		// zone air density
 //   Note: not *dry* air
 {
 	double rho = psyDenMoistAir( tz, wz, LbSfToInHg( zn_pz0));
-	if (rho < .0001)
-	{	err( WRN, "Zone '%s', %s: moist air density <= 0\n",
-					name, Top.When( C_IVLCH_S));
+	if (isnan( rho) || rho < .0001)
+	{	orMsg(ERRRT, "invalid moist air density (<=0 or nan)");
 		rho = 0.01;		// set to small but physically possible value
 	}
 	return rho;
@@ -1359,8 +1358,9 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 	ZNR* zp1 = ZrB.GetAt( iz_zi1);
 	zp1->zn_GetAirStateLs( iz_air1);
 	iz_rho1 = zp1->zn_rho0ls;			// density, lbm/cf
-
 #if defined( _DEBUG)
+	if (isnan(iz_rho1))
+		printf("\nNAN");
 	if ((iz_IsSysOrDuct() || iz_IsOAVRelief()) != (iz_pAF != NULL))
 		err( PWRN, "IZXRAT '%s': inconsistent iz_pAF", name);
 #endif
@@ -1461,7 +1461,7 @@ RC IZXRAT::iz_MassFlow(		// airnet mass flow for this vent
 
 	int rc = RCOK;
 
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	ZNR* zp2 = NULL;
 	if (ZrB.GetAt(iz_zi1)->IsNameMatch("F5 Res Zn-zn")
 		&& !Top.isWarmup && !iz_IsExterior() && Top.iHr == 18)
@@ -2077,6 +2077,9 @@ RC DUCTSEG::ds_BegSubhr()
 
 	ds_uaTot = ds_exArea * ds_sbcO.sb_fRat;
 
+	ds_qCondFL = ds_qCond = ds_qCondRad = ds_qCondAir
+		= ds_qLeakSen = ds_qLeakLat = 0.;
+
 	return rc;
 }		// DUCTSEG::ds_BegSubhr
 //-----------------------------------------------------------------------------
@@ -2206,6 +2209,78 @@ AIRSTATE DUCTSEG::ds_CalcFLRev(		// calc entering state given leaving
 	ds_air[ 0] = ds_air[ 1];
 	return ds_air[ 0];
 }		// DUCTSEG::ds_CalcFLRev
+#if 1
+//-----------------------------------------------------------------------------
+void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
+	float runF)		// run fraction
+{
+	ZNR* zpx = ds_GetExZone();		// zone containing ductseq (NULL if not in zone)
+
+	// finalize conduction
+	//   ds_air[ 0], ds_air[ 1], and ds_air[ 3] must be known
+	ds_air[2] = ds_air[1];
+	double mCpFL = ds_amfFL * Top.tp_airSH;
+	// ds_qCondFL = ds_qCond = ds_qCondAir = ds_qCondRad = 0. per ds_BegSubhr
+	if (ds_uaTot > 0.)
+	{	ds_qCondFL =		// conduction loss rate, Btuh; + = out of duct
+			mCpFL * (ds_air[1].as_tdb - ds_air[3].as_tdb);
+		ds_air[2].as_tdb = ds_qCondFL / ds_uaTot + ds_sbcO.sb_txe;	// mean temp when flow
+		ds_sbcO.sb_qSrf = ds_qCondFL / ds_exArea;	// average conduction
+												//   ds_exArea > 0 since uaTot > 0)
+		if (ds_sbcO.sb_hxtot > 0.)
+			ds_sbcO.sb_tSrf += ds_sbcO.sb_qSrf / ds_sbcO.sb_hxtot;
+#if defined( _DEBUG)
+		// if (ds_Uduct > 0.)
+		{	double tdb2 = ds_sbcO.sb_qSrf / ds_Uduct + ds_sbcO.sb_tSrf;
+			double tErrF = frDiff(ds_air[2].as_tdb, tdb2, .01);
+			if (tErrF > .001)
+				orMsg(WRNRT, "avg temp inconsistency (%.5f)", tErrF);
+		}
+#endif
+
+		if (runF > 0.f)
+		{	ds_qCond = ds_qCondFL * runF;	// conduction loss, Btuh (+ = out of duct)
+			ds_qCondAir = runF * ds_exArea * ds_sbcO.sb_hxa*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txa);
+			ds_qCondRad = runF * ds_exArea * ds_sbcO.sb_hxr*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txr);
+#if defined( _DEBUG)
+			// compare separately calc'd conduction, small diffs are common
+			double condErrF = frDiff(ds_qCond, ds_qCondAir + ds_qCondRad,
+				.1);				// .01 -> .1  8-9-2013
+			if (condErrF > .002)	// .001 -> .002 8-9-2013
+				orMsg(WRNRT, "conduction mismatch (%.5f)", condErrF);
+#endif
+			if (zpx)
+			{	// conduction gains to zone (for next step)
+				zpx->zn_qDuctCondAir += ds_qCondAir;
+				zpx->zn_qDuctCondRad += ds_qCondRad;
+			}
+		}
+	}
+
+	// leakage
+	if (runF > 0.f && ds_leakF > 0.f)
+	{	double amf = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
+		if (ds_IsSupply())
+		{	// supply (leakage is out of duct)
+			ds_qLeakSen = runF * mCpFL * ds_leakF * (ds_air[3].as_tdb - 68.);
+			ds_qLeakLat = amf * PsyHCondWtr * ds_air[3].as_w;
+			if (zpx)
+				zpx->zn_ductLkI.af_AccumDry(amf, ds_air[3]);
+		}
+		else
+		{	// return
+			if (zpx)
+				zpx->zn_ductLkO.af_AccumDry(-amf, zpx->tz, zpx->wz);
+		}
+	}
+	// else ds_qLeakSen = ds_qLeakLat = 0. per ds_BegSubHr()
+#if defined( DEBUGDUMP)
+	if (DbDo(dbdDUCT))
+		ds_DbDump();
+#endif
+}		// DUCTSEG::ds_FinalizeSh
+
+#else
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 	float runF)		// run fraction
@@ -2266,6 +2341,7 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 		ds_DbDump();
 #endif
 }		// DUCTSEG::ds_FinalizeSh
+#endif
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_AfterSubhr()
 {
@@ -2292,7 +2368,7 @@ void DUCTSEG::ds_DbDump() const
 		ds_sbcO.sb_hxa, ds_sbcO.sb_hxr, ds_sbcO.sb_hxtot, ds_sbcO.sb_cx, ds_Rduct, ds_Uduct,
 		ds_amfFL, runF*ds_amfFL*ds_leakF,
 		ds_uaTot, ds_beta, ds_sbcO.sb_tSrf,
-		runF, runF*ds_qCondAirFL, runF*ds_qCondRadFL, runF*ds_qCondFL,
+		runF, ds_qCondAir, ds_qCondRad, ds_qCond,
 		ds_air[ 0].as_tdb, ds_air[ 1].as_tdb, ds_air[ 2].as_tdb, ds_air[ 3].as_tdb);
 }		// DUCTSEG::ds_DbDump
 //=============================================================================
