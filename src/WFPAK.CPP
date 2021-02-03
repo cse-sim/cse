@@ -1225,7 +1225,7 @@ float CalcSkyTemp(		// sky temp model
 					//	 C_SKYMODLWCH_BLAST
 					//	 C_SKYMODLWCH_DRYBULB
 	int iHr,		// hour of day (0 - 23, 0=midnight - 1 AM)
-	float taDb,		// dry buld temp, F
+	float taDb,		// dry bulb temp, F
 	float taDp,		// dew point temp, F
 	float cldCvr,	// total cloud cover, tenths (0.f - 10.f)
 	float presAtm	// atmospheric pressure, in Hg
@@ -1261,7 +1261,7 @@ float CalcSkyTemp(		// sky temp model
 			// bracket() = insurance, impossible? for taDp to be out of range
 			eSky = bracket( 0.f, 0.00344f*DegFtoK( taDp) - 0.137f, 1.f);
 		else if (skyModelLW == C_SKYMODLWCH_BERDAHLMARTIN)
-		{	// Berdhahl-Martin as adapted by Palmiter and Niles.
+		{	// Berdahl-Martin as adapted by Palmiter and Niles.
 			// See CSE algorithm documentation
 
 			// clear sky emittance
