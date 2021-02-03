@@ -2209,10 +2209,15 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_IsHCAvail( int what) const;"
     *declare "float zn_VentTSup();"
     *declare "double zn_TAirCR( double mCpT, double mCp, double qRad) const;"
+    *declare "double zn_TAirCR( double mCpT, double mCp) const;"
     *declare "double zn_TRadCR( double tza, double qRad) const;"
+    *declare "double zn_TRadCR( double tza) const;"
     *declare "double zn_QAirCR( double tza, double qRad) const;"
+    *declare "double zn_QAirCR( double tza) const;"
     *declare "double zn_QsHvacCR( double tza, float fConv) const;"
+    *declare "double zn_QsHvacCR( double tza) const;"
     *declare "double zn_AmfHvacCR( double tza, double tSup, double qRad) const;"
+    *declare "double zn_AmfHvacCR( double tza, double tSup) const;"
     *declare "void zn_SetRSYSAmf( float fSize, int iAux);"
     *declare "void zn_SetRSYSAmfFromTSup();"
     *declare "RC zn_CondixCR2();"
@@ -3092,6 +3097,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as, float DSE);"
 *declare "double rs_ZoneAirRequest( double znAmfSup, int iAux=0);"
 *declare "RC rs_AllocateZoneAir();"
+*declare "void rs_AvgZoneCond();"
 *declare "static double rs_CallAmfRequired( void* pO, double &tSupX);"
 *declare "double rs_AmfRequired( double tSup);"
 *declare "float rs_ACReqCap95( float senLoad);"
@@ -3184,6 +3190,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e *nest AIRSTATE rs_asSupAux //  ... at full cap + auxiliary (ASHP only, else unused)
 *s float rs_tSupLs;				//   ... supply dry-bulb at last step, F
 								//       used as e.g. 1st iteration guess in ASHP aux heat calc
+
+#if 0
+*s *e *nest AIRSTATE rs_asZn	// idea: avg air state of zones at end of step
+#endif
 
 					// Distribution system efficiency = simplified distribution loss model
 					// Model discards 1-DSE of heat added by system

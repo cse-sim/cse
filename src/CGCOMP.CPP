@@ -2259,18 +2259,23 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 
 	// leakage
 	if (runF > 0.f && ds_leakF > 0.f)
-	{	double amf = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
+	{	double amfLk = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
 		if (ds_IsSupply())
 		{	// supply (leakage is out of duct)
-			ds_qLeakSen = runF * mCpFL * ds_leakF * (ds_air[3].as_tdb - 68.);
-			ds_qLeakLat = amf * PsyHCondWtr * ds_air[3].as_w;
+			const RSYS* pRS = ds_GetRSYS();
+#if 0
+			double tz = pRS->rs_asZn.as_tdb;
+#endif
+			double tz = pRS->rs_asRet.as_tdb;
+			ds_qLeakSen = runF * mCpFL * ds_leakF * (ds_air[3].as_tdb - tz);
+			ds_qLeakLat = amfLk * PsyHCondWtr * ds_air[3].as_w;	// TODO
 			if (zpx)
-				zpx->zn_ductLkI.af_AccumDry(amf, ds_air[3]);
+				zpx->zn_ductLkI.af_AccumDry(amfLk, ds_air[3]);
 		}
 		else
 		{	// return
 			if (zpx)
-				zpx->zn_ductLkO.af_AccumDry(-amf, zpx->tz, zpx->wz);
+				zpx->zn_ductLkO.af_AccumDry(-amfLk, zpx->tz, zpx->wz);
 		}
 	}
 	// else ds_qLeakSen = ds_qLeakLat = 0. per ds_BegSubHr()

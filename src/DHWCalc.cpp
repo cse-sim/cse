@@ -2538,7 +2538,8 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 	}
 	if (hw_pHPWH->HPWHinit_presets(preset) != 0)
 		rc |= RCBAD;
-	if (volX > 0.f && hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL) != 0)
+	// force modify tank size (avoids tankSizeFixed error)
+	if (volX > 0.f && hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL, true) != 0)
 		rc |= RCBAD;
 	if (UAX >= 0.f && hw_pHPWH->setUA(UAX, HPWH::UNITS_BTUperHrF) != 0)
 		rc |= RCBAD;
@@ -3632,7 +3633,13 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	else
 	{	rc |= wh_HPWH.hw_InitPreset(wh_ashpTy);
 		if (IsSet(DHWHEATER_VOL))
-			wh_HPWH.hw_pHPWH->setTankSize_adjustUA(wh_vol, HPWH::UNITS_GAL);
+		{	if (wh_HPWH.hw_pHPWH->isTankSizeFixed())
+				oInfo("whVol is ignored when whASHPType=%s (tank volume is fixed at %0.0f gal)",
+					getChoiTx(DHWHEATER_ASHPTY, 1),
+					wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
+			else
+				wh_HPWH.hw_pHPWH->setTankSize_adjustUA(wh_vol, HPWH::UNITS_GAL);
+		}
 	}
 
 	// at this point, HPWH has known size and default UA

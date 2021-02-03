@@ -397,6 +397,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHHPTU66 "AOSmithHPTU66"	// 66 gallon AOSmith HPTU
 			AOSMITHHPTU80 "AOSmithHPTU80"	// 80 gallon AOSmith HPTU
 			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
+			AOSMITHCAHP120 "AOSmithCAHP120"	// 120 gallon AOSmith
 			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
 			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
 			SANDEN120 "Sanden120"			// Sanden 120 gallon CO2 external heat pump
