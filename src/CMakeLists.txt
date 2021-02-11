@@ -247,6 +247,7 @@ set(libs
   tess2
   libHPWHsim
   libkiva
+  btwxt
 )
 
 source_group("Source Files" FILES ${source})
