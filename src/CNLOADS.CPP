@@ -1686,7 +1686,7 @@ RC RSYS::rs_CkF()
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
 				RSYS_ASHPLOCKOUTT,
-				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMINH, RSYS_CAPRAT1747, 0);
+				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
 	else
@@ -1741,8 +1741,8 @@ RC RSYS::rs_CkF()
 
 			if (rs_IsPkgRoom())
 			{
-				rc |= disallowN(when, RSYS_HSPF, RSYS_CAP17, RSYS_COP17,
-					RSYS_CAP35, RSYS_COP35, 0);
+				rc |= disallowN(when, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
+					RSYS_CAP17, RSYS_COP17, RSYS_CAP35, RSYS_COP35, 0);
 				rc |= requireN(when, RSYS_COP47, 0);
 
 				if (!IsSet(RSYS_FANPWRH))
@@ -1760,14 +1760,26 @@ RC RSYS::rs_CkF()
 
 				if (IsAusz(RSYS_CAP47))
 					rc |= disallowN("when rsCap47 is AUTOSIZE",
-						RSYS_CAP17, RSYS_CAP35, 0);
-				if (IsSet(RSYS_CAP17))
-					rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+						RSYS_CAP05, RSYS_CAP17, RSYS_CAP35, 0);
+				else
+				{	if (IsSet(RSYS_CAP17))
+						rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+
+				}
 
 				if (!rs_IsASHPVC())
-				{	rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
-						RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47, RSYS_LOADFMINH, 0);
-					rs_loadFMinH = 1.f;
+				{
+					rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
+						RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
+						RSYS_LOADFMIN05, RSYS_LOADFMIN17, RSYS_LOADFMIN47, 0);
+					rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
+				}
+				else
+				{
+					if (!IsSet(RSYS_LOADFMIN17))
+						rs_loadFMin17 = rs_loadFMin47;
+					if (!IsSet(RSYS_LOADFMIN05))
+						rs_loadFMin05 = rs_loadFMin47;
 				}
 			}
 		}
@@ -1777,6 +1789,7 @@ RC RSYS::rs_CkF()
 		rc |= disallowN( "when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC",
 				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
+			    RSYS_CAP05, RSYS_COP05,
 				RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
 				RSYS_ASHPLOCKOUTT, RSYS_DEFROSTMODEL, RSYS_CDH, 0);
 
@@ -3218,7 +3231,7 @@ RC RSYS::rs_PerfDataASHP()
 
 	for (int iHSPF=65; iHSPF<140; iHSPF++)
 	{	rs_HSPF = float( iHSPF)/10.f;
-		fprintf( f, "%0.3f,%0.3f\n", rs_HSPF, rs_Cap17RatioASHP());
+		fprintf( f, "%0.3f,%0.3f\n", rs_HSPF, rs_CapRat1747());
 	}
 
 	// loop over range of HSPFs and cap47s, derive back-calc HSPF
@@ -3353,10 +3366,10 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 				capDfHt = rs_capAuxH;
 		}
 		if (rs_IsASHPVC())
-		{	capHtMin = rs_loadFMinH * capHt;
+		{	capHtMin = rs_loadFMin47 * capHt;
 			float inpMin17 = rs_CapMin17() / rs_COPMin17;
-			inpHtMin = inpMin17 + rs_ASHPInpMinF[iDefrost] * tdbM17 - rs_loadFMinH * fanHAdj;
-			capDfHtMin = rs_loadFMinH * capDfHt;
+			inpHtMin = inpMin17 + rs_ASHPInpMinF[iDefrost] * tdbM17 - rs_loadFMin47 * fanHAdj;
+			capDfHtMin = rs_loadFMin47 * capDfHt;
 	   	}
 		// else single speed, see code at return below
 	}
@@ -3505,10 +3518,12 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 					: rs_FanHRtdPerTon( rs_cap47 / 12000.f);
 
 	if (!IsSet( RSYS_CAP17) || rs_IsPkgRoom())
-		rs_cap17 = max( rs_Cap17RatioASHP()*rs_cap47, 1.f);
+		rs_cap17 = max( rs_CapRat1747()*rs_cap47, 1.f);
 
 	if (!IsSet(RSYS_CAP35))
 		rs_cap35 = rs_Cap35Default(rs_cap47, rs_cap17);
+
+	if (!IsSet( RSYS_CAP05))
 
 #if ASHP_COPREG == 1
 	// "traditional" model
@@ -3591,7 +3606,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	return rc;
 }		// RSYS::rs_SetupASHP
 //----------------------------------------------------------------------------
-float RSYS::rs_Cap17RatioASHP() const
+float RSYS::rs_CapRat1747() const
 // returns ratio cap17 / cap47
 {
 #if defined( ASHP_CAPRAT2)
@@ -3613,7 +3628,7 @@ x		//   and: COPs predicted from only HSPF and cap47 do not depend on capacity
 x	float capRat = 0.6280951f;
 #endif
 	return capRat;
-}		// RSYS::rs_Cap17RatioASHP
+}		// RSYS::rs_CapRat1747
 //-----------------------------------------------------------------------------
 float RSYS::rs_Cap35Default(		// default 35 F heating capacity
 	float cap47,		// 47 F heating capacity, any power units
@@ -3636,6 +3651,15 @@ float RSYS::rs_Inp35Default(		// default 35 F input power
 		inp35 *= 0.985f;		// defrost power reduction
 	return inp35;
 }	// RSYS::rs_Inp35Default
+//-----------------------------------------------------------------------------
+float RSYS::rs_Cap05Default(		// default 5 F heating capacity
+	float cap47,		// 47 F heating capacity, any power units
+	float cap17) const	// 17 F heating capacity
+// returns 35 F heating capacity, consistent units
+{
+	float cap05 = cap17 + (cap17-cap47)* (5.f-47.f)/(17.f-47.f);
+	return cap05;
+}	// RSYS::rs_Cap05Default
 //-----------------------------------------------------------------------------
 RC RSYS::rs_CalcInputsAndSlopesASHP()
 // uses: rs_cap/COP 47/17
@@ -3929,7 +3953,7 @@ RC RSYS::rs_SizeASHP(			// size ASHP
 
 	// calculate estimated cap47 ignoring defrost and fan power
 	//   use standard straight line fits solved for cap47
-	float r17 = min( rs_Cap17RatioASHP(), 1.f);		// cap17/cap47
+	float r17 = min( rs_CapRat1747(), 1.f);		// cap17/cap47
 	float tdbM17 = tdbOut - 17.f;
 	float tF;
 	float d;
@@ -4627,7 +4651,7 @@ RC RSYS::rs_FinalizeSh()
 					rs_inPrimary = rs_outSen / rs_COPHtAdj;
 					rs_speedF = 1.f;
 				}
-				else if (rs_loadF < rs_loadFMinH)
+				else if (rs_loadF < rs_loadFMin47)
 				{	// variable capacity: cycling at min speed
 					float runFx = rs_outSen / rs_capHtMin;
 					rs_PLF = 1.f - rs_CdH * (1.f - runFx);
@@ -4638,7 +4662,7 @@ RC RSYS::rs_FinalizeSh()
 				}
 				else
 				{	// variable capacity: intermediate speed
-					float runFx = (rs_loadF - rs_loadFMinH) / (1.f - rs_loadFMinH);
+					float runFx = (rs_loadF - rs_loadFMin47) / (1.f - rs_loadFMin47);
 					rs_inPrimary = (rs_inpHt * runFx + rs_inpHtMin * (1.f - runFx)) / rs_FEffH;
 					rs_COPHtAdj = rs_inPrimary <= 0.f
 									? 2.5f		// rs_inPrimary can be 0 during autosize

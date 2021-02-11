@@ -3132,7 +3132,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_HSPFCheckASHP( int options=0);"
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
-*declare "float rs_Cap17RatioASHP() const;"
+*declare "float rs_CapRat1747() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
@@ -3234,30 +3234,36 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *r FLOAT_GZ rs_HSPF			// rated HSPF, Btuh/W
 *f *e FLOAT_GZ rs_cap47		// full speed heating capacity at ODB=47 F
 *f *e FLOAT_GZ rs_COP47		// COP at ODB=47 F
-*f *e FLOAT_GZ rs_cap35		// ditto 35 F
-*f *e FLOAT_GZ rs_COP35
-*f *e FLOAT_GZ rs_cap17		// ditto 17 F
-*f *e FLOAT_GZ rs_COP17
+*f *e FLOAT_GZ rs_cap35		// full speed heating capacity at ODB=35 F
+*f *e FLOAT_GZ rs_COP35     // COP at ODB=35 F
+*f *e FLOAT_GZ rs_cap17		// full speed heating capacity at ODB=17 F
+*f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
+*f *e FLOAT_GZ rs_cap05		// full speed heating capacity at ODB=5 F
+*f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
 *r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+							//   default based on HSPF or other correlations
+*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
 
 						// re ASHPVC (variable capacity)
-*f *e FRAC_GZ rs_loadFMinH;	// heating minimum load fraction
-							//   (cycles below this)
-*f *e FRAC_GZ rs_loadFMinC;	// cooling minimum load fraction
-							//   (cycles below this)
-*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMinH; }"
-*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMinH; }"
+*f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin05;	// htg min load fract at 05 F (cycles below this)
+
+*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
+*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
+*declare "float rs_CapMin05() const { return rs_cap05*rs_loadFMin05; }"
 *f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
-*f *e FLOAT_GZ rs_COPMin35	// ditto 35 F
-*f *e FLOAT_GZ rs_COPMin17	// ditto 17 F
+*f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
+*f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed
+*f *e FLOAT_GZ rs_COPMin05	// COP at ODB=5 F, min speed
 
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
 
-*f *e FLOAT_GZ rs_inp47		// input power at ODB = 47 F, Btuh (not W)
-							//   (includes rated fan power)
-*f *e FLOAT_GZ rs_inp35		// ditto 35 F
-*f *e FLOAT_GZ rs_inp17		// ditto 17 F
+*f *e FLOAT_GZ rs_inp47		// input power at ODB=47 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp35		// input power at ODB=35 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp17		// input power at ODB=17 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp05		// input power at ODB=5 F, Btuh (w/ rated fan power)
 
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
@@ -3318,10 +3324,16 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 					// compression cooling
 *f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
 *f *e FLOAT_GZ rs_EER95;	// cooling AHRI rated EER at 95 F, Btuh/W
-*f *e FLOAT rs_cap95;		// rated total cooling capacity at 95 F, Btuh TODO: decide on sign
+*f *e FLOAT rs_cap95;		// rated total cooling capacity at 95 F (>= 0)
 *f *e FLOAT_GEZ rs_cap95_As;	//     ... as autoSized
 *f *e FLOAT_GEZ rs_cap95_AsNov;	// ... raw autoSized w/o oversizing
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
+
+#if 0
+// TODO: variable speed cooling
+*f *e FRAC_GZ rs_loadFMinC;	// cooling minimum load fraction
+							//   (cycles below this)
+#endif
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
