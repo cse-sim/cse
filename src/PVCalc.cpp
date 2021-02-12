@@ -333,8 +333,8 @@ RC PVARRAY::pv_CalcPOA()
 			pv_panelAzm = pv_azm;
 		}
 		else
-		{
-			float const asrx = asin(bracket(-1.f, sin(pv_panelRot) / sin(pv_panelTilt), 1.f));
+		{	float const asrx =
+			  asin(bracket(-1., sin(double( pv_panelRot)) / sin(double( pv_panelTilt)), 1.));
 			if (pv_panelRot >= -kPiOver2 && pv_panelRot <= kPiOver2)
 				pv_panelAzm = pv_azm + asrx;        // Equation #2
 			else if (pv_panelRot >= -kPi && pv_panelRot < -kPiOver2)
