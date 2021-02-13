@@ -35,7 +35,6 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-// see ECHO and VRR in pp.h
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>
@@ -47,13 +46,9 @@
 #include <ancrec.h>	// getFileIx getFilename
 #include "xiopak.h"
 
-#include <pp.h>		// decls for this file for non-pp callers; #defines options ECHO and VRR.
-#ifdef ECHO			// defined (or not) in pp.h
-#ifdef VRR		// defined (or not) in pp.h
+#include <pp.h>		// decls for this file for non-pp callers
 #include <vrpak.h>  	// vrStr
 #include <cncult.h> 	// getInpTitleText
-#endif
-#endif
 
 
 #include <cutok.h>	// CUTxxx token type defines, and CUTOKMAX 8-90.
@@ -108,13 +103,20 @@ static SI inDepth = 0;				// inStk level, 1..INDEPTH (not -1).
 
 /*--- PREPROCESSOR COMMAND TABLE */
 struct PPCTAB
-{
-	char* word;	// command keyword: if, define, etc.
+{	const char* word;	// command keyword: if, define, etc.
 	SI noMX;	// non-0 to suppress macro expansion in rest of line
-	SI cs;		// case (PPC defines)
+	int cs;		// case (PPC defines)
 };
 
-// defines for preprocessor cmd cases for ppcTab[] data and ppcDoI switch
+// preprocessor cmd cases for ppcTab[] data and ppcDoI switch
+#if 1
+enum PPCS
+{	PPCINCLUDE = 1, PPCIF, PPCIFDEF, PPCIFNDEF, PPCELIF, PPCELSE,
+	PPCENDIF, PPCDEFINE, PPCREDEFINE, PPCUNDEF, PPCCLEAR, PPCCEX, PPCSAY,
+	PPCECHOON, PPCECHOOFF
+};
+
+#else
 #define PPCINCLUDE   1
 #define PPCIF        2
 #define PPCIFDEF     3
@@ -128,6 +130,10 @@ struct PPCTAB
 #define PPCCLEAR     11		// #clear, added 11-1-95
 #define PPCCEX       12		// devel aid: eval/display constant expr
 #define PPCSAY       13		// devel aid: display rest of line
+#define PPCECHOON    14		// enable input echo
+#define PPCECHOOFF   15		// dis
+#endif
+
 
 /* preprocessor command table */
 static PPCTAB ppcTab[] =
@@ -146,6 +152,8 @@ static PPCTAB ppcTab[] =
 	{ "clear",    1,    PPCCLEAR },
 	{ "cex",      0,    PPCCEX },		// development aid: eval/display expr
 	{ "say",      0,    PPCSAY },		// devel aid: display rest of line
+	{ "echoon",   0,    PPCECHOON },	// enable input echo
+	{ "echooff",  0,    PPCECHOOFF },	// disable input echo
 	{ 0,          0,    0 }
 };
 
@@ -229,13 +237,10 @@ const int BUFSZ = BUFKEEP +	// # chars b4 is->i kept in buffer
 		 BUFTAIL;			// space needed after chars read
 
 //------------------- VARIABLES for INPUT LISTING DEPARTMENT -----------------
-#ifdef ECHO
 
 //----- re INPut listing (echo) virtual report
 
-#ifdef VRR
 int VrInp = 0;	// 0 or virtual report handle (vrpak.cpp) for open INPut listing virtual report.
-#endif
 
 typedef enum LINESTATtag 	// VrInp line status type
 {
@@ -272,7 +277,6 @@ LOCAL USI NEAR lisBufN = 0;   			// # bytes in lisBuf
 	input contains long lines or long comments or
 	cul.cpp error detection lags pp.cpp preprocessing & listing,
 			plus messages already inserted and bytes listing format adds to lines.*/
-#endif	// ECHO
 
 /*------------------------- OTHER LOCAL VARIABLES -------------------------*/
 
@@ -484,10 +488,7 @@ void FC ppClean( 		// preprocessor overall init/cleanup routine
 	maCNext = 0;				// no saved next char for macArgC
 
 // pp.cpp input listing dept variables
-#ifdef ECHO
-#ifdef VRR
 	closeInpVr();		// if VrInp, close input vr (currently a NOP 10-93) and zero VrInp
-#endif
 	if (lisBuf)				// if input listing buffer is allocated
 	{
 		//no, abandon listing buffer contents if not written in normal course of exit, in case vrpak closed first, etc.
@@ -499,7 +500,6 @@ void FC ppClean( 		// preprocessor overall init/cleanup routine
 	//lisLs = begLine;		say input listing is at beginning of line: redundant: opInpVr does it.
 	//lisBufN = 0;  		done when buffer allocated
 	lasTy = LtyBody;		// say in a body line in input listing. Also done when buffer allocated -- is that soon enuf?
-#endif // ECHO
 
 	ppCmdClean(cs);
 	ppCexClean(cs);
@@ -595,10 +595,8 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 	E( dmal( DMPP( isi->buf), BUFSZ, WRN|DMZERO) )	// allocate dm, dmpak.cpp
 	isi->bufSz = BUFSZ;					// size alloc'd (define at start file)
 
-#ifdef ECHO
 // flush listing (input echo) buffer so text from multiple files cannot be intermixed in it
 	lisBufOut(0xffff);		// note done AFTER possible open error
-#endif
 
 // ok, now set file-global ptr and bump input nest level
 	inDepth++;			// input nest level
@@ -614,13 +612,11 @@ void FC ppClose()		// close all open CSE user language input files if any
 	while (inDepth > 0)		// until all #includes and source closed
 		ppClI();			// close last opened file (or macro)
 
-#ifdef ECHO
 	if (lisBuf)				// if input listing buffer is allocated
 	{
 		lisBufOut(0xffff);		// output any remaining listing text
 		dmfree( DMPP( lisBuf));  	// deallocate the buffer
 	}
-#endif
 }			// ppClose
 //==========================================================================
 LOCAL void FC NEAR ppClI()		// inner pp input closer: closes last file/macro/arg level open
@@ -642,10 +638,8 @@ LOCAL void FC NEAR ppClI()		// inner pp input closer: closes last file/macro/arg
 				isf->lineSent = 0; 			// tell ppC to send #line for file so caller cuTok will know text source
 			if (isi->file)				// if file open
 			{
-#ifdef ECHO
 				lisToChar( isi, isi->n, LtyNul, 1);  	/* list any remaining text in file's buffer, and flush the list
 	     						   buffer to prevent mixing list lines from multiple files. */
-#endif
 				if (fclose(isi->file) != 0)    		// close FILE (c lib)
 					ppErr( (char *)MH_P0004, 		// error message "Close error, file '%s'" if failed
 						   getFileName(isi->fileIx) );
@@ -676,8 +670,6 @@ x			cupfree( DMPP( isi->buf));	// did not fix crashes
 			err( PWRN, (char *)MH_P0005);   	// display internal error msg "ppClI: bad is->ty", wait for key, rmkerr.cpp
 	}
 }		// ppClI
-#ifdef ECHO		// defined (or not) in pp.h
-#ifdef VRR		// defined (or not) in pp.h
 //==========================================================================
 SI FC openInpVr()		// open input listing virtual report and set VrInp if none open; return handle.
 
@@ -710,11 +702,6 @@ void FC closeInpVr()  	// terminate and close input listing virtual report
        				   close call to vrpak.cpp is not necessary. */
 	}
 }		// closeInpVr
-#else	// ECHO but not VRR
-listing open, close must be inplemented
-#endif	// VRR
-#endif	// ECHO
-
 //==========================================================================
 USI FC ppGet( char *p, USI n)			// public entry to get 1 to n characters of preprocessed text to buffer p
 
@@ -870,9 +857,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		else if (ppCMidline==1)	// if # just seen
 		{
 			// note syntax verify & error msgs done in ppcDo().
-#ifdef ECHO
 			lisToChar( is, is->j, LtyPpc, 0);		// echo input thru end of id after #, say is a preprocessor line
-#endif
 			if (is->isId==1)	// if this text is identifier (implies !inCmt)
 			{
 				char csave;
@@ -921,11 +906,9 @@ const int PPCMAX = 16383;	// max preprocessor command length
 				*nRet += ni;	// transfer to caller.  strpak.cpp fcn.
 			}
 			//>>> else be sure lineSent is 0 (clear at false #if)		<-- how old is this note?
-#ifdef ECHO
 
 			lisToChar( is, is->i + ni, ifOn ? LtyBody : LtyIf0, 0);	/* echo this non-ppc text to input listing (if not in
           								   macro), as regular lines or if'd-out lines. */
-#endif
 		} // nb else follows
 
 		// buffer preprocessor command text for decoding at end line
@@ -1014,9 +997,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 				}
 				else		// \n terminates #command
 				{
-#ifdef ECHO
 					lisToChar( is, i, LtyPpc, 0);   	// list rest of processor command including final \n
-#endif
 					/* pass input text TO the \n, and if #cmd ended in / * comment,
 					   put comment start in buffer for caller to see after cmd done
 					   so continuing cmt won't error.
@@ -1738,9 +1719,7 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 			if (is->i > BUFKEEP)		// if too many processed chars in buf
 			{
 				n = is->i - BUFKEEP;			// # chars to discard
-#ifdef ECHO
 				lisToChar( is, n, LtyNul, 0);			// be sure chars to be discarded have been listed
-#endif
 				memmove( is->buf, is->buf + n, is->n - n);	// move to front
 				is->i -= n;
 				is->j -= n;			// adjust subscripts
@@ -1796,9 +1775,6 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 
 
 /*==================== INPUT LISTING (ECHO) department ====================*/
-
-
-#ifdef ECHO	// rest of file
 
 //-----------------------------------------------------------------------------------------------------------
 void FC lisFlushThruLine( int line)	// list and FLUSH LISTING BUFFER thru specified line number
@@ -2061,11 +2037,8 @@ LOCAL void FC NEAR lisWrite( char *p, int n)		// write to listing (echo) output 
 	char saveC;
 
 	if (n)			// if any bytes to output
-#ifdef VRR
 		if (VrInp)		// if input listing virtual report requested, and opened ok (in cncult.cpp).  Variable in this file.
-#endif
 		{
-#ifdef VRR
 			// first time, write listing report title
 
 			/* title for report is deferred til 1st output to 1) omit it if there is no output (keeping virtual
@@ -2075,17 +2048,11 @@ LOCAL void FC NEAR lisWrite( char *p, int n)		// write to listing (echo) output 
 			if (vrIsEmpty(VrInp))				// if no text in virtual report yet
 				vrStr( VrInp,
 					   getInpTitleText() );		// format title text for this report, cncult.cpp
-#endif
 
 			// store terminating null and output n characters as null-terminated string
 			saveC = p[n];
 			p[n] = 0;				// plant terminull
-#ifdef VRR
 			vrStr( VrInp, p);      		// write null-terminated string to virtual report. vrpak.cpp.
-//#elif ...
-#else
-			err( PWRN, (char *)MH_P0023 );	// "VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level.\n"
-#endif
 			p[n] = saveC;
 		}
 }			// lisWrite
@@ -2288,8 +2255,6 @@ LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
 
 }			// lisInsert
 //-----------------------------------------------------------------------------------------------------------
-
-#endif	// ECHO
 
 /////////////////////////////////////////////////////////////////////////////////////
 // preprocessor char fetch/tokenize, and error messages
@@ -2726,13 +2691,10 @@ LOCAL RC FC NEAR ppErv(
 		const char* tex = "";
 		col = 9999;
 
-#ifdef ECHO		// if including code to make listing (of input + error messages)
 		if (isf)			// insurance eg re call for bad command line
-		lisThruLine(isf->line);		/* echo input to listing thru end of current input FILE line
-		(expect start of line is already echoed & proper Lty set; this is to
-		complete line & prevent error message inserted in mid-line). pp.cpp. */
-#endif
-
+			lisThruLine(isf->line);		/* echo input to listing thru end of current input FILE line
+									(expect start of line is already echoed & proper Lty set; this is to
+									complete line & prevent error message inserted in mid-line). pp.cpp. */
 
 		/* get input line text and column position.  Text can be:
 		1) cmd line arg,
@@ -2741,8 +2703,8 @@ LOCAL RC FC NEAR ppErv(
 		4) macro being expanded, right? */
 
 		if ( (  (shoTx & 4) &&  ppcIsClarg	  	// if cmd line arg requested
-		|| (shoTx & 2) && !ppcIsClarg ) 	// if preproc cmd line req'd
-		&& ppcBp != NULL )			// ... and is present
+		 || (shoTx & 2) && !ppcIsClarg ) 	// if preproc cmd line req'd
+		 && ppcBp != NULL )			// ... and is present
 	{
 		tex = ppcBp;      		// current preprocessor cmd line, if doing one
 		col = (USI)(ppcP - ppcBp);	// column position in that line
@@ -2899,8 +2861,6 @@ x              	          (INT)isf->line, isf->name );
 
 	errI( REG, isWarn, whole);		// lib\rmkerr.cpp
 
-#ifdef ECHO		// if including code to make listing (of input + error messages)
-
 // output message to input listing if in use; attempt to insert after file line.
 
 	if (isf)						// insurance
@@ -2925,7 +2885,6 @@ x              	          (INT)isf->line, isf->name );
 		else		// no file line in msg or cd not find match (too far back, b4 an include (flushes buffer), etc)
 
 			lisMsg( whole, 1, 1);				// same message as screen to listing if in use, pp.cpp
-#endif	// ECHO
 	}
 	return RCBAD;
 }					// ppErv
@@ -3198,6 +3157,10 @@ ifsJoin:
 					if (c=='\n')				// omit (final) newline
 						break;
 				}
+				break;
+
+			case PPCECHOON:
+			case PPCECHOOFF:
 				break;
 
 			default:

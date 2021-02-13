@@ -6,24 +6,8 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-#define ECHO	// define for input listing code; undefine to remove most.
-				// Implemented only with VRR as of 11-91.
-
-#ifdef ECHO	// else VRR makes no difference
-   #define VRR	// define for input echo (listing) to go to "virtual report" using external fcns, and variable "VrInp".  11-22-91.
-				// undefine for portable linkability.
-				// tested in pp.cpp.
-				// suggested future resolution: echo input thru a callback function
-				//   whose address is provided by application to a new entry point to this file.
-#endif
-
 /*-------------- VARIABLES accessed outside of pp.cpp -------------*/
-
-#ifdef ECHO
- #ifdef VRR
-  extern int VrInp;	// 0 or virtual report handle (vrpak.cpp) for open INPut listing virtual report.
- #endif
-#endif
+extern int VrInp;	// 0 or virtual report handle (vrpak.cpp) for open INPut listing virtual report.
 
 /*--------------- FUNCTIONS called outside of pp.cpp files --------------*/
 
