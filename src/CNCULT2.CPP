@@ -259,7 +259,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 // set autosizing flag: TRUE if setting up now for autosizing, FALSE if setting up for main simulation or input check only.
 	Top.tp_autoSizing =     					// also set now in Top run record now for $autoSizing in exprs
 		Topi.tp_autoSizing = !re  				// recall always for main sim
-						     &&  (Topi.chAutoSize==C_NOYESCH_YES);	// 1st call is for autoSize if (still) requested (after check)
+	  &&  (Topi.chAutoSize==C_NOYESCH_YES);	// 1st call is for autoSize if (still) requested (after check)
 
 // now evaluate EVFFAZ exprs: may use @Top.tp_autoSizing or $autoSizing; need values for rest of check/setup processing.
 	exEvEvf( 			// exman.cpp. Stores values into input basAnc records. On error, errCount++'s but may return RCOK.
@@ -423,10 +423,7 @@ LOCAL RC setTop()
 
 	// also .chAutoSize and .autoSizing are processed by caller -- must be done first.
 
-//set stuff based on command line options, 12-95.
-	Topi.tp_SetOptions();		// sets top mbrs for bin res file cmd line flags, etc.
-
-	rc |= Topi.tp_SetDerived();
+	rc |= Topi.tp_SetDerived();		// calls tp_SetOptions() plus more
 
 //---- copy input RAT Topi to run rat Top (retain input for NANDLES for next RUN)
 	Top = Topi;					// operator= copies record incl name & front members, incRef's strings.

@@ -1037,6 +1037,9 @@ noHans:
 *       ; // failure - probably should abort session.
 #endif
 
+	Top.tp_SetOptions();		// set some Top members (exePath etc)
+								//   else not set when input error suppresses run
+
 	/* preset primary report file info, to rcv most errmsgs (unspooled below) if an input error before cncult.cpp sets it.
 									   (if no early input error, cncult.cpp redoes with
 									   primary report file name & options given by user) */
