@@ -838,7 +838,6 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		else if (ppCMidline==1)	// if # just seen
 		{
 			// note syntax verify & error msgs done in ppcDo().
-			//   ifOn ? LtyPpc : LtyIf0 no
 			lisToChar( is, is->j, LtyPpc);		// echo input thru end of id after #, say is a preprocessor line
 			if (is->isId==1)	// if this text is identifier (implies !inCmt)
 			{
@@ -2912,7 +2911,7 @@ x              	          (INT)isf->line, isf->name );
 
 // preprocessor commands
 LOCAL RC   FC NEAR ppcDoI(int ppCase, const char* pSrcText);
-LOCAL RC   FC NEAR doDefine( SI redef);
+LOCAL RC   FC NEAR doDefine( int redef);
 LOCAL SI   FC NEAR isDefined( char *id, DEFINE **defp);
 LOCAL void FC NEAR clearAllDefines();	// clear all entries in defSytb
 LOCAL BOO clearOneDefine( SI tokTy, DEFINE *&theDef);	// used as arg to syClear
@@ -2968,16 +2967,19 @@ LOCAL RC FC NEAR ppcDoI(	// decode/execute preprocessor command inner.  call ppc
 	RC rc;
 
 // syntax verify beginning of command
-	/* (caller ppC looked first identifier up in table,
-	   but did not verify syntax nor issue error message if not found) */
-	if (ppCDc()!='#')				// pass #
+	// caller ppC looked first identifier up in table,
+	// but did not verify syntax nor issue error message if not found)
+	if (ppCDc()!='#')			// pass #
 		ppUncDc();				// unless caller didn't transmit it
 	if (ppcId(IGN)) 				// scan word to ppIdtx[]
 		return ppErr( (char *)MH_P0030); 	// errMsg "Invalid preprocessor command:    word required immediately after '#'"
 	strcpy( ppcWord, "#");
-	strcpy( ppcWord+1, ppIdtx);				// save word for errMsgs
-	if (ppCase==0)					// if ppC did not find id in table
-		return ppErr( (char *)MH_P0031, ppcWord);	// "unrecognized preprocessor command '%s'"
+	strcpy( ppcWord+1, ppIdtx);		// save word for errMsgs
+	if (ppCase == 0)					// if ppC did not find id in table
+	{	if (ifOn)
+			return ppErr((char*)MH_P0031, ppcWord);	// "unrecognized preprocessor command '%s'"
+		// else #if-out unrecognized #cmd, fall thru / ignored below
+	}
 
 // decode rest of command and execute it
 #define CHECKEND   do  c=ppCDc(); while (isspaceW(c));  if (ppCDc()!=EOF) goto unex
@@ -3055,13 +3057,11 @@ ifsJoin:
 
 	case PPCIF:
 		if (ifOn==0)				// if enclosed in false #if
-		{
-			value = 0;				// for speed, don't do expression
+		{	value = 0;				// for speed, don't do expression
 			noCheckEnd++;			// hence can't check end line
 		}
 		else
-		{
-			E( ppCex( &value, ppcWord) )	// evaluate expr
+		{	E( ppCex( &value, ppcWord) )	// evaluate expr
 		}
 		goto ifsJoin;		// join ifdef to add ifStk level
 
@@ -3208,7 +3208,7 @@ unex:     // CHECKEND macro comes here
 #undef CHECKEND
 }						// ppcDoI
 //==========================================================================
-LOCAL RC FC NEAR doDefine( SI redef)		// decode/execute rest of #define/#redefine command
+LOCAL RC FC NEAR doDefine( int redef)		// decode/execute rest of #define/#redefine command
 // returns RCFATAL if out of memory for symbol table
 {
 const int MAXVAL = 16384;	// max #define value size.
