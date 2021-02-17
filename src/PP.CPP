@@ -1475,7 +1475,6 @@ LOCAL RC FC NEAR ppmScan()
 
 // On return, characters is->buf[is->i..j-1] have been scanned and is->inCmt and is->isId are set for these characters.
 {
-	char *p;
 	SI c, c2;
 	USI span;
 
@@ -1491,7 +1490,7 @@ LOCAL RC FC NEAR ppmScan()
 	is->inCmt = is->cmtNx;	// init in-comment flag from last call's comment-next flag
 	is->isId = 0;		// init is-identifier flag to "not identifier"
 	is->cmtNx = 0;		// default to "no comment next" for next call
-	p = is->buf + is->i;	// working pointer to text. p is used to set is->j after switch.
+	char* p = is->buf + is->i;	// working pointer to text. p is used to set is->j after switch.
 	switch (is->inCmt)  	// 2 */ comment, 1 // comment, 0 none, -1 ""
 	{
 	default:
@@ -1886,15 +1885,10 @@ LOCAL void FC NEAR lisToChar( 		// list input to given character position
 		// find start of line where new type applies
 		//   = newline not at end of line
 		char* tyChangeAt = stopAt;
-#if 1
 		while (tyChangeAt > p && *(tyChangeAt - 1) == '\n')
 			tyChangeAt--;
 		while (tyChangeAt > p && *(tyChangeAt - 1) != '\n')
 			tyChangeAt--;
-#else
-		while (tyChangeAt > _is->buf && *(tyChangeAt-1) != '\n')
-			tyChangeAt--;
-#endif
 		// list line(s) to given character position
 		while (p < stopAt)
 		{
