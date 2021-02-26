@@ -35,7 +35,6 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-// see ECHO and VRR in pp.h
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>
@@ -47,13 +46,9 @@
 #include <ancrec.h>	// getFileIx getFilename
 #include "xiopak.h"
 
-#include <pp.h>		// decls for this file for non-pp callers; #defines options ECHO and VRR.
-#ifdef ECHO			// defined (or not) in pp.h
-#ifdef VRR		// defined (or not) in pp.h
+#include <pp.h>		// decls for this file for non-pp callers
 #include <vrpak.h>  	// vrStr
 #include <cncult.h> 	// getInpTitleText
-#endif
-#endif
 
 
 #include <cutok.h>	// CUTxxx token type defines, and CUTOKMAX 8-90.
@@ -108,28 +103,19 @@ static SI inDepth = 0;				// inStk level, 1..INDEPTH (not -1).
 
 /*--- PREPROCESSOR COMMAND TABLE */
 struct PPCTAB
-{
-	char* word;	// command keyword: if, define, etc.
+{	const char* word;	// command keyword: if, define, etc.
 	SI noMX;	// non-0 to suppress macro expansion in rest of line
-	SI cs;		// case (PPC defines)
+	int cs;		// case (PPC defines)
 };
 
-// defines for preprocessor cmd cases for ppcTab[] data and ppcDoI switch
-#define PPCINCLUDE   1
-#define PPCIF        2
-#define PPCIFDEF     3
-#define PPCIFNDEF    4
-#define PPCELIF      5
-#define PPCELSE      6
-#define PPCENDIF     7
-#define PPCDEFINE    8
-#define PPCREDEFINE  9
-#define PPCUNDEF     10
-#define PPCCLEAR     11		// #clear, added 11-1-95
-#define PPCCEX       12		// devel aid: eval/display constant expr
-#define PPCSAY       13		// devel aid: display rest of line
+// preprocessor cmd cases for ppcTab[] data and ppcDoI switch
+enum PPCS
+{	PPCINCLUDE = 1, PPCIF, PPCIFDEF, PPCIFNDEF, PPCELIF, PPCELSE,
+	PPCENDIF, PPCDEFINE, PPCREDEFINE, PPCUNDEF, PPCCLEAR, PPCCEX, PPCSAY,
+	PPCECHOON, PPCECHOOFF
+};
 
-/* preprocessor command table */
+// preprocessor command table
 static PPCTAB ppcTab[] =
 {
 	// --word--  -noMX-  --case--
@@ -146,6 +132,8 @@ static PPCTAB ppcTab[] =
 	{ "clear",    1,    PPCCLEAR },
 	{ "cex",      0,    PPCCEX },		// development aid: eval/display expr
 	{ "say",      0,    PPCSAY },		// devel aid: display rest of line
+	{ "echoon",   0,    PPCECHOON },	// enable input echo
+	{ "echooff",  0,    PPCECHOOFF },	// disable input echo
 	{ 0,          0,    0 }
 };
 
@@ -183,7 +171,7 @@ static char ppIdtx[512+1] = { 0 };	// text of identifier, set by ppcId()
 static RC FC ppOpI( const char *fname, char *defex);
 
 // executing pp cmds
-static RC   FC ppcDo( char *p, SI ppCase);
+static RC   FC ppcDo( const char *p, int ppCase);
 static void FC msgOpenIfs();
 static RC   FC ppDelDefine();
 static RC   FC addDefine( char *id, char *text, SI nA, char *argId[] );
@@ -191,7 +179,7 @@ static RC   FC addDefine( char *id, char *text, SI nA, char *argId[] );
 
 static RC FC ppCex( SI *pValue, char *tx);
 
-static void FC ppctIni( const char* p, SI isClarg);
+static void FC ppctIni( const char* p, bool isClarg=false);
 static SI FC ppTok();
 static RC FC ppcId( int erOp);
 static SI FC ppCDc();
@@ -229,13 +217,10 @@ const int BUFSZ = BUFKEEP +	// # chars b4 is->i kept in buffer
 		 BUFTAIL;			// space needed after chars read
 
 //------------------- VARIABLES for INPUT LISTING DEPARTMENT -----------------
-#ifdef ECHO
 
 //----- re INPut listing (echo) virtual report
 
-#ifdef VRR
 int VrInp = 0;	// 0 or virtual report handle (vrpak.cpp) for open INPut listing virtual report.
-#endif
 
 typedef enum LINESTATtag 	// VrInp line status type
 {
@@ -260,19 +245,18 @@ typedef enum LisTyTag 		// type for types of listing lines
 LOCAL LISTY NEAR lasTy = LtyBody;	// type of lines being listed from input file: LtyNul, LtyBody, LtyIf0, or LtyPpc.
 
 //----- re input listing (echo) buffer
-
-LOCAL char * NEAR lisBuf = NULL;   		// ptr to listing buffer, in dm
-LOCAL USI NEAR lisBufN = 0;   			// # bytes in lisBuf
-#define LISBUFSZ USI(LISBUFKEEP + LISBUFWRITE)	// size of listing buffer (+1 for null added at alloc)
-#define LISBUFWRITE 512				// transfer size out of listing buffer. 256 enuf?
-#define LISBUFKEEP (128 + 128 + 768)		/* bytes to keep in listing buffer, for message-placement search-back:
-128: allowance for one whole line
-128: preprocessor stays a line ahead of compiler (see cutok.cpp:cuC)
-256 to 768: additional text to search back over when
-	input contains long lines or long comments or
-	cul.cpp error detection lags pp.cpp preprocessing & listing,
-			plus messages already inserted and bytes listing format adds to lines.*/
-#endif	// ECHO
+constexpr int LISBUFWRITE = 512;			// transfer size out of listing buffer
+constexpr int LISBUFKEEP = 128 + 128 + 768;	// bytes to keep in listing buffer, for message-placement search-back:
+										//  128: allowance for one whole line
+										//  128: preprocessor stays a line ahead of compiler (see cutok.cpp:cuC)
+										//  256 to 768: additional text to search back over when
+										// input contains long lines or long comments or
+										// cul.cpp error detection lags pp.cpp preprocessing & listing,
+										// plus messages already inserted and bytes listing format adds to lines
+constexpr int LISBUFSZ = LISBUFKEEP + LISBUFWRITE;	// size of listing buffer (+1 for null added at alloc)
+LOCAL char* lisBuf{ nullptr };			// ptr to listing buffer, in dm
+LOCAL int lisBufN{ 0 };   				// # bytes in lisBuf
+LOCAL int lisBufEchoOff{ 0 };			// echo off/on control: 0=echoing; >0=#echooff depth (re nesting)
 
 /*------------------------- OTHER LOCAL VARIABLES -------------------------*/
 
@@ -315,8 +299,9 @@ LOCAL RC   FC NEAR macOpen( char *id, char *text, DEFINE *theDef, char **argV, e
 LOCAL RC   FC NEAR ppRead( void);
 
 // input listing
-LOCAL void FC NEAR lisToChar( INSTK NEAR * _is, int echTo, LISTY newTy, int flush);
-LOCAL void FC NEAR lisBufAppend( char *p, int n=-1);
+LOCAL bool lisBufEchoOnOff(bool turnOn, const char* pSrcTxt);
+LOCAL void FC NEAR lisToChar( INSTK NEAR * _is, int echTo, LISTY newTy, int flush=0);
+LOCAL void FC NEAR lisBufAppend( const char *p, int n=-1);
 LOCAL void FC NEAR lisBufOut( int n);
 LOCAL void FC NEAR lisWrite( char *p, int n);
 LOCAL int  FC NEAR lisCmp( const char* s, int i, int* pPlace, int* pnl);
@@ -347,7 +332,7 @@ SI FC ppClargIf(
 	SI retVal = 0;
 	RC rcSink;
 
-	ppctIni( s, 1);		// init to scan text, and make errMsgs say "in command line arg" not "at line n".
+	ppctIni( s, true);		// init to scan text, and make errMsgs say "in command line arg" not "at line n".
 	SI c = ppCNdc();		// get char, not decommented
 	if (c=='-' || c=='/') 	// switches begin with - or / -- else not a command line arg for us, go return 0
 	{
@@ -377,7 +362,7 @@ SI FC ppClargIf(
 			break;   		// not for us. fall thru to return 0.
 		}
 	}
-	ppctIni( NULL, 0);			// terminate cmd line arg scan
+	ppctIni( nullptr);		// terminate cmd line arg scan
 	return retVal;			// 0 or 1
 }			// ppClargIf
 
@@ -484,10 +469,7 @@ void FC ppClean( 		// preprocessor overall init/cleanup routine
 	maCNext = 0;				// no saved next char for macArgC
 
 // pp.cpp input listing dept variables
-#ifdef ECHO
-#ifdef VRR
 	closeInpVr();		// if VrInp, close input vr (currently a NOP 10-93) and zero VrInp
-#endif
 	if (lisBuf)				// if input listing buffer is allocated
 	{
 		//no, abandon listing buffer contents if not written in normal course of exit, in case vrpak closed first, etc.
@@ -499,7 +481,6 @@ void FC ppClean( 		// preprocessor overall init/cleanup routine
 	//lisLs = begLine;		say input listing is at beginning of line: redundant: opInpVr does it.
 	//lisBufN = 0;  		done when buffer allocated
 	lasTy = LtyBody;		// say in a body line in input listing. Also done when buffer allocated -- is that soon enuf?
-#endif // ECHO
 
 	ppCmdClean(cs);
 	ppCexClean(cs);
@@ -595,10 +576,8 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 	E( dmal( DMPP( isi->buf), BUFSZ, WRN|DMZERO) )	// allocate dm, dmpak.cpp
 	isi->bufSz = BUFSZ;					// size alloc'd (define at start file)
 
-#ifdef ECHO
 // flush listing (input echo) buffer so text from multiple files cannot be intermixed in it
 	lisBufOut(0xffff);		// note done AFTER possible open error
-#endif
 
 // ok, now set file-global ptr and bump input nest level
 	inDepth++;			// input nest level
@@ -614,13 +593,11 @@ void FC ppClose()		// close all open CSE user language input files if any
 	while (inDepth > 0)		// until all #includes and source closed
 		ppClI();			// close last opened file (or macro)
 
-#ifdef ECHO
 	if (lisBuf)				// if input listing buffer is allocated
 	{
 		lisBufOut(0xffff);		// output any remaining listing text
 		dmfree( DMPP( lisBuf));  	// deallocate the buffer
 	}
-#endif
 }			// ppClose
 //==========================================================================
 LOCAL void FC NEAR ppClI()		// inner pp input closer: closes last file/macro/arg level open
@@ -642,10 +619,8 @@ LOCAL void FC NEAR ppClI()		// inner pp input closer: closes last file/macro/arg
 				isf->lineSent = 0; 			// tell ppC to send #line for file so caller cuTok will know text source
 			if (isi->file)				// if file open
 			{
-#ifdef ECHO
 				lisToChar( isi, isi->n, LtyNul, 1);  	/* list any remaining text in file's buffer, and flush the list
 	     						   buffer to prevent mixing list lines from multiple files. */
-#endif
 				if (fclose(isi->file) != 0)    		// close FILE (c lib)
 					ppErr( (char *)MH_P0004, 		// error message "Close error, file '%s'" if failed
 						   getFileName(isi->fileIx) );
@@ -676,8 +651,6 @@ x			cupfree( DMPP( isi->buf));	// did not fix crashes
 			err( PWRN, (char *)MH_P0005);   	// display internal error msg "ppClI: bad is->ty", wait for key, rmkerr.cpp
 	}
 }		// ppClI
-#ifdef ECHO		// defined (or not) in pp.h
-#ifdef VRR		// defined (or not) in pp.h
 //==========================================================================
 SI FC openInpVr()		// open input listing virtual report and set VrInp if none open; return handle.
 
@@ -710,11 +683,6 @@ void FC closeInpVr()  	// terminate and close input listing virtual report
        				   close call to vrpak.cpp is not necessary. */
 	}
 }		// closeInpVr
-#else	// ECHO but not VRR
-listing open, close must be inplemented
-#endif	// VRR
-#endif	// ECHO
-
 //==========================================================================
 USI FC ppGet( char *p, USI n)			// public entry to get 1 to n characters of preprocessed text to buffer p
 
@@ -813,7 +781,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		}
 
 		// send #line command if necessary: tells caller file name and line
-		// at start of new #include or after end of an included file */
+		// at start of new #include or after end of an included file
 
 		if ( isf->lineSent==0		// if #line has not been sent
 		  && ifOn != 0)			// and compilation is on (#if's)
@@ -830,16 +798,16 @@ const int PPCMAX = 16383;	// max preprocessor command length
 			*nRet += m;	   	// memcpyPass: memcpy, point past. strpak.cpp.
 		}
 
-		/* at start line, set 'ppCppc' and 'ppCcase' if this line is a # command,
-		   and turn off macro expansion for body of most # commands */
+		// at start line, set 'ppCppc' and 'ppCcase' if this line is a # command,
+		// and turn off macro expansion for body of most # commands
 
 		char *q;
 		char *pi = is->buf + is->i;	// start of available text
 		char *endi = is->buf + is->j;  	// end+1 of available text
 		if (is->inCmt== -1)		// if chars ppM() returned are quoted
 			ppCMidline = 2;   		// not at beg line: do not look for #.
-		if (ppCMidline==0   		// if last char was \n
-		&& is->inCmt==0)		// and text not in comment nor quotes
+		if (ppCMidline==0   	// if last char was \n
+		 && is->inCmt==0)		// and text not in comment nor quotes
 		{
 			// then look for #
 			q = pi;
@@ -870,25 +838,22 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		else if (ppCMidline==1)	// if # just seen
 		{
 			// note syntax verify & error msgs done in ppcDo().
-#ifdef ECHO
-			lisToChar( is, is->j, LtyPpc, 0);		// echo input thru end of id after #, say is a preprocessor line
-#endif
+			lisToChar( is, is->j, LtyPpc);		// echo input thru end of id after #, say is a preprocessor line
 			if (is->isId==1)	// if this text is identifier (implies !inCmt)
 			{
-				char csave;
 				PPCTAB * tp;
 
-				/* determine which preprocessor command, and re-enable macro
-				   expansion for those commands with constant expressions next */
+				// determine which preprocessor command, and re-enable macro
+				// expansion for those commands with constant expressions next
 
-				csave = *endi;
+				char csave = *endi;
 				*endi = '\0';
 				for (tp = ppcTab; tp->word != 0; tp++)	// search table for word
 					if (strcmpi(tp->word, pi)==0)    	// compare word to this entry. Made case-insensitive 11-94.
-					{
-						// if found
+					{	// if found
 						ppCcase = tp->cs;			// case to pass to ppcDo
-						is->noMX = tp->noMX;			// enable macro expansion per table
+						is->noMX = tp->noMX;		// enable macro expansion per table
+						break;
 					}
 				*endi = csave;
 				ppCMidline = 2;			// say don't look for if or elif or # until after next \n
@@ -921,11 +886,10 @@ const int PPCMAX = 16383;	// max preprocessor command length
 				*nRet += ni;	// transfer to caller.  strpak.cpp fcn.
 			}
 			//>>> else be sure lineSent is 0 (clear at false #if)		<-- how old is this note?
-#ifdef ECHO
 
-			lisToChar( is, is->i + ni, ifOn ? LtyBody : LtyIf0, 0);	/* echo this non-ppc text to input listing (if not in
-          								   macro), as regular lines or if'd-out lines. */
-#endif
+			lisToChar( is, is->i + ni, ifOn ? LtyBody : LtyIf0);
+										// echo this non-ppc text to input listing (if not in
+          								// macro), as regular lines or if'd-out lines.
 		} // nb else follows
 
 		// buffer preprocessor command text for decoding at end line
@@ -1014,9 +978,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 				}
 				else		// \n terminates #command
 				{
-#ifdef ECHO
-					lisToChar( is, i, LtyPpc, 0);   	// list rest of processor command including final \n
-#endif
+					lisToChar( is, i, LtyPpc);   	// list rest of processor command including final \n
 					/* pass input text TO the \n, and if #cmd ended in / * comment,
 					   put comment start in buffer for caller to see after cmd done
 					   so continuing cmt won't error.
@@ -1513,7 +1475,6 @@ LOCAL RC FC NEAR ppmScan()
 
 // On return, characters is->buf[is->i..j-1] have been scanned and is->inCmt and is->isId are set for these characters.
 {
-	char *p;
 	SI c, c2;
 	USI span;
 
@@ -1529,7 +1490,7 @@ LOCAL RC FC NEAR ppmScan()
 	is->inCmt = is->cmtNx;	// init in-comment flag from last call's comment-next flag
 	is->isId = 0;		// init is-identifier flag to "not identifier"
 	is->cmtNx = 0;		// default to "no comment next" for next call
-	p = is->buf + is->i;	// working pointer to text. p is used to set is->j after switch.
+	char* p = is->buf + is->i;	// working pointer to text. p is used to set is->j after switch.
 	switch (is->inCmt)  	// 2 */ comment, 1 // comment, 0 none, -1 ""
 	{
 	default:
@@ -1738,9 +1699,7 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 			if (is->i > BUFKEEP)		// if too many processed chars in buf
 			{
 				n = is->i - BUFKEEP;			// # chars to discard
-#ifdef ECHO
-				lisToChar( is, n, LtyNul, 0);			// be sure chars to be discarded have been listed
-#endif
+				lisToChar( is, n, LtyNul);			// be sure chars to be discarded have been listed
 				memmove( is->buf, is->buf + n, is->n - n);	// move to front
 				is->i -= n;
 				is->j -= n;			// adjust subscripts
@@ -1763,7 +1722,6 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 			}
 			is->n += n;						// subscr last+1 char in buf
 			is->buf[is->n] = '\0';				// null-terminate buffer
-#if 1 // 8-92 to fix hanging on \0 in input
 			if (n)						// is it ok to do memchr(,,0) ?
 				for ( ; ; )				// change any \0's to spaces to prevent hang elsewhere
 				{
@@ -1776,7 +1734,6 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 								   "    in or after input file line number shown" 10-92 */
 					*q = ' ';					// replace \0 with space to not terminate buffer b4 end
 				}    				                // iterate to rescan to see if another null
-#endif
 		}
 
 		// if any unprocessed text in buffer, done
@@ -1796,10 +1753,20 @@ LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer,
 
 
 /*==================== INPUT LISTING (ECHO) department ====================*/
+static void lisBufAllocIf()
+{
+	if (!lisBuf)					// file-local variable
+	{
+		if (dmal(DMPP(lisBuf), LISBUFSZ + 1, WRN)) 	// allocate, dmpak.cpp / if error.  +1 for \0 used in lisBufOut
+			return;					// out of memory, msg issued in dmal.
+		lisBuf[0] = 0;				// terminate empty buffer with a null
+		lisBufN = 0;				// buffer is empty (file-local at start file)
+		lisLs = begLine;   			// say at start line (dept-local)
+		lasTy = LtyBody;   			// current text is not preproc cmd nor under if'd out (dept-local)
+		lisBufEchoOff = 0;			// say echo is on
+	}
 
-
-#ifdef ECHO	// rest of file
-
+}		// lisBufAllocIf
 //-----------------------------------------------------------------------------------------------------------
 void FC lisFlushThruLine( int line)	// list and FLUSH LISTING BUFFER thru specified line number
 
@@ -1810,15 +1777,12 @@ void FC lisFlushThruLine( int line)	// list and FLUSH LISTING BUFFER thru specif
 {
 	// for cul.cpp:culRun
 
-	int tLine;
-	char *lis;
-
 	lisThruLine(line);					// first, be sure all desired text is IN lisBuf
 
 // find where in lisBuf given line and any following error messages end === start of next file line
 
-	lis = lisBuf + lisBufN;				// point end of lisBuf. expect right after a \n.
-	tLine = isf->echLine;				// line # at end lisBuf -- # of line not yet in buffer
+	char* lis = lisBuf + lisBufN;				// point end of lisBuf. expect right after a \n.
+	int tLine = isf->echLine;				// line # at end lisBuf -- # of line not yet in buffer
 	while (tLine > line+1  &&  lis > lisBuf)		// if necess, search back to start of file line after specified line
 	{
 		if (lis > lisBuf  &&  *(lis-1)=='\n')		// back over ONE line feed / newline to preceding line
@@ -1846,19 +1810,17 @@ void FC lisThruLine( int line)		// list thru specfied line number if possible
 
 {
 	// may be called locally, in ppErv, cutok.cpp:cuErv, .
-	int tLine;
-	char *p;
 
 	if (inDepth <= 0)			// if no file open, do nothing
 		return;				// insurance -- eg ppErv can be called during command line checking
 
 // list thru end of requested line
-
+	char* p;
 	if (line < isf->echLine + 100)	/* if requested line # many lines ahead of listing, list no lines:
         				   Wrong file, macro's line, bug, or many many short or blank lines.
         				   Note fallthru lists no lines if req'd line # < last listed line # */
 	{
-		tLine = isf->echLine;		// line # at end of echoed text
+		int tLine = isf->echLine;		// line # at end of echoed text
 		p = isf->buf + isf->ech;		// point 1st unechoed character
 		while (*p  &&  tLine <= line )	// search text to LINE AFTER given line
 		{
@@ -1866,18 +1828,31 @@ void FC lisThruLine( int line)		// list thru specfied line number if possible
 			if (*(p-1)=='\n')		// if passed \n
 				tLine++;   		// count line
 		}
-		lisToChar( isf, p - isf->buf, LtyNul, 0);	// list text UP TO start of LINE AFTER requested line # (next)
+		lisToChar( isf, p - isf->buf, LtyNul);	// list text UP TO start of LINE AFTER requested line # (next)
 	}
 
 // list to after a newline -- insurance against inserting message in mid-line
 
 	if (lisLs==midLine)			// file-local variable above
 	{
-		p = isf->buf + isf->ech;				// point 1st unechoed character
+		p = isf->buf + isf->ech;		// point 1st unechoed character
 		p += strLineLen(p);				// advance past \n or to \0 (lib\strpak.cpp fcn)
-		lisToChar( isf, p - isf->buf, LtyNul, 0);
+		lisToChar( isf, p - isf->buf, LtyNul);
 	}
 }			// lisThruLine
+//----------------------------------------------------------------------------------------------------------
+static void lisLinePfx(		// append leftmost 8 chars of line
+	int incDpth,			// include depth
+	LISTY lineTy=LtyNul)	// line type
+{
+	incDpth = min(incDpth, 8);
+	lisBufAppend("IIIIIIIIII", incDpth);	// one I for each level of include nesting, if any
+	const char* tytx =
+			  lineTy == LtyIf0 ? "0       "		// get "0   " under false if,
+			: lineTy == LtyPpc ? "#       "		// or "#  " if preprocessor cmd,
+			:                    "        ";	// else blank
+	lisBufAppend(tytx, 8 - incDpth);   	// append enuf chars to total 8 after I's (8: tab alignment)
+}		// lisLinePfx
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR lisToChar( 		// list input to given character position
 
@@ -1891,61 +1866,47 @@ LOCAL void FC NEAR lisToChar( 		// list input to given character position
 	/* called during preprocessing, in particular whenever there is a change of line type
 	   or a change of input file (flush buffer since line #'s change) */
 
-	char *tyChangeAt, *stopAt, *p, *tytx;
-	int n;
-
 	// call to this fcn not expected with no input file open
 
 	if (newTy==LtyNul)			// if new type is "no type specified"
 		newTy = lasTy;			// default to last type given (or initial value)
 
-	if (_is->ty==tyFile)    		/* list only file input; skip macro expansions (poss future option to list?)
-					   (but for macros, do save line type (?), and do do 'flush', below). */
+	if (_is->ty==tyFile)   // list only file input; skip macro expansions (poss future option to list?)
+							//  (but for macros, do save line type (?), and do do 'flush', below).
 	{
 
 		// initialize if buffer not yet allocated.  See also lisMsg.
+		lisBufAllocIf();
 
-		if (!lisBuf)					// file-local variable
-		{
-			if (dmal( DMPP( lisBuf), LISBUFSZ+1, WRN)) 	// allocate, dmpak.cpp / if error.  +1 for \0 used in lisBufOut
-				return;					// out of memory, msg issued in dmal.
-			lisBuf[0] = 0;				// terminate empty buffer with a null
-			lisBufN = 0;					// buffer is empty (file-local at start file)
-			lisLs = begLine;   				// say at start line (dept-local)
-			lasTy = LtyBody;   				// current text is not preproc cmd nor under if'd out (dept-local)
-		}
+		// characters to list
+		char* p = _is->buf + _is->ech;
+		char* stopAt = _is->buf + echTo;
 
 		// find start of line where new type applies
-
-		stopAt = _is->buf + echTo;
-		tyChangeAt = stopAt;
-		while (tyChangeAt > _is->buf && *(tyChangeAt-1) != '\n')
+		//   = newline not at end of line
+		char* tyChangeAt = stopAt;
+		while (tyChangeAt > p && *(tyChangeAt - 1) == '\n')
 			tyChangeAt--;
-
+		while (tyChangeAt > p && *(tyChangeAt - 1) != '\n')
+			tyChangeAt--;
 		// list line(s) to given character position
-
-		p = _is->buf + _is->ech;
 		while (p < stopAt)
 		{
-
-			// beginning of line stuff.  CAUTION: if # columns (8) changed, check lisMsg, lisFind, lisInsertMsg, .
+			// beginning of line stuff
+			// CAUTION: if # columns (8) changed, check lisLinePfx, lisMsg, lisFind, lisInsertMsg, .
 
 			if (lisLs != midLine)
 			{
-				SI incDpth = min( (USI)(_is - inStk), (USI)8);	// known bug: counts macros that contain #includes
-				if (p >= tyChangeAt)    			// if at/after last newline before buf[echTo]
+				int incDpth = _is - inStk;		// known bug: counts macros that contain #includes
+				if (p >= tyChangeAt)    		// if at/after last newline before buf[echTo]
 					lasTy = newTy;				// change to line type specified in this call
-				lisBufAppend( "IIIIIIIIII", incDpth);	// one I for each level of include nesting, if any
-				tytx = ( lasTy==LtyIf0  ?  "0       "  :	// get "0   " under false if,
-						 lasTy==LtyPpc  ?  "#       "  :  	//     or "#  " if preprocessor cmd,
-						 "        " );			//     else blank
-				lisBufAppend( tytx, 8 - incDpth);   	// append enuf chars to total 8 after I's (8: tab alignment)
+				lisLinePfx(incDpth, lasTy);		// append leftmost 8 chars ("I#" etc)
 				lisLs = midLine;
 			}
 
 			// body of line -- or as much as precedes stopping point
 
-			n = strLineLen(p);				// line length, including \n (or to \0), strpak.cpp
+			int n = strLineLen(p);			// line length, including \n (or to \0), strpak.cpp
 			if (p + n >= stopAt)			// if more than caller said to echo now
 				n = stopAt - p;  			// reduce #
 			lisBufAppend( p, n);			// put these chars in listing
@@ -1959,8 +1920,8 @@ LOCAL void FC NEAR lisToChar( 		// list input to given character position
 		}
 	}
 
-	lasTy = newTy;			/* insurance: if didn't pass a line start, store caller's
-    					   new type for any following lines for which no type given */
+	lasTy = newTy;		// insurance: if didn't pass a line start, store caller's
+    					// new type for any following lines for which no type given
 	if (flush)				// on option
 		lisBufOut(0xffff);		// output all characters now in list buffer
 }			     // lisToChar
@@ -1975,20 +1936,13 @@ void FC lisMsg( 				// append message to end of listing
 	if (inDepth==0)  				// nop if no file open (eg command line error)
 		return;
 
-// initialize if buffer not yet allocated.  See also lisToChar.
+	int lisBufEchoOffSave = lisBufEchoOff;
+	lisBufEchoOff = 0;		// enable echo so msg shows
 
-	if (!lisBuf)					// file-local variable
-	{
-		if (dmal( DMPP( lisBuf), LISBUFSZ+1, WRN))  	// allocate, dmpak.cpp / if error.  +1 for \0 used in lisBufOut
-			return;					// out of memory, msg issued in dmal.
-		lisBuf[0] = 0;					// terminate empty buffer with a null
-		lisBufN = 0;					// buffer is empty (file-local at start file)
-		lisLs = begLine;   				// say at start line (dept-local)
-		lasTy = LtyBody;   				// current text is not preproc cmd nor under if'd out (dept-local)
-	}
+// initialize if buffer not yet allocated.  See also lisToChar.
+	lisBufAllocIf();
 
 // conditional newline, optional dashes before message.  CAUTION: if use of -----'s changed, check lisFind.
-
 	if (lisLs==midLine)
 		lisBufAppend( "\n", 1);
 	if (dashB4  &&  lisLs != dashed)
@@ -1997,8 +1951,7 @@ void FC lisMsg( 				// append message to end of listing
 // message, with ???'s at start lines.  CAUTION: if ? in col 1 changed, check lisFind, lisInsertMsg
 
 	while (*p)
-	{
-		lisBufAppend( "???     ", 8);	// prefix each line.  Use 8 cols so tabs in message work right.
+	{	lisBufAppend( "???      ", 8);	// prefix each line.  Use 8 cols so tabs in message work right.
 		int n = strLineLen(p);			// line length, including \n (or to \0), strpak.cpp
 		lisBufAppend( p, n);
 		p += n;
@@ -2009,16 +1962,55 @@ void FC lisMsg( 				// append message to end of listing
 	lisBufAppend( "\n", 1);
 	lisLs = begLine;
 	if (dashAf)
-	{
-		lisBufAppend("-----------------------\n");
+	{	lisBufAppend("-----------------------\n");
 		lisLs = dashed;
 	}
+	lisBufEchoOff = lisBufEchoOffSave;		// restore echo state
 }			// lisMsg
 //-----------------------------------------------------------------------------------------------------------
+LOCAL bool lisBufEchoOnOff(	// enable/disable input listing
+	bool turnOn,	// true: enable input listing
+					// false: disable input listing
+	const char* pSrcText)	// initiating source text
+							//   allows echo of #ECHOON
+// returns true iff input echo currently enabled
+{
+	// worry about lisBuf nullptr?
+
+	int incDpth = is - inStk;
+
+	if (turnOn)
+	{	// re-enable echo
+		lisBufEchoOff--;
+		if (lisBufEchoOff == 0)			// if final nested #ECHOON
+		{	lisLinePfx(incDpth, LtyPpc);
+			lisBufAppend(pSrcText);		// echo #ECHOON line (with any comments)
+		}
+		if (lisBufEchoOff < 0)
+		{	lisBufEchoOff = 0;			// ignore redundant #ECHOONs
+			// pInfolc("Ignoring redundant #ECHOON");  does not display correct file/line info, abandon
+		}
+	}
+	else
+	{	// suppress echo
+		if (lisBufEchoOff == 0)
+		{	lisLinePfx(incDpth, LtyPpc);
+			lisBufAppend("... Suppressing input echo until matching #ECHOON\n");
+		}
+		lisBufEchoOff++;
+	}
+
+	return !lisBufEchoOff;
+
+}		// lisBufEchoOnOff
+//-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR lisBufAppend( 	// append given bytes to input listing buffer
-	char *p,
+	const char *p,		// bytes to append
 	int n /*=-1*/)		// # bytes to append, or <0 to append to \0
 {
+	if (lisBufEchoOff > 0 || !p)
+		return;		// not echoing
+
 	if (n < 0)
 		n = strlen(p);
 
@@ -2058,14 +2050,9 @@ LOCAL void FC NEAR lisBufOut( int n)		// output bytes from list buffer. n = larg
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR lisWrite( char *p, int n)		// write to listing (echo) output if any
 {
-	char saveC;
-
 	if (n)			// if any bytes to output
-#ifdef VRR
 		if (VrInp)		// if input listing virtual report requested, and opened ok (in cncult.cpp).  Variable in this file.
-#endif
 		{
-#ifdef VRR
 			// first time, write listing report title
 
 			/* title for report is deferred til 1st output to 1) omit it if there is no output (keeping virtual
@@ -2075,17 +2062,11 @@ LOCAL void FC NEAR lisWrite( char *p, int n)		// write to listing (echo) output 
 			if (vrIsEmpty(VrInp))				// if no text in virtual report yet
 				vrStr( VrInp,
 					   getInpTitleText() );		// format title text for this report, cncult.cpp
-#endif
 
 			// store terminating null and output n characters as null-terminated string
-			saveC = p[n];
+			char saveC = p[n];
 			p[n] = 0;				// plant terminull
-#ifdef VRR
-			vrStr( VrInp, p);      		// write null-terminated string to virtual report. vrpak.cpp.
-//#elif ...
-#else
-			err( PWRN, (char *)MH_P0023 );	// "VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level.\n"
-#endif
+			vrStr( VrInp, p);      	// write null-terminated string to virtual report. vrpak.cpp.
 			p[n] = saveC;
 		}
 }			// lisWrite
@@ -2108,20 +2089,18 @@ int FC lisFind( 					// find matching file listing line
 // returns 0 if not found
 {
 
-	int place, place2;
-	int tLine;
-
-	if ( inDepth <= 0  ||  !isf		// if no file open (insurnace)
-			|| fileIx				// if 0 file index (check probably not needed)
-			|| fileIx != isf->fileIx		// if wrong file name (e.g. #include has just started or ended)
-			|| !lisBuf )			// if no listing buffer allocated
+	if ( inDepth <= 0  ||  !isf	// if no file open (insurnace)
+	  || lisBufEchoOff > 0		// if not echoing (text probably not in buffer)
+	  || !fileIx				// if 0 file index (check probably not needed)
+	  || fileIx != isf->fileIx	// if wrong file name (e.g. #include has just started or ended)
+	  || !lisBuf )				// if no listing buffer allocated
 		return 0;			// return "not found" without searching
 
 	lisThruLine(line);			// make sure listing is complete thru given line and ends in \n; probably redundant here
 
-	place = lisBufN;			// pointer to start of line under test
-	place2 = lisBufN;			// pointer to end of line under test
-	tLine = isf->line;			// line number of listing text under test
+	int place = lisBufN;			// pointer to start of line under test
+	int place2 = lisBufN;			// pointer to end of line under test
+	int tLine = isf->line;			// line number of listing text under test
 
 // search back for matching listing line, return if not found
 
@@ -2139,7 +2118,7 @@ int FC lisFind( 					// find matching file listing line
 		if (!lisCmp( p, place, pPlace, &nl))
 		{
 			if ( tLine + nl - 1 == line			// if last line compared is requested line number
-					||  tLine + nl     == line )			// ... ('line' can lag listing by 1 in #cmd)
+			 ||  tLine + nl     == line )		// ... ('line' can lag listing by 1 in #cmd)
 				return 1;
 #if 1	// debug
 			else
@@ -2289,8 +2268,6 @@ LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
 }			// lisInsert
 //-----------------------------------------------------------------------------------------------------------
 
-#endif	// ECHO
-
 /////////////////////////////////////////////////////////////////////////////////////
 // preprocessor char fetch/tokenize, and error messages
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2317,7 +2294,7 @@ LOCAL RC FC NEAR ppErv( SI shoTx, SI shoCaret, SI shoFnLn, SI isWarn, char *fmt,
 /*-------- LOCAL VARIABLES for preprocessor char fetch and tokenize -------*/
 
 // current preprocessor command line. CAUTION: buf may be in caller's stack.
-LOCAL SI NEAR ppcIsClarg = 0;			// nz if is program command line text not file text (affects errMsgs)
+LOCAL bool ppcIsClarg{ false };			// true iff is program command line text not file text (affects errMsgs)
 LOCAL const char * NEAR ppcBp = NULL; 	// ptr to start of buffer
 LOCAL const char * NEAR ppcP = NULL;   	// ptr to current position in decode
 LOCAL SI NEAR ppcEndRead = 0;			// nz if end buf read: do not unget
@@ -2334,20 +2311,18 @@ void FC ppTokClean( 		// ppTok init/cleanup routine
 
 //called from pp.cpp:ppClean.
 {
-	ppctIni(NULL,0);	// inits ppcBp, ppcP, ppcIsClarg, ppcEndRead, ppRechar. Just below.
+	ppctIni(nullptr);	// inits ppcBp, ppcP, ppcIsClarg, ppcEndRead, ppRechar. Just below.
 
 	//ppTokTx[0] = ppIdtx[0] = 0;	beleived not needed.
 }		// ppTokClean
 
 //===========================================================================
-void FC ppctIni(
-
-// init or terminate char fetching/tokenizing from cmd line arg or pp command
+void FC ppctIni(	// init or terminate char fetching/tokenizing from cmd line arg or pp command
 
 	const char* p,	// Extracted preprocessor command text or command line argument text,
    					// or NULL to say neither being scanned.
    					// NULL affects text display in error message fcns; fetch/tokenize fcns here not used for file input. */
-	SI isClarg )	// non-0 if command line argument
+	bool isClarg )	// non-0 if command line argument
 
 {
 	// CAUTION: command buffer p may be in caller's stack
@@ -2726,13 +2701,10 @@ LOCAL RC FC NEAR ppErv(
 		const char* tex = "";
 		col = 9999;
 
-#ifdef ECHO		// if including code to make listing (of input + error messages)
 		if (isf)			// insurance eg re call for bad command line
-		lisThruLine(isf->line);		/* echo input to listing thru end of current input FILE line
-		(expect start of line is already echoed & proper Lty set; this is to
-		complete line & prevent error message inserted in mid-line). pp.cpp. */
-#endif
-
+			lisThruLine(isf->line);		/* echo input to listing thru end of current input FILE line
+									(expect start of line is already echoed & proper Lty set; this is to
+									complete line & prevent error message inserted in mid-line). pp.cpp. */
 
 		/* get input line text and column position.  Text can be:
 		1) cmd line arg,
@@ -2741,8 +2713,8 @@ LOCAL RC FC NEAR ppErv(
 		4) macro being expanded, right? */
 
 		if ( (  (shoTx & 4) &&  ppcIsClarg	  	// if cmd line arg requested
-		|| (shoTx & 2) && !ppcIsClarg ) 	// if preproc cmd line req'd
-		&& ppcBp != NULL )			// ... and is present
+		 || (shoTx & 2) && !ppcIsClarg ) 	// if preproc cmd line req'd
+		 && ppcBp != NULL )			// ... and is present
 	{
 		tex = ppcBp;      		// current preprocessor cmd line, if doing one
 		col = (USI)(ppcP - ppcBp);	// column position in that line
@@ -2899,8 +2871,6 @@ x              	          (INT)isf->line, isf->name );
 
 	errI( REG, isWarn, whole);		// lib\rmkerr.cpp
 
-#ifdef ECHO		// if including code to make listing (of input + error messages)
-
 // output message to input listing if in use; attempt to insert after file line.
 
 	if (isf)						// insurance
@@ -2925,7 +2895,6 @@ x              	          (INT)isf->line, isf->name );
 		else		// no file line in msg or cd not find match (too far back, b4 an include (flushes buffer), etc)
 
 			lisMsg( whole, 1, 1);				// same message as screen to listing if in use, pp.cpp
-#endif	// ECHO
 	}
 	return RCBAD;
 }					// ppErv
@@ -2935,8 +2904,8 @@ x              	          (INT)isf->line, isf->name );
 /////////////////////////////////////////////////////////////////////////////////
 
 // preprocessor commands
-LOCAL RC   FC NEAR ppcDoI( SI ppCase);
-LOCAL RC   FC NEAR doDefine( SI redef);
+LOCAL RC   FC NEAR ppcDoI(int ppCase, const char* pSrcText);
+LOCAL RC   FC NEAR doDefine( int redef);
 LOCAL SI   FC NEAR isDefined( char *id, DEFINE **defp);
 LOCAL void FC NEAR clearAllDefines();	// clear all entries in defSytb
 LOCAL BOO clearOneDefine( SI tokTy, DEFINE *&theDef);	// used as arg to syClear
@@ -2968,20 +2937,20 @@ void FC ppCmdClean( 		// init/cleanup routine
 }		// ppCmdClean
 
 //==========================================================================
-RC FC ppcDo( char *p, SI ppCase)		// decode/execute preproc command at p
+RC FC ppcDo( const char* p, int ppCase)		// decode/execute preproc command at p
 
 // returned error code ignored by caller unless RCFATAL
 {
 	// printf("ppc: '%s'\n", p);	// temp debug aid
-	ppctIni( p, 0);  		// init pp char fetch/tokenize
-	RC rc = ppcDoI(ppCase);	// decode/execute pp cmd, only call, next.
-	ppctIni( NULL, 0);		// say NOT doing a pp command
+	ppctIni( p);  		// init pp char fetch/tokenize
+	RC rc = ppcDoI(ppCase, p);	// decode/execute pp cmd, only call, next.
+	ppctIni( nullptr);		// say NOT doing a pp command
 	return rc;
 }			// ppcDo
 //==========================================================================
-LOCAL RC FC NEAR ppcDoI( SI ppCase)		// decode/execute preprocessor command inner.  call ppctIni() first.
-
-// ppCase: which command: PPC__ defines at start of this file.
+LOCAL RC FC NEAR ppcDoI(	// decode/execute preprocessor command inner.  call ppctIni() first.
+	int ppCase,	// which command: PPC__ defines at start of this file.
+	const char* pSrcText)	// source text (re #ECHOON / #ECHOOFF)
 
 // ppC() has already looked up command in table; nevertheless, command keyword is included in text received here.
 
@@ -2992,16 +2961,19 @@ LOCAL RC FC NEAR ppcDoI( SI ppCase)		// decode/execute preprocessor command inne
 	RC rc;
 
 // syntax verify beginning of command
-	/* (caller ppC looked first identifier up in table,
-	   but did not verify syntax nor issue error message if not found) */
-	if (ppCDc()!='#')				// pass #
+	// caller ppC looked first identifier up in table,
+	// but did not verify syntax nor issue error message if not found)
+	if (ppCDc()!='#')			// pass #
 		ppUncDc();				// unless caller didn't transmit it
 	if (ppcId(IGN)) 				// scan word to ppIdtx[]
 		return ppErr( (char *)MH_P0030); 	// errMsg "Invalid preprocessor command:    word required immediately after '#'"
 	strcpy( ppcWord, "#");
-	strcpy( ppcWord+1, ppIdtx);				// save word for errMsgs
-	if (ppCase==0)					// if ppC did not find id in table
-		return ppErr( (char *)MH_P0031, ppcWord);	// "unrecognized preprocessor command '%s'"
+	strcpy( ppcWord+1, ppIdtx);		// save word for errMsgs
+	if (ppCase == 0)					// if ppC did not find id in table
+	{	if (ifOn)
+			return ppErr((char*)MH_P0031, ppcWord);	// "unrecognized preprocessor command '%s'"
+		// else #if-out unrecognized #cmd, fall thru / ignored below
+	}
 
 // decode rest of command and execute it
 #define CHECKEND   do  c=ppCDc(); while (isspaceW(c));  if (ppCDc()!=EOF) goto unex
@@ -3079,13 +3051,11 @@ ifsJoin:
 
 	case PPCIF:
 		if (ifOn==0)				// if enclosed in false #if
-		{
-			value = 0;				// for speed, don't do expression
+		{	value = 0;				// for speed, don't do expression
 			noCheckEnd++;			// hence can't check end line
 		}
 		else
-		{
-			E( ppCex( &value, ppcWord) )	// evaluate expr
+		{	E( ppCex( &value, ppcWord) )	// evaluate expr
 		}
 		goto ifsJoin;		// join ifdef to add ifStk level
 
@@ -3102,8 +3072,8 @@ ifsJoin:
 			return ppErr( (char *)MH_P0037,		// "#elif after #else (for #if at line %d of file %s )"
 					iff->line, getFileName(iff->fileIx) );
 		if ( ifOn				// if compile on, it goes off
-		|| iff->hasBeenOn   		// if has been on, stays off
-		|| (iff-1)->allOn==0)		// if outer if is off, does not matter
+		 || iff->hasBeenOn   		// if has been on, stays off
+		 || (iff-1)->allOn==0)		// if outer if is off, does not matter
 		{
 			// skip parsing expr for speed
 			value = 0;				// set compile off
@@ -3200,6 +3170,15 @@ ifsJoin:
 				}
 				break;
 
+			// #echooff / #echoon: input echo control
+			//   implemented as off-level counter to support nesting
+			case PPCECHOOFF:
+				lisBufEchoOnOff(false, pSrcText);
+				break;
+			case PPCECHOON:
+				lisBufEchoOnOff(true, pSrcText);
+				break;
+
 			default:
 				return ppErr( (char *)MH_P0039);	// "Internal error in ppcDoI: bad 'ppCase'"
 			}
@@ -3223,7 +3202,7 @@ unex:     // CHECKEND macro comes here
 #undef CHECKEND
 }						// ppcDoI
 //==========================================================================
-LOCAL RC FC NEAR doDefine( SI redef)		// decode/execute rest of #define/#redefine command
+LOCAL RC FC NEAR doDefine( int redef)		// decode/execute rest of #define/#redefine command
 // returns RCFATAL if out of memory for symbol table
 {
 const int MAXVAL = 16384;	// max #define value size.

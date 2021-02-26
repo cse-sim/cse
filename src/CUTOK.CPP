@@ -7,7 +7,6 @@
 #include <cnglob.h>
 
 /*-------------------------------- OPTIONS --------------------------------*/
-// see ECHO in pp.h, 11-91
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <msghans.h>	// MH_S0150
@@ -17,7 +16,7 @@
 #include <rmkerr.h>	// errI
 #include <messages.h>	// MSG_MAXLEN msgI
 
-#include <pp.h>		// ppOpen ppClose ppGet ECHO
+#include <pp.h>		// ppOpen ppClose ppGet
 #include <cutok.h>	// decls for this file; CUTSI CUTFLOAT cufClose
 
 
@@ -938,11 +937,9 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 		strcat( tex, "\n");  						// newline after file line
 	}
 
-#ifdef ECHO		// if including code to make listing (of input + error messages)
 	lisThruLine(line);	// echo input to listing thru end of current input FILE line
        					// (expect start of line is already echoed & proper Lty set; this is to
        					// complete line & prevent error message inserted in mid-line). pp.cpp.
-#endif
 
 // make up 'where': "<file>(<line>): Error/Warning: "
 
@@ -1018,8 +1015,6 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 	errI( REG, isWarn, (const char*)whole);		// rmkerr.cpp.
 
-#ifdef ECHO		// if including code to make listing (of input + error messages)
-
 // output message to input listing if in use; attempt to insert after file line.
 
 	{
@@ -1044,7 +1039,6 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 			lisMsg( whole, 1, 1);				// same message as screen to listing if in use, pp.cpp
 	}
-#endif	// ECHO
 	return isWarn ? RCOK : RCBAD;		// warnings & infos return ok 7-92, errors return bad, for convenience.
 }					// cuErv
 //===========================================================================
