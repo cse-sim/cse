@@ -481,6 +481,7 @@ friend class WFILE;
 	WDSUBHR* wdy_shDay;			// subhour solar radiation data for wdy_shJday
 	double wdy_taDbAvg[ 13];	// avg daily temp by month, [ 0] = year
 	double wdy_tMainsAvg[ 13];	// avg cold water temp by month, [ 0] = year
+	float wdy_tMainsMin;		// annual minimum cold water temp, F
 
 public:
 	WDYEAR();
@@ -553,6 +554,7 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	if (IsMissing( taDbAvgYr))
 		taDbAvgYr = wf_pWDY->wdy_taDbAvg[ 0];
 	tMainsAvgYr = wf_pWDY->wdy_tMainsAvg[ 0];
+	tMainsMinYr = wf_pWDY->wdy_tMainsMin;
 
 	// fill hour values from daily
 	int options = 0;		// wdd_Set24: fill always
@@ -593,6 +595,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	{	wdy_taDbAvg[ iMon] = 0.;
 		wdy_tMainsAvg[ iMon] = 0.;
 	}
+	wdy_tMainsMin = 999.f;
 
 	int yrDays = wdy_YrDays();			// TODO: handle leap year
 	static const int monLens[ 13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
@@ -673,6 +676,8 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 													//   based on monthly means
 								wdd.wdd_taDbAvg31);	// lagged 31-day average dry-bulb temp
 			wdy_tMainsAvg[ iMon] += wdd.wdd_tMains;
+			if (wdd.wdd_tMains < wdy_tMainsMin)
+				wdy_tMainsMin = wdd.wdd_tMains;
 		}
 		wdy_tMainsAvg[ 0] += wdy_tMainsAvg[ iMon];
 		wdy_tMainsAvg[ iMon] /= monLen;
@@ -972,7 +977,6 @@ void WDDAY::wdd_Set24(		// set hourly values from daily
 // WHY: values that change daily are copied to all hours of day.
 //      Facilitates probing
 {
-#define SETIF( d, s) if (IsMissing( d)) d = s;
 	if (!options)
 	{	for (int iHr=0; iHr<24; iHr++)
 			wdHr[ iHr].wd_SetDayValues( *this);
@@ -981,7 +985,6 @@ void WDDAY::wdd_Set24(		// set hourly values from daily
 	{	for (int iHr=0; iHr<24; iHr++)
 			wdHr[ iHr].wd_SetDayValuesIfMissing( *this);
 	}
-#undef SETIF
 }		// WDDAY::wdd_Set24
 //-----------------------------------------------------------------------------
 void WDHR::wd_SetDayValues(		// set daily members for this hour

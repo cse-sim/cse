@@ -20,6 +20,7 @@
 #include "srd.h"
 
 // #include <random>
+#include <queue>
 
 #include "cnguts.h"
 #include "exman.h"
@@ -495,7 +496,7 @@ double DHWTICK::wtk_DrawTotM(		// tick draw
 	return drawTot;
 
 }		// DHWTICK::wtk_DrawTotM
-//=============================================================================
+//-----------------------------------------------------------------------------
 double DHWTICK::wtk_DrawTotMX(		// tick draw
 	float tOut,						// assumed heater output temp, F
 	float tInletWH, 		// water heater inlet temp, F
@@ -543,7 +544,6 @@ double DHWTICK::wtk_DrawTotMX(		// tick draw
 		return volIn;
 
 }		// DHWTICK::wtk_DrawTotMX
-
 //-----------------------------------------------------------------------------
 void DHWTICK::wtk_ApplySSF(		// apply external solar savings fraction
 	float SSF,	// solar savings fraction	
@@ -569,7 +569,146 @@ struct DHWHRTICK	// per tick info for DHWHEATREC
 	WVect< DWHRUSE> wrtk_draws;	// all draws for this DHWHEATREC for this tick
 
 };		// struct DHWHRTICK
+//=============================================================================
+
+//////////////////////////////////////////////////////////////////////////////
+// DHWSIZEDAY / DHWSIZER: tracks largest draw days re sizing DHWSYS
+//////////////////////////////////////////////////////////////////////////////
+struct DHWSIZEDAY		// retains info for candiate DHW sizing day
+{
+	DHWSIZEDAY() {}
+	DHWSIZEDAY(const VF24& v) : wzd_loadHrs(v) {}
+	DHWSIZEDAY(const DHWSIZEDAY& dsd) : wzd_loadHrs(dsd.wzd_loadHrs) {}
+	void wzd_Clear() { wzd_loadHrs.Clear(); }
+	void wzd_EndDay() { wzd_loadHrs.SetStats(); }
+	float Sum() const { return wzd_loadHrs.Sum(); }
+	VF24 wzd_loadHrs;
+
+};		// struct DHWSIZEDAY
+//=============================================================================
+struct DHWSIZER		// data and methods to support autosizing DHWSYS components
+{
+	DHWSIZER(DHWSYS* pDHWSYS, int nSizeDays, int nWorstHrs)
+		: wz_pDHWSYS(pDHWSYS), wz_nSizeDays(nSizeDays), wz_nWorstHrs( nWorstHrs)
+	{	wz_topNDays = std::make_unique<DHWSIZEDAY[]>(nSizeDays);
+	}
+	~DHWSIZER() {}
+	void wz_Clear();
+	DHWSYS* wz_GetDHWSYS() const { return wz_pDHWSYS; }
+	void wz_SetHr(int iH, float dhwLoad);
+	void wz_DoDay();
+	RC wz_DeriveSize();
+
+private:
+	DHWSYS* wz_pDHWSYS;		// parent DHWSYS
+	size_t wz_nSizeDays;	// # of days tracked
+	int wz_nWorstHrs;		// number of hours in "worst event" window
+
+	DHWSIZEDAY wz_curDay;		// current day, hourly values accum'd here
+	std::unique_ptr<DHWSIZEDAY[]> wz_topNDays;	// top wz_nSizeDays DHWSIZEDAYs *not sorted*
+
+	// priority_queue of pointers into wz_topNDays
+	//  top of priority_queue = smallest of wz_topNDays
+	std::priority_queue< DHWSIZEDAY *, std::vector<DHWSIZEDAY*>,
+		auto(*)(const DHWSIZEDAY*, const DHWSIZEDAY*)->bool > wz_sizeDays
+			{ [](const DHWSIZEDAY* l, const DHWSIZEDAY* r)->bool { return l->Sum() > r->Sum(); } };
+
+};		// struct DHWSIZER
 //-----------------------------------------------------------------------------
+void DHWSIZER::wz_Clear()		// reset all data
+{
+	wz_curDay.wzd_Clear();
+	while (!wz_sizeDays.empty())
+		wz_sizeDays.pop();
+
+}	// DHWSIZER::wz_Clear
+//-----------------------------------------------------------------------------
+void DHWSIZER::wz_SetHr(			// track load by hour
+	int iH,		// hr of day (0-23)
+	float dhwLoad)		// water heating load, Btu
+{
+	wz_curDay.wzd_loadHrs[iH] = dhwLoad;
+
+}		// DHWSIZER::wz_SetHr
+//-----------------------------------------------------------------------------
+void DHWSIZER::wz_DoDay()		// end-of-day sizing accounting
+{
+	
+
+	wz_curDay.wzd_EndDay();
+
+	size_t iSz = wz_sizeDays.size();
+	if (iSz < wz_nSizeDays)
+	{
+		wz_topNDays[iSz] = wz_curDay;
+		wz_sizeDays.push(&wz_topNDays[ iSz]);
+	}
+	else
+	{
+		DHWSIZEDAY* pTop = wz_sizeDays.top();
+		float tSize = pTop->Sum();
+		if (wz_curDay.Sum() > tSize)
+		{	wz_sizeDays.pop();
+			*pTop = wz_curDay;
+			wz_sizeDays.push(pTop);
+		}
+	}
+}		// DHWSIZER::wz_DoDay
+//-----------------------------------------------------------------------------
+RC DHWSIZER::wz_DeriveSize()
+{
+	RC rc = RCOK;
+
+	const DHWSYS* pWS = wz_GetDHWSYS();
+
+	// fill working vector, [ 0] = highest load
+	//   use priority_queue actual size = insurance re (very) short runs
+	size_t nSizeDaysActual = wz_sizeDays.size();
+	std::vector< DHWSIZEDAY*> topN;
+	topN.resize( nSizeDaysActual);		// allocate all slots
+	size_t iX = nSizeDaysActual;
+	while (wz_sizeDays.size() > 0)
+	{	topN[ --iX] = wz_sizeDays.top();	// fill in reverse order
+		wz_sizeDays.pop();
+	}
+
+	// idx of sizing day.  6 = annual 2% approx
+	size_t iSizeDay = min(6u, nSizeDaysActual - 1);
+	const DHWSIZEDAY* pSizeDay = topN[iSizeDay];
+	float loadDay = pSizeDay->Sum();
+	float cap = loadDay / 16.f;
+
+
+	// find worst event in all days
+	VMovingSum< float> worstHrs( wz_nWorstHrs);
+	float worstEventSum = 0.f;		// highest load in any nWorstHrs
+	for (DHWSIZEDAY* pSzD : topN)
+	{	worstHrs.vm_Clear();
+		for (int iH = 0; iH < 23; ++iH)
+		{	float eventSum = worstHrs.vm_Sum(pSzD->wzd_loadHrs[iH % 24]);
+			if (iH >= wz_nWorstHrs - 1)
+			{	if (eventSum > worstEventSum)
+				{	worstEventSum = eventSum;
+					// worstEvent = 
+				}
+			}
+		}
+	}
+
+	float store = worstEventSum - wz_nWorstHrs * cap;
+	float storeVol = store / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
+
+	return rc;
+
+
+}	// DHWSIZER::wz_DeriveSize
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// class DHWSYS -- represents a DHW system
+//                 = hot water loads + optional equipment
+///////////////////////////////////////////////////////////////////////////////
+
 DHWSYS::~DHWSYS()
 {
 	// omit cupfree(DMPP(ws_dayUseName));
@@ -577,11 +716,13 @@ DHWSYS::~DHWSYS()
 	//       when there is a runtime error (works OK on normal termination).
 	//       Something to do with cleanup order?
 	//       Suspect general problem with string expressions?
-	ws_dayUseName = NULL;
+	ws_dayUseName = nullptr;
 	delete[] ws_ticks;
-	ws_ticks = NULL;
+	ws_ticks = nullptr;
 	delete[] ws_fxList;
-	ws_fxList = NULL;
+	ws_fxList = nullptr;
+	delete ws_pSizer;
+	ws_pSizer = nullptr;
 }		// DHWSYS::~DHWSYS
 //-------------------------------------------------------------------------------
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
@@ -590,7 +731,7 @@ DHWSYS::~DHWSYS()
 	record::Copy( pSrc);
 	cupIncRef( DMPP( ws_dayUseName));   // incr reference counts of dm strings if non-NULL
 										//   nop if ISNANDLE
-	// assume ws_ticks and ws_fxList are NULL
+	// assume ws_ticks, ws_fxList, and ws_sizer are nullptr
 }		// DHWSYS::Copy
 //-----------------------------------------------------------------------------
 RC DHWSYS::ws_CkF()		// water heating system input check / default
@@ -805,6 +946,15 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		//   else left 0
 		ws_drawMaxMS.vm_Init(ws_drawMaxDur);
 		ws_loadMaxMS.vm_Init(ws_loadMaxDur);
+
+		// track days with max water heating load
+		//   retains profile by hour for top N days during C_WSCALCMODECH_PRERUN
+		//   allows use of 2% day = 365*.02 = 7th highest day
+		//   Could be done for all DHWSYSs altho not needed for those w/o DHWHEATERs
+		if (!pWSCentral)
+			ws_pSizer = new DHWSIZER(this, 10, 4);		// set up to track top 10 load days
+		if (!IsSet(DHWSYS_TINLETDES))
+			ws_tInletDes = 50.f;	// Wfile.tMainsMinYr;
 
 		return rc;
 	}
@@ -1062,7 +1212,10 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		}
 
 		if (Top.tp_isBegMainSim)
-		{
+		{	// reset sizing information
+			if (ws_pSizer)
+				ws_pSizer->wz_Clear();
+
 			DHWSYSRES* pWSR = ws_GetDHWSYSRES();
 			rc |= pWSR->wsr_Init();
 
@@ -1363,6 +1516,12 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	//    redundant if DHWMTRs are defined
 	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
 	ws_whUse.wmt_AccumTo(ws_whUseTot);
+
+	// track hourly design load
+	if (ws_pSizer)
+	{	float whLoadDes = ws_whUse.total * (ws_tUseDes - ws_tInletDes) * waterRhoCp;
+		ws_pSizer->wz_SetHr(Top.iHrST, whLoadDes);
+	}
 	
 	// track peaks for sizing
 	//   = max draw in ws_drawMaxDur
@@ -1790,22 +1949,28 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 	// note: DHWSYS energy/water meter accum is in ws_DoHour
 	//       values do not vary subhrly
 
-	if (ivl == C_IVLCH_Y)
-	{
-		if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-			rc |= ws_DoEndPreRun();
+	if (ivl <= C_IVLCH_D)
+	{	
+		if (ws_pSizer)
+			ws_pSizer->wz_DoDay();		// end-of-day sizing accounting
 
-		double totHARLCk = 0.;
-		if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
-			totHARLCk = pWH->wh_totHARL;
+		if (ivl == C_IVLCH_Y)
+		{
+			if (ws_calcMode == C_WSCALCMODECH_PRERUN)
+				rc |= ws_DoEndPreRun();
 
-		float fTotHARLCk = float(totHARLCk);
+			double totHARLCk = 0.;
+			if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
+				totHARLCk = pWH->wh_totHARL;
 
-		// solar savings fraction
-		if (ws_pDHWSOLARSYS)
-			ws_SSFAnnual = ws_SSFAnnualReq > 0.
-					? min( 1.f, float( ws_SSFAnnualSolar / ws_SSFAnnualReq))
-					: 0.f;	
+			float fTotHARLCk = float(totHARLCk);
+
+			// solar savings fraction
+			if (ws_pDHWSOLARSYS)
+				ws_SSFAnnual = ws_SSFAnnualReq > 0.
+				   ? min(1.f, float(ws_SSFAnnualSolar / ws_SSFAnnualReq))
+				   : 0.f;
+		}
 	}
 
 	return rc;
@@ -1825,6 +1990,8 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 	if (!pWSi)
 		return orMsg(ERR, "Bad input record linkage in ws_DoEndPreRun");
 
+	if (ws_pSizer)
+		ws_pSizer->wz_DeriveSize();
 
 	if (!ws_HasCentralDHWSYS())		// if central or stand-alone
 	{

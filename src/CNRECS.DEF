@@ -731,6 +731,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *r float taDbAvgYr	// annual average dry-bulb temp, F
 	*f float tMainsAvgYr // annual average cold water temp, F
 						//    computed per CEC ACM method
+    *f float tMainsMinYr    // annual minimum cold water temp, F
     *r SI solartime		// TRUE if file is in solar time
  //additional header items for ET1 file
     *r WFLOC2 loc2		// char[] location 2 (state or country, etc)
@@ -3705,13 +3706,13 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_whUseNoHR;				// current hour virtual hot water use w/o heat recovery, gal
 										//    re verification / accounting of DWHR results
   *h *e *nest DHWMTR_IVL ws_fxUseMix	// current hour total (mixed) water use at fixtures, gal
-  *y *e *array NDHWENDUSESXPP DBL ws_fxUseMixTot;	// annual total (mixed) water use at fixtures, gal
+  *y *e *array NDHWENDUSESXPP DBL ws_fxUseMixTot;	// annual total (mixed) water use at fixtures by end use, gal
   *h    *nest DHWMTR_IVL ws_fxUseMixLH	// prior hour total (mixed) water use at fixtures, gal
-  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use (at ws_tUse), gal
+  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use by end use (at ws_tUse), gal
 										//    water heater out = fixture hot in
 										//    Also frequently assumed water heater in = water heater out
 										//    BUT this is only approx due to e.g. mixdown and XBU.
-  *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use (at ws_tUse), gal
+  *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use by end use (at ws_tUse), gal
 							
 							// draw and load sizing info derived during C_WSCALCMODECH_PRERUN (only)
 							//   copied to assocated input records in ws_DoEndPreRun()
@@ -3724,6 +3725,13 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i SI ws_loadMaxDur					// load duration window, hr (user input, default 12)
   *declare "VMovingSum< float> ws_loadMaxMS;"	// retains recent load history
   *i FLOAT ws_loadMax					// largest load total in any conseq ws_loadMaxDur hrs, Btu
+
+  *declare "struct DHWSIZER* ws_pSizer;"     // tracks highest load days re sizing
+  *r FLOAT ws_tUseDes;                  // design (sizing) hot water use temp, F (constant)
+                                        //    default = 120 F
+  *r FLOAT ws_tInletDes;                // design (sizing) inlet temp, F
+                                        //    default = annual min mains temp
+
   
   *h FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp water is delivered to fixtures or DHWLOOP(s)
