@@ -2485,6 +2485,10 @@ void HPWHLINK::hw_Cleanup()
 	hw_HSMap = NULL;
 	delete hw_pNodePowerExtra_W;
 	hw_pNodePowerExtra_W = NULL;
+	if (hw_pFCSV)
+	{	fclose( hw_pFCSV);
+		hw_pFCSV = nullptr;
+	}
 
 }	// HPWHLINK::hw_Cleanup
 //-----------------------------------------------------------------------------
@@ -3198,6 +3202,8 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		if (!hw_pFCSV)
 		{
 			// dump file name = <cseFile>_<DHWHEATER name>_hpwh.csv
+			//   Overwrite pre-existing file
+			//   >>> thus file contains info from only last RUN in multi-RUN sessions
 			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->name));
 			const char* fName =
 				strsave(strffix2(strtprintf("%s_%s_hpwh", InputFilePathNoExt, nameNoWS), ".csv", 1));
