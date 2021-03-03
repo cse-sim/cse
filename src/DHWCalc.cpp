@@ -3013,6 +3013,8 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 											UNTEMP,	5,
 		  "tSP",	   DegCtoF(hw_pHPWH->getSetpoint()),
 											UNTEMP,	5,
+		  "tCondIn",   DegCtoF(hw_pHPWH->getCondenserWaterInletTemp()),
+											UNTEMP,	5,
 		  "tOut",      tOut > 0. ? DegCtoF(tOut) : CSVItem::ci_UNSET,
 											UNTEMP,  5,
 		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
