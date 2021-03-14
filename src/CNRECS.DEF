@@ -3906,7 +3906,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
 *declare "float hw_GetTankSurfaceArea( float tankCount=1.f, float vol=-1.f) const;"
 *declare "void hw_InitTotals();"
-*declare "bool hw_HasCompressor();"
+*declare "bool hw_HasCompressor() const;"
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
 *declare "void hw_SetNQTXNodes( int nQTXNodes);"

@@ -2898,7 +2898,7 @@ RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
 
 }	// HPWHLINK::hw_SetHeatingCap
 //-----------------------------------------------------------------------------
-RC HPWHLINK::hw_GetHeatingCap(			// set heating capacity
+RC HPWHLINK::hw_GetHeatingCap(			// get compressor heating capacity
 	float& heatingCap,		// returned: design heating capacity, Btuh
 	float ashpTSrcDes,		// source air temp, F
 	float tInletDes,		// cold water inlet, F
@@ -2907,6 +2907,8 @@ RC HPWHLINK::hw_GetHeatingCap(			// set heating capacity
 {
 	RC rc = RCOK;
 	heatingCap = 0.f;
+	if (!hw_pHPWH || !hw_HasCompressor())
+		return RCBAD;		// bad setup or no compressor
 	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
 	if (minT == double(HPWH::HPWH_ABORT))
 		rc = RCBAD;
@@ -2973,15 +2975,16 @@ void HPWHLINK::hw_InitTotals()		// run init
 	hw_fMixUse = hw_fMixRL = 1.f;
 }		// HPWLINK::hw_InitTotals
 //-----------------------------------------------------------------------------
-bool HPWHLINK::hw_HasCompressor()
-// sets hw_HSCount (# of HPHW heat sources)
+bool HPWHLINK::hw_HasCompressor() const
 // returns true iff HPWH has a compressor (= is a heat pump)
 {
-	hw_HSCount = hw_pHPWH->getNumHeatSources();	// insurance
-	for (int iHS = 0; iHS < hw_HSCount; iHS++)
-	{	HPWH::HEATSOURCE_TYPE hsTy = hw_pHPWH->getNthHeatSourceType(iHS);
-		if (hsTy == HPWH::TYPE_compressor)
-			return true;
+	if (hw_pHPWH)
+	{	int nHS = hw_pHPWH->getNumHeatSources();	// insurance
+		for (int iHS = 0; iHS < nHS; iHS++)
+		{	HPWH::HEATSOURCE_TYPE hsTy = hw_pHPWH->getNthHeatSourceType(iHS);
+			if (hsTy == HPWH::TYPE_compressor)
+				return true;
+		}
 	}
 	return false;
 }		// HPWHLINK::hw_HasCompressor
@@ -3765,24 +3768,26 @@ RC DHWHEATER::wh_RddInit()		// late pre-run init
 {
 	RC rc = RCOK;
 	DHWSYS* pWS = wh_GetDHWSYS();
-	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 1)
-	{	
-		if (wh_IsHPWHModel())
+	if (wh_IsHPWHModel() && wh_HPWH.hw_HasCompressor())
+	{	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 1)
 		{	rc = wh_HPWH.hw_SetHeatingCap(
 				wh_heatingCap,			// required capacity
 				pWS->ws_ashpTSrcDes,	// source air
 				pWS->ws_tInletDes,		// inlet water temp
 				pWS->ws_tUseDes);		// outlet water temp
+			if (rc)
+				rc = err(PERR, "DHWHEATER::wh_RddInit(): wh_IsScalable() inconsistency.");
 		}
-		else
-			rc = err(PERR, "DHWHEATER::wh_RddInit(): wh_IsScalable() inconsistency.");
-	}
 
-	rc |= wh_HPWH.hw_GetHeatingCap(
-		wh_heatingCap,			// capacity
-		pWS->ws_ashpTSrcDes,	// source air
-		pWS->ws_tInletDes,		// inlet water temp
-		pWS->ws_tUseDes);		// outlet water temp
+		// retrieve capacity: may not have been set; limits may have been applied
+		rc |= wh_HPWH.hw_GetHeatingCap(
+			wh_heatingCap,			// capacity
+			pWS->ws_ashpTSrcDes,	// source air
+			pWS->ws_tInletDes,		// inlet water temp
+			pWS->ws_tUseDes);		// outlet water temp
+	}
+	else
+		wh_heatingCap = 0.f;
 
 	return rc;
 }	// DHWHEATER::wh_RddInit
