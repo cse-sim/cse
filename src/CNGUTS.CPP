@@ -903,8 +903,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 // Returns RCOK if all ok, else error code, message already issued.
 {
-	// callers 6-95: tp_MainSimI(); cnausz.cpp:begDesDay().
-
 	// CAUTION this fcn called BEFORE setting of time/date variables Top.jDay, Top.isWarmup, Top.isDT, etc.
 
 	// note tp_DTInit() called by caller after initing jDay, for warmup then for run, 1995.
@@ -913,6 +911,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	   If a leap year >= 0, tddyi() allows for Feb 29.  For this to work, must find / check / fix
 	   all conversions to use same year, including those in input e.g. run start & end month-day. */
 
+	RC rc = RCOK;
 
 // Initialize for location
 	EF( locInit() )		// calls slinit() w wthr file location data (via Top).
@@ -923,6 +922,11 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 //   Do each phase, allowing file or location changes.
 //   Messages errors.
 	EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+
+	// pre-run DHW init (may need weather data)
+	DHWSYS* pWS;
+	RLUP(WsR, pWS)
+		rc |= pWS->ws_RddInit();
 
 // Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
@@ -963,7 +967,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 	// RSYS init
 	RSYS* rs;
-	RC rc = RCOK;
 	RLUP( RsR, rs)
 		rc |= rs->rs_RddInit( isAusz);
 

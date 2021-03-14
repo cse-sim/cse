@@ -582,28 +582,29 @@ struct DHWSIZEDAY		// retains info for candiate DHW sizing day
 	void wzd_Clear() { wzd_loadHrs.Clear(); }
 	void wzd_EndDay() { wzd_loadHrs.SetStats(); }
 	float Sum() const { return wzd_loadHrs.Sum(); }
-	VF24 wzd_loadHrs;
+	VF24 wzd_loadHrs;		// 24 hr load profile, Btu
 
 };		// struct DHWSIZEDAY
 //=============================================================================
 struct DHWSIZER		// data and methods to support autosizing DHWSYS components
 {
-	DHWSIZER(DHWSYS* pDHWSYS, int nSizeDays, int nWorstHrs)
-		: wz_pDHWSYS(pDHWSYS), wz_nSizeDays(nSizeDays), wz_nWorstHrs( nWorstHrs)
-	{	wz_topNDays = std::make_unique<DHWSIZEDAY[]>(nSizeDays);
+	DHWSIZER(DHWSYS* pDHWSYS, size_t nSizeDays=10)
+		: wz_pDHWSYS(pDHWSYS)
+	{
+		wz_nSizeDays = max(nSizeDays, 1u);
+		wz_topNDays = std::make_unique<DHWSIZEDAY[]>(nSizeDays);
 	}
 	~DHWSIZER() {}
 	void wz_Clear();
 	DHWSYS* wz_GetDHWSYS() const { return wz_pDHWSYS; }
 	void wz_SetHr(int iH, float dhwLoad);
 	void wz_DoDay();
-	RC wz_DeriveSize();
+	RC wz_DeriveSize(float capSizeF = 1.f, float storeSizeF = 1.f,
+		UINT iSizeDay = 6, UINT maxRunHrs = 16, UINT nWorstHrs = 4);
 
 private:
 	DHWSYS* wz_pDHWSYS;		// parent DHWSYS
 	size_t wz_nSizeDays;	// # of days tracked
-	int wz_nWorstHrs;		// number of hours in "worst event" window
-
 	DHWSIZEDAY wz_curDay;		// current day, hourly values accum'd here
 	std::unique_ptr<DHWSIZEDAY[]> wz_topNDays;	// top wz_nSizeDays DHWSIZEDAYs *not sorted*
 
@@ -633,38 +634,51 @@ void DHWSIZER::wz_SetHr(			// track load by hour
 //-----------------------------------------------------------------------------
 void DHWSIZER::wz_DoDay()		// end-of-day sizing accounting
 {
-	
-
 	wz_curDay.wzd_EndDay();
 
 	size_t iSz = wz_sizeDays.size();
 	if (iSz < wz_nSizeDays)
-	{
-		wz_topNDays[iSz] = wz_curDay;
+	{	wz_topNDays[iSz] = wz_curDay;
 		wz_sizeDays.push(&wz_topNDays[ iSz]);
 	}
 	else
-	{
-		DHWSIZEDAY* pTop = wz_sizeDays.top();
-		float tSize = pTop->Sum();
-		if (wz_curDay.Sum() > tSize)
-		{	wz_sizeDays.pop();
-			*pTop = wz_curDay;
-			wz_sizeDays.push(pTop);
+	{	DHWSIZEDAY* pTop = wz_sizeDays.top();
+		float tSize = pTop->Sum();	// smallest of tracked loads
+		if (wz_curDay.Sum() > tSize)	// if cur day bigger
+		{	wz_sizeDays.pop();		// discard smallest
+			*pTop = wz_curDay;		// replace in wz_topNDays
+			wz_sizeDays.push(pTop);	// add to priority queue
 		}
 	}
 }		// DHWSIZER::wz_DoDay
 //-----------------------------------------------------------------------------
-RC DHWSIZER::wz_DeriveSize()
+RC DHWSIZER::wz_DeriveSize(		// calc required heating and storage volume
+	float capSizeF /*= 1.f*/,		// capacity oversize factor
+	float storeSizeF /*= 1.f*/,		// storage volume oversize factor
+	UINT iSizeDay /*=6*/,			// 0-based ith highest day (sizes capacity)
+	UINT maxRunHrs /*= 16*/,		// run duration assumed on sizing day, hr
+	UINT nWorstHrs /*= 4*/)			// duration of peak draw, hr
+									//   sizes storage
+
+// Note: tracked day priority_queue is destroyed during calc
+//     >> Only one call allowed <<
+
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	const DHWSYS* pWS = wz_GetDHWSYS();
+	DHWSYS* pWS = wz_GetDHWSYS();
 
-	// fill working vector, [ 0] = highest load
-	//   use priority_queue actual size = insurance re (very) short runs
-	size_t nSizeDaysActual = wz_sizeDays.size();
+	// fill vector with pointers to topN days ordered by daily load
+	//   [ 0] = highest daily total
+	//   [ 1] = next
 	std::vector< DHWSIZEDAY*> topN;
+
+	// use priority_queue actual size = insurance re (very) short runs
+	size_t nSizeDaysActual = wz_sizeDays.size();
+	if (nSizeDaysActual == 0)
+		return pWS->orMsg(ERR, "DHWSIZER fail");
+	
 	topN.resize( nSizeDaysActual);		// allocate all slots
 	size_t iX = nSizeDaysActual;
 	while (wz_sizeDays.size() > 0)
@@ -672,34 +686,33 @@ RC DHWSIZER::wz_DeriveSize()
 		wz_sizeDays.pop();
 	}
 
-	// idx of sizing day.  6 = annual 2% approx
-	size_t iSizeDay = min(6u, nSizeDaysActual - 1);
+	// idx of sizing day.  Default 6 = annual 2% approx ((6+1)/365 = .019)
+	iSizeDay = min(iSizeDay, nSizeDaysActual - 1);
 	const DHWSIZEDAY* pSizeDay = topN[iSizeDay];
 	float loadDay = pSizeDay->Sum();
-	float cap = loadDay / 16.f;
+	float cap = capSizeF * loadDay / float( maxRunHrs);
 
-
-	// find worst event in all days
-	VMovingSum< float> worstHrs( wz_nWorstHrs);
+	// find worst event in all days to size storage
+	nWorstHrs = max(nWorstHrs, 1u);
+	VMovingSum< float> worstHrs( nWorstHrs);
 	float worstEventSum = 0.f;		// highest load in any nWorstHrs
 	for (DHWSIZEDAY* pSzD : topN)
 	{	worstHrs.vm_Clear();
-		for (int iH = 0; iH < 23; ++iH)
+		// scan day for nWorstHrs run
+		//   wrap at midnight = (unrealistically?) conservative search
+		for (UINT iH = 0; iH < 23+nWorstHrs; ++iH)
 		{	float eventSum = worstHrs.vm_Sum(pSzD->wzd_loadHrs[iH % 24]);
-			if (iH >= wz_nWorstHrs - 1)
-			{	if (eventSum > worstEventSum)
-				{	worstEventSum = eventSum;
-					// worstEvent = 
-				}
-			}
+			if (eventSum > worstEventSum)
+				worstEventSum = eventSum;
 		}
 	}
 
-	float store = worstEventSum - wz_nWorstHrs * cap;
-	float storeVol = store / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
+	float storeHeat = storeSizeF * (worstEventSum - nWorstHrs * cap);	// can this be <0
+	float storeVol = storeHeat / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
+
+	pWS->ws_ApplySizingResults(cap, storeVol);
 
 	return rc;
-
 
 }	// DHWSIZER::wz_DeriveSize
 //=============================================================================
@@ -952,10 +965,10 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		//   allows use of 2% day = 365*.02 = 7th highest day
 		//   Could be done for all DHWSYSs altho not needed for those w/o DHWHEATERs
 		if (!pWSCentral)
-			ws_pSizer = new DHWSIZER(this, 10, 4);		// set up to track top 10 load days
+			ws_pSizer = new DHWSIZER(this, 10);		// set up to track top 10 load days
 		if (!IsSet(DHWSYS_TINLETDES))
-			ws_tInletDes = 50.f;	// Wfile.tMainsMinYr;
-
+			ws_tInletDes = 50.f;	// initial default
+									//   set from Wfile.tMainsMinYr in ws_RddInit
 		return rc;
 	}
 
@@ -1167,6 +1180,28 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 	return rc;	// pass 1 return
 }		// DHWSYS::ws_Init
+//----------------------------------------------------------------------------
+RC DHWSYS::ws_RddInit()		// late pre-run initialization
+// called at beg of each design day and beg of main simulation
+//   WHY: weather file values not known earlier
+// redundant calls OK
+{
+	RC rc = RCOK;
+	if (!IsSet(DHWSYS_TINLETDES))
+		ws_tInletDes = Wfile.tMainsMinYr;
+	if (!IsSet(DHWSYS_ASHPTSRCDES))
+		ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO?
+
+	// child 
+	DHWHEATER* pWH;
+	RLUPC(WhR, pWH, pWH->ownTi == ss)	// primary heaters
+		rc |= pWH->wh_RddInit();
+	RLUPC(WlhR, pWH, pWH->ownTi == ss)	// loop ("swing") heaters
+		rc |= pWH->wh_RddInit();
+
+	return rc;
+
+}	// DHWSYS::ws_RddInit
 //----------------------------------------------------------------------------
 float DHWSYS::ws_BranchFlow() const		// average branch flow rate
 // returns nominal branch flow, gpm
@@ -2031,6 +2066,25 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 
 	return rc;
 }	// DHWSYS::ws_DoEndPreRun
+//----------------------------------------------------------------------------
+RC DHWSYS::ws_ApplySizingResults(
+	float heatingCap,
+	float vol)
+{
+	RC rc = RCOK;
+
+	if (!IsSet(DHWSYS_HEATINGCAPDES))
+		ws_heatingCapDes = heatingCap;
+
+	if (!IsSet(DHWSYS_VOLDES))
+		ws_volDes = vol;
+
+	DHWSYS* pWSi = WSiB.GetAtSafe(ss);
+	if (pWSi && pWSi != this)
+		pWSi->ws_ApplySizingResults(heatingCap, vol);
+
+	return rc;
+}
 //============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2658,6 +2712,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_NYLEC185A_MP,    hwatLARGE | HPWH::MODELS_NyleC185A_MP },
 	{ C_WHASHPTYCH_NYLEC250A_MP,    hwatLARGE | HPWH::MODELS_NyleC250A_MP },
 #endif
+	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | HPWH::MODELS_TamScalable_SP },
+
 	{ 32767,                         HPWH::MODELS(-1) }  };
 
 	SI tableVal = presetTbl->lookup(ashpTy);
@@ -2800,6 +2856,78 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 
 }	// HPWHLINK::hw_InitFinalize
 //-----------------------------------------------------------------------------
+RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
+	float heatingCap,		// design heating capacity, Btuh
+	float ashpTSrcDes,		// source air temp, F
+	float tInletDes,		// cold water inlet, F
+	float tUseDes)			// hot water use temp, F
+// assumes hw_pHPWH is scalable
+// sets both compressor and resistance (if any) power
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+
+	int hpwhRet = 0;
+	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
+	if (minT == double(HPWH::HPWH_ABORT))
+		++hpwhRet;
+	else
+	{	if (ashpTSrcDes < minT)
+			ashpTSrcDes = minT;		// constrain source air temp to
+									//  HPWH lockout temp
+
+		// set compressor capacity at design conditions
+		hpwhRet = hw_pHPWH->setCompressorOutputCapacity(
+					heatingCap,
+					ashpTSrcDes,	// design source air temp, F
+					tInletDes,		// inlet temp, F
+					tUseDes,		// outlet temp, F
+					HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
+
+		if (!hpwhRet)
+			// set capacity of all reistance elements to design cap
+			//   (handles e.g. possible low-temp lockout)
+			hpwhRet = hw_pHPWH->setResistanceCapacity( heatingCap, 0, HPWH::UNITS_BTUperHr);
+	}
+	if (hpwhRet)
+		// unexpected HPWH error (inconsistent HPWH::isHPWHScalable() logic?)
+		//   isHPWHScalable() checked in wh_HPWHInit()
+		rc = hw_pOwner->oer("Program error (HPWHLINK::hw_SetHeatingCap): HPWH error");
+
+	return rc;
+
+}	// HPWHLINK::hw_SetHeatingCap
+//-----------------------------------------------------------------------------
+RC HPWHLINK::hw_GetHeatingCap(			// set heating capacity
+	float& heatingCap,		// returned: design heating capacity, Btuh
+	float ashpTSrcDes,		// source air temp, F
+	float tInletDes,		// cold water inlet, F
+	float tUseDes) const	// hot water use temp, F
+// returns RCOK and heatingCap iff success
+{
+	RC rc = RCOK;
+	heatingCap = 0.f;
+	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
+	if (minT == double(HPWH::HPWH_ABORT))
+		rc = RCBAD;
+	else
+	{	if (ashpTSrcDes < minT)
+			ashpTSrcDes = minT;		// constrain source air temp to
+									//  HPWH lockout temp
+
+		double cap = hw_pHPWH->getCompressorCapacity(
+						ashpTSrcDes,	// design source air temp, F
+						tInletDes,		// inlet temp, F
+						tUseDes,		// outlet temp, F
+						HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
+		if (cap == double(HPWH::HPWH_ABORT))
+			rc = RCBAD;
+		else
+			heatingCap = float(cap);
+	}
+	return rc;
+}		// HPWHLINK::hw_GetHeatingCap
+//-----------------------------------------------------------------------------
 RC HPWHLINK::hw_GetInfo(		// return HPWH tank values
 	float& vol,		// vol, gal
 	float& UA,		// UA, Btuh/F
@@ -2908,7 +3036,6 @@ void HPWHLINK::hw_SetQTX(
 }		// HPWHLINK::hw_SetQTX
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
-	// DHWSYS* pWS,		// parent DHWSYS
 	float& tSetpoint)	// setpoint for current hour, F
 						//  returned updated to reflect HPWH
 						//    restrictions if any
@@ -2923,20 +3050,26 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	// setpoint temp: ws_tUse has hourly variability
 	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
 	if (!hw_pHPWH->isSetpointFixed())
-		hw_pHPWH->setSetpoint(DegFtoC(tSetpoint));
+	{	double tSetpointMax;
+		bool bSPP = hw_pHPWH->isNewSetpointPossible(tSetpoint, tSetpointMax, HPWH::UNITS_F);
+		// silently limit to max acceptable
+		//   if HPWH has resistance, max = 212
+		float tSetpointX = bSPP ? tSetpoint : tSetpointMax;		
+		hw_pHPWH->setSetpoint(tSetpointX, HPWH::UNITS_F);
+	}
 
 	// retrieve resulting setpoint after HPWH restrictions
 	tSetpoint = DegCtoF(hw_pHPWH->getSetpoint());
 	if (hw_tHWOut == 0.f)
 		hw_tHWOut = tSetpoint;		// initial guess for HW output temp
-										//   updated every substep with nz draw
+									//   updated every substep with nz draw
 	if (!hw_tankTempSet)
 	{	// initialize tank temp on 1st call
 		//   must be done after setting HPWH setpoint (=ws_tSetpoint)
 		//   (ws_tSetpoint may be expression)
 		if (hw_pHPWH->resetTankToSetpoint())
 			rc |= RCBAD;
-		hw_tankTempSet++;
+		++hw_tankTempSet;
 	}
 
 	return rc;
@@ -3388,7 +3521,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 				: HPWHLINK::hwatSMALL;
 			const char* whAshpTyTx = getChoiTx(DHWHEATER_ASHPTY, 1);
 			if (!wh_HPWH.hw_IsAttr(wh_ashpTy, reqdAttr))
-				rc |= ooer(DHWHEATER_ASHPTY, "whAshpType=%s not supported %s", whAshpTyTx, whenTy);
+				rc |= ooer(DHWHEATER_ASHPTY, "whASHPType=%s not supported %s", whAshpTyTx, whenTy);
 			else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
 				rc |= requireN( "when whASHPType=Generic", DHWHEATER_EF, DHWHEATER_VOL, 0);
 			else
@@ -3452,9 +3585,16 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			rc |= disallow(DHWHEATER_INSULR, "when 'whUA' is specified");
 		else if (argCount == 0 && wh_type == C_WHTYPECH_BUILTUP)
 			rc |= oer("whUA or whInsulR is required %s", whenTy);
+		// note: DHWHEATER_HEATINGCAP repeat check in wh_HPWHInit()
+		//       (after HPWH linkage established)
 	}
 	else
 		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, 0);
+
+	// check heating capacity scalability
+	//   note wh_IsScalable() can return -1=maybe -> further checks later
+	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 0)
+		ignore( DHWHEATER_HEATINGCAP, whenHs);
 
 	if (!wh_CanHaveLoopReturn())
 		ignoreN(whenHs, DHWHEATER_INHTSUPPLY, DHWHEATER_INHTLOOPRET, 0);
@@ -3477,6 +3617,25 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 
 	return rc;
 }	// DHWHEATER::wh_CkF
+//-----------------------------------------------------------------------------
+int DHWHEATER::wh_IsScalable() const		// can heating capacity be set
+// returns 1: yes
+//         0: no
+//        -1: maybe (re HPWH pending HPWHLINK setup)
+{
+	int ret = 0;
+	if (wh_IsHPWHModel())
+	{
+		ret = wh_HPWH.hw_pHPWH
+			? wh_HPWH.hw_pHPWH->isHPWHScalable()
+			: -1;
+	}
+	// else
+	//	ret = 0;
+
+	return ret;
+
+}		// DHWHEATER::wh_IsScalable
 //-----------------------------------------------------------------------------
 RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
@@ -3598,6 +3757,35 @@ void DHWHEATER::wh_InitRunTotals()
 	wh_HPWH.hw_InitTotals();
 
 }		// DHWHEATER::wh_InitRunTotals
+//----------------------------------------------------------------------------
+RC DHWHEATER::wh_RddInit()		// late pre-run init
+// called at beg of each design day and beg of main simulation
+//   WHY: weather-dependent defaults not previously known
+// redundant calls OK
+{
+	RC rc = RCOK;
+	DHWSYS* pWS = wh_GetDHWSYS();
+	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 1)
+	{	
+		if (wh_IsHPWHModel())
+		{	rc = wh_HPWH.hw_SetHeatingCap(
+				wh_heatingCap,			// required capacity
+				pWS->ws_ashpTSrcDes,	// source air
+				pWS->ws_tInletDes,		// inlet water temp
+				pWS->ws_tUseDes);		// outlet water temp
+		}
+		else
+			rc = err(PERR, "DHWHEATER::wh_RddInit(): wh_IsScalable() inconsistency.");
+	}
+
+	rc |= wh_HPWH.hw_GetHeatingCap(
+		wh_heatingCap,			// capacity
+		pWS->ws_ashpTSrcDes,	// source air
+		pWS->ws_tInletDes,		// inlet water temp
+		pWS->ws_tUseDes);		// outlet water temp
+
+	return rc;
+}	// DHWHEATER::wh_RddInit
 //----------------------------------------------------------------------------
 int DHWHEATER::wh_SetFunction()		// determine function
 // returns whfcnXXXX
@@ -3756,6 +3944,15 @@ RC DHWHEATER::wh_DoEndPreRun()
 {
 	RC rc = RCOK;
 
+	DHWHEATER* pWHi = wh_GetInputDHWHEATER();
+	if (!pWHi)
+		return orMsg(ERR, "Bad input record linkage in wh_DoEndPreRun");
+
+	if (0)
+	{
+		pWHi->wh_heatingCap = 0;
+	}
+	
 	if (!wh_UsesDerivedLDEF())
 		return rc;		// no adjustments required
 
@@ -3766,8 +3963,7 @@ RC DHWHEATER::wh_DoEndPreRun()
 			// "Load-dependent energy factor"
 			float LDEF = wh_CalcLDEF(arl);
 			// update input record with derived value
-			DHWHEATER* pWHi = wh_GetInputDHWHEATER();
-			if (pWHi && !pWHi->IsSet(DHWHEATER_LDEF))
+			if (!pWHi->IsSet(DHWHEATER_LDEF))
 			{	pWHi->wh_LDEF = LDEF;
 				pWHi->fStat(DHWHEATER_LDEF) |= FsSET | FsVAL;
 			}
@@ -3815,7 +4011,21 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		}
 	}
 
+	if (IsSet(DHWHEATER_HEATINGCAP))
+	{	// check whether heating capacity can be adjusted
+		if (!wh_HPWH.hw_pHPWH->isHPWHScalable())
+		{	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
+				rc |= oer("whHeatingCap is not allowed when whASHPType=%s",
+					getChoiTx(DHWHEATER_ASHPTY, 1));
+			else
+				rc |= oer("whHeatingCap is not allowed.");
+		}
+		// else
+		//   capacity set in wh_RddInit() (after weather data known)
+	}
+
 	// at this point, HPWH has known size and default UA
+	//   (later capacity scaling does not alter size)
 	//   if additional UA or insulR is provided, adjust UA
 	rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR, wh_tankCount);
 
@@ -3843,8 +4053,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	}
 	return rc;
 }		// DHWHEATER::wh_HPWHInit
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Demand reduction (DR) stuff
 struct DRMAP
 {	DHWDRSIG drSig;		// CSE signal choice

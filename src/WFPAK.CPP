@@ -543,7 +543,7 @@ void WDYEAR::wdy_Init(
 //-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int erOp /*=WRN*/)
-// Note: not DST awareness / adjustment
+// Note: no DST awareness / adjustment
 // returns RCOK on success
 {
 	RC rc = RCOK;
