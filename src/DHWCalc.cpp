@@ -919,6 +919,11 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	{	// pass 0: init things that have no inter-DHWSYS effect
 		ws_SetMTRPtrs();
 
+		if (!IsSet(DHWSYS_TINLETDES))
+			ws_tInletDes = Wfile.tMainsMinYr;
+		if (!IsSet(DHWSYS_ASHPTSRCDES))
+			ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO?
+
 		// solar water heating
 		ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
 		if (ws_pDHWSOLARSYS)
@@ -966,9 +971,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		//   Could be done for all DHWSYSs altho not needed for those w/o DHWHEATERs
 		if (!pWSCentral)
 			ws_pSizer = new DHWSIZER(this, 10);		// set up to track top 10 load days
-		if (!IsSet(DHWSYS_TINLETDES))
-			ws_tInletDes = 50.f;	// initial default
-									//   set from Wfile.tMainsMinYr in ws_RddInit
+
 		return rc;
 	}
 
@@ -1181,16 +1184,13 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	return rc;	// pass 1 return
 }		// DHWSYS::ws_Init
 //----------------------------------------------------------------------------
+#if 0
+// activate if needed
 RC DHWSYS::ws_RddInit()		// late pre-run initialization
 // called at beg of each design day and beg of main simulation
-//   WHY: weather file values not known earlier
 // redundant calls OK
 {
 	RC rc = RCOK;
-	if (!IsSet(DHWSYS_TINLETDES))
-		ws_tInletDes = Wfile.tMainsMinYr;
-	if (!IsSet(DHWSYS_ASHPTSRCDES))
-		ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO?
 
 	// child 
 	DHWHEATER* pWH;
@@ -1202,6 +1202,7 @@ RC DHWSYS::ws_RddInit()		// late pre-run initialization
 	return rc;
 
 }	// DHWSYS::ws_RddInit
+#endif
 //----------------------------------------------------------------------------
 float DHWSYS::ws_BranchFlow() const		// average branch flow rate
 // returns nominal branch flow, gpm
@@ -3761,36 +3762,15 @@ void DHWHEATER::wh_InitRunTotals()
 
 }		// DHWHEATER::wh_InitRunTotals
 //----------------------------------------------------------------------------
+#if 0
+// activate if needed
 RC DHWHEATER::wh_RddInit()		// late pre-run init
 // called at beg of each design day and beg of main simulation
-//   WHY: weather-dependent defaults not previously known
-// redundant calls OK
 {
 	RC rc = RCOK;
-	DHWSYS* pWS = wh_GetDHWSYS();
-	if (wh_IsHPWHModel() && wh_HPWH.hw_HasCompressor())
-	{	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 1)
-		{	rc = wh_HPWH.hw_SetHeatingCap(
-				wh_heatingCap,			// required capacity
-				pWS->ws_ashpTSrcDes,	// source air
-				pWS->ws_tInletDes,		// inlet water temp
-				pWS->ws_tUseDes);		// outlet water temp
-			if (rc)
-				rc = err(PERR, "DHWHEATER::wh_RddInit(): wh_IsScalable() inconsistency.");
-		}
-
-		// retrieve capacity: may not have been set; limits may have been applied
-		rc |= wh_HPWH.hw_GetHeatingCap(
-			wh_heatingCap,			// capacity
-			pWS->ws_ashpTSrcDes,	// source air
-			pWS->ws_tInletDes,		// inlet water temp
-			pWS->ws_tUseDes);		// outlet water temp
-	}
-	else
-		wh_heatingCap = 0.f;
-
 	return rc;
 }	// DHWHEATER::wh_RddInit
+#endif
 //----------------------------------------------------------------------------
 int DHWHEATER::wh_SetFunction()		// determine function
 // returns whfcnXXXX
@@ -4018,15 +3998,32 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	if (IsSet(DHWHEATER_HEATINGCAP))
 	{	// check whether heating capacity can be adjusted
-		if (!wh_HPWH.hw_pHPWH->isHPWHScalable())
+		if (!wh_HPWH.hw_pHPWH->isHPWHScalable() || !wh_HPWH.hw_HasCompressor())
 		{	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 				rc |= oer("whHeatingCap is not allowed when whASHPType=%s",
 					getChoiTx(DHWHEATER_ASHPTY, 1));
 			else
 				rc |= oer("whHeatingCap is not allowed.");
 		}
-		// else
-		//   capacity set in wh_RddInit() (after weather data known)
+		else
+		{	RC rc2 = wh_HPWH.hw_SetHeatingCap(
+				wh_heatingCap,			// required capacity
+				pWS->ws_ashpTSrcDes,	// source air
+				pWS->ws_tInletDes,		// inlet water temp
+				pWS->ws_tUseDes);		// outlet water temp
+			if (rc2)
+				rc |= err(PERR, "DHWHEATER::wh_HPWHInit: wh_IsScalable() inconsistency.");
+		}
+	}
+
+	if (wh_HPWH.hw_HasCompressor())
+	{	// retrieve capacity: may not have been set; limits may have been applied
+		// TODO: generalize for non-compressor types
+		rc |= wh_HPWH.hw_GetHeatingCap(
+			wh_heatingCap,			// capacity
+			pWS->ws_ashpTSrcDes,	// source air
+			pWS->ws_tInletDes,		// inlet water temp
+			pWS->ws_tUseDes);		// outlet water temp
 	}
 
 	// at this point, HPWH has known size and default UA

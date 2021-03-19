@@ -78,10 +78,6 @@ LOCAL void FC NEAR setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC NEAR doIvlReports();
 LOCAL void FC NEAR binResInit( int isAusz);
 LOCAL void FC NEAR binResFinish();
-LOCAL RC   FC NEAR locInit();
-LOCAL void FC NEAR locDone();
-
-
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -120,9 +116,9 @@ void FC cgClean( 		// cg overall init/cleanup routine
 	dmfree( DMPP( UnspoolInfo));	// if not NULL, free dm block, set ptr NULL. dmpak.cpp.
 
 	cgDone();				// simulator cleanup, below, normally redundant
-	runFazDataFree();			// free run basAnc records, etc. below, normally redundant. 6-95.
+	runFazDataFree();		// free run basAnc records, etc. below, normally redundant. 6-95.
 
-	locDone();				// clean up location stuff: free Locsolar. local. redundant call ok.
+	Top.tp_LocDone();		// clean up location stuff: free Locsolar. redundant call ok.
 
 #if defined( BINRES)
 	brfw.clean();			// clean the only ResfWriter object. local object, brfw.cpp code.
@@ -914,19 +910,21 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RC rc = RCOK;
 
 // Initialize for location
-	EF( locInit() )		// calls slinit() w wthr file location data (via Top).
-						// inits Locsolar (comments below)
-						// EF: return RCBAD on any non-RCOK return.
+	EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
+							// inits Locsolar (comments below)
+							// EF: return RCBAD on any non-RCOK return.
 
 // Set up weather file, TDV file, and DESCONDs
 //   Do each phase, allowing file or location changes.
 //   Messages errors.
 	EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
 
-	// pre-run DHW init (may need weather data)
-	DHWSYS* pWS;
-	RLUP(WsR, pWS)
-		rc |= pWS->ws_RddInit();
+#if 0	// enable if needed
+0	// pre-run DHW init
+0	DHWSYS* pWS;
+0	RLUP(WsR, pWS)
+0		rc |= pWS->ws_RddInit();
+#endif
 
 // Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
@@ -1023,9 +1021,6 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-// close weather file & clean up. Tentatively 6-95 done each phase eg so wthr file name may change.
-	cgWfDone();				// cgwthr.cpp. only call other than cleanup fcns. Redundant call ok.
-
 #if 1//6-95 move to cgRddDone from cgMainsim so also done after error
 #ifdef BINRES	// cnglob.h
 // close binary results files if open
@@ -1037,7 +1032,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // zone and ah results records are not free'd here, but cgRddInit code that allocates them repeats ok anyway, 6-95.
 
 // clean up location data/solar stuff
-	locDone();				// eg free Locsolar. local. redundant call ok.
+	Top.tp_LocDone();		// eg free Locsolar. redundant call ok.
 	return RCOK;
 }                   // cgRddDone
 //-----------------------------------------------------------------------------------------------------------
@@ -1047,7 +1042,7 @@ RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
-	// callers 6-95: tp_MainSimI(); cnausz.cpp:cgAuszI().
+	cgWthrClean(DONE);	// close wthr file / clean weather data structures
 	return RCOK;		// empty function 7-95.
 }		// cgFazDone
 //-----------------------------------------------------------------------------------------------------------
@@ -2610,11 +2605,11 @@ LOCAL void FC NEAR binResFinish()	// complete and close binary results files at 
 static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) for current calculation.
 					   Locsolar holds location and daily solar info for slpak fcns.
 					   Alloc/init for location by slinit called from locInit().
-					   Released by slfree from locDone().
+					   Released by slfree from tp_LocDone().
 					   Address saved by slinit for other slpak calls.
 				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
 //------------------------------------------------------------------------
-LOCAL RC FC NEAR locInit()		// location-initializer for CSE
+RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 // inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
 // returns RCOK if ok, else message already issued.
 {
@@ -2622,17 +2617,18 @@ LOCAL RC FC NEAR locInit()		// location-initializer for CSE
 //   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
 //   slpak remembers its location internally.
 
-	Locsolar = slinit( RAD( Top.latitude),	// latitude (to radians)
-					   RAD( Top.longitude), // longitude
-					   Top.timeZone, 		// time zone
-					   Top.elevation );		// site altitude (ft)
+	Locsolar = slinit( RAD( latitude),	// latitude (to radians)
+					   RAD( longitude), // longitude
+					   timeZone, 		// time zone
+					   elevation );		// site altitude (ft)
 	return RCOK;
-}		// locInit
+}		// TOPRAT::tp_LocInit
 //------------------------------------------------------------------------
-LOCAL void FC NEAR locDone()		// semi-dummy locdone(): Free location related dm stuff: Locsolar
+RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
 {
 	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
-}			// locDone
+	return RCOK;
+}			// TOPRAT::tp_LocDone
 //===========================================================================================================
 
 /***************************************** rest of file is if-outs *****************************************/

@@ -611,10 +611,8 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 				rc |= pWF->wf_Read( pWd, jDay, iHr, erOp|WF_FORCEREAD);
 				if (rc)
 					break;
-#if defined( SOLARFIX)
 				pWd->wd_Adjust( iHr);	// apply adjusments per user input
 										//   aniso, solar factors, wind factor
-#endif
 			}
 			if (rc)
 				break;
@@ -1473,8 +1471,10 @@ x     dmfree( DMPP( wfName));		// free the heap storage now -- name is in yac->p
 	return rc;			// return value RCOK if ok
 }		// WFILE::wf_Open
 //----------------------------------------------------------------------------
-RC WFILE::wf_Close( 			// Close weather file if open. returns RCOK if ok.
+RC WFILE::wf_Close( 		// Close weather file if open
 	char* hdr /*=NULL*/ )	// NULL or pointer to header to rewrite if file open with write access. For wthr utilities.
+// duplicate calls OK (= nop)
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 	if (yac)
@@ -1819,8 +1819,11 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 						//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
+						//  WF_DBGTRACE: printf trace msg for debugging
 // returns RCOK if OK else other RC, error msg issued per erOp.
 {
+	RC rc = RCOK;
+
 	// handle Feb 29
 	if ( isLeap 				// if wf has Feb 29 (for possible future use in ET1 files 10-94)
  	 &&  !(erOp & WF_USELEAP) )	// if caller is NOT simulating Feb 29
@@ -1831,26 +1834,30 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//   NOTE: cached data assumes full annual weather file
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
-		return wf_pWDY->wdy_TransferHr( jDay, iHr, pwd, erOp);
-
-	RC rc = RCOK;
-
-	// handle alternative formats
-	// pwd->wd_Init( 1);		// set all to UNSET -- done in each xxxRead
-	if (wf_IsPacked())
-	{	// format is packed: BSGS, BSGSdemo, ET1, or ... .
-		USI* phour = (USI *)wf_PackedHrRead( jDay, iHr, erOp);
-		rc |= phour ? pwd->wd_Unpack( iHr, phour, wFileFormat) : RCBAD;
-	}
+		rc |= wf_pWDY->wdy_TransferHr( jDay, iHr, pwd, erOp);
 	else
-		rc |=
-		  wFileFormat==CSW    ? wf_CSWRead( pwd, jDay, iHr, erOp)
-		: wFileFormat==EPW    ? wf_EPWRead( pwd, jDay, iHr, erOp)
-		: wFileFormat==T24DLL ? wf_T24DLLRead( pwd, jDay, iHr, erOp)
-		:                       RCBAD;
+	{	// handle alternative formats
+		// pwd->wd_Init( 1);		// set all to UNSET -- done in each xxxRead
+		if (wf_IsPacked())
+		{	// format is packed: BSGS, BSGSdemo, ET1, or ... .
+			USI* phour = (USI*)wf_PackedHrRead(jDay, iHr, erOp);
+			rc |= phour ? pwd->wd_Unpack(iHr, phour, wFileFormat) : RCBAD;
+		}
+		else
+			rc |=
+			  wFileFormat == CSW ? wf_CSWRead(pwd, jDay, iHr, erOp)
+			: wFileFormat == EPW ? wf_EPWRead(pwd, jDay, iHr, erOp)
+			: wFileFormat == T24DLL ? wf_T24DLLRead(pwd, jDay, iHr, erOp)
+			: RCBAD;
 
-	// read additional TDV data if requested and available
-	rc |= wf_TDVReadIf( pwd, jDay, iHr, erOp);
+		// read additional TDV data if requested and available
+		rc |= wf_TDVReadIf(pwd, jDay, iHr, erOp);
+	}
+#if 0 && defined( _DEBUG)
+	if (erOp & WF_DBGTRACE)
+		printf("\nWFR %2d %2d %6d db=%0.2f",
+			jDay, iHr, erOp, pwd->wd_db);
+#endif
 
 	return rc;		// other returns above
 }		// WFILE::wf_Read

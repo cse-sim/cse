@@ -132,9 +132,6 @@
 #define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
 
-#define SOLARFIX			// define to correct timing of slday() calls
-							//    and definition of HA, 10-25-2017
-							//    plus add'l changes, 8-2020
 #endif	// ifndef _CNEDEFNS_H
 
 // cndefns.h end

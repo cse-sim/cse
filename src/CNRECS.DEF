@@ -136,9 +136,12 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
 	*declare "RC tp_SetDerived();"
+	*declare "RC tp_FazInit();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
 	*declare "RC tp_WthrInit();"
+    *declare "RC tp_LocInit();"
+    *declare "RC tp_LocDone();"
     *declare "int tp_AuszWthrSource() const;"
     *declare "RC tp_MainSim();"
     *declare "RC tp_MainSimI();"
@@ -254,8 +257,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GEZ windSpeedMin	//  minimum, mph (default=.5)
     *i FLOAT_GEZ windF  		//  factor (default=1)
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
-    *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * BeamRadFactor. cgwthr.cpp.
-    *i FLOAT_GEZ radDiffF	// Diffuse variant of BeamRadFactor, ditto.
+    *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * radBeamF. cgwthr.cpp.
+    *i FLOAT_GEZ radDiffF	// Diffuse radiation fctr. appl sees ANISO( <fileVal>) * radDiffF.
     *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEHOUSE)
 							//   C_VENTAVAILCH_NONE: none
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
@@ -515,12 +518,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h POWER radDiffHrAv 	// diffuse irradiance on horizontal surface, hour energy = average power, from weather file
     *s POWER radBeamShAv	// .. current beam subhour average power, interpolated, Btuh/ft2
     *s POWER radDiffShAv	// .. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2
-#if !defined( SOLARFIX)
-    *h POWER radBeamPvHrAv	// .. previous hour (used to generate -SHAv)
-    *h POWER radBeamNxHrAv	// .. next hour (wthr file read ahead) (used to generate -ShAv)
-    *h POWER radDiffPvHrAv	// .. flavors as for radBeam
-    *h POWER radDiffNxHrAv	// ..
-#endif
 #ifdef SOLAVNEND // cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
 o  *s POWER radBeamSh		// .. end subhour instantaneous value, interpolated
 o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
@@ -3730,13 +3727,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
                             // EcoSizer sizing algorithm
   *declare "struct DHWSIZER* ws_pSizer;"     // tracks highest load days re sizing
-  *r FLOAT ws_tUseDes;          // design (sizing) hot water use temp, F (constant)
+  *f FLOAT ws_tUseDes;          // design (sizing) hot water use temp, F (constant)
                                 //    default = 120 F
-  *d FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
+  *f FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
                                 //    default = annual min mains temp
-                                //      (default set after weather file read, hence *d)
-  *d FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
-                                //    default = ?
+  *f FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
+                                //    default = heating design temp
   *i FLOAT ws_heatingCapDes;    // design heating capacity, Btuh
   *i FLOAT ws_volDes;           // design storage volume, gal
 

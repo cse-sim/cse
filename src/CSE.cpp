@@ -1327,7 +1327,6 @@ x		enbeep( BEEPDONE);		// good completion beep
 //-----------------------------------------------------------------------------------------------------------
 void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 
-// called out of cul(), setTop
 // adds command line options into top record Topi b4 checks.
 {
 // set Top members per command line switches, as saved above by cse3 in static flags
