@@ -782,10 +782,10 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	for (i = 1;  i < argc;  i++)
 		tArgs = scWrapIf(
 					tArgs,
-					strtprintf(" %s", argv[ i]),
+					strtcat(" ", argv[ i], NULL),	// not strtprintf! args may contain '%'
 					"\n             ");
 	cmdLineArgs = strsave( tArgs);	// copy to dm
-	screen( NONL, cmdLineArgs);
+	screenNF( cmdLineArgs, NONL);	// display w/o further formatting
 
 // decode command line
 
