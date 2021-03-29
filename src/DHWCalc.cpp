@@ -589,18 +589,18 @@ struct DHWSIZEDAY		// retains info for candiate DHW sizing day
 struct DHWSIZER		// data and methods to support autosizing DHWSYS components
 {
 	DHWSIZER(DHWSYS* pDHWSYS, size_t nSizeDays=10)
-		: wz_pDHWSYS(pDHWSYS)
+		: wz_pDHWSYS(pDHWSYS), wz_capSizeF( 1.f), wz_storeSizeF( 1.f),
+		  wz_iSizeDay( 6), wz_maxRunHrs( 16)
 	{
 		wz_nSizeDays = max(nSizeDays, 1u);
-		wz_topNDays = std::make_unique<DHWSIZEDAY[]>(nSizeDays);
+		wz_topNDays = std::make_unique<DHWSIZEDAY[]>(wz_nSizeDays);
 	}
 	~DHWSIZER() {}
 	void wz_Clear();
 	DHWSYS* wz_GetDHWSYS() const { return wz_pDHWSYS; }
 	void wz_SetHr(int iH, float dhwLoad);
 	void wz_DoDay();
-	RC wz_DeriveSize(float capSizeF = 1.f, float storeSizeF = 1.f,
-		UINT iSizeDay = 6, UINT maxRunHrs = 16, UINT nWorstHrs = 4);
+	RC wz_DeriveSize();
 
 private:
 	DHWSYS* wz_pDHWSYS;		// parent DHWSYS
@@ -614,6 +614,10 @@ private:
 		auto(*)(const DHWSIZEDAY*, const DHWSIZEDAY*)->bool > wz_sizeDays
 			{ [](const DHWSIZEDAY* l, const DHWSIZEDAY* r)->bool { return l->Sum() > r->Sum(); } };
 
+	float wz_capSizeF;		// capacity oversize factor
+	float wz_storeSizeF;	// storage volume oversize factor
+	UINT wz_iSizeDay;		// 0-based ith highest day (sizes capacity)
+	UINT wz_maxRunHrs;		// run duration assumed on sizing day, hr
 };		// struct DHWSIZER
 //-----------------------------------------------------------------------------
 void DHWSIZER::wz_Clear()		// reset all data
@@ -652,13 +656,7 @@ void DHWSIZER::wz_DoDay()		// end-of-day sizing accounting
 	}
 }		// DHWSIZER::wz_DoDay
 //-----------------------------------------------------------------------------
-RC DHWSIZER::wz_DeriveSize(		// calc required heating and storage volume
-	float capSizeF /*= 1.f*/,		// capacity oversize factor
-	float storeSizeF /*= 1.f*/,		// storage volume oversize factor
-	UINT iSizeDay /*=6*/,			// 0-based ith highest day (sizes capacity)
-	UINT maxRunHrs /*= 16*/,		// run duration assumed on sizing day, hr
-	UINT nWorstHrs /*= 4*/)			// duration of peak draw, hr
-									//   sizes storage
+RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 
 // Note: tracked day priority_queue is destroyed during calc
 //     >> Only one call allowed <<
@@ -687,12 +685,13 @@ RC DHWSIZER::wz_DeriveSize(		// calc required heating and storage volume
 	}
 
 	// idx of sizing day.  Default 6 = annual 2% approx ((6+1)/365 = .019)
-	iSizeDay = min(iSizeDay, nSizeDaysActual - 1);
-	const DHWSIZEDAY* pSizeDay = topN[iSizeDay];
+	wz_iSizeDay = min(wz_iSizeDay, nSizeDaysActual - 1);
+	const DHWSIZEDAY* pSizeDay = topN[wz_iSizeDay];
 	float loadDay = pSizeDay->Sum();
-	float cap = capSizeF * loadDay / float( maxRunHrs);
+	float cap = wz_capSizeF * loadDay / float( wz_maxRunHrs);
 
 	// find worst event in all days to size storage
+	UINT nWorstHrs = 4;
 	nWorstHrs = max(nWorstHrs, 1u);
 	VMovingSum< float> worstHrs( nWorstHrs);
 	float worstEventSum = 0.f;		// highest load in any nWorstHrs
@@ -706,8 +705,26 @@ RC DHWSIZER::wz_DeriveSize(		// calc required heating and storage volume
 				worstEventSum = eventSum;
 		}
 	}
+	float storeHeat0 = wz_storeSizeF * (worstEventSum - nWorstHrs * cap);	// can this be <0
+	float storeVol0 = storeHeat0 / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
 
-	float storeHeat = storeSizeF * (worstEventSum - nWorstHrs * cap);	// can this be <0
+	// revised implementation
+	float vRunning = 0.f;
+	for (DHWSIZEDAY* pSzD : topN)
+	{	for (UINT iH = 0; iH < 24; ++iH)
+		{	float vSupEvent = 0.f;		// cummulative HW generation
+			for (UINT iL = 0; iL < 24; ++iL)
+			{	float vSupHr = cap - pSzD->wzd_loadHrs[(iH + iL) % 24];		// + = excess capacity
+				vSupEvent += vSupHr;
+				if (vSupEvent > 0.f)
+					break;
+				if (vSupEvent < vRunning)
+					vRunning = vSupEvent;
+			}
+		}
+	}
+
+	float storeHeat = wz_storeSizeF * vRunning / (1.f - 0.6f /*pWS->ws_aquastatFraction*/);
 	float storeVol = storeHeat / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
 
 	pWS->ws_ApplySizingResults(cap, storeVol);
@@ -1413,9 +1430,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		RLUPC( WlR, pWL, pWL->ownTi == ss)
 		{	rc |= pWL->wl_DoHour( mult);		// also calcs child DHWLOOPSEGs and DHWLOOPPUMPs
 			HRLL += pWL->wl_HRLLnet;	// loop loss
-			ws_HRBL += pWL->wl_HRBL;	// branch loss
-			ws_t24WL += pWL->wl_t24WL;	// branch waste loss volume
-			ws_volRL += pWL->wl_volRL;
+			ws_HRBL += pWL->wl_HRBL;	// branch loss, Btu
+			ws_t24WL += pWL->wl_t24WL;	// T24 model branch waste loss volume, gal (info only)
+			ws_volRL += pWL->wl_volRL;	// vol returned to WH(s), gal
 			tVolRet += pWL->wl_volRL * pWL->wl_tRL;
 		}
 		ws_tRL = tVolRet / ws_volRL;
@@ -1457,8 +1474,10 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	else
 		ws_drStatusHPWH = HPWH::DR_ALLOW;		// no DR for child DHWSYSs (no DHWHEATERs)
 	
-	if (ws_wpCount > 0)		// if any child pumps
-	{	DHWPUMP* pWP;
+	if (ws_wpCount > 0)		// if any child DHWPUMPs
+	{	// DHWPUMPs consume electricity but have no other effect
+		//  note DHWLOOPPUMPs calc'd in DHWLOOP::wl_DoHour
+		DHWPUMP* pWP;
 		RLUPC(WpR, pWP, pWP->ownTi == ss)
 			pWP->wp_DoHour(mult);
 	}
@@ -1555,8 +1574,16 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 
 	// track hourly design load
 	if (ws_pSizer)
-	{	float whLoadDes = ws_whUse.total * (ws_tUseDes - ws_tInletDes) * waterRhoCp;
-		ws_pSizer->wz_SetHr(Top.iHrST, whLoadDes);
+	{	// water heating requirement, Btu
+		//   based on design temps (ignore solar, DWHR, )
+		float loadDHW = ws_whUse.total * (ws_tUseDes - ws_tInletDes) * waterRhoCp;
+		// loop heating requirement, Btu
+		float loadLoop = ws_volRL * (ws_tUseDes - ws_tRL) * waterRhoCp;
+		float loadLoss = ws_HJL;
+		if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
+			loadLoss += ws_HRBL;	// T24DHW: branches losses modeled as heat
+									// else: branch losses included in draws
+		ws_pSizer->wz_SetHr(Top.iHrST, loadDHW+loadLoop+loadLoss);
 	}
 	
 	// track peaks for sizing
@@ -2559,7 +2586,7 @@ void HPWHLINK::hw_HPWHReceiveMessage(const std::string message)
 	// forward to owner
 	hw_pOwner->ReceiveRuntimeMessage( message.c_str());
 
-}		// HPWHLINK::wh_HPWHReceiveMessage
+}		// HPWHLINK::hw_HPWHReceiveMessage
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_Init(			// 1st initialization
 	record* pOwner)		// owner object (DHWHEATER, DHWSOLARSYS, ...)

@@ -80,6 +80,17 @@ template< typename T,typename TR=T> TR VSum(		// vector sum
 	return vTot;
 }		// VSum< T>
 //--------------------------------------------------------------------------
+template< typename T, typename TR = T> TR VSumWrap(		// vector sum with wrap
+	const T* v,  		// vector to sum
+	int nV,				// # of values to sum
+	int n)				// dim of v
+{
+	TR vTot = 0;
+	for (int iV = 0; iV < nV; iV++)
+		vTot += TR(v[iV % n]);
+	return vTot;
+}		// VSumWrap< T>
+//--------------------------------------------------------------------------
 template< typename T,typename TR=T> TR VAbsSum(		// vector absolute value sum
 	const T* v,  		// vector to sum
 	int n)				// dim of v

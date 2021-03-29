@@ -3786,6 +3786,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
 							//   _T24DHW: prior ACM App-B
 							//   _DRAWWASTE: draw duration increase per ws_drawWaste
+                            //   _DAYWASTE: draw duration increase per ??
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
 							//   [ 0] unknown end use
@@ -3868,7 +3869,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_t24WL;		// current hour all-DHWLOOPBRANCH waste loss volume, gal
 							//    per T24DHW branch model
 							//    info only: associated energy is included in ws_HRBL
-  *y *e DBL ws_t24WLTot		// annual total ws_t24WL
+  *y *e DBL ws_t24WLTot		// annual total ws_t24WL, gal
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
