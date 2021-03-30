@@ -982,12 +982,14 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		ws_drawMaxMS.vm_Init(ws_drawMaxDur);
 		ws_loadMaxMS.vm_Init(ws_loadMaxDur);
 
+#if 0
 		// track days with max water heating load
 		//   retains profile by hour for top N days during C_WSCALCMODECH_PRERUN
 		//   allows use of 2% day = 365*.02 = 7th highest day
 		//   Could be done for all DHWSYSs altho not needed for those w/o DHWHEATERs
 		if (!pWSCentral)
 			ws_pSizer = new DHWSIZER(this, 10);		// set up to track top 10 load days
+#endif
 
 		return rc;
 	}
@@ -4511,6 +4513,32 @@ RC DHWHEATER::wh_InstUEFDoSubhrTick(
 	}
 	return rc;
 }		// DHWHEATER::wh_InstUEFDoSubhrTick
+//-----------------------------------------------------------------------------
+#if 0
+static float DHWHEATER::wh_DeriveVol(
+	float vRunning,
+	float cap,
+	float aquaFrac,
+	float unusedFrac,
+	float runMin,
+	float deltaT
+
+{
+	// limit aquaFrac
+	aquaFrac = bracket(0.1f, aquaFrac, .9f);
+	unusedFrac = bracket(0.f, unusedFrac, aquaFrac); ??
+	float volR = vRunning / (1.f - aquaFrac);
+	float volCycMin = cap * runMin / (waterRhoCp * max( deltaT, 10.f));
+	float volC = volCycMin / (aquaFrac - unusedFrac);
+
+	float vol = max(volR, volC);
+
+	return vol;
+
+
+}
+#endif
+
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
