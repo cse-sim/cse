@@ -136,9 +136,12 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
 	*declare "RC tp_SetDerived();"
+	*declare "RC tp_FazInit();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
 	*declare "RC tp_WthrInit();"
+    *declare "RC tp_LocInit();"
+    *declare "RC tp_LocDone();"
     *declare "int tp_AuszWthrSource() const;"
     *declare "RC tp_MainSim();"
     *declare "RC tp_MainSimI();"
@@ -254,8 +257,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GEZ windSpeedMin	//  minimum, mph (default=.5)
     *i FLOAT_GEZ windF  		//  factor (default=1)
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
-    *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * BeamRadFactor. cgwthr.cpp.
-    *i FLOAT_GEZ radDiffF	// Diffuse variant of BeamRadFactor, ditto.
+    *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * radBeamF. cgwthr.cpp.
+    *i FLOAT_GEZ radDiffF	// Diffuse radiation fctr. appl sees ANISO( <fileVal>) * radDiffF.
     *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEHOUSE)
 							//   C_VENTAVAILCH_NONE: none
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
@@ -515,12 +518,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h POWER radDiffHrAv 	// diffuse irradiance on horizontal surface, hour energy = average power, from weather file
     *s POWER radBeamShAv	// .. current beam subhour average power, interpolated, Btuh/ft2
     *s POWER radDiffShAv	// .. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2
-#if !defined( SOLARFIX)
-    *h POWER radBeamPvHrAv	// .. previous hour (used to generate -SHAv)
-    *h POWER radBeamNxHrAv	// .. next hour (wthr file read ahead) (used to generate -ShAv)
-    *h POWER radDiffPvHrAv	// .. flavors as for radBeam
-    *h POWER radDiffNxHrAv	// ..
-#endif
 #ifdef SOLAVNEND // cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
 o  *s POWER radBeamSh		// .. end subhour instantaneous value, interpolated
 o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
@@ -729,8 +726,9 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *r float tz			// time zone, hours W of Greenwich (EST = +5, note non-standard
     *r float elev		// elevation of locn in ft (-9999. to 99999.)
     *r float taDbAvgYr	// annual average dry-bulb temp, F
-	*f float tMainsAvgYr // annual average cold water temp, F
-						//    computed per CEC ACM method
+	*f float tMainsAvgYr    // annual average cold water temp, F
+						    //    computed per CEC ACM method
+    *f float tMainsMinYr    // annual minimum cold water temp, F
     *r SI solartime		// TRUE if file is in solar time
  //additional header items for ET1 file
     *r WFLOC2 loc2		// char[] location 2 (state or country, etc)
@@ -3630,6 +3628,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
+  *declare "RC ws_RddInit();"
   *declare "DHWSYSRES* ws_GetDHWSYSRES() const;"
   *declare "float ws_GetTSetpoint( int whfcn) const;"
   *declare "int ws_GetTSetpointFN( int whfcn) const;"
@@ -3638,6 +3637,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
   *declare "RC ws_DoHourDrawAccounting( float mult);"
   *declare "RC ws_DoEndPreRun();"
+  *declare "RC ws_ApplySizingResults( float heatingCap, float vol);"
   *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
@@ -3705,13 +3705,13 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_whUseNoHR;				// current hour virtual hot water use w/o heat recovery, gal
 										//    re verification / accounting of DWHR results
   *h *e *nest DHWMTR_IVL ws_fxUseMix	// current hour total (mixed) water use at fixtures, gal
-  *y *e *array NDHWENDUSESXPP DBL ws_fxUseMixTot;	// annual total (mixed) water use at fixtures, gal
+  *y *e *array NDHWENDUSESXPP DBL ws_fxUseMixTot;	// annual total (mixed) water use at fixtures by end use, gal
   *h    *nest DHWMTR_IVL ws_fxUseMixLH	// prior hour total (mixed) water use at fixtures, gal
-  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use (at ws_tUse), gal
+  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use by end use (at ws_tUse), gal
 										//    water heater out = fixture hot in
 										//    Also frequently assumed water heater in = water heater out
 										//    BUT this is only approx due to e.g. mixdown and XBU.
-  *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use (at ws_tUse), gal
+  *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use by end use (at ws_tUse), gal
 							
 							// draw and load sizing info derived during C_WSCALCMODECH_PRERUN (only)
 							//   copied to assocated input records in ws_DoEndPreRun()
@@ -3724,7 +3724,18 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i SI ws_loadMaxDur					// load duration window, hr (user input, default 12)
   *declare "VMovingSum< float> ws_loadMaxMS;"	// retains recent load history
   *i FLOAT ws_loadMax					// largest load total in any conseq ws_loadMaxDur hrs, Btu
-  
+
+                            // EcoSizer sizing algorithm
+  *declare "struct DHWSIZER* ws_pSizer;"     // tracks highest load days re sizing
+  *f FLOAT ws_tUseDes;          // design (sizing) hot water use temp, F (constant)
+                                //    default = 120 F
+  *f FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
+                                //    default = annual min mains temp
+  *f FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
+                                //    default = heating design temp
+  *i FLOAT ws_heatingCapDes;    // design heating capacity, Btuh
+  *i FLOAT ws_volDes;           // design storage volume, gal
+
   *h FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp water is delivered to fixtures or DHWLOOP(s)
 							//   default = 120 F
@@ -3773,15 +3784,16 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   [ 0] = unknown end use (DHWUSEs w/o wu_hwEndUse) (*not* ws_hwUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
   *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
-							//  _T24DHW: prior ACM App-B
-							//  _DRAWWASTE: draw duration increase per ws_drawWaste
+							//   _T24DHW: prior ACM App-B
+							//   _DRAWWASTE: draw duration increase per ws_drawWaste
+                            //   _DAYWASTE: draw duration increase per ??
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
-							// [ 0] unknown end use
-							// [ 1..] = per C_DHWEUCH_xxx
+							//   [ 0] unknown end use
+							//   [ 1..] = per C_DHWEUCH_xxx
   *i *array NDHWENDUSESPP FLOAT ws_dayWasteDrawF;	// relative draw for day waste scheme
-							// [ 0] unknown end use
-							// [ 1..] = per C_DHWEUCH_xxx
+							//   [ 0] unknown end use
+							//   [ 1..] = per C_DHWEUCH_xxx
   *i FLOAT_GEZ ws_dayWasteVol			// base daily total draw waste, gal/day
   *i FLOAT_GEZ ws_dayWasteBranchVolF	// additional daily draw waste, discards/day
 										//    DHWLOOPBRANCH volume multiplier
@@ -3857,7 +3869,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_t24WL;		// current hour all-DHWLOOPBRANCH waste loss volume, gal
 							//    per T24DHW branch model
 							//    info only: associated energy is included in ws_HRBL
-  *y *e DBL ws_t24WLTot		// annual total ws_t24WL
+  *y *e DBL ws_t24WLTot		// annual total ws_t24WL, gal
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
@@ -3878,6 +3890,8 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_Cleanup();"
 *declare "RC hw_Init( record* pOwner);"
 *declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
+*declare "RC hw_SetHeatingCap( float heatingCap, float ashpTSrcDes,	float tInletDes, float tUseDes);"
+*declare "RC hw_GetHeatingCap( float& heatingCap, float ashpTSrcDes, float tInletDes, float tUseDes) const;"
 *declare "enum HPWHATTR { hwatSMALL=0x1000, hwatLARGE=0x2000, hwatMASK=0xf000 };"
 *declare "static int hw_HPWHInfo( WHASHPTYCH ashpTy, int& attrs);"
 *declare "static int hw_IsAttr( WHASHPTYCH ashpTy, int attr) { int attrs; return hw_HPWHInfo( ashpTy, attrs) >= 0 ? (attr & attrs) != 0 : -1; }"
@@ -3889,7 +3903,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
 *declare "float hw_GetTankSurfaceArea( float tankCount=1.f, float vol=-1.f) const;"
 *declare "void hw_InitTotals();"
-*declare "bool hw_HasCompressor();"
+*declare "bool hw_HasCompressor() const;"
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
 *declare "void hw_SetNQTXNodes( int nQTXNodes);"
@@ -3965,11 +3979,13 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
   *declare "void wh_InitRunTotals();"
+  *declare "RC wh_RddInit();"
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const { return (DHWSYS *)getOwner();}"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
+  *declare "int wh_IsScalable() const;"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
   *declare "int wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
@@ -4035,6 +4051,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//    default = 7.22, units / meaning unknown
   *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
 								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
+  *r FLOAT_GZ wh_heatingCap;    // Nominal heating capacity, Btuh
+                                //    available only for limited HPWH types
   *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated; not per tank)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)

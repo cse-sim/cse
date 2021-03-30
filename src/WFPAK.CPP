@@ -481,6 +481,7 @@ friend class WFILE;
 	WDSUBHR* wdy_shDay;			// subhour solar radiation data for wdy_shJday
 	double wdy_taDbAvg[ 13];	// avg daily temp by month, [ 0] = year
 	double wdy_tMainsAvg[ 13];	// avg cold water temp by month, [ 0] = year
+	float wdy_tMainsMin;		// annual minimum cold water temp, F
 
 public:
 	WDYEAR();
@@ -542,7 +543,7 @@ void WDYEAR::wdy_Init(
 //-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int erOp /*=WRN*/)
-// Note: not DST awareness / adjustment
+// Note: no DST awareness / adjustment
 // returns RCOK on success
 {
 	RC rc = RCOK;
@@ -553,6 +554,7 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	if (IsMissing( taDbAvgYr))
 		taDbAvgYr = wf_pWDY->wdy_taDbAvg[ 0];
 	tMainsAvgYr = wf_pWDY->wdy_tMainsAvg[ 0];
+	tMainsMinYr = wf_pWDY->wdy_tMainsMin;
 
 	// fill hour values from daily
 	int options = 0;		// wdd_Set24: fill always
@@ -593,6 +595,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	{	wdy_taDbAvg[ iMon] = 0.;
 		wdy_tMainsAvg[ iMon] = 0.;
 	}
+	wdy_tMainsMin = 999.f;
 
 	int yrDays = wdy_YrDays();			// TODO: handle leap year
 	static const int monLens[ 13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
@@ -608,10 +611,8 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 				rc |= pWF->wf_Read( pWd, jDay, iHr, erOp|WF_FORCEREAD);
 				if (rc)
 					break;
-#if defined( SOLARFIX)
 				pWd->wd_Adjust( iHr);	// apply adjusments per user input
 										//   aniso, solar factors, wind factor
-#endif
 			}
 			if (rc)
 				break;
@@ -673,6 +674,8 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 													//   based on monthly means
 								wdd.wdd_taDbAvg31);	// lagged 31-day average dry-bulb temp
 			wdy_tMainsAvg[ iMon] += wdd.wdd_tMains;
+			if (wdd.wdd_tMains < wdy_tMainsMin)
+				wdy_tMainsMin = wdd.wdd_tMains;
 		}
 		wdy_tMainsAvg[ 0] += wdy_tMainsAvg[ iMon];
 		wdy_tMainsAvg[ iMon] /= monLen;
@@ -972,7 +975,6 @@ void WDDAY::wdd_Set24(		// set hourly values from daily
 // WHY: values that change daily are copied to all hours of day.
 //      Facilitates probing
 {
-#define SETIF( d, s) if (IsMissing( d)) d = s;
 	if (!options)
 	{	for (int iHr=0; iHr<24; iHr++)
 			wdHr[ iHr].wd_SetDayValues( *this);
@@ -981,7 +983,6 @@ void WDDAY::wdd_Set24(		// set hourly values from daily
 	{	for (int iHr=0; iHr<24; iHr++)
 			wdHr[ iHr].wd_SetDayValuesIfMissing( *this);
 	}
-#undef SETIF
 }		// WDDAY::wdd_Set24
 //-----------------------------------------------------------------------------
 void WDHR::wd_SetDayValues(		// set daily members for this hour
@@ -1470,8 +1471,10 @@ x     dmfree( DMPP( wfName));		// free the heap storage now -- name is in yac->p
 	return rc;			// return value RCOK if ok
 }		// WFILE::wf_Open
 //----------------------------------------------------------------------------
-RC WFILE::wf_Close( 			// Close weather file if open. returns RCOK if ok.
+RC WFILE::wf_Close( 		// Close weather file if open
 	char* hdr /*=NULL*/ )	// NULL or pointer to header to rewrite if file open with write access. For wthr utilities.
+// duplicate calls OK (= nop)
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 	if (yac)
@@ -1816,8 +1819,11 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 						//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
+						//  WF_DBGTRACE: printf trace msg for debugging
 // returns RCOK if OK else other RC, error msg issued per erOp.
 {
+	RC rc = RCOK;
+
 	// handle Feb 29
 	if ( isLeap 				// if wf has Feb 29 (for possible future use in ET1 files 10-94)
  	 &&  !(erOp & WF_USELEAP) )	// if caller is NOT simulating Feb 29
@@ -1828,26 +1834,30 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 	//   NOTE: cached data assumes full annual weather file
 	//         TODO: support partial weather years
 	if (wf_pWDY && !(erOp & (WF_FORCEREAD|WF_DSNDAY)))
-		return wf_pWDY->wdy_TransferHr( jDay, iHr, pwd, erOp);
-
-	RC rc = RCOK;
-
-	// handle alternative formats
-	// pwd->wd_Init( 1);		// set all to UNSET -- done in each xxxRead
-	if (wf_IsPacked())
-	{	// format is packed: BSGS, BSGSdemo, ET1, or ... .
-		USI* phour = (USI *)wf_PackedHrRead( jDay, iHr, erOp);
-		rc |= phour ? pwd->wd_Unpack( iHr, phour, wFileFormat) : RCBAD;
-	}
+		rc |= wf_pWDY->wdy_TransferHr( jDay, iHr, pwd, erOp);
 	else
-		rc |=
-		  wFileFormat==CSW    ? wf_CSWRead( pwd, jDay, iHr, erOp)
-		: wFileFormat==EPW    ? wf_EPWRead( pwd, jDay, iHr, erOp)
-		: wFileFormat==T24DLL ? wf_T24DLLRead( pwd, jDay, iHr, erOp)
-		:                       RCBAD;
+	{	// handle alternative formats
+		// pwd->wd_Init( 1);		// set all to UNSET -- done in each xxxRead
+		if (wf_IsPacked())
+		{	// format is packed: BSGS, BSGSdemo, ET1, or ... .
+			USI* phour = (USI*)wf_PackedHrRead(jDay, iHr, erOp);
+			rc |= phour ? pwd->wd_Unpack(iHr, phour, wFileFormat) : RCBAD;
+		}
+		else
+			rc |=
+			  wFileFormat == CSW ? wf_CSWRead(pwd, jDay, iHr, erOp)
+			: wFileFormat == EPW ? wf_EPWRead(pwd, jDay, iHr, erOp)
+			: wFileFormat == T24DLL ? wf_T24DLLRead(pwd, jDay, iHr, erOp)
+			: RCBAD;
 
-	// read additional TDV data if requested and available
-	rc |= wf_TDVReadIf( pwd, jDay, iHr, erOp);
+		// read additional TDV data if requested and available
+		rc |= wf_TDVReadIf(pwd, jDay, iHr, erOp);
+	}
+#if 0 && defined( _DEBUG)
+	if (erOp & WF_DBGTRACE)
+		printf("\nWFR %2d %2d %6d db=%0.2f",
+			jDay, iHr, erOp, pwd->wd_db);
+#endif
 
 	return rc;		// other returns above
 }		// WFILE::wf_Read

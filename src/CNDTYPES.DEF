@@ -456,6 +456,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC125AC_SP "NyleC125A_CWP_SP"
 			NYLEC185AC_SP "NyleC185A_CWP_SP"
 			NYLEC250AC_SP "NyleC250A_CWP_SP"
+
+			SCALABLE_SP "Scalable_SP"		// scalable type for autosized standard design
 		}
 
 *choicb DHWEUCH {			// hot end uses

@@ -17,13 +17,9 @@
          local time to solar (and date still changes at local/daylite midnite),
 	 so range is bit more than -Pi to Pi. (mainly used when sun is up.) */
 
-#if defined( SOLARFIX)
 const double HA = k2Pi/24.;  	// earth rotation, rad/hr
 								// for converting hours to hour angle
 								//   then add SLLOCDAT.tmconst.
-#else
-#define HA 0.26179939
-#endif
 
 /*--------------------------------- TYPES ---------------------------------*/
 
