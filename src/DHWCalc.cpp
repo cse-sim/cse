@@ -688,46 +688,35 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 	wz_iSizeDay = min(wz_iSizeDay, nSizeDaysActual - 1);
 	const DHWSIZEDAY* pSizeDay = topN[wz_iSizeDay];
 	float loadDay = pSizeDay->Sum();
-	float cap = wz_capSizeF * loadDay / float( wz_maxRunHrs);
+	float heatingCap = wz_capSizeF * loadDay / float( wz_maxRunHrs);
 
-	// find worst event in all days to size storage
-	UINT nWorstHrs = 4;
-	nWorstHrs = max(nWorstHrs, 1u);
-	VMovingSum< float> worstHrs( nWorstHrs);
-	float worstEventSum = 0.f;		// highest load in any nWorstHrs
-	for (DHWSIZEDAY* pSzD : topN)
-	{	worstHrs.vm_Clear();
-		// scan day for nWorstHrs run
-		//   wrap at midnight = (unrealistically?) conservative search
-		for (UINT iH = 0; iH < 23+nWorstHrs; ++iH)
-		{	float eventSum = worstHrs.vm_Sum(pSzD->wzd_loadHrs[iH % 24]);
-			if (eventSum > worstEventSum)
-				worstEventSum = eventSum;
-		}
-	}
-	float storeHeat0 = wz_storeSizeF * (worstEventSum - nWorstHrs * cap);	// can this be <0
-	float storeVol0 = storeHeat0 / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
-
-	// revised implementation
-	float vRunning = 0.f;
+	// check load profiles of each hour of each topN day
+	float qRunning = 0.f;	// heat required to carry through worst event
 	for (DHWSIZEDAY* pSzD : topN)
 	{	for (UINT iH = 0; iH < 24; ++iH)
-		{	float vSupEvent = 0.f;		// cummulative HW generation
+		{	float qSupEvent = 0.f;		// this event cummulative net HW generation
+			// try increasing event duration
 			for (UINT iL = 0; iL < 24; ++iL)
-			{	float vSupHr = cap - pSzD->wzd_loadHrs[(iH + iL) % 24];		// + = excess capacity
-				vSupEvent += vSupHr;
-				if (vSupEvent > 0.f)
-					break;
-				if (vSupEvent < vRunning)
-					vRunning = vSupEvent;
+			{	// net heat for current hour = cap - use
+				float qSupHr = heatingCap - pSzD->wzd_loadHrs[(iH + iL) % 24];		// + = excess capacity
+				qSupEvent += qSupHr;  // total so far
+				if (qSupEvent > 0.f)
+					break;			// total is positive = end of event
+				if (qSupEvent < qRunning)
+					qRunning = qSupEvent;	// largest deficit so far (< 0)
 			}
 		}
 	}
 
-	float storeHeat = wz_storeSizeF * vRunning / (1.f - 0.6f /*pWS->ws_aquastatFraction*/);
-	float storeVol = storeHeat / (waterRhoCp * (pWS->ws_tUseDes - pWS->ws_tInletDes));
+	// apply oversize factor
+	qRunning *= wz_storeSizeF;
 
-	pWS->ws_ApplySizingResults(cap, storeVol);
+	// required volume (based on setpoint, not use temp)
+	// 	 tank volume is derived from running volume in HPWHLINK::hw_DeriveVolFromVolRunning()
+	//   (applies aquastat fraction etc.)
+	float volRunning = -qRunning / (waterRhoCp * (pWS->ws_tSetpointDes - pWS->ws_tInletDes));
+
+	pWS->ws_ApplySizingResults(heatingCap, volRunning);
 
 	return rc;
 
@@ -936,8 +925,18 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	{	// pass 0: init things that have no inter-DHWSYS effect
 		ws_SetMTRPtrs();
 
+		// design temperatures
 		if (!IsSet(DHWSYS_TINLETDES))
 			ws_tInletDes = Wfile.tMainsMinYr;
+		else
+			rc |= limitCheck(DHWSYS_TINLETDES, 33., 90.);
+
+		if (!IsSet(DHWSYS_TSETPOINTDES))
+			ws_tSetpointDes = ws_tUseDes;
+
+		rc |= limitCheck(DHWSYS_TSETPOINTDES, ws_tInletDes + 20.f, 210.f);
+		// note DHWHEATER::wh_HPWHInit() can override ws_tSetpointDes for fix-setpoint HPWHs
+
 		if (!IsSet(DHWSYS_ASHPTSRCDES))
 			ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO?
 
@@ -982,14 +981,12 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		ws_drawMaxMS.vm_Init(ws_drawMaxDur);
 		ws_loadMaxMS.vm_Init(ws_loadMaxDur);
 
-#if 0
 		// track days with max water heating load
 		//   retains profile by hour for top N days during C_WSCALCMODECH_PRERUN
 		//   allows use of 2% day = 365*.02 = 7th highest day
 		//   Could be done for all DHWSYSs altho not needed for those w/o DHWHEATERs
 		if (!pWSCentral)
 			ws_pSizer = new DHWSIZER(this, 10);		// set up to track top 10 load days
-#endif
 
 		return rc;
 	}
@@ -2097,21 +2094,24 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 	return rc;
 }	// DHWSYS::ws_DoEndPreRun
 //----------------------------------------------------------------------------
-RC DHWSYS::ws_ApplySizingResults(
-	float heatingCap,
-	float vol)
+RC DHWSYS::ws_ApplySizingResults(		// store sizing results
+	float heatingCap,	// required primary (compressor) capacity, Btuh
+	float volRunning)	// required running volume, gal
+// running volume = "active" volume in tank (above aquastat)
+//    see HPWHLINK::hw_DeriveVolFromVolRunning()
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 
 	if (!IsSet(DHWSYS_HEATINGCAPDES))
 		ws_heatingCapDes = heatingCap;
 
-	if (!IsSet(DHWSYS_VOLDES))
-		ws_volDes = vol;
+	if (!IsSet(DHWSYS_VOLRUNNINGDES))
+		ws_volRunningDes = volRunning;
 
 	DHWSYS* pWSi = WSiB.GetAtSafe(ss);
 	if (pWSi && pWSi != this)
-		pWSi->ws_ApplySizingResults(heatingCap, vol);
+		pWSi->ws_ApplySizingResults(heatingCap, volRunning);
 
 	return rc;
 }
@@ -2998,6 +2998,47 @@ float HPWHLINK::hw_GetTankSurfaceArea(		// tank surface area
 	return surfA;
 }		// HPWHLINK::hw_GetTankSurfaceArea
 //-----------------------------------------------------------------------------
+RC HPWHLINK::hw_DeriveVolFromVolRunning(		// calc required volume from running vol
+	float volRunning,		// required running volume, gal
+	float heatingCap,		// compressor design capacity, Btuh
+	float tempRise,			// design temperature rise, F
+	float& totVol) const	// returned: derived total vol, gal
+// Do not call if !hasACompressor
+// Does not actually set volume
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+
+	// retrieve tank volume fractions
+	//   apply insurance (crash-proof) limits
+	double aquaFract;	// fraction of volume below aquastat
+	double useableFract;	// fraction of volume that is useable
+	if (hw_pHPWH->getSizingFractions(aquaFract, useableFract) != 0)
+	{	rc |= RCBAD;
+		aquaFract = .4f;		// plausible values
+		useableFract = .9f;
+	}
+	useableFract = bracket(.6, useableFract, 1.);
+	double unuseableFract = 1. - useableFract;
+	aquaFract = bracket(unuseableFract + .1, aquaFract, .75);
+
+	// total volume req'd based on aquastat position
+	//    Running vol is vol above aquastat
+	float totVolRun = float(volRunning / (1. - aquaFract));
+
+	// total volume req'd based on minimum run time (avoid short cycle)
+	//   Determine vol of water heated in minimum compressor cycle.
+	//   Usable volume below aquastat must be >= to 
+	float runHrMin = hw_pHPWH->getCompressorMinRuntime( HPWH::UNITS_HR);		// minimum compressor run time, hr
+	float volCycMin = heatingCap * runHrMin / (waterRhoCp * max(tempRise, 10.f));
+	float totVolCyc = volCycMin / (aquaFract - unuseableFract);
+
+	totVol = max(totVolRun, totVolCyc);		// caller must set volume
+
+	return rc;
+
+}		// HPWHLINK::hw_DeriveVolFromVolRunning
+//-----------------------------------------------------------------------------
 void HPWHLINK::hw_InitTotals()		// run init
 // start-of-run initialization totals, error counts, ...
 // called at beg of warmup and run
@@ -3008,15 +3049,7 @@ void HPWHLINK::hw_InitTotals()		// run init
 bool HPWHLINK::hw_HasCompressor() const
 // returns true iff HPWH has a compressor (= is a heat pump)
 {
-	if (hw_pHPWH)
-	{	int nHS = hw_pHPWH->getNumHeatSources();	// insurance
-		for (int iHS = 0; iHS < nHS; iHS++)
-		{	HPWH::HEATSOURCE_TYPE hsTy = hw_pHPWH->getNthHeatSourceType(iHS);
-			if (hsTy == HPWH::TYPE_compressor)
-				return true;
-		}
-	}
-	return false;
+	return hw_pHPWH && hw_pHPWH->hasACompressor();
 }		// HPWHLINK::hw_HasCompressor
 //-----------------------------------------------------------------------------
 bool HPWHLINK::hw_IsSetpointFixed() const
@@ -3092,7 +3125,7 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	}
 
 	// retrieve resulting setpoint after HPWH restrictions
-	tSetpoint = DegCtoF(hw_pHPWH->getSetpoint());
+	tSetpoint = hw_pHPWH->getSetpoint(HPWH::UNITS_F);
 	if (hw_tHWOut == 0.f)
 		hw_tHWOut = tSetpoint;		// initial guess for HW output temp
 									//   updated every substep with nz draw
@@ -3618,19 +3651,26 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			rc |= disallow(DHWHEATER_INSULR, "when 'whUA' is specified");
 		else if (argCount == 0 && wh_type == C_WHTYPECH_BUILTUP)
 			rc |= oer("whUA or whInsulR is required %s", whenTy);
-		// note: DHWHEATER_HEATINGCAP repeat check in wh_HPWHInit()
-		//       (after HPWH linkage established)
 	}
 	else
 		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, 0);
 
 	// check heating capacity scalability
-	//   note wh_IsScalable() can return -1=maybe -> further checks later
+	//   wh_IsScalable() can return -1=maybe -> further checks later
+	//   DHWHEATER_HEATINGCAP repeat check in wh_HPWHInit()
+	//       (after HPWH linkage established)
 	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 0)
 		ignore( DHWHEATER_HEATINGCAP, whenHs);
 
 	if (!wh_CanHaveLoopReturn())
 		ignoreN(whenHs, DHWHEATER_INHTSUPPLY, DHWHEATER_INHTLOOPRET, 0);
+
+	if (IsSet(DHWHEATER_VOLRUNNING))
+	{	if (!wh_CanSetVolFromVolRunning())
+			rc |= disallow(DHWHEATER_VOLRUNNING, whenTy);
+		else if (IsSet(DHWHEATER_VOL))
+			rc |= oer("whVol and whVolRunning cannot both be specified");
+	}
 
 	if (wh_IsStorage())
 	{	// note wh_vol is required in some cases
@@ -3660,8 +3700,8 @@ int DHWHEATER::wh_IsScalable() const		// can heating capacity be set
 	if (wh_IsHPWHModel())
 	{
 		ret = wh_HPWH.hw_pHPWH
-			? wh_HPWH.hw_pHPWH->isHPWHScalable()
-			: -1;
+				? wh_HPWH.hw_pHPWH->isHPWHScalable()
+				: -1;
 	}
 	// else
 	//	ret = 0;
@@ -3669,6 +3709,25 @@ int DHWHEATER::wh_IsScalable() const		// can heating capacity be set
 	return ret;
 
 }		// DHWHEATER::wh_IsScalable
+//-----------------------------------------------------------------------------
+int DHWHEATER::wh_CanSetVolFromVolRunning() const	// can volume be derived from volRunning
+// Note: further checks later
+// returns 1: yes
+//         0: no
+//        -1: maybe (re HPWH pending HPWHLINK setup)
+{
+	int ret = 0;
+	if (wh_IsHPWHModel())
+	{	ret = -1;
+		if (wh_HPWH.hw_HasCompressor()
+		 && !wh_HPWH.hw_pHPWH->isTankSizeFixed())
+			ret = 1;
+	}
+	// else
+	//	ret = 0;
+
+	return ret;
+}		// DHWHEATER::wh_CanSetVolFromVolRunning
 //-----------------------------------------------------------------------------
 RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
@@ -3898,7 +3957,9 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 										//   meaningful for HPWH only?
 
 	if (wh_IsHPWHModel())
-		rc |= wh_HPWH.hw_DoHour(tSetpoint);
+	{	rc |= wh_HPWH.hw_DoHour(tSetpoint);
+		// check pWS->ws_tSetpointDes ?
+	}
 
 	return rc;
 
@@ -4004,6 +4065,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	
 	wh_HPWH.hw_Init(this);
 
+	bool bVolMaybeModifiable = false;
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 	{	// resistance tank (no preset)
 		rc |= wh_HPWH.hw_InitResistance(
@@ -4015,14 +4077,8 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	}
 	else
 	{	rc |= wh_HPWH.hw_InitPreset(wh_ashpTy);
-		if (IsSet(DHWHEATER_VOL))
-		{	if (wh_HPWH.hw_pHPWH->isTankSizeFixed())
-				oInfo("whVol is ignored when whASHPType=%s (tank volume is fixed at %0.0f gal)",
-					getChoiTx(DHWHEATER_ASHPTY, 1),
-					wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
-			else
-				wh_HPWH.hw_pHPWH->setTankSize_adjustUA(wh_vol, HPWH::UNITS_GAL);
-		}
+		bVolMaybeModifiable = true;
+		// volume set below after heatingCap is known
 	}
 
 	if (IsSet(DHWHEATER_HEATINGCAP))
@@ -4055,6 +4111,42 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			pWS->ws_tUseDes);		// outlet water temp
 	}
 
+	if (bVolMaybeModifiable)
+	{	const char* what = IsSet(DHWHEATER_VOL) ? "whVol"
+				: IsSet(DHWHEATER_VOLRUNNING) ? "whVolRunning"
+				: NULL;
+		if (what)
+		{	float vol = -1.f;
+			if (wh_HPWH.hw_pHPWH->isTankSizeFixed())
+				oInfo("%s is ignored when whASHPType=%s (tank volume is fixed at %0.0f gal)",
+					what, getChoiTx(DHWHEATER_ASHPTY, 1),
+					wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
+			else if (IsSet(DHWHEATER_VOLRUNNING))
+			{	// semi-redundant check
+				if (!wh_CanSetVolFromVolRunning())
+					rc |= ooer(DHWHEATER_VOLRUNNING, "no can do");
+				else
+				{
+					RC rc2 = wh_HPWH.hw_DeriveVolFromVolRunning(
+						wh_volRunning,
+						wh_heatingCap,
+						pWS->ws_tSetpointDes - pWS->ws_tInletDes,
+						vol);
+					if (rc2)
+						rc |= err(PERR, "DHWHEATER::wh_HPWHInit: hw_CanSetVolFromVolRunning() inconsistency.");
+					// else wh_vol already known
+				}
+			}
+			else // IsSet( DHWHEATER_VOL)
+				vol = wh_vol;
+
+			if (vol > 0.f)
+			{	wh_vol = vol;
+				wh_HPWH.hw_pHPWH->setTankSize_adjustUA(vol, HPWH::UNITS_GAL);
+			}
+		}
+	}
+
 	// at this point, HPWH has known size and default UA
 	//   (later capacity scaling does not alter size)
 	//   if additional UA or insulR is provided, adjust UA
@@ -4079,6 +4171,11 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			if (fn)
 				pWS->ignore(fn,
 					strtprintf("-- HPWH '%s' has a fixed setpoint.", name));
+
+			// force consistent ws_tSetpointDes
+			float tspFixed = wh_HPWH.hw_pHPWH->getSetpoint(HPWH::UNITS_F);
+			if (!pWS->IsSet( DHWSYS_TSETPOINTDES) || tspFixed < pWS->ws_tSetpointDes)
+				pWS->ws_tSetpointDes = tspFixed;
 		}
 		wh_DRMapValidate();	// validate drStatus mapping (ABT if bad)
 	}
@@ -4513,31 +4610,6 @@ RC DHWHEATER::wh_InstUEFDoSubhrTick(
 	}
 	return rc;
 }		// DHWHEATER::wh_InstUEFDoSubhrTick
-//-----------------------------------------------------------------------------
-#if 0
-static float DHWHEATER::wh_DeriveVol(
-	float vRunning,
-	float cap,
-	float aquaFrac,
-	float unusedFrac,
-	float runMin,
-	float deltaT
-
-{
-	// limit aquaFrac
-	aquaFrac = bracket(0.1f, aquaFrac, .9f);
-	unusedFrac = bracket(0.f, unusedFrac, aquaFrac); ??
-	float volR = vRunning / (1.f - aquaFrac);
-	float volCycMin = cap * runMin / (waterRhoCp * max( deltaT, 10.f));
-	float volC = volCycMin / (aquaFrac - unusedFrac);
-
-	float vol = max(volR, volC);
-
-	return vol;
-
-
-}
-#endif
 
 //=============================================================================
 
