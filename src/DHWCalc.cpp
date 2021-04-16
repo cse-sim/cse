@@ -1571,13 +1571,15 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
 	ws_whUse.wmt_AccumTo(ws_whUseTot);
 
-	// track hourly design load
+	// track hourly load for EcoSizer sizing
+	//   done for both _PRERUN and _SIM
 	if (ws_pSizer)
 	{	// water heating requirement, Btu
 		//   based on design temps (ignore solar, DWHR, )
 		float loadDHW = ws_whUse.total * (ws_tUseDes - ws_tInletDes) * waterRhoCp;
 		// loop heating requirement, Btu
 		float loadLoop = ws_volRL * (ws_tUseDes - ws_tRL) * waterRhoCp;
+		// other losses
 		float loadLoss = ws_HJL;
 		if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
 			loadLoss += ws_HRBL;	// T24DHW: branches losses modeled as heat
@@ -1585,9 +1587,9 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 		ws_pSizer->wz_SetHr(Top.iHrST, loadDHW+loadLoop+loadLoss);
 	}
 	
-	// track peaks for sizing
-	//   = max draw in ws_drawMaxDur
-	//   = max load in ws_loadMaxDur
+	// track draw and load peaks for sizing
+	//   = max draw in ws_drawMaxDur hrs
+	//   = max load in ws_loadMaxDur hrs
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
 	{	float drawSum = ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
