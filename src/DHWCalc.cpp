@@ -588,7 +588,7 @@ struct DHWSIZEDAY		// retains info for candiate DHW sizing day
 //=============================================================================
 struct DHWSIZER		// data and methods to support autosizing DHWSYS components
 {
-	DHWSIZER(DHWSYS* pDHWSYS, size_t nSizeDays=10)
+	DHWSIZER(DHWSYS* pDHWSYS, size_t nSizeDays=NDHWSIZEDAYS)
 		: wz_pDHWSYS(pDHWSYS), wz_capSizeF( 1.f), wz_storeSizeF( 1.f),
 		  wz_iSizeDay( 6), wz_maxRunHrs( 16)
 	{
@@ -667,16 +667,16 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 
 	DHWSYS* pWS = wz_GetDHWSYS();
 
-	// fill vector with pointers to topN days ordered by daily load
-	//   [ 0] = highest daily total
-	//   [ 1] = next
-	std::vector< DHWSIZEDAY*> topN;
-
 	// use priority_queue actual size = insurance re (very) short runs
 	size_t nSizeDaysActual = wz_sizeDays.size();
 	if (nSizeDaysActual == 0)
 		return pWS->orMsg(ERR, "DHWSIZER fail");
-	
+
+
+	// fill vector with pointers to topN days ordered by daily load
+	//   [ 0] = highest daily total
+	//   [ 1] = next
+	std::vector< DHWSIZEDAY*> topN;
 	topN.resize( nSizeDaysActual);		// allocate all slots
 	size_t iX = nSizeDaysActual;
 	while (wz_sizeDays.size() > 0)
@@ -684,11 +684,18 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 		wz_sizeDays.pop();
 	}
 
+	// make array of design loads
+	float heatingCapTopN[NDHWSIZEDAYS];
+	VZero(heatingCapTopN, NDHWSIZEDAYS);
+	for (iX=0; iX<min( nSizeDaysActual, size_t( NDHWSIZEDAYS)); iX++)
+	{	float loadDay = topN[ iX]->Sum();
+		float heatingCap = wz_capSizeF * loadDay / float(wz_maxRunHrs);
+		heatingCapTopN[iX] = heatingCap;
+	}
+
 	// idx of sizing day.  Default 6 = annual 2% approx ((6+1)/365 = .019)
 	wz_iSizeDay = min(wz_iSizeDay, nSizeDaysActual - 1);
-	const DHWSIZEDAY* pSizeDay = topN[wz_iSizeDay];
-	float loadDay = pSizeDay->Sum();
-	float heatingCap = wz_capSizeF * loadDay / float( wz_maxRunHrs);
+	float heatingCapDes = heatingCapTopN[wz_iSizeDay];
 
 	// check load profiles of each hour of each topN day
 	float qRunning = 0.f;	// heat required to carry through worst event
@@ -698,7 +705,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 			// try increasing event duration
 			for (UINT iL = 0; iL < 24; ++iL)
 			{	// net heat for current hour = cap - use
-				float qSupHr = heatingCap - pSzD->wzd_loadHrs[(iH + iL) % 24];		// + = excess capacity
+				float qSupHr = heatingCapDes - pSzD->wzd_loadHrs[(iH + iL) % 24];		// + = excess capacity
 				qSupEvent += qSupHr;  // total so far
 				if (qSupEvent > 0.f)
 					break;			// total is positive = end of event
@@ -716,7 +723,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 	//   (applies aquastat fraction etc.)
 	float volRunning = -qRunning / (waterRhoCp * (pWS->ws_tSetpointDes - pWS->ws_tInletDes));
 
-	pWS->ws_ApplySizingResults(heatingCap, volRunning);
+	pWS->ws_ApplySizingResults(heatingCapDes, heatingCapTopN, volRunning);
 
 	return rc;
 
@@ -798,7 +805,6 @@ RC DHWSYS::ws_CheckVals(		// check value ranges
 		erOp |= IGNX;	// limit-only during warmup
 
 	rc |= limitCheckFix(DHWSYS_SSF, 0.f, .99f, erOp);
-	rc |= limitCheckFix(DHWSYS_TUSE, 33.f, 211.f, erOp);
 	rc |= limitCheckFix(DHWSYS_TSETPOINT, 33.f, 210.f, erOp);
 	rc |= limitCheckFix(DHWSYS_TSETPOINTLH, 33.f, 210.f, erOp);
 
@@ -925,20 +931,25 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	{	// pass 0: init things that have no inter-DHWSYS effect
 		ws_SetMTRPtrs();
 
-		// design temperatures
+		// use temperature = temp delivered to fixtures or loop
+		//  note wsTUse > wsTSetpoint causes XBU heating
+		rc |= limitCheckFix(DHWSYS_TUSE, 33.f, 210.f);
+
+		// EcoSizer design inlet (cold) water temp
 		if (!IsSet(DHWSYS_TINLETDES))
 			ws_tInletDes = Wfile.tMainsMinYr;
 		else
 			rc |= limitCheck(DHWSYS_TINLETDES, 33., 90.);
 
+		// EcoSizer design setpoint
 		if (!IsSet(DHWSYS_TSETPOINTDES))
-			ws_tSetpointDes = ws_tUseDes;
-
+			ws_tSetpointDes = ws_tUse;
 		rc |= limitCheck(DHWSYS_TSETPOINTDES, ws_tInletDes + 20.f, 210.f);
 		// note DHWHEATER::wh_HPWHInit() can override ws_tSetpointDes for fix-setpoint HPWHs
 
+		// EcoSizer design heatpump source temp
 		if (!IsSet(DHWSYS_ASHPTSRCDES))
-			ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO?
+			ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO: what about lockout
 
 		// solar water heating
 		ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
@@ -1576,9 +1587,9 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	if (ws_pSizer)
 	{	// water heating requirement, Btu
 		//   based on design temps (ignore solar, DWHR, )
-		float loadDHW = ws_whUse.total * (ws_tUseDes - ws_tInletDes) * waterRhoCp;
+		float loadDHW = ws_whUse.total * (ws_tUse - ws_tInletDes) * waterRhoCp;
 		// loop heating requirement, Btu
-		float loadLoop = ws_volRL * (ws_tUseDes - ws_tRL) * waterRhoCp;
+		float loadLoop = ws_volRL * (ws_tUse - ws_tRL) * waterRhoCp;
 		// other losses
 		float loadLoss = ws_HJL;
 		if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
@@ -2097,10 +2108,14 @@ RC DHWSYS::ws_DoEndPreRun()		// finalize PRERUN results
 }	// DHWSYS::ws_DoEndPreRun
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_ApplySizingResults(		// store sizing results
-	float heatingCap,	// required primary (compressor) capacity, Btuh
+	float heatingCap,		// required primary (compressor) capacity, Btuh
+							//   = heatCapTopN[ wz_iSizeDay] typically
+							//     see DHWSIZER::wz_DeriveSize()
+	float* heatingCapTopN,	// top NDHWSIZEDAYS required capacity, Btuh
+							//   [ 0] = highest, [1] = next etc
 	float volRunning)	// required running volume, gal
-// running volume = "active" volume in tank (above aquastat)
-//    see HPWHLINK::hw_DeriveVolFromVolRunning()
+						// running volume = "active" volume in tank (above aquastat)
+						//    see HPWHLINK::hw_DeriveVolFromVolRunning()
 // returns RCOK iff success
 {
 	RC rc = RCOK;
@@ -2108,12 +2123,16 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 	if (!IsSet(DHWSYS_HEATINGCAPDES))
 		ws_heatingCapDes = heatingCap;
 
-	if (!IsSet(DHWSYS_VOLRUNNINGDES))
-		ws_volRunningDes = volRunning;
+	VCopy(ws_heatingCapDesTopN, NDHWSIZEDAYS, heatingCapTopN);
 
+	if (!IsSet(DHWSYS_VOLRUNNINGDES))
+		ws_volRunningDes = volRunning;		// DHWHEATER derives wh_vol
+											//   if this value passed via ALTER
+
+	// copy to input record
 	DHWSYS* pWSi = WSiB.GetAtSafe(ss);
 	if (pWSi && pWSi != this)
-		pWSi->ws_ApplySizingResults(heatingCap, volRunning);
+		pWSi->ws_ApplySizingResults(heatingCap, heatingCapTopN, volRunning);
 
 	return rc;
 }
@@ -4097,7 +4116,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 				wh_heatingCap,			// required capacity
 				pWS->ws_ashpTSrcDes,	// source air
 				pWS->ws_tInletDes,		// inlet water temp
-				pWS->ws_tUseDes);		// outlet water temp
+				pWS->ws_tUse);			// outlet water temp
 			if (rc2)
 				rc |= err(PERR, "DHWHEATER::wh_HPWHInit: wh_IsScalable() inconsistency.");
 		}
@@ -4110,7 +4129,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			wh_heatingCap,			// capacity
 			pWS->ws_ashpTSrcDes,	// source air
 			pWS->ws_tInletDes,		// inlet water temp
-			pWS->ws_tUseDes);		// outlet water temp
+			pWS->ws_tUse);			// outlet water temp
 	}
 
 	if (bVolMaybeModifiable)

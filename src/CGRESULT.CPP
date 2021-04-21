@@ -36,6 +36,13 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
+// line length limits = buffer sizes
+//   >> no runtime checks !! <<
+static const size_t MAXRPTLINELENSTD = 1000;	// built-in reports
+static const size_t MAXRPTLINELENUDT = 30000;	// user-defined reports
+												//   no limit enforced, use "impossibly" big value
+												//   largest length seen in wild = 7000ish
+
 #define QBAL	// show debugging/check info: ZEB report, AH report Qbal, .  Undefine to remove later.  6-9-92.
 
 #define ZFILTER 0	// 2-->0  7-17-95
@@ -1129,7 +1136,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		if (rpTy==C_RPTYCH_UDT)
 			vpUdtExColHeads(dvrip);		// virtual print user-defined export col headings, below
 		else					// ZEB, ZST, MTR, AH.
-		{	char buf[5000];
+		{	char buf[ MAXRPTLINELENSTD];
 			fmtExColhd(     			// format export column headings, below
 				rxt->colDef,   		//   COLDEF struct gives col wids, hdng
 				buf,   			//   output buffer
@@ -1164,8 +1171,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		if (rpTy==C_RPTYCH_UDT)					// UDT
 			vpUdtRpColHeads(dvrip);   				//   user-defined col headings, below
 		else							// ZEB ZST MTR AH
-		{
-			char buf[5000];
+		{	char buf[MAXRPTLINELENSTD];
 			fmtRpColhd( rxt->colDef, buf, rxt->flags, hd1);  	//   format col heads to buf, local fcn, below
 			vrStr( vrh, buf);					//   write buffer to virtual report, vrpak.h
 		}
@@ -1733,7 +1739,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 	}
 
 // output row of column head texts
-	char buf[5000];
+	char buf[MAXRPTLINELENUDT];
 	char* s = buf;				// init store pointer into line buffer
 	q = s + sLeft;				// where gap b4 1st col should begin: spaces stored after adj for overlong text
 	for (i = dvrip->coli;  i;  )			// loop over columns of table
@@ -1791,7 +1797,7 @@ LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column 
 	COL* colp = NULL;
 
 // output row of quoted, comma-separated column head texts
-	char buf[20000];
+	char buf[MAXRPTLINELENUDT];
 	char* s = buf;					// init store pointer into line buffer
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
@@ -1827,8 +1833,8 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 	}
 
 // output row of data
-	char buf[50000];		// size must exceed longest possible line
-	char* s = buf;  		// set pointer for storing into line buffer
+	char buf[MAXRPTLINELENUDT];	// size must exceed longest possible line
+	char* s = buf;  			// set pointer for storing into line buffer
 	char* q = s + sLeft;					// where gap b4 1st col begins. spaces stored after checking data len.
 	for (int i = dvrip->coli;  i;  )			// loop over columns of table
 	{
@@ -1937,7 +1943,7 @@ LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval ro
 {
 
 // output comma-separated row of data, strings quoted
-	char buf[50000];		// size must exceed longest possible line
+	char buf[MAXRPTLINELENUDT];		// size must exceed longest possible line
 	char* s = buf;  		// set pointer for storing into line buffer
 	COL* colp;
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table

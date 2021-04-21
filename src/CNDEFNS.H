@@ -108,6 +108,7 @@
 							//   see also cnglob.h const int NDHWENDUSES
 #define NDHWENDUSESXPP 8	// # of extended DHW end uses
 							//   must be same as C_DHWEUXCH_COUNT
+#define NDHWSIZEDAYS 10		// # of DHW sizing design days for EcoSizer method
 
 #define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
 
