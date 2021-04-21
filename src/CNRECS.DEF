@@ -3637,7 +3637,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
   *declare "RC ws_DoHourDrawAccounting( float mult);"
   *declare "RC ws_DoEndPreRun();"
-  *declare "RC ws_ApplySizingResults( float heatingCap, float vol);"
+  *declare "RC ws_ApplySizingResults( float heatingCap, float* heatingCapTopN, float volRunning);"
   *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
@@ -3727,17 +3727,25 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
                             // EcoSizer sizing algorithm
   *declare "struct DHWSIZER* ws_pSizer;"     // tracks highest load days re sizing
-  *f FLOAT ws_tUseDes;          // design (sizing) hot water use temp, F (constant)
-                                //    default = 120 F
-  *f FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
+  *i FLOAT ws_tSetpointDes;     // design (sizing) set point temp, F (constant)
+                                //    default = ws_tUse
+  *i FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
                                 //    default = annual min mains temp
-  *f FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
+  *i FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
                                 //    default = heating design temp
+  *r *e *array NDHWSIZEDAYS FLOAT ws_heatingCapDesTopN   // top N design heating capacities
+                                //  [ 0] = largest
   *i FLOAT ws_heatingCapDes;    // design heating capacity, Btuh
-  *i FLOAT ws_volDes;           // design storage volume, gal
+                                //    = ws_heatingCapDesTopN[ 6] or as changed
+                                //    defaults from EcoSizer at end of prerun if not input
+  *i FLOAT_GZ ws_volRunningDes; // design running volume, gal
+                                //   = active volume (above aquastat)
+                                //    full tank volume derived from running volume
+                                //      in HPWHLINK::hw_DeriveVolFromVolRunning
+                                //    defaults from EcoSizer at end of prerun if not input
 
-  *h FLOAT ws_tUse;			// hot water use temp, F
-							//   = temp water is delivered to fixtures or DHWLOOP(s)
+  *r FLOAT ws_tUse;			// hot water use temp, F
+							//   = temp of water delivered to fixtures or DHWLOOP(s)
 							//   default = 120 F
   *h FLOAT ws_tSetpoint;	// DHWHEATER set point (for all DHWHEATERs using HPWH model), F
 							//   default = ws_tUse
@@ -3906,6 +3914,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "bool hw_HasCompressor() const;"
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
+*declare "RC hw_DeriveVolFromVolRunning( float volRunning, float heatingCap, float tempRise, float& totVol) const;"
 *declare "void hw_SetNQTXNodes( int nQTXNodes);"
 *declare "float hw_GetTankQTXTemp() const { return float( hw_GetTankAvgTemp( 0, hw_nQTXNodes)); }"
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
@@ -3986,6 +3995,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
   *declare "int wh_IsScalable() const;"
+  *declare "int wh_CanSetVolFromVolRunning() const;"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
   *declare "int wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
@@ -4056,6 +4066,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated; not per tank)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)
+  *i FLOAT_GZ wh_volRunning;    // running storage volume = vol above aquastat, gal
+                                //    HPWH compressor types: determines reqd total volume based on
+                                //    aquastat position; see HPWHLINK::hw_DeriveVolFromVolRunning()
   *r FLOAT_GEZ wh_UA;			// HPWH-type total UA, Btuh/F (not per tank)
 								//    default from HPWH preset
   *r FLOAT_GZ wh_insulR;		// HPWH-type tank insulation resistance, hr-F/Btuh
