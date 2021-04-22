@@ -3731,7 +3731,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
                                 //    default = ws_tUse
   *i FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
                                 //    default = annual min mains temp
-  *i FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
+  *r *e FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
                                 //    default = heating design temp
   *r *e *array NDHWSIZEDAYS FLOAT ws_heatingCapDesTopN   // top N design heating capacities
                                 //  [ 0] = largest
