@@ -90,13 +90,13 @@ RC TOPRAT::tp_WthrBegDay()
 	int dayTy = WFILE::gshrFILEDAY;		// type of day for wf_GenSubrRad
 	if (tp_dsDay)	// if this is a design day
 	{	rc |= tp_WthrFillDsDay(&Wfile);
-		dayTy = tp_dsDay == 1 ? WFILE::gshrDSDAY0
+		dayTy = tp_dsDay == 1  ? WFILE::gshrDSDAY0
 			   : Top.tp_AuszWthrSource() == TOPRAT_COOLDSDAY
 			                   ? WFILE::gshrFILEDAY
 			   :                 WFILE::gshrDSDAY;
 	}
 
-	rc |= Wfile.wf_GenSubhrRad( dayTy, jDay);
+	rc |= Wfile.wf_GenSubhrRad( tp_slrInterpMeth, dayTy, jDay);
 
 	return rc;
 }		// TOPRAT::tp_WthrBegDay

@@ -2772,6 +2772,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "skymodel",    DAT,   TOPRAT_SKYMODEL,   0,          0, VEOI,   TYCH,  0,   C_SKYMODCH_ANISO,  N,   N),
 	CULT( "skymodelLW",  DAT,   TOPRAT_SKYMODELLW, 0,          0, VEOI,   TYCH,  0,   C_SKYMODLWCH_DEFAULT, N, N),
 	CULT( "exShadeModel",DAT,   TOPRAT_EXSHADEMODEL, 0,        0, VEOI,   TYCH,  0,   C_EXSHMODELCH_PENUMBRA, N, N),
+	CULT( "slrInterpMeth",DAT, TOPRAT_SLRINTERPMETH, 0,        0, VEOI,   TYCH,  0,   C_SLRINTERPMETH_CSE, N, N),
 
 	CULT( "humMeth",     DAT,   TOPRAT_HUMMETH,    0,          0, VEOI,   TYCH,  0,   C_HUMTHCH_ROB,     N,   N),
 	CULT( "dflExH",      DAT,   TOPRAT_DFLEXH,     0,          0, VEOI,   TYFL,  0,      2.64f,          N,   N),

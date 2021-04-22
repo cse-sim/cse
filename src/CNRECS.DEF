@@ -239,6 +239,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i EXSHMODELCH tp_exShadeModel;	// exterior shading model (other than overhang/fins)
 									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
 									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
+    *i SLRINTERPMETH tp_slrInterpMeth    // solar interpolation method
 
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
@@ -686,7 +687,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
 	*declare "enum { gshrFILEDAY, gshrDSDAY, gshrDSDAY0 };"
-	*declare "RC wf_GenSubhrRad( int dayTy, int jDay);"
+	*declare "RC wf_GenSubhrRad( SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);"
 	*declare "RC wf_GetSubhrRad( int jDay, int iHrST, int iSh, float& radBeamAv, float& radDiffAv);"
 	*declare "WDHR& wf_GetDsDayWDHR( int iHr);"
 	*declare "RC wf_GetDsDayHr( WDHR* pWd, int iHr, int erOp = WRN);"
