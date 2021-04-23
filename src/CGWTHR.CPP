@@ -293,7 +293,12 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	DOY jDayST = Top.jDayST;  		// day of simulation 1-365, std time
 									//   appropriate value for autosize design days
 	int iHrST = Top.iHrST;  		// hour 0-23, standard time.
+#if defined( DOSOLARONREAD)
+	int wfOp = 0;
+#else
 	int wfOp = WF_SAVESLRGEOM;		// wf_Read(): do not overwrite solar geometry values
+#endif
+
 	if (Top.isDT)
 		wfOp |= WF_DSTFIX;			// wf_Read(): handle day-transition values during DST
 	wfOp |= WF_DBGTRACE;
@@ -332,9 +337,11 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		break;
 	}
 
+#if !defined( DOSOLARONREAD)
 	// set up solar conditions
 	wd_SetSolarValues(jDayST, iHrST);
 	// NOTE: wfOp includes WF_SAVESLRGEOM -- wd_sunup, wd_slAzm, wd_slAlt survive wf_Read()
+#endif
 	
 	// read
 	if (Top.tp_dsDay)
@@ -346,9 +353,9 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		rc |= pWF->wf_Read(this, jDayST, iHrST, WRN | wfOp);	// Read hour's data from weather file
 
 #if 0 && defined( _DEBUG)
-	if (DbShouldPrint( dbdALWAYS))
-		DbPrintf("WFR %2d %2d %x db=%0.2f\n",
-			jDayST, iHrST, (wfOp & EROMASK) / EROP1, wd_db);
+	if (Top.tp_autoSizing)
+		DbPrintf("WFR %2d %2d %x db=%0.2f su=%d bm=%.0f df=%0.f\n",
+			jDayST, iHrST, (wfOp & EROMASK) / EROP1, wd_db, wd_sunup, wd_bmrad, wd_dfrad);
 #endif
 
 #if 0 && defined( _DEBUG)
@@ -426,7 +433,7 @@ RC TOPRAT::tp_WthrFillDsDay(
 			if (tp_AuszWthrSource() == TOPRAT_COOLDSMO)
 				// read month's design day
 				rc = pWF->wf_Read(&wd, auszMon, iHr, 	// Read hour's data from wthr file design day
-					WRN | WF_DSNDAY);			// option says 2nd arg is design day mon 1-12 not Julian date.
+							WRN | WF_DSNDAY);			// option says 2nd arg is design day mon 1-12 not Julian date.
 			else
 			{	// read actual day
 				rc = pWF->wf_Read(&wd, jDayST, iHr, WRN | wfOp);	// Read hour's data from weather file
