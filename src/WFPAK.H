@@ -183,7 +183,7 @@ struct ET1Hdr
 /*-------------------------------- DEFINES --------------------------------*/
 
 // solar radiation components
-enum SLRCMP { scDIFF, scBEAM };
+enum SLRCMP { scDIFF, scBEAM, scCOUNT };
 
 //--- file type dependent definitions
 // BSGS (PC, TMP) weather file

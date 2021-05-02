@@ -324,13 +324,13 @@ void WDHR::wd_Init(	// initialize all members
 	{	static const NANDAT unset( UNSET);
 		float unsetf;
 		VD unsetf = VD unset;
-		float* pF0 = &wd_slAzm;
+		float* pF0 = &wd_sunupf;
 		float* pFN = &wd_tdvElecAvg01;
 		int szFloat = pFN - pF0 + 1;
 		// attempt to detect layout change (+2 is due to packing)
-		ASSERT( szFloat*sizeof( float)+sizeof( wd_sunup)+sizeof( wd_tdvElecHrRank)+2==sizeof( WDHR));
+		ASSERT( szFloat*sizeof( float)+sizeof( wd_tdvElecHrRank)+2==sizeof( WDHR));
 		VSet( pF0, szFloat, unsetf);
-		wd_sunup = 0;	// non-floats
+		wd_sunupf = 0.f;	// unsetf may confuse pre-existing logic
 		VZero( wd_tdvElecHrRank, 25);
 	}
 }			// WDHR::wd_Init
@@ -443,17 +443,45 @@ struct WDSUBHRFACTORS		// constant factors for weather data interpolation
 	void wdsf_Setup(int iSh, int nSh);
 }; // struct WDSUBHRFACTORS
 //----------------------------------------------------------------------------
+struct WDSLRDAY;	// fwd defns
+class WDSUBHR;
+//----------------------------------------------------------------------------
 struct WDSLRHR		// working solar data for 1 hour
 {
-	float whs_radAv;	// total irradiation for hour, Btu/ft2
-						//   (aka average irradiance, Btuh/ft2)
-	float whs_rad[3];	// derived consistent irradiance, Btuh/ft2
+	WDSLRDAY* whs_pSD;		// parent
+	const WDHR* whs_pWD;	// source WDHR
+	int whs_iH;				// hour of day (0 - 23)
+	int whs_hrTy;			// 0: no sun; 1: sunrise; 2: full hour; 3: sunset
+	float whs_hrSunupBeg;	// fractional hour beg of sun up period
+	float whs_hrSunupEnd;	// fractional hour end of sun up period
+	struct WDSLRHRC
+	{	float tot;	// total irradiation for hour, Btu/ft2
+					//   (aka average irradiance, Btuh/ft2)
+		float inst[3];	// derived consistent (instantaneous) irradiance, Btuh/ft2
 						//   for C_SLRINTERPMETH_TRNSYS
 						//   [ 0] = hour beg
 						//   [ 1] = hour mid
 						//   [ 2] = hour end
+	} whs_rad[2];
 
-	void whs_Clear() {	memset(this, 0, sizeof(WDSLRHR));	}
+	WDSLRHR& whs_GetHr( int iH);
+
+	void whs_BegFromPriorEnd()
+	{	// this hour beg instantaneous = prior hour end instantaneous
+		WDSLRHR& whsPrior = whs_GetHr(whs_iH - 1);
+		for (int iC : { scDIFF, scBEAM})
+			whs_rad[iC].inst[0] = whsPrior.whs_rad[iC].inst[2];
+	}
+
+	void whs_ClearData()
+	{	// do not clear whs_iH and linkage ptrs
+		whs_hrTy = 0;
+		whs_hrSunupBeg = whs_hrSunupEnd = 0.f;
+		memset(&whs_rad, 0, sizeof(whs_rad));
+	}
+	void whs_Init(WDSLRDAY* pSD, int iH, const WDHR* pWD);
+
+	RC whs_DoHourTRNSYS(WDSUBHR wdsh[]);
 
 	void whs_RadRateMidday(const WDSLRHR& whsNext);
 	
@@ -462,23 +490,26 @@ struct WDSLRHR		// working solar data for 1 hour
 //----------------------------------------------------------------------------
 struct WDSLRDAY		// working data re daily solar calcs
 {
-	WDSLRHR wds_rad[2][24];	// hourly info
-							//  [i
+	WDSLRHR wds_rad[24];	// working data by hour
+	int wds_nSubhr;			// # of subhrs per hour (copy of wdy_nSubhr)
+
 	void wds_Clear()
-	{	for (int iC : { 0, 1})
-			for (int iH = 0; iH < 24; iH++)
-				wds_rad[ iC][iH].whs_Clear();
+	{	// nothing needed?  whs_Init() handles all
+		// for (auto whs : wds_rad)
+		//   whs.whs_Clear();
 	}
-	void wds_SetRadAv(int iH, const WDHR* pWD)
-	{	wds_rad[scDIFF][iH].whs_radAv = pWD->wd_dfrad;
-		wds_rad[scBEAM][iH].whs_radAv = pWD->wd_bmrad;
+
+	void wds_InitHour(int iH, const WDHR* pWD)
+	{	wds_rad[iH].whs_Init(this, iH, pWD);
 	}
 	
+#if 0
 	void wds_CopyRadRatePriorEnd(int iH)
 	{	int iHx = (iH + 24 - 1) % 24;
 		for (int iC : {0, 1})
 			wds_rad[ iC][iH].whs_rad[0] = wds_rad[ iC][iHx].whs_rad[2];
 	}
+#endif
 	RC wds_DeriveRadRates();
 	RC wds_DeriveRadRate1(int iH);
 
@@ -487,10 +518,10 @@ struct WDSLRDAY		// working data re daily solar calcs
 class WDSUBHR		// derived subhourly weather data
 {
 public:
-	void wsh_Clear()
-	{	wsh_radBeamAv = wsh_radDiffAv = 0.f;	}
-	float wsh_radBeamAv;	// average DNI for subhour, Btuh/ft2
-	float wsh_radDiffAv;	// average DHI for subhour, Btuh/ft2
+	void wdsh_Clear()
+	{	VZero( wdsh_rad, SLRCMP::scCOUNT);	}
+	float& operator[](SLRCMP iC) { return wdsh_rad[iC]; }
+	float wdsh_rad[ SLRCMP::scCOUNT];	// average DHI, DNI for subhour, Btuh/ft2
 };		// class WDSUBHR
 //----------------------------------------------------------------------------
 struct VHR		// sort helper for wdy_Stats
@@ -556,6 +587,7 @@ public:
 	RC wdy_GenSubhrRadSetup( int nSh);
 	RC wdy_GenSubhrRad(SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);
 	RC wdy_GenSubhrRad1(WDSUBHR wdsh[], int dayTy, int jDay, int iHr);
+	RC wdy_GenSubhrRad1TRNSYS(WDSLRDAY& wdsd, WDSUBHR wdsh[], int iHr);
 };		// class WDYEAR
 //-----------------------------------------------------------------------------
 WDYEAR::WDYEAR()			// c'tor
@@ -796,7 +828,7 @@ RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 					//      WHY: During daylight savings, prior hour data is used, resulting
 					//			 in prior day for iHrClock=0
 					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
-					//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
+					//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunupf
 					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 {
 	pwd->Copy( wdy_Hr( jDay, iHr), (erOp&WF_SAVESLRGEOM) != 0);
@@ -890,7 +922,10 @@ RC WDYEAR::wdy_GenSubhrRad(		// generate subhr radiation values for day
 		rc |= wdy_PrepareWDSLRDAY(wdsd, slrInterpMeth, dayTy, jDay);
 		for (int iHr = 0; iHr < 24; iHr++)
 		{	WDSUBHR* pWDSH = &wdy_Subhr(iHr, 0);
-			rc |= wdy_GenSubhrRad1(pWDSH, dayTy, jDay, iHr);
+			if (slrInterpMeth == C_SLRINTERPMETH_TRNSYS)
+				rc |= wdy_GenSubhrRad1TRNSYS(wdsd, pWDSH, iHr);
+			else
+				rc |= wdy_GenSubhrRad1(pWDSH, dayTy, jDay, iHr);
 		}
 		wdy_shJday = jDay;
 		wdy_shDayTy = dayTy;
@@ -910,6 +945,7 @@ RC WDYEAR::wdy_PrepareWDSLRDAY(		// prepare day's solar data for subhr processin
 	RC rc = RCOK;
 
 	wdsd.wds_Clear();
+	wdsd.wds_nSubhr = wdy_nSubhr;
 
 	if (dayTy == WFILE::gshrDSDAY0)
 		return rc;		// return all 0
@@ -919,15 +955,12 @@ RC WDYEAR::wdy_PrepareWDSLRDAY(		// prepare day's solar data for subhr processin
 	{	const WDHR* pWD = dayTy == WFILE::gshrDSDAY
 			? &wdy_hrDsDay[iH]
 			: &wdy_Hr(jDay, iH);
-		wdsd.wds_SetRadAv(iH, pWD);
+		wdsd.wds_InitHour(iH, pWD);
 	}
-
-	if (slrInterpMeth == C_SLRINTERPMETH_TRNSYS)
-		rc |= wdsd.wds_DeriveRadRates();
-
 
 	return rc;
 }		// WDYEAR::wdy_PrepareWDSLRDAY
+#if 0
 //-----------------------------------------------------------------------------
 RC WDSLRDAY::wds_DeriveRadRates()
 
@@ -940,45 +973,236 @@ RC WDSLRDAY::wds_DeriveRadRates()
 	return rc;
 
 }		// WDLSLRDAY::wds_DeriveRadRates
+#endif
 //-----------------------------------------------------------------------------
-RC WDSLRDAY::wds_DeriveRadRate1(
-	int iH)
+RC WDYEAR::wdy_GenSubhrRad1TRNSYS(		// generate subhour solar values (TRNSYS method)
+	WDSLRDAY& wdsd,		// solar info for current day
+	WDSUBHR wdsh[],		// returned: subhour average irradiation values
+	int iH)				// hour (0 - 23)
+// return RCOK iff success
 {
 	RC rc = RCOK;
-	wds_CopyRadRatePriorEnd(iH);	// beg of this hour = end of prior
 
-#if 0
-	if (sunrise)
-
-
-	else if (sunset)
-
-
-	else
-#endif
-	
-	for (int iC : { scDIFF, scBEAM})
-	{
-		wds_rad[iC][iH].whs_RadRateMidday(wds_rad[iC][(iH + 1) % 24]);
-
-
-
-	}
-
+	rc |= wdsd.wds_rad[iH].whs_DoHourTRNSYS( wdsh);
 
 
 	return rc;
 
 }	// WDSLRDAY::wds_DeriveRadRate1
 //-----------------------------------------------------------------------------
-void WDSLRHR::whs_RadRateMidday(
-	const WDSLRHR& whsNext)
+void WDSLRHR::whs_Init(		// init working data for hour
+	WDSLRDAY* pSD,	// parent
+	int iH,			// hour (0 - 23)
+	const WDHR* pWD)	// source weather data
 {
-	// end
-	whs_rad[2] = 0.5f * whs_radAv + 0.5f * whsNext.whs_radAv;
+	whs_iH = iH;
+	whs_pSD = pSD;
+	whs_pWD = pWD;
 
-	// whs_RadRadMidpoint( what)
-}
+	whs_ClearData();
+
+	whs_hrTy = pWD->wd_SunupBegEnd(iH, whs_hrSunupBeg, whs_hrSunupEnd);
+
+	whs_rad[scDIFF].tot = pWD->wd_dfrad;
+	whs_rad[scBEAM].tot = pWD->wd_bmrad;
+
+}		// WDSLRHR::whs_Init
+//-----------------------------------------------------------------------------
+WDSLRHR& WDSLRHR::whs_GetHr( int iH)	// retrieve WDSLRHR for hour of current day
+// handles wrap (iH may be <0 or >23)
+{
+	return whs_pSD->wds_rad[(iH+24) % 24];
+}	// WDSLRHR::whs_GetHr
+//-----------------------------------------------------------------------------
+RC WDSLRHR::whs_DoHourTRNSYS(
+	WDSUBHR wdsh[])		// returned: avg solar subhr value for hour
+{
+	RC rc = RCOK;
+
+	int nSubhr = whs_pSD->wds_nSubhr;
+
+	// set results to 0
+	int iSh;
+	for (iSh = 0; iSh < nSubhr; iSh++)
+		wdsh[iSh].wdsh_Clear();
+	
+	if (!whs_hrTy)
+		return rc;		// sun not up
+
+	whs_BegFromPriorEnd();	// copy end of prior subhr to beg of this
+
+	float subhrDur = 1.f / float(nSubhr);
+
+	float sunupDur = whs_hrSunupEnd - whs_hrSunupBeg;
+	int iShBeg = int((whs_hrSunupBeg - whs_iH) / subhrDur);
+	float fShBeg = float(iShBeg) / nSubhr;
+	int iShEnd = int((whs_hrSunupEnd - whs_iH) / subhrDur);
+	float fShEnd = float(iShEnd) / nSubhr;
+	int nShSunup = iShEnd - iShBeg + 1;
+	float sunupShDur = nShSunup * subhrDur;	// duration of sunup subhrs
+#if defined( DEBUG)
+	if (iShBeg < 0 || iShEnd >= nSubhr || iShBeg > iShEnd || nShSunup > nSubhr)
+		printf("\nSubhr range fubar");
+#endif
+
+	const WDSLRHR& whsNext = whs_GetHr(whs_iH + 1);
+
+	SLRCMP iC = scBEAM;	// for (int iC : { scDIFF, scBEAM })
+	{	float g[100];
+		VZero(g, 100);
+		WDSLRHRC& R = whs_rad[iC];
+		const char* tag = "  ";
+		if (R.tot < .01f)
+		{	// g entirely 0
+			tag = "R=0";
+		}
+		else if (nShSunup == 1)
+		{	// force single substep to match total
+			g[ whs_hrTy == 1 ? iShEnd+1 : iShBeg] = 2.f*R.tot / subhrDur;
+		}
+		else
+		{	// sun up for during 2 or more subhrs
+			g[iShBeg] = R.inst[0];
+			const WDSLRHRC& RNx = whsNext.whs_rad[iC];
+
+			if (whs_hrTy == 1)
+			{	// sunrise hour
+				if (RNx.tot > R.tot)
+				{
+					R.inst[2] = 2.f * R.tot / sunupDur;
+					tag = "su+";
+				}
+				else
+				{
+					R.inst[2] = (0.25f * R.tot + 0.75f * RNx.tot) / sunupDur;
+					tag = "su-";
+				}
+			}
+			else if (whs_hrTy == 2)
+				R.inst[2] = 0.5f * (R.tot + RNx.tot);
+			// else whs_hrTy == 3 and R.inst[ 2] == 0. per whs_Clear() above
+
+			g[iShEnd + 1] = R.inst[2];
+
+			int iShMid = 0;
+			iShMid = nShSunup / 2;		// integer midpoint of sunup period
+			float fMidSunup = float(iShMid) / float(nShSunup);
+			R.inst[1] = (2.f * R.tot / sunupShDur)
+				- fMidSunup * R.inst[0]
+				- (1.f - fMidSunup) * R.inst[2];
+
+			if (R.inst[1] < 0.f)
+			{
+				float gx = ((2.f * R.tot / subhrDur) - R.inst[0] - R.inst[2])
+					/ (2.f * (nShSunup - 1));
+				if (gx < 0.f)
+				{
+					gx = 0.f;
+					tag = "fm0";
+					float r = (2.f * R.tot / subhrDur) / (R.inst[0] + R.inst[2]);
+					g[iShBeg] *= r;
+					g[iShEnd + 1] *= r;
+				}
+				else
+					tag = "fmx";
+				if (nShSunup < nSubhr && whs_hrTy != 3)
+					printf("\nNeg gMid fubar");
+				for (iSh=iShBeg+1; iSh <= iShEnd; iSh++)
+					g[iSh] = gx;
+
+			}
+			else
+			{
+				float fShMid = float(iShMid + iShBeg) / float(nSubhr);
+				for (iSh = iShBeg + 1; iSh <= iShEnd; iSh++)
+				{
+					float fSh = float(iSh) / nSubhr;
+					float f[3] = { 0.f };
+
+#if 0			
+					if (fSh < fShMid)
+					{
+						f[1] = (fSh - fShBeg) / (fShMid - fShBeg);
+						if (whs_hrTy != 1)
+							f[0] = 1.f - f[1];
+					}
+					else
+					{
+						f[2] = (fSh - fShMid) / (fShEnd - fShMid);
+						f[1] = 1.f - f[2];
+					}
+
+#else					
+					if (whs_hrTy == 1)
+					{	// sunrise hour
+						float fShSunup = float(iShBeg) / nSubhr;
+						if (fSh < fShMid)
+							f[1] = (fSh - fShSunup) / (fShMid - fShSunup);
+						else
+						{
+							f[2] = (fSh - fShMid) / (1.f - fShMid);
+							f[1] = 1.f - f[2];
+						}
+
+					}
+					else if (whs_hrTy == 2)
+					{
+						if (fSh < fShMid)
+						{
+							f[1] = fSh / fShMid;
+							f[0] = 1.f - f[1];
+						}
+						else
+						{
+							f[2] = (fSh - fShMid) / (1.f - fShMid);
+							f[1] = 1.f - f[2];
+						}
+					}
+					else // if (whs_hrTy == 3)
+					{	// sunset hour
+						float fShSundn = float(iShEnd + 1) / nSubhr;
+						if (fSh < fShMid)
+						{
+							f[1] = fSh / fShMid;
+							f[0] = 1.f - f[1];
+						}
+						else
+						{
+							f[2] = (fSh - fShMid) / (fShSundn - fShMid);
+							f[1] = 1.f - f[2];
+						}
+					}
+#endif
+					g[iSh] = VIProd(R.inst, 3, f);
+				}
+			}
+		}
+		for (iSh = 0; iSh < nSubhr; iSh++)
+		{	float radAvg = (g[iSh] + g[iSh + 1]) / 2.f;
+			wdsh[iSh][iC] = radAvg;
+		}
+
+		float radShSum = 0.f;
+		for (iSh = 0; iSh < nSubhr; iSh++)
+			radShSum += wdsh[iSh][iC];
+
+		float totSh = radShSum / nSubhr;
+		float totHr = R.tot;
+		float fDiff = frDiff(totSh, totHr);
+		if (1 || whs_hrTy != 3)
+		{
+			if (fDiff > 0.001f)
+				printf("\nMismatch  hrTy=%d   iC=%d  tag=%s, nShU=%d  totSh=%0.2f  totHr=%0.2f", whs_hrTy, iC, tag, nShSunup, totSh, totHr);
+#if 0
+			else if (whs_hrTy == 1 && totHr > 0.f)
+				printf("\nMatch tag=%s totSh=%0.2f  totHr=%0.2f", tag, totSh, totHr);
+#endif
+		}
+	}
+
+	return rc;
+
+}	// WDSLRHR::whs_DoHourTRNSYS
 //-----------------------------------------------------------------------------
 #if 0
 void WDSLRHR::whs_RadRateMidpoint(
@@ -1033,7 +1257,7 @@ RC WDYEAR::wdy_GenSubhrRad1(		// generate solar subhr values for 1 hour
 
 	if (radBeam[1] < .1f && radDiff[1] < .1f)
 	{	for (int iSh = 0; iSh < wdy_nSubhr; iSh++)
-			wdSh[iSh].wsh_Clear();
+			wdSh[iSh].wdsh_Clear();
 	}
 	else
 	{	// Compute adjustment factors (constant over hour)
@@ -1053,8 +1277,8 @@ RC WDYEAR::wdy_GenSubhrRad1(		// generate solar subhr values for 1 hour
 			// Interpolate subhour average power values for data with average values in file.
 			//   Multiply by subhrDur for energy.
 			const float* slrF = wdy_wShF[iSh].slrF;
-			wdSh[iSh].wsh_radBeamAv = VIProd(radBeam, 3, slrF) * beamAdj;
-			wdSh[iSh].wsh_radDiffAv = VIProd(radDiff, 3, slrF) * diffAdj;
+			wdSh[iSh][scBEAM] = VIProd(radBeam, 3, slrF) * beamAdj;
+			wdSh[iSh][scDIFF] = VIProd(radDiff, 3, slrF) * diffAdj;
 		}
 	}
 	
@@ -1070,10 +1294,10 @@ RC WFILE::wf_GetSubhrRad(		// retrieve subhr solar values
 {
 	RC rc = RCOK;
 	const WDSUBHR& wdsh = wf_pWDY->wdy_Subhr(iHrST, iSh);
-	radBeamAv = wdsh.wsh_radBeamAv;
-	radDiffAv = wdsh.wsh_radDiffAv;
+	radBeamAv = wdsh.wdsh_rad[scBEAM];
+	radDiffAv = wdsh.wdsh_rad[scDIFF];
 	return rc;
-}	// WFILE::wf_GetSubhrSolar
+}	// WFILE::wf_GetSubhrRad
 //=============================================================================
 void WDDAY::wdd_Init()
 {	
@@ -1261,7 +1485,7 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 			&wd_tSky,				// "T sky"
 			&wd_wndDir, &wd_wndSpd,	// "Wind direction", "Wind speed"
 			&wd_glrad,				// "Global Horizontal Radiation",
-			&wd_DNI, &wd_DHI,	// "Direct Normal Radiation", "Diffuse Horiz Radiation"
+			&wd_DNI, &wd_DHI,		// "Direct Normal Radiation", "Diffuse Horiz Radiation"
 			&wd_cldCvr,				// "Total Sky Cover"
 			NULL);
 		wd_bmrad = wd_DNI;
@@ -1945,7 +2169,7 @@ RC WFILE::wf_GetDsDayHr(		// retrieve hour data from current design day
 					//      WHY: During daylight savings, prior hour data is used, resulting
 					//			 in prior day for iHrClock=0
 					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
-					//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
+					//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunupf
 					//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 {
 	pwd->Copy(wf_GetDsDayWDHR( iHr), (erOp&WF_SAVESLRGEOM) != 0);
@@ -1970,7 +2194,7 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 						//      NOTE: alters WDHR *daily* values only, not hourly
 						//            does not alter hour read
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
-						//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunup
+						//  WF_SAVESLRGEOM: do NOT overwrite wd_slAzm, wd_slAlt, and wd_sunupf
 						//      Ignored if WF_DSNDAY|WF_FORCEDREAD
 						//  WF_DBGTRACE: printf trace msg for debugging
 // returns RCOK if OK else other RC, error msg issued per erOp.

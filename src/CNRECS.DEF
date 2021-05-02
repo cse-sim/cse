@@ -773,6 +773,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "void wd_Adjust( int iHrST);"
 	*declare "void wd_SetSolarValues( int jDayST, int iHrST);"
+    *declare "int wd_SunupBegEnd( int iHr, float& hrBeg, float& hrEnd) const;"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
     *declare "float wd_CalcSkyTemp( int skyModelLW, int iHr);"
@@ -788,13 +789,12 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 	*declare "bool wd_HasTdvData() const;"
 
-						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
+						// wd_sunupf, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
 						// wd_db assumed 1st non-solar geometry mbr
 						// re preservation of solar geometry info, see Copy()
-	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
+	*h float wd_sunupf;		// fraction of hour if sun is up
 							// solar position at midpoint of hour (or portion of hour sun is up)
 	*h float wd_slAzm;		//   azimuth, radians (0=N, +clockwise)
-							//     NOTE: code assumes wd_slAzm is 1st float
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
