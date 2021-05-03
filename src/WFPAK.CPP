@@ -483,9 +483,6 @@ struct WDSLRHR		// working solar data for 1 hour
 
 	RC whs_DoHourTRNSYS(WDSUBHR wdsh[]);
 
-	void whs_RadRateMidday(const WDSLRHR& whsNext);
-	
-
 };	// struct WDSLRHR
 //----------------------------------------------------------------------------
 struct WDSLRDAY		// working data re daily solar calcs
@@ -916,6 +913,10 @@ RC WDYEAR::wdy_GenSubhrRad(		// generate subhr radiation values for day
 // NOPs if jDay already set up
 // returns RCOK iff success
 {
+#if 0 && defined( _DEBUG)
+	if (Top.jDay == 121)
+		printf("\nHit %s", Top.dateStr);
+#endif
 	RC rc = RCOK;
 	if (wdy_shJday != jDay || wdy_shDayTy != dayTy)
 	{	WDSLRDAY wdsd;
@@ -1031,58 +1032,74 @@ RC WDSLRHR::whs_DoHourTRNSYS(
 
 	whs_BegFromPriorEnd();	// copy end of prior subhr to beg of this
 
+	float g[1000];	// calculated instantaneous irrad at subhour boundaries, Btuh/ft2
+					//   required size = nSubhr+1, use "really big", don't check
+					//   vZero()d below
+
 	float subhrDur = 1.f / float(nSubhr);
 
 	float sunupDur = whs_hrSunupEnd - whs_hrSunupBeg;
 	int iShBeg = int((whs_hrSunupBeg - whs_iH) / subhrDur);
 	float fShBeg = float(iShBeg) / nSubhr;
-	int iShEnd = int((whs_hrSunupEnd - whs_iH) / subhrDur);
+	int iShEnd = int((whs_hrSunupEnd - whs_iH) / subhrDur) + 1;		// next sh after end
 	float fShEnd = float(iShEnd) / nSubhr;
-	int nShSunup = iShEnd - iShBeg + 1;
+	int nShSunup = iShEnd - iShBeg;
 	float sunupShDur = nShSunup * subhrDur;	// duration of sunup subhrs
 #if defined( DEBUG)
-	if (iShBeg < 0 || iShEnd >= nSubhr || iShBeg > iShEnd || nShSunup > nSubhr)
+	if (iShBeg < 0 || iShEnd > nSubhr || iShBeg >= iShEnd || nShSunup > nSubhr)
 		printf("\nSubhr range fubar");
+#endif
+
+// debug aid: track case being handled for msgs
+	const char* tag[scCOUNT] = { "   ", "   "};
+#if defined( _DEBUG)
+#define TAG( s) tag[ iC] = s;
+#else
+// do nothing in release
+#define TAG( s)
 #endif
 
 	const WDSLRHR& whsNext = whs_GetHr(whs_iH + 1);
 
-	SLRCMP iC = scBEAM;	// for (int iC : { scDIFF, scBEAM })
-	{	float g[100];
-		VZero(g, 100);
-		WDSLRHRC& R = whs_rad[iC];
-		const char* tag = "  ";
-		if (R.tot < .01f)
-		{	// g entirely 0
-			tag = "R=0";
-		}
-		else if (nShSunup == 1)
+	for (SLRCMP iC : { scDIFF, scBEAM })
+	{	WDSLRHRC& R = whs_rad[iC];
+		VZero(g, nSubhr+1);		// instantaneous power at subhr boundaries
+		g[iShBeg] = R.inst[0];	// initial point from end of last hr
+
+		if (nShSunup == 1)
 		{	// force single substep to match total
-			g[ whs_hrTy == 1 ? iShEnd+1 : iShBeg] = 2.f*R.tot / subhrDur;
+			g[ whs_hrTy == 1 ? iShEnd : iShBeg] = 2.f*R.tot / subhrDur;
+			TAG("1up");
 		}
 		else
 		{	// sun up for during 2 or more subhrs
-			g[iShBeg] = R.inst[0];
 			const WDSLRHRC& RNx = whsNext.whs_rad[iC];
 
 			if (whs_hrTy == 1)
 			{	// sunrise hour
 				if (RNx.tot > R.tot)
 				{
-					R.inst[2] = 2.f * R.tot / sunupDur;
-					tag = "su+";
+					// R.inst[2] = 2.f * R.tot / sunupDur;
+					R.inst[2] = 0.5f * (R.tot + RNx.tot);
+					TAG("su+")
 				}
 				else
 				{
 					R.inst[2] = (0.25f * R.tot + 0.75f * RNx.tot) / sunupDur;
-					tag = "su-";
+					TAG("su-")
 				}
 			}
 			else if (whs_hrTy == 2)
 				R.inst[2] = 0.5f * (R.tot + RNx.tot);
 			// else whs_hrTy == 3 and R.inst[ 2] == 0. per whs_Clear() above
 
-			g[iShEnd + 1] = R.inst[2];
+			g[iShEnd] = R.inst[2];
+			if (R.tot < .01f)
+			{	// wdsh[..][iC] = 0 (due to whs_Clear() above)
+				// R.inst[2] is set (for next hr)
+				TAG("R=0")
+				continue;		// nothing further needed
+			}
 
 			int iShMid = 0;
 			iShMid = nShSunup / 2;		// integer midpoint of sunup period
@@ -1098,41 +1115,27 @@ RC WDSLRHR::whs_DoHourTRNSYS(
 				if (gx < 0.f)
 				{
 					gx = 0.f;
-					tag = "fm0";
+					TAG( "fm0")
+					// adjust end points to force match to total
 					float r = (2.f * R.tot / subhrDur) / (R.inst[0] + R.inst[2]);
 					g[iShBeg] *= r;
-					g[iShEnd + 1] *= r;
+					g[iShEnd] *= r;
 				}
 				else
-					tag = "fmx";
-				if (nShSunup < nSubhr && whs_hrTy != 3)
-					printf("\nNeg gMid fubar");
-				for (iSh=iShBeg+1; iSh <= iShEnd; iSh++)
+					TAG("fmx")
+				for (iSh=iShBeg+1; iSh < iShEnd; iSh++)
 					g[iSh] = gx;
 
 			}
 			else
 			{
 				float fShMid = float(iShMid + iShBeg) / float(nSubhr);
-				for (iSh = iShBeg + 1; iSh <= iShEnd; iSh++)
+				for (iSh = iShBeg + 1; iSh < iShEnd; iSh++)
 				{
 					float fSh = float(iSh) / nSubhr;
 					float f[3] = { 0.f };
 
-#if 0			
-					if (fSh < fShMid)
-					{
-						f[1] = (fSh - fShBeg) / (fShMid - fShBeg);
-						if (whs_hrTy != 1)
-							f[0] = 1.f - f[1];
-					}
-					else
-					{
-						f[2] = (fSh - fShMid) / (fShEnd - fShMid);
-						f[1] = 1.f - f[2];
-					}
-
-#else					
+#
 					if (whs_hrTy == 1)
 					{	// sunrise hour
 						float fShSunup = float(iShBeg) / nSubhr;
@@ -1160,7 +1163,7 @@ RC WDSLRHR::whs_DoHourTRNSYS(
 					}
 					else // if (whs_hrTy == 3)
 					{	// sunset hour
-						float fShSundn = float(iShEnd + 1) / nSubhr;
+						float fShSundn = float(iShEnd) / nSubhr;
 						if (fSh < fShMid)
 						{
 							f[1] = fSh / fShMid;
@@ -1172,60 +1175,55 @@ RC WDSLRHR::whs_DoHourTRNSYS(
 							f[1] = 1.f - f[2];
 						}
 					}
-#endif
 					g[iSh] = VIProd(R.inst, 3, f);
+
+#if 1
+					float fx[3] = { 0.f };
+					if (fSh < fShMid)
+					{
+						fx[1] = (fSh - fShBeg) / (fShMid - fShBeg);
+						fx[0] = 1.f - fx[1];
+					}
+					else
+					{
+						fx[2] = (fSh - fShMid) / (fShEnd - fShMid);
+						fx[1] = 1.f - fx[2];
+					}
+					float gx = VIProd(R.inst, 3, fx);
+					if (frDiff(g[iSh], gx) > .001f)
+						printf("\nNo way  %s", tag[iC]);
+
+#endif
 				}
 			}
 		}
-		for (iSh = 0; iSh < nSubhr; iSh++)
+		for (iSh = iShBeg; iSh < iShEnd; iSh++)
 		{	float radAvg = (g[iSh] + g[iSh + 1]) / 2.f;
 			wdsh[iSh][iC] = radAvg;
 		}
 
+	}
+
+#if defined( _DEBUG)
+	// check: subhr sum should equal hour
+	for (SLRCMP iC : { scDIFF, scBEAM })
+	{
 		float radShSum = 0.f;
 		for (iSh = 0; iSh < nSubhr; iSh++)
 			radShSum += wdsh[iSh][iC];
 
 		float totSh = radShSum / nSubhr;
-		float totHr = R.tot;
+		float totHr = whs_rad[iC].tot;
 		float fDiff = frDiff(totSh, totHr);
-		if (1 || whs_hrTy != 3)
-		{
-			if (fDiff > 0.001f)
-				printf("\nMismatch  hrTy=%d   iC=%d  tag=%s, nShU=%d  totSh=%0.2f  totHr=%0.2f", whs_hrTy, iC, tag, nShSunup, totSh, totHr);
-#if 0
-			else if (whs_hrTy == 1 && totHr > 0.f)
-				printf("\nMatch tag=%s totSh=%0.2f  totHr=%0.2f", tag, totSh, totHr);
-#endif
-		}
+		if (fDiff > 0.001f)
+			printf("\nMismatch  hrTy=%d   iC=%d  tag=%s, nShU=%d  totSh=%0.2f  totHr=%0.2f", whs_hrTy, iC, tag[iC], nShSunup, totSh, totHr);
 	}
+#endif
+
 
 	return rc;
 
 }	// WDSLRHR::whs_DoHourTRNSYS
-//-----------------------------------------------------------------------------
-#if 0
-void WDSLRHR::whs_RadRateMidpoint(
-	float subHrDur)		// timestep duration, hr
-// assumes whs_radAv[ 0] and whs_radAv[ 1] are set
-{
-	
-	if (nSubhr <= 1)
-		whs_rad[1] = whs_radAv / subHrDur;
-	else if ()
-	{
-		float rad2 = 2.f * whs_radAv / subHrDur;
-		whs_rad[1] = (1.f / nSubhr) *
-			rad2 - nMid * whs_rad[0] - (nStep - nMid) * whs_rad[2]);
-			if (whs_rad[1] < 0.f)
-				whs_rad[1] = (rad2 - (whs_rad[0] + whs_rad[2])) / (2.f * nStep - 1.f);
-			// handle neg
-
-	}
-
-
-}		// WDSLRHR::whs_RadRateMidpoint
-#endif
 //-----------------------------------------------------------------------------
 RC WDYEAR::wdy_GenSubhrRad1(		// generate solar subhr values for 1 hour
 	WDSUBHR wdSh[],	// returned: subhour values
