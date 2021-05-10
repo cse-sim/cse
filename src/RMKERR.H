@@ -53,9 +53,10 @@ RC CDEC err( int erOp, const char* mOrH, ...);
 RC errV( int erOp, int isWarn, const char* mOrH, va_list ap);
 RC errI( int erOp, int isWarn, const char* text);
 const char* GetSystemMsg( DWORD lastErr=0xffffffff);
-RC CDEC logit( int op, const char* mOrH, ...);
-void logStr( int op, const char* s);
-RC CDEC screen( int op, const char* mOrH, ...);
+RC logit( int op, const char* mOrH, ...);
+void logitNF( const char* text, int op=0);
+RC screen( int op, const char* mOrH, ...);
+void screenNF(const char* text, int op = 0);
 int setScreenQuiet( int sq);
 BOO mbIErr( const char* fcn, const char* fmt, ...);
 #ifdef WINorDLL

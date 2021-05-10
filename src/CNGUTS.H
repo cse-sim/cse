@@ -119,6 +119,7 @@ extern anc<IZXRAT> IzxR;		// interzone transfers
 extern anc<RSYS> RsR;			// residential system
 extern anc<RSYSRES> RsResR;		// residential system results
 extern anc<DUCTSEG> DsR;		// duct segments
+extern anc<AFMTR> AfMtrR;		// air flow meters
 extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
 extern anc<DHWSYSRES> WsResR;	// DHW system results

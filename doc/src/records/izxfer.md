@@ -76,6 +76,36 @@ Choice determining interzone ventilation
 
   -----------------------------------------------------------------
 
+**izAFCat=*choice***
+
+Choice indicating air flow category used *only* for recording air flow results to an AFMETER.  izAFCat has no effect for non-AIRNET IZXFERs.  izAFCat is not used unless the associated ZONE(s) specify znAFMtr.
+
+
+Choices are:
+
+  ----------   -------------------------------------------
+  InfilEx      Infiltration from ambient
+  VentEx       Natural ventilation from ambient
+	FanEx        Forced ventilation from ambient
+	InfilIz      Interzone infiltration
+	VentIz       Interzone natural ventilation
+	FanIz        Interzone forced ventilation
+	DuctLk       Duct leakage
+	HVAC         HVAC air
+  ---------    -------------------------------------------
+
+Default values for izAFCat are generally adequate *except* that natural ventilation IZXFERs are by default categorized as infiltration.  It is thus recommended that izAfCat be omitted except that ventilation IZXFERs (e.g. representing openable windows) should include izAfCat=VentEx (or VentIz).
+
+----------------------------------------------------------------
+  **Units** **Legal**        **Default**                            **Required** **Variability**
+            **Range**
+  --------- ---------------  ------------------------------------- ------------- ---------------
+            *choices above*  derived from IZXFER characteristics        No           constant
+
+  -----------------------------------------------------------------
+
+
+
 **izZn1=*znName***
 
 Name of primary zone. Flow rates $>$ 0 are into the primary zone.

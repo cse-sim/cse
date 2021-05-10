@@ -60,7 +60,7 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  1
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  1
 
 
 
@@ -71,9 +71,9 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 Annual Heating Energy Report
 
-           Pk kW         Heat KWh
-      ----------       ----------
-           0.875          742.71
+      Pk kW   Heat KWh
+ ---------- ----------
+      0.875    742.71
 
 
 
@@ -100,15 +100,15 @@ Yr   2.887  2.887      0      0      0      0      0      0      0      0      0
 
 Annual Cooling Energy Report
 
-           Pk kW         Cool kWh
-      ----------       ----------
-           0.771          846.024
+      Pk kW   Cool kWh
+ ---------- ----------
+      0.771    846.024
 
 
 
 ! Log for Run 001:
 
-! CSE 0.870.0 for Win32 console
+! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ Annual Cooling Energy Report
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  2
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  3
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  4
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  5
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  6
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  7
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.870.0 for Win32 console run(s) done: Wed 17-Jun-20   4:25:26 pm
+! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   2:52:31 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-Jun-20   4:02 pm   (VS 14.16    2623488 bytes)  (HPWH 1.9.0+master.6ae38ca.38)
+!               24-Nov-20  10:41 am   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
 ! Command line: -x!  -t1 fresno
 ! Input file:   D:\cse\test\fresno.cse
 ! Report file:  D:\cse\test\fresno.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0040   
+!                Input:  Time = 0.00     Calls = 1      T/C = 0.0030   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.60     Calls = 1      T/C = 0.6010   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
-!                Total:  Time = 0.62     Calls = 1      T/C = 0.6170   
+!           Simulation:  Time = 0.61     Calls = 1      T/C = 0.6120   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0140   
+!                Total:  Time = 0.64     Calls = 1      T/C = 0.6350   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Wed 17-Jun-20   4:25:25 pm  Page  8
+! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  8
 

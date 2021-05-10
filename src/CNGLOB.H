@@ -60,18 +60,15 @@
 #endif
 #endif
 
-#if _MSC_VER >= 1500
+#if 0 && _MSC_VER >= 1500
 // VS2008
  #define WINVER 0x0501					// support Windows XP and later ?C9?
  #define _WIN32_WINDOWS 0x0501			// ditto ?C9?
  #define _WIN32_IE 0x0600				// require IE 6 or later
- #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
-// #define _USE_32BIT_TIME_T				// avoid 64 bit time_t issues ?C9?
- #pragma conform( forScope, off)		// for loop idx in local scope (not for scope) ?C9?
-// #define UINTFILE ULONGLONG				// file position = 64 bits in VS2008
-// #define FILEPOSUNK MAXLONGLONG			// 64 bit unknown file position
-// #define HANDLE_CFILE HANDLE			// file handle type for CFile calls
 #endif
+
+#pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
+#pragma conform( forScope, off)		// for loop idx in local scope (not for scope) ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
@@ -661,6 +658,8 @@ inline double AMFtoAVF( double amf) { return amf / (60.*.075); }
 inline float  AMFtoAVF( float amf)  { return amf / (60.f*.075f); }
 inline double AVFtoAMF( double avf) { return avf * 60.*.075; }
 inline float  AVFtoAMF( float avf)  { return avf * 60.f*.075f; }
+// amf in lbm/s
+inline float AMFtoAVF2( float amf) { return amf * 60.f / .075f;  }
 
 
 // Powers of 10

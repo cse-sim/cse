@@ -36,6 +36,13 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
+// line length limits = buffer sizes
+//   >> no runtime checks !! <<
+static const size_t MAXRPTLINELENSTD = 1000;	// built-in reports
+static const size_t MAXRPTLINELENUDT = 30000;	// user-defined reports
+												//   no limit enforced, use "impossibly" big value
+												//   largest length seen in wild = 7000ish
+
 #define QBAL	// show debugging/check info: ZEB report, AH report Qbal, .  Undefine to remove later.  6-9-92.
 
 #define ZFILTER 0	// 2-->0  7-17-95
@@ -61,7 +68,7 @@
    specifies row of data from interval results structure, including column heads. */
 struct COLDEF
 {
-	char *colhd;		// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
+	const char* colhd;	// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
 	UCH flags;			// format and column inclusion control bits, just below
 	char width;			// report column width; export max width excluding (CVS) quotes
 	char dfw;			// decimal places
@@ -209,7 +216,7 @@ static COLDEF mtrColdef[] =
 #undef D
 #undef oMtr
 
-// columns definition for "meter" (MTR) report/export
+// columns definition for "DHW meter" (DHWMTR) report/export
 #define oWMtr(m)  offsetof( DHWMTR_IVL, m)
 #define D 3		// decimal digits: 1 s/b enough for water use, gal
 static COLDEF wMtrColdef[] =
@@ -233,6 +240,52 @@ static COLDEF wMtrColdef[] =
 };
 #undef D
 #undef oWMtr
+
+// columns definition for "Airflow meter" (AFMTR) report/export
+#define oAFMt0(m)  offsetof( AFMTR_IVL, m)
+#define oAFMt1(m)  (offsetof( AFMTR_IVL, m)+sizeof( AFMTR_IVL))
+#define D 1		// decimal digits
+static COLDEF afMtrColdef[] =
+/*		             max     offset       cvflag  */
+/* colhd           flags  wid dfw (cnguts.h)   (above) */
+{
+	{ USE_ARG_HD,    8 | 2 | 1,  3, 0, USE_NEXT_ARG,  CVS },  	// report-only "time" column: "Mon", "Day", or "Hr", etc.
+	{ "Meter",    128 | 16 | 1, 17, 0, USE_NEXT_ARG,  CVS },  	// report/export "name" column. 128: left justify
+	{ "Mon",           8 | 4,  2, 0, USE_NEXT_ARG,  CVI },  	// export-only time columns
+	{ "Day",           8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
+	{ "Hr",            8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
+	{ "Subhr",         8 | 4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
+	{ "Tot+",           0,    5, D, oAFMt0(amt_total), CV1 },
+	{ "Unkn+",          0,    5, D, oAFMt0(amt_unknown),  CV1 },
+	{ "InfX+",          0,    5, D, oAFMt0(amt_infEx), CV1 },
+	{ "VntX+",          0,    5, D, oAFMt0(amt_vntEx), CV1 },
+	{ "FanX+",          0,    5, D, oAFMt0(amt_fanEx), CV1 },
+	{ "InfU+",          0,    5, D, oAFMt0(amt_infUz), CV1 },
+	{ "VntU+",          0,    5, D, oAFMt0(amt_vntUz), CV1 },
+	{ "FanU+",          0,    5, D, oAFMt0(amt_fanUz), CV1 },
+	{ "InfC+",          0,    5, D, oAFMt0(amt_infCz), CV1 },
+	{ "VntC+",          0,    5, D, oAFMt0(amt_vntCz), CV1 },
+	{ "FanC+",          0,    5, D, oAFMt0(amt_fanCz), CV1 },
+	{ "Duct+",          0,    5, D, oAFMt0(amt_ductLk),CV1 },
+	{ "HVAC+",          0,    5, D, oAFMt0(amt_hvac),  CV1 },
+	{ "Tot-",           0,    6, D, oAFMt1(amt_total), CV1 },
+	{ "Unkn-",          0,    6, D, oAFMt1(amt_unknown), CV1 },
+	{ "InfX-",          0,    6, D, oAFMt1(amt_infEx), CV1 },
+	{ "VntX-",          0,    6, D, oAFMt1(amt_vntEx), CV1 },
+	{ "FanX-",          0,    6, D, oAFMt1(amt_fanEx), CV1 },
+	{ "InfU-",          0,    6, D, oAFMt1(amt_infUz), CV1 },
+	{ "VntU-",          0,    6, D, oAFMt1(amt_vntUz), CV1 },
+	{ "FanU-",          0,    6, D, oAFMt1(amt_fanUz), CV1 },
+	{ "InfC-",          0,    6, D, oAFMt1(amt_infCz), CV1 },
+	{ "VntC-",          0,    6, D, oAFMt1(amt_vntCz), CV1 },
+	{ "FanC-",          0,    6, D, oAFMt1(amt_fanCz), CV1 },
+	{ "Duct-",          0,    6, D, oAFMt1(amt_ductLk),CV1 },
+	{ "HVAC-",          0,    6, D, oAFMt1(amt_hvac),  CV1 },
+	{ 0,                0,    0, 0, 0,                 CV1 }
+};
+#undef D
+#undef oAFMt0
+#undef oAFMt1
 
 // columns definition for "air handler" (AH) report/export
 #define oAhr(m)  offsetof( AHRES_IVL_SUB, m)
@@ -512,19 +565,18 @@ o          vpRxFooter(dvrip);				// do the footer, below.  clears VR_NEEDFOOT.
 void FC vpRxports( 	// virtual print reports and exports of given frequency for current interval
 
 	IVLCH freq,  		// interval desired: C_IVLCH_Y, M, D, H, S.
-	// HS generated internally when H or S given. HS cannot be given by caller.
-	BOO auszOnly/*=FALSE*/ )	/* non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
-				   used after autosize when main sim will not be performed.
-				   Experiment 5-97 to fix oversight in original ausz implementation;
-				   possibly autosize results reports should always be (have been) done this way
-				     (always call after autosize, then exclude then when auszOnly FALSE). */
+						// HS generated internally when H or S given. HS cannot be given by caller.
+	BOO auszOnly/*=FALSE*/ )	// non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
+						// used after autosize when main sim will not be performed.
+						// Experiment 5-97 to fix oversight in original ausz implementation;
+						// possibly autosize results reports should always be (have been) done this way
+						// (always call after autosize, then exclude then when auszOnly FALSE). */
 {
-	SI i;
-	SI reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
-	SI doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
+	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
+	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
 	RXPORTINFO rxt;					// much info to pass to/amoung callees
 
-	memset( &rxt, 0, sizeof(rxt));					// default all info members to 0
+	memset( &rxt, 0, sizeof(rxt));			// default all info members to 0
 	rxt.fqr = rxt.fq = freq;  				// store args
 
 // init by frequency; each case breaks; stuff used by more than one report type
@@ -562,7 +614,6 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 	switch (rxt.fq)
 	{
-		/*lint -e616 cases fall thru */
 	case C_IVLCH_S:
 		rxt.xebS[0] = 'a' + (char)Top.iSubhr; 	// ZEB export subhour: leave "" if not subhourly
 	case C_IVLCH_H:
@@ -573,32 +624,28 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 		rxt.xebM = Top.tp_date.month;
 	case C_IVLCH_Y:
 		;
-	default: ;	    /*lint +e616 */
+	default: ;
 	}
 
 // loop over reports active for given frequency
 
 	for ( ; ; )						// repeats to do HS if rpfreq==H or S.
-	{
-		DVRI *dvrip /*=NULL*/;
-		RPTYCH rpTy;
-		SI vrh, isAll, isExport;
-
-		for (i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
+	{	DVRI *dvrip /*=NULL*/;
+		for (int i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
 		{
 			dvrip = DvriB.p + i;				// point Date-dependent Virtual Report Info record
-			rpTy = dvrip->rpTy;    				// fetch report type
-			vrh = dvrip->vrh;					// fetch output destination
-			isExport = dvrip->isExport;   			// true if export (not report)
-			isAll = dvrip->isAll;  				// true if zi or mtri or ... is TI_ALL
+			RPTYCH rpTy = dvrip->rpTy;    		// fetch report type
+			int vrh = dvrip->vrh;				// fetch output destination
+			int isExport = dvrip->isExport; 	// true if export (not report)
+			int isAll = dvrip->isAll;  			// true if zi or mtri or ... is TI_ALL
 			rxt.flags = (rxt.flags &~(4|2)) | (isExport ? 4 : 2);	// set export (4) or report (2) flag bit; clear prior.
 			rxt.flags = (rxt.flags &~(16|8))			// set name (16) & time (8) col flags r/xport
 				| ( isExport ? (16|8) 			// exports show BOTH name and the 4 export time columns
 					: (isAll ? 16 : 8) ); 		// all- reports show name, others rpts show time column
-			rxt.flags = (rxt.flags &~(64|32))			// include shutter frac * (64) and Mode (32) columns
+			rxt.flags = (rxt.flags &~(64|32))	// include shutter frac * (64) and Mode (32) columns
 				| ( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
 				    && (dvrip->ownTi > 0 || isAll )   	// .. for a single zone or all zones
-				|| isExport 				// .. and in all exports (keep format constant)
+				|| isExport 					// .. and in all exports (keep format constant)
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
 			// footer line: also on last day of day, month, or year report
@@ -615,8 +662,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			if (ISNANDLE(dvrip->rpCond))					// if condition UNSET (bug) or not yet evaluated
 			{
 				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
-				isExport ? "ex" : "rp",   isExport ? "export" : "report",
-				dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->name );	// title if any, else aname
+					isExport ? "ex" : "rp",   isExport ? "export" : "report",
+					dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->name );	// title if any, else aname
 				continue;									// treat as FALSE
 			}
 			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
@@ -649,6 +696,10 @@ o					vrChangeOptn( vrh, VR_NEEDFOOT, VR_NEEDFOOT);	// (need a way to print last
 			case C_RPTYCH_DHWMTR:
 				rxt.colDef = wMtrColdef;
 				break;  	// DHW meter report or export
+
+			case C_RPTYCH_AFMTR:
+				rxt.colDef = afMtrColdef;
+				break;		// Airflow meter report or export
 
 			case C_RPTYCH_AH:
 				rxt.colDef = ahColdef;
@@ -729,6 +780,16 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 						dvrip->dv_vpDHWMtrRow( &rxt);	// print specified one
 					break;
 
+				case C_RPTYCH_AFMTR:						// DHW meter report
+					if (isAll)
+					{	AFMTR* pAM;
+						RLUP(AfMtrR, pAM)			// loop over records
+							dvrip->dv_vpAfMtrRow(&rxt, pAM->ss);	// print row of text for this meter
+					}
+					else
+						dvrip->dv_vpAfMtrRow(&rxt);	// print specified one
+					break;
+
 				case C_RPTYCH_AH:						// air handler report
 					if (isAll)
 					{
@@ -782,8 +843,8 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 
 		}  // for i=
 
-	/* if hourly or subhourly specified, repeat for hourly+subhourly: hourly+subhourly reports are in a separate list
-								     as there is only one .nextNow in DVRI. */
+	// if hourly or subhourly specified, repeat for hourly+subhourly
+	//   hourly+subhourly reports are in a separate list as there is only one .nextNow in DVRI.
 		if (rxt.fq==C_IVLCH_H)			// if caller said do hour hourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do the hourly lines of the HS reports/exports too
 			reHead = 0;					// no header at hrly line of HS's: header happened at subHour 0.
@@ -802,7 +863,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for type and frequency
 
 	DVRI *dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
-	RXPORTINFO *rxt )	// addl report/export info struct set in vpRxports
+	RXPORTINFO *rxt)	// addl report/export info struct set in vpRxports
 
 // called at first output and first hour each day if daily, first day each month if monthly, etc
 {
@@ -813,7 +874,6 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	SI isAll = dvrip->isAll;		// true if All- (zones or meters) report
 	const char *objTx = "";			// "zone <name>", "All Zones", "Sum of Zones", etc,  or "meter <name>" etc
 	const char *what = NULL;		// set to "Energy Balance", "Statistics", etc for standard report title & col heads per colDef
-	char buf[1000];
 
 	char *fqTx = "<bad rpFreq> ";	// "Annual ", "Monthly ", etc for use in report title text
 	char *ivlTx = "Bug";		// "Year", "Month", etc for use in All-  export head (Y,M,D,H only)
@@ -823,8 +883,8 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	SI hour = 0;				// 0 or hour 1-24 to show in report heading (all- reports)
 	SI subHour = -1;			// -1 or subhour 0.. to show in report heading (all- reports)
 
-	vrChangeOptn( vrh, VR_NEEDHEAD, 0); 		// clear "heading request pending" flag
-	if (dvrip->rpHeader==C_RPTHDCH_NO)			// if header suppressed for this report/export by input command
+	vrChangeOptn(vrh, VR_NEEDHEAD, 0); 		// clear "heading request pending" flag
+	if (dvrip->rpHeader == C_RPTHDCH_NO)			// if header suppressed for this report/export by input command
 		return;						// done
 
 // get rpFreq-dependent title substrings.  Note All- reports (no date col), get one more time subdivision in title.
@@ -833,28 +893,28 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	switch (rpFreq)
 	{
 	case C_IVLCH_S:
-		fqTx= "Subhourly ";
-		ivlTx= "Subhour";
-		when= Top.dateStr;
+		fqTx = "Subhourly ";
+		ivlTx = "Subhour";
+		when = Top.dateStr;
 		break;
 	case C_IVLCH_HS:
-		fqTx= "Hourly and Subhourly ";
-		ivlTx= "Hour + Subhour";
-		when= Top.dateStr;
+		fqTx = "Hourly and Subhourly ";
+		ivlTx = "Hour + Subhour";
+		when = Top.dateStr;
 		break;
 	case C_IVLCH_H:
-		fqTx= "Hourly ";
-		ivlTx= "Hour";
-		when= Top.dateStr;
+		fqTx = "Hourly ";
+		ivlTx = "Hour";
+		when = Top.dateStr;
 		break;
 	case C_IVLCH_D:
-		fqTx= "Daily ";
-		ivlTx= "Day";
-		when= Top.monStr;
+		fqTx = "Daily ";
+		ivlTx = "Day";
+		when = Top.monStr;
 		break;
 	case C_IVLCH_M:
-		fqTx= "Monthly ";
-		ivlTx= "Month";
+		fqTx = "Monthly ";
+		ivlTx = "Month";
 		break;
 	case C_IVLCH_Y:
 		switch (rpTy)
@@ -863,13 +923,13 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		case C_RPTYCH_AHLOAD: 	// for these non-date-dependent reports,
 		case C_RPTYCH_TUSIZE:
 		case C_RPTYCH_TULOAD:  	// in their expected frequency,
-			fqTx= "";
+			fqTx = "";
 			break;		// omit "Annual" from header, 6-95.
 		default:
-			fqTx= "Annual ";
+			fqTx = "Annual ";
 			break;
 		}
-		ivlTx= "Year";   /* ?? hd1 = "";*/
+		ivlTx = "Year";   /* ?? hd1 = "";*/
 		break;
 	default:
 		;
@@ -881,7 +941,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 			subHour = Top.iSubhr;		// show subhour
 			/*lint -e616			case falls thru */
 		case C_IVLCH_H:
-			hour = Top.iHr+1;
+			hour = Top.iHr + 1;
 			break;	// show hour as well as date
 		case C_IVLCH_D:
 			when = Top.dateStr;
@@ -889,10 +949,10 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		case C_IVLCH_M:
 			when = Top.monStr;
 			break;
-		default: ;	 /*lint +e616 */
+		default:;	 /*lint +e616 */
 		}
 
-// get texts describing object(s) report/export is for
+	// get texts describing object(s) report/export is for
 
 	if (dvrip->ownTi)			// if zone-based report (ZEB, ZST, )
 	{
@@ -938,7 +998,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		{
 			DHWMTR* pWM;
 		default:
-			pWM = WMtrR.GetAt( dvrip->dv_dhwMtri);   	// specific DHW meter
+			pWM = WMtrR.GetAt(dvrip->dv_dhwMtri);   	// specific DHW meter
 			objTx = isExport ? pWM->name : strtprintf("DHW meter \"%s\"", pWM->name);
 			break;
 		case TI_ALL:
@@ -947,6 +1007,24 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 			break;			// 1st col is object name not time
 		}
 		xhd1 = "DHW Meter";					// export 1st col always name (and 4 time cols always present)
+	}
+	else if (dvrip->dv_afMtri)
+	{	switch (dvrip->dv_afMtri)
+		{
+			AFMTR *mtr1;
+		default:
+			mtr1 = AfMtrR.p + dvrip->dv_afMtri;   // one specific afmeter
+			objTx = isExport ? mtr1->name : strtprintf("AFMETER \"%s\"", mtr1->name);
+			break;
+		case TI_ALL:
+			objTx = "All AFMETERs";
+			hd1 = "Air Flow Meter";
+			break;			// 1st col is object name not time
+		case TI_SUM:
+			objTx = "Sum of AFMETERs";
+			break;
+		}
+		xhd1 = "Air Flow Meter";
 	}
 	else if (dvrip->ahi)			// if airHandler-based report (AH)
 	{
@@ -1007,6 +1085,10 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		what = "Hot Water Use";
 		break;
 
+	case C_RPTYCH_AFMTR:
+		what = "Air Flow (avg CFM)";
+		break;
+
 	case C_RPTYCH_AH:
 		what = "Air Handler Report";
 		break;      	// insert for title
@@ -1054,7 +1136,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		if (rpTy==C_RPTYCH_UDT)
 			vpUdtExColHeads(dvrip);		// virtual print user-defined export col headings, below
 		else					// ZEB, ZST, MTR, AH.
-		{
+		{	char buf[ MAXRPTLINELENSTD];
 			fmtExColhd(     			// format export column headings, below
 				rxt->colDef,   		//   COLDEF struct gives col wids, hdng
 				buf,   			//   output buffer
@@ -1068,7 +1150,6 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 
 	else			// is report
 	{
-
 		// format blank lines and title to virtual report
 
 		if (rpTy==C_RPTYCH_UDT  &&  dvrip->rpTitle)	// for user-defined report with title given
@@ -1090,7 +1171,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		if (rpTy==C_RPTYCH_UDT)					// UDT
 			vpUdtRpColHeads(dvrip);   				//   user-defined col headings, below
 		else							// ZEB ZST MTR AH
-		{
+		{	char buf[MAXRPTLINELENSTD];
 			fmtRpColhd( rxt->colDef, buf, rxt->flags, hd1);  	//   format col heads to buf, local fcn, below
 			vrStr( vrh, buf);					//   write buffer to virtual report, vrpak.h
 		}
@@ -1142,6 +1223,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		case C_RPTYCH_ZST:
 		case C_RPTYCH_MTR:
 		case C_RPTYCH_DHWMTR:
+		case C_RPTYCH_AFMTR:
 		case C_RPTYCH_AH:
 
 			/* omit total line if report ends b4 month or year it shows is complete: partial results wd be misleading.
@@ -1190,6 +1272,14 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			DHWMTR_IVL* pIvl = &WMtrR[ dhwMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
 			rxt.colDef = wMtrColdef;					 			// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
+		}
+
+		else if (dvrip->rpTy == C_RPTYCH_AFMTR)		// if AFMETER report
+		{
+			TI afMtri = dvrip->dv_afMtri > 0 ? dvrip->dv_afMtri : AfMtrR.n;   		// subscript
+			AFMTR_IVL* pIvl = AfMtrR[afMtri].amt_GetAFMTR_IVL( rxt.fq);
+			rxt.colDef = afMtrColdef;					 			// columns definition table for vpRxRow
+			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
 
 		else if (dvrip->rpTy==C_RPTYCH_AH)   	// if Air handler report
@@ -1252,9 +1342,9 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			break;
 		}
 		// case C_RPTYCH_DHWMTR: no Sum
+		// case C_RPTYCH_AFMTR: no Sum
 		case C_RPTYCH_AH:
-		{
-			AHRES_IVL_SUB *ahrs = &AhresB.p[AhresB.n].Y + rpFreq - 1;   	// point substruct for interval in question
+		{	AHRES_IVL_SUB* ahrs = &AhresB.p[AhresB.n].Y + rpFreq - 1;   	// point substruct for interval in question
 			rxt.colDef = ahColdef;
 			// rxt.flags set above
 			vrStr( dvrip->vrh, "\n");   				// blank separating line
@@ -1405,6 +1495,22 @@ void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
     												// subhr not allowed for DHWMTR --> fq==fqr; no extra -1 needed.
 
 	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+}		// dv_vpDHWMtrRow
+//-----------------------------------------------------------------------------
+void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
+
+// virtual print AFMTR report/export Row for one meter (caller iterates for all)
+{
+	if (afMtri < 0)
+		afMtri = dv_afMtri;
+	if (afMtri == TI_SUM)
+		afMtri = AfMtrR.n;					// handle "sum"
+	AFMTR* pM = AfMtrR.GetAt(afMtri);		// record
+	AFMTR_IVL* pIvl = pM->amt_GetAFMTR_IVL( rxt->fqr);	// interval
+								// results substr offset from .Y: M, D, H, S follow .Y, no HS.
+								//  .fqr is H or S when .fq is HS for hourly+subhourly reports
+
+	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //=================================================================
 LOCAL void FC NEAR vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
@@ -1616,7 +1722,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 {
 	COL *colp /*=NULL*/;
 	SI i, colWid, acWid, sTween, sLeft = 0;
-	char buf[1000], *s, *p, *q;
+	char *p, *q;
 	const char *text;
 	JUSTCH jus;
 	USI dt;
@@ -1633,8 +1739,8 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 	}
 
 // output row of column head texts
-
-	s = buf;					// init store pointer into line buffer
+	char buf[MAXRPTLINELENUDT];
+	char* s = buf;				// init store pointer into line buffer
 	q = s + sLeft;				// where gap b4 1st col should begin: spaces stored after adj for overlong text
 	for (i = dvrip->coli;  i;  )			// loop over columns of table
 	{
@@ -1689,10 +1795,9 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 {
 	COL* colp = NULL;
-	char buf[ 5000];
 
 // output row of quoted, comma-separated column head texts
-
+	char buf[MAXRPTLINELENUDT];
 	char* s = buf;					// init store pointer into line buffer
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
@@ -1715,21 +1820,10 @@ LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column 
 //==================================================================
 LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row for user-defined report
 {
-	COL *colp /*=NULL*/;
-	SI i, colWid, acWid, ptAdj, sTween, sLeft = 0;
-	USI spB4, spAf;
-
-	char buf[1000], *s, *p, *end, *limit, *q, *text;
-
-	JUSTCH jus;
-	SI dec;
-	USI dt, cvFmt;
-	float fv;
-
-
 // determine column spacing: cram or space out per extra width available.  Must match in vpUdtRpRow and vpUdtRpColHeads.
 
-	sTween = 0;							// number of extra spaces between columns: start with 0
+	int sTween = 0;			// number of extra spaces between columns: start with 0
+	int sLeft = 0;
 	if (dvrip->wid + dvrip->nCol <= dvrip->rpCpl)					// note dvrip->wid includes colGaps.
 	{
 		sTween = 1;									// 1 if fits
@@ -1739,32 +1833,35 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 	}
 
 // output row of data
-
-	s = buf;  						// set pointer for storing into line buffer
-	q = s + sLeft;					// where gap b4 1st col begins. spaces stored after checking data len.
-	for (i = dvrip->coli;  i;  )			// loop over columns of table
+	char buf[MAXRPTLINELENUDT];	// size must exceed longest possible line
+	char* s = buf;  			// set pointer for storing into line buffer
+	char* q = s + sLeft;					// where gap b4 1st col begins. spaces stored after checking data len.
+	for (int i = dvrip->coli;  i;  )			// loop over columns of table
 	{
-		colp = RcolB.p + i;
+		COL* colp = RcolB.p + i;
 		i = colp->nxColi;				// step i to next col subscript now, for convenience in lookahead
-		colWid = colp->colWid;				// column width, defaulted in cncult.cpp
-		p = q + colp->colGap;				// nominal start of column, b4 adj for overflow / justification
+		int colWid = colp->colWid;				// column width, defaulted in cncult.cpp
+		char* p = q + colp->colGap;				// nominal start of column, b4 adj for overflow / justification
 		q = p + colWid + sTween;    			// nominal start next column's intercolumn gap
-		//s is next avail position in buffer. 1 space has been stored after prior column.
-		spB4 = p > s ? (USI)(p - s) : 0;			// overflow space to left, reflecting actual prior data length + gap
-		end = p + colWid;				// nominal end of this column
-		limit = i  ?  q + RcolB.p[i].colGap - 1  	// desirable last char posn to write: start next column less one
-				:  buf + dvrip->rpCpl;		// no next col: else end of nominal line width
-		spAf = limit > end ? (USI)(limit - end) : 0;  	// overflow space to right, to next column or end line width
+		// s is next avail position in buffer. 1 space has been stored after prior column.
+		int spB4 = p > s ? (p - s) : 0;		// overflow space to left, reflecting actual prior data length + gap
+		char* end = p + colWid;				// nominal end of this column
+		char* limit = i  ?  q + RcolB.p[i].colGap - 1  	// desirable last char posn to write: start next column less one
+				         :  buf + dvrip->rpCpl;			// no next col: else end of nominal line width
+		int spAf = limit > end ? (limit - end) : 0;  	// overflow space to right, to next column or end line width
 
 		// format data
 
-		dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
-		jus = colp->colJust;				// justification
+		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		JUSTCH  jus = colp->colJust;			// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
-		dec = colp->colDec;				// decimals, defaulted to -1 if not given
-		ptAdj = 0;					// rob's decimal point position adjustment
-		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
+		SI dec = colp->colDec;		// decimals, defaulted to -1 if not given
+		int ptAdj = 0;				// rob's decimal point position adjustment
+		char* text = NULL;
+		USI cvFmt;
+		float fv;
+		if (ISNANDLE(colp->colVal.val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
 						   Only place in language where run with excess evf intentionally permitted, 12-91.
@@ -1813,7 +1910,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 				text = "<bad dt>";
 				break;
 			}
-		acWid = (SI)strlen(text);
+		int acWid = strlen(text);
 
 		// adjust to justify or overhang left or right.  strings are not truncated.
 
@@ -1844,21 +1941,19 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 //==================================================================
 LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for user-defined export
 {
-	COL *colp /*=NULL*/;
-	SI i, dec;
-	char buf[1000], *s, *text;
-	USI dt, cvFmt;
 
 // output comma-separated row of data, strings quoted
-
-	s = buf;  						// set pointer for storing into line buffer
-	for (i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
+	char buf[MAXRPTLINELENUDT];		// size must exceed longest possible line
+	char* s = buf;  		// set pointer for storing into line buffer
+	COL* colp;
+	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
 		colp = XcolB.p + i;
 
 		// format data
 
-		dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		USI dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		char* text;
 		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
@@ -1868,17 +1963,18 @@ LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval ro
 			switch (dt)
 			{
 			case DTFLOAT:
-				dec = colp->colDec;
-				cvFmt = 			// cvin2s format word (cvpak.h): bits, plus # digits in lo nibble
+			{	int dec = colp->colDec;
+				USI cvFmt = 			// cvin2s format word (cvpak.h): bits, plus # digits in lo nibble
 					(dec >= 0)			//  if decimals given, use F format with that many digits after point
-					?  FMTSQ | FMTOVFE 		//    use "squeezed" F format, overflow into E format (not k),
-					| min( dec, 15)   	//    show 'dec' digits after point (4 bits avail).
+					? FMTSQ | FMTOVFE 		//    use "squeezed" F format, overflow into E format (not k),
+					| min(dec, 15)   	//    show 'dec' digits after point (4 bits avail).
 					:				//  decimals not given, specify # sig digits rather than point posn.
 					FMTSQ | FMTRTZ 	 	//    squeeze, # given is # sig not # dec dig & truncate trailing 0's,
 					| FMTOVFE | 6;    	//    overfl to E format, # sig digits is 6 (if value >= .001)
 
-				text = cvin2s( &colp->colVal.val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
+				text = cvin2s(&colp->colVal.val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
 				break;
+			}
 
 			case DTCHP:
 				text = (char *)(colp->colVal.val);
@@ -1915,7 +2011,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 
 // Rets ptr to null-terminated heading string in head[]. Generates 2 rows: second is ----'s underlining the text.
 {
-	register SI i, l, blankit = 0;   char *colhd, *underline;   va_list ap;
+	register SI i, l, blankit = 0;   char *underline;   va_list ap;
 
 	va_start( ap, flags);
 
@@ -1926,7 +2022,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 		if (!(SKIPFLAGS & colDef[i].flags & ~flags)) 		// OMIT column with SKIPFLAGS bit that caller did not give
 		{
 			if (l)  						// no intercol space for 1st non-skipped column 6-95
-				l += !(colDef[i].flags & 1);			// intercol space if not suppressed by option
+				l += !(colDef[i].flags & 1);		// intercol space if not suppressed by option
 			l += colDef[i].width;    				// accumulate column widths
 		}
 	underline = head + l + 1;					// ptr to beg of "-----" line. +1 for \n.
@@ -1948,16 +2044,18 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 		blankit = (BLANKFLAGS & colDef->flags &~flags);   	// BLANK OUT column with BLANKFLAGS bit that caller did not give
 #endif
 
-		colhd =  (colDef->colhd==(char *)-1L)  ?  va_arg( ap, char *)  :  colDef->colhd; 	// for pointer -1L, use next arg
+		const char *colhd =  (colDef->colhd==(const char *)-1L)
+				?  va_arg( ap, const char *)
+			    :  colDef->colhd; 	// for pointer -1L, use next arg
 
 		cvin2sBuf( head+i, 					// format col head text (lib\cvpak.cpp)
-		blankit ? "" : colhd,
-		DTCH, UNNONE, colDef->width,
-		colDef->flags & 128 ? FMTLJ : FMTRJ );	// format: left justify on flag 128
+			blankit ? "" : colhd,
+			DTCH, UNNONE, colDef->width,
+			colDef->flags & 128 ? FMTLJ : FMTRJ );	// format: left justify on flag 128
 
 		memset( underline + i, 					// store ---- in line following text
-		blankit ? ' ' : '-',
-		colDef->width );
+			blankit ? ' ' : '-',
+			colDef->width );
 
 		i += colDef->width;					// pass column in buffer
 	}
@@ -1977,7 +2075,7 @@ LOCAL char * CDEC NEAR fmtExColhd( 		// format export file columns heading per C
 
 // Returns pointer to null-terminated heading string in head.
 {
-	char *s, *colhd;   va_list ap;
+	char *s;   va_list ap;
 
 	va_start( ap, flags);
 
@@ -1989,7 +2087,9 @@ LOCAL char * CDEC NEAR fmtExColhd( 		// format export file columns heading per C
 			*s++ = ',';				// separating comma
 		*s++ = '"';				// enclose in quotes
 
-		colhd =  (colDef->colhd==(char *)-1L)  ?  va_arg( ap, char *)  :  colDef->colhd; 	// for "pointer" -1L use next arg
+		const char* colhd =  (colDef->colhd==(const char *)-1L)
+			  ?  va_arg( ap, char *)
+			  :  colDef->colhd; 	// for "pointer" -1L use next arg
 
 #if BLANKFLAGS  // omit code if no such bits
 		if (!(BLANKFLAGS & colDef->flags &~flags))	// just "" if col has BLANKFLAGS 64 bit that caller did not give
