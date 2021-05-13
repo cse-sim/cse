@@ -1202,6 +1202,7 @@ CULT( "gnFrPl",    DAT,   GAIN_GNFRPL,     0,       0, VHRLY,  TYFL,  0,      N,
 CULT( "gnFrRtn",   DAT,   GAIN_GNFRRTN,    0,       0, VHRLY,  TYFL,  0,      N,   0.f,           N,   N), // 1 or less at runtime
 CULT( "gnDlFrPow", DAT,   GAIN_GNDLFRPOW,  0,       0, VHRLY,  TYFL,  0,      N,   1.f,           N,   N),
 CULT( "gnCtrlDHWSYS",DAT, GAIN_DHWSYSI,    0,       0, VEOI,   TYREF, &WSiB,  N,   0,             N,   N),
+CULT( "gnCtrlDHWMETER",DAT, GAIN_DHWMTRI,  0,       0, VEOI,   TYREF, &WMtriB,N,   0,             N,   N),
 CULT( "gnCtrlDHWEndUse",DAT,GAIN_DHWENDUSE,0,       0, VEOI,   TYCH,  0,      v C_DHWEUXCH_TOTAL, 0.f, N,   N),
 CULT( "endGain",   ENDER, 0,               0,       0, 0,      0,     0,      N,   0.f,           N,   N),
 CULT()
@@ -2772,6 +2773,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "skymodel",    DAT,   TOPRAT_SKYMODEL,   0,          0, VEOI,   TYCH,  0,   C_SKYMODCH_ANISO,  N,   N),
 	CULT( "skymodelLW",  DAT,   TOPRAT_SKYMODELLW, 0,          0, VEOI,   TYCH,  0,   C_SKYMODLWCH_DEFAULT, N, N),
 	CULT( "exShadeModel",DAT,   TOPRAT_EXSHADEMODEL, 0,        0, VEOI,   TYCH,  0,   C_EXSHMODELCH_PENUMBRA, N, N),
+	CULT( "slrInterpMeth",DAT, TOPRAT_SLRINTERPMETH, 0,        0, VEOI,   TYCH,  0,   C_SLRINTERPMETH_CSE, N, N),
 
 	CULT( "humMeth",     DAT,   TOPRAT_HUMMETH,    0,          0, VEOI,   TYCH,  0,   C_HUMTHCH_ROB,     N,   N),
 	CULT( "dflExH",      DAT,   TOPRAT_DFLEXH,     0,          0, VEOI,   TYFL,  0,      2.64f,          N,   N),

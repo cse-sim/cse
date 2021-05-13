@@ -239,6 +239,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i EXSHMODELCH tp_exShadeModel;	// exterior shading model (other than overhang/fins)
 									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
 									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
+    *i SLRINTERPMETH tp_slrInterpMeth    // solar interpolation method
 
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
@@ -686,7 +687,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
 	*declare "enum { gshrFILEDAY, gshrDSDAY, gshrDSDAY0 };"
-	*declare "RC wf_GenSubhrRad( int dayTy, int jDay);"
+	*declare "RC wf_GenSubhrRad( SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);"
 	*declare "RC wf_GetSubhrRad( int jDay, int iHrST, int iSh, float& radBeamAv, float& radDiffAv);"
 	*declare "WDHR& wf_GetDsDayWDHR( int iHr);"
 	*declare "RC wf_GetDsDayHr( WDHR* pWd, int iHr, int erOp = WRN);"
@@ -772,6 +773,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "void wd_Adjust( int iHrST);"
 	*declare "void wd_SetSolarValues( int jDayST, int iHrST);"
+    *declare "int wd_SunupBegEnd( int iHr, float& hrBeg, float& hrEnd) const;"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
     *declare "float wd_CalcSkyTemp( int skyModelLW, int iHr);"
@@ -787,13 +789,12 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 	*declare "bool wd_HasTdvData() const;"
 
-						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
+						// wd_sunupf, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
 						// wd_db assumed 1st non-solar geometry mbr
 						// re preservation of solar geometry info, see Copy()
-	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
+	*h float wd_sunupf;		// fraction of hour if sun is up
 							// solar position at midpoint of hour (or portion of hour sun is up)
 	*h float wd_slAzm;		//   azimuth, radians (0=N, +clockwise)
-							//     NOTE: code assumes wd_slAzm is 1st float
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
@@ -3534,6 +3535,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
  	*declare "void wmt_AccumEU( DHWEUCH eu, FLOAT v) { (&unknown)[ eu] += v; total += v; }"
 	*declare "void wmt_Accum( const DHWMTR_IVL* sIvl, int options=0, float mult=1.f);"
 	*declare "void wmt_AccumTo( double* useTots) const { VAccum( useTots, NDHWENDUSES+1, &total); }"
+    *declare "void wmt_SetPrior() const;"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.
     // Use by purpose (end use), water use, gal:
@@ -3548,7 +3550,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 
 *END		// DHWMTR_IVL
 //=============================================================================
-RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
+RECORD DHWMTR_SUB "DHW meter sub" *SUBSTRUCT
 
     *declare "RC wmt_CkF();"
 	*declare "RC wmt_Init( IVLCH ivl);"
@@ -3557,10 +3559,21 @@ RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
  // results: accumulated water use for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
  //CAUTION: ordered for subscripting by IVLCH-1.
-    *y *e *nest DHWMTR_IVL Y   	// run (aka year or annual)
-    *m *e *nest DHWMTR_IVL M   	// month's use
-    *d *e *nest DHWMTR_IVL D   	// day's use
-    *h *e *nest DHWMTR_IVL H   	// hour's use
+    *y *nest DHWMTR_IVL Y   	// run (aka year or annual)
+    *m *nest DHWMTR_IVL M   	// month's use
+    *d *nest DHWMTR_IVL D   	// day's use
+    *h *nest DHWMTR_IVL H   	// hour's use
+*END		// DHWMTR
+//==============================================================================
+RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
+
+    *declare "RC wmt_CkF();"
+	*declare "RC wmt_Init( IVLCH ivl);"
+	*declare "void wmt_Accum( IVLCH ivl, int firstflg);"
+
+    *e *noname *nest DHWMTR_SUB curr    // current year,month,day,hour,subhr results, stored at end each interval
+    *nest DHWMTR_SUB prior              // prior year,month,day,hour,subhr results, available throughout interval
+    // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// DHWMTR
 //=============================================================================
 RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
@@ -3731,7 +3744,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
                                 //    default = ws_tUse
   *i FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
                                 //    default = annual min mains temp
-  *i FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
+  *r *e FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
                                 //    default = heating design temp
   *r *e *array NDHWSIZEDAYS FLOAT ws_heatingCapDesTopN   // top N design heating capacities
                                 //  [ 0] = largest
@@ -4889,7 +4902,9 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
     *h FRAC gnFrPl			//   fraction of gain going to plenum (0 - 1, hourly expression)
     *h FRAC gnFrRtn			//   fraction of gain going to return (0 - 1, hourly expression)
     *h FRAC gnDlFrPow		// fraction power on for daylighting, 0-1, default 1.0, hourly expression
-	*i TI gn_dhwsysi		// controlling DHWSYS, 0 if none
+	*i TI gn_dhwsysi		// controlling DHWSYS, 0 if none ()
+							//   allows gains that track water use (re e.g. dishwashers, clotheswashers,)
+    *i TI gn_dhwmtri		// controlling DHWMETER, 0 if none
 							//   allows gains that track water use (re e.g. dishwashers, clotheswashers,)
     *i DHWEUXCH gn_dhwEndUse;	// with gn_dhwsysi, specifies controlling HW end use
 								//   note includes _TOTAL and _UNKNOWN

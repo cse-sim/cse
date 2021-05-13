@@ -668,7 +668,49 @@ int slsurfhr( // Calculate solar values for a surface for an hour
 #endif
   return TRUE;
 } // slsurfhr
+//----------------------------------------------------------------------
+float slSunupf(int ihr)
+{
+    return slloccur->sunupf[ihr];
+}       // slSunupf
 
+//-----------------------------------------------------------------------------
+int slSunupBegEnd(		// beg / end times when sun is up during hour
+    int ihr,		// hour (0-23)
+    float& hrBeg,	// returned: start of sun up period
+    float& hrEnd,   // returned: end of sun up period
+    float sunupf/*=-1.f*/)  // fraction sun up during hour
+                            //   if < 0., call slSunupf
+// returns 0 iff sun is down for entire hour
+//         1 iff sunrise hour
+//         2 iff sun is up for entire hour
+//         3 iff sunset hour
+{
+    if (sunupf < 0.f)
+        sunupf = slSunupf(ihr);
+    int ret;
+    if (sunupf < 0.0001f)
+    {   hrBeg = hrEnd = 0.f;
+        ret = 0;
+    }
+    else
+    {   hrBeg = float(ihr);
+        hrEnd = float(ihr + 1);
+        if (sunupf < 1.f)
+        {   if (ihr < 12)
+            {   hrBeg = hrEnd - sunupf;
+                ret = 1;
+            }
+            else
+            {   hrEnd = hrBeg + sunupf;
+                ret = 3;
+            }
+        }
+        else
+            ret = 2;
+    }
+    return ret;
+}       // slSunupBegEnd
 //======================================================================
 float slha( // Calculate hour angle for hour of day
 

@@ -496,3 +496,10 @@ DT = Yes
 
 RUN
 
+UNSET slrInterpMeth
+slrInterpMeth = TRNSYS
+
+RUN
+
+
+
