@@ -3535,6 +3535,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
  	*declare "void wmt_AccumEU( DHWEUCH eu, FLOAT v) { (&unknown)[ eu] += v; total += v; }"
 	*declare "void wmt_Accum( const DHWMTR_IVL* sIvl, int options=0, float mult=1.f);"
 	*declare "void wmt_AccumTo( double* useTots) const { VAccum( useTots, NDHWENDUSES+1, &total); }"
+    *declare "void wmt_SetPrior() const;"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.
     // Use by purpose (end use), water use, gal:
@@ -3549,7 +3550,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 
 *END		// DHWMTR_IVL
 //=============================================================================
-RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
+RECORD DHWMTR_SUB "DHW meter sub" *SUBSTRUCT
 
     *declare "RC wmt_CkF();"
 	*declare "RC wmt_Init( IVLCH ivl);"
@@ -3558,10 +3559,21 @@ RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
  // results: accumulated water use for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
  //CAUTION: ordered for subscripting by IVLCH-1.
-    *y *e *nest DHWMTR_IVL Y   	// run (aka year or annual)
-    *m *e *nest DHWMTR_IVL M   	// month's use
-    *d *e *nest DHWMTR_IVL D   	// day's use
-    *h *e *nest DHWMTR_IVL H   	// hour's use
+    *y *nest DHWMTR_IVL Y   	// run (aka year or annual)
+    *m *nest DHWMTR_IVL M   	// month's use
+    *d *nest DHWMTR_IVL D   	// day's use
+    *h *nest DHWMTR_IVL H   	// hour's use
+*END		// DHWMTR
+//==============================================================================
+RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
+
+    *declare "RC wmt_CkF();"
+	*declare "RC wmt_Init( IVLCH ivl);"
+	*declare "void wmt_Accum( IVLCH ivl, int firstflg);"
+
+    *e *noname *nest DHWMTR_SUB curr    // current year,month,day,hour,subhr results, stored at end each interval
+    *nest DHWMTR_SUB prior              // prior year,month,day,hour,subhr results, available throughout interval
+    // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// DHWMTR
 //=============================================================================
 RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
@@ -4890,7 +4902,9 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
     *h FRAC gnFrPl			//   fraction of gain going to plenum (0 - 1, hourly expression)
     *h FRAC gnFrRtn			//   fraction of gain going to return (0 - 1, hourly expression)
     *h FRAC gnDlFrPow		// fraction power on for daylighting, 0-1, default 1.0, hourly expression
-	*i TI gn_dhwsysi		// controlling DHWSYS, 0 if none
+	*i TI gn_dhwsysi		// controlling DHWSYS, 0 if none ()
+							//   allows gains that track water use (re e.g. dishwashers, clotheswashers,)
+    *i TI gn_dhwmtri		// controlling DHWMETER, 0 if none
 							//   allows gains that track water use (re e.g. dishwashers, clotheswashers,)
     *i DHWEUXCH gn_dhwEndUse;	// with gn_dhwsysi, specifies controlling HW end use
 								//   note includes _TOTAL and _UNKNOWN
