@@ -1146,7 +1146,7 @@ RC slPerezSkyModel(			// Perez transposition model (alt interface)
 	plane_diffuse_ground = horizontal_diffuse * poaDiffG + direct_normal_beam * ground_reflectivity*vfGrndDf*verSun; 
 
 	return rc;
-}	// slPerezSkyModel2
+}	// slPerezSkyModel
 
 //==========================================================================
 

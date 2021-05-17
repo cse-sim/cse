@@ -357,6 +357,39 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	return rc; 				// error returns above including each E macro
 }			// topCkfI
 //===========================================================================
+RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
+// NOTE: call at RUN, can query presence of items in model
+{
+	RC rc = RCOK;
+
+	// DHW models uses shorter "tick" step
+	bool bUsesTicks = WSiB.GetCount() > 0;
+
+	int maxSubStepsThisRun = bUsesTicks ? 60 : MAXSUBSTEPS;
+
+	if (tp_nSubSteps > maxSubStepsThisRun)
+	{
+		rc |= oer("nSubSteps (%d) exceeds maximum allowed (%d)",
+			tp_nSubSteps, maxSubStepsThisRun);
+		tp_nSubSteps = maxSubStepsThisRun;		// set to legal value for remainder of init
+	}
+
+	// Init subhour duration
+	tp_subhrDur = 1.f / tp_nSubSteps;			// subhr duration
+
+	// substep ticks = even shorter steps for e.g. HPWH simulation
+	tp_nSubhrTicks = max(1, 60 / tp_nSubSteps);
+	tp_tickDurHr = 1. / (tp_nSubhrTicks * tp_nSubSteps);
+	tp_tickDurMin = tp_tickDurHr * 60.;
+
+	if (tp_tickDurMin != 1. && bUsesTicks)
+		rc |= oer("nSubSteps=%d is invalid because it yields a non-integral substep duration (%0.3f min)."
+			   "\n    An integral duration is required when DHWSYS(s) are present.",
+			tp_nSubSteps, tp_tickDurMin);
+
+	return rc;
+}	// TOPRAT::tp_SetCheckTimeSteps()
+//----------------------------------------------------------------------------
 RC TOPRAT::tp_SetDerived()
 // set derived (runtime) values from input
 // errors stop run via error count
@@ -370,13 +403,8 @@ RC TOPRAT::tp_SetDerived()
 //set stuff based on command line options, 12-95.
 	tp_SetOptions();		// sets top mbrs for bin res file cmd line flags, etc.
 
-	// Init subhour duration
-	subhrDur = 1.f/nSubSteps;			// subhr duration
-
-	// substep ticks = even shorter steps for e.g. HPWH simulation
-	tp_nSubhrTicks = max( 1, 60 / nSubSteps);
-	tp_tickDurHr = 1. / (tp_nSubhrTicks * nSubSteps);
-	tp_tickDurMin = tp_tickDurHr * 60.;
+	// Timestep setup
+	rc |= tp_SetCheckTimeSteps();
 
 	//# days in run
 	nDays = tp_endDay - tp_begDay + 1;

@@ -482,14 +482,12 @@ struct WDSLRHR		// working solar data for 1 hour
 //----------------------------------------------------------------------------
 struct WDSLRDAY		// working data re daily solar calcs
 {
+
 	WDSLRHR wds_rad[24];	// working data by hour
 	int wds_nSubhr;			// # of subhrs per hour (copy of wdy_nSubhr)
 
-	void wds_Clear()
-	{	// nothing needed?  whs_Init() handles all
-		// for (auto whs : wds_rad)
-		//   whs.whs_Clear();
-	}
+	WDSLRDAY() = delete;
+	WDSLRDAY(const WDYEAR* pWDY, int dayTy, int jDay);
 
 	void wds_InitHour(int iH, const WDHR* pWD)
 	{	wds_rad[iH].whs_Init(this, iH, pWD);
@@ -516,6 +514,7 @@ struct VHR		// sort helper for wdy_Stats
 class WDYEAR		// caches year of weather data re calc of daily stats etc
 {
 friend class WFILE;
+friend struct WDSLRDAY;
 	int wdy_isLeap;				// nz: 366 day year
 	WDDAY wdy_day[ 366];		// daily statistics ([ 0] = jan-1)
 	WDHR wdy_hr[ 24*366];		// hourly data (read from weather file)
@@ -524,7 +523,7 @@ friend class WFILE;
 	WDHR wdy_hrDsDay[24];		// current design-day data by standard time hour
 								//   generated or filled from file data
 	int wdy_nSubhr;				// # of subhrs per hour
-								//   local copy of Top.nSubSteps
+								//   local copy of Top.tp_nSubSteps
 	WDSUBHRFACTORS* wdy_wShF;	// array [nSubhr] of constants re subhr radiation upsampling
 								//   constant for run (depends on nSubhr only)
 	int wdy_shJday;				// day of year now in wdy_shDay (1-365/366)
@@ -532,6 +531,7 @@ friend class WFILE;
 	int wdy_shDayTy;			// type of day now in wdy_shDay
 								//   gshrFILEDAY, gshrDSDAY, gshrDSDAY0
 								//   < 0 if not set up
+	int wdy_shErrCount;			// count of solar subhour errors
 	WDSUBHR* wdy_shDay;			// subhour solar radiation data for wdy_shJday
 	double wdy_taDbAvg[ 13];	// avg daily temp by month, [ 0] = year
 	double wdy_tMainsAvg[ 13];	// avg cold water temp by month, [ 0] = year
@@ -565,7 +565,9 @@ public:
 	void wdy_Stats( int jDay, double& taDbMean, double& taDbMax,
 		double& tdvElecMean, double& tdvElecMax, UCH tdvElecHrRank[ 24]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
+#if 0
 	RC wdy_PrepareWDSLRDAY( WDSLRDAY& wdsd, int dayTy, int jDay);
+#endif
 	RC wdy_GenSubhrRadSetup( int nSh);
 	RC wdy_GenSubhrRad(SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);
 	RC wdy_GenSubhrRad1(WDSUBHR wdsh[], int dayTy, int jDay, int iHr);
@@ -597,6 +599,9 @@ void WDYEAR::wdy_Init(
 									//   avoid wrapping etc so all init'ed()
 	wdy_shJday = wdy_shDayTy = -1;	// no subhr day set up
 	// don't init wdy_hr[]: very big and will be filled by weather file read
+
+	wdy_shErrCount = 0;
+
 }		// WDYEAR::wdy_Init
 //-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
@@ -636,7 +641,7 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 #endif
 
 	// init for subhr interpolation
-	rc |= wf_pWDY->wdy_GenSubhrRadSetup( Top.nSubSteps);
+	rc |= wf_pWDY->wdy_GenSubhrRadSetup( Top.tp_nSubSteps);
 
 	return rc;
 }	// WFILE::wf_FillWDYEAR
@@ -854,7 +859,7 @@ RC WDYEAR::wdy_GenSubhrRadSetup(		// one-time init for solar upsample
 //-----------------------------------------------------------------------------
 void WDSUBHRFACTORS::wdsf_Setup(		// constant factors re upsampling interpolation
 	int iSh,		// subhr, 0 - nSh-1
-	int nSh)		// number of subhrs per hour (*must* = Top.nSubSteps)
+	int nSh)		// number of subhrs per hour (*must* = Top.tp_nSubSteps)
 // factors derived here vary by subhr only
 //   (independent of day, hr, ...)
 {
@@ -879,6 +884,7 @@ void WDSUBHRFACTORS::wdsf_Setup(		// constant factors re upsampling interpolatio
 	slrF[1] = (.5f + m1)*fr1 + (1.5f - m2)*fr2;		// .. current ..
 	slrF[2] = (m2 - .5f)*fr2;						// .. next ..
 
+	// asserts when nSh = 240; nSh = 120 OK.  MAXSUBSTEPS=120 defined in cndefns.h
 	ASSERT(fabs(slrF[0] + slrF[1] + slrF[2] - 1.f) < 1.e-5f);			// a + b + c should be 1.0 within limits of float arithmetic
 
 }	// WDSUBHRFACTORS::wdsf_Setup
@@ -906,8 +912,7 @@ RC WDYEAR::wdy_GenSubhrRad(		// generate subhr radiation values for day
 #endif
 	RC rc = RCOK;
 	if (wdy_shJday != jDay || wdy_shDayTy != dayTy)
-	{	WDSLRDAY wdsd;
-		rc |= wdy_PrepareWDSLRDAY(wdsd, dayTy, jDay);
+	{	WDSLRDAY wdsd( this, dayTy, jDay);
 		for (int iHr = 0; iHr < 24; iHr++)
 		{	WDSUBHR* pWDSH = &wdy_Subhr(iHr, 0);
 			WDSLRHR& wdsh = wdsd.wds_rad[iHr];
@@ -926,34 +931,10 @@ RC WDYEAR::wdy_GenSubhrRad(		// generate subhr radiation values for day
 	return rc;
 }		// WDYEAR::wdy_GenSubhrRad
 //-----------------------------------------------------------------------------
-RC WDYEAR::wdy_PrepareWDSLRDAY(		// prepare day's solar data for subhr processing
-	WDSLRDAY& wdsd,	// returned: input values for day
-	int dayTy,		// generation options
-					//   gshrDSDAY0: set rad values to 0 (for heating design day)
-					//   gshrDSDAY: use design day hourly data
-					//   gshrFILEDAY: use hourly data from weather file
-	int jDay)		// day of year (1-365/366)
-{
-	RC rc = RCOK;
-
-	wdsd.wds_Clear();
-	wdsd.wds_nSubhr = wdy_nSubhr;
-
-	// fill hour average data
-	for (int iH=0; iH<24; iH++)
-	{	const WDHR* pWD =
-			  dayTy == WFILE::gshrDSDAY  ? &wdy_hrDsDay[iH]
-			: dayTy == WFILE::gshrDSDAY0 ? NULL
-			:                              &wdy_Hr(jDay, iH);
-		wdsd.wds_InitHour(iH, pWD);
-	}
-
-	return rc;
-}		// WDYEAR::wdy_PrepareWDSLRDAY
-//-----------------------------------------------------------------------------
 RC WDYEAR::wdy_VerifySubhrRad(
 	const WDSLRDAY& wdsd)
 {
+	static int SHERRCOUNTMAX = 20;
 	RC rc = RCOK;
 	for (int iHr = 0; iHr < 24; iHr++)
 	{
@@ -966,17 +947,48 @@ RC WDYEAR::wdy_VerifySubhrRad(
 		}
 
 		if (wdsd.wds_rad[ iHr].whs_hrTy > 0)
-		{	for (SLRCMP iC : { scDIFF, scBEAM })
-			{	float totHr = wdsd.wds_rad[iHr].whs_hrRad[iC];
-				float fDiff = frDiff(totHr, totSh[iC] / wdy_nSubhr);
-				if (fDiff > 0.001f)
-					rWarn("Subhr solar mismatch");
+		{
+			for (SLRCMP iC : { scDIFF, scBEAM })
+			{
+				float totHrC = wdsd.wds_rad[iHr].whs_hrRad[iC];
+				float totShC = totSh[iC] / wdy_nSubhr;
+				float fDiff = frDiff(totHrC, totShC);
+				if (fDiff > .001f)
+				{	++wdy_shErrCount;
+					if (wdy_shErrCount <= SHERRCOUNTMAX || fDiff > 0.05f)
+						rWarn("%s solar subhr mismatch (totHr=%0.2f  totSh=%0.2f)%s",
+							iC ? "Beam" : "Diffuse", totHrC, totShC,
+							wdy_shErrCount == SHERRCOUNTMAX
+								? "\n    Skipping further messages for minor errors." : "");
+				}
 			}
 		}
 	}
 
 	return rc;
 }		// WDYEAR::wdy_VerifySubhrRad
+//-----------------------------------------------------------------------------
+WDSLRDAY::WDSLRDAY(		// c'tor: prepare day's solar data for subhr processing
+	const WDYEAR* pWDY,	// source WDYEAR
+	int dayTy,		// generation options
+					//   gshrDSDAY0: set rad values to 0 (for heating design day)
+					//   gshrDSDAY: use design day hourly data
+					//   gshrFILEDAY: use hourly data from weather file
+	int jDay)		// day of year (1-365/366)
+{
+
+	wds_nSubhr = pWDY->wdy_nSubhr;
+
+	// fill hour average data
+	for (int iH = 0; iH < 24; iH++)
+	{
+		const WDHR* pWDH =
+			dayTy == WFILE::gshrDSDAY ? &pWDY->wdy_hrDsDay[iH]
+			: dayTy == WFILE::gshrDSDAY0 ? NULL
+			: &pWDY->wdy_Hr(jDay, iH);
+		wds_InitHour(iH, pWDH);
+	}
+}		// WDSLRDAY::WDSLRDAY
 //-----------------------------------------------------------------------------
 void WDSLRHR::whs_Init(		// init working data for hour
 	WDSLRDAY* pSD,	// parent
@@ -1021,9 +1033,9 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 	if (!whs_hrTy)
 		return rc;		// sun not up
 
-	float g[1000];	// calculated instantaneous irrad at subhour boundaries, Btuh/ft2
-					//   required size = nSubhr+1, use "really big", don't check
-					//   vZero()d below
+	float g[ MAXSUBSTEPS+1];	// calculated instantaneous irrad at subhour boundaries, Btuh/ft2
+						//   required size = nSubhr+1, use big enuf, don't check
+						//   vZero()d below
 
 	float subhrDur = 1.f / float(nSubhr);
 
@@ -1048,7 +1060,6 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 #define TAG( s)
 #endif
 
-	const WDSLRHR& whsNext = whs_GetHr(whs_iH + 1);
 
 	for (SLRCMP iC : { scDIFF, scBEAM })
 	{	// instantaneous irrad at beg, mid, end of sunup interval
@@ -1056,22 +1067,39 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 		float gMid = 0.f;
 		float gEnd = 0.f;
 		VZero(g, nSubhr + 1);		// instantaneous irrad at subhr boundaries
-		g[iShBeg] = gBeg;	// initial point from end of last hr
+		g[iShBeg] = gBeg;			// initial point from end of last hr
 
-		float hrRad = whs_hrRad[iC];
+		float hrRad = whs_hrRad[iC];			// hr irradiation, Btu/ft2
+		float irrad2 = 2.f * hrRad / sunupShDur;	// 2x irradiance while sun up, Btuh/ft2
 
 		if (nShSunup == 1)
 		{	// sun up for 1 substep: force total match
-			g[ whs_hrTy == 1 ? iShEnd : iShBeg] = 2.f*hrRad / subhrDur;
+			g[ whs_hrTy == 1 ? iShEnd : iShBeg] = irrad2;
 			TAG("1up");
 		}
 		else
 		{	// sun up for during 2 or more subhrs
-			float hrRadNx = whsNext.whs_hrRad[iC];
+#if 1
+			if (whs_hrTy < 3)
+			{
+				float hrRadNx = whs_GetHr(whs_iH + 1).whs_hrRad[iC];
+				gEnd = 0.5f * (hrRad + hrRadNx);
+#if defined( _DEBUG)
+				if (whs_hrTy == 1)
+					TAG(" su");
+#endif
+			}
+			else
+			{	// else sunset gEnd = 0 per above
+				TAG(" sd");
+			}
+#else
+			float hrRadNx = whsNext.whs_hrRad[iC]
+			gEnd = 0.5f * (hrRad + hrRadNx);
 
 			if (whs_hrTy == 1)
 			{	// sunrise hour
-				if (hrRadNx >= hrRad)
+				if (true || hrRadNx >= hrRad)
 				{
 					// gEnd = 2.f * hrRad / sunupDur;
 					gEnd = 0.5f * (hrRad + hrRadNx);
@@ -1086,6 +1114,7 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 			else if (whs_hrTy == 2)
 				gEnd = 0.5f * (hrRad + hrRadNx);
 			// else whs_hrTy == 3 and gEnd == 0. per whs_Clear() above
+#endif
 
 			whs_gEnd[iC] = gEnd;		// save ending irrad for beg of next hour
 
@@ -1098,12 +1127,9 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 			}
 			g[iShEnd] = gEnd;
 
-			int iShMid = 0;
-			iShMid = nShSunup / 2;		// integer midpoint of sunup period
+			int iShMid = nShSunup / 2;		// integer midpoint of sunup period
 			float fMidSunup = float(iShMid) / float(nShSunup);
-			gMid = (2.f * hrRad / sunupShDur)
-				- fMidSunup * gBeg
-				- (1.f - fMidSunup) * gEnd;
+			gMid = irrad2 - fMidSunup * gBeg - (1.f - fMidSunup) * gEnd;
 
 			if (gMid < 0.f)
 			{
@@ -1141,7 +1167,7 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 					}
 				}
 
-#if 0
+#if 1
 // experiment: average (smooths peaks)
 				float gx[100];
 				VCopy(gx, nSubhr + 1, g);
@@ -1151,11 +1177,9 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 			}
 		}
 
-		
-
 		// result: derived subhr avg values from instantaneous
 		for (iSh = iShBeg; iSh < iShEnd; iSh++)
-		{	float radAvg = (g[iSh] + g[iSh + 1]) / 2.f;
+		{	float radAvg = 0.5f * (g[iSh] + g[iSh + 1]);
 			wdsh[iSh][iC] = radAvg;
 		}
 
@@ -1237,7 +1261,7 @@ RC WDSLRHR::whs_GenSubhrRad1CSE(		// generate solar subhr values for 1 hour, CSE
 RC WFILE::wf_GetSubhrRad(		// retrieve subhr solar values
 	int jDay,	// day of year, 1 - 365/366
 	int iHrST,	// standard time hour of day, 0 - 23
-	int iSh,	// substep, 0 - nSubSteps-1
+	int iSh,	// substep, 0 - tp_nSubSteps-1
 	float& radBeamAv,		// returned: avg DNI for subhr, Btuh/ft2
 	float& radDiffAv)		// returned: avg DHI for subhr, Btuh/ft2
 {

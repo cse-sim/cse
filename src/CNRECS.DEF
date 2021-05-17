@@ -136,6 +136,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
 	*declare "RC tp_SetDerived();"
+    *declare "RC tp_SetCheckTimeSteps();"
 	*declare "RC tp_FazInit();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
@@ -169,11 +170,11 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i DOWCH jan1DoW		// January 1 day of week, sun=1  SUBTRACT 1 FOR MOST INTERNAL USES
     *r SI year    			// derived: tdpak generic non-leap year, -1 = jan 1 is Monday ... -7 = jan 1 is Sunday.
     *i SI_GEZ wuDays		// number of warmUp days
-    *i SI_GZ nSubSteps		// # subhours per hour, determines subhour duration.
+    *i SI_GZ tp_nSubSteps	    // # subhours per hour, determines subhour duration.
 							//    typically 4 for (old) ZNMODELCH_CNE (combined coefficent) models
 							//    5 - 30 for convective/radiant models
-							//    some models require substep duration to be integral minutes
-							//       (e.g. HPWH)
+							//    some models require substep duration to be integral minutes (e.g. HPWH)
+							//       see tp_SetCheckTimesteps()
 
 //TOP: inputs: location/air properties/ground properties
     *f CHP tp_wfName    	// weather file path string
@@ -423,14 +424,14 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     // many TOP working globals set/used comments are old, 12-91.
 
 //TOP: runtime: re subHour and sub-subhour (aka ticks)
-    *r float subhrDur		// duration of subhour, hr (= 1/nSubSteps)
+    *r float tp_subhrDur	// duration of subhour, hr (= 1/tp_nSubSteps)
 	*r SI_GZ tp_nSubhrTicks	// # of subhour ticks for e.g. HPWH simulation
 							//    1 per minute or as generalized
 	*r DBL tp_tickDurMin	// duration of subhr tick, min
 							//    = 1 min or as generalized
 							//    used for e.g. HPWH simulation
 	*r DBL tp_tickDurHr		// duration of subhr tick, hr
-	*declare "int tp_NHrTicks() const { return nSubSteps*tp_nSubhrTicks; }"
+	*declare "int tp_NHrTicks() const { return tp_nSubSteps*tp_nSubhrTicks; }"
 
 //TOP: runtime: simulation date/time variables
     *m ANAME monStr    	// Month being simulated as (non-heap) string
@@ -2087,7 +2088,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *r LEN_GZ zn_ceilingHt	// zone nominal ceiling height, ft. default = znVol / znArea
     *i HC_GZ znCAir			// effective "air" heat cap (Btu/F): models all non-mass heat cap in zone.
 	    					//   defaults to 3.5*area. heat cap of surfaces not modelled as "massive" may be added.
-	*r *hide HC_GZ znCAirSh	// cnCAir / Top.subhrDur (often-used)
+	*r *hide HC_GZ znCAirSh	// cnCAir / Top.tp_subhrDur (often-used)
 	*r FLOAT_GZ zn_HIRatio	// hygric inertia ratio for zone, default 1
 							//   for moisture balance calcs in non-CNE zones,
 							//    effective dry-air mass = zn_HIRatio * zn_dryAirMass
@@ -5807,7 +5808,7 @@ RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result 
     ENERGY ph    ENERGY pc   	// heat and cool coil input energy, from meter or (probably) from plant
     ENERGY pAuxH ENERGY pAuxC	// heat and cool aux energy
     ENERGY pFan			// fans input energy
-    HOURS  hrsOn    		// time air handler on: accumulated Top.subhrDur
+    HOURS  hrsOn    		// time air handler on: accumulated Top.tp_subhrDur
  //long integer members to sum in accumulation.  cnguts.h defines assume nSubhr is 1st, nIterFan is last.
     LI nSubhr  			// subhour counter: for convenience / possibly making cluster-dependent
     LI nIter1			// iteration counter 1: # times called, including immediate exits

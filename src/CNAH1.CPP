@@ -786,7 +786,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 	AHRES_IVL_SUB *ahres = &AhresB.p[ss].S;   	// subhour part of ah results record: same record subscript as ah.
 	if (ahMode != ahOFF)			// if on: output no non-0 results when ah off, except certain aux energies (below)
 	{
-		ahres->hrsOn = Top.subhrDur;			// accumulate time on for weighting averages
+		ahres->hrsOn = Top.tp_subhrDur;			// accumulate time on for weighting averages
 
 		// temps and humRats (wetBulbs may be computed when/if formatted to print) and flows
 		ahres->tDbO = Top.tDbOSh;
@@ -802,11 +802,11 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		ahres->vf = cmix / Top.airX(tSen);		// volumetric flow (after supply fan & coils == at entry to supply duct)
 
 		// ah results: coil output energies
-		ahres->qh = ahhc.q * Top.subhrDur;
-		ahres->qc = ahcc.q * Top.subhrDur;
-		ahres->qs = ahcc.qs * Top.subhrDur;
-		ahres->ql = ahcc.ql * Top.subhrDur;
-		ahres->qFan = (rfanQ + sfan.q)*Top.subhrDur;	// rfanQ is rfan.q of completed iteration (rfan.q may now be next value)
+		ahres->qh = ahhc.q * Top.tp_subhrDur;
+		ahres->qc = ahcc.q * Top.tp_subhrDur;
+		ahres->qs = ahcc.qs * Top.tp_subhrDur;
+		ahres->ql = ahcc.ql * Top.tp_subhrDur;
+		ahres->qFan = (rfanQ + sfan.q)*Top.tp_subhrDur;	// rfanQ is rfan.q of completed iteration (rfan.q may now be next value)
 
 		// ah results: leaks & losses, zone energy, balance
 		/* account leaks & exhaust in enthalpy relative to RETURN CONDITIONS 6-9-92,
@@ -826,11 +826,11 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		DBL hhmix = HH(tmix,wen,cmix);		// .. exiting economizer
 		DBL hhSen = HH(tSen,ws,cmix);		// .. entering supply duct, after coil(s) and supply fan
 		DBL hhs =   HH(ts,ws,CS);   		// .. getting to terminals, after supply duct
-		ahres->qO = (hhmix - hhr2) * Top.subhrDur;  	// subhr outside air q: enthalpy (rel tr/wr) change of flow thru eco
+		ahres->qO = (hhmix - hhr2) * Top.tp_subhrDur;  	// subhr outside air q: enthalpy (rel tr/wr) change of flow thru eco
 		ahres->qLoss =  					// leak and loss q this subhour
 			( hhr1 /* - hhr=0*/  		//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
-			  + hhs - hhSen ) * Top.subhrDur;	//   + sup duct leak-out and cond loss: enthalpy change thru it
-		ahres->qLoad = (/*hhr=0*/ - hhs) * Top.subhrDur;	/* subhr load q: zone load, tu duct loss, plenum loss =
+			  + hhs - hhSen ) * Top.tp_subhrDur;	//   + sup duct leak-out and cond loss: enthalpy change thru it
+		ahres->qLoad = (/*hhr=0*/ - hhs) * Top.tp_subhrDur;	/* subhr load q: zone load, tu duct loss, plenum loss =
        							   enth change thru tus/zns/plenum (use prior return to get balance) */
 		ahres->qBal = ahres->qh + ahres->qc + ahres->qO + ahres->qFan + ahres->qLoss + ahres->qLoad;	// should add to near 0
 #undef CS
@@ -838,11 +838,11 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 #undef SH
 
 		// ah results: input energies
-		ahres->pc = ahcc.p * Top.subhrDur;
-		ahres->ph = ahhc.p * Top.subhrDur;
-		ahres->pAuxC = (ahcc.pAuxOn + ahcc.pAuxOnAtall) * Top.subhrDur;  	// cool aux energy input (ah-on-only portion)
-		ahres->pAuxH = (ahhc.pAuxOn + ahhc.pAuxOnAtall) * Top.subhrDur;  	// heat aux energy input (ditto)
-		ahres->pFan = sfan.p*Top.subhrDur + rfan.p*Top.subhrDur;
+		ahres->pc = ahcc.p * Top.tp_subhrDur;
+		ahres->ph = ahhc.p * Top.tp_subhrDur;
+		ahres->pAuxC = (ahcc.pAuxOn + ahcc.pAuxOnAtall) * Top.tp_subhrDur;  	// cool aux energy input (ah-on-only portion)
+		ahres->pAuxH = (ahhc.pAuxOn + ahhc.pAuxOnAtall) * Top.tp_subhrDur;  	// heat aux energy input (ditto)
+		ahres->pFan = sfan.p*Top.tp_subhrDur + rfan.p*Top.tp_subhrDur;
 
 		// ah results: iteration counts: most are ++'d directly from code
 		ahres->nSubhr = 1L;					// 1 subhour each subhour; let accumulation do its thing
@@ -852,49 +852,49 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 // --- charge energy inputs to meters where specified --- (interaction of plant vs coil type tbd)
 
 		if (sfan.fn_mtri)      					// if meter specified for supply fan
-			MtrB.p[sfan.fn_mtri].H.fan += sfan.p*Top.subhrDur;	// charge power consumption to that meter, end use "fans"
+			MtrB.p[sfan.fn_mtri].H.fan += sfan.p*Top.tp_subhrDur;	// charge power consumption to that meter, end use "fans"
 		if (rfan.fn_mtri)      					// if meter specified for return/relief fan
-			MtrB.p[rfan.fn_mtri].H.fan += rfan.p*Top.subhrDur;	// charge power consumption to that meter, end use "fans"
+			MtrB.p[rfan.fn_mtri].H.fan += rfan.p*Top.tp_subhrDur;	// charge power consumption to that meter, end use "fans"
 
 		if (ahhc.mtri)							// if meter specified for heat coil
 			if (ahhc.coilTy != C_COILTYCH_HW   				// if not a coil type that uses a plant
 					/*&& ahhc.coilTy != C_COILTYCH_HHP*/ )  			// .. (redundant: meter disallowed)
 			{
-				MtrB.p[ahhc.mtri].H.htg += ahhc.p*Top.subhrDur;		// charge heating coil input power to meter, end use "htg"
-				MtrB.p[ahhc.mtri].H.hp  += ahhc.pRh*Top.subhrDur;		// charge AHP suppl res heat to end use "hp" (0 if not AHP)
+				MtrB.p[ahhc.mtri].H.htg += ahhc.p*Top.tp_subhrDur;		// charge heating coil input power to meter, end use "htg"
+				MtrB.p[ahhc.mtri].H.hp  += ahhc.pRh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hp" (0 if not AHP)
 			}
 		if (ahhc.auxOnMtri)							// heating coil-on load-proportional aux energy
-			MtrB.p[ahhc.auxOnMtri].H.HAUX += ahhc.pAuxOn*Top.subhrDur;		//  (eg oil furnace draft fan)
+			MtrB.p[ahhc.auxOnMtri].H.HAUX += ahhc.pAuxOn*Top.tp_subhrDur;		//  (eg oil furnace draft fan)
 		if (ahhc.auxOnAtallMtri)							// heating aux energy when on at all in subr
-			MtrB.p[ahhc.auxOnAtallMtri].H.HAUX += ahhc.pAuxOnAtall*Top.subhrDur;
+			MtrB.p[ahhc.auxOnAtallMtri].H.HAUX += ahhc.pAuxOnAtall*Top.tp_subhrDur;
 
 		if (ahcc.mtri)								// if meter specified for cool coil
 			if (ahcc.coilTy != C_COILTYCH_CHW   					// if not a coil type that uses a plant
 					/*&& ahcc.coilTy != C_COILTYCH_HHP*/ )    				// .. (redundant: meter disallowed)
-				MtrB.p[ahcc.mtri].H.clg += ahcc.p*Top.subhrDur;			// charge cool coil input power, end use "cooling"
+				MtrB.p[ahcc.mtri].H.clg += ahcc.p*Top.tp_subhrDur;			// charge cool coil input power, end use "cooling"
 		if (ahcc.auxOnMtri)							// cooling coil-on load-proportional aux energy
-			MtrB.p[ahcc.auxOnMtri].H.CAUX += ahcc.pAuxOn*Top.subhrDur;
+			MtrB.p[ahcc.auxOnMtri].H.CAUX += ahcc.pAuxOn*Top.tp_subhrDur;
 		if (ahcc.auxOnAtallMtri)							// cooling aux energy when on at all in subr
-			MtrB.p[ahcc.auxOnAtallMtri].H.CAUX += ahcc.pAuxOnAtall*Top.subhrDur;
+			MtrB.p[ahcc.auxOnAtallMtri].H.CAUX += ahcc.pAuxOnAtall*Top.tp_subhrDur;
 	}
 
 // --- result input energies and meter charges that can be non-0 even when ah is off
 
 	//note ahres is 0'd in AH::begSubhr.
-	ahres->pAuxC += (ahcc.pAuxOff + ahcc.pAuxFullOff) * Top.subhrDur;		// cool aux energy input even if ah off
-	ahres->pAuxH += (ahhc.pAuxOff + ahhc.pAuxFullOff) * Top.subhrDur;		// heat aux energy input even if ah off
+	ahres->pAuxC += (ahcc.pAuxOff + ahcc.pAuxFullOff) * Top.tp_subhrDur;		// cool aux energy input even if ah off
+	ahres->pAuxH += (ahhc.pAuxOff + ahhc.pAuxFullOff) * Top.tp_subhrDur;		// heat aux energy input even if ah off
 
 	if (ahhc.auxOffMtri)							// heating coil-off proportional aux energy
-		MtrB.p[ahhc.auxOffMtri].H.HAUX += ahhc.pAuxOff*Top.subhrDur;
+		MtrB.p[ahhc.auxOffMtri].H.HAUX += ahhc.pAuxOff*Top.tp_subhrDur;
 	if (ahhc.auxFullOffMtri)							// heating aux energy when coil off entire subhr
-		MtrB.p[ahhc.auxFullOffMtri].H.HAUX += ahhc.pAuxFullOff*Top.subhrDur;	// eg gas pilot per DOE2 -- incl in polynomial if partly on
+		MtrB.p[ahhc.auxFullOffMtri].H.HAUX += ahhc.pAuxFullOff*Top.tp_subhrDur;	// eg gas pilot per DOE2 -- incl in polynomial if partly on
 	if (ahcc.auxOffMtri)							// cooling coil-off proporitonal aux energy
-		MtrB.p[ahcc.auxOffMtri].H.CAUX += ahcc.pAuxOff*Top.subhrDur;
+		MtrB.p[ahcc.auxOffMtri].H.CAUX += ahcc.pAuxOff*Top.tp_subhrDur;
 	if (ahcc.auxFullOffMtri)							// cooling aux energy when coil off entire subhr
-		MtrB.p[ahcc.auxFullOffMtri].H.CAUX += ahcc.pAuxFullOff*Top.subhrDur;	//  eg possibly heat pump crankcase heater?
+		MtrB.p[ahcc.auxFullOffMtri].H.CAUX += ahcc.pAuxFullOff*Top.tp_subhrDur;	//  eg possibly heat pump crankcase heater?
 
 	if (cch.mtri)							// if crankcase htr has a meter
-		MtrB.p[cch.mtri].H.aux += cch.p*Top.subhrDur;			// post its input (set by CCH:endSubhr from coilsEndSubhr)
+		MtrB.p[cch.mtri].H.aux += cch.p*Top.tp_subhrDur;			// post its input (set by CCH:endSubhr from coilsEndSubhr)
 
 	return RCOK;
 

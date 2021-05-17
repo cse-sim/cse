@@ -543,7 +543,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
-		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
+		Top.isEndHour = (Top.iSubhr + 1 >= Top.tp_nSubSteps);	// set flag if last subHour of hour
 
 #if defined( DEBUGDUMP)
 		DbDo( dbdSTARTSTEP);		// nothing yet debug-printed for this subhour

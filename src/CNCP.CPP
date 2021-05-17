@@ -404,15 +404,15 @@ RC CHILLER::endSubhr()
 	DBL plr;
 	if (chMode==C_OFFONCH_ON)		// if chiller on, charge input energy to meters
 	{
-		if (mtri)       MtrB.p[mtri].H.clg += p*Top.subhrDur;		// compressor energy
-		if (chpp.mtri)  MtrB.p[chpp.mtri].H.aux += chpp.p*Top.subhrDur;	// primary pump
-		if (chcp.mtri)  MtrB.p[chcp.mtri].H.aux += chcp.p*Top.subhrDur;	// condenser pump
+		if (mtri)       MtrB.p[mtri].H.clg += p*Top.tp_subhrDur;		// compressor energy
+		if (chpp.mtri)  MtrB.p[chpp.mtri].H.aux += chpp.p*Top.tp_subhrDur;	// primary pump
+		if (chcp.mtri)  MtrB.p[chcp.mtri].H.aux += chcp.p*Top.tp_subhrDur;	// condenser pump
 		COOLPLANT *cp = CpB.p + ownTi;					// point chiller's COOLPLANT
 		plr = cp->plr;						// fetch part load ratio from owning COOLPLANT for aux's
 		pAuxFullOff = 0.;					// none of this when on at all in subhour
 		pAuxOnAtall = auxOnAtall;				// charge all of this aux power if chiller ran at all in subhour
 		if (auxOnAtallMtri)					// aux energy when on at all in subr
-			MtrB.p[auxOnAtallMtri].H.clg += pAuxOnAtall*Top.subhrDur;
+			MtrB.p[auxOnAtallMtri].H.clg += pAuxOnAtall*Top.tp_subhrDur;
 
 		// chiller ice output check 12-3-92. Assumes no overrun; if necessary, suppress til actual flow simulated.
 		DBL chTs = cp->tr + q / chpp.mw;				// this chiller output temp assuming no flow overrun (q negative)
@@ -427,14 +427,14 @@ RC CHILLER::endSubhr()
 		pAuxOnAtall = 0.;					// none of this aux energy when off for entire subhour
 		pAuxFullOff = auxFullOff;				// charge this aux energy only when not used in entire subhour
 		if (auxFullOffMtri)					// aux energy when off entire subhr
-			MtrB.p[auxFullOffMtri].H.htg += pAuxFullOff*Top.subhrDur;
+			MtrB.p[auxFullOffMtri].H.htg += pAuxFullOff*Top.tp_subhrDur;
 	}
 	pAuxOn = plr * auxOn;					// off-proportional aux power: plr * user input
 	if (auxOnMtri)						// load-proportional aux energy
-		MtrB.p[auxOnMtri].H.clg += pAuxOn*Top.subhrDur;
+		MtrB.p[auxOnMtri].H.clg += pAuxOn*Top.tp_subhrDur;
 	pAuxOff = (1. - plr) * auxOff;				// off-proportional aux power
 	if (auxOffMtri)						// chiller-off proportional aux energy
-		MtrB.p[auxOffMtri].H.htg += pAuxOff*Top.subhrDur;
+		MtrB.p[auxOffMtri].H.htg += pAuxOff*Top.tp_subhrDur;
 	return RCOK;
 }			// CHILLER::endSubhr
 //----------------------------------------------------------------------------------------------------------------------------

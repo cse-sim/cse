@@ -316,7 +316,7 @@ RC TOWERPLANT::endSubhr()	// towers end-subhour computations: fraction on, # tow
 
 // charge energy consumption .fanP to meter, if meter given
 
-	if (tpMtr)   MtrB.p[tpMtr].H.aux += fanP * Top.subhrDur;
+	if (tpMtr)   MtrB.p[tpMtr].H.aux += fanP * Top.tp_subhrDur;
 
 	return rc;
 }			// TOWERPLANT::endSubhr

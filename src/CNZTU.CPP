@@ -880,12 +880,12 @@ x          Then no error. User input for fraction of this heat of condensation t
 
 // subhour results: hvac output
 
-	zrs->qsMech = (zn_qsHvac + zn_qHPWH) * Top.subhrDur;	// subhour sensible hvac energy (power * time = energy)
+	zrs->qsMech = (zn_qsHvac + zn_qHPWH) * Top.tp_subhrDur;	// subhour sensible hvac energy (power * time = energy)
 
-	zrs->qlMech = zn_qlHvac * Top.subhrDur;	// subhour latent hvac energy (power * time = energy)
+	zrs->qlMech = zn_qlHvac * Top.tp_subhrDur;	// subhour latent hvac energy (power * time = energy)
 
 	double qTotMech = (zn_qsHvac + zn_qlHvac)	// combine sensible and latent power (netting out if signs different)
-					  * Top.subhrDur;
+					  * Top.tp_subhrDur;
 	if (zn_hcMode == RSYS::rsmOAV)
 	{	zrs->qvMech = qTotMech;
 		zrs->qhMech = zrs->qcMech = 0.f;
@@ -899,7 +899,7 @@ x          Then no error. User input for fraction of this heat of condensation t
 		zrs->qcMech = 0.f;
 	}
 
-	zrs->eqfVentHr = zn_fVent * Top.subhrDur;	// equivalent full vent operation, hr
+	zrs->eqfVentHr = zn_fVent * Top.tp_subhrDur;	// equivalent full vent operation, hr
 
 	if (!zn_IsConvRad())
 	{	rc |= zn_AirX();		// called earlier for CR
@@ -918,7 +918,7 @@ x          Then no error. User input for fraction of this heat of condensation t
 				  - qrIgMs			//       - zn's masses radiant intn'l gain (Btuh) this hour: energy to mass. 11-95.
 				  - haMass * tz     //       - coupling to ms's ("b") * temp
 				  + znXLGainLs )	//       + last subhr excess latent gain: heat of condensation to zone
-				* Top.subhrDur      		//    all times time interval to get energy
+				* Top.tp_subhrDur      		//    all times time interval to get energy
 				+ i.znCAir * (tzls - tz);	// subhr energy from "cair":  hc times temp diff
 		// (CAIR models all non-mass hc in zone: air, furniture, light walls, etc)
 	}
@@ -932,15 +932,15 @@ x          Then no error. User input for fraction of this heat of condensation t
 #if 0	// excess latent gain ignored in CR model, 5-15-12
 x			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to zone
 #endif
-			) * Top.subhrDur      	//    all times time interval to get energy
+			) * Top.tp_subhrDur      	//    all times time interval to get energy
 			+ i.znCAir * (tzls - tz);	// subhr energy from "cair":  hc times temp diff
 	}
 
 	// subhour results: latent heat transfered out of air in zone (analogous to qMass)
 	zrs->qlAir = (wzls - wz) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr
-				 - znXLGain * Top.subhrDur;				// add loss assumed to prevent supersaturation (but it has other sign)
+				 - znXLGain * Top.tp_subhrDur;				// add loss assumed to prevent supersaturation (but it has other sign)
 														// == heat of condensation of moisture assumed removed (see znW)
-	zrs->qlIz = zn_qlIz * Top.subhrDur;
+	zrs->qlIz = zn_qlIz * Top.tp_subhrDur;
 
 	zrs->ivAirX = zn_ivAirX;	// znres: airX is airnet infil/vent only
 
@@ -948,28 +948,28 @@ x			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to 
 	zrs->qsIg =   ( qsIgHr			// sens intl gain, set in cnloads:loadsHourBeg from znSGain + wthr file.
 					+ qrIgTot )		// total radiant int gain originating in zone.
 									//   non-CAir parts subtracted out of qMass above and qsIz & qCond below. 11-95.
-				  * Top.subhrDur; 		// convert power to energy
+				  * Top.tp_subhrDur; 		// convert power to energy
 	// Next two for daylighting simulation for NREL E10 program using GAINs with gnDlFrPow.
 	// Set in cnguts.cpp:doHourGains; accumulated in cnguts to H,D,M,Y; outputtable only via probes or binary results files (9-94).
-	// "* Top.subhrDur" converts powers to energy.
-	zrs->litDmd = znLitDmd * Top.subhrDur;		// zone lighting demand (energy that would be used without daylighting)
-	zrs->litEu =  znLitEu * Top.subhrDur;		// zone lighting actual energy use, after any daylighting reduction.
-	zrs->qlIg = znLGain * Top.subhrDur;			// latent intl gain (Btuh), set from GAINs by cnguts.cpp:doHourGains
+	// "* Top.tp_subhrDur" converts powers to energy.
+	zrs->litDmd = znLitDmd * Top.tp_subhrDur;		// zone lighting demand (energy that would be used without daylighting)
+	zrs->litEu =  znLitEu * Top.tp_subhrDur;		// zone lighting actual energy use, after any daylighting reduction.
+	zrs->qlIg = znLGain * Top.tp_subhrDur;			// latent intl gain (Btuh), set from GAINs by cnguts.cpp:doHourGains
 
 // subhour results: solar gain
-	zrs->qSlr = (qSgTot + qSgTotSh) * Top.subhrDur;
+	zrs->qSlr = (qSgTot + qSgTotSh) * Top.tp_subhrDur;
 								//	slr gain. qSgTot & qStTotSh are targets set per SgR entries in cnloads.
 								//     mass part qMsSg subtracted out of qMass above
 
 // subhour results: infiltration
-	zrs->qsInfil = zn_uaInfil * (Top.tDbOSh - tz) * Top.subhrDur;	// infiltration sensible gain
+	zrs->qsInfil = zn_uaInfil * (Top.tDbOSh - tz) * Top.tp_subhrDur;	// infiltration sensible gain
 #if 1	// rework re latent bal errors, 10-15-2012
 	if (zn_IsConvRad())
 	{	// CSE zone
 		zrs->qlInfil = zn_NonAnIVAmf()		// dry-air mass flow
 			         * (Top.wOSh - wzls)	// * water added (forward difference, delta from last step)
 					 * PsyHCondWtr			// * 1061 Btu/lb
-					 * Top.subhrDur;		// * portion of hour --> energy (Btu)
+					 * Top.tp_subhrDur;		// * portion of hour --> energy (Btu)
 											//   (convert power to energy)
 	}
 	else
@@ -989,7 +989,7 @@ x			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to 
 			zn_uaInfil/Top.tp_airSH	// heat cap infil air flow / spec ht = mass flow (lb/hr)
 			* wDiff	 				// * water added: entering w - average displaced w (ratios)
 			* PsyHCondWtr 			// * 1061 Btu/lb --> power (Btuh)
-			* Top.subhrDur;			// * portion of hour --> energy (Btu) (convert power to energy)
+			* Top.tp_subhrDur;			// * portion of hour --> energy (Btu) (convert power to energy)
 		// 6-10-92 is above right 1) considering w not computed in a/b form (see znW); 2) when exfil != infil.
 	}
 #else
@@ -1008,13 +1008,13 @@ x	zrs->qlInfil = 				// latent infiltration gain energy
 x		zn_uaInfil/Top.tp_airSH	// heat cap infil air flow / spec ht = mass flow (lb/hr)
 x		* wDiff	 				// * water added: entering w - average displaced w (ratios)
 x		* PsyHCondWtr 			// * 1061 Btu/lb --> power (Btuh)
-x		* Top.subhrDur;			// * portion of hour --> energy (Btu) (convert power to energy)
+x		* Top.tp_subhrDur;			// * portion of hour --> energy (Btu) (convert power to energy)
 x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW); 2) when exfil != infil.
 #endif
 
 // subhour results: conduction
 	if (zn_IsConvRad())
-	{	zrs->qCond = (zn_qCondQS + zn_qDuctCond + zn_qDHWLoss) * Top.subhrDur;
+	{	zrs->qCond = (zn_qCondQS + zn_qDuctCond + zn_qDHWLoss) * Top.tp_subhrDur;
 						// quick surface conduction + duct gain + DHW losses to zone
 	}
 	else
@@ -1022,7 +1022,7 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 
 		zrs->qCond  = ( zn_ua * (Top.tDbOSh - tz)	// conduction thru walls to zone per temp diff
 						- qrIgTotO )				// less rad int gain lost to outdoors thru light surfaces 11-95
-						* Top.subhrDur;				// convert power to energy
+						* Top.tp_subhrDur;				// convert power to energy
 		// conduction thru specified-temp-exposure surfaces 3-91
 		XSRAT *xs /*=NULL*/;
 		for (TI xi = xsSpecT1;  xi != 0;  xi = xs->nxXsSpecT)	// these xsurfs have own chain
@@ -1030,7 +1030,7 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 			xs = XsB.p + xi;						// access XSRAT record xi
 			zrs->qCond += xs->x.xs_uval * xs->x.xs_area	// ua
 					  * (xs->x.sfExT - tz) 				// * tdif
-					  * Top.subhrDur;					// * hr frac
+					  * Top.tp_subhrDur;					// * hr frac
 		}
 	}
 
@@ -1038,11 +1038,11 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 
 	zrs->qsIz = ( zn_qIzSh 			// heat flows to zone per IZXFER inputs (set in cnloads:loadsIzxSubhr)
 				 - qrIgTotIz )		// less net radiant internal gain lost thru light surfaces to other zones' CAirs 11-95
-			   * Top.subhrDur;		// convert power to energy
+			   * Top.tp_subhrDur;		// convert power to energy
 
 // subhour results: record excess latent gain, turned into sensible gain (simulating condensation) to prevent supersaturation
 
-	zrs->qlX = znXLGain * Top.subhrDur;			// convert power to energy. Used for probes, msgs, poss future reporting.
+	zrs->qlX = znXLGain * Top.tp_subhrDur;			// convert power to energy. Used for probes, msgs, poss future reporting.
 	zrs->nSubhrLX = (zrs->qlX != 0.f);			// 1 if non-0, 0 if 0: accumulates to # subhrs with condensation.
 
 // subhour results: unmet load (meaningful for ConvRad only 10-2012)
@@ -1051,7 +1051,7 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 
 #if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97
 x// excess latent gain... accumulate to a zone member for reporting during autoSizing, when ZNRES accumulation isn't done
-x  znXLGainYr += znXLGain * Top.subhrDur;		// convert power to energy. Used for (autosize) msg.
+x  znXLGainYr += znXLGain * Top.tp_subhrDur;		// convert power to energy. Used for (autosize) msg.
 x  if (znXLGain != 0)
 x     znNSubhrXLG++;					// count subhours with excess latent gain
 #endif
@@ -1182,15 +1182,15 @@ x                setToMax( vcAs.plrPk, vf/tuVfMxC);   	// record new plr peak @ 
 	case C_COILTYCH_ELEC:
 		tuhc.p = tuhc.q;				// electric coil's input is its output
 		if (tuhc.mtri)						// if meter specified for terminal coil
-			MtrB.p[tuhc.mtri].H.htg += tuhc.p * Top.subhrDur;	// post coil input energy to use "heating"
-		// "*Top.subhrDur" added 9-25-92.
+			MtrB.p[tuhc.mtri].H.htg += tuhc.p * Top.tp_subhrDur;	// post coil input energy to use "heating"
+		// "*Top.tp_subhrDur" added 9-25-92.
 		break;
 	}
 
 // charge terminal fan energy use to specified meter
 	// ??? no code yet calculates and sets tfan.p, 4-11-92 **********
 	if (tfan.fn_mtri)						// if meter specified for terminal fan
-		MtrB.p[tfan.fn_mtri].H.fan += tfan.p * Top.subhrDur;	// charge fan power consumption to that meter, end use "fans"
+		MtrB.p[tfan.fn_mtri].H.fan += tfan.p * Top.tp_subhrDur;	// charge fan power consumption to that meter, end use "fans"
 	return RCOK;
 }				// TU::endSubhr
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -2741,14 +2741,14 @@ x	// first assume all excess moisture condenses out in zone
 x	if (_wzls > satW)					// air already in zone may be supersat if it has gotten colder
 x	{	xLGain += (_wzls - satW) * M 	// excess H2O in mass of air in zone last subhour
 x                 * PsyHCondWtr			//  heat condensation of this water releases (Btu)
-x                 / Top.subhrDur;		//   convert energy to power
+x                 / Top.tp_subhrDur;		//   convert energy to power
 x       _wzls = satW;					// limit zone last subhour humidity to saturation value
 x	}
 x	if (_wo > satW)				// air infiltrating into zone may supersaturate if colder inside than out
 x	{	xLGain += (_wo - satW)				// excess H2O in in
 x                 * uaInfil/Top.tp_airSH	//  mass of infiltrating air (heat cap flow/specific heat)
 x                 * PsyHCondWtr				//   heat condensation of this water releases (Btu)
-x                 / Top.subhrDur;			//    convert energy to power
+x                 / Top.tp_subhrDur;			//    convert energy to power
 x       _wo = satW;				// limit infiltrating air humidity to saturation value
 x	}
 #endif
@@ -2761,9 +2761,9 @@ x	}
 		switch (Top.humMeth)		// compute zone humidity by selected method.  Note that argument "wc" differs by method.
 		{
 		case C_HUMTHCH_ROB:  			// Rob's basic aw/bw method, like temperature
-			bw = M/Top.subhrDur   		// denominator.  M/t,
+			bw = M/Top.tp_subhrDur   		// denominator.  M/t,
 				 + (c + zn_uaInfil)/Top.tp_airSH;		//   sigma(m): divide by airSH to get mass flow from heat cap flow.
-			aw = _wzls*M/Top.subhrDur					// numerator.  wLast * M / t,
+			aw = _wzls*M/Top.tp_subhrDur					// numerator.  wLast * M / t,
 				 + (wc + zn_uaInfil*_wo)/Top.tp_airSH	//   sigma(w*m): hums * mass flows, for air handlers and infiltration,
 				 + znLGain/PsyHCondWtr;					//   w gain independent of wz: scheduled gain.
 			_wz = aw/bw;   								// wz = aw / bw.
@@ -2782,8 +2782,8 @@ x	}
 				aw = ((zn_uaInfil*_wo + wc)/Top.tp_airSH + znLGain/PsyHCondWtr) / M;
 				bw = (zn_uaInfil + c) / Top.tp_airSH / M;
 			}
-			DBL bwt2 = bw*Top.subhrDur/2.;				// subexpr
-			_wz = ((1. - bwt2)*_wzls + aw*Top.subhrDur)/(1. + bwt2);	// compute zone w: central difference per Niles sect I-H.
+			DBL bwt2 = bw*Top.tp_subhrDur/2.;				// subexpr
+			_wz = ((1. - bwt2)*_wzls + aw*Top.tp_subhrDur)/(1. + bwt2);	// compute zone w: central difference per Niles sect I-H.
 			break;
 		}
 
@@ -2797,7 +2797,7 @@ x	}
 		xLGain += 					// heat from condensing the excess moisture
 			xw * M 					// excess hum rat * mass of air in zone = excess water (lbs)
 			* PsyHCondWtr 			//  * heat of condensation = energy (Btu)
-			/ Top.subhrDur;			//   / time interval = power (Btuh)
+			/ Top.tp_subhrDur;			//   / time interval = power (Btuh)
 		if ( xw > 1.e-11    		// if change was in approx 8th sig dig of w ...  TUNING ITEM, notes above fcn.
 				&&  ++j < 9 )		//  and haven't done 9 iterations (@ not quite 1 more sig dig each). TUNING ITEM
 		{
@@ -2813,7 +2813,7 @@ x// prevent supersaturation. 10-96.
 x    if (_wz > satW)				/* _wz > satW. No msg now cuz may iterate to 0, eg if ah coolCoil is on,
 x						   else errMsg issued in ZNR::ztuEndSubhr above. */
 x   {  xLGain = (_wz - satW) * M * PsyHCondWtr	// convert excess H2O to Btu (heat condensation of this water would release),
-x                / Top.subhrDur;			//  convert energy to power
+x                / Top.tp_subhrDur;			//  convert energy to power
 x       _wz = satW;				// limit zone humidity to saturation value
 x	}
 #endif
