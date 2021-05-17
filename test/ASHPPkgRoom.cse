@@ -1294,25 +1294,40 @@ ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting w
 #Define CSEBtuSF 1000  //reports in kBtu
 
 //AC
-Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=120
-   Reportcol colVal=@Rsys[1].CapH colHead="CapH" colDec=0 colWid=6
-   
-   Reportcol colVal=@Rsys[1].Cap47 colHead="Cap47" colDec=0 colWid=6
-   Reportcol colVal=@Rsys[1].Cap17 colHead="Cap17" colDec=0 colWid=6
-   Reportcol colVal=@Rsys[1].HSPF colHead="HSPF" colDec=2 colWid=6
-   Reportcol colVal=@Rsys[1].COP47 colHead="COP47" colDec=2 colWid=6
-   Reportcol colVal=@Rsys[1].COP17 colHead="COP17" colDec=2 colWid=6
-   Reportcol colVal=@Rsys[1].fanPwrH colHead="fanPwrH" colDec=3 colWid=7 
-   Reportcol colVal=@Rsys[1].CapAuxH colHead="AuxH" colDec=0 colWid=6
-   
-   Reportcol colVal=@Rsys[1].Cap95 colHead="Cap95" colDec=0 colWid=6 
-   Reportcol colVal=@Rsys[1].SEER colHead="SEER" colDec=2 colWid=6 
-   Reportcol colVal=@Rsys[1].EER95 colHead="EER95" colDec=2 colWid=6 
-   Reportcol colVal=@Rsys[1].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
-   Reportcol colVal=@Rsys[1].EERnfX colHead="EERnfX" colDec=2 colWid=6 
-   Reportcol colVal=@Rsys[1].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-   Reportcol colVal=@Rsys[1].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
-   Reportcol colVal=@Rsys[1].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+#define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"  rpCPL=-1 \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+   REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+SYSINFCOOL( 1)
+
+#define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"  rpCPL=-1 \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+SYSINFHEAT( 1)
 
 Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
 Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000

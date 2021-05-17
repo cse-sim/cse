@@ -14,43 +14,58 @@ Optional name of HVAC system; give after the word “RSYS” if desired.
 
 Type of system.
 
---------------------------------------------------------------------
-**rsType**      **Description**
---------------  --------------------------------------------------
-ACFURNACE       Compressor-based cooling and fuel-fired
-                heating.\
-                Primary heating input energy
-                is accumulated to end use HTG of meter
-                rsFuelMtr.
+-------------------------------------------------------------------------
+**rsType**           **Description**
+-------------------  ----------------------------------------------------
+ACFURNACE             Compressor-based cooling and fuel-fired
+                      heating.\
+                      Primary heating input energy
+                      is accumulated to end use HTG of meter
+                      rsFuelMtr.
 
-ACRESISTANCE    Compressor-based cooling and electric
-                (“strip”) heating. Primary heating
-                input energy is accumulated to end use
-                HTG of meter rsElecMtr.
+ACRESISTANCE          Compressor-based cooling and electric
+                      (“strip”) heating. Primary heating
+                      input energy is accumulated to end use
+                      HTG of meter rsElecMtr.
 
-ASHP            Air-source heat pump (compressor-based
-                heating and cooling). Primary
-                (compressor) heating input energy is
-                accumulated to end use HTG of meter
-                rsElecMtr. Auxiliary heating input
-                energy is accumulated to end use HPHTG
-                of meter rsElecMtr.
+ASHP                  Air-source heat pump (compressor-based
+                      heating and cooling). Primary
+                      (compressor) heating input energy is
+                      accumulated to end use HTG of meter
+                      rsElecMtr. Auxiliary heating input
+                      energy is accumulated to end use HPHTG
+                      of meter rsElecMtr.
 
-ASHPHYDRONIC    Air-to-water heat pump with hydronic distribution.
-                Compressor performance is approximated using
-                the air-to-air model with adjusted
-                efficiencies.
+ASHPKGROOM            Packaged air-source heat pump.
 
-AC              Compressor-based cooling; no heating.
+ASHPHYDRONIC          Air-to-water heat pump with hydronic distribution.
+                      Compressor performance is approximated using
+                      the air-to-air model with adjusted
+                      efficiencies.
 
-FURNACE         Fuel-fired heating. Primary heating
-                input energy is accumulated to end use
-                HTG of meter rsFuelMtr.
+VCHP2                 Air-to-air heat pump with variable speed
+                      compressor
+ 
+AC                    Compressor-based cooling; no heating.
+                      Required ratings are SEER and capacity and EER at 95 ^o^F
+                      outdoor dry bulb.
 
-RESISTANCE      Electric heating. Primary heating input
-                energy is accumulated to end use HTG of
-                meter rsElecMtr
-------------------------------------------------------------------
+ACPKGROOM             Packaged compressor-based cooling; no heating.
+                      Required ratings are capacity and EER at 95 ^o^F
+                      outdoor dry bulb.
+
+FURNACE               Fuel-fired heating. Primary heating
+                      input energy is accumulated to end use
+                      HTG of meter rsFuelMtr.
+
+RESISTANCE            Electric heating. Primary heating input
+                      energy is accumulated to end use HTG of
+                      meter rsElecMtr
+
+ACPKGROOMFURNACE
+
+ACPKGROOMRESISTANCE
+--------------------------------------------------------------------------
 
 
 

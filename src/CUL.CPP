@@ -45,8 +45,6 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-// see ECHO in pp.h, 11-91
-
 // more local options below
 
 /*------------------------------- INCLUDES --------------------------------*/
@@ -62,7 +60,7 @@
 #include <rmkerr.h>	// errCount clearErrCount incrErrCout
 
 #include <sytb.h>	// DUPOK
-#include <pp.h>		// ECHO
+#include <pp.h>
 #include <cutok.h>	// CUTVRB CUTID CUTSEM
 #include <cuevf.h>	// evf's and variabilities: EVEOI
 #include <cuparsex.h>	// tokTy ttTx maxErrors
@@ -907,7 +905,6 @@ x     exEvEvf( EVEOI, 0xffff);		// evaluate end-input exprs, all use classes. er
 	if (errCount())  			// if any errors (just above or anytime during compilation) (pptok.cpp variable)
 		pInfol( (char *)MH_S0214 );	// "No run due to error(s) above"
 
-#ifdef ECHO	// pp.h.
 // be sure input listing report is complete to here, and not farther -- in report file, it is divided by run.
 	// intentionally done before eof check below.
 	// other listing stuff: pp.cpp; pptok.cpp & cutok.cpp re error messages.
@@ -920,7 +917,6 @@ x     exEvEvf( EVEOI, 0xffff);		// evaluate end-input exprs, all use classes. er
 		NULL, 0 );			//  char[] buffer would rcv line text
 	lisFlushThruLine(line);		// list to line and flush list buffer, only to line.  11-91. pp.cpp.
 	// if this is last run, rest of listing buffer will be flushed when file closed.
-#endif
 
 // abort if any errors
 	if (errCount())

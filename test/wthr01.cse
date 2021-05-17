@@ -188,7 +188,7 @@ ZONE "Main"
 
 DELETE REPORT EB
 
-REPORT rpType = UDT  rpFreq = YEAR rpCPL=116
+REPORT rpType = UDT  rpFreq = YEAR rpCPL=-1
   REPORTCOL colHead="WF Name" colVal=@Top.wfname colwid=50
   REPORTCOL colHead="WF lat" colVal=@weatherFile.lat colDec=3 colWid=6
   REPORTCOL colHead="TOP lat" colVal=@top.latitude colDec=3 colWid=7
@@ -215,16 +215,16 @@ Reportcol colVal=@znRes[Z].X.qhMech/CSEBtuSF colHead="Hload" colDec=0 \
 Reportcol colVal=@znRes[Z].X.qcMech/CSEBtuSF colHead="Cload" colDec=0
 
 // Report for 1st zone
-Report rpBtuSf=1000 rpType=UDT rpFreq=Month rpCPL=104
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month rpCPL=-1
 rpTitle="Conditioned-zn Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
 Reportcol colVal=$month  colHead="mo"      colWid=2
 ZNCOLS(1, M)
 
-Report rpBtuSf=1000 rpType=UDT rpFreq=Year rpHeader=No rpCPL=104   //Annual Summary
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year rpHeader=No rpCPL=-1   //Annual Summary
 Reportcol colVal="Yr"       colWid=2
 ZNCOLS(1, Y)
 
-#define SHREP1(db, de) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=db rpDayEnd=de rpCPL=118 \
+#define SHREP1(db, de) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=db rpDayEnd=de rpCPL=-1 \
   REPORTCOL colHead="Mon" colVal=$month colWid=3 \
   REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
   REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
@@ -246,7 +246,7 @@ ZNCOLS(1, Y)
   REPORTCOL colHead="TSC" colVal=@weather.cldCvr colWid=3
 
 
-#define SHREP2(db, de) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=db rpDayEnd=de rpCPL=90 \
+#define SHREP2(db, de) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=db rpDayEnd=de rpCPL=-1 \
   REPORTCOL colHead="Mon" colVal=$month colWid=3 \
   REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
   REPORTCOL colHead="Hr" colVal=$hour colWid=3 \

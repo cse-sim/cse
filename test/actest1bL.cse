@@ -25,7 +25,7 @@ RSYS MySys
 	rsAFUE =.71
 	rsFanPwrH = 0.58		//W/cfm (default = 0.365)	
 
-DUCTSEG MySysSup  //No ducts for now
+DUCTSEG MySysSup
 	dsTy=Supply				// "supply" or "return"
 	// dsExCnd = Ambient / AdjZn / SpecifiedT (default AdjZn)
 	dsAdjZn = "SDuctZone"		// duct location
@@ -43,12 +43,12 @@ DUCTSEG MySysSup  //No ducts for now
 DUCTSEG MySysRet 
 	dsExArea = 100
 	dsLeakF =  0.08
-	
 	dsTy=Return dsAdjZn = "RDuctZone" dsInsulMat = DuctWrap dsInsulR = 4    
-		ENDRSYS
+ENDRSYS
+
 #define CaseNo "Simple Default, no latent"
 runTitle=CaseNo
-WfName="ACtest.CSW"
+WfName="CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 
 #Define reports
 //#UnDef reports
@@ -126,7 +126,7 @@ Delete Report eb     // Deletes the sum of zones CNE format report which is neve
 #Define CSEBtuSF 1000  //reports in kBtu
 
 //AC
-Report rpType=UDT rpFreq=Year  rpTitle=CaseNo 
+Report rpType=UDT rpFreq=Year  rpTitle=CaseNo rpCPL=0
    Reportcol colVal=@Rsys[MySys].Cap95 colHead="Cap95" colDec=0 colWid=6 
    Reportcol colVal=@Rsys[MySys].SEER colHead="SEER" colDec=2 colWid=6 
    Reportcol colVal=@Rsys[MySys].EER95 colHead="EER95" colDec=2 colWid=6 
@@ -136,7 +136,7 @@ Report rpType=UDT rpFreq=Year  rpTitle=CaseNo
    Reportcol colVal=@Rsys[MySys].fanPwrC colHead="fanPwrC" colDec=3 colWid=6 
    Reportcol colVal=@Rsys[MySys].fanHeatC colHead="fanElecC" colDec=2 colWid=6 
 
-Report rpType=UDT rpFreq=Hour rpDayBeg=Jan 1 rpDayEnd=Feb 28 rpCPL=200
+Report rpType=UDT rpFreq=Hour rpDayBeg=Jan 1 rpDayEnd=Feb 28 rpCPL=-1
    rpTitle="AC Check Values (rates are kBTU/hr)"
    Reportcol colVal=$Month  colHead="Mo" colWid=2 colDec=0
    Reportcol colVal=$dayOfMonth  colHead="Dy" colWid=2 colDec=0
@@ -163,7 +163,8 @@ Report rpType=UDT rpFreq=Hour rpDayBeg=Jan 1 rpDayEnd=Feb 28 rpCPL=200
    Reportcol colVal=@Rsys[MySys].CapSenCt colHead="CapCt" colDec=2 colWid=6
    Reportcol colVal=@Rsys[MySys].outSen/CSEBtuSF colHead="SysSen" colDec=2 colWid=6 
    Reportcol colVal=@Rsys[MySys].outLat/CSEBtuSF colHead="SysLat" colDec=2 colWid=6 
-   Reportcol colVal=@Rsys[MySys].runf colHead="RunF" colDec=4 colWid=5   
+   Reportcol colVal=@Rsys[MySys].loadF colHead="LoadF" colDec=4 colWid=5 
+   Reportcol colVal=@Rsys[MySys].runF colHead="RunF" colDec=4 colWid=5   
    Reportcol colVal=(@Meter[SysMtr].H.fanC + @Meter[SysMtr].H.fanH)/CSEBtuSF colHead="fan" colDec=3 colWid=7 
    Reportcol colVal=@Meter[SysMtr].H.clg/CSEBtuSF colHead="clg" colDec=3 colWid=7 
    Reportcol colVal=@Meter[SysMtr].H.tot/CSEBtuSF colHead="totkBtu" colDec=3 colWid=7 
@@ -180,7 +181,7 @@ Report rpType=MTR rpMeter=SysMtr rpFreq=Hour rpBtuSf=1000 rpDayBeg=HeatDay rpDay
 
 
 //Ducts
-Report rpType=UDT rpFreq=Year  rpTitle=CaseNo 
+Report rpType=UDT rpFreq=Year  rpTitle=CaseNo rpCPL=0
    Reportcol colVal=@ductseg[ MySysSup].exArea colHead="SxArea" colDec=0 colWid=6 
    Reportcol colVal=@ductseg[ MySysSup].insulR colHead="SupR" colDec=1 colWid=4 
    Reportcol colVal=@ductseg[ MySysSup].fp colHead="Sfp" colDec=3 colWid=6 

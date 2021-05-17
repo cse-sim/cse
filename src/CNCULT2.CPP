@@ -21,6 +21,7 @@
 #include <cvpak.h>		// getChoiTx
 #include <wfpak.h>		// wfOpen wfClose 1-95
 #include <psychro.h>	// psyAltitude PsyRAir
+#include "slpak.h"
 #include <envpak.h>		// ensystd
 #include "impf.h"
 
@@ -50,7 +51,6 @@
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
 LOCAL RC topCkfI( int re);
-LOCAL RC setTop();
 LOCAL RC topDC();
 LOCAL RC topZn( int re);
 LOCAL RC topIz();
@@ -117,8 +117,8 @@ RC topStarPrf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 
 // see also topStarItf: called before input rats cleared.
 {
-// say "Top" (as opposed to Topi) not valid
-	// eg to prevent use of old (poss dmfree'd) runTitle ptr in cncult4.cpp til setTop called (from topCkf) (pre rigorous ref counts)
+	// say "Top" (as opposed to Topi) not valid
+	// eg to prevent use of old (poss dmfree'd) runTitle ptr in cncult4.cpp til tp_fazInit (from topCkf) (pre rigorous ref counts)
 	Top.ck5aa5 = 0;
 
 // say various texts should be (re)generated before use as may have new, more, or better inputs
@@ -259,7 +259,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 // set autosizing flag: TRUE if setting up now for autosizing, FALSE if setting up for main simulation or input check only.
 	Top.tp_autoSizing =     					// also set now in Top run record now for $autoSizing in exprs
 		Topi.tp_autoSizing = !re  				// recall always for main sim
-						     &&  (Topi.chAutoSize==C_NOYESCH_YES);	// 1st call is for autoSize if (still) requested (after check)
+	  &&  (Topi.chAutoSize==C_NOYESCH_YES);	// 1st call is for autoSize if (still) requested (after check)
 
 // now evaluate EVFFAZ exprs: may use @Top.tp_autoSizing or $autoSizing; need values for rest of check/setup processing.
 	exEvEvf( 			// exman.cpp. Stores values into input basAnc records. On error, errCount++'s but may return RCOK.
@@ -269,8 +269,13 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 		return RCBAD;		// terminate run
 #endif
 
-//--- do Top record, including wthr file, location, air properties
-	E( setTop() )			// set up "Top" from input info in "Topi"
+//---- derived Top members, and some defaults that must be done in code
+//        do after .chAutoSize and .autoSizing above.
+	rc |= Topi.tp_SetDerived();		// calls tp_SetOptions() plus more
+
+//---- set up Top from Topi
+	Top = Topi;
+	E( Top.tp_FazInit())	// reads weather file, inits air properties, 
 
 	E( topDC() )			// finalize DESCONDs
 
@@ -278,7 +283,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	E( topZn( re) )			// do zones. E: returns if error.
 
 //--- do meters early: ref'd by reports and maybe many other future things.
-	E( topMtr() )			// check meters / copy data to run rat.  local fcn.
+	E( topMtr() )			// check/dup all types of meters (energy, dhw, air flow)
 
 //--- do stuff re reports next -- much used even if error suppresses run. cncult4.cpp.
 	if (!re)			// report/exports persist from autosize thru main simulation 6-95.
@@ -353,7 +358,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 }			// topCkfI
 //===========================================================================
 RC TOPRAT::tp_SetDerived()
-// set dervied (runtime) values from input
+// set derived (runtime) values from input
 // errors stop run via error count
 {
 	RC rc =RCOK;
@@ -411,49 +416,35 @@ RC TOPRAT::tp_SetDerived()
 	brFileCk();				// below
 #endif
 	return rc;
-}		// TOP::tp_SetDerived
+}		// TOPRAT::tp_SetDerived
 //---------------------------------------------------------------------------------------------
-LOCAL RC setTop()
-// set up "Top" structure from info in "Topi"
-// errors stop run via error count
+RC TOPRAT::tp_FazInit()	// start-of-phase init
+// call at start of autosizing (if any) and again at start of main simulation
+// returns RCOK iff success
+//         do not run if !RCOK
 {
-	RC rc=RCOK;
-
-//---- derived Top members, and some defaults that must be done in code
-
-	// also .chAutoSize and .autoSizing are processed by caller -- must be done first.
-
-//set stuff based on command line options, 12-95.
-	Topi.tp_SetOptions();		// sets top mbrs for bin res file cmd line flags, etc.
-
-	rc |= Topi.tp_SetDerived();
-
-//---- copy input RAT Topi to run rat Top (retain input for NANDLES for next RUN)
-	Top = Topi;					// operator= copies record incl name & front members, incRef's strings.
+	RC rc = RCOK;
 
 #if defined( DEBUGDUMP)
-	DbDo( dbdSTARTRUN);		// init debug print scheme (re heading control)
-	Top.tp_SetDbMask();		// debug printout mask (dbdXXX), controls internal val dumping
+	DbDo(dbdSTARTRUN);		// init debug print scheme (re heading control)
+	tp_SetDbMask();		// debug printout mask (dbdXXX), controls internal val dumping
 							//   (can change hourly, set initial value here re print from setup code)
 #endif
 
-//---- find/check weather file name / get lat, long, tz, default elevation, default autosizing stuff. 1-95.
+//---- find/read weather file name / get lat, long, tz, default elevation, default autosizing stuff. 1-95.
 	int hotMo = 7;				// hottest month 1-12, wthr file hdr to topAusz, July if not set by topWfile
-	E( Top.tp_Wfile( &hotMo) )		// just below. call b4 topAusz.
+	E(tp_Wfile(&hotMo))		// just below. call b4 topAusz.
 
 //---- autosizing setup. call after topWfile. 6-95.
-	E( Top.tp_Ausz( hotMo) )
-
-//---- initialize air properties members of Top
-	E( Top.tp_Psychro() )				// below
+	E(tp_Ausz(hotMo))
 
 //---- say various texts should be (re)generated before (any further) use as may have new runTitle, repHdrL/R.
 	freeRepTexts();				// cncult4.cpp
 
-	Top.tp_pAirNet = new AIRNET();
+	tp_pAirNet = new AIRNET();
 
 	return rc;
-}			// setTop
+}			// TOPRAT::tp_fazInit
 //---------------------------------------------------------------------------
 LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 // WHY: need value available during setup but also with hourly variability
@@ -467,8 +458,9 @@ LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 	return dbgPrintMask;
 }		// TOPRAT::tp_SetDbMask
 //===========================================================================
-RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data from it
+RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data from it
 	int* pHotMo )			// receives hottest month 1-12 if avail in wthr file hdr, if autoSizing
+// return RCOK iff success
 {
 	// wf stuff here & cnguts.cpp redone for run
 	// after autosize, allowing wfName etc to change.
@@ -480,16 +472,27 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 
 // open weather file
 	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName);	// reports err if can't open.
-	if (!rc)					// if opened ok
-	{
-		// fetch latitude, longitude, time zone to Top members
+
+	if (!rc)					// if opened and read ok
+	{	// fetch latitude, longitude, time zone to Top members
 		latitude = Wfile.lat;			// fetch latitude and longitude and time zone
 		longitude = Wfile.lon;			// ..
 		timeZone = Wfile.tz;				// .. used re solar init from cse.cpp.
-		if (!(sstat[TOPRAT_ELEVATION] & FsSET))	// if elevation not given by user
-			elevation = Wfile.elev;			// fetch elevation from weather file. Used in topPsychro.
+		if (!IsSet(TOPRAT_ELEVATION))	// if elevation not given by user
+			elevation = Wfile.elev;			// fetch elevation from weather file
 
-		// check that weather file includes all run dates
+		rc |= tp_LocInit();		// init solar re location
+
+		rc |= tp_Psychro();		// psychrometric constants
+
+		// read weather file
+		if (!rc)
+			rc = Wfile.wf_FillWDYEAR(WRN);		// read/cache entire weather file
+												//   TODO: handle partial years
+	}
+
+	if (!rc)
+	{	// check that weather file includes all run dates
 		if (!tp_autoSizing)				// don't need run date data for autosizing
 		{
 			int jd1 = Wfile.jd1;					// fetch first wthr Julian date 1-365, or -1 if not known
@@ -512,10 +515,9 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 							  Top.tp_wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
 			}
 		}
-
-		// default some autosizing inputs default weather file header
-		if (tp_autoSizing)				// not needed if not setting up to do autosizing
-		{
+		else
+		{	// is autosizing
+			// default some autosizing inputs default weather file header
 			if (!IsSet( TOPRAT_HEATDSTDBO))		// if heating outdoor design temp not given by user
 				switch ( Wfile.wFileFormat)		// default according to weather file type
 				{
@@ -534,6 +536,7 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 					// note caller pre-defaults.
 					case ET1:
 						*pHotMo = Wfile.sumMonHi;
+					default:
 						break;
 				}
 
@@ -558,19 +561,14 @@ RC TOPRAT::tp_Wfile(		// find/check weather file / init top members with data fr
 				warn( "Derived weather values (e.g. tGrnd and tMains) are missing when autosizing\n"
 					"   conditions are specified via 'coolDsMo' (as opposed to 'coolDsDay').");
 		}
-
-		if (!IsSet(TOPRAT_DEEPGRNDT)) {
-			tp_deepGrndT = Wfile.taDbAvgYr;
-		}
 	}
 
-	// close
-	Wfile.wf_Close(); 	// close weather file if opened
-	// If all input ok, file will be reopened from cnguts.cpp for weather data access during run.
-
 	// Other site related top inputs
-	if (IsSet(TOPRAT_SOILDIFF)) {
-		oInfo("soilDiff is used as part of the simple ground model, which is no longer supported.\n"
+	if (!IsSet(TOPRAT_DEEPGRNDT))
+		tp_deepGrndT = Wfile.taDbAvgYr;
+
+	if (IsSet(TOPRAT_SOILDIFF))
+	{	oInfo("soilDiff is used as part of the simple ground model, which is no longer supported.\n"
 			  "    Use soilCond, soilSpHt, and soilDens instead.");
 		if (IsSet(TOPRAT_SOILCOND) || IsSet(TOPRAT_SOILSPHT) || IsSet(TOPRAT_SOILDENS)) {
 			ignore(TOPRAT_SOILDIFF, "when soilCond and/or soilSpHt and/or soilDens are set.\n"
@@ -1404,31 +1402,24 @@ x		}
 	return rc;
 }		// topGt
 //===========================================================================
-LOCAL RC topMtr()	// check METERs / copy to run rat.  Create sum-of-meters record.
+LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
+// copy to run rat.  Create sum-of-meters records as needed
 {
-	MTR *mtri, *mtr;
-	RC rc /*=RCOK*/;
+	RC rc;
 
-// clear run RAT, alloc to needed size, allocate an extra record to hold sum-of-meters
-
-	E( MtrB.al( MtriB.n+1, WRN) )		// delete old records, alloc at once to needed size for min fragmentation.
-	// Meters are unOwned, leave .ownB 0.  If changed, also change cnguts:cgPreInit.
-
-// copy meter input rat MtriB entries to runtime rat MtrB [and check/init]
-
-	RLUP( MtriB, mtri)			// loop input meter RAT records (cnglob.h macro, skips not-guds)
-	{
-		// copy data from input rat, same subscript
-
-		MtrB.add( &mtr, ABT, mtri->ss);   		// add Meter run record.  error not expected due to preceding al.
-		*mtr = *mtri;					// copy entire entry incl name, ancrec.cpp
-	}
+	E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
 
 // initialize sum-of-meters record -- last record in meters run RAT.
+	MTR* mtr;
+	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
-	MtrB.add( &mtr, ABT, MtriB.n+1);     		// error not expected due to preceding MtrB.al.
-	strcpy( mtr->name, "sum_of_meters");   		// set name
-	// leave rest of record zeroes.
+// DHW meters
+	E(WMtrR.RunDup(WMtriB, NULL, 1));
+
+// Air flow meters
+	E( AfMtrR.RunDup(AfMtriB, NULL, 1));
+	AFMTR* pAM;
+	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
 
 	return rc;
 }		// topMtr
@@ -1462,7 +1453,7 @@ LOCAL RC topRSys2()	// additional RSYS check / setup
 LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 {
 	RC rc = RCOK;
-	E( WMtrR.RunDup( WMtriB));
+
 	E( WsR.RunDup( WSiB));
 	E(WhR.RunDup(WHiB, &WsR))
 	E(WlhR.RunDup(WLHiB, &WsR))

@@ -3,7 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-ASHPPKGROOM.CSE(1366): Info: report of reportFile 'Primary': 
+ASHPPKGROOM.CSE(1381): Info: report of reportFile 'Primary': 
     report width 147 is greater than line width 134.
     Line width has been adjusted.
 ---------------
@@ -17,11 +17,19 @@ Warning: Zone 'Attic-atc': Condensation occurred in 1930 subhours of run.
 
 
 
-System Characteristics
+HVAC Cooling Info
 
-   CapH  Cap47  Cap17   HSPF  COP47  COP17 fanPwrH   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
- ------ ------ ------ ------ ------ ------ ------- ------ ------ ------ ------ ------- ------ -------- ------- --------
-      0  26357  16299      0   3.60   2.47       0  30673  20000  13.05  12.20   13.05  12.20      350       0        0
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 RSYS1                     20000  13.05  12.20   13.05  12.20    0      350       0        0
+
+
+
+HVAC Heating Info
+
+ Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
+ ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
+     1 RSYS1                         0       0        0  26357  22334  16299      0   3.60   3.18   2.47      0      0      0 .250  30673      0
 
 
 
@@ -29,20 +37,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 3838.2      0 699.08 1658.3      0      0      0      0      0 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
-Feb 2953.8      0 324.37 1366.0      0      0      0      0      0 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
-Mar 2068.4      0 264.66 497.98      0      0      0  0.566      0 32.332      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
-Apr 1806.8      0 120.39 508.48      0      0      0  3.033      0 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
-May 1200.7 20.581 10.260 33.999      0      0      0 14.111      0 32.376      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
+Jan 3977.7      0 838.61 1658.3      0      0      0      0      0 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Feb 3023.9      0 394.54 1366.0      0      0      0      0      0 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
+Mar 2123.0      0 319.32 497.98      0      0      0  0.566      0 32.332      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
+Apr 1834.0      0 147.55 508.48      0      0      0  3.033      0 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
+May 1203.0 20.581 12.535 33.999      0      0      0 14.111      0 32.376      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
 Jun 1187.3 122.33      0      0      0      0      0 19.101      0 31.331      0      0      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
 Jul 1517.0 397.63      0      0      0      0      0 18.116      0 32.376      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
 Aug 1501.7 319.48      0      0      0      0      0 19.370      0 32.376      0      0      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
 Sep 1513.5 269.92      0      0      0      0      0 18.985      0 31.331      0      0      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
-Oct 1416.1      0  3.483 31.694      0      0      0 23.171      0 32.376      0      0      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
-Nov 2577.8      0 259.46 913.69      0      0      0      0      0 31.375      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
-Dec 4305.2      0 430.24 2373.7      0      0      0      0      0 32.376      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
+Oct 1416.9      0  4.352 31.694      0      0      0 23.171      0 32.376      0      0      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
+Nov 2638.9      0 320.58 913.69      0      0      0      0      0 31.375      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
+Dec 4401.2      0 526.21 2373.7      0      0      0      0      0 32.376      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   25887 1129.9 2112.0 7383.8      0      0      0 116.45      0 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   26338 1129.9 2563.7 7383.8      0      0      0 116.45      0 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -82,21 +90,21 @@ Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
   9 19.502      0      0 17.752      0      0      0      0      0 0.0435      0      0      0  0.402  0.923      0  0.261 0.0527      0 0.0682      0      0      0      0      0
  10 12.623      0      0 11.073      0      0      0      0      0 0.0435      0      0      0  0.343  0.799      0  0.261 0.0456      0 0.0589      0      0      0      0      0
  11  9.027      0      0  7.473      0      0      0      0      0 0.0435      0      0      0  0.319  0.824      0  0.261 0.0470      0 0.0608      0      0      0      0      0
- 12  5.996      0  0.408  4.057      0      0      0      0      0 0.0435      0      0      0  0.295  0.824      0  0.261 0.0470      0 0.0608      0      0      0      0      0
- 13  2.517      0  1.061      0      0      0      0      0      0 0.0435      0      0      0  0.248  0.799      0  0.261 0.0456      0 0.0589      0      0      0      0      0
- 14  2.032      0  0.548      0      0      0      0      0      0 0.0435      0      0      0  0.248  0.824      0  0.261 0.0470      0 0.0608      0      0      0      0      0
- 15  1.744      0  0.203      0      0      0      0      0      0 0.0435      0      0      0  0.248  0.873      0  0.261 0.0499      0 0.0645      0      0      0      0      0
- 16  1.901      0  0.245      0      0      0      0      0      0 0.0435      0      0      0  0.307  0.923      0  0.261 0.0527      0 0.0682      0      0      0      0      0
- 17  2.598      0  0.686      0      0      0      0      0      0 0.0435      0      0      0  0.366  1.098      0  0.261 0.0627      0 0.0810      0      0      0      0      0
- 18  3.356      0  1.036      0      0      0      0      0      0 0.0435      0      0      0  0.520  1.323      0  0.261 0.0756      0 0.0976      0      0      0      0      0
- 19  4.094      0  1.161      0      0      0      0      0      0 0.0435      0      0      0  0.993  1.447      0  0.261 0.0827      0  0.107      0      0      0      0      0
- 20  6.286      0  0.778  2.116      0      0      0      0      0 0.0435      0      0      0  1.394  1.497      0  0.261 0.0855      0  0.111      0      0      0      0      0
+ 12  6.100      0  0.512  4.057      0      0      0      0      0 0.0435      0      0      0  0.295  0.824      0  0.261 0.0470      0 0.0608      0      0      0      0      0
+ 13  2.804      0  1.349      0      0      0      0      0      0 0.0435      0      0      0  0.248  0.799      0  0.261 0.0456      0 0.0589      0      0      0      0      0
+ 14  2.197      0  0.713      0      0      0      0      0      0 0.0435      0      0      0  0.248  0.824      0  0.261 0.0470      0 0.0608      0      0      0      0      0
+ 15  1.809      0  0.269      0      0      0      0      0      0 0.0435      0      0      0  0.248  0.873      0  0.261 0.0499      0 0.0645      0      0      0      0      0
+ 16  1.979      0  0.323      0      0      0      0      0      0 0.0435      0      0      0  0.307  0.923      0  0.261 0.0527      0 0.0682      0      0      0      0      0
+ 17  2.798      0  0.886      0      0      0      0      0      0 0.0435      0      0      0  0.366  1.098      0  0.261 0.0627      0 0.0810      0      0      0      0      0
+ 18  3.640      0  1.320      0      0      0      0      0      0 0.0435      0      0      0  0.520  1.323      0  0.261 0.0756      0 0.0976      0      0      0      0      0
+ 19  4.404      0  1.471      0      0      0      0      0      0 0.0435      0      0      0  0.993  1.447      0  0.261 0.0827      0  0.107      0      0      0      0      0
+ 20  6.487      0  0.979  2.116      0      0      0      0      0 0.0435      0      0      0  1.394  1.497      0  0.261 0.0855      0  0.111      0      0      0      0      0
  21  9.481      0      0  5.819      0      0      0      0      0 0.0435      0      0      0  1.335  1.547  0.273  0.261 0.0884      0  0.114      0      0      0      0      0
  22 10.228      0      0  6.823      0      0      0      0      0 0.0435      0      0      0  1.134  1.497  0.273  0.261 0.0855      0  0.111      0      0      0      0      0
  23 10.714      0      0  7.925      0      0      0      0      0 0.0435      0      0      0  0.744  1.298  0.273  0.261 0.0741      0 0.0958      0      0      0      0      0
  24  2.296      0      0      0      0      0      0      0      0 0.0435      0      0      0  0.449  1.123  0.273  0.261 0.0642      0 0.0829      0      0      0      0      0
 
-Day 177.30      0  6.127 122.74      0      0      0      0      0  1.044      0      0      0 11.816 24.955  1.091  6.256  1.426      0  1.842      0      0      0      0      0
+Day 178.99      0  7.822 122.74      0      0      0      0      0  1.044      0      0      0 11.816 24.955  1.091  6.256  1.426      0  1.842      0      0      0      0      0
 
 
 
@@ -438,7 +446,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console
+! CSE 0.884.0 for Win32 console
 
 
 
@@ -1740,25 +1748,40 @@ Input for Run 001:
 #       #Define CSEBtuSF 1000  //reports in kBtu
         
         //AC
-        Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=120
-           Reportcol colVal=@Rsys[1].CapH colHead="CapH" colDec=0 colWid=6
-           
-           Reportcol colVal=@Rsys[1].Cap47 colHead="Cap47" colDec=0 colWid=6
-           Reportcol colVal=@Rsys[1].Cap17 colHead="Cap17" colDec=0 colWid=6
-           Reportcol colVal=@Rsys[1].HSPF colHead="HSPF" colDec=2 colWid=6
-           Reportcol colVal=@Rsys[1].COP47 colHead="COP47" colDec=2 colWid=6
-           Reportcol colVal=@Rsys[1].COP17 colHead="COP17" colDec=2 colWid=6
-           Reportcol colVal=@Rsys[1].fanPwrH colHead="fanPwrH" colDec=3 colWid=7 
-           Reportcol colVal=@Rsys[1].CapAuxH colHead="AuxH" colDec=0 colWid=6
-           
-           Reportcol colVal=@Rsys[1].Cap95 colHead="Cap95" colDec=0 colWid=6 
-           Reportcol colVal=@Rsys[1].SEER colHead="SEER" colDec=2 colWid=6 
-           Reportcol colVal=@Rsys[1].EER95 colHead="EER95" colDec=2 colWid=6 
-           Reportcol colVal=@Rsys[1].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
-           Reportcol colVal=@Rsys[1].EERnfX colHead="EERnfX" colDec=2 colWid=6 
-           Reportcol colVal=@Rsys[1].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-           Reportcol colVal=@Rsys[1].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
-           Reportcol colVal=@Rsys[1].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+#       #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"  rpCPL=-1 \
+#          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+#          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+#          REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+#          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+#          REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+        SYSINFCOOL( 1)
+        
+#       #define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"  rpCPL=-1 \
+#          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+#          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+#          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+#          REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+        SYSINFHEAT( 1)
         
         Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
         Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
@@ -1983,25 +2006,25 @@ Input for Run 001:
          RUN
          $EOF
 -----------------------
-???     ASHPPKGROOM.CSE(1366): Info: report of reportFile 'Primary': 
+???     ASHPPKGROOM.CSE(1381): Info: report of reportFile 'Primary': 
 ???         report width 147 is greater than line width 134.
 ???         Line width has been adjusted.
 -----------------------
 
 
 
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console run(s) done: Fri 28-Aug-20   4:25:08 pm
+! CSE 0.884.0 for Win32 console run(s) done: Wed 18-Nov-20   3:06:51 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               28-Aug-20   3:21 pm   (VS 14.16    2640896 bytes)  (HPWH 1.10.1+HEAD.5950964.2)
+!               18-Nov-20   2:07 pm   (VS 14.16    2672640 bytes)  (HPWH 1.11.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.03     Calls = 2      T/C = 0.0135   
-!           AutoSizing:  Time = 0.30     Calls = 1      T/C = 0.3000   
-!           Simulation:  Time = 5.97     Calls = 1      T/C = 5.9680   
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0210   
-!                Total:  Time = 6.32     Calls = 1      T/C = 6.3200   
+!                Input:  Time = 0.02     Calls = 2      T/C = 0.0110   
+!           AutoSizing:  Time = 0.29     Calls = 1      T/C = 0.2950   
+!           Simulation:  Time = 6.00     Calls = 1      T/C = 6.0030   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0130   
+!                Total:  Time = 6.34     Calls = 1      T/C = 6.3380   

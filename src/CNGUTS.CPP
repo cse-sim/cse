@@ -68,7 +68,7 @@ LOCAL RC   FC NEAR cgAfterWarmup();
 LOCAL RC   FC NEAR doHourGains();
 LOCAL RC   FC NEAR doIvlExprs( int ivlStage);
 LOCAL void FC NEAR doIvlAccum();
-LOCAL void FC NEAR mtrsAccum( IVLCH ivl, int firstflg);
+LOCAL void FC NEAR mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
 LOCAL void FC NEAR doIvlFinalize();
 LOCAL void FC NEAR mtrsFinalize( IVLCH ivl, int firstflg);
 LOCAL void FC NEAR accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
@@ -78,10 +78,6 @@ LOCAL void FC NEAR setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC NEAR doIvlReports();
 LOCAL void FC NEAR binResInit( int isAusz);
 LOCAL void FC NEAR binResFinish();
-LOCAL RC   FC NEAR locInit();
-LOCAL void FC NEAR locDone();
-
-
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -120,9 +116,9 @@ void FC cgClean( 		// cg overall init/cleanup routine
 	dmfree( DMPP( UnspoolInfo));	// if not NULL, free dm block, set ptr NULL. dmpak.cpp.
 
 	cgDone();				// simulator cleanup, below, normally redundant
-	runFazDataFree();			// free run basAnc records, etc. below, normally redundant. 6-95.
+	runFazDataFree();		// free run basAnc records, etc. below, normally redundant. 6-95.
 
-	locDone();				// clean up location stuff: free Locsolar. local. redundant call ok.
+	Top.tp_LocDone();		// clean up location stuff: free Locsolar. redundant call ok.
 
 #if defined( BINRES)
 	brfw.clean();			// clean the only ResfWriter object. local object, brfw.cpp code.
@@ -547,12 +543,18 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
+		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
+
 #if defined( DEBUGDUMP)
 		DbDo( dbdSTARTSTEP);		// nothing yet debug-printed for this subhour
-									//   (sets flag re on-demand heading printing
+									//   (sets flag re on-demand heading printing)
 #endif
 		EF( Top.tp_WthrBegSubhr() ); 	// set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
-		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
+
+		// clear subhour values in air flow meters
+		AFMTR* pAM;
+		RLUP(AfMtrR, pAM)
+			EF(pAM->amt_BegSubhr());
 	}
 
 // import files: read next record as appropriate
@@ -897,8 +899,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 // Returns RCOK if all ok, else error code, message already issued.
 {
-	// callers 6-95: tp_MainSimI(); cnausz.cpp:begDesDay().
-
 	// CAUTION this fcn called BEFORE setting of time/date variables Top.jDay, Top.isWarmup, Top.isDT, etc.
 
 	// note tp_DTInit() called by caller after initing jDay, for warmup then for run, 1995.
@@ -907,16 +907,24 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	   If a leap year >= 0, tddyi() allows for Feb 29.  For this to work, must find / check / fix
 	   all conversions to use same year, including those in input e.g. run start & end month-day. */
 
+	RC rc = RCOK;
 
 // Initialize for location
-	EF( locInit() )		// calls slinit() w wthr file location data (via Top).
-						// inits Locsolar (comments below)
-						// EF: return RCBAD on any non-RCOK return.
+	EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
+							// inits Locsolar (comments below)
+							// EF: return RCBAD on any non-RCOK return.
 
 // Set up weather file, TDV file, and DESCONDs
 //   Do each phase, allowing file or location changes.
 //   Messages errors.
 	EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+
+#if 0	// enable if needed
+0	// pre-run DHW init
+0	DHWSYS* pWS;
+0	RLUP(WsR, pWS)
+0		rc |= pWS->ws_RddInit();
+#endif
 
 // Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
@@ -957,7 +965,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 	// RSYS init
 	RSYS* rs;
-	RC rc = RCOK;
 	RLUP( RsR, rs)
 		rc |= rs->rs_RddInit( isAusz);
 
@@ -981,7 +988,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RLUP( AhB, ah)
 		rc |= ah->rddInit( isAusz);	// do run-or-design-day init for each air handler
 
-#if 1
 	// allocate results records paired with run records
 	//   do for both autoSize and run
 	//      no accum for autoSize, but code does incidental stores into xxRES
@@ -996,40 +1002,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
 
 	EF(AhresB.AllocResultsRecs(AhB));	// AHRES <-> AH
-
-#else
-	int i = ZrB.n + 1;				// need a results record for each zone, and one for sum of zones
-	EF( ZnresB.al( i, WRN) )		// alloc ZNRES recs, at once for less fragmentation. destroys old.
-	do							// (Note: may be no results accumulation during autoSize,
-	{	//  but alloc anyway cuz code several places stores into records)
-		ZNRES *zp;
-		ZnresB.add( &zp, ABT, i);	// init (to 0) each zone results record, 1 thru i. ancrec.cpp.
-		strcpy( zp->name, i <= ZrB.n ? ZrB.p[i].name : "sum_of_zones");	// results name for rpts: name of zone or "sum_of_zones"
-		zp->zr_InitPrior();		// provide plausible ZNRES.prior values for use in
-								// possible expressions that are evaluated at step beg
-	}
-	while (--i > 0);
-
-	i = RsR.n + 1;				// need a results record for each RSYS, and one for sum of RSYSs
-	EF( RsResR.al( i, WRN) )	// alloc RSYSRES recs, at once for less fragmentation. destroys old.
-	do							// (Note: may be no results accumulation during autoSize,
-	{							//  but alloc anyway cuz code several places stores into records)
-		RSYSRES* pRSR;
-		RsResR.add( &pRSR, ABT, i);	// init (to 0) each zone results record, 1 thru i.
-		strcpy( pRSR->name, i <= RsR.n ? RsR.p[i].name : "sum_of_RSYS");	// results name for rpts
-	}
-	while (--i > 0);
-
-	i = AhB.n + 1;				// need a results record for each ah, and one for sum of ahs
-	EF( AhresB.al( i, WRN) )			// alloc AHRES recs, all at once for less mem frag. destroys any old.
-	do
-	{
-		AHRES *ahr;
-		AhresB.add( &ahr, ABT, i);    					// initialize each ah results record, 1 thru i. ancrec.cpp.
-		strcpy( ahr->name, i <= AhB.n ? AhB.p[i].name : "sum_of_ahs");	// ah results name for rpts: name of ah or "sum_of_ahs"
-	}
-	while (--i > 0);
-#endif
 
 #ifdef BINRES
 // Init re binary results output files
@@ -1049,9 +1021,6 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-// close weather file & clean up. Tentatively 6-95 done each phase eg so wthr file name may change.
-	cgWfDone();				// cgwthr.cpp. only call other than cleanup fcns. Redundant call ok.
-
 #if 1//6-95 move to cgRddDone from cgMainsim so also done after error
 #ifdef BINRES	// cnglob.h
 // close binary results files if open
@@ -1063,7 +1032,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // zone and ah results records are not free'd here, but cgRddInit code that allocates them repeats ok anyway, 6-95.
 
 // clean up location data/solar stuff
-	locDone();				// eg free Locsolar. local. redundant call ok.
+	Top.tp_LocDone();		// eg free Locsolar. redundant call ok.
 	return RCOK;
 }                   // cgRddDone
 //-----------------------------------------------------------------------------------------------------------
@@ -1073,7 +1042,7 @@ RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
-	// callers 6-95: tp_MainSimI(); cnausz.cpp:cgAuszI().
+	cgWthrClean(DONE);	// close wthr file / clean weather data structures
 	return RCOK;		// empty function 7-95.
 }		// cgFazDone
 //-----------------------------------------------------------------------------------------------------------
@@ -1366,7 +1335,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 
 	if (gnPX != 0.)		// do accounting iff nz result
 	{
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		if (gnPX < 0.)
 		{	// neg gain allowed but not expected
 			//  flag in debug build for investigation
@@ -1544,7 +1513,7 @@ LOCAL void FC NEAR doIvlAccum()
 
 	DHWSYSRES* pWSRSum = WsResR.p + WsResR.n;
 	DHWSYSRES* pWSR;
-	RLUP(WsResR, pWSR)						// loop RSYSRES, last is sum
+	RLUP(WsResR, pWSR)						// loop DHWSYSRES, last is sum
 	{
 		if (pWSR->ss < WsResR.n)
 			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
@@ -1554,6 +1523,17 @@ LOCAL void FC NEAR doIvlAccum()
 	AHRES* ahres;
 	RLUP( AhresB, ahres)						// loop simulation results for air handlers. last is sum.
 		accumAhr( &ahres->S, &ahres->H, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour ah sim results, local, below.
+
+	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
+	AFMTR* pAM;
+	RLUP(AfMtrR, pAM)						// loop AFMTRs
+	{
+		if (pAM->ss < AfMtrR.n)
+		{	pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
+			pAMSum->S[1].amt_Accum(pAM->S+1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
+			pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
+		}
+	}
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
@@ -1698,7 +1678,7 @@ LOCAL void FC NEAR doIvlAccum()
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
 
-	mtrsAccum( C_IVLCH_D, Top.isBegDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
 
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
@@ -1711,8 +1691,8 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP(WsResR, pWSR)							// loop DHWSYS simulation results incl sum_of.
 		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
-		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);		// accumulate day ah results to month
-	mtrsAccum( C_IVLCH_M, Top.isBegMonth);					// accum metered energy: day to month. local,below.
+		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);	// accumulate day ah results to month
+	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum METERs, DHWMETERs, AFMETERS: day to month
 #ifdef BINRES
 	if (brf)									// if outputting binary results for this run
 		//if (!Top.tp_autoSizing)						// not for ausz yet 6-95: tested above, and brf is off.
@@ -1751,8 +1731,8 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
-		pWSR->Y.wsr_Accum(&pWSR->D, Top.isFirstMon, Top.isLastDay);
-	mtrsAccum( C_IVLCH_Y, Top.isFirstMon);					// accumulate metered energy use: month to year
+		pWSR->Y.wsr_Accum(&pWSR->M, Top.isFirstMon, Top.isLastDay);
+	mtrsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);					// accumulate metered energy use: month to year
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
 	{
@@ -1894,18 +1874,15 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 {
 	// first call: copy source into destination
 	if (firstflg)
-	{
-		memcpy( this, src, sizeof( RSYSRES_IVL_SUB) );
+	{	memcpy(this, src, sizeof(RSYSRES_IVL_SUB));
 		n = 0;				// reset call count. used?
 	}
 
 	// not first: add source into destination
 	else
-	{
-		if (src->hrsOn != 0.f)					// if hrsOn is 0, skip floats: they will all be 0.
-			VAccum( &RRs1, RRnS, &src->RRs1); // float values not averages: add each to corress dest member
-	}
-
+		VAccum( &RRs1, RRnS, &src->RRs1);	// float values not averages
+											// add each to corress dest member
+	
 	// count call in destination
 	n++;					// used?
 
@@ -1991,10 +1968,12 @@ LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
 	}
 }               // accumAhr
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add interval to next, + tot and sum.
-
+LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
+								// acts on METERs, DHWMETERs, and AFMETERs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-	int firstflg) 	// If TRUE, destination will be initialized before values are accumulated into it
+	int firstflg, 	// iff TRUE, destination will be initialized before values are accumulated into it
+	int lastflg)	// iff TRUE, destination will be finalized (e.g. averages computed)
+					//   Note also mtrsFinalize()
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
@@ -2035,6 +2014,13 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered energy use results: add int
 	DHWMTR* pWM;
 	RLUP( WMtrR, pWM)
 		pWM->wmt_Accum( ivl, firstflg);
+
+	// AFMETERs
+	AFMTR* pAM;
+	RLUP(AfMtrR, pAM)
+	{	if (pAM->ss < AfMtrR.n)
+			pAM->amt_Accum(ivl, firstflg, lastflg);
+	}
 }               // mtrsAccum
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)
@@ -2619,11 +2605,11 @@ LOCAL void FC NEAR binResFinish()	// complete and close binary results files at 
 static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) for current calculation.
 					   Locsolar holds location and daily solar info for slpak fcns.
 					   Alloc/init for location by slinit called from locInit().
-					   Released by slfree from locDone().
+					   Released by slfree from tp_LocDone().
 					   Address saved by slinit for other slpak calls.
 				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
 //------------------------------------------------------------------------
-LOCAL RC FC NEAR locInit()		// location-initializer for CSE
+RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 // inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
 // returns RCOK if ok, else message already issued.
 {
@@ -2631,17 +2617,18 @@ LOCAL RC FC NEAR locInit()		// location-initializer for CSE
 //   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
 //   slpak remembers its location internally.
 
-	Locsolar = slinit( RAD( Top.latitude),	// latitude (to radians)
-					   RAD( Top.longitude), // longitude
-					   Top.timeZone, 		// time zone
-					   Top.elevation );		// site altitude (ft)
+	Locsolar = slinit( RAD( latitude),	// latitude (to radians)
+					   RAD( longitude), // longitude
+					   timeZone, 		// time zone
+					   elevation );		// site altitude (ft)
 	return RCOK;
-}		// locInit
+}		// TOPRAT::tp_LocInit
 //------------------------------------------------------------------------
-LOCAL void FC NEAR locDone()		// semi-dummy locdone(): Free location related dm stuff: Locsolar
+RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
 {
 	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
-}			// locDone
+	return RCOK;
+}			// TOPRAT::tp_LocDone
 //===========================================================================================================
 
 /***************************************** rest of file is if-outs *****************************************/

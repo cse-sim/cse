@@ -232,10 +232,8 @@ static float fShield[ 5][ 2] =
 					//   within two house heights
 };
 
-#if 1	// insurance, 11-18-2014
 	if (Z <= 0.f)
 		return 0.f;
-#endif
 
 	float SC = fShield[ bracket( 1, shieldClass, 5)-1][ 1];
 	if (terrainClass <= 0)
@@ -256,6 +254,105 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 	return float( .5 * tp_rhoMoistOSh * vx * vx / g0Std);
 }	// TOPRAT::tp_WindPresV
 //===============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// AFMTR_IVL, AFMTR: accumulates air mass flow by category
+///////////////////////////////////////////////////////////////////////////////
+/*static*/ const int AFMTR_IVL::NAFCATS
+	= (sizeof(AFMTR_IVL) - offsetof( AFMTR_IVL, amt_total)) / sizeof(float);
+// NAFCATS s/b same as AFCAT choices + 1 (for total) - 1 (for C_AFCAT_NONE)
+static_assert(AFMTR_IVL::NAFCATS == C_AFCAT_COUNT+1-1, "Inconsistent AFMTR constants");
+//-----------------------------------------------------------------------------
+void AFMTR_IVL::amt_Copy(			// copy 
+	const AFMTR_IVL* sIvl,	// source
+	float mult /*=1.f*/)	// optional multiplier
+{
+	if (mult == 1.f)
+		memcpy(this, sIvl, sizeof(AFMTR_IVL));
+	else
+	{	amt_count = sIvl->amt_count;
+		VCopy(&amt_total, NAFCATS, &sIvl->amt_total, double(mult));
+	}
+}	// AFMTR_IVL::amt_Copy
+//-----------------------------------------------------------------------------
+void AFMTR_IVL::amt_Accum(			// accumulate
+	const AFMTR_IVL* sIvl,		// source
+	int firstFlg,				// true iff first accum into this (beg of ivl)
+	int lastFlg,				// true iff last accum into this (end of ivl)
+	int options /*=0*/)			// option bits
+								//   1: use sIvl.amt_count to scale totals
+								//      effectively averages by day for annual values
+								//   2: sum only (do not average)
+{
+	int count = (options & 1) ? sIvl->amt_count : 1;
+	if (firstFlg)
+	{	amt_Copy(sIvl, float( count));
+		amt_count = count;
+	}
+	else
+	{	VAccum(&amt_total, NAFCATS, &sIvl->amt_total, float( count));
+		amt_count += count;
+	}
+
+	// average unless caller says don't
+	//  Note: VMul1() nops if amt_count==1
+	if (lastFlg && !(options & 2))
+		VMul1(&amt_total, NAFCATS, 1.f / amt_count);
+}		// AFMTR_IVL
+//-----------------------------------------------------------------------------
+RC AFMTR::amt_CkF()
+{
+	return RCOK;
+}
+//-----------------------------------------------------------------------------
+RC AFMTR::amt_BegSubhr()		// init at beg of subhr
+{
+	S[ 0].amt_Clear();
+	S[ 1].amt_Clear();
+	return RCOK;
+}		// AFMTR::amt_BegSubhr
+//-----------------------------------------------------------------------------
+void AFMTR::amt_AccumCat(		// accumulate air flow value for current subhour
+	AFCAT afCat,	// air flow category
+	float amf)		// air mass flow, lbm/sec
+{
+	int iNeg = amf < 0.f;
+	S[ iNeg].amt_AccumCat(afCat, AMFtoAVF2(amf));
+}		// AFMTR::amt_AccumCat
+//-----------------------------------------------------------------------------
+AFMTR_IVL* AFMTR::amt_GetAFMTR_IVL(
+	IVLCH ivl,		// interval
+	int iPN /*=0*/)	// flow direction 0: pos (in), 1: neg (out)
+{
+	return Y + 2 * (ivl - C_IVLCH_Y) + iPN;
+}
+//-----------------------------------------------------------------------------
+void AFMTR::amt_Accum(
+	IVLCH ivl,		// destination interval: hour/day/month/year
+					// Accumulates from subhour/day/month.  Not Top.ivl!
+	int firstFlg,	// iff TRUE, destination will be initialized before values are accumulated into it
+	int lastFlg)	// iff TRUE, destination averages will be computed as needed
+{
+	AFMTR_IVL* dIvl0 = amt_GetAFMTR_IVL( ivl);	// point destination substruct for interval
+													// ASSUMES interval members ordered like DTIVLCH choices
+	AFMTR_IVL* sIvl0 = amt_GetAFMTR_IVL(ivl + 1);	// source: next shorter interval
+
+	int options =
+		ivl == C_IVLCH_Y ? 1	// average by day for non-sum-of year values
+								//   handles diffs due to month length
+		:                  0;	// default: track average
+	for (int iPN=0; iPN<2; iPN++)
+		dIvl0[ iPN].amt_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
+
+	if (lastFlg)
+	{	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
+		AFMTR_IVL* dIvlSum0 = pAMSum->amt_GetAFMTR_IVL( ivl);
+		for (int iPN = 0; iPN < 2; iPN++)
+			dIvlSum0[ iPN].amt_Accum(dIvl0+iPN, ss == 1, 0);
+	}
+}		// AFMTR::amt_Accum
+//=============================================================================
+
 
 /////////////////////////////////////////////////////////////////////////////////
 // AIRSTATE
@@ -448,23 +545,12 @@ double ZNR::zn_Rho0() const		// zone air density
 // returns moist air density lb/ft3 at nominal z=0 for current zone conditions
 //   Note: not *dry* air
 {
-#if 1	// air density rework, 10-18-2012
 	double rho = psyDenMoistAir( tz, wz, LbSfToInHg( zn_pz0));
-	if (rho < .0001)
-	{	err( WRN, "Zone '%s', %s: moist air density <= 0\n",
-					name, Top.When( C_IVLCH_S));
+	if (isnan( rho) || rho < .0001)
+	{	orMsg(ERRRT, "invalid moist air density (<=0 or nan)");
 		rho = 0.01;		// set to small but physically possible value
 	}
 	return rho;
-#elif 1
-x	double rho1 = psyDenMoistAir( tz, wz, LbSfToInHg( zn_pz0));
-x	double rho2 = psyDensity( tz, wz, LbSfToInHg( zn_pz0));
-x	if (FEQX( rho1, rho2) > .001)
-x		printf( "Mismatch\n");
-x	return rho2;
-#else
-x	return psyDensity( tz, wz, LbSfToInHg( zn_pz0));
-#endif
 }	// ZNR::zn_Rho0
 //------------------------------------------------------------------------------
 void ZNR::zn_AccumAirFlow(		// accumulate zone bal values due to air flow
@@ -700,12 +786,11 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	ad.ad_mdotX = avfGross * iz_vfExhRat * rhoX / 60.;
 
 #if defined( DEBUGDUMP)
-	if (DbDo( dbdAIRNET))
+	if (0 && DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
-
-
+	
 	// iz_air2 / iz_rho2 = air state into z1
 	// Note: calc HX with moist air mass flow rates
 	//       some sources say dry AMF, not fully understood
@@ -789,6 +874,9 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 		iz_cd = 0.f;
 		iz_exp = 0.f;
 	}
+
+	if (!iz_CanHaveAFCat())
+		ignore(IZXRAT_AFCATI, when);
 
 	// horizontal opening
 	//   stairangle defaults
@@ -951,9 +1039,94 @@ x		}
 
 	iz_SetupNonAirNet();		// calc izxfer derived values
 
+	iz_SetupAfMtrs();			// AFMETER (air flow meter) setup
+
 	return rc;
-}	// IZXRAT::iz_Setup()
+}	// IZXRAT::iz_Setup
 #undef ZFAN
+//-------------------------------------------------------------------
+void IZXRAT::iz_SetupAfMtrs()
+{
+	// Air flow categories (set iz_afMtrCat1 and iz_afMtrCat2)
+	iz_AfMtrCats();
+
+	// AFMTR ptrs: NULL if no meter specified -> no air flow accounting
+	//  one pointer for positive flows, one for negative
+	iz_pAfMtr1 = iz_pAfMtr2 = NULL;	// insurance
+	if (iz_afMtrCat1 != C_AFCAT_NONE)
+	{	// set up ptrs to AFMTR(s)
+		const ZNR* zp;
+		if (iz_zi1 > 0)
+		{	zp = ZrB.GetAt(iz_zi1);
+			iz_pAfMtr1 = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+		}
+		if (iz_zi2 > 0)
+		{	// interzone transfers recorded iff to a different meter
+			zp = ZrB.GetAt(iz_zi2);
+			AFMTR* pAM = AfMtrR.GetAtSafe(zp->i.zn_afMtri);
+			if (pAM == iz_pAfMtr1  && !iz_IsHERV())
+				iz_pAfMtr1 = NULL;		// same meter on both sides of IZ
+										//   don't record IZ within meter
+										//   EXCEPT for HERV
+			else
+				iz_pAfMtr2 = pAM;		// z2 meter specified and differs from z1
+		}
+	}
+	iz_doingAfMtr					// say this IZXRAT has AFMTR (speedier test)
+		= iz_pAfMtr1 != NULL || iz_pAfMtr2 != NULL;	
+				
+}		// IZXRAT::iz_SetupAfMtrs
+//-----------------------------------------------------------------------------
+int IZXRAT::iz_IsCZ(	// detect conditioned / unconditioned adjacent zones
+	int iZn) const	// 1: check inside zone, else checkout outside
+// returns -1 (does not exist), 0=unconditioned, 1=conditioned
+{
+	int zi = iZn==1 ? iz_zi1 : iz_zi2;
+	const ZNR* zp = ZrB.GetAtSafe( zi);
+	return !zp ? -1 : !zp->zn_IsUZ();
+
+}	// IZXRAT::iz_IsCZ
+//-----------------------------------------------------------------------------
+void IZXRAT::iz_AfMtrCats()		// finalize runtime air flow categories
+// Tricky: interzone flow UZ/CZ categories differ depending on side of vent
+{
+	iz_afMtrCat1 = iz_afMtrCat2 = -1;	// flag as unset
+	if (!iz_CanHaveAFCat())
+		iz_afMtrCat1 = C_AFCAT_NONE;		// not trackable
+	else if (IsSet(IZXRAT_AFCATI))
+		iz_afMtrCat1 = iz_afCatI;	// use user input (not checked for consistency with IZXRAT type)
+	else if (iz_IsSysAir())
+		iz_afMtrCat1 = C_AFCAT_HVAC;
+	else if (iz_IsDuctLk())
+		iz_afMtrCat1 = C_AFCAT_DUCTLK;
+	else if (iz_IsHERV())
+		iz_afMtrCat1 = C_AFCAT_FANEX;
+	else
+	{	const static int afCats[3][3] =
+		{	{ C_AFCAT_FANEX, C_AFCAT_VNTEX, C_AFCAT_INFEX },
+			{ C_AFCAT_FANUZ, C_AFCAT_VNTUZ, C_AFCAT_INFUZ },
+			{ C_AFCAT_FANCZ, C_AFCAT_VNTCZ, C_AFCAT_INFCZ }
+		};
+		
+		// fan / vent / infil
+		//   Note: vent guess is approx, explicit izAFCat input may be necessary
+		int izMode = iz_IsFixedFlow() ? 0 : iz_MightBeNatVent() ? 1 : 2;
+		if (iz_IsExterior())
+			iz_afMtrCat1 = afCats[0][izMode];
+		else
+		{	// interzone: set category per *other* side
+			//   iz_IsCZ() returns -1 (no zone, not expected), 0 (uncond), 1 (cond)
+			int iCZ1 = iz_IsCZ(1);	// inside
+			int iCZ2 = iz_IsCZ(2);	// outside
+			iz_afMtrCat1 = afCats[iCZ2 + 1][izMode];
+			iz_afMtrCat2 = afCats[iCZ1 + 1][izMode];
+		}
+	}
+
+	if (iz_afMtrCat2 < 0)
+		iz_afMtrCat2 = iz_afMtrCat1;
+
+}		// IZXRAT::iz_AfMtrCats
 //-----------------------------------------------------------------------------
 RC IZXRAT::iz_SetupNonAirNet()		// interzone transfer one-time initialization
 
@@ -1025,7 +1198,17 @@ RC IZXRAT::iz_SetupNonAirNet()		// interzone transfer one-time initialization
 	return RCOK;
 }           // IZXRAT::iz_SetupNonAirNet
 //-----------------------------------------------------------------------------
+bool IZXRAT::iz_MightBeNatVent() const	// detect possible controlled nat vent
+// returns true iff this looks like typical controlled vent (e.g. openable window)
+// used re default iz_afCat
+{
+	bool ventIsh = 	!iz_IsFixedFlow() && iz_a1 == 0.f && IsSet(IZXRAT_A2);
+
+	return ventIsh;
+}		// IZXRAT::iz_MightBeVent
+//-----------------------------------------------------------------------------
 bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent"
+// can vary during run due to expressions
 // returns 1 iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
 {
 	bool bVentEffect =
@@ -1095,6 +1278,8 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	}
 	else
 		ize->iz_zi2 = -1;		// no other zone
+
+	ize->iz_SetupAfMtrs();		// default iz_afCat, set up AFMTR linkage
 
 	// more init?
 
@@ -1173,8 +1358,9 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 	ZNR* zp1 = ZrB.GetAt( iz_zi1);
 	zp1->zn_GetAirStateLs( iz_air1);
 	iz_rho1 = zp1->zn_rho0ls;			// density, lbm/cf
-
 #if defined( _DEBUG)
+	if (isnan(iz_rho1))
+		printf("\nNAN");
 	if ((iz_IsSysOrDuct() || iz_IsOAVRelief()) != (iz_pAF != NULL))
 		err( PWRN, "IZXRAT '%s': inconsistent iz_pAF", name);
 #endif
@@ -1255,7 +1441,6 @@ RC IZXRAT::iz_Calc()
 	ZNR* zp1 = ZrB.GetAt( iz_zi1);
 	ZNR* zp2 = ZrB.GetAt( iz_zi2);
 	float tdif = zp1->tzls - zp2->tzls;   	// temp diff between zones
-#if 1
 	if (iz_nvcntrl != C_IZNVTYCH_ONEWAY || tdif > 0.f)
 	{	double hx = iz_ua;
 		if (iz_nvcntrl != C_IZNVTYCH_NONE)
@@ -1264,15 +1449,6 @@ RC IZXRAT::iz_Calc()
 		zp1->zn_qIzXAnSh -= qx;		// accumulate heat/hour to zone
 		zp2->zn_qIzXAnSh += qx;		// same for other zone, opposite sign: positive into zone.
 	}
-#else
-x	float hx = iz_ua;						// coupling coeff: init to constant (conduction) portion
-x	if (iz_nvcntrl==C_IZNVTYCH_TWOWAY)   	// if nat vent tween zones
-x		hx += iz_nvcoeff * sqrt( fabs( tdif));   	// it is proportional to sqrt temp difference
-x	float qx = hx * tdif;   		// heat xfer per hour (power): coupling * temp diff.
-x									//   positive for xfer from zn1 to zn2
-x	zp1->zn_qIzXAnSh -= qx;			// accumulate heat/hour to zone
-x	zp2->zn_qIzXAnSh += qx;			// same for other zone, opposite sign: positive into zone.
-#endif
 	return RCOK;
 }	// IZXRAT::iz_Calc
 //--------------------------------------------------------------------------------
@@ -1286,8 +1462,14 @@ RC IZXRAT::iz_MassFlow(		// airnet mass flow for this vent
 	int rc = RCOK;
 
 #if 0 && defined( _DEBUG)
-x	if (iz_IsOAVRelief())
-x		rc = rc;
+	ZNR* zp2 = NULL;
+	if (ZrB.GetAt(iz_zi1)->IsNameMatch("F5 Res Zn-zn")
+		&& !Top.isWarmup && !iz_IsExterior() && Top.iHr == 18)
+	{
+		zp2 = ZrB.GetAt(iz_zi2);
+		if (zp2->tzls > 90.f)
+			rc = rc;
+	}
 #endif
 	if (!iz_IsFixedFlow() && iz_ad[ iV].ad_Ae > 0.)
 	{	// pressure-dependent flow
@@ -1366,10 +1548,10 @@ RC IZXRAT::iz_ZoneXfers(		// calc transfers due to airnet mass flow
 		if (DbDo( dbdAIRNET))
 		{	if (!dbgDoneHorizHdg[ iV])
 			{	DbPrintf( "\nAirNet horiz  mode = %d\n"
-						  "vent               delRho      delpF       mDotB\n", iV);
+						  "vent                   delRho      delpF       mDotB\n", iV);
 				dbgDoneHorizHdg[ iV]++;
 			}
-			DbPrintf( "%-15s  %10.5f  %10.5f  %10.5f\n", name, delRho, delpF, ad.ad_mdotB);
+			DbPrintf( "%-20.20s %10.5f  %10.5f  %10.5f\n", name, delRho, delpF, ad.ad_mdotB);
 		}
 #endif
 	}
@@ -1380,7 +1562,6 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 {
 	ZNR* zp = ZrB.GetAt( iz_zi1);	// zone
 	float fVent = zp->zn_fVent;
-	iz_amfNom = (1.f-fVent)*iz_ad[ 0].ad_mdotP + fVent*iz_ad[ 1].ad_mdotP;
 	if (iz_HasFan() && iz_fan.fn_mtri)
 	{	// calc fan electricity and accum to meter
 		// need venting fraction to determine fan operation
@@ -1393,9 +1574,27 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 			iz_fan.fn_endUse,			// user-specified end use (default = "fan")
 			fanPwr * Top.subhrDur);		// electrical energy, Btu (*not* Wh)
 	}
+
+	// air flow accounting
+	iz_amfNom // incoming nominal flow, lbm/sec
+		= (1.f - fVent)*iz_ad[0].ad_mdotP + fVent * iz_ad[1].ad_mdotP;
+	if (iz_nvcntrl == C_IZNVTYCH_ANHORIZ)
+		iz_amfNom
+			+= (1.f - fVent)*iz_ad[0].ad_mdotB + fVent * iz_ad[1].ad_mdotB;
+	if (iz_doingAfMtr && iz_amfNom != 0.f)
+	{	if (iz_pAfMtr1)
+			iz_pAfMtr1->amt_AccumCat(iz_afMtrCat1, iz_amfNom);
+		if (iz_pAfMtr2)
+		{	// flow is opposite direction from z2 POV
+			// HERV: iz_pAfMtr2 points to exhaust source zone (may be z1)
+			//       HERV same for vent / no vent (use iz_ad[ 0] w/o fVent)
+			iz_pAfMtr2->amt_AccumCat(iz_afMtrCat2, 
+					iz_IsHERV() ? -iz_ad[0].ad_mdotX : -iz_amfNom);
+		}
+	}
+
 	return RCOK;
 }		// IZXRAT::iz_EndSubhr
-
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1403,8 +1602,8 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 AIRNET::AIRNET()
-: an_jac( NULL), an_V1( NULL), an_V2( NULL), an_mdotAbs( NULL), an_didLast( NULL),
-an_nz(0)
+   : an_jac( NULL), an_V1( NULL), an_V2( NULL), an_mdotAbs( NULL), an_didLast( NULL),
+     an_nz(0)
 {	an_resultsClear[0] = an_resultsClear[1] = 0;
 }	// AIRNET::AIRNET
 //-----------------------------------------------------------------------------
@@ -1458,7 +1657,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 	const int ANDBZMAX = 5;
 	double rVSave[ ANDBZMAX];
 	double jacSave[ ANDBZMAX*ANDBZMAX];
-	int bDbPrint = DbDo( dbdAIRNET);
+	bool bDbPrint = DbDo( dbdAIRNET);
 #endif
 
 	TMRSTART( TMR_AIRNET);
@@ -1495,7 +1694,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #if defined( DEBUGDUMP)
 		if (bDbPrint)
 			DbPrintf( "%s\nAirNet mode = %d   iter = %d\n"
-				  "vent                delP         mDotP        mDotX        dmdp\n",
+				"vent                     rho1      rho2       delP       mDotP       mDotX         dmdp\n",
 				  iter==0 ? "\n-------------" : "",
 				  iV, iter);
 #endif
@@ -1531,8 +1730,8 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #if defined( DEBUGDUMP)
 			if (bDbPrint)
 			{	const ANDAT& ad = ize->iz_ad[ iV];
-				DbPrintf( "%-15s %d %10.6f  %10.5f  %10.5f  %11.5f\n",
-					ize->name, iV, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
+				DbPrintf( "%-20.20s %d %6.4f %9.4f %10.6f  %10.5f  %10.5f  %11.5f\n",
+					ize->name, iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
 			}
 #endif
 		}
@@ -1541,6 +1740,8 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		for (zi=0; zi < an_nz; zi++)
 		{	// Net mass flow to each zone s/b 0
 			// Solution not converged if netAMF > max( ResAbs, totAMF*ResRel)
+			//  Using larger of the two tolerances means zones with small abs flow converge loosely.
+			//  This avoids extra iterations to converge zones that have minor impact.
 			if (fabs( rV[ zi]) > ResAbs && fabs( rV[ zi]) > ResRel*an_mdotAbs[ zi])
 			{	bConverge = FALSE;
 				break;		// this zone not balanced, no need to check further
@@ -1551,10 +1752,10 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #if defined( DEBUGDUMP)
 			if (bDbPrint)
 			{	DbPrintf( "\nAirNet mode = %d converged (%d iter)\n"
-					  "zone            znPres        mDotP\n", iV, iter+1);
-				for (zi=0; zi < nzDb; zi++)
+					  "zone                 znPres        mDotP\n", iV, iter+1);
+				for (zi=0; zi < an_nz; zi++)
 				{	ZNR* zp = ZrB.GetAt( zi+zi0);
-					DbPrintf( "%-15s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[ iV], rV[ zi]);
+					DbPrintf( "%-20.20s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[ iV], rV[ zi]);
 				}
 			}
 #endif
@@ -1562,9 +1763,11 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		}
 #if defined( DEBUGDUMP)
 		// save info for debug print (changed by gaussjb())
-		VCopy( rVSave, nzDb, rV);
-		for (zi=0; zi < nzDb; zi++)
-			VCopy( &jacSave[ zi*nzDb], nzDb, &an_jac[ zi*an_nz]);
+		if (bDbPrint)
+		{	VCopy(rVSave, nzDb, rV);
+			for (zi = 0; zi < nzDb; zi++)
+				VCopy(&jacSave[zi*nzDb], nzDb, &an_jac[zi*an_nz]);
+		}
 #endif
 		// solve for pressure corrections
 		int gjRet = gaussjb( an_jac, an_nz, rV, 1);
@@ -1574,11 +1777,11 @@ RC AIRNET::an_Calc(			// airnet flow balance
 					gjRet == 1 ? "singular" : "too large");
 
 #if defined( DEBUGDUMP)
-		if (bDbPrint)
-		{	DbPrintf( "\nzone            znPres       mDotP    corr     jac ...\n");
+		if (0 && bDbPrint)
+		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
-				DbPrintf( "%-15s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[ iV], rVSave[ zi], rV[ zi]);
+				DbPrintf( "%-20.20s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[ iV], rVSave[ zi], rV[ zi]);
 				VDbPrintf( NULL, &jacSave[ zi*nzDb], nzDb, " %10.3f");
 			}
 		}
@@ -1874,6 +2077,9 @@ RC DUCTSEG::ds_BegSubhr()
 
 	ds_uaTot = ds_exArea * ds_sbcO.sb_fRat;
 
+	ds_qCondFL = ds_qCond = ds_qCondRad = ds_qCondAir
+		= ds_qLeakSen = ds_qLeakLat = 0.;
+
 	return rc;
 }		// DUCTSEG::ds_BegSubhr
 //-----------------------------------------------------------------------------
@@ -2003,6 +2209,83 @@ AIRSTATE DUCTSEG::ds_CalcFLRev(		// calc entering state given leaving
 	ds_air[ 0] = ds_air[ 1];
 	return ds_air[ 0];
 }		// DUCTSEG::ds_CalcFLRev
+#if 1
+//-----------------------------------------------------------------------------
+void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
+	float runF)		// run fraction
+{
+	ZNR* zpx = ds_GetExZone();		// zone containing ductseq (NULL if not in zone)
+
+	// finalize conduction
+	//   ds_air[ 0], ds_air[ 1], and ds_air[ 3] must be known
+	ds_air[2] = ds_air[1];
+	double mCpFL = ds_amfFL * Top.tp_airSH;
+	// ds_qCondFL = ds_qCond = ds_qCondAir = ds_qCondRad = 0. per ds_BegSubhr
+	if (ds_uaTot > 0.)
+	{	ds_qCondFL =		// conduction loss rate, Btuh; + = out of duct
+			mCpFL * (ds_air[1].as_tdb - ds_air[3].as_tdb);
+		ds_air[2].as_tdb = ds_qCondFL / ds_uaTot + ds_sbcO.sb_txe;	// mean temp when flow
+		ds_sbcO.sb_qSrf = ds_qCondFL / ds_exArea;	// average conduction
+												//   ds_exArea > 0 since uaTot > 0)
+		if (ds_sbcO.sb_hxtot > 0.)
+			ds_sbcO.sb_tSrf += ds_sbcO.sb_qSrf / ds_sbcO.sb_hxtot;
+#if defined( _DEBUG)
+		// if (ds_Uduct > 0.)
+		{	double tdb2 = ds_sbcO.sb_qSrf / ds_Uduct + ds_sbcO.sb_tSrf;
+			double tErrF = frDiff(ds_air[2].as_tdb, tdb2, .01);
+			if (tErrF > .001)
+				orMsg(WRNRT, "avg temp inconsistency (%.5f)", tErrF);
+		}
+#endif
+
+		if (runF > 0.f)
+		{	ds_qCond = ds_qCondFL * runF;	// conduction loss, Btuh (+ = out of duct)
+			ds_qCondAir = runF * ds_exArea * ds_sbcO.sb_hxa*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txa);
+			ds_qCondRad = runF * ds_exArea * ds_sbcO.sb_hxr*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txr);
+#if defined( _DEBUG)
+			// compare separately calc'd conduction, small diffs are common
+			double condErrF = frDiff(ds_qCond, ds_qCondAir + ds_qCondRad,
+				.1);				// .01 -> .1  8-9-2013
+			if (condErrF > .002)	// .001 -> .002 8-9-2013
+				orMsg(WRNRT, "conduction mismatch (%.5f)", condErrF);
+#endif
+			if (zpx)
+			{	// conduction gains to zone (for next step)
+				zpx->zn_qDuctCondAir += ds_qCondAir;
+				zpx->zn_qDuctCondRad += ds_qCondRad;
+			}
+		}
+	}
+
+	// leakage
+	if (runF > 0.f && ds_leakF > 0.f)
+	{	double amfLk = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
+		if (ds_IsSupply())
+		{	// supply (leakage is out of duct)
+			const RSYS* pRS = ds_GetRSYS();
+#if 0
+			double tz = pRS->rs_asZn.as_tdb;
+#endif
+			double tz = pRS->rs_asRet.as_tdb;
+			ds_qLeakSen = runF * mCpFL * ds_leakF * (ds_air[3].as_tdb - tz);
+			ds_qLeakLat = amfLk * PsyHCondWtr * ds_air[3].as_w;	// TODO
+			if (zpx)
+				zpx->zn_ductLkI.af_AccumDry(amfLk, ds_air[3]);
+		}
+		else
+		{	// return
+			if (zpx)
+				zpx->zn_ductLkO.af_AccumDry(-amfLk, zpx->tz, zpx->wz);
+		}
+	}
+	// else ds_qLeakSen = ds_qLeakLat = 0. per ds_BegSubHr()
+#if defined( DEBUGDUMP)
+	if (DbDo(dbdDUCT))
+		ds_DbDump();
+#endif
+}		// DUCTSEG::ds_FinalizeSh
+
+#else
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 	float runF)		// run fraction
@@ -2063,6 +2346,7 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 		ds_DbDump();
 #endif
 }		// DUCTSEG::ds_FinalizeSh
+#endif
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_AfterSubhr()
 {
@@ -2089,7 +2373,7 @@ void DUCTSEG::ds_DbDump() const
 		ds_sbcO.sb_hxa, ds_sbcO.sb_hxr, ds_sbcO.sb_hxtot, ds_sbcO.sb_cx, ds_Rduct, ds_Uduct,
 		ds_amfFL, runF*ds_amfFL*ds_leakF,
 		ds_uaTot, ds_beta, ds_sbcO.sb_tSrf,
-		runF, runF*ds_qCondAirFL, runF*ds_qCondRadFL, runF*ds_qCondFL,
+		runF, ds_qCondAir, ds_qCondRad, ds_qCond,
 		ds_air[ 0].as_tdb, ds_air[ 1].as_tdb, ds_air[ 2].as_tdb, ds_air[ 3].as_tdb);
 }		// DUCTSEG::ds_DbDump
 //=============================================================================

@@ -340,6 +340,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			ASHP   "ASHP"
 			ASHPHYD "ASHPHydronic"
 			ASHPPKGRM "ASHPPkgRoom"
+			ASHPVC  "VCHP2"
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
@@ -354,8 +355,19 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			REVCYCLE    "RevCycle"
 			REVCYCLEAUX "RevCycleAux"
 		  }
+*choicb AUXHEATTY {
+		NONE  "None"
+		RES   "Resistance"
+		FURN  "Furnace"
+		}
+*choicb AUXHEATCTRL {
+        LO  "Lockout"
+		CYCLE "Cycle"
+		ALT  "Alternate"
+	    }
 
 // DHW choices
+
 *choicb WSCALCMODECH {
 			PRERUN "PreRun"
 			SIM "Simulate"
@@ -385,8 +397,10 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AOSMITHHPTU66 "AOSmithHPTU66"	// 66 gallon AOSmith HPTU
 			AOSMITHHPTU80 "AOSmithHPTU80"	// 80 gallon AOSmith HPTU
 			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
+			AOSMITHCAHP120 "AOSmithCAHP120"	// 120 gallon AOSmith
 			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
 			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
+			SANDEN120 "Sanden120"			// Sanden 120 gallon CO2 external heat pump
 			SANDENGS3 "SandenGS3"			// Sanden GS3 compressor CO2 external
 			GE2012 "GE2012"					// 2012 era GeoSpring
 			GE2014 "GE2014"					// 2014 50 gal GE run in the efficiency mode
@@ -442,6 +456,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC125AC_SP "NyleC125A_CWP_SP"
 			NYLEC185AC_SP "NyleC185A_CWP_SP"
 			NYLEC250AC_SP "NyleC250A_CWP_SP"
+
+			SCALABLE_SP "Scalable_SP"		// scalable type for autosized standard design
 		}
 
 *choicb DHWEUCH {			// hot end uses
@@ -472,6 +488,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
+*choicb DHWDRMETH { NONE "none" SCHED "schedule" /* TDV */ }
 
 // PV choices
 *choicb PVMODCH {
@@ -533,6 +550,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                     TUSIZE	"TUSIZE"	// "Terminal Size"
                     TULOAD	"TULOAD"	// "Terminal Load"
 					DHWMTR  "DHWMTR"	// "DHW Meter (hot water use, gal)"
+					AFMTR   "AFMTR"		// "Airflow Meter"
                    }
 
 *choicb RPTHDCH  { NO     "No"
@@ -548,7 +566,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
                     R             "Right"		// 
                   }
 
-// Energy end use.  CAUTION: MTR_IVL_SUB record (cnrecs.def) member ordering MATCHES order of choices.
+// Energy end use
+// CAUTION: MTR_IVL_SUB record (cnrecs.def) member ordering MATCHES order of choices.
 *choicb ENDUSECH	{
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
@@ -576,6 +595,25 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  BT		"BT"	// battery energy
               PV        "PV"	// CAUTION: code (cnguts,cgresult.cpp) assumes C_ENDUSECH_PV is largest.
 			}
+
+// air flow categories
+// CAUTION: AFMTR_IVL record (cnrecs.def) member ordering MATCHES order of choices.
+*choicb AFCAT	{
+    // UNKNOWN = 0
+    INFEX   "InfilEx"
+	VNTEX   "VentEx"
+	FANEX   "FanEx"
+	INFUZ   "InfilUz"
+	VNTUZ   "VentUz"
+	FANUZ   "FanUz"
+	INFCZ   "InfilCz"
+	VNTCZ   "VentCz"
+	FANCZ   "FanCz"
+	DUCTLK  "DuctLk"
+	HVAC    "HVAC"
+	NONE    "None"
+	COUNT   "*Count"
+	}
 
 // holiday case -- nth <weekday> of <month> (tdpak:tdHoliDate)
 *choicb HDAYCASECH { 
@@ -717,6 +755,19 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			TDVPEAKSAVE "TDVPeakSave"
 			}
 
+*choicn DHWDRSIG {
+	ON "On"
+	TOO "TOO"
+	TOOLOR "TOOLOR"
+	TOOLOC "TOOLOC"
+	TOT "TOT"
+	TOTLOR "TOTLOR"
+	TOTLOC "TOTLOC"
+	LOC "LOC"
+	LOR "LOR"
+	LOCLOR "LOCLOR"
+	COUNT "*Count"	// hidden
+  }
 
 /**********************************************************************************************************************
 ** === CHOICN types: can hold these choices (as NAN), or float number 

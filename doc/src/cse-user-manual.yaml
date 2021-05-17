@@ -43,6 +43,7 @@ sections:
   - [2, "records/glazetype.md"]
   - [2, "records/meter.md"]
   - [2, "records/dhwmeter.md"]
+  - [2, "records/afmeter.md"]
   - [2, "records/zone.md"]
   - [2, "records/gain.md"]
   - [2, "records/surface.md"]
