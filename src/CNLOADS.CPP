@@ -1937,7 +1937,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		}
 	}
 
-#if 1
+#if 0
+// CBOR test code, 9-2020?
 	extern RC TestCBOR(const char* filePath);
 	   
 	TestCBOR

@@ -198,6 +198,7 @@ set(headers
   XIOPAK.H
   XMODULE.h
   YACAM.H
+  A205FACE.H
 )
 
 

@@ -1,10 +1,17 @@
-// Copyright (c) 1997-2020 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2021 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// a205face.cpp: Interface to ASHRAE205 equipment data representations
+// a205face.cpp: Interface to ASHRAE Std 205 equipment data representations
 
 #include "cnglob.h"
+
+#include "a205face.h"
+
+
+
+#if 0
+// experimental code 9/2020 ?
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -48,5 +55,6 @@ RC TestCBOR(
 
 	return rc;
 }
+#endif
 
 // a205face.cpp end

@@ -6,5 +6,4 @@
 //     equipment data representations
 
 
-
 // end a205face.h
