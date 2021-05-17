@@ -225,6 +225,10 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  NONE "None"
 			  PENUMBRA "Penumbra"
 			  }
+*choicb SLRINTERPMETH {
+			  CSE "CSE"
+			  TRNSYS "TRNSYS"
+			  }
 // day of week choice, sun=1: subtract 1 for DOW for use with tdpak.
 *choicb DOWCH    {  SUN "Sun"
 			  MON "Mon"

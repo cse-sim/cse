@@ -281,7 +281,7 @@ RC DHWMTR::wmt_CkF()
 RC DHWMTR::wmt_Init( IVLCH ivl)
 // not called for C_IVLCH_SUBHOUR
 {
-	memset( &H.total, 0, (NDHWENDUSES+1)*sizeof( float));
+	memset( &curr.H.total, 0, (NDHWENDUSES+1)*sizeof( float));
 
 	return RCOK;
 
@@ -300,7 +300,7 @@ void DHWMTR::wmt_Accum(
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int firstflg)	// iff TRUE, destination will be initialized before values are accumulated into it
 {
-	DHWMTR_IVL* dIvl = &Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
+	DHWMTR_IVL* dIvl = &curr.Y + (ivl - C_IVLCH_Y);	// point destination substruct for interval
 												// ASSUMES interval members ordered like DTIVLCH choices
 	DHWMTR_IVL* sIvl = dIvl + 1;				// source: next shorter interval
 
@@ -321,7 +321,14 @@ void DHWMTR_IVL::wmt_Accum(			// accumulate
 		VAccum( &total, NDHWENDUSES+1, &sIvl->total);
 	else
 		VAccum( &total, NDHWENDUSES+1, &sIvl->total, mult);
-}		// DHWMTR_IVL
+}		// DHWMTR_IVL::wmt_Accum
+//-----------------------------------------------------------------------------
+void DHWMTR_IVL::wmt_SetPrior() const 		// copy to prior
+{
+	BYTE* d =
+		((BYTE*)this + (offsetof(DHWMTR, prior) - offsetof(DHWMTR, curr)));
+	memcpy(d, this, sizeof(DHWMTR_IVL));
+}	// DHWMETER_IVL::wmt_SetPrior
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1573,9 +1580,9 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	// accumulate water use to DHWMTRs if defined
 	//   include DHWSYS.ws_mult multiplier
 	if (ws_pFXhwMtr)
-		ws_pFXhwMtr->H.wmt_Accum(&ws_fxUseMix, 0, mult);
+		ws_pFXhwMtr->curr.H.wmt_Accum(&ws_fxUseMix, 0, mult);
 	if (ws_pWHhwMtr)
-		ws_pWHhwMtr->H.wmt_Accum(&ws_whUse, 0, mult);
+		ws_pWHhwMtr->curr.H.wmt_Accum(&ws_whUse, 0, mult);
 
 	// accumulate water use to annual totals
 	//    redundant if DHWMTRs are defined

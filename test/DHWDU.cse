@@ -3552,14 +3552,15 @@ GAIN   "Conditioned-znDishwasherx"
 
 GAIN   "Conditioned-znWasherx"   
    gnPower = 0.010066597  * 3412   //kWh/gal =0.010066597 * BTU/kWh 
-   gnCtrlDHWSYS = "dhwsys-DHW"         // name of DHWSYS
+   gnCtrlDHWMETER = "DHWMtrFXMix"
+  
    gnCtrlDHWEndUse = CWashr    // DHW end use
    gnMeter = "MtrElec"
    gnEndUse = "Wash"
    gnFrRad = 0
 
 GAIN   "Conditioned-znDryerNGasx"   
-   gnPower = 299.9102065 * @DHWSYS["dhwsys-DHW"].FxUseMixLH.CWashr    //Therm/gal	0.002999102
+   gnPower = 299.9102065 * @DHWMETER["DHWMtrFXMix"].prior.H.CWashr    //Therm/gal	0.002999102
    gnMeter = "MtrNatGas"
    gnEndUse = "Dry"
    gnFrZn = 0.3
