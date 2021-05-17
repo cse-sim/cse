@@ -1167,12 +1167,12 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 					}
 				}
 
-#if 1
+#if 0
 // experiment: average (smooths peaks)
 				float gx[100];
 				VCopy(gx, nSubhr + 1, g);
-				for (iSh=iShBeg+1; iSh < iShEnd; iSh++)
-					g[iSh] = 0.5f * (gx[iSh - 1] + gx[iSh + 1]);
+				for (iSh = iShBeg + 2; iSh < iShEnd - 1; iSh++)
+					g[iSh] = 0.25f * (gx[iSh - 2] + gx[iSh - 1] + gx[iSh + 1] + gx[iSh + 2]);
 #endif
 			}
 		}
