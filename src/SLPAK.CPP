@@ -19,11 +19,12 @@
        from other sources (see individual cases). */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include "cnglob.h"
 
-#include <gmpak.h> /* gmcos2alt() */
+#include "gmpak.h" /* gmcos2alt() */
 
-#include <slpak.h> /* declarations for this file; SLLOCDAT */
+#include "slpak.h" /* declarations for this file; SLLOCDAT */
+#include "solar.h"
 
 /*-------------------------------- DEFINES --------------------------------*/
 /* solar constant (Btuh/sf): solar extraterrestial beam radiation before
@@ -844,8 +845,6 @@ void FC slaniso(/* Adjust beam and diffuse radiation values
 ////////////////////////////////////////////////////////////////////////////
 // ASHRAE solar
 ////////////////////////////////////////////////////////////////////////////
-
-#include "ASHRAE/solar.cpp"
 
 float slASHRAETauModel( // ASHRAE "tau" clear sky model
 	float sunZen,         // solar zenith angle, radians
