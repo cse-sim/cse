@@ -1269,7 +1269,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		else if (dvrip->rpTy==C_RPTYCH_DHWMTR)		// if DHW meter report
 		{
 			TI dhwMtri = dvrip->dv_dhwMtri;    		// subscript
-			DHWMTR_IVL* pIvl = &WMtrR[ dhwMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
+			DHWMTR_IVL* pIvl = &WMtrR[ dhwMtri].curr.Y + (rxt.fq - 1); 	// .M is after .Y, etc
 			rxt.colDef = wMtrColdef;					 			// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
@@ -1491,7 +1491,7 @@ void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
 	if (dhwMtri < 0)
 		dhwMtri = dv_dhwMtri;
 	DHWMTR* pWM = WMtrR.GetAt( dhwMtri);		// record
-	DHWMTR_IVL* pIvl = (&pWM->Y) + (rxt->fq - 1);	// interval
+	DHWMTR_IVL* pIvl = (&pWM->curr.Y) + (rxt->fq - 1);	// interval
     												// subhr not allowed for DHWMTR --> fq==fqr; no extra -1 needed.
 
 	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);

@@ -1202,6 +1202,7 @@ CULT( "gnFrPl",    DAT,   GAIN_GNFRPL,     0,       0, VHRLY,  TYFL,  0,      N,
 CULT( "gnFrRtn",   DAT,   GAIN_GNFRRTN,    0,       0, VHRLY,  TYFL,  0,      N,   0.f,           N,   N), // 1 or less at runtime
 CULT( "gnDlFrPow", DAT,   GAIN_GNDLFRPOW,  0,       0, VHRLY,  TYFL,  0,      N,   1.f,           N,   N),
 CULT( "gnCtrlDHWSYS",DAT, GAIN_DHWSYSI,    0,       0, VEOI,   TYREF, &WSiB,  N,   0,             N,   N),
+CULT( "gnCtrlDHWMETER",DAT, GAIN_DHWMTRI,  0,       0, VEOI,   TYREF, &WMtriB,N,   0,             N,   N),
 CULT( "gnCtrlDHWEndUse",DAT,GAIN_DHWENDUSE,0,       0, VEOI,   TYCH,  0,      v C_DHWEUXCH_TOTAL, 0.f, N,   N),
 CULT( "endGain",   ENDER, 0,               0,       0, 0,      0,     0,      N,   0.f,           N,   N),
 CULT()

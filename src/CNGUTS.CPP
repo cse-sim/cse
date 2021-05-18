@@ -1249,15 +1249,23 @@ RC GAIN::gn_CkF(
 			rc |= ckRefPt( &MtrB, mtri,"gnMeter");
 	}
 
-	// controlling DHWSYS linkage
+	// controlling DHWSYS or DHWMTR linkage
 	//   DHWENDUSE is optional (defaults to _TOTAL)
-	//   but cannot be provided w/o DHWSYS
- 	if (!IsSet( GAIN_DHWSYSI) && IsSet( GAIN_DHWENDUSE))
-		oer( "gnCtrlDHWEndUse cannot be given without gnCtrlDHWSYS");
+	//   but cannot be provided w/o DHWSYSI or DHWMTRI
+	int nCtrl = IsSetCount(GAIN_DHWSYSI, GAIN_DHWMTRI, 0);
+	if (nCtrl == 0)
+	{	if (IsSet(GAIN_DHWENDUSE))
+			oer("gnCtrlDHWEndUse cannot be given without gnCtrlDHWSYS or gnCtrlDHWMETER");
+	} 
+	else if (nCtrl == 2)
+		oer("Only 1 of gnCtrlDHWSYS or gnCtrlDHWMETER can be given");
+
 	if (bSetup)
 	{	// final (redundant? runtime check of controlling DHWSYS reference
 		if (gn_dhwsysi)		// if given
 			rc |= ckRefPt( &WsR, gn_dhwsysi, "gnCtrlDHWSYS");
+		else if (gn_dhwmtri)		// if given
+			rc |= ckRefPt(&WMtrR, gn_dhwmtri, "gnCtrlDHWMETER");
 	}
 
 	// check that sum of fractions of heat to zone, plenum, return is not > 1, insofar as not unevaluated expressions
@@ -1328,6 +1336,10 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
           							// This is for binary results file and/or custom reports (via ZNRES).
 	if (gn_dhwsysi)
 	{	float gal = WsR[ gn_dhwsysi].ws_fxUseMix.wmt_GetByEUX( gn_dhwEndUse);
+		gnPX *= gal;
+	}
+	else if (gn_dhwmtri)
+	{	float gal = WMtrR[gn_dhwmtri].curr.H.wmt_GetByEUX( gn_dhwEndUse);
 		gnPX *= gal;
 	}
 	gnPX *= gnDlFrPow;				// reduce power per daylighting or whatever
@@ -1894,7 +1906,7 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 	}
 }               // RSYSRES_IVL_SUB::rsr_Accum
 //-----------------------------------------------------------------------------
-void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// Accumulate RSYS results
+void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// copy to prior
 {
 	BYTE* d = 
 		((BYTE *)this + (offsetof(RSYSRES,prior) - offsetof(RSYSRES,curr)));
@@ -2220,6 +2232,10 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 		setPriorRes( &pZR->curr.H);	// copy zone's current hour results to prior hour results
 	RLUP( RsResR, pRSR)
 		pRSR->curr.H.rsr_SetPrior();
+	DHWMTR* pWMT;
+	RLUP(WMtrR, pWMT)
+		pWMT->curr.H.wmt_SetPrior();
+
 	if (Top.ivl > C_IVLCH_D)
 		return;				// if hour call, done
 
@@ -2228,6 +2244,9 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 		setPriorRes( &pZR->curr.D);	// copy this zone's, or sum-of-zones, current day results to prior day results
 	RLUP( RsResR, pRSR)
 		pRSR->curr.D.rsr_SetPrior();
+	RLUP(WMtrR, pWMT)
+		pWMT->curr.D.wmt_SetPrior();
+
 	if (Top.ivl > C_IVLCH_M)
 		return;				// if day call, done
 
@@ -2236,6 +2255,9 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 		setPriorRes( &pZR->curr.M);	// copy this zone's month results to prior month results
 	RLUP( RsResR, pRSR)
 		pRSR->curr.M.rsr_SetPrior();
+	RLUP(WMtrR, pWMT)
+		pWMT->curr.M.wmt_SetPrior();
+
 	// if (Top.ivl > C_IVLCH_Y)
 	//  return;				// if month call, done
 
