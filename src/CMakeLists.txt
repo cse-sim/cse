@@ -106,7 +106,6 @@ set(source
   Foundation.cpp
   GMUTIL.CPP
   GEOMETRY.CPP
-  hpwhwrap.cpp
   IMPF.CPP
   LOOKUP.CPP
   MESSAGES.CPP
