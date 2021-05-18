@@ -45,8 +45,8 @@ if (KIVA_GROUND_PLOT)
 endif()
 
 # HPWHsim
+set(HPWHSIM_OMIT_TESTTOOL ON CACHE BOOL "Do not build HPWHsim testing code" FORCE)
 add_subdirectory(HPWHsim)
 
 set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
-set_target_properties(testTool PROPERTIES FOLDER Dependencies/HPWHsim)
 

@@ -73,4 +73,3 @@ endforeach()
 configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
 configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.bat")
 
-set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
