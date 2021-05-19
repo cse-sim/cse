@@ -23,7 +23,7 @@ use-node?: true
 use-ghpages?: true
 # Flag on whether to build the PDFs or not. Defaults to false since PDF
 # requires more dependencies
-build-pdf?: true
+build-pdf?: false
 # Location of the build directory (relative to this file)
 build-dir: 'build'
 # Location of the final output directory
