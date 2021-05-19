@@ -1,6 +1,6 @@
 name: Release
 
-on: 
+on:
   release:
     types:
       - created
@@ -25,10 +25,6 @@ jobs:
         shell: bash
       - name: Add pandoc to path
         run: echo "C:\Program Files (x86)\Pandoc" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      - name: Setup LaTeX
-        uses: r-lib/actions/setup-tinytex@v1
-      - name: Add LaTeX packages
-        run: tlmgr install mathspec fancyhdr
       - name: Add MSVC developer commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs
