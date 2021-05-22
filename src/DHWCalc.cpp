@@ -764,8 +764,17 @@ DHWSYS::~DHWSYS()
 	record::Copy( pSrc);
 	cupIncRef( DMPP( ws_dayUseName));   // incr reference counts of dm strings if non-NULL
 										//   nop if ISNANDLE
-	// assume ws_ticks, ws_fxList, and ws_sizer are nullptr
+	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 }		// DHWSYS::Copy
+//-------------------------------------------------------------------------------
+/*virtual*/ DHWSYS& DHWSYS::CopyFrom(const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
+{
+	record::CopyFrom(pSrc, copyName, dupPtrs);
+	cupIncRef(DMPP(ws_dayUseName));		// incr reference counts of dm strings if non-NULL
+										//   nop if ISNANDLE
+	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
+	return *this;
+}		// DHWSYS::CopyFrom
 //-----------------------------------------------------------------------------
 RC DHWSYS::ws_CkF()		// water heating system input check / default
 // called at end of each DHWSYS input

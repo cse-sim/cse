@@ -3638,6 +3638,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
+  *declare "virtual DHWSYS& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "RC ws_CkF();"
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
