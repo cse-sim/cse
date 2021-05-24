@@ -138,7 +138,7 @@ FARPROC XMODULE::xm_GetProcAddress(
 0 	float qhCap = 0.f;					// currently unused, 9-2010
 0 	float patm = Top.presAtm / 29.921;
 0 	float aX, vX;
-0 	int ret = (*xu_pUZMInit)( inputFile, pbDebug, level, Top.nSubSteps, patm,
+0 	int ret = (*xu_pUZMInit)( inputFile, pbDebug, level, Top.tp_nSubSteps, patm,
 0 			qhCap, qcCap, aX, vX);
 0 	if (!ret)
 0 	{	rc = errCrit( WRN, "X0080: UZM Init fail");

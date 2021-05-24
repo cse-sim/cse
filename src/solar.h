@@ -34,6 +34,8 @@
 #include <coa.h>		// for SLRCALC (below)
 #endif
 
+#define _T(s) s
+
 // constants
 const double HaPerHr = kPi/12.;			// earth rotation per hr (rad)
 					  					//   for converting time to ha
@@ -502,6 +504,10 @@ inline BOOL SLRSURFDAY::IsSameOrientation( float azm, float tilt) const
 // public functions
 /////////////////////////////////////////////////////////////////////////////
 inline int ITForIH( int iH) { return (iH+1)%24; }
+float ASHRAETauModel(int options, float extBm, float sunZen,
+	float tauB, float tauD, float& radDirN, float& radDirH);
+float AirMass(float sunAlt);
+
 #if defined( _DEBUG)
  void TestSHGF();
 #endif

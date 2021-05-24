@@ -80,6 +80,12 @@
 						//   Note: crude at best, use for testing only, 12-31-2012
 
 //------------------------------------------------ DEFINES --------------------------------------------------
+#define MAXSUBSTEPS 120		// max # of substeps per hour
+							// limit may be less if specific items present
+							//    if DHWSYS is present, limit is 60
+							// increase with care, trouble has been seen for higher values
+							//    e.g. 240 causes wfpak WDSUBHRFACTORS::wdsf_Setup() assert
+							//    5-2021
 
 #define HSMXSGDIST 8	// Max # of solar gain targets from one XSURF.
 						// Need 1 per solar gain distribution. 4->5 1990, ->8 2-95.

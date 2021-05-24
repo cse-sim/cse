@@ -764,8 +764,17 @@ DHWSYS::~DHWSYS()
 	record::Copy( pSrc);
 	cupIncRef( DMPP( ws_dayUseName));   // incr reference counts of dm strings if non-NULL
 										//   nop if ISNANDLE
-	// assume ws_ticks, ws_fxList, and ws_sizer are nullptr
+	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 }		// DHWSYS::Copy
+//-------------------------------------------------------------------------------
+/*virtual*/ DHWSYS& DHWSYS::CopyFrom(const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
+{
+	record::CopyFrom(pSrc, copyName, dupPtrs);
+	cupIncRef(DMPP(ws_dayUseName));		// incr reference counts of dm strings if non-NULL
+										//   nop if ISNANDLE
+	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
+	return *this;
+}		// DHWSYS::CopyFrom
 //-----------------------------------------------------------------------------
 RC DHWSYS::ws_CkF()		// water heating system input check / default
 // called at end of each DHWSYS input
@@ -1207,13 +1216,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			ignoreN(when, DHWSYS_DRAWWASTE + iEU, DHWSYS_DAYWASTEDRAWF + iEU, 0);
 	}
 
-	if (ss == 1)
-	{	// check ticks on first DHWSYS
-		// Initially require 1 min ticks
-		// TODO: generalize to allow other durations
-		if (Top.tp_tickDurMin != 1.)
-			rc |= oer( "integral minute substep duration required");
-	}
+	// Note: Top.tp_tickDurMin == 1. is checked in tp_SetCheckTimeSteps()
 
 	return rc;	// pass 1 return
 }		// DHWSYS::ws_Init
@@ -1896,7 +1899,7 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	{	rc |= pWT->wt_DoSubhr(ws_tUse);
 		ws_HJLsh += pWT->wt_mult * pWT->wt_qLossSh;
 	}
-	ws_HJL += ws_HJLsh * Top.subhrDur;	// accumulate to hour, Btu
+	ws_HJL += ws_HJLsh * Top.tp_subhrDur;	// accumulate to hour, Btu
 
 	ws_AddLossesToDraws(ws_ticks + iTk0);
 
@@ -3484,11 +3487,11 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 
 	// link zone heat transfers
 	if (pZn)
-		pZn->zn_CoupleDHWLossSubhr(hw_qLoss * mult * BtuperkWh / Top.subhrDur);
+		pZn->zn_CoupleDHWLossSubhr(hw_qLoss * mult * BtuperkWh / Top.tp_subhrDur);
 
 	if (pZnASHPSrc && hw_qEnv > 0.)
 	{	// heat extracted from zone
-		double qZn = hw_qEnv * mult * BtuperkWh / Top.subhrDur;
+		double qZn = hw_qEnv * mult * BtuperkWh / Top.tp_subhrDur;
 		pZnASHPSrc->zn_qHPWH -= qZn;
 		// air flow: assume 20 F deltaT
 		// need approx value re zone convective coefficient derivation
@@ -4457,7 +4460,7 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_qHW = KWH_TO_BTU(wh_HPWH.hw_qHW);			// hot water heating, Btu
 		wh_inElecXBUSh = wh_qXBU = wh_HPWH.hw_HPWHxBU;	// add'l backup heating, Btu
 
-		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.subhrDur;
+		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;
 	}
 	else if (wh_IsInstUEFModel())
@@ -4724,7 +4727,7 @@ RC DHWTANK::wt_DoSubhr(			// subhour DHWTANK calcs
 	wt_qLossSh = wt_UA * (tTank - wt_tEx) + wt_xLoss;
 
 	// total loss (aka HJL in ACM App B)
-	wt_qLoss += wt_qLossSh * Top.subhrDur;
+	wt_qLoss += wt_qLossSh * Top.tp_subhrDur;
 
 	if (wt_pZn)
 		wt_pZn->zn_CoupleDHWLossSubhr(wt_qLossSh * wt_mult);

@@ -30,15 +30,11 @@
 //==========================================================================
 
 
-#include "stdafx.h"
+#include "cnglob.h"
+
+#include "tdpak.h"
 
 #include "solar.h"
-
-#if defined( _MFC_VER) && defined( _DEBUG)
- #define new DEBUG_NEW
- #undef THIS_FILE
- static char BASED_CODE THIS_FILE[] = __FILE__;
-#endif
 
 //===========================================================================
 // Notes
@@ -84,9 +80,6 @@ struct OHFIN
 //===========================================================================
 
 // local functions
-static float AirMass( float sunAlt);
-static float ASHRAETauModel( int options, float extBm, float sunZen,
-	float tauB, float tauD, float& radDirN, float& radDirH);
 static void RefGlsDOE2( double eta, float& trans, float& abso);
 static void RefGlsASHRAE( double eta, float& trans, float& abso);
 static double DCToAzm( double dirCos[ 3]);
@@ -1611,7 +1604,7 @@ BOOL SLRCALC::InitLOC(			// initialize re location
 /////////////////////////////////////////////////////////////////////////////
 // static and public functions
 /////////////////////////////////////////////////////////////////////////////
-static float AirMass(			// air mass
+float AirMass(			// air mass
 	float sunAlt)	// solar altitude, radians
 // Kasten and Young method as used in HOF 2009
 // returns M, dimless
@@ -1628,7 +1621,7 @@ static float AirMass(			// air mass
 	return M;
 }		// :: AirMass
 //------------------------------------------------------------------------------
-static float ASHRAETauModel(	// ASHRAE "tau" clear sky model
+float ASHRAETauModel(	// ASHRAE "tau" clear sky model
 	int options,		// option bits
 						//	 1: use 2013/2017 coefficients (else 2009)
 	float extBm,		// extraterrestrial normal irradiance, aka E0

@@ -17,11 +17,6 @@
 	   into code streams which are interpreted by cueval.c.
 	In BOTH CASES the codes are taken from entries in the operator table opTbl[] in cuparse.c. */
 
-#if 0
-#ifndef GLOB		// defined in cnglob.h for use in cuparse.h and multiple .c files, 1-92.
-  typedef USI PSOP;	// type for pseudo-code opcodes
-#endif
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // pseudo-code operation codes
