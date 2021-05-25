@@ -29,12 +29,18 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //==========================================================================
 
+#if 1 && defined( _DEBUG)
+#define SLRCALCS 3		// transition aid re migration to solar.h style calcs
+						//    1: CSE old style
+						//    2: solar.h style
+						//    3: both
+#else
+#define SLRCALCS 1
+#endif
 
 #if 0
 #include <coa.h>		// for SLRCALC (below)
 #endif
-
-#define _T(s) s
 
 // constants
 const double HaPerHr = kPi/12.;			// earth rotation per hr (rad)
@@ -219,7 +225,7 @@ public:
 	double TmForHa( double ha) const
 	{	return (ha - sd_haConst) / HaPerHr; }
 	int SolarTimeShift() const;
-	void DbDump( int oMsk, const TCHAR* hdg=_T("")) const;
+	void DbDump( int oMsk, const TCHAR* hdg="") const;
 	float GetExtBm() const { return sd_extBm; }
 	float ExtRadHoriz( double ha1, double ha2) const;
 	float KT( float H) const;
@@ -432,7 +438,7 @@ public:
 	SLRSURFDAY* GetSLRSURFDAY( int iD) const;
 	SLRSURFDAY* AddOrGetSLRSURFDAY( int iD, SLRDAY* pSD=NULL);
 	static DWORD MakeKey( float azm, float tilt, float grRef, float& ssAzm, float& ssTilt);
-	void DbDump( int oMsk, const TCHAR* hdg=_T("")) const;
+	void DbDump( int oMsk, const char* hdg="") const;
 };		// class SLRSURF
 
 #if 0
@@ -462,8 +468,7 @@ public:
 
 #if 0
 /////////////////////////////////////////////////////////////////////////////
-// class SLRCALC: packaged classes useful for RSR solar calcs
-//    Used in Right-Energy simulator
+// class SLRCALC: combined SLRLOC / SLRDAY
 /////////////////////////////////////////////////////////////////////////////
 class SLRCALC
 {

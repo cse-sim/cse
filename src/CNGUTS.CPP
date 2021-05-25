@@ -43,7 +43,6 @@
 
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
-// also see Locsolar in dummy locpak below.
 
 #ifdef BINRES //cnglob.h
 static BOO NEAR brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
@@ -54,10 +53,6 @@ static BOO NEAR dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // set by tp_DoDTStuff to tell doIvlAccum to duplicate next hour's data for the skipped hour
   					   // (and when DT goes off, the extra hour's data is lost (overwritten)).
 #endif
-
-static float verSun[24] = { 0.f };	/* cosine of solar beam incidence angle on horizontal surface by hour.
-					   Set by makHrSgt call in doBegIvl(); used re bin res file from doIvlAccum().
-					   Added 9-94. */
 
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
@@ -576,9 +571,8 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 
 		// conditional hourly solar gain calculations
 		if (Top.isSolarCalcDay) 		// on for 24 hours of first day of month, run [, season].  Set above, cleared doEndIvl.
-			makHrSgt(&verSun[Top.iHr]);	/* calculate solar gains to each target, ready for tp_SimHour to combine with wthr data.
-		   			   Sets SGRAT entries, valid for a month (has hourly storage slots).
-		   			   Returns cos solar incidence angle for hour for month via arg. cgsolar.cpp. */
+			makHrSgt();	// calculate solar gains to each target, ready for tp_SimHour to combine with wthr data.
+		   				//  Sets SGRAT entries, valid for a month (has hourly storage slots).
 
 		// zone "early" inits -- zone gains etc.
 		ZNR* zp;
@@ -2623,35 +2617,6 @@ LOCAL void FC NEAR binResFinish()	// complete and close binary results files at 
 	brf = FALSE;
 }			// binResFinish
 #endif // BINRES
-//===========================================================================================================
-static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) for current calculation.
-					   Locsolar holds location and daily solar info for slpak fcns.
-					   Alloc/init for location by slinit called from locInit().
-					   Released by slfree from tp_LocDone().
-					   Address saved by slinit for other slpak calls.
-				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
-//------------------------------------------------------------------------
-RC TOPRAT::tp_LocInit()		// location-initializer for CSE
-// inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
-// returns RCOK if ok, else message already issued.
-{
-// init slpak.cpp: alloc SLLOCDAT (slpak.h) and init for location.
-//   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
-//   slpak remembers its location internally.
-
-	Locsolar = slinit( RAD( latitude),	// latitude (to radians)
-					   RAD( longitude), // longitude
-					   timeZone, 		// time zone
-					   elevation );		// site altitude (ft)
-	return RCOK;
-}		// TOPRAT::tp_LocInit
-//------------------------------------------------------------------------
-RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
-{
-	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
-	return RCOK;
-}			// TOPRAT::tp_LocDone
-//===========================================================================================================
 
 /***************************************** rest of file is if-outs *****************************************/
 

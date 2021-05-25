@@ -1386,24 +1386,24 @@ RECORD WSHADRAT "shade" *RAT		// shading info
 	/* each entry holds info re a window's overhang, left fin, & right fin, & win's ht/wid (not needed except re shading).
 	   WSHADRAT entries are accessed via subscript in .iwshad in shaded window's XSURF (in ZNR's component chain). */
 
-			// .ownTi (base class) is window subscript
+  *declare "float SunlitFract( float gamma, float cosz) const;"
+  // .ownTi (base class) is window subscript
   // all following members are inputs, set by cncult.cpp
-		       // old names 1-92
-    *r  LEN_GZ wWidth	//  wwidth	Window width.  *r: set (from window) by input check/setup (topCkf).
-    *r  LEN_GZ wHeight	//  wheight	Window height
-    *mh LEN ohDepth  	//  ohdepth  	Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
-    *mh LEN ohDistUp   	//  ohwd    	Distance from top of window to bot of OH
-    *mh LEN ohExL    	//  ohlx    	Overhang extension beyond left edge of window
-    *mh LEN ohExR    	//  ohrx        Ditto right edge
-    *mh LEN ohFlap   	//  ohflap   	Len of flap hanging down from front of overhang
-    *mh LEN lfDepth  	//  fldepth  	Left fin depth
-    *mh LEN lfTopUp    	//  fltx    	Left fin top of window to top of fin
-    *mh LEN lfDistL    	//  flwd    	Left fin distance to left edge of window
-    *mh LEN lfBotUp    	//  flwbx    	Left fin bottom to window bottom distance
-    *mh LEN rfDepth	//  frdepth	Right fin values analogous to left
-    *mh LEN rfTopUp     //  frtx
-    *mh LEN rfDistR     //  frwd
-    *mh LEN rfBotUp     //  frwbx
+    *r  LEN_GZ wWidth	// Window width.  *r: set (from window) by input check/setup (topCkf).
+    *r  LEN_GZ wHeight	// Window height
+    *mh LEN ohDepth  	// Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
+    *mh LEN ohDistUp   	// Distance from top of window to bot of OH
+    *mh LEN ohExL    	// Overhang extension beyond left edge of window
+    *mh LEN ohExR    	// Ditto right edge
+    *mh LEN ohFlap   	// Len of flap hanging down from front of overhang
+    *mh LEN lfDepth  	// Left fin depth
+    *mh LEN lfTopUp    	// Left fin top of window to top of fin
+    *mh LEN lfDistL    	// Left fin distance to left edge of window
+    *mh LEN lfBotUp    	// 	Left fin bottom to window bottom distance
+    *mh LEN rfDepth	    // 	Right fin values analogous to left
+    *mh LEN rfTopUp     // 
+    *mh LEN rfDistR     // 
+    *mh LEN rfBotUp     // 
 *END		// WSHADRAT
 //=======================================================================================
 RECORD MASSBC "massbc sub" *SUBSTRUCT	// MASSBC: boundary conditions substruct for MSRAT.inside and .outside

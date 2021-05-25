@@ -7,21 +7,6 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// member names changed 1-92 to match user input language names
-
-/* window is rectangular, in vertical surface.
-	sun assumed at/above horizon.
-	overhang is horizontal rectangle covering full window width or more
-	overhang may have "flap" hanging down at outer edge
-	there may be one fin on each side of window.
-	  top of fins is at/above top of window;
-	  bottom of fins is at/above bottom of window (but below top). */
-
-/* generally caller checks data --
-   this function does not verify most of its geometric assumptions.
-   Negative values are not expected in any of the arguments;
-     use 0 depth to omit a fin or overhang. */
-
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
@@ -53,12 +38,6 @@
 //   this function does not verify most of its geometric assumptions.
 //   Negative values are not expected in any of the arguments;
 //   use 0 depth to omit a fin or overhang.
-
-#if 0
-0 no longer needed with newer compilers, 2-9-17
-0 #pragma optimize("",off)	// else get bad code at ver = cosz etc. expression below
-0							// More comments at that line. MSC 6.0.
-#endif
 
 //==========================================================================
 float FC shadwin(			// sunlit fraction of window shaded with fins and overhang
@@ -106,8 +85,7 @@ float FC shadwin(			// sunlit fraction of window shaded with fins and overhang
 
 	/* triangle area for specific altitude and global hor and ver components.
 	   Divide by 0 protection: most alt's are 0 if ver is 0. */
-#define TRIA(alt) ( (alt)==(float)0.f ? (float)0.f : (alt)*(alt)*0.5f*hor/ver )
-	// the (float)s really are necessary to prevent data conversion warnings in MSC 5.1. rob 1-24-90.
+#define TRIA(alt) ( (alt)==0.f ? 0.f : (alt)*(alt)*0.5f*hor/ver )
 
 // init
 	K = 0;				// 1 later during fin-flap overlap
@@ -330,6 +308,298 @@ exit68:  		// come here to exit
 
 }		// ::shadwin
 //=============================================================================
+
+float WSHADRAT::SunlitFract( 		// Calculate sunlit fraction of rectangle shaded
+									//   with fins and/or overhang
+   float gamma,				// azimuth of sun less azimuth of window:
+							//   angle 0 if sun normal to window,
+							//   positive cw looking down (radians)
+   float cosz) const		// cosine of solar zenith angle
+
+// window is rectangular, in vertical surface.
+// 	sun assumed at/above horizon.
+// 	overhang is horizontal rectangle covering full window width or more
+// 	overhang may have "flap" hanging down at outer edge
+// 	there may be one fin on each side of window.
+// 	  top of fins is at/above top of window;
+// 	  bottom of fins is at/above bottom of window (but below top).
+//
+// generally caller checks data --
+//    this function does not verify most of its geometric assumptions.
+//    Negative values are not expected in any of the arguments;
+//      use 0 depth to omit a fin or overhang.
+
+// returns: fraction of area sunlit, 0 to 1.f
+{
+	//--------------------------------------------------------------------------
+	// Members of  WSHADRAT and associated working variables
+	// member   variable    description
+	//  .wWidth     W      window width
+	//  .wHeight    H      window height
+	//  .ohDepth           depth of overhang
+	//  .ohDistUp   U      distance from top of window to overhang
+	//  .ohExL      E*     distance overhang extends beyond left edge of window
+	//  .ohExRb            distance overhang extends beyond right edge of window
+	//  .ohFlap            depth of vertical projection at the end of overhang
+	//  .lfDepth    FD*    depth of left fin
+	//  .lfTopUp    FU*    distance left fin extends above top of window
+	//  .lfDistL    FO*    distance from left edge of window to left fin
+	//  .lfBotUp    FBU*   distance left fin stops short above bottom of window
+	//  .rfDepth           depth of right fin
+	//  .rfTopUp           distance right fin extends above top of window
+	//  .rfDistR           distance from right edge of window to right fin
+	//  .rfBotUp           distance right fin stops short above bottom of window
+	//            * set to left or right fin/overhang end per sun position.
+	// comment comments
+	//     "near" = toward sun (horizontally), "far" or beyond = away from sun.
+	//     "ray" = extended slanted shadow line from top of fin or near (sunward)
+	//             end of overhang.
+	//     _1 variables are for hor overhang,
+	//     _2  are for vertical flap at end of overhang,
+	//     _3  are for fin.
+
+// triangle area for specific altitude and global hor and ver components.
+// Divide by 0 protection: most alt's are 0 if ver is 0.
+#define TRIA(alt) ( (alt)==0.f ? 0.f : (alt)*(alt)*0.5f*hor/ver )
+
+	// init
+	if (cosz >= 1.f)			/* sun at zenith: no sun enters win.*/
+		return 0.f;			/* (rob 1-90 prevents div by 0) */
+	float cosg = (float)cos(gamma);
+	if (cosg <= 0.f)		// if sun behind wall
+		return 0.f;			//   window fully in shadow
+	float sing = (float)sin(gamma);		/* ... solar azimuth rel to window */
+
+	int K = 0;			/* 1 later during fin-flap overlap */
+	float ver = float(cosz / sqrt(1. - cosz * cosz) / cosg);	/* tan(zenith angle) / cos(gamma) */
+	float hor = (float)fabs(sing) / cosg;	/* abs(tan(gamma)): unit fin shade */
+	float AREAO = 0.f;  		/* hor overhang shadow area */
+	float AREAV = 0.f;  		/* ver overhang flap shadow area */
+	float ARintF = 0.f;  		/* fin shadow area */
+	float AREA1 = 0.f;  		/* working copies of above */
+	float H = wHeight;	// hite, wid of window (later of flap shadow)
+	float W = wWidth;
+	float WAREA = H * W;	// whole window area */
+	float W2 = 0.f;		/* init width & hite of oh flap shadow */
+	float H2 = 0.f;
+/* horiz overhang setup */
+	float E = gamma < 0.f ? ohExR : ohExL;	// pertinent (near sun) oh extension
+	float U = ohDistUp; 			// distance from top win to overhang
+	float HU = H + U;				/* from overhang to bottom window */
+	float WE = W + E;  			/* from near end oh to far side wind*/
+	float Y1 = ohDepth * ver;		/* how far down oh shadow comes */
+	float X1 = ohDepth * hor;	    /* hor component oh shad slantedge
+						   = hor displ corners oh shadow */
+						   /* NOTE: X1, Y1 are components of actual length (to corner) of shadow
+									   slanted edge, based on oh depth.
+									NY, FY relate to slanted ray intercepts with window edges,
+									   irrespective of whether beyond actual corner. */
+	int L = Y1 > U && Y1 < HU&& X1 < WE;	/* true if near shad bot corn
+							(hence hor edge) is in win */
+	if (ohDepth <= 0.f)		/* if no overhang */
+		goto fin37;			/* go do fins.  flap is ignored. */
+
+ /*----- horizontal overhang shadow area "AREAO" -----*/
+	float NY, FY;	// how far down slant ray is at near, far win edge intercepts
+	if (Y1 > U			/* if shadow comes below top window */
+	 && (hor == 0.f ||		/* /0 protection */
+		 (FY = WE * ver / hor) > U))	/* and edge passes below top far win corn */
+			/* (set FY to how far down slant ray hits far side) */
+	{
+		if (Y1 > HU)		/* chop shadow at bot win to simplify */
+			Y1 = HU;		/* (adjusting X1 to match doesn't matter
+						 in any below-win cases) */
+						 /* area: start with window rectangle above shadow bottom */
+		AREAO = W * (Y1 - U);	/* as tho shadow corner sunward of window */
+
+	/* subtract unshaded portions of rectangle if shad corner is in win */
+		if (hor != 0.f)		/* else done and don't divide by 0 */
+		{
+			NY = E * ver / hor;   	/* "near Y": distance down from oh to where
+					   slant ray hits near (to sun) win edge */
+					   /* if corner not sunward of window, subtract unshaded triangle area */
+			if (NY < Y1)  		/* if slant hits nr side abov sh bot*/
+			{
+				AREAO -= TRIA(Y1 - NY); 	/* triangle sunward of edge */
+		  /* add back possible corners thereof hanging out above & beyond win*/
+				if (NY < U)
+					/* slantedge passes thru top, not near side, of window */
+					AREAO += TRIA(U - NY);	/* add back trian ABOVE win */
+				FY = WE * ver / hor;  	/* "far Y": distance down to where
+								  slant ray hits far win edge */
+				if (FY < Y1)			/* if hits abov shad bot */
+					AREAO += TRIA(Y1 - FY); 	/* add back trian BEYOND win*/
+			}
+		}
+	}
+	if (AREAO >= WAREA)			/* if fully shaded */
+		goto exit68;			/* go exit */
+
+ /*----- flap (vertical projection at end of horiz overhang) area AREAV -----*/
+
+ /* flapShad width: from farther of oh extension, slant x to end window */
+	W2 = WE - max(E, X1);
+	/* flapShad hite: from: lower of hor oh shad bot, window top.
+				  to: hier of hor oh shad bot + flap ht, bottom window. */
+	H2 = min(Y1 + ohFlap, HU) - max(Y1, U);
+	/* if hite or wid <= 0, no shadow, AREAV stays 0, H2 and W2 don't matter. */
+	if (H2 > 0.f && W2 > 0.f)
+	{
+		AREAV = H2 * W2;			/* area shaded by flap */
+		if (AREAO + AREAV >= WAREA)	/* if now fully shaded */
+			goto exit68;			/* go exit */
+	}
+
+	/*----- FINS: select sunward fin and set up -----*/
+fin37:			/* come here if no overhang */
+	if (gamma == 0.f)  		/* if sun straight on, no fin shadows, exit */
+		goto exit68;		/* (and prevent division by hor: is 0) */
+
+	float FD;	// fin depth: how far out fin projects
+	float FU;	// "fin up": fin top extension above top win
+	float FO;	// "fin over": how far sunward from window to fin
+	float FBU;	// "fin bottom up": how far above bot win fin ends
+	if (gamma > 0.f)	    /* if sun coming from left */
+	{
+		FD = lfDepth;		/* fin depth: how far out fin projects */
+		FU = lfTopUp; 		/* "fin up": fin top extension above top win*/
+		FO = lfDistL; 		/* "fin over": how far sunward from window */
+		FBU = lfBotUp; 		/* "fin bottom up": how far above bot win */
+	}
+	else  		    /* else right fin shades toward window */
+	{
+		FD = rfDepth; 	/* fin depth */
+		FU = rfTopUp; 		/* top extension */
+		FO = rfDistR; 		/* hor distance from window */
+		FBU = rfBotUp; 		/* bottom distance above windowsill */
+	}
+	if (FD <= 0.f)		/* if fin depth 0 */
+		goto exit68;		/* no fin, go exit */
+
+	float X3 = FD * hor;	/* how far over (antisunward) shadow comes */
+
+/*---- FIN... Adjustments to not double-count overlap
+			 of fin's shadow with horizontal overhang's shadow ----*/
+	if (AREAO > 0.f)			/* if have overhang */
+	{
+		float FUO = U + (FO - E) * ver / hor;	/* how far up fin would extend for fin
+							and oh shad slantEdges to just meet
+							for this sun posn.  Can be < 0. */
+		if (FU > FUO)			/* if fin shadow overlaps oh shadow */
+		{
+			if (L == 0			/* if oh shad has no hor edge in win*/
+		   || X3 - FO < X1 - E)  	/* or fin shad corn (thus ver edge)
+						   nearer than oh shad corner */
+			{  /* fin shadow ver edge intersects oh shadow slanted edge
+				  (or intersects beyond window): overlap is parallelogram */
+				FU = FUO;		/* chop off top of fin that shades oh shadow.
+							  FU < 0 (large E) appears ok 1-90. */
+				if (H + FU <= FBU) 	/* if top of fin now below bottom */
+					goto exit68;		/* no fin shadow */
+			}
+			else		/* vert edge fin shadow intersects hor edge oh shad */
+			{  /* count fin shadow area in chopped-off part of window now:
+			  A triangle or trapezoid nearer than oh shadow;
+			  compute as all of that area not oh shadow. */
+				AREA1 = W * (Y1 - U) - AREAO;
+				/* shorten win to calc fin shad belo hor edge of oh shad only */
+				H -= Y1 - U;	/* reduce window ht to below area oh shades */
+				FU += Y1 - U;	/* keep top of fin same */
+			/*  rob 1-90: might be needed (unproven), else harmless: */
+				U = Y1;		/* keep overhang position same: U may be used
+							  below re fin - flap shadow interaction */
+			}
+		}
+	}
+
+	/*----- FIN... shadow area on window (K = 0) or overhang flap (K = 1) ----*/
+
+fin73:	/* come back here with window params changed to match flap shadow,
+	   to compute fin shadow on flap shadow, to deduct. */
+	   /* COMPUTE: AREA1, ARintF: fin shadow area assuming fin extends to bot win;
+			   ARSH1, ARSHF: lit area to deduct due to short fin
+			   note these variables already init; add to them here. */
+	NY = FO * ver / hor;	/* "near Y":  y component slant ray distance from
+				   top fin to near side win */
+	if (X3 > FO		/* else shadow all sunward of window */
+	  && NY < H + FU)	/* else top shadow slants below window */
+	{
+		/* chop non-overlapping areas off of shadow and window: Simplifies later code;
+		   ok even tho rerun vs flap shadow because latter is within former. */
+
+		   /* far (from sun) side: chop larger of shadow, window to smaller */
+		if (X3 > W + FO)
+			X3 = W + FO;
+		else		/* window goes beyond shadow */
+			W = X3 - FO;
+		FY = (W + FO) * ver / hor;	/* "far Y":  y component slant ray
+						distance from top fin to far side win */
+						/* HFU = H + FU;	* top fin to bot window distance *  not used */
+					/* subtract any lit rectangle and triang above shad.  nb FU can be < 0. */
+		if (FY > FU)		/* if some of top of win lit */
+		{
+			float FYbelowWIN;
+			if (NY <= FU)			/* if less than full width lit */
+				AREA1 -= TRIA(FY - FU);	    /* subtract top far triangle */
+			else				/* full wid (both top corners) lit */
+				AREA1 -= W * (NY - FU)	    /* subtract lit top rectangle */
+				+ TRIA(FY - NY);	    /* and lit far triangle below it*/
+			FYbelowWIN = FY - (H + FU);
+			if (FYbelowWIN > 0.f)		/* if far lit triang goes below win */
+				AREA1 += TRIA(FYbelowWIN);	    /* add back area belo win: wanna
+									  subtract a trapezoid only */
+		}
+		/* subtract any lit rectangle and triangle below fin shadow */
+		if (NY < FBU)		/* if some of bottom of win lit */
+			if (FY >= FBU)		/* if less than full width lit */
+				AREA1 -= TRIA(FBU - NY);	    /* subtract bot near triangle */
+			else				/* full wid (both bot corners) lit */
+				AREA1 -= W * (FBU - FY)	    /* subtact lit bottom rectangle */
+				+ TRIA(FY - NY);	    /* and lit near triang above it */
+/* add in entire area as tho shaded (LAST for best precision: largest #) */
+		AREA1 += H * W;
+	}
+
+	/*---- FIN... done this shadow; sum and proceed from window to flap ----*/
+
+	if (K)			/* if just computed shadow on flap shadow */
+		AREA1 = -AREA1;		/* negate fin shadow on flap shadow */
+	ARintF += AREA1;		/* combine shadow areas */
+	if (K == 0 && AREAV > 0.f)	/* if just did window and have flap shadow */
+	{
+		float HbelowFlapShad;
+		/* change window geometry to that of oh flap shadow,
+		   and go back thru fin shadow code: Computes fin shadow on flap shadow(!!),
+		   which is then deducted (just above) to undo double count. */
+		K++;				/* K = 1: say doing fin on flap */
+
+		AREA1 = 0.f;			/* re-init working areas */
+		/* adjust fin-over to be relative to near side flap shadow */
+		if (X1 > E)		/* if near edge flap shadow is in window */
+			FO += X1 - E; 	/* adjust FO to keep relative */
+			 /* else near edge of area H2*W2 IS near edge window, no FO change */
+		HbelowFlapShad = HU - Y1 - ohFlap;
+		if (HbelowFlapShad > 0.f)	/* if bot flap shadow above bot win */
+		{
+			FBU -= HbelowFlapShad;	/* adjust fin-bottom-up to keep fin
+						   effectively in same place */
+			if (FBU < 0.f)
+				FBU = 0.f;
+		}
+		if (Y1 > U)		/* if flap shadow top below top win */
+			FU += Y1 - U;		/* make fin-up relative to flap shadow */
+		H = H2;			/* replace window ht and wid with */
+		W = W2;			/* ... those of flap shadow */
+		goto fin73;
+	}
+
+exit68:  		// come here to exit
+	float fsunlit = 1.f - (AREAO + AREAV + ARintF) / WAREA;
+	// return 0 if result so small that is probably just roundoff errors;
+	//  in particular, return 0 for small negative results.
+	return fsunlit > 1.e-7f ? fsunlit : 0.f;
+
+}	// WSHADRAT::SunlitFract
 
 ///////////////////////////////////////////////////////////////////////////////
 // class SURFGEOMDET -- geometric details for SURFGEOM

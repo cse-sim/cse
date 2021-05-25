@@ -54,8 +54,6 @@
 						//  DOE2 ref glass calcs cause some SHGF values
 						//  to differ by 1 Btuh/ft2 from ASHRAE table
 						//  values --> use ASHRAE.  11-15-00
-#undef TESTSHADING		// #define to compare results to un-improved
-						//  version of shadwin() (see below)
 
 /////////////////////////////////////////////////////////////////////////////
 // struct OHFIN -- window/ovhg/fin geometry, any consistent units
@@ -84,9 +82,6 @@ static void RefGlsDOE2( double eta, float& trans, float& abso);
 static void RefGlsASHRAE( double eta, float& trans, float& abso);
 static double DCToAzm( double dirCos[ 3]);
 static float ShadeWin( const OHFIN *p, float gamma, float cosz);
-#if defined( TESTSHADING)
- static float shadwin( const OHFIN *p, float gamma, float cosz);
-#endif
 
 //-------------------------------------------------------------------------
 // data for 21st of each month
@@ -219,7 +214,7 @@ x {	-1, 17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 };
 void SLRLOC::DbDump() const
 {
 	DbPrintf(
-	 _T("SLRLOC:  Lat=%.2f  Long=%.2f  TZN=%.2f  elev=%.0f  options=0x%x  SN=%d  sinLat=%0.3f  cosLat=%0.3f\n"),
+	 "SLRLOC:  Lat=%.2f  Long=%.2f  TZN=%.2f  elev=%.0f  options=0x%x  SN=%d  sinLat=%0.3f  cosLat=%0.3f\n",
 		sl_lat, sl_lng, sl_tzn, sl_elev, sl_options, sl_SN, sl_sinLat, sl_cosLat);
 }		// SLRLOC::DbDump
 //===========================================================================
@@ -364,7 +359,7 @@ void SLRDAY::SetupDOYValuesASHRAE2009()
 /*private*/ BOOL SLRDAY::Setup2() 	// day set up, common sections
 {
 	if (!sd_pSL)
-		return mbIErr( _T("SLRDAY::Setup2"), _T("NULL sd_pSL"));
+		return mbIErr( "SLRDAY::Setup2", "NULL sd_pSL");
 
 	sd_haConst = float( -kPi);
 	if (sd_sltm != sltmSLR)
@@ -503,19 +498,19 @@ void SLRDAY::DbDump(
 {
 	if (!DbShouldPrint( oMsk))
 		return;
-	DbPrintf( oMsk, _T("%sSLRDAY  mon=%d  doy=%d  slTm=%d  eqTm=%0.5f  haConst=%0.5f  slrNoon=%.2f slrTmShift=%d tauB/taud=%.3f/%.3f\n"),
+	DbPrintf( oMsk, "%sSLRDAY  mon=%d  doy=%d  slTm=%d  eqTm=%0.5f  haConst=%0.5f  slrNoon=%.2f slrTmShift=%d tauB/taud=%.3f/%.3f\n",
 			hdg, sd_iM+1, sd_doy, sd_sltm, sd_eqTime, sd_haConst, TmForHa( 0.f), SolarTimeShift(), sd_tauB, sd_tauD);
-	DbPrintf( oMsk, _T("hr        ha     fUp     dc0     dc1     dc2     azm  dirN  difH  totH\n"));
+	DbPrintf( oMsk, "hr        ha     fUp     dc0     dc1     dc2     azm  dirN  difH  totH\n");
 	for (int iT=0; iT < 24; iT++)
-		sd_H[ iT].DbDump( oMsk, WStrPrintf( _T("%2.2d"), iT).c_str());
-	sd_HSlrNoon.DbDump( oMsk, _T("SN"));	// solar noon
+		sd_H[ iT].DbDump( oMsk, WStrPrintf( "%2.2d", iT).c_str());
+	sd_HSlrNoon.DbDump( oMsk, "SN");	// solar noon
 }		// SLRDAY::DbDump
 //------------------------------------------------------------------------------
 void SLRHR::DbDump(
 	int oMsk,				// mask
 	const TCHAR* tag) const	// line tag (e.g. hour of day)
 {
-	DbPrintf( oMsk, _T("%s %9.5f %7.4f %7.4f %7.4f %7.4f %7.4f %5.1f %5.1f %5.1f\n"),
+	DbPrintf( oMsk, "%s %9.5f %7.4f %7.4f %7.4f %7.4f %7.4f %5.1f %5.1f %5.1f\n",
 		tag, ha, fUp, dirCos[ 0], dirCos[ 1], dirCos[ 2], azm,
 		radDir, radDif, radHor);
 }		// SLRHR::DbDump
@@ -773,13 +768,13 @@ void SLRSURF::DbDump(
 		return;
 #if 0
 	int nSSD = ss_oaSSD.GetSize();
-	DbPrintf( _T("%sSLRSURF key=%d  azm=%0.1f  tilt=%0.1f  grRef=%0.2f  nSSD=%d\n"),
+	DbPrintf( "%sSLRSURF key=%d  azm=%0.1f  tilt=%0.1f  grRef=%0.2f  nSSD=%d\n",
 			hdg, ss_key, ss_azm, ss_tilt, ss_grRef, nSSD);
 	for (int i=0; i < nSSD; i++)
-	{	DbPrintf( _T("  %2.2d"), i);
+	{	DbPrintf( "  %2.2d", i);
 		SLRSURFDAY* pSSD = ss_oaSSD.GetAt( i);
 		if (!pSSD)
-			DbPrintf( _T(" (null)\n"));
+			DbPrintf( " (null)\n");
 		else
 			pSSD->DbDump();
 	}
@@ -788,7 +783,7 @@ void SLRSURF::DbDump(
 //===========================================================================
 #if 0
 COA_SLRSURF::COA_SLRSURF( RSPROJ* pProj /*=NULL*/)
-	: COA< SLRSURF>( _T("SurfDay"), TRUE),		// no CM
+	: COA< SLRSURF>( "SurfDay", TRUE),		// no CM
 	  ssa_pProj( pProj), ssa_curSLRLOC(), ssa_iLM( -1)
 {
 	ssa_Map.InitHashTable( 101);
@@ -846,7 +841,7 @@ void COA_SLRSURF::InitCalcDaysIf(
 #if defined( _DEBUG)
 	for (iCD=0; iCD < nCD; iCD++)
 	{	if (SD[ iCD]->GetSLRLOC() != SD[ 0]->GetSLRLOC())
-			mbIErr( _T("COA_SLRSURF::InitCalcDaysIf"), _T("Inconsistent SLRLOC (%d)"), iCD);
+			mbIErr( "COA_SLRSURF::InitCalcDaysIf"), "Inconsistent SLRLOC (%d)", iCD);
 	}
 #endif
 	// detect CALCMETH or SLRLOC change (must fully re-init)
@@ -964,13 +959,13 @@ BOOL SLRSURFDAY::InitDayIf( 	// conditionally initialize day-dependent values
 
 {
 	if (!ssd_pSS)
-		return mbIErr( _T("SLRSURFDAY::InitDayIf"), _T("NULL ssd_pSS"));
+		return mbIErr( "SLRSURFDAY::InitDayIf", "NULL ssd_pSS");
 	if (pSD)
 	{	ssd_pSD = pSD;
 		ssd_doy = -1;		// new SD, force calc
 	}
 	else if (!ssd_pSD)
-		return mbIErr( _T("SLRSURFDAY::InitDayIf"), _T("NULL ssd_pSD"));
+		return mbIErr( "SLRSURFDAY::InitDayIf", "NULL ssd_pSD");
 
 	if (ssd_doy == ssd_pSD->sd_doy)
 		return TRUE;
@@ -1291,12 +1286,6 @@ x			fSunlit = 0.f;		// sun behind surface
 			ohfin.ohlx = 100.f;			// infinite overhang
 			ohfin.ohrx = 100.f;
 			fSunlit = ShadeWin( &ohfin, float( gamma), float( cosz));
-#if defined( TESTSHADING)
-			float fSunlitOld = shadwin( &ohfin, float( gamma), cosz);
-			if ( fabs( fSunlit - fSunlitOld) > 0.001f)
-			mbIErr( "SLRSURFDAY::FSunlit", "Fraction disagreement: new = %.3f, old = %.3f",
-					fSunlit, fSunlitOld);
-#endif
 		}
 	}
 	if (pHow)
@@ -1345,7 +1334,7 @@ void SLRSURFDAY::SolAirTemp(		// surface sol-air temp (24 hours)
 	if (fSunlit < 0.f && !pHrFSunlit)
 	{
 #if defined( _DEBUG)
-		mbIErr( _T("SLRSURFDAY::SolAirTemp"), _T("NULL pHrFSunlit"));
+		mbIErr( "SLRSURFDAY::SolAirTemp", "NULL pHrFSunlit");
 #endif
 		fSunlit = 1.f;		// crash proof
 	}
@@ -1508,16 +1497,16 @@ double SLRSURFDAY::RbSlrNoon() const
 void SLRSURFDAY::DbDump() const		// debug print (unconditional)
 {
 #if 0	// enhanced format, 9-21-2011
-	DbPrintf( _T(" %3.3d (%s)  %5.1f %5.1f   %5.3f\n"),
+	DbPrintf( " %3.3d (%s)  %5.1f %5.1f   %5.3f\n",
 				ssd_doy, Calendar.FmtDOY( ssd_doy),
 				ssd_shgfMax, ssd_shgfShdMax, ssd_shgfDifX);
 	for (int iT=0; iT<24; iT++)
-	{	DbPrintf( _T("   %2.2d  %5.1f  %5.1f  %5.1f    %5.1f    %5.1f\n"),
+	{	DbPrintf( "   %2.2d  %5.1f  %5.1f  %5.1f    %5.1f    %5.1f\n",
 			iT, AngIncDeg( iT), AngProfHDeg( iT), AngProfVDeg( iT), IRadDir( iT), IRadDif( iT));
 	}
 #else
 	// traditional format
-	DbPrintf( _T(" %3.3d (%s)  %5.1f %5.1f   %5.3f\n"),
+	DbPrintf( " %3.3d (%s)  %5.1f %5.1f   %5.3f\n",
 				ssd_doy, Calendar.FmtDOY( ssd_doy),
 				ssd_shgfMax, ssd_shgfShdMax, ssd_shgfDifX);
 #endif
@@ -1525,7 +1514,7 @@ void SLRSURFDAY::DbDump() const		// debug print (unconditional)
 //=========================================================================
 #if 0
 COA_SLRSURFDAY::COA_SLRSURFDAY( SLRSURF* pSS)
-	: COA< SLRSURFDAY>( _T("SlrSurfDay"), TRUE),		// no CM
+	: COA< SLRSURFDAY>( "SlrSurfDay", TRUE),		// no CM
 	  cssd_pSS( pSS)
 {
 }		// COA_SLRSURFDAY::COA_SLRSURFDAY
@@ -1662,7 +1651,7 @@ float ASHRAETauModel(	// ASHRAE "tau" clear sky model
 		radGlbH = float( radDirN * cos( sunZen) + radDifH);
 #if defined( _DEBUG)
 		if (radDirN > .9 * extBm)
-		{	mbIErr( _T("ASHRAETauModel"), _T("Dubious radDirN=%.f (extBm=%.f)"),
+		{	mbIErr( "ASHRAETauModel", "Dubious radDirN=%.f (extBm=%.f)",
 				radDirN, extBm);
 			AirMass( sunAlt);		// debug aid
 		}
@@ -1740,7 +1729,7 @@ void TestSHGF()
 // generates table formatted as A89, Chapter 26, p 26.39
 // (values match as of 1-10-08)
 {
-	static const TCHAR* shdTag[ 2] = { _T("sunlit"), _T("shaded") };
+	static const TCHAR* shdTag[ 2] = { "sunlit", "shaded" };
 	SLRLOC sLoc;
 	SLRDAY sDay( &sLoc);
 	SLRSURF sSrf;
@@ -1750,9 +1739,9 @@ void TestSHGF()
 	for (int iLat=0; iLat<17; iLat++)
 	{	float lat = iLat*4.f;
 		sLoc.sl_Init( lat, 0.f, 0.f, 0.f, 0);
-		DbPrintf( _T("\nSHGF Lat=%0.0f (%s)\n---------------\n")
-			_T("            NNE    NE   ENE     E   ESE    SE   SSE\n")
-			_T("        N   NNW    NW   WNW     W   WSW    SW   SSW     S   HOR\n"),
+		DbPrintf( "\nSHGF Lat=%0.0f (%s)\n---------------\n"
+			"            NNE    NE   ENE     E   ESE    SE   SSE\n"
+			"        N   NNW    NW   WNW     W   WSW    SW   SSW     S   HOR\n",
 			lat, shdTag[ iShd]);
 		for (int iM=1; iM<13; iM++)
 		{	sDay.SetupASHRAE( iM, slropCSMOLD, sltmSLR);
@@ -1763,62 +1752,12 @@ void TestSHGF()
 				sSD.Init( 1);
 				shgf[ iOr] = iShd ? sSD.ssd_shgfShdMax : sSD.ssd_shgfMax;
 			}
-			VDbPrintf( dbdALWAYS, Calendar.GetMonAbbrev( iM), shgf, 10, _T("%6.0f"));
+			VDbPrintf( dbdALWAYS, Calendar.GetMonAbbrev( iM), shgf, 10, "%6.0f");
 		}
 	}
 
 }		// ::TestSHGF
 #endif
-//---------------------------------------------------------------------------
-#if 0 // replaced by SLRSURFDAY::FSunlit(), retain for possible testing, 11-7-01
-tint ShadeF(						// return sunlit fraction
-t	SLRSURFDAY* pSRFD,		// solar info re surface
-t	int iT,				// time
-t	float ohDepth,		// overhang depth (ft) (from plane of glazing)
-t	float ohWD,			// overhang-window distance
-t	float wHgt,			// window height
-t	float& shadeF)		// returned: fraction shaded
-t
-t// returns -1 = sun behind surface (shadeF=0)
-t//          0 = no overhang (shadeF=0)
-t//          1 = overhang exists, shadeF calculated
-t
-t{
-tstatic OHFIN ohfin = { 0.f };		// all 0
-t
-t	shadeF = 0.f;
-t#if	1	// reverse order of check, re compare to FSunlit, 11-07-01
-t	if (ohDepth < 0.01f)
-t		return 0;
-t	double gamma = pSRFD->ssd_gamma[ iT];
-t	if (fabs( gamma) > kPiOver2)
-t		return -1;	// sun is behind surface
-t#else
-tx	double gamma = pSRFD->ssd_gamma[ iT];
-tx	if (fabs( gamma) > kPiOver2)
-tx		return -1;	// sun is behind surface
-tx	if (ohDepth < 0.01f)
-tx		return 0;
-t#endif
-t	ohfin.wheight = wHgt;
-t	ohfin.ohdepth = ohDepth;
-t	ohfin.ohwd = ohWD;
-t	ohfin.wwidth  = 5.f;		// width ... any value is OK
-t	ohfin.ohlx = 100.f;			// infinite overhang
-t	ohfin.ohrx = 100.f;
-t
-t	float cosz = float( pSRFD->ssd_pSD->ssd_H[ iT].cosZen());
-t
-t	shadeF = 1.f - ShadeWin( &ohfin, float( gamma), cosz);
-t#if defined( TESTSHADING)
-t	float shadeFOld = 1.f - shadwin( &ohfin, float( gamma), cosz);
-t	if ( fabs( shadeF - shadeFOld) > 0.001f)
-t		mbIErr( "ShadeF", "Fraction disagreement: new = %.3f, old = %.3f",
-t					shadeF, shadeFOld);
-t#endif
-t	return 1;
-t}		// ::ShadeF
-#endif // 11-7-01
 //---------------------------------------------------------------------------
 static float ShadeWin( 		// Calculate sunlit fraction of window shaded
 							//   with fins and/or overhang
@@ -2132,292 +2071,6 @@ exit68:  		// come here to exit
 	return fsunlit > 1.e-7f ? fsunlit : 0.f;
 
 }	// ShadeWin
-//--------------------------------------------------------------------------
-#if defined( TESTSHADING)
-t // original shadwin(), for comparing results to revised version
-t static float shadwin(		// Calculate sunlit fraction of window shaded
-t 			//   with fins and/or overhang
-t    const struct OHFIN *p,	// struct of dimensions of window/ovhg/fins
-t    				//   (see above and shade.h)
-t    float gamma,			// azimuth of sun less azimuth of window:
-t 				//   angle 0 if sun normal to window,
-t 				//   positive cw looking down.
-t    float cosz)			// cosine of solar zenith angle
-t
-t // returns: fraction of area sunlit, 0 to 1.f
-t {
-t // comment comments
-t //     "near" = toward sun (horizontally), "far" or beyond = away from sun.
-t //     "ray" = extended slanted shadow line from top of fin or near (sunward)
-t //             end of overhang.
-t //     _1 variables are for hor overhang,
-t //     _2  are for vertical flap at end of overhang,
-t //     _3  are for fin. */
-t // flow control
-t int K;		// 0 normal, 1 when doing fin-flap shadow overlap
-t int L;		// 1 if overhang horiz shadow edge is in window, else 0
-t // angles
-t float cosg, sing;	// sin and cos of gamma (angle from window normal
-t 			//  to sun, + for sun to left when looking at window)
-t float ver, hor; 	// components of shadow on wall of unit projection
-t // window
-t float H, W;	// hite, wid of window (later of flap shadow)
-t float WAREA;	// whole window area
-t // overhang
-t float E, U;	// near (to sun) flap horiz extension; dist flap above win
-t float HU, WE;	// H+U;  W+E: Width + Extension
-t float X1, Y1;	// components hor oh shad slantEdge -- how far over & down
-t float AREAO;
-t float H2, W2;	// fin flap shadow hite and width
-t float AREAV;
-t // fin
-t float FD;  	// fin depth: how far out fin projects
-t float FU; 	// "fin up": fin top extension above top win
-t float FO; 	// "fin over": how far sunward from window to fin
-t float FBU;	// "fin bottom up": how far above bot win fin ends
-t float X3;	// x compon fin shadow slantEdge: hor far over shadow goes
-t float ARintF, AREA1;		// shadow area & working copy
-t // shadow ray intercepts for oh then fin.
-t //  NB these relate to "ray"; may be beyond actual shadow corner
-t float NY, FY;	// how far down slant ray is at near, far win edge intercepts
-t // result
-t float fsunlit;
-t
-t /* triangle area for specific altitude and global hor and ver components.
-t    Divide by 0 protection: most alt's are 0 if ver is 0. */
-t #define TRIA(alt) ( (alt)==(float)0.f ? (float)0.f : (alt)*(alt)*0.5f*hor/ver )
-t 			/* the (float)s really are necessary to prevent data
-t 			   conversion warnings in MSC 5.1. rob 1-24-90.*/
-t
-t /* init */
-t 	K = 0;			/* 1 later during fin-flap overlap */
-t 	cosg = (float)cos(gamma);		/* sin and cos of ... */
-t 	sing = (float)sin(gamma);		/* ... solar azimuth rel to window */
-t 	if (cosg <= 0.f) 			/* if sun behind wall */
-t 	   return 0.f;			/* window fully in shadow */
-t 	if (cosz >= 1.f)			/* sun at zenith: no sun enters win.*/
-t 	   return 0.f;			/* (rob 1-90 prevents div by 0) */
-t 	   					/* following line compiles incorrectly
-t 					   with default optimization -Oswr;
-t 					   expression produces reciprocal of
-t 					   correct result.  #pragma opt off
-t 					   added above.  8-5-90 chip */
-t 	ver = float( cosz/sqrt(1.-cosz*cosz)/cosg);	/* tan(zenith angle) / cos(gamma) */
-t 	hor = (float)fabs(sing)/cosg;	/* abs(tan(gamma)): unit fin shade */
-t 	AREAO = 0.f;  		/* hor overhang shadow area */
-t 	AREAV = 0.f;  		/* ver overhang flap shadow area */
-t 	ARintF = 0.f;  		/* fin shadow area */
-t 	AREA1 = 0.f;  		/* working copies of above */
-t 	H = p->wheight;
-t 	W = p->wwidth;
-t 	WAREA = H * W;		/* whole window area */
-t 	W2 = H2 = 0.f;		/* init width & hite of oh flap shadow */
-t /* horiz overhang setup */
-t 	E= gamma < 0.f ? p->ohrx : p->ohlx;	/* pertinent (near sun) oh extension*/
-t 	U = p->ohwd; 			/* distance from top win to overhang*/
-t 	HU = H + U;				/* from overhang to bottom window */
-t 	WE = W + E;  			/* from near end oh to far side wind*/
-t 	Y1 = p->ohdepth * ver;		/* how far down oh shadow comes */
-t 	X1 = p->ohdepth * hor;	    	/* hor component oh shad slantedge
-t 						   = hor displ corners oh shadow */
-t 	/* NOTE: X1, Y1 are components of actual length (to corner) of shadow
-t 		        slanted edge, based on oh depth.
-t 	         NY, FY relate to slanted ray intercepts with window edges,
-t 	            irrespective of whether beyond actual corner. */
-t 	L = Y1 > U  &&  Y1 < HU  &&  X1 < WE;	/* true if near shad bot corn
-t 							(hence hor edge) is in win */
-t 	if (p->ohdepth <= 0.f)		/* if no overhang */
-t 	   goto fin37;			/* go do fins.  flap is ignored. */
-t
-t /*----- horizontal overhang shadow area "AREAO" -----*/
-t
-t 	if (Y1 > U			/* if shadow comes below top window */
-t 	 && (hor==0.f ||		/* /0 protection */
-t 	     (FY=WE*ver/hor) > U))	/* and edge passes below top far win corn */
-t 			/* (set FY to how far down slant ray hits far side) */
-t 	{  if (Y1 > HU)		/* chop shadow at bot win to simplify */
-t 	      Y1 = HU;		/* (adjusting X1 to match doesn't matter
-t 	      			   in any below-win cases) */
-t    /* area: start with window rectangle above shadow bottom */
-t 	   AREAO = W * (Y1 - U);	/* as tho shadow corner sunward of window */
-t
-t    /* subtract unshaded portions of rectangle if shad corner is in win */
-t 	   if (hor != 0.f)		/* else done and don't divide by 0 */
-t 	   {  NY = E * ver/hor;   	/* "near Y": distance down from oh to where
-t 					   slant ray hits near (to sun) win edge */
-t 	  /* if corner not sunward of window, subtract unshaded triangle area */
-t 	      if (NY < Y1)  		/* if slant hits nr side abov sh bot*/
-t 	      {  AREAO -= TRIA(Y1 - NY); 	/* triangle sunward of edge */
-t 	     /* add back possible corners thereof hanging out above & beyond win*/
-t 	         if (NY < U)
-t 	        /* slantedge passes thru top, not near side, of window */
-t 	            AREAO += TRIA(U - NY);	/* add back trian ABOVE win */
-t 	     FY = WE * ver/hor;  	/* "far Y": distance down to where
-t 	    				   slant ray hits far win edge */
-t 	     if (FY < Y1)			/* if hits abov shad bot */
-t 	        AREAO += TRIA(Y1 - FY); 	/* add back trian BEYOND win*/
-t 	  }
-t 	   }
-t 	}
-t 	if (AREAO >= WAREA)			/* if fully shaded */
-t 	   goto exit68;			/* go exit */
-t
-t /*----- flap (vertical projection at end of horiz overhang) area AREAV -----*/
-t
-t /* flapShad width: from farther of oh extension, slant x to end window */
-t 	W2 = WE - max( E, X1);
-t /* flapShad hite: from: lower of hor oh shad bot, window top.
-t 	          to: hier of hor oh shad bot + flap ht, bottom window. */
-t 	H2 = min( Y1 + p->ohflap, HU) - max( Y1, U);
-t /* if hite or wid <= 0, no shadow, AREAV stays 0, H2 and W2 don't matter. */
-t 	if (H2 > 0.f && W2 > 0.f)
-t 	{  AREAV = H2 * W2;			/* area shaded by flap */
-t 	   if (AREAO+AREAV >= WAREA)	/* if now fully shaded */
-t 	      goto exit68;			/* go exit */
-t 	}
-t
-t /*----- FINS: select sunward fin and set up -----*/
-t fin37:			/* come here if no overhang */
-t 	if (gamma==0.f)  		/* if sun straight on, no fin shadows, exit */
-t 	   goto exit68;		/* (and prevent division by hor: is 0) */
-t 	if (gamma > 0.f)	    /* if sun coming from left */
-t 	{  FD = p->fldepth;		/* fin depth: how far out fin projects */
-t 	   FU = p->fltx; 		/* "fin up": fin top extension above top win*/
-t 	   FO = p->flwd; 		/* "fin over": how far sunward from window */
-t 	   FBU = p->flwbx; 		/* "fin bottom up": how far above bot win */
-t 	}
-t 	else  		    /* else right fin shades toward window */
-t 	{  FD = p->frdepth; 	/* fin depth */
-t 	   FU = p->frtx; 		/* top extension */
-t 	   FO = p->frwd; 		/* hor distance from window */
-t 	   FBU = p->frwbx; 		/* bottom distance above windowsill */
-t 	}
-t 	if (FD <= 0.f)		/* if fin depth 0 */
-t 	   goto exit68;		/* no fin, go exit */
-t
-t 	X3 = FD*hor;		/* how far over (antisunward) shadow comes */
-t
-t /*---- FIN... Adjustments to not double-count overlap
-t 		     of fin's shadow with horizontal overhang's shadow ----*/
-t 	if (AREAO > 0.f)			/* if have overhang */
-t 	{ float FUO;
-t 	   FUO = U + (FO - E)*ver/hor;	/* how far up fin would extend for fin
-t 	   					   and oh shad slantEdges to just meet
-t 	   					   for this sun posn.  Can be < 0. */
-t 	   if (FU > FUO)			/* if fin shadow overlaps oh shadow */
-t 	   {  if (L==0			/* if oh shad has no hor edge in win*/
-t 	       || X3 - FO < X1 - E)  	/* or fin shad corn (thus ver edge)
-t 	    				   nearer than oh shad corner */
-t 	      {  /* fin shadow ver edge intersects oh shadow slanted edge
-t 	            (or intersects beyond window): overlap is parallelogram */
-t 	         FU = FUO;		/* chop off top of fin that shades oh shadow.
-t 	         			   FU < 0 (large E) appears ok 1-90. */
-t 	         if (H + FU <= FBU) 	/* if top of fin now below bottom */
-t 	            goto exit68;		/* no fin shadow */
-t 	      }
-t 	      else		/* vert edge fin shadow intersects hor edge oh shad */
-t 	      {  /* count fin shadow area in chopped-off part of window now:
-t 	        A triangle or trapezoid nearer than oh shadow;
-t 	        compute as all of that area not oh shadow. */
-t 	         AREA1 = W*(Y1 - U) - AREAO;
-t 	         /* shorten win to calc fin shad belo hor edge of oh shad only */
-t 	         H -= Y1 - U;	/* reduce window ht to below area oh shades */
-t 	         FU += Y1 - U;	/* keep top of fin same */
-t 	     /*  rob 1-90: might be needed (unproven), else harmless: */
-t 	     U = Y1;		/* keep overhang position same: U may be used
-t 	     			   below re fin - flap shadow interaction */
-t 	      }
-t 	   }
-t 	}
-t
-t /*----- FIN... shadow area on window (K = 0) or overhang flap (K = 1) ----*/
-t
-t fin73:	/* come back here with window params changed to match flap shadow,
-t 	   to compute fin shadow on flap shadow, to deduct. */
-t 	/* COMPUTE: AREA1, ARintF: fin shadow area assuming fin extends to bot win;
-t 	        ARSH1, ARSHF: lit area to deduct due to short fin
-t 	        note these variables already init; add to them here. */
-t 	NY = FO*ver/hor;	/* "near Y":  y component slant ray distance from
-t 				   top fin to near side win */
-t 	if (X3 > FO		/* else shadow all sunward of window */
-t 	  && NY < H + FU)	/* else top shadow slants below window */
-t 	{
-t  /* chop non-overlapping areas off of shadow and window: Simplifies later code;
-t 	ok even tho rerun vs flap shadow because latter is within former. */
-t
-t    /* far (from sun) side: chop larger of shadow, window to smaller */
-t 	   if (X3 > W + FO)
-t 	      X3 = W + FO;
-t 	   else		/* window goes beyond shadow */
-t 	      W = X3 - FO;
-t 	   FY = (W + FO)*ver/hor;	/* "far Y":  y component slant ray
-t 	   				   distance from top fin to far side win */
-t 	   /* HFU = H + FU;	* top fin to bot window distance *  not used */
-t    /* subtract any lit rectangle and triang above shad.  nb FU can be < 0. */
-t 	   if (FY > FU)		/* if some of top of win lit */
-t 	   { float FYbelowWIN;
-t 	      if (NY <= FU)			/* if less than full width lit */
-t 	     AREA1 -= TRIA(FY-FU);	    /* subtract top far triangle */
-t 	      else				/* full wid (both top corners) lit */
-t 	         AREA1 -=  W * (NY-FU)	    /* subtract lit top rectangle */
-t 		       +  TRIA(FY-NY);	    /* and lit far triangle below it*/
-t 	  FYbelowWIN = FY - (H + FU);
-t 	  if (FYbelowWIN > 0.f)		/* if far lit triang goes below win */
-t 	     AREA1 += TRIA(FYbelowWIN);	    /* add back area belo win: wanna
-t 	     				       subtract a trapezoid only */
-t 	   }
-t    /* subtract any lit rectangle and triangle below fin shadow */
-t 	   if (NY < FBU)		/* if some of bottom of win lit */
-t 	      if (FY >= FBU)		/* if less than full width lit */
-t 	         AREA1 -= TRIA(FBU-NY);	    /* subtract bot near triangle */
-t 	      else				/* full wid (both bot corners) lit */
-t 	         AREA1 -=  W * (FBU-FY)	    /* subtact lit bottom rectangle */
-t 	         	       +  TRIA(FY-NY);	    /* and lit near triang above it */
-t    /* add in entire area as tho shaded (LAST for best precision: largest #) */
-t 	   AREA1 += H * W;
-t 	}
-t
-t /*---- FIN... done this shadow; sum and proceed from window to flap ----*/
-t
-t 	if (K)			/* if just computed shadow on flap shadow */
-t 	   AREA1 = -AREA1;		/* negate fin shadow on flap shadow */
-t 	ARintF += AREA1;		/* combine shadow areas */
-t 	if (K==0 && AREAV > 0.f)	/* if just did window and have flap shadow */
-t 	{
-t 	  float HbelowFlapShad;
-t   /* change window geometry to that of oh flap shadow,
-t 	 and go back thru fin shadow code: Computes fin shadow on flap shadow(!!),
-t 	 which is then deducted (just above) to undo double count. */
-t 	   K++;				/* K = 1: say doing fin on flap */
-t
-t 	   AREA1 = 0.f;			/* re-init working areas */
-t 	   /* adjust fin-over to be relative to near side flap shadow */
-t 	   if (X1 > E)		/* if near edge flap shadow is in window */
-t 	  FO += X1 - E; 	/* adjust FO to keep relative */
-t 	   /* else near edge of area H2*W2 IS near edge window, no FO change */
-t 	   HbelowFlapShad = HU - Y1 - p->ohflap;
-t 	   if (HbelowFlapShad > 0.f)	/* if bot flap shadow above bot win */
-t 	   {  FBU -= HbelowFlapShad;	/* adjust fin-bottom-up to keep fin
-t 	   					   effectively in same place */
-t 	      if (FBU < 0.f)
-t 	         FBU = 0.f;
-t 	   }
-t 	   if (Y1 > U)		/* if flap shadow top below top win */
-t 	      FU += Y1 - U;		/* make fin-up relative to flap shadow */
-t 	   H = H2;			/* replace window ht and wid with */
-t 	   W = W2;			/* ... those of flap shadow */
-t 	   goto fin73;
-t 	}
-t
-t exit68:  		/* come here to exit */
-t 	fsunlit = 1.f - (AREAO + AREAV + ARintF ) / WAREA;
-t /* return 0 if result so small that is probably just roundoff errors;
-t    in particular, return 0 for small negative results.  rob 1-90. */
-t 	return fsunlit > 1.e-7f ? fsunlit : 0.f;
-t
-t }	// shadwin
-#endif		// TESTSHADING
-
 //--------------------------------------------------------------------------
 static double DCToAzm(			// convert direction cosines to azimuth
 	double dirCos[ 3])			// direction cosines

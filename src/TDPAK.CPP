@@ -536,8 +536,8 @@ const char* CALENDAR::GetMonAbbrev(		// month abbrev: "Jan", "Feb", ...
 WStr CALENDAR::FmtDOY(			// formatted date from DOY
 	int iDoy,							// date to be formatted
 	int yr /*=-1*/,						// yr
-	const TCHAR* fmt /*=_T("%b-%d")*/) const	// strftime-style format
-												//   default = mmm-dd
+	const char* fmt /*="%b-%d"*/) const	// strftime-style format
+										//   default = mmm-dd
 // returns date formatted per fmt
 //         "?" if invalid doy
 {
