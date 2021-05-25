@@ -24,7 +24,7 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
       - name: Load cached toolkit-205 venv if cache exists
-        id: cached-poetry-dependencies
+        id: cached-toolkit-205-dependencies
         uses: actions/cache@v2
         with:
           path: vendor/toolkit-205/.venv
@@ -32,9 +32,9 @@ jobs:
       - name: Install toolkit-205 dependencies if cache does not exist
         shell: bash
         run: cd vendor/toolkit-205 && poetry install
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        if: steps.cached-toolkit-205-dependencies.outputs.cache-hit != 'true'
       - name: Load cached schema205 venv if cache exists
-        id: cached-poetry-dependencies
+        id: cached-schema205-dependencies
         uses: actions/cache@v2
         with:
           path: vendor/toolkit-205/schema-205/.venv
@@ -42,7 +42,7 @@ jobs:
       - name: Install schema205 dependencies if cache does not exist
         shell: bash
         run: cd vendor/toolkit-205/schema-205 && poetry install
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        if: steps.cached-schema205-dependencies.outputs.cache-hit != 'true'
       - name: Build
         shell: bash
         run: cmake -P cmake/configure.cmake && cmake -P cmake/build.cmake
