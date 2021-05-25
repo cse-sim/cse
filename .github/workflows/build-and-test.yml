@@ -28,7 +28,7 @@ jobs:
           key: poetry-cache-v1-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies if cache does not exist
         shell: bash
-        run: cd vendor/toolkit-205 && poetry install
+        run: cd vendor/toolkit-205 && poetry install && poetry run doit headers cpp
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build
         shell: bash
