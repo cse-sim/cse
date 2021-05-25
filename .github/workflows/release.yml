@@ -23,15 +23,25 @@ jobs:
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Load cached venv if cache exists
+      - name: Load cached toolkit-205 venv if cache exists
         id: cached-poetry-dependencies
         uses: actions/cache@v2
         with:
           path: vendor/toolkit-205/.venv
-          key: poetry-cache-v1-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies if cache does not exist
+          key: poetry-tk205-cache-v1-${{ hashFiles('**/poetry.lock') }}
+      - name: Install toolkit-205 dependencies if cache does not exist
         shell: bash
         run: cd vendor/toolkit-205 && poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      - name: Load cached schema205 venv if cache exists
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor/toolkit-205/schema-205/.venv
+          key: poetry-schema205-cache-v1-${{ hashFiles('**/poetry.lock') }}
+      - name: Install schema205 dependencies if cache does not exist
+        shell: bash
+        run: cd vendor/toolkit-205/schema-205 && poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build
         shell: bash
