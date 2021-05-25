@@ -35,7 +35,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build
         shell: bash
-        run: ./build.bat no-pause
+        run: cmake -P cmake/configure.cmake && cmake -P cmake/build.cmake
       - name: Upload executable to release assets
         uses: AButler/upload-release-assets@v2.0
         with:

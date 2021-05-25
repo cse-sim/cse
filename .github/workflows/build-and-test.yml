@@ -28,11 +28,14 @@ jobs:
           key: poetry-cache-v1-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies if cache does not exist
         shell: bash
-        run: cd vendor/toolkit-205 && poetry install && poetry run doit headers cpp
+        run: cd vendor/toolkit-205 && poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      - name: Test tk205 build
+        shell: bash
+        run: cd vendor/toolkit-205 && poetry run doit headers cpp
       - name: Build
         shell: bash
-        run: ./build.bat no-pause
+        run: cmake -P cmake/configure.cmake && cmake -P cmake/build.cmake
       - name: Upload executable artifiact
         uses: actions/upload-artifact@v2
         with:
