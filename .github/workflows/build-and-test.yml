@@ -31,8 +31,8 @@ jobs:
         run: cd vendor/toolkit-205 && poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build
-        shell: cmd
-        run: build.bat no-pause
+        shell: bash
+        run: ./build.bat no-pause
       - name: Upload executable artifiact
         uses: actions/upload-artifact@v2
         with:
