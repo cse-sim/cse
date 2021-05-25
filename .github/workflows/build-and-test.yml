@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor/toolkit-205/.venv
-          key: poetry-cache-v1-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-cache-v2-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies if cache does not exist
         shell: bash
         run: cd vendor/toolkit-205 && poetry install
