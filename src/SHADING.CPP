@@ -33,7 +33,7 @@
 #include "cnguts.h"
 #include "exman.h"
 
-#include <ashrae/geometry.h>
+#include "geometry.h"
 
 #include <penumbra/penumbra.h>
 

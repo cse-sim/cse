@@ -10,7 +10,6 @@ The CSE User Manual can be found on the [CSE Documentation Web Site](https://cse
 
 - [HTML Format](https://cse-sim.github.io/cse/cse-user-manual.html) (single page)
 - [HTML Format](https://cse-sim.github.io/cse/cse-user-manual/index.html) (multi page)
-- [PDF Format](https://cse-sim.github.io/cse/pdfs/cse-user-manual.pdf)
 
 ### Issues and Issue Reporting
 

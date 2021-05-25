@@ -194,8 +194,8 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 	tDbOPvSh = tDbOSh;
 
 // common setup
-	float f = float(iSubhr)/nSubSteps;    	// fraction of hour passed at start this subhour
-	float g = float(iSubhr+1)/nSubSteps;	// fraction of hour passed at end this subhour
+	float f = float(iSubhr)/tp_nSubSteps;    	// fraction of hour passed at start this subhour
+	float g = float(iSubhr+1)/tp_nSubSteps;	// fraction of hour passed at end this subhour
 	float h = 1.f - g;					// fraction of hour remaining after this subhour
 
 // interpolate values for data with instantenous end-hour values in weather file

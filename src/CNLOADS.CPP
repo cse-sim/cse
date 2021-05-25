@@ -107,7 +107,7 @@ unconditioned space), Tz is computed.
 
 Zone temperatures are computed in cnloads.cpp/cnhvac.cpp, using various subexpressions
 (members of the ZNR struct) precomputed in cnguts.cpp.  They are computed
-several times an hour; t is Top.subhrDur.  For "hc" the CAIR is used --
+several times an hour; t is Top.tp_subhrDur.  For "hc" the CAIR is used --
 the "air heat capacity" which has all the not-very-massive heat capacity of
 the space (walls, furniture) lumped into it for modelling purposes.
 
@@ -122,7 +122,7 @@ heat capacities than the air.  A full equilibrium is NOT done between the
 masses and the zones.  Instead, the air temperatures are computed assuming
 the mass temperatures are constant, then the NEXT hour's mass temperatures
 are computed using THIS hour's air temperatures (and solar gains).
-Masses are computed only once an hour regardless of Top.nSubSteps.
+Masses are computed only once an hour regardless of Top.tp_nSubSteps.
 But Masses now all changed 1-95.
 */
 //=============================================================================
@@ -139,7 +139,7 @@ RC ZNR::zn_RddInit()
 	bcon 							// init constant part of main equation denom:
 		= zn_ua    					//  sum uval*area of zone ambient lite surfs
 		  + zn_uaSpecT;				//  sum uval*area of zn specT lite surfs (hsu)
-	i.znCAirSh = i.znCAir / Top.subhrDur;		// commonly used in subhr code
+	i.znCAirSh = i.znCAir / Top.tp_subhrDur;		// commonly used in subhr code
 
 	// Mass->ha's done in ms_RddInit
 	// aMassHr = aMassSh = 0.;   object is pre-0'd but may be re-used in autoSizing
@@ -500,7 +500,7 @@ x		}
 x	}
 #endif
 
-// SIMULATE SUBHOURLY SURFACES. Must follow (any future) subhouly solar gain determination, precede zone loop. Uses Top.subhrDur.
+// SIMULATE SUBHOURLY SURFACES. Must follow (any future) subhouly solar gain determination, precede zone loop. Uses Top.tp_subhrDur.
 	loadsSurfaces( TRUE);					// below. TRUE = do subhourly (not hourly masses)
 
 	TMRSTART( TMR_ZONE);
@@ -1530,13 +1530,13 @@ RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
 					//   2 = time constant OK, result limited
 					//   3 = short time constant (steady state sln used), result clamped
 
-	float f = zn_airX*Top.subhrDur / i.zn_HIRatio;
+	float f = zn_airX*Top.tp_subhrDur / i.zn_HIRatio;
 	if (f > 1.f)
 	{	zn_dryAirMassEff *= f;
 		f = 1.f;
 		zn_wCase += 1;
 	}
-	wz = mw * Top.subhrDur/(zn_dryAirMassEff*i.zn_HIRatio) + wzls*(1. - f);
+	wz = mw * Top.tp_subhrDur/(zn_dryAirMassEff*i.zn_HIRatio) + wzls*(1. - f);
 
 	double wSat = psyHumRat3( tz);   // maximum w air at this temp can hold
 	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
@@ -1545,7 +1545,7 @@ RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
 						// + = into zone (= "condensation")
 	double wzClamp = bracket( double( PsyWmin), wz, wSat);
 	if (wz != wzClamp)
-	{	XLGain = (wz-wzClamp) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.subhrDur;
+	{	XLGain = (wz-wzClamp) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
 		znXLGain += XLGain;		// zone total excess latent gain, Btuh
 		wz = wzClamp;
 		zn_wCase += 2;		// limits applied
@@ -1576,7 +1576,7 @@ x		printf( "hit");
 x moisture balance experiment
 x generally does not balance, 5-10-2012
 x	double znLDelta = zn_dryAirMass*(wz - wzls)*PsyHCondWtr;
-x	double znLX = (zn_qlHvac + znLGain)*Top.subhrDur;
+x	double znLX = (zn_qlHvac + znLGain)*Top.tp_subhrDur;
 x	if (frDiff( znLDelta, znLX) > .01)
 x		printf( "Mismatch\n");
 #endif
@@ -2777,26 +2777,26 @@ RC RSYS::rs_EndSubhr()
 	if (rs_runF == 0.f)		// if no primary
 		R.hrsOn = R.qh = R.qcSen = R.qcLat = R.qDefrost = 0.f;
 	else
-	{	R.hrsOn = rs_runF * Top.subhrDur;
+	{	R.hrsOn = rs_runF * Top.tp_subhrDur;
 		if (rs_outSen >= 0.)
-		{	R.qh = rs_outSen * Top.subhrDur;
-			R.qDefrost = rs_outDefrost * Top.subhrDur;
+		{	R.qh = rs_outSen * Top.tp_subhrDur;
+			R.qDefrost = rs_outDefrost * Top.tp_subhrDur;
 			R.qcSen = R.qcLat = 0.f;
 		}
 		else
-		{	R.qcSen = rs_outSen * Top.subhrDur;
-			R.qcLat = rs_outLat * Top.subhrDur;
+		{	R.qcSen = rs_outSen * Top.tp_subhrDur;
+			R.qcLat = rs_outLat * Top.tp_subhrDur;
 			R.qh = R.qDefrost = 0.f;
 		}
 	}
 	if (rs_runFAux == 0.f)	// if no aux
 		R.hrsOnAux = R.qAux = 0.f;
 	else
-	{	R.hrsOnAux = rs_runFAux * Top.subhrDur;
-		R.qAux = rs_outAux * Top.subhrDur;
+	{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
+		R.qAux = rs_outAux * Top.tp_subhrDur;
 	}
 
-	R.qFan = rs_outFan * Top.subhrDur;	// fan can operate either prim or aux
+	R.qFan = rs_outFan * Top.tp_subhrDur;	// fan can operate either prim or aux
 	return rc;
 }		// RSYS::rs_EndSubhr
 //-----------------------------------------------------------------------------
@@ -4586,8 +4586,8 @@ RC RSYS::rs_FinalizeSh()
 		rs_runF = rs_loadF;
 		rs_inPrimary = fabs( rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		if (rs_pMtrElec)
-		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.subhrDur;	// compressor energy for step, Btu
-			rs_pMtrElec->H.fanC += rs_inFan * Top.subhrDur;
+		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.tp_subhrDur;	// compressor energy for step, Btu
+			rs_pMtrElec->H.fanC += rs_inFan * Top.tp_subhrDur;
 #if defined( _DEBUG)
 			if (rs_pMtrElec->H.clg < .01f && rs_pMtrElec->H.fanC > .01f)
 				printf("\nFanC > 0");
@@ -4693,7 +4693,7 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			rs_inDefrost = rs_outDefrost / rs_effAuxH;
 			rs_inAux = rs_outAux / rs_effAuxH;
 			if (rs_pMtrAux)
-				rs_pMtrAux->H.hp += (rs_inAux + rs_inDefrost) * Top.subhrDur;
+				rs_pMtrAux->H.hp += (rs_inAux + rs_inDefrost) * Top.tp_subhrDur;
 		}
 		else
 		{	// non-ASHP
@@ -4709,10 +4709,10 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 		}
 
 		if (rs_pMtrHeat)
-			rs_pMtrHeat->H.htg += rs_inPrimary * Top.subhrDur;
+			rs_pMtrHeat->H.htg += rs_inPrimary * Top.tp_subhrDur;
 		rs_inFan = rs_outFan;	// fan input, Btuh (in = out, all fan heat into air)
 		if (rs_pMtrElec)
-			rs_pMtrElec->H.fanH += rs_inFan * Top.subhrDur;
+			rs_pMtrElec->H.fanH += rs_inFan * Top.tp_subhrDur;
 
 		rs_outSenTot = rs_outSen + rs_outDefrost + rs_outAux + rs_outFan;
 	}
@@ -4720,15 +4720,15 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 	{	runFFan = rs_runF = rs_loadF;
 		rs_outSenTot = rs_outFan = rs_inFan = rs_fanHeatOAV * rs_runF;
 		if (rs_pMtrElec)
-			rs_pMtrElec->H.fanC += rs_inFan * Top.subhrDur;
+			rs_pMtrElec->H.fanC += rs_inFan * Top.tp_subhrDur;
 	}
 	// else if (rs_Mode == rsmOFF)
 
 	// parasitic consumption
 	if (rs_pMtrElec)
-		rs_pMtrElec->H.aux += rs_parElec * Top.subhrDur * BtuperWh;
+		rs_pMtrElec->H.aux += rs_parElec * Top.tp_subhrDur * BtuperWh;
 	if (rs_pMtrFuel)
-		rs_pMtrFuel->H.aux += rs_parFuel * Top.subhrDur;
+		rs_pMtrFuel->H.aux += rs_parFuel * Top.tp_subhrDur;
 
 	if (runFFan > 0.f)
 	{	// duct conduction and leakage to adjacent zones
@@ -4864,7 +4864,7 @@ static RC loadsSurfaces( 		// surface runtime simulation
 
 	float dur, tDbO;
 	if (subhrly)
-	{	dur = Top.subhrDur;			// interval duration (hours)
+	{	dur = Top.tp_subhrDur;			// interval duration (hours)
 		tDbO = Top.tDbOShAv;		// outdoor temp averaged over time interval
 	}
 	else			// hourly

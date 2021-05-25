@@ -31,7 +31,7 @@
 //==========================================================================
 
 
-#include "stdafx.h"
+#include "cnglob.h"
 #include "geometry.h"
 
 #ifdef _DEBUG
@@ -312,7 +312,7 @@ void CPolygon3D::InitAxisAlignedRect(		// initialize a axis-aligned rectangle
 	GetLW( L, W);
 	if (  (fabs( L - L1) > .001 && fabs( L-L2) > .001)
 	   || (fabs( W - L1) > .001 && fabs( W-L2) > .001))
-	   TRACE( _T("CPolygon3D::InitAxisAlignedRect: L/W mismatch!"));
+	   TRACE( "CPolygon3D::InitAxisAlignedRect: L/W mismatch!");
 #endif
 
 }		// CPolygon3D::InitAxisAlignedRect
@@ -341,7 +341,7 @@ void CPolygon3D::InitVertParallelogram(
 	GetLW( L, W);
 	if (  (fabs( L - zHt) > .001 && fabs( L-lenBase) > .001)
 	   || (fabs( W - zHt) > .001 && fabs( W-lenBase) > .001))
-	{	TRACE( _T("CPolygon3D::InitVertParallelogram: L/W mismatch!"));
+	{	TRACE( "CPolygon3D::InitVertParallelogram: L/W mismatch!");
 		GetLW( L, W);		// call again re debugging
 	}
 #endif
@@ -539,7 +539,7 @@ void CPolygon3D::GetLW(	// length and width of surrounding rectangle
 #if defined( _DEBUG)
 	if (fabs( box[ 0].z) > .001 || fabs( box[ 1].z) > .001)
 	{	// if horiz transform is OK, z is 0
-		TRACE( _T("CPolygon3D::GetLW: bad z"));
+		TRACE( "CPolygon3D::GetLW: bad z");
 		HorizTM( THoriz);		// recall for debugging
 	}
 #endif

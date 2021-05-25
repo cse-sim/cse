@@ -343,13 +343,13 @@ RC BOILER::endSubhr() 	// end subhour computations for boiler: input energies
 		plr = q/blrCap;						// part load ratio (fraction of full load)
 		p = blrCap * blrEirR * blrPyEi.val(plr);  		// boiler input power
 		if (mtri)						// if meter specified
-			MtrB.p[mtri].H.htg += p * Top.subhrDur;		// charge energy to meter, "htg" category
+			MtrB.p[mtri].H.htg += p * Top.tp_subhrDur;		// charge energy to meter, "htg" category
 		if (blrp.mtri)						// if meter specified for boiler primary pump
-			MtrB.p[blrp.mtri].H.aux += blrp.p * Top.subhrDur;	// charge pump energy to meter, "aux" category
+			MtrB.p[blrp.mtri].H.aux += blrp.p * Top.tp_subhrDur;	// charge pump energy to meter, "aux" category
 		pAuxFullOff = 0.;					// none of this when on at all in subhour
 		pAuxOnAtall = auxOnAtall;				// charge all of this aux power if blr ran at all in subhour
 		if (auxOnAtallMtri)					// aux energy when on at all in subr
-			MtrB.p[auxOnAtallMtri].H.clg += pAuxOnAtall*Top.subhrDur;
+			MtrB.p[auxOnAtallMtri].H.clg += pAuxOnAtall*Top.tp_subhrDur;
 	}
 	else		// boiler is off
 	{
@@ -358,14 +358,14 @@ RC BOILER::endSubhr() 	// end subhour computations for boiler: input energies
 		pAuxOnAtall = 0.;					// none of this aux energy when off for entire subhour
 		pAuxFullOff = auxFullOff;				// charge this aux energy only when not used in entire subhour
 		if (auxFullOffMtri)					// aux energy when off entire subhr
-			MtrB.p[auxFullOffMtri].H.htg += pAuxFullOff*Top.subhrDur;
+			MtrB.p[auxFullOffMtri].H.htg += pAuxFullOff*Top.tp_subhrDur;
 	}
 	pAuxOn = plr * auxOn;					// off-proportional aux power: plr * user input
 	if (auxOnMtri)						// load-proportional aux energy
-		MtrB.p[auxOnMtri].H.clg += pAuxOn*Top.subhrDur;
+		MtrB.p[auxOnMtri].H.clg += pAuxOn*Top.tp_subhrDur;
 	pAuxOff = (1. - plr) * auxOff;				// off-proportional aux power
 	if (auxOffMtri)						// boiler-off proportional aux energy
-		MtrB.p[auxOffMtri].H.htg += pAuxOff*Top.subhrDur;
+		MtrB.p[auxOffMtri].H.htg += pAuxOff*Top.tp_subhrDur;
 	return RCOK;
 }				// BOILER::endSubhr
 //------------------------------------------------------------------------------------------------------------------------------

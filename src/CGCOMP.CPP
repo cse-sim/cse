@@ -1572,7 +1572,7 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 		double fanPwr = (1.f-fVent)*iz_ad[ 0].ad_pFan + fVent*iz_ad[ 1].ad_pFan;
 		MtrB.p[ iz_fan.fn_mtri].H.mtr_Accum(
 			iz_fan.fn_endUse,			// user-specified end use (default = "fan")
-			fanPwr * Top.subhrDur);		// electrical energy, Btu (*not* Wh)
+			fanPwr * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
 	}
 
 	// air flow accounting

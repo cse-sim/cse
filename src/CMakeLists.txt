@@ -105,7 +105,7 @@ set(source
   EXMAN.CPP
   Foundation.cpp
   GMUTIL.CPP
-  hpwhwrap.cpp
+  GEOMETRY.CPP
   IMPF.CPP
   LOOKUP.CPP
   MESSAGES.CPP
@@ -120,6 +120,7 @@ set(source
   RUNDATA.CPP
   SHADING.CPP
   SLPAK.CPP
+  SOLAR.CPP
   SRFD.CPP
   STRPAK.CPP
   SYTB.CPP
@@ -174,6 +175,7 @@ set(headers
   EXMAN.H
   Foundation.h
   GMPAK.H
+  GEOMETRY.H
   IMPF.H
   IRATS.H
   LOOKUP.H
@@ -187,6 +189,7 @@ set(headers
   RCCN.H
   RMKERR.H
   SLPAK.H
+  SOLAR.H
   SRD.H
   STRPAK.H
   SYTB.H
