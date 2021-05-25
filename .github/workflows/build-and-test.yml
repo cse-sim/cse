@@ -32,7 +32,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Test tk205 build
         shell: bash
-        run: cd vendor/toolkit-205 && poetry run doit headers cpp
+        run: cd vendor/toolkit-205/schema-205 && poetry run doit headers cpp
       - name: Build
         shell: bash
         run: cmake -P cmake/configure.cmake && cmake -P cmake/build.cmake
