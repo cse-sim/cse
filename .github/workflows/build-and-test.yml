@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+        with:
+          submodules: recursive
       - name: Setup python 3.8
         uses: actions/setup-python@v2
         with:
@@ -43,6 +45,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+        with:
+          submodules: recursive
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Build wcmp
@@ -63,6 +67,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+        with:
+          submodules: recursive
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download executable artifact
