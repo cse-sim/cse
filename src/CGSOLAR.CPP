@@ -533,7 +533,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 		return;			// this surface cannot receive exterior solar gain
 						//   (CTINTWALL, CTPERIM, ...)
 
-	// view factors. For beam radiation, (window) shading is computed in CSE (shadwin call, below).
+	// view factors. For beam radiation, (window) shading is computed in CSE (SunlitFract call, below).
 	//   For diffuse, no shading computed in CSE; user may, for windows, input view factors so can precompute shading
 	// sky diffuse view factor is x.vfSkyDf, inputtable as wnVfSkyDf, m-h vbl, default  .5f + .5*cos(x.tilt)
 	// ground diffuse view factor (incl for ground-reflected beam), times reflectivity, is grx:
@@ -570,25 +570,11 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 	{	// incident beam possible
 		incA = acos( cosi);
 		relAzm = azm - x.azm;	// sun azm wrt wall
-#if 1
 		WSHADRAT* pS = WshadR.GetAtSafe(x.iwshad);
 		if (!pS)
 			fsunlit = 1.f;
 		else
-		{
 			fsunlit = pS->SunlitFract(relAzm, cosz);
-			float fsunlitx = shadwin(pS, relAzm, cosz);
-			if (frDiff(float(fsunlit), fsunlitx) > .0001f)
-				printf("\nBad fsunlit");
-		}
-#else
-		fsunlit = x.iwshad 		// nz iff xs has shading info
-					? shadwin(				// calc shading
-						&WshadR[ x.iwshad],	// window/ovh/fin info in WSHADRAT entry, all VMHLY.
-						relAzm,
-						cosz)				// cos( slr zenith ang)
-					: 1.;
-#endif
 		sgf[ sgcBMXBM] = fsunlit*cosi;	// surface beam irradiance factor, dimless
 										//   = unit area surface beam irradiance per unit beam normal irradiance
 	}
