@@ -4,6 +4,10 @@
 
 // a205face.h -- defn and decls for interface to ASHRAE Std205
 //     equipment data representations
+#ifndef A205FACE_H	// endif at end file
+#define A205FACE_H
 
+#include "libtk205.h"
 
+#endif	// ifndef A205FACE_H at start file
 // end a205face.h

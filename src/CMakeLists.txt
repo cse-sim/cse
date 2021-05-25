@@ -201,11 +201,6 @@ set(headers
   A205FACE.H
 )
 
-
-include_directories(
-)
-
-
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/vendor"
@@ -216,6 +211,11 @@ include_directories(
   "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
   "${kiva_SOURCE_DIR}/src"
   "${kiva_BINARY_DIR}/src/libkiva"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/build/include"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/json/single_include"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/include"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/schema205/src"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/btwxt/src"
 )
 
 # Precompiled Headers
@@ -249,6 +249,7 @@ set(libs
   tess2
   libHPWHsim
   libkiva
+  libtk205
 )
 
 source_group("Source Files" FILES ${source})

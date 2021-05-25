@@ -9,6 +9,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Setup python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Load cached venv if cache exists
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: poetry-cache-v1-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies if cache does not exist
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build
         shell: cmd
         run: build.bat no-pause

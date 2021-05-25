@@ -21,6 +21,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /fp:precise #+Specifies floating-point behavior.
     /fp:except- # Specifies floating-point behavior.
     /arch:IA32  # Specifies the architecture for code generation (no special instructions).
+    /std:c++14  #+Enable supported C and C++ language features from the specified version of the C or C++ language standard.
   )
   string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CompileCommon}")
 

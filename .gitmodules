@@ -7,3 +7,6 @@
 [submodule "vendor/kiva"]
 	path = vendor/kiva
 	url = https://github.com/bigladder/kiva.git
+[submodule "vendor/toolkit-205"]
+	path = vendor/toolkit-205
+	url = https://github.com/open205/toolkit-205
