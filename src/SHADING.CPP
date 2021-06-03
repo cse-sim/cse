@@ -14,7 +14,7 @@
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// WSHADRAT, SHADEX,
 #include "cuparse.h"
-#include "slpak.h"
+#include "solar.h"
 #include "cnguts.h"
 #include "exman.h"
 

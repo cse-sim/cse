@@ -12,7 +12,7 @@
 #include <msghans.h>	// MH_R0168
 
 #include <psychro.h>	// psyHumRat1
-#include <slpak.h>		// slday, slaniso
+#include "solar.h"
 #include <wfpak.h>
 #include <cnguts.h>
 #include <cul.h>		// FsSET 6-95

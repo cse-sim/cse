@@ -40,7 +40,6 @@
 #include <msghans.h>	// MH_R0160
 
 #include "solar.h"
-#include "slpak.h"		// slday SLLOCDAT
 
 #include "ashwface.h"
 
@@ -76,7 +75,7 @@ int slrCalcJDays[13] =	// julian day of year for which to do solar table calcula
 };
 
 #if (SLRCALCS & 1)
-static SLLOCDAT* Locsolar = NULL;	// Ptr to solar info structure (slpak.h) for current calculation.
+static SLLOCDAT* Locsolar = NULL;	// Ptr to solar info structure for current calculation.
 									// Released by slfree from tp_LocDone().
 									// Address saved by slinit for other slpak calls.
 									// Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
@@ -91,7 +90,7 @@ RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 // inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
 // returns RCOK if ok, else message already issued.
 {
-	// init slpak.cpp: alloc SLLOCDAT (slpak.h) and init for location.
+	// init slpak.cpp: alloc SLLOCDAT and init for location.
 	//   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
 	//   slpak remembers its location internally.
 

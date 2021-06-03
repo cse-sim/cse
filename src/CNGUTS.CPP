@@ -14,7 +14,7 @@
 
 #include <vrpak.h>	// vrOpen vrClose
 #include <tdpak.h>	// tddtdis tddyi tddis
-#include <slpak.h>	// slinit SLLOCDAT
+#include "solar.h"
 #include <xiopak.h>	// xfopen
 
 #include <cgwthr.h>	// cgwfxxxx functions

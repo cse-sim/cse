@@ -15,7 +15,7 @@
 #include "cnguts.h"
 #include "cuparse.h"
 #include "cnculti.h"
-#include "slpak.h"
+#include "solar.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARSYS: represents a solar water heating system

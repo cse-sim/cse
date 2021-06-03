@@ -21,7 +21,7 @@
 #include <cvpak.h>		// getChoiTx
 #include <wfpak.h>		// wfOpen wfClose 1-95
 #include <psychro.h>	// psyAltitude PsyRAir
-#include "slpak.h"
+#include "solar.h"
 #include <envpak.h>		// ensystd
 #include "impf.h"
 

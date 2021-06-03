@@ -13,7 +13,7 @@
 #include "exman.h"
 #include "rccn.h"	// TOPRAT WFILE WFDATA
 #include "psychro.h"
-#include "slpak.h"
+#include "solar.h"
 
 #include "yacam.h"	// class YACAM
 #include "tdpak.h"
