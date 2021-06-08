@@ -3135,6 +3135,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapRat1747() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
+*declare "float rs_Cap05Default( float cap47, float cap17) const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
