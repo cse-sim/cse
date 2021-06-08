@@ -80,6 +80,17 @@ template< typename T,typename TR=T> TR VSum(		// vector sum
 	return vTot;
 }		// VSum< T>
 //--------------------------------------------------------------------------
+template< typename T, typename TR = T> TR VSumWrap(		// vector sum with wrap
+	const T* v,  		// vector to sum
+	int nV,				// # of values to sum
+	int n)				// dim of v
+{
+	TR vTot = 0;
+	for (int iV = 0; iV < nV; iV++)
+		vTot += TR(v[iV % n]);
+	return vTot;
+}		// VSumWrap< T>
+//--------------------------------------------------------------------------
 template< typename T,typename TR=T> TR VAbsSum(		// vector absolute value sum
 	const T* v,  		// vector to sum
 	int n)				// dim of v
@@ -126,6 +137,37 @@ template< typename T> T VMax(		// vector max value
 	}
 	return vMax;
 }		// VMax< T>
+//-----------------------------------------------------------------------------
+template< typename T> T VSumMaxMean(
+	const T* v,  		// vector
+	int n,				// dim of v
+	T& vMin,			// returned
+	T& vMax)
+{
+	double vSum = 0.;
+	if (n <= 0)
+	{		vMin = vMax = T(0);
+		vSum = 0.;
+	}
+	else
+	{	for (int i = 0; i < n; i++)
+		{	if (i == 0)
+			{
+				vMin = vMax = *v;
+				vSum = double(*v);
+			}
+			else
+			{	if (*v < vMin)
+					vMin = *v;
+				else if (*v > vMax)
+					vMax = *v;
+				vSum += *v;
+			}
+			v++;
+		}
+	}
+	return T(vSum);
+}		// VSumMaxMin
 //--------------------------------------------------------------------------
 template< typename T> T VMax(		// vector max value
 	const T* v,  		// vector to sum
@@ -388,24 +430,29 @@ template< typename T,typename TR=T> TR VIProd(	// inner product w/ stride
 template< typename T> class VMovingSum
 {
 	double* vals;	// value history (ring buffer)
-	int nSiz;		// active size of vals[]
+	size_t nSiz;		// active size of vals[]
 	double vSum;	// current sum of vals[0..nCur-1]
 	int iOld;		// idx of oldest value in vals[]
-	int nCur;		// # of vals[] currently set
+	size_t nCur;		// # of vals[] currently set
 public:
-	VMovingSum() : vals( nullptr), nSiz( 0),vSum( 0),iOld(0),nCur(0) {}
-	~VMovingSum() { delete[] vals; vals = nullptr; }
+	VMovingSum(size_t _nSiz = 0) : vals(nullptr), nSiz(0), vSum(0), iOld(0), nCur(0)
+	{	if (_nSiz > 0)
+			vm_Init(_nSiz);
+	}
+	~VMovingSum() { delete[] vals; vals = nullptr; nSiz = 0;  }
 	bool vm_Init(int _nSiz)
 	{	delete[] vals;
-		vals = nullptr;
-		iOld = nCur = 0;
+		nSiz = max(1, _nSiz);
+		vals = new double[nSiz];
+		return vm_Clear();
+	}
+	bool vm_Clear()
+	{	iOld = nCur = 0;
 		vSum = 0.;
-		if (_nSiz < 0)
-			_nSiz = 1;
-		vals = new double[_nSiz];
 		if (!vals)
+		{	nSiz = 0;
 			return false;
-		nSiz = _nSiz;
+		}
 		VZero(vals, nSiz);
 		return true;
 	}
@@ -423,38 +470,166 @@ public:
 		vSum += val;			// add new value to sum
 		// vMean = sum / nCur;	// if needed
 		if (pSumMax && vSum > *pSumMax)
-			*pSumMax = vSum;
+			*pSumMax = T(vSum);
 		return vSum;
 	}
 };		// class VMovingSum
 
-/*------------------------- FUNCTION DECLARATIONS -------------------------*/
+///////////////////////////////////////////////////////////////////////////////
+// class VX: vector with min/max/mean, commonly used for 24 hour values
+///////////////////////////////////////////////////////////////////////////////
+template< typename T, int n> class VX
+{
+	T v[n];
+	T vMin;
+	T vMean;
+	T vMax;
+	T vSum;
+public:
+	VX() { Clear(); }
+	VX(const VX& s) { Copy(s); }
+	VX& Copy(const VX& s)
+	{	VCopy(v, n, s.v);
+		vMin = s.vMin; vMax = s.vMax; vMean = s.vMean; vSum = s.vSum;
+		return *this;
+	}
+	void Clear()
+	{	Set(T(0));
+	}
+	void Set(T vAll)
+	{	VSet(v, n, vAll);
+		vMin = vMax = vMean = vAll;
+		vSum = n * vAll;
+	}
+	void Set(const float* _v)
+	{	VCopy(v, n, _v);
+		SetStats();
+	}
+	void Set(const double* _v)
+	{	VCopy(v, n, _v);
+		SetStats();
+	}
+	T Min() const
+	{  return vMin; }
+	T Max() const
+	{	return vMax; }
+	T Sum() const
+	{	return vSum; }
+	T Mean() const
+	{	return vMean; }
+
+	void SetStats()
+	{	vSum = VSumMaxMean(v, n, vMin, vMax);
+		vMean = vSum / n;
+	}
+	operator T* () { return v; }
+	T* VPtr() { return v; }
+	VX& operator =(T vAll) { Set(vAll); return *this; }
+	VX& operator =(const VX vx2) { return Copy(vx2); }
+	T& operator[](int i) { return v[i]; }
+	T operator()(int i) const
+	{	return i < n ? v[i] : i == n ? vMin : i == n + 1 ? vMean : i == n + 2 ? vMax : vSum;
+	}
+	const T& operator[](int i) const { return v[i]; }
+#if 0
+	T FLH()	// full-load hours
+	{	SetStats();
+		return vMax > 0 ? vSum / vMax : 0;
+	}
+	int MaxLoc() const
+	{	return VMaxLoc(v, n); }
+	int MinLoc() const
+	{	return VMinLoc(v, n); }
+
+	// operations (caller must do SetStats())
+	VX& CopyW(const VX vx2, double weight)
+	{	VCopyW(v, n, vx2.v, weight);
+		return *this;
+	}
+	VX& Add(const VX vx2) { VAdd(v, n, vx2.v); return *this; }
+	VX& Sub(const VX vx2) { VSub(v, n, vx2.v); return *this; }
+	VX& Mul(const VX vx2) { VMul(v, n, vx2.v); return *this; }
+	VX& Mul(double f) { VMul(v, n, f); return *this; }
+	VX& Accum(const VX& vx2, double w = 1.)
+	{	VAdd(v, n, vx2.v, w);
+		SetStats();
+		return *this;
+	}
+	T AbsDiff(const VX vx2) const
+	{	return VAbsDiff(v, n, vx2.v);
+	}
+	T AbsSum() const
+	{	return VAbsSum(v, n);
+	}
+	static CWString Tag(int i, int offset = 0)
+	{	static const char* _tags[] = { _T("Min"), _T("Avg"), _T("Max"), _T("Tot") };
+		return i < n ? tFormat(_T("%3d"), i + offset) : _tags[i - n];
+	}
+#endif
+};		// class VX
+//-----------------------------------------------------------------------------
+// VX24 vectors
+const int vxMIN = 24;	// pseudo idxs (use with operator())
+const int vxMEAN = 25;
+const int vxMAX = 26;
+const int vxSUM = 27;
+const int X24 = 28;		// loop limit
 
 #if 0
-// vecpak.cpp -- Integer functions
-extern void FC iVecAdd( SI *i2, const SI *i1, int n);
-extern void FC lVecAdd( LI *i2, const LI* i1, int n);
-
-// vecpak.cpp -- Long integer function
-extern double FC fVecSum( const float* f, int n);
-extern void FC iVecAdd( SI *i2, const SI *i1, int n);
-
-// vecpak.cpp -- Float functions
-extern void FC fVecSet( float *f, int n, float v);
-extern void FC fVecAdd( float *f2, const float *f1, int n);
-extern void FC fVecSub( float *f2, float *f1, int n);
-
-extern double FC fVecIprod( float *f1, float *f2, int n);
-extern void FC vecCopyD2F( double *vdp, float *vfp, int n);
-
-/* vecpak.cpp -- Double functions */
-extern void FC dVecSet( double *d, int n, double v);
-extern double FC dVecIprod( double *d1, double *d2, int n);
-extern double FC dVecMean( double *, SI);
-extern void FC dVecSwap( double *, double *, int, int);
-
-extern double FC fVecAbsum( const float* f, int n);
+template< typename T> class VX24 : public VX< T, 24>
+{
+	VX24& operator *(const VX24& v2) { return (VX< T, 24>::operator *)(v2); }
+};
 #endif
-
+class VF24 : public VX< float, 24>
+{
+public:
+	VF24& operator =(float vAll) { Set(vAll); return *this; }
+};
+class VD24 : public VX< double, 24>
+{
+public:
+	VD24& operator =(double vAll) { Set(vAll); return *this; }
+#if 0
+	VD24& operator *(const VD24& v2) const
+	{
+		return static_cast<VD24&>((VX< double, 24>::operator *)(v2));
+	}
+#endif
+};
+//----------------------------------------------------------------------------
+#if 0
+// if needed
+template< typename T, int n> void VXSet(VX< T, n>* pVX, int nVX, T vAll)
+{
+	for (int iVX = 0; iVX < nVX, iVX++)
+		pVX[iVX].Set(vAll);
+}
+template< typename T, int n> void VXAccum(VX< T, n>* pVX, int nVX, VX< T, n>* pVXSrc)
+{
+	for (int iVX = 0; iVX < nVX; iVX++)
+		pVX[iVX].Accum(pVXSrc[iVX]);
+}
+inline void VXSet(VF24* pVX24, int nVX, float vAll)
+{
+	for (int iVX = 0; iVX < nVX; iVX++)
+		pVX24[iVX].Set(vAll);
+}
+inline void VXSet(VD24* pVX24, int nVX, double vAll)
+{
+	for (int iVX = 0; iVX < nVX; iVX++)
+		pVX24[iVX].Set(vAll);
+}
+inline void VXAccum(VF24* pVX24, int nVX, const VF24* pVX24Src, double w = 1.)
+{
+	for (int iVX = 0; iVX < nVX; iVX++)
+		pVX24[iVX].Accum(pVX24Src[iVX], w);
+}
+inline void VXAccum(VD24* pVX24, int nVX, const VD24* pVX24Src, double w = 1.)
+{
+	for (int iVX = 0; iVX < nVX; iVX++)
+		pVX24[iVX].Accum(pVX24Src[iVX], w);
+}
+#endif
 
 // end of vecpak.h

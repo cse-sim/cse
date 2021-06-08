@@ -36,6 +36,13 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
+// line length limits = buffer sizes
+//   >> no runtime checks !! <<
+static const size_t MAXRPTLINELENSTD = 1000;	// built-in reports
+static const size_t MAXRPTLINELENUDT = 30000;	// user-defined reports
+												//   no limit enforced, use "impossibly" big value
+												//   largest length seen in wild = 7000ish
+
 #define QBAL	// show debugging/check info: ZEB report, AH report Qbal, .  Undefine to remove later.  6-9-92.
 
 #define ZFILTER 0	// 2-->0  7-17-95
@@ -655,8 +662,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			if (ISNANDLE(dvrip->rpCond))					// if condition UNSET (bug) or not yet evaluated
 			{
 				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
-				isExport ? "ex" : "rp",   isExport ? "export" : "report",
-				dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->name );	// title if any, else aname
+					isExport ? "ex" : "rp",   isExport ? "export" : "report",
+					dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->name );	// title if any, else aname
 				continue;									// treat as FALSE
 			}
 			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
@@ -867,7 +874,6 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	SI isAll = dvrip->isAll;		// true if All- (zones or meters) report
 	const char *objTx = "";			// "zone <name>", "All Zones", "Sum of Zones", etc,  or "meter <name>" etc
 	const char *what = NULL;		// set to "Energy Balance", "Statistics", etc for standard report title & col heads per colDef
-	char buf[1000];
 
 	char *fqTx = "<bad rpFreq> ";	// "Annual ", "Monthly ", etc for use in report title text
 	char *ivlTx = "Bug";		// "Year", "Month", etc for use in All-  export head (Y,M,D,H only)
@@ -1130,7 +1136,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		if (rpTy==C_RPTYCH_UDT)
 			vpUdtExColHeads(dvrip);		// virtual print user-defined export col headings, below
 		else					// ZEB, ZST, MTR, AH.
-		{
+		{	char buf[ MAXRPTLINELENSTD];
 			fmtExColhd(     			// format export column headings, below
 				rxt->colDef,   		//   COLDEF struct gives col wids, hdng
 				buf,   			//   output buffer
@@ -1144,7 +1150,6 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 
 	else			// is report
 	{
-
 		// format blank lines and title to virtual report
 
 		if (rpTy==C_RPTYCH_UDT  &&  dvrip->rpTitle)	// for user-defined report with title given
@@ -1166,7 +1171,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 		if (rpTy==C_RPTYCH_UDT)					// UDT
 			vpUdtRpColHeads(dvrip);   				//   user-defined col headings, below
 		else							// ZEB ZST MTR AH
-		{
+		{	char buf[MAXRPTLINELENSTD];
 			fmtRpColhd( rxt->colDef, buf, rxt->flags, hd1);  	//   format col heads to buf, local fcn, below
 			vrStr( vrh, buf);					//   write buffer to virtual report, vrpak.h
 		}
@@ -1264,7 +1269,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		else if (dvrip->rpTy==C_RPTYCH_DHWMTR)		// if DHW meter report
 		{
 			TI dhwMtri = dvrip->dv_dhwMtri;    		// subscript
-			DHWMTR_IVL* pIvl = &WMtrR[ dhwMtri].Y + (rxt.fq - 1); 	// .M is after .Y, etc
+			DHWMTR_IVL* pIvl = &WMtrR[ dhwMtri].curr.Y + (rxt.fq - 1); 	// .M is after .Y, etc
 			rxt.colDef = wMtrColdef;					 			// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
 		}
@@ -1486,7 +1491,7 @@ void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
 	if (dhwMtri < 0)
 		dhwMtri = dv_dhwMtri;
 	DHWMTR* pWM = WMtrR.GetAt( dhwMtri);		// record
-	DHWMTR_IVL* pIvl = (&pWM->Y) + (rxt->fq - 1);	// interval
+	DHWMTR_IVL* pIvl = (&pWM->curr.Y) + (rxt->fq - 1);	// interval
     												// subhr not allowed for DHWMTR --> fq==fqr; no extra -1 needed.
 
 	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
@@ -1717,7 +1722,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 {
 	COL *colp /*=NULL*/;
 	SI i, colWid, acWid, sTween, sLeft = 0;
-	char buf[1000], *s, *p, *q;
+	char *p, *q;
 	const char *text;
 	JUSTCH jus;
 	USI dt;
@@ -1734,8 +1739,8 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 	}
 
 // output row of column head texts
-
-	s = buf;					// init store pointer into line buffer
+	char buf[MAXRPTLINELENUDT];
+	char* s = buf;				// init store pointer into line buffer
 	q = s + sLeft;				// where gap b4 1st col should begin: spaces stored after adj for overlong text
 	for (i = dvrip->coli;  i;  )			// loop over columns of table
 	{
@@ -1790,10 +1795,9 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 {
 	COL* colp = NULL;
-	char buf[ 5000];
 
 // output row of quoted, comma-separated column head texts
-
+	char buf[MAXRPTLINELENUDT];
 	char* s = buf;					// init store pointer into line buffer
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
@@ -1816,21 +1820,10 @@ LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column 
 //==================================================================
 LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row for user-defined report
 {
-	COL *colp /*=NULL*/;
-	SI i, colWid, acWid, ptAdj, sTween, sLeft = 0;
-	USI spB4, spAf;
-
-	char buf[1000], *s, *p, *end, *limit, *q, *text;
-
-	JUSTCH jus;
-	SI dec;
-	USI dt, cvFmt;
-	float fv;
-
-
 // determine column spacing: cram or space out per extra width available.  Must match in vpUdtRpRow and vpUdtRpColHeads.
 
-	sTween = 0;							// number of extra spaces between columns: start with 0
+	int sTween = 0;			// number of extra spaces between columns: start with 0
+	int sLeft = 0;
 	if (dvrip->wid + dvrip->nCol <= dvrip->rpCpl)					// note dvrip->wid includes colGaps.
 	{
 		sTween = 1;									// 1 if fits
@@ -1840,31 +1833,34 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 	}
 
 // output row of data
-
-	s = buf;  						// set pointer for storing into line buffer
-	q = s + sLeft;					// where gap b4 1st col begins. spaces stored after checking data len.
-	for (i = dvrip->coli;  i;  )			// loop over columns of table
+	char buf[MAXRPTLINELENUDT];	// size must exceed longest possible line
+	char* s = buf;  			// set pointer for storing into line buffer
+	char* q = s + sLeft;					// where gap b4 1st col begins. spaces stored after checking data len.
+	for (int i = dvrip->coli;  i;  )			// loop over columns of table
 	{
-		colp = RcolB.p + i;
+		COL* colp = RcolB.p + i;
 		i = colp->nxColi;				// step i to next col subscript now, for convenience in lookahead
-		colWid = colp->colWid;				// column width, defaulted in cncult.cpp
-		p = q + colp->colGap;				// nominal start of column, b4 adj for overflow / justification
+		int colWid = colp->colWid;				// column width, defaulted in cncult.cpp
+		char* p = q + colp->colGap;				// nominal start of column, b4 adj for overflow / justification
 		q = p + colWid + sTween;    			// nominal start next column's intercolumn gap
-		//s is next avail position in buffer. 1 space has been stored after prior column.
-		spB4 = p > s ? (USI)(p - s) : 0;			// overflow space to left, reflecting actual prior data length + gap
-		end = p + colWid;				// nominal end of this column
-		limit = i  ?  q + RcolB.p[i].colGap - 1  	// desirable last char posn to write: start next column less one
-				:  buf + dvrip->rpCpl;		// no next col: else end of nominal line width
-		spAf = limit > end ? (USI)(limit - end) : 0;  	// overflow space to right, to next column or end line width
+		// s is next avail position in buffer. 1 space has been stored after prior column.
+		int spB4 = p > s ? (p - s) : 0;		// overflow space to left, reflecting actual prior data length + gap
+		char* end = p + colWid;				// nominal end of this column
+		char* limit = i  ?  q + RcolB.p[i].colGap - 1  	// desirable last char posn to write: start next column less one
+				         :  buf + dvrip->rpCpl;			// no next col: else end of nominal line width
+		int spAf = limit > end ? (limit - end) : 0;  	// overflow space to right, to next column or end line width
 
 		// format data
 
-		dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
-		jus = colp->colJust;				// justification
+		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		JUSTCH  jus = colp->colJust;			// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
-		dec = colp->colDec;				// decimals, defaulted to -1 if not given
-		ptAdj = 0;					// rob's decimal point position adjustment
+		SI dec = colp->colDec;		// decimals, defaulted to -1 if not given
+		int ptAdj = 0;				// rob's decimal point position adjustment
+		char* text = NULL;
+		USI cvFmt;
+		float fv;
 		if (ISNANDLE(colp->colVal.val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
@@ -1914,7 +1910,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 				text = "<bad dt>";
 				break;
 			}
-		acWid = (SI)strlen(text);
+		int acWid = strlen(text);
 
 		// adjust to justify or overhang left or right.  strings are not truncated.
 
@@ -1945,21 +1941,19 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 //==================================================================
 LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for user-defined export
 {
-	COL *colp /*=NULL*/;
-	SI i, dec;
-	char buf[1000], *s, *text;
-	USI dt, cvFmt;
 
 // output comma-separated row of data, strings quoted
-
-	s = buf;  						// set pointer for storing into line buffer
-	for (i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
+	char buf[MAXRPTLINELENUDT];		// size must exceed longest possible line
+	char* s = buf;  		// set pointer for storing into line buffer
+	COL* colp;
+	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
 		colp = XcolB.p + i;
 
 		// format data
 
-		dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		USI dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		char* text;
 		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
@@ -1969,17 +1963,18 @@ LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval ro
 			switch (dt)
 			{
 			case DTFLOAT:
-				dec = colp->colDec;
-				cvFmt = 			// cvin2s format word (cvpak.h): bits, plus # digits in lo nibble
+			{	int dec = colp->colDec;
+				USI cvFmt = 			// cvin2s format word (cvpak.h): bits, plus # digits in lo nibble
 					(dec >= 0)			//  if decimals given, use F format with that many digits after point
-					?  FMTSQ | FMTOVFE 		//    use "squeezed" F format, overflow into E format (not k),
-					| min( dec, 15)   	//    show 'dec' digits after point (4 bits avail).
+					? FMTSQ | FMTOVFE 		//    use "squeezed" F format, overflow into E format (not k),
+					| min(dec, 15)   	//    show 'dec' digits after point (4 bits avail).
 					:				//  decimals not given, specify # sig digits rather than point posn.
 					FMTSQ | FMTRTZ 	 	//    squeeze, # given is # sig not # dec dig & truncate trailing 0's,
 					| FMTOVFE | 6;    	//    overfl to E format, # sig digits is 6 (if value >= .001)
 
-				text = cvin2s( &colp->colVal.val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
+				text = cvin2s(&colp->colVal.val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
 				break;
+			}
 
 			case DTCHP:
 				text = (char *)(colp->colVal.val);
@@ -2027,7 +2022,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 		if (!(SKIPFLAGS & colDef[i].flags & ~flags)) 		// OMIT column with SKIPFLAGS bit that caller did not give
 		{
 			if (l)  						// no intercol space for 1st non-skipped column 6-95
-				l += !(colDef[i].flags & 1);			// intercol space if not suppressed by option
+				l += !(colDef[i].flags & 1);		// intercol space if not suppressed by option
 			l += colDef[i].width;    				// accumulate column widths
 		}
 	underline = head + l + 1;					// ptr to beg of "-----" line. +1 for \n.
@@ -2054,13 +2049,13 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 			    :  colDef->colhd; 	// for pointer -1L, use next arg
 
 		cvin2sBuf( head+i, 					// format col head text (lib\cvpak.cpp)
-		blankit ? "" : colhd,
-		DTCH, UNNONE, colDef->width,
-		colDef->flags & 128 ? FMTLJ : FMTRJ );	// format: left justify on flag 128
+			blankit ? "" : colhd,
+			DTCH, UNNONE, colDef->width,
+			colDef->flags & 128 ? FMTLJ : FMTRJ );	// format: left justify on flag 128
 
 		memset( underline + i, 					// store ---- in line following text
-		blankit ? ' ' : '-',
-		colDef->width );
+			blankit ? ' ' : '-',
+			colDef->width );
 
 		i += colDef->width;					// pass column in buffer
 	}

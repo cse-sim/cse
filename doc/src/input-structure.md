@@ -355,7 +355,9 @@ Conditional blocks are most simply terminated with `#endif`, but `#else` and `#e
 
 The simplest use of `#if` is to "turn off" sections of an input file without editing them out:
 
-        #if 0This text is deleted from the input stream.#endif
+        #if 0
+        This text is deleted from the input stream.
+        #endif
 
 Or, portions of the input file can be conditionally selected:
 
@@ -380,6 +382,26 @@ Finally, it is once again important to note that conditional directives *nest*, 
         #else
             This text IS included.
         #endif
+
+### Input echo control
+
+By default, CSE echos all input text to the input echo report (see REPORT rpType=INP).  #echooff and #echoon allow disabling and re-enabling text echoing.  This capability is useful reducing
+report file size by suppressing echo of, for example, large standard include files.
+
+        ... some input ...   // text sent to the input echo report
+        #echooff
+           // This text will NOT be sent to the input echo report.
+           // However, it IS read and used by CSE.
+           // Error messages will be echoed even if #echooff
+           ... more input ...
+        #echoon         // restore echo
+
+Nesting is supported -- each #echoon "undoes" the prior #echooff, but echoing
+does not resume until the topmost (earliest) #echooff is cancelled.
+* #echoon has no effect when echoing is already active.
+* Unmatched #echooffs are ignored -- echoing remains disabled through the end
+of the input stream.
+
 
 ### Preprocessor examples
 

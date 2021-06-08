@@ -243,7 +243,7 @@ friend struct BCX;
 	{	mn_t = told[ -1]*mn_f[ 0] + told[ 0]*mn_f[ 1] + told[ 1]*mn_f[ 2]; }
 	void mn_TStepSrf( const BCX& bcx, double told, double ubnAdj, double toldAdj);
 	inline double mn_DtOvrTau( double C)
-	{	double hcMin = C * Top.subhrDur;
+	{	double hcMin = C * Top.tp_subhrDur;
 		mn_hcEff = max( hcMin, mn_hc);
 		return hcMin / mn_hcEff;
 	}

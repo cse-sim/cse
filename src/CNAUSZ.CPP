@@ -446,7 +446,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 
 		// after design day done stuff
 		callAllAuszs( &AUSZ::endP1bDsd);	// record new max rated sizes in all active AUSZ's
-		EF( Top.tp_EndDesDay() )			// calls cnguts.cpp:cgRddDone: closes weather file, imports, binRes, etc. local.
+		EF( Top.tp_EndDesDay() )			// calls cgRddDone: closes weather file, imports, binRes, etc. local.
 	}
 	Top.tp_pass1 = Top.tp_pass1B = Top.tp_sizing = FALSE;
 	return rc;

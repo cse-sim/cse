@@ -17,13 +17,9 @@
          local time to solar (and date still changes at local/daylite midnite),
 	 so range is bit more than -Pi to Pi. (mainly used when sun is up.) */
 
-#if defined( SOLARFIX)
 const double HA = k2Pi/24.;  	// earth rotation, rad/hr
 								// for converting hours to hour angle
 								//   then add SLLOCDAT.tmconst.
-#else
-#define HA 0.26179939
-#endif
 
 /*--------------------------------- TYPES ---------------------------------*/
 
@@ -79,6 +75,8 @@ void   FC slday( DOY doy, int timetype, int options=0);
 void   FC sldec( float sldec, int timetype);
 int slsurfhr( float sdircos[3], int ihr, float* pCosi, float* pAzm=NULL,
                     float* pCos=NULL);
+float slSunupf(int ihr);
+int slSunupBegEnd(int ihr, float& hrBeg, float& hrEnd, float sunupf=-1.f);
 void   FC slaltazm( float fhour, float* altp, float* azmp);
 void   FC slaniso( float* pbeam, float* pdiff, SI ihr);
 float slha( float fhour);

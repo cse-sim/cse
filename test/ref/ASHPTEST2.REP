@@ -8,7 +8,7 @@ Warning: Zone 'Conditioned-zn': Unmet heating loads during 16 hours of run.
 Warning: Zone 'Conditioned-zn': Unmet cooling loads during 39 hours of run.
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 5764 subhours of run.
-    Total condensation heat = 34.7273 kBtu.
+    Total condensation heat = 34.7272 kBtu.
 ---------------
 
 
@@ -185,7 +185,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.875.0 for Win32 console
+! CSE 0.887.0+toolset.0d89432.1 for Win32 console
 
 
 
@@ -1749,18 +1749,18 @@ Input for Run 001:
 
 
 
-! CSE 0.875.0 for Win32 console run(s) done: Thu 03-Sep-20   4:04:38 pm
+! CSE 0.887.0+toolset.0d89432.1 for Win32 console run(s) done: Thu 11-Feb-21   4:57:54 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               03-Sep-20   3:53 pm   (VS 14.16    2640384 bytes)  (HPWH 1.10.2)
+!               11-Feb-21   4:10 pm   (VS 14.28    2590720 bytes)  (HPWH 1.12.4)
 ! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
 ! Report file:  D:\cse\test\ashptest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2      T/C = 0.0055   
-!           AutoSizing:  Time = 0.98     Calls = 1      T/C = 0.9770   
-!           Simulation:  Time = 11.76    Calls = 1      T/C = 11.7560  
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0240   
-!                Total:  Time = 12.78    Calls = 1      T/C = 12.7780  
+!                Input:  Time = 0.02     Calls = 2      T/C = 0.0095   
+!           AutoSizing:  Time = 1.08     Calls = 1      T/C = 1.0770   
+!           Simulation:  Time = 12.11    Calls = 1      T/C = 12.1050  
+!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0340   
+!                Total:  Time = 13.24    Calls = 1      T/C = 13.2400  

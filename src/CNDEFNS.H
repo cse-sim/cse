@@ -80,6 +80,12 @@
 						//   Note: crude at best, use for testing only, 12-31-2012
 
 //------------------------------------------------ DEFINES --------------------------------------------------
+#define MAXSUBSTEPS 120		// max # of substeps per hour
+							// limit may be less if specific items present
+							//    if DHWSYS is present, limit is 60
+							// increase with care, trouble has been seen for higher values
+							//    e.g. 240 causes wfpak WDSUBHRFACTORS::wdsf_Setup() assert
+							//    5-2021
 
 #define HSMXSGDIST 8	// Max # of solar gain targets from one XSURF.
 						// Need 1 per solar gain distribution. 4->5 1990, ->8 2-95.
@@ -108,6 +114,7 @@
 							//   see also cnglob.h const int NDHWENDUSES
 #define NDHWENDUSESXPP 8	// # of extended DHW end uses
 							//   must be same as C_DHWEUXCH_COUNT
+#define NDHWSIZEDAYS 10		// # of DHW sizing design days for EcoSizer method
 
 #define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
 
@@ -132,9 +139,6 @@
 #define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
 
-#define SOLARFIX			// define to correct timing of slday() calls
-							//    and definition of HA, 10-25-2017
-							//    plus add'l changes, 8-2020
 #endif	// ifndef _CNEDEFNS_H
 
 // cndefns.h end

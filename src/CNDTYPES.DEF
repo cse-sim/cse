@@ -225,6 +225,10 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  NONE "None"
 			  PENUMBRA "Penumbra"
 			  }
+*choicb SLRINTERPMETH {
+			  CSE "CSE"
+			  TRNSYS "TRNSYS"
+			  }
 // day of week choice, sun=1: subtract 1 for DOW for use with tdpak.
 *choicb DOWCH    {  SUN "Sun"
 			  MON "Mon"
@@ -456,6 +460,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC125AC_SP "NyleC125A_CWP_SP"
 			NYLEC185AC_SP "NyleC185A_CWP_SP"
 			NYLEC250AC_SP "NyleC250A_CWP_SP"
+
+			SCALABLE_SP "Scalable_SP"		// scalable type for autosized standard design
 		}
 
 *choicb DHWEUCH {			// hot end uses

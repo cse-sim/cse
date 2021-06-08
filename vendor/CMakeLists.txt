@@ -45,10 +45,14 @@ if (KIVA_GROUND_PLOT)
 endif()
 
 # HPWHsim
+set(HPWHSIM_OMIT_TESTTOOL ON CACHE BOOL "HPWHsim: Do not build testing code" FORCE)
+set(HPWHSIM_ABRIDGED ON CACHE BOOL "HPWHsim: omit code not used by CSE" FORCE)
 add_subdirectory(HPWHsim)
 
 set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
-set_target_properties(testTool PROPERTIES FOLDER Dependencies/HPWHsim)
+if (NOT HPWHSIM_OMIT_TESTTOOL)
+  set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
+endif()
 
 # btwxt
 add_subdirectory( btwxt)

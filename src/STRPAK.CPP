@@ -24,7 +24,7 @@ static char THIS_FILE[] = __FILE__;
 static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 // temporary string buffer and access macro
-const int TMPSTRSZ = 200000;    		// size of Temp str buffer Tmpstr[].
+const size_t TMPSTRSZ = 400000;		// size of Temp str buffer Tmpstr[].
 static char Tmpstr[ TMPSTRSZ+2];	// buffer.  When full, buffer is re-used from start.
 // Each allocation is followed by prior TmpstrNx value for rev-order dealloc (strtempPop).
 // TMPSTRSZ: strpak.h.  +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
