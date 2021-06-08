@@ -54,3 +54,8 @@ if (NOT HPWHSIM_OMIT_TESTTOOL)
   set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
 endif()
 
+# btwxt
+add_subdirectory( btwxt)
+
+
+

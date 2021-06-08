@@ -7,3 +7,6 @@
 [submodule "vendor/kiva"]
 	path = vendor/kiva
 	url = https://github.com/bigladder/kiva.git
+[submodule "vendor/btwxt"]
+	path = vendor/btwxt
+	url = https://github.com/bigladder/btwxt.git
