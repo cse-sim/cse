@@ -131,13 +131,12 @@ static struct
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-/*-------------------------------- DEFINES --------------------------------*/
-/* solar constant (Btuh/sf): solar extraterrestial beam radiation before
-   variations during year. */
+// solar constant (Btuh/sf): ext solar irradiance on normal
+//   surface at mean earth/sun dist. SERI value: 1367 w/m2 (1 Btuh/ft2 = 3.1546 w/m2 )
 #ifdef SERI
-const double SOLCON = 433.33; // SERI value: 1367 w/m2 ( 1 Btuh/sf = 3.1546 w/m2
+const float SolarConstant = 433.33f; // SERI value: 1367 w/m2 ( 1 Btuh/sf = 3.1546 w/m2
 #else
-const double SOLCON = 434.; // previous value, source unknown
+const float SolarConstant = 434.f;	// previous value, source unknown
 #endif
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
@@ -188,7 +187,7 @@ t UNMAINTAINED 8 - 9 - 90 t main() t
   t t dminit();
   t ptr = slinit(RAD(40.0), RAD(122.2), 8.);
   t doy = 172;
-  t slday(doy, SLTMSOLAR);
+  t slday(doy, sltmSLR);
   t gmcos2alt(ptr->dircos[12], &alt, &azm, 1);
   t slsdc(RAD(180.), RAD(90.), sdcos);
   t jd1 = 208;
@@ -199,7 +198,7 @@ t UNMAINTAINED 8 - 9 - 90 t main() t
     t #if 0 t sldaydat(doy, &dec, &eqtime, &extbm);
     t printf("Day %d   Decl = %f\n", (INT)doy, DEG(dec));
     t #elseif 0 t printf("\n%d  \n", (INT)doy);
-    t slday(doy, SLTMSOLAR);
+    t slday(doy, sltmSLR);
     t for (i = 0; i < 24; i++) t
     {
       cq = slcoshr(sdcos, i);
@@ -216,7 +215,7 @@ t UNMAINTAINED 8 - 9 - 90 t main() t
       t for (lat = 25.; lat < 51.; lat += 5.) t
       {
         ptr = slinit(RAD(lat), RAD(122.2), 8.);
-        t slday(doy, SLTMSOLAR);
+        t slday(doy, sltmSLR);
         t slaltazm(hour, &alt, &azm);
         t printf("\nLat: %2.0f  MJ mult: %.2f     Alt: %f  Azm: %f",
                  t lat,
@@ -237,7 +236,7 @@ t UNMAINTAINED 8 - 9 - 90 t main() t
       {
         ptr = slinit(mjdat[i][0], RAD(122.2), 8.);
         t printf("\nLat: %.0f", DEG(mjdat[i][0]));
-        t slday(doy, SLTMSOLAR);
+        t slday(doy, sltmSLR);
         t if (gcnw() > 0) t break;
         t slhourfromalt(ATANSP(mjdat[i][1]));
         t slhourfromalt(ATANSP(mjdat[i][2]));
@@ -443,9 +442,9 @@ void FC slday( // set up daily data in current SLLOCDAT
 
   DOY doy,            // day of year, Jan-1 = 1, Dec-31 = 365
   int timetype,       // time system assumed for hourly tables (slpak.h)
-                      //   SLTMSOLAR:   Solar time
-                      //   SLTMLST:     Local standard
-                      //   SLTMLDT:     Local daylight time
+                      //   sltmSLR:   Solar time
+                      //   sltmLST:     Local standard
+                      //   sltmLDT:     Local daylight time
   int options /*=0*/) // option bits
                       //   1: skip setup if SLLOCDAT.doy == doy
 
@@ -515,9 +514,9 @@ LOCAL void FC NEAR sldaydat(
   *dec = cDec[0] + fVecIprod(sc, cDec + 1, 6); // declination (radians)
   *eqtime =                                    // equation of time (hours
     cEtm[0] + VIProd(sc, 4, cEtm + 1)          // radians
-                / (float)HA;                   // convert to hours
+                / (float)HaPerHr;                   // convert to hours
   *extbm =                                     // extrater beam intensity (Btuh/sf)
-    (float)SOLCON                              // solar constant
+    (float)SolarConstant                              // solar constant
     * (cEsd[0] + VIProd(sc, 4, cEsd + 1));     // earth/sun distance correction factor
 
 #else  /* prior non-SERI code follows */
@@ -536,7 +535,7 @@ LOCAL void FC NEAR sldaydat(
   *dec = (float)asin(sindec);
   *eqtime = (float)(-0.123570 * s1 + 0.004289 * c1 - 0.153809 * s2 - 0.060783 * c2);
 
-  *extbm = (float)(SOLCON * (1. + 0.033 * c1));
+  *extbm = SolarConstant * (1.f + 0.033f * c1);
   /* today's et beam rad is solar constant + variation */
 #endif /* SERI */
 
@@ -546,12 +545,12 @@ void FC sldec(/* Set declination-related data in current SLLOCDAT struct */
 
               float dec,    // declination of earth's axis, today, in radians
               int timetype) // time system for setting solar tables:
-                            //  SLTMSOLAR, SLTMLST, or SLTMLDT (slpak.h).
+                            //  sltmSLR, sltmLST, or sltmLDT (slpak.h).
 {
   double hasr, hass; /* hour angles of sun rise, sun set (0 = solar noon) */
   double hsr, hss;   /* hours of sun rise, sun set (curr time system) */
   SI ihsr, ihss;     /* .. truncated to integers */
-  double tmconst;    /* add to hour/HA to get hour angle */
+  double tmconst;    /* add to hour/HaPerHr to get hour angle */
   double sindec;
   double ha, fup, r;
   float alt;
@@ -585,22 +584,22 @@ void FC sldec(/* Set declination-related data in current SLLOCDAT struct */
   tmconst = -kPi; /* converts 0 at midnite to 0 at noon*/
   /* converting solar to local: add equation of time, and
      adjust for longitude relative to center of time zone */
-  if (timetype != SLTMSOLAR)          /* if not solar, convert local to solar */
-    tmconst += HA                     /* radians per hour: convert to angle*/
+  if (timetype != sltmSLR)          /* if not solar, convert local to solar */
+    tmconst += HaPerHr                     /* radians per hour: convert to angle*/
                  * (slloccur->eqtime  /* equation of time */
                     + slloccur->tzn)  /* time zone (longitude of zn ctr).. */
                - slloccur->rlong;     /* .. less actual longitude */
-  if (timetype == SLTMLDT)            /* if daylight local time */
-    tmconst -= HA;                    /* 1 hour earlier */
+  if (timetype == sltmLDT)            /* if daylight local time */
+    tmconst -= HaPerHr;                    /* 1 hour earlier */
   slloccur->tmconst = (float)tmconst; /* note tmconst also used below, also
                  slha calls below use .tmconst. */
 
   /* compute, for 24 hours of selected time type of day,
      Solar direction cosines, azimuth, and fraction of hour sun up. */
 
-  hsr = (hasr - tmconst) / HA; /* convert hour angle to hour */
+  hsr = (hasr - tmconst) / HaPerHr; /* convert hour angle to hour */
   ihsr = (SI)hsr;              /* truncate sunrise hour to integer */
-  hss = (hass - tmconst) / HA; /* sunset ... */
+  hss = (hass - tmconst) / HaPerHr; /* sunset ... */
   ihss = (SI)hss;
 #ifdef PRINTSTUFF
   x printf("\nSunrise = %f    Sunset = %f  Hours up = %f", x hsr, hss, hss - hsr);
@@ -829,7 +828,7 @@ float slha( // Calculate hour angle for hour of day
 
 /* Returns hour angle (radians, 0 = solar noon) */
 {
-  return hour * HA            // HA: earth rotation per hr (slpak.h)
+  return hour * HaPerHr            // HaPerHr: earth rotation per hr (slpak.h)
          + slloccur->tmconst; // .tmconst: adjust current time system to
                               // solar, make noon 0. set by sldec(). */
 } // ::slha
@@ -843,9 +842,9 @@ float slASTCor() // apparent solar time correction
   //               -> rlong > tzn
   //               -> astCor < 0 (neglecting eqtime)
   //               -> AST earlier than LST as expected
-  // astCor = eqtime - (rlong/HA - tzn)
+  // astCor = eqtime - (rlong/HaPerHr - tzn)
   // use precalculated tmconst (which also includes DST)
-  return (slloccur->tmconst + kPi) / HA;
+  return (slloccur->tmconst + kPi) / HaPerHr;
 } // ::slASTCor
 //======================================================================
 LOCAL void FC NEAR sldircos(
@@ -889,65 +888,61 @@ void FC slaltazm(/* Calculate solar altitude and azimuth for hour */
             1); /* use rob's deflaked method 7-88 */
 } /* slaltazm */
 //======================================================================
-#if 1
-void FC slaniso(/* Adjust beam and diffuse radiation values
-	   according to Hay anisotropic sky model */
+void FC slaniso(		// Adjust beam and diffuse radiation values
+						// according to Hay anisotropic sky model
+	float& beam,	// beam value (Btu/sf): used/replaced
+	float& diff,	// diffuse value (Btu/sf): used/replaced
+	int ihr)		// Hour of day (0 - 23, 0 = midnight to 1 AM).
+					//   Meaning of hour (LST, solar time, etc.)
+					//   depends on how SLLOCDAT was set up by slday()
 
-	float *pbeam, /* Pointer to beam value (Btu/sf): used/replaced. */
-	float *pdiff, /* Pointer to diffuse value (Btu/sf): used/replaced.*/
-	SI ihr)       /* Hour of day (0 - 23, 0 = midnight to 1 AM).
-			   Meaning of hour (LST, solar time, etc.)
-			   depends on how SLLOCDAT was set up by slday(). */
+/* must call slday() for day first (uses slloccur members) */
 
-			   /* must call slday() for day first (uses slloccur members) */
+/* Adjusted values of beam and diffuse *REPLACE* the current values */
 
-			   /* Adjusted values of beam and diffuse *REPLACE* the current values */
+/* Story: Code assumes sky is modelled as istropic (uniform) hemisphere of
+	sky radiation plus direct sun beam.  But actually, sky is brighter
+	near sun, near horizon, etc.  Hay model approximates reality better
+	with old code by increasing beam to approximate some of the extra sky
+	brightness near sun.  Rob per Chip, 12-89. */
 
-			   /* Story: Code assumes sky is modelled as istropic (uniform) hemisphere of
-				  sky radiation plus direct sun beam.  But actually, sky is brighter
-				  near sun, near horizon, etc.  Hay model approximates reality better
-				  with old code by increasing beam to approximate some of the extra sky
-				  brightness near sun.  Rob per Chip, 12-89. */
-
-				  /* Recoded 2-10-89 based on cp4sim equivalent function.  Features --
-					1.  Doesn't bother unless there is a little beam
-					2.  Constrains fb to be .8 max.  This prevents wild values from
-						early morning observations.
-					3.  Derives fd (diffuse factor) from fb rather than from basic
-						Hay formula, giving same result unless fb hit .8 limit.  In all
-						cases, total horiz is preserved */
+	/* Recoded 2-10-89 based on cp4sim equivalent function.  Features --
+	1.  Doesn't bother unless there is a little beam
+	2.  Constrains fb to be .8 max.  This prevents wild values from
+		early morning observations.
+	3.  Derives fd (diffuse factor) from fb rather than from basic
+		Hay formula, giving same result unless fb hit .8 limit.  In all
+		cases, total horiz is preserved */
 {
-	SI pos1, pos2;
-	SI ihx;
-	float c1, c2, cosi, f, fb, fd;
+	if (beam > 5.f) // if a little beam
+	{	float f = slloccur->sunupf[ihr];
+		if (f > .05f)	// if sun up > 3 mins
+		{	int ihx = (ihr + 1) % 24;
+			float c1 = slloccur->dircos[ihr][2];
+			float c2 = slloccur->dircos[ihx][2];
+			bool pos1 = (c1 >= 0.f);
+			bool pos2 = (c2 >= 0.f);
+			float cosi;
+			if (pos1 && pos2)
+				cosi = 0.5f * (c1 + c2);
+			else if (pos1)
+				cosi = 0.5f * c1 * c1 / (c1 - c2);
+			else if (pos2)
+				cosi = 0.5f * c2 * c2 / (c2 - c1);
+			else
+				cosi = 0.f;
 
-  if (*pbeam > 5.f) /* if a little beam */
-  {
-    if ((f = slloccur->sunupf[ihr]) > .05f) /* if sun up > 3 mins */
-    {
-      ihx = (ihr + 1) % 24;
-      c1 = slloccur->dircos[ihr][2];
-      c2 = slloccur->dircos[ihx][2];
-      pos1 = (c1 >= 0.f);
-      pos2 = (c2 >= 0.f);
-      if (pos1 && pos2)
-        cosi = (float)(0.5f * (c1 + c2));
-      else if (pos1)
-        cosi = (float)(0.5f * c1 * c1 / (c1 - c2));
-      else if (pos2)
-        cosi = (float)(0.5f * c2 * c2 / (c2 - c1));
-
-      fb = *pbeam / (f * slloccur->extbm); /* Beam factor */
-      if (fb > .8F)
-        fb = .8F; /* Limit to .8 */
-      fd = (*pdiff * f * fb) / (*pbeam * cosi);
-      /* derive diff. fctr from beam */
-      *pbeam *= (1.F + fd); /* adjust caller's values */
-      *pdiff *= (1.F - fb);
-    }
-  }
-} /* slansio */
-#else
+			float fb = beam / (f * slloccur->extbm);	// Beam factor
+			if (fb > .8f)
+		        fb = .8f;		// limit to 0.8
+			float fd = (diff * f * fb) / (beam * cosi);
+					// derive diff. fctr from beam
+			beam *= (1.f + fd); // adjust caller's values
+			diff *= (1.f - fb);
+		}
+	}
+}		// slansio
+//=============================================================================================
 void FC slaniso(/* Adjust beam and diffuse radiation values
        according to Hay anisotropic sky model */
 
@@ -1004,7 +999,7 @@ void FC slaniso(/* Adjust beam and diffuse radiation values
         }
     }
 } /* slansio */
-#endif
+
 
 ////////////////////////////////////////////////////////////////////////////
 // ASHRAE solar
@@ -2231,11 +2226,8 @@ BOOL SLRSURFDAY::InitDayIf( 	// conditionally initialize day-dependent values
 		}
 		else
 		{	
-#if 1	// bug fix (saw dot prod *very* slightly > 1), 4-3-2013
+			// insurance: dot prod sometimes *very* slightly > 1)
 			ssd_cosInc[ iT] = bracket( -1., DotProd3( SolarHr( iT).dirCos, DirCos()), 1.);
-#else
-x			ssd_cosInc[ iT] = DotProd3( SolarHr( iT).dirCos, DirCos());
-#endif
 			ssd_angInc[ iT] = acos( max( 0., ssd_cosInc[ iT]));
 		}
 	}
@@ -2643,7 +2635,6 @@ void SLRSURFDAY::RadRatios(		// f-chart irradiation ratios for surface
 		double C = pS->SinTilt()*pS->SinAzmS() / max( .001, pL->sl_cosLat);
 
 		double A2C2 = A*A + C*C;
-#if 1	// fix sun-never-rises bug, 9-26-08
 		double haSS_H = pD->sd_haSunset;		// horiz surface sunset hour angle
 		double haSR = 0.;
 		double haSS = 0.;
@@ -2668,28 +2659,6 @@ void SLRSURFDAY::RadRatios(		// f-chart irradiation ratios for surface
 			if (D < 0.)
 				D = 0.;
 		}
-#else
-x		BOOL bSR1 = (A > 0. && B > 0.) || (A >= B);
-x		double CSQR = C * sqrt( A2C2 - B*B);
-x		float haSS_H = pD->sd_haSunset;		// horiz surface sunset hour angle
-x
-x		double haT = acos( (A*B + CSQR)/A2C2);
-x		double haSR = fabs( min( haSS_H, haT));
-x		if (bSR1)
-x			haSR = -haSR;
-x
-x		haT = acos( (A*B - CSQR)/A2C2);
-x		double haSS = fabs( min( haSS_H, haT));
-x		if (!bSR1)
-x			haSS = -haSS;
-x		double ap = pD->sd_aCoeff - fDiff;
-x		double D = haSS >= haSR
-x			?   GFunc( haSS,   haSR,   A, B, C, ap)
-x			:   GFunc( haSS,  -haSS_H, A, B, C, ap)
-x			  + GFunc( haSS_H, haSR,   A, B, C, ap);
-x		if (D < 0.)
-x			D = 0.;
-#endif	// 9-26-08
 
 		float rbDiff = fDiff*DifX();
 		float rbGrRef = GrfX();

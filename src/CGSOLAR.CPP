@@ -385,7 +385,7 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 // Initialize slpak for a standard day near middle of month.  slselect(Locsolar) in effect. Note restored at exit.
 
 	slday( slrCalcJDays[ Top.tp_date.month],	// julian date for this month's solar calcs
-					SLTMLST );					// say use local standard time
+					sltmLST );					// say use local standard time
 	/* slpak.cpp: set up curr SLLOCDAT struct for given day:
 	   sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 	   Used by most other slpak calls. */
@@ -464,7 +464,7 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 	// Don't know a) if other parts of program depend on it (else do in wswfread each call)
 	//            b) if would be faster to push & pop the data it sets.
 	slday(Top.jDayST,		// julian date of simulation (standard time), cnguts.cpp.  Use of ST matches call in cgwthr.cpp.
-			SLTMLST,		// say use local standard time
+			sltmLST,		// say use local standard time
 			1);				// skip if no day change
 		// slpak.cpp: set up curr SLLOCDAT struct (which is cse.cpp:Locsolar) for given day:
 		// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.

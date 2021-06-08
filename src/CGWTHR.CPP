@@ -377,7 +377,7 @@ void WDHR::wd_Adjust(		// apply adjustments to weather data
 	// Optional anisotropic sky adjustment
 	// Do NOT adjust wd_DNI, wd_DHI
 	if (Top.skyModel == C_SKYMODCH_ANISO)
-		slaniso(&wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
+		slaniso( wd_bmrad, wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
 												//   near sun, etc, while still computing with sun's
 												//	 beam and isotropic diffuse radiation. slpak.cpp. */
 
@@ -398,7 +398,7 @@ void WDHR::wd_SetSolarValues(
 	int iHrST)		// standard time hr of day (0-23)
 
 {
-	slday(jDayST, SLTMLST, 1);	// set up curr SLLOCDAT struct for today if needed
+	slday(jDayST, sltmLST, 1);	// set up curr SLLOCDAT struct for today if needed
 								// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 								// used by slaniso & most other slpak calls.
 
@@ -618,7 +618,7 @@ RC DESCOND::dc_CheckFixSolar(
 	RC rc = RCOK;
 
 	// solar noon angles
-	slday( dc_doy, SLTMSOLAR, 1);
+	slday( dc_doy, sltmSLR, 1);
 	float sunAlt, sunAzm;
 	slaltazm( 12.f, &sunAlt, &sunAzm);
 	float sunZen = kPiOver2 - sunAlt;

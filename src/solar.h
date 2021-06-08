@@ -50,11 +50,7 @@
 // constants
 const double HaPerHr = kPi/12.;			// earth rotation per hr (rad)
 					  					//   for converting time to ha
-const float SolarConstant = 433.33f;	// solar constant (Btuh/ft2) =
-										//   ext solar irradiance on normal
-										//   surface at mean earth/sun dist.
-										//   SERI value: 1367 w/m2
-										//   (1 Btuh/ft2 = 3.1546 w/m2 )
+
 const int sltmSLR = 1;			// calcs done in solar time
 const int sltmLST = 2;			//  LST
 const int sltmLDT = 3;			//  LDT
@@ -68,24 +64,12 @@ const int slropCSMTAU13 = 1024;	// SLRDAY::SetupASHRAE() option: use 2013 tau co
 
 
 
-// slpak.cpp solar related definitions
-
-
 /*-------------------------------- DEFINES --------------------------------*/
-
-// Time types -- see slday().  All are 0..24, 0 at midnite.
-#define SLTMSOLAR 1       // solar time
-#define SLTMLST 2         // local standard time
-#define SLTMLDT 3         // local daylight savings time
 
 /* note: Hour Angle defined: time as angle from solar noon at longitude.
 		 Adjusted for longitude from center of time zone and from daylight or
 		 local time to solar (and date still changes at local/daylite midnite),
 	 so range is bit more than -Pi to Pi. (mainly used when sun is up.) */
-
-const double HA = k2Pi / 24.;  	// earth rotation, rad/hr
-								// for converting hours to hour angle
-								//   then add SLLOCDAT.tmconst.
 
 /*--------------------------------- TYPES ---------------------------------*/
 
@@ -116,10 +100,10 @@ struct SLLOCDAT
 	float hasunset;		// solar hour angle of sunset = -sunrise.
 	// equation of time: add to local time to get solar.
 	float eqtime;		// equation of time, hours, set in slday().
-	// time to hour angle conversion constant: add to hr/HA to make noon 0 & adjust curr type time to solar
+	// time to hour angle conversion constant: add to hr/HaPerHr to make noon 0 & adjust curr type time to solar
 	float tmconst;		// set in sldec(), used in slha,
 	float extbm;		// normal intensity of extraterrestrial beam for current day (Btu/ft2), set in slday().
-	int timetype;		// time type of following values: SLTMSOLAR, SLTMLST, SLTMDT
+	int timetype;		// time type of following values: sltmSLR, sltmLST, SLTMDT
 	float sunupf[24];		// Sun up fraction of each hour (0 - 1); entry 0 is for midnight - 1 AM, etc.
 	float dircos[24][3]; 	// Direction cosines of sun for day, on the hour, or at sunrise/sunset for last and 1st night hour
 	float slrazm[24];		// Solar azimuth evaluated on the hour (or sunrise/sunset) for current day
@@ -144,7 +128,8 @@ int slsurfhr(float sdircos[3], int ihr, float* pCosi, float* pAzm = NULL,
 float slSunupf(int ihr);
 int slSunupBegEnd(int ihr, float& hrBeg, float& hrEnd, float sunupf = -1.f);
 void   FC slaltazm(float fhour, float* altp, float* azmp);
-void   FC slaniso(float* pbeam, float* pdiff, SI ihr);
+void slaniso(float& beam, float& diff, int ihr);
+void slaniso(float* pbeam, float* pdiff, SI ihr);
 float slha(float fhour);
 float slASTCor();
 
