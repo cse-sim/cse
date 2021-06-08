@@ -14,7 +14,7 @@
 #include <msghans.h>	// MH_S0510
 
 
-#include "slpak.h"		// slsdc
+#include "solar.h"
 #include "psychro.h"
 #include "cnguts.h"
 #include "mspak.h"
@@ -147,10 +147,10 @@ x
 */
 
 // criterion for SFMODEL=AUTO decisions
-#define TC_SHMASS        (1.f/Top.nSubSteps)	// below this use quick model, above use subhourly
+#define TC_SHMASS        (1.f/Top.tp_nSubSteps)	// below this use quick model, above use subhourly
 
 // time constants below which to issue warnings
-#define TC_SHMASS_WARN   (1.f/Top.nSubSteps)
+#define TC_SHMASS_WARN   (1.f/Top.tp_nSubSteps)
 #define TC_HMASS_WARN    1.f
 
 #endif
@@ -724,7 +724,7 @@ x		printf( "Hit\n");
 		else
 		{	// init mass matrix used at run time
 			rc = ((MASSMATRIX *)ms_pMM)->mx_Setup(
-				isSubhrly ? 1.f/Top.nSubSteps : 1.f,	// time step: 1 subhour (as hour fraction), or 1 hour.
+				isSubhrly ? 1.f/Top.tp_nSubSteps : 1.f,	// time step: 1 subhour (as hour fraction), or 1 hour.
 				inside.bc_h,		// surface conductances from surface & msty, combined above
 				outside.bc_h);			// ..
 		}

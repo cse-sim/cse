@@ -14,7 +14,7 @@
 
 #include <vrpak.h>	// vrOpen vrClose
 #include <tdpak.h>	// tddtdis tddyi tddis
-#include <slpak.h>	// slinit SLLOCDAT
+#include "solar.h"
 #include <xiopak.h>	// xfopen
 
 #include <cgwthr.h>	// cgwfxxxx functions
@@ -43,7 +43,6 @@
 
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
-// also see Locsolar in dummy locpak below.
 
 #ifdef BINRES //cnglob.h
 static BOO NEAR brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
@@ -54,10 +53,6 @@ static BOO NEAR dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // set by tp_DoDTStuff to tell doIvlAccum to duplicate next hour's data for the skipped hour
   					   // (and when DT goes off, the extra hour's data is lost (overwritten)).
 #endif
-
-static float verSun[24] = { 0.f };	/* cosine of solar beam incidence angle on horizontal surface by hour.
-					   Set by makHrSgt call in doBegIvl(); used re bin res file from doIvlAccum().
-					   Added 9-94. */
 
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
@@ -78,10 +73,6 @@ LOCAL void FC NEAR setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC NEAR doIvlReports();
 LOCAL void FC NEAR binResInit( int isAusz);
 LOCAL void FC NEAR binResFinish();
-LOCAL RC   FC NEAR locInit();
-LOCAL void FC NEAR locDone();
-
-
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -120,9 +111,9 @@ void FC cgClean( 		// cg overall init/cleanup routine
 	dmfree( DMPP( UnspoolInfo));	// if not NULL, free dm block, set ptr NULL. dmpak.cpp.
 
 	cgDone();				// simulator cleanup, below, normally redundant
-	runFazDataFree();			// free run basAnc records, etc. below, normally redundant. 6-95.
+	runFazDataFree();		// free run basAnc records, etc. below, normally redundant. 6-95.
 
-	locDone();				// clean up location stuff: free Locsolar. local. redundant call ok.
+	Top.tp_LocDone();		// clean up location stuff: free Locsolar. redundant call ok.
 
 #if defined( BINRES)
 	brfw.clean();			// clean the only ResfWriter object. local object, brfw.cpp code.
@@ -547,7 +538,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
-		Top.isEndHour = (Top.iSubhr + 1 >= Top.nSubSteps);	// set flag if last subHour of hour
+		Top.isEndHour = (Top.iSubhr + 1 >= Top.tp_nSubSteps);	// set flag if last subHour of hour
 
 #if defined( DEBUGDUMP)
 		DbDo( dbdSTARTSTEP);		// nothing yet debug-printed for this subhour
@@ -580,9 +571,8 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 
 		// conditional hourly solar gain calculations
 		if (Top.isSolarCalcDay) 		// on for 24 hours of first day of month, run [, season].  Set above, cleared doEndIvl.
-			makHrSgt(&verSun[Top.iHr]);	/* calculate solar gains to each target, ready for tp_SimHour to combine with wthr data.
-		   			   Sets SGRAT entries, valid for a month (has hourly storage slots).
-		   			   Returns cos solar incidence angle for hour for month via arg. cgsolar.cpp. */
+			makHrSgt();	// calculate solar gains to each target, ready for tp_SimHour to combine with wthr data.
+		   				//  Sets SGRAT entries, valid for a month (has hourly storage slots).
 
 		// zone "early" inits -- zone gains etc.
 		ZNR* zp;
@@ -903,8 +893,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 // Returns RCOK if all ok, else error code, message already issued.
 {
-	// callers 6-95: tp_MainSimI(); cnausz.cpp:begDesDay().
-
 	// CAUTION this fcn called BEFORE setting of time/date variables Top.jDay, Top.isWarmup, Top.isDT, etc.
 
 	// note tp_DTInit() called by caller after initing jDay, for warmup then for run, 1995.
@@ -913,16 +901,24 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	   If a leap year >= 0, tddyi() allows for Feb 29.  For this to work, must find / check / fix
 	   all conversions to use same year, including those in input e.g. run start & end month-day. */
 
+	RC rc = RCOK;
 
 // Initialize for location
-	EF( locInit() )		// calls slinit() w wthr file location data (via Top).
-						// inits Locsolar (comments below)
-						// EF: return RCBAD on any non-RCOK return.
+	EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
+							// inits Locsolar (comments below)
+							// EF: return RCBAD on any non-RCOK return.
 
 // Set up weather file, TDV file, and DESCONDs
 //   Do each phase, allowing file or location changes.
 //   Messages errors.
 	EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+
+#if 0	// enable if needed
+0	// pre-run DHW init
+0	DHWSYS* pWS;
+0	RLUP(WsR, pWS)
+0		rc |= pWS->ws_RddInit();
+#endif
 
 // Open import files used in this run, if any
 	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
@@ -963,7 +959,6 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 	// RSYS init
 	RSYS* rs;
-	RC rc = RCOK;
 	RLUP( RsR, rs)
 		rc |= rs->rs_RddInit( isAusz);
 
@@ -1020,9 +1015,6 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-// close weather file & clean up. Tentatively 6-95 done each phase eg so wthr file name may change.
-	cgWfDone();				// cgwthr.cpp. only call other than cleanup fcns. Redundant call ok.
-
 #if 1//6-95 move to cgRddDone from cgMainsim so also done after error
 #ifdef BINRES	// cnglob.h
 // close binary results files if open
@@ -1034,7 +1026,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // zone and ah results records are not free'd here, but cgRddInit code that allocates them repeats ok anyway, 6-95.
 
 // clean up location data/solar stuff
-	locDone();				// eg free Locsolar. local. redundant call ok.
+	Top.tp_LocDone();		// eg free Locsolar. redundant call ok.
 	return RCOK;
 }                   // cgRddDone
 //-----------------------------------------------------------------------------------------------------------
@@ -1044,7 +1036,7 @@ RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
-	// callers 6-95: tp_MainSimI(); cnausz.cpp:cgAuszI().
+	cgWthrClean(DONE);	// close wthr file / clean weather data structures
 	return RCOK;		// empty function 7-95.
 }		// cgFazDone
 //-----------------------------------------------------------------------------------------------------------
@@ -1251,15 +1243,23 @@ RC GAIN::gn_CkF(
 			rc |= ckRefPt( &MtrB, mtri,"gnMeter");
 	}
 
-	// controlling DHWSYS linkage
+	// controlling DHWSYS or DHWMTR linkage
 	//   DHWENDUSE is optional (defaults to _TOTAL)
-	//   but cannot be provided w/o DHWSYS
- 	if (!IsSet( GAIN_DHWSYSI) && IsSet( GAIN_DHWENDUSE))
-		oer( "gnCtrlDHWEndUse cannot be given without gnCtrlDHWSYS");
+	//   but cannot be provided w/o DHWSYSI or DHWMTRI
+	int nCtrl = IsSetCount(GAIN_DHWSYSI, GAIN_DHWMTRI, 0);
+	if (nCtrl == 0)
+	{	if (IsSet(GAIN_DHWENDUSE))
+			oer("gnCtrlDHWEndUse cannot be given without gnCtrlDHWSYS or gnCtrlDHWMETER");
+	} 
+	else if (nCtrl == 2)
+		oer("Only 1 of gnCtrlDHWSYS or gnCtrlDHWMETER can be given");
+
 	if (bSetup)
 	{	// final (redundant? runtime check of controlling DHWSYS reference
 		if (gn_dhwsysi)		// if given
 			rc |= ckRefPt( &WsR, gn_dhwsysi, "gnCtrlDHWSYS");
+		else if (gn_dhwmtri)		// if given
+			rc |= ckRefPt(&WMtrR, gn_dhwmtri, "gnCtrlDHWMETER");
 	}
 
 	// check that sum of fractions of heat to zone, plenum, return is not > 1, insofar as not unevaluated expressions
@@ -1330,6 +1330,10 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
           							// This is for binary results file and/or custom reports (via ZNRES).
 	if (gn_dhwsysi)
 	{	float gal = WsR[ gn_dhwsysi].ws_fxUseMix.wmt_GetByEUX( gn_dhwEndUse);
+		gnPX *= gal;
+	}
+	else if (gn_dhwmtri)
+	{	float gal = WMtrR[gn_dhwmtri].curr.H.wmt_GetByEUX( gn_dhwEndUse);
 		gnPX *= gal;
 	}
 	gnPX *= gnDlFrPow;				// reduce power per daylighting or whatever
@@ -1896,7 +1900,7 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 	}
 }               // RSYSRES_IVL_SUB::rsr_Accum
 //-----------------------------------------------------------------------------
-void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// Accumulate RSYS results
+void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// copy to prior
 {
 	BYTE* d = 
 		((BYTE *)this + (offsetof(RSYSRES,prior) - offsetof(RSYSRES,curr)));
@@ -2222,6 +2226,10 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 		setPriorRes( &pZR->curr.H);	// copy zone's current hour results to prior hour results
 	RLUP( RsResR, pRSR)
 		pRSR->curr.H.rsr_SetPrior();
+	DHWMTR* pWMT;
+	RLUP(WMtrR, pWMT)
+		pWMT->curr.H.wmt_SetPrior();
+
 	if (Top.ivl > C_IVLCH_D)
 		return;				// if hour call, done
 
@@ -2230,6 +2238,9 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 		setPriorRes( &pZR->curr.D);	// copy this zone's, or sum-of-zones, current day results to prior day results
 	RLUP( RsResR, pRSR)
 		pRSR->curr.D.rsr_SetPrior();
+	RLUP(WMtrR, pWMT)
+		pWMT->curr.D.wmt_SetPrior();
+
 	if (Top.ivl > C_IVLCH_M)
 		return;				// if day call, done
 
@@ -2238,6 +2249,9 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 		setPriorRes( &pZR->curr.M);	// copy this zone's month results to prior month results
 	RLUP( RsResR, pRSR)
 		pRSR->curr.M.rsr_SetPrior();
+	RLUP(WMtrR, pWMT)
+		pWMT->curr.M.wmt_SetPrior();
+
 	// if (Top.ivl > C_IVLCH_Y)
 	//  return;				// if month call, done
 
@@ -2603,34 +2617,6 @@ LOCAL void FC NEAR binResFinish()	// complete and close binary results files at 
 	brf = FALSE;
 }			// binResFinish
 #endif // BINRES
-//===========================================================================================================
-static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) for current calculation.
-					   Locsolar holds location and daily solar info for slpak fcns.
-					   Alloc/init for location by slinit called from locInit().
-					   Released by slfree from locDone().
-					   Address saved by slinit for other slpak calls.
-				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
-//------------------------------------------------------------------------
-LOCAL RC FC NEAR locInit()		// location-initializer for CSE
-// inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
-// returns RCOK if ok, else message already issued.
-{
-// init slpak.cpp: alloc SLLOCDAT (slpak.h) and init for location.
-//   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
-//   slpak remembers its location internally.
-
-	Locsolar = slinit( RAD( Top.latitude),	// latitude (to radians)
-					   RAD( Top.longitude), // longitude
-					   Top.timeZone, 		// time zone
-					   Top.elevation );		// site altitude (ft)
-	return RCOK;
-}		// locInit
-//------------------------------------------------------------------------
-LOCAL void FC NEAR locDone()		// semi-dummy locdone(): Free location related dm stuff: Locsolar
-{
-	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
-}			// locDone
-//===========================================================================================================
 
 /***************************************** rest of file is if-outs *****************************************/
 

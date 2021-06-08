@@ -1183,7 +1183,7 @@ x				z.qrIgMs += bcp->rIg;	// add surf's inside radiant int gain to adj zn's .qr
 		case MSBCADIABATIC:		// UZM mass coupling scheme adds fake mm_qSrf to "adiabatic" outside
 								//   surfaces; this must be accounted for in heat balance 9-16-2010
 			{	// accum mass hourly and daily net and abs heat flows for energy bal checks
-				double qtem = ms_area * pMFD->mm_qSrf[ ibc] * Top.subhrDur;
+				double qtem = ms_area * pMFD->mm_qSrf[ ibc] * Top.tp_subhrDur;
 				bcp->qxhnet += qtem;
 				bcp->qxhtot += fabs(qtem);
 				bcp->qxdnet += qtem;
@@ -2007,10 +2007,10 @@ void MASSFD::DbDump( BCX* bcx) const
 	DbPrintf( "Surf '%s'  qIE=%.4f  qIEdelta=%.5f  qSrfNet*dt=%.5f  qBal=%.5f\n"
 		     "       tOldi=%.4f  qSrfi*dt=%.5f  HCi=%.4f  HCEffi=%.4f  tNdi=%.4f  qIEi=%.4f\n"
 			 "       tOldo=%.4f  qSrfo*dt=%.5f  HCo=%.4f  HCEffo=%.4f  tNdo=%.4f  qIEo=%.4f\n",
-		Name(), mm_qIE, mm_qIEDelta, Top.subhrDur*(mm_qSrf[ 0]+mm_qSrf[ 1]), qBal,
-		tOld[ 0],   Top.subhrDur*mm_qSrf[ 0], nd[   0].mn_hc, nd[   0].mn_hcEff, nd[   0].mn_t,
+		Name(), mm_qIE, mm_qIEDelta, Top.tp_subhrDur*(mm_qSrf[ 0]+mm_qSrf[ 1]), qBal,
+		tOld[ 0],   Top.tp_subhrDur*mm_qSrf[ 0], nd[   0].mn_hc, nd[   0].mn_hcEff, nd[   0].mn_t,
 			nd[  0].mn_InternalEnergy(),
-		tOld[ nLx], Top.subhrDur*mm_qSrf[ 1], nd[ nLx].mn_hc, nd[ nLx].mn_hcEff, nd[ nLx].mn_t,
+		tOld[ nLx], Top.tp_subhrDur*mm_qSrf[ 1], nd[ nLx].mn_hc, nd[ nLx].mn_hcEff, nd[ nLx].mn_t,
 			nd[ nLx].mn_InternalEnergy());
 	if (bcx)
 	{	bcx[ 0].DbDump( "   Inside");
@@ -2104,7 +2104,7 @@ x		printf( "Hit\n");
 	// compare internal energy change to surface flux
 	mm_qIEDelta = mm_InternalEnergyDelta( tOld);
 	mm_qIE += mm_qIEDelta;		// must use delta scheme due to possibly changed node HCs
-	double qDelta = Top.subhrDur * (mm_qSrf[ 0] + mm_qSrf[ 1]);
+	double qDelta = Top.tp_subhrDur * (mm_qSrf[ 0] + mm_qSrf[ 1]);
 	mm_qBal = mm_qIEDelta - qDelta;	// energy balance, Btu/ft2
 									//  >0 = more energy appeared in mass than was added
 

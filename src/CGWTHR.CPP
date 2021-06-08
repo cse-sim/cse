@@ -12,7 +12,7 @@
 #include <msghans.h>	// MH_R0168
 
 #include <psychro.h>	// psyHumRat1
-#include <slpak.h>		// slday, slaniso
+#include "solar.h"
 #include <wfpak.h>
 #include <cnguts.h>
 #include <cul.h>		// FsSET 6-95
@@ -50,7 +50,7 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 
 // close weather file possible if end of run
 	if (cs != ENTRY)		// not at startup: not if Wfile.init() has not been called
-		cgWfDone();		// close any open weather file
+		Wfile.wf_Close();		// close any open weather file
 
 // init weather file info record
 	Wfile.wf_Init();		// sets record to say no file open
@@ -65,11 +65,14 @@ RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error message
 // also uses: tp_wfName, tp_TDVfName, [,.isDT]
 // returns non-RCOK if error, message already issued.
 {
-	RC rc = Wfile.wf_Open( tp_wfName, tp_TDVfName);	// open wthr file and option TDV file
+	RC rc = RCOK;
+#if 0
+	rc |= Wfile.wf_Open( tp_wfName, tp_TDVfName);	// open wthr file and option TDV file
 													// init WFILE object, msg if error.
 	if (!rc)
 		rc = Wfile.wf_FillWDYEAR( WRN);		// read/cache entire weather file
 											//   TODO: handle partial years
+#endif
 
 	// design conditions
 	//  set any derived values
@@ -87,13 +90,13 @@ RC TOPRAT::tp_WthrBegDay()
 	int dayTy = WFILE::gshrFILEDAY;		// type of day for wf_GenSubrRad
 	if (tp_dsDay)	// if this is a design day
 	{	rc |= tp_WthrFillDsDay(&Wfile);
-		dayTy = tp_dsDay == 1 ? WFILE::gshrDSDAY0
+		dayTy = tp_dsDay == 1  ? WFILE::gshrDSDAY0
 			   : Top.tp_AuszWthrSource() == TOPRAT_COOLDSDAY
 			                   ? WFILE::gshrFILEDAY
 			   :                 WFILE::gshrDSDAY;
 	}
 
-	rc |= Wfile.wf_GenSubhrRad( dayTy, jDay);
+	rc |= Wfile.wf_GenSubhrRad( tp_slrInterpMeth, dayTy, jDay);
 
 	return rc;
 }		// TOPRAT::tp_WthrBegDay
@@ -138,10 +141,6 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 	// integrated-over-hour values
 	radBeamHrAv = Wthr.d.wd_bmrad;		// beam irradiance
 	radDiffHrAv = Wthr.d.wd_dfrad;		// diffuse irradiance
-#if !defined( SOLARFIX)
-	radBeamNxHrAv = WthrNxHr.d.wd_bmrad;	// next hour beam irradiance
-	radDiffNxHrAv = WthrNxHr.d.wd_dfrad;	// next hour diffuse irradiance
-#endif
 
 	// instantaneous values at end of hour
 	tDbOHr = Wthr.d.wd_db;				// dry bulb temp, deg F
@@ -178,10 +177,6 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 //-----------------------------------------------------------------------------
 void TOPRAT::tp_SetPvHrWthr()		// copy current hour wthr mbrs to previous
 {
-#if !defined( SOLARFIX)
-	radBeamPvHrAv = radBeamHrAv;
-	radDiffPvHrAv = radDiffHrAv;
-#endif
 	tDbOPvHr = tDbOHr;
 	tWbOPvHr = tWbOHr;
 	tDpOPvHr = tDpOHr;
@@ -199,8 +194,8 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 	tDbOPvSh = tDbOSh;
 
 // common setup
-	float f = float(iSubhr)/nSubSteps;    	// fraction of hour passed at start this subhour
-	float g = float(iSubhr+1)/nSubSteps;	// fraction of hour passed at end this subhour
+	float f = float(iSubhr)/tp_nSubSteps;    	// fraction of hour passed at start this subhour
+	float g = float(iSubhr+1)/tp_nSubSteps;	// fraction of hour passed at end this subhour
 	float h = 1.f - g;					// fraction of hour remaining after this subhour
 
 // interpolate values for data with instantenous end-hour values in weather file
@@ -242,7 +237,6 @@ x	}
 	// form subhour average(s) for data with instantenous values in weather file
 	tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
 
-#if defined( SOLARFIX)
 	// subhr radiation values precalculated for entire day
 	//   see WFILE::wf_GenSubhrRad()
 #if 0
@@ -253,49 +247,7 @@ x	}
 	else
 #endif
 		// check day?
-		Wfile.wf_GetSubhrRad(jDayST, iHrST, iSubhr, radBeamShAv, radDiffShAv);
-#else
-/* setup for interpolating subhour average value for data with average (integrated) values in file:
-	Determine a = fraction previous hour, b = fraction current hour, c = fraction next hour  even if subhr overlaps middle hour.
-	The simple cases are:
-	    subhr in 1st half hour: use part prev, part curr hour:   a = .5 - m;  b = .5 + m;   c = 0;
-	    subhr in 2nd half hour: use part curr, part next hour:   a = 0;       b = 1.5 - m;  c = m - .5;
-	where  m = (f + g)/2. Use weighted sum when subhr overlaps middle of hour. */
-
-	float f1 = min( f, .5f), g1 = min( g, .5f);		// start and end of portion of subhr in 1st half of hour
-	float f2 = max( f, .5f), g2 = max( g, .5f);		// .. in 2nd half of hour
-	float fr1 = (g1 - f1)/subhrDur, fr2 = (g2 - f2)/subhrDur; 	// fractions of subhr in 1st and 2nd halves of hour
-	float m1 = .5f*(f1 + g1), m2 = .5f*(f2 + g2);	// middle of portions of subhr in 1st and 2nd halves of hour
-
-	float a = (.5f - m1)*fr1;				// fraction of previous hour avg value to use in forming subhr avg value
-	float b = (.5f + m1)*fr1 + (1.5f - m2)*fr2;		// .. current ..
-	float c = (m2 - .5f)*fr2;				// .. next ..
-
-	ASSERT( fabs(a+b+c-1.) < 1.e-5);			// a + b + c should be 1.0 within limits of float arithmetic
-
-// Compute adjustment factors (constant over hour) to make subhour values add up to given hour value. See Rob's NILES106.TXT, 1-95.
-
-	double beamAdj = radBeamHrAv==0.f  ?  0.f  : 							// prevents /0
-					 8*radBeamHrAv / (radBeamPvHrAv + 6*radBeamHrAv + radBeamNxHrAv);
-
-	double diffAdj = radDiffHrAv==0.f  ?  0.f  :
-					 8*radDiffHrAv / (radDiffPvHrAv + 6*radDiffHrAv + radDiffNxHrAv);
-
-// Interpolate subhour average power values for data with average values in file. Multiply by subhrDur for energy.
-
-	radBeamShAv = (a * radBeamPvHrAv + b * radBeamHrAv + c * radBeamNxHrAv) * beamAdj;
-	radDiffShAv = (a * radDiffPvHrAv + b * radDiffHrAv + c * radDiffNxHrAv) * diffAdj;
-
-#if 0
-	float radBeamX, radDiffX;
-	Wfile.wf_GetSubhrSolar(iHrST, iSubhr, radBeamX, radDiffX);
-	if (frDiff(radBeamShAv, radBeamX) > .001f || frDiff(radDiffShAv, radDiffX) > .001f)
-	{	printf("\nSolar mismatch");
-		Wfile.wf_UpSampleDay(jDay);
-	}
-#endif
-
-#endif
+	Wfile.wf_GetSubhrRad(jDayST, iHrST, iSubhr, radBeamShAv, radDiffShAv);
 
 #ifdef SOLAVNEND // undef in cndefns.h
 o // Interpolate end-subhour instantaneous values for same data
@@ -341,9 +293,15 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	DOY jDayST = Top.jDayST;  		// day of simulation 1-365, std time
 									//   appropriate value for autosize design days
 	int iHrST = Top.iHrST;  		// hour 0-23, standard time.
+#if defined( DOSOLARONREAD)
+	int wfOp = 0;
+#else
 	int wfOp = WF_SAVESLRGEOM;		// wf_Read(): do not overwrite solar geometry values
+#endif
+
 	if (Top.isDT)
 		wfOp |= WF_DSTFIX;			// wf_Read(): handle day-transition values during DST
+	wfOp |= WF_DBGTRACE;
 	RC rc = RCOK;
 
 	// modify iHrST and jDayST as needed
@@ -379,66 +337,27 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 		break;
 	}
 
+#if !defined( DOSOLARONREAD)
 	// set up solar conditions
 	wd_SetSolarValues(jDayST, iHrST);
-	// NOTE: wfOp includes WF_SAVESLRGEOM -- wd_sunup, wd_slAzm, wd_slAlt survive wf_Read()
+	// NOTE: wfOp includes WF_SAVESLRGEOM -- wd_sunupf, wd_slAzm, wd_slAlt survive wf_Read()
+#endif
 	
-#if 1
 	// read
 	if (Top.tp_dsDay)
-	{
-		rc |= pWF->wf_GetDsDayHr(this, iHrST, WRN | wfOp);
+	{	rc |= pWF->wf_GetDsDayHr(this, iHrST, WRN | wfOp);
 		if (Top.tp_dsDay == 1)	// if heating design day
 			rc |= wd_UpdateDesCondHeating();	// update conditions re possible hourly vars
 	}
 	else
 		rc |= pWF->wf_Read(this, jDayST, iHrST, WRN | wfOp);	// Read hour's data from weather file
-#else
 
-	switch (Top.tp_dsDay)
-	{
-	case 1:			// autoSizing. heating design day. Synthesize no-solar weather, probably const temp.
-		rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read data for midnight from weather file
-															// WHY: sets ground temp to plausible winter values
-		wd_wndSpd = 15;
-		wd_wndDir = 0;  						// 15 mph north wind
-		wd_DNI = wd_bmrad = wd_DHI = wd_dfrad = wd_glrad = 0;		// no insolation -- dark all day
-		wd_cldCvr = 0;							// no cloud cover (impacts tSky)
-		wd_db = Top.heatDsTDbO;					// outdoor temperature as input or as dfl'd from wthr file hdr
-		if (Top.IsSet( TOPRAT_HEATDSTWBO))		// if user input the heat design day wetbulb
-			wd_wb = Top.heatDsTWbO;				// use input value. hourly variable allowed but not expected.
-		else
-		{	// calculate default wetbulb
-			float w = psyHumRat2( wd_db, .7);	// humidity ratio for drybulb & 70% rel hum
-			wd_wb = psyTWetBulb( wd_db, w);		// wetbulb for drybulb & humidity ratio
-		}
-		rc |= wd_EstimateMissingET1( 0);		// rederive wd_tSky, wd_taDp,
-		break;
-
-	case 2:			// autoSizing. cooling. use wthr file design day data for month.
-		if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSMO)
-			// read month's design day
-			rc = pWF->wf_Read( this, Top.auszMon, iHrST, 	// Read hour's data from wthr file design day
-					 WRN | WF_DSNDAY );			// option says 2nd arg is design day mon 1-12 not Julian date.
-		else
-		{	// read actual day
-			rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read hour's data from weather file
-			if (Top.tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
-			{	// DSCOND design day: overwrite/adjust weather file values with generated
-				int iDC = Top.tp_coolDsCond[ Top.tp_dsDayI-1];
-				const DESCOND& DC = DcR[ iDC];
-				wd_FillFromDESCOND( DC, iHrST);
-			}
-		}
-		break;
-
-	case 0:			// main simulation day - not autoSizing
-		rc = pWF->wf_Read( this, jDayST, iHrST, WRN|wfOp);	// Read hour's data from weather file
-		break;
-	}
+#if 0 && defined( _DEBUG)
+	if (Top.tp_autoSizing)
+		DbPrintf("WFR %2d %2d %x db=%0.2f su=%.2f bm=%.0f df=%0.f\n",
+			jDayST, iHrST, (wfOp & EROMASK) / EROP1, wd_db, wd_sunupf, wd_bmrad, wd_dfrad);
 #endif
 
-#if defined( SOLARFIX)
 #if 0 && defined( _DEBUG)
 	float bmrad = wd_DNI;
 	float dfrad = wd_DHI;
@@ -447,10 +366,6 @@ RC WDHR::wd_WfReader( 	// read an hour's weather data and make adjustments
 	if (frDiff(bmrad, wd_bmrad) > .0001f
 	 || frDiff(dfrad, wd_dfrad) > 0.0001f)
 		printf("\nDiff");
-#endif
-#else
-	if (!rc)			// if wfRead failed, eg date not in file or type without design days
-		wd_Adjust(iHrST);
 #endif
 
 	return rc;
@@ -462,7 +377,7 @@ void WDHR::wd_Adjust(		// apply adjustments to weather data
 	// Optional anisotropic sky adjustment
 	// Do NOT adjust wd_DNI, wd_DHI
 	if (Top.skyModel == C_SKYMODCH_ANISO)
-		slaniso(&wd_bmrad, &wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
+		slaniso( wd_bmrad, wd_dfrad, iHrST);	// adjust data in place to approx model sky brighter
 												//   near sun, etc, while still computing with sun's
 												//	 beam and isotropic diffuse radiation. slpak.cpp. */
 
@@ -483,7 +398,7 @@ void WDHR::wd_SetSolarValues(
 	int iHrST)		// standard time hr of day (0-23)
 
 {
-	slday(jDayST, SLTMLST, 1);	// set up curr SLLOCDAT struct for today if needed
+	slday(jDayST, sltmLST, 1);	// set up curr SLLOCDAT struct for today if needed
 								// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 								// used by slaniso & most other slpak calls.
 
@@ -491,17 +406,24 @@ void WDHR::wd_SetSolarValues(
 	float verSun = 0.f;				// hour's vertical fract of beam (cosi to horiz)
 									// init 0 for when sun down.
 	float cosz;
-	wd_sunup = slsurfhr(dchoriz, iHrST, &verSun, &wd_slAzm, &cosz);
-	if (!wd_sunup)
-		wd_slAzm = wd_slAlt = 0.f;
+	int sunup = slsurfhr(dchoriz, iHrST, &verSun, &wd_slAzm, &cosz);
+	if (!sunup)
+		wd_sunupf = wd_slAzm = wd_slAlt = 0.f;
 	else
+	{	wd_sunupf = slSunupf(iHrST);
 		wd_slAlt = kPiOver2 - acos(cosz);
+	}
 }	// WDHR::wd_SetSolarValues
-//---------------------------------------------------------------------------
-void FC cgWfDone()   		// Close, clean up hourly simulator weather file
+//-----------------------------------------------------------------------------
+int WDHR::wd_SunupBegEnd(		// beg / end times when sun is up during hour
+	int iH,		// hour (0-23)
+	float& hrBeg,	// returned
+	float& hrEnd) const
+// assumes wd_SetSolarValues has been called
+// returns true iff sun is up for any portion of hour
 {
-	Wfile.wf_Close();		// close wthr file (nop if unopened)
-}			// cgWfDone
+	return slSunupBegEnd(iH, hrBeg, hrEnd, wd_sunupf);
+}	// WDHR::ws_SunupBegEnd
 //=============================================================================
 RC TOPRAT::tp_WthrFillDsDay(
 	WFILE* pWF)
@@ -523,7 +445,7 @@ RC TOPRAT::tp_WthrFillDsDay(
 			if (tp_AuszWthrSource() == TOPRAT_COOLDSMO)
 				// read month's design day
 				rc = pWF->wf_Read(&wd, auszMon, iHr, 	// Read hour's data from wthr file design day
-					WRN | WF_DSNDAY);			// option says 2nd arg is design day mon 1-12 not Julian date.
+							WRN | WF_DSNDAY);			// option says 2nd arg is design day mon 1-12 not Julian date.
 			else
 			{	// read actual day
 				rc = pWF->wf_Read(&wd, jDayST, iHr, WRN | wfOp);	// Read hour's data from weather file
@@ -606,7 +528,7 @@ void WDHR::wd_FillFromDESCOND(		// overwrite/adjust hourly data for design condi
 
 	// derive irradiance
 	//   note: tauB/tauD both 0 -> no solar
-	if (wd_sunup && dc.dc_tauB > 0.f && dc.dc_tauD > 0.f)
+	if (wd_sunupf > 0.f && dc.dc_tauB > 0.f && dc.dc_tauD > 0.f)
 		wd_glrad = slASHRAETauModel(
 			kPiOver2 - wd_slAlt,
 			dc.dc_tauB, dc.dc_tauD,
@@ -696,7 +618,7 @@ RC DESCOND::dc_CheckFixSolar(
 	RC rc = RCOK;
 
 	// solar noon angles
-	slday( dc_doy, SLTMSOLAR, 1);
+	slday( dc_doy, sltmSLR, 1);
 	float sunAlt, sunAzm;
 	slaltazm( 12.f, &sunAlt, &sunAzm);
 	float sunZen = kPiOver2 - sunAlt;

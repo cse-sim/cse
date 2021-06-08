@@ -136,9 +136,13 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
 	*declare "RC tp_SetDerived();"
+    *declare "RC tp_SetCheckTimeSteps();"
+	*declare "RC tp_FazInit();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
 	*declare "RC tp_WthrInit();"
+    *declare "RC tp_LocInit();"
+    *declare "RC tp_LocDone();"
     *declare "int tp_AuszWthrSource() const;"
     *declare "RC tp_MainSim();"
     *declare "RC tp_MainSimI();"
@@ -166,11 +170,11 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i DOWCH jan1DoW		// January 1 day of week, sun=1  SUBTRACT 1 FOR MOST INTERNAL USES
     *r SI year    			// derived: tdpak generic non-leap year, -1 = jan 1 is Monday ... -7 = jan 1 is Sunday.
     *i SI_GEZ wuDays		// number of warmUp days
-    *i SI_GZ nSubSteps		// # subhours per hour, determines subhour duration.
+    *i SI_GZ tp_nSubSteps	    // # subhours per hour, determines subhour duration.
 							//    typically 4 for (old) ZNMODELCH_CNE (combined coefficent) models
 							//    5 - 30 for convective/radiant models
-							//    some models require substep duration to be integral minutes
-							//       (e.g. HPWH)
+							//    some models require substep duration to be integral minutes (e.g. HPWH)
+							//       see tp_SetCheckTimesteps()
 
 //TOP: inputs: location/air properties/ground properties
     *f CHP tp_wfName    	// weather file path string
@@ -236,6 +240,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i EXSHMODELCH tp_exShadeModel;	// exterior shading model (other than overhang/fins)
 									//   C_EXSHMODELCH_NONE: none (SHADEX etc ignored)
 									//   C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs
+    *i SLRINTERPMETH tp_slrInterpMeth    // solar interpolation method
 
     *i HUMTHCH humMeth		// humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92
     *i UH_GZ dflExH			// default ext (air film) cond for os & gz. 2-91
@@ -254,8 +259,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GEZ windSpeedMin	//  minimum, mph (default=.5)
     *i FLOAT_GEZ windF  		//  factor (default=1)
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
-    *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * BeamRadFactor. cgwthr.cpp.
-    *i FLOAT_GEZ radDiffF	// Diffuse variant of BeamRadFactor, ditto.
+    *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * radBeamF. cgwthr.cpp.
+    *i FLOAT_GEZ radDiffF	// Diffuse radiation fctr. appl sees ANISO( <fileVal>) * radDiffF.
     *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEHOUSE)
 							//   C_VENTAVAILCH_NONE: none
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
@@ -419,14 +424,14 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     // many TOP working globals set/used comments are old, 12-91.
 
 //TOP: runtime: re subHour and sub-subhour (aka ticks)
-    *r float subhrDur		// duration of subhour, hr (= 1/nSubSteps)
+    *r float tp_subhrDur	// duration of subhour, hr (= 1/tp_nSubSteps)
 	*r SI_GZ tp_nSubhrTicks	// # of subhour ticks for e.g. HPWH simulation
 							//    1 per minute or as generalized
 	*r DBL tp_tickDurMin	// duration of subhr tick, min
 							//    = 1 min or as generalized
 							//    used for e.g. HPWH simulation
 	*r DBL tp_tickDurHr		// duration of subhr tick, hr
-	*declare "int tp_NHrTicks() const { return nSubSteps*tp_nSubhrTicks; }"
+	*declare "int tp_NHrTicks() const { return tp_nSubSteps*tp_nSubhrTicks; }"
 
 //TOP: runtime: simulation date/time variables
     *m ANAME monStr    	// Month being simulated as (non-heap) string
@@ -515,12 +520,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *h POWER radDiffHrAv 	// diffuse irradiance on horizontal surface, hour energy = average power, from weather file
     *s POWER radBeamShAv	// .. current beam subhour average power, interpolated, Btuh/ft2
     *s POWER radDiffShAv	// .. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2
-#if !defined( SOLARFIX)
-    *h POWER radBeamPvHrAv	// .. previous hour (used to generate -SHAv)
-    *h POWER radBeamNxHrAv	// .. next hour (wthr file read ahead) (used to generate -ShAv)
-    *h POWER radDiffPvHrAv	// .. flavors as for radBeam
-    *h POWER radDiffNxHrAv	// ..
-#endif
 #ifdef SOLAVNEND // cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
 o  *s POWER radBeamSh		// .. end subhour instantaneous value, interpolated
 o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
@@ -689,7 +688,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
 	*declare "enum { gshrFILEDAY, gshrDSDAY, gshrDSDAY0 };"
-	*declare "RC wf_GenSubhrRad( int dayTy, int jDay);"
+	*declare "RC wf_GenSubhrRad( SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);"
 	*declare "RC wf_GetSubhrRad( int jDay, int iHrST, int iSh, float& radBeamAv, float& radDiffAv);"
 	*declare "WDHR& wf_GetDsDayWDHR( int iHr);"
 	*declare "RC wf_GetDsDayHr( WDHR* pWd, int iHr, int erOp = WRN);"
@@ -729,8 +728,9 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *r float tz			// time zone, hours W of Greenwich (EST = +5, note non-standard
     *r float elev		// elevation of locn in ft (-9999. to 99999.)
     *r float taDbAvgYr	// annual average dry-bulb temp, F
-	*f float tMainsAvgYr // annual average cold water temp, F
-						//    computed per CEC ACM method
+	*f float tMainsAvgYr    // annual average cold water temp, F
+						    //    computed per CEC ACM method
+    *f float tMainsMinYr    // annual minimum cold water temp, F
     *r SI solartime		// TRUE if file is in solar time
  //additional header items for ET1 file
     *r WFLOC2 loc2		// char[] location 2 (state or country, etc)
@@ -774,6 +774,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "void wd_Adjust( int iHrST);"
 	*declare "void wd_SetSolarValues( int jDayST, int iHrST);"
+    *declare "int wd_SunupBegEnd( int iHr, float& hrBeg, float& hrEnd) const;"
 	*declare "RC wd_Unpack( int iH, USI* pHour, int wFileFormat=ET1);"
     *declare "RC wd_EstimateMissingET1( int iHr);"
     *declare "float wd_CalcSkyTemp( int skyModelLW, int iHr);"
@@ -789,13 +790,12 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 	*declare "bool wd_HasTdvData() const;"
 
-						// wd_sunup, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
+						// wd_sunupf, wd_slAzm, wd_slAlt MUST BE BEFORE wd_db
 						// wd_db assumed 1st non-solar geometry mbr
 						// re preservation of solar geometry info, see Copy()
-	*h INT   wd_sunup;		// nz if sun is up for any portion of current hour
+	*h float wd_sunupf;		// fraction of hour if sun is up
 							// solar position at midpoint of hour (or portion of hour sun is up)
 	*h float wd_slAzm;		//   azimuth, radians (0=N, +clockwise)
-							//     NOTE: code assumes wd_slAzm is 1st float
 	*h float wd_slAlt;		//   altitude, radians (0=horizon, +upwards)
 
     *h float wd_db			// air dry bulb temp, deg F
@@ -1386,24 +1386,24 @@ RECORD WSHADRAT "shade" *RAT		// shading info
 	/* each entry holds info re a window's overhang, left fin, & right fin, & win's ht/wid (not needed except re shading).
 	   WSHADRAT entries are accessed via subscript in .iwshad in shaded window's XSURF (in ZNR's component chain). */
 
-			// .ownTi (base class) is window subscript
+  *declare "float SunlitFract( float gamma, float cosz) const;"
+  // .ownTi (base class) is window subscript
   // all following members are inputs, set by cncult.cpp
-		       // old names 1-92
-    *r  LEN_GZ wWidth	//  wwidth	Window width.  *r: set (from window) by input check/setup (topCkf).
-    *r  LEN_GZ wHeight	//  wheight	Window height
-    *mh LEN ohDepth  	//  ohdepth  	Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
-    *mh LEN ohDistUp   	//  ohwd    	Distance from top of window to bot of OH
-    *mh LEN ohExL    	//  ohlx    	Overhang extension beyond left edge of window
-    *mh LEN ohExR    	//  ohrx        Ditto right edge
-    *mh LEN ohFlap   	//  ohflap   	Len of flap hanging down from front of overhang
-    *mh LEN lfDepth  	//  fldepth  	Left fin depth
-    *mh LEN lfTopUp    	//  fltx    	Left fin top of window to top of fin
-    *mh LEN lfDistL    	//  flwd    	Left fin distance to left edge of window
-    *mh LEN lfBotUp    	//  flwbx    	Left fin bottom to window bottom distance
-    *mh LEN rfDepth	//  frdepth	Right fin values analogous to left
-    *mh LEN rfTopUp     //  frtx
-    *mh LEN rfDistR     //  frwd
-    *mh LEN rfBotUp     //  frwbx
+    *r  LEN_GZ wWidth	// Window width.  *r: set (from window) by input check/setup (topCkf).
+    *r  LEN_GZ wHeight	// Window height
+    *mh LEN ohDepth  	// Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
+    *mh LEN ohDistUp   	// Distance from top of window to bot of OH
+    *mh LEN ohExL    	// Overhang extension beyond left edge of window
+    *mh LEN ohExR    	// Ditto right edge
+    *mh LEN ohFlap   	// Len of flap hanging down from front of overhang
+    *mh LEN lfDepth  	// Left fin depth
+    *mh LEN lfTopUp    	// Left fin top of window to top of fin
+    *mh LEN lfDistL    	// Left fin distance to left edge of window
+    *mh LEN lfBotUp    	// 	Left fin bottom to window bottom distance
+    *mh LEN rfDepth	    // 	Right fin values analogous to left
+    *mh LEN rfTopUp     // 
+    *mh LEN rfDistR     // 
+    *mh LEN rfBotUp     // 
 *END		// WSHADRAT
 //=======================================================================================
 RECORD MASSBC "massbc sub" *SUBSTRUCT	// MASSBC: boundary conditions substruct for MSRAT.inside and .outside
@@ -2088,7 +2088,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *r LEN_GZ zn_ceilingHt	// zone nominal ceiling height, ft. default = znVol / znArea
     *i HC_GZ znCAir			// effective "air" heat cap (Btu/F): models all non-mass heat cap in zone.
 	    					//   defaults to 3.5*area. heat cap of surfaces not modelled as "massive" may be added.
-	*r *hide HC_GZ znCAirSh	// cnCAir / Top.subhrDur (often-used)
+	*r *hide HC_GZ znCAirSh	// cnCAir / Top.tp_subhrDur (often-used)
 	*r FLOAT_GZ zn_HIRatio	// hygric inertia ratio for zone, default 1
 							//   for moisture balance calcs in non-CNE zones,
 							//    effective dry-air mass = zn_HIRatio * zn_dryAirMass
@@ -3548,6 +3548,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
  	*declare "void wmt_AccumEU( DHWEUCH eu, FLOAT v) { (&unknown)[ eu] += v; total += v; }"
 	*declare "void wmt_Accum( const DHWMTR_IVL* sIvl, int options=0, float mult=1.f);"
 	*declare "void wmt_AccumTo( double* useTots) const { VAccum( useTots, NDHWENDUSES+1, &total); }"
+    *declare "void wmt_SetPrior() const;"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.
     // Use by purpose (end use), water use, gal:
@@ -3562,7 +3563,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 
 *END		// DHWMTR_IVL
 //=============================================================================
-RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
+RECORD DHWMTR_SUB "DHW meter sub" *SUBSTRUCT
 
     *declare "RC wmt_CkF();"
 	*declare "RC wmt_Init( IVLCH ivl);"
@@ -3571,10 +3572,21 @@ RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
  // results: accumulated water use for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
  //CAUTION: ordered for subscripting by IVLCH-1.
-    *y *e *nest DHWMTR_IVL Y   	// run (aka year or annual)
-    *m *e *nest DHWMTR_IVL M   	// month's use
-    *d *e *nest DHWMTR_IVL D   	// day's use
-    *h *e *nest DHWMTR_IVL H   	// hour's use
+    *y *nest DHWMTR_IVL Y   	// run (aka year or annual)
+    *m *nest DHWMTR_IVL M   	// month's use
+    *d *nest DHWMTR_IVL D   	// day's use
+    *h *nest DHWMTR_IVL H   	// hour's use
+*END		// DHWMTR
+//==============================================================================
+RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
+
+    *declare "RC wmt_CkF();"
+	*declare "RC wmt_Init( IVLCH ivl);"
+	*declare "void wmt_Accum( IVLCH ivl, int firstflg);"
+
+    *e *noname *nest DHWMTR_SUB curr    // current year,month,day,hour,subhr results, stored at end each interval
+    *nest DHWMTR_SUB prior              // prior year,month,day,hour,subhr results, available throughout interval
+    // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// DHWMTR
 //=============================================================================
 RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
@@ -3638,10 +3650,12 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
+  *declare "virtual DHWSYS& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "RC ws_CkF();"
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
+  *declare "RC ws_RddInit();"
   *declare "DHWSYSRES* ws_GetDHWSYSRES() const;"
   *declare "float ws_GetTSetpoint( int whfcn) const;"
   *declare "int ws_GetTSetpointFN( int whfcn) const;"
@@ -3650,6 +3664,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_AccumCentralUse( const DHWSYS* pWSChild);"
   *declare "RC ws_DoHourDrawAccounting( float mult);"
   *declare "RC ws_DoEndPreRun();"
+  *declare "RC ws_ApplySizingResults( float heatingCap, float* heatingCapTopN, float volRunning);"
   *declare "int ws_AssignDHWUSEtoFX( const DHWUSE* pWU);"
   *declare "void ws_AccumUseTick( DHWEUCH hwEndUse, int iTk, double fxUseMix, double whUse);"
   *declare "RC ws_DoSubhr();"
@@ -3717,13 +3732,13 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_whUseNoHR;				// current hour virtual hot water use w/o heat recovery, gal
 										//    re verification / accounting of DWHR results
   *h *e *nest DHWMTR_IVL ws_fxUseMix	// current hour total (mixed) water use at fixtures, gal
-  *y *e *array NDHWENDUSESXPP DBL ws_fxUseMixTot;	// annual total (mixed) water use at fixtures, gal
+  *y *e *array NDHWENDUSESXPP DBL ws_fxUseMixTot;	// annual total (mixed) water use at fixtures by end use, gal
   *h    *nest DHWMTR_IVL ws_fxUseMixLH	// prior hour total (mixed) water use at fixtures, gal
-  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use (at ws_tUse), gal
+  *h *e *nest DHWMTR_IVL ws_whUse		// current hour hot water use by end use (at ws_tUse), gal
 										//    water heater out = fixture hot in
 										//    Also frequently assumed water heater in = water heater out
 										//    BUT this is only approx due to e.g. mixdown and XBU.
-  *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use (at ws_tUse), gal
+  *y *e *array NDHWENDUSESXPP DBL ws_whUseTot;		// annual total hot water use by end use (at ws_tUse), gal
 							
 							// draw and load sizing info derived during C_WSCALCMODECH_PRERUN (only)
 							//   copied to assocated input records in ws_DoEndPreRun()
@@ -3736,9 +3751,28 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i SI ws_loadMaxDur					// load duration window, hr (user input, default 12)
   *declare "VMovingSum< float> ws_loadMaxMS;"	// retains recent load history
   *i FLOAT ws_loadMax					// largest load total in any conseq ws_loadMaxDur hrs, Btu
-  
-  *h FLOAT ws_tUse;			// hot water use temp, F
-							//   = temp water is delivered to fixtures or DHWLOOP(s)
+
+                            // EcoSizer sizing algorithm
+  *declare "struct DHWSIZER* ws_pSizer;"     // tracks highest load days re sizing
+  *i FLOAT ws_tSetpointDes;     // design (sizing) set point temp, F (constant)
+                                //    default = ws_tUse
+  *i FLOAT ws_tInletDes;        // design (sizing) cold water inlet temp, F
+                                //    default = annual min mains temp
+  *r *e FLOAT ws_ashpTSrcDes;      // design (sizing) HPWH source air temperature, F
+                                //    default = heating design temp
+  *r *e *array NDHWSIZEDAYS FLOAT ws_heatingCapDesTopN   // top N design heating capacities
+                                //  [ 0] = largest
+  *i FLOAT ws_heatingCapDes;    // design heating capacity, Btuh
+                                //    = ws_heatingCapDesTopN[ 6] or as changed
+                                //    defaults from EcoSizer at end of prerun if not input
+  *i FLOAT_GZ ws_volRunningDes; // design running volume, gal
+                                //   = active volume (above aquastat)
+                                //    full tank volume derived from running volume
+                                //      in HPWHLINK::hw_DeriveVolFromVolRunning
+                                //    defaults from EcoSizer at end of prerun if not input
+
+  *r FLOAT ws_tUse;			// hot water use temp, F
+							//   = temp of water delivered to fixtures or DHWLOOP(s)
 							//   default = 120 F
   *h FLOAT ws_tSetpoint;	// DHWHEATER set point (for all DHWHEATERs using HPWH model), F
 							//   default = ws_tUse
@@ -3785,15 +3819,16 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   [ 0] = unknown end use (DHWUSEs w/o wu_hwEndUse) (*not* ws_hwUse)
 							//   [1 ..] = per C_DHWEUCH_xxx
   *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
-							//  _T24DHW: prior ACM App-B
-							//  _DRAWWASTE: draw duration increase per ws_drawWaste
+							//   _T24DHW: prior ACM App-B
+							//   _DRAWWASTE: draw duration increase per ws_drawWaste
+                            //   _DAYWASTE: draw duration increase per ??
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
-							// [ 0] unknown end use
-							// [ 1..] = per C_DHWEUCH_xxx
+							//   [ 0] unknown end use
+							//   [ 1..] = per C_DHWEUCH_xxx
   *i *array NDHWENDUSESPP FLOAT ws_dayWasteDrawF;	// relative draw for day waste scheme
-							// [ 0] unknown end use
-							// [ 1..] = per C_DHWEUCH_xxx
+							//   [ 0] unknown end use
+							//   [ 1..] = per C_DHWEUCH_xxx
   *i FLOAT_GEZ ws_dayWasteVol			// base daily total draw waste, gal/day
   *i FLOAT_GEZ ws_dayWasteBranchVolF	// additional daily draw waste, discards/day
 										//    DHWLOOPBRANCH volume multiplier
@@ -3869,7 +3904,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_t24WL;		// current hour all-DHWLOOPBRANCH waste loss volume, gal
 							//    per T24DHW branch model
 							//    info only: associated energy is included in ws_HRBL
-  *y *e DBL ws_t24WLTot		// annual total ws_t24WL
+  *y *e DBL ws_t24WLTot		// annual total ws_t24WL, gal
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
@@ -3890,6 +3925,8 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "void hw_Cleanup();"
 *declare "RC hw_Init( record* pOwner);"
 *declare "RC hw_InitGeneric( float vol, float EF, float resUse);"
+*declare "RC hw_SetHeatingCap( float heatingCap, float ashpTSrcDes,	float tInletDes, float tUseDes);"
+*declare "RC hw_GetHeatingCap( float& heatingCap, float ashpTSrcDes, float tInletDes, float tUseDes) const;"
 *declare "enum HPWHATTR { hwatSMALL=0x1000, hwatLARGE=0x2000, hwatMASK=0xf000 };"
 *declare "static int hw_HPWHInfo( WHASHPTYCH ashpTy, int& attrs);"
 *declare "static int hw_IsAttr( WHASHPTYCH ashpTy, int attr) { int attrs; return hw_HPWHInfo( ashpTy, attrs) >= 0 ? (attr & attrs) != 0 : -1; }"
@@ -3901,9 +3938,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "RC hw_GetInfo( float& vol, float& UA, float& insulR, float tankCount=1.f) const;"
 *declare "float hw_GetTankSurfaceArea( float tankCount=1.f, float vol=-1.f) const;"
 *declare "void hw_InitTotals();"
-*declare "bool hw_HasCompressor();"
+*declare "bool hw_HasCompressor() const;"
 *declare "bool hw_IsSetpointFixed() const;"
 *declare "float hw_GetTankVol() const;"
+*declare "RC hw_DeriveVolFromVolRunning( float volRunning, float heatingCap, float tempRise, float& totVol) const;"
 *declare "void hw_SetNQTXNodes( int nQTXNodes);"
 *declare "float hw_GetTankQTXTemp() const { return float( hw_GetTankAvgTemp( 0, hw_nQTXNodes)); }"
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
@@ -3977,11 +4015,14 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
   *declare "void wh_InitRunTotals();"
+  *declare "RC wh_RddInit();"
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const { return (DHWSYS *)getOwner();}"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
   *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
   *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
+  *declare "int wh_IsScalable() const;"
+  *declare "int wh_CanSetVolFromVolRunning() const;"
   *declare "int wh_UsesDerivedLDEF() const;"
   *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
   *declare "int wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
@@ -4047,9 +4088,14 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//    default = 7.22, units / meaning unknown
   *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
 								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
+  *r FLOAT_GZ wh_heatingCap;    // Nominal heating capacity, Btuh
+                                //    available only for limited HPWH types
   *r FLOAT_GEZ wh_vol;			// total storage vol, gal (actual, not rated; not per tank)
 								//    HPWH types: sets vol (default from preset)
 								//    other types: documentation only (default 50)
+  *i FLOAT_GZ wh_volRunning;    // running storage volume = vol above aquastat, gal
+                                //    HPWH compressor types: determines reqd total volume based on
+                                //    aquastat position; see HPWHLINK::hw_DeriveVolFromVolRunning()
   *r FLOAT_GEZ wh_UA;			// HPWH-type total UA, Btuh/F (not per tank)
 								//    default from HPWH preset
   *r FLOAT_GZ wh_insulR;		// HPWH-type tank insulation resistance, hr-F/Btuh
@@ -4870,7 +4916,9 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
     *h FRAC gnFrPl			//   fraction of gain going to plenum (0 - 1, hourly expression)
     *h FRAC gnFrRtn			//   fraction of gain going to return (0 - 1, hourly expression)
     *h FRAC gnDlFrPow		// fraction power on for daylighting, 0-1, default 1.0, hourly expression
-	*i TI gn_dhwsysi		// controlling DHWSYS, 0 if none
+	*i TI gn_dhwsysi		// controlling DHWSYS, 0 if none ()
+							//   allows gains that track water use (re e.g. dishwashers, clotheswashers,)
+    *i TI gn_dhwmtri		// controlling DHWMETER, 0 if none
 							//   allows gains that track water use (re e.g. dishwashers, clotheswashers,)
     *i DHWEUXCH gn_dhwEndUse;	// with gn_dhwsysi, specifies controlling HW end use
 								//   note includes _TOTAL and _UNKNOWN
@@ -5787,7 +5835,7 @@ RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result 
     ENERGY ph    ENERGY pc   	// heat and cool coil input energy, from meter or (probably) from plant
     ENERGY pAuxH ENERGY pAuxC	// heat and cool aux energy
     ENERGY pFan			// fans input energy
-    HOURS  hrsOn    		// time air handler on: accumulated Top.subhrDur
+    HOURS  hrsOn    		// time air handler on: accumulated Top.tp_subhrDur
  //long integer members to sum in accumulation.  cnguts.h defines assume nSubhr is 1st, nIterFan is last.
     LI nSubhr  			// subhour counter: for convenience / possibly making cluster-dependent
     LI nIter1			// iteration counter 1: # times called, including immediate exits

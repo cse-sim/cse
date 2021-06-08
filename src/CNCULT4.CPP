@@ -1727,7 +1727,7 @@ void freeHdrFtr()		// free header, footer, and report titles texts
 RC freeRepTexts()
 
 // say various report heading etc texts should be (re)generated b4 use as may have new, more, or better inputs
-// called from cncult2:topStarPrf (b4 data input) and also from cncult2:setTop (after data input)
+// called from cncult2:topStarPrf (b4 data input) and also from tp_fazInit (after data input)
 {
 	freeHdrFtr();		// currently 1-92 same as fcn above
 	return RCOK;

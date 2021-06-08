@@ -46,7 +46,7 @@ Finally, Appendix A gives an example CSE input file and the output it produces.
 
 ### Hardware and Software Requirements
 
-CSE is a 32-bit Microsoft Windows console application. That is, it runs at the command prompt on Windows XP, Windows Vista, and Windows 7. Memory and disk space requirements depend on the size of projects being modeled, but are generally modest.
+CSE is a 32-bit Microsoft Windows console application. That is, it runs at the command prompt on Windows Vista, Windows 7, Windows 8, and Windows 10.  Memory and disk space requirements depend on the size of projects being modeled, but are generally modest.
 
 To prepare input files, a text editor is required. Notepad will suffice, although a text editor intended for programming is generally more capable. Alternatively, some word processors can be used in "ASCII" or "text" or "non-document" mode.
 

@@ -87,11 +87,10 @@ LOCAL BOO NEAR warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 
 static int errorCounter = 0;		// error count, errors NOT counted if erOp==IGN or if isWarn.
 
 static int screenQuiet = 0;			// suppress screen messages if op&QUIETIF && screenQuiet
-									//    see setScreenQuiet() and screenI()
+									//    see setScreenQuiet() and screen()
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC errCritV( int erOp, int isWarn, const char* msTx, va_list ap);
-LOCAL void screenI( int erOp, const char* text);
 LOCAL int presskey( int erAction);
 
 // ================================================================================
@@ -596,7 +595,7 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	// output message
 
 	if (toScreen)
-		screenI( DASHES, text);				// output to screen or "screen" window with ------ lines between messages
+		screenNF( text, DASHES);		// output to screen or "screen" window with ------ lines between messages
 
 	if (toErrFile && errFile)
 	{
@@ -657,7 +656,7 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	if (kpAbt || erAction==ABT)				// if user says abort (or OUT OF MEMORY) or caller says abort
 	{
 		if (toScreen)
-			screenI( 0, " *** Aborted *** ");		// no \n may leave another line showing
+			screenNF( " *** Aborted *** ");		// no \n may leave another line showing
 		if (toErrFile && errFile)
 			fprintf( errFile, " *** Aborted *** \n");
 #ifdef VRR
@@ -744,25 +743,25 @@ RC logit(		// put remark in log report and display on screen (NOT FC, var args)
 
 // conditionally display remark on screen
 	if (toScreen)
-		screenI( op, buf);				// output to screen or "screen" window with NONL and DASHES options
+		screenNF( buf, op);		// output to screen or "screen" window with NONL and DASHES options
 
 // conditionally output remark to "LOG" virtual report
 #ifdef VRR
 	if (toVr)					// if open (public variable in this file)
-		logStr( op, buf);
+		logitNF( buf, op);
 #endif
 
 	return rc;				// return caller's mOrH or RCBAD
 }			// logit
 //---------------------------------------------------------------------------------
 #if defined( VRR)
-void logStr(			// string to VrLog (no formating)
-	int op,		// option bits
-				//   NONL on:  do NOT move to beg of next line b4 display.
-				//        off: move to beg of next line if needed, then display rmk
-				//   DASHES on: separate from preceding and following remarks with ----------- lines  rob 11-20-91
-				//   NOSCRN on: do not display on screen
-	const char* s)	// string
+void logitNF(			// string to VrLog (no formating)
+	const char* s,	// string
+	int op/*=0*/)	// option bits
+					//   NONL on:  do NOT move to beg of next line b4 display.
+					//        off: move to beg of next line if needed, then display rmk
+					//   DASHES on: separate from preceding and following remarks with ----------- lines  rob 11-20-91
+					//   NOSCRN on: do not display on screen
 {
 	if (!VrLog)
 		return;
@@ -796,15 +795,16 @@ void logStr(			// string to VrLog (no formating)
 			vrLogLs = dashed;				// remember status, so don't get double ----- lines
 		}
 	}
-}		// logStr
+}		// logitNF
 #endif
 // ================================================================================
-RC CDEC screen(		// display remark on display on screen only
+RC screen(		// display remark on display on screen only
 
 	int op,		// option bits (rmkerr.h or cnglob.h)
 				//   NONL on:  do NOT move to beg of next line b4 display.
 				//        off: move to beg of next line if needed, then display rmk
-				//   DASHES on: separate from preceding and following remarks with ----------- lines  rob 11-20-91
+				//   DASHES on: separate from preceding and following remarks with ----------- lines
+				//   QUIETIF: suppress display if screenQuiet
 	const char* mOrH,	// ptr to printf format message (e.g. "Bad value: %d")
 				// OR message handle (e.g. (char *)MH_X1002); message handles are
 				//    defined in msghan.h and are associated with text in msgtab:msgTbl[]
@@ -833,18 +833,17 @@ RC CDEC screen(		// display remark on display on screen only
 			 ap );	//   ptr to args for vsprintf() in msgI
 
 	if (toScreen)
-		screenI( op, buf);		// display message on screen or "screen" window
+		screenNF( buf, op);		// display message on screen or "screen" window
 	return rc;
 }		// screen
 // ================================================================================
-LOCAL void screenI(		// display remark on display on screen only
-
-	int op,		// option bits (rmkerr.h or cnglob.h)
-				//   NONL on:  do NOT move to beg of next line b4 display.
-				//        off: move to beg of next line if needed, then display rmk
-				//   DASHES on: separate from preceding and following remarks with ----------- lines
-				//   SILOPT
-	const char* text )	// pointer to fully formatted message
+void screenNF(		// display remark on screen only (no formatting)
+	const char* text,	// pointer to fully formatted message
+	int op /*=0*/)	// option bits (rmkerr.h or cnglob.h)
+					//   NONL on:  do NOT move to beg of next line b4 display.
+					//        off: move to beg of next line if needed, then display rmk
+					//   DASHES on: separate from preceding and following remarks with ----------- lines
+					//   QUIETIF: suppress display if screenQuiet
 {
 // macro to display console or console-equivalent message
 // NOTE: use printf-style fcns with care due to possible
@@ -874,7 +873,7 @@ LOCAL void screenI(		// display remark on display on screen only
 			screenCol = 0;		// cuz DASHLINE ends with \n
 		default: ;	//case dashed:
 		}
-	if (*text)					// if there is a message (if not, still get newline & one ---line)
+	if (text && *text)					// if there is a message (if not, still get newline & one ---line)
 	{
 		DISPLAY(text); 				// display remark text
 		int len = strlen(text);
@@ -897,7 +896,7 @@ LOCAL void screenI(		// display remark on display on screen only
 				screenCol += len;				// no newline in message: add msg length to column
 		}
 	}
-}			// screenI
+}			// screenNF
 //---------------------------------------------------------------------------
 int setScreenQuiet( int sq)
 {	int sqWas = screenQuiet;
@@ -1106,7 +1105,7 @@ void DbVprintf(					// vprintf-to-debug
 		fmt = strtvprintf( fmt, ap);	// format
 
 #if defined( VR_DEBUGPRINT) && defined( VRR)
-	logStr( NONL, fmt);
+	logitNF( fmt, NONL);
 #else
 	if (dbgFile)
 		fprintf( dbgFile, fmt);

@@ -782,10 +782,10 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	for (i = 1;  i < argc;  i++)
 		tArgs = scWrapIf(
 					tArgs,
-					strtprintf(" %s", argv[ i]),
+					strtcat(" ", argv[ i], NULL),	// not strtprintf! args may contain '%'
 					"\n             ");
 	cmdLineArgs = strsave( tArgs);	// copy to dm
-	screen( NONL, cmdLineArgs);
+	screenNF( cmdLineArgs, NONL);	// display w/o further formatting
 
 // decode command line
 
@@ -1036,6 +1036,9 @@ noHans:
 *    if (vrInit( spoolFilePathName))		// set vr spool file path and init vr's, vrpak.cpp
 *       ; // failure - probably should abort session.
 #endif
+
+	Top.tp_SetOptions();		// set some Top members (exePath etc)
+								//   else not set when input error suppresses run
 
 	/* preset primary report file info, to rcv most errmsgs (unspooled below) if an input error before cncult.cpp sets it.
 									   (if no early input error, cncult.cpp redoes with
@@ -1324,7 +1327,6 @@ x		enbeep( BEEPDONE);		// good completion beep
 //-----------------------------------------------------------------------------------------------------------
 void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 
-// called out of cul(), setTop
 // adds command line options into top record Topi b4 checks.
 {
 // set Top members per command line switches, as saved above by cse3 in static flags
