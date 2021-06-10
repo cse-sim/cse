@@ -430,16 +430,21 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			RHEEM2020BUILD65  "Rheem2020Build65"   // 65 gallon, Rheem 2020 Builder
 			RHEEMHBDRBUILD80  "Rheem2020Build80"   // 80 gallon, Rheem 2020 Builder
 
-			STIEBEL220E "Stiebel220E"		// Stiebel Eltron (2014 model?)
+			STIEBEL220E "Stiebel220E"				// Stiebel Eltron (2014 model?)
+
+			AOSMITHSHPT50 "AOSmithSHPT50"			// AOSmith add'l models (added 3-24-2017)
+			AOSMITHSHPT66 "AOSmithSHPT66"
+			AOSMITHSHPT80 "AOSmithSHPT80"
+
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2
 			GENERIC3 "GenericTier3"			// Generic Tier 3
 			GENERIC "Generic"				// general generic (parameterized by EF and vol)
 			UEF2GENERIC "UEF2Generic"			// experimental UEF=2
-			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports pre-existing test cases)
-			AOSMITHSHPT50 "AOSmithSHPT50"		// AOSmith add'l models (added 3-24-2017)
-			AOSMITHSHPT66 "AOSmithSHPT66"
-			AOSMITHSHPT80 "AOSmithSHPT80"
+			WORSTCASEMEDIUM "WorstCaseMedium"	// UEF2Generic alias (supports pre-existing test cases)
+			AWHSTIER3GENERIC50 "AWHSTier3Generic50"		// 50 gal tier 3 generic (6-2021)
+			AWHSTIER3GENERIC65 "AWHSTier3Generic65"		// 65 gal tier 3 generic (6-2021)
+			AWHSTIER3GENERIC80 "AWHSTier3Generic80"		// 80 gal tier 3 generic (6-2021)
 
 			COLMACCXV5_SP  "ColmacCxV5_SP"	// Colmac CxA-xx modular external HPWHs (single pass mode)
 			COLMACCXA10_SP "ColmacCxA10_SP"
