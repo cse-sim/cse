@@ -200,11 +200,6 @@ set(headers
   YACAM.H
 )
 
-
-include_directories(
-)
-
-
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/vendor"
@@ -215,6 +210,7 @@ include_directories(
   "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
   "${kiva_SOURCE_DIR}/src"
   "${kiva_BINARY_DIR}/src/libkiva"
+  "${btwxt_SOURCE_DIR}/src"
 )
 
 # Precompiled Headers

@@ -23,7 +23,7 @@
 #include "mspak.h"
 #include "nummeth.h"
 
-// #include "btwxt.h"
+#include "btwxt.h"
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
@@ -3715,17 +3715,18 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 	return RCOK;
 }		// RSYS::rs_CalcInputsAndSlopesASHP
 //-----------------------------------------------------------------------------
-#if 0
-RC RSYS::rs_SetupBTWXT()	// init/populate btwxt for runtime interpolation
+RC RSYS::rs_SetupBtwxt()	// init/populate btwxt for runtime interpolation
 {
+	RC rc = RCOK;
 
 	std::vector<double> gridODB{ 5, 17, 35, 45, 47 };
 
+	Btwxt::GridAxis gx(gridODB);
 
 
-}	// RSYS::rs_SetupBTWXT
+	return rc;
 
-#endif
+}	// RSYS::rs_SetupBtwxt
 //-----------------------------------------------------------------------------
 float RSYS::rs_CapEffASHP(			// performance at current conditions
 	float tdbOut/*=-999.f*/,	// outdoor dry-bulb temp, F
