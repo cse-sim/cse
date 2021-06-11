@@ -13,7 +13,7 @@
 #include "exman.h"
 #include "rccn.h"	// TOPRAT WFILE WFDATA
 #include "psychro.h"
-#include "slpak.h"
+#include "solar.h"
 
 #include "yacam.h"	// class YACAM
 #include "tdpak.h"
@@ -668,7 +668,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
-			slday(jDay, SLTMLST);
+			slday(jDay, sltmLST);
 			for (int iHr=0; iHr<24; iHr++)
 			{	WDHR* pWd = &wdy_Hr(jDay, iHr);
 				rc |= pWF->wf_Read( pWd, jDay, iHr, erOp|WF_FORCEREAD);

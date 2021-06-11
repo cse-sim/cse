@@ -39,7 +39,8 @@
 #include <rccn.h>
 #include <msghans.h>	// MH_R0160
 
-#include "slpak.h"		// slday SLLOCDAT
+#include "solar.h"
+
 #include "ashwface.h"
 
 #include <exman.h>		// rer
@@ -63,6 +64,8 @@ static int trapSi = 2;	// 0=inside, 1=outside, -1=either, 2=never
 *  FILE * Fslrdbg = NULL;	// public so others can write to file too.
 #endif
 
+
+
 int slrCalcJDays[13] =	// julian day of year for which to do solar table calculations for each month
 {
 	// used: locally, cnguts.cpp and/or cnausz.cpp.
@@ -70,6 +73,48 @@ int slrCalcJDays[13] =	// julian day of year for which to do solar table calcula
 	17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 	// months 1-12: main sim, autosize cooling design days
 	//16  14  15   14   14   10   16   15   15   15   14   10	(days of months)
 };
+
+#if (SLRCALCS & 1)
+static SLLOCDAT* Locsolar = NULL;	// Ptr to solar info structure for current calculation.
+									// Released by slfree from tp_LocDone().
+									// Address saved by slinit for other slpak calls.
+									// Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
+#endif
+#if (SLRCALCS & 2)
+SLRLOC SlrLoc;
+SLRDAY SlrDay;
+#endif
+
+//------------------------------------------------------------------------
+RC TOPRAT::tp_LocInit()		// location-initializer for CSE
+// inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
+// returns RCOK if ok, else message already issued.
+{
+	// init slpak.cpp: alloc SLLOCDAT and init for location.
+	//   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
+	//   slpak remembers its location internally.
+
+#if (SLRCALCS & 1)
+	Locsolar = slinit(RAD(latitude),	// latitude (to radians)
+					   RAD(longitude), // longitude
+					   timeZone, 		// time zone
+					   elevation);		// site altitude (ft)
+#endif
+#if (SLRCALCS & 2)
+	SlrLoc.sl_Init(latitude, longitude, timeZone, elevation, 0);
+#endif
+	return RCOK;
+}		// TOPRAT::tp_LocInit
+//------------------------------------------------------------------------
+RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
+{
+#if (SLRCALCS & 1)
+	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
+#endif
+	return RCOK;
+}			// TOPRAT::tp_LocDone
+//===========================================================================================================
+
 
 /*-------------------------- SOLAR GAIN OVERVIEW ----------------------------
 
@@ -340,8 +385,8 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 // Initialize slpak for a standard day near middle of month.  slselect(Locsolar) in effect. Note restored at exit.
 
 	slday( slrCalcJDays[ Top.tp_date.month],	// julian date for this month's solar calcs
-					SLTMLST );					// say use local standard time
-	/* slpak.cpp: set up curr SLLOCDAT struct (which is cse.cpp:Locsolar) for given day:
+					sltmLST );					// say use local standard time
+	/* slpak.cpp: set up curr SLLOCDAT struct for given day:
 	   sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
 	   Used by most other slpak calls. */
 
@@ -419,7 +464,7 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 	// Don't know a) if other parts of program depend on it (else do in wswfread each call)
 	//            b) if would be faster to push & pop the data it sets.
 	slday(Top.jDayST,		// julian date of simulation (standard time), cnguts.cpp.  Use of ST matches call in cgwthr.cpp.
-			SLTMLST,		// say use local standard time
+			sltmLST,		// say use local standard time
 			1);				// skip if no day change
 		// slpak.cpp: set up curr SLLOCDAT struct (which is cse.cpp:Locsolar) for given day:
 		// sets info re declination of earth's axis, hourly sunupf[], dircos[], slazm[], etc.
@@ -487,7 +532,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 		return;			// this surface cannot receive exterior solar gain
 						//   (CTINTWALL, CTPERIM, ...)
 
-	// view factors. For beam radiation, (window) shading is computed in CSE (shadwin call, below).
+	// view factors. For beam radiation, (window) shading is computed in CSE (SunlitFract call, below).
 	//   For diffuse, no shading computed in CSE; user may, for windows, input view factors so can precompute shading
 	// sky diffuse view factor is x.vfSkyDf, inputtable as wnVfSkyDf, m-h vbl, default  .5f + .5*cos(x.tilt)
 	// ground diffuse view factor (incl for ground-reflected beam), times reflectivity, is grx:
@@ -524,12 +569,11 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 	{	// incident beam possible
 		incA = acos( cosi);
 		relAzm = azm - x.azm;	// sun azm wrt wall
-		fsunlit = x.iwshad 		// nz iff xs has shading info
-					? shadwin(				// calc shading
-						&WshadR[ x.iwshad],	// window/ovh/fin info in WSHADRAT entry, all VMHLY.
-						relAzm,
-						cosz)				// cos( slr zenith ang)
-					: 1.;
+		WSHADRAT* pS = WshadR.GetAtSafe(x.iwshad);
+		if (!pS)
+			fsunlit = 1.f;
+		else
+			fsunlit = pS->SunlitFract(relAzm, cosz);
 		sgf[ sgcBMXBM] = fsunlit*cosi;	// surface beam irradiance factor, dimless
 										//   = unit area surface beam irradiance per unit beam normal irradiance
 	}

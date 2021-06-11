@@ -94,7 +94,7 @@ typedef unsigned int BOOL;
 typedef unsigned short WORD;
 typedef char TCHAR;
 typedef unsigned char BYTE;
-#define _T(s) s
+// #define _T(s) s
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"

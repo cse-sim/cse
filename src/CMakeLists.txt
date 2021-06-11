@@ -119,7 +119,6 @@ set(source
   RMKERR.CPP
   RUNDATA.CPP
   SHADING.CPP
-  SLPAK.CPP
   SOLAR.CPP
   SRFD.CPP
   STRPAK.CPP
@@ -187,7 +186,6 @@ set(headers
   PSYCHRO.H
   RCCN.H
   RMKERR.H
-  SLPAK.H
   SOLAR.H
   SRD.H
   STRPAK.H
@@ -202,11 +200,6 @@ set(headers
   YACAM.H
 )
 
-
-include_directories(
-)
-
-
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/vendor"
@@ -217,6 +210,7 @@ include_directories(
   "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
   "${kiva_SOURCE_DIR}/src"
   "${kiva_BINARY_DIR}/src/libkiva"
+  "${btwxt_SOURCE_DIR}/src"
 )
 
 # Precompiled Headers
@@ -250,6 +244,7 @@ set(libs
   tess2
   libHPWHsim
   libkiva
+  btwxt
 )
 
 source_group("Source Files" FILES ${source})

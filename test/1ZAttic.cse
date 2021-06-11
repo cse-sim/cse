@@ -239,13 +239,14 @@ ZONE Z1
                 ohDistUp=1.64     //distance from top of window
                 ohExL=0           //distance:left edge of win to left edge of oh
                 ohExR=0           //distance:rght edge of win to rght edge of oh
+                ohFlap=1
                 lfDepth=OHDPTH    //fin depth
                 lfTopUp=1.64      //distance:top of window to top of fin
                 lfDistL=0         //distance:edge of window to fin
                 lfBotUp=0.656     //distance:bottom of window to bottom of fin
                 rfDepth=OHDPTH    //fin depth
                 rfTopUp=1.64      //distance:top of window to top of fin
-                rfDistR=0         //distance:edge of window to fin
+                rfDistR=.1         //distance:edge of window to fin
                 rfBotUp=0.656     //distance:bottom of window to bottom of fin
 
           SGDIST
@@ -280,7 +281,7 @@ ZONE Z1
               lfDepth=OHDPTH    //fin depth
               lfTopUp=1.64      //distance:top of window to top of fin
               lfDistL=0         //distance:edge of window to fin
-              lfBotUp=0.656     //distance:bottom of window to bottom of fin
+              lfBotUp=0.        //distance:bottom of window to bottom of fin
               rfDepth=OHDPTH    //findepth
               rfTopUp=1.64      //distance:top of window to top of fin
               rfDistR=0         //distance:edge of window to fin

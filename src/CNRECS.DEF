@@ -1386,24 +1386,24 @@ RECORD WSHADRAT "shade" *RAT		// shading info
 	/* each entry holds info re a window's overhang, left fin, & right fin, & win's ht/wid (not needed except re shading).
 	   WSHADRAT entries are accessed via subscript in .iwshad in shaded window's XSURF (in ZNR's component chain). */
 
-			// .ownTi (base class) is window subscript
+  *declare "float SunlitFract( float gamma, float cosz) const;"
+  // .ownTi (base class) is window subscript
   // all following members are inputs, set by cncult.cpp
-		       // old names 1-92
-    *r  LEN_GZ wWidth	//  wwidth	Window width.  *r: set (from window) by input check/setup (topCkf).
-    *r  LEN_GZ wHeight	//  wheight	Window height
-    *mh LEN ohDepth  	//  ohdepth  	Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
-    *mh LEN ohDistUp   	//  ohwd    	Distance from top of window to bot of OH
-    *mh LEN ohExL    	//  ohlx    	Overhang extension beyond left edge of window
-    *mh LEN ohExR    	//  ohrx        Ditto right edge
-    *mh LEN ohFlap   	//  ohflap   	Len of flap hanging down from front of overhang
-    *mh LEN lfDepth  	//  fldepth  	Left fin depth
-    *mh LEN lfTopUp    	//  fltx    	Left fin top of window to top of fin
-    *mh LEN lfDistL    	//  flwd    	Left fin distance to left edge of window
-    *mh LEN lfBotUp    	//  flwbx    	Left fin bottom to window bottom distance
-    *mh LEN rfDepth	//  frdepth	Right fin values analogous to left
-    *mh LEN rfTopUp     //  frtx
-    *mh LEN rfDistR     //  frwd
-    *mh LEN rfBotUp     //  frwbx
+    *r  LEN_GZ wWidth	// Window width.  *r: set (from window) by input check/setup (topCkf).
+    *r  LEN_GZ wHeight	// Window height
+    *mh LEN ohDepth  	// Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
+    *mh LEN ohDistUp   	// Distance from top of window to bot of OH
+    *mh LEN ohExL    	// Overhang extension beyond left edge of window
+    *mh LEN ohExR    	// Ditto right edge
+    *mh LEN ohFlap   	// Len of flap hanging down from front of overhang
+    *mh LEN lfDepth  	// Left fin depth
+    *mh LEN lfTopUp    	// Left fin top of window to top of fin
+    *mh LEN lfDistL    	// Left fin distance to left edge of window
+    *mh LEN lfBotUp    	// 	Left fin bottom to window bottom distance
+    *mh LEN rfDepth	    // 	Right fin values analogous to left
+    *mh LEN rfTopUp     // 
+    *mh LEN rfDistR     // 
+    *mh LEN rfBotUp     // 
 *END		// WSHADRAT
 //=======================================================================================
 RECORD MASSBC "massbc sub" *SUBSTRUCT	// MASSBC: boundary conditions substruct for MSRAT.inside and .outside
@@ -3132,10 +3132,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_HSPFCheckASHP( int options=0);"
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
-*declare "float rs_Cap17RatioASHP() const;"
+*declare "float rs_CapRat1747() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
+*declare "float rs_Cap05Default( float cap47, float cap17) const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
+*declare "RC rs_SetupBtwxt();"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
@@ -3234,30 +3236,36 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *r FLOAT_GZ rs_HSPF			// rated HSPF, Btuh/W
 *f *e FLOAT_GZ rs_cap47		// full speed heating capacity at ODB=47 F
 *f *e FLOAT_GZ rs_COP47		// COP at ODB=47 F
-*f *e FLOAT_GZ rs_cap35		// ditto 35 F
-*f *e FLOAT_GZ rs_COP35
-*f *e FLOAT_GZ rs_cap17		// ditto 17 F
-*f *e FLOAT_GZ rs_COP17
+*f *e FLOAT_GZ rs_cap35		// full speed heating capacity at ODB=35 F
+*f *e FLOAT_GZ rs_COP35     // COP at ODB=35 F
+*f *e FLOAT_GZ rs_cap17		// full speed heating capacity at ODB=17 F
+*f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
+*f *e FLOAT_GZ rs_cap05		// full speed heating capacity at ODB=5 F
+*f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
 *r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+							//   default based on HSPF or other correlations
+*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
 
 						// re ASHPVC (variable capacity)
-*f *e FRAC_GZ rs_loadFMinH;	// heating minimum load fraction
-							//   (cycles below this)
-*f *e FRAC_GZ rs_loadFMinC;	// cooling minimum load fraction
-							//   (cycles below this)
-*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMinH; }"
-*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMinH; }"
+*f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin05;	// htg min load fract at 05 F (cycles below this)
+
+*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
+*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
+*declare "float rs_CapMin05() const { return rs_cap05*rs_loadFMin05; }"
 *f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
-*f *e FLOAT_GZ rs_COPMin35	// ditto 35 F
-*f *e FLOAT_GZ rs_COPMin17	// ditto 17 F
+*f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
+*f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed
+*f *e FLOAT_GZ rs_COPMin05	// COP at ODB=5 F, min speed
 
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
 
-*f *e FLOAT_GZ rs_inp47		// input power at ODB = 47 F, Btuh (not W)
-							//   (includes rated fan power)
-*f *e FLOAT_GZ rs_inp35		// ditto 35 F
-*f *e FLOAT_GZ rs_inp17		// ditto 17 F
+*f *e FLOAT_GZ rs_inp47		// input power at ODB=47 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp35		// input power at ODB=35 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp17		// input power at ODB=17 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp05		// input power at ODB=5 F, Btuh (w/ rated fan power)
 
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
@@ -3318,10 +3326,16 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 					// compression cooling
 *f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
 *f *e FLOAT_GZ rs_EER95;	// cooling AHRI rated EER at 95 F, Btuh/W
-*f *e FLOAT rs_cap95;		// rated total cooling capacity at 95 F, Btuh TODO: decide on sign
+*f *e FLOAT rs_cap95;		// rated total cooling capacity at 95 F (>= 0)
 *f *e FLOAT_GEZ rs_cap95_As;	//     ... as autoSized
 *f *e FLOAT_GEZ rs_cap95_AsNov;	// ... raw autoSized w/o oversizing
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
+
+#if 0
+// TODO: variable speed cooling
+*f *e FRAC_GZ rs_loadFMinC;	// cooling minimum load fraction
+							//   (cycles below this)
+#endif
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
