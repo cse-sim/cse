@@ -3133,6 +3133,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
 *declare "float rs_CapRat1747() const;"
+*declare "float rs_CapRat0547() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "float rs_Cap05Default( float cap47, float cap17) const;"
@@ -3245,7 +3246,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
 *r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
-							//   default based on HSPF or other correlations
+							//   default ?
 
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
@@ -3270,7 +3271,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
+#if 1
 *array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
+#endif
+#if 1
+*declare "class RegularGridInterpolator* rs_rgiHtg;"  // ASHPVC heating performance map
+#endif
 
 *r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
 *r AUXHEATCTRL rs_ctrlAuxH	// auxiliary heating control

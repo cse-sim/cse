@@ -23,6 +23,7 @@
 #include "mspak.h"
 #include "nummeth.h"
 
+#include "array"
 #include "btwxt.h"
 
 #ifdef COMFORT_MODEL
@@ -3522,6 +3523,9 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	if (!IsSet( RSYS_CAP17) || rs_IsPkgRoom())
 		rs_cap17 = max( rs_CapRat1747()*rs_cap47, 1.f);
 
+	if (!IsSet( RSYS_CAP05))
+		rs_cap05 = max(rs_CapRat0547() * rs_cap47, 1.f);
+
 	if (!IsSet(RSYS_CAP35))
 		rs_cap35 = rs_Cap35Default(rs_cap47, rs_cap17);
 
@@ -3632,6 +3636,13 @@ x	float capRat = 0.6280951f;
 	return capRat;
 }		// RSYS::rs_CapRat1747
 //-----------------------------------------------------------------------------
+float RSYS::rs_CapRat0547() const
+// returns ratio cap05 / cap47
+{
+	// TODO: develop better default
+	return rs_capRat0547;
+}		// RSYS::rs_CapRat0547
+//-----------------------------------------------------------------------------
 float RSYS::rs_Cap35Default(		// default 35 F heating capacity
 	float cap47,		// 47 F heating capacity, any power units
 	float cap17) const	// 17 F heating capacity
@@ -3657,7 +3668,7 @@ float RSYS::rs_Inp35Default(		// default 35 F input power
 float RSYS::rs_Cap05Default(		// default 5 F heating capacity
 	float cap47,		// 47 F heating capacity, any power units
 	float cap17) const	// 17 F heating capacity
-// returns 35 F heating capacity, consistent units
+// returns 5 F heating capacity, consistent units
 {
 	float cap05 = cap17 + (cap17-cap47)* (5.f-47.f)/(17.f-47.f);
 	return cap05;
@@ -3667,6 +3678,7 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 // uses: rs_cap/COP 47/17
 // sets: rs_inp17/35/47, rs_COP35 (if needed), and slopes
 {
+	RC rc = RCOK;
 	rs_inp47 = rs_cap47 / max( rs_COP47, .1f);	// full speed input power, Btuh
 	rs_inp17 = rs_cap17 / max( rs_COP17, .1f);
 
@@ -3710,18 +3722,74 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 
 		rs_ASHPInpMinF[0] = (inpMin47 - inpMin17) / (47.f - 17.f);
 		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);	
+
+		rc |= rs_SetupBtwxt();
 	}
 
-	return RCOK;
+	return rc;
 }		// RSYS::rs_CalcInputsAndSlopesASHP
+//-----------------------------------------------------------------------------
+struct VSPERFP
+{
+	enum { ppCAPLS, ppINPLS, ppCAPHS, ppINPHS, ppCOUNT };
+	VSPERFP(float temp, float capLS, float COPLS, float capHS, float COPHS)
+		: pp_temp(temp)
+	{
+		pp_data[ ppCAPLS] = capLS;
+		pp_data[ ppCAPHS] = capHS;
+		pp_data[ ppINPLS] = capLS / max(COPLS, .1f);
+		pp_data[ ppINPHS] = capHS / max(COPHS, .1f);
+	}
+
+	double pp_temp;		// temp for this point, F
+	std::array< double, ppCOUNT> pp_data{ 0. };	// data
+	double operator [](int i) const { return pp_data[i];	}
+	static int NData() { return ppCOUNT; }
+};	// struct VSPERFP
+
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupBtwxt()	// init/populate btwxt for runtime interpolation
 {
 	RC rc = RCOK;
 
-	std::vector<double> gridODB{ 5, 17, 35, 45, 47 };
 
-	Btwxt::GridAxis gx(gridODB);
+	std::vector< VSPERFP> ppV;
+
+	ppV.emplace_back(5.f, rs_CapMin05(), rs_COPMin05, rs_cap05, rs_COP05);
+	ppV.emplace_back(17.f, rs_CapMin17(), rs_COPMin17, rs_cap17, rs_COP17);
+	// ppV.emplace_back(35.f, rs_CapMin35(), rs_COP35, rs_cap35, rs_COP35);
+	ppV.emplace_back(47.f, rs_CapMin47(), rs_COPMin47, rs_cap47, rs_COP47);
+
+	int nD = VSPERFP::NData();
+	int nPts = ppV.size();
+	std::vector< double> gridODB;
+	std::vector< std::vector<double>> values;
+	values.resize(nD);
+
+	for (int iPt = 0; iPt<nPts; iPt++)
+	{
+		const VSPERFP& pp = ppV[iPt];
+		gridODB.push_back(pp.pp_temp);
+		// values[iPt].resize(nD);
+		for (int iD = 0; iD < nD; iD++)
+		{
+			values[iD].push_back(pp[iD]);
+		}
+	}
+
+	Btwxt::GridAxis dbtRange(gridODB);
+	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
+
+	Btwxt::GriddedData perfMapHtg(dbt, values);
+
+	Btwxt::RegularGridInterpolator rgiHtg(perfMapHtg);
+
+	std::vector< double> targ{ 17. };
+	auto result = rgiHtg(targ);
+
+	targ[0] = 11.;
+
+	result = rgiHtg(targ);
 
 
 	return rc;
