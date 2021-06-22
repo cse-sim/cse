@@ -860,8 +860,8 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 			if (ahhc.coilTy != C_COILTYCH_HW   				// if not a coil type that uses a plant
 					/*&& ahhc.coilTy != C_COILTYCH_HHP*/ )  			// .. (redundant: meter disallowed)
 			{
-				MtrB.p[ahhc.mtri].H.htg += ahhc.p*Top.tp_subhrDur;		// charge heating coil input power to meter, end use "htg"
-				MtrB.p[ahhc.mtri].H.hp  += ahhc.pRh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hp" (0 if not AHP)
+				MtrB.p[ahhc.mtri].H.htg  += ahhc.p*Top.tp_subhrDur;		// charge heating coil input power to meter, end use "htg"
+				MtrB.p[ahhc.mtri].H.hpBU += ahhc.pRh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hp" (0 if not AHP)
 			}
 		if (ahhc.auxOnMtri)							// heating coil-on load-proportional aux energy
 			MtrB.p[ahhc.auxOnMtri].H.HAUX += ahhc.pAuxOn*Top.tp_subhrDur;		//  (eg oil furnace draft fan)

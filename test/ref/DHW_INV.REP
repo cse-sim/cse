@@ -8,7 +8,7 @@ Inversion test case
 
 Monthly Energy Use, meter "mtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 473.87      0      0      0 411.40 62.474      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb 428.02      0      0      0 371.59 56.428      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -29,7 +29,7 @@ Yr  5579.5      0      0      0 4843.9 735.59      0      0      0      0      0
 
 Hourly Energy Use, meter "mtrElec", Thu 15-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -60,7 +60,7 @@ Day 15.286      0      0      0 13.271  2.015      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw_inv  001                             Mon 11-May-20  10:20:49 am  Page  1
+! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Day  95.102  95.102       0       0       0       0       0
 
 
 ------------------------------------------------------------------------------
-! dhw_inv  001                             Mon 11-May-20  10:20:49 am  Page  2
+! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  2
 
 
 
@@ -134,7 +134,7 @@ Inversion test case
 
 ! Log for Run 001:
 
-! CSE 0.869.1+window-conduction.8a551e4.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -186,7 +186,7 @@ Inversion test case
 
 
 ------------------------------------------------------------------------------
-! dhw_inv  001                             Mon 11-May-20  10:20:49 am  Page  3
+! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! dhw_inv  001                             Mon 11-May-20  10:20:49 am  Page  4
+! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Inversion test case
 
 
 ------------------------------------------------------------------------------
-! dhw_inv  001                             Mon 11-May-20  10:20:49 am  Page  5
+! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  5
 
 
 
@@ -321,21 +321,21 @@ Inversion test case
 
 
 
-! CSE 0.869.1+window-conduction.8a551e4.1 for Win32 console run(s) done: Mon 11-May-20  10:20:49 am
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:18:19 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               11-May-20   9:43 am   (VS 14.16    2607616 bytes)  (HPWH 1.9.0+master.796508b.20)
-! Command line: -x!  -t1 dhw_inv
-! Input file:   D:\cse\test\dhw_inv.cse
-! Report file:  D:\cse\test\dhw_inv.rep
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+! Command line: -x!  -t1 DHW_INV
+! Input file:   D:\cse\test\DHW_INV.cse
+! Report file:  D:\cse\test\DHW_INV.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0030   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0450   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.51     Calls = 1      T/C = 0.5100   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
-!                Total:  Time = 0.52     Calls = 1      T/C = 0.5220   
+!           Simulation:  Time = 0.45     Calls = 1      T/C = 0.4540   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
+!                Total:  Time = 0.51     Calls = 1      T/C = 0.5060   
 
 
 
@@ -375,5 +375,5 @@ Inversion test case
 
 
 ------------------------------------------------------------------------------
-! dhw_inv  001                             Mon 11-May-20  10:20:49 am  Page  6
+! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  6
 

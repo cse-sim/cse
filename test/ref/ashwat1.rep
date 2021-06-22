@@ -44,7 +44,7 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
 
 Monthly Energy Use, meter "MtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 1688.8      0      0      0      0      0      0      0 207.98 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
 Feb 1384.8      0      0      0      0      0      0      0 121.44 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
@@ -65,7 +65,7 @@ Yr   17609 1287.0      0      0      0      0      0 442.78 735.04 381.20      0
 
 Monthly Energy Use, meter "MtrNatGas"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 7450.9      0 6920.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 343.63      0 186.96      0      0      0      0
 Feb 4487.9      0 4040.9      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 289.51      0 157.52      0      0      0      0
@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console   Thu 11-Feb-21   5:01:11 pm
+! CSE 0.893.0 for Win32 console   Tue 22-Jun-21  11:15:04 am
 
 
 ================
@@ -13267,7 +13267,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -14823,18 +14823,18 @@ Input for Run 001:
 
 
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console run(s) done: Thu 11-Feb-21   5:01:24 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:15:17 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               11-Feb-21   4:10 pm   (VS 14.28    2590720 bytes)  (HPWH 1.12.4)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 ashwat1
 ! Input file:   D:\cse\test\ashwat1.cse
 ! Report file:  D:\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2      T/C = 0.0075   
-!           AutoSizing:  Time = 1.24     Calls = 1      T/C = 1.2360   
-!           Simulation:  Time = 12.01    Calls = 1      T/C = 12.0100  
-!              Reports:  Time = 0.04     Calls = 1      T/C = 0.0450   
-!                Total:  Time = 13.31    Calls = 1      T/C = 13.3110  
+!                Input:  Time = 0.10     Calls = 2      T/C = 0.0525   
+!           AutoSizing:  Time = 1.17     Calls = 1      T/C = 1.1690   
+!           Simulation:  Time = 11.72    Calls = 1      T/C = 11.7220  
+!              Reports:  Time = 0.05     Calls = 1      T/C = 0.0480   
+!                Total:  Time = 13.05    Calls = 1      T/C = 13.0510  
