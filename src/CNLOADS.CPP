@@ -1628,6 +1628,8 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 /*virtual*/ RSYS::~RSYS()
 {
 	cupfree( DMPP( rs_desc));
+	delete rs_pRgiHtg;
+	rs_pRgiHtg = nullptr;
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
@@ -3352,29 +3354,36 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	ashpModel &= 0xff;
 
 	if (ashpModel == 0)
-	{	// CSE AHRI 210/240 model
-		// input power and heating capacity at current conditions (Btuh)
-		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
-		float tdbM17 = tdbOut - 17.f;
-		inpHt = rs_inp17 + rs_ASHPInpF[ iDefrost]*tdbM17 - fanHAdj;
-		capHt = rs_cap17 + rs_ASHPCapF[ iDefrost]*tdbM17 - fanHAdj;
-		if (iDefrost && bDoDefrost)
-		{	// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
-			// include sufficient aux heat to make up for ASHP cooling
-			// limit to available aux heat capacity
-			// Note: does NOT over-commit aux because compressor
-			//   and aux do not run simultaneously.
-			capDfHt = (rs_ASHPCapF[ 0] - rs_ASHPCapF[ 1]) * tdbM17;
-			if (capDfHt > rs_capAuxH)
-				capDfHt = rs_capAuxH;
-		}
+	{	
 		if (rs_IsASHPVC())
-		{	capHtMin = rs_loadFMin47 * capHt;
+		{	/* rc = */ rs_GetPerfHtgBtwxt(tdbOut, capHt, inpHt, capHtMin, inpHtMin);
+
+#if 0
+			capHtMin = rs_loadFMin47 * capHt;
 			float inpMin17 = rs_CapMin17() / rs_COPMin17;
 			inpHtMin = inpMin17 + rs_ASHPInpMinF[iDefrost] * tdbM17 - rs_loadFMin47 * fanHAdj;
 			capDfHtMin = rs_loadFMin47 * capDfHt;
-	   	}
-		// else single speed, see code at return below
+#endif
+		}
+		else
+		{
+			// CSE AHRI 210/240 model
+			// input power and heating capacity at current conditions (Btuh)
+			int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
+			float tdbM17 = tdbOut - 17.f;
+			inpHt = rs_inp17 + rs_ASHPInpF[iDefrost] * tdbM17 - fanHAdj;
+			capHt = rs_cap17 + rs_ASHPCapF[iDefrost] * tdbM17 - fanHAdj;
+			if (iDefrost && bDoDefrost)
+			{	// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
+				// include sufficient aux heat to make up for ASHP cooling
+				// limit to available aux heat capacity
+				// Note: does NOT over-commit aux because compressor
+				//   and aux do not run simultaneously.
+				capDfHt = (rs_ASHPCapF[0] - rs_ASHPCapF[1]) * tdbM17;
+				if (capDfHt > rs_capAuxH)
+					capDfHt = rs_capAuxH;
+			}
+		}
 	}
 	else
 	{	// DOE-2 curve fit methods
@@ -3674,6 +3683,24 @@ float RSYS::rs_Cap05Default(		// default 5 F heating capacity
 	return cap05;
 }	// RSYS::rs_Cap05Default
 //-----------------------------------------------------------------------------
+struct VSPERFP
+{
+	enum { ppCAPHS, ppINPHS, ppCAPLS, ppINPLS, ppCOUNT };
+	VSPERFP(float temp, float capHS, float COPHS, float capLS, float COPLS)
+		: pp_temp(temp)
+	{
+		pp_data[ppCAPHS] = capHS;
+		pp_data[ppINPHS] = capHS / max(COPHS, .1f);
+		pp_data[ppCAPLS] = capLS;
+		pp_data[ppINPLS] = capLS / max(COPLS, .1f);
+	}
+
+	double pp_temp;		// temp for this point, F
+	std::array< double, ppCOUNT> pp_data{ 0. };	// data
+	double operator [](int i) const { return pp_data[i]; }
+	static int NData() { return ppCOUNT; }
+};	// struct VSPERFP
+//-----------------------------------------------------------------------------
 RC RSYS::rs_CalcInputsAndSlopesASHP()
 // uses: rs_cap/COP 47/17
 // sets: rs_inp17/35/47, rs_COP35 (if needed), and slopes
@@ -3720,45 +3747,30 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 		else
 			inpMin35 = capMin35 / max(rs_COPMin35, .1f);
 
-		rs_ASHPInpMinF[0] = (inpMin47 - inpMin17) / (47.f - 17.f);
-		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);	
+		// vector of performance points
+		std::vector< VSPERFP> ppV;
+		ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
+		ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
+		ppV.emplace_back(35.f, rs_cap35, rs_COP35, capMin35, rs_COPMin35);
+		ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
 
-		rc |= rs_SetupBtwxt();
+		// Populate Btwxt interpolator grid data from performance points
+		rc |= rs_SetupBtwxt(ppV);
+
+#if 0
+		rs_ASHPInpMinF[0] = (inpMin47 - inpMin17) / (47.f - 17.f);
+		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);
+#endif
+
 	}
 
 	return rc;
 }		// RSYS::rs_CalcInputsAndSlopesASHP
 //-----------------------------------------------------------------------------
-struct VSPERFP
-{
-	enum { ppCAPLS, ppINPLS, ppCAPHS, ppINPHS, ppCOUNT };
-	VSPERFP(float temp, float capLS, float COPLS, float capHS, float COPHS)
-		: pp_temp(temp)
-	{
-		pp_data[ ppCAPLS] = capLS;
-		pp_data[ ppCAPHS] = capHS;
-		pp_data[ ppINPLS] = capLS / max(COPLS, .1f);
-		pp_data[ ppINPHS] = capHS / max(COPHS, .1f);
-	}
-
-	double pp_temp;		// temp for this point, F
-	std::array< double, ppCOUNT> pp_data{ 0. };	// data
-	double operator [](int i) const { return pp_data[i];	}
-	static int NData() { return ppCOUNT; }
-};	// struct VSPERFP
-
-//-----------------------------------------------------------------------------
-RC RSYS::rs_SetupBtwxt()	// init/populate btwxt for runtime interpolation
+RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for runtime interpolation
+	const std::vector< VSPERFP> ppV)	// performance point vector
 {
 	RC rc = RCOK;
-
-
-	std::vector< VSPERFP> ppV;
-
-	ppV.emplace_back(5.f, rs_CapMin05(), rs_COPMin05, rs_cap05, rs_COP05);
-	ppV.emplace_back(17.f, rs_CapMin17(), rs_COPMin17, rs_cap17, rs_COP17);
-	// ppV.emplace_back(35.f, rs_CapMin35(), rs_COP35, rs_cap35, rs_COP35);
-	ppV.emplace_back(47.f, rs_CapMin47(), rs_COPMin47, rs_cap47, rs_COP47);
 
 	int nD = VSPERFP::NData();
 	int nPts = ppV.size();
@@ -3782,19 +3794,40 @@ RC RSYS::rs_SetupBtwxt()	// init/populate btwxt for runtime interpolation
 
 	Btwxt::GriddedData perfMapHtg(dbt, values);
 
-	Btwxt::RegularGridInterpolator rgiHtg(perfMapHtg);
+	delete rs_pRgiHtg;		// delete prior if any
 
+	rs_pRgiHtg = new Btwxt::RegularGridInterpolator( perfMapHtg);
+
+#if 0
+	// test code
 	std::vector< double> targ{ 17. };
-	auto result = rgiHtg(targ);
+	auto result = (*rs_pRgiHtg)(targ);
 
 	targ[0] = 11.;
 
-	result = rgiHtg(targ);
-
+	result = (*rs_pRgiHtg)(targ);
+#endif
 
 	return rc;
 
 }	// RSYS::rs_SetupBtwxt
+//-----------------------------------------------------------------------------
+RC RSYS::rs_GetPerfHtgBtwxt(
+	float tdbOut,
+	float& capHt,		// returned: full speed heating capacity
+	float& inpHt,		// returned: compressor-only full speed input power, Btuh
+	float& capHtMin,	// returned: min speed heating capacity, Btuh
+	float& inpHtMin)	// returned: compressor-only min speed input power, Btuh
+{
+	RC rc = RCOK;
+	std::vector< double> targ{ tdbOut };
+	auto result = (*rs_pRgiHtg)(targ);
+	capHt = result[VSPERFP::ppCAPHS];
+	inpHt = result[VSPERFP::ppINPHS];
+	capHtMin = result[VSPERFP::ppCAPLS];
+	inpHtMin = result[VSPERFP::ppINPLS];
+	return rc;
+}	// RSYS::rs_GetPerfHtgBtwxt
 //-----------------------------------------------------------------------------
 float RSYS::rs_CapEffASHP(			// performance at current conditions
 	float tdbOut/*=-999.f*/,	// outdoor dry-bulb temp, F

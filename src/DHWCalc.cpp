@@ -965,7 +965,8 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// EcoSizer design heatpump source temp
 		if (!IsSet(DHWSYS_ASHPTSRCDES))
-			ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO: what about lockout
+			ws_ashpTSrcDes = Top.heatDsTDbO;	// HPWH min operating temp may limit
+												//   see HPWHLINK::hw_SetHeatingCap()
 
 		// solar water heating
 		ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL

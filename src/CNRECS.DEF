@@ -3138,7 +3138,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "float rs_Cap05Default( float cap47, float cap17) const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
-*declare "RC rs_SetupBtwxt();"
+*declare "RC rs_SetupBtwxt( const std::vector<struct VSPERFP> ppV);"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
@@ -3271,11 +3271,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
-#if 1
+#if 0
 *array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
 #endif
 #if 1
-*declare "class RegularGridInterpolator* rs_rgiHtg;"  // ASHPVC heating performance map
+*declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg;"  // ASHPVC heating performance map
+*declare "RC rs_GetPerfHtgBtwxt( float tdbOut, float& capHt, float& inpHt, float& capHtMin, float& inpHtMin);"
 #endif
 
 *r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
