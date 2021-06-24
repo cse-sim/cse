@@ -60,7 +60,7 @@ MySys Characteristics
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  1
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  1
 
 
 
@@ -71,7 +71,7 @@ MySys Characteristics
 
 Monthly Energy Use, meter "SysMtr"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  3.301      0  3.190      0      0      0      0      0 0.0851      0 0.0262      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  1.956      0  1.882      0      0      0      0      0 0.0502      0 0.0236      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -123,7 +123,7 @@ Yr  15.248  1.613 12.604      0      0      0      0  0.386  0.336      0  0.308
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  2
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  3
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  4
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -312,7 +312,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  5
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  6
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
         		layer lrThk = .1 lrMat = FoamInsul
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  7
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  8
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Input for Run 001:
             znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page  9
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page  9
 
 
 
@@ -627,7 +627,7 @@ Input for Run 001:
         	rsFChg = 1		//ACM charge factor (default = 1)
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page 10
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page 10
 
 
 
@@ -690,7 +690,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page 11
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page 11
 
 
 
@@ -699,21 +699,21 @@ Input for Run 001:
 
 
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   2:53:22 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:14:11 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Nov-20  10:41 am   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 herv
 ! Input file:   D:\cse\test\herv.cse
 ! Report file:  D:\cse\test\herv.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0040   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0450   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.10     Calls = 1      T/C = 1.0990   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
-!                Total:  Time = 1.11     Calls = 1      T/C = 1.1150   
+!           Simulation:  Time = 1.09     Calls = 1      T/C = 1.0860   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
+!                Total:  Time = 1.15     Calls = 1      T/C = 1.1470   
 
 
 
@@ -753,5 +753,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 24-Nov-20   2:53:21 pm  Page 12
+! herv  001                                Tue 22-Jun-21  11:14:10 am  Page 12
 

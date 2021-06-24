@@ -4949,7 +4949,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
     *e float clg		// space cooling.  code assumes 1st member.
     *e float htg		// space heating incl heat pump compressor
-    *e float hp			// heat pump auxiliary (backup) heat
+    *e float hpBU		// heat pump resistance heating (backup and defrost)
     *e float dhw		// domestic (service) hot water heating
 						//   HPWH: compressor+misc energy
 	*e float dhwBU		// domestic (service) hot water backup

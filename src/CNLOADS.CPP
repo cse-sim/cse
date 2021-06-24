@@ -4819,7 +4819,7 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			rs_inDefrost = rs_outDefrost / rs_effAuxH;
 			rs_inAux = rs_outAux / rs_effAuxH;
 			if (rs_pMtrAux)
-				rs_pMtrAux->H.hp += (rs_inAux + rs_inDefrost) * Top.tp_subhrDur;
+				rs_pMtrAux->H.hpBU += (rs_inAux + rs_inDefrost) * Top.tp_subhrDur;
 		}
 		else
 		{	// non-ASHP

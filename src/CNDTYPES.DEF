@@ -582,7 +582,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
 			  HTG		"Htg"	// space heating incl heat pump compressor
-			  HPHTG		"HPHtg"	// heat pump backup and defrost heat
+			  HPHTG		"HPBU"	// heat pump resistance heating (backup and defrost)
 			  DHW		"DHW"	// domestic (service) hot water heating
 			  DHWBU		"DHWBU"	// domestic (service) hot water heating backup
 			  DHWMFL	"DHWMFL"// domestic (service) hot water DHWLOOP energy
