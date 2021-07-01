@@ -1142,6 +1142,7 @@ x						printf( "1B\n");
 							if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
 								&& frDiff( qHt0, qHt1) > .001)
 								printf( "\nqHt mismatch");
+							// zn_AirFlowVsTsup();
 #endif
 						}
 						// zone temp calc'd in zn_CondixCR2()
@@ -1328,6 +1329,52 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	return RCOK;
 
 }		// ZNR::zn_CondixCR2
+//----------------------------------------------------------------------------
+RC ZNR::zn_AirFlowVsTsup()
+{
+	RC rc = RCOK;
+	if (!Top.isEndHour)
+		return rc;		// skip all except last substep
+
+	RSYS* rs = zn_GetRSYS();
+	if (!rs)
+		return RCBAD;
+
+	static FILE* f = NULL;
+	if (!f)
+	{
+		f = fopen(strtprintf("AirCurves.csv"), "wt");
+		if (!f)
+			return RCBAD;		// can't open file
+		fprintf(f, "%s\n", rs->rs_desc ? rs->rs_desc : "Curves");
+
+		fprintf(f, "Mon,Day,Hr,Sh,fAmf,amf,tReg,amfNeeded\n");
+
+	}
+
+	// RSYS rsSave( rs);		// save for restore at exit
+								//   (we alter mbrs here)
+
+
+	AIRSTATE asSup;		// air state at register
+	for (int i = 0; i < 10; i++)
+	{
+		float fAmf = 1.f - float(i) / 10.f;
+
+		float amf = rs->rs_TsupVarFlow(fAmf, asSup);
+
+		double amfNeed = zn_AmfHvacCR(70. /*tz*/, asSup.as_tdb);
+
+		fprintf(f, "%d,%d,%d,%d,%.1f,%.0f,%0.1f,%.0f\n",
+			Top.tp_date.month, Top.tp_date.mday, Top.iHrST + 1,Top.iSubhr,
+			fAmf, amf, asSup.as_tdb, amfNeed);
+
+	}
+
+	return rc;
+
+
+}	// ZNR::zn_AirFlowVsTsup
 //----------------------------------------------------------------------------
 double ZNR::zn_TAirCR(			// zone air temp w/ add'l radiant heat
   	double mCpT,	// add'l air heat to zone, Btuh
@@ -3002,7 +3049,7 @@ x	rs_asOut = asSav;
 	if (rs_fan.fanTy != C_FANTYCH_BLOWTHRU)
 		rs_asOut.as_AddQSen( rs_fanHeatC, rs_amfC);
 	rs_asSup = rs_asOut;
-	rs_SupplyDSEAndDucts( rs_asSup, rs_DSEC);
+	rs_SupplyDSEAndDucts( rs_asSup);
 
 #if defined( _DEBUG)
 	if (!Top.isWarmup)
@@ -3726,19 +3773,19 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 	//   unused if not ASHPVC
 	if (rs_IsASHPVC())
 	{	// min spd capacities
-		float capMin47 = rs_CapMin47();
-		float capMin17 = rs_CapMin17();
-		float capMin35 = rs_Cap35Default(capMin47, capMin17);
 				
 		// min spd COP and input
 		if (!IsSet(RSYS_COPMIN47))
 			rs_COPMin47 = rs_COP47;
 		if (!IsSet(RSYS_COPMIN17))
 			rs_COPMin17 = rs_COP17;
+		if (!IsSet(RSYS_COPMIN05))
+			rs_COPMin05 = rs_COP05;
 
-		float inpMin47 = capMin47 / max(rs_COPMin47, .1f);
-		float inpMin17 = capMin17 / max(rs_COPMin17, .1f);
-	
+		float inpMin47 = rs_CapMin47() / max(rs_COPMin47, .1f);
+		float inpMin17 = rs_CapMin17() / max(rs_COPMin17, .1f);
+
+		float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
 		float inpMin35;
 		if (!IsSet(RSYS_COPMIN35))
 		{	inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
@@ -4154,7 +4201,8 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 //----------------------------------------------------------------------------
 int RSYS::rs_IsModeAvailable(
 	int rsMode)		// desired mode (rsmHEAT or rsmCOOL)
-// returns 1 iff RSYS can operate in desired mode
+
+// returns 1 iff RSYS can operate in desired mode (rs_amf set)
 //         0 if not (mode fixed and different)
 //        -1 if not (system off)
 {
@@ -4188,7 +4236,7 @@ int RSYS::rs_IsModeAvailable(
 
 		if (ret > 0)
 		{
-			// set mode-specific air flow
+			// set mode-specific full speed air flow
 			rs_amf = rsMode == rsmHEAT ? rs_amfH
 				   : rsMode == rsmCOOL ? rs_amfC
 				   : rsMode == rsmOAV  ? rs_amfOAV
@@ -4200,9 +4248,9 @@ int RSYS::rs_IsModeAvailable(
 	return ret;
 }		// RSYS::rs_IsModeAvailable
 //----------------------------------------------------------------------------
-void RSYS::rs_EnteringAirState(		// RSYS entering air state
-	int rsMode /*=-1*/)	// mode, default = rs_mode
+void RSYS::rs_EnteringAirState()	// RSYS entering air state
 
+// rs_mode s/b set by caller (and not rsmOFF)
 // rs_amf s/b set by caller and > 0
 
 // rsMode determines assumed air source
@@ -4215,10 +4263,8 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 //  rs_rhIn = corresponding relative humidity (0 - 1)
 //  rs_twbIn = corresponding wet bulb temp, F
 {
-	if (rsMode < 0)
-		rsMode = rs_mode;
 
-	if (rsMode == rsmOAV)
+	if (rs_mode == rsmOAV)
 		// outdoor air vent: set state from possibly modified outdoor conditions
 		//   ignore possibility of impossible humidity ratio
 		rs_asRet.as_Set( rs_OAVTdbInlet, Top.wOSh);
@@ -4277,7 +4323,8 @@ void RSYS::rs_EnteringAirState(		// RSYS entering air state
 }	// RSYS::rs_EnteringAirState
 //----------------------------------------------------------------------------
 int RSYS::rs_SupplyAirState(		// current conditioning capabilities
-	int rsMode)		// desired mode (do not call with rsMode == rsmOFF)
+	int rsMode,		// desired mode (do not call with rsMode == rsmOFF)
+	float fSpd /*=1.f*/)		// speed fraction
 // NOTE: many side effects -- changes rs_mode, clears prior step, ...
 
 //	returns 3: mode is available, rs_asSup set
@@ -4287,8 +4334,10 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 {
 	// TODO: not returning right value!
 
+	float amfWas = rs_amf;
+
 	// mode availability
-	// sets rs_amf
+	// if success, sets rs_amf = mode-specific full speed amf
 	if (rs_IsModeAvailable( rsMode) <= 0)
 		return 0;		// mode not possible
 
@@ -4299,7 +4348,8 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 	else if (auszMode != rsmOFF)
 		return 1;			// another mode is being autosized
 
-	if (rs_mode == rsmOFF)		// if was off
+	rs_amf *= fSpd;
+	if (rs_mode == rsmOFF || rs_amf != amfWas)		// if was off or speed has changed
 	{	// first zone requesting this mode during this step
 		rs_SetModeAndClear( rsMode);	// clear results from prior calc
 
@@ -4348,7 +4398,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 
 				rs_asOutAux.as_AddQSen2( rs_capAuxH+fanHeatAux, rs_amf);
 				rs_asSupAux = rs_asOutAux;
-				rs_SupplyDSEAndDucts( rs_asSupAux, rs_DSEH);
+				rs_SupplyDSEAndDucts( rs_asSupAux);
 			}
 			else
 			{	// non-ASHP
@@ -4357,7 +4407,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 				rs_asOut.as_AddQSen2( rs_capHt, rs_amf);
 			}
 			rs_asSup = rs_asOut;
-			rs_SupplyDSEAndDucts( rs_asSup, rs_DSEH);
+			rs_SupplyDSEAndDucts( rs_asSup);
 #if defined( RSYS_FIXEDSAT)
 			rs_asSup.as_Set( 120., .001);
 #endif
@@ -4367,10 +4417,10 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 			rs_asOut = rs_asIn;
 			rs_asOut.as_AddQSen2( rs_fanHeatOAV, rs_amf);
 			rs_asSup = rs_asOut;
-			rs_SupplyDSEAndDucts( rs_asSup, rs_DSEC);
+			rs_SupplyDSEAndDucts( rs_asSup);
 			if (rs_asSup.as_tdb > 74.f)
 			{	rs_asSup = rs_asOut;
-				rs_SupplyDSEAndDucts( rs_asSup, rs_DSEC);
+				rs_SupplyDSEAndDucts( rs_asSup);
 			}
 		}
 	}
@@ -4379,15 +4429,21 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 	return rsAvail;
 }	// RSYS::rs_SupplyAirState
 //----------------------------------------------------------------------------
-void RSYS::rs_SupplyDSEAndDucts(	// apply supply duct and DSE losses
+float RSYS::rs_SupplyDSEAndDucts(	// apply supply duct and DSE losses
 	AIRSTATE& as,	// air state
 					//    call: state at RSYS outlet
 					//    return: state at room register
-	float DSE)		// distribution system efficiency
-					//    if > 0, 1 - DSE is discarded
-					//    else DUCTSEG model used (if present)
+	float amf /*=-1*/)	// dry air mass flow rate, lbm/hr
+						// default: rs_amf
+
+// returns room register air mass flow rate, lbm/hr (after leakage if any)
 {
+	if (amf < 0.f)
+		amf = rs_amf;
+
 	// DSE: discard (1-DSE) of heat/moisture added by system
+	int iHC = rs_DsHC();		// returns nz iff cooling
+	float DSE = iHC ? rs_DSEC : rs_DSEH;
 	if (DSE > 0.f)
 	{	if (DSE < 1.f)
 			as.as_MixF( 1.f - DSE, rs_asIn);
@@ -4395,22 +4451,26 @@ void RSYS::rs_SupplyDSEAndDucts(	// apply supply duct and DSE losses
 	}
 	else
 	{	// supply duct (if any) to get supply state
-		int iDS = rs_Dsi( 0);	// retrieve supply duct idx
-		if (iDS > 0)			// if supply duct present
-			as = DsR[ iDS].ds_CalcFL( as, rs_amf);
+		int iDS = rs_Dsi( 0, iHC);	// retrieve supply duct idx
+		if (iDS > 0)				// if supply duct present
+		{	as = DsR[iDS].ds_CalcFL(as, amf);
+			amf *= (1.f - DsR[iDS].ds_leakF);
+		}
 	}
+	return amf;
 }		// RSYS_SupplyDSEAndDucts
 //----------------------------------------------------------------------------
 void RSYS::rs_SupplyDSEAndDuctsRev(	// reverse supply duct and DSE losses
-	AIRSTATE& as,	// air state
+	AIRSTATE& as)	// air state
 					//    call: state at room register
 					//    return: state at RSYS outlet
-	float DSE)		// distribution system efficiency
-					//   if > 0, 1-DSE is discarded
-					//   else DUCTSEG model used (if present)
 {
+	int iHC = rs_DsHC();		// returns nz iff cooling
+	float DSE = iHC ? rs_DSEC : rs_DSEH;
 	if (DSE > 0.f)
-	{	if (DSE < 1.f)
+	{	// distribution system efficiency
+		//   1-DSE is discarded
+		if (DSE < 1.f)
 			as.as_MixF( -(1.f - DSE)/DSE, rs_asIn);
 		// else leave as unchanged (no duct losses)
 	}
@@ -4457,6 +4517,19 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 	return znAmfSys;
 }		// RSYS::rs_ZoneAirRequest
 //-----------------------------------------------------------------------------
+float RSYS::rs_TsupVarFlow(
+	float fAmf,
+	AIRSTATE& asSup)
+{
+
+	asSup = rs_asOut;
+
+	float amf = rs_amf * fAmf;
+
+	return rs_SupplyDSEAndDucts(asSup, amf);
+
+}		// RSYS::rs_TsupVarFlow
+//-----------------------------------------------------------------------------
 #if defined( _DEBUG)
 #define RSYSITERCOUNT
 #if defined( RSYSITERCOUNT)
@@ -4498,7 +4571,7 @@ RC RSYS::rs_AllocateZoneAir()
 		//  recalc duct loss
 		//  WHY: duct temps must be current re surrounding zone xfer
 		rs_asSup = rs_asOut = rs_asOutAux;
-		rs_SupplyDSEAndDucts( rs_asSup, rs_DSEH);
+		rs_SupplyDSEAndDucts( rs_asSup);
 #if defined( _DEBUG)
 		// result s/b same as initial calc!
 		if (rs_asSup != rs_asSupAux)
@@ -4525,7 +4598,7 @@ RC RSYS::rs_AllocateZoneAir()
 		//  recalc duct loss
 		//  WHY: duct temps must be current re surrounding zone xfer
 		rs_asSup = rs_asOut = rs_asOutAux;
-		rs_SupplyDSEAndDucts( rs_asSup, rs_DSEH);
+		rs_SupplyDSEAndDucts( rs_asSup);
 #if defined( _DEBUG)
 		// result s/b same as initial calc!
 		if (rs_asSup != rs_asSupAux)
@@ -4576,12 +4649,12 @@ x					rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);
 		AIRSTATE asOutNoAux(rs_asOut);
 		rs_asSup.as_tdb = tSup;		// required supply air state
 		rs_asOut = rs_asSup;
-		rs_SupplyDSEAndDuctsRev(rs_asOut, rs_DSEH);
+		rs_SupplyDSEAndDuctsRev(rs_asOut);
 
 #if defined( _DEBUG)
 		// reverse calc, should match supply
 		AIRSTATE asSupX(rs_asOut);
-		rs_SupplyDSEAndDucts(asSupX, rs_DSEH);
+		rs_SupplyDSEAndDucts(asSupX);
 		if (asSupX != rs_asSup)
 			printf("rs_AllocateZoneAir: inconsistent air state\n");
 #endif
@@ -4774,7 +4847,7 @@ RC RSYS::rs_FinalizeSh()
 					rs_COPHtAdj = rs_inpHtMin <= 0.f
 								? 2.5f		// rs_inpHtMin can be 0 during autosize
 							    : rs_FEffH * rs_capHtMin * rs_PLF / rs_inpHtMin;
-					rs_inPrimary = rs_capHtMin / rs_COPHtAdj;
+					rs_inPrimary = rs_outSen / rs_COPHtAdj;
 				}
 				else
 				{	// variable capacity: intermediate speed

@@ -2221,6 +2221,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_SetRSYSAmf( float fSize, int iAux);"
     *declare "void zn_SetRSYSAmfFromTSup();"
     *declare "RC zn_CondixCR2();"
+    *declare "RC zn_AirFlowVsTsup();"
     *declare "void zn_TAirFloatCR() { tz = zn_balC1 / zn_balC2; }"
     *declare "int zn_AssessVentUtility();"
     *declare "int zn_OAVAttempt( double tSup);"
@@ -3018,6 +3019,8 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *i EXCNDCH ds_exCnd			// adjacent cond: adiabatic/ambient/specT/adjZn.
 
 *i FRAC ds_leakF			// leakage fraction, 0-1
+                            //   return: leak is modelled at duct inlet (return register)
+                            //   supply: leak is modelled at duct outlet (supply register)
 *s *e DBL ds_uaTot			// cur step total conductance between duct air
 							//   and surrounding equivalent temp, Btuh/F
 
@@ -3031,7 +3034,6 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 									//  [ 3]=leaving
 
 *s *e DBL ds_amfFL			// dry air mass flow rate at full load, lbm/hr
-#if 1
 *s *e DBL ds_qCondFL		// full load total conduction losses to surround (+ = out of duct), Btuh
 							//   (may be old: from last calc when rsMode != rsmOFF)
 *s *e DBL ds_qCond			// total conduction loss rate to surround (+ = out of duct), Btuh
@@ -3041,13 +3043,6 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 							//  ds_qCond = ds_qCondAir + ds_qCondRad
 *s *e DBL ds_qLeakSen		// leakage sensible heat loss rate, Btuh (+ = out of duct)
 *s *e DBL ds_qLeakLat		// leakage latent heat loss rate, Btuh (+ = out of duct)
-#else
-*s *e DBL ds_qCondFL		// full load total conduction losses to surround (+ = out of duct), Btuh
-							//   (may be old: from last calc when rsMode != rsmOFF)
-*s *e DBL ds_qCondAirFL		//  ... to txa (air)
-*s *e DBL ds_qCondRadFL		//  ... to txr (radiant)
-							// ds_qCondAirFL + ds_qCondRadFL = ds_qCondFL
-#endif
 
 *END	// DUCTSEG
 //=============================================================================
@@ -3089,12 +3084,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_EndSubhr();"
 *declare "RC rs_AfterSubhr();"
 *declare "RC rs_AfterHour();"
-*declare "void rs_EnteringAirState( int rsMode=-1);"
+*declare "void rs_EnteringAirState();"
 *declare "int rs_IsModeAvailable( int rsMode);"
 *declare "int rs_IsAutoSizing() const;"
-*declare "int rs_SupplyAirState( int rsMode);"
-*declare "void rs_SupplyDSEAndDucts( AIRSTATE& as, float DSE);"
-*declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as, float DSE);"
+*declare "int rs_SupplyAirState( int rsMode, float fSpd=1.f);"
+*declare "float rs_SupplyDSEAndDucts(AIRSTATE& as, float amf = -1.f);"
+*declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as);"
+*declare "float rs_TsupVarFlow( float fAmf, AIRSTATE& as);"
 *declare "double rs_ZoneAirRequest( double znAmfSup, int iAux=0);"
 *declare "RC rs_AllocateZoneAir();"
 *declare "void rs_AvgZoneCond();"
