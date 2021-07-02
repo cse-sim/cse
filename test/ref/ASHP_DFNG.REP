@@ -8,7 +8,7 @@ CZ16 Dual Fuel
 
 Monthly Energy Use, meter "MtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  3.810      0  1.826  1.284      0      0      0      0  0.396 0.0561      0 0.0984      0  0.200  0.766 0.0523  0.150      0      0      0 .00748      0      0      0 -1.027
 Feb  2.797      0  1.499  0.995      0      0      0      0  0.326 0.0507      0 0.0768      0  0.168  0.636 0.0441  0.135      0      0      0 .00658      0      0      0 -1.140
@@ -29,7 +29,7 @@ Yr  12.438  0.219  9.570  5.072      0      0      0  0.379  2.050  0.661      0
 
 Monthly Energy Use, meter "MtrNatGas"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  0.141      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.141      0      0      0      0
 Feb  0.124      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.124      0      0      0      0
@@ -60,7 +60,7 @@ HVAC Cooling Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  1
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  2
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Hourly User-defined Report, Mon 05-Jan
      1   5 18 37.9 0.551        0       8       0       0       0       1       0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  3
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  4
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ CZ16 Dual Fuel
 
 Hourly Energy Use, meter "MtrNatGas", Sun 04-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -292,7 +292,7 @@ Day .00456      0      0      0      0      0      0      0      0      0      0
 
 Hourly Energy Use, meter "MtrNatGas", Mon 05-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -312,7 +312,7 @@ Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  16 .00024      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00024      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  5
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Monthly User-defined Report
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  6
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Subhourly User-defined Report, Sun 04-Jan
    1   4  7  5 21.0 68.00     0 12513 3.038 1.000 1.000 1.000 1.000   0.245 3.038  11317   6126    347    850  18640  15495
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  7
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ CZ16 Dual Fuel
    1   4 16  5 25.9 68.00     0 13594 3.187 0.775 0.775 1.000 0.975       0 3.107   9288      0    594    659  10541   8747
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  8
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Subhourly User-defined Report, Mon 05-Jan
    1   5  0  5 26.2 68.00     0 13674 3.198 1.000 1.000 1.000 1.000   0.206 3.198  12027   5162    797    850  18837  15488
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page  9
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page  9
 
 
 
@@ -627,7 +627,7 @@ CZ16 Dual Fuel
    1   5  9  5 38.1 68.00     0 16317 3.553 0.278 0.278 1.000 0.919       0 3.265   3793      0    507    236   4535   3630
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 10
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 10
 
 
 
@@ -690,7 +690,7 @@ CZ16 Dual Fuel
    1   5 18  5 37.9 68.00     0 16277 3.548 0.629 0.629 1.000 0.958       0 3.400   8566      0   1136    535  10237   8345
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 11
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 11
 
 
 
@@ -753,7 +753,7 @@ Subhourly User-defined Report, Tue 06-Jan
    1   6  2  5 37.2 68.00     0 16116 3.527 0.815 0.815 1.000 0.979       0 3.454  11023      0   1422    693  13138  10757
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 12
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 12
 
 
 
@@ -816,7 +816,7 @@ CZ16 Dual Fuel
    1   6 11  5 39.9 68.00     0 16717 3.606 0.554 0.554 1.000 0.950       0 3.425   7698      0   1096    471   9265   7626
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 13
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 13
 
 
 
@@ -879,7 +879,7 @@ CZ16 Dual Fuel
    1   6 20  5 34.7 68.00     0 15556 3.453 0.748 0.748 1.000 0.972       0 3.355   9852      0   1142    635  11629   9449
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 14
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 14
 
 
 
@@ -942,7 +942,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 15
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Subhourly User-defined Report, Fri 14-Aug
    8  14  7  5 77.2 77.60     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 16
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ CZ16 Dual Fuel
    8  14 16  5 85.3 78.00     0 20413 4.753 0.634 0.634     0 1.000       0 4.229 -10773      0      0    540 -10233  -8408
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 17
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Subhourly User-defined Report, Sat 15-Aug
    8  15  0  5 73.4 77.94     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 18
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ CZ16 Dual Fuel
    8  15  9  5 82.6 78.00     0 20413 4.753 0.271 0.271     0 1.000       0 4.229  -4644      0      0    230  -4414  -3790
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 19
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ CZ16 Dual Fuel
    8  15 18  5 83.7 78.00     0 20413 4.753 0.566 0.566     0 1.000       0 4.229  -9712      0      0    482  -9230  -7533
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 20
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 20
 
 
 
@@ -1299,7 +1299,7 @@ CZ16 Dual Fuel
 
 ! Log for Run 001:
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -1320,7 +1320,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 21
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ Input for Run 001:
 #        #define  RefrTemp_WEH   hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129)
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 22
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 23
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ CZ16 Dual Fuel
               lrMat = "m-Carpet"                // Layer material
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 24
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 25
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 26
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 27
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 27
 
 
 
@@ -1761,7 +1761,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 28
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 28
 
 
 
@@ -1824,7 +1824,7 @@ CZ16 Dual Fuel
               lrMat = "m-SoftWood"              // Layer material
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 29
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 29
 
 
 
@@ -1887,7 +1887,7 @@ CZ16 Dual Fuel
         CONSTRUCTION   "c-Zone1DoorRight-dr"  
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 30
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 30
 
 
 
@@ -1950,7 +1950,7 @@ CZ16 Dual Fuel
            LAYER   "cl2-FloorFrmIMass"  
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 31
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 31
 
 
 
@@ -2013,7 +2013,7 @@ CZ16 Dual Fuel
            LAYER   "cl2-WallCavIMass"  
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 32
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 32
 
 
 
@@ -2076,7 +2076,7 @@ CZ16 Dual Fuel
         MATERIAL   "m-10 PSF Roof"  
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 33
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 33
 
 
 
@@ -2139,7 +2139,7 @@ CZ16 Dual Fuel
            matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 34
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 34
 
 
 
@@ -2202,7 +2202,7 @@ CZ16 Dual Fuel
         MATERIAL   "m-GarageCarDoorBack-dr"  
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 35
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 35
 
 
 
@@ -2265,7 +2265,7 @@ CZ16 Dual Fuel
            izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 36
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 36
 
 
 
@@ -2328,7 +2328,7 @@ CZ16 Dual Fuel
            izNVEff = 1                          // Vent discharge coefficient coefficient
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 37
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 37
 
 
 
@@ -2391,7 +2391,7 @@ CZ16 Dual Fuel
            izHD = 17.4                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 38
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 38
 
 
 
@@ -2454,7 +2454,7 @@ CZ16 Dual Fuel
            izZn1 = "Attic-atc"                  // Name of primary zone (flow rates > 0 are into the primary zone)
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 39
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 39
 
 
 
@@ -2517,7 +2517,7 @@ CZ16 Dual Fuel
               gnMeter = "MtrElec"               // Meter that tracks internal gain
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 40
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 40
 
 
 
@@ -2580,7 +2580,7 @@ CZ16 Dual Fuel
               sfAdjZn = "Attic-atc"             // Zone that lies on the other side of this surface
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 41
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 41
 
 
 
@@ -2643,7 +2643,7 @@ CZ16 Dual Fuel
               sfModel = "Forward_Difference"    // Modeling option
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 42
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 42
 
 
 
@@ -2706,7 +2706,7 @@ CZ16 Dual Fuel
                  wnExShd = "Inscrn"             // Exterior shade type
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 43
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 43
 
 
 
@@ -2769,7 +2769,7 @@ CZ16 Dual Fuel
               sfTilt = 90                       // Surface tilt, deg
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 44
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 44
 
 
 
@@ -2832,7 +2832,7 @@ CZ16 Dual Fuel
                  wnNGlz = 2                     // Number of glazing layers
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 45
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 45
 
 
 
@@ -2895,7 +2895,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 46
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 46
 
 
 
@@ -2958,7 +2958,7 @@ CZ16 Dual Fuel
         
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 47
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 47
 
 
 
@@ -3021,7 +3021,7 @@ CZ16 Dual Fuel
               sfTilt = 22.619865                // Surface tilt, deg
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 48
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 48
 
 
 
@@ -3084,7 +3084,7 @@ CZ16 Dual Fuel
               sfArea = 19.795484                // Wall area, ft2
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 49
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 49
 
 
 
@@ -3147,7 +3147,7 @@ CZ16 Dual Fuel
            rsFanPwrH = 0.45                     // Heating fan power.  Heating air flow is estimated based on a 50 ?F temperature rise.
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 50
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 50
 
 
 
@@ -3210,7 +3210,7 @@ CZ16 Dual Fuel
 #          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 51
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 51
 
 
 
@@ -3273,7 +3273,7 @@ CZ16 Dual Fuel
 #         RXCOL colHead="capfl" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 52
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 52
 
 
 
@@ -3336,7 +3336,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  001                           Thu 11-Feb-21   4:58:46 pm  Page 53
+! ashp_dfng  001                           Tue 22-Jun-21  11:13:33 am  Page 53
 
 
 
@@ -3347,7 +3347,7 @@ CZ16 Dual Fuel
 
 Monthly Energy Use, meter "MtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  2.526      0  1.826      0      0      0      0      0  0.396 0.0561      0 0.0984      0  0.200  0.766 0.0523  0.150      0      0      0 .00748      0      0      0 -1.027
 Feb  1.802      0  1.499      0      0      0      0      0  0.326 0.0507      0 0.0768      0  0.168  0.636 0.0441  0.135      0      0      0 .00658      0      0      0 -1.140
@@ -3368,7 +3368,7 @@ Yr   7.366  0.219  9.570      0      0      0      0  0.379  2.050  0.661      0
 
 Monthly Energy Use, meter "MtrNatGas"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  1.522      0      0  1.381      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.141      0      0      0      0
 Feb  1.194      0      0  1.069      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.124      0      0      0      0
@@ -3399,7 +3399,7 @@ HVAC Cooling Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 54
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 54
 
 
 
@@ -3462,7 +3462,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 55
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 55
 
 
 
@@ -3525,7 +3525,7 @@ Hourly User-defined Report, Mon 05-Jan
      1   5 18 37.9 0.551        0       8       0       0       0       1       0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 56
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 56
 
 
 
@@ -3588,7 +3588,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 57
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 57
 
 
 
@@ -3599,7 +3599,7 @@ CZ16 Dual Fuel
 
 Hourly Energy Use, meter "MtrNatGas", Sun 04-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 0.0102      0      0 0.0101      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 0.0103      0      0 0.0103      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -3631,7 +3631,7 @@ Day  0.118      0      0  0.114      0      0      0      0      0      0      0
 
 Hourly Energy Use, meter "MtrNatGas", Mon 05-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 .00624      0      0 .00622      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 .00611      0      0 .00609      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -3651,7 +3651,7 @@ Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  16 .00076      0      0 .00053      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00024      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 58
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 58
 
 
 
@@ -3714,7 +3714,7 @@ Monthly User-defined Report
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 59
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 59
 
 
 
@@ -3777,7 +3777,7 @@ Subhourly User-defined Report, Sun 04-Jan
    1   4  7  5 21.0 68.00     0 12513 3.038 1.000 1.000 1.000 1.000   0.245 3.038  11317   6126    347    850  18640  15495
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 60
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 60
 
 
 
@@ -3840,7 +3840,7 @@ CZ16 Dual Fuel
    1   4 16  5 25.9 68.00     0 13594 3.187 0.775 0.775 1.000 0.975       0 3.107   9288      0    594    659  10541   8747
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 61
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 61
 
 
 
@@ -3903,7 +3903,7 @@ Subhourly User-defined Report, Mon 05-Jan
    1   5  0  5 26.2 68.00     0 13674 3.198 1.000 1.000 1.000 1.000   0.206 3.198  12027   5162    797    850  18837  15488
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 62
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 62
 
 
 
@@ -3966,7 +3966,7 @@ CZ16 Dual Fuel
    1   5  9  5 38.1 68.00     0 16317 3.553 0.278 0.278 1.000 0.919       0 3.265   3793      0    507    236   4535   3630
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 63
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 63
 
 
 
@@ -4029,7 +4029,7 @@ CZ16 Dual Fuel
    1   5 18  5 37.9 68.00     0 16277 3.548 0.629 0.629 1.000 0.958       0 3.400   8566      0   1136    535  10237   8345
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 64
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 64
 
 
 
@@ -4092,7 +4092,7 @@ Subhourly User-defined Report, Tue 06-Jan
    1   6  2  5 37.2 68.00     0 16116 3.527 0.815 0.815 1.000 0.979       0 3.454  11023      0   1422    693  13138  10757
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 65
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 65
 
 
 
@@ -4155,7 +4155,7 @@ CZ16 Dual Fuel
    1   6 11  5 39.9 68.00     0 16717 3.606 0.554 0.554 1.000 0.950       0 3.425   7698      0   1096    471   9265   7626
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 66
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 66
 
 
 
@@ -4218,7 +4218,7 @@ CZ16 Dual Fuel
    1   6 20  5 34.7 68.00     0 15556 3.453 0.748 0.748 1.000 0.972       0 3.355   9852      0   1142    635  11629   9449
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 67
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 67
 
 
 
@@ -4281,7 +4281,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 68
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 68
 
 
 
@@ -4344,7 +4344,7 @@ Subhourly User-defined Report, Fri 14-Aug
    8  14  7  5 77.2 77.60     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 69
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 69
 
 
 
@@ -4407,7 +4407,7 @@ CZ16 Dual Fuel
    8  14 16  5 85.3 78.00     0 20413 4.753 0.634 0.634     0 1.000       0 4.229 -10773      0      0    540 -10233  -8408
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 70
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 70
 
 
 
@@ -4470,7 +4470,7 @@ Subhourly User-defined Report, Sat 15-Aug
    8  15  0  5 73.4 77.94     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 71
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 71
 
 
 
@@ -4533,7 +4533,7 @@ CZ16 Dual Fuel
    8  15  9  5 82.6 78.00     0 20413 4.753 0.271 0.271     0 1.000       0 4.229  -4644      0      0    230  -4414  -3790
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 72
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 72
 
 
 
@@ -4596,7 +4596,7 @@ CZ16 Dual Fuel
    8  15 18  5 83.7 78.00     0 20413 4.753 0.566 0.566     0 1.000       0 4.229  -9712      0      0    482  -9230  -7533
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 73
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 73
 
 
 
@@ -4638,7 +4638,7 @@ CZ16 Dual Fuel
 
 ! Log for Run 002:
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -4659,7 +4659,7 @@ Input for Run 002:
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  002                           Thu 11-Feb-21   4:58:48 pm  Page 74
+! ashp_dfng  002                           Tue 22-Jun-21  11:13:36 am  Page 74
 
 
 
@@ -4670,7 +4670,7 @@ CZ16 Dual Fuel
 
 Monthly Energy Use, meter "MtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  2.306      0  1.606      0      0      0      0      0  0.396 0.0561      0 0.0984      0  0.200  0.766 0.0523  0.150      0      0      0 .00748      0      0      0 -1.027
 Feb  1.625      0  1.321      0      0      0      0      0  0.326 0.0507      0 0.0768      0  0.168  0.636 0.0441  0.135      0      0      0 .00658      0      0      0 -1.140
@@ -4691,7 +4691,7 @@ Yr   6.733  0.219  8.937      0      0      0      0  0.379  2.050  0.661      0
 
 Monthly Energy Use, meter "MtrNatGas"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  2.272      0      0  2.130      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.141      0      0      0      0
 Feb  1.809      0      0  1.684      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.124      0      0      0      0
@@ -4722,7 +4722,7 @@ HVAC Cooling Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 75
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 75
 
 
 
@@ -4785,7 +4785,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 76
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 76
 
 
 
@@ -4848,7 +4848,7 @@ Hourly User-defined Report, Mon 05-Jan
      1   5 18 37.9 0.551        0       8       0       0       0       1       0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 77
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 77
 
 
 
@@ -4911,7 +4911,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 78
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 78
 
 
 
@@ -4922,7 +4922,7 @@ CZ16 Dual Fuel
 
 Hourly Energy Use, meter "MtrNatGas", Sun 04-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 0.0180      0      0 0.0180      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 0.0184      0      0 0.0184      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -4954,7 +4954,7 @@ Day  0.205      0      0  0.201      0      0      0      0      0      0      0
 
 Hourly Energy Use, meter "MtrNatGas", Mon 05-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 0.0115      0      0 0.0115      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 0.0114      0      0 0.0113      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -4974,7 +4974,7 @@ Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  16 .00076      0      0 .00053      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00024      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 79
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 79
 
 
 
@@ -5037,7 +5037,7 @@ Monthly User-defined Report
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 80
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 80
 
 
 
@@ -5100,7 +5100,7 @@ Subhourly User-defined Report, Sun 04-Jan
    1   4  7  5 21.0 68.00     0 12513 3.038 1.000 0.541 1.000 1.000   0.459 3.038   6118  11485    188    850  18640  15495
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 81
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 81
 
 
 
@@ -5163,7 +5163,7 @@ CZ16 Dual Fuel
    1   4 16  5 25.9 68.00     0 13594 3.187 0.775 0.775 1.000 0.975       0 3.107   9288      0    594    659  10541   8747
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 82
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 82
 
 
 
@@ -5226,7 +5226,7 @@ Subhourly User-defined Report, Mon 05-Jan
    1   5  0  5 26.2 68.00     0 13674 3.198 1.000 0.576 1.000 1.000   0.424 3.198   6928  10600    459    850  18837  15488
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 83
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 83
 
 
 
@@ -5289,7 +5289,7 @@ CZ16 Dual Fuel
    1   5  9  5 38.1 68.00     0 16317 3.553 0.278 0.278 1.000 0.919       0 3.265   3793      0    507    236   4535   3630
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 84
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 84
 
 
 
@@ -5352,7 +5352,7 @@ CZ16 Dual Fuel
    1   5 18  5 37.9 68.00     0 16277 3.548 0.629 0.629 1.000 0.958       0 3.400   8566      0   1136    535  10237   8345
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 85
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 85
 
 
 
@@ -5415,7 +5415,7 @@ Subhourly User-defined Report, Tue 06-Jan
    1   6  2  5 37.2 68.00     0 16116 3.527 0.815 0.815 1.000 0.979       0 3.454  11023      0   1422    693  13138  10757
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 86
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 86
 
 
 
@@ -5478,7 +5478,7 @@ CZ16 Dual Fuel
    1   6 11  5 39.9 68.00     0 16717 3.606 0.554 0.554 1.000 0.950       0 3.425   7698      0   1096    471   9265   7626
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 87
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 87
 
 
 
@@ -5541,7 +5541,7 @@ CZ16 Dual Fuel
    1   6 20  5 34.7 68.00     0 15556 3.453 0.748 0.748 1.000 0.972       0 3.355   9852      0   1142    635  11629   9449
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 88
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 88
 
 
 
@@ -5604,7 +5604,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 89
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 89
 
 
 
@@ -5667,7 +5667,7 @@ Subhourly User-defined Report, Fri 14-Aug
    8  14  7  5 77.2 77.60     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 90
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 90
 
 
 
@@ -5730,7 +5730,7 @@ CZ16 Dual Fuel
    8  14 16  5 85.3 78.00     0 20413 4.753 0.634 0.634     0 1.000       0 4.229 -10773      0      0    540 -10233  -8408
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 91
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 91
 
 
 
@@ -5793,7 +5793,7 @@ Subhourly User-defined Report, Sat 15-Aug
    8  15  0  5 73.4 77.94     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 92
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 92
 
 
 
@@ -5856,7 +5856,7 @@ CZ16 Dual Fuel
    8  15  9  5 82.6 78.00     0 20413 4.753 0.271 0.271     0 1.000       0 4.229  -4644      0      0    230  -4414  -3790
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 93
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 93
 
 
 
@@ -5919,7 +5919,7 @@ CZ16 Dual Fuel
    8  15 18  5 83.7 78.00     0 20413 4.753 0.566 0.566     0 1.000       0 4.229  -9712      0      0    482  -9230  -7533
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 94
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 94
 
 
 
@@ -5961,7 +5961,7 @@ CZ16 Dual Fuel
 
 ! Log for Run 003:
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -5982,7 +5982,7 @@ Input for Run 003:
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  003                           Thu 11-Feb-21   4:58:50 pm  Page 95
+! ashp_dfng  003                           Tue 22-Jun-21  11:13:38 am  Page 95
 
 
 
@@ -5993,7 +5993,7 @@ CZ16 Dual Fuel
 
 Monthly Energy Use, meter "MtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  1.772      0  1.123      0      0      0      0      0  0.346 0.0561      0 0.0984      0  0.200  0.766 0.0523  0.150      0      0      0 .00748      0      0      0 -1.027
 Feb  1.056      0  0.806      0      0      0      0      0  0.272 0.0507      0 0.0768      0  0.168  0.636 0.0441  0.135      0      0      0 .00658      0      0      0 -1.140
@@ -6014,7 +6014,7 @@ Yr   4.558  0.219  6.967      0      0      0      0  0.379  1.845  0.661      0
 
 Monthly Energy Use, meter "MtrNatGas"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  3.973      0      0  3.832      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.141      0      0      0      0
 Feb  3.625      0      0  3.501      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.124      0      0      0      0
@@ -6045,7 +6045,7 @@ HVAC Cooling Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 96
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 96
 
 
 
@@ -6108,7 +6108,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 97
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 97
 
 
 
@@ -6171,7 +6171,7 @@ Hourly User-defined Report, Mon 05-Jan
      1   5 18 37.9 0.563        0       8       0       0       0       1       0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 98
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 98
 
 
 
@@ -6234,7 +6234,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 99
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 99
 
 
 
@@ -6245,7 +6245,7 @@ CZ16 Dual Fuel
 
 Hourly Energy Use, meter "MtrNatGas", Sun 04-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 0.0223      0      0 0.0223      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 0.0225      0      0 0.0225      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -6277,7 +6277,7 @@ Day  0.309      0      0  0.304      0      0      0      0      0      0      0
 
 Hourly Energy Use, meter "MtrNatGas", Mon 05-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 0.0192      0      0 0.0192      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 0.0193      0      0 0.0193      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -6297,7 +6297,7 @@ Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  16 .00078      0      0 .00055      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00024      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 100
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 100
 
 
 
@@ -6360,7 +6360,7 @@ Monthly User-defined Report
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 101
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 101
 
 
 
@@ -6423,7 +6423,7 @@ Subhourly User-defined Report, Sun 04-Jan
    1   4  7  5 21.0 68.00     0 12513     0     0     0     0     0   0.707     0      0  17663      0    600  18263  15201
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 102
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 102
 
 
 
@@ -6486,7 +6486,7 @@ CZ16 Dual Fuel
    1   4 16  5 25.9 68.00     0 13594 3.187 0.787 0.787 1.000 0.976       0 3.111   9433      0    603    669  10706   8883
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 103
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 103
 
 
 
@@ -6549,7 +6549,7 @@ Subhourly User-defined Report, Mon 05-Jan
    1   5  0  5 26.2 68.00     0 13674     0     0     0     0     0   0.723     0      0  18071      0    614  18685  15413
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 104
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 104
 
 
 
@@ -6612,7 +6612,7 @@ CZ16 Dual Fuel
    1   5  9  5 38.1 68.00     0 16317 3.553 0.307 0.307 1.000 0.922       0 3.276   4189      0    559    261   5010   4000
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 105
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 105
 
 
 
@@ -6675,7 +6675,7 @@ CZ16 Dual Fuel
    1   5 18  5 37.9 68.00     0 16277 3.548 0.635 0.635 1.000 0.959       0 3.402   8647      0   1147    540  10334   8424
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 106
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 106
 
 
 
@@ -6738,7 +6738,7 @@ Subhourly User-defined Report, Tue 06-Jan
    1   6  2  5 37.2 68.00     0 16116 3.527 0.823 0.823 1.000 0.980       0 3.457  11129      0   1436    699  13264  10858
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 107
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 107
 
 
 
@@ -6801,7 +6801,7 @@ CZ16 Dual Fuel
    1   6 11  5 39.9 68.00     0 16717 3.606 0.560 0.560 1.000 0.951       0 3.427   7781      0   1108    476   9365   7712
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 108
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 108
 
 
 
@@ -6864,7 +6864,7 @@ CZ16 Dual Fuel
    1   6 20  5 34.7 68.00     0 15556 3.453 0.743 0.743 1.000 0.971       0 3.353   9793      0   1135    632  11560   9394
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 109
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 109
 
 
 
@@ -6927,7 +6927,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 110
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 110
 
 
 
@@ -6990,7 +6990,7 @@ Subhourly User-defined Report, Fri 14-Aug
    8  14  7  5 77.2 77.60     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 111
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 111
 
 
 
@@ -7053,7 +7053,7 @@ CZ16 Dual Fuel
    8  14 16  5 85.3 78.00     0 20413 4.753 0.634 0.634     0 1.000       0 4.229 -10773      0      0    540 -10233  -8408
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 112
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 112
 
 
 
@@ -7116,7 +7116,7 @@ Subhourly User-defined Report, Sat 15-Aug
    8  15  0  5 73.4 77.94     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 113
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 113
 
 
 
@@ -7179,7 +7179,7 @@ CZ16 Dual Fuel
    8  15  9  5 82.6 78.00     0 20413 4.753 0.271 0.271     0 1.000       0 4.229  -4644      0      0    230  -4414  -3790
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 114
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 114
 
 
 
@@ -7242,7 +7242,7 @@ CZ16 Dual Fuel
    8  15 18  5 83.7 78.00     0 20413 4.753 0.566 0.566     0 1.000       0 4.229  -9712      0      0    482  -9230  -7533
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 115
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 115
 
 
 
@@ -7284,7 +7284,7 @@ CZ16 Dual Fuel
 
 ! Log for Run 004:
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -7305,7 +7305,7 @@ Input for Run 004:
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  004                           Thu 11-Feb-21   4:58:53 pm  Page 116
+! ashp_dfng  004                           Tue 22-Jun-21  11:13:40 am  Page 116
 
 
 
@@ -7316,7 +7316,7 @@ CZ16 Dual Fuel
 
 Monthly Energy Use, meter "MtrElec"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  5.938      0  0.845  4.471      0      0      0      0  0.318 0.0561      0 0.0984      0  0.200  0.766 0.0523  0.150      0      0      0 .00748      0      0      0 -1.027
 Feb  4.879      0  0.550  4.103      0      0      0      0  0.248 0.0507      0 0.0768      0  0.168  0.636 0.0441  0.135      0      0      0 .00658      0      0      0 -1.140
@@ -7337,7 +7337,7 @@ Yr  21.627  0.219  5.391 18.796      0      0      0  0.379  1.694  0.661      0
 
 Monthly Energy Use, meter "MtrNatGas"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  0.141      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.141      0      0      0      0
 Feb  0.124      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.124      0      0      0      0
@@ -7368,7 +7368,7 @@ HVAC Cooling Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 117
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 117
 
 
 
@@ -7431,7 +7431,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 118
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 118
 
 
 
@@ -7494,7 +7494,7 @@ Hourly User-defined Report, Mon 05-Jan
      1   5 18 37.9 0.566        0       8       0       0       0       1       0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 119
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 119
 
 
 
@@ -7557,7 +7557,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 120
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 120
 
 
 
@@ -7568,7 +7568,7 @@ CZ16 Dual Fuel
 
 Hourly Energy Use, meter "MtrNatGas", Sun 04-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -7600,7 +7600,7 @@ Day .00456      0      0      0      0      0      0      0      0      0      0
 
 Hourly Energy Use, meter "MtrNatGas", Mon 05-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
   2 .00002      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00002      0      0      0      0
@@ -7620,7 +7620,7 @@ Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  16 .00024      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 .00024      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 121
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 121
 
 
 
@@ -7683,7 +7683,7 @@ Monthly User-defined Report
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 122
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 122
 
 
 
@@ -7746,7 +7746,7 @@ Subhourly User-defined Report, Sun 04-Jan
    1   4  7  5 21.0 68.00     0   850     0     0     0     0     0   0.715     0      0  17883      0    608  18491  15382
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 123
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 123
 
 
 
@@ -7809,7 +7809,7 @@ CZ16 Dual Fuel
    1   4 16  5 25.9 68.00     0   850     0     0     0     0     0   0.392     0      0   9789      0    333  10122   8429
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 124
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 124
 
 
 
@@ -7872,7 +7872,7 @@ Subhourly User-defined Report, Mon 05-Jan
    1   5  0  5 26.2 68.00     0   850     0     0     0     0     0   0.721     0      0  18025      0    613  18638  15354
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 125
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 125
 
 
 
@@ -7935,7 +7935,7 @@ CZ16 Dual Fuel
    1   5  9  5 38.1 68.00     0 16317 3.553 0.337 0.337 1.000 0.925       0 3.288   4592      0    613    286   5491   4378
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 126
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 126
 
 
 
@@ -7998,7 +7998,7 @@ CZ16 Dual Fuel
    1   5 18  5 37.9 68.00     0 16277 3.548 0.640 0.640 1.000 0.960       0 3.404   8723      0   1157    544  10424   8491
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 127
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 127
 
 
 
@@ -8061,7 +8061,7 @@ Subhourly User-defined Report, Tue 06-Jan
    1   6  2  5 37.2 68.00     0 16116 3.527 0.820 0.820 1.000 0.980       0 3.456  11090      0   1431    697  13218  10821
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 128
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 128
 
 
 
@@ -8124,7 +8124,7 @@ CZ16 Dual Fuel
    1   6 11  5 39.9 68.00     0 16717 3.606 0.568 0.568 1.000 0.951       0 3.431   7893      0   1124    483   9499   7810
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 129
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 129
 
 
 
@@ -8187,7 +8187,7 @@ CZ16 Dual Fuel
    1   6 20  5 34.7 68.00     0   850     0     0     0     0     0   0.402     0      0  10052      0    342  10394   8578
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 130
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 130
 
 
 
@@ -8250,7 +8250,7 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 131
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 131
 
 
 
@@ -8313,7 +8313,7 @@ Subhourly User-defined Report, Fri 14-Aug
    8  14  7  5 77.2 77.60     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 132
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 132
 
 
 
@@ -8376,7 +8376,7 @@ CZ16 Dual Fuel
    8  14 16  5 85.3 78.00     0 20413 4.753 0.634 0.634     0 1.000       0 4.229 -10773      0      0    540 -10233  -8408
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 133
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 133
 
 
 
@@ -8439,7 +8439,7 @@ Subhourly User-defined Report, Sat 15-Aug
    8  15  0  5 73.4 77.94     0 20413 4.753     0     0     0     0       0 4.229      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 134
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 134
 
 
 
@@ -8502,7 +8502,7 @@ CZ16 Dual Fuel
    8  15  9  5 82.6 78.00     0 20413 4.753 0.271 0.271     0 1.000       0 4.229  -4644      0      0    230  -4414  -3790
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 135
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 135
 
 
 
@@ -8565,7 +8565,7 @@ CZ16 Dual Fuel
    8  15 18  5 83.7 78.00     0 20413 4.753 0.566 0.566     0 1.000       0 4.229  -9712      0      0    482  -9230  -7533
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 136
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 136
 
 
 
@@ -8607,7 +8607,7 @@ CZ16 Dual Fuel
 
 ! Log for Run 005:
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -8628,7 +8628,7 @@ Input for Run 005:
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 137
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 137
 
 
 
@@ -8637,21 +8637,21 @@ CZ16 Dual Fuel
 
 
 
-! CSE 0.887.0+toolset.0d89432.1 for Win32 console run(s) done: Thu 11-Feb-21   4:58:57 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:13:44 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               11-Feb-21   4:10 pm   (VS 14.28    2590720 bytes)  (HPWH 1.12.4)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 ashp_dfng
 ! Input file:   D:\cse\test\ashp_dfng.cse
 ! Report file:  D:\cse\test\ashp_dfng.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 5      T/C = 0.0046   
+!                Input:  Time = 0.24     Calls = 5      T/C = 0.0490   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 11.50    Calls = 5      T/C = 2.2996   
-!              Reports:  Time = 0.05     Calls = 5      T/C = 0.0106   
-!                Total:  Time = 11.59    Calls = 1      T/C = 11.5910  
+!           Simulation:  Time = 10.73    Calls = 5      T/C = 2.1464   
+!              Reports:  Time = 0.05     Calls = 5      T/C = 0.0100   
+!                Total:  Time = 11.04    Calls = 1      T/C = 11.0450  
 
 
 
@@ -8691,5 +8691,5 @@ CZ16 Dual Fuel
 
 
 ------------------------------------------------------------------------------
-! ashp_dfng  005                           Thu 11-Feb-21   4:58:55 pm  Page 138
+! ashp_dfng  005                           Tue 22-Jun-21  11:13:42 am  Page 138
 

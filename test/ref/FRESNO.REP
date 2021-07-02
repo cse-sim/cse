@@ -38,7 +38,7 @@ Monthly Energy Balance, Sum of Zones
 
 Monthly Energy Use, meter "HEATMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  0.681      0  0.681      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  0.382      0  0.382      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -60,7 +60,7 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  1
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  1
 
 
 
@@ -79,7 +79,7 @@ Annual Heating Energy Report
 
 Monthly Energy Use, meter "COOLMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -108,7 +108,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -123,7 +123,7 @@ Annual Cooling Energy Report
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  2
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  3
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  4
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  5
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  6
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  7
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   2:52:31 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:09:10 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Nov-20  10:41 am   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
-! Command line: -x!  -t1 fresno
-! Input file:   D:\cse\test\fresno.cse
-! Report file:  D:\cse\test\fresno.rep
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+! Command line: -x!  -t1 Fresno
+! Input file:   D:\cse\test\Fresno.cse
+! Report file:  D:\cse\test\Fresno.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0030   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.61     Calls = 1      T/C = 0.6120   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0140   
-!                Total:  Time = 0.64     Calls = 1      T/C = 0.6350   
+!           Simulation:  Time = 0.61     Calls = 1      T/C = 0.6150   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
+!                Total:  Time = 0.64     Calls = 1      T/C = 0.6400   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! fresno  001                              Tue 24-Nov-20   2:52:30 pm  Page  8
+! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  8
 

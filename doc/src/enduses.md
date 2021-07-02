@@ -1,7 +1,7 @@
 ------- -------------------------------------------------------------
 Clg     Cooling
 Htg     Heating (includes heat pump compressor)
-HPHTG   Heat pump backup heat
+HPBU    Heat pump resistance heating (backup and defrost)
 DHW     Domestic (service) hot water
 DHWBU   Domestic (service) hot water heating backup (HPWH resistance)
 DHWMFL  Domestic (service) hot water heating multi-family loop pumping and loss makeup

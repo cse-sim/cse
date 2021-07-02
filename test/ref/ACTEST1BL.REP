@@ -1799,7 +1799,7 @@ AC Check Values (rates are kBTU/hr) for Sat 28-Feb
 
 Hourly Energy Use, meter "SysMtr", Sat 31-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1  8.058  5.567      0      0      0      0      0  2.491      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2  7.931  5.451      0      0      0      0      0  2.480      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -1871,7 +1871,7 @@ Duct Check Values (Sxx= Supply, Rxx=Return, rates are kBTU/hr) for Sat 31-Jan
 
 Hourly Energy Use, meter "SysMtr", Sat 31-Jan
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1  8.058  5.567      0      0      0      0      0  2.491      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2  7.931  5.451      0      0      0      0      0  2.480      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -1935,7 +1935,7 @@ Duct Check Values (Sxx= Supply, Rxx=Return, rates are kBTU/hr) for Sat 28-Feb
 
 Hourly Energy Use, meter "SysMtr", Sat 28-Feb
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 16.806 12.854      0      0      0      0      0  3.951      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2 16.190 12.297      0      0      0      0      0  3.893      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -4417,7 +4417,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console   Tue 24-Nov-20   2:57:55 pm
+! CSE 0.893.0 for Win32 console   Tue 22-Jun-21  11:12:22 am
 
 
 ================
@@ -53378,7 +53378,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -54038,18 +54038,18 @@ Input for Run 001:
 
 
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   2:57:58 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:12:25 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Nov-20  10:41 am   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
-! Command line: -x!  -t1 actest1bl
-! Input file:   D:\cse\test\actest1bl.cse
-! Report file:  D:\cse\test\actest1bl.rep
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+! Command line: -x!  -t1 actest1bL
+! Input file:   D:\cse\test\actest1bL.cse
+! Report file:  D:\cse\test\actest1bL.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.03     Calls = 1      T/C = 0.0270   
+!                Input:  Time = 0.07     Calls = 1      T/C = 0.0710   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.74     Calls = 1      T/C = 2.7370   
-!              Reports:  Time = 0.22     Calls = 1      T/C = 0.2180   
-!                Total:  Time = 2.99     Calls = 1      T/C = 2.9870   
+!           Simulation:  Time = 2.80     Calls = 1      T/C = 2.8040   
+!              Reports:  Time = 0.21     Calls = 1      T/C = 0.2060   
+!                Total:  Time = 3.09     Calls = 1      T/C = 3.0880   
