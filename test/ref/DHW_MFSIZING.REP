@@ -1,0 +1,757 @@
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+! Log for Run 001:
+
+! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  1
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+Input for Run 001:
+
+#        #define  RunDateFmt  11:51, Wed, Feb 21, 2018
+#        #define  RunID                7   // Proposed
+#        #define  AnalysisType        13   // Proposed and Standard
+#        #define  CompCodeBase      2019   // CA2019
+#        #define  StdDesignBase     2019   // CA2019
+#        #define  StandardsVersion  2020   // Compliance 2020
+#        #define  DesignRatingBase  2014   // RESNET2014
+#        #define  ClimateZone         12   // CZ12  (Sacramento)
+#        #define  DD1  Jun 30
+#        #define  CD1  Jul 10
+#        #define  HD1  Dec 03
+#        #define  SEASONCHANGESETPT  60
+#        #define  FANVENTLOCKOUTTEMP  68
+#        #define  ISSEASONCOOLING  (@weather.taDbAvg07 > SEASONCHANGESETPT)
+#        #define  FANVENTAVAIL  (@weather.taDbAvg07 > FANVENTLOCKOUTTEMP)
+#        #define  WINDOWVENTAVAIL  ($hour < 24 && ($hour > 12 || $radDiff > 1))
+#        #define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )
+#        #define  HWUSEF_WE  hourval( 0.018, 0.010, 0.009, 0.008, 0.015, 0.023, 0.026, 0.047, 0.077, 0.083, 0.074, 0.061, 0.051, 0.043, 0.039, 0.039, 0.052, 0.058, 0.056, 0.052, 0.047, 0.044, 0.040, 0.028 )
+#        #define  ShwrFLOWF  1
+#        #define  ShwrDRAINHREFF  0
+#        #define  CwshHOTF  0.22
+#        #define  CwshUSEF  2.03
+#        #define  FaucHOTF  0.5
+#        #define  FaucFlowF  1
+#        #define  BathFLOWF  1
+#        #define  BathDRAINHREFF  0
+#        #define  DwshFLOWF  1
+#        #define  Cook_WD       hourval( .005,.004,.004,.004,.004,.014,.019,.025,.026,.022,.021,.029,.035,.032,.034,.052,.115,.193,.180,.098,.042,.020,.012,.010)
+#        #define  Cook_WEH      hourval( .005,.004,.003,.003,.003,.005,.010,.027,.048,.048,.046,.055,.063,.059,.062,.068,.091,.139,.129,.072,.032,.014,.009,.005)
+#        #define  TV_WD         hourval( .035,.026,.023,.022,.021,.021,.025,.032,.038,.040,.038,.038,.041,.042,.042,.041,.044,.049,.056,.064,.070,.074,.067,.051)
+#        #define  TV_WEH        hourval( .035,.027,.022,.021,.020,.020,.022,.029,.037,.043,.042,.039,.040,.042,.045,.048,.051,.052,.056,.061,.065,.069,.064,.050)
+#        #define  STB_WD        hourval( .040,.040,.040,.040,.040,.040,.040,.041,.040,.040,.040,.040,.040,.040,.041,.041,.042,.043,.044,.045,.046,.047,.045,.045)
+#        #define  STB_WEH       hourval( .041,.041,.040,.041,.040,.040,.040,.040,.041,.042,.042,.041,.041,.041,.041,.042,.042,.043,.044,.044,.045,.045,.044,.039)
+#        #define  Comp_WD       hourval( .036,.033,.032,.032,.031,.032,.034,.036,.039,.043,.045,.045,.046,.046,.046,.047,.048,.049,.049,.049,.049,.048,.044,.041)
+#        #define  Comp_WEH      hourval( .036,.034,.033,.033,.032,.033,.033,.035,.038,.042,.044,.045,.046,.047,.047,.048,.049,.049,.048,.048,.048,.047,.044,.041)
+#        #define  RMEL_WD       hourval( .037,.035,.034,.034,.032,.036,.042,.044,.037,.032,.033,.033,.032,.033,.035,.037,.044,.053,.058,.060,.062,.060,.052,.045)
+#        #define  RMEL_WEH      hourval( .037,.035,.034,.034,.032,.036,.042,.044,.037,.032,.033,.033,.032,.033,.035,.037,.044,.053,.058,.060,.062,.060,.052,.045)
+#        #define  IntLight_WD   hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)
+#        #define  IntLight_WEH  hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)
+#        #define  ExtLight_WD   hourval( .046,.046,.046,.046,.046,.037,.035,.034,.033,.028,.022,.015,.012,.011,.011,.012,.019,.037,.049,.065,.091,.105,.091,.063)
+#        #define  ExtLight_WEH  hourval( .046,.046,.045,.045,.046,.045,.044,.041,.036,.030,.024,.016,.012,.011,.011,.012,.019,.038,.048,.060,.083,.098,.085,.059)
+#        #define  Cook_SM    choose1( $month, 1.094,1.065,1.074,0.889,0.891,0.935,0.993,0.92,0.923,0.92,1.128,1.168)
+#        #define  TV_SM      choose1( $month, 1.032,.991,.986,.99,.971,.971,1.002,1.013,1.008,1.008,1.02,1.008)
+#        #define  STB_SM     choose1( $month, 1.02,.84,.92,.98,.91,.94,1.05,1.06,1.06,1.14,1.03,1.050)
+#        #define  Comp_SM    choose1( $month, 0.98,0.87,0.89,1.11,1.14,0.99,1.05,1.01,0.96,0.97,0.99,1.04)
+#        #define  Other_SM   choose1( $month,  1.19,1.11,1.02,.93,.84,.8,.82,.88,.98,1.07,1.16,1.2)
+#        #define  RefrConst_WD   hourval( -0.5436,-0.3646,-0.4044,-0.3871,-0.5341,-0.7521,-0.3747,0.0041,-0.1293,-0.4644,-0.4800,-0.4351,-0.2195,-0.3301,-0.0919,-0.1686,-0.4819,-0.4731,-0.2223,0.0604,-0.1466,-0.3214,-0.4113,-0.7701)
+#        #define  RefrConst_WEH  hourval( -0.3467,-0.2779,-0.2844,-0.2954,-0.4680,-0.5127,-0.7110,-0.5662,0.0463,-0.2995,-0.2388,-0.2646,-0.2905,-0.2730,-0.3306,-0.0031,-0.4356,-0.2580,0.2384,0.1176,-0.0458,-0.0596,-0.5300,0.0197 )
+#        #define  RefrTemp_WD    hourval( 0.0195,0.0167,0.0169,0.0165,0.0183,0.0218,0.0178,0.0136,0.0151,0.0189,0.0188,0.0183,0.0156,0.0169,0.0137,0.0149,0.0197,0.0208,0.0184,0.0144,0.0166,0.0184,0.0188,0.0229)
+#        #define  RefrTemp_WEH   hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129)
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  2
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+        
+        //File generated at 2021-02-15 20:16:40.066349
+#       #echooff
+#       ... Suppressing input echo until matching #ECHOON
+#       #echoon
+        // =====================================================================================================================================
+        
+           repHdrL = "MF Sanden"
+           wfName = "CTZ12S13b.CSW"
+           ebTolHour = 0.001
+           ebTolDay = 0.001
+           ebTolMon = 0.001
+           ebTolSubHr = 0.001
+           jan1DOW = "THU"
+           skyModel = "anisotropic"
+           bldgAzm = 35
+           dt = "YES"
+           heatDsTDbO = 37                      // °F
+           coolDsDay = DD1                      // coolDsDay
+           nSubSteps = 6
+           wuDays = 15
+           awTrigSlr = 0.3
+           anTolAbs = 0.03
+           anTolRel = 0.003
+           auszTol = 0.05
+           awTrigT = 15
+           awTrigH = 1
+        
+         DELETE Report "eb"    // move from end of CSE file
+        
+        
+        METER   "MtrElec"
+        METER   "MtrElecLH"
+        METER   "MtrNatGas"  
+        DHWMETER   "DHWMtrFXMix"  
+        DHWMETER   "DHWMtrWH"
+        
+        DHWSYS   "dhwsys1"
+           wsMult = 1 
+           wsTUse = 120                         // Water use temperature (at the point of use), °F
+           wsTSetpoint = 135
+           wsTSetPointLH = 136                  // Setpoint temperature for loop heater, °F
+        
+           // wsTSetpointDes = 130              // <<< design setpoint (default = wsTUse)
+                                                //     may want higher value (e.g. wsTSetpoint) (would yield larger size)
+           // wsASHPTSrcDes = 45                // <<< design air source temp for HPWH (default = Top.heatDsTDbO)
+                                                //     may want higher value if HPWH source not outdoors (would yield smaller size)
+        
+           wsElecMtr = "MtrElec"                // Electric use meter
+           wsFuelMtr = "MtrNatGas"              // Fuel use meter
+           wsFXHwMtr = "DHWMtrFXMix"
+           wsWHHwMtr = "DHWMtrWH"
+           wsBranchModel = "DayWaste"           // Model used to simulate DHW branch losses
+           wsShowerDayWasteF = 3                // used to determine ratio of Shower/Faucet water waste
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  3
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+           wsFaucetDayWasteF = 1                // used to determine ratio of Shower/Faucet water waste
+           wsDayWasteBranchVolF = 1.4 * 19.84 * exp( -0.554 * 3/2)    // Number of branch volumes discarded per day (wsBranchModel = DayWaste) (expression)
+           wsCalcMode = "Prerun"
+              
+          DHWHEATER   "dhwhtr1"  
+              whMult = 1                        // Water heater multiplier
+              whType = "BuiltUp"                // Type of water heater
+              whHeatSrc = "ASHPX"               // Fuel source for water heater
+              whASHPType = "Scalable_SP"        // <<< only supported type
+              whInsulR = 12
+        	  whTEx = 70
+              whASHPSrcT = ($tDbO+70)/2
+              whXBUEndUse = "User2"
+        
+         DHWLOOPHEATER   "dhwlphtr-LoopTank2"  
+              whType = "SmallStorage"           // Type of water heater
+              whHeatSrc = "ResistanceX"         // Fuel source for water heater
+              whMult = 1                        // Water heater multiplier
+              whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
+              whEF = 0.97                       // Water heater energy factor (for small storage & instantaneous)
+              whResHtPwr = 8*175                // Water heater resistance heat power (watts), W
+              whVol = 80                        // Water heater tank volume (must be 0 or undefined for instantaneous), gal
+        	  whElecMtr = "MtrElecLH"
+        
+           DHWLOOP   "dhwlp-DHW System 1"  
+              wlMult = 1                        // DHW loop multiplier
+              wlFlow = 6                        // DHW loop flow (gpm), gpm
+              wlRunF = 0.2                      // Hourly fraction that recirc is assumed to operate in the DHW loop, frac
+              wlFUA = 2                         // DHW loop imperfect insulation correction factor
+        
+              DHWLOOPPUMP   "dhwlppmp-DHW System 1"  
+                 wlpPwr = 100                   // DHW loop pump power (W), W
+                 wlpElecMtr = "MtrElec"         // Electric use meter
+        
+              DHWLOOPSEG   "dhwlpseg1-DHW System 1"  
+                 wgTy = "Supply"                // DHW loop segment type
+                 wgSize = 2                     // DHW loop segment nominal pipe size (diameter), in
+                 wgLength = 17.015              // DHW loop segment length, ft
+                 wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgFNoDraw = 0.2                // DHW loop segment fraction of hour when no draw flow occurs, frac
+                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+        
+              DHWLOOPSEG   "dhwlpseg2-DHW System 1"  
+                 wgTy = "Supply"                // DHW loop segment type
+                 wgSize = 2                     // DHW loop segment nominal pipe size (diameter), in
+                 wgLength = 29.495762           // DHW loop segment length, ft
+                 wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgFNoDraw = 0.4                // DHW loop segment fraction of hour when no draw flow occurs, frac
+                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+        
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  4
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+                 DHWLOOPBRANCH   "dhwlpbr2-DHW System 1"  
+                    wbMult = 4                  // DHW loop branch multiplier
+                    wbSize = 1                  // DHW loop branch nominal pipe size (diameter), in
+                    wbLength = 13.015           // DHW loop branch length, ft
+                    wbFlow = 2                  // DHW loop branch flow (gpm), gpm
+                    wbInsulThk = 1.5            // DHW loop branch insulation thickness, in
+                    wbInsulK = 0.02167          // DHW loop branch insulation conductivity, Btuh-ft/ft2-°F
+                    wbExH = 1.5                 // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                    wbExT = 70                  // ambient temperature around DHW loop branch, °F
+                    wbFWaste = 1.4 * 19.84 * exp( -0.544 * 1 ) * hourval( 0.01, 0.02, 0.05, 0.22, 0.25, 0.22, 0.06, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)    // DHW loop branch waste factor (expression), vol/hr
+        
+              DHWLOOPSEG   "dhwlpseg3-DHW System 1"  
+                 wgTy = "Supply"                // DHW loop segment type
+                 wgSize = 1.5                   // DHW loop segment nominal pipe size (diameter), in
+                 wgLength = 29.495762           // DHW loop segment length, ft
+                 wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgFNoDraw = 0.6                // DHW loop segment fraction of hour when no draw flow occurs, frac
+                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+        
+                 DHWLOOPBRANCH   "dhwlpbr3-DHW System 1"  
+                    wbMult = 4                  // DHW loop branch multiplier
+                    wbSize = 1                  // DHW loop branch nominal pipe size (diameter), in
+                    wbLength = 13.015           // DHW loop branch length, ft
+                    wbFlow = 2                  // DHW loop branch flow (gpm), gpm
+                    wbInsulThk = 1.5            // DHW loop branch insulation thickness, in
+                    wbInsulK = 0.02167          // DHW loop branch insulation conductivity, Btuh-ft/ft2-°F
+                    wbExH = 1.5                 // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                    wbExT = 70                  // ambient temperature around DHW loop branch, °F
+                    wbFWaste = 1.4 * 19.84 * exp( -0.544 * 1 ) * hourval( 0.01, 0.02, 0.05, 0.22, 0.25, 0.22, 0.06, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)    // DHW loop branch waste factor (expression), vol/hr
+        
+              DHWLOOPSEG   "dhwlpseg4-DHW System 1"  
+                 wgTy = "Return"                // DHW loop segment type
+                 wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
+                 wgLength = 29.495762           // DHW loop segment length, ft
+                 wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
+                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+        
+              DHWLOOPSEG   "dhwlpseg5-DHW System 1"  
+                 wgTy = "Return"                // DHW loop segment type
+                 wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
+                 wgLength = 29.495762           // DHW loop segment length, ft
+                 wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
+                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+        
+              DHWLOOPSEG   "dhwlpseg6-DHW System 1"  
+                 wgTy = "Return"                // DHW loop segment type
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  5
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+                 wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
+                 wgLength = 17.015              // DHW loop segment length, ft
+                 wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
+                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+        
+        DHWSYS   "dhwsys-1stFlrOneBR DU"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF1BR01                   // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.135511                    // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-1stFlrOneBR DU 2"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF1BR02                   // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.135511                    // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-1stFlrTwoBR DU"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF2BR01                   // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.16233                     // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-1stFlrTwoBR DU 4"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF2BR02                   // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.16233                     // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-2ndFlrOneBR DU"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF1BR03                   // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.135511                    // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-2ndFlrOneBR DU 6"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF1BR04                  // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.135511                    // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-2ndFlrTwoBR DU"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF2BR03                  // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  6
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+           wsSDLM = 1.16233                     // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        DHWSYS   "dhwsys-2ndFlrTwoBR DU 8"  
+           wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
+           wsDayUse = DHWMF2BR04                  // Day use profile object
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
+           wsSDLM = 1.16233                     // Standard distribution loss multiplier
+           wsDSM = 1                            // Distribution system multiplier
+        
+        // verbose = -1         // <<< probably want message suppression
+        RUN		// prerun 1 = derive daywaste factors
+        
+#       #define WHCHAR(h) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWHEATER Primary" \
+#       ReportCol colhead = "loadMax" colVal = @DHWSYS[ 1].loadMax colWid=8 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  7
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+DHWHEATER Primary
+
+  loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
+ -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
+ 228508       12      19042.3    201.815      4         50.454      0.290    19435    120     84.7     1  92434  600.0  600.0  77496984
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 3315.9      0      0      0 3265.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 2899.9      0      0      0 2854.1      0 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 3037.3      0      0      0 2986.6      0 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 2921.3      0      0      0 2872.2      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 2427.5      0      0      0 2376.7      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 2254.8      0      0      0 2205.7      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 2153.6      0      0      0 2102.8      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 2145.6      0      0      0 2094.8      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 2066.8      0      0      0 2017.6      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 2271.8      0      0      0 2221.0      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 2606.0      0      0      0 2556.8      0 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 3015.0      0      0      0 2964.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   31116      0      0      0  30518      0 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+Monthly Energy Use, meter "MtrElecLH"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 934.15      0      0      0 934.15      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 842.76      0      0      0 842.76      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 934.43      0      0      0 934.43      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 920.11      0      0      0 920.11      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 1007.4      0      0      0 1007.4      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 934.94      0      0      0 934.94      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 958.01      0      0      0 958.01      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 978.84      0      0      0 978.84      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 944.39      0      0      0 944.39      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 995.06      0      0      0 995.06      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 940.98      0      0      0 940.98      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 939.36      0      0      0 939.36      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   11330      0      0      0  11330      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  002                        Fri 02-Jul-21  10:04:36 am  Page  8
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+! Log for Run 002:
+
+! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console
+
+
+
+Input for Run 001:
+
+\
+#       ReportCol colhead = "loadMaxDur" colVal = @DHWSYS[ 1].loadMaxDur colWid=10 \
+#       ReportCol colhead = "loadMaxAvg" colVal = @DHWSYS[ 1].loadMax/@DHWSYS[ 1].loadMaxDur colWid=10 \
+#       ReportCol colhead = "drawMax" colVal = @DHWSYS[ 1].drawMax colWid=8 \
+#       ReportCol colhead = "drawMaxDur" colVal = @DHWSYS[ 1].drawMaxDur colWid=10 \
+#       ReportCol colhead = "drawMaxAvg" colVal = @DHWSYS[ 1].drawMax/@DHWSYS[ 1].drawMaxDur colWid=10 \
+#       ReportCol colhead = "dayWasteS" colVal = @DHWSYS[ 1].dayWasteScale colDec=3 colWid=10 \
+#       ReportCol colhead = "htCapDes"  colVal = @DHWSYS[ 1].heatingCapDes colDec=0 colWid=8 \
+#       ReportCol colhead = "tSpDes"  colVal = @DHWSYS[ 1].tSetpointDes colDec=0 colWid=6 \
+#       ReportCol colhead = "volRDes"  colVal = @DHWSYS[ 1].volRunningDes colDec=1 colWid=8 \
+#       ReportCol colhead = "Count" colVal = @DHWHEATER[ h].mult colWid=5 \
+#       ReportCol colhead = "htCap"  colVal = @DHWHEATER[ h].heatingCap colDec=1 colWid = 6 \
+#       ReportCol colhead = "VolEa"  colVal = @DHWHEATER[ h].vol colDec=1 colWid = 6 \
+#       ReportCol colhead = "VolTot" colVal = @DHWHEATER[ h].vol * @DHWHEATER[ h].mult colDec=1 colWid=6 \
+#       ReportCol colhead = "totHARL"   colVal = @DHWHEATER[ h].totHARL * @DHWHEATER[ h].mult colDec=0 colWid=9
+        
+        WHCHAR(1)
+        
+        REPORT  rpType = MTR  rpMeter="MtrElec"  rpFreq=Month  rpBtuSf=1000
+        REPORT  rpType = MTR  rpMeter="MtrElecLH"  rpFreq=Month  rpBtuSf=1000
+        
+        // set up for prerun 2
+        ALTER DHWSYS "dhwsys1"
+           wsCalcMode = Prerun      // override default "simulate"
+           wsFxDes = .9
+        endDHWSYS
+        
+        RUN     // prerun 2 = sizing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  002                        Fri 02-Jul-21  10:04:36 am  Page  9
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+DHWHEATER Primary
+
+  loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
+ -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
+ 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1  20470  108.0  108.0  77394024
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 3151.6      0      0      0 3092.9  7.847 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 2734.2      0      0      0 2673.4 15.011 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 2914.9      0      0      0 2858.1  6.091 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 2747.5      0      0      0 2694.3  4.094 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 2309.4      0      0      0 2258.6      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 2110.7      0      0      0 2061.6      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 2025.7      0      0      0 1972.4  2.581 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 2007.7      0      0      0 1956.9      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 1914.8      0      0      0 1865.7      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 2125.4      0      0      0 2071.7  2.937 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 2461.8      0      0      0 2411.9  0.682 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 2863.5      0      0      0 2804.6  8.214 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   29367      0      0      0  28722 47.459 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+Monthly Energy Use, meter "MtrElecLH"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 799.45      0      0      0 799.45      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 741.42      0      0      0 741.42      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 804.36      0      0      0 804.36      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 779.57      0      0      0 779.57      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 842.92      0      0      0 842.92      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 797.46      0      0      0 797.46      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 849.46      0      0      0 849.46      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 826.19      0      0      0 826.19      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 849.60      0      0      0 849.60      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 857.98      0      0      0 857.98      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 783.88      0      0      0 783.88      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 843.81      0      0      0 843.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr  9776.1      0      0      0 9776.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  003                        Fri 02-Jul-21  10:04:37 am  Page 10
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+! Log for Run 003:
+
+! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console
+
+
+
+Input for Run 003:
+
+        
+        // <<< Here is where the DHWHEATER size is actually set 
+        ALTER DHWSYS "dhwsys1"
+          wsCalcMode = Simulate     // redundant but clear
+          ALTER DHWHEATER "dhwhtr1"
+            whHeatingCap = @DHWSYS["dhwsys1"].heatingCapDes
+        	whVolRunning = @DHWSYS["dhwsys1"].volRunningDes
+        
+        // UNSET verbose
+        
+        RUN     // simulation
+        
+        $EOF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  003                        Fri 02-Jul-21  10:04:37 am  Page 11
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
+! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console run(s) done: Fri 02-Jul-21  10:04:39 am
+
+! Executable:   d:\cse\msvc\cse.exe
+!               02-Jul-21  10:04 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+! Command line: -x!  -t1 dhw_mfsizing
+! Input file:   D:\cse\test\dhw_mfsizing.cse
+! Report file:  D:\cse\test\dhw_mfsizing.rep
+
+! Timing info --
+
+!                Input:  Time = 0.85     Calls = 3      T/C = 0.2827   
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
+!           Simulation:  Time = 3.23     Calls = 3      T/C = 1.0757   
+!              Reports:  Time = 0.01     Calls = 3      T/C = 0.0037   
+!                Total:  Time = 4.09     Calls = 1      T/C = 4.0940   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  003                        Fri 02-Jul-21  10:04:37 am  Page 12
+

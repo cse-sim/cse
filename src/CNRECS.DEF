@@ -3767,11 +3767,17 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i FLOAT ws_heatingCapDes;    // design heating capacity, Btuh
                                 //    = ws_heatingCapDesTopN[ 6] or as changed
                                 //    defaults from EcoSizer at end of prerun if not input
+                                //    No direct use, must be passed to DHWHEATER via ALTER
   *i FLOAT_GZ ws_volRunningDes; // design running volume, gal
                                 //   = active volume (above aquastat)
                                 //    full tank volume derived from running volume
                                 //      in HPWHLINK::hw_DeriveVolFromVolRunning
                                 //    defaults from EcoSizer at end of prerun if not input
+                                //    No direct use, must be passed to DHWHEATER via ALTER
+  *i FLOAT_GZ ws_fxDes;         // DHW design excess size factor, default 1
+                                //    Applied if/when ws_heatingCapDes and/or ws_volRunningDes
+                                //    are defaulted from EcoSizer at end of prerun.
+                                //    No effect if those values are input.
 
   *r FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp of water delivered to fixtures or DHWLOOP(s)

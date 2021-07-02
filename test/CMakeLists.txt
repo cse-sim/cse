@@ -59,6 +59,7 @@ set(files
   dhw_uef
   dhw_brwl
   dhwloop32U
+  dhw_mfsizing
   pvtest
   pv_bt_test
   bt_test

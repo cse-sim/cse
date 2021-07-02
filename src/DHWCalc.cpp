@@ -2131,13 +2131,13 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 	RC rc = RCOK;
 
 	if (!IsSet(DHWSYS_HEATINGCAPDES))
-		ws_heatingCapDes = heatingCap;
+		ws_heatingCapDes = ws_fxDes * heatingCap;
 
 	VCopy(ws_heatingCapDesTopN, NDHWSIZEDAYS, heatingCapTopN);
 
 	if (!IsSet(DHWSYS_VOLRUNNINGDES))
-		ws_volRunningDes = volRunning;		// DHWHEATER derives wh_vol
-											//   if this value passed via ALTER
+		ws_volRunningDes = ws_fxDes * volRunning;	// DHWHEATER derives wh_vol
+													//   if this value passed via ALTER
 
 	// copy to input record
 	DHWSYS* pWSi = WSiB.GetAtSafe(ss);

@@ -2090,6 +2090,7 @@ CULT( "wsTSetpointLH",DAT,  DHWSYS_TSETPOINTLH,0,     0, VHRLY,  TYFL,  0,    12
 CULT( "wsTSetpointDes",DAT, DHWSYS_TSETPOINTDES, 0,   0, VEOI,   TYFL,  0,    120.f,	N, N),
 CULT( "wsVolRunningDes",DAT,DHWSYS_VOLRUNNINGDES,0,   0, VEOI,   TYFL,  0,      0.f,	N, N),
 CULT( "wsASHPTSrcDes",DAT,  DHWSYS_ASHPTSRCDES,0,     0, VEOI,   TYFL,  0,      0.f,	N, N),
+CULT( "wsFxDes",     DAT,   DHWSYS_FXDES,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsDRMethod",  DAT,   DHWSYS_DRMETHOD, 0,       0, VEOI,   TYCH,  0,      C_DHWDRMETH_NONE, N, N),
 CULT( "wsDRSignal",  DAT,   DHWSYS_DRSIGNAL, 0,       0, VHRLY,  TYCH, 0,     nc( C_DHWDRSIG_ON), 0.f, N, N),
 CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      N,      N, N),
