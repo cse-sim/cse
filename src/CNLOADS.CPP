@@ -1143,6 +1143,7 @@ x						printf( "1B\n");
 								&& frDiff( qHt0, qHt1) > .001)
 								printf( "\nqHt mismatch");
 							// zn_AirFlowVsTsup();
+							zn_FindAirFlow();
 #endif
 						}
 						// zone temp calc'd in zn_CondixCR2()
@@ -1375,6 +1376,48 @@ RC ZNR::zn_AirFlowVsTsup()
 
 
 }	// ZNR::zn_AirFlowVsTsup
+//-----------------------------------------------------------------------------
+double ZNR::zn_FSpdMismatch(
+	double fSpd)
+{
+	RSYS* rs = zn_GetRSYS();
+	int rsRet = rs->rs_SupplyAirState( zn_hcMode, float( fSpd));
+
+	double amfNeed = zn_AmfHvacCR(zn_tzsp, rs->rs_asSup.as_tdb);
+
+
+	return amfNeed - rs->rs_amf;
+
+}
+//-----------------------------------------------------------------------------
+RC ZNR::zn_FindAirFlow()
+{
+	RC rc = RCOK;
+
+	RSYS* rs = zn_GetRSYS();
+	if (!rs)
+		return RCBAD;
+
+	if (rs->rs_IsAutoSizing())
+		return RCBAD;
+
+	// RSYS rsSave( rs);		// save for restore at exit
+								//   (we alter mbrs here)
+
+
+	double fAmf = .5;
+	double f1 = DBL_MIN;
+	int ret = secant([](void* pO, double& fSpd) { return ((ZNR*)pO)->zn_FSpdMismatch(fSpd); },
+		                this, 0., 1.,
+						fAmf, f1,	// x1, f1
+						1. );		// x2 (f2)
+
+
+	return rc;
+
+
+}	// ZNR::zn_AirFlowVsTsup
+
 //----------------------------------------------------------------------------
 double ZNR::zn_TAirCR(			// zone air temp w/ add'l radiant heat
   	double mCpT,	// add'l air heat to zone, Btuh
@@ -4202,9 +4245,11 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 int RSYS::rs_IsModeAvailable(
 	int rsMode)		// desired mode (rsmHEAT or rsmCOOL)
 
-// returns 1 iff RSYS can operate in desired mode (rs_amf set)
-//         0 if not (mode fixed and different)
-//        -1 if not (system off)
+// returns 1 iff RSYS can operate in desired mode
+//               rs_amf = max amf for mode
+//						  (rs_amfH, rs_amfC, or rs_amfOAV)
+//         0 if not (mode fixed and different, rs_amf=0)
+//        -1 if not (system off, rs_amf=0)
 {
 	int ret;
 	if (rs_mode != rsmOFF)
@@ -4224,7 +4269,7 @@ int RSYS::rs_IsModeAvailable(
 
 		case C_RSYSMODECTRLCH_AUTO:
 			// control is auto and system is currently off
-			ret =  (rsMode == rsmHEAT && rs_CanHeat())
+			ret = (rsMode == rsmHEAT && rs_CanHeat())
 				|| (rsMode == rsmCOOL && rs_CanCool())
 				|| (rsMode == rsmOAV && rs_CanOAV());
 			break;
@@ -4233,17 +4278,19 @@ int RSYS::rs_IsModeAvailable(
 		default:
 			ret = -1;		// off: no can do
 		}
+	}
 
-		if (ret > 0)
-		{
-			// set mode-specific full speed air flow
-			rs_amf = rsMode == rsmHEAT ? rs_amfH
-				   : rsMode == rsmCOOL ? rs_amfC
-				   : rsMode == rsmOAV  ? rs_amfOAV
-				   :                     0.;
-			if (rs_amf < .0001)
-				ret = -1;		// no air available
-		}
+	if (ret > 0)
+	{
+		// set mode-specific full speed air flow
+		// must be set even if mode not changed
+		//   due to possible fSpd modifications
+		rs_amf =  rsMode == rsmHEAT ? rs_amfH
+				: rsMode == rsmCOOL ? rs_amfC
+				: rsMode == rsmOAV  ? rs_amfOAV
+				:                     0.;
+		if (rs_amf < .0001)
+			ret = -1;		// no air available
 	}
 	return ret;
 }		// RSYS::rs_IsModeAvailable
@@ -4348,7 +4395,8 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 	else if (auszMode != rsmOFF)
 		return 1;			// another mode is being autosized
 
-	rs_amf *= fSpd;
+	rs_amf *= fSpd;		// set speed
+
 	if (rs_mode == rsmOFF || rs_amf != amfWas)		// if was off or speed has changed
 	{	// first zone requesting this mode during this step
 		rs_SetModeAndClear( rsMode);	// clear results from prior calc
