@@ -2223,8 +2223,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_SetRSYSAmfFromTSup();"
     *declare "RC zn_CondixCR2();"
     *declare "RC zn_AirFlowVsTsup();"
-    *declare "double zn_FSpdMismatch( double fSpd);"
-    *declare "RC zn_FindAirFlow();"
+    *declare "double zn_FSpdMismatch( double& speedF);"
+    *declare "double zn_FindAirFlow();"
     *declare "int zn_AssessVentUtility();"
     *declare "int zn_OAVAttempt( double tSup);"
     *declare "int zn_FVentCR();"
@@ -3080,7 +3080,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_SetupFanC( float avfC=-1.f);"
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
 *declare "RC rs_SetDuctSizes();"
-*declare "void rs_SetModeAndClear( int rsModeNew);"
+*declare "void rs_SetModeAndClear( int rsModeNew, float speedF=1.f);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
 *declare "RC rs_EndSubhr();"
@@ -3089,7 +3089,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_EnteringAirState();"
 *declare "int rs_IsModeAvailable( int rsMode);"
 *declare "int rs_IsAutoSizing() const;"
-*declare "int rs_SupplyAirState( int rsMode, float fSpd=1.f);"
+*declare "int rs_SupplyAirState( int rsMode, float speedF=1.f);"
 *declare "float rs_SupplyDSEAndDucts(AIRSTATE& as, float amf = -1.f);"
 *declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as);"
 *declare "float rs_TsupVarFlow( float fAmf, AIRSTATE& as);"
@@ -3135,6 +3135,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "float rs_Cap05Default( float cap47, float cap17) const;"
+*declare "float rs_SpeedFMin() const { return rs_capHt <= 0.f ? 1.f : rs_capHtMin / rs_capHt; }"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
 *declare "RC rs_SetupBtwxt( const std::vector<struct VSPERFP> ppV);"
 *declare "void rs_AuszFinalASHP();"
@@ -3313,7 +3314,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
 							//   0 = ASHP compressor is unavailable (due to lockout, )
-*s *e FLOAT rs_capHt		// current step primary heating capacity, Btuh
+*s *e FLOAT rs_capHt		// current step full speed primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
 *s *e FLOAT rs_inpHt		// current step full speed compressor input power
