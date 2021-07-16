@@ -2055,10 +2055,10 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 	}
 }		// RSYS::rs_RddiInit
 //-----------------------------------------------------------------------------
-RC RSYS::rs_endP1DsdIter()
+RC RSYS::rs_endP1DsdIter(		// autosizing end of day
+	int auszMode)		// rsmHEAT, rsmCOOL
 {
 	RC rc = RCOK;
-	int auszMode = rs_IsAutoSizing();
 	if (auszMode == rsmHEAT)
 	{	// note: rs_fxCapHDay = 20 if no load
 		float f = rs_fxCapHAsF / max( rs_fxCapHDay, .01f);
@@ -2107,13 +2107,10 @@ RC RSYS::rs_endP1DsdIter()
 			float fX = bracket( .9f, errX+1.f, 1.1f);
 			rs_cap95 *= fX;
 
-#if 1
-			if (rs_cap95 < 1200.f)
-				rs_cap95 = 1200.f;			// never < 0.1 ton
-			else
-#endif
-			if (rs_cap95 < rs_auszC.az_b)
-				rs_cap95 = rs_auszC.az_b;	// never < previous design day peak
+			float cap95min = max(rs_auszC.az_b, 1200.f);
+			if (rs_cap95 < cap95min)
+				rs_cap95 = cap95min;	// never < 0.1 ton
+										// never < previous design day peak
 		}
 
 		setToMax( rs_auszC.ldPk, rs_cap95);	// peak
@@ -2819,8 +2816,13 @@ RC RSYS::rs_AfterHour()
 
 	if (Top.isEndDay)
 	{	// last step of day
-		rc = rs_endP1DsdIter();
+		int auszMode = rs_IsAutoSizing();
+		if (auszMode != rsmOFF)
+			rc = rs_endP1DsdIter( auszMode);
 	}
+
+	// prior interval values: none
+
 	return rc;
 }		// RSYS::rs_AfterHour
 //-----------------------------------------------------------------------------
@@ -4336,15 +4338,21 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 	if (znSupReq > 1.e10)	// znSupReq = DBL_MAX if supplyDT is tiny
 		znSupReq = rs_amf;
 	else if (znSupReq < 0.)
-		// reverse flow (caused by "backwards" supplyDT)
+		// reverse flow
+		//   caused by "flipped" supply DT
+		//   due to e.g. big duct losses
 		znSupReq =
-#if 1
+#if 1	// attempt to fix small load sizing, 7-16-2021
+			2. * rs_amf;		// request "a lot"
+#else
+#if 1	// unknown date
 			Top.tp_autoSizing
 #else
 			Top.tp_pass1A
 #endif
 					? 1.				// autosize warmup: ignore
 					: 2. * rs_amf;		// simulation: request "a lot"
+#endif
 
 	double znAmfSys = znSupReq / rs_ducts[ rs_DsHC()].ductLkXF[ 0];
 	rs_amfReq[ iAux] += znAmfSys;		// all-zone total at system
@@ -4827,12 +4835,13 @@ static RC loadsIzxSh2()   		// interzone transfers, part 2
 	return rc;
 }		// ::loadsIzxSh2
 //--------------------------------------------------------------------
-static RC loadsXFans()
+static RC loadsXFans()	// SIMULATE zone exhaust fans (xfans)
 {
+	RC rc = RCOK;
 	ZNR* zp;
 	RLUP( ZrB, zp)
-		zp->zn_XFan();
-	return RCOK;
+		rc |= zp->zn_XFan();
+	return rc;
 }	// ::loadsXFans
 //--------------------------------------------------------------------
 RC ZNR::zn_XFan()		// zone exhaust fan calcs (hourly)

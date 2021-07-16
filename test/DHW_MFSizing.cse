@@ -9361,6 +9361,7 @@ DHWSYS   "dhwsys1"
  DHWLOOPHEATER   "dhwlphtr-LoopTank2"  
       whType = "SmallStorage"           // Type of water heater
       whHeatSrc = "ResistanceX"         // Fuel source for water heater
+      whResType = "Swingtank"
       whMult = 1                        // Water heater multiplier
       whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
       whEF = 0.97                       // Water heater energy factor (for small storage & instantaneous)

@@ -1264,8 +1264,10 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	IZXRAT* ize;
 	IzxR.add( &ize, ABT);
 
-	strcpy( ize->name, name);
-	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx);
+	ize->SetName( name);
+	// append suffix
+	int catOption = 1;		// attempt to truncate name size exceeded
+	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx, catOption);
 	ize->iz_zi1 = ss;		// idx of this zone
 	ize->iz_nvcntrl = ty;
 	ize->iz_pAF = pAF;

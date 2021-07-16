@@ -442,7 +442,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 		*pIffnmi = iffnm->ss;					// return added record subscript
 
 		// use IMPORTFILE given object name as record name, for later association with IMPORTFILEs.
-		strncpy( iffnm->name, impfName, sizeof(ANAME)-1 );
+		iffnm->SetName( impfName);
 
 		// put source file index and line in record so (first) use can be reported in errmsg eg if no IMPF for IFFNM.
 		iffnm->fileIx = fileIx;

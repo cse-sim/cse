@@ -470,6 +470,11 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			SCALABLE_SP "Scalable_SP"		// scalable type for autosized standard design
 		}
 
+*choicb WHRESTYCH {			// resistance heater types
+       TYPICAL "Typical"
+	   SWINGTANK "SwingTank"
+}
+
 *choicb DHWEUCH {			// hot end uses
 			FAUCET "Faucet"
 			SHOWER "Shower"
