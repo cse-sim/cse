@@ -8,7 +8,7 @@ MF Sanden
 
 ! Log for Run 001:
 
-! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console
+! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console
 
 
 
@@ -60,7 +60,7 @@ MF Sanden
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  1
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
 #        #define  RefrTemp_WEH   hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129)
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  2
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ MF Sanden
            wsShowerDayWasteF = 3                // used to determine ratio of Shower/Faucet water waste
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  3
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  3
 
 
 
@@ -210,6 +210,7 @@ MF Sanden
          DHWLOOPHEATER   "dhwlphtr-LoopTank2"  
               whType = "SmallStorage"           // Type of water heater
               whHeatSrc = "ResistanceX"         // Fuel source for water heater
+              whResType = "Swingtank"
               whMult = 1                        // Water heater multiplier
               whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
               whEF = 0.97                       // Water heater energy factor (for small storage & instantaneous)
@@ -246,16 +247,16 @@ MF Sanden
                  wgFNoDraw = 0.4                // DHW loop segment fraction of hour when no draw flow occurs, frac
                  wgExT = 70                     // ambient temperature around DHW loop segment, °F
                  wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
-        
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  4
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  4
 
 
 
 MF Sanden
 ------------------------------------------------------------------------------
 
+        
                  DHWLOOPBRANCH   "dhwlpbr2-DHW System 1"  
                     wbMult = 4                  // DHW loop branch multiplier
                     wbSize = 1                  // DHW loop branch nominal pipe size (diameter), in
@@ -309,16 +310,16 @@ MF Sanden
                  wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
         
               DHWLOOPSEG   "dhwlpseg6-DHW System 1"  
-                 wgTy = "Return"                // DHW loop segment type
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  5
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  5
 
 
 
 MF Sanden
 ------------------------------------------------------------------------------
 
+                 wgTy = "Return"                // DHW loop segment type
                  wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 17.015              // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
@@ -372,16 +373,16 @@ MF Sanden
         DHWSYS   "dhwsys-2ndFlrTwoBR DU"  
            wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
            wsDayUse = DHWMF2BR03                  // Day use profile object
-           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  6
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  6
 
 
 
 MF Sanden
 ------------------------------------------------------------------------------
 
+           wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
            wsSDLM = 1.16233                     // Standard distribution loss multiplier
            wsDSM = 1                            // Distribution system multiplier
         
@@ -396,8 +397,7 @@ MF Sanden
         RUN		// prerun 1 = derive daywaste factors
         
 #       #define WHCHAR(h) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWHEATER Primary" \
-#       ReportCol colhead = "loadMax" colVal = @DHWSYS[ 1].loadMax colWid=8 
-
+#       ReportCol colhead = "loadMax" 
 
 
 
@@ -438,7 +438,7 @@ MF Sanden
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Fri 02-Jul-21  10:04:35 am  Page  7
+! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  7
 
 
 
@@ -459,20 +459,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 3315.9      0      0      0 3265.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb 2899.9      0      0      0 2854.1      0 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar 3037.3      0      0      0 2986.6      0 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr 2921.3      0      0      0 2872.2      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May 2427.5      0      0      0 2376.7      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun 2254.8      0      0      0 2205.7      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul 2153.6      0      0      0 2102.8      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug 2145.6      0      0      0 2094.8      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep 2066.8      0      0      0 2017.6      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct 2271.8      0      0      0 2221.0      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov 2606.0      0      0      0 2556.8      0 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec 3015.0      0      0      0 2964.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 3206.2      0      0      0 3155.4      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 2796.1      0      0      0 2750.2      0 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 2975.6      0      0      0 2924.9      0 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 2829.6      0      0      0 2780.4      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 2386.0      0      0      0 2335.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 2164.9      0      0      0 2115.7      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 2069.8      0      0      0 2019.0      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 2075.2      0      0      0 2024.5      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 1987.9      0      0      0 1938.8      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 2214.1      0      0      0 2163.3      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 2523.6      0      0      0 2474.4      0 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 2948.8      0      0      0 2898.1      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   31116      0      0      0  30518      0 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   30178      0      0      0  29580      0 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -480,20 +480,20 @@ Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 934.15      0      0      0 934.15      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb 842.76      0      0      0 842.76      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar 934.43      0      0      0 934.43      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr 920.11      0      0      0 920.11      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May 1007.4      0      0      0 1007.4      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun 934.94      0      0      0 934.94      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul 958.01      0      0      0 958.01      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug 978.84      0      0      0 978.84      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep 944.39      0      0      0 944.39      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct 995.06      0      0      0 995.06      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov 940.98      0      0      0 940.98      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec 939.36      0      0      0 939.36      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 1129.3      0      0      0 1129.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 1029.5      0      0      0 1029.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 1139.6      0      0      0 1139.6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 1093.0      0      0      0 1093.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 1144.3      0      0      0 1144.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 1145.5      0      0      0 1145.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 1163.2      0      0      0 1163.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 1157.7      0      0      0 1157.7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 1133.0      0      0      0 1133.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 1164.0      0      0      0 1164.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 1131.2      0      0      0 1131.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 1139.8      0      0      0 1139.8      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   11330      0      0      0  11330      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   13570      0      0      0  13570      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -501,7 +501,7 @@ Yr   11330      0      0      0  11330      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  002                        Fri 02-Jul-21  10:04:36 am  Page  8
+! dhw_mfsizing  002                        Wed 14-Jul-21   2:24:25 pm  Page  8
 
 
 
@@ -512,13 +512,13 @@ MF Sanden
 
 ! Log for Run 002:
 
-! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console
+! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console
 
 
 
 Input for Run 001:
 
-\
+colVal = @DHWSYS[ 1].loadMax colWid=8 \
 #       ReportCol colhead = "loadMaxDur" colVal = @DHWSYS[ 1].loadMaxDur colWid=10 \
 #       ReportCol colhead = "loadMaxAvg" colVal = @DHWSYS[ 1].loadMax/@DHWSYS[ 1].loadMaxDur colWid=10 \
 #       ReportCol colhead = "drawMax" colVal = @DHWSYS[ 1].drawMax colWid=8 \
@@ -564,7 +564,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  002                        Fri 02-Jul-21  10:04:36 am  Page  9
+! dhw_mfsizing  002                        Wed 14-Jul-21   2:24:25 pm  Page  9
 
 
 
@@ -585,20 +585,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 3151.6      0      0      0 3092.9  7.847 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb 2734.2      0      0      0 2673.4 15.011 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar 2914.9      0      0      0 2858.1  6.091 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr 2747.5      0      0      0 2694.3  4.094 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May 2309.4      0      0      0 2258.6      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun 2110.7      0      0      0 2061.6      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul 2025.7      0      0      0 1972.4  2.581 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug 2007.7      0      0      0 1956.9      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep 1914.8      0      0      0 1865.7      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct 2125.4      0      0      0 2071.7  2.937 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov 2461.8      0      0      0 2411.9  0.682 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec 2863.5      0      0      0 2804.6  8.214 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 3069.8      0      0      0 3014.3  4.776 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 2666.3      0      0      0 2607.5 12.964 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 2829.2      0      0      0 2778.5      0 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 2666.7      0      0      0 2614.4  3.079 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 2237.4      0      0      0 2186.7      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 2038.4      0      0      0 1985.5  3.760 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 1965.8      0      0      0 1912.3  2.674 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 1931.6      0      0      0 1880.8      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 1858.9      0      0      0 1809.8      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 2058.3      0      0      0 2007.5      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 2371.3      0      0      0 2322.1      0 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 2792.7      0      0      0 2741.9      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   29367      0      0      0  28722 47.459 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   28486      0      0      0  27861 27.253 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -606,20 +606,20 @@ Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 799.45      0      0      0 799.45      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb 741.42      0      0      0 741.42      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar 804.36      0      0      0 804.36      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr 779.57      0      0      0 779.57      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May 842.92      0      0      0 842.92      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun 797.46      0      0      0 797.46      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul 849.46      0      0      0 849.46      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug 826.19      0      0      0 826.19      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep 849.60      0      0      0 849.60      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct 857.98      0      0      0 857.98      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov 783.88      0      0      0 783.88      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec 843.81      0      0      0 843.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 984.65      0      0      0 984.65      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 895.17      0      0      0 895.17      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 1003.1      0      0      0 1003.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 967.69      0      0      0 967.69      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 1016.4      0      0      0 1016.4      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 983.23      0      0      0 983.23      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 1016.5      0      0      0 1016.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 1021.5      0      0      0 1021.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 994.85      0      0      0 994.85      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 1012.6      0      0      0 1012.6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 997.71      0      0      0 997.71      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 994.89      0      0      0 994.89      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr  9776.1      0      0      0 9776.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   11888      0      0      0  11888      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -627,7 +627,7 @@ Yr  9776.1      0      0      0 9776.1      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  003                        Fri 02-Jul-21  10:04:37 am  Page 10
+! dhw_mfsizing  003                        Wed 14-Jul-21   2:24:26 pm  Page 10
 
 
 
@@ -638,7 +638,7 @@ MF Sanden
 
 ! Log for Run 003:
 
-! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console
+! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console
 
 
 
@@ -690,7 +690,7 @@ Input for Run 003:
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  003                        Fri 02-Jul-21  10:04:37 am  Page 11
+! dhw_mfsizing  003                        Wed 14-Jul-21   2:24:26 pm  Page 11
 
 
 
@@ -699,21 +699,21 @@ MF Sanden
 
 
 
-! CSE 0.893.0+dhwszfctr.93fb8b5.1 for Win32 console run(s) done: Fri 02-Jul-21  10:04:39 am
+! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console run(s) done: Wed 14-Jul-21   2:24:27 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               02-Jul-21  10:04 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+!               14-Jul-21   2:18 pm   (VS 14.29    2641920 bytes)  (HPWH 1.14.0+master.f3d8238.7)
 ! Command line: -x!  -t1 dhw_mfsizing
 ! Input file:   D:\cse\test\dhw_mfsizing.cse
 ! Report file:  D:\cse\test\dhw_mfsizing.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.85     Calls = 3      T/C = 0.2827   
+!                Input:  Time = 0.83     Calls = 3      T/C = 0.2767   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 3.23     Calls = 3      T/C = 1.0757   
+!           Simulation:  Time = 3.00     Calls = 3      T/C = 1.0010   
 !              Reports:  Time = 0.01     Calls = 3      T/C = 0.0037   
-!                Total:  Time = 4.09     Calls = 1      T/C = 4.0940   
+!                Total:  Time = 3.85     Calls = 1      T/C = 3.8510   
 
 
 
@@ -753,5 +753,5 @@ MF Sanden
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  003                        Fri 02-Jul-21  10:04:37 am  Page 12
+! dhw_mfsizing  003                        Wed 14-Jul-21   2:24:26 pm  Page 12
 

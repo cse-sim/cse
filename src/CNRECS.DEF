@@ -3065,7 +3065,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_RddiInit();"
 *declare "RC rs_pass1AtoB();"
 *declare "RC rs_begP1b();"
-*declare "RC rs_endP1DsdIter();"
+*declare "RC rs_endP1DsdIter( int auszMode);"
 *declare "RC rs_endAutosize();"
 *declare "void rs_AuszFinal();"
 *declare "float rs_ClgCapNomTons( float nearest=-1.f);"
@@ -3945,7 +3945,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "static int hw_HPWHInfo( WHASHPTYCH ashpTy, int& attrs);"
 *declare "static int hw_IsAttr( WHASHPTYCH ashpTy, int attr) { int attrs; return hw_HPWHInfo( ashpTy, attrs) >= 0 ? (attr & attrs) != 0 : -1; }"
 *declare "RC hw_InitPreset( WHASHPTYCH ashpTy);"
-*declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
+*declare "RC hw_InitResistance( WHRESTYCH resTy, float vol, float EF, float resHt, float resHt2, float tUse);"
 *declare "RC hw_InitTank( float vol);"
 *declare "RC hw_AdjustUAIf( float UA, float insulR, float tankCount=1.f);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
@@ -4079,8 +4079,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
   *declare "int wh_SetFunction();"
   *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
-  *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff ASHPX, else ignored
+  *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff wh_heatSrc=ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
+  *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
+								//	  C_WHRESTYCH_xxx, etc
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant

@@ -1293,7 +1293,7 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 		   New record is all 0's (inits FsSET, FsVAL, FsERR, FsFROZ, etc to 0).
 		   Default data can be supplied via STAR entry: see nuCult.  Still??7-92 */
 		if (name)						// if name given
-			strncpy( e->name, name, sizeof(ANAME)-1);		// copy name into record
+			e->SetName( name);			// copy name into record
 		// .fileIx & .line are set below, after LIKE/COPY/USETYPE
 
 		// do LIKE/COPY if given: look up record in this basAnc, copy data after name

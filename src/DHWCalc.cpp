@@ -2662,17 +2662,25 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 }	// HPWHLINK::hw_InitGeneric
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
-	float vol,		// tank volume, gal
-	float EF,		// rated EF
-	float resHtPwr,	// upper resistance heat element power, W
-	float resHtPwr2)// lower resistance heat element power, W
+	WHRESTYCH resTy,	// resistance heater type
+	float vol,			// tank volume, gal
+	float EF,			// rated EF
+	float resHtPwr,		// upper resistance heat element power, W
+	float resHtPwr2,	// lower resistance heat element power, W
+	float tUse)			// use temp, F
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	if (hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
-		resHtPwr, resHtPwr2) != 0)
+	int ret = resTy == C_WHRESTYCH_SWINGTANK
+		? hw_pHPWH->HPWHinit_resSwingTank(GAL_TO_L(max(vol, 1.f)), EF,
+		   resHtPwr, resHtPwr2, F_TO_C( tUse))
+		: hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
+			resHtPwr, resHtPwr2);
+	   
+	if (ret)
 		rc |= RCBAD;
+
 	return rc;
 }		// HPWHLINK::hw_InitResistance
 //-----------------------------------------------------------------------------
@@ -3615,7 +3623,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	else if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	// STRGSML or BUILTUP HPWH model
 		// TODO: more specific checking for ASHPX
-		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
+		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, DHWHEATER_RESTY, 0);
 		RC rc1 = requireN( whenHs, DHWHEATER_ASHPTY, 0);
 		rc |= rc1;
 		if (!rc1)
@@ -3704,7 +3712,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 
 	if (IsSet(DHWHEATER_VOLRUNNING))
 	{	if (!wh_CanSetVolFromVolRunning())
-			rc |= disallow(DHWHEATER_VOLRUNNING, whenTy);
+			rc |= disallow(DHWHEATER_VOLRUNNING, whenHs);
 		else if (IsSet(DHWHEATER_VOL))
 			rc |= oer("whVol and whVolRunning cannot both be specified");
 	}
@@ -3754,13 +3762,14 @@ int DHWHEATER::wh_CanSetVolFromVolRunning() const	// can volume be derived from 
 //        -1: maybe (re HPWH pending HPWHLINK setup)
 {
 	int ret = 0;
-	if (wh_IsHPWHModel())
+	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	ret = -1;
-		if (wh_HPWH.hw_HasCompressor()
+		if (wh_HPWH.hw_HasCompressor()	// redundant *but* false if !hw_pHPWH
 		 && !wh_HPWH.hw_pHPWH->isTankSizeFixed())
 			ret = 1;
 	}
 	// else
+	// 	Other type (including C_WHHEATSRCCH_ELRESX): volRunning not supported
 	//	ret = 0;
 
 	return ret;
@@ -4106,7 +4115,8 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 	{	// resistance tank (no preset)
 		rc |= wh_HPWH.hw_InitResistance(
-			wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2);
+			wh_resTy, wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2, pWS->ws_tUse);
+		// bVolMaybeModifiable = true;
 	}
 	else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
 	{	// generic HPWH (no preset)
@@ -4161,17 +4171,16 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			else if (IsSet(DHWHEATER_VOLRUNNING))
 			{	// semi-redundant check
 				if (!wh_CanSetVolFromVolRunning())
-					rc |= ooer(DHWHEATER_VOLRUNNING, "no can do");
+					oInfo("%s is ignored (tank volume is fixed at %0.0f gal)",
+						what, wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
 				else
-				{
-					RC rc2 = wh_HPWH.hw_DeriveVolFromVolRunning(
+				{	RC rc2 = wh_HPWH.hw_DeriveVolFromVolRunning(
 						wh_volRunning,
 						wh_heatingCap,
 						pWS->ws_tSetpointDes - pWS->ws_tInletDes,
 						vol);
 					if (rc2)
 						rc |= err(PERR, "DHWHEATER::wh_HPWHInit: hw_CanSetVolFromVolRunning() inconsistency.");
-					// else wh_vol already known
 				}
 			}
 			else // IsSet( DHWHEATER_VOL)

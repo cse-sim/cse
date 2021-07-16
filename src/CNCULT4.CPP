@@ -142,9 +142,9 @@ LOCAL RC addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd
 	UCH *fs;
 	RC rc;
 
-	E( RiB.add( &rp, WRN) ) 			// add report input record (ancrec.cpp) / return if error
-	strncpy( rp->name, name, sizeof(ANAME)-1 );	// record name, for like/alter/delete
-	rp->zi = zi;				// 0, TI_SUM, or TI_ALL (or reference to a zone)
+	E( RiB.add( &rp, WRN) ) 		// add report input record (ancrec.cpp) / return if error
+	rp->SetName( name);				// record name, for like/alter/delete
+	rp->zi = zi;					// 0, TI_SUM, or TI_ALL (or reference to a zone)
 	rp->ownTi = rfi;       			// reference to report file
 	rp->rpTy = rpTy;     			// type of report
 	rp->rpFreq = freq;  			// 0 or frequency of report
@@ -1817,10 +1817,10 @@ LOCAL void addHdayDate( char *name, DOY date) 		// add holiday celebrated on spe
 {
 	// for topPrfHday
 	HDAY *hdi;
-	if (HdayiB.add( &hdi, WRN))  return; 		// add holiday input record (ancrec.cpp) / return if error (msg issued)
-	strncpy( hdi->name, name, sizeof(ANAME)-1 );	// record name, for like/alter/delete and error messages
-	hdi->hdDateTrue = date;				// store true date
-	hdi->hdOnMonday = C_NOYESCH_YES;			// say observe on following monday if falls on weekend
+	if (HdayiB.add( &hdi, WRN))  return; 	// add holiday input record (ancrec.cpp) / return if error (msg issued)
+	hdi->SetName( name);					// record name, for like/alter/delete and error messages
+	hdi->hdDateTrue = date;					// store true date
+	hdi->hdOnMonday = C_NOYESCH_YES;		// say observe on following monday if falls on weekend
 	// topHday will set hdDateObs.
 }					// addHdayDate
 //---------------------------------------------------------------------------------------------------------------------------
@@ -1829,9 +1829,9 @@ LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, MONTH mon)
 {
 	// for topPrfHday
 	HDAY *hdi;
-	if (HdayiB.add( &hdi, WRN))  return; 		// add holiday input record (ancrec.cpp) / return if error (msg issued)
-	strncpy( hdi->name, name, sizeof(ANAME)-1 );	// record name, for like/alter/delete
-	hdi->hdCase = hdCase;				// store arguments
+	if (HdayiB.add( &hdi, WRN))  return;	// add holiday input record (ancrec.cpp) / return if error (msg issued)
+	hdi->SetName( name);					// record name, for like/alter/delete
+	hdi->hdCase = hdCase;					// store arguments
 	hdi->hdDow = dow;
 	hdi->hdMon = mon;
 	// topHday will set hdDateTrue and hdDateObs.
