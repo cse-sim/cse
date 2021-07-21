@@ -9539,6 +9539,14 @@ ReportCol colhead = "totHARL"   colVal = @DHWHEATER[ h].totHARL * @DHWHEATER[ h]
 
 WHCHAR(1)
 
+#define WLHCHAR(lh) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWLOOPHEATER Info" \
+ReportCol colhead = "LH Vol"  colVal = @DHWLOOPHEATER[ lh].vol colDec=1 colWid = 6 \
+ReportCol colhead = "LH UA" colVal = @DHWLOOPHEATER[ lh].UA colDec=2 colWid=6 \
+ReportCol colhead = "htCap"  colVal = @DHWLOOPHEATER[ lh].heatingCap colDec=1 colWid = 6
+
+WLHCHAR(1)
+
+
 REPORT  rpType = MTR  rpMeter="MtrElec"  rpFreq=Month  rpBtuSf=1000
 REPORT  rpType = MTR  rpMeter="MtrElecLH"  rpFreq=Month  rpBtuSf=1000
 
