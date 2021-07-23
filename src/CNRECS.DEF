@@ -2229,6 +2229,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_OAVAttempt( double tSup);"
     *declare "int zn_FVentCR();"
     *declare "RC zn_CondixCR( ULI ventAvail);"
+    *declare "RC zn_AirRequest( RSYS* rs);"
     *declare "RC zn_AirX();"
     *declare "RC zn_MoistureBalCR();"
     *declare "RC zn_ComfortCR();"
@@ -3095,6 +3096,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_TsupVarFlow( float fAmf, AIRSTATE& as);"
 *declare "double rs_ZoneAirRequest( double znAmfSup, int iAux=0);"
 *declare "RC rs_AllocateZoneAir();"
+*declare "RC rs_AllocateZoneAirVC();"
 *declare "void rs_AvgZoneCond();"
 *declare "static double rs_CallAmfRequired( void* pO, double &tSupX);"
 *declare "double rs_AmfRequired( double tSup);"
@@ -3111,16 +3113,17 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
-*declare "int rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
-*declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
-*declare "int rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
-*declare "int rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
-*declare "int rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
-*declare "int rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
-*declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
-*declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
-*declare "int rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
-*declare "int rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
+*declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
+*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
+*declare "bool rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
+*declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
+*declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
+*declare "bool rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
+*declare "bool rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
+*declare "bool rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
+*declare "bool rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
+*declare "bool rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
 *declare "void rs_OAVSetup();"
 *declare "void rs_OAVAirFlow();"
@@ -4166,10 +4169,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r FLOAT_GEZ wh_stbyElec;		// electrical power during standby, W
 								//   default=4, used for INSTUEF
 
-  *i FLOAT_GZ wh_resHtPwr;		// upper element resistance heating power, W
+  *i FLOAT_GEZ wh_resHtPwr;		// upper element resistance heating power, W
 								//   used for some models only
 								//   default = 4500
-  *i FLOAT_GZ wh_resHtPwr2;		// lower element resistance heating power, W
+  *i FLOAT_GEZ wh_resHtPwr2;	// lower element resistance heating power, W
 								//   default = wh_resPwr
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model

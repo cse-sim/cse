@@ -2973,35 +2973,50 @@ RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
 
 }	// HPWHLINK::hw_SetHeatingCap
 //-----------------------------------------------------------------------------
-RC HPWHLINK::hw_GetHeatingCap(			// get compressor heating capacity
+RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	float& heatingCap,		// returned: design heating capacity, Btuh
-	float ashpTSrcDes,		// source air temp, F
-	float tInletDes,		// cold water inlet, F
-	float tUseDes) const	// hot water use temp, F
+	float ashpTSrcDes,		// source air temp, F (used if conpressor)
+	float tInletDes,		// cold water inlet, F (used if conpressor)
+	float tUseDes) const	// hot water use temp, F (used if conpressor)
 // returns RCOK and heatingCap iff success
+//    else RCBAD (heatingCap = 0)
 {
 	RC rc = RCOK;
 	heatingCap = 0.f;
-	if (!hw_pHPWH || !hw_HasCompressor())
-		return RCBAD;		// bad setup or no compressor
-	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
-	if (minT == double(HPWH::HPWH_ABORT))
-		rc = RCBAD;
-	else
-	{	if (ashpTSrcDes < minT)
-			ashpTSrcDes = minT;		// constrain source air temp to
-									//  HPWH lockout temp
-
-		double cap = hw_pHPWH->getCompressorCapacity(
-						ashpTSrcDes,	// design source air temp, F
-						tInletDes,		// inlet temp, F
-						tUseDes,		// outlet temp, F
-						HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
-		if (cap == double(HPWH::HPWH_ABORT))
+	if (!hw_pHPWH)
+		return RCBAD;		// bad setup
+	double cap = 0.;
+	if (hw_pHPWH->hasACompressor())
+	{	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
+		if (minT == double(HPWH::HPWH_ABORT))
 			rc = RCBAD;
 		else
-			heatingCap = float(cap);
+		{
+			if (ashpTSrcDes < minT)
+				ashpTSrcDes = minT;		// constrain source air temp to
+										//  HPWH lockout temp
+
+			cap = hw_pHPWH->getCompressorCapacity(
+							ashpTSrcDes,	// design source air temp, F
+							tInletDes,		// inlet temp, F
+							tUseDes,		// outlet temp, F
+							HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
+			if (cap == double(HPWH::HPWH_ABORT))
+				rc = RCBAD;
+		}
 	}
+	else
+	{	// resistance: return capacity of largest heating element
+		for (int which = 1; which < 3; which++)
+		{	double capx = hw_pHPWH->getResistanceCapacity(which, HPWH::UNITS_BTUperHr);
+			if (capx == double(HPWH::HPWH_ABORT))
+				rc = RCBAD;	
+			else if (capx > cap)
+				cap = capx;
+		}
+	}
+	if (!rc)
+		heatingCap = float(cap);
 	return rc;
 }		// HPWHLINK::hw_GetHeatingCap
 //-----------------------------------------------------------------------------
@@ -4128,7 +4143,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		// volume set below after heatingCap is known
 	}
 
-	if (IsSet(DHWHEATER_HEATINGCAP))
+	if (!rc && IsSet(DHWHEATER_HEATINGCAP))
 	{	// check whether heating capacity can be adjusted
 		if (!wh_HPWH.hw_pHPWH->isHPWHScalable() || !wh_HPWH.hw_HasCompressor())
 		{	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
@@ -4148,17 +4163,15 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		}
 	}
 
-	if (wh_HPWH.hw_HasCompressor())
-	{	// retrieve capacity: may not have been set; limits may have been applied
-		// TODO: generalize for non-compressor types
+	// retrieve capacity: may not have been set; limits may have been applied
+	if (!rc)	// if success so far (else HPWH queries can fail)
 		rc |= wh_HPWH.hw_GetHeatingCap(
 			wh_heatingCap,			// capacity
 			pWS->ws_ashpTSrcDes,	// source air
 			pWS->ws_tInletDes,		// inlet water temp
 			pWS->ws_tUse);			// outlet water temp
-	}
 
-	if (bVolMaybeModifiable)
+	if (!rc && bVolMaybeModifiable)
 	{	const char* what = IsSet(DHWHEATER_VOL) ? "whVol"
 				: IsSet(DHWHEATER_VOLRUNNING) ? "whVolRunning"
 				: NULL;
@@ -4196,9 +4209,10 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	// at this point, HPWH has known size and default UA
 	//   (later capacity scaling does not alter size)
 	//   if additional UA or insulR is provided, adjust UA
-	rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR, wh_tankCount);
+	if (!rc)
+		rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR, wh_tankCount);
 
-	if (rc == RCOK)
+	if (!rc)
 	{	// tank inlet fractional heights
 		float inHtSupply  = IsSet(DHWHEATER_INHTSUPPLY)  ? wh_inHtSupply  : -1.f;
 		float inHtLoopRet = IsSet(DHWHEATER_INHTLOOPRET) ? wh_inHtLoopRet : -1.f;
@@ -4207,10 +4221,11 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	// make probe-able values consistent with HPWH
 	//   note hw_GetInfo() call uses tankCount=1: get totals from HPWH
-	wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
+	if (!rc)
+		wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
 
 	// config checks -- report only once
-	if (!pWS->ws_configChecked)
+	if (!rc && !pWS->ws_configChecked)
 	{
 		if (wh_HPWH.hw_IsSetpointFixed())
 		{	int fn = pWS->ws_GetTSetpointFN(whfcn);

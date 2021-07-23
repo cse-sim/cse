@@ -1118,48 +1118,8 @@ x						printf( "1B\n");
 
 					if (rsAvail >= 2)
 					{	// mode is possible
-						double tSup0 = rs->rs_asSup.as_tdb;
-#if 1 && defined( _DEBUG)
-						if ((!Top.isWarmup &&
-							(zn_hcMode==RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-							 || (zn_hcMode==RSYS::rsmHEAT && tSup0 <= zn_tzsp && !rs->rs_IsASHP())))
-						{	printf( "Zone '%s': Flipped tSup  RSYS='%s', tOut=%f, tSup=%f, tSP=%f, tZone=%f\n", name, rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
-							rs->rs_SupplyAirState( zn_hcMode);	// debug aid
-						}
-#endif
-						double amfSup0 = zn_AmfHvacCR( zn_tzsp, tSup0);	// dry air mass flow rate required to hold
-						zn_rsAmfSysReq[ 0] = rs->rs_ZoneAirRequest( amfSup0, 0);	// notify system of requirement
-						CHECKFP( zn_rsAmfSysReq[ 0]);
-						if (zn_hcMode == RSYS::rsmHEAT && rs->rs_IsASHP())
-						{	// ASHP heating: repeat calc with full aux
-							double tSup1 = rs->rs_asSupAux.as_tdb;
-							double amfSup1 = zn_AmfHvacCR( zn_tzsp, tSup1);
-							zn_rsAmfSysReq[ 1] = rs->rs_ZoneAirRequest( amfSup1, 1);
-#if defined( _DEBUG)
-							double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
-							double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
-							// zn_AmfHvacCR can return DBL_MAX
-							if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
-								&& frDiff( qHt0, qHt1) > .001)
-								printf( "\nqHt mismatch");
-#endif
-							if (rs->rs_IsASHPVC() && rsAvail==3 && amfSup0 <= rs->rs_amf)
-							{
-								float speedFMin = rs->rs_SpeedFMin();
-#if defined( _DEBUG)
-								if (speedFMin < 0.f || speedFMin > 1.f)
-									printf("\nSpeedfMin = %0.3f", speedFMin);
-#endif
-								rs->rs_SupplyAirState(zn_hcMode, rs->rs_SpeedFMin());
-
-								double tSupVar = rs->rs_asSup.as_tdb;
-								double amfNeedVar = zn_AmfHvacCR(zn_tzsp, tSupVar);
-								if (amfNeedVar > rs->rs_amf)
-									amfNeedVar = zn_FindAirFlow();
-								zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfNeedVar, 0);
-
-							}
-						}
+						rc |= zn_AirRequest( rs);	// determine air requirement given
+													//   rs_asSup
 						// zone temp calc'd in zn_CondixCR2()
 					}
 					else if (rsAvail == 1)
@@ -1236,6 +1196,40 @@ x						printf( "1B\n");
 
 	return rc;
 }		// ZNR::zn_CondixCR
+//-----------------------------------------------------------------------------
+RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
+	RSYS* rs)	// zone's RSYS
+{
+	RC rc = RCOK;
+	double tSup0 = rs->rs_asSup.as_tdb;
+#if 1 && defined( _DEBUG)
+	if ((!Top.isWarmup &&
+		(zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
+		|| (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && !rs->rs_IsASHP())))
+	{
+		printf("Zone '%s': Flipped tSup  RSYS='%s', tOut=%f, tSup=%f, tSP=%f, tZone=%f\n", name, rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
+		rs->rs_SupplyAirState(zn_hcMode);	// debug aid
+	}
+	#endif
+	double amfSup0 = zn_AmfHvacCR(zn_tzsp, tSup0);	// dry air mass flow rate required to hold
+	zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfSup0, 0);	// notify system of requirement
+	CHECKFP(zn_rsAmfSysReq[0]);
+	if (zn_hcMode == RSYS::rsmHEAT && rs->rs_IsASHP())
+	{	// ASHP heating: repeat calc with full aux
+		double tSup1 = rs->rs_asSupAux.as_tdb;
+		double amfSup1 = zn_AmfHvacCR(zn_tzsp, tSup1);
+		zn_rsAmfSysReq[1] = rs->rs_ZoneAirRequest(amfSup1, 1);
+#if defined( _DEBUG)
+		double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
+		double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
+		// zn_AmfHvacCR can return DBL_MAX
+		if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
+			&& frDiff(qHt0, qHt1) > .001)
+			printf("\nqHt mismatch");
+#endif
+	}
+	return rc;
+}		// ZNR::zn_AirRequest
 //-----------------------------------------------------------------------------
 void ZNR::zn_SetRSYSAmf(		// set RSYS air flow
 	float fSize,		// fraction of zone request that system can meet
@@ -4642,6 +4636,7 @@ RC RSYS::rs_AllocateZoneAir()
 	if (rs_speedF < 0.f || rs_speedF > 1.f)
 		printf("\nrs_speedF = %0.f", rs_speedF);
 #endif
+	RC rc = RCOK;
 
 	if (rs_amfReq[ 0] > 0.)						// if any air requested (by any zone)
 		rs_fxCap[ 0] = rs_amf / rs_amfReq[ 0];	// >1 = excess capacity
@@ -4655,10 +4650,13 @@ RC RSYS::rs_AllocateZoneAir()
 
 	ZNR* zp;
 	if (!bAux)
-	{	// run on main source (aux not available or not needed)
-		RLUP( ZrB, zp)
-		{	if (rs_IsZoneServed( zp))
-				zp->zn_SetRSYSAmf( fSize, 0);
+	{	if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing() && rs_mode == rsmHEAT)
+			// variable capacity with excess capacity
+			rc = rs_AllocateZoneAirVC();
+		else
+		{	// run on main source (aux not available or not needed)
+			RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+					zp->zn_SetRSYSAmf(fSize, 0);
 		}
 	}
 	else if (rs_amfReq[ 1] > rs_amf)
@@ -4794,8 +4792,45 @@ x					rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);
 		}
 	}	// end partial aux
 
-	return RCOK;
+	return rc;
 }	// RSYS::rs_AllocateZoneAir
+//----------------------------------------------------------------------------
+RC RSYS::rs_AllocateZoneAirVC()		// 
+// rs_fxCap[] known
+{
+#if defined( _DEBUG)
+	if (rs_fxCap[0] < 1.f)
+		printf("\nrs_AllocateZoneAirVC: rs_fxCap[ 0] < 1");
+#endif
+	RC rc = RCOK;
+
+	// try minimum speed
+	int ret = rs_SupplyAirState(rs_mode, rs_SpeedFMin());
+	ZNR* zp;
+	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+		zp->zn_AirRequest( this);
+
+
+#if 0
+	if (0 && rs->rs_IsASHPVC() && rsAvail == 3 && amfSup0 <= rs->rs_amf)
+	{
+		float speedFMin = rs->rs_SpeedFMin();
+#if defined( _DEBUG)
+		if (speedFMin < 0.f || speedFMin > 1.f)
+			printf("\nSpeedfMin = %0.3f", speedFMin);
+#endif
+		rs->rs_SupplyAirState(zn_hcMode, rs->rs_SpeedFMin());
+
+		double tSupVar = rs->rs_asSup.as_tdb;
+		double amfNeedVar = zn_AmfHvacCR(zn_tzsp, tSupVar);
+		if (amfNeedVar > rs->rs_amf)
+			amfNeedVar = zn_FindAirFlow();
+		zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfNeedVar, 0);
+#endif
+
+	return rc;
+
+}	// RSYS::AllocateZoneAirVC()
 //----------------------------------------------------------------------------
 void RSYS::rs_AvgZoneCond()
 {
