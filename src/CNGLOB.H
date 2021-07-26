@@ -493,6 +493,9 @@ typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files 
 struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
+namespace Btwxt { class RegularGridInterpolator; }
+
+
 
 #ifdef WINorDLL
   // control of scattered code for returning file names used via a cse() argument.
@@ -726,12 +729,6 @@ const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
 static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
 static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
-#if 0
-x not used / not maintained 6-5-2012
-x //--- data type for subscripting of ResEgy.endUse (for callers, not used here)
-x enum endUses { euClg=0, euHtg, euHPHtg, euSHW, euFan, euAux, euProc, euLit, euRcp, euExt, euUser1, euUser2 };
-#endif
-
 
 // more nested includes
 #include "dmpak.h"

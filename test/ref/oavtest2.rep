@@ -4,11 +4,11 @@ Error Messages for Run 001:
 
 ---------------
 Warning: Zone 'House': Condensation occurred in 89239 subhours of run.
-    Total condensation heat = 2153.73 kBtu.
+    Total condensation heat = 2153.72 kBtu.
 ---------------
 Warning: Zone 'House': Unmet heating loads during 2 hours of run.
 ---------------
-Warning: Zone 'Attic': Condensation occurred in 61957 subhours of run.
+Warning: Zone 'Attic': Condensation occurred in 61959 subhours of run.
     Total condensation heat = 585.727 kBtu.
 ---------------
 
@@ -26,7 +26,7 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
 
  mo Tatt  Tin Trad        Slr      IntGs      IntGl       Cond       Surf VntHr  InfVnS        Htg        Clg        OAV  FfanE   ClgE     HtgE
  -- ---- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ---------- ------ ------ --------
-  1 50.5 67.5 66.9        853       1912        514      -2134      -3809     0     -43       3114          0          0    229      0        0
+  1 50.5 67.5 66.9        853       1912        514      -2134      -3809     0     -44       3114          0          0    229      0        0
   2 55.7 67.6 67.1       1396       1623        433      -1733      -3023     0     -27       1708          0          0    117      0        0
   3 63.5 68.4 68.1       1748       1665        440      -1513      -2826     0     -19        937          0        -48     67      0        0
   4 68.4 69.1 68.8       1937       1487        389      -1499      -2276     0     -15        514          0       -228     39      0        0
@@ -186,7 +186,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.893.0 for Win32 console
+! CSE 0.895.0+vsashp.09f2187.13 for Win32 console
 
 
 
@@ -1492,18 +1492,18 @@ Input for Run 001:
 
 
 
-! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:14:32 am
+! CSE 0.895.0+vsashp.09f2187.13 for Win32 console run(s) done: Mon 26-Jul-21  11:13:20 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+!               26-Jul-21  11:09 am   (VS 14.29    2693120 bytes)  (HPWH 1.14.0+cut_down_msgs.f9bf0a1.16)
 ! Command line: -x!  -t1 oavtest2
 ! Input file:   D:\cse\test\oavtest2.cse
 ! Report file:  D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0490   
+!                Input:  Time = 0.05     Calls = 1      T/C = 0.0500   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 11.24    Calls = 1      T/C = 11.2430  
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0060   
-!                Total:  Time = 11.30    Calls = 1      T/C = 11.3000  
+!           Simulation:  Time = 12.75    Calls = 1      T/C = 12.7460  
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0070   
+!                Total:  Time = 12.80    Calls = 1      T/C = 12.8050  

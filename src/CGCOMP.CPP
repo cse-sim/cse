@@ -2211,7 +2211,6 @@ AIRSTATE DUCTSEG::ds_CalcFLRev(		// calc entering state given leaving
 	ds_air[ 0] = ds_air[ 1];
 	return ds_air[ 0];
 }		// DUCTSEG::ds_CalcFLRev
-#if 1
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 	float runF)		// run fraction
@@ -2286,69 +2285,6 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 		ds_DbDump();
 #endif
 }		// DUCTSEG::ds_FinalizeSh
-
-#else
-//-----------------------------------------------------------------------------
-void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
-	float runF)		// run fraction
-{
-	// finalize full load DUCTSEG conduction
-	//   ds_air[ 0], ds_air[ 1], and ds_air[ 3] must be known
-	ds_air[ 2] = ds_air[ 1];
-	if (ds_uaTot > 0.)
-	{	double mCp = ds_amfFL*Top.tp_airSH;
-		ds_qCondFL =		// conduction loss rate, Btuh; + = out of duct
-			mCp*(ds_air[ 1].as_tdb - ds_air[ 3].as_tdb);
-
-		ds_sbcO.sb_qSrf = ds_qCondFL / ds_exArea;	// average conduction
-													//   ds_exArea > 0 since uaTot > 0)
-		if (ds_sbcO.sb_hxtot > 0.)
-			ds_sbcO.sb_tSrf += ds_sbcO.sb_qSrf / ds_sbcO.sb_hxtot;
-		ds_qCondAirFL = ds_exArea * ds_sbcO.sb_hxa*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txa);
-		ds_qCondRadFL = ds_exArea * ds_sbcO.sb_hxr*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txr);
-		ds_air[ 2].as_tdb = ds_qCondFL / ds_uaTot + ds_sbcO.sb_txe;	// mean temp
-
-#if defined( _DEBUG)
-		if (ds_Uduct > 0.)
-		{	double tdb2 = ds_sbcO.sb_qSrf / ds_Uduct + ds_sbcO.sb_tSrf;
-			double tErrF = frDiff( ds_air[ 2].as_tdb, tdb2, .01);
-			if (tErrF > .001)
-				warn( "DUCTSEG '%s': avg temp inconsistency (%.5f)", name, tErrF);
-		}
-		// compare separately calc'd conduction, small diffs are common
-		double condErrF =frDiff( ds_qCondFL, ds_qCondAirFL + ds_qCondRadFL,
-			.1);				// .01 -> .1  8-9-2013
-		if (condErrF > .002)	// .001 -> .002 8-9-2013
-			warn( "DUCTSEG '%s': conduction mismatch (%.5f)", name, condErrF);
-#endif
-	}
-	else
-	{	ds_qCondFL = 0.;
-		ds_qCondAirFL = 0.;
-		ds_qCondRadFL = 0.;
-	}
-
-	if (runF > 0.f)
-	{	ZNR* zpx = ds_GetExZone();		// zone containing ductseq (NULL if not in zone)
-		if (zpx)
-		{	// conduction gains to zone (for next step)
-			zpx->zn_qDuctCondAir += runF * ds_qCondAirFL;
-			zpx->zn_qDuctCondRad += runF * ds_qCondRadFL;
-
-			double amf = runF * ds_amfFL * ds_leakF;	// leak amf
-			if (ds_IsSupply())
-				zpx->zn_ductLkI.af_AccumDry( amf, ds_air[ 3]);
-			else
-				// return
-				zpx->zn_ductLkO.af_AccumDry( -amf, zpx->tz, zpx->wz);
-		}
-	}
-#if defined( DEBUGDUMP)
-	if (DbDo( dbdDUCT))
-		ds_DbDump();
-#endif
-}		// DUCTSEG::ds_FinalizeSh
-#endif
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_AfterSubhr()
 {

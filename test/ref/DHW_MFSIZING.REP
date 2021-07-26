@@ -8,7 +8,7 @@ MF Sanden
 
 ! Log for Run 001:
 
-! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console
+! CSE 0.895.0+vsashp.33eb5b4.12 for Win32 console
 
 
 
@@ -60,7 +60,7 @@ MF Sanden
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  1
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
 #        #define  RefrTemp_WEH   hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129)
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  2
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ MF Sanden
            wsShowerDayWasteF = 3                // used to determine ratio of Shower/Faucet water waste
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  3
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ MF Sanden
                  wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  4
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ MF Sanden
               DHWLOOPSEG   "dhwlpseg6-DHW System 1"  
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  5
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ MF Sanden
            wsDayUse = DHWMF2BR03                  // Day use profile object
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  6
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ MF Sanden
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Wed 14-Jul-21   2:24:23 pm  Page  7
+! dhw_mfsizing  001                        Mon 26-Jul-21  10:34:03 am  Page  7
 
 
 
@@ -452,6 +452,14 @@ DHWHEATER Primary
   loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
  -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
  228508       12      19042.3    201.815      4         50.454      0.290    19435    120     84.7     1  92434  600.0  600.0  77496984
+
+
+
+DHWLOOPHEATER Info
+
+ LH Vol  LH UA  htCap
+ ------ ------ ------
+   80.0   0.42 9554.0
 
 
 
@@ -476,6 +484,32 @@ Yr   30178      0      0      0  29580      0 597.81      0      0      0      0
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  002                        Mon 26-Jul-21  10:34:05 am  Page  8
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
 Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -497,22 +531,45 @@ Yr   13570      0      0      0  13570      0      0      0      0      0      0
 
 
 
+! Log for Run 002:
+
+! CSE 0.895.0+vsashp.33eb5b4.12 for Win32 console
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  002                        Wed 14-Jul-21   2:24:25 pm  Page  8
+! dhw_mfsizing  002                        Mon 26-Jul-21  10:34:05 am  Page  9
 
 
 
 MF Sanden
 ------------------------------------------------------------------------------
-
-
-
-! Log for Run 002:
-
-! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console
 
 
 
@@ -535,6 +592,14 @@ colVal = @DHWSYS[ 1].loadMax colWid=8 \
 #       ReportCol colhead = "totHARL"   colVal = @DHWHEATER[ h].totHARL * @DHWHEATER[ h].mult colDec=0 colWid=9
         
         WHCHAR(1)
+        
+#       #define WLHCHAR(lh) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWLOOPHEATER Info" \
+#       ReportCol colhead = "LH Vol"  colVal = @DHWLOOPHEATER[ lh].vol colDec=1 colWid = 6 \
+#       ReportCol colhead = "LH UA" colVal = @DHWLOOPHEATER[ lh].UA colDec=2 colWid=6 \
+#       ReportCol colhead = "htCap"  colVal = @DHWLOOPHEATER[ lh].heatingCap colDec=1 colWid = 6
+        
+        WLHCHAR(1)
+        
         
         REPORT  rpType = MTR  rpMeter="MtrElec"  rpFreq=Month  rpBtuSf=1000
         REPORT  rpType = MTR  rpMeter="MtrElecLH"  rpFreq=Month  rpBtuSf=1000
@@ -561,10 +626,8 @@ colVal = @DHWSYS[ 1].loadMax colWid=8 \
 
 
 
-
-
 ------------------------------------------------------------------------------
-! dhw_mfsizing  002                        Wed 14-Jul-21   2:24:25 pm  Page  9
+! dhw_mfsizing  002                        Mon 26-Jul-21  10:34:05 am  Page 10
 
 
 
@@ -578,6 +641,14 @@ DHWHEATER Primary
   loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
  -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
  262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1  20470  108.0  108.0  77394024
+
+
+
+DHWLOOPHEATER Info
+
+ LH Vol  LH UA  htCap
+ ------ ------ ------
+   80.0   0.42 9554.0
 
 
 
@@ -602,6 +673,32 @@ Yr   28486      0      0      0  27861 27.253 597.81      0      0      0      0
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! dhw_mfsizing  003                        Mon 26-Jul-21  10:34:06 am  Page 11
+
+
+
+MF Sanden
+------------------------------------------------------------------------------
+
+
+
 Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -623,22 +720,9 @@ Yr   11888      0      0      0  11888      0      0      0      0      0      0
 
 
 
-
-
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  003                        Wed 14-Jul-21   2:24:26 pm  Page 10
-
-
-
-MF Sanden
-------------------------------------------------------------------------------
-
-
-
 ! Log for Run 003:
 
-! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console
+! CSE 0.895.0+vsashp.33eb5b4.12 for Win32 console
 
 
 
@@ -668,29 +752,8 @@ Input for Run 003:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ------------------------------------------------------------------------------
-! dhw_mfsizing  003                        Wed 14-Jul-21   2:24:26 pm  Page 11
+! dhw_mfsizing  003                        Mon 26-Jul-21  10:34:06 am  Page 12
 
 
 
@@ -699,21 +762,21 @@ MF Sanden
 
 
 
-! CSE 0.894.0+dhwloopheater.80f76e6.1 for Win32 console run(s) done: Wed 14-Jul-21   2:24:27 pm
+! CSE 0.895.0+vsashp.33eb5b4.12 for Win32 console run(s) done: Mon 26-Jul-21  10:34:07 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               14-Jul-21   2:18 pm   (VS 14.29    2641920 bytes)  (HPWH 1.14.0+master.f3d8238.7)
+!               26-Jul-21   9:47 am   (VS 14.29    2693120 bytes)  (HPWH 1.14.0+cut_down_msgs.f9bf0a1.16)
 ! Command line: -x!  -t1 dhw_mfsizing
 ! Input file:   D:\cse\test\dhw_mfsizing.cse
 ! Report file:  D:\cse\test\dhw_mfsizing.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.83     Calls = 3      T/C = 0.2767   
+!                Input:  Time = 0.85     Calls = 3      T/C = 0.2823   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 3.00     Calls = 3      T/C = 1.0010   
-!              Reports:  Time = 0.01     Calls = 3      T/C = 0.0037   
-!                Total:  Time = 3.85     Calls = 1      T/C = 3.8510   
+!           Simulation:  Time = 3.15     Calls = 3      T/C = 1.0490   
+!              Reports:  Time = 0.01     Calls = 3      T/C = 0.0040   
+!                Total:  Time = 4.02     Calls = 1      T/C = 4.0160   
 
 
 
@@ -753,5 +816,5 @@ MF Sanden
 
 
 ------------------------------------------------------------------------------
-! dhw_mfsizing  003                        Wed 14-Jul-21   2:24:26 pm  Page 12
+! dhw_mfsizing  003                        Mon 26-Jul-21  10:34:06 am  Page 13
 
