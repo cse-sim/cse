@@ -3007,11 +3007,10 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	}
 	else
 	{	// resistance: return capacity of largest heating element
-		for (int which = 1; which < 3; which++)
+		//   TODO: recode to return max when HPWH is fixed
+		for (int which = 0; which < 1; which++)
 		{	double capx = hw_pHPWH->getResistanceCapacity(which, HPWH::UNITS_BTUperHr);
-			if (capx == double(HPWH::HPWH_ABORT))
-				rc = RCBAD;	
-			else if (capx > cap)
+			if (capx != double(HPWH::HPWH_ABORT) && capx > cap)
 				cap = capx;
 		}
 	}
@@ -3177,7 +3176,8 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
 	if (!hw_pHPWH->isSetpointFixed())
 	{	double tSetpointMax;
-		bool bSPP = hw_pHPWH->isNewSetpointPossible(tSetpoint, tSetpointMax, HPWH::UNITS_F);
+		std::string whyNot;		// HPWH explanatory text, ignored
+		bool bSPP = hw_pHPWH->isNewSetpointPossible(tSetpoint, tSetpointMax, whyNot, HPWH::UNITS_F);
 		// silently limit to max acceptable
 		//   if HPWH has resistance, max = 212
 		float tSetpointX = bSPP ? tSetpoint : tSetpointMax;		

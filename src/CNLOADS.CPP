@@ -2844,6 +2844,8 @@ RC RSYS::rs_BegSubhr()
 
 	rs_tSupLs = rs_asSup.as_tdb;
 	rs_mode = rsmOFF;					// mode not yet known
+	rs_ClearSubhrResults();
+
 	rs_fxCap[ 0] = rs_fxCap[ 1] = 0.f;	// excess capacity not known
 
 	if (!IsSet( RSYS_TDBOUT))
@@ -4247,6 +4249,7 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 		printf("\nrs_SetModeAndClear() speedF=%0.2f", speedF);
 #endif
 	rs_speedF = speedF;
+#if 0
 	rs_loadF = rs_runF = rs_runFAux = rs_PLF = 0.f;
 	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost
 	  = rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
@@ -4270,8 +4273,37 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 	{	rs_asOutAux.as_Init();
 		rs_asSupAux.as_Init();
 	}
+#endif
 	rs_mode = rsModeNew;
 }		// RSYS::rs_SetModeAndClear
+//-----------------------------------------------------------------------------
+void RSYS::rs_ClearSubhrResults(
+	int options /*= 0*/)	// option bits
+							//  all 0: full clear (e.g. subhr beg)
+							//  1: clear for speed retry
+{
+	rs_amfReq[0] = rs_amfReq[1] = 0.;
+
+	if (options & 1)
+		return;
+
+	rs_loadF = rs_runF = rs_runFAux = rs_PLF = 0.f;
+	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost
+		= rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
+
+
+
+	rs_tdbCoilIn = 0.f;
+	rs_twbCoilIn = 0.f;
+	rs_SHR = 0.f;
+	rs_fCondCap = 0.f;
+	rs_capTotCt = rs_capSenCt = rs_capLatCt = 0.f;
+	rs_fCondSEER = rs_fCondEER = 0.f;
+	rs_SEERnf = rs_EERnf = rs_EERt = rs_effCt = 0.f;
+	rs_asOutAux.as_Init();
+	rs_asSupAux.as_Init();
+
+}		// RSYS::rs_ClearSubrResults
 //----------------------------------------------------------------------------
 int RSYS::rs_IsModeAvailable(
 	int rsMode)		// desired mode (rsmHEAT or rsmCOOL)
@@ -4805,6 +4837,7 @@ RC RSYS::rs_AllocateZoneAirVC()		//
 	RC rc = RCOK;
 
 	// try minimum speed
+	rs_ClearSubhrResults(1);	// init for speed re-try
 	int ret = rs_SupplyAirState(rs_mode, rs_SpeedFMin());
 	ZNR* zp;
 	RLUPC(ZrB, zp, rs_IsZoneServed(zp))

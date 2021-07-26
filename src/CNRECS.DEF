@@ -3082,6 +3082,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
 *declare "RC rs_SetDuctSizes();"
 *declare "void rs_SetModeAndClear( int rsModeNew, float speedF=1.f);"
+*declare "void rs_ClearSubhrResults( int options=0);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
 *declare "RC rs_EndSubhr();"
