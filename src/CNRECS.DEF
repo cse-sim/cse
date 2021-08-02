@@ -2223,8 +2223,6 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_SetRSYSAmfFromTSup();"
     *declare "RC zn_CondixCR2();"
     *declare "RC zn_AirFlowVsTsup();"
-    *declare "double zn_FSpdMismatch( double& speedF);"
-    *declare "double zn_FindAirFlow();"
     *declare "int zn_AssessVentUtility();"
     *declare "int zn_OAVAttempt( double tSup);"
     *declare "int zn_FVentCR();"
@@ -3098,6 +3096,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_ZoneAirRequest( double znAmfSup, int iAux=0);"
 *declare "RC rs_AllocateZoneAir();"
 *declare "RC rs_AllocateZoneAirVC();"
+*declare "RC rs_TotalAirRequest( float speedF);"
+*declare "double rs_SpeedFMismatch( double& speedF);"
+*declare "double rs_FindAirFlow();"
 *declare "void rs_AvgZoneCond();"
 *declare "static double rs_CallAmfRequired( void* pO, double &tSupX);"
 *declare "double rs_AmfRequired( double tSup);"
@@ -3139,11 +3140,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "float rs_Cap05Default( float cap47, float cap17) const;"
-*declare "float rs_SpeedFMin() const { return rs_capHt <= 0.f ? 1.f : rs_capHtMin / rs_capHt; }"
+*declare "float rs_CapHtCurSpeedF() const;"
+*declare "float rs_InpHtCurSpeedF() const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
 *declare "RC rs_SetupBtwxt( const std::vector<struct VSPERFP> ppV);"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
+*declare "float rs_CapEffASHP2();"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
@@ -3279,6 +3282,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 #endif
 #if 1
 *declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg;"  // ASHPVC heating performance map
+                                                              // values in map are derived from rs_cap47 etc.
+                                                              // thus include fan heat/power
 *declare "RC rs_GetPerfHtgBtwxt( float tdbOut, float& capHt, float& inpHt, float& capHtMin, float& inpHtMin);"
 #endif
 
@@ -3317,6 +3322,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
+                            //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
 *s *e FLOAT rs_capHt		// current step full speed primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
@@ -3327,7 +3333,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   0 if not ASHP or no defrost active
 *s *e FLOAT rs_capHtMin		// current step min speed heating capacity (including fan and ASHP defrost heat), Btuh
 							//   = fan heat only if compressor unavailable
-*s *e FLOAT rs_inpHtMin		// current min full speed compressor input power
+*s *e FLOAT rs_inpHtMin		// current min speed compressor input power
 *s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
 *s *e FLOAT rs_PLF			// efficiency degradation due to cycling
 							//   PLF = PartLoadEfficiency / FullLoadEfficency
@@ -3429,11 +3435,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 								//  [ 0] = primary source (compressor or burner)
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
 								//         ASHP heating only else 0
-*s *e FLOAT rs_loadF	// current step load fraction = sensible load / current capacity
+*s *e FLOAT rs_loadF	// current step load fraction = sensible load / capacity at current speed
 *s FLOAT rs_loadFLs		// last step load fraction (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
-*s *e FLOAT rs_speedF	// primary (compressor) speed fraction
-						//    1 for fixed speed, <=1 for var spd
+*s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
+						//    fixed speed: 1; var spd: <= 1 per load
+*s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
+                        //    fixed speed: 1; var spd: < 1 per min current min cap
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
@@ -3449,8 +3457,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 						// efficiency adjustment factors applied to substep efficiency
 						// allows modification of input energy requirements. Default=1
-*s FLOAT_GZ rs_FEffH;	//   heating
-*s FLOAT_GZ rs_FEffC;	//   cooling
+*s FLOAT_GZ rs_fEffH;	//   heating
+*s FLOAT_GZ rs_fEffC;	//   cooling
 
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
