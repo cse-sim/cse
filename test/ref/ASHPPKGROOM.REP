@@ -29,7 +29,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
-     1 RSYS1                         0       0        0  26357  22334  16299      0   3.60   3.18   2.47      0      0      0 .250  30673      0
+     1 RSYS1                         0       0        0  26357  22334  16299      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  30673      0
 
 
 
@@ -446,7 +446,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.893.0 for Win32 console
+! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console
 
 
 
@@ -2013,18 +2013,18 @@ Input for Run 001:
 
 
 
-! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:13:13 am
+! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console run(s) done: Thu 26-Aug-21   2:12:48 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
-! Command line: -x!  -t1 ashpPkgRoom
-! Input file:   D:\cse\test\ashpPkgRoom.cse
-! Report file:  D:\cse\test\ashpPkgRoom.rep
+!               26-Aug-21   2:06 pm   (VS 14.29    2701312 bytes)  (HPWH 1.15.0+master.d18737e.3)
+! Command line: -x!  -t1 ashppkgroom
+! Input file:   D:\cse\test\ashppkgroom.cse
+! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 2      T/C = 0.0545   
-!           AutoSizing:  Time = 0.19     Calls = 1      T/C = 0.1890   
-!           Simulation:  Time = 6.02     Calls = 1      T/C = 6.0180   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0120   
-!                Total:  Time = 6.33     Calls = 1      T/C = 6.3330   
+!                Input:  Time = 0.10     Calls = 2      T/C = 0.0525   
+!           AutoSizing:  Time = 0.18     Calls = 1      T/C = 0.1780   
+!           Simulation:  Time = 5.87     Calls = 1      T/C = 5.8730   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0130   
+!                Total:  Time = 6.17     Calls = 1      T/C = 6.1730   
