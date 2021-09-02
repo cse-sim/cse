@@ -2673,8 +2673,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	RC rc = RCOK;
 
 	int ret = resTy == C_WHRESTYCH_SWINGTANK
-		? hw_pHPWH->HPWHinit_resSwingTank(GAL_TO_L(max(vol, 1.f)), EF,
-		   resHtPwr, resHtPwr2, F_TO_C( tUse))
+		? hw_pHPWH->HPWHinit_commercialResTank(GAL_TO_L(max(vol, 1.f)),
+		   resHtPwr, resHtPwr2, HPWH::MODELS_CustomComResTankSwing)
 		: hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
 			resHtPwr, resHtPwr2);
 	   
@@ -3008,8 +3008,9 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	else
 	{	// resistance: return capacity of largest heating element
 		//   TODO: recode to return max when HPWH is fixed
-		for (int which = 0; which < 1; which++)
-		{	double capx = hw_pHPWH->getResistanceCapacity(which, HPWH::UNITS_BTUperHr);
+		int nRE = hw_pHPWH->getNumResistanceElements();
+		for (int iRE = 0; iRE < nRE; iRE++)
+		{	double capx = hw_pHPWH->getResistanceCapacity(iRE, HPWH::UNITS_BTUperHr);
 			if (capx != double(HPWH::HPWH_ABORT) && capx > cap)
 				cap = capx;
 		}

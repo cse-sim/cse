@@ -1723,7 +1723,18 @@ CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .3
 
 CULT( "rsSEER",		 DAT,   RSYS_SEER,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsEER",		 DAT,   RSYS_EER95,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCapC",		 DAT,   RSYS_CAP95,	     AS_OK,   0, VFAZLY|EVENDIVL, TYFL, 0, 0.f, N,   N),
+
+CULT("rsCapC",		 DAT,   RSYS_CAP95,	     AS_OK,   0, VFAZLY | EVENDIVL, TYFL, 0, 0.f, N,   N),
+
+CULT( "rsCap82",	 DAT,   RSYS_CAP82,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "rsCOP82",	 DAT,   RSYS_COP82,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+
+CULT( "rsCapRat8295",DAT,   RSYS_CAPRAT8295, 0,       0, VEOI,   TYFL,  0,      1.06f,    N,   N),
+CULT( "rsloadFMin95",DAT,   RSYS_LOADFMIN95,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT("rsloadFMin82", DAT,   RSYS_LOADFMIN82,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT("rsCOPMin95",	 DAT,   RSYS_COPMIN95,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT("rsCOPMin82",	 DAT,   RSYS_COPMIN82,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+
 CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsFSize",     DAT,   RSYS_FSIZE,      0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
@@ -2080,7 +2091,7 @@ static CULT dhwSysT[] = //------ DHWSYS cmd RAT Entry table, used from cnTopCult
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N, wsStarCkf),
 CULT( "wsCentralDHWSYS",DAT,DHWSYS_CENTRALDHWSYSI,0,  0, VEOI,   TYREF, &WSiB,  N,      N, N),
-CULT( "wsLoadShareDHWSYS",DAT,DHWSYS_LOADSHAREDHWSYSI,0, 0,VEOI, TYREF, &WSiB,  N,      N, N),
+CULT( "wsLoadShareDHWSYS",DAT,DHWSYS_LOADSHAREDHWSYSI,0,0,VEOI,  TYREF, &WSiB,  N,      N, N),
 CULT( "wsCalcMode",  DAT,   DHWSYS_CALCMODE, 0,       0, VEOI,   TYCH,  0,      C_WSCALCMODECH_SIM, N, N),
 CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsTInlet",	 DAT,   DHWSYS_TINLET,	 0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),

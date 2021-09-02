@@ -1689,6 +1689,9 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 	cupfree( DMPP( rs_desc));
 	delete rs_pRgiHtg;
 	rs_pRgiHtg = nullptr;
+	delete rs_pRgiClg;
+	rs_pRgiClg = nullptr;
+
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
@@ -1828,7 +1831,8 @@ RC RSYS::rs_CkF()
 				else
 				{	if (IsSet(RSYS_CAP17))
 						rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
-
+					if (IsSet(RSYS_CAP05))
+						rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
 				}
 
 				if (!rs_IsASHPVC())
@@ -1898,7 +1902,7 @@ RC RSYS::rs_CkFCd(	// default and check Cd values
 	RC rc = RCOK;
 	if (mode == rsmCOOL)
 	{	if (!IsSet(RSYS_CDC))
-			rs_CdC = rs_IsASHPVC() ? 0.25f : 0.f;
+			rs_CdC = rs_IsVCClg() ? 0.25f : 0.f;
 		else
 			rc |= limitCheckFix(RSYS_CDC, 0.f, .5f);
 	}
@@ -1979,6 +1983,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			if (rs_SEER <= rs_EER95)
 				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
 		}
+		rs_COP95 = rs_EER95 / BtuperWh;
 	}
 
 	if (IsAusz( RSYS_CAP95))
@@ -2730,6 +2735,11 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
 	rs_EERnfX =  inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;
 
+	if (!IsSet(RSYS_CAP82))
+		rs_cap82 = rs_capRat8295 * rs_cap95;
+
+	rc |= rs_SetupBtwxtClg();
+
 	rs_DefaultCapNomsIf();
 
 	return rc;
@@ -2882,42 +2892,24 @@ RC RSYS::rs_AfterHour()
 	return rc;
 }		// RSYS::rs_AfterHour
 //-----------------------------------------------------------------------------
-void RSYS::rs_ACFactors()
-// call:   rs_asIn = entering state
-//		   rs_twb = entering air wet bulb, F (consistent with rs_asIn)
-//         rs_tdbOut = dry-bulb temp at outdoor unit, F
-// return: rs_asOut = rs_asIn + blow thru fan heat (if any)
-//         rs_tdbCoilIn = coil entering dry bulb, F
+void RSYS::rs_CoolingSHR()		// derive cooling sensible heat ratio
+// call:   rs_tdbCoilIn = coil entering dry bulb, F
 //         rs_twbCoilIn = coil entering wet bulb, F
-//		   rs_SHR = SHR under current conditions
-//         rs_bWetCoil = nz iff coil is wet
-//         rs_fCondCap = current conditions factor for total capacity
+//		   rs_tdbOut = outdoor drybulb seen by condenser, F
+//         rs_vfPerTon = indoor std air cfm / ton
+// return: rs_SHR = SHR under current conditions
 {
-#if 0 && defined( _DEBUG)
-x	if (Top.jDay == 242 && Top.iHr == 14)
-x		printf( "\nhit");
-#endif
-	// init leaving conditions and find coil entering conditions
-	rs_asOut = rs_asIn;
-	if (rs_fan.fanTy == C_FANTYCH_BLOWTHRU)
-	{
-		rs_asOut.as_AddQSen( rs_fanHeatC, rs_amfC);
-		rs_twbCoilIn = rs_asOut.as_Twb();
-	}
-	else
-		rs_twbCoilIn = rs_twbIn;		// use known value
-	rs_tdbCoilIn = rs_asOut.as_tdb;
-
 #if 0 && defined( _DEBUG)
 x	if (!Top.isWarmup)
 x		printf("Hit\n");
 #endif
 #if 0 && defined( _DEBUG)
 	if (!Top.isWarmup)
-	{	if (fabs( rs_asIn.as_tdb-80.) < .2
-		 && fabs( rs_twbCoilIn-67.) < 1.
-		 && fabs( rs_tdbOut - 95.f) < .2)
-			printf( "Hit\n");
+	{
+		if (fabs(rs_asIn.as_tdb - 80.) < .2
+		 && fabs(rs_twbCoilIn - 67.) < 1.
+	     && fabs(rs_tdbOut - 95.f) < .2)
+			printf("Hit\n");
 	}
 #endif
 #if 0 && defined( _DEBUG)
@@ -2927,74 +2919,79 @@ x		printf("Hit\n");
 	rs_vfPerTon = 400.f;
 #endif
 
-	float twbCoilIn2 = rs_twbCoilIn * rs_twbCoilIn;
-
 	// sensible heat ratio
-	static const float ASHR =   0.0242020f;
-	static const float BSHR =  -0.0592153f;
-	static const float CSHR =	0.0012651f;
-	static const float DSHR =	0.0016375f;
-	static const float ESHR =	0.f;
-	static const float FSHR =	0.f;
-	static const float GSHR =	0.f;
-	static const float HSHR =  -0.0000165f;
-	static const float ISHR =	0.f;
-	static const float JSHR =	0.0002021f;
-	static const float KSHR =	0.f;
-	static const float LSHR =   1.5085285f;
+	static const float ASHR = 0.0242020f;
+	static const float BSHR = -0.0592153f;
+	static const float CSHR = 0.0012651f;
+	static const float DSHR = 0.0016375f;
+	static const float ESHR = 0.f;
+	static const float FSHR = 0.f;
+	static const float GSHR = 0.f;
+	static const float HSHR = -0.0000165f;
+	static const float ISHR = 0.f;
+	static const float JSHR = 0.0002021f;
+	static const float KSHR = 0.f;
+	static const float LSHR = 1.5085285f;
 
-	rs_SHR = ASHR * rs_tdbCoilIn +
-			 BSHR * rs_twbCoilIn +
-			 CSHR * rs_tdbOut +
-			 DSHR * rs_vfPerTon +
-			 ESHR * rs_tdbCoilIn * rs_tdbOut +
-			 FSHR * rs_tdbCoilIn * rs_vfPerTon +
-			 GSHR * rs_twbCoilIn * rs_tdbOut +
-			 HSHR * rs_twbCoilIn * rs_vfPerTon +
-			 ISHR * rs_tdbOut * rs_vfPerTon +
-			 JSHR * twbCoilIn2 +
-			 KSHR / rs_vfPerTon +
-			 LSHR;
+	float SHR = ASHR * rs_tdbCoilIn +
+		BSHR * rs_twbCoilIn +
+		CSHR * rs_tdbOut +
+		DSHR * rs_vfPerTon +
+		ESHR * rs_tdbCoilIn * rs_tdbOut +
+		FSHR * rs_tdbCoilIn * rs_vfPerTon +
+		GSHR * rs_twbCoilIn * rs_tdbOut +
+		HSHR * rs_twbCoilIn * rs_vfPerTon +
+		ISHR * rs_tdbOut * rs_vfPerTon +
+		JSHR * rs_twbCoilIn * rs_twbCoilIn +
+		KSHR / rs_vfPerTon +	// OK for 1 spd or VC (air flow and cap scale together)
+		LSHR;
 
-	rs_wetCoil = rs_SHR < 1.f;
-	if (!rs_wetCoil)
-		rs_SHR = 1.f;	// if dry, clamp SHR at 1.0
-	else if (rs_SHR < .5f)
-		rs_SHR = .5f;	// arbitrary limit, retains sensible capacity in
-						//   unrealistic cases
+	// limit result
+	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
+	rs_SHR = bracket(0.5f, SHR, 1.f);
+
+}		// RSYS::rs_CoolingSHR
+//-----------------------------------------------------------------------------
+void RSYS::rs_CoolingCapF1Spd()		// capacity factor for 1 spd model
+// call:   rs_tdbCoilIn = coil entering dry bulb, F
+//         rs_twbCoilIn = coil entering wet bulb, F
+//		   rs_tdbOut = outdoor drybulb seen by condenser, F
+//         rs_vfPerTon = indoor std air cfm / ton
+//         rs_bWetCoil = nz iff coil is wet
+// return: rs_fCondCap = current conditions factor for total capacity
+{
 
 	// capacity: adjust rated capacity re current conditions
-								//   wet coil	     dry coil
-	static const float ACAP[ 2] = {  0.f,			 0.009483100f };
-	static const float BCAP[ 2] = {  0.009645900f,   0.f          };
-	static const float CCAP[ 2] = {  0.002536900f,	-0.000600600f };
-	static const float DCAP[ 2] = {  0.000171500f,	-0.000148900f };
-	static const float ECAP[ 2] = {  0.f,			-0.000032600f };
-	static const float FCAP[ 2] = {  0.f,			 0.000011900f };
-	static const float GCAP[ 2] = { -0.000095900f,	 0.f          };
-	static const float HCAP[ 2] = {  0.000008180f,	 0.f          };
-	static const float ICAP[ 2] = { -0.000007550f,	-0.000005050f };
-	static const float JCAP[ 2] = {  0.000105700f,	 0.f          };
-	static const float KCAP[ 2] = {-53.542300000f, -52.561740000f };
-	static const float LCAP[ 2] = {  0.381567150f,   0.430751600f };
+									//   wet coil	     dry coil
+		static const float ACAP[2] = { 0.f,			 0.009483100f };
+		static const float BCAP[2] = { 0.009645900f,   0.f };
+		static const float CCAP[2] = { 0.002536900f,	-0.000600600f };
+		static const float DCAP[2] = { 0.000171500f,	-0.000148900f };
+		static const float ECAP[2] = { 0.f,			-0.000032600f };
+		static const float FCAP[2] = { 0.f,			 0.000011900f };
+		static const float GCAP[2] = { -0.000095900f,	 0.f };
+		static const float HCAP[2] = { 0.000008180f,	 0.f };
+		static const float ICAP[2] = { -0.000007550f,	-0.000005050f };
+		static const float JCAP[2] = { 0.000105700f,	 0.f };
+		static const float KCAP[2] = { -53.542300000f, -52.561740000f };
+		static const float LCAP[2] = { 0.381567150f,   0.430751600f };
 
-	int iDry = !(rs_wetCoil);
+		int iDry = !(rs_wetCoil);
 
-	rs_fCondCap = ACAP[ iDry] * rs_tdbCoilIn +
-				  BCAP[ iDry] * rs_twbCoilIn +
-				  CCAP[ iDry] * rs_tdbOut +
-				  DCAP[ iDry] * rs_vfPerTon +
-				  ECAP[ iDry] * rs_tdbCoilIn * rs_tdbOut +
-				  FCAP[ iDry] * rs_tdbCoilIn * rs_vfPerTon +
-				  GCAP[ iDry] * rs_twbCoilIn * rs_tdbOut +
-				  HCAP[ iDry] * rs_twbCoilIn * rs_vfPerTon +
-				  ICAP[ iDry] * rs_tdbOut * rs_vfPerTon +
-				  JCAP[ iDry] * twbCoilIn2 +
-				  KCAP[ iDry] / rs_vfPerTon +
-				  LCAP[ iDry];
+		rs_fCondCap = ACAP[iDry] * rs_tdbCoilIn +
+			BCAP[iDry] * rs_twbCoilIn +
+			CCAP[iDry] * rs_tdbOut +
+			DCAP[iDry] * rs_vfPerTon +
+			ECAP[iDry] * rs_tdbCoilIn * rs_tdbOut +
+			FCAP[iDry] * rs_tdbCoilIn * rs_vfPerTon +
+			GCAP[iDry] * rs_twbCoilIn * rs_tdbOut +
+			HCAP[iDry] * rs_twbCoilIn * rs_vfPerTon +
+			ICAP[iDry] * rs_tdbOut * rs_vfPerTon +
+			JCAP[iDry] * rs_twbCoilIn * rs_twbCoilIn +
+			KCAP[iDry] / rs_vfPerTon +
+			LCAP[iDry];
 
-}		// RSYS::rs_ACFactors
-
+}		// RSYS::rs_CoolingCapF1Spd
 //----------------------------------------------------------------------------
 void RSYS::rs_Cooling(
 	int auszMode /*=rsmOff*/)	// active autosizing, if any
@@ -3012,7 +3009,27 @@ void RSYS::rs_Cooling(
 //         (plus intermediate correlation results)
 {
 
-	rs_ACFactors();
+#if 0 && defined( _DEBUG)
+x	if (Top.jDay == 242 && Top.iHr == 14)
+x		printf("\nhit");
+#endif
+	// init leaving conditions and find coil entering conditions
+	rs_asOut = rs_asIn;
+	if (rs_fan.fanTy == C_FANTYCH_BLOWTHRU)
+	{	// OK for 1 spd or VC (fan heat and flow scale together)
+		rs_asOut.as_AddQSen(rs_fanHeatC, rs_amfC);
+		rs_twbCoilIn = rs_asOut.as_Twb();
+	}
+	else
+		rs_twbCoilIn = rs_twbIn;		// use known value
+	rs_tdbCoilIn = rs_asOut.as_tdb;
+
+
+	rs_CoolingSHR();
+	rs_wetCoil = rs_SHR < 1.f;
+
+	rs_CoolingCapF1Spd();
+
 
 	// no fan (coil-only) capacities at current conditions (fan heat elsewhere)
 	//  total, sensible
@@ -3020,15 +3037,38 @@ void RSYS::rs_Cooling(
 	{	// autosizing warmup: assume coil can produce design delta-T
 		//  (ignore sign of rs_tdDesC)
 		//  why: produces (more) stable supply air state
+		rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd and VC
 		float coilDT =		// temp diff across coil (< 0)
-			-fabs( rs_tdDesC) * rs_fCondCap - rs_fanDeltaTC;
+			-fabs(rs_tdDesC) * rs_fCondCap - rs_fanDeltaTC;
 		rs_capSenCt = coilDT * rs_amfC * Top.tp_airSH;
 		rs_capTotCt = rs_capSenCt / rs_SHR;		// total, Btuh (note rs_SHR>0 always)
 	}
-	else
-	{	// not autosizing warmup, use full model
+	else if (!rs_IsVCClg())
+	{	// 1 spd, not autosizing warmup, use full model
+		rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd and VC
 		rs_capTotCt = rs_capnfX * rs_fCondCap;		// total capacity at current conditions, Btuh
 		rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible capacity at current conditions, Btuh
+	}
+	else
+	{	float capClg, inpClg, capClgMin, inpClgMin;
+		RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
+			capClg, inpClg, capClgMin, inpClgMin);
+		rs_speedFMin = capClg != 0.f ? 1.f : capClgMin / capClg;
+#if 0
+		capClg -= fanHAdj;
+		inpClg -= fanHAdj;
+		capClgMin -= fanHAdj * rs_speedFMin;
+		inpClg Min -= fanHAdj * rs_speedFMin;
+#endif
+		rs_capTotCt = capClg * rs_speedF;
+		rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible capacity at current conditions, Btuh
+
+		float inpX = rs_speedF == 1.f
+			? inpClg
+			: inpClgMin
+			+ (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+
+		rs_effCt = abs( rs_capSenCt) / inpX;
 	}
 	rs_capLatCt = rs_capTotCt - rs_capSenCt;	// latent, Btuh
 
@@ -3080,85 +3120,96 @@ x	rs_asOut = asSav;
 	rs_asOut.as_Set( 50., .001);
 #endif
 
-							//          wet             dry
-	static const float ASEER[ 2] = {	0.f,	        0.0046103f     };
-	static const float BSEER[ 2] = {   -0.0202256f,	    0.f			  };
-	static const float CSEER[ 2] = {	0.0236703f,	    0.0125598f	  };
-	static const float DSEER[ 2] = {   -0.0006638f,    -0.000512f	  };
-	static const float ESEER[ 2] = {	0.f,	       -0.0000357f	  };
-	static const float FSEER[ 2] = {	0.f,            0.0000105f	  };
-	static const float GSEER[ 2] = {   -0.0001841f,	    0.f			  };
-	static const float HSEER[ 2] = {	0.0000214f,	    0.f			  };
-	static const float ISEER[ 2] = {   -0.00000812f,	0.f			  };
-	static const float JSEER[ 2] = {    0.0002971f,	    0.f			  };
-	static const float KSEER[ 2] = {  -27.95672f,	    0.f			  };
-	static const float LSEER[ 2] = {	0.209951063f,  -0.316172311f  };
+	if (!rs_IsVCClg())
+	{
+		rs_CoolingEff1Spd();	// derive rs_EERt
 
-	float twbCoilIn2 = rs_twbCoilIn * rs_twbCoilIn;
+		rs_effCt = rs_SHR * rs_fEffC * rs_EERt / BtuperWh;	// compressor efficiency (COP)
+														//   = (Btuh sensible)/(Btuh compressor)
+	}
+
+}		// RSYS::rs_Cooling
+//-----------------------------------------------------------------------------
+void RSYS::rs_CoolingEff1Spd()		// cooling efficiency, 1 spd model
+// sets rs_fCondSEER, rs_SEERnf, rs_fCondEER, rs_EERnf, rs_EERt
+{
+
+	//          wet             dry
+	static const float ASEER[2] = { 0.f,	        0.0046103f };
+	static const float BSEER[2] = { -0.0202256f,	    0.f };
+	static const float CSEER[2] = { 0.0236703f,	    0.0125598f };
+	static const float DSEER[2] = { -0.0006638f,    -0.000512f };
+	static const float ESEER[2] = { 0.f,	       -0.0000357f };
+	static const float FSEER[2] = { 0.f,            0.0000105f };
+	static const float GSEER[2] = { -0.0001841f,	    0.f };
+	static const float HSEER[2] = { 0.0000214f,	    0.f };
+	static const float ISEER[2] = { -0.00000812f,	0.f };
+	static const float JSEER[2] = { 0.0002971f,	    0.f };
+	static const float KSEER[2] = { -27.95672f,	    0.f };
+	static const float LSEER[2] = { 0.209951063f,  -0.316172311f };
+
 	int iDry = !rs_wetCoil;
 
 	if (rs_tdbOut < 95.f)
-	{	float fSEERX =	ASEER[ iDry] * rs_tdbCoilIn +
-						BSEER[ iDry] * rs_twbCoilIn +
-						CSEER[ iDry] * rs_tdbOut +
-						DSEER[ iDry] * rs_vfPerTon +
-						ESEER[ iDry] * rs_tdbCoilIn * rs_tdbOut +
-						FSEER[ iDry] * rs_tdbCoilIn * rs_vfPerTon +
-						GSEER[ iDry] * rs_twbCoilIn * rs_tdbOut +
-						HSEER[ iDry] * rs_twbCoilIn * rs_vfPerTon +
-						ISEER[ iDry] * rs_tdbOut * rs_vfPerTon +
-						JSEER[ iDry] * twbCoilIn2 +
-						KSEER[ iDry] / rs_vfPerTon +
-						LSEER[ iDry];
+	{
+		float fSEERX = ASEER[iDry] * rs_tdbCoilIn +
+			BSEER[iDry] * rs_twbCoilIn +
+			CSEER[iDry] * rs_tdbOut +
+			DSEER[iDry] * rs_vfPerTon +
+			ESEER[iDry] * rs_tdbCoilIn * rs_tdbOut +
+			FSEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
+			GSEER[iDry] * rs_twbCoilIn * rs_tdbOut +
+			HSEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
+			ISEER[iDry] * rs_tdbOut * rs_vfPerTon +
+			JSEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
+			KSEER[iDry] / rs_vfPerTon +
+			LSEER[iDry];
 		rs_fCondSEER = rs_fCondCap / fSEERX;
 		rs_SEERnf = rs_SEERnfX * rs_fCondSEER;
 	}
 	else
 		rs_fCondSEER = rs_SEERnf = 0.f;
 
-							//        wet            dry
-	static const float AEER[ 2] = {	  0.f,	         0.004610300f   };
-	static const float BEER[ 2] = {  -0.020225600f,	 0.f			};
-	static const float CEER[ 2] = {	  0.023670300f,	 0.012559800f   };
-	static const float DEER[ 2] = {  -0.000663800f, -0.000512000f   };
-	static const float EEER[ 2] = {	  0.f,	        -0.000035700f   };
-	static const float FEER[ 2] = {	  0.f,	         0.000010500f   };
-	static const float GEER[ 2] = {  -0.000184100f,	 0.f			};
-	static const float HEER[ 2] = {	  0.000021400f,	 0.f			};
-	static const float IEER[ 2] = {  -0.000008120f,	 0.f			};
-	static const float JEER[ 2] = {	  0.000297100f,	 0.f			};
-	static const float KEER[ 2] = { -27.956720000f,	 0.f			};
-	static const float LEER[ 2] = {	  0.015003100f, -0.475306500f   };
+	//        wet            dry
+	static const float AEER[2] = { 0.f,	         0.004610300f };
+	static const float BEER[2] = { -0.020225600f,	 0.f };
+	static const float CEER[2] = { 0.023670300f,	 0.012559800f };
+	static const float DEER[2] = { -0.000663800f, -0.000512000f };
+	static const float EEER[2] = { 0.f,	        -0.000035700f };
+	static const float FEER[2] = { 0.f,	         0.000010500f };
+	static const float GEER[2] = { -0.000184100f,	 0.f };
+	static const float HEER[2] = { 0.000021400f,	 0.f };
+	static const float IEER[2] = { -0.000008120f,	 0.f };
+	static const float JEER[2] = { 0.000297100f,	 0.f };
+	static const float KEER[2] = { -27.956720000f,	 0.f };
+	static const float LEER[2] = { 0.015003100f, -0.475306500f };
 
 	if (rs_tdbOut > 82.f)
 	{
 		rs_fCondEER = 1. /
-		  ( AEER[ iDry] * rs_tdbCoilIn +
-			BEER[ iDry] * rs_twbCoilIn +
-			CEER[ iDry] * rs_tdbOut +
-			DEER[ iDry] * rs_vfPerTon +
-			EEER[ iDry] * rs_tdbCoilIn * rs_tdbOut +
-			FEER[ iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			GEER[ iDry] * rs_twbCoilIn * rs_tdbOut +
-			HEER[ iDry] * rs_twbCoilIn * rs_vfPerTon +
-			IEER[ iDry] * rs_tdbOut * rs_vfPerTon +
-			JEER[ iDry] * twbCoilIn2 +
-			KEER[ iDry] / rs_vfPerTon +
-			LEER[ iDry]);
-		rs_EERnf  = rs_EERnfX * rs_fCondEER * rs_fCondCap;
+			(AEER[iDry] * rs_tdbCoilIn +
+			  BEER[iDry] * rs_twbCoilIn +
+			  CEER[iDry] * rs_tdbOut +
+			  DEER[iDry] * rs_vfPerTon +
+			  EEER[iDry] * rs_tdbCoilIn * rs_tdbOut +
+			  FEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
+			  GEER[iDry] * rs_twbCoilIn * rs_tdbOut +
+			  HEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
+			  IEER[iDry] * rs_tdbOut * rs_vfPerTon +
+			  JEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
+			  KEER[iDry] / rs_vfPerTon +
+			  LEER[iDry]);
+		rs_EERnf = rs_EERnfX * rs_fCondEER * rs_fCondCap;
 		rs_EERt = rs_tdbOut < 95.f
-						? rs_SEERnf + (rs_tdbOut-82.f)*(rs_EERnf - rs_SEERnf) / 13.f
-			            : rs_EERnf;
+			? rs_SEERnf + (rs_tdbOut - 82.f) * (rs_EERnf - rs_SEERnf) / 13.f
+			: rs_EERnf;
 	}
 	else
-	{	rs_EERnf = 0.f;
+	{
+		rs_EERnf = 0.f;
 		rs_EERt = rs_SEERnf;
 	}
-
-	rs_effCt = rs_SHR * rs_fEffC * rs_EERt / BtuperWh;	// compressor efficiency (COP)
-														//   = (Btuh sensible)/(Btuh compressor)
-
-}		// RSYS::rs_Cooling
+}		// RSYS::rs_CoolingEff1Spd
 //-----------------------------------------------------------------------------
 void RSYS::rs_GetPerfClg(	// derive current cooling performance values
 	float& capTot,			// total capacity, kBtuh
@@ -3412,7 +3463,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 		if (rs_IsASHPVC())
 		{	// retrieve min/max cap and input at tdbOut
 			//   values include fan heat/power
-			/* rc = */ rs_GetPerfHtgBtwxt(tdbOut, capHt, inpHt, capHtMin, inpHtMin);
+			/* rc = */ rs_GetPerfBtwxt( rs_pRgiHtg, tdbOut, capHt, inpHt, capHtMin, inpHtMin);
 #if defined( _DEBUG)
 			if (capHt < capHtMin)
 				printf("\ncapHt < capHtMin");
@@ -3665,6 +3716,9 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 #error Missing ASHP COPREG case
 #endif
 
+	// setup ASHP runtime data
+	//   calls MinSpdDefaultsHtg
+	//   makes slope data and Btwxt perf map
 	rs_CalcInputsAndSlopesASHP();
 
 #if 1 && defined( _DEBUG)
@@ -3740,29 +3794,26 @@ float RSYS::rs_Cap05Default(		// default 5 F heating capacity
 	return cap05;
 }	// RSYS::rs_Cap05Default
 //-----------------------------------------------------------------------------
-struct VSPERFP
+RC RSYS::rs_MinSpdDefaultsHtg()		// default heating min spd values
 {
-	enum { ppCAPHS, ppINPHS, ppCAPLS, ppINPLS, ppCOUNT };
-	VSPERFP(float temp, float capHS, float COPHS, float capLS, float COPLS)
-		: pp_temp(temp)
-	{
-		pp_data[ppCAPHS] = capHS;
-		pp_data[ppINPHS] = capHS / max(COPHS, .1f);
-		pp_data[ppCAPLS] = capLS;
-		pp_data[ppINPLS] = capLS / max(COPLS, .1f);
-	}
+	RC rc = RCOK;
 
-	double pp_temp;		// temp for this point, F
-	std::array< double, ppCOUNT> pp_data{ 0. };	// data
-	double operator [](int i) const { return pp_data[i]; }
-	static int NData() { return ppCOUNT; }
-};	// struct VSPERFP
+	if (!IsSet(RSYS_COPMIN47))
+		rs_COPMin47 = rs_COP47;
+	if (!IsSet(RSYS_COPMIN17))
+		rs_COPMin17 = rs_COP17;
+	if (!IsSet(RSYS_COPMIN05))
+		rs_COPMin05 = rs_COP05;
+
+	return rc;
+}		// RSYS::rs_MinSpdDefaultsHtg
 //-----------------------------------------------------------------------------
 RC RSYS::rs_CalcInputsAndSlopesASHP()
 // uses: rs_cap/COP 47/17
 // sets: rs_inp17/35/47, rs_COP35 (if needed), and slopes
 {
-	RC rc = RCOK;
+	RC rc = rs_MinSpdDefaultsHtg();	// min spd defaults
+
 	rs_inp47 = rs_cap47 / max( rs_COP47, .1f);	// full speed input power, Btuh
 	rs_inp17 = rs_cap17 / max( rs_COP17, .1f);
 
@@ -3779,50 +3830,89 @@ RC RSYS::rs_CalcInputsAndSlopesASHP()
 	rs_ASHPCapF[ 1] = (rs_cap35-rs_cap17) / (35.f-17.f);
 	rs_ASHPInpF[ 1] = (rs_inp35-rs_inp17) / (35.f-17.f);
 
-	// similar setup for variable capacity (ASHPVC)
-	//   unused if not ASHPVC
-	if (rs_IsASHPVC())
-	{	// min spd capacities
-				
-		// min spd COP and input
-		if (!IsSet(RSYS_COPMIN47))
-			rs_COPMin47 = rs_COP47;
-		if (!IsSet(RSYS_COPMIN17))
-			rs_COPMin17 = rs_COP17;
-		if (!IsSet(RSYS_COPMIN05))
-			rs_COPMin05 = rs_COP05;
-
-		float inpMin47 = rs_CapMin47() / max(rs_COPMin47, .1f);
-		float inpMin17 = rs_CapMin17() / max(rs_COPMin17, .1f);
-
-		float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
-		float inpMin35;
-		if (!IsSet(RSYS_COPMIN35))
-		{	inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
-			rs_COPMin35 = capMin35 / max(inpMin35, .1f);
-		}
-		else
-			inpMin35 = capMin35 / max(rs_COPMin35, .1f);
-
-		// vector of performance points
-		std::vector< VSPERFP> ppV;
-		ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
-		ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
-		ppV.emplace_back(35.f, rs_cap35, rs_COP35, capMin35, rs_COPMin35);
-		ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
-
-		// Populate Btwxt interpolator grid data from performance points
-		rc |= rs_SetupBtwxt(ppV);
-
-#if 0
-		rs_ASHPInpMinF[0] = (inpMin47 - inpMin17) / (47.f - 17.f);
-		rs_ASHPInpMinF[1] = (inpMin35 - inpMin17) / (35.f - 17.f);
-#endif
-
-	}
+	// Btwxt performance map setup
+	// initially used for ASHPVC only
+	rc |= rs_SetupBtwxtHtg();
 
 	return rc;
 }		// RSYS::rs_CalcInputsAndSlopesASHP
+//-----------------------------------------------------------------------------
+// helper performance point re btwxt setup
+// = temperature + array of perf values
+struct VSPERFP
+{
+	enum { ppCAPHS, ppINPHS, ppCAPLS, ppINPLS, ppCOUNT };
+	VSPERFP(float temp, float capHS, float COPHS, float capLS, float COPLS)
+		: pp_temp(temp)
+	{
+		pp_data[ppCAPHS] = capHS;
+		pp_data[ppINPHS] = abs(capHS / max(COPHS, .1f));
+		pp_data[ppCAPLS] = capLS;
+		pp_data[ppINPLS] = abs(capLS / max(COPLS, .1f));
+	}
+
+	double pp_temp;		// temp for this point, F
+	std::array< double, ppCOUNT> pp_data{ 0. };	// data
+	double operator [](int i) const { return pp_data[i]; }
+	static int NData() { return ppCOUNT; }
+};	// struct VSPERFP
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupBtwxtHtg()
+{
+	RC rc = RCOK;
+
+#if 0
+	float inpMin47 = rs_CapMin47() / max(rs_COPMin47, .1f);
+	float inpMin17 = rs_CapMin17() / max(rs_COPMin17, .1f);
+
+	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
+	float inpMin35;
+	if (!IsSet(RSYS_COPMIN35))
+	{
+		inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
+		rs_COPMin35 = capMin35 / max(inpMin35, .1f);
+	}
+	else
+		inpMin35 = capMin35 / max(rs_COPMin35, .1f);
+#else
+	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
+
+	if (!IsSet(RSYS_COPMIN35))
+	{	float inpMin47 = rs_CapMin47() / max(rs_COPMin47, .1f);
+		float inpMin17 = rs_CapMin17() / max(rs_COPMin17, .1f);
+		float inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
+		rs_COPMin35 = capMin35 / max(inpMin35, .1f);
+	}
+#endif
+
+	// vector of performance points
+	std::vector< VSPERFP> ppV;
+	ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
+	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
+	ppV.emplace_back(35.f, rs_cap35, rs_COP35, capMin35, rs_COPMin35);
+	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
+
+	// Populate Btwxt interpolator grid data from performance points
+	rc |= rs_SetupBtwxt(rs_pRgiHtg, ppV);
+
+	return rc;
+}		// RSYS::rs_SetupBtwxtHtg
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupBtwxtClg()
+{
+	RC rc = RCOK;
+
+	// vector of performance points
+	//  note cooling capacities <0
+	std::vector< VSPERFP> ppV;
+	ppV.emplace_back(82.f, -rs_cap82, rs_COP82, -rs_CapMin82(), rs_COPMin82);
+	ppV.emplace_back(95.f, -rs_cap95, rs_COP95, -rs_CapMin95(), rs_COPMin95);
+
+	// Populate Btwxt interpolator grid data from performance points
+	rc |= rs_SetupBtwxt(rs_pRgiClg, ppV);
+
+	return rc;
+}		// RSYS::rs_SetupBtwxtHtg
 //-----------------------------------------------------------------------------
 float RSYS::rs_CapHtCurSpeedF() const
 {
@@ -3838,10 +3928,14 @@ float RSYS::rs_InpHtCurSpeedF() const
 	return inpHt;
 }		// RSYS::rs_InpHtCurSpeedF()
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for runtime interpolation
+RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
+	Btwxt::RegularGridInterpolator* & pRgi,		// returned: heap ptr to Btwxt interpolator object
+												//   note: any prior contents deleted
 	const std::vector< VSPERFP> ppV)	// performance point vector
 {
 	RC rc = RCOK;
+
+	delete pRgi;		// delete prior if any
 
 	int nD = VSPERFP::NData();
 	int nPts = ppV.size();
@@ -3865,9 +3959,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for runtime interpolation
 
 	Btwxt::GriddedData perfMapHtg(dbt, values);
 
-	delete rs_pRgiHtg;		// delete prior if any
-
-	rs_pRgiHtg = new Btwxt::RegularGridInterpolator( perfMapHtg);
+	pRgi = new Btwxt::RegularGridInterpolator( perfMapHtg);
 
 #if 0
 	// test code
@@ -3883,12 +3975,16 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for runtime interpolation
 
 }	// RSYS::rs_SetupBtwxt
 //-----------------------------------------------------------------------------
-RC RSYS::rs_GetPerfHtgBtwxt(
-	float tdbOut,
-	float& capHt,		// returned: full speed heating capacity
-	float& inpHt,		// returned: compressor-only full speed input power, Btuh
-	float& capHtMin,	// returned: min speed heating capacity, Btuh
-	float& inpHtMin)	// returned: compressor-only min speed input power, Btuh
+RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
+	Btwxt::RegularGridInterpolator* pRgi,	// interpolation data
+	float tdbOut,		// outdoor dry-bulb temp, F
+	float& cap,			// returned: full speed capacity
+	float& inp,			// returned: full speed input power, Btuh
+	float& capMin,		// returned: min speed capacity, Btuh
+	float& inpMin)		// returned: min speed input power, Btuh
+// Note: data generally net (include fan heat/power) per setup input
+// returns RCOK iff success
+//    else ?
 {
 	RC rc = RCOK;
 #if 0 && defined( _DEBUG)
@@ -3897,13 +3993,13 @@ RC RSYS::rs_GetPerfHtgBtwxt(
 #endif
 
 	std::vector< double> targ{ tdbOut };
-	auto result = (*rs_pRgiHtg)(targ);
-	capHt = result[VSPERFP::ppCAPHS];
-	inpHt = result[VSPERFP::ppINPHS];
-	capHtMin = result[VSPERFP::ppCAPLS];
-	inpHtMin = result[VSPERFP::ppINPLS];
+	auto result = (*pRgi)(targ);
+	cap = result[VSPERFP::ppCAPHS];
+	inp = result[VSPERFP::ppINPHS];
+	capMin = result[VSPERFP::ppCAPLS];
+	inpMin = result[VSPERFP::ppINPLS];
 	return rc;
-}	// RSYS::rs_GetPerfHtgBtwxt
+}	// RSYS::rs_GetPerfBtwxt
 //-----------------------------------------------------------------------------
 float RSYS::rs_CapEffASHP(			// performance at current conditions
 	float tdbOut/*=-999.f*/,	// outdoor dry-bulb temp, F
@@ -4673,7 +4769,7 @@ RC RSYS::rs_AllocateZoneAir()
 	ZNR* zp;
 	if (!bAux)
 	{	// aux not available or not needed
-		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing() && rs_mode == rsmHEAT)
+		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing() /* && rs_mode == rsmHEAT */)
 			// variable capacity with excess capacity
 		{
 			rc |= rs_AllocateZoneAirVC();
@@ -4844,29 +4940,28 @@ RC RSYS::rs_AllocateZoneAirVC()		//
 
 }	// RSYS::AllocateZoneAirVC()
 //-----------------------------------------------------------------------------
-	RC RSYS::rs_TotalAirRequest(
-		float speedF)
+RC RSYS::rs_TotalAirRequest(
+	float speedF)
 
+{
+	RC rc = RCOK;
+
+	rs_ClearSubhrResults(1);	// init for speed re-try
+	int ret = rs_SupplyAirState(rs_mode, speedF);
+	ZNR* zp;
+	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+		zp->zn_AirRequest(this);
+
+	if (rs_amfReq[0] <= 0.)				// if any air requested (by any zone)
 	{
-		RC rc = RCOK;
+		printf("\nrs_AirRequest: rs_amfReq[ 0] <= 0.");
+		return RCBAD;
+	}
 
-		rs_ClearSubhrResults(1);	// init for speed re-try
-		int ret = rs_SupplyAirState(rs_mode, speedF);
-		ZNR* zp;
-		RLUPC(ZrB, zp, rs_IsZoneServed(zp))
-			zp->zn_AirRequest(this);
+	rs_fxCap[0] = rs_amf / rs_amfReq[0];	// >1 = excess capacity
 
-		if (rs_amfReq[0] <= 0.)				// if any air requested (by any zone)
-		{
-			printf("\nrs_AirRequest: rs_amfReq[ 0] <= 0.");
-			return RCBAD;
-		}
-
-		rs_fxCap[0] = rs_amf / rs_amfReq[0];	// >1 = excess capacity
-
-		return rc;
+	return rc;
 }		// RSYS::rs_TotalAirRequest
-
 //-----------------------------------------------------------------------------
 double RSYS::rs_SpeedFMismatch(		// call-back fcn for secant method
 	double& speedF)
@@ -4903,8 +4998,6 @@ double RSYS::rs_FindAirFlow()
 #endif
 
 	return rs_amf;
-
-
 }	// RSYS::rs_FindAirFlow
 //----------------------------------------------------------------------------
 void RSYS::rs_AvgZoneCond()
@@ -4985,14 +5078,40 @@ RC RSYS::rs_FinalizeSh()
 	//       BUT may be side effects
 	float runFFan = 0.f;
 	if (rs_mode == rsmCOOL)
-	{	rs_outSen = rs_loadF * rs_capSenCt;		// average output w/o fan, Btuh (< 0)
-		rs_outLat = rs_loadF * rs_capLatCt;
-		rs_outFan = rs_inFan = rs_loadF * rs_fanHeatC;	// all fan heat to air
-		runFFan = rs_loadF;
-		rs_outSenTot = rs_outSen + rs_outFan;	// gross output
-		rs_PLF = 1.f - rs_CdC * ( 1.f - rs_loadF);
-		rs_runF = rs_loadF;
-		rs_inPrimary = fabs( rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
+	{
+		if (!rs_IsVCClg() || rs_speedF == 1.f)
+		{
+			rs_outSen = rs_loadF * rs_capSenCt;		// average output w/o fan, Btuh (< 0)
+			rs_outLat = rs_loadF * rs_capLatCt;
+			rs_outFan = rs_inFan = rs_loadF * rs_fanHeatC;	// all fan heat to air
+			runFFan = rs_loadF;
+			rs_outSenTot = rs_outSen + rs_outFan;	// gross output
+			rs_PLF = 1.f - rs_CdC * (1.f - rs_loadF);
+			rs_runF = rs_loadF;
+			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
+		}
+		else if (rs_speedF <= rs_speedFMin)
+		{// variable capacity: cycling at min speed
+			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
+			rs_COPHtAdj = rs_inpHtMin <= 0.f
+				? 2.5f		// rs_inpHtMin can be 0 during autosize
+				: rs_fEffH * rs_capHtMin * rs_PLF / rs_inpHtMin;
+			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));
+
+		}
+		else
+		{
+			// variable capacity: intermediate speed
+			rs_inPrimary = rs_InpHtCurSpeedF() / rs_fEffH;
+			rs_COPHtAdj = rs_inPrimary <= 0.f
+				? 2.5f		// rs_inPrimary can be 0 during autosize
+				: rs_outSen / rs_inPrimary;
+			rs_PLF = 1.f;
+
+		}
+
+
+
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.tp_subhrDur;	// compressor energy for step, Btu
 			rs_pMtrElec->H.fanC += rs_inFan * Top.tp_subhrDur;
@@ -5019,7 +5138,6 @@ RC RSYS::rs_FinalizeSh()
 			}
 			else
 			{
-#if 1
 				float fFanHeatPrim;
 				if (rs_runFAux > 0.f && rs_ctrlAuxH == C_AUXHEATCTRL_ALT)
 				{	fFanHeatPrim = rs_runF = 1.f - rs_runFAux;
@@ -5042,7 +5160,6 @@ RC RSYS::rs_FinalizeSh()
 				rs_outSen = outTot - rs_outFan*fFanHeatPrim - rs_outDefrost;		// compressor output
 				// rs_outLat = 0.;						// total latent output
 
-#if 1
 				if (!rs_IsASHPVC() || rs_speedF == 1.f)
 				{	// single speed or variable speed at max
 					rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
@@ -5066,19 +5183,10 @@ RC RSYS::rs_FinalizeSh()
 									: rs_outSen / rs_inPrimary;
 					rs_PLF = 1.f;
 				}
-#else
-				rs_PLF = 1.f - rs_CdH * ( 1.f - rs_runF);
-
-				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);			// compressor input
-#endif
-#else
+#if 0
+x Not maintained, 8-2020
 x#undef ASHP_COMPAREMP		// define to enable Micropas comparison code for ASHP
 x							//   experimental, 5-9-2013
-x				double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
-x				// rs_outLat = 0.;						// total latent output
-x				rs_outFan = min( outTot, rs_runF * rs_fanHeatH);	// fan output, Btuh
-x														// insurance: limit to total output
-x				rs_outSen = outTot - rs_outFan;			// compressor output
 x#if defined( ASHP_COMPAREMP) || defined( _DEBUG)
 x				// DOE-2.1E curve (from Micropas)
 x				float fMP = 0.0856522
