@@ -453,13 +453,27 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			COLMACCXA20_SP "ColmacCxA20_SP"
 			COLMACCXA25_SP "ColmacCxA25_SP"
 			COLMACCXA30_SP "ColmacCxA30_SP"
-					   
+
+			COLMACCXV5_MP  "ColmacCxV5_MP"	// Colmac CxA-xx modular external HPWHs (multi-pass mode)
+			COLMACCXA10_MP "ColmacCxA10_MP"
+			COLMACCXA15_MP "ColmacCxA15_MP"
+			COLMACCXA20_MP "ColmacCxA20_MP"
+			COLMACCXA25_MP "ColmacCxA25_MP"
+			COLMACCXA30_MP "ColmacCxA30_MP"
+								   
 			NYLEC25A_SP  "NyleC25A_SP"		// Nyle Cxx external HPWHs (single pass mode)
 			NYLEC60A_SP  "NyleC60A_SP"
 			NYLEC90A_SP  "NyleC90A_SP"
 			NYLEC125A_SP "NyleC125A_SP"
 			NYLEC185A_SP "NyleC185A_SP"
 			NYLEC250A_SP "NyleC250A_SP"
+
+			NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (multi-pass mode)
+			NYLEC60A_MP  "NyleC60A_MP"
+			NYLEC90A_MP  "NyleC90A_MP"
+			NYLEC125A_MP "NyleC125A_MP"
+			NYLEC185A_MP "NyleC185A_MP"
+			NYLEC250A_MP "NyleC250A_MP"
 
 			NYLEC60AC_SP  "NyleC60A_CWP_SP"	// Nyle Cxx external HPWHs with cold weather package)
 			NYLEC90AC_SP  "NyleC90A_CWP_SP"
