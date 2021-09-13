@@ -3100,7 +3100,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_SpeedFMismatch( double& speedF);"
 *declare "double rs_FindAirFlow();"
 *declare "void rs_AvgZoneCond();"
-*declare "static double rs_CallAmfRequired( void* pO, double &tSupX);"
 *declare "double rs_AmfRequired( double tSup);"
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
@@ -3373,7 +3372,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
-*f *e FLOAT rs_fanHeatC		// cooling fan operating electrical power, Btuh
+*f *e FLOAT rs_fanHeatC		// cooling fan full speed operating electrical power, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_fanDeltaTC	// cooling fan heat temperature rise, F
 							//   constant even if capacity is altered during autosize
@@ -3410,9 +3409,18 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//     rs_SEERnf and rs_EERnf)
 *s *e FLOAT rs_effCt;		// temp adjusted compressor efficiency (= CEt in ACM)
 							//   (Btuh sensible)/(Btuh compressor electrical input)
-*s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions, Btuh (<0)
-*s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions, Btuh (<0)
-*s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions, Btuh (<0)
+*s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions and speed, Btuh (<0)
+*s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions and speed, Btuh (<0)
+*s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions and speed, Btuh (<0)
+
+#if 0
+*s *e FLOAT rs_capTotCl		// coil full speed total cooling capacity, Btuh
+							//   includes rated fan heat
+*s *e FLOAT rs_inpCl		// current step full speed compressor input power
+*s *e FLOAT rs_capClMin		// current step min speed cooling capacity (including fan heat\), Btuh
+*s *e FLOAT rs_inpClMin		// current min speed compressor input power
+*s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
+#endif
 
 						// Central outside air vent (aka OAV)
 *i RSYSOAVTYCH rs_OAVType	// type: NONE, FIXEDFLOW (aka SmartVent), VARFLOW (aka SmartBreeze)
@@ -3446,9 +3454,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
 *s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s *e DBL rs_amf		// full-load (maximum) dry air mass flow rate, lbm/hr
+*s *e DBL rs_amf		// current dry air mass flow rate, lbm/hr
 						//   = flow at blower / coil / furnace HX etc.
 						//   set per rsMode from rs_amfH, rs_amfC, or OAV algorithm
+                        //   modified by rs_speedF
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
