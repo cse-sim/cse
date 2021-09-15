@@ -4122,6 +4122,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//	  C_WHASHPTYCH_xxx, etc
   *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
 								//	  C_WHRESTYCH_xxx, etc
+                                //    documentation only (9-2021)
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant

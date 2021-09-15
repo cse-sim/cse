@@ -9364,7 +9364,7 @@ DHWSYS   "dhwsys1"
       whResType = "Swingtank"
       whMult = 1                        // Water heater multiplier
       whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
-      whEF = 0.97                       // Water heater energy factor (for small storage & instantaneous)
+      whEF = 0.92                       // Water heater energy factor (for small storage & instantaneous)
       whResHtPwr = 8*175                // Water heater resistance heat power (watts), W
       whVol = 80                        // Water heater tank volume (must be 0 or undefined for instantaneous), gal
 	  whElecMtr = "MtrElecLH"
@@ -9542,6 +9542,7 @@ WHCHAR(1)
 #define WLHCHAR(lh) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWLOOPHEATER Info" \
 ReportCol colhead = "LH Vol"  colVal = @DHWLOOPHEATER[ lh].vol colDec=1 colWid = 6 \
 ReportCol colhead = "LH UA" colVal = @DHWLOOPHEATER[ lh].UA colDec=2 colWid=6 \
+ReportCol colhead = "LH RIns" colVal = @DHWLOOPHEATER[ lh].insulR colDec=2 colWid=7 \
 ReportCol colhead = "htCap"  colVal = @DHWLOOPHEATER[ lh].heatingCap colDec=1 colWid = 6
 
 WLHCHAR(1)

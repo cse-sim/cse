@@ -2662,21 +2662,24 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 }	// HPWHLINK::hw_InitGeneric
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
-	WHRESTYCH resTy,	// resistance heater type
+	WHRESTYCH resTy,	// resistance heater type (currently unused)
 	float vol,			// tank volume, gal
 	float EF,			// rated EF
+						//   if >0, call HPWHinit_resTank
+						//   else HPWHinit_resTankGeneric
+	float insulR,		// insulation resistance, ft2-F/Btuh
+						//   used iff EF <= 0
 	float resHtPwr,		// upper resistance heat element power, W
-	float resHtPwr2,	// lower resistance heat element power, W
-	float tUse)			// use temp, F
+	float resHtPwr2)	// lower resistance heat element power, W
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	int ret = resTy == C_WHRESTYCH_SWINGTANK
-		? hw_pHPWH->HPWHinit_commercialResTank(GAL_TO_L(max(vol, 1.f)),
-		   resHtPwr, resHtPwr2, HPWH::MODELS_CustomComResTankSwing)
-		: hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
-			resHtPwr, resHtPwr2);
+	int ret = EF > 0.f
+		? hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)),
+			EF, resHtPwr, resHtPwr2)
+		: hw_pHPWH->HPWHinit_resTankGeneric(GAL_TO_L(max(vol, 1.f)),
+		   insulR / 5.678f, resHtPwr, resHtPwr2);
 	   
 	if (ret)
 		rc |= RCBAD;
@@ -4130,8 +4133,12 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	bool bVolMaybeModifiable = false;
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 	{	// resistance tank (no preset)
+		//  wh_EF and wh_insulR < 0 if not set
+		//  wh_EF > 0 determines HPWH type of resistance tank
+		//  wh_resTy is currently documentation only (9-2021)
+		float insulR = IsSet(DHWHEATER_INSULR) ? wh_insulR : 12.f;
 		rc |= wh_HPWH.hw_InitResistance(
-			wh_resTy, wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2, pWS->ws_tUse);
+			wh_resTy, wh_vol, wh_EF, insulR, wh_resHtPwr, wh_resHtPwr2);
 		// bVolMaybeModifiable = true;
 	}
 	else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
