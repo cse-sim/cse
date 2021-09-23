@@ -1723,15 +1723,23 @@ CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .3
 
 CULT( "rsSEER",		 DAT,   RSYS_SEER,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsEER",		 DAT,   RSYS_EER95,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "rsCOP95",     DAT,   RSYS_COP95,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 
 CULT("rsCapC",		 DAT,   RSYS_CAP95,	     AS_OK,   0, VFAZLY | EVENDIVL, TYFL, 0, 0.f, N,   N),
 
+CULT("rsCap115",	 DAT,   RSYS_CAP115,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT("rsCOP115",	 DAT,   RSYS_COP115,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCap82",	 DAT,   RSYS_CAP82,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOP82",	 DAT,   RSYS_COP82,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 
-CULT( "rsCapRat8295",DAT,   RSYS_CAPRAT8295, 0,       0, VEOI,   TYFL,  0,      1.06f,    N,   N),
+CULT("rsCapRat11595",DAT,   RSYS_CAPRAT11595, 0,      0, VEOI,   TYFL,  0,     0.9155f,  N,   N),
+CULT( "rsCapRat8295",DAT,   RSYS_CAPRAT8295,  0,      0, VEOI,   TYFL,  0,      1.06f,    N,   N),
+
+CULT("rsloadFMin115",DAT,   RSYS_LOADFMIN115,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsloadFMin95",DAT,   RSYS_LOADFMIN95,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT("rsloadFMin82", DAT,   RSYS_LOADFMIN82,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+
+CULT("rsCOPMin115",	 DAT,   RSYS_COPMIN115,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT("rsCOPMin95",	 DAT,   RSYS_COPMIN95,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT("rsCOPMin82",	 DAT,   RSYS_COPMIN82,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 

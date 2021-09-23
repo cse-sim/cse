@@ -1912,6 +1912,12 @@ RSYS* DUCTSEG::ds_GetRSYS() const
 	return pRS;
 }		// DUCTSEG::ds_GetRSYS
 //-----------------------------------------------------------------------------
+DUCTSEGRES* DUCTSEG::ds_GetDUCTSEGRES() const
+{
+	DUCTSEGRES* pDSR = DsResR.GetAt( ss);
+	return pDSR;
+}		// DUCTSEG::ds_GetDUCTSEGRES
+//-----------------------------------------------------------------------------
 bool DUCTSEG::ds_IsRound() const
 {	// if ds_exArea is input, assume flat area-only model
 	// else round
@@ -2069,6 +2075,7 @@ RC DUCTSEG::ds_BegHour()
 RC DUCTSEG::ds_BegSubhr()
 {
 	RC rc=RCOK;
+
 	ZNR* zpx = ds_GetExZone();
 
 	ds_sbcO.sb_SetCoeffs( zpx);
@@ -2081,6 +2088,7 @@ RC DUCTSEG::ds_BegSubhr()
 
 	ds_qCondFL = ds_qCond = ds_qCondRad = ds_qCondAir
 		= ds_qLeakSen = ds_qLeakLat = 0.;
+	ds_GetDUCTSEGRES()->curr.S.dsr_Clear();
 
 	return rc;
 }		// DUCTSEG::ds_BegSubhr
@@ -2223,7 +2231,8 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 	double mCpFL = ds_amfFL * Top.tp_airSH;
 	// ds_qCondFL = ds_qCond = ds_qCondAir = ds_qCondRad = 0. per ds_BegSubhr
 	if (ds_uaTot > 0.)
-	{	ds_qCondFL =		// conduction loss rate, Btuh; + = out of duct
+	{
+		ds_qCondFL =		// conduction loss rate, Btuh; + = out of duct
 			mCpFL * (ds_air[1].as_tdb - ds_air[3].as_tdb);
 		ds_air[2].as_tdb = ds_qCondFL / ds_uaTot + ds_sbcO.sb_txe;	// mean temp when flow
 		ds_sbcO.sb_qSrf = ds_qCondFL / ds_exArea;	// average conduction
@@ -2233,16 +2242,17 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 #if defined( _DEBUG)
 		// if (ds_Uduct > 0.)
 		{	double tdb2 = ds_sbcO.sb_qSrf / ds_Uduct + ds_sbcO.sb_tSrf;
-			double tErrF = frDiff(ds_air[2].as_tdb, tdb2, .01);
-			if (tErrF > .001)
-				orMsg(WRNRT, "avg temp inconsistency (%.5f)", tErrF);
+		double tErrF = frDiff(ds_air[2].as_tdb, tdb2, .01);
+		if (tErrF > .001)
+			orMsg(WRNRT, "avg temp inconsistency (%.5f)", tErrF);
 		}
 #endif
 
 		if (runF > 0.f)
-		{	ds_qCond = ds_qCondFL * runF;	// conduction loss, Btuh (+ = out of duct)
-			ds_qCondAir = runF * ds_exArea * ds_sbcO.sb_hxa*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txa);
-			ds_qCondRad = runF * ds_exArea * ds_sbcO.sb_hxr*(ds_sbcO.sb_tSrf - ds_sbcO.sb_txr);
+		{
+			ds_qCond = ds_qCondFL * runF;	// conduction loss, Btuh (+ = out of duct)
+			ds_qCondAir = runF * ds_exArea * ds_sbcO.sb_hxa * (ds_sbcO.sb_tSrf - ds_sbcO.sb_txa);
+			ds_qCondRad = runF * ds_exArea * ds_sbcO.sb_hxr * (ds_sbcO.sb_tSrf - ds_sbcO.sb_txr);
 #if defined( _DEBUG)
 			// compare separately calc'd conduction, small diffs are common
 			double condErrF = frDiff(ds_qCond, ds_qCondAir + ds_qCondRad,
@@ -2259,15 +2269,19 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 	}
 
 	// leakage
+	const RSYS* pRS = ds_GetRSYS();
 	if (runF > 0.f && ds_leakF > 0.f)
-	{	double amfLk = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
+	{
+		double amfLk = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
 		if (ds_IsSupply())
 		{	// supply (leakage is out of duct)
-			const RSYS* pRS = ds_GetRSYS();
 #if 0
 			double tz = pRS->rs_asZn.as_tdb;
 #endif
 			double tz = pRS->rs_asRet.as_tdb;
+			double qDotIn = runF * mCpFL * ds_air[1].as_tdb;
+			double qDotOut = runF * mCpFL * (1.f - ds_leakF) * ds_air[3].as_tdb;
+			double qLeak = qDotOut - qDotIn - ds_qCond;
 			ds_qLeakSen = runF * mCpFL * ds_leakF * (ds_air[3].as_tdb - tz);
 			ds_qLeakLat = amfLk * PsyHCondWtr * ds_air[3].as_w;	// TODO
 			if (zpx)
@@ -2280,6 +2294,23 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 		}
 	}
 	// else ds_qLeakSen = ds_qLeakLat = 0. per ds_BegSubHr()
+
+	// populate results
+	DUCTSEGRES_IVL_SUB& R = ds_GetDUCTSEGRES()->curr.S;
+	if (pRS->rs_mode == RSYS::rsmHEAT)
+	{	R.qhCond = ds_qCond * Top.tp_subhrDur;
+		R.qhLeakSen = ds_qLeakSen * Top.tp_subhrDur;
+		R.qhTotSen = R.qhCond + R.qhLeakSen;
+	}
+	else
+	{
+		R.qcCond = ds_qCond * Top.tp_subhrDur;
+		R.qcLeakSen = ds_qLeakSen * Top.tp_subhrDur;
+		R.qcTotSen = R.qcCond + R.qcLeakSen;
+		R.qcLeakLat = ds_qLeakLat * Top.tp_subhrDur;
+	}
+
+
 #if defined( DEBUGDUMP)
 	if (DbDo(dbdDUCT))
 		ds_DbDump();

@@ -2076,7 +2076,7 @@ RC record::limitCheckFix(	// range check, msg, set to min/max
 ///////////////////////////////////////////////////////////////////////////////
 RC CDEC record::disallowN( 			// issue "not allowed" message for each given field in 0-terminated list of field numbers
 	const char* when /*=NULL*/,	// message insert.  message handle ok (see lib\messages.cpp).
-	... )			// SI field numbers, 0 ends list  REMEMBER THE 0!
+	... )			// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc=RCOK;
 	va_list ap;
@@ -2142,7 +2142,7 @@ RC record::require(    			// issue message if field is not given
 //-------------------------------------------------------------------------------
 RC CDEC record::ignoreN( 		// issue "ignored" message for each given field in 0-terminated list of field numbers
 	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
-	... )			// field numbers, 0 ends list  REMEMBER THE 0!
+	... )			// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc=RCOK;
 	va_list ap;

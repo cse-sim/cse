@@ -105,7 +105,7 @@
 							//    4 = Y, M, D, H
 							// see IvlData() template function, cnglobl.h
 
-#define RSMCOUNT 4			// # of RSYS operating modes
+#define RSYSMODES 3			// # of RSYS operating modes (not including rsmOFF)
 							//   must be known in cnrecs.def
 							//   must be consistent the rsmXXX enum
 

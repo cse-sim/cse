@@ -203,6 +203,7 @@ void FC runFazDataFree()
 	ZrB.free(); 	// Zones runtime info
 	ZnresB.free();	// zone simulation results
 	RsResR.free();	// RSYS results
+	DsResR.free();	// DUCTSEG results
 	WsResR.free();	// DHWSYS results
 	IzxR.free();	// interzone transfers
 	GnB.free();   	// (zone) gains
@@ -993,6 +994,8 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 	EF(RsResR.AllocResultsRecs(RsR));	// RSYSRES <-> RSYS
 
+	EF(DsResR.AllocResultsRecs(DsR));	// DUCTSEGRES <-> DUCTSEG
+
 	EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
 
 	EF(AhresB.AllocResultsRecs(AhB));	// AHRES <-> AH
@@ -1517,6 +1520,14 @@ LOCAL void FC NEAR doIvlAccum()
 																					//  0x100: limit hrsOn to 1
 	}
 
+	DUCTSEGRES* pDSRSum = DsResR.p + DsResR.n;
+	DUCTSEGRES* pDSR;
+	RLUP(DsResR, pDSR)						// loop DUCTSYSRES, last is sum
+	{	if (pDSR->ss < DsResR.n)
+			pDSRSum->curr.S.dsr_Accum(&pDSR->curr.S, pDSR->ss == 1, (pDSR->ss == DsResR.n - 1));
+		pDSR->curr.H.dsr_Accum(&pDSR->curr.S, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour
+	}
+
 	DHWSYSRES* pWSRSum = WsResR.p + WsResR.n;
 	DHWSYSRES* pWSR;
 	RLUP(WsResR, pWSR)						// loop DHWSYSRES, last is sum
@@ -1673,6 +1684,9 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
 
+	RLUP(DsResR, pDSR)							// loop DUCTSYS simulation results incl sum_of.
+		pDSR->curr.D.dsr_Accum(&pDSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
+
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
 		pWSR->D.wsr_Accum(&pWSR->H, Top.isBegDay, Top.isEndDay);
 
@@ -1694,6 +1708,8 @@ LOCAL void FC NEAR doIvlAccum()
 		accumZr( &pZR->curr.D, &pZR->curr.M, Top.isBegMonth, Top.isEndMonth);	// add day results to month's for each zone & sum-of-zones.
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.M.rsr_Accum( &pRSR->curr.D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
+	RLUP(DsResR, pDSR)							// loop DUCTSEG imulation results incl sum_of.
+		pDSR->curr.M.dsr_Accum(&pDSR->curr.D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP(WsResR, pWSR)							// loop DHWSYS simulation results incl sum_of.
 		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
@@ -1736,6 +1752,8 @@ LOCAL void FC NEAR doIvlAccum()
 		accumAhr( &ahres->M, &ahres->Y, Top.isFirstMon, Top.isLastDay);		// accumulate month ah results to run (year)
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
+	RLUP(DsResR, pDSR)							// loop DUCTSEG simulation results incl sum_of.
+		pDSR->curr.Y.dsr_Accum(&pDSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
 		pWSR->Y.wsr_Accum(&pWSR->M, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);					// accumulate metered energy use: month to year
@@ -1864,12 +1882,12 @@ void ZNRES_IVL_SUB::zr_Init1(
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// RSYS results
+// RSYSRES: RSYS results
 ///////////////////////////////////////////////////////////////////////////////
 // float members to sum
 #define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
 #define RRs1 hrsOn								// first float member to sum (energies)
-#define RRnS ((rsysRes(qAux) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
+#define RRnS ((rsysRes(qcSenNet) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
 //-----------------------------------------------------------------------------
 void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 
@@ -1906,6 +1924,55 @@ void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// copy to prior
 		((BYTE *)this + (offsetof(RSYSRES,prior) - offsetof(RSYSRES,curr)));
 	memcpy( d, this, sizeof( RSYSRES_IVL_SUB) );
 }	// RSYSRES_IVL_SUB::rsr_SetPrior
+//=============================================================================
+// 
+// ///////////////////////////////////////////////////////////////////////////////
+// DUCTSEGRES: DUCTSEG results
+///////////////////////////////////////////////////////////////////////////////
+// float members to sum
+#define ductsegRes(m) offsetof( DUCTSEGRES_IVL_SUB, m)
+#define DRs1 qhCond								// first float member to sum
+#define DRnS ((ductsegRes(qcLeakLat) - ductsegRes( DRs1))/sizeof(float) + 1)		// number of float members to sum
+//-----------------------------------------------------------------------------
+void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
+
+	const DUCTSEGRES_IVL_SUB* src,  	// source: next longer interval, or same interval for sum_of_
+	int firstflg, 		// nz: *this will be initialized before values are accumulated into it
+	int lastflg)  		// nz: *this end-of-interval calcs as needed
+						//     +0x100: limit hrsOn to 1 (for H record)
+{
+	// first call: copy source into destination
+	if (firstflg)
+	{
+		memcpy(this, src, sizeof(DUCTSEGRES_IVL_SUB));
+		n = 0;				// reset call count. used?
+	}
+
+	// not first: add source into destination
+	else
+		VAccum(&DRs1, DRnS, &src->DRs1);	// float values not averages
+											// add each to corress dest member
+
+	// count call in destination
+	n++;					// used?
+
+#if 0
+	// last call
+	if (lastflg & 0xff)
+	{
+		if (lastflg & 0x100)	// limit hrsOn (for H record only)
+			if (hrsOn > 1.f)
+				hrsOn = 1.f;
+	}
+#endif
+}               // DUCTSEGRES_IVL_SUB::dsr_Accum
+//-----------------------------------------------------------------------------
+void DUCTSEGRES_IVL_SUB::dsr_SetPrior() const 		// copy to prior
+{
+	BYTE* d =
+		((BYTE*)this + (offsetof(DUCTSEGRES, prior) - offsetof(DUCTSEGRES, curr)));
+	memcpy(d, this, sizeof(DUCTSEGRES_IVL_SUB));
+}	// DUCTSEGRES_IVL_SUB::dsr_SetPrior
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

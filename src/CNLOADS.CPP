@@ -1703,8 +1703,8 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 //-------------------------------------------------------------------------------
 RC RSYS::rs_CkF()
 {
-	ASSERT( RSMCOUNT == rsmCOUNT);		// cndefn.h #define must be consistent
-										//   with cnrecs.def enum
+	ASSERT( RSYSMODES == rsmCOUNT-1);		// cndefn.h #define must be consistent
+											//   with cnrecs.def enum
 	int rc = RCOK;
 	const char* when;
 	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
@@ -1714,12 +1714,15 @@ RC RSYS::rs_CkF()
 		
 		if (rs_IsPkgRoom())
 		{	rc |= requireN(when, RSYS_EER95, 0);
-			rc |= disallowN(when, RSYS_SEER, 0);
+			rc |= disallowN(when, RSYS_SEER, RSYS_COP95, 0);
 			if (!IsSet(RSYS_FANPWRC))
 				rs_fanPwrC = 0.f;	// fan power included in primary by default
 		}
 		else
-			rc |= requireN(when, RSYS_SEER, 0);
+		{	rc |= requireN(when, RSYS_SEER, 0);
+			if (IsSetCount(RSYS_COP95, RSYS_EER95, 0) == 2)
+				rc |= oer("rsEER and rsCOP95 cannot both be given %s", when);
+		}
 
 		// cooling model air flow correlations have limited validity range
 		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
@@ -1730,15 +1733,47 @@ RC RSYS::rs_CkF()
 
 		rc |= rs_CkFCd(rsmCOOL);
 
-		if (!IsAusz( RSYS_CAP95))
-			// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
-			FldCopyIf( RSYS_CAP95, RSYS_CAPNOMC);
+		if (!IsAusz(RSYS_CAP95))
+		{	// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
+			FldCopyIf(RSYS_CAP95, RSYS_CAPNOMC);
+
+			if (IsSet(RSYS_CAP82))
+				rc |= disallowN("when rsCap82 is given", RSYS_CAPRAT8295, 0);
+			if (IsSet(RSYS_CAP115))
+				rc |= disallowN("when rsCap115 is given", RSYS_CAPRAT11595, 0);
+		}
+		else
+		{	// rsCap95 is autosize
+
+			rc |= disallowN("when rsCap95 is AUTOSIZE",
+					RSYS_CAP82, RSYS_CAP115, 0);
+
+		}
+
+		if (!rs_IsASHPVC())
+		{
+			rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
+				RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
+				RSYS_LOADFMIN05, RSYS_LOADFMIN17, RSYS_LOADFMIN47, 0);
+			rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
+		}
+		else
+		{
+			if (!IsSet(RSYS_LOADFMIN82))
+				rs_loadFMin82 = rs_loadFMin95;
+			if (!IsSet(RSYS_LOADFMIN115))
+				rs_loadFMin115 = rs_loadFMin95;
+		}
+
 	}
 	else
 	{	// no cooling capability
 		when = strtprintf( "when rsType=%s (cooling not available)",
 			getChoiTx( RSYS_TYPE));
-		rc |= disallowN( when, RSYS_CAP95, RSYS_SEER, RSYS_EER95,
+		rc |= disallowN( when, RSYS_SEER, RSYS_EER95,
+				RSYS_CAP95, RSYS_COP95, RSYS_LOADFMIN95, RSYS_COPMIN95,
+				RSYS_CAP82, RSYS_COP82, RSYS_CAPRAT8295, RSYS_LOADFMIN82, RSYS_COPMIN82,
+				RSYS_CAP115, RSYS_COP115, RSYS_CAPRAT11595, RSYS_LOADFMIN115, RSYS_COPMIN115,
 				RSYS_FCHG, RSYS_FSIZE, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC,
 			    RSYS_CAPNOMC, 0);
 		FldSet( RSYS_CAPNOMC, 0.f);		// insurance
@@ -1969,20 +2004,28 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	}
 
 	if (rs_CanCool())
-	{	if (rs_IsPkgRoom())
-			// pkg: derive SEER from EER
+	{	// default/harmonize 95 F COP
+		//   force rs_COP95 <-> rs_EER95 consistency
+		//   at most 1 can be input
+		//   EER can default from SEER
+		if (rs_IsPkgRoom())
+		{	// pkg: derive SEER from EER
 			//   abram conant fit, 6-20
 			rs_SEER = 1.07f * rs_EER95;
-		else
+			// rs_COP95 not allowed
+		}
+		else if (IsSet(RSYS_COP95))
+			rs_EER95 = rs_COP95 * BtuperWh;
+		else if (!IsSet(RSYS_EER95))
 		{	// estimate missing EER from SEER
 			//   California ACM method
-			if (!IsSet(RSYS_EER95))
-				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
-				: rs_SEER < 16.f          ? 11.3f + 0.57f * (rs_SEER - 13)
-				:                           13.f;
+			rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
+				: rs_SEER < 16.f      ? 11.3f + 0.57f * (rs_SEER - 13)
+				:                       13.f;
 			if (rs_SEER <= rs_EER95)
 				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
 		}
+		// rs_EER95 now set
 		rs_COP95 = rs_EER95 / BtuperWh;
 	}
 
@@ -2738,6 +2781,22 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	if (!IsSet(RSYS_CAP82))
 		rs_cap82 = rs_capRat8295 * rs_cap95;
 
+	if (!IsSet(RSYS_CAP115))
+		rs_cap115 = rs_capRat11595 * rs_cap95;
+
+#if 0
+#if 0
+		if (!IsSet(rs_cap115))
+			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
+#endif
+		if (!IsSet(rs_COP115))
+		{
+			float inp82 = rs_cap82 / rs_COP82;
+			float inp95 = rs_cap95 / rs_COP95;
+			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
+		}
+#endif
+
 	rc |= rs_SetupBtwxtClg();
 
 	rs_DefaultCapNomsIf();
@@ -2838,29 +2897,40 @@ RC RSYS::rs_EndSubhr()
 	// populate results
 	RSYSRES_IVL_SUB& R = RsResR[ ss].curr.S;
 	// RSYSRES_IVL_SUB& RH = RsResR[ ss].curr.H;
+
+	R.qFan = rs_outFan * Top.tp_subhrDur;	// fan can operate either prim or aux
+
+	float qhFan = 0.f;	// fan heat assigned to heating (primary and/or aux)
+	float qcFan = 0.f;	// fan heat assigned to cooling
+	if (rs_runFAux == 0.f)	// if no aux
+		R.hrsOnAux = R.qAux = 0.f;
+	else
+	{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
+		R.qAux = rs_outAux * Top.tp_subhrDur;
+		qhFan = R.qFan;		// also set if primary heating
+	}
+
 	if (rs_runF == 0.f)		// if no primary
 		R.hrsOn = R.qh = R.qcSen = R.qcLat = R.qDefrost = 0.f;
 	else
 	{	R.hrsOn = rs_runF * Top.tp_subhrDur;
 		if (rs_outSen >= 0.)
 		{	R.qh = rs_outSen * Top.tp_subhrDur;
+			qhFan = R.qFan;		// also set if aux
 			R.qDefrost = rs_outDefrost * Top.tp_subhrDur;
 			R.qcSen = R.qcLat = 0.f;
 		}
 		else
 		{	R.qcSen = rs_outSen * Top.tp_subhrDur;
 			R.qcLat = rs_outLat * Top.tp_subhrDur;
+			qcFan = R.qFan;
 			R.qh = R.qDefrost = 0.f;
 		}
 	}
-	if (rs_runFAux == 0.f)	// if no aux
-		R.hrsOnAux = R.qAux = 0.f;
-	else
-	{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
-		R.qAux = rs_outAux * Top.tp_subhrDur;
-	}
 
-	R.qFan = rs_outFan * Top.tp_subhrDur;	// fan can operate either prim or aux
+	R.qhNet = R.qh + qhFan + R.qAux + R.qDefrost;
+	R.qcSenNet = R.qcSen + qcFan;
+
 	return rc;
 }		// RSYS::rs_EndSubhr
 //-----------------------------------------------------------------------------
@@ -3794,6 +3864,44 @@ float RSYS::rs_Cap05Default(		// default 5 F heating capacity
 	return cap05;
 }	// RSYS::rs_Cap05Default
 //-----------------------------------------------------------------------------
+float RSYS::rs_Cap115Default(		// default 115 F (total) cooling capacity
+	float cap95,		// 95 F cooling capacity, any power units
+	float cap82) const	// 82 F cooling capacity
+// method: extrapolation using 82 - 95 slope
+// returns 115 F cooling capacity, consistent units
+{
+	float cap115 = cap82 + (33.f/13.f) * (cap95 - cap82);
+	return cap115;
+}	// RSYS::rs_Cap115Default
+//-----------------------------------------------------------------------------
+float RSYS::rs_Inp115Default(		// default 115 F input power
+	float inp95,		// 47 F input power, any power units
+	float inp82) const	// 17 F input power
+// method: extrapolation using 82 - 95 slope
+// returns 115 F input power, consistent units
+{
+	float inp115 = inp82 + (33.f/13.f) * (inp95 - inp82);
+	return inp115;
+}	// RSYS::rs_Inp115Default
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetDefaultsClg()
+{
+	RC rc = RCOK;
+
+
+	if (rs_IsVCClg())
+	{	if (!IsSet(rs_cap115))
+			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
+		float inp82 = rs_cap82 / rs_COP82;
+		float inp95 = rs_cap95 / rs_COP95;
+		if (!IsSet(rs_COP115))
+			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
+	}
+
+	return rc;
+
+}		// RSYS::rs_SetDefaultsClg()
+//-----------------------------------------------------------------------------
 RC RSYS::rs_MinSpdDefaultsHtg()		// default heating min spd values
 {
 	RC rc = RCOK;
@@ -3861,20 +3969,6 @@ RC RSYS::rs_SetupBtwxtHtg()
 {
 	RC rc = RCOK;
 
-#if 0
-	float inpMin47 = rs_CapMin47() / max(rs_COPMin47, .1f);
-	float inpMin17 = rs_CapMin17() / max(rs_COPMin17, .1f);
-
-	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
-	float inpMin35;
-	if (!IsSet(RSYS_COPMIN35))
-	{
-		inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
-		rs_COPMin35 = capMin35 / max(inpMin35, .1f);
-	}
-	else
-		inpMin35 = capMin35 / max(rs_COPMin35, .1f);
-#else
 	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
 
 	if (!IsSet(RSYS_COPMIN35))
@@ -3883,7 +3977,6 @@ RC RSYS::rs_SetupBtwxtHtg()
 		float inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
 		rs_COPMin35 = capMin35 / max(inpMin35, .1f);
 	}
-#endif
 
 	// vector of performance points
 	std::vector< VSPERFP> ppV;
@@ -3907,12 +4000,13 @@ RC RSYS::rs_SetupBtwxtClg()
 	std::vector< VSPERFP> ppV;
 	ppV.emplace_back(82.f, -rs_cap82, rs_COP82, -rs_CapMin82(), rs_COPMin82);
 	ppV.emplace_back(95.f, -rs_cap95, rs_COP95, -rs_CapMin95(), rs_COPMin95);
+	ppV.emplace_back(115.f, -rs_cap115, rs_COP115, -rs_CapMin115(), rs_COPMin115);
 
 	// Populate Btwxt interpolator grid data from performance points
 	rc |= rs_SetupBtwxt(rs_pRgiClg, ppV);
 
 	return rc;
-}		// RSYS::rs_SetupBtwxtHtg
+}		// RSYS::rs_SetupBtwxtClg
 //-----------------------------------------------------------------------------
 float RSYS::rs_CapHtCurSpeedF() const
 {

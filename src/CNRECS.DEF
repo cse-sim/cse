@@ -2958,6 +2958,7 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *declare "void ds_Init( int options=0);"
 *declare "ZNR* ds_GetExZone() const;"
 *declare "RSYS* ds_GetRSYS() const;"
+*declare "DUCTSEGRES* ds_GetDUCTSEGRES() const;"
 *declare "RC ds_Ckf();"
 *declare "bool ds_IsRound() const;"
 *declare "RC ds_TopDS( const DUCTSEG* pDSi);"
@@ -3046,6 +3047,46 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *s *e DBL ds_qLeakLat		// leakage latent heat loss rate, Btuh (+ = out of duct)
 
 *END	// DUCTSEG
+//=============================================================================
+RECORD DUCTSEGRES_IVL_SUB "DUCTSEG interval results sub" *SUBSTRUCT	// DUCTSEGresult substruct for DUCTSEGRES
+
+    *declare "void dsr_Clear() { memset(this, 0, sizeof(DUCTSEGRES_IVL_SUB)); }"
+	*declare "void dsr_Accum( const DUCTSEGRES_IVL_SUB* src, int firstFlg, int lastFlg);"
+	*declare "void dsr_SetPrior() const;"
+
+	INT n			// number of intervals added together in this one (divisor for averages)
+					//  (maintained but unused)
+
+	// float members: qhCond is first, xx is last (see code)
+    //   heating values when rsmHEAT, cooling otherwise (rsmCOOL or rsmOAV)
+    *s *e ENERGY qhCond     // heating conduction
+    *s *e ENERGY qhLeakSen  // heating leakage sensible
+    *s *e ENERGY qhTotSen   // heating total sensible
+
+    *s *e ENERGY qcCond     // cooling conduction
+    *s *e ENERGY qcLeakSen  // cooling leakage sensible
+    *s *e ENERGY qcTotSen   // cooling total sensible
+    *s *e ENERGY qcLeakLat  // cooling leakage latent
+
+*END		// DUCTSEGRES_IVL_SUB
+//=============================================================================
+RECORD DUCTSEGRES_SUB "DUCTSEG results sub" *SUBSTRUCT
+    // name: same as corresponding DUCTSEG, or sum_of_DUCTSEG.
+    // CAUTION: code assumes these are in order matching IVLCH
+    //    so can add IVLCH-1 to ptr to .Y to access M,D,S. eg in cgresult.cpp.
+    *y *nest DUCTSEGRES_IVL_SUB Y  	// run results, aka year or annual
+    *m *nest DUCTSEGRES_IVL_SUB M  	// month
+    *d *nest DUCTSEGRES_IVL_SUB D  	// day
+    *h *nest DUCTSEGRES_IVL_SUB H  	// hour.
+    *s *nest DUCTSEGRES_IVL_SUB S  	// subhour, aka subStep or sub-time-step
+*END		// DUCTSEGRES_SUB
+//=============================================================================
+RECORD DUCTSEGRES "DUCTSEGRes" *RAT	// holds DUCTSEG and all-DUCTSEG simulation results (later at subscript #DUCTSEG + 1)
+    // name: same as corresponding DUCTSEG, or sum_of_DUCTSEG.
+	*e *noname *nest DUCTSEGRES_SUB curr 	// current year,month,day,hour,subhr results, stored at end each interval
+    *nest DUCTSEGRES_SUB prior 			// prior year,month,day,hour,subhr results, available throughout interval
+    // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
+*END		// DUCTSEGRES
 //=============================================================================
 RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *prefix rs_
@@ -3149,7 +3190,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_InpHtCurSpeedF() const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
 *declare "RC rs_SetupBtwxtHtg();"
-*declare "RC rs_MinSpdDefaultsClg();"
+*declare "float rs_Cap115Default( float cap95, float cap82) const;"
+*declare "float rs_Inp115Default( float inp95, float inp82) const;"
+*declare "RC rs_SetDefaultsClg();"
 *declare "RC rs_SetupBtwxtClg();"
 *declare "RC rs_SetupBtwxt( class Btwxt::RegularGridInterpolator* &pRgi, const std::vector<struct VSPERFP> ppV);"
 *declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float& capH, float& inp, float& capHt, float& inpHt);"
@@ -3349,22 +3392,31 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GEZ rs_cap95_AsNov;	// raw autoSized cap95 net total cooling cap w/o oversizing, Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
-*f *e FLOAT_GZ rs_COP95;    // cooling AHRI rated COP at 95 F (=rs_EER95 / 3.412)
-*f *e FLOAT_GZ rs_EER95;	// cooling AHRI rated EER at 95 F, Btuh/W
+*f *e FLOAT_GZ rs_COP95;    // COP at 95 F (= rs_EER95 / 3.412)
+                            //   rs_COP95 and rs_EER95 are consistent at runtime
+*f *e FLOAT_GZ rs_EER95;	// EER at 95 F, Btuh/W (=rs_COP95 * 3.412)
+                            //   rs_COP95 and rs_EER95 are consistent at runtime
 *f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
+
+*f *e FLOAT_GEZ rs_cap115;	// total full speed net cooling capacity at 115 F (>= 0), Btuh
+*f *e FLOAT_GZ rs_COP115;   // full speed cooling COP at 115F
+*r FLOAT_GZ rs_capRat11595  // cap115 / cap95 (re autosizing)
+
 
 *f *e FLOAT_GEZ rs_cap82;	// total full speed net cooling capacity at 82 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP82;    // full speed cooling COP at 82F
-
 *r FLOAT_GZ rs_capRat8295	// cap82 / cap95 ratio (re autosizing)
 
+*f *e FRAC_GZ rs_loadFMin115;   // clg min load fract at 115 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin95;    // clg min load fract at 95 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin82;	// clg min load fract at 82 F (cycles below this)
+*declare "float rs_CapMin115() const { return rs_cap115*rs_loadFMin115; }"
 *declare "float rs_CapMin95() const { return rs_cap95*rs_loadFMin95; }"
 *declare "float rs_CapMin82() const { return rs_cap82*rs_loadFMin82; }"
 
-*f *e FLOAT_GZ rs_COPMin95	// EER at ODB=95 F, min speed, Btuh/W
-*f *e FLOAT_GZ rs_COPMin82	// EER at ODB=82 F, min speed, Btuh/W
+*f *e FLOAT_GZ rs_COPMin115 // COP at ODB=115 F, min speed
+*f *e FLOAT_GZ rs_COPMin95	// COP at ODB=95 F, min speed
+*f *e FLOAT_GZ rs_COPMin82	// COP at ODB=82 F, min speed
 
 *declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
                                                               // values in map are derived from rs_cap95 etc.
@@ -3502,7 +3554,7 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	INT n			// number of intervals added together in this one (divisor for averages)
 					//  (maintained but unused)
 
-	// float members to add, hrsOn is first, qAux is last (see code)
+	// float members to add, hrsOn is first, qcSenNet is last (see code)
 	HOURS hrsOn		// operating hours
 	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
 					//   not including defrost
@@ -3512,6 +3564,8 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	ENERGY qFan		// fan heat, Btu
 	ENERGY qDefrost	// defrost (strip) heat output, Btu
 	ENERGY qAux		// auxiliary heat output, Btu
+	ENERGY qhNet	// heating net output, Btu
+    ENERGY qcSenNet // sensible cooling net output, Btu
 
 *END		// RSYSRES_IVL_SUB
 //=============================================================================
