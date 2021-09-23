@@ -80,6 +80,7 @@ makAncAFMTR(AfMtrR);		// air flow meters run basAnc
 makAncRSYS( RsR);			// compliance-oriented simple residential system model
 makAncRSYSRES( RsResR);		// RSYS results
 makAncDUCTSEG( DsR);		// duct segments
+makAncDUCTSEGRES( DsResR);	// DUCTSEG results
 
 // DHW: California compliance-oriented water heating
 makAncDHWMTR( WMtrR);		// DHW meters

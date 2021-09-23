@@ -2662,21 +2662,24 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 }	// HPWHLINK::hw_InitGeneric
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
-	WHRESTYCH resTy,	// resistance heater type
+	WHRESTYCH resTy,	// resistance heater type (currently unused)
 	float vol,			// tank volume, gal
 	float EF,			// rated EF
+						//   if >0, call HPWHinit_resTank
+						//   else HPWHinit_resTankGeneric
+	float insulR,		// insulation resistance, ft2-F/Btuh
+						//   used iff EF <= 0
 	float resHtPwr,		// upper resistance heat element power, W
-	float resHtPwr2,	// lower resistance heat element power, W
-	float tUse)			// use temp, F
+	float resHtPwr2)	// lower resistance heat element power, W
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	int ret = resTy == C_WHRESTYCH_SWINGTANK
-		? hw_pHPWH->HPWHinit_resSwingTank(GAL_TO_L(max(vol, 1.f)), EF,
-		   resHtPwr, resHtPwr2, F_TO_C( tUse))
-		: hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
-			resHtPwr, resHtPwr2);
+	int ret = EF > 0.f
+		? hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)),
+			EF, resHtPwr, resHtPwr2)
+		: hw_pHPWH->HPWHinit_resTankGeneric(GAL_TO_L(max(vol, 1.f)),
+		   insulR / 5.678f, resHtPwr, resHtPwr2);
 	   
 	if (ret)
 		rc |= RCBAD;
@@ -2758,14 +2761,13 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_COLMACCXA25_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_SP },
 	{ C_WHASHPTYCH_COLMACCXA30_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_SP },
 
-#if 0
 	{ C_WHASHPTYCH_COLMACCXV5_MP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_MP },
 	{ C_WHASHPTYCH_COLMACCXA10_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_MP },
 	{ C_WHASHPTYCH_COLMACCXA15_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_MP },
 	{ C_WHASHPTYCH_COLMACCXA20_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_MP },
 	{ C_WHASHPTYCH_COLMACCXA25_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_MP },
 	{ C_WHASHPTYCH_COLMACCXA30_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_MP },
-#endif
+
 	{ C_WHASHPTYCH_NYLEC25A_SP,     hwatLARGE | HPWH::MODELS_NyleC25A_SP },
 	{ C_WHASHPTYCH_NYLEC60A_SP,     hwatLARGE | HPWH::MODELS_NyleC60A_SP  },
 	{ C_WHASHPTYCH_NYLEC90A_SP,     hwatLARGE | HPWH::MODELS_NyleC90A_SP  },
@@ -2779,14 +2781,13 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_NYLEC185AC_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_C_SP  },
 	{ C_WHASHPTYCH_NYLEC250AC_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_C_SP },
 
-#if 0
 	{ C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | HPWH::MODELS_NyleC25A_MP },
 	{ C_WHASHPTYCH_NYLEC60A_MP,     hwatLARGE | HPWH::MODELS_NyleC60A_MP },
 	{ C_WHASHPTYCH_NYLEC90A_MP,     hwatLARGE | HPWH::MODELS_NyleC90A_MP },
 	{ C_WHASHPTYCH_NYLEC125A_MP,    hwatLARGE | HPWH::MODELS_NyleC125A_MP },
 	{ C_WHASHPTYCH_NYLEC185A_MP,    hwatLARGE | HPWH::MODELS_NyleC185A_MP },
 	{ C_WHASHPTYCH_NYLEC250A_MP,    hwatLARGE | HPWH::MODELS_NyleC250A_MP },
-#endif
+
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | HPWH::MODELS_TamScalable_SP },
 
 	{ 32767,                         HPWH::MODELS(-1) }  };
@@ -3008,8 +3009,9 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	else
 	{	// resistance: return capacity of largest heating element
 		//   TODO: recode to return max when HPWH is fixed
-		for (int which = 0; which < 1; which++)
-		{	double capx = hw_pHPWH->getResistanceCapacity(which, HPWH::UNITS_BTUperHr);
+		int nRE = hw_pHPWH->getNumResistanceElements();
+		for (int iRE = 0; iRE < nRE; iRE++)
+		{	double capx = hw_pHPWH->getResistanceCapacity(iRE, HPWH::UNITS_BTUperHr);
 			if (capx != double(HPWH::HPWH_ABORT) && capx > cap)
 				cap = capx;
 		}
@@ -4129,8 +4131,12 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	bool bVolMaybeModifiable = false;
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 	{	// resistance tank (no preset)
+		//  wh_EF and wh_insulR < 0 if not set
+		//  wh_EF > 0 determines HPWH type of resistance tank
+		//  wh_resTy is currently documentation only (9-2021)
+		float insulR = IsSet(DHWHEATER_INSULR) ? wh_insulR : 12.f;
 		rc |= wh_HPWH.hw_InitResistance(
-			wh_resTy, wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2, pWS->ws_tUse);
+			wh_resTy, wh_vol, wh_EF, insulR, wh_resHtPwr, wh_resHtPwr2);
 		// bVolMaybeModifiable = true;
 	}
 	else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)

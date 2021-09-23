@@ -3,7 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'House': Condensation occurred in 82684 subhours of run.
+Warning: Zone 'House': Condensation occurred in 82683 subhours of run.
     Total condensation heat = 2205.44 kBtu.
 ---------------
 Warning: Zone 'Attic': Condensation occurred in 58476 subhours of run.
@@ -457,7 +457,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.895.0+vsashp.09f2187.13 for Win32 console
+! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console
 
 
 
@@ -1747,18 +1747,18 @@ Input for Run 001:
 
 
 
-! CSE 0.895.0+vsashp.09f2187.13 for Win32 console run(s) done: Mon 26-Jul-21  11:14:21 am
+! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console run(s) done: Fri 27-Aug-21  11:13:13 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               26-Jul-21  11:09 am   (VS 14.29    2693120 bytes)  (HPWH 1.14.0+cut_down_msgs.f9bf0a1.16)
+!               27-Aug-21  11:04 am   (VS 14.29    2701824 bytes)  (HPWH 1.15.0+master.d18737e.3)
 ! Command line: -x!  -t1 bgtest
 ! Input file:   D:\cse\test\bgtest.cse
 ! Report file:  D:\cse\test\bgtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0490   
+!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 7.61     Calls = 1      T/C = 7.6120   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0090   
-!                Total:  Time = 7.67     Calls = 1      T/C = 7.6740   
+!           Simulation:  Time = 7.11     Calls = 1      T/C = 7.1090   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0120   
+!                Total:  Time = 7.17     Calls = 1      T/C = 7.1730   
