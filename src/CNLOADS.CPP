@@ -355,7 +355,6 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 RC ZNR::zn_BegSubhr1()			// zone start of subhour, part 1
 // call *before* airnet and possible others needing prior-step (lagged) values
 {
-	// is following still needed? eg loadsIzxfer no longer accumulates to it... 11-95
 	memset( &ZnresB.p[ss].curr.S, 0, sizeof( ZNRES_IVL_SUB) );	// access subhr results struct in ZNRES via subscr in ZrB & 0 it.
 	ZnresB.p[ss].curr.S.nSubhr = 1L;	// count subhours by setting to 1 at subhr level & accumulating
 
@@ -1719,10 +1718,7 @@ RC RSYS::rs_CkF()
 				rs_fanPwrC = 0.f;	// fan power included in primary by default
 		}
 		else
-		{	rc |= requireN(when, RSYS_SEER, 0);
-			if (IsSetCount(RSYS_COP95, RSYS_EER95, 0) == 2)
-				rc |= oer("rsEER and rsCOP95 cannot both be given %s", when);
-		}
+			rc |= requireN(when, RSYS_SEER, 0);
 
 		// cooling model air flow correlations have limited validity range
 		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
@@ -2005,8 +2001,9 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 	if (rs_CanCool())
 	{	// default/harmonize 95 F COP
-		//   force rs_COP95 <-> rs_EER95 consistency
-		//   at most 1 can be input
+		//   inter-default rs_COP95 <-> rs_EER95
+		//   if both input, values can be different
+		//   rs_COP95 used for VCHP2, rs_EER95 used for single speed
 		//   EER can default from SEER
 		if (rs_IsPkgRoom())
 		{	// pkg: derive SEER from EER
@@ -2014,19 +2011,24 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			rs_SEER = 1.07f * rs_EER95;
 			// rs_COP95 not allowed
 		}
-		else if (IsSet(RSYS_COP95))
-			rs_EER95 = rs_COP95 * BtuperWh;
-		else if (!IsSet(RSYS_EER95))
-		{	// estimate missing EER from SEER
-			//   California ACM method
-			rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
-				: rs_SEER < 16.f      ? 11.3f + 0.57f * (rs_SEER - 13)
-				:                       13.f;
-			if (rs_SEER <= rs_EER95)
-				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
+		else if (IsSet(RSYS_EER95))
+		{	if (!IsSet(RSYS_COP95))
+				rs_COP95 = rs_EER95 / BtuperWh;
 		}
-		// rs_EER95 now set
-		rs_COP95 = rs_EER95 / BtuperWh;
+		else
+		{	if (IsSet(RSYS_COP95))
+				rs_EER95 = rs_COP95 * BtuperWh;
+			else
+			{	// estimate missing EER from SEER
+				//   California ACM method
+				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
+					: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
+					: 13.f;
+				rs_COP95 = rs_EER95 / BtuperWh;
+			}
+		}
+		if (rs_SEER <= rs_EER95)
+			rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);	
 	}
 
 	if (IsAusz( RSYS_CAP95))
@@ -2704,10 +2706,9 @@ float RSYS::rs_FanHRtdPerTon(		// fan heat included in ratings
 // returns fan heat included in ratings, Btuh
 {
 	float fanHRtdPerTon =
-		rs_IsPkgRoom()  ? 0.f			// PkgRoom: no fan adjustment
-	                    : rs_fan.fn_motTy == C_MOTTYCH_PSC
-		                   ? 500.f	    // PSC = Permanent Split Capacitor
-	                       : 283.f;		// BPM = Brushless Permanent Magnet (aka ECM)
+		rs_IsPkgRoom() || rs_adjForFanHt == C_NOYESCH_NO      ? 0.f		// PkgRoom or user override: no fan adjustment
+	                    : rs_fan.fn_motTy == C_MOTTYCH_PSC  ? 500.f	    // PSC = Permanent Split Capacitor
+	                    :									  283.f;	// BPM = Brushless Permanent Magnet (aka ECM)
 
 	return capNomTons * fanHRtdPerTon;
 
@@ -3120,23 +3121,26 @@ x		printf("\nhit");
 	else
 	{	// total capacities and input, Btuh
 		//   include rated fan power
+		//   cap values are net Btuh, <0
 		float capClg, inpClg, capClgMin, inpClgMin;
 		RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
 			capClg, inpClg, capClgMin, inpClgMin);
 		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;
 		float fanHAdj = rs_fanHRtdC;	// fan heat adjustment, Btuh
+		// adjust for fan power (= convert to gross cooling)
 		capClg += fanHAdj;
 		inpClg -= fanHAdj;
 		capClgMin += fanHAdj * rs_speedFMin;
 		inpClgMin -= fanHAdj * rs_speedFMin;
 
-		rs_capTotCt = capClg * rs_speedF;		// total coil capacity at current conditions and speed, Btuh
+		rs_capTotCt = capClg * rs_speedF;		// total coil capacity (= gross) at current conditions and speed, Btuh
 		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
+		// input at current speed (Btuh)
 		float inpX = rs_speedF == 1.f
 			? inpClg
 			: inpClgMin
-			+ (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+			   + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
 
 		rs_effCt = abs( rs_capSenCt) / inpX;		// compressor-only COP
 	}
@@ -4553,7 +4557,7 @@ void RSYS::rs_EnteringAirState()	// RSYS entering air state
 				orWarn("dubious return temp (%.1f F)", afRet.as_tdb);
 #endif
 		}
-		rs_asRet = afRet;		// state = flow w/o amf
+		rs_asRet.as_Set( afRet);		// state = flow w/o amf
 	}
 
 	// adjust state for return duct
@@ -4998,25 +5002,28 @@ RC RSYS::rs_AllocateZoneAirVC()		//
 
 }	// RSYS::AllocateZoneAirVC()
 //-----------------------------------------------------------------------------
-RC RSYS::rs_TotalAirRequest(
+RC RSYS::rs_TotalAirRequest(		// all-zone air request at speedF
 	float speedF)
-
 {
 	RC rc = RCOK;
 
-	rs_ClearSubhrResults(1);	// init for speed re-try
-	int ret = rs_SupplyAirState(rs_mode, speedF);
-	ZNR* zp;
-	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
-		zp->zn_AirRequest(this);
-
-	if (rs_amfReq[0] <= 0.)				// if any air requested (by any zone)
+	if (speedF != rs_speedF)
 	{
-		printf("\nrs_AirRequest: rs_amfReq[ 0] <= 0.");
-		return RCBAD;
-	}
 
-	rs_fxCap[0] = rs_amf / rs_amfReq[0];	// >1 = excess capacity
+		rs_ClearSubhrResults(1);	// init for speed re-try
+		int ret = rs_SupplyAirState(rs_mode, speedF);
+		ZNR* zp;
+		RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+			zp->zn_AirRequest(this);
+
+		if (rs_amfReq[0] <= 0.)				// if any air requested (by any zone)
+		{
+			printf("\nrs_AirRequest: rs_amfReq[ 0] <= 0.");
+			return RCBAD;
+		}
+
+		rs_fxCap[0] = rs_amf / rs_amfReq[0];	// >1 = excess capacity
+	}
 
 	return rc;
 }		// RSYS::rs_TotalAirRequest
@@ -5050,7 +5057,7 @@ double RSYS::rs_FindAirFlow()
 
 #if defined( _DEBUG)
 	if (ret)
-		printf("\nrs_FindAirFlow(): secant ret=%d", ret);
+		printf("\nrs_FindAirFlow(): secant ret=%d  rsMode=%d", ret, rs_mode);
 	if (rs_speedF < rs_speedFMin || rs_speedF > 1.f)
 		printf("\nrs_FindAirFlow() rs_speedF=%0.2f", rs_speedF);
 #endif
@@ -5124,11 +5131,11 @@ RC RSYS::rs_FinalizeSh()
 	float runFFan = 0.f;		// subhour fan run fraction
 	if (rs_mode == rsmCOOL)
 	{
-		rs_outSen = rs_loadF * rs_capSenCt;		// average output w/o fan, Btuh (< 0)
+		rs_outSen = rs_loadF * rs_capSenCt;		// average output w/o fan (= gross cooling), Btuh (< 0)
 		rs_outLat = rs_loadF * rs_capLatCt;
 		rs_outFan = rs_inFan = rs_loadF * rs_speedF * rs_fanHeatC;	// all fan heat to air
 		runFFan = rs_loadF;
-		rs_outSenTot = rs_outSen + rs_outFan;	// gross output
+		rs_outSenTot = rs_outSen + rs_outFan;	// net cooling output, Btuh (generally < 0)
 
 		if (!rs_IsVCClg() || rs_speedF == 1.f)
 		{	rs_runF = rs_loadF;

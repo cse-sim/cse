@@ -1922,6 +1922,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "AIRSTATE( double tdb, double w) : as_tdb( tdb), as_w( w) { }"
 *declare "void as_Init() { as_tdb=0.; as_w=0.; }"
 *declare "void as_Set( double tdb, double w) { as_tdb=tdb; as_w = w; }"
+*declare "void as_Set( const AIRFLOW& af);"
 *declare "void as_SetWFromRh( float rh) { as_w = psyHumRat2( as_tdb, rh); }"
 *declare "float as_Twb() const { return psyTWetBulb( as_tdb, as_w); }"
 *declare "float as_Enthalpy() const { return psyEnthalpy( as_tdb, as_w); }"
@@ -1954,6 +1955,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_W() const { return as_w; }"
 *declare "double af_Wmf() const { return af_amf*as_w; }"
 *declare "void af_GetAirState( AIRSTATE& as) const { as.as_Set( as_tdb, as_w); }"
+*declare "void af_SetAirState( const AIRSTATE& as) { as_Set( as.as_tdb, as.as_w); }"
 *declare "void af_Init() { af_amf=0.; as_tdb=0.; as_w=0.; }"
 *declare "void af_Init( double amf, double tdb, double w) { af_amf=amf;	as_tdb=tdb; as_w=w; }"
 *declare "void af_Copy( const AIRFLOW& af){ af_amf=af.af_amf; as_tdb=af.as_tdb; as_w=af.as_w; }"
@@ -2699,6 +2701,7 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qMass  	// zone net sensible transfer from mass, Btu.  See qlAir for moisture.
     float qsIz    	// interzone gain to zone, Btu
     float qsMech  	// zone total sensible mechanical heat gain, Btu
+                    //   includes HPWH heat removal
     float eqfVentHr	// equivalent full vent hours = sum( zn_fVent)
   //2. latent heats for latent heat balance: qlInfil thru qlMech
     float qlInfil	// zone infiltration latent gain, Btu
@@ -2713,9 +2716,11 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
 					//   - added to next subr sens gain. Btu.
     float unMetHDH	// zone end-of-hour air temp excursion below heating set point, deg-hr (<=0)
 	float unMetCDH	// zone end-of-hour air temp excursion above cooling set point, deg-hr (>=0)
-    float qcMech	// zone accumulated cooling (negative) ...
-    float qhMech	// ... and heating (positive) mechanical heat gains. Latent & sensible combined. 10-93.
-    float qvMech	// ... mechanical (OAV) vent (negative)
+    float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (OAV not included)
+    float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
+    float qcMech	// zone accumulated total mechanical (sensible + latent) cooling (including HPWH heat extraction), Btu (< 0)
+    float qhMech	// zone accumulated total mechanical (sensible + latent) heating (including HPWH heat extraction), Btu (>0)
+    float qvMech	// zone accumulated mechanical (OAV) total (sensible + latent) heat gains, Btu (< 0)
     float litDmd	// zone lighting demand and Energy Use, ...
     float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
 *END		// ZNRES_IVL_SUB
@@ -3059,14 +3064,14 @@ RECORD DUCTSEGRES_IVL_SUB "DUCTSEG interval results sub" *SUBSTRUCT	// DUCTSEGre
 
 	// float members: qhCond is first, xx is last (see code)
     //   heating values when rsmHEAT, cooling otherwise (rsmCOOL or rsmOAV)
-    *s *e ENERGY qhCond     // heating conduction
-    *s *e ENERGY qhLeakSen  // heating leakage sensible
-    *s *e ENERGY qhTotSen   // heating total sensible
+    ENERGY qhCond     // heating conduction
+    ENERGY qhLeakSen  // heating leakage sensible
+    ENERGY qhTotSen   // heating total sensible
 
-    *s *e ENERGY qcCond     // cooling conduction
-    *s *e ENERGY qcLeakSen  // cooling leakage sensible
-    *s *e ENERGY qcTotSen   // cooling total sensible
-    *s *e ENERGY qcLeakLat  // cooling leakage latent
+    ENERGY qcCond     // cooling conduction
+    ENERGY qcLeakSen  // cooling leakage sensible
+    ENERGY qcTotSen   // cooling total sensible
+    ENERGY qcLeakLat  // cooling leakage latent
 
 *END		// DUCTSEGRES_IVL_SUB
 //=============================================================================
@@ -3231,7 +3236,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *d FLOAT rs_capNomH			//   nominal heating capacity, Btuh.  Default=rs_capH or rs_cap47
 *d FLOAT rs_capNomC			//   nominal cooling capacity, Btuh.  Default=rs_cap95
 
-*r *nest FAN rs_fan				// RSYS fan characteristics
+*r *nest FAN rs_fan			// RSYS fan characteristics
+*r NOYESCH rs_adjForFanHt   // YES: fanHtRtd derived from rs_fan.motTy
+                            //        and removed from capacity and input values
+                            //    NO: no rated fan heat adjustments
 
 *s *e *nest AIRSTATE rs_asRet	// return duct entering air state (at grilles)
 								//   (flow-weighted average of all zones)
