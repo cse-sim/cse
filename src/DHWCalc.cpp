@@ -4035,7 +4035,7 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 
 // DHWHEATER subhour models accum to wh_inElec, wh_inElecBu, wh_inElecXBU, and wh_inFuel
 
-// do not for C_IVLCH_S
+// do not call for C_IVLCH_S
 
 {
 	RC rc = RCOK;
@@ -4487,14 +4487,22 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_qLoss = wh_HPWH.hw_qLoss;
 		wh_qEnv = wh_HPWH.hw_qEnv;
 		wh_balErrCount = wh_HPWH.hw_balErrCount;
-		if (pWS->ws_tUse - wh_HPWH.hw_tHWOut > 1.f)
+		wh_tHWOut = wh_HPWH.hw_tHWOut;
+		wh_qXBU = wh_HPWH.hw_HPWHxBU;
+		if (pWS->ws_tUse - wh_tHWOut > 1.f)
+		{
+#if 0 && defined( _DEBUG)
+			if (wh_HPWH.hw_nzDrawCount != 0)
+				printf("\nUnexpected unmet");
+#endif
 			wh_unMetSh++;	// unexpected, XBU should maintain temp
 							//   will happen if ws_tUse changes (e.g. via expression)
-							//   during a period of no draw			
+							//   during a period of no draw
+		}
 
 		// energy output and electricity accounting (assume no fuel)
 		wh_qHW = KWH_TO_BTU(wh_HPWH.hw_qHW);			// hot water heating, Btu
-		wh_inElecXBUSh = wh_qXBU = wh_HPWH.hw_HPWHxBU;	// add'l backup heating, Btu
+		wh_inElecXBUSh = wh_qXBU;						// add'l backup heating, Btu
 
 		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;
