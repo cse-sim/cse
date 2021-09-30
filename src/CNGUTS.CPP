@@ -1439,13 +1439,13 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 // floats: all
 #define ZRf1 tAir							// 1st of all float members (incl avgs & sums). cnguts.cpp
 #define ZRnF ((oRes(litEu) - oRes(tAir))/sizeof(float) + 1)      	// total # float members.  cnguts.cpp
-  // floats: to average (cnguts.cpp)
+// floats: to average (cnguts.cpp)
 #define ZRa1 tAir							// 1st float to average in float mbrs.  cnguts.cpp.
 #define ZRnA ((oRes(wAir) - oRes(tAir))/sizeof(float) + 1) // # of floats to average
-  // floats: to sum: all (cnguts.cpp)
+// floats: to sum: all (cnguts.cpp)
 #define ZRs1 qCond							// first one
 #define ZRnS ((oRes(litEu) - oRes(qCond))/sizeof(float) + 1)		// #
-    // floats to sum: sensible heat balance (cgenbal.cpp)
+// floats to sum: sensible heat balance (cgenbal.cpp)
 #define ZRq1 qCond							// 1st float sum & 1st heat flow.  cnguts.cpp, cgenbal.cpp.
 #define ZRnQ ((oRes(qsMech) - oRes(qCond))/sizeof(float) + 1)     	// # of floats to sum / # heat flows. cnguts.cpp, cgenbal.cpp.
 // floats to sum: latent heat balance

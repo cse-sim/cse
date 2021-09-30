@@ -868,35 +868,32 @@ x          Then no error. User input for fraction of this heat of condensation t
 //      Note q to CAir is subtracted from qMass for balance.
 	RC rc = RCOK;
 
-	ZNRES_IVL_SUB* zrs = &ZnresB.p[ss].curr.S;	// pointers to zone's hour results in ZNRES
-	zrs->tAir = tz;				// substep result air temp
-	zrs->tRad = tr;				// substep result radiant temp
-	zrs->wAir = wz;				// substep result air humidity ratio
+	ZNRES_IVL_SUB* zrs = &ZnresB.p[ss].curr.S;	// zone's subhour results in ZNRES
+												//  0d in ZNR::zn_BegSubhr1
+	zrs->tAir = tz;				// subhour result air temp
+	zrs->tRad = tr;				// subhour result radiant temp
+	zrs->wAir = wz;				// subhour result air humidity ratio
 #ifdef COMFORT_MODEL
-	zrs->PMV7730 = zn_comfPMV7730;		// substep PMV (comfort)
-	zrs->PPD7730 = zn_comfPPD7730;		// substep PPD (comfort)
+	zrs->PMV7730 = zn_comfPMV7730;		// subhour PMV (comfort)
+	zrs->PPD7730 = zn_comfPPD7730;		// subhour PPD (comfort)
 #endif
 	zrs->pz0 = zn_pz0;			// substep zone pressure
 
 // subhour results: hvac output
-
-	zrs->qsMech = (zn_qsHvac + zn_qHPWH) * Top.tp_subhrDur;	// subhour sensible hvac energy (power * time = energy)
+	double qsHvac = zn_qsHvac * Top.tp_subhrDur;		// subhour sensible hvac energy, Btu
+	zrs->qsMech = qsHvac + zn_qHPWH * Top.tp_subhrDur;	// subhour sensible mechanical energy, Btu
+														//   (includes HPWH heat extraction)
 
 	zrs->qlMech = zn_qlHvac * Top.tp_subhrDur;	// subhour latent hvac energy (power * time = energy)
 
-	double qTotMech = (zn_qsHvac + zn_qlHvac)	// combine sensible and latent power (netting out if signs different)
-					  * Top.tp_subhrDur;
+	double qTotMech		// combined sensible and latent energy (netting out if signs different)
+		= qsHvac + zn_qlHvac * Top.tp_subhrDur;
+
 	if (zn_hcMode == RSYS::rsmOAV)
-	{	zrs->qvMech = qTotMech;
-		zrs->qhMech = zrs->qcMech = 0.f;
-	}
-	else if (qTotMech < 0.)				// if net cooling
-	{	zrs->qcMech = qTotMech;			// store negative values in qcMech for non-netting accumulation to H,D,M,Y.
-		zrs->qhMech = 0.f;				//  This is output via probes or binary results files only, 10-93.
-	}
+		zrs->qvMech = qTotMech;
 	else
-	{	zrs->qhMech = qTotMech;			// positive (heating) values accumulate in qhMech
-		zrs->qcMech = 0.f;
+	{	(qTotMech < 0. ? zrs->qcMech : zrs->qhMech) = qTotMech;
+		(qsHvac < 0.f ? zrs->qscHvac : zrs->qshHvac) = qsHvac;
 	}
 
 	zrs->eqfVentHr = zn_fVent * Top.tp_subhrDur;	// equivalent full vent operation, hr

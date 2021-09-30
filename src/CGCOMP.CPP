@@ -357,6 +357,13 @@ void AFMTR::amt_Accum(
 /////////////////////////////////////////////////////////////////////////////////
 // AIRSTATE
 /////////////////////////////////////////////////////////////////////////////////
+void AIRSTATE::as_Set(const AIRFLOW& af)
+// copy AIRFLOW state (ignore af_amf)
+{
+	as_tdb = af.as_tdb;
+	as_w = af.as_w;
+}	// AIRSTATE::as_Set
+//------------------------------------------------------------------------------
 int AIRSTATE::as_IsEqual( const AIRSTATE& as, double tol/*=.001*/) const
 {	return frDiff( as_tdb, as.as_tdb) < tol
         && frDiff( as_w,   as.as_w)   < tol;
@@ -2273,29 +2280,31 @@ void DUCTSEG::ds_FinalizeSh(		// finish subhour calcs
 	if (runF > 0.f && ds_leakF > 0.f)
 	{
 		double amfLk = runF * ds_amfFL * ds_leakF;	// leak amf, lb/hr
+		double tz = pRS->rs_asRet.as_tdb;
+		double wz = pRS->rs_asRet.as_w;
 		if (ds_IsSupply())
-		{	// supply (leakage is out of duct)
-#if 0
-			double tz = pRS->rs_asZn.as_tdb;
-#endif
-			double tz = pRS->rs_asRet.as_tdb;
-			double qDotIn = runF * mCpFL * ds_air[1].as_tdb;
-			double qDotOut = runF * mCpFL * (1.f - ds_leakF) * ds_air[3].as_tdb;
-			double qLeak = qDotOut - qDotIn - ds_qCond;
-			ds_qLeakSen = runF * mCpFL * ds_leakF * (ds_air[3].as_tdb - tz);
-			ds_qLeakLat = amfLk * PsyHCondWtr * ds_air[3].as_w;	// TODO
+		{	// supply (leakage: + = out of duct, heating loss > 0, cooling loss < 0)
+			ds_qLeakSen = amfLk * Top.tp_airSH * (ds_air[3].as_tdb - tz);
+			ds_qLeakLat = amfLk * PsyHCondWtr * (ds_air[3].as_w - wz);
 			if (zpx)
 				zpx->zn_ductLkI.af_AccumDry(amfLk, ds_air[3]);
 		}
 		else
 		{	// return
+			//   leakage flow is into the duct -- that is, negative per sign convention
+			//   ds_amfFL is always > 0, so amfLk must be negated
 			if (zpx)
 				zpx->zn_ductLkO.af_AccumDry(-amfLk, zpx->tz, zpx->wz);
+			// return leakage losses: duct flow * deltaT across leak
+			//  heating loss > 0, cooling loss < 0
+			ds_qLeakSen = runF * ds_amfFL * Top.tp_airSH * (ds_air[0].as_tdb - ds_air[1].as_tdb);
+			ds_qLeakLat = runF * ds_amfFL * PsyHCondWtr * (ds_air[0].as_w - ds_air[1].as_w);
 		}
 	}
 	// else ds_qLeakSen = ds_qLeakLat = 0. per ds_BegSubHr()
 
 	// populate results
+	//   results zeroed in DUCTSEG::ds_BegSubhr()
 	DUCTSEGRES_IVL_SUB& R = ds_GetDUCTSEGRES()->curr.S;
 	if (pRS->rs_mode == RSYS::rsmHEAT)
 	{	R.qhCond = ds_qCond * Top.tp_subhrDur;
