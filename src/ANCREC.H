@@ -228,8 +228,9 @@ class record		// base class for records
 
 	// input-checking support functions in cncult2.cpp
     // require/disallow fields
+	RC checkN(const char* when, RC (*checkFcn)(int fn, const char* when), va_list ap);
     RC disallowN( const char* when=NULL, ...);
-    RC disallow( int fn, const char* when=NULL);
+    RC disallow( int fn, const char* when);
     RC requireN( const char* when=NULL, ...);
     RC require( int fn, const char* when=NULL);
     RC ignoreN( const char* when=NULL, ...);

@@ -8,7 +8,7 @@
 
 Monthly Energy Use, meter "Elec0"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan -28.47      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.47
 Feb -29.41      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.41
@@ -29,7 +29,7 @@ Yr  -456.0      0      0      0      0      0      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.868.1+pvupdate.29a649a.9 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -60,7 +60,7 @@ Yr  -456.0      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 28-Apr-20   5:15:13 pm  Page  1
+! pvtest  001                              Tue 22-Jun-21  11:19:55 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 28-Apr-20   5:15:13 pm  Page  2
+! pvtest  001                              Tue 22-Jun-21  11:19:55 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 28-Apr-20   5:15:13 pm  Page  3
+! pvtest  001                              Tue 22-Jun-21  11:19:55 am  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 28-Apr-20   5:15:13 pm  Page  4
+! pvtest  001                              Tue 22-Jun-21  11:19:55 am  Page  4
 
 
 
@@ -258,21 +258,21 @@ Input for Run 001:
 
 
 
-! CSE 0.868.1+pvupdate.29a649a.9 for Win32 console run(s) done: Tue 28-Apr-20   5:15:13 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:19:55 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               28-Apr-20   5:10 pm   (VS 14.16    2607616 bytes)  (HPWH 1.9.0+HEAD.6ded143.16)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 pvtest
 ! Input file:   D:\cse\test\pvtest.cse
 ! Report file:  D:\cse\test\pvtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0040   
+!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.49     Calls = 1      T/C = 0.4870   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0130   
-!                Total:  Time = 0.51     Calls = 1      T/C = 0.5070   
+!           Simulation:  Time = 0.39     Calls = 1      T/C = 0.3850   
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0160   
+!                Total:  Time = 0.45     Calls = 1      T/C = 0.4510   
 
 
 
@@ -312,5 +312,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! pvtest  001                              Tue 28-Apr-20   5:15:13 pm  Page  5
+! pvtest  001                              Tue 22-Jun-21  11:19:55 am  Page  5
 

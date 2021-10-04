@@ -8,7 +8,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -60,7 +60,7 @@
 
 
 ------------------------------------------------------------------------------
-! dhw02  001                               Tue 24-Nov-20   2:58:52 pm  Page  1
+! dhw02  001                               Tue 22-Jun-21  11:16:00 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Input for Run 001:
             whMult = 2
 
 ------------------------------------------------------------------------------
-! dhw02  001                               Tue 24-Nov-20   2:58:52 pm  Page  2
+! dhw02  001                               Tue 22-Jun-21  11:16:00 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! dhw02  001                               Tue 24-Nov-20   2:58:52 pm  Page  3
+! dhw02  001                               Tue 22-Jun-21  11:16:00 am  Page  3
 
 
 
@@ -205,7 +205,7 @@ Weather for Apr
 
 Monthly Energy Use, meter "Elec0"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 0.0190      0      0      0 0.0190      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb 0.0218      0      0      0 0.0218      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -226,7 +226,7 @@ Yr   0.555      0      0      0  0.555      0      0      0      0      0      0
 
 Monthly Energy Use, meter "Fuel0"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  1.041      0      0      0  1.041      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  0.950      0      0      0  0.950      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -249,7 +249,7 @@ Yr  10.811      0      0      0 10.811      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page  4
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ Yr  10.811      0      0      0 10.811      0      0      0      0      0      0
 
 Hourly Energy Use, meter "Elec0", Wed 01-Apr
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 30.709      0      0      0 30.709      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2 34.121      0      0      0 34.121      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -312,7 +312,7 @@ Day 1105.5      0      0      0 1105.5      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page  5
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page  5
 
 
 
@@ -323,7 +323,7 @@ Day 1105.5      0      0      0 1105.5      0      0      0      0      0      0
 
 Hourly Energy Use, meter "Fuel0", Wed 01-Apr
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 457.60      0      0      0 457.60      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2 260.53      0      0      0 260.53      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -375,7 +375,7 @@ DS0
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page  6
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ DS0 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page  7
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ DS0 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page  8
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page  8
 
 
 
@@ -543,7 +543,7 @@ Fuel SmallStorage for Wed 01-Apr
 
 Monthly Energy Use, meter "Elec1"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  9.078      0      0      0  8.867      0  0.210      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  8.239      0      0      0  8.049      0  0.190      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -564,7 +564,7 @@ Yr  100.95      0      0      0 98.471      0  2.478      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page  9
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page  9
 
 
 
@@ -575,7 +575,7 @@ Yr  100.95      0      0      0 98.471      0  2.478      0      0      0      0
 
 Monthly Energy Use, meter "Fuel1"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  8.105      0      0      0  8.105      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  7.358      0      0      0  7.358      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -596,7 +596,7 @@ Yr  89.901      0      0      0 89.901      0      0      0      0      0      0
 
 Hourly Energy Use, meter "Elec1", Wed 01-Apr
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 7567.5      0      0      0 7284.6      0 282.83      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2 8176.4      0      0      0 7893.5      0 282.83      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -627,7 +627,7 @@ Day 288907      0      0      0 282119      0 6787.9      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 10
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 10
 
 
 
@@ -638,7 +638,7 @@ Day 288907      0      0      0 282119      0 6787.9      0      0      0      0
 
 Hourly Energy Use, meter "Fuel1", Wed 01-Apr
 
-Hr     Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
   1 6577.5      0      0      0 6577.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
   2 7147.0      0      0      0 7147.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -690,7 +690,7 @@ DS1
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 11
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 11
 
 
 
@@ -753,7 +753,7 @@ DS1 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 12
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 12
 
 
 
@@ -816,7 +816,7 @@ DS0 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 13
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 13
 
 
 
@@ -879,7 +879,7 @@ Fuel SmallInstantaneous for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 14
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 14
 
 
 
@@ -942,7 +942,7 @@ Fuel SmallStorage for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 15
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Fuel LargeInstantaneous for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 16
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Fuel LargeStorage for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 17
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Resistance SmallInstantaneous for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 18
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ Resistance SmallStorage for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 19
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ Resistance LargeInstantaneous for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 20
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ Resistance LargeStorage for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 21
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ ASHP SmallStorage for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 22
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ Tank1 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 23
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ Loop1 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 24
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ LP1 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 25
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ Seg1 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 26
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ Seg2 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 27
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 27
 
 
 
@@ -1761,7 +1761,7 @@ Seg3 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 28
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 28
 
 
 
@@ -1824,7 +1824,7 @@ Seg4 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 29
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 29
 
 
 
@@ -1887,7 +1887,7 @@ Seg5 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 30
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 30
 
 
 
@@ -1950,7 +1950,7 @@ Seg6 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 31
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 31
 
 
 
@@ -1992,7 +1992,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -2013,7 +2013,7 @@ Br1 for Wed 01-Apr
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 32
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 32
 
 
 
@@ -2076,7 +2076,7 @@ Input for Run 001:
         	DHWLOOPSEG "Seg3"  wgTy=Supply wgLength = 86.6025 wgSize = 2 wgInsulK = 0.26/12 wgInsulThk = 1.5 wgfNoDraw =.6
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 33
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 33
 
 
 
@@ -2139,7 +2139,7 @@ Input for Run 001:
 #       ReportCol colVal="Yr" colWid = 3 \
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 34
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 34
 
 
 
@@ -2202,7 +2202,7 @@ Input for Run 001:
 #       ReportCol colhead="Hr" colVal=$hour colWid = 2 \
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 35
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 35
 
 
 
@@ -2265,7 +2265,7 @@ Input for Run 001:
         WLPREP( "LP1", apr 1)
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 36
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 36
 
 
 
@@ -2328,7 +2328,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 37
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 37
 
 
 
@@ -2337,21 +2337,21 @@ Input for Run 001:
 
 
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   2:58:54 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:16:01 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Nov-20  10:41 am   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 dhw02
 ! Input file:   D:\cse\test\dhw02.cse
 ! Report file:  D:\cse\test\dhw02.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2      T/C = 0.0040   
+!                Input:  Time = 0.10     Calls = 2      T/C = 0.0490   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.40     Calls = 2      T/C = 0.6975   
-!              Reports:  Time = 0.02     Calls = 2      T/C = 0.0095   
-!                Total:  Time = 1.43     Calls = 1      T/C = 1.4290   
+!           Simulation:  Time = 1.37     Calls = 2      T/C = 0.6845   
+!              Reports:  Time = 0.02     Calls = 2      T/C = 0.0105   
+!                Total:  Time = 1.49     Calls = 1      T/C = 1.4930   
 
 
 
@@ -2391,5 +2391,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! dhw02  002                               Tue 24-Nov-20   2:58:53 pm  Page 38
+! dhw02  002                               Tue 22-Jun-21  11:16:00 am  Page 38
 

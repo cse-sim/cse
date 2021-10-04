@@ -119,7 +119,6 @@ set(source
   RMKERR.CPP
   RUNDATA.CPP
   SHADING.CPP
-  SLPAK.CPP
   SOLAR.CPP
   SRFD.CPP
   STRPAK.CPP
@@ -188,7 +187,6 @@ set(headers
   PSYCHRO.H
   RCCN.H
   RMKERR.H
-  SLPAK.H
   SOLAR.H
   SRD.H
   STRPAK.H
@@ -219,6 +217,7 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/include"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/schema205/src"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/btwxt/src"
+  "${btwxt_SOURCE_DIR}/src"
 )
 
 # Precompiled Headers
@@ -252,6 +251,7 @@ set(libs
   tess2
   libHPWHsim
   libkiva
+  btwxt
   libtk205
 )
 

@@ -14,7 +14,7 @@
 
 #include <vrpak.h>	// vrOpen vrClose
 #include <tdpak.h>	// tddtdis tddyi tddis
-#include <slpak.h>	// slinit SLLOCDAT
+#include "solar.h"
 #include <xiopak.h>	// xfopen
 
 #include <cgwthr.h>	// cgwfxxxx functions
@@ -43,7 +43,6 @@
 
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
-// also see Locsolar in dummy locpak below.
 
 #ifdef BINRES //cnglob.h
 static BOO NEAR brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
@@ -54,10 +53,6 @@ static BOO NEAR dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // set by tp_DoDTStuff to tell doIvlAccum to duplicate next hour's data for the skipped hour
   					   // (and when DT goes off, the extra hour's data is lost (overwritten)).
 #endif
-
-static float verSun[24] = { 0.f };	/* cosine of solar beam incidence angle on horizontal surface by hour.
-					   Set by makHrSgt call in doBegIvl(); used re bin res file from doIvlAccum().
-					   Added 9-94. */
 
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
@@ -208,6 +203,7 @@ void FC runFazDataFree()
 	ZrB.free(); 	// Zones runtime info
 	ZnresB.free();	// zone simulation results
 	RsResR.free();	// RSYS results
+	DsResR.free();	// DUCTSEG results
 	WsResR.free();	// DHWSYS results
 	IzxR.free();	// interzone transfers
 	GnB.free();   	// (zone) gains
@@ -576,9 +572,8 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 
 		// conditional hourly solar gain calculations
 		if (Top.isSolarCalcDay) 		// on for 24 hours of first day of month, run [, season].  Set above, cleared doEndIvl.
-			makHrSgt(&verSun[Top.iHr]);	/* calculate solar gains to each target, ready for tp_SimHour to combine with wthr data.
-		   			   Sets SGRAT entries, valid for a month (has hourly storage slots).
-		   			   Returns cos solar incidence angle for hour for month via arg. cgsolar.cpp. */
+			makHrSgt();	// calculate solar gains to each target, ready for tp_SimHour to combine with wthr data.
+		   				//  Sets SGRAT entries, valid for a month (has hourly storage slots).
 
 		// zone "early" inits -- zone gains etc.
 		ZNR* zp;
@@ -998,6 +993,8 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 								// possible expressions that are evaluated at step beg
 
 	EF(RsResR.AllocResultsRecs(RsR));	// RSYSRES <-> RSYS
+
+	EF(DsResR.AllocResultsRecs(DsR));	// DUCTSEGRES <-> DUCTSEG
 
 	EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
 
@@ -1442,13 +1439,13 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 // floats: all
 #define ZRf1 tAir							// 1st of all float members (incl avgs & sums). cnguts.cpp
 #define ZRnF ((oRes(litEu) - oRes(tAir))/sizeof(float) + 1)      	// total # float members.  cnguts.cpp
-  // floats: to average (cnguts.cpp)
+// floats: to average (cnguts.cpp)
 #define ZRa1 tAir							// 1st float to average in float mbrs.  cnguts.cpp.
 #define ZRnA ((oRes(wAir) - oRes(tAir))/sizeof(float) + 1) // # of floats to average
-  // floats: to sum: all (cnguts.cpp)
+// floats: to sum: all (cnguts.cpp)
 #define ZRs1 qCond							// first one
 #define ZRnS ((oRes(litEu) - oRes(qCond))/sizeof(float) + 1)		// #
-    // floats to sum: sensible heat balance (cgenbal.cpp)
+// floats to sum: sensible heat balance (cgenbal.cpp)
 #define ZRq1 qCond							// 1st float sum & 1st heat flow.  cnguts.cpp, cgenbal.cpp.
 #define ZRnQ ((oRes(qsMech) - oRes(qCond))/sizeof(float) + 1)     	// # of floats to sum / # heat flows. cnguts.cpp, cgenbal.cpp.
 // floats to sum: latent heat balance
@@ -1521,6 +1518,14 @@ LOCAL void FC NEAR doIvlAccum()
 			pRSRSum->curr.S.rsr_Accum( &pRSR->curr.S, pRSR->ss == 1, (pRSR->ss == RsResR.n-1)+0x100);
 		pRSR->curr.H.rsr_Accum( &pRSR->curr.S, Top.isBegHour, Top.isEndHour+0x100);	// accumulate subhr to hour
 																					//  0x100: limit hrsOn to 1
+	}
+
+	DUCTSEGRES* pDSRSum = DsResR.p + DsResR.n;
+	DUCTSEGRES* pDSR;
+	RLUP(DsResR, pDSR)						// loop DUCTSYSRES, last is sum
+	{	if (pDSR->ss < DsResR.n)
+			pDSRSum->curr.S.dsr_Accum(&pDSR->curr.S, pDSR->ss == 1, (pDSR->ss == DsResR.n - 1));
+		pDSR->curr.H.dsr_Accum(&pDSR->curr.S, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour
 	}
 
 	DHWSYSRES* pWSRSum = WsResR.p + WsResR.n;
@@ -1679,6 +1684,9 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
 
+	RLUP(DsResR, pDSR)							// loop DUCTSYS simulation results incl sum_of.
+		pDSR->curr.D.dsr_Accum(&pDSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
+
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
 		pWSR->D.wsr_Accum(&pWSR->H, Top.isBegDay, Top.isEndDay);
 
@@ -1700,6 +1708,8 @@ LOCAL void FC NEAR doIvlAccum()
 		accumZr( &pZR->curr.D, &pZR->curr.M, Top.isBegMonth, Top.isEndMonth);	// add day results to month's for each zone & sum-of-zones.
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.M.rsr_Accum( &pRSR->curr.D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
+	RLUP(DsResR, pDSR)							// loop DUCTSEG imulation results incl sum_of.
+		pDSR->curr.M.dsr_Accum(&pDSR->curr.D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP(WsResR, pWSR)							// loop DHWSYS simulation results incl sum_of.
 		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
@@ -1742,6 +1752,8 @@ LOCAL void FC NEAR doIvlAccum()
 		accumAhr( &ahres->M, &ahres->Y, Top.isFirstMon, Top.isLastDay);		// accumulate month ah results to run (year)
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.Y.rsr_Accum( &pRSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
+	RLUP(DsResR, pDSR)							// loop DUCTSEG simulation results incl sum_of.
+		pDSR->curr.Y.dsr_Accum(&pDSR->curr.M, Top.isFirstMon, Top.isLastDay);		// accumulate year from month
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
 		pWSR->Y.wsr_Accum(&pWSR->M, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);					// accumulate metered energy use: month to year
@@ -1870,12 +1882,12 @@ void ZNRES_IVL_SUB::zr_Init1(
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// RSYS results
+// RSYSRES: RSYS results
 ///////////////////////////////////////////////////////////////////////////////
 // float members to sum
 #define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
 #define RRs1 hrsOn								// first float member to sum (energies)
-#define RRnS ((rsysRes(qAux) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
+#define RRnS ((rsysRes(qcSenNet) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
 //-----------------------------------------------------------------------------
 void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 
@@ -1912,6 +1924,55 @@ void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// copy to prior
 		((BYTE *)this + (offsetof(RSYSRES,prior) - offsetof(RSYSRES,curr)));
 	memcpy( d, this, sizeof( RSYSRES_IVL_SUB) );
 }	// RSYSRES_IVL_SUB::rsr_SetPrior
+//=============================================================================
+// 
+// ///////////////////////////////////////////////////////////////////////////////
+// DUCTSEGRES: DUCTSEG results
+///////////////////////////////////////////////////////////////////////////////
+// float members to sum
+#define ductsegRes(m) offsetof( DUCTSEGRES_IVL_SUB, m)
+#define DRs1 qhCond								// first float member to sum
+#define DRnS ((ductsegRes(qcLeakLat) - ductsegRes( DRs1))/sizeof(float) + 1)		// number of float members to sum
+//-----------------------------------------------------------------------------
+void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
+
+	const DUCTSEGRES_IVL_SUB* src,  	// source: next longer interval, or same interval for sum_of_
+	int firstflg, 		// nz: *this will be initialized before values are accumulated into it
+	int lastflg)  		// nz: *this end-of-interval calcs as needed
+						//     +0x100: limit hrsOn to 1 (for H record)
+{
+	// first call: copy source into destination
+	if (firstflg)
+	{
+		memcpy(this, src, sizeof(DUCTSEGRES_IVL_SUB));
+		n = 0;				// reset call count. used?
+	}
+
+	// not first: add source into destination
+	else
+		VAccum(&DRs1, DRnS, &src->DRs1);	// float values not averages
+											// add each to corress dest member
+
+	// count call in destination
+	n++;					// used?
+
+#if 0
+	// last call
+	if (lastflg & 0xff)
+	{
+		if (lastflg & 0x100)	// limit hrsOn (for H record only)
+			if (hrsOn > 1.f)
+				hrsOn = 1.f;
+	}
+#endif
+}               // DUCTSEGRES_IVL_SUB::dsr_Accum
+//-----------------------------------------------------------------------------
+void DUCTSEGRES_IVL_SUB::dsr_SetPrior() const 		// copy to prior
+{
+	BYTE* d =
+		((BYTE*)this + (offsetof(DUCTSEGRES, prior) - offsetof(DUCTSEGRES, curr)));
+	memcpy(d, this, sizeof(DUCTSEGRES_IVL_SUB));
+}	// DUCTSEGRES_IVL_SUB::dsr_SetPrior
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2623,35 +2684,6 @@ LOCAL void FC NEAR binResFinish()	// complete and close binary results files at 
 	brf = FALSE;
 }			// binResFinish
 #endif // BINRES
-//===========================================================================================================
-static SLLOCDAT* NEAR Locsolar = NULL;	/* Ptr to solar info structure (slpak.h) for current calculation.
-					   Locsolar holds location and daily solar info for slpak fcns.
-					   Alloc/init for location by slinit called from locInit().
-					   Released by slfree from tp_LocDone().
-					   Address saved by slinit for other slpak calls.
-				           Daily info set by slpak:slday from cgwthr.cpp and cgsolar.cpp at least, 1-95. */
-//------------------------------------------------------------------------
-RC TOPRAT::tp_LocInit()		// location-initializer for CSE
-// inits slpak.cpp using location info in Top members (gotten weather file and/or user input in cncultx.cpp)
-// returns RCOK if ok, else message already issued.
-{
-// init slpak.cpp: alloc SLLOCDAT (slpak.h) and init for location.
-//   More of Locsolar is set each day by slday(). It is used by most other slpak calls.
-//   slpak remembers its location internally.
-
-	Locsolar = slinit( RAD( latitude),	// latitude (to radians)
-					   RAD( longitude), // longitude
-					   timeZone, 		// time zone
-					   elevation );		// site altitude (ft)
-	return RCOK;
-}		// TOPRAT::tp_LocInit
-//------------------------------------------------------------------------
-RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
-{
-	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
-	return RCOK;
-}			// TOPRAT::tp_LocDone
-//===========================================================================================================
 
 /***************************************** rest of file is if-outs *****************************************/
 

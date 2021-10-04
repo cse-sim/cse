@@ -60,7 +60,7 @@ Monthly Energy Balance, Sum of Zones
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  1
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Mass West_Wall          Area: 174.380   UNom: 0.09083     tc: 1.28   subhrly:
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  2
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  2
 
 
 
@@ -155,7 +155,7 @@ Yr  49.5 41.0 71.8 50.5   0 71.8 50.5 71.7 50.5  8760 1.0  1003     0 1.274     
 
 Monthly Energy Use, meter "HEATMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  2.157      0  2.157      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  1.937      0  1.937      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -186,7 +186,7 @@ Annual Heating Energy Report
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  3
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  3
 
 
 
@@ -197,7 +197,7 @@ BESTEST                                                                    960
 
 Monthly Energy Use, meter "COOLMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -226,7 +226,7 @@ Annual Cooling Energy Report
 
 Monthly Energy Use, meter "GAINMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  0.203      0      0      0      0      0      0      0      0      0      0      0      0  0.203      0      0      0      0      0      0      0      0      0      0      0
 Feb  0.183      0      0      0      0      0      0      0      0      0      0      0      0  0.183      0      0      0      0      0      0      0      0      0      0      0
@@ -249,7 +249,7 @@ Yr   2.391      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  4
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hourly Energy Balance, zone "960", Fri 04-Jan
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  5
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Day -3.4 -4.7 68.0 40.8   0 68.0 40.8 68.0 40.8 24.00 1.0  1003     0     0     
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  6
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hourly Energy Balance, zone "960", Fri 26-Jul
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  7
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ Day 80.7 55.6 79.9 55.4   0 79.9 55.4 78.3 54.8 24.00 1.0  1003     0 .0344     
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  8
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Hourly Energy Balance, zone "960", Wed 16-Oct
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page  9
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page  9
 
 
 
@@ -608,7 +608,7 @@ Day 58.9 43.0 75.3 49.9   0 75.3 49.9 75.1 49.8 24.00 1.0  1003     0 .0046     
 
 ! Log for Run 001:
 
-! CSE 0.887.0+noecho.97799eb.5 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -627,7 +627,7 @@ Day 58.9 43.0 75.3 49.9   0 75.3 49.9 75.1 49.8 24.00 1.0  1003     0 .0046     
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 10
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 10
 
 
 
@@ -690,7 +690,7 @@ I       //  Use built-in view factors                                   SW/BAW 7
 I       //  Add meters for heating and cooling                          SW 7/17/95
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 11
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 11
 
 
 
@@ -753,7 +753,7 @@ I
 I        MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 12
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 12
 
 
 
@@ -816,7 +816,7 @@ I
 I       // ----- CONSTRUCTION section for heavyweight case -----
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 13
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 13
 
 
 
@@ -879,7 +879,7 @@ I0          oaRaLeak=0                  //No economizer leaks to return air
 I0          ahSOLeak=0                  //No supply duct leaks
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 14
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 14
 
 
 
@@ -942,7 +942,7 @@ I0          sfanMtr=GAINMETER
 I0        
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 15
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ I           sfanVfDs= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Z
 I           oaVfDsMn= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 16
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ I               sfCon=WALLCON
 I               sfExAbs=ABSORP
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 17
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ I#      #ifdef EASTWESTWIN
 I0            WINDOW West_Win
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 18
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ I0                    ohDepth=OHDPTH    //overhang depth
 I0                    ohDistUp=1.64     //dance from top of window
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 19
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ I
 I#      #ifdef VENTILATE
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 20
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ II
 II          SURFACE FloorSun
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 21
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ II
 II            WINDOW South_WinSun1
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 22
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ I
 I        REPORT     rpType=MTR     rpMeter=HEATMETER    rpFreq=Month
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 23
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ I               xfFileStat=APPEND
 I               endExportFile
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 24
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ I#       #endif
 I       
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 25
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ I               xfFileName=JUL27NAME
 I               xfFileStat=OVERWRITE
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 26
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ I
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 27
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 27
 
 
 
@@ -1707,21 +1707,21 @@ BESTEST                                                                    960
 
 
 
-! CSE 0.887.0+noecho.97799eb.5 for Win32 console run(s) done: Tue 16-Feb-21  10:54:54 am
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:08:34 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Feb-21  10:42 am   (VS 14.28    2591232 bytes)  (HPWH 1.12.4)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 960
 ! Input file:   D:\cse\test\960.cse
 ! Report file:  D:\cse\test\960.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0060   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0120   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.45     Calls = 1      T/C = 0.4500   
-!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0290   
-!                Total:  Time = 0.49     Calls = 1      T/C = 0.4870   
+!           Simulation:  Time = 0.42     Calls = 1      T/C = 0.4250   
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0240   
+!                Total:  Time = 0.46     Calls = 1      T/C = 0.4640   
 
 
 
@@ -1761,5 +1761,5 @@ BESTEST                                                                    960
 
 
 ------------------------------------------------------------------------------
-! 960  001                                 Tue 16-Feb-21  10:54:53 am  Page 28
+! 960  001                                 Tue 22-Jun-21  11:08:34 am  Page 28
 

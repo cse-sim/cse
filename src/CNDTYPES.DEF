@@ -430,16 +430,22 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			RHEEM2020BUILD65  "Rheem2020Build65"   // 65 gallon, Rheem 2020 Builder
 			RHEEMHBDRBUILD80  "Rheem2020Build80"   // 80 gallon, Rheem 2020 Builder
 
-			STIEBEL220E "Stiebel220E"		// Stiebel Eltron (2014 model?)
+			STIEBEL220E "Stiebel220E"				// Stiebel Eltron (2014 model?)
+
+			AOSMITHSHPT50 "AOSmithSHPT50"			// AOSmith add'l models (added 3-24-2017)
+			AOSMITHSHPT66 "AOSmithSHPT66"
+			AOSMITHSHPT80 "AOSmithSHPT80"
+
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2
 			GENERIC3 "GenericTier3"			// Generic Tier 3
 			GENERIC "Generic"				// general generic (parameterized by EF and vol)
 			UEF2GENERIC "UEF2Generic"			// experimental UEF=2
-			WORSTCASEMEDIUM "WorstCaseMedium"	// alias (supports pre-existing test cases)
-			AOSMITHSHPT50 "AOSmithSHPT50"		// AOSmith add'l models (added 3-24-2017)
-			AOSMITHSHPT66 "AOSmithSHPT66"
-			AOSMITHSHPT80 "AOSmithSHPT80"
+			WORSTCASEMEDIUM "WorstCaseMedium"	// UEF2Generic alias (supports pre-existing test cases)
+			AWHSTIER3GENERIC40 "AWHSTier3Generic40"		// 40 gal tier 3 generic (6-2021)
+			AWHSTIER3GENERIC50 "AWHSTier3Generic50"		// 50 gal tier 3 generic (6-2021)
+			AWHSTIER3GENERIC65 "AWHSTier3Generic65"		// 65 gal tier 3 generic (6-2021)
+			AWHSTIER3GENERIC80 "AWHSTier3Generic80"		// 80 gal tier 3 generic (6-2021)
 
 			COLMACCXV5_SP  "ColmacCxV5_SP"	// Colmac CxA-xx modular external HPWHs (single pass mode)
 			COLMACCXA10_SP "ColmacCxA10_SP"
@@ -447,13 +453,27 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			COLMACCXA20_SP "ColmacCxA20_SP"
 			COLMACCXA25_SP "ColmacCxA25_SP"
 			COLMACCXA30_SP "ColmacCxA30_SP"
-					   
+
+			COLMACCXV5_MP  "ColmacCxV5_MP"	// Colmac CxA-xx modular external HPWHs (multi-pass mode)
+			COLMACCXA10_MP "ColmacCxA10_MP"
+			COLMACCXA15_MP "ColmacCxA15_MP"
+			COLMACCXA20_MP "ColmacCxA20_MP"
+			COLMACCXA25_MP "ColmacCxA25_MP"
+			COLMACCXA30_MP "ColmacCxA30_MP"
+								   
 			NYLEC25A_SP  "NyleC25A_SP"		// Nyle Cxx external HPWHs (single pass mode)
 			NYLEC60A_SP  "NyleC60A_SP"
 			NYLEC90A_SP  "NyleC90A_SP"
 			NYLEC125A_SP "NyleC125A_SP"
 			NYLEC185A_SP "NyleC185A_SP"
 			NYLEC250A_SP "NyleC250A_SP"
+
+			NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (multi-pass mode)
+			NYLEC60A_MP  "NyleC60A_MP"
+			NYLEC90A_MP  "NyleC90A_MP"
+			NYLEC125A_MP "NyleC125A_MP"
+			NYLEC185A_MP "NyleC185A_MP"
+			NYLEC250A_MP "NyleC250A_MP"
 
 			NYLEC60AC_SP  "NyleC60A_CWP_SP"	// Nyle Cxx external HPWHs with cold weather package)
 			NYLEC90AC_SP  "NyleC90A_CWP_SP"
@@ -463,6 +483,11 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 
 			SCALABLE_SP "Scalable_SP"		// scalable type for autosized standard design
 		}
+
+*choicb WHRESTYCH {			// resistance heater types
+       TYPICAL "Typical"
+	   SWINGTANK "SwingTank"
+}
 
 *choicb DHWEUCH {			// hot end uses
 			FAUCET "Faucet"
@@ -576,7 +601,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.
 			  HTG		"Htg"	// space heating incl heat pump compressor
-			  HPHTG		"HPHtg"	// heat pump backup and defrost heat
+			  HPHTG		"HPBU"	// heat pump resistance heating (backup and defrost)
 			  DHW		"DHW"	// domestic (service) hot water heating
 			  DHWBU		"DHWBU"	// domestic (service) hot water heating backup
 			  DHWMFL	"DHWMFL"// domestic (service) hot water DHWLOOP energy

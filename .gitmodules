@@ -10,3 +10,6 @@
 [submodule "vendor/toolkit-205"]
 	path = vendor/toolkit-205
 	url = https://github.com/open205/toolkit-205
+[submodule "vendor/btwxt"]
+	path = vendor/btwxt
+	url = https://github.com/bigladder/btwxt.git

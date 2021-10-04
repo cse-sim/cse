@@ -21,7 +21,7 @@
 #include <cvpak.h>		// getChoiTx
 #include <wfpak.h>		// wfOpen wfClose 1-95
 #include <psychro.h>	// psyAltitude PsyRAir
-#include "slpak.h"
+#include "solar.h"
 #include <envpak.h>		// ensystd
 #include "impf.h"
 
@@ -2019,7 +2019,7 @@ RC record::limitCheck(		// range check, issue warning or error msg
 //        else RCxx if value out of range (msg issued)
 {
 	RC rc = RCOK;
-	if (IsSet( fn))
+	if (IsVal( fn))
 	{	int dt = DType( fn);
 		void* pV = field( fn);
 		double v = 0.;
@@ -2074,13 +2074,40 @@ RC record::limitCheckFix(	// range check, msg, set to min/max
 ///////////////////////////////////////////////////////////////////////////////
 //   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)
 ///////////////////////////////////////////////////////////////////////////////
-RC CDEC record::disallowN( 			// issue "not allowed" message for each given field in 0-terminated list of field numbers
-	const char* when /*=NULL*/,	// message insert.  message handle ok (see lib\messages.cpp).
-	... )			// SI field numbers, 0 ends list  REMEMBER THE 0!
+RC record::checkN(
+	const char* when,	// message insert.  message handle ok (see messages.cpp).
+	RC (*checkFcn)(int fn, const char* when),
+	va_list ap)
+{
+	RC rc = RCOK;
+	char whenBuf[200];
+	if (!msgIsHan(when))					// not if handle given
+		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
+			when = strncpy0(whenBuf, when, sizeof(whenBuf));	// so any (possible future) strtprintf's in following loop
+																// won't overwrite it, 7-92.
+	for (; ; )
+	{
+		int fn = va_arg(ap, int);
+		if (!fn)
+			break;
+		if (fn > 1024)
+			rc |= oer((char*)MH_S0495,	// "cncult2.cpp:%s Internal error: field # %nd: probable unterminated arg list"
+					   "checkN", fn);
+		rc |= (*checkFcn)(fn, when);
+	}
+	return rc;
+}		// checkN
+//-----------------------------------------------------------------------------
+RC record::disallowN( 			// issue "not allowed" message for each given field in 0-terminated list of field numbers
+	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
+	... )			// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc=RCOK;
 	va_list ap;
 	va_start( ap, when);
+#if 0
+	rc = checkN(when, [this](int fn, const char* when)->RC { return this->disallow(fn, when); }, ap);
+#else
 	char whenBuf[200];
 	if (!msgIsHan(when))					// not if handle given, lib\messages.cpp, 7-10-92
 		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
@@ -2095,6 +2122,7 @@ RC CDEC record::disallowN( 			// issue "not allowed" message for each given fiel
 					   "disallowN", fn);
 		rc |= disallow( fn, when);
 	}
+#endif
 	return rc;
 }		// disallowN
 //-----------------------------------------------------------------------------
@@ -2107,7 +2135,7 @@ RC record::disallow(     			// issue message if field is given
 	return RCOK;
 }			// disallow
 //-----------------------------------------------------------------------------
-RC CDEC record::requireN( 			// issue "missing" message for each omitted field in 0-terminated list of field numbers
+RC record::requireN( 			// issue "missing" message for each omitted field in 0-terminated list of field numbers
 	const char* when /*=NULL*/,	// message insert (message handle ok)
 	... )			// int field numbers, 0 ends list  REMEMBER THE 0!
 {
@@ -2140,9 +2168,9 @@ RC record::require(    			// issue message if field is not given
 	return RCOK;
 }			// require
 //-------------------------------------------------------------------------------
-RC CDEC record::ignoreN( 		// issue "ignored" message for each given field in 0-terminated list of field numbers
+RC record::ignoreN( 		// issue "ignored" message for each given field in 0-terminated list of field numbers
 	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
-	... )			// field numbers, 0 ends list  REMEMBER THE 0!
+	... )			// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc=RCOK;
 	va_list ap;

@@ -547,7 +547,7 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 	if (_n < 1)
 		_n = 1 + 1024/eSz;			// if # records not specified, use 1k's worth plus 1
 	TI _nAl = _n+1;					// space [0] not used (all 0's for grounding) --> max subscr+1 is n+1
-	ULI sz = (ULI)(USI)_nAl * eSz;	// size that must be allocated
+	size_t sz = (ULI)(USI)_nAl * eSz;	// size that must be allocated
 #if 0	// remove 64k limit, 9-10
 x	if (sz >= 0xFFF0)					// leave a few bytes for overhead.
 x		return err( erOp, "Attempt to allocate more than 64K worth of '%s' records",
@@ -556,27 +556,27 @@ x					(char /*far!*/ *)what );					// returns RCBAD
 	desRecs(_nAl, 32767); 				// insurance: destroy any excess existing records if making block smaller
 	record* ptrWas = ptr();				// NULL if this is initial allocation
 	RC rc = dmral( pptr(), sz, erOp|DMZERO);	// (re)alloc memory, zero new space, dmpak.cpp
-	if (rc)						// if failed
-		;						// leave variables unchanged
-	else						// ok
+	if (rc)								// if failed
+		;								// leave variables unchanged
+	else								// ok
 	{
-		nAl = _nAl;   				// save max alloc'd subscript+1.
-		mn = 1;  					// insurance: mn is already 1.
-		ba_flags |= RFHEAP;			// say block is in heap, should be free'd
+		nAl = _nAl;   					// save max alloc'd subscript+1.
+		n = min(n, nAl - 1);			// make sure n is with allocated space		
+		mn = 1;  						// insurance: mn is already 1.
+		ba_flags |= RFHEAP;				// say block is in heap, should be free'd
 		// the n record spaces are subscripted 1 to n.  The spaces are not "records" till constructed by add().
 		// allocated but unused space[0] "grounds" unset references and allows using 0 subscript as "unset" indicator.
 		// set front members in block's space[0] now, as req'd by validate's check when ptr nz.
 		if (!ptrWas)				// do 1st time only to avoid compensating for bugs
 		{
 			ptr()->rt = rt;  			//   ... (rec(0) is not add'd, and anyway validate error would foil add.)
-			ptr()->b = (BP)this;			// .ss is already 0.  .gud is left 0.
+			ptr()->b = (BP)this;		// .ss is already 0.  .gud is left 0.
 		}
 
 		// loop all pre-reAl gud records
 		for (int i=mn; i<=n ; i++)
 			if (rec( i).gud)
 				rec( i).FixUp();		// virtual, allow record to fix e.g. link ptrs
-
 	}
 	return rc;
 } 		// basAnc::reAl

@@ -60,7 +60,7 @@ Yr  49.5 41.0 70.9 50.2   0 70.9 50.2 70.8 50.1  8760 1.0  1003     0 1.076     
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  1
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  1
 
 
 
@@ -71,7 +71,7 @@ Z2
 
 Monthly Energy Use, All Meters, Jan
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          3.595      0  3.595      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -82,7 +82,7 @@ Sum                4.024      0  3.606      0 0.0119      0      0      0      0
 
 Monthly Energy Use, All Meters, Feb
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          2.983      0  2.983      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -93,7 +93,7 @@ Sum                3.408      0  3.010      0 0.0306      0      0      0      0
 
 Monthly Energy Use, All Meters, Mar
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          2.375      0  2.375      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -104,7 +104,7 @@ Sum                2.887      0  2.425      0 0.0558      0      0      0      0
 
 Monthly Energy Use, All Meters, Apr
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          1.244      0  1.244      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00090 .00090      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -115,7 +115,7 @@ Sum                1.782 .00090  1.312      0 0.0760      0      0      0      0
 
 Monthly Energy Use, All Meters, May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          0.540      0  0.540      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         0.0259 0.0259      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -123,7 +123,7 @@ GAINMETER          0.598      0 0.0911      0  0.101      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  2
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  2
 
 
 
@@ -135,7 +135,7 @@ Sum                1.164 0.0259  0.631      0  0.101      0      0      0      0
 
 Monthly Energy Use, All Meters, Jun
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          0.179      0  0.179      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER          0.163  0.163      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -146,7 +146,7 @@ Sum                0.963  0.163  0.287      0  0.120      0      0      0      0
 
 Monthly Energy Use, All Meters, Jul
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00843      0 .00843      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER          0.485  0.485      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -157,7 +157,7 @@ Sum                1.178  0.485  0.140      0  0.147      0      0      0      0
 
 Monthly Energy Use, All Meters, Aug
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         0.0125      0 0.0125      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER          0.292  0.292      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -168,7 +168,7 @@ Sum                1.033  0.292  0.165      0  0.170      0      0      0      0
 
 Monthly Energy Use, All Meters, Sep
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          0.269      0  0.269      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER          0.110  0.110      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -179,14 +179,14 @@ Sum                1.125  0.110  0.436      0  0.186      0      0      0      0
 
 Monthly Energy Use, All Meters, Oct
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          1.162      0  1.162      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 GAINMETER          0.815      0  0.194      0  0.215      0      0      0      0      0      0      0      0  0.406      0      0      0      0      0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  3
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  3
 
 
 
@@ -199,7 +199,7 @@ Sum                1.977      0  1.355      0  0.215      0      0      0      0
 
 Monthly Energy Use, All Meters, Nov
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          2.153      0  2.153      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -210,7 +210,7 @@ Sum                2.983      0  2.360      0  0.230      0      0      0      0
 
 Monthly Energy Use, All Meters, Dec
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER          3.018      0  3.018      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -249,7 +249,7 @@ Sum                3.919      0  3.252      0  0.260      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  4
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ Z2
 
 Daily Energy Use, All Meters, Tue 14-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         0.0186      0 0.0186      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -271,7 +271,7 @@ Sum               0.0378      0 0.0215      0 .00322      0      0      0      0
 
 Daily Energy Use, All Meters, Wed 15-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00646      0 .00646      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00205 .00205      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -282,7 +282,7 @@ Sum               0.0278 .00205 .00937      0 .00324      0      0      0      0
 
 Daily Energy Use, All Meters, Thu 16-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00174      0 .00174      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00315 .00315      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -293,7 +293,7 @@ Sum               0.0242 .00315 .00467      0 .00326      0      0      0      0
 
 Daily Energy Use, All Meters, Fri 17-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00030      0 .00030      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00089 .00089      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -304,7 +304,7 @@ Sum               0.0205 .00089 .00326      0 .00329      0      0      0      0
 
 Daily Energy Use, All Meters, Sat 18-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00246 .00246      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -312,7 +312,7 @@ GAINMETER         0.0194      0 .00298      0 .00331      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  5
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  5
 
 
 
@@ -324,7 +324,7 @@ Sum               0.0219 .00246 .00298      0 .00331      0      0      0      0
 
 Daily Energy Use, All Meters, Sun 19-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -335,7 +335,7 @@ Sum               0.0194      0 .00300      0 .00334      0      0      0      0
 
 Daily Energy Use, All Meters, Mon 20-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00364      0 .00364      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00301 .00301      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -346,7 +346,7 @@ Sum               0.0261 .00301 .00666      0 .00336      0      0      0      0
 
 Daily Energy Use, All Meters, Tue 21-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00481 .00481      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -357,7 +357,7 @@ Sum               0.0243 .00481 .00305      0 .00338      0      0      0      0
 
 Daily Energy Use, All Meters, Wed 22-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         0.0138      0 0.0138      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -368,14 +368,14 @@ Sum               0.0334      0 0.0169      0 .00341      0      0      0      0
 
 Daily Energy Use, All Meters, Thu 23-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         0.0155      0 0.0155      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 GAINMETER         0.0196      0 .00309      0 .00343      0      0      0      0      0      0      0      0 0.0131      0      0      0      0      0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  6
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  6
 
 
 
@@ -388,7 +388,7 @@ Sum               0.0351      0 0.0186      0 .00343      0      0      0      0
 
 Daily Energy Use, All Meters, Fri 24-May
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         0.0110      0 0.0110      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00034 .00034      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -438,7 +438,7 @@ Sum               0.0310 .00034 0.0141      0 .00346      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  7
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  7
 
 
 
@@ -449,7 +449,7 @@ Z2
 
 Hourly Energy Use, All Meters, Wed 15-May hour 1
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -460,7 +460,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 2
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00024      0 .00024      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -471,7 +471,7 @@ Sum               .00104      0 .00036      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 3
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00097      0 .00097      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -482,7 +482,7 @@ Sum               .00177      0 .00109      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 4
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00133      0 .00133      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -493,7 +493,7 @@ Sum               .00213      0 .00145      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 5
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00153      0 .00153      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -501,7 +501,7 @@ GAINMETER         .00080      0 .00012      0 .00013      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  8
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  8
 
 
 
@@ -513,7 +513,7 @@ Sum               .00233      0 .00165      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 6
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00145      0 .00145      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -524,7 +524,7 @@ Sum               .00225      0 .00157      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 7
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00083      0 .00083      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -535,7 +535,7 @@ Sum               .00163      0 .00095      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 8
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER         .00010      0 .00010      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -546,7 +546,7 @@ Sum               .00091      0 .00023      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 9
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -557,14 +557,14 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 10
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 GAINMETER         .00080      0 .00012      0 .00013      0      0      0      0      0      0      0      0 .00055      0      0      0      0      0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page  9
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page  9
 
 
 
@@ -577,7 +577,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 11
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -588,7 +588,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 12
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -599,7 +599,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 13
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -610,7 +610,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 14
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -621,13 +621,13 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 15
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 10
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 10
 
 
 
@@ -641,7 +641,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 16
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00050 .00050      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -652,7 +652,7 @@ Sum               .00130 .00050 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 17
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00078 .00078      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -663,7 +663,7 @@ Sum               .00158 .00078 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 18
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00064 .00064      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -674,7 +674,7 @@ Sum               .00144 .00064 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 19
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER         .00012 .00012      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -685,12 +685,12 @@ Sum               .00093 .00012 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 20
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 11
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 11
 
 
 
@@ -705,7 +705,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 21
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -716,7 +716,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 22
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -727,7 +727,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 23
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -738,7 +738,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 Hourly Energy Use, All Meters, Wed 15-May hour 24
 
-Meter                Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Meter                Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 ----------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 HEATMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 COOLMETER              0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -753,7 +753,7 @@ Sum               .00080      0 .00012      0 .00013      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 12
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 12
 
 
 
@@ -816,7 +816,7 @@ Hourly Energy Balance, zone "Z1", Fri 04-Jan
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 13
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 13
 
 
 
@@ -879,7 +879,7 @@ Day -3.4 -4.7 68.0 40.8   0 68.0 40.8 68.0 40.8 24.00 1.0  1003     0     0     
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 14
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 14
 
 
 
@@ -942,7 +942,7 @@ Hourly Energy Balance, zone "Z1", Fri 26-Jul
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 15
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Day 80.7 55.6 79.4 55.2   0 79.4 55.2 77.7 54.5 24.00 1.0  1003     0 .0361     
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 16
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Hourly Energy Balance, zone "Z1", Wed 16-Oct
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 17
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Day 58.9 43.0 71.9 48.6   0 71.9 48.6 71.9 48.6 24.00 1.0  1003     0     0     
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 18
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ IzXfer                  Zn1: Z1  Zn2: Z2  UAconst: 5.000  NVctrl: TwoWay
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 19
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 19
 
 
 
@@ -1205,7 +1205,7 @@ Z2
 
 ! Log for Run 001:
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -1257,7 +1257,7 @@ Z2
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 20
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ Input for Run 001:
          nSubSteps=4                      //
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 21
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ Z2
          CONSTRUCTION roofcon
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 22
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ Z2
          //--------- AIR HANDLERS ------------
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 23
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ Z2
 0           ahROLeak=0                  //No return duct leaks
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 24
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ Z2
             //=========
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 25
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ Z2
                 sfInH=INFILM             //ceiling inside film coefficient
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 26
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ Z2
 0                       rfDistR=0         //distance:edge of window to fin
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 27
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 27
 
 
 
@@ -1761,7 +1761,7 @@ Z2
         
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 28
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 28
 
 
 
@@ -1824,7 +1824,7 @@ Z2
 0                   wnGT=GLASSTYPE
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 29
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 29
 
 
 
@@ -1887,7 +1887,7 @@ Z2
 0                     lfBotUp=0.656     //distance:bottom of window to bottom of fin
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 30
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 30
 
 
 
@@ -1950,7 +1950,7 @@ Z2
          REPORT     rpType=MTR     rpMeter=All    rpFreq=Day  rpDayBeg=May 14  rpDayEnd=May 24
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 31
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 31
 
 
 
@@ -2013,7 +2013,7 @@ Z2
 0               xfFileStat=APPEND
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 32
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 32
 
 
 
@@ -2076,7 +2076,7 @@ Z2
 #        #endif
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 33
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 33
 
 
 
@@ -2139,7 +2139,7 @@ Z2
 0               xfFileName=JUL27NAME
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 34
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 34
 
 
 
@@ -2202,7 +2202,7 @@ Z2
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 35
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 35
 
 
 
@@ -2211,21 +2211,21 @@ Z2
 
 
 
-! CSE 0.884.0+vsashp.522e37f.10 for Win32 console run(s) done: Tue 24-Nov-20   2:51:00 pm
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:08:48 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Nov-20  10:41 am   (VS 14.16    2673152 bytes)  (HPWH 1.11.1)
-! Command line: -x!  -t1 2zone
-! Input file:   D:\cse\test\2zone.cse
-! Report file:  D:\cse\test\2zone.rep
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+! Command line: -x!  -t1 2Zone
+! Input file:   D:\cse\test\2Zone.cse
+! Report file:  D:\cse\test\2Zone.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0050   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.32     Calls = 1      T/C = 0.3240   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0130   
-!                Total:  Time = 0.34     Calls = 1      T/C = 0.3440   
+!           Simulation:  Time = 0.29     Calls = 1      T/C = 0.2950   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
+!                Total:  Time = 0.32     Calls = 1      T/C = 0.3180   
 
 
 
@@ -2265,5 +2265,5 @@ Z2
 
 
 ------------------------------------------------------------------------------
-! 2zone  001                               Tue 24-Nov-20   2:50:59 pm  Page 36
+! 2Zone  001                               Tue 22-Jun-21  11:08:47 am  Page 36
 

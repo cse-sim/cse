@@ -60,7 +60,7 @@ Monthly Energy Balance, Sum of Zones
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  1
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  1
 
 
 
@@ -123,7 +123,7 @@ Mass North_Wall         Area: 232.510   UNom: 0.1005      tc: 12.74  subhrly:
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  2
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  2
 
 
 
@@ -186,7 +186,7 @@ Mass South_Wall         Area: 232.510   UNom: 0.1005      tc: 12.74  subhrly:
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  3
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  3
 
 
 
@@ -218,7 +218,7 @@ Yr  49.5 41.0 72.8 50.9   0 72.8 50.9 72.1 50.7  8760 1.0  1003     0 5.495     
 
 Monthly Energy Use, meter "HEATMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  4.165      0  4.165      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  3.260      0  3.260      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -249,7 +249,7 @@ Annual Heating Energy Report
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  4
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  4
 
 
 
@@ -260,7 +260,7 @@ BESTEST                                                                    930
 
 Monthly Energy Use, meter "COOLMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -289,7 +289,7 @@ Annual Cooling Energy Report
 
 Monthly Energy Use, meter "GAINMETER"
 
-Mon    Tot    Clg    Htg  HPHtg    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  0.203      0      0      0      0      0      0      0      0      0      0      0      0  0.203      0      0      0      0      0      0      0      0      0      0      0
 Feb  0.183      0      0      0      0      0      0      0      0      0      0      0      0  0.183      0      0      0      0      0      0      0      0      0      0      0
@@ -312,7 +312,7 @@ Yr   2.391      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  5
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  5
 
 
 
@@ -375,7 +375,7 @@ Hourly Energy Balance, zone "930", Fri 04-Jan
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  6
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  6
 
 
 
@@ -438,7 +438,7 @@ Day -3.4 -4.7 68.0 40.8   0 68.0 40.8 68.0 40.8 24.00 1.0  1003     0     0     
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  7
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  7
 
 
 
@@ -501,7 +501,7 @@ Hourly Energy Balance, zone "930", Fri 26-Jul
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  8
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  8
 
 
 
@@ -564,7 +564,7 @@ Day 80.7 55.6 80.6 55.6   0 80.6 55.6 75.7 53.9 24.00 1.0  1003     0 0.104     
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page  9
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page  9
 
 
 
@@ -627,7 +627,7 @@ Hourly Energy Balance, zone "930", Wed 16-Oct
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 10
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 10
 
 
 
@@ -671,7 +671,7 @@ Day 58.9 43.0 73.1 49.0   0 73.1 49.0 73.1 49.0 24.00 1.0  1003     0 .0002     
 
 ! Log for Run 001:
 
-! CSE 0.887.0+noecho.97799eb.5 for Win32 console
+! CSE 0.893.0 for Win32 console
 
 
 
@@ -690,7 +690,7 @@ Day 58.9 43.0 73.1 49.0   0 73.1 49.0 73.1 49.0 24.00 1.0  1003     0 .0002     
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 11
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 11
 
 
 
@@ -753,7 +753,7 @@ I       //  Add meters for heating and cooling                          SW 7/17/
 I       //  Model infiltraion using ventilation
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 12
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 12
 
 
 
@@ -816,7 +816,7 @@ I        MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens
 I         
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 13
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 13
 
 
 
@@ -879,7 +879,7 @@ I       // ----- CONSTRUCTION section for heavyweight case -----
 I         
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 14
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 14
 
 
 
@@ -942,7 +942,7 @@ I0          ahSOLeak=0                  //No supply duct leaks
 I0          ahROLeak=0                  //No return duct leaks
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 15
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ I0
 I0          //COOLING COIL
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 16
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ I           oaVfDsMn= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Z
 I           oaOaLeak=0
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 17
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ I               sfExAbs=ABSORP
 I               sfInAbs=INABSORP
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 18
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ I             WINDOW West_Win
 I                   wnGT=GLASSTYPE
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 19
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ I0                    ohDistUp=1.64     //dance from top of window
 I0                    ohExL=1.64        //distance:left edge of win to left edge of oh
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 20
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ I#      #ifdef VENTILATE
 I0      TERMINAL  CASE
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 21
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ I
 I        REPORT     rpType=MTR     rpMeter=COOLMETER    rpFreq=Month
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 22
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ I               exportcol colVal=@meter[COOLMETER].Y.dmd/-3413    //kwh
 I               exportcol colVal=@Top.qcPeakM
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 23
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ I0              exType=ZEB
 I#            #ifdef SUNZONE
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 24
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ I0              exZone=CASE
 I#            #endif
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 25
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ I
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 26
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 26
 
 
 
@@ -1644,21 +1644,21 @@ BESTEST                                                                    930
 
 
 
-! CSE 0.887.0+noecho.97799eb.5 for Win32 console run(s) done: Tue 16-Feb-21  10:54:28 am
+! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:08:14 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Feb-21  10:42 am   (VS 14.28    2591232 bytes)  (HPWH 1.12.4)
+!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
 ! Command line: -x!  -t1 930
 ! Input file:   D:\cse\test\930.cse
 ! Report file:  D:\cse\test\930.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0050   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0100   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.31     Calls = 1      T/C = 0.3070   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0070   
-!                Total:  Time = 0.32     Calls = 1      T/C = 0.3220   
+!           Simulation:  Time = 0.29     Calls = 1      T/C = 0.2890   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
+!                Total:  Time = 0.31     Calls = 1      T/C = 0.3090   
 
 
 
@@ -1698,5 +1698,5 @@ BESTEST                                                                    930
 
 
 ------------------------------------------------------------------------------
-! 930  001                                 Tue 16-Feb-21  10:54:27 am  Page 27
+! 930  001                                 Tue 22-Jun-21  11:08:14 am  Page 27
 

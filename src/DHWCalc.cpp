@@ -965,7 +965,8 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// EcoSizer design heatpump source temp
 		if (!IsSet(DHWSYS_ASHPTSRCDES))
-			ws_ashpTSrcDes = Top.heatDsTDbO;	// TODO: what about lockout
+			ws_ashpTSrcDes = Top.heatDsTDbO;	// HPWH min operating temp may limit
+												//   see HPWHLINK::hw_SetHeatingCap()
 
 		// solar water heating
 		ws_pDHWSOLARSYS = SwhR.GetAtSafe(ws_swTi);		//solar system or NULL
@@ -2131,13 +2132,13 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 	RC rc = RCOK;
 
 	if (!IsSet(DHWSYS_HEATINGCAPDES))
-		ws_heatingCapDes = heatingCap;
+		ws_heatingCapDes = ws_fxDes * heatingCap;
 
 	VCopy(ws_heatingCapDesTopN, NDHWSIZEDAYS, heatingCapTopN);
 
 	if (!IsSet(DHWSYS_VOLRUNNINGDES))
-		ws_volRunningDes = volRunning;		// DHWHEATER derives wh_vol
-											//   if this value passed via ALTER
+		ws_volRunningDes = ws_fxDes * volRunning;	// DHWHEATER derives wh_vol
+													//   if this value passed via ALTER
 
 	// copy to input record
 	DHWSYS* pWSi = WSiB.GetAtSafe(ss);
@@ -2661,17 +2662,28 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 }	// HPWHLINK::hw_InitGeneric
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
-	float vol,		// tank volume, gal
-	float EF,		// rated EF
-	float resHtPwr,	// upper resistance heat element power, W
-	float resHtPwr2)// lower resistance heat element power, W
+	WHRESTYCH resTy,	// resistance heater type (currently unused)
+	float vol,			// tank volume, gal
+	float EF,			// rated EF
+						//   if >0, call HPWHinit_resTank
+						//   else HPWHinit_resTankGeneric
+	float insulR,		// insulation resistance, ft2-F/Btuh
+						//   used iff EF <= 0
+	float resHtPwr,		// upper resistance heat element power, W
+	float resHtPwr2)	// lower resistance heat element power, W
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	if (hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
-		resHtPwr, resHtPwr2) != 0)
+	int ret = EF > 0.f
+		? hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)),
+			EF, resHtPwr, resHtPwr2)
+		: hw_pHPWH->HPWHinit_resTankGeneric(GAL_TO_L(max(vol, 1.f)),
+		   insulR / 5.678f, resHtPwr, resHtPwr2);
+	   
+	if (ret)
 		rc |= RCBAD;
+
 	return rc;
 }		// HPWHLINK::hw_InitResistance
 //-----------------------------------------------------------------------------
@@ -2726,14 +2738,19 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_RHEEMHBDRBUILD80,hwatSMALL | HPWH::MODELS_Rheem2020Build80 },
 
 	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | HPWH::MODELS_Stiebel220E },
+    { C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
+	{ C_WHASHPTYCH_SANDEN80,         hwatSMALL | HPWH::MODELS_Sanden80 },
+	{ C_WHASHPTYCH_SANDEN120,        hwatSMALL | HPWH::MODELS_Sanden120 },
+
 	{ C_WHASHPTYCH_GENERIC1,         hwatSMALL | HPWH::MODELS_Generic1 },
 	{ C_WHASHPTYCH_GENERIC2,         hwatSMALL | HPWH::MODELS_Generic2 },
 	{ C_WHASHPTYCH_GENERIC3,         hwatSMALL | HPWH::MODELS_Generic3 },
 	{ C_WHASHPTYCH_UEF2GENERIC,      hwatSMALL | HPWH::MODELS_UEF2generic },
 	{ C_WHASHPTYCH_WORSTCASEMEDIUM,  hwatSMALL | HPWH::MODELS_UEF2generic },	// alias (testing aid)
-    { C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
-	{ C_WHASHPTYCH_SANDEN80,         hwatSMALL | HPWH::MODELS_Sanden80 },
-	{ C_WHASHPTYCH_SANDEN120,        hwatSMALL | HPWH::MODELS_Sanden120 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC40, hwatSMALL | HPWH::MODELS_AWHSTier3Generic40 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC50, hwatSMALL | HPWH::MODELS_AWHSTier3Generic50 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC65, hwatSMALL | HPWH::MODELS_AWHSTier3Generic65 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier3Generic80 },
 
 // large
 	{ C_WHASHPTYCH_SANDENGS3,       hwatLARGE | HPWH::MODELS_Sanden_GS3_45HPA_US_SP },
@@ -2744,14 +2761,13 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_COLMACCXA25_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_SP },
 	{ C_WHASHPTYCH_COLMACCXA30_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_SP },
 
-#if 0
 	{ C_WHASHPTYCH_COLMACCXV5_MP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_MP },
 	{ C_WHASHPTYCH_COLMACCXA10_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_MP },
 	{ C_WHASHPTYCH_COLMACCXA15_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_MP },
 	{ C_WHASHPTYCH_COLMACCXA20_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_MP },
 	{ C_WHASHPTYCH_COLMACCXA25_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_MP },
 	{ C_WHASHPTYCH_COLMACCXA30_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_MP },
-#endif
+
 	{ C_WHASHPTYCH_NYLEC25A_SP,     hwatLARGE | HPWH::MODELS_NyleC25A_SP },
 	{ C_WHASHPTYCH_NYLEC60A_SP,     hwatLARGE | HPWH::MODELS_NyleC60A_SP  },
 	{ C_WHASHPTYCH_NYLEC90A_SP,     hwatLARGE | HPWH::MODELS_NyleC90A_SP  },
@@ -2765,14 +2781,13 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_NYLEC185AC_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_C_SP  },
 	{ C_WHASHPTYCH_NYLEC250AC_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_C_SP },
 
-#if 0
 	{ C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | HPWH::MODELS_NyleC25A_MP },
 	{ C_WHASHPTYCH_NYLEC60A_MP,     hwatLARGE | HPWH::MODELS_NyleC60A_MP },
 	{ C_WHASHPTYCH_NYLEC90A_MP,     hwatLARGE | HPWH::MODELS_NyleC90A_MP },
 	{ C_WHASHPTYCH_NYLEC125A_MP,    hwatLARGE | HPWH::MODELS_NyleC125A_MP },
 	{ C_WHASHPTYCH_NYLEC185A_MP,    hwatLARGE | HPWH::MODELS_NyleC185A_MP },
 	{ C_WHASHPTYCH_NYLEC250A_MP,    hwatLARGE | HPWH::MODELS_NyleC250A_MP },
-#endif
+
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | HPWH::MODELS_TamScalable_SP },
 
 	{ 32767,                         HPWH::MODELS(-1) }  };
@@ -2959,35 +2974,50 @@ RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
 
 }	// HPWHLINK::hw_SetHeatingCap
 //-----------------------------------------------------------------------------
-RC HPWHLINK::hw_GetHeatingCap(			// get compressor heating capacity
+RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	float& heatingCap,		// returned: design heating capacity, Btuh
-	float ashpTSrcDes,		// source air temp, F
-	float tInletDes,		// cold water inlet, F
-	float tUseDes) const	// hot water use temp, F
+	float ashpTSrcDes,		// source air temp, F (used if conpressor)
+	float tInletDes,		// cold water inlet, F (used if conpressor)
+	float tUseDes) const	// hot water use temp, F (used if conpressor)
 // returns RCOK and heatingCap iff success
+//    else RCBAD (heatingCap = 0)
 {
 	RC rc = RCOK;
 	heatingCap = 0.f;
-	if (!hw_pHPWH || !hw_HasCompressor())
-		return RCBAD;		// bad setup or no compressor
-	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
-	if (minT == double(HPWH::HPWH_ABORT))
-		rc = RCBAD;
-	else
-	{	if (ashpTSrcDes < minT)
-			ashpTSrcDes = minT;		// constrain source air temp to
-									//  HPWH lockout temp
-
-		double cap = hw_pHPWH->getCompressorCapacity(
-						ashpTSrcDes,	// design source air temp, F
-						tInletDes,		// inlet temp, F
-						tUseDes,		// outlet temp, F
-						HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
-		if (cap == double(HPWH::HPWH_ABORT))
+	if (!hw_pHPWH)
+		return RCBAD;		// bad setup
+	double cap = 0.;
+	if (hw_pHPWH->hasACompressor())
+	{	double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
+		if (minT == double(HPWH::HPWH_ABORT))
 			rc = RCBAD;
 		else
-			heatingCap = float(cap);
+		{
+			if (ashpTSrcDes < minT)
+				ashpTSrcDes = minT;		// constrain source air temp to
+										//  HPWH lockout temp
+
+			cap = hw_pHPWH->getCompressorCapacity(
+							ashpTSrcDes,	// design source air temp, F
+							tInletDes,		// inlet temp, F
+							tUseDes,		// outlet temp, F
+							HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
+			if (cap == double(HPWH::HPWH_ABORT))
+				rc = RCBAD;
+		}
 	}
+	else
+	{	// resistance: return capacity of largest heating element
+		//   TODO: recode to return max when HPWH is fixed
+		int nRE = hw_pHPWH->getNumResistanceElements();
+		for (int iRE = 0; iRE < nRE; iRE++)
+		{	double capx = hw_pHPWH->getResistanceCapacity(iRE, HPWH::UNITS_BTUperHr);
+			if (capx != double(HPWH::HPWH_ABORT) && capx > cap)
+				cap = capx;
+		}
+	}
+	if (!rc)
+		heatingCap = float(cap);
 	return rc;
 }		// HPWHLINK::hw_GetHeatingCap
 //-----------------------------------------------------------------------------
@@ -3148,7 +3178,8 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
 	if (!hw_pHPWH->isSetpointFixed())
 	{	double tSetpointMax;
-		bool bSPP = hw_pHPWH->isNewSetpointPossible(tSetpoint, tSetpointMax, HPWH::UNITS_F);
+		std::string whyNot;		// HPWH explanatory text, ignored
+		bool bSPP = hw_pHPWH->isNewSetpointPossible(tSetpoint, tSetpointMax, whyNot, HPWH::UNITS_F);
 		// silently limit to max acceptable
 		//   if HPWH has resistance, max = 212
 		float tSetpointX = bSPP ? tSetpoint : tSetpointMax;		
@@ -3609,7 +3640,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	else if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	// STRGSML or BUILTUP HPWH model
 		// TODO: more specific checking for ASHPX
-		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, 0);
+		ignoreN( whenHs, DHWHEATER_LDEF, DHWHEATER_RESHTPWR, DHWHEATER_RESHTPWR2, DHWHEATER_RESTY, 0);
 		RC rc1 = requireN( whenHs, DHWHEATER_ASHPTY, 0);
 		rc |= rc1;
 		if (!rc1)
@@ -3698,7 +3729,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 
 	if (IsSet(DHWHEATER_VOLRUNNING))
 	{	if (!wh_CanSetVolFromVolRunning())
-			rc |= disallow(DHWHEATER_VOLRUNNING, whenTy);
+			rc |= disallow(DHWHEATER_VOLRUNNING, whenHs);
 		else if (IsSet(DHWHEATER_VOL))
 			rc |= oer("whVol and whVolRunning cannot both be specified");
 	}
@@ -3748,13 +3779,14 @@ int DHWHEATER::wh_CanSetVolFromVolRunning() const	// can volume be derived from 
 //        -1: maybe (re HPWH pending HPWHLINK setup)
 {
 	int ret = 0;
-	if (wh_IsHPWHModel())
+	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	ret = -1;
-		if (wh_HPWH.hw_HasCompressor()
+		if (wh_HPWH.hw_HasCompressor()	// redundant *but* false if !hw_pHPWH
 		 && !wh_HPWH.hw_pHPWH->isTankSizeFixed())
 			ret = 1;
 	}
 	// else
+	// 	Other type (including C_WHHEATSRCCH_ELRESX): volRunning not supported
 	//	ret = 0;
 
 	return ret;
@@ -4003,7 +4035,7 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 
 // DHWHEATER subhour models accum to wh_inElec, wh_inElecBu, wh_inElecXBU, and wh_inFuel
 
-// do not for C_IVLCH_S
+// do not call for C_IVLCH_S
 
 {
 	RC rc = RCOK;
@@ -4099,8 +4131,13 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	bool bVolMaybeModifiable = false;
 	if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
 	{	// resistance tank (no preset)
+		//  wh_EF and wh_insulR < 0 if not set
+		//  wh_EF > 0 determines HPWH type of resistance tank
+		//  wh_resTy is currently documentation only (9-2021)
+		float insulR = IsSet(DHWHEATER_INSULR) ? wh_insulR : 12.f;
 		rc |= wh_HPWH.hw_InitResistance(
-			wh_vol, wh_EF, wh_resHtPwr, wh_resHtPwr2);
+			wh_resTy, wh_vol, wh_EF, insulR, wh_resHtPwr, wh_resHtPwr2);
+		// bVolMaybeModifiable = true;
 	}
 	else if (wh_ashpTy == C_WHASHPTYCH_GENERIC)
 	{	// generic HPWH (no preset)
@@ -4112,7 +4149,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		// volume set below after heatingCap is known
 	}
 
-	if (IsSet(DHWHEATER_HEATINGCAP))
+	if (!rc && IsSet(DHWHEATER_HEATINGCAP))
 	{	// check whether heating capacity can be adjusted
 		if (!wh_HPWH.hw_pHPWH->isHPWHScalable() || !wh_HPWH.hw_HasCompressor())
 		{	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
@@ -4132,17 +4169,15 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		}
 	}
 
-	if (wh_HPWH.hw_HasCompressor())
-	{	// retrieve capacity: may not have been set; limits may have been applied
-		// TODO: generalize for non-compressor types
+	// retrieve capacity: may not have been set; limits may have been applied
+	if (!rc)	// if success so far (else HPWH queries can fail)
 		rc |= wh_HPWH.hw_GetHeatingCap(
 			wh_heatingCap,			// capacity
 			pWS->ws_ashpTSrcDes,	// source air
 			pWS->ws_tInletDes,		// inlet water temp
 			pWS->ws_tUse);			// outlet water temp
-	}
 
-	if (bVolMaybeModifiable)
+	if (!rc && bVolMaybeModifiable)
 	{	const char* what = IsSet(DHWHEATER_VOL) ? "whVol"
 				: IsSet(DHWHEATER_VOLRUNNING) ? "whVolRunning"
 				: NULL;
@@ -4155,17 +4190,16 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			else if (IsSet(DHWHEATER_VOLRUNNING))
 			{	// semi-redundant check
 				if (!wh_CanSetVolFromVolRunning())
-					rc |= ooer(DHWHEATER_VOLRUNNING, "no can do");
+					oInfo("%s is ignored (tank volume is fixed at %0.0f gal)",
+						what, wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
 				else
-				{
-					RC rc2 = wh_HPWH.hw_DeriveVolFromVolRunning(
+				{	RC rc2 = wh_HPWH.hw_DeriveVolFromVolRunning(
 						wh_volRunning,
 						wh_heatingCap,
 						pWS->ws_tSetpointDes - pWS->ws_tInletDes,
 						vol);
 					if (rc2)
 						rc |= err(PERR, "DHWHEATER::wh_HPWHInit: hw_CanSetVolFromVolRunning() inconsistency.");
-					// else wh_vol already known
 				}
 			}
 			else // IsSet( DHWHEATER_VOL)
@@ -4181,9 +4215,10 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	// at this point, HPWH has known size and default UA
 	//   (later capacity scaling does not alter size)
 	//   if additional UA or insulR is provided, adjust UA
-	rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR, wh_tankCount);
+	if (!rc)
+		rc |= wh_HPWH.hw_AdjustUAIf(wh_UA, wh_insulR, wh_tankCount);
 
-	if (rc == RCOK)
+	if (!rc)
 	{	// tank inlet fractional heights
 		float inHtSupply  = IsSet(DHWHEATER_INHTSUPPLY)  ? wh_inHtSupply  : -1.f;
 		float inHtLoopRet = IsSet(DHWHEATER_INHTLOOPRET) ? wh_inHtLoopRet : -1.f;
@@ -4192,10 +4227,11 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	// make probe-able values consistent with HPWH
 	//   note hw_GetInfo() call uses tankCount=1: get totals from HPWH
-	wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
+	if (!rc)
+		wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
 
 	// config checks -- report only once
-	if (!pWS->ws_configChecked)
+	if (!rc && !pWS->ws_configChecked)
 	{
 		if (wh_HPWH.hw_IsSetpointFixed())
 		{	int fn = pWS->ws_GetTSetpointFN(whfcn);
@@ -4451,14 +4487,22 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_qLoss = wh_HPWH.hw_qLoss;
 		wh_qEnv = wh_HPWH.hw_qEnv;
 		wh_balErrCount = wh_HPWH.hw_balErrCount;
-		if (pWS->ws_tUse - wh_HPWH.hw_tHWOut > 1.f)
+		wh_tHWOut = wh_HPWH.hw_tHWOut;
+		wh_qXBU = wh_HPWH.hw_HPWHxBU;
+		if (pWS->ws_tUse - wh_tHWOut > 1.f)
+		{
+#if 0 && defined( _DEBUG)
+			if (wh_HPWH.hw_nzDrawCount != 0)
+				printf("\nUnexpected unmet");
+#endif
 			wh_unMetSh++;	// unexpected, XBU should maintain temp
 							//   will happen if ws_tUse changes (e.g. via expression)
-							//   during a period of no draw			
+							//   during a period of no draw
+		}
 
 		// energy output and electricity accounting (assume no fuel)
 		wh_qHW = KWH_TO_BTU(wh_HPWH.hw_qHW);			// hot water heating, Btu
-		wh_inElecXBUSh = wh_qXBU = wh_HPWH.hw_HPWHxBU;	// add'l backup heating, Btu
+		wh_inElecXBUSh = wh_qXBU;						// add'l backup heating, Btu
 
 		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;

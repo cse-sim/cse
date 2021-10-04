@@ -13,7 +13,7 @@
 #include "rccn.h"
 #include "cnguts.h"
 #include "exman.h"
-#include "slpak.h"
+#include "solar.h"
 
 
 static const float airRefrInd = 1.f;

@@ -560,7 +560,7 @@ x#endif
 // ====================================================================
 char * FC strtemp(		// allocate n+1 bytes in temp string buffer (Tmpstr[])
 
-	SI n )	// number of bytes needed, less 1 (1 added here eg for null, 9-89)
+	size_t n )		// number of bytes needed, less 1 (1 added here eg for null)
 
 // returns pointer to space in Tmpstr : Valid for a (very) short while
 
@@ -1038,8 +1038,13 @@ char* strTranslateEscapes(	 	// translate standard escape sequences
 	return d;
 }		// strTranslateEscapes
 //----------------------------------------------------------------------------
-char* strCatIf( char* d, size_t dSize, const char *brk, const char* s)
-// conditional concatenate
+char* strCatIf(		// conditional concatenation
+	char* d,			// input / destination
+	size_t dSize,		// dim of d (including space for \0)
+	const char* brk,	// break, e.g. "-" or ", "
+	const char* s,		// concat string
+	int options /*=0*/)	// options
+						//   1: attempt to truncate d if dSize exceeded
 // adds break string iff both d and s non-null --
 //   d    s	result
 // ---  ---	-------
@@ -1048,15 +1053,30 @@ char* strCatIf( char* d, size_t dSize, const char *brk, const char* s)
 // ""    "s" "s"
 // "d"   "s" "d" + brk + "s"
 
-// returns d
+// returns NULL if combined result length exceeds dSize
+//    else d (updated)
 {
+// 7-2021 prior code used strcat_s.  However, library code
+//   throws on too long altho docs say it returns errno_t.
+//   Modified to check length here and use strcat()
 	if ( s && *s)	// if s contains a string
-	{	if (*d)		// if d not ""
-			strcat_s( d, dSize, brk);	// add break string
-		strcat_s( d, dSize, s);			// add s
+	{	size_t dLen = strlen(d);
+		size_t len = dLen ? dLen + strlen(brk) + strlen(s) : 0;
+		if (len >= dSize)
+		{	size_t dLenMax = dSize - (len - dLen) - 1;
+			if (dLen < dLenMax || !(options & 1))
+				return NULL;	// result does not fit
+			else
+				d[ dLenMax] = '\0';
+		}
+		if (*d)		// if d not ""
+			strcat(d, brk);	// add break string
+		strcat( d, s);			// add s
 	}
 	return d;
 }		// strCatIf
+//-------------------------------------------------------------------------
+// 
 //-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally

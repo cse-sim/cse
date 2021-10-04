@@ -1386,24 +1386,24 @@ RECORD WSHADRAT "shade" *RAT		// shading info
 	/* each entry holds info re a window's overhang, left fin, & right fin, & win's ht/wid (not needed except re shading).
 	   WSHADRAT entries are accessed via subscript in .iwshad in shaded window's XSURF (in ZNR's component chain). */
 
-			// .ownTi (base class) is window subscript
+  *declare "float SunlitFract( float gamma, float cosz) const;"
+  // .ownTi (base class) is window subscript
   // all following members are inputs, set by cncult.cpp
-		       // old names 1-92
-    *r  LEN_GZ wWidth	//  wwidth	Window width.  *r: set (from window) by input check/setup (topCkf).
-    *r  LEN_GZ wHeight	//  wheight	Window height
-    *mh LEN ohDepth  	//  ohdepth  	Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
-    *mh LEN ohDistUp   	//  ohwd    	Distance from top of window to bot of OH
-    *mh LEN ohExL    	//  ohlx    	Overhang extension beyond left edge of window
-    *mh LEN ohExR    	//  ohrx        Ditto right edge
-    *mh LEN ohFlap   	//  ohflap   	Len of flap hanging down from front of overhang
-    *mh LEN lfDepth  	//  fldepth  	Left fin depth
-    *mh LEN lfTopUp    	//  fltx    	Left fin top of window to top of fin
-    *mh LEN lfDistL    	//  flwd    	Left fin distance to left edge of window
-    *mh LEN lfBotUp    	//  flwbx    	Left fin bottom to window bottom distance
-    *mh LEN rfDepth	//  frdepth	Right fin values analogous to left
-    *mh LEN rfTopUp     //  frtx
-    *mh LEN rfDistR     //  frwd
-    *mh LEN rfBotUp     //  frwbx
+    *r  LEN_GZ wWidth	// Window width.  *r: set (from window) by input check/setup (topCkf).
+    *r  LEN_GZ wHeight	// Window height
+    *mh LEN ohDepth  	// Depth of overhang.  *mh: may change monthly-hourly: m-h user exprs accepted.
+    *mh LEN ohDistUp   	// Distance from top of window to bot of OH
+    *mh LEN ohExL    	// Overhang extension beyond left edge of window
+    *mh LEN ohExR    	// Ditto right edge
+    *mh LEN ohFlap   	// Len of flap hanging down from front of overhang
+    *mh LEN lfDepth  	// Left fin depth
+    *mh LEN lfTopUp    	// Left fin top of window to top of fin
+    *mh LEN lfDistL    	// Left fin distance to left edge of window
+    *mh LEN lfBotUp    	// 	Left fin bottom to window bottom distance
+    *mh LEN rfDepth	    // 	Right fin values analogous to left
+    *mh LEN rfTopUp     // 
+    *mh LEN rfDistR     // 
+    *mh LEN rfBotUp     // 
 *END		// WSHADRAT
 //=======================================================================================
 RECORD MASSBC "massbc sub" *SUBSTRUCT	// MASSBC: boundary conditions substruct for MSRAT.inside and .outside
@@ -1922,6 +1922,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "AIRSTATE( double tdb, double w) : as_tdb( tdb), as_w( w) { }"
 *declare "void as_Init() { as_tdb=0.; as_w=0.; }"
 *declare "void as_Set( double tdb, double w) { as_tdb=tdb; as_w = w; }"
+*declare "void as_Set( const AIRFLOW& af);"
 *declare "void as_SetWFromRh( float rh) { as_w = psyHumRat2( as_tdb, rh); }"
 *declare "float as_Twb() const { return psyTWetBulb( as_tdb, as_w); }"
 *declare "float as_Enthalpy() const { return psyEnthalpy( as_tdb, as_w); }"
@@ -1954,6 +1955,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_W() const { return as_w; }"
 *declare "double af_Wmf() const { return af_amf*as_w; }"
 *declare "void af_GetAirState( AIRSTATE& as) const { as.as_Set( as_tdb, as_w); }"
+*declare "void af_SetAirState( const AIRSTATE& as) { as_Set( as.as_tdb, as.as_w); }"
 *declare "void af_Init() { af_amf=0.; as_tdb=0.; as_w=0.; }"
 *declare "void af_Init( double amf, double tdb, double w) { af_amf=amf;	as_tdb=tdb; as_w=w; }"
 *declare "void af_Copy( const AIRFLOW& af){ af_amf=af.af_amf; as_tdb=af.as_tdb; as_w=af.as_w; }"
@@ -2218,14 +2220,16 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "double zn_QsHvacCR( double tza) const;"
     *declare "double zn_AmfHvacCR( double tza, double tSup, double qRad) const;"
     *declare "double zn_AmfHvacCR( double tza, double tSup) const;"
+    *declare "void zn_TAirFloatCR() { tz = zn_balC1 / zn_balC2; }"
     *declare "void zn_SetRSYSAmf( float fSize, int iAux);"
     *declare "void zn_SetRSYSAmfFromTSup();"
     *declare "RC zn_CondixCR2();"
-    *declare "void zn_TAirFloatCR() { tz = zn_balC1 / zn_balC2; }"
+    *declare "RC zn_AirFlowVsTsup();"
     *declare "int zn_AssessVentUtility();"
     *declare "int zn_OAVAttempt( double tSup);"
     *declare "int zn_FVentCR();"
     *declare "RC zn_CondixCR( ULI ventAvail);"
+    *declare "RC zn_AirRequest( RSYS* rs);"
     *declare "RC zn_AirX();"
     *declare "RC zn_MoistureBalCR();"
     *declare "RC zn_ComfortCR();"
@@ -2697,6 +2701,7 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qMass  	// zone net sensible transfer from mass, Btu.  See qlAir for moisture.
     float qsIz    	// interzone gain to zone, Btu
     float qsMech  	// zone total sensible mechanical heat gain, Btu
+                    //   includes HPWH heat removal
     float eqfVentHr	// equivalent full vent hours = sum( zn_fVent)
   //2. latent heats for latent heat balance: qlInfil thru qlMech
     float qlInfil	// zone infiltration latent gain, Btu
@@ -2711,9 +2716,11 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
 					//   - added to next subr sens gain. Btu.
     float unMetHDH	// zone end-of-hour air temp excursion below heating set point, deg-hr (<=0)
 	float unMetCDH	// zone end-of-hour air temp excursion above cooling set point, deg-hr (>=0)
-    float qcMech	// zone accumulated cooling (negative) ...
-    float qhMech	// ... and heating (positive) mechanical heat gains. Latent & sensible combined. 10-93.
-    float qvMech	// ... mechanical (OAV) vent (negative)
+    float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (OAV not included)
+    float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
+    float qcMech	// zone accumulated total mechanical (sensible + latent) cooling (including HPWH heat extraction), Btu (< 0)
+    float qhMech	// zone accumulated total mechanical (sensible + latent) heating (including HPWH heat extraction), Btu (>0)
+    float qvMech	// zone accumulated mechanical (OAV) total (sensible + latent) heat gains, Btu (< 0)
     float litDmd	// zone lighting demand and Energy Use, ...
     float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
 *END		// ZNRES_IVL_SUB
@@ -2956,6 +2963,7 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *declare "void ds_Init( int options=0);"
 *declare "ZNR* ds_GetExZone() const;"
 *declare "RSYS* ds_GetRSYS() const;"
+*declare "DUCTSEGRES* ds_GetDUCTSEGRES() const;"
 *declare "RC ds_Ckf();"
 *declare "bool ds_IsRound() const;"
 *declare "RC ds_TopDS( const DUCTSEG* pDSi);"
@@ -3018,6 +3026,8 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 *i EXCNDCH ds_exCnd			// adjacent cond: adiabatic/ambient/specT/adjZn.
 
 *i FRAC ds_leakF			// leakage fraction, 0-1
+                            //   return: leak is modelled at duct inlet (return register)
+                            //   supply: leak is modelled at duct outlet (supply register)
 *s *e DBL ds_uaTot			// cur step total conductance between duct air
 							//   and surrounding equivalent temp, Btuh/F
 
@@ -3031,7 +3041,6 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 									//  [ 3]=leaving
 
 *s *e DBL ds_amfFL			// dry air mass flow rate at full load, lbm/hr
-#if 1
 *s *e DBL ds_qCondFL		// full load total conduction losses to surround (+ = out of duct), Btuh
 							//   (may be old: from last calc when rsMode != rsmOFF)
 *s *e DBL ds_qCond			// total conduction loss rate to surround (+ = out of duct), Btuh
@@ -3041,15 +3050,48 @@ RECORD DUCTSEG "DuctSeg" *RAT	// duct segment
 							//  ds_qCond = ds_qCondAir + ds_qCondRad
 *s *e DBL ds_qLeakSen		// leakage sensible heat loss rate, Btuh (+ = out of duct)
 *s *e DBL ds_qLeakLat		// leakage latent heat loss rate, Btuh (+ = out of duct)
-#else
-*s *e DBL ds_qCondFL		// full load total conduction losses to surround (+ = out of duct), Btuh
-							//   (may be old: from last calc when rsMode != rsmOFF)
-*s *e DBL ds_qCondAirFL		//  ... to txa (air)
-*s *e DBL ds_qCondRadFL		//  ... to txr (radiant)
-							// ds_qCondAirFL + ds_qCondRadFL = ds_qCondFL
-#endif
 
 *END	// DUCTSEG
+//=============================================================================
+RECORD DUCTSEGRES_IVL_SUB "DUCTSEG interval results sub" *SUBSTRUCT	// DUCTSEGresult substruct for DUCTSEGRES
+
+    *declare "void dsr_Clear() { memset(this, 0, sizeof(DUCTSEGRES_IVL_SUB)); }"
+	*declare "void dsr_Accum( const DUCTSEGRES_IVL_SUB* src, int firstFlg, int lastFlg);"
+	*declare "void dsr_SetPrior() const;"
+
+	INT n			// number of intervals added together in this one (divisor for averages)
+					//  (maintained but unused)
+
+	// float members: qhCond is first, xx is last (see code)
+    //   heating values when rsmHEAT, cooling otherwise (rsmCOOL or rsmOAV)
+    ENERGY qhCond     // heating conduction
+    ENERGY qhLeakSen  // heating leakage sensible
+    ENERGY qhTotSen   // heating total sensible
+
+    ENERGY qcCond     // cooling conduction
+    ENERGY qcLeakSen  // cooling leakage sensible
+    ENERGY qcTotSen   // cooling total sensible
+    ENERGY qcLeakLat  // cooling leakage latent
+
+*END		// DUCTSEGRES_IVL_SUB
+//=============================================================================
+RECORD DUCTSEGRES_SUB "DUCTSEG results sub" *SUBSTRUCT
+    // name: same as corresponding DUCTSEG, or sum_of_DUCTSEG.
+    // CAUTION: code assumes these are in order matching IVLCH
+    //    so can add IVLCH-1 to ptr to .Y to access M,D,S. eg in cgresult.cpp.
+    *y *nest DUCTSEGRES_IVL_SUB Y  	// run results, aka year or annual
+    *m *nest DUCTSEGRES_IVL_SUB M  	// month
+    *d *nest DUCTSEGRES_IVL_SUB D  	// day
+    *h *nest DUCTSEGRES_IVL_SUB H  	// hour.
+    *s *nest DUCTSEGRES_IVL_SUB S  	// subhour, aka subStep or sub-time-step
+*END		// DUCTSEGRES_SUB
+//=============================================================================
+RECORD DUCTSEGRES "DUCTSEGRes" *RAT	// holds DUCTSEG and all-DUCTSEG simulation results (later at subscript #DUCTSEG + 1)
+    // name: same as corresponding DUCTSEG, or sum_of_DUCTSEG.
+	*e *noname *nest DUCTSEGRES_SUB curr 	// current year,month,day,hour,subhr results, stored at end each interval
+    *nest DUCTSEGRES_SUB prior 			// prior year,month,day,hour,subhr results, available throughout interval
+    // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
+*END		// DUCTSEGRES
 //=============================================================================
 RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *prefix rs_
@@ -3068,7 +3110,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_RddiInit();"
 *declare "RC rs_pass1AtoB();"
 *declare "RC rs_begP1b();"
-*declare "RC rs_endP1DsdIter();"
+*declare "RC rs_endP1DsdIter( int auszMode);"
 *declare "RC rs_endAutosize();"
 *declare "void rs_AuszFinal();"
 *declare "float rs_ClgCapNomTons( float nearest=-1.f);"
@@ -3083,28 +3125,36 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_SetupFanC( float avfC=-1.f);"
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
 *declare "RC rs_SetDuctSizes();"
-*declare "void rs_SetModeAndClear( int rsModeNew);"
+*declare "void rs_SetModeAndClear( int rsModeNew, float speedF=1.f);"
+*declare "void rs_ClearSubhrResults( int options=0);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
 *declare "RC rs_EndSubhr();"
 *declare "RC rs_AfterSubhr();"
 *declare "RC rs_AfterHour();"
-*declare "void rs_EnteringAirState( int rsMode=-1);"
+*declare "void rs_EnteringAirState();"
 *declare "int rs_IsModeAvailable( int rsMode);"
 *declare "int rs_IsAutoSizing() const;"
-*declare "int rs_SupplyAirState( int rsMode);"
-*declare "void rs_SupplyDSEAndDucts( AIRSTATE& as, float DSE);"
-*declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as, float DSE);"
+*declare "int rs_SupplyAirState( int rsMode, float speedF=1.f);"
+*declare "float rs_SupplyDSEAndDucts(AIRSTATE& as, float amf = -1.f);"
+*declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as);"
+*declare "float rs_TsupVarFlow( float fAmf, AIRSTATE& as);"
 *declare "double rs_ZoneAirRequest( double znAmfSup, int iAux=0);"
 *declare "RC rs_AllocateZoneAir();"
+*declare "RC rs_AllocateZoneAirVC();"
+*declare "RC rs_TotalAirRequest( float speedF);"
+*declare "double rs_SpeedFMismatch( double& speedF);"
+*declare "double rs_FindAirFlow();"
 *declare "void rs_AvgZoneCond();"
-*declare "static double rs_CallAmfRequired( void* pO, double &tSupX);"
 *declare "double rs_AmfRequired( double tSup);"
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
 *declare "float rs_FanHRtdPerTon( float capNomTons);"
 *declare "void rs_ACFactors();"
 *declare "void rs_Cooling( int auszMode=rsmOFF);"
+*declare "void rs_CoolingSHR();"
+*declare "void rs_CoolingEff1Spd();"
+*declare "void rs_CoolingCapF1Spd();"
 *declare "void rs_GetPerfClg( float& capTot, float& capSen, float& pwrIn) const;"
 *declare "RC rs_PerfMapAC();"
 *declare "RC rs_PerfDataASHP();"
@@ -3113,16 +3163,19 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
-*declare "int rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
-*declare "int rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
-*declare "int rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
-*declare "int rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
-*declare "int rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
-*declare "int rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
-*declare "int rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
-*declare "int rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
-*declare "int rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
-*declare "int rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
+*declare "bool rs_IsVCHtg() const { return rs_IsASHPVC(); }"
+*declare "bool rs_IsVCClg() const { return rs_IsASHPVC(); }"
+*declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
+*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
+*declare "bool rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
+*declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
+*declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
+*declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
+*declare "bool rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
+*declare "bool rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
+*declare "bool rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
+*declare "bool rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
+*declare "bool rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
 *declare "void rs_OAVSetup();"
 *declare "void rs_OAVAirFlow();"
@@ -3132,12 +3185,25 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_HSPFCheckASHP( int options=0);"
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
-*declare "float rs_Cap17RatioASHP() const;"
+*declare "float rs_CapRat1747() const;"
+*declare "float rs_CapRat0547() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
+*declare "float rs_Cap05Default( float cap47, float cap17) const;"
+*declare "RC rs_MinSpdDefaultsHtg();"
+*declare "float rs_CapHtCurSpeedF() const;"
+*declare "float rs_InpHtCurSpeedF() const;"
 *declare "RC rs_CalcInputsAndSlopesASHP();"
+*declare "RC rs_SetupBtwxtHtg();"
+*declare "float rs_Cap115Default( float cap95, float cap82) const;"
+*declare "float rs_Inp115Default( float inp95, float inp82) const;"
+*declare "RC rs_SetDefaultsClg();"
+*declare "RC rs_SetupBtwxtClg();"
+*declare "RC rs_SetupBtwxt( class Btwxt::RegularGridInterpolator* &pRgi, const std::vector<struct VSPERFP> ppV);"
+*declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float& capH, float& inp, float& capHt, float& inpHt);"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
+*declare "float rs_CapEffASHP2();"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
@@ -3170,7 +3236,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *d FLOAT rs_capNomH			//   nominal heating capacity, Btuh.  Default=rs_capH or rs_cap47
 *d FLOAT rs_capNomC			//   nominal cooling capacity, Btuh.  Default=rs_cap95
 
-*r *nest FAN rs_fan				// RSYS fan characteristics
+*r *nest FAN rs_fan			// RSYS fan characteristics
+*r NOYESCH rs_adjForFanHt   // YES: fanHtRtd derived from rs_fan.motTy
+                            //        and removed from capacity and input values
+                            //    NO: no rated fan heat adjustments
 
 *s *e *nest AIRSTATE rs_asRet	// return duct entering air state (at grilles)
 								//   (flow-weighted average of all zones)
@@ -3234,35 +3303,44 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *r FLOAT_GZ rs_HSPF			// rated HSPF, Btuh/W
 *f *e FLOAT_GZ rs_cap47		// full speed heating capacity at ODB=47 F
 *f *e FLOAT_GZ rs_COP47		// COP at ODB=47 F
-*f *e FLOAT_GZ rs_cap35		// ditto 35 F
-*f *e FLOAT_GZ rs_COP35
-*f *e FLOAT_GZ rs_cap17		// ditto 17 F
-*f *e FLOAT_GZ rs_COP17
+*f *e FLOAT_GZ rs_cap35		// full speed heating capacity at ODB=35 F
+*f *e FLOAT_GZ rs_COP35     // COP at ODB=35 F
+*f *e FLOAT_GZ rs_cap17		// full speed heating capacity at ODB=17 F
+*f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
+*f *e FLOAT_GZ rs_cap05		// full speed heating capacity at ODB=5 F
+*f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
 *r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
+*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
+							//   default ?
 
 						// re ASHPVC (variable capacity)
-*f *e FRAC_GZ rs_loadFMinH;	// heating minimum load fraction
-							//   (cycles below this)
-*f *e FRAC_GZ rs_loadFMinC;	// cooling minimum load fraction
-							//   (cycles below this)
-*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMinH; }"
-*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMinH; }"
+*f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin05;	// htg min load fract at 05 F (cycles below this)
+
+*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
+*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
+*declare "float rs_CapMin05() const { return rs_cap05*rs_loadFMin05; }"
 *f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
-*f *e FLOAT_GZ rs_COPMin35	// ditto 35 F
-*f *e FLOAT_GZ rs_COPMin17	// ditto 17 F
+*f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
+*f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed
+*f *e FLOAT_GZ rs_COPMin05	// COP at ODB=5 F, min speed
 
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
 
-*f *e FLOAT_GZ rs_inp47		// input power at ODB = 47 F, Btuh (not W)
-							//   (includes rated fan power)
-*f *e FLOAT_GZ rs_inp35		// ditto 35 F
-*f *e FLOAT_GZ rs_inp17		// ditto 17 F
+*f *e FLOAT_GZ rs_inp47		// input power at ODB=47 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp35		// input power at ODB=35 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp17		// input power at ODB=17 F, Btuh (w/ rated fan power)
+*f *e FLOAT_GZ rs_inp05		// input power at ODB=5 F, Btuh (w/ rated fan power)
 
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
-*array 2 *r FLOAT rs_ASHPInpMinF	// min spd input slopes (re ASHPVC)
+
+*declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg;"  // ASHPVC heating performance map
+                                                              // values in map are derived from rs_cap47 etc.
+                                                              // thus include fan heat/power
 
 *r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
 *r AUXHEATCTRL rs_ctrlAuxH	// auxiliary heating control
@@ -3288,8 +3366,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f FRAC_GZ rs_AFUE			//   heating system rated AFUE, 0 < AFUE <= 1
 
 *f *e FLOAT_GEZ rs_capH;		// rated heating output (including fan), Btuh
-*f *e FLOAT_GEZ rs_capH_As;		// ... as autoSized
-*f *e FLOAT_GEZ rs_capH_AsNov;	// ... raw autoSized w/o oversizing
+*f *e FLOAT_GEZ rs_capH_As;		// autoSized capH (including fan), Btuh
+*f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
 *f FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
@@ -3299,8 +3377,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
+                            //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
-*s *e FLOAT rs_capHt		// current step primary heating capacity, Btuh
+*s *e FLOAT rs_capHt		// current step full speed primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
 *s *e FLOAT rs_inpHt		// current step full speed compressor input power
@@ -3309,23 +3388,51 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   0 if not ASHP or no defrost active
 *s *e FLOAT rs_capHtMin		// current step min speed heating capacity (including fan and ASHP defrost heat), Btuh
 							//   = fan heat only if compressor unavailable
-*s *e FLOAT rs_inpHtMin		// current min full speed compressor input power
+*s *e FLOAT rs_inpHtMin		// current min speed compressor input power
 *s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
 *s *e FLOAT rs_PLF			// efficiency degradation due to cycling
 							//   PLF = PartLoadEfficiency / FullLoadEfficency
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 
 					// compression cooling
-*f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
-*f *e FLOAT_GZ rs_EER95;	// cooling AHRI rated EER at 95 F, Btuh/W
-*f *e FLOAT rs_cap95;		// rated total cooling capacity at 95 F, Btuh TODO: decide on sign
-*f *e FLOAT_GEZ rs_cap95_As;	//     ... as autoSized
-*f *e FLOAT_GEZ rs_cap95_AsNov;	// ... raw autoSized w/o oversizing
+*f *e FLOAT_GEZ rs_cap95;		// rated total full speed net cooling capacity at 95 F (>= 0), Btuh
+*f *e FLOAT_GEZ rs_cap95_As;	// autosize cap95 net total cooling cap, Btuh
+*f *e FLOAT_GEZ rs_cap95_AsNov;	// raw autoSized cap95 net total cooling cap w/o oversizing, Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
+
+*f *e FLOAT_GZ rs_COP95;    // COP at 95 F (= rs_EER95 / 3.412)
+                            //   rs_COP95 and rs_EER95 are consistent at runtime
+*f *e FLOAT_GZ rs_EER95;	// EER at 95 F, Btuh/W (=rs_COP95 * 3.412)
+                            //   rs_COP95 and rs_EER95 are consistent at runtime
+*f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
+
+*f *e FLOAT_GEZ rs_cap115;	// total full speed net cooling capacity at 115 F (>= 0), Btuh
+*f *e FLOAT_GZ rs_COP115;   // full speed cooling COP at 115F
+*r FLOAT_GZ rs_capRat11595  // cap115 / cap95 (re autosizing)
+
+
+*f *e FLOAT_GEZ rs_cap82;	// total full speed net cooling capacity at 82 F (>= 0), Btuh
+*f *e FLOAT_GZ rs_COP82;    // full speed cooling COP at 82F
+*r FLOAT_GZ rs_capRat8295	// cap82 / cap95 ratio (re autosizing)
+
+*f *e FRAC_GZ rs_loadFMin115;   // clg min load fract at 115 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin95;    // clg min load fract at 95 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin82;	// clg min load fract at 82 F (cycles below this)
+*declare "float rs_CapMin115() const { return rs_cap115*rs_loadFMin115; }"
+*declare "float rs_CapMin95() const { return rs_cap95*rs_loadFMin95; }"
+*declare "float rs_CapMin82() const { return rs_cap82*rs_loadFMin82; }"
+
+*f *e FLOAT_GZ rs_COPMin115 // COP at ODB=115 F, min speed
+*f *e FLOAT_GZ rs_COPMin95	// COP at ODB=95 F, min speed
+*f *e FLOAT_GZ rs_COPMin82	// COP at ODB=82 F, min speed
+
+*declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
+                                                              // values in map are derived from rs_cap95 etc.
+                                                              // thus include fan heat/power
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
-*f *e FLOAT rs_fanHeatC		// cooling fan operating electrical power, Btuh
+*f *e FLOAT rs_fanHeatC		// cooling fan full speed operating electrical power, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_fanDeltaTC	// cooling fan heat temperature rise, F
 							//   constant even if capacity is altered during autosize
@@ -3362,9 +3469,18 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//     rs_SEERnf and rs_EERnf)
 *s *e FLOAT rs_effCt;		// temp adjusted compressor efficiency (= CEt in ACM)
 							//   (Btuh sensible)/(Btuh compressor electrical input)
-*s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions, Btuh (<0)
-*s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions, Btuh (<0)
-*s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions, Btuh (<0)
+*s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions and speed, Btuh (<0)
+*s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions and speed, Btuh (<0)
+*s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions and speed, Btuh (<0)
+
+#if 0
+*s *e FLOAT rs_capTotCl		// coil full speed total cooling capacity, Btuh
+							//   includes rated fan heat
+*s *e FLOAT rs_inpCl		// current step full speed compressor input power
+*s *e FLOAT rs_capClMin		// current step min speed cooling capacity (including fan heat\), Btuh
+*s *e FLOAT rs_inpClMin		// current min speed compressor input power
+*s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
+#endif
 
 						// Central outside air vent (aka OAV)
 *i RSYSOAVTYCH rs_OAVType	// type: NONE, FIXEDFLOW (aka SmartVent), VARFLOW (aka SmartBreeze)
@@ -3398,18 +3514,21 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
 *s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s *e DBL rs_amf		// full-load (maximum) dry air mass flow rate, lbm/hr
+*s *e DBL rs_amf		// current dry air mass flow rate, lbm/hr
 						//   = flow at blower / coil / furnace HX etc.
 						//   set per rsMode from rs_amfH, rs_amfC, or OAV algorithm
+                        //   modified by rs_speedF
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
 								//         ASHP heating only else 0
-*s *e FLOAT rs_loadF	// current step load fraction = sensible load / current capacity
+*s *e FLOAT rs_loadF	// current step load fraction = sensible load / capacity at current speed
 *s FLOAT rs_loadFLs		// last step load fraction (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
-*s *e FLOAT rs_speedF	// primary (compressor) speed fraction
-						//    1 for fixed speed, <=1 for var spd
+*s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
+						//    fixed speed: 1; var spd: <= 1 per load
+*s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
+                        //    fixed speed: 1; var spd: < 1 per min current min cap
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
@@ -3425,8 +3544,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 						// efficiency adjustment factors applied to substep efficiency
 						// allows modification of input energy requirements. Default=1
-*s FLOAT_GZ rs_FEffH;	//   heating
-*s FLOAT_GZ rs_FEffC;	//   cooling
+*s FLOAT_GZ rs_fEffH;	//   heating
+*s FLOAT_GZ rs_fEffC;	//   cooling
 
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
@@ -3443,7 +3562,7 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	INT n			// number of intervals added together in this one (divisor for averages)
 					//  (maintained but unused)
 
-	// float members to add, hrsOn is first, qAux is last (see code)
+	// float members to add, hrsOn is first, qcSenNet is last (see code)
 	HOURS hrsOn		// operating hours
 	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
 					//   not including defrost
@@ -3453,6 +3572,8 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	ENERGY qFan		// fan heat, Btu
 	ENERGY qDefrost	// defrost (strip) heat output, Btu
 	ENERGY qAux		// auxiliary heat output, Btu
+	ENERGY qhNet	// heating net output, Btu
+    ENERGY qcSenNet // sensible cooling net output, Btu
 
 *END		// RSYSRES_IVL_SUB
 //=============================================================================
@@ -3753,11 +3874,17 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *i FLOAT ws_heatingCapDes;    // design heating capacity, Btuh
                                 //    = ws_heatingCapDesTopN[ 6] or as changed
                                 //    defaults from EcoSizer at end of prerun if not input
+                                //    No direct use, must be passed to DHWHEATER via ALTER
   *i FLOAT_GZ ws_volRunningDes; // design running volume, gal
                                 //   = active volume (above aquastat)
                                 //    full tank volume derived from running volume
                                 //      in HPWHLINK::hw_DeriveVolFromVolRunning
                                 //    defaults from EcoSizer at end of prerun if not input
+                                //    No direct use, must be passed to DHWHEATER via ALTER
+  *i FLOAT_GZ ws_fxDes;         // DHW design excess size factor, default 1
+                                //    Applied if/when ws_heatingCapDes and/or ws_volRunningDes
+                                //    are defaulted from EcoSizer at end of prerun.
+                                //    No effect if those values are input.
 
   *r FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp of water delivered to fixtures or DHWLOOP(s)
@@ -3919,7 +4046,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "static int hw_HPWHInfo( WHASHPTYCH ashpTy, int& attrs);"
 *declare "static int hw_IsAttr( WHASHPTYCH ashpTy, int attr) { int attrs; return hw_HPWHInfo( ashpTy, attrs) >= 0 ? (attr & attrs) != 0 : -1; }"
 *declare "RC hw_InitPreset( WHASHPTYCH ashpTy);"
-*declare "RC hw_InitResistance( float vol, float EF, float resHt, float resHt2);"
+*declare "RC hw_InitResistance( WHRESTYCH resTy, float vol, float EF, float resHt, float resHt2, float tUse);"
 *declare "RC hw_InitTank( float vol);"
 *declare "RC hw_AdjustUAIf( float UA, float insulR, float tankCount=1.f);"
 *declare "RC hw_InitFinalize( float inHtSupply, float inHtLoopRet);"
@@ -4053,8 +4180,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
   *declare "int wh_SetFunction();"
   *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
-  *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff ASHPX, else ignored
+  *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff wh_heatSrc=ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
+  *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
+								//	  C_WHRESTYCH_xxx, etc
+                                //    documentation only (9-2021)
   *i TI wh_znTi;				// DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant
@@ -4138,10 +4268,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r FLOAT_GEZ wh_stbyElec;		// electrical power during standby, W
 								//   default=4, used for INSTUEF
 
-  *i FLOAT_GZ wh_resHtPwr;		// upper element resistance heating power, W
+  *i FLOAT_GEZ wh_resHtPwr;		// upper element resistance heating power, W
 								//   used for some models only
 								//   default = 4500
-  *i FLOAT_GZ wh_resHtPwr2;		// lower element resistance heating power, W
+  *i FLOAT_GEZ wh_resHtPwr2;	// lower element resistance heating power, W
 								//   default = wh_resPwr
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
@@ -4928,7 +5058,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
     //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
     *e float clg		// space cooling.  code assumes 1st member.
     *e float htg		// space heating incl heat pump compressor
-    *e float hp			// heat pump auxiliary (backup) heat
+    *e float hpBU		// heat pump resistance heating (backup and defrost)
     *e float dhw		// domestic (service) hot water heating
 						//   HPWH: compressor+misc energy
 	*e float dhwBU		// domestic (service) hot water backup

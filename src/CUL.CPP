@@ -303,11 +303,11 @@ LOCAL RC FC NEAR ratTyR( BP b);
 LOCAL SI NEAR nxOwRat( BP ownB, CULT *c, CULT **pc, BP *prTyIf, BP *pr);
 LOCAL SI NEAR nxOwRec( TI ownTi, BP b, TI *pi, record **pe);
 LOCAL SI FC NEAR xnxDatMbr( SI bads, void **pp);
-LOCAL SI FC NEAR xnxC( CULT **pp);
+LOCAL bool xnxC( CULT* &c, int options=0);
 LOCAL SI FC NEAR nxRat( BP * pr, int options=0);
 LOCAL SI FC NEAR nxRec( SI bads, void **pe);
 LOCAL SI FC NEAR nxDatMbr( void **pp);
-LOCAL SI FC NEAR nxC( CULT **pp);
+LOCAL bool nxC( CULT* &pp);
 LOCAL RC NEAR ratLuCtx( BP b, char *name, char *what, record **pE);
 LOCAL RC NEAR ratLuDefO( BP b, const char* name, TI defO, char *what, record **pE, const char** pMsg);
 //public 1-92: LOCAL TI FC NEAR ratDefO( BP b);
@@ -1293,7 +1293,7 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 		   New record is all 0's (inits FsSET, FsVAL, FsERR, FsFROZ, etc to 0).
 		   Default data can be supplied via STAR entry: see nuCult.  Still??7-92 */
 		if (name)						// if name given
-			strncpy( e->name, name, sizeof(ANAME)-1);		// copy name into record
+			e->SetName( name);			// copy name into record
 		// .fileIx & .line are set below, after LIKE/COPY/USETYPE
 
 		// do LIKE/COPY if given: look up record in this basAnc, copy data after name
@@ -2522,12 +2522,9 @@ LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
 
 // call at top level for complete check.
 {
-	XSTK* x;
-	CULT *c, *cc;
-
 	// if we can make xStk full in xnxC fatal, can drop other checks? 1-91 <<<<<<
 
-	for (c = NULL;  xnxC(&c); ) 			// loop over all members of all cults
+	for (CULT* c = NULL; xnxC(c, nxropIGNORE_BEEN_HERE); ) 		// loop over all members of all cults
 	{
 		// flag input basAncs as input basAncs and to suppress expression evaluation.
 		// because: 1) speed; 2) keep NANDLEs in input records in case used in a later run.
@@ -2537,8 +2534,8 @@ LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
 		                  | RFINP;		// flag tells cuparse.cpp:probe that this is an input basAnc.
 
 		// look for ambiguities re implicit ENDs: id of a group also used in any table nested within the group
-		for (x = xStk; x < xSp; x++)			// loop over nestING cults
-			for (cc = x->cult; cc->id; cc++)		// entries of a nestING cult
+		for (XSTK* x = xStk; x < xSp; x++)			// loop over nestING cults
+			for (CULT* cc = x->cult; cc->id; cc++)		// entries of a nestING cult
 				if ( cc != x->c				// skip entry that got here!
 				&& cc->cs != STAR			// skip * entries: all same!
 				&& strcmpi( cc->id, c->id)==0		// msg if same id except ...
@@ -3820,12 +3817,12 @@ reenter:
 	return 0;				// done.  another return above.
 }		// xnxDatMbr
 //===========================================================================
-LOCAL SI FC NEAR xnxC(
+LOCAL bool xnxC(
+	CULT* &c,			// init c NULL on 1st call; rcvs cult ptr (same as xSp->c)
+	int options /*=0*/)	// options (passed to nxRat)
 
-	/* extended first/next cult entry of world of current xSp level:
-	   loops cults, following nesting of RATE records, depth first */
-
-	CULT **pc )	// init *pc NULL on 1st call; rcvs cult ptr (same as xSp->c)
+// extended first/next cult entry of world of current xSp level:
+// loops cults, following nesting of RATE records, depth first */
 
 // uses: xSp->b, xSp->cult (current/top level)
 // sets: xSp->c's, and, for nested levels, xSp->b, xSp->cult
@@ -3834,26 +3831,28 @@ LOCAL SI FC NEAR xnxC(
 // forms xStk entries per table nesting; xSp restored only at completion.
 // DO NOT NEST CALLS (nxRat, xnxC have internal static data)
 // walks tree bottom-up -- does most nested cults first.
-// typical use:  for (c = NULL; xnxC(&c); )
+// typical use:  for (c = NULL; xnxC(c); )
+
+// returns true if 
 {
-	static BP NEAR b;		// static basAnc * NEAR b
+	static BP b;		// static basAnc * NEAR b
 	// (self-cleaning: *pc NULL on outer call)
 
-	if (*pc != NULL)				// unless 1st call
+	if (c != NULL)				// unless 1st call
 		goto reenter;				// resume in middle of loops
 
-	for (b = 0;  nxRat(&b); )			// loop over all CULTs/basAncs
+	for (b = 0;  nxRat(&b, options); )		// loop over all CULTs/basAncs
 	{
 		if (b->ba_flags & RFTYS)     		// skip any types sub-basAncs
 			continue; 					// .. wanna do each CULT once.
-		for (*pc = NULL;  nxC( pc); )  	// loop over members of cult
+		for (c = NULL;  nxC( c); )  	// loop over members of cult
 		{
-			return 1;					// say have a cult, *pc and xStk set
+			return true;				// say have a cult, *pc and xStk set
 reenter:
 			;
 		}
 	}
-	return 0;				// done.  another return above.
+	return false;				// done.  another return above.
 }		// xnxC
 //===========================================================================
 LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
@@ -3994,23 +3993,26 @@ LOCAL SI FC NEAR nxDatMbr( 	// first/next data member of current record
 	return 1;			// say found one.  Other return(s) above.
 }		// nxDatMbr
 //===========================================================================
-LOCAL SI FC NEAR nxC( 	// first/next member of current cult
+LOCAL bool nxC( 	// first/next member of current cult
 
-	CULT **pc )	// init *pp NULL on 1st call; rcvs cult ptr (same as xSp->c)
+	CULT* &c )	// init c = NULL on 1st call; rcvs cult ptr (same as xSp->c)
 
 // also uses: xSp->cult
 // sets: xSp->c
 // DOES NOT datPt
 
-// typical use:  for (c = NULL; nxC(&c); )
+// typical use:  for (c = NULL; nxC(c); )
+
+// returns true iff c set pointing to next CULT
+
 {
-	if (*pc==NULL)  			// if first call
+	if (c==NULL)  			// if first call
 		xSp->c = xSp->cult - 1; // init working ptr into table
 	++xSp->c;					// next table entry
 	if (!xSp->c->id)     		// if end table
-		return 0; 				// say done
-	*pc = xSp->c;				// return pointer / initialized indicator
-	return 1;					// say found one.  Another return above.
+		return false; 			// say done
+	c = xSp->c;					// return pointer / initialized indicator
+	return true;				// say found one.  Another return above.
 }		// nxC
 
 //===========================================================================
@@ -4701,7 +4703,7 @@ x            (void *)xSp, (void *)xStk );	// casts are to make far.
 	}
 #endif
 
-	for (CULT *c = NULL;  xnxC(&c);  )	// loop CULT entries, using xStk[0], making addl xStk entries
+	for (CULT *c = NULL;  xnxC(c);  )	// loop CULT entries, using xStk[0], making addl xStk entries
 		if (
 #if 1	// another try, 4-9-2013
 			(xSp->b->rt==b->rt			// match rt not b so run basAncs, types basAncs work

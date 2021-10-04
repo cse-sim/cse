@@ -119,6 +119,7 @@ extern anc<IZXRAT> IzxR;		// interzone transfers
 extern anc<RSYS> RsR;			// residential system
 extern anc<RSYSRES> RsResR;		// residential system results
 extern anc<DUCTSEG> DsR;		// duct segments
+extern anc<DUCTSEGRES> DsResR;	// duct segment results
 extern anc<AFMTR> AfMtrR;		// air flow meters
 extern anc<DHWMTR> WMtrR;  		// DHW meters
 extern anc<DHWSYS> WsR;			// DHW system
@@ -256,9 +257,6 @@ void FC makHrSgt( float * pVerSun = NULL);
 
 // cgdebug.cpp
 void FC cgzndump( SI vrh, TI zi);
-
-// shading.cpp
-float FC shadwin( const WSHADRAT *p, float gamma, float cosz);
 
 // dhwcalc.cpp
 RC DHWBegIvl(IVLCH ivl);

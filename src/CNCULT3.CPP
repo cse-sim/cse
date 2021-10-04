@@ -14,7 +14,7 @@
 #include <msghans.h>	// MH_S0510
 
 
-#include "slpak.h"		// slsdc
+#include "solar.h"
 #include "psychro.h"
 #include "cnguts.h"
 #include "mspak.h"

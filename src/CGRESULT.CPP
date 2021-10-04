@@ -189,7 +189,7 @@ static COLDEF mtrColdef[] =
 	{ "Tot",             0,  6, D, oMtr(tot),     BTU },  	// total use
 	{ "Clg",             0,  6, D, oMtr(clg),     BTU },  	// space cooling use
 	{ "Htg",             0,  6, D, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
-	{ "HPHtg",           0,  6, D, oMtr(hp),      BTU },  	// heat pump backup heat
+	{ "HPBU",            0,  6, D, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
 	{ "Dhw",             0,  6, D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
 	{ "DhwBU",           0,  6, D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
 	{ "DhwMFL",          0,  6, D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy

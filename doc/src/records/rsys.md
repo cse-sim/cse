@@ -32,9 +32,9 @@ ASHP                  Air-source heat pump (compressor-based
                       heating and cooling). Primary
                       (compressor) heating input energy is
                       accumulated to end use HTG of meter
-                      rsElecMtr. Auxiliary heating input
-                      energy is accumulated to end use HPHTG
-                      of meter rsElecMtr.
+                      rsElecMtr. Auxiliary and defrost resistance
+                      ("strip") heating input energy is accumulated to
+                      end use HPBU of meter rsElecMtr.
 
 ASHPKGROOM            Packaged air-source heat pump.
 
@@ -290,7 +290,7 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd
 
 **rsCOPAuxH=*float***
 
-For rsType=ASHP, auxiliary electric (“strip”) heating coefficient of performance. Energy use for auxiliary heat is accumulated to end use HPHTG of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
+For rsType=ASHP, auxiliary electric (“strip”) heating coefficient of performance. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
