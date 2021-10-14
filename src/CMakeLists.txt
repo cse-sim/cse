@@ -216,7 +216,6 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/json/single_include"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/include"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/schema205/src"
-  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/btwxt/src"
   "${btwxt_SOURCE_DIR}/src"
 )
 

@@ -2062,17 +2062,10 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		rs_zonesServed++;
 	}
 
-#if 0
-// CBOR test code, 9-2020?
 	extern RC TestCBOR(const char* filePath);
 	   
-	TestCBOR
-#if 1
-		("Unitary-Constant-Efficiency.RS0002.a205.json");
-#else
-		("Unitary-Constant-Efficiency.RS0002.a205.cbor");
-#endif
-#endif
+
+	// Load ASHRAE 205 files
 
 
 	return rc;

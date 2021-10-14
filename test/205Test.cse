@@ -1,0 +1,1545 @@
+//CBECCr generated input for the 2100 ft2 prototype with tile roof and prescriptive features for CTZ12 (Sacramento)
+
+
+ #define  DD1  Jun 30
+ #define  CD1  Jul 10
+ #define  HD1  Dec 03
+   repHdrL = "12 P21 G20 TILE"
+   wfname = "USA_CA_Sacramento.Exec.AP.724830_CTZ2010.epw"
+   ebTolHour = 0.001
+   ebTolDay = 0.001
+   ebTolMon = 0.001
+   ebTolSubHr = 0.001
+   jan1DOW = "THU"
+   wuDays = 30
+   nSubSteps = 30
+   skyModel = "anisotropic"
+   dt = "YES"
+   heatDsTDbO = 37
+   coolDsDay = DD1
+
+MATERIAL   "mat-Gypsum Board"  
+   matDens = 40
+   matSpHt = 0.27
+   matCond = 0.09167
+
+MATERIAL   "mat-3 Coat Stucco"  
+   matDens = 116
+   matSpHt = 0.2
+   matCond = 0.4167
+
+MATERIAL   "mat-SoftWood"  
+   matDens = 35
+   matSpHt = 0.39
+   matCond = 0.08167
+
+MATERIAL   "mat-Wood layer"  
+   matDens = 41
+   matSpHt = 0.45
+   matCond = 0.06127
+
+MATERIAL   "mat-R2 Sheathing"  
+   matDens = 1.5
+   matSpHt = 0.35
+   matCond = 0.04167
+
+MATERIAL   "mat-Light Roof"  
+   matDens = 120
+   matSpHt = 0.2
+   matCond = 1
+
+MATERIAL   "mat-Carpet"  
+   matDens = 12.3
+   matSpHt = 0.34
+   matCond = 0.02
+
+MATERIAL   "mat-R4 Sheathing"  
+   matDens = 1.5
+   matSpHt = 0.35
+   matCond = 0.02083
+
+MATERIAL   "mat-R4 Synth Stucco"  
+   matDens = 1.5
+   matSpHt = 0.35
+   matCond = 0.02083
+
+MATERIAL   "mat-R4 Synth Stucco (Copy)"  
+   matDens = 1.5
+   matSpHt = 0.35
+   matCond = 0.02083
+   matCondCT = 0.00418
+
+MATERIAL   "mat-R2 Sheathing (Copy)"  
+   matDens = 1.5
+   matSpHt = 0.35
+   matCond = 0.04167
+   matCondCT = 0.00418
+
+MATERIAL   "mat-10 PSF Roof"  
+   matDens = 120
+   matSpHt = 0.2
+   matCond = 1
+
+MATERIAL   "mat-Exterior Wall Cons-R15-InsMat-2"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.027778
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Cathedral Ceiling Cons-R19-InsMat-1"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.02193
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Floor Above Crawl Cons-R15-InsMat-3"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.027778
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Ceiling below attic Cons-R9.1-InsMat-2"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.038703
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Ext Floor Cons-R19-InsMat-3"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.02193
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Ceiling below attic Cons-AtcEdgWA-R14.0292-InsMat-2"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.038703
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.038703
+   matCondCT = 0.00418
+
+MATERIAL   "mat-Ceiling below attic Cons-AtcEdgWB-R18.9583-InsMat-4"  
+   matDens = 1.5
+   matSpHt = 0.2
+   matCond = 0.038703
+   matCondCT = 0.00418
+
+MATERIAL   "mat-SNEICCarpet"  
+   matDens = 12.3
+   matSpHt = 0.34
+   matCond = 0.02
+
+MATERIAL   "mat-SNEICConcrete"  
+   matDens = 144
+   matSpHt = 0.2
+   matCond = 1
+
+MATERIAL   "mat-SNEICEarth"  
+   matDens = 115
+   matSpHt = 0.2
+   matCond = 1
+
+MATERIAL   "mat-AtticTruss"  
+   matDens = 32
+   matSpHt = 0.33
+   matCond = 0.0667
+
+MATERIAL   "IntMassMat-SoftWood"  
+   matDens = 35
+   matSpHt = 0.39
+   matCond = 0.08167
+
+MATERIAL   "IntMassMat-Gypsum"  
+   matDens = 40
+   matSpHt = 0.27
+   matCond = 0.09167
+
+CONSTRUCTION   "ccn-Exterior Wall Cons"  
+
+LAYER   "cl1-Exterior Wall Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "cl2-Exterior Wall Cons"  
+   lrMat = "mat-Exterior Wall Cons-R15-InsMat-2"
+   lrThk = 0.291667
+
+LAYER   "cl3-Exterior Wall Cons"  
+   lrMat = "mat-R4 Synth Stucco (Copy)"
+   lrThk = 0.083333
+
+CONSTRUCTION   "fcn-Exterior Wall Cons"  
+
+LAYER   "fl1-Exterior Wall Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "fl2-Exterior Wall Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl3-Exterior Wall Cons"  
+   lrMat = "mat-R4 Synth Stucco (Copy)"
+   lrThk = 0.083333
+
+CONSTRUCTION   "ccn-Cathedral Ceiling Cons"  
+
+LAYER   "cl1-Cathedral Ceiling Cons"  
+   lrMat = "mat-Cathedral Ceiling Cons-R19-InsMat-1"
+   lrThk = 0.291667
+
+LAYER   "cl2-Cathedral Ceiling Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl3-Cathedral Ceiling Cons"  
+   lrMat = "mat-R2 Sheathing (Copy)"
+   lrThk = 0.083333
+
+LAYER   "cl4-Cathedral Ceiling Cons"  
+   lrMat = "mat-Light Roof"
+   lrThk = 0.016667
+
+CONSTRUCTION   "fcn-Cathedral Ceiling Cons"  
+
+LAYER   "fl1-Cathedral Ceiling Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl2-Cathedral Ceiling Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl3-Cathedral Ceiling Cons"  
+   lrMat = "mat-R2 Sheathing (Copy)"
+   lrThk = 0.083333
+
+LAYER   "fl4-Cathedral Ceiling Cons"  
+   lrMat = "mat-Light Roof"
+   lrThk = 0.016667
+
+CONSTRUCTION   "ccn-Floor Above Crawl Cons"  
+
+LAYER   "cl1-Floor Above Crawl Cons"  
+   lrMat = "mat-Carpet"
+   lrThk = 0.041667
+
+LAYER   "cl2-Floor Above Crawl Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl3-Floor Above Crawl Cons"  
+   lrMat = "mat-Floor Above Crawl Cons-R15-InsMat-3"
+   lrThk = 0.291667
+
+LAYER   "cl4-Floor Above Crawl Cons"  
+   lrMat = "mat-3 Coat Stucco"
+   lrThk = 0.072917
+
+CONSTRUCTION   "fcn-Floor Above Crawl Cons"  
+
+LAYER   "fl1-Floor Above Crawl Cons"  
+   lrMat = "mat-Carpet"
+   lrThk = 0.041667
+
+LAYER   "fl2-Floor Above Crawl Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl3-Floor Above Crawl Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl4-Floor Above Crawl Cons"  
+   lrMat = "mat-3 Coat Stucco"
+   lrThk = 0.072917
+
+CONSTRUCTION   "ccn-Ceiling below attic Cons"  
+
+LAYER   "cl1-Ceiling below attic Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "cl2-Ceiling below attic Cons"  
+   lrMat = "mat-Ceiling below attic Cons-R9.1-InsMat-2"
+   lrThk = 0.291667
+
+LAYER   "cl3-Ceiling below attic Cons"  
+   lrMat = "mat-Ceiling below attic Cons-R9.1-InsMat-2"
+   lrThk = 0.926282
+
+CONSTRUCTION   "fcn-Ceiling below attic Cons"  
+
+LAYER   "fl1-Ceiling below attic Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "fl2-Ceiling below attic Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl3-Ceiling below attic Cons"  
+   lrMat = "mat-Ceiling below attic Cons-R9.1-InsMat-2"
+   lrThk = 0.926282
+
+CONSTRUCTION   "ccn-Interior Floor Cons"  
+
+LAYER   "cl1-Interior Floor Cons"  
+   lrMat = "mat-Carpet"
+   lrThk = 0.041667
+
+LAYER   "cl2-Interior Floor Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl4-Interior Floor Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+CONSTRUCTION   "fcn-Interior Floor Cons"  
+
+LAYER   "fl1-Interior Floor Cons"  
+   lrMat = "mat-Carpet"
+   lrThk = 0.041667
+
+LAYER   "fl2-Interior Floor Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl3-Interior Floor Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.9375
+
+LAYER   "fl4-Interior Floor Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+CONSTRUCTION   "ccn-Attic Roof Cons"  
+
+LAYER   "cl2-Attic Roof Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl3-Attic Roof Cons"  
+   lrMat = "mat-10 PSF Roof"
+   lrThk = 0.083333
+
+CONSTRUCTION   "fcn-Attic Roof Cons"  
+
+LAYER   "fl1-Attic Roof Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl2-Attic Roof Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl3-Attic Roof Cons"  
+   lrMat = "mat-10 PSF Roof"
+   lrThk = 0.083333
+
+CONSTRUCTION   "ccn-Interior Wall Cons"  
+
+LAYER   "cl1-Interior Wall Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "cl3-Interior Wall Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+CONSTRUCTION   "fcn-Interior Wall Cons"  
+
+LAYER   "fl1-Interior Wall Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "fl2-Interior Wall Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl3-Interior Wall Cons"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+CONSTRUCTION   "ccn-Ext Floor Cons"  
+
+LAYER   "cl1-Ext Floor Cons"  
+   lrMat = "mat-Carpet"
+   lrThk = 0.041667
+
+LAYER   "cl2-Ext Floor Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl3-Ext Floor Cons"  
+   lrMat = "mat-Ext Floor Cons-R19-InsMat-3"
+   lrThk = 0.291667
+
+CONSTRUCTION   "fcn-Ext Floor Cons"  
+
+LAYER   "fl1-Ext Floor Cons"  
+   lrMat = "mat-Carpet"
+   lrThk = 0.041667
+
+LAYER   "fl2-Ext Floor Cons"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl3-Ext Floor Cons"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+CONSTRUCTION   "ccn-Ceiling below attic Cons-AtcEdgWA"  
+
+LAYER   "cl1-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "cl2-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-Ceiling below attic Cons-AtcEdgWA-R14.0292-InsMat-2"
+   lrThk = 0.449653
+
+LAYER   "cl3-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl4-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-10 PSF Roof"
+   lrThk = 0.083333
+
+CONSTRUCTION   "fcn-Ceiling below attic Cons-AtcEdgWA"  
+
+LAYER   "fl1-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "fl2-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.449653
+
+LAYER   "fl3-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl4-Ceiling below attic Cons-AtcEdgWA"  
+   lrMat = "mat-10 PSF Roof"
+   lrThk = 0.083333
+
+CONSTRUCTION   "ccn-Ceiling below attic Cons-AtcEdgWB"  
+
+LAYER   "cl1-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "cl2-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"
+   lrThk = 0.291667
+
+LAYER   "cl3-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"
+   lrThk = 0.305155
+
+LAYER   "cl4-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R18.9583-InsMat-4"
+   lrThk = 0.607639
+
+LAYER   "cl5-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "cl6-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-10 PSF Roof"
+   lrThk = 0.083333
+
+CONSTRUCTION   "fcn-Ceiling below attic Cons-AtcEdgWB"  
+
+LAYER   "fl1-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Gypsum Board"
+   lrThk = 0.041667
+
+LAYER   "fl2-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "fl3-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"
+   lrThk = 0.305155
+
+LAYER   "fl4-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-SoftWood"
+   lrThk = 0.607639
+
+LAYER   "fl5-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-Wood layer"
+   lrThk = 0.041667
+
+LAYER   "fl6-Ceiling below attic Cons-AtcEdgWB"  
+   lrMat = "mat-10 PSF Roof"
+   lrThk = 0.083333
+
+CONSTRUCTION   "scn-SlabConsNoEdgeInsulCpt"  
+
+LAYER   "cl1-SNEICCCarpet"  
+   lrMat = "mat-SNEICCarpet"
+   lrThk = 0.041667
+
+LAYER   "cl2-SNEICCConcrete"  
+   lrMat = "mat-SNEICConcrete"
+   lrThk = 0.291667
+
+LAYER   "cl3-SNEICCEarth"  
+   lrMat = "mat-SNEICEarth"
+   lrThk = 2
+
+CONSTRUCTION   "scn-SlabConsNoEdgeInsulExp"  
+
+LAYER   "cl1-SNEIXCConcrete"  
+   lrMat = "mat-SNEICConcrete"
+   lrThk = 0.291667
+
+LAYER   "cl2-SNEIXCEarth"  
+   lrMat = "mat-SNEICEarth"
+   lrThk = 2
+
+CONSTRUCTION   "con-AtticTruss"  
+
+LAYER   "lyr-AtticTruss"  
+   lrMat = "mat-AtticTruss"
+   lrThk = 0.0625
+
+CONSTRUCTION   "con-FurnIMass"  
+
+LAYER   "cl1-FurnIMass"  
+   lrMat = "IntMassMat-SoftWood"
+   lrThk = 0.208333
+
+CONSTRUCTION   "con-WallFrmIMass"  
+
+LAYER   "cl1-WallFrmIMass"  
+   lrMat = "IntMassMat-Gypsum"
+   lrThk = 0.041667
+
+LAYER   "cl2-WallFrmIMass"  
+   lrMat = "IntMassMat-SoftWood"
+   lrThk = 0.291667
+
+LAYER   "cl3-WallFrmIMass"  
+   lrMat = "IntMassMat-Gypsum"
+   lrThk = 0.041667
+
+CONSTRUCTION   "con-WallCavIMass"  
+
+LAYER   "cl1-WallCavIMass"  
+   lrMat = "IntMassMat-Gypsum"
+   lrThk = 0.041667
+
+LAYER   "cl2-WallCavIMass"  
+   lrMat = "IntMassMat-Gypsum"
+   lrThk = 0.041667
+
+METER   "MtrElec"  
+
+METER   "MtrNatGas"  
+
+IZXFER   "Conditioned-BypassxA"  
+   izNVType = "NONE"
+   izZn1 = "Conditioned-zn"
+   izZn2 = "Attic-atc"
+   izHConst = 0.015 * 2100 * select(@znRes["Conditioned-zn"].prior.H.tAir - @znRes["Attic-atc"].prior.H.tAir > 0., 1., default 0.)
+
+IZXFER   "Conditioned-WlLU"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.047578
+   izHD = 2.25
+   izNVEff = 1
+   izCpr = 0.6
+   izExp = 0.65
+
+IZXFER   "Conditioned-WlLS"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.095156
+   izHD = 2.25
+   izNVEff = 1
+   izCpr = -0.65
+   izExp = 0.65
+
+IZXFER   "Conditioned-WlLD"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.047578
+   izHD = 2.25
+   izNVEff = 1
+   izCpr = -0.3
+   izExp = 0.65
+
+IZXFER   "Conditioned-WlHU"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.047578
+   izHD = 6.75
+   izNVEff = 1
+   izCpr = 0.6
+   izExp = 0.65
+
+IZXFER   "Conditioned-WlHS"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.095156
+   izHD = 6.75
+   izNVEff = 1
+   izCpr = -0.65
+   izExp = 0.65
+
+IZXFER   "Conditioned-WlHD"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.047578
+   izHD = 6.75
+   izNVEff = 1
+   izCpr = -0.3
+   izExp = 0.65
+
+IZXFER   "Conditioned-WnLU"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.00001
+   izAHi = 2.625 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izHD = 2.67
+   izNVEff = 0.5
+   izCpr = 0.6
+
+IZXFER   "Conditioned-WnLS"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.00001
+   izAHi = 5.250 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izHD = 2.67
+   izNVEff = 0.5
+   izCpr = -0.65
+
+IZXFER   "Conditioned-WnLD"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.00001
+   izAHi = 2.625 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izHD = 2.67
+   izNVEff = 0.5
+   izCpr = -0.3
+
+IZXFER   "Conditioned-WnHU"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.00001
+   izAHi = 2.625 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izHD = 6.67
+   izNVEff = 0.5
+   izCpr = 0.6
+
+IZXFER   "Conditioned-WnHS"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.00001
+   izAHi = 5.250 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izHD = 6.67
+   izNVEff = 0.5
+   izCpr = -0.65
+
+IZXFER   "Conditioned-WnHD"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Conditioned-zn"
+   izALo = 0.00001
+   izAHi = 2.625 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izHD = 6.67
+   izNVEff = 0.5
+   izCpr = -0.3
+
+IZXFER   "Conditioned-xAttic"  
+   izNVType = "AIRNETIZ"
+   izZn1 = "Conditioned-zn"
+   izZn2 = "Attic-atc"
+   izALo = 0.540125
+   izHD = 9
+   izNVEff = 1
+   izExp = 0.65
+
+IZXFER   "Conditioned-IAQFanE"  
+   izNVType = "AIRNETEXTFAN"
+   izZn1 = "Conditioned-zn"
+   izVFmin = -51
+   izVFmax = -51
+   izFanVfDs = 51
+   izFanElecPwr = 0.25
+   izFanMtr = "MtrElec"
+   izFanEndUse = "FANV"
+
+IZXFER   "Conditioned-WHF"  
+   izNVType = "AIRNETIZFAN"
+   izZn1 = "Conditioned-zn"
+   izZn2 = "Attic-atc"
+   izVFmin = 0
+   izVFmax = -262.5 * select( $hour < 24, select($radDiff <1., select($hour>12,1.0, default .00001 ), default 1.0 ), default .00001 )
+   izFanVfDs = 262.5
+   izFanElecPwr = 0.1
+   izFanMtr = "MtrElec"
+   izFanEndUse = "FANC"
+
+IZXFER   "Attic-SU"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Attic-atc"
+   izALo = 0.875
+   izHD = 9
+   izNVEff = 0.6
+   izCpr = 0.6
+   izExp = 0.65
+
+IZXFER   "Attic-SS"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Attic-atc"
+   izALo = 1.75
+   izHD = 9
+   izNVEff = 0.6
+   izCpr = -0.65
+   izExp = 0.65
+
+IZXFER   "Attic-SD"  
+   izNVType = "AIRNETEXT"
+   izZn1 = "Attic-atc"
+   izALo = 0.875
+   izHD = 9
+   izNVEff = 0.6
+   izCpr = -0.3
+   izExp = 0.65
+
+ZONE   "Conditioned-zn"  
+   znModel = "CZM"
+   znArea = 2100
+   znVol = 18900
+   znEaveZ = 9
+   znCeilingHt = 9
+   znCAir = 4200
+   znSC = select( $radDiff >1., 0.5, default 0.8 )
+   znTH = select( $dsDay==1, 70, $dsDay==2, 60, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)) 
+   znTC = select( $dsDay==1, 83, $dsDay==2, 78, default hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78))
+   znTD = select( $dsDay==1, 77, $dsDay==2, 99, @weather.taDbAvg07 >60., 68, default 77 )
+   infAC = 0
+   infELA = 0
+   infShld = 4
+   znRSys = "rsys-Central HVAC"
+
+GAIN   "Conditioned-znLtg"  
+   gnMeter = "MtrElec"
+   gnEndUse = "Lit"
+   gnPower = 4.65014 * 2100 * 
+		select( $dsDay==1, 0., default hourval(0.023,0.019,0.015,0.017,0.021,0.031,0.042,0.041,0.034,0.029,0.027,0.025,0.021,0.021,0.021,0.026,0.031,0.044,0.084,0.118,0.113,0.096,0.063,0.038)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrRad = 0.4
+
+GAIN   "Conditioned-znPpl"  
+   gnPower = 9.56121 * 2100 * 
+		select( $dsDay==1, 0., default hourval(0.035,0.035,0.035,0.035,0.035,0.059,0.082,0.055,0.027,0.014,0.014,0.014,0.014,0.014,0.019,0.027,0.041,0.055,0.068,0.082,0.082,0.07,0.053,0.035)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrRad = 0.3
+   gnFrLat = 0.427
+
+GAIN   "Conditioned-znMsc"  
+   gnMeter = "MtrElec"
+   gnEndUse = "Rcp"
+   gnPower = 9.82089 * 2100 * 
+		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrRad = 0.3
+   gnFrLat = 0.03
+
+GAIN   "Conditioned-znRefrig"  
+   gnMeter = "MtrElec"
+   gnEndUse = "Refr"
+   gnPower = 260.65033
+   gnFrRad = 0
+
+GAIN   "Conditioned-znDishwasher"  
+   gnMeter = "MtrElec"
+   gnEndUse = "Dish"
+   gnPower = 1178.19 * 
+		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrRad = 0
+   gnFrLat = 0.25
+
+GAIN   "Conditioned-znCook"  
+   gnMeter = "MtrNatGas"
+   gnEndUse = "Cook"
+   gnPower = 5068.11 * 
+		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrZn = 0.9
+   gnFrRad = 0
+   gnFrLat = 0.67
+
+GAIN   "Conditioned-znWasher"  
+   gnMeter = "MtrElec"
+   gnEndUse = "Wash"
+   gnPower = 1522.29 * 
+		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrRad = 0
+
+GAIN   "Conditioned-znDryer"  
+   gnMeter = "MtrNatGas"
+   gnEndUse = "Dry"
+   gnPower = 9315.07 * 
+		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+     choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+   gnFrZn = 0.3
+   gnFrRad = 0
+   gnFrLat = 0.5
+
+GAIN   "Conditioned-znExtLtg"  
+   gnMeter = "MtrElec"
+   gnEndUse = "Ext"
+   gnPower = 1091.39 * 
+		hourval(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.25,0.25,0.25,0.25) 
+   gnFrZn = 0
+
+SURFACE   "Ceiling (below attic) 1-Frm"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Ceiling below attic Cons"
+   sfArea = 127.032661
+   sfModel = "Forward_Difference"
+   sfExCnd = "AdjZn"
+   sfAdjZn = "Attic-atc"
+
+SURFACE   "Ceiling (below attic) 1-Cav"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Ceiling below attic Cons"
+   sfArea = 1687.719604
+   sfModel = "Forward_Difference"
+   sfExCnd = "AdjZn"
+   sfAdjZn = "Attic-atc"
+
+SURFACE   "Ceiling (below attic) 1-WAFrm"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Ceiling below attic Cons-AtcEdgWA"
+   sfArea = 6.811235
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.9
+   sfModel = "Forward_Difference"
+
+SURFACE   "Ceiling (below attic) 1-WACav"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Ceiling below attic Cons-AtcEdgWA"
+   sfArea = 90.492126
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.9
+   sfModel = "Forward_Difference"
+
+SURFACE   "Ceiling (below attic) 1-WBFrm"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Ceiling below attic Cons-AtcEdgWB"
+   sfArea = 13.156106
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.9
+   sfModel = "Forward_Difference"
+
+SURFACE   "Ceiling (below attic) 1-WBCav"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Ceiling below attic Cons-AtcEdgWB"
+   sfArea = 174.788254
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.9
+   sfModel = "Forward_Difference"
+
+SURFACE   "Front-Frm"  
+   sfType = "Wall"
+   sfCon = "fcn-Exterior Wall Cons"
+   sfArea = 74.25
+   sfTilt = 90
+   sfAzm = 0
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+SURFACE   "Left-Frm"  
+   sfType = "Wall"
+   sfCon = "fcn-Exterior Wall Cons"
+   sfArea = 84.25
+   sfTilt = 90
+   sfAzm = 90
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+SURFACE   "Back-Frm"  
+   sfType = "Wall"
+   sfCon = "fcn-Exterior Wall Cons"
+   sfArea = 84.25
+   sfTilt = 90
+   sfAzm = 180
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+SURFACE   "Right-Frm"  
+   sfType = "Wall"
+   sfCon = "fcn-Exterior Wall Cons"
+   sfArea = 84.25
+   sfTilt = 90
+   sfAzm = 270
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+SURFACE   "Front-Cav"  
+   sfType = "Wall"
+   sfCon = "ccn-Exterior Wall Cons"
+   sfArea = 367.75
+   sfTilt = 90
+   sfAzm = 0
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+WINDOW   "Win F1-NoScrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "None"
+   wnInShd = "DrapeMed"
+
+WINDOW   "Win F1-Scrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "Inscrn"
+   wnInShd = "DrapeMed"
+
+DOOR   "Door 1-Sim"  
+   drArea = 40
+   drU = 0.5
+
+SURFACE   "Left-Cav"  
+   sfType = "Wall"
+   sfCon = "ccn-Exterior Wall Cons"
+   sfArea = 357.75
+   sfTilt = 90
+   sfAzm = 90
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+WINDOW   "Win L1-NoScrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "None"
+   wnInShd = "DrapeMed"
+
+WINDOW   "Win L1-Scrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "Inscrn"
+   wnInShd = "DrapeMed"
+
+SURFACE   "Back-Cav"  
+   sfType = "Wall"
+   sfCon = "ccn-Exterior Wall Cons"
+   sfArea = 357.75
+   sfTilt = 90
+   sfAzm = 180
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+WINDOW   "Win B1-NoScrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "None"
+   wnInShd = "DrapeMed"
+
+WINDOW   "Win B1-Scrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "Inscrn"
+   wnInShd = "DrapeMed"
+
+SURFACE   "Right-Cav"  
+   sfType = "Wall"
+   sfCon = "ccn-Exterior Wall Cons"
+   sfArea = 357.75
+   sfTilt = 90
+   sfAzm = 270
+   sfExAbs = 0.5
+   sfModel = "Forward_Difference"
+
+WINDOW   "Win R1-NoScrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "None"
+   wnInShd = "DrapeMed"
+
+WINDOW   "Win R1-Scrn"  
+   wnArea = 52.5
+   wnHeight = 5
+   wnWidth = 3
+   wnMult = 1
+   wnModel = "ASHWAT"
+   wnFMult = 0.85
+   wnNGlz = 2
+   wnUnfrc = 0.32
+   wnSHGC = 0.25
+   wnDirtLoss = 0.1
+   wnExShd = "Inscrn"
+   wnInShd = "DrapeMed"
+
+SURFACE   "Slab On Grade 1-Prm"  
+   sfType = "Floor"
+   sfCon = "scn-SlabConsNoEdgeInsulCpt"
+   sfArea = 307.200012
+   sfTilt = 180
+   sfModel = "Forward_Difference"
+   sfExCnd = "Ground"
+   sfExCTGrnd = 0.0551
+   sfExCTaDbAvgYr = 0.0028
+   sfExCTaDbAvg14 = 0.0852
+   sfExRConGrnd = 5.267
+   sfInHcModel = "Unified"
+
+SURFACE   "Slab On Grade 1-Int"  
+   sfType = "Floor"
+   sfCon = "scn-SlabConsNoEdgeInsulCpt"
+   sfArea = 1372.800049
+   sfTilt = 180
+   sfModel = "Forward_Difference"
+   sfExCnd = "Ground"
+   sfExCTGrnd = 0.0446
+   sfExCTaDbAvgYr = 0.0238
+   sfExRConGrnd = 5.267
+   sfInHcModel = "Unified"
+
+SURFACE   "Slab On Grade 1-Prm 17"  
+   sfType = "Floor"
+   sfCon = "scn-SlabConsNoEdgeInsulExp"
+   sfArea = 76.799995
+   sfTilt = 180
+   sfModel = "Forward_Difference"
+   sfExCnd = "Ground"
+   sfExCTGrnd = 0.0737
+   sfExCTaDbAvgYr = 0.0014
+   sfExCTaDbAvg14 = 0.1692
+   sfExRConGrnd = 3.187
+   sfInHcModel = "Unified"
+
+SURFACE   "Slab On Grade 1-Int 18"  
+   sfType = "Floor"
+   sfCon = "scn-SlabConsNoEdgeInsulExp"
+   sfArea = 343.199982
+   sfTilt = 180
+   sfModel = "Forward_Difference"
+   sfExCnd = "Ground"
+   sfExCTGrnd = 0.0521
+   sfExCTaDbAvgYr = 0.0251
+   sfExRConGrnd = 3.187
+   sfInHcModel = "Unified"
+
+SURFACE   "Furniture-imass"  
+   sfType = "Wall"
+   sfCon = "con-FurnIMass"
+   sfArea = 4200
+   sfAzm = 0
+   sfModel = "Forward_Difference"
+   sfExCnd = "AdjZn"
+   sfAdjZn = "Conditioned-zn"
+
+SURFACE   "WallFrm-imass"  
+   sfType = "Wall"
+   sfCon = "con-WallFrmIMass"
+   sfArea = 525
+   sfAzm = 0
+   sfModel = "Forward_Difference"
+   sfExCnd = "AdjZn"
+   sfAdjZn = "Conditioned-zn"
+
+SURFACE   "WallCav-imass"  
+   sfType = "Wall"
+   sfCon = "con-WallCavIMass"
+   sfArea = 1575
+   sfAzm = 0
+   sfModel = "Forward_Difference"
+   sfExCnd = "AdjZn"
+   sfAdjZn = "Conditioned-zn"
+
+ZONE   "Attic-atc"  
+   znModel = "UZX"
+   znArea = 1814.752197
+   znVol = 5775.166016
+   znCAir = 0.01
+   infAC = 0
+   infELA = 0
+   infShld = 4
+
+SURFACE   "Attic-atc-rfNF"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Attic Roof Cons"
+   sfArea = 34.404678
+   sfTilt = 22.619864
+   sfAzm = 0
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfNC"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Attic Roof Cons"
+   sfArea = 457.090729
+   sfTilt = 22.619864
+   sfAzm = 0
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfEF"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Attic Roof Cons"
+   sfArea = 34.404678
+   sfTilt = 22.619864
+   sfAzm = 90
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfEC"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Attic Roof Cons"
+   sfArea = 457.090729
+   sfTilt = 22.619864
+   sfAzm = 90
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfSF"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Attic Roof Cons"
+   sfArea = 34.404678
+   sfTilt = 22.619864
+   sfAzm = 180
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfSC"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Attic Roof Cons"
+   sfArea = 457.090729
+   sfTilt = 22.619864
+   sfAzm = 180
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfWF"  
+   sfType = "Ceiling"
+   sfCon = "fcn-Attic Roof Cons"
+   sfArea = 34.404678
+   sfTilt = 22.619864
+   sfAzm = 270
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfWC"  
+   sfType = "Ceiling"
+   sfCon = "ccn-Attic Roof Cons"
+   sfArea = 457.090729
+   sfTilt = 22.619864
+   sfAzm = 270
+   sfExAbs = 0.8
+   sfExEpsLW = 0.85
+   sfInEpsLW = 0.05
+   sfModel = "Forward_Difference"
+
+SURFACE   "Attic-atc-rfT1"  
+   sfType = "Wall"
+   sfCon = "con-AtticTruss"
+   sfArea = 1209.834839
+   sfAzm = 0
+   sfModel = "Forward_Difference"
+   sfExCnd = "Adiabatic"
+
+SURFACE   "Attic-atc-rfT2"  
+   sfType = "Wall"
+   sfCon = "con-AtticTruss"
+   sfArea = 1209.834839
+   sfAzm = 0
+   sfModel = "Forward_Difference"
+   sfExCnd = "Adiabatic"
+
+SURFACE   "Attic-atc-rfT3"  
+   sfType = "Wall"
+   sfCon = "con-AtticTruss"
+   sfArea = 1209.834839
+   sfAzm = 0
+   sfModel = "Forward_Difference"
+   sfExCnd = "Adiabatic"
+
+EQUIPDATA "Constant-Eff-AC"
+   edFilePath = "DX-Constant-Efficiency.RS0004.a205.cbor"
+   edExpectedRS = "RS0004"
+   edDoValidation = YES
+
+RSYS   "rsys-Central HVAC" 
+   rsType = ASHP 
+   rsRep205 = "Constant-Eff-AC"
+   AUTOSIZE rsCapC
+   rsFxCapC = 1.1
+   rsSEER = 14
+   rsEER = 12.2
+   rsVfPerTon = 350
+   rsFanPwrH = 0.58
+   rsFanPwrC = 0.58
+   
+   rsCap47 = 20000 rsCap17 = 18000 rsHSPF = 8.7
+   rsCapAuxH = 25000
+   
+   rsFxCapH = 1.5
+   rsElecMtr = "MtrElec"
+   rsFuelMtr = "MtrNatGas"
+
+DUCTSEG   "SupplyDuct-rsys-Central HVAC"  
+   dsTy = "SUPPLY"
+   dsInArea = 567
+   dsDiameter = 0.666667
+   dsAdjZn = "Attic-atc"
+   dsInsulR = 5.65
+   dsLeakF = 0.0468
+
+DUCTSEG   "ReturnDuct-rsys-Central HVAC"  
+   dsTy = "RETURN"
+   dsInArea = 105
+   dsDiameter = 1.333333
+   dsAdjZn = "Attic-atc"
+   dsInsulR = 5.65
+   dsLeakF = 0.0332
+
+EXPORT   "ExportElec"  
+   exType = "MTR"
+   exFreq = "HOUR"
+   exMeter = "MtrElec"
+   exBtuSf = 1000
+   exDayBeg = Jan 1
+   exDayEnd = Dec 31
+
+EXPORT   "ExportNatGas"  
+   exType = "MTR"
+   exFreq = "HOUR"
+   exMeter = "MtrNatGas"
+   exBtuSf = 1000
+   exDayBeg = Jan 1
+   exDayEnd = Dec 31
+
+ DELETE Report  "eb"
+ 
+//Rev 5 for CSE707 Autosizing   130103  BAW
+
+ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
+#Define CSEBtuSF 1000  //reports in kBtu
+
+//AC
+Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].CapH colHead="CapH" colDec=0 colWid=6
+   
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap47 colHead="Cap47" colDec=0 colWid=6
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap17 colHead="Cap17" colDec=0 colWid=6
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].HSPF colHead="HSPF" colDec=2 colWid=6
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].COP47 colHead="COP47" colDec=2 colWid=6
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].COP17 colHead="COP17" colDec=2 colWid=6
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].CapAuxH colHead="AuxH" colDec=0 colWid=6
+   
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap95 colHead="Cap95" colDec=0 colWid=6 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].SEER colHead="SEER" colDec=2 colWid=6 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].EER95 colHead="EER95" colDec=2 colWid=6 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+
+
+
+// CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
+//Monthly
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=132
+rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$month  colHead="mo"      colWid=2
+Reportcol colVal=@znRes["Attic-atc"].M.tAir colHead="Tatt" colWid=4 colDec=1
+Reportcol colVal=@znRes["Conditioned-zn"].M.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes["Conditioned-zn"].M.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes["Conditioned-zn"].M.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].M.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].M.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].M.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].M.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8 colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].M.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes["Conditioned-zn"].M.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes["Conditioned-zn"].M.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+Reportcol colVal=@znRes["Conditioned-zn"].M.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+Reportcol colVal=(@Meter[MtrElec].M.fanc+@Meter[MtrElec].m.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+Reportcol colVal=@Meter[MtrNatGas].m.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=132  rpHeader=No    //Annual Summary
+Reportcol colVal="Yr"       colWid=2
+Reportcol colVal=@znRes["Attic-atc"].Y.tAir colHead="Tatt" colWid=4 colDec=1
+Reportcol colVal=@znRes["Conditioned-zn"].Y.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes["Conditioned-zn"].Y.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8
+Reportcol colVal=@znRes["Conditioned-zn"].Y.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+Reportcol colVal=@znRes["Conditioned-zn"].Y.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+Reportcol colVal=(@Meter[MtrElec].Y.fanc+@Meter[MtrElec].Y.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].Y.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+Reportcol colVal=@Meter[MtrNatGas].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+
+Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
+Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
+
+//Coldest Day
+      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=HD1 rpCPL=134
+    rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
+    Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+    Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+    Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+    Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+    Reportcol colVal=@znRes["Attic-atc"].h.tAir colHead="Tatt" colWid=4 colDec=1
+    Reportcol colVal=@znRes["Conditioned-zn"].H.tAir colHead="Tin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].H.tRad colHead="Trad" colWid=4 colDec=2
+    Reportcol colVal=@zone["Conditioned-zn"].wz colHead="Win" colWid=5 colDec=4
+    Reportcol colVal=@zone["Conditioned-zn"].relHum*100 colHead="RHin" colWid=3 colDec=0
+    Reportcol colVal=@zone["Conditioned-zn"].twb  colHead="WBin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qsIz/CSEBtuSF colHead="sInfVnt" colDec=2 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].H.ivAirX colHead="ACH" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Htgl"  colDec=1 colWid=5  
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
+    Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+    Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
+    
+ //Coldest totals 
+    Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1	 //Day Summary
+    Reportcol colVal="Dy"    colWid=2
+    Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal=@znRes["Attic-atc"].D.tAir colHead="Tatt" colWid=4 colDec=1   // x
+    Reportcol colVal=@znRes["Conditioned-zn"].D.tAir colHead="Tin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].D.tRad colHead="Trad" colWid=4 colDec=2
+    Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+    Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+    Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qsIz/CSEBtuSF colHead="sInfVnt" colDec=1 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].D.ivAirX colHead="ACH" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5   
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qlMech/CSEBtuSF colHead="Htgl" colDec=1 colWid=5   
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qhMech/CSEBtuSF colHead="Htgt" colDec=1 colWid=5 
+       Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Meter[MtrElec].D.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+    Reportcol colVal=@Meter[MtrNatGas].D.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
+
+ 
+//Cooling Design Day
+      Report rpType=UDT rpFreq=HOUR  rpDayBeg= DD1; rpDayEnd=DD1 rpCPL=134
+    rpTitle="Energy Balance (F, kBtu, + into the zone)"
+    Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+    Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+    Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+    Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+    Reportcol colVal=@znRes["Attic-atc"].h.tAir colHead="Tatt" colWid=4 colDec=1
+    Reportcol colVal=@znRes["Conditioned-zn"].H.tAir colHead="Tin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].H.tRad colHead="Trad" colWid=4 colDec=2
+    Reportcol colVal=@zone["Conditioned-zn"].wz colHead="Win" colWid=5 colDec=4
+    Reportcol colVal=@zone["Conditioned-zn"].relHum*100 colHead="RHin" colWid=3 colDec=0
+    Reportcol colVal=@zone["Conditioned-zn"].twb  colHead="WBin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qsIz/CSEBtuSF colHead="sInfVnt" colDec=2 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].H.ivAirX colHead="ACH" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Clgl"  colDec=1 colWid=5  
+    Reportcol colVal=@znRes["Conditioned-zn"].H.qcMech/CSEBtuSF colHead="Clgt"  colDec=1 colWid=5
+    Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Meter[MtrElec].H.fanc/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+    Reportcol colVal=@Meter[MtrElec].H.clg/CSEBtuSF colHead="ClgkE" colDec=1 colWid=6 
+
+    
+ //Cooling Design Day Totals 
+    Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= DD1; rpDayEnd=DD1	 //Day Summary
+    Reportcol colVal="Dy"    colWid=2
+    Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal=@znRes["Attic-atc"].D.tAir colHead="Tatt" colWid=4 colDec=1   // x
+    Reportcol colVal=@znRes["Conditioned-zn"].D.tAir colHead="Tin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].D.tRad colHead="Trad" colWid=4 colDec=2
+    Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+    Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+    Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["Conditioned-zn"].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qsIz/CSEBtuSF colHead="sInfVnt" colDec=1 colWid=5
+    Reportcol colVal=@znRes["Conditioned-zn"].D.ivAirX colHead="ACH" colWid=4 colDec=2
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5   
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qlMech/CSEBtuSF colHead="Clgl" colDec=1 colWid=5   
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qcMech/CSEBtuSF colHead="Clgt" colDec=1 colWid=5 
+       Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+       Reportcol colVal=@Meter[MtrElec].d.fanc/CSEBtuSF colHead="fan" colDec=1 colWid=6 
+       Reportcol colVal=@Meter[MtrElec].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
+       
+       //Hottest Day
+		       Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=134
+		     rpTitle="Energy Balance (F, kBtu, + into the zone)"
+		     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+		     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+		     Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+		     Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+		     Reportcol colVal=@znRes["Attic-atc"].h.tAir colHead="Tatt" colWid=4 colDec=1
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.tAir colHead="Tin" colWid=4 colDec=2
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.tRad colHead="Trad" colWid=4 colDec=2
+		     Reportcol colVal=@zone["Conditioned-zn"].wz colHead="Win" colWid=5 colDec=4
+		     Reportcol colVal=@zone["Conditioned-zn"].relHum*100 colHead="RHin" colWid=3 colDec=0
+		     Reportcol colVal=@zone["Conditioned-zn"].twb  colHead="WBin" colWid=4 colDec=2
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+		     Reportcol colVal=(@znRes["Conditioned-zn"].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+		     Reportcol colVal=(@znRes["Conditioned-zn"].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+		     Reportcol colVal=(@znRes["Conditioned-zn"].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qsIz/CSEBtuSF colHead="sInfVnt" colDec=2 colWid=5
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.ivAirX colHead="ACH" colWid=4 colDec=2
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Clgl"  colDec=1 colWid=5  
+		     Reportcol colVal=@znRes["Conditioned-zn"].H.qcMech/CSEBtuSF colHead="Clgt"  colDec=1 colWid=5
+		     Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+		     Reportcol colVal=@Meter[MtrElec].H.fanc/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+		     Reportcol colVal=@Meter[MtrElec].H.clg/CSEBtuSF colHead="ClgkE" colDec=1 colWid=6 
+		 
+		     
+		  //Hottest Day Totals 
+		     Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
+		     Reportcol colVal="Dy"    colWid=2
+		     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+		     Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+		     Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+		     Reportcol colVal=@znRes["Attic-atc"].D.tAir colHead="Tatt" colWid=4 colDec=1   // x
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.tAir colHead="Tin" colWid=4 colDec=2
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.tRad colHead="Trad" colWid=4 colDec=2
+		     Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+		     Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+		     Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+		     Reportcol colVal=(@znRes["Conditioned-zn"].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+		     Reportcol colVal=(@znRes["Conditioned-zn"].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+		     Reportcol colVal=(@znRes["Conditioned-zn"].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qsIz/CSEBtuSF colHead="sInfVnt" colDec=1 colWid=5
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.ivAirX colHead="ACH" colWid=4 colDec=2
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5   
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qlMech/CSEBtuSF colHead="Clgl" colDec=1 colWid=5   
+		     Reportcol colVal=@znRes["Conditioned-zn"].D.qcMech/CSEBtuSF colHead="Clgt" colDec=1 colWid=5 
+		        Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+		        Reportcol colVal=@Meter[MtrElec].d.fanc/CSEBtuSF colHead="fan" colDec=1 colWid=6 
+       Reportcol colVal=@Meter[MtrElec].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
+
+
+      
+ RUN
+ $EOF

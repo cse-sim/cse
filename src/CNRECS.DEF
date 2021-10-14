@@ -2930,6 +2930,18 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 
 *END	// AIRNET
 //=============================================================================
+RECORD EQUIPDATA "EquipData" *RAT	// holds ASHRAE 205 equipment data
+*prefix ed_
+
+// *declare "class libtk205::rs_instance_base_class ed_data;"
+
+// in base class: .name, .ownTi, more.
+*r CHP ed_filePath      // File path
+*r CHP ed_expectedRS    // Expected Representation Specification identifier (e.g., RS0004)
+*r NOYESCH ed_doValidation  // Validate file against schema
+
+*END	// EQUIPDATA
+//=============================================================================
 #if 0	// not needed, save for possible use, 4-12
 x RECORD DUCTMODE "DuctMode" *SUBSTRUCT *hideall
 x *prefix dsm_
@@ -3217,6 +3229,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   included in perf map,
 *i NOYESCH rs_perfMap		// if YES, make performance map (development aid)
 							//   writes file <PM_name>.csv
+
+*r TI rs_rep205             // ASHRAE 205 equipment data reference
 *r DBL rs_areaServed		// total zone floor area served by this RSYS, ft2
 *r INT rs_zonesServed		// # of zones served by this RSYS
 
