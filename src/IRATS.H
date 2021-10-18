@@ -50,6 +50,7 @@ extern anc<TOWERPLANT> TpiB;   	// TOWERPLANT input info
 
 extern anc<MTR> MtriB;			// meters input records
 extern anc<GAIN> GniB;			// (zone) gains input records
+extern anc<EQUIPDATA> EDiB;		// ASHRAE 205 equipment data records
 extern anc<RSYS> RSiB;			// residential HVAC system
 extern anc<DUCTSEG> DsiB;		// duct segment input records
 

@@ -1455,6 +1455,7 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 LOCAL RC topRSys1()	// check RSYS / copy to run rat
 {
 	RC rc = RCOK;
+	E(EdR.RunDup(EDiB));		// TODO: Move to its own function?
 	E( RsR.al( RSiB.n, WRN) )	// delete old records, alloc to needed size now for min fragmentation
 	if (rc == RCOK)
 	{	RSYS* pRSi;

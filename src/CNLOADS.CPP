@@ -26,6 +26,8 @@
 #include "array"
 #include "btwxt.h"
 
+#include "libtk205.h"
+
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
 #endif
@@ -1684,6 +1686,12 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 }		// ZNR::zn_ComfortCR
 
 //=============================================================================
+/*virtual*/ EQUIPDATA::~EQUIPDATA()
+{
+	delete ed_data;
+	ed_data = nullptr;
+}	// EQUIPDATA::~EQUIPDATA
+//=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
 	cupfree( DMPP( rs_desc));
@@ -1991,6 +1999,18 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
+	// Load ASHRAE 205 files
+	if (IsSet(RSYS_REP205))
+	{
+		rs_pRep205 = EdR.GetAtSafe(rs_rep205);  // Get pointer to equipment data
+		if (!rs_pRep205->ed_data)
+		{
+			rs_pRep205->ed_data = new ASHRAE205_NS::RS0004_NS::RS0004;
+			libtk205_NS::A205_SDK _sdk;
+			*(rs_pRep205->ed_data) = _sdk.Load_RS0004(rs_pRep205->ed_filePath);
+		}
+	}
+
 	if (!IsSet(RSYS_TDDESH))
 		rs_tdDesH = rs_IsASHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
 
@@ -2065,7 +2085,6 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	extern RC TestCBOR(const char* filePath);
 	   
 
-	// Load ASHRAE 205 files
 
 
 	return rc;

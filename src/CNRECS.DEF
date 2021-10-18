@@ -2932,8 +2932,8 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 //=============================================================================
 RECORD EQUIPDATA "EquipData" *RAT	// holds ASHRAE 205 equipment data
 *prefix ed_
-
-// *declare "class libtk205::rs_instance_base_class ed_data;"
+*exdes	// explicit destructor
+*declare "class ASHRAE205_NS::RS0004_NS::RS0004* ed_data;"
 
 // in base class: .name, .ownTi, more.
 *r CHP ed_filePath      // File path
@@ -3231,6 +3231,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   writes file <PM_name>.csv
 
 *r TI rs_rep205             // ASHRAE 205 equipment data reference
+*declare "EQUIPDATA* rs_pRep205;"  // runtime pointer to equipment data
+
 *r DBL rs_areaServed		// total zone floor area served by this RSYS, ft2
 *r INT rs_zonesServed		// # of zones served by this RSYS
 
