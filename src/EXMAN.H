@@ -48,7 +48,7 @@ void FC extClr( void);
 RC FC exClrExUses( BOO jfc);	// arg added 10-95
 RC FC exWalkRecs( void);
 // RC FC exReg( USI ancN, TI i, USI o); 		if wanted: restore when needed
-RC FC addChafIf ( NANDAT *pv, USI ancN, TI i, USI o);
+RC addChafIf ( NANDAT *pv, USI ancN, TI i, USI o);
 RC FC exEvEvf( USI evf, USI useCl);
 RC FC exInfo( USI h, USI *pEvf, USI *pTy, NANDAT *pv );
 const char* FC whatEx( USI h);
