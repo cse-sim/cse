@@ -26,13 +26,14 @@
 //  do statSetup() setup from constructor: would fit uses; rcdef changes needed?
 //		above comment is pre-multi-run (1993), less clear with multi-run and DLL use.
 
-#include <cnglob.h>
-
+#include "cnglob.h"
+#include "ancrec.h"
 #include "cse.h"
-#include <msghans.h>	// MH_X0050
-#include <ancrec.h>
+#include "msghans.h"	// MH_X0050
+#include "messages.h"	// msgIsHan
+#include "exman.h"
 #include "cvpak.h"
-#include <srd.h>		// SFIR
+#include "srd.h"		// SFIR
 
 
 //***************************************************************************************************************************
@@ -390,6 +391,254 @@ RC record::CkSet( 	// verify that required member has been set
 	}
 	return balErrCount;
 }		// record::ReportBalErrorsIf
+
+
+///////////////////////////////////////////////////////////////////////////////
+// record data checking member functions
+///////////////////////////////////////////////////////////////////////////////
+RC record::limitCheck(		// range check, issue warning or error msg
+	int fn,				// field
+	double vMin,		// min allowed value
+	double vMax,		// max allowed value
+	double vMinWarn /*=-DBL_MAX*/,	// min for warning
+	double vMaxWarn /*=DBL_MAX*/)	// max for warning
+// return RCOK if field not set or value is in range or warning msg
+//        else RCxx if value out of range (msg issued)
+{
+	RC rc = RCOK;
+	if (IsVal(fn))
+	{
+		int dt = DType(fn);
+		void* pV = field(fn);
+		double v = 0.;
+		if (dt == DTFLOAT)
+			v = *(FLOAT*)pV;
+		else if (dt == DTDBL)
+			v = *(DBL*)pV;
+		else
+			err(PWRN, "record::limitCheck -- unsupported dt=%d", dt);
+		if (v < vMin || v > vMax)
+			rc = oer("%s (%g) must be in range %g - %g",
+				mbrIdTx(fn), v, vMin, vMax);
+		else if (v < vMinWarn || v > vMaxWarn)
+		{	// warning (do not return RCBAD)
+			// use vMin / vMax instead of default DBL_MAX (avoid showing 10e+308)
+			//    if here, at most one can be DBL_MAX
+			if (vMinWarn == -DBL_MAX)
+				vMinWarn = vMin;
+			else if (vMaxWarn == DBL_MAX)
+				vMaxWarn = vMax;
+			oWarn("dubious %s (%g) typically should be in range %g - %g",
+				mbrIdTx(fn), v, vMinWarn, vMaxWarn);
+		}
+	}
+	return rc;
+}		// record::limitCheck
+//-----------------------------------------------------------------------------
+RC record::limitCheckFix(	// range check, msg, set to min/max
+	int fn,			// field
+	float vMin,		// min allowed value
+	float vMax,		// max allowed value
+	int erOp /*=ERR*/)		// WRN/ERR/IGN etc
+							// note IGNX bit: limit only (don't msg)
+// return RCOK if field not set or value is in range or warning msg
+//        else RCxx if value out of range (msg issued)
+{
+	RC rc = RCOK;
+	void* p = field(fn);
+	if (!ISNANDLEP(p))
+	{
+		float* pV = (float*)p;
+		float v = *pV;
+		if (v < vMin || v > vMax)
+		{
+			rc = orMsg(erOp, "%s (%g) must be in range %g - %g",
+				mbrIdTx(fn), v, vMin, vMax);
+			*pV = bracket(vMin, v, vMax);
+		}
+	}
+	return rc;
+}		// record::limitCheck
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+//   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)
+///////////////////////////////////////////////////////////////////////////////
+RC record::checkN(			// general purpose check multiple fields
+	const char* when,		// message insert.  message handle ok (see messages.cpp).
+	RC(record::* checkFcn)(int fn, const char* when),	// check function called for each field
+	va_list ap)				// int field numbers, 0 ends list  REMEMBER THE 0!
+{
+	RC rc = RCOK;
+	char whenBuf[1000];
+	if (!msgIsHan(when))					// not if handle given
+		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
+			when = strncpy0(whenBuf, when, sizeof(whenBuf));	// so any (possible future) strtprintf's in following loop
+																// won't overwrite it, 7-92.
+	for (; ; )
+	{
+		int fn = va_arg(ap, int);
+		if (!fn)
+			break;
+		if (fn > 1024)
+			rc |= oer((char*)MH_S0495,	// "cncult2.cpp:%s Internal error: field # %nd: probable unterminated arg list"
+					   "checkN", fn);
+		rc |= (this->*checkFcn)(fn, when);
+	}
+	return rc;
+}		// checkN
+//-----------------------------------------------------------------------------
+RC record::disallowN( 			// issue "not allowed" message for each given field in 0-terminated list of field numbers
+	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
+	...)			// int field numbers, 0 ends list  REMEMBER THE 0!
+{
+	va_list ap;
+	va_start(ap, when);
+	RC rc = checkN(when, &record::disallow, ap);
+	return rc;
+}		// disallowN
+//-----------------------------------------------------------------------------
+RC record::disallow(     			// issue message if field is given
+	int fn,
+	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
+{
+	if (IsSet(fn))			// if value for field given in user input (test field status byte)
+		return cantGiveEr(fn, when);
+	return RCOK;
+}			// disallow
+//-----------------------------------------------------------------------------
+RC record::requireN( 			// issue "missing" message for each omitted field in 0-terminated list of field numbers
+	const char* when /*=NULL*/,	// message insert (message handle ok)
+	...)			// int field numbers, 0 ends list  REMEMBER THE 0!
+{
+	va_list ap;
+	va_start(ap, when);
+	RC rc = checkN(when, &record::require, ap);
+	return rc;
+}		// requireN
+//-----------------------------------------------------------------------------
+RC record::require(    			// issue message if field is not given
+	int fn,
+	const char* when /*=NULL*/)	// NULL or message insert (msghan ok), worded for work context "<f> missing: required <when>"
+{
+	if (!IsSet(fn)) 		// if value for field not given in user input
+		return notGivenEr(fn, when);
+	return RCOK;
+}			// require
+//-------------------------------------------------------------------------------
+RC record::ignoreN( 		// issue "ignored" message for each given field in 0-terminated list of field numbers
+	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
+	...)			// int field numbers, 0 ends list  REMEMBER THE 0!
+{
+	va_list ap;
+	va_start(ap, when);
+	RC rc = checkN(when, &record::ignore, ap);
+	return rc;
+}		// ignoreN
+//-----------------------------------------------------------------------------
+RC record::ignore(     			// issue message if field is given
+	int fn,
+	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
+{
+	if (IsSet(fn))			// if value for field given in user input
+		return ignoreInfo(fn, when);
+	return RCOK;
+}			// ignore
+//============================================================================
+
+/****************************************************************************************************************************
+*   'record' MEMBER FUNCTIONS TO MAKE CHANGE FLAG ENTRIES IN RUNTIME TABLES (class declaration: ancrec.h)
+****************************************************************************************************************************/
+void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on change in list of fields of record
+	SI chafFn, 		// field NUMBER of change flag: an SI field in same record
+	...)			// 0-terminated list of field numbers in record to monitor for change if contain expressions
+{
+	va_list ap;
+	va_start(ap, chafFn);
+	chafNV(this->b, ss, b->fir[chafFn].off, ap);
+}							// record::chafSelf
+//============================================================================================================================
+void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
+
+	BP b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
+	...)			// 0-terminated list of field numbers
+
+/* for each given field which contains an expression handle, make expression manager runtime table entry
+  to increment flag at b-i-off when value of that expression changes. */
+{
+	va_list ap;
+	va_start(ap, off);
+	chafNV(b, i, off, ap);
+}								// record::chafN
+//===========================================================================
+void record::chafNV( 		// say increment specified flag during run on change in var list of fields in curr record
+
+	BP b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
+	va_list ap)		// pointer to 0-terminated list of field numbers
+
+// var arg list level for flexibility
+{
+	for (; ; )
+	{
+		int fn = va_arg(ap, int);
+		if (!fn)
+			break;
+		if (fn > 1024)
+			oer((char*)MH_S0495,    	// "cncult2.cpp:%s Internal error: field # %d: probable unterminated arg list"
+				 "chavNV", (INT)fn);
+		addChafIf((NANDAT*)field(fn), b->ancN, i, off);  	/* test pointed to field contents, add increment-on-change
+									   table entry if is expr handle.  exman.cpp. */
+	}
+}					// record::chafNV
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS TO ISSUE SPECIFIC ERROR MESSAGES
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+RC record::cantGiveEr(   				// issue message (using ooer) for disallowed field that user gave
+	int fn,
+	const char* when /*=NULL*/)	// NULL or message insert, worded for work context "Can't give <f> <when>"
+{
+	return ooer(fn, 			// message for record & field if 1st error for field, & flag bad.
+				 (char*)MH_S0496, 		// "Can't give '%s' %s"
+				 mbrIdTx(fn),			// input name (id)
+				 when ? strtprintf(when) : "");	// user's explanatory insert, eg "when no local heat".
+	//   use strtprintf to retrieve text (to Tmpstr) if handle given.
+}	// cantGiveEr
+//-----------------------------------------------------------------------------
+RC record::notGivenEr( 				// issue message (using ooer) for disallowed field that user gave
+	int fn,
+	const char* when /*=NULL*/)	// NULL or message insert, worded for work context "<f> missing: required <when>"
+{
+	if (when)
+		return ooer(fn,  				// message if 1st error for record & field, & flag field bad
+					 (char*)MH_S0497,	// handle of message "'%s' missing: required %s"
+					 mbrIdTx(fn), 		// input name (id)
+					 strtprintf(when));	// user's explanatory insert, eg "when tuTLh given"
+											//   use strtprintf to retrieve text (to Tmpstr) if handle given.
+	return ooer(fn, (char*)MH_S0498, 		// "'%s' missing"
+				 mbrIdTx(fn));
+}			// record::notGivenEr
+//-----------------------------------------------------------------------------
+RC record::ignoreInfo( 	// issue info message for ignored field
+	int fn,
+	const char* when /*=NULL*/)	// NULL or message insert
+									// worded for context "<f> is ignored <when>"
+{
+	const char* msg = strtprintf(
+			when ? "'%s' is ignored %s" : "ignoring '%s'",
+			mbrIdTx(fn),
+			strtprintf(when));		// when might be handle
+	return oerI(1, 1, 2, msg, NULL);	// do msg using vbl arg list flavor of oer
+}		// record::ignoreInfo
+//-----------------------------------------------------------------------------
+RC record::notGzEr(int fn)		// issue error message for field not greater than 0.  finds user name in CULTs.
+{
+	return ooer(fn, (char*)MH_S0499, mbrIdTx(fn));  	// "'%s' must be > 0"
+}
+
+
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

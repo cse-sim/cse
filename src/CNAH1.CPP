@@ -53,7 +53,6 @@
 
 #include <psychro.h>	// psyEnthalpy
 #include <exman.h>	// rer
-#include <cul.h>	// FsSET
 #include <irats.h>	// AhiB
 
 #include <cnguts.h>	// Decls for this file; ZrB MDS_FLOAT
