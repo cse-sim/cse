@@ -2,6 +2,8 @@ name: Build and Test
 
 on: push
 
+env:
+  CI_GIT_BRANCH: ${GITHUB_REF#refs/heads/}
 jobs:
   build-cse:
     name: Build CSE executable
@@ -31,7 +33,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor/toolkit-205/.venv
-          key: poetry-tk205-cache-v1-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-tk205-cache-v2-${{ hashFiles('**/poetry.lock') }}
       - name: Install toolkit-205 dependencies if cache does not exist
         run: cd vendor/toolkit-205 && poetry install
         if: steps.cached-toolkit-205-dependencies.outputs.cache-hit != 'true'
@@ -40,7 +42,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor/toolkit-205/schema-205/.venv
-          key: poetry-schema205-cache-v1-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-schema205-cache-v2-${{ hashFiles('**/poetry.lock') }}
       - name: Install schema205 dependencies if cache does not exist
         run: cd vendor/toolkit-205/schema-205 && poetry install
         if: steps.cached-schema205-dependencies.outputs.cache-hit != 'true'

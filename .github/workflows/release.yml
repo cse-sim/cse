@@ -5,6 +5,8 @@ on:
     types:
       - created
 
+env:
+  CI_GIT_BRANCH: ${GITHUB_REF#refs/heads/}
 jobs:
   release-cse:
     name: Deploy CSE release
