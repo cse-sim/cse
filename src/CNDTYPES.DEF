@@ -329,6 +329,12 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  DOE2 "DOE2"
 			  UNIFIED "Unified"
 			  }
+*choicb EDRSCH {
+			RS0002 "RS0002"
+			RS0003 "RS0003"
+			RS0004 "RS0004"
+			RS0005 "RS0005"
+			}
 *choicb RSYSMODECTRLCH {
 		    OFF "Off"
 			HEAT "Heat"

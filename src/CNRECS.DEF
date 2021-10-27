@@ -2933,11 +2933,11 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 RECORD EQUIPDATA "EquipData" *RAT	// holds ASHRAE 205 equipment data
 *prefix ed_
 *exdes	// explicit destructor
-*declare "class ASHRAE205_NS::RS0004_NS::RS0004* ed_data;"
+*declare "class ASHRAE205_NS::RS0002_NS::RS0002* ed_data;"
 
 // in base class: .name, .ownTi, more.
 *r CHP ed_filePath      // File path
-*r CHP ed_expectedRS    // Expected Representation Specification identifier (e.g., RS0004)
+*r EDRSCH ed_expectedRS    // Expected Representation Specification identifier (e.g., RS0004)
 *r NOYESCH ed_doValidation  // Validate file against schema
 
 *END	// EQUIPDATA
@@ -3471,6 +3471,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
 *f FLOAT rs_capnfX;			// constant for rs_capCt calc
 *f FLOAT rs_capAdjF;
+*f FLOAT rs_205outScaleF;
+*f FLOAT rs_205flowScaleF;
 *f *e FLOAT rs_SEERnfX;		// constant for rs_SEERnf calc
 *f *e FLOAT rs_EERnfX;		// constant for rs_EERnfCalc
 

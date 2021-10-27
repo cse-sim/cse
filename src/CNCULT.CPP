@@ -1584,7 +1584,7 @@ static CULT edT[] = //-------------- EQUIPDATA cmd table, used from cnTopCult
 	// id                      cs   fn                        f        uc evf     ty      b    dfls                           p2   ckf
 	//"*",                   STAR,  0,                        0,       0, 0,      0,      0,   N,    0.f,                     N,   edStarCkf),
 	CULT("edFilePath",       DAT,   EQUIPDATA_FILEPATH,       RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT("edExpectedRS",     DAT,   EQUIPDATA_EXPECTEDRS,     RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                     N,   N),
+	CULT("edExpectedRS",     DAT,   EQUIPDATA_EXPECTEDRS,     RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
 	CULT("edDoValidation",   DAT,   EQUIPDATA_DOVALIDATION,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
 	CULT("endEquipmentData", ENDER, 0,                        0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT()

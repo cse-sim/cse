@@ -60,7 +60,7 @@ Oct 1343.6      0  0.407  0.203      0      0      0 17.593 0.0911      0      0
 Nov 2049.9      0 306.29 295.27      0      0      0      0 75.109      0      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
 Dec 3286.0      0 831.78 784.51      0      0      0      0 200.73      0      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   22275 491.45 2952.7 2782.5      0      0      0 558.64 726.71      0      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   22275 491.45 2952.8 2782.5      0      0      0 558.64 726.71      0      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -186,7 +186,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console
+! CSE 0.899.0+ashrae205.9d2cd31.25 for Win32 console
 
 
 
@@ -1492,18 +1492,18 @@ Input for Run 001:
 
 
 
-! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console run(s) done: Fri 27-Aug-21  11:11:40 am
+! CSE 0.899.0+ashrae205.9d2cd31.25 for Win32 console run(s) done: Wed 27-Oct-21   9:52:27 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               27-Aug-21  11:04 am   (VS 14.29    2701824 bytes)  (HPWH 1.15.0+master.d18737e.3)
-! Command line: -x!  -t1 oavtest2
-! Input file:   D:\cse\test\oavtest2.cse
-! Report file:  D:\cse\test\oavtest2.rep
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               27-Oct-21   9:48 am   (VS 14.29    3374592 bytes)  (HPWH 1.15.0+HEAD.81d7b80.17)
+! Command line: -x!  -b -t1 oavtest2
+! Input file:   C:\Users\nkruis\projects\cse\test\oavtest2.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480   
+!                Input:  Time = 0.12     Calls = 1      T/C = 0.1220   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 11.06    Calls = 1      T/C = 11.0650  
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0060   
-!                Total:  Time = 11.12    Calls = 1      T/C = 11.1230  
+!           Simulation:  Time = 16.29    Calls = 1      T/C = 16.2910  
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0120   
+!                Total:  Time = 16.43    Calls = 1      T/C = 16.4280  

@@ -1246,25 +1246,20 @@ SURFACE   "Attic-atc-rfT3"
    sfExCnd = "Adiabatic"
 
 EQUIPDATA "Constant-Eff-AC"
-   edFilePath = "DX-Constant-Efficiency.RS0004.a205.cbor"
-   edExpectedRS = "RS0004"
+   edFilePath = "Unitary-Constant-Efficiency.RS0002.a205.cbor"
+   edExpectedRS = RS0002
    edDoValidation = YES
 
 RSYS   "rsys-Central HVAC" 
-   rsType = ASHP 
+   rsType = ACFURNACE 
    rsRep205 = "Constant-Eff-AC"
    AUTOSIZE rsCapC
+   AUTOSIZE rsCapH
    rsFxCapC = 1.1
-   rsSEER = 14
-   rsEER = 12.2
    rsVfPerTon = 350
    rsFanPwrH = 0.58
    rsFanPwrC = 0.58
    
-   rsCap47 = 20000 rsCap17 = 18000 rsHSPF = 8.7
-   rsCapAuxH = 25000
-   
-   rsFxCapH = 1.5
    rsElecMtr = "MtrElec"
    rsFuelMtr = "MtrNatGas"
 
