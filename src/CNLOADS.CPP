@@ -1720,14 +1720,6 @@ RC RSYS::rs_CkF()
 		else
 			rc |= requireN(when, RSYS_SEER, 0);
 
-		// cooling model air flow correlations have limited validity range
-		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
-		rc |= limitCheck( RSYS_VFPERTON, 150., 550.);
-
-		// rsFanPwrC (W/cfm): error if >5, warn if >2
-		rc |= limitCheck( RSYS_FANPWRC, 0., 5., 0., 2.);
-
-		rc |= rs_CkFCd(rsmCOOL);
 
 		if (!IsAusz(RSYS_CAP95))
 		{	// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
@@ -1751,14 +1743,13 @@ RC RSYS::rs_CkF()
 			rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
 				RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
 				RSYS_LOADFMIN05, RSYS_LOADFMIN17, RSYS_LOADFMIN47, 0);
+				// cooling?
 			rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
 		}
 		else
 		{
-			if (!IsSet(RSYS_LOADFMIN82))
-				rs_loadFMin82 = rs_loadFMin95;
-			if (!IsSet(RSYS_LOADFMIN115))
-				rs_loadFMin115 = rs_loadFMin95;
+			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
+			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
 		}
 
 	}
@@ -1787,13 +1778,9 @@ RC RSYS::rs_CkF()
 				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
-	else
-	{	// general heating checks
-		// rsFanPwrH (W/cfm): error if >5, warn if >2
-		rc |= limitCheck( RSYS_FANPWRH, 0., 5., 0., 2.);
-
-
-	}
+	// else
+	// {	// general heating checks
+	// }
 		
 	if (rs_IsASHP())
 	{
@@ -1801,8 +1788,6 @@ RC RSYS::rs_CkF()
 
 		rs_AFUE = 0.f;		// drop possibly confusing default
 
-		rc |= rs_CkFCd( rsmHEAT);		// heating Cd
-		
 		if (rs_IsASHPHydronic())
 		{	// ASHPHydronic: air-to-water heat pump
 			//   approximated with air-to-air model
@@ -2000,7 +1985,16 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	}
 
 	if (rs_CanCool())
-	{	// default/harmonize 95 F COP
+	{	// cooling model air flow correlations have limited validity range
+		//   verify air flow 150 - 550 cfm/ton (per Proctor Engineering)
+		rc |= limitCheck(RSYS_VFPERTON, 150., 550.);
+
+		// rsFanPwrC (W/cfm): error if >5, warn if >2
+		rc |= limitCheck(RSYS_FANPWRC, 0., 5., 0., 2.);
+
+		rc |= rs_CkFCd(rsmCOOL);
+		
+		// default/harmonize 95 F COP
 		//   inter-default rs_COP95 <-> rs_EER95
 		//   if both input, values can be different
 		//   rs_COP95 used for VCHP2, rs_EER95 used for single speed
@@ -2038,18 +2032,27 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 								//   during autosize search
 	}
 
-	if (IsAusz( RSYS_CAP47) || IsAusz( RSYS_CAPAUXH))
-	{	rs_auszH.az_active = TRUE;	// ASHP autosizes rs_capH
-									//   capacities derived in rs_AuszFinal
-		rs_fxCapHAsF = 1.2f;		// working oversize factor
-	}
+	if (rs_CanHeat())
+	{
+		// rsFanPwrH (W/cfm): error if >5, warn if >2
+		rc |= limitCheck(RSYS_FANPWRH, 0., 5., 0., 2.);
 
-	// 
+		if (rs_IsASHP())
+			rc |= rs_CkFCd(rsmHEAT);
 
-	else if (IsAusz( RSYS_CAPH))
-		// other checking?
-	{	rs_auszH.az_active = TRUE;
-		rs_fxCapHAsF = 1.4f;
+		if (IsAusz(RSYS_CAP47) || IsAusz(RSYS_CAPAUXH))
+		{
+			rs_auszH.az_active = TRUE;	// ASHP autosizes rs_capH
+								//   capacities derived in rs_AuszFinal
+			rs_fxCapHAsF = 1.2f;		// working oversize factor
+		}
+
+		else if (IsAusz(RSYS_CAPH))
+			// other checking?
+		{
+			rs_auszH.az_active = TRUE;
+			rs_fxCapHAsF = 1.4f;
+		}
 	}
 
 	// loop all zones served by this RSYS

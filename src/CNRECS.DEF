@@ -3370,10 +3370,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
+// *r FLOAT rs_fanPwrRtdH      // fan power include in ASHP rated cap/COP/HSPF, W/cfm 
 *f FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
 							//   (generally estimated from rs_fanHRtdC)
-*f FLOAT_GEZ rs_fanPwrH;	// heating fan power, W/cfm
-*f *e FLOAT rs_fanHeatH		// heating fan total electrical power, Btuh
+*r FLOAT_GEZ rs_fanPwrH;	// operating heating fan power, W/cfm
+*f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at cfm, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
@@ -3390,8 +3391,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   = fan heat only if compressor unavailable
 *s *e FLOAT rs_inpHtMin		// current min speed compressor input power
 *s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
-*s *e FLOAT rs_PLF			// efficiency degradation due to cycling
-							//   PLF = PartLoadEfficiency / FullLoadEfficency
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 
 					// compression cooling
@@ -3482,6 +3481,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 #endif
 
+// shared results (set for both heating and cooling)
+
 						// Central outside air vent (aka OAV)
 *i RSYSOAVTYCH rs_OAVType	// type: NONE, FIXEDFLOW (aka SmartVent), VARFLOW (aka SmartBreeze)
 *i TI rs_OAVReliefZi		// OAV relief zone index
@@ -3508,22 +3509,33 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_DsHC() const { return rs_mode > rsmHEAT; }"	// 0: use htg ducts, 1: use clg
 *declare "int rs_Dsi( int iSR, int iHC=-1) const { if (iHC<0) iHC=rs_DsHC(); return rs_ducts[ iHC].dsi[ iSR]; }"
 
+*s FLOAT_GZ rs_fEffH;	// heating efficiency adjustment factor (applied to substep efficency), default=1
+*s FLOAT_GZ rs_fEffC;	// cooling efficiency adjustment factor (applied to substep efficency), default=1  
+
 *s FLOAT rs_tdbOut		// outdoor dry-bulb temp at condensor or other outdoor components, F
 						//   default = from project weather data source (generally weather file)
 						// note: default varies subhourly but input expression is hourly
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
 *s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s *e DBL rs_amf		// current dry air mass flow rate, lbm/hr
-						//   = flow at blower / coil / furnace HX etc.
-						//   set per rsMode from rs_amfH, rs_amfC, or OAV algorithm
-                        //   modified by rs_speedF
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
 								//         ASHP heating only else 0
-*s *e FLOAT rs_loadF	// current step load fraction = sensible load / capacity at current speed
-*s FLOAT rs_loadFLs		// last step load fraction (for probe access at step beg)
+
+// calculated results
+*s *e FLOAT rs_capSen
+*s *e FLOAT rs_capSenMin
+
+*s *e DBL rs_amf		// current dry air mass flow rate, lbm/hr
+						//   = flow at blower / coil / furnace HX etc.
+						//   set per rsMode from rs_amfH, rs_amfC, or OAV algorithm
+                        //   modified by rs_speedF
+*s *e FLOAT rs_PLF		// efficiency degradation due to cycling
+						//   PLF = PartLoadEfficiency / FullLoadEfficency
+*s *e FLOAT rs_PLR      // current step part load ratio = sensible load / full-speed sensible capacity
+*s *e FLOAT rs_loadF	// current step load fraction = sensible load / current-speed sensible capacity
+*s FLOAT rs_loadFLs		// last step loadF (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
 						//    fixed speed: 1; var spd: <= 1 per load
@@ -3533,19 +3545,14 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
 						//   used for both heating and cooling
-*s *e DBL rs_outLat		// ditto latent, Btuh
-*s *e DBL rs_outFan		// ditto fan heat added to air stream, Btuh
-*s *e DBL rs_outDefrost // ditto defrost heat, Btuh
+*s *e DBL rs_outLat		// average latent heat delivery rate, Btuh
+*s *e DBL rs_outFan		// average fan heat added to air stream, Btuh
+*s *e DBL rs_outDefrost // averate defrost heat, Btuh
 						//	  = typically resistance heat added to prevent cold supply air
 						//    0 if not ASHP or if defrost not active
-*s *e DBL rs_outAux		// ditto auxiliary heat added to air stream, Btuh (for ASHP)
+*s *e DBL rs_outAux		// average auxiliary heat added to air stream, Btuh (for ASHP)
 *s *e DBL rs_outSenTot	// average total sensible heat delivery rate for last subhr, Btuh
 						//   = rs_outSen + rs_outFan + rs_outDefrost + rs_outAux
-
-						// efficiency adjustment factors applied to substep efficiency
-						// allows modification of input energy requirements. Default=1
-*s FLOAT_GZ rs_fEffH;	//   heating
-*s FLOAT_GZ rs_fEffC;	//   cooling
 
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
