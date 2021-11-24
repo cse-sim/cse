@@ -17,7 +17,6 @@ jobs:
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
-
       - name: Save branch name
         run: |
           echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
