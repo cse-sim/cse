@@ -3235,7 +3235,7 @@ x		printf("\nhit");
 				rhIn,
 				tdbInK,
 				MFRIPtoSI(rs_amf/ rs_205flowScaleF),
-				1.0 + (double(rs_speedF) - rs_speedFMin)/(1.0 - rs_speedFMin)*(double(maxSpeed) - 1.0),
+				double(1.f + (rs_speedF - rs_speedFMin)/(1.f - rs_speedFMin)*(maxSpeed - 1.f)),
 				pAtm
 			}
 		);
@@ -4999,7 +4999,7 @@ RC RSYS::rs_AllocateZoneAir()
 	ZNR* zp;
 	if (!bAux)
 	{	// aux not available or not needed
-		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing() /* && rs_mode == rsmHEAT */)
+		if ((rs_IsVC() || rs_pRep205) && fSize == 1. && !rs_IsAutoSizing() /* && rs_mode == rsmHEAT */)
 			// variable capacity with excess capacity
 		{
 			rc |= rs_AllocateZoneAirVC();
