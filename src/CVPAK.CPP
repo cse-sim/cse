@@ -343,6 +343,11 @@ p		wsign = !(pv==FMTPVNULL && val >= 0.);	// sign width
 			*(str+l+1) = '\0';					// reterminate
 		}
 #endif
+#if 0
+x consider changing "-0" to "0"?
+x		if (strcmp("-0", str) == 0)
+x			printf("\n-0");
+#endif
 		break;
 
 	default:		// a choice or number-choice data type -- else error

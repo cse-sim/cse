@@ -1887,7 +1887,7 @@ void ZNRES_IVL_SUB::zr_Init1(
 // float members to sum
 #define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
 #define RRs1 hrsOn								// first float member to sum (energies)
-#define RRnS ((rsysRes(qcSenZone) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
+#define RRnS ((sizeof( RSYSRES_IVL_SUB) - rsysRes( RRs1))/sizeof(float))
 //-----------------------------------------------------------------------------
 void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 

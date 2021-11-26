@@ -1128,7 +1128,7 @@ x						printf( "1B\n");
 #if defined( ZNHVACFCONV)
 						zn_QsHvacCR( tz, zn_fConv);
 #else
-						zn_QsHvacCR(tz);
+						zn_QAirCR(tz);
 #endif
 					}
 					// else system not available
@@ -1147,7 +1147,7 @@ x						printf( "1B\n");
 				zn_fConv = zn_fConvC;
 				zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
 #else
-				zn_qsHvac = zn_QsHvacCR(tz);
+				zn_qsHvac = zn_QAirCR(tz);
 #endif
 				if (fabs( zn_qsHvac) > fabs( qcCap))
 				{	zn_qsHvac = qcCap;
@@ -1169,7 +1169,7 @@ x						printf( "1B\n");
 				zn_fConv = zn_fConvH;
 				zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
 #else
-				zn_qsHvac = zn_QsHvacCR( tz);
+				zn_qsHvac = zn_QAirCR( tz);
 #endif
 				if (zn_qsHvac > qhCap)
 				{	// heat at heating capacity, find resulting tz.
@@ -1215,7 +1215,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 
 	double amfSup0 = zn_AmfHvacCR(zn_tzsp, tSup0);	// dry air mass flow rate required to hold
 #if 0 && defined(_DEBUG)
-	double qLoad = zn_QsHvacCR(zn_tzsp);
+	double qLoad = zn_QAirCR(zn_tzsp);
 	// load at system, Btuh
 	double qLoad0 = rs->rs_asOut.as_QSenDiff2(rs->rs_asIn, amfSup0);
 	if (fabs(qLoad - qLoad0) > 5.)
@@ -1289,6 +1289,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			double tSup = rs->rs_asSup.as_tdb;
 			tz = zn_TAirCR( mCp*tSup, mCp);
 			zn_qsHvac = mCp*(tSup - tz);
+			// zn_qsHvac = zn_QAirCR(tzls); experiment, same results 11-21
 			zn_sysAirI.af_AccumDry( zn_rsAmfSup, rs->rs_asSup);
 			if (zn_hcMode == RSYS::rsmOAV)
 				zn_OAVRlfO.af_AccumDry( -zn_rsAmfSup, tz, wzls);	// w not used
@@ -1467,17 +1468,6 @@ double ZNR::zn_QsHvacCR(		// sensible hvac heat/cool requirements
 // returns sensible power rqd to hold tza, Btuh
 {
 	double qs = (zn_balC2*tza - zn_balC1) / (fConv*zn_dRadSh + zn_cxSh);
-	return qs;
-}		// ZNR::zn_QsHvacCR
-//------------------------------------------------------------------------------
-double ZNR::zn_QsHvacCR(		// sensible hvac heat/cool requirements
-	double tza) const		// zone air temp, F
-// assume no vent (HVAC active)
-// does NOT change ZNR state
-// HVAC source assumed all convective
-// returns sensible power rqd to hold tza, Btuh
-{
-	double qs = (zn_balC2*tza - zn_balC1) / zn_dRpCx;
 	return qs;
 }		// ZNR::zn_QsHvacCR
 //------------------------------------------------------------------------------
@@ -1971,7 +1961,7 @@ RC RSYS::rs_CkFAuxHeat()	// check aux heat
 		rs_capAuxHInp = rs_capAuxH;
 		if (IsAusz(RSYS_CAPAUXH))
 			rs_capAuxH = 0.f;		// overwrite NANDLE
-		if (rs_typeAuxH == C_AUXHEATTY_FURN)
+		if (rs_IsFuelAuxH())
 		{	rs_effAuxH = rs_AFUEAuxH;
 			if (!IsSet(RSYS_CTRLAUXH))
 				rs_ctrlAuxH = C_AUXHEATCTRL_ALT;
@@ -2676,7 +2666,7 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pMtrElec = MtrB.GetAtSafe( rs_elecMtri);			// elec mtr or NULL
 	rs_pMtrFuel = MtrB.GetAtSafe( rs_fuelMtri);			// fuel mtr or NULL
 	rs_pMtrHeat = rs_IsElecHeat() ? rs_pMtrElec : rs_pMtrFuel;	// heat mtr or NULL
-	rs_pMtrAux = rs_typeAuxH == C_AUXHEATTY_FURN ? rs_pMtrFuel : rs_pMtrElec;
+	rs_pMtrAux = rs_IsFuelAuxH() ? rs_pMtrFuel : rs_pMtrElec;
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -2928,41 +2918,89 @@ RC RSYS::rs_EndSubhr()
 		}
 	}
 
-	float qzSen = rs_SenHeatDelivered();
+	// float qzSen = rs_SenHeatDelivered();
 
 	// populate results
 	RSYSRES_IVL_SUB& R = RsResR[ ss].curr.S;
 	// RSYSRES_IVL_SUB& RH = RsResR[ ss].curr.H;
 
-	R.qFan = rs_outFan * Top.tp_subhrDur;	// fan can operate either prim or aux
+#if 1
+	if (rs_mode == rsmOFF)
+	{	// RSYS is off, track parasitics only
+		R.fuelH = rs_parFuel;		// assign all fuel parasitics to heating
+		(rs_modeLastActive > rsmHEAT) ? R.elecC : R.elecH
+					= rs_parElec * BtuperWh * Top.tp_subhrDur;
+	}
+	else
+	{	R.hrsOn = rs_runF * Top.tp_subhrDur;
+		R.qFan = rs_outFan * Top.tp_subhrDur;	// fan can operate either prim or aux
+
+		rs_HeatDelivered(R.qhZone, R.qcSenZone, R.qcLatZone);
+
+		if (rs_mode == rsmHEAT)
+		{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
+			R.qAux = rs_outAux * Top.tp_subhrDur;
+			R.qh = rs_outSen * Top.tp_subhrDur;
+			R.qDefrost = rs_outDefrost * Top.tp_subhrDur;
+			R.qhNet = R.qh + R.qDefrost + R.qAux + R.qFan;
+
+			// input electricity and fuel (rs_xxx values are Btuh)
+			R.elecH = rs_inFan + rs_parElec * BtuperWh;
+			R.fuelH = rs_parFuel;
+			(rs_IsElecHeat() ? R.elecH : R.fuelH) += rs_inPrimary;
+			(rs_IsFuelAuxH() ? R.fuelH : R.elecH) += rs_inDefrost + rs_inAux;
+
+			// convert to subhr Btu
+			R.elecH *= Top.tp_subhrDur;
+			R.fuelH *= Top.tp_subhrDur;
+
+		}
+		else if (rs_mode == rsmCOOL)
+		{
+			R.qcSen = rs_outSen * Top.tp_subhrDur;
+			R.qcLat = rs_outLat * Top.tp_subhrDur;
+			R.qcSenNet = R.qcSen + R.qFan;
+			R.elecC = (rs_inPrimary+rs_parElec*BtuperWh) * Top.tp_subhrDur;
+		}
+		else if (rs_mode == rsmOAV)
+		{
+
+		}
+	}
+
+#else
 
 	float qhFan = 0.f;	// fan heat assigned to heating (primary and/or aux)
-	float qcFan = 0.f;	// fan heat assigned to cooling
 
 	if (rs_runFAux > 0.f)	// if aux
 	{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
 		R.qAux = rs_outAux * Top.tp_subhrDur;
-		qhFan = R.qFan;		// also set if primary heating
+		R.qhNet = R.qAux;
+		qhFan = R.qFan;		// also set under primar
 	}
 
 	if (rs_runF > 0.f)		// if primary
 	{	R.hrsOn = rs_runF * Top.tp_subhrDur;
 		if (rs_outSen >= 0.)
 		{	R.qh = rs_outSen * Top.tp_subhrDur;
-			qhFan = R.qFan;		// also set if aux
 			R.qDefrost = rs_outDefrost * Top.tp_subhrDur;
-			R.qhZone = qzSen;
+			R.qhNet += R.qh + R.qDefrost;
+			qhFan = R.qFan;		// also set in aux
 		}
 		else
 		{	R.qcSen = rs_outSen * Top.tp_subhrDur;
 			R.qcLat = rs_outLat * Top.tp_subhrDur;
-			qcFan = R.qFan;
-			R.qcSenZone = qzSen;
+			R.qcSenNet = R.qcSen + R.qFan;
+#if 0 && defined( _DEBUG)
+			// occasional latent > 0 expected due to duct leakage
+			if (R.qcLatZone > 0.f)
+				printf("\nLat > 0");
+#endif
 		}
 	}
 
-	R.qhNet = R.qh + qhFan + R.qAux + R.qDefrost;
-	R.qcSenNet = R.qcSen + qcFan;
+	R.qhNet += qhFan;	// include heating fan w/o double counting
+#endif
 
 	return rc;
 }		// RSYS::rs_EndSubhr
@@ -2972,6 +3010,8 @@ RC RSYS::rs_AfterSubhr()
 // set 'prior interval' variables etc: if done sooner, probes come out wrong.
 {
 	rs_modeLs = rs_mode;
+	if (rs_mode != rsmOFF)
+		rs_modeLastActive = rs_mode;
 	rs_loadFLs = rs_loadF;
 	return RCOK;
 }	// RSYS::rs_AfterSubhr
@@ -4112,7 +4152,8 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		}
 	}
 
-	Btwxt::GridAxis dbtRange(gridODB);
+	// single grid variable = dry-bulb temp (CONSTANT sez "don't extrapolate")
+	Btwxt::GridAxis dbtRange(gridODB, Btwxt::Method::CONSTANT);
 	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
 
 	Btwxt::GriddedData perfMapHtg(dbt, values);
@@ -5004,7 +5045,7 @@ RC RSYS::rs_AllocateZoneAir()
 #if defined( RSYSITERCOUNT)
 		rsysPartAuxCount++;
 #endif
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		if (Top.jDay == 336)
 			printf("\nHit %s", Top.dateStr);
 #endif
@@ -5140,6 +5181,7 @@ double RSYS::rs_SpeedFMismatch(		// call-back fcn for secant method
 
 	double amfError = rs_amfReq[0] - rs_amf;
 
+	use fxCap[ 0], search for 1
 	return amfError;
 }	// RSYS::rs_SpeedFMismatch
 //-----------------------------------------------------------------------------
@@ -5179,6 +5221,7 @@ void RSYS::rs_AvgZoneCond()
 #endif
 }	// RSYS::rs_AvgZoneCond
 //----------------------------------------------------------------------------
+#if 0
 float RSYS::rs_SenHeatDelivered()
 {
 	float qSenTot = 0.f;
@@ -5188,6 +5231,30 @@ float RSYS::rs_SenHeatDelivered()
 		qSenTot += zp->zn_qsHvac;
 	}
 	return qSenTot * Top.tp_subhrDur;
+}	// RSYS::rs_SenHeatDelivered
+#endif
+//----------------------------------------------------------------------------
+void RSYS::rs_HeatDelivered(	// heat delivered to zone(s) by this RSYS
+	float& qhSen,	// heating sensible, Btu (>= 0)
+	float& qcSen,	// cooling sensible, Btu (< 0)
+	float& qcLat)	// cooling latent, Btu
+					//   (generally <0, can be >0 due to duct leakage
+{
+	qhSen = qcSen = qcLat = 0.f;
+	const ZNR* zp;
+	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+	{
+		if (zp->zn_qsHvac >= 0.)
+			qhSen += float(zp->zn_qsHvac);
+			// ignore latent if no sensible cooling
+		else
+		{	qcSen += float(zp->zn_qsHvac);
+			qcLat += float(zp->zn_qlHvac);
+		}
+	}
+	qhSen *= Top.tp_subhrDur;
+	qcSen *= Top.tp_subhrDur;
+	qcLat *= Top.tp_subhrDur;
 }	// RSYS::rs_SenHeatDelivered
 //----------------------------------------------------------------------------
 double RSYS::rs_AmfRequired(		// find all-zone total AMF required for tSup

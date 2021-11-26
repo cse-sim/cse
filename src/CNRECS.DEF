@@ -1744,6 +1744,7 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
 	*ovrcopy
 	*declare "void dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri=-1);"
 	*declare "void dv_vpAfMtrRow( RXPORTINFO *rxt, TI afMtri=-1);"
+    *declare "bool dv_IsReportActive( DOY jDay) const;"
 
   // from inputs to RiB/XiB		.ownTi is zone subscript or TI_SUM or ?TI_ALL.
     *r TI mtri			// meter to report/export. can be TI_SUM, TI_ALL.
@@ -2217,7 +2218,6 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "double zn_QAirCR( double tza, double qRad) const;"
     *declare "double zn_QAirCR( double tza) const;"
     *declare "double zn_QsHvacCR( double tza, float fConv) const;"
-    *declare "double zn_QsHvacCR( double tza) const;"
     *declare "double zn_AmfHvacCR( double tza, double tSup, double qRad) const;"
     *declare "double zn_AmfHvacCR( double tza, double tSup) const;"
     *declare "void zn_TAirFloatCR() { tz = zn_balC1 / zn_balC2; }"
@@ -2548,7 +2548,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s *e *hide DBL/*CFLOW*/ cM	// 0 if floating or or active-zhx heat cap flow to zone (after leaks) for current mode (Btuh/F)
     *s *e *hide DBL qM   	// 0 if floating or power of active zhx: q to yeild setpoint (Btuh).
     *s *e *hide CFLOW cTot 	// total air heat/cool flow (heat cap units) to zone (after duct leaks): bSo+bStO[md]+cM.
-    *s *e DBL zn_qsHvac 	// subhour total (sensible) power of all hvac (Btuh)
+    *s *e DBL zn_qsHvac 	// subhour total (sensible) power of all hvac, Btuh
 							//   NB: power (Btuh) q is *subhrDur'd to yield energy (Btu) q's for results.
     *s *e DBL zn_qlHvac		// subhour total latent power (Btuh) (moisture * 1061) likewise
 #if 0	// unused, 9-12
@@ -3151,7 +3151,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_SpeedFMismatch( double& speedF);"
 *declare "double rs_FindAirFlow();"
 *declare "void rs_AvgZoneCond();"
-*declare "float rs_SenHeatDelivered();"
+*declare "void rs_HeatDelivered( float& qhSen, float& qcSen, float& qcLat);"
 *declare "double rs_AmfRequired( double tSup);"
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
@@ -3173,7 +3173,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "bool rs_IsVCClg() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
-*declare "bool rs_IsElecHeat() const { return rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES || rs_IsASHP(); }"
+*declare "bool rs_IsElecHeat() const { return rs_IsASHP() || rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES; }"
+*declare "bool rs_IsFuelAuxH() const { return rs_typeAuxH == C_AUXHEATTY_FURN; }"
 *declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
 *declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
 *declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
@@ -3528,6 +3529,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
 *s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s INT rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+                            //   (allows guess re e.g. heating vs cooling season)
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
@@ -3581,21 +3584,31 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	INT n			// number of intervals added together in this one (divisor for averages)
 					//  (maintained but unused)
 
-	// float members to add, hrsOn is first, qcSenNet is last (see code)
+	// float members to add, hrsOn MUST be first (else change rsr_Accum() etc)
 	HOURS hrsOn		// operating hours
 	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
 					//   not including defrost
-	ENERGY qFan		// fan heat, Btu
+	ENERGY qFan		// total fan heat, all modes, Btu
 	ENERGY qh		// heating output w/o fan, w/o defrost, Btu
 	ENERGY qDefrost	// defrost (strip) heat output, Btu
 	ENERGY qAux		// auxiliary heat output, Btu
 	ENERGY qhNet	// heating net output (qh+qDefrost+qAux+qFan), Btu
     ENERGY qhZone   // net heat delivered to zone(s) (after dist losses), Btu
 
+    ENERGY elecH    // total heating electricity use, Btu
+                    //   primary+fan+aux+defrost+parasitic
+    ENERGY fuelH    // total heating fuel, Btu
+                    //   primary+aux+parasitic
+
 	ENERGY qcSen	// sensible cooling output w/o fan (< 0), Btu
 	ENERGY qcLat	// latent cooing output (<0), Btu
     ENERGY qcSenNet // sensible cooling net output (qcSen+qFan), Btu
-    ENERGY qcSenZone  // net cooling delivered to zone(s) (after dist losses), Btu
+    ENERGY qcSenZone    // net sensible cooling delivered to zone(s) (after dist losses), Btu
+    ENERGY qcLatZone    // net latent cooling delivered to zone(s) (after dist losses), Btu
+
+    ENERGY elecC    // total cooling electricity use, Btu
+
+    ENERGY elecOAV  // total OAV electricity use, Btu
 
 *END		// RSYSRES_IVL_SUB
 //=============================================================================
