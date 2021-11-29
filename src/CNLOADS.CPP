@@ -1117,8 +1117,8 @@ x						printf( "1B\n");
 
 					if (rsAvail >= 2)
 					{	// mode is possible
-						rc |= zn_AirRequest( rs);	// determine air requirement given
-													//   rs_asSup
+						rc |= zn_AirRequest( rs, 1);	// determine air requirement given rs_asSup
+														//   1: msg if bad supply temp
 						// zone temp calc'd in zn_CondixCR2()
 					}
 					else if (rsAvail == 1)
@@ -1197,19 +1197,21 @@ x						printf( "1B\n");
 }		// ZNR::zn_CondixCR
 //-----------------------------------------------------------------------------
 RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
-	RSYS* rs)	// zone's RSYS
+	RSYS* rs,			// zone's RSYS
+	int options /*=0*/)		// option bits
+							//   1: report "flipped" supply temps
 // Prereq: rs->rs_SupplyAirState() at current speed
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 	double tSup0 = rs->rs_asSup.as_tdb;
 #if 1 && defined( _DEBUG)
-	if ((!Top.isWarmup &&
+	if ((options & 1) && !Top.isWarmup &&
 		(zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-		|| (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && !rs->rs_IsASHP())))
+		|| (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp))
 	{
-		printf("Zone '%s': Flipped tSup  RSYS='%s', tOut=%f, tSup=%f, tSP=%f, tZone=%f\n", name, rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
-		rs->rs_SupplyAirState(zn_hcMode);	// debug aid
+		orWarn("Flipped tSup  RSYS='%s', tOut=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
+			rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
 #endif
 
@@ -4730,9 +4732,12 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 		rs_EnteringAirState();
 
 		if (rs_mode == rsmCOOL)
-			rs_Cooling( auszMode);
+		{	++rs_calcCount[1];
+			rs_Cooling(auszMode);
+		}
 		else if (rs_mode == rsmHEAT)
-		{	rs_asOut = rs_asIn;		// init to entering state
+		{	++rs_calcCount[0];
+			rs_asOut = rs_asIn;		// init to entering state
 			if (auszMode == rsmHEAT && Top.tp_pass1A)
 			{	// autosize warmup: assume fixed temp rise
 				rs_asOut.as_tdb = rs_asRet.as_tdb + rs_tdDesH;
@@ -4939,7 +4944,8 @@ int rsysIterCount = 0;		// count secant method call-backs
 #endif
 #endif
 //-----------------------------------------------------------------------------
-RC RSYS::rs_AllocateZoneAir()
+RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
+// 
 {
 	if (rs_mode == rsmOAV)
 		return RCOK;			// OAV: allocation done by rs_OAVAttempt
@@ -4977,9 +4983,10 @@ RC RSYS::rs_AllocateZoneAir()
 	if (!bAux)
 	{	// aux not available or not needed
 		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing())
-			// variable capacity with excess capacity
-		{
-			rc |= rs_AllocateZoneAirVC();
+		{	// variable capacity with excess capacity
+			// find intermediate speed
+			rc |= rs_FindRequiredSpeedF();
+			// now rs_speedFMin <= rs_speedF < 1
 			fSize = min(rs_fxCap[0], 1.);
 		}
 		RLUPC(ZrB, zp, rs_IsZoneServed(zp))
@@ -5127,27 +5134,83 @@ RC RSYS::rs_AllocateZoneAir()
 	return rc;
 }	// RSYS::rs_AllocateZoneAir
 //----------------------------------------------------------------------------
-RC RSYS::rs_AllocateZoneAirVC()		// 
-// rs_fxCap[] known
+RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
+// at call: RSYS in full speed state (excess capacity, rs_fxCap[ 0]==1)
+// returns RCBAD iff search fail (unexpected)
+//    else RCOK and RSYS at intermediate speed state
+//         if rs_fxCap[ 0] == 1, pegged at rs_speedFMin (must cycle below min)
 {
 #if defined( _DEBUG)
 	if (rs_fxCap[0] < 1.f)
 		printf("\nrs_AllocateZoneAirVC: rs_fxCap[ 0] < 1");
 #endif
+	float fxCapFullSpd = rs_fxCap[0];		// save full speed cap rat
 	RC rc = RCOK;
 
-	// try minimum speed
-	rc |= rs_TotalAirRequest( rs_speedFMin);
+	assert(!rs_IsAutoSizing());
 
-	if (rs_fxCap[0] < 1.f)
-		rs_FindAirFlow();
+	// try minimum speed
+	rc |= rs_TotalAirRequestForSpeedF( rs_speedFMin);
+
+	if (rc || rs_fxCap[0] >= 1.f)
+		return rc;		// error or rs_speedFMin is sufficient
+
+	// rs_speedFMin not sufficient, search for intermediate speed
+
+	float fxCapMinSpd = rs_fxCap[0];
+
+	float speedFEst = rs_speedFMin + (1.f - rs_speedFMin) * (1.f - fxCapMinSpd) / (fxCapFullSpd - fxCapMinSpd);
+
+	double speedF, f1;
+#if 1
+	if (speedFEst > 0.5f * rs_speedFMin + 0.5f)
+	{
+		speedF = 1.;
+		f1 = fxCapFullSpd;
+	}
+	else
+	{
+		speedF = rs_speedFMin;
+		f1 = fxCapMinSpd;
+	}
+
+#elif 0
+	speedF = rs_speedFMin;
+	f1 = fxCapMinSpd;
+#else
+	speedF = double( 0.5f * rs_speedFMin + 0.5f);
+	f1 = DBL_MIN;
+#endif
+
+	// search for speedF that produces fxCap = 1.
+	//   this RSYS is left in the corresponding state via rc_TotalAirRequestForSpeed() calls
+	//   (secant results not directly returned)
+	int ret = secant([](void* pO, double& speedF) { return ((RSYS*)pO)->rs_FxCapForSpeedF(speedF); },
+						this,
+						1., .0005,	// target=rs_fxCap[0]=1 within .0005
+						speedF, f1,	// x1, f1
+						speedFEst, DBL_MIN);	// x2, f2 (not known)
+	if (ret)	// if secant failed (unexpected)
+		// leave RSYS is speedFEst state (= semi-decent result)
+		rc |= rs_TotalAirRequestForSpeedF(speedFEst);
+
+#if defined( _DEBUG)
+	if (ret)
+		printf("\nrs_FindRequiredSpeedF: secant ret=%d  rsMode=%d", ret, rs_mode);
+	if (rs_speedF < rs_speedFMin || rs_speedF > 1.f)
+		printf("\nrs_FindRequiredSpeedF bad rs_speedF=%0.2f", rs_speedF);
+#endif
 
 	return rc;
 
-}	// RSYS::AllocateZoneAirVC()
+}	// RSYS::rs_FindRequiredSpeedF()
 //-----------------------------------------------------------------------------
-RC RSYS::rs_TotalAirRequest(		// all-zone air request at speedF
-	float speedF)
+RC RSYS::rs_TotalAirRequestForSpeedF(		// all-zone air request at speedF
+	float speedF,			// speed to attempt
+	int options /*=0*/)		// option bits
+							//   1: report zn_AirRequest errors
+// returns RCOK iff valid result (rs_fxCap[ 0] set)
+//    else RCBAD, rs_fxCap[ 0] = 0
 {
 	RC rc = RCOK;
 
@@ -5157,58 +5220,54 @@ RC RSYS::rs_TotalAirRequest(		// all-zone air request at speedF
 		int ret = rs_SupplyAirState(rs_mode, speedF);
 		ZNR* zp;
 		RLUPC(ZrB, zp, rs_IsZoneServed(zp))
-			zp->zn_AirRequest(this);
+			rc |= zp->zn_AirRequest(this, options);
 
-		if (rs_amfReq[0] <= 0.)				// if any air requested (by any zone)
+		if (rc || rs_amfReq[0] <= 0.)
 		{
-			printf("\nrs_AirRequest: rs_amfReq[ 0] <= 0.");
-			return RCBAD;
+#if defined( _DEBUG)
+			printf("\nrs_TotalAirRequestForSpeed: rs_amfReq[ 0] <= 0.");
+#endif
+			rs_fxCap[0] = 0.f;
+			rc = RCBAD;
 		}
-
-		rs_fxCap[0] = rs_amf / rs_amfReq[0];	// >1 = excess capacity
+		else
+			rs_fxCap[0] = rs_amf / rs_amfReq[0];	// >1 = excess capacity
 	}
 
 	return rc;
-}		// RSYS::rs_TotalAirRequest
+}		// RSYS::rs_TotalAirRequestForSpeedF
 //-----------------------------------------------------------------------------
-double RSYS::rs_SpeedFMismatch(		// call-back fcn for secant method
-	double& speedF)
-// returns required AMF - RSYS AMF
+double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
+	double& speedF)		// trial speedF (may be returned modified)
+// returns required rs_fxCap[ 0] (= rs_amf / amfReq), >1 = excess capacity
 {
-	speedF = bracket(double( rs_speedFMin), speedF, 1.);
-
-	rs_TotalAirRequest(float(speedF));
-
-	double amfError = rs_amfReq[0] - rs_amf;
-
-	use fxCap[ 0], search for 1
-	return amfError;
-}	// RSYS::rs_SpeedFMismatch
-//-----------------------------------------------------------------------------
-double RSYS::rs_FindAirFlow()
-{
-	RC rc = RCOK;
-
-	if (rs_IsAutoSizing())
-		return -1.f;		// bad call
-
-	double fAmf = .5;
-	double f1 = DBL_MIN;
-	int ret = secant([](void* pO, double& speedF) { return ((RSYS*)pO)->rs_SpeedFMismatch(speedF); },
-						this, 0., 1.,
-						fAmf, f1,	// x1, f1
-						1.);		// x2 (f2)
-
 #if defined( _DEBUG)
-	if (ret)
-		printf("\nrs_FindAirFlow(): secant ret=%d  rsMode=%d", ret, rs_mode);
-	if (rs_speedF < rs_speedFMin || rs_speedF > 1.f)
-		printf("\nrs_FindAirFlow() rs_speedF=%0.2f", rs_speedF);
+	double speedFWas = speedF;
+#endif
+	speedF = bracket(double( rs_speedFMin), speedF, 1.);
+#if defined( _DEBUG)
+	if (speedF != speedFWas)
+		printf("\nrs_FxCapForSpeedF limit!");
 #endif
 
-	return rs_amf;
-}	// RSYS::rs_FindAirFlow
-//----------------------------------------------------------------------------
+	// options: report bad supply temps iff near solution
+	//   (when far from solution errors are common and not meaningful
+	int arOptions = abs(rs_fxCap[0] - 1.f) < .01f;
+
+	RC rc = rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
+
+	// if rc != RCOK, rs_fxCap[0] is 0
+
+#if defined( _DEBUG)
+	if (rc)
+		printf("\nrs_FxCapForSpeedF: rs_TotalAirRequestForSpeedF() fail");
+#else
+	// ignore rc, return rs_fxCap[ 0] = 0
+#endif
+
+	return double(rs_fxCap[0]);
+}	// RSYS::rs_FxCapForSpeedF
+//-----------------------------------------------------------------------------
 void RSYS::rs_AvgZoneCond()
 {
 #if 0
