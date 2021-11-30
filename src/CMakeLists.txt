@@ -254,6 +254,8 @@ source_group("Def Files" FILES ${defs})
 target_link_libraries(CSE ${libs})
 
 add_dependencies(CSE version_header)
+set_target_properties(CSE PROPERTIES CXX_STANDARD 17)
+target_compile_features(CSE PRIVATE cxx_std_17)
 
 set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
 
