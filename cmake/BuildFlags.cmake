@@ -1,4 +1,3 @@
-set(CMAKE_CXX_STANDARD)
 if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
 
   # Final flags are Common + build-specific flags (e.g., Release, Debug)
