@@ -17,7 +17,7 @@ jobs:
         id: branch-name
       - name: Save branch name
         run: |
-            echo "CI_GIT_BRANCH=${steps.branch-name.outputs.current_branch}" >> $GITHUB_ENV
+          echo "CI_GIT_BRANCH=${steps.branch-name.outputs.current_branch}" >> $GITHUB_ENV
       - name: Build
         shell: cmd
         run: build.bat no-pause
