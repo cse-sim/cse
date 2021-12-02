@@ -8,5 +8,5 @@ execute_process(COMMAND ${CMAKE_COMMAND}
 if (${success} MATCHES "0")
   message("Build Successful!")
 else()
-  message("Build failed.")
+  message(FATAL_ERROR "Build failed.")
 endif()
