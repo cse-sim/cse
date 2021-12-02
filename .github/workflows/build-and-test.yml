@@ -13,6 +13,7 @@ jobs:
         uses: tj-actions/branch-names@v5
         id: branch-name
       - name: Save branch name
+        shell: bash
         run: | 
           echo "CI_GIT_BRANCH=${steps.branch-name.outputs.current_branch}" >> $GITHUB_ENV
       - name: Build
