@@ -8,7 +8,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
   #================#
   # Compiler flags #
   #================#
-  message(FATAL_ERROR "Testing error code")
+
   set(CompileCommon
     /DWIN32     #*
   # /D_WINDOWS  #*
