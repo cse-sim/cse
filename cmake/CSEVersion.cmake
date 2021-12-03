@@ -1,7 +1,7 @@
 # Generate CSE Version header
 
-if(DEFINED ENV{APPVEYOR_REPO_BRANCH})
-  set(GIT_BRANCH "$ENV{APPVEYOR_REPO_BRANCH}")
+if(DEFINED ENV{CI_GIT_BRANCH})
+  set(GIT_BRANCH "$ENV{CI_GIT_BRANCH}")
 else()
   execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD

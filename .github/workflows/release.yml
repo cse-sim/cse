@@ -9,9 +9,17 @@ jobs:
   release-cse:
     name: Deploy CSE release
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Get branch name
+        uses: tj-actions/branch-names@v5
+        id: branch-name
+      - name: Save branch name
+        run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       - name: Build
         shell: cmd
         run: build.bat no-pause
