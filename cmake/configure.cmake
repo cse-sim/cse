@@ -7,6 +7,5 @@ execute_process(COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR} -T v142 -A 
   RESULT_VARIABLE success
 )
 if (NOT ${success} MATCHES "0")
-  message("Generation step failed.")
-  return()
+  message(FATAL_ERROR "Generation step failed.")
 endif()
