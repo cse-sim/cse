@@ -106,9 +106,9 @@ RC FC probe()
 	b = o.inB ? o.inB : o.runB;				// single pointer to base of (one of) the basAnc(s) found
 	if (tokeIf(CUTLB))					// get token / if [ next (else unget the token) (cuparse.cpp)
 	{
-		E( expTy( PRRGR, TYSI|TYID, "className[", 0) )	// compile integer or string expr to new stk frame.
+		CSE_E( expTy( PRRGR, TYSI|TYID, "className[", 0) )	// compile integer or string expr to new stk frame.
 		// TYID: like TYSTR, plus assume quotes around unreserved identifiers.
-		E( konstize( &o.ssIsK, &o.pSsV, 0 ) )	// determine if constant/get value, re immediate input probes, below.
+		CSE_E( konstize( &o.ssIsK, &o.pSsV, 0 ) )	// determine if constant/get value, re immediate input probes, below.
     											// evals if evaluable and un-eval'd, rets flag and pointer
 		if (tokeNot(CUTRB))
 			return perNx( (char *)MH_U0004,		// "U0004: Expected ']' after object %s"
@@ -123,8 +123,8 @@ RC FC probe()
 				&&  tokeIf(CUTPER) )			// if period next -- what would follow subscript
 		{
 			static SI iZero = 0;
-			E( newSf())				// use separate stack frame to be like expression case
-			E( emiKon( TYSI, &iZero, 0, NULL ) )	// emit code for a 0 contant
+			CSE_E( newSf())				// use separate stack frame to be like expression case
+			CSE_E( emiKon( TYSI, &iZero, 0, NULL ) )	// emit code for a 0 contant
 			o.pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKE via cuparse:konstize.
 			o.ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
 			parSp->ty = TYSI;			// have integer value
@@ -226,21 +226,21 @@ RC FC probe()
 
 // emit eoi or runtime probe code: PSRATRN / PSRATROS & inline args, PSRATLODx & field #.  Subscr/name expr already emitted.
 
-	E( combSf() )				// combine stack frame & code & evf from subscr expr above with preceding code
-	E( emit( o.ssTy==TYSTR
+	CSE_E( combSf() )				// combine stack frame & code & evf from subscr expr above with preceding code
+	CSE_E( emit( o.ssTy==TYSTR
 			 ? PSRATROS   	// access record by ownTi & name: string on stack, leave pointer
 			 : PSRATRN ) ) 	// access record by number: SI value on stack, leave pointer on stack
-	E( emit2(b->ancN) )  			// basAnc number follows inline, from basAnc
+	CSE_E( emit2(b->ancN) )  			// basAnc number follows inline, from basAnc
 	if (o.ssTy==TYSTR)					// for lookup by name
-		E( emit2( ratDefO(o.inB ? o.inB : b) ) );	// also emit inline owning input record subsc per context, or 0. cul.cpp.
+		CSE_E( emit2( ratDefO(o.inB ? o.inB : b) ) );	// also emit inline owning input record subsc per context, or 0. cul.cpp.
 	/* ratDefO returns subscript of input record in b->ownB of context
 	   in which current expr is being evaluated, if any, for resolving ambiguous names.
 	   Returns 0 if not ownable-record basAnc (none remain 7-92?) or its ownB unset or not embedded
 	     in statement group of owning type (including if b is a run record basAnc).
 	   RUNTIME ignores defO if actual probed basAnc is not ownable-record or its .ownB not set:
 	     run setup (cncult:topCkf) sets run .ownB's only where run subscripts corres to input subscrs. */
-	E( emit(lop) )					// load per data type: takes record addr on stack, field number inline
-	E( emit2(fn) )					// field number follows inline
+	CSE_E( emit(lop) )					// load per data type: takes record addr on stack, field number inline
+	CSE_E( emit2(fn) )					// field number follows inline
 
 // finish
 

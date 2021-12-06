@@ -362,7 +362,7 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 				jDay = 1;    				// wrap at end year
 			xJDay = jDay;					// extended jDay same when not autosizing
 			isLastWarmupDay = isWarmup && (dayDownCount==0);	// flag TRUE on last warmup day
-			E( tp_SimDay());					// simulate for one day, next. On error return exact rc re ^C.
+			CSE_E( tp_SimDay());					// simulate for one day, next. On error return exact rc re ^C.
 #if 0
 x			if (jDay == 35)		// test for abort handling
 x				err( PABT, "Die die die");
@@ -388,7 +388,7 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 // simulate 24 hours
 	for (iHr = 0;  iHr < 24;  iHr++)	// loop over (Daylight Time) hours 0 to 23
 	{
-		E( tp_SimHour());		// simulate for hour, next.  Alters iHr if DT starts or ends.
+		CSE_E( tp_SimHour());		// simulate for hour, next.  Alters iHr if DT starts or ends.
 		//  on error return exact rc re ^C detection (MH_C0100).
 		yielder();			// if under Windows, let other applications run. rmkerr.cpp. 2-94.
 	}						//   note daily yield (after } ) got complaints from ET beta testers, 5-95.
@@ -398,7 +398,7 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 	// Thus each repetion of day uses same data. Also all days use same data,
 	//   and main sim must use a different file or start with same day of data.
 	if ( tp_autoSizing)
-		E( impfAfterWarmup());			// position file for next rep of day, or for warmup of main sim. impf.ccp.
+		CSE_E( impfAfterWarmup());			// position file for next rep of day, or for warmup of main sim. impf.ccp.
 #endif
 	return rc;
 }		// TOPRAT::tp_SimDay
@@ -446,7 +446,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		RLUP( ChB, ch)   EF( ch->endSubhr() )		// chillers end-subhour stuff.  cncp.cpp.
 		RLUP( TpB, tp)   EF( tp->endSubhr() )		// towerplants end-subhour stuff.  cntp.cpp.
 
-		E( doEndIvl());		// end interval stuff: update Top.ivl, results accum, reports,etc. local.
+		CSE_E( doEndIvl());		// end interval stuff: update Top.ivl, results accum, reports,etc. local.
 							// Also ends hour,day,month,run ending with this subhour.
 							// On error, return exact code re ^C detection (rc = MH_C0100)
 		if (ebTolSubhr > 0.f)			// if tolerance given for subhourly energy balance check 3-28-92

@@ -54,7 +54,7 @@ RC   FC topHp1( void)		// heat plants 1: create run records. AH's & HPLOOPs & BO
 
 // copy HEATPLANT input records to run records: do early as other checkers chain HW coils, HX's, BOILERs to hp.
 
-	E( HpB.al( HpiB.n, WRN) )			// delete (unexpected) old hp's, alloc needed # hp's at once for min fragmentation
+	CSE_E( HpB.al( HpiB.n, WRN) )			// delete (unexpected) old hp's, alloc needed # hp's at once for min fragmentation
 	// hp's are not owned (names must be unique), leave .ownB 0.
 	RLUP( HpiB, hpi)				// loop heatplant input records (cnglob.h macro)
 	{
@@ -80,7 +80,7 @@ RC   FC topBlr( void)		// check/initialize boilers. do between topHp1 and 2.
 	RC rc /*=RCOK*/;
 
 // copy BOILER input records to run records
-	E( BlrB.al( BlriB.n, WRN) )			// delete (unexpected) old blr's, alloc needed # at once for min fragmentation
+	CSE_E( BlrB.al( BlriB.n, WRN) )			// delete (unexpected) old blr's, alloc needed # at once for min fragmentation
 	// blr's are not owned (names must be unique), leave .ownB 0.
 	RLUP( BlriB, blri)				// loop heatplant input records (cnglob.h macro)
 	{
@@ -101,7 +101,7 @@ RC   FC topCp1( void)		// coolPlants 1: create run records. AH's & CHILLERs must
 
 // copy COOLPLANT input records to run records: do early as other checkers chain CHW coils, CHILLERs to cp.
 
-	E( CpB.al( CpiB.n, WRN) )			// delete (unexpected) old cp's, alloc needed # cp's at once for min fragmentation
+	CSE_E( CpB.al( CpiB.n, WRN) )			// delete (unexpected) old cp's, alloc needed # cp's at once for min fragmentation
 	// cp's are not owned (names must be unique), leave .ownB 0.
 	RLUP( CpiB, cpi)				// loop coolplant input records (cnglob.h macro)
 	{
@@ -127,7 +127,7 @@ RC   FC topCh( void)		// check/initialize chillers. do between topCp1 and 2.
 	RC rc /*=RCOK*/;
 
 // copy CHILLER input records to run records
-	E( ChB.al( ChiB.n, WRN) )			// delete (unexpected) old ch's, alloc needed # at once for min fragmentation
+	CSE_E( ChB.al( ChiB.n, WRN) )			// delete (unexpected) old ch's, alloc needed # at once for min fragmentation
 	// ch's are not owned (names must be unique), leave .ownB 0.
 	RLUP( ChiB, chi)				// loop coolplant input records (cnglob.h macro)
 	{
@@ -147,7 +147,7 @@ RC   FC topTp1( void)		// towerplants 1: generate run records. topCp2 must be do
 	RC rc /*=RCOK*/;
 
 // copy TOWERPLANT input records to run records: do early as other checkers chain COOLPLANTs to TOWERPLANTs.
-	E( TpB.al( TpiB.n, WRN) )			// delete (unexpected) old tp's, alloc needed # at once for min fragmentation
+	CSE_E( TpB.al( TpiB.n, WRN) )			// delete (unexpected) old tp's, alloc needed # at once for min fragmentation
 	// tp's are not owned (names must be unique), leave .ownB 0.
 	RLUP( TpiB, tpi)				// loop coolplant input records (cnglob.h macro)
 	{
@@ -495,7 +495,7 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 // owning coolplant: check, point, chain chiller to it
 
 	COOLPLANT *cp;
-	E( ckRefPt( &CpB, ownTi, "ownTi", NULL, (record**)&cp) );	// if ownTi is bad, msg & return bad to caller now.
+	CSE_E( ckRefPt( &CpB, ownTi, "ownTi", NULL, (record**)&cp) );	// if ownTi is bad, msg & return bad to caller now.
 																// Is this check unnecessary?
 	nxCh4cp = cp->ch1;
 	cp->ch1 = ss;				// nxCh4cp bkwds chillers-for-coolplant chain begins in cp->ch1.
@@ -790,13 +790,13 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 
 // determine ntuADs: ntu on air side at design conditions: characterizes tower performance at dsgn cond. Niles VI-C-3-b.
 
-	E( setupNtuADs() )				// function follows. E macro returns to our caller upon error return.
+	CSE_E( setupNtuADs() )				// function follows. E macro returns to our caller upon error return.
 
 // conditionally determine ctK: Niles "k", for formula  ntuA = const*(mw/ma)^k .  Niles VI-C-3-b continued.
 
 	if (odGiven)				// if off-design conditions given (else ctK given or defaulted per CULT table)
 	{
-		E( setupNtuAOd() )						// determine ntuAOd: off-design air side ntu. below.
+		CSE_E( setupNtuAOd() )						// determine ntuAOd: off-design air side ntu. below.
 		if (fabs(maOverMwDs - maOd/mwOd) < 1.e-10)			// prevent divide by 0 (log of 1) in next statement
 			return oer( (char *)MH_S0740,				/* "maOd/mwOd must not equal maDs/mwDs.\n"
 									   "    maOd=%g  mwOd=%g  maDs=%g  mwDs=%g\n"

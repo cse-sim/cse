@@ -155,11 +155,11 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
 								// (below, sets .az_px's, etc) & do addl object-specific init.
 
 // pass 1: find large enuf sizes, with open-ended models then transition to real model.
-	E( pass1());		// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+	CSE_E( pass1());		// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 
 // pass 2: reduce any oversize sizes, or as changed.
 	if (!Top.tp_bAllCR)		// needed only for CNE (pre-CR) zones
-		E( pass2());
+		CSE_E( pass2());
 
 	// might be a pass 3 in the future to generate reports or hourly information of any sort.
 	// might want some final call to cnguts for month-end, year-end stuff.
@@ -209,7 +209,7 @@ RC TOPRAT::tp_BegDesDay()	// init many things before start of repetitions for de
 
 	// init simulator to stardard state before each design day -- 70F zone temps, etc.
 	RC rc;
-	E( cgRddInit(TRUE));	// init repeated for (main sim run or) each autoSize design day, cnguts.cpp.
+	CSE_E( cgRddInit(TRUE));	// init repeated for (main sim run or) each autoSize design day, cnguts.cpp.
 							// sets initial state of zones & systems; calls AH::rddInit's, etc.
 							// also allocs results records not used in autosizing, etc, ... .
 							// calls asRddiInit in this file: clears peaks.
@@ -391,7 +391,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 				screen( NONL," a");
 			EF( begP1aDsdIter());  	// init all AUSZ's for new iteration of a pass 1 design day
 			EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
-			E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
+			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
 			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 			EF( p1aCvgTest() );		// test all active AUSZ's for pass 1A convergence. Sets Top.notDone.
 			if (!Top.notDone)		// leave loop if done
@@ -424,7 +424,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 			if (Top.verbose >= 2)
 				screen( NONL," b");
 			EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
-			E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
+			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
 			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 			EF( p1bCvgTest() );		// test all active AUSZ's for pass 1 part B convergence. Sets Top.notDone.
 			if (!Top.notDone)
@@ -573,7 +573,7 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 					screen( NONL," .");
 				EF( begP2DsdIter());  		// init all AUSZ's for new iteration of a pass 2 design day: init sizes
 				EF( asRddiInit());			// clear peaks each pass 2 des day iteration
-				E( Top.tp_SimDay());		// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
+				CSE_E( Top.tp_SimDay());		// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
 				// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 				EF( p2CvgTest() );			// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
 				if (!Top.notDone)			// leave loop if done
@@ -600,7 +600,7 @@ x             for ( ; ; )
 x             {	if (Top.verbose >= 2)
 x                   screen( NONL," b");
 x                EF( asRddiInit());		// clear peaks each pass 2 des day iteration
-x                E( Top.tp_SimDay());			// simulate a day, cnguts.cpp
+x                CSE_E( Top.tp_SimDay());			// simulate a day, cnguts.cpp
 x                EF( p2CvgTest() );		// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
 x                if (!Top.notDone)				// if (still or again) converged per p2CvgTest
 x                {  //if (no increase [over smallTol?] occurred)	<--- implement flag from resizeIf() if need found, 7-95
@@ -623,7 +623,7 @@ x}
 
 		// pass 2 outer loop endtest: done if all sizes ok, else do another complete pass
 
-		E (p2EndTest());	// if need to repeat pass 2, adjust size and set Top.notDone.
+		CSE_E( p2EndTest());	// if need to repeat pass 2, adjust size and set Top.notDone.
 							// Also sets Top.notDone if any size increased more than tolerance.
 		if (!Top.notDone)			// leave loop if done
 		{

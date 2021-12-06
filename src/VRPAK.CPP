@@ -233,7 +233,7 @@ RC vrOpen( 		// open virtual report and return handle
 	if (!(spl.isInit && spl.isOpen))
 	{	const char* splFName = strffix2( InputFilePathNoExt, ".spl", 1);
 		RC rc;		// for E()
-		E( vrInit( splFName));
+		CSE_E( vrInit( splFName));
 	}
 
 // fail now if prior serious error
@@ -278,7 +278,7 @@ RC vrClose( int vrh)			// close a virtual report -- terminate output to it
 	VRI *vr;
 	RC rc;
 // check
-	E( vrCkHan( vrh, &vr));		// ret bad now if if bad handle or prior error (vrRc)
+	CSE_E( vrCkHan( vrh, &vr));		// ret bad now if if bad handle or prior error (vrRc)
 
 // say not open
 	vr->spooling = 0;		// say not ready to receive text
@@ -340,7 +340,7 @@ RC vrSetPage( int vrh, int pageN)	// set page
 {
 	VRI *vr;
 	RC rc;
-	E( vrCkHan( vrh, &vr));		// ret bad now if if bad handle or prior error (vrRc)
+	CSE_E( vrCkHan( vrh, &vr));		// ret bad now if if bad handle or prior error (vrRc)
 	vr->pageN = pageN;
 	return RCOK;
 }		// vrSetPage
@@ -425,7 +425,7 @@ RC vrStrF( 		// output string to virtual report with format info option; inner f
     							//  yet set (eg if spooling an input-time error message), may return
     							//  Topi.bodyLpp or a default value. cncult.cpp
 	VRI* vr;
-	E( vrCkHan( vrh, &vr));			// checks/set vr table pointer; return bad now if bad vrh or prior error
+	CSE_E( vrCkHan( vrh, &vr));			// checks/set vr table pointer; return bad now if bad vrh or prior error
 
 	int incl = !isFmt || (vr->optn & VR_FMT);	// include text if not formatting text or report is page-formatted
 

@@ -1069,7 +1069,7 @@ LOCAL RC FC NEAR culENDER( 	// do  c u l  end cases
 			{
 				/* convert regular basAnc record and any owned subRat records to "type(s)"
 				   (massage flags) and move it to special sub-basAnc at basAnc.tyB. */
-				E( ratPutTy( (record *)xSp->e, xSp->cult) )	// local, below.  returns RCOK/RCBAD/RCFATAL.
+				CSE_E( ratPutTy( (record *)xSp->e, xSp->cult) )	// local, below.  returns RCOK/RCBAD/RCFATAL.
 				defTyping = 0;					// clear "defining a type" flag
 			}
 
@@ -1093,7 +1093,7 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 
 // parse rest of statement
 	RC rc;
-	E( vFind( RATE) )		// get RATE verb for class name from input stream, look it up, msg if not found, do implicit ENDs
+	CSE_E( vFind( RATE) )		// get RATE verb for class name from input stream, look it up, msg if not found, do implicit ENDs
 	CULT *c = xSp->c;
 	BP b = (BP)c->b;
 
@@ -1102,7 +1102,7 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 
 	// get Identifier, Quoted txt, or constant string eXpr for name, & get terminator.
 	char* name;
-	E( ganame( 0,		// disallow "all" and "sum"
+	CSE_E( ganame( 0,		// disallow "all" and "sum"
 			NULL,    	// use xSp->c->id in error messages
 			&name ) ) 	// rcvs dm string ptr.  gets terminator. local.
 
@@ -1307,7 +1307,7 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 			{
 				lity = 1;					// say good COPY/LIKE in effect
 				e->li = likeE->ss;				// nz means LIKE record. Avail for user fcns to test or access record.
-				E( rateDuper( e, likeE, 0, 0, -1, (CULT *)(copy ? c->CULTP2 : NULL) ) )
+				CSE_E( rateDuper( e, likeE, 0, 0, -1, (CULT *)(copy ? c->CULTP2 : NULL) ) )
 				/* copy basAnc record contents, its deferred ref table entries (drefs),
 				   and, if COPY, subrat records w drefs. local. can ret RCFATAL. */
 			}
@@ -1325,7 +1325,7 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 			{
 				lity = 2;				// say good USETYPE in effect. 2 distinguishes from COPY/LIKE - poss future use.
 				e->ty = typeE->ss;		// nz means USETYPE'd entry. Avail for user fcns to test or access type
-				E( rateDuper( e, typeE, 0, 0, -1, (CULT *)c->CULTP2) )	// copy contents, dref's, subRat records
+				CSE_E( rateDuper( e, typeE, 0, 0, -1, (CULT *)c->CULTP2) )	// copy contents, dref's, subRat records
 			}
 #if 1 // memory leak, 8-24-2010
 			dmfree( DMPP( typeName));
@@ -1747,12 +1747,12 @@ LOCAL RC FC NEAR culRqFrz( 	// do "Require" or "Freeze" non-table command
 	RC rc;
 
 // parse rest of statment
-	E( vFind( DAT) )	/* get DAT verb from input stream, look it up,
+	CSE_E( vFind( DAT) )	/* get DAT verb from input stream, look it up,
     			   msg if not found, do implicit ENDs, set xSp->c. */
 	termnIf();		// get optional terminating ;
 
 // point at the member and its flags byte.  local.
-	E( datPt() )
+	CSE_E( datPt() )
 
 // execute command
 	*xSp->fs |= flag;		// say member required or frozen (FsFROZ/FsRQD used only on 1st elt of ARRAYs)
@@ -1771,7 +1771,7 @@ LOCAL RC FC NEAR culAUTOSZ() 	// do "AutoSize" non-table command
 	RC rc;
 
 // parse rest of statment, check for autosizable member
-	E( vFind( DAT) )					/* get DAT verb from input stream, look it up, msg if not found,
+	CSE_E( vFind( DAT) )					/* get DAT verb from input stream, look it up, msg if not found,
 							   do implicit ENDs, set xSp->c. */
 	if (!(xSp->c->f & AS_OK))				// error if member not flagged as autosizable in CULT table
 		return perNx( (char *)MH_S0280, cuToktx);	// "'%s' cannot be AUTOSIZEd"
@@ -1784,7 +1784,7 @@ LOCAL RC FC NEAR culAUTOSZ() 	// do "AutoSize" non-table command
 			(char *)xSp->c->id, (char *)xSp->c->id );
 
 // point at the member and its flags byte.  local.
-	E( datPt() )
+	CSE_E( datPt() )
 
 // execute command
 
@@ -1820,12 +1820,12 @@ LOCAL RC FC NEAR culRESET() 	// "unset" a member -- re-default it
 	RC rc;
 
 // parse rest of statment
-	E( vFind( DAT) )	/* get DAT verb from input stream, look it up,
+	CSE_E( vFind( DAT) )	/* get DAT verb from input stream, look it up,
     			   msg if not found, do implicit ENDs, set xSp->c. */
 	termnIf();		// get optional terminating ;
 
 // point at the member and its flags byte.  local.
-	E( datPt() )
+	CSE_E( datPt() )
 	for ( ; xSp->j < xSp->arSz;  xSp->j++, IncP( DMPP( xSp->p), xSp->sz))	// loop ARRAY elements (usually 1)
 	{
 
@@ -1910,7 +1910,7 @@ x            ~(FsSET|FsVAL|FsERR);		//   clear has-been-entered, value-is-stored
 
 	}	// for ( ; j ... ARRAY element loop
 
-	return rc;				// error returns above, incl E macros
+	return rc;				// error returns above, incl CSE_E macros
 }		// culRESET
 //===========================================================================
 LOCAL RC FC NEAR culNODAT()	// do cul no-data case per xSp
@@ -1953,7 +1953,7 @@ LOCAL RC FC NEAR culKDAT()	// do cul constant-data case per xSp
 	// .itf function, if any, is called by nuCult.
 
 // point to data storage: sets xSp->p, ->sz, ->fs, etc. local.
-	E( datPt() )
+	CSE_E( datPt() )
 	// ARRAY flag assumed not used, but not checked.
 
 // call "pre-input" function
@@ -2111,7 +2111,7 @@ LOCAL RC NEAR culDAT()	// do cul DAT case per xSp
 
 // point to storage (of first element if array): set xSp->p & ->sz / return code if error
 	RC rc;
-	E( datPt() )				// uses xSp->c. zero's xSp->j. local, below.
+	CSE_E( datPt() )				// uses xSp->c. zero's xSp->j. local, below.
 	// return now on error.  datPt skipped to next statement.
 
 #if 0	// BCC32 4.0 compiled bad code for fsj: used from ebx at "setFsVal" after register altered.
@@ -2130,7 +2130,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 	{
 
 		// call pre-input fcn if this datum has one
-		E( cuf( PRF, RGLR, 1) ) 		/* if nonNULL, call xSp->c->prf with args.
+		CSE_E( cuf( PRF, RGLR, 1) ) 		/* if nonNULL, call xSp->c->prf with args.
     					   return any err to our caller now (cuf skipped input to nxt stmt). */
 
 		// get and store value according to type
@@ -2225,7 +2225,7 @@ setFsVAL:
 		case TYQCH:	// historical "quick choice" data type (decoding string in .b)
 
 			// get Identifier, Quoted text, or string eXpression. local fcn.
-			E( xpr( TYID,			// get string, assume quotes around non-reserved undefined words
+			CSE_E( xpr( TYID,			// get string, assume quotes around non-reserved undefined words
 				xSp->fdTy, 			// field type (or use 0 here?? 2-91)
 				0, 0,      			// no evfOk, no useCL: require constant.
 				0,	        		// for flags for "all" and "sum" and numbers
@@ -2281,7 +2281,7 @@ setFsVAL:
 			// Probably no uses left that are not RDFLIN/NOINP. later 2-91.
 
 			// get Identifier, Quoted text, or const string eXpression. local fcn.
-			E( ganame( 0,	// disallow "all" and "sum" **** implement here like TYREF if needed, 1-92
+			CSE_E( ganame( 0,	// disallow "all" and "sum" **** implement here like TYREF if needed, 1-92
 				NULL,   	// use xSp->c->id in errMsgs
 				&p ) )  	// receives dm string ptr.  gets terminator.
 
@@ -3486,13 +3486,13 @@ LOCAL RC NEAR ratPutTy( record *e, CULT *c)
 		return err( PWRN, (char *)MH_S0266);	// "cul.cpp:ratPutTy(): basAnc record to be made a TYPE must be last"
 
 // if this basAnc does not already have secondary basAnc for types, make one
-	E( ratTyR(b) )				// below.  return if error.
+	CSE_E( ratTyR(b) )				// below.  return if error.
 
 // move record from main basAnc to its types basAnc
 
 	if (b->tyB->add( &tye, WRN) )   			// add record to types basAnc
 		return RCFATAL;					// if out of memory, terminate session 1-8-92
-	E( rateDuper( tye, e, 1, 1, -1, c) )		// move record including name, dref's, owned subRat entries. Above.
+	CSE_E( rateDuper( tye, e, 1, 1, -1, c) )		// move record including name, dref's, owned subRat entries. Above.
 
 // adjust sstat[] flags to convert record into a TYPE.   (caller pre-do this flags loop if ratPutTy moved to ancrec.cpp)
 
@@ -3584,7 +3584,7 @@ LOCAL RC NEAR rateDuper(
 				{
 					if (newE->b->ba_flags & RFTYS)	// if dest is a TYPE
 					{
-						E( ratTyR(b) )		// add it if necessary (returns RCOK/RCFATAL), and
+						CSE_E( ratTyR(b) )		// add it if necessary (returns RCOK/RCFATAL), and
 						toB = b->tyB;		//  use dest's types subRatBas
 					}
 					else
@@ -3596,7 +3596,7 @@ LOCAL RC NEAR rateDuper(
 					fromE->Validate();
 #endif
 				}
-				E( rateDuper(     		// CALL SELF: copy/move/delete record,
+				CSE_E( rateDuper(     		// CALL SELF: copy/move/delete record,
 					   toE,				// ... dref's, and subcults */
 					   fromE,			// repoint fromE
 					   move, 1,   		// do copy name in subs
@@ -3682,7 +3682,7 @@ LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for 
 		BP _ownB = 0;
 		if (b->ownB)			// if basAnc is owned, then tyB's owner will be owners tyB
 		{
-			E( ratTyR(b->ownB) )    	// CALL SELF now to be sure owner already has tyB: if added later, ptr wd not get here
+			CSE_E( ratTyR(b->ownB) )    	// CALL SELF now to be sure owner already has tyB: if added later, ptr wd not get here
 			_ownB = b->ownB->tyB;
 		}
 

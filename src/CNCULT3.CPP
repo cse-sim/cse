@@ -626,7 +626,7 @@ RC FC topMsCon()
 	MSRAT* mse;
 	RLUP( MsR, mse)				// loop over any masses (cnglob.h macro)
 		mse->DelSubObjects();
-	E( MsR.al( msiLast, WRN) )	// delete old MsR entries, alloc to needed size now for min fragmentation
+	CSE_E( MsR.al( msiLast, WRN) )	// delete old MsR entries, alloc to needed size now for min fragmentation
 	// E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++; be sure error propogated so cul.cuf will errCount++.
 	// masses are not owned (no .ownTI 1-92). leave .ownB 0.
@@ -986,7 +986,7 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// make SHADE run record, put its subscript in window.x.iwshad
 
-		E( WshadR.add( &shr, WRN) )  	// add shade run record, return if error
+		CSE_E( WshadR.add( &shr, WRN) )  	// add shade run record, return if error
 		*shr = *sh;						// copy record data (except internal overhead), ancrec.cpp.
 		gz->x.iwshad = shr->ss;    		// WSHADRAT subscript to XSURF
 	}
@@ -1018,7 +1018,7 @@ RC FC topSf2()
 			}
 			else
 			{
-				E(sf->sf_TopSf2());	// quit immediately on error
+				CSE_E(sf->sf_TopSf2());	// quit immediately on error
 			}
 		}
 	}
@@ -1027,7 +1027,7 @@ RC FC topSf2()
 		//   BG floor model uses info from zone's BG walls
 		RLUP( SfiB, sf)
 		{	if (sf->sf_IsFloorBG())
-				E( sf->sf_TopSf2());	// quit immediately on error
+				CSE_E( sf->sf_TopSf2());	// quit immediately on error
 		}
 	}
 
@@ -1097,7 +1097,7 @@ RC SFI::sf_TopSf2()
 		{
 		case C_EXCNDCH_AMBIENT:			// regular ol' traditional exterior surface, door, or window
 		case C_EXCNDCH_SPECT:			// specified temp on other side
-			E( cnuCompAdd( &x, name, zi, &xi, &xr) )		// add XSRAT record, below. return if error.
+			CSE_E( cnuCompAdd( &x, name, zi, &xi, &xr) )		// add XSRAT record, below. return if error.
 			if (x.sfExCnd==C_EXCNDCH_SPECT)				// if specT
 			{
 				// specified temp on other side: own xsurf chain for speed:
@@ -1112,7 +1112,7 @@ RC SFI::sf_TopSf2()
 			if (zi != x.sfAdjZi)			// omit if both sides in same zone! 2-95
 			{
 				IZXRAT *ize;
-				E( IzxR.add( &ize, WRN) );		// add izxfer run record, return if error
+				CSE_E( IzxR.add( &ize, WRN) );		// add izxfer run record, return if error
 				ize->iz_zi1 = zi;					// surface's zone
 				ize->iz_zi2 = x.sfAdjZi;  			// other zone
 				ize->iz_ua = x.xs_uval * x.xs_area;	// conductance = UA
@@ -1123,7 +1123,7 @@ RC SFI::sf_TopSf2()
 
 		case C_EXCNDCH_ADIABATIC:			// no heat nor solar transfer
 			// make runtime surface cuz solar gain & rad intgain targeting use inside of all surfaces, 2-95
-			E( cnuCompAdd( &x, name, zi, &xi, &xr) )	// add XSRAT record, below. return if error.
+			CSE_E( cnuCompAdd( &x, name, zi, &xi, &xr) )	// add XSRAT record, below. return if error.
 			xr->x.xs_ty = CTINTWALL;		// change to "interior wall" to be sure ...
 			break;							//    ... outside won't receive solar
 
@@ -3417,7 +3417,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 
 // allocate and fill XSRAT record
 	XSRAT* xr;
-	E( XsB.add( &xr, WRN) ) 		// add record to XsB (a run record anchor) / return bad if error
+	CSE_E( XsB.add( &xr, WRN) ) 		// add record to XsB (a run record anchor) / return bad if error
 	strcpy( xr->name, name);		// name for runtime probing, 1-92
 	xr->ownTi = zi;					// store zone
 	xr->x.Copy( x);
