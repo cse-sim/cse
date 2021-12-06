@@ -261,8 +261,8 @@ LOCAL RC FC NEAR cuEvalI(
 		//--- execute pseudo-code ---
 		switch (op)
 		{
-			register SI siTem;
-			register void *v;
+			SI siTem;
+			void *v;
 			SI n, i, defO;
 			RC trc;
 			USI h;

@@ -105,7 +105,7 @@ LOCAL RC FC NEAR pgralloce( 		// Reallocate a page with additional or fewer rows
 /* returns RCOK if ok, or non-0 on error such as memory full (and not ABT).
    On error, original block not gone -- *ppp must still be free'd. */
 {
-	register SI i;
+	SI i;
 	SI rowsold, cols, delta;
 	char *p, *pp;
 	RC rc;
@@ -785,7 +785,7 @@ void FC pgputrc( 			// Find last row and column for display
 
 // Returns last row and column to be displayed
 {
-	register SI l, r;
+	SI l, r;
 	SI lastrow;
 
 	lastrow = min( SI(row1+nrows-SI(1)), PP->rows);

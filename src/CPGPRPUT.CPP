@@ -25,7 +25,7 @@ RC FC pgVrPut( 			// Output contents of (partial) page to [printer]/virtual repo
 	SI row1,	// Row of page at which to start
 	SI nrows )	// Number of rows to print.  Also stops after last row.
 {
-	register SI r;
+	SI r;
 	SI lastr, lastcSink;
 	RC rc;
 
