@@ -149,7 +149,7 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
     								//  If not verbose, continues line started in cse.cpp.
 	Top.tp_ClearAuszFlags();
 
-	EF( cgFazInit(TRUE));		// do initialization done once for all design days:
+	CSE_EF( cgFazInit(TRUE));		// do initialization done once for all design days:
 								// Inits autoSizing & peak recording stuff in all objects.
 								// Calls AH::, TU::, HEATPLANT:: etc fazInit's, which call AUSZ::fazInit's
 								// (below, sets .az_px's, etc) & do addl object-specific init.
@@ -372,7 +372,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 		}
 
 		// init cse for repetition of design day
-		EF( Top.tp_BegDesDay());	// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
+		CSE_EF( Top.tp_BegDesDay());	// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
 									// inits .tp_dsDay,.auszmon,.jDay,.isBegRun, etc. Uses Top.tp_dsDayI. local.
 		// init all AUSZ's to start a pass 1 design day
 		callAllAuszs( &AUSZ::begP1Dsd);	// do mbr fcn for all AUSZ's, local.
@@ -389,11 +389,11 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 			Top.dsDayNIt++;		// count iterations / 1-based while iterating (0'd in begDesDay)
 			if (Top.verbose >= 2)
 				screen( NONL," a");
-			EF( begP1aDsdIter());  	// init all AUSZ's for new iteration of a pass 1 design day
-			EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
+			CSE_EF( begP1aDsdIter());  	// init all AUSZ's for new iteration of a pass 1 design day
+			CSE_EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
 			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
 			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-			EF( p1aCvgTest() );		// test all active AUSZ's for pass 1A convergence. Sets Top.notDone.
+			CSE_EF( p1aCvgTest() );		// test all active AUSZ's for pass 1A convergence. Sets Top.notDone.
 			if (!Top.notDone)		// leave loop if done
 				break;
 #if defined( DBGPRINT)
@@ -414,7 +414,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 		Top.tp_pass1B = TRUE;			// now pass 1B: real models, finding rated capacity
 
 		// pass 1B: continue iterating same design day -- don't warm up again
-		EF( pass1AtoB());	// transition all active AUSZ's to pass 1B simulation
+		CSE_EF( pass1AtoB());	// transition all active AUSZ's to pass 1B simulation
 							// Top.tp_pass1A is FAL
 		Top.dsDayNIt = 0;		// restart iteration count
 
@@ -423,10 +423,10 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 			Top.dsDayNIt++;		// count iterations / 1-based while iterating (0'd in begDesDay)
 			if (Top.verbose >= 2)
 				screen( NONL," b");
-			EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
+			CSE_EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
 			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
 			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-			EF( p1bCvgTest() );		// test all active AUSZ's for pass 1 part B convergence. Sets Top.notDone.
+			CSE_EF( p1bCvgTest() );		// test all active AUSZ's for pass 1 part B convergence. Sets Top.notDone.
 			if (!Top.notDone)
 				break;
 #if defined( DBGPRINT)
@@ -446,7 +446,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 
 		// after design day done stuff
 		callAllAuszs( &AUSZ::endP1bDsd);	// record new max rated sizes in all active AUSZ's
-		EF( Top.tp_EndDesDay() )			// calls cgRddDone: closes weather file, imports, binRes, etc. local.
+		CSE_EF( Top.tp_EndDesDay() )			// calls cgRddDone: closes weather file, imports, binRes, etc. local.
 	}
 	Top.tp_pass1 = Top.tp_pass1B = Top.tp_sizing = FALSE;
 	return rc;
@@ -560,7 +560,7 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 				screen( NONL, " %s", Top.tp_AuszDoing());	// display cooling month or " heat"
 			}
 			// init for repetition of design day
-			EF( Top.tp_BegDesDay());		// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
+			CSE_EF( Top.tp_BegDesDay());		// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
 											// inits .tp_dsDay,.auszmon,.jDay,.isBegRun, etc. Uses Top.tp_dsDayI. local. */
 			// init all AUSZ's to start a pass 2 design day
 			callAllAuszs( &AUSZ::begP2Dsd);	// do mbr fcn for all AUSZ's. local.
@@ -571,11 +571,11 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 				Top.dsDayNIt++;			// count iterations / 1-based while iterating (0'd in begDesDay)
 				if (Top.verbose >= 2)
 					screen( NONL," .");
-				EF( begP2DsdIter());  		// init all AUSZ's for new iteration of a pass 2 design day: init sizes
-				EF( asRddiInit());			// clear peaks each pass 2 des day iteration
+				CSE_EF( begP2DsdIter());  		// init all AUSZ's for new iteration of a pass 2 design day: init sizes
+				CSE_EF( asRddiInit());			// clear peaks each pass 2 des day iteration
 				CSE_E( Top.tp_SimDay());		// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
 				// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-				EF( p2CvgTest() );			// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
+				CSE_EF( p2CvgTest() );			// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
 				if (!Top.notDone)			// leave loop if done
 					break;
 				else if (Top.dsDayNIt >= 30)	// 30-->40 rob 6-97 .487 BUG0089. UNDONE: still didn't converge.
@@ -618,7 +618,7 @@ x}
 
 			// after des day done stuff
 			endP2Dsd();					// record new high sizes/loads/plr's
-			EF( Top.tp_EndDesDay() )	// calls cnguts.cpp:cgRddDone: closes weather file, imports, binRes, etc. local.
+			CSE_EF( Top.tp_EndDesDay() )	// calls cnguts.cpp:cgRddDone: closes weather file, imports, binRes, etc. local.
 		}
 
 		// pass 2 outer loop endtest: done if all sizes ok, else do another complete pass
