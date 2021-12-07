@@ -206,6 +206,7 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
+  "${btwxt_SOURCE_DIR}/src"
 )
 
 # Precompiled Headers
@@ -231,7 +232,7 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
-target_compile_features(CSE PUBLIC cxx_std_17)
+target_compile_features(CSE INTERFACE cxx_std_17)
 
 
 set(libs

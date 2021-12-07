@@ -1028,7 +1028,7 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 
 // determine 'ahMode' including for ahTsSp==ZN,ZN2
 	AHMODE ahModeWas = ahMode;
-	CSE_E( setMode() )					// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
+	CSE_E( setMode() )				// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
 	// if ah goes on or off, sets zones ztuCf's.
 	if (ahMode==ahOFF)  return RCOK;			// if ah off, done
 
