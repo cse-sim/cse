@@ -206,10 +206,6 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
-  "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
-  "${kiva_SOURCE_DIR}/src"
-  "${kiva_BINARY_DIR}/src/libkiva"
-  "${btwxt_SOURCE_DIR}/src"
 )
 
 # Precompiled Headers
