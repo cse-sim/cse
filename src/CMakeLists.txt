@@ -234,7 +234,6 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 add_executable(CSE ${source} ${rcFile} ${headers})
 target_compile_features(CSE PUBLIC cxx_std_17)
 
-
 set(libs
   glad
   penumbra
