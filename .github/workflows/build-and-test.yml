@@ -21,7 +21,7 @@ jobs:
         shell: cmd
         run: build.bat
       - name: Upload executable artifiact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2.2.4
         with:
           name: CSE.exe
           path: msvc/CSE.exe
