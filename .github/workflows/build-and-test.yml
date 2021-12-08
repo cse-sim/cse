@@ -70,7 +70,7 @@ jobs:
         run: rake
         working-directory: doc
       - name: Upload documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2.2.4
         with:
           name: Documentation
           path: doc/output
