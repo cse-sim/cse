@@ -3554,8 +3554,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//    fixed speed: 1; var spd: <= 1 per load
 *s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
                         //    fixed speed: 1; var spd: < 1 per min current min cap
-*y *e *array 2 LI rs_calcCount; // # calls to rs_SupplyAirState, re optimizing rs_FindRequiredSpeedF()
-                                //  [ 0] = heating, [1] = cooling
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
@@ -3569,6 +3567,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e DBL rs_outSenTot	// average total sensible heat delivery rate for last subhr, Btuh
 						//   = rs_outSen + rs_outFan + rs_outDefrost + rs_outAux
 
+*y *e *array 2 LI rs_calcCount; // # calls to rs_SupplyAirState, re optimizing rs_FindRequiredSpeedF()
+                                //  [ 0] = heating, [1] = cooling
+
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
 *s *e DBL rs_inFan		// fan electricity input, Btuh (not kWh)
 *s *e DBL rs_inDefrost	// defrost heating input, Btuh (ASHP only)
@@ -3577,39 +3578,65 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *END	// RSYS
 //=============================================================================
 RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult substruct for RSYSRES
-
 	*declare "void rsr_Accum( const RSYSRES_IVL_SUB* src, int firstFlg, int lastFlg);"
 	*declare "void rsr_SetPrior() const;"
     *declare "void rsr_Zero() { memset( this, 0, sizeof( RSYSRES_IVL_SUB)); }"	// 0 all (bitwise)
 
-	INT n			// number of intervals added together in this one (divisor for averages)
-					//  (maintained but unused)
+	INT n			    // number of intervals added together in this one (divisor for averages)
+					    //  (maintained but unused)
 
 	// float members to add, hrsOn MUST be first (else change rsr_Accum() etc)
-	HOURS hrsOn		// operating hours
-	HOURS hrsOnAux	// auxiliary heating operating hours (ASHP only)
-					//   not including defrost
-	ENERGY qFan		// total fan heat, all modes, Btu
-	ENERGY qh		// heating output w/o fan, w/o defrost, Btu
-	ENERGY qDefrost	// defrost (strip) heat output, Btu
-	ENERGY qAux		// auxiliary heat output, Btu
-	ENERGY qhNet	// heating net output (qh+qDefrost+qAux+qFan), Btu
-    ENERGY qhZone   // net heat delivered to zone(s) (after dist losses), Btu
+	HOURS hrsOn		    // operating hours
+	HOURS hrsOnAux	    // auxiliary heating operating hours (ASHP only)
+					    //   does not include defrost
 
-    ENERGY elecH    // total heating electricity use, Btu
-                    //   primary+fan+aux+defrost+parasitic
-    ENERGY fuelH    // total heating fuel, Btu
-                    //   primary+aux+parasitic
+	ENERGY qhPrimary	// heating output w/o fan, w/o defrost, Btu
+	ENERGY qhDefrost	// defrost (strip) heat output, Btu
+	ENERGY qhAux		// auxiliary heat output, Btu
+    ENERGY qhFan        // heating mode fan heat, Btu
+	ENERGY qhNet	    // heating mode net output (qhPrimary+qhDefrost+qhAux+qhFan), Btu
 
-	ENERGY qcSen	// sensible cooling output w/o fan (< 0), Btu
-	ENERGY qcLat	// latent cooing output (<0), Btu
-    ENERGY qcSenNet // sensible cooling net output (qcSen+qFan), Btu
-    ENERGY qcSenZone    // net sensible cooling delivered to zone(s) (after dist losses), Btu
-    ENERGY qcLatZone    // net latent cooling delivered to zone(s) (after dist losses), Btu
+	ENERGY qcSen	    // sensible cooling output w/o fan (< 0), Btu
+	ENERGY qcLat	    // latent cooing output (<0), Btu
+    ENERGY qcFan        // cooling mode fan heat, Btu
+    ENERGY qcSenNet     // sensible cooling net output (qcSen+qcFan), Btu
 
-    ENERGY elecC    // total cooling electricity use, Btu
+    ENERGY qvFan        // OAV mode fan heat, Btu
+   
+    ENERGY fhPrimary    // heating mode primary fuel, Btu
+    ENERGY fhDefrost    // heating mode defrost fuel, Btu
+    ENERGY fhAux        // heating mode auxiliary fuel, Btu
+    ENERGY fhParasitic  // heating mode parasitic fuel, Btu
+    ENERGY fhTot        // heating mode total fuel, Btu
+                        //   primary+defrost+aux+parasitics
 
-    ENERGY elecOAV  // total OAV electricity use, Btu
+    ENERGY ehPrimary    // heating mode primary electicity use, Btu
+                        //   (compressor, resistance, )
+    ENERGY ehDefrost    // heating mode defrost (strip) electricity use, Btu
+    ENERGY ehAux        // heating mode auxiliary (strip) electricity use, Btu
+    ENERGY ehFan        // heating mode fan electricity use, Btu
+    ENERGY ehParasitic  // heating mode parasitic electricity, Btu
+    ENERGY ehTot        // heating mode total electricity use, Btu
+                        //   primary+defrost+aux+fan+parasitic
+
+    ENERGY ecPrimary    // cooling mode compressor electricity use, Btu
+    ENERGY ecFan        // cooling mode fan electricity use, Btu
+    ENERGY ecParasitic  // cooling mode parasitic electricity, Btu
+    ENERGY ecTot        // cooling mode total electricity use, Btu
+                        //   primary+fan+parasitic
+
+    ENERGY evFan        // OAV mode fan electricity use, Btu
+    ENERGY evParasitic  // OAV mode parasitic electricity use, Btu
+    ENERGY evTot        // OAV mode total electricity use, Btu
+                        //   fan+parasistic
+
+                    // zone energy transfers (must be contiguous and in order, see code)
+    ENERGY qhZoneSen    // heating mode sensible transfer to zone(s) (after dist losses), Btu
+    ENERGY qhZoneLat    // heating mode latent tranfer to zone(s) (after dist losses), Btu
+    ENERGY qcZoneSen    // cooling mode sensible transfer to zone(s) (after dist losses), Btu
+    ENERGY qcZoneLat    // cooling mode latent transfer to zone(s) (after dist losses), Btu
+    ENERGY qvZoneSen    // OAV mode sensible transfer to zone(s) (after dist losses), Btu
+    ENERGY qvZoneLat    // OAV mode latent transfer to zone(s) (after dist losses), Btu
 
 *END		// RSYSRES_IVL_SUB
 //=============================================================================

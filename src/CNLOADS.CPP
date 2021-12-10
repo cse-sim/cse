@@ -1886,11 +1886,14 @@ RC RSYS::rs_CkF()
 			FldCopyIf( RSYS_CAPH, RSYS_CAPNOMH);
 	}
 
-	// parasitics -- issue info message if no associated meter
-	if (IsSet( RSYS_PARELEC) && !IsSet( RSYS_ELECMTRI))
-		oInfo( "rsElecMtr not specified -- rsParElec has no effect");
-	if (IsSet( RSYS_PARFUEL) && !IsSet( RSYS_FUELMTRI))
-		oInfo( "rsFuelMtr not specified -- rsParFuel has no effect");
+#if 0
+x Parasitics are accumlated to RSYSRES also, 11-2021
+x	// parasitics -- issue info message if no associated meter
+x	if (IsSet( RSYS_PARELEC) && !IsSet( RSYS_ELECMTRI))
+x		oInfo( "rsElecMtr not specified -- rsParElec has no effect");
+x	if (IsSet( RSYS_PARFUEL) && !IsSet( RSYS_FUELMTRI))
+x		oInfo( "rsFuelMtr not specified -- rsParFuel has no effect");
+#endif
 
 	// OAV
 	if (rs_OAVType == C_RSYSOAVTYCH_NONE)
@@ -2574,7 +2577,7 @@ int RSYS::rs_OAVAttempt()
 	// leave rs_mode as rsmOAV
 	RLUPC( ZrB, zp, rs_IsZoneServed( zp))
 	{	zp->zn_hcMode = rsmOAV;		// say this zone has been successfully OAVed
-										// most further this-step HVAC modelling is skipped
+									// most further this-step HVAC modelling is skipped
 		if (ZnresB[ zp->ss].curr.S.nShVentH)
 		{	const int WARNMAX = 20;
 			int warnCount = ZnresB[ zp->ss].zr_GetRunTotalLI( ZNRES_IVL_SUB_NSHVENTH);
@@ -2920,89 +2923,91 @@ RC RSYS::rs_EndSubhr()
 		}
 	}
 
-	// float qzSen = rs_SenHeatDelivered();
-
 	// populate results
 	RSYSRES_IVL_SUB& R = RsResR[ ss].curr.S;
-	// RSYSRES_IVL_SUB& RH = RsResR[ ss].curr.H;
 
-#if 1
-	if (rs_mode == rsmOFF)
-	{	// RSYS is off, track parasitics only
-		R.fuelH = rs_parFuel;		// assign all fuel parasitics to heating
-		(rs_modeLastActive > rsmHEAT) ? R.elecC : R.elecH
-					= rs_parElec * BtuperWh * Top.tp_subhrDur;
-	}
-	else
-	{	R.hrsOn = rs_runF * Top.tp_subhrDur;
-		R.qFan = rs_outFan * Top.tp_subhrDur;	// fan can operate either prim or aux
-
-		rs_HeatDelivered(R.qhZone, R.qcSenZone, R.qcLatZone);
-
-		if (rs_mode == rsmHEAT)
-		{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
-			R.qAux = rs_outAux * Top.tp_subhrDur;
-			R.qh = rs_outSen * Top.tp_subhrDur;
-			R.qDefrost = rs_outDefrost * Top.tp_subhrDur;
-			R.qhNet = R.qh + R.qDefrost + R.qAux + R.qFan;
-
-			// input electricity and fuel (rs_xxx values are Btuh)
-			R.elecH = rs_inFan + rs_parElec * BtuperWh;
-			R.fuelH = rs_parFuel;
-			(rs_IsElecHeat() ? R.elecH : R.fuelH) += rs_inPrimary;
-			(rs_IsFuelAuxH() ? R.fuelH : R.elecH) += rs_inDefrost + rs_inAux;
-
-			// convert to subhr Btu
-			R.elecH *= Top.tp_subhrDur;
-			R.fuelH *= Top.tp_subhrDur;
-
-		}
-		else if (rs_mode == rsmCOOL)
-		{
-			R.qcSen = rs_outSen * Top.tp_subhrDur;
-			R.qcLat = rs_outLat * Top.tp_subhrDur;
-			R.qcSenNet = R.qcSen + R.qFan;
-			R.elecC = (rs_inPrimary+rs_parElec*BtuperWh) * Top.tp_subhrDur;
-		}
-		else if (rs_mode == rsmOAV)
-		{
-
-		}
+	R.fhTot = R.fhParasitic = rs_parFuel * Top.tp_subhrDur;	// assign fuel parasitics to heating
+	if (rs_parElec > 0.f)
+	{	// assign electrical parasitics per current mode or last active mode
+		float ePar = rs_parElec * BtuperWh * Top.tp_subhrDur;
+		int modeX = rs_mode != rsmOFF ? rs_mode : rs_modeLastActive;
+		if (modeX <= rsmHEAT)
+			R.ehTot = R.ehParasitic = ePar;		// rsmOFF and rsmHEAT -> heating
+		else if (modeX == rsmCOOL)
+			R.ecTot = R.ecParasitic = ePar;
+		else
+			R.evTot = R.evParasitic = ePar;
 	}
 
-#else
+	R.hrsOn = rs_runF * Top.tp_subhrDur;
+	float qFan = rs_outFan * Top.tp_subhrDur;
+	float eFan = rs_inFan * Top.tp_subhrDur;
 
-	float qhFan = 0.f;	// fan heat assigned to heating (primary and/or aux)
+	if (rs_mode == rsmHEAT)
+	{
+		R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
+		R.qhPrimary = rs_outSen * Top.tp_subhrDur;
+		R.qhDefrost = rs_outDefrost * Top.tp_subhrDur;
+		R.qhAux = rs_outAux * Top.tp_subhrDur;
+		R.qhFan = qFan;
+		R.qhNet = R.qhPrimary + R.qhDefrost + R.qhAux + R.qhFan;
 
-	if (rs_runFAux > 0.f)	// if aux
-	{	R.hrsOnAux = rs_runFAux * Top.tp_subhrDur;
-		R.qAux = rs_outAux * Top.tp_subhrDur;
-		R.qhNet = R.qAux;
-		qhFan = R.qFan;		// also set under primar
-	}
-
-	if (rs_runF > 0.f)		// if primary
-	{	R.hrsOn = rs_runF * Top.tp_subhrDur;
-		if (rs_outSen >= 0.)
-		{	R.qh = rs_outSen * Top.tp_subhrDur;
-			R.qDefrost = rs_outDefrost * Top.tp_subhrDur;
-			R.qhNet += R.qh + R.qDefrost;
-			qhFan = R.qFan;		// also set in aux
+		// heating input electricity and fuel (rs_xxx values are Btuh)
+		(rs_IsElecHeat() ? R.ehPrimary : R.fhPrimary) = rs_inPrimary * Top.tp_subhrDur;
+		if (rs_IsFuelAuxH())
+		{	R.fhDefrost = rs_inDefrost * Top.tp_subhrDur;
+			R.fhAux = rs_inAux * Top.tp_subhrDur;
 		}
 		else
-		{	R.qcSen = rs_outSen * Top.tp_subhrDur;
-			R.qcLat = rs_outLat * Top.tp_subhrDur;
-			R.qcSenNet = R.qcSen + R.qFan;
-#if 0 && defined( _DEBUG)
-			// occasional latent > 0 expected due to duct leakage
-			if (R.qcLatZone > 0.f)
-				printf("\nLat > 0");
-#endif
+		{	R.ehDefrost = rs_inDefrost * Top.tp_subhrDur;
+			R.ehAux = rs_inAux * Top.tp_subhrDur;
 		}
+		R.ehFan = eFan;
+		R.ehTot += R.ehPrimary + R.ehDefrost + R.ehAux + R.ehFan;
+					/* + R.ehParasitic see above */
+		R.fhTot += R.fhPrimary + R.fhDefrost + R.fhAux /* + R.fhParasitic*/;
+	}
+	else if (rs_mode == rsmCOOL)
+	{
+		R.qcSen = rs_outSen * Top.tp_subhrDur;
+		R.qcLat = rs_outLat * Top.tp_subhrDur;
+		R.qcFan = qFan;
+		R.qcSenNet = R.qcSen + R.qcFan;
+
+		R.ecPrimary = rs_inPrimary * Top.tp_subhrDur;
+		R.ecFan = eFan;
+
+		R.ecTot += R.ecPrimary + R.ecFan /* + R.ecParasitic, see above */;
+	}
+	else if (rs_mode == rsmOAV)
+	{	// sensible "output" = fan power
+		R.evFan = eFan;
+		R.evTot += R.evFan; /* + R.evParasitic, see above */
 	}
 
-	R.qhNet += qhFan;	// include heating fan w/o double counting
-#endif
+	// verify RSYSRES_IVL_SUB layout at compile time
+	// fixed sequence allows array access by rs_mode (see code below)
+	// rsmHEAT/rsmCOOL/rsmOAV definitions must be consistent with member sequences.
+#define QZONECHK( m, oDif) static_assert( &((RSYSRES_IVL_SUB *)0)->m-&((RSYSRES_IVL_SUB *)0)->qhZoneSen == oDif, "Bad seq " #m)
+	QZONECHK(qhZoneSen, (rsmHEAT - 1) * 2);
+	QZONECHK(qhZoneLat, (rsmHEAT - 1) * 2 + 1);
+	QZONECHK(qcZoneSen, (rsmCOOL - 1) * 2);
+	QZONECHK(qcZoneLat, (rsmCOOL - 1) * 2 + 1);
+	QZONECHK(qvZoneSen, (rsmOAV - 1) * 2);
+	QZONECHK(qvZoneLat, (rsmOAV - 1) * 2 + 1);
+	static_assert(rsmCOUNT == 4, "Bad rsm enum");
+#undef QZONECHK
+
+	if (rs_mode != rsmOFF)
+	{ 	// heat transfers from this RSYS to all zones (including duct losses)
+		const ZNR* zp;
+		int iMX = 2 * (rs_mode - 1);
+		RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+		{
+			(&R.qhZoneSen)[iMX] += float(zp->zn_qsHvac * Top.tp_subhrDur);
+			(&R.qhZoneLat)[iMX] += float(zp->zn_qlHvac * Top.tp_subhrDur);
+		}
+	}
 
 	return rc;
 }		// RSYS::rs_EndSubhr
@@ -5293,6 +5298,7 @@ float RSYS::rs_SenHeatDelivered()
 }	// RSYS::rs_SenHeatDelivered
 #endif
 //----------------------------------------------------------------------------
+#if 0
 void RSYS::rs_HeatDelivered(	// heat delivered to zone(s) by this RSYS
 	float& qhSen,	// heating sensible, Btu (>= 0)
 	float& qcSen,	// cooling sensible, Btu (< 0)
@@ -5315,6 +5321,7 @@ void RSYS::rs_HeatDelivered(	// heat delivered to zone(s) by this RSYS
 	qcSen *= Top.tp_subhrDur;
 	qcLat *= Top.tp_subhrDur;
 }	// RSYS::rs_SenHeatDelivered
+#endif
 //----------------------------------------------------------------------------
 double RSYS::rs_AmfRequired(		// find all-zone total AMF required for tSup
 	double tSup)		// proposed supply air temp, F
