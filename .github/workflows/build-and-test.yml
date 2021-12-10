@@ -25,6 +25,16 @@ jobs:
         with:
           name: CSE.exe
           path: msvc/CSE.exe
+      - name: Upload executable artifiact
+        uses: actions/upload-artifact@v2
+        with:
+          name: CSE.map
+          path: msvc/CSE.map
+      - name: Upload executable artifiact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linkRead.log
+          path: msvc\build\src\CSE.dir\Release\CSE.tlog\link.read.1.tlog
   test-cse:
     name: Test CSE
     needs: build-cse
