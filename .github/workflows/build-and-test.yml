@@ -6,17 +6,35 @@ jobs:
   build-cse:
     name: Build CSE executable
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Get branch name
+        uses: tj-actions/branch-names@v5
+        id: branch-name
+      - name: Save branch name
+        run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       - name: Build
         shell: cmd
-        run: build.bat no-pause
+        run: build.bat
       - name: Upload executable artifiact
         uses: actions/upload-artifact@v2
         with:
           name: CSE.exe
           path: msvc/CSE.exe
+      - name: Upload executable artifiact
+        uses: actions/upload-artifact@v2
+        with:
+          name: CSE.map
+          path: msvc/CSE.map
+      - name: Upload executable artifiact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linkRead.log
+          path: msvc\build\src\CSE.dir\Release\CSE.tlog\link.read.1.tlog
   test-cse:
     name: Test CSE
     needs: build-cse
