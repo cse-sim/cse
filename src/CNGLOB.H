@@ -84,17 +84,25 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
-#undef ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
-								//   work in progress, 10-2017
+#if 1
+#define	ELIMINATE_WINDOWS
+#else
+#undef	ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
+#endif 								//   work in progress, 10-2017
+
 #if defined( ELIMINATE_WINDOWS)
-// typedefs based on windows.h
+/*---------------------- Windows definitions -------------------------------*/
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
 typedef unsigned short WORD;
 typedef char TCHAR;
 typedef unsigned char BYTE;
-// #define _T(s) s
+typedef void* PVOID;
+typedef PVOID HANDLE;
+typedef HANDLE HWND;
+typedef HANDLE HINSTANCE;
+typedef HINSTANCE HMODULE; 
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
