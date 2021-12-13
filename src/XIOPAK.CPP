@@ -34,7 +34,9 @@
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include <io.h>		// open, read, write,
+#if !defined( ELIMINATE_WINDOWS)
 #include <direct.h>	// getcwd, chdir, _chdrive
+#endif
 #include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
@@ -47,6 +49,19 @@
 #include "cvpak.h"
 
 #include "xiopak.h"	// xiopak.cpp publics
+#include <system_error>
+
+
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesys = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif 
+
 
 #undef WANTXFSETUPPATH  // define if want xfSetupPath() and xfFindOnPath() and path seach in xfopen():
 						// Replacing this stuff with various C lib calls and caller local path searches
@@ -123,8 +138,11 @@ const char * FC xgetdir()
 
 {
 	char * p = strtemp( _MAX_PATH );	// alloc n+1 bytes tmp strng space, strpak.cpp
+	filesys::path currentPath;
+	currentPath = filesys::current_path();
+	strcpy(p, currentPath.string().c_str());
 
-	return getcwd( p, _MAX_PATH);		// seems to include drive.
+	return p;		// seems to include drive.
 }		// xfgetdir
 //======================================================================
 SEC FC xchdir(		// Change current working directory and/or drive
@@ -136,21 +154,26 @@ SEC FC xchdir(		// Change current working directory and/or drive
 {
 	SEC sec=SECOK;
 	char *tpath;
+	filesys::path tpathTemp;
+	std::error_code pathEC;
 
 // strip white space first, to TmpStr
 	tpath = strTrim( NULL, path);
-	if (*tpath  &&  *(tpath+1) == ':') 	// if colon, then there is a drive
+	tpathTemp = tpath; // Change variable to use filesystem
+	if (filesys::exists(tpathTemp) && tpathTemp.has_root_name()) 	// if colon, then there is a drive
 	{
-		SI drvlet = toupper(*tpath);		// char b4 colon is drive letter
-		if ( drvlet < 'A'  ||  drvlet > 'Z'	// if not a possible valid drive
-				||  _chdrive( drvlet-'A'+1) != 0 )	// or selecting the drive fails (C library)
+		filesys::path drvlet = tpathTemp.root_name();		// char b4 colon is drive letter
+		
+		if ( filesys::exists(drvlet))	// if not a possible valid drive
+										// or selecting the drive fails (C library)
 			sec = SECBADRV;		// invoke msg below / return value
-		else				// drive selected ok
+		else					// drive selected ok
 			tpath += 2;			// point past drive
 	}
 	if (*tpath && sec==SECOK)		// if not null or drive only
 	{
-		if (chdir(tpath) != 0)		// select directory (c library), -1 if bad
+		filesys::current_path(tpathTemp, pathEC); // select directory (c library)
+		if (pathEC)					// -1 if bad
 			sec = errno;			// get ENOENT (no other values expected here)
 	}
 	if (sec != SECOK)
@@ -176,9 +199,11 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	const char *fname, *p, *namepart, *dir;
-	SEC sec;
-	char save, cwdSave[ _MAX_PATH];			// save current dir pathname
+	const char *fname, *p, *namepart;
+	//SEC sec;
+	char save;			// save current dir pathname
+	filesys::path cwdSave, fnameTemp, dir;	// filesystem variables
+	std::error_code pathEC;					// Error Code for filesystem functions
 
 
 	fname = strupr( strTrim( NULL, *fnamp) );		// upper case and deblank
@@ -201,37 +226,30 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 				also verifies existence of drive and directories. */
 		save = *p;
 		*(char *)p = '\0';		// terminate before name.ext for chdir. override const 10-94 -- but we restore it.
-		getcwd( cwdSave, _MAX_PATH );	// save drv:dir in stack array
-		sec = xchdir( fname, IGN);	// select path's drv:dir. suppress message.
-		if (sec != SECOK)		// if chdir failed
+		cwdSave = filesys::current_path();	// save drv:dir in stack array
+		fnameTemp = filesys::path(fname);
+		filesys::current_path(fnameTemp, pathEC); // select path's drv:dir. suppress message.
+		
+		if (pathEC)		// if chdir failed
 			// xchdir's "cannot change working directory to %s" message is inappropriate eg when checking CSE input path.
-			switch (sec)			// issue our own more appropariate message. err() is in rmkerr.cpp.
-			{
-			case SECBADRV:
-				err( erOp, "\"%s\": Invalid drive", fname);
-				break;	// (d:dirpath displays -- accept)
-			case ENOENT:
-				err( erOp, "\"%s\": Directory not found", fname);
-				break;
-			default:
-				err( erOp, "\"%s\": Invalid path (sec=%d)", fname, INT(sec));
-				break;	// not expected
-			}
-		dir = xgetdir(); 		// get full drv:dir
+			err(pathEC.value(), pathEC.message().c_str(), fname);
+			
+		dir = filesys::current_path(); 		// get full drv:dir
 
-		xchdir( cwdSave, ABT );		// restore drv:dir; err impossible?
+		filesys::current_path(cwdSave, pathEC);		// restore drv:dir; err impossible?
 		*(char *)p = save;		// replace char
-		if (sec != SECOK)		// now, if chdir failed
+		if (pathEC)		// now, if chdir failed
 			return RCBAD;			// give bad return
 	}
 	else	// no drive, no directory
 	{
 		namepart = fname;
-		dir = xgetdir();		// get full current drive/dir
+		dir = filesys::current_path();		// get full current drive/dir
 	}
 
 // assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat( dir, namepart);
+	//*fnamp = strtPathCat( dir, namepart);
+	//strcpy(fnamp, dir.string().c_str());
 
 	return RCOK;		// another return is in code above
 }		// xfGetPath
@@ -656,8 +674,11 @@ LI FC dskDrvFreeSpace()		// returns total disk free space in bytes on current de
 	DWORD bps;			// receives bytes per sector
 	DWORD freec;		// receives free clusters
 	DWORD totcl;
+	std::error_code spaceErrorCode;
+	filesys::path inputPath = rootPath;
+	filesys::space_info freeSpace = filesys::space(inputPath, spaceErrorCode);
 
-	if ( !GetDiskFreeSpace( rootPath, &spc, &bps, &freec, &totcl))
+	if ( !spaceErrorCode )
 		// GetLastError for more info
 		return 0L;				// call failed, return 0 space avail
 
