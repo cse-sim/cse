@@ -10,7 +10,6 @@
 #include <cnglob.h>
 
 #include <messages.h>	// MAX_MSGLEN msgI
-
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
 #if defined( _DEBUG)
@@ -1105,7 +1104,8 @@ char* strPluralize(				// form plural of a word
 	else
 	{
 		bool bException = false;
-		for (int i=0; excpTbl[ i].wordSingular; i++)
+		int i;
+		for (i=0; excpTbl[ i].wordSingular; i++)
 		{
 			if (!_stricmp( word, excpTbl[ i].wordSingular))
 			{
@@ -1124,15 +1124,15 @@ char* strPluralize(				// form plural of a word
 		else
 		{
 			strcpy( d, word);
-			int len = strlen( d);		// len >= 1 (check above)
-			BOOL bLastUpper = IsCharUpper( d[ len-1]) > 0;
+			int dLen = strlen( d);		// len >= 1 (check above)
+			BOOL bLastUpper = isupperW( d[dLen - 1] ) > 0;
 			// standard rules y -> ies, else add s
-			if (tolower( d[ len-1]) == 'y')
-				strcpy( d+len-1, bLastUpper ? "IES" : "ies");
+			if (tolower( d[dLen -1]) == 'y')
+				strcpy( d+ dLen -1, bLastUpper ? "IES" : "ies");
 			else
 			{
-				d[ len] = "sS"[ bLastUpper];
-				d[ len+1] = '\0';
+				d[dLen] = "sS"[ bLastUpper];
+				d[dLen +1] = '\0';
 			}
 		}
 	}
@@ -1159,13 +1159,14 @@ char* strCase( char* s, const char toCases[3])
 // internalize toCases[] for speed
 	enum { lower, nc, upper } itc[3];
 	itc[0] = itc[1] = itc[2] = nc;
-	for (int i = 0; i < 3; i++)
+	int i;
+	for (i = 0; i < 3; i++)
 	{
 		if (!toCases[i])			// if < 3 chars given
 			break;					// treat rest as -
-		else if (IsCharLower(toCases[i]))
+		else if (islowerW(toCases[i]))
 			itc[i] = lower;
-		else if (IsCharUpper(toCases[i]))
+		else if (isupperW(toCases[i]))
 			itc[i] = upper;
 	}
 
@@ -1181,10 +1182,10 @@ char* strCase( char* s, const char toCases[3])
 		else				// spaces don't need case conversion
 		{
 			if (itc[which]==upper)
-				CharUpperBuff( s+i, 1);
+				*((unsigned char*)s+i) = toupper(*((unsigned char*)s + i));
 			// upperize 1 char, handle accented chars
 			else if (itc[which]==lower)
-				CharLowerBuff( s+i, 1);
+				*((unsigned char*)s + i) = tolower( *((unsigned char*)s + i));
 			// lowerize 1 char, handle accented chars
 			which = 2;			// for s[i] til next space
 			nsSeen++;			// next word beginning is not 1st word
