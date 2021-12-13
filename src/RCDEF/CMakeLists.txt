@@ -30,3 +30,4 @@ include_directories(
 add_definitions(-DNOVRR)
 
 add_executable(RCDEF ${source} ${headers})
+target_compile_features(RCDEF PRIVATE cxx_std_17)
