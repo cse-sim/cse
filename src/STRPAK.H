@@ -28,12 +28,7 @@ const int STRPPEXT   = 8;
 inline int fcn##W( int c) { return fcn( c); } \
 inline int fcn##W( char c) { return fcn( (unsigned char)c); } \
 inline int fcn##W( unsigned char c) { return fcn( (unsigned char)c); }
-// cause error in VS2008 (won't compile in VS6 due to Dundas grid STL troubles, 5-31-06)
-#if _MSC_VER >= 1400
 #define charTypeErr( fcn) Should_use_##fcn##W
-#else
-#define charTypeErr( fcn) fcn
-#endif
 charTypeW( isspace)
 #define isspace charTypeErr( isspace)
 charTypeW( iscntrl)

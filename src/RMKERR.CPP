@@ -42,6 +42,10 @@
 
 #include <rmkerr.h>		// decls for this file
 
+#if defined( ELIMINATE_WINDOWS)
+#define NO_ERROR 0
+#endif
+
 
 
 /*-------------------------------- DEFINES --------------------------------*/
