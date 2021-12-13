@@ -7,9 +7,11 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
-
-#include <signal.h> 	// signal SIGINT
+#if !defined( ELIMINATE_WINDOWS)
+#include <windows.h>
 #include <direct.h>	// getcwd
+#endif
+#include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
 #include <conio.h>
 #include <sys\timeb.h>	// timeb structure
@@ -105,7 +107,9 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	WStr exePath,		// path to .exe
 	int& codeSize)		// code size (bytes)
 // returns info as string or "?" if error
+// Re Write this code 
 {
+	
 	const char* msg = "?";
 	time_t timeDateStamp = 0;
 	codeSize = 0;
