@@ -129,7 +129,7 @@ set(source
   VRPAK.CPP
   WFPAK.CPP
   XIOPAK.CPP
-  XMODULE.CPP
+  #XMODULE.CPP     # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
   YACAM.CPP
 )
 
@@ -196,7 +196,7 @@ set(headers
   VRPAK.H
   WFPAK.H
   XIOPAK.H
-  XMODULE.h
+  #XMODULE.H     # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
   YACAM.H
 )
 
