@@ -484,6 +484,7 @@ void ZNR::zn_SGClearTots()		// clear SG totals
 	}
 }		// ZNR::zn_SGClearTots
 //-----------------------------------------------------------------------------
+
 void XSRAT::xr_SGAccumAbsTrans()	// accumulate zone surface absorptance and transmittance totals
 // also some by-surface initialization
 {
@@ -522,6 +523,7 @@ void XSRAT::xr_SGAccumAbsTrans()	// accumulate zone surface absorptance and tran
 			zp->rmTrans[ oc] += tauAbsB[ oc] * x.xs_fMult * x.xs_area / zp->zn_surfA;
 	}
 }		// XSRAT::xr_SGAccumAbsTrans
+
 //----------------------------------------------------------------------
 void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gains for surface
 	int sunup,				// nz iff sun is above horizon

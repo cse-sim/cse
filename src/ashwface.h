@@ -49,8 +49,9 @@ struct CFSTYX : public CFSTY
 	float SHGCcogNFRC;	// NRFC cog SHGC (ditto)
 	float UcogAW;		// ASHWAT cog U
 	float SHGCcogAW;	// ASHWAT cog SHGC
-
+	
 	CFSTYX() { Clear(); }
+	
 	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, const char* layer1ID, ...);
 	void Clear();
 	// wrappers for CFSTY mbrs that to facilitate C++ <-> DLL comparisons
@@ -292,8 +293,11 @@ public:
 #define FCSL( s) s, sizeof( s)
 #define FCSET( d, s) strSpacePad( FCSL( d), s)
 #define FCGET( s) strTrim( NULL, FCSL( s))
+#if defined(SUPPORT_DLLS)
 #include "xmodule.h"
 class XASHWAT : public XMODULE
+#endif
+class XASHWAT
 {
 friend class FENAW;
 friend struct CFSTY;
@@ -349,7 +353,9 @@ private:
 public:
 	XASHWAT( const char* moduleName);
 	~XASHWAT();
+	#if defined(SUPPORT_DLLS)
 	virtual void xm_ClearPtrs();
+	#endif // SUPPORT_DLLS
 
 	RC xw_Setup();
 	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const string& msg);
@@ -373,7 +379,6 @@ public:
 //-----------------------------------------------------------------------------
 extern XASHWAT ASHWAT;		// public XASHWAT object
 //=============================================================================
-
 #endif	// _ASHWFACE_H
 
 // ashwface.h end

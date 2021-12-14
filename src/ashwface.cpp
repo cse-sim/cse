@@ -26,6 +26,7 @@ static const CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
 // ASHWAT wrappers: faciliate calling C++ and/or FORTRAN DLL fcns
 //                  as testing aid
 ///////////////////////////////////////////////////////////////////////////////
+
 bool CFSTYX::cfx_OffNormal(			// derive off-normal properties for all layers
 	float incA,			// beam incident angle, radians
 	float vProfA,		// beam vertical profile angle, radians
@@ -51,6 +52,7 @@ bool CFSTYX::cfx_OffNormal(			// derive off-normal properties for all layers
 	}
 	return true;
 }		// CFSTYX::cfx_OffNormal
+
 #if defined( ASHWAT_CPPTEST)
 //------------------------------------------------------------------------
 int CFSLAYER::cl_OffNormalTest()
@@ -378,6 +380,7 @@ RC FENAW::fa_SetupBare(		// FENAW init glazing alone
 	return rc;
 
 }		// FENAW::fa_SetupBare
+
 //-----------------------------------------------------------------------------
 RC FENAW::fa_InsertLayer(
 	int iLIns,		// idx at which new layer is inserted (0 based)
@@ -409,7 +412,9 @@ RC FENAW::fa_InsertLayer(
 		fa_CFS._G[ min( iLIns, nL-1)] = *pG;
 		fa_CFS.NL++;
 
+		
 		rc = ASHWAT.xw_FinalizeCFS( fa_CFS);
+		
 	}
 
 	return rc;
@@ -1033,7 +1038,9 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 	WStr hdgO = awO.aw_CSVHeading();
 	fprintf( f, "%s,%s\n", hdgI.c_str(), hdgO.c_str());
 
+	
 	int nL = fa_NL();
+	
 	double absSlr[ CFSMAXNL+1] = { 0.};
 	for (int iTO=0; tO[ iTO]>0.f; iTO++)
 	for (int iHO=0; hxO[ iHO]>0.f; iHO++)
@@ -1063,7 +1070,6 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 #endif	// _DEBUG
 //=============================================================================
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // class XASHWAT: ASHWAT interface
 //   routes calls either to ASHWAT.DLL (FORTRAN implementation)
@@ -1080,16 +1086,22 @@ XASHWAT ASHWAT(		// public ASHWAT object
 	"ASHWAT.DLL");
 #endif
 //=============================================================================
+
 XASHWAT::XASHWAT( const char* moduleName)		// c'tor
+#if defined(SUPPORT_DLLS)
 	: XMODULE( moduleName)
+#endif
 {
+#if defined(SUPPORT_DLLS)
 	xm_ClearPtrs();
+#endif // SUPPORT_DLLS
 }
 //-----------------------------------------------------------------------------
 XASHWAT::~XASHWAT()
 {
 }	// XASHWAT::~XASHWAT
 //-----------------------------------------------------------------------------
+#if defined(SUPPORT_DLLS)
 /*virtual*/ void XASHWAT::xm_ClearPtrs()
 {
 #if defined( ASHWAT_LINKDLL)
@@ -1097,6 +1109,7 @@ XASHWAT::~XASHWAT()
 	xw_pAWCheckFixCFSLayer = NULL;
 #endif
 }		// XASHWAT::xm_ClearPtrs
+#endif // SUPPORT_DLLS
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_Setup()		// general initialization
 // duplicate calls OK
@@ -1379,7 +1392,4 @@ const CFSTYX* XASHWAT::xw_FindLibCFSTYX(
 	return pClosest;
 }		// XASHWAT::xw_FindLibCFSTYX
 //=============================================================================
-
-
-
 // ashwface.cpp end
