@@ -420,15 +420,11 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 
 // accumulate absortivity of light surface-sides & zone "air", and transmission (back out) of windows
 	XSRAT* xr;
-	#if defined(SUPPORT_DLLS)
 	RLUP( XsB, xr)			// all surfaces, all zones
 		xr->xr_SGAccumAbsTrans();
-	#endif
 
-	#if defined(SUPPORT_DLLS)
 	RLUP( XsB, xr)
 		xr->xr_SGIncTrans( sunup, verSun);		// calc gains to / thru each surface for hour
-	#endif
 
 	// compute cavity absorptance for zones
 	RLUP( ZrB, zp)
@@ -488,7 +484,7 @@ void ZNR::zn_SGClearTots()		// clear SG totals
 	}
 }		// ZNR::zn_SGClearTots
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
+
 void XSRAT::xr_SGAccumAbsTrans()	// accumulate zone surface absorptance and transmittance totals
 // also some by-surface initialization
 {
@@ -655,7 +651,6 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 		sgtw.tw_Doit();
 	}
 }		// XSRAT::xr_SGIncTrans
-#endif
 //-----------------------------------------------------------------------------
 void XSRAT::xr_SGFInit()		// initialize gain accumulators
 {
