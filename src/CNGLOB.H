@@ -88,7 +88,7 @@ typedef unsigned long long ULLI;
 #undef SUPPORT_DLLS
 
 
-#if 1
+#if 0
 #define	ELIMINATE_WINDOWS
 #else
 #undef	ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
