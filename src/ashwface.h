@@ -383,7 +383,7 @@ public:
 //-----------------------------------------------------------------------------
 extern XASHWAT ASHWAT;		// public XASHWAT object
 //=============================================================================
-
-#endif	// _ASHWFACE_H
 #endif // SUPPORT_DLLS
+#endif	// _ASHWFACE_H
+
 // ashwface.h end

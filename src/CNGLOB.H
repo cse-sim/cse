@@ -84,6 +84,7 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
+/*---------------------------- Remove DLL Support ---------------------------*/
 #undef SUPPORT_DLLS
 
 #undef ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
