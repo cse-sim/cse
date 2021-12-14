@@ -43,14 +43,16 @@ const float RinNFRC = .82f;
 //=============================================================================
 
 // CFSTYX: extended CFSTY for internal use
+#if defined(SUPPORT_DLLS)
 struct CFSTYX : public CFSTY
 {
 	float UcogNFRC;		// NFRC cog U (externally calulated by e.g. Windows6)
 	float SHGCcogNFRC;	// NRFC cog SHGC (ditto)
 	float UcogAW;		// ASHWAT cog U
 	float SHGCcogAW;	// ASHWAT cog SHGC
-
+	
 	CFSTYX() { Clear(); }
+	
 	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, const char* layer1ID, ...);
 	void Clear();
 	// wrappers for CFSTY mbrs that to facilitate C++ <-> DLL comparisons
