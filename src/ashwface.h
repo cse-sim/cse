@@ -59,6 +59,7 @@ struct CFSTYX : public CFSTY
 		double absL[ CFSMAXNL+1]);
 	bool cfx_OffNormal( float incA, float vProfA, float hProfA, CFSSWP* swpON);
 };		// struct CFSTYX
+#endif
 //=============================================================================
 
 #undef ASHWAT_STATS		// define to derive statistics about ASHWAT use
@@ -215,7 +216,9 @@ public:
 	float fa_frmUC;				// frame surface-to-surface conductance, Btuh/ft2-F
 	SBC fa_frmSbcI;				// frame inside (zone side) boundary conditions
 	SBC fa_frmSbcO;				// frame outside boundary conditions
+	#if defined(SUPPORT_DLLS)
 	CFSTYX fa_CFS;				// CFS for this fenestration: represents glazing and shades
+	#endif
 	char fa_refDesc[ CFSIDLEN+30];	// fa_CFS.ID + " (SHGC=%.3f  U=%.3f)"
 	float fa_mSolar;			// solar muliplier
 	float fa_mCond;				// conduction multiplier
@@ -263,7 +266,9 @@ public:
 	RC fa_SetupBare( float dirtShadeF);
 	RC fa_InsertLayer( int iLIns, const CFSLAYER* pL, const CFSGAP* pG=NULL);
     SBC& fa_SBC( int si) { return fa_pXS->xs_SBC( si); }
+	#if defined(SUPPORT_DLLS)
 	int fa_NL() const { return fa_CFS.NL; }
+	#endif
 	void DbDump() const;
 	RC fa_DfSolar();
 	RC fa_BmSolar( int iH, float incA=0.f, float vProfA=0.f, float hProfA=0.f);
@@ -276,10 +281,12 @@ public:
 	RC fa_ThermalCache( const AWIN& awIn, AWOUT& awOut);
 	RC fa_Thermal( const AWIN& awIn, AWOUT& awOut);
 	RC fa_PerfMap();
+	#if defined(SUPPORT_DLLS)
 	float fa_DfRhoB() const { return fa_dfRhoB; }
 	float fa_DfTauB() const { return fa_dfTauB; }
 	float fa_BmTauF( int iH) const { return fa_bmLAbsF[ iH][ fa_NL()]; }
 	float fa_DfTauF() const { return fa_dfLAbsF[ fa_NL()]; }
+	#endif
 	static float fa_UtoCNFRC( float UNFRC);
 	static float fa_CtoUNFRC( float uC);
 };		// class FENAW
@@ -292,6 +299,7 @@ public:
 #define FCSL( s) s, sizeof( s)
 #define FCSET( d, s) strSpacePad( FCSL( d), s)
 #define FCGET( s) strTrim( NULL, FCSL( s))
+#if defined(SUPPORT_DLLS)
 #include "xmodule.h"
 class XASHWAT : public XMODULE
 {
@@ -375,5 +383,5 @@ extern XASHWAT ASHWAT;		// public XASHWAT object
 //=============================================================================
 
 #endif	// _ASHWFACE_H
-
+#endif // SUPPORT_DLLS
 // ashwface.h end

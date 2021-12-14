@@ -5421,7 +5421,9 @@ static RC loadsSurfaces( 		// surface runtime simulation
 		TMRSTART( TMR_AWTOT);	// total ASHWAT time (incl setup)
 								// see also TMR_AWCALC
 		RLUPC(XsB, xr, xr->x.xs_IsASHWAT())
+			#if defined(SUPPORT_DLLS)
 			rc |= xr->x.xs_ASHWAT();
+			#endif
 		TMRSTOP( TMR_AWTOT);
 
 		RLUPC(XsB, xr, xr->x.xs_ty != CTMXWALL)
@@ -5497,6 +5499,7 @@ RC XSURF::xs_SubhrBC()		// subhour: surface boundary conditions
 	return rc;
 }		// XSURF::xs_SubbrBC
 //-----------------------------------------------------------------------------
+#if defined(SUPPORT_DLLS)
 RC XSURF::xs_ASHWAT()		// subhour calcs for ASHWAT fenestration
 // do NOT call for if !xs_IsASHWAT()
 {
@@ -5520,6 +5523,7 @@ RC XSURF::xs_ASHWAT()		// subhour calcs for ASHWAT fenestration
 
 	return rc;
 }		// XSURF::xs_ASHWAT
+#endif
 //-----------------------------------------------------------------------------
 RC XSURF::xs_SubhrQS()		// subhour quick surface
 {

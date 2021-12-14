@@ -2420,8 +2420,8 @@ void XSURF::xs_SetRunConstants()
 	{	xs_sbcI.sb_SetRunConstants(dbPrint);
 		xs_sbcO.sb_SetRunConstants(dbPrint);
 	}
-
 	xs_DeleteFENAW();		// insurance
+	#if defined(SUPPORT_DLLS)
 	if (xs_IsASHWAT())
 	{	if (ASHWAT.xw_Setup() == RCOK)
 		{	xs_pFENAW[ 0] = new FENAW( this);
@@ -2432,6 +2432,7 @@ void XSURF::xs_SetRunConstants()
 			}
 		}
 	}
+	#endif // SUPPORT_DLLS
 }		// XSURF::xs_SetRunConstants
 //-----------------------------------------------------------------------------
 #if defined( DEBUGDUMP)
