@@ -26,7 +26,7 @@ static const CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
 // ASHWAT wrappers: faciliate calling C++ and/or FORTRAN DLL fcns
 //                  as testing aid
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(SUPPORT_DLLS)
+
 bool CFSTYX::cfx_OffNormal(			// derive off-normal properties for all layers
 	float incA,			// beam incident angle, radians
 	float vProfA,		// beam vertical profile angle, radians
@@ -52,7 +52,7 @@ bool CFSTYX::cfx_OffNormal(			// derive off-normal properties for all layers
 	}
 	return true;
 }		// CFSTYX::cfx_OffNormal
-#endif // SUPPORT_DLLS
+
 #if defined( ASHWAT_CPPTEST)
 //------------------------------------------------------------------------
 int CFSLAYER::cl_OffNormalTest()
@@ -110,7 +110,6 @@ int CFSLAYER::cl_OffNormalTest1(
 }
 #endif
 //------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 bool CFSTYX::cfx_Solar(
 	CFSSWP* swpON,		// layer properties w/ off-normal adjustments
 	float iBm,			// incident outside beam normal, any power units
@@ -238,13 +237,11 @@ void CFSTYX::Clear()
 	SHGCcogAW = 0.;
 	cf_Clear();
 }		// CFSTYX::Clear
-#endif // SUPPORT_DLLS
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // class FENAW -- XSURF substructure for ASHWAT glazings
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(SUPPORT_DLLS)
 FENAW::FENAW( XSURF* pXS /*=NULL*/)
 #if defined( ASHWAT_REV2)
 	: fa_X( 25000)
@@ -253,9 +250,7 @@ FENAW::FENAW( XSURF* pXS /*=NULL*/)
 	fa_pXS = pXS;
 	fa_Init();
 }		// FENAW::FENAW
-#endif
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 void FENAW::fa_Init()
 {	// fa_pXS do not alter
 	fa_UNFRC = fa_SHGC = fa_frmF = fa_frmArea = fa_frmUNFRC = fa_frmUC = 0.f;
@@ -281,7 +276,6 @@ void FENAW::fa_Init()
 const char* FENAW::fa_Name() const
 {	return fa_pXS ? fa_pXS->xs_Name() : "?";
 }		// FENAW::fa_Name
-#endif
 //-----------------------------------------------------------------------------
 #if 0
 FENAW& FENAW::Copy( const FENAW& f)
@@ -293,7 +287,6 @@ FENAW& FENAW::Copy( const FENAW& f)
 }		// FENAW::Copy
 #endif
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 RC FENAW::fa_Setup(
 	int oc)		// 0=int shades open, 1=int shades closed
 {
@@ -426,9 +419,7 @@ RC FENAW::fa_InsertLayer(
 
 	return rc;
 }	// FENAW::fa_InsertLayer
-#endif // SUPPORT_DLLS
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 void FENAW::DbDump() const
 {
 	int nL = fa_NL();
@@ -503,7 +494,6 @@ RC FENAW::fa_CalcRatings()
 	RC rc = fa_CFS.cfx_CalcRatings( fa_CFS.SHGCcogAW, fa_CFS.UcogAW);
 	return rc;
 }		// FENAW::fa_CalcRatings
-#endif
 //-----------------------------------------------------------------------------
 #if 0
 RC FENAW::fa_InitForRatingTargets(
@@ -549,7 +539,6 @@ RC FENAW::fa_FrameEndSubhr()
 	return rc;
 }		// FENAW::fa_FrameEndSubhr
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	float fActive,	// fraction of glazed area to be included in model, 0 - 1
 					//   (re controlled shades)
@@ -696,7 +685,6 @@ const double tol = .001;
 
 	return rc;
 }		// FENAW::fa_Subhr
-#endif
 //-----------------------------------------------------------------------------
 RC FENAW::fa_EndSubhr(			// ASHWAT end-of-subhour (accounting etc)
 	float fActive)	// fraction of glazed area to be included in model, 0 - 1
@@ -919,7 +907,6 @@ RC FENAW::fa_ThermalCache(		// ASHWAT thermal calcs
 }
 #endif
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	const AWIN& awI,		// input values
 	AWOUT& awO)			// output values
@@ -1026,10 +1013,8 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	return rc;
 
 }	// FENAW::fa_Thermal
-#endif
 #if defined( _DEBUG)
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
 RC FENAW::fa_PerfMap()		// dump numerous cases for testing
 {
 const float tO[] = { 10.f, 30.f, 50.f, 70.f, 90.f, 110.f, -1.f};
@@ -1083,16 +1068,13 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 	return RCOK;
 }
 #endif	// _DEBUG
-#endif
 //=============================================================================
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // class XASHWAT: ASHWAT interface
 //   routes calls either to ASHWAT.DLL (FORTRAN implementation)
 //   or staticly-linked ashwat.cpp
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(SUPPORT_DLLS)
 XASHWAT ASHWAT(		// public ASHWAT object
 #if !defined( ASHWAT_LINKDLL)
 	"");
@@ -1104,16 +1086,22 @@ XASHWAT ASHWAT(		// public ASHWAT object
 	"ASHWAT.DLL");
 #endif
 //=============================================================================
+
 XASHWAT::XASHWAT( const char* moduleName)		// c'tor
+#if defined(SUPPORT_DLLS)
 	: XMODULE( moduleName)
+#endif
 {
+#if defined(SUPPORT_DLLS)
 	xm_ClearPtrs();
+#endif // SUPPORT_DLLS
 }
 //-----------------------------------------------------------------------------
 XASHWAT::~XASHWAT()
 {
 }	// XASHWAT::~XASHWAT
 //-----------------------------------------------------------------------------
+#if defined(SUPPORT_DLLS)
 /*virtual*/ void XASHWAT::xm_ClearPtrs()
 {
 #if defined( ASHWAT_LINKDLL)
@@ -1121,6 +1109,7 @@ XASHWAT::~XASHWAT()
 	xw_pAWCheckFixCFSLayer = NULL;
 #endif
 }		// XASHWAT::xm_ClearPtrs
+#endif // SUPPORT_DLLS
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_Setup()		// general initialization
 // duplicate calls OK
@@ -1403,7 +1392,4 @@ const CFSTYX* XASHWAT::xw_FindLibCFSTYX(
 	return pClosest;
 }		// XASHWAT::xw_FindLibCFSTYX
 //=============================================================================
-
-#endif // SUPPORT_DLLS
-
 // ashwface.cpp end
