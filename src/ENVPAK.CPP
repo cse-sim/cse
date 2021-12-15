@@ -22,7 +22,15 @@
 
 #include <envpak.h>	// declares functions in this file
 
-
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesys = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)
 
@@ -95,12 +103,15 @@ WStr enExePath()		// full path to current executable
 {
 	char exePath[_MAX_PATH + 1];
 	WStr t;
+	#if !defined( ELIMINATE_WINDOWS)
 	if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
 	{
 		t = exePath;
 		WStrLower(t);
 	}
+	#endif
 	return t;
+	
 }		// enExePath
 //=============================================================================
 WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
@@ -115,6 +126,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
+	#if !defined( ELIMINATE_WINDOWS)
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
@@ -159,7 +171,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 		}
 		CloseHandle( hFile);
 	}
-
+	#endif
 	WStr exeInfo;
 	if (timeDateStamp == 0)
 		exeInfo = "? (enExeInfo fail)";
@@ -326,7 +338,8 @@ signal( SIGFPE, 			// floating point errors, and integer errors (changes 0:0) un
 	//    to ease reporting calling location (in which case aborts, no return). */
 
 //--- save current drive/dir to restore at exit
-	getcwd( cwdSave, _MAX_PATH);	// save current dir (including drive) in static for byebye to use at exit
+	filesys::path cwdSave;
+	cwdSave = filesys::current_path();	// save current dir (including drive) in static for byebye to use at exit
 }		// hello
 //=====================================================================
 void FC byebye(		// cleanup and normal or error exit.
