@@ -567,9 +567,13 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	const char* text;
 	if (erOp & SYSMSG)
 	{
+		#if !defined( ELIMINATE_WINDOWS)
 		DWORD osErr = GetLastError();
 		SetLastError( NO_ERROR);		// reset
 		text = strtprintf( "%s\nGetLastError() = %d (%s)", _text, osErr, GetSystemMsg( osErr));
+		#else
+		text = strtprintf("ERRNO: %i", errno);
+		#endif // ELIMINATE_WINDOWS
 	}
 	else
 		text = _text;
@@ -686,11 +690,17 @@ const char* GetSystemMsg(				// get system error text
 	t[ 0] = '\0';
 	if (lastErr == 0xffffffff)
 	{
-		lastErr = GetLastError();		// get error
-		SetLastError( NO_ERROR);		// reset
+		#if !defined( ELIMINATE_WINDOWS)
+		lastErr = GetLastError();
+		SetLastError(NO_ERROR);		// reset
+		#else
+		lastErr = NO_ERROR;
+		#endif // ELIMINATE_WINDOWS
 	}
 	if (lastErr != NO_ERROR)
-	{	if (!FormatMessage(
+	{
+		#if !defined( ELIMINATE_WINDOWS)
+		if (!FormatMessage(
 					FORMAT_MESSAGE_FROM_SYSTEM
 					| FORMAT_MESSAGE_IGNORE_INSERTS,
 					NULL,
@@ -698,6 +708,10 @@ const char* GetSystemMsg(				// get system error text
 					MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),
 					t, sizeof( t)-1, NULL))
 			t[ 0] = '\0';	// FormatMessage failed
+		#else
+		std::string tempS = strtprintf("ERRNO: %i", errno);
+		strcpy(t, tempS.c_str());
+		#endif
 	}
 	return strTrim( NULL, t);	// copy to tmpStr
 }			// GetSystemMsg
