@@ -49,9 +49,7 @@ struct CFSTYX : public CFSTY
 	float SHGCcogNFRC;	// NRFC cog SHGC (ditto)
 	float UcogAW;		// ASHWAT cog U
 	float SHGCcogAW;	// ASHWAT cog SHGC
-	
 	CFSTYX() { Clear(); }
-	
 	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, const char* layer1ID, ...);
 	void Clear();
 	// wrappers for CFSTY mbrs that to facilitate C++ <-> DLL comparisons
@@ -379,6 +377,7 @@ public:
 //-----------------------------------------------------------------------------
 extern XASHWAT ASHWAT;		// public XASHWAT object
 //=============================================================================
+
 #endif	// _ASHWFACE_H
 
 // ashwface.h end
