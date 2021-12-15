@@ -206,10 +206,6 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
-  SYSTEM "${kiva_SOURCE_DIR}/vendor/boost-1.61.0"
-  "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
-  "${kiva_SOURCE_DIR}/src"
-  "${kiva_BINARY_DIR}/src/libkiva"
   "${btwxt_SOURCE_DIR}/src"
 )
 
@@ -236,6 +232,7 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+target_compile_features(CSE PUBLIC cxx_std_17)
 
 set(libs
   glad

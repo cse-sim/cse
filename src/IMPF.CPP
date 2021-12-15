@@ -507,13 +507,13 @@ RC topImpf()		// check/process ImportFiles at end of input
 
 // check IMPORTFILES and make run records
 
-	E( ImpfB.al( ImpfiB.n, WRN) )		// delete old importfile run records, alloc needed # now for min fragmentation.
+	CSE_E( ImpfB.al( ImpfiB.n, WRN) )		// delete old importfile run records, alloc needed # now for min fragmentation.
 	// E: return if error.  CAUTION: ratCre may not errCount++ on error.
 	RLUP (ImpfiB, iimpf)		// loop over good IMPF input records (ancrec.h macro)
 	{
 		// be sure all required members are set. Believed redundant; extra protection against FPE bomb-out on NAN (4-byte mbrs).
-		E( iimpf->CkSet( IMPF_FILENAME))			// if not set, no run, terminate checking now
-		E( iimpf->CkSet( IMPF_IMFREQ))			// if not set, no run, terminate checking now
+		CSE_E( iimpf->CkSet( IMPF_FILENAME))			// if not set, no run, terminate checking now
+		CSE_E( iimpf->CkSet( IMPF_IMFREQ))			// if not set, no run, terminate checking now
 
 		// find file & save full path. Search same paths as for #include files. 2-95.
 		ppFindFile( iimpf->fileName);

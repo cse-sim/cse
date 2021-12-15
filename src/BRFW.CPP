@@ -444,7 +444,7 @@ RC FC ResfWriter::makeMoavs()	// compute monthly average hourly values for curre
 								:  NULL;
 			bkHrMon[currMi].setDirty();			// say month block changed in memory
 			SI tempT[24], tOutT[24];			// to expand temps from 8 to 16 bits for summing
-			register SI i;
+			SI i;
 			SI nSummed = 0;
 
 			for (SI mdi = currMon->firstDaySet; mdi <= currMon->lastDaySet; mdi++, nSummed++)

@@ -275,15 +275,15 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 
 //---- set up Top from Topi
 	Top = Topi;
-	E( Top.tp_FazInit())	// reads weather file, inits air properties, 
+	CSE_E( Top.tp_FazInit())	// reads weather file, inits air properties, 
 
-	E( topDC() )			// finalize DESCONDs
+	CSE_E( topDC() )			// finalize DESCONDs
 
 //--- zones next: reports store into zone run records
-	E( topZn( re) )			// do zones. E: returns if error.
+	CSE_E( topZn( re) )			// do zones. E: returns if error.
 
 //--- do meters early: ref'd by reports and maybe many other future things.
-	E( topMtr() )			// check/dup all types of meters (energy, dhw, air flow)
+	CSE_E( topMtr() )			// check/dup all types of meters (energy, dhw, air flow)
 
 //--- do stuff re reports next -- much used even if error suppresses run. cncult4.cpp.
 	if (!re)			// report/exports persist from autosize thru main simulation 6-95.
@@ -292,59 +292,59 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 		// DvriB, XcolB, rColB are not free'd after autosize like most run data,
 		//  and their expr use info is retained (exman.cpp) per RFPERSIS flag set above.
 		// ZNI/R.vrZdd requires special consideration in cncult4.cpp.
-		E( topRep() )   		// check rep___ members / set up page header and footer. cncult4.cpp
-		E( topRf() )			// check REPORTFILEs cncult4.cpp
-		E( topXf() )			// check EXPORTFILEs cncult4.cpp
-		E( topCol(0) ) 			// check REPORTCOLS / build RcolB.  cncult4.cpp
-		E( topCol(1) ) 			// check EXPORTCOLS / build XcolB.  cncult4.cpp
-		E( topRxp() )			// check REPORTS and EXPORTS / build dvri info.  cncult4.cpp
-		E( buildUnspoolInfo() )	// build virtual report unspooling specifications.  cncult4.cpp
+		CSE_E( topRep() )   		// check rep___ members / set up page header and footer. cncult4.cpp
+		CSE_E( topRf() )			// check REPORTFILEs cncult4.cpp
+		CSE_E( topXf() )			// check EXPORTFILEs cncult4.cpp
+		CSE_E( topCol(0) ) 			// check REPORTCOLS / build RcolB.  cncult4.cpp
+		CSE_E( topCol(1) ) 			// check EXPORTCOLS / build XcolB.  cncult4.cpp
+		CSE_E( topRxp() )			// check REPORTS and EXPORTS / build dvri info.  cncult4.cpp
+		CSE_E( buildUnspoolInfo() )	// build virtual report unspooling specifications.  cncult4.cpp
 	}
 
 //--- other input data
-	E( topImpf() )			// IMPORTFILEs
-	E( topHday() )			// holidays. cncult4.cpp.
+	CSE_E( topImpf() )			// IMPORTFILEs
+	CSE_E( topHday() )			// holidays. cncult4.cpp.
 	topPr();				// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
-	E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
-	E( topHp1() )			// heatplants 1: create run recs. do TU's,AH's,BOILERS,HPLOOPs tween topHp1 & 2. cncult6.cpp.
-	E( topCp1() )			// coolplants 1: create run recs. must do AH's,CHILLERs tween topCp1 & 2. cncult6.cpp.
-	E( topTp1() )			// towerplants 1: create run recs. must to topCp2 between TopTp1 & 2. cncult6.cpp.
-	E( topAh1() )			// do air handlers part 1, before terminals.  cncult5.cpp.
-	E( topTu() )			// do terminal units.  cncult5.cpp.  Be sure error return propogates.
-	E( topAh2() )			// do air handlers part 2, after terminals and topHp1, topCp1. cncult5.cpp.
-	E( topBlr() )			// do boilers b4 topHp2. cncult6.cpp.
-	E( topCh() )			// do chillers b4 topCp2. cncult6.cpp.
+	CSE_E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
+	CSE_E( topHp1() )			// heatplants 1: create run recs. do TU's,AH's,BOILERS,HPLOOPs tween topHp1 & 2. cncult6.cpp.
+	CSE_E( topCp1() )			// coolplants 1: create run recs. must do AH's,CHILLERs tween topCp1 & 2. cncult6.cpp.
+	CSE_E( topTp1() )			// towerplants 1: create run recs. must to topCp2 between TopTp1 & 2. cncult6.cpp.
+	CSE_E( topAh1() )			// do air handlers part 1, before terminals.  cncult5.cpp.
+	CSE_E( topTu() )			// do terminal units.  cncult5.cpp.  Be sure error return propogates.
+	CSE_E( topAh2() )			// do air handlers part 2, after terminals and topHp1, topCp1. cncult5.cpp.
+	CSE_E( topBlr() )			// do boilers b4 topHp2. cncult6.cpp.
+	CSE_E( topCh() )			// do chillers b4 topCp2. cncult6.cpp.
 // HPLOOPs when impl must be above here
-	E( topHp2() )			// heatplants 2: complete check/setup after loads chained & boilers to records. cncult6.cpp.
-	E( topCp2() )			// coolplants 2: complete check/setup after loads chained & chillers to records. cncult6.cpp.
-	E( topTp2() )  			// towerplants 2: after topCp2: chains cp's to tp's; generates default cap info. cncult6.cpp.
-	E( topMat() )			// materials.  local.
-	E( topCon1() )			// constr pass 1: 0 accumulators.  local.
-	E( topLr() )			// layers, & accumulate to constructions.  local.
-	E( topCon2() )			// constructions pass 2.  local.
-	E( topFnd() )			// foundations 04-18. local.
-	E( topGt() )			// glazeTypes 12-94. local.
-	E( topSf1() )			// surfaces pass 1.  cks/dflts stuff used for doors/windows (azm,tilt,H's). cncult3.
-	E( topMsCon())			// mass & masstype stuff between topSf1 and 2.  cncult3.cpp
-	E( topSg() )		   	// sgdists: do after windows pass 1. sets gz.sgdist[]: do b4 topSf2( , WINDOW). cncult3.
-	E( topSh() )			// shades: do after windows pass 1. sets gz.x.iwshad: do b4 topSf2( , WINDOW). cncult3.
-	E( topRSys1() )			// RSYS basic setup: before topDs
-	E( topDs() )   			// duct segments: before topZn2
-	E( topZn2() )			// zones: accum total surf areas etc.
-	E( topSf2() )  			// surfs pass 2: make XSRATs and MSRATs.
-	E( topSg2() )			// solar gains pass 2
-	E( topDHW() )			// DHW (must be before topGain)
-	E( topGain() )			// check gains / copy to run rat.  local fcn.
-	E( topRadGainDist() )	// set up distribution of radiant internal gains. Must follow most surface/zone stuff
+	CSE_E( topHp2() )			// heatplants 2: complete check/setup after loads chained & boilers to records. cncult6.cpp.
+	CSE_E( topCp2() )			// coolplants 2: complete check/setup after loads chained & chillers to records. cncult6.cpp.
+	CSE_E( topTp2() )  			// towerplants 2: after topCp2: chains cp's to tp's; generates default cap info. cncult6.cpp.
+	CSE_E( topMat() )			// materials.  local.
+	CSE_E( topCon1() )			// constr pass 1: 0 accumulators.  local.
+	CSE_E( topLr() )			// layers, & accumulate to constructions.  local.
+	CSE_E( topCon2() )			// constructions pass 2.  local.
+	CSE_E( topFnd() )			// foundations 04-18. local.
+	CSE_E( topGt() )			// glazeTypes 12-94. local.
+	CSE_E( topSf1() )			// surfaces pass 1.  cks/dflts stuff used for doors/windows (azm,tilt,H's). cncult3.
+	CSE_E( topMsCon())			// mass & masstype stuff between topSf1 and 2.  cncult3.cpp
+	CSE_E( topSg() )		   	// sgdists: do after windows pass 1. sets gz.sgdist[]: do b4 topSf2( , WINDOW). cncult3.
+	CSE_E( topSh() )			// shades: do after windows pass 1. sets gz.x.iwshad: do b4 topSf2( , WINDOW). cncult3.
+	CSE_E( topRSys1() )			// RSYS basic setup: before topDs
+	CSE_E( topDs() )   			// duct segments: before topZn2
+	CSE_E( topZn2() )			// zones: accum total surf areas etc.
+	CSE_E( topSf2() )  			// surfs pass 2: make XSRATs and MSRATs.
+	CSE_E( topSg2() )			// solar gains pass 2
+	CSE_E( topDHW() )			// DHW (must be before topGain)
+	CSE_E( topGain() )			// check gains / copy to run rat.  local fcn.
+	CSE_E( topRadGainDist() )	// set up distribution of radiant internal gains. Must follow most surface/zone stuff
 
-	E( topRSys2() )			// RSYS final setup
-	E( topPV() )			// PVArrays
-	E( topBT() )            // Batteries
-	E( topSX() )			// ShadeX external shading
+	CSE_E( topRSys2() )			// RSYS final setup
+	CSE_E( topPV() )			// PVArrays
+	CSE_E( topBT() )            // Batteries
+	CSE_E( topSX() )			// ShadeX external shading
 
-	E( topZn3() )			// zones: add generated IZXFERs,
+	CSE_E( topZn3() )			// zones: add generated IZXFERs,
 
-	E( topInverse())		// inverse objects
+	CSE_E( topInverse())		// inverse objects
 
 
 #ifdef AUTOSIZE
@@ -461,10 +461,10 @@ RC TOPRAT::tp_FazInit()	// start-of-phase init
 
 //---- find/read weather file name / get lat, long, tz, default elevation, default autosizing stuff. 1-95.
 	int hotMo = 7;				// hottest month 1-12, wthr file hdr to topAusz, July if not set by topWfile
-	E(tp_Wfile(&hotMo))		// just below. call b4 topAusz.
+	CSE_E(tp_Wfile(&hotMo))		// just below. call b4 topAusz.
 
 //---- autosizing setup. call after topWfile. 6-95.
-	E(tp_Ausz(hotMo))
+	CSE_E(tp_Ausz(hotMo))
 
 //---- say various texts should be (re)generated before (any further) use as may have new runTitle, repHdrL/R.
 	freeRepTexts();				// cncult4.cpp
@@ -884,7 +884,7 @@ LOCAL RC topZn(		// all-zone initialization
 
 	// traditional code clears after run; could remove this duplication.
 	XsB.free();					// clear XSURFs. ratpak.cpp.  records are added to XsB by cncult3.cpp:cnuCompAdd.
-	E( ZrB.al( ZiB.n, WRN))		// zones: delete old records, alloc nec size now for minimum fragmentation
+	CSE_E( ZrB.al( ZiB.n, WRN)	)	// zones: delete old records, alloc nec size now for minimum fragmentation
 	// E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++, be sure error return propogated back to cul:cuf.
 	// zones are not owned (names must be unique); leave .ownB 0.
@@ -1061,7 +1061,7 @@ LOCAL RC topIz()		// do interzone transfers
 	RC rc = RCOK;
 
 	// clear izxfer run RAT.   nothing to dmfree for izxfers, right?
-	E( IzxR.al( IzxiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
+	CSE_E( IzxR.al( IzxiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
 
 	// leave IzxR.ownB 0 because interzone transfers are not owned (right?).
 	// CAUTION 1-7-91 record format looks like rcdef may consider them to be owned (by first zone);
@@ -1085,7 +1085,7 @@ LOCAL RC topDs()		// do duct segments
 	RC rc = RCOK;
 
 	// clear DUCTSEG run RAT.
-	E( DsR.al( DsiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
+	CSE_E( DsR.al( DsiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
 
 	// copy input rat entries to runtime rat, check, initialize
 	DUCTSEG* pDSi;
@@ -1377,7 +1377,7 @@ LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run ba
 	RC rc /*=RCOK*/;
 
 // clear run basAnc, alloc to needed size
-	E( GtB.al( GtiB.n, WRN))		// delete old records, alloc at once to needed size for min fragmentation.
+	CSE_E( GtB.al( GtiB.n, WRN))		// delete old records, alloc at once to needed size for min fragmentation.
 
 // check/default input records and copy to runtime records
 
@@ -1435,17 +1435,17 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 {
 	RC rc;
 
-	E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
+	CSE_E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
 
 // initialize sum-of-meters record -- last record in meters run RAT.
 	MTR* mtr;
 	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
 // DHW meters
-	E(WMtrR.RunDup(WMtriB, NULL, 1));
+	CSE_E(WMtrR.RunDup(WMtriB, NULL, 1));
 
 // Air flow meters
-	E( AfMtrR.RunDup(AfMtriB, NULL, 1));
+	CSE_E( AfMtrR.RunDup(AfMtriB, NULL, 1));
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
 
@@ -1455,7 +1455,7 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 LOCAL RC topRSys1()	// check RSYS / copy to run rat
 {
 	RC rc = RCOK;
-	E( RsR.al( RSiB.n, WRN) )	// delete old records, alloc to needed size now for min fragmentation
+	CSE_E( RsR.al( RSiB.n, WRN) )	// delete old records, alloc to needed size now for min fragmentation
 	if (rc == RCOK)
 	{	RSYS* pRSi;
 		RLUP( RSiB, pRSi)
@@ -1482,20 +1482,20 @@ LOCAL RC topDHW()		// check DHWSYS/DHWHEATER ... copy to run rat
 {
 	RC rc = RCOK;
 
-	E( WsR.RunDup( WSiB));
-	E(WhR.RunDup(WHiB, &WsR))
-	E(WlhR.RunDup(WLHiB, &WsR))
-	E(WtR.RunDup(WTiB, &WsR))
-	E(WrR.RunDup(WRiB, &WsR))
-	E(WpR.RunDup(WPiB, &WsR))
-	E(WlR.RunDup(WLiB, &WsR))
-	E(WgR.RunDup(WGiB, &WlR))
-	E(WbR.RunDup(WBiB, &WgR))
-	E(WlpR.RunDup(WLPiB, &WlR))
-	E(WduR.RunDup(WDUiB, &WsR))
-	E(WuR.RunDup(WUiB, &WduR))
-	E(SwhR.RunDup(SWHiB))
-	E(ScR.RunDup(SCiB, &SWHiB))
+	CSE_E( WsR.RunDup( WSiB));
+	CSE_E(WhR.RunDup(WHiB, &WsR))
+	CSE_E(WlhR.RunDup(WLHiB, &WsR))
+	CSE_E(WtR.RunDup(WTiB, &WsR))
+	CSE_E(WrR.RunDup(WRiB, &WsR))
+	CSE_E(WpR.RunDup(WPiB, &WsR))
+	CSE_E(WlR.RunDup(WLiB, &WsR))
+	CSE_E(WgR.RunDup(WGiB, &WlR))
+	CSE_E(WbR.RunDup(WBiB, &WgR))
+	CSE_E(WlpR.RunDup(WLPiB, &WlR))
+	CSE_E(WduR.RunDup(WDUiB, &WsR))
+	CSE_E(WuR.RunDup(WUiB, &WduR))
+	CSE_E(SwhR.RunDup(SWHiB))
+	CSE_E(ScR.RunDup(SCiB, &SWHiB))
 
 	// DHWDAYUSE one-time inits
 	//   2 passes req'd (see wdu_Init())
@@ -1543,7 +1543,7 @@ LOCAL RC topPV()		// check PVARRAY ... copy to run rat
 {
 	RC rc = RCOK;
 
-	E(PvR.RunDup(PViB));
+	CSE_E(PvR.RunDup(PViB));
 
 	PVARRAY* pPV;
 	RLUP(PvR, pPV)
@@ -1556,7 +1556,7 @@ LOCAL RC topBT()		// check BATTERY ... copy to run rat
 {
 	RC rc = RCOK;
 
-	E(BtR.RunDup(BTiB));
+	CSE_E(BtR.RunDup(BTiB));
 
 	BATTERY* pBT;
 	RLUP(BtR, pBT)
@@ -1569,7 +1569,7 @@ LOCAL RC topSX()		// SHADEX copy to run rat
 {
 	RC rc = RCOK;
 
-	E(SxR.RunDup(SXiB));
+	CSE_E(SxR.RunDup(SXiB));
 
 	SHADEX* pSX;
 	RLUP( SxR, pSX)
@@ -1582,7 +1582,7 @@ LOCAL RC topGain()	// check GAINs / copy to run rat
 
 	RC rc = RCOK;
 
-	E (GnB.RunDup( GniB, &ZrB));
+	CSE_E (GnB.RunDup( GniB, &ZrB));
 
 	return rc;
 }		// topGain
