@@ -9,7 +9,9 @@
 #ifdef WINorDLL
 #if 0
 #define STRICT
+#if !defined( ELIMINATE_WINDOWS)
 #include <windows.h>
+#endif
 #endif
 #include "cnewin.h"		// for struct BrHans, used in brfw.h and here
 #endif
