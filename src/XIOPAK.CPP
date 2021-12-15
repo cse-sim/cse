@@ -675,15 +675,15 @@ LI FC dskDrvFreeSpace()		// returns total disk free space in bytes on current de
 	DWORD freec;		// receives free clusters
 	DWORD totcl;
 	std::error_code spaceErrorCode;
-	filesys::path inputPath = rootPath;
+	filesys::path inputPath = filesys::current_path(); // rootPath - since is defined as NULL I will look for current path
 	filesys::space_info freeSpace = filesys::space(inputPath, spaceErrorCode);
 
 	if ( !spaceErrorCode )
 		// GetLastError for more info
 		return 0L;				// call failed, return 0 space avail
 
-	if ( (float)spc * (float)bps * (float)freec < (float)LONG_MAX)	// if free space fits in a long
-		return spc * bps * freec;					// compute fixed point free space & return it
+	if ( freeSpace.available < (float)LONG_MAX)	// if free space fits in a long
+		return freeSpace.available;					// compute fixed point free space & return it
 
 	return LONG_MAX;				// too much for LI, return max LI value (2GB)
 }					// dskDrvFreeSpace
