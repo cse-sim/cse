@@ -1062,6 +1062,7 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 }
 #endif	// _DEBUG
 //=============================================================================
+
 ///////////////////////////////////////////////////////////////////////////////
 // class XASHWAT: ASHWAT interface
 //   routes calls either to ASHWAT.DLL (FORTRAN implementation)
@@ -1383,4 +1384,5 @@ const CFSTYX* XASHWAT::xw_FindLibCFSTYX(
 	return pClosest;
 }		// XASHWAT::xw_FindLibCFSTYX
 //=============================================================================
+
 // ashwface.cpp end

@@ -49,6 +49,7 @@ struct CFSTYX : public CFSTY
 	float SHGCcogNFRC;	// NRFC cog SHGC (ditto)
 	float UcogAW;		// ASHWAT cog U
 	float SHGCcogAW;	// ASHWAT cog SHGC
+	
 	CFSTYX() { Clear(); }
 	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, const char* layer1ID, ...);
 	void Clear();
