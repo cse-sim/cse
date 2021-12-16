@@ -292,10 +292,10 @@ public:
 #define FCSL( s) s, sizeof( s)
 #define FCSET( d, s) strSpacePad( FCSL( d), s)
 #define FCGET( s) strTrim( NULL, FCSL( s))
-#if defined(SUPPORT_DLLS)
+#if defined(SUPPORT_XMODULE)
 #include "xmodule.h"
 class XASHWAT : public XMODULE
-#endif
+#endif // SUPPORT_XMODULE
 class XASHWAT
 {
 friend class FENAW;
@@ -352,9 +352,9 @@ private:
 public:
 	XASHWAT( const char* moduleName);
 	~XASHWAT();
-	#if defined(SUPPORT_DLLS)
+	#if defined(SUPPORT_XMODULE)
 	virtual void xm_ClearPtrs();
-	#endif // SUPPORT_DLLS
+	#endif // SUPPORT_XMODULE
 
 	RC xw_Setup();
 	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const string& msg);
