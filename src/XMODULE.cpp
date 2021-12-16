@@ -491,4 +491,5 @@ FARPROC XMODULE::xm_GetProcAddress(
 0 //=============================================================================
 #endif // #if 0
 #endif // SUPPORT_DLLS
+
 // xmodule.cpp end
