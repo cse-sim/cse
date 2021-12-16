@@ -357,15 +357,9 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // RC Return Codes: integers returned by fcns to indicate call outcome
 // 0 indicates all OK so RC can be cumulatively or'd
 typedef SI RC;
-#include <RMKERR.h>
+//#include <RMKERR.h>
 // debugging aid: warn if limits invoked
-template< typename T> inline T bracketWarn(T vMin, T v, T vMax)
-{
-	T vx = bracket(vMin, v, vMax);
-	if (vx != v)
-		warn("bracketWarn: hit limit\n");
-	return vx;
-}
+
 const RC RCOK=0;		// fcn succeeded.  code assumes 0 value.
 const RC RCFATAL = -1;	// fcn encountered fatal error; current process should be abandoned.
 						//   note (RCFATAL | x) == RCFATAL, code may assume
