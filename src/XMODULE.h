@@ -119,5 +119,5 @@ protected:
 #endif
 //=============================================================================
 #endif	// _XMODULE_H
-#endif // SUPPORT_DLLS
+#endif // SUPPORT_XMODULE
 // xmodule.h end

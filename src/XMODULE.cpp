@@ -490,6 +490,6 @@ FARPROC XMODULE::xm_GetProcAddress(
 0 }		// XCZM::xc_Shutdown
 0 //=============================================================================
 #endif // #if 0
-#endif // SUPPORT_DLLS
+#endif // SUPPORT_XMODULE
 
 // xmodule.cpp end
