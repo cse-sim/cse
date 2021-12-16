@@ -295,8 +295,9 @@ public:
 #if defined(SUPPORT_XMODULE)
 #include "xmodule.h"
 class XASHWAT : public XMODULE
-#endif // SUPPORT_XMODULE
+#else
 class XASHWAT
+#endif // SUPPORT_XMODULE
 {
 friend class FENAW;
 friend struct CFSTY;

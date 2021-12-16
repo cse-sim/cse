@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
-#if defined(SUPPORT_DLLS)
+#if defined(SUPPORT_XMODULE)
 #include "envpak.h"
 #include "ancrec.h"
 #include "rccn.h"
