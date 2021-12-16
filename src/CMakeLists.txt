@@ -10,6 +10,9 @@ set(defs
   CNRECS.DEF
 )
 
+# User Option
+option(USE_XMODULE "Add XMODULE to the build." OFF)
+
 macro(c_preprocess file)
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
@@ -129,7 +132,6 @@ set(source
   VRPAK.CPP
   WFPAK.CPP
   XIOPAK.CPP
-  #XMODULE.CPP     # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
   YACAM.CPP
 )
 
@@ -196,9 +198,16 @@ set(headers
   VRPAK.H
   WFPAK.H
   XIOPAK.H
-  #XMODULE.H     # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
   YACAM.H
 )
+
+if (USE_XMODULE)
+  list(APPEND source XMODULE.CPP) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
+  list(APPEND headers XMODULE.H) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
+  message(STATUS "Adding xmodule")
+else()
+  message(STATUS "Ignode xmodule")
+endif()
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
@@ -236,6 +245,7 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+target_compile_definitions(CSE PRIVATE USE_XMODULE=${USE_XMODULE})
 
 set(libs
   glad
