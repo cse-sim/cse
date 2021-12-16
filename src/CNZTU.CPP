@@ -1258,13 +1258,13 @@ RC ZNR::ztuCompute() 		// Compute ("refine") all terminals for zone: subhour com
 	if (i.znModel == C_ZNMODELCH_CNE)
 	{ 	// "traditional" CSE zone model (conditioned by terminals)
 		if (spCf)  			// if a setpoint has changed
-		{	E( ztuMdSeq() )	// Build zone mode sequence table for zone.  Check setpoint relations.
+		{	CSE_E( ztuMdSeq() )	// Build zone mode sequence table for zone.  Check setpoint relations.
 							// Init to a middle mode so will pass thru setpoint modes b4 max'ing out, for autoSize.
 			ztuCf++;		// sp change can change all q's
 		}
 
 		if (ztuCf)
-			E( ztuMode() )	// Determine zone mode md, temp tz, tstat-ctrl'd tu outputs, etc.
+			CSE_E( ztuMode() )	// Determine zone mode md, temp tz, tstat-ctrl'd tu outputs, etc.
 							//  resets some .ztuCf priors. may do ah->ahEstimate.
 		else
 			printf( "YAK\n");

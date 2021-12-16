@@ -372,8 +372,8 @@ const RC RCUNSET = 16385;	// returned by e.g. cuEvalxx if unset data accessed
 const RC RCCANNOT = 16386;	// return code for "cannot do it, try another way" (see tryImInProbe())
 const RC RCNOP = 16390;		// fcn did nothing (due to e.g. specific input values)
 const RC RCEOF = 16391;		// indicates end of input when returned by ppRead, ppM, ppC, etc
-#define E(f)  { rc = (f); if (rc) return rc; }	// if fcn f returns error, return it to caller.  Note RCOK is 0.
-#define EF(f) { if (f) return RCBAD; }			// "fast" variant: return RCBAD for any non-RCOK
+#define CSE_E(f)  { rc = (f); if (rc) return rc; }	// if fcn f returns error, return it to caller.  Note RCOK is 0.
+#define CSE_EF(f) { if (f) return RCBAD; }			// "fast" variant: return RCBAD for any non-RCOK
 
 // SEC additional system error codes -- in addition to c library errno values.
 //   must not conflict with errno values.  See rmkerr:secMsg and xiopak.cpp.

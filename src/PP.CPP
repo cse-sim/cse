@@ -381,7 +381,7 @@ LOCAL RC FC NEAR ppClDefine()
 	RC rc /*=RCOK*/;
 
 // parse identifier
-	E( ppcId(WRN) )		// get identifier to ppIdtx or issue errMsg; decomments.
+	CSE_E( ppcId(WRN) )		// get identifier to ppIdtx or issue errMsg; decomments.
 	id = strsave(ppIdtx);	// save in dm for symbol table
 
 // parse optional "=value".
@@ -420,7 +420,7 @@ LOCAL RC FC NEAR ppClUndefine()
 	RC rc /*=RCOK*/;		// (redundant init removed 12-94 when BCC 32 4.5 warned)
 
 // parse identifier
-	E( ppcId(WRN) )		// get identifier to ppIdtx or issue errMsg, decomments.
+	CSE_E( ppcId(WRN) )		// get identifier to ppIdtx or issue errMsg, decomments.
 
 // check for end of input
 	SI c;
@@ -535,7 +535,7 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 	inDepth = 0;	// file/macro input nesting depth: none yet: insurance
 
 // open input file using internal function
-	E( ppOpI( fname, defex) )		// next.  E returns if error; inits rc.
+	CSE_E( ppOpI( fname, defex) )		// next.  E returns if error; inits rc.
 
 	return rc;				// another return above (E macro)
 }			// ppOpen
@@ -573,7 +573,7 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 		return ppErr( (char *)MH_P0003, fname);	// format & display msg "Cannot open file '%s'" (local), return bad
 
 // allocate file buffer
-	E( dmal( DMPP( isi->buf), BUFSZ, WRN|DMZERO) )	// allocate dm, dmpak.cpp
+	CSE_E( dmal( DMPP( isi->buf), BUFSZ, WRN|DMZERO) )	// allocate dm, dmpak.cpp
 	isi->bufSz = BUFSZ;					// size alloc'd (define at start file)
 
 // flush listing (input echo) buffer so text from multiple files cannot be intermixed in it
@@ -755,7 +755,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		   Handles ends of included files; macro expansion starts and ends;
 		   determines if text in quotes or comment or identifier. */
 
-		E( ppM())  	/* sets is->j to last+1 useable char;
+		CSE_E( ppM())  	/* sets is->j to last+1 useable char;
        			   sets is->inCmt and is->isId.  Always returns identifier separately; code here assumes this.
 			   if fcn value non-RCOK (top level EOF (RCEOF) or error), E() returns it to our caller. */
 		/* >>> if need found, defer non-RCOK return till after #line sent so
@@ -1057,14 +1057,14 @@ LOCAL RC FC NEAR ppM()		// Macro-scan 1 or more input chars from current input
 			return RCOK;		// .. call at this level. NB .inCmt unchanged
 
 		// read input if buffer emptyish; at end inc file/macro, go to previous
-		E( ppRead() )		/* read if < 128 chars; close/pop if nec. Only call.
+		CSE_E( ppRead() )		/* read if < 128 chars; close/pop if nec. Only call.
 				   ret err or top-level EOF (RCEOF) to caller. */
 
 		// scan text, advancing is->j past chars with same is->inCmt and ->isId
-		E( ppmScan() )		// local fcn, below, only call; ret error now.
+		CSE_E( ppmScan() )		// local fcn, below, only call; ret error now.
 		if (is->isId)		// if text is identifier
 		{
-			E( ppmId( &reScan) )	// process macro arg, macro name, $eof, etc. Only call.  Return error now.
+			CSE_E( ppmId( &reScan) )	// process macro arg, macro name, $eof, etc. Only call.  Return error now.
 			// CAUTION: ppmId can move is->buf[], invalidating any pointers
 			if (reScan)		// if needs rescanning for nested macros
 				continue;		// loop to do so
@@ -1109,7 +1109,7 @@ LOCAL RC FC NEAR ppmId( SI *pRescan)
 					*pend = csave;				// restore next char
 					is->i = is->j;   			// pass arg name at this level
 					char* thisArgV = is->argV[i];		// ith argument in reference
-					E( macOpen( 				/* set up expansion (below) */
+					CSE_E( macOpen( 				/* set up expansion (below) */
 						theDef1->argId[i],		/* argument name. used? */
 						thisArgV ? thisArgV : "",	/* argument value... if none, use "" (too few args insurance) */
 						NULL, NULL,			/* no DEFINE, no argV for arg */
@@ -1141,13 +1141,13 @@ LOCAL RC FC NEAR ppmId( SI *pRescan)
 				argV = NULL;		// no arg values
 			else
 			{
-				E( macArgs( theDef2, &argV) )	// only call. just below.
+				CSE_E( macArgs( theDef2, &argV) )	// only call. just below.
 				// CAUTION: macArgs can move is->buf[], invalidating any pointers
 				// CAUTION: can get back here if nested macro reference
 			}
 
 			// initiate expansion
-			E( macOpen( theDef2->id, theDef2->text, theDef2, argV, tyMacro) )	// set up expansion (below)
+			CSE_E( macOpen( theDef2->id, theDef2->text, theDef2, argV, tyMacro) )	// set up expansion (below)
 
 			//after success, increment ref counts of heap blocks, to make #clear during a macro safe, 11-95.
 			dmIncRef( DMPP( theDef2));		// inc ref count of definition (dmpak.cpp). ppClI decRefs (with dmfree).
@@ -1207,14 +1207,14 @@ LOCAL RC FC NEAR macArgs(
 // allocate array for pointers to argument values
 
 	// note one extra pointer is allocated and left NULL
-	E( dmal( (DMP *)pArgV, sizeof( char **) * (theDef->nA+1), WRN|DMZERO ) )
+	CSE_E( dmal( (DMP *)pArgV, sizeof( char **) * (theDef->nA+1), WRN|DMZERO ) )
 
 // deblank between macro name and argument list
 
 	// note macArgC and callees decomment and communicate to ppC() about newlines in file via is->nlsNotRet.
 	SI c;
 	do
-		E( macArgC( &c) )	// get char, rif eof/error (unexpected)
+		CSE_E( macArgC( &c) )	// get char, rif eof/error (unexpected)
 	while (isspaceW(c));		// pass whitespace
 
 // '(' begins argument list
@@ -1230,7 +1230,7 @@ LOCAL RC FC NEAR macArgs(
 	for (SI i = 0;  ;  )
 	{
 		char arg[ARGMAX+1];		// space for arg and \0
-		E( macArg( theDef, arg, &c) )	// scan to , or ) not in () "" or cmt
+		CSE_E( macArg( theDef, arg, &c) )	// scan to , or ) not in () "" or cmt
 		if (i < theDef->nA)		// if not too many args
 			(*pArgV)[i] = strsave(arg);	// arg to dm (actual size); ptr to arg pointers array
 		i++;				// count completed args
@@ -1253,7 +1253,7 @@ LOCAL RC FC NEAR macArgs(
 	// note macro reference code substitutes "" for missing arg (null argV)
 
 	return RCOK;		// good return
-	// additional returns above (including in 'E' macros)
+	// additional returns above (including in 'CSE_E' macros)
 }							// macArgs
 //==========================================================================
 LOCAL RC FC NEAR macArg( DEFINE *theDef, char *arg, SI *pC)
@@ -1271,7 +1271,7 @@ LOCAL RC FC NEAR macArg( DEFINE *theDef, char *arg, SI *pC)
 	{
 
 		// get char, decommented, return eof/error (messaged). Sets is->inCmt, to 0 if not in [comment/]quotes.
-		E( macArgC( &c) )	// local fcn, next.  CAUTION can recursively call ppM, ppmId, macArgs, macArg (here)
+		CSE_E( macArgC( &c) )	// local fcn, next.  CAUTION can recursively call ppM, ppmId, macArgs, macArg (here)
 		// process char
 		if (is->inCmt==0)		// if not in quotes nor comment
 		{
@@ -1307,7 +1307,7 @@ endArg: ;			// come here on comma or ) not in () or "" or comment
 	// c is next character, ) or ,
 	*pC = c;					// return next char to caller
 	return RCOK;				// good return
-	// other returns above (E macro)
+	// other returns above (CSE_E macro)
 #undef ARGMAX
 }		// macArg
 
@@ -1372,13 +1372,13 @@ LOCAL RC FC NEAR macArgC( SI *pC)
 		}
 		else			// normally
 		{
-			E( macArgCi( &c) )	// get char, set .inCmt / rif err/eof (msged)
+			CSE_E( macArgCi( &c) )	// get char, set .inCmt / rif err/eof (msged)
 
 			// strip \-newlines now, so work right in "texts"
 
 			if (c=='\\')
 			{
-				E( macArgCi( &maCNext) )	// char after '\'
+				CSE_E( macArgCi( &maCNext) )	// char after '\'
 				if (maCNext=='\n')		// if \-newline
 				{
 					maCNext = 0;		// forget both of them
@@ -1404,7 +1404,7 @@ LOCAL RC FC NEAR macArgC( SI *pC)
 		macArgLastC = c;		// save char for reUse after unget
 		*pC = c;			// return char to caller
 		return RCOK;		// good return
-		// more returns above (E macro)
+		// more returns above (CSE_E macro)
 	}		// for ( ; ; )
 	/*NOTREACHED */
 }					// macArgC
@@ -3020,12 +3020,12 @@ elifJoins: ;			// set compile on or off per 'value'
 		break;				// checks for end line
 
 	case PPCIFNDEF:
-		E( ppcId( WRN) )				// decode identifier to ppIdtx, msg & ret bad now if err
+		CSE_E( ppcId( WRN) )				// decode identifier to ppIdtx, msg & ret bad now if err
 		value = (RCOK != syLu( &defSytb, ppIdtx, 0, NULL, NULL));	// look up id, RCOK if found, sytb.cpp
 		goto ifsJoin;					// go add ifStk level, using 'value'
 
 	case PPCIFDEF:
-		E( ppcId( WRN) )				// decode identifier to ppIdtx, msg & ret bad now if err
+		CSE_E( ppcId( WRN) )				// decode identifier to ppIdtx, msg & ret bad now if err
 		value = (RCOK==syLu( &defSytb, ppIdtx, 0, NULL, NULL));	// look up id, RCOK if found, sytb.cpp
 ifsJoin:
 		;
@@ -3055,7 +3055,7 @@ ifsJoin:
 			noCheckEnd++;			// hence can't check end line
 		}
 		else
-		{	E( ppCex( &value, ppcWord) )	// evaluate expr
+		{	CSE_E( ppCex( &value, ppcWord) )	// evaluate expr
 		}
 		goto ifsJoin;		// join ifdef to add ifStk level
 
@@ -3081,7 +3081,7 @@ ifsJoin:
 		}
 		else				// conditionally turn compile on
 		{
-			E( ppCex( &value, ppcWord) )	// evaluate expr
+			CSE_E( ppCex( &value, ppcWord) )	// evaluate expr
 		}
 		goto elifJoins;	// join #else case. uses 'value'.
 
@@ -3121,16 +3121,16 @@ ifsJoin:
 				break;
 
 			case PPCUNDEF:
-				E( ppcId( WRN) )	// decode identifier to ppIdtx, msg & ret bad now if err
+				CSE_E( ppcId( WRN) )	// decode identifier to ppIdtx, msg & ret bad now if err
 				ppDelDefine();   	// undefine ppIdtx, local, below
 				break;				// go check for garbage after name
 
 			case PPCDEFINE:
-				E( doDefine(0))		// do #define (local fcn below), ret if error, RCFATAL if out of memory
+				CSE_E( doDefine(0))		// do #define (local fcn below), ret if error, RCFATAL if out of memory
 				break;				// go verify whole command used (insurance)
 
 			case PPCREDEFINE:
-				E( doDefine(1))		// do #redefine (local fcn below), ret if err, RCFATAL if out of memory
+				CSE_E( doDefine(1))		// do #redefine (local fcn below), ret if err, RCFATAL if out of memory
 				break;			// go verify whole command used (insurance)
 
 			case PPCCLEAR:
@@ -3139,7 +3139,7 @@ ifsJoin:
 
 			case PPCCEX:		// eval/print const expr at compile time:
 				// development aid
-				E( ppCex( &value, ppcWord) )		// eval const expr
+				CSE_E( ppCex( &value, ppcWord) )		// eval const expr
 				printf( " %d ", (INT)value);   		// display value now
 				break;
 
@@ -3198,7 +3198,7 @@ unex:     // CHECKEND macro comes here
 	}
 	return RCOK;
 
-	// additional (error) returns above, incl in E macros
+	// additional (error) returns above, incl in CSE_E macros
 #undef CHECKEND
 }						// ppcDoI
 //==========================================================================
@@ -3217,7 +3217,7 @@ const int MAXVAL = 16384;	// max #define value size.
 
 // get/check id to be #defined
 
-	E( ppcId( WRN) )			// decode identifier to ppIdtx[], return bad if error
+	CSE_E( ppcId( WRN) )			// decode identifier to ppIdtx[], return bad if error
 	if (redef)				// if is #redefine cmd
 		ppDelDefine();			// delete ppIdtx[] if defined, below
 	// else: addDefine checks for redefinitions.
@@ -3312,7 +3312,7 @@ RC FC ppDelDefine() 	// undefine identifier in ppIdtx[]
 	RC rc;
 
 // delete symbol table entry, returning ptr to block
-	E( syDel( &defSytb, 0/*tokTy*/, 1/*casi*/, 0/*nearId*/, ppIdtx, 0/*undef ok*/, (void **)&theDef) )	// sytb.cpp. Only call 11-94.
+	CSE_E( syDel( &defSytb, 0/*tokTy*/, 1/*casi*/, 0/*nearId*/, ppIdtx, 0/*undef ok*/, (void **)&theDef) )	// sytb.cpp. Only call 11-94.
 
 // free dynamic memory the DEFINE points to, then DEFINE block itself
 	return clearOneDefine( 0, theDef);  			// just below
@@ -3366,7 +3366,7 @@ RC FC addDefine( 	// enter definition in preprocessor symbol table
 	}
 
 // not defined.  Make up definition block.
-	E( dmal( DMPP( defp),				// alloc sym tab blk in dm
+	CSE_E( dmal( DMPP( defp),				// alloc sym tab blk in dm
 		sizeof(*defp) + nA * sizeof(defp->argId),
 		WRN | DMZERO ) )
 	defp->id = id;			// put definition in block
@@ -3382,7 +3382,7 @@ RC FC addDefine( 	// enter definition in preprocessor symbol table
 *    rc = syAdd( &defSytb, 0, 0, defp, 0, 0);			// add to symbol table, sytb.cpp.  rets RCFATAL if out of memory
 *    printf("after adding '%s':\n", id);
 *	 dumpDefines();
-*    return rc;							// more returns above, incl E macros
+*    return rc;							// more returns above, incl CSE_E macros
 #elif 0
 x    return syAdd( &defSytb, 0, 0, defp, 0, 0); 	// add to symbol table, sytb.cpp.  returns RCFATAL if out of memory.
 x							// only add to this symbol table, 10-93.
@@ -3392,7 +3392,7 @@ x							// only add to this symbol table, 10-93.
 							   everywhere -- also FUNCTION defintion syAdd in cuparse.cpp.
 							   Only add to this symbol table, 10-93. */
 #endif
-	// more returns above, incl E macros
+	// more returns above, incl CSE_E macros
 }					// addDefine
 //==========================================================================
 LOCAL void FC NEAR clearAllDefines()	// clear all entries in defSytb, 11-1-95.
@@ -3521,13 +3521,13 @@ LOCAL RC FC NEAR cex( SI *pValue, char *tx)   	// evaluate preprocessor const ex
 	RC rc;
 
 	ppParSp = ppParStk-1;		// init evaluation stack
-	E( ceval( PREOF, tx) )		// evaluate expression
+	CSE_E( ceval( PREOF, tx) )		// evaluate expression
 	if (ppParSp != ppParStk + 0)	// check ppParStk level: devel aid
 		return ppErr( (char *)MH_P0050, 	// "Internal error:\n    parse stack level %d not 1 after constant expression"
 					  INT((ppParSp-ppParStk) + 1) );
 	*pValue = ppParSp->value;		// return result
 	return RCOK;
-	// other returns above (E macros)
+	// other returns above (CSE_E macros)
 }		// cex
 //==========================================================================
 LOCAL RC FC NEAR ceval( SI toprec, char *tx)     	// interpret (parse/execute) constant expression inner recursive fcn
@@ -3548,7 +3548,7 @@ LOCAL RC FC NEAR ceval( SI toprec, char *tx)     	// interpret (parse/execute) c
 	printif( ppTrace," ceval(%d) ", (INT)toprec );	// cueval.c
 
 	ppPrec = 0;		// nothing yet: prevent "operator missing before" message if expression starts with operand
-	E( ppNewSf()) 	// start new parse stack frame for this expression
+	CSE_E( ppNewSf()) 	// start new parse stack frame for this expression
 
 // loop over tokens of sufficiently high precedence
 	for ( ; ; )
@@ -3575,18 +3575,18 @@ LOCAL RC FC NEAR ceval( SI toprec, char *tx)     	// interpret (parse/execute) c
 			// unary integer operator.  ppPrec-1 used for toprec to do r to l.
 		case CSUNN:  // "unary numeric" is integer only in preprocessor
 		case CSUNI:
-			E( ppUnOp( ppPrec-1, PSOP( ppOpp->v1), ppOpp->tx))
+			CSE_E( ppUnOp( ppPrec-1, PSOP( ppOpp->v1), ppOpp->tx))
 			break;
 
 			// binary integer operators  |  &  ^  >>  <<  %
 		case CSBIN:  // "binary numeric" is same here
 		case CSBII:
-			E( ppBiOp( ppPrec, ppOpp->v1, ppOpp->tx))
+			CSE_E( ppBiOp( ppPrec, ppOpp->v1, ppOpp->tx))
 			break;
 
 			// comparisons: binary numeric ops with integer result
 		case CSCMP:
-			E( ppBiOp( ppPrec, ppOpp->v1, ppOpp->tx))
+			CSE_E( ppBiOp( ppPrec, ppOpp->v1, ppOpp->tx))
 			//ppParSp->ty = TYSI;  in pp, already set from arg.
 			break;
 
@@ -3594,7 +3594,7 @@ LOCAL RC FC NEAR ceval( SI toprec, char *tx)     	// interpret (parse/execute) c
 		case CSGRP:
 			NOVALUECHECK;
 			svOpp = ppOpp;			// save ppOpp thru ppUnOp
-			E( ppUnOp( PRRGR, 0, ppOpp->tx) )
+			CSE_E( ppUnOp( PRRGR, 0, ppOpp->tx) )
 			{
 				char ss[2];   			// { for scope for C
 				ss[0] = (char)svOpp->v2;	// char to string for msg
@@ -3644,14 +3644,14 @@ notInPp:
 				|| ppParSp->ty != TYSI )				// if no preceding value
 					return ppErr( (char *)MH_P0056, ppOpp->tx );	// "Preceding constant integer value expected before %s"
 				// then-expr.  NB prec of ':' is prec of '?' - 1.
-				E( ceval( ppPrec-1, ppOpp->tx) )	// get a value, new ppParStk frame.
+				CSE_E( ceval( ppPrec-1, ppOpp->tx) )	// get a value, new ppParStk frame.
 				EXPECT( CUTCLN, ":")		// err if : not next
 				// else-expression
-				E( ceval( ppPrec, ppOpp->tx) )	// get value, another frame
+				CSE_E( ceval( ppPrec, ppOpp->tx) )	// get value, another frame
 				// resulting value: replace cond with then- or else-value
 				(ppParSp-2)->value =
 				(ppParSp-2)->value ? (ppParSp-1)->value : ppParSp->value;
-				E(ppPopSf())  E(ppPopSf())		// discard the 2 frames
+				CSE_E(ppPopSf())  CSE_E(ppPopSf())		// discard the 2 frames
 				//ppParSp->ty = TYSI;		// already true
 				//ppPrec = PROP;			// needed if can be < PROP
 				break;
@@ -3685,7 +3685,7 @@ notInPp:
 	ppUnToke();					// unget token, local, only call
 	printif( ppTrace," exprOk ");
 	return RCOK;				// added ppParStk entry returns .value
-	// other returns above (including E macros)
+	// other returns above (including CSE_E macros)
 }			// ceval
 //==========================================================================
 LOCAL RC NEAR ppUnOp( 	// parse arg to unary operator and execute
@@ -3698,8 +3698,8 @@ LOCAL RC NEAR ppUnOp( 	// parse arg to unary operator and execute
 	RC rc;
 
 	// why is it that NOVALUECHECK not needed here? rob 9-30-90.
-	E( ppPopSf() )		// discard empty stack frame of calling ceval as next ceval will make another. right? rob 9-90.
-	E( ceval( toprec, tx) )  		// get expression to appropriate prec
+	CSE_E( ppPopSf() )		// discard empty stack frame of calling ceval as next ceval will make another. right? rob 9-90.
+	CSE_E( ceval( toprec, tx) )  		// get expression to appropriate prec
 	// always returns ppPrec >= PROP, right?
 	v = ppParSp->value;			// fetch operand to shorten cases
 	/* 9-26-92, BC 3.1: observed this switch badly compiled: used same register (bx)
@@ -3723,7 +3723,7 @@ LOCAL RC NEAR ppUnOp( 	// parse arg to unary operator and execute
 	ppParSp->value = v;				// put result back
 	ppParSp->ty = TYSI;				// have integer value
 	return RCOK;
-	// other returns above (E macros)
+	// other returns above (CSE_E macros)
 }			// ppUnOp
 //==========================================================================
 LOCAL RC FC NEAR ppBiOp( 	// parse 2nd arg to binary operator and execute
@@ -3738,7 +3738,7 @@ LOCAL RC FC NEAR ppBiOp( 	// parse 2nd arg to binary operator and execute
 	if ( ppParSp < ppParStk
 	|| ppParSp->ty != TYSI )			// if preceding value wrong type
 		return ppErr( (char *)MH_P0060, tx );	// "Preceding constant integer value expected before %s"
-	E( ceval( toprec, tx) )	  		// get following expression (v)
+	CSE_E( ceval( toprec, tx) )	  		// get following expression (v)
 	u = (ppParSp-1)->value;  		// fetch operands to shorten cases
 	v = ppParSp->value;			// ..
 	switch (opSi)			// do operation
@@ -3796,10 +3796,10 @@ LOCAL RC FC NEAR ppBiOp( 	// parse 2nd arg to binary operator and execute
 	default:
 		ppErr( (char *)MH_P0061, (INT)opSi );    	// "ppBiOp() internal error: unrecognized 'opSi' value %d"
 	}
-	E( ppPopSf() )		// pop 2nd ppParStk frame (discard v)
+	CSE_E( ppPopSf() )		// pop 2nd ppParStk frame (discard v)
 	ppParSp->value = u;		// store result in 1st frame
 	return RCOK;
-	// other returns above (E macros)
+	// other returns above (CSE_E macros)
 }			// ppBiOp
 //===========================================================================
 LOCAL RC FC NEAR ppNewSf()		// start new parse stack frame: call at start (sub)expression

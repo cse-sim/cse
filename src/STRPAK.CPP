@@ -298,7 +298,7 @@ char * FC strpad( 		// Pad a string to length n in place
 /* Returns pointer to s.  If strlen(s) >= n, no action is performed.
    Otherwise, pads is appended to s until n is reached. */
 {
-	register SI i, j;
+	SI i, j;
 	SI lp;
 
 	i = (SI)strlen(s);
@@ -457,7 +457,7 @@ char * FC strBsUnDouble( char *s)	// un-double any \'s in string: for reversing 
 
 // returns given string with \\ -> \ IN PLACE
 {
-	register SI is = 0, ir = 0;			// source, result offsets
+	SI is = 0, ir = 0;			// source, result offsets
 
 	/*lint -e720 boolean test of assignment */
 	while ( (*(s+ir++) = *(s+is)) != 0 )	// move char AND test for null term

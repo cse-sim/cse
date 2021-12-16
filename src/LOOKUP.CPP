@@ -85,7 +85,7 @@ SI FC looksw(			// string/word table lookup
 /* Returns value in table corresponding to name.  If not found,
    returns entry corresponding to NULL in table */
 {
-	register SI i = -1;
+	SI i = -1;
 	while ((swtab+(++i))->key != NULL)
 	{
 		if (strcmpi(string,(swtab+i)->key) == 0)
