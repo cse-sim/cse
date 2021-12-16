@@ -320,7 +320,7 @@ RC FC exPile(		// compile an expression from current input
 								   "    called with TYNC wanTy 0x%x but 2-byte choiDt 0x%x" */
 	/* compile expression from current input file to pseudocode OR constant value */
 
-	E( 				/* E: if not RCOK, return error code rc now. */
+	CSE_E( 				/* CSE_E: if not RCOK, return error code rc now. */
 		exOrk(   			/* cuparse.cpp */
 			toprec, 			/* terminating precedence, exOrk defaults. */
 			wanTy==TYLLI ? TYSI : wanTy,	/* for limited-long-integer get 16-bit value (4 byte size used to hold nandle) */
@@ -337,7 +337,7 @@ RC FC exPile(		// compile an expression from current input
 	/* check/return constant now */
 	if (isKon)
 	{
-		E( uniLimCt( fdTy, gotTy, _ermTx, &v) )	// check limits & apply units, with errMsg suitable for compile time. below.
+		CSE_E( uniLimCt( fdTy, gotTy, _ermTx, &v) )	// check limits & apply units, with errMsg suitable for compile time. below.
 
 		if ( gotTy==TYSI				// return the constant value in destination.  SI has 16 bit storage only
 		||  gotTy==TYCH && choiDt & DTBCHOICB )	// choice types with this bit on are 16 bits only
@@ -358,7 +358,7 @@ RC FC exPile(		// compile an expression from current input
 	else
 	{
 		EXTDUMPIF("exPile start");
-		E( extEntry( b, i, fn, &h) )  		// find existing entry to reuse, or add new expr table entry, return h / rif error
+		CSE_E( extEntry( b, i, fn, &h) )  		// find existing entry to reuse, or add new expr table entry, return h / rif error
 
 		// if got an "evaluate-at-end/post-interval" expression, indicate in use class for eval at correct time
 		if (gotEvf & (EVENDIVL|EVPSTIVL))
@@ -410,7 +410,7 @@ RC FC exPile(		// compile an expression from current input
 		*pGotTy = gotTy;		// return actual type gotten
 	if (pGotEvf)
 		*pGotEvf = gotEvf;	// return actual evf gotten
-	return rc;			// addl return(s) above, including E macros
+	return rc;			// addl return(s) above, including CSE_E macros
 }		// exPile
 
 //===========================================================================
@@ -534,7 +534,7 @@ LOCAL RC FC NEAR extAdd( USI *ph)
 // expression table is full, or not yet allocated.  (re)alloc it and assign next expresion number.
 	RC rc;
 	USI nuNal = exNal + EXTAB_NADD;
-	E( dmral( DMPP( exTab),
+	CSE_E( dmral( DMPP( exTab),
 				nuNal*sizeof(EXTAB),
 				WRN|DMZERO ) )		// zero added space; return bad if out of memory
 	exNal = nuNal;
@@ -850,7 +850,7 @@ RC FC exWalkRecs()
 #ifdef STATREF
 0						addStore( EXN(v), ancN, i, o );	// register expr use
 #else
-						E( addStore( EXN(v), w) )		// register expr use at w
+						CSE_E( addStore( EXN(v), w) )		// register expr use at w
 #endif
 				}
 			}
@@ -904,7 +904,7 @@ LOCAL RC FC NEAR addStore( 		// register use of expression h in basAnc record
 	{
 		USI nuNal = ex->whValNal + WHVAL_NADD;
 		RC rc;
-		E( dmral( DMPP( ex->whVal), nuNal * sizeof(WHERE), WRN) )  	// (re)allocate heap block, dmpak.cpp
+		CSE_E( dmral( DMPP( ex->whVal), nuNal * sizeof(WHERE), WRN) )  	// (re)allocate heap block, dmpak.cpp
 		ex->whValNal = nuNal;
 	}
 	ex->whVal[ex->whValN++] = w;			// store ancN-i-o in next available store-where slot
@@ -939,7 +939,7 @@ RC addChafIf (		// conditionally register change flag in basAnc record for expr.
 	{
 		USI nuNal = ex->whChafNal + WHCHAF_NADD;
 		RC rc;
-		E( dmral( DMPP( ex->whChaf), nuNal * sizeof(WHERE), WRN) )	// (re)allocate heap (dm) block, dmpak.cpp
+		CSE_E( dmral( DMPP( ex->whChaf), nuNal * sizeof(WHERE), WRN) )	// (re)allocate heap (dm) block, dmpak.cpp
 		ex->whChafNal = nuNal;
 	}
 	WHERE *w = &ex->whChaf[ ex->whChafN++];	// point next available change-flag-where for expression
@@ -1278,7 +1278,7 @@ x						strsave( *(char **)(pVal), (const char *)v);
 
 			}   // whChaf loop
 	}	// if (isChanged)
-	return rc;			// additonal return(s) above (including E macros)
+	return rc;			// additonal return(s) above (including CSE_E macros)
 }		// exEvUp
 
 //===========================================================================

@@ -891,7 +891,7 @@ LOCAL RC FC NEAR funcDef( 	// compile function definition
 		return perNx( (char *)MH_S0011 );    		// "'=' expected"
 
 	/* init to compile code */
-	E( itPile( ps, sizeof(ps) ) )		// below. Put code in stack for now.  CAUTION defaults evfOk, ermTx.
+	CSE_E( itPile( ps, sizeof(ps) ) )		// below. Put code in stack for now.  CAUTION defaults evfOk, ermTx.
 
 	/* compile expression of fcn's type, using fcn's dummy arguments */
 
@@ -918,24 +918,24 @@ LOCAL RC FC NEAR funcDef( 	// compile function definition
 	tokeIf2( CUTSEM, CUTCOM);				/* if terminator is ';' or ?comma, pass it.
 		    					   Accept but do not pass (next) verb or type (or ')' or ']' ) */
 	/* emit return code */
-	E( emit2( PSRETA) )  				// pop words and return absolute
-	E( emit2( off) )					// # (arg) words to discard
-	E( emit2( stb.sz / sizeof(SI) ) )			// # return value words to keep (move)
+	CSE_E( emit2( PSRETA) )  				// pop words and return absolute
+	CSE_E( emit2( off) )					// # (arg) words to discard
+	CSE_E( emit2( stb.sz / sizeof(SI) ) )			// # return value words to keep (move)
 
 	/* code to dm */
-	E( finPile( &codeSize) )				// terminate compilation / get size
-	E( dmal( DMPP( stb.ip), codeSize, WRN) )		// alloc dm space, dmpak.cpp
+	CSE_E( finPile( &codeSize) )				// terminate compilation / get size
+	CSE_E( dmal( DMPP( stb.ip), codeSize, WRN) )		// alloc dm space, dmpak.cpp
 	memcpy( stb.ip, ps, codeSize);   			// put pseudocode in the space
 
 	/* allocate and fill symbol table block in dm */
-	E( dmal( DMPP( p),    					/* alloc heap space, dmpak.cpp */
+	CSE_E( dmal( DMPP( p),    					/* alloc heap space, dmpak.cpp */
 		sizeof(UFST) + (stb.nA - 1)*sizeof( UFARG),
 		WRN) )
 	memcpy( p, &stb, sizeof(UFST)-sizeof( UFARG) );	// basic info
 	memcpy( p->arg, arg, stb.nA * sizeof( UFARG) );	// arg info
 
 	/* add to symbol table */
-	E( syAdd( &symtab, CUTUF, TRUE /* case insens */, p, 0) )  	// sytb.cpp. changed to case-insens 11-94.
+	CSE_E( syAdd( &symtab, CUTUF, TRUE /* case insens */, p, 0) )  	// sytb.cpp. changed to case-insens 11-94.
 
 	return RCOK;					// also many error returns above.
 	// note dm string storage for id's is NOT (yet) recovered on error returns.
@@ -2060,7 +2060,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
    used after compile to associate with IMPORTFILE objects,
    and at runtime to access IMPORTFILEs by Import() pseudo-ops. */
 {
-	// no ERVARS/ERSAVE/ERREX needed because caller does. Use E not EE macros.
+	// no ERVARS/ERSAVE/ERREX needed because caller does. Use CSE_E not EE macros.
 	RC rc /*=RCOK*/;
 
 // get source file name and line: these are put into IFFNM record and into pseudo-code for use in runtime error messages.
@@ -2074,11 +2074,11 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 
 // first argument: name of ImportFile object.
 	// cuparse seems to have no intended support for contants, but expTy then konstize should work. 2-94.
-	E( expTy( PRCOM, TYID, (char *)f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
+	CSE_E( expTy( PRCOM, TYID, (char *)f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
 	SI isK;  						// receives TRUE if konstize detects or makes constant
 	void *pv;						// receives pointer to const value (ptr to ptr for TYSTR)
 	// 							(search EMIKONFIX re correcting apparent bug in ptr ptr return 2-94)
-	E( konstize( &isK, &pv, 0) )  			/* test expression just compiled: detect constant value;
+	CSE_E( konstize( &isK, &pv, 0) )  			/* test expression just compiled: detect constant value;
     							   else evaluate now to make constant value if possible. */
 	if (!isK)						// if not contant (and could not be make constant)
 		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
@@ -2094,12 +2094,12 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 
 // second argument: field name or number.
 #if 0
-*    E( expTy( PRCOM, TYSI|TYSTR, (char *)f->id, 2) )	// get integer or string expr for 2nd argument
+*    CSE_E( expTy( PRCOM, TYSI|TYSTR, (char *)f->id, 2) )	// get integer or string expr for 2nd argument
 #else	// 2-94 believe this will allow unquoted field names
-	E( expTy( PRCOM, TYSI|TYID, (char *)f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
+	CSE_E( expTy( PRCOM, TYSI|TYID, (char *)f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
 #endif
 	BOO byName = parSp->ty==TYSTR;			// TYSI is by field number. Others should not return.
-	E( konstize( &isK, &pv, 0) )			// detect or make constant value if possible
+	CSE_E( konstize( &isK, &pv, 0) )			// detect or make constant value if possible
 	if (!isK)						// if not constant
 		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
@@ -2136,19 +2136,19 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 	SI fnmi;		// receives field name index for named field (adds table entry first time name seen)
 	IVLCH imFreq;	// receives import frequency (hour-day-month-year) if yet given, else a safe assumption
 	if (byName)
-		E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fieldName, &fnmi) )	// cncult4.cpp
+		CSE_E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fieldName, &fnmi) )	// cncult4.cpp
 		else
-			E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fnr) )		// error returns unlikely -- most errors ABT.
+			CSE_E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fnr) )		// error returns unlikely -- most errors ABT.
 
-			E( dropSfs( 0, 2) )		// now drop top 2 stack frames: code for arguments: constants, values already used or moved.
+			CSE_E( dropSfs( 0, 2) )		// now drop top 2 stack frames: code for arguments: constants, values already used or moved.
 
 // emit code:  op, iffnmi, fnr or fnmi, fileIx, line.  Is added to frame started by caller.
 
-			E( emit( byName ? f->op2 : f->op1) )	// from table: op1 for field by number, op2 by name
-			E( emit( iffnmi) )				// IFFNM record subscript, to identify file
-			E( emit( byName ? fnmi : fnr) )		// field number, or name index (IFFNM.fnmt[] subscript)
-			E( emit( (SI)fileIx ) )			// emit input file index, for run errmsgs
-			E( emit( line) )				// emit line number ditto
+			CSE_E( emit( byName ? f->op2 : f->op1) )	// from table: op1 for field by number, op2 by name
+			CSE_E( emit( iffnmi) )				// IFFNM record subscript, to identify file
+			CSE_E( emit( byName ? fnmi : fnr) )		// field number, or name index (IFFNM.fnmt[] subscript)
+			CSE_E( emit( (SI)fileIx ) )			// emit input file index, for run errmsgs
+			CSE_E( emit( line) )				// emit line number ditto
 
 // set result type, precedence, evaluation frequency
 
@@ -2192,7 +2192,7 @@ LOCAL RC FC NEAR fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn(
 
 	if (tokeNot(CUTLPR))					// get '(' after fcn name
 		return perNx( (char *)MH_S0034, (char *)f->id );		// "'(' missing after built-in function name '%s'". cast to far.
-	E( fcnArgs( f, 0, wanTy, 0, &aTy, NULL, NULL, NULL, NULL) )	// parse args, ret bad if err
+	CSE_E( fcnArgs( f, 0, wanTy, 0, &aTy, NULL, NULL, NULL, NULL) )	// parse args, ret bad if err
 
 // if '=' next in input, value is being ASSIGNED TO function
 
@@ -2210,7 +2210,7 @@ LOCAL RC FC NEAR fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn(
 *
 *       char tx[50]; 					// must be in stack
 *       sprintf( tx, "%s(...)=", (char *)f->id);  	// for "after ___" in errmsgs
-*       E( expTy(					/* get expr. sets nextPrec. */
+*       CSE_E( expTy(					/* get expr. sets nextPrec. */
 *                 max( toprec, PRASS-1), 		/* parse to current toprec except stop b4 , or ) */
 *                 f->resTy, 				/* type: fcn's result type */
 *                 tx, 0) )
@@ -2222,8 +2222,8 @@ LOCAL RC FC NEAR fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn(
 *   // re code for fcn assignment
 *
 *       if (wanTy != TYDONE)				// if set is nested
-*          E (emiDup())					// dup run stack top: 1 copy to store, 1 copy for nested use in expr.
-*       E( combSf( ) )					// combine expr with preceding code
+*          CSE_E (emiDup())					// dup run stack top: 1 copy to store, 1 copy for nested use in expr.
+*       CSE_E( combSf( ) )					// combine expr with preceding code
 *       // emiFcn is called after 'else'.  Ok to do combSf 1st.
 *       // parSp->ty already correct
 *       parSp->did = 1;  				// say expr has had an effect: value stored.
@@ -2249,11 +2249,11 @@ LOCAL RC FC NEAR fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn(
 	}
 	if (!(f->f & VC))					// (VC code is done in fcnArgs)
 #ifdef LOKFCN
-*       E( emiFcn( f, onLeft, aTy) ) 			// emit code for fcn, below
+*       CSE_E( emiFcn( f, onLeft, aTy) ) 			// emit code for fcn, below
 #elif defined(LOKFCN) || defined(LOCSV)
-*       E( emiFcn( f, 0, aTy) ) 				// emit code for fcn, below
+*       CSE_E( emiFcn( f, 0, aTy) ) 				// emit code for fcn, below
 #else
-		E( emiFcn( f, aTy) ) 				// emit code for fcn, below
+		CSE_E( emiFcn( f, aTy) ) 				// emit code for fcn, below
 #endif
 		return rc;
 }			// fcnReg
@@ -2288,8 +2288,8 @@ LOCAL RC FC NEAR fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn(
 
 	if (f->f & F1)	// hourval(): implicit $hour index
 	{
-		E( newSf() )			// make parStk frame to hold code
-		E( emiLod( TYSI, &Top.iHr) )   	// load hour (0-23) variable
+		CSE_E( newSf() )			// make parStk frame to hold code
+		CSE_E( emiLod( TYSI, &Top.iHr) )   	// load hour (0-23) variable
 		parSp->ty = TYSI;		// (probably unnec to set)
 		parSp->evf |= EVFHR;		// hour changes hourly: don't constize
 		haveIx = 1;			// have index expr in parStk
@@ -2302,7 +2302,7 @@ LOCAL RC FC NEAR fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn(
 	}
 	else		// choose(), choose1(): integer index expression
 	{
-		E( expSi( PRCOM, &isK, &v, f->id, 1) )	// get int expr and konstize
+		CSE_E( expSi( PRCOM, &isK, &v, f->id, 1) )	// get int expr and konstize
 #ifndef RUNT
 		if (isK)					// if index constant
 			optn &= ~16;				/* don't default the default in fcnArgs: our msg below is better than
@@ -2316,7 +2316,7 @@ LOCAL RC FC NEAR fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn(
 
 // get value expressions and ')'
 
-	E( fcnArgs( 	/* parse list of exprs, of any type but all of (or conv to) same type.  ret bad if error. */
+	CSE_E( fcnArgs( 	/* parse list of exprs, of any type but all of (or conv to) same type.  ret bad if error. */
 		   f, 				/* note f->f & (MA|VA) set */
 		   nA0,				/* # args already done: 1 for choose */
 		   wanTy,				/* messy parsing bits may feed thru to value expressions */
@@ -2363,9 +2363,9 @@ o			v = nAnDef;   		// use default (nA-1)
 			   So we suppress def def when choose() index constant (above) or all select() cond-exprs const 0 (fcnArgs). */
 #endif
 		}
-		E( dropSfs( 0, nA-v-1) ) 	// delete value exprs after v'th
-		E( dropSfs( 1, v+haveIx) )  	// del val exprs b4 v'th, and index
-		E( dropJmpIf() )			// delete jmp at end remaining valExpr
+		CSE_E( dropSfs( 0, nA-v-1) ) 	// delete value exprs after v'th
+		CSE_E( dropSfs( 1, v+haveIx) )  	// del val exprs b4 v'th, and index
+		CSE_E( dropJmpIf() )			// delete jmp at end remaining valExpr
 		/* what is left is one choose expr, or one select val-expr (note that
 		   fcnArgs deleted constant true cond-expr of select arg pair) */
 	}
@@ -2375,23 +2375,23 @@ o			v = nAnDef;   		// use default (nA-1)
 		   index value, and fill jumps and combine stack frames of fcn call */
 
 		if (haveIx)			// select uses no dispatch
-			E( emiDisp( f, nA, defa) )	// emit dispatch after index
+			CSE_E( emiDisp( f, nA, defa) )	// emit dispatch after index
 
 			// fill jumps in args to after last arg (current psp value)
 
 			for (i = nA; --i >= 1; )		// for i = nA-1..1: last has no jmp.
-				E (fillJmp(i) )    		// replace 0xffff with offset to psp, rif err
+				CSE_E (fillJmp(i) )    		// replace 0xffff with offset to psp, rif err
 
 				// combine nA or nA+1 stack frames into one (nA args, 1 index)
 
 				for (i = nA+haveIx; --i >= 1; )	// nA or nA-1 times
-					E( combSf() )			// combines top two stack frames
+					CSE_E( combSf() )			// combines top two stack frames
 				}
 
 // constantize and combine with preceding code
 
-	E( konstize( NULL, NULL, 0) )	// eval now if possible. usually redundant due to isK stuff above.
-	E( combSf() )			// combine with preceding stack frame
+	CSE_E( konstize( NULL, NULL, 0) )	// eval now if possible. usually redundant due to isK stuff above.
+	CSE_E( combSf() )			// combine with preceding stack frame
 
 // notes:
 	//result type: same as value argument types, thus final parSp->ty correct.
@@ -2455,12 +2455,12 @@ LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, an
 				}				// .. for purposes of isk/v return
 				else
 				{
-					E( expSi( PRCOM, &tisK, &tv, f->id, uAN+nA0) )		// int expr
+					CSE_E( expSi( PRCOM, &tisK, &tv, f->id, uAN+nA0) )		// int expr
 					if (tokeNot(CUTCOM))
 						return perNx( (char *)MH_S0045,    			// "',' expected. '%s' arguments must be in pairs."
 						(char *)f->id );
-					E( emit( PSPJZ) )   	// pop and branch (around val) if 0
-					E( emit( 0xffff) ) 	// filled after val-expr parsed
+					CSE_E( emit( PSPJZ) )   	// pop and branch (around val) if 0
+					CSE_E( emit( 0xffff) ) 	// filled after val-expr parsed
 					uAN++;			// count an arg for errMsg display
 					selC++;			// say have select cond-expr -- complete arg pair after val-expr.
 				}
@@ -2508,7 +2508,7 @@ LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, an
 
 			// parse argument expression (value-expr for choose or select)
 
-			E( expTy( PRCOM, aWanTy, f->id, uAN+nA0) )	// parse an expr of type.  Makes parStk frame.
+			CSE_E( expTy( PRCOM, aWanTy, f->id, uAN+nA0) )	// parse an expr of type.  Makes parStk frame.
 
 			// check/pass separator
 
@@ -2539,8 +2539,8 @@ LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, an
 			&&  ( tokTy != CUTRPR 	// no jmp after last arg, but..
 			|| defdef) )		// yes jmp before default default
 			{
-				E( emit(PSJMP) )		// append unconditional branch
-				E( emit(0xffff) )		// caller fills later w offset
+				CSE_E( emit(PSJMP) )		// append unconditional branch
+				CSE_E( emit(0xffff) )		// caller fills later w offset
 			}
 
 			// save arg 1 type to ret to caller (also used in switch below)
@@ -2557,22 +2557,22 @@ LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, an
 				// select: if cond-expr constant true, drop it
 				// BUT: we do not drop val-expr for const false cond yet: keep it here for consistent type conversion behavior.
 				if (tisK && tv)
-					E( dropSfs( 1, 1) )			// delete 1 parStk frame 1 frame down
+					CSE_E( dropSfs( 1, 1) )			// delete 1 parStk frame 1 frame down
 					else
 					{
 						// select(): conditionally hold space for later val-expr conversn
 						if (parSp->ty==TYSI)			// if SI, might float later
 						{
-							E( cnvPrevSf( 0, PSNOP, 0) )		// emit place holder (b4 jmp). PSNOPs must be emitted via cnvPrevSf 10-95.
+							CSE_E( cnvPrevSf( 0, PSNOP, 0) )		// emit place holder (b4 jmp). PSNOPs must be emitted via cnvPrevSf 10-95.
 							/* later cnvPrevSf from utconvN from MA switch will store PSFLOAT over PSNOP, not move expr,
 							   & thus not invalidate offset of cond jmp which is filled and combSf'd next. */
 						}
 						if (parSp->ty==TYSTR)			// if string, might choice it later, likewise
-							E( cnvPrevSf( 0, PSNOP, PSNOP) )	// emit place holder (b4 jmp): 2 slots, for PSSCH, choiDt.
+							CSE_E( cnvPrevSf( 0, PSNOP, PSNOP) )	// emit place holder (b4 jmp): 2 slots, for PSSCH, choiDt.
 							// select(): fill jump after cond-expr (around val-expr) and combSf
-							E( fillJmp(1) )				// fill jmp 1 frame back to jmp to psp
+							CSE_E( fillJmp(1) )				// fill jmp 1 frame back to jmp to psp
 							// another unfilled jmp remains at end valExpr.  It will jmp past all args.  Caller will fill.
-							E( combSf() )				// combine condExpr and valExpr frames
+							CSE_E( combSf() )				// combine condExpr and valExpr frames
 							// must combSf b4 utconvN in MA switch below -- else modify utconvN, tconv to do alternate stack frames.
 							// CAUTION: this frame CANNOT be konstize'd: not single value.
 						}
@@ -2595,7 +2595,7 @@ x						}
 				default:		/* any aWanTy without special case (note 'any type' value varies per wanTy bits
 	        			   and as tconv clears bits.  Single types (expTy handles) should fall thru ok. */
 
-					E( tconv( nSF, &aWanTy) )		// convert nSF stack frames to compatible types if possible
+					CSE_E( tconv( nSF, &aWanTy) )		// convert nSF stack frames to compatible types if possible
 					/* clears incompat aWanTy bits to make best use of expTy's conversions
 					   (which are b4 konstize b4 jump added that prevents konstize) */
 					// check for incompatible argument: done here for context-specific message format
@@ -2649,13 +2649,13 @@ x				break;
 					// MH_S0048 probably no longer used 2-95.
 #endif
 #if defined(LOKFCN) || defined(LOCSV)
-*                E( emiFcn( f, 0/*onLeft*/, aTy) ) 			// emit code for fcn
+*                CSE_E( emiFcn( f, 0/*onLeft*/, aTy) ) 			// emit code for fcn
 #else
-					E( emiFcn( f, aTy) ) 			// emit code for fcn
+					CSE_E( emiFcn( f, aTy) ) 			// emit code for fcn
 #endif
-					E( combSf() )				/* combine last arg with preceding code now.
+					CSE_E( combSf() )				/* combine last arg with preceding code now.
 							   Any addl utconvN (under MA) applies to RESULT of code just emitted. */
-					E( konstize( NULL, NULL, 0) )		// eval result & repl w const if poss: e.g. get min/max of 2 constants now.
+					CSE_E( konstize( NULL, NULL, 0) )		// eval result & repl w const if poss: e.g. get min/max of 2 constants now.
 					nSF--;					// say 1 less uncombined frame
 				}
 		}
@@ -2679,9 +2679,9 @@ x				break;
 	{
 		defa = 2;
 		aN++;   	// ret as tho caller gave default except defa is 2 not 1 re hourval < 24 args errmsg
-		E( newSf() )
+		CSE_E( newSf() )
 		nSF++;
-		E( emit( f->op2) )			// eg code to generate error message
+		CSE_E( emit( f->op2) )			// eg code to generate error message
 		// >> expect to want to add file/line info for errmsg
 		parSp->ty = (parSp-1)->ty;		// propogate type in case caller uses last arg as representative
 		//parSp->evf = (parSp-1)->evf;		if need found 10-90
@@ -2695,7 +2695,7 @@ x				break;
 
 	if ((optn & 4)==0)		// option defers to caller for special code generation for choose, select, etc
 		while (nSF-- > 0)	// aN times, less combSf's done above: combine all args and preceding code
-			E( combSf() )   	/* combine 2 parStk frames: merge already-merged args with preceding arg or
+			CSE_E( combSf() )   	/* combine 2 parStk frames: merge already-merged args with preceding arg or
           			   (last iteration) with preceding code. Yields TYNC for TYFL + TYCH. */
 
 // return info if nonNULL pointers given
@@ -2762,7 +2762,7 @@ LOCAL RC   FC NEAR emiDisp( 		// emit "dispatch" operation
 // make space for dispatch and its parameters after the index expression
 
 	n = defa ? nA-1 : nA;		// # offsets for PSDISP, excluding default
-	E( movPsLastN( nA, n+3) )		// make space (n+3) after expr (parSp-nA)
+	CSE_E( movPsLastN( nA, n+3) )		// make space (n+3) after expr (parSp-nA)
 	// E returns fcn value now if error (not RCOK)
 
 // emit PSDISP or PSDISP1, n, n offsets, default offset in movPsLastN's space.
@@ -2897,8 +2897,8 @@ LOCAL RC   FC NEAR uFcn( UFST *stb )		// compile call to user function
 			aTy = aN >= stb->nA			// type for this arg:
 			?  TYANY			// if too many args, use "any type"
 			:  stb->arg[aN].ty;
-			E( expTy( PRCOM, aTy, stb->id, aN+1) )	// parse expr of type, make parStk frame
-			E( combSf() );  				// combine parStk frames: merge arg's code with preceding
+			CSE_E( expTy( PRCOM, aTy, stb->id, aN+1) )	// parse expr of type, make parStk frame
+			CSE_E( combSf() );  				// combine parStk frames: merge arg's code with preceding
 			aN++;					// count args
 		}
 		while (tokeTest(CUTCOM));		// get separator / args loop endtest
@@ -2916,8 +2916,8 @@ LOCAL RC   FC NEAR uFcn( UFST *stb )		// compile call to user function
 	   PSRETA (in fcn code) clears frame and arg values. */
 
 // emit call code
-	E( emit2( PSCALA) );			// absolute call
-	E( emit4( (void **)&stb->ip) );		// address to call
+	CSE_E( emit2( PSCALA) );			// absolute call
+	CSE_E( emit4( (void **)&stb->ip) );		// address to call
 	// fcn body removes arguments from stack, leaves return value (PSRETA)
 
 	prec = PROP;				// operand last (necess if 0 args)
@@ -3057,7 +3057,7 @@ LOCAL RC FC NEAR expSi( 	// get an integer expression for a condition.  accepts 
 	RC rc;
 
 // get numeric expression: SI or float  (expTy( TYSI ) errors on floats)
-	E( expTy( toprec, TYNUM, tx, aN) )
+	CSE_E( expTy( toprec, TYNUM, tx, aN) )
 
 // convert it to int if float (error if string), test if constant
 	return convSi( pisK, pv, 0, tx, aN);
@@ -3077,7 +3077,7 @@ LOCAL RC FC NEAR convSi( 		// convert last expr to int, else issue error.  konst
 	switch (parSp->ty)
 	{
 	case TYFL:
-		E( emit( PSFIX) )  	// float: convert (rif error)
+		CSE_E( emit( PSFIX) )  	// float: convert (rif error)
 		parSp->ty = TYSI;	// type is now integer
 		break;		// consistency issue: some contexts (expTy) may not fix floats where int needed
 
@@ -3628,7 +3628,7 @@ LOCAL RC FC NEAR cnvPrevSf( 	// append (conversion) operation to ith previous ex
 		if (i  &&  parSpe->psp2 != (parSpe+1)->psp1)
 			return perNx( (char *)MH_S0066);  		// "Internal error in cuparse.cpp:cnvPrevSf: expressions not consecutive"
 		// don't know what to move where
-		E( movPsLastN( i, make) )					/* move last i exprs (parSp-(0..i-1)) to make
+		CSE_E( movPsLastN( i, make) )					/* move last i exprs (parSp-(0..i-1)) to make
        									   space for 'make' PSOPs b4 them. terminates. */
 		memmove( pspe, pspe-make, (make+sizeJmp)*sizeof(PSOP) ); 	// move jmp and PSNOPs (in case extras) up to make space
 		jmpLoc += make;							// maintain pointer to jmp
@@ -3674,7 +3674,7 @@ LOCAL RC FC NEAR cnvPrevSf( 	// append (conversion) operation to ith previous ex
 			memmove( pspe, jmpLoc, sizeJmp * sizeof(PSOP));	// move jmp
 			//pspe += sizeJmp;					no further use 12-94
 		}
-		E( movPsLastN( i, -xspace) ); 			// check, terminate, adjust psp, move following exprs if i != 0 gets here
+		CSE_E( movPsLastN( i, -xspace) ); 			// check, terminate, adjust psp, move following exprs if i != 0 gets here
 		parSpe->psp2 -= xspace;				// now point new end this expr's code
 	}
 	else					// not sure save to compress, or <= 2 bytes left over
@@ -3806,7 +3806,7 @@ LOCAL RC FC NEAR movPsLastN(
 			return perNx( (char *)MH_S0074);   		// "Internal error in cuparse.cpp:movPsLast: expressions not consecutive"
 
 	while (psp + nPsc >= pspMax)			// if will overflow buffer
-		E( emiBufFull() )  				// reallocate (future) or issue msg; if failed to enlarge, ret bad.
+		CSE_E( emiBufFull() )  				// reallocate (future) or issue msg; if failed to enlarge, ret bad.
 		// if ret'd ok (future), loop to see if now big enuf.
 
 // execute
@@ -3815,12 +3815,12 @@ LOCAL RC FC NEAR movPsLastN(
 	{
 		*psp = PSEND;			// keep terminated; insurance here
 		for (i = 0; i < nFrames; i++)	// from last expr back, ...
-			E( movPs( parSp-i, nPsc) )	// move expr's code, next
+			CSE_E( movPs( parSp-i, nPsc) )	// move expr's code, next
 		}
 	else if (nPsc < 0)			// if closing a hole, do in opposite order (poss future use in cnvPrevSf, 2-92)
 	{
 		for (i = nFrames; --i >= 0; )	// from first expr to move forward, ...
-			E( movPs( parSp-i, nPsc) )	// move expr's code, next
+			CSE_E( movPs( parSp-i, nPsc) )	// move expr's code, next
 		}
 	*psp = PSEND;			// keep terminated, even if 0 exprs moved 2-91
 	return RCOK;
@@ -3835,7 +3835,7 @@ LOCAL RC FC NEAR movPs( PARSTK *p, SI nPsc)	// move pseudo-code for subexpressio
 	/* *** check assumes expr is in same buffer *psp: *** */
 	while (p->psp2 + nPsc >= pspMax)  		// check if buffer would be filled
 	{
-		E( emiBufFull() )  			// reallocate (future) or issue msg; if failed to enlarge, ret bad.
+		CSE_E( emiBufFull() )  			// reallocate (future) or issue msg; if failed to enlarge, ret bad.
 		// else loop to see if now large enuf
 		// *** reallocator will have to adjust all ptrs in parStk ***
 		// *** callers such as cnvPrevSf will have to be recoded to repoint
@@ -4147,7 +4147,7 @@ LOCAL RC FC NEAR emitStr( char *s)	// emit string in pseudo-code stream.  pad to
 		l = (USI)strlen(s) + 1;  				// length, bytes, incl \0
 		while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
 		{
-			E( emiBufFull() )				// realloc (future) or errmsg & return bad.
+			CSE_E( emiBufFull() )				// realloc (future) or errmsg & return bad.
 			// else loop to see if now enuf space
 		}
 		memmove( psp, s, l);			// move string with its null
@@ -4405,7 +4405,7 @@ LOCAL RC FC NEAR addLocalSyms()		// init symbol table: local entries
 // add entries in several data-init tables per itSyms table (in cuparse.cpp)
 
 	for (p = itSyms;  p->tokTy != 0;  p++)					// loop over tables of data
-		E( cuAddItSyms( p->tokTy, p->casi, p->tbl, p->entlen, 0) )	// add entries to symtab, just below
+		CSE_E( cuAddItSyms( p->tokTy, p->casi, p->tbl, p->entlen, 0) )	// add entries to symtab, just below
 		return RCOK;
 }		// addLocalSyms
 //==========================================================================
@@ -4431,7 +4431,7 @@ RC FC cuAddItSyms( SI tokTyPar, SI casi, STBK* tbl, USI entLen, int op)
 
 	for (q = tbl;  q->ID() != NULL;  IncP( (void **)&q, entLen))	// loop tbl entries
 
-		E( syAdd( &symtab,   			/* add entry to symtab, sytb.cpp */
+		CSE_E( syAdd( &symtab,   			/* add entry to symtab, sytb.cpp */
 				  tokTyPar==-1 			/* tokTyPar == -1 means varying tokTy */
 				  ? ((RWST*)q)->tokTy		/* is in 2nd member of each st block */
 				  : tokTyPar,     		/* else (normally) use totkTyPar */

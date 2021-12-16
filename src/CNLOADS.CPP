@@ -508,7 +508,7 @@ x	}
 	TMRSTART( TMR_ZONE);
 
 // COMPUTE INTERZONE TRANSFERS and base (infil only) airnet
-	E( loadsIzxSh1() )
+	CSE_E( loadsIzxSh1() )
 
 // GLOBAL LOAD CHANGE CHECK: outdoor humidity -- change changes all zone loads, but does not show in a,b.
 	BOO azCf = FALSE;   			// TRUE for all-zones load change

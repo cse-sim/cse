@@ -297,13 +297,13 @@ RC TOWERPLANT::endSubhr()	// towers end-subhour computations: fraction on, # tow
 				nCtOp++;
 				qx -= (qMax1 - qMin1);	// add full-speed towers
 			}
-			E( findSpeed(qx) );			// set .f, .fanpwr for lead tower to produce remaining qx
+			CSE_E( findSpeed(qx) );			// set .f, .fanpwr for lead tower to produce remaining qx
 			fanP += (nCtOp - 1) * oneFanP;		// add fan power for the full-speed towers
 		}
 		else					// all towers running together
 		{
 			nCtOp = ctN;				// all fans run in this staging mode
-			E( findSpeed(qNeed/ctN) );			// determine speed f so each tower produces its share; sets .fanP.
+			CSE_E( findSpeed(qNeed/ctN) );			// determine speed f so each tower produces its share; sets .fanP.
 		} // if (tpStg==LEAD) ... else ...
 
 	} // switch (towldCase)
@@ -350,7 +350,7 @@ RC TOWERPLANT::findSpeed( DBL q)	// determine speed necessary to produce q from 
 		break;
 
 	case C_CTTYCH_VARIABLE:   		// variable speed fan
-		E( varSpeedF( q, f, qVarTem, qVarGuess) );	/* search for rel speed f that delivers heat q. only varSpeedF call.
+		CSE_E( varSpeedF( q, f, qVarTem, qVarGuess) );	/* search for rel speed f that delivers heat q. only varSpeedF call.
           						   At call, f contains last subhr value: starting point for search */
 		fanP = ctFcVar.val(f);			// determine fan power at speed f per polynomial
 		break;

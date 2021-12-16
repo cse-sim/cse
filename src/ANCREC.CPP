@@ -864,7 +864,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	 ||  !ptr() )   				// insurance
 	{
 		ULI sz = (ULI)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
-		register TI _n = max( (USI)(sz/eSz), (USI)i);	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
+		TI _n = max( (USI)(sz/eSz), (USI)i);	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
 		if (reAl(_n, erOp))
 			return RCBAD; 		// (re)alloc rec spaces 1.._n, init nAl, ptr(), space[0], etc. above.
 	}

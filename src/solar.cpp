@@ -554,7 +554,7 @@ void FC sldec(/* Set declination-related data in current SLLOCDAT struct */
   double sindec;
   double ha, fup, r;
   float alt;
-  register SI ihr;
+  SI ihr;
 
   /* Store args */
   slloccur->rdecl = dec;         /* declination in radians */

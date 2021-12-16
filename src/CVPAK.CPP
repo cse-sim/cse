@@ -1888,7 +1888,7 @@ RC FC cvatof(		/* Convert a string to a double value */
 	SI negVal, negExp, nd, id, idd, expo, irdd;
 	char c;
 	char d[100], dd[100];	/* characters left / right of decimal point */
-	register SI s, ct;
+	SI s, ct;
 
 	/* String decode portion of function is implemented with finite state scheme.
 	   The STATE records the current decoding situation; each input char is

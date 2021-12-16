@@ -1027,7 +1027,7 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 
 // determine 'ahMode' including for ahTsSp==ZN,ZN2
 	AHMODE ahModeWas = ahMode;
-	E( setMode() )					// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
+	CSE_E( setMode() )				// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
 	// if ah goes on or off, sets zones ztuCf's.
 	if (ahMode==ahOFF)  return RCOK;			// if ah off, done
 
@@ -1132,7 +1132,7 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	AhresB.p[ss].S.nIter1++;				// in ah subhour results subrecord, count times ah entered
 
 // redetermine 'ahMode' including for ahTsSp==ZN,ZN2
-	E( setMode() )				// sets ahMode to ahHEATING/-COOLING/both(usually)/-FAN/-OFF
+	CSE_E( setMode() )				// sets ahMode to ahHEATING/-COOLING/both(usually)/-FAN/-OFF
 	if (ahMode==ahOFF)				// if ah now off
 		return RCOK;				// nothing more to do for off airHandler
 	// note 10-96: ahClf stays on when return here. Clear here when/if need found.

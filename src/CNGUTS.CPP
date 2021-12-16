@@ -319,12 +319,12 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 	tp_dsDay = 0;				// say main sim, not autosizing design days.
 	tp_ClearAuszFlags();		// no autosizing underway
 
-	EF( cgFazInit(FALSE) );	// main Sim or autosize phase initialization. local function below.
-							// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
-	EF( cgRddInit(FALSE) );		// more init (what is repeated for each des day for autoSize). local below.
-								// EF: if error, return bad now.
+	CSE_EF( cgFazInit(FALSE) );	// main Sim or autosize phase initialization. local function below.
+								// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
+	CSE_EF( cgRddInit(FALSE) );	// more init (what is repeated for each des day for autoSize). local below.
+								// CSE_EF: if error, return bad now.
 
-	EF( tp_ExshRunInit());		// Penumbra external shading initialization
+	CSE_EF( tp_ExshRunInit());	// Penumbra external shading initialization
 
 	screen( NONL|QUIETIF, " Warmup");	// screen msg on current line (rmkerr.cpp): beg of warmup.
     									//   Continues line started in cse.cpp.
@@ -362,7 +362,7 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 				jDay = 1;    				// wrap at end year
 			xJDay = jDay;					// extended jDay same when not autosizing
 			isLastWarmupDay = isWarmup && (dayDownCount==0);	// flag TRUE on last warmup day
-			E( tp_SimDay());					// simulate for one day, next. On error return exact rc re ^C.
+			CSE_E( tp_SimDay());			// simulate for one day, next. On error return exact rc re ^C.
 #if 0
 x			if (jDay == 35)		// test for abort handling
 x				err( PABT, "Die die die");
@@ -370,12 +370,12 @@ x				err( PABT, "Die die die");
 
 		}
 		if (isWarmup > 0)
-			EF( cgAfterWarmup())			// stuff done after main sim warmup. EF: if error, return bad now.
+			CSE_EF( cgAfterWarmup())		// stuff done after main sim warmup. CSE_EF: if error, return bad now.
 	}
 	// CAUTION isWarmup is normally -1 not 0 here
 
 // end of run stuff
-	return rc;			// many addl returns above including in E, EF macros
+	return rc;			// many addl returns above including in E, CSE_EF macros
 }		// TOPRAT::tp_MainSimI
 //-----------------------------------------------------------------------------------------------------------
 RC TOPRAT::tp_SimDay()		// Simulate for one day
@@ -388,7 +388,7 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 // simulate 24 hours
 	for (iHr = 0;  iHr < 24;  iHr++)	// loop over (Daylight Time) hours 0 to 23
 	{
-		E( tp_SimHour());		// simulate for hour, next.  Alters iHr if DT starts or ends.
+		CSE_E( tp_SimHour());// simulate for hour, next.  Alters iHr if DT starts or ends.
 		//  on error return exact rc re ^C detection (MH_C0100).
 		yielder();			// if under Windows, let other applications run. rmkerr.cpp. 2-94.
 	}						//   note daily yield (after } ) got complaints from ET beta testers, 5-95.
@@ -398,7 +398,7 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 	// Thus each repetion of day uses same data. Also all days use same data,
 	//   and main sim must use a different file or start with same day of data.
 	if ( tp_autoSizing)
-		E( impfAfterWarmup());			// position file for next rep of day, or for warmup of main sim. impf.ccp.
+		CSE_E( impfAfterWarmup());		// position file for next rep of day, or for warmup of main sim. impf.ccp.
 #endif
 	return rc;
 }		// TOPRAT::tp_SimDay
@@ -416,37 +416,37 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 	do  					// subHour loop
 	{
 		// start subhour, and start coincident hour,day,month,run.
-		EF( doBegIvl())			// start-interval ( Top.ivl) processing, next.
+		CSE_EF( doBegIvl())		// start-interval ( Top.ivl) processing, next.
 								// sets much, wthr data, exprs, solar calcs, etc.
-		AH* ah; RLUP( AhB, ah)   EF( ah->begSubhr() )			// start-subhour air handler stuff.  cnah.cpp
-		TU* tu; RLUP( TuB, tu)   EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
-		ZNR* zp; RLUP( ZrB, zp)   EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
-		IZXRAT* ize; RLUP( IzxR, ize) EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
-		EF( DHWSubhr())			// all DHW (including solar water heating)
-		RLUP( ZrB, zp)   EF( zp->zn_BegSubhr2() )
-		DUCTSEG* ds; RLUP( DsR, ds) EF( ds->ds_BegSubhr() )		// start-subhour duct segments
-		RSYS* rs; RLUP( RsR, rs) EF( rs->rs_BegSubhr() )		// start-subhour RSYS HVAC systems
+		AH* ah; RLUP( AhB, ah)   CSE_EF( ah->begSubhr() )			// start-subhour air handler stuff.  cnah.cpp
+		TU* tu; RLUP( TuB, tu)   CSE_EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
+		ZNR* zp; RLUP( ZrB, zp)   CSE_EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
+		IZXRAT* ize; RLUP( IzxR, ize) CSE_EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
+		CSE_EF( DHWSubhr())			// all DHW (including solar water heating)
+		RLUP( ZrB, zp)   CSE_EF( zp->zn_BegSubhr2() )
+		DUCTSEG* ds; RLUP( DsR, ds) CSE_EF( ds->ds_BegSubhr() )		// start-subhour duct segments
+		RSYS* rs; RLUP( RsR, rs) CSE_EF( rs->rs_BegSubhr() )		// start-subhour RSYS HVAC systems
 
 		// subhour loads (loads mostly done in loadsHourBeg, from doBegIvl)
-		EF( loadsSubhr() )
+		CSE_EF( loadsSubhr() )
 
 		// may extrapolate tz if load unchanged
 		// subhour CNE hvac
-		EF( hvacIterSubhr() )	// does iterative portion of subhour hvac ONLY.
+		CSE_EF( hvacIterSubhr() )	// does iterative portion of subhour hvac ONLY.
 
 		// end subhour
-		RLUP( XsB, xr)   EF( xr->x.xs_EndSubhr() )	// surface temp updates, accum conduction totals to zones,
-		RLUP( IzxR, ize) EF( ize->iz_EndSubhr() )	// end-subhour vent, fan power accounting
-		RLUP( ZrB, zp)   EF( zp->ztuEndSubhr() )   	// by-zone terminals end-subhour stuff, and zone exhaust fan
-		RLUP( RsR, rs)	 EF( rs->rs_EndSubhr() )	// end-subhour RSYS HVAC, mode management
-		RLUP( TuB, tu)   EF( tu->endSubhr() )		// terminal end-subhour stuff.  cnztu.cpp.
-		RLUP( AhB, ah)   EF( ah->endSubhr() )		// air handlers end-subhour stuff.  cnah.cpp.
-		RLUP( BlrB,blr)  EF( blr->endSubhr() )		// BOILERs end-subhour stuff: energy use.  cnhp.cpp.
-		//RLUP( CpB, cp)   EF( cp->endSubhr() )		// coolplants end-subhour stuff.  cncp.cpp.
-		RLUP( ChB, ch)   EF( ch->endSubhr() )		// chillers end-subhour stuff.  cncp.cpp.
-		RLUP( TpB, tp)   EF( tp->endSubhr() )		// towerplants end-subhour stuff.  cntp.cpp.
+		RLUP( XsB, xr)   CSE_EF( xr->x.xs_EndSubhr() )	// surface temp updates, accum conduction totals to zones,
+		RLUP( IzxR, ize) CSE_EF( ize->iz_EndSubhr() )	// end-subhour vent, fan power accounting
+		RLUP( ZrB, zp)   CSE_EF( zp->ztuEndSubhr() )   	// by-zone terminals end-subhour stuff, and zone exhaust fan
+		RLUP( RsR, rs)	 CSE_EF( rs->rs_EndSubhr() )	// end-subhour RSYS HVAC, mode management
+		RLUP( TuB, tu)   CSE_EF( tu->endSubhr() )		// terminal end-subhour stuff.  cnztu.cpp.
+		RLUP( AhB, ah)   CSE_EF( ah->endSubhr() )		// air handlers end-subhour stuff.  cnah.cpp.
+		RLUP( BlrB,blr)  CSE_EF( blr->endSubhr() )		// BOILERs end-subhour stuff: energy use.  cnhp.cpp.
+		//RLUP( CpB, cp)   CSE_EF( cp->endSubhr() )		// coolplants end-subhour stuff.  cncp.cpp.
+		RLUP( ChB, ch)   CSE_EF( ch->endSubhr() )		// chillers end-subhour stuff.  cncp.cpp.
+		RLUP( TpB, tp)   CSE_EF( tp->endSubhr() )		// towerplants end-subhour stuff.  cntp.cpp.
 
-		E( doEndIvl());		// end interval stuff: update Top.ivl, results accum, reports,etc. local.
+		CSE_E( doEndIvl());	// end interval stuff: update Top.ivl, results accum, reports,etc. local.
 							// Also ends hour,day,month,run ending with this subhour.
 							// On error, return exact code re ^C detection (rc = MH_C0100)
 		if (ebTolSubhr > 0.f)			// if tolerance given for subhourly energy balance check 3-28-92
@@ -464,7 +464,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 	}
 	while (!isEndHour);				// set in doBegIvl.
 
-	return rc;			// many returns above including in E, EF macros
+	return rc;			// many returns above including in E, CSE_EF macros
 }		// TOPRAT::tp_SimHour
 //-----------------------------------------------------------------------------------------------------------
 LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init, solar calcs, exprs, etc.
@@ -534,9 +534,9 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		Top.tp_DoDTStuff();				// update DT/ST stuff, local, below
 
 		// weather data
-		EF( Top.tp_WthrBegHour() );	// read weather file, set Wthr, and Top hourly weather members, eg tDbOHr. cgwthr.cpp.
+		CSE_EF( Top.tp_WthrBegHour() );	// read weather file, set Wthr, and Top hourly weather members, eg tDbOHr. cgwthr.cpp.
 
-		EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
+		CSE_EF( Top.tp_ExshBegHour());	// Penumbra external shading: sets sun position
 
 	default:  // case C_IVLCH_S:	// at start of each subhour, incl longer intervals (fall in)
 		Top.isEndHour = (Top.iSubhr + 1 >= Top.tp_nSubSteps);	// set flag if last subHour of hour
@@ -545,19 +545,19 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		DbDo( dbdSTARTSTEP);		// nothing yet debug-printed for this subhour
 									//   (sets flag re on-demand heading printing)
 #endif
-		EF( Top.tp_WthrBegSubhr() ); 	// set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
+		CSE_EF( Top.tp_WthrBegSubhr() ); // set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
 
 		// clear subhour values in air flow meters
 		AFMTR* pAM;
 		RLUP(AfMtrR, pAM)
-			EF(pAM->amt_BegSubhr());
+			CSE_EF(pAM->amt_BegSubhr());
 	}
 
 // import files: read next record as appropriate
 	impfIvl( Top.ivl);			// impf.cpp.
 
 // evaluate and stuff user's variable expressions that are or may be calc inputs
-	EF( doIvlExprs( EVBEGIVL) )  	// do all start-of-interval expressions for this interval. uses Top.ivl. local, below.
+	CSE_EF( doIvlExprs( EVBEGIVL) ) // do all start-of-interval expressions for this interval. uses Top.ivl. local, below.
 
 // stuff done hourly (& longer intervals) only, after expressions
 	if (Top.ivl < C_IVLCH_S)	// if start of hour or longer interval, not start subhour only
@@ -568,7 +568,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 #endif
 		// masses: init heat flow totals
 		//   (after tp_SetDbMask() re correct db printing)
-		EF( msBegIvl( Top.ivl));		// EF()=insurance, RCOK expected
+		CSE_EF( msBegIvl( Top.ivl));	// CSE_EF()=insurance, RCOK expected
 
 		// conditional hourly solar gain calculations
 		if (Top.isSolarCalcDay) 		// on for 24 hours of first day of month, run [, season].  Set above, cleared doEndIvl.
@@ -578,7 +578,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 		// zone "early" inits -- zone gains etc.
 		ZNR* zp;
 		RLUP(ZrB, zp)
-			EF( zp->zn_BegHour1())
+			CSE_EF( zp->zn_BegHour1())
 
 		// zero meters for hour
 		//  must precede DHW
@@ -587,32 +587,32 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 			mtr->mtr_HrInit();		// 0 end use values
 		DHWMTR* pWM;
 		RLUP( WMtrR, pWM)
-			EF( pWM->wmt_Init( Top.ivl) )	// 0s hour values
+			CSE_EF( pWM->wmt_Init( Top.ivl) )	// 0s hour values
 
 		// domestic water heating (including solar water heating)
 		//   draws and other setup done hourly
 		//   most calcs done subhour / subhourtick
 		//   must be done before gains due to possible DHW linkage
-		EF( DHWBegIvl( Top.ivl))
+		CSE_EF( DHWBegIvl( Top.ivl))
 
 		// distrubute GAINs to zones and meters
-		EF( doHourGains() )    	// sets hour's znSGain's and znLGain's and accumulates hour's metered energy use from GAIN records.
+		CSE_EF( doHourGains() )	// sets hour's znSGain's and znLGain's and accumulates hour's metered energy use from GAIN records.
 								// and sets zone qrIgAir's and mass rIg's per zone .rIgDist table, 11-95.
 
 		// photovoltaic arrays
 		//   calcs done hourly using PV Watts routines in SAM Simulation Core ssc.dll
 		PVARRAY* pv;
-		RLUP(PvR, pv) EF(pv->pv_DoHour())
+		RLUP(PvR, pv) CSE_EF(pv->pv_DoHour())
 
 
 		// hourly part of loads computation (most of it). Must call after gains.
-		EF( loadsHourBeg() )   				// start-hour loads stuff -- solar gains, masses, zones. cnloads.cpp.
+		CSE_EF( loadsHourBeg() )   		// start-hour loads stuff -- solar gains, masses, zones. cnloads.cpp.
 
 		// hvac hourly init
 		TU *tu;
-		RLUP( TuB, tu)   EF( tu->begHour() )   		// looks for various tu input changes. call after exprs.  cnztu.cpp.
+		RLUP( TuB, tu)   CSE_EF( tu->begHour() )   		// looks for various tu input changes. call after exprs.  cnztu.cpp.
 		AH *ah;
-		RLUP( AhB, ah)   EF( ah->begHour() )   		// determines fanFMax.  call after expressions.  cnah.cpp.
+		RLUP( AhB, ah)   CSE_EF( ah->begHour() )   		// determines fanFMax.  call after expressions.  cnah.cpp.
 
 	}
 
@@ -624,7 +624,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 				   (char *)MH_R1251, 		// "More than %d errors.  Terminating run."
 				   (INT)maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 
-	return RCOK;		// many error returns above, including E and EF macros.
+	return RCOK;		// many error returns above, including E and CSE_EF macros.
 }		    // doBegIvl
 //-----------------------------------------------------------------------------------------------------------
 LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: results accumulation, reports, etc
@@ -679,7 +679,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 // finalize water heating
 	if (Top.ivl <= C_IVLCH_H)
-		EF(DHWEndIvl(Top.ivl));
+		CSE_EF(DHWEndIvl(Top.ivl));
 
 
 // Mass end-of-interval enthalpy accounting
@@ -694,7 +694,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		//   *BEFORE* EVENDIVL expressions (sets probable values)
 		BATTERY* bt;
 		RLUP(BtR, bt)
-			EF(bt->bt_DoHour( 0))
+			CSE_EF(bt->bt_DoHour( 0))
 	}
 
 // energy balance check.  After results accumulation.
@@ -714,7 +714,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	}
 
 // now evaluate and stuff exprs from user input that are used in reports -- may show results.  Others done at interval start.
-	EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
+	CSE_EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
 
 // post-processing steps (may depend on end-of-interval (*e) values)
 	if (Top.ivl < C_IVLCH_S)
@@ -722,12 +722,12 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 		//   *AFTER* EVENDIVL function eval
 		BATTERY* bt;
 		RLUP(BtR, bt)
-			EF(bt->bt_DoHour(1))
+			CSE_EF(bt->bt_DoHour(1))
 	}
 
 	doIvlFinalize();				// finalize meters etc
 
-	EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
+	CSE_EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
 
 // do reports due for intervals ending now
 	doIvlReports();					// uses not-yet-updated Top.iSubhr.
@@ -742,7 +742,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 	AH* ah;
 	RLUP( AhB, ah)
 		ah->ah_AfterSubhr();			// air handlers, cnah.cpp 5-92.
-	// RLUP( TuB, tu)   EF( tu->AfterSubhr() )    	when needed
+	// RLUP( TuB, tu)   CSE_EF( tu->AfterSubhr() )    	when needed
 
 // stuff done only at end hour (or longer interval), after reports
 
@@ -759,7 +759,7 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 		INVERSE* pI;
 		RLUP(IvB, pI)
-			EF(pI->iv_Calc(Top.ivl))
+			CSE_EF(pI->iv_Calc(Top.ivl))
 		
 		// interval-dependent stuff after reports
 
@@ -905,14 +905,14 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	RC rc = RCOK;
 
 // Initialize for location
-	EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
-							// inits Locsolar (comments below)
-							// EF: return RCBAD on any non-RCOK return.
+	CSE_EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
+								// inits Locsolar (comments below)
+								// CSE_EF: return RCBAD on any non-RCOK return.
 
 // Set up weather file, TDV file, and DESCONDs
 //   Do each phase, allowing file or location changes.
 //   Messages errors.
-	EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+	CSE_EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
 
 #if 0	// enable if needed
 0	// pre-run DHW init
@@ -922,10 +922,10 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 #endif
 
 // Open import files used in this run, if any
-	EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
+	CSE_EF( impfStart() )					// impf.cpp. related code: cncult4.cpp, cuparse.cpp.
 
 // portion in cgausz.cpp: eg init peak load/plr mbrs (for autosize, may be redone elsewhere each design day iteration)
-	EF( asRddiInit() )					// does AUSZ::, TU::, AH::, rddiInit's.
+	CSE_EF( asRddiInit() )					// does AUSZ::, TU::, AH::, rddiInit's.
 
 	ZNR* zp;
 #if defined( _DEBUG)
@@ -986,19 +986,19 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	// allocate results records paired with run records
 	//   do for both autoSize and run
 	//      no accum for autoSize, but code does incidental stores into xxRES
-	EF(ZnresB.AllocResultsRecs(ZrB));	// ZNRES <-> ZNR
+	CSE_EF(ZnresB.AllocResultsRecs(ZrB));	// ZNRES <-> ZNR
 	ZNRES* pZR;
 	RLUP(ZnresB, pZR)
 		pZR->zr_InitPrior();	// provide plausible ZNRES.prior values for use in
 								// possible expressions that are evaluated at step beg
 
-	EF(RsResR.AllocResultsRecs(RsR));	// RSYSRES <-> RSYS
+	CSE_EF(RsResR.AllocResultsRecs(RsR));	// RSYSRES <-> RSYS
 
-	EF(DsResR.AllocResultsRecs(DsR));	// DUCTSEGRES <-> DUCTSEG
+	CSE_EF(DsResR.AllocResultsRecs(DsR));	// DUCTSEGRES <-> DUCTSEG
 
-	EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
+	CSE_EF(WsResR.AllocResultsRecs(WsR));	// DHWSYSRES <-> DHWSYS
 
-	EF(AhresB.AllocResultsRecs(AhB));	// AHRES <-> AH
+	CSE_EF(AhresB.AllocResultsRecs(AhB));	// AHRES <-> AH
 
 #ifdef BINRES
 // Init re binary results output files
@@ -1153,9 +1153,9 @@ LOCAL RC FC NEAR doIvlExprs( 		// evaluate and store user-input variable express
 
 // do exprs
 
-	EF( exEvEvf( evf, ucl) );	// evaluate user-input expressions whose variability matches evf and whose
-    							// use class matches ucl, and store results at all locations per tables. exman.cpp.
-    							// EF: return RCBAD now on non-RCOK return.
+	CSE_EF( exEvEvf( evf, ucl) );	// evaluate user-input expressions whose variability matches evf and whose
+									// use class matches ucl, and store results at all locations per tables. exman.cpp.
+									// CSE_EF: return RCBAD now on non-RCOK return.
 
 
 #else	// KEEP: believe following is right if exEvEvf reorders evaluation to handle forward references. unrun.
@@ -1175,12 +1175,12 @@ w    evf = 0;
 w    switch (Top.ivl)		/*lint -e616  cases fall thru -- each interval also does shorter intervals */
 w	{
 w      case C_IVLCH_Y:
-w      case C_IVLCH_M:		EF( exEvEvf( EVFMON, ucl) );	// evaluate monthly-varying exprs for ucl and store where used. exman.cpp
-w      case C_IVLCH_D:		EF( exEvEvf( EVFDAY, ucl) );	// .. daily-varying
-w      case C_IVLCH_H:		if (Top.isBegMonth)		// if first day of month
-w								EF( exEvEvf( EVFMH, ucl) );	// do monthly-hourly exprs for 24 hours on 1st day of month/run/season.
-w							EF( exEvEvf( EVFHR, ucl) );	// evaluate hourly-varying exprs
-w      case C_IVLCH_S:		EF( exEvEvf( EVFSUBHR, ucl) );	// .. subhourly-varying
+w      case C_IVLCH_M:		CSE_EF( exEvEvf( EVFMON, ucl) );	// evaluate monthly-varying exprs for ucl and store where used. exman.cpp
+w      case C_IVLCH_D:		CSE_EF( exEvEvf( EVFDAY, ucl) );	// .. daily-varying
+w      case C_IVLCH_H:		if (Top.isBegMonth)			// if first day of month
+w								CSE_EF( exEvEvf( EVFMH, ucl) );	// do monthly-hourly exprs for 24 hours on 1st day of month/run/season.
+w							CSE_EF( exEvEvf( EVFHR, ucl) );		// evaluate hourly-varying exprs
+w      case C_IVLCH_S:		CSE_EF( exEvEvf( EVFSUBHR, ucl) );	// .. subhourly-varying
 w      default:		;
 w	}  /*lint +e616 */
 #endif

@@ -2013,7 +2013,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 
 // Rets ptr to null-terminated heading string in head[]. Generates 2 rows: second is ----'s underlining the text.
 {
-	register SI i, l, blankit = 0;   char *underline;   va_list ap;
+	SI i, l, blankit = 0;   char *underline;   va_list ap;
 
 	va_start( ap, flags);
 
