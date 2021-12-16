@@ -195,6 +195,9 @@ typedef std::string WStr;
 						//   NOTE: < > required re rcdef build
 
 /*---------------------- global macros and defines -------------------------*/
+// useful constants
+const double kPi = 3.14159265358979323846;
+const double kPiOver2 = kPi / 2.;
 
 /*------------------------------- math -------------------------------------*/
 // error handling
@@ -251,13 +254,6 @@ template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
 {	if (v < vMin) {	v = vMin; return 1; }
 	if (v > vMax) {	v = vMax; return 1; }
 	return 0;
-}
-// debugging aid: warn if limits invoked
-template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
-{	T vx = bracket( vMin, v, vMax);
-	if (vx != v)
-		warn( "bracketWarn: hit limit\n");
-	return vx;
 }
 template< typename T> inline void tswap( T v1, T v2)
 {	T vx = v1; v1 = v2; v2 = vx; }
@@ -361,6 +357,15 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // RC Return Codes: integers returned by fcns to indicate call outcome
 // 0 indicates all OK so RC can be cumulatively or'd
 typedef SI RC;
+#include <RMKERR.h>
+// debugging aid: warn if limits invoked
+template< typename T> inline T bracketWarn(T vMin, T v, T vMax)
+{
+	T vx = bracket(vMin, v, vMax);
+	if (vx != v)
+		warn("bracketWarn: hit limit\n");
+	return vx;
+}
 const RC RCOK=0;		// fcn succeeded.  code assumes 0 value.
 const RC RCFATAL = -1;	// fcn encountered fatal error; current process should be abandoned.
 						//   note (RCFATAL | x) == RCFATAL, code may assume
@@ -567,10 +572,8 @@ inline float pow033( float v)
 }
 
 // useful constants
-const double kPi=3.14159265358979323846;
 const double k2Pi=2.*kPi;
 const double k4Pi=4.*kPi;
-const double kPiOver2=kPi/2.;
 const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
 const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
 const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
