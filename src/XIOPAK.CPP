@@ -668,12 +668,10 @@ LI FC xdisksp()		// returns diskspace on default drive
 //=============================================================================
 LI FC dskDrvFreeSpace()		// returns total disk free space in bytes on current default drive
 {
+	#if 0 // Not use in the function
 	char * rootPath = NULL;	// NULL for current, or "root directory of disk" -- C:\ i guess
+	#endif
 
-	DWORD spc;			// receives sectors per cluster
-	DWORD bps;			// receives bytes per sector
-	DWORD freec;		// receives free clusters
-	DWORD totcl;
 	std::error_code spaceErrorCode;
 	filesys::path inputPath = filesys::current_path(); // rootPath - since is defined as NULL I will look for current path
 	filesys::space_info freeSpace = filesys::space(inputPath, spaceErrorCode);
