@@ -162,7 +162,7 @@ class record		// base class for records
 	virtual const char* GetDescription(int /*options*/ = 0) { return ""; }
 	virtual int ReportBalErrorsIf( int balErrCount, const char* ivlText) const;
   private:
-    record::record() {}					// cannot construct record without basAnc and subscript
+    record() {}					// cannot construct record without basAnc and subscript
   public:
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
