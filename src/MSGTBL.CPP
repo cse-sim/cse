@@ -1535,4 +1535,3 @@ x  { MH_T0003, "\nReport file name: %s" },
 SI msgTblCount = sizeof(msgTbl)/sizeof(MSGTBL);		// number of msgTbl entries
 
 // msgtbl.cpp end
-
