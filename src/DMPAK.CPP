@@ -130,7 +130,7 @@ RC dmCheckMemory(
 #if defined( CSE_MFC)
 	if (AfxCheckMemory())
 #else
-	if (_CrtCheckMemory())
+	if (_CrtCheckMemory()) // Find a replacement
 #endif
 		return RCOK;
 
