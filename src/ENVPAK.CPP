@@ -105,7 +105,7 @@ t }
 //=============================================================================
 WStr enExePath()		// full path to current executable
 {
-	char exePath[_MAX_PATH + 1];
+	char exePath[FILENAME_MAX + 1];
 	WStr t;
 	#if !defined( ELIMINATE_WINDOWS)
 	if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
@@ -279,13 +279,14 @@ int enkichk()			// Check whether a keyboard interrupt has been received
 					 actual decl in math.h */
 void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
+#if 0								// This is not use anywhere
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
-
+#endif
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
 // saved by hello() for byebye()
 LOCAL void (* CDEC NEAR byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[_MAX_PATH] = { 0 };						// current directory to restore at exit
+LOCAL char cwdSave[FILENAME_MAX] = { 0 };						// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
