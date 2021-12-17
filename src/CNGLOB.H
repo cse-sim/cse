@@ -229,7 +229,19 @@ typedef std::string WStr;
 /*---------------------- global macros and defines -------------------------*/
 // useful constants
 const double kPi = 3.14159265358979323846;
+const double k2Pi = 2. * kPi;
+const double k4Pi = 4. * kPi;
 const double kPiOver2 = kPi / 2.;
+const double g0Std = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
+const double sigmaSB = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
+const double sigmaSB4 = sigmaSB * 4.;	// 4 * ditto
+const double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
+const double tAbs0F						// 0 F in Rankine
+#if defined( CZM_COMPARE)
+= 460.;
+#else
+= 459.67;
+#endif
 
 /*------------------------------- math -------------------------------------*/
 // error handling
@@ -389,7 +401,6 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // RC Return Codes: integers returned by fcns to indicate call outcome
 // 0 indicates all OK so RC can be cumulatively or'd
 typedef SI RC;
-//#include <RMKERR.h>
 // debugging aid: warn if limits invoked
 
 const RC RCOK=0;		// fcn succeeded.  code assumes 0 value.
@@ -597,19 +608,6 @@ inline float pow033( float v)
 #endif
 }
 
-// useful constants
-const double k2Pi=2.*kPi;
-const double k4Pi=4.*kPi;
-const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
-const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
-const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
-const double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
-const double tAbs0F						// 0 F in Rankine
-#if defined( CZM_COMPARE)
-	= 460.;
-#else
-	= 459.67;
-#endif
 inline float  DegFtoR( float f)  { return float( f+tAbs0F); }
 inline double DegFtoR( double f)  { return f+tAbs0F; }
 inline float  DegRtoF( float r)  { return float( r-tAbs0F); }
