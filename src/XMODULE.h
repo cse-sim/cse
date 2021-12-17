@@ -118,6 +118,6 @@ protected:
 0 extern XCZM CZM;		// public XCZM object
 #endif
 //=============================================================================
-#endif // _XMODULE_H
+#endif  // _XMODULE_H
 
 // xmodule.h end
