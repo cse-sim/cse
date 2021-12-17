@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // XMODULE.h -- interfaces to external DLL/EXE functions
 ///////////////////////////////////////////////////////////////////////////////
+
 #if !defined( _XMODULE_H)
 #define _XMODULE_H
 
@@ -117,6 +118,6 @@ protected:
 0 extern XCZM CZM;		// public XCZM object
 #endif
 //=============================================================================
-#endif // SUPPORT_XMODULE
+#endif // _XMODULE_H
 
 // xmodule.h end

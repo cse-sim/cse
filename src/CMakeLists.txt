@@ -201,9 +201,9 @@ set(headers
   YACAM.H
 )
 
-if(USE_XMODULE)
-  list(APPEND source XMODULE.CPP) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
-  list(APPEND headers XMODULE.H) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
+if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
+  list(APPEND source XMODULE.CPP)
+  list(APPEND headers XMODULE.H)
 endif()
 
 include_directories(
