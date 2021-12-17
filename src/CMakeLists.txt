@@ -201,12 +201,9 @@ set(headers
   YACAM.H
 )
 
-if (USE_XMODULE)
+if(USE_XMODULE)
   list(APPEND source XMODULE.CPP) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
   list(APPEND headers XMODULE.H) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
-  message(STATUS "Adding xmodule")
-else()
-  message(STATUS "Ignode xmodule")
 endif()
 
 include_directories(
@@ -242,7 +239,10 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
 target_compile_features(CSE PUBLIC cxx_std_17)
-target_compile_definitions(CSE PRIVATE USE_XMODULE=${USE_XMODULE})
+
+if(USE_XMODULE)
+  target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
+endif()
 
 set(libs
   glad

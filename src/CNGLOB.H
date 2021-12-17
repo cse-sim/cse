@@ -84,15 +84,6 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
-/*---------------------------- Remove DLL Support ---------------------------*/
-#if USE_XMODULE
-#define SUPPORT_XMODULE
-#pragma message("CNGLOG: SUPPORT_XMODULE is defined")
-#else
-#undef SUPPORT_XMODULE
-#pragma message("CNGLOG: SUPPORT_XMODULE is undefined")
-#endif // USE_XMODULE
-
 #undef ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
 								//   work in progress, 10-2017
 #if defined( ELIMINATE_WINDOWS)

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
-#if defined(SUPPORT_XMODULE)
+
 #include "envpak.h"
 #include "ancrec.h"
 #include "rccn.h"
@@ -490,6 +490,5 @@ FARPROC XMODULE::xm_GetProcAddress(
 0 }		// XCZM::xc_Shutdown
 0 //=============================================================================
 #endif // #if 0
-#endif // SUPPORT_XMODULE
 
 // xmodule.cpp end
