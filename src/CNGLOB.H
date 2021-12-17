@@ -107,13 +107,39 @@ typedef PVOID HANDLE;
 typedef HANDLE HWND;
 typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE; 
+#endif // ELIMINATE_WINDOWS
+
+#ifdef linux
 #define DOMAIN     1   // argument domain error
 #define SING       2   // argument singularity
 #define OVERFLOW   3   // overflow range error
 #define UNDERFLOW  4   // underflow range error
 #define TLOSS      5   // total loss of precision
 #define PLOSS      6   // partial loss of precision
-#endif
+
+// Floating point error signals and return codes
+#define _FPE_INVALID            0x81
+#define _FPE_DENORMAL           0x82
+#define _FPE_ZERODIVIDE         0x83
+#define _FPE_OVERFLOW           0x84
+#define _FPE_UNDERFLOW          0x85
+#define _FPE_INEXACT            0x86
+#define _FPE_UNEMULATED         0x87
+#define _FPE_SQRTNEG            0x88
+#define _FPE_STACKOVERFLOW      0x8a
+#define _FPE_STACKUNDERFLOW     0x8b
+
+// Definition of the _exception struct, which is passed to the matherr function
+// when a floating point exception is detected:
+struct _exception
+{
+	int    type;   // exception type - see below
+	char* name;   // name of function where error occurred
+	double arg1;   // first argument to function
+	double arg2;   // second argument (if any) to function
+	double retval; // value to be returned by function
+};
+#endif // linux
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging

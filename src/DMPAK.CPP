@@ -127,16 +127,20 @@ x		rc = RCOK;
 RC dmCheckMemory(
 	const char* doing /*=NULL*/)
 {
+#ifdef __WIN32
 #if defined( CSE_MFC)
 	if (AfxCheckMemory())
 #else
 	if (_CrtCheckMemory()) // Find a replacement
-#endif
+#endif // __WIN32
 		return RCOK;
 
 	if (!doing)
 		doing = "?";
 	return errCrit( ABT, "dmCheckMemory() failure at %s", doing);
+#else
+	return RCOK;
+#endif
 }		// dmCheckMemory
 //================================================================================================
 RC dmal(		// allocate dynamic memory
