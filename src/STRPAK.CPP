@@ -1332,6 +1332,14 @@ BOOL strMatch(					// string match
 			bSeenDifSpace = TRUE;		// both space but different
 	}
 }			// strMatch
+//-----------------------------------------------------------------------------
+int compareCaseStr(const char* char1, const char* char2) {		//Substitude strcmpi functions
+	std::string string1(char1), string2(char2);
+	for (char& c : string1) { c = tolower(c); }
+	for (char& c : string2) { c = tolower(c); }
+
+	return string1.compare(string2);
+}
 //=============================================================================
 
 
