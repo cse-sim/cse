@@ -535,7 +535,7 @@ static SI FC strsnfnd(          /* find string in snake */
 
 /* returns offset in snake to str if successful, 0 if not found */
 {
-	register SI ls, off;
+	SI ls, off;
 
 	if (snp == NULL)
 		return 0;
@@ -3832,7 +3832,7 @@ SI FC mtulook2( 		// Looks up USI value associated with another in an MTU
 /* Returns:  TRUE if match found, *pnew contains matched value
 		 FALSE if no match (*pnew undefined) */
 {
-	register USI i, n;
+	USI i, n;
 
 	if (pmtu != NULL)
 	{
@@ -3855,7 +3855,7 @@ USI FC mturep( 			// Looks up USI value associated with old in a MTU and replace
 
 // returns previous new USI associated with old, 0 if not found and not replaced
 {
-	register USI i;
+	USI i;
 	USI prevnew;
 
 	for (i = 1; i < MTUCUR(pmtu); i++)
