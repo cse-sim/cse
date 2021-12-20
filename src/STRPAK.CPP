@@ -10,6 +10,7 @@
 #include <cnglob.h>
 
 #include <messages.h>	// MAX_MSGLEN msgI
+
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
 #if defined( _DEBUG)
@@ -1104,8 +1105,7 @@ char* strPluralize(				// form plural of a word
 	else
 	{
 		bool bException = false;
-		int i;
-		for (i=0; excpTbl[ i].wordSingular; i++)
+		for (int i=0; excpTbl[ i].wordSingular; i++)
 		{
 			if (!_stricmp( word, excpTbl[ i].wordSingular))
 			{
@@ -1124,15 +1124,15 @@ char* strPluralize(				// form plural of a word
 		else
 		{
 			strcpy( d, word);
-			int dLen = strlen( d);		// len >= 1 (check above)
-			BOOL bLastUpper = isupperW( d[dLen - 1] ) > 0;
+			int len = strlen( d);		// len >= 1 (check above)
+			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
-			if (tolower( d[dLen -1]) == 'y')
-				strcpy( d+ dLen -1, bLastUpper ? "IES" : "ies");
+			if (tolower( d[ len -1]) == 'y')
+				strcpy( d+len -1, bLastUpper ? "IES" : "ies");
 			else
 			{
-				d[dLen] = "sS"[ bLastUpper];
-				d[dLen +1] = '\0';
+				d[ len] = "sS"[ bLastUpper];
+				d[ len +1] = '\0';
 			}
 		}
 	}

@@ -2460,8 +2460,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 
 	struct rcfdd *dest = rcdesc->rcdfdd + Nfields;      // point destination RCD field info
 	struct rcfdd *source = bRcdesc->rcdfdd;             // source field 0 info ptr
-	int j;
-	for (j = 0; j < bNfields; j++)                   // loop over base rec flds
+	for (int j = 0; j < bNfields; j++)                   // loop over base rec flds
 	{
 		// copy one field's info (substruct rcfdd of RCD)
 		dest->rcfdnm =   source->rcfdnm;                // field type: Fdtab index
@@ -2476,7 +2475,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 	}
 
 // copy structure element info to globals used for current record (for field # defines)
-	for (j = 0;  j < bRcdesc->rd_nstrel;  j++)
+	for (int j = 0;  j < bRcdesc->rd_nstrel;  j++)
 	{
 #if !defined( MBRNAMESX)
 		strelFnr[nstrel] = bRcdesc->rd_strelFnr[j];

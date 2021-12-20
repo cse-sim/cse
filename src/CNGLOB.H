@@ -87,7 +87,6 @@ typedef unsigned long long ULLI;
 /*---------------------------- Remove DLL Support ---------------------------*/
 #undef SUPPORT_DLLS
 
-
 #if 1
 #define	ELIMINATE_WINDOWS
 #else
