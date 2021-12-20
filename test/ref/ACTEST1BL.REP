@@ -2408,7 +2408,7 @@ Sensible Energy Balance (+ into the Cond, Supduct and Retduct zone) for Sat 31-J
   1312 -1327      88     107     196    130     0   -4353 14.42     149     183     331      0  -115   -5658 19.13
   1313 -1327      88     107     196    130     0   -4354 14.42     149     183     331      0  -115   -5661 19.13
   1313 -1327      88     107     196    130     0   -4355 14.42     149     183     331      0  -115   -5664 19.13
-  1313 -1327      89     107     196    130     0   -4356 14.42     149     183     332      0  -115   -5667 19.13
+  1313 -1327      88     107     196    130     0   -4356 14.42     149     183     332      0  -115   -5667 19.13
   1313 -1327      89     107     196    130     0   -4356 14.42     149     183     332      0  -115   -5670 19.13
   1313 -1328      89     107     196    130     0   -4357 14.42     149     183     332      0  -115   -5674 19.13
   1313 -1328      89     107     196    130     0   -4358 14.42     149     183     332      0  -115   -5677 19.13
@@ -4417,7 +4417,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console   Fri 27-Aug-21  11:10:17 am
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console   Mon 20-Dec-21  10:35:35 am
 
 
 ================
@@ -53378,7 +53378,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
 
 
 
@@ -54038,18 +54038,18 @@ Input for Run 001:
 
 
 
-! CSE 0.897.0+vsashp.2197d7a.4 for Win32 console run(s) done: Fri 27-Aug-21  11:10:21 am
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:35:39 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               27-Aug-21  11:04 am   (VS 14.29    2701824 bytes)  (HPWH 1.15.0+master.d18737e.3)
-! Command line: -x!  -t1 actest1bl
-! Input file:   D:\cse\test\actest1bl.cse
-! Report file:  D:\cse\test\actest1bl.rep
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
+! Command line: -x!  -b -t1 actest1bL
+! Input file:   C:\Users\nkruis\projects\cse\test\actest1bL.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\actest1bL.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1      T/C = 0.0660   
+!                Input:  Time = 0.11     Calls = 1      T/C = 0.1140   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.97     Calls = 1      T/C = 2.9700   
-!              Reports:  Time = 0.31     Calls = 1      T/C = 0.3120   
-!                Total:  Time = 3.35     Calls = 1      T/C = 3.3530   
+!           Simulation:  Time = 4.09     Calls = 1      T/C = 4.0930   
+!              Reports:  Time = 0.17     Calls = 1      T/C = 0.1670   
+!                Total:  Time = 4.37     Calls = 1      T/C = 4.3740   

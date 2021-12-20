@@ -140,7 +140,7 @@ Energy Balance (F, kBtu, + into the zone) for Tue 30-Jun
  17 97.2 69.2 .0090  120 79.0 78.8 .0107  50 65.8   5.93  1.74 -8.42  1.77  0.47  2.08  2.35 0.20  -3.4  -2.3  -5.6 0.36    0.5    2.0
  18 97.9 69.5 .0090  118 78.5 78.8 .0079  39 61.6   6.31  1.93  1.81  2.18  0.60  3.94  2.61 0.23 -14.8  -4.7 -19.5 1.00    1.9    7.6
  19 98.1 69.8 .0092  115 78.0 78.6 .0073  36 60.6   5.93  2.11  2.20  2.72  0.72  0.89  2.51 0.23 -15.5  -2.0 -17.5 0.82    1.8    7.1
- 20 97.9 69.3 .0088  111 78.0 78.5 .0073  36 60.5   4.04  2.04  1.42  3.15  0.82 0.072  2.25 0.22 -12.9  -1.3 -14.2 0.65    1.4    5.7
+ 20 97.9 69.2 .0088  111 78.0 78.5 .0073  36 60.5   4.04  2.04  1.42  3.15  0.82 0.072  2.25 0.22 -12.9  -1.3 -14.2 0.65    1.4    5.7
  21 96.1 68.8 .0089  107 78.0 78.4 .0074  36 60.7   0.39  1.58  1.81  3.15  0.83 -0.19  1.94 0.21  -8.9  -1.0  -9.8 0.43    0.9    3.7
  22 89.1 70.0 .0114  103 78.0 78.3 .0076  37 61.0      0  1.05  0.91  2.87  0.74 -0.29  1.49 0.20  -6.3  -0.8  -7.2 0.28    0.6    2.4
  23 82.4 66.9 .0106 98.4 78.0 78.2 .0079  39 61.5      0  0.35  0.46  2.29  0.59 -0.44  1.00 0.18  -4.1  -0.7  -4.8 0.16    0.4    1.5
@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.893.0 for Win32 console   Tue 22-Jun-21  11:15:04 am
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console   Mon 20-Dec-21  10:37:02 am
 
 
 ================
@@ -13267,7 +13267,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.893.0 for Win32 console
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
 
 
 
@@ -14823,18 +14823,18 @@ Input for Run 001:
 
 
 
-! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:15:17 am
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:37:28 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
-! Command line: -x!  -t1 ashwat1
-! Input file:   D:\cse\test\ashwat1.cse
-! Report file:  D:\cse\test\ashwat1.rep
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
+! Command line: -x!  -b -t1 ashwat1
+! Input file:   C:\Users\nkruis\projects\cse\test\ashwat1.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0525   
-!           AutoSizing:  Time = 1.17     Calls = 1      T/C = 1.1690   
-!           Simulation:  Time = 11.72    Calls = 1      T/C = 11.7220  
-!              Reports:  Time = 0.05     Calls = 1      T/C = 0.0480   
-!                Total:  Time = 13.05    Calls = 1      T/C = 13.0510  
+!                Input:  Time = 0.19     Calls = 2      T/C = 0.0935   
+!           AutoSizing:  Time = 1.70     Calls = 1      T/C = 1.6970   
+!           Simulation:  Time = 24.41    Calls = 1      T/C = 24.4150  
+!              Reports:  Time = 0.07     Calls = 1      T/C = 0.0730   
+!                Total:  Time = 26.37    Calls = 1      T/C = 26.3740  
