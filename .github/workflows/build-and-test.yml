@@ -53,16 +53,16 @@ jobs:
       - name: Download Mesa3D on Windows
         if: runner.os == 'Windows'
         shell: cmd
-        run: curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
-        working-directory: test
+        run: curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/21.3.2/mesa3d-21.3.2-release-msvc.7z
+        working-directory: msvc
       - name: Install Mesa3D on Windows
         if: runner.os == 'Windows'
         shell: cmd
         run: |
           "C:\Program Files\7-Zip\7z.exe" x mesa.7z
-          mklink opengl32.dll "x64\opengl32.dll"
-          mklink libglapi.dll "x64\libglapi.dll"
-        working-directory: test
+          mklink opengl32.dll "x86\opengl32.dll"
+          mklink libglapi.dll "x86\libglapi.dll"
+        working-directory: msvc
       - name: Test
         run: ctest -C Release --output-on-failure
         working-directory: msvc/build
