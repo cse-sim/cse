@@ -95,6 +95,7 @@ typedef unsigned long long ULLI;
 #endif 								//   work in progress, 10-2017
 
 /*---------------------- Windows definitions -------------------------------*/
+#if defined(ELIMINATE_WINDOWS)
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
