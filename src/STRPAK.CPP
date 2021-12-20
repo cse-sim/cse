@@ -1132,7 +1132,7 @@ char* strPluralize(				// form plural of a word
 			else
 			{
 				d[ len] = "sS"[ bLastUpper];
-				d[ len +1] = '\0';
+				d[ len+1] = '\0';
 			}
 		}
 	}
