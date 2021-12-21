@@ -111,8 +111,8 @@ SEC    FC xlsterr( XFILE *);
 
 RC     FC xfcopy( const char *, const char *, SI, SI);
 RC     FC xfcopy2( XFILE *xfs, XFILE *xfd, int op, const char** pMsg);
-LI     FC xdisksp();
-LI FC dskDrvFreeSpace();
+uintmax_t FC xdisksp();
+uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 
 

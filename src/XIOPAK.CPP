@@ -609,13 +609,14 @@ SEC FC xfseek(		// Reposition file pointer
 //======================================================================
 SEC FC xfsize(		// Return the current size of a file
 
-	XFILE *xf,	 // Pointer to extended IO packet for file.  Must be open.
-	LI *psize)	 // Current size of file
+	XFILE *xf,			// Pointer to extended IO packet for file.  Must be open.
+	uintmax_t *psize)	// Current size of file
 
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
-	*psize = filelength(xf->han);	/* get cur file length, MSC */
-	return *psize == -1L		/* if length invalid */
+	std::error_code ec;
+	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
+	return ec		/* if length invalid */
 		   ?  xioerr(xf)		/*    bad: report error, return SEC */
 		   :  SECOK;   		/*    good */
 }				// xfsize
@@ -657,26 +658,25 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 }			// xfflush
 
 //======================================================================
-LI FC xdisksp()		// returns diskspace on default drive
+uintmax_t FC xdisksp()		// returns diskspace on default drive
 {
 	return dskDrvFreeSpace();
 }		// xdisksp
 //=============================================================================
-LI FC dskDrvFreeSpace()		// returns total disk free space in bytes on current default drive
+uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on current default drive
 {
-	// char * rootPath = NULL;	// NULL for current, or "root directory of disk" -- C:\ i guess
+	// Determine the available space on the filesystem on which current path is located
 	std::error_code spaceErrorCode;
-	filesys::path inputPath = filesys::current_path(); // rootPath - since is defined as NULL I will look for current path
-	filesys::space_info freeSpace = filesys::space(inputPath, spaceErrorCode);
+	uintmax_t freeSpace = filesys::space(filesys::current_path(), spaceErrorCode).available;
 
 	if ( !spaceErrorCode )
 		// GetLastError for more info
-		return 0L;				// call failed, return 0 space avail
+		return 0ui64;					// call failed, return 0 space avail
 
-	if ( freeSpace.available < (float)LONG_MAX)	// if free space fits in a long
-		return freeSpace.available;					// compute fixed point free space & return it
+	if ( freeSpace < UINTMAX_MAX)	// if free space fits in a uintmax
+		return freeSpace;			// compute fixed point free space & return it
 
-	return LONG_MAX;				// too much for LI, return max LI value (2GB)
+	return UINTMAX_MAX;				// too much for uintmax_t, return max uintmax_t value (16 Million TB)
 }					// dskDrvFreeSpace
 
 //======================================================================
@@ -1002,7 +1002,7 @@ RC FC xfcopy(		// Copy a file
 {
 	XFILE *xfs, *xfd;
 	SEC sec;
-	LI reqspace, availspace;
+	uintmax_t reqspace, availspace;
 	RC rc;
 	SI eraMasked;
 	const char *erArg;
