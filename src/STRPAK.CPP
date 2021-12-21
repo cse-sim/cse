@@ -346,7 +346,7 @@ char * FC strffix( 			// put a filename in canonical form
 		nu = strtcat( name, ext, NULL);
 	else
 		nu = strtcat( name, NULL);
-	strTrim( nu, strupr(nu));
+	strTrim( nu, stringUpperCase(nu));
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -1339,6 +1339,20 @@ int compareCaseStr(const char* char1, const char* char2) {		//Substitude strcmpi
 	for (char& c : string2) { c = tolower(c); }
 
 	return string1.compare(string2);
+}
+//-----------------------------------------------------------------------------
+char * stringUpperCase(char* stringMod) {		// Substitude strupr function
+	for (int i = 0; stringMod[i] != '\0'; ++i) {
+		stringMod[i] = toupper(stringMod[i]);
+	}
+	return stringMod;
+}
+//-----------------------------------------------------------------------------
+char * stringLowerCase(char* stringMod) {		// Substitude strlwr function
+	for (int i = 0; stringMod[i] != '\0'; ++i) {
+		stringMod[i] = tolower(stringMod[i]);
+	}
+	return stringMod;
 }
 //=============================================================================
 

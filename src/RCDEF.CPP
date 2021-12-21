@@ -1336,12 +1336,10 @@ LOCAL void units(       // do units types, for rcdef main()
 
 	/* read unit systems stuff.  Used in writing units.h. */
 
-	// Eliminates the need of strupr(Sval[0]) inside stash()
-	for (int ii = 0; Sval[0][ii] != '\0'; ++ii) { Sval[0][ii] = toupper(Sval[0][ii]); }
 	for (i = 0; i < Nunsys; i++)
 	{
 		gtoks("s");                      /* read unit system name */
-		unsysnm[i] = stash( Sval[0] );
+		unsysnm[i] = stash( stringUpperCase(Sval[0]) );
 	}
 
 	/* unit types info format + examples.  2 lines/entry, for 2 unit systems.
@@ -2838,12 +2836,10 @@ LOCAL void wrStr(               // Do *struct field
 		{
 			if (gtoks("s"))                       // separate token
 				rcderr("Generic field error");
-			strcpy( lcsnm, Sval[0]);
-			for (int ii = 0; lcsnm[ii] != '\0'; ++ii) { lcsnm[ii] = tolower(lcsnm[ii]); }
+			stringLowerCase( strcpy( lcsnm, Sval[0]) );
 		}
 		else {                                    // copy/lower same token
-			strcpy(lcsnm, rcfdnms[fdTy]);
-			for (int ii = 0; lcsnm[ii] != '\0'; ++ii) { lcsnm[ii] = tolower(lcsnm[ii]); }
+			stringLowerCase( strcpy(lcsnm, rcfdnms[fdTy]) );
 		}
 		/* output member declaration */
 		if (rcf)                                 // if outputting h files
