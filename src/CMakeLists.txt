@@ -10,6 +10,9 @@ set(defs
   CNRECS.DEF
 )
 
+# User Option
+option(USE_XMODULE "Add XMODULE to the build." OFF)
+
 macro(c_preprocess file)
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
@@ -129,7 +132,6 @@ set(source
   VRPAK.CPP
   WFPAK.CPP
   XIOPAK.CPP
-  XMODULE.CPP
   YACAM.CPP
   A205FACE.CPP
 )
@@ -197,10 +199,14 @@ set(headers
   VRPAK.H
   WFPAK.H
   XIOPAK.H
-  XMODULE.h
   YACAM.H
   A205FACE.H
 )
+
+if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
+  list(APPEND source XMODULE.CPP)
+  list(APPEND headers XMODULE.H)
+endif()
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
@@ -208,10 +214,6 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
-  SYSTEM "${kiva_SOURCE_DIR}/vendor/boost-1.61.0"
-  "${kiva_SOURCE_DIR}/vendor/eigen-da9b4e14c255/"
-  "${kiva_SOURCE_DIR}/src"
-  "${kiva_BINARY_DIR}/src/libkiva"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/build/include"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/json/single_include"
   "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/include"
@@ -242,6 +244,11 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+target_compile_features(CSE PUBLIC cxx_std_17)
+
+if(USE_XMODULE)
+  target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
+endif()
 
 set(libs
   glad

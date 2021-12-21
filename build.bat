@@ -1,12 +1,17 @@
 @echo off
+if "%parent%"=="" set parent=%~0
+if "%console_mode%"=="" (set console_mode=1& for %%x in (%cmdcmdline%) do if /i "%%~x"=="/c" set console_mode=0)
+
 cmake -P cmake/configure.cmake
-IF %ERRORLEVEL% NEQ 0 (
-    exit %ERRORLEVEL%
+if %errorlevel% neq 0 (
+  if "%parent%"=="%~0" ( if "%console_mode%"=="0" pause )
+  exit /B %errorlevel%
 )
+
 cmake -P cmake/build.cmake
-IF %ERRORLEVEL% NEQ 0 (
-    exit %ERRORLEVEL%
+if %errorlevel% neq 0 (
+  if "%parent%"=="%~0" ( if "%console_mode%"=="0" pause )
+  exit /B %errorlevel%
 )
-IF "%1"=="" (
-  PAUSE
-)
+
+if "%parent%"=="%~0" ( if "%console_mode%"=="0" pause )

@@ -76,7 +76,7 @@ RC FC topAh1( void)		// check / set up air handlers, part 1, done before termina
 
 // copy air handler input records to run records
 
-	E( AhB.al( AhiB.n, WRN) )			// delete (unexpected) old ah's, alloc needed # ah's at once for min fragmentation
+	CSE_E( AhB.al( AhiB.n, WRN) )			// delete (unexpected) old ah's, alloc needed # ah's at once for min fragmentation
 	// ah's are not owned (names must be unique), leave .ownB 0.
 	RLUP( AhiB, ahi)				// loop air handler input records (cnglob.h macro)
 	{
@@ -101,7 +101,7 @@ RC FC topTu()			// check / set up terminals
 
 // clear terminals run records and set "ownership".  Note topZn cleared ZhxB; we add ZHX's here.
 
-	E( TuB.al( TuiB.n, WRN) )		// delete (unexpected) old tu's, alloc needed # tu's at once for min fragmentation
+	CSE_E( TuB.al( TuiB.n, WRN) )		// delete (unexpected) old tu's, alloc needed # tu's at once for min fragmentation
 	// CAUTION: may not errCount++, be sure error return propogated back to cul:cuf.
 	// CAUTION: run .ownB's also set in cnguts:cgPreInit; if changed here, change there for showProbeNames.
 	TuB.ownB = &ZrB;			/* terminals are owned by zones and zone run subscripts match zone input subscs.
@@ -482,18 +482,18 @@ x           ;									// don't require tuVfDs for autoSizing ... 6-95
 		// add zhx (zone hvac transfer) records for each capability of terminal.  cncult2.cpp:topZn cleared ZhxB.
 
 		if (cmLh==cmSo)
-			E( addZhx( ss, ownTi, 0, LhSo, 0, 0, name, &xiLh ) )    		// local heat, set output
+			CSE_E( addZhx( ss, ownTi, 0, LhSo, 0, 0, name, &xiLh ) )    		// local heat, set output
 		else if (cmLh==cmStH)
-			E( addZhx( ss, ownTi, 0, LhStH, VD tuTLh, tuPriLh, name, &xiLh ) )	// local heat, set temp
+			CSE_E( addZhx( ss, ownTi, 0, LhStH, VD tuTLh, tuPriLh, name, &xiLh ) )	// local heat, set temp
 
 		if (cmAr==cmSo)
-			E( addZhx( ss, ownTi, ai, ArSo, 0, 0, name, &xiArH ) )    		// air heat/cool set out. Will be linked as heat.
+			CSE_E( addZhx( ss, ownTi, ai, ArSo, 0, 0, name, &xiArH ) )    		// air heat/cool set out. Will be linked as heat.
 		else
 		{
 			if (cmAr & cmStH)
-				E( addZhx( ss, ownTi, ai, ArStH, VD tuTH, tuPriH, name, &xiArH) )  	// set temp air heat
+				CSE_E( addZhx( ss, ownTi, ai, ArStH, VD tuTH, tuPriH, name, &xiArH) )  	// set temp air heat
 			if (cmAr & cmStC)
-				E( addZhx( ss, ownTi, ai, ArStC, VD tuTC, tuPriC, name, &xiArC) )  	// set temp air cool: can have both zhx's
+				CSE_E( addZhx( ss, ownTi, ai, ArStC, VD tuTC, tuPriC, name, &xiArC) )  	// set temp air cool: can have both zhx's
 		}
 		if (xiLh)
 		{
@@ -596,7 +596,7 @@ LOCAL RC FC NEAR addZhx(			// add ZHX (Zone HVAC transfer) for TU, probably late
 	ZHX *zhx;
 
 // make a ZHX
-	E( ZhxB.add( &zhx, WRN) )	// add a ZHX record to base ZhxB, allocating block if necessary. lib\ancrec.cpp.
+	CSE_E( ZhxB.add( &zhx, WRN) )	// add a ZHX record to base ZhxB, allocating block if necessary. lib\ancrec.cpp.
 	// leave front mbrs .ty, .li, .file, .line unset (0).  does this cause runtime errmsg troubles?
 	// CAUTION: al may not errCount++, be sure error return propogated back to cul:cuf.
 // record owner is zone
@@ -1203,7 +1203,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 
 //--- first setup the general coil which is base class of COOLCOIL
 
-	E( COIL::setup( app, r, coolCoilFn, rqd, prohib))
+	CSE_E( COIL::setup( app, r, coolCoilFn, rqd, prohib))
 
 //--- if coil not specified, issue error for each member given, return
 
@@ -1491,7 +1491,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 //--- first setup the general coil which is base class of HEATCOIL
 
-	E( COIL::setup( app, r, heatCoilFn, rqd, prohib))
+	CSE_E( COIL::setup( app, r, heatCoilFn, rqd, prohib))
 
 //--- if coil not specified, issue error for each member given, return
 
@@ -1750,7 +1750,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 
 //--- first setup the base HEATCOIL coil which is base class of AHHEATCOIL.  Covers all types but AHP (Air source heat pump).
 
-	E( HEATCOIL::setup( app, r, ahhCoilFn, rqd, prohib, TRUE)) 	// and this calls COIL::setup.
+	CSE_E( HEATCOIL::setup( app, r, ahhCoilFn, rqd, prohib, TRUE)) 	// and this calls COIL::setup.
 		// last arg says called from AHHEATCOIL: allow AHP.
 
 //--- if coil not specified, issue error for each derived class member given, return.

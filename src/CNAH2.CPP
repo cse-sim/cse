@@ -3671,7 +3671,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 // fan-on flow === max poss avg flow = smaller of ctl tu max flow, and supply fan's max flow with overrun less leakage.
 
 	//DBL cMxnx;  made member				// .. typical sensible input wd be sfan.cMx==ctu->aCMxC==aCMxH; not enforced.
-	register TU* ctu = TuB.p + ahCtu;			// point ah's control terminal (ahCtu verified non-0 in AH::begHour)
+	TU* ctu = TuB.p + ahCtu;			// point ah's control terminal (ahCtu verified non-0 in AH::begHour)
 #if 1 // 4-25-95 after zRat call added in ahEstimate
 	if (uUseAr==uNONE)					// can occur at startup (ahEstimate b4 1st ztuCompute), 4-95.
 		cMxnx = 0.;					// no flow if control terminal not (yet) requesting any air

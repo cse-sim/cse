@@ -1,3 +1,6 @@
+include(initialize-submodules)
+initialize_submodules()
+
 # Penumbra
 add_subdirectory(penumbra)
 

@@ -87,7 +87,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	if (RfiB.n==0)					// if no report files yet -- insurance: recall not expected
 	{
 		RFI *rfp;
-		E( RfiB.add( &rfp, WRN) )   			// add report file record for PRIMARY REPORTFILE / return if error
+		CSE_E( RfiB.add( &rfp, WRN) )   			// add report file record for PRIMARY REPORTFILE / return if error
 		fs = (UCH *)rfp + RfiB.sOff;			// point record's field status bytes (sstat[])
 		strcpy( rfp->name, "Primary" );   		// record name
 		rfp->fileName = strsave( strffix2( InputFilePathNoExt, ".rep", 1));
@@ -103,7 +103,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	if (XfiB.n==0)					// if no export files yet -- insurance: recall not expected
 	{
 		RFI *xfp;
-		E( XfiB.add( &xfp, WRN) )    			// add export file record for PRIMARY EXPORTFILE / return if error
+		CSE_E( XfiB.add( &xfp, WRN) )    			// add export file record for PRIMARY EXPORTFILE / return if error
 		fs = (UCH *)xfp + XfiB.sOff;			// point record's field status bytes (sstat[])
 		strcpy( xfp->name, "Primary" );  		// record name
 		xfp->fileName = strsave( strffix2( InputFilePathNoExt, ".csv", 1));
@@ -120,12 +120,12 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 
 	if (RiB.n==0)			// if no report entries yet -- recall insurance
 	{
-		E( addRep( priRfi, "Err",  C_RPTYCH_ERR,  0, 0, 0) ) 		// ERR report: Error messages
-		E( addRep( priRfi, "Sum",  C_RPTYCH_SUM,  0, 0, 0) ) 		// SUM report: Summary
-		E( addRep( priRfi, "eb",   C_RPTYCH_ZEB, TI_SUM, C_IVLCH_M, 0) )	// ZEB: Zones Energy Balance, sum of all zones, monthly, all months
+		CSE_E( addRep( priRfi, "Err",  C_RPTYCH_ERR,  0, 0, 0) ) 		// ERR report: Error messages
+		CSE_E( addRep( priRfi, "Sum",  C_RPTYCH_SUM,  0, 0, 0) ) 		// SUM report: Summary
+		CSE_E( addRep( priRfi, "eb",   C_RPTYCH_ZEB, TI_SUM, C_IVLCH_M, 0) )	// ZEB: Zones Energy Balance, sum of all zones, monthly, all months
 		// user-specified reports appear here
-		E( addRep( priRfi, "Log",  C_RPTYCH_LOG,  0, 0, 1) )		// LOG report: run messages
-		E( addRep( priRfi, "Inp",  C_RPTYCH_INP,  0, 0, 1) )		// INP report: input echo, including some or all errMsgs
+		CSE_E( addRep( priRfi, "Log",  C_RPTYCH_LOG,  0, 0, 1) )		// LOG report: run messages
+		CSE_E( addRep( priRfi, "Inp",  C_RPTYCH_INP,  0, 0, 1) )		// INP report: input echo, including some or all errMsgs
 	}
 
 	// note: there are no default exports.
@@ -142,7 +142,7 @@ LOCAL RC addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd
 	UCH *fs;
 	RC rc;
 
-	E( RiB.add( &rp, WRN) ) 		// add report input record (ancrec.cpp) / return if error
+	CSE_E( RiB.add( &rp, WRN) ) 		// add report input record (ancrec.cpp) / return if error
 	rp->SetName( name);				// record name, for like/alter/delete
 	rp->zi = zi;					// 0, TI_SUM, or TI_ALL (or reference to a zone)
 	rp->ownTi = rfi;       			// reference to report file
@@ -199,7 +199,7 @@ RC topRf( )  	// check REPORTFILEs 11-91
 	RC rc;
 
 	RLUP( RfiB, rfp)
-		E( rfp->rf_CkF2( 0));	// 0: report (as opposed to export)
+		CSE_E( rfp->rf_CkF2( 0));	// 0: report (as opposed to export)
 	return RCOK;
 }			// topRf
 //===========================================================================
@@ -211,7 +211,7 @@ RC topXf()   	// check EXPORTFILEs 11-91
 	RC rc;
 
 	RLUP( XfiB, xfp)
-		E( xfp->rf_CkF2( 1))	// 1: export (as opposed to report)
+		CSE_E( xfp->rf_CkF2( 1))	// 1: export (as opposed to report)
 	return RCOK;
 }			// topXf
 //===========================================================================
@@ -248,7 +248,7 @@ RC topCol( int isExport)
 
 // clear columns runtime RAT.  A separate run RAT is required re expressions.
 
-	E( colB->al( coliB->n, WRN) )	// delete any old records, alloc needed # COL records now now for min fragmentation.
+	CSE_E( colB->al( coliB->n, WRN) )	// delete any old records, alloc needed # COL records now now for min fragmentation.
 	// E: return if error.  CAUTION: ratCre may not errCount++ on error.
 	// note: prior run if any was cleared, with dmfree's, in cnguts.cpp.
 	// CAUTION: run .ownB's also set in cnguts:cgPreInit; if changed here, change there for showProbeNames.
@@ -494,7 +494,7 @@ RC topRxp()			// check REPORTS and EXPORTS / build dvri info
 
 	VrLog = 0;						// not opened elsewhere, 0 here for insurance.
 	Top.vrSum = 0;   					// insurance: also 0'd at each unspool and by copying Topi to Top
-	E (DvriB.al( RiB.n+XiB.n, WRN) )		/* (redundantly) clear Date-dependent Virtual Reports Info records
+	CSE_E (DvriB.al( RiB.n+XiB.n, WRN) )		/* (redundantly) clear Date-dependent Virtual Reports Info records
     						   & alloc now a generous # records to minimize fragmentation */
 	DvriB.ownB = &ZrB;		/* Dvri's belong to zones & zone run subscripts match input subscripts,
     				   so enable possible use of zone input subscript in resolving ambiguous name in probe. 1-92. */
@@ -1103,7 +1103,7 @@ RC buildUnspoolInfo()
 			* (RfiB.n + XfiB.n + 1)		// number of files. + 1 allows for terminating NULL.
 				+ sizeof(int)			// bytes per virtual report to unspool
 				* (RiB.n + XiB.n);		// # virtual report arguments, including duplicates
-	E( dmral( DMPP( UnspoolInfo), nbytes, DMZERO|WRN) )	/* (re)alloc memory, dmpak.cpp.  Realloc prevents loss of memory
+	CSE_E( dmral( DMPP( UnspoolInfo), nbytes, DMZERO|WRN) )	/* (re)alloc memory, dmpak.cpp.  Realloc prevents loss of memory
 	    							   if prior was not free'd (but main program does release it).*/
 	// UnspoolInfo freeing: fileNames free'd as used in vrUnspool;
 	// block is free'd in cnguts.cpp:cgReInit.
@@ -1255,12 +1255,12 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 {
 	RC rc = RCOK;
 	// check all RQD members set -- else can bomb with FPE
-	E( CkSet( RFI_FILENAME) )			// if not set, no run, terminate checking now
+	CSE_E( CkSet( RFI_FILENAME) )			// if not set, no run, terminate checking now
 
 	// recall entry time check function 1) as it has not been called for pre-stuffed "Primary" entry;
 	// to recheck references (DELETE after entry?)(if it checks any); and 3) general paranoia.
 
-	E( rf_CkF( isExport))		// stop here if error
+	CSE_E( rf_CkF( isExport))		// stop here if error
 
 	// ONCE ONLY, check file per fileStat, possibly error or set "overwrite" flag.  Later uses always append.
 
@@ -1844,8 +1844,8 @@ RC topHday()		// check HDAY input info / build run info
 {
 	HDAY *hdi, *hd;
 	RC rc;
-	E( HdayB.al( HdayiB.n, WRN) )		// delete old holiday run records, alloc needed # now for min fragmentation.
-	// E: return if error.  CAUTION: ratCre may not errCount++ on error.
+	CSE_E( HdayB.al( HdayiB.n, WRN) )		// delete old holiday run records, alloc needed # now for min fragmentation.
+	// CSE_E: return if error.  CAUTION: ratCre may not errCount++ on error.
 	RLUP( HdayiB, hdi)				// loop over holiday input records
 	{
 		// check for valid holiday
