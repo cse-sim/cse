@@ -1127,8 +1127,8 @@ char* strPluralize(				// form plural of a word
 			int len = strlen( d);		// len >= 1 (check above)
 			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
-			if (tolower( d[ len -1]) == 'y')
-				strcpy( d+len -1, bLastUpper ? "IES" : "ies");
+			if (tolower( d[ len-1]) == 'y')
+				strcpy( d+len-1, bLastUpper ? "IES" : "ies");
 			else
 			{
 				d[ len] = "sS"[ bLastUpper];

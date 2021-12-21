@@ -103,14 +103,14 @@ t }
 WStr enExePath()		// full path to current executable
 {
 	WStr t;
-	#if !defined( ELIMINATE_WINDOWS)
+#if !defined( ELIMINATE_WINDOWS)
 	char exePath[_MAX_PATH + 1];
 	if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
 	{
 		t = exePath;
 		WStrLower(t);
 	}
-	#endif
+#endif
 	return t;
 }		// enExePath
 //=============================================================================
