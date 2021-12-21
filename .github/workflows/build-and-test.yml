@@ -5,17 +5,13 @@ on: push
 jobs:
   build-cse:
     name: Build CSE executable
-    runs-on: windows-latest
+    runs-on: windows-2022
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Install recent SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
-        with:
-          sdk-version: 19041
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
@@ -32,14 +28,10 @@ jobs:
   test-cse:
     name: Test CSE
     needs: build-cse
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Install recent SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
-        with:
-          sdk-version: 19041
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Build wcmp
@@ -69,7 +61,7 @@ jobs:
   build-doc:
     name: Build CSE documentation
     needs: build-cse
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Checkout
         uses: actions/checkout@v1
