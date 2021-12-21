@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // XMODULE.h -- interfaces to external DLL/EXE functions
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(SUPPORT_DLLS)
+
 #if !defined( _XMODULE_H)
 #define _XMODULE_H
 
@@ -119,5 +119,5 @@ protected:
 #endif
 //=============================================================================
 #endif	// _XMODULE_H
-#endif // SUPPORT_DLLS
+
 // xmodule.h end
