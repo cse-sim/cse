@@ -47,7 +47,6 @@
 #endif
 
 
-
 /*-------------------------------- DEFINES --------------------------------*/
 
 #define DASHLINE "---------------\n"	// separates error messages, and optionally log messages

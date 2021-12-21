@@ -1062,6 +1062,8 @@ const float absS[] = { 0.f, 10.f, 20.f, -1.f };
 }
 #endif	// _DEBUG
 //=============================================================================
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // class XASHWAT: ASHWAT interface
 //   routes calls either to ASHWAT.DLL (FORTRAN implementation)
@@ -1079,20 +1081,20 @@ XASHWAT ASHWAT(		// public ASHWAT object
 #endif
 //=============================================================================
 XASHWAT::XASHWAT( const char* moduleName)		// c'tor
-#if defined(SUPPORT_DLLS)
+#if defined(SUPPORT_XMODULE)
 	: XMODULE( moduleName)
-#endif
+#endif // SUPPORT_XMODULE
 {
-#if defined(SUPPORT_DLLS)
+#if defined(SUPPORT_XMODULE)
 	xm_ClearPtrs();
-#endif // SUPPORT_DLLS
+#endif // SUPPORT_XMODULE
 }
 //-----------------------------------------------------------------------------
 XASHWAT::~XASHWAT()
 {
 }	// XASHWAT::~XASHWAT
 //-----------------------------------------------------------------------------
-#if defined(SUPPORT_DLLS)
+#if defined(SUPPORT_XMODULE)
 /*virtual*/ void XASHWAT::xm_ClearPtrs()
 {
 #if defined( ASHWAT_LINKDLL)
@@ -1100,7 +1102,7 @@ XASHWAT::~XASHWAT()
 	xw_pAWCheckFixCFSLayer = NULL;
 #endif
 }		// XASHWAT::xm_ClearPtrs
-#endif // SUPPORT_DLLS
+#endif // SUPPORT_XMODULE
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_Setup()		// general initialization
 // duplicate calls OK
@@ -1383,4 +1385,7 @@ const CFSTYX* XASHWAT::xw_FindLibCFSTYX(
 	return pClosest;
 }		// XASHWAT::xw_FindLibCFSTYX
 //=============================================================================
+
+
+
 // ashwface.cpp end

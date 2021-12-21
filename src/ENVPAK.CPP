@@ -12,6 +12,7 @@
 #include <direct.h>	// getcwd
 #include <conio.h>
 #endif
+
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
 #ifdef __WIN32
@@ -115,16 +116,13 @@ WStr enExePath()		// full path to current executable
 	}
 	#endif
 	return t;
-	
 }		// enExePath
 //=============================================================================
 WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	WStr exePath,		// path to .exe
 	int& codeSize)		// code size (bytes)
 // returns info as string or "?" if error
-// Re Write this code 
 {
-	
 	const char* msg = "?";
 	time_t timeDateStamp = 0;
 	codeSize = 0;

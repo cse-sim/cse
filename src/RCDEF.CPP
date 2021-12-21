@@ -535,7 +535,7 @@ static SI FC strsnfnd(          /* find string in snake */
 
 /* returns offset in snake to str if successful, 0 if not found */
 {
-	register SI ls, off;
+	SI ls, off;
 
 	if (snp == NULL)
 		return 0;
@@ -2460,8 +2460,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 
 	struct rcfdd *dest = rcdesc->rcdfdd + Nfields;      // point destination RCD field info
 	struct rcfdd *source = bRcdesc->rcdfdd;             // source field 0 info ptr
-	int j;
-	for (j = 0; j < bNfields; j++)                   // loop over base rec flds
+	for (int j = 0; j < bNfields; j++)                   // loop over base rec flds
 	{
 		// copy one field's info (substruct rcfdd of RCD)
 		dest->rcfdnm =   source->rcfdnm;                // field type: Fdtab index
@@ -2476,7 +2475,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 	}
 
 // copy structure element info to globals used for current record (for field # defines)
-	for (j = 0;  j < bRcdesc->rd_nstrel;  j++)
+	for (int j = 0;  j < bRcdesc->rd_nstrel;  j++)
 	{
 #if !defined( MBRNAMESX)
 		strelFnr[nstrel] = bRcdesc->rd_strelFnr[j];
@@ -3833,7 +3832,7 @@ SI FC mtulook2( 		// Looks up USI value associated with another in an MTU
 /* Returns:  TRUE if match found, *pnew contains matched value
 		 FALSE if no match (*pnew undefined) */
 {
-	register USI i, n;
+	USI i, n;
 
 	if (pmtu != NULL)
 	{
@@ -3856,7 +3855,7 @@ USI FC mturep( 			// Looks up USI value associated with old in a MTU and replace
 
 // returns previous new USI associated with old, 0 if not found and not replaced
 {
-	register USI i;
+	USI i;
 	USI prevnew;
 
 	for (i = 1; i < MTUCUR(pmtu); i++)

@@ -2420,6 +2420,7 @@ void XSURF::xs_SetRunConstants()
 	{	xs_sbcI.sb_SetRunConstants(dbPrint);
 		xs_sbcO.sb_SetRunConstants(dbPrint);
 	}
+
 	xs_DeleteFENAW();		// insurance
 	if (xs_IsASHWAT())
 	{	if (ASHWAT.xw_Setup() == RCOK)

@@ -51,7 +51,6 @@
 #include "xiopak.h"	// xiopak.cpp publics
 #include <system_error>
 
-
 #if __has_include(<filesystem>)
 #include <filesystem>
 namespace filesys = std::filesystem;
@@ -163,11 +162,10 @@ SEC FC xchdir(		// Change current working directory and/or drive
 	if (filesys::exists(tpathTemp) && tpathTemp.has_root_name()) 	// if colon, then there is a drive
 	{
 		filesys::path drvlet = tpathTemp.root_name();		// char b4 colon is drive letter
-		
 		if ( filesys::exists(drvlet))	// if not a possible valid drive
 										// or selecting the drive fails (C library)
 			sec = SECBADRV;		// invoke msg below / return value
-		else					// drive selected ok
+		else				// drive selected ok
 			tpath += 2;			// point past drive
 	}
 	if (*tpath && sec==SECOK)		// if not null or drive only
@@ -229,11 +227,9 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 		cwdSave = filesys::current_path();	// save drv:dir in stack array
 		fnameTemp = filesys::path(fname);
 		filesys::current_path(fnameTemp, pathEC); // select path's drv:dir. suppress message.
-		
 		if (pathEC)		// if chdir failed
 			// xchdir's "cannot change working directory to %s" message is inappropriate eg when checking CSE input path.
 			err(pathEC.value(), pathEC.message().c_str(), fname);
-			
 		dir = filesys::current_path(); 		// get full drv:dir
 
 		filesys::current_path(cwdSave, pathEC);		// restore drv:dir; err impossible?

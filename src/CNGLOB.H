@@ -87,15 +87,14 @@ typedef unsigned long long ULLI;
 /*---------------------------- Remove DLL Support ---------------------------*/
 #undef SUPPORT_DLLS
 
-
 #if 1
 #define	ELIMINATE_WINDOWS
 #else
 #undef	ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
 #endif 								//   work in progress, 10-2017
 
-#if defined( ELIMINATE_WINDOWS)
 /*---------------------- Windows definitions -------------------------------*/
+#if defined(ELIMINATE_WINDOWS)
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
