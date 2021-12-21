@@ -1336,10 +1336,12 @@ LOCAL void units(       // do units types, for rcdef main()
 
 	/* read unit systems stuff.  Used in writing units.h. */
 
+	// Eliminates the need of strupr(Sval[0]) inside stash()
+	for (int ii = 0; Sval[0][ii] != '\0'; ++ii) { Sval[0][ii] = toupper(Sval[0][ii]); }
 	for (i = 0; i < Nunsys; i++)
 	{
 		gtoks("s");                      /* read unit system name */
-		unsysnm[i] = stash( strupr(Sval[0]) );
+		unsysnm[i] = stash( Sval[0] );
 	}
 
 	/* unit types info format + examples.  2 lines/entry, for 2 unit systems.
@@ -2836,11 +2838,13 @@ LOCAL void wrStr(               // Do *struct field
 		{
 			if (gtoks("s"))                       // separate token
 				rcderr("Generic field error");
-			strlwr( strcpy( lcsnm, Sval[0]) );
+			strcpy( lcsnm, Sval[0]);
+			for (int ii = 0; lcsnm[ii] != '\0'; ++ii) { lcsnm[ii] = tolower(lcsnm[ii]); }
 		}
-		else                                     // copy/lower same token
-			strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
-
+		else {                                    // copy/lower same token
+			strcpy(lcsnm, rcfdnms[fdTy]);
+			for (int ii = 0; lcsnm[ii] != '\0'; ++ii) { lcsnm[ii] = tolower(lcsnm[ii]); }
+		}
 		/* output member declaration */
 		if (rcf)                                 // if outputting h files
 		{
@@ -3137,7 +3141,7 @@ LOCAL void wSrfd1( FILE *f)
 	for (i = 0; i < nfdtypes; i++)
 	{
 		// write data type 0 as "0", not "DTSI" or whatever is first, for clearer entry 0 (FDNONE)
-		dtTx = (Fdtab[i].dtype==0  ?  "0"
+		dtTx = (Fdtab[i].dtype==0  ? const_cast < char*>("0")
 				:  strtcat( "DT", dtnames[ dtnmi[ DTBMASK&(Fdtab[i].dtype) ] ],
 							NULL ) );
 		/* write line: DTXXXX,   LMXXXX,   UNXXXX,      // number  NAME */
