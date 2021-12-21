@@ -1182,10 +1182,10 @@ char* strCase( char* s, const char toCases[3])
 		else				// spaces don't need case conversion
 		{
 			if (itc[which]==upper)
-				*((unsigned char*)s+i) = toupper(*((unsigned char*)s + i));
+				*((unsigned char*)s+i) = toupper(*((unsigned char*)s+i));
 			// upperize 1 char, handle accented chars
 			else if (itc[which]==lower)
-				*((unsigned char*)s + i) = tolower( *((unsigned char*)s + i));
+				*((unsigned char*)s+i) = tolower(*((unsigned char*)s+i));
 			// lowerize 1 char, handle accented chars
 			which = 2;			// for s[i] til next space
 			nsSeen++;			// next word beginning is not 1st word
