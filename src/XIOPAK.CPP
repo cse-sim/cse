@@ -32,10 +32,10 @@
 //#define USEFOP	// defined in xiopak.h to use fop.cpp not local path code, 2-95.
 
 /*------------------------------- INCLUDES --------------------------------*/
-
+#include <io.h>		// open, read, write,
+#include <fstream>
 #if !defined( ELIMINATE_WINDOWS)
 #include <direct.h>	// getcwd, chdir, _chdrive
-#include <io.h>		// open, read, write,
 #endif
 #include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
@@ -760,9 +760,9 @@ int xfWriteable(			// check whether file is writeable
 {
 	int ret = 0;
 	const char* pMsg = NULL;
-	int han = _open( fPath, _O_CREAT|_O_APPEND|_O_WRONLY|_O_BINARY, S_IWRITE);
-	if (han != -1)
-	{	_close( han);
+	std::fstream han(fPath, std::fstream::out | std::fstream::binary | std::fstream::app);
+	if (han)
+	{	han.close();
 		ret = 1;
 	}
 	else
