@@ -9,7 +9,9 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>
 #include <time.h>	// struct tm
+#ifndef ELIMINATE_WINDOWS
 #include <tchar.h>
+#endif
 
 #include <msghans.h>	// MH_xxxx defns
 
@@ -435,7 +437,7 @@ const char* tdtis( 		// Convert integer format time to string
 		apchar = "";				// no am/pm
 	else 					// not 24 hour time
 	{
-		apchar = (hour < 12) ? " am" : " pm";	// get am or pm to append
+		apchar = (hour < 12) ? const_cast < char*>(" am") : const_cast < char*>(" pm");	// get am or pm to append
 		hour = (hour+11)%12 + 1;			// convert 0..23 to 1..12
 	}
 	s += sprintf( s, "%d:%2.2d", (INT)hour, (INT)itm->min);	// format hour:min, point to end
@@ -550,7 +552,7 @@ WStr CALENDAR::FmtDOY(			// formatted date from DOY
 		char buf[ 100];
 		struct tm t;
 		FillTM( t, idt);
-		_tcsftime( buf, sizeof( buf), fmt, &t);
+		strftime( buf, sizeof( buf), fmt, &t);
 		s = buf;
 	}
 	return s;
