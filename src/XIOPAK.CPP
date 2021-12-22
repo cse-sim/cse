@@ -33,14 +33,14 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <io.h>		// open, read, write,
 #if !defined( ELIMINATE_WINDOWS)
 #include <direct.h>	// getcwd, chdir, _chdrive
+#include <io.h>		// open, read, write,
 #endif
-#include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
+#include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
-#include <sys\stat.h>	// S_IREAD, S_IWRITE
+#include <sys/stat.h>	// S_IREAD, S_IWRITE
 
 #include <msghans.h>	// MH_xxxx defns
 #include <messages.h>	// msgSec()
@@ -614,7 +614,7 @@ SEC FC xfsize(		// Return the current size of a file
 
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
-	*psize = filelength(xf->han);	/* get cur file length, MSC */
+	*psize = filesys::file_size(filesys::path(xf->xfname));	/* get cur file length, MSC */
 	return *psize == -1L		/* if length invalid */
 		   ?  xioerr(xf)		/*    bad: report error, return SEC */
 		   :  SECOK;   		/*    good */
@@ -627,9 +627,12 @@ SEC FC xfchsize(		// Change the size of a file
 
 // Returns SECOK if no errors; else other sec (SETS xf->xflsterr)
 {
-	if (xfflush(xf)==SECOK)   // Flush buffers; if no prior error and flush successful
-		if (chsize( xf->han, size) != 0)		// set length, if good
+	if (xfflush(xf) == SECOK) {  // Flush buffers; if no prior error and flush successful
+		std::error_code ec;
+		filesys::resize_file(filesys::path(xf->xfname), size, ec);
+		if (ec)		// set length, if good
 			xf->xflsterr = xioerr(xf);		//  failed, report err
+	}
 	return xf->xflsterr;
 }				// xfchsize
 //======================================================================
