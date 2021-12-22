@@ -12,6 +12,12 @@
 #include <direct.h>	// getcwd
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
 #include <conio.h>
@@ -102,14 +108,31 @@ t }
 //=============================================================================
 WStr enExePath()		// full path to current executable
 {
+	char exePath[FILENAME_MAX + 1];
 	WStr t;
-#if !defined( ELIMINATE_WINDOWS)
-	char exePath[_MAX_PATH + 1];
-	if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
-	{
+
+#ifdef __APPLE__
+		uint32_t pathSize = sizeof(exePath);
+		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-	}
+#elif __linux__
+		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
+		if (len == -1) {
+			std::cout << "ERROR: Unable to locate executable." << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else {
+			exePath[len] = '\0';
+			t = exePath;
+			WStrLower(t);
+		}
+#elif _WIN32
+		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
+		{
+			t = exePath;
+			WStrLower(t);
+		}
 #endif
 	return t;
 }		// enExePath
