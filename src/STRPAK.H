@@ -28,6 +28,8 @@ const int STRPPEXT   = 8;
 inline int fcn##W( int c) { return fcn( c); } \
 inline int fcn##W( char c) { return fcn( (unsigned char)c); } \
 inline int fcn##W( unsigned char c) { return fcn( (unsigned char)c); }
+// The redefinition of standard functions defined below end on a W
+// to specify that it uses the declaration above for proper casting.
 #define charTypeErr( fcn) Should_use_##fcn##W
 charTypeW( isspace)
 #define isspace charTypeErr( isspace)
