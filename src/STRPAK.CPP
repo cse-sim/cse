@@ -11,6 +11,16 @@
 
 #include <messages.h>	// MAX_MSGLEN msgI
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesys = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif
+
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
 #if defined( _DEBUG)
@@ -362,10 +372,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	if (options & 1)
 		bAddExt = TRUE;
 	else
-	{	char curExt[ _MAX_EXT];
-		_splitpath( name, NULL, NULL, NULL, curExt);
-		bAddExt = IsBlank( curExt);
-	}
+		bAddExt = !(filesys::path(name).has_extension());
 
 	char* nu = strtcat(name, NULL);
 	if (bAddExt)
@@ -406,19 +413,41 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 
 // Returns assembled string, equested parts which are not present in *path are omitted from result.
 {
-	char pbuf[_MAX_PATH*4];
+	char pbuf[FILENAME_MAX *4];
 	static char wantmask[4] = { STRPPDRIVE, STRPPDIR, STRPPFNAME, STRPPEXT };
-
-#define part(p) (pbuf+((p)*_MAX_PATH))
+	filesys::path pathParts(path);
+#define part(p) (pbuf+((p)*FILENAME_MAX))
 
 	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
+	// The strings below replace the variable above
+	// They all work except for part(1) I need to find a sutable replacement
+	strcpy( part(0), pathParts.root_name().string().c_str());
+	/*Create the correct string*/
+	//strcat(part(1), pathParts.root_directory().string().c_str());
+	//strcat(part(1), pathParts.parent_path().relative_path().string().c_str());
+	//strcat(part(1), pathParts.root_directory().string().c_str());
+
+	strcpy( part(2), pathParts.stem().string().c_str());
+	strcpy( part(3), pathParts.extension().string().c_str());
 
 	if (!pcombo)
-		pcombo = strtemp( _MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
+		pcombo = strtemp(FILENAME_MAX);	// alloc n+1 Tmpstr[] bytes. local
 	*pcombo = '\0';
 	for (int i = 0; i < 4; i++ )
 		if (partswanted & wantmask[i])
-			strcat( pcombo, part(i));
+			strcat(pcombo, part(i));
+
+	/*for (int i = 0; i < 4; i++ )
+		if (partswanted & wantmask[i]) {
+			if (i == 0)
+				strcat(pcombo, pathParts.root_name().string().c_str());
+			else if (i == 1)
+				strcat(pcombo, pathParts.relative_path().string().c_str());
+			else if (i == 2)
+				strcat(pcombo, pathParts.stem().string().c_str());
+			else if (i == 3)
+				strcat(pcombo, pathParts.extension().string().c_str());
+		}*/
 	return pcombo;
 }			// strpathparts
 // =========================================================================
@@ -587,14 +616,14 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 
 // returns arg: valid till next strtemp -- e.g. ok for use with c lib fcn
 {
-	if (TmpstrNx < sizeof( int)  	// nop if startup
-			|| TmpstrNx > TMPSTRSZ)		// or garbage -- insurance
-		goto ret;
+	if (TmpstrNx < sizeof(int)  	// nop if startup
+		|| TmpstrNx > TMPSTRSZ)		// or garbage -- insurance
+		return anS;
 
 // fetch TmpstrNx value b4 last strtemp
 	int priorNx = *(int *)(Tmpstr + TmpstrNx - sizeof( int));
 	if (priorNx < 0 || priorNx > TMPSTRSZ)	// nop if out of range
-		goto ret;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
+		return anS;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
 // determine pointer most recent strtemp() returned
 	char* s = Tmpstr + (priorNx > TmpstrNx		// if priorNx > current Nx
 					?  0 			// then last strtemp wrapped to start
@@ -607,7 +636,6 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 	      there has been an intervening alloc,
 	      or have dealloc'd whole Tmpstr, back to overwritten stuff,
 	      or other unexpected garbage. */
-ret:
 	return anS;			// return location of (vulnerable!) string: strUntemp thus can be nested in call using anS.
 }		// strtempPop
 // ======================================================================
@@ -801,7 +829,7 @@ SI FC strlstin(			// case insensitive search for string in list
 		int lsub = strcspn( list+off, " ,/");	// find next delim
 		if (lsub
 		 && lsub == lstr
-		 && !strnicmp( str, list+off, lsub) )
+		 && !compareCaseStr( str, list+off) )
 		{
 			match = 1;
 			break;
@@ -1105,9 +1133,10 @@ char* strPluralize(				// form plural of a word
 	else
 	{
 		bool bException = false;
-		for (int i=0; excpTbl[ i].wordSingular; i++)
+		int i;
+		for (i=0; excpTbl[ i].wordSingular; i++)
 		{
-			if (!_stricmp( word, excpTbl[ i].wordSingular))
+			if (!compareCaseStr( word, excpTbl[ i].wordSingular))
 			{
 				bException = true;
 				break;
