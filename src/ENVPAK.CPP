@@ -8,12 +8,11 @@
 #include "cnglob.h"
 // #include "cse.h"
 #if !defined( ELIMINATE_WINDOWS)
+#if (_WIN32)
 #include <windows.h>
-#include <direct.h>	// getcwd
-#endif
-
-#ifdef linux
+#else
 #include <unistd.h>
+#endif
 #endif
 
 #include <signal.h> 	// signal SIGINT
