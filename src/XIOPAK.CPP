@@ -34,9 +34,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include <io.h>		// open, read, write,
-#if !defined( ELIMINATE_WINDOWS)
-#include <direct.h>	// getcwd, chdir, _chdrive
-#endif
 #include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
