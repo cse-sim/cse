@@ -2933,7 +2933,7 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 RECORD EQUIPDATA "EquipData" *RAT	// holds ASHRAE 205 equipment data
 *prefix ed_
 *exdes	// explicit destructor
-*declare "class ASHRAE205_NS::RS0002_NS::RS0002* ed_data;"
+*declare "class tk205::RS0002_NS::RS0002* ed_data;"
 
 // in base class: .name, .ownTi, more.
 *r CHP ed_filePath      // File path

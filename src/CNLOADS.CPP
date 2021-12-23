@@ -2021,22 +2021,20 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		rs_pRep205 = EdR.GetAtSafe(rs_rep205);  // Get pointer to equipment data
 		if (!rs_pRep205->ed_data)
 		{
-			libtk205_NS::A205_SDK _sdk;
-
 			// Validate
 			if (rs_pRep205->ed_doValidation) {
 				// Nothing yet
 			}
 
-			rs_pRep205->ed_data = new ASHRAE205_NS::RS0002_NS::RS0002;
-			*(rs_pRep205->ed_data) = _sdk.Load_RS0002(rs_pRep205->ed_filePath);
+			rs_pRep205->ed_data = new tk205::RS0002_NS::RS0002;
+			*(rs_pRep205->ed_data) = tk205::Load_RS0002(rs_pRep205->ed_filePath);
 
-			static const std::unordered_map<ASHRAE205_NS::SchemaType, SI> RSMAP =
+			static const std::unordered_map<tk205::ASHRAE205_NS::SchemaType, SI> RSMAP =
 				{
-					{ASHRAE205_NS::SchemaType::RS0002, C_EDRSCH_RS0002},
-					{ASHRAE205_NS::SchemaType::RS0003, C_EDRSCH_RS0003},
-					{ASHRAE205_NS::SchemaType::RS0004, C_EDRSCH_RS0004},
-					{ASHRAE205_NS::SchemaType::RS0005, C_EDRSCH_RS0005}
+					{tk205::ASHRAE205_NS::SchemaType::RS0002, C_EDRSCH_RS0002},
+					{tk205::ASHRAE205_NS::SchemaType::RS0003, C_EDRSCH_RS0003},
+					{tk205::ASHRAE205_NS::SchemaType::RS0004, C_EDRSCH_RS0004},
+					{tk205::ASHRAE205_NS::SchemaType::RS0005, C_EDRSCH_RS0005}
 				};
 
 			// TODO move to EQUIPDATA Function
@@ -2848,15 +2846,14 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 			int maxSpeed = dxRepPerf.performance_map_cooling.grid_variables.compressor_sequence_number.back();
 			double maxFlow = dxRepPerf.performance_map_cooling.grid_variables.indoor_coil_air_mass_flow_rate.back();
 			auto performance = dxRepPerf.performance_map_cooling.Calculate_performance(
-				{
 					DegFtoK(95.f),     // outdoor_coil_entering_dry_bulb_temperature
 					0.4,               // indoor_coil_entering_relative_humidity;
 					DegFtoK(80.f),     // indoor_coil_entering_dry_bulb_temperature;
 					maxFlow,           // indoor_coil_air_mass_flow_rate;
 					double(maxSpeed),  // compressor_sequence_number;
 					101325             // ambient_absolute_air_pressure;
-				});
-			auto capTot_205 = performance[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_total_capacity_index]*BtuperWh;
+				);
+			auto capTot_205 = performance.gross_total_capacity*BtuperWh;
 			rs_205flowScaleF = MFRIPtoSI(rs_amfC) / maxFlow;
 			rs_205outScaleF = abs(rs_capnfX) / capTot_205;
 			rs_CdC = dxRepPerf.cycling_degradation_coefficient;
@@ -3205,43 +3202,37 @@ x		printf("\nhit");
 		double tdbInK = DegFtoK(rs_tdbCoilIn);
 		double pAtm = inHGtoPa(Top.tp_presAtm);
 		auto& minSpeedPerf = dxRepPerf.performance_map_cooling.Calculate_performance(
-			{
 				tdbOutK,
 				rhIn,
 				tdbInK,
 				MFRIPtoSI(rs_amfC / (maxSpeed * rs_205flowScaleF)),
 				1.0,
 				pAtm
-			}
 		);
-		double capTotCmin = minSpeedPerf[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_total_capacity_index] * BtuperWh * rs_205outScaleF;
-		double capSensCmin = min(minSpeedPerf[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_sensible_capacity_index] * BtuperWh * rs_205outScaleF, capTotCmin);
+		double capTotCmin = minSpeedPerf.gross_total_capacity * BtuperWh * rs_205outScaleF;
+		double capSensCmin = min(minSpeedPerf.gross_sensible_capacity * BtuperWh * rs_205outScaleF, capTotCmin);
 		auto& maxSpeedPerf = dxRepPerf.performance_map_cooling.Calculate_performance(
-			{
 				tdbOutK,
 				rhIn,
 				tdbInK,
 				MFRIPtoSI(rs_amfC / rs_205flowScaleF),
 				double(maxSpeed),
 				pAtm
-			}
 		);
-		double capTotCmax = maxSpeedPerf[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_total_capacity_index] * BtuperWh * rs_205outScaleF;
-		double capSensCmax = min(maxSpeedPerf[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_sensible_capacity_index] * BtuperWh * rs_205outScaleF, capTotCmax);
+		float capTotCmax = maxSpeedPerf.gross_total_capacity * BtuperWh * rs_205outScaleF;
+		float capSensCmax = min(maxSpeedPerf.gross_sensible_capacity * BtuperWh * rs_205outScaleF, capTotCmax);
 		rs_speedFMin = capSensCmin / capSensCmax;
 		auto& performance = dxRepPerf.performance_map_cooling.Calculate_performance(
-			{
 				tdbOutK,
 				rhIn,
 				tdbInK,
 				MFRIPtoSI(rs_amf/ rs_205flowScaleF),
 				double(1.f + (rs_speedF - rs_speedFMin)/(1.f - rs_speedFMin)*(maxSpeed - 1.f)),
 				pAtm
-			}
 		);
-		rs_capTotCt = -performance[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_total_capacity_index]*BtuperWh* rs_205outScaleF;
-		rs_capSenCt = max(-performance[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_sensible_capacity_index]*BtuperWh* rs_205outScaleF,rs_capTotCt);
-		double inpX = performance[ASHRAE205_NS::RS0004_NS::LookupVariablesCooling::gross_power_index]*BtuperWh* rs_205outScaleF;
+		rs_capTotCt = -performance.gross_total_capacity*BtuperWh* rs_205outScaleF;
+		rs_capSenCt = max(-performance.gross_sensible_capacity*BtuperWh* rs_205outScaleF,rs_capTotCt);
+		double inpX = performance.gross_power*BtuperWh* rs_205outScaleF;
 		rs_SHR = rs_capSenCt / rs_capTotCt;
 		rs_effCt = abs(rs_capSenCt) / inpX;
 		rs_fCondCap = rs_capTotCt/ rs_capnfX;
@@ -5451,8 +5442,8 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 		{
 			auto& dxStandbyPerf = rs_pRep205->ed_data->performance.dx_system_representation.performance.performance_map_standby;
 			rs_parElec = dxStandbyPerf.Calculate_performance(
-				{ DegFtoK(rs_tdbOut) }
-			)[ASHRAE205_NS::RS0004_NS::LookupVariablesStandby::gross_power_index];
+				DegFtoK(rs_tdbOut)
+			).gross_power;
 		}
 	}
 

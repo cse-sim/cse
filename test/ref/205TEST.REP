@@ -183,9 +183,9 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 
 
-Log for Run 001:
+! Log for Run 001:
 
-CSE 0.899.0+ashrae205.f438428.26 for Win32 console
+! CSE 0.899.0+ashrae205.fcfe5d8.81 for Win32 console
 
 
 
@@ -1734,18 +1734,18 @@ Input for Run 001:
 
 
 
-CSE 0.899.0+ashrae205.f438428.26 for Win32 console run(s) done: Tue 23-Nov-21   5:03:05 pm
+! CSE 0.899.0+ashrae205.fcfe5d8.81 for Win32 console run(s) done: Thu 23-Dec-21  10:31:08 am
 
-Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-              23-Nov-21   5:02 pm   (VS 14.29    3374592 bytes)  (HPWH 1.15.0+HEAD.81d7b80.17)
-Command line: 205test.cse
-Input file:   C:\Users\nkruis\projects\cse\test\205test.cse
-Report file:  C:\Users\nkruis\projects\cse\test\205test.rep
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               23-Dec-21  10:28 am   (VS 14.29    3766272 bytes)  (HPWH 1.16.0)
+! Command line: -x!  -b -t1 205test
+! Input file:   C:\Users\nkruis\projects\cse\test\205test.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\205test.rep
 
-Timing info --
+! Timing info --
 
-               Input:  Time = 0.42     Calls = 2      T/C = 0.2080   
-          AutoSizing:  Time = 10.32    Calls = 1      T/C = 10.3210  
-          Simulation:  Time = 27.51    Calls = 1      T/C = 27.5080  
-             Reports:  Time = 0.12     Calls = 1      T/C = 0.1180   
-               Total:  Time = 38.39    Calls = 1      T/C = 38.3890  
+!                Input:  Time = 0.15     Calls = 2      T/C = 0.0745   
+!           AutoSizing:  Time = 2.94     Calls = 1      T/C = 2.9370   
+!           Simulation:  Time = 20.50    Calls = 1      T/C = 20.4980  
+!              Reports:  Time = 0.07     Calls = 1      T/C = 0.0670   
+!                Total:  Time = 23.65    Calls = 1      T/C = 23.6510  

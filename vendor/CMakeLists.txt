@@ -44,10 +44,10 @@ if (NOT HPWHSIM_OMIT_TESTTOOL)
 endif()
 
 # btwxt
-add_subdirectory( btwxt)
+add_subdirectory(btwxt)
 
-# Toolkit 205
-add_subdirectory(toolkit-205)
+# libtk205
+add_subdirectory(libtk205)
 
 
 
