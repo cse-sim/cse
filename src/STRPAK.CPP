@@ -418,15 +418,11 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 	filesys::path pathParts(path);
 #define part(p) (pbuf+((p)*FILENAME_MAX))
 
-	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
-	// The strings below replace the variable above
-	// They all work except for part(1) I need to find a sutable replacement
+	// Split the path into the necessary components
 	strcpy( part(0), pathParts.root_name().string().c_str());
-	/*Create the correct string*/
-	//strcat(part(1), pathParts.root_directory().string().c_str());
-	//strcat(part(1), pathParts.parent_path().relative_path().string().c_str());
-	//strcat(part(1), pathParts.root_directory().string().c_str());
-
+	strcpy( part(1), pathParts.root_directory().string().c_str());
+	strcat( part(1), pathParts.relative_path().parent_path().string().c_str());
+	strcat( part(1), pathParts.root_directory().string().c_str());
 	strcpy( part(2), pathParts.stem().string().c_str());
 	strcpy( part(3), pathParts.extension().string().c_str());
 
@@ -436,18 +432,6 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 	for (int i = 0; i < 4; i++ )
 		if (partswanted & wantmask[i])
 			strcat(pcombo, part(i));
-
-	/*for (int i = 0; i < 4; i++ )
-		if (partswanted & wantmask[i]) {
-			if (i == 0)
-				strcat(pcombo, pathParts.root_name().string().c_str());
-			else if (i == 1)
-				strcat(pcombo, pathParts.relative_path().string().c_str());
-			else if (i == 2)
-				strcat(pcombo, pathParts.stem().string().c_str());
-			else if (i == 3)
-				strcat(pcombo, pathParts.extension().string().c_str());
-		}*/
 	return pcombo;
 }			// strpathparts
 // =========================================================================
