@@ -12,9 +12,7 @@
 #include <direct.h>	// getcwd
 #endif
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+#ifdef linux
 #include <unistd.h>
 #endif
 
@@ -110,7 +108,7 @@ WStr enExePath()		// full path to current executable
 {
 	char exePath[FILENAME_MAX + 1];
 	WStr t;
-
+#if !defined(ELIMINATE_WINDOWS)
 #ifdef __APPLE__
 		uint32_t pathSize = sizeof(exePath);
 		_NSGetExecutablePath(exePath, &pathSize);
@@ -134,6 +132,9 @@ WStr enExePath()		// full path to current executable
 			WStrLower(t);
 		}
 #endif
+#endif
+	t = "?";
+	WStrLower(t);
 	return t;
 }		// enExePath
 //=============================================================================
