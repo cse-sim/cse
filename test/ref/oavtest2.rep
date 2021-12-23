@@ -141,7 +141,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Tue 30-Jun
  17 97.2 69.2 .0090  119   -0.02 77.8 77.6    0.03 .0126  61 68.3   5.85  1.85 -9.49  1.77  0.47 -0.46  0.022 .003     0     0     0     0     0    0      0      0
  18 97.9 69.5 .0090  119   -0.02 78.0 78.0    0.03 .0112  54 66.2   6.19  1.92 -6.63  2.18  0.60  2.15  0.076 .012  -3.7  -2.7     0  -6.4     0 0.20      0      0
  19 98.1 69.8 .0092  117   -0.02 78.0 78.2    0.03 .0097  47 64.1   5.83  2.07 -4.62  2.72  0.72  2.19   0.11 .015  -6.1  -2.9     0  -9.0     0 0.25      0      0
- 20 97.9 69.3 .0088  114   -0.02 78.0 78.3    0.03 .0088  43 62.8   3.99  2.00 -2.59  3.15  0.82  1.23   0.11 .015  -6.7  -2.0     0  -8.7     0 0.22      0      0
+ 20 97.9 69.2 .0088  114   -0.02 78.0 78.3    0.03 .0088  43 62.8   3.99  2.00 -2.59  3.15  0.82  1.23   0.11 .015  -6.7  -2.0     0  -8.7     0 0.22      0      0
  21 96.1 68.8 .0089  110   -0.01 78.0 78.2    0.02 .0086  42 62.5   0.38  1.54 -0.59  3.15  0.83  0.29  0.069 .010  -4.6  -1.1     0  -5.7     0 0.14      0      0
  22 89.1 70.0 .0114  106   -0.01 78.0 78.2    0.02 .0086  42 62.5      0  1.03 -0.62  2.87  0.74 0.047  0.040 .008  -3.3  -0.8     0  -4.1     0 .098      0      0
  23 82.4 66.9 .0106  102   -0.01 78.0 78.1    0.02 .0086  42 62.6      0  0.35 -0.53  2.29  0.59 -.067  0.016 .006  -2.1  -0.5     0  -2.7     0 .055      0      0
@@ -186,7 +186,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.899.0+ashrae205.9d2cd31.25 for Win32 console
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
 
 
 
@@ -1492,18 +1492,18 @@ Input for Run 001:
 
 
 
-! CSE 0.899.0+ashrae205.9d2cd31.25 for Win32 console run(s) done: Wed 27-Oct-21   9:52:27 am
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:36:43 am
 
 ! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               27-Oct-21   9:48 am   (VS 14.29    3374592 bytes)  (HPWH 1.15.0+HEAD.81d7b80.17)
+!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
 ! Command line: -x!  -b -t1 oavtest2
 ! Input file:   C:\Users\nkruis\projects\cse\test\oavtest2.cse
 ! Report file:  C:\Users\nkruis\projects\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.12     Calls = 1      T/C = 0.1220   
+!                Input:  Time = 0.12     Calls = 1      T/C = 0.1150   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 16.29    Calls = 1      T/C = 16.2910  
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0120   
-!                Total:  Time = 16.43    Calls = 1      T/C = 16.4280  
+!           Simulation:  Time = 15.67    Calls = 1      T/C = 15.6690  
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
+!                Total:  Time = 15.80    Calls = 1      T/C = 15.7960  

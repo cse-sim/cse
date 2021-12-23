@@ -58,10 +58,10 @@ CFA: 2100.00  Vol: 18900.0 FloorZ: 0     CeilingHt: 9.00   EaveZ: 9.00   CAir: 4
 Infil AC: 0        ELA: 0        Stackc: 323.482  Windc: 80.870 
 UA:    0        UANom:  235.839
 Surface Ceiling (below aArea: 2100.0  Az: 0   T: 0   UNom: 0.0299   UA: 62.77  InAbs: 0.20 ExAbs: 0.20   ExCnd: AdjZn Attic    
-Surface Front-Frm       Area: 74.3    Az: 0   T: 90  UNom: 0.113    UA: 8.36   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
-Surface Left-Frm        Area: 84.3    Az: 90  T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
-Surface Back-Frm        Area: 84.3    Az: 180 T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
-Surface Right-Frm       Area: 84.3    Az: 270 T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Front-Frm       Area: 74.2    Az: 0   T: 90  UNom: 0.113    UA: 8.36   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Left-Frm        Area: 84.2    Az: 90  T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Back-Frm        Area: 84.2    Az: 180 T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Right-Frm       Area: 84.2    Az: 270 T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
 Surface Front-Cav       Area: 262.8   Az: 0   T: 90  UNom: 0.0633   UA: 16.62  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
 Surface Left-Cav        Area: 252.8   Az: 90  T: 90  UNom: 0.0633   UA: 15.99  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
 Surface Back-Cav        Area: 252.8   Az: 180 T: 90  UNom: 0.0633   UA: 15.99  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
@@ -412,7 +412,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Tue 30-Jun
  17 97.2 69.2 .0090  118   -0.02 78.1 77.7    0.03 .0126  60 68.4   7.02  1.48 -10.3  1.77  0.47 -0.46  0.021 .003     0     0     0     0     0    0      0      0
  18 97.9 69.5 .0090  118   -0.02 78.0 77.9    0.03 .0106  51 65.4   7.32  1.54 -5.73  2.18  0.60  3.00   0.11 .016  -5.4  -3.5     0  -9.0     0 0.16      0      0
  19 98.1 69.8 .0092  117   -0.02 78.0 78.0    0.03 .0097  47 64.2   6.87  1.60 -6.65  2.72  0.72  1.29  0.084 .012  -4.6  -2.0     0  -6.6     0 0.17      0      0
- 20 97.9 69.3 .0088  114   -0.01 78.0 78.1    0.03 .0093  45 63.5   4.73  1.55 -5.31  3.15  0.82  0.61  0.071 .010  -4.2  -1.4     0  -5.6     0 0.12      0      0
+ 20 97.9 69.2 .0088  114   -0.01 78.0 78.1    0.03 .0093  45 63.5   4.73  1.55 -5.31  3.15  0.82  0.61  0.071 .010  -4.2  -1.4     0  -5.6     0 0.12      0      0
  21 96.1 68.8 .0089  110   -0.01 78.0 77.8    0.02 .0094  46 63.7   0.44  1.33 -2.95  3.15  0.83 -0.18  0.042 .006  -2.0  -0.6     0  -2.6     0 .054      0      0
  22 89.1 70.0 .0114  106   -0.01 78.0 77.6    0.02 .0097  47 64.2      0  0.90 -2.89  2.87  0.74 -0.43  0.012 .003  -0.9  -0.3     0  -1.2     0 .022      0      0
  23 82.4 66.9 .0106  102   -0.01 78.0 77.3    0.02 .0101  49 64.7      0  0.30 -2.54  2.29  0.59 -0.57  0.011 .004 -0.07 -0.03     0 -0.09     0    0      0      0
@@ -457,7 +457,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.899.0+ashrae205.9d2cd31.25 for Win32 console
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
 
 
 
@@ -1747,18 +1747,18 @@ Input for Run 001:
 
 
 
-! CSE 0.899.0+ashrae205.9d2cd31.25 for Win32 console run(s) done: Wed 27-Oct-21   9:52:38 am
+! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:37:02 am
 
 ! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               27-Oct-21   9:48 am   (VS 14.29    3374592 bytes)  (HPWH 1.15.0+HEAD.81d7b80.17)
+!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
 ! Command line: -x!  -b -t1 bgtest
 ! Input file:   C:\Users\nkruis\projects\cse\test\bgtest.cse
 ! Report file:  C:\Users\nkruis\projects\cse\test\bgtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 1      T/C = 0.0850   
+!                Input:  Time = 0.10     Calls = 1      T/C = 0.1050   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 11.04    Calls = 1      T/C = 11.0360  
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0140   
-!                Total:  Time = 11.14    Calls = 1      T/C = 11.1360  
+!           Simulation:  Time = 17.77    Calls = 1      T/C = 17.7690  
+!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0610   
+!                Total:  Time = 17.94    Calls = 1      T/C = 17.9370  
