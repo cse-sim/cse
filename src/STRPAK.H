@@ -28,8 +28,10 @@ const int STRPPEXT   = 8;
 inline int fcn##W( int c) { return fcn( c); } \
 inline int fcn##W( char c) { return fcn( (unsigned char)c); } \
 inline int fcn##W( unsigned char c) { return fcn( (unsigned char)c); }
-// The redefinition of standard functions defined below end on a W
-// to specify that it uses the declaration above for proper casting.
+// charTypeErr is used to redefine the original functions so that when they are used,
+// the compiler will throw an error because "Should_use_##fcn##W" is not defined.
+// This indicates to the user that they should use the "W" suffixed version of the function
+// instead for proper casting.
 #define charTypeErr( fcn) Should_use_##fcn##W
 charTypeW( isspace)
 #define isspace charTypeErr( isspace)
