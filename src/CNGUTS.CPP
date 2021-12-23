@@ -202,6 +202,7 @@ void FC runFazDataFree()
 
 	ZrB.free(); 	// Zones runtime info
 	ZnresB.free();	// zone simulation results
+	EdR.free();   	// EQUIPDATA
 	RsResR.free();	// RSYS results
 	DsResR.free();	// DUCTSEG results
 	WsResR.free();	// DHWSYS results

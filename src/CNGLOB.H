@@ -494,6 +494,7 @@ struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
+namespace tk205 { namespace RS0002_NS { class RS0002; } }
 
 
 
@@ -653,6 +654,11 @@ inline double MFRSItoIP(double mfr) { return mfr / cfMFR; }
 const double cfV = 1./2.23694;		// m/s / mph
 template< typename T> inline T VIPtoSI(T mph) { return T( mph*cfV); }
 template< typename T> inline T VSItoIP(T ms) { return T( ms/cfV); }
+
+// pressure inHg <-> Pa
+const double cfP = 3386.39;
+template< typename T> inline T inHGtoPa(T inHG) { return T(inHG * cfP); }
+template< typename T> inline T PatoinHG(T Pa) { return T(Pa / cfP); }
 
 // air mass flow <--> air volume flow
 //   amf in lbm/hr

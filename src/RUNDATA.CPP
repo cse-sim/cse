@@ -77,6 +77,7 @@ makAncMTR( MtrB);			// meters (energy use) run records basAnc
 makAncAFMTR(AfMtrR);		// air flow meters run basAnc
 
 // hvac: residential system model
+makAncEQUIPDATA(EdR);		// ASHRAE 205 equipment data
 makAncRSYS( RsR);			// compliance-oriented simple residential system model
 makAncRSYSRES( RsResR);		// RSYS results
 makAncDUCTSEG( DsR);		// duct segments

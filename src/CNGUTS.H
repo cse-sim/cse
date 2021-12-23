@@ -116,6 +116,7 @@ extern anc<DESCOND> DcR;		// design conditions
 extern anc<ZNR> ZrB;			// zones runtime info
 extern anc<ZNRES> ZnresB;      	// Zones simulation results info
 extern anc<IZXRAT> IzxR;		// interzone transfers
+extern anc<EQUIPDATA> EdR;		// ASHRAE 205 equipment data
 extern anc<RSYS> RsR;			// residential system
 extern anc<RSYSRES> RsResR;		// residential system results
 extern anc<DUCTSEG> DsR;		// duct segments

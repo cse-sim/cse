@@ -74,6 +74,7 @@ makAncMTR(MtriB);			// Meters input records basAnc
 makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
 
 // simple HVAC and DHW (for CSE T24 residential compliance)
+makAncEQUIPDATA(EDiB);			// residential HVAC system
 makAncRSYS( RSiB);			// residential HVAC system
 makAncDHWMTR( WMtriB);		// DHW meters
 makAncDHWSYS( WSiB);		// DHW system
@@ -144,6 +145,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	AfMtriB.free();
 	GniB.free();
 	MtriB.free();
+	EDiB.free();
 	RSiB.free();
 	WMtriB.free();
 	WSiB.free();
@@ -1575,6 +1577,20 @@ CULT()
 };	// izxT
 #undef ZFAN
 
+//========== EQUIPDATA command (ASHRAE 205 equipment data) ==============
+
+static CULT edT[] = //-------------- EQUIPDATA cmd table, used from cnTopCult
+{
+	// id                      cs   fn                        f        uc evf     ty      b    dfls                           p2   ckf
+	//"*",                   STAR,  0,                        0,       0, 0,      0,      0,   N,    0.f,                     N,   edStarCkf),
+	CULT("edFilePath",       DAT,   EQUIPDATA_FILEPATH,       RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                     N,   N),
+	CULT("edExpectedRS",     DAT,   EQUIPDATA_EXPECTEDRS,     RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
+	CULT("edDoValidation",   DAT,   EQUIPDATA_DOVALIDATION,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
+	CULT("endEquipmentData", ENDER, 0,                        0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
+	CULT()
+};	// edT
+
+
 
 //=================== DUCTSEG command ( duct segment) ===================
 RC DUCTSEG::ds_Ckf()
@@ -1678,6 +1694,7 @@ CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      
 CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTYCH_ACFURN, N, N),
 CULT( "rsDesc",		 DAT,   RSYS_DESC,       0,       0, VEOI,   TYSTR, 0,		0,		N,	 N),
 CULT( "rsPerfMap",	 DAT,	RSYS_PERFMAP,	 0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
+CULT( "rsRep205",    DAT,   RSYS_REP205,     0,       0, VEOI,   TYREF, &EDiB,  N,      N,   N),
 CULT( "rsFanTy",	 DAT,	RSFAN( FANTY),   0,       0, VEOI,   TYCH,  0,      C_FANTYCH_BLOWTHRU, N, N ),
 CULT( "rsFanMotTy",  DAT,   RSFAN( MOTTY),   0,       0, VEOI,   TYCH,  0,      C_MOTTYCH_PSC,  N, N ),
 CULT( "rsAdjForFanHt", DAT, RSYS_ADJFORFANHT,0,       0, VEOI,   TYCH,  0,      C_NOYESCH_YES,  N, N),
@@ -2856,6 +2873,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),
 	CULT("afmeter",      RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "equipdata",   RATE,  0,                 NM_RQD,     0, 0,      0,    &EDiB,   N,    0.f,           edT,  N),
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),

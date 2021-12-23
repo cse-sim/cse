@@ -133,6 +133,7 @@ set(source
   WFPAK.CPP
   XIOPAK.CPP
   YACAM.CPP
+  A205FACE.CPP
 )
 
 set(precomp
@@ -199,6 +200,7 @@ set(headers
   WFPAK.H
   XIOPAK.H
   YACAM.H
+  A205FACE.H
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
@@ -212,6 +214,10 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/build/include"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/vendor/json/single_include"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/libtk205/include"
+  "${CMAKE_SOURCE_DIR}/vendor/toolkit-205/schema-205/schema205/src"
   "${btwxt_SOURCE_DIR}/src"
 )
 
@@ -252,6 +258,7 @@ set(libs
   libHPWHsim
   libkiva
   btwxt
+  libtk205
 )
 
 source_group("Source Files" FILES ${source})

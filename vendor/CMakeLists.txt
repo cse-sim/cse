@@ -92,8 +92,7 @@ endif()
 
 
 # btwxt
-add_subdirectory( btwxt)
-
+add_subdirectory(btwxt)
 set_target_properties(btwxt PROPERTIES FOLDER Dependencies)
 mark_as_advanced(
   BTWXT_COVERAGE
@@ -102,4 +101,10 @@ mark_as_advanced(
   GIT_SUBMODULE # Should go away with Btwxt update
 )
 
+# libtk205
+set(LIBTK205_BUILD_TESTING OFF CACHE BOOL "" FORCE)
 
+add_subdirectory(libtk205)
+
+set_target_properties(libtk205 PROPERTIES FOLDER Dependencies)
+mark_as_advanced(LIBTK205_BUILD_TESTING)

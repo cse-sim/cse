@@ -40,6 +40,7 @@ set(files
   1ZKiva
   2zattic
   actest1bL
+  205test
   ashptest2
   ashpPkgRoom
   ashp_dfng

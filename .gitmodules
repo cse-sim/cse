@@ -10,3 +10,6 @@
 [submodule "vendor/btwxt"]
 	path = vendor/btwxt
 	url = https://github.com/bigladder/btwxt.git
+[submodule "vendor/libtk205"]
+	path = vendor/libtk205
+	url = https://github.com/open205/libtk205.git
