@@ -179,25 +179,21 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 	filesys::path fname(*fnamp), dir;	// filesystem variables
 	std::error_code ec;					// Error Code for filesystem functions
 
-	if (filesys::exists(fname, ec)) {
-		dir = filesys::absolute(fname);
+	if (filesys::exists(fname, ec)) {	// File or full path exist
+		dir = filesys::absolute(fname); // Create full path
 	}
 	else {
-		if (!ec)
-			dir = filesys::absolute(fname, ec);
-		if (ec) {
-			if (!dir.has_root_name()) {
-				err(erOp, "\"%s\": Invalid Drive", fname);
-				return RCBAD;
-			}
-			else if (!dir.has_relative_path()) {
-				err(erOp, "\"%s\": Directory not found", fname);
-				return RCBAD;
-			}
-			else {
-				err(erOp, "\"%s\": Invalid path", fname, ec);
-				return RCBAD;
-			}
+		if (!fname.has_root_name()) {			// Missing root name, ex C:
+			err(erOp, "\"%s\": Invalid Drive", fname);
+			return RCBAD;
+		}
+		else if (!fname.has_relative_path()) {	// Missing Path
+			err(erOp, "\"%s\": Directory not found", fname);
+			return RCBAD;
+		}
+		else {
+			err(erOp, "\"%s\": Invalid path", fname, ec);
+			return RCBAD;
 		}
 	}
 
