@@ -176,56 +176,36 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	const char *fname, *p, *namepart;
-	//SEC sec;
-	char save;			// save current dir pathname
-	filesys::path cwdSave, fnameTemp, dir;	// filesystem variables
+	filesys::path fname(*fnamp), dir;	// filesystem variables
 	std::error_code ec;					// Error Code for filesystem functions
 
-
-	fname = strupr( strTrim( NULL, *fnamp) );		// upper case and deblank
-	// uppercasing appears UNNECESSARY. ? xx
-
-	p = strrchr(fname,'\\');		// find last \, NULL if no directories
-	if ( p != NULL				// if contains '\'
-			|| (p=strrchr(fname,':')) != NULL ) 	// or else colon
-	{
-		namepart = p+1;		// name.ext starts after drv:dir\
-
-		// substring for selecting drv:dir includes colon and leading (root) '\'
-		if (*p==':'		// if drive only, no \'s
-				|| *(p-1)==':'  	// or just root after drive (only 1 \)
-				|| (p-fname)==0)	// or root only (or : - bad syntax)
-			p++;			// include : or leading \ in directory string
-		// else: no p++: \ after (last) dir name is omitted.
-
-		/* select drive/dir: easy way to interpret ..\'s, etc, to get full path.
-				also verifies existence of drive and directories. */
-		save = *p;
-		*(char *)p = '\0';		// terminate before name.ext for chdir. override const 10-94 -- but we restore it.
-		cwdSave = filesys::current_path();	// save drv:dir in stack array
-		filesys::current_path(filesys::path(fname), ec); // select path's drv:dir. suppress message.
-		if (ec)		// if chdir failed
-			// xchdir's "cannot change working directory to %s" message is inappropriate eg when checking CSE input path.
-			err(ec.value(), ec.message().c_str(), fname);
-		dir = filesys::current_path(); 		// get full drv:dir
-
-		filesys::current_path(cwdSave, ec);		// restore drv:dir; err impossible?
-		*(char *)p = save;		// replace char
-		if (ec)		// now, if chdir failed
-			return RCBAD;			// give bad return
+	if (filesys::exists(fname, ec)) {
+		dir = filesys::absolute(fname);
 	}
-	else	// no drive, no directory
-	{
-		namepart = fname;
-		dir = filesys::current_path();		// get full current drive/dir
+	else {
+		if (!ec)
+			dir = filesys::absolute(fname, ec);
+		if (ec) {
+			if (!dir.has_root_name()) {
+				err(erOp, "\"%s\": Invalid Drive", fname);
+				return RCBAD;
+			}
+			else if (!dir.has_relative_path()) {
+				err(erOp, "\"%s\": Directory not found", fname);
+				return RCBAD;
+			}
+			else {
+				err(erOp, "\"%s\": Invalid path", fname, ec);
+				return RCBAD;
+			}
+		}
 	}
 
-// assemble, with \ between dir and filename one is lacking
-	//*fnamp = strtPathCat( dir, namepart);
-	//strcpy(fnamp, dir.string().c_str());
+	// assemble, with \ between dir and filename one is lacking
+	*fnamp = strtPathCat(dir.parent_path().string().c_str(), dir.filename().string().c_str());
 
 	return RCOK;		// another return is in code above
+
 }		// xfGetPath
 //======================================================================
 XFILE* xfopen(  	// Set up extended IO structure and open file
