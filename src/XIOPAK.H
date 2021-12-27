@@ -26,25 +26,25 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 	unknown:   File is created if it does not exist but preserved if
 		   it does.  This is most applicable when appending. */
 // Text modes
-#define O_RT (_O_RDONLY|_O_TEXT)					// Read
-#define O_WT (_O_RDWR|_O_TEXT|_O_CREAT|_O_TRUNC)	// r/w (fresh)
-#define O_WTOLD (_O_RDWR|_O_TEXT) 					// r/w (must exist)
-#define O_WTOLDA (_O_RDWR|_O_TEXT|_O_APPEND)		// r/w (append)
-#define O_WTUNKA (_O_WTOLDA|_O_CREAT)				// r/w append, create if nec
+#define O_RT "r"					// Read							// (_O_RDONLY|_O_TEXT)
+#define O_WT "w"					// r/w (fresh)					// (_O_RDWR|_O_TEXT|_O_CREAT|_O_TRUNC)
+#define O_WTOLD "w+"				// r/w (must exist)				// (_O_RDWR|_O_TEXT)
+#define O_WTOLDA "a"				// r/w (append)					// (_O_RDWR|_O_TEXT|_O_APPEND)
+#define O_WTUNKA "a+"				// r/w append, create if nec	// (_O_WTOLDA|_O_CREAT)
 
 // Binary
-#define O_RB (_O_RDONLY|_O_BINARY)		     		// Read
-#define O_WB (_O_RDWR|_O_BINARY|_O_CREAT|_O_TRUNC)	// r/w (fresh)
-#define O_WBOLD (_O_RDWR|(_O_BINARY) 				// r/w (old, must exist)
-#define O_WBOLDA (O_WBOLD|_O_APPEND)	  			// r/w append (must exist)
-#define O_WBUNK (O_WBOLD|_O_CREAT)	  				// r/w (create if nec.)
-#define O_WBUNKA (O_WBOLDA|_O_CREAT)	  			// r/w append (create if nec.)
+#define O_RB "rb"				// Read							// (_O_RDONLY|_O_BINARY)
+#define O_WB "wb"				// r/w (fresh)					// (_O_RDWR|_O_BINARY|_O_CREAT|_O_TRUNC)
+#define O_WBOLD "wb+"			// r/w (old, must exist)		// (_O_RDWR|(_O_BINARY)
+#define O_WBOLDA "ab"			// r/w append (must exist)		// (O_WBOLD|_O_APPEND)
+#define O_WBUNK "wb+"			// r/w (create if nec.)			// (O_WBOLD|_O_CREAT)
+#define O_WBUNKA "ab+"			// r/w append (create if nec.)	// (O_WBOLDA|_O_CREAT)
 
 ///////////////////////////////////////////////////////////////////////////////
 // struct XFILE: extended IO packet set up in dm by xfopen, used with other xiopak fcns
 ///////////////////////////////////////////////////////////////////////////////
 struct XFILE
-{   int han;		// File handle
+{   FILE* han;		// File handle
     int access;		// Access flag used on last open()
     int nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
