@@ -4,7 +4,7 @@
 
 // dmpak.cpp: Dynamic memory routines for CSE
 
-#include "cnglob.h"	// global defns
+#include "CNGLOB.H"	// global defns
 
 #if 0	// debug aid, 7-10
 x #include "ancrec.h"
