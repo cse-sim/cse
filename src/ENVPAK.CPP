@@ -15,11 +15,7 @@
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
-#ifdef __WIN32
-#include <sys\timeb.h>	// timeb structure
-#else
 #include <sys/timeb.h>	// timeb structure
-#endif
 
 #include <lookup.h>	// lookws wstable
 #include <tdpak.h>	// tdldti

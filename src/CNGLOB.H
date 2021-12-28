@@ -108,7 +108,7 @@ typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE; 
 #endif // ELIMINATE_WINDOWS
 
-#ifdef linux
+#ifdef __linux__
 #define DOMAIN     1   // argument domain error
 #define SING       2   // argument singularity
 #define OVERFLOW   3   // overflow range error
@@ -127,6 +127,18 @@ typedef HINSTANCE HMODULE;
 #define _FPE_SQRTNEG            0x88
 #define _FPE_STACKOVERFLOW      0x8a
 #define _FPE_STACKUNDERFLOW     0x8b
+
+// Floating point error signals
+#define FPE_INVALID			_FPE_INVALID
+#define FPE_DENORMAL		_FPE_DENORMAL
+#define FPE_ZERODIVIDE		_FPE_ZERODIVIDE
+#define FPE_OVERFLOW		_FPE_OVERFLOW
+#define FPE_UNDERFLOW		_FPE_UNDERFLOW
+#define FPE_INEXACT			_FPE_INEXACT
+#define FPE_UNEMULATED		_FPE_UNEMULATED
+#define FPE_SQRTNEG			_FPE_SQRTNEG
+#define FPE_STACKOVERFLOW	_FPE_STACKOVERFLOW
+#define FPE_STACKUNDERFLOW	_FPE_STACKUNDERFLOW
 
 // Definition of the _exception struct, which is passed to the matherr function
 // when a floating point exception is detected:
