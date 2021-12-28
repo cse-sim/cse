@@ -8,9 +8,11 @@
 #include "CNGLOB.H"
 // #include "cse.h"
 #if !defined( ELIMINATE_WINDOWS)
+#if (_WIN32)
 #include <windows.h>
-#include <direct.h>	// getcwd
-#include <conio.h>
+#else
+#include <unistd.h>
+#endif
 #endif
 
 #include <signal.h> 	// signal SIGINT
@@ -103,14 +105,34 @@ t }
 WStr enExePath()		// full path to current executable
 {
 	WStr t;
-	#if !defined( ELIMINATE_WINDOWS)
+#if !defined(ELIMINATE_WINDOWS)
 	char exePath[FILENAME_MAX + 1];
-	if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
-	{
+#ifdef __APPLE__
+		uint32_t pathSize = sizeof(exePath);
+		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-	}
-	#endif
+#elif __linux__
+		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
+		if (len == -1) {
+			std::cout << "ERROR: Unable to locate executable." << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else {
+			exePath[len] = '\0';
+			t = exePath;
+			WStrLower(t);
+		}
+#elif _WIN32
+		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
+		{
+			t = exePath;
+			WStrLower(t);
+		}
+#endif
+#endif
+	t = "?";
+	WStrLower(t);
 	return t;
 }		// enExePath
 //=============================================================================
@@ -280,7 +302,7 @@ void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and intege
 
 // saved by hello() for byebye()
 LOCAL void (* CDEC NEAR byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[FILENAME_MAX] = { 0 };						// current directory to restore at exit
+LOCAL filesys::path cwdSave = "";						// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -337,7 +359,6 @@ signal( SIGFPE, 			// floating point errors, and integer errors (changes 0:0) un
 	//    to ease reporting calling location (in which case aborts, no return). */
 
 //--- save current drive/dir to restore at exit
-	filesys::path cwdSave;
 	cwdSave = filesys::current_path();	// save current dir (including drive) in static for byebye to use at exit
 }		// hello
 //=====================================================================
@@ -353,7 +374,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //--- restore current directory
 	xchdir( cwdSave, WRN );		// restore drive and dir, xiopak.cpp.
 								//   Ok NOP if "". cwdSave set in hello, just above.
-	cwdSave[0] = '\0';			// clear saved dir eg for when subr pkg recalled.
+	cwdSave = "";				// clear saved dir eg for when subr pkg recalled.
 
 	throw exitCode;
 

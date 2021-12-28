@@ -585,8 +585,6 @@ int CDEC main( SI argc, char * argv[] )
 	SI i;                       /* Working integer */
 	char *s;
 	int exitCode = 0;
-	filesys::path dbuff;
-	std::error_code pathEC;
 
 	hello( ourByebye);	// initialize envpak
 
@@ -622,11 +620,11 @@ int CDEC main( SI argc, char * argv[] )
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		dbuff = filesys::current_path();
+		filesys::path dbuff = filesys::current_path();
 		incdir = argv[6];
-		filesys::path incdirTemp = filesys::path(incdir);
-		filesys::current_path(incdirTemp, pathEC);
-		if (pathEC)
+		std::error_code ec;
+		filesys::current_path(filesys::path(incdir), ec);
+		if (ec)
 		{
 			printf( "\nCannot find include directory '%s'.\n", incdir);
 			Errcount++;
@@ -637,11 +635,11 @@ int CDEC main( SI argc, char * argv[] )
 	/* check cpp file directory argument if specified */
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
-		dbuff = filesys::current_path();
+		filesys::path dbuff = filesys::current_path();
 		cFilesDir = argv[10];
-		filesys::path cFilesDirTemp = filesys::path(cFilesDir);
-		filesys::current_path(cFilesDirTemp, pathEC);
-		if (pathEC)
+		std::error_code ec;
+		filesys::current_path(filesys::path(cFilesDir), ec);
+		if (ec)
 		{
 			printf( "\nCannot find include directory '%s'.\n", cFilesDir);
 			Errcount++;
