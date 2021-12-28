@@ -7,9 +7,9 @@
 // that can be found in the LICENSE file.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <messages.h>	// MAX_MSGLEN msgI
+#include <MESSAGES.H>	// MAX_MSGLEN msgI
 
 #if __has_include(<filesystem>)
 #include <filesystem>

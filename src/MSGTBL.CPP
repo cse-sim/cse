@@ -18,10 +18,10 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// sub-includes cndefns.h
+#include <CNGLOB.H>	// sub-includes cndefns.h
 
-#include <msghans.h>	// MHxxx definitions
-#include <messages.h>	// MSGTBL,
+#include <MSGHANS.H>	// MHxxx definitions
+#include <MESSAGES.H>	// MSGTBL,
 
 //===========================================================================
 MSGTBL far msgTbl[] =		//(far rob 1-92 for BC)

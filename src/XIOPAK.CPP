@@ -17,7 +17,7 @@
 */
 
 
-#include "cnglob.h"
+#include "CNGLOB.H"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
@@ -42,16 +42,16 @@
 #include <fcntl.h>	// O_TEXT O_RDONLY
 #include <sys/stat.h>	// S_IREAD, S_IWRITE
 
-#include <msghans.h>	// MH_xxxx defns
-#include <messages.h>	// msgSec()
+#include <MSGHANS.H>	// MH_xxxx defns
+#include <MESSAGES.H>	// msgSec()
 #if defined(linux)
 #include <unistd.h>
 #endif
 
-#include "tdpak.h"
-#include "cvpak.h"
+#include "TDPAK.H"
+#include "CVPAK.H"
 
-#include "xiopak.h"	// xiopak.cpp publics
+#include "XIOPAK.H"	// xiopak.cpp publics
 #include <system_error>
 
 #if __has_include(<filesystem>)
