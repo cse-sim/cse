@@ -1189,8 +1189,8 @@ LOCAL int vruOpen( UNS* u)		// open report output file for virtual report unspoo
 
 	u->xf = xfopen( u->fName,
 					u->optn & VR_OVERWRITE 				// access per VROUTINFO optn bit
-						? _O_CREAT|_O_TRUNC|_O_WRONLY|_O_BINARY
-						: _O_CREAT|_O_APPEND|_O_WRONLY|_O_BINARY,
+						? "wb+"
+						: "ab",
 					IGN 						// no msg at open (changed below for later calls)
 					| XFBUFALLOC,				// alloc buffer -- XFILE.buf[],.busz,.bufn. see vruWrite.
 					FALSE, 					// eof is not an error on this file
