@@ -5,7 +5,7 @@
 // ENVPAK.C: Environment specific routines -- Windows dependent
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"
+#include "CNGLOB.H"
 // #include "cse.h"
 #if !defined( ELIMINATE_WINDOWS)
 #include <windows.h>
@@ -21,11 +21,11 @@
 #include <sys/timeb.h>	// timeb structure
 #endif
 
-#include <lookup.h>	// lookws wstable
-#include <tdpak.h>	// tdldti
-#include <xiopak.h>	// xchdir
+#include <LOOKUP.H>	// lookws wstable
+#include <TDPAK.H>	// tdldti
+#include <XIOPAK.H>	// xchdir
 
-#include <envpak.h>	// declares functions in this file
+#include <ENVPAK.H>	// declares functions in this file
 
 #if __has_include(<filesystem>)
 #include <filesystem>
