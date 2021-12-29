@@ -2408,7 +2408,7 @@ Sensible Energy Balance (+ into the Cond, Supduct and Retduct zone) for Sat 31-J
   1312 -1327      88     107     196    130     0   -4353 14.42     149     183     331      0  -115   -5658 19.13
   1313 -1327      88     107     196    130     0   -4354 14.42     149     183     331      0  -115   -5661 19.13
   1313 -1327      88     107     196    130     0   -4355 14.42     149     183     331      0  -115   -5664 19.13
-  1313 -1327      89     107     196    130     0   -4356 14.42     149     183     332      0  -115   -5667 19.13
+  1313 -1327      88     107     196    130     0   -4356 14.42     149     183     332      0  -115   -5667 19.13
   1313 -1327      89     107     196    130     0   -4356 14.42     149     183     332      0  -115   -5670 19.13
   1313 -1328      89     107     196    130     0   -4357 14.42     149     183     332      0  -115   -5674 19.13
   1313 -1328      89     107     196    130     0   -4358 14.42     149     183     332      0  -115   -5677 19.13
@@ -4417,7 +4417,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.899.0+vsashp.b1f7095.6 for Win32 console   Mon 01-Nov-21   3:15:08 pm
+! CSE 0.899.0+vsashp.0b3d2df8.49 for Win32 console   Wed 29-Dec-21   2:19:45 pm
 
 
 ================
@@ -53378,7 +53378,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.899.0+vsashp.b1f7095.6 for Win32 console
+! CSE 0.899.0+vsashp.0b3d2df8.49 for Win32 console
 
 
 
@@ -54038,18 +54038,18 @@ Input for Run 001:
 
 
 
-! CSE 0.899.0+vsashp.b1f7095.6 for Win32 console run(s) done: Mon 01-Nov-21   3:15:11 pm
+! CSE 0.899.0+vsashp.0b3d2df8.49 for Win32 console run(s) done: Wed 29-Dec-21   2:19:48 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               01-Nov-21   3:13 pm   (VS 14.29    2712064 bytes)  (HPWH 1.15.0+master.99d395c.25)
+!               29-Dec-21   1:56 pm   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
 ! Command line: -x!  -t1 actest1bl
 ! Input file:   D:\cse\test\actest1bl.cse
 ! Report file:  D:\cse\test\actest1bl.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1      T/C = 0.0650   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0620   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.92     Calls = 1      T/C = 2.9150   
-!              Reports:  Time = 0.22     Calls = 1      T/C = 0.2200   
-!                Total:  Time = 3.20     Calls = 1      T/C = 3.2030   
+!           Simulation:  Time = 2.53     Calls = 1      T/C = 2.5290   
+!              Reports:  Time = 0.22     Calls = 1      T/C = 0.2220   
+!                Total:  Time = 2.82     Calls = 1      T/C = 2.8170   

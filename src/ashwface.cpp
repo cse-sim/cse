@@ -1081,15 +1081,20 @@ XASHWAT ASHWAT(		// public ASHWAT object
 #endif
 //=============================================================================
 XASHWAT::XASHWAT( const char* moduleName)		// c'tor
+#if defined(SUPPORT_XMODULE)
 	: XMODULE( moduleName)
+#endif // SUPPORT_XMODULE
 {
+#if defined(SUPPORT_XMODULE)
 	xm_ClearPtrs();
+#endif // SUPPORT_XMODULE
 }
 //-----------------------------------------------------------------------------
 XASHWAT::~XASHWAT()
 {
 }	// XASHWAT::~XASHWAT
 //-----------------------------------------------------------------------------
+#if defined(SUPPORT_XMODULE)
 /*virtual*/ void XASHWAT::xm_ClearPtrs()
 {
 #if defined( ASHWAT_LINKDLL)
@@ -1097,6 +1102,7 @@ XASHWAT::~XASHWAT()
 	xw_pAWCheckFixCFSLayer = NULL;
 #endif
 }		// XASHWAT::xm_ClearPtrs
+#endif // SUPPORT_XMODULE
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_Setup()		// general initialization
 // duplicate calls OK
