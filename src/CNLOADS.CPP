@@ -1811,14 +1811,6 @@ RC RSYS::rs_CkF()
 			if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
 				rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
 
-#if 0
-			// save input value of rs_capAuxH
-			//   estimated rs_capAuxH used during autosize
-			rs_capAuxHInp = rs_capAuxH;
-			if (IsAusz(RSYS_CAPAUXH))
-				rs_capAuxH = 0.f;		// overwrite NANDLE
-#endif
-
 			if (!IsAusz(RSYS_CAP47))
 				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
 				//   see DefaultCapNomsIf()
@@ -5249,7 +5241,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 #if defined( _DEBUG)
 	double speedFWas = speedF;
 #endif
-	speedF = bracket(double( rs_speedFMin), speedF, 1.);
+	speedF = bracket(double(rs_speedFMin), speedF, 1.);
 #if defined( _DEBUG)
 	if (speedF != speedFWas)
 		printf("\nrs_FxCapForSpeedF limit!");

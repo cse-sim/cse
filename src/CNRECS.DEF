@@ -3597,7 +3597,7 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 	ENERGY qhNet	    // heating mode net output (qhPrimary+qhDefrost+qhAux+qhFan), Btu
 
 	ENERGY qcSen	    // sensible cooling output w/o fan (< 0), Btu
-	ENERGY qcLat	    // latent cooing output (<0), Btu
+	ENERGY qcLat	    // latent cooling output (<0), Btu
     ENERGY qcFan        // cooling mode fan heat, Btu
     ENERGY qcSenNet     // sensible cooling net output (qcSen+qcFan), Btu
 
