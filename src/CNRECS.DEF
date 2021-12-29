@@ -3632,7 +3632,7 @@ RECORD RSYSRES_IVL_SUB "RSYS interval results sub" *SUBSTRUCT	// RSYSresult subs
 
                     // zone energy transfers (must be contiguous and in order, see code)
     ENERGY qhZoneSen    // heating mode sensible transfer to zone(s) (after dist losses), Btu
-    ENERGY qhZoneLat    // heating mode latent tranfer to zone(s) (after dist losses), Btu
+    ENERGY qhZoneLat    // heating mode latent transfer to zone(s) (after dist losses), Btu
     ENERGY qcZoneSen    // cooling mode sensible transfer to zone(s) (after dist losses), Btu
     ENERGY qcZoneLat    // cooling mode latent transfer to zone(s) (after dist losses), Btu
     ENERGY qvZoneSen    // OAV mode sensible transfer to zone(s) (after dist losses), Btu
@@ -4263,7 +4263,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s FLOAT wh_ashpTSrc;			// ASHP source temperature, F
 								//    when wh_ashpTSrc set
 								//    - wh_ashpSrcZnTi ignored
-								//    - heat tranfer ignored
+								//    - heat transfer ignored
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
