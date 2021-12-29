@@ -140,7 +140,7 @@ const char * FC xgetdir()
 /* Returns pointer to current working drive/directory pathname in Tmpstr[] */
 
 {
-	char * p = strtemp( _MAX_PATH );	// alloc n+1 bytes tmp strng space, strpak.cpp
+	char * p = strtemp( FILENAME_MAX );	// alloc n+1 bytes tmp strng space, strpak.cpp
 	filesys::path currentPath;
 	currentPath = filesys::current_path();
 	strcpy(p, currentPath.string().c_str());
@@ -789,7 +789,7 @@ int fileFind1(			// check existence of a single file
 //        -1 error (unexpected return from _stat)
 
 {
-	char tPath[ _MAX_PATH];
+	char tPath[ FILENAME_MAX];
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
@@ -816,13 +816,13 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
 #if 1
-	char fNameFound[ _MAX_PATH];
+	char fNameFound[ FILENAME_MAX];
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[ _MAX_PATH];		// drive (C:) or (\\server\)
-		char fDir[ _MAX_PATH];		// directory
+		char fRoot[ FILENAME_MAX];		// drive (C:) or (\\server\)
+		char fDir[ FILENAME_MAX];		// directory
 		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
 		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
