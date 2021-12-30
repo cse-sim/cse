@@ -184,30 +184,35 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), dir;	// filesystem variables
+	filesys::path fname(*fnamp), dir, namepart;	// filesystem variables
 	std::error_code ec;					// Error Code for filesystem functions
 
 	if (filesys::exists(fname, ec)) {	// File or full path exist
-		dir = filesys::absolute(fname); // Create full path
-
+		namepart = fname.filename();
+		dir = filesys::absolute(fname,ec); // Create full path
+		if (ec) {
+			if (!fname.has_root_name()) {			// Missing root name, ex C:
+				err(erOp, "\"%s\": Invalid Drive", fname);
+				return RCBAD;
+			}
+			else if (!fname.has_relative_path()) {	// Missing Path
+				err(erOp, "\"%s\": Directory not found", fname);
+				return RCBAD;
+			}
+			else {
+				err(erOp, "\"%s\": Invalid path", fname, ec);
+				return RCBAD;
+			}
+		}
+		dir = fname.parent_path();
 	}
 	else {
-		if (!fname.has_root_name()) {			// Missing root name, ex C:
-			err(erOp, "\"%s\": Invalid Drive", fname);
-			return RCBAD;
-		}
-		else if (!fname.has_relative_path()) {	// Missing Path
-			err(erOp, "\"%s\": Directory not found", fname);
-			return RCBAD;
-		}
-		else {
-			err(erOp, "\"%s\": Invalid path", fname, ec);
-			return RCBAD;
-		}
+		namepart = filesys::path(*fnamp);
+		dir = filesys::current_path();
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(dir.parent_path().string().c_str(), dir.filename().string().c_str());
+	*fnamp = strtPathCat(dir.string().c_str(), namepart.string().c_str());
 
 	return RCOK;		// another return is in code above
 
