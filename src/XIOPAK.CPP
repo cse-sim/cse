@@ -826,10 +826,7 @@ BOO findFile( 	// non-member function to find file on given path
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[ FILENAME_MAX];		// drive (C:) or (\\server\)
-		char fDir[ FILENAME_MAX];		// directory
-		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
-		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
+		if (!filesys::path(fName).has_root_name() && !filesys::path(fName).has_root_directory())	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
