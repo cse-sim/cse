@@ -767,16 +767,16 @@ int xfExist(	// determine file existence
 	// return to caller or use tmpstr
 	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
 	if (!IsBlank( tPath))
-	{	struct _stat stat;
-		int statRet = _stat( tPath, &stat);
-		if (statRet == 0)		// if file found
-			ret = (stat.st_mode & _S_IFDIR)  ? 3
-			    : (stat.st_mode & _S_IFREG)  ? 1 + int( stat.st_size > 0)
-				:                              0;	// other (e.g. volume "C:")
-		else if (statRet==-1 && errno == ENOENT)
-			ret = 0;	// clean not found
-		else
+	{	std::error_code ec;
+		bool fileFound = filesys::exists(filesys::path(tPath),ec);
+		if (fileFound)		// if file found
+			ret = (filesys::is_directory(filesys::path(tPath)))		? 3 // Directory found
+			    : (filesys::is_empty(filesys::path(tPath)))			? 1	// File empty
+				:													2;	// Non-empty file other (e.g. volume "C:")
+		else if (ec)
 			ret = -1;	// unknown error
+		else
+			ret = 0;	// clean not found
 	}
 	return ret;
 }		// xfExist
@@ -841,10 +841,10 @@ BOO findFile( 	// non-member function to find file on given path
 	}
 	BOO bRet = FALSE;
 	if (found > 0) {
-		filesys::path bufPath = filesys::canonical(filesys::path(fNameFound));
-		strcpy(buf, bufPath.string().c_str());
+		//filesys::path bufPath = filesys::canonical(filesys::path(fNameFound));
+		//strcpy(buf, bufPath.string().c_str());
 		bRet = _fullpath(buf, fNameFound, _MAX_PATH) != NULL;	// get full path, probably even if no such file
-		bRet = filesys::exists(bufPath);
+		//bRet = filesys::exists(bufPath);
 	}
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
