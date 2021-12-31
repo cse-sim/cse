@@ -840,8 +840,12 @@ BOO findFile( 	// non-member function to find file on given path
 		}
 	}
 	BOO bRet = FALSE;
-	if (found > 0)
-		bRet = _fullpath( buf, fNameFound, _MAX_PATH) != NULL;	// get full path, probably even if no such file
+	if (found > 0) {
+		filesys::path bufPath = filesys::canonical(filesys::path(fNameFound));
+		strcpy(buf, bufPath.string().c_str());
+		bRet = _fullpath(buf, fNameFound, _MAX_PATH) != NULL;	// get full path, probably even if no such file
+		bRet = filesys::exists(bufPath);
+	}
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;
