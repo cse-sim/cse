@@ -5,15 +5,11 @@
  #define  StdDesignBase     2019   // CA2019
  #define  StandardsVersion  2020   // Compliance 2020
  #define  DesignRatingBase  2014   // RESNET2014
- #define  ClimateZone         16   // CZ16  (Blue Canyon)
- #define  DD1  Aug 11
- #define  CD1  Aug 15
- #define  HD1  Jan 03
  #define  SEASONCHANGESETPT  60
  #define  FANVENTLOCKOUTTEMP  68
  #define  ISSEASONCOOLING  (@weather.taDbAvg07 > SEASONCHANGESETPT)
- #define  FANVENTAVAIL  (@weather.taDbAvg07 > FANVENTLOCKOUTTEMP)
- #define  WINDOWVENTAVAIL  ($hour < 24 && ($hour > 12 || $radDiff > 1))
+ #define  FANVENTAVAIL  0 // (@weather.taDbAvg07 > FANVENTLOCKOUTTEMP)
+ #define  WINDOWVENTAVAIL  0  // ($hour < 24 && ($hour > 12 || $radDiff > 1))
  #define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )
  #define  HWUSEF_WE  hourval( 0.018, 0.010, 0.009, 0.008, 0.015, 0.023, 0.026, 0.047, 0.077, 0.083, 0.074, 0.061, 0.051, 0.043, 0.039, 0.039, 0.052, 0.058, 0.056, 0.052, 0.047, 0.044, 0.040, 0.028 )
  #define  ShwrFLOWF  1
@@ -51,8 +47,21 @@
  #define  FVCHPC  0.95		// VCHP cooling input energy factor
  #define  FVCHPH  0.88		// VCHP heating input energy factor
 
-   repHdrL = "CZ16 Dual Fuel"
+#if 1
+   repHdrL = "CZ12 VC Temp Heat Pump"
+   wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+   #define  ClimateZone 12
+   #define  DD1  Jun 30
+   #define  CD1  Jul 10
+   #define  HD1  Dec 03
+#else
+   repHdrL = "CZ16 Low Temp Heat Pump"
    wfName = "CA_BLUE-CANYON-AP_725845S_STYP20.epw"
+   #define  ClimateZone         16   // CZ16  (Blue Canyon)
+   #define  DD1  Aug 11
+   #define  CD1  Aug 15
+   #define  HD1  Jan 03
+#endif
    ebTolHour = 0.001
    ebTolDay = 0.001
    ebTolMon = 0.001
@@ -210,7 +219,37 @@ CONSTRUCTION   "fc-Attic Roof Cons"
       lrMat = "m-10 PSF Roof"           // Layer material
       lrThk = 0.083333                  // Thickness (feet), ft
 
+CONSTRUCTION   "cc-Garage Attic Roof Cons"  
 
+   LAYER   "cl2-Garage Attic Roof Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Garage Attic Roof Cons"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "cl4-Garage Attic Roof Cons"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Attic Roof Cons"  
+
+   LAYER   "fl1-Garage Attic Roof Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Attic Roof Cons"  
+      lrMat = "m-Wood layer"            // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Garage Attic Roof Cons"  
+      lrMat = "m-TileGap"               // Layer material
+      lrThk = 0.0625                    // Thickness (feet), ft
+
+   LAYER   "fl4-Garage Attic Roof Cons"  
+      lrMat = "m-10 PSF Roof"           // Layer material
+      lrThk = 0.083333                  // Thickness (feet), ft
 
 CONSTRUCTION   "cc-Ext Floor Cons"  
 
@@ -237,6 +276,50 @@ CONSTRUCTION   "fc-Ext Floor Cons"
       lrThk = 0.041667                  // Thickness (feet), ft
 
    LAYER   "fl3-Ext Floor Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Ext Wall Cons"  
+
+   LAYER   "cl1-Garage Ext Wall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Garage Ext Wall Cons"  
+      lrMat = "m-VertWallCavity"        // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Garage Ext Wall Cons"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Ext Wall Cons"  
+
+   LAYER   "fl1-Garage Ext Wall Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Ext Wall Cons"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Garage Ext Wall Cons"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Ceiling Below Attic Cons"  
+
+   LAYER   "cl1-Garage Ceiling Below Attic Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Ceiling Below Attic Cons"  
+
+   LAYER   "fl1-Garage Ceiling Below Attic Cons"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Ceiling Below Attic Cons"  
       lrMat = "m-SoftWood"              // Layer material
       lrThk = 0.291667                  // Thickness (feet), ft
 
@@ -335,6 +418,34 @@ CONSTRUCTION   "fc-Interior Floor"
    LAYER   "fl4-Interior Floor"  
       lrMat = "m-Gypsum Board"          // Layer material
       lrThk = 0.041667                  // Thickness (feet), ft
+
+CONSTRUCTION   "cc-Garage Ext Wall"  
+
+   LAYER   "cl1-Garage Ext Wall"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "cl2-Garage Ext Wall"  
+      lrMat = "m-VertWallCavity"        // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "cl3-Garage Ext Wall"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
+
+CONSTRUCTION   "fc-Garage Ext Wall"  
+
+   LAYER   "fl1-Garage Ext Wall"  
+      lrMat = "m-Gypsum Board"          // Layer material
+      lrThk = 0.041667                  // Thickness (feet), ft
+
+   LAYER   "fl2-Garage Ext Wall"  
+      lrMat = "m-SoftWood"              // Layer material
+      lrThk = 0.291667                  // Thickness (feet), ft
+
+   LAYER   "fl3-Garage Ext Wall"  
+      lrMat = "m-3 Coat Stucco"         // Layer material
+      lrThk = 0.072917                  // Thickness (feet), ft
 
 CONSTRUCTION   "cc-Zone1ToAtticCeiling-AtcEdgWA"  
 
@@ -915,6 +1026,24 @@ IZXFER   "Zone1-NVHD"
    izNVEff = 0.5                        // Vent discharge coefficient coefficient
    izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
 
+IZXFER   "Zone1-xGarageH"  
+   izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
+   izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn2 = "Garage-grg"                 // Name of secondary zone
+   izALo = 0.019388                     // Area of low or only vent (typically VentOff), ft2
+   izHD = 14.95                         // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 1                          // Vent discharge coefficient coefficient
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "Zone1-xGarageL"  
+   izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
+   izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn2 = "Garage-grg"                 // Name of secondary zone
+   izALo = 0.019388                     // Area of low or only vent (typically VentOff), ft2
+   izHD = 5.45                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 1                          // Vent discharge coefficient coefficient
+   izExp = 0.65                         // Opening exponent
+
 IZXFER   "Zone1-IAQFanE"  
    izNVType = "AIRNETEXTFAN"            // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
@@ -972,6 +1101,77 @@ IZXFER   "Attic-SD"
    izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
    izExp = 0.65                         // Opening exponent
 
+IZXFER   "GarageAttic-SU"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "GarageAttic-atc"            // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.1                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "GarageAttic-SS"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "GarageAttic-atc"            // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.2                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "GarageAttic-SD"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "GarageAttic-atc"            // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.1                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "Zone1ToGarageFloorxGarage"  
+   izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
+   izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn2 = "Garage-grg"                 // Name of secondary zone
+   izALo = 0.041649                     // Area of low or only vent (typically VentOff), ft2
+   izHD = 10.7                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 1                          // Vent discharge coefficient coefficient
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "Garage-GrgU"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "Garage-grg"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.2                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 1.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "Garage-GrgS"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "Garage-grg"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.4                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 1.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "Garage-GrgD"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "Garage-grg"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.2                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 1.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
+
+IZXFER   "Garage-GrgDH"  
+   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
+   izZn1 = "Garage-grg"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izALo = 0.2                          // Area of low or only vent (typically VentOff), ft2
+   izHD = 8.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
+   izNVEff = 0.6                        // Vent discharge coefficient coefficient
+   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
+   izExp = 0.65                         // Opening exponent
 
 ZONE   "Zone1-zn"  
    znModel = "CZM"                      // Zone model (CNE, CSE, CZM, UZM)
@@ -982,7 +1182,7 @@ ZONE   "Zone1-zn"
    znFloorZ = 0.7                       // Nominal zone floor height relative to arbitrary 0 level, ft
    znCAir = 5400                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
    znSC = select( $radDiff >1., 0.5, default 0.8 )    // Expression representing zone shade closure
-#if 1
+#if 0
    znTH = 68
    znTC = 78
 #else
@@ -1058,6 +1258,71 @@ ZONE   "Zone1-zn"
       gnEndUse = "Ext"                  // Internal gain enduse
       gnPower = (((8 * 1) + (.0532 * 2700)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, ExtLight_WEH, Default ExtLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
       gnFrZn = 0
+
+   SURFACE   "Zone1ToGarageWallFront-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-IntWall Cons"         // Surface construction
+      sfArea = 40                       // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "Garage-grg"            // Zone that lies on the other side of this surface
+
+   SURFACE   "Zone1ToGarageWallRight-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-IntWall Cons"         // Surface construction
+      sfArea = 22.5                     // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "Garage-grg"            // Zone that lies on the other side of this surface
+
+   SURFACE   "Zone1ToGarageAtticWall-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-IntWall Cons"         // Surface construction
+      sfArea = 10.5                     // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "GarageAttic-atc"       // Zone that lies on the other side of this surface
+
+   SURFACE   "Zone1ToGarageWallFront-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-IntWall Cons"         // Surface construction
+      sfArea = 140                      // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "Garage-grg"            // Zone that lies on the other side of this surface
+
+      DOOR   "Zone1ToGarageDoorFront-Sim"  
+         drArea = 20                    // Area, ft2
+         drModel = "Forward_Difference"    // Modeling option
+         drCon = "c-Zone1ToGarageDoorFront-dr"    // Door construction
+
+   SURFACE   "Zone1ToGarageWallRight-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-IntWall Cons"         // Surface construction
+      sfArea = 67.5                     // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "Garage-grg"            // Zone that lies on the other side of this surface
+
+   SURFACE   "Zone1ToGarageAtticWall-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-IntWall Cons"         // Surface construction
+      sfArea = 31.5                     // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "GarageAttic-atc"       // Zone that lies on the other side of this surface
 
    SURFACE   "Zone1ToAtticCeiling-Frm"  
       sfType = "Ceiling"                // Type of opaque surface
@@ -1321,7 +1586,8 @@ ZONE   "Zone1-zn"
       sfArea = 20                       // Wall area, ft2
       sfTilt = 180                      // Surface tilt, deg
       sfModel = "Forward_Difference"    // Modeling option
-      sfExCnd = "Ambient"                 // Exterior condition description
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "Garage-grg"            // Zone that lies on the other side of this surface
 
    SURFACE   "Zone1ToGarageFloor-Cav"  
       sfType = "Floor"                  // Type of opaque surface
@@ -1329,7 +1595,8 @@ ZONE   "Zone1-zn"
       sfArea = 180                      // Wall area, ft2
       sfTilt = 180                      // Surface tilt, deg
       sfModel = "Forward_Difference"    // Modeling option
-      sfExCnd = "Ambient"                 // Exterior condition description
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "Garage-grg"            // Zone that lies on the other side of this surface
 
    SURFACE   "Zone1Slab-Prm"  
       sfType = "Floor"                  // Type of opaque surface
@@ -1424,7 +1691,160 @@ ZONE   "Zone1-zn"
       sfExCnd = "AdjZn"                 // Exterior condition description
       sfAdjZn = "Zone1-zn"              // Zone that lies on the other side of this surface
 
+ZONE   "Garage-grg"  
+   znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
+   znArea = 440                         // Zone area, ft2
+   znVol = 3960                         // Zone volume, ft3
+   znEaveZ = 9.7                        // Height of top of the wall in this zone above the ground, ft
+   znFloorZ = 0.7                       // Nominal zone floor height relative to arbitrary 0 level, ft
+   znCAir = 0.01                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+   infAC = 0                            // Zone infiltration air changes per hour, 1/hr
+   infELA = 0                           // Zone effective leakage area (ELA), in2
 
+   GAIN   "Garage-grgLtg"  
+      gnMeter = "MtrElec"               // Meter that tracks internal gain
+      gnEndUse = "Lit"                  // Internal gain enduse
+      gnPower = ((20 + (.0063 * 2700)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, IntLight_WEH, Default IntLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
+      gnFrRad = 0.2
+
+   GAIN   "Garage-grgRefrig"  
+      gnMeter = "MtrElec"               // Meter that tracks internal gain
+      gnEndUse = "Refr"                 // Internal gain enduse
+      gnPower = ((4 * 71) * 3412/8760) * 1 * ( select( $isWeHol, RefrConst_WEH, default RefrConst_WD ) + select( $isWeHol, RefrTemp_WEH, default RefrTemp_WD ) * @znRes["Garage-grg"].prior.H.tAir)    // Expression representing internal gain power, Btuh
+      gnFrRad = 0
+
+   SURFACE   "GarageToGarageAttic-Frm"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "fc-Garage Ceiling Below Attic Cons"    // Surface construction
+      sfArea = 16.8                     // Wall area, ft2
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "GarageAttic-atc"       // Zone that lies on the other side of this surface
+
+   SURFACE   "GarageToGarageAttic-Cav"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "cc-Garage Ceiling Below Attic Cons"    // Surface construction
+      sfArea = 223.2                    // Wall area, ft2
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "AdjZn"                 // Exterior condition description
+      sfAdjZn = "GarageAttic-atc"       // Zone that lies on the other side of this surface
+
+   SURFACE   "GarageWallFront-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 22.375                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageWallLeft-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 22.375                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 90                        // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageWallBack-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 22.375                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 180                       // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageWallRight-Frm"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "fc-Garage Ext Wall"      // Surface construction
+      sfArea = 22.375                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 270                       // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageWallFront-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 99.125                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+      DOOR   "GarageCarDoorFront-Sim"  
+         drArea = 32                    // Area, ft2
+         drModel = "Forward_Difference"    // Modeling option
+         drCon = "c-GarageCarDoorFront-dr"    // Door construction
+
+   SURFACE   "GarageWallLeft-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 99.125                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 90                        // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+      DOOR   "GarageCarDoorLeft-Sim"  
+         drArea = 32                    // Area, ft2
+         drModel = "Forward_Difference"    // Modeling option
+         drCon = "c-GarageCarDoorLeft-dr"    // Door construction
+
+   SURFACE   "GarageWallBack-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 99.125                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 180                       // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+      DOOR   "GarageCarDoorBack-Sim"  
+         drArea = 32                    // Area, ft2
+         drModel = "Forward_Difference"    // Modeling option
+         drCon = "c-GarageCarDoorBack-dr"    // Door construction
+
+   SURFACE   "GarageWallRight-Cav"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "cc-Garage Ext Wall"      // Surface construction
+      sfArea = 99.125                   // Wall area, ft2
+      sfTilt = 90                       // Surface tilt, deg
+      sfAzm = 270                       // Surface azimuth, deg
+      sfExAbs = 0.5                     // Surface exterior solar absorptivity
+      sfModel = "Forward_Difference"    // Modeling option
+
+      DOOR   "GarageCarDoorRight-Sim"  
+         drArea = 32                    // Area, ft2
+         drModel = "Forward_Difference"    // Modeling option
+         drCon = "c-GarageCarDoorRight-dr"    // Door construction
+
+   SURFACE   "GarageSlab-Prm"  
+      sfType = "Floor"                  // Type of opaque surface
+      sfCon = "scn-SlabConsExposed"     // Surface construction
+      sfArea = 108                      // Wall area, ft2
+      sfTilt = 180                      // Surface tilt, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Ground"                // Exterior condition description
+      sfExCTGrnd = 0.0737               // Surface ???
+      sfExCTaDbAvgYr = 0.0014           // Surface ???
+      sfExCTaDbAvg14 = 0.1692           // Surface ???
+      sfExRConGrnd = 3.187              // Surface ???
+      sfInHcModel = "Unified"           // Surface ???
+
+   SURFACE   "GarageSlab-Int"  
+      sfType = "Floor"                  // Type of opaque surface
+      sfCon = "scn-SlabConsExposed"     // Surface construction
+      sfArea = 332                      // Wall area, ft2
+      sfTilt = 180                      // Surface tilt, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Ground"                // Exterior condition description
+      sfExCTGrnd = 0.0521               // Surface ???
+      sfExCTaDbAvgYr = 0.0251           // Surface ???
+      sfExRConGrnd = 3.187              // Surface ???
+      sfInHcModel = "Unified"           // Surface ???
 
 ZONE   "Attic-atc"  
    znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
@@ -1548,53 +1968,211 @@ ZONE   "Attic-atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
+ZONE   "GarageAttic-atc"  
+   znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
+   znArea = 240                         // Zone area, ft2
+   znVol = 258.19889                    // Zone volume, ft3
+   znEaveZ = 9.7                        // Height of top of the wall in this zone above the ground, ft
+   znCAir = 0.01                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+   infAC = 0                            // Zone infiltration air changes per hour, 1/hr
+   infELA = 0                           // Zone effective leakage area (ELA), in2
+   infShld = 4                          // Zone local shielding class, used in ELA model
 
-RSYS "rsys1"
-   rsType = "ASHP"                      // System type
-   rsCapC = 19000
-   rsCapAuxH = 25000
-   rsCap47 = 18200
-   rsFxCapC = 1.1                       // Cooling sizing factor
+   SURFACE   "GarageAttic-atc-rfNF"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "fc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 4.55                     // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfNC"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "cc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 60.45                    // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 0                         // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfEF"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "fc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 4.55                     // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 90                        // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfEC"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "cc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 60.45                    // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 90                        // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfSF"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "fc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 4.55                     // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 180                       // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfSC"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "cc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 60.45                    // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 180                       // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfWF"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "fc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 4.55                     // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 270                       // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfWC"  
+      sfType = "Ceiling"                // Type of opaque surface
+      sfCon = "cc-Garage Attic Roof Cons"    // Surface construction
+      sfArea = 60.45                    // Wall area, ft2
+      sfTilt = 22.619865                // Surface tilt, deg
+      sfAzm = 270                       // Surface azimuth, deg
+      sfExAbs = 0.8                     // Surface exterior solar absorptivity
+      sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+      sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+      sfModel = "Forward_Difference"    // Modeling option
+
+   SURFACE   "GarageAttic-atc-rfT1"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "con-AtticTruss 41"       // Surface construction
+      sfArea = 160                      // Wall area, ft2
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Adiabatic"             // Exterior condition description
+
+   SURFACE   "GarageAttic-atc-rfT2"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "con-AtticTruss 41"       // Surface construction
+      sfArea = 160                      // Wall area, ft2
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Adiabatic"             // Exterior condition description
+
+   SURFACE   "GarageAttic-atc-rfT3"  
+      sfType = "Wall"                   // Type of opaque surface
+      sfCon = "con-AtticTruss 41"       // Surface construction
+      sfArea = 160                      // Wall area, ft2
+      sfAzm = 0                         // Surface azimuth, deg
+      sfModel = "Forward_Difference"    // Modeling option
+      sfExCnd = "Adiabatic"             // Exterior condition description
+
+// RSYS
+//   based on NEEP data for Daikin LV series mini-split
+//   AHRI Cert # 5265758
+
+#define HEATCAPF 1
+RSYS   "rsys1" 
+   rsType = "VCHP2"                     // System type
    rsFChg = 0.96                        // Refrigerant charge adjustment factor
-   rsSEER = 14                          // Cooling SEER
-   rsEER = 11.7                         // Cooling EER (defaults per ACM if missing)
+   rsSEER = 22                          // Cooling SEER
+   rsEER = 13.5
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
    rsFanPwrH = 0.45                     // Heating fan power.  Heating air flow is estimated based on a 50 ?F temperature rise.
    rsFanPwrC = 0.45                     // Cooling fan power.
+   rsAdjForFanHt = No
    rsParElec = ($tdboHrAv < 50) * 40    // Parasitic electric use, W
-   rsHSPF = 9                           // ratio of BTU heat output over the heating season to watt-hours of electricity used, ratio
+   rsDefrostModel = "RevCycleAux"       // Modeling options for ASHP outdoor coil defrosting
+   rsFxCapH = 1.466667                  // Heating sizing factor
+   rsHSPF = 11                          // ratio of BTU heat output over the heating season to watt-hours of electricity used, ratio
+   rsCap115 = 41846.2                   // Total cooling capacity (@ 115°F), Btuh
+   rsCapC = 48000                       // Total rated cooling capacity (@ 95°F), Btuh
+   rsCap82 = 52000                      // Total rated cooling capacity (@ 82°F), Btuh
+   rsCap47 = 46000*HEATCAPF             // Total rated heating capacity (@ 47°F), Btuh
+   rsCap17 = 42500*HEATCAPF             // Total rated heating capacity (@ 17°F), Btuh
+   rsCap05 = 31130*HEATCAPF             // Total rated heating capacity (@ 5°F), Btuh
+   rsCapAuxH = 50000
+   // rsCtrlAuxH = CYCLE = default
+   rsCOP115 = 2.16013                   // ratio of cooling provided over the electrical energy consumed (@ 115°F), ratio
+   rsCOP95 = 3.7                        // ratio of cooling provided over the electrical energy consumed (@ 95°F), ratio
+   rsCOP82 = 5.9                        // ratio of cooling provided over the electrical energy consumed (@ 82°F), ratio
+   rsCOP47 = 3.7                        // ratio of heating provided over the electrical energy consumed (@ 47°F), ratio
+   rsCOP17 = 2.6                        // ratio of heating provided over the electrical energy consumed (@ 17°F), ratio
+   rsCOP05 = 2.32                       // ratio of heating provided over the electrical energy consumed (@ 5°F), ratio
+   rsCOPMin115 = 1.66728                // ratio of cooling provided over the elec energy consumed @ minimum 115°F capacity, ratio
+   rsCOPMin95 = 4                       // ratio of cooling provided over the elec energy consumed @ minimum 95°F capacity, ratio
+   rsCOPMin82 = 7.7                     // ratio of cooling provided over the elec energy consumed @ minimum 82°F capacity, ratio
+   rsCOPMin47 = 4.45                    // ratio of heating provided over the elec energy consumed @ minimum 47°F capacity, ratio
+   rsCOPMin17 = 2.72                    // ratio of heating provided over the elec energy consumed @ minimum 17°F capacity, ratio
+   rsCOPMin05 = 2.24                    // ratio of heating provided over the elec energy consumed @ minimum 5°F capacity, ratio
+   rsLoadFMin115 = 0.523333             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 115°F), ratio
+   rsLoadFMin95 = 0.523333              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 95°F), ratio
+   rsLoadFMin82 = 0.269231              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 82°F), ratio
+   rsLoadFMin47 = 0.26087               // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 47°F), ratio
+   rsLoadFMin17 = 0.489176              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 17°F), ratio
+   rsLoadFMin05 = 0.512046              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 5°F), ratio
+   rsOAVType = "None"                   // OAV system type
    rsElecMtr = "MtrElec"                // Electric use meter
    rsFuelMtr = "MtrNatGas"              // Natural gas use meter
 
+
 #if 1
+#if !defined( DUCTAF)
+#define DUCTAF 1
+#endif
+#if !defined( DUCTR)
+#define DUCTR 4
+#endif
+#if !defined( DUCTLF)
+#define DUCTLF 1
+#endif
+
    DUCTSEG   "SupplyDuct1"  
       dsTy = "SUPPLY"
-      dsInArea = 473.85                 // Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct., ft2
-      dsDiameter = 0.666667             // Duct segment round duct diameter (duct wall thickness assumed negligible), ft
+      dsInArea = DUCTAF*473.85
+      dsDiameter = 0.666667
+#if 0
+      dsExCnd = SpecifiedT
+      dsExT = 30
+#else
       dsAdjZn = "Attic-atc"
-      dsInsulR = 7.093555
-      dsLeakF = 0.04095
+#endif
+      dsInsulR = DUCTR
+      dsLeakF = 0.1 * DUCTLF
 
    DUCTSEG   "ReturnDuct1"  
       dsTy = "RETURN"
-      dsInArea = 270                    // Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct., ft2
-      dsDiameter = 1.333333             // Duct segment round duct diameter (duct wall thickness assumed negligible), ft
+      dsInArea = DUCTAF*270         
+      dsDiameter = 1.333333          
       dsAdjZn = "Attic-atc"
-      dsInsulR = 7.093555
-      dsLeakF = 0.02905
+      dsInsulR = DUCTR
+      dsLeakF = .1 * DUCTLF
 #endif
 
-PVARRAY   "pvarray 1"  
-   pvDCSysSize = 3.210005               // Rated array output, kW
-   pvModuleType = "Standard"
-   pvArrayType = "FixedOpenRack"
-   pvTilt = 22.619884                   // Array tilt (0=H, 90=V), deg
-   pvAzm = 170                          // Array azimuth (0=N, 90=E, ...), deg
-   pvInverterEff = 0.96                 // Inverter efficiency at full load, frac
-   pvElecMtr = "MtrElec"                // Electric meter to report results to
-
 REPORT rpType=MTR rpMeter = MtrElec rpFreq=MONTH
-REPORT rpType=MTR rpMeter = MtrNatGas rpFreq=MONTH
 
 #define SYSRESCOLS( RXCOL, WhenHead, when, R, F, dp) \
     RXCOL colHead=WhenHead colVal=when colWid=3 \
@@ -1635,16 +2213,52 @@ REPORT rpType=MTR rpMeter = MtrNatGas rpFreq=MONTH
     RXCOL colHead="qvZSen" colVal=F*R.qvZoneSen   colDec=dp colWid = 6 \
     RXCOL colHead="qvZLat" colVal=F*R.qvZoneLat   colDec=dp colWid = 6
 
-REPORT SYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "RSYSRES Res Alt"
-SYSRESCOLS( REPORTCOL,"Mon",@Top.monstr,@RSYSRES[ 1].M,.001,3)
+REPORT SYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "RSYS -- Aux Cycle / Def RevCyc"
+SYSRESCOLS( REPORTCOL,"Mon",@Top.monstr,@RSYSRES[ 1].M,.000001,3)
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
-SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
+SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.000001,3)
+
+#define TPERFCOLS( RXCOL, whenHead, when, X, F, dp, mtr, rs, zn) \
+  RXCOL colHead=WhenHead colVal=when colWid=3 \
+  RXCOL colHead="eHtg"  colVal=@METER[ mtr].X.htg*F colDec=dp colWid=6 \
+  RXCOL colHead="eHPBU"  colVal=@METER[ mtr].X.HPBU*F colDec=dp colWid=6 \
+  RXCOL colHead="eFanH"  colVal=@METER[ mtr].X.fanH*F colDec=dp colWid=6 \
+  RXCOL colHead="eHTot"  colVal=(@METER[ mtr].X.htg+@METER[ mtr].X.HPBU+@METER[ mtr].X.fanH+@RSysRes[rs].X.ehParasitic)*F colDec=dp colWid=6 \
+  RXCOL colHead="qhZone"  colVal=@ZnRes[zn].X.qshHVAC*F colDec=dp colWid=6 \
+  RXCOL colHead="COPH"  colVal=@ZnRes[zn].X.qshHVAC / max(1.,@METER[ mtr].X.htg+@METER[ mtr].X.HPBU+@METER[ mtr].X.fanH+@RSysRes[rs].X.ehParasitic) colDec=dp colWid=6 \
+  RXCOL colHead="eHTot2"   colVal=@RsysRes[ rs].X.ehTot*F colDec=dp colWid=6 \
+  RXCOL colHead="qhZone2"   colVal=@RsysRes[ rs].X.qhZoneSen*F colDec=dp colWid=6 \
+  RXCOL colHead="COPH2"  colVal=@RsysRes[ rs].X.qhZoneSen/max(1.,@RsysRes[ rs].X.ehTot) colDec=dp colWid = 6 \
+  RXCOL colHead="eClg"  colVal=(@METER[ mtr].X.clg+@METER[ mtr].X.fanC+@RSysRes[rs].X.ecParasitic)*F colDec=dp colWid=10 \
+  RXCOL colHead="qcZone"  colVal=@ZnRes[zn].X.qcMech*F colDec=dp colWid=6 \
+  RXCOL colHead="COPC"  colVal=-@ZnRes[zn].X.qcMech / max(1.,@METER[ mtr].X.clg+@METER[ mtr].X.fanC+@RSysRes[rs].X.ecParasitic) colDec=dp colWid=6 \
+  RXCOL colHead="eClg2"   colVal=@RsysRes[ rs].X.ecTot*F colDec=dp colWid=6 \
+  RXCOL colHead="qcZone2"   colVal=(@RsysRes[ rs].X.qcZoneSen+@RsysRes[ rs].X.qcZoneLat)*F colDec=dp colWid=6 \
+  RXCOL colHead="COPC2"  colVal=-(@RsysRes[ rs].X.qcZoneSen+@RsysRes[ rs].X.qcZoneLat)/max(1.,@RsysRes[ rs].X.ecTot) colDec=dp colWid = 6 \
+  RXCOL colHead="ParErr"  colVal=@METER[ mtr].X.aux - @RsysRes[ rs].X.ehParasitic - @RsysRes[ rs].X.ecParasitic - @RsysRes[ rs].X.evParasitic colDec=dp colWid = 6
+
+REPORT ENUSEMO rpType=UDT rpFreq=MONTH rpTitle = "RSYS -- Aux Cycle / Def RevCyc"
+TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, 1, 1)
+REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, 1, 1)
+
+REPORT ENUSEHR rpType=UDT rpFreq=HOUR rpTitle = "RSYS -- Aux Cycle / Def RevCyc" rpDayBeg=Jan 1 rpDayEnd=Jan 3
+TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, 1, 1)
 
 
-#define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info" \
+
+#define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"  rpCPL=-1 \
    REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].Cap115 colHead="Cap115" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].Cap82 colHead="Cap82" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP115 colHead="COP115" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP95 colHead="COP95" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP82 colHead="COP82" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin115 colHead="COPm115" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin95 colHead="COPm95" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin82 colHead="COPm82" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
@@ -1655,139 +2269,256 @@ SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
    REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 SYSINFCOOL( 1)
 
-#define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info" \
+#define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"  rpCPL=-1 \
    REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
-   REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
-   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
-   REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
    REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
-   REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=5   \
-   REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=5  \
-   REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=5  \
-   REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=5  \
+   REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
-   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="CapAuxH" colDec=0 colWid=7  \
-   REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=2 colWid=5 \
-   REPORTCOL colVal = @Rsys[s].effAuxH colHead="AFUEAuxH" colDec=2 colWid=8
+   REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
+   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8
+
 SYSINFHEAT( 1)
 
-#define RSYSHRCOLS( s, IVL) \
-   Reportcol colVal=@RsysRes[ s].IVL.hrsOn colHead="hrsOn" colDec=3 colWid=5 \
-   Reportcol colVal=@RsysRes[ s].IVL.hrsOnAux colHead="hrsOnAux" colDec=3 colWid=8 \
-   Reportcol colVal=@RsysRes[ s].IVL.qhPrimary/1000 colHead="qh" colDec=0 colWid=7 \
-   Reportcol colVal=@RsysRes[ s].IVL.qcSen/1000 colHead="qcSen" colDec=0 colWid=7 \
-   Reportcol colVal=@RsysRes[ s].IVL.qcLat/1000 colHead="qcLat" colDec=0 colWid=7 \
-   Reportcol colVal=@RsysRes[ s].IVL.qhFan/1000 colHead="qhFan" colDec=0 colWid=7 \
-   Reportcol colVal=@RsysRes[ s].IVL.qcFan/1000 colHead="qcFan" colDec=0 colWid=7 \
-   Reportcol colVal=@RsysRes[ s].IVL.qhDefrost/1000 colHead="qDefrost" colDec=0 colWid=7 \
-   Reportcol colVal=@RsysRes[ s].IVL.qhAux/1000 colHead="qAux" colDec=0 colWid=7
+#if 0
+// columns for all DUCTSEGRES values (conduction, leakage / supply, return, total)
+#define DUCTCOLS( RXCOL, s, r, t, X, f, WhenHead, When) \
+  RXCOL colHead=WhenHead colVal=when colWid=3 \
+  RXCOL colHead="ShCond"  colVal=@DUCTSEGRES[ s].X.qhCond*f colWid=6 colDec=0 \
+  RXCOL colHead="ShLk"  colVal=@DUCTSEGRES[ s].X.qhLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ShTot"  colVal=@DUCTSEGRES[ s].X.qhTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ScCond"  colVal=@DUCTSEGRES[ s].X.qcCond*f colWid=6 colDec=0 \
+  RXCOL colHead="ScLkS"  colVal=@DUCTSEGRES[ s].X.qcLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ScTotS"  colVal=@DUCTSEGRES[ s].X.qcTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ScLkL"  colVal=@DUCTSEGRES[ s].X.qcLeakLat*f colWid=6 colDec=0 \
+  RXCOL colHead="RhCond"  colVal=@DUCTSEGRES[ r].X.qhCond*f colWid=6 colDec=0 \
+  RXCOL colHead="RhLk"  colVal=@DUCTSEGRES[ r].X.qhLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="RhTot"  colVal=@DUCTSEGRES[ r].X.qhTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="RcCond"  colVal=@DUCTSEGRES[ r].X.qcCond*f colWid=6 colDec=0 \
+  RXCOL colHead="RcLkS"  colVal=@DUCTSEGRES[ r].X.qcLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="RcTotS"  colVal=@DUCTSEGRES[ r].X.qcTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="RcLkL"  colVal=@DUCTSEGRES[ r].X.qcLeakLat*f colWid=6 colDec=0 \
+  RXCOL colHead="ThCond"  colVal=@DUCTSEGRES[ t].X.qhCond*f colWid=6 colDec=0 \
+  RXCOL colHead="ThLk"  colVal=@DUCTSEGRES[ t].X.qhLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ThTot"  colVal=@DUCTSEGRES[ t].X.qhTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="TcCond"  colVal=@DUCTSEGRES[ t].X.qcCond*f colWid=6 colDec=0 \
+  RXCOL colHead="TcLkS"  colVal=@DUCTSEGRES[ t].X.qcLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="TcTotS"  colVal=@DUCTSEGRES[ t].X.qcTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="TcLkL"  colVal=@DUCTSEGRES[ t].X.qcLeakLat*f colWid=6 colDec=0
 
-Report rpType=UDT rpFreq=hour  rpDayBeg=jan 4 rpDayEnd=jan 5
-   reportcol colVal=$Month   colHead="Month" colWid = 5
-   reportcol colVal=$dayofmonth colHead="Day" colWid = 3
-   Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
-   Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1
-   RSYSHRCOLS( 1, H)
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1)-1 rpDayEnd=(HD1)+1 rpCpl=-1
+DUCTCOLS( Reportcol, 1, 2, 3, S, 1, "SH", $subhour)
 
-REPORT rpType=MTR rpMeter = MtrNatGas rpFreq=HOUR rpDayBeg=Jan 4 rpDayEnd=jan 5
+REPORT rpType=UDT rpFreq=month
+DUCTCOLS( Reportcol, 1, 2, 3, M, .001, "Mon", @Top.monStr)
+REPORT rpType=UDT rpFreq=Year rpHeader = No
+DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
+#endif
+
+// report columns: system <-> duct <-> zone energy balance
+#define DUCTCOLX( RXCOL, X, zn, rs, dctSup, dctRet, dctTot, f, WhenHead, When) \
+  RXCOL colHead=WhenHead colVal=when colWid=3 \
+  RXCOL colHead="Tzn"  colVal=@ZNRES[zn].X.tAir colWid=6 colDec=2 \
+  RXCOL colHead="ShCond"  colVal=@DUCTSEGRES[ dctTot].X.qhCond*f colWid=10 colDec=0 \
+  RXCOL colHead="ShLk"  colVal=@DUCTSEGRES[ dctTot].X.qhLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ShTot"  colVal=@DUCTSEGRES[ dctTot].X.qhTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="QhSys"  colVal=@RSYSRES[ rs].X.qhNet*f colWid=6 colDec=0 \
+  RXCOL colHead="QhZn"  colVal=@ZNRES[ zn].X.qshHvac*f colWid=6 colDec=0 \
+  RXCOL colHead="QhBal"  colVal=(@RSYSRES[ rs].X.qhNet-@ZNRES[ zn].X.qshHvac-@DUCTSEGRES[ dctTot].X.qhTotSen)*f colWid=6 colDec=0 \
+  RXCOL colHead="ScCond"  colVal=@DUCTSEGRES[ dctTot].X.qcCond*f colWid=12 colDec=0 \
+  RXCOL colHead="ScLkS"  colVal=@DUCTSEGRES[ dctTot].X.qcLeakSen*f colWid=6 colDec=0 \
+  RXCOL colHead="ScLkL"  colVal=@DUCTSEGRES[ dctTot].X.qcLeakLat*f colWid=6 colDec=0 \
+  RXCOL colHead="ScTotS"  colVal=@DUCTSEGRES[ dctTot].X.qcTotSen*f colWid=6 colDec=0 \
+  RXCOL colHead="QcSys"  colVal=@RSYSRES[ rs].X.qcSenNet*f colWid=6 colDec=0 \
+  RXCOL colHead="QcZn"  colVal=@ZNRES[ zn].X.qscHVAC*f colWid=6 colDec=0 \
+  RXCOL colHead="QcBal"  colVal=(@RSYSRES[ rs].X.qcSenNet-@ZNRES[ zn].X.qscHvac-@DUCTSEGRES[ dctTot].X.qcTotSen)*f colWid=6 colDec=0
+
+REPORT rpType=UDT rpFreq=month  rpTitle="Duct / system / zone energy balance"
+DUCTCOLX( Reportcol,M, 1, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
+ENDREPORT
+REPORT rpType=UDT rpFreq=Year rpHeader = No
+DUCTCOLX( Reportcol,Y,1, 1, 1, 2, 3, .001, "", "Yr")
+ENDREPORT
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1)-1 rpDayEnd=(HD1)+1 rpCpl=-1 rpTitle="Duct / system / zone energy balance"
+DUCTCOLX( Reportcol,S, 1, 1, 1, 2, 3, 1, "SH", $subhour)
+ENDREPORT
 
 
-Report rpType=UDT rpFreq=month  rpDayBeg=jan 1 rpDayEnd=Dec 31
-   reportcol colVal=$Month   colHead="Month" colWid = 5
-   RSYSHRCOLS( 1, M)
-Report rpType=UDT rpFreq=Year rpHeader=No
-   reportcol colVal="   Yr" colHead="Month" colWid = 5
-   RSYSHRCOLS( 1, Y)
+// report columns: RSYS heating subhour details
+#define SYSCOLSH( RXCOL, rs, zn, zat, dctTot) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tatt"  colVal=@Zone[zat].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHdH colWid=5 colDec=2 \
+    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
+    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="runFAux" colVal=@RSYS[ rs].runFAux colWid=7  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="qComp" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qAux" colVal=@RSYS[ rs].outAux colWid=6 colDec=0 \
+    RXCOL colHead="qDef" colVal=@RSYS[ rs].outDefrost colWid=5 colDec=0 \
+    RXCOL colHead="qFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qDct" colVal=-@DUCTSEGRES[ dctTot].S.qhTotSen/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot / @Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="COPfs" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
+    RXCOL colHead="COPpl" colVal=@RSYS[ rs].COPHtAdj  colWid=5  colDec=3 \
+    RXCOL colHead="COPov"  colVal=abs( @Zone[zn].qsHVAC)/max( 1, @RSYS[rs].inPrimary+@RSYS[rs].inAux+@RSYS[rs].inDefrost+@RSYS[rs].inFan) colWid=5 colDec=3
 
-#define SYSCOLS( RXCOL, rs, zn) \
-  RXCOL colHead="mon" colVal=$Month colWid=3 \
-  RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
-  RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
-  RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
-  RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=4 colDec=1 \
-  RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
-  RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHdH colWid=5 colDec=2 \
-  RXCOL colHead="capfl" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
-  RXCOL colHead="COPfl" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
-  RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
-  RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
-  RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
-  RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
-  RXCOL colHead="runFAux" colVal=@RSYS[ rs].runFAux colWid=7  colDec=3 \
-  RXCOL colHead="COPpl" colVal=@RSYS[ rs].COPHtAdj  colWid=5  colDec=3 \
-  RXCOL colHead="qComp" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
-  RXCOL colHead="qAux" colVal=@RSYS[ rs].outAux colWid=6 colDec=0 \
-  RXCOL colHead="qDef" colVal=@RSYS[ rs].outDefrost colWid=6 colDec=0 \
-  RXCOL colHead="qFan" colVal=@RSYS[ rs].outFan colWid=6 colDec=0 \
-  RXCOL colHead="qTot" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
-  RXCOL colHead="qsZn" colVal=@ZnRes[zn].S.qsMech*@Top.nSubSteps colWid=6 colDec=0
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1)-1 rpDayEnd=(HD1)+1 rpCpl=-1 rpTitle="RSYS Heating subhour details"
+SYSCOLSH( Reportcol, 1, 1, "Attic-atc", 3)
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=jan 4 rpDayEnd=jan 6 rpCpl=-1
-SYSCOLS( Reportcol, 1, 1)
+// report columns: RSYS cooling subhour details
+#define SYSCOLSC( RXCOL, rs, zn, zat, dctTot) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tatt"  colVal=@Zone[zat].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetCdH colWid=5 colDec=2 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
+    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="SHR" colVal=@RSYS[ rs].shr  colWid=4 colDec=3 \
+    RXCOL colHead="capSen" colVal=@RSYS[rs].capSenCt colWid=6 colDec=0 \
+    RXCOL colHead="capLat" colVal=@RSYS[rs].capLatCt colWid=6 colDec=0 \
+    RXCOL colHead="capTot" colVal=@RSYS[rs].capTotCt colWid=6 colDec=0 \
+    RXCOL colHead="qSCoil" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qSFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qSNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qSDct" colVal=@DuctSegRes[ dctTot].S.qcTotSen/@Top.subhrDur colWid=5 colDec=0 \
+    RXCOL colHead="qsZn1"  colVal=@ZnRes[zn].S.qscHVAC/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qsZn2"  colVal=@Zone[ zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qcSenNet-@ZNRES[ zn].S.qscHvac-@DUCTSEGRES[ dctTot].S.qcTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qLat1" colVal=@RSYS[ rs].outLat colWid=6 colDec=0 \
+    RXCOL colHead="qLat2"  colVal=@ZnRes[zn].S.qlMech/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qtZn"   colVal=(@ZnRes[zn].S.qscHvac+@ZnRes[zn].S.qlMech)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ecTot / @Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="COPspl" colVal=@RSYS[ rs].effCt  colWid=6  colDec=3 \
+    RXCOL colHead="COPov"  colVal=(abs(@ZnRes[zn].S.qscHvac+@ZnRes[zn].S.qlMech)/@Top.subhrDur)/max( 1, @RSYS[rs].inPrimary+@RSYS[rs].inFan) colWid=5 colDec=3
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=(CD1)-1 rpDayEnd=(CD1) rpCpl=-1
-SYSCOLS( Reportcol, 1, 1)
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(DD1)-1 rpDayEnd=(DD1)+1 rpCpl=-1 rpTitle="RSYS cooling subhour details"
+SYSCOLSC( Reportcol, 1, 1, "Attic-atc", 3)
 
 
 #if 0
-EXPORT exType=UDT exFreq=subhour  exDayBeg=jan 4 exDayEnd=jan 6
-SYSCOLS( Exportcol, 1, 1)
+// repeat subhour info to CSV file
+EXPORT exType=UDT exFreq=subhour  exDayBeg=(HD1)-1 exDayEnd=(HD1)+1
+SYSCOLSH( Exportcol, 1, 1, "Attic-atc", 3)
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=aug 11 rpDayEnd=aug 11 rpCpl=-1
-SYSCOLS( Reportcol, 1, 1)
-
-EXPORT exType=UDT exFreq=subhour  exDayBeg=aug 11 exDayEnd=aug 11
-SYSCOLS( Exportcol, 1, 1)
+EXPORT exType=UDT exFreq=subhour exDayBeg=(DD1)-1 exDayEnd=(DD1)+1
+SYSCOLSC( Exportcol, 1, 1, "Attic-atc", 3)
 #endif
 
+RUN
+
+UNSET begDay  begDay=nov 1
+UNSET endDay  endDay=Apr 30
+
+#define FIXRPTITLES( t) \
+ALTER REPORT SYSRESMO rpTitle = t \
+ALTER REPORT ENUSEMO rpTitle = t \
+ALTER REPORT ENUSEHR rpTitle = t
+
+ALTER RSYS "rsys1"
+  rsCtrlAuxH = ALTERNATE
+FIXRPTITLES("RSYS -- Aux Alt / Def RevCycleAux")
 
 RUN
 
 ALTER RSYS "rsys1"
-   rsTypeAuxH = Furnace
-   rsCtrlAuxH = Cycle
-   rsAFUEAuxH = .93
-
-ALTER REPORT SYSRESMO
-   rpTitle = "RSYSRES Furn Cycle"
+  rsCtrlAuxH = LOCKOUT
+FIXRPTITLES("RSYS -- Aux Lockout / Def RevCycleAux")
 
 RUN
 
 ALTER RSYS "rsys1"
-   rsTypeAuxH = Furnace
-   rsCtrlAuxH = Alternate
-   rsParFuel = 100
-   rsAFUEAuxH = .93
-
-ALTER REPORT SYSRESMO
-   rpTitle = "RSYSRES Furn Alt"
+  rsDefrostModel = "RevCycle"
+  rsCtrlAuxH = CYCLE
+FIXRPTITLES("RSYS -- Aux Cycle / Def RevCycle")
 
 RUN
 
 ALTER RSYS "rsys1"
-   rsTypeAuxH = Furnace
-   rsCtrlAuxH = LockOut
-   UNSET rsParFuel
-   rsAFUEAuxH = .93
-
-ALTER REPORT SYSRESMO
-   rpTitle = "RSYSRES Furn Lockout"
+  rsCtrlAuxH = ALTERNATE
+FIXRPTITLES("RSYS -- Aux Alt / Def RevCycle")
 
 RUN
 
 ALTER RSYS "rsys1"
-   rsTypeAuxH = Resistance
-   rsCtrlAuxH = Cycle
-   rsASHPLockOutT = 35
+  rsCtrlAuxH = LOCKOUT
+FIXRPTITLES("RSYS -- Aux Lockout / Def RevCycle")
 
-ALTER REPORT SYSRESMO
-   rpTitle = "RSYSRES Res Cycle LO35"
+RUN
+
+ALTER RSYS "rsys1"
+  rsDefrostModel = "None"
+  rsCtrlAuxH = CYCLE
+FIXRPTITLES("RSYS -- Aux Cycle / Def None")
+
+RUN
+
+ALTER RSYS "rsys1"
+  rsCtrlAuxH = ALTERNATE
+FIXRPTITLES("RSYS -- Aux Alt / Def None")
+
+RUN
+
+ALTER RSYS "rsys1"
+  rsCtrlAuxH = LOCKOUT
+FIXRPTITLES("RSYS -- Aux Lockout / Def None")
+
+RUN
+
+ALTER RSYS "rsys1"
+  rsCtrlAuxH = ALTERNATE
+  rsDefrostModel = "RevCycleAux"
+  rsASHPLockOutT = 37
+FIXRPTITLES("RSYS -- Aux Alt / Def RevCycleAux / LO 37")
 
 RUN
 
