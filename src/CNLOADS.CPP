@@ -1206,11 +1206,11 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 	RC rc = RCOK;
 	double tSup0 = rs->rs_asSup.as_tdb;
 #if 1 && defined( _DEBUG)
-	if ((options & 1) && !Top.isWarmup &&
-		(zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-		|| (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp))
+	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
+		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
+		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp)))
 	{
-		orWarn("Flipped tSup  RSYS='%s', tOut=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
+		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
 #endif
@@ -5160,6 +5160,9 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 
 	double speedF, f1;
 #if 1
+	speedF = min(1., speedFEst * 1.2);
+	f1 = DBL_MIN;
+#elif 0
 	if (speedFEst > 0.5f * rs_speedFMin + 0.5f)
 	{
 		speedF = 1.;
@@ -5179,6 +5182,11 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 	f1 = DBL_MIN;
 #endif
 
+#if defined( _DEBUG)
+	printf("\nStart speedFMin=%0.4f  fxCapMinSpd=%0.4f  fxCapFullSpd=%0.4f  speedFEst=%0.4f",
+		rs_speedFMin, fxCapMinSpd, fxCapFullSpd, speedFEst);
+#endif
+
 	// search for speedF that produces fxCap = 1.
 	//   this RSYS is left in the corresponding state via rc_TotalAirRequestForSpeed() calls
 	//   (secant results not directly returned)
@@ -5196,6 +5204,7 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 		printf("\nrs_FindRequiredSpeedF: secant ret=%d  rsMode=%d", ret, rs_mode);
 	if (rs_speedF < rs_speedFMin || rs_speedF > 1.f)
 		printf("\nrs_FindRequiredSpeedF bad rs_speedF=%0.2f", rs_speedF);
+	printf("\nDone  speedF=%0.4f  fxCap=%0.4f", rs_speedF, rs_fxCap[0]);
 #endif
 
 	return rc;
@@ -5240,11 +5249,15 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 {
 #if defined( _DEBUG)
 	double speedFWas = speedF;
+	static double speedFLastCall = 0.;
+	static float fxLastCall = 0.;
+	float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
 #if defined( _DEBUG)
 	if (speedF != speedFWas)
-		printf("\nrs_FxCapForSpeedF limit!");
+		printf("\nrs_FxCapForSpeedF limit: speedFWas=%0.4f  speedF=%0.4f",
+			speedFWas, speedF);
 #endif
 
 	// options: report bad supply temps iff near solution
@@ -5256,8 +5269,19 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	// if rc != RCOK, rs_fxCap[0] is 0
 
 #if defined( _DEBUG)
+	bool bDup = speedF != speedFLastCall && rs_fxCap[0] == fxLastCall;
+	printf("\n    speedF=%0.4f  f=%0.4f tSup=%0.3f rs_amf=%0.3f rs_amfReq=%0.3f (speedFLastCall=%0.4f rsSpeedFWas=%0.4f)%s",
+			speedF, rs_fxCap[0], rs_asSup.as_tdb, rs_amf, rs_amfReq[ 0], speedFLastCall, rsSpeedFWas, bDup ? " Dup" : "");
+	if (bDup)
+	{ 
+		rs_speedF = rsSpeedFWas;
+		rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
+	}
+
 	if (rc)
 		printf("\nrs_FxCapForSpeedF: rs_TotalAirRequestForSpeedF() fail");
+	speedFLastCall = speedF;
+	fxLastCall = rs_fxCap[0];
 #else
 	// ignore rc, return rs_fxCap[ 0] = 0
 #endif
@@ -5265,19 +5289,17 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	return double(rs_fxCap[0]);
 }	// RSYS::rs_FxCapForSpeedF
 //-----------------------------------------------------------------------------
+#if 0	// incomplete/unused ideas
 void RSYS::rs_AvgZoneCond()
 {
-#if 0
 	const ZNR* zp;
 	AIRFLOW asZn;
 	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
 	{	asZn.af_Mix(zp->zn_sysAirO);
 	}
 	rs_asZn = ??
-#endif
 }	// RSYS::rs_AvgZoneCond
 //----------------------------------------------------------------------------
-#if 0
 float RSYS::rs_SenHeatDelivered()
 {
 	float qSenTot = 0.f;
@@ -5288,9 +5310,7 @@ float RSYS::rs_SenHeatDelivered()
 	}
 	return qSenTot * Top.tp_subhrDur;
 }	// RSYS::rs_SenHeatDelivered
-#endif
 //----------------------------------------------------------------------------
-#if 0
 void RSYS::rs_HeatDelivered(	// heat delivered to zone(s) by this RSYS
 	float& qhSen,	// heating sensible, Btu (>= 0)
 	float& qcSen,	// cooling sensible, Btu (< 0)

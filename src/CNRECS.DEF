@@ -3149,8 +3149,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_TotalAirRequestForSpeedF( float speedF, int options=0);"
 *declare "double rs_FxCapForSpeedF( double& speedF);"
 *declare "RC rs_FindRequiredSpeedF();"
+#if 0   // incomplete/unused ideas
 *declare "void rs_AvgZoneCond();"
+#declare "float rs_SenHeatDelivered();"
 *declare "void rs_HeatDelivered( float& qhSen, float& qcSen, float& qcLat);"
+#endif
 *declare "double rs_AmfRequired( double tSup);"
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
