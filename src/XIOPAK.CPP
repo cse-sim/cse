@@ -132,10 +132,8 @@ const char * FC xgetdir()
 /* Returns pointer to current working drive/directory pathname in Tmpstr[] */
 
 {
-	char * p = strtemp( _MAX_PATH );	// alloc n+1 bytes tmp strng space, strpak.cpp
-	filesys::path currentPath;
-	currentPath = filesys::current_path();
-	strcpy(p, currentPath.string().c_str());
+	char * p = strtemp( FILENAME_MAX );	// alloc n+1 bytes tmp strng space, strpak.cpp
+	strcpy(p, filesys::current_path().string().c_str());
 
 	return p;		// seems to include drive.
 }		// xfgetdir
@@ -176,29 +174,19 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), dir;	// filesystem variables
-	std::error_code ec;					// Error Code for filesystem functions
+	filesys::path fname(*fnamp), dirPath;	// filesystem variables
+	std::error_code ec;						// Error Code for filesystem functions
 
-	if (filesys::exists(fname, ec)) {	// File or full path exist
-		dir = filesys::absolute(fname); // Create full path
+	if (filesys::exists(fname, ec)) {		// File or full path exist
+		dirPath = filesys::absolute(fname); // Create full path
 	}
 	else {
-		if (!fname.has_root_name()) {			// Missing root name, ex C:
-			err(erOp, "\"%s\": Invalid Drive", fname);
-			return RCBAD;
-		}
-		else if (!fname.has_relative_path()) {	// Missing Path
-			err(erOp, "\"%s\": Directory not found", fname);
-			return RCBAD;
-		}
-		else {
-			err(erOp, "\"%s\": Invalid path", fname, ec);
-			return RCBAD;
-		}
+		err(erOp, ec.message().c_str(), fname);
+		return RCBAD;
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(dir.parent_path().string().c_str(), dir.filename().string().c_str());
+	*fnamp = strtPathCat(dirPath.parent_path().string().c_str(), dirPath.filename().string().c_str());
 
 	return RCOK;		// another return is in code above
 
