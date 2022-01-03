@@ -181,18 +181,8 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 		dirPath = filesys::absolute(fname); // Create full path
 	}
 	else {
-		if (!fname.has_root_name() && !ec) {		// Missing root name, ex C:
-			err(erOp, "\"%s\": Invalid drive", fname);
-			return RCBAD;
-		}
-		else if (!fname.has_relative_path() && !ec) {	// Missing Path
-			err(erOp, "\"%s\": Directory not found", fname);
-			return RCBAD;
-		}
-		else {
-			err(erOp, ec.message().c_str(), fname);
-			return RCBAD;
-		}
+		err(erOp, ec.message().c_str(), fname);
+		return RCBAD;
 	}
 
 	// assemble, with \ between dir and filename one is lacking
@@ -376,7 +366,8 @@ SEC FC xfclose(		// Close file and release XFILE
 			*pCumSec = xf->xflsterr;	// cumulative SEC receives any error including those caused by close
 		dmfree( DMPP( xf->xfname));	// free name if any (see xFindOnPath)
 	}
-	dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
+	if (xfp != NULL)
+		dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
 
 	return sec;			// return outcome of close()
 }		// xfclose
