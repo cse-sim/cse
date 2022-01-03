@@ -229,7 +229,7 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 
 	const char *pText				// pt to text corresponding to SEC
 	  =  sec >= 0 && sec < sys_nerr 	// for errors in system range
-	      ? sys_errlist[sec]  			//    get msc library msg text
+	      ? strerror(sec)  			//    get msc library msg text
 	      : lookws( sec, secText);   	//    else get text from our table
 
 	return strtprintf(			// format msg in Tmpstr, strpak.cpp

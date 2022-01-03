@@ -646,7 +646,7 @@ uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on cur
 
 	if ( !spaceErrorCode )
 		// GetLastError for more info
-		return 0ui64;					// call failed, return 0 space avail
+		return (unsigned long long int) 0;		// call failed, return 0 space avail
 
 	if ( freeSpace < UINTMAX_MAX)	// if free space fits in a uintmax
 		return freeSpace;			// compute fixed point free space & return it
