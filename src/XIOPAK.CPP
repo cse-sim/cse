@@ -181,8 +181,18 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 		dirPath = filesys::absolute(fname); // Create full path
 	}
 	else {
-		err(erOp, ec.message().c_str(), fname);
-		return RCBAD;
+		if (!fname.has_root_name() && !ec) {		// Missing root name, ex C:
+			err(erOp, "\"%s\": Invalid drive", fname);
+			return RCBAD;
+		}
+		else if (!fname.has_relative_path() && !ec) {	// Missing Path
+			err(erOp, "\"%s\": Directory not found", fname);
+			return RCBAD;
+		}
+		else {
+			err(erOp, ec.message().c_str(), fname);
+			return RCBAD;
+		}
 	}
 
 	// assemble, with \ between dir and filename one is lacking
