@@ -25,10 +25,12 @@ Replace the content in this section with:
         - [ ] manually verifying the changes (as explained in the the pull request description above)
     - [ ] My changes pass all local tests
     - [ ] My changes successfully passes CI checks
+    - [ ] Add any unit test for proof and documentation.
 - [ ] Move pull request out of draft mode and assign reviewers
 - [ ] Iterate with reviewers until all changes are approved
     - [ ] Make changes in response to reviewer comments
     - [ ] Re-request review in GitHub
+    - [ ] Add Chip for final review.
 
 ## Reviewer Checklist:
 
