@@ -177,11 +177,13 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 	filesys::path fname(*fnamp), absolutepath;	// filesystem variables
 	std::error_code ec;						// Error Code for filesystem functions
 
-	if (filesys::exists(fname, ec)) {		// File or full path exist
-		absolutepath = filesys::absolute(fname); // Create full path
+	if (filesys::exists(fname)) {		// File or full path exist
+		absolutepath = filesys::absolute(fname,ec); // Create full path
+		if(ec)
+			err(erOp, ec.message().c_str(), fname);
 	}
 	else {
-		err(erOp, ec.message().c_str(), fname);
+		err(erOp, "\"%s\": Invalid path", fname);
 		return RCBAD;
 	}
 
@@ -614,7 +616,7 @@ uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on cur
 
 	if ( !spaceErrorCode )
 		// GetLastError for more info
-		return 0ui64;					// call failed, return 0 space avail
+		return 0;					// call failed, return 0 space avail
 
 	if ( freeSpace < UINTMAX_MAX)	// if free space fits in a uintmax
 		return freeSpace;			// compute fixed point free space & return it
