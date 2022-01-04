@@ -174,11 +174,11 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), absolutePath;	// filesystem variables
+	filesys::path fname(*fnamp), absolutepath;	// filesystem variables
 	std::error_code ec;						// Error Code for filesystem functions
 
 	if (filesys::exists(fname, ec)) {		// File or full path exist
-		absolutePath = filesys::absolute(fname); // Create full path
+		absolutepath = filesys::absolute(fname); // Create full path
 	}
 	else {
 		err(erOp, ec.message().c_str(), fname);
@@ -186,7 +186,7 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(absolutePath.parent_path().string().c_str(), absolutePath.filename().string().c_str());
+	*fnamp = strtPathCat(absolutepath.parent_path().string().c_str(), absolutepath.filename().string().c_str());
 
 	return RCOK;		// another return is in code above
 
