@@ -1385,7 +1385,7 @@ RC ZNR::zn_AirFlowVsTsup()
 	{
 		float fAmf = 1.f - float(i) / 10.f;
 
-		float amf = rs->rs_TsupVarFlow(fAmf, asSup);
+		float amf = rs->rs_TSupVarFlow(fAmf, asSup);
 
 		double amfNeed = zn_AmfHvacCR(70. /*tz*/, asSup.as_tdb);
 
@@ -1397,6 +1397,19 @@ RC ZNR::zn_AirFlowVsTsup()
 
 	return rc;
 }	// ZNR::zn_AirFlowVsTsup
+//-----------------------------------------------------------------------------
+float RSYS::rs_TSupVarFlow(
+	float fAmf,
+	AIRSTATE& asSup)
+{
+
+	asSup = rs_asOut;
+
+	float amf = rs_amf * fAmf;
+
+	return rs_SupplyDSEAndDucts(asSup, amf);
+
+}		// RSYS::rs_TSupVarFlow
 #endif
 //----------------------------------------------------------------------------
 double ZNR::zn_TAirCR(			// zone air temp w/ add'l radiant heat
@@ -2377,7 +2390,31 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 								//      (coolOver = heatOver = 1)
 
 }		// RSYS::rs_AuszFinal
-
+//-----------------------------------------------------------------------------
+float RSYS::rs_Cap47FromCap95ASHP(	// force ASHP htg/clg consistency (cooling dominated)
+	float cap95) const	// 95 F cooling capacity
+// returns cap47 consistent with cap95
+//   TODO: net or gross?
+{	
+// note: default ratio per A. Conant
+//       based on data set of split systems
+	float cap47 = IsSet( RSYS_CAPRAT9547)
+		? cap95 / rs_capRat9547		// user specified ratio
+		: 0.98f * cap95 + 180.f;	// default
+	return cap47;
+}	// RSYS::rs_Cap47FromCap95ASHP
+//-----------------------------------------------------------------------------
+float RSYS::rs_Cap95FromCap47ASHP(		// force ASHP htg/clg consistency (heating dominated)
+	float cap47) const	// 47F net heating capacity
+// returns cap95 consistent with cap47
+{
+// note: default ratio per A. Conant
+//       based on data set of split systems
+	float cap95 = IsSet( RSYS_CAPRAT9547)
+		? cap47 * rs_capRat9547		// user specified ratio
+		: max(cap47 - 180., 0.f) / 0.98f;	// default
+	return cap95;
+}	// RSYS::rs_Cap95FromCap47ASHP
 //-----------------------------------------------------------------------------
 float RSYS::rs_ClgCapNomTons(	// nominal cooling capacity
 	float nearest /*=-1.f*/)		// if >0, round to nearest specified increment
@@ -4862,7 +4899,6 @@ void RSYS::rs_SupplyDSEAndDuctsRev(	// reverse supply duct and DSE losses
 			as = DsR[ iDS].ds_CalcFLRev( asSup);
 		}
 	}
-
 }		// RSYS_SupplyDSEAndDuctsRev
 //----------------------------------------------------------------------------
 double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
@@ -4918,19 +4954,6 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 #endif
 	return znAmfSys;
 }		// RSYS::rs_ZoneAirRequest
-//-----------------------------------------------------------------------------
-float RSYS::rs_TsupVarFlow(
-	float fAmf,
-	AIRSTATE& asSup)
-{
-
-	asSup = rs_asOut;
-
-	float amf = rs_amf * fAmf;
-
-	return rs_SupplyDSEAndDucts(asSup, amf);
-
-}		// RSYS::rs_TsupVarFlow
 //-----------------------------------------------------------------------------
 #if defined( _DEBUG)
 #define RSYSITERCOUNT
@@ -5131,6 +5154,10 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	return rc;
 }	// RSYS::rs_AllocateZoneAir
 //----------------------------------------------------------------------------
+#if defined( _DEBUGF)
+#define TRACEFINDSPEEDF
+#endif
+//----------------------------------------------------------------------------
 RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 // at call: RSYS in full speed state (excess capacity, rs_fxCap[ 0]==1)
 // returns RCBAD iff search fail (unexpected)
@@ -5182,7 +5209,7 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 	f1 = DBL_MIN;
 #endif
 
-#if defined( _DEBUG)
+#if defined( TRACEFINDSPEEDF)
 	printf("\nStart speedFMin=%0.4f  fxCapMinSpd=%0.4f  fxCapFullSpd=%0.4f  speedFEst=%0.4f",
 		rs_speedFMin, fxCapMinSpd, fxCapFullSpd, speedFEst);
 #endif
@@ -5196,10 +5223,14 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 						speedF, f1,	// x1, f1
 						speedFEst, DBL_MIN);	// x2, f2 (not known)
 	if (ret)	// if secant failed (unexpected)
+#if 0
+		rc |= rs_FindSpeedFForTSup(80.);
+#else
 		// leave RSYS is speedFEst state (= semi-decent result)
 		rc |= rs_TotalAirRequestForSpeedF(speedFEst);
+#endif
 
-#if defined( _DEBUG)
+#if defined( TRACEFINDSPEEDF)
 	if (ret)
 		printf("\nrs_FindRequiredSpeedF: secant ret=%d  rsMode=%d", ret, rs_mode);
 	if (rs_speedF < rs_speedFMin || rs_speedF > 1.f)
@@ -5268,7 +5299,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 
 	// if rc != RCOK, rs_fxCap[0] is 0
 
-#if defined( _DEBUG)
+#if defined( TRACEFINDSPEEDF)
 	bool bDup = speedF != speedFLastCall && rs_fxCap[0] == fxLastCall;
 	printf("\n    speedF=%0.4f  f=%0.4f tSup=%0.3f rs_amf=%0.3f rs_amfReq=%0.3f (speedFLastCall=%0.4f rsSpeedFWas=%0.4f)%s",
 			speedF, rs_fxCap[0], rs_asSup.as_tdb, rs_amf, rs_amfReq[ 0], speedFLastCall, rsSpeedFWas, bDup ? " Dup" : "");
@@ -5288,6 +5319,43 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 
 	return double(rs_fxCap[0]);
 }	// RSYS::rs_FxCapForSpeedF
+
+
+
+
+//-----------------------------------------------------------------------------
+RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified supply temp
+	double tSup)
+{
+	RC rc = RCOK;
+
+	double speedFLo = rs_speedFMin;
+	double speedFHi = 1.;
+	double f1 = DBL_MIN;
+
+	// search for speedF that produces fxCap = 1.
+//   this RSYS is left in the corresponding state via rc_TotalAirRequestForSpeed() calls
+//   (secant results not directly returned)
+	int ret = secant([](void* pO, double& speedF) { return ((RSYS*)pO)->rs_TSupForSpeedF(speedF); },
+						this,
+						tSup, .005,	// target=tSup within .005 degF
+						speedFLo, f1,	// x1, f1
+						speedFHi, DBL_MIN);	// x2, f2
+
+	return rc;
+
+}		// RSYS::rs_FindSpeedFForTSup
+//-----------------------------------------------------------------------------
+double RSYS::rs_TSupForSpeedF(
+	double speedF)
+{
+
+	rs_ClearSubhrResults(1);	// init for speed re-try
+	int ret = rs_SupplyAirState(rs_mode, speedF);
+
+	return rs_asSup.as_tdb;
+
+}		// RSYS::rs_TSupForSpeedF
 //-----------------------------------------------------------------------------
 #if 0	// incomplete/unused ideas
 void RSYS::rs_AvgZoneCond()
