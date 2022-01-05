@@ -7,12 +7,10 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
-#if !defined( ELIMINATE_WINDOWS)
 #if (_WIN32)
 #include <windows.h>
 #else
 #include <unistd.h>
-#endif
 #endif
 
 #include <signal.h> 	// signal SIGINT
@@ -144,7 +142,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
-	#if !defined( ELIMINATE_WINDOWS)
+	#ifdef _WIN32
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
