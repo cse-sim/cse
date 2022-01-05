@@ -164,9 +164,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
 #include <srd.h>
-#if !defined( ELIMINATE_WINDOWS)
-#include <direct.h>     // getcwd(), chdir(
-#endif
 
 #include <xiopak.h>     // xffilcomp
 #include <envpak.h>     // hello byebye
