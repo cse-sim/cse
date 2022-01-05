@@ -610,10 +610,10 @@ uintmax_t FC xdisksp()		// returns diskspace on default drive
 uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on current default drive
 {
 	// Determine the available space on the filesystem on which current path is located
-	std::error_code spaceErrorCode;
-	uintmax_t freeSpace = filesys::space(filesys::current_path(), spaceErrorCode).available;
+	std::error_code ec;
+	uintmax_t freeSpace = filesys::space(filesys::current_path(), ec).available;
 
-	if ( spaceErrorCode )
+	if (ec)
 		// GetLastError for more info
 		return 0;					// call failed, return 0 space avail
 
