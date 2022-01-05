@@ -623,7 +623,7 @@ int CDEC main( SI argc, char * argv[] )
 		filesys::current_path(filesys::path(incdir), ec);
 		if (ec)
 		{
-			printf( "\nCannot find include directory '%s'.\n", incdir);
+			printf( "\n\"%s\": %s", incdir, ec.message().c_str());
 			Errcount++;
 		}
 		filesys::current_path(dbuff);
@@ -638,7 +638,7 @@ int CDEC main( SI argc, char * argv[] )
 		filesys::current_path(filesys::path(cFilesDir), ec);
 		if (ec)
 		{
-			printf( "\nCannot find include directory '%s'.\n", cFilesDir);
+			printf("\n\"%s\": %s", cFilesDir, ec.message().c_str());
 			Errcount++;
 		}
 		filesys::current_path(dbuff);
