@@ -558,9 +558,11 @@ SEC FC xfsize(		// Return the current size of a file
 {
 	std::error_code ec;
 	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
-	return ec		/* if length invalid */
-		   ?  xioerr(xf)		/*    bad: report error, return SEC */
-		   :  SECOK;   		/*    good */
+	if (ec) {/* if length invalid */
+		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
+		return xioerr(xf); /*    bad: report error, return SEC */
+	}
+	return SECOK;   		/*    good */
 }				// xfsize
 //======================================================================
 SEC FC xfchsize(		// Change the size of a file
