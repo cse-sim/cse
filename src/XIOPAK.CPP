@@ -152,10 +152,7 @@ SEC FC xchdir(		// Change current working directory and/or drive
 		sec = RCBAD;
 	}
 	if (sec != SECOK)
-		err( erOp, 			// disp msg per erOp, rmkerr.cpp
-			 (char *)MH_I0011,		// "I0011: unable to change working directory to '%s':\n    %s"
-			 path,			//    filename
-			 msgSec( sec) );		//    sec text, messages.cpp
+		err(erOp, "\"%s\": %s", path, ec.message().c_str());
 	return sec;
 }		// xchdir
 //======================================================================
@@ -180,7 +177,7 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 	if (filesys::exists(fname)) {		// File or full path exist
 		absolutepath = filesys::absolute(fname,ec); // Create full path
 		if(ec)
-			err(erOp, ec.message().c_str(), fname);
+			err(erOp, "\"%s\": %s", fname, ec.message().c_str());
 	}
 	else {
 		err(erOp, "\"%s\": Invalid path", fname);
@@ -614,7 +611,7 @@ uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on cur
 	std::error_code spaceErrorCode;
 	uintmax_t freeSpace = filesys::space(filesys::current_path(), spaceErrorCode).available;
 
-	if ( !spaceErrorCode )
+	if ( spaceErrorCode )
 		// GetLastError for more info
 		return 0;					// call failed, return 0 space avail
 
