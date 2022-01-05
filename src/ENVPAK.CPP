@@ -106,7 +106,6 @@ t }
 WStr enExePath()		// full path to current executable
 {
 	WStr t;
-#if !defined(ELIMINATE_WINDOWS)
 	char exePath[FILENAME_MAX + 1];
 #ifdef __APPLE__
 		uint32_t pathSize = sizeof(exePath);
@@ -131,8 +130,6 @@ WStr enExePath()		// full path to current executable
 			WStrLower(t);
 		}
 #endif
-#endif
-	t = "?";
 	WStrLower(t);
 	return t;
 }		// enExePath
