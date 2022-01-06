@@ -172,16 +172,6 @@
 #include <cuevf.h>      // EVFHR EVFMH
 #include "cvpak.h"
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif 
-
 /*-------------------------------- DEFINES --------------------------------*/
 //  Note additional #definitions intermingled with declarations below
 

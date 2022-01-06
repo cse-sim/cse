@@ -45,16 +45,6 @@
 #include "tdpak.h"
 #include "cvpak.h"
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif 
-
 #include "xiopak.h"	// xiopak.cpp publics
 #include <system_error>
 
