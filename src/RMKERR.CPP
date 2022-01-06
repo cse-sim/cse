@@ -23,11 +23,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "CSE.h"		// globals required for some configurations
 
-#if defined( _WIN32 )
-#include <conio.h>		// getch
-#else
-#include <curses.h>		// getch for linux
-#endif
+#include <iostream>
 
 #include <MESSAGES.H>	// msgI
 #include <ENVPAK.H>		// byebye
@@ -1010,7 +1006,8 @@ LOCAL int presskey( 	// prompt user after error message display
 		erAction == ABT
 		? "Press any key (program will abort) "
 		: "Press 'A' to abort, any other key to continue " );
-	int key = getch();							// input any char
+	int key;
+	std::cin >> key;				// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
 	// if screenLs was 'dashed' or 'begLine', it is now the same.
 	if (screenLs==midLine)		// if was midline (unexpected)
