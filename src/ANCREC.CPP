@@ -109,7 +109,7 @@ int record::DType( int fn) const
 int record::IsNameMatch( const char* _name) const
 {
 	// Note: prior (1994) version disregarded unexpected excess chars
-	return !_strnicmp( _name, name, sizeof(ANAME)-1);
+	return !compareCaseStr( _name, name);
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ record& record::CopyFrom(
@@ -922,7 +922,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 	int i;
 	for (i = 1;  i < FNCACHESZ && fnCache[i];  i++)
 		if ( strlen(fnCache[i])== len
-		 &&  memicmp( name, (void *)fnCache[i], len)==0 )
+		 &&  memcmp( name, (void *)fnCache[i], len)==0 )
 			break;  						// found. i is index to return.
 
 // i is index of found name, free slot, or off end table if full
