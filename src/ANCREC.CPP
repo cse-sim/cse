@@ -26,13 +26,13 @@
 //  do statSetup() setup from constructor: would fit uses; rcdef changes needed?
 //		above comment is pre-multi-run (1993), less clear with multi-run and DLL use.
 
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include "cse.h"
-#include <msghans.h>	// MH_X0050
-#include <ancrec.h>
-#include "cvpak.h"
-#include <srd.h>		// SFIR
+#include "CSE.h"
+#include <MSGHANS.H>	// MH_X0050
+#include <ANCREC.H>
+#include "CVPAK.H"
+#include <SRD.H>		// SFIR
 
 
 //***************************************************************************************************************************
@@ -699,7 +699,7 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	BP b;
 	USI an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!strcmpi( _what, (char *)b->what))		// if name matches
+		if (!compareCaseStr( _what, (char *)b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name
