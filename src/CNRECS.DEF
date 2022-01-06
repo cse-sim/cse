@@ -111,7 +111,7 @@ FIELD * directives are
 */
 
 /*----------------------------- SUB INCLUDES -------------------------------*/
-#include <cndefns.h>	// #defines shared with cse code
+#include <CNDEFNS.H>	// #defines shared with cse code
 
 
 /*-------------------------------- OPTIONS ---------------------------------*/
@@ -6731,7 +6731,7 @@ o    *z FRAC nvStEM 	// steffm   Stack effectiveness multiplier
 o    *z FRAC nvDdEM 	// ddeffm   Direction-dependent effectiveness mult.
 o    *z FRAC nvDiEM 	// dieffm   Direction-independent effectiveness mult.
 o    *z TEMPDIFF nvTD 	// tdiff    Min out-zone temp diff to vent. Set:crsimzn.cpp.
-o			   Normally 0 to vent only if cooler outdoors.
+o			   /* Normally 0 to vent only if cooler outdoors.
 o			   < 0 lets allows vent even if heats zone: << 0 used for uncontrolled vents eg cr's CVCs.
 o			   > 0 would hold zone warmer than out (CAUTION as now coded 1-90 wd also prevent fanvent). */
 o    /* note: addl historical nat vent input info that was never used (only _INDOOR strategy implemented),

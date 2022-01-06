@@ -28,7 +28,7 @@
 	   constants for array dimensions taken from cndefns.h 1-94 */
 
 
-#include <cndefns.h>	// defines shared between data definitions and CSE code.
+#include <CNDEFNS.H>	// defines shared between data definitions and CSE code.
 
 
 /* Data types */
