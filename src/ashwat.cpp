@@ -306,7 +306,7 @@ static string stringFmtV( const char* fmt, va_list ap=NULL)
 	static const int maxLen = 2000;
 	char buf[ maxLen];
 	if (ap)
-	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
+	{	int fRet = vsprintf( buf, fmt, ap);
 		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf_s failure.";
 	}
 	return fmt;
@@ -5522,7 +5522,7 @@ static CFSFILLGAS FGX[] =
 };
 	bool bFound = false;
 	for (int iFG=0; !bFound && FGX[ iFG].ID[ 0]; iFG++)
-	{	if (stricmp( FGID, FGX[ iFG].ID)==0)
+	{	if (compareCaseStr( FGID, FGX[ iFG].ID)==0)
 		{	*this = FGX[ iFG];
 			bFound = true;
 		}
