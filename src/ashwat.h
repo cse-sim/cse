@@ -11,6 +11,9 @@
 
 #include <vector>
 #include <string>
+#ifdef __linux__
+#include <bits/stdc++.h>
+#endif
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
