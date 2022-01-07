@@ -15,7 +15,6 @@
 #include "solar.h"
 #include <wfpak.h>
 #include <cnguts.h>
-#include <cul.h>		// FsSET 6-95
 
 #include <cgwthr.h>		// decls for this file
 
