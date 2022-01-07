@@ -17,7 +17,7 @@
 // 1311-RP FORTRAN code re-implemented in C++ by Chip Barnaby, Sept 2016
 //==============================================================================
 
-#include "cnglob.h"
+#include "CNGLOB.H"
 
 #include "ashwat.h"
 
