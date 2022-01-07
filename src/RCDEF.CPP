@@ -607,31 +607,23 @@ int CDEC main( SI argc, char * argv[] )
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		filesys::path dbuff = filesys::current_path();
 		incdir = argv[6];
-		std::error_code ec;
-		filesys::current_path(filesys::path(incdir), ec);
-		if (ec)
+		if (filesys::exists(filesys::path(incdir)))
 		{
-			printf( "\n\"%s\": %s", incdir, ec.message().c_str());
+			printf("\n'%s': Path not found.\n", incdir);
 			Errcount++;
 		}
-		filesys::current_path(dbuff);
 	}
 
 	/* check cpp file directory argument if specified */
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
-		filesys::path dbuff = filesys::current_path();
 		cFilesDir = argv[10];
-		std::error_code ec;
-		filesys::current_path(filesys::path(cFilesDir), ec);
-		if (ec)
+		if (filesys::exists(filesys::path(cFilesDir)))
 		{
-			printf("\n\"%s\": %s", cFilesDir, ec.message().c_str());
+			printf("\n'%s': Path not found.\n", incdir);
 			Errcount++;
 		}
-		filesys::current_path(dbuff);
 	}
 
 	/* Option flags */
