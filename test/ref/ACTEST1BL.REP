@@ -1657,7 +1657,7 @@ AC Check Values (rates are kBTU/hr) for Tue 24-Feb
   2 24  5 29  51.6  23.00  23.00  78.0 .0109 -40.14 -22.62 -62.75      0.73 67.10  1.279  1.543      0  24.38      0  24.38   5.23  -146k -59.67 -21.83 .4079 .4079   3.535  11.430  14.965
   2 24  6 29  50.0  23.00  23.00  78.0 .0109 -40.13 -22.66 -62.79      0.73 67.08  1.289  1.582      0  25.00      0  25.00   5.35  -147k -59.54 -21.92 .4044 .4044   3.516  11.257  14.773
   2 24  7 29  50.2  23.00  23.00  78.0 .0109 -40.13 -22.63 -62.75      0.73 67.06  1.288  1.578      0  24.93      0  24.93   5.34  -147k -59.54 -21.85 .4045 .4045   3.503  11.133  14.635
-  2 24  8 29  50.7  23.00  23.00  78.0 .0109 -40.11 -22.61 -62.73      0.73 67.07  1.284  1.565      0  24.72      0  24.72   5.30  -147k -59.55 -21.80 .4054 .4054   3.506  11.182  14.688
+  2 24  8 29  50.7  23.00  23.00  78.0 .0109 -40.11 -22.61 -62.73      0.73 67.07  1.284  1.565      0  24.72      0  24.72   5.30  -147k -59.55 -21.80 .4055 .4054   3.506  11.182  14.688
   2 24  9 29  50.2  23.00  23.00  78.0 .0109 -40.12 -22.65 -62.78      0.73 67.08  1.288  1.578      0  24.93      0  24.93   5.34  -147k -59.55 -21.94 .4049 .4049   3.508  11.191  14.699
   2 24 10 29  51.3  23.00  23.00  78.0 .0109 -40.12 -22.62 -62.74      0.73 67.11  1.282  1.552      0  24.51      0  24.51   5.25  -146k -59.64 -21.94 .4074 .4074   3.516  11.255  14.771
   2 24 11 29  52.0  23.00  23.00  78.0 .0109 -40.12 -22.65 -62.77      0.73 67.16  1.278  1.534      0  24.24      0  24.24   5.19  -146k -59.73 -22.08 .4097 .4097   3.537  11.435  14.972
@@ -4417,7 +4417,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console   Mon 20-Dec-21  10:35:35 am
+! CSE 0.899.0+vsashp.0b3d2df8.49 for Win32 console   Wed 29-Dec-21   2:19:45 pm
 
 
 ================
@@ -53378,7 +53378,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
+! CSE 0.899.0+vsashp.0b3d2df8.49 for Win32 console
 
 
 
@@ -54038,18 +54038,18 @@ Input for Run 001:
 
 
 
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:35:39 am
+! CSE 0.899.0+vsashp.0b3d2df8.49 for Win32 console run(s) done: Wed 29-Dec-21   2:19:48 pm
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
-! Command line: -x!  -b -t1 actest1bL
-! Input file:   C:\Users\nkruis\projects\cse\test\actest1bL.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\actest1bL.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               29-Dec-21   1:56 pm   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
+! Command line: -x!  -t1 actest1bl
+! Input file:   D:\cse\test\actest1bl.cse
+! Report file:  D:\cse\test\actest1bl.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 1      T/C = 0.1140   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0620   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.09     Calls = 1      T/C = 4.0930   
-!              Reports:  Time = 0.17     Calls = 1      T/C = 0.1670   
-!                Total:  Time = 4.37     Calls = 1      T/C = 4.3740   
+!           Simulation:  Time = 2.53     Calls = 1      T/C = 2.5290   
+!              Reports:  Time = 0.22     Calls = 1      T/C = 0.2220   
+!                Total:  Time = 2.82     Calls = 1      T/C = 2.8170   

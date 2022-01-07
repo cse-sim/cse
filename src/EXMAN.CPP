@@ -913,7 +913,7 @@ LOCAL RC FC NEAR addStore( 		// register use of expression h in basAnc record
 
 //STATREF version at end file
 //===========================================================================
-RC FC addChafIf (		// conditionally register change flag in basAnc record for expr.   (formerly addChafRatIf, 7-92)
+RC addChafIf (		// conditionally register change flag in basAnc record for expr.   (formerly addChafRatIf, 7-92)
 
 	NANDAT *pv, 		// if this contains a "nandle" on a live run-time expression, change flag will be registered; else not
 	// where to ++ when expression changes:
@@ -948,7 +948,6 @@ RC FC addChafIf (		// conditionally register change flag in basAnc record for ex
 	w->o  = o;					// ... (as can happen at reallocation)
 	return RCOK;
 }		// addChafIf
-
 //===========================================================================
 RC FC exEvEvf( 			// evaluate expressions and do their updates
 
