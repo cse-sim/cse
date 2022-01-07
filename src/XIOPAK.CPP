@@ -53,17 +53,7 @@
 #include "TDPAK.H"
 #include "CVPAK.H"
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif 
-
-#include "XIOPAK.H"	// xiopak.cpp publics
+#include "xiopak.h"	// xiopak.cpp publics
 #include <system_error>
 
 #undef WANTXFSETUPPATH  // define if want xfSetupPath() and xfFindOnPath() and path seach in xfopen():
@@ -141,10 +131,7 @@ const char * FC xgetdir()
 
 {
 	char * p = strtemp( FILENAME_MAX );	// alloc n+1 bytes tmp strng space, strpak.cpp
-	filesys::path currentPath;
-	currentPath = filesys::current_path();
-	strcpy(p, currentPath.string().c_str());
-
+	strcpy(p, filesys::current_path().string().c_str());
 	return p;		// seems to include drive.
 }		// xfgetdir
 //======================================================================
@@ -162,10 +149,7 @@ SEC FC xchdir(		// Change current working directory and/or drive
 		sec = RCBAD;
 	}
 	if (sec != SECOK)
-		err( erOp, 			// disp msg per erOp, rmkerr.cpp
-			 (char *)MH_I0011,		// "I0011: unable to change working directory to '%s':\n    %s"
-			 path,			//    filename
-			 msgSec( sec) );		//    sec text, messages.cpp
+		err(erOp, "\"%s\": %s", path, ec.message().c_str());
 	return sec;
 }		// xchdir
 //======================================================================
@@ -184,35 +168,21 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), dir, namepart;	// filesystem variables
-	std::error_code ec;					// Error Code for filesystem functions
+	filesys::path fname(*fnamp), absolutepath;	// filesystem variables
+	std::error_code ec;						// Error Code for filesystem functions
 
-	if (filesys::exists(fname, ec)) {	// File or full path exist
-		namepart = fname.filename();
-		dir = filesys::absolute(fname,ec); // Create full path
-		if (ec) {
-			if (!fname.has_root_name()) {			// Missing root name, ex C:
-				err(erOp, "\"%s\": Invalid Drive", fname);
-				return RCBAD;
-			}
-			else if (!fname.has_relative_path()) {	// Missing Path
-				err(erOp, "\"%s\": Directory not found", fname);
-				return RCBAD;
-			}
-			else {
-				err(erOp, "\"%s\": Invalid path", fname, ec);
-				return RCBAD;
-			}
-		}
-		dir = fname.parent_path();
+	if (filesys::exists(fname)) {		// File or full path exist
+		absolutepath = filesys::absolute(fname,ec); // Create full path
+		if(ec)
+			err(erOp, "\"%s\": %s", fname, ec.message().c_str());
 	}
 	else {
-		namepart = filesys::path(*fnamp);
-		dir = filesys::current_path();
+		err(erOp, "\"%s\": Invalid path", fname);
+		return RCBAD;
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(dir.string().c_str(), namepart.string().c_str());
+	*fnamp = strtPathCat(absolutepath.parent_path().string().c_str(), absolutepath.filename().string().c_str());
 
 	return RCOK;		// another return is in code above
 
@@ -392,7 +362,8 @@ SEC FC xfclose(		// Close file and release XFILE
 			*pCumSec = xf->xflsterr;	// cumulative SEC receives any error including those caused by close
 		dmfree( DMPP( xf->xfname));	// free name if any (see xFindOnPath)
 	}
-	dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
+	if (xfp != NULL)
+		dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
 
 	return sec;			// return outcome of close()
 }		// xfclose
@@ -583,10 +554,12 @@ SEC FC xfsize(		// Return the current size of a file
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
 	std::error_code ec;
-	*psize = filesys::file_size(filesys::path(xf->xfname));	/* get cur file length, MSC */
-	return ec		/* if length invalid */
-		   ?  xioerr(xf)		/*    bad: report error, return SEC */
-		   :  SECOK;   		/*    good */
+	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
+	if (ec) {/* if length invalid */
+		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
+		return xioerr(xf); /*    bad: report error, return SEC */
+	}
+	return SECOK;   		/*    good */
 }				// xfsize
 //======================================================================
 SEC FC xfchsize(		// Change the size of a file
@@ -641,12 +614,12 @@ uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on cur
 	#endif
 
 	// Determine the available space on the filesystem on which current path is located
-	std::error_code spaceErrorCode;
-	uintmax_t freeSpace = filesys::space(filesys::current_path(), spaceErrorCode).available;
+	std::error_code ec;
+	uintmax_t freeSpace = filesys::space(filesys::current_path(), ec).available;
 
-	if ( !spaceErrorCode )
+	if (ec)
 		// GetLastError for more info
-		return (unsigned long long int) 0;		// call failed, return 0 space avail
+		return 0;					// call failed, return 0 space avail
 
 	if ( freeSpace < UINTMAX_MAX)	// if free space fits in a uintmax
 		return freeSpace;			// compute fixed point free space & return it

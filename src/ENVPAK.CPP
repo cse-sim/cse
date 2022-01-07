@@ -7,12 +7,10 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "CNGLOB.H"
 // #include "cse.h"
-#if !defined( ELIMINATE_WINDOWS)
 #if (_WIN32)
 #include <windows.h>
 #else
 #include <unistd.h>
-#endif
 #endif
 
 #include <signal.h> 	// signal SIGINT
@@ -25,15 +23,6 @@
 
 #include <ENVPAK.H>	// declares functions in this file
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)
 
@@ -105,7 +94,6 @@ t }
 WStr enExePath()		// full path to current executable
 {
 	WStr t;
-#if !defined(ELIMINATE_WINDOWS)
 	char exePath[FILENAME_MAX + 1];
 #ifdef __APPLE__
 		uint32_t pathSize = sizeof(exePath);
@@ -130,8 +118,6 @@ WStr enExePath()		// full path to current executable
 			WStrLower(t);
 		}
 #endif
-#endif
-	t = "?";
 	WStrLower(t);
 	return t;
 }		// enExePath
@@ -146,7 +132,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
-	#if !defined( ELIMINATE_WINDOWS)
+	#ifdef _WIN32
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 

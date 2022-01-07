@@ -84,12 +84,10 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
-/*---------------------------- Eliminate Windows ---------------------------*/
-#define	ELIMINATE_WINDOWS			// #define to eliminate Windows dependencies
-									//   work in progress, 10-2017
-
 /*---------------------- Windows definitions -------------------------------*/
-#if defined(ELIMINATE_WINDOWS)
+#ifdef _WIN32
+#include <windows.h>
+#else
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
@@ -200,10 +198,6 @@ struct CULT;
 //   #include <string.h>
 
 #else
-
-#if !defined( ELIMINATE_WINDOWS)
-#include <windows.h>
-#endif
 
 #include <string.h>
 #include <stddef.h>

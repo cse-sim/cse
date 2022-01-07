@@ -163,10 +163,7 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
-#include <SRD.H>
-#if !defined( ELIMINATE_WINDOWS)
-#include <direct.h>     // getcwd(), chdir(
-#endif
+#include <srd.h>
 
 #include <XIOPAK.H>     // xffilcomp
 #include <ENVPAK.H>     // hello byebye
@@ -174,16 +171,6 @@
 #include <ANCREC.H>     // RFNAMED
 #include <CUEVF.H>      // EVFHR EVFMH
 #include "CVPAK.H"
-
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif 
 
 /*-------------------------------- DEFINES --------------------------------*/
 //  Note additional #definitions intermingled with declarations below
@@ -620,31 +607,23 @@ int CDEC main( SI argc, char * argv[] )
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		filesys::path dbuff = filesys::current_path();
 		incdir = argv[6];
-		std::error_code ec;
-		filesys::current_path(filesys::path(incdir), ec);
-		if (ec)
+		if (!filesys::exists(filesys::path(incdir)))
 		{
-			printf( "\nCannot find include directory '%s'.\n", incdir);
+			printf("\n'%s': Path not found.\n", incdir);
 			Errcount++;
 		}
-		filesys::current_path(dbuff);
 	}
 
 	/* check cpp file directory argument if specified */
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
-		filesys::path dbuff = filesys::current_path();
 		cFilesDir = argv[10];
-		std::error_code ec;
-		filesys::current_path(filesys::path(cFilesDir), ec);
-		if (ec)
+		if (!filesys::exists(filesys::path(cFilesDir)))
 		{
-			printf( "\nCannot find include directory '%s'.\n", cFilesDir);
+			printf("\n'%s': Path not found.\n", incdir);
 			Errcount++;
 		}
-		filesys::current_path(dbuff);
 	}
 
 	/* Option flags */

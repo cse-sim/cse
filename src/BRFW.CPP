@@ -9,6 +9,7 @@
 #ifdef WINorDLL
 #if 0
 #define STRICT
+#include <windows.h>
 #endif
 #include "cnewin.h"		// for struct BrHans, used in brfw.h and here
 #endif
