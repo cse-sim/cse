@@ -3141,6 +3141,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_IsModeAvailable( int rsMode);"
 *declare "int rs_IsAutoSizing() const;"
 *declare "int rs_SupplyAirState( int rsMode, float speedF=1.f);"
+*declare "bool rs_IsSupplyAirTempUseful( int rsMode, float tSup, float& tSupUseful) const;"
 *declare "float rs_SupplyDSEAndDucts(AIRSTATE& as, float amf = -1.f);"
 *declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as);"
 *declare "float rs_TSupVarFlow( float fAmf, AIRSTATE& as);"
@@ -3150,7 +3151,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_FxCapForSpeedF( double& speedF);"
 *declare "RC rs_FindRequiredSpeedF();"
 *declare "RC rs_FindSpeedFForTSup( double tSup);"
-*declare "double rs_TSupForSpeedF( double speedF);"
+*declare "double rs_TSupForSpeedF( double& speedF);"
 #if 0   // incomplete/unused ideas
 *declare "void rs_AvgZoneCond();"
 #declare "float rs_SenHeatDelivered();"

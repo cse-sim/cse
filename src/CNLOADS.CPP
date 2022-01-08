@@ -3287,9 +3287,11 @@ x	rs_asOut = asSav;
 	{	double tSup = rs_asOut.as_tdb;
 		if (tSup < 20. || tSup > 200.)
 			orWarn("unreasonable cooling supply temp %.2f F", tSup);
+#if 0
 		if (rs_asIn.as_tdb - tSup < 10.)
 			orWarn("low cooling deltaT -- tRet=%.2f F, tSup=%.2f, SHR=%.3f",
 				rs_asIn.as_tdb, tSup, rs_SHR);
+#endif
 		float hOut = rs_asOut.as_Enthalpy();
 		float hDelta = rs_amf * (hOut - hIn);
 		float capTot = rs_capSenCt + rs_capLatCt + rs_speedF*rs_fanHeatC;
@@ -5005,6 +5007,12 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing())
 		{	// variable capacity with excess capacity
 			// find intermediate speed
+#if 0
+			float tSupUseful;
+			bool bUseful = rs_IsSupplyAirTempUseful(rs_mode, rs_asSup.as_tdb, tSupUseful);
+			if (!bUseful)
+				printf("\nNot useful");
+#endif
 			rc |= rs_FindRequiredSpeedF();
 			// now rs_speedFMin <= rs_speedF < 1
 			fSize = min(rs_fxCap[0], 1.);
@@ -5154,7 +5162,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	return rc;
 }	// RSYS::rs_AllocateZoneAir
 //----------------------------------------------------------------------------
-#if defined( _DEBUGF)
+#if 0 && defined( _DEBUG)
 #define TRACEFINDSPEEDF
 #endif
 //----------------------------------------------------------------------------
@@ -5176,6 +5184,9 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 	// try minimum speed
 	rc |= rs_TotalAirRequestForSpeedF( rs_speedFMin);
 
+	// note: rs_speedF > rs_speedFMin is possible
+	//  rs_TotalAirRequestForSpeedF() increases speed to avoid useless supply temp
+
 	if (rc || rs_fxCap[0] >= 1.f)
 		return rc;		// error or rs_speedFMin is sufficient
 
@@ -5183,21 +5194,21 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 
 	float fxCapMinSpd = rs_fxCap[0];
 
-	float speedFEst = rs_speedFMin + (1.f - rs_speedFMin) * (1.f - fxCapMinSpd) / (fxCapFullSpd - fxCapMinSpd);
+	float speedFEst = rs_speedF + (1.f - rs_speedF) * (1.f - fxCapMinSpd) / (fxCapFullSpd - fxCapMinSpd);
 
 	double speedF, f1;
 #if 1
 	speedF = min(1., speedFEst * 1.2);
 	f1 = DBL_MIN;
 #elif 0
-	if (speedFEst > 0.5f * rs_speedFMin + 0.5f)
+	if (speedFEst > 0.5f * rs_speedF + 0.5f)
 	{
 		speedF = 1.;
 		f1 = fxCapFullSpd;
 	}
 	else
 	{
-		speedF = rs_speedFMin;
+		speedF = rs_speedF;
 		f1 = fxCapMinSpd;
 	}
 
@@ -5242,6 +5253,37 @@ RC RSYS::rs_FindRequiredSpeedF()	// find VC intermediate speed
 
 }	// RSYS::rs_FindRequiredSpeedF()
 //-----------------------------------------------------------------------------
+bool RSYS::rs_IsSupplyAirTempUseful(	// determine utility of supply air
+	int rsMode,		// mode of interest
+	float tSup,		// proposed supply temp
+	float& tSupUseful) const	// returned: temp that would be useful
+
+// returns true iff proposed supply air temp
+
+// sets rs_TSupLimit
+{
+	bool bRet = false;
+	float tspMaxH = -999.f;
+	float tspMinC = 999.f;
+	ZNR* zp;
+	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
+	{	
+		setToMax(tspMaxH, zp->i.znTH);
+		setToMin(tspMinC, zp->i.znTC);
+	}
+	if (rsMode == rsmHEAT)
+	{
+		tSupUseful = tspMaxH + .1f;
+		bRet = tSup >= tSupUseful;
+	}
+	else
+	{
+		tSupUseful = tspMinC - .1f;
+		bRet = tSup <= tSupUseful;
+	}
+	return bRet;
+}		// RSYS::rs_IsSupplyAirTempUseful
+//-----------------------------------------------------------------------------
 RC RSYS::rs_TotalAirRequestForSpeedF(		// all-zone air request at speedF
 	float speedF,			// speed to attempt
 	int options /*=0*/)		// option bits
@@ -5255,6 +5297,14 @@ RC RSYS::rs_TotalAirRequestForSpeedF(		// all-zone air request at speedF
 	{
 		rs_ClearSubhrResults(1);	// init for speed re-try
 		int ret = rs_SupplyAirState(rs_mode, speedF);
+
+		float tSupUseful;
+		if (!rs_IsSupplyAirTempUseful(rs_mode, rs_asSup.as_tdb, tSupUseful))
+		{	// adjust rs_speedF to produce useful supply air temp
+			rs_FindSpeedFForTSup(tSupUseful);
+			// printf("\nSpeedF = %0.3f", rs_speedF);
+
+		}
 		ZNR* zp;
 		RLUPC(ZrB, zp, rs_IsZoneServed(zp))
 			rc |= zp->zn_AirRequest(this, options);
@@ -5280,8 +5330,6 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 {
 #if defined( _DEBUG)
 	double speedFWas = speedF;
-	static double speedFLastCall = 0.;
-	static float fxLastCall = 0.;
 	float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
@@ -5300,6 +5348,8 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	// if rc != RCOK, rs_fxCap[0] is 0
 
 #if defined( TRACEFINDSPEEDF)
+	static double speedFLastCall = 0.;
+	static float fxLastCall = 0.;
 	bool bDup = speedF != speedFLastCall && rs_fxCap[0] == fxLastCall;
 	printf("\n    speedF=%0.4f  f=%0.4f tSup=%0.3f rs_amf=%0.3f rs_amfReq=%0.3f (speedFLastCall=%0.4f rsSpeedFWas=%0.4f)%s",
 			speedF, rs_fxCap[0], rs_asSup.as_tdb, rs_amf, rs_amfReq[ 0], speedFLastCall, rsSpeedFWas, bDup ? " Dup" : "");
@@ -5347,10 +5397,21 @@ RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified suppl
 }		// RSYS::rs_FindSpeedFForTSup
 //-----------------------------------------------------------------------------
 double RSYS::rs_TSupForSpeedF(
-	double speedF)
+	double& speedF)
 {
+#if defined( _DEBUG)
+	double speedFWas = speedF;
+	float rsSpeedFWas = rs_speedF;
+#endif
+	speedF = bracket(double(rs_speedFMin), speedF, 1.);
+#if defined( _DEBUG)
+	if (speedF != speedFWas)
+		printf("\nrs_TSupForSpeedF limit: speedFWas=%0.4f  speedF=%0.4f",
+			speedFWas, speedF);
+#endif
 
-	rs_ClearSubhrResults(1);	// init for speed re-try
+
+	// rs_ClearSubhrResults(1);	// init for speed re-try
 	int ret = rs_SupplyAirState(rs_mode, speedF);
 
 	return rs_asSup.as_tdb;
