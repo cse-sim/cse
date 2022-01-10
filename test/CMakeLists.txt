@@ -43,6 +43,7 @@ set(files
   ashptest2
   ashpPkgRoom
   ashp_dfng
+  ashpvc2
   herv
   oavtest2
   bgtest

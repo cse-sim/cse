@@ -8,13 +8,17 @@ on:
 jobs:
   release-cse:
     name: Deploy CSE release
-    runs-on: windows-latest
+    runs-on: windows-2022
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Install recent SDK
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
+        with:
+          sdk-version: 19041
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
@@ -32,7 +36,7 @@ jobs:
         run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
         shell: bash
       - name: Add pandoc to path
-        run: echo "C:\Program Files (x86)\Pandoc" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        run: echo "C:\Program Files (x86)\Pandoc" >> $GITHUB_PATH
       - name: Add MSVC developer commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs

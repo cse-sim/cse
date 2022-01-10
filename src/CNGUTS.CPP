@@ -1524,7 +1524,7 @@ LOCAL void FC NEAR doIvlAccum()
 
 	DUCTSEGRES* pDSRSum = DsResR.p + DsResR.n;
 	DUCTSEGRES* pDSR;
-	RLUP(DsResR, pDSR)						// loop DUCTSYSRES, last is sum
+	RLUP(DsResR, pDSR)						// loop DUCTSEGRES, last is sum
 	{	if (pDSR->ss < DsResR.n)
 			pDSRSum->curr.S.dsr_Accum(&pDSR->curr.S, pDSR->ss == 1, (pDSR->ss == DsResR.n - 1));
 		pDSR->curr.H.dsr_Accum(&pDSR->curr.S, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour
@@ -1889,7 +1889,7 @@ void ZNRES_IVL_SUB::zr_Init1(
 // float members to sum
 #define rsysRes(m) offsetof( RSYSRES_IVL_SUB, m)
 #define RRs1 hrsOn								// first float member to sum (energies)
-#define RRnS ((rsysRes(qcSenNet) - rsysRes( RRs1))/sizeof(float) + 1)		// number of float members to sum
+#define RRnS ((sizeof( RSYSRES_IVL_SUB) - rsysRes( RRs1))/sizeof(float))
 //-----------------------------------------------------------------------------
 void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 
@@ -1969,12 +1969,15 @@ void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
 #endif
 }               // DUCTSEGRES_IVL_SUB::dsr_Accum
 //-----------------------------------------------------------------------------
+#if 0		// future: if needed, 11-21
+// add suitable calls to ::doIvlPrior()
 void DUCTSEGRES_IVL_SUB::dsr_SetPrior() const 		// copy to prior
 {
 	BYTE* d =
 		((BYTE*)this + (offsetof(DUCTSEGRES, prior) - offsetof(DUCTSEGRES, curr)));
 	memcpy(d, this, sizeof(DUCTSEGRES_IVL_SUB));
 }	// DUCTSEGRES_IVL_SUB::dsr_SetPrior
+#endif
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
