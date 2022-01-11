@@ -26,19 +26,19 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 	unknown:   File is created if it does not exist but preserved if
 		   it does.  This is most applicable when appending. */
 // Text modes
-#define O_RT "r"					// Read							// (_O_RDONLY|_O_TEXT)
-#define O_WT "w"					// r/w (fresh)					// (_O_RDWR|_O_TEXT|_O_CREAT|_O_TRUNC)
-#define O_WTOLD "w+"				// r/w (must exist)				// (_O_RDWR|_O_TEXT)
-#define O_WTOLDA "a"				// r/w (append)					// (_O_RDWR|_O_TEXT|_O_APPEND)
-#define O_WTUNKA "a+"				// r/w append, create if nec	// (_O_WTOLDA|_O_CREAT)
+#define O_RT "r"					// Read
+#define O_WT "w+"					// r/w (fresh)
+#define O_WTOLD "r+"				// r/w (must exist)
+#define O_WTOLDA "a+"				// r/w (append)
+#define O_WTUNKA "a+"				// r/w append, create if nec
 
 // Binary
-#define O_RB "rb"				// Read							// (_O_RDONLY|_O_BINARY)
-#define O_WB "wb+"				// r/w (fresh)					// (_O_RDWR|_O_BINARY|_O_CREAT|_O_TRUNC)
-#define O_WBOLD "wb+"			// r/w (old, must exist)		// (_O_RDWR|(_O_BINARY)
-#define O_WBOLDA "ab"			// r/w append (must exist)		// (O_WBOLD|_O_APPEND)
-#define O_WBUNK "wb+"			// r/w (create if nec.)			// (O_WBOLD|_O_CREAT)
-#define O_WBUNKA "ab+"			// r/w append (create if nec.)	// (O_WBOLDA|_O_CREAT)
+#define O_RB "rb"				// Read
+#define O_WB "wb+"				// r/w (fresh)
+#define O_WBOLD "rb+"			// r/w (old, must exist)
+#define O_WBOLDA "ab+"			// r/w append (must exist)
+#define O_WBUNK "rb+"			// r/w (create if nec.)
+#define O_WBUNKA "ab+"			// r/w append (create if nec.)
 
 ///////////////////////////////////////////////////////////////////////////////
 // struct XFILE: extended IO packet set up in dm by xfopen, used with other xiopak fcns

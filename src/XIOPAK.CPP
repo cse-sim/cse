@@ -455,7 +455,7 @@ SEC FC xfread(		// Read from file
 
 // Returns SECOK OK, SECEOF to indicate eof, other values for other errors.
 {
-	USI nX;
+	std::size_t nX;
 
 	if (   nbytes > 0			// if read needed
 			&& xf->xflsterr == SECOK)	// and if no prior unnoticed error (clear with xlsterr(xf) )
@@ -471,12 +471,9 @@ SEC FC xfread(		// Read from file
 		/* CAUTION: caller must clear eof/error (use xlsterr(xf))
 		   	    b4 ANY other xiopak call will work (except xfseek and xftell) */
 
-		nX = fread( buf, 1, nbytes, xf->han);	// read -- msc lib
+		nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);
 
-		if (   nX == 0xFFFF			// read() error return
-				|| nX < ( std::string(xf->access).find('b') == std::string::npos	// if transfer < .. check for b
-						  ?  1  			// 1 byte in text mode or
-						  :  nbytes) )  	// requestd bytes in binary
+		if ( nX != nbytes )		// Either a reading error occurred or the end-of-file was reached while reading
 		{
 			if (   nX == 0		// if 0 bytes transferred
 					|| feof( xf->han) )	// or at end of file
@@ -526,9 +523,6 @@ SEC FC xfwrite(  	// Write to a file
 /* CAUTION: if there has been an error OR EOF caller must clear .xflsterr
             (eg call xlsterr) else xiopak calls just keep returning same code*/
 {
-	if (std::string(buf).find("Page 152") != std::string::npos ||
-		std::string(buf).find("Page 20") != std::string::npos)
-		int temp = 0;
 	if ( nbytes > 0			/* if write needed */
 	  && xf->xflsterr == SECOK)	/* and no if error currently posted */
 	{
@@ -537,7 +531,7 @@ SEC FC xfwrite(  	// Write to a file
 		   and not 0xFFFF; chip doesn't see how but cover both cases.  Prior code
 		   failed to detect the 0xFFFF case. 1-3-90 */
 
-		if ( (xf->nxfer = fwrite( buf, 1, nbytes, xf->han)) != nbytes)
+		if ( (xf->nxfer = fwrite( buf, sizeof(char), nbytes/sizeof(char), xf->han)) != (nbytes*sizeof(char)))
 			xf->xflsterr = xioerr(xf);	// report err (below), SET .xflsterr
 		// CAUTION caller must clear error/eof -- xlsterr()
 	}
@@ -656,9 +650,9 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 		acc = xf->access;
 		// close and re-open file to flush buffers to disk (not just to OS)
 		if ( (fpos = ftell(xf->han)) != -1
-				&& fclose(xf->han) != -1
+				&& fclose(xf->han) == 0
 				&& (xf->han = fopen( xf->xfname, acc)) != NULL
-				&& fseek( xf->han, fpos, SEEK_SET) != -1 )
+				&& fseek( xf->han, fpos, SEEK_SET) == 0 )
 			return SECOK;
 		xf->xflsterr = xioerr(xf);		// report error
 	}
