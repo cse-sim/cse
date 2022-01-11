@@ -526,6 +526,9 @@ SEC FC xfwrite(  	// Write to a file
 /* CAUTION: if there has been an error OR EOF caller must clear .xflsterr
             (eg call xlsterr) else xiopak calls just keep returning same code*/
 {
+	if (std::string(buf).find("Page 152") != std::string::npos ||
+		std::string(buf).find("Page 20") != std::string::npos)
+		int temp = 0;
 	if ( nbytes > 0			/* if write needed */
 	  && xf->xflsterr == SECOK)	/* and no if error currently posted */
 	{
@@ -534,7 +537,7 @@ SEC FC xfwrite(  	// Write to a file
 		   and not 0xFFFF; chip doesn't see how but cover both cases.  Prior code
 		   failed to detect the 0xFFFF case. 1-3-90 */
 
-		if ( (xf->nxfer = fwrite( buf, sizeof(char), nbytes, xf->han)) != nbytes)
+		if ( (xf->nxfer = fwrite( buf, 1, nbytes, xf->han)) != nbytes)
 			xf->xflsterr = xioerr(xf);	// report err (below), SET .xflsterr
 		// CAUTION caller must clear error/eof -- xlsterr()
 	}
