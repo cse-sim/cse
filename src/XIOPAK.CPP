@@ -523,9 +523,6 @@ SEC FC xfwrite(  	// Write to a file
 /* CAUTION: if there has been an error OR EOF caller must clear .xflsterr
             (eg call xlsterr) else xiopak calls just keep returning same code*/
 {
-	//if (std::string(buf).find("Page 152") != std::string::npos) //||
-		//std::string(buf).find("Page 20") != std::string::npos)
-	//	int temp = 0;
 	if ( nbytes > 0			/* if write needed */
 	  && xf->xflsterr == SECOK)	/* and no if error currently posted */
 	{
