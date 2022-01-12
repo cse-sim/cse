@@ -1,3 +1,4 @@
+@echo off
 cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"
 
 set /p Input=Do you want to update (Y/N):
