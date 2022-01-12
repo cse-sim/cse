@@ -164,9 +164,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
 #include <srd.h>
-#if !defined( ELIMINATE_WINDOWS)
-#include <direct.h>     // getcwd(), chdir(
-#endif
 
 #include <xiopak.h>     // xffilcomp
 #include <envpak.h>     // hello byebye
@@ -174,16 +171,6 @@
 #include <ancrec.h>     // RFNAMED
 #include <cuevf.h>      // EVFHR EVFMH
 #include "cvpak.h"
-
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif 
 
 /*-------------------------------- DEFINES --------------------------------*/
 //  Note additional #definitions intermingled with declarations below
@@ -585,8 +572,6 @@ int CDEC main( SI argc, char * argv[] )
 	SI i;                       /* Working integer */
 	char *s;
 	int exitCode = 0;
-	filesys::path dbuff;
-	std::error_code pathEC;
 
 	hello( ourByebye);	// initialize envpak
 
@@ -622,31 +607,23 @@ int CDEC main( SI argc, char * argv[] )
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		dbuff = filesys::current_path();
 		incdir = argv[6];
-		filesys::path incdirTemp = filesys::path(incdir);
-		filesys::current_path(incdirTemp, pathEC);
-		if (pathEC)
+		if (!filesys::exists(filesys::path(incdir)))
 		{
-			printf( "\nCannot find include directory '%s'.\n", incdir);
+			printf("\n'%s': Include file output directory path not found.\n", incdir);
 			Errcount++;
 		}
-		filesys::current_path(dbuff);
 	}
 
 	/* check cpp file directory argument if specified */
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
-		dbuff = filesys::current_path();
 		cFilesDir = argv[10];
-		filesys::path cFilesDirTemp = filesys::path(cFilesDir);
-		filesys::current_path(cFilesDirTemp, pathEC);
-		if (pathEC)
+		if (!filesys::exists(filesys::path(cFilesDir)))
 		{
-			printf( "\nCannot find include directory '%s'.\n", cFilesDir);
+			printf("\n'%s': C++ file output directory path not found.\n", incdir);
 			Errcount++;
 		}
-		filesys::current_path(dbuff);
 	}
 
 	/* Option flags */

@@ -30,9 +30,7 @@
 #include "cse.h"
 #include <impf.h>	// impfStart impfIvl 2-94
 #ifdef WINorDLL
-#if !defined( ELIMINATE_WINDOWS)
-#include <windows.h>		// probably needed before brfw.h
-#endif
+#include <windows.h>	// probably needed before brfw.h
 #ifdef BINRES //cnglob.h
 #include <cnewin.h>		// BrHans -- if needed here
 #endif

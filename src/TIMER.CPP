@@ -36,9 +36,6 @@ static double tmrTicksToSecs(
 #if defined( TIMING_HIRES)
 
 // hi-res timing (Windows dependent)
-#if !defined( ELIMINATE_WINDOWS)
-#include <windows.h>
-#endif
 
 static inline LLI tmrTicks()		// current clock time
 {	LARGE_INTEGER t;

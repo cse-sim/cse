@@ -1140,8 +1140,8 @@ char* strPluralize(				// form plural of a word
 			int len = strlen( d);		// len >= 1 (check above)
 			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
-			if (tolower( d[ len -1]) == 'y')
-				strcpy( d+len -1, bLastUpper ? "IES" : "ies");
+			if (tolower( d[ len-1]) == 'y')
+				strcpy( d+len-1, bLastUpper ? "IES" : "ies");
 			else
 			{
 				d[ len] = "sS"[ bLastUpper];
@@ -1195,10 +1195,10 @@ char* strCase( char* s, const char toCases[3])
 		else				// spaces don't need case conversion
 		{
 			if (itc[which]==upper)
-				*((unsigned char*)s+i) = toupper(*((unsigned char*)s + i));
+				*((unsigned char*)s+i) = toupper(*((unsigned char*)s+i));
 			// upperize 1 char, handle accented chars
 			else if (itc[which]==lower)
-				*((unsigned char*)s + i) = tolower( *((unsigned char*)s + i));
+				*((unsigned char*)s+i) = tolower(*((unsigned char*)s+i));
 			// lowerize 1 char, handle accented chars
 			which = 2;			// for s[i] til next space
 			nsSeen++;			// next word beginning is not 1st word
