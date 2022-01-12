@@ -1,1 +1,4 @@
 cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"
+
+set /p Input=Do you want to update (Y/N):
+IF %Input%==Y echo This will permanently modify the REP files. Are you sure? & set /p Response=Please confirm (Y/N): & IF %Response%==Y echo Updating... & CALL update.bat
