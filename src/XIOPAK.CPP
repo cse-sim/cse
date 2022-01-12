@@ -531,7 +531,7 @@ SEC FC xfwrite(  	// Write to a file
 		   and not 0xFFFF; chip doesn't see how but cover both cases.  Prior code
 		   failed to detect the 0xFFFF case. 1-3-90 */
 
-		if ( (xf->nxfer = fwrite( buf, sizeof(char), nbytes/sizeof(char), xf->han)) != (nbytes*sizeof(char)))
+		if ( (xf->nxfer = fwrite( buf, sizeof(char), nbytes/sizeof(char), xf->han) * sizeof(char)) != nbytes)
 			xf->xflsterr = xioerr(xf);	// report err (below), SET .xflsterr
 		// CAUTION caller must clear error/eof -- xlsterr()
 	}
