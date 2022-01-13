@@ -163,7 +163,7 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
-#include <srd.h>
+#include <SRD.H>
 
 #include <XIOPAK.H>     // xffilcomp
 #include <ENVPAK.H>     // hello byebye

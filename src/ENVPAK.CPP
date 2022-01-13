@@ -11,6 +11,7 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <iostream>
 #endif
 
 #include <signal.h> 	// signal SIGINT

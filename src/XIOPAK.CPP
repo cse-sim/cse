@@ -34,8 +34,10 @@
 /*------------------------------- INCLUDES --------------------------------*/
 //#include <io.h>		// open, read, write,
 #include <fstream>
+#if 0
 #if !defined( ELIMINATE_WINDOWS)
 #include <direct.h>	// getcwd, chdir, _chdrive
+#endif
 #endif
 #include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 
@@ -52,7 +54,7 @@
 #include "TDPAK.H"
 #include "CVPAK.H"
 
-#include "xiopak.h"	// xiopak.cpp publics
+#include "XIOPAK.H"	// xiopak.cpp publics
 #include <system_error>
 
 #undef WANTXFSETUPPATH  // define if want xfSetupPath() and xfFindOnPath() and path seach in xfopen():

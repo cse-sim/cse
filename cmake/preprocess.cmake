@@ -1,6 +1,6 @@
 if (CMAKE_MSVC_COMPILER_ID MATCHES MSVC)
   execute_process(
-    COMMAND "${compiler}" -c -EP -nologo -I "${include_dir}" -Tc ${input_path}
+    COMMAND "${compiler}" -c -E -P -I "${include_dir}" -Tc ${input_path}
     OUTPUT_FILE ${output_path}
     RESULT_VARIABLE exit_status
 )

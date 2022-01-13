@@ -9,8 +9,10 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include <CNGLOB.H>
 #include <time.h>	// struct tm
+#if 0
 #ifndef ELIMINATE_WINDOWS
 #include <tchar.h>
+#endif
 #endif
 
 #include <MSGHANS.H>	// MH_xxxx defns
