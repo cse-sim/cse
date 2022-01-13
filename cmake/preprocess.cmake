@@ -1,12 +1,12 @@
-if (CMAKE_MSVC_COMPILER_ID MATCHES MSVC)
+if (${compiler_name} STREQUAL "MSVC")
   execute_process(
-    COMMAND "${compiler}" -c -EP -I "${include_dir}" -Tc ${input_path}
+    COMMAND "${compiler_path}" -c -EP -nologo -I "${include_dir}" -Tc ${input_path}
     OUTPUT_FILE ${output_path}
     RESULT_VARIABLE exit_status
 )
 else()
   execute_process(
-    COMMAND "${compiler}"  -E -P -I "${include_dir}" -
+    COMMAND "${compiler_path}"  -E -P -I "${include_dir}" -
     INPUT_FILE "${input_path}"
     OUTPUT_FILE "${output_path}"
     RESULT_VARIABLE exit_status

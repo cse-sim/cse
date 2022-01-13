@@ -20,10 +20,11 @@ macro(c_preprocess defFile)
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
     COMMAND ${CMAKE_COMMAND}
     ARGS
-      -Dcompiler=${CMAKE_C_COMPILER}
+      -Dcompiler_path=${CMAKE_C_COMPILER}
       -Dinput_path="${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
       -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
       -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
+      -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )
