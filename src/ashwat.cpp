@@ -17,6 +17,9 @@
 // 1311-RP FORTRAN code re-implemented in C++ by Chip Barnaby, Sept 2016
 //==============================================================================
 
+#ifdef __linux__
+#include <bits/stdc++.h>
+#endif
 #include "CNGLOB.H"
 
 #include "ashwat.h"
@@ -3954,7 +3957,7 @@ double RHOBF_BT_PERP, TAUBF_BB_PERP, TAUBF_BD_PERP;
 	else
 		geoCase = 6;	//  beam parallel to pleat sides (no direct illum on pleat back)
 
-	typedef void cdecl PDCASE( double, double, double, double,
+	typedef void PDCASE( double, double, double, double,
 			   double, double, double, double, double, double,
 			   double, double, double, double, double, double,
 			   double, double, double, double,
