@@ -25,9 +25,9 @@
 // signed version of stddef.h:offsetof
 //   (for less lintCasting, because PBDATOFF/L.off is SI, because
 //   special values are negative, because PBDATA.field is SI).
-#define off(s,m)	SI(int(&(((s *)0L)->m)))
+#define off(s,m)	SI(reinterpret_cast<intptr_t>(&(((s *)0L)->m)))
 //  array member version of above: & removed for no "& ignored" warning
-#define ofa(s,m)	SI(int(/*&*/(((s *)0L)->m)))
+#define ofa(s,m)	SI(reinterpret_cast<intptr_t>(/*&*/(((s *)0L)->m)))
 
 /*lint -e507	suppress "Size incompatibility" in every use of off(s,m) */
 
@@ -455,7 +455,10 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 
 				case SGDTTSURFI:
 				case SGDTTSURFO:
-					s1 = XsB[ xs->x.sgdist[i].sd_targTi].x.xs_msi > 0 ? "mass" : "surface";
+					if (XsB[ xs->x.sgdist[i].sd_targTi].x.xs_msi > 0)
+						s1 = "mass";
+					else
+						s1 = "surface";
 				    rb = (BP)&XsB;
 					break;
 
