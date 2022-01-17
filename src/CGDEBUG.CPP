@@ -5,17 +5,17 @@
 // cgdebug.cpp -- debug printing functions for CSE
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// includes dtypes.h: MASSBC
+#include <CNGLOB.H>	// includes dtypes.h: MASSBC
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>
 
-#include <cvpak.h>	// FMTLJ
-#include <vrpak.h>	// vrNewl
-#include <pgpak.h>	// PGLJ PGCUR
-#include <cpgbuild.h>	// PBHEAD PB_DATOFFL pgbuildr
-#include <cncult.h>	// getBodyLpp
-#include <cnguts.h>	// declarations for this file; Top
+#include <CVPAK.H>	// FMTLJ
+#include <VRPAK.H>	// vrNewl
+#include <PGPAK.H>	// PGLJ PGCUR
+#include <CPGBUILD.H>	// PBHEAD PB_DATOFFL pgbuildr
+#include <CNCULT.H>	// getBodyLpp
+#include <CNGUTS.H>	// declarations for this file; Top
 #include "ashwface.h"
 #include "mspak.h"
 
