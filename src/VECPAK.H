@@ -3,7 +3,8 @@
 // that can be found in the LICENSE file.
 
 // vecpak.h -- Include file for vector operation routines
-
+#if !defined( _VECPAK_H)
+#define _VECPAK_H
 ////////////////////////////////////////////////////////////////////////////
 // vector template functions
 ////////////////////////////////////////////////////////////////////////////
@@ -632,4 +633,4 @@ inline void VXAccum(VD24* pVX24, int nVX, const VD24* pVX24Src, double w = 1.)
 }
 #endif
 
-// end of vecpak.h
+#endif // end of vecpak.h

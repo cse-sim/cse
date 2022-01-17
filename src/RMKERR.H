@@ -7,6 +7,7 @@
 #if !defined( _RMKERR_H)
 #define _RMKERR_H
 
+#include "VECPAK.H"
 /*-------------------------------- DEFINES --------------------------------*/
 // see cnglob.h for MANY rmkerr-related defines
 //     including IGN, WRN, ABT, NONL, DASHES, NOSCRN ...

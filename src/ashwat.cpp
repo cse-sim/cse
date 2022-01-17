@@ -18,7 +18,7 @@
 //==============================================================================
 
 #ifdef __linux__
-#include <bits/stdc++.h>
+#include <limits.h> // Library to define INT_MAX
 #endif
 #include "CNGLOB.H"
 
