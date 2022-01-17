@@ -20,7 +20,7 @@
 
 #include <ANCREC.H>		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
-#include <MSGHANS.h>		// MH_R1960
+#include <MSGHANS.H>		// MH_R1960
 
 #include "BRFW.H"		// header for this file. includes brf.h.
 
