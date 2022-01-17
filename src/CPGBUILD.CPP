@@ -42,12 +42,12 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// global defines, typedefs, options
+#include <CNGLOB.H>	// global defines, typedefs, options
 
-#include <pgpak.h>	// pgw pnPrIf pnPrPg
-#include <cvpak.h>	// cvfddisp()
+#include <PGPAK.H>	// pgw pnPrIf pnPrPg
+#include <CVPAK.H>	// cvfddisp()
 
-#include <cpgbuild.h>	// typedefs and declarations for this file
+#include <CPGBUILD.H>	// typedefs and declarations for this file
 
 
 /*---------------------- LOCAL DEFINES and TYPEDEFS -----------------------*/

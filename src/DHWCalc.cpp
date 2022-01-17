@@ -6,24 +6,24 @@
 // DHWCalc.cpp -- Domestic Hot Water model implementation
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "cnglob.h"
+#include "CNGLOB.H"
 
-#include "cse.h"
-#include "ancrec.h" 	// record: base class for rccn.h classes
+#include "CSE.h"
+#include "ANCREC.H" 	// record: base class for rccn.h classes
 #include "rccn.h"
-#include "irats.h"
-#include "lookup.h"
-#include "cuparse.h"
-#include "cueval.h"
-#include "cvpak.h"
-#include "yacam.h"
-#include "srd.h"
+#include "IRATS.H"
+#include "LOOKUP.H"
+#include "CUPARSE.H"
+#include "CUEVAL.H"
+#include "CVPAK.H"
+#include "YACAM.H"
+#include "SRD.H"
 
 // #include <random>
 #include <queue>
 
-#include "cnguts.h"
-#include "exman.h"
+#include "CNGUTS.H"
+#include "EXMAN.H"
 
 #include "hpwh.hh"	// decls/defns for Ecotope heat pump water heater model
 

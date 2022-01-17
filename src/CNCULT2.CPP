@@ -8,38 +8,38 @@
 // search NUMS for messages just added 6-95...  exman.cpp too. grep NUMS!
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI. includes cndefns.h, for ZHX_TULHC,
+#include "CNGLOB.H"	// USI SI LI. includes cndefns.h, for ZHX_TULHC,
 
-#include "srd.h"	// SFIR,
-#include "ancrec.h"	// record: base class for rccn.h classes
+#include "SRD.H"	// SFIR,
+#include "ANCREC.H"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
-#include "msghans.h"	// MH_S0470
-#include "messages.h"	// msgIsHan
-#include "exman.h"
-#include "tdpak.h"		// tdHoliDate tddtis tddyi
-#include "cvpak.h"		// getChoiTx
-#include "wfpak.h"		// wfOpen wfClose 1-95
-#include "psychro.h"	// psyAltitude PsyRAir
+#include "MSGHANS.H"	// MH_S0470
+#include "MESSAGES.H"	// msgIsHan
+#include "EXMAN.H"
+#include "TDPAK.H"		// tdHoliDate tddtis tddyi
+#include "CVPAK.H"		// getChoiTx
+#include "WFPAK.H"		// wfOpen wfClose 1-95
+#include "PSYCHRO.H"	// psyAltitude PsyRAir
 #include "solar.h"
-#include "envpak.h"		// ensystd
-#include "impf.h"
+#include "ENVPAK.H"		// ensystd
+#include "IMPF.H"
 
-#include "cnguts.h"	// Top ZrB Wfile
+#include "CNGUTS.H"	// Top ZrB Wfile
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
 #endif
 
-#include "pp.h"    	// ppFindFile
-#include "cuparse.h"	// per
-#include "cul.h"	// CULT oer ooer oWarn
-#include "cueval.h"	// cupfree cupIncRef
-#include "cuevf.h"	// evf's and variabilities: EVF____ defines: EVFFAZ
+#include "PP.H"    	// ppFindFile
+#include "CUPARSE.H"	// per
+#include "CUL.H"	// CULT oer ooer oWarn
+#include "CUEVAL.H"	// cupfree cupIncRef
+#include "CUEVF.H"	// evf's and variabilities: EVF____ defines: EVFFAZ
 
 // declaration for this file:
-#include "cncult.h"	// use classes, globally used functions
-#include "irats.h"	// declarations of input record arrays (rats)
-#include "cnculti.h"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
+#include "CNCULT.H"	// use classes, globally used functions
+#include "IRATS.H"	// declarations of input record arrays (rats)
+#include "CNCULTI.H"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
 
 #include "Foundation.h"	// access to Kiva objects
 

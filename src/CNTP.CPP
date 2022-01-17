@@ -10,16 +10,16 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <msghans.h>	// MH_R1370
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <MSGHANS.H>	// MH_R1370
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// COOLPLANT CHILLER including mbr fcn decls NHPSTAGES HPSTAGESZ
 
-#include <psychro.h>	// psySatEnthalpy psySatEnthSlope psyTWSat
-#include <exman.h>	// rer
+#include <PSYCHRO.H>	// psySatEnthalpy psySatEnthSlope psyTWSat
+#include <EXMAN.H>	// rer
 
-#include <cnguts.h>	// run basAncs: Top, TpB.
+#include <CNGUTS.H>	// run basAncs: Top, TpB.
 // and any decls for this file that are not member fcns, decl'd in rccn.h (from cnrecs.def)
 
 

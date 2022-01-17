@@ -36,13 +36,13 @@
 //==========================================================================
 
 
-#include "cnglob.h"
+#include "CNGLOB.H"
 
-#include "tdpak.h"
+#include "TDPAK.H"
 
 #include "solar.h"
 
-#include "gmpak.h" // gmcos2alt()
+#include "GMPAK.H" // gmcos2alt()
 
 
 //===========================================================================

@@ -22,20 +22,20 @@
 */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// CSE global defines, incl our ASSERT macro 8-95.
+#include <CNGLOB.H>	// CSE global defines, incl our ASSERT macro 8-95.
 #include <fcntl.h> 	// O_CREAT O_BINARY
 #include <errno.h>	// EMFILE
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// TOPRATstr
-#include <msghans.h>	// MH_R1200
+#include <MSGHANS.H>	// MH_R1200
 
-#include <xiopak.h>	// xfopen, xfwrite,
-#include <messages.h>	// msgI, MSG_MAXLEN, err
+#include <XIOPAK.H>	// xfopen, xfwrite,
+#include <MESSAGES.H>	// msgI, MSG_MAXLEN, err
 
-#include <cnguts.h>	// Top
-#include <cncult.h>	// getBodyLpp
-#include <vrpak.h>	// external decls for this file
+#include <CNGUTS.H>	// Top
+#include <CNCULT.H>	// getBodyLpp
+#include <VRPAK.H>	// external decls for this file
 
 
 //---------------------------- TYPES AND DATA -------------------------------

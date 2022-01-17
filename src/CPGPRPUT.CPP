@@ -8,11 +8,11 @@
 	       separated from pgpak.c for flexible linking. */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <vrpak.h>	// vrStr
+#include <VRPAK.H>	// vrStr
 
-#include <pgpak.h>      // public pgpak defs and decls; decl for this file;
+#include <PGPAK.H>      // public pgpak defs and decls; decl for this file;
 
 
 //=========================================================================

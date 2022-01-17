@@ -45,17 +45,17 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// USI LI dtypes.h cndefns.h
+#include <CNGLOB.H>	// USI LI dtypes.h cndefns.h
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// AH TU ZNR
-#include <msghans.h>	// MH_R1270
+#include <MSGHANS.H>	// MH_R1270
 
-#include <psychro.h>	// psyEnthalpy
-#include <exman.h>	// rer
-#include <irats.h>	// AhiB
+#include <PSYCHRO.H>	// psyEnthalpy
+#include <EXMAN.H>	// rer
+#include <IRATS.H>	// AhiB
 
-#include <cnguts.h>	// Decls for this file; ZrB MDS_FLOAT
+#include <CNGUTS.H>	// Decls for this file; ZrB MDS_FLOAT
 
 //-------------------------------- OPTIONS ----------------------------------
 #define NOACMS	// re deleting aCMn, aCMxH, aCMxC 7-22-95. edit when final. Also cnah2, .

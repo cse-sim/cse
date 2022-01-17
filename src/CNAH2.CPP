@@ -5,17 +5,17 @@
 // cnah2.cpp -- hvac airHandler simulation routines for CSE -- part 2
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// USI LI dtypes.h cndefns.h
+#include <CNGLOB.H>	// USI LI dtypes.h cndefns.h
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// AH TU ZNR
-#include <msghans.h>	// MH_R1270
+#include <MSGHANS.H>	// MH_R1270
 
-#include <psychro.h>	// psyHumRat3 PSYCHROMINT
-#include <exman.h>	// rer
-#include <cul.h>	// FsSET
+#include <PSYCHRO.H>	// psyHumRat3 PSYCHROMINT
+#include <EXMAN.H>	// rer
+#include <CUL.H>	// FsSET
 
-#include <cnguts.h>	// Decls for this file; ZrB MDS_FLOAT
+#include <CNGUTS.H>	// Decls for this file; ZrB MDS_FLOAT
 
 
 //-------------------------------- OPTIONS ----------------------------------

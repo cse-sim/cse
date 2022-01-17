@@ -6,14 +6,14 @@
 
 
 //-------------------------------- INCLUDES ---------------------------------
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// WSHADRATstr ZNRstr
 
-#include <vrpak.h>	// VROUTINFO5
+#include <VRPAK.H>	// VROUTINFO5
 
-#include <cnguts.h>	// decls for this file
+#include <CNGUTS.H>	// decls for this file
 
 /*------------------ HOURLY SIMULATOR GLOBAL VARIABLES -------------------*/
 

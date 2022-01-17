@@ -5,23 +5,23 @@
 // cnloads.cpp -- Hourly simulation loads modelling calculations for a single hour for CSE
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>		// global defines
+#include <CNGLOB.H>		// global defines
 
-#include "srd.h"
-#include <ancrec.h>		// record: base class for rccn.h classes
+#include "SRD.H"
+#include <ANCREC.H>		// record: base class for rccn.h classes
 #include <rccn.h>		// IZXRAT SGRAT ZNR
-#include "irats.h"
-#include "timer.h"
+#include "IRATS.H"
+#include "TIMER.H"
 
-#include <psychro.h>	// psyHCondWtr
-#include <cgwthr.h>		// Wthr.nZ .zD
+#include <PSYCHRO.H>	// psyHCondWtr
+#include <CGWTHR.H>		// Wthr.nZ .zD
 
-#include "cueval.h"
-#include "exman.h"
-#include "cse.h"
-#include "cnguts.h"
-#include "mspak.h"
-#include "nummeth.h"
+#include "CUEVAL.H"
+#include "EXMAN.H"
+#include "CSE.h"
+#include "CNGUTS.H"
+#include "MSPAK.H"
+#include "NUMMETH.H"
 
 #include "array"
 #include "btwxt.h"
