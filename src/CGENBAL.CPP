@@ -6,17 +6,17 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// includes dtypes.h: MASSBC
+#include <CNGLOB.H>	// includes dtypes.h: MASSBC
 
-#include <ancrec.h>		// record: base class for rccn.h classes
+#include <ANCREC.H>		// record: base class for rccn.h classes
 #include <rccn.h>
 #include "mspak.h"
 
-#include <msghans.h>	// MH_xxxx defns
+#include <MSGHANS.H>	// MH_xxxx defns
 
-#include <cvpak.h> 		// FMTSQ FMTUNITS cvin2s
+#include <CVPAK.H> 		// FMTSQ FMTUNITS cvin2s
 
-#include <cnguts.h>		// declarations for this file, MsR ZrB ResR
+#include <CNGUTS.H>		// declarations for this file, MsR ZrB ResR
 
 #define DO_LATENT		// define to include latent balance check, 9-12
 
