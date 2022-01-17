@@ -132,6 +132,7 @@ typedef HINSTANCE HMODULE;
 #define FPE_SQRTNEG			_FPE_SQRTNEG
 #define FPE_STACKOVERFLOW	_FPE_STACKOVERFLOW
 #define FPE_STACKUNDERFLOW	_FPE_STACKUNDERFLOW
+#define pascal
 
 // Definition of the _exception struct, which is passed to the matherr function
 // when a floating point exception is detected:
@@ -156,7 +157,6 @@ struct _exception
 #define near
 #define FAR   far
 #define far
-#define pascal
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
