@@ -16,7 +16,7 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <io.h>			// _creat
+//#include <io.h>			// _creat
 
 #include <ANCREC.H>		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
@@ -967,7 +967,7 @@ void ResEgyMoPak::pack( ResEgyMoRam *src)	// pack monthly energy info from ram f
 		endUse[i].pack( src->endUse[i]);
 	dmdQ.pack( src->dmdQ);
 
-	for (i = 0; i < 12; i++)
+	for (int i = 0; i < 12; i++)
 		dmdShoy[i] = src->dmdShoy[i];		// copy month peak subhour-of-year's (not floats)
 
 }			// ResEgyMoPak::pack
@@ -1085,7 +1085,7 @@ void packResf( 				// pack basic binary results file
 			// non-zone
 			moavd->nonzonePak()->pack( moavSrc->nonzoneRam());			// pack non-zone monthly hourly averages
 			// zones
-			for (zi = 0;  zi < moavSrc->nZones;  zi++)
+			for (int zi = 0;  zi < moavSrc->nZones;  zi++)
 				moavd->zonePak(zi)->pack( moavSrc->zoneRam(zi));			// pack zone month moav with mbr fcn, below
 			// note 12-93 calls HresZoneDayPak::pak -- #define'd same brf.h.
 		}
@@ -1633,7 +1633,7 @@ void BinFile::clear()
 	if (!this)  return;		// NOP if called as member of NULL pointer
 
 	*pNam = 0;
-	fh = -1;
+	//fh = -1;
 	outFile = FALSE;
 	maxSeek = 0L;
 }		// BinFile::clear
@@ -1652,23 +1652,23 @@ BOO BinFile::create()
 {
 	outFile = TRUE;
 #if 1
-	fh = ::open( pNam, 				// open file. C library function.
-				 O_CREAT|O_TRUNC|O_BINARY|O_RDWR,	// create file, delete any existing contents, binary, read/write access
-				 S_IREAD|S_IWRITE );			// read/write permission
+	fh = fopen(pNam, 				// open file. C library function.
+		"wb+");	// create file, delete any existing contents, binary, read/write access
+				 //S_IREAD|S_IWRITE );			// read/write permission
 #else
 x    fh = _rtl_creat( pNam, FA_NORMAL);
 #endif
-	if (fh < 0)
+	if (fh == NULL)
 		return !err( WRN, (char *)MH_R1980, pNam);	// "Create failure, file \"%s\""
 	return TRUE;
 }  			// BinFile::create
 //---------------------------------------------------------------------------
 BOO BinFile::close()
 {
-	if (fh < 0)
+	if (fh == NULL)
 		return TRUE;			// nop if not (sucessfully) opened
-	INT ret = ::close(fh);
-	fh = -1;				// clear open indication even on error so doesn't loop on error in desructor
+	INT ret = fclose(fh);
+	//fh = -1;				// clear open indication even on error so doesn't loop on error in desructor
 	if (ret < 0)
 		return !err( WRN, (char *)MH_R1981, pNam);	// "Close failure, file \"%s\""
 	return TRUE;
@@ -1676,7 +1676,7 @@ BOO BinFile::close()
 //---------------------------------------------------------------------------
 BOO BinFile::seek( DWORD offset)
 {
-	if (_lseek( fh, offset, SEEK_SET) < 0L)
+	if (fseek( fh, offset, SEEK_SET) < 0L)
 		return !err( WRN, (char *)MH_R1982, pNam);	// "Seek failure, file \"%s\""
 	if (offset > DWORD( maxSeek))
 		maxSeek = offset;
@@ -1685,7 +1685,7 @@ BOO BinFile::seek( DWORD offset)
 //---------------------------------------------------------------------------
 BOO BinFile::write( void *buf, WORD size)
 {
-	INT nWrit = ::write( fh, buf, size);
+	INT nWrit = fwrite( buf, sizeof(char), size/sizeof(char), fh) * sizeof(char);
 	if (nWrit==-1 || (WORD)nWrit < size)
 		return !err( WRN, (char *)MH_R1983, pNam);  	// "Write error on file \"%s\" -- disk full?"
 	return TRUE;
@@ -1727,7 +1727,7 @@ static void NEAR pack( float *data, float *pf, char *v, SI n)
 
 // compress n values
 	if (v)
-		for (i = 0;  i < n;  i++)
+		for (int i = 0;  i < n;  i++)
 		{
 			float sdat = f==0.  ?  0.f  :  data[i]/f;	// scale to range +- 511, or use 0 if all data 0
 			SI idat = SI(sdat+512.5f) - 512;		// round to integer: round as a

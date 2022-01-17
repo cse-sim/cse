@@ -19,7 +19,7 @@ class BinFile
 {
     BYTE outFile;		// TRUE if output file (pre-created; read files can auto-open)
     BYTE filler;
-    INT fh;			// file handle, -1 if file not open or open failed. 16 or 32 bits as compiled.
+    FILE* fh;			// file handle, -1 if file not open or open failed. 16 or 32 bits as compiled.
     long maxSeek;		// max seek pointer value seen = length of output file
 public:
     char pNam[_MAX_PATH]; 	// pathName of file, or "" if file not in use
