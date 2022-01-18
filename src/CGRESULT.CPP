@@ -2051,7 +2051,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 			    :  colDef->colhd; 	// for pointer -1L, use next arg
 
 		cvin2sBuf( head+i, 					// format col head text (lib\cvpak.cpp)
-			blankit ? static_cast<char*>("") : const_cast<char*>(colhd),
+			const_cast<void*> (reinterpret_cast<const void*> (blankit ? "" : colhd)),
 			DTCH, UNNONE, colDef->width,
 			colDef->flags & 128 ? FMTLJ : FMTRJ );	// format: left justify on flag 128
 
