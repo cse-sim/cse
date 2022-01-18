@@ -1249,7 +1249,7 @@ x  }  }
 	/* set flags re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
 	   and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
 	if (asFlow)								// else not autoSizing any tu's on ah
-		for (tu = 0;  nxTu(tu);  )  					// loop ah's tu's
+		for (TU* tu = 0;  nxTu(tu);  )  					// loop ah's tu's
 			if (tu->useAr & uStH)							// if this terminal is set temp heating
 				tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
 			else if (tu->useAr & uStC)						// if terminal is set temp cooling
