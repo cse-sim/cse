@@ -800,7 +800,7 @@ x                     "    A total of %g kBtu of condensation heat was added to 
 x                     zp->i.name, (long)zp->znNSubhrXLG,
 x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 #endif
-			AH* ah;
+			ah;
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
@@ -2143,7 +2143,7 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
 			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
 				if (firstRec)
-				{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+				{	mtrSum = MtrB.p[MtrB.n].H;
 					mtrSum.tot = mtrSub1->tot;
 					mtrSum.bt = mtrSub1->bt;
 					mtrSum.dmd = mtrSub1->dmd;

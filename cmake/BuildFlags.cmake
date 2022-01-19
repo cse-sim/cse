@@ -14,7 +14,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
   # /D_WINDOWS  #*
     /D_CONSOLE  #
     /DINCNE     # CSE-specific
-    /W3         #*Warning level
+    /W4         #*Warning level
     /GR         #*Enable Run-Time Type Information TODO: keep?
     /EHsc       #*Specifies the model of exception handling (sc options).
     /nologo     # Suppresses display of sign-on banner.

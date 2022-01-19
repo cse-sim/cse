@@ -916,7 +916,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 {
 	char cmsg[750], tex[ULIBUFSZ+2], caret[139], where[139], 	// ULIBUFSZ (770, 9-95): above in this file.
 		whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
-	int col;
+	int col=0;
 
 	caret[0] = where[0] = tex[0] = '\0';
 

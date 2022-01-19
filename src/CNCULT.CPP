@@ -739,7 +739,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 	BOO xcSet = IsSet( SFX( SFEXCND)); // nz if sfExCnd given by user (a choice type: no exprs
 
 // sf_CkfSURF: sfTilt checks and default
-	float t;   					// receives tilt if defaulted or constant given
+	float t=0;   					// receives tilt if defaulted or constant given
 	if (IsVal( SFX( TILT)))		// if sfTilt value stored (not if expr not eval'd yet)
 	{	t = x.tilt;					// fetch sfTilt
 		switch (sfTy)				// check sfTilt
@@ -1704,6 +1704,7 @@ CULT( "rsCOP17",	 DAT,   RSYS_COP17,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT( "rsCap05",	 DAT,   RSYS_CAP05,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOP05",	 DAT,   RSYS_COP05,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "rsCapRat9547",DAT,   RSYS_CAPRAT9547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat0547",DAT,   RSYS_CAPRAT0547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsloadFMin47",DAT,   RSYS_LOADFMIN47,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsloadFMin17",DAT,   RSYS_LOADFMIN17,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),

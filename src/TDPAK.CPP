@@ -356,7 +356,7 @@ RC tddsi(		// Decode month-day date string
 {
 	RC rc;
 	MONTH tmon;
-	int iflg2;
+	int iflg2=0;
 	short tday;
 	char *tstr, *loc, *tok1, *tok2;
 
@@ -529,7 +529,7 @@ int CALENDAR::GetDoy(
 	int mDay,				// day of month, 1-31
 	int yr /*=-1*/) const	// actual year or -1
 {
-	return tddiy( month, month, yr);
+	return tddiy( month, mDay, yr);
 }	// CALENDAR::GetDoy
 //-----------------------------------------------------------------------------
 const char* CALENDAR::GetMonAbbrev(		// month abbrev: "Jan", "Feb", ...

@@ -234,7 +234,7 @@ int Solve(			// matrix solver
 		SwapRows( L, NOS);
 		for (I=LP; I<=N; I++)
 		{	double Y = M( I, L) / M( L,L);
-			for (int J=L; J<=NP2; J++)
+			for (J=L; J<=NP2; J++)
 				M( I, J) -= Y * M( L, J);
 		}
 	}
@@ -1656,7 +1656,7 @@ bool CFSTY::cf_URated(		// U-factor
 // returns true iff U-factor successfully derived
 {
 
-double HRO, HCO, HRI, HCI, TGO, TGI;
+double HRO, HCO=0, HRI, HCI, TGO, TGI;
 double TL[ CFSMAXNL+2] = { 0. };	// layer temps, K
 
 	bool bRet = false;
@@ -2314,7 +2314,7 @@ static void IS_BEAM(	// insect screen BB and BD properties
 			TAU_BB = P01( TAU_BB0 * pow( cos( PIOVER2*THETA/THETA_CUTOFF), B), "IS_BEAM TauBB");
 		}
 
-		double B = -.65 * log( max( TAU_BT0, .01)) + .1;
+		B = -.65 * log( max( TAU_BT0, .01)) + .1;
 		TAU_BT = P01( TAU_BT0 * pow( COSTHETA, B), "IS_BEAM TauBT");
 	}
 

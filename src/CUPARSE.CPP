@@ -1019,7 +1019,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	//   another PSSZ is above in funcDef().
 	PSOP ps[PSSZ];		// holds pseudo-code during compilation
 
-	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v;   void *pv;   USI codeSize;   PSOP *ip;   RC rc;
+	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v=0;   void *pv;   USI codeSize;   PSOP *ip=NULL;   RC rc;
 
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
@@ -2133,7 +2133,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 // use compile support function (cncult4.cpp) to get values to put in code
 
 	TI iffnmi;		// receives IFFNM record subscript for import file name (adds record 1st time name seen)
-	SI fnmi;		// receives field name index for named field (adds table entry first time name seen)
+	SI fnmi=0;		// receives field name index for named field (adds table entry first time name seen)
 	IVLCH imFreq;	// receives import frequency (hour-day-month-year) if yet given, else a safe assumption
 	if (byName)
 		CSE_E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fieldName, &fnmi) )	// cncult4.cpp
@@ -2420,8 +2420,8 @@ LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, an
 {
 //ERVARS  	//<--- believe unnec here becuase caller fcn() does. 10-90
 	SI aN=0, uAN=0, nSF=0, defdef=0, selC=0, isK=-1, v=0;
-	SI tisK, tv;			// isK and v for current select() condExpr
-	USI aTy=TYNONE, aWanTy, defa=0;
+	SI tisK=0, tv=0;			// isK and v for current select() condExpr
+	USI aTy=TYNONE, aWanTy=0, defa=0;
 	RC rc;
 
 	//ERSAVE	//<--- believe unnec here becuase caller fcn() does. 10-90
@@ -2603,7 +2603,7 @@ x						}
 						USI anTy = parSp->ty;		// note assume previously-checked args remain compat with each other
 						for ( SI i = nSF; --i > 0; )		// check preceding uncombined stack frames for type compat with latest
 						{
-							USI aTy = (parSp - i)->ty;			// type of arg aN-i
+							aTy = (parSp - i)->ty;			// type of arg aN-i
 							if (aTy != anTy  &&  (anTy|aTy) != TYNC)  	// only 2-bit type allowed is TYNC === TYCH|TYFL.
 							{
 								// error message for incompatible argument

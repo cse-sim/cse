@@ -3408,7 +3408,7 @@ LOCAL RC FC NEAR msgMissReq()
 {
 	CULT *c;
 	const char* ms;
-	UCH fs, *fsp;
+	UCH fs, *fsp=NULL;
 	RC rc=RCOK;
 
 // no checks if defining a type: omitting anything is ok
