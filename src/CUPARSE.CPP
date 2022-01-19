@@ -2603,7 +2603,7 @@ x						}
 						USI anTy = parSp->ty;		// note assume previously-checked args remain compat with each other
 						for ( SI i = nSF; --i > 0; )		// check preceding uncombined stack frames for type compat with latest
 						{
-							USI aTy = (parSp - i)->ty;			// type of arg aN-i
+							aTy = (parSp - i)->ty;			// type of arg aN-i
 							if (aTy != anTy  &&  (anTy|aTy) != TYNC)  	// only 2-bit type allowed is TYNC === TYCH|TYFL.
 							{
 								// error message for incompatible argument

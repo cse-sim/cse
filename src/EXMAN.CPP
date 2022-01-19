@@ -748,7 +748,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 			for (i = 0;  i < ex->whChafN;  i++)  		// loop over change flag registrations for this expr
 			{
 				w = ex->whChaf+i;
-				BP b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
+				b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
 				if (b && b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this entry
 				{
 					if (j < i)				// if any have been deleted,

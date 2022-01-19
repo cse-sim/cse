@@ -564,7 +564,7 @@ x	}
 
 	if (ventAvail == C_VENTAVAILVC_WHOLEBLDG || ventAvail == C_VENTAVAILVC_ZONAL)
 	{
-		int nVentUseful = 0;	// ventilation usefulness
+		nVentUseful = 0;	// ventilation usefulness
 						//   >0: vent potentially useful for 1 or more zones
 						//   =0: vent not useful
 						//   <0: vent forbidden by conditions in 1 or more zones
@@ -3525,7 +3525,7 @@ RC RSYS::rs_PerfDataASHP()
 
 	fprintf( f, "\ncap17/cap47 vs HSPF\n");
 
-	for (int iHSPF=65; iHSPF<140; iHSPF++)
+	for (iHSPF=65; iHSPF<140; iHSPF++)
 	{	rs_HSPF = float( iHSPF)/10.f;
 		fprintf( f, "%0.3f,%0.3f\n", rs_HSPF, rs_CapRat1747());
 	}
@@ -3704,7 +3704,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 			// DOE-2 curves should be applied to compressor-only
 			//   but it appears the Micropas implementation applied to values with fan
 
-			float fCap = 0.302 + 0.0121*tdbOut + 0.0000759*tdbOut2 - 0.000000384*tdbOut3;
+			fCap = 0.302 + 0.0121*tdbOut + 0.0000759*tdbOut2 - 0.000000384*tdbOut3;
 			capNet = fCap * rs_cap47;	// capacity with fan
 			capHt = capNet - fanHAdj;	// capacity w/o fan
 
@@ -3721,7 +3721,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 			capHt = fCap * rs_cap47;
 
 			// EIR (curve SDL-C56)
-			double fEIR = 2.03914613 - 0.03906753*tdbOut + 0.00045617*tdbOut2 - 0.00000203*tdbOut3;
+			fEIR = 2.03914613 - 0.03906753*tdbOut + 0.00045617*tdbOut2 - 0.00000203*tdbOut3;
 
 			// fan / no-fan issue
 
@@ -3761,13 +3761,13 @@ static const double epEIR[ 6][ 6] = {
 {  0.981100941, -0.005158493,  0.000243416, -0.005274352, 0.000230742, -0.000336954 }};
 
 
-			float tdbOut2 = tdbOut * tdbOut;
+			tdbOut2 = tdbOut * tdbOut;
 			float tdbEnt = 70.f;
 			float tdbEnt2 = tdbEnt*tdbEnt;
 			float tdbX = tdbOut*tdbEnt;
 			const int iHS = 3;		// heating, 1 spd
 
-			double fCap = epCap[ iHS][ 0]
+			fCap = epCap[ iHS][ 0]
 			            + epCap[ iHS][ 1]*tdbEnt
 					    + epCap[ iHS][ 2]*tdbEnt2
 						+ epCap[ iHS][ 3]*tdbOut
@@ -3775,7 +3775,7 @@ static const double epEIR[ 6][ 6] = {
 						+ epCap[ iHS][ 5]*tdbX;
 			capHt = fCap * rs_cap47;
 
-			double fEIR = epEIR[ iHS][ 0]
+			fEIR = epEIR[ iHS][ 0]
 			            + epEIR[ iHS][ 1]*tdbEnt
 					    + epEIR[ iHS][ 2]*tdbEnt2
 						+ epEIR[ iHS][ 3]*tdbOut
