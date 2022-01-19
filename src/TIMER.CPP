@@ -31,9 +31,8 @@ static double tmrTicksToSecs(
 {	return ticks * tmrSecsPerTick;
 }		// tmrTicksToSecs
 //==============================================================================
-#undef TIMING_HIRES
-
 #if defined( TIMING_HIRES)
+#error TIMING HIRES no longer supported
 
 // hi-res timing (Windows dependent)
 
