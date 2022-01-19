@@ -1467,7 +1467,7 @@ LOCAL void cnClean( 		// CSE overall init/cleanup routine
 
 	// free all records (in basAncs)(both input and run)
 	// and any "types" sub-basAncs.  includes clearFileIxs().
-	cleanBasAncs(cs);		// ancrec.cpp
+	cleanBasAncs();		// ancrec.cpp
 
 	if (cs != ENTRY)			// cuz paths are already set up
 		xfClean();				// xiopak.cpp and associated files
