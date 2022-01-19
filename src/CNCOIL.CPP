@@ -1895,10 +1895,9 @@ x	}
 #endif
 	DBL te, he;
 	FLOAT we;
-#ifdef DEBUG
 	SI cs1=0, cs2=0;					/* removed redundant init when BCC32 4.5 warned, 12-94.
 							   But init appears non-redundant, restored 7-95. */
-#endif
+
 	for (SI j = 1;  j++;  )
 	{
 #endif
