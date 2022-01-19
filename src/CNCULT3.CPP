@@ -186,7 +186,7 @@ RC topSf1()
 RC SFI::sf_TopSf1()
 {
 	RC rc = RCOK;
-	RC rc1;
+	RC rc1 = 0;
 
 #if defined( _DEBUG)
 	Validate();
@@ -476,7 +476,7 @@ RC SFI::sf_TopSf1()
 	// topSf1: check / access construction if given
 
 	SI conSet = fs[ SFI_SFCON] & FsSET; 		// nz if construction spec'd (always false for window)
-	CON *con;
+	CON *con=NULL;
 	if (conSet)
 		if (ckRefPt( &ConiB, sfCon, "sfCon", NULL, (record **)&con, &rc) )
 			return rc;			// bad ref (msg issued, rc set, no run).
@@ -852,7 +852,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
 		char* s = NULL;					// set non-NULL iff error
-		BOO toOutside;
+		BOO toOutside=NULL;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
 			if (sg->sgSide==C_SIDECH_EXTERIOR)	// if 'exterior' specified
@@ -1067,7 +1067,7 @@ RC SFI::sf_TopSf2()
 	// access construction if given
 
 	BOO conSet = fs[ SFI_SFCON] & FsSET;	// non-0 if contruction given
-	CON *con;
+	CON *con=NULL;
 	if (conSet)
 	{	if (sfCon <= 0  ||  sfCon > ConiB.n)	// if bad
 			return rc;					// skip (msg'd above)

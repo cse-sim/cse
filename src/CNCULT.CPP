@@ -739,7 +739,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 	BOO xcSet = IsSet( SFX( SFEXCND)); // nz if sfExCnd given by user (a choice type: no exprs
 
 // sf_CkfSURF: sfTilt checks and default
-	float t;   					// receives tilt if defaulted or constant given
+	float t=0;   					// receives tilt if defaulted or constant given
 	if (IsVal( SFX( TILT)))		// if sfTilt value stored (not if expr not eval'd yet)
 	{	t = x.tilt;					// fetch sfTilt
 		switch (sfTy)				// check sfTilt

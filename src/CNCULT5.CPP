@@ -1662,7 +1662,7 @@ x			   chTx( r->b, heatCoilFn+HEATCOIL_COILTY, ty),
 
 	if (ty==C_COILTYCH_HW)
 	{
-		char *hpiMbrName;
+		char *hpiMbrName=NULL;
 		switch (app)								// get subtexts for following error messages
 		{
 		case C_COILAPPCH_AHHC:
@@ -2001,7 +2001,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 					subFn += 4;			//  addl bits set if > 1 ARRAY values entered, but no CULT entries
 					continue;			//  --> mbrIdTx from cantGiveEr might give internal err msg. 6-92.
 				}
-				char *when;					// subtext for input that says no fan present
+				char *when = NULL;					// subtext for input that says no fan present
 				switch (app)
 				{
 				case C_FANAPPCH_SFAN:

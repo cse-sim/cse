@@ -744,7 +744,7 @@ LOCAL RC FC NEAR ppC( char *p, USI n, USI *nRet)
 
 const int PPCMAX = 16383;	// max preprocessor command length
 
-	char ppcBuf[ PPCMAX+1], *ppcP;
+	char ppcBuf[ PPCMAX+1], *ppcP=NULL;
 
 	*nRet = 0;				// say no chars returned yet
 	SI newlineRet = 0;			// say no \n ret'd yet. added 11-91 re reducing preprocess-ahead re embedded errmsgs.
@@ -1475,7 +1475,7 @@ LOCAL RC FC NEAR ppmScan()
 
 // On return, characters is->buf[is->i..j-1] have been scanned and is->inCmt and is->isId are set for these characters.
 {
-	SI c, c2;
+	SI c, c2=0;
 	USI span;
 
 #define SCANPAST(p,tx,label) \

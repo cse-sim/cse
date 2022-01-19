@@ -103,7 +103,7 @@ const char* TOPRAT::tp_AuszDoing() const	// current autosizing activity
 		if (iAWS == TOPRAT_COOLDSMO)
 			p = tddMonName( tp_coolDsMo[ iDs]);
 		else
-		{	int auszDoy;
+		{	int auszDoy=0;
 			if (iAWS == TOPRAT_COOLDSCOND)
 				auszDoy = DcR[ tp_coolDsCond[ iDs]].dc_GetDOY();
 			else if (iAWS == TOPRAT_COOLDSDAY)

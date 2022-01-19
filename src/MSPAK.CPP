@@ -1355,7 +1355,7 @@ RC MASSMODEL::mm_FromLayers(			// base init from physical layers
 		return MH_R0122;		// "R0122: no layers in mass"
 
 	mm_layers.clear();  	// no layers yet (insurance)
-	float thkcomb, rcomb;
+	float thkcomb, rcomb=0;
 	double mushthick, mushr, mushhc;
 
 	// Loop over layers with several vhc massiveness thresholds to try to

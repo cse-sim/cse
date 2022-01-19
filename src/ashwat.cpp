@@ -1653,7 +1653,7 @@ bool CFSTY::cf_URated(		// U-factor
 // returns true iff U-factor successfully derived
 {
 
-double HRO, HCO, HRI, HCI, TGO, TGI;
+double HRO, HCO=0, HRI, HCI, TGO, TGI;
 double TL[ CFSMAXNL+2] = { 0. };	// layer temps, K
 
 	bool bRet = false;

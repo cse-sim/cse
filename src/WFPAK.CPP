@@ -2682,8 +2682,8 @@ RC WFILE::wf_EPWPosHr1( int erOp)			// position EPW file at beg of 1st hour
 
 	yac->rewind();		// pos file to beginning
 
-	int nDataPeriods;
-	int nRecordsPerHour;
+	int nDataPeriods=0;
+	int nRecordsPerHour=0;
 	char xTagFile[ 100], xDP1Desc[ 500], xDP1DOW[ 100], xDP1BegDate[ 100], xDP1EndDate[ 100];
 	const char* xTagSeek = "DATA PERIODS";
 	char ln[ YACAM_MAXLINELEN];
