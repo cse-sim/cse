@@ -2297,6 +2297,7 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 		else
 		{	// DHWUSE may be part of previously seen draw
 			// search backwards for matching eventID
+			int iWU;
 			for (iWU = pWU->ss - 1; iWU > 0; iWU--)
 			{	const DHWUSE* pWUX = (const DHWUSE*)pWU->b->GetAtSafe(iWU);
 				if (pWUX && pWUX->gud && pWUX->ownTi == ss
