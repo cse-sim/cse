@@ -2004,8 +2004,7 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 
 // return leaks/losses/fan heat like puteRa()
 
-	DBL _tr1 = 1.;
-	DBL _tr2, /*_wr1,*/ _cr1, _frFanOn = 1.;		// sets these using _tr, _wr, _cr, fcc, .
+	DBL _tr1=1, _tr2, /*_wr1,*/ _cr1, _frFanOn=1.;		// sets these using _tr, _wr, _cr, fcc, .
 	{
 		// init leakage. story in puteRa.
 #ifdef AUTOSIZE//7-95

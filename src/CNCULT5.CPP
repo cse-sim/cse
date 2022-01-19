@@ -2001,7 +2001,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 					subFn += 4;			//  addl bits set if > 1 ARRAY values entered, but no CULT entries
 					continue;			//  --> mbrIdTx from cantGiveEr might give internal err msg. 6-92.
 				}
-				char *when = NULL;					// subtext for input that says no fan present
+				char *when=NULL;					// subtext for input that says no fan present
 				switch (app)
 				{
 				case C_FANAPPCH_SFAN:
