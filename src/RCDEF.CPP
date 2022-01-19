@@ -621,7 +621,7 @@ int CDEC main( SI argc, char * argv[] )
 		cFilesDir = argv[10];
 		if (!filesys::exists(filesys::path(cFilesDir)))
 		{
-			printf("\n'%s': Include file output directory path not found.\n", cFilesDir);
+			printf("\n'%s': C++ file output directory path not found.\n", cFilesDir);
 			Errcount++;
 		}
 	}
