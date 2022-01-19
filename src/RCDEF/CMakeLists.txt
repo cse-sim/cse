@@ -23,8 +23,8 @@ set(headers
 )
 
 include_directories(
-  ..
   .
+  ..
 )
 
 add_definitions(-DNOVRR)
