@@ -452,7 +452,7 @@ int AIRSTATE::as_AddQSenLat(		// add sensible and latent heat to an air stream
 			ret = 1;
 		}
 	}
-	float qTot = qSen + qLat;
+	[[maybe_unused]] float qTot = qSen + qLat;
 #if defined( _DEBUG)
 	float hOut = as_Enthalpy();
 	if (frDiff( absAmf*(hOut-hIn), double( qTot)) > .0001)
@@ -1888,7 +1888,7 @@ DUCTSEG::DUCTSEG( basAnc* b, TI i, SI noZ/*=0*/)
 }	// DUCTSEG::~DUCTSEG
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_Init(			// init DUCTSEG
-	int options/*=0*/)
+	[[maybe_unused]] int options/*=0*/)
 {
 	ds_sbcO.sb_Init( this);
 #if 0

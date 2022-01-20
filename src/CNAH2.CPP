@@ -1643,7 +1643,7 @@ x}			// AH::tsFo
 //-----------------------------------------------------------------------------------------------------------------------------
 DBL AH::tsFo(		// get supply temp zone-controlled ah will deliver at specified approach to ctu max flow
 	float approach,
-	BOO outsideCall )		// TRUE if called not from within air handler
+	[[maybe_unused]] BOO outsideCall )		// TRUE if called not from within air handler
 
 // should not be called for 0 flow (0 approach when ctu min flow is 0)
 

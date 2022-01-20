@@ -3018,7 +3018,7 @@ er:
 	// additional returns above
 }				// dumVar
 //==========================================================================
-LOCAL RC FC NEAR var( UVST *f, USI wanTy)		// parse (poss future) variable reference or assignment
+LOCAL RC FC NEAR var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// parse (poss future) variable reference or assignment
 
 // last token gotten is its name (f arg redundant).
 
@@ -4247,7 +4247,7 @@ LOCAL BOO /*no FC, no NEAR */ stbkDel( SI tokTy, STBK *&stbk)	// syClear callbac
 }		// stbkDel
 
 //==========================================================================
-LOCAL void FC near cuptokeClean( CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
+LOCAL void FC near cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
 {
 	reToke = 0;				// say do not re-get token. 12-93 observed that this can be set after no-run error.
 

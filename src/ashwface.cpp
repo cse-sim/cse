@@ -182,7 +182,7 @@ CFSTYX::CFSTYX(			// build a CFS
 	const char* id,			// unique ID (max len = CFSIDLEN)
 	float _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
 	float _SHGCcogNFRC,		// externally calculated NFRC cog SHGC
-	const char* layer1ID,	// ID of 1st layer
+	[[maybe_unused]] const char* layer1ID,	// ID of 1st layer
 	...)					// add'l gap / layer info
 // call = id, U, SHGC, layerID, gasID, gapT (inches), layerID, ...
 {
@@ -910,7 +910,7 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	TMRSTART( TMR_AWCALC);		// time calcs only
 								// see also TMR_AWTOT
 	RC rc = RCOK;
-	int nL = fa_CFS.NL;
+	[[maybe_unused]] int nL = fa_CFS.NL;
 	static const double tol = .001;
 	double Q[ CFSMAXNL+2];
 	double ucgSI;
@@ -1080,7 +1080,7 @@ XASHWAT ASHWAT(		// public ASHWAT object
 	"ASHWAT.DLL");
 #endif
 //=============================================================================
-XASHWAT::XASHWAT( const char* moduleName)		// c'tor
+XASHWAT::XASHWAT([[maybe_unused]] const char* moduleName)		// c'tor
 #if defined(SUPPORT_XMODULE)
 	: XMODULE( moduleName)
 #endif // SUPPORT_XMODULE
@@ -1140,7 +1140,7 @@ static bool bSetup = false;
 }		// XASHWAT::xw_Setup
 //-----------------------------------------------------------------------------
 /*static*/ void XASHWAT::MsgCallBackFunc(
-	void* msgContext,
+	[[maybe_unused]] void* msgContext,
 	AWMSGTY msgTy,
 	const string& msg)
 {
@@ -1152,7 +1152,7 @@ static bool bSetup = false;
 //-----------------------------------------------------------------------------
 bool XASHWAT::xw_CheckFixCFSLayer(
 	CFSLAYER& L,		// layer to be checked / fixed
-	const char* what)	// context for messages
+	[[maybe_unused]] const char* what)	// context for messages
 {
 #if defined( ASHWAT_USECPP)
 	vector< string> msgs;
@@ -1272,15 +1272,15 @@ RC XASHWAT::xw_OffNormalProperties(			// ASHWAT: derive off-normal properties
 }		// XASHWAT::xw_OffNormalProperties
 //-----------------------------------------------------------------------------
 RC XASHWAT::xw_Solar(		// ASHWAT_Solar interface fcn
-	int nL,				// # of layers
-	CFSSWP* swpON,		// array of off-normal SW (solar) properties of layers
+	[[maybe_unused]] int nL,				// # of layers
+	[[maybe_unused]] CFSSWP* swpON,		// array of off-normal SW (solar) properties of layers
 						//   [ 0]=outside; [ nL-1]=inside
-	CFSSWP& swpRoom,	// SW (solar) properties of room pseudo-layer
+	[[maybe_unused]] CFSSWP& swpRoom,	// SW (solar) properties of room pseudo-layer
 						//   generally black or close to it
-	double iBm,			// outside beam normal irradiance, power/area
-	double iDf,			// outside diffuse irradiance, power/area
-	double iDfIn,		// inside diffuse irradiance, power/area
-	double* absL)		// returned: absorbed by layer [0 .. nL] (nL=room), power/area
+	[[maybe_unused]] double iBm,			// outside beam normal irradiance, power/area
+	[[maybe_unused]] double iDf,			// outside diffuse irradiance, power/area
+	[[maybe_unused]] double iDfIn,		// inside diffuse irradiance, power/area
+	[[maybe_unused]] double* absL)		// returned: absorbed by layer [0 .. nL] (nL=room), power/area
 						//   note: absL[ nL] = overall transmitted
 {
 #if defined( ASHWAT_USECPP)

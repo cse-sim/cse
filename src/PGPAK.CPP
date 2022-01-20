@@ -196,7 +196,7 @@ LOCAL RC FC NEAR pgcleare(
 // Clear a whole page (set to all blanks)
 
 	char **ppp,		// POINTER TO Pointer to page to clear: [may be updated -- page could move.]
-	int erOp )		// error action for memory full
+	[[maybe_unused]] int erOp )		// error action for memory full
 
 // Fcn value RCOK if ok, other value if error and not ABT
 {

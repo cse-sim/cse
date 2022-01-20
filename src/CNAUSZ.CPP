@@ -712,7 +712,7 @@ LOCAL RC FC p2EndTest()		// check each object for need to redo pass 2 (and chang
 //===========================================================================================================
 //  cse MAIN SIMULATION support function(s) that use AUSZ stuff
 //===========================================================================================================
-RC FC asFazInit(int isAusz)			// main sim run or autoSize phase init: portion in this file
+RC FC asFazInit([[maybe_unused]] int isAusz)			// main sim run or autoSize phase init: portion in this file
 
 {
 	// caller: cnguts:cgFazInit() 6-95

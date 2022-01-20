@@ -222,7 +222,7 @@ class record		// base class for records
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
-	virtual int IsCountable( int ) const { return 1; }
+	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
 	virtual void FixUp() { };		// optional fixup after reAl()
 	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
 	int IsNameMatch( const char* _name) const;

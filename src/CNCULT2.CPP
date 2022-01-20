@@ -74,7 +74,7 @@ LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, rec
 //===========================================================================
 void cncultClean(	// cleanup fcn for all the cncultn.cpp files
 
-	CLEANCASE cs )		// ENTRY, DONE, CRASH (cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )		// ENTRY, DONE, CRASH (cnglob.h)
 
 // added for DLL version, which should free every bit of its heap memory, ideally even on error exits
 {
@@ -94,7 +94,7 @@ void cncultClean(	// cleanup fcn for all the cncultn.cpp files
 
 
 //===========================================================================
-RC topStarItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topStarItf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // top *-entry IniTialization Function
 
@@ -133,7 +133,7 @@ RC topStarPrf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 	return RCOK;
 }		// topStarPrf
 //===========================================================================
-RC topStarPrf2( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topStarPrf2([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // top *-entry recall pre-input function, also called (from topStarPrf above) on startup and clear. 7-13-92.
 
@@ -150,7 +150,7 @@ RC topStarPrf2( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 	return RCOK;
 }			// topStarPrf2
 //===========================================================================
-RC topClearItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topClearItf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // called by CLEAR at top level BEFORE data deleted
 {
@@ -175,7 +175,7 @@ RC topClearItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 //---------------------------------------------------------------------------
 
 //===========================================================================
-RC topCkf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topCkf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // finish/check/set up function entry called via cnTopCult at top level "RUN" command
 {

@@ -163,7 +163,7 @@ RC YACAM::close( int erOp /*=WRN*/)	// close file, nop if not opened, RCOK if ok
 	return rc;
 }			// YACAM::close
 //---------------------------------------------------------------------------
-RC YACAM::rewind( int erOp /*=WRN*/)
+RC YACAM::rewind([[maybe_unused]] int erOp /*=WRN*/)
 // repos file to beginning
 {
 	RC rc = clrBufIf();

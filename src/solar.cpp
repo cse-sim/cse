@@ -2008,7 +2008,7 @@ SLRSURFDAY* SLRSURF::AddOrGetSLRSURFDAY(
 //---------------------------------------------------------------------------
 void SLRSURF::DbDump(
 	int oMsk,
-	const TCHAR* hdg/*=""*/) const
+	[[maybe_unused]] const TCHAR* hdg/*=""*/) const
 {
 	if (!DbShouldPrint( oMsk))
 		return;

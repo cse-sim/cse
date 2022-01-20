@@ -278,7 +278,7 @@ RC DHWMTR::wmt_CkF()
 {	return RCOK;
 }
 //-----------------------------------------------------------------------------
-RC DHWMTR::wmt_Init( IVLCH ivl)
+RC DHWMTR::wmt_Init([[maybe_unused]] IVLCH ivl)
 // not called for C_IVLCH_SUBHOUR
 {
 	memset( &curr.H.total, 0, (NDHWENDUSES+1)*sizeof( float));
@@ -1613,9 +1613,10 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	//   = max draw in ws_drawMaxDur hrs
 	//   = max load in ws_loadMaxDur hrs
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-	{	float drawSum = ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
+	{
+		[[maybe_unused]] float drawSum = ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
-		float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
+		[[maybe_unused]] float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
 #if defined( ALTDRAWCSV)
 		// alternative format draw export
 		//   supports testing of ws_drawMaxDur and ws_loadMaxDur
@@ -1750,7 +1751,7 @@ float DHWSYS::ws_TickAvgTInletX(	// average inlet temp
 	float& whUseTot) const	// returned: total use
 // returns all-tick average of wtk_tInletX
 {
-	RC rc = RCOK;
+	[[maybe_unused]] RC rc = RCOK;
 	whUseTot = 0.f;
 	float tUseSum = 0.f;
 	float tSum = 0.f;
@@ -2049,7 +2050,7 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 			if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
 				totHARLCk = pWH->wh_totHARL;
 
-			float fTotHARLCk = float(totHARLCk);
+			[[maybe_unused]] float fTotHARLCk = float(totHARLCk);
 
 			// solar savings fraction
 			if (ws_pDHWSOLARSYS)
@@ -2204,7 +2205,7 @@ void DHWSYSRES_IVL::wsr_Copy(
 void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 	const DHWSYSRES_IVL* sIvl,		// source
 	int firstFlg,					// true iff first accum into this (beg of ivl)
-	int lastFlg)					// true iff last accum into this (end of ivl)
+	[[maybe_unused]] int lastFlg)					// true iff last accum into this (end of ivl)
 {
 	float mult = 1.f;
 	if (firstFlg)
@@ -2662,7 +2663,7 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 }	// HPWHLINK::hw_InitGeneric
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
-	WHRESTYCH resTy,	// resistance heater type (currently unused)
+	[[maybe_unused]] WHRESTYCH resTy,	// resistance heater type (currently unused)
 	float vol,			// tank volume, gal
 	float EF,			// rated EF
 						//   if >0, call HPWHinit_resTank
@@ -4630,7 +4631,7 @@ RC DHWHEATER::wh_InstUEFDoSubhrTick(
 	float tInletWH,	// current water heater inlet temp, F
 					//   includes upstream heat recovery, solar, etc.
 					//   also includes mixed-in DHWLOOP return, if any
-	float scaleWH,	// draw scale factor
+	[[maybe_unused]] float scaleWH,	// draw scale factor
 					//   re DHWSYSs with >1 DHWHEATER
 					//   *not* including hw_fMixUse or hw_fMixRL;
 	float tUse)		// assumed output temp, F
@@ -5034,7 +5035,7 @@ float DHWHEATREC::wr_EffAdjusted(		// derive effectiveness for current condition
 	float vp,	// potable water inlet flow, gal/tick
 	float tpI,	// potable water inlet temp, F
 	float vd,	// drain water inlet flow, gal/tick
-	float tdI)	// drain water inlet temp, F
+	[[maybe_unused]] float tdI)	// drain water inlet temp, F
 // sets and returns wr_eff
 {
 	if (wr_type == C_DWHRTYCH_SETEF)
@@ -5185,7 +5186,7 @@ float DHWPUMP::wp_DoHour(			// hourly DHWPUMP/DHWLOOPPUMP calcs
 
 // returns heat added to liquid stream, Btu
 {
-	RC rc = RCOK;
+	[[maybe_unused]] RC rc = RCOK;
 	wp_inElec = BtuperWh * runF * wp_pwr;	// electrical input, Btuh
 											//   per pump (no wp_mult)
 
