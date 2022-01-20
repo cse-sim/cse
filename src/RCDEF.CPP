@@ -1681,7 +1681,7 @@ static SWTABLE rdirtab[] =      /* table of record level * directives:
 										   Content is record type bit or other value tested in switch in records loop */
 {
 	{ "rat",       RTBRAT     },        // Record Array Table record type
-	{ "substruct", (SI)RTBSUB },        // substructure-only "record" definition
+	{ "substruct", static_cast<SI>(RTBSUB) },        // substructure-only "record" definition
 	{ "hideall",   RTBHIDE    },        // omit entire record from probe names help (CSE -p)
 	{ "baseclass", 32764      },        // *baseclass <name>: C++ base class for this record type
 	{ "excon",     32765      },        // external constructor: declare only (else inline code may be supplied)
@@ -1697,7 +1697,7 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 										value for which switch in fields loop has a case. */
 {
 // field flags, for SFIR.ff
-	{ "hide",   (SI)0x8000 | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
+	{ "hide",   static_cast<SI>(0x8000) | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
 
 // variations: how often program changes field, for SFIR.evf
 	// input rat members set during input checking should be encoded at least *r to prevent input time probes.
