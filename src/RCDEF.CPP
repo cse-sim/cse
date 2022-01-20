@@ -758,7 +758,7 @@ LOCAL void dtypes(                      // do data types
 {
 	SI val, choff, choicb, choicn, nchoices, i;
 	USI chan;
-	char *cp;
+	char *cp=NULL;
 
 	// global Fpm assumed preset to file_dtypes
 	// global file fdtyph assumed open if HFILESOUT
@@ -2752,7 +2752,7 @@ LOCAL void wrStr(               // Do *struct field
 	static SI level=0;
 	SI i, j, fdTy;
 	SI field, nflds, fldsize, fdoffbeg, fieldbeg, source;
-	SI array, generic;
+	SI array=0, generic;
 	char lcsnm[MAXNAMEL];                       // Field name, lower case
 
 	fdoffbeg = Fdoff;
