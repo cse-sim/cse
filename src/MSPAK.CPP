@@ -759,7 +759,7 @@ MSRAT::~MSRAT()
 }			// MSRAT::~MSRAT
 //---------------------------------------------------------------------------
 /*virtual*/ void MSRAT::DelSubObjects(
-	int options /*=0*/)
+	[[maybe_unused]] int options /*=0*/)
 {
 	delete ms_pMM;
 	ms_pMM = NULL;
@@ -1209,7 +1209,7 @@ double MSRAT::ms_InternalEnergy() const	// current internal energy wrt 0 F
 ///////////////////////////////////////////////////////////////////////////////
 // class MASSMODEL: base class for mass models
 ///////////////////////////////////////////////////////////////////////////////
-/*virtual*/ MASSMODEL& MASSMODEL::Copy( const MASSMODEL& mmSrc, int options/*=0*/)
+/*virtual*/ MASSMODEL& MASSMODEL::Copy( const MASSMODEL& mmSrc, [[maybe_unused]] int options/*=0*/)
 {
 	mm_pMSRAT = mmSrc.mm_pMSRAT;		// caller may have to fix
 	mm_model = mmSrc.mm_model;
@@ -1237,7 +1237,7 @@ RC MASSMODEL::mm_FromLayersFD(			// base init from physical layers
 								//   2.  layers w/ conductivity  <= 0 illegal
 								//   3.  layers w/ vhc <= low value treated
 								//       as non-massive (see code)
-	int options /*=0*/)			// option bits (unused)
+	[[maybe_unused]] int options /*=0*/)			// option bits (unused)
 
 // Returns RCOK if OK; with following changes from arML --
 //   1.  Outside light surfaces changed to rsurfs

@@ -4384,7 +4384,7 @@ LOCAL void FC NEAR drefRes()
 }		// drefRes
 //===========================================================================
 LOCAL void FC NEAR drefClr(
-	const char* callTag)		// identification of call (debug aid)
+	[[maybe_unused]] const char* callTag)		// identification of call (debug aid)
 
 // clear table of deferred rat references (TYREF's)
 {

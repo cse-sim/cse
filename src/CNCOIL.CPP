@@ -91,7 +91,7 @@ RC AHHEATCOIL::reSetup( 	// re set up coil for changed total capacity (.captRat)
 	return setup(ah);					// (re) initialize coil model
 }			// AHHEATCOIL::reSetup
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AHHEATCOIL::setup( AH *ah)	// set up heat coil per current capacity in record -- initially or at change while autosizing
+RC AHHEATCOIL::setup([[maybe_unused]] AH *ah)	// set up heat coil per current capacity in record -- initially or at change while autosizing
 
 // CAUTION: at first call if resizing, captRat may contain 0 or a NAN.
 {

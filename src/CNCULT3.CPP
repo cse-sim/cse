@@ -2103,7 +2103,7 @@ PRI::PRI( basAnc* b, TI i, SI noZ /*=0*/)
 }		// PRI::FixUp
 //-----------------------------------------------------------------------------
 RC PRI::pr_Ckf(
-	int options)	// 1
+	[[maybe_unused]] int options)	// 1
 {
 	RC rc = RCOK;
 	FixUp();
@@ -2192,7 +2192,7 @@ void XSURF::xs_Init(			// initialize
 	}
 }		// XSURF::xs_Init
 //-----------------------------------------------------------------------------
-XSURF& XSURF::Copy( const XSURF* pXS, int options /*=0*/)
+XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
 	memcpy( this, pXS, sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr

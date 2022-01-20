@@ -904,7 +904,7 @@ const RSYS* ZNR::zn_GetRSYS() const
 }		// ZNR::zn_GetRSYS
 //-----------------------------------------------------------------------------
 int ZNR::zn_IsHCAvail(		// determine system availability
-	int rsMode) const		// capability required: rsmHEAT, rsmCOOL
+	[[maybe_unused]] int rsMode) const		// capability required: rsmHEAT, rsmCOOL
 // returns 1 if specified capability is available
 {	return !zn_IsUZ();		// TODO: schedule availability?
 }		// ZNR::zn_HCAvail
@@ -1198,7 +1198,7 @@ x						printf( "1B\n");
 //-----------------------------------------------------------------------------
 RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 	RSYS* rs,			// zone's RSYS
-	int options /*=0*/)		// option bits
+	[[maybe_unused]] int options /*=0*/)		// option bits
 							//   1: report "flipped" supply temps
 // Prereq: rs->rs_SupplyAirState() at current speed
 // returns RCOK iff success
@@ -2796,7 +2796,7 @@ void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	float avfC /*=-1*/,	// air flow if known, passed to rs_SetupFanC
-	int options /*=0*/)	// option bits TBD
+	[[maybe_unused]] int options /*=0*/)	// option bits TBD
 // sets RSYS cooling members that do not vary during simulation
 {
 	RC rc = RCOK;

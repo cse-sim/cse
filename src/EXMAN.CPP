@@ -255,7 +255,7 @@ static RC extValidate(
 //===========================================================================
 void FC exClean(	// exman.cpp cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH. type in cnglob.h.
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH. type in cnglob.h.
 
 // added for DLL version that should free every bit of memory. Rob 12-3-93.
 {

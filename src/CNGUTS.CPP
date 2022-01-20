@@ -1011,7 +1011,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize design day
 
-	int isAusz )	// TRUE for autosize, FALSE for main simulation phase
+	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase
 
 // Returns RCOK or error code, message already issued.
 {
@@ -1035,7 +1035,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but not each design day.
 
-	int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
+	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
@@ -1938,7 +1938,7 @@ void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
 
 	const DUCTSEGRES_IVL_SUB* src,  	// source: next longer interval, or same interval for sum_of_
 	int firstflg, 		// nz: *this will be initialized before values are accumulated into it
-	int lastflg)  		// nz: *this end-of-interval calcs as needed
+	[[maybe_unused]] int lastflg)  		// nz: *this end-of-interval calcs as needed
 						//     +0x100: limit hrsOn to 1 (for H record)
 {
 	// first call: copy source into destination

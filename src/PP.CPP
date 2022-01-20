@@ -2307,7 +2307,7 @@ LOCAL SI NEAR ppTokty = 0;		// token type (same as ppTok return)
 //===========================================================================
 void FC ppTokClean( 		// ppTok init/cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
 
 //called from pp.cpp:ppClean.
 {
@@ -3319,7 +3319,7 @@ RC FC ppDelDefine() 	// undefine identifier in ppIdtx[]
 }					// ppDelDefine
 //==========================================================================
 LOCAL BOO clearOneDefine( 	// clean and free one DEFINE symbol table entry
-	SI tokTy,		// token type, not used here
+	[[maybe_unused]] SI tokTy,		// token type, not used here
 	DEFINE *&theDef )	// ref to pointer to DEFINE structure as used in defSytb entries
 // returns TRUE to say symbol table entry should be deleted.
 {
@@ -3499,7 +3499,7 @@ LOCAL void FC NEAR ppUnToke( void);
 //===========================================================================
 void FC ppCexClean( 		// init/cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
 
 // added 10-93 while converting from main program to repeatedly-callable, DLLable subroutine.
 {

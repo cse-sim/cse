@@ -200,7 +200,7 @@ x       bkHrHdr.write(keePak);			// must fill the space before writing 1st month
 RC /*FC*/ ResfWriter::close( 	// finish writing binary results
 	// file names, if any, were set by create().
 
-	struct BrHans * hans )	// NULL for file output only (free the memory blocks), or
+	[[maybe_unused]] struct BrHans * hans )	// NULL for file output only (free the memory blocks), or
 // pointer to struct to receive memory handles to be returned to CSE caller.
 // always NULL under DOS. Hmm.. could return POINTERs under DOS extender, if need found.
 // if (hans), keePak must have been TRUE in create call (checked below 12-94).

@@ -119,7 +119,7 @@ static RC dropFront( ULI drop);
 //---------------------------------------------------------------------------------------------------------------------------
 void vrpakClean( 		// vrpak overall init/cleanup routine
 
-	CLEANCASE cs )	// [STARTUP,] DONE, or CRASH (type in cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )	// [STARTUP,] DONE, or CRASH (type in cnglob.h)
 
 {
 // added 10-93 while converting from main program to repeatedly-callable, DLLable subroutine.
