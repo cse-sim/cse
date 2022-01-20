@@ -431,7 +431,7 @@ template <typename T> static int vNEQMsg(			// compare, issue message if fail
 //=============================================================================
 static double P01(		//  constrain property to range 0 - 1
 	double P,			//  property
-	const char* what)	//  identifier for err msg
+	[[maybe_unused]] const char* what)	//  identifier for err msg
 {
 #if defined( _DEBUG)
 	if (P < -.05 || P > 1.05)
@@ -2149,7 +2149,7 @@ void RB_BEAM(	// roller blind off-normal properties
 static double RB_F(	//  roller blind integrand
 	double THETA,		//  incidence angle, radians
 	const HEMINTP& P,	//  parameters
-	int opt=0)			// unused options
+	[[maybe_unused]] int opt=0)			// unused options
 {
 	double RHO_BD, TAU_BB, TAU_BD;
 	RB_BEAM( THETA, P.RHO_BT0, P.TAU_BT0, P.TAU_BB0,
@@ -2678,13 +2678,13 @@ static void PD_LW(		// Pleated drape layer long wave effective properties
 static void PD_BEAM_CASE_I(		// pleated drape 14 surface flat-fabric model
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
+	[[maybe_unused]] double OMEGA_H,			//  horizontal profile angle, radians
 	double DE,				//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -2989,13 +2989,13 @@ static void PD_BEAM_CASE_I(		// pleated drape 14 surface flat-fabric model
 static void PD_BEAM_CASE_II(		// pleated drape 14 surface flat-fabric model, case II
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
+	[[maybe_unused]] double OMEGA_H,	//  horizontal profile angle, radians
 	double DE,				//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3236,7 +3236,7 @@ static void PD_BEAM_CASE_III(		// pleated drape 14 surface flat-fabric model, ca
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3470,13 +3470,13 @@ static void PD_BEAM_CASE_III(		// pleated drape 14 surface flat-fabric model, ca
 static void PD_BEAM_CASE_IV(		// pleated drape 14 surface flat-fabric model, case IV
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
-	double DE,				//  width of illumination on pleat bottom (same units as S)
+	[[maybe_unused]] double OMEGA_H,	//  horizontal profile angle, radians
+	[[maybe_unused]] double DE,			//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3605,7 +3605,7 @@ static void PD_BEAM_CASE_V(		// pleated drape 14 surface flat-fabric model, case
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3756,15 +3756,15 @@ static void PD_BEAM_CASE_V(		// pleated drape 14 surface flat-fabric model, case
 static void PD_BEAM_CASE_VI(		// pleated drape 14 surface flat-fabric model, case VI
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
-	double DE,				//  width of illumination on pleat bottom (same units as S)
+	[[maybe_unused]] double OMEGA_H,	//  horizontal profile angle, radians
+	[[maybe_unused]] double DE,			//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
-	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
-	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOFF_BT_PERP, [[maybe_unused]] double TAUFF_BB_PERP, [[maybe_unused]] double TAUFF_BD_PERP,
+	[[maybe_unused]] double RHOBF_BT_PERP, [[maybe_unused]] double TAUBF_BB_PERP, [[maybe_unused]] double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
 	double RHOBF_DD,		//  fabric back diffuse-diffuse reflectance
 	double TAUFF_DD,		//  fabric front diffuse-diffuse transmittance
@@ -5160,8 +5160,8 @@ int CFSSWP::csw_IsNEQ(	// compare short wave properties
 	int options /*=0*/,			// options:
 								//   0: compare all
 								//   1: compare only input
-	const char* w1/*="?"*/,		// context for error messages
-	const char* w2/*=?*/) const	// context for error messages
+	[[maybe_unused]] const char* w1/*="?"*/,		// context for error messages
+	[[maybe_unused]] const char* w2/*=?*/) const	// context for error messages
 // returns 0 iff *this "equals" swp
 //    else minimum # of errors found
 {
@@ -5287,7 +5287,7 @@ void CFSSWP::csw_SpecularAdjust(		// adjust properties
 //----------------------------------------------------------------------------
 static double Specular_F(		// integrand fcn for specular properties
 	double THETA,		// incidence angle, radians
-	const HEMINTP& P,	// parameters
+	[[maybe_unused]] const HEMINTP& P,	// parameters
 	int opt)			// options: what proterty to return
 {
 	double RAT_TAU, RAT_1MR;
@@ -5360,8 +5360,8 @@ int CFSLWP::clw_IsNEQ(	// compare long wave properties
 	double tol /*=0.*/,			// relative tolerance
 								//   0=require exact equality
 	int options/*=0*/,			// options (unused)
-	const char* w1/*="?"*/,		// context for msgs
-	const char* w2/*="?"*/) const
+	[[maybe_unused]] const char* w1/*="?"*/,		// context for msgs
+	[[maybe_unused]] const char* w2/*="?"*/) const
 {
 #if defined( _DEBUG)
 // debug version: all mbrs compared

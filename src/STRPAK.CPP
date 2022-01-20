@@ -817,7 +817,7 @@ int strDecode(					// decode numeric value (internal fcn)
 	const char *fmt,	// decode format, with "guard char", e.g. "%lg%1s"
 	//   Note: %1c will NOT scan over WS, use %1s
 	void *p,			// where to store converted value
-	int erOp/*=IGN*/,			// msg ctrl: IGN/WRN/ABT
+	[[maybe_unused]] int erOp/*=IGN*/,			// msg ctrl: IGN/WRN/ABT
 	const char* what/*=NULL*/,	// item name for msg, NULL=generic message
 	const char** pMsg/*=NULL*/)	// if non-NULL, error msg returned here
 //   (in addition to display per erOp)
@@ -886,7 +886,7 @@ char* strFill(			// fill string IN PLACE
 //---------------------------------------------------------------------------
 const char* strSuffix(   // generate string suffix
 	int n,				// index
-	int options /*=0*/)	// options
+	[[maybe_unused]] int options /*=0*/)	// options
 						//   future: might control style
 // returns (in Tmpstr) "a", "b" ..."aa", ...
 {

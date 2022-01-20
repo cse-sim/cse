@@ -389,8 +389,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 
 //==========================================================================
 void CDEC fpeErr(		// Handle floating point error exceptions
-
-	INT sigfpe,		// SIGFPE is passed (currently not used)
+	[[maybe_unused]] INT sigfpe,		// SIGFPE is passed (currently not used)
 	INT code )		// code indicating error
 
 // Calls BSG error routines to report error with PABT.

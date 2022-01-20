@@ -523,7 +523,7 @@ static SI FC strsnfnd(          /* find string in snake */
 
 /* returns offset in snake to str if successful, 0 if not found */
 {
-	register SI ls, off;
+	SI ls, off;
 
 	if (snp == NULL)
 		return 0;
@@ -1144,7 +1144,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 			n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			int iCh = 1;
 			for (j = 0; j < n; j++)
-			{	const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s %u\n",
 					strtcat( dtnames[i],"_",  dtcdecl[i][j], NULL),
 					iCh++ );               // <-- choice handle or index. choicb difference
@@ -1166,7 +1166,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 		if (dttype[i] & DTBCHOICN)
 		{	n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			for (j = 0; j < n; j++)
-			{	const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s 0x%x\n",
 					 strtcat( dtnames[i], "_", dtcdecl[i][j], NULL),
 					 UI(j + NCNAN + 1) );                   // <-- choicn difference.  NCNAN: 7f80, cnglob.h.
@@ -1840,7 +1840,7 @@ MBRNM& MBRNM::mn_Copy(
 #endif
 //======================================================================
 LOCAL RC recs(                  // do records
-	char *argv[],
+	[[maybe_unused]] char *argv[],
 	FILE* file_dtypeh)                  // open file dtypes.hx
 
 // returns RCOK ok; RCBAD for some error exit cases
@@ -3815,7 +3815,7 @@ SI FC mtulook2( 		// Looks up USI value associated with another in an MTU
 /* Returns:  TRUE if match found, *pnew contains matched value
 		 FALSE if no match (*pnew undefined) */
 {
-	register USI i, n;
+	USI i, n;
 
 	if (pmtu != NULL)
 	{
@@ -3838,7 +3838,7 @@ USI FC mturep( 			// Looks up USI value associated with old in a MTU and replace
 
 // returns previous new USI associated with old, 0 if not found and not replaced
 {
-	register USI i;
+	USI i;
 	USI prevnew;
 
 	for (i = 1; i < MTUCUR(pmtu); i++)
