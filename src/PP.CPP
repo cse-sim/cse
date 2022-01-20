@@ -3810,7 +3810,7 @@ LOCAL RC FC NEAR ppNewSf()		// start new parse stack frame: call at start (sub)e
        								   "    preprocessor constant expression probably too complex" */
 // allocate and init new frame
 	ppParSp++;  			// point next frame
-	ppParSp->value = (SI)0x8000;	// poss representation of "no value"
+	ppParSp->value = static_cast<SI>(0x8000);	// poss representation of "no value"
 
 	ppParSp->ty = TYNONE;  		// data type: no value yet
 	return RCOK;
