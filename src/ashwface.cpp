@@ -910,7 +910,7 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	TMRSTART( TMR_AWCALC);		// time calcs only
 								// see also TMR_AWTOT
 	RC rc = RCOK;
-	int nL = fa_CFS.NL;
+	[[maybe_unused]] int nL = fa_CFS.NL;
 	static const double tol = .001;
 	double Q[ CFSMAXNL+2];
 	double ucgSI;

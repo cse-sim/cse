@@ -1053,7 +1053,7 @@ RC SFI::sf_TopSf2()
 	Validate();
 #endif
 	UCH* fs = fStat();		// record's field status byte array
-	SFCLASS sfc = SFCLASS( sfClass);
+	[[maybe_unused]] SFCLASS sfc = SFCLASS( sfClass);
 
 	// access/check zone
 	ZNR* zp = sf_GetZone( 0);		// point zone record
@@ -1301,7 +1301,7 @@ static int FFactors(			// derive spherical geometry factors
 	{	VSet( F, nS, 1.);
 		double sumAF = VSum( areaS, nS);
 
-		int ret = 0;
+		[[maybe_unused]] int ret = 0;
 		int iL;		// loop counter
 		static const int iLLimit = 100;
 		double fChange, fLast;
@@ -2777,7 +2777,7 @@ static inline double RayleighNat( double tFilm, double lenChar, double absTDif)
 void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 // sets sb_hcNat and sb_hcFrc
 {
-	BOOL bDbPrint =
+	[[maybe_unused]] BOOL bDbPrint =
 #if defined( DEBUGDUMP)
 		DbDo( dbdRCM);
 #else
@@ -3010,7 +3010,7 @@ x			printf( "Hit\n");
 		// double Ra = (5.68 - .956 * log( tFilm)) * 1000000. * pow3( Lchar) * absTDiff;
 		double Ra = RayleighNat( tFilm, Lchar, absTDiff);
 		double Phi = .35;   // Prandtl number correction
-		int mside = sb_si ? 1 : -1;
+		[[maybe_unused]] int mside = sb_si ? 1 : -1;
 		BOOL bHtFlowUp = (sb_txa - sb_tSrf) * (sb_si ? -1. : 1.) > 0.;
 #if defined( NEWRACOR)
 		double kAir = .013 + .000026 * tFilm;

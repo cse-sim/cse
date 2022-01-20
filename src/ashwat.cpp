@@ -868,7 +868,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 #if defined( TEST_PRINT)
 	bool DoPrint = true;
 #else
-	bool DoPrint = false;
+	[[maybe_unused]] bool DoPrint = false;
 #endif
 
 	if (NL < 1)
@@ -1241,7 +1241,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		Q_INdv += HC2D(I,NL+1)*(XSOL( I)-TINdv) + HR2D(I,NL+1)*(XSOL( I)-TRMINdv);
 
 	Ucg = Q_INdv;
-	double Rvalue = 5.678/Ucg;		// Resistance in I-P units, ft2-F/Btuh
+	[[maybe_unused]] double Rvalue = 5.678/Ucg;		// Resistance in I-P units, ft2-F/Btuh
 
 	// find SHGCcg
 	SHGCcg = 0.;
@@ -1292,7 +1292,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		Q_INdv += HC2D(I,NL+1)*(XSOL( I)-TINdv) + HR2D(I,NL+1)*(XSOL( I)-TRMINdv);
 
 	FHR_IN = 1.0 + (Q_INdv/Ucg);
-	double TAE_IN = FHR_IN*TRMIN + (1-FHR_IN)*TIN;
+	[[maybe_unused]] double TAE_IN = FHR_IN*TRMIN + (1-FHR_IN)*TIN;
 
 	// calculate FHR_OUT
 	A = ACopy;
@@ -1317,7 +1317,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		Q_INdv += HC2D(I,NL+1)*(XSOL( I)-TINdv) + HR2D(I,NL+1)*(XSOL( I)-TRMINdv);
 
 	FHR_OUT = 1.0 - (Q_INdv/Ucg);
-	double TAE_OUT = FHR_OUT*TRMOUT + (1-FHR_OUT)*TOUT;
+	[[maybe_unused]] double TAE_OUT = FHR_OUT*TRMOUT + (1-FHR_OUT)*TOUT;
 
 	// compute inward-flowing fractions
 	// can only be done if ISOL > 0
@@ -4031,13 +4031,13 @@ static int caseCount[ 7] = { 0};
 		double RHOBF_BT0 = SWP_MAT.RHOSBBB + SWP_MAT.RHOSBBD;	// back rho
 
 		// drape front properties
-		int geoCaseF = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
+		[[maybe_unused]] int geoCaseF = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
 			RHOFF_BT0, SWP_MAT.TAUSFBB, SWP_MAT.TAUSFBD, SWP_MAT.RHOSFDD, SWP_MAT.TAUS_DD,
 			RHOBF_BT0, SWP_MAT.TAUSBBB, SWP_MAT.TAUSBBD, SWP_MAT.RHOSBDD, SWP_MAT.TAUS_DD,
 			LSWP.RHOSFBD, LSWP.TAUSFBB, LSWP.TAUSFBD);
 
 		// drape back properties: call with reversed fabric properies
-		int geoCaseB = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
+		[[maybe_unused]] int geoCaseB = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
 			RHOBF_BT0, SWP_MAT.TAUSBBB, SWP_MAT.TAUSBBD, SWP_MAT.RHOSBDD, SWP_MAT.TAUS_DD,
 			RHOFF_BT0, SWP_MAT.TAUSFBB, SWP_MAT.TAUSFBD, SWP_MAT.RHOSFDD, SWP_MAT.TAUS_DD,
 			LSWP.RHOSBBD, LSWP.TAUSBBB, LSWP.TAUSBBD);
@@ -4363,8 +4363,8 @@ double DE = 0.;		//  distance from front tip of any slat to shadow (caused by th
 	//  limit profile angle to +/- 89.5 deg
 	OMEGA = max( -DTOR*89.5, min( DTOR*89.5, OMEGA));
 
-	double SL_RAD = W / max( SL_WR, .0000001);
-	double SL_THETA = 2. * asin( 0.5*SL_WR);
+	[[maybe_unused]] double SL_RAD = W / max( SL_WR, .0000001);
+	[[maybe_unused]] double SL_THETA = 2. * asin( 0.5*SL_WR);
 
 #if defined( CURVEDSLAT_CORR)
 double  Slope,T_CORR_D,T_CORR_F,RHO_TEMP,TAU_TEMP;
@@ -4983,7 +4983,7 @@ int CFSLAYER::cl_IsNEQ(		// compare CFSLAYERs
 #define XCI( m) vNEQ( m, cl.m, 0)
 #define XCD( m) vNEQ( m, cl.m, tol)
 #endif
-	int errCount = 0;
+	[[maybe_unused]] int errCount = 0;
 	int ret = XCI( LTYPE) _X_ XCI( iGZS) _X_ XCI( CNTRL)
 		  _X_ XCD( S) _X_ XCD( W) _X_ XCD( C) _X_ XCD( PHI_DEG)
 		  _X_ SWP_MAT.csw_IsNEQ( cl.SWP_MAT, tol, optionsMAT, what, "SWP.MAT")

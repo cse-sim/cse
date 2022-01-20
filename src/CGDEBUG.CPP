@@ -520,7 +520,7 @@ static PBHEAD lyrh = { PBDATOFFL, lyrt, 0, 0, 0 };
 
 	char *pp = NULL;
 	RC rc = RCOK;
-	const XSURF& xs = mse->ms_GetXSRAT()->x;
+	[[maybe_unused]] const XSURF& xs = mse->ms_GetXSRAT()->x;
 
 // Allocate page (autoexpands) and format basic mass info
 	pgbuildr( &pp, &rc, 10, 78, 0, NULL, &massh, mse, PBSPECEND );
@@ -545,7 +545,7 @@ const char* MSRAT::ms_SurfBCDesc(		// generate description of boundary condix
 // returns descriptive string (in TmpStr)
 {
 	const XSURF& xs = ms_GetXSRAT()->x;
-	const XSURF* pXS = &xs;
+	[[maybe_unused]] const XSURF* pXS = &xs;
 	const MASSBC& bc = si ? outside : inside;
 	const char* bcx = "?";
 	switch( bc.bc_ty)

@@ -1613,9 +1613,10 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	//   = max draw in ws_drawMaxDur hrs
 	//   = max load in ws_loadMaxDur hrs
 	if (ws_calcMode == C_WSCALCMODECH_PRERUN)
-	{	float drawSum = ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
+	{
+		[[maybe_unused]] float drawSum = ws_drawMaxMS.vm_Sum( ws_whUse.total, &ws_drawMax);
 		float whLoad = ws_whUse.total*(ws_tUse - ws_tInletX)*waterRhoCp;
-		float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
+		[[maybe_unused]] float loadSum = ws_loadMaxMS.vm_Sum( whLoad, &ws_loadMax);
 #if defined( ALTDRAWCSV)
 		// alternative format draw export
 		//   supports testing of ws_drawMaxDur and ws_loadMaxDur
@@ -1750,7 +1751,7 @@ float DHWSYS::ws_TickAvgTInletX(	// average inlet temp
 	float& whUseTot) const	// returned: total use
 // returns all-tick average of wtk_tInletX
 {
-	RC rc = RCOK;
+	[[maybe_unused]] RC rc = RCOK;
 	whUseTot = 0.f;
 	float tUseSum = 0.f;
 	float tSum = 0.f;
@@ -2049,7 +2050,7 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 			if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
 				totHARLCk = pWH->wh_totHARL;
 
-			float fTotHARLCk = float(totHARLCk);
+			[[maybe_unused]] float fTotHARLCk = float(totHARLCk);
 
 			// solar savings fraction
 			if (ws_pDHWSOLARSYS)
@@ -5185,7 +5186,7 @@ float DHWPUMP::wp_DoHour(			// hourly DHWPUMP/DHWLOOPPUMP calcs
 
 // returns heat added to liquid stream, Btu
 {
-	RC rc = RCOK;
+	[[maybe_unused]] RC rc = RCOK;
 	wp_inElec = BtuperWh * runF * wp_pwr;	// electrical input, Btuh
 											//   per pump (no wp_mult)
 
