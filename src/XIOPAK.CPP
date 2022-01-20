@@ -46,7 +46,6 @@
 #include "cvpak.h"
 
 #include "xiopak.h"	// xiopak.cpp publics
-#include <system_error>
 
 #undef WANTXFSETUPPATH  // define if want xfSetupPath() and xfFindOnPath() and path seach in xfopen():
 						// Replacing this stuff with various C lib calls and caller local path searches
