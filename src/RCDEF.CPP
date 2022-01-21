@@ -608,10 +608,20 @@ int CDEC main( SI argc, char * argv[] )
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
 		incdir = argv[6];
-		if (!xExists(incdir))
+		if (xfExist(incdir) != 3)
 		{
-			printf("\n'%s': Include file output directory path not found.\n", incdir);
-			Errcount++;
+			if (xfExist(incdir) == 0) {
+				printf("\n'%s': Include file output directory path not found.\n", incdir);
+				Errcount++;
+			}
+			else if (xfExist(incdir) == 1 || xfExist(incdir) == 2) {
+				printf("\n'%s': Include file output directory is not a path.\n", incdir);
+				Errcount++;
+			}
+			else {
+				printf("\n'%s': Unknown error for Include file output directory.\n", incdir);
+				Errcount++;
+			}
 		}
 	}
 
@@ -619,10 +629,20 @@ int CDEC main( SI argc, char * argv[] )
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
 		cFilesDir = argv[10];
-		if (!xExists(cFilesDir))
+		if (xfExist(cFilesDir) != 3)
 		{
-			printf("\n'%s': C++ file output directory path not found.\n", cFilesDir);
-			Errcount++;
+			if (xfExist(cFilesDir) == 0) {
+				printf("\n'%s': C++ file output directory path not found.\n", cFilesDir);
+				Errcount++;
+			}
+			else if (xfExist(cFilesDir) == 1 || xfExist(cFilesDir) == 2) {
+				printf("\n'%s': C++ file output directory is not a path.\n", cFilesDir);
+				Errcount++;
+			}
+			else {
+				printf("\n'%s': Unknown error for C++ file output directory.\n", cFilesDir);
+				Errcount++;
+			}
 		}
 	}
 

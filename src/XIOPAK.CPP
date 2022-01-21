@@ -750,14 +750,6 @@ int xfExist(	// determine file existence
 	return ret;
 }		// xfExist
 //===========================================================================
-BOO xExists(				// Checks the existence of the path
-	const char* path)		// Path to check
-	// Returns	True if the file exists
-	//			False if it does not
-{
-	return filesys::exists(filesys::path(path));
-}		// xExist
-//===========================================================================
 int fileFind1(			// check existence of a single file
 	const char* drvDir,		// drive and/or dir in which to look
 							//   ignored if NULL or ""

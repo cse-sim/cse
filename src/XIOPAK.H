@@ -93,7 +93,6 @@ int xfWriteable( const char* fPath, const char** ppMsg=NULL);
 int xfExist( const char* fPath, char* fPathChecked=NULL);
 int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
-BOO xExists(const char* path);
 
 const char * FC xgetdir( void);
 SEC    FC xchdir( const char*, int erOp=WRN);
