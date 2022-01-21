@@ -152,7 +152,7 @@ SEC FC xchdir(		// Change current working directory and/or drive
 		sec = RCBAD;
 	}
 	if (sec != SECOK)
-		err(erOp, "\"%s\": %s", fsysPath.c_str(), ec.message().c_str());
+		err(erOp, "\"%s\": %s", fsysPath.string().c_str(), ec.message().c_str());
 	return sec;
 }		// xchdir
 //======================================================================
@@ -177,10 +177,10 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 	if (filesys::exists(fname)) {		// File or full path exist
 		absolutepath = filesys::absolute(fname,ec); // Create full path
 		if(ec)
-			err(erOp, "\"%s\": %s", fname, ec.message().c_str());
+			err(erOp, "\"%s\": %s", fname.string().c_str(), ec.message().c_str());
 	}
 	else {
-		err(erOp, "\"%s\": Invalid path", fname);
+		err(erOp, "\"%s\": Invalid path", fname.string().c_str());
 		return RCBAD;
 	}
 
@@ -751,7 +751,10 @@ int xfExist(	// determine file existence
 }		// xfExist
 //===========================================================================
 BOO xExists(				// Checks the existence of the path
-	const char* path) {		// Path to check
+	const char* path)		// Path to check
+	// Returns	True if the file exists
+	//			False if it does not
+{
 	return filesys::exists(filesys::path(path));
 }		// xExist
 //===========================================================================
