@@ -19,6 +19,16 @@
 
 #include "cnglob.h"
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesys = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif
+
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
 
@@ -129,19 +139,20 @@ const char * FC xgetdir()
 //======================================================================
 SEC FC xchdir(		// Change current working directory and/or drive
 
-	filesys::path path, 	// new working directory. May include drive. "" is ok NOP.
+	const char* path, 	// new working directory. May include drive. "" is ok NOP.
 	int erOp/*=WRN*/ )	// Error action -- IGN, WRN, ABT, etc
 
 // Returns SECOK if sucessful; otherwise error number SECBADRV or ENOENT
 {
+	filesys::path fsysPath = filesys::path(path);
 	SEC sec=SECOK;
 	std::error_code ec;
-	filesys::current_path(path, ec); // select directory (c library)
+	filesys::current_path(fsysPath, ec); // select directory (c library)
 	if (ec) {
 		sec = RCBAD;
 	}
 	if (sec != SECOK)
-		err(erOp, "\"%s\": %s", path, ec.message().c_str());
+		err(erOp, "\"%s\": %s", fsysPath.c_str(), ec.message().c_str());
 	return sec;
 }		// xchdir
 //======================================================================
@@ -738,6 +749,11 @@ int xfExist(	// determine file existence
 	}
 	return ret;
 }		// xfExist
+//===========================================================================
+BOO xExists(				// Checks the existence of the path
+	const char* path) {		// Path to check
+	return filesys::exists(filesys::path(path));
+}		// xExist
 //===========================================================================
 int fileFind1(			// check existence of a single file
 	const char* drvDir,		// drive and/or dir in which to look

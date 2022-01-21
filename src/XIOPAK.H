@@ -7,16 +7,6 @@
 #if !defined( _XIOPAK_H)
 #define _XIOPAK_H
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif
-
 /*-------------------------------- DEFINES --------------------------------*/
 // xfcopy() erOp option
 const int XFCOPYTEXT=EROP1;	// terminate input file at ctrl-Z:
@@ -103,9 +93,10 @@ int xfWriteable( const char* fPath, const char** ppMsg=NULL);
 int xfExist( const char* fPath, char* fPathChecked=NULL);
 int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
+BOO xExists(const char* path);
 
 const char * FC xgetdir( void);
-SEC    FC xchdir( filesys::path, int erOp=WRN);
+SEC    FC xchdir( const char*, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
 XFILE* xfopen( const char* fname, int access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
