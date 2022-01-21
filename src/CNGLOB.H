@@ -99,6 +99,7 @@ typedef PVOID HANDLE;
 typedef HANDLE HWND;
 typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE; 
+#define pascal
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
@@ -112,7 +113,6 @@ typedef HINSTANCE HMODULE;
 #define near
 #define FAR   far
 #define far
-#define pascal
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
