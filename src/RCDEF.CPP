@@ -678,7 +678,7 @@ int CDEC main( SI argc, char * argv[] )
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
-		sprintf( fdtyphname, "%s\\dtypes.hx",incdir);
+		sprintf( fdtyphname, "%s/dtypes.hx",incdir);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
 	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
@@ -714,7 +714,7 @@ int CDEC main( SI argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		update( strtprintf( "%s\\dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
+		update( strtprintf( "%s/dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
 	}
 
 	/* ************* SUMMARY ******************* */
@@ -1937,7 +1937,7 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			sprintf( dbuff, "%s\\%sx", incdir, rchFileNm);
+			sprintf( dbuff, "%s/%sx", incdir, rchFileNm);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
