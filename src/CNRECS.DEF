@@ -5503,8 +5503,8 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 //=============================================================================
 RECORD CCH "cch sub" *SUBSTRUCT	// Crankcase Heater subRecord for AIRHANDLER
 
-    *declare "RC CCH::setup( AH *ah, SI cchFn);"		// cncult.cpp
-    *declare "void CCH::endSubhr();"				// cncoil.cpp
+    *declare "RC setup( AH *ah, SI cchFn);"		// cncult.cpp
+    *declare "void endSubhr();"				// cncoil.cpp
 
 //CCH inputs
     *r CCHCM cchCM	/* crankcase heater presence and control method choice. Niles cchCtlMtd.
@@ -5599,7 +5599,7 @@ RECORD AH "airHandler" *RAT
     //only 1 of next 2 used... both decls ok? 6-97.
      *declare "DBL tsfo( DBL _tr, DBL _cr);"
      *declare "BOO tsPoss( DBL _tr, DBL _wr, DBL _cr, int want, DBL & _ts);"
-    *declare "BOO AH::resizeFansIf( float _cMx, float vfDsWas);"
+    *declare "BOO resizeFansIf( float _cMx, float vfDsWas);"
     *declare "RC setMode();"
     *declare "BOO setTsSp1( BOO est, DBL &tsOut);"
     *declare "void wzczSp( BOO est, BOO cooling, BOO maxIt, DBL llim, DBL ulim, TU *ctu, DBL &tTsSp, FLOAT &cznC);"
@@ -6319,7 +6319,7 @@ RECORD ZHX "zhx" *RAT		// zone hvac transfer
 
 //=============================================================================
 RECORD PUMP "pump sub" *SUBSTRUCT	// pump subrecord for BOILER, CHILLER, TOWERPLANT, HPLOOP, .
-    *declare "RC PUMP::setup( record *r, SI pumpFn);"
+    *declare "RC setup( record *r, SI pumpFn);"
     //*declare "RC PUMP::endSubhr();"
  //PUMP user inputs
     *r H2OFLOW_GZ gpm		// rated flow (gpm), delivered at HdLoss. required input. code defaults .gpm for blrp, chcp, chpp.
@@ -6339,11 +6339,11 @@ RECORD PUMP "pump sub" *SUBSTRUCT	// pump subrecord for BOILER, CHILLER, TOWERPL
 //=============================================================================
 RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW coils in AH's, HX's in HPLOOPs
 						// basAncs: input HpiB; run HpB.
-    *declare "RC HEATPLANT::setup();"
-    *declare "BOO HEATPLANT::hpOn();"					// turn on AVAIL heatplant: load calls. cnhp.cpp.
-    *declare "RC HEATPLANT::hpEstimate(BOO wantHeat=FALSE);"		// estimate a heatplant, cnhp.cpp
-    *declare "RC HEATPLANT::hpCompute();"				// compute a heatplant, cnhp.cpp
-    *declare "void HEATPLANT::adjCapF();				// adjust capF for overload/underload. cnhp.cpp"
+    *declare "RC setup();"
+    *declare "BOO hpOn();"					// turn on AVAIL heatplant: load calls. cnhp.cpp.
+    *declare "RC hpEstimate(BOO wantHeat=FALSE);"		// estimate a heatplant, cnhp.cpp
+    *declare "RC hpCompute();"				// compute a heatplant, cnhp.cpp
+    *declare "void adjCapF();				// adjust capF for overload/underload. cnhp.cpp"
     *declare "void fazInit(int isAusz);"  				// cnhp.cpp  6-95
     *declare "void rddiInit();"						// cnhp.cpp 6-95
     *declare "void endP2Dsd();"						// cnhp.cpp 6-95
@@ -6396,8 +6396,8 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
 *END					// HEATPLANT
 //=============================================================================
 RECORD BOILER "boiler" *RAT		// boiler: subobject of HEATPLANT. basAncs: input BlriB; run BlrB.
-    *declare "RC BOILER::setup();"
-    *declare "RC BOILER::endSubhr();"
+    *declare "RC setup();"
+    *declare "RC endSubhr();"
 				// in base class: .name (required), .ownTi (subscript of owning HEATPLANT), more.
  //boiler user inputs
     *f POWER_GZ blrCap		// capacity (Btuh). required input.
@@ -6433,14 +6433,14 @@ RECORD BOILER "boiler" *RAT		// boiler: subobject of HEATPLANT. basAncs: input B
 //=============================================================================
 RECORD COOLPLANT "coolPlant" *RAT	// coolplant: Top object, contains chillers, supports CHW coils in AH's. CpiB, CpB.
 
-    *declare "RC COOLPLANT::setup();"
-    *declare "BOO COOLPLANT::cpOn();"
-    *declare "RC COOLPLANT::cpEstimate(BOO wantCool=FALSE);"
-    *declare "RC COOLPLANT::cpCompute();"
-    *declare "DBL/*POWER*/ COOLPLANT::capStg();"
-    *declare "BOO COOLPLANT::nxAh( AH *&ah);"
-    *declare "BOO COOLPLANT::nxCh( CHILLER *&ch);"
-    *declare "BOO COOLPLANT::nxChStg( CHILLER *&ch, SI stgi=-1);"
+    *declare "RC setup();"
+    *declare "BOO cpOn();"
+    *declare "RC cpEstimate(BOO wantCool=FALSE);"
+    *declare "RC cpCompute();"
+    *declare "DBL/*POWER*/ capStg();"
+    *declare "BOO nxAh( AH *&ah);"
+    *declare "BOO nxCh( CHILLER *&ch);"
+    *declare "BOO nxChStg( CHILLER *&ch, SI stgi=-1);"
 
     // in base class: .name, .ownTi, more. Name required, for reference from coil.
 
@@ -6519,9 +6519,9 @@ RECORD COOLPLANT "coolPlant" *RAT	// coolplant: Top object, contains chillers, s
 //=============================================================================
 RECORD CHILLER "chiller" *RAT	// chiller. subobject of COOLPLANT. ChiB, ChB.
 
-    *declare "RC CHILLER::setup();"
+    *declare "RC setup();"
     //chiller compute code is in coolplant.
-    *declare "RC CHILLER::endSubhr();"
+    *declare "RC endSubhr();"
 
     // in base class: .name, .ownTi, more.
     // .name required, for reference in coolplant staging commands.
@@ -6622,16 +6622,16 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     // in base class: .name, .ownTi, more.
     // Name required, for reference in COOLPLANTs and/or HPLOOPs
 
-    *declare "RC   TOWERPLANT::setup();"			// cncult6.cpp
-    *declare "RC   TOWERPLANT::setupNtuADs();"			// cncult6.cpp
-    *declare "RC   TOWERPLANT::setupNtuAOd();"			// cncult6.cpp
-    *declare "RC   TOWERPLANT::tpEstimate();"			// cntow.cpp
-    *declare "RC   TOWERPLANT::tpCompute();"			// cntow.cpp
-    *declare "RC   TOWERPLANT::endSubhr();"			// cntow.cpp
-    *declare "RC   TOWERPLANT::findSpeed( DBL q);"					// cntow.cpp
-    *declare "RC   TOWERPLANT::varSpeedF( DBL qWant, DBL &f, DBL &q, FLOAT &guess);"	// cntow.cpp
-    *declare "RC   TOWERPLANT::towModel( DBL f, DBL &q, FLOAT &guess);"			// cntow.cpp
-    *declare "BOO TOWERPLANT::nxCp( COOLPLANT *&cp);"					// cntow.cpp
+    *declare "RC   setup();"			// cncult6.cpp
+    *declare "RC   setupNtuADs();"			// cncult6.cpp
+    *declare "RC   setupNtuAOd();"			// cncult6.cpp
+    *declare "RC   tpEstimate();"			// cntow.cpp
+    *declare "RC   tpCompute();"			// cntow.cpp
+    *declare "RC   endSubhr();"			// cntow.cpp
+    *declare "RC   findSpeed( DBL q);"					// cntow.cpp
+    *declare "RC   varSpeedF( DBL qWant, DBL &f, DBL &q, FLOAT &guess);"	// cntow.cpp
+    *declare "RC   towModel( DBL f, DBL &q, FLOAT &guess);"			// cntow.cpp
+    *declare "BOO  nxCp( COOLPLANT *&cp);"					// cntow.cpp
 #if 0 // when HPLOOP defined, 10-92
 *    *declare "BOO TOWERPLANT::nxHl( HPLOOP *&hl);"					// cntow.cpp.
 #endif
