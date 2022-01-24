@@ -1,6 +1,12 @@
 @echo off
 cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"
-goto end
+if not exist "@CMAKE_SOURCE_DIR@/msvc/build/Testing/Temporary/LastTestFailed.log" goto end
+setlocal
+set File="C:/Users/galan/Documents/Big Ladder Software/cse/msvc/build/Testing/Temporary/LastTestFailed.log""
+set maxbytesize=0
+FOR /F "usebackq" %%A IN ('%File%') DO set size=%%~zA
+if %size% gtr %maxbytesize% (goto end)
+
 set /p Input=Do you want to update (Y/N):
 IF %Input%==Y echo This will permanently modify the REP files. Are you sure? & set /p Response=Please confirm (Y/N): & IF %Response%==Y echo Updating... & CALL update.bat
 :end
