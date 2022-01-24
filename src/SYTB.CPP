@@ -159,7 +159,7 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 #undef SYTBADD
 }			// syAdd
 //===========================================================================
-RC FC syDel( SYTBH *st, SI tokTy, BOO casi, BOO nearId, char *id, BOO undefBad/*=FALSE*/, void **pStb/*=NULL*/)
+RC FC syDel( SYTBH *st, SI tokTy, BOO casi, [[maybe_unused]] BOO nearId, char *id, BOO undefBad/*=FALSE*/, void **pStb/*=NULL*/)
 
 // delete symbol table entry
 

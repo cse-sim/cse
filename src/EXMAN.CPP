@@ -255,7 +255,7 @@ static RC extValidate(
 //===========================================================================
 void FC exClean(	// exman.cpp cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH. type in cnglob.h.
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH. type in cnglob.h.
 
 // added for DLL version that should free every bit of memory. Rob 12-3-93.
 {
@@ -748,7 +748,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 			for (i = 0;  i < ex->whChafN;  i++)  		// loop over change flag registrations for this expr
 			{
 				w = ex->whChaf+i;
-				BP b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
+				b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
 				if (b && b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this entry
 				{
 					if (j < i)				// if any have been deleted,
@@ -1111,7 +1111,7 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 {
 	RC rc;
 	const char* ms;
-	NANDAT v, *pv;
+	NANDAT v=NULL, *pv;
 	SI isChanged;
 
 // get new value: evaluate expression's pseudo-code
@@ -1399,7 +1399,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		return strtprintf( (char *)MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
 
 // field name
-	const char* mName;
+	const char* mName=NULL;
 	for (SFIR *fir = b->fir;  fir && fir->fdTy;  fir++)		// find member name in rat's fields-in-record table
 		if (fir->off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment

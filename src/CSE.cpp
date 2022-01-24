@@ -386,7 +386,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	int argc, 			// argument count (size of argv), including arg[0], which is (client) .exe file pathname.
 	const char* argv[],	// array of pointers to argument strings, each a file name or flag.
 						// multiple file names cause multiple calls from cne1 to cse2 level
-	CSEMSGCALLBACK* _pMsgCallBack /*=NULL*/
+	[[maybe_unused]] CSEMSGCALLBACK* _pMsgCallBack /*=NULL*/
 #if defined( WINorDLL)
 	, HINSTANCE _hInst		// calling application instance handle (but server's if client-server; see hInstLib for DLL's)
 	, HWND _hPar    		// calling application Window handle -- parent of windows displayed here
@@ -539,7 +539,7 @@ _DLLImpExp int CSEZ( 			// interface to CSE main function, callable by WinMain o
 
 	const char* _exePath,   // calling program pathName, searched for other files (get with GetModuleFileName)
 	const char* _cmdLine,   	// string of fileName and flag arguments as would be given on command line
-	CSEMSGCALLBACK* _pMsgCallBack /*=NULL*/
+	[[maybe_unused]] CSEMSGCALLBACK* _pMsgCallBack /*=NULL*/
 #if defined( WINorDLL)
 	, HINSTANCE _hInst		// additional arguments as for cse() -- see descriptions below
 	, HWND _hPar
@@ -1467,7 +1467,7 @@ LOCAL void cnClean( 		// CSE overall init/cleanup routine
 
 	// free all records (in basAncs)(both input and run)
 	// and any "types" sub-basAncs.  includes clearFileIxs().
-	cleanBasAncs(cs);		// ancrec.cpp
+	cleanBasAncs();		// ancrec.cpp
 
 	if (cs != ENTRY)			// cuz paths are already set up
 		xfClean();				// xiopak.cpp and associated files

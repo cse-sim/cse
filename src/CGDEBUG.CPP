@@ -443,8 +443,8 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 						  &wshadh, &WshadR.p[xs->x.iwshad], PBSPECEND );
 			for (int i = -1; ++i < xs->x.nsgdist; )				// dump its solar gain dists
 			{
-				char *s1, *s2, *s3;
-				BP rb;
+				char *s1=NULL, *s2, *s3=NULL;
+				BP rb=NULL;
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
 				case SGDTTZNAIR:
@@ -523,7 +523,7 @@ static PBHEAD lyrh = { PBDATOFFL, lyrt, 0, 0, 0 };
 
 	char *pp = NULL;
 	RC rc = RCOK;
-	const XSURF& xs = mse->ms_GetXSRAT()->x;
+	[[maybe_unused]] const XSURF& xs = mse->ms_GetXSRAT()->x;
 
 // Allocate page (autoexpands) and format basic mass info
 	pgbuildr( &pp, &rc, 10, 78, 0, NULL, &massh, mse, PBSPECEND );
@@ -548,7 +548,7 @@ const char* MSRAT::ms_SurfBCDesc(		// generate description of boundary condix
 // returns descriptive string (in TmpStr)
 {
 	const XSURF& xs = ms_GetXSRAT()->x;
-	const XSURF* pXS = &xs;
+	[[maybe_unused]] const XSURF* pXS = &xs;
 	const MASSBC& bc = si ? outside : inside;
 	const char* bcx = "?";
 	switch( bc.bc_ty)

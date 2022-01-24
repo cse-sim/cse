@@ -429,7 +429,7 @@ SURFGEOM::~SURFGEOM()
 //-----------------------------------------------------------------------------
 void SURFGEOM::gx_SetParent(			// parent linkage etc
 	record* pParent,		// parent record: SHADEX, PVARRAY, etc
-	int options /*=0*/)		// options TBD
+	[[maybe_unused]] int options /*=0*/)		// options TBD
 {
 	gx_pParent = pParent;
 }		// SURFGEOM::gx_SetParent
@@ -467,7 +467,7 @@ void SURFGEOM::gx_CopySubObjects()		// copy heap subobjects
 }	// SURFGEOM::gx_CopySubObjects
 //-----------------------------------------------------------------------------
 RC SURFGEOM::gx_CheckAndMakePolygon(
-	int phase,
+	[[maybe_unused]] int phase,
 	int fnG)		// SURFGEOM field number within parent
 // returns RCOK iff success
 
@@ -657,7 +657,7 @@ RC SHADEX::sx_CkF()
 static void PenumbraMessageHandler(
 	const int messageType,
 	const std::string message,
-	void* contextPtr)
+	[[maybe_unused]] void* contextPtr)
 {
 	// TOPRAT* pTop = (TOPRAT *)contextPtr;
 

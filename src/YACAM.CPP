@@ -163,7 +163,7 @@ RC YACAM::close( int erOp /*=WRN*/)	// close file, nop if not opened, RCOK if ok
 	return rc;
 }			// YACAM::close
 //---------------------------------------------------------------------------
-RC YACAM::rewind( int erOp /*=WRN*/)
+RC YACAM::rewind([[maybe_unused]] int erOp /*=WRN*/)
 // repos file to beginning
 {
 	RC rc = clrBufIf();
@@ -565,7 +565,7 @@ state	    -------- -------- -------- -------- -------- -------- -------- -------
 		else                    ct=7;
 
 		// perform action for char type in state
-		char savc;
+		char savc=NULL;
 		int reDo;
 		do
 		{
@@ -784,7 +784,7 @@ int YACAM::line( 	// return current line
 // returns -1 if clean EOF before 1st char
 //         else >= 0 = line length
 {
-	char c;
+	char c=NULL;
 	int iC;
 	for (iC=0; iC < lineSz; iC++)
 	{	c = getC( erOp);
@@ -890,7 +890,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 		cc = toupper(cc);
 
 		// access variable arg list if not skipping
-		size_t size;
+		size_t size = 0;
 		if (cc != 'X')
 		{ 	p = va_arg( pp, void *);	// get result-storing pointer from var arg list
 			if (cc=='C')				// for C, pointer is followed by character array size

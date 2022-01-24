@@ -452,7 +452,7 @@ int AIRSTATE::as_AddQSenLat(		// add sensible and latent heat to an air stream
 			ret = 1;
 		}
 	}
-	float qTot = qSen + qLat;
+	[[maybe_unused]] float qTot = qSen + qLat;
 #if defined( _DEBUG)
 	float hOut = as_Enthalpy();
 	if (frDiff( absAmf*(hOut-hIn), double( qTot)) > .0001)
@@ -793,7 +793,7 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	ad.ad_mdotX = avfGross * iz_vfExhRat * rhoX / 60.;
 
 #if defined( DEBUGDUMP)
-	if (0 && DbDo( dbdAIRNET))
+	if (0 & DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
@@ -1782,13 +1782,13 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #endif
 		// solve for pressure corrections
 		int gjRet = gaussjb( an_jac, an_nz, rV, 1);
-		if (0 && gjRet)
+		if (0 & gjRet)
 			err( PWRN,				// display program error msg, wait for key
 				"AIRNET::an_Calc: matrix is %s",
 					gjRet == 1 ? "singular" : "too large");
 
 #if defined( DEBUGDUMP)
-		if (0 && bDbPrint)
+		if (0 & bDbPrint)
 		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
@@ -1888,7 +1888,7 @@ DUCTSEG::DUCTSEG( basAnc* b, TI i, SI noZ/*=0*/)
 }	// DUCTSEG::~DUCTSEG
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_Init(			// init DUCTSEG
-	int options/*=0*/)
+	[[maybe_unused]] int options/*=0*/)
 {
 	ds_sbcO.sb_Init( this);
 #if 0

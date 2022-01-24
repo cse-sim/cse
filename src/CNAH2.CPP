@@ -1643,7 +1643,7 @@ x}			// AH::tsFo
 //-----------------------------------------------------------------------------------------------------------------------------
 DBL AH::tsFo(		// get supply temp zone-controlled ah will deliver at specified approach to ctu max flow
 	float approach,
-	BOO outsideCall )		// TRUE if called not from within air handler
+	[[maybe_unused]] BOO outsideCall )		// TRUE if called not from within air handler
 
 // should not be called for 0 flow (0 approach when ctu min flow is 0)
 
@@ -2004,8 +2004,7 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 
 // return leaks/losses/fan heat like puteRa()
 
-
-	DBL _tr1, _tr2, /*_wr1,*/ _cr1, _frFanOn = 1.;		// sets these using _tr, _wr, _cr, fcc, .
+	DBL _tr1=1, _tr2, /*_wr1,*/ _cr1, _frFanOn=1.;		// sets these using _tr, _wr, _cr, fcc, .
 	{
 		// init leakage. story in puteRa.
 #ifdef AUTOSIZE//7-95
@@ -2559,7 +2558,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 		   but search all in case zone is in wrong mode (eg when estimating (may still miss: old mdSeq may be wrong)). */
 
 		TI xi = 0;
-		ZHX *x;
+		ZHX *x=NULL;
 		TI spMd = czp->md;
 		if (czp->nMd)						// insurance: if zone currently has any hvac modes
 			for ( ; ; )      					// mode search loop, 2 endtests in loop
@@ -2805,7 +2804,7 @@ x	 					   (and increasing (heat) ts INCREASES flow) */
 								 : max( aTs, ttTsSp + Top.absTol);	// (used re trx leak adj, next)
 					DBL pessTz = cooling ? min( czp->aTz, sp - Top.absTol) 	// worse of curr and setpoint zone temps
 								 : max( czp->aTz, sp + Top.absTol);
-					DBL crx, trx;						// return flow & temp for cM @ ctu
+					DBL crx, trx=0;						// return flow & temp for cM @ ctu
 					//  if only 1 tu (usual case), calc crx/trx anew, else adjust crNx/trNx:
 					if ( !TuB.p[tu1].nxTu4a				// if ah serves only 1 terminal (no 2nd in chain)
 							&&  tu1==ahCtu					// if it is control terminal (believe redundant)
@@ -3814,7 +3813,7 @@ void AH::upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas)
 			}
 			if (tu->cO != 0.f)				// skip ws for terminals on zones with no other flows (needed?)
 			{
-				DBL wcO;				// sigma(tu->cz*ws) adjusted for this ah ws and/or cz change,
+				DBL wcO=0;				// sigma(tu->cz*ws) adjusted for this ah ws and/or cz change,
 				switch (Top.humMeth)		// ...computed using average or latest ws according to humidity calculation method
 				{
 				case C_HUMTHCH_PHIL:

@@ -186,7 +186,7 @@ RC topSf1()
 RC SFI::sf_TopSf1()
 {
 	RC rc = RCOK;
-	RC rc1;
+	RC rc1 = 0;
 
 #if defined( _DEBUG)
 	Validate();
@@ -476,7 +476,7 @@ RC SFI::sf_TopSf1()
 	// topSf1: check / access construction if given
 
 	SI conSet = fs[ SFI_SFCON] & FsSET; 		// nz if construction spec'd (always false for window)
-	CON *con;
+	CON *con=NULL;
 	if (conSet)
 		if (ckRefPt( &ConiB, sfCon, "sfCon", NULL, (record **)&con, &rc) )
 			return rc;			// bad ref (msg issued, rc set, no run).
@@ -852,7 +852,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
 		char* s = NULL;					// set non-NULL iff error
-		BOO toOutside;
+		BOO toOutside=NULL;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
 			if (sg->sgSide==C_SIDECH_EXTERIOR)	// if 'exterior' specified
@@ -1053,7 +1053,7 @@ RC SFI::sf_TopSf2()
 	Validate();
 #endif
 	UCH* fs = fStat();		// record's field status byte array
-	SFCLASS sfc = SFCLASS( sfClass);
+	[[maybe_unused]] SFCLASS sfc = SFCLASS( sfClass);
 
 	// access/check zone
 	ZNR* zp = sf_GetZone( 0);		// point zone record
@@ -1067,7 +1067,7 @@ RC SFI::sf_TopSf2()
 	// access construction if given
 
 	BOO conSet = fs[ SFI_SFCON] & FsSET;	// non-0 if contruction given
-	CON *con;
+	CON *con=NULL;
 	if (conSet)
 	{	if (sfCon <= 0  ||  sfCon > ConiB.n)	// if bad
 			return rc;					// skip (msg'd above)
@@ -1301,7 +1301,7 @@ static int FFactors(			// derive spherical geometry factors
 	{	VSet( F, nS, 1.);
 		double sumAF = VSum( areaS, nS);
 
-		int ret = 0;
+		[[maybe_unused]] int ret = 0;
 		int iL;		// loop counter
 		static const int iLLimit = 100;
 		double fChange, fLast;
@@ -2103,7 +2103,7 @@ PRI::PRI( basAnc* b, TI i, SI noZ /*=0*/)
 }		// PRI::FixUp
 //-----------------------------------------------------------------------------
 RC PRI::pr_Ckf(
-	int options)	// 1
+	[[maybe_unused]] int options)	// 1
 {
 	RC rc = RCOK;
 	FixUp();
@@ -2192,7 +2192,7 @@ void XSURF::xs_Init(			// initialize
 	}
 }		// XSURF::xs_Init
 //-----------------------------------------------------------------------------
-XSURF& XSURF::Copy( const XSURF* pXS, int options /*=0*/)
+XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
 	memcpy( this, pXS, sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
@@ -2777,7 +2777,7 @@ static inline double RayleighNat( double tFilm, double lenChar, double absTDif)
 void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 // sets sb_hcNat and sb_hcFrc
 {
-	BOOL bDbPrint =
+	[[maybe_unused]] BOOL bDbPrint =
 #if defined( DEBUGDUMP)
 		DbDo( dbdRCM);
 #else
@@ -3010,7 +3010,7 @@ x			printf( "Hit\n");
 		// double Ra = (5.68 - .956 * log( tFilm)) * 1000000. * pow3( Lchar) * absTDiff;
 		double Ra = RayleighNat( tFilm, Lchar, absTDiff);
 		double Phi = .35;   // Prandtl number correction
-		int mside = sb_si ? 1 : -1;
+		[[maybe_unused]] int mside = sb_si ? 1 : -1;
 		BOOL bHtFlowUp = (sb_txa - sb_tSrf) * (sb_si ? -1. : 1.) > 0.;
 #if defined( NEWRACOR)
 		double kAir = .013 + .000026 * tFilm;

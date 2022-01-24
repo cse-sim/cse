@@ -971,7 +971,7 @@ x			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to 
 	}
 	else
 	{	// CNE zone
-		DBL wDiff;
+		DBL wDiff=0;
 		switch (Top.humMeth)			// compute infil air w diff from displaced air consistently with w calc method
 		{
 		case C_HUMTHCH_PHIL:
@@ -2152,7 +2152,7 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	// [note zn_qsHvac may be updated by AH:antRatTs when it adjusts tz.]
 
 // zone's latent power, similarly.      Moisture inflow = sigma(c * (ws - wz)) = sigma(c*ws) - wz*sigma(c).
-	DBL wDiffC;
+	DBL wDiffC=0;
 	switch (Top.humMeth)	// use average or latest values per humidity calc method, else zone latent gain does not balance
 	{
 	case C_HUMTHCH_PHIL:
@@ -2727,7 +2727,7 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 // c:       sigma tu->c: total supply flow into zone, heat cap units.
 	DBL aw, bw; 							// a and b for humidity balance equation
 	DBL M = i.znVol * Top.airDens(_tz);		// mass of air in zone (use average temp (_tz+tzls)/2. ?? )
-	DBL _wz;
+	DBL _wz = 0;
 	float _wo = Top.wOSh;		// outdoor humidity
 	DBL _wzls = wzls;			// zone humidity last subhour
 	xLGain = 0;					// init to no supersaturation, no excess humidity to reject (ref arg)

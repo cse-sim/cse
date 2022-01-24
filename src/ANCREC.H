@@ -222,7 +222,7 @@ class record		// base class for records
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
-	virtual int IsCountable( int options) const { return 1; }
+	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
 	virtual void FixUp() { };		// optional fixup after reAl()
 	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
 	int IsNameMatch( const char* _name) const;
@@ -490,7 +490,7 @@ template <class T> T* anc<T>::GetAt( int i) const
 //  ancrec.cpp non-member fcn declarations
 //-----------------------------------------------------------------------------
 RC ArrayStatus( const UCH* _sstat0,	int count, int& nSet, int& nVal);
-void FC cleanBasAncs( CLEANCASE cs); 	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
+void FC cleanBasAncs( ); 	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
 
 // functions for saving file names for record.fileIx 2-94
 void clearFileIxs();

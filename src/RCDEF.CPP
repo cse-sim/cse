@@ -752,7 +752,7 @@ LOCAL void dtypes(                      // do data types
 {
 	SI val, choff, choicb, choicn, nchoices, i;
 	USI chan;
-	char *cp;
+	char *cp=NULL;
 
 	// global Fpm assumed preset to file_dtypes
 	// global file fdtyph assumed open if HFILESOUT
@@ -1138,7 +1138,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 			n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			int iCh = 1;
 			for (j = 0; j < n; j++)
-			{	const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s %u\n",
 					strtcat( dtnames[i],"_",  dtcdecl[i][j], NULL),
 					iCh++ );               // <-- choice handle or index. choicb difference
@@ -1160,7 +1160,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 		if (dttype[i] & DTBCHOICN)
 		{	n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			for (j = 0; j < n; j++)
-			{	const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s 0x%x\n",
 					 strtcat( dtnames[i], "_", dtcdecl[i][j], NULL),
 					 UI(j + NCNAN + 1) );                   // <-- choicn difference.  NCNAN: 7f80, cnglob.h.
@@ -1675,7 +1675,7 @@ static SWTABLE rdirtab[] =      /* table of record level * directives:
 										   Content is record type bit or other value tested in switch in records loop */
 {
 	{ "rat",       RTBRAT     },        // Record Array Table record type
-	{ "substruct", (SI)RTBSUB },        // substructure-only "record" definition
+	{ "substruct", static_cast<SI>(RTBSUB) },        // substructure-only "record" definition
 	{ "hideall",   RTBHIDE    },        // omit entire record from probe names help (CSE -p)
 	{ "baseclass", 32764      },        // *baseclass <name>: C++ base class for this record type
 	{ "excon",     32765      },        // external constructor: declare only (else inline code may be supplied)
@@ -1691,7 +1691,7 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 										value for which switch in fields loop has a case. */
 {
 // field flags, for SFIR.ff
-	{ "hide",   (SI)0x8000 | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
+	{ "hide",   static_cast<SI>(0x8000) | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
 
 // variations: how often program changes field, for SFIR.evf
 	// input rat members set during input checking should be encoded at least *r to prevent input time probes.
@@ -1834,7 +1834,7 @@ MBRNM& MBRNM::mn_Copy(
 #endif
 //======================================================================
 LOCAL RC recs(                  // do records
-	char *argv[],
+	[[maybe_unused]] char *argv[],
 	FILE* file_dtypeh)                  // open file dtypes.hx
 
 // returns RCOK ok; RCBAD for some error exit cases
@@ -2746,7 +2746,7 @@ LOCAL void wrStr(               // Do *struct field
 	static SI level=0;
 	SI i, j, fdTy;
 	SI field, nflds, fldsize, fdoffbeg, fieldbeg, source;
-	SI array, generic;
+	SI array=0, generic;
 	char lcsnm[MAXNAMEL];                       // Field name, lower case
 
 	fdoffbeg = Fdoff;
@@ -3091,9 +3091,9 @@ LOCAL void wSrfd1( FILE *f)
 			 "/* DO NOT EDIT: This file is overwritten when rcdef is run.\n"
 			 "   To change, change rcdef.exe input as desired and re-run rcdef.exe via the appropropriate batch file. */\n\n"
 			 "\n"
-			 "#include \"cnglob.h\"	// includes <dtypes.h> for DTxxxx symbols\n"
-			 "#include \"srd.h\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
-			 "#include <ancrec.h>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
+			 "#include \"CNGLOB.H\"	// includes <dtypes.h> for DTxxxx symbols\n"
+			 "#include \"SRD.H\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
+			 "#include <ANCREC.H>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
 			 "// also <rc___.h> file(s) are included below.\n"
 			 "\n"
 			 "#undef o		// in case an .h file defines o\n"// 1-95

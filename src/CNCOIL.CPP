@@ -91,7 +91,7 @@ RC AHHEATCOIL::reSetup( 	// re set up coil for changed total capacity (.captRat)
 	return setup(ah);					// (re) initialize coil model
 }			// AHHEATCOIL::reSetup
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AHHEATCOIL::setup( AH *ah)	// set up heat coil per current capacity in record -- initially or at change while autosizing
+RC AHHEATCOIL::setup([[maybe_unused]] AH *ah)	// set up heat coil per current capacity in record -- initially or at change while autosizing
 
 // CAUTION: at first call if resizing, captRat may contain 0 or a NAN.
 {
@@ -930,8 +930,8 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 	}
 	else					// heat pump can meet load in time fan runs, w/o suppl heat.  determine runtime.
 	{
-		DBL hlf; 		// heating load factor: hp heat used/capCon, excluding reg & dfr rh. frCprOn may be larger.
-		DBL plf; 		// part load factor: factor by which COP falls due to cycling.
+		DBL hlf=0; 		// heating load factor: hp heat used/capCon, excluding reg & dfr rh. frCprOn may be larger.
+		DBL plf=0; 		// part load factor: factor by which COP falls due to cycling.
 		/* and have cdm = modified (from ahpCd, at setup time) cycling degradation coefficient
 		   = ratio of COP reduction to capacity reduction for cycling.
 		   = (1 - plf)/(1 - hlf) */
@@ -1886,15 +1886,16 @@ x	}
 
 //--- head of loop to repeat if capacity must be increased during autoSizing, 7-95
 
-	DBL texf;						// full-load exit temp for current entry conditions
-	DBL wexf;						// full-load exit hum rat, for interest & consistency & debug chks
+	DBL texf=0;						// full-load exit temp for current entry conditions
+	DBL wexf=0;						// full-load exit hum rat, for interest & consistency & debug chks
 #if 0
 	x    DBL wena = max( wen0, ahcc.wsatMinTEvap);    	// wena: artificial wen; increase it if coil dry
 #else //11-1-95: move wena init into autoSize loop below
-	DBL wena;					    	// wena: artificial wen: increased if coil dry
+	DBL wena=0;					    	// wena: artificial wen: increased if coil dry
 #endif
-	DBL te, he;
-	FLOAT we;
+
+	DBL te=0, he;
+	FLOAT we=0;
 	SI cs1=0, cs2=0;					/* removed redundant init when BCC32 4.5 warned, 12-94.
 							   But init appears non-redundant, restored 7-95. */
 

@@ -3141,14 +3141,17 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_IsModeAvailable( int rsMode);"
 *declare "int rs_IsAutoSizing() const;"
 *declare "int rs_SupplyAirState( int rsMode, float speedF=1.f);"
+*declare "bool rs_IsSupplyAirTempUseful( int rsMode, float tSup, float& tSupUseful) const;"
 *declare "float rs_SupplyDSEAndDucts(AIRSTATE& as, float amf = -1.f);"
 *declare "void rs_SupplyDSEAndDuctsRev( AIRSTATE& as);"
-*declare "float rs_TsupVarFlow( float fAmf, AIRSTATE& as);"
+*declare "float rs_TSupVarFlow( float fAmf, AIRSTATE& as);"
 *declare "double rs_ZoneAirRequest( double znAmfSup, int iAux=0);"
 *declare "RC rs_AllocateZoneAir();"
 *declare "RC rs_TotalAirRequestForSpeedF( float speedF, int options=0);"
 *declare "double rs_FxCapForSpeedF( double& speedF);"
 *declare "RC rs_FindRequiredSpeedF();"
+*declare "RC rs_FindSpeedFForTSup( double tSup);"
+*declare "double rs_TSupForSpeedF( double& speedF);"
 #if 0   // incomplete/unused ideas
 *declare "void rs_AvgZoneCond();"
 #declare "float rs_SenHeatDelivered();"
@@ -3217,8 +3220,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
-*declare "static float rs_Cap47FromCap95ASHP( float cap95) { return 0.98f * cap95 + 180.f; }"
-*declare "static float rs_Cap95FromCap47ASHP( float cap47) { return max( cap47 - 180., 0.f) / 0.98f; }"
+*declare "float rs_Cap47FromCap95ASHP( float cap95) const;"
+*declare "float rs_Cap95FromCap47ASHP( float cap47) const;"
 
 *i RSYSTYCH rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
 *i CHP rs_desc				// optional description string (e.g. model #)
@@ -3309,18 +3312,23 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 						// ASHP heating (all values net = include rated fan heat / power)
 *r FLOAT_GZ rs_HSPF			// rated HSPF, Btuh/W
-*f *e FLOAT_GZ rs_cap47		// full speed heating capacity at ODB=47 F
+*f *e FLOAT_GZ rs_cap47		// full speed net heating capacity at ODB=47 F
 *f *e FLOAT_GZ rs_COP47		// COP at ODB=47 F
-*f *e FLOAT_GZ rs_cap35		// full speed heating capacity at ODB=35 F
+*f *e FLOAT_GZ rs_cap35		// full speed net heating capacity at ODB=35 F
 *f *e FLOAT_GZ rs_COP35     // COP at ODB=35 F
-*f *e FLOAT_GZ rs_cap17		// full speed heating capacity at ODB=17 F
+*f *e FLOAT_GZ rs_cap17		// full speed net heating capacity at ODB=17 F
 *f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
-*f *e FLOAT_GZ rs_cap05		// full speed heating capacity at ODB=5 F
+*f *e FLOAT_GZ rs_cap05		// full speed net heating capacity at ODB=5 F
 *f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
 *r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
 *r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
 							//   default ?
+*r FLOAT_GZ rs_capRat9547   // total net cap95 (cooling) / net cap47 (heating)
+                            //   re consistent htg/clg size iff both autosized
+                            //   (else inconsistency ignored)
+                            //   default=correlation per A. Conant
+                            //   see rs_Cap95FromCap47ASHP() and rs_Cap47FromCap95ASHP()
 
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
@@ -3407,7 +3415,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 
 					// compression cooling
-*f *e FLOAT_GEZ rs_cap95;		// rated total full speed net cooling capacity at 95 F (>= 0), Btuh
+*f *e FLOAT_GEZ rs_cap95;		// rated full speed net total cooling capacity at 95 F (>= 0), Btuh
 *f *e FLOAT_GEZ rs_cap95_As;	// autosize cap95 net total cooling cap, Btuh
 *f *e FLOAT_GEZ rs_cap95_AsNov;	// raw autoSized cap95 net total cooling cap w/o oversizing, Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.

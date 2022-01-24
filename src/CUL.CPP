@@ -3408,7 +3408,7 @@ LOCAL RC FC NEAR msgMissReq()
 {
 	CULT *c;
 	const char* ms;
-	UCH fs, *fsp;
+	UCH fs, *fsp=NULL;
 	RC rc=RCOK;
 
 // no checks if defining a type: omitting anything is ok
@@ -4384,7 +4384,7 @@ LOCAL void FC NEAR drefRes()
 }		// drefRes
 //===========================================================================
 LOCAL void FC NEAR drefClr(
-	const char* callTag)		// identification of call (debug aid)
+	[[maybe_unused]] const char* callTag)		// identification of call (debug aid)
 
 // clear table of deferred rat references (TYREF's)
 {
@@ -4485,7 +4485,7 @@ RC CDEC record::ooerV( int fn, const char* message, va_list ap)
 // returns RCBAD
 {
 	RC rc;
-	UCH* fs = NULL;
+	[[maybe_unused]] UCH* fs = NULL;
 
 	if (fn && (fStat( fn) & FsERR))		// always message if 0 field # given (?)
 		return RCBAD;					// no more messages for field
@@ -4508,7 +4508,8 @@ RC CDEC record::ooerV( int fn1, int fn2, const char* message, va_list ap)
 
 // returns RCBAD
 {
-	UCH *fs1 = NULL, *fs2 = NULL;
+	[[maybe_unused]] UCH* fs1 = NULL;
+	[[maybe_unused]] UCH* fs2 = NULL;
 	if (fn1 && (fStat( fn1) & FsERR))	// always message if both field #'s 0 (?)
 		return RCBAD;			// if field flagged as already having an error, do not issue another
 	if (fn2 && (fStat( fn2) & FsERR))	// always message if both field #'s 0 (?)
