@@ -684,7 +684,7 @@ int CDEC main( SI argc, char * argv[] )
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
-		sprintf( fdtyphname, "%s/dtypes.hx",incdir);
+		sprintf( fdtyphname, "%s\\dtypes.hx",incdir);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
 	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
@@ -720,7 +720,7 @@ int CDEC main( SI argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		update( strtprintf( "%s/dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
+		update( strtprintf( "%s\\dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
 	}
 
 	/* ************* SUMMARY ******************* */
@@ -1184,7 +1184,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	FILE *f;
 
 // open working file dttab.cx
-	sprintf( buf, "%s/dttab.cx", cFilesDir);                   // buf also used to close
+	sprintf( buf, "%s\\dttab.cx", cFilesDir);                   // buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1200,8 +1200,8 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 			 "      instead change the input, dtypes.def, and re-run rcdef.exe. */\n"
 			 "\n"
 			 "\n"
-			 "#include \"CNGLOB.H\"\n"
-			 "#include \"SRD.H\"	// declares variables defined here\n"
+			 "#include \"cnglob.h\"\n"
+			 "#include \"srd.h\"	// declares variables defined here\n"
 			 "//#include <dtypes.h>	typedef's types sizeof'd here -- already included via cnglob.h\n"
 			 "\n"
 			 "#define ML(low, high) ((ULI)(((USI)(low)) | (((ULI)((USI)(high))) << 16)))	//MAKELONG\n"
@@ -1294,7 +1294,7 @@ x					printf( "Vom\n");
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	sprintf( temp, "%s/dttab.cpp", cFilesDir);
+	sprintf( temp, "%s\\dttab.cpp", cFilesDir);
 	update( temp, buf);                         // compare file, replace if different
 
 }               // wDttab()
@@ -1422,7 +1422,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	FILE *f;
 
 // open working file untab.cx
-	sprintf( buf, "%s/untab.cx", cFilesDir);   // buf also used to close
+	sprintf( buf, "%s\\untab.cx", cFilesDir);   // buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1438,8 +1438,8 @@ LOCAL void wUntab()                     // write untab.cpp
 			 "      instead change the input, units.def, and re-run rcdef. */" );
 
 // write head of file stuff
-	fprintf( f, "\n\n\n#include \"CNGLOB.H\"");
-	fprintf( f, "\n#include \"SRD.H\"	// declares variable(s) defined here");
+	fprintf( f, "\n\n\n#include \"cnglob.h\"");
+	fprintf( f, "\n#include \"srd.h\"	// declares variable(s) defined here");
 
 // write unit systems info
 	fprintf( f, "\n\n\n/* Unit systems */\n"
@@ -1481,7 +1481,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	sprintf( temp, "%s/untab.cpp", cFilesDir);
+	sprintf( temp, "%s\\untab.cpp", cFilesDir);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
@@ -1874,7 +1874,7 @@ LOCAL RC recs(                  // do records
 	/* open and start "small record & field descriptor" output .cpp file */
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
-		sprintf( fsrfdName, "%s/srfd.cx", cFilesDir);   // also used below
+		sprintf( fsrfdName, "%s\\srfd.cx", cFilesDir);   // also used below
 		fSrfd = fopen( fsrfdName, "wt");
 		if (fSrfd==NULL)
 			printf( "\n\nCannot open srfd output file '%s'\n", fsrfdName );
@@ -1943,7 +1943,7 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			sprintf( dbuff, "%s/%sx", incdir, rchFileNm);
+			sprintf( dbuff, "%s\\%sx", incdir, rchFileNm);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
@@ -2322,7 +2322,7 @@ x		{    printf( "\nRecord trap!");}
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
-		update( strtprintf( "%s/srfd.cpp",cFilesDir), fsrfdName);       // compare new include file to old, replace if different
+		update( strtprintf( "%s\\srfd.cpp",cFilesDir), fsrfdName);       // compare new include file to old, replace if different
 	}
 
 // create file containing record type definitions (written to dtypes.h 4-5-10)
@@ -3097,9 +3097,9 @@ LOCAL void wSrfd1( FILE *f)
 			 "/* DO NOT EDIT: This file is overwritten when rcdef is run.\n"
 			 "   To change, change rcdef.exe input as desired and re-run rcdef.exe via the appropropriate batch file. */\n\n"
 			 "\n"
-			 "#include \"CNGLOB.H\"	// includes <dtypes.h> for DTxxxx symbols\n"
-			 "#include \"SRD.H\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
-			 "#include <ANCREC.H>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
+			 "#include \"cnglob.h\"	// includes <dtypes.h> for DTxxxx symbols\n"
+			 "#include \"srd.h\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
+			 "#include <ancrec.h>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
 			 "// also <rc___.h> file(s) are included below.\n"
 			 "\n"
 			 "#undef o		// in case an .h file defines o\n"// 1-95
