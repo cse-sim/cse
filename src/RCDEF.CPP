@@ -714,7 +714,7 @@ int CDEC main( SI argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		update( strtprintf( "%s\\dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
+		update( strtprintf( "%s/dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
 	}
 
 	/* ************* SUMMARY ******************* */
