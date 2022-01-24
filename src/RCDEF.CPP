@@ -1200,8 +1200,8 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 			 "      instead change the input, dtypes.def, and re-run rcdef.exe. */\n"
 			 "\n"
 			 "\n"
-			 "#include \"cnglob.h\"\n"
-			 "#include \"srd.h\"	// declares variables defined here\n"
+			 "#include \"CNGLOB.H\"\n"
+			 "#include \"SRD.H\"	// declares variables defined here\n"
 			 "//#include <dtypes.h>	typedef's types sizeof'd here -- already included via cnglob.h\n"
 			 "\n"
 			 "#define ML(low, high) ((ULI)(((USI)(low)) | (((ULI)((USI)(high))) << 16)))	//MAKELONG\n"
@@ -1438,8 +1438,8 @@ LOCAL void wUntab()                     // write untab.cpp
 			 "      instead change the input, units.def, and re-run rcdef. */" );
 
 // write head of file stuff
-	fprintf( f, "\n\n\n#include \"cnglob.h\"");
-	fprintf( f, "\n#include \"srd.h\"	// declares variable(s) defined here");
+	fprintf( f, "\n\n\n#include \"CNGLOB.H\"");
+	fprintf( f, "\n#include \"SRD.H\"	// declares variable(s) defined here");
 
 // write unit systems info
 	fprintf( f, "\n\n\n/* Unit systems */\n"
@@ -3097,9 +3097,9 @@ LOCAL void wSrfd1( FILE *f)
 			 "/* DO NOT EDIT: This file is overwritten when rcdef is run.\n"
 			 "   To change, change rcdef.exe input as desired and re-run rcdef.exe via the appropropriate batch file. */\n\n"
 			 "\n"
-			 "#include \"cnglob.h\"	// includes <dtypes.h> for DTxxxx symbols\n"
-			 "#include \"srd.h\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
-			 "#include <ancrec.h>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
+			 "#include \"CNGLOB.H\"	// includes <dtypes.h> for DTxxxx symbols\n"
+			 "#include \"SRD.H\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
+			 "#include <ANCREC.H>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
 			 "// also <rc___.h> file(s) are included below.\n"
 			 "\n"
 			 "#undef o		// in case an .h file defines o\n"// 1-95
