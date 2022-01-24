@@ -1937,7 +1937,7 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			sprintf( dbuff, "%s\\%sx", incdir, rchFileNm);
+			sprintf( dbuff, "%s/%sx", incdir, rchFileNm);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
@@ -3091,9 +3091,9 @@ LOCAL void wSrfd1( FILE *f)
 			 "/* DO NOT EDIT: This file is overwritten when rcdef is run.\n"
 			 "   To change, change rcdef.exe input as desired and re-run rcdef.exe via the appropropriate batch file. */\n\n"
 			 "\n"
-			 "#include \"cnglob.h\"	// includes <dtypes.h> for DTxxxx symbols\n"
-			 "#include \"srd.h\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
-			 "#include <ancrec.h>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
+			 "#include \"CNGLOB.H\"	// includes <dtypes.h> for DTxxxx symbols\n"
+			 "#include \"SRD.H\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
+			 "#include <ANCREC.H>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
 			 "// also <rc___.h> file(s) are included below.\n"
 			 "\n"
 			 "#undef o		// in case an .h file defines o\n"// 1-95
