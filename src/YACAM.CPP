@@ -891,6 +891,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 
 		// access variable arg list if not skipping
 		size_t size = 0;
+		int count = 0;
 		if (cc != 'X')
 		{ 	p = va_arg( pp, void *);	// get result-storing pointer from var arg list
 			if (cc=='C')				// for C, pointer is followed by character array size
