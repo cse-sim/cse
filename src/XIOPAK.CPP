@@ -33,7 +33,7 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <io.h>		// open, read, write,
+//#include <io.h>		// open, read, write,
 #include <direct.h>	// getcwd, chdir, _chdrive
 #include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
@@ -239,7 +239,7 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 XFILE* xfopen(  	// Set up extended IO structure and open file
 
 	const char *fname, 	// File pathname
-	int accs,			// Access type.  Passed to _open().  Note that the useful
+	char* accs,			// Access type.  Passed to _open().  Note that the useful
 						//  combinations of accesses are defined in xiopak.h
 	int erOp/*=WRN*/,	// Error action code (ABT/WRN/IGN etc) for all errors both now
 						// and in later calls.  To change after open, use xeract().
@@ -295,7 +295,7 @@ static const int XFBUFFSZ = 1024;
 #endif
 
 // open file, handle fail
-	if ( (xf->han = _open( fname, accs, S_IREAD|S_IWRITE)) == -1)	// open file (C library) / if failed
+	if ( (xf->han = fopen( fname, accs)) == NULL)	// open file (C library) / if failed
 	{
 		xf->xfname = fname;		// used in xioerr's error messages
 		sec = xioerr(xf);		// resolve sys err code & report error
@@ -402,7 +402,7 @@ SEC FC xfclose(		// Close file and release XFILE
 
 	if (xf != NULL)			// if we really have an XFILE
 	{
-		SI closeRet = close(xf->han);	// attempt close even if prev error
+		SI closeRet = fclose(xf->han);	// attempt close even if prev error
 		if (closeRet)			// close() returns NZ on error
 			sec = xf->xflsterr
 				  = xioerr(xf);		// resolve, report, rtrn SEC (below)
@@ -454,15 +454,12 @@ SEC FC xfread(		// Read from file
 		/* CAUTION: caller must clear eof/error (use xlsterr(xf))
 		   	    b4 ANY other xiopak call will work (except xfseek and xftell) */
 
-		nX = read( xf->han, buf, nbytes);	// read -- msc lib
+		nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read -- msc lib
 
-		if (   nX == 0xFFFF			// read() error return
-				|| nX < ( xf->access & O_TEXT 	// if transfer < ..
-						  ?  1  		// 1 byte in text mode or
-						  :  nbytes) )  	// requestd bytes in binary
+		if (  nX != nbytes)			// read() error return
 		{
 			if (   nX == 0		// if 0 bytes transferred
-					|| eof( xf->han) )	// or at end of file
+					|| feof( xf->han) )	// or at end of file
 				errno = SECEOF;		// force errno to EOF (commnt abve)
 
 			xf->xflsterr = xioerr(xf);	// issue i/o error msg or not per .xferact,.xfeoferr; SET xflsterr
@@ -517,7 +514,7 @@ SEC FC xfwrite(  	// Write to a file
 		   and not 0xFFFF; chip doesn't see how but cover both cases.  Prior code
 		   failed to detect the 0xFFFF case. 1-3-90 */
 
-		if ( (xf->nxfer = write( xf->han, buf, nbytes )) != nbytes )
+		if ( (xf->nxfer = fwrite( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char)) != nbytes)
 			xf->xflsterr = xioerr(xf);	// report err (below), SET .xflsterr
 		// CAUTION caller must clear error/eof -- xlsterr()
 	}
@@ -540,7 +537,7 @@ SEC FC xftell(  	// Return current file position with proper accounting of buffe
             else other sec w/ *fpos = -1 (DOES NOT SET xf->xflsterr) */
 {
 	SEC sec;
-	LI pos = tell(xf->han);		/* get position at c library level */
+	LI pos = ftell(xf->han);		/* get position at c library level */
 	if (pos == -1L)
 		sec = xioerr(xf);		/* report error, DON'T set xflsterr */
 	else
@@ -579,7 +576,7 @@ SEC FC xfseek(		// Reposition file pointer
 // Returns   SECOK iff _lseek() call was successful, sets xf->xflsterr to SECOK
 //	     else other SEC (xf->xflsterr set, PRIOR xf->xflsterr lost)
 {
-	if (_lseek( xf->han, disp, mode) == -1L)
+	if (fseek( xf->han, disp, mode) != 0)
 		xf->xflsterr = xioerr(xf);	/* report and post error */
 	else
 	{
@@ -625,17 +622,17 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 
 // Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
 {
-	SI acc;
+	char* acc;
 	LI fpos;
 
 	if (xf->xflsterr==SECOK)			// if no prior error
 	{
 		acc = xf->access & (O_RDONLY|O_WRONLY|O_RDWR|O_TEXT|O_BINARY);
 		// close and re-open file to flush buffers to disk (not just to OS)
-		if ( (fpos = tell(xf->han)) != -1
-				&& close(xf->han) != -1
-				&& (xf->han = _open( xf->xfname, acc, S_IREAD|S_IWRITE)) != -1
-				&& _lseek( xf->han, fpos, SEEK_SET) != -1 )
+		if ( (fpos = ftell(xf->han)) != -1
+				&& fclose(xf->han) == 0
+				&& (xf->han = fopen( xf->xfname, acc)) != NULL
+				&& fseek( xf->han, fpos, SEEK_SET) != -1 )
 			return SECOK;
 		xf->xflsterr = xioerr(xf);		// report error
 	}
@@ -964,7 +961,7 @@ RC FC xfcopy(		// Copy a file
 
 	const char *fns,	/* Source file pathname for copy */
 	const char *fnd,	/* Destination file pathname for copy */
-	SI accd,	/* Destination access flag -- determines whether
+	char* accd,	/* Destination access flag -- determines whether
                destination file is overwritten, must preexist, etc.
                Typical values (xiopak.h/fcntl.h) --
                 O_WB       Dest. is fresh (created or overwritten)
@@ -1016,7 +1013,8 @@ RC FC xfcopy(		// Copy a file
 		xfd = xfopen( fnd, accd, IGN, FALSE, &sec);	// IGN: hndl errs here
 		if (xfd==NULL)
 		{
-			rc = (accd & O_CREAT)
+			rc = (std::string(accd).find("a") != std::string::npos ||
+					std::string(accd).find("w") != std::string::npos) // Check for a create file mode on
 				 ? MH_I0023	// "I0023: Unable to create file '%s'"
 				 : MH_I0024;	// "I0024: File '%s' does not exist, cannot copy onto it"
 			mOrH = (char *)(LI)rc;
