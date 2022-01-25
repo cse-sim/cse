@@ -545,10 +545,10 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 	sgf[ sgcDFXBM] = grx*verSun;		// surface beam-diffuse irradiance factor, dimless
 										//   = unit area surface diffuse irrad per unit normal beam irrad
 
-	float cosi=0;		// cosine( incidence angle)
+	float cosi = 0;		// cosine( incidence angle)
 	float incA;		// angle of incidence, radians (Pi/2 if !sunup)
-	float cosz=0;		// cos( zenith angle), 0 if !sunup
-	float azm=0;		// solar azimuth, radians (0=south)
+	float cosz = 0;		// cos( zenith angle), 0 if !sunup
+	float azm = 0;		// solar azimuth, radians (0=south)
 	float relAzm;	// solar azimuth relative to surface (Pi if !sunupSrf)
 	int sunupSrf	// 1 iff sun up relative to surface
 		= sunup			// if sun over horizon

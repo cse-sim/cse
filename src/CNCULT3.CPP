@@ -476,7 +476,7 @@ RC SFI::sf_TopSf1()
 	// topSf1: check / access construction if given
 
 	SI conSet = fs[ SFI_SFCON] & FsSET; 		// nz if construction spec'd (always false for window)
-	CON *con=NULL;
+	CON *con = nullptr;
 	if (conSet)
 		if (ckRefPt( &ConiB, sfCon, "sfCon", NULL, (record **)&con, &rc) )
 			return rc;			// bad ref (msg issued, rc set, no run).
@@ -851,8 +851,8 @@ RC FC topSg()		// SGDIST processing at RUN
 			targSf->x.sfExCnd==C_EXCNDCH_ADJZN	// if ext cond zone, not specT,ambient,adiabatic.
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
-		char* s = NULL;					// set non-NULL iff error
-		BOO toOutside=NULL;
+		char* s = nullptr;					// set non-NULL iff error
+		BOO toOutside = 0;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
 			if (sg->sgSide==C_SIDECH_EXTERIOR)	// if 'exterior' specified
@@ -1067,7 +1067,7 @@ RC SFI::sf_TopSf2()
 	// access construction if given
 
 	BOO conSet = fs[ SFI_SFCON] & FsSET;	// non-0 if contruction given
-	CON *con=NULL;
+	CON *con = nullptr;
 	if (conSet)
 	{	if (sfCon <= 0  ||  sfCon > ConiB.n)	// if bad
 			return rc;					// skip (msg'd above)

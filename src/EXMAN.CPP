@@ -1111,7 +1111,7 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 {
 	RC rc;
 	const char* ms;
-	NANDAT v=NULL, *pv;
+	NANDAT v = nullptr, *pv;
 	SI isChanged;
 
 // get new value: evaluate expression's pseudo-code
@@ -1399,7 +1399,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		return strtprintf( (char *)MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
 
 // field name
-	const char* mName=NULL;
+	const char* mName = nullptr;
 	for (SFIR *fir = b->fir;  fir && fir->fdTy;  fir++)		// find member name in rat's fields-in-record table
 		if (fir->off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment

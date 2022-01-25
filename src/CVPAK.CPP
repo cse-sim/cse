@@ -2046,7 +2046,7 @@ makeval:
 }				/* cvatof */
 
 #if 1 /* add 'w' 7-25-90 */
-/*#pragma optimize("aw",off)	/* turn off no-aliases options because args
+#pragma optimize("aw",off)	/* turn off no-aliases options because args
 s1 and s2 point into same string. (With
 								   -Oa on, compiler moved "*s2 = c;" before
 								   cvatof, defeating partial-string decode).

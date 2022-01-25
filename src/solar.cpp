@@ -698,7 +698,7 @@ int slsurfhr( // Calculate solar values for a surface for an hour
            FALSE if no direct solar on surface this hour.
                  *pCosi = 0, *pAzm and *pCosz undefined. */
 {
-  float c1, c2, fc1=0, fc2=0, faz1=0, faz2;
+  float c1, c2, fc1 = 0, fc2 = 0, faz1 = 0, faz2;
 
   // If sun below HORIZON for the entire hour, no need to calculate
   if (slloccur->sunupf[ihr] == 0.F) // if sun below horizon entire hour
@@ -971,7 +971,7 @@ void FC slaniso(/* Adjust beam and diffuse radiation values
                         cases, total horiz is preserved */
 {
     SI ihx;
-    float c1, c2, cosi=0, f, fb, fd;
+    float c1, c2, cosi = 0, f, fb, fd;
 
     if (*pbeam > 5.f) /* if a little beam */
     {

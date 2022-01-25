@@ -1230,7 +1230,7 @@ LOCAL RC unsRun(		// guts of pass over spool file.
 
 	UNS* u0, * u, * un;
 	SpoolTy ty;
-	int vrh, txLen=0;
+	int vrh, txLen = 0;
 	ULI nxEv;
 
 	// onlyU must disable anything that could alter buffer or pointers, including reading more text.

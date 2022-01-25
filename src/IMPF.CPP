@@ -383,7 +383,7 @@ RC impFcn( 		// compile support for Import() of named field
 // find or add entry in field names table
 
 	// Names in table will be resolved to field number at open; runtime accesses get fnr from table by fnmi.
-	SI tfnmi=0;
+	SI tfnmi = 0;
 	BOO found = FALSE;
 	if (iffnm->fnmt)		// insurance
 		for (tfnmi = 1;  tfnmi <= iffnm->fnmiN;  tfnmi++)		// 1-based subscript

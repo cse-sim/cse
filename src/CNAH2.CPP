@@ -2003,7 +2003,6 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 
 
 // return leaks/losses/fan heat like puteRa()
-
 	DBL _tr1=1, _tr2, /*_wr1,*/ _cr1, _frFanOn=1.;		// sets these using _tr, _wr, _cr, fcc, .
 	{
 		// init leakage. story in puteRa.
@@ -2550,7 +2549,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 
 	BOO foundCzn = FALSE;
 	cznC = 0;							// init ctrl zn tu flow, re ah shutdown under ZN/ZN2 cm's
-	for (ZNR *czp= nullptr;  nxTsCzn(czp); )			// loop over ahCtu zone or wz/cz control zones for airHandler
+	for (ZNR *czp = nullptr;  nxTsCzn(czp); )			// loop over ahCtu zone or wz/cz control zones for airHandler
 	{
 
 		/* wz/cz/zn/zn2.  To get setpoint and terminal, search zone mdSeq for zhx for this zone and airHandler.
@@ -2804,7 +2803,7 @@ x	 					   (and increasing (heat) ts INCREASES flow) */
 								 : max( aTs, ttTsSp + Top.absTol);	// (used re trx leak adj, next)
 					DBL pessTz = cooling ? min( czp->aTz, sp - Top.absTol) 	// worse of curr and setpoint zone temps
 								 : max( czp->aTz, sp + Top.absTol);
-					DBL crx, trx=0;						// return flow & temp for cM @ ctu
+					DBL crx, trx = 0;						// return flow & temp for cM @ ctu
 					//  if only 1 tu (usual case), calc crx/trx anew, else adjust crNx/trNx:
 					if ( !TuB.p[tu1].nxTu4a				// if ah serves only 1 terminal (no 2nd in chain)
 							&&  tu1==ahCtu					// if it is control terminal (believe redundant)
@@ -3813,7 +3812,7 @@ void AH::upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas)
 			}
 			if (tu->cO != 0.f)				// skip ws for terminals on zones with no other flows (needed?)
 			{
-				DBL wcO=0;				// sigma(tu->cz*ws) adjusted for this ah ws and/or cz change,
+				DBL wcO = 0;				// sigma(tu->cz*ws) adjusted for this ah ws and/or cz change,
 				switch (Top.humMeth)		// ...computed using average or latest ws according to humidity calculation method
 				{
 				case C_HUMTHCH_PHIL:

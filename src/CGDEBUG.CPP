@@ -443,8 +443,8 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 						  &wshadh, &WshadR.p[xs->x.iwshad], PBSPECEND );
 			for (int i = -1; ++i < xs->x.nsgdist; )				// dump its solar gain dists
 			{
-				char *s1=NULL, *s2, *s3=NULL;
-				BP rb=NULL;
+				char *s1 = nullptr, *s2, *s3 = nullptr;
+				BP rb = nullptr;
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
 				case SGDTTZNAIR:

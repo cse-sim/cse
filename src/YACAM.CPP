@@ -565,7 +565,7 @@ state	    -------- -------- -------- -------- -------- -------- -------- -------
 		else                    ct=7;
 
 		// perform action for char type in state
-		char savc=NULL;
+		char savc = nullptr;
 		int reDo;
 		do
 		{
@@ -784,7 +784,7 @@ int YACAM::line( 	// return current line
 // returns -1 if clean EOF before 1st char
 //         else >= 0 = line length
 {
-	char c=NULL;
+	char c = nullptr;
 	int iC;
 	for (iC=0; iC < lineSz; iC++)
 	{	c = getC( erOp);

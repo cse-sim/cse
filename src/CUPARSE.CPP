@@ -1019,7 +1019,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	//   another PSSZ is above in funcDef().
 	PSOP ps[PSSZ];		// holds pseudo-code during compilation
 
-	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v=0;   void *pv;   USI codeSize;   PSOP *ip=NULL;   RC rc;
+	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v=0;   void *pv;   USI codeSize;   PSOP *ip = nullptr;   RC rc;
 
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
@@ -2133,7 +2133,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 // use compile support function (cncult4.cpp) to get values to put in code
 
 	TI iffnmi;		// receives IFFNM record subscript for import file name (adds record 1st time name seen)
-	SI fnmi=0;		// receives field name index for named field (adds table entry first time name seen)
+	SI fnmi = 0;		// receives field name index for named field (adds table entry first time name seen)
 	IVLCH imFreq;	// receives import frequency (hour-day-month-year) if yet given, else a safe assumption
 	if (byName)
 		CSE_E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fieldName, &fnmi) )	// cncult4.cpp

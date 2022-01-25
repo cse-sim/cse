@@ -233,7 +233,7 @@ LOCAL RC FC NEAR cuEvalI(
 
 	/* code assumes LI's, floats, char * are same size */ /*lint -e506 */
 	if ( (sizeof(LI) != sizeof(float))		// in case ported
-	   || (sizeof(LI) != sizeof(char *)) )
+		|| (sizeof(LI) != sizeof(char *)) )
 		err( PABT,					// display internal error msg, wait for key, abort. rmkerr.cpp
 		(char *)MH_R0203);			// "cueval.cpp must be reworked for float size != long size or != char * size"
 	/*lint +e506 "constant value boolean" */

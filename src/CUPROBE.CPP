@@ -62,7 +62,7 @@ RC FC probe()
 {
 	PROBEOBJECT o;		// contains local variables passed to callees. CAUTION: recursion possible, don't use statics.
 
-	USI inDt=0,runDt=0;
+	USI inDt = 0,runDt = 0;
 	PSOP lop;
 	char *errSub;
 	BP b;
@@ -284,7 +284,7 @@ LOCAL RC FC NEAR findMember( PROBEOBJECT *o)	// parse and look up probe member n
 	m = 0;					// # chars matched by preceding tokens in multitoken member name
 	for ( ; ; )				// loop over input tokens until break or error return
 	{
-		SFIR *f1=NULL;						// fir entry for which preceding m chars match
+		SFIR *f1 = nullptr;						// fir entry for which preceding m chars match
 		l = (USI)strlen(cuToktx);					// length of the token to match now
 
 		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
@@ -576,8 +576,8 @@ LOCAL RC FC NEAR lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load
 
 // if no corresponding TY type, returns errSub text and returns bad.  NO ERROR MESSAGE HERE.
 {
-	USI ty=0, sz=0;
-	PSOP lop=0;
+	USI ty = 0, sz = 0;
+	PSOP lop = 0;
 
 	char* errorSub = NULL;			// say no error
 	switch (dt)				// for dt, get load pseudo-op (lop) or error message insert text (errorSub)

@@ -1147,7 +1147,7 @@ LOCAL RC topLr()	// process layers at RUN
 RC LR::lr_TopLr()
 {
 	CON *con;
-	MAT *mat, *frmMat=NULL;
+	MAT *mat, *frmMat = nullptr;
 	RC rc=RCOK;
 
 	int thkSet = IsSet( LR_THK);  			// nz iff layer thickness given

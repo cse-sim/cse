@@ -1065,7 +1065,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 {
 	RC rc;
 	char *buf;
-	const char *ebuf, *fName = NULL;
+	const char *ebuf, *fName = nullptr;
 	USI nw;
 	SEC sec;
 

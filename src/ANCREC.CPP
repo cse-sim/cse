@@ -1021,7 +1021,7 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 {
 	if (!this)
 		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
-	record *r, *r1=NULL;
+	record *r, *r1 = nullptr;
 	int nHits = 0;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
 	{	if (r->IsNameMatch( _name))	// if matches

@@ -32,7 +32,7 @@ int FC gaussjb(		// Solve a system of equations using Gauss-Jordan elimination
 	int indxr[ MAXN];
 	int indxc[ MAXN];
 
-	int i, j, ll, irow=0, icol=0, l, k;
+	int i, j, ll, irow = 0, icol = 0, l, k;
 	double f, big, pivinv;
 	double *arow, *arcol, *arow2;
 	double *brow, *brcol, *brow2;

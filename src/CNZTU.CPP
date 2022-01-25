@@ -971,7 +971,7 @@ x			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to 
 	}
 	else
 	{	// CNE zone
-		DBL wDiff=0;
+		DBL wDiff = 0;
 		switch (Top.humMeth)			// compute infil air w diff from displaced air consistently with w calc method
 		{
 		case C_HUMTHCH_PHIL:
@@ -2152,7 +2152,7 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	// [note zn_qsHvac may be updated by AH:antRatTs when it adjusts tz.]
 
 // zone's latent power, similarly.      Moisture inflow = sigma(c * (ws - wz)) = sigma(c*ws) - wz*sigma(c).
-	DBL wDiffC=0;
+	DBL wDiffC = 0;
 	switch (Top.humMeth)	// use average or latest values per humidity calc method, else zone latent gain does not balance
 	{
 	case C_HUMTHCH_PHIL:
