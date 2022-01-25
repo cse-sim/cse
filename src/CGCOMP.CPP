@@ -1780,7 +1780,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 #endif
 		// solve for pressure corrections
 		int gjRet = gaussjb( an_jac, an_nz, rV, 1);
-		if (0 & gjRet)
+		if (0 && gjRet)
 			err( PWRN,				// display program error msg, wait for key
 				"AIRNET::an_Calc: matrix is %s",
 					gjRet == 1 ? "singular" : "too large");

@@ -4698,7 +4698,7 @@ x            (void *)xSp, (void *)xStk );	// casts are to make far.
 #if 1	// use basAnc's associated CULT, 3-24-2016
 	if (b->an_pCULT)		// if basAnc has an associated CULT
 	{	for (const CULT* c=b->an_pCULT; c->id; c++)
-		{	if (c->cs==DAT && c->fn==fn)
+		{	if (c->cs==DAT && c->fn==static_cast<unsigned int>(fn))
 				return c->id;
 		}
 	}

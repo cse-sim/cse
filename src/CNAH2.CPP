@@ -2550,7 +2550,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 
 	BOO foundCzn = FALSE;
 	cznC = 0;							// init ctrl zn tu flow, re ah shutdown under ZN/ZN2 cm's
-	for (ZNR *czp=NULL;  nxTsCzn(czp); )			// loop over ahCtu zone or wz/cz control zones for airHandler
+	for (ZNR *czp= nullptr;  nxTsCzn(czp); )			// loop over ahCtu zone or wz/cz control zones for airHandler
 	{
 
 		/* wz/cz/zn/zn2.  To get setpoint and terminal, search zone mdSeq for zhx for this zone and airHandler.
@@ -2558,7 +2558,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 		   but search all in case zone is in wrong mode (eg when estimating (may still miss: old mdSeq may be wrong)). */
 
 		TI xi = 0;
-		ZHX *x=NULL;
+		ZHX *x = nullptr;
 		TI spMd = czp->md;
 		if (czp->nMd)						// insurance: if zone currently has any hvac modes
 			for ( ; ; )      					// mode search loop, 2 endtests in loop
