@@ -43,6 +43,7 @@ namespace filesys = std::experimental::filesystem;
 #endif
 
 //#include <io.h>		// open, read, write,
+#include <fstream>
 #include <direct.h>	// getcwd, chdir, _chdrive
 #include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
@@ -606,6 +607,7 @@ SEC FC xfsize(		// Return the current size of a file
 
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
+	std::error_code ec;
 	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
 	if (ec) {/* if length invalid */
 		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
@@ -641,7 +643,7 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 
 	if (xf->xflsterr==SECOK)			// if no prior error
 	{
-		acc = xf->access & (O_RDONLY|O_WRONLY|O_RDWR|O_TEXT|O_BINARY);
+		acc = xf->access;
 		// close and re-open file to flush buffers to disk (not just to OS)
 		if ( (fpos = ftell(xf->han)) != -1
 				&& fclose(xf->han) == 0
@@ -753,9 +755,9 @@ int xfWriteable(			// check whether file is writeable
 {
 	int ret = 0;
 	const char* pMsg = NULL;
-	int han = _open( fPath, _O_CREAT|_O_APPEND|_O_WRONLY|_O_BINARY, S_IWRITE);
-	if (han != -1)
-	{	_close( han);
+	FILE* han = fopen( fPath, "ab");
+	if (han == NULL)
+	{	fclose( han);
 		ret = 1;
 	}
 	else
