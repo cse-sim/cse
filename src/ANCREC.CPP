@@ -116,7 +116,7 @@ int record::IsNameMatch( const char* _name) const
 /*virtual*/ record& record::CopyFrom(
 	const record* src,
 	int copyName/*=1*/,
-	int /*=0*/)
+	[[maybe_unused]] int dupPtrs/*=0*/)
 
 // copy user and ul data from another record or init data to already-constructed record
 
@@ -736,7 +736,8 @@ void basAnc::desRecs( SI _mn, SI _n)
 			desRec(i);						// conditionally destroy record in space
 }				// basAnc::desRecs
 //---------------------------------------------------------------------------------------------------------------------------
-void FC cleanBasAncs()	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
+void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
+		[[maybe_unused]] CLEANCASE cs)
 {
 	if (ancs)					// skip if heap array not allocated
 		for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs

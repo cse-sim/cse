@@ -488,7 +488,7 @@ template <class T> T* anc<T>::GetAt( int i) const
 //  ancrec.cpp non-member fcn declarations
 //-----------------------------------------------------------------------------
 RC ArrayStatus( const UCH* _sstat0,	int count, int& nSet, int& nVal);
-void FC cleanBasAncs( ); 	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
+void FC cleanBasAncs( CLEANCASE cs); 	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
 
 // functions for saving file names for record.fileIx 2-94
 void clearFileIxs();
