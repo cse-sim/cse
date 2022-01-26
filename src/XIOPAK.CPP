@@ -32,17 +32,8 @@
 //#define USEFOP	// defined in xiopak.h to use fop.cpp not local path code, 2-95.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif
 
-//#include <io.h>		// open, read, write,
+#include <io.h>		// open, read, write,
 #include <fstream>
 #include <direct.h>	// getcwd, chdir, _chdrive
 #include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
@@ -607,13 +598,10 @@ SEC FC xfsize(		// Return the current size of a file
 
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
-	std::error_code ec;
-	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
-	if (ec) {/* if length invalid */
-		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
-		return xioerr(xf); /*    bad: report error, return SEC */
-	}
-	return SECOK;
+	*psize = filelength(xf->han);   /* get cur file length, MSC */
+	return *psize == -1L            /* if length invalid */
+				? xioerr(xf)        /*    bad: report error, return SEC */
+				: SECOK;            /*    good */
 }				// xfsize
 //======================================================================
 SEC FC xfchsize(		// Change the size of a file
@@ -623,12 +611,9 @@ SEC FC xfchsize(		// Change the size of a file
 
 // Returns SECOK if no errors; else other sec (SETS xf->xflsterr)
 {
-	if (xfflush(xf) == SECOK) {  // Flush buffers; if no prior error and flush successful
-		std::error_code ec;
-		filesys::resize_file(filesys::path(xf->xfname), size, ec);
-		if (ec)		// set length, if good
+	if (xfflush(xf) == SECOK)   // Flush buffers; if no prior error and flush successful
+		if (chsize(xf->han, size) != 0)                // set length, if good
 			xf->xflsterr = xioerr(xf);		//  failed, report err
-	}
 	return xf->xflsterr;
 }				// xfchsize
 //======================================================================
