@@ -737,7 +737,7 @@ void basAnc::desRecs( SI _mn, SI _n)
 }				// basAnc::desRecs
 //---------------------------------------------------------------------------------------------------------------------------
 void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
-		[[maybe_unused]] CLEANCASE cs)
+		[[maybe_unused]] CLEANCASE cs)		// what is being cleaned
 {
 	if (ancs)					// skip if heap array not allocated
 		for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
