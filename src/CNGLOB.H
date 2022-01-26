@@ -98,8 +98,7 @@ typedef void* PVOID;
 typedef PVOID HANDLE;
 typedef HANDLE HWND;
 typedef HANDLE HINSTANCE;
-typedef HINSTANCE HMODULE; 
-#define pascal
+typedef HINSTANCE HMODULE;
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
@@ -109,10 +108,6 @@ typedef HINSTANCE HMODULE;
 #define FC 		// eliminating all 32-bit fastcalls fixes rampant bad bcc32 4.0 compiles 3-3-94.
 				// tried -Od and -rd compile options at same time, found not necessary.
 				// gave up on trying to change individual FC's only b4 getting cul.cpp to complete imput compilation 3-94.
-#define NEAR  near
-#define near
-#define FAR   far
-#define far
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
