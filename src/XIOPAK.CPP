@@ -19,6 +19,15 @@
 
 #include "cnglob.h"
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesys = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
 
@@ -594,14 +603,17 @@ SEC FC xfseek(		// Reposition file pointer
 SEC FC xfsize(		// Return the current size of a file
 
 	XFILE *xf,	 // Pointer to extended IO packet for file.  Must be open.
-	uintmax_t *psize)	 // Current size of file
+	LI *psize)	 // Current size of file
 
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
-	*psize = filelength(xf->han);   /* get cur file length, MSC */
-	return *psize == -1L            /* if length invalid */
-				? xioerr(xf)        /*    bad: report error, return SEC */
-				: SECOK;            /*    good */
+	std::error_code ec;
+	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
+	if (ec) {/* if length invalid */
+		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
+		return xioerr(xf); /*    bad: report error, return SEC */
+	}
+	return SECOK;   		/*    good */
 }				// xfsize
 //======================================================================
 SEC FC xfchsize(		// Change the size of a file
@@ -611,9 +623,12 @@ SEC FC xfchsize(		// Change the size of a file
 
 // Returns SECOK if no errors; else other sec (SETS xf->xflsterr)
 {
-	if (xfflush(xf) == SECOK)   // Flush buffers; if no prior error and flush successful
-		if (chsize(xf->han, size) != 0)                // set length, if good
+	if (xfflush(xf) == SECOK) {  // Flush buffers; if no prior error and flush successful
+		std::error_code ec;
+		filesys::resize_file(filesys::path(xf->xfname), size, ec);
+		if (ec)		// set length, if good
 			xf->xflsterr = xioerr(xf);		//  failed, report err
+	}
 	return xf->xflsterr;
 }				// xfchsize
 //======================================================================
@@ -740,13 +755,15 @@ int xfWriteable(			// check whether file is writeable
 {
 	int ret = 0;
 	const char* pMsg = NULL;
-	FILE* han = fopen( fPath, "ab");
-	if (han == NULL)
-	{	fclose( han);
+	std::fstream han(fPath, std::fstream::out | std::fstream::binary | std::fstream::app);
+	if (han)
+	{
+		han.close();
 		ret = 1;
 	}
 	else
-	{	pMsg = msgSec( errno);
+	{
+		pMsg = msgSec(errno);
 		if (errno == ENOENT)
 			ret = -1;
 		// else ret = 0
