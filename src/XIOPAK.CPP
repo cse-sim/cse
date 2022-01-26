@@ -755,10 +755,10 @@ int xfWriteable(			// check whether file is writeable
 {
 	int ret = 0;
 	const char* pMsg = NULL;
-	std::fstream han(fPath, std::fstream::out | std::fstream::binary | std::fstream::app);
+	FILE* han = fopen(fPath,"ab");
 	if (han)
 	{
-		han.close();
+		fclose(han);
 		ret = 1;
 	}
 	else
@@ -768,10 +768,8 @@ int xfWriteable(			// check whether file is writeable
 			ret = -1;
 		// else ret = 0
 	}
-
 	if (ppMsg)
 		*ppMsg = pMsg;
-
 	return ret;
 }	// xfWriteable
 ////////////////////////////////////////////////////////////////////////
