@@ -747,7 +747,7 @@ RC ZNR::zn_InitSubhr()
 		+ qsIgHr				// convective internal gains
 		+ zn_AnAmfCpT( 0)
 		+ zn_qIzXAnSh			// non-airnet interzone
-		+ znXLGainLs;			// excess latent gain last subhr === heat of condensation
+		+ znXLGainLs			// excess latent gain last subhr === heat of condensation
 		+ zn_uaInfil*Top.tDbOSh;	// non-airnet infiltration
 	zn_nAirSh += nAirSh;
 
