@@ -288,7 +288,7 @@ void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and intege
 
 // saved by hello() for byebye()
 LOCAL void (* CDEC NEAR byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[FILENAME_MAX];						// current directory to restore at exit
+LOCAL char cwdSave[FILENAME_MAX] = {0};						// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -360,7 +360,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //--- restore current directory
 	xchdir( cwdSave, WRN );		// restore drive and dir, xiopak.cpp.
 								//   Ok NOP if "". cwdSave set in hello, just above.
-	strcpy(cwdSave,"");				// clear saved dir eg for when subr pkg recalled.
+	cwdSave[0] = '\0';				// clear saved dir eg for when subr pkg recalled.
 
 	throw exitCode;
 
