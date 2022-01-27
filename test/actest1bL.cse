@@ -118,12 +118,56 @@ ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting w
 //Kill all the default reports except the ERR  BAW 9/27
 Delete Report eb     // Deletes the sum of zones CNE format report which is never appropriate since it includes the attic
 
+#Define CSEBtuSF 1000  //reports in kBtu
+
+
+REPORT rpType=MTR rpMETER=SysMtr rpFreq=MONTH
+
+// CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
+//Monthly
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=132
+rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$month  colHead="mo"      colWid=2
+Reportcol colVal=@znRes["SDuctZone"].M.tAir colHead="TzSD" colWid=4 colDec=1
+Reportcol colVal=@znRes["RDuctZone"].M.tAir colHead="TzRD" colWid=4 colDec=1
+Reportcol colVal=@znRes["Single"].M.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes["Single"].M.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes["Single"].M.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["Single"].M.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes["Single"].M.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes["Single"].M.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["Single"].M.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8 colDec=0
+Reportcol colVal=@znRes["Single"].M.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes["Single"].M.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes["Single"].M.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+Reportcol colVal=@znRes["Single"].M.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+Reportcol colVal=(@Meter[SysMtr].M.fanc+@Meter[SysMtr].m.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[SysMtr].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=132  rpHeader=No    //Annual Summary
+Reportcol colVal="Yr"       colWid=2
+Reportcol colVal=@znRes["SDuctZone"].Y.tAir colHead="TzSD" colWid=4 colDec=1
+Reportcol colVal=@znRes["RDuctZone"].Y.tAir colHead="TzRD" colWid=4 colDec=1
+Reportcol colVal=@znRes["Single"].Y.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes["Single"].Y.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes["Single"].Y.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["Single"].Y.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes["Single"].Y.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes["Single"].Y.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7
+Reportcol colVal=@znRes["Single"].Y.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8
+Reportcol colVal=@znRes["Single"].Y.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes["Single"].Y.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes["Single"].Y.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+Reportcol colVal=@znRes["Single"].Y.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+Reportcol colVal=(@Meter[SysMtr].Y.fanc+@Meter[SysMtr].Y.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[SysMtr].Y.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+
+
 #ifndef Reports  // no reports for speed
 //Delete Report Log     // Deletes the run log:  CSE version etc
 //Delete Report Inp     // Deletes input echo
    #endif    
 #Ifdef Reports  // Switch in the .cse file to turn on the following optional diagnostic reports  BAW 9/3
-#Define CSEBtuSF 1000  //reports in kBtu
 
 //AC
 Report rpType=UDT rpFreq=Year  rpTitle=CaseNo rpCPL=0

@@ -7,8 +7,8 @@ Warning: Zone 'Conditioned-zn': Unmet heating loads during 102 hours of run.
 ---------------
 Warning: Zone 'Conditioned-zn': Unmet cooling loads during 40 hours of run.
 ---------------
-Warning: Zone 'Attic-atc': Condensation occurred in 7618 subhours of run.
-    Total condensation heat = 38.1859 kBtu.
+Warning: Zone 'Attic-atc': Condensation occurred in 4073 subhours of run.
+    Total condensation heat = 37.1588 kBtu.
 ---------------
 
 
@@ -25,8 +25,8 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
 
  mo Tatt  Tin Trad        Slr      IntGs      IntGl       Cond       Surf VntHr sInfVnt      Hload      Cload  FfanE   ClgE     HtgE
  -- ---- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ------ ------ --------
-  1 51.2 67.3 66.7        855       1912        514      -2131      -3747     0   -1226       4305          0    208      0     6920
-  2 56.1 67.4 66.9       1401       1623        433      -1734      -2973     0    -851       2515          0    121      0     4041
+  1 51.2 67.3 66.7        855       1912        514      -2131      -3746     0   -1226       4304          0    208      0     6917
+  2 56.1 67.4 66.9       1401       1623        433      -1734      -2972     0    -851       2515          0    121      0     4040
   3 63.4 68.2 67.9       1757       1665        440      -1511      -2790    12    -617       1485          0     72      0     2361
   4 68.1 68.8 68.5       1951       1487        389      -1495      -2236    57    -665        951          0     49      0     1524
   5 78.6 71.2 71.1       2005       1407        363       -918      -1591   283    -938         82        -67     24     24      131
@@ -35,10 +35,10 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
   8 85.8 76.3 76.4       2089       1465        380       -699       -491   427   -1490          0      -1034    112    364        0
   9 81.7 76.0 76.0       1992       1557        410       -801       -495   432   -1482          0       -867     96    298        0
  10 69.2 70.5 70.5       1840       1739        462      -1149       -641   464   -1841         50          0     25      0       82
- 11 55.2 67.7 67.4       1189       1811        486      -1763      -2214     0    -927       1888          0     91      0     3044
- 12 51.2 67.3 66.8        922       1941        523      -2133      -3437     0   -1260       3938          0    191      0     6355
+ 11 55.2 67.7 67.4       1189       1811        486      -1763      -2213     0    -926       1887          0     91      0     3043
+ 12 51.2 67.3 66.8        922       1941        523      -2133      -3436     0   -1260       3937          0    191      0     6352
 
- Yr 69.6 71.0 70.8      20215      19292       5090     -15574     -22061  2489  -14107      15215      -3644   1178   1287    24458
+ Yr 69.6 71.0 70.8      20215      19292       5090     -15574     -22058  2489  -14106      15212      -3644   1178   1287    24450
 
 
 
@@ -46,20 +46,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 1688.8      0      0      0      0      0      0      0 207.98 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
-Feb 1384.8      0      0      0      0      0      0      0 121.44 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
-Mar 1376.7      0      0      0      0      0      0  0.567 70.965 32.332      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
-Apr 1223.8      0      0      0      0      0      0  3.020 45.789 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
+Jan 1688.7      0      0      0      0      0      0      0 207.89 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Feb 1384.8      0      0      0      0      0      0      0 121.43 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
+Mar 1376.7      0      0      0      0      0      0  0.567 70.958 32.332      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
+Apr 1223.8      0      0      0      0      0      0  3.020 45.788 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
 May 1169.1 23.774      0      0      0      0      0 19.584  3.938 32.376      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
 Jun 1241.7 140.85      0      0      0      0      0 54.910      0 31.331      0      0      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
 Jul 1695.8 460.21      0      0      0      0      0 134.34      0 32.376      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
 Aug 1638.9 364.11      0      0      0      0      0 111.98      0 32.376      0      0      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
 Sep 1618.2 298.03      0      0      0      0      0 95.581      0 31.331      0      0      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
-Oct 1383.0      0      0      0      0      0      0 22.790  2.462 32.376      0      0      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
-Nov 1496.1      0      0      0      0      0      0      0 91.480 31.375      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
-Dec 1692.3      0      0      0      0      0      0      0 190.98 32.376      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
+Oct 1383.0      0      0      0      0      0      0 22.791  2.459 32.376      0      0      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
+Nov 1496.1      0      0      0      0      0      0      0 91.439 31.375      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
+Dec 1692.2      0      0      0      0      0      0      0 190.91 32.376      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   17609 1287.0      0      0      0      0      0 442.78 735.04 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   17609 1287.0      0      0      0      0      0 442.78 734.81 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -67,20 +67,20 @@ Monthly Energy Use, meter "MtrNatGas"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 7450.9      0 6920.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 343.63      0 186.96      0      0      0      0
-Feb 4487.9      0 4040.9      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 289.51      0 157.52      0      0      0      0
-Mar 2815.6      0 2361.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 294.22      0 160.08      0      0      0      0
+Jan 7448.0      0 6917.4      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 343.63      0 186.96      0      0      0      0
+Feb 4487.4      0 4040.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 289.51      0 157.52      0      0      0      0
+Mar 2815.4      0 2361.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 294.22      0 160.08      0      0      0      0
 Apr 1924.9      0 1523.6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 259.89      0 141.40      0      0      0      0
-May 505.59      0 131.05      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 242.56      0 131.97      0      0      0      0
+May 505.56      0 131.02      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 242.56      0 131.97      0      0      0      0
 Jun 345.20      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 223.56      0 121.63      0      0      0      0
 Jul 365.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 236.79      0 128.83      0      0      0      0
 Aug 392.37      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 254.12      0 138.26      0      0      0      0
 Sep 422.87      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 273.86      0 149.00      0      0      0      0
-Oct 559.02      0 81.932      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 308.98      0 168.11      0      0      0      0
-Nov 3545.0      0 3043.9      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 324.53      0 176.57      0      0      0      0
-Dec 6894.2      0 6354.7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 349.41      0 190.10      0      0      0      0
+Oct 558.91      0 81.823      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 308.98      0 168.11      0      0      0      0
+Nov 3543.7      0 3042.6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 324.53      0 176.57      0      0      0      0
+Dec 6891.8      0 6352.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 349.41      0 190.10      0      0      0      0
 
-Yr   29709      0  24458      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 3401.1      0 1850.4      0      0      0      0
+Yr   29701      0  24450      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 3401.1      0 1850.4      0      0      0      0
 
 
 
@@ -89,31 +89,31 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Thu 03-Dec
  Hr Tout  WBo    Wo Tatt  Tin Trad   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL sInfVnt ACH Htgs  Htgl  Htgt loadF  FfanE   HtgE
  -- ---- ---- ----- ---- ---- ---- ----- --- ---- ------ ----- ----- ----- ----- ----- ----- ---- ----- ----- ----- ----- ------ ------
   1 41.7 36.1 .0032 46.3 66.7 66.7 .0065  47 54.9      0 -3.64  3.51  2.15  0.60  0.20 -2.03 0.16     0     0     0     0      0      0
-  2 38.8 34.8 .0033 44.5 66.2 66.3 .0064  47 54.4      0 -3.71  3.78  2.04  0.59  0.18 -2.11 0.16     0     0     0     0      0      0
+  2 38.8 34.8 .0033 44.6 66.2 66.3 .0064  47 54.4      0 -3.71  3.78  2.04  0.59  0.18 -2.11 0.16     0     0     0     0      0      0
   3 36.5 33.3 .0033 42.8 65.7 65.9 .0063  47 54.1      0 -3.95  4.30  1.97  0.58  0.17 -2.32 0.17     0     0     0     0      0      0
   4 32.9 30.9 .0032 40.8 65.3 65.5 .0062  47 53.6      0 -4.23  4.84  1.99  0.58  0.20 -2.60 0.17     0     0     0     0      0      0
   5 30.9 29.4 .0030 38.8 65.0 65.1 .0060  46 53.3      0 -4.52  2.74  1.98  0.57  0.28 -2.91 0.18   2.7 -0.02   2.7  0.16    0.1    4.5
   6 30.0 28.8 .0030 36.7 65.0 64.9 .0060  45 53.2      0 -4.70  0.61  2.55  0.85 0.028 -3.12 0.19   4.7 -0.04   4.6  0.22    0.2    7.7
-  7 28.2 27.5 .0029 34.8 65.0 64.8 .0061  46 53.5      0 -4.87 -0.81  3.18  1.12 -0.19 -3.32 0.19   5.8 -0.04   5.8  0.26    0.3    9.7
-  8 28.4 27.7 .0029 35.7 66.3 65.2 .0059  42 54.0   1.78 -5.29 -20.9  2.86  0.86  0.24 -3.59 0.20  25.1  -0.2  25.0  1.00    1.3   42.2
+  7 28.2 27.5 .0029 34.8 65.0 64.8 .0061  46 53.5      0 -4.87 -0.80  3.18  1.12 -0.19 -3.32 0.19   5.8 -0.04   5.8  0.26    0.3    9.7
+  8 28.4 27.7 .0029 35.7 66.3 65.2 .0059  42 54.0   1.78 -5.29 -20.9  2.86  0.86  0.24 -3.58 0.20  25.2  -0.2  25.0  1.00    1.3   42.2
   9 30.2 29.1 .0031 37.3 67.6 66.2 .0057  39 53.9   5.56 -5.38 -23.5  2.17  0.52  0.43 -3.60 0.20  24.8  -0.1  24.6  0.78    1.2   41.6
  10 38.3 35.7 .0038 39.7 68.0 66.8 .0055  38 53.6   7.17 -4.79 -15.3  1.78  0.35  0.26 -3.02 0.18  14.2 -0.04  14.1  0.42    0.7   23.7
  11 41.5 37.5 .0038 44.3 68.0 67.1 .0054  37 53.5   6.89 -4.08 -11.2  1.79  0.36 0.069 -2.39 0.17   9.0 -0.02   9.0  0.29    0.4   14.8
  12 46.2 40.0 .0038 49.4 68.0 67.2 .0054  37 53.4   6.53 -3.57 -9.13  1.76  0.36 0.038 -1.96 0.17   6.4 -0.02   6.3  0.20    0.3   10.2
  13 48.4 40.8 .0037 54.3 68.0 67.4 .0054  37 53.4   6.48 -3.18 -7.75  1.68  0.35 0.034 -1.55 0.17   4.3 -0.01   4.3  0.13    0.2    6.8
- 14 51.3 42.6 .0038 59.0 68.0 67.5 .0054  37 53.4   6.75 -2.92 -6.76  1.71  0.36 .0079 -1.20 0.16   2.4 -.007   2.4 0.067    0.1    3.7
+ 14 51.3 42.6 .0038 59.0 68.0 67.5 .0054  37 53.4   6.75 -2.92 -6.76  1.71  0.36 .0079 -1.20 0.16   2.4 -.007   2.4 0.066    0.1    3.7
  15 53.2 43.2 .0036 61.5 68.0 67.6 .0054  37 53.4   6.60 -2.64 -5.91  1.85  0.42 -.051 -0.96 0.16   1.1 -.004   1.1 0.038   0.05    1.6
- 16 54.9 43.8 .0036 62.2 68.0 67.6 .0055  38 53.6   4.45 -2.46 -4.45  2.08  0.52 -0.11 -0.83 0.16   1.2 -.005   1.2 0.066   0.06    1.9
+ 16 54.9 43.8 .0036 62.2 68.0 67.6 .0055  38 53.6   4.45 -2.46 -4.45  2.08  0.52 -0.11 -0.83 0.16   1.2 -.005   1.2 0.066   0.06    1.8
  17 54.1 43.6 .0036 61.1 68.0 67.5 .0057  39 53.9   0.90 -2.47 -2.91  2.55  0.71 -0.25 -0.86 0.16   2.8 -0.01   2.8  0.13    0.1    4.3
  18 51.4 42.3 .0037 58.6 68.0 67.4 .0059  41 54.4      0 -2.62 -3.40  3.17  0.91 -0.39 -1.06 0.16   3.9 -0.02   3.9  0.16    0.2    6.0
- 19 49.1 41.2 .0037 56.2 68.0 67.4 .0062  43 54.9      0 -2.91 -3.96  3.98  1.08 -0.48 -1.30 0.17   4.2 -0.03   4.2  0.17    0.2    6.5
+ 19 49.1 41.2 .0037 56.2 68.0 67.4 .0062  43 54.9      0 -2.91 -3.95  3.98  1.08 -0.48 -1.30 0.17   4.2 -0.03   4.2  0.17    0.2    6.5
  20 42.8 38.2 .0038 53.6 68.0 67.4 .0066  45 55.6      0 -3.39 -4.38  4.63  1.24 -0.55 -1.65 0.17   4.8 -0.04   4.7  0.20    0.2    7.5
  21 41.9 38.1 .0040 50.9 68.0 67.4 .0069  48 56.2      0 -3.74 -4.74  4.64  1.25 -0.49 -1.97 0.17   5.8 -0.05   5.8  0.23    0.3    9.2
  22 40.1 37.2 .0040 48.7 68.0 67.3 .0071  49 56.5      0 -3.88 -4.98  4.21  1.12 -0.29 -2.14 0.17   6.8 -0.07   6.7  0.27    0.3   10.8
  23 42.1 38.5 .0041 47.1 68.0 67.3 .0072  49 56.5      0 -3.85 -5.16  3.34  0.89 -.036 -2.19 0.17   7.9 -0.08   7.8  0.30    0.4   12.7
  24 41.9 38.3 .0041 45.3 67.4 67.0 .0071  50 56.1      0 -3.60  3.12  2.58  0.66 0.073 -2.09 0.16     0     0     0     0      0      0
 
- Dy                 47.9 67.2 66.7                 53.10 -90.4  -112 62.62 16.87 -0.63 -50.8 0.17 137.8  -0.8 137.0    0    6.8  225.4
+ Dy                 47.9 67.2 66.7                 53.10 -90.4  -112 62.62 16.87 -0.63 -50.8 0.17 137.8  -0.8 137.0    0    6.8  225.3
 
 
 
@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console   Mon 20-Dec-21  10:37:02 am
+! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console   Thu 27-Jan-22  11:46:09 am
 
 
 ================
@@ -7727,14 +7727,14 @@ ASHWAT Win F1-NoScrn  nL=3  tao=38.06 tro=25.03 teo=29.52   tai=65.85 tri=65.98 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.358 hro=0.680 qro=0.00   tsi=62.83 hci=0.306 hri=0.831 qri=0.00   qSrf=8.33
 
-ASHWAT Win F1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win F1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.392 hro=0.678 qro=0.00   tsi=59.22 hci=0.301 hri=0.832 qri=0.00   qSrf=7.82
     Frame tso=38.57 hco=0.362 hro=0.682 qro=0.00   tsi=58.33 hci=0.409 hri=0.820 qri=0.00   qSrf=9.34
 
-ASHWAT Win F1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win F1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -7753,14 +7753,14 @@ ASHWAT Win L1-NoScrn  nL=3  tao=38.06 tro=25.03 teo=29.52   tai=65.85 tri=65.98 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.358 hro=0.680 qro=0.00   tsi=62.83 hci=0.306 hri=0.831 qri=0.00   qSrf=8.33
 
-ASHWAT Win L1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win L1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.392 hro=0.678 qro=0.00   tsi=59.22 hci=0.301 hri=0.832 qri=0.00   qSrf=7.82
     Frame tso=38.57 hco=0.362 hro=0.682 qro=0.00   tsi=58.33 hci=0.409 hri=0.820 qri=0.00   qSrf=9.34
 
-ASHWAT Win L1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win L1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -7779,14 +7779,14 @@ ASHWAT Win B1-NoScrn  nL=3  tao=38.06 tro=25.03 teo=29.52   tai=65.85 tri=65.98 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.358 hro=0.680 qro=0.00   tsi=62.83 hci=0.306 hri=0.831 qri=0.00   qSrf=8.33
 
-ASHWAT Win B1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win B1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.392 hro=0.678 qro=0.00   tsi=59.22 hci=0.301 hri=0.832 qri=0.00   qSrf=7.82
     Frame tso=38.57 hco=0.362 hro=0.682 qro=0.00   tsi=58.33 hci=0.409 hri=0.820 qri=0.00   qSrf=9.34
 
-ASHWAT Win B1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win B1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -7805,14 +7805,14 @@ ASHWAT Win R1-NoScrn  nL=3  tao=38.06 tro=25.03 teo=29.52   tai=65.85 tri=65.98 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.358 hro=0.680 qro=0.00   tsi=62.83 hci=0.306 hri=0.831 qri=0.00   qSrf=8.33
 
-ASHWAT Win R1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win R1-Scrn  nL=3  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.392 hro=0.678 qro=0.00   tsi=59.22 hci=0.301 hri=0.832 qri=0.00   qSrf=7.82
     Frame tso=38.57 hco=0.362 hro=0.682 qro=0.00   tsi=58.33 hci=0.409 hri=0.820 qri=0.00   qSrf=9.34
 
-ASHWAT Win R1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.94
+ASHWAT Win R1-Scrn  nL=4  tao=38.06 tro=25.03 teo=31.72   tai=65.85 tri=65.98 tei=65.95
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -8599,14 +8599,14 @@ ASHWAT Win F1-NoScrn  nL=3  tao=37.44 tro=24.39 teo=28.88   tai=65.72 tri=65.88 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.328 hro=0.677 qro=0.00   tsi=62.83 hci=0.312 hri=0.830 qri=0.00   qSrf=8.44
 
-ASHWAT Win F1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win F1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.377 hro=0.674 qro=0.00   tsi=59.22 hci=0.307 hri=0.831 qri=0.00   qSrf=7.92
     Frame tso=38.10 hco=0.328 hro=0.680 qro=0.00   tsi=58.13 hci=0.411 hri=0.819 qri=0.00   qSrf=9.47
 
-ASHWAT Win F1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win F1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -8625,14 +8625,14 @@ ASHWAT Win L1-NoScrn  nL=3  tao=37.44 tro=24.39 teo=28.88   tai=65.72 tri=65.88 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.328 hro=0.677 qro=0.00   tsi=62.83 hci=0.312 hri=0.830 qri=0.00   qSrf=8.44
 
-ASHWAT Win L1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win L1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.377 hro=0.674 qro=0.00   tsi=59.22 hci=0.307 hri=0.831 qri=0.00   qSrf=7.92
     Frame tso=38.10 hco=0.328 hro=0.680 qro=0.00   tsi=58.13 hci=0.411 hri=0.819 qri=0.00   qSrf=9.47
 
-ASHWAT Win L1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win L1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -8651,14 +8651,14 @@ ASHWAT Win B1-NoScrn  nL=3  tao=37.44 tro=24.39 teo=28.88   tai=65.72 tri=65.88 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.328 hro=0.677 qro=0.00   tsi=62.83 hci=0.312 hri=0.830 qri=0.00   qSrf=8.44
 
-ASHWAT Win B1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win B1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.377 hro=0.674 qro=0.00   tsi=59.22 hci=0.307 hri=0.831 qri=0.00   qSrf=7.92
     Frame tso=38.10 hco=0.328 hro=0.680 qro=0.00   tsi=58.13 hci=0.411 hri=0.819 qri=0.00   qSrf=9.47
 
-ASHWAT Win B1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win B1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -8677,14 +8677,14 @@ ASHWAT Win R1-NoScrn  nL=3  tao=37.44 tro=24.39 teo=28.88   tai=65.72 tri=65.88 
    SHGC=0.000  ucg=0.229  cr=0.092  cc=0.137  FP=0.000  FM=0.000  Cx=0.390
       COG tso=36.77 hco=0.328 hro=0.677 qro=0.00   tsi=62.83 hci=0.312 hri=0.830 qri=0.00   qSrf=8.44
 
-ASHWAT Win R1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win R1-Scrn  nL=3  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.377 hro=0.674 qro=0.00   tsi=59.22 hci=0.307 hri=0.831 qri=0.00   qSrf=7.92
     Frame tso=38.10 hco=0.328 hro=0.680 qro=0.00   tsi=58.13 hci=0.411 hri=0.819 qri=0.00   qSrf=9.47
 
-ASHWAT Win R1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.83
+ASHWAT Win R1-Scrn  nL=4  tao=37.44 tro=24.39 teo=31.09   tai=65.72 tri=65.88 tei=65.84
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
    layer temps=   35.25  38.55  57.52  62.99
    SHGC=0.000  ucg=0.229  cr=0.093  cc=0.136  FP=0.000  FM=0.000  Cx=0.387
@@ -8809,7 +8809,7 @@ ASHWAT Win F1-NoScrn  nL=2  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 
    layer temps=   37.25  58.80
    SHGC=0.000  ucg=0.245  cr=0.178  cc=0.067  FP=0.000  FM=0.000  Cx=0.179
       COG tso=37.25 hco=0.313 hro=0.677 qro=0.00   tsi=58.80 hci=0.311 hri=0.830 qri=0.00   qSrf=8.47
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win F1-NoScrn  nL=3  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
@@ -8822,7 +8822,7 @@ ASHWAT Win F1-Scrn  nL=3  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 te
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.365 hro=0.674 qro=0.00   tsi=59.22 hci=0.306 hri=0.831 qri=0.00   qSrf=7.95
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win F1-Scrn  nL=4  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
@@ -8835,7 +8835,7 @@ ASHWAT Win L1-NoScrn  nL=2  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 
    layer temps=   37.25  58.80
    SHGC=0.000  ucg=0.245  cr=0.178  cc=0.067  FP=0.000  FM=0.000  Cx=0.179
       COG tso=37.25 hco=0.313 hro=0.677 qro=0.00   tsi=58.80 hci=0.311 hri=0.830 qri=0.00   qSrf=8.47
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win L1-NoScrn  nL=3  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
@@ -8848,7 +8848,7 @@ ASHWAT Win L1-Scrn  nL=3  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 te
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.365 hro=0.674 qro=0.00   tsi=59.22 hci=0.306 hri=0.831 qri=0.00   qSrf=7.95
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win L1-Scrn  nL=4  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
@@ -8861,7 +8861,7 @@ ASHWAT Win B1-NoScrn  nL=2  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 
    layer temps=   37.25  58.80
    SHGC=0.000  ucg=0.245  cr=0.178  cc=0.067  FP=0.000  FM=0.000  Cx=0.179
       COG tso=37.25 hco=0.313 hro=0.677 qro=0.00   tsi=58.80 hci=0.311 hri=0.830 qri=0.00   qSrf=8.47
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win B1-NoScrn  nL=3  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
@@ -8874,7 +8874,7 @@ ASHWAT Win B1-Scrn  nL=3  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 te
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.365 hro=0.674 qro=0.00   tsi=59.22 hci=0.306 hri=0.831 qri=0.00   qSrf=7.95
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win B1-Scrn  nL=4  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
@@ -8887,7 +8887,7 @@ ASHWAT Win R1-NoScrn  nL=2  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 
    layer temps=   37.25  58.80
    SHGC=0.000  ucg=0.245  cr=0.178  cc=0.067  FP=0.000  FM=0.000  Cx=0.179
       COG tso=37.25 hco=0.313 hro=0.677 qro=0.00   tsi=58.80 hci=0.311 hri=0.830 qri=0.00   qSrf=8.47
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win R1-NoScrn  nL=3  tao=37.28 tro=24.23 teo=28.72   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00
@@ -8900,7 +8900,7 @@ ASHWAT Win R1-Scrn  nL=3  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 te
    layer temps=   35.33  39.01  59.22
    SHGC=0.000  ucg=0.244  cr=0.179  cc=0.066  FP=0.000  FM=0.000  Cx=0.177
       COG tso=35.33 hco=0.365 hro=0.674 qro=0.00   tsi=59.22 hci=0.306 hri=0.831 qri=0.00   qSrf=7.95
-    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.07 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
+    Frame tso=37.99 hco=0.320 hro=0.679 qro=0.00   tsi=58.08 hci=0.411 hri=0.819 qri=0.00   qSrf=9.50
 
 ASHWAT Win R1-Scrn  nL=4  tao=37.28 tro=24.23 teo=30.93   tai=65.69 tri=65.85 tei=65.81
    incSlr=0.00  trans=0.00 (0.000)  layer abs=  0.00  0.00  0.00  0.00
@@ -10090,9 +10090,9 @@ ASHWAT Win R1-NoScrn  nL=2  tao=48.48 tro=34.35 teo=38.90   tai=68.00 tri=67.42 
 
 ASHWAT Win R1-NoScrn  nL=3  tao=48.48 tro=34.35 teo=38.89   tai=68.00 tri=67.42 tei=67.57
    incSlr=107.47  trans=0.73 (0.007)  layer abs=  32.70  5.60  11.94
-   layer temps=   70.91  76.62  75.86
+   layer temps=   70.91  76.62  75.87
    SHGC=0.207  ucg=0.235  cr=0.096  cc=0.139  FP=0.104  FM=0.096  Cx=0.394
-      COG tso=70.91 hco=0.350 hro=0.737 qro=0.00   tsi=75.86 hci=0.306 hri=0.850 qri=0.00   qSrf=6.75
+      COG tso=70.91 hco=0.350 hro=0.737 qro=0.00   tsi=75.87 hci=0.306 hri=0.850 qri=0.00   qSrf=6.75
 
 ASHWAT Win R1-Scrn  nL=3  tao=48.48 tro=34.34 teo=41.98   tai=68.00 tri=67.42 tei=67.56
    incSlr=107.47  trans=8.96 (0.083)  layer abs=  55.79  16.59  2.18
@@ -10347,14 +10347,14 @@ ASHWAT Win F1-Scrn  nL=3  tao=48.76 tro=34.65 teo=41.24   tai=68.00 tri=67.45 te
    incSlr=26.92  trans=3.09 (0.115)  layer abs=  11.93  4.86  0.57
    layer temps=   55.33  52.43  64.07
    SHGC=0.190  ucg=0.243  cr=0.186  cc=0.057  FP=0.018  FM=0.057  Cx=0.156
-      COG tso=55.33 hco=0.364 hro=0.739 qro=0.00   tsi=64.07 hci=0.251 hri=0.845 qri=0.00   qSrf=6.03
+      COG tso=55.33 hco=0.364 hro=0.739 qro=0.00   tsi=64.07 hci=0.250 hri=0.845 qri=0.00   qSrf=6.03
     Frame tso=45.99 hco=0.282 hro=0.718 qro=0.00   tsi=61.77 hci=0.437 hri=0.831 qri=0.00   qSrf=7.46
 
 ASHWAT Win F1-Scrn  nL=4  tao=48.76 tro=34.65 teo=41.24   tai=68.00 tri=67.45 tei=67.57
    incSlr=26.92  trans=0.19 (0.007)  layer abs=  12.01  5.03  0.80  2.29
    layer temps=   55.44  52.63  64.29  67.43
    SHGC=0.162  ucg=0.227  cr=0.104  cc=0.123  FP=0.074  FM=0.081  Cx=0.353
-      COG tso=55.44 hco=0.364 hro=0.739 qro=0.00   tsi=67.43 hci=0.251 hri=0.845 qri=0.00   qSrf=6.03
+      COG tso=55.44 hco=0.364 hro=0.739 qro=0.00   tsi=67.43 hci=0.250 hri=0.845 qri=0.00   qSrf=6.03
 
 ASHWAT Win L1-NoScrn  nL=2  tao=48.76 tro=34.66 teo=38.96   tai=68.00 tri=67.45 tei=67.56
    incSlr=26.92  trans=5.15 (0.191)  layer abs=  8.09  0.95
@@ -10565,14 +10565,14 @@ ASHWAT Win F1-Scrn  nL=3  tao=48.96 tro=34.85 teo=41.44   tai=68.00 tri=67.46 te
    incSlr=26.92  trans=3.09 (0.115)  layer abs=  11.93  4.86  0.57
    layer temps=   55.33  52.43  64.07
    SHGC=0.190  ucg=0.243  cr=0.186  cc=0.057  FP=0.018  FM=0.057  Cx=0.156
-      COG tso=55.33 hco=0.370 hro=0.739 qro=0.00   tsi=64.07 hci=0.247 hri=0.845 qri=0.00   qSrf=5.99
+      COG tso=55.33 hco=0.370 hro=0.739 qro=0.00   tsi=64.07 hci=0.246 hri=0.845 qri=0.00   qSrf=5.99
     Frame tso=46.15 hco=0.291 hro=0.719 qro=0.00   tsi=61.80 hci=0.433 hri=0.832 qri=0.00   qSrf=7.40
 
 ASHWAT Win F1-Scrn  nL=4  tao=48.96 tro=34.85 teo=41.44   tai=68.00 tri=67.46 tei=67.58
    incSlr=26.92  trans=0.19 (0.007)  layer abs=  12.01  5.03  0.80  2.29
    layer temps=   55.44  52.63  64.29  67.43
    SHGC=0.162  ucg=0.227  cr=0.104  cc=0.123  FP=0.074  FM=0.081  Cx=0.353
-      COG tso=55.44 hco=0.370 hro=0.739 qro=0.00   tsi=67.43 hci=0.247 hri=0.845 qri=0.00   qSrf=5.99
+      COG tso=55.44 hco=0.370 hro=0.739 qro=0.00   tsi=67.43 hci=0.246 hri=0.845 qri=0.00   qSrf=5.99
 
 ASHWAT Win L1-NoScrn  nL=2  tao=48.96 tro=34.85 teo=38.69   tai=68.00 tri=67.46 tei=67.57
    incSlr=26.92  trans=5.15 (0.191)  layer abs=  8.09  0.95
@@ -10662,7 +10662,7 @@ ASHWAT Win F1-NoScrn  nL=2  tao=49.05 tro=34.95 teo=38.73   tai=68.00 tri=67.46 
    layer temps=   51.25  63.94
    SHGC=0.285  ucg=0.240  cr=0.190  cc=0.050  FP=0.020  FM=0.074  Cx=0.139
       COG tso=51.25 hco=0.290 hro=0.731 qro=0.00   tsi=63.94 hci=0.217 hri=0.847 qri=0.00   qSrf=6.48
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win F1-NoScrn  nL=3  tao=49.05 tro=34.95 teo=38.72   tai=68.00 tri=67.46 tei=67.57
    incSlr=26.92  trans=0.31 (0.011)  layer abs=  8.37  1.33  3.81
@@ -10675,7 +10675,7 @@ ASHWAT Win F1-Scrn  nL=3  tao=49.05 tro=34.95 teo=41.54   tai=68.00 tri=67.46 te
    layer temps=   55.33  52.43  64.07
    SHGC=0.190  ucg=0.243  cr=0.186  cc=0.057  FP=0.018  FM=0.057  Cx=0.156
       COG tso=55.33 hco=0.372 hro=0.739 qro=0.00   tsi=64.07 hci=0.245 hri=0.845 qri=0.00   qSrf=5.97
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win F1-Scrn  nL=4  tao=49.05 tro=34.95 teo=41.53   tai=68.00 tri=67.46 tei=67.58
    incSlr=26.92  trans=0.19 (0.007)  layer abs=  12.01  5.03  0.80  2.29
@@ -10688,7 +10688,7 @@ ASHWAT Win L1-NoScrn  nL=2  tao=49.05 tro=34.95 teo=38.79   tai=68.00 tri=67.46 
    layer temps=   51.39  63.97
    SHGC=0.285  ucg=0.241  cr=0.190  cc=0.050  FP=0.019  FM=0.074  Cx=0.138
       COG tso=51.39 hco=0.294 hro=0.731 qro=0.00   tsi=63.97 hci=0.219 hri=0.847 qri=0.00   qSrf=6.47
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win L1-NoScrn  nL=3  tao=49.05 tro=34.95 teo=38.78   tai=68.00 tri=67.46 tei=67.57
    incSlr=26.92  trans=0.31 (0.011)  layer abs=  8.37  1.33  3.81
@@ -10701,7 +10701,7 @@ ASHWAT Win L1-Scrn  nL=3  tao=49.05 tro=34.95 teo=41.49   tai=68.00 tri=67.46 te
    layer temps=   55.31  52.38  64.05
    SHGC=0.190  ucg=0.243  cr=0.186  cc=0.057  FP=0.018  FM=0.058  Cx=0.157
       COG tso=55.31 hco=0.372 hro=0.739 qro=0.00   tsi=64.05 hci=0.247 hri=0.845 qri=0.00   qSrf=5.98
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win L1-Scrn  nL=4  tao=49.05 tro=34.95 teo=41.49   tai=68.00 tri=67.46 tei=67.58
    incSlr=26.92  trans=0.19 (0.007)  layer abs=  12.01  5.03  0.80  2.29
@@ -10714,7 +10714,7 @@ ASHWAT Win B1-NoScrn  nL=2  tao=49.05 tro=34.91 teo=41.02   tai=68.00 tri=67.46 
    layer temps=   84.45  75.02
    SHGC=0.302  ucg=0.281  cr=0.168  cc=0.114  FP=0.033  FM=0.048  Cx=0.287
       COG tso=84.45 hco=0.633 hro=0.813 qro=0.00   tsi=75.02 hci=0.566 hri=0.888 qri=0.00   qSrf=7.44
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win B1-NoScrn  nL=3  tao=49.05 tro=34.91 teo=40.98   tai=68.00 tri=67.46 tei=67.67
    incSlr=214.66  trans=3.31 (0.015)  layer abs=  68.12  10.28  35.01
@@ -10727,7 +10727,7 @@ ASHWAT Win B1-Scrn  nL=3  tao=49.05 tro=34.90 teo=43.29   tai=68.00 tri=67.46 te
    layer temps=   94.17  80.18  72.96
    SHGC=0.205  ucg=0.278  cr=0.172  cc=0.106  FP=0.024  FM=0.039  Cx=0.268
       COG tso=94.17 hco=0.666 hro=0.829 qro=0.00   tsi=72.96 hci=0.510 hri=0.875 qri=0.00   qSrf=6.68
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win B1-Scrn  nL=4  tao=49.05 tro=34.90 teo=43.27   tai=68.00 tri=67.46 tei=67.66
    incSlr=214.66  trans=2.11 (0.010)  layer abs=  84.36  44.24  6.70  22.55
@@ -10740,7 +10740,7 @@ ASHWAT Win R1-NoScrn  nL=2  tao=49.05 tro=34.93 teo=40.49   tai=68.00 tri=67.46 
    layer temps=   66.34  69.93
    SHGC=0.239  ucg=0.264  cr=0.177  cc=0.087  FP=0.029  FM=0.059  Cx=0.227
       COG tso=66.34 hco=0.510 hro=0.767 qro=0.00   tsi=69.93 hci=0.439 hri=0.862 qri=0.00   qSrf=6.96
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win R1-NoScrn  nL=3  tao=49.05 tro=34.93 teo=40.48   tai=68.00 tri=67.46 tei=67.64
    incSlr=106.27  trans=0.72 (0.007)  layer abs=  32.33  5.54  11.81
@@ -10752,14 +10752,14 @@ ASHWAT Win R1-Scrn  nL=3  tao=49.05 tro=34.92 teo=43.08   tai=68.00 tri=67.46 te
    incSlr=106.27  trans=8.87 (0.083)  layer abs=  55.14  16.41  2.15
    layer temps=   79.80  63.47  67.98
    SHGC=0.143  ucg=0.262  cr=0.185  cc=0.077  FP=0.017  FM=0.042  Cx=0.200
-      COG tso=79.80 hco=0.592 hro=0.795 qro=0.00   tsi=67.98 hci=0.371 hri=0.855 qri=0.00   qSrf=6.18
-    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.432 hri=0.832 qri=0.00   qSrf=7.37
+      COG tso=79.80 hco=0.592 hro=0.795 qro=0.00   tsi=67.98 hci=0.370 hri=0.855 qri=0.00   qSrf=6.18
+    Frame tso=46.22 hco=0.296 hro=0.719 qro=0.00   tsi=61.81 hci=0.431 hri=0.832 qri=0.00   qSrf=7.37
 
 ASHWAT Win R1-Scrn  nL=4  tao=49.05 tro=34.92 teo=43.07   tai=68.00 tri=67.46 tei=67.62
    incSlr=106.27  trans=0.44 (0.004)  layer abs=  55.38  16.94  2.85  6.56
    layer temps=   80.07  64.41  70.72  71.38
    SHGC=0.123  ucg=0.249  cr=0.093  cc=0.156  FP=0.066  FM=0.052  Cx=0.427
-      COG tso=80.07 hco=0.592 hro=0.795 qro=0.00   tsi=71.38 hci=0.371 hri=0.855 qri=0.00   qSrf=6.18
+      COG tso=80.07 hco=0.592 hro=0.795 qro=0.00   tsi=71.38 hci=0.370 hri=0.855 qri=0.00   qSrf=6.18
 
 
 ================
@@ -10822,14 +10822,14 @@ ASHWAT Win B1-NoScrn  nL=2  tao=49.15 tro=35.01 teo=41.11   tai=68.00 tri=67.46 
    incSlr=214.19  trans=47.45 (0.222)  layer abs=  65.48  6.85
    layer temps=   84.45  75.02
    SHGC=0.302  ucg=0.281  cr=0.168  cc=0.114  FP=0.033  FM=0.048  Cx=0.287
-      COG tso=84.45 hco=0.637 hro=0.813 qro=0.00   tsi=75.02 hci=0.565 hri=0.888 qri=0.00   qSrf=7.41
+      COG tso=84.45 hco=0.637 hro=0.813 qro=0.00   tsi=75.02 hci=0.564 hri=0.888 qri=0.00   qSrf=7.41
     Frame tso=46.30 hco=0.300 hro=0.720 qro=0.00   tsi=61.83 hci=0.430 hri=0.832 qri=0.00   qSrf=7.34
 
 ASHWAT Win B1-NoScrn  nL=3  tao=49.15 tro=35.01 teo=41.08   tai=68.00 tri=67.46 tei=67.67
    incSlr=214.19  trans=3.30 (0.015)  layer abs=  67.97  10.26  34.93
    layer temps=   87.88  85.67  84.83
    SHGC=0.262  ucg=0.276  cr=0.072  cc=0.204  FP=0.160  FM=0.087  Cx=0.557
-      COG tso=87.88 hco=0.637 hro=0.813 qro=0.00   tsi=84.83 hci=0.565 hri=0.888 qri=0.00   qSrf=7.41
+      COG tso=87.88 hco=0.637 hro=0.813 qro=0.00   tsi=84.83 hci=0.564 hri=0.888 qri=0.00   qSrf=7.41
 
 ASHWAT Win B1-Scrn  nL=3  tao=49.15 tro=35.00 teo=43.39   tai=68.00 tri=67.46 tei=67.66
    incSlr=214.19  trans=30.53 (0.143)  layer abs=  83.41  42.48  4.48
@@ -11463,14 +11463,14 @@ ASHWAT Win L1-Scrn  nL=3  tao=49.72 tro=35.64 teo=42.59   tai=68.00 tri=67.49 te
    incSlr=26.91  trans=3.09 (0.115)  layer abs=  11.92  4.85  0.57
    layer temps=   55.74  52.96  64.19
    SHGC=0.186  ucg=0.245  cr=0.190  cc=0.055  FP=0.016  FM=0.055  Cx=0.149
-      COG tso=55.74 hco=0.396 hro=0.742 qro=0.00   tsi=64.19 hci=0.238 hri=0.845 qri=0.00   qSrf=5.76
+      COG tso=55.74 hco=0.396 hro=0.742 qro=0.00   tsi=64.19 hci=0.237 hri=0.845 qri=0.00   qSrf=5.76
     Frame tso=46.77 hco=0.325 hro=0.722 qro=0.00   tsi=61.95 hci=0.423 hri=0.832 qri=0.00   qSrf=7.18
 
 ASHWAT Win L1-Scrn  nL=4  tao=49.72 tro=35.64 teo=42.58   tai=68.00 tri=67.49 tei=67.60
    incSlr=26.91  trans=0.19 (0.007)  layer abs=  12.00  5.03  0.80  2.29
    layer temps=   55.84  53.15  64.43  67.48
    SHGC=0.158  ucg=0.228  cr=0.108  cc=0.120  FP=0.070  FM=0.081  Cx=0.341
-      COG tso=55.84 hco=0.396 hro=0.742 qro=0.00   tsi=67.48 hci=0.238 hri=0.845 qri=0.00   qSrf=5.76
+      COG tso=55.84 hco=0.396 hro=0.742 qro=0.00   tsi=67.48 hci=0.237 hri=0.845 qri=0.00   qSrf=5.76
 
 ASHWAT Win B1-NoScrn  nL=2  tao=49.72 tro=35.60 teo=41.91   tai=68.00 tri=67.49 tei=67.69
    incSlr=211.36  trans=46.81 (0.221)  layer abs=  64.61  6.76
@@ -11764,14 +11764,14 @@ ASHWAT Win F1-Scrn  nL=3  tao=50.01 tro=35.94 teo=42.90   tai=68.00 tri=67.50 te
    incSlr=26.82  trans=3.08 (0.115)  layer abs=  11.89  4.84  0.57
    layer temps=   55.81  53.02  64.21
    SHGC=0.186  ucg=0.245  cr=0.191  cc=0.055  FP=0.016  FM=0.055  Cx=0.148
-      COG tso=55.81 hco=0.403 hro=0.742 qro=0.00   tsi=64.21 hci=0.232 hri=0.845 qri=0.00   qSrf=5.68
+      COG tso=55.81 hco=0.403 hro=0.742 qro=0.00   tsi=64.21 hci=0.231 hri=0.845 qri=0.00   qSrf=5.68
     Frame tso=47.01 hco=0.337 hro=0.723 qro=0.00   tsi=62.01 hci=0.420 hri=0.832 qri=0.00   qSrf=7.09
 
 ASHWAT Win F1-Scrn  nL=4  tao=50.01 tro=35.94 teo=42.90   tai=68.00 tri=67.50 tei=67.61
    incSlr=26.82  trans=0.18 (0.007)  layer abs=  11.97  5.01  0.80  2.28
    layer temps=   55.90  53.21  64.44  67.49
    SHGC=0.157  ucg=0.228  cr=0.108  cc=0.120  FP=0.069  FM=0.081  Cx=0.339
-      COG tso=55.90 hco=0.403 hro=0.742 qro=0.00   tsi=67.49 hci=0.232 hri=0.845 qri=0.00   qSrf=5.68
+      COG tso=55.90 hco=0.403 hro=0.742 qro=0.00   tsi=67.49 hci=0.231 hri=0.845 qri=0.00   qSrf=5.68
 
 ASHWAT Win L1-NoScrn  nL=2  tao=50.01 tro=35.94 teo=40.00   tai=68.00 tri=67.50 tei=67.60
    incSlr=26.82  trans=5.14 (0.191)  layer abs=  8.06  0.95
@@ -11951,14 +11951,14 @@ ASHWAT Win R1-Scrn  nL=3  tao=50.11 tro=36.01 teo=44.39   tai=68.00 tri=67.50 te
    incSlr=103.86  trans=8.69 (0.084)  layer abs=  53.85  16.06  2.10
    layer temps=   78.30  63.28  67.93
    SHGC=0.141  ucg=0.265  cr=0.185  cc=0.080  FP=0.017  FM=0.040  Cx=0.203
-      COG tso=78.30 hco=0.624 hro=0.794 qro=0.00   tsi=67.93 hci=0.359 hri=0.854 qri=0.00   qSrf=5.91
+      COG tso=78.30 hco=0.624 hro=0.794 qro=0.00   tsi=67.93 hci=0.358 hri=0.854 qri=0.00   qSrf=5.91
     Frame tso=47.09 hco=0.341 hro=0.723 qro=0.00   tsi=62.03 hci=0.419 hri=0.832 qri=0.00   qSrf=7.07
 
 ASHWAT Win R1-Scrn  nL=4  tao=50.11 tro=36.01 teo=44.38   tai=68.00 tri=67.50 tei=67.65
    incSlr=103.86  trans=0.43 (0.004)  layer abs=  54.08  16.57  2.79  6.43
    layer temps=   78.55  64.15  70.55  71.27
    SHGC=0.121  ucg=0.251  cr=0.092  cc=0.159  FP=0.066  FM=0.051  Cx=0.432
-      COG tso=78.55 hco=0.624 hro=0.794 qro=0.00   tsi=71.27 hci=0.359 hri=0.854 qri=0.00   qSrf=5.91
+      COG tso=78.55 hco=0.624 hro=0.794 qro=0.00   tsi=71.27 hci=0.358 hri=0.854 qri=0.00   qSrf=5.91
 
 
 ================
@@ -12078,14 +12078,14 @@ ASHWAT Win F1-NoScrn  nL=2  tao=50.30 tro=36.24 teo=40.25   tai=68.00 tri=67.51 
    incSlr=26.66  trans=5.10 (0.191)  layer abs=  8.01  0.94
    layer temps=   52.00  64.13
    SHGC=0.283  ucg=0.241  cr=0.193  cc=0.049  FP=0.019  FM=0.073  Cx=0.133
-      COG tso=52.00 hco=0.321 hro=0.736 qro=0.00   tsi=64.13 hci=0.221 hri=0.848 qri=0.00   qSrf=6.15
+      COG tso=52.00 hco=0.321 hro=0.736 qro=0.00   tsi=64.13 hci=0.220 hri=0.848 qri=0.00   qSrf=6.15
     Frame tso=47.24 hco=0.349 hro=0.724 qro=0.00   tsi=62.07 hci=0.417 hri=0.832 qri=0.00   qSrf=7.01
 
 ASHWAT Win F1-NoScrn  nL=3  tao=50.30 tro=36.24 teo=40.25   tai=68.00 tri=67.51 tei=67.61
    incSlr=26.66  trans=0.31 (0.011)  layer abs=  8.29  1.32  3.78
    layer temps=   52.45  65.09  68.42
    SHGC=0.235  ucg=0.223  cr=0.114  cc=0.109  FP=0.094  FM=0.130  Cx=0.312
-      COG tso=52.45 hco=0.321 hro=0.736 qro=0.00   tsi=68.42 hci=0.221 hri=0.848 qri=0.00   qSrf=6.15
+      COG tso=52.45 hco=0.321 hro=0.736 qro=0.00   tsi=68.42 hci=0.220 hri=0.848 qri=0.00   qSrf=6.15
 
 ASHWAT Win F1-Scrn  nL=3  tao=50.30 tro=36.24 teo=43.19   tai=68.00 tri=67.51 tei=67.62
    incSlr=26.66  trans=3.06 (0.115)  layer abs=  11.81  4.81  0.57
@@ -12104,14 +12104,14 @@ ASHWAT Win L1-NoScrn  nL=2  tao=50.30 tro=36.24 teo=40.30   tai=68.00 tri=67.51 
    incSlr=26.66  trans=5.10 (0.191)  layer abs=  8.01  0.94
    layer temps=   52.13  64.17
    SHGC=0.283  ucg=0.242  cr=0.193  cc=0.049  FP=0.019  FM=0.073  Cx=0.134
-      COG tso=52.13 hco=0.325 hro=0.736 qro=0.00   tsi=64.17 hci=0.223 hri=0.848 qri=0.00   qSrf=6.15
+      COG tso=52.13 hco=0.325 hro=0.736 qro=0.00   tsi=64.17 hci=0.222 hri=0.848 qri=0.00   qSrf=6.15
     Frame tso=47.24 hco=0.349 hro=0.724 qro=0.00   tsi=62.07 hci=0.417 hri=0.832 qri=0.00   qSrf=7.01
 
 ASHWAT Win L1-NoScrn  nL=3  tao=50.30 tro=36.24 teo=40.29   tai=68.00 tri=67.51 tei=67.61
    incSlr=26.66  trans=0.31 (0.011)  layer abs=  8.29  1.32  3.78
    layer temps=   52.58  65.13  68.44
    SHGC=0.235  ucg=0.223  cr=0.114  cc=0.109  FP=0.094  FM=0.130  Cx=0.314
-      COG tso=52.58 hco=0.325 hro=0.736 qro=0.00   tsi=68.44 hci=0.223 hri=0.848 qri=0.00   qSrf=6.15
+      COG tso=52.58 hco=0.325 hro=0.736 qro=0.00   tsi=68.44 hci=0.222 hri=0.848 qri=0.00   qSrf=6.15
 
 ASHWAT Win L1-Scrn  nL=3  tao=50.30 tro=36.24 teo=43.17   tai=68.00 tri=67.51 tei=67.62
    incSlr=26.66  trans=3.06 (0.115)  layer abs=  11.81  4.81  0.57
@@ -12183,14 +12183,14 @@ ASHWAT Win R1-Scrn  nL=4  tao=50.30 tro=36.21 teo=44.58   tai=68.00 tri=67.51 te
 Thu 03-Dec  hr=13 subhr=20
 ----------------
 
-ASHWAT Win F1-NoScrn  nL=2  tao=50.40 tro=36.34 teo=40.35   tai=68.00 tri=67.52 tei=67.61
+ASHWAT Win F1-NoScrn  nL=2  tao=50.40 tro=36.34 teo=40.35   tai=68.00 tri=67.52 tei=67.62
    incSlr=26.61  trans=5.09 (0.191)  layer abs=  7.99  0.94
    layer temps=   52.00  64.13
    SHGC=0.283  ucg=0.241  cr=0.193  cc=0.049  FP=0.019  FM=0.073  Cx=0.133
       COG tso=52.00 hco=0.321 hro=0.736 qro=0.00   tsi=64.13 hci=0.220 hri=0.848 qri=0.00   qSrf=6.13
     Frame tso=47.32 hco=0.353 hro=0.725 qro=0.00   tsi=62.09 hci=0.416 hri=0.832 qri=0.00   qSrf=6.98
 
-ASHWAT Win F1-NoScrn  nL=3  tao=50.40 tro=36.34 teo=40.35   tai=68.00 tri=67.52 tei=67.61
+ASHWAT Win F1-NoScrn  nL=3  tao=50.40 tro=36.34 teo=40.35   tai=68.00 tri=67.52 tei=67.62
    incSlr=26.61  trans=0.30 (0.011)  layer abs=  8.27  1.32  3.77
    layer temps=   52.45  65.09  68.42
    SHGC=0.235  ucg=0.223  cr=0.114  cc=0.109  FP=0.094  FM=0.130  Cx=0.312
@@ -12636,14 +12636,14 @@ ASHWAT Win F1-Scrn  nL=3  tao=50.78 tro=36.73 teo=43.88   tai=68.00 tri=67.53 te
    incSlr=26.39  trans=3.03 (0.115)  layer abs=  11.69  4.76  0.56
    layer temps=   56.38  53.64  64.35
    SHGC=0.184  ucg=0.246  cr=0.194  cc=0.053  FP=0.015  FM=0.054  Cx=0.141
-      COG tso=56.38 hco=0.427 hro=0.745 qro=0.00   tsi=64.35 hci=0.226 hri=0.845 qri=0.00   qSrf=5.46
+      COG tso=56.38 hco=0.427 hro=0.745 qro=0.00   tsi=64.35 hci=0.225 hri=0.845 qri=0.00   qSrf=5.46
     Frame tso=47.64 hco=0.369 hro=0.726 qro=0.00   tsi=62.17 hci=0.412 hri=0.833 qri=0.00   qSrf=6.87
 
 ASHWAT Win F1-Scrn  nL=4  tao=50.78 tro=36.73 teo=43.88   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.39  trans=0.18 (0.007)  layer abs=  11.77  4.93  0.79  2.25
    layer temps=   56.46  53.82  64.59  67.54
    SHGC=0.155  ucg=0.228  cr=0.112  cc=0.116  FP=0.066  FM=0.082  Cx=0.327
-      COG tso=56.46 hco=0.427 hro=0.745 qro=0.00   tsi=67.54 hci=0.226 hri=0.845 qri=0.00   qSrf=5.46
+      COG tso=56.46 hco=0.427 hro=0.745 qro=0.00   tsi=67.54 hci=0.225 hri=0.845 qri=0.00   qSrf=5.46
 
 ASHWAT Win L1-NoScrn  nL=2  tao=50.78 tro=36.73 teo=40.79   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.39  trans=5.05 (0.191)  layer abs=  7.93  0.93
@@ -12733,7 +12733,7 @@ ASHWAT Win F1-NoScrn  nL=2  tao=50.88 tro=36.83 teo=41.11   tai=68.00 tri=67.53 
    layer temps=   52.65  64.33
    SHGC=0.282  ucg=0.244  cr=0.193  cc=0.050  FP=0.019  FM=0.072  Cx=0.137
       COG tso=52.65 hco=0.345 hro=0.738 qro=0.00   tsi=64.33 hci=0.218 hri=0.848 qri=0.00   qSrf=6.02
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win F1-NoScrn  nL=3  tao=50.88 tro=36.83 teo=41.10   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.34  trans=0.30 (0.011)  layer abs=  8.19  1.31  3.73
@@ -12745,21 +12745,21 @@ ASHWAT Win F1-Scrn  nL=3  tao=50.88 tro=36.83 teo=43.98   tai=68.00 tri=67.53 te
    incSlr=26.34  trans=3.03 (0.115)  layer abs=  11.67  4.75  0.56
    layer temps=   56.38  53.64  64.35
    SHGC=0.184  ucg=0.246  cr=0.194  cc=0.053  FP=0.015  FM=0.054  Cx=0.141
-      COG tso=56.38 hco=0.429 hro=0.746 qro=0.00   tsi=64.35 hci=0.224 hri=0.845 qri=0.00   qSrf=5.44
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+      COG tso=56.38 hco=0.429 hro=0.746 qro=0.00   tsi=64.35 hci=0.224 hri=0.846 qri=0.00   qSrf=5.44
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win F1-Scrn  nL=4  tao=50.88 tro=36.83 teo=43.98   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.34  trans=0.18 (0.007)  layer abs=  11.75  4.92  0.79  2.24
    layer temps=   56.46  53.82  64.59  67.54
    SHGC=0.155  ucg=0.228  cr=0.112  cc=0.116  FP=0.066  FM=0.082  Cx=0.327
-      COG tso=56.46 hco=0.429 hro=0.746 qro=0.00   tsi=67.54 hci=0.224 hri=0.845 qri=0.00   qSrf=5.44
+      COG tso=56.46 hco=0.429 hro=0.746 qro=0.00   tsi=67.54 hci=0.224 hri=0.846 qri=0.00   qSrf=5.44
 
 ASHWAT Win L1-NoScrn  nL=2  tao=50.88 tro=36.83 teo=40.89   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.34  trans=5.04 (0.191)  layer abs=  7.91  0.93
    layer temps=   52.13  64.17
    SHGC=0.283  ucg=0.242  cr=0.193  cc=0.049  FP=0.019  FM=0.073  Cx=0.134
       COG tso=52.13 hco=0.328 hro=0.737 qro=0.00   tsi=64.17 hci=0.219 hri=0.848 qri=0.00   qSrf=6.02
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win L1-NoScrn  nL=3  tao=50.88 tro=36.83 teo=40.88   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.34  trans=0.30 (0.011)  layer abs=  8.19  1.31  3.73
@@ -12772,7 +12772,7 @@ ASHWAT Win L1-Scrn  nL=3  tao=50.88 tro=36.83 teo=43.96   tai=68.00 tri=67.53 te
    layer temps=   56.33  53.59  64.34
    SHGC=0.184  ucg=0.246  cr=0.193  cc=0.053  FP=0.015  FM=0.054  Cx=0.142
       COG tso=56.33 hco=0.428 hro=0.746 qro=0.00   tsi=64.34 hci=0.223 hri=0.845 qri=0.00   qSrf=5.45
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win L1-Scrn  nL=4  tao=50.88 tro=36.83 teo=43.96   tai=68.00 tri=67.53 tei=67.63
    incSlr=26.34  trans=0.18 (0.007)  layer abs=  11.75  4.92  0.79  2.24
@@ -12785,7 +12785,7 @@ ASHWAT Win B1-NoScrn  nL=2  tao=50.88 tro=36.79 teo=43.27   tai=68.00 tri=67.53 
    layer temps=   82.86  74.65
    SHGC=0.300  ucg=0.282  cr=0.172  cc=0.110  FP=0.031  FM=0.048  Cx=0.276
       COG tso=82.86 hco=0.695 hro=0.813 qro=0.00   tsi=74.65 hci=0.549 hri=0.887 qri=0.00   qSrf=6.82
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win B1-NoScrn  nL=3  tao=50.88 tro=36.79 teo=43.24   tai=68.00 tri=67.53 tei=67.71
    incSlr=204.39  trans=3.15 (0.015)  layer abs=  64.85  9.79  33.31
@@ -12798,7 +12798,7 @@ ASHWAT Win B1-Scrn  nL=3  tao=50.88 tro=36.79 teo=45.47   tai=68.00 tri=67.53 te
    layer temps=   90.56  78.54  72.59
    SHGC=0.202  ucg=0.279  cr=0.176  cc=0.103  FP=0.022  FM=0.038  Cx=0.256
       COG tso=90.56 hco=0.721 hro=0.825 qro=0.00   tsi=72.59 hci=0.494 hri=0.874 qri=0.00   qSrf=6.08
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win B1-Scrn  nL=4  tao=50.88 tro=36.79 teo=45.45   tai=68.00 tri=67.53 tei=67.70
    incSlr=204.39  trans=2.01 (0.010)  layer abs=  80.37  42.10  6.38  21.46
@@ -12811,7 +12811,7 @@ ASHWAT Win R1-NoScrn  nL=2  tao=50.88 tro=36.82 teo=42.80   tai=68.00 tri=67.53 
    layer temps=   66.23  69.81
    SHGC=0.237  ucg=0.267  cr=0.179  cc=0.088  FP=0.028  FM=0.057  Cx=0.227
       COG tso=66.23 hco=0.571 hro=0.771 qro=0.00   tsi=69.81 hci=0.420 hri=0.862 qri=0.00   qSrf=6.49
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win R1-NoScrn  nL=3  tao=50.88 tro=36.82 teo=42.79   tai=68.00 tri=67.53 tei=67.69
    incSlr=101.59  trans=0.70 (0.007)  layer abs=  30.92  5.29  11.32
@@ -12824,7 +12824,7 @@ ASHWAT Win R1-Scrn  nL=3  tao=50.88 tro=36.80 teo=45.30   tai=68.00 tri=67.53 te
    layer temps=   77.56  63.34  67.93
    SHGC=0.140  ucg=0.265  cr=0.187  cc=0.078  FP=0.016  FM=0.039  Cx=0.199
       COG tso=77.56 hco=0.651 hro=0.796 qro=0.00   tsi=67.93 hci=0.353 hri=0.855 qri=0.00   qSrf=5.72
-    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.412 hri=0.833 qri=0.00   qSrf=6.84
+    Frame tso=47.72 hco=0.374 hro=0.727 qro=0.00   tsi=62.19 hci=0.411 hri=0.833 qri=0.00   qSrf=6.84
 
 ASHWAT Win R1-Scrn  nL=4  tao=50.88 tro=36.80 teo=45.29   tai=68.00 tri=67.53 tei=67.67
    incSlr=101.59  trans=0.42 (0.004)  layer abs=  52.89  16.21  2.73  6.29
@@ -12837,105 +12837,105 @@ ASHWAT Win R1-Scrn  nL=4  tao=50.88 tro=36.80 teo=45.29   tai=68.00 tri=67.53 te
 Thu 03-Dec  hr=13 subhr=26
 ----------------
 
-ASHWAT Win F1-NoScrn  nL=2  tao=50.97 tro=36.93 teo=41.21   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win F1-NoScrn  nL=2  tao=50.97 tro=36.93 teo=41.21   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=5.03 (0.191)  layer abs=  7.90  0.93
    layer temps=   52.65  64.33
    SHGC=0.282  ucg=0.244  cr=0.193  cc=0.050  FP=0.019  FM=0.072  Cx=0.137
       COG tso=52.65 hco=0.346 hro=0.738 qro=0.00   tsi=64.33 hci=0.219 hri=0.848 qri=0.00   qSrf=6.00
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win F1-NoScrn  nL=3  tao=50.97 tro=36.93 teo=41.20   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win F1-NoScrn  nL=3  tao=50.97 tro=36.93 teo=41.20   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=0.30 (0.011)  layer abs=  8.17  1.30  3.72
    layer temps=   53.08  65.28  68.47
    SHGC=0.234  ucg=0.225  cr=0.113  cc=0.112  FP=0.095  FM=0.128  Cx=0.319
       COG tso=53.08 hco=0.346 hro=0.738 qro=0.00   tsi=68.47 hci=0.219 hri=0.848 qri=0.00   qSrf=6.00
 
-ASHWAT Win F1-Scrn  nL=3  tao=50.97 tro=36.93 teo=44.08   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win F1-Scrn  nL=3  tao=50.97 tro=36.93 teo=44.08   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=3.02 (0.115)  layer abs=  11.65  4.74  0.56
    layer temps=   56.38  53.64  64.35
    SHGC=0.184  ucg=0.246  cr=0.194  cc=0.053  FP=0.015  FM=0.054  Cx=0.141
       COG tso=56.38 hco=0.430 hro=0.746 qro=0.00   tsi=64.35 hci=0.222 hri=0.846 qri=0.00   qSrf=5.42
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win F1-Scrn  nL=4  tao=50.97 tro=36.93 teo=44.08   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win F1-Scrn  nL=4  tao=50.97 tro=36.93 teo=44.08   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=0.18 (0.007)  layer abs=  11.72  4.91  0.78  2.24
    layer temps=   56.46  53.82  64.59  67.54
    SHGC=0.155  ucg=0.228  cr=0.112  cc=0.116  FP=0.066  FM=0.082  Cx=0.327
       COG tso=56.46 hco=0.430 hro=0.746 qro=0.00   tsi=67.54 hci=0.222 hri=0.846 qri=0.00   qSrf=5.42
 
-ASHWAT Win L1-NoScrn  nL=2  tao=50.97 tro=36.93 teo=41.26   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win L1-NoScrn  nL=2  tao=50.97 tro=36.93 teo=41.26   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=5.03 (0.191)  layer abs=  7.90  0.93
    layer temps=   52.77  64.36
    SHGC=0.281  ucg=0.244  cr=0.193  cc=0.051  FP=0.019  FM=0.071  Cx=0.137
       COG tso=52.77 hco=0.329 hro=0.737 qro=0.00   tsi=64.36 hci=0.219 hri=0.848 qri=0.00   qSrf=6.00
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win L1-NoScrn  nL=3  tao=50.97 tro=36.93 teo=41.26   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win L1-NoScrn  nL=3  tao=50.97 tro=36.93 teo=41.26   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=0.30 (0.011)  layer abs=  8.17  1.30  3.72
    layer temps=   53.20  65.31  68.48
    SHGC=0.234  ucg=0.225  cr=0.113  cc=0.112  FP=0.095  FM=0.127  Cx=0.320
       COG tso=53.20 hco=0.329 hro=0.737 qro=0.00   tsi=68.48 hci=0.219 hri=0.848 qri=0.00   qSrf=6.00
 
-ASHWAT Win L1-Scrn  nL=3  tao=50.97 tro=36.93 teo=44.06   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win L1-Scrn  nL=3  tao=50.97 tro=36.93 teo=44.06   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=3.02 (0.115)  layer abs=  11.65  4.74  0.56
    layer temps=   56.33  53.59  64.34
    SHGC=0.184  ucg=0.246  cr=0.193  cc=0.053  FP=0.015  FM=0.054  Cx=0.142
-      COG tso=56.33 hco=0.429 hro=0.746 qro=0.00   tsi=64.34 hci=0.221 hri=0.845 qri=0.00   qSrf=5.42
+      COG tso=56.33 hco=0.429 hro=0.746 qro=0.00   tsi=64.34 hci=0.221 hri=0.846 qri=0.00   qSrf=5.42
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win L1-Scrn  nL=4  tao=50.97 tro=36.93 teo=44.06   tai=68.00 tri=67.53 tei=67.63
+ASHWAT Win L1-Scrn  nL=4  tao=50.97 tro=36.93 teo=44.06   tai=68.00 tri=67.54 tei=67.63
    incSlr=26.28  trans=0.18 (0.007)  layer abs=  11.72  4.91  0.78  2.24
    layer temps=   56.42  53.77  64.58  67.54
    SHGC=0.155  ucg=0.228  cr=0.111  cc=0.116  FP=0.066  FM=0.082  Cx=0.328
-      COG tso=56.42 hco=0.429 hro=0.746 qro=0.00   tsi=67.54 hci=0.221 hri=0.845 qri=0.00   qSrf=5.42
+      COG tso=56.42 hco=0.429 hro=0.746 qro=0.00   tsi=67.54 hci=0.221 hri=0.846 qri=0.00   qSrf=5.42
 
-ASHWAT Win B1-NoScrn  nL=2  tao=50.97 tro=36.89 teo=43.37   tai=68.00 tri=67.53 tei=67.71
+ASHWAT Win B1-NoScrn  nL=2  tao=50.97 tro=36.89 teo=43.37   tai=68.00 tri=67.54 tei=67.71
    incSlr=203.79  trans=45.12 (0.221)  layer abs=  62.29  6.52
    layer temps=   82.86  74.65
    SHGC=0.300  ucg=0.282  cr=0.172  cc=0.110  FP=0.031  FM=0.048  Cx=0.276
       COG tso=82.86 hco=0.698 hro=0.813 qro=0.00   tsi=74.65 hci=0.548 hri=0.887 qri=0.00   qSrf=6.79
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win B1-NoScrn  nL=3  tao=50.97 tro=36.89 teo=43.34   tai=68.00 tri=67.53 tei=67.71
+ASHWAT Win B1-NoScrn  nL=3  tao=50.97 tro=36.89 teo=43.34   tai=68.00 tri=67.54 tei=67.71
    incSlr=203.79  trans=3.14 (0.015)  layer abs=  64.66  9.76  33.22
    layer temps=   86.07  85.07  84.40
    SHGC=0.258  ucg=0.276  cr=0.075  cc=0.201  FP=0.154  FM=0.088  Cx=0.543
       COG tso=86.07 hco=0.698 hro=0.813 qro=0.00   tsi=84.40 hci=0.548 hri=0.887 qri=0.00   qSrf=6.79
 
-ASHWAT Win B1-Scrn  nL=3  tao=50.97 tro=36.89 teo=45.56   tai=68.00 tri=67.53 tei=67.70
+ASHWAT Win B1-Scrn  nL=3  tao=50.97 tro=36.89 teo=45.56   tai=68.00 tri=67.54 tei=67.70
    incSlr=203.79  trans=29.02 (0.142)  layer abs=  79.41  40.40  4.26
    layer temps=   90.56  78.54  72.59
    SHGC=0.202  ucg=0.279  cr=0.176  cc=0.103  FP=0.022  FM=0.038  Cx=0.256
       COG tso=90.56 hco=0.725 hro=0.825 qro=0.00   tsi=72.59 hci=0.493 hri=0.874 qri=0.00   qSrf=6.06
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win B1-Scrn  nL=4  tao=50.97 tro=36.89 teo=45.54   tai=68.00 tri=67.53 tei=67.70
+ASHWAT Win B1-Scrn  nL=4  tao=50.97 tro=36.89 teo=45.54   tai=68.00 tri=67.54 tei=67.70
    incSlr=203.79  trans=2.00 (0.010)  layer abs=  80.13  41.98  6.36  21.40
    layer temps=   91.22  80.88  80.00  79.28
    SHGC=0.175  ucg=0.270  cr=0.079  cc=0.191  FP=0.102  FM=0.063  Cx=0.513
       COG tso=91.22 hco=0.725 hro=0.825 qro=0.00   tsi=79.28 hci=0.493 hri=0.874 qri=0.00   qSrf=6.06
 
-ASHWAT Win R1-NoScrn  nL=2  tao=50.97 tro=36.91 teo=42.90   tai=68.00 tri=67.53 tei=67.69
+ASHWAT Win R1-NoScrn  nL=2  tao=50.97 tro=36.91 teo=42.90   tai=68.00 tri=67.54 tei=67.69
    incSlr=101.31  trans=15.29 (0.151)  layer abs=  29.94  4.05
    layer temps=   66.23  69.81
    SHGC=0.237  ucg=0.267  cr=0.179  cc=0.088  FP=0.028  FM=0.057  Cx=0.227
       COG tso=66.23 hco=0.573 hro=0.771 qro=0.00   tsi=69.81 hci=0.419 hri=0.862 qri=0.00   qSrf=6.42
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win R1-NoScrn  nL=3  tao=50.97 tro=36.91 teo=42.89   tai=68.00 tri=67.53 tei=67.69
+ASHWAT Win R1-NoScrn  nL=3  tao=50.97 tro=36.91 teo=42.89   tai=68.00 tri=67.54 tei=67.69
    incSlr=101.31  trans=0.69 (0.007)  layer abs=  30.83  5.28  11.29
    layer temps=   67.68  74.23  74.18
    SHGC=0.203  ucg=0.256  cr=0.085  cc=0.171  FP=0.116  FM=0.080  Cx=0.469
       COG tso=67.68 hco=0.573 hro=0.771 qro=0.00   tsi=74.18 hci=0.419 hri=0.862 qri=0.00   qSrf=6.42
 
-ASHWAT Win R1-Scrn  nL=3  tao=50.97 tro=36.90 teo=45.40   tai=68.00 tri=67.53 tei=67.67
+ASHWAT Win R1-Scrn  nL=3  tao=50.97 tro=36.90 teo=45.40   tai=68.00 tri=67.54 tei=67.67
    incSlr=101.31  trans=8.48 (0.084)  layer abs=  52.51  15.67  2.05
    layer temps=   77.56  63.34  67.93
    SHGC=0.140  ucg=0.265  cr=0.187  cc=0.078  FP=0.016  FM=0.039  Cx=0.199
       COG tso=77.56 hco=0.649 hro=0.794 qro=0.00   tsi=67.93 hci=0.352 hri=0.854 qri=0.00   qSrf=5.66
     Frame tso=47.80 hco=0.378 hro=0.727 qro=0.00   tsi=62.21 hci=0.411 hri=0.833 qri=0.00   qSrf=6.81
 
-ASHWAT Win R1-Scrn  nL=4  tao=50.97 tro=36.90 teo=45.39   tai=68.00 tri=67.53 tei=67.67
+ASHWAT Win R1-Scrn  nL=4  tao=50.97 tro=36.90 teo=45.39   tai=68.00 tri=67.54 tei=67.67
    incSlr=101.31  trans=0.42 (0.004)  layer abs=  52.74  16.17  2.72  6.27
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
@@ -13267,7 +13267,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
+! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console
 
 
 
@@ -14823,18 +14823,18 @@ Input for Run 001:
 
 
 
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:37:28 am
+! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console run(s) done: Thu 27-Jan-22  11:46:22 am
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
-! Command line: -x!  -b -t1 ashwat1
-! Input file:   C:\Users\nkruis\projects\cse\test\ashwat1.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\ashwat1.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               27-Jan-22  11:23 am   (VS 14.29    2903040 bytes)  (HPWH 1.16.1)
+! Command line: -x!  -t1 ashwat1
+! Input file:   D:\cse\test\ashwat1.cse
+! Report file:  D:\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.19     Calls = 2      T/C = 0.0935   
-!           AutoSizing:  Time = 1.70     Calls = 1      T/C = 1.6970   
-!           Simulation:  Time = 24.41    Calls = 1      T/C = 24.4150  
-!              Reports:  Time = 0.07     Calls = 1      T/C = 0.0730   
-!                Total:  Time = 26.37    Calls = 1      T/C = 26.3740  
+!                Input:  Time = 0.09     Calls = 2      T/C = 0.0455   
+!           AutoSizing:  Time = 1.13     Calls = 1      T/C = 1.1330   
+!           Simulation:  Time = 12.48    Calls = 1      T/C = 12.4770  
+!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0580   
+!                Total:  Time = 13.76    Calls = 1      T/C = 13.7640  
