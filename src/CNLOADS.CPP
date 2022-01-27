@@ -3128,7 +3128,9 @@ x		printf("Hit\n");
 
 }		// RSYS::rs_CoolingSHR
 //-----------------------------------------------------------------------------
-void RSYS::rs_CoolingCapF1Spd()		// capacity factor for 1 spd model
+void RSYS::rs_CoolingCapF1Spd(	// capacity factor for 1 spd model
+	float tdbOut /*=0.f*/)	// assumed outdoor temp
+							//   default = rs_tdbOut
 // call:   rs_tdbCoilIn = coil entering dry bulb, F
 //         rs_twbCoilIn = coil entering wet bulb, F
 //		   rs_tdbOut = outdoor drybulb seen by condenser, F
@@ -3137,38 +3139,126 @@ void RSYS::rs_CoolingCapF1Spd()		// capacity factor for 1 spd model
 // return: rs_fCondCap = current conditions factor for total capacity
 {
 
-	// capacity: adjust rated capacity re current conditions
-									//   wet coil	     dry coil
-		static const float ACAP[2] = { 0.f,			 0.009483100f };
-		static const float BCAP[2] = { 0.009645900f,   0.f };
-		static const float CCAP[2] = { 0.002536900f,	-0.000600600f };
-		static const float DCAP[2] = { 0.000171500f,	-0.000148900f };
-		static const float ECAP[2] = { 0.f,			-0.000032600f };
-		static const float FCAP[2] = { 0.f,			 0.000011900f };
-		static const float GCAP[2] = { -0.000095900f,	 0.f };
-		static const float HCAP[2] = { 0.000008180f,	 0.f };
-		static const float ICAP[2] = { -0.000007550f,	-0.000005050f };
-		static const float JCAP[2] = { 0.000105700f,	 0.f };
-		static const float KCAP[2] = { -53.542300000f, -52.561740000f };
-		static const float LCAP[2] = { 0.381567150f,   0.430751600f };
+// coefficients
+							//   wet coil	     dry coil
+static const float ACAP[2] = { 0.f,			    0.009483100f };
+static const float BCAP[2] = { 0.009645900f,    0.f };
+static const float CCAP[2] = { 0.002536900f,   -0.000600600f };
+static const float DCAP[2] = { 0.000171500f,   -0.000148900f };
+static const float ECAP[2] = { 0.f,			   -0.000032600f };
+static const float FCAP[2] = { 0.f,			    0.000011900f };
+static const float GCAP[2] = { -0.000095900f,   0.f };
+static const float HCAP[2] = { 0.000008180f,    0.f };
+static const float ICAP[2] = { -0.000007550f,  -0.000005050f };
+static const float JCAP[2] = { 0.000105700f,    0.f };
+static const float KCAP[2] = { -53.542300000f, -52.561740000f };
+static const float LCAP[2] = { 0.381567150f,    0.430751600f };
 
-		int iDry = !(rs_wetCoil);
+		if (tdbOut == 0.f)
+			tdbOut = rs_tdbOut;
+
+		int iDry = rs_wetCoil == 0;
 
 		rs_fCondCap = ACAP[iDry] * rs_tdbCoilIn +
 			BCAP[iDry] * rs_twbCoilIn +
-			CCAP[iDry] * rs_tdbOut +
+			CCAP[iDry] * tdbOut +
 			DCAP[iDry] * rs_vfPerTon +
-			ECAP[iDry] * rs_tdbCoilIn * rs_tdbOut +
+			ECAP[iDry] * rs_tdbCoilIn * tdbOut +
 			FCAP[iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			GCAP[iDry] * rs_twbCoilIn * rs_tdbOut +
+			GCAP[iDry] * rs_twbCoilIn * tdbOut +
 			HCAP[iDry] * rs_twbCoilIn * rs_vfPerTon +
-			ICAP[iDry] * rs_tdbOut * rs_vfPerTon +
+			ICAP[iDry] * tdbOut * rs_vfPerTon +
 			JCAP[iDry] * rs_twbCoilIn * rs_twbCoilIn +
 			KCAP[iDry] / rs_vfPerTon +
 			LCAP[iDry];
 
 }		// RSYS::rs_CoolingCapF1Spd
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void RSYS::rs_CoolingEff1Spd(		// cooling efficiency, 1 spd model
+	float tdbOut /*=0.f*/)
+
+// sets rs_fCondSEER, rs_SEERnf, rs_fCondEER, rs_EERnf, rs_EERt
+{
+// SEER coefficients
+//          wet             dry
+static const float ASEER[2] = { 0.f,	        0.0046103f };
+static const float BSEER[2] = { -0.0202256f,	    0.f };
+static const float CSEER[2] = { 0.0236703f,	    0.0125598f };
+static const float DSEER[2] = { -0.0006638f,    -0.000512f };
+static const float ESEER[2] = { 0.f,	       -0.0000357f };
+static const float FSEER[2] = { 0.f,            0.0000105f };
+static const float GSEER[2] = { -0.0001841f,	    0.f };
+static const float HSEER[2] = { 0.0000214f,	    0.f };
+static const float ISEER[2] = { -0.00000812f,	0.f };
+static const float JSEER[2] = { 0.0002971f,	    0.f };
+static const float KSEER[2] = { -27.95672f,	    0.f };
+static const float LSEER[2] = { 0.209951063f,  -0.316172311f };
+
+	if (tdbOut == 0.f)
+		tdbOut = rs_tdbOut;
+	int iDry = rs_wetCoil == 0;
+
+	if (tdbOut < 95.f)
+	{
+		float fSEERX = ASEER[iDry] * rs_tdbCoilIn +
+			BSEER[iDry] * rs_twbCoilIn +
+			CSEER[iDry] * tdbOut +
+			DSEER[iDry] * rs_vfPerTon +
+			ESEER[iDry] * rs_tdbCoilIn * tdbOut +
+			FSEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
+			GSEER[iDry] * rs_twbCoilIn * tdbOut +
+			HSEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
+			ISEER[iDry] * tdbOut * rs_vfPerTon +
+			JSEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
+			KSEER[iDry] / rs_vfPerTon +
+			LSEER[iDry];
+		rs_fCondSEER = rs_fCondCap / fSEERX;
+		rs_SEERnf = rs_SEERnfX * rs_fCondSEER;
+	}
+	else
+		rs_fCondSEER = rs_SEERnf = 0.f;
+
+//                             wet            dry
+static const float AEER[2] = { 0.f,	            0.004610300f };
+static const float BEER[2] = { -0.020225600f,	0.f };
+static const float CEER[2] = { 0.023670300f,	0.012559800f };
+static const float DEER[2] = { -0.000663800f,  -0.000512000f };
+static const float EEER[2] = { 0.f,	           -0.000035700f };
+static const float FEER[2] = { 0.f,	            0.000010500f };
+static const float GEER[2] = { -0.000184100f,	0.f };
+static const float HEER[2] = { 0.000021400f,	0.f };
+static const float IEER[2] = { -0.000008120f,	0.f };
+static const float JEER[2] = { 0.000297100f,	0.f };
+static const float KEER[2] = { -27.956720000f,	0.f };
+static const float LEER[2] = { 0.015003100f,   -0.475306500f };
+
+	if (tdbOut > 82.f)
+	{
+		rs_fCondEER = 1.f /
+			( AEER[iDry] * rs_tdbCoilIn +
+			  BEER[iDry] * rs_twbCoilIn +
+			  CEER[iDry] * tdbOut +
+			  DEER[iDry] * rs_vfPerTon +
+			  EEER[iDry] * rs_tdbCoilIn * tdbOut +
+			  FEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
+			  GEER[iDry] * rs_twbCoilIn * tdbOut +
+			  HEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
+			  IEER[iDry] * tdbOut * rs_vfPerTon +
+			  JEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
+			  KEER[iDry] / rs_vfPerTon +
+			  LEER[iDry]);
+		rs_EERnf = rs_EERnfX * rs_fCondEER * rs_fCondCap;
+		rs_EERt = tdbOut < 95.f
+			? rs_SEERnf + (tdbOut - 82.f) * (rs_EERnf - rs_SEERnf) / 13.f
+			: rs_EERnf;
+	}
+	else
+	{
+		rs_EERnf = 0.f;
+		rs_EERt = rs_SEERnf;
+	}
+}		// RSYS::rs_CoolingEff1Spd
+//-----------------------------------------------------------------------------
 void RSYS::rs_Cooling(
 	int auszMode /*=rsmOff*/)	// active autosizing, if any
 								//   rsmOFF: none
@@ -3224,7 +3314,8 @@ x		printf("\nhit");
 		rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible capacity at current conditions, Btuh
 	}
 	else
-	{	// total capacities and input, Btuh
+	{	// variable capacity
+		// total capacities and input, Btuh
 		//   include rated fan power
 		//   cap values are net Btuh, <0
 		float capClg, inpClg, capClgMin, inpClgMin;
@@ -3232,7 +3323,36 @@ x		printf("\nhit");
 			capClg, inpClg, capClgMin, inpClgMin);
 		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;
 		float fanHAdj = rs_fanHRtdC;	// fan heat adjustment, Btuh
+
+#if 1
 		// adjust for fan power (= convert to gross cooling)
+		capClg += fanHAdj;
+		inpClg -= fanHAdj;
+
+		rs_CoolingCapF1Spd(95.f);
+		capClg *= rs_fCondCap;
+		rs_CoolingEff1Spd(95.f);
+		inpClg /= (rs_fCondCap * rs_fCondEER);
+
+		rs_capTotCt = capClg * rs_speedF;		// total coil capacity (= gross) at current conditions and speed, Btuh
+		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
+
+		// input at current speed (Btuh)
+		float inpX;
+		if (rs_speedF = 1.f)
+			inpX = inpClg;
+		else
+		{
+			capClgMin += fanHAdj * rs_speedFMin;
+			capClgMin *= rs_fCondCap;
+			inpClgMin -= fanHAdj * rs_speedFMin;
+			inpClgMin /= (rs_fCondCap * rs_fCondEER);
+
+			inpX = inpClgMin
+				  + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+		}
+#else
+				// adjust for fan power (= convert to gross cooling)
 		capClg += fanHAdj;
 		inpClg -= fanHAdj;
 		capClgMin += fanHAdj * rs_speedFMin;
@@ -3245,7 +3365,8 @@ x		printf("\nhit");
 		float inpX = rs_speedF == 1.f
 			? inpClg
 			: inpClgMin
-			   + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+			  + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+#endif
 
 		rs_effCt = abs( rs_capSenCt) / inpX;		// compressor-only COP
 	}
@@ -3311,88 +3432,7 @@ x	rs_asOut = asSav;
 	}
 
 }		// RSYS::rs_Cooling
-//-----------------------------------------------------------------------------
-void RSYS::rs_CoolingEff1Spd()		// cooling efficiency, 1 spd model
-// sets rs_fCondSEER, rs_SEERnf, rs_fCondEER, rs_EERnf, rs_EERt
-{
-
-	//          wet             dry
-	static const float ASEER[2] = { 0.f,	        0.0046103f };
-	static const float BSEER[2] = { -0.0202256f,	    0.f };
-	static const float CSEER[2] = { 0.0236703f,	    0.0125598f };
-	static const float DSEER[2] = { -0.0006638f,    -0.000512f };
-	static const float ESEER[2] = { 0.f,	       -0.0000357f };
-	static const float FSEER[2] = { 0.f,            0.0000105f };
-	static const float GSEER[2] = { -0.0001841f,	    0.f };
-	static const float HSEER[2] = { 0.0000214f,	    0.f };
-	static const float ISEER[2] = { -0.00000812f,	0.f };
-	static const float JSEER[2] = { 0.0002971f,	    0.f };
-	static const float KSEER[2] = { -27.95672f,	    0.f };
-	static const float LSEER[2] = { 0.209951063f,  -0.316172311f };
-
-	int iDry = !rs_wetCoil;
-
-	if (rs_tdbOut < 95.f)
-	{
-		float fSEERX = ASEER[iDry] * rs_tdbCoilIn +
-			BSEER[iDry] * rs_twbCoilIn +
-			CSEER[iDry] * rs_tdbOut +
-			DSEER[iDry] * rs_vfPerTon +
-			ESEER[iDry] * rs_tdbCoilIn * rs_tdbOut +
-			FSEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			GSEER[iDry] * rs_twbCoilIn * rs_tdbOut +
-			HSEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
-			ISEER[iDry] * rs_tdbOut * rs_vfPerTon +
-			JSEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
-			KSEER[iDry] / rs_vfPerTon +
-			LSEER[iDry];
-		rs_fCondSEER = rs_fCondCap / fSEERX;
-		rs_SEERnf = rs_SEERnfX * rs_fCondSEER;
-	}
-	else
-		rs_fCondSEER = rs_SEERnf = 0.f;
-
-	//        wet            dry
-	static const float AEER[2] = { 0.f,	         0.004610300f };
-	static const float BEER[2] = { -0.020225600f,	 0.f };
-	static const float CEER[2] = { 0.023670300f,	 0.012559800f };
-	static const float DEER[2] = { -0.000663800f, -0.000512000f };
-	static const float EEER[2] = { 0.f,	        -0.000035700f };
-	static const float FEER[2] = { 0.f,	         0.000010500f };
-	static const float GEER[2] = { -0.000184100f,	 0.f };
-	static const float HEER[2] = { 0.000021400f,	 0.f };
-	static const float IEER[2] = { -0.000008120f,	 0.f };
-	static const float JEER[2] = { 0.000297100f,	 0.f };
-	static const float KEER[2] = { -27.956720000f,	 0.f };
-	static const float LEER[2] = { 0.015003100f, -0.475306500f };
-
-	if (rs_tdbOut > 82.f)
-	{
-		rs_fCondEER = 1. /
-			(AEER[iDry] * rs_tdbCoilIn +
-			  BEER[iDry] * rs_twbCoilIn +
-			  CEER[iDry] * rs_tdbOut +
-			  DEER[iDry] * rs_vfPerTon +
-			  EEER[iDry] * rs_tdbCoilIn * rs_tdbOut +
-			  FEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			  GEER[iDry] * rs_twbCoilIn * rs_tdbOut +
-			  HEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
-			  IEER[iDry] * rs_tdbOut * rs_vfPerTon +
-			  JEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
-			  KEER[iDry] / rs_vfPerTon +
-			  LEER[iDry]);
-		rs_EERnf = rs_EERnfX * rs_fCondEER * rs_fCondCap;
-		rs_EERt = rs_tdbOut < 95.f
-			? rs_SEERnf + (rs_tdbOut - 82.f) * (rs_EERnf - rs_SEERnf) / 13.f
-			: rs_EERnf;
-	}
-	else
-	{
-		rs_EERnf = 0.f;
-		rs_EERt = rs_SEERnf;
-	}
-}		// RSYS::rs_CoolingEff1Spd
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 void RSYS::rs_GetPerfClg(	// derive current cooling performance values
 	float& capTot,			// total capacity, kBtuh
 	float& capSen,			// sensible capacity, kBtuh
