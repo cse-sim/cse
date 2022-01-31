@@ -3164,10 +3164,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_ACFactors();"
 *declare "void rs_Cooling( int auszMode=rsmOFF);"
 *declare "void rs_CoolingSHR();"
-*declare "void rs_CoolingEff1Spd( float tdbOut=0.f);"
-*declare "void rs_CoolingCapF1Spd( float tdbOut=0.f);"
+*declare "float rs_CoolingEff1Spd( float tdbOut=0.f);"
+*declare "float rs_CoolingCapF1Spd( float tdbOut=0.f);"
+*declare "void rs_CoolingEnteringAirFactorsVS( float& capF, float& inpF) const;"
 *declare "void rs_GetPerfClg( float& capTot, float& capSen, float& pwrIn) const;"
 *declare "RC rs_PerfMapAC();"
+*declare "RC rs_ExportCorrelationValues();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
 *declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj=0.f);"
@@ -3464,7 +3466,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   ( = rs_rhInTest if given, else from zone + return duct)
 *s *e FLOAT rs_twbCoilIn	// coil entering wet bulb, F (after blow-thru fan if any)
 *s *e FLOAT rs_tdbCoilIn	// coil entering dry bulb, F (ditto)
-*s *e INT rs_wetCoil		// 1 = wet coil, 0 = dry coil
 
 *s *e FLOAT rs_SHR;			// cooling sensible heat ratio (derived using coil model)
 
