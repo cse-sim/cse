@@ -1773,7 +1773,7 @@ RC RSYS::rs_CkF()
 				RSYS_CAP95, RSYS_COP95, RSYS_LOADFMIN95, RSYS_COPMIN95,
 				RSYS_CAP82, RSYS_COP82, RSYS_CAPRAT8295, RSYS_LOADFMIN82, RSYS_COPMIN82,
 				RSYS_CAP115, RSYS_COP115, RSYS_CAPRAT11595, RSYS_LOADFMIN115, RSYS_COPMIN115,
-				RSYS_FCHG, RSYS_FSIZE, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC,
+				RSYS_FCHG, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC,
 			    RSYS_CAPNOMC, 0);
 		FldSet( RSYS_CAPNOMC, 0.f);		// insurance
 	}
@@ -2812,20 +2812,20 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 	if (fabs( cap95nf) > 10.f)
 	{	// if meaningful capacity
-		rs_capnfX = cap95nf * rs_fChg * rs_fSize;		// apply constant adjustment factors
+		rs_capnfX = cap95nf * rs_fChg;		// apply constant adjustment factor
 
 		float fanHRtdRat = rs_fanHRtdC / cap95nf;		// rated fan heat ratio, (Btuh fan)/(Btuh coil)
 
-		rs_capAdjF = rs_fChg * rs_fSize * (1.f - fanHRtdRat);
+		rs_capAdjF = rs_fChg * (1.f - fanHRtdRat);
 	}
 	else
 	{	rs_capnfX = 0.f;
-		rs_capAdjF = rs_fChg * rs_fSize;
+		rs_capAdjF = rs_fChg;
 	}
 
 	// base value for SEERnf calculation
 	float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC/3.413f;	// input power, W
-	rs_SEERnfX = inpX > 0.f ? rs_fChg * rs_fSize * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
+	rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
 							: rs_SEER;
 
 	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
@@ -3645,19 +3645,10 @@ static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
 RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from RSYS correlations
 // testing aid
 {
-#if 1
-	// Goodman
 	static float fAF[] = { .550f, .700f, .875f, 1.f, 1.125f, 0.f };
-	static float tdbI[] = { 70.f, 75.f, 80.f, 85.f, 0.f };
-	static float twbI[] = { 55.f, 59.f, 63.f, 67.f, 71.f };
-	static float tdbO[] = { 65.f, 75.f, 85.f, 95.f, 105.f, 115.f, 0.f };
-#else
-	// Carrier
-	static float fAF[] = { .875f, 1.f, 1.125f, 0.f };
-	static float tdbI[] = { 70.f, 75.f, 80.f, 0.f };
-	static float twbI[] = { 57.f, 62.f, 67.f, 72.f };
-	static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
-#endif
+	static float tdbI[] = { 70.f, 72.f, 74.f, 76.f, 78.f, 80.f, 85.f, 0.f };
+	static float twbI[] = { 54.f, 56.f, 58.f, 60.f, 62.f, 64.f, 67.f, 71.f, 0.f };
+	static float tdbO[] = { 65.f, 75.f, 82.f, 85.f, 95.f, 105.f, 115.f, 0.f };
 
 	// write to file PM_<name>.csv
 	const char* nameX = name;
@@ -3672,7 +3663,7 @@ RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from R
 
 	fprintf(f, "%s\n", rs_desc ? rs_desc : nameX);
 
-	fprintf(f, "cfm/ton,ODB (F),EDB (F),EWB (F),SHR,fCap,fEER,fInp\n");
+	fprintf(f, "cfm/ton,ODB (F),EDB (F),EWB (F),RH,SHR,fCap,fEER,fInp\n");
 
 	float vfPerTonNom = 400.f;
 
@@ -3700,13 +3691,12 @@ RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from R
 					rs_twbCoilIn = twbI[iwbI];
 					if (rs_twbCoilIn > rs_tdbCoilIn)
 						continue;
+					float rh = psyRelHum(rs_tdbCoilIn, rs_twbCoilIn);
 					rs_CoolingSHR();
 					rs_CoolingCapF1Spd();
-					rs_CoolingEff1Spd();
-					float fCondCOP = rs_fCondCap * rs_fCondEER;
-					float fCondInp = fCondCOP > 0.f ? 1.f / fCondCOP : 0.f;
-					fprintf(f, "%s,%s,%s,%.f,%.3f,%.3f,%.3f,%.3f\n",
-						sVf, sDbO, sDbI, rs_twbCoilIn, rs_SHR, rs_fCondCap, rs_fCondEER, fCondInp);
+					float fCondInp = rs_CoolingEff1Spd();
+					fprintf(f, "%s,%s,%s,%.f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+						sVf, sDbO, sDbI, rs_twbCoilIn, rh, rs_SHR, rs_fCondCap, rs_fCondEER, fCondInp);
 				}
 			}
 		}

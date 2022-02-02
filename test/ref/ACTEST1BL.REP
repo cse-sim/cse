@@ -3,8 +3,8 @@
 Error Messages for Run 001: Simple Default, no latent
 
 ---------------
-ACTEST1BL.CSE(577): Warning: 
-  reportCol of report [ACTEST1BL.CSE(550)]: 
+ACTEST1BL.CSE(576): Warning: 
+  reportCol of report [ACTEST1BL.CSE(549)]: 
     S0546: End-of-interval varying value is reported more often than it is set:
     rpFreq of report '' is 'Subhour', but colVal for colHead 'Energy'
     varies (is given a value) only at end of each hour.
@@ -4439,7 +4439,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console   Mon 31-Jan-22   3:37:48 pm
+! CSE 0.901.0+vsashp.908f6256.17 for Win32 console   Wed 02-Feb-22   2:45:48 pm
 
 
 ================
@@ -53400,7 +53400,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
+! CSE 0.901.0+vsashp.908f6256.17 for Win32 console
 
 
 
@@ -53428,7 +53428,6 @@ Input for Run 001:
         	//rsVfPerTon = cfm per ton (default = 350)
         	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
         	rsFChg = 1		//ACM charge factor (default = 1)
-        	rsFSize = 1		//ACM size factor (default = 1)
         
         	rsAFUE =.71
         	rsFanPwrH = 0.58		//W/cfm (default = 0.365)	
@@ -54095,8 +54094,8 @@ Input for Run 001:
         	
         Run	
 -----------------------
-???     ACTEST1BL.CSE(577): Warning: 
-???       reportCol of report [ACTEST1BL.CSE(550)]: 
+???     ACTEST1BL.CSE(576): Warning: 
+???       reportCol of report [ACTEST1BL.CSE(549)]: 
 ???         S0546: End-of-interval varying value is reported more often than it is set:
 ???         rpFreq of report '' is 'Subhour', but colVal for colHead 'Energy'
 ???         varies (is given a value) only at end of each hour.
@@ -54104,18 +54103,18 @@ Input for Run 001:
 
 
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console run(s) done: Mon 31-Jan-22   3:37:51 pm
+! CSE 0.901.0+vsashp.908f6256.17 for Win32 console run(s) done: Wed 02-Feb-22   2:45:51 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               31-Jan-22   2:54 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
+!               02-Feb-22   2:33 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
 ! Command line: -x!  -t1 actest1BL
 ! Input file:   D:\cse\test\actest1BL.cse
 ! Report file:  D:\cse\test\actest1BL.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 1      T/C = 0.0830   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0630   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.63     Calls = 1      T/C = 2.6300   
-!              Reports:  Time = 0.11     Calls = 1      T/C = 0.1110   
-!                Total:  Time = 2.83     Calls = 1      T/C = 2.8260   
+!           Simulation:  Time = 2.64     Calls = 1      T/C = 2.6380   
+!              Reports:  Time = 0.12     Calls = 1      T/C = 0.1230   
+!                Total:  Time = 2.83     Calls = 1      T/C = 2.8280   

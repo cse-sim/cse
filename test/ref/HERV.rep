@@ -60,7 +60,7 @@ MySys Characteristics
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  1
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ RSYSRES Furn
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  2
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  3
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  4
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  4
 
 
 
@@ -260,7 +260,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.899.0+vsashp.852a8bf.9 for Win32 console
+! CSE 0.901.0+vsashp.908f6256.17 for Win32 console
 
 
 
@@ -312,7 +312,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  5
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  6
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
         		layer lrThk = .1 lrMat = FoamInsul
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  7
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  8
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Input for Run 001:
             znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page  9
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  9
 
 
 
@@ -627,14 +627,13 @@ Input for Run 001:
         	rsFChg = 1		//ACM charge factor (default = 1)
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page 10
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 10
 
 
 
 1Z Test
 ------------------------------------------------------------------------------
 
-        	rsFSize = 1		//ACM size factor (default = 1)
         
         	rsAFUE =.71
         	rsFanPwrH = 0.58		//W/cfm (default = 0.365)
@@ -688,16 +687,16 @@ Input for Run 001:
 #           RXCOL colHead="ehTot" colVal=F*R.ehTot       colDec=dp colWid = 6 \
 #           RXCOL colHead="ecPrim" colVal=F*R.ecPrimary   colDec=dp colWid = 6 \
 #           RXCOL colHead="ecFan" colVal=F*R.ecFan       colDec=dp colWid = 6 \
+#           RXCOL colHead="ecPar" colVal=F*R.ecParasitic colDec=dp colWid = 6 \
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page 11
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 11
 
 
 
 1Z Test
 ------------------------------------------------------------------------------
 
-#           RXCOL colHead="ecPar" colVal=F*R.ecParasitic colDec=dp colWid = 6 \
 #           RXCOL colHead="ecTot" colVal=F*R.ecTot       colDec=dp colWid = 6 \
 #           RXCOL colHead="evFan" colVal=F*R.evFan       colDec=dp colWid = 6 \
 #           RXCOL colHead="evPar" colVal=F*R.evParasitic colDec=dp colWid = 6 \
@@ -752,8 +751,9 @@ Input for Run 001:
 
 
 
+
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page 12
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 12
 
 
 
@@ -762,21 +762,21 @@ Input for Run 001:
 
 
 
-! CSE 0.899.0+vsashp.852a8bf.9 for Win32 console run(s) done: Tue 07-Dec-21   5:20:37 pm
+! CSE 0.901.0+vsashp.908f6256.17 for Win32 console run(s) done: Wed 02-Feb-22   2:45:13 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               07-Dec-21   5:14 pm   (VS 14.29    1592320 bytes)  (HPWH 1.15.0+master.99d395c.25)
+!               02-Feb-22   2:33 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
 ! Command line: -x!  -t1 herv
 ! Input file:   D:\cse\test\herv.cse
 ! Report file:  D:\cse\test\herv.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0470   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0400   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.33     Calls = 1      T/C = 1.3270   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
-!                Total:  Time = 1.38     Calls = 1      T/C = 1.3800   
+!           Simulation:  Time = 1.27     Calls = 1      T/C = 1.2710   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
+!                Total:  Time = 1.31     Calls = 1      T/C = 1.3150   
 
 
 
@@ -816,5 +816,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Tue 07-Dec-21   5:20:36 pm  Page 13
+! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 13
 

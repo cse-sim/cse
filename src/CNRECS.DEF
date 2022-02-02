@@ -3471,8 +3471,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 							//   multiplies cooling capacity (no effect on heating)
-*f FRAC rs_fSize			// compressor sizing factor (default 1, 0.95 or 1 for CA compliance)
-							//   multiples cooling capacity (no effect on heating)
 *f FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
 *f FLOAT rs_capnfX;			// constant for rs_capCt calc
 *f FLOAT rs_capAdjF;
