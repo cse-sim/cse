@@ -109,7 +109,7 @@ SEC    FC xfchsize( XFILE *, LI);
 SEC    FC xfflush( XFILE *);
 SEC    FC xlsterr( XFILE *);
 
-RC     FC xfcopy( const char *, const char *, char*, SI);
+RC     FC xfcopy( const char *, const char *, const char*, SI);
 RC     FC xfcopy2( XFILE *xfs, XFILE *xfd, int op, const char** pMsg);
 LI     FC xdisksp();
 LI FC dskDrvFreeSpace();

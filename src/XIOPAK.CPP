@@ -980,7 +980,7 @@ RC FC xfcopy(		// Copy a file
 
 	const char *fns,	/* Source file pathname for copy */
 	const char *fnd,	/* Destination file pathname for copy */
-	char* accd,	/* Destination access flag -- determines whether
+	const char *accd,	/* Destination access flag -- determines whether
                destination file is overwritten, must preexist, etc.
                Typical values (xiopak.h/fcntl.h) --
                 O_WB       Dest. is fresh (created or overwritten)
