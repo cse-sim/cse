@@ -3450,7 +3450,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
                                                               // values in map are derived from rs_cap95 etc.
-                                                              // thus include fan heat/power
+                                                              // thus are net (include rated fan heat/power)
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
@@ -3472,8 +3472,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 							//   multiplies cooling capacity (no effect on heating)
 *f FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
-*f FLOAT rs_capnfX;			// constant for rs_capCt calc
-*f FLOAT rs_capAdjF;
+*f FLOAT rs_capnfX;			// constant for rs_capXxxCt calc
 *f *e FLOAT rs_SEERnfX;		// constant for rs_SEERnf calc
 *f *e FLOAT rs_EERnfX;		// constant for rs_EERnfCalc
 

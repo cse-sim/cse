@@ -2804,24 +2804,13 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 	// load = capSensT = capnf*shr - qFanOp
 	// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
-	// let F = fChg*fSize*fCondCap*shr
+	// let F = fChg*fCondCap*shr
 	// load = (cap95 + qFanRat)*F - qFanOp
 	// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
 	// load = cap95*(F*(1+fanRatX)-fanOpX
 	// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
 
-	if (fabs( cap95nf) > 10.f)
-	{	// if meaningful capacity
-		rs_capnfX = cap95nf * rs_fChg;		// apply constant adjustment factor
-
-		float fanHRtdRat = rs_fanHRtdC / cap95nf;		// rated fan heat ratio, (Btuh fan)/(Btuh coil)
-
-		rs_capAdjF = rs_fChg * (1.f - fanHRtdRat);
-	}
-	else
-	{	rs_capnfX = 0.f;
-		rs_capAdjF = rs_fChg;
-	}
+	rs_capnfX = fabs(cap95nf) > 10.f ? cap95nf * rs_fChg : 0.f;
 
 	// base value for SEERnf calculation
 	float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC/3.413f;	// input power, W
@@ -3239,93 +3228,8 @@ float RSYS::rs_CoolingEff1Spd(		// cooling efficiency, 1 spd model
 	if (tdbOut == 0.f)
 		tdbOut = rs_tdbOut;
 
-#if 0
-// SEER coefficients
-//          wet             dry
-static const float ASEER[2] = { 0.f,	        0.0046103f };
-static const float BSEER[2] = { -0.0202256f,	    0.f };
-static const float CSEER[2] = { 0.0236703f,	    0.0125598f };
-static const float DSEER[2] = { -0.0006638f,    -0.000512f };
-static const float ESEER[2] = { 0.f,	       -0.0000357f };
-static const float FSEER[2] = { 0.f,            0.0000105f };
-static const float GSEER[2] = { -0.0001841f,	    0.f };
-static const float HSEER[2] = { 0.0000214f,	    0.f };
-static const float ISEER[2] = { -0.00000812f,	0.f };
-static const float JSEER[2] = { 0.0002971f,	    0.f };
-static const float KSEER[2] = { -27.95672f,	    0.f };
-static const float LSEER[2] = { 0.209951063f,  -0.316172311f };
-
-
-	int iDry = rs_SHR > 0.9999f;
-
-	if (tdbOut < 95.f)
-	{
-		float fSEERX = ASEER[iDry] * rs_tdbCoilIn +
-			BSEER[iDry] * rs_twbCoilIn +
-			CSEER[iDry] * tdbOut +
-			DSEER[iDry] * rs_vfPerTon +
-			ESEER[iDry] * rs_tdbCoilIn * tdbOut +
-			FSEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			GSEER[iDry] * rs_twbCoilIn * tdbOut +
-			HSEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
-			ISEER[iDry] * tdbOut * rs_vfPerTon +
-			JSEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
-			KSEER[iDry] / rs_vfPerTon +
-			LSEER[iDry];
-		rs_fCondSEER = rs_fCondCap / fSEERX;
-		rs_SEERnf = rs_SEERnfX * rs_fCondSEER;
-	}
-	else
-		rs_fCondSEER = rs_SEERnf = 0.f;
-
-//                             wet            dry
-static const float AEER[2] = { 0.f,	            0.004610300f };
-static const float BEER[2] = { -0.020225600f,	0.f };
-static const float CEER[2] = { 0.023670300f,	0.012559800f };
-static const float DEER[2] = { -0.000663800f,  -0.000512000f };
-static const float EEER[2] = { 0.f,	           -0.000035700f };
-static const float FEER[2] = { 0.f,	            0.000010500f };
-static const float GEER[2] = { -0.000184100f,	0.f };
-static const float HEER[2] = { 0.000021400f,	0.f };
-static const float IEER[2] = { -0.000008120f,	0.f };
-static const float JEER[2] = { 0.000297100f,	0.f };
-static const float KEER[2] = { -27.956720000f,	0.f };
-static const float LEER[2] = { 0.015003100f,   -0.475306500f };
-
-	if (tdbOut > 82.f)
-	{
-		rs_fCondEER = 1.f /
-			( AEER[iDry] * rs_tdbCoilIn +
-			  BEER[iDry] * rs_twbCoilIn +
-			  CEER[iDry] * tdbOut +
-			  DEER[iDry] * rs_vfPerTon +
-			  EEER[iDry] * rs_tdbCoilIn * tdbOut +
-			  FEER[iDry] * rs_tdbCoilIn * rs_vfPerTon +
-			  GEER[iDry] * rs_twbCoilIn * tdbOut +
-			  HEER[iDry] * rs_twbCoilIn * rs_vfPerTon +
-			  IEER[iDry] * tdbOut * rs_vfPerTon +
-			  JEER[iDry] * rs_twbCoilIn * rs_twbCoilIn +
-			  KEER[iDry] / rs_vfPerTon +
-			  LEER[iDry]);
-		rs_EERnf = rs_EERnfX * rs_fCondEER * rs_fCondCap;
-		rs_EERt = tdbOut < 95.f
-			? rs_SEERnf + (tdbOut - 82.f) * (rs_EERnf - rs_SEERnf) / 13.f
-			: rs_EERnf;
-	}
-	else
-	{
-		rs_EERnf = 0.f;
-		rs_EERt = rs_SEERnf;
-	}
-#endif
-
 	float fInpSEER;
 	float fInpEER = CoolingInpF1Spd(rs_SHR, tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon, fInpSEER);
-
-#if 0
-	float EERnf = rs_EERnfX * rs_fCondCap / fInpEER;
-	float SEERnf = rs_SEERnfX * rs_fCondCap / fInpSEER;
-#endif
 
 	rs_fCondSEER = rs_fCondCap / fInpSEER;
 	rs_SEERnf = rs_SEERnfX * rs_fCondSEER;
@@ -3336,11 +3240,6 @@ static const float LEER[2] = { 0.015003100f,   -0.475306500f };
 	rs_EERt = tdbOut < 82.f ? rs_SEERnf
 		: tdbOut < 95.f ? rs_SEERnf + (tdbOut - 82.f) * (rs_EERnf - rs_SEERnf) / 13.f
 		: rs_EERnf;
-
-#if 0
-	if (fabs(EERt - rs_EERt) > 0.0001f)
-		printf("\nMismatch");
-#endif
 
 	return fInpEER;
 
@@ -5702,16 +5601,24 @@ double RSYS::rs_AmfRequired(		// find all-zone total AMF required for tSup
 	return rsAmf / ductLkXF;
 }		// RSYS::rs_AmfRequired
 //----------------------------------------------------------------------------
-float RSYS::rs_ACReqCap95(		// required rated capacity to meet sensible load
-	float senLoad)	// sensible load, Btuh
-// returns required total capacity required to meet load, Btuh
-//         (adjusted to AHRI rating conditions)
-{
-	float cap95 = senLoad / (rs_SHR * rs_fCondCap);
-	if (rs_capAdjF > 0.)
-		cap95 /= rs_capAdjF;
-	return cap95;
-}		// RSYS::rs_ACReqCap95
+#if 0
+x unused idea
+x float RSYS::rs_ACReqCap95(		// required rated capacity to meet sensible load
+x	float senLoad)	// sensible load, Btuh
+x // returns required total capacity required to meet load, Btuh
+x //         (adjusted to AHRI rating conditions)
+x {
+x   worry about x/0
+x   is rs_fChg handled correctly?
+x	float cap95 = senLoad / (rs_fChg * rs_SHR * rs_fCondCap);
+x	float fanHRtdRat = rs_fanHRtdC / cap95;		// rated fan heat ratio, (Btuh fan)/(Btuh coil)
+x	float capAdjF = rs_fChg * (1.f - fanHRtdRat);
+x	if (rs_capAdjF > 0.)
+x		cap95 /= capAdjF;
+x	return cap95;
+x
+x }		// RSYS::rs_ACReqCap95
+#endif
 //---------------------------------------------------------------------------
 RC RSYS::rs_FinalizeSh()
 // rs_speedF known
