@@ -247,7 +247,7 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 XFILE* xfopen(  	// Set up extended IO structure and open file
 
 	const char *fname, 	// File pathname
-	char* accs,			// Access type.  Passed to _open().  Note that the useful
+	char* accs,			// Access type.  Passed to fopen().  Note that the useful
 						//  combinations of accesses are defined in xiopak.h
 	int erOp/*=WRN*/,	// Error action code (ABT/WRN/IGN etc) for all errors both now
 						// and in later calls.  To change after open, use xeract().
@@ -462,7 +462,7 @@ SEC FC xfread(		// Read from file
 		/* CAUTION: caller must clear eof/error (use xlsterr(xf))
 		   	    b4 ANY other xiopak call will work (except xfseek and xftell) */
 
-		nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read -- msc lib
+		nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read
 
 		if (  nX != nbytes)			// read() error return
 		{
@@ -606,10 +606,10 @@ SEC FC xfsize(		// Return the current size of a file
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
 	std::error_code ec;
-	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
-	if (ec) {/* if length invalid */
+	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length */
+	if (ec) {				/* if length invalid */
 		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
-		return xioerr(xf); /*    bad: report error, return SEC */
+		return xioerr(xf);	/*    bad: report error, return SEC */
 	}
 	return SECOK;   		/*    good */
 }				// xfsize
@@ -646,11 +646,11 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 			|| acc.find('w') != std::string::npos
 			|| acc.find('a') != std::string::npos) {
 			
-			// close and re-open file to flush buffers to disk (not just to OS)
+			// flush buffers
 			if ((fpos = ftell(xf->han)) != -1
 				&& fflush(xf->han) == 0
 				&& fseek( xf->han, fpos, SEEK_SET) != -1 )
-				return SECOK;
+				return SECOK;			// success
 		}
 		xf->xflsterr = xioerr(xf);		// report error
 	}
