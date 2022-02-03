@@ -42,8 +42,6 @@ namespace filesys = std::experimental::filesystem;
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <io.h>		// open, read, write,
-#include <fstream>
 #include <direct.h>	// getcwd, chdir, _chdrive
 #include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
