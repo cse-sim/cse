@@ -3352,7 +3352,7 @@ x		printf("\nhit");
 		float fanHAdj = rs_fanHRtdC;	// fan heat adjustment, Btuh
 
 		// adjust for fan power (= convert to gross cooling)
-		capClg += fanHAdj;
+		capClg -= fanHAdj;		// note: capClg<0
 
 		capClg *= rs_fChg * rs_fCondCap;	// apply charge factor and entering air adjustment
 
@@ -3360,8 +3360,8 @@ x		printf("\nhit");
 		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
 		// input at current speed (Btuh)
-		inpClg -= fanHAdj;
-		inpClg *= fCondInp;
+		inpClg -= fanHAdj;		// full speed input power w/o fan
+		inpClg *= fCondInp;		// apply entering conditions correction
 		float inpX;
 		if (rs_speedF == 1.f)
 			inpX = inpClg;
@@ -3369,7 +3369,7 @@ x		printf("\nhit");
 		{
 			// capClgMin += fanHAdj * rs_speedFMin;
 			// capClgMin *= rs_fChg * rs_fCondCap;
-			inpClgMin -= fanHAdj * rs_speedFMin;
+			inpClgMin -= fanHAdj * rs_speedFMin;	// min speed input power w/o fan
 
 			inpX = inpClgMin
 				  + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
