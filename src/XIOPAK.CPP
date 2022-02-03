@@ -638,18 +638,22 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 
 // Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
 {
-	char* acc;
+	std::string acc;
 	LI fpos;
 
 	if (xf->xflsterr==SECOK)			// if no prior error
 	{
-		acc = xf->access;
-		// close and re-open file to flush buffers to disk (not just to OS)
-		if ( (fpos = ftell(xf->han)) != -1
-				&& fclose(xf->han) == 0
-				&& (xf->han = fopen( xf->xfname, acc)) != NULL
+		acc = std::string(xf->access);
+		if (acc.find('+') != std::string::npos
+			|| acc.find('w') != std::string::npos
+			|| acc.find('a') != std::string::npos) {
+			
+			// close and re-open file to flush buffers to disk (not just to OS)
+			if ((fpos = ftell(xf->han)) != -1
+				&& fflush(xf->han) == 0
 				&& fseek( xf->han, fpos, SEEK_SET) != -1 )
-			return SECOK;
+				return SECOK;
+		}
 		xf->xflsterr = xioerr(xf);		// report error
 	}
 	return xf->xflsterr;	// return (possibly prior) sec
