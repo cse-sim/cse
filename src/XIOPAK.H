@@ -45,7 +45,7 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 ///////////////////////////////////////////////////////////////////////////////
 struct XFILE
 {   FILE* han;		// File handle
-    char* access;	// Access flag used on last fopen()
+    char access[3];	// Access flag used on last fopen()
     int nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
     SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
@@ -97,7 +97,7 @@ BOO findFile( const char* fName, const char* path, char* fPathFound);	// searche
 const char * FC xgetdir( void);
 SEC    FC xchdir( const char *, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
-XFILE* xfopen( const char* fname, char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
+XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
 SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );

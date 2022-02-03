@@ -247,7 +247,7 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 XFILE* xfopen(  	// Set up extended IO structure and open file
 
 	const char *fname, 	// File pathname
-	char* accs,			// Access type.  Passed to fopen().  Note that the useful
+	const char *accs,			// Access type.  Passed to fopen().  Note that the useful
 						//  combinations of accesses are defined in xiopak.h
 	int erOp/*=WRN*/,	// Error action code (ABT/WRN/IGN etc) for all errors both now
 						// and in later calls.  To change after open, use xeract().
@@ -278,7 +278,7 @@ static const int XFBUFFSZ = 1024;
 	dmal( DMPP( xf), 			// allocate dm (heap space) for XFILE, dmpak.cpp
 		  sizeof(XFILE) + tBufsz,	// size: base XFILE + buffer if needed.  1 extra allocd due to .buf[1] in XFILE.
 		  ABT | DMZERO );			// abt if dm full (unlikely -- small), 0 fill
-	xf->access = accs;    			// various fcns need to know how file opend
+	strcpy(xf->access, accs);    			// various fcns need to know how file opend
 	xf->xferact = erOp & (ERAMASK|PROGERR);	// save for later xiopak calls for file
 	xf->xfeoferr = eoferr;			// nz if eofs are to be treated as errors
 	xf->bufsz = tBufsz;				// buffer size: 0 or XFBUFFSZ
@@ -303,7 +303,7 @@ static const int XFBUFFSZ = 1024;
 #endif
 
 // open file, handle fail
-	if ( (xf->han = fopen( fname, accs)) == NULL)	// open file (C library) / if failed
+	if ( (xf->han = fopen( fname, xf->access)) == NULL)	// open file (C library) / if failed
 	{
 		xf->xfname = fname;		// used in xioerr's error messages
 		sec = xioerr(xf);		// resolve sys err code & report error
@@ -410,7 +410,7 @@ SEC FC xfclose(		// Close file and release XFILE
 
 	if (xf != NULL)			// if we really have an XFILE
 	{
-		SI closeRet = fclose(xf->han);	// attempt close even if prev error
+		int closeRet = fclose(xf->han);	// attempt close even if prev error
 		if (closeRet)			// close() returns NZ on error
 			sec = xf->xflsterr
 				  = xioerr(xf);		// resolve, report, rtrn SEC (below)
@@ -418,7 +418,8 @@ SEC FC xfclose(		// Close file and release XFILE
 			*pCumSec = xf->xflsterr;	// cumulative SEC receives any error including those caused by close
 		dmfree( DMPP( xf->xfname));	// free name if any (see xFindOnPath)
 	}
-	dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
+	if (*xfp)
+		dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
 
 	return sec;			// return outcome of close()
 }		// xfclose
