@@ -2784,7 +2784,7 @@ void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 		rs_amfC = AVFtoAMF( avfC);				// amf using standard air density, lbm/hr
 	}
 
-	rs_fanHeatC  = avfC * rs_fanPwrC * BtuperWh;
+	rs_fanHeatC  = avfC * rs_fanPwrC * BtuperWh;	// full speed operating fan power, Btuh
 
 	rs_fanHRtdC = rs_FanHRtdPerTon( capNomTons);	// fan heat included in rated capacity, Btuh
 	// rs_fanHRtdH is derived independently
@@ -2798,28 +2798,12 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 {
 	RC rc = RCOK;
 
-	rs_SetupFanC( avfC);
+	rs_SetupFanC( avfC);	// sets rs_cap95 if avfC > 0., else sets rs_amfC
+							// derives rs_fanHRtdC
 
-	float cap95nf = -( fabs( rs_cap95) + rs_fanHRtdC);	// coil (gross) rated total capacity, Btuh
-
-	// load = capSensT = capnf*shr - qFanOp
-	// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
-	// let F = fChg*fCondCap*shr
-	// load = (cap95 + qFanRat)*F - qFanOp
-	// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
-	// load = cap95*(F*(1+fanRatX)-fanOpX
-	// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
-
-	rs_capnfX = fabs(cap95nf) > 10.f ? cap95nf * rs_fChg : 0.f;
-
-	// base value for SEERnf calculation
-	float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC/3.413f;	// input power, W
-	rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
-							: rs_SEER;
-
-	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
-	rs_EERnfX =  inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;	// gross total EER
-
+	// rs_cap95 now known = net total cooling cap at 95 F (> 0)
+	//   default other cooling capacities if needed
+	//   not all used in all models
 	if (!IsSet(RSYS_CAP82))
 		rs_cap82 = rs_capRat8295 * rs_cap95;
 
@@ -2828,17 +2812,45 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 #if 0
 #if 0
-		if (!IsSet(rs_cap115))
-			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
+	if (!IsSet(rs_cap115))
+		rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
 #endif
-		if (!IsSet(rs_COP115))
-		{
-			float inp82 = rs_cap82 / rs_COP82;
-			float inp95 = rs_cap95 / rs_COP95;
-			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
-		}
+	if (!IsSet(rs_COP115))
+	{
+		float inp82 = rs_cap82 / rs_COP82;
+		float inp95 = rs_cap95 / rs_COP95;
+		rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
+	}
 #endif
 
+	// notes re capacity manipulations
+	// load = capSensT = capnf*shr - qFanOp
+	// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
+	// let F = fChg*fCondCap*shr
+	// load = (cap95 + qFanRat)*F - qFanOp
+	// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
+	// load = cap95*(F*(1+fanRatX)-fanOpX
+	// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
+
+	// set up constants for single speed model
+	float cap95nf = -( fabs( rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh
+														// (< 0)
+
+	rs_capnfX = fabs(cap95nf) > 10.f ? cap95nf * rs_fChg : 0.f;		// apply charge adjustment
+
+	// base value for SEERnf and EERnf calculations
+	//   (probably) used only for single speed
+	float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC/3.413f;	// input power, W
+	rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
+							: rs_SEER;
+
+	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
+	rs_EERnfX =  inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;	// gross total EER
+
+
+	// cooling performance map
+	//   currently (2-22) used for rs_IsVC() only
+	//   initialized for all
 	rc |= rs_SetupBtwxtClg();
 
 	rs_DefaultCapNomsIf();
@@ -3245,17 +3257,17 @@ float RSYS::rs_CoolingEff1Spd(		// cooling efficiency, 1 spd model
 
 }		// RSYS::rs_CoolingEff1Spd
 //-----------------------------------------------------------------------------
-void RSYS::rs_CoolingEnteringAirFactorsVS(
-	float& capF,
-	float& inpF) const
+void RSYS::rs_CoolingEnteringAirFactorsVS(		// adjustments for entering (indoor) air state
+	float& capF,			// returned: capacity factor
+	float& inpF) const		// returned: compressor input power factor
 {
 	float capFN = CoolingCapF1Spd(rs_SHR, rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
-	float capFD = CoolingCapF1Spd(0.8f, rs_tdbOut, 80.f, 67.f, 400.f);
+	float capFD = CoolingCapF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f);
 	capF = capFN / capFD;
 
 	float fSink;
 	float inpFN = CoolingInpF1Spd(rs_SHR, rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon, fSink);
-	float inpFD = CoolingInpF1Spd(0.8, rs_tdbOut, 80.f, 67.f, 400.f, fSink);
+	float inpFD = CoolingInpF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f, fSink);
 
 	inpF = inpFN / inpFD;
 
@@ -3320,72 +3332,50 @@ x		printf("\nhit");
 	else if (!rs_IsVCClg())
 	{	// 1 spd, not autosizing warmup, use full model
 		rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd
-		rs_capTotCt = rs_capnfX * rs_fCondCap;		// total capacity at current conditions, Btuh
-		rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible capacity at current conditions, Btuh
+		rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
+		rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible gross capacity at current conditions, Btuh
 	}
 	else
 	{	// variable capacity
 		// total capacities and input, Btuh
 		//   include rated fan power
-		//   cap values are net Btuh, <0
+		//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
 		float capClg, inpClg, capClgMin, inpClgMin;
 		RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
 			capClg, inpClg, capClgMin, inpClgMin);
-		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;
-		float fanHAdj = rs_fanHRtdC;	// fan heat adjustment, Btuh
+		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;	// rs_speedFMin: no rs_fChg impact
 
-#if 1
-		// adjust for fan power (= convert to gross cooling)
-		capClg += fanHAdj;
-		inpClg -= fanHAdj;
-
-#if 1
+		// use correlations to get adjusments for entering air state
 		float fCondInp;
 		rs_CoolingEnteringAirFactorsVS(rs_fCondCap, fCondInp);
-		capClg *= rs_fCondCap;
-		inpClg *= fCondInp;
-#else
-		rs_CoolingCapF1Spd(95.f);
-		capClg *= rs_fCondCap;
-		rs_CoolingEff1Spd(95.f);
-		inpClg /= (rs_fCondCap * rs_fCondEER);
-#endif
+
+		float fanHAdj = rs_fanHRtdC;	// fan heat adjustment, Btuh
+
+		// adjust for fan power (= convert to gross cooling)
+		capClg += fanHAdj;
+
+		capClg *= rs_fChg * rs_fCondCap;	// apply charge factor and entering air adjustment
 
 		rs_capTotCt = capClg * rs_speedF;		// total coil capacity (= gross) at current conditions and speed, Btuh
 		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
 		// input at current speed (Btuh)
+		inpClg -= fanHAdj;
+		inpClg *= fCondInp;
 		float inpX;
 		if (rs_speedF == 1.f)
 			inpX = inpClg;
 		else
 		{
 			// capClgMin += fanHAdj * rs_speedFMin;
-			// capClgMin *= rs_fCondCap;
+			// capClgMin *= rs_fChg * rs_fCondCap;
 			inpClgMin -= fanHAdj * rs_speedFMin;
-			// inpClgMin /= (rs_fCondCap * rs_fCondEER);
 
 			inpX = inpClgMin
 				  + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
 		}
-#else
-				// adjust for fan power (= convert to gross cooling)
-		capClg += fanHAdj;
-		inpClg -= fanHAdj;
-		capClgMin += fanHAdj * rs_speedFMin;
-		inpClgMin -= fanHAdj * rs_speedFMin;
 
-		rs_capTotCt = capClg * rs_speedF;		// total coil capacity (= gross) at current conditions and speed, Btuh
-		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
-
-		// input at current speed (Btuh)
-		float inpX = rs_speedF == 1.f
-			? inpClg
-			: inpClgMin
-			  + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
-#endif
-
-		rs_effCt = abs( rs_capSenCt) / inpX;		// compressor-only COP
+		rs_effCt = abs( rs_capSenCt) / inpX;		// compressor-only sensible COP
 	}
 	rs_capLatCt = rs_capTotCt - rs_capSenCt;	// latent, Btuh
 
@@ -4207,8 +4197,8 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	rs_ASHPCapF[ 1] = (rs_cap35-rs_cap17) / (35.f-17.f);
 	rs_ASHPInpF[ 1] = (rs_inp35-rs_inp17) / (35.f-17.f);
 
-	// Btwxt performance map setup
-	// initially used for ASHPVC only
+	// Btwxt heating performance map setup
+	// currently (2-22) used for rs_IsVC() only
 	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
 
 	if (!IsSet(RSYS_COPMIN35))
