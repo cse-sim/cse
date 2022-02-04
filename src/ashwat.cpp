@@ -2310,8 +2310,8 @@ static void IS_BEAM(	// insect screen BB and BD properties
 			TAU_BB = P01( TAU_BB0 * pow( cos( PIOVER2*THETA/THETA_CUTOFF), B), "IS_BEAM TauBB");
 		}
 
-		B = -.65 * log( max( TAU_BT0, .01)) + .1;
-		TAU_BT = P01( TAU_BT0 * pow( COSTHETA, B), "IS_BEAM TauBT");
+		double expB = -.65 * log( max( TAU_BT0, .01)) + .1;
+		TAU_BT = P01( TAU_BT0 * pow( COSTHETA, expB), "IS_BEAM TauBT");
 	}
 
 	TAU_BD = P01( TAU_BT-TAU_BB, "IS_BEAM TauBD");
