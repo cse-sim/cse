@@ -2103,7 +2103,7 @@ RSYS   "rsys1"
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
    rsFanPwrH = 0.45                     // Heating fan power.  Heating air flow is estimated based on a 50 ?F temperature rise.
    rsFanPwrC = 0.45                     // Cooling fan power.
-   rsAdjForFanHt = No
+   rsAdjForFanHt = Yes
    rsParElec = ($tdboHrAv < 50) * 40    // Parasitic electric use, W
    rsDefrostModel = "RevCycleAux"       // Modeling options for ASHP outdoor coil defrosting
    rsFxCapH = 1.466667                  // Heating sizing factor

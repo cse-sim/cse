@@ -1747,7 +1747,6 @@ RC RSYS::rs_CkF()
 
 			rc |= disallowN("when rsCap95 is AUTOSIZE",
 					RSYS_CAP82, RSYS_CAP115, 0);
-
 		}
 
 		if (!rs_IsASHPVC())
@@ -2007,6 +2006,12 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	{	if (!IsSet(rs_ASHPLockOutT))
 			rs_ASHPLockOutT = 45.f;		// pkg room ASHP: use resistance at lower temps
 		rc |= rs_SetupASHP();
+	}
+
+	if (rs_IsVC())
+	{	// VCHP default motor type is BPM (others are PSC from cult)
+		if (!IsSet(RSYS_FAN + FAN_MOTTY))
+			rs_fan.fn_motTy = C_MOTTYCH_BPM;
 	}
 
 	if (rs_CanCool())
@@ -2758,9 +2763,9 @@ float RSYS::rs_FanHRtdPerTon(		// fan heat included in ratings
 // returns fan heat included in ratings, Btuh
 {
 	float fanHRtdPerTon =
-		rs_IsPkgRoom() || rs_adjForFanHt == C_NOYESCH_NO      ? 0.f		// PkgRoom or user override: no fan adjustment
-	                    : rs_fan.fn_motTy == C_MOTTYCH_PSC  ? 500.f	    // PSC = Permanent Split Capacitor
-	                    :									  283.f;	// BPM = Brushless Permanent Magnet (aka ECM)
+		rs_IsPkgRoom() || rs_adjForFanHt == C_NOYESCH_NO    ? 0.f	 // PkgRoom or user override: no fan adjustment
+		:                 rs_fan.fn_motTy == C_MOTTYCH_BPM  ? 283.f	 // BPM = Brushless Permanent Magnet (aka ECM)
+	    :                                                     500.f; // PSC = Permanent Split Capacitor
 
 	return capNomTons * fanHRtdPerTon;
 
@@ -4086,53 +4091,58 @@ float RSYS::rs_Inp35Default(		// default 35 F input power
 		inp35 *= 0.985f;		// defrost power reduction
 	return inp35;
 }	// RSYS::rs_Inp35Default
-//-----------------------------------------------------------------------------
-float RSYS::rs_Cap05Default(		// default 5 F heating capacity
-	float cap47,		// 47 F heating capacity, any power units
-	float cap17) const	// 17 F heating capacity
-// extrapolates using 47-to-17 line
-// returns 5 F heating capacity, consistent units
-{
-	float cap05 = cap17 + (cap17-cap47)* (5.f-47.f)/(17.f-47.f);
-	return cap05;
-}	// RSYS::rs_Cap05Default
-//-----------------------------------------------------------------------------
-float RSYS::rs_Cap115Default(		// default 115 F (total) cooling capacity
-	float cap95,		// 95 F cooling capacity, any power units
-	float cap82) const	// 82 F cooling capacity
-// method: extrapolation using 82 - 95 slope
-// returns 115 F cooling capacity, consistent units
-{
-	float cap115 = cap82 + (33.f/13.f) * (cap95 - cap82);
-	return cap115;
-}	// RSYS::rs_Cap115Default
-//-----------------------------------------------------------------------------
-float RSYS::rs_Inp115Default(		// default 115 F input power
-	float inp95,		// 47 F input power, any power units
-	float inp82) const	// 17 F input power
-// method: extrapolation using 82 - 95 slope
-// returns 115 F input power, consistent units
-{
-	float inp115 = inp82 + (33.f/13.f) * (inp95 - inp82);
-	return inp115;
-}	// RSYS::rs_Inp115Default
-//-----------------------------------------------------------------------------
-RC RSYS::rs_SetDefaultsClg()
-{
-	RC rc = RCOK;
-
-	if (rs_IsVCClg())
-	{	if (!IsSet(rs_cap115))
-			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
-		float inp82 = rs_cap82 / rs_COP82;
-		float inp95 = rs_cap95 / rs_COP95;
-		if (!IsSet(rs_COP115))
-			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
-	}
-
-	return rc;
-
-}		// RSYS::rs_SetDefaultsClg()
+#if 0
+x unused
+x //-----------------------------------------------------------------------------
+x float RSYS::rs_Cap05Default(		// default 5 F heating capacity
+x 	float cap47,		// 47 F heating capacity, any power units
+x 	float cap17) const	// 17 F heating capacity
+x // extrapolates using 47-to-17 line
+x // returns 5 F heating capacity, consistent units
+x {
+x 	float cap05 = cap17 + (cap17-cap47)* (5.f-47.f)/(17.f-47.f);
+x 	return cap05;
+x }	// RSYS::rs_Cap05Default
+x //-----------------------------------------------------------------------------
+x float RSYS::rs_Cap115Default(		// default 115 F (total) cooling capacity
+x 	float cap95,		// 95 F cooling capacity, any power units
+x 	float cap82) const	// 82 F cooling capacity
+x // method: extrapolation using 82 - 95 slope
+x // returns 115 F cooling capacity, consistent units
+x {
+x 	float cap115 = cap82 + (33.f / 13.f) * (cap95 - cap82);
+x 	return cap115;
+x }	// RSYS::rs_Cap115Default
+x //-----------------------------------------------------------------------------
+x float RSYS::rs_Inp115Default(		// default 115 F input power
+x 	float inp95,		// 47 F input power, any power units
+x	float inp82) const	// 17 F input power
+x	float inp82) const	// 17 F input power
+x// method: extrapolation using 82 - 95 slope
+x// returns 115 F input power, consistent units
+x{
+x	float inp115 = inp82 + (33.f / 13.f) * (inp95 - inp82);
+x	return inp115;
+x }	// RSYS::rs_Inp115Default
+x//-----------------------------------------------------------------------------
+xRC RSYS::rs_SetDefaultsClg()
+x {
+x	RC rc = RCOK;
+x
+x	if (rs_IsVCClg())
+x	{ if (!IsSet(rs_cap115))
+x			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
+x		float inp82 = rs_cap82 / rs_COP82;
+x		float inp95 = rs_cap95 / rs_COP95;
+x		if (!IsSet(rs_COP115))
+x			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
+x	}
+x
+x	return rc;
+x
+x
+x}		// RSYS::rs_SetDefaultsClg()
+#endif
 //-----------------------------------------------------------------------------
 // helper performance point re btwxt setup
 // = temperature + array of perf values
