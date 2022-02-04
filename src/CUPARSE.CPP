@@ -2603,8 +2603,8 @@ x						}
 						USI anTy = parSp->ty;		// note assume previously-checked args remain compat with each other
 						for ( SI i = nSF; --i > 0; )		// check preceding uncombined stack frames for type compat with latest
 						{
-							aTy = (parSp - i)->ty;			// type of arg aN-i
-							if (aTy != anTy  &&  (anTy|aTy) != TYNC)  	// only 2-bit type allowed is TYNC === TYCH|TYFL.
+							USI argType = (parSp - i)->ty;			// type of arg aN-i
+							if (argType != anTy  &&  (anTy| argType) != TYNC)  	// only 2-bit type allowed is TYNC === TYCH|TYFL.
 							{
 								// error message for incompatible argument
 								SI ann = (optn & 8) ? 2*aN + nA0 : aN + nA0;   	// argument # for errmsg of last arg parsed
@@ -2614,7 +2614,7 @@ x						}
 								:  strtprintf(" %d and %d",(INT)an1,(INT)ann);	// arg # subtext eg " 1 and 3"
 								return perNx( (char *)MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
 								anTx, (char *)f->id,			// "    can't mix '%s' and '%s'"
-								datyTx(aTy), datyTx(anTy));
+								datyTx(argType), datyTx(anTy));
 							}
 						}
 					}
