@@ -408,7 +408,7 @@ SEC FC xfclose(		// Close file and release XFILE
 	XFILE * xf = (xfp != NULL) ? *xfp	// fetch ptr via ptr-ptr
 				 : NULL;	//   or NULL if ptr-ptr is (unexpectedly) NULL
 
-	if (xf != NULL)			// if we really have an XFILE
+	if (xf != nullptr)			// if we really have an XFILE
 	{
 		int closeRet = fclose(xf->han);	// attempt close even if prev error
 		if (closeRet)			// close() returns NZ on error
@@ -418,7 +418,7 @@ SEC FC xfclose(		// Close file and release XFILE
 			*pCumSec = xf->xflsterr;	// cumulative SEC receives any error including those caused by close
 		dmfree( DMPP( xf->xfname));	// free name if any (see xFindOnPath)
 	}
-	if (*xfp)
+	if (xfp)
 		dmfree( DMPP( *xfp));	// free XFILE.  Note use of xfp (not &xf) so caller's pointer is NULLed.
 
 	return sec;			// return outcome of close()
