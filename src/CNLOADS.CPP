@@ -549,12 +549,6 @@ x	}
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
 #endif
 
-	int nVentUseful = 0;	// ventilation usefulness
-							//   >0: vent potentially useful for 1 or more zones
-							//   =0: vent not useful
-							//   <0: vent forbidden by conditions in 1 or more zones
-							//       e.g. heating or cooling required
-
 	ULI ventAvail = Top.tp_GetVentAvail();		// overall vent availability
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
@@ -564,7 +558,7 @@ x	}
 
 	if (ventAvail == C_VENTAVAILVC_WHOLEBLDG || ventAvail == C_VENTAVAILVC_ZONAL)
 	{
-		nVentUseful = 0;	// ventilation usefulness
+		int nVentUseful = 0;	// ventilation usefulness
 						//   >0: vent potentially useful for 1 or more zones
 						//   =0: vent not useful
 						//   <0: vent forbidden by conditions in 1 or more zones
