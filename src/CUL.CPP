@@ -4684,7 +4684,7 @@ const char* record::mbrIdTx( int fn) const	// record field id from cult table
 	return culMbrId( b, fn);
 }		// record::mbrIdTx
 //===========================================================================
-const char* FC culMbrId( BP b, int fn)	// return record field name from cult table for use in error message
+const char* FC culMbrId( BP b, unsigned int fn)	// return record field name from cult table for use in error message
 
 {
 #if 0 //2-95 check only on failure, below, so can be used for members of the nested cult for nested-object error messages.
@@ -4698,7 +4698,7 @@ x            (void *)xSp, (void *)xStk );	// casts are to make far.
 #if 1	// use basAnc's associated CULT, 3-24-2016
 	if (b->an_pCULT)		// if basAnc has an associated CULT
 	{	for (const CULT* c=b->an_pCULT; c->id; c++)
-		{	if (c->cs==DAT && c->fn==static_cast<unsigned int>(fn))
+		{	if (c->cs==DAT && c->fn==fn)
 				return c->id;
 		}
 	}
