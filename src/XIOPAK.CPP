@@ -518,11 +518,6 @@ SEC FC xfwrite(  	// Write to a file
 	if ( nbytes > 0			/* if write needed */
 	  && xf->xflsterr == SECOK)	/* and no if error currently posted */
 	{
-
-		/* MSC write() documentation asserts that return value can be < nbytes
-		   and not 0xFFFF; chip doesn't see how but cover both cases.  Prior code
-		   failed to detect the 0xFFFF case. 1-3-90 */
-
 		if ( (xf->nxfer = fwrite( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char)) != nbytes)
 			xf->xflsterr = xioerr(xf);	// report err (below), SET .xflsterr
 		// CAUTION caller must clear error/eof -- xlsterr()
@@ -538,9 +533,8 @@ SEC FC xftell(  	// Return current file position with proper accounting of buffe
 	XFILE *xf,	// Pointer to extended IO packet for file
 	LI *fpos)	// Pointer to LI to receive current file position
 
-/* attempts tell() call w/o regard to prior errors so should return pos even
-   on eofd file.  BUT possible interactions within OS or MSC fcns may cause
-   error return if after prior file error. */
+/* attempts ftell() call w/o regard to prior errors so should return pos even
+   on eofd file. */
 
 /* Returns: SECOK if result is good.
             else other sec w/ *fpos = -1 (DOES NOT SET xf->xflsterr) */
@@ -572,7 +566,7 @@ SEC FC xfseek(		// Reposition file pointer
 	    caller must clear xflsterr or this and all? xiopak calls just
 	    returns same code.  For example, call xlsterr(xf).  I think this
 	    is a poor spec but don't wanna upset things now... (rob 10-89) */
-/* CURRENT CAUTION (3-90):
+/* FORMER CAUTION (3-90):
             Now always attempts lseek and SETS xf->xflsterr.  That is, a
 	    successful lseek clears a prior posted error.  But NOTE that
 	    MSC documentation for read() states that file must be closed to
@@ -753,7 +747,6 @@ int xfWriteable(			// check whether file is writeable
 	const char* fPath,	// path
 	const char** ppMsg /*=NULL*/)	// errno message (set iff ret <= 0)
 // returns 1 if writeable
-//         0 not writeable (e.g. read-only or open by others)
 //        -1 path does not exist
 {
 	int ret = 0;
