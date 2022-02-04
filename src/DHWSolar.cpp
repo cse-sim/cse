@@ -200,7 +200,6 @@ RC DHWSOLARSYS::sw_EndIvl(
 			    : 0.f;	
 
 		double scTotQFluidAll = 0.;
-		pSC;
 		RLUPC(ScR, pSC, pSC->ownTi == ss)
 		{	scTotQFluidAll += pSC->sc_totQFluid;
 		}
