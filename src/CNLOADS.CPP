@@ -3343,36 +3343,26 @@ x		printf("\nhit");
 		float capClg, inpClg, capClgMin, inpClgMin;
 		RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
 			capClg, inpClg, capClgMin, inpClgMin);
-		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;	// rs_speedFMin: no rs_fChg impact
+
+		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;	// rs_speedFMin = min/max ratio
+																	// rs_fChg adjustment cancels
 
 		// use correlations to get adjusments for entering air state
 		float fCondInp;
 		rs_CoolingEnteringAirFactorsVS(rs_fCondCap, fCondInp);
 
-		float fanHAdj = rs_fanHRtdC;	// fan heat adjustment, Btuh
-
-		// adjust for fan power (= convert to gross cooling)
-		capClg -= fanHAdj;		// note: capClg<0
-
-		capClg *= rs_fChg * rs_fCondCap;	// apply charge factor and entering air adjustment
-
-		rs_capTotCt = capClg * rs_speedF;		// total coil capacity (= gross) at current conditions and speed, Btuh
+		rs_capTotCt		// total coil capacity (= gross) at current conditions and speed, Btuh
+			= (capClg - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedF;
 		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
-		// input at current speed (Btuh)
-		inpClg -= fanHAdj;		// full speed input power w/o fan
-		inpClg *= fCondInp;		// apply entering conditions correction
-		float inpX;
-		if (rs_speedF == 1.f)
-			inpX = inpClg;
-		else
+		float inpX = (inpClg - rs_fanHRtdC) * fCondInp;	// full speed input power at current conditions w/o fan
+		if (rs_speedF < 1.f)
 		{
-			// capClgMin += fanHAdj * rs_speedFMin;
-			// capClgMin *= rs_fChg * rs_fCondCap;
-			inpClgMin -= fanHAdj * rs_speedFMin;	// min speed input power w/o fan
+			//  capTotMinCt = (capClgMin - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedFMin;
+			float inpXMin = (inpClgMin - rs_fanHRtdC * rs_speedFMin) * fCondInp;	// min speed input power at current conditions w/o fan
 
 			inpX = inpClgMin
-				  + (inpClg - inpClgMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+				  + (inpX - inpXMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
 		}
 
 		rs_effCt = abs( rs_capSenCt) / inpX;		// compressor-only sensible COP
