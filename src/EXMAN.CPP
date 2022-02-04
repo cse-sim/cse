@@ -745,6 +745,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 
 			// keep change flag registrations in recs that are NOT free'd tween phases (tho suspect ok to free all, 10-95)
 			j = 0;
+			b = nullptr;
 			for (i = 0;  i < ex->whChafN;  i++)  		// loop over change flag registrations for this expr
 			{
 				w = ex->whChaf+i;
