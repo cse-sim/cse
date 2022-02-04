@@ -213,35 +213,34 @@ int Solve(			// matrix solver
 	int NM1=N-1;
 	int NP1=N+1;
 	int NP2=N+2;
-	int I,J,L;
 
-	for (I=1; I<=N; I++)
+	for (int I=1; I<=N; I++)
 		M( I, NP2)=SumRow( I, 1, NP1);
 
-	for (L=1; L<=NM1; L++)
+	for (int L=1; L<=NM1; L++)
 	{	double CMAX = M( L, L);
 		int LP = L+1;
 		int NOS = L;
-		for (I=LP; I<=N; I++)
+		for (int I=LP; I<=N; I++)
 		{	if (abs( M( I,L)) > abs( CMAX))
 			{	CMAX = M( I, L);
 				NOS = I;
 			}
 		}
 		SwapRows( L, NOS);
-		for (I=LP; I<=N; I++)
+		for (int I=LP; I<=N; I++)
 		{	double Y = M( I, L) / M( L,L);
-			for (J=L; J<=NP2; J++)
+			for (int J=L; J<=NP2; J++)
 				M( I, J) -= Y * M( L, J);
 		}
 	}
 
 	//  back-substitute
 	XSOL( N) = M( N, NP1) / M( N, N);
-	for (I=1; I<=NM1; I++)
+	for (int I=1; I<=NM1; I++)
 	{	int NI = N - I;
 		double D = 0.;
-		for (J=1; J<=I; J++)
+		for (int J=1; J<=I; J++)
 		{	int NJ = N+1-J;
 			D += M( NI, NJ)*XSOL( NJ);
 		}
