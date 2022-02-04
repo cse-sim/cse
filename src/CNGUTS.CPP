@@ -2143,8 +2143,7 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
 			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
 				if (firstRec)
-				{	mtrSum = MtrB.p[MtrB.n].H;
-					mtrSum.tot = mtrSub1->tot;
+				{	mtrSum.tot = mtrSub1->tot;
 					mtrSum.bt = mtrSub1->bt;
 					mtrSum.dmd = mtrSub1->dmd;
 					mtrSum.dmdShoy = mtrSub1->dmdShoy;
