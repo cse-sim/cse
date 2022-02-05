@@ -926,9 +926,7 @@ x          Then no error. User input for fraction of this heat of condensation t
 			  + zn_hrATMsSh - zn_hrAMsSh * tr	// radiant coupling to mass
 			  - qMsSg 				// - zn's masses solar gain (Btuh) this subhr: energy to mass.
 			  - qrIgMs				// - zn's masses radiant intn'l gain (Btuh) this hour: energy to mass
-#if 0	// excess latent gain ignored in CR model, 5-15-12
-x			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to zone
-#endif
+			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to zone
 			) * Top.tp_subhrDur      	//    all times time interval to get energy
 			+ i.znCAir * (tzls - tz);	// subhr energy from "cair":  hc times temp diff
 	}
