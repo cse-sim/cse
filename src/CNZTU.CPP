@@ -619,7 +619,7 @@ void TU::tu_auszFinal() 			// called after autoSize to complete & store results
 //-----------------------------------------------------------------------------------------------------------------------------
 BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 
-	DBL &cv, 		// desired flow in heat cap units. May be reduced eg to prevent runaway.
+	DBL &_cv, 		// desired flow in heat cap units. May be reduced eg to prevent runaway.
 	BOO isCooling,	// TRUE to resize cMxC/tuVfMxC, FALSE for H's.
 	DBL cvLim, 		/* 0 or flow limit to prevent runaway when ts approaches zone temp for underpowered coil.
 			   compute as "ts * b - a"; negated here for cooling; must be consistent amoung callers.
@@ -649,7 +649,7 @@ BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 	if (ah->airxTs==0)
 		return FALSE;				// prevent divide by 0 (unexpected): say limit to existing max flow for now
 
-	float vf = cv/ah->airxTs;			// convert heat cap flow to cfm @ current ah supply temp, as in ahVshNLims.
+	float vf = _cv/ah->airxTs;			// convert heat cap flow to cfm @ current ah supply temp, as in ahVshNLims.
 	if (!asKVol)  				// unless autosizing const vol (max===min)
 		vf *= Top.auszHiTol2; 			// add a margin (if cv is pegged at max, presume decrOnly flag given).
 
@@ -701,13 +701,13 @@ BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 		if (cvLim > 0)					// if non-0 and correct sign, use cvLim
 		{
 			setToMax( cvLim, cMx);				// don't limit below max already established
-			if (cv > cvLim)   				// if vav flow to meet setpoint exceeds limit
+			if (_cv > cvLim)   				// if vav flow to meet setpoint exceeds limit
 			{
-				cv = cvLim;				// use limit. UPDATES CALLER's CV via reference arg.
+				_cv = cvLim;				// use limit. UPDATES CALLER's CV via reference arg.
 				isCooling ? dtLoCSh : dtLoHSh = TRUE; 	/* set flag. -->dtLoH/C-->dtLoH/CAs-->endAutoSize() msg.
 							   cleared in TU::begSubhr; remains set if ts > sp. */
 #if 1 // wasn't this intended? found missing 8-28-95.
-				vf = cv/ah->airxTs;			// recompute cfm for reduced heat cap flow
+				vf = _cv/ah->airxTs;			// recompute cfm for reduced heat cap flow
 				if (!asKVol)  				// unless autosizing const vol (max===min)
 					vf *= Top.auszHiTol2;			// add a margin
 #endif
@@ -1304,14 +1304,15 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 
 	// Don't change re active mode, cuz sometimes ah must heat to cancel loss when zone is cooling -- cases below handle.
 
-	SI xi = 0;					// receives subscript of zhx to change to, if any; corress zone mode found below.
-	for (SI i = 1;  i < nMd;  i++)		// search +i and -i from current mode to make nearest change if more than one
+	int xi = 0;					// receives subscript of zhx to change to, if any; corress zone mode found below.
+	int iMd;
+	for (iMd = 1;  iMd < nMd;  iMd++)		// search +iMd and -iMd from current mode to make nearest change if more than one
 	{	ZHX *x;
 		AH* ah;
 		TU* tu;
 
 		// if hier mode heats but its zn-ctrl'd ah is set to cool, start zone mode search at mode where that ah cools.
-		SI j = m + i;  					// i'th mode up from last mode used
+		int j = m + iMd;  					// iMd'th mode up from last mode used
 		if ( j < nMd  					// if mode in range
 				&&  mdSeq[j] != MDS_FLOAT )			// if not a float mode (float modes (-1) have no zhx's)
 		{	x = ZhxB.p + mdSeq[j];
@@ -1330,7 +1331,7 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 		}
 
 		// if lower mode cools but its zn-ctrl'd ah is set to heat, start zone mode search at mode where that ah heats.
-		j = m - i;  					// i'th mode down from last mode used
+		j = m - iMd;  					// iMd'th mode down from last mode used
 		if ( j >= 0  					// if mode in range
 				&&  mdSeq[j] != MDS_FLOAT )			// if not a float mode (float modes (-1) have no zhx's)
 		{	x = ZhxB.p + mdSeq[j];
@@ -1349,10 +1350,9 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 		}
 	}
 	if (xi > 0)				// if found a ZHX whose mode to use
-	{	SI i;
-		for (i = 0; i < nMd; i++)  	// find mode that uses this zhx
-			if (mdSeq[i]==xi)
-				m = i;			// update zone mode at which following search starts
+	{	for (iMd = 0; iMd < nMd; iMd++)  	// find mode that uses this zhx
+			if (mdSeq[iMd]==xi)
+				m = iMd;			// update zone mode at which following search starts
 	}
 
 	DBL a, b;   		// a and b for all but active terminal; become ZNR.aqO/bqO, and TU.aqO/bO for that tu.
@@ -1382,18 +1382,18 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 	{
 		SI mWas = m;					// save zone mode to test if changed
 		// >> wsSum unused 6-12-92.  later delete member and rename wsSum1 back.
-		ztuAbs( m, 1, aqHvO, bHvO, wcSum, wcSum1, cSum);	// set zone members aqHvO, bHvO, wcSum1, wcSum, cSum.
+		ztuAbs( m, 1, zn_aqHvO, zn_bHvO, wcSum, wcSum1, cSum);	// set zone members aqHvO, bHvO, wcSum1, wcSum, cSum.
 		// active-tu contribution is added to wcSum, wcSum1 and cSum below.
 		// may start ZN/ZN2 ah's as implied by mode.
 		lhq = 0.;				// no local heat q unless an lh zone mode
 
 		// a  =  sigma(UAi*Ti) + other q's + Told*hc/t
 		a = zn_aqLdSh				// non-hvac portion for subhour, set in cnloads.cpp:loadsSubhr()
-			+ aqHvO;				// Other-terminal HVAC part: q of lh's, c*t for air.
+			+ zn_aqHvO;				// Other-terminal HVAC part: q of lh's, c*t for air.
 
 		// b  =  sigma(UAi) + hc/t
 		b = zn_bLdSh   				// non-hvac UA's portion for subhour, set in cnloads.cpp:loadsSubhr()
-			+ bHvO;				// + other-tu hvac UA: set output and pegged TU cap rate (Btuh/F)
+			+ zn_bHvO;				// + other-tu hvac UA: set output and pegged TU cap rate (Btuh/F)
 
 		// following code must either: change md (causing another iteration),
 		// or set cz, q, t (if not setpoint), tu->cv, tu->cz & tu->aCv, or lhq & tu->tuhc.q & .qWant where pertinent,
@@ -2126,11 +2126,11 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	//also cSum, wcSum, wcSum1 stored directly above.
 
 // overall zone a and b's (used by ztuMdSets for other-tu tu->aqO and bO)
-	this->aq = a + cz * ts + lhq;  		// for active terminal, add  flow * ts  or  q  (other is 0; both 0 if floating)
-	this->b = b + cz;				// add flow, or 0
+	this->zn_aq = a + cz * ts + lhq;  		// for active terminal, add  flow * ts  or  q  (other is 0; both 0 if floating)
+	this->zn_b = b + cz;				// add flow, or 0
 
 // ye Olde dept of a b c's
-	cTot = bHvO + cz;				// total flow to zone.  bHvO is sum of c's of other terminals.  for probing.
+	cTot = zn_bHvO + cz;				// total flow to zone.  bHvO is sum of c's of other terminals.  for probing.
 	// SAME AS cSum -- verify and delete one? 5-92.
 // zone humidity ratio
 	aWz =					// working copy of wz for air handler to modify
@@ -2144,8 +2144,8 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 // zone's TOTAL (sensible) hvac power.        q = sigma(lhQ) + sigma(Ts - tz) * c     	where c is cap flow rate, Btuh/F.
 //                                     thus   q = sigma(lhQ) + sigma(Ts*c) - tz*sigma(c)
 	zn_qsHvac = q				// power of active (tstat ctrl'd, not pegged) zhx  [qM, tz not stored yet]
-			 + aqHvO	   		// sigma(lhQ+Ts*c) for set output and pegged zhx's
-			 - t * bHvO;   	   	// - tz * sigma(c) for set output and pegged zhx's
+			 + zn_aqHvO	   		// sigma(lhQ+Ts*c) for set output and pegged zhx's
+			 - t * zn_bHvO;    	// - tz * sigma(c) for set output and pegged zhx's
 	// why not compute zn_qsHvac as  bLdSh * t - aqLdSh?  Cuz throws in all roundoff error, putting many .000's in reports.
 	// [note zn_qsHvac may be updated by AH:antRatTs when it adjusts tz.]
 
@@ -2252,22 +2252,22 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 
 // FORM MODE SEQUENCE by inserting floats between sorted zhx's and filling mdSeq[] array. And find top heat & first cool mode.
 
-	SI i = 0;					// local mode sequence table subscript/counter
+	SI iMd = 0;					// local mode sequence table subscript/counter
 	SI hi = 0, ci = 32767;			// for highest-numbered heat mode, lowest-numbered cool mode
-	mdSeq[i++] = MDS_FLOAT;			// mode 0 is always float below all setpoints
+	mdSeq[iMd++] = MDS_FLOAT;			// mode 0 is always float below all setpoints
 	for (x = NULL;  nxZhxSt(x);  )		// loop over the now sorted SET TEMP zhx's for zone
 	{
 		TI nxi = x->nxZhxSt4z;
 		ZHX *nx = ZhxB.p + nxi;
-		if      (x->zhxTy & StH)  setToMax( hi, i);	// determine highest heat mode
-		else if (x->zhxTy & StC)  setToMin( ci, i);	//  and lowest cool mode, 7-3-95
-		x->mda = i;  				// set zhx's active mode (mode where it is tstat ctrl'd, not pegged)
-		mdSeq[i++] = x->ss;			// mode sequence table SET TEMP entry is zhx subscript
+		if      (x->zhxTy & StH)  setToMax( hi, iMd);	// determine highest heat mode
+		else if (x->zhxTy & StC)  setToMin( ci, iMd);	//  and lowest cool mode, 7-3-95
+		x->mda = iMd;  				// set zhx's active mode (mode where it is tstat ctrl'd, not pegged)
+		mdSeq[iMd++] = x->ss;			// mode sequence table SET TEMP entry is zhx subscript
 		if (!nxi || nx->sp > x->sp)   		// if end or next sp hier, add FLOAT mode b4 nxt SET TEMP mode
-			mdSeq[i++] = MDS_FLOAT;   		// mode sequence table FLOAT entry is a negative constant
+			mdSeq[iMd++] = MDS_FLOAT;   		// mode sequence table FLOAT entry is a negative constant
 	}
-	nMd = i;					// store # modes in zn member
-	setToMin( ci, i);
+	nMd = iMd;					// store # modes in zn member
+	setToMin( ci, iMd);
 
 // initialize mode to between heating and cooling, 7-3-95.
 
@@ -2321,7 +2321,7 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					|| tuHasFlow( tu, m) )			//    or flow present -- else 0
 					&& ( tu->tuhc.coilTy != C_COILTYCH_HW 		// and not an HW coil
 						 || HpB.p[tu->tuhc.hpi].hpOn() ) )  		//    or its plant is (now) on
-				a += tu->lhMn;  				// this is a Q not a UAT: accumulate Q for aqHvO; no flow for bHvO.
+				a += tu->lhMn;  		// this is a Q not a UAT: accumulate Q for aqHvO; no flow for bHvO.
 			break;						// local heat makes no humidity contribution.
 
 		case ArSo:					// set output air heat/cool (heat/cool not differentiated when no setpoint)
@@ -2620,8 +2620,8 @@ floatOrPeg:
 			tu->cz = cz;					// store tu flow that gets to zone
 			if (floatMode)					// if mode is not tstat-ctrl'd temp
 			{
-				tu->aqO = aq - cz * ts;   			// a and b excluding this tu, so ah can update tz
-				tu->bO = b - cz;          			// ... when ts (if coil limited) or c (if fan limited) change
+				tu->aqO = zn_aq - cz * ts;   			// a and b excluding this tu, so ah can update tz
+				tu->bO = zn_b - cz;          			// ... when ts (if coil limited) or c (if fan limited) change
 			}
 			else
 			{

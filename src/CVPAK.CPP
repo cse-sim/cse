@@ -1772,6 +1772,8 @@ t}						/* main */
 #endif	/* TEST */
 
 //===========================================================================
+#if 0
+unused, 2-2022
 RC FC cvatol(		/* convert string to (signed) long integer */
 
 	char *s,	/* string */
@@ -1853,11 +1855,12 @@ RC FC cvatol(		/* convert string to (signed) long integer */
 	return RCOK;           /* good return */
 
 }					/* cvatol */
+#endif	// unused
 
 //========================================================================
-RC FC cvatof(		/* Convert a string to a double value */
+RC FC cvatof(		// Convert a string to a double value
 
-	char *str,		/* String, leading and trailing ws OK */
+	const char* _str,	/* String, leading and trailing ws OK */
 	double *vp,		/* Pointer to double to receive value. */
 	SI percent )	/* nz: trailing '%' is acceptable (and ignored)
     			   0:  '%' treated as error */
@@ -1935,7 +1938,7 @@ RC FC cvatof(		/* Convert a string to a double value */
 	for ( ; ; )		/* loop over char string */
 	{
 		/* get and categorize character */
-		c = tolower(*str);
+		c = tolower(*_str);
 		if (isdigitW(c))		ct = 2;
 		else if (isspaceW(c))	ct = 0;
 		else if (c=='.')		ct = 3;
@@ -1997,7 +2000,7 @@ RC FC cvatof(		/* Convert a string to a double value */
 			;
 		}
 		s = actState[s][ct] & 0x0F;	/* new state */
-		str++;				/* next char */
+		_str++;				/* next char */
 	}
 
 	/* Upon arrival here, things are set up as follows:
@@ -2045,6 +2048,8 @@ makeval:
 	return RCOK;
 }				/* cvatof */
 
+#if 0
+unused
 #if 1 /* add 'w' 7-25-90 */
 #pragma optimize("aw",off)	/* turn off no-aliases options because args
 s1 and s2 point into same string. (With
@@ -2085,5 +2090,7 @@ RC FC cvatof2(		/* Substring variant of cvatof() */
 #else
 x #pragma optimize("a",on)	/* restore */
 #endif /* 7-25-90 */
+
+#endif
 
 // end of cvpak.c

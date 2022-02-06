@@ -2183,8 +2183,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     // .name (in base class) is required.  .ownTi is unused.
     *declare "void addRIgDist( RIGTARGTY targTy, TI targTi, float targFr);"
     *declare "void zn_AddIZXFERs();"
-    *declare "TI zn_AddIZXFER( IZNVTYCH ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
-    *declare "TI zn_FindOrAddIZXFER( IZNVTYCH ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
+    *declare "TI zn_AddIZXFER( IZNVTYCH _ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
+    *declare "TI zn_FindOrAddIZXFER( IZNVTYCH _ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
     *declare "XSRAT* zn_FindXSRAT( const char* xsName);"
     *declare "MSRAT* zn_FindMSRAT( const char* xsName);"
     *declare "void zn_AccumBalTermsQS( double area, const SBC& sbcI, const SBC& sbcO);"
@@ -2537,12 +2537,12 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
 // ZNR runtime subhourly hvac a,b,c,q's.  *hide; not fully analyzed re note 1, note 2.
 
-    *s *e *hide DBL aqHvO	// hvac a + q except active terminal: sum of lh q's and ah cz*Ts's
-    *s *e *hide DBL bHvO	// hvac b except active terminal: sum of ah tu cz's
-    //aqO,bO			for loads plus all zhx's but active: __LdSh+__Hvo: in TERMINAL cuz AH's update them as they go.
-    //cO			total flow (heat cap units) except active zhx: same as bHvO, use that.
-    *s *e *hide DBL aq  	// zone total a+q: loads and all terminals including active
-    *s *e *hide DBL b		// zone total b ditto.
+    *s *e *hide DBL zn_aqHvO    // hvac a + q except active terminal: sum of lh q's and ah cz*Ts's
+    *s *e *hide DBL zn_bHvO	    // hvac b except active terminal: sum of ah tu cz's
+                //aqO,bO			for loads plus all zhx's but active: __LdSh+__Hvo: in TERMINAL cuz AH's update them as they go.
+                //cO			total flow (heat cap units) except active zhx: same as bHvO, use that.
+    *s *e *hide DBL zn_aq  	// zone total a+q: loads and all terminals including active
+    *s *e *hide DBL zn_b	// zone total b ditto.
     //aStA  			set-temp active (tstat) zhx part of 'a' for current md; 0 if floating. compute if need found.
     //bStA  			.. b.
     *s *e *hide DBL/*CFLOW*/ cM	// 0 if floating or or active-zhx heat cap flow to zone (after leaks) for current mode (Btuh/F)
@@ -6073,15 +6073,15 @@ RECORD TU "terminal" *RAT		/* TERMINAL
    // following 8 return CFLOW: heat cap flow (Btuh/F):
      *declare "DBL tfanBackCMx()     { return tfanRunning ? 0. : tfanBkC; }"		// max backflow thru shut-off tfan
      *declare "DBL aTfanBackC()      { return tfanRunning ? 0. : min( aCv, tfanBkC); }"	// ah working backflow thru shut-off tfan @ curr flow
-     *declare "DBL tfanBackC(DBL cv) { return tfanRunning ? 0. : min( cv, tfanBkC); }"	// backflow thru shut-off tfan @ flow cv
+     *declare "DBL tfanBackC(DBL _cv) { return tfanRunning ? 0. : min( _cv, tfanBkC); }"// backflow thru shut-off tfan @ flow cv
      *declare "DBL aRLeakC()         { return (aCv - aTfanBackC()) * tuSRLeak; }"   	// ah working flow leakage to ret/plenum
      *declare "DBL aCz()             { return (aCv - aTfanBackC()) * (1.-tuSRLeak); }"	// ah working flow getting to zone
-     *declare "DBL znC(DBL cv)       { return (cv - tfanBackC(cv)) * (1.-tuSRLeak); }"	// flow getting to zone given vav flow
-     *declare "DBL vavC(DBL cz)      { return (cz + tfanBackCMx()) / (1.-tuSRLeak); }"	// flow req'd at vav for flow cz to zone
+     *declare "DBL znC(DBL _cv)       { return (_cv - tfanBackC(_cv)) * (1.-tuSRLeak); }"// flow getting to zone given vav flow
+     *declare "DBL vavC(DBL _cz)      { return (_cz + tfanBackCMx()) / (1.-tuSRLeak); }"// flow req'd at vav for flow cz to zone
   //restore if needed:
    //*declare "DBL tfanBackC()       { return tfanRunning ? 0. : min( cv, tfanBkC); }"	// backflow thru shut-off tfan @ curr flow
-   //*declare "DBL rLeakC()          { return (cv - tfanBackC()) * tuSRLeak; }"		// current flow leakage to return/plenum
-     *declare "DBL rLeakC(DBL cv)    { return (cv - tfanBackC(cv)) * tuSRLeak; }"    	// flow leakage to return/plenum
+   //*declare "DBL rLeakC()          { return (cv - tfanBackC()) * tuSRLeak; }"		    // current flow leakage to return/plenum
+     *declare "DBL rLeakC(DBL _cv)    { return (_cv - tfanBackC(_cv)) * tuSRLeak; }"    // flow leakage to return/plenum
 
     //.ownTi is terminal's zone.  name is optional.
 

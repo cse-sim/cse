@@ -2641,8 +2641,8 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
                    						   this terminal active (x->mda===xi, right?). */
 				else						// active terminal; not estimating
 				{
-					a = czp->aqHvO;
-					b = czp->bHvO;		// use values from ztuCompute for speed
+					a = czp->zn_aqHvO;
+					b = czp->zn_bHvO;		// use values from ztuCompute for speed
 				}
 				a += czp->zn_aqLdSh;
 				b += czp->zn_bLdSh;		// add load components to complete a and b.  If estimating,

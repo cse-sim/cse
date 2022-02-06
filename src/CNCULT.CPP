@@ -1970,7 +1970,7 @@ static CULT dhwPumpT[] = //------ DHWPUMP cmd RAT Entry table, used from dhwSysT
 {
 // id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
-CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   whStarCkf),
+CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wpStarCkf),
 CULT( "wpDHWSYS",    DAT,   DHWPUMP_OWNTI,   NO_INP|RDFLIN,0,0, TYREF,    &WSiB,  0,     N,   N),
 CULT( "wpMult",		 DAT,	DHWPUMP_MULT,	   0,     0, VEOI,   TYSI,    0,      1,      N, N),
 CULT( "wpElecMtr",   DAT,   DHWPUMP_ELECMTRI,  0,     0, VEOI,	 TYREF,   &MtriB, N,      N, N),

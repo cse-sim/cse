@@ -701,14 +701,14 @@ x		printf( "Hit\n");
 	ms_tc = con->hc/sf->x.uI;		// time constant, recomputed & stored here for reporting (cgresult.cpp) added 1-95
 
 	inside.bc_Setup( ss, MSBCZONE, 0);		// 0 = doing inside
-	int ty =					// adjacency type per surface, translate codes:
+	int adjTy =					// adjacency type per surface, translate codes:
 			  sf->x.sfExCnd==C_EXCNDCH_ADJZN      ?  MSBCZONE
 			: sf->x.sfExCnd==C_EXCNDCH_AMBIENT    ?  MSBCAMBIENT
 			: sf->x.sfExCnd==C_EXCNDCH_GROUND     ?  MSBCGROUND
 			: sf->x.sfExCnd==C_EXCNDCH_SPECT      ?  MSBCSPECT
 			: sf->x.sfExCnd==C_EXCNDCH_ADIABATIC  ?  MSBCADIABATIC
 			:    (rc |= sf->oer( (char *)MH_S0526, sf->x.sfExCnd));			// "Bad sfExCnd %d (cnuclt.cpp:makMs())"
-	outside.bc_Setup( ss, ty, 1);		// 1 = doing outside
+	outside.bc_Setup( ss, adjTy, 1);		// 1 = doing outside
 
 	for (int si=0; si<2; si++)
 	{	ZNR* zp = ms_GetZone( si);

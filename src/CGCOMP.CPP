@@ -1246,7 +1246,7 @@ void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 }		// ZNR::zn_AddIZXFERs
 //------------------------------------------------------------------------------
 TI ZNR::zn_FindOrAddIZXFER(		// locate or added IZXFER coupled to this zone
-	IZNVTYCH ty,		// C_IZNVTYCH_ANDUCTLKIN etc
+	IZNVTYCH _ty,		// C_IZNVTYCH_ANDUCTLKIN etc
 	const char* nmSfx,	// IZXFER name = <znName>-<nmSfx>
 						//   e.g. "Attic-DLkI"
 	const AIRFLOW* pAF /*=NULL*/)
@@ -1254,15 +1254,15 @@ TI ZNR::zn_FindOrAddIZXFER(		// locate or added IZXFER coupled to this zone
 {
 	IZXRAT* ize;
 	RLUP( IzxR, ize)
-	{	if (ize->iz_nvcntrl == ty && ize->iz_zi1 == ss
+	{	if (ize->iz_nvcntrl == _ty && ize->iz_zi1 == ss
 	      && (pAF == NULL || pAF == ize->iz_pAF))
 			return ize->ss;
 	}
-	return zn_AddIZXFER( ty, nmSfx, pAF);
+	return zn_AddIZXFER( _ty, nmSfx, pAF);
 }		// ZNR::zn_FindOrAddIZXFER
 //------------------------------------------------------------------------------
 TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
-	IZNVTYCH ty,			// C_IZNVTYCH_ANDUCTLKIN etc
+	IZNVTYCH _ty,			// C_IZNVTYCH_ANDUCTLKIN etc
 	const char* nmSfx,		// IZXFER name = <znName>-<nmSfx>
 							//   e.g. "Attic-DLkI"
 	const AIRFLOW* pAF /*=NULL*/)
@@ -1276,9 +1276,9 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	int catOption = 1;		// attempt to truncate name size exceeded
 	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx, catOption);
 	ize->iz_zi1 = ss;		// idx of this zone
-	ize->iz_nvcntrl = ty;
+	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;
-	if (ty == C_IZNVTYCH_ANOAVRLF)
+	if (_ty == C_IZNVTYCH_ANOAVRLF)
 	{	RSYS* rs = zn_GetRSYS();
 		ize->iz_zi2 = rs->rs_OAVReliefZi;		// relief zone
 		ize->iz_hz = i.zn_floorZ + i.zn_ceilingHt;	// assume in ceiling

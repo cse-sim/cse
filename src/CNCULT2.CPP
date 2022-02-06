@@ -838,12 +838,12 @@ void TOPRAT::freeDM()		// free child objects in DM
 	// monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------
-const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error messages
+const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
 {
 	const char* dateStrX = dateStr ? dateStr : "(no date)";
 	const char* s = NULL;
-	switch (ivl)
+	switch (_ivl)
 	{
 	case C_IVLCH_Y:
 		 s = strtmp( "year");
@@ -1733,9 +1733,9 @@ void ZNR::addRIgDist( 	// add radiant internal gain distribution for gain origin
 // see if zone already has rIg distribution table entry for type/ti: if so, we will add to it
 	RIGDIST * e = NULL;
 	if (rIgDist)				// if zone has table allocated: insurance
-		for (int i = 0; i < rIgDistN; i++)	// loop over used entries
+		for (int iR = 0; iR < rIgDistN; iR++)	// loop over used entries
 		{
-			RIGDIST * e1 = rIgDist + i;		// point entry
+			RIGDIST * e1 = rIgDist + iR;		// point entry
 			if ( e1->targTy==targTy		// if entry matches
 					&&  e1->targTi==targTi		// ..
 					&&  e1->targP==p )			// testing targP is redundant
