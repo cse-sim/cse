@@ -3,11 +3,7 @@
 cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"
 
 :: Checks if there is a last test failed.
-set File="C:/Users/galan/Documents/Big Ladder Software/cse/msvc/build/Testing/Temporary/LastTestFailed.log"
-set maxbytesize=0
-FOR /F "usebackq" %%A IN ('%file%') DO set size=%%~zA
-if "%size%"=="0" goto end
-echo "%size%"
+for %%R in ("@CMAKE_SOURCE_DIR@/msvc/build/Testing/Temporary/LastTestsFailed.log") do if %%~zR equ 0 goto end
 
 :: Ask if it wants to update diff files
 set /p Input=Do you want to update (Y/N):
