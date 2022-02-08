@@ -632,7 +632,6 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 // Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
 {
 	std::string acc;
-	LI fpos;
 
 	if (xf->xflsterr==SECOK)			// if no prior error
 	{
@@ -642,9 +641,7 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 			|| acc.find('a') != std::string::npos) {
 			
 			// flush buffers
-			if ((fpos = ftell(xf->han)) != -1
-				&& fflush(xf->han) == 0
-				&& fseek( xf->han, fpos, SEEK_SET) != -1 )
+			if (fflush(xf->han) == 0)
 				return SECOK;			// success
 		}
 		xf->xflsterr = xioerr(xf);		// report error
