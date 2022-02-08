@@ -1020,8 +1020,8 @@ RC FC xfcopy(		// Copy a file
 		xfd = xfopen( fnd, accd, IGN, FALSE, &sec);	// IGN: hndl errs here
 		if (xfd==NULL)
 		{
-			rc = (std::string(accd).find("a") != std::string::npos ||
-					std::string(accd).find("w") != std::string::npos) // Check for a create file mode on
+			rc = (strchr(accd, 'a') ||
+					strchr(accd, 'w')) // Check for a create file mode on
 				 ? MH_I0023	// "I0023: Unable to create file '%s'"
 				 : MH_I0024;	// "I0024: File '%s' does not exist, cannot copy onto it"
 			mOrH = (char *)(LI)rc;
