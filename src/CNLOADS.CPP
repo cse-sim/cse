@@ -3349,8 +3349,15 @@ x		printf("\nhit");
 		RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
 			capClg, inpClg, capClgMin, inpClgMin);
 
+		capClgMin = bracket(capClg, capClgMin, 0.05f*capClg);
+		inpClgMin = bracket(-capClgMin / 10.f, inpClgMin, inpClg);
+
 		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;	// rs_speedFMin = min/max ratio
 																	// rs_fChg adjustment cancels
+#if defined( _DEBUG)
+		if (rs_speedFMin <= 0.f || rs_speedFMin > 1.f)
+			printf("\nBad rs_speedFMin");
+#endif
 
 		// use correlations to get adjusments for entering air state
 		float fCondInp;
@@ -3753,6 +3760,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
 		if (rs_IsASHPVC())
 		{	// retrieve min/max cap and input at tdbOut
+			//   rs_pRgiHtg[ 0] includes 5, 17, 35, and 47 F points
 			//   values include fan heat/power
 			/* rc = */ rs_GetPerfBtwxt(rs_pRgiHtg[ 0], tdbOut, capHt, inpHt, capHtMin, inpHtMin);
 #if defined( _DEBUG)
@@ -4300,8 +4308,8 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		}
 	}
 
-	// single grid variable = dry-bulb temp (CONSTANT sez "don't extrapolate")
-	Btwxt::GridAxis dbtRange(gridODB, Btwxt::Method::CONSTANT);
+	// single grid variable = dry-bulb temp (allow linear extrapolation)
+	Btwxt::GridAxis dbtRange(gridODB, Btwxt::Method::LINEAR);
 	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
 
 	Btwxt::GriddedData perfMapHtg(dbt, values);
