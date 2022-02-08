@@ -631,14 +631,12 @@ SEC FC xfflush(		// Flush all buffers associated with a file
 
 // Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
 {
-	std::string acc;
-
 	if (xf->xflsterr==SECOK)			// if no prior error
 	{
-		acc = std::string(xf->access);
-		if (acc.find('+') != std::string::npos
-			|| acc.find('w') != std::string::npos
-			|| acc.find('a') != std::string::npos) {
+		// Check if the stream was open for writting
+		if (strchr(xf->access,'+')
+			|| strchr(xf->access, 'w')
+			|| strchr(xf->access, 'a')) {
 			
 			// flush buffers
 			if (fflush(xf->han) == 0)
