@@ -107,6 +107,20 @@ int record::DType( int fn) const
 	return dt;
 }		// record::DType
 //-----------------------------------------------------------------------------
+float record::FldValFloat(int fn) const
+{
+	int dt = DType(fn);
+	const void* pV = field(fn);
+	float v = 0.f;
+	if (dt == DTFLOAT)
+		v = *(FLOAT*)pV;
+	else if (dt == DTDBL)
+		v = float(*(DBL*)pV);
+	else
+		err(PWRN, "record::FldValFloat -- unsupported dt=%d", dt);
+	return v;
+}		// record::FldValFloat
+//-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
 	// Note: prior (1994) version disregarded unexpected excess chars
@@ -407,16 +421,10 @@ RC record::limitCheck(		// range check, issue warning or error msg
 {
 	RC rc = RCOK;
 	if (IsVal(fn))
-	{
-		int dt = DType(fn);
-		void* pV = field(fn);
-		double v = 0.;
-		if (dt == DTFLOAT)
-			v = *(FLOAT*)pV;
-		else if (dt == DTDBL)
-			v = *(DBL*)pV;
-		else
-			err(PWRN, "record::limitCheck -- unsupported dt=%d", dt);
+	{	// value is user-provided and known
+		//   not CULT default
+		//   not unevaluated expression
+		double v = FldValFloat(fn);
 		if (v < vMin || v > vMax)
 			rc = oer("%s (%g) must be in range %g - %g",
 				mbrIdTx(fn), v, vMin, vMax);
@@ -458,7 +466,29 @@ RC record::limitCheckFix(	// range check, msg, set to min/max
 		}
 	}
 	return rc;
-}		// record::limitCheck
+}		// record::limitCheckFix
+//-----------------------------------------------------------------------------
+RC record::limitCheckRatio(		// check the ratio of two fields
+	int fn1,	// field 1
+	int fn2,	// field 2
+	double vMin,	// min allowed val for f1/f2
+	double vMax)	// max allowed val for f1/f2
+// NOTE: No field status checks
+//       Caller must ensure values set (not unevaluated expressions)
+// returns RCOK iff ratio is within (vMin, vMax)
+{
+	RC rc = RCOK;
+
+	double v1 = FldValFloat(fn1);
+	double v2 = FldValFloat(fn2);
+
+	double vRat = v2 != 0. ? v1 / v2 : 0.;
+
+	if (v2 == 0. || vRat < vMin || vRat > vMax)
+		rc = oer("The ratio %s (%g) / %s (%g) is %g; it must be in range %g - %g",
+			mbrIdTx(fn1), v1, mbrIdTx(fn2), v2, vRat, vMin, vMax);
+	return rc;
+}	// record::limitCheckRatio
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

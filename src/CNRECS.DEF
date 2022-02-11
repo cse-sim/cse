@@ -3107,6 +3107,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_CkF();"
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
+*declare "RC rs_CkFRatio( int fn1, int fn2, int fnRat, float vMin, float vMax);"
 *declare "RC rs_TopRSys1();"
 *declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
@@ -3324,9 +3325,9 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
 *f *e FLOAT_GZ rs_cap05		// full speed net heating capacity at ODB=5 F
 *f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
-*r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+*r FRAC_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
-*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
+*r FRAC_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
 							//   default ?
 *r FLOAT_GZ rs_capRat9547   // total net cap95 (cooling) / net cap47 (heating)
                             //   re consistent htg/clg size iff both autosized
@@ -3432,12 +3433,13 @@ x *declare "RC rs_SetDefaultsClg();"
 
 *f *e FLOAT_GEZ rs_cap115;	// total full speed net cooling capacity at 115 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP115;   // full speed cooling COP at 115F
-*r FLOAT_GZ rs_capRat11595  // cap115 / cap95 (re autosizing)
-
+*r FRAC_GZ rs_capRat11595   // cap115 / cap95 (re autosizing)
+                            //   default = .9155, 0 < x <= 1
 
 *f *e FLOAT_GEZ rs_cap82;	// total full speed net cooling capacity at 82 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP82;    // full speed cooling COP at 82F
 *r FLOAT_GZ rs_capRat8295	// cap82 / cap95 ratio (re autosizing)
+                            //  default = 1.06, 1 <= x < 2 enforced at runtime
 
 *f *e FRAC_GZ rs_loadFMin115;   // clg min load fract at 115 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin95;    // clg min load fract at 95 F (cycles below this)

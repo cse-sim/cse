@@ -1799,14 +1799,20 @@ RC RSYS::rs_CkF()
 
 		rs_AFUE = 0.f;		// drop possibly confusing default
 
+		if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
+			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
+
+		if (IsSetCount(RSYS_CAP47, RSYS_CAP95, RSYS_CAPRAT9547, 0) == 3
+		 && !(IsAusz( RSYS_CAP47) && IsAusz( RSYS_CAP95)))
+			// cannot give all 3 values unless both caps are autosized
+			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", when);
+
 		if (rs_IsASHPHydronic())
 		{	// ASHPHydronic: air-to-water heat pump
 			//   approximated with air-to-air model
 			when = "when rsType=ASHPHydronic";
 			rc |= requireN(when, RSYS_COP47, RSYS_COP17, 0);
 			rc |= disallowN(when, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
-			if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
-				rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
 			if (!IsSet(RSYS_FANPWRH))
 				rs_fanPwrH = 0.f;		// hydronic: no fan power
 			if (!IsAusz(RSYS_CAP47))
@@ -1817,8 +1823,6 @@ RC RSYS::rs_CkF()
 		{	// ASHP other than ASHPHydronic
 
 			rc |= disallowN(when, RSYS_CAPH, RSYS_AFUE, 0);
-			if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
-				rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
 
 			if (!IsAusz(RSYS_CAP47))
 				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
@@ -1977,6 +1981,22 @@ RC RSYS::rs_CkFAuxHeat()	// check aux heat
 	return rc;
 }		// RSYS::rs_CkFAuxHeat
 //-----------------------------------------------------------------------------
+RC RSYS::rs_CkFRatio(
+	int fn1,	// field 1
+	int fn2,	// field 2
+	int fnRat,	// alternate: ratio field
+	float vMin,	// min allowed value for v1/v2 or vRat
+	float vMax)	// max allowed value for v1/v2 or vRat
+// Expects either (fn1 and fn2) OR fnRat to be set (but not all 3)
+// Prior checking must verify that (see e.g. rs_CkF)
+//       mutua
+{
+	RC rc = IsSet( fn1)
+		    ? limitCheckRatio(fn1, fn2, vMin, vMax)
+			: limitCheck(fnRat, vMin, vMax);
+	return rc;
+}		// RSYS::rs_CkFRatio
+//-----------------------------------------------------------------------------
 #if 0
 // incomplete idea, 11-21
 RC RSYS::rs_CheckCapAuxH()		// check for sufficient aux heat capacity
@@ -2052,7 +2072,14 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			}
 		}
 		if (rs_SEER <= rs_EER95)
-			rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);	
+			rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
+
+		// checks to prevent crazy extrapolation results
+		rc |= rs_CkFRatio(RSYS_CAP82,  RSYS_CAP95, RSYS_CAPRAT8295,  1.f, 2.f);
+		rc |= rs_CkFRatio(RSYS_CAP115, RSYS_CAP95, RSYS_CAPRAT11595, .2f, 1.f);
+
+
+
 	}
 
 	if (IsAusz( RSYS_CAP95))
@@ -2068,18 +2095,22 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		rc |= limitCheck(RSYS_FANPWRH, 0., 5., 0., 2.);
 
 		if (rs_IsASHP())
+		{
 			rc |= rs_CkFCd(rsmHEAT);
 
-		if (IsAusz(RSYS_CAP47) || IsAusz(RSYS_CAPAUXH))
-		{
-			rs_auszH.az_active = TRUE;	// ASHP autosizes rs_capH
-								//   capacities derived in rs_AuszFinal
-			rs_fxCapHAsF = 1.2f;		// working oversize factor
-		}
+			if (IsAusz(RSYS_CAP47) || IsAusz(RSYS_CAPAUXH))
+			{
+				rs_auszH.az_active = TRUE;	// ASHP autosizes rs_capH
+									//   capacities derived in rs_AuszFinal
+				rs_fxCapHAsF = 1.2f;		// working oversize factor
+			}
 
+			rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.f);
+			rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.f);
+
+		}
 		else if (IsAusz(RSYS_CAPH))
-			// other checking?
-		{
+		{	// other checking?
 			rs_auszH.az_active = TRUE;
 			rs_fxCapHAsF = 1.4f;
 		}
@@ -2343,18 +2374,13 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 	{	if (rs_isAuszC)
 		{	if (IsAusz( RSYS_CAP47))
 			{	// both autosized
-				float cap47min = 0.75f * rs_cap47;
-				float cap95x = rs_Cap95FromCap47ASHP( cap47min);
+				float cap95x = rs_Cap95FromCap47ASHP( rs_cap47);
 				if (rs_cap95 > cap95x)
-				{	// cooling dominated
-					// rs_cap95: per autosize
+					// cooling dominated: rs_cap95 per autosize, derive rs_cap47 from rs_cap95
 					rs_cap47 = rs_Cap47FromCap95ASHP( rs_cap95);
-				}
 				else
-				{	// heating dominated
+					// heating dominated: rs_cap47 per autosize, derive rs_cap95 from rs_cap47
 					rs_cap95 = cap95x;
-					rs_cap47 = cap47min;
-				}
 			}
 			// else leave rs_cap95 autosized, rs_cap47 as input
 		}
@@ -4050,7 +4076,6 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 float RSYS::rs_CapRat1747() const
 // returns ratio cap17 / cap47
 {
-#if defined( ASHP_CAPRAT2)
 	// multi-segment model from Abram Conant, 5-31-2013
 	//  includes HSPF < 7.5
 	float capRat =
@@ -4061,13 +4086,6 @@ float RSYS::rs_CapRat1747() const
 				 : rs_HSPF < 9.5567f ? .017f  * rs_HSPF + .4804f
 		         : rs_HSPF < 10.408f ? .0982f * rs_HSPF - .2956f
 				 :                     .0232f * rs_HSPF + .485f;
-#else
-x		// revised model per eMail from Abram Conant, 5-21-2013
-x		//   constant eliminated
-x		//   so: cap17/cap47 cancel in COP vs. HSPF correlations (just below)
-x		//   and: COPs predicted from only HSPF and cap47 do not depend on capacity
-x	float capRat = 0.6280951f;
-#endif
 	return capRat;
 }		// RSYS::rs_CapRat1747
 //-----------------------------------------------------------------------------
@@ -4151,6 +4169,27 @@ x
 x
 x}		// RSYS::rs_SetDefaultsClg()
 #endif
+#if 0
+// incomplete idea re finding extrapolation range limits
+//-----------------------------------------------------------------------------
+static float FindLimitingPoint(
+	float t1, float cap1, float COP1,
+	float t2, float cap2, float COP2)
+{
+
+	float txCap = t1 - cap1 * (t2 - t1) / (cap2 - cap1);
+
+	float inp1 = cap1 / COP1;
+	float inp2 = cap2 / COP2;
+
+	float txInp = t1 - inp1 * (t2 - t1) / (inp2 - inp1);
+
+	float tx = max(txCap, txInp);
+
+	return tx;
+
+}
+#endif
 //-----------------------------------------------------------------------------
 // helper performance point re btwxt setup
 // = temperature + array of perf values
@@ -4216,6 +4255,10 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 		float inpMin35 = rs_Inp35Default(inpMin47, inpMin17);
 		rs_COPMin35 = capMin35 / max(inpMin35, .1f);
 	}
+
+#if 0
+	float tx = FindLimitingPoint(5.f, rs_cap05, rs_COP05, 17.f, rs_cap17, rs_COP17);
+#endif
 
 	// integrated performance (including defrost degradation)
 	std::vector< VSPERFP> ppV;
