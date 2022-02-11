@@ -45,7 +45,7 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 ///////////////////////////////////////////////////////////////////////////////
 struct XFILE
 {   FILE* han;		// File handle
-    char access[3];	// Access flag used on last fopen()
+    char access[20];	// Access flag used on last fopen()
     int nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
     SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
