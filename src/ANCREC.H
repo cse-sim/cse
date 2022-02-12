@@ -166,6 +166,8 @@ class record		// base class for records
   public:
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
+	int DType(int fn) const;
+
 	void RRFldCopy( const record* r, int fn);
 	int RRFldCopyIf( const record* r, int fn)
 	{	int ret = !IsSet( fn);
@@ -194,7 +196,7 @@ class record		// base class for records
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;
 	}	// record::FldSet
-	int DType( int fn) const;
+	float FldValFloat(int fn) const;
 	inline UCH* fStat()	// access status byte array
 	{ return (UCH *)this + b->sOff; }
 	inline UCH& fStat(int fn)	// access specific field's status bytes, lvalue use ok
@@ -214,6 +216,8 @@ class record		// base class for records
 	int IsValAll( int fn, ...) const;
 	inline int IsAusz( int fn) const
 	{ return (fStat( fn)&FsAS) != 0; }
+	inline int IsSetNotAusz(int fn) const
+	{	return (fStat(fn) & (FsSET | FsAS)) == FsSET; 	}
     // override following for records with specific copying req'ts eg heap pointers to dup (dupPtrs does nothing here in base).
     // CAUTION dest's (this) must be init.
     virtual record& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);	// copy user/ul data from another record or data
@@ -251,6 +255,7 @@ class record		// base class for records
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
+	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
 
 	RC CDEC ooer( int fn, const char* message, ... );
 	RC CDEC ooerV( int fn, const char* message, va_list ap);

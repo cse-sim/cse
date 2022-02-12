@@ -1,0 +1,238 @@
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license
+// that can be found in the LICENSE file.
+
+/* cnfields.def: Master field definitions for CSE
+
+	This file is an input file for the record definer RCDEF.EXE,
+	named on the rcdef command line, argument 4. */
+
+
+/* The information here produces Fdtab in the recdef file and fdtab.c
+   for products not using a recdef file, and is used in processing the 
+   record information in recdef.
+
+   No .h files are produced.
+   
+   column uses include 7-89:
+      datatype, limits, and units are put in srfd.c [fdtab.c], 1-91.
+ 
+
+/* This file is preprocessed for each product; it is believed that fields 
+   information may vary freely amoung products.
+	
+   Uses of preprocessing of fields.def include:
+      removal of // comments,
+*/
+
+/* FIELD NAMES
+
+Field	  
+TypeName      Datatype     Limits    Units
+--------      --------     ------    -------- */
+//
+//========== I.  Basic data types + limit variations.  Mostly used in CSE.
+INT			  INT		   LMNONE    UNNONE
+INTP		  INTP		   LMNONE	 UNNONE
+SI			  SI           LMNONE    UNNONE
+SI_GEZ	      SI           LMGEZ     UNNONE
+SI_GZ	      SI           LMGZ      UNNONE
+BOO           BOO          LMNONE    UNNONE	// doct'n aid: same as SI.
+DOY           DOY          LMDOY     UNNONE
+SHOY          SHOY         LMNONE    UNNONE
+USI	          USI          LMNONE    UNNONE
+LI	          LI           LMNONE    UNNONE
+//CH	      CH           LMNONE    UNNONE	unused 5-95, restore when desired
+CHP	          CHP          LMNONE    UNNONE
+FLOAT	      FLOAT        LMNONE    UNNONE
+FLOAT_GEZ     FLOAT        LMGEZ     UNNONE
+FLOAT_GZ      FLOAT        LMGZ      UNNONE
+FLOAT_GE1     FLOAT        LMGE1     UNNONE
+//FLOAT_G1    FLOAT        LMG1      UNNONE	unused 2-16
+//FLOAT_LEZ   FLOAT        LMLEZ     UNNONE	unused 5-95
+FLOAT_LZ      FLOAT        LMLZ      UNNONE
+FRAC	      FLOAT        LMFR      UNNONE
+FRAC_GZ	      FLOAT        LMFGZ     UNNONE
+DBL           DBL          LMNONE    UNNONE
+FLOATP        FLOATP       LMNONE    UNNONE
+DBLP          DBLP         LMNONE    UNNONE
+//VOIDP       VOIDP        LMNONE    UNNONE	unused 5-95
+IDATE         IDATE        LMNONE    UNNONE
+
+//----- Types required re RATs (Record Array Tables):
+// string for use in RATs:
+ANAME         ANAME        LMNONE    UNNONE
+// for reference (subscript) to a RAT or table:
+TI	      TI           LMGEZ     UNNONE
+//                                                        
+//========== II. Fields used or expected to be used in CSE.EXE.
+//               ---> near start to keep fdtab.c small.
+LEN           FLOAT        LMGEZ     UNLENGTH
+LEN_GZ        FLOAT        LMGZ      UNLENGTH
+//THK         FLOAT        LMGEZ     UNLENGTH2
+AREA	      FLOAT        LMGEZ     UNAREA	// ft2
+AREA_GZ	      FLOAT        LMGZ      UNAREA	// ft2
+AREA_GEZ	  FLOAT        LMGEZ     UNAREA	// ft2
+AREA2         FLOAT        LMGEZ     UNAREA2	// in2
+//ELA	      FLOAT        LMGEZ     UNAREA2
+//VOL         FLOAT        LMGEZ     UNVOLUME
+VOL_GZ        FLOAT        LMGZ      UNVOLUME
+AFLOW         FLOAT        LMNONE    UNAIRFLOW	// rob 2-12 (air) flow in cfm, or L/s
+AFLOW_GZ      FLOAT        LMGZ      UNAIRFLOW	// rob 3-92
+AFLOW_GEZ     FLOAT        LMGEZ     UNAIRFLOW	// rob 3-92
+//ACH         FLOAT        LMGEZ     UNAIRCHANGE	unused 9-92
+CFLOW         FLOAT        LMNONE    UNUA	// air flow in heat capacity, Btuh/F (same units as UA) rob 3-92
+MFLOW         FLOAT        LMNONE    UNMFLOW	// air or moisture flow in mass units, lb/hr.
+//PRESAIR_GZ  FLOAT	       LMGZ      UNPRESAIR	// Air pressure, in H2O or Pa
+PRESAIR_GEZ   FLOAT	       LMGEZ     UNPRESAIR	// Air pressure, in H2O or Pa
+PRESH2O_GEZ   FLOAT        LMGEZ     UNPRESH2O	// Water pressure, ft-H2O or kPa
+H2OFLOW_GZ    FLOAT        LMGZ      UNH2OFLOW	// water flow, gpm / L/s.
+//VELOCITY_GZ FLOAT        LMGZ      UNVELOCITY	// fpm   unused 9-92
+ANGLE         FLOAT        LMNONE    UNANGLE
+ANGLE_DBL	  DBL		   LMNONE    UNANGLE
+TEMP          FLOAT        LMNONE    UNTEMP
+TEMP_GZ       FLOAT        LMGZ      UNTEMP
+TEMPDIFF      FLOAT        LMNONE    UNTDIFF	// rob 2-12
+HUMRAT	      FLOAT        LMFR      UNNONE	// 0 or humidity ratio. unitless; field as mneumonic aid. rob 5-92.
+HUMRAT_GZ     FLOAT        LMFGZ     UNNONE	// humidity ratio. unitless; field as mneumonic aid. rob 5-92.
+ENERGY        FLOAT        LMNONE    UNENERGY	// Btu
+POWER         FLOAT        LMNONE    UNPOWER	// Btuh
+POWER_NZ      FLOAT        LMNZ      UNPOWER	//      Many "POWER" fields actually
+POWER_GZ      FLOAT        LMGZ      UNPOWER	// 	should be "ENERGY".
+POWER_GEZ     FLOAT        LMGEZ     UNPOWER	// 	otta review them, 6-92.
+//POWER_LEZ   FLOAT        LMLEZ     UNPOWER	// unused 9-92
+KW_GZ         FLOAT        LMGZ      UNELPWR2   // power entered in kW, internally in Btuh
+BHP_GZ        FLOAT        LMGZ      UNBHP		// 
+//BHP_GEZ     FLOAT        LMGEZ     UNBHP	// 
+DENSITY       FLOAT        LMGEZ     UNDENSITY
+//CNDVY	      FLOAT        LMGEZ     UNCNDVY	// conductivity: Btuh-ft/ft2-F
+CNDVY_GZ      FLOAT        LMGZ      UNCNDVY	// conductivity: Btuh-ft/ft2-F
+UH            FLOAT        LMGEZ     UNUVAL	    // uval = conductance (per area): Btuh/ft2-F
+UH_GZ         FLOAT        LMGZ      UNUVAL
+//F2          FLOAT	       LMGEZ     UNF2
+F2_GZ         FLOAT	       LMGZ      UNF2
+UA	          FLOAT        LMGEZ     UNUA   	// ua = uval * area = [conductance] of whole area: Btuh/F.  CFLOW same units.
+//RESVY       FLOAT        LMGEZ     UNRESVY	// resistivity: resistance of 1 ft2 per ft thick: ft2-F/ft-Btuh
+RESVY_GZ      FLOAT        LMGZ      UNRESVY	// resistivity: resistance of 1 ft2 per ft thick: ft2-F/ft-Btuh
+RES_GZ        FLOAT        LMGZ      UNRVAL	// rval: resistance: ft2-F/Btuh
+SPECHEAT      FLOAT        LMGEZ     UNSPECHEAT
+//HC          FLOAT        LMGEZ     UNHEATCAP
+HC_GZ         FLOAT        LMGZ      UNHEATCAP
+HC_AREA       FLOAT        LMGEZ     UNHEATCAP_AREA
+//HC_AREA_GZ  FLOAT        LMGZ      UNHEATCAP_AREA
+HC_VOL        FLOAT        LMGZ      UNHEATCAP_VOL
+HOURS         FLOAT        LMGEZ     UNHOURS	// time interval in hours, rob 6-92
+SGTARGP       SGTARGP      LMNONE    UNNONE	// pointer to an SGTARG
+MASSLAYERP    MASSLAYERP   LMNONE    UNNONE
+MASSMODELP    MASSMODELP   LMNONE    UNNONE
+IZXRATP		  IZXRATP	   LMNONE	 UNNONE
+TCCM          TCCM         LMNONE    UNNONE	// term capab ctrl method: enum { NONE, SETOUT, ...  3-92
+ZHXTY         ZHXTY        LMNONE    UNNONE	// zone hvac xfer type enum 3-92
+TCUSE         TCUSE        LMNONE    UNNONE	// terminal capability use this subhour enum 3-92
+AHMODE        AHMODE	   LMNONE    UNNONE	// air handler mode enum 3-92
+TOWLOADCASE   TOWLOADCASE  LMNONE    UNNONE	// TOWERPLANT load case enum 9-92
+COILUSED      COILUSED     LMNONE    UNNONE	// AH coil used 12-92
+
+WFLOC         WFLOC        LMNONE    UNNONE	// arrays used in WFILE record 1-94
+WFLID         WFLID        LMNONE    UNNONE	// ..
+
+WFileFormat   WFileFormat  LMNONE    UNNONE	// open weather file type (see wfpak.h)
+WFLOC2	      WFLOC2       LMNONE    UNNONE	// "location 2" field in E10v1+ weather files
+YACAMP        YACAMP       LMNONE    UNNONE
+WDYEARP       WDYEARP      LMNONE    UNNONE
+
+RIGTARG       RIGTARG      LMNONE    UNNONE	// radiant internal gain target (accumulator)
+RIGDISTP      RIGDISTP     LMNONE    UNNONE	// ptr to array of above, for ZNR::rIgDist
+ZNRP		  ZNRP	       LMNONE	 UNNONE
+XSURFP		  XSURFP	   LMNONE	 UNNONE
+DUCTSEGP	  DUCTSEGP	   LMNONE    UNNONE
+PIPESEGP	  PIPESEGP	   LMNONE    UNNONE
+
+// choice (choicb) types
+NOYESCH       NOYESCH      LMNONE    UNNONE
+DOWCH         DOWCH        LMNONE    UNNONE
+DGCH          DGCH         LMNONE    UNNONE
+TSCH          TSCH         LMNONE    UNNONE
+SKYMODCH      SKYMODCH     LMNONE    UNNONE
+SKYMODLWCH    SKYMODLWCH   LMNONE    UNNONE
+EXSHMODELCH   EXSHMODELCH  LMNONE    UNNONE
+SLRINTERPMETH SLRINTERPMETH LMNONE   UNNONE
+OSTYCH	      OSTYCH       LMNONE    UNNONE
+ZNMODELCH     ZNMODELCH    LMNONE    UNNONE
+IZNVTYCH      IZNVTYCH     LMNONE    UNNONE
+EXCNDCH       EXCNDCH      LMNONE    UNNONE
+SFMODELCH     SFMODELCH    LMNONE    UNNONE
+GROUNDMODELCH GROUNDMODELCH LMNONE   UNNONE
+FBXREFCH      FBXREFCH     LMNONE   UNNONE
+FBZREFCH      FBZREFCH     LMNONE   UNNONE
+CONVMODELCH	  CONVMODELCH  LMNONE    UNNONE
+RSYSMODECTRLCH RSYSMODECTRLCH LMNONE UNNONE
+RSYSTYCH	  RSYSTYCH	   LMNONE	 UNNONE
+RSYSOAVTYCH	  RSYSOAVTYCH  LMNONE	 UNNONE
+RSYSDEFROSTMODELCH	  RSYSDEFROSTMODELCH  LMNONE	 UNNONE
+AUXHEATTY	  AUXHEATTY    LMNONE	 UNNONE
+AUXHEATCTRL   AUXHEATCTRL  LMNONE    UNNONE
+WHTYPECH      WHTYPECH     LMNONE    UNNONE
+WHHEATSRCCH	  WHHEATSRCCH  LMNONE	 UNNONE
+WSCALCMODECH  WSCALCMODECH LMNONE	 UNNONE
+WHASHPTYCH	  WHASHPTYCH   LMNONE    UNNONE
+WHRESTYCH	  WHRESTYCH    LMNONE    UNNONE
+DHWEUCH		  DHWEUCH      LMNONE    UNNONE
+DHWEUXCH	  DHWEUXCH     LMNONE    UNNONE
+DHWBRANCHMODELCH  DHWBRANCHMODELCH LMNONE	 UNNONE
+DHWLSEGTYCH	  DHWLSEGTYCH  LMNONE	 UNNONE
+DWHRTYCH	  DWHRTYCH     LMNONE	 UNNONE
+DHWDRMETH	  DHWDRMETH    LMNONE    UNNONE		// DHW demand response control method
+PVMODCH       PVMODCH      LMNONE    UNNONE
+PVARRCH       PVARRCH      LMNONE    UNNONE
+MOUNTCH       MOUNTCH      LMNONE    UNNONE
+FENMODELCH	  FENMODELCH   LMNONE    UNNONE
+EXSHDCH		  EXSHDCH	   LMNONE	 UNNONE
+INSHDCH		  INSHDCH	   LMNONE	 UNNONE
+SIDECH        SIDECH       LMNONE    UNNONE
+IVLCH         IVLCH        LMNONE    UNNONE		// interval year/mon/day/hr/subhr: report frequency
+FILESTATCH    FILESTATCH   LMNONE    UNNONE		// file status: new, overwrite, append
+RPTYCH        RPTYCH       LMNONE    UNNONE		// report type
+RPTHDCH       RPTHDCH      LMNONE    UNNONE		// report header (yes, no, columnonly)
+JUSTCH        JUSTCH       LMNONE    UNNONE		// justification left or right
+VALNDT        VALNDT       LMNONE    UNNONE		// value 'n data type struct for reportCol
+ENDUSECH      ENDUSECH     LMNONE    UNNONE		// energy end use choice clg/htg/hp/shw etc
+AFCAT	      AFCAT        LMNONE    UNNONE     // air flow categories
+MONCH	      MONCH        LMNONE    UNNONE		// month jan..dec
+HDAYCASECH    HDAYCASECH   LMNONE    UNNONE		// holiday case: first,,,fourth,last <weekday> of <month>
+FANTYCH       FANTYCH      LMNONE    UNNONE
+FANAPPCH      FANAPPCH     LMNONE    UNNONE
+MOTTYCH       MOTTYCH      LMNONE    UNNONE
+MOTPOSCH      MOTPOSCH     LMNONE    UNNONE
+FANPLCH       FANPLCH      LMNONE    UNNONE
+COILAPPCH     COILAPPCH    LMNONE    UNNONE
+COILTYCH      COILTYCH     LMNONE    UNNONE	 
+ECOTYCH       ECOTYCH      LMNONE    UNNONE
+DUCTTYCH	  DUCTTYCH	   LMNONE	 UNNONE
+OAMNCH        OAMNCH       LMNONE    UNNONE 
+HUMTHCH       HUMTHCH      LMNONE    UNNONE 
+OFFONCH       OFFONCH      LMNONE    UNNONE 
+TPSTGCH       TPSTGCH      LMNONE    UNNONE 
+CTTYCH        CTTYCH       LMNONE    UNNONE 
+CCHCM         CCHCM        LMNONE    UNNONE 
+DIFFSAMECH    DIFFSAMECH   LMNONE    UNNONE 
+
+// variable choice (VC choicn) types
+AHSCHVC       AHSCHVC      LMNONE    UNNONE	
+OFFAVAILVC    OFFAVAILVC   LMNONE    UNNONE	
+TFANSCHVC     TFANSCHVC    LMNONE    UNNONE	
+OFFONVC       OFFONVC      LMNONE    UNNONE	
+NOYESVC       NOYESVC      LMNONE    UNNONE
+OFFAVAILONVC  OFFAVAILONVC LMNONE    UNNONE
+VENTAVAILVC	  VENTAVAILVC  LMNONE	 UNNONE
+BATCTRLALGVC  BATCTRLALGVC LMNONE    UNNONE
+DHWDRSIG      DHWDRSIG     LMNONE    UNNONE
+
+// number/choice (NC choicn) types
+TEMP_TSCM     TSCMNC       LMNONE    UNTEMP	
+TEMP_RA       RANC         LMNONE    UNTEMP	
+ENTH_RA       RANC         LMNONE    UNENTH
+
+*END
+
+// end of cnfields.def

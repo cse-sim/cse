@@ -164,7 +164,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
 #include <srd.h>
-#include <direct.h>     // getcwd(), chdir(
 
 #include <xiopak.h>     // xffilcomp
 #include <envpak.h>     // hello byebye
@@ -569,7 +568,6 @@ int CDEC main( SI argc, char * argv[] )
 	/* .def files, opened at start */
 	char fdtyphname[80];        /* data types file name */
 	SI i;                       /* Working integer */
-	char dbuff[80];
 	char *s;
 	int exitCode = 0;
 
@@ -607,27 +605,43 @@ int CDEC main( SI argc, char * argv[] )
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		getcwd( dbuff, 80);
 		incdir = argv[6];
-		if (chdir(incdir))
+		if (xfExist(incdir) != 3)
 		{
-			printf( "\nCannot find include directory '%s'.\n", incdir);
-			Errcount++;
+			if (xfExist(incdir) == 0) {
+				printf("\n'%s': Include file output directory path not found.\n", incdir);
+				Errcount++;
+			}
+			else if (xfExist(incdir) == 1 || xfExist(incdir) == 2) {
+				printf("\n'%s': Include file output directory path exists, but is not a directory.\n", incdir);
+				Errcount++;
+			}
+			else {
+				printf("\n'%s': Unknown error in finding Include file output directory path.\n", incdir);
+				Errcount++;
+			}
 		}
-		chdir(dbuff);
 	}
 
 	/* check cpp file directory argument if specified */
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
-		getcwd( dbuff, 80);
 		cFilesDir = argv[10];
-		if (chdir(cFilesDir))
+		if (xfExist(cFilesDir) != 3)
 		{
-			printf( "\nCannot find include directory '%s'.\n", cFilesDir);
-			Errcount++;
+			if (xfExist(cFilesDir) == 0) {
+				printf("\n'%s': C++ file output directory path not found.\n", cFilesDir);
+				Errcount++;
+			}
+			else if (xfExist(cFilesDir) == 1 || xfExist(cFilesDir) == 2) {
+				printf("\n'%s': C++ file output directory path exists, but is not a directory.\n", cFilesDir);
+				Errcount++;
+			}
+			else {
+				printf("\n'%s': Unknown error in finding C++ file output directory path.\n", cFilesDir);
+				Errcount++;
+			}
 		}
-		chdir(dbuff);
 	}
 
 	/* Option flags */
@@ -2456,7 +2470,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 	}
 
 // copy structure element info to globals used for current record (for field # defines)
-	for (j = 0;  j < bRcdesc->rd_nstrel;  j++)
+	for (int j = 0;  j < bRcdesc->rd_nstrel;  j++)
 	{
 #if !defined( MBRNAMESX)
 		strelFnr[nstrel] = bRcdesc->rd_strelFnr[j];

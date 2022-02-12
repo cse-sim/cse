@@ -94,7 +94,7 @@ RSYSRES OAV
  Mar 49.917  4.973 801.31 34.424 124.33 52.654 1012.7      0      0      0      0      0      0      0      0      0      0 209.64 34.424 124.33 52.654 56.243 477.29      0      0      0      0  0.374  1.456  1.829 745.51 -22.83      0      0 -26.02 -27.02
  Apr 52.092  2.554 354.72 30.705 63.848 24.519 473.79      0      0      0      0      0      0      0      0      0      0 101.86 30.705 63.848 24.519 52.718 273.65      0      0      0      0  1.888  4.743  6.631 343.19 -12.30      0      0 -179.8 -63.14
  May 167.50 0.0667  4.665  0.495  1.667  0.328  7.155      0      0      0      0      0      0      0      0      0      0  1.378  0.495  1.667  0.328 11.124 14.992      0      0      0      0 37.775 20.678 58.453  5.208 -0.161      0      0 -999.4 -266.7
- Jun 257.27      0      0      0      0      0      0 -99.72 -32.71  7.559 -92.16      0      0      0      0      0      0      0      0      0      0      0      0 30.705  7.559  1.360 39.625 74.087 23.207 97.294      0      0 -66.07 -31.38  -1843 -301.4
+ Jun 257.27      0      0      0      0      0      0 -99.72 -32.71  7.559 -92.16      0      0      0      0      0      0      0      0      0      0      0      0 30.705  7.559  1.360 39.624 74.087 23.207 97.294      0      0 -66.07 -31.38  -1843 -301.4
  Jul 259.28      0      0      0      0      0      0 -783.2 -125.5 54.782 -728.4      0      0      0      0      0      0      0      0      0      0      0      0 219.75 54.782  4.739 279.27 101.46 20.647 122.11      0      0 -539.9 -119.2  -1948 -231.6
  Aug 273.87      0      0      0      0      0      0 -512.0 -114.5 36.799 -475.2      0      0      0      0      0      0      0      0      0      0      0      0 147.22 36.799  4.146 188.16 109.11 21.241 130.35      0      0 -355.7 -110.1  -2119 -261.1
  Sep 271.18      0      0      0      0      0      0 -330.5 -75.18 23.717 -306.8      0      0      0      0      0      0      0      0      0      0      0      0 94.103 23.717  3.519 121.34 94.084 21.048 115.13      0      0 -236.5 -73.39  -2066 -335.3
@@ -207,7 +207,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console
+! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
 
 
 
@@ -1763,7 +1763,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console
+! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
 
 
 
@@ -1786,18 +1786,18 @@ Input for Run 002:
 
 
 
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console run(s) done: Thu 27-Jan-22  11:42:55 am
+! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console run(s) done: Mon 31-Jan-22   3:38:31 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               27-Jan-22  11:23 am   (VS 14.29    2903040 bytes)  (HPWH 1.16.1)
+!               31-Jan-22   2:54 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
 ! Command line: -x!  -t1 oavtest2
 ! Input file:   D:\cse\test\oavtest2.cse
 ! Report file:  D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 2      T/C = 0.0415   
+!                Input:  Time = 0.08     Calls = 2      T/C = 0.0410   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 24.32    Calls = 2      T/C = 12.1620  
-!              Reports:  Time = 0.01     Calls = 2      T/C = 0.0060   
-!                Total:  Time = 24.44    Calls = 1      T/C = 24.4370  
+!           Simulation:  Time = 24.57    Calls = 2      T/C = 12.2865  
+!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0020   
+!                Total:  Time = 24.68    Calls = 1      T/C = 24.6750  

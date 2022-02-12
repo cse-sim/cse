@@ -344,19 +344,12 @@ Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak des
 
 **rsFChg=*float***
 
-Cooling refrigerant charge adjustment factor.  See rsFSize (below).
+Cooling compressor capacity factor.  The gross cooling capacity is adjusted by the factor rsFChg as specified by California Title 24 procedures.
+
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0         1             no             constant
-
-**rsFSize=*float***
-
-Cooling compressor sizing factor.  The effective cooling capacity is adjusted by the factor (rsFChg*rsFSize) as specified by California Title 24 procedures.
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0         1             no             constant
+              *x* $>$ 0         1 (no effect)      no             constant
 
 **rsVFPerTon=*float***
 

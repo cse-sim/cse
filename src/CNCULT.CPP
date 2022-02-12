@@ -1746,7 +1746,6 @@ CULT("rsCOPMin95",	 DAT,   RSYS_COPMIN95,   0,       0, VEOI,   TYFL,  0,      0
 CULT("rsCOPMin82",	 DAT,   RSYS_COPMIN82,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsFSize",     DAT,   RSYS_FSIZE,      0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsVFPerTon",  DAT,   RSYS_VFPERTON,   0,       0, VEOI,   TYFL,  0,    350.f,    N,   N),
 CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),

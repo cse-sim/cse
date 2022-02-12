@@ -116,8 +116,6 @@
 							//   must be same as C_DHWEUXCH_COUNT
 #define NDHWSIZEDAYS 10		// # of DHW sizing design days for EcoSizer method
 
-#define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
-
 #define ASHP_COPREG 6		// select COP17/47 regression model
 							//   1 = original (2012?)
 							//   2 = revised 6-3-2013
