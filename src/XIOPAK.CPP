@@ -1195,9 +1195,21 @@ doneOpen0:	/* come here on error opening file 1 */
 	return rv;
 
 }		/* xffilcmp */
-
-
-
+//=============================================================================
+SEC xfclear(	// Cleans the file by discarting all the data in the file
+	XFILE* xf)	// File to be clean
+	/* Returns: SECOK on sucess or
+				SECOTHER on failure
+	*/
+{
+	xlsterr(xf);				// clear any prior xiopak error (else addl calls will nop)
+	if ( (freopen(NULL, "w", xf->han)) != nullptr			// Reopen with "w" to discard all the data in the file
+		|| ((freopen(NULL, xf->access, xf->han)) != nullptr))	// Reopen with the initial mode
+	{
+		return SECOK;   		/*    good */
+	}
+	return SECOTHER;	/*    bad: report error */
+}
 //=============================================================================
 
 // all if-outs below

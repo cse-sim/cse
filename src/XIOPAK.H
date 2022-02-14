@@ -114,6 +114,7 @@ RC     FC xfcopy2( XFILE *xfs, XFILE *xfd, int op, const char** pMsg);
 LI     FC xdisksp();
 LI FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
+SEC	xfclear(XFILE* xf);
 
 
 #endif	// _XIOPAK_H
