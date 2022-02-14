@@ -1779,7 +1779,7 @@ XSRAT* ZNR::zn_FindXSRAT(			// find XSRAT within zone
 	RLUP (XsB, xs)				// loop over all XSRATs
 	{	if (xs->ownTi != ss)		// if wrong inside zone
 			continue;				// skip
-		if (strcmpi( xs->name, xsName) == 0)
+		if (compareCaseStr( xs->name, xsName) == 0)
 			return xs;
 	}
 	return NULL;
@@ -1790,7 +1790,7 @@ MSRAT* ZNR::zn_FindMSRAT(			// find MSRAT within zone
 {	MSRAT* pMS = NULL;
 	RLUP( MsR, pMS)
 	{	if (pMS->inside.bc_zi == ss
-		 && strcmpi( pMS->name, xsName) == 0)
+		 && compareCaseStr( pMS->name, xsName) == 0)
 			return pMS;
 	}
 	return NULL;
