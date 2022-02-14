@@ -31,12 +31,10 @@ static double tmrTicksToSecs(
 {	return ticks * tmrSecsPerTick;
 }		// tmrTicksToSecs
 //==============================================================================
-#undef TIMING_HIRES
-
 #if defined( TIMING_HIRES)
+#error TIMING HIRES no longer supported
 
 // hi-res timing (Windows dependent)
-#include <windows.h>
 
 static inline LLI tmrTicks()		// current clock time
 {	LARGE_INTEGER t;
