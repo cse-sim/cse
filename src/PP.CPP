@@ -2166,7 +2166,7 @@ LOCAL int FC NEAR lisCmp( 		// multi-line compare text to listing text
 
 		// compare this line
 		lis += 8;				// point after prefix part of listing line
-		int lls = strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
+		size_t lls = strcspn( s, "\r\f\n" );	// line body length -- do not count \r, \n, etc
 		if (strcspn( lis, "\r\f\n" ) != lls)
 			return 1;				// different line lengths, no match
 		if (lls)

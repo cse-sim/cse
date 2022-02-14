@@ -775,15 +775,15 @@ BOO AH::converger()		// interpolate/extrapolate ts (and ws) for iter4Fs
 		// note there are fewer conditions here than in humXtrap cuz we are extrapolating this tsHis entry already.
 		// unlike humXtrap, negative rdW is used here: try to improve w that has been oscillating with oscillating t and c.
 		DBL nuWs=tsHis[0].w;
-		DBL wr = tsHis[0].rdW;   			// ratio of last 2 dW's, like rdT. 0 if not valid, just xtrap'd, etc.
-		if ( wr != 0					// if have 3 w points, 2 non-0 dW's, & other conditions
+		DBL wr2 = tsHis[0].rdW;   			// ratio of last 2 dW's, like rdT. 0 if not valid, just xtrap'd, etc.
+		if ( wr2 != 0					// if have 3 w points, 2 non-0 dW's, & other conditions
 				&&  ( coilUsed != cuCOOL			// only when cooling, because condensation on coil nonlinear,
 					  || !tsHis[2].x				//  can't start from xtrap'd w
 					  && tsHis[1].gud==tsHis[2].gud ) )	//  initial 0/part/full load must match
 		{
-			setToMin( wr, .8);  				// limit non-alternating change in case a big oscillation, not a trend
-			//setToMax( wr, .7);    				I'm unclear about negative wr limit, 4-29-95.
-			nuWs = (tsHis[0].w - tsHis[1].w*wr)/(1. - wr);			// inter/extrapolate w in same manner as t
+			setToMin( wr2, .8);  				// limit non-alternating change in case a big oscillation, not a trend
+			//setToMax( wr2, .7);    				I'm unclear about negative wr2 limit, 4-29-95.
+			nuWs = (tsHis[0].w - tsHis[1].w*wr2)/(1. - wr2);			// inter/extrapolate w in same manner as t
 			setToMax( nuWs, min( tsHis[0].w, .0002));				// don't xtrap below ws below .0002
 			if (nuWs > tsHis[0].w)						// speed check
 				setToMin( nuWs, max( tsHis[0].w, 					// don't xtrap into possible saturation
@@ -1996,10 +1996,10 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 {
 	// save fan members -- some are used elsewhere, all might be probed for reports.
 	// instead add mbr fcn that returns dT without altering members? 5-95.
-	float  sfanCMx = sfan.cMx,  sfanC = sfan.c,  sfanT = sfan.t,    sfanFrOn = sfan.frOn,
-		   sfanP = sfan.p,      sfanQ = sfan.q,  sfanDT = sfan.dT,  sfanQAround = sfan.qAround;
-	float  rfanCMx = rfan.cMx,  rfanC = rfan.c,  rfanT = rfan.t,    rfanFrOn = rfan.frOn,
-		   rfanP = rfan.p,      rfanQ = rfan.q,  rfanDT = rfan.dT,  rfanQAround = rfan.qAround;
+	float  sfsvCMx = sfan.cMx,  sfsvC = sfan.c,  sfsvT = sfan.t,    sfsvFrOn = sfan.frOn,
+		   sfsvP = sfan.p,      sfsvQ = sfan.q,  sfsvDT = sfan.dT,  sfsvQAround = sfan.qAround;
+	float  rfsvCMx = rfan.cMx,  rfsvC = rfan.c,  rfsvT = rfan.t,    rfsvFrOn = rfan.frOn,
+		   rfsvP = rfan.p,      rfsvQ = rfan.q,  rfsvDT = rfan.dT,  rfsvQAround = rfan.qAround;
 
 
 // return leaks/losses/fan heat like puteRa()
@@ -2126,31 +2126,31 @@ x                              : _cr/_cMx;	// fraction on = fraction of ah poss 
 			//floor (_mxPo, _mnPo);  			// min overrules max (insurance: believe cannot occur)
 			DBL _po = _mnPo;   				// init to min outside air flow
 
-			/* delete economizer code, cuz eco not used when coils off.
-			 * to restore, restore commented _wr1 and _mxPo code above and add "DBL _wr" and "BOO ecoLow" args. 5-5-95.
-			 *   // if economizer present and enabled, determine fraction outside air, like doEco().
-			 *       // uses _mnPo, _mxPo, _po, _tr2, _wr1, ecoLow. Sets _po.
-			 *       if (oaEcoTy != C_ECOTYCH_NONE)			// if have economizer
-			 *       {  if (ahMode & ahCOOLBIT)				// if cooling enabled
-			 *          {
-			 *             if ( ISNUM(oaLimT) ? Top.tDbOSh >= oaLimT	// disable eco if outside air too warm
-			 *                                : CHN(oaLimT)==C_RANC_RA
-			 *                                  && Top.tDbOSh >= _tr2 )
-			 *                ;
-			 *             else
-			 *             if ( ISNUM(oaLimE) ? Top.hOSh >= oaLimE		// disable eco if outside air to enthalpic
-			 *                                : CHN(oaLimE)==C_RANC_RA
-			 *                                  && Top.hOSh >= psyEnthalpy( _tr2, _wr1) )
-			 *                ;
-			 *             else				// eco enabled. compute fraction outside air
-			 *             if (Top.tDbOSh >= _tr2)    	// if too hot out
-			 *             {  if (ecoLow)      		// if want mixed air cooler than return air (else mnPo preset),
-			 *                   _po = _mxPo;    		//  actual equipment uses use max oa even tho warmer
-			 *             }
-			 *             else if (ecoLow)   		// if lowest supply temp desired
-			 *                _po = _mxPo;   		// use max outside air. Else mnPo preset.
-			 *       }  }				// end of code like doEco()
-			 */
+/* delete economizer code, cuz eco not used when coils off.
+* to restore, restore commented _wr1 and _mxPo code above and add "DBL _wr" and "BOO ecoLow" args. 5-5-95.
+*   // if economizer present and enabled, determine fraction outside air, like doEco().
+*       // uses _mnPo, _mxPo, _po, _tr2, _wr1, ecoLow. Sets _po.
+*       if (oaEcoTy != C_ECOTYCH_NONE)			// if have economizer
+*       {  if (ahMode & ahCOOLBIT)				// if cooling enabled
+*          {
+*             if ( ISNUM(oaLimT) ? Top.tDbOSh >= oaLimT	// disable eco if outside air too warm
+*                                : CHN(oaLimT)==C_RANC_RA
+*                                  && Top.tDbOSh >= _tr2 )
+*                ;
+*             else
+*             if ( ISNUM(oaLimE) ? Top.hOSh >= oaLimE		// disable eco if outside air to enthalpic
+*                                : CHN(oaLimE)==C_RANC_RA
+*                                  && Top.hOSh >= psyEnthalpy( _tr2, _wr1) )
+*                ;
+*             else				// eco enabled. compute fraction outside air
+*             if (Top.tDbOSh >= _tr2)    	// if too hot out
+*             {  if (ecoLow)      		// if want mixed air cooler than return air (else mnPo preset),
+*                   _po = _mxPo;    		//  actual equipment uses use max oa even tho warmer
+*             }
+*             else if (ecoLow)   		// if lowest supply temp desired
+*                _po = _mxPo;   		// use max outside air. Else mnPo preset.
+*       }  }				// end of code like doEco()
+*/
 			// mixed air temp
 			_tmix = (1. - _po) * _tr2 + _po * Top.tDbOSh;
 
@@ -2176,22 +2176,22 @@ x                              : _cr/_cMx;	// fraction on = fraction of ah poss 
 			&&  ++l <= 3 );							// up to 3 times.
 
 	// restore fan members, cuz fans were pute'd here for wrong conditions
-	sfan.cMx = sfanCMx;
-	sfan.c = sfanC;
-	sfan.t = sfanT;
-	sfan.frOn = sfanFrOn;
-	sfan.p = sfanP;
-	sfan.q = sfanQ;
-	sfan.dT = sfanDT;
-	sfan.qAround = sfanQAround;
-	rfan.cMx = rfanCMx;
-	rfan.c = rfanC;
-	rfan.t = rfanT;
-	rfan.frOn = rfanFrOn;
-	rfan.p = rfanP;
-	rfan.q = rfanQ;
-	rfan.dT = rfanDT;
-	rfan.qAround = rfanQAround;
+	sfan.cMx = sfsvCMx;
+	sfan.c = sfsvC;
+	sfan.t = sfsvT;
+	sfan.frOn = sfsvFrOn;
+	sfan.p = sfsvP;
+	sfan.q = sfsvQ;
+	sfan.dT = sfsvDT;
+	sfan.qAround = sfsvQAround;
+	rfan.cMx = rfsvCMx;
+	rfan.c = rfsvC;
+	rfan.t = rfsvT;
+	rfan.frOn = rfsvFrOn;
+	rfan.p = rfsvP;
+	rfan.q = rfsvQ;
+	rfan.dT = rfsvDT;
+	rfan.qAround = rfsvQAround;
 
 	return _tsFO;
 }			// AH::tsfo
@@ -2633,19 +2633,19 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 			case uMxC:
 
 				// get a and b for zone excluding this terminal for zone mode where this terminal is active
-				DBL a, b, snk;
+				DBL aZn, bZn, snk;
 				if ( est    					// if estimating, do ztuAbs to get a,b poss some newer ts's
 						||  tu->useAr & (uMxH|uMxC|uMn) )    		/* if pegged, always do ztuAbs to get desired a, b, as may be 0
                    						   or may reflect too much other tu flow for different mode */
-					czp->ztuAbs( x->mda, 0, a, b, snk,snk,snk);	/* get a, b contributions of OTHER terminals for mode where
+					czp->ztuAbs( x->mda, 0, aZn, bZn, snk,snk,snk);	/* get a, b contributions of OTHER terminals for mode where
                    						   this terminal active (x->mda===xi, right?). */
 				else						// active terminal; not estimating
 				{
-					a = czp->zn_aqHvO;
-					b = czp->zn_bHvO;		// use values from ztuCompute for speed
+					aZn = czp->zn_aqHvO;
+					bZn = czp->zn_bHvO;		// use values from ztuCompute for speed
 				}
-				a += czp->zn_aqLdSh;
-				b += czp->zn_bLdSh;		// add load components to complete a and b.  If estimating,
+				aZn += czp->zn_aqLdSh;
+				bZn += czp->zn_bLdSh;		// add load components to complete a and b.  If estimating,
                      					// this gets newer values than reflected in tu->aqO, bO.
 				// get setpoint temp
 				DBL sp = ZhxB.p[czp->mdSeq[spMd]].sp;		// fetch setpoint from zhx found
@@ -2736,7 +2736,7 @@ x                 continue;			// and protects against /0 during ah turn-on or in
 				//   NB vsh falls with temp --> req'd ts can be infinite. In that case j >= 1.
 				//	TESTED 4-20-92: this vsh adj often saves an iteration.
 				//
-				DBL q = sp * b - a;				// heat required to zone, also used below
+				DBL q = sp * bZn - aZn;			// heat required to zone, also used below
 				DBL j = q * airxTs / (Top.airXK * czM); 	// subexpression used twice
 				if (j >= 1.)					/* if infinite ts needed,
              							   fallthru yields wrong sign due to /(1-j) */
@@ -3633,7 +3633,7 @@ x                  :  cr1Nx==0. ? 0. : sfan.cMx;			// /0 protection: insurance; 
 //if-outs removed 6-24-92; old at eof:
 void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if fcc.
 
-	DBL leakCOn )		// leakage in heat cap units: difference of sfan and tu flows
+	DBL _leakCOn )		// leakage in heat cap units: difference of sfan and tu flows
 // currently same as "leakCOnNx" member (debug aid, or cd remove this arg) 6-25-92.
 
 // uses: crNx, sfan.cMx, uUseAr, control terminal aCMn/aCMxC/H
@@ -3693,7 +3693,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 				min( uUseAr & (uStC|uMxC)   		// test whether ah is on cuz terminal called for cooling or heat
 					 ? ctu->aCMxC : ctu->aCMxH,     	// tu cool or heat max flow per current use (set by AH::vshNLims)
 					 sfan.cMx				// supply fan max flow, incl overrun (FAN::pute sets).
-					 - leakCOn );			// less fan-on leak-in (==leak-out) to get poss tu flow at max sfan flow
+					 - _leakCOn );			// less fan-on leak-in (==leak-out) to get poss tu flow at max sfan flow
 		}
 	if (cMxnx==0. && crNx != 0.)      			// fatal error if there is flow when no flow is possible
 #ifdef AUTOSIZE
@@ -3769,7 +3769,7 @@ void AH::flagChanges()		// conditionally flag zone for zone temp/w and tu flow c
 	}
 }		// AH::flagChanges
 //-----------------------------------------------------------------------------------------------------------------------------
-void AH::upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas)
+void AH::upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas)
 
 // update zone's coupling to OTHER AIRHANDLERS for specified ts / ws changes and flow changes
 
@@ -3780,8 +3780,8 @@ void AH::upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas)
    ---> zn's other tu's have 0 a/b's.  But code present anyway. 3-92. Now needed for fan-limit c changes? */
 {
 
-	if ( fabs(ts-tsWas) < .0001 * Top.absTol		// do not bother for 0 or VERY SMALL changes
-			&&  fabs(ws-wsWas) < .0001 * Top.absHumTol )	// .. VERY VERY SMALL !!
+	if ( fabs(_ts-tsWas) < .0001 * Top.absTol		// do not bother for 0 or VERY SMALL changes
+			&&  fabs(_ws-wsWas) < .0001 * Top.absHumTol )	// .. VERY VERY SMALL !!
 		return;
 
 	for (TU *tu = NULL;  nxTu(tu);  )  ZrB.p[tu->ownTi].tuCz = tu->aCz(); 	/* temp put flows in ZONES for ez access here;
@@ -3794,7 +3794,7 @@ void AH::upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas)
 			if (tu->ai==ss)   continue;			// skip terminals on THIS airHandler
 			if (tu->bO != 0.f)  				// skip ts for terminals with constant flow and tz in zn's current mode
 			{
-				DBL aqO = tu->aqO - zp->tuCzWas*tsWas + zp->tuCz*ts;	/* adjust sigma(tu->cz*ts) for ts and/or (unexpected (??))
+				DBL aqO = tu->aqO - zp->tuCzWas*tsWas + zp->tuCz*_ts;	/* adjust sigma(tu->cz*ts) for ts and/or (unexpected (??))
              								   cz change, using tu cz's TEMPORARILY stored in zones */
 				DBL bO = tu->bO - zp->tuCzWas + zp->tuCz;   		// adjust sigma(cz) (plus more) for (unexpected) cz change
 				if (aqO > 0.  &&  bO > 0.)					// paranoia (always some a/b from CAIR & UA, right?)
@@ -3810,16 +3810,16 @@ void AH::upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas)
 								       if ztuCompute not reexecuted. */
 				}
 			}
-			if (tu->cO != 0.f)				// skip ws for terminals on zones with no other flows (needed?)
+			if (tu->cO != 0.f)				// skip _ws for terminals on zones with no other flows (needed?)
 			{
 				DBL wcO = 0;				// sigma(tu->cz*ws) adjusted for this ah ws and/or cz change,
 				switch (Top.humMeth)		// ...computed using average or latest ws according to humidity calculation method
 				{
 				case C_HUMTHCH_PHIL:
-					wcO = tu->wcO - zp->tuCzWas*(wsWas + wsls)/2. + zp->tuCz*(ws + wsls)/2.;	// average
+					wcO = tu->wcO - zp->tuCzWas*(wsWas + wsls)/2. + zp->tuCz*(_ws + wsls)/2.;	// average
 					break;
 				case C_HUMTHCH_ROB:
-					wcO = tu->wcO - zp->tuCzWas*wsWas             + zp->tuCz*ws;    		// latest
+					wcO = tu->wcO - zp->tuCzWas*wsWas             + zp->tuCz*_ws;    		// latest
 					break;
 				}
 				DBL cO = tu->cO - zp->tuCzWas + zp->tuCz;			// sigma(c) adjusted for (unexpected here) c change

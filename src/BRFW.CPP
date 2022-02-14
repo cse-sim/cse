@@ -177,7 +177,7 @@ x     if (!bkResf.alLock())			// alloc and lock zeroed moveable memory, discarda
 		// set info for monthly blocks of hourly file
 		for (SI mi = 0; mi < 12; mi++)
 			bkHrMon[mi].init( pNam ? &fHresf : NULL,	// same file association (or none) as header block
-							  -1L, 0, 0, 			// offset & size are set during run, starting with first month of run
+							  DWORD( -1), 0, 0, 		// offset & size are set during run, starting with first month of run
 							  discardable, keePak, (PAKFCN *)packHresfMon );
 		// months blocks are allocated and init as required, in startMonth().
 
@@ -185,11 +185,7 @@ x     if (!bkResf.alLock())			// alloc and lock zeroed moveable memory, discarda
 		if (*fHresf.pNam)			// if have file for hourly info
 			if (!fHresf.create())
 				return RCBAD;
-#if 0
-x       bkHrHdr.write(keePak);			// must fill the space before writing 1st month, I think.
-#else//12-3-94 arg moved to init()
 		bkHrHdr.write(FALSE);			// must fill the space before writing 1st month, I think.
-#endif
 
 		hourlyOpened = TRUE;
 	}
@@ -1178,9 +1174,6 @@ void HresZoneDayPak::pack( HresZoneDayRam *src)		// pack hourly zone results for
 }				// HresZoneDayPak::pack (also ResMoavZonePak::pack)
 //---------------------------------------------------------------------------
 
-#if 1 /* 12-3-94 redo to not use global Windows memory except to return to caller,
-cuz WIN32 global memory is not swappable and had many out of memory problems,
-	and combine DOS and WIN versions and reduce support for unused options. */
 //===========================================================================
 // member functions of class BinBlock: memory block associated with part of a binary file. for ResfBase members.
 //===========================================================================
@@ -1351,280 +1344,6 @@ void BinBlock::free() 		// free block
 }		// BinBlock::free
 //---------------------------------------------------------------------------
 
-#else	// old versions 12-3-94. "12-3-94" if's unrun, tho mostly trial-compiled.
-x //===========================================================================
-x // member functions of class BinBlock: memory block associated with part of a binary file. for ResfBase members.
-x //===========================================================================
-x #ifdef WINorDLL	// windows version. DOS version follows.
-x //---------------------------------------------------------------------------
-x void BinBlock::clear()
-x{
-x     if (!this)  return;
-x
-x     discardable = dirty = 0;
-x     h = 0;
-x     offset = size = sizePak = 0;
-x #if 0
-x x    f = NULL; p = pPak = NULL; pNam = NULL; pakFcn = NULL;
-x #else//12/3-94
-x     f = NULL; p = NULL; pNam = NULL; pakFcn = NULL;
-x #endif
-x}					// BinBlock::clear
-x //---------------------------------------------------------------------------
-x void BinBlock::init( BinFile *_f, DWORD _offset, WORD _size, WORD _sizePak,
-x                      BOO _discardable, BOO _keePak, PAKFCN * _pakFcn )
-x{
-x     clear();
-x
-x     f = _f;
-x     if (f)
-x        pNam = f->pNam;  	// handy redundant pointer so needn't keep doing "f ? f->pNam : NULL"
-x     offset = _offset;
-x     size = _size;
-x     sizePak = _sizePak;
-x     discardable = _discardable;
-x     keePak = _keePak;		// added 12-3-94
-x     pakFcn = _pakFcn;
-x}			// BinBlock::init
-x //---------------------------------------------------------------------------
-x BOO BinBlock::alLock()	 		// allocate new block
-x 					// (buffer for unpacked form. packed form alloc'd in write())
-x{
-x     h = GlobalAlloc( discardable ? (GHND|GMEM_SHARE|GMEM_DISCARDABLE) 	// discardable...
-x     	      			 : (GHND|GMEM_SHARE), 			// 0'd moveable sharable (server passes handle to client)
-x 	             size );
-x     // generalize wording of following error messages if this general routine used for additional purposes.
-x     if (!h)
-x        return !err( WRN, (char *)MH_R1970);	// "Out of memory for binary results file buffer".  ! returns FALSE for RCBAD.
-x     p = GlobalLock(h);
-x     if (!p)
-x        return !err( WRN, (char *)MH_R1971);	// "Lock failure in BinBlock::alLock re binary results file".  ! returns FALSE.
-x     dirty = TRUE;
-x     return TRUE;
-x}			// BinBlock::alLock
-x //---------------------------------------------------------------------------
-x #if 0
-x x  BOO BinBlock::put(BOO keePak)		// write if dirty & unlock
-x #else//12-3-94: keePak member
-x   BOO BinBlock::put()			// write if dirty & unlock
-x #endif
-x{
-x     if (!p)
-x        return FALSE;
-x     if (dirty)  			// if changed, write: appl uses discardable blocks when a file is in use.
-x #if 0
-x x       if (!write(keePak))		// pack, and write if a file is in use
-x #else//12-3-94
-x        if (!write())			// pack, and write if a file is in use
-x #endif
-x           return FALSE;
-x     return unlock();			// unlock block, set p NULL. If no file in use, memory is not discardable.
-x}			// BinBlock::put
-x //---------------------------------------------------------------------------
-x BOO BinBlock::lock()		// try to lock existing block (unpacked form)
-x{
-x     if (p)
-x        return TRUE;
-x     if (!h)  			// when a file is in use, control comes here on the way to reading block
-x        return FALSE;		// so no errmsg here (see diskFetch)
-x     p = GlobalLock(h);
-x     // no error message if p==NULL cuz may have been discarded and caller may read from file
-x     return (p != NULL);
-x}			// BinBlock::lock
-x //---------------------------------------------------------------------------
-x BOO BinBlock::write(		// write block if using a file, else ok nop
-x #if 0	//12-3-94: made member
-x x    BOO keePak  		// non-0 to keep packed form (for memory return to caller)
-x #endif
-x     )
-x{
-x
-x // pack
-x #if 1 //12-3-94 dismember pPak; some of following logic could also be removed.
-x     void *pPak = NULL;
-x #endif
-x     if ( pakFcn					// if has packing fcn, else no packed from
-x      &&  p					// if has non-packed data to pack
-x      &&  (keePak || (f && f->isOpen()) ) )	// if keep-packed-form flag OR if we will write file just below
-x     {
-x        if (!pPak)						// if buffer for packed form not locked
-x        {	if (hPak) 						// if packed block just needs locking
-x           {	pPak = GlobalLock(hPak);
-x				if (!pPak) hPak = 0;	// if lock fails, assume block has been discarded.
-x			}
-x           if (!hPak)  							// if needs allocating
-x           {
-x              hPak = GlobalAlloc( discardable ? (GHND|GMEM_SHARE|GMEM_DISCARDABLE) 	// discardable...
-x                                              : (GHND|GMEM_SHARE), 			// 0'd moveable sharable memory
-x                                  sizePak );   						// .. (server passes handle to client)
-x              // generalize wording of following error messages if this general routine used for additional purposes.
-x              if (!hPak)
-x                 return !err( WRN, (char *)MH_R1972);	// "Out of memory for binary results file packing buffer". ! returns FALSE.
-x              pPak = GlobalLock(hPak);
-x              if (!pPak)
-x                 return !err( WRN, (char *)MH_R1973);	// "Lock failure in BinBlock::write re binary results file"
-x 							// ! returns FALSE for RCBAD.
-x		}	}
-x        pakFcn( p, pPak);			// pack into buffer
-x}
-x
-x // write
-x     BOO ok = TRUE;
-x     if (p && f && f->isOpen())		// write files don't auto-open, right?
-x     {  dirty = FALSE;			// clear 'dirty' first: don't try again on cleanup if errors out
-x        if (size)			// nop if 0 length: presumably unused block
-x        {  if (!f->seek(offset))
-x              return FALSE;
-x           if (pakFcn)
-x              ok = f->write( pPak, sizePak);	// write packed form
-x           else
-x              ok = f->write( p, size); 		// no pack function. Write from non-packed buffer.
-x	}	}
-x
-x // discard packed form (if any) now to conserve memory except on flag
-x     GlobalUnlock(hPak);
-x     pPak = NULL;
-x     if (!keePak)
-x     {  if (GlobalFree(hPak))
-x           err( WRN, (char *)MH_R1974);	// "GlobalFree failure in BinBlock::write"
-x        hPak = 0;
-x}
-x
-x     return ok;
-x}			// BinBlock::write
-x //---------------------------------------------------------------------------
-x BOO BinBlock::unlock()			// unlock without write: used internally after write. both forms.
-x{
-x     if (p)     if (h) { GlobalUnlock(h); p = NULL; }
-x #if 0//12-3-94
-x x    if (pPak)  if (hPak) { GlobalUnlock(hPak); pPak = NULL; }
-x #endif
-x     return TRUE;
-x}			// BinBlock::unlock
-x //---------------------------------------------------------------------------
-x HGLOBAL BinBlock::removeHan() 		// return (packed) handle to caller and 0 it in BinBlock to prevent free'ing
-x{
-x     HGLOBAL temp;
-x     if (pakFcn)
-x	  { temp = hPak;     // return handle of packed form if block has packed from
-x		hPak = 0;
-x	  }
-x     else
-x	  {  temp = h;     h = 0;    }	// else return handle of regular form
-x     return temp;
-x}		// BinBlock::removeHan
-x //---------------------------------------------------------------------------
-x void BinBlock::free() 		// free block: both packed and unpacked forms.
-x 				// note: handles of memory to be returned to caller moved & 0'd by prior call to removeHan.
-x {   unlock();
-x     if (h)
-x        if (GlobalFree(h))
-x           err( WRN, (char *)MH_R1975);  	// "GlobalFree failure in BinBlock::free"
-x     h = 0;
-x     if (hPak)
-x        if (GlobalFree(hPak))
-x           err( WRN, (char *)MH_R1976);   	// "GlobalFree failure (packed block) in BinBlock::free"
-x     hPak = 0;
-x}			// BinBlock::free
-x //---------------------------------------------------------------------------
-x #endif	// WINorDLL
-x
-x #ifdef DOS	// DOS subset version of BinBlock class
-x //---------------------------------------------------------------------------
-x void BinBlock::clear()		// DOS subset
-x{
-x     dirty = 0;
-x     offset = size = sizePak = 0;
-x #if 0
-x x    f = NULL; p = pPak = NULL; pNam = NULL; pakFcn = NULL;
-x #else//12-3-94
-x     f = NULL; p = NULL; pNam = NULL; pakFcn = NULL;
-x #endif
-x}					// BinBlock::clear
-x //---------------------------------------------------------------------------
-x void BinBlock::init( 							// DOS subset
-x     BinFile *_f, DWORD _offset, WORD _size, WORD _sizePak,
-x     BOO _discardable /*=FALSE*/, BOO _keePak /*=FALSE*/, PAKFCN * _pakFcn /*=NULL*/ )
-x{
-x     clear();
-x
-x     f = _f;
-x     if (f)
-x        pNam = f->pNam;  	// handy redundant pointer so needn't keep doing "f ? f->pNam : NULL"
-x     offset = _offset;
-x     size = _size;
-x     sizePak = _sizePak;
-x     pakFcn = _pakFcn;
-x}			// BinBlock::init
-x //---------------------------------------------------------------------------
-x BOO BinBlock::alLock()	 		// allocate new block, DOS version
-x{
-x     if (dmal( p, size, DMZERO))		// allocate. dmpak.c fcn. RC return value: non-0 bad.
-x        return FALSE;
-x     dirty = TRUE;
-x     return TRUE;
-x}			// BinBlock::alLock
-x //---------------------------------------------------------------------------
-x #if 0
-x x BOO BinBlock::put(BOO keePak) 		// write if dirty & free, DOS version.
-x #else//12-3-94: keePak member
-x  BOO BinBlock::put() 			// write if dirty & free, DOS version.
-x #endif
-x{
-x     if (!p)
-x        return FALSE;
-x     if (dirty)  		// if changed, write
-x #if 0
-x x       if (!write(keePak))
-x #else//12-3-94
-x        if (!write())
-x #endif
-x           return FALSE;
-x     free();			// no handles, replace "unlock" with "free" for DOS
-x     return TRUE;
-x}		// BinBlock::put
-x //---------------------------------------------------------------------------
-x #if 0
-x x BOO BinBlock::write(BOO keePak)		// write block, DOS version: error if no file or not open
-x #else//12-3-94: keePak member
-x  BOO BinBlock::write()			// write block, DOS version: error if no file or not open
-x #endif
-x{
-x     BOO ok = TRUE;
-x     if (p && size)		// ok nop if no ram block, or if 0 length (assume means unused block)
-x     {
-x #if 1 //12-3-94 dismember pPak
-x        void *pPak = NULL;
-x #endif
-x        dirty = FALSE;		// clear 'dirty' first, to not try again (thru "put") on cleanup if errors out
-x        if (!f || !f->isOpen())
-x           return !err( PWRN, (char *)MH_R1977); // "BinBlock: Request to write block but file not open"
-x        if (!f->seek(offset))
-x           return FALSE;
-x        if (pakFcn)
-x        { if (dmal( pPak, size, DMZERO)) 	// allocate packing buffer
-x              return FALSE;
-x           pakFcn( p, pPak);			// pack into buffer
-x           ok = f->write( pPak, sizePak);	// write packed form
-x           dmfree(pPak);				// free packing buffer (under DOS)
-x		}
-x        else					// no pakFcn: non-packed block
-x           ok = f->write( p, size);
-x	}
-x     return ok;
-x }			// BinBlock::write
-x //---------------------------------------------------------------------------
-x void BinBlock::free() 		// free block, DOS version
-x{
-x     dmfree(p);		// dmpak.c. nop if p is already NULL; sets p NULL.
-x #if 0//12-3-94
-x x    dmfree(pPak);
-x #endif
-x}			// BinBlock::free
-x //---------------------------------------------------------------------------
-x #endif	// DOS
-#endif
-
 //===========================================================================
 // member functions of class BinFile: binary file i/o class used for members of ResfBase.
 //===========================================================================
@@ -1638,11 +1357,11 @@ void BinFile::clear()
 	maxSeek = 0L;
 }		// BinFile::clear
 //---------------------------------------------------------------------------
-void BinFile::init( const char* pNam, const char *dotExt) 		// pNam may have extension added in place
+void BinFile::init( const char* _pNam, const char* dotExt) 		// pNam may have extension added in place
 {
 	clear();
-	if (pNam)
-	{	strcpy( this->pNam, pNam);
+	if (_pNam)
+	{	strcpy( this->pNam, _pNam);
 		if (dotExt)
 			strcpy( (char *)pointExt( this->pNam), dotExt); 	// ... overwrite any extension, else append
 	}

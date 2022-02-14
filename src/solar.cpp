@@ -2720,7 +2720,7 @@ void SLRSURFDAY::DbDump() const		// debug print (unconditional)
 {
 #if 0	// enhanced format, 9-21-2011
 	DbPrintf( " %3.3d (%s)  %5.1f %5.1f   %5.3f\n",
-				ssd_doy, Calendar.FmtDOY( ssd_doy),
+				ssd_doy, Calendar.FmtDOY( ssd_doy).c_str(),
 				ssd_shgfMax, ssd_shgfShdMax, ssd_shgfDifX);
 	for (int iT=0; iT<24; iT++)
 	{	DbPrintf( "   %2.2d  %5.1f  %5.1f  %5.1f    %5.1f    %5.1f\n",
@@ -2729,7 +2729,7 @@ void SLRSURFDAY::DbDump() const		// debug print (unconditional)
 #else
 	// traditional format
 	DbPrintf( " %3.3d (%s)  %5.1f %5.1f   %5.3f\n",
-				ssd_doy, Calendar.FmtDOY( ssd_doy),
+				ssd_doy, Calendar.FmtDOY( ssd_doy).c_str(),
 				ssd_shgfMax, ssd_shgfShdMax, ssd_shgfDifX);
 #endif
 }		// SLRSURFDAY::DbDump

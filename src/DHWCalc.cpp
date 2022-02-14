@@ -1343,13 +1343,9 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	ws_DLM = 1.f + (ws_SDLM-1.f)*ws_DSM;
 
 	// Draw duration factors
-#if defined( _DEBUG)
-	static const int WSDRAWDURFDIM = sizeof(ws_drawDurF) / sizeof(ws_drawDurF[0]);
-	if (WSDRAWDURFDIM != NDHWENDUSES)
-		err(PABT, "ws_drawDurF array size error");
-	if (sizeof(ws_drawWaste) / sizeof(ws_drawWaste[0]) != NDHWENDUSES)
-		err(PABT, "ws_drawWaste array size error");
-#endif
+	static_assert(sizeof(ws_drawDurF) / sizeof(ws_drawDurF[0]) == NDHWENDUSES, "ws_DrawDurF array size error");
+	static_assert(sizeof(ws_drawWaste) / sizeof(ws_drawWaste[0]) == NDHWENDUSES, "ws_drawWaste array size error");
+
 	// temperature-dependent end uses
 	//   losses modeled by extending draw
 	float drawDurFDflt = ws_WF * ws_DLM;	// can vary hourly
@@ -2298,9 +2294,9 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 		else
 		{	// DHWUSE may be part of previously seen draw
 			// search backwards for matching eventID
-			int iWU;
-			for (iWU = pWU->ss - 1; iWU > 0; iWU--)
-			{	const DHWUSE* pWUX = (const DHWUSE*)pWU->b->GetAtSafe(iWU);
+			int iWX;
+			for (iWX = pWU->ss - 1; iWX > 0; iWX--)
+			{	const DHWUSE* pWUX = (const DHWUSE*)pWU->b->GetAtSafe(iWX);
 				if (pWUX && pWUX->gud && pWUX->ownTi == ss
 				 && pWUX->wu_hwEndUse == pWU->wu_hwEndUse
 				 && pWUX->wu_eventID == pWU->wu_eventID)
@@ -2308,7 +2304,7 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 					break;
 				}
 			}
-			if (iWU == 0)
+			if (iWX == 0)
 				// unexpected (could happen for if eventID skipped)
 				pWU->wu_drawSeqN = drawSeqNNext[pWU->wu_hwEndUse]++;
 		}

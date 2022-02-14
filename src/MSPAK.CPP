@@ -2126,7 +2126,7 @@ x		printf( "Hit\n");
 		for (int i=0; i<2; i++)
 		{	double qSrfNew = bcx[ i].QSrf( nd[ i*nLx].mn_t);
 			double qX = bcx[ i].QX();
-			double aDiff = fabs( qX - qSrfNew);
+			aDiff = fabs( qX - qSrfNew);
 			if (aDiff > .01 && aDiff > .001*(fabs( qX)+fabs( qSrfNew)))
 				warn( "Mass '%s' (%d), %s: surface energy balance error (qX=%.3f vs qSrf=%.3f)",
 					Name(), i, Top.When( C_IVLCH_S), qX, qSrfNew);

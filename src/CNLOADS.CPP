@@ -1372,9 +1372,9 @@ RC ZNR::zn_AirFlowVsTsup()
 
 
 	AIRSTATE asSup;		// air state at register
-	for (int i = 0; i < 10; i++)
+	for (int iAf = 0; iAf < 10; iAf++)
 	{
-		float fAmf = 1.f - float(i) / 10.f;
+		float fAmf = 1.f - float(iAf) / 10.f;
 
 		float amf = rs->rs_TSupVarFlow(fAmf, asSup);
 
@@ -2557,7 +2557,7 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 		{	double d = 17.91554 - 3.67538*log( tMax);
 			afOld = 1.f/max( 1.f, float( d));
 		}
-		float d = af - afOld;
+		// float d = af - afOld;
 		if (rs_fanHeatOAV > 4000.f)
 			printf( "Excess OAV fan heat\n");
 #endif
@@ -4869,7 +4869,7 @@ void RSYS::rs_EnteringAirState()	// RSYS entering air state
 	{	if (!Top.isWarmup)
 			orWarn( "Dubious asIn tdb (%0.2f)", rs_asIn.as_tdb);
 		// repeat return duct calc (debug aid)
-		int iDS = rs_Dsi( 1);
+		// int iDS = rs_Dsi( 1); above
 		if (iDS > 0)
 			rs_asIn = DsR[ iDS].ds_CalcFL( rs_asRet, rs_amf);
 	}
@@ -5485,7 +5485,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 {
 #if defined( _DEBUG)
 	double speedFWas = speedF;
-	float rsSpeedFWas = rs_speedF;
+	// float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
 #if defined( _DEBUG)
@@ -5556,7 +5556,7 @@ double RSYS::rs_TSupForSpeedF(
 {
 #if defined( _DEBUG)
 	double speedFWas = speedF;
-	float rsSpeedFWas = rs_speedF;
+	// float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
 #if defined( _DEBUG)

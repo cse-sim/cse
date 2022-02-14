@@ -239,12 +239,12 @@ int Solve(			// matrix solver
 	XSOL( N) = M( N, NP1) / M( N, N);
 	for (int I=1; I<=NM1; I++)
 	{	int NI = N - I;
-		double D = 0.;
+		double tD = 0.;
 		for (int J=1; J<=I; J++)
 		{	int NJ = N+1-J;
-			D += M( NI, NJ)*XSOL( NJ);
+			tD += M( NI, NJ)*XSOL( NJ);
 		}
-		XSOL( NI) = (M( NI, NP1) - D) / M( NI, NI);
+		XSOL( NI) = (M( NI, NP1) - tD) / M( NI, NI);
 	}
 	return ret;
 
@@ -277,6 +277,8 @@ static const char* awStrToBF(		// c-string to space-padded string
 	return d;
 }	// awStrToBF
 //-----------------------------------------------------------------------------
+#if 0
+// unused, save for possible future use
 static const char* awStrToZF(		// safe c-string copy with truncate
 	char* d,		// destination
 	size_t dDim,	// size of destination
@@ -291,6 +293,7 @@ static const char* awStrToZF(		// safe c-string copy with truncate
 		*(d+iD++) = '\0';
 	return d;
 }	// awStrToZF
+#endif
 //-----------------------------------------------------------------------------
 #if defined( FORTRAN_TRANSITION)
 #define FCSET( d, s) awStrToBF( d, sizeof( d), s)
@@ -382,6 +385,7 @@ bool AppendMsg(		// append message with break;
 	return false;
 }  // AppendMsg
 //-----------------------------------------------------------------------------
+#if defined( _DEBUG)
 static bool CompMsg(		// message re compare error (double)
 	const char* w1,		// context 1
 	const char* w2,		// context 2
@@ -427,6 +431,7 @@ template <typename T> static int vNEQMsg(			// compare, issue message if fail
 		CompMsg( w1, w2, item, v1, v2, errCount++==0);
 	return ret;
 }	// vNEQMsg
+#endif
 //=============================================================================
 static double P01(		//  constrain property to range 0 - 1
 	double P,			//  property
@@ -607,7 +612,7 @@ double T[ KMAX][ KMAX];
 #if defined( _DEBUG)
 double TEST_F(	//  test function
 	double x,			//  ind var
-	int OPT,		//  options (unused)
+	int /*OPT*/,		//  options (unused)
 	double P[])	//  parameters
 {
 	return x*x*P[ 2] + x*P[ 1] + P[ 0];
@@ -1515,6 +1520,8 @@ static double FNU(	// Nusselt number (function of Rayleigh number)
 	return FNU;
 }  // FNU
 //--------------------------------------------------------------------------
+#if 0
+// unused, save for possible future use
 static double HRadPar(
 	double T1, double T2,	// bounding surface temps, K
 	double E1, double E2)	// bounding surface emissivities
@@ -1533,6 +1540,7 @@ static double HRadPar(
 	}
 	return hr;
 }  // HRadPar
+#endif
 //==============================================================================
 double CFSLAYER::cl_ConvectionFactor() const	// layer convection enhancement
 // modifies convection rate per shade config

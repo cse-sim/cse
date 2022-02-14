@@ -640,10 +640,10 @@ x //    SI did;		// nz if does something: value stored or side effect
  PARSTK* parSp = parStk;	// parse stack stack pointer
 
  /*--- CODE OUTPUT variables */
- PSOP* NEAR psp = NULL;  	// set by itPile(), used by emit() &c.
+ LOCAL PSOP* NEAR psp = NULL;  	// set by itPile(), used by emit() &c.
  LOCAL PSOP* NEAR psp0 = NULL;	// initial psp value, for computing length
- LOCAL PSOP* NEAR pspMax = NULL;	// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
- LOCAL SI NEAR psFull = 0;	// non-0 if *psp has overflowed
+ LOCAL PSOP* NEAR pspMax = NULL;// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
+ LOCAL SI NEAR psFull = 0;		// non-0 if *psp has overflowed
 
  /*--- re Parse Error Messages ---*/
 // 1 when parsing fcn defn arg list: says a type word is NOT start new statement until a ')' has been passed:
@@ -946,14 +946,14 @@ LOCAL RC FC NEAR funcDef( 	// compile function definition
 LOCAL BOO funcDel(   	// clean up and free a user function symbol table block
 	// callback function for use with syClear
 
-	SI tokTy, 		// token type (syClear passes; only CUTUF expected
+	SI _totTy, 		// token type (syClear passes; only CUTUF expected
 	UFST** pStb )	// pointer to pointer to the block
 
 // returns TRUE to say "do delete the symbol table entry"
 {
 	UFST* stb = *pStb;
 	if (!stb)  return TRUE;		// if NULL pointer (unexpected) say go ahead and delete symbol table block
-	if (tokTy != CUTUF)  return FALSE;	// if not a user function, this fcn should not have been called. bug.
+	if (_totTy != CUTUF)  return FALSE;	// if not a user function, this fcn should not have been called. bug.
 
 	dmfree( DMPP( stb->id));		// free function name string
 	dmfree( DMPP( stb->ip));		// free function pseudo-code block
@@ -967,15 +967,15 @@ LOCAL BOO funcDel(   	// clean up and free a user function symbol table block
 LOCAL BOO funcOrVarDel( 	// clean & free a user function or variable symbol table block, leave others
 	// callback function for use with syClear
 
-	SI tokTy, 		// token type
+	SI _totTy, 		// token type
 	STBK *&stb )		// ref to pointer to the block
 
 // returns TRUE for deleted blocks only
 {
-	switch (tokTy)
+	switch (_totTy)
 	{
 	case CUTUF:
-		return funcDel( tokTy, (UFST **)&stb); 	// user fcn: call fcn just above
+		return funcDel( _totTy, (UFST **)&stb); 	// user fcn: call fcn just above
 		//case CUTUV:		add code for user variable: not implemented as of 10-93.
 	default:
 		return FALSE;				// other type block (reserved word): do not delete
@@ -4232,12 +4232,12 @@ LOCAL SI NEAR symtabIsIt = 0;   	// non-0 if symbol table has been initialized b
 LOCAL SI NEAR symtabIsSorted = 0;	// non-0 if symbol table sorted (slows adds, speeds searches)
 
 //==========================================================================
-LOCAL BOO /*no FC, no NEAR */ stbkDel( SI tokTy, STBK *&stbk)	// syClear callback for all symtab entries
+LOCAL BOO /*no FC, no NEAR */ stbkDel( SI _tokTy, STBK *&_stbk)	// syClear callback for all symtab entries
 {
-	switch (tokTy)
+	switch (_tokTy)
 	{
 	case CUTUF:
-		return funcDel( tokTy, (UFST **)&stbk);	// function above in cuparse.cpp cleans user functions
+		return funcDel( _tokTy, (UFST **)&_stbk);	// function above in cuparse.cpp cleans user functions
 
 		//case CUTUV:	add code for user variable (unimplemented 10-93)
 

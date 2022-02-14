@@ -5560,7 +5560,7 @@ RECORD AH "airHandler" *RAT
 // Each AH record describes one AIR HANDLER (Niles' terminology; formerly a "generic subsystem"), including
 // supply and return fans, outside air control, economizer, heat and cool coils, supply temperature regulation,
 //         and (probably deferred) warmup, optimum start, and setback/setup control.
-// Member names begin with ah-, py-, sfan-, rfan-, and oa-. */
+// Member names begin with ah-, py-, sfan-, rfan-, and oa-.
 
     *declare "RC setup();"
     *declare "void fazInit( int isAusz);"
@@ -5582,7 +5582,7 @@ RECORD AH "airHandler" *RAT
     *declare "RC ahCompute();"
     *declare "BOO iter4Fs( BOO &cvgFail);"
     *declare "void pute4Fs();"
-    *declare "void setFrFanOn( DBL leakCOn);"
+    *declare "void setFrFanOn( DBL _leakCOn);"
     *declare "BOO incrFanF();"
     *declare "BOO decrFanF();"
     *declare "BOO fanXtrap( SI whichway);"
@@ -5610,7 +5610,7 @@ RECORD AH "airHandler" *RAT
     *declare "void puteRa();"
     *declare "BOO flagTusIf();"
     *declare "void flagChanges();"
-    *declare "void upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas);"
+    *declare "void upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas);"
     *declare "void upPriors();"
     *declare "void ahVshNLims( DBL _ts, DBL &cIncr, DBL &cDecr);"
     *declare "void flagTus();"
@@ -5875,17 +5875,17 @@ RECORD AH "airHandler" *RAT
 
   // ah runtime, terminals interactions:
     *s *e *hide BOO ahRun		// TRUE if ah has been run this subHr; if FALSE, ts is old or an estimage. 7-95.
-    *s *e *hide SI timesReEst		// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
+    *s *e *hide SI timesReEst	// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
     *s *e AHMODE ahMode			// what ah is doing: set to: ahOFF/ahFAN/ahHEATING/ahCOOLING/ahON(normal).
-    					//  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
+    					        //  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
     *s *e DBL /*TEMP*/ ts		// supply temp FOR TERMINALS, set from working copy aTs at ahCompute exit.
-    					// Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
+    					        // Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
     *s *e DBL /*HUMRAT*/ ws		// supply air hum rat for TERMINALS, set from working copy aWs at ah exit.
-    *s    DBL /*HUMRAT*/ wsls		// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
-    *s *e DBL /*HC_VOL*/ airxTs  	// Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
-    *s *e DBL /*TEMP*/ tsMnFo		// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
+    *s    DBL /*HUMRAT*/ wsls	// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
+    *s *e DBL /*HC_VOL*/ airxTs // Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
+    *s *e DBL /*TEMP*/ tsMnFo	// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
     *s *e BOO tsMnFoOk			// TRUE if tsMnFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMnFo().
-    *s *e DBL /*TEMP*/ tsMxFo		// ctu max flow, coil-off supply temp, calc'd & ret'd by getTsMxFo. See tsMxFoOk.
+    *s *e DBL /*TEMP*/ tsMxFo	// ctu max flow, coil-off supply temp, calc'd & ret'd by getTsMxFo. See tsMxFoOk.
     *s *e BOO tsMxFoOk			// TRUE if tsMxFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMxFo().
 
 //---- ah run internal: temp, w, flow, delta-T at various points in air handler ----
@@ -6442,7 +6442,7 @@ RECORD COOLPLANT "coolPlant" *RAT	// coolplant: Top object, contains chillers, s
     *declare "DBL/*POWER*/ capStg();"
     *declare "BOO nxAh( AH *&ah);"
     *declare "BOO nxCh( CHILLER *&ch);"
-    *declare "BOO nxChStg( CHILLER *&ch, SI stgi=-1);"
+    *declare "BOO nxChStg( CHILLER *&ch, int _stgi=-1);"
 
     // in base class: .name, .ownTi, more. Name required, for reference from coil.
 
@@ -6630,9 +6630,9 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *declare "RC   tpEstimate();"			// cntow.cpp
     *declare "RC   tpCompute();"			// cntow.cpp
     *declare "RC   endSubhr();"			// cntow.cpp
-    *declare "RC   findSpeed( DBL q);"					// cntow.cpp
-    *declare "RC   varSpeedF( DBL qWant, DBL &f, DBL &q, FLOAT &guess);"	// cntow.cpp
-    *declare "RC   towModel( DBL f, DBL &q, FLOAT &guess);"			// cntow.cpp
+    *declare "RC   findSpeed( DBL _q);"					// cntow.cpp
+    *declare "RC   varSpeedF( DBL qWant, DBL &_f, DBL &_q, FLOAT &guess);"	// cntow.cpp
+    *declare "RC   towModel( DBL _f, DBL &_q, FLOAT &guess);"			// cntow.cpp
     *declare "BOO  nxCp( COOLPLANT *&cp);"					// cntow.cpp
 #if 0 // when HPLOOP defined, 10-92
 *    *declare "BOO TOWERPLANT::nxHl( HPLOOP *&hl);"					// cntow.cpp.

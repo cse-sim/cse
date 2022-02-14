@@ -558,8 +558,9 @@ SEC FC xfsize(		// Return the current size of a file
 {
 	std::error_code ec;
 	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
-	if (ec) {/* if length invalid */
-		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
+	if (ec)
+	{	// if length invalid
+		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message().c_str());
 		return xioerr(xf); /*    bad: report error, return SEC */
 	}
 	return SECOK;   		/*    good */
@@ -1060,7 +1061,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 			}
 		}
 	}
-	while (rc==RCOK && xfs->nxfer==bufsize);	/* last transfer is smaller than buffer */
+	while (rc==RCOK && size_t( xfs->nxfer)==bufsize);	/* last transfer is smaller than buffer */
 	dmfree( DMPP( buf));			/* free buffer */
 
 	if (rc && pMsg)			// if err and caller wants msg
