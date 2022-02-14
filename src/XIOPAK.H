@@ -36,26 +36,26 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 	unknown:   File is created if it does not exist but preserved if
 		   it does.  This is most applicable when appending. */
 // Text modes
-#define O_RT "r"					// Read
-#define O_WT "w+"					// r/w (fresh)
-#define O_WTOLD "r+"				// r/w (must exist)
-#define O_WTOLDA "a+"				// r/w (append)
-#define O_WTUNKA "a+"				// r/w append, create if nec
+#define O_RT		"r"				// Read
+#define O_WT		"w+"			// r/w (fresh)
+#define O_WTOLD		"r+" 			// r/w (must exist)
+#define O_WTOLDA	"a+"			// r/w (append)
+#define O_WTUNKA	"a+"			// r/w append, create if nec
 
 // Binary
-#define O_RB "rb"				// Read
-#define O_WB "wb+"				// r/w (fresh)
-#define O_WBOLD "rb+"			// r/w (old, must exist)
-#define O_WBOLDA "ab+"			// r/w append (must exist)
-#define O_WBUNK "rb+"			// r/w (create if nec.)
-#define O_WBUNKA "ab+"			// r/w append (create if nec.)
+#define O_RB		"rb"			// Read
+#define O_WB		"wb+"			// r/w (fresh)
+#define O_WBOLD		"rb+"			// r/w (old, must exist)
+#define O_WBOLDA	"ab+"			// r/w append (must exist)
+#define O_WBUNK		"rb+"			// r/w (create if nec.)
+#define O_WBUNKA	"ab+"			// r/w append (create if nec.)
 
 ///////////////////////////////////////////////////////////////////////////////
 // struct XFILE: extended IO packet set up in dm by xfopen, used with other xiopak fcns
 ///////////////////////////////////////////////////////////////////////////////
 struct XFILE
 {   FILE* han;		// File handle
-    char* access;		// Access flag used on last open()
+    char access[20];	// Access flag used on last fopen()
     int nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
     SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
@@ -107,7 +107,7 @@ BOO findFile( const char* fName, const char* path, char* fPathFound);	// searche
 const char * FC xgetdir( void);
 SEC    FC xchdir( filesys::path, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
-XFILE* xfopen( const char* fname, char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
+XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
 SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );
@@ -119,11 +119,12 @@ SEC    FC xfchsize( XFILE *, LI);
 SEC    FC xfflush( XFILE *);
 SEC    FC xlsterr( XFILE *);
 
-RC     FC xfcopy( const char *, const char *, char*, SI);
+RC     FC xfcopy( const char *, const char *, const char*, SI);
 RC     FC xfcopy2( XFILE *xfs, XFILE *xfd, int op, const char** pMsg);
 uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
+SEC	xfclear(XFILE* xf);
 
 
 #endif	// _XIOPAK_H

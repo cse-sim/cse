@@ -168,11 +168,8 @@ RC vrClear()		// delete all virtual reports in spool in preparation for re-use
 // clear spool file
 	if (spl.isOpen)					// if open (probably always true here)
 	{
-		xlsterr( spl.splxf);				// clear any prior xiopak error (else addl calls will nop)
-		if ( xfseek( spl.splxf, 0L, SEEK_SET) != SECOK	// set file pointer to start file (needed?)
-				|| xfchsize( spl.splxf, 0L) != SECOK )		// truncate file to 0 length
-		{
-			;    // on error, do nothing?
+		if (xfclear(spl.splxf) != SECOK) {
+			return RCBAD;
 		}
 	}
 	spl.spO = spl.spWo = 0;					// set file end offset and written offset to 0
