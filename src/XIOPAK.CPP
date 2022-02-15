@@ -171,21 +171,29 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), absolutepath;	// filesystem variables
+	filesys::path fname(*fnamp), parentPath, fileNamePart;	// filesystem variables
 	std::error_code ec;						// Error Code for filesystem functions
 
-	if (filesys::exists(fname)) {		// File or full path exist
-		absolutepath = filesys::absolute(fname,ec); // Create full path
-		if(ec)
-			err(erOp, "\"%s\": %s", fname.string().c_str(), ec.message().c_str());
+	if (fname.has_parent_path()) // Check the parent path i.e drv:dir
+	{
+		if (filesys::exists(fname.parent_path())) {		// Check the parent path exists.
+			parentPath = fname.parent_path();			// Save the parent path
+		}
+		else
+		{
+			err(erOp, "\"%s\": Invalid path", fname.string().c_str());
+			return RCBAD;		// Parent path is not valid
+		}
+		fileNamePart = fname.filename();	// Save the filename.ext to be append at the end
 	}
-	else {
-		err(erOp, "\"%s\": Invalid path", fname.string().c_str());
-		return RCBAD;
+	else // No parent path
+	{
+		parentPath = filesys::current_path();	// Use the current location
+		fileNamePart = fname;
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(absolutepath.parent_path().string().c_str(), absolutepath.filename().string().c_str());
+	*fnamp = strtPathCat(parentPath.string().c_str(), fileNamePart.string().c_str());
 
 	return RCOK;		// another return is in code above
 
