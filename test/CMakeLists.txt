@@ -9,13 +9,7 @@ set(test_comment "! ")
 endmacro()
 
 macro(regress_test case)
-  if(${case} MATCHES "cse")
-   string(LENGTH ${case} wordlenght)
-   math(EXPR filelength ${wordlenght}-4)
-   string(SUBSTRING ${case} 0 ${filelength} testname)
-  else()
-   set(testname ${case})
-  endif()
+  get_filename_component(testname ${case} NAME_WE)
   add_test(NAME ${testname}.Regression
     COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${testname}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${testname}.rep" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -24,7 +18,7 @@ macro(regress_test case)
 endmacro()
 
 set(files
-  wthr01.cse
+  wthr01.CSE
   600.cse
   930.cse
   960.cse
