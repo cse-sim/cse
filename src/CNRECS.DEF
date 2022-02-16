@@ -2106,12 +2106,10 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 					// Subhourly variablility desirable (rob's opinion); requires duplicating
 					// loadsHourBeg solar gain code in loadsSubhr with znSC-change trigger.
 
-				// Alternate zone model inputs
-				//   used for some zone models only (e.g. CZM and thus UZM), else no effect
-					// thermostat set points, F (8-10)
-	*s TEMP_GZ znTH 	// heating
-	*s TEMP_GZ znTD		// desired (venting)
-    *s TEMP_GZ znTC    	// cooling
+	*s TEMP_GZ znTH // base heating set point, F (from input, may be modified for autosizing)
+	*s TEMP_GZ znTD // base desired temp (vent) set point, F (from input, may be modified for autosizing)
+    *s TEMP_GZ znTC // base cooling set point, F (from input, may be modified for autosizing)
+
 					// available nominal system capacity, Btuh (added 9-10)
     *h FLOAT znQMxH			// heating cap for current hour (>= 0)
     *r FLOAT znQMxHRated	// heating cap rated (>=0, constant for run)  TODO: s/b autosizable?
@@ -2459,7 +2457,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 										//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)
 	*s *e FLOAT zn_tzVent				// zone air temp with full vent, F (debug aid)
 										//    0 if vent not possible
-   	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at znTD
+   	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at zn_tzspD
 										//    = (actual mCp) / (possible mCp)
     *s *e DBL zn_anAmfCpVent			// vent flow (in excess of zn_airNetI[ 0]), Btuh/F
     *s *e DBL zn_anAmfCpTVent			// vent flow*temp (in excess of zn_airNetI[ 0]), Btuh
@@ -2514,14 +2512,23 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e DBL zn_rsAmfSup;		// final RSYS supply air mass flow (at register, +=in), lbm/hr
 	*s *e DBL zn_rsAmfRet;		// final RSYS return air mass flow (out of zone at grille, +=out), lbm/hr
 	*s DBL zn_rsAmfRetLs;		// last step zn_rsAmfRet (+ = out)
-	*s *e FLOAT zn_tzsp			// current step controlling set point, F
-								//   not reliably set for all configurations
+
+    *s *e TEMP_GZ zn_tzsp       // current step controlling set point, F
+                                //    may not be reliably set for all modes
+	*s *e TEMP_GZ zn_tzspH		// current step heating set point, F
+    *s *e TEMP_GZ zn_tzspD		// current step desired temp set point, F
+    *s *e TEMP_GZ zn_tzspC		// current step cooling set point, F
+
+    *h TEMP_GZ zn_tzspHlh		// end-of-last-hour heating set point, F
+    *h TEMP_GZ zn_tzspDlh		// end-of-last-hour desired temp set point, F
+    *h TEMP_GZ zn_tzspClh		// end-of-last-hour cooling set point, F
+
 	*s *e SI zn_hcMode			// heating / cooling mode required per set point (rsmHEAT, rsmCOOL, )
 								//   (may not match RSYS.rs_mode due to e.g. RSYS availability or
 								//    conflicting zone requests)
 								// flag unmet heating/cooling requirements (zn_tzsp not held)
-	*h *e FLOAT zn_unMetHDH		//   tz - znTH at end of hour, deg-hr
-	*h *e FLOAT zn_unMetCDH		//   tz - znTC at end of hour, deg-hr
+	*h *e FLOAT zn_unMetHDH		//   tz - zn_tzspH at end of hour, deg-hr
+	*h *e FLOAT zn_unMetCDH		//   tz - zn_tzspC at end of hour, deg-hr
 
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating
