@@ -1113,7 +1113,7 @@ x #define MH_S0118  6118	// "run start time"
 // cueval.cpp: runtime errors in expression evaluator 7-92
 #define MH_R0201  901	// "cuEvalTop: %d words left on eval stack"
 #define MH_R0202  902	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
-#define MH_R0203  903	// "cueval.cpp must be reworked for float size != long size or != char * size"
+// #define MH_R0203  903
 #define MH_R0204  904	// "cuEvalI internal error: \n    eval stack overflow at ps ip=%p"
 #define MH_R0205  905	// "cuEvalI internal error: \n    eval stack underflow at ps ip=%p"
 #define MH_R0206  906	// "cuEvalI internal error: \n    arg access thru NULL frame ptr at ip=%p"
@@ -1141,7 +1141,6 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_R0228  928	// "%s has not been evaluated yet."  			// used twice in cueval.cpp.
 #define MH_R0229  929	// "Bad IVLCH value %d"
 #define MH_R0230  930	// "%s has not been evaluated yet."	10-92
-//6-95
 #define MH_R0231  931	// "Unexpected being-autosized value where number needed"
 #define MH_R0232  932	// "%s probed while being autosized"
 //#define MH_R0233  933	//

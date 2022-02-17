@@ -1347,8 +1347,8 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
     *i TI sfFndFloor		// surface foundation floor object (walls only, optional)
 	*i LEN sfExpPerim		// foundation floor exposed perimeter (floors only)
  //window only
-    *i LEN_GZ width 		// width and height: used to compute shading,
-    *i LEN_GZ height		//  ... and to compute area b4 mutliplier.
+    *i LEN_GZ sf_width 		// width and height: used to compute shading,
+    *i LEN_GZ sf_height		//  ... and to compute area b4 mutliplier.
     *i FLOAT_GZ mult		// area multiplier (for multiple identical windows)
  //derived/internal
     *r TI xi		// subscript in runtime XSRAT, to facilitate access by probers 1-92
@@ -2183,8 +2183,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     // .name (in base class) is required.  .ownTi is unused.
     *declare "void addRIgDist( RIGTARGTY targTy, TI targTi, float targFr);"
     *declare "void zn_AddIZXFERs();"
-    *declare "TI zn_AddIZXFER( IZNVTYCH ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
-    *declare "TI zn_FindOrAddIZXFER( IZNVTYCH ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
+    *declare "TI zn_AddIZXFER( IZNVTYCH _ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
+    *declare "TI zn_FindOrAddIZXFER( IZNVTYCH _ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
     *declare "XSRAT* zn_FindXSRAT( const char* xsName);"
     *declare "MSRAT* zn_FindMSRAT( const char* xsName);"
     *declare "void zn_AccumBalTermsQS( double area, const SBC& sbcI, const SBC& sbcO);"
@@ -2537,12 +2537,12 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
 // ZNR runtime subhourly hvac a,b,c,q's.  *hide; not fully analyzed re note 1, note 2.
 
-    *s *e *hide DBL aqHvO	// hvac a + q except active terminal: sum of lh q's and ah cz*Ts's
-    *s *e *hide DBL bHvO	// hvac b except active terminal: sum of ah tu cz's
-    //aqO,bO			for loads plus all zhx's but active: __LdSh+__Hvo: in TERMINAL cuz AH's update them as they go.
-    //cO			total flow (heat cap units) except active zhx: same as bHvO, use that.
-    *s *e *hide DBL aq  	// zone total a+q: loads and all terminals including active
-    *s *e *hide DBL b		// zone total b ditto.
+    *s *e *hide DBL zn_aqHvO    // hvac a + q except active terminal: sum of lh q's and ah cz*Ts's
+    *s *e *hide DBL zn_bHvO	    // hvac b except active terminal: sum of ah tu cz's
+                //aqO,bO			for loads plus all zhx's but active: __LdSh+__Hvo: in TERMINAL cuz AH's update them as they go.
+                //cO			total flow (heat cap units) except active zhx: same as bHvO, use that.
+    *s *e *hide DBL zn_aq  	// zone total a+q: loads and all terminals including active
+    *s *e *hide DBL zn_b	// zone total b ditto.
     //aStA  			set-temp active (tstat) zhx part of 'a' for current md; 0 if floating. compute if need found.
     //bStA  			.. b.
     *s *e *hide DBL/*CFLOW*/ cM	// 0 if floating or or active-zhx heat cap flow to zone (after leaks) for current mode (Btuh/F)
@@ -5560,7 +5560,7 @@ RECORD AH "airHandler" *RAT
 // Each AH record describes one AIR HANDLER (Niles' terminology; formerly a "generic subsystem"), including
 // supply and return fans, outside air control, economizer, heat and cool coils, supply temperature regulation,
 //         and (probably deferred) warmup, optimum start, and setback/setup control.
-// Member names begin with ah-, py-, sfan-, rfan-, and oa-. */
+// Member names begin with ah-, py-, sfan-, rfan-, and oa-.
 
     *declare "RC setup();"
     *declare "void fazInit( int isAusz);"
@@ -5582,7 +5582,7 @@ RECORD AH "airHandler" *RAT
     *declare "RC ahCompute();"
     *declare "BOO iter4Fs( BOO &cvgFail);"
     *declare "void pute4Fs();"
-    *declare "void setFrFanOn( DBL leakCOn);"
+    *declare "void setFrFanOn( DBL _leakCOn);"
     *declare "BOO incrFanF();"
     *declare "BOO decrFanF();"
     *declare "BOO fanXtrap( SI whichway);"
@@ -5610,7 +5610,7 @@ RECORD AH "airHandler" *RAT
     *declare "void puteRa();"
     *declare "BOO flagTusIf();"
     *declare "void flagChanges();"
-    *declare "void upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas);"
+    *declare "void upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas);"
     *declare "void upPriors();"
     *declare "void ahVshNLims( DBL _ts, DBL &cIncr, DBL &cDecr);"
     *declare "void flagTus();"
@@ -5875,17 +5875,17 @@ RECORD AH "airHandler" *RAT
 
   // ah runtime, terminals interactions:
     *s *e *hide BOO ahRun		// TRUE if ah has been run this subHr; if FALSE, ts is old or an estimage. 7-95.
-    *s *e *hide SI timesReEst		// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
+    *s *e *hide SI timesReEst	// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
     *s *e AHMODE ahMode			// what ah is doing: set to: ahOFF/ahFAN/ahHEATING/ahCOOLING/ahON(normal).
-    					//  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
+    					        //  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
     *s *e DBL /*TEMP*/ ts		// supply temp FOR TERMINALS, set from working copy aTs at ahCompute exit.
-    					// Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
+    					        // Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
     *s *e DBL /*HUMRAT*/ ws		// supply air hum rat for TERMINALS, set from working copy aWs at ah exit.
-    *s    DBL /*HUMRAT*/ wsls		// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
-    *s *e DBL /*HC_VOL*/ airxTs  	// Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
-    *s *e DBL /*TEMP*/ tsMnFo		// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
+    *s    DBL /*HUMRAT*/ wsls	// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
+    *s *e DBL /*HC_VOL*/ airxTs // Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
+    *s *e DBL /*TEMP*/ tsMnFo	// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
     *s *e BOO tsMnFoOk			// TRUE if tsMnFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMnFo().
-    *s *e DBL /*TEMP*/ tsMxFo		// ctu max flow, coil-off supply temp, calc'd & ret'd by getTsMxFo. See tsMxFoOk.
+    *s *e DBL /*TEMP*/ tsMxFo	// ctu max flow, coil-off supply temp, calc'd & ret'd by getTsMxFo. See tsMxFoOk.
     *s *e BOO tsMxFoOk			// TRUE if tsMxFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMxFo().
 
 //---- ah run internal: temp, w, flow, delta-T at various points in air handler ----
@@ -6075,15 +6075,15 @@ RECORD TU "terminal" *RAT		/* TERMINAL
    // following 8 return CFLOW: heat cap flow (Btuh/F):
      *declare "DBL tfanBackCMx()     { return tfanRunning ? 0. : tfanBkC; }"		// max backflow thru shut-off tfan
      *declare "DBL aTfanBackC()      { return tfanRunning ? 0. : min( aCv, tfanBkC); }"	// ah working backflow thru shut-off tfan @ curr flow
-     *declare "DBL tfanBackC(DBL cv) { return tfanRunning ? 0. : min( cv, tfanBkC); }"	// backflow thru shut-off tfan @ flow cv
+     *declare "DBL tfanBackC(DBL _cv) { return tfanRunning ? 0. : min( _cv, tfanBkC); }"// backflow thru shut-off tfan @ flow cv
      *declare "DBL aRLeakC()         { return (aCv - aTfanBackC()) * tuSRLeak; }"   	// ah working flow leakage to ret/plenum
      *declare "DBL aCz()             { return (aCv - aTfanBackC()) * (1.-tuSRLeak); }"	// ah working flow getting to zone
-     *declare "DBL znC(DBL cv)       { return (cv - tfanBackC(cv)) * (1.-tuSRLeak); }"	// flow getting to zone given vav flow
-     *declare "DBL vavC(DBL cz)      { return (cz + tfanBackCMx()) / (1.-tuSRLeak); }"	// flow req'd at vav for flow cz to zone
+     *declare "DBL znC(DBL _cv)       { return (_cv - tfanBackC(_cv)) * (1.-tuSRLeak); }"// flow getting to zone given vav flow
+     *declare "DBL vavC(DBL _cz)      { return (_cz + tfanBackCMx()) / (1.-tuSRLeak); }"// flow req'd at vav for flow cz to zone
   //restore if needed:
    //*declare "DBL tfanBackC()       { return tfanRunning ? 0. : min( cv, tfanBkC); }"	// backflow thru shut-off tfan @ curr flow
-   //*declare "DBL rLeakC()          { return (cv - tfanBackC()) * tuSRLeak; }"		// current flow leakage to return/plenum
-     *declare "DBL rLeakC(DBL cv)    { return (cv - tfanBackC(cv)) * tuSRLeak; }"    	// flow leakage to return/plenum
+   //*declare "DBL rLeakC()          { return (cv - tfanBackC()) * tuSRLeak; }"		    // current flow leakage to return/plenum
+     *declare "DBL rLeakC(DBL _cv)    { return (_cv - tfanBackC(_cv)) * tuSRLeak; }"    // flow leakage to return/plenum
 
     //.ownTi is terminal's zone.  name is optional.
 
@@ -6353,7 +6353,7 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
     *declare "BOO nxTu( TU *&tu);"				// 1st/next tu with hw coil served by hp, cnhp.cpp
     *declare "BOO nxAh( AH *&ah);"				// 1st/next ah with hw coil served by hp, cnhp.cpp
     *declare "BOO nxBlr( BOILER *&blr);"			// 1st/next boiler in hp, cnhp.cpp
-    *declare "BOO nxBlrStg( BOILER *&blr, SI stgi = -1);"	// 1st/next boiler in given or current hp stage, cnhp.cpp
+    *declare "BOO nxBlrStg( BOILER *&blr, SI _stgi = -1);"	// 1st/next boiler in given or current hp stage, cnhp.cpp
     // in base class: .name (required), .ownTi (unused), more.
  //heatplant user inputs
     *h OFFAVAILONVC hpSched	// hourly choice of OFF, AVAIL (default; plant runs on demand), or ON (at least 1st stage runs).
@@ -6442,7 +6442,7 @@ RECORD COOLPLANT "coolPlant" *RAT	// coolplant: Top object, contains chillers, s
     *declare "DBL/*POWER*/ capStg();"
     *declare "BOO nxAh( AH *&ah);"
     *declare "BOO nxCh( CHILLER *&ch);"
-    *declare "BOO nxChStg( CHILLER *&ch, SI stgi=-1);"
+    *declare "BOO nxChStg( CHILLER *&ch, int _stgi=-1);"
 
     // in base class: .name, .ownTi, more. Name required, for reference from coil.
 
@@ -6630,9 +6630,9 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *declare "RC   tpEstimate();"			// cntow.cpp
     *declare "RC   tpCompute();"			// cntow.cpp
     *declare "RC   endSubhr();"			// cntow.cpp
-    *declare "RC   findSpeed( DBL q);"					// cntow.cpp
-    *declare "RC   varSpeedF( DBL qWant, DBL &f, DBL &q, FLOAT &guess);"	// cntow.cpp
-    *declare "RC   towModel( DBL f, DBL &q, FLOAT &guess);"			// cntow.cpp
+    *declare "RC   findSpeed( DBL _q);"					// cntow.cpp
+    *declare "RC   varSpeedF( DBL qWant, DBL &_f, DBL &_q, FLOAT &guess);"	// cntow.cpp
+    *declare "RC   towModel( DBL _f, DBL &_q, FLOAT &guess);"			// cntow.cpp
     *declare "BOO  nxCp( COOLPLANT *&cp);"					// cntow.cpp
 #if 0 // when HPLOOP defined, 10-92
 *    *declare "BOO TOWERPLANT::nxHl( HPLOOP *&hl);"					// cntow.cpp.

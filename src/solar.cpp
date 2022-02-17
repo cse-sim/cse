@@ -698,7 +698,7 @@ int slsurfhr( // Calculate solar values for a surface for an hour
            FALSE if no direct solar on surface this hour.
                  *pCosi = 0, *pAzm and *pCosz undefined. */
 {
-  float c1, c2, fc1, fc2, faz1, faz2;
+  float c1, c2, fc1 = 0, fc2 = 0, faz1 = 0, faz2;
 
   // If sun below HORIZON for the entire hour, no need to calculate
   if (slloccur->sunupf[ihr] == 0.F) // if sun below horizon entire hour
@@ -971,7 +971,7 @@ void FC slaniso(/* Adjust beam and diffuse radiation values
                         cases, total horiz is preserved */
 {
     SI ihx;
-    float c1, c2, cosi, f, fb, fd;
+    float c1, c2, cosi = 0, f, fb, fd;
 
     if (*pbeam > 5.f) /* if a little beam */
     {
@@ -2008,7 +2008,7 @@ SLRSURFDAY* SLRSURF::AddOrGetSLRSURFDAY(
 //---------------------------------------------------------------------------
 void SLRSURF::DbDump(
 	int oMsk,
-	const TCHAR* hdg/*=""*/) const
+	[[maybe_unused]] const TCHAR* hdg/*=""*/) const
 {
 	if (!DbShouldPrint( oMsk))
 		return;
@@ -2720,7 +2720,7 @@ void SLRSURFDAY::DbDump() const		// debug print (unconditional)
 {
 #if 0	// enhanced format, 9-21-2011
 	DbPrintf( " %3.3d (%s)  %5.1f %5.1f   %5.3f\n",
-				ssd_doy, Calendar.FmtDOY( ssd_doy),
+				ssd_doy, Calendar.FmtDOY( ssd_doy).c_str(),
 				ssd_shgfMax, ssd_shgfShdMax, ssd_shgfDifX);
 	for (int iT=0; iT<24; iT++)
 	{	DbPrintf( "   %2.2d  %5.1f  %5.1f  %5.1f    %5.1f    %5.1f\n",
@@ -2729,7 +2729,7 @@ void SLRSURFDAY::DbDump() const		// debug print (unconditional)
 #else
 	// traditional format
 	DbPrintf( " %3.3d (%s)  %5.1f %5.1f   %5.3f\n",
-				ssd_doy, Calendar.FmtDOY( ssd_doy),
+				ssd_doy, Calendar.FmtDOY( ssd_doy).c_str(),
 				ssd_shgfMax, ssd_shgfShdMax, ssd_shgfDifX);
 #endif
 }		// SLRSURFDAY::DbDump
