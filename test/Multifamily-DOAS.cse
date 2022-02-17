@@ -76,6 +76,7 @@
    awTrigH = 0.3
 
  DELETE Report "eb"    // move from end of CSE file
+ DELETE Report "Inp"
 
 CONSTRUCTION   "cc-Exterior Wall Cons"  
 
@@ -1711,62 +1712,13 @@ PVARRAY   "PV Array-sim"
    pvInverterEff = 0.96                 // frac
    pvElecMtr = "MtrElec"
 
-EXPORTFILE   "xf-hvacCaps"  
-   xfFileName = "MF8_Prop_ELEC-CZ12_Restructure - Prop-hvacCaps.csv"    // Name of file to write simulation results to
-   endEXPORTFILE
-
-EXPORT   "ExportElec"  
-   exExportfile = "Primary"             // Name of EXPORTFILE to write simulation results to
-   exType = "MTR"                       // Export type
-   exFreq = "HOUR"                      // Time interval for generating rows of export data
-   exMeter = "MtrElec"                  // Meter to report
-   exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
-   exDayBeg = Jan 1                     // initial day of export period
-   exDayEnd = Dec 31                    // final day of export period
-
-EXPORT   "ExportNatGas"  
-   exExportfile = "Primary"             // Name of EXPORTFILE to write simulation results to
-   exType = "MTR"                       // Export type
-   exFreq = "HOUR"                      // Time interval for generating rows of export data
-   exMeter = "MtrNatGas"                // Meter to report
-   exBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
-   exDayBeg = Jan 1                     // initial day of export period
-   exDayEnd = Dec 31                    // final day of export period
-
-EXPORT   "x-hvacCaps"  
-   exExportfile = "xf-hvacCaps"         // Name of EXPORTFILE to write simulation results to
-   exType = "UDT"                       // Export type
-   exFreq = "YEAR"                      // Time interval for generating rows of export data
-   exHeader = "COLUMNSONLY"             // export header which gives the export type, object being exported, time interval, column headings, etc.
-
-   EXPORTCOL   "xc-hvacCaps"  
-      colVal = @top.runDateTime         // Value to show in this position in each row of export
-      colHead = "runDateTime"           // Text used for field name in export header
-
-   EXPORTCOL   "xc1-Zone1 HVACSys-Name"  
-      colVal = "Zone1 HVACSys"          // Value to show in this position in each row of export
-      colHead = "SysName"               // Text used for field name in export header
-
-   EXPORTCOL   "xc1-Zone1 HVACSys-HtgCap"  
-      colVal = @Rsys["rsys-Zone1 HVACSys"].Cap47/1000    // Value to show in this position in each row of export
-      colHead = "HtgCap"                // Text used for field name in export header
-
-   EXPORTCOL   "xc1-Zone1 HVACSys-ClgCap"  
-      colVal = @Rsys["rsys-Zone1 HVACSys"].Cap95/1000    // Value to show in this position in each row of export
-      colHead = "ClgCap"                // Text used for field name in export header
-
-   EXPORTCOL   "xc1-Zone2 HVACSys-Name"  
-      colVal = "Zone2 HVACSys"          // Value to show in this position in each row of export
-      colHead = "SysName"               // Text used for field name in export header
-
-   EXPORTCOL   "xc1-Zone2 HVACSys-HtgCap"  
-      colVal = @Rsys["rsys-Zone2 HVACSys"].Cap47/1000    // Value to show in this position in each row of export
-      colHead = "HtgCap"                // Text used for field name in export header
-
-   EXPORTCOL   "xc1-Zone2 HVACSys-ClgCap"  
-      colVal = @Rsys["rsys-Zone2 HVACSys"].Cap95/1000    // Value to show in this position in each row of export
-      colHead = "ClgCap"                // Text used for field name in export header
-
+REPORT   "ReportElec"  
+   rpType = "MTR"                       // Report type
+   rpFreq = "MONTH"                     // Time interval for generating rows of report data
+   rpMeter = "MtrElec"                  // Meter to report
+   rpBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+   rpDayBeg = Jan 1                     // initial day of report period
+   rpDayEnd = Dec 31                    // final day of report period
 
  RUN
  $EOF
