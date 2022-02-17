@@ -46,6 +46,7 @@ set(files
   ashp_dfng
   ashpvc2
   herv
+  Multifamily-DOAS
   oavtest2
   bgtest
   ashwat1
