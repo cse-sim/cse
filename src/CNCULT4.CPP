@@ -1570,7 +1570,7 @@ char* getInpTitleText() 			// get "INP" report title text -- public function
 //---------------------------------------------------------------------------------------------------------------------------
 const int HFBUFSZ = 2*132 + 6 + 1 + 100;	// 2 lines of text up to 132, 3 crlf's, null, insurance
 //---------------------------------------------------------------------------------------------------------------------------
-char* getHeaderText( int pageN) 			// get header text -- public function
+char* getHeaderText([[maybe_unused]] int pageN) 			// get header text -- public function
 
 // (currently no page # in header; argument is to localize changes if one is put there)
 {

@@ -266,7 +266,7 @@ extern SI NEAR firstCulCall;	// non-0 if first cul call, 0 on reentry (eg after 
 void FC culClean(CLEANCASE cs);
 SI FC cul( SI cs, const char* fName, char *defex, CULT *cult, record *e, BOO *pAuszF=NULL);
 TI FC ratDefO( BP b);
-const char* FC culMbrId( BP b, int fn);
+const char* FC culMbrId( BP b, unsigned int fn);
 const char* FC quifnn( char *s);
 
 // cncult2.cpp

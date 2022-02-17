@@ -213,23 +213,22 @@ int Solve(			// matrix solver
 	int NM1=N-1;
 	int NP1=N+1;
 	int NP2=N+2;
-	int I,J,L;
 
-	for (I=1; I<=N; I++)
+	for (int I=1; I<=N; I++)
 		M( I, NP2)=SumRow( I, 1, NP1);
 
-	for (L=1; L<=NM1; L++)
+	for (int L=1; L<=NM1; L++)
 	{	double CMAX = M( L, L);
 		int LP = L+1;
 		int NOS = L;
-		for (I=LP; I<=N; I++)
+		for (int I=LP; I<=N; I++)
 		{	if (abs( M( I,L)) > abs( CMAX))
 			{	CMAX = M( I, L);
 				NOS = I;
 			}
 		}
 		SwapRows( L, NOS);
-		for (I=LP; I<=N; I++)
+		for (int I=LP; I<=N; I++)
 		{	double Y = M( I, L) / M( L,L);
 			for (int J=L; J<=NP2; J++)
 				M( I, J) -= Y * M( L, J);
@@ -238,14 +237,14 @@ int Solve(			// matrix solver
 
 	//  back-substitute
 	XSOL( N) = M( N, NP1) / M( N, N);
-	for (I=1; I<=NM1; I++)
+	for (int I=1; I<=NM1; I++)
 	{	int NI = N - I;
-		double D = 0.;
-		for (J=1; J<=I; J++)
+		double tD = 0.;
+		for (int J=1; J<=I; J++)
 		{	int NJ = N+1-J;
-			D += M( NI, NJ)*XSOL( NJ);
+			tD += M( NI, NJ)*XSOL( NJ);
 		}
-		XSOL( NI) = (M( NI, NP1) - D) / M( NI, NI);
+		XSOL( NI) = (M( NI, NP1) - tD) / M( NI, NI);
 	}
 	return ret;
 
@@ -278,6 +277,8 @@ static const char* awStrToBF(		// c-string to space-padded string
 	return d;
 }	// awStrToBF
 //-----------------------------------------------------------------------------
+#if 0
+// unused, save for possible future use
 static const char* awStrToZF(		// safe c-string copy with truncate
 	char* d,		// destination
 	size_t dDim,	// size of destination
@@ -292,6 +293,7 @@ static const char* awStrToZF(		// safe c-string copy with truncate
 		*(d+iD++) = '\0';
 	return d;
 }	// awStrToZF
+#endif
 //-----------------------------------------------------------------------------
 #if defined( FORTRAN_TRANSITION)
 #define FCSET( d, s) awStrToBF( d, sizeof( d), s)
@@ -383,6 +385,7 @@ bool AppendMsg(		// append message with break;
 	return false;
 }  // AppendMsg
 //-----------------------------------------------------------------------------
+#if defined( _DEBUG)
 static bool CompMsg(		// message re compare error (double)
 	const char* w1,		// context 1
 	const char* w2,		// context 2
@@ -428,10 +431,11 @@ template <typename T> static int vNEQMsg(			// compare, issue message if fail
 		CompMsg( w1, w2, item, v1, v2, errCount++==0);
 	return ret;
 }	// vNEQMsg
+#endif
 //=============================================================================
 static double P01(		//  constrain property to range 0 - 1
 	double P,			//  property
-	const char* what)	//  identifier for err msg
+	[[maybe_unused]] const char* what)	//  identifier for err msg
 {
 #if defined( _DEBUG)
 	if (P < -.05 || P > 1.05)
@@ -608,7 +612,7 @@ double T[ KMAX][ KMAX];
 #if defined( _DEBUG)
 double TEST_F(	//  test function
 	double x,			//  ind var
-	int OPT,		//  options (unused)
+	int /*OPT*/,		//  options (unused)
 	double P[])	//  parameters
 {
 	return x*x*P[ 2] + x*P[ 1] + P[ 0];
@@ -868,7 +872,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 #if defined( TEST_PRINT)
 	bool DoPrint = true;
 #else
-	bool DoPrint = false;
+	[[maybe_unused]] bool DoPrint = false;
 #endif
 
 	if (NL < 1)
@@ -1241,7 +1245,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		Q_INdv += HC2D(I,NL+1)*(XSOL( I)-TINdv) + HR2D(I,NL+1)*(XSOL( I)-TRMINdv);
 
 	Ucg = Q_INdv;
-	double Rvalue = 5.678/Ucg;		// Resistance in I-P units, ft2-F/Btuh
+	[[maybe_unused]] double Rvalue = 5.678/Ucg;		// Resistance in I-P units, ft2-F/Btuh
 
 	// find SHGCcg
 	SHGCcg = 0.;
@@ -1292,7 +1296,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		Q_INdv += HC2D(I,NL+1)*(XSOL( I)-TINdv) + HR2D(I,NL+1)*(XSOL( I)-TRMINdv);
 
 	FHR_IN = 1.0 + (Q_INdv/Ucg);
-	double TAE_IN = FHR_IN*TRMIN + (1-FHR_IN)*TIN;
+	[[maybe_unused]] double TAE_IN = FHR_IN*TRMIN + (1-FHR_IN)*TIN;
 
 	// calculate FHR_OUT
 	A = ACopy;
@@ -1317,7 +1321,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 		Q_INdv += HC2D(I,NL+1)*(XSOL( I)-TINdv) + HR2D(I,NL+1)*(XSOL( I)-TRMINdv);
 
 	FHR_OUT = 1.0 - (Q_INdv/Ucg);
-	double TAE_OUT = FHR_OUT*TRMOUT + (1-FHR_OUT)*TOUT;
+	[[maybe_unused]] double TAE_OUT = FHR_OUT*TRMOUT + (1-FHR_OUT)*TOUT;
 
 	// compute inward-flowing fractions
 	// can only be done if ISOL > 0
@@ -1516,6 +1520,8 @@ static double FNU(	// Nusselt number (function of Rayleigh number)
 	return FNU;
 }  // FNU
 //--------------------------------------------------------------------------
+#if 0
+// unused, save for possible future use
 static double HRadPar(
 	double T1, double T2,	// bounding surface temps, K
 	double E1, double E2)	// bounding surface emissivities
@@ -1534,6 +1540,7 @@ static double HRadPar(
 	}
 	return hr;
 }  // HRadPar
+#endif
 //==============================================================================
 double CFSLAYER::cl_ConvectionFactor() const	// layer convection enhancement
 // modifies convection rate per shade config
@@ -1653,7 +1660,7 @@ bool CFSTY::cf_URated(		// U-factor
 // returns true iff U-factor successfully derived
 {
 
-double HRO, HCO, HRI, HCI, TGO, TGI;
+double HRO, HCO = 0, HRI, HCI, TGO, TGI;
 double TL[ CFSMAXNL+2] = { 0. };	// layer temps, K
 
 	bool bRet = false;
@@ -2149,7 +2156,7 @@ void RB_BEAM(	// roller blind off-normal properties
 static double RB_F(	//  roller blind integrand
 	double THETA,		//  incidence angle, radians
 	const HEMINTP& P,	//  parameters
-	int opt=0)			// unused options
+	[[maybe_unused]] int opt=0)			// unused options
 {
 	double RHO_BD, TAU_BB, TAU_BD;
 	RB_BEAM( THETA, P.RHO_BT0, P.TAU_BT0, P.TAU_BB0,
@@ -2311,8 +2318,8 @@ static void IS_BEAM(	// insect screen BB and BD properties
 			TAU_BB = P01( TAU_BB0 * pow( cos( PIOVER2*THETA/THETA_CUTOFF), B), "IS_BEAM TauBB");
 		}
 
-		double B = -.65 * log( max( TAU_BT0, .01)) + .1;
-		TAU_BT = P01( TAU_BT0 * pow( COSTHETA, B), "IS_BEAM TauBT");
+		double expB = -.65 * log( max( TAU_BT0, .01)) + .1;
+		TAU_BT = P01( TAU_BT0 * pow( COSTHETA, expB), "IS_BEAM TauBT");
 	}
 
 	TAU_BD = P01( TAU_BT-TAU_BB, "IS_BEAM TauBD");
@@ -2678,13 +2685,13 @@ static void PD_LW(		// Pleated drape layer long wave effective properties
 static void PD_BEAM_CASE_I(		// pleated drape 14 surface flat-fabric model
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
+	[[maybe_unused]] double OMEGA_H,			//  horizontal profile angle, radians
 	double DE,				//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -2989,13 +2996,13 @@ static void PD_BEAM_CASE_I(		// pleated drape 14 surface flat-fabric model
 static void PD_BEAM_CASE_II(		// pleated drape 14 surface flat-fabric model, case II
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
+	[[maybe_unused]] double OMEGA_H,	//  horizontal profile angle, radians
 	double DE,				//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3236,7 +3243,7 @@ static void PD_BEAM_CASE_III(		// pleated drape 14 surface flat-fabric model, ca
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3470,13 +3477,13 @@ static void PD_BEAM_CASE_III(		// pleated drape 14 surface flat-fabric model, ca
 static void PD_BEAM_CASE_IV(		// pleated drape 14 surface flat-fabric model, case IV
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
-	double DE,				//  width of illumination on pleat bottom (same units as S)
+	[[maybe_unused]] double OMEGA_H,	//  horizontal profile angle, radians
+	[[maybe_unused]] double DE,			//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3605,7 +3612,7 @@ static void PD_BEAM_CASE_V(		// pleated drape 14 surface flat-fabric model, case
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
 	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
 	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
@@ -3756,15 +3763,15 @@ static void PD_BEAM_CASE_V(		// pleated drape 14 surface flat-fabric model, case
 static void PD_BEAM_CASE_VI(		// pleated drape 14 surface flat-fabric model, case VI
 	double S,				//  pleat spacing (> 0)
 	double W,				//  pleat depth (>=0, same units as S)
-	double OMEGA_H,			//  horizontal profile angle, radians
-	double DE,				//  width of illumination on pleat bottom (same units as S)
+	[[maybe_unused]] double OMEGA_H,	//  horizontal profile angle, radians
+	[[maybe_unused]] double DE,			//  width of illumination on pleat bottom (same units as S)
 							//  fabric properties at current (off-normal) incidence
 							//    _PARL = surface parallel to window (pleat top/bot)
 							//    _PERP = surface perpendicular to window (pleat side)
 	double RHOFF_BT_PARL, double TAUFF_BB_PARL, double TAUFF_BD_PARL,
-	double RHOBF_BT_PARL, double TAUBF_BB_PARL, double TAUBF_BD_PARL,
-	double RHOFF_BT_PERP, double TAUFF_BB_PERP, double TAUFF_BD_PERP,
-	double RHOBF_BT_PERP, double TAUBF_BB_PERP, double TAUBF_BD_PERP,
+	[[maybe_unused]] double RHOBF_BT_PARL, [[maybe_unused]] double TAUBF_BB_PARL, [[maybe_unused]] double TAUBF_BD_PARL,
+	[[maybe_unused]] double RHOFF_BT_PERP, [[maybe_unused]] double TAUFF_BB_PERP, [[maybe_unused]] double TAUFF_BD_PERP,
+	[[maybe_unused]] double RHOBF_BT_PERP, [[maybe_unused]] double TAUBF_BB_PERP, [[maybe_unused]] double TAUBF_BD_PERP,
 	double RHOFF_DD,		//  fabric front diffuse-diffuse reflectance
 	double RHOBF_DD,		//  fabric back diffuse-diffuse reflectance
 	double TAUFF_DD,		//  fabric front diffuse-diffuse transmittance
@@ -4031,13 +4038,13 @@ static int caseCount[ 7] = { 0};
 		double RHOBF_BT0 = SWP_MAT.RHOSBBB + SWP_MAT.RHOSBBD;	// back rho
 
 		// drape front properties
-		int geoCaseF = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
+		[[maybe_unused]] int geoCaseF = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
 			RHOFF_BT0, SWP_MAT.TAUSFBB, SWP_MAT.TAUSFBD, SWP_MAT.RHOSFDD, SWP_MAT.TAUS_DD,
 			RHOBF_BT0, SWP_MAT.TAUSBBB, SWP_MAT.TAUSBBD, SWP_MAT.RHOSBDD, SWP_MAT.TAUS_DD,
 			LSWP.RHOSFBD, LSWP.TAUSFBB, LSWP.TAUSFBD);
 
 		// drape back properties: call with reversed fabric properies
-		int geoCaseB = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
+		[[maybe_unused]] int geoCaseB = PD_BEAM( S, W, OHM_V_RAD, OHM_H_RAD,
 			RHOBF_BT0, SWP_MAT.TAUSBBB, SWP_MAT.TAUSBBD, SWP_MAT.RHOSBDD, SWP_MAT.TAUS_DD,
 			RHOFF_BT0, SWP_MAT.TAUSFBB, SWP_MAT.TAUSFBD, SWP_MAT.RHOSFDD, SWP_MAT.TAUS_DD,
 			LSWP.RHOSBBD, LSWP.TAUSBBB, LSWP.TAUSBBD);
@@ -4363,8 +4370,8 @@ double DE = 0.;		//  distance from front tip of any slat to shadow (caused by th
 	//  limit profile angle to +/- 89.5 deg
 	OMEGA = max( -DTOR*89.5, min( DTOR*89.5, OMEGA));
 
-	double SL_RAD = W / max( SL_WR, .0000001);
-	double SL_THETA = 2. * asin( 0.5*SL_WR);
+	[[maybe_unused]] double SL_RAD = W / max( SL_WR, .0000001);
+	[[maybe_unused]] double SL_THETA = 2. * asin( 0.5*SL_WR);
 
 #if defined( CURVEDSLAT_CORR)
 double  Slope,T_CORR_D,T_CORR_F,RHO_TEMP,TAU_TEMP;
@@ -4983,7 +4990,7 @@ int CFSLAYER::cl_IsNEQ(		// compare CFSLAYERs
 #define XCI( m) vNEQ( m, cl.m, 0)
 #define XCD( m) vNEQ( m, cl.m, tol)
 #endif
-	int errCount = 0;
+	[[maybe_unused]] int errCount = 0;
 	int ret = XCI( LTYPE) _X_ XCI( iGZS) _X_ XCI( CNTRL)
 		  _X_ XCD( S) _X_ XCD( W) _X_ XCD( C) _X_ XCD( PHI_DEG)
 		  _X_ SWP_MAT.csw_IsNEQ( cl.SWP_MAT, tol, optionsMAT, what, "SWP.MAT")
@@ -5160,8 +5167,8 @@ int CFSSWP::csw_IsNEQ(	// compare short wave properties
 	int options /*=0*/,			// options:
 								//   0: compare all
 								//   1: compare only input
-	const char* w1/*="?"*/,		// context for error messages
-	const char* w2/*=?*/) const	// context for error messages
+	[[maybe_unused]] const char* w1/*="?"*/,		// context for error messages
+	[[maybe_unused]] const char* w2/*=?*/) const	// context for error messages
 // returns 0 iff *this "equals" swp
 //    else minimum # of errors found
 {
@@ -5287,7 +5294,7 @@ void CFSSWP::csw_SpecularAdjust(		// adjust properties
 //----------------------------------------------------------------------------
 static double Specular_F(		// integrand fcn for specular properties
 	double THETA,		// incidence angle, radians
-	const HEMINTP& P,	// parameters
+	[[maybe_unused]] const HEMINTP& P,	// parameters
 	int opt)			// options: what proterty to return
 {
 	double RAT_TAU, RAT_1MR;
@@ -5360,8 +5367,8 @@ int CFSLWP::clw_IsNEQ(	// compare long wave properties
 	double tol /*=0.*/,			// relative tolerance
 								//   0=require exact equality
 	int options/*=0*/,			// options (unused)
-	const char* w1/*="?"*/,		// context for msgs
-	const char* w2/*="?"*/) const
+	[[maybe_unused]] const char* w1/*="?"*/,		// context for msgs
+	[[maybe_unused]] const char* w2/*="?"*/) const
 {
 #if defined( _DEBUG)
 // debug version: all mbrs compared

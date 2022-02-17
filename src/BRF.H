@@ -244,7 +244,7 @@ struct HresfHdr 		// header for entire hourly binary results file
        return offPerMon;
     }
 
-    DWORD moOff( short mi) 		// file position of month mi 0-11, or -1L if not present
+    long moOff( short mi) 		// file position of month mi 0-11, or -1L if not present
     {  if (!isGoodMon(mi))				// check month carefully, but allowing end year wrap
           return -1L;
        return offMon0 + runMon(mi)*offPerMon;   	// months are stored in run order, unwrapped.

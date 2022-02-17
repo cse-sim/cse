@@ -800,7 +800,7 @@ x                     "    A total of %g kBtu of condensation heat was added to 
 x                     zp->i.name, (long)zp->znNSubhrXLG,
 x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
 #endif
-			AH* ah;
+			ah;
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
@@ -1011,7 +1011,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize design day
 
-	int isAusz )	// TRUE for autosize, FALSE for main simulation phase
+	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase
 
 // Returns RCOK or error code, message already issued.
 {
@@ -1035,7 +1035,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but not each design day.
 
-	int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
+	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
@@ -1938,7 +1938,7 @@ void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
 
 	const DUCTSEGRES_IVL_SUB* src,  	// source: next longer interval, or same interval for sum_of_
 	int firstflg, 		// nz: *this will be initialized before values are accumulated into it
-	int lastflg)  		// nz: *this end-of-interval calcs as needed
+	[[maybe_unused]] int lastflg)  		// nz: *this end-of-interval calcs as needed
 						//     +0x100: limit hrsOn to 1 (for H record)
 {
 	// first call: copy source into destination
@@ -2143,8 +2143,7 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
 			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
 				if (firstRec)
-				{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
-					mtrSum.tot = mtrSub1->tot;
+				{	mtrSum.tot = mtrSub1->tot;
 					mtrSum.bt = mtrSub1->bt;
 					mtrSum.dmd = mtrSub1->dmd;
 					mtrSum.dmdShoy = mtrSub1->dmdShoy;
@@ -2179,11 +2178,10 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
 
 #if	defined( _DEBUG)
-		if (1 || bTrc)
+		// if (bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub2->clg, NENDUSES);
-		if (frDiff(xTot, mtrSub2->tot, 1.f) > .001)
-			printf("\n    Bad sub2 after");// ,
-					//Top.jDay, Top.iHr);
+			if (frDiff(xTot, mtrSub2->tot, 1.f) > .001)
+				printf("\n    Bad sub2 after");	//Top.jDay, Top.iHr);
 		}
 #endif
 	}
