@@ -508,7 +508,9 @@ MATERIAL   "IntMassMat-Gypsum"
 
 METER   "MtrElec"  
 
-METER   "MtrNatGas"  
+METER   "MtrNatGas"
+
+AFMETER "MtrAirFlow"
 
 IZXFER   "Zone2ToAtticCeiling-BypassxA"  
    izNVType = "NONE"                    // Choice determining interzone ventilation
@@ -845,6 +847,7 @@ ZONE   "Zone1-zn"
    infELA = 0                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
    znRSys = "rsys-Zone1 HVACSys"        // RSYS component conditioning this ZONE
+   znAFMTR = MtrAirFlow
 
    GAIN   "Zone1-znLtg"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
@@ -1170,6 +1173,7 @@ ZONE   "Zone2-zn"
    infELA = 0                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
    znRSys = "rsys-Zone2 HVACSys"        // RSYS component conditioning this ZONE
+   znAFMTR = MtrAirFlow
 
    GAIN   "Zone2-znLtg"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
@@ -1719,6 +1723,8 @@ REPORT   "ReportElec"
    rpBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
    rpDayBeg = Jan 1                     // initial day of report period
    rpDayEnd = Dec 31                    // final day of report period
+
+REPORT "AFCondM" rpType=AFMTR rpFreq=month rpAFMETER=MtrAirFlow rpDayBeg=Jan 1 rpDayEnd=dec 31
 
  RUN
  $EOF

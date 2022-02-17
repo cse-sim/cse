@@ -37,24 +37,24 @@ Yr  6662.0 3460.0  11216 2495.7      0      0      0 883.66 2604.7 5801.4      0
 
 
 
-! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
+Monthly Air Flow (avg CFM), AFMETER "MtrAirFlow"
 
-! CSE 0.902.0+doas.644c3e75.9 for Win32 console
+Mon  Tot+ Unkn+ InfX+ VntX+ FanX+ InfU+ VntU+ FanU+ InfC+ VntC+ FanC+ Duct+ HVAC+   Tot-  Unkn-  InfX-  VntX-  FanX-  InfU-  VntU-  FanU-  InfC-  VntC-  FanC-  Duct-  HVAC-
+--- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan  1018     0 178.0     0 384.3     0     0     0     0     0     0     0 455.2  -1018      0  -46.2      0 -368.7 -141.9      0      0      0      0      0      0 -460.8
+Feb 856.7     0 166.1     0 381.9     0     0     0     0     0     0     0 308.7 -856.7      0  -50.4      0 -368.6 -125.2      0      0      0      0      0      0 -312.5
+Mar 706.3     0 154.9  16.3 378.0   0.5     0     0     0     0     0     0 156.5 -707.1      0  -62.1  -17.3 -368.1 -101.2      0      0      0      0      0      0 -158.5
+Apr 741.1     0 142.1  72.7 377.6   3.3     0     0     0     0     0     0 145.4 -743.4      0  -55.3  -74.5 -367.9  -98.5      0      0      0      0      0      0 -147.2
+May 831.5     0 104.8 300.9 370.6  12.6     0     0     0     0     0     0  42.6 -836.3      0  -63.0 -301.6 -366.0  -62.6      0      0      0      0      0      0  -43.1
+Jun 991.7     0  98.4 446.9 366.0  20.4     0     0     0     0     0     0  60.0 -991.1      0  -81.0 -437.2 -363.3  -48.9      0      0      0      0      0      0  -60.8
+Jul 998.8     0  86.6 342.5 363.7  25.6     0     0     0     0     0     0 180.4 -997.1      0  -75.7 -331.7 -361.9  -45.1      0      0      0      0      0      0 -182.7
+Aug  1017     0  86.5 392.1 364.7  22.9     0     0     0     0     0     0 150.4  -1016      0  -70.9 -381.3 -362.1  -49.3      0      0      0      0      0      0 -152.2
+Sep 989.9     0  85.4 347.4 365.8  20.9     0     0     0     0     0     0 170.3 -988.9      0  -63.3 -335.9 -362.4  -55.0      0      0      0      0      0      0 -172.4
+Oct 980.9     0 100.4 499.5 372.4   5.8     0     0     0     0     0     0   2.7 -980.7      0  -54.0 -485.7 -365.7  -72.6      0      0      0      0      0      0   -2.8
+Nov 733.7     0 159.1     0 381.0     0     0     0     0     0     0     0 193.6 -733.8      0  -47.5      0 -368.4 -121.9      0      0      0      0      0      0 -196.0
+Dec  1027     0 187.0     0 384.7     0     0     0     0     0     0     0 455.1  -1027      0  -54.6      0 -368.7 -142.8      0      0      0      0      0      0 -460.7
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Yr  908.5     0 128.9 203.0 374.2   9.4     0     0     0     0     0     0 193.0 -908.9      0  -60.4 -198.6 -366.0  -88.5      0      0      0      0      0      0 -195.4
 
 
 
@@ -69,21 +69,21 @@ MF8 Restructure Prototype
 
 
 
-! CSE 0.902.0+doas.644c3e75.9 for Win32 console run(s) done: Thu 17-Feb-22  11:23:13 am
+! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               17-Feb-22  11:12 am   (VS 14.29    2923008 bytes)  (HPWH 1.16.1)
-! Command line: -x!  -b -t1 Multifamily-DOAS
-! Input file:   C:\Users\nkruis\projects\cse\test\Multifamily-DOAS.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\Multifamily-DOAS.rep
+! CSE 0.902.0+doas.6750ca86.10 for Win32 console
 
-! Timing info --
 
-!                Input:  Time = 0.19     Calls = 2      T/C = 0.0945   
-!           AutoSizing:  Time = 2.00     Calls = 1      T/C = 1.9950   
-!           Simulation:  Time = 17.75    Calls = 1      T/C = 17.7530  
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
-!                Total:  Time = 19.95    Calls = 1      T/C = 19.9510  
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -124,4 +124,67 @@ MF8 Restructure Prototype
 
 ------------------------------------------------------------------------------
 !   001  MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ12_Restruc  Page  2
+
+
+
+MF8 Restructure Prototype
+------------------------------------------------------------------------------
+
+
+
+! CSE 0.902.0+doas.6750ca86.10 for Win32 console run(s) done: Thu 17-Feb-22  11:45:29 am
+
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               17-Feb-22  11:44 am   (VS 14.29    2923008 bytes)  (HPWH 1.16.1)
+! Command line: -x!  -b -t1 Multifamily-DOAS
+! Input file:   C:\Users\nkruis\projects\cse\test\Multifamily-DOAS.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\Multifamily-DOAS.rep
+
+! Timing info --
+
+!                Input:  Time = 0.16     Calls = 2      T/C = 0.0805   
+!           AutoSizing:  Time = 2.31     Calls = 1      T/C = 2.3110   
+!           Simulation:  Time = 15.60    Calls = 1      T/C = 15.6030  
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0090   
+!                Total:  Time = 18.09    Calls = 1      T/C = 18.0860  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+!   001  MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ12_Restruc  Page  3
 
