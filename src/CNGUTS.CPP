@@ -547,7 +547,12 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 #endif
 		CSE_EF( Top.tp_WthrBegSubhr() ); // set Top subhourly weather members, eg tDbOSh. Mostly interpolated. cgwthr.cpp.
 
-		// clear subhour values in air flow meters
+		// LOADMTR: clear subhour values
+		LOADMTR* pLM;
+		RLUP(LdMtrR, pLM)
+			CSE_EF(pLM->lmt_BegSubhr());
+
+		// AFMTR: clear subhour values
 		AFMTR* pAM;
 		RLUP(AfMtrR, pAM)
 			CSE_EF(pAM->amt_BegSubhr());
@@ -2086,6 +2091,11 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to ne
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 0 + (firstflg!=0));
 	}
 
+	// LOADMTRs
+	LOADMTR* pLM;
+	RLUP(LdMtrR, pLM)
+		pLM->lmt_Accum(ivl, firstflg, lastflg);
+
 	// DHWMTRs
 	DHWMTR* pWM;
 	RLUP( WMtrR, pWM)
@@ -2267,6 +2277,106 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
        					// ASSUMES the NENDUSES end use members follow .tot.
 						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
+
+
+///////////////////////////////////////////////////////////////////////////////
+// LOADMTR_IVL, LOADMTR: accumulates heating and cooling loads
+///////////////////////////////////////////////////////////////////////////////
+/*static*/ const size_t LOADMTR_IVL::lmt_NFLOAT
+		= (sizeof(LOADMTR_IVL) - offsetof(LOADMTR_IVL, qHtg)) / sizeof(float);
+//-----------------------------------------------------------------------------
+void LOADMTR_IVL::lmt_Copy(			// copy 
+	const LOADMTR_IVL* sIvl,	// source
+	float mult /*=1.f*/)		// optional multiplier
+{
+	if (mult == 1.f)
+		memcpy(this, sIvl, sizeof(LOADMTR_IVL));
+	else
+	{
+		lmt_count = sIvl->lmt_count;
+		VCopy(&qHtg, lmt_NFLOAT, &sIvl->qHtg, double(mult));
+	}
+}	// LOADMTR_IVL::lmt_Copy
+//-----------------------------------------------------------------------------
+void LOADMTR_IVL::lmt_Accum(			// accumulate
+	const LOADMTR_IVL* sIvl,		// source
+	int firstFlg,				// true iff first accum into this (beg of ivl)
+	int lastFlg,				// true iff last accum into this (end of ivl)
+	int options /*=0*/)			// option bits
+								//   1: use sIvl.lmt_count to scale totals
+								//      effectively averages by day for annual values
+								//   2: sum only (do not average)
+{
+	int count = (options & 1) ? sIvl->lmt_count : 1;
+	if (firstFlg)
+	{
+		lmt_Copy(sIvl, float(count));
+		lmt_count = count;
+	}
+	else
+	{
+		VAccum(&qHtg, lmt_NFLOAT, &sIvl->qHtg, float(count));
+		lmt_count += count;
+	}
+
+	// average unless caller says don't
+	//  Note: VMul1() nops if lmt_count==1
+	if (lastFlg && !(options & 2))
+		VMul1(&qHtg, lmt_NFLOAT, 1.f / lmt_count);
+}		// LOADMTR_IVL
+//-----------------------------------------------------------------------------
+RC LOADMTR::lmt_CkF()
+{
+	return RCOK;
+}
+//-----------------------------------------------------------------------------
+RC LOADMTR::lmt_BegSubhr()		// init at beg of subhr
+{
+	S.lmt_Clear();		// clear subhour values
+	return RCOK;
+}		// LOADMTR::lmt_BegSubhr
+//-----------------------------------------------------------------------------
+#if 0
+void AFMTR::lmt_AccumCat(		// accumulate air flow value for current subhour
+	AFCAT afCat,	// air flow category
+	float amf)		// air mass flow, lbm/sec
+{
+	int iNeg = amf < 0.f;
+	S[iNeg].lmt_AccumCat(afCat, AMFtoAVF2(amf));
+}		// AFMTR::lmt_AccumCat
+#endif
+//-----------------------------------------------------------------------------
+LOADMTR_IVL* LOADMTR::lmt_GetLOADMTR_IVL(
+	IVLCH ivl)		// interval
+{
+	return &Y + (ivl - C_IVLCH_Y);
+}		// LOADMTR::lmt_GetLOADMTR_IVL
+//-----------------------------------------------------------------------------
+void LOADMTR::lmt_Accum(
+	IVLCH ivl,		// destination interval: hour/day/month/year
+					// Accumulates from subhour/day/month.  Not Top.ivl!
+	int firstFlg,	// iff TRUE, destination will be initialized before values are accumulated into it
+	int lastFlg)	// iff TRUE, destination averages will be computed as needed
+{
+	LOADMTR_IVL* dIvl0 = lmt_GetLOADMTR_IVL(ivl);	// point destination substruct for interval
+													// ASSUMES interval members ordered like DTIVLCH choices
+	LOADMTR_IVL* sIvl0 = lmt_GetLOADMTR_IVL(ivl + 1);	// source: next shorter interval
+
+	int options =
+		ivl == C_IVLCH_Y ? 1	// average by day for non-sum-of year values
+								//   handles diffs due to month length
+		                 : 0;	// default: track average
+	dIvl0->lmt_Accum(sIvl0, firstFlg, lastFlg);
+
+	if (lastFlg)
+	{
+		LOADMTR* pLMSum = LdMtrR.p + LdMtrR.n;
+		LOADMTR_IVL* dIvlSum0 = pLMSum->lmt_GetLOADMTR_IVL(ivl);
+		dIvlSum0->lmt_Accum(dIvl0, ss == 1, 0);
+	}
+}		// LOADMTR::lmt_Accum
+//=============================================================================
+
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending intervals for each zone and for sum-of-zones.
 

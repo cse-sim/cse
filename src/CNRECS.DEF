@@ -3781,6 +3781,37 @@ RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
     // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// DHWMTR
 //=============================================================================
+RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct for LOADMTR
+
+    *prefix lmt_
+	*declare "void lmt_Clear() { memset( this, 0, sizeof( LOADMTR_IVL));}"
+	*declare "void lmt_Copy( const LOADMTR_IVL* s, float mult=1.f);"
+	*declare "void lmt_Accum( const LOADMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+	*declare "static const size_t lmt_NFLOAT;"
+
+    *e INT lmt_count;   // # of accums
+
+	// energy use
+    *e FLOAT qHtg		// heating energy, Btu (assumed to be first float)
+	*e FLOAT qClg		// cooling energy, Btu
+*END		// LOADMTR_IVL
+//=============================================================================
+RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
+    *declare "RC lmt_CkF();"
+	*declare "RC lmt_BegSubhr();"
+    *declare "LOADMTR_IVL* lmt_GetLOADMTR_IVL( IVLCH ivl);"
+	*declare "void lmt_Accum( IVLCH ivl, int firstflg, int lastflg);"
+
+ // accumulated values for each interval
+ // CAUTION: ordered for subscripting by IVLCH-1
+    *y *e *nest LOADMTR_IVL Y   	// run (aka year or annual)
+    *m *e *nest LOADMTR_IVL M   	// month
+    *d *e *nest LOADMTR_IVL D   	// day
+    *h *e *nest LOADMTR_IVL H   	// hour
+    *s *e *nest LOADMTR_IVL S   	// subhour
+
+*END		// LOADMTR
+//=============================================================================
 RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
  // use results
 

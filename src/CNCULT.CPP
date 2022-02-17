@@ -72,10 +72,11 @@ makAncDUCTSEG( DsiB);		// duct segment input records basAnc
 makAncGAIN(GniB);			// (zone) gains input records basAnc
 makAncMTR(MtriB);			// Meters input records basAnc
 makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
+makAncDHWMTR(WMtriB);		// DHW meters
+makAncLOADMTR(LdMtriB);		// Load meters
 
 // simple HVAC and DHW (for CSE T24 residential compliance)
 makAncRSYS( RSiB);			// residential HVAC system
-makAncDHWMTR( WMtriB);		// DHW meters
 makAncDHWSYS( WSiB);		// DHW system
 makAncDHWHEATER( WHiB);		// DHW heater
 makAncDHWTANK( WTiB);		// DHW tank
@@ -1811,6 +1812,23 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 	CULT()
 };	// afMeterT
 
+//============================= LOADMETER command =============================
+LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
+// called at end of AFMETER input, to get messages near source of error.
+{
+	return ((LOADMTR*)p)->lmt_CkF();
+}		// lmtStarCkf
+//=============================================================================
+static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
+{
+	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",            STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
+	CULT("endLOADMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	CULT()
+};	// ldMeterT
+
+
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf( CULT* c, /*DHWUSE* */ void *p, void *p2, void *p3)
 // called at end of DHWUSE input, to get messages near source of error.
@@ -2855,7 +2873,9 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "glazeType",   RATE,  0,                 NM_RQD,     0, 0,      0,    &GtiB,   N,    0.f,           gtT,  N), // added 12-94
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),
-	CULT("afmeter",      RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "afmeter",     RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "loadmeter",   RATE,  0,                 NM_RQD,     0, 0,      0,    &LdMtriB,N,    0.f,      ldMeterT,  N),
+
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
