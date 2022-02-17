@@ -512,6 +512,14 @@ METER   "MtrNatGas"
 
 AFMETER "MtrAirFlow"
 
+DOAS    "Central Ventilation"
+   oaSupFanElecPwr = 0.275                 // Fan input power per unit air flow (at design flow and pressure), W/cfm
+   oaSupFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
+   oaSupFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
+   oaExhFanElecPwr = 0.25                  // Fan input power per unit air flow (at design flow and pressure), W/cfm
+   oaExhFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
+   oaExhFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
+
 IZXFER   "Zone2ToAtticCeiling-BypassxA"  
    izNVType = "NONE"                    // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)

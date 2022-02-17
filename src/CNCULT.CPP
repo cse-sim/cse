@@ -1518,14 +1518,49 @@ RC oaStarCkf( CULT* c, void *p, void* p2, void* p3)
 {
 	return RCOK;
 }
+//---------------------------------------------------------------------------
+#define SFAN(m) (DOAS_SUPFAN + FAN_##m)
+#define EFAN(m) (DOAS_EXHFAN + FAN_##m)
+
 static CULT doasT[] =
 {
 // id                cs     fn            f   uc evf      ty     b      dfls                 p2   ckf
 //----------         -----  ------------  --- -- ------   -----  -----  -------------        ---- ----
 CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   oaStarCkf),
+// following iff supply fan
+CULT( "oaSupFanVfDs",   DAT,   SFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N), // 0 means no fan
+CULT( "oaSupFanPress",  DAT,   SFAN(PRESS),  0,   0, VEOI,   TYFL,  0,      .3f,                N,   N), //*****default??????
+CULT( "oaSupFanEff",    DAT,   SFAN(EFF),    0,   0, VEOI,   TYFL,  0,      .08f,               N,   N),
+CULT( "oaSupFanShaftBhp",DAT,  SFAN(SHAFTPWR),0,  0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanElecPwr",DAT,   SFAN(ELECPWR),0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanMtr",    DAT,   SFAN(MTRI),   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaSupFanEndUse", DAT,   SFAN(ENDUSE), 0,   0, VEOI,   TYCH,  0,      C_ENDUSECH_FAN,	 	N,   N),
+CULT( "oaSupFanType",   DAT,   SFAN(FANTY),  NO_INP, 0, 0,   TYCH,  0,      C_FANTYCH_NONE,     N,   N),
+CULT( "oaSupFanVfMxF",  DAT,   SFAN(VFMXF),  NO_INP, 0, 0,   TYFL,  0,      1.0f,               N,   N),
+CULT( "oaSupFanMotPos", DAT,   SFAN(MOTPOS), NO_INP, 0, 0,   TYCH,  0,      C_MOTPOSCH_INFLO,   N,   N),
+CULT( "oaSupFanCurvePy",DAT,   SFAN(CURVEPY+PYCUBIC_K),
+                                          ARRAY,  0, VEOI,TYFL,  0,      0.f,               v 6,  N), // use default: runs at full flow only. cult entry probably needed for id for FAN error msgs
+CULT( "oaSupFanMotEff", DAT,   SFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
+
+// following iff exhaust fan
+CULT( "oaExhFanVfDs",   DAT,   EFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N), // 0 means no fan
+CULT( "oaExhFanPress",  DAT,   EFAN(PRESS),  0,   0, VEOI,   TYFL,  0,      .3f,                N,   N), //*****default??????
+CULT( "oaExhFanEff",    DAT,   EFAN(EFF),    0,   0, VEOI,   TYFL,  0,      .08f,               N,   N),
+CULT( "oaExhFanShaftBhp",DAT,  EFAN(SHAFTPWR),0,  0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanElecPwr",DAT,   EFAN(ELECPWR),0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanMtr",    DAT,   EFAN(MTRI),   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaExhFanEndUse", DAT,   EFAN(ENDUSE), 0,   0, VEOI,   TYCH,  0,      C_ENDUSECH_FAN,	 	N,   N),
+CULT( "oaExhFanType",   DAT,   EFAN(FANTY),  NO_INP, 0, 0,   TYCH,  0,      C_FANTYCH_NONE,     N,   N),
+CULT( "oaExhFanVfMxF",  DAT,   EFAN(VFMXF),  NO_INP, 0, 0,   TYFL,  0,      1.0f,               N,   N),
+CULT( "oaExhFanMotPos", DAT,   EFAN(MOTPOS), NO_INP, 0, 0,   TYCH,  0,      C_MOTPOSCH_INFLO,   N,   N),
+CULT( "oaExhFanCurvePy",DAT,   EFAN(CURVEPY+PYCUBIC_K),
+                                          ARRAY,  0, VEOI,TYFL,  0,      0.f,               v 6,  N), // use default: runs at full flow only. cult entry probably needed for id for FAN error msgs
+CULT( "oaExhFanMotEff", DAT,   EFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
 CULT( "endDOAS",    ENDER, 0,            0,   0, 0,      0,     0,      N,   0.f,           N,   N),
 CULT()
 };
+#undef SFAN
+#undef EFAN
 
 //=================== IZXFER command (interzone transfer) ===================
 RC izStarCkf( CULT* c, void *p, void* p2, void* p3)
