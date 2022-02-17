@@ -430,10 +430,10 @@ template< typename T,typename TR=T> TR VIProd(	// inner product w/ stride
 template< typename T> class VMovingSum
 {
 	double* vals;	// value history (ring buffer)
-	size_t nSiz;		// active size of vals[]
+	size_t nSiz;	// active size of vals[]
 	double vSum;	// current sum of vals[0..nCur-1]
-	int iOld;		// idx of oldest value in vals[]
-	size_t nCur;		// # of vals[] currently set
+	size_t iOld;	// idx of oldest value in vals[]
+	size_t nCur;	// # of vals[] currently set
 public:
 	VMovingSum(size_t _nSiz = 0) : vals(nullptr), nSiz(0), vSum(0), iOld(0), nCur(0)
 	{	if (_nSiz > 0)

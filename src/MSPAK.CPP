@@ -605,7 +605,7 @@ double AR_MASSLAYER::ml_AdjustResistance(		// alter insulation layers
 		return RNom;	// resistance sufficient as-is
 						//   no adjustment required
 
-	double RReduce = 0.;
+	[[maybe_unused]] double RReduce = 0.;
 	double RAdj = RNom;
 	iterator itL;
 	int nL = size();
@@ -759,7 +759,7 @@ MSRAT::~MSRAT()
 }			// MSRAT::~MSRAT
 //---------------------------------------------------------------------------
 /*virtual*/ void MSRAT::DelSubObjects(
-	int options /*=0*/)
+	[[maybe_unused]] int options /*=0*/)
 {
 	delete ms_pMM;
 	ms_pMM = NULL;
@@ -1209,7 +1209,7 @@ double MSRAT::ms_InternalEnergy() const	// current internal energy wrt 0 F
 ///////////////////////////////////////////////////////////////////////////////
 // class MASSMODEL: base class for mass models
 ///////////////////////////////////////////////////////////////////////////////
-/*virtual*/ MASSMODEL& MASSMODEL::Copy( const MASSMODEL& mmSrc, int options/*=0*/)
+/*virtual*/ MASSMODEL& MASSMODEL::Copy( const MASSMODEL& mmSrc, [[maybe_unused]] int options/*=0*/)
 {
 	mm_pMSRAT = mmSrc.mm_pMSRAT;		// caller may have to fix
 	mm_model = mmSrc.mm_model;
@@ -1237,7 +1237,7 @@ RC MASSMODEL::mm_FromLayersFD(			// base init from physical layers
 								//   2.  layers w/ conductivity  <= 0 illegal
 								//   3.  layers w/ vhc <= low value treated
 								//       as non-massive (see code)
-	int options /*=0*/)			// option bits (unused)
+	[[maybe_unused]] int options /*=0*/)			// option bits (unused)
 
 // Returns RCOK if OK; with following changes from arML --
 //   1.  Outside light surfaces changed to rsurfs
@@ -1310,7 +1310,7 @@ RC MASSMODEL::mm_AddLayerFD(		// add a MASSLAYER for forward difference model
 x	if (nSL > 1)
 x		ml.ml_SubLayerCount( sf->x.xs_lThkF);	// call again re debugging
 #endif
-	int nML = mm_layers.size();
+	[[maybe_unused]] int nML = mm_layers.size();
 	{	mm_hcTot += ml.ml_HC();
 		MASSLAYER tML = ml;
 		tML.ml_Slice( nSL);
@@ -1355,7 +1355,7 @@ RC MASSMODEL::mm_FromLayers(			// base init from physical layers
 		return MH_R0122;		// "R0122: no layers in mass"
 
 	mm_layers.clear();  	// no layers yet (insurance)
-	float thkcomb, rcomb;
+	float thkcomb, rcomb = 0;
 	double mushthick, mushr, mushhc;
 
 	// Loop over layers with several vhc massiveness thresholds to try to
@@ -1836,7 +1836,7 @@ void MASSFD::mf_SetSize( int n)
 /*virtual*/ MASSFD& MASSFD::Copy( const MASSMODEL& mmSrc, int options /*=0*/)
 {
 	MASSMODEL::Copy( mmSrc, options);	// base class
-	const MASSFD& mf = (MASSFD&)mmSrc;
+	[[maybe_unused]] const MASSFD& mf = (MASSFD&)mmSrc;
 	mf_nd = mf_nd;
 	mf_tOld = mf_tOld;
 	return *this;
@@ -1858,7 +1858,7 @@ RC MASSFD::mf_Setup()			// set up forward difference model from mm_layers
 	if (nL <= 0)
 		rc = MH_R0122;	// "R0122: no layers in mass"
 	if (!rc)
-	{	int nLx = nL - 1;
+	{	[[maybe_unused]] int nLx = nL - 1;
 		MASSNODE* nd = &mf_nd.front();
 		int iL;
 		for (iL=0; iL<nL; iL++)
@@ -1917,7 +1917,7 @@ x				change += fabs( d) > .0001;
 	nd[ nLx].mn_ubn = 0.;		// last node: no coupling
 
 	// interior nodes pre-computed factors
-	int hcChange = 0;		// nz if node HC altered (not used here)
+	[[maybe_unused]] int hcChange = 0;		// nz if node HC altered (not used here)
 	for (iL=1; iL<nLx; iL++)
 	{	double dtOvrTau = nd[ iL].mn_DtOvrTau( nd[ iL-1].mn_ubn + nd[ iL].mn_ubn);
 		nd[ iL].mn_f[ 0] = dtOvrTau*nd[ iL-1].mn_ubn/(nd[ iL-1].mn_ubn + nd[ iL].mn_ubn);
@@ -2126,7 +2126,7 @@ x		printf( "Hit\n");
 		for (int i=0; i<2; i++)
 		{	double qSrfNew = bcx[ i].QSrf( nd[ i*nLx].mn_t);
 			double qX = bcx[ i].QX();
-			double aDiff = fabs( qX - qSrfNew);
+			aDiff = fabs( qX - qSrfNew);
 			if (aDiff > .01 && aDiff > .001*(fabs( qX)+fabs( qSrfNew)))
 				warn( "Mass '%s' (%d), %s: surface energy balance error (qX=%.3f vs qSrf=%.3f)",
 					Name(), i, Top.When( C_IVLCH_S), qX, qSrfNew);

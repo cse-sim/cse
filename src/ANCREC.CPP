@@ -130,7 +130,7 @@ int record::IsNameMatch( const char* _name) const
 /*virtual*/ record& record::CopyFrom(
 	const record* src,
 	int copyName/*=1*/,
-	int dupPtrs/*=0*/)
+	[[maybe_unused]] int dupPtrs/*=0*/)
 
 // copy user and ul data from another record or init data to already-constructed record
 
@@ -590,7 +590,7 @@ void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on cha
 //============================================================================================================================
 void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
 
-	BP b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
+	BP _b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
 	...)			// 0-terminated list of field numbers
 
 /* for each given field which contains an expression handle, make expression manager runtime table entry
@@ -598,12 +598,12 @@ void CDEC record::chafN( 		// say increment specified flag during run on change 
 {
 	va_list ap;
 	va_start(ap, off);
-	chafNV(b, i, off, ap);
+	chafNV(_b, i, off, ap);
 }								// record::chafN
 //===========================================================================
 void record::chafNV( 		// say increment specified flag during run on change in var list of fields in curr record
 
-	BP b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
+	BP _b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
 	va_list ap)		// pointer to 0-terminated list of field numbers
 
 // var arg list level for flexibility
@@ -615,8 +615,8 @@ void record::chafNV( 		// say increment specified flag during run on change in v
 			break;
 		if (fn > 1024)
 			oer((char*)MH_S0495,    	// "cncult2.cpp:%s Internal error: field # %d: probable unterminated arg list"
-				 "chavNV", (INT)fn);
-		addChafIf((NANDAT*)field(fn), b->ancN, i, off);  	/* test pointed to field contents, add increment-on-change
+				 "chavNV", fn);
+		addChafIf((NANDAT*)field(fn), _b->ancN, i, off);  	/* test pointed to field contents, add increment-on-change
 									   table entry if is expr handle.  exman.cpp. */
 	}
 }					// record::chafNV
@@ -767,7 +767,7 @@ void basAnc::desRecs( SI _mn, SI _n)
 }				// basAnc::desRecs
 //---------------------------------------------------------------------------------------------------------------------------
 void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
-	CLEANCASE cs)			// what is being cleaned
+		[[maybe_unused]] CLEANCASE cs)		// what is being cleaned
 {
 	if (ancs)					// skip if heap array not allocated
 		for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
@@ -1051,7 +1051,7 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 {
 	if (!this)
 		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
-	record *r, *r1;
+	record *r, *r1 = nullptr;
 	int nHits = 0;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
 	{	if (r->IsNameMatch( _name))	// if matches
@@ -1200,7 +1200,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 // search saved names, return existing index if found
 	int i;
 	for (i = 1;  i < FNCACHESZ && fnCache[i];  i++)
-		if ( strlen(fnCache[i])== len
+		if ( int( strlen(fnCache[i])) == len
 		 &&  memicmp( name, (void *)fnCache[i], len)==0 )
 			break;  						// found. i is index to return.
 

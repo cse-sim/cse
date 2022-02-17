@@ -186,7 +186,7 @@ RC topSf1()
 RC SFI::sf_TopSf1()
 {
 	RC rc = RCOK;
-	RC rc1;
+	RC rc1 = 0;
 
 #if defined( _DEBUG)
 	Validate();
@@ -271,7 +271,7 @@ RC SFI::sf_TopSf1()
 			if (rc1==RCOK)						// if ht & wid set (else FPE!)
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
-					sfArea = height * width;			// compute window area
+					sfArea = sf_height * sf_width;			// compute window area
 			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
 			// sfArea is copied to x.area below
 		}
@@ -476,7 +476,7 @@ RC SFI::sf_TopSf1()
 	// topSf1: check / access construction if given
 
 	SI conSet = fs[ SFI_SFCON] & FsSET; 		// nz if construction spec'd (always false for window)
-	CON *con;
+	CON *con = nullptr;
 	if (conSet)
 		if (ckRefPt( &ConiB, sfCon, "sfCon", NULL, (record **)&con, &rc) )
 			return rc;			// bad ref (msg issued, rc set, no run).
@@ -701,14 +701,14 @@ x		printf( "Hit\n");
 	ms_tc = con->hc/sf->x.uI;		// time constant, recomputed & stored here for reporting (cgresult.cpp) added 1-95
 
 	inside.bc_Setup( ss, MSBCZONE, 0);		// 0 = doing inside
-	int ty =					// adjacency type per surface, translate codes:
+	int adjTy =					// adjacency type per surface, translate codes:
 			  sf->x.sfExCnd==C_EXCNDCH_ADJZN      ?  MSBCZONE
 			: sf->x.sfExCnd==C_EXCNDCH_AMBIENT    ?  MSBCAMBIENT
 			: sf->x.sfExCnd==C_EXCNDCH_GROUND     ?  MSBCGROUND
 			: sf->x.sfExCnd==C_EXCNDCH_SPECT      ?  MSBCSPECT
 			: sf->x.sfExCnd==C_EXCNDCH_ADIABATIC  ?  MSBCADIABATIC
 			:    (rc |= sf->oer( (char *)MH_S0526, sf->x.sfExCnd));			// "Bad sfExCnd %d (cnuclt.cpp:makMs())"
-	outside.bc_Setup( ss, ty, 1);		// 1 = doing outside
+	outside.bc_Setup( ss, adjTy, 1);		// 1 = doing outside
 
 	for (int si=0; si<2; si++)
 	{	ZNR* zp = ms_GetZone( si);
@@ -851,8 +851,8 @@ RC FC topSg()		// SGDIST processing at RUN
 			targSf->x.sfExCnd==C_EXCNDCH_ADJZN	// if ext cond zone, not specT,ambient,adiabatic.
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
-		char* s = NULL;					// set non-NULL iff error
-		BOO toOutside;
+		char* s = nullptr;					// set non-NULL iff error
+		BOO toOutside = 0;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
 			if (sg->sgSide==C_SIDECH_EXTERIOR)	// if 'exterior' specified
@@ -945,8 +945,8 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// get hite and width from window
 		// gz->height, width ckSet'd in topSf1.
-		sh->wHeight = gz->height;
-		sh->wWidth = gz->width;
+		sh->wHeight = gz->sf_height;
+		sh->wWidth = gz->sf_width;
 
 		// check for vertical surface (assumed by shading compute fcn).
 
@@ -1053,7 +1053,7 @@ RC SFI::sf_TopSf2()
 	Validate();
 #endif
 	UCH* fs = fStat();		// record's field status byte array
-	SFCLASS sfc = SFCLASS( sfClass);
+	[[maybe_unused]] SFCLASS sfc = SFCLASS( sfClass);
 
 	// access/check zone
 	ZNR* zp = sf_GetZone( 0);		// point zone record
@@ -1067,7 +1067,7 @@ RC SFI::sf_TopSf2()
 	// access construction if given
 
 	BOO conSet = fs[ SFI_SFCON] & FsSET;	// non-0 if contruction given
-	CON *con;
+	CON *con = nullptr;
 	if (conSet)
 	{	if (sfCon <= 0  ||  sfCon > ConiB.n)	// if bad
 			return rc;					// skip (msg'd above)
@@ -1301,7 +1301,7 @@ static int FFactors(			// derive spherical geometry factors
 	{	VSet( F, nS, 1.);
 		double sumAF = VSum( areaS, nS);
 
-		int ret = 0;
+		[[maybe_unused]] int ret = 0;
 		int iL;		// loop counter
 		static const int iLLimit = 100;
 		double fChange, fLast;
@@ -2103,7 +2103,7 @@ PRI::PRI( basAnc* b, TI i, SI noZ /*=0*/)
 }		// PRI::FixUp
 //-----------------------------------------------------------------------------
 RC PRI::pr_Ckf(
-	int options)	// 1
+	[[maybe_unused]] int options)	// 1
 {
 	RC rc = RCOK;
 	FixUp();
@@ -2192,7 +2192,7 @@ void XSURF::xs_Init(			// initialize
 	}
 }		// XSURF::xs_Init
 //-----------------------------------------------------------------------------
-XSURF& XSURF::Copy( const XSURF* pXS, int options /*=0*/)
+XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
 	memcpy( this, pXS, sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
@@ -2777,7 +2777,7 @@ static inline double RayleighNat( double tFilm, double lenChar, double absTDif)
 void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 // sets sb_hcNat and sb_hcFrc
 {
-	BOOL bDbPrint =
+	[[maybe_unused]] BOOL bDbPrint =
 #if defined( DEBUGDUMP)
 		DbDo( dbdRCM);
 #else
@@ -3010,7 +3010,7 @@ x			printf( "Hit\n");
 		// double Ra = (5.68 - .956 * log( tFilm)) * 1000000. * pow3( Lchar) * absTDiff;
 		double Ra = RayleighNat( tFilm, Lchar, absTDiff);
 		double Phi = .35;   // Prandtl number correction
-		int mside = sb_si ? 1 : -1;
+		[[maybe_unused]] int mside = sb_si ? 1 : -1;
 		BOOL bHtFlowUp = (sb_txa - sb_tSrf) * (sb_si ? -1. : 1.) > 0.;
 #if defined( NEWRACOR)
 		double kAir = .013 + .000026 * tFilm;
