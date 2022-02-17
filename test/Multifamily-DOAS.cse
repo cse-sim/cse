@@ -633,24 +633,18 @@ IZXFER   "Zone1-NVHD"
    izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
 
 IZXFER   "Zone1-IAQFanS"  
-   izNVType = "AIRNETEXTFAN"            // Choice determining interzone ventilation
+   izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = 184.8                      // Minimum volume flow rate (VentOff mode), cfm
    izVFmax = 184.8                      // Maximum volume flow rate (VentOn mode), cfm
-   izFanVfDs = 184.8                    // Fan design or rated flow at rated pressure, cfm
-   izFanElecPwr = 0.275                 // Fan input power per unit air flow (at design flow and pressure), W/cfm
-   izFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
-   izFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
 
 IZXFER   "Zone1-IAQFanE"  
-   izNVType = "AIRNETEXTFAN"            // Choice determining interzone ventilation
+   izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
    izVFmax = -184.8                     // Maximum volume flow rate (VentOn mode), cfm
-   izFanVfDs = 184.8                    // Fan design or rated flow at rated pressure, cfm
-   izFanElecPwr = 0.25                  // Fan input power per unit air flow (at design flow and pressure), W/cfm
-   izFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
-   izFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
 
 IZXFER   "Zone2-InfLU"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
@@ -767,24 +761,18 @@ IZXFER   "Zone2-NVHD"
    izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
 
 IZXFER   "Zone2-IAQFanS"  
-   izNVType = "AIRNETEXTFAN"            // Choice determining interzone ventilation
+   izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = 184.8                      // Minimum volume flow rate (VentOff mode), cfm
    izVFmax = 184.8                      // Maximum volume flow rate (VentOn mode), cfm
-   izFanVfDs = 184.8                    // Fan design or rated flow at rated pressure, cfm
-   izFanElecPwr = 0.275                 // Fan input power per unit air flow (at design flow and pressure), W/cfm
-   izFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
-   izFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
 
 IZXFER   "Zone2-IAQFanE"  
-   izNVType = "AIRNETEXTFAN"            // Choice determining interzone ventilation
+   izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
+   izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
    izVFmax = -184.8                     // Maximum volume flow rate (VentOn mode), cfm
-   izFanVfDs = 184.8                    // Fan design or rated flow at rated pressure, cfm
-   izFanElecPwr = 0.25                  // Fan input power per unit air flow (at design flow and pressure), W/cfm
-   izFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
-   izFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
 
 IZXFER   "Zone2ToAtticCeiling-xAttic"  
    izNVType = "AIRNETIZ"                // Choice determining interzone ventilation

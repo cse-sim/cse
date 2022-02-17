@@ -971,7 +971,7 @@ RC IZXRAT::iz_Setup(			// set up run record
 							 IZXRAT_A1, IZXRAT_A2,  		// error if user OMITTED any of
 							 IZXRAT_HZ, 0 );			// ... these fields. cncult2.cpp.
 		rc |= disallowN( (char *)MH_S0476, 			// "when izNVType is TWOWAY"
-					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), 0); 				// error if user gave any of
+					  IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN( VFDS), 0); 				// error if user gave any of
 		break;
 
 	case C_IZNVTYCH_ANHORIZ:
@@ -991,12 +991,12 @@ x		}
 
 	case C_IZNVTYCH_ANIZ:
 		rc |= disallowN( "when izNVType is not exterior AIRNET",
-				IZXRAT_CPR, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), 0);
+				IZXRAT_CPR, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), IZXRAT_DOAS, 0);
 		// fall thru
 
 	case C_IZNVTYCH_ANEXT:
 		rc |= disallowN( "when izNVType is not flow or fan AIRNET",
-					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), 0);
+					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), IZXRAT_DOAS, 0);
 		break;
 
 	case C_IZNVTYCH_ANIZFAN:
@@ -1004,7 +1004,7 @@ x		}
 	case C_IZNVTYCH_ANHERV:
 		{	rc |= disallowN( "when izNVType is fan AIRNET",
 						  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-						  IZXRAT_CPR, IZXRAT_EXP, 0 );
+						  IZXRAT_CPR, IZXRAT_EXP, IZXRAT_DOAS, 0 );
 
 			float vfDsInp = iz_fan.vfDs;		// save input vfDs before possible alteration
 			if (iz_IsHERV())
@@ -1032,11 +1032,20 @@ x		}
 		}
 		break;
 
+	case C_IZNVTYCH_ANDOAS:
+		{
+			const char* when = "when izNVType is DOAS AIRNET";
+			rc |= disallowN( when,
+						IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
+						ZFAN( VFDS), 0);
+			rc |= require( IZXRAT_DOAS, when);
+		}
+		break;
 	case C_IZNVTYCH_ANIZFLOW:
 	case C_IZNVTYCH_ANEXTFLOW:
 		rc |= disallowN( "when izNVType is flow AIRNET",
 					  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-					  ZFAN( VFDS), 0);
+					  ZFAN( VFDS), IZXRAT_DOAS, 0);
 		break;
 
 	default:
@@ -1120,13 +1129,21 @@ void IZXRAT::iz_AfMtrCats()		// finalize runtime air flow categories
 		int izMode = iz_IsFixedFlow() ? 0 : iz_MightBeNatVent() ? 1 : 2;
 		if (iz_IsExterior())
 			iz_afMtrCat1 = afCats[0][izMode];
-		else
+		else if (iz_IsAirNetIZ())
 		{	// interzone: set category per *other* side
 			//   iz_IsCZ() returns -1 (no zone, not expected), 0 (uncond), 1 (cond)
 			int iCZ1 = iz_IsCZ(1);	// inside
 			int iCZ2 = iz_IsCZ(2);	// outside
 			iz_afMtrCat1 = afCats[iCZ2 + 1][izMode];
 			iz_afMtrCat2 = afCats[iCZ1 + 1][izMode];
+		}
+		else if (iz_IsDOAS())
+		{
+			iz_afMtrCat1 = C_AFCAT_FANEX; // TODO: Make new DOAS Category?
+		}
+		else
+		{
+			iz_afMtrCat1 = 0;  // UKNOWN
 		}
 	}
 
@@ -1393,7 +1410,7 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 			errCrit( ABT, "Missing IZXRAT::iz_BegSubhr() code");
 	#endif
 
-		if (iz_IsFan() || iz_IsFlow())
+		if (iz_IsFan() || iz_IsFlow() || iz_IsDOAS())
 		{	// fixed air flow
 			//   massflows depend on iz_rho1/2, must be derived subhourly
 			if (!IsSet( IZXRAT_VFMAX))
