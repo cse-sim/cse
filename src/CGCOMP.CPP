@@ -792,8 +792,8 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	float rhoX = zpx->zn_rho0ls;
 	ad.ad_mdotX = avfGross * iz_vfExhRat * rhoX / 60.;
 
-#if defined( DEBUGDUMP)
-	if (0 && DbDo( dbdAIRNET))
+#if 0 && defined( DEBUGDUMP)
+	if (DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
@@ -1263,7 +1263,7 @@ void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 }		// ZNR::zn_AddIZXFERs
 //------------------------------------------------------------------------------
 TI ZNR::zn_FindOrAddIZXFER(		// locate or added IZXFER coupled to this zone
-	IZNVTYCH ty,		// C_IZNVTYCH_ANDUCTLKIN etc
+	IZNVTYCH _ty,		// C_IZNVTYCH_ANDUCTLKIN etc
 	const char* nmSfx,	// IZXFER name = <znName>-<nmSfx>
 						//   e.g. "Attic-DLkI"
 	const AIRFLOW* pAF /*=NULL*/)
@@ -1271,15 +1271,15 @@ TI ZNR::zn_FindOrAddIZXFER(		// locate or added IZXFER coupled to this zone
 {
 	IZXRAT* ize;
 	RLUP( IzxR, ize)
-	{	if (ize->iz_nvcntrl == ty && ize->iz_zi1 == ss
+	{	if (ize->iz_nvcntrl == _ty && ize->iz_zi1 == ss
 	      && (pAF == NULL || pAF == ize->iz_pAF))
 			return ize->ss;
 	}
-	return zn_AddIZXFER( ty, nmSfx, pAF);
+	return zn_AddIZXFER( _ty, nmSfx, pAF);
 }		// ZNR::zn_FindOrAddIZXFER
 //------------------------------------------------------------------------------
 TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
-	IZNVTYCH ty,			// C_IZNVTYCH_ANDUCTLKIN etc
+	IZNVTYCH _ty,			// C_IZNVTYCH_ANDUCTLKIN etc
 	const char* nmSfx,		// IZXFER name = <znName>-<nmSfx>
 							//   e.g. "Attic-DLkI"
 	const AIRFLOW* pAF /*=NULL*/)
@@ -1293,9 +1293,9 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	int catOption = 1;		// attempt to truncate name size exceeded
 	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx, catOption);
 	ize->iz_zi1 = ss;		// idx of this zone
-	ize->iz_nvcntrl = ty;
+	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;
-	if (ty == C_IZNVTYCH_ANOAVRLF)
+	if (_ty == C_IZNVTYCH_ANOAVRLF)
 	{	RSYS* rs = zn_GetRSYS();
 		ize->iz_zi2 = rs->rs_OAVReliefZi;		// relief zone
 		ize->iz_hz = i.zn_floorZ + i.zn_ceilingHt;	// assume in ceiling
@@ -1807,14 +1807,20 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		}
 #endif
 		// solve for pressure corrections
-		int gjRet = gaussjb( an_jac, an_nz, rV, 1);
-		if (0 && gjRet)
+
+#if defined( _DEBUG)
+		int gjRet =
+#endif
+			gaussjb(an_jac, an_nz, rV, 1);
+#if defined( _DEBUG)
+		if (gjRet)
 			err( PWRN,				// display program error msg, wait for key
 				"AIRNET::an_Calc: matrix is %s",
 					gjRet == 1 ? "singular" : "too large");
+#endif
 
-#if defined( DEBUGDUMP)
-		if (0 && bDbPrint)
+#if 0 && defined( DEBUGDUMP)
+		if (bDbPrint)
 		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
@@ -1915,7 +1921,7 @@ DUCTSEG::DUCTSEG( basAnc* b, TI i, SI noZ/*=0*/)
 }	// DUCTSEG::~DUCTSEG
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_Init(			// init DUCTSEG
-	int options/*=0*/)
+	[[maybe_unused]] int options/*=0*/)
 {
 	ds_sbcO.sb_Init( this);
 #if 0

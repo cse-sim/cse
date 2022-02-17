@@ -48,6 +48,7 @@
 #include <cnguts.h>	// declarations for this file, shad, WshadR, Top, ...
 
 // DEBUG AIDS --------------------------------------------------------------
+#if 0 && defined( _DEBUG)
 static int TrapSurf( const char* name, int si=-1)
 {
 static const char* trapName = "Ceiling";
@@ -55,6 +56,7 @@ static int trapSi = 2;	// 0=inside, 1=outside, -1=either, 2=never
 	return strcmpi( name, trapName)==0
 		&& trapSi < 2 && (si == trapSi || trapSi == -1 || si == -1);
 }
+#endif
 
 //-------------------------------- DEFINES ----------------------------------
 //(none now)
@@ -545,10 +547,10 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 	sgf[ sgcDFXBM] = grx*verSun;		// surface beam-diffuse irradiance factor, dimless
 										//   = unit area surface diffuse irrad per unit normal beam irrad
 
-	float cosi;		// cosine( incidence angle)
+	float cosi = 0;		// cosine( incidence angle)
 	float incA;		// angle of incidence, radians (Pi/2 if !sunup)
-	float cosz;		// cos( zenith angle), 0 if !sunup
-	float azm;		// solar azimuth, radians (0=south)
+	float cosz = 0;		// cos( zenith angle), 0 if !sunup
+	float azm = 0;		// solar azimuth, radians (0=south)
 	float relAzm;	// solar azimuth relative to surface (Pi if !sunupSrf)
 	int sunupSrf	// 1 iff sun up relative to surface
 		= sunup			// if sun over horizon
@@ -1345,38 +1347,7 @@ x	}
 	sge->sg_dfXDfF[ Top.iHrST] += dfDf;
 
 }				// sgrPut
-
 //======================================================================
-// obsolete 11-10
-LOCAL void FC cgRefGls( 	// calculate transmission and absorption of reference glass
-
-	float eta,		// cosine of direct angle of incidence, or < 0 to return values for diffuse
-	float *trans,	// receives transmissivity
-	float *abso )	// receives absorptivity
-
-// This routine is based on DOE-2 routines
-{
-	static float c[10] =
-	{
-		-0.01325f, 3.08716f,   -3.68232f, 1.48683f, 0.077366f,
-		-0.02718f, -0.002691f, 0.040548f, 0.79901f, 0.05435f
-	};
-
-	if (eta >= 0.)		// beam, eta is cosine incidence angle
-	{
-		DBL eta2 = eta * eta;
-		DBL eta3 = eta * eta2;
-		if ( (*trans = (float)( c[0]+c[1]*eta+c[2]*eta2+c[3]*eta3)) < 0.f)
-			*trans = 0.f;
-		if ( (*abso = (float)( c[4]+c[5]*eta+( c[6]/( c[7]+eta)))) < 0.f)
-			*abso = 0.f;
-	}
-	else			// for diffuse radiation
-	{
-		*trans = c[8];
-		*abso = c[9];
-	}
-}		// cgRefGls
 
 // end of cgsolar.cpp
 

@@ -21,7 +21,7 @@ class YACAM
     // for character/token access:
     int bufI; 			// buffer subscript of next character to return
     int mLineNo;		// line number in file
-    char buf[ 32768];
+    char yc_buf[ 32768];
 
 	YACAM();
     ~YACAM();

@@ -248,7 +248,7 @@ CULT()
 //------------------------ LAYER (for CONSTRUCTION) -------------------------
 
 //------------------------------------------------------------ LAYER check fcn
-LOCAL RC FC lrStarCkf( CULT *c, /* LR* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+LOCAL RC FC lrStarCkf([[maybe_unused]] CULT *c, /* LR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // LAYER check function.  only arg 'p' used.
 
@@ -296,7 +296,7 @@ static CULT lrT[] = //--------------------- LAYER subCmd table for CONSTRUCTION
 //------------- CONSTRUCTION (for Top table; ref'd in surface,) -------------
 
 //----------------------------------------------------- CONSTRUCTION check fcn
-LOCAL RC FC conStarCkf( CULT *c, /*CON* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+LOCAL RC FC conStarCkf([[maybe_unused]] CULT *c, /*CON* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // called at end construction object, to get messages near source of error.
 
@@ -346,7 +346,7 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 //------------- FNDBLOCK (for Foundation table) -------------
 
 //------------------------------------------------------------ FNDBLOCK check fcn
-RC FC fbStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+RC FC fbStarCkf([[maybe_unused]] CULT *c, /* GT* */ [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	RC rc = RCOK;
 
@@ -377,7 +377,7 @@ static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
 //------------- FOUNDATION (for Top table; ref'd in surface,) -------------
 
 //------------------------------------------------------------ FOUNDATION check fcn
-RC FC fdStarCkf(CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+RC FC fdStarCkf([[maybe_unused]] CULT *c, /* GT* */ [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	RC rc = RCOK;
 
@@ -402,7 +402,7 @@ static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 //------------- GLAZETYPE (for Top table; ref'd in window,) -------------
 
 //------------------------------------------------------------ GLAZETYPE check fcn
-RC FC gtStarCkf( CULT *c, /* GT* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+RC FC gtStarCkf([[maybe_unused]] CULT *c, /* GT* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // called at end layer, to get error messages near source.
 // recalled at run (believe unnecessary except when using a defined type, 12-94).
@@ -488,7 +488,7 @@ CULT()
 
 //---------------------------------------------- SGDIST pre-input fcn: limit #
 // note: pre-input not Itf used so ownTi already set in RAT for errmsg. Otherwise, worked fine as Itf.
-LOCAL RC sgStarPrf( CULT *c, /*SGDIST* */ void *p, /*SFI* */ void *p2, void *p3) /*ARGSUSED*/
+LOCAL RC sgStarPrf([[maybe_unused]] CULT *c, /*SGDIST* */ void *p, /*SFI* */ void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	/* check for too many sgdists for same window during input, for clear msg
 	   at offending input file line.  Sgdist's are rechecked and stored at RUN. */
@@ -592,7 +592,7 @@ RC SFI::sf_CkfWINDOW(
 	return rc;
 }	// SFI::sf_ChkWINDOW
 //------------------------------------------------------------------------
-RC FC wnStarCkf( CULT *c, /*SFI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+RC FC wnStarCkf( CULT *c, /*SFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // called at end of window object entry.
 // ALSO called from topSf1() at RUN, to issue msgs otherwise lost
@@ -677,7 +677,7 @@ RC SFI::sf_CkfDOOR(
 	return rc;
 }		// SFI::sf_CkfDOOR
 //----------------------------------------------------------------------------=
-RC FC drStarCkf( CULT *c, /*SFI* */ void* p, void *p2, void *p3)
+RC FC drStarCkf( CULT *c, /*SFI* */ void* p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 
 // called at end of door object entry.
 // ALSO called from sf_topSf1() at RUN, to issue msgs otherwise lost
@@ -741,7 +741,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 	BOO xcSet = IsSet( SFX( SFEXCND)); // nz if sfExCnd given by user (a choice type: no exprs
 
 // sf_CkfSURF: sfTilt checks and default
-	float t;   					// receives tilt if defaulted or constant given
+	float t=0;   					// receives tilt if defaulted or constant given
 	if (IsVal( SFX( TILT)))		// if sfTilt value stored (not if expr not eval'd yet)
 	{	t = x.tilt;					// fetch sfTilt
 		switch (sfTy)				// check sfTilt
@@ -996,7 +996,7 @@ RC SFI::sf_CkfSURFGround(
 	return rc;
 }		// SFI::sf_CkfSURFGround
 //-----------------------------------------------------------------------------
-RC sfStarCkf( CULT *c, /*SFI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+RC sfStarCkf( CULT *c, /*SFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // called at end of surface object entry.
 //	ALSO called from sf_topSf1() at RUN, to issue msgs otherwise lost
@@ -1065,7 +1065,7 @@ CULT()
   Any number allowed.
   Input now to PRI; later XSURFs are chained to ZNR record. */
 //-----------------------------------------------------------------------------
-RC prStarCkf(CULT *c, /*SFI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+RC prStarCkf(CULT *c, /*SFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // called at end of surface object entry.
 //	ALSO called from sf_topSf1() at RUN, to issue msgs otherwise lost
@@ -1098,7 +1098,7 @@ CULT()
 
 //-------------------------------------------- terminal pre-input fcn: limit #
 // note: pre-input not Itf used so ownTi (=zi) already set in RAT for errmsg.
-LOCAL RC tuPrf( CULT *c, TU *p, ZNI *p2, void *p3) /*ARGSUSED*/
+LOCAL RC tuPrf([[maybe_unused]] CULT *c, TU *p, ZNI *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	TU *tu;
 	int n=0;
@@ -1182,7 +1182,7 @@ CULT()
 
 
 //===================================== GAIN command for ZONE ============================================
-LOCAL RC FC gnStarCkf( CULT* c, /*GAIN* */ void *p, void *p2, void *p3)
+LOCAL RC FC gnStarCkf([[maybe_unused]] CULT* c, /*GAIN* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of GAIN input, to get messages near source of error.
 {
 	return ((GAIN*)p)->gn_CkF( 0);
@@ -1257,7 +1257,7 @@ CULT()
 // re/exports and re/exportfiles persist through autosize and main sim phases;
 // they are not reinitialized and thus cannot have any VFAZLY members. 6-95.
 
-static RC FC rpStarCkf( CULT *c, /*RI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+static RC FC rpStarCkf([[maybe_unused]] CULT *c, /*RI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 // check function automatically called at end of REPORT and EXPORT object entry (per tables * lines).
 // also called by code in TopCkf.
 // ONLY argument 'p' is used.
@@ -1347,7 +1347,7 @@ CULT()
 // they are not reinitialized and thus cannot have any VFAZLY members.
 
 //-----------------------------------------------------------------------------
-RC FC rfStarCkf( CULT *c, /*RFI* */ void *p, void *p2, void *p3) /*ARGSUSED*/	//-------------------------------
+RC FC rfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/	//-------------------------------
 // check function automatically called at end of REPORTFILE object entry, also called from TopCkf.
 // ONLY argument 'p' is used.
 {
@@ -1372,7 +1372,7 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 
 // initial record for implicit command EXPORTFILE Primary rfFileName = <inputfile>.csv is entered from topPrfRep.
 
-RC FC xfStarCkf( CULT *c, /*RFI* */ void *p, void *p2, void *p3) /*ARGSUSED*/  //----------------------------------
+RC FC xfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/  //----------------------------------
 
 // check function automatically called at end of EXPORTFILE object entry, also called from TopCkf.
 // ONLY argument 'p' is used.
@@ -1418,7 +1418,7 @@ static CULT impfT[] = //-------------- IMPORTFILE cmd table, used from cnTopCult
 
 //--------------- ZONE command itself: enters a ZONE RAT Entry -------------
 
-LOCAL RC FC infShldCkf( CULT *c, /*SI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+LOCAL RC FC infShldCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // check sheilding when entered, not called if expr.  check is repeated in topZn.
 {
@@ -1427,7 +1427,7 @@ LOCAL RC FC infShldCkf( CULT *c, /*SI* */ void *p, void *p2, void *p3) /*ARGSUSE
 	return RCOK;
 }
 
-LOCAL RC FC infStoriesCkf( CULT *c, /*SI* */ void *p, void *p2, void *p3) /*ARGSUSED*/
+LOCAL RC FC infStoriesCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 
 // check stories at entry, not called if expr.  check is repeated in topZn.
 {
@@ -1563,7 +1563,7 @@ CULT()
 #undef EFAN
 
 //=================== IZXFER command (interzone transfer) ===================
-RC izStarCkf( CULT* c, void *p, void* p2, void* p3)
+RC izStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
 
 // called at end of IZXFER object entry.
 //	ALSO called from topSf1() at RUN, to issue msgs otherwise lost
@@ -1683,7 +1683,7 @@ RC DUCTSEG::ds_Ckf()
 	return rc;
 }	// DUCTSEG::ds_Ckf
 //-----------------------------------------------------------------------------
-static RC FC dsStarCkf( CULT *c, /*DUCTSEG* */ void *p, void *p2, void *p3)
+static RC FC dsStarCkf([[maybe_unused]] CULT *c, /*DUCTSEG* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 {	return ((DUCTSEG*)p)->ds_Ckf();
 }
 //-----------------------------------------------------------------------------
@@ -1715,7 +1715,7 @@ CULT()
 };	// dsT
 
 //=================== RSYS command ( residential system) ===================
-LOCAL RC FC rsStarCkf( CULT* c, /*RSYS* */ void *p, void *p2, void *p3)
+LOCAL RC FC rsStarCkf([[maybe_unused]] CULT* c, /*RSYS* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of RSYS input, to get messages near source of error.
 {
 	return ((RSYS *)p)->rs_CkF();
@@ -1832,7 +1832,7 @@ CULT()
 #undef AS_OKIF
 
 //============================= DHWMETER command =============================
-LOCAL RC wmtStarCkf( CULT* c, /*DHWMTR* */ void *p, void *p2, void *p3)
+LOCAL RC wmtStarCkf([[maybe_unused]] CULT* c, /*DHWMTR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWMETER input, to get messages near source of error.
 {
 	return ((DHWMTR*)p)->wmt_CkF();
@@ -1848,7 +1848,7 @@ CULT()
 };	// dhwMeterT
 
 //============================= AFMETER command =============================
-LOCAL RC amtStarCkf(CULT* c, /*AFMTR* */ void *p, void *p2, void *p3)
+LOCAL RC amtStarCkf([[maybe_unused]] CULT* c, /*AFMTR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of AFMETER input, to get messages near source of error.
 {
 	return ((AFMTR*)p)->amt_CkF();
@@ -1864,7 +1864,7 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 };	// afMeterT
 
 //============================= DHWUSE command =============================
-LOCAL RC FC wuStarCkf( CULT* c, /*DHWUSE* */ void *p, void *p2, void *p3)
+LOCAL RC FC wuStarCkf([[maybe_unused]] CULT* c, /*DHWUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWUSE input, to get messages near source of error.
 {
 	return ((DHWUSE*)p)->wu_CkF();
@@ -1890,7 +1890,7 @@ CULT()
 
 
 //============================= DHWDAYUSE command =============================
-LOCAL RC wduStarCkf( CULT* c, /*DHWDAYUSE* */ void *p, void *p2, void *p3)
+LOCAL RC wduStarCkf([[maybe_unused]] CULT* c, /*DHWDAYUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWDAYUSE input, to get messages near source of error.
 {
 	return ((DHWDAYUSE*)p)->wdu_CkF();
@@ -1908,7 +1908,7 @@ CULT()
 };	// dhwDayUseT
 
 //============================= DHWHEATER command =============================
-LOCAL RC FC whStarCkf( CULT* c, /*DHWHEATER* */ void *p, void *p2, void *p3)
+LOCAL RC FC whStarCkf([[maybe_unused]] CULT* c, /*DHWHEATER* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWHEATER input, to get messages near source of error.
 {
 	return ((DHWHEATER*)p)->wh_CkF();
@@ -1960,7 +1960,7 @@ CULT()
 };	// dhwHeaterT
 
 //============================= DHWHEATREC command =============================
-LOCAL RC FC wrStarCkf( CULT* c, /*DHWTANK* */ void *p, void *p2, void *p3)
+LOCAL RC FC wrStarCkf([[maybe_unused]] CULT* c, /*DHWTANK* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWHEATREC input, to get messages near source of error.
 {
 	return ((DHWHEATREC*)p)->wr_CkF();
@@ -1986,7 +1986,7 @@ CULT()
 };	// dhwHeatRecT
 
 //============================= DHWTANK command =============================
-LOCAL RC FC wtStarCkf( CULT* c, /*DHWTANK* */ void *p, void *p2, void *p3)
+LOCAL RC FC wtStarCkf([[maybe_unused]] CULT* c, /*DHWTANK* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWTANK input, to get messages near source of error.
 {
 	return ((DHWTANK*)p)->wt_CkF();
@@ -2011,7 +2011,7 @@ CULT()
 };	// dhwTankT
 
 //============================= DHWPUMP command =============================
-LOCAL RC FC wpStarCkf( CULT* c, /*DHWPUMP* */ void *p, void *p2, void *p3)
+LOCAL RC FC wpStarCkf([[maybe_unused]] CULT* c, /*DHWPUMP* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWPUMP input, to get messages near source of error.
 {
 	return ((DHWPUMP*)p)->wp_CkF();
@@ -2021,7 +2021,7 @@ static CULT dhwPumpT[] = //------ DHWPUMP cmd RAT Entry table, used from dhwSysT
 {
 // id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
-CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   whStarCkf),
+CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wpStarCkf),
 CULT( "wpDHWSYS",    DAT,   DHWPUMP_OWNTI,   NO_INP|RDFLIN,0,0, TYREF,    &WSiB,  0,     N,   N),
 CULT( "wpMult",		 DAT,	DHWPUMP_MULT,	   0,     0, VEOI,   TYSI,    0,      1,      N, N),
 CULT( "wpElecMtr",   DAT,   DHWPUMP_ELECMTRI,  0,     0, VEOI,	 TYREF,   &MtriB, N,      N, N),
@@ -2031,7 +2031,7 @@ CULT()
 };	// dhwPumpT
 
 //============================= DHWLOOPBRANCH command =============================
-LOCAL RC FC wbStarCkf( CULT* c, /*DHWLOOPBRANCH* */ void *p, void *p2, void *p3)
+LOCAL RC FC wbStarCkf([[maybe_unused]] CULT* c, /*DHWLOOPBRANCH* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWLOOPBRANCH input, to get messages near source of error.
 {
 	return ((DHWLOOPBRANCH*)p)->wb_CkF();
@@ -2061,7 +2061,7 @@ CULT()
 };	// dhwLoopBranchT
 
 //============================= DHWLOOPSEG command =============================
-LOCAL RC FC wgStarCkf( CULT* c, /*DHWLOOPSEG* */ void *p, void *p2, void *p3)
+LOCAL RC FC wgStarCkf([[maybe_unused]] CULT* c, /*DHWLOOPSEG* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWLOOPSEG input, to get messages near source of error.
 {
 	return ((DHWLOOPSEG*)p)->wg_CkF();
@@ -2087,7 +2087,7 @@ CULT()
 };	// dhwLoopSegT
 
 //============================= DHWLOOPPUMP command =============================
-LOCAL RC FC wlpStarCkf( CULT* c, /*DHWLOOPPUMP */ void *p, void *p2, void *p3)
+LOCAL RC FC wlpStarCkf([[maybe_unused]] CULT* c, /*DHWLOOPPUMP */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWLOOPSEG input, to get messages near source of error.
 {
 	return ((DHWLOOPPUMP*)p)->wlp_CkF();
@@ -2108,7 +2108,7 @@ CULT()
 };	// dhwLoopPumpT
 
 //============================= DHWLOOP command =============================
-LOCAL RC FC wlStarCkf( CULT* c, /*DHWLOOP* */ void *p, void *p2, void *p3)
+LOCAL RC FC wlStarCkf([[maybe_unused]] CULT* c, /*DHWLOOP* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWLOOPSEG input, to get messages near source of error.
 {
 	return ((DHWLOOP*)p)->wl_CkF();
@@ -2135,7 +2135,7 @@ CULT()
 };	// dhwLoopT
 
 //============================== DHWSYS command ===============================
-LOCAL RC FC wsStarCkf( CULT* c, /*DHWSYS* */ void *p, void *p2, void *p3)
+LOCAL RC FC wsStarCkf([[maybe_unused]] CULT* c, /*DHWSYS* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWSYS input, to get messages near source of error.
 {
 	return ((DHWSYS*)p)->ws_CkF();
@@ -2231,7 +2231,7 @@ CULT()
 #undef DWF
 
 //============================== DHWSOLARCOLLECTOR command ===============================
-LOCAL RC FC scStarCkf(CULT* c, /*DHWSOLARCOLLECTOR* */ void *p, void *p2, void *p3)
+LOCAL RC FC scStarCkf([[maybe_unused]] CULT* c, /*DHWSOLARCOLLECTOR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWSOLARSYS input, to get messages near source of error.
 {
 	return ((DHWSOLARCOLLECTOR*)p)->sc_CkF();
@@ -2267,7 +2267,7 @@ CULT()
 };	// dhwSolColT
 
 //============================== DHWSOLARSYS command ===============================
-LOCAL RC FC swStarCkf(CULT* c, /*DHWSOLARSYS* */ void *p, void *p2, void *p3)
+LOCAL RC FC swStarCkf([[maybe_unused]] CULT* c, /*DHWSOLARSYS* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWSOLARSYS input, to get messages near source of error.
 {
 	return ((DHWSOLARSYS*)p)->sw_CkF();
@@ -2298,7 +2298,7 @@ CULT()
 
 
 //============================== PVARRAY command ===============================
-LOCAL RC FC pvStarCkf( CULT* c, /*PVARRAY* */ void *p, void *p2, void *p3)
+LOCAL RC FC pvStarCkf([[maybe_unused]] CULT* c, /*PVARRAY* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of PVARRAY input, to get messages near source of error.
 {
 	return ((PVARRAY*)p)->pv_CkF();
@@ -2332,7 +2332,7 @@ CULT()
 };	// pvArrT
 
 //============================== BATTERY command ===============================
-LOCAL RC FC btStarCkf(CULT* c, /*BATTERY* */ void *p, void *p2, void *p3)
+LOCAL RC FC btStarCkf([[maybe_unused]] CULT* c, /*BATTERY* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of BATTERY input, to get messages near source of error.
 {
 	return ((BATTERY*)p)->bt_CkF();
@@ -2360,7 +2360,7 @@ CULT()
 };	// btT
 
 //============================== SHADEX command ===============================
-LOCAL RC FC shStarCkf(CULT* c, /*SHADE* */ void *p, void *p2, void *p3)
+LOCAL RC FC shStarCkf([[maybe_unused]] CULT* c, /*SHADE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of SHADE input, to get messages near source of error.
 {
 	return ((SHADEX*)p)->sx_CkF();
@@ -2734,7 +2734,7 @@ CULT()
 
 //================== DESCOND command =================
 
-LOCAL RC FC dcStarCkf(CULT* c, /*DESCOND* */ void *p, void *p2, void *p3)
+LOCAL RC FC dcStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DESCOND input, to get messages near source of error.
 {
 	return ((DESCOND*)p)->dc_CkF();
@@ -2765,7 +2765,7 @@ CULT()
 };	// dcT
 
 //================== INVERSE ===================================================
-LOCAL RC FC ivStarCkf(CULT* c, /*DESCOND* */ void *p, void *p2, void *p3)
+LOCAL RC FC ivStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DESCOND input, to get messages near source of error.
 {
 	return ((INVERSE*)p)->iv_CkF();

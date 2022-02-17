@@ -469,7 +469,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC185A_SP "NyleC185A_SP"
 			NYLEC250A_SP "NyleC250A_SP"
 
-			NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (multi-pass mode)
+			// NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (multi-pass mode)
 			NYLEC60A_MP  "NyleC60A_MP"
 			NYLEC90A_MP  "NyleC90A_MP"
 			NYLEC125A_MP "NyleC125A_MP"
@@ -487,7 +487,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			RHEEM_HPHD135HNU_483_MP "Rheem_HPHD135HNU_MP"
 			RHEEM_HPHD135VNU_483_MP "Rheem_HPHD135VNU_MP"
 
-			SCALABLE_SP "Scalable_SP"		// scalable type for autosized standard design
+			SCALABLE_SP "Scalable_SP"		// single pass scalable type for autosized standard design
+			SCALABLE_MP "Scalable_MP"		// multipass scalable type for autosized standard design
 		}
 
 *choicb WHRESTYCH {			// resistance heater types

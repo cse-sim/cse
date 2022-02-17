@@ -1,0 +1,66 @@
+
+    Unknown field type name ENERYG in RECORD RSYSRES_IVL_SUB.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Record definition error.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ecFan': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ecTot': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'evFan': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'evTot': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'qhZoneSen': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'qhZoneLat': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'qcZoneSen': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'qcZoneLat': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'qvZoneSen': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'ENERGY': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Passing 'qvZoneLat': ignoring to 'RECORD' or '*file'.
+Error occurred near: RSYSRES_IVL_SUB
+
+    Error in records.def.
+Error occurred near: RSYSRES_IVL_SUB

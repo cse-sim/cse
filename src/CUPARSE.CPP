@@ -640,10 +640,10 @@ x //    SI did;		// nz if does something: value stored or side effect
  PARSTK* parSp = parStk;	// parse stack stack pointer
 
  /*--- CODE OUTPUT variables */
- PSOP* NEAR psp = NULL;  	// set by itPile(), used by emit() &c.
+ LOCAL PSOP* NEAR psp = NULL;  	// set by itPile(), used by emit() &c.
  LOCAL PSOP* NEAR psp0 = NULL;	// initial psp value, for computing length
- LOCAL PSOP* NEAR pspMax = NULL;	// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
- LOCAL SI NEAR psFull = 0;	// non-0 if *psp has overflowed
+ LOCAL PSOP* NEAR pspMax = NULL;// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
+ LOCAL SI NEAR psFull = 0;		// non-0 if *psp has overflowed
 
  /*--- re Parse Error Messages ---*/
 // 1 when parsing fcn defn arg list: says a type word is NOT start new statement until a ')' has been passed:
@@ -946,14 +946,14 @@ LOCAL RC FC NEAR funcDef( 	// compile function definition
 LOCAL BOO funcDel(   	// clean up and free a user function symbol table block
 	// callback function for use with syClear
 
-	SI tokTy, 		// token type (syClear passes; only CUTUF expected
+	SI _totTy, 		// token type (syClear passes; only CUTUF expected
 	UFST** pStb )	// pointer to pointer to the block
 
 // returns TRUE to say "do delete the symbol table entry"
 {
 	UFST* stb = *pStb;
 	if (!stb)  return TRUE;		// if NULL pointer (unexpected) say go ahead and delete symbol table block
-	if (tokTy != CUTUF)  return FALSE;	// if not a user function, this fcn should not have been called. bug.
+	if (_totTy != CUTUF)  return FALSE;	// if not a user function, this fcn should not have been called. bug.
 
 	dmfree( DMPP( stb->id));		// free function name string
 	dmfree( DMPP( stb->ip));		// free function pseudo-code block
@@ -967,15 +967,15 @@ LOCAL BOO funcDel(   	// clean up and free a user function symbol table block
 LOCAL BOO funcOrVarDel( 	// clean & free a user function or variable symbol table block, leave others
 	// callback function for use with syClear
 
-	SI tokTy, 		// token type
+	SI _totTy, 		// token type
 	STBK *&stb )		// ref to pointer to the block
 
 // returns TRUE for deleted blocks only
 {
-	switch (tokTy)
+	switch (_totTy)
 	{
 	case CUTUF:
-		return funcDel( tokTy, (UFST **)&stb); 	// user fcn: call fcn just above
+		return funcDel( _totTy, (UFST **)&stb); 	// user fcn: call fcn just above
 		//case CUTUV:		add code for user variable: not implemented as of 10-93.
 	default:
 		return FALSE;				// other type block (reserved word): do not delete
@@ -1019,7 +1019,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	//   another PSSZ is above in funcDef().
 	PSOP ps[PSSZ];		// holds pseudo-code during compilation
 
-	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v;   void *pv;   USI codeSize;   PSOP *ip;   RC rc;
+	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v=0;   void *pv;   USI codeSize;   PSOP *ip = nullptr;   RC rc;
 
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
@@ -2133,7 +2133,7 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 // use compile support function (cncult4.cpp) to get values to put in code
 
 	TI iffnmi;		// receives IFFNM record subscript for import file name (adds record 1st time name seen)
-	SI fnmi;		// receives field name index for named field (adds table entry first time name seen)
+	SI fnmi = 0;		// receives field name index for named field (adds table entry first time name seen)
 	IVLCH imFreq;	// receives import frequency (hour-day-month-year) if yet given, else a safe assumption
 	if (byName)
 		CSE_E( impFcn( impfName, &iffnmi, fileIx, line, &imFreq, fieldName, &fnmi) )	// cncult4.cpp
@@ -2420,8 +2420,8 @@ LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, an
 {
 //ERVARS  	//<--- believe unnec here becuase caller fcn() does. 10-90
 	SI aN=0, uAN=0, nSF=0, defdef=0, selC=0, isK=-1, v=0;
-	SI tisK, tv;			// isK and v for current select() condExpr
-	USI aTy=TYNONE, aWanTy, defa=0;
+	SI tisK=0, tv=0;			// isK and v for current select() condExpr
+	USI aTy=TYNONE, aWanTy=0, defa=0;
 	RC rc;
 
 	//ERSAVE	//<--- believe unnec here becuase caller fcn() does. 10-90
@@ -2603,8 +2603,8 @@ x						}
 						USI anTy = parSp->ty;		// note assume previously-checked args remain compat with each other
 						for ( SI i = nSF; --i > 0; )		// check preceding uncombined stack frames for type compat with latest
 						{
-							USI aTy = (parSp - i)->ty;			// type of arg aN-i
-							if (aTy != anTy  &&  (anTy|aTy) != TYNC)  	// only 2-bit type allowed is TYNC === TYCH|TYFL.
+							USI argType = (parSp - i)->ty;			// type of arg aN-i
+							if (argType != anTy  &&  (anTy| argType) != TYNC)  	// only 2-bit type allowed is TYNC === TYCH|TYFL.
 							{
 								// error message for incompatible argument
 								SI ann = (optn & 8) ? 2*aN + nA0 : aN + nA0;   	// argument # for errmsg of last arg parsed
@@ -2614,7 +2614,7 @@ x						}
 								:  strtprintf(" %d and %d",(INT)an1,(INT)ann);	// arg # subtext eg " 1 and 3"
 								return perNx( (char *)MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
 								anTx, (char *)f->id,			// "    can't mix '%s' and '%s'"
-								datyTx(aTy), datyTx(anTy));
+								datyTx(argType), datyTx(anTy));
 							}
 						}
 					}
@@ -3018,7 +3018,7 @@ er:
 	// additional returns above
 }				// dumVar
 //==========================================================================
-LOCAL RC FC NEAR var( UVST *f, USI wanTy)		// parse (poss future) variable reference or assignment
+LOCAL RC FC NEAR var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// parse (poss future) variable reference or assignment
 
 // last token gotten is its name (f arg redundant).
 
@@ -4232,12 +4232,12 @@ LOCAL SI NEAR symtabIsIt = 0;   	// non-0 if symbol table has been initialized b
 LOCAL SI NEAR symtabIsSorted = 0;	// non-0 if symbol table sorted (slows adds, speeds searches)
 
 //==========================================================================
-LOCAL BOO /*no FC, no NEAR */ stbkDel( SI tokTy, STBK *&stbk)	// syClear callback for all symtab entries
+LOCAL BOO /*no FC, no NEAR */ stbkDel( SI _tokTy, STBK *&_stbk)	// syClear callback for all symtab entries
 {
-	switch (tokTy)
+	switch (_tokTy)
 	{
 	case CUTUF:
-		return funcDel( tokTy, (UFST **)&stbk);	// function above in cuparse.cpp cleans user functions
+		return funcDel( _tokTy, (UFST **)&_stbk);	// function above in cuparse.cpp cleans user functions
 
 		//case CUTUV:	add code for user variable (unimplemented 10-93)
 
@@ -4247,7 +4247,7 @@ LOCAL BOO /*no FC, no NEAR */ stbkDel( SI tokTy, STBK *&stbk)	// syClear callbac
 }		// stbkDel
 
 //==========================================================================
-LOCAL void FC near cuptokeClean( CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
+LOCAL void FC near cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
 {
 	reToke = 0;				// say do not re-get token. 12-93 observed that this can be set after no-run error.
 

@@ -1,0 +1,255 @@
+// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license
+// that can be found in the LICENSE file.
+
+// cnunits.def: Definitions of unit types for CSE
+
+// This file is an input file for the record definer RCDEF.EXE,
+// named on the command line, argument 2.
+
+// Information in this file is used to produce:
+//    dtypes.h     units constants
+//    untab.cpp    units types table
+
+// Unit systems: do not change or reorder without reviewing rcdef, cvpak.
+// Also, many things in program are limited to 2 data types -- e.g. Untab[]
+UNSYS 2		// Number of units systems
+IP			//  Inch-pound system name
+SI			//  SI system name
+
+// Unit types
+
+// Each table entry is 2 lines, I-P values on 1st line, SI values on 2nd.
+// Note that the factor value *cannot* be 0.
+
+// "Factor" DIVIDES value on INPUT, MULIPLIES on OUTPUT.
+
+// This information produces: unit type defines (UNxxxx) in dtypes.h;
+// Untab in untab.c; and is used for units fields in record descriptors.
+
+/*	    
+Unit 		Print
+Type Name	Names		Factors		Description (comments)
+---------	----------	-----------	----------------------  */
+UNNONE	  	""		1.00		// No units. Should be first to produce 0 value.
+			""		1.00		// UNNONE must be 1st
+
+UNTEMP		"F"		1.00		// Temperature
+			"C"		0.55555556	// UNTEMP must be 2nd
+			
+UNABSTEMP	"R"		1.00		// Absolute temperature
+			"K"		5./9.
+
+UNTDIFF		"F"		1.00		// Temperature difference
+			"C"		0.55555556
+
+UNENERGY	"Btu"		1.00		// Small energy
+			"kJ"		1.055
+
+UNENERGY1	"kBtu"		0.001		// Medium energy
+			"MJ"		0.001055	// note UNENERGY1 info also coded into cvpak.c to run without Untab, 12-89
+
+UNENERGY2	"MBtu"		0.000001	// Large energy
+			"GJ"		0.000001055
+
+UNENERGY3	"Wh"		0.293		// Small energy (electrical) (internal Btu)
+			"Wh"		0.293
+
+UNENERGY4	"kWh"		0.000293	// Energy (electrical) (internal Btu)
+			"kWh"		0.000293
+
+UNENERGYDEN	"Btu/ft2"	1.00		// Energy per area
+			"kJ/m2"		11.3559
+			
+UNELPWR1	"W"			0.293		// Energy entered in watts, internally in Btuh (1/3.413)
+			"W"			0.293
+
+UNELPWR2	"kW"		0.000293	// Energy entered in kW, internally in Btuh
+			"kW"		0.000293
+
+UNPOWER		"Btuh"		1.00		// Small energy rate
+			"W"			0.293
+		
+UNPOWER1	"kBtuh"		0.001		// Medium energy rate
+			"kW"		0.000293
+
+UNPOWER2	"MBtuh"		0.000001	// Large energy rate
+			"MW"		0.000000293
+
+UNPOWER3	"Btu/day"	24.0		// Daily energy rate
+			"kWh/day"	0.00703
+
+UNPOWER4	"kBtu/yr"	8.7600		// Yearly energy rate
+			"kWh/yr"	2.56668
+
+UNPOWER5	"Wh/yr"		2566.68		// Special yearly energy rate
+			"Wh/yr"		2566.68
+
+UNBHP		"bhp"           0.000392752	// Brake Horsepower (550 ft-lb, 745.69987 watts), conv to Btuh. 1/2546.136.
+			"hp"            0.000398199	// metric horseposer. hp?
+
+UNLENGTH	"ft-in"		1.00		// Length (special case for
+			"mm"		304.80		//   ft/inch display in IP)
+
+UNLENGTH2	"in"		12.00		// Small length
+			"mm"		304.80
+
+UNLENGTH3	"ft"		1.00		// Decimal length
+			"mm"		304.80
+
+UNAREA		"ft2"		1.00		// Area
+			"m2"		0.0929
+
+UNAREA2		"in2"		144.0		// Small area
+			"cm2"		929.0
+
+UNVOLUME	"ft3"		1.00		// Volume
+			"m3"		0.0283
+
+UNANGLE		"deg"		180./kPi	// Angle
+			"deg"		180./kPi
+
+UNPOWERDEN	"Btuh/ft2"	1.00		// Power density
+			"W/m2"		3.15
+
+UNWATTDEN	"W/ft2"		0.2926		// Power density in watts
+			"W/m2"		3.15
+
+UNPOWERDEN2	"Btu/ft2-day"	24.00	// Daily power density
+			"Wh/m2-day"	75.6
+
+UNDENPOWER	"ft2/ton"	1.00		// Floor area per ton
+			"m2/kW"		0.0264
+
+UNELECDEN	"W/ft2"		0.293		// Electrical power density
+			"W/m2"		3.15
+
+UNANNUSE	"kBtu/ft2 (source)" 1.00	// Annual energy use per unit area
+			"MJ/m2 (source)"    11.4
+
+UNDENSITY	"lb/ft3"	1.00		// Density
+			"kg/m3"		16.00
+
+UNDENSITY2	"lb/ft2"	1.00		// Weight per unit area
+			"kg/m2"		4.88
+
+UNSPECHEAT	"Btu/lb-F"	1.00		// Specific heat
+			"kJ/kg-K"	4.19
+
+UNHEATCAP	"Btu/F"		1.00		// Heat capacity
+			"kJ/K"		1.90
+
+UNHEATCAP_AREA	"Btu/F-ft2"	1.00		// Heat capacity per unit area
+			"kJ/K-m2"	20.45
+
+UNHEATCAP_VOL	"Btu/F-ft3"	1.00		// Volumetric heat capacity
+			"kJ/K/m3"		67.10
+
+UNENTH		"Btu/lb"	1.00		// Enthalpy
+			"kJ/kg"		2.32444	 	// 1.05435 * 2.20462
+
+UNUVAL		"Btuh/ft2-F"	1.00	// U-value (Conductance; per area)
+			"W/m2-C"	5.68		  
+
+UNCNDVY		"Btuh-ft/ft2-F"	1.00	// Conductivity
+			"W/m-C"		1.731		  
+
+UNUA		"Btuh/F"	1.00		// UA.    Also heat capacity flow rate (CFLOW) rob 3-92.
+			"W/C"		0.5277
+
+UNRVAL		"ft2-F/Btuh"	1.00	// R-value
+			"m2-C/W"	0.176
+
+UNRESVY		"ft2-F/Btuh-f"	1.00	// Resistivity
+			"m2-C/W-m"	.5777		// <--check this factor (rob)
+
+UNF2		"Btuh/ft-F"	1.00		// Perimeter F2 factor
+			"W/m-C"		1.73
+
+UNAIRCHANGE	"ach"		1.00		// Air changes per hour
+			"ach"		1.00
+
+UNELA		"in2/ft2"	1.00		// Effective leakage area
+			"mm2/m2"	6944
+
+UNAIRFLOW	"cfm"		1.00		// Air volume flow rate
+			"L/s"		0.472
+
+UNMFLOW		"lb/hr"     1.00		// mass flow (eg of air or moisture)
+			"kg/hr"		0.453593	// 1/2.20462
+
+UNPRESAIR	"in H2O"	1.00		// Air pressure
+			"Pa"		249
+
+UNPRESH2O	"ft H2O"	1.00		// Water pressure 9-92
+			"kPa"		2.99
+
+UNH2OFLOW	"gpm"		1.00		// Water volumetric flow rate
+			"L/s"		0.0631
+
+UNVELOCITY	"fpm"		1.00		// Velocity
+			"m/s"		0.00508
+
+UNHOURS		"hr"		1.00		// time interval in hours
+            "hr"        1.00
+
+UNLATITUDE	"deg N"		57.2958		// Latitude
+			"deg N"		57.2958
+
+UNLONGITUDE	"deg W"		57.2958		// Longitude
+			"deg W"		57.2958
+
+UNPITCH		"in 12"		12.00		// Pitch
+			"in 10"		10.00
+
+UNWINDVEL	"mph"		1.00		// Wind speed
+			"km/h"		1.61
+
+UNLVOLUME	"gal"		7.47943		// Liquid volume (internal ft3)
+			"l"			28.2821
+
+UNLVOLUME2	"gal"		1.00		// Liquid volume (internal gal)
+			"l"			3.78541
+
+UNTON		"ton"		0.000083333	// Refrigeration rate
+			"kW"		0.000293	// 12000 Btuh
+
+UNCFMXPOW	"cfm/Btuh"	1.00		// Air flow per energy
+			"(L/s)/kJ"	0.498
+
+UNGPMXPOW	"gpm/Btuh"	1.00		// Water flow per energy
+			"(L/s)/kj"	0.0666
+
+UNCFMPSF	"cfm/ft2"	1.00		// Air flow per unit area
+			"(L/s)/m2"	5.08073
+			
+UNGPMPSF	"gpm/ft2"	1.00		// Water flow per unit area
+			"(L/s)/m2"	1.4723
+			
+UNCOST		"$"			1.00		// Cost
+			"$"			1.00
+			
+UNCOSTF		"$/ft"		1.00		// Cost per unit length
+			"$/m"		3.281
+			
+UNCOSTSF	"$/ft2"		1.00		// Cost per unit area
+			"$/m2"		10.764
+			
+UNWXFLOW	"W/cfm"		1.00		// Watts per unit flow
+			"W/L/s"		2.119
+
+UNEER		"Btu/Wh"	1.00		// Energy efficiency ratio
+			"Btu/Wh"	1.00
+	
+UNTIME		"hr"		1.00		// Time  (and see UNHOURS above 6-92)
+			"hr"		1.00
+
+UNTIME2		"min"		60.00		// Shorter time
+			"min"		60.00
+
+UNTIME3		"sec"		3600.00		// Shortest time
+			"sec"		3600.00
+		
+*END		// terminates input
+		
+// end of cnunits.def
