@@ -1685,7 +1685,7 @@ CULT( "rsAdjForFanHt", DAT, RSYS_ADJFORFANHT,0,       0, VEOI,   TYCH,  0,      
 CULT( "rsModeCtrl",  DAT,   RSYS_MODECTRL,   0,       0, VHRLY,  TYCH,  0,    C_RSYSMODECTRLCH_AUTO, N, N),
 CULT( "rsElecMtr",   DAT,   RSYS_ELECMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsFuelMtr",   DAT,   RSYS_FUELMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
-
+CULT( "rsLoadMtr",   DAT,   RSYS_LOADMTRI,   0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 CULT( "rsTdDesH",	 DAT,   RSYS_TDDESH,     0,       0, VEOI,   TYFL,  0,    50.f,     N,   N),
 CULT( "rsTdDesC",	 DAT,   RSYS_TDDESC,     0,       0, VEOI,   TYFL,  0,    -25.f,    N,   N),
 CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f,     N,   N),

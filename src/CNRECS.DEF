@@ -3249,6 +3249,10 @@ x *declare "RC rs_SetDefaultsClg();"
 							// runtime pointers to meters, NULL if not accum'ing
 							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
 
+*i TI rs_loadMtri           // LOADMTR idx for accumulation of primary (coil) output
+*declare "LOADMTR* rs_pLoadMtr;"
+// *i TI rs_rejHeatMtri        // LOADMTR idx for accumulation of rejected heat
+
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect
 *h FLOAT rs_parElec			//		electrical parasitic power, W

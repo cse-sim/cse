@@ -2755,6 +2755,7 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pMtrFuel = MtrB.GetAtSafe( rs_fuelMtri);			// fuel mtr or NULL
 	rs_pMtrHeat = rs_IsElecHeat() ? rs_pMtrElec : rs_pMtrFuel;	// heat mtr or NULL
 	rs_pMtrAux = rs_IsFuelAuxH() ? rs_pMtrFuel : rs_pMtrElec;
+	rs_pLoadMtr = LdMtrR.GetAtSafe(rs_loadMtri);
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -3091,6 +3092,12 @@ RC RSYS::rs_EndSubhr()
 			(&R.qhZoneSen)[iMX] += float(zp->zn_qsHvac * Top.tp_subhrDur);
 			(&R.qhZoneLat)[iMX] += float(zp->zn_qlHvac * Top.tp_subhrDur);
 		}
+	}
+
+	// Load meter
+	if (rs_pLoadMtr)
+	{	rs_pLoadMtr->S.qHtg += 1.f;
+		rs_pLoadMtr->S.qClg -= 1.f;
 	}
 
 	return rc;
