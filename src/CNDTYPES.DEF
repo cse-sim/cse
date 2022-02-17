@@ -275,6 +275,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  ANIZFAN "AirNetIZFan"
 			  ANEXTFLOW "AirNetExtFlow"
 			  ANIZFLOW "AirNetIZFlow"
+			  ANDOAS "AirNetDOAS"
 			  ANHERV "AirNetHERV"
 			  ANDUCTLK "AirNetDuctLk"
 			  ANSYSAIR "AirNetSysAir"

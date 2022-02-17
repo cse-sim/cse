@@ -75,6 +75,7 @@ makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
 
 // simple HVAC and DHW (for CSE T24 residential compliance)
 makAncRSYS( RSiB);			// residential HVAC system
+makAncDOAS( OAiB);			// DOAS input records basAnc
 makAncDHWMTR( WMtriB);		// DHW meters
 makAncDHWSYS( WSiB);		// DHW system
 makAncDHWHEATER( WHiB);		// DHW heater
@@ -145,6 +146,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	GniB.free();
 	MtriB.free();
 	RSiB.free();
+	OAiB.free();
 	WMtriB.free();
 	WSiB.free();
 	WHiB.free();
@@ -1511,6 +1513,20 @@ x	CULT( "znWindFCnv",  DAT,   ZI( WINDFCNV),   0,        0, VSUBHRLY, TYFL,  0, 
 #undef ZI
 #undef XFAN
 
+//============== DOAS command (dedicated outdoor air system) ================
+RC oaStarCkf( CULT* c, void *p, void* p2, void* p3)
+{
+	return RCOK;
+}
+static CULT doasT[] =
+{
+// id                cs     fn            f   uc evf      ty     b      dfls                 p2   ckf
+//----------         -----  ------------  --- -- ------   -----  -----  -------------        ---- ----
+CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   oaStarCkf),
+CULT( "endDOAS",    ENDER, 0,            0,   0, 0,      0,     0,      N,   0.f,           N,   N),
+CULT()
+};
+
 //=================== IZXFER command (interzone transfer) ===================
 RC izStarCkf( CULT* c, void *p, void* p2, void* p3)
 
@@ -1532,6 +1548,7 @@ static CULT izxT[] = //------ IZXFER cmd RAT Entry table, used from cnTopCult
 CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   izStarCkf),
 CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
 CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
+CULT( "izDOAS",      DAT,   IZXRAT_DOAS,  0,   0, VEOI,   TYREF, &OAiB,  0.f,                N,   N),
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
 CULT( "izAFCat",     DAT,   IZXRAT_AFCATI, 0,  0, VEOI,   TYCH,  0,      0,                  N,   N),
@@ -2857,6 +2874,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),
 	CULT("afmeter",      RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
+	CULT( "doas",        RATE,  0,                 0,          0, 0,      0,    &OAiB,  N,    0.f,          doasT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),

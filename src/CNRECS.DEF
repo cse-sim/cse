@@ -2775,6 +2775,11 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *s *e DBL ad_pFan		// fan (electrical) power for meter, Btuh (*not* W)
 *END
 //-----------------------------------------------------------------------------
+RECORD DOAS "doas" *RAT
+    *prefix oa_
+
+*END
+//-----------------------------------------------------------------------------
 RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *prefix iz_
     *excon		// explicit constructor
@@ -2794,6 +2799,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
+	*declare "void iz_GetDOASConditions();"
 	*declare "RC iz_SetupHERV();"
 	*declare "RC iz_Calc();"
 	*declare "RC iz_MassFlow( int iV);"
@@ -2810,6 +2816,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
 	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
 	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
+	*declare "BOOL iz_IsDOAS() const { return iz_nvcntrl == C_IZNVTYCH_ANDOAS; }"
 	*declare "BOOL iz_IsDuctLk() const { return iz_nvcntrl == C_IZNVTYCH_ANDUCTLK; }"
 	*declare "BOOL iz_IsSysAir() const { return iz_nvcntrl == C_IZNVTYCH_ANSYSAIR; }"
 	*declare "BOOL iz_IsSysOrDuct() const { return iz_IsDuctLk() || iz_IsSysAir(); }"
@@ -2824,6 +2831,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
   // inputs
     *r TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
     *r TI iz_zi2		//   iz_zi2 = -1 iff not interzone
+    *r TI iz_doas       // subscript of DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
     *h UA iz_ua   		// air-to-air coupling const (Btuh/F) thru walls etc.
     *i IZNVTYCH iz_nvcntrl	// Control type for nat vents:
 						//   C_IZNVTYCH_NONE: no venting (iz_ua only)
@@ -2895,11 +2903,11 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
    										//  re C_IZNVTYCH_ANDUCTLK / ANSYSAIR
     *r FLOAT iz_nvcoeff				// nat vent overall coeff Btuh/(dt^.5). set by izxSetup().
     *s *e *nest AIRSTATE iz_air1	// z1 air state (tdb and w)
-    *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient)
+    *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient or from DOAS)
 
     *declare "inline float iz_T( int i) { return i ? iz_air2.as_tdb : iz_air1.as_tdb; }"
     *s float iz_rho1	// z1 moist air density, lb/cf
-    *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient)
+    *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient or from DOAS)
     *declare "inline float iz_Rho( int i) { return i ? iz_rho2 : iz_rho1; }"
     *s *hide float iz_pres2	// z2 pressure (or portion thereof, see code), lbf/sf
     *array 2 *s *e *nest ANDAT iz_ad		// airnet working data

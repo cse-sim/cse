@@ -1385,6 +1385,9 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 		else if (iz_IsAirNetIZ())
 			// zone 2 is zone
 			iz_GetZn2Conditions();
+		else if (iz_IsDOAS())
+		    // zone 2 is DOAS
+			iz_GetDOASConditions();
 	#if defined( _DEBUG)
 		else
 			errCrit( ABT, "Missing IZXRAT::iz_BegSubhr() code");
@@ -1441,6 +1444,14 @@ void IZXRAT::iz_GetExteriorConditions(
 		iz_cpr * windPresV	// pressure coeff * velocity pressure
 		- iz_hz * iz_rho2;	// plus stack
 }	// IZXRAT::iz_GetExteriorConditions
+//-----------------------------------------------------------------------------
+void IZXRAT::iz_GetDOASConditions()
+// set source conditions to DOAS supply
+{
+	iz_air2.as_Set(Top.tDbOSh, Top.wOSh);
+	iz_rho2 = Top.tp_rhoMoistOSh;
+	iz_pres2 = 0.f;
+}	// IZXRAT::iz_GetDOASConditions
 //------------------------------------------------------------------------------
 RC IZXRAT::iz_Calc()
 // pre-2010 hi-low vent
