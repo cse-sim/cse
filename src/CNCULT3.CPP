@@ -271,7 +271,7 @@ RC SFI::sf_TopSf1()
 			if (rc1==RCOK)						// if ht & wid set (else FPE!)
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
-					sfArea = height * width;			// compute window area
+					sfArea = sf_height * sf_width;			// compute window area
 			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
 			// sfArea is copied to x.area below
 		}
@@ -945,8 +945,8 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// get hite and width from window
 		// gz->height, width ckSet'd in topSf1.
-		sh->wHeight = gz->height;
-		sh->wWidth = gz->width;
+		sh->wHeight = gz->sf_height;
+		sh->wWidth = gz->sf_width;
 
 		// check for vertical surface (assumed by shading compute fcn).
 

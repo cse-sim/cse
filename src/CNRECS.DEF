@@ -1347,8 +1347,8 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
     *i TI sfFndFloor		// surface foundation floor object (walls only, optional)
 	*i LEN sfExpPerim		// foundation floor exposed perimeter (floors only)
  //window only
-    *i LEN_GZ width 		// width and height: used to compute shading,
-    *i LEN_GZ height		//  ... and to compute area b4 mutliplier.
+    *i LEN_GZ sf_width 		// width and height: used to compute shading,
+    *i LEN_GZ sf_height		//  ... and to compute area b4 mutliplier.
     *i FLOAT_GZ mult		// area multiplier (for multiple identical windows)
  //derived/internal
     *r TI xi		// subscript in runtime XSRAT, to facilitate access by probers 1-92
@@ -6353,7 +6353,7 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
     *declare "BOO nxTu( TU *&tu);"				// 1st/next tu with hw coil served by hp, cnhp.cpp
     *declare "BOO nxAh( AH *&ah);"				// 1st/next ah with hw coil served by hp, cnhp.cpp
     *declare "BOO nxBlr( BOILER *&blr);"			// 1st/next boiler in hp, cnhp.cpp
-    *declare "BOO nxBlrStg( BOILER *&blr, SI stgi = -1);"	// 1st/next boiler in given or current hp stage, cnhp.cpp
+    *declare "BOO nxBlrStg( BOILER *&blr, SI _stgi = -1);"	// 1st/next boiler in given or current hp stage, cnhp.cpp
     // in base class: .name (required), .ownTi (unused), more.
  //heatplant user inputs
     *h OFFAVAILONVC hpSched	// hourly choice of OFF, AVAIL (default; plant runs on demand), or ON (at least 1st stage runs).
