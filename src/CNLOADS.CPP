@@ -1225,7 +1225,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 #if 1 && defined( _DEBUG)
 	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
 		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp)))
+		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))
 	{
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
@@ -2366,6 +2366,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{	if (IsAusz( RSYS_CAP47))
 			{	// find cap47 that produces required output
 				// (re-derives dependent values)
+				rs_speedF = 1.f;	// force full speed (used in e.g. rs_CapEffASHP())
 				rs_SizeASHP( rs_capH*rs_fxCapHTarg, Top.heatDsTDbO);
 #if defined( _DEBUG)
 				// capacity consistency check
