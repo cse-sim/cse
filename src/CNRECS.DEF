@@ -2777,8 +2777,12 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
 //-----------------------------------------------------------------------------
 RECORD DOAS "doas" *RAT
     *prefix oa_
-    *i *nest FAN oa_supFan	// supply fan characteristics
-    *i *nest FAN oa_exhFan	// exhaust fan characteristics
+    *declare "RC oa_CkfDOAS();"
+    *declare "RC oa_Setup( DOAS* iRat);"
+
+    // Inputs
+    *i *nest FAN oa_supFan      // supply fan characteristics
+    *i *nest FAN oa_exhFan      // exhaust fan characteristics
 
 *END
 //-----------------------------------------------------------------------------

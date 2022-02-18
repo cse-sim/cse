@@ -834,6 +834,47 @@ void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 	ad_pFan = ad.ad_pFan;
 }	// ANDAT::ad_DupHERV
 //===============================================================================
+RC DOAS::oa_CkfDOAS()	// input checks
+{
+	RC rc = RCOK;
+	return rc;
+}
+//-----------------------------------------------------------------------------
+RC DOAS::oa_Setup(DOAS* iRat)
+{
+	RC rc = RCOK;
+	*this = *iRat;		// copy record, incl name, excl internal front overhead.
+
+	rc |= oa_CkfDOAS();		// check run record
+
+	oa_supFan.vfDs = 0.f;
+	oa_exhFan.vfDs = 0.f;
+
+	IZXRAT* izx;
+	RLUP( IzxR, izx)
+	{	
+		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+		{
+			if (izx->iz_vfMax > 0)
+			{
+				oa_supFan.vfDs += izx->iz_vfMax;
+			}
+			else
+			{
+				oa_exhFan.vfDs -= izx->iz_vfMax;
+			}
+		}	
+	}
+
+	oa_supFan.fn_setup( C_FANAPPCH_DSFAN, this, DOAS_SUPFAN, oa_supFan.vfDs, NULL);	// checks fan input, does defaults
+	oa_exhFan.fn_setup( C_FANAPPCH_DEFAN, this, DOAS_EXHFAN, oa_exhFan.vfDs, NULL);	// checks fan input, does defaults
+
+	return rc;
+}
+
+
+
+//===============================================================================
 /*static*/ const double IZXRAT::delPLinear = .000001;	// pres dif below which eqns made linear, lbf/sf
 //-----------------------------------------------------------------------------
 IZXRAT::IZXRAT( basAnc *b, TI i, SI noZ/*=0*/)		// c'tor

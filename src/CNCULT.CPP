@@ -1514,9 +1514,9 @@ x	CULT( "znWindFCnv",  DAT,   ZI( WINDFCNV),   0,        0, VSUBHRLY, TYFL,  0, 
 #undef XFAN
 
 //============== DOAS command (dedicated outdoor air system) ================
-RC oaStarCkf( CULT* c, void *p, void* p2, void* p3)
+RC oaStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
 {
-	return RCOK;
+	return ((DOAS* )p)->oa_CkfDOAS();
 }
 //---------------------------------------------------------------------------
 #define SFAN(m) (DOAS_SUPFAN + FAN_##m)
