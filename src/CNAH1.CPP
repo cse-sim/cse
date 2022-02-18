@@ -179,7 +179,7 @@ slowing convergence when limit got too small while converging flow (during warmu
 	}
 }		// AH::fazInit
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AH::rddInit(int isAusz)	// init done ONCE for main sim and once for each autoSize design day: set inital state. 7-95.
+RC AH::rddInit([[maybe_unused]] int isAusz)	// init done ONCE for main sim and once for each autoSize design day: set inital state. 7-95.
 
 // see also rddiInit, next: confusing names.   Called from cnguts.cpp:cgRddInit, 7-95
 {

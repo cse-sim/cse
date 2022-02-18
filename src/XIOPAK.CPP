@@ -171,21 +171,29 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), absolutepath;	// filesystem variables
+	filesys::path fname(*fnamp), parentPath, fileNamePart;	// filesystem variables
 	std::error_code ec;						// Error Code for filesystem functions
 
-	if (filesys::exists(fname)) {		// File or full path exist
-		absolutepath = filesys::absolute(fname,ec); // Create full path
-		if(ec)
-			err(erOp, "\"%s\": %s", fname.string().c_str(), ec.message().c_str());
+	if (fname.has_parent_path()) // Check the parent path i.e drv:dir
+	{
+		if (filesys::exists(fname.parent_path())) {		// Check the parent path exists.
+			parentPath = fname.parent_path();			// Save the parent path
+		}
+		else
+		{
+			err(erOp, "\"%s\": Invalid path", fname.string().c_str());
+			return RCBAD;		// Parent path is not valid
+		}
+		fileNamePart = fname.filename();	// Save the filename.ext to be append at the end
 	}
-	else {
-		err(erOp, "\"%s\": Invalid path", fname.string().c_str());
-		return RCBAD;
+	else // No parent path
+	{
+		parentPath = filesys::current_path();	// Use the current location
+		fileNamePart = fname;
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(absolutepath.parent_path().string().c_str(), absolutepath.filename().string().c_str());
+	*fnamp = strtPathCat(parentPath.string().c_str(), fileNamePart.string().c_str());
 
 	return RCOK;		// another return is in code above
 
@@ -558,8 +566,9 @@ SEC FC xfsize(		// Return the current size of a file
 {
 	std::error_code ec;
 	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
-	if (ec) {/* if length invalid */
-		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
+	if (ec)
+	{	// if length invalid
+		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message().c_str());
 		return xioerr(xf); /*    bad: report error, return SEC */
 	}
 	return SECOK;   		/*    good */
@@ -1021,7 +1030,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 {
 	RC rc;
 	char *buf;
-	const char *ebuf, *fName;
+	const char *ebuf, *fName = nullptr;
 	USI nw;
 	SEC sec;
 
@@ -1060,7 +1069,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 			}
 		}
 	}
-	while (rc==RCOK && xfs->nxfer==bufsize);	/* last transfer is smaller than buffer */
+	while (rc==RCOK && size_t( xfs->nxfer)==bufsize);	/* last transfer is smaller than buffer */
 	dmfree( DMPP( buf));			/* free buffer */
 
 	if (rc && pMsg)			// if err and caller wants msg

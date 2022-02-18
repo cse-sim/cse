@@ -74,7 +74,7 @@ LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, rec
 //===========================================================================
 void cncultClean(	// cleanup fcn for all the cncultn.cpp files
 
-	CLEANCASE cs )		// ENTRY, DONE, CRASH (cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )		// ENTRY, DONE, CRASH (cnglob.h)
 
 // added for DLL version, which should free every bit of its heap memory, ideally even on error exits
 {
@@ -94,7 +94,7 @@ void cncultClean(	// cleanup fcn for all the cncultn.cpp files
 
 
 //===========================================================================
-RC topStarItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topStarItf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // top *-entry IniTialization Function
 
@@ -133,7 +133,7 @@ RC topStarPrf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 	return RCOK;
 }		// topStarPrf
 //===========================================================================
-RC topStarPrf2( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topStarPrf2([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // top *-entry recall pre-input function, also called (from topStarPrf above) on startup and clear. 7-13-92.
 
@@ -150,7 +150,7 @@ RC topStarPrf2( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 	return RCOK;
 }			// topStarPrf2
 //===========================================================================
-RC topClearItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topClearItf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // called by CLEAR at top level BEFORE data deleted
 {
@@ -175,7 +175,7 @@ RC topClearItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 //---------------------------------------------------------------------------
 
 //===========================================================================
-RC topCkf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topCkf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // finish/check/set up function entry called via cnTopCult at top level "RUN" command
 {
@@ -837,12 +837,12 @@ void TOPRAT::freeDM()		// free child objects in DM
 	// monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------
-const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error messages
+const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
 {
 	const char* dateStrX = dateStr ? dateStr : "(no date)";
 	const char* s = NULL;
-	switch (ivl)
+	switch (_ivl)
 	{
 	case C_IVLCH_Y:
 		 s = strtmp( "year");
@@ -1146,7 +1146,7 @@ LOCAL RC topLr()	// process layers at RUN
 RC LR::lr_TopLr()
 {
 	CON *con;
-	MAT *mat, *frmMat;
+	MAT *mat, *frmMat = nullptr;
 	RC rc=RCOK;
 
 	int thkSet = IsSet( LR_THK);  			// nz iff layer thickness given
@@ -1737,9 +1737,9 @@ void ZNR::addRIgDist( 	// add radiant internal gain distribution for gain origin
 // see if zone already has rIg distribution table entry for type/ti: if so, we will add to it
 	RIGDIST * e = NULL;
 	if (rIgDist)				// if zone has table allocated: insurance
-		for (int i = 0; i < rIgDistN; i++)	// loop over used entries
+		for (int iR = 0; iR < rIgDistN; iR++)	// loop over used entries
 		{
-			RIGDIST * e1 = rIgDist + i;		// point entry
+			RIGDIST * e1 = rIgDist + iR;		// point entry
 			if ( e1->targTy==targTy		// if entry matches
 					&&  e1->targTi==targTi		// ..
 					&&  e1->targP==p )			// testing targP is redundant

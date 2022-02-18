@@ -224,7 +224,7 @@ class record		// base class for records
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
-	virtual int IsCountable( int options) const { return 1; }
+	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
 	virtual void FixUp() { };		// optional fixup after reAl()
 	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
 	int IsNameMatch( const char* _name) const;
@@ -249,8 +249,8 @@ class record		// base class for records
     RC FC notGzEr( int fn);
 	// change propogation support functions in cncult2.cpp
     void CDEC chafSelf( SI chafFn, ...);
-    void CDEC chafN( BP b, TI i, USI off, ...);
-    void chafNV( BP b, TI i, USI off, va_list ap);
+    void CDEC chafN( BP _b, TI i, USI off, ...);
+    void chafNV( BP _b, TI i, USI off, va_list ap);
 
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
@@ -319,7 +319,7 @@ template <class T>  class anc : public basAnc
 	{	return basAnc::add((record **)r, erOp, i, name); }
 	RC RunDup( const anc< T> &src, BP _ownB=NULL, int nxRecs=0, int erOp=ABT);
 	RC AllocResultsRecs(basAnc& src);
-    void statSetup( T &r, TI n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, n, noZ, inHeap); }
+    void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
 
  protected:
@@ -418,9 +418,9 @@ template <class T> void anc<T>::desRecs( SI _mn, SI _n)
 template <class T> int anc<T>::GetCount( int options /*=0*/) const
 {
 	int count = 0;
-	const T* p;
-	RLUP( *this, p)
-	{	if (!options || p->IsCountable( options))
+	const T* pT;
+	RLUP( *this, pT)
+	{	if (!options || pT->IsCountable( options))
 			count++;
 	}
 	return count;
@@ -443,12 +443,12 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 
 	an_pCULT = src.an_pCULT;	// assume same associated CULT
 
-	const T* p;
-	RLUP( src, p)
+	const T* pT;
+	RLUP( src, pT)
 	{	T* pNew;
-		add( &pNew, ABT, p->ss); 	// add empty record
+		add( &pNew, ABT, pT->ss); 	// add empty record
 									// error not expected due to preceding al
-		rc |= pNew->RunDup( p);		// virtual, base class Copy()s
+		rc |= pNew->RunDup( pT);	// virtual, base class Copy()s
 	}
 	return rc;
 }		// anc<T>::RunDup

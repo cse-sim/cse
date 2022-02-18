@@ -556,12 +556,6 @@ x	}
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
 #endif
 
-	int nVentUseful = 0;	// ventilation usefulness
-							//   >0: vent potentially useful for 1 or more zones
-							//   =0: vent not useful
-							//   <0: vent forbidden by conditions in 1 or more zones
-							//       e.g. heating or cooling required
-
 	ULI ventAvail = Top.tp_GetVentAvail();		// overall vent availability
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
@@ -927,7 +921,7 @@ const RSYS* ZNR::zn_GetRSYS() const
 }		// ZNR::zn_GetRSYS
 //-----------------------------------------------------------------------------
 int ZNR::zn_IsHCAvail(		// determine system availability
-	int rsMode) const		// capability required: rsmHEAT, rsmCOOL
+	[[maybe_unused]] int rsMode) const		// capability required: rsmHEAT, rsmCOOL
 // returns 1 if specified capability is available
 {	return !zn_IsUZ();		// TODO: schedule availability?
 }		// ZNR::zn_HCAvail
@@ -1221,7 +1215,7 @@ x						printf( "1B\n");
 //-----------------------------------------------------------------------------
 RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 	RSYS* rs,			// zone's RSYS
-	int options /*=0*/)		// option bits
+	[[maybe_unused]] int options /*=0*/)		// option bits
 							//   1: report "flipped" supply temps
 // Prereq: rs->rs_SupplyAirState() at current speed
 // returns RCOK iff success
@@ -1231,7 +1225,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 #if 1 && defined( _DEBUG)
 	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
 		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp)))
+		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))
 	{
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
@@ -1404,9 +1398,9 @@ RC ZNR::zn_AirFlowVsTsup()
 
 
 	AIRSTATE asSup;		// air state at register
-	for (int i = 0; i < 10; i++)
+	for (int iAf = 0; iAf < 10; iAf++)
 	{
-		float fAmf = 1.f - float(i) / 10.f;
+		float fAmf = 1.f - float(iAf) / 10.f;
 
 		float amf = rs->rs_TSupVarFlow(fAmf, asSup);
 
@@ -2372,6 +2366,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{	if (IsAusz( RSYS_CAP47))
 			{	// find cap47 that produces required output
 				// (re-derives dependent values)
+				rs_speedF = 1.f;	// force full speed (used in e.g. rs_CapEffASHP())
 				rs_SizeASHP( rs_capH*rs_fxCapHTarg, Top.heatDsTDbO);
 #if defined( _DEBUG)
 				// capacity consistency check
@@ -2539,7 +2534,7 @@ void RSYS::rs_OAVSetup()			// 1 time setup for OAV
 	}
 	else
 	{
-		ZNR* zp = rs_GetOAVReliefZn();
+		[[maybe_unused]] ZNR* zp = rs_GetOAVReliefZn();
 		if (rs_OAVType == C_RSYSOAVTYCH_VARFLOW)
 		{	// variable flow (aka "NightBreeze")
 
@@ -2589,7 +2584,7 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 		{	double d = 17.91554 - 3.67538*log( tMax);
 			afOld = 1.f/max( 1.f, float( d));
 		}
-		float d = af - afOld;
+		// float d = af - afOld;
 		if (rs_fanHeatOAV > 4000.f)
 			printf( "Excess OAV fan heat\n");
 #endif
@@ -2851,7 +2846,7 @@ void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	float avfC /*=-1*/,	// air flow if known, passed to rs_SetupFanC
-	int options /*=0*/)	// option bits TBD
+	[[maybe_unused]] int options /*=0*/)	// option bits TBD
 // sets RSYS cooling members that do not vary during simulation
 {
 	RC rc = RCOK;
@@ -3405,7 +3400,7 @@ x		printf("\nhit");
 		//   include rated fan power
 		//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
 		float capClg, inpClg, capClgMin, inpClgMin;
-		RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
+		[[maybe_unused]] RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
 			capClg, inpClg, capClgMin, inpClgMin);
 
 		capClgMin = bracket(capClg, capClgMin, 0.05f*capClg);
@@ -3696,7 +3691,7 @@ RC RSYS::rs_PerfDataASHP()
 
 	fprintf( f, "\ncap17/cap47 vs HSPF\n");
 
-	for (int iHSPF=65; iHSPF<140; iHSPF++)
+	for (iHSPF=65; iHSPF<140; iHSPF++)
 	{	rs_HSPF = float( iHSPF)/10.f;
 		fprintf( f, "%0.3f,%0.3f\n", rs_HSPF, rs_CapRat1747());
 	}
@@ -3876,7 +3871,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 			// DOE-2 curves should be applied to compressor-only
 			//   but it appears the Micropas implementation applied to values with fan
 
-			float fCap = 0.302 + 0.0121*tdbOut + 0.0000759*tdbOut2 - 0.000000384*tdbOut3;
+			fCap = 0.302 + 0.0121*tdbOut + 0.0000759*tdbOut2 - 0.000000384*tdbOut3;
 			capNet = fCap * rs_cap47;	// capacity with fan
 			capHt = capNet - fanHAdj;	// capacity w/o fan
 
@@ -3893,7 +3888,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 			capHt = fCap * rs_cap47;
 
 			// EIR (curve SDL-C56)
-			double fEIR = 2.03914613 - 0.03906753*tdbOut + 0.00045617*tdbOut2 - 0.00000203*tdbOut3;
+			fEIR = 2.03914613 - 0.03906753*tdbOut + 0.00045617*tdbOut2 - 0.00000203*tdbOut3;
 
 			// fan / no-fan issue
 
@@ -3933,13 +3928,13 @@ static const double epEIR[ 6][ 6] = {
 {  0.981100941, -0.005158493,  0.000243416, -0.005274352, 0.000230742, -0.000336954 }};
 
 
-			float tdbOut2 = tdbOut * tdbOut;
+			tdbOut2 = tdbOut * tdbOut;
 			float tdbEnt = 70.f;
 			float tdbEnt2 = tdbEnt*tdbEnt;
 			float tdbX = tdbOut*tdbEnt;
 			const int iHS = 3;		// heating, 1 spd
 
-			double fCap = epCap[ iHS][ 0]
+			fCap = epCap[ iHS][ 0]
 			            + epCap[ iHS][ 1]*tdbEnt
 					    + epCap[ iHS][ 2]*tdbEnt2
 						+ epCap[ iHS][ 3]*tdbOut
@@ -3947,7 +3942,7 @@ static const double epEIR[ 6][ 6] = {
 						+ epCap[ iHS][ 5]*tdbX;
 			capHt = fCap * rs_cap47;
 
-			double fEIR = epEIR[ iHS][ 0]
+			fEIR = epEIR[ iHS][ 0]
 			            + epEIR[ iHS][ 1]*tdbEnt
 					    + epEIR[ iHS][ 2]*tdbEnt2
 						+ epEIR[ iHS][ 3]*tdbOut
@@ -4594,7 +4589,7 @@ static double fHrReg4[] =
 		double Eh = rs_effHt > 0.
 						? rs_capHt / rs_effHt		// input, Btuh
 						: 0.;
-		double EhW = Eh / 3.413;		// input, W (check value)
+		[[maybe_unused]] double EhW = Eh / 3.413;		// input, W (check value)
 
 		// low temp cut-out
 		float delta = tDbBin <= tOff || rs_effHt < 1. ? 0.f
@@ -4608,7 +4603,7 @@ static double fHrReg4[] =
 		double RHBin = RH * fHrReg4[ iBin];
 
 		double inpBin = ehBin + RHBin;
-		double inpBinWh = inpBin / 3.413;
+		[[maybe_unused]] double inpBinWh = inpBin / 3.413;
 
 		double outBin = BL * fHrReg4[ iBin];
 		inpTot += inpBin;
@@ -4908,7 +4903,7 @@ void RSYS::rs_EnteringAirState()	// RSYS entering air state
 	{	if (!Top.isWarmup)
 			orWarn( "Dubious asIn tdb (%0.2f)", rs_asIn.as_tdb);
 		// repeat return duct calc (debug aid)
-		int iDS = rs_Dsi( 1);
+		// int iDS = rs_Dsi( 1); above
 		if (iDS > 0)
 			rs_asIn = DsR[ iDS].ds_CalcFL( rs_asRet, rs_amf);
 	}
@@ -4993,7 +4988,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 				//   add aux heat and apply duct losses
 				if (rs_speedF == 1.f)	// skip if not full speed
 				{
-					double tdbWas = rs_asOutAux.as_tdb;
+					[[maybe_unused]] double tdbWas = rs_asOutAux.as_tdb;
 					float fanHeatAux;
 					if (rs_ctrlAuxH == C_AUXHEATCTRL_CYCLE)
 					{	// aux cycles: aux out = prim out + aux heat
@@ -5490,7 +5485,7 @@ RC RSYS::rs_TotalAirRequestForSpeedF(		// all-zone air request at speedF
 	if (speedF != rs_speedF)
 	{
 		rs_ClearSubhrResults(1);	// init for speed re-try
-		int ret = rs_SupplyAirState(rs_mode, speedF);
+		[[maybe_unused]] int ret = rs_SupplyAirState(rs_mode, speedF);
 
 		float tSupUseful;
 		if (!rs_IsSupplyAirTempUseful(rs_mode, rs_asSup.as_tdb, tSupUseful))
@@ -5524,7 +5519,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 {
 #if defined( _DEBUG)
 	double speedFWas = speedF;
-	float rsSpeedFWas = rs_speedF;
+	// float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
 #if defined( _DEBUG)
@@ -5537,7 +5532,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	//   (when far from solution errors are common and not meaningful
 	int arOptions = abs(rs_fxCap[0] - 1.f) < .01f;
 
-	RC rc = rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
+	[[maybe_unused]] RC rc = rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
 
 	// if rc != RCOK, rs_fxCap[0] is 0
 
@@ -5580,7 +5575,7 @@ RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified suppl
 	// search for speedF that produces fxCap = 1.
 //   this RSYS is left in the corresponding state via rc_TotalAirRequestForSpeed() calls
 //   (secant results not directly returned)
-	int ret = secant([](void* pO, double& speedF) { return ((RSYS*)pO)->rs_TSupForSpeedF(speedF); },
+	[[maybe_unused]] int ret = secant([](void* pO, double& speedF) { return ((RSYS*)pO)->rs_TSupForSpeedF(speedF); },
 						this,
 						tSup, .005,	// target=tSup within .005 degF
 						speedFLo, f1,	// x1, f1
@@ -5595,7 +5590,7 @@ double RSYS::rs_TSupForSpeedF(
 {
 #if defined( _DEBUG)
 	double speedFWas = speedF;
-	float rsSpeedFWas = rs_speedF;
+	// float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
 #if defined( _DEBUG)
@@ -5606,7 +5601,7 @@ double RSYS::rs_TSupForSpeedF(
 
 
 	// rs_ClearSubhrResults(1);	// init for speed re-try
-	int ret = rs_SupplyAirState(rs_mode, speedF);
+	[[maybe_unused]] int ret = rs_SupplyAirState(rs_mode, speedF);
 
 	return rs_asSup.as_tdb;
 

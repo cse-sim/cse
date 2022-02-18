@@ -1566,7 +1566,7 @@ LOCAL void CDEC NEAR vpRxRow(	// virtual print report or export row given COLDEF
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.
 {
-	va_list ap;   COLDEF *colDef;   float ftemp;   USI mfw, fmt;   char temp[1000];   void *p;
+	va_list ap;   COLDEF *colDef;   float ftemp = 0;   USI mfw, fmt;   char temp[1000];   void *p = nullptr;
 
 	SI isExport = dvrip->isExport;
 
