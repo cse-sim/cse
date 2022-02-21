@@ -461,25 +461,31 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			COLMACCXA25_MP "ColmacCxA25_MP"
 			COLMACCXA30_MP "ColmacCxA30_MP"
 								   
-			NYLEC25A_SP  "NyleC25A_SP"		// Nyle Cxx external HPWHs (single pass mode)
+			NYLEC25A_SP  "NyleC25A_SP"		// Nyle Cxx external HPWHs (SP = single pass mode)
 			NYLEC60A_SP  "NyleC60A_SP"
 			NYLEC90A_SP  "NyleC90A_SP"
 			NYLEC125A_SP "NyleC125A_SP"
 			NYLEC185A_SP "NyleC185A_SP"
 			NYLEC250A_SP "NyleC250A_SP"
 
-			// NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (multi-pass mode)
+			NYLEC60AC_SP  "NyleC60A_CWP_SP"	// Nyle Cxx external SP HPWHs with cold weather package
+			NYLEC90AC_SP  "NyleC90A_CWP_SP"
+			NYLEC125AC_SP "NyleC125A_CWP_SP"
+			NYLEC185AC_SP "NyleC185A_CWP_SP"
+			NYLEC250AC_SP "NyleC250A_CWP_SP"
+
+			// NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (MP = multi-pass mode)
 			NYLEC60A_MP  "NyleC60A_MP"
 			NYLEC90A_MP  "NyleC90A_MP"
 			NYLEC125A_MP "NyleC125A_MP"
 			NYLEC185A_MP "NyleC185A_MP"
 			NYLEC250A_MP "NyleC250A_MP"
 
-			NYLEC60AC_SP  "NyleC60A_CWP_SP"	// Nyle Cxx external HPWHs with cold weather package)
-			NYLEC90AC_SP  "NyleC90A_CWP_SP"
-			NYLEC125AC_SP "NyleC125A_CWP_SP"
-			NYLEC185AC_SP "NyleC185A_CWP_SP"
-			NYLEC250AC_SP "NyleC250A_CWP_SP"
+			NYLEC60AC_MP  "NyleC60A_CWP_MP"		// Nyle Cxx external MP HPWHs w/ cold weather package
+			NYLEC90AC_MP  "NyleC90A_CWP_MP"
+			NYLEC125AC_MP "NyleC125A_CWP_MP"
+			NYLEC185AC_MP "NyleC185A_CWP_MP"
+			NYLEC250AC_MP "NyleC250A_CWP_MP"
 
 			RHEEM_HPHD60HNU_201_MP "Rheem_HPHD60HNU_MP"
 			RHEEM_HPHD60VNU_201_MP "Rheem_HPHD60VNU_MP"
