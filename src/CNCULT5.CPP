@@ -1946,7 +1946,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 		break;
 	case C_FANAPPCH_DSFAN:		// DOAS supply fan
 	case C_FANAPPCH_DEFAN:		// DOAS exhaust fan
-		if (vfDs > 0.f)
+		if (defVfDs > 0.f)
 		{
 			fanTy = C_FANTYCH_EXHAUST;		// type not inputtable; set per presence
 		}

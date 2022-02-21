@@ -1952,6 +1952,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *prefix af_
 *declare "AIRFLOW() : AIRSTATE(), af_amf( 0.) { }"
 *declare "AIRFLOW( double amf, double tdb, double w) { af_Init( amf, tdb, w); }"
+*declare "AIRFLOW( double amf, const AIRSTATE& as) { af_Init( amf, as.as_tdb, as.as_w); }"
 *declare "double af_Tdb() const { return as_tdb; }"
 *declare "double af_W() const { return as_w; }"
 *declare "double af_Wmf() const { return af_amf*as_w; }"
@@ -2779,10 +2780,35 @@ RECORD DOAS "doas" *RAT
     *prefix oa_
     *declare "RC oa_CkfDOAS();"
     *declare "RC oa_Setup( DOAS* iRat);"
+	*declare "RC oa_BegSubhr();"
+	*declare "RC oa_EndSubhr();"
 
-    // Inputs
+    // Fan inputs
     *i *nest FAN oa_supFan      // supply fan characteristics
     *i *nest FAN oa_exhFan      // exhaust fan characteristics
+
+    // Tempering inputs
+    *s TEMP oa_supTH            // supply temperature heating setpoint
+    *s TEMP oa_supTC            // supply temperature cooling setpoint
+    // Coils (reuse CNE COILS?)
+    /*
+    *s FLOAT_GZ oa_effH         // 
+    */
+
+    // Heat exchanger inputs
+    /*
+    *s FRAC oa_hxEff                // TODO: Separate into different HX input models
+    *i BOOL oa_bypass               // HX can be bypassed when not adventatgeous
+    *s FLOAT_GEZ oa_hxAuxPwr        // Auxiliary power
+    *i TI oa_hxAuxMtri              // Meter for auxiliary power
+    *declare "MTR* oa_pHXAuxMtr;"
+    // TODO: Add defrost control (see EnergyPlus options)
+    */
+
+    // Outputs
+    *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs
+    *s *e *nest AIRFLOW oa_exhAF    // Exhaust air flow coming from IZXFERs
+    *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
 
 *END
 //-----------------------------------------------------------------------------

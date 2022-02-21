@@ -847,33 +847,149 @@ RC DOAS::oa_Setup(DOAS* iRat)
 
 	rc |= oa_CkfDOAS();		// check run record
 
-	oa_supFan.vfDs = 0.f;
-	oa_exhFan.vfDs = 0.f;
+	// Calculate total design flow rates from child IXFERS
+	float supFanVfDemand = 0.f;
+	float exhFanVfDemand = 0.f;
 
 	IZXRAT* izx;
 	RLUP( IzxR, izx)
 	{	
 		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
 		{
-			if (izx->iz_vfMax > 0)
+			if (izx->iz_vfMin > 0)
 			{
-				oa_supFan.vfDs += izx->iz_vfMax;
+				supFanVfDemand += izx->iz_vfMin;
 			}
 			else
 			{
-				oa_exhFan.vfDs -= izx->iz_vfMax;
+				exhFanVfDemand -= izx->iz_vfMin;
 			}
 		}	
 	}
 
+	// If fan design flows are not set, set them from IZXFER flows
+	//   Note: This may not be reliable if iz_vfMin is an expression
+	// Warn if vfDs is not large enough to meet IZXFER demand
+	bool supFanVfDsIsSet = IsSet(DOAS_SUPFAN + FAN_VFDS);
+	bool exhFanVfDsIsSet = IsSet(DOAS_EXHFAN + FAN_VFDS);
+
+	if (!supFanVfDsIsSet)
+	{
+		oa_supFan.vfDs = supFanVfDemand;
+	}
+	else
+	{
+		float supFlowRatio = oa_supFan.vfDs / supFanVfDemand;
+		if(supFlowRatio < 0.99f)
+		{
+			oWarn( "Sum of IZXFER supply flows referencing DOAS is larger than vfDs.\n"
+				"    IZXFER supply flows will be reduced proportionately"
+			);
+
+			// Adjust IZXFER flows
+			IZXRAT* izx;
+			RLUP( IzxR, izx)
+			{	
+				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+				{
+					if (izx->iz_vfMin > 0)
+					{
+						izx->iz_vfMin *= supFlowRatio;
+					}
+				}	
+			}
+		}
+	}
+
+	if (!exhFanVfDsIsSet)
+	{
+		oa_exhFan.vfDs = exhFanVfDemand;
+	}
+	else
+	{
+		float exhFlowRatio = oa_exhFan.vfDs / exhFanVfDemand;
+		if(exhFlowRatio < 0.99f)
+		{
+			oWarn( "Sum of IZXFER exhaust flows referencing DOAS is larger than vfDs\n"
+				"    IZXFER exhaust flows will be reduced proportionately"
+			);
+
+			// Adjust IZXFER flows
+			IZXRAT* izx;
+			RLUP( IzxR, izx)
+			{	
+				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+				{
+					if (izx->iz_vfMin < 0)
+					{
+						izx->iz_vfMin *= exhFlowRatio;
+					}
+				}	
+			}
+		}
+	}
+
+	// Setup fan records
 	oa_supFan.fn_setup( C_FANAPPCH_DSFAN, this, DOAS_SUPFAN, oa_supFan.vfDs, NULL);	// checks fan input, does defaults
 	oa_exhFan.fn_setup( C_FANAPPCH_DEFAN, this, DOAS_EXHFAN, oa_exhFan.vfDs, NULL);	// checks fan input, does defaults
 
 	return rc;
 }
+//-----------------------------------------------------------------------------
+RC DOAS::oa_BegSubhr()
+{
+	RC rc = RCOK;
+	// Get total air flow rates and calculate mixed exhaust air state
+	oa_supAF.af_amf = 0.;
+	oa_exhAF.af_amf = 0.;
+	IZXRAT* izx;
+	RLUP( IzxR, izx)
+	{	
+		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+		{
+			if (izx->iz_vfMin > 0)
+			{
+				oa_supAF.af_amf += izx->iz_vfMin * Top.tp_rhoMoistOSh / 60.;
+			}
+			else
+			{
+				ZNR* zpx = ZrB.GetAt( izx->iz_zi1);
+				AIRSTATE zoneAir;
+				zpx->zn_GetAirStateLs( zoneAir);
+				float rhoX = zpx->zn_rho0ls;
+				AIRFLOW zoneExhAF(-izx->iz_vfMin * rhoX / 60., zoneAir);
+				oa_exhAF.af_Mix(zoneExhAF);
+			}
+		}	
+	}
 
+	// Calculate supply air conditions
+	AIRFLOW inletAF(oa_supAF.af_amf, Top.tDbOSh, Top.wOSh);
 
+	// Add fan heat
+	double supC = inletAF.af_AmfCp() * 3600.;		// fan flow in heat cap units (Btuh/F)
+	float tdSup = oa_supFan.fn_pute(supC, inletAF.as_tdb);
+	oa_supAF = inletAF;
+	oa_supAF.as_AddDeltaT(tdSup);
 
+	double exhC = oa_exhAF.af_AmfCp() * 3600.;		// fan flow in heat cap units (Btuh/F)
+	oa_exhFan.fn_pute(exhC, oa_exhAF.as_tdb);
+	return rc;
+}
+//-----------------------------------------------------------------------------
+RC DOAS::oa_EndSubhr()
+{
+	RC rc = RCOK;
+	// Accummulate meters
+	MtrB.p[ oa_supFan.fn_mtri].H.mtr_Accum(
+		oa_supFan.fn_endUse,			// user-specified end use (default = "fan")
+		oa_supFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+	MtrB.p[ oa_exhFan.fn_mtri].H.mtr_Accum(
+		oa_exhFan.fn_endUse,			// user-specified end use (default = "fan")
+		oa_exhFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+
+	return rc;
+}
 //===============================================================================
 /*static*/ const double IZXRAT::delPLinear = .000001;	// pres dif below which eqns made linear, lbf/sf
 //-----------------------------------------------------------------------------
@@ -1075,10 +1191,10 @@ x		}
 
 	case C_IZNVTYCH_ANDOAS:
 		{
-			const char* when = "when izNVType is DOAS AIRNET";
+			const char* when = "when izNVType is AirNetDOAS";
 			rc |= disallowN( when,
 						IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-						ZFAN( VFDS), 0);
+						ZFAN( VFDS), IZXRAT_VFMAX, 0);
 			rc |= require( IZXRAT_DOAS, when);
 		}
 		break;
@@ -1506,9 +1622,10 @@ void IZXRAT::iz_GetExteriorConditions(
 void IZXRAT::iz_GetDOASConditions()
 // set source conditions to DOAS supply
 {
-	iz_air2.as_Set(Top.tDbOSh, Top.wOSh);
-	iz_rho2 = Top.tp_rhoMoistOSh;
-	iz_pres2 = 0.f;
+	DOAS* pDOAS = doasR.GetAt(iz_doas);
+	iz_air2 = static_cast<AIRSTATE>(pDOAS->oa_supAF);
+	iz_rho2 = iz_air2.as_RhoMoist();
+	iz_pres2 = 0.f;  // Not used for fixed flows
 }	// IZXRAT::iz_GetDOASConditions
 //------------------------------------------------------------------------------
 RC IZXRAT::iz_Calc()

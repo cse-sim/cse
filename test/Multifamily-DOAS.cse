@@ -645,14 +645,12 @@ IZXFER   "Zone1-IAQFanS"
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = 184.8                      // Minimum volume flow rate (VentOff mode), cfm
-   izVFmax = 184.8                      // Maximum volume flow rate (VentOn mode), cfm
 
 IZXFER   "Zone1-IAQFanE"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
-   izVFmax = -184.8                     // Maximum volume flow rate (VentOn mode), cfm
 
 IZXFER   "Zone2-InfLU"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
@@ -773,14 +771,12 @@ IZXFER   "Zone2-IAQFanS"
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = 184.8                      // Minimum volume flow rate (VentOff mode), cfm
-   izVFmax = 184.8                      // Maximum volume flow rate (VentOn mode), cfm
 
 IZXFER   "Zone2-IAQFanE"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
-   izVFmax = -184.8                     // Maximum volume flow rate (VentOn mode), cfm
 
 IZXFER   "Zone2ToAtticCeiling-xAttic"  
    izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
