@@ -1454,9 +1454,9 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znAzm",       DAT,   ZI(ZNAZM),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
-	CULT( "znTH",        DAT,   ZI(ZNTH),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTH",        DAT,   ZI(ZNTH),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
-	CULT( "znTC",        DAT,   ZI(ZNTC),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTC",        DAT,   ZI(ZNTC),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),

@@ -428,7 +428,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		DUCTSEG* ds; RLUP( DsR, ds) CSE_EF( ds->ds_BegSubhr() )		// start-subhour duct segments
 		RSYS* rs; RLUP( RsR, rs) CSE_EF( rs->rs_BegSubhr() )		// start-subhour RSYS HVAC systems
 
-		// subhour loads (loads mostly done in loadsHourBeg, from doBegIvl)
+		// subhour loads (see also loadsHourBeg, from doBegIvl)
 		CSE_EF( loadsSubhr() )
 
 		// may extrapolate tz if load unchanged
