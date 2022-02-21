@@ -279,6 +279,13 @@ RC ZNR::zn_BegHour1()	// "early" hourly initializations
 	zn_anVentEffect = 0;	// # of IZXRATs that *could* impact this
 							//   zone when operated in vent mode.
 							//   see IZXRAT::iz_HasVentEffect()
+
+	if (Top.isBegRun)
+	{	// prior hour setpoints
+		zn_tzspHlh = i.znTH;
+		zn_tzspDlh = i.znTD;
+		zn_tzspClh = i.znTC;
+	}
 	return RCOK;
 }	// ZNR::zn_BegHour1
 //-----------------------------------------------------------------------------
@@ -679,6 +686,25 @@ x	}
 //----------------------------------------------------------------------------
 RC ZNR::zn_InitSubhr()
 {
+	// set points
+#if 1
+	if (Top.tp_autoSizing)
+	{	// avoid setpoint step changes when autosizing
+		// assume zn_tzspXbs changes hourly (altho they have subhourly variability)
+		// ramp from prior value over the hour
+		float f = float(Top.iSubhr + 1) / Top.tp_nSubSteps;
+		zn_tzspH = (1.f - f) * zn_tzspHlh + f * i.znTH;
+		zn_tzspD = (1.f - f) * zn_tzspDlh + f * i.znTD;
+		zn_tzspC = (1.f - f) * zn_tzspClh + f * i.znTC;
+	}
+	else
+#endif
+	{	// not autosizing: use setpoints as input
+		zn_tzspH = i.znTH;
+		zn_tzspD = i.znTD;
+		zn_tzspC = i.znTC;
+	}
+
 	// subhr's Infil UA (Btuh/F)
 #if 1	// 4-17-2013
 	// infiltration UA based on AMF of *zone* air
@@ -809,7 +835,7 @@ void ZNR::zn_DbDump() const
 		zn_nAirSh, zn_dAirSh, zn_nRadSh, zn_dRadSh, zn_cxSh, i.zn_hcAirX);
 	if (!zn_IsUZ())
 	{	DbPrintf("     TH=%.2f  TD=%.2f  TC=%.2f",
-				i.znTH, i.znTD, i.znTC);
+				zn_tzspH, zn_tzspD, zn_tzspC);
 		if (!zn_HasRSYS())
 				DbPrintf("  qhCap=%.f  qcCap=%.f\n", i.znQMxH, i.znQMxC);
 		else
@@ -921,15 +947,15 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 const int vForbid = -9999;
 	int ventUt = 0;
 	if (!zn_IsUZ() && zn_anVentEffect > 0)
-	{	if (tz < i.znTD)
+	{	if (tz < zn_tzspD)
 			ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
-		else if (tz > i.znTD)
+		else if (tz > zn_tzspD)
 		{	// zone temp is above TD
 			//  vent might be useful
 			float tvSup = zn_VentTSup();
 			if (tvSup > tz)
 				ventUt = vForbid;	// venting would add heat, forbid
-			else if (tvSup > i.znTC && zn_IsHCAvail( RSYS::rsmCOOL))
+			else if (tvSup > zn_tzspC && zn_IsHCAvail( RSYS::rsmCOOL))
 				ventUt = vForbid;	// venting cannot prevent cooling
 			else
 				ventUt = 1;			// venting might help get to TD
@@ -964,16 +990,16 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 	else
 	{	double anAmfCp = zn_AnAmfCp(1) - zn_AnAmfCp(0);
 		zn_tzVent = zn_TAirCR( anAmfCpT, anAmfCp);	// zone air temp at full vent (do not set tz)
-		if (zn_tzVent > i.znTC && zn_IsHCAvail( RSYS::rsmCOOL))
+		if (zn_tzVent > zn_tzspC && zn_IsHCAvail( RSYS::rsmCOOL))
 			ret = -1;	// zn_fVentPrf = 0
-		else if (zn_tzVent > i.znTD)
+		else if (zn_tzVent > zn_tzspD)
 		{	zn_fVentPrf = 1.f;
 			ret = 1;
 		}
 		else
-		{	double amfDT = anAmfCpT - anAmfCp * i.znTD;
+		{	double amfDT = anAmfCpT - anAmfCp * zn_tzspD;
 			if (amfDT != 0.)
-			{	double qVent = zn_QAirCR( i.znTD); // q required to keep tz at i.znTD
+			{	double qVent = zn_QAirCR( zn_tzspD); // q required to keep tz at zn_tzspD
 				zn_fVentPrf = qVent / amfDT;
 				if (zn_fVentPrf < 0.f)
 				{
@@ -1038,8 +1064,8 @@ x	}
 			{	// equal fVents: current zone is "control"
 				// tz s/b exactly TD, fix if very close
 				//    else error
-				if (fabs( i.znTD - tz) < .001)
-					tz = i.znTD;
+				if (fabs( zn_tzspD - tz) < .001)
+					tz = zn_tzspD;
 #if defined( _DEBUG)
 				else
 					printf( "Zone '%s': control zone vent mismatch\n", name);
@@ -1060,14 +1086,14 @@ x	}
 		if (!bUZ && zn_anVentEffect > 0)
 		{	// check conditioned zone outcome
 			//   don't complain about zones with no vents
-			if (tz < i.znTD - .001f)
+			if (tz < zn_tzspD - .001f)
 			{	if (znfVent > .001 && zn_anAmfCpTVent > .001)
-					orWarn("vent tz (%.1f F) below TD (%.1f F)", tz, i.znTD);
-				if (tz < i.znTH)
-					orWarn("floating tz (%.1f F) below TH (%.1f F)", tz, i.znTH);
+					orWarn("vent tz (%.1f F) below TD (%.1f F)", tz, zn_tzspD);
+				if (tz < zn_tzspH)
+					orWarn("floating tz (%.1f F) below TH (%.1f F)", tz, zn_tzspH);
 			}
-			else if (tz > i.znTC + .1f)
-				orWarn("floating tz (%.1f F) above TC (%.1f F)", tz, i.znTC);
+			else if (tz > zn_tzspC + .1f)
+				orWarn("floating tz (%.1f F) above TC (%.1f F)", tz, zn_tzspC);
 		}
 #endif
 		zn_fVent = znfVent;		// final vent fraction
@@ -1084,15 +1110,15 @@ x	}
 		{	// this zone is served by an RSYS
 			if (zn_hcMode == RSYS::rsmOFF)	// if not already handled (e.g. rsmOAV)
 			{	zn_tzsp = 0.f;
-				if (tz > i.znTC)
-				{	zn_tzsp = i.znTC;
+				if (tz > zn_tzspC)
+				{	zn_tzsp = zn_tzspC;
 					zn_hcMode = RSYS::rsmCOOL;
 #if defined( ZNHVACFCONV)
 					zn_fConv = zn_fConvC;
 #endif
 				}
-				else if (tz < i.znTH)
-				{	zn_tzsp = i.znTH;
+				else if (tz < zn_tzspH)
+				{	zn_tzsp = zn_tzspH;
 					zn_hcMode = RSYS::rsmHEAT;
 #if defined( ZNHVACFCONV)
 					zn_fConv = zn_fConvH;
@@ -1131,9 +1157,9 @@ x						printf( "1B\n");
 		{	// non-RSYS zone ("magic" heating and cooling)
 			double qhCap =  max( 0., i.znQMxH);
 			double qcCap =  min( 0., i.znQMxC);
-			if (tz > i.znTC)
+			if (tz > zn_tzspC)
 			{	zn_hcMode = RSYS::rsmCOOL;
-				tz = zn_tzsp = i.znTC;
+				tz = zn_tzsp = zn_tzspC;
 #if defined( ZNHVACFCONV)
 				zn_fConv = zn_fConvC;
 				zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
@@ -1148,14 +1174,14 @@ x						printf( "1B\n");
 					tz = zn_TAirCR(zn_qsHvac, 0.);
 #endif
 					if (Top.isEndHour)
-						zn_unMetCDH = tz - i.znTC;		// temp excursion above setpoint
+						zn_unMetCDH = tz - zn_tzspC;		// temp excursion above setpoint
 				}
 				// else capacity sufficient
 			}
-			else if (tz < i.znTH)
+			else if (tz < zn_tzspH)
 			{	// tz < TH: air needs heating
 				zn_hcMode = RSYS::rsmHEAT;
-				tz = zn_tzsp = i.znTH;
+				tz = zn_tzsp = zn_tzspH;
 #if defined( ZNHVACFCONV)
 				zn_fConv = zn_fConvH;
 				zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
@@ -1172,7 +1198,7 @@ x						printf( "1B\n");
 #endif
 
 					if (Top.isEndHour)
-						zn_unMetHDH = tz - i.znTH;	// temp excursion below setpoint (< 0)
+						zn_unMetHDH = tz - zn_tzspH;	// temp excursion below setpoint (< 0)
 				}
 				// else capacity sufficient
 			}
@@ -1199,7 +1225,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 #if 1 && defined( _DEBUG)
 	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
 		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
-		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp)))
+		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))
 	{
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
@@ -2340,6 +2366,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{	if (IsAusz( RSYS_CAP47))
 			{	// find cap47 that produces required output
 				// (re-derives dependent values)
+				rs_speedF = 1.f;	// force full speed (used in e.g. rs_CapEffASHP())
 				rs_SizeASHP( rs_capH*rs_fxCapHTarg, Top.heatDsTDbO);
 #if defined( _DEBUG)
 				// capacity consistency check
@@ -2593,7 +2620,7 @@ int RSYS::rs_OAVAttempt()
 	if (okOAV > 0)
 	{	// at least 1 zone wants OAV
 		// find zone air temp with available air
-		// OAV not OK if any zone above znTC
+		// OAV not OK if any zone above zn_tzspC
 		double fSize = rs_amfReq[ 0] > 0.		// fraction of total air that is avaailable
 				? min( rs_amf / rs_amfReq[ 0], 1.)
 				: 0.;
@@ -2602,7 +2629,7 @@ int RSYS::rs_OAVAttempt()
 			zp->zn_SetRSYSAmf( fSize, 0);
 			double mCp = zp->zn_rsAmfSup*Top.tp_airSH;
 			double tzx = zp->zn_TAirCR( mCp*tSup, mCp, 0.);
-			if (tzx > zp->i.znTC /* && RSYS can cool */)
+			if (tzx > zp->zn_tzspC /* && RSYS can cool */)
 			{	// OAV cannot hold tz below cooling set point, disable
 				okOAV = 0;
 				break;
@@ -2655,16 +2682,16 @@ int ZNR::zn_OAVAttempt(
 {
 	zn_rsAmfSysReq[ 0] = 0.;	// insurance: no air requested
 
-	if (tz < i.znTH /* && RSYS could heat*/)
+	if (tz < zn_tzspH /* && RSYS could heat*/)
 		return -9999;	// zone needs heat, don't OAV
 
 	RSYS* rs = zn_GetRSYS();
 #if 1	// spec change, 10-9-2013
-	zn_tzsp = max( i.znTD, rs->rs_OAVTdbInlet + rs->rs_OAVTdiff);
+	zn_tzsp = max( zn_tzspD, rs->rs_OAVTdbInlet + rs->rs_OAVTdiff);
 #else
-x	zn_tzsp = max( i.znTD, tSup + rs->rs_OAVTdiff);
+x	zn_tzsp = max( zn_tzspD, tSup + rs->rs_OAVTdiff);
 #endif
-	if (zn_tzsp > i.znTC /*&& RSYS could cool*/)
+	if (zn_tzsp > zn_tzspC /*&& RSYS could cool*/)
 		return -9999;	// no amount of OAV will prevent cooling
 	if (tz < zn_tzsp)
 		return 0;		// no OAV required
@@ -5423,8 +5450,8 @@ bool RSYS::rs_IsSupplyAirTempUseful(	// determine utility of supply air
 	ZNR* zp;
 	RLUPC(ZrB, zp, rs_IsZoneServed(zp))
 	{	
-		setToMax(tspMaxH, zp->i.znTH);
-		setToMin(tspMinC, zp->i.znTC);
+		setToMax(tspMaxH, zp->zn_tzspH);
+		setToMin(tspMinC, zp->zn_tzspC);
 	}
 	if (rsMode == rsmHEAT)
 	{
@@ -6306,11 +6333,18 @@ RC ZNR::zn_AfterHour()
 
 	// next hour's "end last hour" zone air temp
 	tzlh = tzls;		// air temp from final step of hour (NOT average here).
-	// needed? used in main eqn in loadsHourBeg, but .tzls cd be used directly 1-92.
+						// needed? used in main eqn in loadsHourBeg, but .tzls cd be used directly 1-92.
 
 	trlh = trls;				// ditto radiant temp
 
 	zn_relHumlh = zn_relHumls;	// ditto relative humidity
+
+	// end of hour set points
+	// used re ramped setpoints for autosizing
+	zn_tzspHlh = zn_tzspH;
+	zn_tzspDlh = zn_tzspD;
+	zn_tzspClh = zn_tzspC;
+
 
 #if 0 // nHrCool is present but not set: no longer works.
 x   // zone shutter fraction for next hour: determine whether movable window shades open or closed next hour
