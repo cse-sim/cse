@@ -2430,9 +2430,12 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		rs_auszH.final( this, rsi, heatOver);
 	}
 
-	// insurance: rs_capH used during ASHP autosize but s/b 0 for simulation
-	if (rs_IsASHP())
-		rsi->rs_capH = rs_capH = 0.f;
+#if 0
+x NO -- leave to allow reporting of load at design temp
+x	// insurance: rs_capH used during ASHP autosize but s/b 0 for simulation
+x	if (rs_IsASHP())
+x		rsi->rs_capH = rs_capH = 0.f;
+#endif
 
 	rs_DefaultCapNomsIf();		// capture possible cap change(s)
 								//   insurance: no rs_auszX.final() changes expected

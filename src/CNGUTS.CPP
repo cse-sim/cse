@@ -1549,13 +1549,22 @@ LOCAL void FC NEAR doIvlAccum()
 	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)						// loop AFMTRs
-	{
-		if (pAM->ss < AfMtrR.n)
+	{	if (pAM->ss < AfMtrR.n)
 		{	pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
 			pAMSum->S[1].amt_Accum(pAM->S+1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
 			pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
 		}
 	}
+
+	LOADMTR* pLMSum = LdMtrR.p + LdMtrR.n;
+	LOADMTR* pLM;
+	RLUP(LdMtrR, pLM)						// loop LOADMTRs
+	{	if (pLM->ss < LdMtrR.n)
+		{	pLMSum->S.lmt_Accum(&pLM->S, pLM->ss == 1, pLM->ss == LdMtrR.n - 1);
+			pLM->lmt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
+		}
+	}
+
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;

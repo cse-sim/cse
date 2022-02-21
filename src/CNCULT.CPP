@@ -142,11 +142,12 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 {
 	ZiB.free();
 	IzxiB.free();
-	AfMtriB.free();
-	GniB.free();
 	MtriB.free();
-	RSiB.free();
+	AfMtriB.free();
 	WMtriB.free();
+	LdMtriB.free();
+	GniB.free();
+	RSiB.free();
 	WSiB.free();
 	WHiB.free();
 	WLHiB.free();
