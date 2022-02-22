@@ -50,4 +50,3 @@ RC FC pgVrPut( 			// Output contents of (partial) page to [printer]/virtual repo
 }               // [pgprput]/pgVrPut
 
 // end of cpgprput.c
-
