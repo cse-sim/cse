@@ -103,7 +103,7 @@ set(source
   DHWCalc.cpp
   DHWSolar.cpp
   DMPAK.CPP
-  DTTAB.CPP
+  dttab.cpp
   ENVPAK.CPP
   EXMAN.CPP
   Foundation.cpp
@@ -123,12 +123,12 @@ set(source
   RUNDATA.CPP
   SHADING.CPP
   SOLAR.CPP
-  SRFD.CPP
+  srfd.cpp
   STRPAK.CPP
   SYTB.CPP
   TDPAK.CPP
   TIMER.CPP
-  UNTAB.CPP
+  untab.cpp
   VRPAK.CPP
   WFPAK.CPP
   XIOPAK.CPP
@@ -170,7 +170,7 @@ set(headers
   CVPAK.H
   DATFCNS.H
   DMPAK.H
-  DTYPES.H
+  dtypes.h
   ENVPAK.H
   EXMAN.H
   Foundation.h
@@ -186,7 +186,7 @@ set(headers
   PGPAK.H
   PP.H
   PSYCHRO.H
-  RCCN.H
+  rccn.h
   RMKERR.H
   SOLAR.H
   SRD.H
