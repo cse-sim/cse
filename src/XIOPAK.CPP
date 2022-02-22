@@ -1161,6 +1161,14 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	return SECOTHER;	/*    bad: report error */
 }
 //=============================================================================
+SEC getFileNameExtension(	// Returns the extension of the file given
+	 const char* fileName,  // File of the extension to be extracted
+	 char* fileExtension)	// Place where the extension will be copy to
+{
+	strcpy( fileExtension, filesys::path(fileName).extension().string().c_str());
+	return SECOK;
+} /* getFileNameExtension */
+//=============================================================================
 
 // all if-outs below
 #ifdef TEST

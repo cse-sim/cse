@@ -126,6 +126,7 @@ uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
 
+SEC getFileNameExtension(const char* fileName, char * fileExtension);
 
 #endif	// _XIOPAK_H
 
