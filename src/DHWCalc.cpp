@@ -3668,8 +3668,8 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		{	// default ASHP src from heater location zone
 			//   (heat source is typically heater location zone)
 			// wh_ashpSrcZnTi = wh_znTi done in wh_Init() (after deferred ref resolution)
-			VD wh_ashpTSrc = VD wh_tEx;		// default ashpTSrc to tEx
-											//   VD handles NANDLES
+			CSE_V wh_ashpTSrc = CSE_V wh_tEx;		// default ashpTSrc to tEx
+											//   CSE_V handles NANDLES
 		}
 	}
 	else if (wh_heatSrc == C_WHHEATSRCCH_ELRESX)
