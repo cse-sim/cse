@@ -175,7 +175,7 @@ x    { "CF rntm",         0,  7, 2, oRes(runTimeCeilFan), CV1 },	// ceilFan tota
 
 // columns definition for "meter" (MTR) report/export
 #define oMtr(m)  offsetof( MTR_IVL_SUB, m)
-#define D_CSE 3		// decimal digits: 1 shd be enuf for MBtu; for Btu use 3, or 4 for more resolution of small numbers.
+#define CSE_D 3		// decimal digits: 1 shd be enuf for MBtu; for Btu use 3, or 4 for more resolution of small numbers.
 static COLDEF mtrColdef[] =
 	/*		             max     offset       cvflag  */
 	/* colhd           flags  wid dfw (cnguts.h)   (above) */
@@ -186,39 +186,39 @@ static COLDEF mtrColdef[] =
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
-	{ "Tot",             0,  6, D_CSE, oMtr(tot),     BTU },  	// total use
-	{ "Clg",             0,  6, D_CSE, oMtr(clg),     BTU },  	// space cooling use
-	{ "Htg",             0,  6, D_CSE, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
-	{ "HPBU",            0,  6, D_CSE, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
-	{ "Dhw",             0,  6, D_CSE, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
-	{ "DhwBU",           0,  6, D_CSE, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
-	{ "DhwMFL",          0,  6, D_CSE, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
-	{ "FanC",            0,  6, D_CSE, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
-	{ "FanH",            0,  6, D_CSE, oMtr(fanH),    BTU },  	// fans - heating
-	{ "FanV",            0,  6, D_CSE, oMtr(fanV),    BTU },  	// fans - IAQ ventilation
-	{ "Fan",             0,  6, D_CSE, oMtr(fan),     BTU },  	// fans - other
-	{ "Aux",             0,  6, D_CSE, oMtr(aux),     BTU },  	// HVAC auxiliary, not including fans
-	{ "Proc",            0,  6, D_CSE, oMtr(proc),    BTU },  	// process energy
-	{ "Lit",             0,  6, D_CSE, oMtr(lit),     BTU },  	// lighting
-	{ "Rcp",             0,  6, D_CSE, oMtr(rcp),     BTU },  	// receptacles
-	{ "Ext",             0,  6, D_CSE, oMtr(ext),     BTU },  	// exterior
-	{ "Refr",            0,  6, D_CSE, oMtr(refr),    BTU },  	// refrigeration
-	{ "Dish",            0,  6, D_CSE, oMtr(dish),    BTU },  	// dish washing
-	{ "Dry",             0,  6, D_CSE, oMtr(dry),     BTU },  	// clothes drying
-	{ "Wash",            0,  6, D_CSE, oMtr(wash),    BTU },  	// clothes washing
-	{ "Cook",            0,  6, D_CSE, oMtr(cook),    BTU },  	// cooking (range/oven)
-	{ "User1",           0,  6, D_CSE, oMtr(usr1),    BTU },  	// user1
-	{ "User2",           0,  6, D_CSE, oMtr(usr2),    BTU },  	// user2
-	{ "BT",              0,  6, D_CSE, oMtr(bt),      BTU },    // battery
-	{ "PV",              0,  6, D_CSE, oMtr(pv),      BTU },  	// photovoltaics
+	{ "Tot",             0,  6, CSE_D, oMtr(tot),     BTU },  	// total use
+	{ "Clg",             0,  6, CSE_D, oMtr(clg),     BTU },  	// space cooling use
+	{ "Htg",             0,  6, CSE_D, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
+	{ "HPBU",            0,  6, CSE_D, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
+	{ "Dhw",             0,  6, CSE_D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
+	{ "DhwBU",           0,  6, CSE_D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
+	{ "DhwMFL",          0,  6, CSE_D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
+	{ "FanC",            0,  6, CSE_D, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
+	{ "FanH",            0,  6, CSE_D, oMtr(fanH),    BTU },  	// fans - heating
+	{ "FanV",            0,  6, CSE_D, oMtr(fanV),    BTU },  	// fans - IAQ ventilation
+	{ "Fan",             0,  6, CSE_D, oMtr(fan),     BTU },  	// fans - other
+	{ "Aux",             0,  6, CSE_D, oMtr(aux),     BTU },  	// HVAC auxiliary, not including fans
+	{ "Proc",            0,  6, CSE_D, oMtr(proc),    BTU },  	// process energy
+	{ "Lit",             0,  6, CSE_D, oMtr(lit),     BTU },  	// lighting
+	{ "Rcp",             0,  6, CSE_D, oMtr(rcp),     BTU },  	// receptacles
+	{ "Ext",             0,  6, CSE_D, oMtr(ext),     BTU },  	// exterior
+	{ "Refr",            0,  6, CSE_D, oMtr(refr),    BTU },  	// refrigeration
+	{ "Dish",            0,  6, CSE_D, oMtr(dish),    BTU },  	// dish washing
+	{ "Dry",             0,  6, CSE_D, oMtr(dry),     BTU },  	// clothes drying
+	{ "Wash",            0,  6, CSE_D, oMtr(wash),    BTU },  	// clothes washing
+	{ "Cook",            0,  6, CSE_D, oMtr(cook),    BTU },  	// cooking (range/oven)
+	{ "User1",           0,  6, CSE_D, oMtr(usr1),    BTU },  	// user1
+	{ "User2",           0,  6, CSE_D, oMtr(usr2),    BTU },  	// user2
+	{ "BT",              0,  6, CSE_D, oMtr(bt),      BTU },    // battery
+	{ "PV",              0,  6, CSE_D, oMtr(pv),      BTU },  	// photovoltaics
 	{ 0,                 0,  0, 0, 0,             CV1 }
 };
-#undef D_CSE
+#undef CSE_D
 #undef oMtr
 
 // columns definition for "DHW meter" (DHWMTR) report/export
 #define oWMtr(m)  offsetof( DHWMTR_IVL, m)
-#define D_CSE 3		// decimal digits: 1 s/b enough for water use, gal
+#define CSE_D 3		// decimal digits: 1 s/b enough for water use, gal
 static COLDEF wMtrColdef[] =
 	/*		             max     offset       cvflag  */
 	/* colhd           flags  wid dfw (cnguts.h)   (above) */
@@ -229,22 +229,22 @@ static COLDEF wMtrColdef[] =
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
-	{ "Total",           0,  7, D_CSE, oWMtr(total),  CV1 },
-	{ "Unknown",         0,  7, D_CSE, oWMtr(unknown),CV1 },
-	{ "Faucet",          0,  7, D_CSE, oWMtr(faucet), CV1 },
-	{ "Shower",          0,  7, D_CSE, oWMtr(shower), CV1 },
-	{ "Bath",            0,  7, D_CSE, oWMtr(bath),   CV1 },
-	{ "CWashr",          0,  7, D_CSE, oWMtr(cwashr), CV1 },
-	{ "DWashr",          0,  7, D_CSE, oWMtr(dwashr), CV1 },
+	{ "Total",           0,  7, CSE_D, oWMtr(total),  CV1 },
+	{ "Unknown",         0,  7, CSE_D, oWMtr(unknown),CV1 },
+	{ "Faucet",          0,  7, CSE_D, oWMtr(faucet), CV1 },
+	{ "Shower",          0,  7, CSE_D, oWMtr(shower), CV1 },
+	{ "Bath",            0,  7, CSE_D, oWMtr(bath),   CV1 },
+	{ "CWashr",          0,  7, CSE_D, oWMtr(cwashr), CV1 },
+	{ "DWashr",          0,  7, CSE_D, oWMtr(dwashr), CV1 },
 	{ 0,                 0,  0, 0, 0,             CV1 }
 };
-#undef D_CSE
+#undef CSE_D
 #undef oWMtr
 
 // columns definition for "Airflow meter" (AFMTR) report/export
 #define oAFMt0(m)  offsetof( AFMTR_IVL, m)
 #define oAFMt1(m)  (offsetof( AFMTR_IVL, m)+sizeof( AFMTR_IVL))
-#define D_CSE 1		// decimal digits
+#define CSE_D 1		// decimal digits
 static COLDEF afMtrColdef[] =
 /*		             max     offset       cvflag  */
 /* colhd           flags  wid dfw (cnguts.h)   (above) */
@@ -255,35 +255,35 @@ static COLDEF afMtrColdef[] =
 	{ "Day",           8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8 | 4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8 | 4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
-	{ "Tot+",           0,    5, D_CSE, oAFMt0(amt_total), CV1 },
-	{ "Unkn+",          0,    5, D_CSE, oAFMt0(amt_unknown),  CV1 },
-	{ "InfX+",          0,    5, D_CSE, oAFMt0(amt_infEx), CV1 },
-	{ "VntX+",          0,    5, D_CSE, oAFMt0(amt_vntEx), CV1 },
-	{ "FanX+",          0,    5, D_CSE, oAFMt0(amt_fanEx), CV1 },
-	{ "InfU+",          0,    5, D_CSE, oAFMt0(amt_infUz), CV1 },
-	{ "VntU+",          0,    5, D_CSE, oAFMt0(amt_vntUz), CV1 },
-	{ "FanU+",          0,    5, D_CSE, oAFMt0(amt_fanUz), CV1 },
-	{ "InfC+",          0,    5, D_CSE, oAFMt0(amt_infCz), CV1 },
-	{ "VntC+",          0,    5, D_CSE, oAFMt0(amt_vntCz), CV1 },
-	{ "FanC+",          0,    5, D_CSE, oAFMt0(amt_fanCz), CV1 },
-	{ "Duct+",          0,    5, D_CSE, oAFMt0(amt_ductLk),CV1 },
-	{ "HVAC+",          0,    5, D_CSE, oAFMt0(amt_hvac),  CV1 },
-	{ "Tot-",           0,    6, D_CSE, oAFMt1(amt_total), CV1 },
-	{ "Unkn-",          0,    6, D_CSE, oAFMt1(amt_unknown), CV1 },
-	{ "InfX-",          0,    6, D_CSE, oAFMt1(amt_infEx), CV1 },
-	{ "VntX-",          0,    6, D_CSE, oAFMt1(amt_vntEx), CV1 },
-	{ "FanX-",          0,    6, D_CSE, oAFMt1(amt_fanEx), CV1 },
-	{ "InfU-",          0,    6, D_CSE, oAFMt1(amt_infUz), CV1 },
-	{ "VntU-",          0,    6, D_CSE, oAFMt1(amt_vntUz), CV1 },
-	{ "FanU-",          0,    6, D_CSE, oAFMt1(amt_fanUz), CV1 },
-	{ "InfC-",          0,    6, D_CSE, oAFMt1(amt_infCz), CV1 },
-	{ "VntC-",          0,    6, D_CSE, oAFMt1(amt_vntCz), CV1 },
-	{ "FanC-",          0,    6, D_CSE, oAFMt1(amt_fanCz), CV1 },
-	{ "Duct-",          0,    6, D_CSE, oAFMt1(amt_ductLk),CV1 },
-	{ "HVAC-",          0,    6, D_CSE, oAFMt1(amt_hvac),  CV1 },
+	{ "Tot+",           0,    5, CSE_D, oAFMt0(amt_total), CV1 },
+	{ "Unkn+",          0,    5, CSE_D, oAFMt0(amt_unknown),  CV1 },
+	{ "InfX+",          0,    5, CSE_D, oAFMt0(amt_infEx), CV1 },
+	{ "VntX+",          0,    5, CSE_D, oAFMt0(amt_vntEx), CV1 },
+	{ "FanX+",          0,    5, CSE_D, oAFMt0(amt_fanEx), CV1 },
+	{ "InfU+",          0,    5, CSE_D, oAFMt0(amt_infUz), CV1 },
+	{ "VntU+",          0,    5, CSE_D, oAFMt0(amt_vntUz), CV1 },
+	{ "FanU+",          0,    5, CSE_D, oAFMt0(amt_fanUz), CV1 },
+	{ "InfC+",          0,    5, CSE_D, oAFMt0(amt_infCz), CV1 },
+	{ "VntC+",          0,    5, CSE_D, oAFMt0(amt_vntCz), CV1 },
+	{ "FanC+",          0,    5, CSE_D, oAFMt0(amt_fanCz), CV1 },
+	{ "Duct+",          0,    5, CSE_D, oAFMt0(amt_ductLk),CV1 },
+	{ "HVAC+",          0,    5, CSE_D, oAFMt0(amt_hvac),  CV1 },
+	{ "Tot-",           0,    6, CSE_D, oAFMt1(amt_total), CV1 },
+	{ "Unkn-",          0,    6, CSE_D, oAFMt1(amt_unknown), CV1 },
+	{ "InfX-",          0,    6, CSE_D, oAFMt1(amt_infEx), CV1 },
+	{ "VntX-",          0,    6, CSE_D, oAFMt1(amt_vntEx), CV1 },
+	{ "FanX-",          0,    6, CSE_D, oAFMt1(amt_fanEx), CV1 },
+	{ "InfU-",          0,    6, CSE_D, oAFMt1(amt_infUz), CV1 },
+	{ "VntU-",          0,    6, CSE_D, oAFMt1(amt_vntUz), CV1 },
+	{ "FanU-",          0,    6, CSE_D, oAFMt1(amt_fanUz), CV1 },
+	{ "InfC-",          0,    6, CSE_D, oAFMt1(amt_infCz), CV1 },
+	{ "VntC-",          0,    6, CSE_D, oAFMt1(amt_vntCz), CV1 },
+	{ "FanC-",          0,    6, CSE_D, oAFMt1(amt_fanCz), CV1 },
+	{ "Duct-",          0,    6, CSE_D, oAFMt1(amt_ductLk),CV1 },
+	{ "HVAC-",          0,    6, CSE_D, oAFMt1(amt_hvac),  CV1 },
 	{ 0,                0,    0, 0, 0,                 CV1 }
 };
-#undef D_CSE
+#undef CSE_D
 #undef oAFMt0
 #undef oAFMt1
 
