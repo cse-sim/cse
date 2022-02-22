@@ -754,7 +754,7 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 	}
 }	// ANDAT::ad_SetFromFixedAVF
 //-------------------------------------------------------------------------------
-RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
+RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 // call subhourly
 // sets iz_ad[ 0] and iz_ad[ 1] + fan members
 {
@@ -823,7 +823,7 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	iz_ad[ 1].ad_DupHERV( ad);
 
 	return rc;
-}	// IZXRAT::iz_SetupHERV
+}	// IZXRAT::iz_CalcHERV
 //-------------------------------------------------------------------------------
 void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 // WHY: HERV does not have non-vent / vent modes
@@ -1551,7 +1551,7 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 	if (iz_pAF)
 		iz_SetFromAF( iz_pAF);
 	else if (iz_IsHERV())
-		rc |= iz_SetupHERV();
+		rc |= iz_CalcHERV();
 	else
 	{	if (iz_IsExterior())
 			// zone 2 is exterior

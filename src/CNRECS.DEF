@@ -2839,7 +2839,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_ClearZn2Conditions();"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
 	*declare "void iz_GetDOASConditions();"
-	*declare "RC iz_SetupHERV();"
+	*declare "RC iz_CalcHERV();"
 	*declare "RC iz_Calc();"
 	*declare "RC iz_MassFlow( int iV);"
 	*declare "RC iz_ZoneXfers( int iV);"
