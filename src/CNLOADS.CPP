@@ -20,7 +20,7 @@
 #include "EXMAN.H"
 #include "CSE.h"
 #include "CNGUTS.H"
-#include "MSPAK.H"
+#include "mspak.h"
 #include "NUMMETH.H"
 
 #include "array"

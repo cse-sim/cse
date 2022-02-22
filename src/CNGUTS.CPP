@@ -25,7 +25,7 @@
 #include <EXMAN.H>	// exEvEvf
 #include <CNCULT.H>	// UENDIVL
 #include <IRATS.H>	// RiB XiB
-#include <MSPAK.H>
+#include <mspak.h>
 #include "TIMER.H"
 #include "CSE.h"
 #include <IMPF.H>	// impfStart impfIvl 2-94
