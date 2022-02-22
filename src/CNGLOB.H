@@ -302,12 +302,12 @@ template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
 template< typename T> inline void tswap( T v1, T v2)
 {	T vx = v1; v1 = v2; v2 = vx; }
 
-// snap to -1, 0, or 1
-template< typename T> inline T snapTrig( T& v, double tol=1e-10)
-{	return snap( v, T( 0), tol) || snap( v, T( 1), tol) || snap( v, T( -1), tol); }
 // snap to specified value
 template< typename T> int snap( T& v, T vSnap, double tol=1e-10)
 {	if (fabs(v-vSnap)<tol) { v=vSnap; return 1; } return 0; }
+// snap to -1, 0, or 1
+template< typename T> inline T snapTrig( T& v, double tol=1e-10)
+{	return snap( v, T( 0), tol) || snap( v, T( 1), tol) || snap( v, T( -1), tol); }
 template< typename T> int snapRAD( T& v, double tol=.1)
 {	return snap( v, T( 0), tol)
         || v < T( 0) ? snap( v, T( -kPiOver2), tol) || snap( v, T( -kPi), tol)
