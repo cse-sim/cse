@@ -751,7 +751,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 	if ( ahCtu
 			&&  !rc )    						// not if ahCtu might be a bad TU reference
 	{
-		tu = TuB.p + ahCtu;					// point controlling terminal
+		TU* tu = TuB.p + ahCtu;					// point controlling terminal
 		if (!dflCtu)						// no errmsg for dfl'd ctu: don't know ctu use intended, 4-1-92.
 			// --> runtime must also check ahCtu for having a setpoint.
 			if (!(tu->cmAr & cmStBOTH))
