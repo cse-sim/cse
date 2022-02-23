@@ -122,7 +122,7 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
 
 **whVolRunning=*float***
 
-Nominal heating capacity, available only for a limited HPWH types.
+Running storage volume = vol above aquastat. Determines require total volume based on aquastat position. Ecotope's HPWH tank and heater.
 
 <%= member_table(
   units: "gal",
@@ -401,11 +401,11 @@ Tank insulation resistance for heat pump water heater.
 
 **whtankCount=*float***
 
-Tank insulation resistance for heat pump water heater.
+Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $<$ 0",
+  units: "#",
+  legal_range: "x $\\geq$ 1",
   default: "1",
   required: "N",
   variability: "constant") %>
