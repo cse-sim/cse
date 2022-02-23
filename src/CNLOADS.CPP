@@ -3094,8 +3094,8 @@ RC RSYS::rs_EndSubhr()
 
 	// Load meter
 	if (rs_pLoadMtr)
-	{	rs_pLoadMtr->S.qHtg += 1.f;
-		rs_pLoadMtr->S.qClg -= 1.f;
+	{	rs_pLoadMtr->S.qHtg += R.qhPrimary;
+		rs_pLoadMtr->S.qClg += R.qcSen + R.qcLat;
 	}
 
 	return rc;

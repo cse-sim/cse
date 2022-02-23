@@ -344,12 +344,14 @@ void AFMTR::amt_Accum(
 	for (int iPN=0; iPN<2; iPN++)
 		dIvl0[ iPN].amt_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
 
+#if 0
 	if (lastFlg)
 	{	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
 		AFMTR_IVL* dIvlSum0 = pAMSum->amt_GetAFMTR_IVL( ivl);
 		for (int iPN = 0; iPN < 2; iPN++)
 			dIvlSum0[ iPN].amt_Accum(dIvl0+iPN, ss == 1, 0);
 	}
+#endif
 }		// AFMTR::amt_Accum
 //=============================================================================
 

@@ -1550,21 +1550,21 @@ LOCAL void FC NEAR doIvlAccum()
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)						// loop AFMTRs
 	{	if (pAM->ss < AfMtrR.n)
-		{	pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
-			pAMSum->S[1].amt_Accum(pAM->S+1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1);
-			pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
+		{	// sum subhours to sum_of_AFMETERs w/o averaging
+			pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1, 2);
+			pAMSum->S[1].amt_Accum(pAM->S + 1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1, 2);
 		}
+		// subhour->hour, all AFMTRs (including sum_of_AFMETERs)
+		pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
 	}
 
 	LOADMTR* pLMSum = LdMtrR.p + LdMtrR.n;
 	LOADMTR* pLM;
 	RLUP(LdMtrR, pLM)						// loop LOADMTRs
 	{	if (pLM->ss < LdMtrR.n)
-		{	pLMSum->S.lmt_Accum(&pLM->S, pLM->ss == 1, pLM->ss == LdMtrR.n - 1);
-			pLM->lmt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
-		}
+			pLMSum->S.lmt_Accum(&pLM->S, pLM->ss == 1, pLM->ss == LdMtrR.n - 1);
+		pLM->lmt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
 	}
-
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
@@ -1712,7 +1712,7 @@ LOCAL void FC NEAR doIvlAccum()
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
 
-	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour as needed, sum to day
 
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
@@ -1728,7 +1728,7 @@ LOCAL void FC NEAR doIvlAccum()
 		pWSR->M.wsr_Accum(&pWSR->D, Top.isBegMonth, Top.isEndMonth);		// accumulate month from day
 	RLUP( AhresB, ahres)							// loop air handers sim results
 		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);	// accumulate day ah results to month
-	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum METERs, DHWMETERs, AFMETERS: day to month
+	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum METERs, DHWMETERs, AFMETERS, LOADMTRs: day to month
 #ifdef BINRES
 	if (brf)									// if outputting binary results for this run
 		//if (!Top.tp_autoSizing)						// not for ausz yet 6-95: tested above, and brf is off.
@@ -2059,11 +2059,13 @@ LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
 }               // accumAhr
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
-								// acts on METERs, DHWMETERs, and AFMETERs
+								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int firstflg, 	// iff TRUE, destination will be initialized before values are accumulated into it
 	int lastflg)	// iff TRUE, destination will be finalized (e.g. averages computed)
 					//   Note also mtrsFinalize()
+
+// Not called with ivl = C_IVLCH_H
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
@@ -2101,6 +2103,7 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to ne
 	}
 
 	// LOADMTRs
+	//   Accumulate all (including last record = "sum_of_loadmeters")
 	LOADMTR* pLM;
 	RLUP(LdMtrR, pLM)
 		pLM->lmt_Accum(ivl, firstflg, lastflg);
@@ -2110,10 +2113,10 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to ne
 	RLUP( WMtrR, pWM)
 		pWM->wmt_Accum( ivl, firstflg);
 
-	// AFMETERs
+	// AFMTRs
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)
-	{	if (pAM->ss < AfMtrR.n)
+	{	// if (pAM->ss < AfMtrR.n)
 			pAM->amt_Accum(ivl, firstflg, lastflg);
 	}
 }               // mtrsAccum
@@ -2326,10 +2329,15 @@ void LOADMTR_IVL::lmt_Accum(			// accumulate
 		lmt_count += count;
 	}
 
-	// average unless caller says don't
-	//  Note: VMul1() nops if lmt_count==1
-	if (lastFlg && !(options & 2))
-		VMul1(&qHtg, lmt_NFLOAT, 1.f / lmt_count);
+#if 1
+	// LOADMTR contains no averages
+	lastFlg;
+#else
+x	// average unless caller says don't
+x	//  Note: VMul1() nops if lmt_count==1
+x	if (lastFlg && !(options & 2))
+x
+#endif
 }		// LOADMTR_IVL
 //-----------------------------------------------------------------------------
 RC LOADMTR::lmt_CkF()
@@ -2342,16 +2350,6 @@ RC LOADMTR::lmt_BegSubhr()		// init at beg of subhr
 	S.lmt_Clear();		// clear subhour values
 	return RCOK;
 }		// LOADMTR::lmt_BegSubhr
-//-----------------------------------------------------------------------------
-#if 0
-void AFMTR::lmt_AccumCat(		// accumulate air flow value for current subhour
-	AFCAT afCat,	// air flow category
-	float amf)		// air mass flow, lbm/sec
-{
-	int iNeg = amf < 0.f;
-	S[iNeg].lmt_AccumCat(afCat, AMFtoAVF2(amf));
-}		// AFMTR::lmt_AccumCat
-#endif
 //-----------------------------------------------------------------------------
 LOADMTR_IVL* LOADMTR::lmt_GetLOADMTR_IVL(
 	IVLCH ivl)		// interval
@@ -2369,18 +2367,8 @@ void LOADMTR::lmt_Accum(
 													// ASSUMES interval members ordered like DTIVLCH choices
 	LOADMTR_IVL* sIvl0 = lmt_GetLOADMTR_IVL(ivl + 1);	// source: next shorter interval
 
-	int options =
-		ivl == C_IVLCH_Y ? 1	// average by day for non-sum-of year values
-								//   handles diffs due to month length
-		                 : 0;	// default: track average
 	dIvl0->lmt_Accum(sIvl0, firstFlg, lastFlg);
 
-	if (lastFlg)
-	{
-		LOADMTR* pLMSum = LdMtrR.p + LdMtrR.n;
-		LOADMTR_IVL* dIvlSum0 = pLMSum->lmt_GetLOADMTR_IVL(ivl);
-		dIvlSum0->lmt_Accum(dIvl0, ss == 1, 0);
-	}
 }		// LOADMTR::lmt_Accum
 //=============================================================================
 

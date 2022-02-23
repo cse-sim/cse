@@ -1462,6 +1462,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxCRated", DAT,   ZI(ZNQMXCRATED), 0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znRsys",	     DAT,   ZI( RSI),        0,        0, VEOI,   TYREF, &RSiB,  N,        N,   N),
+	CULT( "znLoadMtr",   DAT,   ZI( LOADMTRI),   0,        0, VEOI,   TYREF, &LdMtriB, N,      N,   N),
 
 // convection
 	CULT( "znHcFrcF",    DAT,   ZI( HCFRCF),     0,        0, VHRLY,   TYFL, 0,      0.2f,     N,   N),

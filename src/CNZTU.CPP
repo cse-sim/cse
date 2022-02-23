@@ -894,6 +894,12 @@ x          Then no error. User input for fraction of this heat of condensation t
 	else
 	{	(qTotMech < 0. ? zrs->qcMech : zrs->qhMech) = qTotMech;
 		(qsHvac < 0.f ? zrs->qscHvac : zrs->qshHvac) = qsHvac;
+		if (i.zn_loadMtri)
+		{
+			LOADMTR_IVL& lm = LdMtrR[i.zn_loadMtri].S;
+			lm.qHtg += zrs->qshHvac;
+			lm.qClg += zrs->qscHvac;
+		}
 	}
 
 	zrs->eqfVentHr = zn_fVent * Top.tp_subhrDur;	// equivalent full vent operation, hr

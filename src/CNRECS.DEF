@@ -2115,6 +2115,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *r FLOAT znQMxHRated	// heating cap rated (>=0, constant for run)  TODO: s/b autosizable?
     *h FLOAT znQMxC			// cooling cap for current hour (<= 0)
     *r FLOAT znQMxCRated	// cooling cap rated (<=0, constant for run)  TODO: s/b autosizable?
+    *r TI zn_loadMtri       // idx of LOADMETER for accumulation of zone heating and cooling loads
 
 	*r TI zn_rsi;			// idx of RSYS serving zone
 
