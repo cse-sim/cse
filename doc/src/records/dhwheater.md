@@ -91,14 +91,14 @@ Resistance heater type, valid only if wh_heatSrc=_ELRESX, else ignored. These ch
 
 <%= member_table(
   units: "",
-  legal_range: "Typical", "SwingTank"
+  legal_range: "Typical\nSwingTank",
   default: "Typical",
   required: "N",
   variability: "constant") %>
 
 **whHeatingCap=*float***
 
-Nominal heating capacity, available only for a limited HPWH types
+Nominal heating capacity, available only for a limited HPWH types.
 
 <%= member_table(
   units: "Btuh",
@@ -122,7 +122,7 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
 
 **whVolRunning=*float***
 
-Nominal heating capacity, available only for a limited HPWH types
+Nominal heating capacity, available only for a limited HPWH types.
 
 <%= member_table(
   units: "gal",
@@ -373,7 +373,7 @@ HPWH-type total UA (not per tank)
 
 **whUAMult=*float***
 
-Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e.g. tank wrap insulation.  Note that tank UA is derived from whEF and cannot be directly set. Depricated since v0.903.
+Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e.g. tank wrap insulation.  Note that tank UA is derived from whEF and cannot be directly set.
 
   **Units**   **Legal Range**   **Default**   **Required**  **Variability**
   ----------- ----------------- ------------- ------------- -------------------------
@@ -412,7 +412,7 @@ Tank insulation resistance for heat pump water heater.
 
 **whHPAF=*float***
 
-Heat pump adjustment factor, applied to whLDEF when modeling whType=SMALLSTORAGE and whHeatSrc=ASHP. This value should be derived according to RACM App B Table B-6.  Deprecated: the detailed HPWH model (whHeatSrc=ASHPX) is recommended for air source heat pumps. Deprecated since v 0.903.
+Heat pump adjustment factor, applied to whLDEF when modeling whType=SMALLSTORAGE and whHeatSrc=ASHP. This value should be derived according to RACM App B Table B-6.  Deprecated: the detailed HPWH model (whHeatSrc=ASHPX) is recommended for air source heat pumps.
 
   **Units**   **Legal Range**   **Default**   **Required**                                    **Variability**
   ----------- ----------------- ------------- ----------------------------------------------- -----------------
