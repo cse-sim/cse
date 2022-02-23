@@ -85,6 +85,28 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
   ----------- ---------------------- ------------- -------------- -----------------
                *Codes listed above*   FUEL          No             constant
 
+**whResType=*float***
+
+resistance heater type, valid only if wh_heatSrc=_ELRESX, else ignored. These choices are supported in the 
+
+<%= member_table(
+  units: "Btuh",
+  legal_range: "x $<$ 0",
+  default: "",
+  required: "N",
+  variability: "constant") %>
+
+**whHeatingCap=*float***
+
+Nominal heating capacity, available only for a limited HPWH types
+
+<%= member_table(
+  units: "Btuh",
+  legal_range: "x $<$ 0",
+  default: "",
+  required: "N",
+  variability: "constant") %>
+
 **whVol=*float***
 
 Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.
@@ -326,6 +348,17 @@ Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from t
   ----------- ----------------- ------------- ------------- -------------------------
     W             $\ge$ 0         whResHtPwr           N          constant
 
+**whUA=*float***
+
+HPWH-type total UA (not per tank)
+
+<%= member_table(
+  units: "Btuh/F",
+  legal_range: "x $\\geq$ 0",
+  default: "HPWH default",
+  required: "N",
+  variability: "constant") %>
+
 **whUAMult=*float***
 
 Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e.g. tank wrap insulation.  Note that tank UA is derived from whEF and cannot be directly set.
@@ -334,6 +367,16 @@ Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e
   ----------- ----------------- ------------- ------------- -------------------------
                    > 0              1           N            constant
 
+**whInsulR=*float***
+
+Tank insulation resistance for heat pump water heater.
+
+<%= member_table(
+  units: "hr-F/Btuh",
+  legal_range: "x $<$ 0",
+  default: "from preset or wh_UA and wh_vol",
+  required: "N",
+  variability: "constant") %>
 
 **whInHtSupply=*float***\
 **whInHtLoopRet=*float***
