@@ -85,14 +85,14 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
   ----------- ---------------------- ------------- -------------- -----------------
                *Codes listed above*   FUEL          No             constant
 
-**whResType=*float***
+**whResType=*choice***
 
-resistance heater type, valid only if wh_heatSrc=_ELRESX, else ignored. These choices are supported in the 
+Resistance heater type, valid only if wh_heatSrc=_ELRESX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.
 
 <%= member_table(
-  units: "Btuh",
-  legal_range: "x $<$ 0",
-  default: "",
+  units: "",
+  legal_range: "Typical", "SwingTank"
+  default: "Typical",
   required: "N",
   variability: "constant") %>
 
@@ -103,7 +103,7 @@ Nominal heating capacity, available only for a limited HPWH types
 <%= member_table(
   units: "Btuh",
   legal_range: "x $<$ 0",
-  default: "",
+  default: "0",
   required: "N",
   variability: "constant") %>
 
@@ -119,6 +119,18 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
               values may cause   else 50         see above
               runtime errors) 
   -----------------------------------------------------------------------
+
+**whVolRunning=*float***
+
+Nominal heating capacity, available only for a limited HPWH types
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $<$ 0",
+  default: "0",
+  required: "N",
+  variability: "constant") %>
+
 
 **whEF=*float***
 
@@ -361,7 +373,7 @@ HPWH-type total UA (not per tank)
 
 **whUAMult=*float***
 
-Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e.g. tank wrap insulation.  Note that tank UA is derived from whEF and cannot be directly set.
+Tank UA multiplier, used only with whHeatSrc=RESISTANCEX.  Used to account for e.g. tank wrap insulation.  Note that tank UA is derived from whEF and cannot be directly set. Depricated since v0.903.
 
   **Units**   **Legal Range**   **Default**   **Required**  **Variability**
   ----------- ----------------- ------------- ------------- -------------------------
@@ -374,7 +386,7 @@ Tank insulation resistance for heat pump water heater.
 <%= member_table(
   units: "hr-F/Btuh",
   legal_range: "x $<$ 0",
-  default: "from preset or wh_UA and wh_vol",
+  default: "-1",
   required: "N",
   variability: "constant") %>
 
@@ -387,9 +399,20 @@ Tank insulation resistance for heat pump water heater.
   ----------- -----------------   -------------------- -------------- -------------------------
       -        0 $\le$ x $\le$ 1    HPWH default (0?)           N          constant
 
+**whtankCount=*float***
+
+Tank insulation resistance for heat pump water heater.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $<$ 0",
+  default: "1",
+  required: "N",
+  variability: "constant") %>
+
 **whHPAF=*float***
 
-Heat pump adjustment factor, applied to whLDEF when modeling whType=SMALLSTORAGE and whHeatSrc=ASHP. This value should be derived according to RACM App B Table B-6.  Deprecated: the detailed HPWH model (whHeatSrc=ASHPX) is recommended for air source heat pumps.
+Heat pump adjustment factor, applied to whLDEF when modeling whType=SMALLSTORAGE and whHeatSrc=ASHP. This value should be derived according to RACM App B Table B-6.  Deprecated: the detailed HPWH model (whHeatSrc=ASHPX) is recommended for air source heat pumps. Deprecated since v 0.903.
 
   **Units**   **Legal Range**   **Default**   **Required**                                    **Variability**
   ----------- ----------------- ------------- ----------------------------------------------- -----------------
