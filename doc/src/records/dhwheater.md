@@ -267,43 +267,6 @@ Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=
 
 Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
 
-<%= csv_table(<<END, :row_header=> true)
-"Choice","Specified type"
-"Generic","General generic (parameterized by wh_EF and wh_vol)"
-"AOSmithPHPT60","60 gallon Voltex"
-"AOSmithPHPT80","80 gallon Voltex"
-"AOSmithHPTU50","50 gallon AOSmith HPTU"
-"AOSmithHPTU66","66 gallon AOSmith HPTU"
-"AOSmithHPTU80","80 gallon AOSmith HPTU"
-"Sanden40","Sanden 40 gallon CO2 external heat pump"
-"Sanden80","Sanden 80 gallon CO2 external heat pump"
-"GE2012","2012 era GeoSpring"
-"GE2014","2014 50 gal GE run in the efficiency mode"
-"GE2014StdMode","2014 50 gal GE run in standard mode"
-"GE2014StdMode80","2014 80 gal GE run in standard mode"
-"RheemHB50","newish Rheem (2014 model?)"
-"RheemHBDR2250","50 gallon, 2250 W resistance Rheem HB Duct Ready"
-"RheemHBDR4550","50 gallon, 4500 W resistance Rheem HB Duct Ready"
-"RheemHBDR2265","65 gallon, 2250 W resistance Rheem HB Duct Ready"
-"RheemHBDR4565","65 gallon, 4500 W resistance Rheem HB Duct Ready"
-"RheemHBDR2280","80 gallon, 2250 W resistance Rheem HB Duct Ready"
-"RheemHBDR4580","80 gallon, 4500 W resistance Rheem HB Duct Ready"
-"Stiebel220E","Stiebel Eltron (2014 model?)"
-"GenericTier1","Generic Tier 1"
-"GenericTier2","Generic Tier 2"
-"GenericTier3","Generic Tier 3"
-"UEF2Generic","Experimental UEF=2"
-"BasicIntegrated","Typical integrated HPWH"
-"ResTank","Resistance heater (no compressor).  Superceded by whHeatSrc=RESITANCEX"
-"ResTankNoUA","Resistance heater (no compressor) with no tank losses.  Superseded by whHeatSrc=RESISTANCEX."
-"AOSmithHPTU80DR","80 gallon AOSmith HPTU with fixed backup setpoint (experimental for demand response testing)"
-"AOSmithSHPT50","50 gal AOSmith SHPT"
-"AOSmithSHPT66","66 gal AOSmith SHPT"
-"AOSmithSHPT80","80 gal AOSmith SHPT"
-END
-%>
-
-
   **Units**   **Legal Range**        **Default**   **Required**           **Variability**
   ----------- ---------------------- ------------- ---------------------- -----------------
               *Codes listed above*   --            When whHeatSrc=ASHPX   constant

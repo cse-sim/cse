@@ -21,7 +21,7 @@ Heater type.
 
 <%= member_table(
   units: "",
-  legal_range: " C_WHTYPECH_STRGSML\nC_WHTYPECH_STRGLRG\nC_WHTYPECH_INSTSML\nC_WHTYPECH_INSTLRG\C_WHTYPECH_INSTUEF\nC_WHTYPECH_BUILTUP",
+  legal_range: " C_WHTYPECH_STRGSML\nC_WHTYPECH_STRGLRG\nC_WHTYPECH_INSTSML\nC_WHTYPECH_INSTLRG\nC_WHTYPECH_INSTUEF\nC_WHTYPECH_BUILTUP",
   default: "C_WHTYPECH_STRGSML",
   required: "No",
   variability: "constant") %>
@@ -29,16 +29,10 @@ Heater type.
 **whHeatSrc=*choice***
 
 Heat source.
-
-<%= csv_table(<<END, :row_header=> true)
-"Choice","Description"
-"C_WHHEATSRCCH_ELRES", "Electric resistance"
-"C_WHHEATSRCCH_FUEL","Fuel-fired burner"
-"C_WHHEATSRCCH_ASHP","Air source heat pump (T24DHW.DLL model)"
-"C_WHHEATSRCCH_ASHPX","Air source heat pump (Ecotope HPWH)"
-"C_WHHEATSRCCH_ELRESX","Electric resistance (Ecotope HPWH)"
-END
-%>
+<%= member_table(
+  Choice: "C_WHHEATSRCCH_ELRES\nC_WHHEATSRCCH_FUEL\nC_WHHEATSRCCH_ASHP\nC_WHHEATSRCCH_ASHPX\nC_WHHEATSRCCH_ELRESX",
+  Description: "Electric resistance\nFuel-fired burner\nAir source heat pump (T24DHW.DLL model)\nAir source heat pump (Ecotope HPWH)\nElectric resistance (Ecotope HPWH)",
+  ) %>
 
 **whZone=*integer***
 
@@ -348,7 +342,7 @@ Pilot light power. Included in whInFuel
   required: "No",
   variability: "hourly") %>
 
-**whParElec+=*float***
+**whParElec=*float***
 
 Parasitic electric use.
 
