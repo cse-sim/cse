@@ -4411,7 +4411,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r *e DBL wh_inFuelTot;	//    annual total fuel, Btu
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
-  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
+  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_fuelMtri)
   *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
 							//   default = none (include wh_HPWHxBU in end use dhwBU)
   *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel;"
