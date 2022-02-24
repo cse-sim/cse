@@ -1546,13 +1546,14 @@ LOCAL void FC NEAR doIvlAccum()
 	RLUP( AhresB, ahres)						// loop simulation results for air handlers. last is sum.
 		accumAhr( &ahres->S, &ahres->H, Top.isBegHour, Top.isEndHour);	// accumulate subhr to hour ah sim results, local, below.
 
+	// all-AFMTR subhr total plus accum subhour->hour
 	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)						// loop AFMTRs
 	{	if (pAM->ss < AfMtrR.n)
 		{	// sum subhours to sum_of_AFMETERs w/o averaging
-			pAMSum->S[0].amt_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1, 2);
-			pAMSum->S[1].amt_Accum(pAM->S + 1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1, 2);
+			pAMSum->S[0].amti_Accum(pAM->S, pAM->ss == 1, pAM->ss == AfMtrR.n - 1, 2);
+			pAMSum->S[1].amti_Accum(pAM->S + 1, pAM->ss == 1, pAM->ss == AfMtrR.n - 1, 2);
 		}
 		// subhour->hour, all AFMTRs (including sum_of_AFMETERs)
 		pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);

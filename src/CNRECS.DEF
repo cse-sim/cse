@@ -3686,10 +3686,10 @@ RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (lat
 RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct for AIRFLOWMETER
 
     *prefix amt_
-	*declare "void amt_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
-	*declare "void amt_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
- 	*declare "void amt_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
-	*declare "void amt_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+	*declare "void amti_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
+	*declare "void amti_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
+ 	*declare "void amti_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
+	*declare "void amti_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
 
 	*declare "static const int NAFCATS;"
 
