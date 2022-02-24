@@ -4355,7 +4355,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   used for some models only
 								//   default = 4500
   *i FLOAT_GEZ wh_resHtPwr2;	// lower element resistance heating power, W
-								//   default = wh_resPwr
+								//   default = wh_resHtPwr
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
