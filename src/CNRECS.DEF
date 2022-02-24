@@ -2794,28 +2794,46 @@ RECORD DOAS "doas" *RAT
     *i *nest FAN oa_supFan      // supply fan characteristics
     *i *nest FAN oa_exhFan      // exhaust fan characteristics
 
-    // Tempering inputs
+    // Tempering coil inputs
     *s TEMP oa_supTH            // supply temperature heating setpoint
+    *s FLOAT_GZ oa_EIRH         // heating coil energy input ratio (1/efficiency (or 1/COP)
+    *i TI oa_coilHMtri          // Meter for heating coil
+    *declare "MTR* oa_pCoilHMtr;"
     *s TEMP oa_supTC            // supply temperature cooling setpoint
-    // Coils (reuse CNE COILS?)
-    /*
-    *s FLOAT_GZ oa_effH         // 
-    */
+    *s FLOAT_GZ oa_EIRC         // cooling coil energy input ratio (1/efficiency (or 1/COP)
+    *s FLOAT_GZ oa_SHRC         // cooling coil SHR
+    *i TI oa_coilCMtri          // Meter for heating coil
+    *declare "MTR* oa_pCoilCMtr;"
 
     // Heat exchanger inputs
-    /*
-    *s FRAC oa_hxEff                // TODO: Separate into different HX input models
-    *i BOOL oa_bypass               // HX can be bypassed when not adventatgeous
+    *i AFLOW_GZ oa_hxVfDs           // Design supply volumetric flow rate of the heat exchanger
+                                    // defaults to supply fan VfDs
+    *i FLOAT_GZ oa_hxf2             // Flow fraction for second set of inputs (default 0.75)
+    *array 2 *i FRAC oa_hxSenEffH   // Heat exchanger heating sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *array 2 *i FRAC oa_hxLatEffH   // Heat exchanger heating latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *array 2 *i FRAC oa_hxSenEffC   // Heat exchanger cooling sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *array 2 *i FRAC oa_hxLatEffC   // Heat exchanger cooling latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *i BOO oa_hxBypass              // HX can be bypassed when not adventatgeous
     *s FLOAT_GEZ oa_hxAuxPwr        // Auxiliary power
     *i TI oa_hxAuxMtri              // Meter for auxiliary power
     *declare "MTR* oa_pHXAuxMtr;"
     // TODO: Add defrost control (see EnergyPlus options)
-    */
 
     // Outputs
     *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs
     *s *e *nest AIRFLOW oa_exhAF    // Exhaust air flow coming from IZXFERs
     *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
+    *s *e FRAC oa_hxSensEff         // Sensible efficacy
+    *s *e FRAC oa_hxLatEff          // Latent efficacy
+
 
 *END
 //-----------------------------------------------------------------------------
