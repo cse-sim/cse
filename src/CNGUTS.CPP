@@ -2330,15 +2330,8 @@ void LOADMTR_IVL::lmt_Accum(			// accumulate
 		lmt_count += count;
 	}
 
-#if 1
 	// LOADMTR contains no averages
-	lastFlg;
-#else
-x	// average unless caller says don't
-x	//  Note: VMul1() nops if lmt_count==1
-x	if (lastFlg && !(options & 2))
-x
-#endif
+	lastFlg;	// unused
 }		// LOADMTR_IVL
 //-----------------------------------------------------------------------------
 RC LOADMTR::lmt_CkF()
