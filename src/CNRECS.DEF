@@ -2116,6 +2116,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *r FLOAT znQMxHRated	// heating cap rated (>=0, constant for run)  TODO: s/b autosizable?
     *h FLOAT znQMxC			// cooling cap for current hour (<= 0)
     *r FLOAT znQMxCRated	// cooling cap rated (<=0, constant for run)  TODO: s/b autosizable?
+    *r TI zn_loadMtri       // idx of LOADMETER for accumulation of zone heating and cooling loads
 
 	*r TI zn_rsi;			// idx of RSYS serving zone
 
@@ -3307,6 +3308,10 @@ x *declare "RC rs_SetDefaultsClg();"
 							// runtime pointers to meters, NULL if not accum'ing
 							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
 
+*i TI rs_loadMtri           // LOADMTR idx for accumulation of primary (coil) output
+*declare "LOADMTR* rs_pLoadMtr;"
+// *i TI rs_rejHeatMtri        // LOADMTR idx for accumulation of rejected heat
+
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect
 *h FLOAT rs_parElec			//		electrical parasitic power, W
@@ -3739,10 +3744,10 @@ RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (lat
 RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct for AIRFLOWMETER
 
     *prefix amt_
-	*declare "void amt_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
-	*declare "void amt_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
- 	*declare "void amt_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
-	*declare "void amt_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+	*declare "void amti_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
+	*declare "void amti_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
+ 	*declare "void amti_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
+	*declare "void amti_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
 
 	*declare "static const int NAFCATS;"
 
@@ -3838,6 +3843,37 @@ RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
     *nest DHWMTR_SUB prior              // prior year,month,day,hour,subhr results, available throughout interval
     // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// DHWMTR
+//=============================================================================
+RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct for LOADMTR
+
+    *prefix lmt_
+	*declare "void lmt_Clear() { memset( this, 0, sizeof( LOADMTR_IVL));}"
+	*declare "void lmt_Copy( const LOADMTR_IVL* s, float mult=1.f);"
+	*declare "void lmt_Accum( const LOADMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+	*declare "static const size_t lmt_NFLOAT;"
+
+    *e INT lmt_count;   // # of accums
+
+	// energy use
+    *e FLOAT qHtg		// heating energy, Btu (assumed to be first float)
+	*e FLOAT qClg		// cooling energy, Btu
+*END		// LOADMTR_IVL
+//=============================================================================
+RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
+    *declare "RC lmt_CkF();"
+	*declare "RC lmt_BegSubhr();"
+    *declare "LOADMTR_IVL* lmt_GetLOADMTR_IVL( IVLCH ivl);"
+	*declare "void lmt_Accum( IVLCH ivl, int firstflg, int lastflg);"
+
+ // accumulated values for each interval
+ // CAUTION: ordered for subscripting by IVLCH-1
+    *y *e *nest LOADMTR_IVL Y   	// run (aka year or annual)
+    *m *e *nest LOADMTR_IVL M   	// month
+    *d *e *nest LOADMTR_IVL D   	// day
+    *h *e *nest LOADMTR_IVL H   	// hour
+    *s *e *nest LOADMTR_IVL S   	// subhour
+
+*END		// LOADMTR
 //=============================================================================
 RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
  // use results

@@ -72,11 +72,12 @@ makAncDUCTSEG( DsiB);		// duct segment input records basAnc
 makAncGAIN(GniB);			// (zone) gains input records basAnc
 makAncMTR(MtriB);			// Meters input records basAnc
 makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
+makAncDHWMTR(WMtriB);		// DHW meters
+makAncLOADMTR(LdMtriB);		// Load meters
 
 // simple HVAC and DHW (for CSE T24 residential compliance)
 makAncRSYS( RSiB);			// residential HVAC system
 makAncDOAS( OAiB);			// DOAS input records basAnc
-makAncDHWMTR( WMtriB);		// DHW meters
 makAncDHWSYS( WSiB);		// DHW system
 makAncDHWHEATER( WHiB);		// DHW heater
 makAncDHWTANK( WTiB);		// DHW tank
@@ -142,12 +143,13 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 {
 	ZiB.free();
 	IzxiB.free();
-	AfMtriB.free();
-	GniB.free();
 	MtriB.free();
+	AfMtriB.free();
+	WMtriB.free();
+	LdMtriB.free();
+	GniB.free();
 	RSiB.free();
 	OAiB.free();
-	WMtriB.free();
 	WSiB.free();
 	WHiB.free();
 	WLHiB.free();
@@ -1462,6 +1464,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxCRated", DAT,   ZI(ZNQMXCRATED), 0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znRsys",	     DAT,   ZI( RSI),        0,        0, VEOI,   TYREF, &RSiB,  N,        N,   N),
+	CULT( "znLoadMtr",   DAT,   ZI( LOADMTRI),   0,        0, VEOI,   TYREF, &LdMtriB, N,      N,   N),
 
 // convection
 	CULT( "znHcFrcF",    DAT,   ZI( HCFRCF),     0,        0, VHRLY,   TYFL, 0,      0.2f,     N,   N),
@@ -1763,7 +1766,7 @@ CULT( "rsAdjForFanHt", DAT, RSYS_ADJFORFANHT,0,       0, VEOI,   TYCH,  0,      
 CULT( "rsModeCtrl",  DAT,   RSYS_MODECTRL,   0,       0, VHRLY,  TYCH,  0,    C_RSYSMODECTRLCH_AUTO, N, N),
 CULT( "rsElecMtr",   DAT,   RSYS_ELECMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsFuelMtr",   DAT,   RSYS_FUELMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
-
+CULT( "rsLoadMtr",   DAT,   RSYS_LOADMTRI,   0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 CULT( "rsTdDesH",	 DAT,   RSYS_TDDESH,     0,       0, VEOI,   TYFL,  0,    50.f,     N,   N),
 CULT( "rsTdDesC",	 DAT,   RSYS_TDDESC,     0,       0, VEOI,   TYFL,  0,    -25.f,    N,   N),
 CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f,     N,   N),
@@ -1889,6 +1892,23 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 	CULT("endAFMETER",  ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// afMeterT
+
+//============================= LOADMETER command =============================
+LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
+// called at end of AFMETER input, to get messages near source of error.
+{
+	return ((LOADMTR*)p)->lmt_CkF();
+}		// lmtStarCkf
+//=============================================================================
+static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
+{
+	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",            STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
+	CULT("endLOADMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	CULT()
+};	// ldMeterT
+
 
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf([[maybe_unused]] CULT* c, /*DHWUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
@@ -2934,7 +2954,9 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "glazeType",   RATE,  0,                 NM_RQD,     0, 0,      0,    &GtiB,   N,    0.f,           gtT,  N), // added 12-94
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),
-	CULT("afmeter",      RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "afmeter",     RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "loadmeter",   RATE,  0,                 NM_RQD,     0, 0,      0,    &LdMtriB,N,    0.f,      ldMeterT,  N),
+
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
 	CULT( "doas",        RATE,  0,                 0,          0, 0,      0,    &OAiB,  N,    0.f,          doasT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
