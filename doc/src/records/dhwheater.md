@@ -102,7 +102,7 @@ Nominal heating capacity, available only for a limited HPWH types.
 
 <%= member_table(
   units: "Btuh",
-  legal_range: "x $<$ 0",
+  legal_range: "x $>$ 0",
   default: "0",
   required: "N",
   variability: "constant") %>
@@ -126,7 +126,7 @@ Running storage volume = vol above aquastat. Determines require total volume bas
 
 <%= member_table(
   units: "gal",
-  legal_range: "x $<$ 0",
+  legal_range: "x $>$ 0",
   default: "0",
   required: "N",
   variability: "constant") %>
@@ -385,7 +385,7 @@ Tank insulation resistance for heat pump water heater.
 
 <%= member_table(
   units: "hr-F/Btuh",
-  legal_range: "x $<$ 0",
+  legal_range: "x $>$ 0",
   default: "-1",
   required: "N",
   variability: "constant") %>
