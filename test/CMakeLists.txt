@@ -49,6 +49,7 @@ set(files
   oavtest2
   bgtest
   ashwat1
+  loadAndAFMeters
   dhw02
   dhwX
   dhwDU

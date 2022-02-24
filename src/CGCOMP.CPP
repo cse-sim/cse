@@ -263,7 +263,7 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 // NAFCATS s/b same as AFCAT choices + 1 (for total) - 1 (for C_AFCAT_NONE)
 static_assert(AFMTR_IVL::NAFCATS == C_AFCAT_COUNT+1-1, "Inconsistent AFMTR constants");
 //-----------------------------------------------------------------------------
-void AFMTR_IVL::amt_Copy(			// copy 
+void AFMTR_IVL::amti_Copy(			// copy 
 	const AFMTR_IVL* sIvl,	// source
 	float mult /*=1.f*/)	// optional multiplier
 {
@@ -275,7 +275,7 @@ void AFMTR_IVL::amt_Copy(			// copy
 	}
 }	// AFMTR_IVL::amt_Copy
 //-----------------------------------------------------------------------------
-void AFMTR_IVL::amt_Accum(			// accumulate
+void AFMTR_IVL::amti_Accum(			// accumulate
 	const AFMTR_IVL* sIvl,		// source
 	int firstFlg,				// true iff first accum into this (beg of ivl)
 	int lastFlg,				// true iff last accum into this (end of ivl)
@@ -286,7 +286,7 @@ void AFMTR_IVL::amt_Accum(			// accumulate
 {
 	int count = (options & 1) ? sIvl->amt_count : 1;
 	if (firstFlg)
-	{	amt_Copy(sIvl, float( count));
+	{	amti_Copy(sIvl, float( count));
 		amt_count = count;
 	}
 	else
@@ -307,8 +307,8 @@ RC AFMTR::amt_CkF()
 //-----------------------------------------------------------------------------
 RC AFMTR::amt_BegSubhr()		// init at beg of subhr
 {
-	S[ 0].amt_Clear();
-	S[ 1].amt_Clear();
+	S[ 0].amti_Clear();
+	S[ 1].amti_Clear();
 	return RCOK;
 }		// AFMTR::amt_BegSubhr
 //-----------------------------------------------------------------------------
@@ -317,7 +317,7 @@ void AFMTR::amt_AccumCat(		// accumulate air flow value for current subhour
 	float amf)		// air mass flow, lbm/sec
 {
 	int iNeg = amf < 0.f;
-	S[ iNeg].amt_AccumCat(afCat, AMFtoAVF2(amf));
+	S[ iNeg].amti_AccumCat(afCat, AMFtoAVF2(amf));
 }		// AFMTR::amt_AccumCat
 //-----------------------------------------------------------------------------
 AFMTR_IVL* AFMTR::amt_GetAFMTR_IVL(
@@ -329,7 +329,7 @@ AFMTR_IVL* AFMTR::amt_GetAFMTR_IVL(
 //-----------------------------------------------------------------------------
 void AFMTR::amt_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year
-					// Accumulates from subhour/day/month.  Not Top.ivl!
+					// Accumulates from subhour/hour/day/month.  Not Top.ivl!
 	int firstFlg,	// iff TRUE, destination will be initialized before values are accumulated into it
 	int lastFlg)	// iff TRUE, destination averages will be computed as needed
 {
@@ -342,14 +342,8 @@ void AFMTR::amt_Accum(
 								//   handles diffs due to month length
 		:                  0;	// default: track average
 	for (int iPN=0; iPN<2; iPN++)
-		dIvl0[ iPN].amt_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
+		dIvl0[ iPN].amti_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
 
-	if (lastFlg)
-	{	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
-		AFMTR_IVL* dIvlSum0 = pAMSum->amt_GetAFMTR_IVL( ivl);
-		for (int iPN = 0; iPN < 2; iPN++)
-			dIvlSum0[ iPN].amt_Accum(dIvl0+iPN, ss == 1, 0);
-	}
 }		// AFMTR::amt_Accum
 //=============================================================================
 

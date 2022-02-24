@@ -73,8 +73,11 @@ makAncZNR( ZrB);			// Zones runtime info: input set in cncult.
 makAncZNRES( ZnresB);		// Month and year simulation results for zones
 makAncIZXRAT( IzxR);		// interZone transfers -- conductions / ventilations between zones
 makAncGAIN( GnB);			// (zone) gains run records basAnc
+
 makAncMTR( MtrB);			// meters (energy use) run records basAnc
 makAncAFMTR(AfMtrR);		// air flow meters run basAnc
+makAncLOADMTR(LdMtrR);		// load meters run basAnc
+makAncDHWMTR(WMtrR);		// DHW meters
 
 // hvac: residential system model
 makAncRSYS( RsR);			// compliance-oriented simple residential system model
@@ -82,8 +85,7 @@ makAncRSYSRES( RsResR);		// RSYS results
 makAncDUCTSEG( DsR);		// duct segments
 makAncDUCTSEGRES( DsResR);	// DUCTSEG results
 
-// DHW: California compliance-oriented water heating
-makAncDHWMTR( WMtrR);		// DHW meters
+// DHW: water heating
 makAncDHWSYS( WsR);			// DHW system
 makAncDHWSYSRES(WsResR);	// DHWSYS results
 makAncDHWHEATER( WhR);		// DHW heater
