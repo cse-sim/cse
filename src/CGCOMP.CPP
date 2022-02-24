@@ -752,6 +752,12 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 		ad_tdFan = ad_pIZXRAT->iz_fan.fn_pute( c, ad_pIZXRAT->iz_T( in));
 		ad_pFan  = ad_pIZXRAT->iz_fan.p;		// fan power (for meter)
 	}
+	if (ad_pIZXRAT->iz_IsDOAS())
+	{
+		DOAS* pDOAS = doasR.GetAt(ad_pIZXRAT->iz_doas);
+		FAN* fan = ad_pIZXRAT->iz_vfMin > 0 ? &pDOAS->oa_supFan : &pDOAS->oa_exhFan;
+		ad_tdFan = fan->dT;
+	}
 }	// ANDAT::ad_SetFromFixedAVF
 //-------------------------------------------------------------------------------
 RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
@@ -969,8 +975,8 @@ RC DOAS::oa_BegSubhr()
 	// Add fan heat
 	double supC = inletAF.af_AmfCp() * 3600.;		// fan flow in heat cap units (Btuh/F)
 	float tdSup = oa_supFan.fn_pute(supC, inletAF.as_tdb);
-	oa_supAF = inletAF;
-	oa_supAF.as_AddDeltaT(tdSup);
+	oa_supAF = inletAF; 	// This is the flow before the fan because the temperature rise due
+	                        // to the fan is applied at the IZXFER level
 
 	double exhC = oa_exhAF.af_AmfCp() * 3600.;		// fan flow in heat cap units (Btuh/F)
 	oa_exhFan.fn_pute(exhC, oa_exhAF.as_tdb);

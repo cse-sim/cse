@@ -2828,7 +2828,7 @@ RECORD DOAS "doas" *RAT
     // TODO: Add defrost control (see EnergyPlus options)
 
     // Outputs
-    *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs
+    *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs (before supply fan, fan heat added to IZXFERs)
     *s *e *nest AIRFLOW oa_exhAF    // Exhaust air flow coming from IZXFERs
     *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
     *s *e FRAC oa_hxSensEff         // Sensible efficacy
