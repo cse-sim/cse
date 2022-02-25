@@ -31,8 +31,8 @@ Heater type.
 Heat source.
 
 <%= member_table(
-  Choice: "C_WHHEATSRCCH_ELRES\nC_WHHEATSRCCH_FUEL\nC_WHHEATSRCCH_ASHP\nC_WHHEATSRCCH_ASHPX\nC_WHHEATSRCCH_ELRESX",
-  Description: "Electric resistance\nFuel-fired burner\nAir source heat pump (T24DHW.DLL model)\nAir source heat pump (Ecotope HPWH)\nElectric resistance (Ecotope HPWH)",
+  legal_range: "C_WHHEATSRCCH_ELRES\nC_WHHEATSRCCH_FUEL\nC_WHHEATSRCCH_ASHP\nC_WHHEATSRCCH_ASHPX\nC_WHHEATSRCCH_ELRESX",
+  default: "Electric resistance\nFuel-fired burner\nAir source heat pump (T24DHW.DLL model)\nAir source heat pump (Ecotope HPWH)\nElectric resistance (Ecotope HPWH)",
   ) %>
 
 **whZone=*integer***
