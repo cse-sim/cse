@@ -136,6 +136,10 @@ Specifies type of motor driving the fan (blower). This is used in the derivation
   ----------- ----------------- ------------- -------------- -----------------
               PSC, BPM          PSC           No             constant
 
+**rsAdjForFanHt=*NOYESCH***
+
+Fan heat adjustment with two options Yes or no. Yes: fanHtRtd derived from rsFanTy and removed from capacity and input values. No: no rated fan heat adjustments.
+
 **rsElecMtr=*mtrName***
 
 Name of METER object, if any, by which system’s electrical energy use is recorded (under appropriate end uses).
@@ -200,6 +204,28 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
   ----------- ----------------- ------------- -------------------- -----------------
   Btu/Wh      *x* $>$ 0                       Yes if rsType=ASHP   constant
 
+**rsCAP115=*float***
+
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 115 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCAP95",
+  required: "No",
+  variability: "constant") %>
+
+**rsCAP82=*float***
+
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 82 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCAP95",
+  required: "No",
+  variability: "constant") %>
+
 **rsCap47=*float***
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F.
@@ -225,6 +251,50 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^
   **Units**   **Legal Range**   **Default**              **Required**   **Variability**
   ----------- ----------------- ------------------------ -------------- -----------------
   Btu/Wh      *x* $>$ 0         Calculated from rsCap47   no             constant
+
+**rsCAP05=*float***
+
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 5 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCAP47",
+  required: "No",
+  variability: "constant") %>
+
+**rs_COP115=*float***
+
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 115 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCap115",
+  required: "No",
+  variability: "constant") %>
+
+**rs_COP95=*float***
+
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 95 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCap95",
+  required: "No",
+  variability: "constant") %>
+
+**rs_COP82=*float***
+
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 82 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCap82",
+  required: "No",
+  variability: "constant") %>
 
 **rsCOP47=*float***
 
@@ -257,6 +327,237 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   ----------- ----------------- --------------------------------------------- -------------- -----------------
               *x* $>$ 0          Calculated from rsHSPF, rsCap47, and rsCap17   no             constant
 
+**rsCOP05=*float***
+
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 5 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCap05",
+  required: "No",
+  variability: "constant") %>
+
+**rsCapRat1747=*float***
+
+Ratio of rsCAP17 over rsCAP47.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Based on HSPF or\nother correlations",
+  required: "No",
+  variability: "Start of a run") %>
+
+**rsCapRat9547=*float***
+
+Ratio of rsCAP95 over rsCAP47.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Based on rsCap95",
+  required: "No",
+  variability: "constant") %>
+
+**rsCapRat0547=*float***
+
+Ratio of rsCAP05 over rsCAP47.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "In development",
+  required: "No",
+  variability: "constant") %>
+
+**rsCapRat11595=*datatype***
+
+Ratio of rsCAP115 over rsCAP95.
+
+<%= member_table(
+  units: "",
+  legal_range: 0 $<$ "x $\\geq$ 1",
+  default: "0.9155",
+  required: "No",
+  variability: "constant") %>
+
+**rsCapRat8295=*float***
+
+Ratio of rsCAP82 over rsCAP95.
+
+<%= member_table(
+  units: "",
+  legal_range: "1 $\\leq$ x $<$ 2",
+  default: "1.06",
+  required: "No",
+  variability: "Start of a run") %>
+
+**rsCOPMin115=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "Calculated from rsCAP115, rsCOP115",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsCOPMin95=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "Calculated from rsCAP95, rsCOP95",
+  default: "0.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsCOPMin82=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "Calculated from rsCAP82, rsCOP82",
+  default: "0.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsCOPMin47=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "Calculated from rsCAP47, rsCOP47",
+  default: "0.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsCOPMin35=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "Calculated from rsCAP35, rsCOP35",
+  default: "0.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsCOPMin17=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "Calculated from rsCAP17, rsCOP17",
+  default: "0.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsCOPMin05=*float***
+
+Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimun speed.
+
+<%= member_table(
+  units: "",
+  legal_range: "Calculated from rsCAP05, rsCOP05",
+  default: "0.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsloadFMin115=*float***
+
+Fraction of a clg minimum load at 115 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsloadFMin95=*datatype***
+
+Fraction of a clg minimum load at 95 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsloadFMin82=*datatype***
+
+Fraction of a clg minimum load at 82 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsloadFMin47=*datatype***
+
+Fraction of a htg minimum load at 47 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsloadFMin17=*datatype***
+
+Fraction of a htg minimum load at 17 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsloadFMin05=*datatype***
+
+Fraction of a htg minimum load at 05 ^o^F.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Before set up or at the end of interval") %>
+
+**rsTypeAuxH=*choice***
+
+Type of auxiliary heat.
+
+<%= member_table(
+  units: "",
+  legal_range: "C_AUXHEATTY_NONE\nC_AUXHEATTY_RES\nC_AUXHEATTY_FURN",
+  default: "C_AUXHEATTY_RES",
+  required: "No",
+  variability: "Start of a run") %>
+
+**rsCtrlAuxH=*choice***
+
+Type of auxiliary heating control. C_AUXHEATCTRL_LO, Compressor locked out if any auxiliary heating control; C_AUXHEATCTRL_CYCLE, Compressor runs continuously, auxiliary cycles; C_AUXHEATCTRL_ALT, Alternates between compressor auxiliary.
+
+<%= member_table(
+  units: "",
+  legal_range: "C_AUXHEATCTRL_LO\nC_AUXHEATCTRL_CYCLE\nC_AUXHEATCTRL_ALT",
+  default: "C_AUXHEATCTRL_CYCLE",
+  required: "No",
+  variability: "Start of a run") %>
+
 **rsCapAuxH=*float***
 
 For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
@@ -264,6 +565,17 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd
   **Units**   **Legal Range**             **Default**   **Required**   **Variability**
   ----------- --------------------------- ------------- -------------- -----------------
   Btu/hr      *AUTOSIZE* or *x* $\ge$ 0   0             no             constant
+
+**rsAFUEAuxH=*float***
+
+Auxiliary furnace heating for annualized fuel utilization efficiency.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.9",
+  required: "No",
+  variability: "constant") %>
 
 **rsDefrostModel=*choice***
 
