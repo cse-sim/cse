@@ -371,7 +371,7 @@ Ratio of rsCAP05 over rsCAP47.
   required: "No",
   variability: "constant") %>
 
-**rsCapRat11595=*datatype***
+**rsCapRat11595=*float***
 
 Ratio of rsCAP115 over rsCAP95.
 
@@ -481,7 +481,7 @@ Fraction of a clg minimum load at 115 ^o^F.
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsloadFMin95=*datatype***
+**rsloadFMin95=*float***
 
 Fraction of a clg minimum load at 95 ^o^F.
 
@@ -492,7 +492,7 @@ Fraction of a clg minimum load at 95 ^o^F.
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsloadFMin82=*datatype***
+**rsloadFMin82=*float***
 
 Fraction of a clg minimum load at 82 ^o^F.
 
@@ -503,7 +503,7 @@ Fraction of a clg minimum load at 82 ^o^F.
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsloadFMin47=*datatype***
+**rsloadFMin47=*float***
 
 Fraction of a htg minimum load at 47 ^o^F.
 
@@ -514,7 +514,7 @@ Fraction of a htg minimum load at 47 ^o^F.
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsloadFMin17=*datatype***
+**rsloadFMin17=*float***
 
 Fraction of a htg minimum load at 17 ^o^F.
 
@@ -525,7 +525,7 @@ Fraction of a htg minimum load at 17 ^o^F.
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsloadFMin05=*datatype***
+**rsloadFMin05=*float***
 
 Fraction of a htg minimum load at 05 ^o^F.
 
@@ -538,14 +538,14 @@ Fraction of a htg minimum load at 05 ^o^F.
 
 **rsTypeAuxH=*choice***
 
-Type of auxiliary heat.
+Type of auxiliary heat. The functions have C_AUXHEATTY as a prefix.
 
 <%= member_table(
   units: "",
-  legal_range: "C_AUXHEATTY_NONE\nC_AUXHEATTY_RES\nC_AUXHEATTY_FURN",
-  default: "C_AUXHEATTY_RES",
+  legal_range: "_NONE,\n_RES,\nFURN",
+  default: "_RES",
   required: "No",
-  variability: "Start of a run") %>
+  variability: "constant") %>
 
 **rsCtrlAuxH=*choice***
 
@@ -553,8 +553,8 @@ Type of auxiliary heating control. C_AUXHEATCTRL_LO, Compressor locked out if an
 
 <%= member_table(
   units: "",
-  legal_range: "C_AUXHEATCTRL_LO\nC_AUXHEATCTRL_CYCLE\nC_AUXHEATCTRL_ALT",
-  default: "C_AUXHEATCTRL_CYCLE",
+  legal_range: "_LO,\n_CYCLE,\n_ALT",
+  default: "_CYCLE",
   required: "No",
   variability: "Start of a run") %>
 
