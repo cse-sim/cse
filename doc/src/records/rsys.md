@@ -263,7 +263,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 5 ^o^F
   required: "No",
   variability: "constant") %>
 
-**rs_COP115=*float***
+**rsCOP115=*float***
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 115 ^o^F.
 
@@ -274,7 +274,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   required: "No",
   variability: "constant") %>
 
-**rs_COP95=*float***
+**rsCOP95=*float***
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 95 ^o^F.
 
@@ -285,7 +285,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   required: "No",
   variability: "constant") %>
 
-**rs_COP82=*float***
+**rsCOP82=*float***
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 82 ^o^F.
 
@@ -377,7 +377,7 @@ Ratio of rsCAP115 over rsCAP95.
 
 <%= member_table(
   units: "",
-  legal_range: 0 $<$ "x $\\geq$ 1",
+  legal_range: "0 $<$ x $\\geq$ 1",
   default: "0.9155",
   required: "No",
   variability: "constant") %>
