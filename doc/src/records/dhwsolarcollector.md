@@ -109,6 +109,50 @@ Collector loop operating mass flow rate
 ----------- ---------------------   -------------            -------------- -----------------
  gpm		 x $\ge$ 0               from *scArea*, *scMult*  No             constant
 
+**scPipingLength=*float***
+
+Information about the collector piping lenght.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingInsulK=*float***
+
+Information about the collector piping insulation conductivity.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.02167",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingInsulThk=*float***
+
+Information about the collector piping insulation thickness.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingExH=*float***
+
+Information about the collector piping heat transfer coefficient.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.5",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
 **scPipingExT=*float***
 
 Collector piping suround temperature.
