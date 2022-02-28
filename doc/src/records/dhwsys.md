@@ -117,6 +117,17 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
 
 Hot water demand determination
 
+**wsTInletDes=*float***
+
+Specifies cold water inlet temperature design (sizing).
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 32 ^o^F",
+  default: "Annual minimums mains temperature",
+  required: "No",
+  variability: "constant") %>
+
 **wsUse=*float***
 
 Hourly hot water use (at the point of use).  See further info under wsDayUse.
@@ -227,6 +238,71 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
   ----------- ----------------- ------------- -------------- -----------------
     ^o^F        $>$ 32 ^o^F      wsTSetPoint        No             hourly
 
+**wsTSetpointDes=*float***
+
+Specifies the design (sizing) setpoint temperature.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 32 ^o^F",
+  default: "wsTUse",
+  required: "No",
+  variability: "constant") %>
+
+**wsVolRunningDes=*float***
+
+Running volume for design.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**wsASHPTSrcDes=*float***
+
+Design (sizing) source air temperature for HPWH.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 32 ^o^F",
+  default: "Heating design temperature",
+  required: "No",
+  variability: "At the start and at the end of interval") %>
+
+**wsFxDes=*float***
+
+Excess size factor for domestic hot water design. wsFxDes is applied when wsHeatingCapDes and/or wsVolRunningDes are defaulted from EcoSizer at the end of the prerun. There is no effect if those values are input.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "constant") %>
+
+**wsDRMethod=*choice***
+
+Response control method for domestic hot water demand.
+
+<%= member_table(
+  units: "",
+  legal_range: "C_DHWDRMETH_NONE C_DHWDRMETH_SCHED",
+  default: "C_DHWDRMETH_NONE",
+  required: "No",
+  variability: "At the start of a run") %>
+
+**wsDRSignal=*choice***
+
+Response control signal for domestic hot water demand. The options start with C_DHWDRSIG follow by one of the legal range options.
+
+<%= member_table(
+  units: "",
+  legal_range: "_ON, _TOO, _TOOLOR, _TOOLOC, _TOT, _TOTLOR, _TOTLOC, _LOC, _LOR, _LOCLOR, _COUNT",
+  default: "C_DHWDRSIG_ON",
+  required: "No",
+  variability: "constant") %>
 
 **wsSDLM=*float***
 
@@ -282,6 +358,28 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
   **Units**   **Legal Range**   **Default**   **Required**    **Variability**
 ----------- ------------------ ------------- --------------- -----------------
    W            $\ge$ 0             0             No             hourly
+
+**wsDrawMaxDur=*integer***
+
+Maximum draw duration for the window.
+
+<%= member_table(
+  units: "Hr",
+  legal_range: "x $\\geq$ 0",
+  default: "4",
+  required: "No",
+  variability: "constant") %>
+
+**wsLoadMaxDur=*integer***
+
+Maximum load duration for the window.
+
+<%= member_table(
+  units: "Hr",
+  legal_range: "x $\\geq$ 0",
+  default: "12",
+  required: "No",
+  variability: "constant") %>
 
 **wsElecMtr=*mtrName***
 
