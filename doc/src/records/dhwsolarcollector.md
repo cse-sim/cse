@@ -70,17 +70,72 @@ Fit y-intercept
   required: "No",
   variability: "constant") %>
 
+**scTestMassFlow=*flaot***
+
+Mass flow rate for collector loop SRCC rating.
+
+<%= member_table(
+  units: "lb/h-ft^2^",
+  legal_range: "x $>$ 0",
+  default: "14.79",
+  required: "No",
+  variability: "constant") %>
+
+**scKta60=*float***
+
+Incident angle modifier at 60 degree, from SRCC rating.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.72",
+  required: "No",
+  variability: "constant") %>
+
+**scOprMassFlow=*float***
+
+Collector loop operating mass flow rate
+
+<%= member_table(
+  units: "lb/h-ft^2^",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
 **scPumpFlow=*float***
 
 **Units**   **Legal Range**         **Default**              **Required**   **Variability**
 ----------- ---------------------   -------------            -------------- -----------------
  gpm		 x $\ge$ 0               from *scArea*, *scMult*  No             constant
 
+**scPipingExT=*float***
+
+Collector piping suround temperature.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $\\geq$ 32",
+  default: "70.0",
+  required: "No",
+  variability: "hourly") %>
+
 **scPumpPwr=*float***
 
 **Units**   **Legal Range**         **Default**              **Required**   **Variability**
 ----------- ---------------------   -------------            -------------- -----------------
  Btu/h		 x $\ge$ 0               from *scPumpflow*        No             constant
+
+**scPumpLiqHeatF=*float***
+
+Fraction of scPumpPwr added to liquid stream, the remainder is discarded.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Every run") %>
 
 **scPumpOnDeltaT=*float***
 
