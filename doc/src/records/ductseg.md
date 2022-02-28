@@ -24,6 +24,50 @@ The surface area of a DUCTSEG depends on its shape. 0 surface area is legal (lea
 -   dsExArea specified: Flat. Interior and exterior areas are assumed to be equal (duct surfaces are flat and corner effects are neglected).
 -   dsExArea *not* specified: Round. Any two of dsInArea, dsDiameter, and dsLength must be given. Insulation thickness is derived from dsInsulR and dsInsulMat and this thickness is used to calculate the exterior surface area. Overall inside-to-outside conductance is also calculated including suitable adjustment for curvature.
 
+**dsBranchLen=*float***
+
+Average branch length.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "-1.0",
+  required: "No",
+  variability: "constant") %>
+
+**dsBranchCount=*integer***
+
+Number of branches.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "-1",
+  required: "No",
+  variability: "constant") %>
+
+**dsBranchCFA=*float***
+
+Floor area served per branch
+
+<%= member_table(
+  units: "ft^2^",
+  legal_range: "x $>$ 0",
+  default: "-1.0",
+  required: "No",
+  variability: "constant") %>
+
+**dsAirVelDs=*float***
+
+Specified air velocity design.
+
+<%= member_table(
+  units: "fpm",
+  legal_range: "x $>$ 0",
+  default: "-1.0",
+  required: "No",
+  variability: "constant") %>
+
 **dsExArea=*float***
 
 Duct segment surface area at outside face of insulation for flat duct shape, see above.
