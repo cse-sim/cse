@@ -21,6 +21,28 @@ Name of METER object, if any, to which DHWSOLARSYS electrical energy use is reco
   required: "No",
   variability: "constant") %>
 
+**swSCFluidSpHt=*float***
+
+Specify the specific heat for the collector fluid.
+
+<%= member_table(
+  units: "Btu/lbm-F",
+  legal_range: "x $>$ 0",
+  default: "0.9",
+  required: "No",
+  variability: "constant") %>
+
+**swSCFluidDens=*float***
+
+Specify the density for the collector fluid.
+
+<%= member_table(
+  units: "lb/ft^3^",
+  legal_range: "x $>$ 0",
+  default: "64.0",
+  required: "No",
+  variability: "constant") %>
+
 **swEndUse**
 
 End use of pump energy; defaults to "DHW".
@@ -49,6 +71,17 @@ Tank heat exchanger effectiveness.
 **Units**   **Legal Range**         **Default**   **Required**   **Variability**
 ----------- ---------------------   ------------- -------------- -----------------
 			 0 $\le$ x $\le$ 0.99    0             No             hourly
+
+**swTankTHxLimit=*float***
+
+Temperature limit for the tank collector.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $\\geq$ 0",
+  default: "180.0",
+  required: "No",
+  variability: "constant") %>
 
 **swTankUA=*float***
 
@@ -81,7 +114,7 @@ Total tank insulation resistance, built-in plus exterior wrap.
   required: "No",
   variability: "constant") %>
 
-**swTankZn**
+**swTankZone=*integer***
 
 Pointer to tank zone location, use sw_tankTEx if NULL
 
