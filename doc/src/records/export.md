@@ -93,6 +93,10 @@ Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 ----------- ----------------------------- ------------- --------------------------- -----------------
 name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
 
+**exTu**
+
+Not currently supported.
+
 **exDHWMeter=*dhwMtrName***
 
 Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
