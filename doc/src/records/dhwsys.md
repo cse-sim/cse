@@ -155,11 +155,137 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   ---------- ---------------------- ---------------------- -------------- -----------------
               *name of a DHWDAYUSE*   (no scheduled draws)        No             daily
 
-**wsFaucetWaste=*float***\
-**wsShowerWaste=*float***\
-**wsBathWaste=*float***\
-**wsCWashrWaste=*float***\
-**wsDWashrWaste=*float***
+**wsUnkDrawDurF=*float***
+
+Unknown water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**wsFaucetDrawDurF=*float***
+
+Fauce water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**wsShowerDrawDurF=*float***
+
+Shower water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**wsBathDrawDurF=*float***
+
+Bath water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**wsCWashrDrawDurF=*float***
+
+Clothed washer water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**wsDWashrDurF=*float***
+
+Dish washer water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**wsUnkDrawtWaste=*float***
+
+Unknown water waste per draw.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
+
+**wsFauceDrawtWaste=*float***
+
+Faucet water waste per draw.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
+
+**wsShowerDrawWaste=*float***
+
+Shower water waste per draw.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
+
+**wsBathDrawWaste=*float***
+
+Bath water waste per draw.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
+
+**wsCWashrDrawWaste=*float***
+
+Clothing washer water waste per draw.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
+
+**wsDWashrDrawWaste=*float***
+
+Dish washer water waste per draw.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
 
 Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -197,15 +323,71 @@ Day waste scaling factor.
   ----------- ----------------- ------------------------------ -------------- -----------------
      --        $\ge$ 0             1                               No            constant
 
+**wsUnkDayWasteF=*float***
 
+Unknown relative water draw for day of waste scheme.
 
-**wsDayWasteFaucetF=*float***\
-**wsDayWasteShowerF=*float***\
-**wsDayWasteBathF=*float***\
-**wsDayWasteCWashrF=*float***\
-**wsDayWasteDWashrF=*float***
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
-ToDo
+**wsFaucetDayWasteF=*float***
+
+Relative faucet water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**wsShowerDayWasteF=*float***
+
+Relative shower water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**wsBathDayWasteF=*float***
+
+Relative bath water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**wsCWashrDayWasteF=*float***
+
+Relative clothes washer water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**wsDWashrDayWasteF=*float***
+
+Relative dish washer water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
