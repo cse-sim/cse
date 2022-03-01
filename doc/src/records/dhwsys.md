@@ -221,7 +221,7 @@ Dish washer water heater for draw duration factor to be use by warm-up waste and
   required: "No",
   variability: "Hourly and at the end of interval") %>
 
-**wsUnkDrawtWaste=*float***
+**wsUnkDrawWaste=*float***
 
 Unknown water waste per draw.
 
@@ -232,7 +232,7 @@ Unknown water waste per draw.
   required: "No",
   variability: "Hourly") %>
 
-**wsFauceDrawtWaste=*float***
+**wsFaucetDrawWaste=*float***
 
 Faucet water waste per draw.
 
