@@ -53,17 +53,6 @@ End use of pump energy; defaults to "DHW".
 ----------- ----------------- ------------- -------------- -----------------
 			 x $\ge$ 0         0             No             hourly
 
-**swFluidVolSpHt=*float***
- 
-Default specific heat for Ethylene Glycol.
-
-<%= member_table(
-  units: "Btu/gal-^o^F",
-  legal_range: "",
-  default: "5.31",
-  required: "No",
-  variability: "constant") %>
-
 **swTankHXEff=*float***
 
 Tank heat exchanger effectiveness.

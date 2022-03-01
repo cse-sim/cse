@@ -103,12 +103,6 @@ Collector loop operating mass flow rate
   required: "No",
   variability: "constant") %>
 
-**scPumpFlow=*float***
-
-**Units**   **Legal Range**         **Default**              **Required**   **Variability**
------------ ---------------------   -------------            -------------- -----------------
- gpm		 x $\ge$ 0               from *scArea*, *scMult*  No             constant
-
 **scPipingLength=*float***
 
 Information about the collector piping lenght.
