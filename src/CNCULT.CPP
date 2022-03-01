@@ -2932,7 +2932,11 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
 		printf("\n");
 		const CULT* pCX = pCULT;
 		while (pCX->id)
-		{   if (pCX->cs != RATE)
+		{	if (pCX->cs == CLEAR || pCX->cs == RUN) {
+				pCX++;
+				continue;
+			}
+			if (pCX->cs != RATE)
 				pCX->cu_ShowDoc( cu_options);
 			pCX++;
 		}
