@@ -196,6 +196,10 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
   ----------- ----------------------------- ------------- --------------------------- -----------------
               name of a *METER*, ALL, SUM                 Required for *rpType*=MTR   constant
 
+**rpAH**
+
+Currently not supported.
+
 **rpDHWMeter=*dhwMtrName***
 
 Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
@@ -212,6 +216,9 @@ Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
 --------- ------------------------------ ------------- ---------------------------- ---------------
           name of a *DHWMETER*, ALL, SUM               Required for *rpType*=AFMTR  constant
 
+**rpTu**
+
+Currently not supported.
 
 <% if inactive_CNE_records %>
 **rpAh=*ahName***
