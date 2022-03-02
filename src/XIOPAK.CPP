@@ -566,44 +566,47 @@ SEC FC xfsize(		// Return the current size of a file
 	return SECOK;   		/*    good */
 }				// xfsize
 //======================================================================
-SEC FC xfchsize(		// Change the size of a file
-
-	XFILE *xf,	// Pointer to extended IO packet for file
-	LI size)	// New size of file
-
-// Returns SECOK if no errors; else other sec (SETS xf->xflsterr)
-{
-	if (xfflush(xf) == SECOK) {  // Flush buffers; if no prior error and flush successful
-		std::error_code ec;
-		filesys::resize_file(filesys::path(xf->xfname), size, ec);
-		if (ec)		// set length, if good
-			xf->xflsterr = xioerr(xf);		//  failed, report err
-	}
-	return xf->xflsterr;
-}				// xfchsize
+#if 0			// Replace by xfClear 2/22
+0SEC FC xfchsize(		// Change the size of a file
+0
+0	XFILE *xf,	// Pointer to extended IO packet for file
+0	LI size)	// New size of file
+0
+0// Returns SECOK if no errors; else other sec (SETS xf->xflsterr)
+0{
+0	if (xfflush(xf) == SECOK) {  // Flush buffers; if no prior error and flush successful
+0		std::error_code ec;
+0		filesys::resize_file(filesys::path(xf->xfname), size, ec);
+0		if (ec)		// set length, if good
+0			xf->xflsterr = xioerr(xf);		//  failed, report err
+0	}
+0	return xf->xflsterr;
+0}				// xfchsize
+#endif
 //======================================================================
-SEC FC xfflush(		// Flush all buffers associated with a file
-
-	XFILE *xf ) 	// Pointer to extended IO packet for file
-
-// Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
-{
-	if (xf->xflsterr==SECOK)			// if no prior error
-	{
-		// Check if the stream was open for writting
-		if (strchr(xf->access,'+')
-			|| strchr(xf->access, 'w')
-			|| strchr(xf->access, 'a')) {
-			
-			// flush buffers
-			if (fflush(xf->han) == 0)
-				return SECOK;			// success
-		}
-		xf->xflsterr = xioerr(xf);		// report error
-	}
-	return xf->xflsterr;	// return (possibly prior) sec
-}			// xfflush
-
+#if 0			// Replace by xfClear 2/22
+0SEC FC xfflush(		// Flush all buffers associated with a file
+0
+0	XFILE *xf ) 	// Pointer to extended IO packet for file
+0
+0// Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
+0{
+0	if (xf->xflsterr==SECOK)			// if no prior error
+0	{
+0		// Check if the stream was open for writting
+0		if (strchr(xf->access,'+')
+0			|| strchr(xf->access, 'w')
+0			|| strchr(xf->access, 'a')) {
+0			
+0			// flush buffers
+0			if (fflush(xf->han) == 0)
+0				return SECOK;			// success
+0		}
+0		xf->xflsterr = xioerr(xf);		// report error
+0	}
+0	return xf->xflsterr;	// return (possibly prior) sec
+0}			// xfflush
+#endif
 //======================================================================
 uintmax_t FC xdisksp()		// returns diskspace on default drive
 {
