@@ -58,6 +58,39 @@ Combined radiant/convective exterior surface conductance between insulation (or 
   --------------- ----------------- ------------- -------------- -----------------
   Btuh/ft^2^-^o^F   $>$ 0             1.5           No             hourly
 
+**wbExCnd=*choice***
+
+Exterior conditions. The options are C_EXCNDCH follow by the legal range.
+
+<%= member_table(
+  units: "",
+  legal_range: "_ADIABATIC _AMBIENT _SPECT _ADJZN _GROUND",
+  default: "_SPECT",
+  required: "No",
+  variability: "constant") %>
+
+**wbAdjZn=*float***
+
+Boundary conditions for adjacent zones.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "runly") %>
+
+**wbExTX=*float***
+
+Boudary conditions for External Exterior.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "70.0",
+  required: "No",
+  variability: "runly") %>
+
 **wbFUA=*float***
 
 Adjustment factor applied to branch UA.  UA is derived (from wbSize, wbLength, wbInsulK, wbInsulThk, and wbExH) and then multiplied by wbFUA.  Used to represent e.g. imperfect insulation.  Note that parent DHWLOOP wlFUA does not apply to DHWLOOPBRANCH (only DHWLOOPSEG)
