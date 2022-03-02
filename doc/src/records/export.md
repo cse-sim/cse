@@ -105,6 +105,17 @@ Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
   ----------- ----------------------------- ------------- ------------------------------ -----------------
               name of a *DHWMETER*, ALL, SUM              Required for *exType*=DHWMTR   constant
 
+**exAFMeter=*integer***
+
+Air flow meter report.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0",
+  required: "No",
+  variability: "runly") %>
+
 **exAh=ah*Name***
 
 Specifies air handler(s) to be exported, for *exType*=AH.
