@@ -600,14 +600,6 @@ Auxiliary furnace heating for annualized fuel utilization efficiency.
   ----------- ----------------- ------------- -------------- -----------------
               *x* $>$ 0             1           No             constant
 
-**rsCOPAuxH=*float***
-
-For rsType=ASHP, auxiliary electric (“strip”) heating coefficient of performance. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $\ge$ 0       1.0           no             constant
-
 **rsSEER=*float***
 
 Cooling rated Seasonal Energy Efficiency Ratio (SEER).
