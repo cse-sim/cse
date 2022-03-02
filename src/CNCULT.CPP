@@ -2932,7 +2932,7 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
 		printf("\n");
 		const CULT* pCX = pCULT;
 		while (pCX->id)
-		{	if (pCX->cs == CLEAR || pCX->cs == RUN) {
+		{	if (pCX->cs != RATE && pCX->cs != DAT && pCX->cs != ENDER) {
 				pCX++;
 				continue;
 			}
