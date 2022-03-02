@@ -95,7 +95,7 @@ int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
 
 const char * FC xgetdir( void);
-SEC    FC xchdir( const char *, int erOp=WRN);
+SEC    FC xchdir( const char*, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
 XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
@@ -111,8 +111,8 @@ SEC    FC xlsterr( XFILE *);
 
 RC     FC xfcopy( const char *, const char *, const char*, SI);
 RC     FC xfcopy2( XFILE *xfs, XFILE *xfd, int op, const char** pMsg);
-LI     FC xdisksp();
-LI FC dskDrvFreeSpace();
+uintmax_t FC xdisksp();
+uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
 

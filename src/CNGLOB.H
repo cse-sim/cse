@@ -84,17 +84,21 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
-#undef ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
-								//   work in progress, 10-2017
-#if defined( ELIMINATE_WINDOWS)
-// typedefs based on windows.h
+/*---------------------- Windows definitions -------------------------------*/
+#ifdef _WIN32
+#include <windows.h>
+#else
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
 typedef unsigned short WORD;
 typedef char TCHAR;
 typedef unsigned char BYTE;
-// #define _T(s) s
+typedef void* PVOID;
+typedef PVOID HANDLE;
+typedef HANDLE HWND;
+typedef HANDLE HINSTANCE;
+typedef HINSTANCE HMODULE;
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
@@ -104,11 +108,6 @@ typedef unsigned char BYTE;
 #define FC 		// eliminating all 32-bit fastcalls fixes rampant bad bcc32 4.0 compiles 3-3-94.
 				// tried -Od and -rd compile options at same time, found not necessary.
 				// gave up on trying to change individual FC's only b4 getting cul.cpp to complete imput compilation 3-94.
-#define NEAR  near
-#define near
-#define FAR   far
-#define far
-#define pascal
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
@@ -150,10 +149,6 @@ struct CULT;
 //   #include <string.h>
 
 #else
-
-#if !defined( ELIMINATE_WINDOWS)
-#include <windows.h>
-#endif
 
 #include <string.h>
 #include <stddef.h>

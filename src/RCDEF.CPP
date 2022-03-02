@@ -164,7 +164,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
 #include <srd.h>
-#include <direct.h>     // getcwd(), chdir(
 
 #include <xiopak.h>     // xffilcomp
 #include <envpak.h>     // hello byebye
@@ -370,7 +369,7 @@ static char * rcfdnms[MAXFIELDS];                                       // Table
 static char rdfas[MAXFIELDS];                                   // set 1 by lufind if used
 static struct LUTAB (MAXFIELDS) fdlut= {0,MAXFIELDS,rcfdnms,rdfas};      // lupak fields table
 SI nfdtypes = 0;                                                        // Current number of field names
-USI fieldtype;
+// USI fieldtype;
 
 // MORE VARIABLES incl most record variables are below, just above record()
 
@@ -418,17 +417,15 @@ struct MTU
 	USI oldval;
 	USI newval;
 };
-#define MTUCUR(pmtu) (pmtu)->oldval	/* next slot to use in MTU table:
-Slot 0 .oldval contains # used slots; 1st user slot is slot 1.
-Used 6-89 in points.c, ceilmu.c, dbxpak.c. */
-LOCAL RC     FC mtpinit( char **pmtab, SI sltsize, SI nslots);
 LOCAL char * FC mtinit( SI, SI);
-LOCAL char * FC mtadd( char **, SI, char *);
+LOCAL char* FC mtadd(char**, SI, char*);
+#if 0
+LOCAL SI     FC mtulook2(MTU*, USI, USI*);
 LOCAL void   FC mtfree( char **);
 LOCAL MTU *  FC mtuadd( MTU *, USI, USI);
 LOCAL USI    FC mtulook( MTU *, USI);
-LOCAL SI     FC mtulook2( MTU *, USI, USI *);
 LOCAL USI    FC mturep( MTU *, USI, USI);
+#endif
 //===============================================================================
 
 
@@ -523,7 +520,7 @@ static SI FC strsnfnd(          /* find string in snake */
 
 /* returns offset in snake to str if successful, 0 if not found */
 {
-	register SI ls, off;
+	SI ls, off;
 
 	if (snp == NULL)
 		return 0;
@@ -571,7 +568,6 @@ int CDEC main( SI argc, char * argv[] )
 	/* .def files, opened at start */
 	char fdtyphname[80];        /* data types file name */
 	SI i;                       /* Working integer */
-	char dbuff[80];
 	char *s;
 	int exitCode = 0;
 
@@ -609,27 +605,43 @@ int CDEC main( SI argc, char * argv[] )
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		getcwd( dbuff, 80);
 		incdir = argv[6];
-		if (chdir(incdir))
+		if (xfExist(incdir) != 3)
 		{
-			printf( "\nCannot find include directory '%s'.\n", incdir);
-			Errcount++;
+			if (xfExist(incdir) == 0) {
+				printf("\n'%s': Include file output directory path not found.\n", incdir);
+				Errcount++;
+			}
+			else if (xfExist(incdir) == 1 || xfExist(incdir) == 2) {
+				printf("\n'%s': Include file output directory path exists, but is not a directory.\n", incdir);
+				Errcount++;
+			}
+			else {
+				printf("\n'%s': Unknown error in finding Include file output directory path.\n", incdir);
+				Errcount++;
+			}
 		}
-		chdir(dbuff);
 	}
 
 	/* check cpp file directory argument if specified */
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
-		getcwd( dbuff, 80);
 		cFilesDir = argv[10];
-		if (chdir(cFilesDir))
+		if (xfExist(cFilesDir) != 3)
 		{
-			printf( "\nCannot find include directory '%s'.\n", cFilesDir);
-			Errcount++;
+			if (xfExist(cFilesDir) == 0) {
+				printf("\n'%s': C++ file output directory path not found.\n", cFilesDir);
+				Errcount++;
+			}
+			else if (xfExist(cFilesDir) == 1 || xfExist(cFilesDir) == 2) {
+				printf("\n'%s': C++ file output directory path exists, but is not a directory.\n", cFilesDir);
+				Errcount++;
+			}
+			else {
+				printf("\n'%s': Unknown error in finding C++ file output directory path.\n", cFilesDir);
+				Errcount++;
+			}
 		}
-		chdir(dbuff);
 	}
 
 	/* Option flags */
@@ -758,7 +770,7 @@ LOCAL void dtypes(                      // do data types
 {
 	SI val, choff, choicb, choicn, nchoices, i;
 	USI chan;
-	char *cp;
+	char *cp = nullptr;
 
 	// global Fpm assumed preset to file_dtypes
 	// global file fdtyph assumed open if HFILESOUT
@@ -1144,7 +1156,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 			n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			int iCh = 1;
 			for (j = 0; j < n; j++)
-			{	const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s %u\n",
 					strtcat( dtnames[i],"_",  dtcdecl[i][j], NULL),
 					iCh++ );               // <-- choice handle or index. choicb difference
@@ -1166,7 +1178,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 		if (dttype[i] & DTBCHOICN)
 		{	n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			for (j = 0; j < n; j++)
-			{	const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s 0x%x\n",
 					 strtcat( dtnames[i], "_", dtcdecl[i][j], NULL),
 					 UI(j + NCNAN + 1) );                   // <-- choicn difference.  NCNAN: 7f80, cnglob.h.
@@ -1681,7 +1693,7 @@ static SWTABLE rdirtab[] =      /* table of record level * directives:
 										   Content is record type bit or other value tested in switch in records loop */
 {
 	{ "rat",       RTBRAT     },        // Record Array Table record type
-	{ "substruct", (SI)RTBSUB },        // substructure-only "record" definition
+	{ "substruct", static_cast<SI>(RTBSUB) },        // substructure-only "record" definition
 	{ "hideall",   RTBHIDE    },        // omit entire record from probe names help (CSE -p)
 	{ "baseclass", 32764      },        // *baseclass <name>: C++ base class for this record type
 	{ "excon",     32765      },        // external constructor: declare only (else inline code may be supplied)
@@ -1697,7 +1709,7 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 										value for which switch in fields loop has a case. */
 {
 // field flags, for SFIR.ff
-	{ "hide",   (SI)0x8000 | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
+	{ "hide",   static_cast<SI>(0x8000) | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
 
 // variations: how often program changes field, for SFIR.evf
 	// input rat members set during input checking should be encoded at least *r to prevent input time probes.
@@ -1840,7 +1852,7 @@ MBRNM& MBRNM::mn_Copy(
 #endif
 //======================================================================
 LOCAL RC recs(                  // do records
-	char *argv[],
+	[[maybe_unused]] char *argv[],
 	FILE* file_dtypeh)                  // open file dtypes.hx
 
 // returns RCOK ok; RCBAD for some error exit cases
@@ -2130,20 +2142,20 @@ x		{    printf( "\nRecord trap!");}
 						 "{ public:\n",               rcNam, rcNam, baseClass);
 				// constructor and destructor
 				//   //%s() : record() {}						<-- add default constructor if need found
-				//   %s( basAnc *b, TI i, SI noZ=0)  :  record( b, i, noZ)  {}	<-- not anc<rcNam>: uses template b4 class rcNam defined.
+				//   %s( basAnc *_b, TI i, SI noZ=0)  :  record( _b, i, noZ)  {}	<-- not anc<rcNam>: uses template b4 class rcNam defined.
 				//   virtual ~%s() {}						(compiler supplies call to record::~record)
 				if (excon)                                                              // *excon
-					fprintf( frc, "    %s( basAnc *b, TI i, SI noZ=0);\n",  rcNam );    // just declare external constructor
+					fprintf( frc, "    %s( basAnc *_b, TI i, SI noZ=0);\n",  rcNam );    // just declare external constructor
 				else
-					fprintf( frc, "    %s( basAnc *b, TI i, SI noZ=0)  :  %s( b, i, noZ)  {} \n",  rcNam, baseClass );
+					fprintf( frc, "    %s( basAnc *_b, TI i, SI noZ=0)  :  %s( _b, i, noZ)  {} \n",  rcNam, baseClass );
 				if (exdes)
 					fprintf( frc, "    virtual ~%s(); \n",   rcNam );                   // *exdes: declare external destructor
 				else
 					fprintf( frc, "    virtual ~%s() {} \n",  rcNam );
 
 				// standard type-specific members: Copy() and operator=()
-				fprintf( frc, "    %s& Copy( const %s& d) { Copy( static_cast< const record*>(&d)); return *this; }\n", rcNam, rcNam);
-				fprintf( frc, "    %s& operator=( const %s& d) { Copy( static_cast< const record*>(&d)); return *this; }\n", rcNam, rcNam);
+				fprintf( frc, "    %s& Copy( const %s& _d) { Copy( static_cast< const record*>(&_d)); return *this; }\n", rcNam, rcNam);
+				fprintf( frc, "    %s& operator=( const %s& _d) { Copy( static_cast< const record*>(&_d)); return *this; }\n", rcNam, rcNam);
 
 				// virtual Copy(): override or not
 				fprintf( frc, "    virtual void Copy( const record* pSrc, int options=0)%s;\n",
@@ -2458,7 +2470,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 	}
 
 // copy structure element info to globals used for current record (for field # defines)
-	for (j = 0;  j < bRcdesc->rd_nstrel;  j++)
+	for (int j = 0;  j < bRcdesc->rd_nstrel;  j++)
 	{
 #if !defined( MBRNAMESX)
 		strelFnr[nstrel] = bRcdesc->rd_strelFnr[j];
@@ -2669,7 +2681,7 @@ LOCAL void rec_fds()
 
 		/* get type (table index) for field's typeName */
 
-		fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
+		USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
 		if (fieldtype == (USI)LUFAIL)
 		{
 			rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
@@ -2752,7 +2764,7 @@ LOCAL void wrStr(               // Do *struct field
 	static SI level=0;
 	SI i, j, fdTy;
 	SI field, nflds, fldsize, fdoffbeg, fieldbeg, source;
-	SI array, generic;
+	SI array = 0, generic;
 	char lcsnm[MAXNAMEL];                       // Field name, lower case
 
 	fdoffbeg = Fdoff;
@@ -3196,7 +3208,7 @@ LOCAL void wSrfd3( FILE *f)
 				 rcfdnms[fdi] );							// name of field type, in comment
 #define WARNAT (30-1)								// extra -1 got lots of messages
 		if (strlen(fldNm2[ rcseq][j].c_str()) > WARNAT)		// report overlong ones
-			rcderr( "Warning: member name over %d long: %s", WARNAT, fldNm2[ rcseq][j]);
+			rcderr( "Warning: member name over %d long: %s", WARNAT, fldNm2[ rcseq][j].c_str());
 	}
 	fprintf( f, "    {   0,    0,    0,                   0,                  0 }\t// terminator\n"
 			 " #undef o\n"
@@ -3636,10 +3648,10 @@ int CheckAbort()
 
 #define MTGROWTH 5	// how many slots to add when enlarging a table
 
-/* defined in mtpak.h, used 6-89 in points.c, ceilmu.c, dbxpak.c:
- *  #define MTUCUR(pmtu) (pmtu)->oldval	 * next slot to use in MTU table:
-					   Slot 0 .oldval contains # used
-					   slots; 1st user slot is slot 1. */
+
+ #define MTUCUR(pmtu) (pmtu)->oldval /* next slot to use in MTU table:
+									   Slot 0 .oldval contains # used
+									   slots; 1st user slot is slot 1. */
 
 /*------------------------------- TYPEDEFS --------------------------------*/
 
@@ -3653,27 +3665,9 @@ struct MTHEADER			// memory table header
 SI NEAR Mteract = ABT;	// mtpak error action code.  Changed and restored 6-89 by: pdbpak, dospak.
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC /*no FC: checks stack*/ NEAR mtralloc( char **, SI, SI);
+LOCAL RC NEAR mtralloc( char **, SI, SI);
 
 
-//=========================================================================
-RC FC mtpinit( char **pmtab, SI sltsize, SI nslots)
-
-// (re)initialize a memory table, pointer interface: rob 6-89.
-
-// at entry *pmtab must be NULL or point to old table.
-// see mtinit (next)
-
-// returns RCOK if ok.  Errors abort unless caller changes Mteract.
-{
-	RC rc;
-
-	rc = mtralloc( pmtab, sltsize, nslots);  	// (re)alloc to size. local.
-	// on error, *pmtab not changed: old table or NULL remain.
-	if (rc==RCOK)
-		memset( (char *)*pmtab, 0, sltsize * nslots);	// zero whole table
-	return rc;
-}		// mtpinit
 //=========================================================================
 char * FC mtinit( 			// initialize a memory table
 
@@ -3703,35 +3697,127 @@ char * FC mtinit( 			// initialize a memory table
 		return NULL;			// out of memory and not ABT
 }		       // mtinit
 //=========================================================================
-char * FC mtadd( 		// add an entry to a memory table; return pointer to entry.
+char* FC mtadd( 		// add an entry to a memory table; return pointer to entry.
 
-	char **pmtab,	// pointer to pointer to memory table:  CAUTION: table may move; ptr updated if so.
+	char** pmtab,	// pointer to pointer to memory table:  CAUTION: table may move; ptr updated if so.
 	SI slot,		// slot to put data in.  Table is reallocated if necess, and added memory is 0'd.
-	char *data )	/* NULL or pointer to new data to store in slot.
+	char* data)	/* NULL or pointer to new data to store in slot.
 			   (User may store data using returned pointer,
 			   or *(pmtab + slot * slotsize) if table already big enuf.)*/
 
-/* returns pointer to data location in memory table (a CHANGE 6-89 rob;
-   no existing code uses return value but new crb update code may...).
-   If out of memory and Mteract not ABT, rets NULL w/o changing *pmtab. */
+			   /* returns pointer to data location in memory table (a CHANGE 6-89 rob;
+				  no existing code uses return value but new crb update code may...).
+				  If out of memory and Mteract not ABT, rets NULL w/o changing *pmtab. */
 {
 	SI sltsize;
-	MTHEADER *phead;
-	char *datloc;
+	MTHEADER* phead;
+	char* datloc;
 
-	phead = (MTHEADER *)*pmtab - 1;	// header is before data
+	phead = (MTHEADER*)*pmtab - 1;	// header is before data
 	sltsize = phead->slotsize;		// fetch slot size
 	if (slot >= phead->alslots)		// if necessary, enlarge table.
-		if (mtralloc( pmtab, 		// realloc / if ok. local.
-		sltsize,
-		slot + MTGROWTH) )	// extra space. only use of MTGROWTH.
+		if (mtralloc(pmtab, 		// realloc / if ok. local.
+			sltsize,
+			slot + MTGROWTH))	// extra space. only use of MTGROWTH.
 			return NULL;			// error: ret NULL, *pmtab unchanged
 	datloc = *pmtab			// fetch after mtralloc: can move it!
-	+ slot*sltsize;      	// point data location in table
+		+ slot * sltsize;      	// point data location in table
 	if (data != NULL)    		// if data given for us to store
-		memcpy( datloc, data, sltsize);	// copy data into table slot
+		memcpy(datloc, data, sltsize);	// copy data into table slot
 	return datloc;			// ret data location
 }		// mtadd
+// no FC because generates compile warning with stack_check on
+LOCAL RC NEAR mtralloc( 		// (re)allocate a memory table
+
+	char** pmtab,	// pointer to NULL or memory table pointer.  Updated if successful.  Added memory is 0'd.
+	SI sltsize,  	// # bytes per "slot"
+	SI nslots)  	// slot which table must grow to accept, plus extra
+
+// returns RCOK if succeeded; errors abort unless caller changes Mteract
+{
+	MTHEADER* p;
+	RC rc;
+
+	p = (MTHEADER*)*pmtab;	// fetch caller's table pointer
+	if (p)			// unless NULL (no table alloc)
+		p--;			// back over header to start dm block
+	rc = dmral(DMPP(p),				// (re)alloc block, dmpak.c
+	nslots * sltsize + sizeof(MTHEADER),	// new size in bytes
+	Mteract 				// ABT or as changed externally
+	| DMZERO);				// 0 new memory 9-88
+	if (rc == RCOK)
+	{
+		p->slotsize = sltsize;   	// (for new alloc case)
+		p->alslots = nslots;		// new size in slots to header
+		*pmtab = (char*)(p + 1);	// return user table ptr: after hdr
+	}
+	return rc;
+}			// mtralloc
+//=============================================================================
+
+#if 0
+//=========================================================================
+USI FC mtulook( 	// Look up USI value associated with old in a MTU; see also mtulook2
+
+	MTU* pmtu,		// pointer to mtu
+	USI old)		// old USI
+
+/* This is the original mtulook spec.  mtulook2 added 9-18-88 by Chip becuase
+   mtulook does not allow a 0 value for "nu".  See comments at beg. file */
+
+   // Returns new USI associated with old, 0 if not found
+{
+	USI nu;
+
+	if (mtulook2(pmtu, old, &nu))
+		return nu;
+	else
+		return 0;
+}		// mtulook
+//==========================================================================
+SI FC mtulook2( 		// Looks up USI value associated with another in an MTU
+
+	MTU* pmtu,		// Pointer to MTU.  If NULL, FALSE is returned
+	USI old,		// USI sought
+	USI* pnew)		// Pointer for returning associatied value
+
+// see also mtulook() above
+
+/* Returns:  TRUE if match found, *pnew contains matched value
+		 FALSE if no match (*pnew undefined) */
+{
+	USI i, n;
+
+	if (pmtu != NULL)
+	{
+		n = MTUCUR(pmtu);
+		for (i = 0; ++i < n; )		// Start search at slot 1 since slot 0 holds count used by MTUCUR()
+			if ((pmtu + i)->oldval == old)
+			{
+				*pnew = (pmtu + i)->newval;
+				return TRUE;
+			}
+	}
+	return FALSE;
+}			// mtulook2
+//=========================================================================
+RC FC mtpinit(char** pmtab, SI sltsize, SI nslots)
+
+// (re)initialize a memory table, pointer interface: rob 6-89.
+
+// at entry *pmtab must be NULL or point to old table.
+// see mtinit (next)
+
+// returns RCOK if ok.  Errors abort unless caller changes Mteract.
+{
+	RC rc;
+
+	rc = mtralloc(pmtab, sltsize, nslots);  	// (re)alloc to size. local.
+	// on error, *pmtab not changed: old table or NULL remain.
+	if (rc == RCOK)
+		memset((char*)*pmtab, 0, sltsize * nslots);	// zero whole table
+	return rc;
+}		// mtpinit
 //=========================================================================
 void FC mtfree(			// frees a memory table from dm and sets caller's pointer NULL
 
@@ -3786,50 +3872,6 @@ MTU * FC mtuadd(		// adds an element to an mtu (memory table unsigned
 	return pmtu;
 }			    // mtuadd
 //=========================================================================
-USI FC mtulook( 	// Look up USI value associated with old in a MTU; see also mtulook2
-
-	MTU *pmtu,		// pointer to mtu
-	USI old )		// old USI
-
-/* This is the original mtulook spec.  mtulook2 added 9-18-88 by Chip becuase
-   mtulook does not allow a 0 value for "nu".  See comments at beg. file */
-
-// Returns new USI associated with old, 0 if not found
-{
-	USI nu;
-
-	if (mtulook2( pmtu, old, &nu))
-		return nu;
-	else
-		return 0;
-}		// mtulook
-//=========================================================================
-SI FC mtulook2( 		// Looks up USI value associated with another in an MTU
-
-	MTU *pmtu,		// Pointer to MTU.  If NULL, FALSE is returned
-	USI old,		// USI sought
-	USI *pnew )		// Pointer for returning associatied value
-
-// see also mtulook() above
-
-/* Returns:  TRUE if match found, *pnew contains matched value
-		 FALSE if no match (*pnew undefined) */
-{
-	register USI i, n;
-
-	if (pmtu != NULL)
-	{
-		n = MTUCUR(pmtu);
-		for (i = 0; ++i < n; )		// Start search at slot 1 since slot 0 holds count used by MTUCUR()
-			if ((pmtu+i)->oldval == old)
-			{
-				*pnew = (pmtu+i)->newval;
-				return TRUE;
-			}
-	}
-	return FALSE;
-}			// mtulook2
-//=========================================================================
 USI FC mturep( 			// Looks up USI value associated with old in a MTU and replaces prev new with current new
 
 	MTU *pmtu,		// pointer to mtu
@@ -3838,7 +3880,7 @@ USI FC mturep( 			// Looks up USI value associated with old in a MTU and replace
 
 // returns previous new USI associated with old, 0 if not found and not replaced
 {
-	register USI i;
+	USI i;
 	USI prevnew;
 
 	for (i = 1; i < MTUCUR(pmtu); i++)
@@ -3852,35 +3894,8 @@ USI FC mturep( 			// Looks up USI value associated with old in a MTU and replace
 	}
 	return 0;
 }			    // mturep
+#endif
 //=========================================================================
-// no FC because generates compile warning with stack_check on
-LOCAL RC NEAR mtralloc( 		// (re)allocate a memory table
-
-	char **pmtab,	// pointer to NULL or memory table pointer.  Updated if successful.  Added memory is 0'd.
-	SI sltsize,  	// # bytes per "slot"
-	SI nslots )  	// slot which table must grow to accept, plus extra
-
-// returns RCOK if succeeded; errors abort unless caller changes Mteract
-{
-	MTHEADER *p;
-	RC rc;
-
-	p = (MTHEADER*)*pmtab;	// fetch caller's table pointer
-	if (p)			// unless NULL (no table alloc)
-		p--;			// back over header to start dm block
-	rc = dmral( DMPP( p),				// (re)alloc block, dmpak.c
-	nslots*sltsize + sizeof(MTHEADER),	// new size in bytes
-	Mteract 				// ABT or as changed externally
-	| DMZERO);				// 0 new memory 9-88
-	if (rc==RCOK)
-	{
-		p->slotsize = sltsize;   	// (for new alloc case)
-		p->alslots = nslots;		// new size in slots to header
-		*pmtab = (char *)(p + 1);	// return user table ptr: after hdr
-	}
-	return rc;
-}			// mtralloc
-//=============================================================================
 
 /////////////////////////////////////////////////////////////////////////////////
 // lupak: semi-obsolete lookup table manipulation

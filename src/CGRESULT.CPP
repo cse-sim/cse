@@ -1281,7 +1281,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			TI afMtri = dvrip->dv_afMtri > 0 ? dvrip->dv_afMtri : AfMtrR.n;   		// subscript
 			AFMTR_IVL* pIvl = AfMtrR[afMtri].amt_GetAFMTR_IVL( rxt.fq);
 			rxt.colDef = afMtrColdef;					 			// columns definition table for vpRxRow
-			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
+			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do AFMTR rpt row.  Uses rxt.flags, colDef.
 		}
 
 		else if (dvrip->rpTy==C_RPTYCH_AH)   	// if Air handler report
@@ -1566,7 +1566,7 @@ LOCAL void CDEC NEAR vpRxRow(	// virtual print report or export row given COLDEF
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.
 {
-	va_list ap;   COLDEF *colDef;   float ftemp;   USI mfw, fmt;   char temp[1000];   void *p;
+	va_list ap;   COLDEF *colDef;   float ftemp = 0;   USI mfw, fmt;   char temp[1000];   void *p = nullptr;
 
 	SI isExport = dvrip->isExport;
 

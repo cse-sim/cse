@@ -9,37 +9,38 @@ set(test_comment "! ")
 endmacro()
 
 macro(regress_test case)
-  add_test(NAME ${case}.Regression
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${case}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${case}.rep" "!"
+  get_filename_component(test_name ${case} NAME_WE)
+  add_test(NAME ${test_name}.Regression
+    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.rep" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
-  set_tests_properties(${case}.Regression PROPERTIES DEPENDS ${case}.Run)
+  set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
 endmacro()
 
 set(files
-  wthr01
-  600
-  930
-  960
-  2Zone
-  3ZoneAirNet
-  3ZoneAirNetCSW
-  Fresno
-  Autosize
-  masstest1
+  wthr01.CSE
+  600.cse
+  930.cse
+  960.cse
+  2Zone.cse
+  3ZoneAirNet.cse
+  3ZoneAirNetCSW.cse
+  Fresno.cse
+  Autosize.cse
+  masstest1.cse
   # 12P21M
   # 1ZCZMU
-  Z2SG
-  zonetest4W
-  zt5d
-  qw5ds
-  izfantest
+  Z2SG.cse
+  zonetest4W.cse
+  zt5d.cse
+  qw5ds.cse
+  izfantest.cse
   # 2700x
-  2zun
-  1zattic
-  1ZKiva
-  2zattic
-  actest1bL
+  2zun.cse
+  1zattic.cse
+  1ZKiva.cse
+  2zattic.cse
+  actest1bL.cse
   ashptest2
   ashpPkgRoom
   ashp_dfng
@@ -48,6 +49,7 @@ set(files
   oavtest2
   bgtest
   ashwat1
+  loadAndAFMeters
   dhw02
   dhwX
   dhwDU

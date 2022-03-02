@@ -263,7 +263,7 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 // NAFCATS s/b same as AFCAT choices + 1 (for total) - 1 (for C_AFCAT_NONE)
 static_assert(AFMTR_IVL::NAFCATS == C_AFCAT_COUNT+1-1, "Inconsistent AFMTR constants");
 //-----------------------------------------------------------------------------
-void AFMTR_IVL::amt_Copy(			// copy 
+void AFMTR_IVL::amti_Copy(			// copy 
 	const AFMTR_IVL* sIvl,	// source
 	float mult /*=1.f*/)	// optional multiplier
 {
@@ -275,7 +275,7 @@ void AFMTR_IVL::amt_Copy(			// copy
 	}
 }	// AFMTR_IVL::amt_Copy
 //-----------------------------------------------------------------------------
-void AFMTR_IVL::amt_Accum(			// accumulate
+void AFMTR_IVL::amti_Accum(			// accumulate
 	const AFMTR_IVL* sIvl,		// source
 	int firstFlg,				// true iff first accum into this (beg of ivl)
 	int lastFlg,				// true iff last accum into this (end of ivl)
@@ -286,7 +286,7 @@ void AFMTR_IVL::amt_Accum(			// accumulate
 {
 	int count = (options & 1) ? sIvl->amt_count : 1;
 	if (firstFlg)
-	{	amt_Copy(sIvl, float( count));
+	{	amti_Copy(sIvl, float( count));
 		amt_count = count;
 	}
 	else
@@ -307,8 +307,8 @@ RC AFMTR::amt_CkF()
 //-----------------------------------------------------------------------------
 RC AFMTR::amt_BegSubhr()		// init at beg of subhr
 {
-	S[ 0].amt_Clear();
-	S[ 1].amt_Clear();
+	S[ 0].amti_Clear();
+	S[ 1].amti_Clear();
 	return RCOK;
 }		// AFMTR::amt_BegSubhr
 //-----------------------------------------------------------------------------
@@ -317,7 +317,7 @@ void AFMTR::amt_AccumCat(		// accumulate air flow value for current subhour
 	float amf)		// air mass flow, lbm/sec
 {
 	int iNeg = amf < 0.f;
-	S[ iNeg].amt_AccumCat(afCat, AMFtoAVF2(amf));
+	S[ iNeg].amti_AccumCat(afCat, AMFtoAVF2(amf));
 }		// AFMTR::amt_AccumCat
 //-----------------------------------------------------------------------------
 AFMTR_IVL* AFMTR::amt_GetAFMTR_IVL(
@@ -329,7 +329,7 @@ AFMTR_IVL* AFMTR::amt_GetAFMTR_IVL(
 //-----------------------------------------------------------------------------
 void AFMTR::amt_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year
-					// Accumulates from subhour/day/month.  Not Top.ivl!
+					// Accumulates from subhour/hour/day/month.  Not Top.ivl!
 	int firstFlg,	// iff TRUE, destination will be initialized before values are accumulated into it
 	int lastFlg)	// iff TRUE, destination averages will be computed as needed
 {
@@ -342,14 +342,8 @@ void AFMTR::amt_Accum(
 								//   handles diffs due to month length
 		:                  0;	// default: track average
 	for (int iPN=0; iPN<2; iPN++)
-		dIvl0[ iPN].amt_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
+		dIvl0[ iPN].amti_Accum(sIvl0+iPN, firstFlg, lastFlg, options);
 
-	if (lastFlg)
-	{	AFMTR* pAMSum = AfMtrR.p + AfMtrR.n;
-		AFMTR_IVL* dIvlSum0 = pAMSum->amt_GetAFMTR_IVL( ivl);
-		for (int iPN = 0; iPN < 2; iPN++)
-			dIvlSum0[ iPN].amt_Accum(dIvl0+iPN, ss == 1, 0);
-	}
 }		// AFMTR::amt_Accum
 //=============================================================================
 
@@ -452,10 +446,10 @@ int AIRSTATE::as_AddQSenLat(		// add sensible and latent heat to an air stream
 			ret = 1;
 		}
 	}
-	float qTot = qSen + qLat;
 #if defined( _DEBUG)
 	float hOut = as_Enthalpy();
-	if (frDiff( absAmf*(hOut-hIn), double( qTot)) > .0001)
+	double qTot = qSen + qLat;
+	if (frDiff( absAmf*(hOut-hIn), qTot) > .0001)
 	{	if (!Top.isWarmup)
 			warn( "as_AddQSenLat: enthalpy mismatch, ret=%d", ret);
 	}
@@ -792,8 +786,8 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	float rhoX = zpx->zn_rho0ls;
 	ad.ad_mdotX = avfGross * iz_vfExhRat * rhoX / 60.;
 
-#if defined( DEBUGDUMP)
-	if (0 && DbDo( dbdAIRNET))
+#if 0 && defined( DEBUGDUMP)
+	if (DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
@@ -1246,7 +1240,7 @@ void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 }		// ZNR::zn_AddIZXFERs
 //------------------------------------------------------------------------------
 TI ZNR::zn_FindOrAddIZXFER(		// locate or added IZXFER coupled to this zone
-	IZNVTYCH ty,		// C_IZNVTYCH_ANDUCTLKIN etc
+	IZNVTYCH _ty,		// C_IZNVTYCH_ANDUCTLKIN etc
 	const char* nmSfx,	// IZXFER name = <znName>-<nmSfx>
 						//   e.g. "Attic-DLkI"
 	const AIRFLOW* pAF /*=NULL*/)
@@ -1254,15 +1248,15 @@ TI ZNR::zn_FindOrAddIZXFER(		// locate or added IZXFER coupled to this zone
 {
 	IZXRAT* ize;
 	RLUP( IzxR, ize)
-	{	if (ize->iz_nvcntrl == ty && ize->iz_zi1 == ss
+	{	if (ize->iz_nvcntrl == _ty && ize->iz_zi1 == ss
 	      && (pAF == NULL || pAF == ize->iz_pAF))
 			return ize->ss;
 	}
-	return zn_AddIZXFER( ty, nmSfx, pAF);
+	return zn_AddIZXFER( _ty, nmSfx, pAF);
 }		// ZNR::zn_FindOrAddIZXFER
 //------------------------------------------------------------------------------
 TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
-	IZNVTYCH ty,			// C_IZNVTYCH_ANDUCTLKIN etc
+	IZNVTYCH _ty,			// C_IZNVTYCH_ANDUCTLKIN etc
 	const char* nmSfx,		// IZXFER name = <znName>-<nmSfx>
 							//   e.g. "Attic-DLkI"
 	const AIRFLOW* pAF /*=NULL*/)
@@ -1276,9 +1270,9 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	int catOption = 1;		// attempt to truncate name size exceeded
 	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx, catOption);
 	ize->iz_zi1 = ss;		// idx of this zone
-	ize->iz_nvcntrl = ty;
+	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;
-	if (ty == C_IZNVTYCH_ANOAVRLF)
+	if (_ty == C_IZNVTYCH_ANOAVRLF)
 	{	RSYS* rs = zn_GetRSYS();
 		ize->iz_zi2 = rs->rs_OAVReliefZi;		// relief zone
 		ize->iz_hz = i.zn_floorZ + i.zn_ceilingHt;	// assume in ceiling
@@ -1779,14 +1773,20 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		}
 #endif
 		// solve for pressure corrections
-		int gjRet = gaussjb( an_jac, an_nz, rV, 1);
-		if (0 && gjRet)
+
+#if defined( _DEBUG)
+		int gjRet =
+#endif
+			gaussjb(an_jac, an_nz, rV, 1);
+#if defined( _DEBUG)
+		if (gjRet)
 			err( PWRN,				// display program error msg, wait for key
 				"AIRNET::an_Calc: matrix is %s",
 					gjRet == 1 ? "singular" : "too large");
+#endif
 
-#if defined( DEBUGDUMP)
-		if (0 && bDbPrint)
+#if 0 && defined( DEBUGDUMP)
+		if (bDbPrint)
 		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
@@ -1887,7 +1887,7 @@ DUCTSEG::DUCTSEG( basAnc* b, TI i, SI noZ/*=0*/)
 }	// DUCTSEG::~DUCTSEG
 //-----------------------------------------------------------------------------
 void DUCTSEG::ds_Init(			// init DUCTSEG
-	int options/*=0*/)
+	[[maybe_unused]] int options/*=0*/)
 {
 	ds_sbcO.sb_Init( this);
 #if 0

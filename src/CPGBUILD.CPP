@@ -123,7 +123,7 @@ void CDEC pgbuildr(
 	USI meth;
 	SI keepgoing;
 	RC rc;
-	char *rp;
+	char *rp = nullptr;
 	char *tp;
 	/* Size table -- !! MUST match PBxxxx method type defns in cpgbuild.c.  Used to increment pointer through method driver tables.
 	   Currently not used by methods involving PBM_IDX (such as PB_TABCOL and PB_FILLREC), but they are in table anyway */
@@ -222,7 +222,8 @@ void CDEC pgbuildr(
 
 				while ( ((PB_TEXT *)tp)->pgfmt != PBMETHEND )
 				{
-					SI units, wid, cvfmt;
+					SI wid = 0;
+					SI units, cvfmt;
 					SI off;
 					USI dt;
 					char *p;

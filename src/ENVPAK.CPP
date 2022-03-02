@@ -7,9 +7,13 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
+#if (_WIN32)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 #include <signal.h> 	// signal SIGINT
-#include <direct.h>	// getcwd
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
 #include <conio.h>
 #include <sys\timeb.h>	// timeb structure
@@ -19,7 +23,6 @@
 #include <xiopak.h>	// xchdir
 
 #include <envpak.h>	// declares functions in this file
-
 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)
@@ -91,13 +94,32 @@ t }
 //=============================================================================
 WStr enExePath()		// full path to current executable
 {
-	char exePath[_MAX_PATH + 1];
 	WStr t;
-	if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
-	{
+	char exePath[FILENAME_MAX + 1];
+#ifdef __APPLE__
+		uint32_t pathSize = sizeof(exePath);
+		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-	}
+#elif __linux__
+		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
+		if (len == -1) {
+			std::cout << "ERROR: Unable to locate executable." << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else {
+			exePath[len] = '\0';
+			t = exePath;
+			WStrLower(t);
+		}
+#elif _WIN32
+		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
+		{
+			t = exePath;
+			WStrLower(t);
+		}
+#endif
+	WStrLower(t);
 	return t;
 }		// enExePath
 //=============================================================================
@@ -111,6 +133,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
+	#ifdef _WIN32
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
@@ -155,7 +178,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 		}
 		CloseHandle( hFile);
 	}
-
+	#endif
 	WStr exeInfo;
 	if (timeDateStamp == 0)
 		exeInfo = "? (enExeInfo fail)";
@@ -265,7 +288,7 @@ void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and intege
 
 // saved by hello() for byebye()
 LOCAL void (* CDEC NEAR byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[_MAX_PATH] = { 0 };						// current directory to restore at exit
+LOCAL char cwdSave[FILENAME_MAX] = {0};						// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -322,7 +345,7 @@ signal( SIGFPE, 			// floating point errors, and integer errors (changes 0:0) un
 	//    to ease reporting calling location (in which case aborts, no return). */
 
 //--- save current drive/dir to restore at exit
-	getcwd( cwdSave, _MAX_PATH);	// save current dir (including drive) in static for byebye to use at exit
+	strcpy(cwdSave,xgetdir());	// save current dir (including drive) in static for byebye to use at exit
 }		// hello
 //=====================================================================
 void FC byebye(		// cleanup and normal or error exit.
@@ -337,7 +360,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //--- restore current directory
 	xchdir( cwdSave, WRN );		// restore drive and dir, xiopak.cpp.
 								//   Ok NOP if "". cwdSave set in hello, just above.
-	cwdSave[0] = '\0';			// clear saved dir eg for when subr pkg recalled.
+	cwdSave[0] = '\0';				// clear saved dir eg for when subr pkg recalled.
 
 	throw exitCode;
 
@@ -389,8 +412,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 
 //==========================================================================
 void CDEC fpeErr(		// Handle floating point error exceptions
-
-	INT sigfpe,		// SIGFPE is passed (currently not used)
+	[[maybe_unused]] INT sigfpe,		// SIGFPE is passed (currently not used)
 	INT code )		// code indicating error
 
 // Calls BSG error routines to report error with PABT.

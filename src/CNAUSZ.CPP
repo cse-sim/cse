@@ -103,7 +103,7 @@ const char* TOPRAT::tp_AuszDoing() const	// current autosizing activity
 		if (iAWS == TOPRAT_COOLDSMO)
 			p = tddMonName( tp_coolDsMo[ iDs]);
 		else
-		{	int auszDoy;
+		{	int auszDoy = 0;
 			if (iAWS == TOPRAT_COOLDSCOND)
 				auszDoy = DcR[ tp_coolDsCond[ iDs]].dc_GetDOY();
 			else if (iAWS == TOPRAT_COOLDSDAY)
@@ -712,7 +712,7 @@ LOCAL RC FC p2EndTest()		// check each object for need to redo pass 2 (and chang
 //===========================================================================================================
 //  cse MAIN SIMULATION support function(s) that use AUSZ stuff
 //===========================================================================================================
-RC FC asFazInit(int isAusz)			// main sim run or autoSize phase init: portion in this file
+RC FC asFazInit([[maybe_unused]] int isAusz)			// main sim run or autoSize phase init: portion in this file
 
 {
 	// caller: cnguts:cgFazInit() 6-95

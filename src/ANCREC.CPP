@@ -107,6 +107,20 @@ int record::DType( int fn) const
 	return dt;
 }		// record::DType
 //-----------------------------------------------------------------------------
+float record::FldValFloat(int fn) const
+{
+	int dt = DType(fn);
+	const void* pV = field(fn);
+	float v = 0.f;
+	if (dt == DTFLOAT)
+		v = *(FLOAT*)pV;
+	else if (dt == DTDBL)
+		v = float(*(DBL*)pV);
+	else
+		err(PWRN, "record::FldValFloat -- unsupported dt=%d", dt);
+	return v;
+}		// record::FldValFloat
+//-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
 	// Note: prior (1994) version disregarded unexpected excess chars
@@ -116,7 +130,7 @@ int record::IsNameMatch( const char* _name) const
 /*virtual*/ record& record::CopyFrom(
 	const record* src,
 	int copyName/*=1*/,
-	int dupPtrs/*=0*/)
+	[[maybe_unused]] int dupPtrs/*=0*/)
 
 // copy user and ul data from another record or init data to already-constructed record
 
@@ -407,16 +421,10 @@ RC record::limitCheck(		// range check, issue warning or error msg
 {
 	RC rc = RCOK;
 	if (IsVal(fn))
-	{
-		int dt = DType(fn);
-		void* pV = field(fn);
-		double v = 0.;
-		if (dt == DTFLOAT)
-			v = *(FLOAT*)pV;
-		else if (dt == DTDBL)
-			v = *(DBL*)pV;
-		else
-			err(PWRN, "record::limitCheck -- unsupported dt=%d", dt);
+	{	// value is user-provided and known
+		//   not CULT default
+		//   not unevaluated expression
+		double v = FldValFloat(fn);
 		if (v < vMin || v > vMax)
 			rc = oer("%s (%g) must be in range %g - %g",
 				mbrIdTx(fn), v, vMin, vMax);
@@ -458,7 +466,29 @@ RC record::limitCheckFix(	// range check, msg, set to min/max
 		}
 	}
 	return rc;
-}		// record::limitCheck
+}		// record::limitCheckFix
+//-----------------------------------------------------------------------------
+RC record::limitCheckRatio(		// check the ratio of two fields
+	int fn1,	// field 1
+	int fn2,	// field 2
+	double vMin,	// min allowed val for f1/f2
+	double vMax)	// max allowed val for f1/f2
+// NOTE: No field status checks
+//       Caller must ensure values set (not unevaluated expressions)
+// returns RCOK iff ratio is within (vMin, vMax)
+{
+	RC rc = RCOK;
+
+	double v1 = FldValFloat(fn1);
+	double v2 = FldValFloat(fn2);
+
+	double vRat = v2 != 0. ? v1 / v2 : 0.;
+
+	if (v2 == 0. || vRat < vMin || vRat > vMax)
+		rc = oer("The ratio %s (%g) / %s (%g) is %g; it must be in range %g - %g",
+			mbrIdTx(fn1), v1, mbrIdTx(fn2), v2, vRat, vMin, vMax);
+	return rc;
+}	// record::limitCheckRatio
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -560,7 +590,7 @@ void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on cha
 //============================================================================================================================
 void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
 
-	BP b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
+	BP _b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
 	...)			// 0-terminated list of field numbers
 
 /* for each given field which contains an expression handle, make expression manager runtime table entry
@@ -568,12 +598,12 @@ void CDEC record::chafN( 		// say increment specified flag during run on change 
 {
 	va_list ap;
 	va_start(ap, off);
-	chafNV(b, i, off, ap);
+	chafNV(_b, i, off, ap);
 }								// record::chafN
 //===========================================================================
 void record::chafNV( 		// say increment specified flag during run on change in var list of fields in curr record
 
-	BP b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
+	BP _b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
 	va_list ap)		// pointer to 0-terminated list of field numbers
 
 // var arg list level for flexibility
@@ -585,8 +615,8 @@ void record::chafNV( 		// say increment specified flag during run on change in v
 			break;
 		if (fn > 1024)
 			oer((char*)MH_S0495,    	// "cncult2.cpp:%s Internal error: field # %d: probable unterminated arg list"
-				 "chavNV", (INT)fn);
-		addChafIf((NANDAT*)field(fn), b->ancN, i, off);  	/* test pointed to field contents, add increment-on-change
+				 "chavNV", fn);
+		addChafIf((NANDAT*)field(fn), _b->ancN, i, off);  	/* test pointed to field contents, add increment-on-change
 									   table entry if is expr handle.  exman.cpp. */
 	}
 }					// record::chafNV
@@ -737,7 +767,7 @@ void basAnc::desRecs( SI _mn, SI _n)
 }				// basAnc::desRecs
 //---------------------------------------------------------------------------------------------------------------------------
 void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
-	CLEANCASE cs)			// what is being cleaned
+		[[maybe_unused]] CLEANCASE cs)		// what is being cleaned
 {
 	if (ancs)					// skip if heap array not allocated
 		for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
@@ -1021,7 +1051,7 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 {
 	if (!this)
 		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
-	record *r, *r1;
+	record *r, *r1 = nullptr;
 	int nHits = 0;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
 	{	if (r->IsNameMatch( _name))	// if matches
@@ -1170,7 +1200,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 // search saved names, return existing index if found
 	int i;
 	for (i = 1;  i < FNCACHESZ && fnCache[i];  i++)
-		if ( strlen(fnCache[i])== len
+		if ( int( strlen(fnCache[i])) == len
 		 &&  memicmp( name, (void *)fnCache[i], len)==0 )
 			break;  						// found. i is index to return.
 

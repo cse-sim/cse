@@ -17,9 +17,9 @@ extern SI     FC looksw(const char *, const struct SWTABLE *);		// string-word t
 struct WWTABLE		// terminate w/ last array entry of 32767, default/not found indicator
 {
    SI key, value;
-   SI lookup( SI key) const
+   SI lookup( SI _key) const
    {
-	   return lookww(key, this);
+	   return lookww(_key, this);
    }
 
 };
