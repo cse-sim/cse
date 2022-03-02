@@ -94,7 +94,7 @@ Incident angle modifier at 60 degree, from SRCC rating.
 
 **scOprMassFlow=*float***
 
-Collector loop operating mass flow rate
+Collector loop operating mass flow rate.
 
 <%= member_table(
   units: "lb/h-ft^2^",

@@ -83,7 +83,7 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 
 **whResType=*choice***
 
-Resistance heater type, valid only if wh_heatSrc=_ELRESX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.
+Resistance heater type, valid only if whHeatSrc is equal to RESISTANCEX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.
 
 <%= member_table(
   units: "",
@@ -118,7 +118,7 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
 
 **whVolRunning=*float***
 
-Running storage volume = vol above aquastat. Determines require total volume based on aquastat position. Ecotope's HPWH tank and heater.
+Running storage volume is the volume above aquastat. Requires the total volume based on aquastat position. Ecotope's HPWH tank and heater.
 
 <%= member_table(
   units: "gal",
