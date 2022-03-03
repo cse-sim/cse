@@ -1160,12 +1160,13 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	*/
 {
 	xlsterr(xf);				// clear any prior xiopak error (else addl calls will nop)
-	if ( (freopen(NULL, "w", xf->han)) != nullptr			// Reopen with "w" to discard all the data in the file
-		&& ((freopen(NULL, xf->access, xf->han)) != nullptr))	// Reopen with the initial mode
+	if ( (freopen(xf->xfname, "w", xf->han)) != nullptr			// Reopen with "w" to discard all the data in the file
+		&& ((freopen(xf->xfname, xf->access, xf->han)) != nullptr))	// Reopen with the initial mode
 	{
 		return SECOK;   		/*    good */
 	}
-	return SECOTHER;	/*    bad: report error */
+	xf->xflsterr = xioerr(xf);		// report error
+	return xf->xflsterr;	/*    bad: report error */
 }
 //=============================================================================
 
