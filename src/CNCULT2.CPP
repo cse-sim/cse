@@ -1438,10 +1438,15 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	MTR* mtr;
 	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
-// DHW meters
+	// Load meters
+	CSE_E(LdMtrR.RunDup(LdMtriB, NULL, 1));
+	LOADMTR* pLM;
+	LdMtrR.add(&pLM, ABT, LdMtriB.n + 1, "sum_of_LOADMETERs");
+
+	// DHW meters
 	CSE_E(WMtrR.RunDup(WMtriB, NULL, 1));
 
-// Air flow meters
+	// Air flow meters
 	CSE_E( AfMtrR.RunDup(AfMtriB, NULL, 1));
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");

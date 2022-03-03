@@ -156,6 +156,15 @@ Name of METER object, if any, by which system’s fuel energy use is recorded (u
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 
+**rsLoadMtr =*ldmtrName***
+
+Name of a LOADMETER object, if any, to which the system’s heating and cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
+
+  **Units**   **Legal Range**       **Default**      **Required**   **Variability**
+  ----------- --------------------- ---------------- -------------- -----------------
+              *name of a LOADMETER*   *not recorded*   No             constant
+
+
 **rsAFUE=*float***
 
 Heating Annual Fuel Utilization Efficiency (AFUE).
