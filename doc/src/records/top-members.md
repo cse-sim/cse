@@ -275,11 +275,18 @@ NONE            Disable advanced shading calculations
 
 **slrInterpMeth=*choice***
 
-Solar interpolation method. The options are C_SLRINTERPMETH follow by the legal range option.
+Solar interpolation method.
+
+<%= csv_table(<<END, :row_header => true)
+Choice
+C_SLRINTERPMETH_CSE
+C_SLRINTERPMETH_TRNSYS
+END
+%>
 
 <%= member_table(
   units: "",
-  legal_range: "_CSE _TRNSYS",
+  legal_range: "See table above",
   default: "C_SLRINTERPMETH_CSE",
   required: "No",
   variability: "constant") %>

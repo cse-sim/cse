@@ -549,21 +549,37 @@ Fraction of a htg minimum load at 05 ^o^F.
 
 Type of auxiliary heat. The functions have C_AUXHEATTY as a prefix.
 
+<%= csv_table(<<END, :row_header => true)
+Choice
+C_AUXHEATTY_NONE
+C_AUXHEATTY_RES
+C_AUXHEATTY_FURN
+END
+%>
+
 <%= member_table(
   units: "",
-  legal_range: "_NONE,\n_RES,\nFURN",
-  default: "_RES",
+  legal_range: "See table above",
+  default: "C_AUXHEATTY_RES",
   required: "No",
   variability: "constant") %>
 
 **rsCtrlAuxH=*choice***
 
-Type of auxiliary heating control. C_AUXHEATCTRL_LO, Compressor locked out if any auxiliary heating control; C_AUXHEATCTRL_CYCLE, Compressor runs continuously, auxiliary cycles; C_AUXHEATCTRL_ALT, Alternates between compressor auxiliary.
+Type of auxiliary heating control.
+
+<%= csv_table(<<END, :row_header => true)
+Choice, Description
+C_AUXHEATCTRL_LO, Compressor locked out if any auxiliary heating control
+C_AUXHEATCTRL_CYCLE, Compressor runs continuously auxiliary cycles
+C_AUXHEATCTRL_ALT, Alternates between compressor auxiliary
+END
+%>
 
 <%= member_table(
   units: "",
-  legal_range: "_LO,\n_CYCLE,\n_ALT",
-  default: "_CYCLE",
+  legal_range: "See table above",
+  default: "C_AUXHEATCTRL_CYCLE",
   required: "No",
   variability: "Start of a run") %>
 

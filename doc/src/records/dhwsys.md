@@ -468,20 +468,43 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 
 Response control method for domestic hot water demand.
 
+<%= csv_table(<<END, :row_header => true)
+Choice, Description
+C_DHWDRMETH_NONE, None
+C_DHWDRMETH_SCHED, Demand response
+END
+%>
+
 <%= member_table(
   units: "",
-  legal_range: "C_DHWDRMETH_NONE C_DHWDRMETH_SCHED",
+  legal_range: "See table above",
   default: "C_DHWDRMETH_NONE",
   required: "No",
   variability: "At the start of a run") %>
 
 **wsDRSignal=*choice***
 
-Response control signal for domestic hot water demand. The options start with C_DHWDRSIG follow by one of the legal range options.
+Response control signal for domestic hot water demand.
+
+<%= csv_table(<<END, :row_header => true)
+Choice
+C_DHWDRSIG_ON
+C_DHWDRSIG_TOO
+C_DHWDRSIG_TOOLOR
+C_DHWDRSIG_TOOLOC
+C_DHWDRSIG_TOT
+C_DHWDRSIG_TOTLOR
+C_DHWDRSIG_TOTLOC
+C_DHWDRSIG_LOC
+C_DHWDRSIG_LOR
+C_DHWDRSIG_LOCLOR
+C_DHWDRSIG_COUNT
+END
+%>
 
 <%= member_table(
   units: "",
-  legal_range: "_ON, _TOO, _TOOLOR, _TOOLOC, _TOT, _TOTLOR, _TOTLOC, _LOC, _LOR, _LOCLOR, _COUNT",
+  legal_range: "See Table above",
   default: "C_DHWDRSIG_ON",
   required: "No",
   variability: "constant") %>
