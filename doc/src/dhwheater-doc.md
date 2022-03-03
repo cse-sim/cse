@@ -263,7 +263,7 @@ Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=
 
 Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
 
-<%= csv_table(<<END, :row_header=> true)
+<%= csv_table(<<END, :row_header => true)
 "Choice","Specified type"
 "Generic","General generic (parameterized by wh_EF and wh_vol)"
 "AOSmithPHPT60","60 gallon Voltex"

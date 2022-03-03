@@ -2430,9 +2430,12 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		rs_auszH.final( this, rsi, heatOver);
 	}
 
-	// insurance: rs_capH used during ASHP autosize but s/b 0 for simulation
-	if (rs_IsASHP())
-		rsi->rs_capH = rs_capH = 0.f;
+#if 0
+x NO -- leave to allow reporting of load at design temp
+x	// insurance: rs_capH used during ASHP autosize but s/b 0 for simulation
+x	if (rs_IsASHP())
+x		rsi->rs_capH = rs_capH = 0.f;
+#endif
 
 	rs_DefaultCapNomsIf();		// capture possible cap change(s)
 								//   insurance: no rs_auszX.final() changes expected
@@ -2750,6 +2753,7 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pMtrFuel = MtrB.GetAtSafe( rs_fuelMtri);			// fuel mtr or NULL
 	rs_pMtrHeat = rs_IsElecHeat() ? rs_pMtrElec : rs_pMtrFuel;	// heat mtr or NULL
 	rs_pMtrAux = rs_IsFuelAuxH() ? rs_pMtrFuel : rs_pMtrElec;
+	rs_pLoadMtr = LdMtrR.GetAtSafe(rs_loadMtri);
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -3086,6 +3090,12 @@ RC RSYS::rs_EndSubhr()
 			(&R.qhZoneSen)[iMX] += float(zp->zn_qsHvac * Top.tp_subhrDur);
 			(&R.qhZoneLat)[iMX] += float(zp->zn_qlHvac * Top.tp_subhrDur);
 		}
+	}
+
+	// Load meter
+	if (rs_pLoadMtr)
+	{	rs_pLoadMtr->S.qHtg += R.qhPrimary;
+		rs_pLoadMtr->S.qClg += R.qcSen + R.qcLat;
 	}
 
 	return rc;

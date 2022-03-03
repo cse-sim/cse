@@ -60,12 +60,22 @@ Combined radiant/convective exterior surface conductance between insulation (or 
 
 **wbExCnd=*choice***
 
-Exterior conditions. The options are C_EXCNDCH follow by the legal range.
+Specify exterior conditions.
+
+<%= csv_table(<<END, :row_header => true)
+Choice, Description
+C_EXCNDCH_ADIABATIC, Adiabatic on other side
+C_EXCNDCH_AMBIENT, Ambient exterior
+C_EXCNDCH_SPECT, Specify temperature
+C_EXCNDCH_ADJZN, Adjacent zone
+C_EXCNDCH_GROUND, Ground conditions
+END
+%>
 
 <%= member_table(
   units: "",
-  legal_range: "_ADIABATIC _AMBIENT _SPECT _ADJZN _GROUND",
-  default: "_SPECT",
+  legal_range: "See table above",
+  default: "C_EXCNDCH_SPECT",
   required: "No",
   variability: "constant") %>
 
