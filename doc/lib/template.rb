@@ -46,6 +46,13 @@ module Template
       b = fn[config.fetch("context")]
       text = File.read(path)
       result = RenderWithErb[text, b]
+      last_result = nil
+      max_iterations = 10
+      max_iterations.times do
+        last_result = result
+        result = RenderWithErb[result, b]
+        break if result == last_result
+      end
       File.write(out_path, result)
     end
   end
