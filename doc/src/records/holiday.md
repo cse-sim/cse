@@ -11,9 +11,13 @@ hdName is required in the program. WHY? 7-92.
 
 Name of holiday: <!-- if given,--> must follow the word HOLIDAY. <!-- Necessary only if the HOLIDAY object is referenced later with another statement, for example in a LIKE clause or with ALTER; however, we suggest always naming all objects for clearer error messages and future flexibility. -->
 
-  **Units**   **Legal Range**   **Default**   **Required**    **Variability**
-  ----------- ----------------- ------------- --------------- -----------------
-              *63 characters*   *none*        Yes <!--No-->   constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 A holiday may be specified by date or via a rule such as "Fourth Thursday in November". To specify by date, give hdDateTrue, and also hdDateObs or hdOnMonday if desired. To specify by rule, give all three of hdCase, hdMon, and hdDow.
 
@@ -21,17 +25,25 @@ A holiday may be specified by date or via a rule such as "Fourth Thursday in Nov
 
 The true date of a holiday, even if not celebrated on that day.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *date*            *blank*       No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*date*",
+  default: "*blank*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **hdDateObs*=date***
 
 The date that a holiday will be observed. Allowed only if hdDateTrue given and hdOnMonday not given.
 
-  **Units**   **Legal Range**   **Default**    **Required**   **Variability**
-  ----------- ----------------- -------------- -------------- -----------------
-              *date*            *hdDateTrue*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*date*",
+  default: "*hdDateTrue*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **hdOnMonday=*choice***
 
@@ -39,17 +51,25 @@ If YES, holiday is observed on the following Monday if the true date falls on a 
 
 Note: there is no provision to celebrate a holiday that falls on a Saturday on *Friday* (as July 4 was celebrated in 1992).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              YES NO            YES           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "YES/NO",
+  default: "YES",
+  required: "No",
+  variability: "constant")
+  %>
 
 **hdCase=*choice***
 
 Week of the month that the holiday is observed. hdCase, hdMon, and hdDow may be given only if hdDateTrue, hdDateObs, and hdOnMonday are not given.
 
-  **Units**   **Legal Range**                  **Default**   **Required**   **Variability**
-  ----------- -------------------------------- ------------- -------------- -----------------
-              FIRST SECOND THIRD FOURTH LAST   FIRST         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "FIRST SECOND THIRD FOURTH LAST",
+  default: "FIRST",
+  required: "No",
+  variability: "constant")
+  %>
 
 **hdMon=*choice***
 
@@ -88,9 +108,13 @@ Day of the week that the holiday is observed.
 
 Indicates the end of the holiday definition. Alternatively, the end of the holiday definition can be indicated by "END" or simply by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "",
+  required: "*none*",
+  variability: "constant")
+  %>
 
 Examples of valid HOLIDAY object specifications:
 

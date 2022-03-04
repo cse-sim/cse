@@ -144,6 +144,10 @@ The Z position of the second corner of the block relative to *fbZ2Ref*.
 
 Indicates the end of the foundation block definition. Alternatively, the end of the foundation block definition can be indicated by the declaration of another object or by END.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>

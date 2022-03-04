@@ -14,84 +14,97 @@ Input for EXPORTs is similar to input for REPORTs; refer to the REPORT descripti
 
 Name of export. Give after the word EXPORT.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **exExportfile=*fname***
 
 Name of export file to which current export will be written. If omitted, if EXPORT is within an EXPORTFILE object, report will be written to that export file, or else to the automatically-supplied EXPORTFILE "Primary", which by default uses the name of the input file with the extension .csv.
 
-  -----------------------------------------------------------------
-  **Units** **Legal**    **Default**   **Required** **Variability**
-            **Range**
-  --------- ------------ ------------- ------------ ---------------
-            name of an   current       No           constant
-            *EXPORTFILE* *EXPORTFILE*,
-                         if any, else
-                         "Primary"                    
-
-  -----------------------------------------------------------------
+<%= member_table(
+  units: "name of an  *EXPORTFILE*",
+  legal_range: "current *EXPORTFILE*, if any, else 'Primary'",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **exType=*choice***
 
 Choice indicating export type. See descriptions in Section 5.22, REPORT. While not actually disallowed, use of *exType* = ERR, LOG, INP, or ZDD is unexpected.
 
-  **Units**   **Legal Range**                        **Default**   **Required**   **Variability**
-  ----------- -------------------------------------- ------------- -------------- -----------------
-              ZEB, ZST, MTR, DHWMTR, AH, UDT, or SUM                 Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "ZEB, ZST, MTR, DHWMTR, AH, UDT, or SUM",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **exFreq=*choice***
 
 Export Frequency: specifies interval for generating rows of export data:
 
-  **Units**   **Legal Range**                               **Default**   **Required**   **Variability**
-  ----------- --------------------------------------------- ------------- -------------- -----------------
-              YEAR, MONTH, DAY, HOUR, HOURANDSUB, SUBHOUR                 Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "YEAR, MONTH, DAY, HOUR, HOURANDSUB, SUBHOUR",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **exDayBeg=*date***
 
 Initial day of export. Exports for which *exFreq* = YEAR do not allow specification of *exDayBeg* and *exDayEnd*; for MONTH exports, these members are optional and default to include the entire run; for DAY and shorter-interval exports, *exDayBeg* is required and *exDayEnd* defaults to *exDayBeg*.
 
-  ------------------------------------------------------------
-  **Units** **Legal** **Default** **Required** **Variability**
-            **Range**
-  --------- --------- ----------- ------------ ---------------
-            *date*    first day   Required for constant
-                      of          *exTypes*
-                      simulation  ZEB, ZST,
-                      if *exFreq* MTR, AH,
-                      = MONTH     and UDT if
-                                  *exFreq* is
-                                  DAY, HOUR,
-                                  HOURANDSUB,
-                                  or SUBHOUR
-
-  ------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "*date*",
+  default: "first day of simulation if *exFreq* = MONTH",
+  required: "Required for *exTypes* ZEB, ZST, MTR, AH, and UDT if *exFreq* is DAY, HOUR, HOURANDSUB, or SUBHOUR",
+  variability: "constant")
+  %>
 
 **exDayEnd=*date***
 
 Final day of export period, except for YEAR exports.
 
-  **Units**   **Legal Range**   **Default**                                                  **Required**   **Variability**
-  ----------- ----------------- ------------------------------------------------------------ -------------- -----------------
-              *date*            last day of simulation if *exFreq*= MONTH, else *exDayBeg*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*date*",
+  default: "last day of simulation if *exFreq*= MONTH, else *exDayBeg*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **exZone=*znName***
 
 Name of ZONE for which a ZEB, ZST, or ZDD export is being requested; ALL and SUM are also allowed except with *exType* = ZST.
 
-  **Units**   **Legal Range**              **Default**   **Required**                                **Variability**
-  ----------- ---------------------------- ------------- ------------------------------------------- -----------------
-              name of a *ZONE*, ALL, SUM                 Required for *exTypes* ZDD, ZEB, and ZST.   constant
+<%= member_table(
+  units: "",
+  legal_range: "name of a *ZONE*, ALL, SUM",
+  default: "*none*",
+  required: "Required for *exTypes* ZDD, ZEB, and ZST.",
+  variability: "constant")
+  %>
 
 **exMeter=*mtrName***
 
 Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 
-**Units**   **Legal Range**               **Default**   **Required**                **Variability**
------------ ----------------------------- ------------- --------------------------- -----------------
-name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
+<%= member_table(
+  units: "",
+  legal_range: "name of a *METER*, ALL, SUM",
+  default: "*none*",
+  required: "for *exType*=MTR",
+  variability: "constant")
+  %>
 
 **exTu**
 
@@ -101,9 +114,13 @@ Not currently supported.
 
 Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
 
-  **Units**   **Legal Range**               **Default**   **Required**                **Variability**
-  ----------- ----------------------------- ------------- ------------------------------ -----------------
-              name of a *DHWMETER*, ALL, SUM              Required for *exType*=DHWMTR   constant
+<%= member_table(
+  units: "",
+  legal_range: "name of a *DHWMETER*, ALL, SUM",
+  default: "*none*",
+  required: "for *exType*=DHWMTR",
+  variability: "constant")
+  %>
 
 **exAFMeter=*integer***
 
@@ -120,33 +137,49 @@ Air flow meter report.
 
 Specifies air handler(s) to be exported, for *exType*=AH.
 
-  **Units**   **Legal Range**                     **Default**   **Required**               **Variability**
-  ----------- ----------------------------------- ------------- -------------------------- -----------------
-              name of an *AIRHANDLER*, ALL, SUM                 Required for *exType*=AH   constant
+<%= member_table(
+  units: "",
+  legal_range: "name of an *AIRHANDLER*, ALL, SUM",
+  default: "*none*",
+  required: "for *exType*=AH",
+  variability: "constant")
+  %>
 
 **exBtuSf=*float***
 
 Scale factor used for exported energy values.
 
-  **Units**   **Legal Range**         **Default**                           **Required**   **Variability**
-  ----------- ----------------------- ------------------------------------- -------------- -----------------
-              *any multiple of ten*   1,000,000: energy exported in MBtu.   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*any multiple of ten*",
+  default: "1,000,000: energy exported in MBtu.",
+  required: "No",
+  variability: "constant")
+  %>
 
 **exCond=*expression***
 
 Conditional exporting flag. If given, export rows are generated only when value of expression is non-0. Allowed with *exTypes* ZEB, ZST, MTR, AH, and UDT.
 
-  **Units**   **Legal Range**            **Default**             **Required**   **Variability**
-  ----------- -------------------------- ----------------------- -------------- --------------------------
-              *any numeric expression*   1 (exporting enabled)   No             subhour /end of interval
+<%= member_table(
+  units: "",
+  legal_range: "*any numeric expression*",
+  default: "1 (exporting enabled)",
+  required: "No",
+  variability: "subhour /end of interval")
+  %>
 
 **exTitle=*string***
 
 Title for use in export header of User-Defined export. Disallowed if *exType* is not UDT.
 
-  **Units**   **Legal Range**   **Default**             **Required**   **Variability**
-  ----------- ----------------- ----------------------- -------------- -----------------
-                                "User-defined Export"   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "User-defined Export",
+  required: "No",
+  variability: "constant")
+  %>
 
 **exHeader=*choice***
 
@@ -173,17 +206,25 @@ The field names may be used by a program reading the export to identify the data
 
 Use NO to suppress the blank line otherwise output as an export "footer". (Exports do not receive the total lines that most reports receive as footers.)
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              YES, NO           YES           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "YES, NO",
+  default: "YES",
+  required: "No",
+  variability: "constant")
+  %>
 
 **endExport**
 
 Optionally indicates the end of the export definition. Alternatively, the end of the export definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 

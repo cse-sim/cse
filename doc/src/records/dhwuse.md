@@ -6,55 +6,74 @@ Defines a single hot water draw as part of a DHWDAYUSE.  See discussion and exam
 
 Optional name; give after the word “DHWUSE” if desired.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wuStart=*float***
 
 The starting time of the hot water draw.
 
-**Units**   **Legal Range**    **Default**   **Required**  **Variability**
------------ ------------------ ------------- ------------- -------------------------
-  hr        0 $\le$ x $\le$ 24       --             Yes            constant
+<%= member_table(
+  units: "hr",
+  legal_range: "0 $<$ x $<$ 24",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **wuDuration=*float***
 
 Draw duration.  wuDuration = 0 is equivalent to omitting the DHWUSE.
 Durations that extend beyond midnight are included in the current day.
 
-**Units**   **Legal Range**        **Default**   **Required**  **Variability**
------------ ---------------------- ------------- ------------- -------------------------
-  min         0 $\le$ x $\le$ 1440         0           N          hourly
+<%= member_table(
+  units: "min",
+  legal_range: "0 $<$ x $<$ 1440",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wuFlow=*float***
 
 Draw flow rate at the point of use (in other words, the mixed-water flow rate).  wuFlow = 0 is equivalent to omitting the DHWUSE.  There is no enforced upper limit on wuFlow, however, unrealistically large values can cause runtime errors.
 
-**Units**   **Legal Range**      **Default**   **Required**  **Variability**
------------ -------------------  ----------- ------------- -------------------------
-  gpm         0 $\le$ x           0              N          hourly
+<%= member_table(
+  units: "gpm",
+  legal_range: "x $>$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wuHotF=*float***
 
 Fraction of draw that is hot water.  Cannot be specified with wuTemp or wuHeatRecEF.
 
-  **Units**   **Legal Range**     **Default**   **Required**  **Variability**
-  ----------- ------------------- ------------- ------------- -------------------------
-    --         0 $\le$ x $\le$ 1         1           N          hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ x $<$ 1",
+  default: "1",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wuTemp=*float***
 
 Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is given.   
 
----------------------------------------------------------------------------------------------
-  **Units**   **Legal Range**     **Default**   **Required**                  **Variability**
-  ---------- ------------------- ------------- ----------------------------   ---------------
-  ^o^F         0 $\le$ x          0             when wuHeatRecEF is given           hourly
-                                                or parent DHWSYS includes
-                                                DHWHEATREC(s)
----------------------------------------------------------------------------------------------
-
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "0",
+  required: "when wuHeatRecEF is given or parent DHWSYS includes DHWHEATREC(s)",
+  variability: "hourly")
+  %>
 
 **wuHeatRecEF=*float***
 
@@ -64,10 +83,13 @@ If non-0 (evaluated hourly), hot water use is reduced based on wuTemp, DHWSYS ws
 
 If 0, detailed heat recovery modeling *may* apply, see [DHWHEATREC](#dhwheatrec).
 
-**Units**   **Legal Range**        **Default**   **Required**  **Variability**
------------ --------------------- ------------- ------------- -------------------------
-  --         0 $\le$ x $\le$ 0.9          0          N          hourly
-
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ x $<$ 0.9",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wuHWEndUse=*choice***
 
@@ -77,26 +99,37 @@ Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  wuHWEndUse h
  * DHWMETER end-use accounting (via DHWSYS).
  * Activation of the detailed heat recovery model (available for end use Shower when wuHeatRecEF=0 and the parent DHWSYS includes DHWHEATREC(s)).
 
-**Units**   **Legal Range**       **Default**                 **Required**  **Variability**
------------ --------------------  --------------------------- ------------- -------------------------
-  --        One of above choices   (use allocated to Unknown)           N          constant
-
+<%= member_table(
+  units: "",
+  legal_range: "One of above choices",
+  default: "(use allocated to Unknown)",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wuEventID=*integer***
 
 User-defined identifier that associates multiple DHWUSEs with a single event or activity.  For example, a dishwasher uses water at several discrete times during a 90 minute cycle and all DHWUSEs would be assigned the same wuEventID.  All DHWUSEs having the same wuEventID should have the same wuHWEndUse.
 
-**Units**   **Legal Range**     **Default**   **Required**  **Variability**
------------ ------------------- ------------- ------------- -------------------------
-      --         0 $\le$ x               0              N          constant
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant")
+  %>
 
 **endDHWUSE**
 
 Optionally indicates the end of the DHWUSE definition.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No  
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "")
+  %>
 
 **Related Probes:**
 

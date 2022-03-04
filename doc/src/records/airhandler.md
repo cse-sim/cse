@@ -18,9 +18,14 @@ AIRHANDLER is designed primarily to model a central system that supplies hot or 
 
 Name of air handler: give after the word AIRHANDLER. Required for reference in TERMINALs.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 Yes            
+
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **ahSched=*choice***
 
@@ -43,9 +48,14 @@ The following might be used to run an air handler between 8 AM and 5 PM:
         ahSched = select(  (\$hour > 8 && \$hour <= 5),  ON,
                                               default, OFF );
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              ON/OFF            ON            No             hourly
+
+<%= member_table(
+  units: "",
+  legal_range: "ON/OFF",
+  default: "ON",
+  required: "No",
+  variability: "hourly")
+  %>
 
 ## AIRHANDLER Supply Air Temperature Controller
 
@@ -125,15 +135,14 @@ Unless *ahTsSp* is ZN or ZN2, the AIRHANDLER does not know whether it is heating
 
 Giving *ahTsSp* is disallowed for an air handler with no economizer, no heat coil and no cooling coil. Such an AIRHANDLER object is valid as a ventilator; its supply temperature is not controlled. but rather determined by the outside temperature and/or the return air temperature.
 
-  ---------------------------------------------------------------------------
-  **Unit** **Legal**        **Default**   **Required**       **Variability**
-           **Range**
-  -------- --------------- ------------- ------------------ -----------------
-  ^o^F     *number*, RA\*,   0            YES, if coil(s)    hourly
-            WZ, CZ,                       or economizer    
-            ZN\*\*,                       present
-            ZN2\*\*
-  ---------------------------------------------------------------------------
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*number*, RA\*, WZ, CZ, ZN\*\*, ZN2\*\*,",
+  default: "0",
+  required: "Yes, if coil(s) or economizer present",
+  variability: "hourly")
+  %>
 
 \* ahTsRaMn, ahTsRaMx, ahTsMn, and ahTsMx are *required* input for this choice.
 
@@ -220,17 +229,26 @@ Determines whether the fan cycles with the zone thermostat.
          equal to *tuVfMxH/C*.)
   ------ ---------------------------------------
 
-  **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
-  ----------- ----------------- ------------------------------------ -------------- -----------------
-              YES,NO            YES when *ahTsSp*=ZN, NO otherwise   No             hourly
+
+<%= member_table(
+  units: "",
+  legal_range: "YES/NO",
+  default: "YES when *ahTsSp*=ZN, NO otherwise",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **ahTsMn=*float***
 
 Minimum supply temperature. Also used as cooling supply temperature setpoint value under *ahTsSp* = ZN.
 
-  **Units**   **Legal Range**                                    **Default**   **Required**           **Variability**
-  ----------- -------------------------------------------------- ------------- ---------------------- -----------------
-  ^o^F        *no limit*; typically: 40 $\le$ *x* $\le$ 140^o^   0^o^F         Only for *ahTsSp*=RA   hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*no limit*; typically: 40 $\le$ *x* $\le$ 140^o^",
+  default: "0^o^F",
+  required: "Only for *ahTsSp*=RA",
+  variability: "hourly")
+  %>
 
 <!-- P to permit page break after frame -->
 

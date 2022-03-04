@@ -6,50 +6,73 @@ DHWLOOPPUMP constructs an object representing a pump serving part a DHWLOOP. The
 
 Optional name of pump; give after the word “DHWLOOPPUMP” if desired.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wlpMult=*integer***
 
 Number of identical pumps of this type. Any value $>1$ is equivalent to repeated entry of the same DHWPUMP.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              $>$ 0             1             No             constant
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0 ",
+  default: "1",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wlpPwr=*float***
 
 Pump power.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  W           $>$ 0             0             No             hourly
+<%= member_table(
+  units: "W",
+  legal_range: "x $>$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wlpLiqHeatF=*float***
 
 Fraction of pump power that heats circulating liquid.  The remainder is discarded.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ------------------ ------------- -------------- -----------------
-                0 $\le$ x $\le$    1             No             hourly
-
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ x $<$ 1",
+  default: "1",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wlpElecMtr=*mtrName***
 
 Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is recorded (under end use dhwMFL).
 
-  **Units**   **Legal Range**     **Default**                 **Required**   **Variability**
-  ----------- ------------------- --------------------------- -------------- -----------------
-              *name of a METER*   *Parent DHWLOOP wlElecMtr*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*Parent DHWLOOP wlElecMtr*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **endDHWLOOPPUMP**
 
 Optionally indicates the end of the DHWPUMP definition.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 
