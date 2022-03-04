@@ -3186,7 +3186,7 @@ void RSYS::rs_CoolingSHR()		// derive cooling sensible heat ratio
 {
 #if 0 && defined( _DEBUG)
 x	if (!Top.isWarmup)
-	x		printf("Hit\n");
+x		printf("Hit\n");
 #endif
 #if 0 && defined( _DEBUG)
 	if (!Top.isWarmup)
@@ -3204,41 +3204,7 @@ x	if (!Top.isWarmup)
 	rs_vfPerTon = 400.f;
 #endif
 
-#if 1
 	rs_SHR = CoolingSHR(rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
-#else
-
-	// sensible heat ratio
-	static const float ASHR = 0.0242020f;
-	static const float BSHR = -0.0592153f;
-	static const float CSHR = 0.0012651f;
-	static const float DSHR = 0.0016375f;
-	static const float ESHR = 0.f;
-	static const float FSHR = 0.f;
-	static const float GSHR = 0.f;
-	static const float HSHR = -0.0000165f;
-	static const float ISHR = 0.f;
-	static const float JSHR = 0.0002021f;
-	static const float KSHR = 0.f;
-	static const float LSHR = 1.5085285f;
-
-	float SHR = ASHR * rs_tdbCoilIn +
-		BSHR * rs_twbCoilIn +
-		CSHR * rs_tdbOut +
-		DSHR * rs_vfPerTon +
-		ESHR * rs_tdbCoilIn * rs_tdbOut +
-		FSHR * rs_tdbCoilIn * rs_vfPerTon +
-		GSHR * rs_twbCoilIn * rs_tdbOut +
-		HSHR * rs_twbCoilIn * rs_vfPerTon +
-		ISHR * rs_tdbOut * rs_vfPerTon +
-		JSHR * rs_twbCoilIn * rs_twbCoilIn +
-		KSHR / rs_vfPerTon +	// OK for 1 spd or VC (air flow and cap scale together)
-		LSHR;
-
-	// limit result
-	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
-	rs_SHR = bracket(0.5f, SHR, 1.f);
-#endif
 
 }		// RSYS::rs_CoolingSHR
 //-----------------------------------------------------------------------------
