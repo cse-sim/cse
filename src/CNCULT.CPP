@@ -1678,7 +1678,7 @@ static CULT rsysT[] = //------ RSYS cmd RAT Entry table, used from cnTopCult
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   rsStarCkf),
-CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTYCH_ACFURN, N, N),
+CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTY_ACFURN, N, N),
 CULT( "rsDesc",		 DAT,   RSYS_DESC,       0,       0, VEOI,   TYSTR, 0,		0,		N,	 N),
 CULT( "rsPerfMap",	 DAT,	RSYS_PERFMAP,	 0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 CULT( "rsFanTy",	 DAT,	RSFAN( FANTY),   0,       0, VEOI,   TYCH,  0,      C_FANTYCH_BLOWTHRU, N, N ),
@@ -1688,6 +1688,7 @@ CULT( "rsModeCtrl",  DAT,   RSYS_MODECTRL,   0,       0, VHRLY,  TYCH,  0,    C_
 CULT( "rsElecMtr",   DAT,   RSYS_ELECMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsFuelMtr",   DAT,   RSYS_FUELMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsLoadMtr",   DAT,   RSYS_LOADMTRI,   0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+CULT( "rsSrcSideLoadMtr", DAT, RSYS_SRCSIDELOADMTRI, 0,0,VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 CULT( "rsTdDesH",	 DAT,   RSYS_TDDESH,     0,       0, VEOI,   TYFL,  0,    50.f,     N,   N),
 CULT( "rsTdDesC",	 DAT,   RSYS_TDDESC,     0,       0, VEOI,   TYFL,  0,    -25.f,    N,   N),
 CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f,     N,   N),
@@ -1723,6 +1724,7 @@ CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0
 CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
+CULT( "rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
 
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 

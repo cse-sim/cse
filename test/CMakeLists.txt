@@ -45,6 +45,7 @@ set(files
   ashpPkgRoom
   ashp_dfng
   ashpvc2
+  fancoil
   herv
   oavtest2
   bgtest

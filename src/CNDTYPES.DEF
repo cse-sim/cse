@@ -335,7 +335,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			COOL "Cool"
 			AUTO "Auto"
 			}
-*choicb RSYSTYCH {
+*choicb RSYSTY {
 			ACFURN "ACFurnace"
 			ACRES  "ACResistance"
 			ACPKGRM "ACPkgRoom"
@@ -348,6 +348,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
+			FANCOIL "FanCoil"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
