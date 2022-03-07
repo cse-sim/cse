@@ -404,7 +404,7 @@ Ratio of rsCAP82 over rsCAP95.
 
 **rsCOPMin115=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -415,7 +415,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimun 
 
 **rsCOPMin95=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -426,7 +426,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimun s
 
 **rsCOPMin82=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -437,7 +437,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimun s
 
 **rsCOPMin47=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -448,7 +448,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimun s
 
 **rsCOPMin35=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -459,7 +459,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimun s
 
 **rsCOPMin17=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -470,7 +470,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimun s
 
 **rsCOPMin05=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",

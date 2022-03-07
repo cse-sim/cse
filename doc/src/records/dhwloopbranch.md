@@ -1,6 +1,6 @@
 # DHWLOOPBRANCH
 
-DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceeding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
+DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
 
 **wbName**
 
@@ -92,7 +92,7 @@ Boundary conditions for adjacent zones.
 
 **wbExTX=*float***
 
-Boudary conditions for External Exterior.
+Boundary conditions for External Exterior.
 
 <%= member_table(
   units: "",

@@ -157,73 +157,73 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
 **wsUnkDrawDurF=*float***
 
-Unknown water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for unknown end use.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsFaucetDrawDurF=*float***
 
-Fauce water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for faucet fixture.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsShowerDrawDurF=*float***
 
-Shower water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for shower fixture.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsBathDrawDurF=*float***
 
-Bath water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for bath fixture.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsCWashrDrawDurF=*float***
 
-Clothed washer water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for clothing washer fixture.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
   default: "1.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsDWashrDurF=*float***
 
-Dish washer water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for dish washer fixture.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
   default: "1.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsUnkDrawWaste=*float***
 
-Unknown water waste per draw.
+Draw water waste for unknown fixture.
 
 <%= member_table(
   units: "gal",
@@ -234,7 +234,7 @@ Unknown water waste per draw.
 
 **wsFaucetDrawWaste=*float***
 
-Faucet water waste per draw.
+Draw water waste for faucet fixture.
 
 <%= member_table(
   units: "gal",
@@ -245,7 +245,7 @@ Faucet water waste per draw.
 
 **wsShowerDrawWaste=*float***
 
-Shower water waste per draw.
+Draw water waste for unknown fixture.
 
 <%= member_table(
   units: "gal",
@@ -256,7 +256,7 @@ Shower water waste per draw.
 
 **wsBathDrawWaste=*float***
 
-Bath water waste per draw.
+Draw water waste for bath fixture.
 
 <%= member_table(
   units: "gal",
@@ -267,7 +267,7 @@ Bath water waste per draw.
 
 **wsCWashrDrawWaste=*float***
 
-Clothing washer water waste per draw.
+Draw water waste for clothing washer fixture.
 
 <%= member_table(
   units: "gal",
@@ -278,7 +278,7 @@ Clothing washer water waste per draw.
 
 **wsDWashrDrawWaste=*float***
 
-Dish washer water waste per draw.
+Draw water waste for dish washer fixture.
 
 <%= member_table(
   units: "gal",
@@ -291,7 +291,7 @@ Specifies additional draw volume per DHWUSE event (at fixture, by end use).  Thi
 
 Note that DHWUSE draws can be referenced by multiple DHWSYSs; these adjustments apply only to the current DHWSYS.
 
-These adjustments have not impact on draw specifified by wsUse.
+These adjustments have not impact on draw specified by wsUse.
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ----------- ----------------- ------------- -------------- -----------------
@@ -405,7 +405,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetPoint=*float***
 
-  Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
+  Specifies the hot water set point temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -414,7 +414,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetPointLH=*float***
 
-  Specifies the hot water setpoint temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
+  Specifies the hot water set point temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -422,7 +422,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetpointDes=*float***
 
-Specifies the design (sizing) setpoint temperature.
+Specifies the design (sizing) set point temperature.
 
 <%= member_table(
   units: "^o^F",

@@ -105,7 +105,7 @@ Collector loop operating mass flow rate.
 
 **scPipingLength=*float***
 
-Information about the collector piping lenght.
+Information about the collector piping length.
 
 <%= member_table(
   units: "ft",
@@ -149,7 +149,7 @@ Information about the collector piping heat transfer coefficient.
 
 **scPipingExT=*float***
 
-Collector piping suround temperature.
+Collector piping surround temperature.
 
 <%= member_table(
   units: "^o^F",
