@@ -105,8 +105,6 @@ SEC    FC xfwrite( XFILE *, const char *, USI);
 SEC    FC xftell( XFILE *, LI *);
 SEC    FC xfseek( XFILE *, LI, int mode);
 SEC    FC xfsize( XFILE *, LI*);
-SEC    FC xfchsize( XFILE *, LI);
-SEC    FC xfflush( XFILE *);
 SEC    FC xlsterr( XFILE *);
 
 RC     FC xfcopy( const char *, const char *, const char*, SI);
