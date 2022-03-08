@@ -155,6 +155,17 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   ---------- ---------------------- ---------------------- -------------- -----------------
               *name of a DHWDAYUSE*   (no scheduled draws)        No             daily
 
+Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+
+Note that DHWUSE draws can be referenced by multiple DHWSYSs; these adjustments apply only to the current DHWSYS.
+
+These adjustments have not impact on draw specified by wsUse.
+
+**Units**   **Legal Range**   **Default**   **Required**   **Variability**
+----------- ----------------- ------------- -------------- -----------------
+  gal/draw        --             0             No          hourly
+
+
 **wsUnkDrawDurF=*float***
 
 Draw duration factor for unknown end use.
@@ -286,17 +297,6 @@ Draw water waste for dish washer fixture.
   default: "0.0",
   required: "No",
   variability: "Hourly") %>
-
-Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
-
-Note that DHWUSE draws can be referenced by multiple DHWSYSs; these adjustments apply only to the current DHWSYS.
-
-These adjustments have not impact on draw specified by wsUse.
-
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-  gal/draw        --             0             No          hourly
-
 
 **wsBranchModel=*choice***
 
