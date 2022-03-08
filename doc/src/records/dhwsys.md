@@ -433,7 +433,7 @@ Specifies the design (sizing) set point temperature.
 
 **wsVolRunningDes=*float***
 
-Running volume for design.
+Running volume for design. Active volume (above aquastat) equals to a full tank volume, defaults from EcoSizer at end of prerun if not input. No direct use, must be passed to DHWHEATER via ALTER.
 
 <%= member_table(
   units: "gal",
