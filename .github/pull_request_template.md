@@ -15,7 +15,6 @@ Replace the content in this section with:
 - [ ] Make code changes (if you haven't already)
 - [ ] Self-review of code
     - [ ] My code follows the style guidelines of this project
-    - [ ] I have performed a self-review of my code
     - [ ] I have added comments to my code, particularly in hard-to-understand areas
     - [ ] I have only committed the necessary changes for this fix or feature
     - [ ] I have made corresponding changes to the documentation
@@ -44,4 +43,8 @@ Replace the content in this section with:
      - [ ] Request changes, or
      - [ ] Approve
  - [ ] Iterate with author until all changes are approved
+
+ ## Final Check
+ - [ ] Merge master
+ - [ ] Check for new errors or warnings
  - [ ] If you are the last reviewer to approve, merge the pull request and delete the branch
