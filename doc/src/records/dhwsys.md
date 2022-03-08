@@ -119,7 +119,7 @@ Hot water demand determination
 
 **wsTInletDes=*float***
 
-Specifies cold water inlet temperature design (sizing).
+Cold water inlet design temperature for sizing.
 
 <%= member_table(
   units: "^o^F",
@@ -212,7 +212,7 @@ Draw duration factor for clothing washer fixture.
 
 **wsDWashrDurF=*float***
 
-Draw duration factor for dish washer fixture.
+Draw duration factor for dishwasher fixture.
 
 <%= member_table(
   units: "",
@@ -488,24 +488,24 @@ Response control signal for domestic hot water demand.
 
 <%= csv_table(<<END, :row_header => true)
 Choice
-C_DHWDRSIG_ON
-C_DHWDRSIG_TOO
-C_DHWDRSIG_TOOLOR
-C_DHWDRSIG_TOOLOC
-C_DHWDRSIG_TOT
-C_DHWDRSIG_TOTLOR
-C_DHWDRSIG_TOTLOC
-C_DHWDRSIG_LOC
-C_DHWDRSIG_LOR
-C_DHWDRSIG_LOCLOR
-C_DHWDRSIG_COUNT
+ON
+TOO
+TOOLOR
+TOOLOC
+TOT
+TOTLOR
+TOTLOC
+LOC
+LOR
+LOCLOR
+COUNT
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See Table above",
-  default: "C_DHWDRSIG_ON",
+  default: "ON",
   required: "No",
   variability: "constant") %>
 

@@ -279,15 +279,15 @@ Solar interpolation method.
 
 <%= csv_table(<<END, :row_header => true)
 Choice
-C_SLRINTERPMETH_CSE
-C_SLRINTERPMETH_TRNSYS
+CSE
+TRNSYS
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_SLRINTERPMETH_CSE",
+  default: "CSE",
   required: "No",
   variability: "constant") %>
 

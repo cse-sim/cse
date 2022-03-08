@@ -92,7 +92,7 @@ Boundary conditions for adjacent zones.
 
 **wbExTX=*float***
 
-Boundary conditions for External Exterior.
+External boundary conditions.
 
 <%= member_table(
   units: "",

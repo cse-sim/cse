@@ -105,7 +105,7 @@ Collector loop operating mass flow rate.
 
 **scPipingLength=*float***
 
-Information about the collector piping length.
+Collector piping length.
 
 <%= member_table(
   units: "ft",
@@ -116,7 +116,7 @@ Information about the collector piping length.
 
 **scPipingInsulK=*float***
 
-Information about the collector piping insulation conductivity.
+Collector piping insulation conductivity.
 
 <%= member_table(
   units: "",
@@ -127,7 +127,7 @@ Information about the collector piping insulation conductivity.
 
 **scPipingInsulThk=*float***
 
-Information about the collector piping insulation thickness.
+Collector piping insulation thickness.
 
 <%= member_table(
   units: "",
@@ -138,7 +138,7 @@ Information about the collector piping insulation thickness.
 
 **scPipingExH=*float***
 
-Information about the collector piping heat transfer coefficient.
+Collector piping heat transfer coefficient.
 
 <%= member_table(
   units: "",

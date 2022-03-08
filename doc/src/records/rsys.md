@@ -547,20 +547,20 @@ Fraction of a htg minimum load at 05 ^o^F.
 
 **rsTypeAuxH=*choice***
 
-Type of auxiliary heat. The functions have C_AUXHEATTY as a prefix.
+Type of auxiliary heat.
 
 <%= csv_table(<<END, :row_header => true)
 Choice
-C_AUXHEATTY_NONE
-C_AUXHEATTY_RES
-C_AUXHEATTY_FURN
+NONE
+RES
+FURN
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_AUXHEATTY_RES",
+  default: "RES",
   required: "No",
   variability: "constant") %>
 
@@ -570,16 +570,16 @@ Type of auxiliary heating control.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-C_AUXHEATCTRL_LO, Compressor locked out if any auxiliary heating control
-C_AUXHEATCTRL_CYCLE, Compressor runs continuously auxiliary cycles
-C_AUXHEATCTRL_ALT, Alternates between compressor auxiliary
+LO, Compressor locked out if any auxiliary heating control
+CYCLE, Compressor runs continuously auxiliary cycles
+ALT, Alternates between compressor auxiliary
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_AUXHEATCTRL_CYCLE",
+  default: "CYCLE",
   required: "No",
   variability: "Start of a run") %>
 
@@ -593,7 +593,7 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd
 
 **rsAFUEAuxH=*float***
 
-Auxiliary furnace heating for annualized fuel utilization efficiency.
+For rsType=ASHP, auxiliary electric (“strip”) heating coefficient of performance. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
 
 <%= member_table(
   units: "",

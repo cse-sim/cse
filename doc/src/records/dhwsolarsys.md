@@ -23,7 +23,7 @@ Name of METER object, if any, to which DHWSOLARSYS electrical energy use is reco
 
 **swSCFluidSpHt=*float***
 
-Specify the specific heat for the collector fluid.
+Specific heat for the collector fluid.
 
 <%= member_table(
   units: "Btu/lbm-F",
@@ -34,7 +34,7 @@ Specify the specific heat for the collector fluid.
 
 **swSCFluidDens=*float***
 
-Specify the density for the collector fluid.
+Density for the collector fluid.
 
 <%= member_table(
   units: "lb/ft^3^",
