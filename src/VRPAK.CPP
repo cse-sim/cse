@@ -168,11 +168,8 @@ RC vrClear()		// delete all virtual reports in spool in preparation for re-use
 // clear spool file
 	if (spl.isOpen)					// if open (probably always true here)
 	{
-		xlsterr( spl.splxf);				// clear any prior xiopak error (else addl calls will nop)
-		if ( xfseek( spl.splxf, 0L, SEEK_SET) != SECOK	// set file pointer to start file (needed?)
-				|| xfchsize( spl.splxf, 0L) != SECOK )		// truncate file to 0 length
-		{
-			;    // on error, do nothing?
+		if (xfclear(spl.splxf) != SECOK) {
+			return RCBAD;
 		}
 	}
 	spl.spO = spl.spWo = 0;					// set file end offset and written offset to 0
@@ -1189,8 +1186,8 @@ LOCAL int vruOpen( UNS* u)		// open report output file for virtual report unspoo
 
 	u->xf = xfopen( u->fName,
 					u->optn & VR_OVERWRITE 				// access per VROUTINFO optn bit
-						? _O_CREAT|_O_TRUNC|_O_WRONLY|_O_BINARY
-						: _O_CREAT|_O_APPEND|_O_WRONLY|_O_BINARY,
+						? "wb"
+						: "ab",
 					IGN 						// no msg at open (changed below for later calls)
 					| XFBUFALLOC,				// alloc buffer -- XFILE.buf[],.busz,.bufn. see vruWrite.
 					FALSE, 					// eof is not an error on this file
