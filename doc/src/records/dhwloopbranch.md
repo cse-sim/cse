@@ -64,18 +64,18 @@ Specify exterior conditions.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-C_EXCNDCH_ADIABATIC, Adiabatic on other side
-C_EXCNDCH_AMBIENT, Ambient exterior
-C_EXCNDCH_SPECT, Specify temperature
-C_EXCNDCH_ADJZN, Adjacent zone
-C_EXCNDCH_GROUND, Ground conditions
+ADIABATIC, Adiabatic on other side
+AMBIENT, Ambient exterior
+SPECT, Specify temperature
+ADJZN, Adjacent zone
+GROUND, Ground conditions
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_EXCNDCH_SPECT",
+  default: "SPECT",
   required: "No",
   variability: "constant") %>
 

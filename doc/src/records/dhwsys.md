@@ -470,15 +470,15 @@ Response control method for domestic hot water demand.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-C_DHWDRMETH_NONE, None
-C_DHWDRMETH_SCHED, Demand response
+NONE, None
+SCHED, Demand response schedule
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_DHWDRMETH_NONE",
+  default: "NONE",
   required: "No",
   variability: "At the start of a run") %>
 
