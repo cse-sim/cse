@@ -8,49 +8,73 @@ Windows may optionally have operable interior shading that reduces the overall s
 
 Name of window: follows the word "WINDOW" if given.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wnHeight=*float***
 
 Overall height of window (including frame).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft          *x* $>$ 0         *none*        Yes            constant
+<%= member_table(
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **wnWidth=*float***
 
 Overall width of window (including frame).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft          *x* $>$ 0         *none*        Yes            constant
+<%= member_table(
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **wnArea=*float***
 
 Overall area of window (including frame).
 
-  **Units**   **Legal Range**   **Default**               **Required**   **Variability**
-  ----------- ----------------- ------------------------- -------------- -----------------
-  ft^2^       *x* $>$ 0         *wnHeight* \* *wnWidth*   No             constant
+<%= member_table(
+  units: "ft^2^",
+  legal_range: "x $>$ 0",
+  default: "*wnHeight* \* *wnWidth*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wnMult=*float***
 
 Area multiplier; can be used to represent multiple identical windows.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0         1             No             constant
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wnModel=*choice***
 
 Selects window model
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              SHGC, ASHWAT      SHGC          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "SHGC, ASHWAT",
+  default: "SHGC",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wnGt=*choice***
 
@@ -68,21 +92,37 @@ Where 0.85 is the sum of the interior (0.68) and exterior (0.17) design air film
 
 Approach 2. Enter wnU=U-factor and let the wnInH and wnExH default. Tnormally this approach systematically underestimates the window U-factor because it adds the wnExfilm resistance to 1/U-factor thereby double counting the exterior film resistance. This approach will also yield incorrect results for gnFrad internal gain since the high wnInH will put almost all the gain back in the space.
 
-  **Units**         **Legal Range**   **Default**   **Required**   **Variability**
-  ----------------- ----------------- ------------- -------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         *none*        Yes            constant
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "x $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **wnUNFRC=*float***
 
 Fenestration system (including frame) U-factor evaluated at NFRC heating conditions.
 
-  **Units**         **Legal Range**   **Default**   **Required**                       **Variability**
-  ----------------- ----------------- ------------- ---------------------------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         gtUNFRC       Required when *wnModel* = ASHWAT   constant
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "x $>$ 0",
+  default: "gtUNFRC",
+  required: "Required when *wnModel* = ASHWAT",
+  variability: "constant")
+  %>
 
 **wnExEpsLW=*float***
 
 Window exterior long wave (thermal) emittance.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Units**   **Legal Range**       **Default**   **Required**   **Variability**
 ----------- --------------------- ------------- -------------- -----------------
@@ -91,6 +131,14 @@ Window exterior long wave (thermal) emittance.
 **wnInEpsLW=*float***
 
 Window interior long wave (thermal) emittance.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Units**   **Legal Range**       **Default**   **Required**   **Variability**
 ----------- --------------------- ------------- -------------- -----------------
@@ -109,18 +157,25 @@ Preferred Approach: Enter the appropriate value for each window, normally:
 
 The large default value of 10,000 represents a near-0 resistance, for the convenience of those who wish to include the interior surface film in wnU according to approach 2 above.
 
-  **Units**         **Legal Range**   **Default**                             **Required**   **Variability**
-  ----------------- ----------------- --------------------------------------- -------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         <!-- same as owning surface --> 10000   No             constant
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "x $>$ 0",
+  default: "10000",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wnExH=*float***
 
 Window exterior surface (air film) conductance.
 
-  **Units**         **Legal Range**   **Default**              **Required**   **Variability**
-  ----------------- ----------------- ------------------------ -------------- -----------------
-  Btuh/ft^2^-^o^F    x > 0             same as owning surface   No             constant
-
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "x $>$ 0",
+  default: "same as owning surface",
+  required: "No",
+  variability: "constant")
+  %>
 
 Several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on wnExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
@@ -139,6 +194,14 @@ ASHRAE           n/a                             ASHRAE handbook values
 
 Selects the model used for exterior surface convection when wnModel = Forward\_Difference.
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ---------- ----------------- ------------- -------------- -----------------
            *choices above*     UNIFIED         No             constant
@@ -146,6 +209,14 @@ Selects the model used for exterior surface convection when wnModel = Forward\_D
 **wnExHcLChar=*float***
 
 Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside face is exposed to ambient (i.e. to wind).
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Units**   **Legal Range**   **Default**   **Required**   **Variability**
 ----------- ----------------- ------------- -------------- -----------------
@@ -156,6 +227,14 @@ Characteristic length of surface, used in derivation of forced exterior convecti
 
 Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=wnExHcMult.  For other wnExHcModel choices, the model-derived hc is multiplied by wnExHcMult.
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
 **Units**         **Legal Range**   **Default**   **Required**   **Variability**
 ----------------- ----------------- ------------- -------------- -----------------
                                        1               No            subhourly
@@ -163,6 +242,14 @@ Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=w
 **wnInHcModel=*choice***
 
 Selects the model used for the inside (zone) surface convection when wnModel = Forward\_Difference.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Units**   **Legal Range**                    **Default**   **Required**   **Variability**
 ---------- ----------------------------------- ------------- -------------- -----------------
@@ -172,6 +259,14 @@ Selects the model used for the inside (zone) surface convection when wnModel = F
 
 Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=wnInHcMult.  For other wnInHcModel choices, the model-derived hc is multiplied by wnInHcMult.
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
 **Units**         **Legal Range**   **Default**   **Required**   **Variability**
 ----------------- ----------------- ------------- -------------- -----------------
                                        1               No            subhourly
@@ -179,6 +274,14 @@ Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=w
 **wnSHGC=*float***
 
 Rated Solar Heat Gain Coefficient (SHGC) for the window assembly.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Units**   **Legal Range**         **Default**   **Required**   **Variability**
 ----------- ----------------------- ------------- -------------- ------------------
@@ -188,6 +291,14 @@ fraction    0 < x < 1                gtSHGC          No           constant
 
 Frame area multiplier = areaGlaze / areaAssembly
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
 **Units**   **Legal Range**         **Default**   **Required**   **Variability**
 ----------- ----------------------- ------------- -------------- ------------------
 fraction    0 < x < 1                gtFMult or 1      No           constant
@@ -195,6 +306,14 @@ fraction    0 < x < 1                gtFMult or 1      No           constant
 **wnSMSO=*float***
 
 SHGC multiplier with shades open. Overrides gtSMSO.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- ------------------
@@ -204,6 +323,14 @@ SHGC multiplier with shades open. Overrides gtSMSO.
 
 SHGC multiplier with shades closed. Overrides gtSMSC
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
   **Units**   **Legal Range**         **Default**        **Required**   **Variability**
   ----------- ----------------------- ------------------ -------------- ------------------
   fraction    0 $\leq$ *x* $\leq$ 1   wnSMSO or gtSMSC   No             Monthly - Hourly
@@ -211,6 +338,14 @@ SHGC multiplier with shades closed. Overrides gtSMSC
 **wnNGlz=*int***
 
 Number of glazings in the window (bare glass only, not including any interior or exterior shades).
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
   **Units**   **Legal Range**      **Default**   **Required**                       **Variability**
   ----------- -------------------- ------------- ---------------------------------- -----------------
@@ -220,6 +355,14 @@ Number of glazings in the window (bare glass only, not including any interior or
 
 Exterior shading type (ASHWAT only).
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
               NONE, INSCRN      gtExShd       no             Constant
@@ -227,6 +370,14 @@ Exterior shading type (ASHWAT only).
 **wnInShd=*choice***
 
 Interior shade type (ASHWAT only).
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
@@ -236,6 +387,14 @@ Interior shade type (ASHWAT only).
 
 Glazing dirt loss factor.
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
   fraction    0 $\leq$ *x* $\leq$ 1   0             no             Constant
@@ -244,6 +403,14 @@ Glazing dirt loss factor.
 
 Ground reflectivity for this window.
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- ------------------
   fraction    0 $\leq$ *x* $\leq$ 1   sfGrndRefl    No             Monthly - Hourly
@@ -251,6 +418,14 @@ Ground reflectivity for this window.
 **wnVfSkyDf=*float***
 
 View factor from this window to sky for diffuse radiation. For the shading effects of an overhang, a wnVfSkyDf value smaller than the default would be used
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
   -------------------------------------------------------------
   **Units** **Legal** **Default**  **Required** **Variability**
@@ -268,6 +443,14 @@ View factor from this window to sky for diffuse radiation. For the shading effec
 
 View factor from this window to ground for diffuse radiation. For the shading effects of a fin(s), both wnVfSkyDf and wnVfGrndDf would be used.
 
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
+
   -------------------------------------------------------------
   **Units** **Legal** **Default**  **Required** **Variability**
             **Range**
@@ -283,6 +466,14 @@ View factor from this window to ground for diffuse radiation. For the shading ef
 **endWINDOW**
 
 Optionally indicates the end of the window definition. Alternatively, the end of the window definition can be indicated by END or the declaration of another object. END or endWindow, if used, should follow any subobjects of the window (SHADEs and/or SGDISTs).
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------

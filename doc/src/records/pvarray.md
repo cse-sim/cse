@@ -6,17 +6,25 @@ PVARRAY describes a photovoltaic panel system. The algorithms are based on the [
 
 Name of photovoltaic array. Give after the word PVARRAY.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvElecMtr=*choice***
 
 Name of meter by which this PVARRAY's AC power out is recorded. Generated power is expressed as a negative value.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *name of a METER*     *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvEndUse=*choice***
 
@@ -24,17 +32,25 @@ Meter end use to which the PVARRAY's generated energy should be accumulated.
 
 <%= insert_file('doc/src/enduses.md') %>
 
-  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
-  ----------- ---------------------- ------------- -------------- -----------------
-              *Codes listed above*   PV            No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*Codes listed above*",
+  default: "PV",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvDCSysSize=*float***
 
 The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
-  **Units**   **Legal Range**     **Default**   **Required**   **Variability**
-  ----------- ------------------- ------------- -------------- -----------------
-  kW          *x* $\geq$ 0          *none*        Yes            constant
+<%= member_table(
+  units: "kW",
+  legal_range: "x $\\geq$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **pvModuleType=*choice***
 
@@ -47,60 +63,61 @@ Type of module to model. The module type determines the refraction index and tem
   ThinFilm        1.3                -0.00178
   Custom          User-defined       User-defined
 
-  --------------------------------------------------------------
-  **Units** **Legal**   **Default** **Required** **Variability**
-            **Range**
-  --------- ----------- ----------- ------------ ---------------
-            Standard \  Standard    No             constant
-            Premium \
-            ThinFilm \
-            Custom
-
-  --------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "Standard Premium ThinFilm Custom",
+  default: "Standard",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvCoverRefrInd=*float***
 
 The refraction index for the coating applied to the module cover. A value of 1.0 represents refraction through air. Coatings have higher refraction indexes that capture more solar at lower angles of incidence.
 
-  ------------------------------------------------------------------------------
-  **Units**   **Legal Range**     **Default**   **Required**   **Variability**
-  ----------- ------------------- ------------- -------------- -----------------
-              *x* $\geq$ 1.0        1.3           No             constant
-
-  ------------------------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.3",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvTempCoeff=*float***
 
 The temperature coefficient how the efficiency of the module varies with the cell temperature. Values are typically negative.
 
-  ------------------------------------------------------------------------------
-  **Units**   **Legal Range**     **Default**   **Required**   **Variability**
-  ----------- ------------------- ------------- -------------- -----------------
-  1/^o^F      *no restrictions*   -0.00206       No             constant
-
-  ------------------------------------------------------------------------------
+<%= member_table(
+  units: "1/^o^F",
+  legal_range: "*no restrictions*",
+  default: "-0.00206",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvArrayType=*choice***
 
 The type of array describes mounting and tracking options. Roof mounted arrays have a higher installed nominal operating cell temperature (INOCT) of 120 ^o^F compared to the default of 113 ^o^F. Array self-shading is not currently calculated for adjacent rows of modules within an array.
 
-  **Units** **Legal Range**  **Default**   **Required** **Variability**
-  --------- ---------------- ------------- ------------ ---------------
-            FixedOpenRack,   FixedOpenRack No           constant
-            FixedRoofMount,
-            OneAxisTracking,
-            TwoAxisTracking
+<%= member_table(
+  units: "",
+  legal_range: " FixedOpenRack, FixedRoofMount, OneAxisTracking, TwoAxisTracking",
+  default: "FixedOpenRack",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvTilt=*float***
 
 The tilt of the photovoltaic array from horizontal.  Values outside the range 0 to 360 are first normalized to that range. For one-axis tracking, defines the tilt of the rotation axis. Not used for two-axis tracking arrays.  Should be omitted if pvVertices is given.
 
-  ------------------------------------------------------------------
-  **Units** **Legal Range** **Default**                      **Required**  **Variability**
-  --------- --------------- -----------------------------    ------------  ---------------
-  degrees   unrestricted    from pvVertices (if given)\         No            hourly
-                            else 0
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "degrees",
+  legal_range: "unrestricted",
+  default: "from pvVertices (if given) else 0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 The following figures illustrate the use of both pvTilt and pvAzm for various configurations:
 
@@ -116,12 +133,14 @@ The following figures illustrate the use of both pvTilt and pvAzm for various co
 
 Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
 
-  ------------------------------------------------------------------
-  **Units** **Legal Range** **Default**                  **Required**  **Variability**
-  --------- --------------- --------------------------- -------------  ---------------
-  degrees   unrestricted    from pvVertices (if given)\         No            hourly
-                            else 0                           
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "degrees",
+  legal_range: "unrestricted",
+  default: "from pvVertices (if given) else 0",
+  required: "No",
+  variability: "hourly")
+  %>
+
 **pvVertices=*list of up to 36 floats***
 
   Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs](#shadex) are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [TOP exShadeModel](#top-model-control-items).  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
@@ -134,14 +153,13 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
      pvVertices = 0, 0, 15,   20, 0, 15,  20, 7.07, 22.07,  0, 7.07, 22.07
 
-  ------------------------------------------------------------------
-  **Units** **Legal Range** **Default** **Required**     **Variability**
-  --------- --------------- ----------- ---------------- ---------------
-  ft         unrestricted    no polygon   9, 12, 15, 18,      constant
-                                          21, 24, 27, 30,
-                                          33, or 36
-                                          values
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "ft",
+  legal_range: "unrestricted",
+  default: "no polygon",
+  required: "9, 12, 15, 18, 21, 24, 27, 30, 33, or 36 values",
+  variability: "constant")
+  %>
 
 **pvSIF=*float***
 
@@ -164,22 +182,25 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
   Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm](#top-general-data-items), while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
-  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
-  ----------- ---------------------- ------------- -------------- -----------------
-              Building or Site        Building           No             constant
-
+<%= member_table(
+  units: "",
+  legal_range: "Building or Site",
+  default: "Building",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvGrndRefl=*float***
 
 Ground reflectance used for calculating reflected solar incidence on the array.
 
-  ------------------------------------------------------------------
-  **Units** **Legal Range** **Default** **Required** **Variability**
-  --------- --------------- ----------- ------------ ---------------
-            0 &lt; *x*      0.2         No           hourly
-            $\le$ 1.0
-
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ *x* $<$ 1.0",
+  default: "0.2",
+  required: "No",
+  variability: "hourly")
+  %>
 
 <!-- Hide
 **pvGCR=*float***
@@ -198,25 +219,25 @@ Ground coverage ratio is. This is currently unused as array self-shading is not 
 
 DC-to-AC ratio used to intentionally undersize the AC inverter. This is used to increase energy production in the beginning and end of the day despite the possibility of clipping peak sun hours.
 
-  ------------------------------------------------------------------
-  **Units** **Legal Range** **Default** **Required** **Variability**
-  --------- --------------- ----------- ------------ ---------------
-            *x* &gt; 0.0       1.2         No           constant
-
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "*x* &gt; 0.0",
+  default: "1.2",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvInverterEff=*float***
 
 AC inverter efficiency at rated DC power.
 
-  -------------------------------------------------------------
-  **Units** **Legal**  **Default** **Required** **Variability**
-            **Range**
-  --------- ---------- ----------- ------------ ---------------
-            0 &lt; *x* 0.96        No           constant
-            $\le$ 1.0
-
-  -------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ *x* $<$ 1.0",
+  default: "0.96",
+  required: "No",
+  variability: "constant")
+  %>
 
 **pvSysLosses=*float***
 
@@ -238,23 +259,25 @@ Fraction of total DC energy lost. The total loss from a system is aggregated fro
 
 *Italic* lines indicate differences from PVWatts assumptions.
 
-  ------------------------------------------------------------
-  **Units** **Legal** **Default** **Required** **Variability**
-            **Range**
-  --------- --------- ----------- ------------ ---------------
-            0 &lt;    0.14        No           hourly
-            *x*
-            $\le$ 1.0
-
-  ------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ *x* $<$ 1.0",
+  default: "0.14",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **endPVARRAY**
 
 Optionally indicates the end of the PVARRAY definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 
