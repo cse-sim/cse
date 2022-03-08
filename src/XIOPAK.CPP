@@ -403,8 +403,6 @@ SEC FC xfread(		// Read from file
 
 // Returns SECOK OK, SECEOF to indicate eof, other values for other errors.
 {
-	size_t nX;
-
 	if (   nbytes > 0			// if read needed
 			&& xf->xflsterr == SECOK)	// and if no prior unnoticed error (clear with xlsterr(xf) )
 	{
@@ -419,7 +417,7 @@ SEC FC xfread(		// Read from file
 		/* CAUTION: caller must clear eof/error (use xlsterr(xf))
 		   	    b4 ANY other xiopak call will work (except xfseek and xftell) */
 
-		nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read
+		size_t nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read
 
 		if (  nX != nbytes)			// read() error return
 		{
@@ -464,7 +462,7 @@ SEC FC xfwrite(  	// Write to a file
 
 	XFILE *xf,  	// Pointer to extended IO packet for file
 	const char *buf,  	// ptr to buffer from which to write
-	USI nbytes) 	// Number of bytes to write. NOP if nbytes==0. Largest legal value 0xFFFE (0xFFFF rsrvd for error cond).
+	size_t nbytes) 	// Number of bytes to write. NOP if nbytes==0. Largest legal value 0xFFFE (0xFFFF rsrvd for error cond).
 
 // Returns SECOK if all OK, else errno
 
@@ -986,7 +984,6 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 	RC rc;
 	char *buf;
 	const char *ebuf, *fName = nullptr;
-	USI nw;
 	SEC sec;
 
 	/* allocate memory for buffer */
@@ -1005,7 +1002,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 		}
 		else if (xfs->nxfer > 0)				/* if bytes in bfr */
 		{
-			nw = xfs->nxfer;
+			size_t nw = xfs->nxfer;
 			if (op & XFCOPYTEXT)	// option to terminate input file at ctrl-Z:
 									// corrects WordStar's vestigial cp/m style file termination,
 									// so that if file is later opened for appending, appended
