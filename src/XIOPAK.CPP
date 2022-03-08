@@ -403,7 +403,7 @@ SEC FC xfread(		// Read from file
 
 // Returns SECOK OK, SECEOF to indicate eof, other values for other errors.
 {
-	USI nX;
+	size_t nX;
 
 	if (   nbytes > 0			// if read needed
 			&& xf->xflsterr == SECOK)	// and if no prior unnoticed error (clear with xlsterr(xf) )
