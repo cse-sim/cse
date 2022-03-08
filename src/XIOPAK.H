@@ -46,7 +46,7 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 struct XFILE
 {   FILE* han;		// File handle
     char access[20];	// Access flag used on last fopen()
-    int nxfer;		// # bytes actually transfered on last xfread/write.
+    size_t nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
     SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
     int xferact;		// Error action (message) code: IGN, WRN, ABT
@@ -101,7 +101,7 @@ XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=F
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
 SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );
-SEC    FC xfwrite( XFILE *, const char *, USI);
+SEC    FC xfwrite( XFILE *, const char *, size_t);
 SEC    FC xftell( XFILE *, LI *);
 SEC    FC xfseek( XFILE *, LI, int mode);
 SEC    FC xfsize( XFILE *, LI*);
