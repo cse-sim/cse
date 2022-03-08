@@ -1561,15 +1561,17 @@ CULT( "oaExhFanCurvePy",DAT,   EFAN(CURVEPY+PYCUBIC_K),
 CULT( "oaExhFanMotEff", DAT,   EFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
 
 // Heating Coil
-CULT( "oaSupTH", 		DAT,   DOAS_SUPTH, 	 0,   0, VSUBHRLY, TYFL,  0,      45.f,             N,   N),
+CULT( "oaSupTH", 		DAT,   DOAS_SUPTH, 	 0,   0, VSUBHRLY, TYFL,  0,      65.f,             N,   N),
 CULT( "oaEIRH", 		DAT,   DOAS_EIRH, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
 CULT( "oaCoilHMtr",   	DAT,   DOAS_COILHMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
 
 // Cooling Coil
-CULT( "oaSupTC", 		DAT,   DOAS_SUPTC, 	 0,   0, VSUBHRLY, TYFL,  0,      60.f,             N,   N),
+CULT( "oaSupTC", 		DAT,   DOAS_SUPTC, 	 0,   0, VSUBHRLY, TYFL,  0,      68.f,             N,   N),
 CULT( "oaEIRC", 		DAT,   DOAS_EIRC, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
-CULT( "oaSHRC", 		DAT,   DOAS_SHRC, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaSHRtarget",	DAT,   DOAS_SHRTARGET, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
 CULT( "oaCoilCMtr",   	DAT,   DOAS_COILCMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+CULT( "oaLoadMtr",   	DAT,   DOAS_LOADMTRI,	 0,   0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 
 // Heat Exchanger
 CULT( "oaHXVfDs",		DAT,   	DOAS_HXVFDS,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),

@@ -1958,6 +1958,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_Wmf() const { return af_amf*as_w; }"
 *declare "void af_GetAirState( AIRSTATE& as) const { as.as_Set( as_tdb, as_w); }"
 *declare "void af_SetAirState( const AIRSTATE& as) { as_Set( as.as_tdb, as.as_w); }"
+*declare "void af_SetAirState( const AIRSTATE& as, float& qLat, float& qSen);"
 *declare "void af_Init() { af_amf=0.; as_tdb=0.; as_w=0.; }"
 *declare "void af_Init( double amf, double tdb, double w) { af_amf=amf;	as_tdb=tdb; as_w=w; }"
 *declare "void af_Copy( const AIRFLOW& af){ af_amf=af.af_amf; as_tdb=af.as_tdb; as_w=af.as_w; }"
@@ -1969,6 +1970,11 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_AmfCp()  const { return af_amf*Top.tp_airSH; }"
 *declare "double af_AmfCpT() const { return af_amf*as_tdb*Top.tp_airSH; }"
 *declare "double af_QLat( double wx) const { return af_amf*(as_w - wx)*PsyHCondWtr; }"
+*declare "double af_AddQSen( double q) { return as_AddQSen(q, af_amf); }"
+*declare "double af_AddQSen2( double q) { return as_AddQSen2(q, af_amf); }"
+*declare "double af_QSenDiff2( const AIRSTATE& as) const { return as_QSenDiff2(as, af_amf); };"
+*declare "double af_AddQLat( double q) { return as_AddQLat(q, af_amf); }"
+*declare "int af_AddQSenLat( float& qSen, float& qLat, float rhMax=1.f) { return as_AddQSenLat(qSen, qLat, af_amf, rhMax); }"
 
 *s *e DBL af_amf		// mass flow rate, lb/hr dry air
 // *s *e DBL as_tdb		// from AIRSTATE
@@ -2797,14 +2803,17 @@ RECORD DOAS "doas" *RAT
 
     // Tempering coil inputs
     *s TEMP oa_supTH            // supply temperature heating setpoint
-    *s FLOAT_GZ oa_EIRH         // heating coil energy input ratio (1/efficiency (or 1/COP)
+    *s FLOAT_GEZ oa_EIRH         // heating coil energy input ratio (1/efficiency (or 1/COP)
     *i TI oa_coilHMtri          // Meter for heating coil
     *declare "MTR* oa_pCoilHMtr;"
     *s TEMP oa_supTC            // supply temperature cooling setpoint
-    *s FLOAT_GZ oa_EIRC         // cooling coil energy input ratio (1/efficiency (or 1/COP)
-    *s FLOAT_GZ oa_SHRC         // cooling coil SHR
+    *s FLOAT_GEZ oa_EIRC         // cooling coil energy input ratio (1/efficiency (or 1/COP)
+    *s FRAC_GZ oa_SHRtarget     // target cooling coil SHR. Could be overriden by oa_SHR.
     *i TI oa_coilCMtri          // Meter for heating coil
     *declare "MTR* oa_pCoilCMtr;"
+
+    *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
+    *declare "LOADMTR* oa_pLoadMtr;"
 
     // Heat exchanger inputs
     *i AFLOW_GZ oa_hxVfDs           // Design supply volumetric flow rate of the heat exchanger
@@ -2832,6 +2841,8 @@ RECORD DOAS "doas" *RAT
     *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs (before supply fan, fan heat added to IZXFERs)
     *s *e *nest AIRFLOW oa_exhAF    // Exhaust air flow coming from IZXFERs
     *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
+    *s *e FLOAT oa_supQLat          // Latent heat added (+) or removed (-) from the supply for tempering
+    *s *e FRAC_GZ oa_SHR            // actual cooling coil SHR. Same as oa_SHRtarget unless adjusted for humidity limits.
     *s *e FRAC oa_hxSensEff         // Sensible efficacy
     *s *e FRAC oa_hxLatEff          // Latent efficacy
 

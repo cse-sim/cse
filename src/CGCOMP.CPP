@@ -494,6 +494,16 @@ int AIRSTATE::as_HX(			// heat exchange (re e.g. HERV)
 // class AIRFLOW -- mass flow, dry-bulb temp, humidity ratio
 //                  many mbrs inline
 ///////////////////////////////////////////////////////////////////////////////
+void AIRFLOW::af_SetAirState(
+	const AIRSTATE& as, // new state
+	float& qSen, // Added (+) or removed (-) sensible heat required to get to new state
+	float& qLat) // Added (+) or removed (-) latent heat required to get to new state 
+{
+	qSen = af_AmfCp()*(as.as_tdb - as_tdb);
+	qLat = af_amf*(as.as_w - as_w)*PsyHCondWtr;
+	as_Set( as.as_tdb, as.as_w);
+}
+//-----------------------------------------------------------------------------
 void AIRFLOW::af_Mix(		// mix AIRFLOWs
 	const AIRFLOW& af)	// flow to be mixed with *this
 // returns *this with total flow and state
@@ -847,6 +857,11 @@ RC DOAS::oa_Setup(DOAS* iRat)
 
 	rc |= oa_CkfDOAS();		// check run record
 
+	// Setup meter pointers
+	oa_pCoilCMtr = MtrB.GetAtSafe( oa_coilCMtri);
+	oa_pCoilHMtr = MtrB.GetAtSafe( oa_coilHMtri);
+	oa_pLoadMtr = LdMtrR.GetAtSafe(oa_loadMtri);
+
 	// Calculate total design flow rates from child IXFERS
 	float supFanVfDemand = 0.f;
 	float exhFanVfDemand = 0.f;
@@ -949,7 +964,7 @@ RC DOAS::oa_BegSubhr()
 		{
 			if (izx->iz_vfMin > 0)
 			{
-				oa_supAF.af_amf += izx->iz_vfMin * Top.tp_rhoMoistOSh / 60.;
+				oa_supAF.af_amf += izx->iz_vfMin * Top.tp_rhoMoistOSh * 60.;
 			}
 			else
 			{
@@ -957,36 +972,147 @@ RC DOAS::oa_BegSubhr()
 				AIRSTATE zoneAir;
 				zpx->zn_GetAirStateLs( zoneAir);
 				float rhoX = zpx->zn_rho0ls;
-				AIRFLOW zoneExhAF(-izx->iz_vfMin * rhoX / 60., zoneAir);
+				AIRFLOW zoneExhAF(-izx->iz_vfMin * rhoX * 60., zoneAir);
 				oa_exhAF.af_Mix(zoneExhAF);
 			}
 		}	
 	}
 
 	// Calculate supply air conditions
+
+	// Inlet (OA) conditions
 	AIRFLOW inletAF(oa_supAF.af_amf, Top.tDbOSh, Top.wOSh);
 
-	// Add fan heat
-	double supC = inletAF.af_AmfCp() * 3600.;		// fan flow in heat cap units (Btuh/F)
-	float tdSup = oa_supFan.fn_pute(supC, inletAF.as_tdb);
-	oa_supAF = inletAF; 	// This is the flow before the fan because the temperature rise due
-	                        // to the fan is applied at the IZXFER level
 
-	double exhC = oa_exhAF.af_AmfCp() * 3600.;		// fan flow in heat cap units (Btuh/F)
+
+	// Exhuast air conditions
+	double exhC = oa_exhAF.af_AmfCp();		// fan flow in heat cap units (Btuh/F)
 	oa_exhFan.fn_pute(exhC, oa_exhAF.as_tdb);
+
+	AIRFLOW hxOutAF(inletAF);
+
+	// Calculate HX (if it exists)
+	if (IsSet(DOAS_HXSENEFFH))
+	{
+		// Fan outlet only needs to be calculated if HX present
+		AIRFLOW exhFanOutAF(oa_exhAF);
+		exhFanOutAF.as_AddDeltaT(oa_exhFan.dT);
+	}
+
+
+	if (IsSet(DOAS_SUPTH) && IsSet(DOAS_SUPTC))
+	{
+		if (oa_supTH > oa_supTC)
+		{
+			rWarn("%s is greater than oaSupTC; oaSupTC will be set equal to oaSupTH",
+			mbrIdTx(DOAS_SUPTH));
+			oa_supTC = oa_supTH;
+		}
+	}
+
+	// Calculate supply fan heat
+	double supC = inletAF.af_AmfCp();		// fan flow in heat cap units (Btuh/F)
+	float tdFan = oa_supFan.fn_pute(supC, inletAF.as_tdb);
+
+	AIRFLOW tempOutAF(hxOutAF);
+
+	oa_supQSen = 0.f;
+	oa_supQLat = 0.f;
+
+	// Heating Coil (if setpoint is set)
+	if (IsSet(DOAS_SUPTH))
+	{
+		float supTdb = oa_supTH - tdFan;
+		if (hxOutAF.as_tdb < supTdb)
+		{
+			// Set air state to meet setpoint
+			tempOutAF.af_SetAirState(AIRSTATE(supTdb, hxOutAF.as_w), oa_supQSen, oa_supQLat);
+		}
+	}
+
+	// Cooling Coil (if setpoint is set)
+	if (IsSet(DOAS_SUPTC))
+	{
+		float supTdb = oa_supTC - tdFan;
+		if (hxOutAF.as_tdb > supTdb)
+		{
+			oa_supQSen = hxOutAF.af_AmfCp()*(supTdb - hxOutAF.as_tdb);
+			oa_supQLat = oa_supQSen/oa_SHRtarget - oa_supQSen;
+			tempOutAF.af_AddQSenLat(oa_supQSen, oa_supQLat);  // TODO: Preserve Qsen
+			oa_SHR = oa_supQSen/(oa_supQSen + oa_supQLat);
+		}
+	}
+
+	oa_supAF = tempOutAF; 	// This is the flow before the fan because the temperature rise due
+	                        // to the fan is applied at the IZXFER level
 	return rc;
+
 }
 //-----------------------------------------------------------------------------
 RC DOAS::oa_EndSubhr()
 {
 	RC rc = RCOK;
 	// Accummulate meters
-	MtrB.p[ oa_supFan.fn_mtri].H.mtr_Accum(
-		oa_supFan.fn_endUse,			// user-specified end use (default = "fan")
-		oa_supFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
-	MtrB.p[ oa_exhFan.fn_mtri].H.mtr_Accum(
-		oa_exhFan.fn_endUse,			// user-specified end use (default = "fan")
-		oa_exhFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+
+	// Fan meters
+	if (oa_supFan.fn_mtri)
+	{
+		MtrB.p[ oa_supFan.fn_mtri].H.mtr_Accum(
+			oa_supFan.fn_endUse,			// user-specified end use (default = "fan")
+			oa_supFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+	}
+	if (oa_exhFan.fn_mtri)
+	{
+		MtrB.p[ oa_exhFan.fn_mtri].H.mtr_Accum(
+			oa_exhFan.fn_endUse,			// user-specified end use (default = "fan")
+			oa_exhFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+	}
+
+	// Coil energy meters
+	if (oa_pCoilCMtr && oa_EIRC > 0.f)  // Cooling Coil
+	{
+		if (oa_supQSen < 0.f)
+		{
+			oa_pCoilCMtr->H.clg -= (oa_supQSen*oa_EIRC*Top.tp_subhrDur);
+		}
+		if (oa_supQLat < 0.f)
+		{
+			oa_pCoilCMtr->H.clg -= (oa_supQLat*oa_EIRC*Top.tp_subhrDur);
+		}
+	}
+	if (oa_pCoilHMtr && oa_EIRH > 0.f)  // Heating Coil
+	{
+		if (oa_supQSen > 0.f)
+		{
+			oa_pCoilHMtr->H.htg += (oa_supQSen*oa_EIRH*Top.tp_subhrDur);
+		}
+		if (oa_supQLat > 0.f)
+		{
+			oa_pCoilHMtr->H.htg += (oa_supQLat*oa_EIRH*Top.tp_subhrDur);
+		}
+	}
+
+	// Load meter
+	if (oa_pLoadMtr)
+	{
+		if (oa_supQSen > 0.f)
+		{
+			oa_pLoadMtr->S.qHtg += oa_supQSen*Top.tp_subhrDur;
+		}
+		else
+		{
+			oa_pLoadMtr->S.qClg += oa_supQSen*Top.tp_subhrDur;
+		}
+		if (oa_supQLat > 0.f)
+		{
+			oa_pLoadMtr->S.qHtg += oa_supQLat*Top.tp_subhrDur;
+		}
+		else
+		{
+			oa_pLoadMtr->S.qClg += oa_supQLat*Top.tp_subhrDur;
+		}
+
+	}
 
 	return rc;
 }

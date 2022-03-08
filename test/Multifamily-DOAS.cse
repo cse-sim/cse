@@ -508,17 +508,43 @@ MATERIAL   "IntMassMat-Gypsum"
 
 METER   "MtrElec"  
 
-METER   "MtrNatGas"
+METER   "MtrDOASElec"
 
 AFMETER "MtrAirFlow"
 
+LOADMETER "MtrPlantLoad"
+
+#define VENTILATION
+#define TEMPERING
+
+#ifdef VENTILATION
 DOAS    "Central Ventilation"
    oaSupFanElecPwr = 0.275                 // Fan input power per unit air flow (at design flow and pressure), W/cfm
    oaSupFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
    oaSupFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
+   
    oaExhFanElecPwr = 0.25                  // Fan input power per unit air flow (at design flow and pressure), W/cfm
    oaExhFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
    oaExhFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
+
+#ifdef TEMPERING
+   oaSupTH = 50
+   oaEIRH = 0.42
+#ifdef DOASMETER
+   oaCoilHMtr = "MtrDOASElec"
+   oaCoilCMtr = "MtrDOASElec"
+#else
+   oaCoilHMtr = "MtrElec"
+   oaCoilCMtr = "MtrElec"
+#endif
+
+   oaSupTC = 80
+   oaEIRC = 0.25
+   oaSHRtarget = 0.8
+#endif
+
+   oaLoadMtr = "MtrPlantLoad"
+#endif
 
 IZXFER   "Zone2ToAtticCeiling-BypassxA"  
    izNVType = "NONE"                    // Choice determining interzone ventilation
@@ -640,6 +666,7 @@ IZXFER   "Zone1-NVHD"
    izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
    izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
 
+#ifdef VENTILATION
 IZXFER   "Zone1-IAQFanS"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
@@ -651,6 +678,7 @@ IZXFER   "Zone1-IAQFanE"
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
+#endif
 
 IZXFER   "Zone2-InfLU"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
@@ -766,6 +794,7 @@ IZXFER   "Zone2-NVHD"
    izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
    izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
 
+#ifdef VENTILATION
 IZXFER   "Zone2-IAQFanS"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
@@ -777,6 +806,7 @@ IZXFER   "Zone2-IAQFanE"
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
    izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
+#endif
 
 IZXFER   "Zone2ToAtticCeiling-xAttic"  
    izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
@@ -1645,7 +1675,6 @@ RSYS   "rsys-Zone1 HVACSys"
    rsFxCapAuxH = 1.2                    // Auxiliary (backup) heating sizing factor
    rsOAVType = "None"                   // OAV system type
    rsElecMtr = "MtrElec"                // Electric use meter
-   rsFuelMtr = "MtrNatGas"              // Natural gas use meter
 
    DUCTSEG   "SupplyDuct-rsys-Zone1 HVACSys"  
       dsTy = "SUPPLY"
@@ -1681,7 +1710,6 @@ RSYS   "rsys-Zone2 HVACSys"
    rsFxCapAuxH = 1.2                    // Auxiliary (backup) heating sizing factor
    rsOAVType = "None"                   // OAV system type
    rsElecMtr = "MtrElec"                // Electric use meter
-   rsFuelMtr = "MtrNatGas"              // Natural gas use meter
 
    DUCTSEG   "SupplyDuct-rsys-Zone2 HVACSys"  
       dsTy = "SUPPLY"
@@ -1716,7 +1744,42 @@ REPORT   "ReportElec"
    rpDayBeg = Jan 1                     // initial day of report period
    rpDayEnd = Dec 31                    // final day of report period
 
+#ifdef DOASMETER
+REPORT   "DOASMeter"  
+   rpType = "MTR"                       // Report type
+   rpFreq = "MONTH"                     // Time interval for generating rows of report data
+   rpMeter = "MtrDOASElec"                  // Meter to report
+   rpBtuSf = 1000                       // Result scaling factor (1,000 reports kBtu)
+   rpDayBeg = Jan 1                     // initial day of report period
+   rpDayEnd = Dec 31                    // final day of report period
+#endif
+
 REPORT "AFCondM" rpType=AFMTR rpFreq=month rpAFMETER=MtrAirFlow rpDayBeg=Jan 1 rpDayEnd=dec 31
+
+#ifdef DEBUG
+REPORT "CoilLoadsM" rpType=UDT rpFreq="MONTH"  rpDayBeg=jan 1 rpDayEnd=dec 31
+    reportCol colHead="Mon"  colVal=@Top.MonStr
+    reportCol colHead="Htg"  colVal=@LOADMETER[ "MtrPlantLoad"].M.qHtg/1000
+    reportCol colHead="Clg"  colVal=@LOADMETER[ "MtrPlantLoad"].M.qClg/1000
+
+REPORT "CoilLoadsY" rpType=UDT rpFreq="YEAR"
+    reportCol colHead="Mon"  colVal="Yr"
+    reportCol colHead="Htg"  colVal=@LOADMETER[ "MtrPlantLoad"].Y.qHtg/1000
+    reportCol colHead="Clg"  colVal=@LOADMETER[ "MtrPlantLoad"].Y.qClg/1000
+
+REPORT "CoilLoadsH" rpType=UDT rpFreq="SUBHOUR"  rpDayBeg=May 1 rpDayEnd=May 1
+    reportCol colHead="Hour"  colVal=@Top.iHrST
+    reportCol colHead="SH"  colVal=@Top.iSubhr
+    reportCol colHead="Tout"  colVal=@Top.tDbOSh
+#ifdef VENTILATION
+    reportCol colHead="Tsup"  colVal=@DOAS["Central Ventilation"].supAF.tdb
+    reportCol colHead="AMF"  colVal=@DOAS["Central Ventilation"].supAF.amf
+    reportCol colHead="Z1Ts"  colVal=@IZXFER["Zone1-IAQFanS"].air2.tdb
+    reportCol colHead="Z1AMF"  colVal=@IZXFER["Zone1-IAQFanS"].ad[1].mdotP
+#endif
+    reportCol colHead="Htg"  colVal=@LOADMETER[ "MtrPlantLoad"].S.qHtg
+    reportCol colHead="Clg"  colVal=@LOADMETER[ "MtrPlantLoad"].S.qClg
+#endif
 
  RUN
  $EOF
