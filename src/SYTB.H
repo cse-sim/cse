@@ -28,7 +28,7 @@ struct STAE		// sym table array struct: SYTBH.p points to array of these
 };	// struct STAE
 const USI SYTBCASI = 0x8000;	// bit in iTokTy indicating case-insensitive entry
 const USI SYTBRES  = 0x4000;	// bit reserved for next feature to be added
-const USI TOKTYMASK = (~(SYTBCASI|SYTBRES));
+const USI TOKTYMASK = USI(~(SYTBCASI | SYTBRES));
 
 struct SYTBH	// symbol table header (base) structure
 {   STAE *p;		// pointer to array of STAE entries

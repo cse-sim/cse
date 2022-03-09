@@ -26,7 +26,7 @@ extern SI NEAR nextPrec;	// "prec" of ungotten (ie next) token, only valid after
 //extern SI NEAR lastPrec;	// "prec" of PRIOR token (0 at bof).
 //extern OPTBL * NEAR opp;	// ptr to opTbl entry for token
 extern char * NEAR ttTx;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs.  cul.cpp uses.
-extern void * NEAR stbk; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
+// extern void * NEAR stbk; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
 extern SI NEAR isWord;  	// non-0 if word: reserved, defined, or CUTID.
 
 /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees, incl cuprobe.cpp. */
@@ -50,12 +50,12 @@ extern PARSTK parStk[];	// parse stack buffer
 extern PARSTK* parSp;	// parse stack stack pointer
 
 /*--- CODE OUTPUT variables */
-extern PSOP* NEAR psp;		// set by itPile(), used by emit() &cpp.
+//extern PSOP* NEAR psp;		// set by itPile(), used by emit() &cpp.
 //extern PSOP* NEAR psp0;	// initial psp value, for computing length
-extern PSOP* NEAR pspMax;	/* ptr to end of code buffer less *6* bytes
-				   (6 = one float or ptr, 1 PSEND)
-				   for checking in emit() &cpp. */
-extern SI NEAR psFull;  	// non-0 if *psp has overflowed
+//extern PSOP* NEAR pspMax;	// ptr to end of code buffer less *6* bytes
+							// (6 = one float or ptr, 1 PSEND)
+							// for checking in emit() &cpp.
+//extern SI NEAR psFull;  	// non-0 if *psp has overflowed
 
 /*--- compiler debug aid display flags */
 extern int trace;	// nz for many printf's during compile.

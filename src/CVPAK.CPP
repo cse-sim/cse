@@ -34,10 +34,10 @@ static USI NEAR fmt;		// cvin2s "format" argument; see cvpak.h for field definit
 static USI NEAR mfw;		// cvin2s "max field width" argument.
 static SI NEAR just;		// justification: left, rt, rz, squeeze.
 static SI NEAR ijust;		// ditto right-shifted for use as subscript.
-static SI NEAR lj;		// left justify (just & FLMLJ).
-static SI NEAR lz;		// leading 0's (right justify).  note FMTLZ not used, could code out. rob 10-88
+static SI NEAR lj;			// left justify (just & FLMLJ).
+static SI NEAR lz;			// leading 0's (right justify).  note FMTLZ not used, could code out. rob 10-88
 static SI NEAR wsign;		// 0 or 1 columns for sign, set by cvin2s
-static SI NEAR wid;		// width for sprintf: 1 for squeeze, else mfw. cvdd expects caller to set.
+static SI NEAR wid;			// width for sprintf: 1 for squeeze, else mfw. cvdd expects caller to set.
 static SI NEAR ppos;		// precomputed sprintf precision (prcsn) for several cases for values >= 0
 static SI NEAR pneg;		// precomputed sprintf precision (prcsn) for serveral cases for values < 0
 static double NEAR aval;	// fabs(val): set by cvsd, cvdd, ft-in; updated by nexK.
@@ -342,6 +342,11 @@ p		wsign = !(pv==FMTPVNULL && val >= 0.);	// sign width
 			if (i != l)  *(str+l) = ' ';				// append space unless just put % there
 			*(str+l+1) = '\0';					// reterminate
 		}
+#endif
+#if 0
+x consider changing "-0" to "0"?
+x		if (strcmp("-0", str) == 0)
+x			printf("\n-0");
 #endif
 		break;
 
@@ -775,7 +780,7 @@ LOCAL BOO FC NEAR nexK()		// K format incrementer: call each time need to make s
 			return FALSE;			// not enough room, period.
 		if (fabs(val) < 500.)		// 500-->1k: smaller (too misleading?);  499.9999-->.5k: no smaller than 499.
 			return FALSE;			// too small to gain from shrinking
-		amfw--;				// first time, reduce field width (after sign) by 1 for the k, M, etc
+		amfw--;						// first time, reduce field width (after sign) by 1 for the k, M, etc
 		if (wid > 1)  wid--;		// unless FMTSQ, reduce sprintf width for the ditto.
 	}
 	else				// already in K format
@@ -785,9 +790,9 @@ LOCAL BOO FC NEAR nexK()		// K format incrementer: call each time need to make s
 		if (ddalpha[ki+1]=='?')		// if we have used up all the suffix characters (ie have divided by about 1e18)
 			return FALSE;			// can't shrink any more, let it ****
 	}
-	ki++;				// first/next k format trailing character (init -1)
+	ki++;					// first/next k format trailing character (init -1)
 	val /= 1000.;			// divide value to print by 1000
-	aval = fabs(val);			// maintain absolute val for some callers
+	aval = fabs(val);		// maintain absolute val for some callers
 	nDigB4Pt -= 3;			// 3 less digits before point
 	setToMax( nDigB4Pt, 0);		// .. but not less than 0.
 	return TRUE;
@@ -831,8 +836,8 @@ LOCAL BOO FC NEAR cvsd( 			// Significant-digits (trim trailing 0's, g format) o
 
 // determine digits left of decimal point.  Note nexK adjusts.
 	for ( nDigB4Pt = 0;  					// count digits before point (b4 rounding)
-	nDigB4Pt < PTENSIZE  &&  Pten[nDigB4Pt] <= aval;	//   Pten: powers of 10, [0]..[15]. cons.c.
-	nDigB4Pt++ ) ;
+		nDigB4Pt < PTENSIZE  &&  Pten[nDigB4Pt] <= aval;	//   Pten: powers of 10, [0]..[15]. cons.c.
+		nDigB4Pt++ ) ;
 
 #if 0	// idea not used -- leave user the control of seeing eg 99.9k not 99990 by spec'ing 4 digits in 6 columns. 4-9-92.
 x// conditionally use more significant digits rather than an overflow format
@@ -973,17 +978,15 @@ p		};  // squeeze
 		"%*.*f",
 	};		// squeeze
 #endif
-	SI n0afPt, nDigB4Pt, prcsn, maxDfw;
-	char *zp;
 	aval = fabs(val);			// absolute val
 	amfw = _mfw - wsign; 		// width less sign.  wsign is !(val >= 0. [&& pv==FMTPVNULL])
 
 // compute precision (digits after point) to fit field, in range 0 to (possibly increased) _dfw
 
-	nDigB4Pt = 0;
-	while (nDigB4Pt < PTENSIZE  &&  Pten[nDigB4Pt] <= aval)	// Pten: powers of 10, [0]..[15]. cons.c.
-		nDigB4Pt++;						// digits needed for magnitude left of .
-	prcsn = amfw - nDigB4Pt - 1;   				// precision: space avail for digits after .
+	int _nDigB4Pt = 0;	// local
+	while (_nDigB4Pt < PTENSIZE  &&  Pten[_nDigB4Pt] <= aval)	// Pten: powers of 10, [0]..[15]. cons.c.
+		_nDigB4Pt++;						// digits needed for magnitude left of .
+	int prcsn = amfw - _nDigB4Pt - 1;   	// precision: space avail for digits after .
 	if (prcsn <= 0)
 		prcsn = 0;
 	else 					// prcsn > 0: room for 1 or more digits after point
@@ -996,13 +999,13 @@ p		};  // squeeze
 		if (_dfw > 0)   				/* don't go into decimal places if none requested (take dfw==0 as 0 sig dig here)
 						   (??? or, do "if (!_dfw) _dfw++;" at foot of loop to get a sig dig to show) */
 		{
-			maxDfw = min( prcsn, _dfw + 3);     	// don't exceed space avail; don't add > 3 places here (shd that be 2?)
+			int maxDfw = min( prcsn, _dfw + 3);     // don't exceed space avail; don't add > 3 places here (shd that be 2?)
 			maxDfw = min( maxDfw, 7);		// increase only to 7 dec places: avoid garbage detail; don't exceed NPten[].
 			if (aval < NPten[maxDfw] * .5)	// if only 0's would show anyway even after round, don't crowd:
 				maxDfw = min( maxDfw - 1,		/* add 1 less digit here (re 7 or +3 limits), and */
 				prcsn + wsign - 2);	// leave space for sign even if > 0, here only.  CAUTION: may make maxDfw < 0.
 
-			for (n0afPt = 1;  _dfw < maxDfw;  _dfw++, n0afPt++)	// increase _dfw til dfw sig digits show or to maxDfw limit
+			for (int n0afPt = 1;  _dfw < maxDfw;  _dfw++, n0afPt++)	// increase _dfw til dfw sig digits show or to maxDfw limit
 			{
 				// test if enuf significant digits will (now) show
 				if (aval >= NPten[n0afPt]) 		// if aval > .1 at entry, > .01 next iteration, then .001, .0001, etc.
@@ -1030,7 +1033,8 @@ p       Cvnchars = sprintf( str, ff[ijust][ipv], wid, prcsn, val);	// convert
 		if (Cvnchars <= _mfw)
 			return 1;						// return if fits _mfw
 		// too wide.  If number < 1.0, sprintf output "0.xxx".  ndig did not allow for 0 b4 point.  Remove it.
-		if (nDigB4Pt==0 && *(zp=(str+Cvnchars-prcsn-2))=='0')	// if of format 0.xxx
+		char* zp;
+		if (_nDigB4Pt==0 && *(zp=(str+Cvnchars-prcsn-2))=='0')	// if of format 0.xxx
 		{
 			strcpy( zp, zp+1);					// remove leading 0 from 0.xxx.
 			Cvnchars--;
@@ -1767,6 +1771,8 @@ t}						/* main */
 #endif	/* TEST */
 
 //===========================================================================
+#if 0
+unused, 2-2022
 RC FC cvatol(		/* convert string to (signed) long integer */
 
 	char *s,	/* string */
@@ -1848,11 +1854,12 @@ RC FC cvatol(		/* convert string to (signed) long integer */
 	return RCOK;           /* good return */
 
 }					/* cvatol */
+#endif	// unused
 
 //========================================================================
-RC FC cvatof(		/* Convert a string to a double value */
+RC FC cvatof(		// Convert a string to a double value
 
-	char *str,		/* String, leading and trailing ws OK */
+	const char* _str,	/* String, leading and trailing ws OK */
 	double *vp,		/* Pointer to double to receive value. */
 	SI percent )	/* nz: trailing '%' is acceptable (and ignored)
     			   0:  '%' treated as error */
@@ -1930,7 +1937,7 @@ RC FC cvatof(		/* Convert a string to a double value */
 	for ( ; ; )		/* loop over char string */
 	{
 		/* get and categorize character */
-		c = tolower(*str);
+		c = tolower(*_str);
 		if (isdigitW(c))		ct = 2;
 		else if (isspaceW(c))	ct = 0;
 		else if (c=='.')		ct = 3;
@@ -1992,7 +1999,7 @@ RC FC cvatof(		/* Convert a string to a double value */
 			;
 		}
 		s = actState[s][ct] & 0x0F;	/* new state */
-		str++;				/* next char */
+		_str++;				/* next char */
 	}
 
 	/* Upon arrival here, things are set up as follows:
@@ -2040,6 +2047,8 @@ makeval:
 	return RCOK;
 }				/* cvatof */
 
+#if 0
+unused
 #if 1 /* add 'w' 7-25-90 */
 #pragma optimize("aw",off)	/* turn off no-aliases options because args
 s1 and s2 point into same string. (With
@@ -2080,5 +2089,7 @@ RC FC cvatof2(		/* Substring variant of cvatof() */
 #else
 x #pragma optimize("a",on)	/* restore */
 #endif /* 7-25-90 */
+
+#endif
 
 // end of cvpak.c

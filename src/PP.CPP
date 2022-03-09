@@ -744,7 +744,7 @@ LOCAL RC FC NEAR ppC( char *p, USI n, USI *nRet)
 
 const int PPCMAX = 16383;	// max preprocessor command length
 
-	char ppcBuf[ PPCMAX+1], *ppcP;
+	char ppcBuf[ PPCMAX+1], *ppcP = nullptr;
 
 	*nRet = 0;				// say no chars returned yet
 	SI newlineRet = 0;			// say no \n ret'd yet. added 11-91 re reducing preprocess-ahead re embedded errmsgs.
@@ -1475,7 +1475,7 @@ LOCAL RC FC NEAR ppmScan()
 
 // On return, characters is->buf[is->i..j-1] have been scanned and is->inCmt and is->isId are set for these characters.
 {
-	SI c, c2;
+	SI c, c2 = 0;
 	USI span;
 
 #define SCANPAST(p,tx,label) \
@@ -2166,7 +2166,7 @@ LOCAL int FC NEAR lisCmp( 		// multi-line compare text to listing text
 
 		// compare this line
 		lis += 8;				// point after prefix part of listing line
-		int lls = strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
+		size_t lls = strcspn( s, "\r\f\n" );	// line body length -- do not count \r, \n, etc
 		if (strcspn( lis, "\r\f\n" ) != lls)
 			return 1;				// different line lengths, no match
 		if (lls)
@@ -2307,7 +2307,7 @@ LOCAL SI NEAR ppTokty = 0;		// token type (same as ppTok return)
 //===========================================================================
 void FC ppTokClean( 		// ppTok init/cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
 
 //called from pp.cpp:ppClean.
 {
@@ -3319,7 +3319,7 @@ RC FC ppDelDefine() 	// undefine identifier in ppIdtx[]
 }					// ppDelDefine
 //==========================================================================
 LOCAL BOO clearOneDefine( 	// clean and free one DEFINE symbol table entry
-	SI tokTy,		// token type, not used here
+	[[maybe_unused]] SI tokTy,		// token type, not used here
 	DEFINE *&theDef )	// ref to pointer to DEFINE structure as used in defSytb entries
 // returns TRUE to say symbol table entry should be deleted.
 {
@@ -3499,7 +3499,7 @@ LOCAL void FC NEAR ppUnToke( void);
 //===========================================================================
 void FC ppCexClean( 		// init/cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH (type in cnglob.h)
 
 // added 10-93 while converting from main program to repeatedly-callable, DLLable subroutine.
 {
@@ -3810,7 +3810,7 @@ LOCAL RC FC NEAR ppNewSf()		// start new parse stack frame: call at start (sub)e
        								   "    preprocessor constant expression probably too complex" */
 // allocate and init new frame
 	ppParSp++;  			// point next frame
-	ppParSp->value = (SI)0x8000;	// poss representation of "no value"
+	ppParSp->value = static_cast<SI>(0x8000);	// poss representation of "no value"
 
 	ppParSp->ty = TYNONE;  		// data type: no value yet
 	return RCOK;

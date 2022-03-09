@@ -817,7 +817,7 @@ int strDecode(					// decode numeric value (internal fcn)
 	const char *fmt,	// decode format, with "guard char", e.g. "%lg%1s"
 	//   Note: %1c will NOT scan over WS, use %1s
 	void *p,			// where to store converted value
-	int erOp/*=IGN*/,			// msg ctrl: IGN/WRN/ABT
+	[[maybe_unused]] int erOp/*=IGN*/,			// msg ctrl: IGN/WRN/ABT
 	const char* what/*=NULL*/,	// item name for msg, NULL=generic message
 	const char** pMsg/*=NULL*/)	// if non-NULL, error msg returned here
 //   (in addition to display per erOp)
@@ -886,7 +886,7 @@ char* strFill(			// fill string IN PLACE
 //---------------------------------------------------------------------------
 const char* strSuffix(   // generate string suffix
 	int n,				// index
-	int options /*=0*/)	// options
+	[[maybe_unused]] int options /*=0*/)	// options
 						//   future: might control style
 // returns (in Tmpstr) "a", "b" ..."aa", ...
 {
@@ -1125,7 +1125,7 @@ char* strPluralize(				// form plural of a word
 		{
 			strcpy( d, word);
 			int len = strlen( d);		// len >= 1 (check above)
-			BOOL bLastUpper = IsCharUpper( d[ len-1]) > 0;
+			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
 			if (tolower( d[ len-1]) == 'y')
 				strcpy( d+len-1, bLastUpper ? "IES" : "ies");
@@ -1159,13 +1159,14 @@ char* strCase( char* s, const char toCases[3])
 // internalize toCases[] for speed
 	enum { lower, nc, upper } itc[3];
 	itc[0] = itc[1] = itc[2] = nc;
-	for (int i = 0; i < 3; i++)
+	int i;
+	for (i = 0; i < 3; i++)
 	{
 		if (!toCases[i])			// if < 3 chars given
 			break;					// treat rest as -
-		else if (IsCharLower(toCases[i]))
+		else if (islowerW(toCases[i]))
 			itc[i] = lower;
-		else if (IsCharUpper(toCases[i]))
+		else if (isupperW(toCases[i]))
 			itc[i] = upper;
 	}
 
@@ -1181,10 +1182,10 @@ char* strCase( char* s, const char toCases[3])
 		else				// spaces don't need case conversion
 		{
 			if (itc[which]==upper)
-				CharUpperBuff( s+i, 1);
+				*((unsigned char*)s+i) = toupper(*((unsigned char*)s+i));
 			// upperize 1 char, handle accented chars
 			else if (itc[which]==lower)
-				CharLowerBuff( s+i, 1);
+				*((unsigned char*)s+i) = tolower(*((unsigned char*)s+i));
 			// lowerize 1 char, handle accented chars
 			which = 2;			// for s[i] til next space
 			nsSeen++;			// next word beginning is not 1st word

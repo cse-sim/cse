@@ -264,10 +264,11 @@ RSYS MySys
 	//rsVfPerTon = cfm per ton (default = 350)
 	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
 	rsFChg = 1		//ACM charge factor (default = 1)
-	rsFSize = 1		//ACM size factor (default = 1)
 
 	rsAFUE =.71
-	rsFanPwrH = 0.58		//W/cfm (default = 0.365)	
+	rsFanPwrH = 0.58		//W/cfm (default = 0.365)
+    rsParFuel = $month >= 10 || $month <= 4 ? 100 : 0
+    rsParElec = ($tdbo > 80)*40
 	
 METER SysMtr;
 
@@ -288,6 +289,51 @@ Report rpType=UDT rpFreq=Year  rpTitle="MySys Characteristics"
 #endif
  
  REPORT rpType=MTR  rpMeter = SysMtr rpFreq=Month
+
+ #define SYSRESCOLS( RXCOL, WhenHead, when, R, F, dp) \
+    RXCOL colHead=WhenHead colVal=when colWid=3 \
+	RXCOL colHead="hrsOn" colVal=R.hrsOn	colDec=dp colWid = 6 \
+	RXCOL colHead="hrsOnX" colVal=R.hrsOnAux	colDec=dp colWid = 6 \
+	RXCOL colHead="qhPrim" colVal=F*R.qhPrimary	colDec=dp colWid = 6 \
+	RXCOL colHead="qhDef" colVal=F*R.qhDefrost	colDec=dp colWid = 6 \
+	RXCOL colHead="qhAux" colVal=F*R.qhAux		colDec=dp colWid = 6 \
+    RXCOL colHead="qhFan" colVal=F*R.qhFan   colDec=dp colWid = 6 \
+	RXCOL colHead="qhNet" colVal=F*R.qhNet	   colDec=dp colWid = 6 \
+	RXCOL colHead="qcSen" colVal=F*R.qcSen	   colDec=dp colWid = 6 \
+	RXCOL colHead="qcLat" colVal=F*R.qcLat	   colDec=dp colWid = 6 \
+    RXCOL colHead="qcFan" colVal=F*R.qcFan       colDec=dp colWid = 6 \
+    RXCOL colHead="qcSenNet" colVal=F*R.qcSenNet    colDec=dp colWid = 6 \
+    RXCOL colHead="qvFan" colVal=F*R.qvFan       colDec=dp colWid = 6 \
+    RXCOL colHead="fhPrim" colVal=F*R.fhPrimary   colDec=dp colWid = 6 \
+    RXCOL colHead="fhDef" colVal=F*R.fhDefrost   colDec=dp colWid = 6 \
+    RXCOL colHead="fhAux" colVal=F*R.fhAux       colDec=dp colWid = 6 \
+    RXCOL colHead="fhPar" colVal=F*R.fhParasitic colDec=dp colWid = 6 \
+    RXCOL colHead="fhTot" colVal=F*R.fhTot       colDec=dp colWid = 6 \
+    RXCOL colHead="ehPrim" colVal=F*R.ehPrimary   colDec=dp colWid = 6 \
+    RXCOL colHead="ehDef" colVal=F*R.ehDefrost   colDec=dp colWid = 6 \
+    RXCOL colHead="ehAux" colVal=F*R.ehAux       colDec=dp colWid = 6 \
+    RXCOL colHead="ehFan" colVal=F*R.ehFan       colDec=dp colWid = 6 \
+    RXCOL colHead="ehPar" colVal=F*R.ehParasitic colDec=dp colWid = 6 \
+    RXCOL colHead="ehTot" colVal=F*R.ehTot       colDec=dp colWid = 6 \
+    RXCOL colHead="ecPrim" colVal=F*R.ecPrimary   colDec=dp colWid = 6 \
+    RXCOL colHead="ecFan" colVal=F*R.ecFan       colDec=dp colWid = 6 \
+    RXCOL colHead="ecPar" colVal=F*R.ecParasitic colDec=dp colWid = 6 \
+    RXCOL colHead="ecTot" colVal=F*R.ecTot       colDec=dp colWid = 6 \
+    RXCOL colHead="evFan" colVal=F*R.evFan       colDec=dp colWid = 6 \
+    RXCOL colHead="evPar" colVal=F*R.evParasitic colDec=dp colWid = 6 \
+    RXCOL colHead="evTot" colVal=F*R.evTot       colDec=dp colWid = 6 \
+    RXCOL colHead="qhZSen" colVal=F*R.qhZoneSen   colDec=dp colWid = 6 \
+    RXCOL colHead="qhZLat" colVal=F*R.qhZoneLat   colDec=dp colWid = 6 \
+    RXCOL colHead="qcZSen" colVal=F*R.qcZoneSen   colDec=dp colWid = 6 \
+    RXCOL colHead="qcZLat" colVal=F*R.qcZoneLat   colDec=dp colWid = 6 \
+    RXCOL colHead="qvZSen" colVal=F*R.qvZoneSen   colDec=dp colWid = 6 \
+    RXCOL colHead="qvZLat" colVal=F*R.qvZoneLat   colDec=dp colWid = 6
+
+REPORT SYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "RSYSRES Furn"
+SYSRESCOLS( REPORTCOL,"Mon",@Top.monstr,@RSYSRES[ 1].M,.001,3)
+REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
+
  REPORT   rpType=ZDD     rpZone="Z1"
         
 

@@ -15,7 +15,6 @@
 #include "solar.h"
 #include <wfpak.h>
 #include <cnguts.h>
-#include <cul.h>		// FsSET 6-95
 
 #include <cgwthr.h>		// decls for this file
 
@@ -194,7 +193,7 @@ RC TOPRAT::tp_WthrBegSubhr()		// start-subhour weather stuff: set subhourly publ
 	tDbOPvSh = tDbOSh;
 
 // common setup
-	float f = float(iSubhr)/tp_nSubSteps;    	// fraction of hour passed at start this subhour
+	[[maybe_unused]] float f = float(iSubhr)/tp_nSubSteps;    	// fraction of hour passed at start this subhour
 	float g = float(iSubhr+1)/tp_nSubSteps;	// fraction of hour passed at end this subhour
 	float h = 1.f - g;					// fraction of hour remaining after this subhour
 
@@ -433,27 +432,27 @@ RC TOPRAT::tp_WthrFillDsDay(
 
 	int wfOp = 0;
 
-	for (int iHr = 0; iHr < 24; iHr++)
+	for (int iH = 0; iH < 24; iH++)
 	{
-		WDHR& wd = pWF->wf_GetDsDayWDHR(iHr);
+		WDHR& wd = pWF->wf_GetDsDayWDHR(iH);
 
 		if (tp_dsDay == 1)
-			rc |= wd.wd_GenDesCondHeating(pWF, jDay, iHr);
+			rc |= wd.wd_GenDesCondHeating(pWF, jDay, iH);
 
 		else if (tp_dsDay == 2)
 		{
 			if (tp_AuszWthrSource() == TOPRAT_COOLDSMO)
 				// read month's design day
-				rc = pWF->wf_Read(&wd, auszMon, iHr, 	// Read hour's data from wthr file design day
+				rc = pWF->wf_Read(&wd, auszMon, iH, 	// Read hour's data from wthr file design day
 							WRN | WF_DSNDAY);			// option says 2nd arg is design day mon 1-12 not Julian date.
 			else
 			{	// read actual day
-				rc = pWF->wf_Read(&wd, jDayST, iHr, WRN | wfOp);	// Read hour's data from weather file
+				rc = pWF->wf_Read(&wd, jDayST, iH, WRN | wfOp);	// Read hour's data from weather file
 				if (tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
 				{	// DSCOND design day: overwrite/adjust weather file values with generated
 					int iDC = tp_coolDsCond[tp_dsDayI - 1];
 					const DESCOND& DC = DcR[iDC];
-					wd.wd_FillFromDESCOND(DC, iHr);
+					wd.wd_FillFromDESCOND(DC, iH);
 				}
 			}
 		}
@@ -642,7 +641,7 @@ RC DESCOND::dc_CheckFixSolar(
 #if defined( _DEBUG)
 			else
 			{	float ebn, edh;
-				float egl = slASHRAETauModel( sunZen, dc_tauB, dc_tauD, ebn, edh);
+				/*float egl =*/ slASHRAETauModel(sunZen, dc_tauB, dc_tauD, ebn, edh);
 				if (frDiff( ebn, dc_ebnSlrNoon) > .01f
 				  || frDiff( edh, dc_edhSlrNoon) > .01f)
 					oWarn( "ebn/edh mismatch");

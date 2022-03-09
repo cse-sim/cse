@@ -235,7 +235,7 @@ friend struct BCX;
 							//   (re excessive msg skip)
 
 	int mn_Init( MASSFD* pMFD, const MASSLAYER& ml);
-	inline double mn_UhT( float T) const { return max( .0001, mn_uhA + mn_uhB*mn_t); }
+	inline double mn_UhT([[maybe_unused]] float T) const { return max( .0001, mn_uhA + mn_uhB*mn_t); }
 	inline void mn_UpdateUh() { mn_uh = mn_UhT( mn_t); }
 	inline int mn_IsCondTempDependent() const { return mn_uhB != 0.; }
 	inline const char* mn_MassName() const;

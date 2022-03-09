@@ -255,7 +255,7 @@ static RC extValidate(
 //===========================================================================
 void FC exClean(	// exman.cpp cleanup routine
 
-	CLEANCASE cs )	// ENTRY, DONE, or CRASH. type in cnglob.h.
+	[[maybe_unused]] CLEANCASE cs )	// ENTRY, DONE, or CRASH. type in cnglob.h.
 
 // added for DLL version that should free every bit of memory. Rob 12-3-93.
 {
@@ -745,10 +745,11 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 
 			// keep change flag registrations in recs that are NOT free'd tween phases (tho suspect ok to free all, 10-95)
 			j = 0;
+			b = nullptr;
 			for (i = 0;  i < ex->whChafN;  i++)  		// loop over change flag registrations for this expr
 			{
 				w = ex->whChaf+i;
-				BP b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
+				b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
 				if (b && b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this entry
 				{
 					if (j < i)				// if any have been deleted,
@@ -913,7 +914,7 @@ LOCAL RC FC NEAR addStore( 		// register use of expression h in basAnc record
 
 //STATREF version at end file
 //===========================================================================
-RC FC addChafIf (		// conditionally register change flag in basAnc record for expr.   (formerly addChafRatIf, 7-92)
+RC addChafIf (		// conditionally register change flag in basAnc record for expr.   (formerly addChafRatIf, 7-92)
 
 	NANDAT *pv, 		// if this contains a "nandle" on a live run-time expression, change flag will be registered; else not
 	// where to ++ when expression changes:
@@ -948,7 +949,6 @@ RC FC addChafIf (		// conditionally register change flag in basAnc record for ex
 	w->o  = o;					// ... (as can happen at reallocation)
 	return RCOK;
 }		// addChafIf
-
 //===========================================================================
 RC FC exEvEvf( 			// evaluate expressions and do their updates
 
@@ -1112,7 +1112,7 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 {
 	RC rc;
 	const char* ms;
-	NANDAT v, *pv;
+	NANDAT v = nullptr, *pv;
 	SI isChanged;
 
 // get new value: evaluate expression's pseudo-code
@@ -1400,7 +1400,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		return strtprintf( (char *)MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
 
 // field name
-	const char* mName;
+	const char* mName = nullptr;
 	for (SFIR *fir = b->fir;  fir && fir->fdTy;  fir++)		// find member name in rat's fields-in-record table
 		if (fir->off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment

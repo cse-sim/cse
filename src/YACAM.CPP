@@ -163,7 +163,7 @@ RC YACAM::close( int erOp /*=WRN*/)	// close file, nop if not opened, RCOK if ok
 	return rc;
 }			// YACAM::close
 //---------------------------------------------------------------------------
-RC YACAM::rewind( int erOp /*=WRN*/)
+RC YACAM::rewind([[maybe_unused]] int erOp /*=WRN*/)
 // repos file to beginning
 {
 	RC rc = clrBufIf();
@@ -190,7 +190,7 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 				:  _lseek( mFh, 0, SEEK_END)==-1L )		//  else seek to end file
 			rc = errFl((const char *)MH_I0104);			// seek failed, conditionally issue error msg containing "Seek error on"
 
-		int nw = ::write( mFh, buf, bufN); 	// write buffer contents, return -1 or # bytes written. C library function.
+		int nw = ::write( mFh, yc_buf, bufN); 	// write buffer contents, return -1 or # bytes written. C library function.
 		if ( nw == -1						// if -1 for error
 				||  nw < bufN )   			// if too few bytes written -- probable full disk
 			rc = errFl((const char *)MH_I0105);	// conditionally issue message. "Write error on".
@@ -207,7 +207,7 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 int YACAM::read( 		// read to caller's buffer
 
 	char *buf,  int count, 	// buffer address and desired number of bytes
-	long filO /*-1L*/,    		// file offset or -1L to use current position
+	long filO /*-1L*/,    	// file offset or -1L to use current position
 	int erOp /*=WRN*/ )		// error action: IGNore, WaRN, etc -- comments above
 // and option bit(s): YAC_EOFOK: no message for reading end of file.
 
@@ -243,7 +243,7 @@ int YACAM::read( 		// read to caller's buffer
 RC YACAM::write( 		// write from caller's buffer
 
 	char *buf,  int count, 	// buffer address and desired number of bytes
-	long filO /*-1L*/,    		// file offset or -1L to use current position
+	long filO /*-1L*/,    	// file offset or -1L to use current position
 	int erOp /*=WRN*/ )		// error action: IGNore, WaRN, etc -- comments above
 
 // random write from caller's buffer. Returns RCOK if ok.
@@ -290,20 +290,20 @@ char* YACAM::getBytes(     // random access using buffer in object -- use for sh
 	if (mFilO >= 0L && bufN > 0)	// if there is data in buffer
 	{
 		if (filO >= mFilO  &&  filO+count <= mFilO+bufN)		// if all of the data is in buffer
-			return buf + (filO - mFilO);   	// just return its address within buffer
+			return yc_buf + (filO - mFilO);   	// just return its address within buffer
 		if (filO >= mFilO  &&  filO < mFilO+bufN)		// if start of data is in buffer
 			nKeep = bufN - (filO - mFilO);  	// compute how many bytes to keep
 		//else nKeep = 0;
 	}
 	if (nKeep > 0)
 	{
-		memmove( buf, buf+bufN-nKeep, nKeep);		// move bytes to keep to start buffer so can read after them
+		memmove( yc_buf, yc_buf+bufN-nKeep, nKeep);		// move bytes to keep to start buffer so can read after them
 		//mFilO += nKeep; bufN -= nKeep; bufI ??		reset on fallthru
 	}
 
 // read enough bytes to fill buffer
 
-	int cr = read( buf + nKeep, sizeof(buf) - nKeep,	// seek and read bytes (mbr fcn). buffer, count.
+	int cr = read( yc_buf + nKeep, sizeof(yc_buf) - nKeep,	// seek and read bytes (mbr fcn). buffer, count.
 							  filO + nKeep, 			// file offset
 							  erOp | YAC_EOFOK );		/* suppress eof/short read msg cuz want no msg if enuf
                               					   bytes for caller's request but < bufferful. 10-26-94. */
@@ -317,7 +317,7 @@ char* YACAM::getBytes(     // random access using buffer in object -- use for sh
 		errFl((const char *)MH_I0107);    	// cnd'l msg containing "Unexpected end of file in" (2nd use)
 		return NULL;
 	}
-	return buf;					// ok, desired bytes start at front of buffer. Another good return above.
+	return yc_buf;					// ok, desired bytes start at front of buffer. Another good return above.
 }			// YACAM::getBytes
 //---------------------------------------------------------------------------
 RC YACAM::putBytes(     // random access using buffer in object -- use for short, likely-to-be sequential writes.
@@ -340,7 +340,7 @@ RC YACAM::putBytes(     // random access using buffer in object -- use for short
 	if ( bufN > 0 					// if any data in buffer
 			&&  mFilO == -1L 					// if buffer is to be written at eof
 			&&  filO == -1L					// and new data is also for eof
-			&&  bufN + count < sizeof(buf) )	// and new data will fit in buffer
+			&&  bufN + count < sizeof(yc_buf) )	// and new data will fit in buffer
 	{
 		i = bufN;					// put new data after present buffer contents; no write now.
 	}
@@ -348,7 +348,7 @@ RC YACAM::putBytes(     // random access using buffer in object -- use for short
 			  &&  mFilO >= 0L 					// if buffer data goes at specified buffer position
 			  &&  filO >= mFilO					// if new data does not start before buffer position (thus filO >= 0L)
 			  &&  filO <= mFilO + bufN				// if new data does not start after end of buffer contents
-			  &&  filO + count <= long( mFilO + sizeof(buf)) )		// if new data would not extend past buffer capacity
+			  &&  filO + count <= long( mFilO + sizeof(yc_buf)) )		// if new data would not extend past buffer capacity
 	{
 		i = (filO - mFilO);		// offset within buffer for the new data
 	}
@@ -362,7 +362,7 @@ RC YACAM::putBytes(     // random access using buffer in object -- use for short
 
 // put data in buffer
 
-	memcpy( buf + i, data, count);		// copy data into and/or after end of buffer contents
+	memcpy( yc_buf + i, data, count);		// copy data into and/or after end of buffer contents
 	setToMax( bufN, (USI)(i + count));		// new size of buffer contents
 	dirty = TRUE;				// buffer needs to be written
 	//mFilO was set above if changed
@@ -417,9 +417,9 @@ char YACAM::peekC( int erOp /*=WRN*/)			// return next character or EOF and leav
 // if buffer empty, read it full
 	if (bufI >= bufN)				// if no (more) chars in buffer
 	{
-		bufN = bufI = 0;				// no chars in buffer; next char to use will be buf[0].
+		bufN = bufI = 0;				// no chars in buffer; next char to use will be yc_buf[0].
 
-		int cr = read( buf, sizeof(buf), -1L, erOp|YAC_EOFOK); 	// read without seek, member fcn above.
+		int cr = read( yc_buf, sizeof(yc_buf), -1L, erOp|YAC_EOFOK); 	// read without seek, member fcn above.
 
 		if (cr==-1)				// if error
 			return EOF;			// read() issued a message
@@ -428,7 +428,7 @@ char YACAM::peekC( int erOp /*=WRN*/)			// return next character or EOF and leav
 		bufN = cr;				// ok, # chars in buffer is # read.
 	}
 // return next char in buffer, do not point past it
-	char c = buf[bufI];
+	char c = yc_buf[bufI];
 	return c==0x1a ? EOF : c;	// return EOF for ctrl-z: ctrl-z is stored by some archaic editors to indicate eof
 }				// YACAM::peekC
 //---------------------------------------------------------------------------
@@ -565,7 +565,7 @@ state	    -------- -------- -------- -------- -------- -------- -------- -------
 		else                    ct=7;
 
 		// perform action for char type in state
-		char savc;
+		char savc = NULL;
 		int reDo;
 		do
 		{
@@ -784,7 +784,7 @@ int YACAM::line( 	// return current line
 // returns -1 if clean EOF before 1st char
 //         else >= 0 = line length
 {
-	char c;
+	char c = NULL;
 	int iC;
 	for (iC=0; iC < lineSz; iC++)
 	{	c = getC( erOp);
@@ -881,7 +881,8 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			continue;
 
 		// decode optional count before control letter
-		for (int count = 0;  isdigitW(cc);  cc = *cstr++)	// decode count. if none, 0 treated as 1 by code below.
+		int count;
+		for (count = 0;  isdigitW(cc);  cc = *cstr++)	// decode count. if none, 0 treated as 1 by code below.
 			count = count * 10 + (cc - '0');
 		while (cc && isspaceW(cc))			// deblank again after count
 			cc = *cstr++;
@@ -890,7 +891,8 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 		cc = toupper(cc);
 
 		// access variable arg list if not skipping
-		size_t size;
+		size_t size = 0;
+		count = 0;
 		if (cc != 'X')
 		{ 	p = va_arg( pp, void *);	// get result-storing pointer from var arg list
 			if (cc=='C')				// for C, pointer is followed by character array size

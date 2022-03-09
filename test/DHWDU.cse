@@ -3357,6 +3357,7 @@ ZONE   "Attic -atc"
    infAC = 0
    infELA = 0
    infShld = 4
+   znAfMtr = AFMTR2
 
 SURFACE   "Attic -atc-rfNF"  
    sfType = "Ceiling"
@@ -3575,9 +3576,18 @@ Alter DHWSYS "dhwsys-DHW"
   wsWHHwMtr = DHWMtrWH
 
 AFMETER AFMTR1
+AFMETER AFMTR2
+
 REPORT "AFCondH" rpType=AFMTR rpFreq=hour rpAFMETER=AFMTR1 rpFooter=NO rpDayBeg=May 1 rpDayEnd=May 1
 REPORT "AFCondD" rpType=AFMTR rpFreq=day rpAFMETER=AFMTR1 rpDayBeg=May 1 rpDayEnd=May 1
 REPORT "AFCondM" rpType=AFMTR rpFreq=month rpAFMETER=AFMTR1 rpDayBeg=Jan 1 rpDayEnd=dec 31
+
+REPORT "AFAttH" rpType=AFMTR rpFreq=hour rpAFMETER=AFMTR2 rpFooter=NO rpDayBeg=May 1 rpDayEnd=May 1
+REPORT "AFAttD" rpType=AFMTR rpFreq=day rpAFMETER=AFMTR2 rpDayBeg=May 1 rpDayEnd=May 1
+REPORT "AFAttM" rpType=AFMTR rpFreq=month rpAFMETER=AFMTR2 rpDayBeg=Jan 1 rpDayEnd=dec 31
+
+REPORT "AFSumM" rpType=AFMTR rpFreq=month rpAFMETER=SUM rpDayBeg=Jan 1 rpDayEnd=dec 31
+
 
 REPORT "Fixture" rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=hour rpDayBeg=jan 1 rpDayEnd=dec 31 rpBtuSf=3412
 REPORT "Heater" rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=hour rpDayBeg=jan 1 rpDayEnd=dec 31 rpBtuSf=3412

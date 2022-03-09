@@ -119,7 +119,7 @@ static RC dropFront( ULI drop);
 //---------------------------------------------------------------------------------------------------------------------------
 void vrpakClean( 		// vrpak overall init/cleanup routine
 
-	CLEANCASE cs )	// [STARTUP,] DONE, or CRASH (type in cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )	// [STARTUP,] DONE, or CRASH (type in cnglob.h)
 
 {
 // added 10-93 while converting from main program to repeatedly-callable, DLLable subroutine.
@@ -168,11 +168,8 @@ RC vrClear()		// delete all virtual reports in spool in preparation for re-use
 // clear spool file
 	if (spl.isOpen)					// if open (probably always true here)
 	{
-		xlsterr( spl.splxf);				// clear any prior xiopak error (else addl calls will nop)
-		if ( xfseek( spl.splxf, 0L, SEEK_SET) != SECOK	// set file pointer to start file (needed?)
-				|| xfchsize( spl.splxf, 0L) != SECOK )		// truncate file to 0 length
-		{
-			;    // on error, do nothing?
+		if (xfclear(spl.splxf) != SECOK) {
+			return RCBAD;
 		}
 	}
 	spl.spO = spl.spWo = 0;					// set file end offset and written offset to 0
@@ -443,8 +440,8 @@ RC vrStrF( 		// output string to virtual report with format info option; inner f
 // write start-of-text stuff into spool
 	char oBuf[ sizeof(int)+1];
 	spl.p = spl.p2;				// keep spl.p pointing to start of an item: if buffer full, write to p.
-	oBuf[0] = isFmt ? (char)vrFormat	// start-format-text code in a char
-			:         (char)vrBody;		// start-body-text code in a char.  oBuf contents also used below.
+	oBuf[0] = isFmt ? static_cast<char>(vrFormat)	// start-format-text code in a char
+					: static_cast<char>(vrBody);		// start-body-text code in a char.  oBuf contents also used below.
 	*(int *)(oBuf+1) = vrh;			// handle in an int
 	vrPut( oBuf, sizeof(oBuf), incl); 	// output characters -- or not if !incl
 	// vrPut nops if spl.vrRc is set, so we don't check each return.
@@ -1189,8 +1186,8 @@ LOCAL int vruOpen( UNS* u)		// open report output file for virtual report unspoo
 
 	u->xf = xfopen( u->fName,
 					u->optn & VR_OVERWRITE 				// access per VROUTINFO optn bit
-						? _O_CREAT|_O_TRUNC|_O_WRONLY|_O_BINARY
-						: _O_CREAT|_O_APPEND|_O_WRONLY|_O_BINARY,
+						? "wb"
+						: "ab",
 					IGN 						// no msg at open (changed below for later calls)
 					| XFBUFALLOC,				// alloc buffer -- XFILE.buf[],.busz,.bufn. see vruWrite.
 					FALSE, 					// eof is not an error on this file
@@ -1230,7 +1227,7 @@ LOCAL RC unsRun(		// guts of pass over spool file.
 
 	UNS* u0, * u, * un;
 	SpoolTy ty;
-	int vrh, txLen;
+	int vrh, txLen = 0;
 	ULI nxEv;
 
 	// onlyU must disable anything that could alter buffer or pointers, including reading more text.
@@ -1317,7 +1314,7 @@ x                       (INT)onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName
 			vrErr( "unsRun",
 				   (char *)MH_R1220,				// "Invalid type %d in spool file at offset %ld"
 				   ty,  spl.bufO1 + (spl.p-spl.p1) );
-			while (spl.p < spl.p2  &&  *spl.p < (char)vrBody)	// skip to a probable type byte (or to end buf)
+			while (spl.p < spl.p2  &&  *spl.p < static_cast<char>(vrBody))	// skip to a probable type byte (or to end buf)
 				spl.p++;
 			break;				// continue here.  but wanna cause bad return or say run is bad?
 		}
