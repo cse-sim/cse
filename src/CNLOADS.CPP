@@ -1734,16 +1734,24 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 //-------------------------------------------------------------------------------
 RC RSYS::rs_CkF()
 {
-	ASSERT( RSYSMODES == rsmCOUNT-1);		// cndefn.h #define must be consistent
-											//   with cnrecs.def enum
+	static_assert(RSYSMODES == rsmCOUNT - 1);		// cndefn.h #define must be consistent
+													//   with cnrecs.def enum
+
+	// all heating fields EXCEPT RSYS_CAPH and RSYS_FANPWRH
+	//  = heating fields disallowed for FANCOIL
+	int16_t htgFNs[] = { RSYS_AFUE, RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
+		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
+		RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0 };
+
 	int rc = RCOK;
-	const char* when;
+	const char* when = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
 	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
+	if (rs_IsFanCoil())
+	{	
+		rc |= disallowX(when, htgFNs, RSYS_HSPF, 0);
+	}
 	if (rs_CanCool())
-	{	when = strtprintf( "when rsType=%s",
-			getChoiTx( RSYS_TYPE));
-		
-		if (rs_IsPkgRoom())
+	{	if (rs_IsPkgRoom())
 		{	rc |= requireN(when, RSYS_EER95, 0);
 			rc |= disallowN(when, RSYS_SEER, RSYS_COP95, 0);
 			if (!IsSet(RSYS_FANPWRC))
@@ -1751,6 +1759,7 @@ RC RSYS::rs_CkF()
 		}
 		else if (rs_IsFanCoil())
 		{
+			// rc |= disallow(0, when);
 		}
 		else
 			rc |= requireN(when, RSYS_SEER, 0);
@@ -1805,11 +1814,7 @@ RC RSYS::rs_CkF()
 	if (!rs_CanHeat())
 	{	when = strtprintf( "when rsType=%s (heating not available)",
 			getChoiTx( RSYS_TYPE));
-		rc |= disallowN( when, RSYS_CAPH, RSYS_AFUE,
-				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
-				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
-				RSYS_ASHPLOCKOUTT,
-				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0);
+		rc |= disallowX(when, RSYS_CAPH, RSYS_FANPWRH, htgFNs);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
 	// else
