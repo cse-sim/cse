@@ -155,23 +155,12 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   ---------- ---------------------- ---------------------- -------------- -----------------
               *name of a DHWDAYUSE*   (no scheduled draws)        No             daily
 
-Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
-
-Note that DHWUSE draws can be referenced by multiple DHWSYSs; these adjustments apply only to the current DHWSYS.
-
-These adjustments have not impact on draw specified by wsUse.
-
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-  gal/draw        --             0             No          hourly
-
-
 **wsUnkDrawDurF=*float***
 
-Draw duration factor for unknown end use.
+Draw duration factor for unknown end use. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
@@ -179,10 +168,10 @@ Draw duration factor for unknown end use.
 
 **wsFaucetDrawDurF=*float***
 
-Draw duration factor for faucet fixture.
+Draw duration factor for faucet fixture. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
@@ -190,10 +179,10 @@ Draw duration factor for faucet fixture.
 
 **wsShowerDrawDurF=*float***
 
-Draw duration factor for shower fixture.
+Draw duration factor for shower fixture. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
@@ -201,10 +190,10 @@ Draw duration factor for shower fixture.
 
 **wsBathDrawDurF=*float***
 
-Draw duration factor for bath fixture.
+Draw duration factor for bath fixture. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
@@ -212,10 +201,10 @@ Draw duration factor for bath fixture.
 
 **wsCWashrDrawDurF=*float***
 
-Draw duration factor for clothing washer fixture.
+Draw duration factor for clothing washer fixture. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "1.0",
   required: "No",
@@ -223,10 +212,10 @@ Draw duration factor for clothing washer fixture.
 
 **wsDWashrDurF=*float***
 
-Draw duration factor for dishwasher fixture.
+Draw duration factor for dishwasher fixture. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "1.0",
   required: "No",
@@ -329,10 +318,10 @@ Unknown relative water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsFaucetDayWasteF=*float***
 
@@ -340,10 +329,10 @@ Relative faucet water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsShowerDayWasteF=*float***
 
@@ -351,10 +340,10 @@ Relative shower water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsBathDayWasteF=*float***
 
@@ -362,10 +351,10 @@ Relative bath water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsCWashrDayWasteF=*float***
 
@@ -373,10 +362,10 @@ Relative clothes washer water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsDWashrDayWasteF=*float***
 
@@ -384,16 +373,10 @@ Relative dish washer water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
-
- **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                $\ge$ 0          0           No             subhourly
-
-
+  variability: "subhourly") %>
 
 **wsTUse=*float***
 
