@@ -123,7 +123,7 @@ Fraction of total gain going to zone (gnFrZn) that is latent heat (moisture addi
 **gnDlFrPow=*float***
 
 Hourly power reduction factor, typically used to modify lighting power to account for
-day lighting.
+daylighting.
 
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ----------------------- ------------- -------------- -----------------
@@ -140,7 +140,7 @@ Name of a DHWSYS whose water use modulates gnPower.  For example, electricity us
 
 **gnCtrlDHWMETER=*integer***
 
-Controls the DHWMETER. Allows gains to track water usage such as dishwashers, clothes washers, etc.
+Controls the gain. Allows gains to track water usage such as dishwashers, clothes washers, etc.
 
 <%= member_table(
   units: "",

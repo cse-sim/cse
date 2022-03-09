@@ -136,7 +136,7 @@ Specifies type of motor driving the fan (blower). This is used in the derivation
   ----------- ----------------- ------------- -------------- -----------------
               PSC, BPM          PSC           No             constant
 
-**rsAdjForFanHt=*NOYESCH***
+**rsAdjForFanHt=*choice***
 
 Fan heat adjustment with two options Yes or no. Yes: fanHtRtd derived from rsFanTy and removed from capacity and input values. No: no rated fan heat adjustments.
 
@@ -593,7 +593,7 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd
 
 **rsAFUEAuxH=*float***
 
-For rsType=ASHP, auxiliary electric (“strip”) heating coefficient of performance. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
+For rsType=ASHP, auxiliary electric (“strip”) annualized fuel utilization efficiency. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
 
 <%= member_table(
   units: "",
