@@ -196,32 +196,23 @@ Selects the model used for exterior surface convection when wnModel = Forward\_D
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  legal_range: "*choices above*",
+  default: "UNIFIED",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
----------- ----------------- ------------- -------------- -----------------
-           *choices above*     UNIFIED         No             constant
 
 **wnExHcLChar=*float***
 
 Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside face is exposed to ambient (i.e. to wind).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "10",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-    ft            x > 0              10            No            constant
-
 
 **wnExHcMult=*float***
 
@@ -229,15 +220,11 @@ Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=w
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  legal_range: "",
+  default: "1",
   required: "No",
-  variability: "constant")
+  variability: "subhourly")
   %>
-
-**Units**         **Legal Range**   **Default**   **Required**   **Variability**
------------------ ----------------- ------------- -------------- -----------------
-                                       1               No            subhourly
 
 **wnInHcModel=*choice***
 
@@ -245,15 +232,11 @@ Selects the model used for the inside (zone) surface convection when wnModel = F
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  legal_range: "*choices above (see wnExHcModel)*",
+  default: "UNIFIED",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**                    **Default**   **Required**   **Variability**
----------- ----------------------------------- ------------- -------------- -----------------
-            *choices above (see wnExHcModel)*  UNIFIED         No             constant
 
 **wnInHcMult=*float***
 
@@ -261,79 +244,59 @@ Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=w
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  legal_range: "",
+  default: "1",
   required: "No",
-  variability: "constant")
+  variability: "subhourly")
   %>
-
-**Units**         **Legal Range**   **Default**   **Required**   **Variability**
------------------ ----------------- ------------- -------------- -----------------
-                                       1               No            subhourly
 
 **wnSHGC=*float***
 
 Rated Solar Heat Gain Coefficient (SHGC) for the window assembly.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 < x < 1",
+  default: "gtSHGC",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**         **Default**   **Required**   **Variability**
------------ ----------------------- ------------- -------------- ------------------
-fraction    0 < x < 1                gtSHGC          No           constant
 
 **wnFMult=*float***
 
 Frame area multiplier = areaGlaze / areaAssembly
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 < x < 1",
+  default: "gtFMult or 1",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**         **Default**   **Required**   **Variability**
------------ ----------------------- ------------- -------------- ------------------
-fraction    0 < x < 1                gtFMult or 1      No           constant
 
 **wnSMSO=*float***
 
 SHGC multiplier with shades open. Overrides gtSMSO.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
+  default: "gtSMSO or 1",
   required: "No",
-  variability: "constant")
+  variability: "Monthly - Hourly")
   %>
-
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- ------------------
-  fraction    0 $\leq$ *x* $\leq$ 1   gtSMSO or 1   No             Monthly - Hourly
 
 **wnSMSC=*float***
 
 SHGC multiplier with shades closed. Overrides gtSMSC
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 $\leq$ *x* $\leq$ 1",
+  default: "wnSMSO or gtSMSC",
   required: "No",
-  variability: "constant")
+  variability: "Monthly - Hourly")
   %>
-
-  **Units**   **Legal Range**         **Default**        **Required**   **Variability**
-  ----------- ----------------------- ------------------ -------------- ------------------
-  fraction    0 $\leq$ *x* $\leq$ 1   wnSMSO or gtSMSC   No             Monthly - Hourly
 
 **wnNGlz=*int***
 
@@ -341,15 +304,11 @@ Number of glazings in the window (bare glass only, not including any interior or
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
-  required: "No",
+  legal_range: "0 $<$ *x* $\leq$ 4",
+  default: "gtNGLZ",
+  required: "Required when *wnModel* = ASHWAT",
   variability: "constant")
   %>
-
-  **Units**   **Legal Range**      **Default**   **Required**                       **Variability**
-  ----------- -------------------- ------------- ---------------------------------- -----------------
-              0 $<$ *x* $\leq$ 4   gtNGLZ        Required when *wnModel* = ASHWAT   Constant
 
 **wnExShd=*choice***
 
@@ -357,15 +316,11 @@ Exterior shading type (ASHWAT only).
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  legal_range: "NONE, INSCRN",
+  default: "gtExShd",
   required: "No",
   variability: "constant")
   %>
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              NONE, INSCRN      gtExShd       no             Constant
 
 **wnInShd=*choice***
 
@@ -373,95 +328,59 @@ Interior shade type (ASHWAT only).
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  legal_range: "NONE, DRAPEMED",
+  default: "gtInShd",
   required: "No",
   variability: "constant")
   %>
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              NONE, DRAPEMED    gtInShd       no             Constant
 
 **wnDirtLoss=*float***
 
 Glazing dirt loss factor.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
+  units: "fraction",
+  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
   default: "*none*",
   required: "No",
   variability: "constant")
   %>
-
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-  fraction    0 $\leq$ *x* $\leq$ 1   0             no             Constant
 
 **wnGrndRefl=*float***
 
 Ground reflectivity for this window.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
+  default: "sfGrndRefl",
   required: "No",
-  variability: "constant")
+  variability: "Monthly - Hourly")
   %>
-
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- ------------------
-  fraction    0 $\leq$ *x* $\leq$ 1   sfGrndRefl    No             Monthly - Hourly
 
 **wnVfSkyDf=*float***
 
 View factor from this window to sky for diffuse radiation. For the shading effects of an overhang, a wnVfSkyDf value smaller than the default would be used
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 $\\leq$ x $\\leq$ 1",
+  default: "0.5 - 0.5 cos(tilt) = .5 for vertical surface",
   required: "No",
-  variability: "constant")
+  variability: "Monthly - Hourly")
   %>
-
-  -------------------------------------------------------------
-  **Units** **Legal** **Default**  **Required** **Variability**
-            **Range**
-  --------- --------- ------------ ------------ ---------------
-  fraction  0 $\leq$  0.5 - 0.5    No           Monthly -
-            *x*       \* cos(tilt)              Hourly
-            $\leq$ 1  = .5 for
-                      vertical
-                      surface
-
-  -------------------------------------------------------------
 
 **wnVfGrndDf=*float***
 
 View factor from this window to ground for diffuse radiation. For the shading effects of a fin(s), both wnVfSkyDf and wnVfGrndDf would be used.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  units: "fraction",
+  legal_range: "0 $\\leq$ x $\\leq$ 1",
+  default: "0.5 + 0.5 .5 for vertical surface",
   required: "No",
-  variability: "constant")
+  variability: "Monthly - Hourly")
   %>
-
-  -------------------------------------------------------------
-  **Units** **Legal** **Default**  **Required** **Variability**
-            **Range**
-  --------- --------- ------------ ------------ ---------------
-  fraction  0 $\leq$  0.5 + 0.5 \* No           Monthly -
-            *x*       cos(tilt) =               Hourly
-            $\leq$ 1  .5 for
-                      vertical
-                      surface
-
-  -------------------------------------------------------------
 
 **endWINDOW**
 
@@ -469,15 +388,11 @@ Optionally indicates the end of the window definition. Alternatively, the end of
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "",
   default: "*none*",
   required: "No",
   variability: "constant")
   %>
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
 
 **Related Probes:**
 
