@@ -155,17 +155,6 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   ---------- ---------------------- ---------------------- -------------- -----------------
               *name of a DHWDAYUSE*   (no scheduled draws)        No             daily
 
-**wsUnkDrawDurF=*float***
-
-Draw duration factor for unknown end use. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
-
-<%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
-
 **wsFaucetDrawDurF=*float***
 
 Draw duration factor for faucet fixture. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
@@ -221,12 +210,12 @@ Draw duration factor for dishwasher fixture. This can be used to account for wat
   required: "No",
   variability: "Hourly") %>
 
-**wsUnkDrawWaste=*float***
+**wsUnkDrawDurF=*float***
 
-Draw water waste for unknown fixture.
+Draw duration factor for unknown end use. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "gal",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
@@ -287,6 +276,17 @@ Draw water waste for dish washer fixture.
   required: "No",
   variability: "Hourly") %>
 
+**wsUnkDrawWaste=*float***
+
+Draw water waste for unknown fixture.
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly") %>
+
 **wsBranchModel=*choice***
 
 ToDo
@@ -311,17 +311,6 @@ Day waste scaling factor.
   **Units**   **Legal Range**   **Default**                    **Required**   **Variability**
   ----------- ----------------- ------------------------------ -------------- -----------------
      --        $\ge$ 0             1                               No            constant
-
-**wsUnkDayWasteF=*float***
-
-Unknown relative water draw for day of waste scheme.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
 
 **wsFaucetDayWasteF=*float***
 
@@ -378,6 +367,17 @@ Relative dish washer water draw for day of waste scheme.
   required: "No",
   variability: "subhourly") %>
 
+**wsUnkDayWasteF=*float***
+
+Unknown relative water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "subhourly") %>
+
 **wsTUse=*float***
 
 Hot water delivery temperature (at output of water heater(s) and at point of use).  Delivered water is mixed down to wsTUSe (with cold water) or heated to wsTUse (with extra electric resistance backup, see DHWHEATER whXBUEndUse).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
@@ -388,7 +388,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetPoint=*float***
 
-  Specifies the hot water set point temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
+  Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
 
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
