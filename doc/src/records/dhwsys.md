@@ -190,7 +190,7 @@ Draw duration factor for baths. This can be used to account for water discarded 
 
 **wsCWashrDrawDurF=*float***
 
-Draw duration factor for clothes washer. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for clothes washers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
   units: "gal/draw",
@@ -256,7 +256,7 @@ Draw water waste for baths.
 
 **wsCWashrDrawWaste=*float***
 
-Draw water waste for clothes washer.
+Draw water waste for clothes washers.
 
 <%= member_table(
   units: "gal",
@@ -289,7 +289,15 @@ Draw water waste for unknown end use.
 
 **wsBranchModel=*choice***
 
-ToDo
+Branch model selection.
+
+<%= csv_table(<<END, :row_header => true)
+"Choice","Description"
+"T24DHW","Model in appendix B of the Alternative Compliance Manual"
+"DRAWWASTE","Draw duration increase per draw waste"
+"DAYWASTE","draw duration increase per day waste"
+END
+%>
 
 **wsDayWasteVol=*float***
 
