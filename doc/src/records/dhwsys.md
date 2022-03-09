@@ -478,18 +478,18 @@ END
 Response control signal for domestic hot water demand.
 
 <%= csv_table(<<END, :row_header => true)
-Choice
-ON
-TOO
-TOOLOR
-TOOLOC
-TOT
-TOTLOR
-TOTLOC
-LOC
-LOR
-LOCLOR
-COUNT
+Choice, Description
+ON, Normal operation following the water heater's internal control logic.
+TOO, Tops of the tank once by engaging the all the available heating sources (compressor and resistive elements) in the water heater to heat the tank to setpoint, regardless of the current condition.
+TOOLOR, Tops of the tank once and locks out the resistance elements, just the compressor is used to heat the tank to setpoint.
+TOOLOC, Tops of the tank once and locks out the compressor, just the resistance elements are used to heat the tank to setpoint.
+TOT, Tops of the tank on a timer using all the available heating sources (compressor and resistive elements) in the water heater. The tank starts a timer and heating to setpoint when the call is received, and repeats the heating call when the timer reaches zero.
+TOTLOR, Tops of the tank on a timer and locks out the resistance elements, just the compressor is used to heat the tank to setpoint.
+TOTLOC, Tops of the tank on a timer and locks out the compressor, just the resistance elements is used to heat the tank to setpoint.
+LOC, Locks out the compressor from the water heater's normal internal control logic.
+LOR, Locks out the resistive elements from the water heater's normal internal control logic.
+LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.
+COUNT, ???
 END
 %>
 
