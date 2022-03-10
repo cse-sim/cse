@@ -571,7 +571,7 @@ RC record::disallow(     			// issue "not allowed" message if field is given
 	int fn)
 {
 	RC rc = ValidateFN(fn, "disallow");
-	if (!rc && IsSet(fn))		// if value for field given in user input (test field status byte)
+	if (!rc && fn && IsSet(fn))		// if value for field given in user input (test field status byte)
 		rc = cantGiveEr(fn, when);
 	return rc;
 }			// record::disallow
@@ -599,7 +599,7 @@ RC record::require(    			// issue message if field is not given
 	int fn)				// field number
 {
 	RC rc = ValidateFN(fn, "require");
-	if (!rc && !IsSet(fn)) 		// if value for field not given in user input
+	if (!rc && fn && !IsSet(fn)) 		// if value for field not given in user input
 		rc = notGivenEr(fn, when);
 	return rc;
 }			// record::require
@@ -627,7 +627,7 @@ RC record::ignore(     			// issue "ignored" message if field is given
 	int fn)
 {
 	RC rc = ValidateFN(fn, "ignore");
-	if (!rc && IsSet(fn))			// if value for field given in user input
+	if (!rc && fn && IsSet(fn))			// if value for field given in user input
 		rc = ignoreInfo(fn, when);
 	return rc;
 }			// record::ignore
