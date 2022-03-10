@@ -1387,7 +1387,7 @@ x		}
 			rc |= disallowN( when,
 						IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
 						ZFAN( VFDS), IZXRAT_VFMAX, 0);
-			rc |= require( IZXRAT_DOAS, when);
+			rc |= require( when, IZXRAT_DOAS);
 		}
 		break;
 	case C_IZNVTYCH_ANIZFLOW:
