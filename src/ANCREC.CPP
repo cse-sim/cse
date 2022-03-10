@@ -506,7 +506,7 @@ static void WhenSave(const char*& when, char* whenBuf, size_t whenBufSize)
 RC record::ValidateFN(int fn, const char* caller) const
 {
 	RC rc = RCOK;
-	if (fn <= 0 || fn > 1024)
+	if (fn < 0 || fn > 1024)
 		rc |= oer((char*)MH_S0495,	// "%s Internal error: field # %nd: unterminated arg list?"
 				   caller, fn);
 	return rc;
@@ -559,8 +559,8 @@ RC record::disallowN( 			// issue "not allowed" message for each given field in 
 }		// record::disallowN
 //-----------------------------------------------------------------------------
 RC record::disallow( 		// issue "not allowed" message for each given field in an array of field numbers
-	int16_t fnList[],	// array of field numbers, 0 ends list  REMEMBER THE 0
-	const char* when)	// NULL or message insert.  message handle ok (see messages.cpp).
+	int16_t fnList[],		// array of field numbers, 0 ends list  REMEMBER THE 0
+	const char* when)		// NULL or message insert.  message handle ok (see messages.cpp).
 {
 	RC rc = checkN(when, &record::disallow, fnList);
 	return rc;
@@ -571,7 +571,7 @@ RC record::disallow(     			// issue "not allowed" message if field is given
 	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
 {
 	RC rc = ValidateFN(fn, "disallow");
-	if (!rc && IsSet(fn))		// if value for field given in user input (test field status byte)
+	if (!rc && fn && IsSet(fn))		// if value for field given in user input (test field status byte)
 		rc = cantGiveEr(fn, when);
 	return rc;
 }			// record::disallow
@@ -599,7 +599,7 @@ RC record::require(    			// issue message if field is not given
 	const char* when /*=NULL*/)	// NULL or message insert (msghan ok)
 {
 	RC rc = ValidateFN(fn, "require");
-	if (!rc && !IsSet(fn)) 		// if value for field not given in user input
+	if (!rc && fn && !IsSet(fn)) 		// if value for field not given in user input
 		rc = notGivenEr(fn, when);
 	return rc;
 }			// record::require
@@ -627,7 +627,7 @@ RC record::ignore(     			// issue "ignored" message if field is given
 	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
 {
 	RC rc = ValidateFN(fn, "ignore");
-	if (!rc && IsSet(fn))			// if value for field given in user input
+	if (!rc && fn && IsSet(fn))			// if value for field given in user input
 		rc = ignoreInfo(fn, when);
 	return rc;
 }			// record::ignore

@@ -237,7 +237,7 @@ class record		// base class for records
 	RC checkN(const char* when, RC(record::* checkFcn)(int fn, const char* when), int16_t fnList[]);
     RC disallowN( const char* when, ...);
     RC disallow( int fn, const char* when=NULL);
-	RC disallow(int16_t fnList[], const char* when=NULL);
+	RC disallow( int16_t fnList[], const char* when=NULL);
 	template<typename... Args>
 	RC disallowX(const char* when, Args... args) { return (disallow(args, when) | ...); }
     RC requireN( const char* when, ...);
