@@ -1746,10 +1746,6 @@ RC RSYS::rs_CkF()
 	int rc = RCOK;
 	const char* when = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
 	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
-	if (rs_IsFanCoil())
-	{	
-		rc |= disallowX(when, htgFNs, RSYS_HSPF, 0);
-	}
 	if (rs_CanCool())
 	{	if (rs_IsPkgRoom())
 		{	rc |= requireN(when, RSYS_EER95, 0);

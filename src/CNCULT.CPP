@@ -1586,7 +1586,7 @@ RC DUCTSEG::ds_Ckf()
 
 	if (IsSet( DUCTSEG_EXAREA))
 	{	// flat configuration: area is fixed
-		rc |= disallow( DUCTSEG_INAREA, "when dsExArea is given");
+		rc |= disallow("when dsExArea is given", DUCTSEG_INAREA);
 		ignoreN( "when dsExArea is given", DUCTSEG_DIAM, DUCTSEG_LEN,
 			DUCTSEG_BRANCHCOUNT, DUCTSEG_BRANCHLEN, DUCTSEG_BRANCHCFA, DUCTSEG_AIRVELDS, 0);
 	}
@@ -1594,9 +1594,9 @@ RC DUCTSEG::ds_Ckf()
 	{	// round: many interdependent defaults
 		// # of branches: user-input branch count takes precedence
 		if (IsSet( DUCTSEG_BRANCHCOUNT))
-			ignore( DUCTSEG_BRANCHCFA, "when dsBranchCount is given");
+			ignore("when dsBranchCount is given", DUCTSEG_BRANCHCFA);
 		if (IsSet( DUCTSEG_BRANCHLEN))
-			rc |= disallow( DUCTSEG_LEN, "when dsBranchLen is given");
+			rc |= disallow("when dsBranchLen is given", DUCTSEG_LEN);
 
 		int dimCount = IsSet( DUCTSEG_DIAM) + IsSet( DUCTSEG_LEN) + IsSet( DUCTSEG_INAREA);
 		if (dimCount == 3)

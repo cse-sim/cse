@@ -514,7 +514,7 @@ RC record::ValidateFN(int fn, const char* caller) const
 //-----------------------------------------------------------------------------
 RC record::checkN(			// general purpose check multiple fields
 	const char* when,		// message insert.  message handle ok (see messages.cpp).
-	RC(record::* checkFcn)(int fn, const char* when),	// check function called for each field
+	RC(record::* checkFcn)(const char* when, int fn),	// check function called for each field
 	va_list ap)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
@@ -527,15 +527,15 @@ RC record::checkN(			// general purpose check multiple fields
 		int fn = va_arg(ap, int);
 		if (!fn)
 			break;
-		rc |= (this->*checkFcn)(fn, when);
+		rc |= (this->*checkFcn)(when, fn);
 	}
 	return rc;
 }		// record::checkN
 //-----------------------------------------------------------------------------
 RC record::checkN(			// general purpose check multiple fields
 	const char* when,		// message insert.  message handle ok (see messages.cpp).
-	RC(record::* checkFcn)(int fn, const char* when),	// check function called for each field
-	int16_t fnList[])		// array of field numbers, 0 ends list  REMEMBER THE 0!
+	RC(record::* checkFcn)(const char* when, int fn),	// check function called for each field
+	const int16_t* fnList)		// array of field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
 
@@ -544,7 +544,7 @@ RC record::checkN(			// general purpose check multiple fields
 
 	int fn = 0;
 	for (int iFn = 0; fn = fnList[iFn]; iFn++)
-		rc |= (this->*checkFcn)(fn, when);
+		rc |= (this->*checkFcn)(when, fn);
 	return rc;
 }		// record::checkN
 //-----------------------------------------------------------------------------
@@ -559,16 +559,16 @@ RC record::disallowN( 			// issue "not allowed" message for each given field in 
 }		// record::disallowN
 //-----------------------------------------------------------------------------
 RC record::disallow( 		// issue "not allowed" message for each given field in an array of field numbers
-	int16_t fnList[],	// array of field numbers, 0 ends list  REMEMBER THE 0
-	const char* when)	// NULL or message insert.  message handle ok (see messages.cpp).
+	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
 	RC rc = checkN(when, &record::disallow, fnList);
 	return rc;
 }		// record::disallow
 //-----------------------------------------------------------------------------
 RC record::disallow(     			// issue "not allowed" message if field is given
-	int fn,
-	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
+	const char* when,	// NULL or message insert, worded for work context "Can't give <f> <when>", handle ok
+	int fn)
 {
 	RC rc = ValidateFN(fn, "disallow");
 	if (!rc && IsSet(fn))		// if value for field given in user input (test field status byte)
@@ -587,16 +587,16 @@ RC record::requireN( 			// issue "missing" message for each omitted field in 0-t
 }		// record::requireN
 //-----------------------------------------------------------------------------
 RC record::require( 		// issue "missing" message for each given field in an array of field numbers
-	int16_t fnList[],	// array of field numbers, 0 ends list  REMEMBER THE 0
-	const char* when)	// NULL or message insert.  message handle ok (see messages.cpp).
+	const char* when,		// NULL or message insert.  message handle ok (see messages.cpp).
+	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
 	RC rc = checkN(when, &record::disallow, fnList);
 	return rc;
 }		// record::require
 //-----------------------------------------------------------------------------
 RC record::require(    			// issue message if field is not given
-	int fn,
-	const char* when /*=NULL*/)	// NULL or message insert (msghan ok)
+	const char* when,	// NULL or message insert (msghan ok)
+	int fn)				// field number
 {
 	RC rc = ValidateFN(fn, "require");
 	if (!rc && !IsSet(fn)) 		// if value for field not given in user input
@@ -615,16 +615,16 @@ RC record::ignoreN( 		// issue "ignored" message for each given field in 0-termi
 }		// record::ignoreN
 //-----------------------------------------------------------------------------
 RC record::ignore( 		// issue "ignored" message for each given in an array of field numbers
-	int16_t fnList[],	// array of field numbers, 0 ends list  REMEMBER THE 0
-	const char* when)	// NULL or message insert.  message handle ok (see messages.cpp).
+	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
 	RC rc = checkN(when, &record::ignore, fnList);
 	return rc;
 }		// record::ignore
 //-----------------------------------------------------------------------------
 RC record::ignore(     			// issue "ignored" message if field is given
-	int fn,
-	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
+	const char* when,	// NULL or message insert, worded for work context
+	int fn)
 {
 	RC rc = ValidateFN(fn, "ignore");
 	if (!rc && IsSet(fn))			// if value for field given in user input
