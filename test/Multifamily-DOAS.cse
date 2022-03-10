@@ -516,6 +516,7 @@ LOADMETER "MtrPlantLoad"
 
 #define VENTILATION
 #define TEMPERING
+#define RECOVERY
 
 #ifdef VENTILATION
 DOAS    "Central Ventilation"
@@ -527,8 +528,23 @@ DOAS    "Central Ventilation"
    oaExhFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
    oaExhFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
 
+#ifdef RECOVERY
+   oaHXf2 = 0.75
+   oaHXSenEffHDs = 0.8
+   oaHXSenEffHf2 = 0.8
+   oaHXLatEffHDs = 0.0
+   oaHXLatEffHf2 = 0.0
+   oaHXSenEffCDs = 0.8
+   oaHXSenEffCf2 = 0.8
+   oaHXLatEffCDs = 0.0
+   oaHXLatEffCf2 = 0.0
+   oaHXBypass = NO
+   oaHXAuxPwr = 0
+   oaHXAuxMtr = "MtrElec"
+#endif
+
 #ifdef TEMPERING
-   oaSupTH = 50
+   oaSupTH = 65
    oaEIRH = 0.42
 #ifdef DOASMETER
    oaCoilHMtr = "MtrDOASElec"
@@ -538,7 +554,7 @@ DOAS    "Central Ventilation"
    oaCoilCMtr = "MtrElec"
 #endif
 
-   oaSupTC = 80
+   oaSupTC = 68
    oaEIRC = 0.25
    oaSHRtarget = 0.8
 #endif

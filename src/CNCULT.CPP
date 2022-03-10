@@ -1584,7 +1584,7 @@ CULT( "oaHXSenEffCDs",	DAT,	DOAS_HXSENEFFC,		0,   0, VEOI,   TYFL,  0,      0.f,
 CULT( "oaHXSenEffCf2",	DAT,	DOAS_HXSENEFFC+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
 CULT( "oaHXLatEffCDs",	DAT,	DOAS_HXLATEFFC,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
 CULT( "oaHXLatEffCf2",	DAT,	DOAS_HXLATEFFC+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXBypass",		DAT,	DOAS_HXBYPASS,		0,   0, VEOI,   TYSI,  0,      0.f,                N,   N),
+CULT( "oaHXBypass",		DAT,	DOAS_HXBYPASS,		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
 CULT( "oaHXAuxPwr",		DAT,	DOAS_HXAUXPWR,		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
 CULT( "oaHXAuxMtr",   	DAT,   	DOAS_HXAUXMTRI,     0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
 

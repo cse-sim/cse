@@ -1941,7 +1941,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "int as_IsEqual( const AIRSTATE& as, double tol=.001) const;"
 *declare "int operator==( const AIRSTATE& as) const { return as_IsEqual( as); }"
 *declare "int operator!=( const AIRSTATE& as) const { return !as_IsEqual( as); }"
-*declare "static double af_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
+*declare "static double as_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
 *declare "int as_HX( const AIRSTATE& asSup, float amfSup, const AIRSTATE& asExh, float amfExh, float effS, float effL);"
 
 *s *e DBL as_tdb			// air dry-bulb temp, F
@@ -1975,6 +1975,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_QSenDiff2( const AIRSTATE& as) const { return as_QSenDiff2(as, af_amf); };"
 *declare "double af_AddQLat( double q) { return as_AddQLat(q, af_amf); }"
 *declare "int af_AddQSenLat( float& qSen, float& qLat, float rhMax=1.f) { return as_AddQSenLat(qSen, qLat, af_amf, rhMax); }"
+*declare "int af_HX( const AIRFLOW& afSup, const AIRFLOW& afExh, float effS, float effL) {return as_HX(afSup, afSup.af_amf, afExh, afExh.af_amf, effS, effL); }"
 
 *s *e DBL af_amf		// mass flow rate, lb/hr dry air
 // *s *e DBL as_tdb		// from AIRSTATE
@@ -2831,8 +2832,8 @@ RECORD DOAS "doas" *RAT
     *array 2 *i FRAC oa_hxLatEffC   // Heat exchanger cooling latent effectiveness
                                         //   [ 0]: at design 100% flow
                                         //   [ 1]: at oa_hxF2
-    *i BOO oa_hxBypass              // HX can be bypassed when not adventatgeous
-    *s FLOAT_GEZ oa_hxAuxPwr        // Auxiliary power
+    *i NOYESCH oa_hxBypass              // HX can be bypassed when not adventatgeous
+    *s FLOAT_GEZ oa_hxAuxPwr        // Auxiliary power, W
     *i TI oa_hxAuxMtri              // Meter for auxiliary power
     *declare "MTR* oa_pHXAuxMtr;"
     // TODO: Add defrost control (see EnergyPlus options)
