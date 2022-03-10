@@ -1219,7 +1219,7 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 
 	// other zone
 	if (iz_IsIZ())
-		rc |= require( IZXRAT_ZI2, when);
+		rc |= require( when, IZXRAT_ZI2);
 
 	// UA coupling only
 	if (iz_nvcntrl == C_IZNVTYCH_NONE)
@@ -1232,7 +1232,7 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 	}
 
 	if (!iz_CanHaveAFCat())
-		ignore(IZXRAT_AFCATI, when);
+		ignore( when, IZXRAT_AFCATI);
 
 	// horizontal opening
 	//   stairangle defaults
@@ -1314,11 +1314,11 @@ RC IZXRAT::iz_Setup(			// set up run record
 		break;
 
 	case C_IZNVTYCH_TWOWAY:
-		rc |= require( IZXRAT_HZ, 				// specific message if izHD omitted
-							(char *)MH_S0475);		// "\n    (no ventilation is modelled with no height difference)"
+		rc |= require((char*)MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
+													//   (no ventilation is modelled with no height difference)"
 		rc |= requireN( (char *)MH_S0476,			// "when izNVType is TWOWAY"
-							 IZXRAT_A1, IZXRAT_A2,  		// error if user OMITTED any of
-							 IZXRAT_HZ, 0 );			// ... these fields. cncult2.cpp.
+							 IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
+							 IZXRAT_HZ, 0 );		// ... these fields. cncult2.cpp.
 		rc |= disallowN( (char *)MH_S0476, 			// "when izNVType is TWOWAY"
 					  IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN( VFDS), 0); 				// error if user gave any of
 		break;

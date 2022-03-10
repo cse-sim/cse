@@ -244,8 +244,8 @@ x #endif
 
 			/* require max heat spec: else omission yields mysteriously inoperative local heat.
 			   wouldn't it be nicer to default it to the coil capacity if given? 12-92. */
-			rc |= require( TU_TUQMXLH, (char *)MH_S0604);  	/* "when terminal has thermostat-controlled local heat\n"
-								   "    (when tuTLh is given)" */
+			rc |= require( (char *)MH_S0604, TU_TUQMXLH);  // "when terminal has thermostat-controlled local heat\n"
+														   // "    (when tuTLh is given)"
 			// terminal local heat coil autoSizing
 			if (sstat[TU_TUHC + HEATCOIL_CAPTRAT] & FsAS)		// if "AUTOSIZE tuhcCaptRat" given
 			{
@@ -306,13 +306,13 @@ x #endif
 	}
 
 	if (!(FsAS & (sstat[TU_TUHC + HEATCOIL_CAPTRAT] | sstat[TU_TUVFMXH] | sstat[TU_TUVFMXC]))) 	// if NO autosizes for tu
-		rc |= disallow( TU_TUOVERSIZE, "when no terminal members are being autoSized");  		// NUMS
+		rc |= disallow( "when no terminal members are being autoSized", TU_TUOVERSIZE);  		// NUMS
 
 	if (cmAr==cmNONE)   						// no air heat nor air cool
 	{
 
-		rc |= disallowN( (char *)MH_S0607,				/* "when terminal has no air heat nor cool\n"
-									   "    (when none of tuTH, tuTC, or tuVfMn is given)" */
+		rc |= disallowN( (char *)MH_S0607,	// "when terminal has no air heat nor cool\n"
+											// "    (when none of tuTH, tuTC, or tuVfMn is given)"
 						 TU_AI, TU_TUSRLEAK, TU_TUSRLOSS,
 						 TU_TFANSCH, TU_TFANOFFLEAK, TU_TFAN+FAN_FANTY, 0);
 	}
@@ -404,23 +404,23 @@ x           ;									// don't require tuVfDs for autoSizing ... 6-95
 			// require max heating cfm tuVfMxH if heat setpoint tuTH given, else disallow. and tuVfMxC likewise.
 
 			if (sstat[TU_TUTH] & FsSET)
-				rc |= require( TU_TUVFMXH, (char *)MH_S0691);	/* "\n    when terminal has thermostat-controlled air heat "
-             							   "(when tuTH is given)" */
+				rc |= require( (char *)MH_S0691, TU_TUVFMXH);	// "\n    when terminal has thermostat-controlled air heat "
+             													// "(when tuTH is given)"
 			else
-				rc |= disallow( TU_TUVFMXH, (char *)MH_S0605);	// "when tuTH not given"
+				rc |= disallow( (char *)MH_S0605, TU_TUVFMXH);	// "when tuTH not given"
 			if (sstat[TU_TUTC] & FsSET)
-				rc |= require( TU_TUVFMXC, (char *)MH_S0692);	/* "\n    when terminal has thermostat-controlled air cooling "
-             							   "(when tuTC is given)" */
+				rc |= require( (char *)MH_S0692, TU_TUVFMXC);	// "\n    when terminal has thermostat-controlled air cooling "
+             													// "(when tuTC is given)"
 			else
-				rc |= disallow( TU_TUVFMXC, (char *)MH_S0606);	// "when tuTC not given"
+				rc |= disallow( (char *)MH_S0606, TU_TUVFMXC);	// "when tuTC not given"
 
 			// disallow tuSRLoss if return not ducted
 
 			if (zp)						// if zone reference ok
 				if (!zp->i.plenumRet)				// if ducted return zone, S to R loss disallowed
 				{
-					disallow( TU_TUSRLOSS,  			// error if given  *** check wording when plenums done ***
-							  (char *)MH_S0609 );			// "when zone plenumRet is 0"
+					disallow((char*)MH_S0609, TU_TUSRLOSS);		// error if given  *** check wording when plenums done ***
+													  			// "when zone plenumRet is 0"
 					tuSRLoss = 0.f;					// set to 0 (is RUN RECORD!) (CULT defaults non-0)
 				}
 
@@ -463,7 +463,7 @@ x           ;									// don't require tuVfDs for autoSizing ... 6-95
 		else							// have fan
 		{
 			// tfanOffLeak is defaulted non-0 by CULT.
-			rc |= require( TU_TFANSCH, (char *)MH_S0612); 	// schedule required "when tfanType not NONE"
+			rc |= require((char*)MH_S0612, TU_TFANSCH); 	// schedule required "when tfanType not NONE"
 		}
 
 		//=============== useless terminal check ===============
@@ -768,10 +768,10 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 	// (changed from RQD 5-8-92 cuz users would give ahTsSp w/o coil then wonder why no heating/cooling occurred)
 
 	if (oaEcoTy==C_ECOTYCH_NONE  &&  ahhc.coilTy==C_COILTYCH_NONE  &&  ahcc.coilTy==C_COILTYCH_NONE)
-		rc |= disallow( AH_AHTSSP, (char *)MH_S0620);		/* "when air handler has no econimizer nor coil\n"
-			               			   "    (did you forget to specify your coil?)" */
+		rc |= disallow( (char *)MH_S0620, AH_AHTSSP);	// "when air handler has no econimizer nor coil\n"
+							               				//   (did you forget to specify your coil?)"
 	else
-		rc |= require( AH_AHTSSP, (char *)MH_S0621);		// "unless air handler has no economizer nor coil"
+		rc |= require( (char *)MH_S0621, AH_AHTSSP);		// "unless air handler has no economizer nor coil"
 
 	// if supply temp setpoint / ctrl method value stored (thus constant), can check now for user convenience.
 	// must REPEAT CHECKS AT RUNTIME in case variable expr given!
@@ -783,8 +783,8 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		case C_TSCMNC_ZN2:
 		case C_TSCMNC_ZN:
 			if (!ahCtu)  					// not if defaulted above
-				rc |= require( AH_AHCTU, (char *)MH_S0622);	/* "when ahTsSp is ZN or ZN2 and "
-									   "more than one terminal served" */
+				rc |= require( (char *)MH_S0622, AH_AHCTU);	// "when ahTsSp is ZN or ZN2 and "
+															// "more than one terminal served"
 			break;
 
 		case C_TSCMNC_RA:

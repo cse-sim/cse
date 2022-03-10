@@ -3253,20 +3253,21 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
 *declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj=0.f);"
 *declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
-*declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
-*declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
+*declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
+*declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
 *declare "bool rs_IsVCHtg() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsVCClg() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
-*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
-*declare "bool rs_IsElecHeat() const { return rs_IsASHP() || rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES; }"
+*declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
+*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTY_ASHPVC; }"
+*declare "bool rs_IsElecHeat() const { return rs_IsASHP() || rs_type==C_RSYSTY_ACRES || rs_type==C_RSYSTY_ACPKGRMRES || rs_type==C_RSYSTY_RES; }"
 *declare "bool rs_IsFuelAuxH() const { return rs_typeAuxH == C_AUXHEATTY_FURN; }"
 *declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
-*declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
-*declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
+*declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTY_ASHPPKGRM; }"
+*declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTY_ACPKGRM || rs_type==C_RSYSTY_ACPKGRMFURN || rs_type==C_RSYSTY_ACPKGRMRES; }"
 *declare "bool rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
-*declare "bool rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
-*declare "bool rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
+*declare "bool rs_CanHeat() const { return rs_type != C_RSYSTY_AC && rs_type != C_RSYSTY_ACPKGRM; }"
+*declare "bool rs_CanCool() const { return rs_type != C_RSYSTY_FURN && rs_type != C_RSYSTY_RES; }"
 *declare "bool rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
 *declare "bool rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
@@ -3306,7 +3307,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "float rs_Cap47FromCap95ASHP( float cap95) const;"
 *declare "float rs_Cap95FromCap47ASHP( float cap47) const;"
 
-*i RSYSTYCH rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
+*i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
 *i CHP rs_desc				// optional description string (e.g. model #)
 							//   included in perf map,
 *i NOYESCH rs_perfMap		// if YES, make performance map (development aid)
@@ -3316,13 +3317,18 @@ x *declare "RC rs_SetDefaultsClg();"
 
 *i TI rs_elecMtri			// meter for system electricity use
 *i TI rs_fuelMtri			// meter for system fuel use
-*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux;"
+*i TI rs_loadMtri           // LOADMTR idx for accumulation of primary (coil) output
+                            //    qHtg accums heating output, Btu (> 0)
+                            //    qClg accums cooling output, Btu (< 0)
+*i TI rs_srcSideLoadMtri    // LOADMTR idx for accumulation of source-side heat
+                            //    aka heat of rejection or outdoor coil heat transfer
+                            //    qHtg accums heat to RSYS from env during heating operation, Btu (> 0)
+                            //    qClg accums heat from RSYS to env during cooling opersion, Btu (< 0)
+                            //    Meaningful for compression rs_types.
+*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux; LOADMTR* rs_pLoadMtr; LOADMTR* rs_pSrcSideLoadMtr;"
 							// runtime pointers to meters, NULL if not accum'ing
 							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
 
-*i TI rs_loadMtri           // LOADMTR idx for accumulation of primary (coil) output
-*declare "LOADMTR* rs_pLoadMtr;"
-// *i TI rs_rejHeatMtri        // LOADMTR idx for accumulation of rejected heat
 
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect
@@ -3553,7 +3559,12 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e FLOAT rs_twbCoilIn	// coil entering wet bulb, F (after blow-thru fan if any)
 *s *e FLOAT rs_tdbCoilIn	// coil entering dry bulb, F (ditto)
 
-*s *e FLOAT rs_SHR;			// cooling sensible heat ratio (derived using coil model)
+*s *e FLOAT_GZ rs_SHR;		// cooling sensible heat ratio (sensible capacity / total capacity)
+                            //   from coil model for compression types
+                            //   from rs_SHRtarget for fancoil
+                            //   may be modified re humidity constraints
+*s FLOAT_GZ rs_SHRtarget    // inputable nominal sensible heat ratio (for fancoil)
+                            //   default 0.7
 
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 							//   multiplies cooling capacity (no effect on heating)

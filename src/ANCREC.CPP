@@ -494,86 +494,143 @@ RC record::limitCheckRatio(		// check the ratio of two fields
 ///////////////////////////////////////////////////////////////////////////////
 //   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)
 ///////////////////////////////////////////////////////////////////////////////
+static void WhenSave(const char*& when, char* whenBuf, size_t whenBufSize)
+// optionally make stack copy of possible Tmpstr
+{
+	if (!msgIsHan(when))					// not if handle given
+		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
+			when = strncpy0(whenBuf, when, whenBufSize);	// so any (possible future) strtprintf's in following loop
+															// won't overwrite it
+}	// WhenSave
+//-----------------------------------------------------------------------------
+RC record::ValidateFN(int fn, const char* caller) const
+{
+	RC rc = RCOK;
+	if (fn <= 0 || fn > 1024)
+		rc |= oer((char*)MH_S0495,	// "%s Internal error: field # %nd: unterminated arg list?"
+				   caller, fn);
+	return rc;
+}	// record::ValidateFN
+//-----------------------------------------------------------------------------
 RC record::checkN(			// general purpose check multiple fields
 	const char* when,		// message insert.  message handle ok (see messages.cpp).
-	RC(record::* checkFcn)(int fn, const char* when),	// check function called for each field
+	RC(record::* checkFcn)(const char* when, int fn),	// check function called for each field
 	va_list ap)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
+
 	char whenBuf[1000];
-	if (!msgIsHan(when))					// not if handle given
-		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
-			when = strncpy0(whenBuf, when, sizeof(whenBuf));	// so any (possible future) strtprintf's in following loop
-																// won't overwrite it, 7-92.
+	WhenSave(when, whenBuf, sizeof( whenBuf));
+
 	for (; ; )
 	{
 		int fn = va_arg(ap, int);
 		if (!fn)
 			break;
-		if (fn > 1024)
-			rc |= oer((char*)MH_S0495,	// "cncult2.cpp:%s Internal error: field # %nd: probable unterminated arg list"
-					   "checkN", fn);
-		rc |= (this->*checkFcn)(fn, when);
+		rc |= (this->*checkFcn)(when, fn);
 	}
 	return rc;
-}		// checkN
+}		// record::checkN
+//-----------------------------------------------------------------------------
+RC record::checkN(			// general purpose check multiple fields
+	const char* when,		// message insert.  message handle ok (see messages.cpp).
+	RC(record::* checkFcn)(const char* when, int fn),	// check function called for each field
+	const int16_t* fnList)		// array of field numbers, 0 ends list  REMEMBER THE 0!
+{
+	RC rc = RCOK;
+
+	char whenBuf[1000];
+	WhenSave(when, whenBuf, sizeof(whenBuf));
+
+	int fn = 0;
+	for (int iFn = 0; fn = fnList[iFn]; iFn++)
+		rc |= (this->*checkFcn)(when, fn);
+	return rc;
+}		// record::checkN
 //-----------------------------------------------------------------------------
 RC record::disallowN( 			// issue "not allowed" message for each given field in 0-terminated list of field numbers
-	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
-	...)			// int field numbers, 0 ends list  REMEMBER THE 0!
+	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	...)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	va_list ap;
 	va_start(ap, when);
 	RC rc = checkN(when, &record::disallow, ap);
 	return rc;
-}		// disallowN
+}		// record::disallowN
 //-----------------------------------------------------------------------------
-RC record::disallow(     			// issue message if field is given
-	int fn,
-	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
+RC record::disallow( 		// issue "not allowed" message for each given field in an array of field numbers
+	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
-	if (IsSet(fn))			// if value for field given in user input (test field status byte)
-		return cantGiveEr(fn, when);
-	return RCOK;
-}			// disallow
+	RC rc = checkN(when, &record::disallow, fnList);
+	return rc;
+}		// record::disallow
+//-----------------------------------------------------------------------------
+RC record::disallow(     			// issue "not allowed" message if field is given
+	const char* when,	// NULL or message insert, worded for work context "Can't give <f> <when>", handle ok
+	int fn)
+{
+	RC rc = ValidateFN(fn, "disallow");
+	if (!rc && fn && IsSet(fn))		// if value for field given in user input (test field status byte)
+		rc = cantGiveEr(fn, when);
+	return rc;
+}			// record::disallow
 //-----------------------------------------------------------------------------
 RC record::requireN( 			// issue "missing" message for each omitted field in 0-terminated list of field numbers
-	const char* when /*=NULL*/,	// message insert (message handle ok)
-	...)			// int field numbers, 0 ends list  REMEMBER THE 0!
+	const char* when,	// NULL or message insert (message handle ok)
+	...)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	va_list ap;
 	va_start(ap, when);
 	RC rc = checkN(when, &record::require, ap);
 	return rc;
-}		// requireN
+}		// record::requireN
+//-----------------------------------------------------------------------------
+RC record::require( 		// issue "missing" message for each given field in an array of field numbers
+	const char* when,		// NULL or message insert.  message handle ok (see messages.cpp).
+	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
+{
+	RC rc = checkN(when, &record::disallow, fnList);
+	return rc;
+}		// record::require
 //-----------------------------------------------------------------------------
 RC record::require(    			// issue message if field is not given
-	int fn,
-	const char* when /*=NULL*/)	// NULL or message insert (msghan ok), worded for work context "<f> missing: required <when>"
+	const char* when,	// NULL or message insert (msghan ok)
+	int fn)				// field number
 {
-	if (!IsSet(fn)) 		// if value for field not given in user input
-		return notGivenEr(fn, when);
-	return RCOK;
-}			// require
+	RC rc = ValidateFN(fn, "require");
+	if (!rc && fn && !IsSet(fn)) 		// if value for field not given in user input
+		rc = notGivenEr(fn, when);
+	return rc;
+}			// record::require
 //-------------------------------------------------------------------------------
 RC record::ignoreN( 		// issue "ignored" message for each given field in 0-terminated list of field numbers
-	const char* when /*=NULL*/,	// message insert.  message handle ok (see messages.cpp).
-	...)			// int field numbers, 0 ends list  REMEMBER THE 0!
+	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	...)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	va_list ap;
 	va_start(ap, when);
 	RC rc = checkN(when, &record::ignore, ap);
 	return rc;
-}		// ignoreN
+}		// record::ignoreN
 //-----------------------------------------------------------------------------
-RC record::ignore(     			// issue message if field is given
-	int fn,
-	const char* when /*=NULL*/)	// message insert, worded for work context "Can't give <f> <when>", handle ok
+RC record::ignore( 		// issue "ignored" message for each given in an array of field numbers
+	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
-	if (IsSet(fn))			// if value for field given in user input
-		return ignoreInfo(fn, when);
-	return RCOK;
-}			// ignore
+	RC rc = checkN(when, &record::ignore, fnList);
+	return rc;
+}		// record::ignore
+//-----------------------------------------------------------------------------
+RC record::ignore(     			// issue "ignored" message if field is given
+	const char* when,	// NULL or message insert, worded for work context
+	int fn)
+{
+	RC rc = ValidateFN(fn, "ignore");
+	if (!rc && fn && IsSet(fn))			// if value for field given in user input
+		rc = ignoreInfo(fn, when);
+	return rc;
+}			// record::ignore
 //============================================================================
 
 /****************************************************************************************************************************
@@ -634,7 +691,7 @@ RC record::cantGiveEr(   				// issue message (using ooer) for disallowed field 
 				 (char*)MH_S0496, 		// "Can't give '%s' %s"
 				 mbrIdTx(fn),			// input name (id)
 				 when ? strtprintf(when) : "");	// user's explanatory insert, eg "when no local heat".
-	//   use strtprintf to retrieve text (to Tmpstr) if handle given.
+												//   use strtprintf to retrieve text (to Tmpstr) if handle given.
 }	// cantGiveEr
 //-----------------------------------------------------------------------------
 RC record::notGivenEr( 				// issue message (using ooer) for disallowed field that user gave
@@ -659,7 +716,7 @@ RC record::ignoreInfo( 	// issue info message for ignored field
 	const char* msg = strtprintf(
 			when ? "'%s' is ignored %s" : "ignoring '%s'",
 			mbrIdTx(fn),
-			strtprintf(when));		// when might be handle
+			strtprintf(when));			// when might be handle
 	return oerI(1, 1, 2, msg, NULL);	// do msg using vbl arg list flavor of oer
 }		// record::ignoreInfo
 //-----------------------------------------------------------------------------
@@ -667,8 +724,6 @@ RC record::notGzEr(int fn)		// issue error message for field not greater than 0.
 {
 	return ooer(fn, (char*)MH_S0499, mbrIdTx(fn));  	// "'%s' must be > 0"
 }
-
-
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
