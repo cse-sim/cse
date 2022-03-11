@@ -596,8 +596,8 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 	{	oInfo("soilDiff is used as part of the simple ground model, which is no longer supported.\n"
 			  "    Use soilCond, soilSpHt, and soilDens instead.");
 		if (IsSet(TOPRAT_SOILCOND) || IsSet(TOPRAT_SOILSPHT) || IsSet(TOPRAT_SOILDENS)) {
-			ignore(TOPRAT_SOILDIFF, "when soilCond and/or soilSpHt and/or soilDens are set.\n"
-			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)");
+			ignore("when soilCond and/or soilSpHt and/or soilDens are set.\n"
+			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)", TOPRAT_SOILDIFF);
 			tp_soilDiff = tp_soilCond / (tp_soilDens*tp_soilSpHt);
 		}
 	}
