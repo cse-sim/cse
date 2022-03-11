@@ -1743,26 +1743,42 @@ RC RSYS::rs_CkF()
 		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
 		RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0 };
 
+	// ASHP heating FNs (all types)
+	int16_t ASHP_HtgFNs[] = { RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
+		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
+		RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_CAPRAT0547, RSYS_CDH, 0};
+
+	// FNs meaningful only for variable capacity heating
+	//   ignored for non-VC ASHP
+	//   disallowed for others
+	int16_t ASHPVC_HtgFNs[] = { RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
+		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05, 0};
+
+
+	int16_t ASHPVC_ClgFNs[] = { RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
+	RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05, 0 };
+
+
 	int rc = RCOK;
-	const char* when = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
+	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
 	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
 	if (rs_IsFanCoil())
 	{	
-		rc |= disallowX(when, htgFNs, RSYS_HSPF, 0);
+		rc |= disallowX(whenTy, RSYS_HSPF);
 	}
 	if (rs_CanCool())
 	{	if (rs_IsPkgRoom())
-		{	rc |= requireN(when, RSYS_EER95, 0);
-			rc |= disallowN(when, RSYS_SEER, RSYS_COP95, 0);
+		{	rc |= requireN(whenTy, RSYS_EER95, 0);
+			rc |= disallowN(whenTy, RSYS_SEER, RSYS_COP95, 0);
 			if (!IsSet(RSYS_FANPWRC))
 				rs_fanPwrC = 0.f;	// fan power included in primary by default
 		}
 		else if (rs_IsFanCoil())
 		{
-			// rc |= disallow(0, when);
+			// rc |= disallow(0, whenTy);
 		}
 		else
-			rc |= requireN(when, RSYS_SEER, 0);
+			rc |= requireN(whenTy, RSYS_SEER, 0);
 
 
 		if (!IsAusz(RSYS_CAP95))
@@ -1781,7 +1797,12 @@ RC RSYS::rs_CkF()
 					RSYS_CAP82, RSYS_CAP115, 0);
 		}
 
-		if (!rs_IsASHPVC())
+		if (rs_IsASHPVC())
+		{
+			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
+			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
+		}
+		else
 		{
 			rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
 				RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
@@ -1789,18 +1810,13 @@ RC RSYS::rs_CkF()
 				// cooling?
 			rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
 		}
-		else
-		{
-			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
-			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
-		}
 
 	}
 	else
 	{	// no cooling capability
-		when = strtprintf( "when rsType=%s (cooling not available)",
+		const char* whenNoCl = strtprintf( "when rsType=%s (cooling not available)",
 			getChoiTx( RSYS_TYPE));
-		rc |= disallowN( when, RSYS_SEER, RSYS_EER95,
+		rc |= disallowN( whenNoCl, RSYS_SEER, RSYS_EER95,
 				RSYS_CAP95, RSYS_COP95, RSYS_LOADFMIN95, RSYS_COPMIN95,
 				RSYS_CAP82, RSYS_COP82, RSYS_CAPRAT8295, RSYS_LOADFMIN82, RSYS_COPMIN82,
 				RSYS_CAP115, RSYS_COP115, RSYS_CAPRAT11595, RSYS_LOADFMIN115, RSYS_COPMIN115,
@@ -1812,9 +1828,9 @@ RC RSYS::rs_CkF()
 	rc |= rs_CkFAuxHeat();		// check aux heat inputs
 	
 	if (!rs_CanHeat())
-	{	when = strtprintf( "when rsType=%s (heating not available)",
+	{	const char* whenTyNoHt = strtprintf( "when rsType=%s (heating not available)",
 			getChoiTx( RSYS_TYPE));
-		rc |= disallowX(when, RSYS_CAPH, RSYS_FANPWRH, htgFNs);
+		rc |= disallowX(whenTyNoHt, RSYS_CAPH, RSYS_FANPWRH);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
 	// else
@@ -1823,24 +1839,21 @@ RC RSYS::rs_CkF()
 		
 	if (rs_IsASHP())
 	{
-		when = strtprintf("when rsType=%s",	getChoiTx(RSYS_TYPE));
-
 		rs_AFUE = 0.f;		// drop possibly confusing default
 
 		if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
-			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
+			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", whenTy);
 
 		if (IsSetCount(RSYS_CAP47, RSYS_CAP95, RSYS_CAPRAT9547, 0) == 3
 		 && !(IsAusz( RSYS_CAP47) && IsAusz( RSYS_CAP95)))
 			// cannot give all 3 values unless both caps are autosized
-			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", when);
+			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", whenTy);
 
 		if (rs_IsASHPHydronic())
 		{	// ASHPHydronic: air-to-water heat pump
 			//   approximated with air-to-air model
-			when = "when rsType=ASHPHydronic";
-			rc |= requireN(when, RSYS_COP47, RSYS_COP17, 0);
-			rc |= disallowN(when, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
+			rc |= requireN(whenTy, RSYS_COP47, RSYS_COP17, 0);
+			rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
 			if (!IsSet(RSYS_FANPWRH))
 				rs_fanPwrH = 0.f;		// hydronic: no fan power
 			if (!IsAusz(RSYS_CAP47))
@@ -1850,7 +1863,7 @@ RC RSYS::rs_CkF()
 		else
 		{	// ASHP other than ASHPHydronic
 
-			rc |= disallowN(when, RSYS_CAPH, RSYS_AFUE, 0);
+			rc |= disallowN(whenTy, RSYS_CAPH, RSYS_AFUE, 0);
 
 			if (!IsAusz(RSYS_CAP47))
 				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
@@ -1859,9 +1872,9 @@ RC RSYS::rs_CkF()
 
 			if (rs_IsPkgRoom())
 			{
-				rc |= disallowN(when, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
+				rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
 					RSYS_CAP17, RSYS_COP17, RSYS_CAP35, RSYS_COP35, 0);
-				rc |= requireN(when, RSYS_COP47, 0);
+				rc |= requireN(whenTy, RSYS_COP47, 0);
 
 				if (!IsSet(RSYS_FANPWRH))
 					rs_fanPwrH = 0.f;	// fan power included in primary by default
@@ -1874,7 +1887,7 @@ RC RSYS::rs_CkF()
 				//   COPs defaulted from HSPF
 				//   if both COP47 and COP17 are specified, HSPF is not used
 
-				rc |= requireN(when, RSYS_HSPF, 0);
+				rc |= requireN(whenTy, RSYS_HSPF, 0);
 
 				if (IsAusz(RSYS_CAP47))
 					rc |= disallowN("when rsCap47 is AUTOSIZE",
@@ -1905,12 +1918,8 @@ RC RSYS::rs_CkF()
 	}
 	else
 	{	// not ASHP of any type
-		rc |= disallowN( "when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC",
-				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
-				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
-			    RSYS_CAP05, RSYS_COP05,
-				RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
-				RSYS_ASHPLOCKOUTT, RSYS_DEFROSTMODEL, RSYS_CDH, 0);
+		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC",
+				ASHP_HtgFNs, ASHPVC_HtgFNs);
 
 		if (!IsSet( RSYS_AFUE))
 			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
@@ -1935,8 +1944,8 @@ x		oInfo( "rsFuelMtr not specified -- rsParFuel has no effect");
 				RSYS_OAVAVFDS, RSYS_OAVAVFMINF, RSYS_OAVFANPWR,
 				0);
 	else
-	{	when = "when rsOAVType is given";
-		rc |= requireN( when, RSYS_OAVRELIEFZI, RSYS_OAVAVFDS, 0);
+	{	const char* whenOAV = "when rsOAVType is given";
+		rc |= requireN( whenOAV, RSYS_OAVRELIEFZI, RSYS_OAVAVFDS, 0);
 		if (IsVal( RSYS_OAVTDIFF) && rs_OAVTdiff < 2.f)
 			oWarn( "Dubious rsOAVTdiff (%0.2f F) may cause inadvertent vent heating."
 				   "\n    rsOAVTdiff is typically >= 5 F to allow for fan heat and duct gains",
