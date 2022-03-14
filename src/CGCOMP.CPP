@@ -847,6 +847,41 @@ void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 RC DOAS::oa_CkfDOAS()	// input checks
 {
 	RC rc = RCOK;
+
+	// heat recovery
+	if (IsSet(DOAS_HXSENEFFH))
+	{
+		const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_HXSENEFFH));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_HXSENEFFH));
+		rc |= ignoreN(when, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
+			DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
+			DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, 0);
+	}
+
+	// heating coil
+	if (IsSet(DOAS_SUPTH)) {
+		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_SUPTH));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_SUPTH));
+		rc |= ignoreN(when, DOAS_EIRH, 0);
+	}
+
+	// cooling coil
+	if (IsSet(DOAS_SUPTC)) {
+		// const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_SUPTC));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_SUPTC));
+		rc |= ignoreN(when, DOAS_EIRC, DOAS_SHRTARGET, 0);
+	}
+
+
 	return rc;
 }
 //-----------------------------------------------------------------------------
@@ -949,17 +984,33 @@ RC DOAS::oa_Setup(DOAS* iRat)
 	oa_supFan.fn_setup( C_FANAPPCH_DSFAN, this, DOAS_SUPFAN, oa_supFan.vfDs, NULL);	// checks fan input, does defaults
 	oa_exhFan.fn_setup( C_FANAPPCH_DEFAN, this, DOAS_EXHFAN, oa_exhFan.vfDs, NULL);	// checks fan input, does defaults
 
+	// Check inputs in absence of fan(s)
+	if (oa_supFan.fanTy == C_FANTYCH_NONE)
+	{
+		if (IsSet(DOAS_HXSENEFFH))
+		{
+			oer("%s was specified, but there is no supply fan", mbrIdTx(DOAS_HXSENEFFH));
+		}
+		if (IsSet(DOAS_SUPTH))
+		{
+			oer("%s was specified, but there is no supply fan", mbrIdTx(DOAS_SUPTH));
+		}
+		if (IsSet(DOAS_SUPTC))
+		{
+			oer("%s was specified, but there is no supply fan", mbrIdTx(DOAS_SUPTC));
+		}
+	}
+	if (oa_exhFan.fanTy == C_FANTYCH_NONE)
+	{
+		if (IsSet(DOAS_HXSENEFFH))
+		{
+			oer("%s was specified, but there is no exhaust fan", mbrIdTx(DOAS_HXSENEFFH));
+		}
+	}
+
 	// Setup HX
 	if (IsSet(DOAS_HXSENEFFH))
 	{
-		if (oa_supFan.vfDs == 0.f)
-		{
-			oer("% was specified, but there is no supply fan", mbrIdTx(DOAS_HXSENEFFH));
-		}
-		if (oa_exhFan.vfDs == 0.f)
-		{
-			oer("% was specified, but there is no exhaust fan", mbrIdTx(DOAS_HXSENEFFH));
-		}
 		if (!IsSet(DOAS_HXVFDS))
 		{
 			oa_hxVfDs = (oa_supFan.vfDs + oa_exhFan.vfDs)*0.5f;

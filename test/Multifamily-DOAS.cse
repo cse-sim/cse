@@ -515,15 +515,28 @@ AFMETER "MtrAirFlow"
 LOADMETER "MtrPlantLoad"
 
 #define VENTILATION
+
+#ifdef VENTILATION
+
+#define VENTRATE 184.8
+
+#define DOAS_SUPPLY
+#define DOAS_EXHAUST
+
+
+DOAS    "Central Ventilation"
+
+#ifdef DOAS_SUPPLY
+
 #define TEMPERING
 #define RECOVERY
 
-#ifdef VENTILATION
-DOAS    "Central Ventilation"
    oaSupFanElecPwr = 0.275                 // Fan input power per unit air flow (at design flow and pressure), W/cfm
    oaSupFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
    oaSupFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
-   
+#endif
+
+#ifdef DOAS_EXHAUST
    oaExhFanElecPwr = 0.25                  // Fan input power per unit air flow (at design flow and pressure), W/cfm
    oaExhFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
    oaExhFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
@@ -541,6 +554,7 @@ DOAS    "Central Ventilation"
    oaHXBypass = NO
    oaHXAuxPwr = 0
    oaHXAuxMtr = "MtrElec"
+#endif
 #endif
 
 #ifdef TEMPERING
@@ -683,17 +697,21 @@ IZXFER   "Zone1-NVHD"
    izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
 
 #ifdef VENTILATION
+#ifdef DOAS_SUPPLY
 IZXFER   "Zone1-IAQFanS"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
-   izVFmin = 184.8                      // Minimum volume flow rate (VentOff mode), cfm
+   izVFmin = VENTRATE                   // Minimum volume flow rate (VentOff mode), cfm
+#endif
 
+#ifdef DOAS_EXHAUST
 IZXFER   "Zone1-IAQFanE"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
-   izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
+   izVFmin = -VENTRATE                  // Minimum volume flow rate (VentOff mode), cfm
+#endif
 #endif
 
 IZXFER   "Zone2-InfLU"  
@@ -811,17 +829,21 @@ IZXFER   "Zone2-NVHD"
    izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
 
 #ifdef VENTILATION
+#ifdef DOAS_SUPPLY
 IZXFER   "Zone2-IAQFanS"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
-   izVFmin = 184.8                      // Minimum volume flow rate (VentOff mode), cfm
+   izVFmin = VENTRATE                   // Minimum volume flow rate (VentOff mode), cfm
+#endif
 
+#ifdef DOAS_EXHAUST
 IZXFER   "Zone2-IAQFanE"  
    izNVType = "AIRNETDOAS"              // Choice determining interzone ventilation
    izZn1 = "Zone2-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
    izDOAS = "Central Ventilation"       // Name of the DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
-   izVFmin = -184.8                     // Minimum volume flow rate (VentOff mode), cfm
+   izVFmin = -VENTRATE                  // Minimum volume flow rate (VentOff mode), cfm
+#endif
 #endif
 
 IZXFER   "Zone2ToAtticCeiling-xAttic"  
@@ -1787,7 +1809,7 @@ REPORT "CoilLoadsH" rpType=UDT rpFreq="SUBHOUR"  rpDayBeg=May 1 rpDayEnd=May 1
     reportCol colHead="Hour"  colVal=@Top.iHrST
     reportCol colHead="SH"  colVal=@Top.iSubhr
     reportCol colHead="Tout"  colVal=@Top.tDbOSh
-#ifdef VENTILATION
+#ifdef DOAS_SUPPLY
     reportCol colHead="Tsup"  colVal=@DOAS["Central Ventilation"].supAF.tdb
     reportCol colHead="AMF"  colVal=@DOAS["Central Ventilation"].supAF.amf
     reportCol colHead="Z1Ts"  colVal=@IZXFER["Zone1-IAQFanS"].air2.tdb

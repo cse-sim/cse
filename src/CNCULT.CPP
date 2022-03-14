@@ -2962,7 +2962,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "loadmeter",   RATE,  0,                 NM_RQD,     0, 0,      0,    &LdMtriB,N,    0.f,      ldMeterT,  N),
 
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
-	CULT( "doas",        RATE,  0,                 0,          0, 0,      0,    &OAiB,  N,    0.f,          doasT,  N),
+	CULT( "doas",        RATE,  0,                 NM_RQD,     0, 0,      0,    &OAiB,   N,    0.f,         doasT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
