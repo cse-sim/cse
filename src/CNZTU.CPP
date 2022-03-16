@@ -1055,24 +1055,18 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 
 	if (zn_hcMode == RSYS::rsmHEAT && tzErr < -0.001f)
 	{	// heating (tzErr < 0)
-		// if (tzErr < -i.zn_tzTolUnMet)
-		//   zrs->nHrUnMetH = Top.tp_subhrDur;
+		if (tzErr < -i.zn_tzTolUnMet)
+			zrs->nHrUnMetH = Top.tp_subhrDur;
 		if (Top.isEndHour)
-		{
 			zrs->unMetHrHDH = tzErr;
-			zrs->nHrUnMetH += 1.f;
-		}
 	}
 	else if (zn_hcMode == RSYS::rsmCOOL && tzErr > 0.001f)
 	{	// cooling (tzErr > 0)
-		// if (tzErr > i.zn_tzTolUnMet)
-		//  zrs->nHrUnMetC = Top.tp_subhrDur;
+		if (tzErr > i.zn_tzTolUnMet)
+			zrs->nHrUnMetC = Top.tp_subhrDur;
 		zrs->unMetShCDH = tzErr * Top.tp_subhrDur;
 		if (Top.isEndHour)
-		{
 			zrs->unMetHrCDH = tzErr;
-			zrs->nHrUnMetC += 1.f;
-		}
 	}
 
 
