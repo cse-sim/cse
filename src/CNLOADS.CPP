@@ -380,8 +380,6 @@ x	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls, 0.f), 0.8f);
 	if (!nMd)				// if zone has no modes (eg startup with no terminals)
 		spCf++;				// tell ztuCompute to build zone mode sequence
 
-	zn_unMetCDH = zn_unMetHDH = 0.f;	// unmet temp diffs
-
 	// initialize DHW heat transfer totals
 	//   TODO: could be done in DHW code iff needed
 	//   Win? -- generally less DHWHEATERs than ZONEs
@@ -687,7 +685,6 @@ x	}
 RC ZNR::zn_InitSubhr()
 {
 	// set points
-#if 1
 	if (Top.tp_autoSizing)
 	{	// avoid setpoint step changes when autosizing
 		// assume zn_tzspXbs changes hourly (altho they have subhourly variability)
@@ -698,7 +695,6 @@ RC ZNR::zn_InitSubhr()
 		zn_tzspC = (1.f - f) * zn_tzspClh + f * i.znTC;
 	}
 	else
-#endif
 	{	// not autosizing: use setpoints as input
 		zn_tzspH = i.znTH;
 		zn_tzspD = i.znTD;
@@ -1173,8 +1169,6 @@ x						printf( "1B\n");
 #else
 					tz = zn_TAirCR(zn_qsHvac, 0.);
 #endif
-					if (Top.isEndHour)
-						zn_unMetCDH = tz - zn_tzspC;		// temp excursion above setpoint
 				}
 				// else capacity sufficient
 			}
@@ -1196,9 +1190,6 @@ x						printf( "1B\n");
 #else
 					tz = zn_TAirCR(zn_qsHvac, 0.);
 #endif
-
-					if (Top.isEndHour)
-						zn_unMetHDH = tz - zn_tzspH;	// temp excursion below setpoint (< 0)
 				}
 				// else capacity sufficient
 			}
@@ -1320,40 +1311,19 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 #endif
 		}
 
-		// track unmet
+#if defined( _DEBUG)
 		// test against setpoint (with a little tolerance)
 		if (!Top.isWarmup)		// skip if warmup (including autosize)
 		{	if (zn_hcMode == RSYS::rsmHEAT)
-			{	if (tz < zn_tzsp-.001)
-				{	if (Top.isEndHour)
-						zn_unMetHDH = tz - zn_tzsp;		// hour end temp excursion below set point
-#if 0 && defined( _DEBUG)
-					if (zn_rsFSize > .9999)
-						// air request received: temp should hold
-						printf( "Heating temp error\n");
-#endif
-				}
-#if defined( _DEBUG)
-				else if (tz > zn_tzsp + .001)
+			{	if (tz > zn_tzspH + .001f)
 					printf( "\nOverheat");
-#endif
 			}
 			else if (zn_hcMode == RSYS::rsmCOOL)
-			{	if (tz > zn_tzsp+.001)
-				{	if (Top.isEndHour)
-						zn_unMetCDH = tz - zn_tzsp;		// hour end temp excursion above set point
-#if 0 && defined( _DEBUG)
-					if (zn_rsFSize > .9999)
-						// air request received: temp should hold
-						printf( "Cooling temp error\n");
-#endif
-				}
-#if defined( _DEBUG)
-				else if (tz < zn_tzsp - .001)
+			{	if (tz < zn_tzspC - .001f)
 					printf( "\nOvercool");
-#endif
 			}
 		}
+#endif
 	}
 	// else all known
 #if defined( ZNHVACFCONV)
@@ -5561,10 +5531,6 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 
 	return double(rs_fxCap[0]);
 }	// RSYS::rs_FxCapForSpeedF
-
-
-
-
 //-----------------------------------------------------------------------------
 RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified supply temp
 	double tSup)

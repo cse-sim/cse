@@ -1046,9 +1046,35 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 	zrs->qlX = znXLGain * Top.tp_subhrDur;			// convert power to energy. Used for probes, msgs, poss future reporting.
 	zrs->nSubhrLX = (zrs->qlX != 0.f);			// 1 if non-0, 0 if 0: accumulates to # subhrs with condensation.
 
-// subhour results: unmet load (meaningful for ConvRad only 10-2012)
-	zrs->unMetHDH = zn_unMetHDH;
-	zrs->unMetCDH = zn_unMetCDH;
+// subhour results: unmet load (CR zones only, else zn_hcMode not set)
+// 3 values tracked
+//  - nHrUnMetX = count of hours when tz error > zn_tzTolUnMet
+//  - unMetHrXDH = deg-hr excursion evaluated at end of hour
+//  - unMetShXDH = deg-hr excursion accumulated each subhour
+	float tzErr = tz - zn_tzsp;		// temp excursion above/below setpoint
+
+	if (zn_hcMode == RSYS::rsmHEAT && tzErr < -0.001f)
+	{	// heating (tzErr < 0)
+		// if (tzErr < -i.zn_tzTolUnMet)
+		//   zrs->nHrUnMetH = Top.tp_subhrDur;
+		if (Top.isEndHour)
+		{
+			zrs->unMetHrHDH = tzErr;
+			zrs->nHrUnMetH += 1.f;
+		}
+	}
+	else if (zn_hcMode == RSYS::rsmCOOL && tzErr > 0.001f)
+	{	// cooling (tzErr > 0)
+		// if (tzErr > i.zn_tzTolUnMet)
+		//  zrs->nHrUnMetC = Top.tp_subhrDur;
+		zrs->unMetShCDH = tzErr * Top.tp_subhrDur;
+		if (Top.isEndHour)
+		{
+			zrs->unMetHrCDH = tzErr;
+			zrs->nHrUnMetC += 1.f;
+		}
+	}
+
 
 #if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97
 x// excess latent gain... accumulate to a zone member for reporting during autoSizing, when ZNRES accumulation isn't done

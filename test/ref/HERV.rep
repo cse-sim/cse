@@ -9,7 +9,7 @@
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'Z1': Unmet cooling loads during 11 hours of run.
+Warning: Zone 'Z1': Unmet cooling loads during 11.0 hours of run.
 ---------------
 
 
@@ -60,7 +60,7 @@ MySys Characteristics
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  1
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ RSYSRES Furn
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  2
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  3
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  4
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  4
 
 
 
@@ -260,7 +260,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.901.0+vsashp.908f6256.17 for Win32 console
+! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
 
 
 
@@ -312,7 +312,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  5
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
          DELETE HOLIDAY "M L King Day"
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  6
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
         		layer lrThk = .1 lrMat = FoamInsul
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  7
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Input for Run 001:
         
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  8
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Input for Run 001:
             znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page  9
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ Input for Run 001:
         	rsFChg = 1		//ACM charge factor (default = 1)
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 10
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 10
 
 
 
@@ -690,7 +690,7 @@ Input for Run 001:
 #           RXCOL colHead="ecPar" colVal=F*R.ecParasitic colDec=dp colWid = 6 \
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 11
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 12
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 12
 
 
 
@@ -762,21 +762,21 @@ Input for Run 001:
 
 
 
-! CSE 0.901.0+vsashp.908f6256.17 for Win32 console run(s) done: Wed 02-Feb-22   2:45:13 pm
+! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console run(s) done: Wed 16-Mar-22   1:46:46 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               02-Feb-22   2:33 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
-! Command line: -x!  -t1 herv
-! Input file:   D:\cse\test\herv.cse
-! Report file:  D:\cse\test\herv.rep
+! Executable:   d:\cse\msvc\csed.exe
+!               16-Mar-22   1:46 pm   (VS 14.29    5748736 bytes)  (HPWH 1.17.1)
+! Command line: -x!  -t1 HERV
+! Input file:   D:\cse\test\HERV.cse
+! Report file:  D:\cse\test\HERV.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0400   
+!                Input:  Time = 0.20     Calls = 1      T/C = 0.1960   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.27     Calls = 1      T/C = 1.2710   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
-!                Total:  Time = 1.31     Calls = 1      T/C = 1.3150   
+!           Simulation:  Time = 3.88     Calls = 1      T/C = 3.8810   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 4.08     Calls = 1      T/C = 4.0810   
 
 
 
@@ -816,5 +816,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! herv  001                                Wed 02-Feb-22   2:45:12 pm  Page 13
+! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 13
 

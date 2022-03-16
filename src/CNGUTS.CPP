@@ -783,11 +783,11 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 						"    Total condensation heat = %g kBtu.",
 						zr->name, zr->curr.Y.nSubhrLX,
 						zr->curr.Y.qlX/1000 );				// convert Btu to kBtu
-				if (zr->curr.Y.nHrUnMetH)
-					warn( "Zone '%s': Unmet heating loads during %d hours of run.",
+				if (zr->curr.Y.nHrUnMetH > 0.f)
+					warn( "Zone '%s': Unmet heating loads during %0.1f hours of run.",
 						zr->name, zr->curr.Y.nHrUnMetH);
-				if (zr->curr.Y.nHrUnMetC)
-					warn( "Zone '%s': Unmet cooling loads during %d hours of run.",
+				if (zr->curr.Y.nHrUnMetC > 0.f)
+					warn( "Zone '%s': Unmet cooling loads during %0.1f hours of run.",
 						zr->name, zr->curr.Y.nHrUnMetC);
 								if (zr->curr.Y.nHrUnMetC)
 				if (zr->curr.Y.nShVentH)
@@ -1501,11 +1501,14 @@ LOCAL void FC NEAR doIvlAccum()
 		accumZr(  &pZR->curr.S, &pZR->curr.H,	//   src & dest ZNRES substrs: accumulate zone's subhr to same zone's hour
 				  Top.isBegHour,    		//   non-0 if 1st call of hour: init: copy don't add.
 				  Top.isEndHour );			//   non-0 if last call of hour: compute averages
+#if 0
 		if (Top.isEndHour)
 		{	// hour has unmet if temp not held at end of hour
 			pZR->curr.H.nHrUnMetH = pZR->curr.H.unMetHDH != 0.f;
 			pZR->curr.H.nHrUnMetC = pZR->curr.H.unMetCDH != 0.f;
 		}
+#endif
+
 #ifdef SHSZ	// if keeping sum-of-subhours results. cnguts.h. untested. undef 6-92 for speed, flexibility.
 *     if (pZR->ss < ZnresB.n)							// except for last (sum-of-zones) record
 *        accumZr( &pZR->curr.S, &azResp->curr.S, pZR->ss==1, pZR->ss==ZrB.n);	// add zone's subhr results to sum of zones

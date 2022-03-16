@@ -2371,7 +2371,7 @@ ENDREPORT
     RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
-    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHdH colWid=5 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrHdH colWid=5 colDec=2 \
     RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
     RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
@@ -2412,7 +2412,7 @@ SYSCOLSH( Reportcol, 1, 1, "Attic-atc", 3)
     RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
-    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetCdH colWid=5 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrCdH colWid=5 colDec=2 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
     RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \

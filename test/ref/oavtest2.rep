@@ -6,7 +6,7 @@ Error Messages for Run 001:
 Warning: Zone 'House': Condensation occurred in 95095 subhours of run.
     Total condensation heat = 2212.85 kBtu.
 ---------------
-Warning: Zone 'House': Unmet heating loads during 1 hours of run.
+Warning: Zone 'House': Unmet heating loads during 1.0 hours of run.
 ---------------
 Warning: Zone 'Attic': Condensation occurred in 30274 subhours of run.
     Total condensation heat = 529.307 kBtu.
@@ -207,7 +207,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
+! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
 
 
 
@@ -1763,7 +1763,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
+! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
 
 
 
@@ -1786,18 +1786,18 @@ Input for Run 002:
 
 
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console run(s) done: Mon 31-Jan-22   3:38:31 pm
+! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console run(s) done: Wed 16-Mar-22   1:59:14 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               31-Jan-22   2:54 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
+!               16-Mar-22   1:48 pm   (VS 14.29    2930688 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 oavtest2
 ! Input file:   D:\cse\test\oavtest2.cse
 ! Report file:  D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 2      T/C = 0.0410   
+!                Input:  Time = 0.08     Calls = 2      T/C = 0.0420   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 24.57    Calls = 2      T/C = 12.2865  
-!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0020   
-!                Total:  Time = 24.68    Calls = 1      T/C = 24.6750  
+!           Simulation:  Time = 23.69    Calls = 2      T/C = 11.8440  
+!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0005   
+!                Total:  Time = 23.78    Calls = 1      T/C = 23.7810  
