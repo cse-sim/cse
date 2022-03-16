@@ -119,14 +119,10 @@ Window exterior long wave (thermal) emittance.
 <%= member_table(
   units: "",
   legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "*none*",
+  default: "0.84",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**       **Default**   **Required**   **Variability**
------------ --------------------- ------------- -------------- -----------------
-(none)      0 $\le$ *x* $\le$ 1   0.84           No             constant
 
 **wnInEpsLW=*float***
 
@@ -135,15 +131,10 @@ Window interior long wave (thermal) emittance.
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
-  default: "*none*",
+  default: "0.84",
   required: "No",
   variability: "constant")
   %>
-
-**Units**   **Legal Range**       **Default**   **Required**   **Variability**
------------ --------------------- ------------- -------------- -----------------
-(none)      0 $\le$ *x* $\le$ 1   0.84           No             constant
-
 
 **wnInH=*float***
 

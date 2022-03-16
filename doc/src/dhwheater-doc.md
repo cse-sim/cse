@@ -121,7 +121,7 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
 
 <%= member_table(
   units: "gal",
-  legal_range: "$\ge$ 0.1 (caution: small values may cause runtime errors)",
+  legal_range: "$\\ge$ 0.1 (caution: small values may cause runtime errors)",
   default: "per whASHPType if HPWH else 50",
   required: "For some HPWH configurations, see above",
   variability: "constant")
