@@ -32,4 +32,42 @@ class TableTest < TC
     actual = Template::RenderWithErb.("Hi <%= inspect %>", b2)
     assert_equal(actual, expected)
   end
+  def test_rendering_a_csv_table
+    b1 = MakeBinding.().({});
+    template = <<ENDEND
+<%= csv_table(<<END, :row_header => false)
+A,B,C
+1,2,3
+END
+%>
+ENDEND
+  expected = <<END.strip
+---------------------- ---------------------- ----------------------
+A                      B                      C                     
+
+1                      2                      3                     
+---------------------- ---------------------- ----------------------
+END
+    actual = Template::RenderWithErb.(template, b1)
+    assert_equal(expected, actual)
+  end
+  def test_rendering_a_csv_table_with_literal_comma
+    b1 = MakeBinding.().({});
+    template = <<ENDEND
+<%= csv_table(<<END, :row_header => false)
+A,B,C
+1,2,"3,4,5"
+END
+%>
+ENDEND
+  expected = <<END.strip
+---------- ---------- ---------------------------------------------
+A          B          C                                            
+
+1          2          3,4,5                                        
+---------- ---------- ---------------------------------------------
+END
+    actual = Template::RenderWithErb.(template, b1)
+    assert_equal(expected, actual)
+  end
 end
