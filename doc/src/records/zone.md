@@ -20,21 +20,12 @@ Name of zone. Enter after the word ZONE; no "=" is used.
 
 Selects model for zone.
 
------------ ------------------------------
-CNE         Older, central difference model based on
-            original CALPAS methods.  Not fully supported
-            and not suitable for current compliance applications.
-
-CZM         Conditioned zone model.  Forward-difference,
-            short time step methods are used.
-
-UZM         Unconditioned zone model.  Identical to CZM
-            except heating and cooling are not supported.
-            Typically used for attics, garages, and other
-            ancillary spaces.
-
------------ ------------------------------
-
+<%= csv_table(<<END, :row_header => false)
+CNE, Older central difference model based on original CALPAS methods.  Not fully supported and not suitable for current compliance applications.
+CZM, Conditioned zone model. Forward-difference *coma* short time step methods are used.
+UZM, Unconditioned zone model. Identical to CZM except heating and cooling are not supported. Typically used for attics *coma* garages *coma* and other ancillary spaces.
+END
+%>
 
 <%= member_table(
   units: "",
@@ -359,19 +350,14 @@ Zone effective leakage area (ELA).
 
 Zone local shielding class, used in derivation of local wind speed for ELA infiltration model, wind-driven AirNet leakage, and exterior surface coefficients. infShld values are --
 
-  ---------- -----------------------------------------------------------
-  1          no obstructions or local shielding
-
-  2          light local shielding with few obstructions
-
-  3          moderate local shielding, some obstructions within two
-             house heights
-
-  4          heavy shielding, obstructions around most of the perimeter
-
-  5          very heavy shielding, large obstructions surrounding the
-             perimeter within two house heights
-  ---------- -----------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  1, no obstructions or local shielding
+  2, light local shielding with few obstructions
+  3, moderate local shielding*coma* some obstructions within two house heights
+  4, heavy shielding*coma* obstructions around most of the perimeter
+  5, very heavy shielding*coma* large obstructions surrounding the perimeter within two house heights
+END
+%>
 
 <%= member_table(
   units: "",
