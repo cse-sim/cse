@@ -2024,11 +2024,8 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 					when = "when izFanVfDs is 0";
 					break;
 				case C_FANAPPCH_DSFAN:
-					when = "when sum of doas supply IZXFER flow is 0";
-					break;
 				case C_FANAPPCH_DEFAN:
-					when = "when sum of doas exhaust IZXFER flow is 0";
-					break;
+					continue;  // Inputs are ignored instead of issuing an error
 				case C_FANAPPCH_XFAN:
 					when = (char *)MH_S0679;
 					break;	// "when no exhaust fan (xfanVfDs 0 or omitted)"
