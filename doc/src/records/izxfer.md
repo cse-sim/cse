@@ -11,9 +11,12 @@ The assumption is that in realistic configurations, zone pressure will generally
 
 Optional name of interzone transfer; give after the word "IZXFER" if desired.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **izNVType=*choice***
 
@@ -68,13 +71,12 @@ Choice determining interzone ventilation
                    Flow may or may not be balanced.
   ---------------- ---------------------------------------
 
-  -----------------------------------------------------------------
-  **Units** **Legal**      **Default** **Required** **Variability**
-            **Range**
-  --------- -------------- ----------- ------------ ---------------
-            *choices above*   NONE        No           constant
-
-  -----------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **izAFCat=*choice***
 
@@ -96,39 +98,34 @@ Choices are:
 
 Default values for izAFCat are generally adequate *except* that natural ventilation IZXFERs are by default categorized as infiltration.  It is thus recommended that izAfCat be omitted except that ventilation IZXFERs (e.g. representing openable windows) should include izAfCat=VentEx (or VentIz).
 
-----------------------------------------------------------------
-  **Units** **Legal**        **Default**                            **Required** **Variability**
-            **Range**
-  --------- ---------------  ------------------------------------- ------------- ---------------
-            *choices above*  derived from IZXFER characteristics        No           constant
-
-  -----------------------------------------------------------------
-
-
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "derived from IZXFER characteristics",
+  required: "No",
+  variability: "constant") %>
 
 **izZn1=*znName***
 
 Name of primary zone. Flow rates $>$ 0 are into the primary zone.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              name of a ZONE                  Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "name of a ZONE",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **izZn2=*znName***
 
 Name of secondary zone.
 
-  ---------------------------------------------------------------
-  **Units** **Legal** **Default** **Required**    **Variability**
-            **Range**
-  --------- --------- ----------- --------------- ---------------
-            name of a             required unless constant
-            ZONE                  izNVType =
-                                  AIRNETEXT,
-                                  AIRNETEXTFAN,
-                                  AIRNETEXTFLOW,
-                                  or AIRNETHERV
-  ---------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "name of a ZONE",
+  default: "*none*",
+  required: "required unless constant izNVType = AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, or AIRNETHERV",
+  variability: "constant") %>
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
 
@@ -136,171 +133,233 @@ Give izHConst for a conductive transfer between zones. Give izNVType other than 
 
 Conductance between zones.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  Btu/^o^F    *x* $\ge$ 0       0             No             hourly
+<%= member_table(
+  units: "Btu/^o^F",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 **izALo=*float***
 
 Area of low or only vent (typically VentOff)
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft^2^       *x* $\ge$ 0       0             No             hourly
+<%= member_table(
+  units: "ft^2^",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 **izAHi=*float***
 
 Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo typically but this is not required.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft^2^       *x* $\ge$ 0       izALo         No             hourly
+<%= member_table(
+  units: "ft^2^",
+  legal_range: "*x* $\\ge$ 0",
+  default: "izALo",
+  required: "No",
+  variability: "hourly") %>
 
 **izL1=*float***
 
 Length or width of AIRNETHORIZ opening.
 
-  **Units**   **Legal Range**   **Default**   **Required**                **Variability**
-  ----------- ----------------- ------------- --------------------------- -----------------
-  ft          *x* $>$ 0                       if izNVType = AIRNETHORIZ   constant
+<%= member_table(
+  units: "ft",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "if izNVType = AIRNETHORIZ",
+  variability: "constant") %>
 
 **izL2=*float***
 
 Width or length of AIRNETHORIZ opening.
 
-  **Units**   **Legal Range**   **Default**   **Required**                **Variability**
-  ----------- ----------------- ------------- --------------------------- -----------------
-  ft          *x* $>$ 0                       if izNVType = AIRNETHORIZ   constant
+<%= member_table(
+  units: "ft",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "if izNVType = AIRNETHORIZ",
+  variability: "constant") %>
 
 **izStairAngle=*float***
 
 Stairway angle for AIRNETHORIZ opening. Use 90 for an open hole. Note that 0 prevents flow.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  degrees     *x* $>$ 0         34            No             constant
+<%= member_table(
+  units: "^o^ degrees",
+  legal_range: "*x* $>$ 0",
+  default: "34",
+  required: "No",
+  variability: "constant") %>
 
 **izHD=*float***
 
 Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types)
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft                            0             No             constant
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
 
 **izNVEff=*float***
 
 Vent discharge coefficient.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.8           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.8",
+  required: "No",
+  variability: "constant") %>
 
 **izfanVfDs=*float***
 
 Fan design or rated flow at rated pressure.  For AIRNETHERV, this is the net air flow into the zone, gross flow at the fan is derived using izEATR (see below).
 
-  **Units**   **Legal Range**   **Default**   **Required**     **Variability**
-  ----------- ----------------- ------------- ---------------- -----------------
-  cfm         *x* $\ge$ 0       0 (no fan)    If fan present   constant
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0 (no fan)",
+  required: "If fan present",
+  variability: "constant") %>
 
 **izCpr=*float***
 
 Wind pressure coefficient (for AIRNETEXT).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-               *x* $\ge$ 0       0.            No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
 
 **izExp=*float***
 
 Opening exponent (for AIRNETEXT).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  none        *x* $>$ 0         0.5           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "0.5",
+  required: "No",
+  variability: "constant") %>
 
 **izVfMin=*float***
 
 Minimum volume flow rate (VentOff mode).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  cfm         *x* $\ge$ 0        izfanVfDs             No             subhourly
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "izfanVfDs",
+  required: "No",
+  variability: "subhourly") %>
 
 **izVfMax=*float***
 
 Maximum volume flow rate (VentOn mode)
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  cfm         *x* $\ge$ 0       izVfMin             No             subhourly
-
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "izVfMin",
+  required: "No",
+  variability: "subhourly") %>
 
 **izASEF=*float***
 
 Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-reported HERV rating and is calculated as (supplyT - sourceT) / (returnT - sourceT).  This formulation includes fan heat (in supplyT), hence the term "apparent".  Ignored if izSRE is given.  CSE does not HRV exhaust-side condensation, so this model is approximate.
 
-**Units**   **Legal Range**    **Default**   **Required**   **Variability**
------------ ------------------ ------------- -------------- -----------------
-             0 $\le$ x $\le$ 1  0             No             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
 
 **izSRE=*float***
 
 Sensible recovery efficiency (SRE) for AIRNETHERV ventilator.  Used as the sensible effectiveness in calculation of the supply air temperature.  Note that values of SRE greater than approximately 0.6 imply exhaust-side condensation under HVI rating conditions.  CSE does not adjust for these effects.  High values of izSRE will produce unrealistic results under mild outdoor conditions and/or dry indoor conditions.
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-            0 $\le$ x $\le$ 1  0                No             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
 
 **izASRE=*float***
 
 Adjusted sensible recovery efficiency (ASRE) for AIRNETHERV ventilator.  The difference izASRE - izSRE is used to calculate fan heat added to the supply air stream.  See izSRE notes.  No effect when izSRE is 0.
 
-**Units**   **Legal Range**       **Default**   **Required**   **Variability**
------------ --------------------- ------------- -------------- -----------------
-            0 $\le$ x $\le$ izSRE   0             No             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ izSRE",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
 
 **izEATR=*float***
 
 Exhaust air transfer ratio for AIRNETHERV ventilator.  NetFlow = (1 - EATR)*(grossFlow).
 
- **Units** **Legal Range**   **Default** **Required** **Variability**
- --------- ----------------- ----------- ------------ ---------------
- cfm       0 $\le$ x $\le$ 1 0           No           subhourly
+<%= member_table(
+  units: "cfm",
+  legal_range: "0 $\\le$ x $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
 
 **izLEF=*float***
 
 Latent heat recovery effectiveness for AIRNETHERV ventilator.  The default value (0) results in sensible-only heat recovery.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              0 $\le$ x $\le$ 1       0             No             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
 
 **izRVFanHeatF=*float***
 
 Fraction of fan heat added to supply air stream for AIRNETHERV ventilator.  Used only when when izSRE is 0 (that is, when izASEF specifies the sensible effectiveness).
 
-**Units**   **Legal Range**       **Default**   **Required**   **Variability**
------------ --------------------- ------------- -------------- -----------------
-            0 $\le$ x $\le$ 1      0             No             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
 
 **izVfExhRat=*float***
 
 Exhaust volume flow ratio for AIRNETHERV ventilator = (exhaust flow) / (supply flow).  Any
 value other than 1 indicates unbalanced flow that effects the zone pressure.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                 1 (balanced)      No             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 0",
+  default: "1 (balanced)",
+  required: "No",
+  variability: "constant") %>
 
 **izfanPress=*float***
 
 Design or rated fan pressure.
 
-  **Units**      **Legal Range**   **Default**   **Required**   **Variability**
-  -------------- ----------------- ------------- -------------- -----------------
-  inches H~2~O   *x* $>$ 0         .3            No             constant
+<%= member_table(
+  units: "inches H~2~O",
+  legal_range: "*x* $>$ 0",
+  default: "0.3",
+  required: "No",
+  variability: "constant") %>
 
 Only one of izfanElecPwr, izfanEff, and izfanShaftBhp may be given: together with izfanVfDs and izfanPress, any one is sufficient for CSE to determine the others and to compute the fan heat contribution to the air stream.
 
@@ -308,30 +367,34 @@ Only one of izfanElecPwr, izfanEff, and izfanShaftBhp may be given: together wit
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  ------------------------------------------------------------------
-  **Units** **Legal** **Default**   **Required**     **Variability**
-            **Range**
-  --------- --------- ------------- ---------------- ---------------
-  W/cfm     *x* $>$ 0 derived from  If izfanEff and  constant
-                      izfanEff and  izfanShaftBhp
-                      izfanShaftBhp not present
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "*x* $>$ 0",
+  default: "derived from izfanEff and izfanShaftBhp",
+  required: "If izfanEff and izfanShaftBhp not present",
+  variability: "constant") %>
 
 **izfanEff=*float***
 
 Fan efficiency at design flow and pressure, as a fraction.
 
-  **Units**   **Legal Range**       **Default**                                        **Required**   **Variability**
-  ----------- --------------------- -------------------------------------------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   derived from *izfanShaftBhp* if given, else 0.08   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "derived from *izfanShaftBhp* if given, else 0.08",
+  required: "No",
+  variability: "constant") %>
 
 **izfanShaftBhp=*float***
 
 Fan shaft brake horsepower at design flow and pressure.
 
-  **Units**   **Legal Range**   **Default**                **Required**   **Variability**
-  ----------- ----------------- -------------------------- -------------- -----------------
-  bhp         *x* $>$ 0         derived from *izfanEff*.   No             constant
+<%= member_table(
+  units: "bhp",
+  legal_range: "*x* $>$ 0",
+  default: "derived from *izfanEff*.",
+  required: "No",
+  variability: "constant") %>
 
 **izfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**
 
@@ -348,33 +411,45 @@ where:
 
 If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
 
-  **Units**   **Legal Range**   **Default**                **Required**   **Variability**
-  ----------- ----------------- -------------------------- -------------- -----------------
-                                *0, 1, 0, 0, 0 (linear)*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 0",
+  default: "*0, 1, 0, 0, 0 (linear)*",
+  required: "No",
+  variability: "constant") %>
 
 **izFanMtr=*mtrName***
 
 Name of meter, if any, to record energy used by supply fan. End use category used is specified by izFanEndUse (next).
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 **izFanEndUse=*choice***
 
 End use to which fan energy is recorded (in METER specified by izFanMtr).  See METER for available end use choices.
 
-**Units**   **Legal Range**     **Default**      **Required**   **Variability**
------------ ------------------- ---------------- -------------- -----------------
-            *end use choice*       Fan             No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*end use choice*",
+  default: "Fan",
+  required: "No",
+  variability: "constant") %>
 
 **endIZXFER**
 
 Optionally indicates the end of the interzone transfer definition.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
