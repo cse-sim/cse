@@ -66,6 +66,9 @@ Choice determining interzone ventilation
                    with the exterior with heat and/or
                    moisture exchange between the air streams.
                    Flow may or may not be balanced.
+
+  AIRNETDOAS       Air supplied from and/or exhausted to
+                   a centralized DOAS fans.
   ---------------- ---------------------------------------
 
   -----------------------------------------------------------------
@@ -129,6 +132,15 @@ Name of secondary zone.
                                   AIRNETEXTFLOW,
                                   or AIRNETHERV
   ---------------------------------------------------------------
+
+**izDOAS=*oaName***
+
+Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**izVfMin** < 0).
+
+<%= member_table(
+  legal_range: "name of a DOAS",
+  required: "when izNVType = AIRNETDOAS",
+  variability: "constant") %>
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
 

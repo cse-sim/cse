@@ -851,7 +851,7 @@ RC DOAS::oa_CkfDOAS()	// input checks
 	// heat recovery
 	if (IsSet(DOAS_HXSENEFFH))
 	{
-		const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_HXSENEFFH));
+		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_HXSENEFFH));
 	}
 	else
 	{
@@ -981,31 +981,32 @@ RC DOAS::oa_Setup(DOAS* iRat)
 	}
 
 	// Setup fan records
-	oa_supFan.fn_setup( C_FANAPPCH_DSFAN, this, DOAS_SUPFAN, oa_supFan.vfDs, NULL);	// checks fan input, does defaults
-	oa_exhFan.fn_setup( C_FANAPPCH_DEFAN, this, DOAS_EXHFAN, oa_exhFan.vfDs, NULL);	// checks fan input, does defaults
+	rc |= oa_supFan.fn_setup( C_FANAPPCH_DSFAN, this, DOAS_SUPFAN, oa_supFan.vfDs, NULL);	// checks fan input, does defaults
+	rc |= oa_exhFan.fn_setup( C_FANAPPCH_DEFAN, this, DOAS_EXHFAN, oa_exhFan.vfDs, NULL);	// checks fan input, does defaults
 
 	// Check inputs in absence of fan(s)
 	if (oa_supFan.fanTy == C_FANTYCH_NONE)
 	{
-		if (IsSet(DOAS_HXSENEFFH))
-		{
-			oer("%s was specified, but there is no supply fan", mbrIdTx(DOAS_HXSENEFFH));
-		}
-		if (IsSet(DOAS_SUPTH))
-		{
-			oer("%s was specified, but there is no supply fan", mbrIdTx(DOAS_SUPTH));
-		}
-		if (IsSet(DOAS_SUPTC))
-		{
-			oer("%s was specified, but there is no supply fan", mbrIdTx(DOAS_SUPTC));
-		}
+#define ZFAN(m) (DOAS_SUPFAN + FAN_##m)
+		const char* when = "when there is no supply fan";
+		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
+				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
+				 DOAS_HXSENEFFH, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
+				 DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
+				 DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, DOAS_SUPTH, DOAS_SUPTC, 
+				 DOAS_EIRH, DOAS_EIRC, DOAS_SHRTARGET, 0);
+#undef ZFAN
 	}
 	if (oa_exhFan.fanTy == C_FANTYCH_NONE)
 	{
-		if (IsSet(DOAS_HXSENEFFH))
-		{
-			oer("%s was specified, but there is no exhaust fan", mbrIdTx(DOAS_HXSENEFFH));
-		}
+#define ZFAN(m) (DOAS_EXHFAN + FAN_##m)
+		const char* when = "when there is no exhaust fan";
+		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
+				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
+				 DOAS_HXSENEFFH, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
+				 DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
+				 DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, 0);
+#undef ZFAN
 	}
 
 	// Setup HX
