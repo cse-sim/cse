@@ -57,7 +57,7 @@ Day of week on which January 1 falls.
   legal_range: "",
   default: "",
   required: "",
-  variability: "") %>
+  variability: "constant") %>
 
 **wuDays=*int***
 
