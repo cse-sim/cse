@@ -506,7 +506,7 @@ static void WhenSave(const char*& when, char* whenBuf, size_t whenBufSize)
 RC record::ValidateFN(int fn, const char* caller) const
 {
 	RC rc = RCOK;
-	if (fn <= 0 || fn > 1024)
+	if (fn < 0 || fn > 1024)
 		rc |= oer((char*)MH_S0495,	// "%s Internal error: field # %nd: unterminated arg list?"
 				   caller, fn);
 	return rc;

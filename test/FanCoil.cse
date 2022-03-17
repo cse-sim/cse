@@ -2155,6 +2155,7 @@ ALTER REPORTFILE Primary rfPageFmt = NO
 #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"  rpCPL=-1 \
    REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].CapNomC colHead="CapNom" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].Cap115 colHead="Cap115" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].Cap82 colHead="Cap82" colDec=0 colWid=6  \
@@ -2177,6 +2178,7 @@ SYSINFCOOL( 1)
 #define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"  rpCPL=-1 \
    REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].CapNomH colHead="CapNom" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
@@ -2192,7 +2194,7 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
    REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
-   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="CapAuxH" colDec=0 colWid=7  \
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
    REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8
@@ -2244,7 +2246,7 @@ SYSRESCOLS( REPORTCOL,"Mon",@Top.monstr,@RSYSRES[ 1].M,.000001,3)
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
 SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.000001,3)
 
-#define TPERFCOLS( RXCOL, whenHead, when, X, F, dp, mtr, lm, rs, zn) \
+#define TPERFCOLS( RXCOL, whenHead, when, X, F, dp, mtr, lm, lmSS, rs, zn) \
   RXCOL colHead=WhenHead colVal=when colWid=3 \
   RXCOL colHead="eHtg"  colVal=@METER[ mtr].X.htg*F colDec=dp colWid=6 \
   RXCOL colHead="eHPBU"  colVal=@METER[ mtr].X.HPBU*F colDec=dp colWid=6 \
@@ -2252,22 +2254,24 @@ SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.000001,3)
   RXCOL colHead="eHTot"  colVal=(@METER[ mtr].X.htg+@METER[ mtr].X.HPBU+@METER[ mtr].X.fanH+@RSysRes[rs].X.ehParasitic)*F colDec=dp colWid=6 \
   RXCOL colHead="qhZn"  colVal=@ZnRes[zn].X.qshHVAC*F colDec=dp colWid=6 \
   RXCOL colHead="qLMHtg"  colVal=@LoadMeter[ lm].X.qhtg*F colDec=dp colWid=6 \
+  RXCOL colHead="qSSHtg"  colVal=@LoadMeter[ lmSS].X.qhtg*F colDec=dp colWid=6 \
   RXCOL colHead="eHTot2"   colVal=@RsysRes[ rs].X.ehTot*F colDec=dp colWid=6 \
   RXCOL colHead="qhZn2"   colVal=@RsysRes[ rs].X.qhZoneSen*F colDec=dp colWid=6 \
   RXCOL colHead="eClg"  colVal=(@METER[ mtr].X.clg+@METER[ mtr].X.fanC+@RSysRes[rs].X.ecParasitic)*F colDec=dp colWid=10 \
   RXCOL colHead="qcZone"  colVal=@ZnRes[zn].X.qcMech*F colDec=dp colWid=6 \
   RXCOL colHead="qLMClg"  colVal=@LoadMeter[lm].X.qClg*F colDec=dp colWid=6 \
+  RXCOL colHead="qSSClg"  colVal=@LoadMeter[ lmSS].X.qClg*F colDec=dp colWid=6 \
   RXCOL colHead="eClg2"   colVal=@RsysRes[ rs].X.ecTot*F colDec=dp colWid=6 \
   RXCOL colHead="qcZn2"   colVal=(@RsysRes[ rs].X.qcZoneSen+@RsysRes[ rs].X.qcZoneLat)*F colDec=dp colWid=6 \
   RXCOL colHead="ParErr"  colVal=@METER[ mtr].X.aux - @RsysRes[ rs].X.ehParasitic - @RsysRes[ rs].X.ecParasitic - @RsysRes[ rs].X.evParasitic colDec=dp colWid = 6
 
 REPORT ENUSEMO rpType=UDT rpFreq=MONTH rpTitle = "RSYS -- Fan Coil"
-TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, MtrLoads, 1, 1)
+TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
-TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrLoads, 1, 1)
+TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 
 REPORT ENUSEHR rpType=UDT rpFreq=HOUR rpTitle = "RSYS -- Fan Coil" rpDayBeg=Jan 1 rpDayEnd=Jan 3
-TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, 1, 1)
+TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 
 
 

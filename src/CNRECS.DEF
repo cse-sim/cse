@@ -3183,6 +3183,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC rs_CkF();"
+*declare "RC rs_CkFCooling();"
+*declare "RC rs_CkFHeating();"
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
 *declare "RC rs_CkFRatio( int fn1, int fn2, int fnRat, float vMin, float vMax);"
