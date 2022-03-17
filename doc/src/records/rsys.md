@@ -6,6 +6,13 @@ RSYS constructs an object representing an air-based residential HVAC system.
 
 Optional name of HVAC system; give after the word “RSYS” if desired.
 
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
+
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        No             constant
@@ -69,18 +76,23 @@ ACPKGROOMRESISTANCE
 
 
 
-  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
-  ----------- ---------------------- ------------- -------------- -----------------
-              *one of above choices*   ACFURNACE        No             constant
-
+<%= member_table(
+  units: "",
+  legal_range: "*one of above choices*",
+  default: "ACFURNACE",
+  required: "No",
+  variability: "constant") %>
 
 **rsDesc=*string***
 
 Text description of system, included as documentation in debugging reports such as those triggered by rsPerfMap=YES
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              string            *blank*       No             constant
+<%= member_table(
+  units: "",
+  legal_range: "string",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **rsModeCtrl=*choice***
 
@@ -103,25 +115,34 @@ Specifies systems heating/cooling availability during simulation.
           step.
   ------- ---------------------------------------
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-              OFF, HEAT, COOL, AUTO    AUTO          No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "OFF, HEAT, COOL, AUTO",
+  default: "AUTO",
+  required: "No",
+  variability: "hourly") %>
 
 **rsPerfMap=*choice***
 
 Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              NO, YES           NO            No             constant
+<%= member_table(
+  units: "",
+  legal_range: "YES, NO",
+  default: "NO",
+  required: "No",
+  variability: "constant") %>
 
 **rsFanTy=*choice***
 
 Specifies fan (blower) position relative to cooling coil.
 
-  **Units**   **Legal Range**      **Default**   **Required**   **Variability**
-  ----------- -------------------- ------------- -------------- -----------------
-              BLOWTHRU, DRAWTHRU   BLOWTHRU      No             constant
+<%= member_table(
+  units: "",
+  legal_range: "BLOWTHRU, DRAWTHRU",
+  default: "BLOWTHRU",
+  required: "No",
+  variability: "constant") %>
 
 **rsFanMotTy=*choice***
 
@@ -132,9 +153,12 @@ Specifies type of motor driving the fan (blower). This is used in the derivation
   BPM   Brushless permanent magnet (aka ECM)
   ----- --------------------------------------
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              PSC, BPM          PSC           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "PSC, BPM",
+  default: "PSC",
+  required: "No",
+  variability: "constant") %>
 
 **rsAdjForFanHt=*NOYESCH***
 
@@ -144,74 +168,100 @@ Fan heat adjustment with two options Yes or no. Yes: fanHtRtd derived from rsFan
 
 Name of METER object, if any, by which system’s electrical energy use is recorded (under appropriate end uses).
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **rsFuelMtr =*mtrName***
 
 Name of METER object, if any, by which system’s fuel energy use is recorded (under appropriate end uses).
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **rsLoadMtr =*ldmtrName***
 
 Name of a LOADMETER object, if any, to which the system’s heating and cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
 
-  **Units**   **Legal Range**       **Default**      **Required**   **Variability**
-  ----------- --------------------- ---------------- -------------- -----------------
-              *name of a LOADMETER*   *not recorded*   No             constant
-
+<%= member_table(
+  units: "",
+  legal_range: "*name of a LOADMETER*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **rsAFUE=*float***
 
 Heating Annual Fuel Utilization Efficiency (AFUE).
 
-  **Units**   **Legal Range**   **Default**                         **Required**   **Variability**
-  ----------- ----------------- ----------------------------------- -------------- -----------------
-              0 $<$ x $\le$ 1   0.9 if furnace, 1.0 if resistance   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $<$ x $\\le$ 1",
+  default: "0.9 if furnace, 1.0 if resistance",
+  required: "No",
+  variability: "constant") %>
 
 **rsCapH=*float***
 
 Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, or RESISTANCE.
 
-  **Units**   **Legal Range**           **Default**   **Required**   **Variability**
-  ----------- ------------------------- ------------- -------------- -----------------
-  Btu/hr      *AUTOSIZE* or x $\ge$ 0   0             No             constant
+<%= member_table(
+  units: "Btu/hr",
+  legal_range: "*AUTOSIZE* or x $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
 
 **rsTdDesH=*float***
 
 Nominal heating temperature rise (across system, not at zone) used during autosizing (when capacity is not yet known) and to derive heating air flow rate from heating capacity.
 
-  **Units**   **Legal Range**   **Default**                                  **Required**   **Variability**
-  ----------- ----------------- -------------------------------------------- -------------- -----------------
-  ^o^F        *x* $>$ 0         30 ^o^F if ASHP or ASHPHYDRONIC else 50 ^o^F   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "30 ^o^F if ASHP or ASHPHYDRONIC else 50 ^o^F",
+  required: "No",
+  variability: "constant") %>
 
 **rsFxCapH=*float***
 
 Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 is set to rsFxCapH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0         1.4           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1.4",
+  required: "No",
+  variability: "constant") %>
 
 **rsFanPwrH=*float***
 
 Heating fan power. Heating air flow is calculated from heating capacity and rsTdDesH.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  W/cfm       *x* $\ge$ 0       .365          No             constant
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0.365",
+  required: "No",
+  variability: "constant") %>
 
 **rsHSPF=*float***
 
 For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
 
-  **Units**   **Legal Range**   **Default**   **Required**         **Variability**
-  ----------- ----------------- ------------- -------------------- -----------------
-  Btu/Wh      *x* $>$ 0                       Yes if rsType=ASHP   constant
+<%= member_table(
+  units: "Btu/Wh",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "Yes if rsType=ASHP",
+  variability: "constant") %>
 
 **rsCAP115=*float***
 
@@ -241,25 +291,34 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^
 
 If both rsCap47 and rsCapC are autosized, they are set to consistent values based on the relative values of heating and cooling loads.  If the autosized capC is greater than 75% of the autosized cap47, then rsCapC is set to autosized capC and rsCap47 is derived from rsCapC.  Otherwise, rsCap47 is set to 75% of autosized cap47 and rsCapC is derived from rsCap47.
 
-  **Units**   **Legal Range**           **Default**            **Required**   **Variability**
-  ----------- ------------------------- ---------------------- -------------- -----------------
-  Btu/Wh      *AUTOSIZE* or *x* $>$ 0   Calculated from rsCapC   no             constant
+<%= member_table(
+  units: "Btu/Wh",
+  legal_range: "*AUTOSIZE* or *x* $>$ 0",
+  default: "Calculated from rsCapC",
+  required: "No",
+  variability: "constant") %>
 
 **rsCap35=*float***
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^F.  rsCap35 typically reflects reduced capacity due to reverse (cooling) heat pump operation for defrost.
 
-  **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
-  ----------- ----------------- ------------------------------------ -------------- -----------------
-  Btu/Wh      *x* $>$ 0         Calculated from rsCap47 and rsCap17   no             constant
+<%= member_table(
+  units: "Btu/Wh",
+  legal_range: "*x* $>$ 0",
+  default: "Calculated from rsCap47 and rsCap17",
+  required: "No",
+  variability: "constant") %>
 
 **rsCap17=*float***
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^F.
 
-  **Units**   **Legal Range**   **Default**              **Required**   **Variability**
-  ----------- ----------------- ------------------------ -------------- -----------------
-  Btu/Wh      *x* $>$ 0         Calculated from rsCap47   no             constant
+<%= member_table(
+  units: "Btu/Wh",
+  legal_range: "*x* $>$ 0",
+  default: "Calculated from rsCap47",
+  required: "No",
+  variability: "constant") %>
 
 **rsCAP05=*float***
 
@@ -309,32 +368,34 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 ^o^F.
 
-  **Units**   **Legal Range**   **Default**                                   **Required**   **Variability**
-  ----------- ----------------- --------------------------------------------- -------------- -----------------
-              *x* $>$ 0         Estimated from rsHSPF, rsCap47, and rsCap17   no             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "Estimated from rsHSPF, rsCap47, and rsCap17",
+  required: "No",
+  variability: "constant") %>
 
 **rsCOP35=*float***
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 ^o^F.
 
-  ------------------------------------------------------------------
-  **Units** **Legal** **Default**       **Required** **Variability**
-            **Range**                                        
-  --------- --------- ----------------- ------------ ---------------
-            *x* $>$ 0 Calculated from    no           constant
-                      rsCap35, rsCap47,
-                      rsCap17, rsCOP47,
-                      and rsCOP17
-
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "Calculated from rsCap35, rsCap47, rsCap17, rsCOP47, and rsCOP17",
+  required: "No",
+  variability: "constant") %>
 
 **rsCOP17=*float***
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 17 ^o^F.
 
-  **Units**   **Legal Range**   **Default**                                   **Required**   **Variability**
-  ----------- ----------------- --------------------------------------------- -------------- -----------------
-              *x* $>$ 0          Calculated from rsHSPF, rsCap47, and rsCap17   no             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "Calculated from rsHSPF, rsCap47, and rsCap17",
+  required: "No",
+  variability: "constant") %>
 
 **rsCOP05=*float***
 
@@ -587,9 +648,12 @@ END
 
 For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- -----------------
-  Btu/hr      *AUTOSIZE* or *x* $\ge$ 0   0             no             constant
+<%= member_table(
+  units: "Btu/hr",
+  legal_range: "*AUTOSIZE* or *x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
 
 **rsAFUEAuxH=*float***
 
@@ -613,174 +677,213 @@ Auxiliary furnace heating for annualized fuel utilization efficiency.
 
   ---------  ----------------------------------------------------------------------------
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-               *one of above choices* REVCYCLEAUX          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*one of above choices*",
+  default: "REVCYCLEAUX",
+  required: "No",
+  variability: "constant") %>
 
 **rsFxCapAuxH=*float***
 
   Auxiliary heating autosizing capacity factor. If AUTOSIZEd, rsCapAuxH is set to rsFxCapAuxH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0             1           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1",
+  required: "No",
+  variability: "constant") %>
 
 **rsSEER=*float***
 
 Cooling rated Seasonal Energy Efficiency Ratio (SEER).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  Btu/Wh      *x* $>$ 0                       Yes            constant
+<%= member_table(
+  units: "Btu/Wh",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **rsEER=*float***
 
 Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoor drybulb of 95 ^o^F and entering air at 80 ^o^F drybulb and 67 ^o^F wetbulb).
 
-  **Units**   **Legal Range**   **Default**           **Required**   **Variability**
-  ----------- ----------------- --------------------- -------------- -----------------
-  Btu/Wh      *x* $>$ 0         Estimated from SEER   no             constant
+<%= member_table(
+  units: "Btu/Wh",
+  legal_range: "*x* $>$ 0",
+  default: "Estimated from SEER",
+  required: "No",
+  variability: "constant") %>
 
 **rsCapC=*float***
 
 Cooling capacity at standard AHRI rating conditions. If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value.
 
-  -----------------------------------------------------------------------
-  **Units**  **Legal**       **Default**  **Required**    **Variability**
-             **Range**                                    
-  ---------- --------------- ------------ --------------- ---------------
-  Btu/hr     *AUTOSIZE* or                Yes if rsType   constant
-             *x* $\le$ 0 (x               includes        
-             $>$ 0 coverted               cooling         
-             to $<$ 0)                                    
-  -----------------------------------------------------------------------
+<%= member_table(
+  units: "Btu/hr",
+  legal_range: "*AUTOSIZE* or *x* $\le$ 0 (x $>$ 0 coverted to $<$ 0)",
+  default: "*none*",
+  required: "Yes if rsType includes cooling",
+  variability: "constant") %>
 
 **rsTdDesC=*float***
 
 Nominal cooling temperature fall (across system, not zone) used during autosizing (when capacity is not yet known).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* $<$ 0         -25           No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $<$ 0",
+  default: "-25",
+  required: "No",
+  variability: "constant") %>
 
 **rsFxCapC=*float***
 
 Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak design-day load). Peak design-day load is the cooling capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0         1.4           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1.4",
+  required: "No",
+  variability: "constant") %>
 
 **rsFChg=*float***
 
 Cooling compressor capacity factor.  The gross cooling capacity is adjusted by the factor rsFChg as specified by California Title 24 procedures.
 
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $>$ 0         1 (no effect)      no             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1 (no effect)",
+  required: "No",
+  variability: "constant") %>
 
 **rsVFPerTon=*float***
 
 Standard air volumetric flow rate per nominal ton of cooling capacity.
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-  cfm/ton     150 $\le$ x $\le$ 500   350           no             constant
+<%= member_table(
+  units: "cfm/ton",
+  legal_range: "150 $\\le$ x $\\le$ 500",
+  default: "350",
+  required: "No",
+  variability: "constant") %>
 
 **rsFanPwrC=*float***
 
 Cooling fan power.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  W/cfm       *x* $\ge$ 0       .365          No             constant
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0.365",
+  required: "No",
+  variability: "constant") %>
 
 **rsASHPLockOutT=*float***
 
   Source air dry-bulb temperature below which the air source heat pump compressor does not operate.
 
-  **Units**   **Legal Range**   **Default**         **Required**   **Variability**
-  ----------- ----------------- ------------------- -------------- -----------------
-  ^o^F                          (no lockout)          No             hourly
-
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "(no lockout)",
+  required: "No",
+  variability: "hourly") %>
 
 **rsCdH=*float***
 
   Heating cyclic degradation coefficient, valid only for compressor-based heating (heat pumps).
 
-  ---------------------------------------------------------------------------------------------
-  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
-  ----------- --------------------- -------------------------- -------------- -----------------
-                0 $\le$ x $\le$ 0.5  ASHPHYDRONIC: 0.25\           No             hourly
-                                     ASHP: derived from rsHSPF
-  ---------------------------------------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 0.5",
+  default: "ASHPHYDRONIC: 0.25 ASHP: derived from rsHSPF",
+  required: "No",
+  variability: "hourly") %>
 
 **rsCdC=*float***
 
 Cooling cyclic degradation coefficient, valid for configurations having compressor-based cooling.
 
-  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
-  ----------- --------------------- -------------------------- -------------- -----------------
-                0 $\le$ x $\le$ 0.5  0                          No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 0.5",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 **rsFEffH=*float***
 
 Heating efficiency factor.  At each time step, the heating efficiency is multiplied by rsFEffH.
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-             *x* $>$ 0         1             no             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly") %>
 
 **rsFEffC=*float***
 
 Cooling efficiency factor.  At each time step, the cooling efficiency is multiplied by rsEffC.
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-                  *x* $>$ 0         1             no             subhourly
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly") %>
 
 **rsCapNomH=*float***
 
 Heating nominal capacity.  Provides type-independent probe source for RSYS heating capacity.  Daily variability is specified to support value changes during AUTOSIZEing.  Values set via input are typically constant.
 
----------------------------------------------------------------------------------------------
-**Units** **Legal Range**  **Default**                                **Required**  **Variability**
---------- ---------------- ------------------------------------------ ------------ -----------------
-Btu/hr      *x* $\ge$ 0      no heating: 0\                              no          daily
-                             heat pump: rsCap47 (input or AUTOSIZEd)\
-                             other: rsCapH (input or AUTOSIZEd)
----------------------------------------------------------------------------------------------
+<%= member_table(
+  units: "Btu/hr",
+  legal_range: "*x* $\\ge$ 0",
+  default: "no heating: 0 heat pump: rsCap47 (input or AUTOSIZEd) other: rsCapH (input or AUTOSIZEd)",
+  required: "No",
+  variability: "daily") %>
 
 **rsCapNomC=*float***
 
 Cooling nominal capacity.  Provides type-independent probe source for RSYS cooling capacity.  Daily variability is specified to support value changes during AUTOSIZEing.  Values set via input are typically constant.
 
----------------------------------------------------------------------------------------------
-**Units** **Legal Range**  **Default**                                **Required**  **Variability**
---------- ---------------- ------------------------------------------ ------------ -----------------
-Btu/hr      *x* $\ge$ 0      no cooling: 0\                              no          daily
-                             other: rsCap95 (input or AUTOSIZEd)
----------------------------------------------------------------------------------------------
+<%= member_table(
+  units: "Btu/hr",
+  legal_range: "*x* $\\ge$ 0",
+  default: "no cooling: 0 other: rsCap95 (input or AUTOSIZEd)",
+  required: "No",
+  variability: "daily") %>
 
 **rsDSEH=*float***
 
 Heating distribution system efficiency.  If given, (1-rsDSEH) of RSYS heating output is discarded.  Cannot be combined with more detailed DUCTSEG model.
 
 
-  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
-  ----------- --------------------- -------------------------- -------------- -----------------
-                0 < x < 1             (use DUCTSEG model)            No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 < *x* < 1",
+  default: "(use DUCTSEG model)",
+  required: "No",
+  variability: "hourly") %>
 
 **rsDSEC=*float***
 
 Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling output is discarded.  Cannot be combined with more detailed DUCTSEG model.
 
 
-  **Units**   **Legal Range**       **Default**                **Required**   **Variability**
-  ----------- --------------------- -------------------------- -------------- -----------------
-                0 < x < 1             (use DUCTSEG model)            No             hourly  
-
+<%= member_table(
+  units: "",
+  legal_range: "0 < *x* < 1",
+  default: "(use DUCTSEG model)",
+  required: "No",
+  variability: "hourly") %>
 
   **rsOAVType=*choice***
 
@@ -799,111 +902,134 @@ Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling ou
              algorithm defined by the NightBreeze vendor.
   ---------  ----------------------------------------------------------------------------
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-               NONE, FIXED, VARIABLE    NONE          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "NONE, FIXED, VARIABLE",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
  **rsOAVVfDs=*float***
 
  Design air volume flow rate when RSYS is operating in OAV mode.
 
 
- **Units**   **Legal Range**       **Default**    **Required**               **Variability**
- ----------- --------------------- ------------ ------------------------ -----------------
-    cfm         $\ge$ 0                         if rsOAVType $\ne$ NONE         constant  
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "*none*",
+  required: "if rsOAVType $\ne$ NONE",
+  variability: "constant") %>
 
  **rsOAVVfMinF=*float***
 
  Minimum air volume flow rate fraction when RSYS is operating in OAV mode.  When rsOAVType=VARIABLE, air flow rate is constrained to rsOAVVfMinF * rsOAVVfDs or greater.
 
- **Units**   **Legal Range**       **Default**                **Required**   **Variability**
- ----------- --------------------- -------------------------- -------------- -----------------
-               0 $\le$ x $\le$ 1          0.2                         No             constant  
-
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 1",
+  default: "0.2",
+  required: "No",
+  variability: "constant") %>
 
  **rsOAVFanPwr=*float***
 
  RSYS OAV-mode fan power.
 
--------------------------------------------------------------------------------------------------------
- **Units**   **Legal Range**       **Default**                        **Required**   **Variability**
- ----------- --------------------- ---------------------------------- -------------- -----------------
-    W/cfm       0 < x $\le$ 5       per rsOAVTYPE\                         No             constant  
-                                    \ \ FIXED: rsFanPwrC\
-                                    \ \ VARIABLE: NightBreeze vendor\
-                                    \ \ \ \ curve based on rsOAVvfDs
------------ --------------------- ---------------------------------- -------------- -----------------
-
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "0 < x $\\le$ 5",
+  default: "per rsOAVTYPE FIXED: rsFanPwrC VARIABLE: NightBreeze vendor curve based on rsOAVvfDs",
+  required: "No",
+  variability: "constant") %>
 
 **rsOAVTDbInlet=*float***
 
 OAV inlet (source) air temperature.  Supply air temperature at the zone is generally higher due to fan heat.  Duct losses, if any, also alter the supply air temperature.
 
----------------------------------------------------------------------------
-**Units** **Legal Range** **Default**          **Required** **Variability**
---------- --------------- -------------------- ------------ ---------------
-  ^o^F                    Dry-bulb temperature No           hourly  
-                          from weather file
----------------------------------------------------------------------------
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\ge$ 0",
+  default: "Dry-bulb temperature from weather file",
+  required: "No",
+  variability: "hourly") %>
 
 **rsOAVTdiff=*float***
 
  OAV temperature differential.  When operating in OAV mode, the zone set point temperature is max( znTD, inletT+rsOAVTdiff).  Small values can result in inadvertent zone heating, due to fan heat.
 
- **Units**   **Legal Range**       **Default**                **Required**   **Variability**
- ----------- --------------------- -------------------------- -------------- -----------------
-    ^o^F         > 0                      5 ^o^F                    No             hourly  
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "5 ^o^F",
+  required: "No",
+  variability: "hourly") %>
 
 **rsOAVReliefZn=*znName***
 
 Name of zone to which relief air is directed during RSYS OAV operation, typically an attic zone.  Relief air flow is included in the target zone's pressure and thermal balance.
 
- **Units**   **Legal Range**       **Default**  **Required**               **Variability**
- ----------- --------------------- ----------  -------------------------- -----------------
-               *name of ZONE*                   if rsOAVType $\ne$ NONE       constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of ZONE*",
+  default: "*none*",
+  required: "if rsOAVType $\ne$ NONE",
+  variability: "constant") %>
 
 **rsParElec=*float***
 
 Parasitic electrical power.  rsParElec is unconditionally accumulated to rsElecMtr (if specified) and has no other effect.
 
-**Units**   **Legal Range**       **Default**                **Required**   **Variability**
------------ --------------------- -------------------------- -------------- -----------------
-  W                                0                           No             hourly  
-
+<%= member_table(
+  units: "W",
+  legal_range: "",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 **rsParFuel=*float***
 
 Parasitic fuel use.  rsParFuel is unconditionally accumulated to rsFuelMtr (if specified) and has no other effect.
 
-
-**Units**   **Legal Range**       **Default**                **Required**   **Variability**
------------ --------------------- -------------------------- -------------- -----------------
-Btuh                                 0                          No             hourly  
-
+<%= member_table(
+  units: "Btuh",
+  legal_range: "",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 **rsRhIn=*float***
 
 Entering air relative humidity (for model testing).
 
-  **Units**   **Legal Range**       **Default**                       **Required**   **Variability**
-  ----------- --------------------- --------------------------------- -------------- -----------------
-  W/cfm       0 $\le$ *x* $\le$ 1   Derived from entering air state   No             constant
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "Derived from entering air state",
+  required: "No",
+  variability: "constant") %>
 
 **rsTdbOut=*float***
 
 Air dry-bulb temperature at the outdoor portion of this system.
 
-  **Units**   **Legal Range**   **Default**         **Required**   **Variability**
-  ----------- ----------------- ------------------- -------------- -----------------
-  ^o^F                          From weather file   No             hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\ge$ 0",
+  default: "From weather file",
+  required: "No",
+  variability: "hourly") %>
 
 **endRSYS**
 
 Optionally indicates the end of the RSYS definition.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
