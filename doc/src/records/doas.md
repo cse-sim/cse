@@ -7,7 +7,7 @@ DOAS (Dedicated Outdoor Air System) provides centralized supply and/or exhuast v
 
 Name of DOAS.
 
-## Supply Fan
+## DOAS Supply Fan Data Members
 
 **oaSupFanVfDs=*float***
 
@@ -110,7 +110,7 @@ End use to which fan energy is recorded (in METER specified by oaSupFanMtr).  Se
   required: "No",
   variability: "constant") %>
 
-## Exhaust Fan
+## DOAS Exhaust Fan Data Members
 
 **oaExhFanVfDs=*float***
 
@@ -213,7 +213,7 @@ End use to which fan energy is recorded (in METER specified by oaExhFanMtr).  Se
   required: "No",
   variability: "constant") %>
 
-## Tempering Coils
+## DOAS Tempering Coils Data Members
 
 **oaSupTH=*float***
 
@@ -300,7 +300,7 @@ Name of load meter, if any, to record load met by the heating coil or cooling co
   variability: "constant") %>
 
 
-## Heat Recovery
+## DOAS Heat Recovery Data Members
 
 **oaExhFanVfDs=*float***
 
