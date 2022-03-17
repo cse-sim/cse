@@ -3632,9 +3632,9 @@ x *declare "RC rs_SetDefaultsClg();"
 						//   default = from project weather data source (generally weather file)
 						// note: default varies subhourly but input expression is hourly
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
-*s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s INT rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s *e USI rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s USI rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s USI rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
                             //   (allows guess re e.g. heating vs cooling season)
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)
