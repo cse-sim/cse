@@ -22,54 +22,20 @@ Optional name of interzone transfer; give after the word "IZXFER" if desired.
 
 Choice determining interzone ventilation
 
-  ---------------- ---------------------------------------
-  NONE             No interzone ventilation
-
-  ONEWAY           Uncontrolled flow from izZn1 to izZn2
-                   when izZn1 air temperature exceeds
-                   izZn2 air temperature
-                   (using ASHRAE high/low vent model).
-
-  TWOWAY           Uncontrolled flow in either direction
-                   (using ASHRAE high/low vent model).
-
-  AIRNETIZ         Single opening to another zone (using
-                   pressure balance AirNet model).  Flow
-                   is driven by buoyancy.
-
-  AIRNETEXT        Single opening to ambient (using
-                   pressure balance AirNet model).  Flow
-                   is driven by buoyancy and wind pressure.
-
-  AIRNETHORIZ      Horizontal (large) opening between two
-                   zones, used to represent e.g.
-                   stairwells.  Flow is driven by buoyancy;
-                   simultaneous up and down flow is modeled.
-
-  AIRNETEXTFAN     Fan from exterior to zone (flow either
-                   direction).
-
-  AIRNETIZFAN      Fan between two zones (flow either
-                   direction).
-
-  AIRNETEXTFLOW    Specified flow from exterior to zone
-                   (either direction). Behaves identically
-                   to AIRNETEXTFAN except no electricity
-                   is consumed and no fan heat is added to
-                   the air stream.
-
-  AIRNETIZFLOW     Specified flow between two zones
-                   (either direction). Behaves identically
-                   to AIRNETIZFAN except no electricity is
-                   consumed and no fan heat is added to
-                   the air stream.
-
-  AIRNETHERV       Heat or energy recovery ventilator.
-                   Supply and exhaust air are exchanged
-                   with the exterior with heat and/or
-                   moisture exchange between the air streams.
-                   Flow may or may not be balanced.
-  ---------------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  NONE,             No interzone ventilation
+  ONEWAY,           Uncontrolled flow from izZn1 to izZn2 when izZn1 air temperature exceeds izZn2 air temperature (using ASHRAE high/low vent model).
+  TWOWAY,           Uncontrolled flow in either direction (using ASHRAE high/low vent model).
+  AIRNETIZ,         Single opening to another zone (using pressure balance AirNet model).  Flow is driven by buoyancy.
+  AIRNETEXT,        Single opening to ambient (using pressure balance AirNet model).  Flow is driven by buoyancy and wind pressure.
+  AIRNETHORIZ,      Horizontal (large) opening between two zones&comma; used to represent e.g. stairwells.  Flow is driven by buoyancy; simultaneous up and down flow is modeled.
+  AIRNETEXTFAN,     Fan from exterior to zone (flow either direction).
+  AIRNETIZFAN,      Fan between two zones (flow either direction).
+  AIRNETEXTFLOW,    Specified flow from exterior to zone (either direction). Behaves identically to AIRNETEXTFAN except no electricity is consumed and no fan heat is added to the air stream.
+  AIRNETIZFLOW,     Specified flow between two zones (either direction). Behaves identically to AIRNETIZFAN except no electricity is consumed and no fan heat is added to the air stream.
+  AIRNETHERV,       Heat or energy recovery ventilator. Supply and exhaust air are exchanged with the exterior with heat and/or moisture exchange between the air streams. Flow may or may not be balanced.
+END
+%>
 
 <%= member_table(
   units: "",
@@ -85,16 +51,17 @@ Choice indicating air flow category used *only* for recording air flow results t
 
 Choices are:
 
-  ----------   -------------------------------------------
-  InfilEx      Infiltration from ambient
-  VentEx       Natural ventilation from ambient
-	FanEx        Forced ventilation from ambient
-	InfilIz      Interzone infiltration
-	VentIz       Interzone natural ventilation
-	FanIz        Interzone forced ventilation
-	DuctLk       Duct leakage
-	HVAC         HVAC air
-  ---------    -------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  InfilEx,      Infiltration from ambient
+  VentEx,       Natural ventilation from ambient
+	FanEx,        Forced ventilation from ambient
+	InfilIz,      Interzone infiltration
+	VentIz,       Interzone natural ventilation
+	FanIz,        Interzone forced ventilation
+	DuctLk,       Duct leakage
+	HVAC,         HVAC air
+END
+%>
 
 Default values for izAFCat are generally adequate *except* that natural ventilation IZXFERs are by default categorized as infiltration.  It is thus recommended that izAfCat be omitted except that ventilation IZXFERs (e.g. representing openable windows) should include izAfCat=VentEx (or VentIz).
 
