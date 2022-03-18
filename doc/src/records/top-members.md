@@ -186,14 +186,11 @@ Allows the user to choose whether to calculate foundation conduction on hourly o
 
 Developmental zone humidity computation method choice for CNE models (no effect for CSE models).
 
-  ------------ ---------------------------------------------------------
-  ROB          Rob's backward difference method. Works well within
-               limitations of backward difference approach.
-
-  PHIL         Phil's central difference method. Should be better if
-               perfected, but initialization at air handler startup is
-               unresolved, and ringing has been observed.
-  ------------ ---------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+ROB,         Rob's backward difference method. Works well within limitations of backward difference approach.
+PHIL,         Phil's central difference method. Should be better if perfected*coma* but initialization at air handler startup is unresolved*coma and ringing has been observed.
+END
+%>
 
 <%= member_table(
   units: "",
@@ -300,12 +297,13 @@ End day for daylight saving time (assuming DT=Yes)
 
 Indicates availability of outdoor ventilation strategies.  CSE cannot model simultaneously-operating alternative ventilation strategies.  For example, an RSYS central fan integrated (CFI) OAV system is never modeled while whole house fan ventilation is available.  ventAvail controls which ventilation mode, if any, is available for the current hour.  Note that mode availability means that the strategy could operate but may not operate due to other control assumptions.
 
-**Choice**    **Ventilation Strategy Available**
-------------- ---------------------------------
-NONE          None
-WHOLEBUILDING IZXFER (window and whole-house fan)
-RSYSOAV       RSYS central fan integrated (CFI) outside air ventilation (OAV)
-------------- ---------------------------------
+<%= csv_table(<<END, :row_header => true)
+Choice, Ventilation Strategy Available
+NONE,          None
+WHOLEBUILDING, IZXFER (window and whole-house fan)
+RSYSOAV,       RSYS central fan integrated (CFI) outside air ventilation (OAV)
+END
+%>
 
 As noted, ventAvail is evaluated hourly, permitting flexible control strategy modeling.  The following example specifies that RSYSOAV (CFI) ventilation is available when the seven day moving average temperature is above 68 ^o^F, otherwise whole building ventilation is available between 7 and 11 PM, otherwise no ventilation.
 
@@ -323,6 +321,13 @@ As noted, ventAvail is evaluated hourly, permitting flexible control strategy mo
 **exShadeModel=*choice***
 
 Specifies advanced exterior shading model used to evaluate shading of [PVARRAYs](#pvarray) by [SHADEXs](#shadex) or other PVARRAYs.  Advanced shading is not implemented for building surfaces and this setting has no effect on walls or windows.
+
+<%= csv_table(<<END, :row_header => true)
+**Choice**,    **Effect**
+PENUMBRA,        Calculate shading using the Penumbra model
+NONE,            Disable advanced shading calculations
+END
+%>
 
 **Choice**    **Effect**
 ------------- ---------------------------------
@@ -416,23 +421,16 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
 
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
 
-  ---------------- -----------------------------------------------------
-  \$radBeam        beam irradiance on tracking surface (integral for
-                   hour, Btu/ft^2^).
-
-  \$radDiff        diffuse irradiance on a horizontal surface (integral
-                   for hour, Btu/ft^2^).
-
-  \$tDbO           dry bulb temp (^o^F).
-
-  \$tWbO           wet bulb temp (^o^F).
-
-  \$wO             humidity ratio
-
-  \$windDirDeg     wind direction (degrees, NOT RADIANS; 0=N, 90=E).
-
-  \$windSpeed      wind speed (mph).
-  ---------------- -----------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+\$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
+\$radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
+\$tDbO,           dry bulb temp (^o^F).
+\$tWbO,           wet bulb temp (^o^F).
+\$wO,             humidity ratio
+\$windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
+\$windSpeed,      wind speed (mph).
+END
+%>
 
 The following are the terms determined from the weather file for internal use, and can be referenced with the probes shown.
 
@@ -457,10 +455,11 @@ Note: Backslash (\\) characters in path names must be doubled to work properly (
 
 Selects sky model used to determine relative amounts of direct and diffuse irradiance.
 
-  ------------- ---------------------------------
-  ISOTROPIC     traditional isotropic sky model
-  ANISOTROPIC   Hay anisotropic model
-  ------------- ---------------------------------
+<%= csv_table(<<END, :row_header => false)
+ISOTROPIC,     traditional isotropic sky model
+ANISOTROPIC,   Hay anisotropic model
+END
+%>
 
 <%= member_table(
   units: "",
@@ -473,13 +472,14 @@ Selects sky model used to determine relative amounts of direct and diffuse irrad
 
 Selects the model used to derive sky temperature used in long-wave (thermal) radiant heat exchange calculations for SURFACEs exposed to ambient conditions.  See the RACM alorithms documentation for technical details.
 
-  Choice         Description
-  -------------- ---------------------------------------------
-  DEFAULT        Default: tSky from weather file if available else Berdahl-Martin
-	BERDAHLMARTIN  Berdahl-Martin (tSky depends on dew point, cloud cover, and hour)
-	DRYBULB   	   tSky = dry-bulb temperature (for testing)
-	BLAST          Blast model (tSky depends on dry-bulb)
-  ------------- ---------------------------------
+<%= csv_table(<<END, :row_header => true)
+**Choice**,         **Description**
+DEFAULT,        Default: tSky from weather file if available else Berdahl-Martin
+BERDAHLMARTIN,  Berdahl-Martin (tSky depends on dew point&comma; cloud cover&comma; and hour)
+DRYBULB,   	   tSky = dry-bulb temperature (for testing)
+BLAST,          Blast model (tSky depends on dry-bulb)
+END
+%>
 
 <%= member_table(
   units: "",
@@ -579,19 +579,14 @@ Wind Factor: multiplier for wind speeds read from weather file. windF is applied
 
 Specifies characteristics of ground terrain in the project region.
 
-  ------------ ---------------------------------------------------------
-  1            ocean or other body of water with at least 5 km
-               unrestricted expanse
-
-  2            flat terrain with some isolated obstacles (buildings or
-               trees well separated)
-
-  3            rural areas with low buildings, trees, etc.
-
-  4            urban, industrial, or forest areas
-
-  5            center of large city
-  ------------ ---------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+1,            ocean or other body of water with at least 5 km unrestricted expanse
+2,            flat terrain with some isolated obstacles (buildings or trees well separated)
+3,            rural areas with low buildings&comma; trees&comma; etc.
+4,            urban&comma; industrial&comma; or forest areas
+5,            center of large city
+END
+%>
 
 <%= member_table(
   units: "",
@@ -743,24 +738,15 @@ CSE supports an optional comma-separated (CSV) text file that provides hourly TD
 
 The format of a TDV file is the same as an [IMPORTFILE](#importfile) with the proviso that the 4 line header is not optional and certain header items must have specified values.  In the following table, non-italic items must be provided as shown (with optional quotes).
 
-  -----------------------------------------------------------------------------------------------------
-  Line      Contents                          Notes
-  --------- ------------------------------    --------------------------------------------------------------
-  1         TDV Data (TDV/Btu), *runNumber*   *runNumber* is not checked
-
-  2         *timestamp*                       optionally in quotes\
-                                              accessible via @TOP.TDVFileTimeStamp
-
-  3         *title*, hour                     *title* (in quotes if it contains commas)\
-                                              accessible via @TOP.TDVFileTitle
-
-  4         tdvElec, tdvFuel                  comma separated column names (optionally in quotes)\
-                                              not checked
-
-  5 ..      *valElec*,*valFuel*               comma separated numerical values (8760 or 8784 rows)\
-                                              tdvElec is always in column 1, tdvFuel always in column 2\
-                                              column names in row 4 do not determine order
- -------------------------------------------------------------------------------------------------------
+<%= csv_table(<<END, :row_header => true)
+**Line**      **Contents**                          **Notes**
+1,         TDV Data (TDV/Btu)&comma; *runNumber*&comma;   *runNumber* is not checked
+2,         *timestamp*                       optionally in quotes accessible via @TOP.TDVFileTimeStamp
+3,         *title*&comma; hour                     *title* (in quotes if it contains commas) accessible via @TOP.TDVFileTitle
+4,         tdvElec&comma; tdvFuel                  comma separated column names (optionally in quotes)\ not checked
+5 ..,      *valElec*&comma;*valFuel*               comma separated numerical values (8760 or 8784 rows) tdvElec is always in column 1&comma; tdvFuel always in column 2 column names in row 4 do not determine order
+END
+%>
 
 Example TDV file --
 
@@ -783,31 +769,20 @@ Note: additional columns can be included and are ignored.
 
 The table below shows probes available for accessing TDV data in expressions.  Except as noted, daily values are updated based on standard time, so they may be inaccurate by small amounts when daylight savings time is in effect.
 
-------------------------------------------------------------------------------------------------------------------
- Probe                          Variability      Description
- -----------------------------  ------------     -----------------------------------------------------------
- @Weather.tdvElec               Hour               current hour electricity TDV
-
- @Weather.tdvFuel               Hour               current hour fuel TDV
-
- @Weather.tdvElecPk             Day                current day peak electricity TDV (includes future hours).  Updated
-                                                   at hour 23 during daylight savings.
-
- @Weather.tdvElecAvg            Day                current day average electricity TDV (includes future hours)
-
- @Weather.tdvElecPvPk           Day                previous day peak electricity TDV
-
- @Weather.tdvElecAvg01          Day                previous day average electricity TDV
-
- @weather.tdvElecHrRank[]       Day                hour ranking of TDVElec values.  tdvElecHrRank[ 1] is the hour
-                                                   having the highest TDVElec, tdvElecHrRank[ 2] is the next highest, etc.  The hour values are adjusted when dayight savings time is in effect, so they remain consistent with system variable $hour.
-
- @weatherFile.tdvFileTimeStamp  Constant           TDV file timestamp (line 2 of header)
-
- @weatherFile.tdvFileTitle      Constant           TDV file title (line 3 of header)
-
- @Top.tdvFName                  Constant           TDV file full path
-------------------------------------------------------------------------------------------------------------------
+<%= csv_table(<<END, :row_header => true)
+**Probe**,                          **Variability**,      **Description**
+@Weather.tdvElec, Hour, current hour electricity TDV
+@Weather.tdvFuel, Hour, current hour fuel TDV
+@Weather.tdvElecPk, Day, current day peak electricity TDV (includes future hours).  Updated at hour 23 during daylight savings.
+@Weather.tdvElecAvg, Day, current day average electricity TDV (includes future hours)
+@Weather.tdvElecPvPk, Day,previous day peak electricity TDV
+@Weather.tdvElecAvg01, Day,previous day average electricity TDV
+@weather.tdvElecHrRank[], Day, hour ranking of TDVElec values.  tdvElecHrRank[ 1] is the hour having the highest TDVElec&comma; tdvElecHrRank[ 2] is the next highest&comma; etc. The hour values are adjusted when dayight savings time is in effect&comma; so they remain consistent with system variable $hour.
+@weatherFile.tdvFileTimeStamp, Constant, TDV file timestamp (line 2 of header)
+@weatherFile.tdvFileTitle, Constant, TDV file title (line 3 of header)
+@Top.tdvFName, Constant, TDV file full path
+END
+%>
 
 **TDVfName=*string***
 
