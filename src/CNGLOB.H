@@ -405,6 +405,11 @@ const int DASHES = 0x2000;	// separate this remark from preceding & following me
 const int NOSCRN = 0x4000;	// logit: do not also display on screen
 const int QUIETIF= 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
 
+// options for errI() isWarn
+const int NOERRFILE = 0x1000;	// do NOT write message to error file (override default behavior)
+const int NOREPORT = 0x2000;	// do NOT write message to report file (override default behavior)
+// const int NOSCRN = 0x4000;	// do NOT write message to screen (override default behavior)
+
 
 // application option bits in same argument word as error action.
 // Options for specific functions are defined in other .h files in terms of

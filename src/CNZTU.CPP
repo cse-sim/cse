@@ -1047,26 +1047,32 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 	zrs->nSubhrLX = (zrs->qlX != 0.f);			// 1 if non-0, 0 if 0: accumulates to # subhrs with condensation.
 
 // subhour results: unmet load (CR zones only, else zn_hcMode not set)
-// 3 values tracked
-//  - nHrUnMetX = count of hours when tz error > zn_tzTolUnMet
-//  - unMetHrXDH = deg-hr excursion evaluated at end of hour
+// 4 values tracked
+//  - unMetXHrs = count of hours when tz error > 0
+//  - unMetXTolHrs = count of hours when tz error > zn_tzTolUnMet
 //  - unMetShXDH = deg-hr excursion accumulated each subhour
+//  - unMetHrXDH = deg-hr excursion evaluated at end of hour
 	float tzErr = tz - zn_tzsp;		// temp excursion above/below setpoint
 
 	if (zn_hcMode == RSYS::rsmHEAT && tzErr < -0.001f)
 	{	// heating (tzErr < 0)
-		if (tzErr < -i.zn_tzTolUnMet)
-			zrs->nHrUnMetH = Top.tp_subhrDur;
+		zrs->unMetHHrs = Top.tp_subhrDur;
+		if (tzErr < -Top.tp_unMetTzTol)
+			zrs->unMetHTolHrs = Top.tp_subhrDur;
+		zrs->unMetShHDH = tzErr * Top.tp_subhrDur;
+		zrs->unMetMaxHTD = tzErr;
 		if (Top.isEndHour)
-			zrs->unMetHrHDH = tzErr;
+			zrs->unMetHrHDH = tzErr /* * 1.f */;
 	}
 	else if (zn_hcMode == RSYS::rsmCOOL && tzErr > 0.001f)
 	{	// cooling (tzErr > 0)
-		if (tzErr > i.zn_tzTolUnMet)
-			zrs->nHrUnMetC = Top.tp_subhrDur;
+		zrs->unMetCHrs = Top.tp_subhrDur;
+		if (tzErr > Top.tp_unMetTzTol)
+			zrs->unMetCTolHrs = Top.tp_subhrDur;
 		zrs->unMetShCDH = tzErr * Top.tp_subhrDur;
+		zrs->unMetMaxCTD = tzErr;
 		if (Top.isEndHour)
-			zrs->unMetHrCDH = tzErr;
+			zrs->unMetHrCDH = tzErr /* * 1.f */;
 	}
 
 

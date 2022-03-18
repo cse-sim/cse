@@ -774,24 +774,46 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 			// note weather file is closed by cgDone (so done even after error).
 			// notify user if condensation occurred, 5-97:
 		{
-			ZNRES* zr;
+			const ZNRES* zr;
 			RLUP( ZnresB, zr)
 			if (zr->ss < ZnresB.n)		// skip last (sum-of-zones) record
-			{	if (zr->curr.Y.nSubhrLX)
+			{
+				const ZNR& Z = ZrB[zr->ss];
+				const ZNRES_IVL_SUB& R = zr->curr.Y;
+
+				if (R.nSubhrLX)	// condensation
 					warn( 			// not rWarn: no day/hour etc (at least not til also done for ausz) 5-97
 						"Zone '%s': Condensation occurred in %d subhours of run.\n"
 						"    Total condensation heat = %g kBtu.",
-						zr->name, zr->curr.Y.nSubhrLX,
-						zr->curr.Y.qlX/1000 );				// convert Btu to kBtu
-				if (zr->curr.Y.nHrUnMetH > 0.f)
-					warn( "Zone '%s': Unmet heating loads during %0.1f hours of run (%0.1f degF-hr)",
-						zr->name, zr->curr.Y.nHrUnMetH, zr->curr.Y.unMetShHDH);
-				if (zr->curr.Y.nHrUnMetC > 0.f)
-					warn( "Zone '%s': Unmet cooling loads during %0.1f hours of run (%0.1f degF-hr)",
-						zr->name, zr->curr.Y.nHrUnMetC, zr->curr.Y.unMetShCDH);
-				if (zr->curr.Y.nShVentH)
-					warn( "Zone '%s': Unhelpful ventilation heating occurred during %d subhours of run.",
-						zr->name, zr->curr.Y.nShVentH);
+						zr->name, R.nSubhrLX,
+						R.qlX/1000 );				// convert Btu to kBtu
+				if (R.nShVentH)		// unhelpful ventilation
+					warn("Zone '%s': Unhelpful ventilation heating occurred during %d subhours of run.",
+						zr->name, R.nShVentH);
+
+				if (Z.i.znModel != C_ZNMODELCH_CZM)
+					continue;		// unmet tracking meaningful for CZM only
+
+				if (R.unMetHHrs > 0.001f || R.unMetCHrs > 0.001f)
+				{
+					float avgErrH = R.unMetHHrs > 0.f ? R.unMetShHDH / R.unMetHHrs : 0.f;
+					float avgErrC = R.unMetCHrs > 0.f ? R.unMetShCDH / R.unMetCHrs : 0.f;
+
+					const char* fmt = "Zone '%s': Temp control outcomes\n"
+						"            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > %0.1f F tol (hr)\n"
+						"    Heating       %5.1f              %5.2f             %5.2f             %5.1f\n"
+						"    Cooling       %5.1f              %5.2f             %5.2f             %5.1f";
+
+					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->name, Top.tp_unMetTzTol,
+						R.unMetHHrs, avgErrH, R.unMetMaxHTD, R.unMetHTolHrs,
+						R.unMetCHrs, avgErrC, R.unMetMaxCTD, R.unMetCTolHrs);
+				}
+				if (R.unMetHTolHrs > Top.tp_unMetTzTolWarnHrs)
+					warn ("Zone '%s': Air temp more than %0.1f F below heating setpoint during %0.1f hours of run",
+						zr->name, Top.tp_unMetTzTol, R.unMetHTolHrs);
+				if (R.unMetCTolHrs > Top.tp_unMetTzTolWarnHrs)
+					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
+						zr->name, Top.tp_unMetTzTol, R.unMetCTolHrs);
 
 			}
 #if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97. Mbrs not added. DELETE.
@@ -1432,30 +1454,35 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 	curr.Y.zr_Init1();
 }		// ZNRES::zr_InitCurr
 //=============================================================================
-#define ZRi1 nHrHeat							// 1st SI member.  used in cnguts.cpp, 12-91.
-#define ZRnI ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)       // # SI members.  cnguts.cpp
+#define ZRi1 nHrHeat							// 1st SI member
+#define ZRnI ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)       // # SI members.
   // SIs: # hours
   //#define ZRnh1 nHrHeat						// 1st "# of hours" in SI members.  unused 12-91.
   //#define ZRnNH ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)	// # of "# of hours": all the SIs. unused 12-91.
 // LIs
-#define ZRl1 nIter							// 1st LI member.  cnguts.cpp.
-#define ZRnL ((oRes(nSubhrLX) - oRes(nIter))/sizeof(LI) + 1)		// # LI members.   cnguts.cpp.
+#define ZRl1 nIter							// 1st LI member.
+#define ZRnL ((oRes(nSubhrLX) - oRes(nIter))/sizeof(LI) + 1)		// # LI members
 // floats: all
-#define ZRf1 tAir							// 1st of all float members (incl avgs & sums). cnguts.cpp
-#define ZRnF ((oRes(litEu) - oRes(tAir))/sizeof(float) + 1)      	// total # float members.  cnguts.cpp
-// floats: to average (cnguts.cpp)
-#define ZRa1 tAir							// 1st float to average in float mbrs.  cnguts.cpp.
+#define ZRf1 tAir							// 1st of avgs & sum float mbrs
+#define ZRnF ((oRes(litEu) - oRes(tAir))/sizeof(float) + 1)      	// total # float members to sum.  
+// floats: to average
+#define ZRa1 tAir							// 1st float to average in float mbrs.
 #define ZRnA ((oRes(wAir) - oRes(tAir))/sizeof(float) + 1) // # of floats to average
-// floats: to sum: all (cnguts.cpp)
+// floats: to sum:
 #define ZRs1 qCond							// first one
 #define ZRnS ((oRes(litEu) - oRes(qCond))/sizeof(float) + 1)		// #
 // floats to sum: sensible heat balance (cgenbal.cpp)
-#define ZRq1 qCond							// 1st float sum & 1st heat flow.  cnguts.cpp, cgenbal.cpp.
-#define ZRnQ ((oRes(qsMech) - oRes(qCond))/sizeof(float) + 1)     	// # of floats to sum / # heat flows. cnguts.cpp, cgenbal.cpp.
+#define ZRq1 qCond							// 1st float sum & 1st heat flow.
+#define ZRnQ ((oRes(qsMech) - oRes(qCond))/sizeof(float) + 1)     	// # of floats to sum / # heat flows
 // floats to sum: latent heat balance
 #define ZRw1 qlInfil						// first one
 #define ZRnW ((oRes(qlMech) - oRes(qlInfil))/sizeof(float) + 1)	// #
-
+// floats to track min
+#define ZRmin1 unMetMaxHTD
+#define ZRminN ((oRes(unMetMaxHTD) - oRes(unMetMaxHTD))/sizeof(float) + 1)
+// floats to track max
+#define ZRmax1 unMetMaxCTD
+#define ZRmaxN ((oRes(unMetMaxCTD) - oRes(unMetMaxCTD))/sizeof(float) + 1)
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR doIvlAccum()
 
@@ -1840,6 +1867,8 @@ LOCAL void FC NEAR accumZr(
 		VAccum( &res2->ZRi1, ZRnI, &res1->ZRi1); 	// sum integer values (cnguts.h defines; lib\vecpak.cpp functions)
 		VAccum( &res2->ZRl1, ZRnL, &res1->ZRl1); 	// sum long values
 		VAccum( &res2->ZRf1, ZRnF, &res1->ZRf1); 	// sum all float values, including members to be averaged
+		VAccumMin( &res2->ZRmin1, ZRminN, &res1->ZRmin1);	// track float mins
+		VAccumMax( &res2->ZRmax1, ZRmaxN, &res1->ZRmax1);	// track float maxs
 	}
 
 // count call in destination

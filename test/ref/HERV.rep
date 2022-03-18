@@ -1,15 +1,18 @@
 
 
-
-1Z Test
-------------------------------------------------------------------------------
-
-
-
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'Z1': Unmet cooling loads during 11.0 hours of run.
+Info: Zone 'Z1': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 0.5 F tol (hr)
+    Heating        17.2              -1.74             -4.20              10.9
+    Cooling       129.8               0.48              3.27              52.9
+---------------
+Warning: 
+  Zone 'Z1': Air temp more than 0.5 F below heating setpoint during 10.9 hours of run
+---------------
+Warning: 
+  Zone 'Z1': Air temp more than 0.5 F above cooling setpoint during 52.9 hours of run
 ---------------
 
 
@@ -18,20 +21,20 @@ Monthly Energy Balance, Sum of Zones
 
  Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
 ---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
- Jan 67.23 54.05      0      0     0     0 -1.920 -0.424  2.344    0      0     0 -.0001 .00007      0    0
- Feb 67.87 53.58      0      0     0     0 -1.051 -0.330  1.381    0      0     0 .00006 -.0001      0    0
- Mar 69.45 55.16      0      0     0     0 -0.554 -0.288  0.842    0      0     0 .00113 .00015 -.0013    0
- Apr 70.35 55.57      0      0     0     0 -0.213 -0.286  0.499    0      0     0 0.0208 -.0006 -.0202    0
- May 73.18 59.60      0      0     0     0  0.643 -0.162 -0.481    0      0     0 0.0776 -.0001 -.0774    0
+ Jan 68.20 54.44      0      0     0     0 -2.042 -0.444  2.486    0      0     0 -.0001 .00008      0    0
+ Feb 69.32 54.18      0      0     0     0 -1.211 -0.357  1.568    0      0     0 .00008 -.0001      0    0
+ Mar 70.68 55.66      0      0     0     0 -0.702 -0.313  1.015    0      0     0 .00252 .00014 -.0027    0
+ Apr 71.30 55.95      0      0     0     0 -0.322 -0.305  0.627    0      0     0 0.0225 -.0006 -.0218    0
+ May 73.40 59.67      0      0     0     0  0.618 -0.166 -0.451    0      0     0 0.0788 -.0001 -.0786    0
  Jun 76.00 61.25      0      0     0     0  1.116 -.0869 -1.030    0      0     0  0.135 -.0006 -0.135    0
  Jul 76.80 62.30      0      0     0     0  1.454 -.0446 -1.410    0      0     0  0.177 .00001 -0.177    0
  Aug 76.30 62.02      0      0     0     0  1.267 -.0624 -1.205    0      0     0  0.115 -.0001 -0.115    0
  Sep 75.56 60.14      0      0     0     0  1.041 -.0691 -0.972    0      0     0 0.0323 .00028 -.0326    0
- Oct 71.27 57.33      0      0     0     0  0.190 -0.171 -.0185    0      0     0 .00416 .00062 -.0048    0
- Nov 67.74 54.62      0      0     0     0 -1.181 -0.330  1.511    0      0     0 -.0004 .00038      0    0
- Dec 67.26 53.67      0      0     0     0 -1.902 -0.433  2.336    0      0     0 .00046 -.0005      0    0
+ Oct 71.40 57.38      0      0     0     0  0.173 -0.174 .00082    0      0     0 .00422 .00061 -.0048    0
+ Nov 69.00 55.13      0      0     0     0 -1.329 -0.355  1.684    0      0     0 -.0003 .00038 -0.000    0
+ Dec 68.25 54.07      0      0     0     0 -2.025 -0.454  2.479    0      0     0 .00045 -.0004      0    0
 
- Yr  71.59 57.54      0      0     0     0 -1.110 -2.688  3.798    0      0     0  0.564 -.0005 -0.563    0
+ Yr  72.18 57.77      0      0     0     0 -1.961 -2.831  4.792    0      0     0  0.568 -.0005 -0.568    0
 
 
 
@@ -43,50 +46,24 @@ MySys Characteristics
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  1
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Use, meter "SysMtr"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  3.376      0  3.190      0      0      0      0      0 0.0851      0 0.0262 0.0744      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  2.024      0  1.882      0      0      0      0      0 0.0502      0 0.0236 0.0672      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  1.304 .00306  1.168      0      0      0      0 .00086 0.0312      0 0.0262 0.0747      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  1.036 0.0365  0.867      0      0      0      0 .00936 0.0231      0 0.0253 0.0745      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.358  0.164  0.112      0      0      0      0 0.0399 .00298      0 0.0262 0.0135      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  3.592      0  3.401      0      0      0      0      0 0.0907      0 0.0262 0.0744      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  2.304 .00036  2.155      0      0      0      0 .00012 0.0575      0 0.0236 0.0672      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  1.605 .00873  1.454      0      0      0      0 .00249 0.0388      0 0.0262 0.0747      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  1.250 0.0398  1.072      0      0      0      0 0.0103 0.0286      0 0.0253 0.0745      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.426  0.167  0.174      0      0      0      0 0.0408 .00463      0 0.0262 0.0135      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun  0.433  0.305      0      0      0      0      0 0.0735      0      0 0.0253 0.0288      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul  0.601  0.434      0      0      0      0      0  0.102      0      0 0.0262 0.0379      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug  0.505  0.361      0      0      0      0      0 0.0856      0      0 0.0262 0.0330      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep  0.398  0.278      0      0      0      0      0 0.0667      0      0 0.0253 0.0278      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.297 0.0315  0.146      0      0      0      0 .00816 .00389      0 0.0262 0.0810      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  2.212      0  2.059      0      0      0      0      0 0.0549      0 0.0253 0.0720      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  3.364      0  3.179      0      0      0      0      0 0.0848      0 0.0262 0.0744      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.331 0.0322  0.178      0      0      0      0 .00836 .00475      0 0.0262 0.0810      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  2.471 .00008  2.312      0      0      0      0 .00002 0.0617      0 0.0253 0.0720      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  3.583      0  3.392      0      0      0      0      0 0.0905      0 0.0262 0.0744      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr  15.907  1.613 12.604      0      0      0      0  0.386  0.336      0  0.308  0.659      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr  17.498  1.627 14.137      0      0      0      0  0.390  0.377      0  0.308  0.659      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -94,41 +71,53 @@ RSYSRES Furn
 
  Mon  hrsOn hrsOnX qhPrim  qhDef  qhAux  qhFan  qhNet  qcSen  qcLat  qcFan qcSenNet qvFan fhPrim fhDef  fhAux  fhPar  fhTot ehPrim  ehDef  ehAux  ehFan  ehPar  ehTot ecPrim  ecFan  ecPar  ecTot  evFan  evPar  evTot qhZSen qhZLat qcZSen qcZLat qvZSen qvZLat
  --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
- Jan 23.501      0 2265.0      0      0 85.089 2350.1      0      0      0      0      0 3190.1      0      0 74.400 3264.5      0      0      0 85.089      0 85.089      0      0      0      0      0      0      0 2344.1      0      0      0      0      0
- Feb 13.868      0 1336.5      0      0 50.210 1386.8      0      0      0      0      0 1882.5      0      0 67.200 1949.7      0      0      0 50.210      0 50.210      0      0      0      0      0      0      0 1381.4      0      0      0      0      0
- Mar  9.599      0 829.49      0      0 31.162 860.65 -14.23 -1.280  0.859 -13.37      0 1168.3      0      0 74.400 1242.7      0      0      0 31.162  0.177 31.339  3.059  0.859 0.0955  4.014      0      0      0 855.09      0 -13.34 -1.280      0      0
- Apr 17.201      0 615.45      0      0 23.121 638.57 -145.3 -20.20  9.365 -136.0      0 866.83      0      0 72.000 938.83      0      0      0 23.121      0 23.121 36.466  9.365  2.457 48.287      0      0      0 634.23      0 -135.2 -20.20      0      0
- May 46.902      0 79.374      0      0  2.982 82.356 -605.7 -77.45 39.896 -565.8      0 111.79      0      0      0 111.79      0      0      0  2.982      0  2.982 163.74 39.896 13.512 217.15      0      0      0 81.248      0 -562.0 -77.45      0      0
+ Jan 25.055      0 2414.8      0      0 90.716 2505.5      0      0      0      0      0 3401.1      0      0 74.400 3475.5      0      0      0 90.716      0 90.716      0      0      0      0      0      0      0 2485.8      0      0      0      0      0
+ Feb 16.009      0 1529.9      0      0 57.472 1587.3 -2.118      0  0.117 -2.000      0 2154.7      0      0 67.200 2221.9      0      0      0 57.472      0 57.472  0.361  0.117      0  0.479      0      0      0 1569.8      0 -2.006      0      0      0
+ Mar 13.589      0 1032.4      0      0 38.785 1071.2 -41.99 -2.663  2.491 -39.50      0 1454.1      0      0 74.400 1528.5      0      0      0 38.785      0 38.785  8.729  2.491  0.273 11.493      0      0      0 1054.1      0 -39.48 -2.663      0      0
+ Apr 19.807      0 760.89      0      0 28.584 789.47 -161.1 -21.84 10.314 -150.8      0 1071.7      0      0 72.000 1143.7      0      0      0 28.584      0 28.584 39.772 10.314  2.457 52.543      0      0      0 776.56      0 -150.0 -21.84      0      0
+ May 48.359      0 123.36      0      0  4.634 127.99 -620.2 -78.62 40.763 -579.5      0 173.74      0      0      0 173.74      0      0      0  4.634      0  4.634 166.78 40.763 13.512 221.05      0      0      0 124.63      0 -575.7 -78.62      0      0
  Jun 84.932      0      0      0      0      0      0  -1110 -134.8 73.536  -1036      0      0      0      0      0      0      0      0      0      0      0      0 305.23 73.536 28.798 407.56      0      0      0      0      0  -1030 -134.8      0      0
  Jul 117.92      0      0      0      0      0      0  -1521 -177.1 102.10  -1419      0      0      0      0      0      0      0      0      0      0      0      0 434.42 102.10 37.943 574.46      0      0      0      0      0  -1410 -177.1      0      0
  Aug 98.848      0      0      0      0      0      0  -1297 -115.3 85.586  -1211      0      0      0      0      0      0      0      0      0      0      0      0 360.60 85.586 33.030 479.22      0      0      0      0      0  -1205 -115.3      0      0
  Sep 76.991      0      0      0      0      0      0  -1041 -32.58 66.661 -974.1      0      0      0      0      0      0      0      0      0      0      0      0 278.41 66.661 27.843 372.92      0      0      0      0      0 -971.9 -32.58      0      0
- Oct 10.501      0 103.67      0      0  3.895 107.57 -134.1 -4.783  8.161 -125.9      0 146.02      0      0 74.400 220.42      0      0      0  3.895      0  3.895 31.501  8.161  6.551 46.213      0      0      0 106.90      0 -125.4 -4.783      0      0
- Nov 15.172      0 1462.2      0      0 54.932 1517.2      0      0      0      0      0 2059.5      0      0 72.000 2131.5      0      0      0 54.932      0 54.932      0      0      0      0      0      0      0 1511.4      0      0      0      0      0
- Dec 23.416      0 2256.8      0      0 84.781 2341.6      0      0      0      0      0 3178.6      0      0 74.400 3253.0      0      0      0 84.781      0 84.781      0      0      0      0      0      0      0 2335.6      0      0      0      0      0
+ Oct 10.966      0 126.51      0      0  4.753 131.26 -137.5 -4.836  8.359 -129.1      0 178.18      0      0 74.400 252.58      0      0      0  4.753      0  4.753 32.207  8.359  6.551 47.117      0      0      0 129.42      0 -128.6 -4.836      0      0
+ Nov 17.056      0 1641.2      0      0 61.656 1702.9 -0.406 -.0303 0.0235 -0.382      0 2311.6      0      0 72.000 2383.6      0      0      0 61.656      0 61.656 0.0786 0.0235      0  0.102      0      0      0 1684.2      0 -0.381 -.0303      0      0
+ Dec 24.989      0 2408.4      0      0 90.476 2498.9      0      0      0      0      0 3392.1      0      0 74.400 3466.5      0      0      0 90.476      0 90.476      0      0      0      0      0      0      0 2479.3      0      0      0      0      0
 
- Yr  538.85      0 8948.5      0      0 336.17 9284.7  -5868 -563.5 386.17  -5481      0  12604      0      0 508.80  13112      0      0      0 336.17  0.177 336.35 1613.4 386.17 150.23 2149.8      0      0      0 9250.0      0  -5452 -563.5      0      0
-
-
+ Yr  554.52      0  10037      0      0 377.08  10414  -5931 -567.7 389.95  -5542      0  14137      0      0 508.80  14646      0      0      0 377.08      0 377.08 1626.6 389.95 150.41 2167.0      0      0      0  10304      0  -5512 -567.7      0      0
 
 
 
+Energy Balance (F, kBtu, + into the zone) for Wed 10-Jul
 
+ Hr Tout  WBo    Wo  Tin Trad   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL sInfVnt ACH Clgs  Clgl  Clgt RunF  FfanE  ClgkE
+ -- ---- ---- ----- ---- ---- ----- --- ---- ------ ----- ----- ----- ----- ----- ----- ---- ----- ----- ----- ---- ------ ------
+  1 70.9 61.4 .0095 77.7 77.5 .0094  47 63.6      0     0  0.13     0     0 -.019 -0.13 1.94     0     0     0    0      0      0
+  2 68.7 60.4 .0093 77.1 76.8 .0094  48 63.3      0     0  0.19     0     0 .0094 -0.19 1.94     0     0     0    0      0      0
+  3 65.8 59.6 .0095 76.3 76.0 .0094  49 63.1      0     0  0.24     0     0 -.014 -0.24 1.95     0     0     0    0      0      0
+  4 64.8 58.8 .0092 75.5 75.1 .0093  50 62.6      0     0  0.27     0     0 0.020 -0.27 1.95     0     0     0    0      0      0
+  5 63.9 58.5 .0093 74.6 74.2 .0093  51 62.3      0     0  0.27     0     0 0.011 -0.27 1.95     0     0     0    0      0      0
+  6 62.6 58.6 .0096 73.9 73.9 .0095  53 62.5      0     0  0.29     0     0 -.048 -0.29 1.95     0     0     0    0      0      0
+  7 67.8 61.4 .0102 74.5 75.4 .0099  53 63.6      0     0  0.25     0     0 -0.11 -0.25 1.95     0     0     0    0      0      0
+  8 75.7 63.3 .0096 76.6 77.9 .0098  48 64.3      0     0  0.13     0     0 0.027 -0.13 1.94     0     0     0    0      0      0
+  9 81.7 65.6 .0099 79.2 80.5 .0098  44 65.1      0     0 0.017     0     0 .0098 -.017 1.94     0     0     0    0      0      0
+ 10 87.6 67.4 .0097 81.6 82.8 .0098  41 65.8      0     0 -.075     0     0 .0003 0.075 1.94     0     0     0    0      0      0
+ 11 92.8 71.3 .0116 83.0 84.4 .0093  39 65.3      0     0  3.47     0     0  0.12  0.19 1.93  -3.7  -0.7  -4.4 0.41    0.3    1.1
+ 12 99.3 73.2 .0116 83.0 84.6 .0093  39 65.3      0     0  5.17     0     0 -.001  0.33 1.92  -5.5  -1.0  -6.6 0.53    0.4    1.8
+ 13  103 71.8 .0097 83.0 84.8 .0085  35 64.1      0     0  6.35     0     0  0.21  0.45 1.92  -6.8  -1.0  -7.8 0.63    0.5    2.4
+ 14  106 74.5 .0112 82.2 84.4 .0084  36 63.7      0     0 10.12     0     0 .0072  0.56 1.92 -10.7  -1.1 -11.7 0.88    0.8    3.8
+ 15  107 72.6 .0093 81.7 84.1 .0078  34 62.5      0     0 10.65     0     0  0.16  0.62 1.91 -11.3  -1.1 -12.4 1.00    0.9    4.2
+ 16  109 73.7 .0098 81.5 83.9 .0079  34 62.6      0     0 10.62     0     0 -.019  0.66 1.91 -11.3  -0.8 -12.1 1.00    0.9    4.2
+ 17  109 73.8 .0099 81.4 83.7 .0079  35 62.6      0     0 10.46     0     0 -.011  0.68 1.91 -11.1  -0.9 -12.1 1.00    0.9    4.2
+ 18  108 74.1 .0104 81.1 83.4 .0080  36 62.7      0     0 10.42     0     0 -.026  0.68 1.91 -11.1  -1.0 -12.1 1.00    0.9    4.2
+ 19  107 74.4 .0110 80.5 82.6 .0081  37 62.5      0     0 10.32     0     0 -.026  0.67 1.91 -11.0  -1.2 -12.2 1.00    0.9    4.2
+ 20  102 72.4 .0103 79.0 80.8 .0078  38 61.3      0     0 10.12     0     0 0.086  0.63 1.91 -10.8  -1.4 -12.1 0.73    0.9    4.0
+ 21 94.1 70.3 .0105 78.0 79.5 .0084  41 62.3      0     0  5.03     0     0 -0.17  0.50 1.92  -5.5  -0.9  -6.4 0.39    0.4    1.9
+ 22 87.4 66.9 .0094 78.0 79.2 .0084  41 62.2      0     0  3.11     0     0 0.015  0.32 1.92  -3.4  -0.7  -4.2 0.23    0.3    1.1
+ 23 83.5 65.3 .0092 78.0 78.8 .0084  41 62.3      0     0  1.84     0     0 -.017  0.19 1.93  -2.0  -0.4  -2.5 0.13    0.2    0.6
+ 24 79.9 64.1 .0092 78.0 78.5 .0087  42 62.7      0     0  0.99     0     0 -.058 0.094 1.93  -1.1  -0.3  -1.3 .057   0.08    0.3
 
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  2
-
-
-
-1Z Test
-------------------------------------------------------------------------------
+ Dy                 79.0 80.1                     0     0 100.4     0     0  0.15   4.9 1.93  -105 -12.6  -118 .057    8.1   38.1
 
 
 
@@ -179,20 +168,6 @@ Mass Clg                Area: 400.000   UNom: 0.05737     tc: 0      subhrly:
   Layer  thk: 0.333   vhc: 0       cond: 0.0200     R: 16.650 
  Outside: Ambient   RSrfNom: 0.17                                             
 
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  3
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
 IzXfer HERV             Zn1: Z1  Zn2: Z1  UAconst: 0      NVctrl: AirNetHERV
     Vlo: 0        Vhi:  0        Hz: 0        Cd: 0.800    NVc: 0        Cpr: 0      
 IzXfer Hole             Zn1: Z1  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
@@ -203,121 +178,9 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
     Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  4
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
-
-
 ! Log for Run 001:
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  5
-
-
-
-1Z Test
-------------------------------------------------------------------------------
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -354,6 +217,8 @@ Input for Run 001:
         // coolDsMo = 6, 7, 8
         coolDsDay = Jul 15, Aug 14
         verbose = 5
+        unMetTzTol = .5
+        unMetTzTolWarnHrs = 4
         
          repHdrL="1Z Test"
          repHdrR=""
@@ -373,15 +238,6 @@ Input for Run 001:
         
          DELETE HOLIDAY "New Year's Day"  //No holidays per BESTEST p.9
          DELETE HOLIDAY "M L King Day"
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  6
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
          DELETE HOLIDAY "President's Day"
          DELETE HOLIDAY "Memorial Day"
          DELETE HOLIDAY "Fourth of July"
@@ -436,15 +292,6 @@ Input for Run 001:
         		
          CONSTRUCTION foam_wall
         		layer lrThk = .1 lrMat = FoamInsul
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  7
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
         		
          CONSTRUCTION conc_wall
         		layer lrThk = .1 lrMat = ConcreteSlab
@@ -499,15 +346,6 @@ Input for Run 001:
          CONSTRUCTION styro
                     layer     lrThk=23       lrMat="FoamInsul"
         
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  8
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
         // ----- GLAZETYPES --------------------------------------------------
         
          GLAZETYPE  Best_Double
@@ -561,16 +399,7 @@ Input for Run 001:
             
 #       #if 1
         	// $dsDay=0: simulation; =1: heating autosize; =2: cooling autosize
-            znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page  9
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
+            znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,75,68,68,68,68,68,68,68,68,68,68,68,68,65))
             znTD = select( @weather.taDbAvg07 >60., 68, default 77 )
             znTC = select( $dsDay==2, 78, @weather.taDbAvg07 >60., hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78), default 78)
 #       #else
@@ -625,15 +454,6 @@ Input for Run 001:
         	//rsVfPerTon = cfm per ton (default = 350)
         	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
         	rsFChg = 1		//ACM charge factor (default = 1)
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 10
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
         
         	rsAFUE =.71
         	rsFanPwrH = 0.58		//W/cfm (default = 0.365)
@@ -643,6 +463,8 @@ Input for Run 001:
         METER SysMtr;
         
          //--------- REPORTS ------------
+        
+         ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
          
         //AC
         Report rpType=UDT rpFreq=Year  rpTitle="MySys Characteristics"
@@ -688,15 +510,6 @@ Input for Run 001:
 #           RXCOL colHead="ecPrim" colVal=F*R.ecPrimary   colDec=dp colWid = 6 \
 #           RXCOL colHead="ecFan" colVal=F*R.ecFan       colDec=dp colWid = 6 \
 #           RXCOL colHead="ecPar" colVal=F*R.ecParasitic colDec=dp colWid = 6 \
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 11
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
 #           RXCOL colHead="ecTot" colVal=F*R.ecTot       colDec=dp colWid = 6 \
 #           RXCOL colHead="evFan" colVal=F*R.evFan       colDec=dp colWid = 6 \
 #           RXCOL colHead="evPar" colVal=F*R.evParasitic colDec=dp colWid = 6 \
@@ -713,6 +526,63 @@ Input for Run 001:
         REPORT rpType=UDT rpFreq=YEAR rpHeader = No
         SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
         
+#       #define CD1 jul 10
+#       #define CSEBtuSF 1000.
+        //Hottest Day
+        Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=134
+        rpTitle="Energy Balance (F, kBtu, + into the zone)"
+        Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+        Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+        Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+        Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+        Reportcol colVal=@znRes[1].H.tAir colHead="Tin" colWid=4 colDec=2
+        Reportcol colVal=@znRes[1].H.tRad colHead="Trad" colWid=4 colDec=2
+        Reportcol colVal=@zone[1].wz colHead="Win" colWid=5 colDec=4
+        Reportcol colVal=@zone[1].relHum*100 colHead="RHin" colWid=3 colDec=0
+        Reportcol colVal=@zone[1].twb  colHead="WBin" colWid=4 colDec=2
+        Reportcol colVal=@znRes[1].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+        Reportcol colVal=@znRes[1].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+        Reportcol colVal=@znRes[1].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+        Reportcol colVal=(@znRes[1].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+        Reportcol colVal=(@znRes[1].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+        Reportcol colVal=(@znRes[1].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+        Reportcol colVal=@znRes[1].H.qsIz/CSEBtuSF colHead="sInfVnt" colDec=2 colWid=5
+        Reportcol colVal=@znRes[1].H.ivAirX colHead="ACH" colWid=4 colDec=2
+        Reportcol colVal=@znRes[1].H.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5
+        Reportcol colVal=@znRes[1].H.qlMech/CSEBtuSF colHead="Clgl"  colDec=1 colWid=5  
+        Reportcol colVal=@znRes[1].H.qcMech/CSEBtuSF colHead="Clgt"  colDec=1 colWid=5
+        Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+        Reportcol colVal=@Meter[1].H.fanc/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+        Reportcol colVal=@Meter[1].H.clg/CSEBtuSF colHead="ClgkE" colDec=1 colWid=6 
+         
+        		     
+        //Hottest Day Totals 
+        Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
+        Reportcol colVal="Dy"    colWid=2
+        Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+        Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+        Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+        Reportcol colVal=@znRes[1].D.tAir colHead="Tin" colWid=4 colDec=2
+        Reportcol colVal=@znRes[1].D.tRad colHead="Trad" colWid=4 colDec=2
+        Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+        Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+        Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+        Reportcol colVal=@znRes[1].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+        Reportcol colVal=@znRes[1].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+        Reportcol colVal=@znRes[1].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+        Reportcol colVal=(@znRes[1].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+        Reportcol colVal=(@znRes[1].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+        Reportcol colVal=(@znRes[1].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+        Reportcol colVal=@znRes[1].D.qsIz/CSEBtuSF colHead="sInfVnt" colDec=1 colWid=5
+        Reportcol colVal=@znRes[1].D.ivAirX colHead="ACH" colWid=4 colDec=2
+        Reportcol colVal=@znRes[1].D.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5   
+        Reportcol colVal=@znRes[1].D.qlMech/CSEBtuSF colHead="Clgl" colDec=1 colWid=5   
+        Reportcol colVal=@znRes[1].D.qcMech/CSEBtuSF colHead="Clgt" colDec=1 colWid=5 
+        Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+        Reportcol colVal=@Meter[1].d.fanc/CSEBtuSF colHead="fan" colDec=1 colWid=6 
+        Reportcol colVal=@Meter[1].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
+        
+        
          REPORT   rpType=ZDD     rpZone="Z1"
                 
         
@@ -726,95 +596,18 @@ Input for Run 001:
 
 
 
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:07:06 pm
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 12
-
-
-
-1Z Test
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console run(s) done: Wed 16-Mar-22   1:46:46 pm
-
-! Executable:   d:\cse\msvc\csed.exe
-!               16-Mar-22   1:46 pm   (VS 14.29    5748736 bytes)  (HPWH 1.17.1)
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Mar-22   3:05 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 HERV
 ! Input file:   D:\cse\test\HERV.cse
 ! Report file:  D:\cse\test\HERV.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.20     Calls = 1      T/C = 0.1960   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0430   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 3.88     Calls = 1      T/C = 3.8810   
+!           Simulation:  Time = 1.49     Calls = 1      T/C = 1.4940   
 !              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
-!                Total:  Time = 4.08     Calls = 1      T/C = 4.0810   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! HERV  001                                Wed 16-Mar-22   1:46:42 pm  Page 13
-
+!                Total:  Time = 1.54     Calls = 1      T/C = 1.5410   
