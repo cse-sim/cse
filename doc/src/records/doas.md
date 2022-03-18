@@ -302,7 +302,7 @@ Name of load meter, if any, to record load met by the heating coil or cooling co
 
 ## DOAS Heat Recovery Data Members
 
-**oaExhFanVfDs=*float***
+**oaHXVfDs=*float***
 
 Heat exchanger design or rated flow.
 
@@ -443,5 +443,16 @@ Name of meter, if any, to record energy used by auxiliary components of the heat
   default: "*not recorded*",
   required: "No",
   variability: "constant") %>
+
+**endDOAS**
+
+Indicates the end of the DOAS definition. Alternatively, the end of the DOAS definition can be indicated by the declaration of another object or by "END".
+
+<%= member_table(
+  default: "*N/A*",
+  required: "No",
+  variability: "constant") %>
+
+**Related Probes:**
 
 - @[doas](#p_doas)
