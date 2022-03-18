@@ -36,11 +36,11 @@ The specified surface must be modeled with the Delayed model. If gain is targete
 **sgSide=*choice***
 
 Designates the side of the surface to which the gain is to be targeted:
-
-  ---------- -----------------------------------
-  INTERIOR   Apply gain to interior of surface
-  EXTERIOR   Apply gain to exterior of surface
-  ---------- -----------------------------------
+<%= csv_table(<<END, :row_header => false)
+INTERIOR,   Apply gain to interior of surface
+EXTERIOR,   Apply gain to exterior of surface
+END
+%>
 
 <%= member_table(
   units: "",
