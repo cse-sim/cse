@@ -46,15 +46,12 @@ path name of file to be written. If no path is specified, the file is written in
 
 Choice indicating what CSE should do if the file specified by *rfFileName*already exists:
 
-  ------------ ---------------------------------------------------------
-  OVERWRITE    Overwrite pre-existing file.
-
-  NEW          Issue error message if file exists at beginning of
-               session. If there are several runs in session using same
-               file, output from runs after the first will append.
-
-  APPEND       Append new output to present contents of existing file.
-  ------------ ---------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  OVERWRITE,    Overwrite pre-existing file.
+  NEW,          Issue error message if file exists at beginning of session. If there are several runs in session using same file&comma; output from runs after the first will append.
+  APPEND,       Append new output to present contents of existing file.
+END
+%>
 
 If the specified file does not exist, it is created and *rfFileStat* has no effect.
 
@@ -69,12 +66,11 @@ If the specified file does not exist, it is created and *rfFileStat* has no effe
 
 Choice controlling page formatting. Page formatting consists of dividing the output into pages (with form feed characters), starting a new page before each report too long to fit on the current page, and putting headers and footers on each page. Page formatting makes attractive printed output but is a distraction when examining the output on the screen and may inappropriate if you are going to further process the output with another program.
 
-  ----- ----------------------------------------------------------------
-  Yes   Do page formatting in this report file.
-
-  No    Suppress page formatting. Output is continuous, uninterrupted by
-        page headers and footers or large blank spaces.
-  ----- ----------------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  Yes,   Do page formatting in this report file.
+  No,    Suppress page formatting. Output is continuous&comma; uninterrupted by page headers and footers or large blank spaces.
+END
+%>
 
 <%= member_table(
   units: "",
