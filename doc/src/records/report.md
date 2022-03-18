@@ -62,64 +62,20 @@ Name of report file to which current report will be written. If omitted, if REPO
 
 Choice indicating report type. Report types may be described at greater length, with examples, in Section 6.
 
-  ------- --------------------------------------------------------------
-  ERR     Error and warning messages. If there are any such messages,
-          they are also displayed on the screen *AND* written to a file
-          with the same name as the input file and extension .ERR.
-          Furthermore, \* \*many error messages are repeated in the INP
-          report.
-
-  LOG     Run "log". As of July 1992, contains only CSE version number;
-          should be enhanced or deleted.??
-
-  INP     Input echo: shows the portion of the input file used to
-          specify this run. Does not repeat descriptions of objects left
-          from prior runs in the same session when CLEAR is not used.
-
-          Error and warning messages relating to specific lines of the
-          input are repeated after or near the line to which they
-          relate, prefixed with "?". Lines not used due to a
-          preprocessor \#if command (Section 4.4.4) with a false
-          expression are prefixed with a "0" in the leftmost column; all
-          preprocessor command lines are prefixed with a "\#" in that
-          column.
-
-  SUM     Run summary. As of July 1992, *NOT IMPLEMENTED*: generates no
-          output and no error message. Should be defined and
-          implemented, or else deleted??.
-
-  ZDD     Zone data dump. Detailed dump of internal simulation values,
-          useful for verifying that your input is as desired. Should be
-          made less cryptic (July 1992)??. Requires *rpZone*.
-
-  ZST     Zone statistics. Requires *rpZone*.
-
-  ZEB     Zone energy balance. Requires *rpZone*.
-
-  MTR     Meter report. Requires *rpMeter*.
-
-  DHWMTR  DHW meter report.  Requires *rpDHWMeter*
-
-  AFMTR   Air flow meter report.  Requires *rpAFMeter*
-
-<% if inactive_CNE_records %>
-  AH      Air handler report. Requires *rpAh*.
-
-  AHSIZE  Air handler autosizing report. Requires *rpAh*.
-
-  AHLOAD  Air handler load report. Requires *rpAh*. TODO
-
-  TUSIZE  Terminal autosizing report. Requires *rpTu.*
-
-  TULOAD  Terminal load. Requires *rpTu.* TODO
-<% end %>
-
-  UDT     User-defined table. Data items are specified with REPORTCOL
-          commands (next section). Allows creating almost any desired
-          report by using CSE expressions to specify numeric or string
-          values to tabulate; "Probes" may be used in the expressions to
-          access CSE internal data.
-  ------- --------------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  ERR,     Error and warning messages. If there are any such messages&comma; they are also displayed on the screen *AND* written to a file with the same name as the input file and extension .ERR. Furthermore&comma; \* \*many error messages are repeated in the INP report.
+  LOG,     Run 'log'. As of July 1992&comma; contains only CSE version number; should be enhanced or deleted.??
+  INP,     Input echo: shows the portion of the input file used to specify this run. Does not repeat descriptions of objects left from prior runs in the same session when CLEAR is not used. Error and warning messages relating to specific lines of the input are repeated after or near the line to which they relate&comma; prefixed with '?'. Lines not used due to a preprocessor \#if command (Section 4.4.4) with a false expression are prefixed with a '0' in the leftmost column; all preprocessor command lines are prefixed with a '\#' in that column.
+  SUM,     Run summary. As of July 1992&comma; *NOT IMPLEMENTED*: generates no  output and no error message. Should be defined and implemented&comma; or else deleted??.
+  ZDD,     Zone data dump. Detailed dump of internal simulation values&comma; useful for verifying that your input is as desired. Should be made less cryptic (July 1992)??. Requires *rpZone*.
+  ZST,     Zone statistics. Requires *rpZone*.
+  ZEB,     Zone energy balance. Requires *rpZone*.
+  MTR,     Meter report. Requires *rpMeter*.
+  DHWMTR,  DHW meter report.  Requires *rpDHWMeter*
+  AFMTR,   Air flow meter report.  Requires *rpAFMeter*
+  UDT,     User-defined table. Data items are specified with REPORTCOL commands (next section). Allows creating almost any desired report by using CSE expressions to specify numeric or string values to tabulate; 'Probes' may be used in the expressions to access CSE internal data.
+END
+%>
 
 <%= member_table(
   units: "",
@@ -134,20 +90,15 @@ The next three members specify how frequently values are reported and the start 
 
 Report Frequency: specifies interval for generating rows of report data:
 
-  ------------------ ---------------------------------------------------
-  YEAR               at run completion
-
-  MONTH              at end of each month (and at run completion if
-                     mid-month)
-
-  DAY                at end of each day
-
-  HOUR               at end of each hour
-
-  HOURANDSUB         at end of each subhour AND at end of hour
-
-  SUBHOUR            at end of each subhour
-  ------------------ ---------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  YEAR,               at run completion
+  MONTH,              at end of each month (and at run completion if mid-month)
+  DAY,                at end of each day
+  HOUR,               at end of each hour
+  HOURANDSUB,         at end of each subhour AND at end of hour
+  SUBHOUR,            at end of each subhour
+END
+%>
 
 *rpFreq* values of HOURANDSUB and SUBHOUR are not supported in some combinations with data selection of ALL or SUM.
 
