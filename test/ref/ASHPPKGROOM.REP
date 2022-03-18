@@ -7,9 +7,10 @@ ASHPPKGROOM.CSE(1381): Info: report of reportFile 'Primary':
     report width 147 is greater than line width 134.
     Line width has been adjusted.
 ---------------
-Warning: Zone 'Conditioned-zn': Unmet heating loads during 3.0 hours of run.
----------------
-Warning: Zone 'Conditioned-zn': Unmet cooling loads during 55.0 hours of run.
+Info: Zone 'Conditioned-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        76.2              -0.50             -1.26               7.6
+    Cooling        81.2               0.52              1.80               8.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1861 subhours of run.
     Total condensation heat = 28.6412 kBtu.
@@ -446,7 +447,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -2013,18 +2014,18 @@ Input for Run 001:
 
 
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console run(s) done: Wed 16-Mar-22   1:54:56 pm
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:28:22 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Mar-22   1:48 pm   (VS 14.29    2930688 bytes)  (HPWH 1.17.1)
+!               18-Mar-22   3:16 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0525   
+!                Input:  Time = 0.10     Calls = 2      T/C = 0.0485   
 !           AutoSizing:  Time = 0.19     Calls = 1      T/C = 0.1860   
-!           Simulation:  Time = 6.11     Calls = 1      T/C = 6.1120   
+!           Simulation:  Time = 6.08     Calls = 1      T/C = 6.0810   
 !              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
-!                Total:  Time = 6.41     Calls = 1      T/C = 6.4120   
+!                Total:  Time = 6.37     Calls = 1      T/C = 6.3730   

@@ -3,9 +3,10 @@
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'Conditioned-zn': Unmet heating loads during 16.0 hours of run.
----------------
-Warning: Zone 'Conditioned-zn': Unmet cooling loads during 39.0 hours of run.
+Info: Zone 'Conditioned-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        94.9              -1.03             -2.82              42.6
+    Cooling        65.1               0.52              1.85               5.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 3093 subhours of run.
     Total condensation heat = 33.8287 kBtu.
@@ -185,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -1749,18 +1750,18 @@ Input for Run 001:
 
 
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console run(s) done: Wed 16-Mar-22   1:50:54 pm
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:27:25 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Mar-22   1:48 pm   (VS 14.29    2930688 bytes)  (HPWH 1.17.1)
+!               18-Mar-22   3:16 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
 ! Report file:  D:\cse\test\ashptest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2      T/C = 0.0445   
-!           AutoSizing:  Time = 0.91     Calls = 1      T/C = 0.9130   
-!           Simulation:  Time = 11.95    Calls = 1      T/C = 11.9530  
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0180   
-!                Total:  Time = 12.98    Calls = 1      T/C = 12.9780  
+!                Input:  Time = 0.09     Calls = 2      T/C = 0.0430   
+!           AutoSizing:  Time = 0.92     Calls = 1      T/C = 0.9150   
+!           Simulation:  Time = 11.88    Calls = 1      T/C = 11.8840  
+!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0200   
+!                Total:  Time = 12.91    Calls = 1      T/C = 12.9120  

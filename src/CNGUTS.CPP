@@ -801,8 +801,8 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 
 					const char* fmt = "Zone '%s': Temp control outcomes\n"
 						"            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > %0.1f F tol (hr)\n"
-						"    Heating       %5.1f              %5.2f             %5.2f             %5.1f\n"
-						"    Cooling       %5.1f              %5.2f             %5.2f             %5.1f";
+						"    Heating      %6.1f            %7.2f           %7.2f            %6.1f\n"
+						"    Cooling      %6.1f            %7.2f           %7.2f            %6.1f";
 
 					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->name, Top.tp_unMetTzTol,
 						R.unMetHHrs, avgErrH, R.unMetMaxHTD, R.unMetHTolHrs,

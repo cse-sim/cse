@@ -3,7 +3,10 @@
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'Conditioned-zn': Unmet heating loads during 21.0 hours of run.
+Info: Zone 'Conditioned-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        89.0              -0.50             -1.30              10.7
+    Cooling         5.1               0.31              0.69               0.0
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 41 subhours of run.
     Total condensation heat = 1.21047 kBtu.
@@ -3556,7 +3559,7 @@ Yr  278.7     0 170.7     0     0     0     0     0  22.2     0  30.5     0  55.
 
 ! Log for Run 001:
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -5066,18 +5069,18 @@ Input for Run 001:
 
 
 
-! CSE 0.903.0+unmet-hours.b04edd31.39 for Win32 console run(s) done: Wed 16-Mar-22   2:00:50 pm
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:33:17 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Mar-22   1:48 pm   (VS 14.29    2930688 bytes)  (HPWH 1.17.1)
-! Command line: -x!  -t1 loadAndAFMeters
-! Input file:   D:\cse\test\loadAndAFMeters.cse
-! Report file:  D:\cse\test\loadAndAFMeters.rep
+!               18-Mar-22   3:16 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
+! Command line: -x!  -t1 loadandAFMeters
+! Input file:   D:\cse\test\loadandAFMeters.cse
+! Report file:  D:\cse\test\loadandAFMeters.rep
 
 ! Timing info --
 
 !                Input:  Time = 0.09     Calls = 2      T/C = 0.0430   
-!           AutoSizing:  Time = 0.49     Calls = 1      T/C = 0.4870   
-!           Simulation:  Time = 6.07     Calls = 1      T/C = 6.0740   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0060   
-!                Total:  Time = 6.66     Calls = 1      T/C = 6.6600   
+!           AutoSizing:  Time = 0.49     Calls = 1      T/C = 0.4890   
+!           Simulation:  Time = 6.00     Calls = 1      T/C = 6.0020   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
+!                Total:  Time = 6.59     Calls = 1      T/C = 6.5890   
