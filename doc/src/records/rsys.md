@@ -8,73 +8,31 @@ Optional name of HVAC system; give after the word “RSYS” if desired.
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "*63 characters*",
   default: "*none*",
   required: "No",
   variability: "constant") %>
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
 
 **rsType=*choice***
 
 Type of system.
 
--------------------------------------------------------------------------
-**rsType**           **Description**
--------------------  ----------------------------------------------------
-ACFURNACE             Compressor-based cooling and fuel-fired
-                      heating.\
-                      Primary heating input energy
-                      is accumulated to end use HTG of meter
-                      rsFuelMtr.
-
-ACRESISTANCE          Compressor-based cooling and electric
-                      (“strip”) heating. Primary heating
-                      input energy is accumulated to end use
-                      HTG of meter rsElecMtr.
-
-ASHP                  Air-source heat pump (compressor-based
-                      heating and cooling). Primary
-                      (compressor) heating input energy is
-                      accumulated to end use HTG of meter
-                      rsElecMtr. Auxiliary and defrost resistance
-                      ("strip") heating input energy is accumulated to
-                      end use HPBU of meter rsElecMtr.
-
-ASHPKGROOM            Packaged air-source heat pump.
-
-ASHPHYDRONIC          Air-to-water heat pump with hydronic distribution.
-                      Compressor performance is approximated using
-                      the air-to-air model with adjusted
-                      efficiencies.
-
-VCHP2                 Air-to-air heat pump with variable speed
-                      compressor
- 
-AC                    Compressor-based cooling; no heating.
-                      Required ratings are SEER and capacity and EER at 95 ^o^F
-                      outdoor dry bulb.
-
-ACPKGROOM             Packaged compressor-based cooling; no heating.
-                      Required ratings are capacity and EER at 95 ^o^F
-                      outdoor dry bulb.
-
-FURNACE               Fuel-fired heating. Primary heating
-                      input energy is accumulated to end use
-                      HTG of meter rsFuelMtr.
-
-RESISTANCE            Electric heating. Primary heating input
-                      energy is accumulated to end use HTG of
-                      meter rsElecMtr
-
+<%= csv_table(<<END, :row_header => true)
+**rsType**,           **Description**
+ACFURNACE,             Compressor-based cooling and fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
+ACRESISTANCE,          Compressor-based cooling and electric ('strip') heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
+ASHP,                  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost resistance ('strip') heating input energy is accumulated to end use HPBU of meter rsElecMtr.
+ASHPKGROOM,            Packaged air-source heat pump.
+ASHPHYDRONIC,          Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
+VCHP2,                 Air-to-air heat pump with variable speed compressor
+AC,                    Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
+ACPKGROOM,             Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
+FURNACE,               Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
+RESISTANCE,            Electric heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr
 ACPKGROOMFURNACE
-
 ACPKGROOMRESISTANCE
---------------------------------------------------------------------------
-
-
+END
+%>
 
 <%= member_table(
   units: "",
@@ -98,22 +56,13 @@ Text description of system, included as documentation in debugging reports such 
 
 Specifies systems heating/cooling availability during simulation.
 
-  ------- ---------------------------------------
-  OFF     System is off (neither heating nor
-          cooling is available)
-
-  HEAT    System can heat (assuming rsType can
-          heat)
-
-  COOL    System can cool (assuming rsType can
-          cool)
-
-  AUTO    System can either heat or cool
-          (assuming rsType compatibility). First
-          request by any zone served by this RSYS
-          determines mode for the current time
-          step.
-  ------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  OFF,     System is off (neither heating nor cooling is available)
+  HEAT,    System can heat (assuming rsType can heat)
+  COOL,    System can cool (assuming rsType can cool)
+  AUTO,    System can either heat or cool (assuming rsType compatibility). First request by any zone served by this RSYS determines mode for the current time step.
+END
+%>
 
 <%= member_table(
   units: "",
@@ -148,10 +97,11 @@ Specifies fan (blower) position relative to cooling coil.
 
 Specifies type of motor driving the fan (blower). This is used in the derivation of the coil-only cooling capacity for the RSYS.
 
-  ----- --------------------------------------
-  PSC   Permanent split capacitor
-  BPM   Brushless permanent magnet (aka ECM)
-  ----- --------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  PSC,   Permanent split capacitor
+  BPM,   Brushless permanent magnet (aka ECM)
+END
+%>
 
 <%= member_table(
   units: "",
@@ -670,12 +620,11 @@ Auxiliary furnace heating for annualized fuel utilization efficiency.
 
   Selects modeling options for ASHP outdoor coil defrosting when 17 ^o^F < TDbO < 45 ^o^F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
 
-  ---------  ---------------------------------------------------------------------------
-  REVCYCLE   Reverse compressor (cooling) operation.  Net capacity and efficiency is derived from rsCap17/rsCOP17 and rsCap35/rsCOP35 using linear interpolation.  Auxiliary heat is not modeled.
-
-  REVCYCLEAUX  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.
-
-  ---------  ----------------------------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  REVCYCLE,   Reverse compressor (cooling) operation.  Net capacity and efficiency is derived from rsCap17/rsCOP17 and rsCap35/rsCOP35 using linear interpolation.  Auxiliary heat is not modeled.
+  REVCYCLEAUX,  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.
+END
+%>
 
 <%= member_table(
   units: "",
@@ -891,16 +840,12 @@ Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling ou
 
   OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via  [Top ventAvail](#top-model-control-items).
 
-  ---------  ---------------------------------------------------------------------------
-  NONE       No CFI ventilation capabilities
-
-  FIXED      Fixed-flow CFI (aka SmartVent).  The specified rsOAVVfDs is used whenever
-             the RSYS operates in OAV mode.
-
-  VARIABLE   Variable-flow CFI (aka NightBreeze).  Flow rate is determined at midnight
-             based on prior day's average dry-bulb temperature according to a control
-             algorithm defined by the NightBreeze vendor.
-  ---------  ----------------------------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+NONE,       No CFI ventilation capabilities
+FIXED,      Fixed-flow CFI (aka SmartVent). The specified rsOAVVfDs is used whenever the RSYS operates in OAV mode.
+VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midnight based on prior day's average dry-bulb temperature according to a control algorithm defined by the NightBreeze vendor.
+END
+%>
 
 <%= member_table(
   units: "",
