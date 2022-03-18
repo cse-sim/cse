@@ -56,12 +56,14 @@ The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
 Type of module to model. The module type determines the refraction index and temperature coefficient used in the simulation. Alternatively, the "Custom" module type may be used in conjunction with user-defined input for *pvCoverRefrInd* and *pvTempCoeff*.
 
-  **Module Type** **pvCoverRefrInd** **pvTempCoeff**
-  --------------- ------------------ ---------------
-  Standard        1.3                -0.00206
-  Premium         1.3                -0.00194
-  ThinFilm        1.3                -0.00178
-  Custom          User-defined       User-defined
+<%= csv_table(<<END, :row_header => true)
+  **Module Type**, **pvCoverRefrInd**, **pvTempCoeff**
+  Standard,        1.3,                -0.00206
+  Premium,         1.3,                -0.00194
+  ThinFilm,        1.3,                -0.00178
+  Custom,          User-defined,       User-defined
+END
+%>
 
 <%= member_table(
   units: "",
@@ -243,19 +245,21 @@ AC inverter efficiency at rated DC power.
 
 Fraction of total DC energy lost. The total loss from a system is aggregated from several possible causes as illustrated below:
 
-  **Loss Type**             **Default Assumption**
-  ------------------------- ----------------------
-  Soiling                   0.02
-  *Shading*                 *0 (handled explicitly)*
-  Snow                      0
-  *Mismatch*                *0 (shading mismatch handled explicitly [see pvSIF])*
-  Wiring                    0.02
-  Connections               0.005
-  Light-induced degradation 0.015
-  Nameplate rating          0.01
-  *Age*                     *0.05 (estimated 0.5% degradation over 20 years)*
-  Availability              0.03
-  **Total**                 **0.14**
+<%= csv_table(<<END, :row_header => true)
+  **Loss Type**,             **Default Assumption**
+  Soiling,                   0.02
+  *Shading*,                 *0 (handled explicitly)*
+  Snow,                      0
+  *Mismatch*,                *0 (shading mismatch handled explicitly [see pvSIF])*
+  Wiring,                    0.02
+  Connections,               0.005
+  Light-induced degradation, 0.015
+  Nameplate rating,          0.01
+  *Age*,                     *0.05 (estimated 0.5% degradation over 20 years)*
+  Availability,              0.03
+  **Total**,                 **0.14**
+END
+%>
 
 *Italic* lines indicate differences from PVWatts assumptions.
 
