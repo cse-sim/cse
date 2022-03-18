@@ -17,18 +17,12 @@ Name of surface; give after the word SURFACE.
 
 Type of surface:
 
-  ------------- ---------------------------------------------------------
-  FLOOR         Surface defines part or all of the "bottom" of the zone;
-                it is horizontal with inside facing up. The outside of
-                the surface is not adjacent to the current zone.
-
-  WALL          Surface defines a "side" of the zone; its outside is not
-                adjacent to the current zone.
-
-  CEILING       Surface defines part or all of the "top" of the zone with
-                the inside facing down. The outside of the surface is not
-                adjacent to the current zone.
-  ------------- ---------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+FLOOR, Surface defines part or all of the 'bottom' of the zone; it is horizontal with inside facing up. The outside of the surface is not adjacent to the current zone.
+WALL, Surface defines a 'side' of the zone; its outside is not adjacent to the current zone.
+CEILING, Surface defines part or all of the 'top' of the zone with the inside facing down. The outside of the surface is not adjacent to the current zone.
+END
+%>
 
 sfType is used extensively for default determination and input checking, but does not have any further internal effect. The Floor, Wall, and Ceiling choices identify surfaces that form boundaries between the zone and some other condition.
 
@@ -82,38 +76,14 @@ Azimuth of surface with respect to znAzm. The azimuth used in simulating a surfa
 
 Provides user control over how CSE models conduction for this surface.
 
-  ----------------------------------- -----------------------------------
-  QUICK                               Surface is modeled using a simple
-                                      conductance. Heat capacity effects
-                                      are ignored. Either sfCon or sfU
-                                      (next) can be specified.
-
-  DELAYED, DELAYED\_HOUR,             Surface is modeled using a
-  DELAYED\_SUBHOUR                    multi-layer finite difference
-                                      technique that represents heat
-                                      capacity effects. If the time
-                                      constant of the surface is too
-                                      short to accurately simulate, a
-                                      warning message is issued and the
-                                      Quick model is used. The program
-                                      **cannot** use the finite
-                                      difference model if sfU rather than
-                                      sfCon is specified.
-
-  AUTO                                Program selects Quick or the
-                                      appropriate Delayed automatically
-                                      according to the time constant of
-                                      the surface (if sfU is specified,
-                                      Quick is selected).
-
-  FD (or FORWARD\_DIFFERENCE)         Selects the forward difference
-                                      model (used with short time steps
-                                      and the CZM/UZM zone model).
-
-  KIVA                                Uses a two-dimensional finite
-                                      difference model to simulate heat
-                                      flow through foundation surfaces.
-  ----------------------------------- -----------------------------------
+<%= csv_table(<<END, :row_header => false)
+QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either sfCon or sfU (next) can be specified.
+DELAYED&comma; DELAYED\_HOUR&comma; DELAYED\_SUBHOUR, Surface is modeled using a multi-layer finite difference technique that represents heat capacity effects. If the time constant of the surface is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. The program **cannot** use the finite difference model if sfU rather than sfCon is specified.
+AUTO, Program selects Quick or the appropriate Delayed automatically according to the time constant of the surface (if sfU is specified&comma; Quick is selected).
+FD (or FORWARD\_DIFFERENCE),         Selects the forward difference model (used with short time steps and the CZM/UZM zone model).
+KIVA,                                Uses a two-dimensional finite difference model to simulate heat flow through foundation surfaces.
+END
+%>
 
 <%= member_table(
   legal_range: "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, 2D_FND",
@@ -163,36 +133,14 @@ Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model us
 
 Specifies the thermal conditions assumed at surface exterior, and at exterior of any subobjects (windows or doors) belonging to current surface. The conditions accounted for are dry bulb temperature and incident solar radiation.
 
-  -------------- ---------------------------------------
-  AMBIENT        Exterior surface is exposed to the
-                 "weather" as read from the weather
-                 file. Solar gain is calculated using
-                 solar geometry, sfAzm, sfTilt, and
-                 sfExAbs.
-
-  SPECIFIEDT     Exterior surface is exposed to solar
-                 radiation as in AMBIENT, but the dry
-                 bulb temperature is calculated with a
-                 user specified function (sfExT).
-                 sfExAbs can be set to 0 to eliminate
-                 solar effects.
-
-  ADJZN          Exterior surface is exposed to another
-                 zone, whose name is specified by
-                 sfAdjZn. Solar gain is 0 unless gain is
-                 targeted to the surface with SGDIST
-                 below.
-
-  GROUND         The surface is in contact with the
-                 ground. Details of the two-dimensional
-                 foundation design are defined by
-                 sfFnd. Only floor and wall surfaces
-                 may use this option.
-
-  ADIABATIC      Exterior surface heat flow is 0.
-                 Thermal storage effects of delayed
-                 surfaces are modeled.
-  -------------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+AMBIENT,        Exterior surface is exposed to the 'weather' as read from the weather file. Solar gain is calculated using solar geometry&comma; sfAzm&comma; sfTilt&comma; and sfExAbs.
+SPECIFIEDT,     Exterior surface is exposed to solar radiation as in AMBIENT&comma; but the dry bulb temperature is calculated with a user specified function (sfExT). sfExAbs can be set to 0 to eliminate solar effects.
+ADJZN,          Exterior surface is exposed to another zone&comma; whose name is specified by sfAdjZn. Solar gain is 0 unless gain is targeted to the surface with SGDIST below.
+GROUND,         The surface is in contact with the ground. Details of the two-dimensional foundation design are defined by sfFnd. Only floor and wall surfaces may use this option.
+ADIABATIC, Exterior surface heat flow is 0. Thermal storage effects of delayed surfaces are modeled.
+END
+%>
 
 **sfExAbs=*float***
 
@@ -275,10 +223,11 @@ Ground reflectivity for this surface.
 
 Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference. Default depends on the surface type.
 
-  --------------------------- ------
-  sfType = FLOOR or CEILING   1.32
-  other                       1.5
-  --------------------------- ------
+<%= csv_table(<<END, :row_header => false)
+sfType = FLOOR or CEILING, 1.32
+other, 1.5
+END
+%>
 
 <%= member_table(
   units: "Btuh/ft^2^-^o^F",
@@ -291,16 +240,13 @@ Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference
 
 Outside combined surface (air film) conductance. Ignored for sfModel = Forward\_Difference. The default value is dependent upon the exterior conditions:
 
-  ------------------------ ---------------------------------------
-  sfExCnd = AMBIENT        dflExH (Top-level member, described
-                           above)
-
-  sfExCnd = SPECIFIEDT     dflExH (described above)
-
-  sfExCnd = ADJZN          1.5
-
-  sfExCnd = ADIABATIC      not applicable
-  ------------------------ ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+sfExCnd = AMBIENT,        dflExH (Top-level member&comma; described above)
+sfExCnd = SPECIFIEDT,     dflExH (described above)
+sfExCnd = ADJZN,          1.5
+sfExCnd = ADIABATIC,      not applicable
+END
+%>
 
 <%= member_table(
   units: "Btuh/ft^2^-^o^F",
@@ -311,18 +257,19 @@ Outside combined surface (air film) conductance. Ignored for sfModel = Forward\_
 
 When sfModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on sfExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
-Model            Exposed to ambient              Exposed to zone
----------------- ------------------------------- ----------------------------
-UNIFIED          default CSE model               default CSE model
-INPUT            hc = sfExHcMult                 hc = sfxxHcMult
-AKBARI           Akbari model                    n/a
-WALTON           Walton model                    n/a
-WINKELMANN       Winkelmann model                n/a
-DOE2             DOE2 model                      n/a
-MILLS            n/a                             Mills model
-ASHRAE           n/a                             ASHRAE handbook values
-TARP             n/a                             TARP model
---------------- ------------------------------- ----------------------------
+<%= csv_table(<<END, :row_header => true)
+Model,            Exposed to ambient,              Exposed to zone
+UNIFIED,          default CSE model,               default CSE model
+INPUT,            hc = sfExHcMult,                 hc = sfxxHcMult
+AKBARI,           Akbari model,                    n/a
+WALTON,           Walton model,                    n/a
+WINKELMANN,       Winkelmann model,                n/a
+DOE2,             DOE2 model,                      n/a
+MILLS,            n/a,                             Mills model
+ASHRAE,           n/a,                             ASHRAE handbook values
+TARP,             n/a,                             TARP model
+END
+%>
 
 **sfExHcModel=*choice***
 
@@ -363,14 +310,16 @@ Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=s
 
 Exterior surface roughness factor.  Used only when surface is exposed to ambient (i.e. with wind exposure).  Typical values:
 
-Roughness Index	   sfExRf	 Example
------------------  ------  ---------
-1 (very rough)		 2.17	   Stucco
-2 (rough)          1.67 	 Brick
-3 (medium rough)	 1.52 	 Concrete
-4 (Medium smooth)	 1.13	   Clear pine
-5 (Smooth)         1.11    Smooth plaster
-6 (Very Smooth)		 1		   Glass
+<%= csv_table(<<END, :row_header => true)
+Roughness Index,	   sfExRf,	 Example
+1 (very rough),		 2.17,	   Stucco
+2 (rough),          1.67, 	 Brick
+3 (medium rough),	 1.52, 	 Concrete
+4 (Medium smooth),	 1.13,	   Clear pine
+5 (Smooth),         1.11,    Smooth plaster
+6 (Very Smooth),		 1,		   Glass
+END
+%>
 
 <%= member_table(
   units: "",
