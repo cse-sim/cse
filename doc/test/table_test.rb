@@ -52,7 +52,7 @@ END
     assert_equal(expected, actual)
   end
   def test_rendering_a_csv_table_with_literal_comma
-    b1 = MakeBinding.().({});
+    b1 = MakeBinding.().({})
     template = <<ENDEND
 <%= csv_table(<<END, :row_header => false)
 A,B,C
@@ -71,7 +71,7 @@ END
     assert_equal(expected, actual)
   end
   def test_actual_csv_table_example
-    b1 = MakeBinding.().({});
+    b1 = MakeBinding.().({})
     template = <<ENDEND
 <%= csv_table(<<END, :row_header => false)
 CNE,"Older central difference model based on original CALPAS methods.  Not fully supported and not suitable for current compliance applications."
@@ -93,6 +93,30 @@ UZM Unconditioned zone model. Identical to CZM except heating and
     cooling are not supported. Typically used for attics, garages,  
     and other ancillary spaces.                                     
 --- ----------------------------------------------------------------
+END
+    actual = Template::RenderWithErb.(template, b1)
+    assert_equal(expected, actual)
+  end
+  def test_that_member_table_renders_well
+    b1 = MakeBinding.().({})
+    template = <<ENDEND.strip
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "*x* $>$ 0",
+  default: "derived from oaSupFanEff and oaSupFanShaftBhp",
+  required: "If oaSupFanEff and oaSupFanShaftBhp not present",
+  variability: "constant") %>    
+ENDEND
+    expected = <<END.strip
+---------------------------------------------------------------------
+**Units** **Legal** **Default**      **Required**     **Variability**
+          **Range**                                                  
+--------- --------- ---------------- ---------------- ---------------
+W/cfm     *x* $>$ 0 derived from     If oaSupFanEff   constant       
+                    oaSupFanEff and  and                             
+                    oaSupFanShaftBhp oaSupFanShaftBhp                
+                                     not present                     
+---------------------------------------------------------------------
 END
     actual = Template::RenderWithErb.(template, b1)
     assert_equal(expected, actual)

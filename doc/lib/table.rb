@@ -183,7 +183,9 @@ module Table
     def col_widths(mins, maxs)
       num_cols = mins.length
       spacing = 2 * (num_cols - 1)
-      extra_space = @max_width - (mins.inject(0, &:+) + spacing)
+      minimum_max_width = (mins.inject(0, &:+) + spacing)
+      the_max_width = if minimum_max_width > @max_width then minimum_max_width else @max_width end
+      extra_space = the_max_width - minimum_max_width
       total_max = maxs.inject(0, &:+).to_f
       width_fracs = maxs.map {|m| m / total_max}
       extra_space_alloc = width_fracs.map {|w| (w * extra_space).to_i}
