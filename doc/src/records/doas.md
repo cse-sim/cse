@@ -40,7 +40,7 @@ Fan input power per unit air flow (at design flow and pressure).
 <%= member_table(
   units: "W/cfm",
   legal_range: "*x* $>$ 0",
-  default: "derived from oaSupFanEff and oaSupFanShaftBhp",
+  default: "derived from oaSupFanEff and oaSup- FanShaftBhp",
   required: "If oaSupFanEff and oaSupFanShaftBhp not present",
   variability: "constant") %>
 
@@ -143,7 +143,7 @@ Fan input power per unit air flow (at design flow and pressure).
 <%= member_table(
   units: "W/cfm",
   legal_range: "*x* $>$ 0",
-  default: "derived from oaExhFanEff and oaExhFanShaftBhp",
+  default: "derived from oaExhFanEff and oaExh- FanShaftBhp",
   required: "If oaExhFanEff and oaExhFanShaftBhp not present",
   variability: "constant") %>
 
