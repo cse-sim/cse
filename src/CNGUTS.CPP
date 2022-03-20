@@ -794,27 +794,30 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 				if (Z.i.znModel != C_ZNMODELCH_CZM)
 					continue;		// unmet tracking meaningful for CZM only
 
-				if (R.unMetHHrs > 0.001f || R.unMetCHrs > 0.001f)
-				{
-					float avgErrH = R.unMetHHrs > 0.f ? R.unMetShHDH / R.unMetHHrs : 0.f;
-					float avgErrC = R.unMetCHrs > 0.f ? R.unMetShCDH / R.unMetCHrs : 0.f;
+				if (R.unMetHrs[ 0] > 0.001f || R.unMetHrs[ 1] > 0.001f)
+				{	// some unmet hours (with tolerance 0)
+					float avgErr[2];	// average tz excursion, [0]=htg, [1]=clg
+					for (int iHC=0; iHC<2; iHC++)
+						avgErr[ iHC] = R.unMetHrs[iHC] > 0.f ? R.unMetShDH[iHC] / R.unMetHrs[iHC] : 0.f;
 
 					const char* fmt = "Zone '%s': Temp control outcomes\n"
 						"            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > %0.1f F tol (hr)\n"
 						"    Heating      %6.1f            %7.2f           %7.2f            %6.1f\n"
 						"    Cooling      %6.1f            %7.2f           %7.2f            %6.1f";
 
+					// "Info" msg to report only
 					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->name, Top.tp_unMetTzTol,
-						R.unMetHHrs, avgErrH, R.unMetMaxHTD, R.unMetHTolHrs,
-						R.unMetCHrs, avgErrC, R.unMetMaxCTD, R.unMetCTolHrs);
+						R.unMetHrs[ 0], avgErr[ 0], R.unMetMaxTD[ 0], R.unMetHrsTol[ 0],
+						R.unMetHrs[ 1], avgErr[ 1], R.unMetMaxTD[ 1], R.unMetHrsTol[ 1]);
 				}
-				if (R.unMetHTolHrs > Top.tp_unMetTzTolWarnHrs)
-					warn ("Zone '%s': Air temp more than %0.1f F below heating setpoint during %0.1f hours of run",
-						zr->name, Top.tp_unMetTzTol, R.unMetHTolHrs);
-				if (R.unMetCTolHrs > Top.tp_unMetTzTolWarnHrs)
-					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
-						zr->name, Top.tp_unMetTzTol, R.unMetCTolHrs);
 
+				// issue warning(s) if unmet hrs per tp_unMetTzTol exceed threshold
+				if (R.unMetHrsTol[ 0] > Top.tp_unMetTzTolWarnHrs)
+					warn ("Zone '%s': Air temp more than %0.1f F below heating setpoint during %0.1f hours of run",
+						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 0]);
+				if (R.unMetHrsTol[ 1] > Top.tp_unMetTzTolWarnHrs)
+					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
+						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
 			}
 #if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97. Mbrs not added. DELETE.
 x			// duplicate message to test new members
@@ -1478,11 +1481,11 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 #define ZRw1 qlInfil						// first one
 #define ZRnW ((oRes(qlMech) - oRes(qlInfil))/sizeof(float) + 1)	// #
 // floats to track min
-#define ZRmin1 unMetMaxHTD
-#define ZRminN ((oRes(unMetMaxHTD) - oRes(unMetMaxHTD))/sizeof(float) + 1)
+#define ZRmin1 unMetMaxTD[ 0]
+#define ZRminN ((oRes(unMetMaxTD[ 0]) - oRes(unMetMaxTD[ 0]))/sizeof(float) + 1)
 // floats to track max
-#define ZRmax1 unMetMaxCTD
-#define ZRmaxN ((oRes(unMetMaxCTD) - oRes(unMetMaxCTD))/sizeof(float) + 1)
+#define ZRmax1 unMetMaxTD[ 1]
+#define ZRmaxN ((oRes(unMetMaxTD[ 1]) - oRes(unMetMaxTD[ 1]))/sizeof(float) + 1)
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC NEAR doIvlAccum()
 
