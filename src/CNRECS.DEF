@@ -210,6 +210,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GZ ebTolSubhr	// subhourly ..
     *r *hide INT tp_ebErrCount	// count of short-interval (day/hour/subhour) overall energy balance errors;
 								// s/b 0; re suppression of excessive warnings
+    *i FLOAT_GEZ tp_unMetTzTol  // unmet zone air temp tolerance, F (default = 1 F)
+    *i FLOAT_GEZ tp_unMetTzTolWarnHrs
+                                // unmet warning threshold, hr (default 150)
+                                //   Warning(s) issued when zone heating or cooling unmet tzTol hrs exceed threshold
 
 //TOP: inputs: Kiva calculation settings
     *i FLOAT_GZ tp_grndMinDim		// minimum cell dimension in Kiva, ft, default .066f
@@ -2520,16 +2524,13 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s *e TEMP_GZ zn_tzspD		// current step desired temp set point, F
     *s *e TEMP_GZ zn_tzspC		// current step cooling set point, F
 
-    *h TEMP_GZ zn_tzspHlh		// end-of-last-hour heating set point, F
-    *h TEMP_GZ zn_tzspDlh		// end-of-last-hour desired temp set point, F
-    *h TEMP_GZ zn_tzspClh		// end-of-last-hour cooling set point, F
+    *h TEMP_GZ zn_tzspHlh		// end-of-last-hour heating set point (re autosize setpoint ramping), F
+    *h TEMP_GZ zn_tzspDlh		// end-of-last-hour desired temp set point (re autosize setpoint ramping), F
+    *h TEMP_GZ zn_tzspClh		// end-of-last-hour cooling set point (re autosize setpoint ramping), F
 
 	*s *e SI zn_hcMode			// heating / cooling mode required per set point (rsmHEAT, rsmCOOL, )
 								//   (may not match RSYS.rs_mode due to e.g. RSYS availability or
 								//    conflicting zone requests)
-								// flag unmet heating/cooling requirements (zn_tzsp not held)
-	*h *e FLOAT zn_unMetHDH		//   tz - zn_tzspH at end of hour, deg-hr
-	*h *e FLOAT zn_unMetCDH		//   tz - zn_tzspC at end of hour, deg-hr
 
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating
@@ -2683,8 +2684,6 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     SI nHrCeilFan	//    ditto ceiling fan operation; last "# of hours"
 //LIs. code in cnguts.h and .cpp assumes LI members together, first is nIter, last is nSubhrLX.
     LI nIter		// # of iterations
-    LI nHrUnMetH	// # of hours in this intervals having *any* unmet heating subhours
-    LI nHrUnMetC	//   ditto heating
     LI nShVentH		// # of substeps int this interval when ventilation caused heating
 					//   (initial implementation for OAV only, 10-13)
     LI nSubhr		// subhour counter (convenience)
@@ -2722,8 +2721,16 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qlBal  	// latent balance similarly.  Consider removing Bals after development.
     float qlX		// latent gain rejected to prevent zone supersaturation === heat of condensation.
 					//   - added to next subr sens gain. Btu.
-    float unMetHDH	// zone end-of-hour air temp excursion below heating set point, deg-hr (<=0)
-	float unMetCDH	// zone end-of-hour air temp excursion above cooling set point, deg-hr (>=0)
+
+    *array 2 float unMetHrDH	// end-of-hour tz excursion below/above setpoint, deg-hr
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)
+    *array 2 float unMetShDH	// subhour tz excursion below/above setpoint, deg-hr
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)
+    *array 2 float unMetHrs	    // unmet hours (accumulated subhourly, tz excursion > 0)
+                                //  [ 0]=heating  [ 1]=cooling
+    *array 2 float unMetHrsTol 	// unmet hours (accumulated subhourly, tz excursion > tp_unMetTzTol)
+                                //  [ 0]=heating  [ 1]=cooling
+
     float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (OAV not included)
     float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
     float qcMech	// zone accumulated total mechanical (sensible + latent) cooling (including HPWH heat extraction), Btu (< 0)
@@ -2731,6 +2738,9 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qvMech	// zone accumulated mechanical (OAV) total (sensible + latent) heat gains, Btu (< 0)
     float litDmd	// zone lighting demand and Energy Use, ...
     float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
+// floats that track min/max value
+    *array 2 float unMetMaxTD   // maximum tz excursion below/above setpoint, F
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)    
 *END		// ZNRES_IVL_SUB
 //=============================================================================
 RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT

@@ -9,7 +9,10 @@ CZ12 VC Temp Heat Pump
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'Zone1-zn': Unmet cooling loads during 17 hours of run.
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating         2.7              -0.07             -0.18               0.0
+    Cooling        60.3               0.33              0.91               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 55 subhours of run.
     Total condensation heat = 0.0529893 kBtu.
@@ -55,17 +58,16 @@ RSYS -- Aux Cycle / Def RevCyc
  Nov 76.122  1.369  1.086 0.0260 0.0684 0.0529  1.234      0      0      0      0      0      0      0      0      0      0  0.271 0.0260 0.0684 0.0529 0.0329  0.451      0      0 .00300 .00300      0      0      0  0.859 -.0071      0      0      0      0
  Dec 302.20  4.932  4.316  0.172  0.247  0.215  4.949      0      0      0      0      0      0      0      0      0      0  1.111  0.172  0.247  0.215 0.0605  1.805      0      0      0      0      0      0      0  3.593 -.0271      0      0      0      0
 
- Yr  1522.1 16.273 13.730  0.388  0.814  0.674 15.606 -10.73 -1.136  0.591 -10.14      0      0      0      0      0      0  3.472  0.388  0.814  0.674  0.246  5.594  3.785  0.591 0.0101  4.386      0      0      0 11.273 -.0884 -7.534 -1.001      0      0
-
-
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  1
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  1
 
 
 
 CZ12 VC Temp Heat Pump
 ------------------------------------------------------------------------------
+
+ Yr  1522.1 16.273 13.730  0.388  0.814  0.674 15.606 -10.73 -1.136  0.591 -10.14      0      0      0      0      0      0  3.472  0.388  0.814  0.674  0.246  5.594  3.785  0.591 0.0101  4.386      0      0      0 11.273 -.0884 -7.534 -1.001      0      0
 
 
 
@@ -120,10 +122,8 @@ RSYS -- Aux Cycle / Def RevCyc
 
 
 
-
-
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  2
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ RSYS -- Aux Cycle / Def RevCyc for Fri 02-Jan
   18  1.875      0  0.407  2.419  6.101  2.522  2.419  6.101  2.522          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  3
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  4
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  5
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        508    454    962   5189   4227     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  6
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ CZ12 VC Temp Heat Pump
    6  68.26          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  7
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  8
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        377    108    484   1400    915      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page  9
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        285     81    366   1065    700      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 10
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 10
 
 
 
@@ -690,7 +690,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 11
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        439    129    568   1790   1221     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 12
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 12
 
 
 
@@ -816,7 +816,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        410    124    534   1792   1258      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 13
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 13
 
 
 
@@ -879,7 +879,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 14
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 14
 
 
 
@@ -942,7 +942,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.84 68.00  68.12  97.59  94.68     0 45193 11263 31136 0.689 0.746 0.689 1.000 1.000       0 869.7  27276      0  2376  1484  31136  -5773  25364  5773     -0  9202  13198 2.860 2.964 1.942
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 15
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.98 68.26      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 16
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.96 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 17
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.53 68.00  67.70  97.98  90.00     0 46432 11546  8398 0.181 0.189 0.249 0.727 0.932       0 228.3   7641      0   368   390   8398  -2907   5491  2907      0  1771   2665 3.247 4.314 2.172
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 18
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.30 68.00  67.76  98.13  90.16     0 46579 11580  6392 0.137 0.142 0.249 0.552 0.888       0 173.2   5882      0   215   296   6392  -2195   4197  2195      0  1418   2065 3.316 4.147 2.177
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 19
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 64.03 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 20
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 69.16 68.00  68.23  98.34  90.82     0 46161 11470 10737 0.233 0.233 0.248 0.936 0.984       0 293.6  10236      0     0   501  10737  -3411   7326  3411     -0  2225   2862 3.446 4.601 2.688
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 21
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.67 68.00  68.59  98.89  91.63     0 46453 11551 10750 0.231 0.242 0.249 0.931 0.983       0 292.1   9796      0   455   498  10750  -3204   7546  3204      0  2151   3240 3.257 4.555 2.431
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 22
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 23
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ RSYS cooling subhour details for Mon 29-Jun
    6  29  7  5 77.72 78.05 78.44      0      0      0     0      0     0     0     0     0     0     0    0      0      0      0      0     0      0     0      0      0     0      0      0      0      0     0      0      0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 24
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ CZ12 VC Temp Heat Pump
    6  29 16  5 106.5 86.20 79.00  80.04  57.41  59.64     0 -30993 0.895 0.892 1.000 0.895 1.000  1127 .943 -33006  -2003 -35010 -33006  1923 -31083 -7100 -23861 -23861 -7222   -122  -2003  -1765 -25626 15539  17463  2.124 1.467
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 25
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ RSYS cooling subhour details for Tue 30-Jun
    6  30  0  5 78.62 80.69 78.00  78.59  53.65  59.30     0  -4876 0.128 0.127 0.422 0.302 0.856 160.9 .877 -12252  -1720 -13972  -5175   275  -4901 -1586  -3289  -3289 -1612    -25   -727   -559  -3848  1581   1856  3.825 2.073
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 26
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ CZ12 VC Temp Heat Pump
    6  30  9  5 83.66 78.72 79.05      0      0      0     0      0     0     0     0     0     0     0    0      0      0      0      0     0      0     0      0      0     0      0      0      0      0     0      0      0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 27
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 27
 
 
 
@@ -1761,7 +1761,7 @@ CZ12 VC Temp Heat Pump
    6  30 18  5 102.4 84.69 78.07  79.05  55.99  57.98 0.066 -39496 1.000 1.117 1.000 1.000 1.000  1260 .949 -37521  -2018 -39539 -37521  2150 -35372 -7521 -27671 -27671 -7700   -180  -2018  -1491 -29163 16104  18254  2.330 1.598
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 28
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 28
 
 
 
@@ -1824,7 +1824,7 @@ RSYS cooling subhour details for Wed 01-Jul
    7   1  2  5 64.40 79.77 77.95      0      0      0     0      0     0     0     0     0     0     0    0      0      0      0      0     0      0     0      0      0     0      0      0      0      0     0      0      0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 29
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 29
 
 
 
@@ -1887,7 +1887,7 @@ CZ12 VC Temp Heat Pump
    7   1 11  5 84.38 79.36 79.11      0      0      0     0      0     0     0     0     0     0     0    0      0      0      0      0     0      0     0      0      0     0      0      0      0      0     0      0      0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 30
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 30
 
 
 
@@ -1950,7 +1950,7 @@ CZ12 VC Temp Heat Pump
    7   1 20  5 86.54 80.44 78.00  78.51  53.78  58.73     0 -13034 0.344 0.343 1.000 0.344 1.000 433.8 .924 -13808  -1130 -14938 -13808   740 -13068 -3897  -9137  -9137 -3931    -35  -1130   -773  -9910  4068   4808  3.395 2.061
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 31
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 31
 
 
 
@@ -1980,7 +1980,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 001:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -2013,7 +2013,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 32
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 32
 
 
 
@@ -2076,7 +2076,7 @@ Input for Run 001:
 #       #if 1
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 33
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 33
 
 
 
@@ -2139,7 +2139,7 @@ CZ12 VC Temp Heat Pump
         CONSTRUCTION   "fc-Exterior Wall Cons"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 34
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 34
 
 
 
@@ -2202,7 +2202,7 @@ CZ12 VC Temp Heat Pump
               lrThk = 0.041667                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 35
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 35
 
 
 
@@ -2265,7 +2265,7 @@ CZ12 VC Temp Heat Pump
               lrThk = 0.041667                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 36
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 36
 
 
 
@@ -2328,7 +2328,7 @@ CZ12 VC Temp Heat Pump
               lrThk = 0.291667                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 37
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 37
 
 
 
@@ -2391,7 +2391,7 @@ CZ12 VC Temp Heat Pump
               lrThk = 0.041667                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 38
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 38
 
 
 
@@ -2454,7 +2454,7 @@ CZ12 VC Temp Heat Pump
               lrThk = 0.041667                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 39
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 39
 
 
 
@@ -2517,7 +2517,7 @@ CZ12 VC Temp Heat Pump
            LAYER   "cl2-Garage Ext Wall"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 40
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 40
 
 
 
@@ -2580,7 +2580,7 @@ CZ12 VC Temp Heat Pump
            LAYER   "fl3-Zone1ToAtticCeiling-AtcEdgWA"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 41
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 41
 
 
 
@@ -2643,7 +2643,7 @@ CZ12 VC Temp Heat Pump
               lrThk = 0.635016                  // Thickness (feet), ft
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 42
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 42
 
 
 
@@ -2706,7 +2706,7 @@ CZ12 VC Temp Heat Pump
            LAYER   "l-Zone1DoorBack-dr"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 43
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 43
 
 
 
@@ -2769,7 +2769,7 @@ CZ12 VC Temp Heat Pump
               lrMat = "IntMassMat-Carpet"       // Layer material
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 44
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 44
 
 
 
@@ -2832,7 +2832,7 @@ CZ12 VC Temp Heat Pump
               lrMat = "IntMassMat-Gypsum"       // Layer material
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 45
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 45
 
 
 
@@ -2895,7 +2895,7 @@ CZ12 VC Temp Heat Pump
            matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 46
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 46
 
 
 
@@ -2958,7 +2958,7 @@ CZ12 VC Temp Heat Pump
         MATERIAL   "m-SNEICConcrete"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 47
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 47
 
 
 
@@ -3021,7 +3021,7 @@ CZ12 VC Temp Heat Pump
            matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 48
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 48
 
 
 
@@ -3084,7 +3084,7 @@ CZ12 VC Temp Heat Pump
         
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 49
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 49
 
 
 
@@ -3147,7 +3147,7 @@ CZ12 VC Temp Heat Pump
            izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 50
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 50
 
 
 
@@ -3210,7 +3210,7 @@ CZ12 VC Temp Heat Pump
            izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 51
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 51
 
 
 
@@ -3273,7 +3273,7 @@ CZ12 VC Temp Heat Pump
         
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 52
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 52
 
 
 
@@ -3336,7 +3336,7 @@ CZ12 VC Temp Heat Pump
         
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 53
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 53
 
 
 
@@ -3399,7 +3399,7 @@ CZ12 VC Temp Heat Pump
            znSC = select( $radDiff >1., 0.5, default 0.8 )    // Expression representing zone shade closure
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 54
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 54
 
 
 
@@ -3462,7 +3462,7 @@ CZ12 VC Temp Heat Pump
               gnFrRad = 0
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 55
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 55
 
 
 
@@ -3525,7 +3525,7 @@ CZ12 VC Temp Heat Pump
            SURFACE   "Zone1ToGarageWallFront-Cav"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 56
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 56
 
 
 
@@ -3588,7 +3588,7 @@ CZ12 VC Temp Heat Pump
               sfArea = 5.659789                 // Wall area, ft2
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 57
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 57
 
 
 
@@ -3651,7 +3651,7 @@ CZ12 VC Temp Heat Pump
               sfArea = 133.125                  // Wall area, ft2
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 58
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 58
 
 
 
@@ -3714,7 +3714,7 @@ CZ12 VC Temp Heat Pump
                  drModel = "Forward_Difference"    // Modeling option
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 59
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 59
 
 
 
@@ -3777,7 +3777,7 @@ CZ12 VC Temp Heat Pump
               WINDOW   "Zone1WinBack-NoScrn"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 60
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 60
 
 
 
@@ -3840,7 +3840,7 @@ CZ12 VC Temp Heat Pump
                  wnInShd = "DrapeMed"           // Interior shade type
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 61
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 61
 
 
 
@@ -3903,7 +3903,7 @@ CZ12 VC Temp Heat Pump
               sfCon = "scn-SlabConsCarpet"      // Surface construction
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 62
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 62
 
 
 
@@ -3966,7 +3966,7 @@ CZ12 VC Temp Heat Pump
               sfCon = "con-FloorCavIMass"       // Surface construction
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 63
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 63
 
 
 
@@ -4029,7 +4029,7 @@ CZ12 VC Temp Heat Pump
            SURFACE   "GarageToGarageAttic-Cav"  
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 64
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 64
 
 
 
@@ -4092,7 +4092,7 @@ CZ12 VC Temp Heat Pump
                  drArea = 32                    // Area, ft2
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 65
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 65
 
 
 
@@ -4155,7 +4155,7 @@ CZ12 VC Temp Heat Pump
               sfExCTaDbAvgYr = 0.0014           // Surface ???
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 66
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 66
 
 
 
@@ -4218,7 +4218,7 @@ CZ12 VC Temp Heat Pump
               sfAzm = 90                        // Surface azimuth, deg
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 67
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 67
 
 
 
@@ -4281,7 +4281,7 @@ CZ12 VC Temp Heat Pump
               sfTilt = 22.619865                // Surface tilt, deg
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 68
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 68
 
 
 
@@ -4344,7 +4344,7 @@ CZ12 VC Temp Heat Pump
               sfCon = "cc-Garage Attic Roof Cons"    // Surface construction
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 69
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 69
 
 
 
@@ -4407,7 +4407,7 @@ CZ12 VC Temp Heat Pump
               sfType = "Ceiling"                // Type of opaque surface
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 70
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 70
 
 
 
@@ -4470,7 +4470,7 @@ CZ12 VC Temp Heat Pump
            rsEER = 13.5
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 71
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 71
 
 
 
@@ -4533,7 +4533,7 @@ CZ12 VC Temp Heat Pump
               dsDiameter = 0.666667
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 72
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 72
 
 
 
@@ -4596,7 +4596,7 @@ CZ12 VC Temp Heat Pump
 #           RXCOL colHead="qhZLat" colVal=F*R.qhZoneLat   colDec=dp colWid = 6 \
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 73
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 73
 
 
 
@@ -4659,7 +4659,7 @@ CZ12 VC Temp Heat Pump
 #          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 74
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 74
 
 
 
@@ -4722,7 +4722,7 @@ CZ12 VC Temp Heat Pump
 #         RXCOL colHead="TcCond"  colVal=@DUCTSEGRES[ t].X.qcCond*f colWid=6 colDec=0 \
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 75
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 75
 
 
 
@@ -4785,7 +4785,7 @@ CZ12 VC Temp Heat Pump
 #           RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 76
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 76
 
 
 
@@ -4793,7 +4793,7 @@ CZ12 VC Temp Heat Pump
 ------------------------------------------------------------------------------
 
 #           RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
-#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHdH colWid=5 colDec=2 \
+#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 0] colWid=5 colDec=2 \
 #           RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
 #           RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
 #           RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
@@ -4834,7 +4834,7 @@ CZ12 VC Temp Heat Pump
 #           RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
-#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetCdH colWid=5 colDec=2 \
+#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 1] colWid=5 colDec=2 \
 #           RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
 #           RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
 #           RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
@@ -4848,7 +4848,7 @@ CZ12 VC Temp Heat Pump
 #           RXCOL colHead="capTot" colVal=@RSYS[rs].capTotCt colWid=6 colDec=0 \
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 77
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 77
 
 
 
@@ -4911,7 +4911,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  001                             Tue 08-Feb-22  11:31:40 am  Page 78
+! ashpvc2  001                             Sun 20-Mar-22   4:51:36 pm  Page 78
 
 
 
@@ -4922,6 +4922,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 002:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.2              -0.45             -0.96               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.053549 kBtu.
@@ -4957,6 +4962,27 @@ RSYS -- Aux Alt / Def RevCycleAux
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 79
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Alt / Def RevCycleAux
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -4973,8 +4999,45 @@ RSYS -- Aux Alt / Def RevCycleAux
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 79
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 80
 
 
 
@@ -5037,7 +5100,7 @@ RSYS -- Aux Alt / Def RevCycleAux for Fri 02-Jan
   18  1.893      0  0.412  2.441  6.179  2.532  2.441  6.179  2.532          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 80
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 81
 
 
 
@@ -5100,7 +5163,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 81
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 82
 
 
 
@@ -5163,7 +5226,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 82
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 83
 
 
 
@@ -5226,7 +5289,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        515    486   1000   5501   4501      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 83
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 84
 
 
 
@@ -5289,7 +5352,7 @@ CZ12 VC Temp Heat Pump
    6  68.25          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 84
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 85
 
 
 
@@ -5352,7 +5415,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 85
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 86
 
 
 
@@ -5415,7 +5478,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        390    111    501   1437    936     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 86
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 87
 
 
 
@@ -5478,7 +5541,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        288     82    370   1076    705      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 87
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 88
 
 
 
@@ -5541,7 +5604,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 88
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 89
 
 
 
@@ -5604,7 +5667,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        446    131    577   1806   1229      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 89
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 90
 
 
 
@@ -5667,7 +5730,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        415    125    540   1798   1259      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 90
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 91
 
 
 
@@ -5730,7 +5793,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 91
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 92
 
 
 
@@ -5793,7 +5856,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.62 68.00  68.09  97.57  94.79     0 45193 11263 33006 0.730 0.791 0.730 1.000 1.000       0 922.0  28915      0  2519  1573  33006  -6002  27004  6002      0  9819  14047 2.860 2.945 1.941
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 92
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 93
 
 
 
@@ -5856,7 +5919,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.93 68.25      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 93
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 94
 
 
 
@@ -5919,7 +5982,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.96 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 94
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 95
 
 
 
@@ -5982,7 +6045,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.43 68.00  67.66  97.94  89.92     0 46432 11546  8620 0.186 0.194 0.249 0.747 0.937       0 234.4   7843      0   377   400   8620  -3005   5615  3005     -0  1809   2722 3.247 4.336 2.172
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 95
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 96
 
 
 
@@ -6045,7 +6108,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.21 68.00  67.74  98.12  90.13     0 46579 11580  6455 0.139 0.143 0.249 0.557 0.889       0 174.9   5940      0   217   298   6455  -2222   4233  2222      0  1430   2082 3.316 4.153 2.176
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 96
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 97
 
 
 
@@ -6108,7 +6171,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 64.00 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 97
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 98
 
 
 
@@ -6171,7 +6234,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 69.00 68.00  68.19  98.30  90.76     0 46161 11470 10835 0.235 0.235 0.248 0.945 0.986       0 296.3  10330      0     0   506  10835  -3463   7373  3463      0  2240   2882 3.446 4.611 2.685
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 98
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 99
 
 
 
@@ -6234,7 +6297,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.55 68.00  68.55  98.84  91.56     0 46453 11551 10791 0.232 0.243 0.249 0.934 0.984       0 293.2   9834      0   457   500  10791  -3239   7552  3239      0  2157   3250 3.257 4.559 2.425
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 99
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 100
 
 
 
@@ -6264,7 +6327,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 002:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -6297,7 +6360,7 @@ Input for Run 002:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  002                             Tue 08-Feb-22  11:31:43 am  Page 100
+! ashpvc2  002                             Sun 20-Mar-22   4:51:40 pm  Page 101
 
 
 
@@ -6308,6 +6371,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 003:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.2              -0.45             -0.96               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.0535455 kBtu.
@@ -6343,6 +6411,27 @@ RSYS -- Aux Lockout / Def RevCycleAux
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 102
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Lockout / Def RevCycleAux
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -6359,8 +6448,45 @@ RSYS -- Aux Lockout / Def RevCycleAux
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 101
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 103
 
 
 
@@ -6423,7 +6549,7 @@ RSYS -- Aux Lockout / Def RevCycleAux for Fri 02-Jan
   18  1.893      0  0.412  2.441  6.179  2.532  2.441  6.179  2.532          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 102
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 104
 
 
 
@@ -6486,7 +6612,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 103
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 105
 
 
 
@@ -6549,7 +6675,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 104
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 106
 
 
 
@@ -6612,7 +6738,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        514    486   1000   5501   4501      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 105
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 107
 
 
 
@@ -6675,7 +6801,7 @@ CZ12 VC Temp Heat Pump
    6  68.25          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 106
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 108
 
 
 
@@ -6738,7 +6864,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 107
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 109
 
 
 
@@ -6801,7 +6927,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        390    111    501   1437    936     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 108
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 110
 
 
 
@@ -6864,7 +6990,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        288     82    370   1076    705      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 109
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 111
 
 
 
@@ -6927,7 +7053,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 110
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 112
 
 
 
@@ -6990,7 +7116,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        446    131    577   1806   1229      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 111
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 113
 
 
 
@@ -7053,7 +7179,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        414    125    540   1798   1259      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 112
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 114
 
 
 
@@ -7116,7 +7242,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 113
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 115
 
 
 
@@ -7179,7 +7305,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.62 68.00  68.09  97.57  94.79     0 45193 11263 33006 0.730 0.791 0.730 1.000 1.000       0 921.9  28914      0  2519  1573  33006  -6002  27004  6002      0  9819  14047 2.860 2.945 1.941
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 114
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 116
 
 
 
@@ -7242,7 +7368,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.93 68.25      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 115
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 117
 
 
 
@@ -7305,7 +7431,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.96 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 116
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 118
 
 
 
@@ -7368,7 +7494,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.43 68.00  67.66  97.94  89.92     0 46432 11546  8621 0.186 0.194 0.249 0.747 0.937       0 234.4   7844      0   377   400   8621  -3005   5616  3005     -0  1809   2723 3.247 4.336 2.172
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 117
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 119
 
 
 
@@ -7431,7 +7557,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.21 68.00  67.74  98.12  90.13     0 46579 11580  6455 0.139 0.143 0.249 0.557 0.889       0 174.9   5940      0   217   298   6455  -2222   4233  2222      0  1430   2082 3.316 4.153 2.176
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 118
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 120
 
 
 
@@ -7494,7 +7620,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 64.00 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 119
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 121
 
 
 
@@ -7557,7 +7683,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 69.00 68.00  68.19  98.30  90.76     0 46161 11470 10835 0.235 0.235 0.248 0.945 0.986       0 296.3  10330      0     0   506  10835  -3463   7373  3463      0  2240   2882 3.446 4.611 2.685
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 120
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 122
 
 
 
@@ -7620,7 +7746,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.55 68.00  68.55  98.84  91.56     0 46453 11551 10791 0.232 0.243 0.249 0.934 0.984       0 293.2   9834      0   457   500  10791  -3239   7552  3239      0  2157   3250 3.257 4.559 2.425
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 121
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 123
 
 
 
@@ -7650,7 +7776,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 003:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -7683,7 +7809,7 @@ Input for Run 003:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  003                             Tue 08-Feb-22  11:31:45 am  Page 122
+! ashpvc2  003                             Sun 20-Mar-22   4:51:41 pm  Page 124
 
 
 
@@ -7694,6 +7820,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 004:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating         4.3              -0.11             -0.25               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 55 subhours of run.
     Total condensation heat = 0.0534953 kBtu.
@@ -7729,6 +7860,27 @@ RSYS -- Aux Cycle / Def RevCycle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 125
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Cycle / Def RevCycle
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -7745,8 +7897,45 @@ RSYS -- Aux Cycle / Def RevCycle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 123
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 126
 
 
 
@@ -7809,7 +7998,7 @@ RSYS -- Aux Cycle / Def RevCycle for Fri 02-Jan
   18  1.894      0  0.412  2.443  6.181  2.530  2.443  6.181  2.530          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 124
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 127
 
 
 
@@ -7872,7 +8061,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 125
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 128
 
 
 
@@ -7935,7 +8124,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 126
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 129
 
 
 
@@ -7998,7 +8187,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        475    464    940   5226   4287      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 127
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 130
 
 
 
@@ -8061,7 +8250,7 @@ CZ12 VC Temp Heat Pump
    6  68.26          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 128
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 131
 
 
 
@@ -8124,7 +8313,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 129
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 132
 
 
 
@@ -8187,7 +8376,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        381    109    489   1397    908      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 130
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 133
 
 
 
@@ -8250,7 +8439,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        288     82    370   1068    698      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 131
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 134
 
 
 
@@ -8313,7 +8502,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 132
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 135
 
 
 
@@ -8376,7 +8565,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        443    130    573   1779   1207      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 133
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 136
 
 
 
@@ -8439,7 +8628,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        412    125    537   1801   1263      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 134
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 137
 
 
 
@@ -8502,7 +8691,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 135
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 138
 
 
 
@@ -8565,7 +8754,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.48 68.00  68.08  95.30  92.81     0 41744 10404 31359 0.751 0.751 0.751 1.000 1.000       0 948.3  29741      0     0  1618  31359  -5639  25720  5639      0 10131  11885 2.860 2.936 2.189
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 136
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 139
 
 
 
@@ -8628,7 +8817,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.75 68.26      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 137
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 140
 
 
 
@@ -8691,7 +8880,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.85 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 138
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 141
 
 
 
@@ -8754,7 +8943,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.20 68.00  67.63  96.59  88.91     0 44403 11041  8383 0.189 0.189 0.249 0.759 0.940       0 238.3   7976      0     0   407   8383  -2936   5447  2936      0  1917   2460 3.247 4.161 2.344
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 139
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 142
 
 
 
@@ -8817,7 +9006,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.08 68.00  67.71  97.07  89.32     0 45018 11191  6409 0.142 0.142 0.249 0.573 0.893       0 179.7   6102      0     0   307   6409  -2219   4189  2219      0  1514   1957 3.316 4.031 2.301
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 140
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 143
 
 
 
@@ -8880,7 +9069,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 63.93 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 141
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 144
 
 
 
@@ -8943,7 +9132,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 68.80 68.00  68.15  98.25  90.69     0 46161 11470 10677 0.231 0.231 0.248 0.931 0.983       0 292.0  10178      0     0   498  10677  -3435   7241  3435      0  2215   2850 3.446 4.595 2.669
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 142
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 145
 
 
 
@@ -9006,7 +9195,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.50 68.00  68.55  97.57  90.62     0 44490 11063 10803 0.243 0.243 0.249 0.977 0.994       0 306.5  10280      0     0   523  10803  -3224   7579  3224      0  2329   2989 3.257 4.413 2.657
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 143
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 146
 
 
 
@@ -9036,7 +9225,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 004:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -9069,7 +9258,7 @@ Input for Run 004:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  004                             Tue 08-Feb-22  11:31:47 am  Page 144
+! ashpvc2  004                             Sun 20-Mar-22   4:51:43 pm  Page 147
 
 
 
@@ -9080,6 +9269,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 005:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.8              -0.45             -0.97               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.0535497 kBtu.
@@ -9115,6 +9309,27 @@ RSYS -- Aux Alt / Def RevCycle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 148
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Alt / Def RevCycle
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -9131,8 +9346,45 @@ RSYS -- Aux Alt / Def RevCycle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 145
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 149
 
 
 
@@ -9195,7 +9447,7 @@ RSYS -- Aux Alt / Def RevCycle for Fri 02-Jan
   18  1.894      0  0.412  2.442  6.177  2.529  2.442  6.177  2.529          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 146
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 150
 
 
 
@@ -9258,7 +9510,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 147
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 151
 
 
 
@@ -9321,7 +9573,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 148
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 152
 
 
 
@@ -9384,7 +9636,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        480    491    971   5496   4525      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 149
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 153
 
 
 
@@ -9447,7 +9699,7 @@ CZ12 VC Temp Heat Pump
    6  68.25          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 150
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 154
 
 
 
@@ -9510,7 +9762,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 151
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 155
 
 
 
@@ -9573,7 +9825,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        391    112    502   1429    927      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 152
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 156
 
 
 
@@ -9636,7 +9888,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        291     83    373   1077    704     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 153
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 157
 
 
 
@@ -9699,7 +9951,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 154
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 158
 
 
 
@@ -9762,7 +10014,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        450    132    583   1808   1226      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 155
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 159
 
 
 
@@ -9825,7 +10077,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        413    125    538   1803   1265      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 156
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 160
 
 
 
@@ -9888,7 +10140,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 157
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 161
 
 
 
@@ -9951,7 +10203,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.38 68.00  68.06  95.29  92.90     0 41744 10404 32977 0.790 0.790 0.790 1.000 1.000       0 997.2  31275      0     0  1701  32977  -5827  27150  5827      0 10709  12547 2.860 2.920 2.188
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 158
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 162
 
 
 
@@ -10014,7 +10266,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.71 68.25      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 159
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 163
 
 
 
@@ -10077,7 +10329,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.83 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 160
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 164
 
 
 
@@ -10140,7 +10392,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.23 68.00  67.61  96.57  88.86     0 44403 11041  8574 0.193 0.193 0.249 0.777 0.944       0 243.8   8158      0     0   416   8574  -3014   5560  3014      0  1952   2504 3.247 4.180 2.348
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 161
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 165
 
 
 
@@ -10203,7 +10455,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.06 68.00  67.71  97.07  89.31     0 45018 11191  6462 0.144 0.144 0.249 0.577 0.894       0 181.2   6152      0     0   309   6462  -2240   4222  2240     -0  1524   1970 3.316 4.036 2.303
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 162
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 166
 
 
 
@@ -10266,7 +10518,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 63.92 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 163
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 167
 
 
 
@@ -10329,7 +10581,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 68.68 68.00  68.14  98.25  90.67     0 46161 11470 10849 0.235 0.235 0.248 0.946 0.986       0 296.7  10343      0     0   506  10849  -3496   7353  3496      0  2242   2885 3.446 4.613 2.675
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 164
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 168
 
 
 
@@ -10392,7 +10644,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.50 68.00  68.55  97.57  90.62     0 44490 11063 10815 0.243 0.243 0.249 0.978 0.994       0 306.9  10292      0     0   524  10815  -3228   7588  3228      0  2331   2991 3.257 4.414 2.658
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 165
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 169
 
 
 
@@ -10422,7 +10674,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 005:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -10455,7 +10707,7 @@ Input for Run 005:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  005                             Tue 08-Feb-22  11:31:49 am  Page 166
+! ashpvc2  005                             Sun 20-Mar-22   4:51:45 pm  Page 170
 
 
 
@@ -10466,6 +10718,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 006:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.8              -0.45             -0.97               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.0535495 kBtu.
@@ -10501,6 +10758,27 @@ RSYS -- Aux Lockout / Def RevCycle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 171
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Lockout / Def RevCycle
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -10517,8 +10795,45 @@ RSYS -- Aux Lockout / Def RevCycle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 167
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 172
 
 
 
@@ -10581,7 +10896,7 @@ RSYS -- Aux Lockout / Def RevCycle for Fri 02-Jan
   18  1.894      0  0.412  2.442  6.177  2.529  2.442  6.177  2.529          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 168
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 173
 
 
 
@@ -10644,7 +10959,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 169
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 174
 
 
 
@@ -10707,7 +11022,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 170
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 175
 
 
 
@@ -10770,7 +11085,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        479    486    966   5453   4487      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 171
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 176
 
 
 
@@ -10833,7 +11148,7 @@ CZ12 VC Temp Heat Pump
    6  68.25          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 172
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 177
 
 
 
@@ -10896,7 +11211,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 173
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 178
 
 
 
@@ -10959,7 +11274,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        392    112    504   1433    929     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 174
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 179
 
 
 
@@ -11022,7 +11337,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        291     83    374   1078    704      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 175
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 180
 
 
 
@@ -11085,7 +11400,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 176
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 181
 
 
 
@@ -11148,7 +11463,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        450    132    582   1806   1224      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 177
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 182
 
 
 
@@ -11211,7 +11526,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        413    125    538   1803   1265     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 178
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 183
 
 
 
@@ -11274,7 +11589,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 179
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 184
 
 
 
@@ -11337,7 +11652,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.38 68.00  68.07  95.29  92.89     0 41744 10404 32716 0.784 0.784 0.784 1.000 1.000       0 989.4  31028      0     0  1688  32716  -5794  26922  5794      0 10616  12440 2.860 2.923 2.188
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 180
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 185
 
 
 
@@ -11400,7 +11715,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.73 68.25      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 181
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 186
 
 
 
@@ -11463,7 +11778,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.85 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 182
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 187
 
 
 
@@ -11526,7 +11841,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.23 68.00  67.61  96.57  88.86     0 44403 11041  8599 0.194 0.194 0.249 0.779 0.945       0 244.5   8182      0     0   417   8599  -3023   5576  3023     -0  1956   2510 3.247 4.182 2.349
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 183
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 188
 
 
 
@@ -11589,7 +11904,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.06 68.00  67.71  97.07  89.31     0 45018 11191  6468 0.144 0.144 0.249 0.578 0.894       0 181.4   6159      0     0   309   6468  -2242   4226  2242      0  1526   1972 3.316 4.037 2.303
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 184
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 189
 
 
 
@@ -11652,7 +11967,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 63.92 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 185
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 190
 
 
 
@@ -11715,7 +12030,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 68.76 68.00  68.14  98.24  90.67     0 46161 11470 10833 0.235 0.235 0.248 0.944 0.986       0 296.3  10328      0     0   505  10833  -3491   7342  3491      0  2240   2882 3.446 4.611 2.674
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 186
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 191
 
 
 
@@ -11778,7 +12093,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.50 68.00  68.55  97.57  90.63     0 44490 11063 10817 0.243 0.243 0.249 0.978 0.994       0 306.9  10293      0     0   524  10817  -3226   7591  3226     -0  2332   2992 3.257 4.415 2.659
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 187
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 192
 
 
 
@@ -11808,7 +12123,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 006:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -11841,7 +12156,7 @@ Input for Run 006:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  006                             Tue 08-Feb-22  11:31:50 am  Page 188
+! ashpvc2  006                             Sun 20-Mar-22   4:51:46 pm  Page 193
 
 
 
@@ -11852,6 +12167,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 007:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating         2.7              -0.07             -0.19               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 55 subhours of run.
     Total condensation heat = 0.053083 kBtu.
@@ -11887,6 +12207,27 @@ RSYS -- Aux Cycle / Def None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 194
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Cycle / Def None
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -11903,8 +12244,45 @@ RSYS -- Aux Cycle / Def None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 189
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 195
 
 
 
@@ -11967,7 +12345,7 @@ RSYS -- Aux Cycle / Def None for Fri 02-Jan
   18  1.895      0  0.412  2.444  6.184  2.530  2.444  6.184  2.530          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 190
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 196
 
 
 
@@ -12030,7 +12408,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 191
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 197
 
 
 
@@ -12093,7 +12471,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 192
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 198
 
 
 
@@ -12156,7 +12534,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        508    454    962   5190   4228      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 193
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 199
 
 
 
@@ -12219,7 +12597,7 @@ CZ12 VC Temp Heat Pump
    6  68.26          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 194
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 200
 
 
 
@@ -12282,7 +12660,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 195
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 201
 
 
 
@@ -12345,7 +12723,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        377    108    485   1400    915     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 196
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 202
 
 
 
@@ -12408,7 +12786,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        284     81    366   1065    700      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 197
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 203
 
 
 
@@ -12471,7 +12849,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 198
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 204
 
 
 
@@ -12534,7 +12912,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        440    129    569   1790   1221      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 199
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 205
 
 
 
@@ -12597,7 +12975,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        410    124    534   1792   1258      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 200
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 206
 
 
 
@@ -12660,7 +13038,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 201
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 207
 
 
 
@@ -12723,7 +13101,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.84 68.00  68.12  97.59  94.68     0 45193 11263 31140 0.689 0.689 0.689 1.000 1.000       0 869.8  29656      0     0  1484  31140  -5773  25368  5773      0  9317  10938 3.071 3.183 2.349
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 202
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 208
 
 
 
@@ -12786,7 +13164,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.98 68.26      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 203
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 209
 
 
 
@@ -12849,7 +13227,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.96 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 204
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 210
 
 
 
@@ -12912,7 +13290,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.54 68.00  67.70  97.99  90.00     0 46432 11547  8399 0.181 0.181 0.249 0.727 0.932       0 228.3   8010      0     0   390   8399  -2907   5492  2907     -0  1871   2397 3.377 4.280 2.429
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 205
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 211
 
 
 
@@ -12975,7 +13353,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.31 68.00  67.76  98.13  90.17     0 46579 11580  6392 0.137 0.137 0.249 0.552 0.888       0 173.2   6096      0     0   296   6392  -2193   4198  2193      0  1479   1911 3.416 4.122 2.366
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 206
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 212
 
 
 
@@ -13038,7 +13416,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 64.03 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 207
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 213
 
 
 
@@ -13101,7 +13479,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 69.16 68.00  68.23  98.79  91.16     0 46852 11643 10741 0.229 0.229 0.248 0.923 0.981       0 289.4  10248      0     0   494  10741  -3414   7327  3414      0  2208   2838 3.491 4.642 2.712
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 208
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 214
 
 
 
@@ -13164,7 +13542,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.68 68.00  68.59  98.89  91.63     0 46453 11551 10751 0.231 0.231 0.249 0.931 0.983       0 292.2  10253      0     0   498  10751  -3203   7548  3203      0  2268   2903 3.383 4.521 2.728
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 209
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 215
 
 
 
@@ -13194,7 +13572,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 007:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -13227,7 +13605,7 @@ Input for Run 007:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  007                             Tue 08-Feb-22  11:31:52 am  Page 210
+! ashpvc2  007                             Sun 20-Mar-22   4:51:48 pm  Page 216
 
 
 
@@ -13238,6 +13616,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 008:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.3              -0.45             -0.96               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.0523454 kBtu.
@@ -13273,6 +13656,27 @@ RSYS -- Aux Alt / Def None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 217
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Alt / Def None
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -13289,8 +13693,45 @@ RSYS -- Aux Alt / Def None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 211
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 218
 
 
 
@@ -13353,7 +13794,7 @@ RSYS -- Aux Alt / Def None for Fri 02-Jan
   18  1.897      0  0.413  2.446  6.187  2.530  2.446  6.187  2.530          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 212
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 219
 
 
 
@@ -13416,7 +13857,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 213
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 220
 
 
 
@@ -13479,7 +13920,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 214
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 221
 
 
 
@@ -13542,7 +13983,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        514    486   1000   5501   4500      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 215
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 222
 
 
 
@@ -13605,7 +14046,7 @@ CZ12 VC Temp Heat Pump
    6  68.25          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 216
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 223
 
 
 
@@ -13668,7 +14109,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 217
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 224
 
 
 
@@ -13731,7 +14172,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        390    111    501   1437    936      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 218
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 225
 
 
 
@@ -13794,7 +14235,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        288     82    370   1075    705      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 219
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 226
 
 
 
@@ -13857,7 +14298,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 220
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 227
 
 
 
@@ -13920,7 +14361,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        446    131    577   1806   1229      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 221
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 228
 
 
 
@@ -13983,7 +14424,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        412    125    537   1799   1262      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 222
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 229
 
 
 
@@ -14046,7 +14487,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 223
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 230
 
 
 
@@ -14109,7 +14550,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.62 68.00  68.09  97.57  94.79     0 45193 11263 33003 0.730 0.730 0.730 1.000 1.000       0 921.9  31430      0     0  1573  33003  -6001  27002  6001      0  9940  11649 3.071 3.162 2.345
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 224
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 231
 
 
 
@@ -14172,7 +14613,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.93 68.25      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 225
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 232
 
 
 
@@ -14235,7 +14676,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.96 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 226
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 233
 
 
 
@@ -14298,7 +14739,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.43 68.00  67.66  97.94  89.92     0 46432 11547  8620 0.186 0.186 0.249 0.747 0.937       0 234.4   8220      0     0   400   8620  -3005   5616  3005      0  1911   2447 3.377 4.302 2.430
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 227
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 234
 
 
 
@@ -14361,7 +14802,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.21 68.00  67.74  98.12  90.14     0 46579 11580  6451 0.138 0.138 0.249 0.557 0.889       0 174.8   6153      0     0   298   6451  -2220   4231  2220      0  1491   1925 3.416 4.128 2.365
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 228
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 235
 
 
 
@@ -14424,7 +14865,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 64.00 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 229
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 236
 
 
 
@@ -14487,7 +14928,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 69.00 68.00  68.19  98.75  91.10     0 46852 11643 10837 0.231 0.231 0.248 0.931 0.983       0 292.0  10339      0     0   498  10837  -3465   7372  3465      0  2223   2857 3.491 4.651 2.709
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 230
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 237
 
 
 
@@ -14550,7 +14991,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.55 68.00  68.58  98.88  91.61     0 46453 11551 10792 0.232 0.232 0.249 0.934 0.984       0 293.3  10291      0     0   500  10792  -3221   7571  3221      0  2275   2911 3.383 4.525 2.728
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 231
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 238
 
 
 
@@ -14580,7 +15021,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 008:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -14613,7 +15054,7 @@ Input for Run 008:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  008                             Tue 08-Feb-22  11:31:54 am  Page 232
+! ashpvc2  008                             Sun 20-Mar-22   4:51:50 pm  Page 239
 
 
 
@@ -14624,6 +15065,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 009:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.3              -0.45             -0.96               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.0526713 kBtu.
@@ -14659,6 +15105,27 @@ RSYS -- Aux Lockout / Def None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 240
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Lockout / Def None
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -14675,8 +15142,45 @@ RSYS -- Aux Lockout / Def None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 233
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 241
 
 
 
@@ -14739,7 +15243,7 @@ RSYS -- Aux Lockout / Def None for Fri 02-Jan
   18  1.897      0  0.413  2.446  6.187  2.530  2.446  6.187  2.530          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 234
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 242
 
 
 
@@ -14802,7 +15306,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 235
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 243
 
 
 
@@ -14865,7 +15369,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 236
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 244
 
 
 
@@ -14928,7 +15432,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        514    486   1000   5501   4500      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 237
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 245
 
 
 
@@ -14991,7 +15495,7 @@ CZ12 VC Temp Heat Pump
    6  68.25          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 238
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 246
 
 
 
@@ -15054,7 +15558,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.76          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 239
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 247
 
 
 
@@ -15117,7 +15621,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        390    111    501   1437    936     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 240
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 248
 
 
 
@@ -15180,7 +15684,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        288     82    370   1075    705     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 241
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 249
 
 
 
@@ -15243,7 +15747,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.84          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 242
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 250
 
 
 
@@ -15306,7 +15810,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        446    131    577   1806   1229      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 243
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 251
 
 
 
@@ -15369,7 +15873,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        412    125    537   1799   1262      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 244
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 252
 
 
 
@@ -15432,7 +15936,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 245
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 253
 
 
 
@@ -15495,7 +15999,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 68.62 68.00  68.09  97.57  94.79     0 45193 11263 33004 0.730 0.730 0.730 1.000 1.000       0 921.9  31431      0     0  1573  33004  -6001  27003  6001      0  9940  11649 3.071 3.162 2.345
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 246
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 254
 
 
 
@@ -15558,7 +16062,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.93 68.25      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 247
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 255
 
 
 
@@ -15621,7 +16125,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.96 66.76      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 248
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 256
 
 
 
@@ -15684,7 +16188,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 66.42 68.00  67.66  97.94  89.92     0 46432 11547  8623 0.186 0.186 0.249 0.747 0.937       0 234.4   8223      0     0   400   8623  -3006   5618  3006     -0  1911   2448 3.377 4.303 2.431
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 249
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 257
 
 
 
@@ -15747,7 +16251,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 67.21 68.00  67.74  98.12  90.14     0 46579 11580  6451 0.138 0.138 0.249 0.557 0.889       0 174.8   6152      0     0   298   6451  -2220   4231  2220     -0  1491   1925 3.416 4.128 2.365
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 250
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 258
 
 
 
@@ -15810,7 +16314,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 64.00 65.84      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 251
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 259
 
 
 
@@ -15873,7 +16377,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 69.00 68.00  68.19  98.75  91.10     0 46852 11643 10837 0.231 0.231 0.248 0.931 0.983       0 292.0  10339      0     0   498  10837  -3465   7372  3465      0  2223   2857 3.491 4.651 2.709
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 252
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 260
 
 
 
@@ -15936,7 +16440,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.55 68.00  68.58  98.88  91.61     0 46453 11551 10792 0.232 0.232 0.249 0.934 0.984       0 293.3  10291      0     0   500  10792  -3221   7571  3221      0  2275   2911 3.383 4.525 2.728
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 253
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 261
 
 
 
@@ -15966,7 +16470,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 009:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -15999,7 +16503,7 @@ Input for Run 009:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  009                             Tue 08-Feb-22  11:31:56 am  Page 254
+! ashpvc2  009                             Sun 20-Mar-22   4:51:51 pm  Page 262
 
 
 
@@ -16010,6 +16514,11 @@ CZ12 VC Temp Heat Pump
 
 Error Messages for Run 010:
 
+---------------
+Info: Zone 'Zone1-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.2              -0.45             -0.96               0.0
+    Cooling         0.0               0.00              0.00               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 54 subhours of run.
     Total condensation heat = 0.0535467 kBtu.
@@ -16045,6 +16554,27 @@ RSYS -- Aux Alt / Def RevCycleAux / LO 37
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 263
+
+
+
+CZ12 VC Temp Heat Pump
+------------------------------------------------------------------------------
+
+
+
 RSYS -- Aux Alt / Def RevCycleAux / LO 37
 
  Mon   eHtg  eHPBU  eFanH  eHTot qhZone   COPH eHTot2 qhZone2 COPH2       eClg qcZone   COPC  eClg2 qcZone2 COPC2 ParErr
@@ -16061,8 +16591,45 @@ RSYS -- Aux Alt / Def RevCycleAux / LO 37
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 255
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 264
 
 
 
@@ -16125,7 +16692,7 @@ RSYS -- Aux Alt / Def RevCycleAux / LO 37 for Fri 02-Jan
   18  1.893      0  0.412  2.441  6.180  2.532  2.441  6.180  2.532          0      0      0      0      0      0 -0.000
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 256
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 265
 
 
 
@@ -16188,7 +16755,7 @@ HVAC Heating Info
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 257
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 266
 
 
 
@@ -16251,7 +16818,7 @@ Duct / system / zone energy balance
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 258
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 267
 
 
 
@@ -16314,7 +16881,7 @@ Duct / system / zone energy balance for Wed 02-Dec
    6  68.00        390    501    891   5363   4472      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 259
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 268
 
 
 
@@ -16377,7 +16944,7 @@ CZ12 VC Temp Heat Pump
    6  68.24          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 260
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 269
 
 
 
@@ -16440,7 +17007,7 @@ Duct / system / zone energy balance for Thu 03-Dec
    6  66.75          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 261
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 270
 
 
 
@@ -16503,7 +17070,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        440    124    564   1564   1000      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 262
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 271
 
 
 
@@ -16566,7 +17133,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        303     86    389   1109    719     -0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 263
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 272
 
 
 
@@ -16629,7 +17196,7 @@ Duct / system / zone energy balance for Fri 04-Dec
    6  65.83          0      0      0      0      0      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 264
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 273
 
 
 
@@ -16692,7 +17259,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        476    138    614   1867   1252      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 265
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 274
 
 
 
@@ -16755,7 +17322,7 @@ CZ12 VC Temp Heat Pump
    6  68.00        420    126    546   1809   1263      0            0      0      0      0      0      0      0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 266
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 275
 
 
 
@@ -16818,7 +17385,7 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 267
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 276
 
 
 
@@ -16881,7 +17448,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  7  5 30.92 67.52 68.00  67.96 101.97  99.51     0     0     0 34303     0     0 1.000     0     0   0.617 778.8      0  30847     0  1329  32176  -5345  26831  5345      0     0  32312     0     0 0.834
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 268
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 277
 
 
 
@@ -16944,7 +17511,7 @@ CZ12 VC Temp Heat Pump
   12   2 16  5 54.86 64.34 68.24      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0      0     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 269
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 278
 
 
 
@@ -17007,7 +17574,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  0  5 38.84 62.68 66.75      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 270
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 279
 
 
 
@@ -17070,7 +17637,7 @@ CZ12 VC Temp Heat Pump
   12   3  9  5 41.54 65.43 68.00  67.43  97.71  89.51     0 46432 11546  9385 0.202 0.211 0.249 0.813 0.953       0 255.1   8539      0   411   435   9385  -3385   6000  3385      0  1935   2917 3.247 4.413 2.158
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 271
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 280
 
 
 
@@ -17133,7 +17700,7 @@ CZ12 VC Temp Heat Pump
   12   3 18  5 42.80 66.66 68.00  67.61  97.99  89.90     0 46579 11580  6652 0.143 0.148 0.249 0.574 0.894       0 180.3   6121      0   223   308   6652  -2335   4316  2335     -0  1467   2134 3.316 4.173 2.161
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 272
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 281
 
 
 
@@ -17196,7 +17763,7 @@ RSYS Heating subhour details for Fri 04-Dec
   12   4  2  5 30.92 63.72 65.83      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 273
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 282
 
 
 
@@ -17259,7 +17826,7 @@ CZ12 VC Temp Heat Pump
   12   4 11  5 45.14 68.21 68.00  68.02  98.12  90.44     0 46161 11470 11199 0.243 0.243 0.248 0.976 0.994       0 306.3  10677      0     0   523  11199  -3686   7513  3686      0  2297   2956 3.446 4.648 2.665
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 274
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 283
 
 
 
@@ -17322,7 +17889,7 @@ CZ12 VC Temp Heat Pump
   12   4 20  5 41.72 70.37 68.00  68.52  98.81  91.50     0 46453 11551 10852 0.234 0.244 0.249 0.940 0.985       0 294.9   9890      0   459   503  10852  -3277   7575  3277      0  2166   3265 3.257 4.565 2.421
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 275
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 284
 
 
 
@@ -17352,7 +17919,7 @@ CZ12 VC Temp Heat Pump
 
 ! Log for Run 010:
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -17385,7 +17952,7 @@ Input for Run 010:
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 276
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 285
 
 
 
@@ -17394,21 +17961,21 @@ CZ12 VC Temp Heat Pump
 
 
 
-! CSE 0.901.0+vsashp.a49b8691.23 for Win32 console run(s) done: Tue 08-Feb-22  11:31:59 am
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console run(s) done: Sun 20-Mar-22   4:51:55 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               08-Feb-22  10:56 am   (VS 14.29    2904064 bytes)  (HPWH 1.16.1)
+!               20-Mar-22   4:45 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 ashpvc2
 ! Input file:   D:\cse\test\ashpvc2.cse
 ! Report file:  D:\cse\test\ashpvc2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.44     Calls = 10     T/C = 0.0440   
+!                Input:  Time = 0.42     Calls = 10     T/C = 0.0416   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 18.69    Calls = 10     T/C = 1.8694   
-!              Reports:  Time = 0.14     Calls = 10     T/C = 0.0145   
-!                Total:  Time = 19.36    Calls = 1      T/C = 19.3550  
+!           Simulation:  Time = 17.82    Calls = 10     T/C = 1.7816   
+!              Reports:  Time = 0.02     Calls = 10     T/C = 0.0023   
+!                Total:  Time = 18.28    Calls = 1      T/C = 18.2830  
 
 
 
@@ -17448,5 +18015,5 @@ CZ12 VC Temp Heat Pump
 
 
 ------------------------------------------------------------------------------
-! ashpvc2  010                             Tue 08-Feb-22  11:31:58 am  Page 277
+! ashpvc2  010                             Sun 20-Mar-22   4:51:53 pm  Page 286
 

@@ -183,6 +183,25 @@ template< typename T> T VMax(		// vector max value
 	return vMax;
 }		// VMax< T>
 //--------------------------------------------------------------------------
+template< typename T1, typename T2> void VAccumMin(	// vector-vector min
+	T1* v,				// where to accum
+	int n,				// dim of v
+	const T2* vSrc)		// source
+{
+	for (int i = 0; i < n; i++)
+		v[i] = T1(min(v[i], T1(*vSrc++)));
+}		// VAccumMin< T1, T2>
+//--------------------------------------------------------------------------
+template< typename T1, typename T2> void VAccumMax(	// vector-vector max
+	T1* v,				// where to accum
+	int n,				// dim of v
+	const T2* vSrc)		// source
+{
+	for (int i = 0; i < n; i++)
+		v[i] = T1(max(v[i], T1(*vSrc++)));
+}		// VAccumMax< T1, T2>
+
+//--------------------------------------------------------------------------
 template< typename T1, typename T2> T1 VSum2(		// vector sum
 	const T2* v,  		// vector to sum
 	int n)				// dim of v

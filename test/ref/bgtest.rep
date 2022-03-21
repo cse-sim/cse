@@ -6,6 +6,11 @@ Error Messages for Run 001:
 Warning: Zone 'House': Condensation occurred in 89514 subhours of run.
     Total condensation heat = 2274.99 kBtu.
 ---------------
+Info: Zone 'House': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        47.4              -1.10             -2.78              23.8
+    Cooling         8.0               0.40              0.88               0.0
+---------------
 Warning: Zone 'Attic': Condensation occurred in 28475 subhours of run.
     Total condensation heat = 476.961 kBtu.
 ---------------
@@ -457,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -1747,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console run(s) done: Thu 27-Jan-22  11:44:58 am
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:31:43 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               27-Jan-22  11:23 am   (VS 14.29    2903040 bytes)  (HPWH 1.16.1)
+!               18-Mar-22   3:16 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 bgtest
 ! Input file:   D:\cse\test\bgtest.cse
 ! Report file:  D:\cse\test\bgtest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0440   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0430   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 7.48     Calls = 1      T/C = 7.4780   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
-!                Total:  Time = 7.54     Calls = 1      T/C = 7.5350   
+!           Simulation:  Time = 7.19     Calls = 1      T/C = 7.1860   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 7.23     Calls = 1      T/C = 7.2340   

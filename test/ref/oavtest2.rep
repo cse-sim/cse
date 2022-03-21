@@ -6,7 +6,10 @@ Error Messages for Run 001:
 Warning: Zone 'House': Condensation occurred in 95095 subhours of run.
     Total condensation heat = 2212.85 kBtu.
 ---------------
-Warning: Zone 'House': Unmet heating loads during 1 hours of run.
+Info: Zone 'House': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        49.5              -0.82             -2.78              17.1
+    Cooling         4.5               0.36              0.89               0.0
 ---------------
 Warning: Zone 'Attic': Condensation occurred in 30274 subhours of run.
     Total condensation heat = 529.307 kBtu.
@@ -207,7 +210,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -1564,6 +1567,11 @@ Error Messages for Run 002:
 Warning: Zone 'House': Condensation occurred in 101712 subhours of run.
     Total condensation heat = 2357.77 kBtu.
 ---------------
+Info: Zone 'House': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        43.1              -0.83             -2.73              15.2
+    Cooling         4.5               0.36              0.89               0.0
+---------------
 Warning: Zone 'Attic': Condensation occurred in 27375 subhours of run.
     Total condensation heat = 404.594 kBtu.
 ---------------
@@ -1763,7 +1771,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -1786,18 +1794,18 @@ Input for Run 002:
 
 
 
-! CSE 0.901.0+vsashp.2609d8ae.15 for Win32 console run(s) done: Mon 31-Jan-22   3:38:31 pm
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:30:59 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               31-Jan-22   2:54 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
+!               18-Mar-22   3:16 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 oavtest2
 ! Input file:   D:\cse\test\oavtest2.cse
 ! Report file:  D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 2      T/C = 0.0410   
+!                Input:  Time = 0.08     Calls = 2      T/C = 0.0390   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 24.57    Calls = 2      T/C = 12.2865  
-!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0020   
-!                Total:  Time = 24.68    Calls = 1      T/C = 24.6750  
+!           Simulation:  Time = 23.15    Calls = 2      T/C = 11.5730  
+!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0015   
+!                Total:  Time = 23.23    Calls = 1      T/C = 23.2320  

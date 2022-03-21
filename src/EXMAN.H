@@ -58,7 +58,7 @@ RC CDEC rer( int erOp, char *msg, ...);
 RC CDEC rWarn( char *msg, ...);
 RC CDEC rWarn( int erOp, char *msg, ...);
 RC CDEC rInfo( char *msg, ...);
-RC rerIV( int erOp,	SI isWarn, const char *fmt, va_list ap=NULL);
+RC rerIV( int erOp,	int isWarn, const char *fmt, va_list ap=NULL);
 
 
 // end of exman.h

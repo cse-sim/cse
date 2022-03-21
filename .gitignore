@@ -4,6 +4,7 @@
 /src/untab.cpp
 /src/srfd.cpp
 /src/rcdef.sum
+/src/rcdef.err
 /src/rccn.h
 /src/dttab.cpp
 /src/dtypes.h

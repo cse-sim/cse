@@ -3,9 +3,10 @@
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'Conditioned-zn': Unmet heating loads during 102 hours of run.
----------------
-Warning: Zone 'Conditioned-zn': Unmet cooling loads during 40 hours of run.
+Info: Zone 'Conditioned-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating       180.3              -1.02             -2.88              80.3
+    Cooling        65.0               0.52              1.85               5.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 4073 subhours of run.
     Total condensation heat = 37.1588 kBtu.
@@ -186,7 +187,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console   Thu 27-Jan-22  11:46:09 am
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console   Fri 18-Mar-22   3:32:26 pm
 
 
 ================
@@ -13267,7 +13268,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console
 
 
 
@@ -14823,18 +14824,18 @@ Input for Run 001:
 
 
 
-! CSE 0.901.0+condensation-heat.7a1e9e90.7 for Win32 console run(s) done: Thu 27-Jan-22  11:46:22 am
+! CSE 0.903.0+unmet-hours.817f2752.41 for Win32 console run(s) done: Fri 18-Mar-22   3:32:39 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               27-Jan-22  11:23 am   (VS 14.29    2903040 bytes)  (HPWH 1.16.1)
+!               18-Mar-22   3:16 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 ashwat1
 ! Input file:   D:\cse\test\ashwat1.cse
 ! Report file:  D:\cse\test\ashwat1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2      T/C = 0.0455   
-!           AutoSizing:  Time = 1.13     Calls = 1      T/C = 1.1330   
-!           Simulation:  Time = 12.48    Calls = 1      T/C = 12.4770  
-!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0580   
-!                Total:  Time = 13.76    Calls = 1      T/C = 13.7640  
+!                Input:  Time = 0.09     Calls = 2      T/C = 0.0440   
+!           AutoSizing:  Time = 1.10     Calls = 1      T/C = 1.1010   
+!           Simulation:  Time = 11.64    Calls = 1      T/C = 11.6420  
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0100   
+!                Total:  Time = 12.85    Calls = 1      T/C = 12.8470  

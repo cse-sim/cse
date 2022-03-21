@@ -1492,8 +1492,8 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 	// **** WRN/PWRN made effective again here 2-94, remove where effects (keystroke wait etc) not desired.
 
 	int erOp,			// error action: WRN or PWRN
-	SI isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
-	const char *fmt,		// message text
+	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
+	const char* fmt,		// message text
 	va_list ap /*=NULL*/)	// message argument list
 
 // increments error count if isWarn==0.  returns RCBAD for convenience.
