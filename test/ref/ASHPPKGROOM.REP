@@ -7,9 +7,10 @@ ASHPPKGROOM.CSE(1381): Info: report of reportFile 'Primary':
     report width 147 is greater than line width 134.
     Line width has been adjusted.
 ---------------
-Warning: Zone 'Conditioned-zn': Unmet heating loads during 3 hours of run.
----------------
-Warning: Zone 'Conditioned-zn': Unmet cooling loads during 55 hours of run.
+Info: Zone 'Conditioned-zn': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        76.2              -0.50             -1.26               7.6
+    Cooling        81.2               0.52              1.80               8.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1861 subhours of run.
     Total condensation heat = 28.6412 kBtu.
@@ -446,7 +447,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.902.0+loadmeter.bea08340.61 for Win32 console
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
 
 
 
@@ -1857,7 +1858,7 @@ Input for Run 001:
             Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
             Reportcol colVal=@Rsys[1].runf colHead="RFPrm" colDec=3 colWid=5
             Reportcol colVal=@Rsys[1].runfAux colHead="RFAux" colDec=3 colWid=5
-            Reportcol colVal=@ZnRes["Conditioned-zn"].H.unMetHDH colHead="UMDH" colDec=1 colWid=5
+            Reportcol colVal=@ZnRes["Conditioned-zn"].H.unMetHrDH[ 0] colHead="UMDH" colDec=1 colWid=5
             Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
             Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
             
@@ -2013,18 +2014,18 @@ Input for Run 001:
 
 
 
-! CSE 0.902.0+loadmeter.bea08340.61 for Win32 console run(s) done: Sat 19-Feb-22   4:35:20 pm
+! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console run(s) done: Sun 20-Mar-22   4:50:13 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               19-Feb-22   4:33 pm   (VS 14.29    2929664 bytes)  (HPWH 1.17.1)
+!               20-Mar-22   4:45 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2      T/C = 0.0470   
-!           AutoSizing:  Time = 0.18     Calls = 1      T/C = 0.1810   
-!           Simulation:  Time = 5.84     Calls = 1      T/C = 5.8440   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
-!                Total:  Time = 6.13     Calls = 1      T/C = 6.1270   
+!                Input:  Time = 0.10     Calls = 2      T/C = 0.0505   
+!           AutoSizing:  Time = 0.18     Calls = 1      T/C = 0.1840   
+!           Simulation:  Time = 6.09     Calls = 1      T/C = 6.0950   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
+!                Total:  Time = 6.39     Calls = 1      T/C = 6.3870   

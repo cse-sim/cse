@@ -60,7 +60,7 @@ jobs:
       #     mklink libglapi.dll "x64\libglapi.dll"
       #   working-directory: msvc
       - name: Test
-        run: ctest -C Release --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
+        run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: msvc/build
   build-doc:
     name: Build CSE documentation

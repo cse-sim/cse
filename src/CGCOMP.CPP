@@ -484,8 +484,8 @@ int AIRSTATE::as_HX(			// heat exchange (re e.g. HERV)
 	}
 
 	double effX = amfMin / amfSup;
-	as_tdb = af_HXEff( asSup.as_tdb, asExh.as_tdb, effX*effS);
-	as_w = af_HXEff( asSup.as_w, asExh.as_w, effX*effL);
+	as_tdb = as_HXEff( asSup.as_tdb, asExh.as_tdb, effX*effS);
+	as_w = as_HXEff( asSup.as_w, asExh.as_w, effX*effL);
 	return 1;
 }		// AIRSTATE::as_HX
 //===============================================================================
@@ -494,6 +494,16 @@ int AIRSTATE::as_HX(			// heat exchange (re e.g. HERV)
 // class AIRFLOW -- mass flow, dry-bulb temp, humidity ratio
 //                  many mbrs inline
 ///////////////////////////////////////////////////////////////////////////////
+void AIRFLOW::af_SetAirState(
+	const AIRSTATE& as, // new state
+	float& qSen, // Added (+) or removed (-) sensible heat required to get to new state
+	float& qLat) // Added (+) or removed (-) latent heat required to get to new state 
+{
+	qSen = af_AmfCp()*(as.as_tdb - as_tdb);
+	qLat = af_amf*(as.as_w - as_w)*PsyHCondWtr;
+	as_Set( as.as_tdb, as.as_w);
+}
+//-----------------------------------------------------------------------------
 void AIRFLOW::af_Mix(		// mix AIRFLOWs
 	const AIRFLOW& af)	// flow to be mixed with *this
 // returns *this with total flow and state
@@ -746,9 +756,15 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 		ad_tdFan = ad_pIZXRAT->iz_fan.fn_pute( c, ad_pIZXRAT->iz_T( in));
 		ad_pFan  = ad_pIZXRAT->iz_fan.p;		// fan power (for meter)
 	}
+	if (ad_pIZXRAT->iz_IsDOAS())
+	{
+		DOAS* pDOAS = doasR.GetAt(ad_pIZXRAT->iz_doas);
+		FAN* fan = ad_pIZXRAT->iz_vfMin > 0 ? &pDOAS->oa_supFan : &pDOAS->oa_exhFan;
+		ad_tdFan = fan->dT;
+	}
 }	// ANDAT::ad_SetFromFixedAVF
 //-------------------------------------------------------------------------------
-RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
+RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 // call subhourly
 // sets iz_ad[ 0] and iz_ad[ 1] + fan members
 {
@@ -817,7 +833,7 @@ RC IZXRAT::iz_SetupHERV()			// set mbrs re HERV model
 	iz_ad[ 1].ad_DupHERV( ad);
 
 	return rc;
-}	// IZXRAT::iz_SetupHERV
+}	// IZXRAT::iz_CalcHERV
 //-------------------------------------------------------------------------------
 void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 // WHY: HERV does not have non-vent / vent modes
@@ -827,6 +843,397 @@ void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 	ad_tdFan = ad.ad_tdFan;
 	ad_pFan = ad.ad_pFan;
 }	// ANDAT::ad_DupHERV
+//===============================================================================
+RC DOAS::oa_CkfDOAS()	// input checks
+{
+	RC rc = RCOK;
+
+	// heat recovery
+	if (IsSet(DOAS_HXSENEFFH))
+	{
+		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_HXSENEFFH));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_HXSENEFFH));
+		rc |= ignoreN(when, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
+			DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
+			DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, 0);
+	}
+
+	// heating coil
+	if (IsSet(DOAS_SUPTH)) {
+		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_SUPTH));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_SUPTH));
+		rc |= ignoreN(when, DOAS_EIRH, 0);
+	}
+
+	// cooling coil
+	if (IsSet(DOAS_SUPTC)) {
+		// const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_SUPTC));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_SUPTC));
+		rc |= ignoreN(when, DOAS_EIRC, DOAS_SHRTARGET, 0);
+	}
+
+
+	return rc;
+}
+//-----------------------------------------------------------------------------
+RC DOAS::oa_Setup(DOAS* iRat)
+{
+	RC rc = RCOK;
+	*this = *iRat;		// copy record, incl name, excl internal front overhead.
+
+	rc |= oa_CkfDOAS();		// check run record
+
+	// Setup meter pointers
+	oa_pCoilCMtr = MtrB.GetAtSafe( oa_coilCMtri);
+	oa_pCoilHMtr = MtrB.GetAtSafe( oa_coilHMtri);
+	oa_pHXAuxMtr = MtrB.GetAtSafe( oa_hxAuxMtri);
+	oa_pLoadMtr = LdMtrR.GetAtSafe( oa_loadMtri);
+
+	// Calculate total design flow rates from child IXFERS
+	float supFanVfDemand = 0.f;
+	float exhFanVfDemand = 0.f;
+
+	IZXRAT* izx;
+	RLUP( IzxR, izx)
+	{	
+		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+		{
+			if (izx->iz_vfMin > 0.f)
+			{
+				supFanVfDemand += izx->iz_vfMin;
+			}
+			else
+			{
+				exhFanVfDemand -= izx->iz_vfMin;
+			}
+		}	
+	}
+
+	// If fan design flows are not set, set them from IZXFER flows
+	//   Note: This may not be reliable if iz_vfMin is an expression
+	// Warn if vfDs is not large enough to meet IZXFER demand
+	bool supFanVfDsIsSet = IsSet(DOAS_SUPFAN + FAN_VFDS);
+	bool exhFanVfDsIsSet = IsSet(DOAS_EXHFAN + FAN_VFDS);
+
+	if (!supFanVfDsIsSet)
+	{
+		oa_supFan.vfDs = supFanVfDemand;
+	}
+	else
+	{
+		float supFlowRatio = oa_supFan.vfDs / supFanVfDemand;
+		if(supFlowRatio < 0.99f)
+		{
+			oWarn( "Sum of IZXFER supply flows referencing DOAS is larger than vfDs.\n"
+				"    IZXFER supply flows will be reduced proportionately"
+			);
+
+			// Adjust IZXFER flows
+			IZXRAT* izx;
+			RLUP( IzxR, izx)
+			{	
+				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+				{
+					if (izx->iz_vfMin > 0.f)
+					{
+						izx->iz_vfMin *= supFlowRatio;
+					}
+				}	
+			}
+		}
+	}
+
+	if (!exhFanVfDsIsSet)
+	{
+		oa_exhFan.vfDs = exhFanVfDemand;
+	}
+	else
+	{
+		float exhFlowRatio = oa_exhFan.vfDs / exhFanVfDemand;
+		if(exhFlowRatio < 0.99f)
+		{
+			oWarn( "Sum of IZXFER exhaust flows referencing DOAS is larger than vfDs\n"
+				"    IZXFER exhaust flows will be reduced proportionately"
+			);
+
+			// Adjust IZXFER flows
+			IZXRAT* izx;
+			RLUP( IzxR, izx)
+			{	
+				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+				{
+					if (izx->iz_vfMin < 0.f)
+					{
+						izx->iz_vfMin *= exhFlowRatio;
+					}
+				}	
+			}
+		}
+	}
+
+	// Setup fan records
+	rc |= oa_supFan.fn_setup( C_FANAPPCH_DSFAN, this, DOAS_SUPFAN, oa_supFan.vfDs, NULL);	// checks fan input, does defaults
+	rc |= oa_exhFan.fn_setup( C_FANAPPCH_DEFAN, this, DOAS_EXHFAN, oa_exhFan.vfDs, NULL);	// checks fan input, does defaults
+
+	// Check inputs in absence of fan(s)
+	if (oa_supFan.fanTy == C_FANTYCH_NONE)
+	{
+#define ZFAN(m) (DOAS_SUPFAN + FAN_##m)
+		const char* when = "when there is no supply fan";
+		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
+				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
+				 DOAS_HXSENEFFH, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
+				 DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
+				 DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, DOAS_SUPTH, DOAS_SUPTC, 
+				 DOAS_EIRH, DOAS_EIRC, DOAS_SHRTARGET, 0);
+#undef ZFAN
+	}
+	if (oa_exhFan.fanTy == C_FANTYCH_NONE)
+	{
+#define ZFAN(m) (DOAS_EXHFAN + FAN_##m)
+		const char* when = "when there is no exhaust fan";
+		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
+				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
+				 DOAS_HXSENEFFH, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
+				 DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
+				 DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, 0);
+#undef ZFAN
+	}
+
+	// Setup HX
+	if (IsSet(DOAS_HXSENEFFH))
+	{
+		if (!IsSet(DOAS_HXVFDS))
+		{
+			oa_hxVfDs = (oa_supFan.vfDs + oa_exhFan.vfDs)*0.5f;
+		}
+	}
+
+	return rc;
+}
+//-----------------------------------------------------------------------------
+RC DOAS::oa_BegSubhr()
+{
+	RC rc = RCOK;
+	// Get total air flow rates and calculate mixed exhaust air state
+	oa_supAF.af_amf = 0.;
+	oa_exhAF.af_amf = 0.;
+	float supVf = 0.f;
+	float exhVf = 0.f;
+	IZXRAT* izx;
+	RLUP( IzxR, izx)
+	{	
+		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+		{
+			if (izx->iz_vfMin > 0.f)
+			{
+				supVf += izx->iz_vfMin;
+			}
+			else
+			{
+				ZNR* zpx = ZrB.GetAt( izx->iz_zi1);
+				AIRSTATE zoneAir;
+				zpx->zn_GetAirStateLs( zoneAir);
+				float rhoX = zpx->zn_rho0ls;
+				exhVf -= izx->iz_vfMin;
+				AIRFLOW zoneExhAF(-izx->iz_vfMin * rhoX * 60.f, zoneAir);
+				oa_exhAF.af_Mix(zoneExhAF);
+			}
+		}	
+	}
+	oa_supAF.af_amf = supVf * Top.tp_rhoMoistOSh * 60.f;
+
+	// Calculate supply air conditions
+
+	// Inlet (OA) conditions
+	AIRFLOW inletAF(oa_supAF.af_amf, Top.tDbOSh, Top.wOSh);
+
+	// Exhuast air conditions
+	double exhC = oa_exhAF.af_AmfCp();		// fan flow in heat cap units (Btuh/F)
+	oa_exhFan.fn_pute(exhC, oa_exhAF.as_tdb);
+
+	// Fan outlet conditions
+	AIRFLOW exhFanOutAF(oa_exhAF);
+	exhFanOutAF.as_AddDeltaT(oa_exhFan.dT);
+
+	// Supply air conditions
+	double supC = inletAF.af_AmfCp();		// fan flow in heat cap units (Btuh/F)
+	float tdFan = oa_supFan.fn_pute(supC, inletAF.as_tdb);
+
+	// Calculate target setpoint and determine if HX should be bypassed
+	if (IsSet(DOAS_SUPTH) && IsSet(DOAS_SUPTC))
+	{
+		if (oa_supTH > oa_supTC)
+		{
+			rWarn("%s is greater than %s; %s will be set equal to %s",
+			mbrIdTx(DOAS_SUPTH), mbrIdTx(DOAS_SUPTC), mbrIdTx(DOAS_SUPTC), mbrIdTx(DOAS_SUPTH));
+			oa_supTC = oa_supTH;
+		}
+	}
+	float heatSP{-100.f};
+	float coolSP{200.f};
+	bool doBypass{true};
+	if (IsSet(DOAS_SUPTH))  // Heating setpoint
+	{
+		heatSP = oa_supTH - tdFan;
+		if (inletAF.as_tdb < heatSP)
+		{
+			doBypass = inletAF.as_tdb > exhFanOutAF.as_tdb;
+		}
+	}
+	if (IsSet(DOAS_SUPTC))  // Cooling setpoint
+	{
+		coolSP = oa_supTC - tdFan;
+		if (inletAF.as_tdb > coolSP)
+		{
+			doBypass = inletAF.as_tdb < exhFanOutAF.as_tdb;
+		}
+	}
+
+	AIRFLOW hxOutAF(inletAF);
+
+	// Calculate HX (if it exists and bypass is not triggered)
+	if (IsSet(DOAS_HXSENEFFH) && (oa_hxBypass==C_NOYESCH_NO || (oa_hxBypass==C_NOYESCH_YES && !doBypass)))
+	{
+
+		// Calculate effectivenesses
+		float ff = (supVf + exhVf)*0.5 / oa_hxVfDs;
+
+		float weight = (ff - oa_hxf2)/(1.0 - oa_hxf2);
+
+		float effS;
+		float effL;
+		if (inletAF.as_tdb < exhFanOutAF.as_tdb) {
+			// HX is heating
+			effS =  oa_hxSenEffH[1] + (oa_hxSenEffH[0] - oa_hxSenEffH[1])*weight;
+			effL =  oa_hxLatEffH[1] + (oa_hxLatEffH[0] - oa_hxLatEffH[1])*weight;
+		}
+		else
+		{
+			// HX is cooling
+			effS =  oa_hxSenEffC[1] + (oa_hxSenEffC[0] - oa_hxSenEffC[1])*weight;
+			effL =  oa_hxLatEffC[1] + (oa_hxLatEffC[0] - oa_hxLatEffC[1])*weight;
+		}
+
+		hxOutAF.af_HX(inletAF, exhFanOutAF, effS, effL);
+
+	}
+
+	AIRFLOW tempOutAF(hxOutAF);
+
+	oa_supQSen = 0.f;
+	oa_supQLat = 0.f;
+
+	// Heating Coil (if setpoint is set)
+	if (IsSet(DOAS_SUPTH))
+	{
+		if (hxOutAF.as_tdb < heatSP)  // Entering air below heating setpoint
+		{
+			// Set air state to meet setpoint
+			tempOutAF.af_SetAirState(AIRSTATE(heatSP, hxOutAF.as_w), oa_supQSen, oa_supQLat);
+		}
+	}
+
+	// Cooling Coil (if setpoint is set)
+	if (IsSet(DOAS_SUPTC))
+	{
+		if (hxOutAF.as_tdb > coolSP)  // Entering air above cooling setpoint
+		{
+			oa_supQSen = hxOutAF.af_AmfCp()*(coolSP - hxOutAF.as_tdb);
+			oa_supQLat = oa_supQSen/oa_SHRtarget - oa_supQSen;
+			tempOutAF.af_AddQSenLat(oa_supQSen, oa_supQLat);  // TODO: Preserve Qsen
+			oa_SHR = oa_supQSen/(oa_supQSen + oa_supQLat);
+		}
+	}
+
+	oa_supAF = tempOutAF; 	// This is the flow before the fan because the temperature rise due
+	                        // to the fan is applied at the IZXFER level
+	return rc;
+
+}
+//-----------------------------------------------------------------------------
+RC DOAS::oa_EndSubhr()
+{
+	RC rc = RCOK;
+	// Accummulate meters
+
+	// Fan meters
+	if (oa_supFan.fn_mtri)
+	{
+		MtrB.p[ oa_supFan.fn_mtri].H.mtr_Accum(
+			oa_supFan.fn_endUse,			// user-specified end use (default = "fan")
+			oa_supFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+	}
+	if (oa_exhFan.fn_mtri)
+	{
+		MtrB.p[ oa_exhFan.fn_mtri].H.mtr_Accum(
+			oa_exhFan.fn_endUse,			// user-specified end use (default = "fan")
+			oa_exhFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
+	}
+
+	// Coil energy meters
+	if (oa_pCoilCMtr && oa_EIRC > 0.f)  // Cooling Coil
+	{
+		if (oa_supQSen < 0.f)
+		{
+			oa_pCoilCMtr->H.clg -= (oa_supQSen*oa_EIRC*Top.tp_subhrDur);
+		}
+		if (oa_supQLat < 0.f)
+		{
+			oa_pCoilCMtr->H.clg -= (oa_supQLat*oa_EIRC*Top.tp_subhrDur);
+		}
+	}
+	if (oa_pCoilHMtr && oa_EIRH > 0.f)  // Heating Coil
+	{
+		if (oa_supQSen > 0.f)
+		{
+			oa_pCoilHMtr->H.htg += (oa_supQSen*oa_EIRH*Top.tp_subhrDur);
+		}
+		if (oa_supQLat > 0.f)
+		{
+			oa_pCoilHMtr->H.htg += (oa_supQLat*oa_EIRH*Top.tp_subhrDur);
+		}
+	}
+
+	// HX meter
+	if (oa_pHXAuxMtr)
+	{
+		oa_pHXAuxMtr->H.aux += oa_hxAuxPwr * Top.tp_subhrDur * BtuperWh;
+	}
+
+	// Load meter
+	if (oa_pLoadMtr)
+	{
+		if (oa_supQSen > 0.f)
+		{
+			oa_pLoadMtr->S.qHtg += oa_supQSen*Top.tp_subhrDur;
+		}
+		else
+		{
+			oa_pLoadMtr->S.qClg += oa_supQSen*Top.tp_subhrDur;
+		}
+		if (oa_supQLat > 0.f)
+		{
+			oa_pLoadMtr->S.qHtg += oa_supQLat*Top.tp_subhrDur;
+		}
+		else
+		{
+			oa_pLoadMtr->S.qClg += oa_supQLat*Top.tp_subhrDur;
+		}
+
+	}
+
+	return rc;
+}
 //===============================================================================
 /*static*/ const double IZXRAT::delPLinear = .000001;	// pres dif below which eqns made linear, lbf/sf
 //-----------------------------------------------------------------------------
@@ -965,7 +1372,7 @@ RC IZXRAT::iz_Setup(			// set up run record
 							 IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
 							 IZXRAT_HZ, 0 );		// ... these fields. cncult2.cpp.
 		rc |= disallowN( (char *)MH_S0476, 			// "when izNVType is TWOWAY"
-					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), 0); 				// error if user gave any of
+					  IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN( VFDS), 0); 				// error if user gave any of
 		break;
 
 	case C_IZNVTYCH_ANHORIZ:
@@ -985,12 +1392,12 @@ x		}
 
 	case C_IZNVTYCH_ANIZ:
 		rc |= disallowN( "when izNVType is not exterior AIRNET",
-				IZXRAT_CPR, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), 0);
+				IZXRAT_CPR, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), IZXRAT_DOAS, 0);
 		// fall thru
 
 	case C_IZNVTYCH_ANEXT:
 		rc |= disallowN( "when izNVType is not flow or fan AIRNET",
-					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), 0);
+					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), IZXRAT_DOAS, 0);
 		break;
 
 	case C_IZNVTYCH_ANIZFAN:
@@ -998,7 +1405,7 @@ x		}
 	case C_IZNVTYCH_ANHERV:
 		{	rc |= disallowN( "when izNVType is fan AIRNET",
 						  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-						  IZXRAT_CPR, IZXRAT_EXP, 0 );
+						  IZXRAT_CPR, IZXRAT_EXP, IZXRAT_DOAS, 0 );
 
 			float vfDsInp = iz_fan.vfDs;		// save input vfDs before possible alteration
 			if (iz_IsHERV())
@@ -1026,11 +1433,20 @@ x		}
 		}
 		break;
 
+	case C_IZNVTYCH_ANDOAS:
+		{
+			const char* when = "when izNVType is AirNetDOAS";
+			rc |= disallowN( when,
+						IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
+						ZFAN( VFDS), IZXRAT_VFMAX, 0);
+			rc |= require( when, IZXRAT_DOAS);
+		}
+		break;
 	case C_IZNVTYCH_ANIZFLOW:
 	case C_IZNVTYCH_ANEXTFLOW:
 		rc |= disallowN( "when izNVType is flow AIRNET",
 					  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-					  ZFAN( VFDS), 0);
+					  ZFAN( VFDS), IZXRAT_DOAS, 0);
 		break;
 
 	default:
@@ -1114,13 +1530,21 @@ void IZXRAT::iz_AfMtrCats()		// finalize runtime air flow categories
 		int izMode = iz_IsFixedFlow() ? 0 : iz_MightBeNatVent() ? 1 : 2;
 		if (iz_IsExterior())
 			iz_afMtrCat1 = afCats[0][izMode];
-		else
+		else if (iz_IsAirNetIZ())
 		{	// interzone: set category per *other* side
 			//   iz_IsCZ() returns -1 (no zone, not expected), 0 (uncond), 1 (cond)
 			int iCZ1 = iz_IsCZ(1);	// inside
 			int iCZ2 = iz_IsCZ(2);	// outside
 			iz_afMtrCat1 = afCats[iCZ2 + 1][izMode];
 			iz_afMtrCat2 = afCats[iCZ1 + 1][izMode];
+		}
+		else if (iz_IsDOAS())
+		{
+			iz_afMtrCat1 = C_AFCAT_FANEX; // TODO: Make new DOAS Category?
+		}
+		else
+		{
+			iz_afMtrCat1 = 0;  // UKNOWN
 		}
 	}
 
@@ -1371,7 +1795,7 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 	if (iz_pAF)
 		iz_SetFromAF( iz_pAF);
 	else if (iz_IsHERV())
-		rc |= iz_SetupHERV();
+		rc |= iz_CalcHERV();
 	else
 	{	if (iz_IsExterior())
 			// zone 2 is exterior
@@ -1379,12 +1803,15 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 		else if (iz_IsAirNetIZ())
 			// zone 2 is zone
 			iz_GetZn2Conditions();
+		else if (iz_IsDOAS())
+		    // zone 2 is DOAS
+			iz_GetDOASConditions();
 	#if defined( _DEBUG)
 		else
 			errCrit( ABT, "Missing IZXRAT::iz_BegSubhr() code");
 	#endif
 
-		if (iz_IsFan() || iz_IsFlow())
+		if (iz_IsFan() || iz_IsFlow() || iz_IsDOAS())
 		{	// fixed air flow
 			//   massflows depend on iz_rho1/2, must be derived subhourly
 			if (!IsSet( IZXRAT_VFMAX))
@@ -1435,6 +1862,15 @@ void IZXRAT::iz_GetExteriorConditions(
 		iz_cpr * windPresV	// pressure coeff * velocity pressure
 		- iz_hz * iz_rho2;	// plus stack
 }	// IZXRAT::iz_GetExteriorConditions
+//-----------------------------------------------------------------------------
+void IZXRAT::iz_GetDOASConditions()
+// set source conditions to DOAS supply
+{
+	DOAS* pDOAS = doasR.GetAt(iz_doas);
+	iz_air2 = static_cast<AIRSTATE>(pDOAS->oa_supAF);
+	iz_rho2 = iz_air2.as_RhoMoist();
+	iz_pres2 = 0.f;  // Not used for fixed flows
+}	// IZXRAT::iz_GetDOASConditions
 //------------------------------------------------------------------------------
 RC IZXRAT::iz_Calc()
 // pre-2010 hi-low vent

@@ -12,8 +12,23 @@ ACTEST1BL.CSE(576): Warning:
 Warning: Zone 'SDuctZone': Condensation occurred in 22315 subhours of run.
     Total condensation heat = 162.266 kBtu.
 ---------------
+Info: Zone 'SDuctZone': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating         0.5             -59.43           -119.67               0.5
+    Cooling         0.5              57.62            119.60               0.5
+---------------
 Warning: Zone 'RDuctZone': Condensation occurred in 22310 subhours of run.
     Total condensation heat = 1126.71 kBtu.
+---------------
+Info: Zone 'RDuctZone': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating         0.5             -59.38           -119.65               0.5
+    Cooling         0.5              58.87            119.41               0.5
+---------------
+Info: Zone 'Single': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating         0.0               0.00              0.00               0.0
+    Cooling         0.8              14.13             27.88               0.7
 ---------------
 
 
@@ -4439,7 +4454,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.901.0+vsashp.908f6256.17 for Win32 console   Wed 02-Feb-22   2:45:48 pm
+! CSE 0.903.0+unmet-hours.c832c0b1.42 for Win32 console   Fri 18-Mar-22   3:47:14 pm
 
 
 ================
@@ -53400,7 +53415,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.901.0+vsashp.908f6256.17 for Win32 console
+! CSE 0.903.0+unmet-hours.c832c0b1.42 for Win32 console
 
 
 
@@ -54103,18 +54118,18 @@ Input for Run 001:
 
 
 
-! CSE 0.901.0+vsashp.908f6256.17 for Win32 console run(s) done: Wed 02-Feb-22   2:45:51 pm
+! CSE 0.903.0+unmet-hours.c832c0b1.42 for Win32 console run(s) done: Fri 18-Mar-22   3:47:16 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               02-Feb-22   2:33 pm   (VS 14.29    2904576 bytes)  (HPWH 1.16.1)
-! Command line: -x!  -t1 actest1BL
-! Input file:   D:\cse\test\actest1BL.cse
-! Report file:  D:\cse\test\actest1BL.rep
+!               18-Mar-22   3:44 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
+! Command line: -x!  -t1 actest1bl
+! Input file:   D:\cse\test\actest1bl.cse
+! Report file:  D:\cse\test\actest1bl.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0630   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0620   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.64     Calls = 1      T/C = 2.6380   
-!              Reports:  Time = 0.12     Calls = 1      T/C = 0.1230   
-!                Total:  Time = 2.83     Calls = 1      T/C = 2.8280   
+!           Simulation:  Time = 2.58     Calls = 1      T/C = 2.5750   
+!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0590   
+!                Total:  Time = 2.70     Calls = 1      T/C = 2.6990   

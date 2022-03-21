@@ -116,6 +116,28 @@ Sub-hourly energy balance error tolerance.
   ----------- ----------------- ------------- -------------- -----------------
               *x* $>$ 0         0.0001        No             constant
 
+**unMetTzTol=*float***
+
+Zone temperature unmet load tolerance.  At the end of each subhour, if a conditioned zone temperature is more than unMetTzTol below the current heating setpoint or more than unMetTzTol above the current cooling setpoint, "unmet load" time is accumulated.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $\\geq$ 0",
+  default: "1 ^o^F",
+  required: "No",
+  variability: "constant") %>
+
+**unMetTzTolWarnHrs=*float***
+
+Unmet load warning threshold.  A warning message is issued for each zone having more than unMetTzTolWarnHrs unmet heating or cooling loads.
+
+<%= member_table(
+  units: "hr",
+  legal_range: "x $\\geq$ 0",
+  default: "150",
+  required: "No",
+  variability: "constant") %>
+
 **grndMinDim=*float***
 
 The minimum cell dimension used in the two-dimensional finite difference calculations for FOUNDATIONs.

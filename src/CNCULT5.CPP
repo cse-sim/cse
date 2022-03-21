@@ -1944,7 +1944,17 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 		else
 			fanTy = C_FANTYCH_NONE;			// fan not active
 		break;
-
+	case C_FANAPPCH_DSFAN:		// DOAS supply fan
+	case C_FANAPPCH_DEFAN:		// DOAS exhaust fan
+		if (defVfDs > 0.f)
+		{
+			fanTy = C_FANTYCH_EXHAUST;		// type not inputtable; set per presence
+		}
+		else
+		{
+			fanTy = C_FANTYCH_NONE;
+		}
+		break;
 	case C_FANAPPCH_SFAN:   		// air handler supply fan.
 		if (ausz)					// if autoSizing specified,
 		{	((AH *)r)->fanAs.az_active = TRUE;		// set flag in ah's fan AUSZ substruct
@@ -2013,6 +2023,9 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 				case C_FANAPPCH_ZFAN:
 					when = "when izFanVfDs is 0";
 					break;
+				case C_FANAPPCH_DSFAN:
+				case C_FANAPPCH_DEFAN:
+					continue;  // Inputs are ignored instead of issuing an error
 				case C_FANAPPCH_XFAN:
 					when = (char *)MH_S0679;
 					break;	// "when no exhaust fan (xfanVfDs 0 or omitted)"

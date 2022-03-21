@@ -210,6 +210,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GZ ebTolSubhr	// subhourly ..
     *r *hide INT tp_ebErrCount	// count of short-interval (day/hour/subhour) overall energy balance errors;
 								// s/b 0; re suppression of excessive warnings
+    *i FLOAT_GEZ tp_unMetTzTol  // unmet zone air temp tolerance, F (default = 1 F)
+    *i FLOAT_GEZ tp_unMetTzTolWarnHrs
+                                // unmet warning threshold, hr (default 150)
+                                //   Warning(s) issued when zone heating or cooling unmet tzTol hrs exceed threshold
 
 //TOP: inputs: Kiva calculation settings
     *i FLOAT_GZ tp_grndMinDim		// minimum cell dimension in Kiva, ft, default .066f
@@ -1941,7 +1945,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "int as_IsEqual( const AIRSTATE& as, double tol=.001) const;"
 *declare "int operator==( const AIRSTATE& as) const { return as_IsEqual( as); }"
 *declare "int operator!=( const AIRSTATE& as) const { return !as_IsEqual( as); }"
-*declare "static double af_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
+*declare "static double as_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
 *declare "int as_HX( const AIRSTATE& asSup, float amfSup, const AIRSTATE& asExh, float amfExh, float effS, float effL);"
 
 *s *e DBL as_tdb			// air dry-bulb temp, F
@@ -1952,11 +1956,13 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *prefix af_
 *declare "AIRFLOW() : AIRSTATE(), af_amf( 0.) { }"
 *declare "AIRFLOW( double amf, double tdb, double w) { af_Init( amf, tdb, w); }"
+*declare "AIRFLOW( double amf, const AIRSTATE& as) { af_Init( amf, as.as_tdb, as.as_w); }"
 *declare "double af_Tdb() const { return as_tdb; }"
 *declare "double af_W() const { return as_w; }"
 *declare "double af_Wmf() const { return af_amf*as_w; }"
 *declare "void af_GetAirState( AIRSTATE& as) const { as.as_Set( as_tdb, as_w); }"
 *declare "void af_SetAirState( const AIRSTATE& as) { as_Set( as.as_tdb, as.as_w); }"
+*declare "void af_SetAirState( const AIRSTATE& as, float& qLat, float& qSen);"
 *declare "void af_Init() { af_amf=0.; as_tdb=0.; as_w=0.; }"
 *declare "void af_Init( double amf, double tdb, double w) { af_amf=amf;	as_tdb=tdb; as_w=w; }"
 *declare "void af_Copy( const AIRFLOW& af){ af_amf=af.af_amf; as_tdb=af.as_tdb; as_w=af.as_w; }"
@@ -1968,6 +1974,12 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_AmfCp()  const { return af_amf*Top.tp_airSH; }"
 *declare "double af_AmfCpT() const { return af_amf*as_tdb*Top.tp_airSH; }"
 *declare "double af_QLat( double wx) const { return af_amf*(as_w - wx)*PsyHCondWtr; }"
+*declare "double af_AddQSen( double q) { return as_AddQSen(q, af_amf); }"
+*declare "double af_AddQSen2( double q) { return as_AddQSen2(q, af_amf); }"
+*declare "double af_QSenDiff2( const AIRSTATE& as) const { return as_QSenDiff2(as, af_amf); };"
+*declare "double af_AddQLat( double q) { return as_AddQLat(q, af_amf); }"
+*declare "int af_AddQSenLat( float& qSen, float& qLat, float rhMax=1.f) { return as_AddQSenLat(qSen, qLat, af_amf, rhMax); }"
+*declare "int af_HX( const AIRFLOW& afSup, const AIRFLOW& afExh, float effS, float effL) {return as_HX(afSup, afSup.af_amf, afExh, afExh.af_amf, effS, effL); }"
 
 *s *e DBL af_amf		// mass flow rate, lb/hr dry air
 // *s *e DBL as_tdb		// from AIRSTATE
@@ -2520,16 +2532,13 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s *e TEMP_GZ zn_tzspD		// current step desired temp set point, F
     *s *e TEMP_GZ zn_tzspC		// current step cooling set point, F
 
-    *h TEMP_GZ zn_tzspHlh		// end-of-last-hour heating set point, F
-    *h TEMP_GZ zn_tzspDlh		// end-of-last-hour desired temp set point, F
-    *h TEMP_GZ zn_tzspClh		// end-of-last-hour cooling set point, F
+    *h TEMP_GZ zn_tzspHlh		// end-of-last-hour heating set point (re autosize setpoint ramping), F
+    *h TEMP_GZ zn_tzspDlh		// end-of-last-hour desired temp set point (re autosize setpoint ramping), F
+    *h TEMP_GZ zn_tzspClh		// end-of-last-hour cooling set point (re autosize setpoint ramping), F
 
 	*s *e SI zn_hcMode			// heating / cooling mode required per set point (rsmHEAT, rsmCOOL, )
 								//   (may not match RSYS.rs_mode due to e.g. RSYS availability or
 								//    conflicting zone requests)
-								// flag unmet heating/cooling requirements (zn_tzsp not held)
-	*h *e FLOAT zn_unMetHDH		//   tz - zn_tzspH at end of hour, deg-hr
-	*h *e FLOAT zn_unMetCDH		//   tz - zn_tzspC at end of hour, deg-hr
 
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating
@@ -2683,8 +2692,6 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     SI nHrCeilFan	//    ditto ceiling fan operation; last "# of hours"
 //LIs. code in cnguts.h and .cpp assumes LI members together, first is nIter, last is nSubhrLX.
     LI nIter		// # of iterations
-    LI nHrUnMetH	// # of hours in this intervals having *any* unmet heating subhours
-    LI nHrUnMetC	//   ditto heating
     LI nShVentH		// # of substeps int this interval when ventilation caused heating
 					//   (initial implementation for OAV only, 10-13)
     LI nSubhr		// subhour counter (convenience)
@@ -2722,8 +2729,16 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qlBal  	// latent balance similarly.  Consider removing Bals after development.
     float qlX		// latent gain rejected to prevent zone supersaturation === heat of condensation.
 					//   - added to next subr sens gain. Btu.
-    float unMetHDH	// zone end-of-hour air temp excursion below heating set point, deg-hr (<=0)
-	float unMetCDH	// zone end-of-hour air temp excursion above cooling set point, deg-hr (>=0)
+
+    *array 2 float unMetHrDH	// end-of-hour tz excursion below/above setpoint, deg-hr
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)
+    *array 2 float unMetShDH	// subhour tz excursion below/above setpoint, deg-hr
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)
+    *array 2 float unMetHrs	    // unmet hours (accumulated subhourly, tz excursion > 0)
+                                //  [ 0]=heating  [ 1]=cooling
+    *array 2 float unMetHrsTol 	// unmet hours (accumulated subhourly, tz excursion > tp_unMetTzTol)
+                                //  [ 0]=heating  [ 1]=cooling
+
     float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (OAV not included)
     float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
     float qcMech	// zone accumulated total mechanical (sensible + latent) cooling (including HPWH heat extraction), Btu (< 0)
@@ -2731,6 +2746,9 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qvMech	// zone accumulated mechanical (OAV) total (sensible + latent) heat gains, Btu (< 0)
     float litDmd	// zone lighting demand and Energy Use, ...
     float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
+// floats that track min/max value
+    *array 2 float unMetMaxTD   // maximum tz excursion below/above setpoint, F
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)    
 *END		// ZNRES_IVL_SUB
 //=============================================================================
 RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
@@ -2783,6 +2801,65 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *s *e DBL ad_pFan		// fan (electrical) power for meter, Btuh (*not* W)
 *END
 //-----------------------------------------------------------------------------
+RECORD DOAS "doas" *RAT
+    *prefix oa_
+    *declare "RC oa_CkfDOAS();"
+    *declare "RC oa_Setup( DOAS* iRat);"
+	*declare "RC oa_BegSubhr();"
+	*declare "RC oa_EndSubhr();"
+
+    // Fan inputs
+    *i *nest FAN oa_supFan      // supply fan characteristics
+    *i *nest FAN oa_exhFan      // exhaust fan characteristics
+
+    // Tempering coil inputs
+    *s TEMP oa_supTH            // supply temperature heating setpoint
+    *s FLOAT_GEZ oa_EIRH         // heating coil energy input ratio (1/efficiency (or 1/COP)
+    *i TI oa_coilHMtri          // Meter for heating coil
+    *declare "MTR* oa_pCoilHMtr;"
+    *s TEMP oa_supTC            // supply temperature cooling setpoint
+    *s FLOAT_GEZ oa_EIRC         // cooling coil energy input ratio (1/efficiency (or 1/COP)
+    *s FRAC_GZ oa_SHRtarget     // target cooling coil SHR. Could be overriden by oa_SHR.
+    *i TI oa_coilCMtri          // Meter for heating coil
+    *declare "MTR* oa_pCoilCMtr;"
+
+    *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
+    *declare "LOADMTR* oa_pLoadMtr;"
+
+    // Heat exchanger inputs
+    *i AFLOW_GZ oa_hxVfDs           // Design supply volumetric flow rate of the heat exchanger
+                                    // defaults to supply fan VfDs
+    *i FLOAT_GZ oa_hxf2             // Flow fraction for second set of inputs (default 0.75)
+    *array 2 *i FRAC oa_hxSenEffH   // Heat exchanger heating sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *array 2 *i FRAC oa_hxLatEffH   // Heat exchanger heating latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *array 2 *i FRAC oa_hxSenEffC   // Heat exchanger cooling sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *array 2 *i FRAC oa_hxLatEffC   // Heat exchanger cooling latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at oa_hxF2
+    *i NOYESCH oa_hxBypass              // HX can be bypassed when not adventatgeous
+    *s FLOAT_GEZ oa_hxAuxPwr        // Auxiliary power, W
+    *i TI oa_hxAuxMtri              // Meter for auxiliary power
+    *declare "MTR* oa_pHXAuxMtr;"
+    // TODO: Add defrost control (see EnergyPlus options)
+
+    // Outputs
+    *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs (before supply fan, fan heat added to IZXFERs)
+    *s *e *nest AIRFLOW oa_exhAF    // Exhaust air flow coming from IZXFERs
+    *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
+    *s *e FLOAT oa_supQLat          // Latent heat added (+) or removed (-) from the supply for tempering
+    *s *e FRAC_GZ oa_SHR            // actual cooling coil SHR. Same as oa_SHRtarget unless adjusted for humidity limits.
+    *s *e FRAC oa_hxSensEff         // Sensible efficacy
+    *s *e FRAC oa_hxLatEff          // Latent efficacy
+
+
+*END
+//-----------------------------------------------------------------------------
 RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *prefix iz_
     *excon		// explicit constructor
@@ -2802,7 +2879,8 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
-	*declare "RC iz_SetupHERV();"
+	*declare "void iz_GetDOASConditions();"
+	*declare "RC iz_CalcHERV();"
 	*declare "RC iz_Calc();"
 	*declare "RC iz_MassFlow( int iV);"
 	*declare "RC iz_ZoneXfers( int iV);"
@@ -2818,6 +2896,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
 	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
 	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
+	*declare "BOOL iz_IsDOAS() const { return iz_nvcntrl == C_IZNVTYCH_ANDOAS; }"
 	*declare "BOOL iz_IsDuctLk() const { return iz_nvcntrl == C_IZNVTYCH_ANDUCTLK; }"
 	*declare "BOOL iz_IsSysAir() const { return iz_nvcntrl == C_IZNVTYCH_ANSYSAIR; }"
 	*declare "BOOL iz_IsSysOrDuct() const { return iz_IsDuctLk() || iz_IsSysAir(); }"
@@ -2832,6 +2911,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
   // inputs
     *r TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
     *r TI iz_zi2		//   iz_zi2 = -1 iff not interzone
+    *r TI iz_doas       // subscript of DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
     *h UA iz_ua   		// air-to-air coupling const (Btuh/F) thru walls etc.
     *i IZNVTYCH iz_nvcntrl	// Control type for nat vents:
 						//   C_IZNVTYCH_NONE: no venting (iz_ua only)
@@ -2903,11 +2983,11 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
    										//  re C_IZNVTYCH_ANDUCTLK / ANSYSAIR
     *r FLOAT iz_nvcoeff				// nat vent overall coeff Btuh/(dt^.5). set by izxSetup().
     *s *e *nest AIRSTATE iz_air1	// z1 air state (tdb and w)
-    *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient)
+    *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient or from DOAS)
 
     *declare "inline float iz_T( int i) { return i ? iz_air2.as_tdb : iz_air1.as_tdb; }"
     *s float iz_rho1	// z1 moist air density, lb/cf
-    *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient)
+    *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient or from DOAS)
     *declare "inline float iz_Rho( int i) { return i ? iz_rho2 : iz_rho1; }"
     *s *hide float iz_pres2	// z2 pressure (or portion thereof, see code), lbf/sf
     *array 2 *s *e *nest ANDAT iz_ad		// airnet working data
@@ -3564,9 +3644,9 @@ x *declare "RC rs_SetDefaultsClg();"
 						//   default = from project weather data source (generally weather file)
 						// note: default varies subhourly but input expression is hourly
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
-*s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s INT rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s *e USI rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s USI rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s USI rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
                             //   (allows guess re e.g. heating vs cooling season)
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)

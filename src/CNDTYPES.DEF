@@ -275,6 +275,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  ANIZFAN "AirNetIZFan"
 			  ANEXTFLOW "AirNetExtFlow"
 			  ANIZFLOW "AirNetIZFlow"
+			  ANDOAS "AirNetDOAS"
 			  ANHERV "AirNetHERV"
 			  ANDUCTLK "AirNetDuctLk"
 			  ANSYSAIR "AirNetSysAir"
@@ -672,6 +673,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  TFAN		"terminal"
 			  XFAN		"exhaust"
 			  ZFAN		"interzone"
+			  DSFAN		"DOAS Supply"
+			  DEFAN		"DOAS Exhaust"
 			}
 			
 *choicb FANTYCH   { NONE		"none"				// fan type/position 3-92

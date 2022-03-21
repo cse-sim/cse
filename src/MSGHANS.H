@@ -106,7 +106,6 @@ x//#define MH_T0004  1084	//
 #define MH_P0020  5020	// "Unexpected end of file or macro in comment"
 #define MH_P0021  5021	// "Too many nested macros and #includes"
 #define MH_P0022  5022	// "pp.cpp:lisFind: matching buffer line is %d but requested line is %d\n"
-#define MH_P0023  5023	// "VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level.\n"
 #define MH_P0024  5024	// "Replacing illegal null character ('\\0') with space\n    in or after input file line number shown."	//10-92
 //pp.cpp additions 6-95
 #define MH_P0025  5025	// "'=' expected"
