@@ -5966,18 +5966,15 @@ RC RSYS::rs_FinalizeSh()
 		rs_outSenTot = rs_outSen + rs_outFan;	// net cooling output, Btuh (generally < 0)
 
 		if (rs_IsFanCoil())
-		{
+		{	// rs_inPrimary = 0
 
 		}
-		else if (!rs_IsVCClg() || rs_speedF == 1.f)
-		{	rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
-		}
-		else if (rs_speedF <= rs_speedFMin)
-		{	// variable capacity: cycling at min speed
+		else if (!rs_IsVCClg() || rs_speedF == 1.f || rs_speedF <= rs_speedFMin)
+		{	// cycling possible
+			//   not variable capacity
+			//   or variable capacity below min speed	
 			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));
-
+			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		}
 		else
 		{
