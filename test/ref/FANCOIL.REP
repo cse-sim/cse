@@ -1740,7 +1740,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.903.0+fancoil.d118c082.48 for Win32 console
+! CSE 0.903.0+fancoil.8729710e.94 for Win32 console
 
 
 
@@ -4151,7 +4151,7 @@ Input for Run 001:
 #           RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
-#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHdH colWid=5 colDec=2 \
+#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 0] colWid=5 colDec=2 \
 #           RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
 #           RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
 #           RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
@@ -4216,7 +4216,7 @@ Input for Run 001:
 #           RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
-#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetCdH colWid=5 colDec=2 \
+#           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 1] colWid=5 colDec=2 \
 #           RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
 #           RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
 #           RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
@@ -4263,18 +4263,18 @@ Input for Run 001:
 
 
 
-! CSE 0.903.0+fancoil.d118c082.48 for Win32 console run(s) done: Tue 15-Mar-22   3:57:09 pm
+! CSE 0.903.0+fancoil.8729710e.94 for Win32 console run(s) done: Mon 21-Mar-22   1:50:44 pm
 
-! Executable:   d:\cse\msvc\csed.exe
-!               15-Mar-22   3:55 pm   (VS 14.29    5751296 bytes)  (HPWH 1.17.1)
+! Executable:   d:\cse\msvc\cse.exe
+!               21-Mar-22   1:39 pm   (VS 14.29    2942464 bytes)  (HPWH 1.17.1)
 ! Command line: -x!  -t1 fancoil
 ! Input file:   D:\cse\test\fancoil.cse
 ! Report file:  D:\cse\test\fancoil.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.49     Calls = 1      T/C = 0.4880   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0610   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 14.87    Calls = 1      T/C = 14.8720  
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
-!                Total:  Time = 15.37    Calls = 1      T/C = 15.3680  
+!           Simulation:  Time = 3.23     Calls = 1      T/C = 3.2270   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
+!                Total:  Time = 3.29     Calls = 1      T/C = 3.2950   
