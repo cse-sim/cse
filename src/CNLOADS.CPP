@@ -2287,7 +2287,9 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
 
 			// checks to prevent crazy extrapolation results
-			rc |= rs_CkFRatio(RSYS_CAP82, RSYS_CAP95, RSYS_CAPRAT8295, 1.f, 2.f);
+			// cap82 > cap95 typically; occasional cap82 < cap95 examples seen so use 0.8
+			rc |= rs_CkFRatio(RSYS_CAP82, RSYS_CAP95, RSYS_CAPRAT8295, 0.8f, 2.f);
+			// cap115 < cap95 always
 			rc |= rs_CkFRatio(RSYS_CAP115, RSYS_CAP95, RSYS_CAPRAT11595, .2f, 1.f);
 		}
 	}
@@ -5936,18 +5938,15 @@ RC RSYS::rs_FinalizeSh()
 		rs_outSenTot = rs_outSen + rs_outFan;	// net cooling output, Btuh (generally < 0)
 
 		if (rs_IsFanCoil())
-		{
+		{	// rs_inPrimary = 0
 
 		}
-		else if (!rs_IsVCClg() || rs_speedF == 1.f)
-		{	rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
-		}
-		else if (rs_speedF <= rs_speedFMin)
-		{	// variable capacity: cycling at min speed
+		else if (!rs_IsVCClg() || rs_speedF == 1.f || rs_speedF <= rs_speedFMin)
+		{	// cycling possible
+			//   not variable capacity
+			//   or variable capacity below min speed	
 			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));
-
+			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		}
 		else
 		{
