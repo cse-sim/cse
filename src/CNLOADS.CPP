@@ -2317,7 +2317,9 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
 
 			// checks to prevent crazy extrapolation results
-			rc |= rs_CkFRatio(RSYS_CAP82, RSYS_CAP95, RSYS_CAPRAT8295, 1.f, 2.f);
+			// cap82 > cap95 typically; occasional cap82 < cap95 examples seen so use 0.8
+			rc |= rs_CkFRatio(RSYS_CAP82, RSYS_CAP95, RSYS_CAPRAT8295, 0.8f, 2.f);
+			// cap115 < cap95 always
 			rc |= rs_CkFRatio(RSYS_CAP115, RSYS_CAP95, RSYS_CAPRAT11595, .2f, 1.f);
 		}
 	}
