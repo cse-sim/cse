@@ -230,17 +230,29 @@ class record		// base class for records
 	int IsNameMatch( const char* _name) const;
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 
-	// input-checking support functions in cncult2.cpp
-    // require/disallow fields
-	// RC checkN(const char* when, RC (*checkFcn)(record* pRec, int fn, const char* when), va_list ap);
-	// typedef RC (record::* RecCheckFcn)(int fn, const char* when);
-	RC checkN(const char* when, RC(record::* checkFcn)(int fn, const char* when), va_list ap);
-    RC disallowN( const char* when=NULL, ...);
-    RC disallow( int fn, const char* when);
-    RC requireN( const char* when=NULL, ...);
-    RC require( int fn, const char* when=NULL);
-    RC ignoreN( const char* when=NULL, ...);
-    RC ignore( int fn, const char* when=NULL);
+	// input-checking support functions
+	RC ValidateFN(int fn, const char* caller) const;
+    // require/disallow/ignore fields
+	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), va_list ap);
+	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), const int16_t* fnList);
+    RC disallowN( const char* when, ...);
+	RC disallow(int fn) { return disallow(NULL, fn); }
+    RC disallow(const char* when, int fn);
+	RC disallow(const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC disallowX(const char* when, Args... args) { return (disallow(when, args) | ...); }
+    RC requireN( const char* when, ...);
+	RC require(int fn) { return require(NULL, fn); }
+    RC require( const char* when, int fn);
+	RC require( const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC requireX(const char* when, Args... args) { return (require(when, args) | ...); }
+    RC ignoreN( const char* when, ...);
+	RC ignore(int fn) { return ignore(NULL, fn); }
+    RC ignore( const char* when, int fn);
+	RC ignore( const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC ignoreX(const char* when, Args... args) { return (ignore(when, args) | ...); }
     // specific error messages
     RC cantGiveEr( int fn, const char* when=NULL);
     RC notGivenEr( int fn, const char* when=NULL);

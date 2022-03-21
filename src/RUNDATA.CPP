@@ -72,6 +72,7 @@ makAncDESCOND( DcR);						// design conditions
 makAncZNR( ZrB);			// Zones runtime info: input set in cncult.
 makAncZNRES( ZnresB);		// Month and year simulation results for zones
 makAncIZXRAT( IzxR);		// interZone transfers -- conductions / ventilations between zones
+makAncDOAS( doasR);		// DOAS
 makAncGAIN( GnB);			// (zone) gains run records basAnc
 
 makAncMTR( MtrB);			// meters (energy use) run records basAnc

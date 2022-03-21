@@ -421,6 +421,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		AH* ah; RLUP( AhB, ah)   CSE_EF( ah->begSubhr() )			// start-subhour air handler stuff.  cnah.cpp
 		TU* tu; RLUP( TuB, tu)   CSE_EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
 		ZNR* zp; RLUP( ZrB, zp)   CSE_EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
+		DOAS* doas; RLUP( doasR, doas) CSE_EF( doas->oa_BegSubhr() )	// start-subhour DOAS
 		IZXRAT* ize; RLUP( IzxR, ize) CSE_EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
 		CSE_EF( DHWSubhr())			// all DHW (including solar water heating)
 		RLUP( ZrB, zp)   CSE_EF( zp->zn_BegSubhr2() )
@@ -437,6 +438,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		// end subhour
 		RLUP( XsB, xr)   CSE_EF( xr->x.xs_EndSubhr() )	// surface temp updates, accum conduction totals to zones,
 		RLUP( IzxR, ize) CSE_EF( ize->iz_EndSubhr() )	// end-subhour vent, fan power accounting
+		RLUP( doasR, doas) CSE_EF( doas->oa_EndSubhr() )	// end-subhour DOAS, fan power accounting
 		RLUP( ZrB, zp)   CSE_EF( zp->ztuEndSubhr() )   	// by-zone terminals end-subhour stuff, and zone exhaust fan
 		RLUP( RsR, rs)	 CSE_EF( rs->rs_EndSubhr() )	// end-subhour RSYS HVAC, mode management
 		RLUP( TuB, tu)   CSE_EF( tu->endSubhr() )		// terminal end-subhour stuff.  cnztu.cpp.

@@ -541,7 +541,7 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0491  6491	// "More than 100 percent of gnPower distributed:\n    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g%s"
 #define MH_S0493  6493	// "Required member '%s' has not been set,\n    and apparently no message about it appeared above"
 #define MH_S0494  6494	// "bad %s index %d in%s %s '%s' [%d]%s"
-#define MH_S0495  6495	// "cncult2.cpp:disallowN Internal error: field # %d: probable unterminated arg list" /* 3 uses */
+#define MH_S0495  6495	// "%s: Internal error: field # %d: unterminated arg list?"
 #define MH_S0496  6496	// "Can't give '%s' %s"
 #define MH_S0497  6497	// "'%s' missing: required %s"
 #define MH_S0498  6498	// "'%s' missing"

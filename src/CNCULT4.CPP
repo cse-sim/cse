@@ -585,37 +585,37 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	switch (rpTy)
 	{
 	case C_RPTYCH_MTR:							// "Meter" report/export requires rp/exMeter
-		rc |= require( RI_MTRI, whenTy);
+		rc |= require( whenTy, RI_MTRI);
 		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_DHWMTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_DHWMTR:							// "DHWMTR" report/export requires rp/exDHWMeter
-		rc |= require( RI_DHWMTRI, whenTy);
+		rc |= require( whenTy, RI_DHWMTRI);
 		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_AFMTR:							// "AFMTR" report/export requires rp/exAFMeter
-		rc |= require(RI_AFMTRI, whenTy);
+		rc |= require( whenTy, RI_AFMTRI);
 		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_AHSIZE:	// AH-specific reports
 	case C_RPTYCH_AHLOAD:
 	case C_RPTYCH_AH:
-		rc |= require( RI_AHI, whenTy);
+		rc |= require( whenTy, RI_AHI);
 		rc |= disallowN( whenTy, RI_ZI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_TUSIZE:	// TU-specific reports
 	case C_RPTYCH_TULOAD:
-		rc |= require( RI_TUI, whenTy);
+		rc |= require( whenTy, RI_TUI);
 		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_ZDD:	// zone-specific reports
 	case C_RPTYCH_ZEB:
 	case C_RPTYCH_ZST:
-		rc |= require( RI_ZI, whenTy);
+		rc |= require( whenTy, RI_ZI);
 		rc |= disallowN( whenTy, RI_TUI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
