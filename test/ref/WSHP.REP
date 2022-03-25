@@ -1563,7 +1563,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console
+! CSE 0.903.0+wshp.5a7b8200.97 for Win32 console
 
 
 
@@ -4855,7 +4855,7 @@ RSYS Heating subhour details for Thu 03-Dec
   12   3  4  4 29.99 59.24 65.17      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
   12   3  4  5 29.84 59.13 65.11      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
   12   3  5  0 29.54 59.02 65.05      0      0      0     0     0     0     0     0     0     0     0     0       0     0      0      0     0     0      0      0      0     0      0     0    136     0     0     0
-  12   3  5  1 29.24 58.91 65.00  64.07 114.07 106.69     0 40000     0   644 .0161 .0161 1.000 .0161 1.000       0  10.6    625      0     0    18    644   -161    483   161     -0   156    311 4.000 4.000 2.768
+  12   3  5  1 29.24 58.91 65.00  64.07 114.07 106.69     0 40000     0   644 .0161 .0161 1.000 .0161 1.000       0  10.6    625      0     0    18    644   -161    483   161     -1   156    311 4.000 4.000 2.768
   12   3  5  2 28.94 58.90 65.00  64.02 114.02 106.63     0 40000     0  3212 .0803 .0803 1.000 .0803 1.000       0  52.9   3122      0     0    90   3212   -805   2407   805      0   781   1007 4.000 4.000 2.764
   12   3  5  3 28.64 59.17 65.00  64.01 114.01 106.62     0 40000     0  3784 .0946 .0946 1.000 .0946 1.000       0  62.3   3678      0     0   106   3784   -949   2835   949      0   919   1162 4.000 4.000 2.764
   12   3  5  4 28.34 59.21 65.00  64.05 114.05 106.67     0 40000     0  4311 0.108 0.108 1.000 0.108 1.000       0  71.0   4190      0     0   121   4311  -1077   3234  1077      0  1047   1305 4.000 4.000 2.767
@@ -5123,7 +5123,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console
+! CSE 0.903.0+wshp.5a7b8200.97 for Win32 console
 
 
 
@@ -6236,7 +6236,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console
+! CSE 0.903.0+wshp.5a7b8200.97 for Win32 console
 
 
 
@@ -6257,18 +6257,18 @@ Input for Run 003:
 
 
 
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console run(s) done: Fri 25-Mar-22   3:35:30 pm
+! CSE 0.903.0+wshp.5a7b8200.97 for Win32 console run(s) done: Fri 25-Mar-22   4:49:19 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               25-Mar-22   2:44 pm   (VS 14.29    2942976 bytes)  (HPWH 1.17.1)
-! Command line: -x!  -t1 WSHP
-! Input file:   D:\cse\test\WSHP.cse
-! Report file:  D:\cse\test\WSHP.rep
+!               25-Mar-22   4:43 pm   (VS 14.29    2942976 bytes)  (HPWH 1.17.1)
+! Command line: -x!  -t1 wshp
+! Input file:   D:\cse\test\wshp.cse
+! Report file:  D:\cse\test\wshp.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.17     Calls = 3      T/C = 0.0573   
+!                Input:  Time = 0.16     Calls = 3      T/C = 0.0527   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 6.57     Calls = 3      T/C = 2.1910   
+!           Simulation:  Time = 6.64     Calls = 3      T/C = 2.2123   
 !              Reports:  Time = 0.01     Calls = 3      T/C = 0.0030   
-!                Total:  Time = 6.76     Calls = 1      T/C = 6.7630   
+!                Total:  Time = 6.82     Calls = 1      T/C = 6.8150   
