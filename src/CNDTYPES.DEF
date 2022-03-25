@@ -188,13 +188,13 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 ///////////////////////////////////////////////////////////////////////////////
 // Choices: text <-> constant mapping
 ///////////////////////////////////////////////////////////////////////////////
+// choice TEXT may specify aliases ("MAIN|ALIAS1|ALIAS2")
 // choices may have TEXT beginning a prefix
 //    * = hidden (output only, not recognized on input)
 //    ! = alias (alternative wording for prior "real" choice
 //    ~ = deprecated alias (same as ! but info msg on input)
 //    else "normal"
-// NOTE: alias choices do not #define C_XXX_xxx
-//    Caution: this can mean non-contiguous definitions
+// NOTE: only MAIN yields #define C_XXX_xxx
 ///////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************************
@@ -346,6 +346,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			ASHPHYD "ASHPHydronic"
 			ASHPPKGRM "ASHPPkgRoom"
 			ASHPVC  "VCHP2"
+			WSHP "WSHP"
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"

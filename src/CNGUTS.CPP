@@ -1358,6 +1358,10 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 				   name, gnFrRad, gnFrLat, gnFrRad + gnFrLat );
 
 	// accumulate zone lighting power before and after daylighting reduction, for binary results file and/or custom reports
+#if 0
+	if (Top.iHr == 0)
+		printf("\nBeg day");
+#endif
 	double gnPX = gnPower;				// fetch gain power level for modification
 	if (gnEndUse==C_ENDUSECH_LIT && zp)	// if gain has "lighting" end use
 		zp->znLitDmd += gnPX;		// accumulate zone total lighting "demand" -- b4 daylighting reduction.

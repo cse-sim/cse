@@ -1235,8 +1235,8 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 	zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfSup0, 0);	// notify system of requirement
 	CHECKFP(zn_rsAmfSysReq[0]);		// check for NaN etc (debug only)
 
-	if (zn_hcMode == RSYS::rsmHEAT && rs->rs_IsASHP() && rs->rs_speedF==1.f)
-	{	// ASHP heating full speed: repeat calc with full aux
+	if (zn_hcMode == RSYS::rsmHEAT && rs->rs_CanHaveAuxHeat() && rs->rs_speedF==1.f)
+	{	// HP heating full speed: repeat calc with full aux
 		double tSup1 = rs->rs_asSupAux.as_tdb;
 		double amfSup1 = zn_AmfHvacCR(zn_tzsp, tSup1);
 		zn_rsAmfSysReq[1] = rs->rs_ZoneAirRequest(amfSup1, 1);
@@ -1706,201 +1706,11 @@ RC RSYS::rs_CkF()
 {
 	static_assert(RSYSMODES == rsmCOUNT - 1);		// cndefn.h #define must be consistent
 													//   with cnrecs.def enum
-
-
 	int rc = RCOK;
 
-#if 1
 	rc |= rs_CkFHeating();
 
 	rc |= rs_CkFCooling();
-
-#else
-	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
-	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
-	if (rs_CanCool())
-	{	if (rs_IsPkgRoom())
-		{	rc |= requireN(whenTy, RSYS_EER95, 0);
-			rc |= disallowN(whenTy, RSYS_SEER, RSYS_COP95, 0);
-			if (!IsSet(RSYS_FANPWRC))
-				rs_fanPwrC = 0.f;	// fan power included in primary by default
-		}
-		else if (rs_IsFanCoil())
-		{	// fancoil cooling (heating checked below)
-			rc |= disallowX(whenTy, ClgFNs, VC_ClgFNs);
-		}
-		else
-			rc |= requireN(whenTy, RSYS_SEER, 0);
-
-
-		if (!IsAusz(RSYS_CAP95))
-		{	// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
-			FldCopyIf(RSYS_CAP95, RSYS_CAPNOMC);
-
-			if (IsSet(RSYS_CAP82))
-				rc |= disallowN("when rsCap82 is given", RSYS_CAPRAT8295, 0);
-			if (IsSet(RSYS_CAP115))
-				rc |= disallowN("when rsCap115 is given", RSYS_CAPRAT11595, 0);
-		}
-		else
-		{	// rsCap95 is autosize
-
-			rc |= disallowN("when rsCap95 is AUTOSIZE",
-					RSYS_CAP82, RSYS_CAP115, 0);
-		}
-
-		if (rs_IsASHPVC())
-		{
-			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
-			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
-		}
-		else
-		{
-			rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
-				RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
-				RSYS_LOADFMIN05, RSYS_LOADFMIN17, RSYS_LOADFMIN47, 0);
-				// cooling?
-			rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
-		}
-
-	}
-	else
-	{	// no cooling capability
-		const char* whenNoCl = strtprintf( "when rsType=%s (cooling not available)",
-			getChoiTx( RSYS_TYPE));
-		rc |= disallowX(whenNoCl, Clg_FNs, VC_Clg_FNs);
-		FldSet( RSYS_CAPNOMC, 0.f);		// insurance
-	}
-
-	// -- HEATING --
-	// all heating fields EXCEPT RSYS_CAPH and RSYS_FANPWRH
-	//  = heating fields disallowed for FANCOIL
-	static constexpr int16_t htgFNs[]{ RSYS_AFUE, RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
-		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
-		RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0 };
-
-	// ASHP heating FNs (all types)
-	static constexpr int16_t ASHP_HtgFNs[]{ RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
-		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
-		RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_CAPRAT0547, RSYS_CDH, 0 };
-
-	static constexpr int16_t ASHPVC_HtgFNs[]{ RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
-		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05, 0 };
-
-	rc |= rs_CkFAuxHeat();		// check aux heat inputs
-	
-	if (!rs_CanHeat())
-	{	const char* whenTyNoHt = strtprintf( "when rsType=%s (heating not available)",
-			getChoiTx( RSYS_TYPE));
-		rc |= disallowX(whenTyNoHt, RSYS_CAPH, RSYS_FANPWRH);
-		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
-	}
-	// else if (rs_I)
-	// {	// general heating checks
-	// }
-		
-	if (rs_IsASHP())
-	{
-		rs_AFUE = 0.f;		// drop possibly confusing default
-
-		if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
-			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", whenTy);
-
-		if (IsSetCount(RSYS_CAP47, RSYS_CAP95, RSYS_CAPRAT9547, 0) == 3
-		 && !(IsAusz( RSYS_CAP47) && IsAusz( RSYS_CAP95)))
-			// cannot give all 3 values unless both caps are autosized
-			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", whenTy);
-
-		if (rs_IsASHPHydronic())
-		{	// ASHPHydronic: air-to-water heat pump
-			//   approximated with air-to-air model
-			rc |= requireN(whenTy, RSYS_COP47, RSYS_COP17, 0);
-			rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
-			if (!IsSet(RSYS_FANPWRH))
-				rs_fanPwrH = 0.f;		// hydronic: no fan power
-			if (!IsAusz(RSYS_CAP47))
-				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
-				FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
-		}
-		else
-		{	// ASHP other than ASHPHydronic
-
-			rc |= disallowN(whenTy, RSYS_CAPH, RSYS_AFUE, 0);
-
-			if (!IsAusz(RSYS_CAP47))
-				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
-				//   see DefaultCapNomsIf()
-				FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
-
-			if (rs_IsPkgRoom())
-			{
-				rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
-					RSYS_CAP17, RSYS_COP17, RSYS_CAP35, RSYS_COP35, 0);
-				rc |= requireN(whenTy, RSYS_COP47, 0);
-
-				if (!IsSet(RSYS_FANPWRH))
-					rs_fanPwrH = 0.f;	// fan power included in primary by default
-
-				// other defaults derived in rs_TopRSys1()
-			}
-			else
-			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
-				//   capacities defaulted from cooling cap95
-				//   COPs defaulted from HSPF
-				//   if both COP47 and COP17 are specified, HSPF is not used
-
-				rc |= requireN(whenTy, RSYS_HSPF, 0);
-
-				if (IsAusz(RSYS_CAP47))
-					rc |= disallowN("when rsCap47 is AUTOSIZE",
-						RSYS_CAP05, RSYS_CAP17, RSYS_CAP35, 0);
-				else
-				{	if (IsSet(RSYS_CAP17))
-						rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
-					if (IsSet(RSYS_CAP05))
-						rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
-				}
-
-				if (!rs_IsASHPVC())
-				{
-					rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
-						RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
-						RSYS_LOADFMIN05, RSYS_LOADFMIN17, RSYS_LOADFMIN47, 0);
-					rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
-				}
-				else
-				{
-					if (!IsSet(RSYS_LOADFMIN17))
-						rs_loadFMin17 = rs_loadFMin47;
-					if (!IsSet(RSYS_LOADFMIN05))
-						rs_loadFMin05 = rs_loadFMin47;
-				}
-			}
-		}
-	}
-	else
-	{	// not ASHP of any type
-		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
-				ASHP_HtgFNs, ASHPVC_HtgFNs);
-
-		if (!IsSet( RSYS_AFUE))
-			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
-		if (!IsAusz( RSYS_CAPH))
-			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
-			FldCopyIf( RSYS_CAPH, RSYS_CAPNOMH);
-	}
-
-#endif
-
-
-#if 0
-x Parasitics are accumlated to RSYSRES also, 11-2021
-x	// parasitics -- issue info message if no associated meter
-x	if (IsSet( RSYS_PARELEC) && !IsSet( RSYS_ELECMTRI))
-x		oInfo( "rsElecMtr not specified -- rsParElec has no effect");
-x	if (IsSet( RSYS_PARFUEL) && !IsSet( RSYS_FUELMTRI))
-x		oInfo( "rsFuelMtr not specified -- rsParFuel has no effect");
-#endif
 
 	// OAV
 	if (rs_OAVType == C_RSYSOAVTYCH_NONE)
@@ -1926,6 +1736,9 @@ RC RSYS::rs_CkFHeating()
 {
 	RC rc = RCOK;
 
+	rc |= rs_CkFAuxHeat();		// check aux heat inputs
+
+
 #if 0
 	// all heating non-ASHP fields EXCEPT RSYS_CAPH, RSYS_FANPWRH, RSYS_FXCAPHTARG
 	//  = heating fields disallowed for FANCOIL
@@ -1943,7 +1756,6 @@ RC RSYS::rs_CkFHeating()
 		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05,
 		RSYS_CAPRAT0547, RSYS_CAP05, RSYS_COP05, 0 };
 
-	rc |= rs_CkFAuxHeat();		// check aux heat inputs
 
 	if (!rs_CanHeat())
 	{
@@ -1965,7 +1777,11 @@ RC RSYS::rs_CkFHeating()
 			ASHP_HtgFNs, ASHPVC_HtgFNs);
 		rs_AFUE = 0.f;
 	}
-
+	else if (rs_IsWSHP())
+	{
+		rc |= require(whenTy, RSYS_CAPH);
+		rc |= ignoreX(whenTy, ASHP_HtgFNs, ASHPVC_HtgFNs);
+	}
 	else if (rs_IsASHP())
 	{
 		rs_AFUE = 0.f;		// drop possibly confusing default
@@ -2091,6 +1907,9 @@ RC RSYS::rs_CkFCooling()
 	{	// fancoil cooling
 		rc |= require(whenTy, RSYS_CAP95);
 		rc |= ignoreX(whenTy, Clg_FNs, VC_ClgFNs);
+	}
+	else if (rs_IsWSHP())
+	{
 	}
 	else
 		rc |= requireN(whenTy, RSYS_SEER, 0);
@@ -2250,7 +2069,11 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		// rsFanPwrC (W/cfm): error if >5, warn if >2
 		rc |= limitCheck(RSYS_FANPWRC, 0., 5., 0., 2.);
 
-		if (!rs_IsFanCoil())
+		if (rs_IsWSHP())
+		{
+
+		}
+		else if (!rs_IsFanCoil())
 		{
 			rc |= rs_CkFCd(rsmCOOL);
 
@@ -2277,8 +2100,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 				else
 				{	// estimate missing EER from SEER
 					//   California ACM method
-					rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
-						: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
+					rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5f)
+						: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13.f)
 						: 13.f;
 					rs_COP95 = rs_EER95 / BtuperWh;
 				}
@@ -2317,8 +2140,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 				rs_fxCapHAsF = 1.2f;		// working oversize factor
 			}
 
-			rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.f);
-			rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.f);
+			rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.2f);
+			rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.2f);
 
 		}
 		else if (IsAusz(RSYS_CAPH))
@@ -2991,7 +2814,8 @@ RC RSYS::rs_SetupCapH(
 		else
 		{	// non-ASHP
 			nomCap = rs_capH;
-			rs_capAuxH = 0.f;	// insurance
+			if (!rs_CanHaveAuxHeat())
+				rs_capAuxH = 0.f;	// insurance
 		}
 		rs_amfH = nomCap / (rs_tdDesH * Top.tp_airSH);	// nominal dry-air mass flow rate, lb/hr
 		avfH = AMFtoAVF( rs_amfH);
@@ -3052,6 +2876,10 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 	if (rs_IsFanCoil())
 	{
+	}
+	else if (rs_IsWSHP())
+	{
+
 	}
 	else
 	{	// rs_cap95 now known = net total cooling cap at 95 F (> 0)
@@ -3335,6 +3163,90 @@ RC RSYS::rs_AfterHour()
 	return rc;
 }		// RSYS::rs_AfterHour
 //-----------------------------------------------------------------------------
+void RSYS::rs_HeatingOutletAirState(
+	int auszMode /*=rsmOff*/)	// active autosizing, if any
+								//   rsmOFF: none (normal simulation)
+								//   rsmHEAT: heating
+								//   rsmCOOL: do not call
+
+// derives RSYS outlet conditions (before distribution losses) for heating mode
+
+// call:   rs_asIn = entering state (return duct leaving state)
+//		   rs_asOut = rs_asIn (initialized for calc)
+//		   rs_twb = entering air wet bulb, F (consistent with rs_asIn)
+//         rs_tdbOut = dry-bulb temp at outdoor unit, F
+//		   rs_speedF = current speed fraction
+//         rs_amf = current dry air mass flow rate, lbm/hr (at rs_speedF)
+// return: rs_asOut = outlet (leaving) air state (including fan heat)
+//         (plus intermediate correlation results)
+
+{
+	// rs_asOut = rs_asIn;		// init to entering state
+	if (auszMode == rsmHEAT && Top.tp_pass1A)
+	{	// autosize warmup: assume fixed temp rise
+		rs_asOut.as_tdb = rs_asRet.as_tdb + rs_tdDesH;
+		rs_effHt = 1.;		// need nz value, else ASHP assumes compressor off
+	}
+	else if (rs_IsASHP())
+	{
+		float capHt;	// working heating capacity
+		if (auszMode == rsmOFF)
+		{	// ASHP autosize is based on rs_capH
+			// run full model only during simulation
+			capHt = rs_CapEffASHP2();
+		}
+		else
+		{	// ASHP heat autosize
+			rs_effHt = 1.f;
+			capHt = rs_capHt = rs_capH;
+			rs_capAuxH = rs_capH;
+		}
+		rs_asOut.as_AddQSen2(capHt, rs_amf);
+
+	}
+	else if (rs_IsWSHP())
+	{
+		rs_effHt = rs_COP47 * rs_fEffH;
+		rs_capHt = rs_capH;		// includes fan heat
+		rs_asOut.as_AddQSen2(rs_capHt, rs_amf);
+
+	}
+	else
+	{	// not heat pump of any type
+		rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
+		rs_capHt = rs_capH;		// includes fan heat
+		rs_asOut.as_AddQSen2(rs_capHt, rs_amf);
+	}
+
+	// auxiliary heat
+	if (rs_CanHaveAuxHeat() && rs_speedF == 1.f)
+	{
+		// double tdbWas = rs_asOutAux.as_tdb;
+		float fanHeatAux;
+		if (rs_ctrlAuxH == C_AUXHEATCTRL_CYCLE)
+		{	// aux cycles: aux out = prim out + aux heat
+			//     fan heat already in prim out
+			rs_asOutAux = rs_asOut;
+			fanHeatAux = 0.f;
+		}
+		else
+		{	// aux alternate or locked out: prim off
+			//    fan heat must be added
+			rs_asOutAux = rs_asIn;
+			fanHeatAux = rs_fanHeatH;
+		}
+
+		rs_asOutAux.as_AddQSen2(rs_capAuxH + fanHeatAux, rs_amf);
+		rs_asSupAux = rs_asOutAux;
+		rs_SupplyDSEAndDucts(rs_asSupAux);
+	}
+
+#if defined( RSYS_FIXEDOAT)
+	rs_asSup.as_Set(120., .001);
+#endif
+	return;
+}		// RSYS::rs_HeatingOutletAirState
+//-----------------------------------------------------------------------------
 static float CoolingSHR(		// derive cooling sensible heat ratio
 	float tdbOut,		// outdoor dry bulb, F
 	float tdbCoilIn,	// coil entering dry bulb, F
@@ -3539,19 +3451,21 @@ void RSYS::rs_CoolingEnteringAirFactorsVS(		// adjustments for entering (indoor)
 
 }		// RSYS::rs_CoolingVspdEnteringAirFactors
 //-----------------------------------------------------------------------------
-void RSYS::rs_Cooling(
+void RSYS::rs_CoolingOutletAirState(		// cooling outlet (leaving) air state
 	int auszMode /*=rsmOff*/)	// active autosizing, if any
-								//   rsmOFF: none
+								//   rsmOFF: none (normal simulation)
 								//   rsmCOOL: cooling
 								//   rsmHEAT: do not call
 
+// derives RSYS outlet conditions (before distribution losses) for cooling mode
+
 // call:   rs_asIn = entering state (return duct leaving state)
+//		   rs_asOut = rs_asIn (initialized for calc)
 //		   rs_twb = entering air wet bulb, F (consistent with rs_asIn)
 //         rs_tdbOut = dry-bulb temp at outdoor unit, F
 //		   rs_speedF = current speed fraction
 //         rs_amf = current dry air mass flow rate, lbm/hr (at rs_speedF)
 // return: rs_asOut = leaving state (including fan heat)
-//         rs_asSup = supply register state (after DSE/ducts if any)
 //         rs_tdbCoilIn = coil entering dry bulb, F
 //         rs_twbCoilIn = coil entering wet bulb, F
 //         (plus intermediate correlation results)
@@ -3570,8 +3484,9 @@ void RSYS::rs_Cooling(
 x	if (Top.jDay == 242 && Top.iHr == 14)
 x		printf("\nhit");
 #endif
-	// init leaving conditions and find coil entering conditions
-	rs_asOut = rs_asIn;
+
+	// fan heat: coil entering conditions
+	// rs_asOut = rs_asIn per caller
 	if (rs_fan.fanTy == C_FANTYCH_BLOWTHRU)
 	{	rs_asOut.as_AddQSen(rs_speedF*rs_fanHeatC, rs_amf);
 		rs_twbCoilIn = rs_asOut.as_Twb();
@@ -3604,11 +3519,22 @@ x		printf("\nhit");
 			rs_capSenCt = coilDT * rs_amf * Top.tp_airSH;
 			rs_capTotCt = rs_capSenCt / rs_SHR;		// total, Btuh (note rs_SHR>0 always)
 		}
+		else if (rs_IsWSHP())
+		{
+			rs_capTotCt = -rs_cap95;		// total gross capacity at current conditions, Btuh
+			rs_capSenCt = rs_SHR * rs_capTotCt;
+			rs_effCt = rs_EER95 / BtuperWh;
+		}
 		else if (!rs_IsVCClg())
 		{	// 1 spd, not autosizing warmup, use full model
 			rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd
 			rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
 			rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible gross capacity at current conditions, Btuh
+
+			rs_CoolingEff1Spd();	// derive rs_EERt
+
+			rs_effCt = rs_SHR * rs_fEffC * rs_EERt / BtuperWh;	// compressor efficiency (COP)
+															//   = (Btuh sensible)/(Btuh compressor)
 		}
 		else
 		{	// variable capacity
@@ -3616,7 +3542,7 @@ x		printf("\nhit");
 			//   include rated fan power
 			//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
 			float capClg, inpClg, capClgMin, inpClgMin;
-			[[maybe_unused]] RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
+			/* RC rc = */ rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
 				capClg, inpClg, capClgMin, inpClgMin);
 
 			capClgMin = bracket(capClg, capClgMin, 0.05f * capClg);
@@ -3653,7 +3579,7 @@ x		printf("\nhit");
 
 	rs_capLatCt = rs_capTotCt - rs_capSenCt;	// latent, Btuh
 
-	// leaving conditions
+	// outlet (leaving) conditions
 #if defined( _DEBUG)
 	float hIn = rs_asIn.as_Enthalpy();
 #endif
@@ -3674,10 +3600,15 @@ x	rs_asOut = asSav;
 		rs_fCondCap = rs_capTotCt / rs_capnfX;		// back-calc consistent value
 		rs_SHR = rs_capTotCt != 0.f ? rs_capSenCt / rs_capTotCt : 0.f;
 	}
+
+	// draw-thru fan heat
 	if (rs_fan.fanTy != C_FANTYCH_BLOWTHRU)
 		rs_asOut.as_AddQSen( rs_speedF*rs_fanHeatC, rs_amf);
-	rs_asSup = rs_asOut;
-	rs_SupplyDSEAndDucts( rs_asSup);
+
+#if defined( RSYS_FIXEDOAT)
+	rs_asOut.as_Set(50., .001);
+#endif
+
 	rs_capSenNetFS = rs_capSenCt / rs_speedF + rs_fanHeatC;		// net full speed sensible capacity
 
 #if defined( _DEBUG)
@@ -3699,19 +3630,7 @@ x	rs_asOut = asSav;
 	}
 #endif
 
-#if defined( RSYS_FIXEDSAT)
-	rs_asOut.as_Set( 50., .001);
-#endif
-
-	if (!rs_IsVCClg() && !rs_IsFanCoil())
-	{
-		rs_CoolingEff1Spd();	// derive rs_EERt
-
-		rs_effCt = rs_SHR * rs_fEffC * rs_EERt / BtuperWh;	// compressor efficiency (COP)
-														//   = (Btuh sensible)/(Btuh compressor)
-	}
-
-}		// RSYS::rs_Cooling
+}		// RSYS::rs_CoolingOutletAirState
 //----------------------------------------------------------------------------
 void RSYS::rs_GetPerfClg(	// derive current cooling performance values
 	float& capTot,			// total capacity, kBtuh
@@ -3786,8 +3705,9 @@ static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
 				rs_asIn.as_Set( tdbI[ idbI], w);
 				for (int idbO=0; tdbO[ idbO] > 0.f; idbO++)
 				{	// outdoor conditions
+					rs_asOut = rs_asIn;
 					rs_tdbOut = tdbO[ idbO];
-					rs_Cooling();
+					rs_CoolingOutletAirState();
 					float capTot, capSen, pwrIn;
 					rs_GetPerfClg( capTot, capSen, pwrIn);
 					fprintf( f, "%.f,%.f,%.f,%.f,%.2f,%.2f,%.2f\n",
@@ -5174,83 +5094,30 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 		//   does return duct calcs, uses rs_amf
 		rs_EnteringAirState();
 
+		rs_asOut = rs_asIn;		// init entering state
+
 		if (rs_mode == rsmCOOL)
 		{	++rs_calcCount[1];
-			rs_Cooling(auszMode);
+			rs_CoolingOutletAirState(auszMode);
 		}
 		else if (rs_mode == rsmHEAT)
 		{	++rs_calcCount[0];
-			rs_asOut = rs_asIn;		// init to entering state
-			if (auszMode == rsmHEAT && Top.tp_pass1A)
-			{	// autosize warmup: assume fixed temp rise
-				rs_asOut.as_tdb = rs_asRet.as_tdb + rs_tdDesH;
-				rs_effHt = 1.;		// need nz value, else ASHP assumes compressor off
-			}
-			else if (rs_IsASHP())
-			{
-				float capHt;	// working heating capacity
-				if (auszMode == rsmOFF)
-				{	// ASHP autosize is based on rs_capH
-					// run full model only during simulation
-					capHt = rs_CapEffASHP2();
-				}
-				else
-				{	// ASHP heat autosize
-					rs_effHt = 1.f;
-					capHt = rs_capHt = rs_capH;
-					rs_capAuxH = rs_capH;
-				}
-				rs_asOut.as_AddQSen2( capHt, rs_amf);
-
-				// auxiliary heat (ASHP only)
-				//   add aux heat and apply duct losses
-				if (rs_speedF == 1.f)	// skip if not full speed
-				{
-					[[maybe_unused]] double tdbWas = rs_asOutAux.as_tdb;
-					float fanHeatAux;
-					if (rs_ctrlAuxH == C_AUXHEATCTRL_CYCLE)
-					{	// aux cycles: aux out = prim out + aux heat
-						//     fan heat already in prim out
-						rs_asOutAux = rs_asOut;
-						fanHeatAux = 0.f;
-					}
-					else
-					{	// aux alternate or locked out: prim off
-						//    fan heat must be added
-						rs_asOutAux = rs_asIn;
-						fanHeatAux = rs_fanHeatH;
-					}
-
-					rs_asOutAux.as_AddQSen2(rs_capAuxH + fanHeatAux, rs_amf);
-					rs_asSupAux = rs_asOutAux;
-					rs_SupplyDSEAndDucts(rs_asSupAux);
-				}
-			}
-			else
-			{	// non-ASHP
-				rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
-				rs_capHt = rs_capH;		// includes fan heat
-				rs_asOut.as_AddQSen2( rs_capHt, rs_amf);
-			}
-			rs_asSup = rs_asOut;
-			rs_SupplyDSEAndDucts( rs_asSup);
-#if defined( RSYS_FIXEDSAT)
-			rs_asSup.as_Set( 120., .001);
-#endif
+			// rs_asOut = rs_asIn;		// init to entering state
+			rs_HeatingOutletAirState( auszMode);
 		}
 		else
-		{	// OAV: add fan heat and duct gains
+		{	// OAV: add fan heat
 			rs_asOut = rs_asIn;
 			rs_asOut.as_AddQSen2( rs_fanHeatOAV, rs_amf);
-			rs_asSup = rs_asOut;
-			rs_SupplyDSEAndDucts( rs_asSup);
-			if (rs_asSup.as_tdb > 74.f)
-			{	rs_asSup = rs_asOut;
-				rs_SupplyDSEAndDucts( rs_asSup);
-			}
 		}
+
+		// outlet air state rs_asOut now known for all cases
+		// calc supply air state at zone(s)
+		rs_asSup = rs_asOut;
+		rs_SupplyDSEAndDucts(rs_asSup);
+
 	}
-	// else leaving air state known
+	// else supply air state known
 
 	return rsAvail;
 }	// RSYS::rs_SupplyAirState
@@ -5969,7 +5836,7 @@ RC RSYS::rs_FinalizeSh()
 		}
 	}
 	else if (rs_mode == rsmHEAT)
-	{	if (rs_IsASHP())
+	{	if (rs_IsHP())
 		{	// rs_runFAux known at this point
 			if (rs_effHt == 0.f)		// if compressor is off
 			{	// rs_inPrimary = 0.;

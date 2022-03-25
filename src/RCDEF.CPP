@@ -896,7 +896,7 @@ LOCAL void dtypes(                      // do data types
 				//    ! = alias (redundant)
 				//    ~ = deprecated alias (same as ! but give info msg on input)
 				//    else "normal"
-				// NOTE: main and all aliases have same #define C_XXX_xxx
+				// NOTE: only MAIN yields #define C_XXX_xxx
 
 				choff = strsndma( &Cp4snake, Sval[ 1]);                    // choicb/n text to snake, get offset
 
