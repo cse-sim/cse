@@ -26,44 +26,22 @@ Number of identical water heaters of this type. Any value $>1$ is equivalent to 
 
 Type of water heater.  This categorization is based on CEC and federal rating standards that change from time to time.
 
-  --------------------- ---------------------------------------
-  SMALLSTORAGE          A storage water heater having an energy
-                        factor (EF) rating.  Generally, a gas-fired
-                        storage water heater with
-                        input of 75,000 Btuh or less, an
-                        oil-fired storage water heater with
-                        input of 105,000 Btuh or less, an
-                        electric storage water heater with
-                        input of 12 kW or less, or a heat pump
-                        water heater rated at 24 amps or less.
+<%= csv_table(<<END, :row_header => false)
+  SMALLSTORAGE, A storage water heater having an energy factor (EF) rating.  Generally&comma; a gas-fired storage water heater with input of 75&comma;000 Btuh or less&comma; an oil-fired storage water heater with input of 105&comma;000 Btuh or less&comma; an electric storage water heater with input of 12 kW or less&comma; or a heat pump water heater rated at 24 amps or less.
+  LARGESTORAGE,          Any storage water heater that is not SMALLSTORAGE.
+  SMALLINSTANTANEOUS,    A water heater that has an input rating of at least 4&comma;000 Btuh per gallon of stored water. Small instantaneous water heaters include: gas instantaneous water heaters with an input of 200&comma;000 Btu per hour or less&comma; oil instantaneous water heaters with an input of 210&comma;000 Btu per hour or less&comma; and electric instantaneous water heaters with an input of 12 kW or less.
+  LARGEINSTANTANEOUS, An instantaneous water heater that does not conform to the definition of SMALLINSTANTANEOUS&comma; an indirect fuel-fired water heater&comma; or a hot water  supply boiler.
+  INSTANTANEOUSUEF, An instantaneous water heater having a UEF rating (as opposed to EF).
+END
+%>
 
-  LARGESTORAGE          Any storage water heater that is not
-                        SMALLSTORAGE.
-
-  SMALLINSTANTANEOUS    A water heater that has an input rating
-                        of at least 4,000 Btuh per gallon of
-                        stored water. Small instantaneous water
-                        heaters include: gas instantaneous
-                        water heaters with an input of 200,000
-                        Btu per hour or less, oil instantaneous
-                        water heaters with an input of 210,000
-                        Btu per hour or less, and electric
-                        instantaneous water heaters with an
-                        input of 12 kW or less.
-
-  LARGEINSTANTANEOUS    An instantaneous water heater that does
-                        not conform to the definition of
-                        SMALLINSTANTANEOUS, an indirect
-                        fuel-fired water heater, or a hot water
-                        supply boiler.
-
-  INSTANTANEOUSUEF      An instantaneous water heater having
-                        a UEF rating (as opposed to EF).
-  --------------------- ---------------------------------------
-
-  **Units**   **Legal Range**        **Default**    **Required**   **Variability**
-  ----------- ---------------------- -------------- -------------- -----------------
-               *Codes listed above*   SMALLSTORAGE   No             constant
+  <%= member_table(
+  units: "",
+  legal_range: "*Codes listed above*",
+  default: "SMALLSTORAGE",
+  required: "No",
+  variability: "constant")
+  %>
 
 **whHeatSrc=*choice***
 
@@ -71,19 +49,14 @@ Heat source for water heater.  CSE implements uses efficiency-based models for
 all whTypes (as documented in RACM, App. B).  In addition, the detailed Ecotope HPWH model is
 available for electric (air source heat pump and resistance) SMALLSTORAGE water heaters.
 
-  ------------- ---------------------------------------
-  RESISTANCE    Electric resistance heating element\
-                Deprecated for whType=SMALLSTORAGE (use RESISTANCEX)
-
-  RESISTANCEX   Electric resistance heating element, detailed HPWH model
-
-  ASHP          Air source heat pump, EF model\
-                Deprecated for whType=SMALLSTORAGE (use ASHPX)
-
-  ASHPX         Air source heat pump, detailed HPWH model
-
-  FUEL          Fuel-fired burner
-  ------------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  RESISTANCE,    Electric resistance heating element Deprecated for whType=SMALLSTORAGE (use RESISTANCEX)
+  RESISTANCEX,   Electric resistance heating element&comma; detailed HPWH model
+  ASHP,          Air source heat pump&comma; EF model Deprecated for whType=SMALLSTORAGE (use ASHPX)
+  ASHPX,         Air source heat pump&comma; detailed HPWH model
+  FUEL,          Fuel-fired burner
+END
+%>
 
 <%= member_table(
   units: "",
@@ -145,30 +118,16 @@ Rated energy factor that specifies DHWHEATER efficiency under test conditions.  
 by CSE to derive annual water heating efficiency and/or other characteristics as described
 below.  Calculation methods are documented in RACM, Appendix B.
 
-  ----------------------------------------------------------------------------
-  Configuration                 whEF default    Use
-  ---------------------------- ---------------  -------------------------
-  whType=SMALLSTORAGE\               0.82        Derivation of whLDEF
-  whHeatSrc=RESISTANCE or FUEL     
-
-  whType=SMALLSTORAGE\               0.82        Derivation of whLDEF\
-  whHeatSrc=ASHP                                 note inappropriate default\
-                                                 (deprecated, use ASHPX)
-
-  whType=SMALLSTORAGE\             (req'd)      Tank losses\
-  whHeatSrc=ASHPX\                              Overall efficiency
-  whASHPType=GENERIC              
-
-  whType=SMALLSTORAGE\             (req'd)      Tank losses\
-  whHeatSrc=RESISTANCEX                         Note: maximum whEF=0.98.
-
-  whType=SMALLINSTANTANEOUS          0.82       Annual efficiency = whEF*0.92
-  whHeatSrc=RESISTANCE or FUEL
-
-  Any other                        (unused)
-
-  ----------------------------------------------------------------------
-
+<%= csv_table(<<END, :row_header => true)
+  Configuration,                 whEF default,    Use
+  whType=SMALLSTORAGE&comma; whHeatSrc=RESISTANCE or FUEL, 0.82, Derivation of whLDEF
+  whType=SMALLSTORAGE&comma; whHeatSrc=ASHP, 0.82, Derivation of whLDEFnote inappropriate default (deprecated&comma; use ASHPX)
+  whType=SMALLSTORAGE&comma; whHeatSrc=ASHPX&comma; whASHPType=GENERIC, (req'd), Tank losses Overall efficiency
+  whType=SMALLSTORAGE&comma; whHeatSrc=RESISTANCEX, (req'd), Tank losses Note: maximum whEF=0.98.
+  whType=SMALLINSTANTANEOUS&comma; whHeatSrc=RESISTANCE or FUEL, 0.82, Annual efficiency = whEF*0.92
+  Any other, (unused)
+END
+%>
 
 <%= member_table(
   units: "",
