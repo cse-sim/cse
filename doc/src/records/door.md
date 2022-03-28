@@ -30,34 +30,13 @@ Overall area of door.
 
 Provides user control over how CSE models conduction for this door:
 
-  ----------------------------------- -----------------------------------
-  QUICK                               Surface is modeled using a simple
-                                      conductance. Heat capacity effects
-                                      are ignored. Either drCon or drU
-                                      (next) can be specified.
-
-  DELAYED, DELAYED\_HOUR,             Surface is modeled using a
-  DELAYED\_SUBOUR                     multi-layer finite difference
-                                      technique which represents heat
-                                      capacity effects. If the time
-                                      constant of the door is too short
-                                      to accurately simulate, a warning
-                                      message is issued and the Quick
-                                      model is used. drCon (next) must be
-                                      specified -- the program cannot use
-                                      the finite difference model if drU
-                                      rather than drCon is specified.
-
-  AUTO                                Program selects Quick or
-                                      appropriate Delayed automatically
-                                      according to the time constant of
-                                      the surface (if drU is specified,
-                                      Quick is selected).
-
-  FD or                               Selects the forward difference
-  FORWARD\_DIFFERENCE                 model (used with short time steps
-                                      and the CZM/UZM zone models)
-  ----------------------------------- -----------------------------------
+<%= csv_table(<<END, :row_header => false)
+  QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either drCon or drU (next) can be specified.
+  DELAYED&comma; DELAYED\_HOUR&comma; DELAYED\_SUBOUR,  Surface is modeled using a multi-layer finite difference technique which represents heat capacity effects. If the time constant of the door is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. drCon (next) must be specified -- the program cannot use the finite difference model if drU rather than drCon is specified.
+  AUTO,                                Program selects Quick or appropriate Delayed automatically according to the time constant of the surface (if drU is specified&comma; Quick is selected).
+  FD or FORWARD\_DIFFERENCE,           Selects the forward difference model (used with short time steps and the CZM/UZM zone models)
+END
+%>
 
 <%= member_table(
   units: "",
@@ -179,16 +158,17 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Diff
 
   When drModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on drExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
-  Model            Exposed to ambient              Exposed to zone
-  ---------------- ------------------------------- ----------------------------
-  UNIFIED          default CSE model               default CSE model
-  INPUT            hc = drExHcMult                 hc = drxxHcMult
-  AKBARI           Akbari model                    n/a
-  WALTON           Walton model                    n/a
-  WINKELMANN       Winkelmann model                n/a
-  MILLS            n/a                             Mills model
-  ASHRAE           n/a                             ASHRAE handbook values
-  --------------- ------------------------------- ----------------------------
+<%= csv_table(<<END, :row_header => true)
+  Model,            Exposed to ambient,              Exposed to zone
+  UNIFIED,          default CSE model,               default CSE model
+  INPUT,            hc = drExHcMult,                 hc = drxxHcMult
+  AKBARI,           Akbari model,                    n/a
+  WALTON,           Walton model,                    n/a
+  WINKELMANN,       Winkelmann model,                n/a
+  MILLS,            n/a,                             Mills model
+  ASHRAE,           n/a,                             ASHRAE handbook values
+END
+%>
 
 **drExHcModel=*choice***
 
@@ -230,14 +210,16 @@ Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=d
 
 Exterior roughness factor.  Typical roughness values:
 
-Roughness Index	   drExRf	 Example
------------------  ------  ---------
-1 (very rough)		 2.17	   Stucco
-2 (rough)          1.67 	 Brick
-3 (medium rough)	 1.52 	 Concrete
-4 (Medium smooth)	 1.13	   Clear pine
-5 (Smooth)         1.11    Smooth plaster
-6 (Very Smooth)		 1		   Glass
+<%= csv_table(<<END, :row_header => true)
+Roughness Index,	    drExRf,	 Example
+1 (very rough),		    2.17,	   Stucco
+2 (rough),            1.67, 	 Brick
+3 (medium rough),	    1.52, 	 Concrete
+4 (Medium smooth),	  1.13,	   Clear pine
+5 (Smooth),           1.11,    Smooth plaster
+6 (Very Smooth),		  1,		   Glass
+END
+%>
 
 <%= member_table(
   units: "",
