@@ -75,34 +75,25 @@ Week of the month that the holiday is observed. hdCase, hdMon, and hdDow may be 
 
 Month that the holiday is observed.
 
-  -----------------------------------------------------------------
-  **Units** **Legal**      **Default** **Required** **Variability**
-            **Range**
-  --------- -------------- ----------- ------------ ---------------
-            JAN, FEB, MAR, *none*      required if  constant
-            APR, MAY, JUN,             hdCase given   
-            JUL, AUG, SEP,
-            OCT, NOV, DEC
-
-  -----------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC",
+  default: "*none*",
+  required: "required if hdCase given",
+  variability: "constant")
+  %>
 
 **hdDow*=choice***
 
 Day of the week that the holiday is observed.
 
-  -------------------------------------------------------------
-  **Units** **Legal**  **Default** **Required** **Variability**
-            **Range**
-  --------- ---------- ----------- ------------ ---------------
-            SUNDAY,    MONDAY      required if  constant
-            MONDAY,                hdCase given   
-            TUESDAY,
-            WEDNESDAY,
-            THURSDAY,
-            FRIDAY,
-            SATURDAY                                                 
-
-  -------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY",
+  default: "MONDAY",
+  required: "required if hdCase given",
+  variability: "constant")
+  %>
 
 **endHoliday**
 
@@ -148,18 +139,19 @@ Examples of valid HOLIDAY object specifications:
 
 As with reports, Holidays are automatically generated for a standard set of Holidays. The following are the default holidays automatically defined by CSE:
 
-  ----------------- --------------------------
-  New Year's Day    \*January 1
-  M L King Day      \*January 15
-  President's Day   3rd Monday in February
-  Memorial Day      last Monday in May
-  Fourth of July    \*July 4
-  Labor Day         1st Monday in September
-  Columbus Day      2nd Monday in October
-  Veterans Day      \*November 11
-  Thanksgiving      4th Thursday in November
-  Christmas         \*December 25
-  ----------------- --------------------------
+<%= csv_table(<<END, :row_header => false)
+  New Year's Day,    \*January 1
+  M L King Day,      \*January 15
+  President's Day,   3rd Monday in February
+  Memorial Day,      last Monday in May
+  Fourth of July,    \*July 4
+  Labor Day,         1st Monday in September
+  Columbus Day,      2nd Monday in October
+  Veterans Day,      \*November 11
+  Thanksgiving,      4th Thursday in November
+  Christmas,         \*December 25
+END
+%>
 
 \* *observed on the following Monday if falls on a weekend, except as otherwise noted:*
 
