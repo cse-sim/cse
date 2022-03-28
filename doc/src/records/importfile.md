@@ -5,14 +5,15 @@ IMPORTFILE allows specification of a file from which external data can be access
 Import files are text files containing an optional header and comma-separated data fields.  With
 the header present, the structure of an import file matches that of an [EXPORT](#export) file.  This makes it convenient to import unmodified files EXPORTed from prior runs.  The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
 
-  Line      Contents                     Notes
-  --------- -----------------------      --------------------------------------
-  1         *runTitle*, *runNumber*      read but not checked
-  2         *timestamp*                  in quotes, read but not checked
-  3         *title*, *freq*              should match imTitle and imFreq (see below)
-  4         *colName1*,*colName2*,...    comma separated column names optionally in quotes
-  5 ..      *val1*,*val2*,...            comma separated values (string values optionally in quotes)
-
+<%= csv_table(<<END, :row_header => true)
+  Line,      Contents,                            Notes
+  1,         *runTitle*&comma; *runNumber*,       read but not checked
+  2,         *timestamp*,                         in quotes&comma; read but not checked
+  3,         *title*&comma; *freq*,               should match imTitle and imFreq (see below)
+  4,         *colName1*&comma; *colName2*&comma; ...,    comma separated column names optionally in quotes
+  5 ..,      *val1*&comma; *val2*&comma; ...,            comma separated values (string values optionally in quotes)
+END
+%>
 
 Example import file imp1.csv
 
