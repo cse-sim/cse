@@ -34,14 +34,12 @@ path name of file to be written. If no path is specified, the file is written in
 
 What CSE should do if file *xfFileName* already exists:
 
-  ----------------- ----------------------------------------------------
-  OVERWRITE         Overwrite pre-existing file.
-
-  NEW               Issue error message if file exists.
-
-  APPEND            Append new output to present contents of existing
-                    file.
-  ----------------- ----------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  OVERWRITE,         Overwrite pre-existing file.
+  NEW,               Issue error message if file exists.
+  APPEND,            Append new output to present contents of existing file.
+END
+%>
 
 If the specified file does not exist, it is created and *xfFileStat* has no effect.
 
