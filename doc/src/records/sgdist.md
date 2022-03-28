@@ -36,6 +36,7 @@ The specified surface must be modeled with the Delayed model. If gain is targete
 **sgSide=*choice***
 
 Designates the side of the surface to which the gain is to be targeted:
+
 <%= csv_table(<<END, :row_header => false)
 INTERIOR,   Apply gain to interior of surface
 EXTERIOR,   Apply gain to exterior of surface
@@ -52,6 +53,7 @@ END
 <!--
   ??This can produce some strange arrangements; verify that energy balance can be properly defined in all cases.
 -->
+
 **sgFSO=*float***
 
 Fraction of solar gain directed to specified surface when the owning window's interior shading is in the open position (when the window's zone's shade closure (znSC) is 0).
@@ -61,7 +63,7 @@ Fraction of solar gain directed to specified surface when the owning window's in
   legal_range: "0 $\\le$ *x* $\\le$ 1,and sum of window's sgFSO's $\\le$ 1",
   default: "*none*",
   required: "Yes",
-  variability: "monthly-hourl") %>
+  variability: "monthly-hourly") %>
 
 **sgFSC=*float***
 
