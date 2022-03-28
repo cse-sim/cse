@@ -18,15 +18,11 @@ Optional name of segment; give after the word “DHWLOOPSEG” if desired.
 
 Specifies the type of segment.  RETURN segments, if any, must follow SUPPLY segments.
 
-  --------- ---------------------------------------
-  SUPPLY    Indicates a supply segment (flow is sum
-            of circulation and draw flow, child
-            DHWLOOPBRANCHs permitted).
-
-  RETURN    Indicates a return segment (flow is
-            only due to circulation, child
-            DHWLOOPBRANCHs not allowed)
-  --------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  SUPPLY,    Indicates a supply segment (flow is sum of circulation and draw flow&comma; child DHWLOOPBRANCHs permitted).
+  RETURN,    Indicates a return segment (flow is only due to circulation&comma; child DHWLOOPBRANCHs not allowed)
+END
+%>
 
 <%= member_table(
   units: "",
