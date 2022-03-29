@@ -11,7 +11,7 @@ else()
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   if (NOT ${git_branch_exit_status} MATCHES "0")
-    set(GIT_BRANCH "unknown-branch")
+    message(FATAL_ERROR "GIT_BRANCH is not accessible." )
   endif()
 endif()
 
@@ -24,7 +24,7 @@ execute_process(
 )
 
 if (NOT ${git_sha_exit_status} MATCHES "0")
-  set(GIT_SHA "unknown-commit")
+    message(FATAL_ERROR "GIT_SHA is not accessible." )
 endif()
 
 execute_process(
@@ -36,22 +36,24 @@ execute_process(
 )
 
 if (NOT ${git_tag_exit_status} MATCHES "0")
-  set(GIT_TAG "unknown-tag")
+  message(FATAL_ERROR "GIT_TAG is not accessible." )
 endif()
 
-if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+$")
-  string(REGEX REPLACE "^v([0-9]+)\\.[0-9]+\\.[0-9]+$" "\\1" CSEVRSN_MAJOR "${GIT_TAG}")
-  string(REGEX REPLACE "^v[0-9]+\\.([0-9]+)\\.[0-9]+$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
-  string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+)$" "\\1" CSEVRSN_PATCH "${GIT_TAG}")
+if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-])?$")
+  string(REGEX REPLACE "^v([0-9]+)\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-])?$" "\\1" CSEVRSN_MAJOR "${GIT_TAG}")
+  string(REGEX REPLACE "^v[0-9]+\\.([0-9]+)\\.[0-9]+(\\-[0-9A-Za-z-])?$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
+  string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+)(\\-[0-9A-Za-z-])?$" "\\1" CSEVRSN_PATCH "${GIT_TAG}")
+  if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-])$")
+    string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-])$" "\\1" CSEVRSN_PRERELEASE "${GIT_TAG}")
+    message(STATUS "CSEVRSN_PRERELEASE is ${CSEVRSN_PRERELEASE}")
+  endif()
 elseif(GIT_TAG MATCHES "^cse\\.[0-9]+$")
   # old version scheme
   set(CSEVRSN_MAJOR "0")
   string(REGEX REPLACE "^cse\\.([0-9]+)$" "\\1" CSEVRSN_MINOR "${GIT_TAG}")
   set(CSEVRSN_PATCH "0")
 else()
-  set(CSEVRSN_MAJOR "?")
-  set(CSEVRSN_MINOR "?")
-  set(CSEVRSN_PATCH "?")
+  message(FATAL_ERROR "GIT_TAG ${GIT_TAG} must have format 'v<major>.<minor>.<patch>' or 'v<major>.<minor>.<patch>-<prerelease>'." )
 endif()
 
 execute_process(
@@ -63,7 +65,7 @@ execute_process(
 )
 
 if (NOT ${git_build_exit_status} MATCHES "0")
-  set(GIT_BUILD "unknown-build-number")
+  message(FATAL_ERROR "GIT_BUILD value ${GIT_BUILD} is not accessible." )
 endif()
 
 if(NOT ${GIT_BUILD} MATCHES "^0$")
@@ -72,7 +74,7 @@ else()
   set(CSEVRSN_META "")
 endif()
 
-message("Building CSE ${CSEVRSN_MAJOR}.${CSEVRSN_MINOR}.${CSEVRSN_PATCH}${CSEVRSN_META}")
+message("Building CSE ${CSEVRSN_MAJOR}.${CSEVRSN_MINOR}.${CSEVRSN_PATCH}${CSEVRSN_PRERELEASE}${CSEVRSN_META}")
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/src/csevrsn.h.in"
