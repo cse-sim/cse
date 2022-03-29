@@ -74,11 +74,10 @@ module Table
     end
     def insert_file(file_path)
       full_path = File.join(ROOT_DIR, file_path) 
-      if File.exists?(full_path)
+      if File.exist?(full_path)
         File.read(full_path)
       else
-        msg = ("Path '#{file_path}' doesn't exist. "
-               + "resolved full-path: '#{full_path}'")
+        msg = ("Path '#{file_path}' doesn't exist. " + "resolved full-path: '#{full_path}'")
         raise IOError.new(msg)
       end
     end
