@@ -316,7 +316,6 @@ const char* record::objIdTx(
 					  strtcat( tween, r->classObjTx( op), NULL),		// class and object name text,
 					  "\n    ");   					// inserting __ if line wd be too long
 		tween = " of ";
-		//if (r->b->isNamed() )				if basAnc's records have names: all do 7-92
 		if (r->name[0])					// if name is not ""
 			nameShown++;
 		if ( r->b->ownB==0 || r->ownTi <= 0		// or basAnc has no owning basAnc, or record has owning record,
@@ -347,7 +346,6 @@ const char* record::classObjTx(		// get class name - object name text
 	const char* what = (char *)b->what;  		// class name from basAnc
 
 // if it has a name ...
-	//if (r->b->isNamed())  		if basAnc's records have names: all do now, 7-92.
 	if (name[0])			// if this record has nonblank name
 		return strtprintf("%s '%s'", what, name);
 

@@ -182,10 +182,10 @@ NB return this BEFORE making xStk entry for command that fails. */
 // ditto, popping context stack a level on RCSKIP2END return
 #define FSP(f) { rc = (f); if (rc != RCOK) { if (rc==RCFATAL) return rc; \
                   			     xSp--;  return RCSKIP2END; } }
-		  /* note FSP neglects to clear 'defTyping' if xSp->cs==4.
-		     Believe that skip2end() cleans defTyping up ok. 1-91. */
+/* note FSP neglects to clear 'defTyping' if xSp->cs==4.
+	Believe that skip2end() cleans defTyping up ok. 1-91. */
 
-		  /*--------------------------- PUBLIC VARIABLES ----------------------------*/
+/*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
 // for testing by user .itf, .prf, .ckf fcns as well as internal use:
 SI NEAR defTyping = 0;	/* non-0 if defining a "type"
@@ -194,13 +194,6 @@ SI NEAR defTyping = 0;	/* non-0 if defining a "type"
 			               remains on thru nested culDATs, etc;
 			               also xSp->cs is 4 not 3 at DEFTYPE level. */
 
-// added 11-15-91. was there another way to know this?
-SI NEAR firstCulCall = 0;	/* non-0 if initial entry to cul(), 0 if recall.
-							   for testing in .itf/.prf/.ckf fcns.
-				               NOT USED 11-91, delete later if still unsused.
-				               case in CSE, 11-91: existing report/export files get
-				               deleted first run, appended to in later runs,
-				               was done another way. */
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
@@ -429,7 +422,6 @@ x	trace = 1;
 		xSp = xStk;			// init context stack pointer
 		culNRuns = 0;			// init RUN cmd counter
 		culNClears = 0;			// init CLEAR cmd counter
-		firstCulCall = 1;		// say initial entry, for .ckf testing 11-91
 
 		if (!addVrbsDone)		// don't repeat, for speed, 10-93
 		{
@@ -511,8 +503,6 @@ x	trace = 1;
 #endif
 
 	} // if cs==1
-	else
-		firstCulCall = 0;		// say not initial entry, for .ckf testing 11-91
 
 // reinitialize on reentry: call re-entry pre-input fcn, using main STAR check-function pointer, 7-12-92
 	if (cs==2)				// if recall, to continue data entry eg for another a run.
@@ -1028,9 +1018,8 @@ LOCAL RC FC NEAR culENDER( 	// do  c u l  end cases
 		// look for and check optional basAnc record name after command
 
 		if ( (xSp->cs==3			// if ending a basAnc record
-		|| xSp->cs==4)		// .. or DEFTYPE basAnc record
-		//&& xSp->b->isNamed()   	if basAnc has records with standard name member: all do, 7-92.
-		&& nxPrec() > PRSEM )   	// if next token NOT terminator (eof, verb, verb-like, type, ';') (ungets the token)
+		  || xSp->cs==4)			// .. or DEFTYPE basAnc record
+		  && nxPrec() > PRSEM )   	// if next token NOT terminator (eof, verb, verb-like, type, ';') (ungets the token)
 		{
 			char *p;
 			if (ganame( 0, NULL, &p)==RCOK)   				// get id, "text", or const string expr (uses xSp->c->id)
@@ -1097,9 +1086,6 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 	CULT *c = xSp->c;
 	BP b = (BP)c->b;
 
-	//if (b->isNamed()==0)					if basAnc does not have named records: no such left, 7-92.
-	//   return perNx( (char *)MH_S0218, (char *)c->id );     	// err msg "cannot DELETE '%s's", ret RCBAD
-
 	// get Identifier, Quoted txt, or constant string eXpr for name, & get terminator.
 	char* name;
 	CSE_E( ganame( 0,		// disallow "all" and "sum"
@@ -1159,40 +1145,31 @@ LOCAL RC FC NEAR culRATE(	// do RATE cult entry
 		NULL,		// would receive column
 		NULL, 0 );		// char[] buffer would rcv line text
 
-// conditionally get id (name)
-	//if (b->isNamed())			if basAnc's records have names (lib\ancrec.cpp) (all do 7-92)
+	if (nxPrec() <= PRSEM)		// if terminator next (eof, verb-like, verb, type, ';') (ungets it)
 	{
-		if (nxPrec() <= PRSEM)		// if terminator next (eof, verb-like, verb, type, ';') (ungets it)
+		if (defTy)				// deftype rq's name
 		{
-			if (defTy)				// deftype rq's name
-			{
-				toke();						// to position ^ in errmsg
-				return perNxE( (char *)MH_S0221, (char *)c->id);	// err msg "%s type name required", skip group (?)
-			}
-			if (c->f & NM_RQD)					// if name required
-			{
-				toke();						// position errMsg ^
-				return perNxE( (char *)MH_S0222, (char *)c->id);	// err msg "%s name required", skip group (?)
-			}
+			toke();						// to position ^ in errmsg
+			return perNxE( (char *)MH_S0221, (char *)c->id);	// err msg "%s type name required", skip group (?)
 		}
-		else					// terminator not next
+		if (c->f & NM_RQD)					// if name required
 		{
-			// get Identifier, Quoted txt, or constant string eXpression for name. local fcn.
-			if ( ganame( 0,		// disallow "all" and "sum"
-			   NULL,		// use xSp->c->id in error messages
-			   &name )		// rcvs string ptr. ganame gets terminator.
-			     != RCOK )
-				return RCSKIP2END;		// on error in name, skip stmt blk (ganame already perNx'd).
-			// duplicate name check is below
-			xprD++;			// say terminator already gotten (by xpr from ganame)
-			// note: permits ; between name and LIKE/USETYPE: not desired 1-91.
+			toke();						// position errMsg ^
+			return perNxE( (char *)MH_S0222, (char *)c->id);	// err msg "%s name required", skip group (?)
 		}
 	}
-	//else			all records are now named, 7-92.	// not named record basAnc: DEFTYPE, ALTER not allowed
-	//if (defTy)
-	//   return perNxE( (char *)MH_S0223, (char *)c->id );	// err msg "cannot define TYPEs for '%s'", return RCSKIP2END
-	//else if (alter)
-	//   return perNxE( (char *)MH_S0224, (char *)c->id );	// err msg "cannot ALTER '%s's", return RCSKIP2END
+	else					// terminator not next
+	{
+		// get Identifier, Quoted txt, or constant string eXpression for name. local fcn.
+		if ( ganame( 0,		// disallow "all" and "sum"
+			NULL,		// use xSp->c->id in error messages
+			&name )		// rcvs string ptr. ganame gets terminator.
+			    != RCOK )
+			return RCSKIP2END;		// on error in name, skip stmt blk (ganame already perNx'd).
+		// duplicate name check is below
+		xprD++;			// say terminator already gotten (by xpr from ganame)
+		// note: permits ; between name and LIKE/USETYPE: not desired 1-91.
+	}
 
 // get optional "LIKE <name>" or "COPY <name>"
 	if (!alter && tkIf2( CUTLIKE, CUTCOPY))
@@ -3673,8 +3650,7 @@ LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for 
 
 		// generate constructor arguments: flags, what, ownB
 
-		int flags = RFTYS | RFNOEX  				// say is "types" anchor, disable expression expansion
-		   | (b->ba_flags & (RFNAMED|RFOWNED) );  	// same namedness and ?ownedness as base anchor
+		int flags = RFTYS | RFNOEX;  				// say is "types" anchor, disable expression expansion
 
 		char *_what = strsave( strtcat( (char *)b->what, " type", NULL) );	// form record type name
 		if (!_what)								// if failed (strsave issued msg, right?)
@@ -3694,8 +3670,8 @@ LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for 
 		{
 			//  (known inconsistency: out of memory messages from
 			// memfullerr: ;			//  ancrec, dmpak, etc do not appear in input listing.)
-			cuEr( 0, (char *)MH_S0267);				// display message and echo in input listing 1-8-92.
-			// "Out of near heap memory (cul:ratTyr)"
+			cuEr( 0, (char *)MH_S0267);		// display message and echo in input listing 1-8-92.
+											// "Out of near heap memory (cul:ratTyr)"
 			return RCFATAL;					// out of memory: end session.
 		}
 	}
@@ -4694,16 +4670,16 @@ x            (char *)MH_S0275,    		// "cul.cpp:culMbrId called with xSp %p not 
 x            (void *)xSp, (void *)xStk );	// casts are to make far.
 #endif
 
-	const char* tx = NULL;
-#if 1	// use basAnc's associated CULT, 3-24-2016
+
+	// use basAnc's associated CULT, 3-24-2016
 	if (b->an_pCULT)		// if basAnc has an associated CULT
 	{	for (const CULT* c=b->an_pCULT; c->id; c++)
 		{	if (c->cs==DAT && c->fn==fn)
 				return c->id;
 		}
 	}
-#endif
 
+	const char* tx = NULL;
 	for (CULT *c = NULL;  xnxC(c);  )	// loop CULT entries, using xStk[0], making addl xStk entries
 		if (
 #if 1	// another try, 4-9-2013

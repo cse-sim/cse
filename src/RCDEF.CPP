@@ -168,7 +168,6 @@
 #include <xiopak.h>     // xffilcomp
 #include <envpak.h>     // hello byebye
 #include <lookup.h>     // SWTABLE structure, looksw
-#include <ancrec.h>     // RFNAMED
 #include <cuevf.h>      // EVFHR EVFMH
 #include "cvpak.h"
 
