@@ -4,10 +4,8 @@
 
 // cncult.cpp: cul user interface tables and functions for cnr.exe: part 1: tables and most fcns called via tables
 
-//unresolved notes
+// unresolved notes
 // colJust does nothing for exportCol. take it out. 8-14-92.
-
-// line 650: ooWarn wanted.  Is it now implemented?  7-10-92.
 
 // TYREF's are supposed to be VEOI/VFAZLY, right? A lot were 0, changed to VEOI 10-9-92. cul.cpp doesn't check evf for TYREF.
 
@@ -51,88 +49,6 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 
 
 /*---------------------------- INPUT VARIABLES ----------------------------*/
-
-// declarations in irats.h.
-// order of declaration may control order of -p info display
-
-/* "Top" input record base/anchor (basAnc): contains top-level / one-instance-only input stuff,
-   set via table cnTopCult[], as cul.cpp user input functions can store only in RATs.
-   May be accessed as static Topi.member, or as TopiR.p->member. */
-makAncTOPRAT( TopiR);   		// "Top" info input record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
-TOPRAT Topi( (anc<TOPRAT> *)&TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
-// pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
-
-// inverse objects
-makAncINVERSE(IvB);
-
-// zones, transfers, gains, meters
-makAncZNI(ZiB);				// zones input info records basAnc
-makAncIZXRAT( IzxiB);		// interzone transfer input records basAnc
-makAncDUCTSEG( DsiB);		// duct segment input records basAnc
-makAncGAIN(GniB);			// (zone) gains input records basAnc
-makAncMTR(MtriB);			// Meters input records basAnc
-makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
-makAncDHWMTR(WMtriB);		// DHW meters
-makAncLOADMTR(LdMtriB);		// Load meters
-
-// simple HVAC and DHW (for CSE T24 residential compliance)
-makAncRSYS( RSiB);			// residential HVAC system
-makAncDOAS( OAiB);			// DOAS input records basAnc
-makAncDHWSYS( WSiB);		// DHW system
-makAncDHWHEATER( WHiB);		// DHW heater
-makAncDHWTANK( WTiB);		// DHW tank
-makAncDHWHEATREC( WRiB);	// DHW heat recovery
-makAncDHWPUMP( WPiB);		// DHW pump
-makAncDHWLOOP( WLiB);		// DHW loop
-makAncDHWLOOPSEG( WGiB);	// DHW loop segment
-makAncDHWLOOPBRANCH( WBiB);	// DHW loop branch
-makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
-makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater (aka "swing tank")
-makAncDHWDAYUSE( WDUiB);	// DHW daily use
-makAncDHWUSE( WUiB);		// DHW use (single draw)
-
-makAncDHWSOLARSYS(SWHiB);	// DHW Solar System
-makAncDHWSOLARCOLLECTOR(SCiB);	// DHW Solar Collector
-
-makAncPVARRAY(PViB);		// PV array
-makAncBATTERY(BTiB);		// Battery
-
-makAncSHADEX( SXiB);		// SHADEX external shading
-
-// air handlers and terminals and plant
-makAncTU(TuiB);				// terminals input
-makAncAH(AhiB);				// air handlers input
-makAncHEATPLANT(HpiB);		// HEATPLANTs input info
-makAncBOILER(BlriB);		// BOILERs input info
-makAncCOOLPLANT(CpiB);		// COOLPLANTs input info
-makAncCHILLER(ChiB);		// CHILLERs input info
-makAncTOWERPLANT(TpiB);		// TOWERPLANTs input info
-// surfaces etc
-makAncPRI(PriB);  			// perimeters input records basAnc
-//surfaces, doors, windows: same struct: required by topSf1() and -2.
-makAncSFI(SfiB);  			// surfaces input records basAnc
-makAncSFI2(DriB,"door");   	// doors input records basAnc
-makAncSFI2(GziB,"window"); 	// windows input records basAnc
-makAncWSHADRAT(ShiB);		// shades (fins, ovh's) input records basAnc
-makAncSGI(SgiB); 			// solar gain distributions input records basAnc
-// construction
-makAncGT(GtiB);  			// glazeTypes input info 12-94
-makAncFOUNDATION(FndiB);  			// foundations input info records basAnc
-makAncFNDBLOCK(FbiB);  			// foundation blocks input info records basAnc
-makAncCON(ConiB);  			// constructions input info records basAnc
-makAncLR(LriB);    			// layers input info records basAnc
-makAncMAT(MatiB);			// materials input info records basAnc
-// reports etc
-makAncRFI(RfiB);  				// REPORTFILE input info
-makAncRFI2(XfiB,"exportFile"); // EXPORTFILE input info
-makAncRI(RiB);    				// REPORT input info
-makAncRI2(XiB,"export");		// EXPORT input info
-makAncCOL(RcoliB);				// REPORTCOL input info for UDT reports
-makAncCOL2(XcoliB,"exportCol"); // EXPORTCOL input info for UDT exports
-makAncIMPF(ImpfiB);				// IMPORTFILE input info, 2-94
-
-makAncHDAY(HdayiB);				// HDAY input info
-makAncDESCOND(DCiB);			// DESCOND input info
 
 //=======================================================================
 void FC iRatsFree()	// free record storage for all input basAncs.
@@ -2995,15 +2911,201 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "clear",       CLEAR, 0,                 PRFP,       0, 0,      0,     0,   v topClearItf,0.f,   v topStarPrf, N), // note topStarPrf reuse
 	CULT()
 };	// cnTopCult
+//=======================================================================================
 
-/*lint +e507 */
+/////////////////////////////////////////////////////////////////////////////////////////
+// basanc
+
+// declarations in irats.h.
+// order of declaration may control order of -p info display
+
+// "Top" input record base/anchor (basAnc): contains top-level / one-instance-only input stuff,
+//   set via table cnTopCult[], as cul.cpp user input functions can store only in RATs.
+//   May be accessed as static Topi.member, or as TopiR.p->member. */
+makAncTOPRAT(TopiR, cnTopCult);   			// "Top" info input record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
+TOPRAT Topi((anc<TOPRAT>*)& TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
+// pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
+
+// inverse objects
+makAncINVERSE(IvB, inverseT);
+
+// zones, transfers, gains, meters
+makAncZNI(ZiB, znT);				// zones input info records basAnc
+makAncIZXRAT(IzxiB, izxT);		// interzone transfer input records basAnc
+makAncDUCTSEG(DsiB, dsT);		// duct segment input records basAnc
+makAncGAIN(GniB, gnT);			// (zone) gains input records basAnc
+makAncMTR(MtriB, mtrT);			// Meters input records basAnc
+makAncAFMTR(AfMtriB, afMeterT);		// Airflow meters input records basAnc
+makAncDHWMTR(WMtriB, dhwMeterT);		// DHW meters
+makAncLOADMTR(LdMtriB, ldMeterT);		// Load meters
+
+// simple HVAC and DHW (for CSE T24 residential compliance)
+makAncRSYS(RSiB, rsysT);			// residential HVAC system
+makAncDOAS(OAiB, doasT);			// DOAS input records basAnc
+makAncDHWSYS(WSiB, dhwSysT);		// DHW system
+makAncDHWHEATER(WHiB, dhwHeaterT);		// DHW heater
+makAncDHWTANK(WTiB, dhwTankT);		// DHW tank
+makAncDHWHEATREC(WRiB, dhwHeatRecT);	// DHW heat recovery
+makAncDHWPUMP(WPiB, dhwPumpT);		// DHW pump
+makAncDHWLOOP(WLiB, dhwLoopT);		// DHW loop
+makAncDHWLOOPSEG(WGiB, dhwLoopSegT);	// DHW loop segment
+makAncDHWLOOPBRANCH(WBiB, dhwLoopBranchT);	// DHW loop branch
+makAncDHWLOOPPUMP(WLPiB, dhwLoopPumpT);	// DHW loop pump
+makAncDHWHEATER2(WLHiB, dhwHeaterT, "DHWLoopHeater");		// DHW loop heater (aka "swing tank")
+makAncDHWDAYUSE(WDUiB, dhwDayUseT);	// DHW daily use
+makAncDHWUSE(WUiB, dhwUseT);		// DHW use (single draw)
+
+makAncDHWSOLARSYS(SWHiB, dhwSolSysT);	// DHW Solar System
+makAncDHWSOLARCOLLECTOR(SCiB, dhwSolColT);	// DHW Solar Collector
+
+makAncPVARRAY(PViB, pvArrT);		// PV array
+makAncBATTERY(BTiB, btT);		// Battery
+
+makAncSHADEX(SXiB, shadexT);		// SHADEX external shading
+
+// air handlers and terminals and plant
+makAncTU(TuiB, tuT);				// terminals input
+makAncAH(AhiB, ahT);				// air handlers input
+makAncHEATPLANT(HpiB, hpT);		// HEATPLANTs input info
+makAncBOILER(BlriB, blrT);		// BOILERs input info
+makAncCOOLPLANT(CpiB, cpT);		// COOLPLANTs input info
+makAncCHILLER(ChiB, chT);		// CHILLERs input info
+makAncTOWERPLANT(TpiB, tpT);		// TOWERPLANTs input info
+// surfaces etc
+makAncPRI(PriB, perT);  			// perimeters input records basAnc
+//surfaces, doors, windows: same struct: required by topSf1() and -2.
+makAncSFI(SfiB, sfT);  			// surfaces input records basAnc
+makAncSFI2(DriB, drT, "door");   	// doors input records basAnc
+makAncSFI2(GziB, wnT, "window"); 	// windows input records basAnc
+makAncWSHADRAT(ShiB, shT);		// shades (fins, ovh's) input records basAnc
+makAncSGI(SgiB, sgT); 			// solar gain distributions input records basAnc
+// construction
+makAncGT(GtiB, gtT);  			// glazeTypes input info 12-94
+makAncFOUNDATION(FndiB, fdT);  			// foundations input info records basAnc
+makAncFNDBLOCK(FbiB, fbT);  			// foundation blocks input info records basAnc
+makAncCON(ConiB, conT);  			// constructions input info records basAnc
+makAncLR(LriB, lrT);    			// layers input info records basAnc
+makAncMAT(MatiB, matT);			// materials input info records basAnc
+// reports etc
+makAncRFI(RfiB, rpfT);  				// REPORTFILE input info
+makAncRFI2(XfiB, exfT, "exportFile"); // EXPORTFILE input info
+makAncRI(RiB, rpT);    				// REPORT input info
+makAncRI2(XiB, exT, "export");		// EXPORT input info
+makAncCOL(RcoliB, rpColT);				// REPORTCOL input info for UDT reports
+makAncCOL2(XcoliB, exColT, "exportCol"); // EXPORTCOL input info for UDT exports
+makAncIMPF(ImpfiB, impfT);				// IMPORTFILE input info
+
+makAncHDAY(HdayiB, hdayT);				// HDAY input info
+makAncDESCOND(DCiB, dcT);			// DESCOND input info
+
+///////////////////////////////////////////////////////////////////////////////
+// Record Array base/anchors (basAncs)
+// see members and comments in cnrecs.def.
+///////////////////////////////////////////////////////////////////////////////
+// order of construction may control order of display by -p.  Input record basAncs are in cncult.cpp.
+// "Top" record basAnc. Top record contains top-level / once-only stuff.  Access as Top.mbr or TopR.p->mbr.
+// Set (and used): cncult.cpp (from TopiR).  Used: cnguts (and frees .wfname), cgwthr. 2-91. probably now many more uses 1-92.
+makAncTOPRAT(TopR, cnTopCult);   		// "Top" info record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
+TOPRAT Top((anc<TOPRAT>*)& TopR, 0);  	// Top's one static record (entry).  statSetup call is in cgPreInit, below.
+// pending >>> make constructor for rec 0 conditionally init top, so statSetup not needed. 2-92.
+// weather. 1-record static basAncs for probe-ability
+makAncWFILE(WfileR, nullptr);						// basAnc for...
+WFILE Wfile((anc<WFILE>*)& WfileR, 0);	// record containing info on file and buffer for day's data (c'tor call).
+makAncWFDATA(WthrR, nullptr);						// basAnc for...
+WFDATA Wthr((anc<WFDATA>*)& WthrR, 0);	// record containing current hour's weather data, extracted and adjusted.
+makAncWFDATA2(WthrNxHrR, nullptr, "weatherNextHour");	// basAnc for...
+WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next hour's weather data,
+													// extracted and adjusted, for cgWthr.cpp read-ahead
+makAncDESCOND(DcR, dcT);						// design conditions
+
+// zones, transfers, gains, meters
+makAncZNR(ZrB, nullptr);			// Zones runtime info: input set in cncult.
+makAncZNRES(ZnresB, nullptr);		// Month and year simulation results for zones
+makAncIZXRAT(IzxR, izxT);		// interZone transfers -- conductions / ventilations between zones
+makAncDOAS(doasR, doasT);		// DOAS
+makAncGAIN(GnB, gnT);			// (zone) gains run records basAnc
+
+makAncMTR(MtrB, mtrT);			// meters (energy use) run records basAnc
+makAncAFMTR(AfMtrR, afMeterT);		// air flow meters run basAnc
+makAncLOADMTR(LdMtrR, ldMeterT);		// load meters run basAnc
+makAncDHWMTR(WMtrR, dhwMeterT);		// DHW meters
+
+// hvac: residential system model
+makAncRSYS(RsR, rsysT);			// compliance-oriented simple residential system model
+makAncRSYSRES(RsResR, nullptr);		// RSYS results
+makAncDUCTSEG(DsR, dsT);		// duct segments
+makAncDUCTSEGRES(DsResR, nullptr);	// DUCTSEG results
+
+// DHW: water heating
+makAncDHWSYS(WsR, dhwSysT);			// DHW system
+makAncDHWSYSRES(WsResR, nullptr);	// DHWSYS results
+makAncDHWHEATER(WhR, dhwHeaterT);		// DHW heater
+makAncDHWHEATREC(WrR, dhwHeatRecT);		// DHW heat recovery
+makAncDHWTANK(WtR, dhwTankT);		// DHW tank
+makAncDHWPUMP(WpR, dhwPumpT);		// DHW pump
+makAncDHWLOOP(WlR, dhwLoopT);		// DHW loop
+makAncDHWLOOPSEG(WgR, dhwLoopSegT);		// DHW loop segment
+makAncDHWLOOPBRANCH(WbR, dhwLoopBranchT);	// DHW loop branch
+makAncDHWLOOPPUMP(WlpR, dhwLoopPumpT);	// DHW loop pump
+makAncDHWHEATER2(WlhR, dhwHeaterT, "DHWLoopHeater");		// DHW loop heater (aka "swing tank")
+makAncDHWDAYUSE(WduR, dhwDayUseT);		// DHW day use
+makAncDHWUSE(WuR, dhwUseT);			// DHW use
+
+makAncDHWSOLARSYS(SwhR, dhwSolSysT);	// DHW solar system
+makAncDHWSOLARCOLLECTOR(ScR, dhwSolColT);	// DHW solar collector
+
+makAncPVARRAY(PvR, pvArrT);			// PV array
+makAncBATTERY(BtR, btT);			// Battery
+
+makAncSHADEX(SxR, shadexT);			// Shading
+
+// hvac: terminals, air handlers, plant
+makAncTU(TuB, tuT);  			// terminals
+makAncAH(AhB, ahT); 			// air handlers
+makAncZHX(ZhxB, nullptr);			// Zone HVAC transfers: these relate to terminals & air handlers.
+makAncAHRES(AhresB, nullptr);		// air handler results
+makAncHEATPLANT(HpB, hpT);		// HEATPLANT run info
+makAncBOILER(BlrB, blrT);     	// BOILER run info
+makAncCOOLPLANT(CpB, cpT);		// COOLPLANTs run info
+makAncCHILLER(ChB, chT);		// CHILLERs run info
+makAncTOWERPLANT(TpB, tpT);    	// TOWERPLANTs run info
+
+// surfaces and constructions
+makAncXSRAT(XsB, nullptr);		// runtime XSURFs: radiant/conductive coupling-to-ambient info for (light) os, doors,
+						//  glz, & perims, and solar gains of mass outsides ("mass walls").
+makAncWSHADRAT(WshadR, nullptr);// Window shading info: entry for each window that has fin and/or overhang(s).
+						//    Accessed via subscript in XSURF.iwshad.
+makAncMSRAT(MsR, nullptr);		// Masses
+makAncKIVA(KvR, nullptr);		// Kiva Instances
+makAncSGRAT(SgR, nullptr);		// Solar gains for current month/season, calculated when month or season
+						//   [or other input] changes.
+// construction: CON/LR/MAT have input rats only.
+makAncGT(GtB, gtT);  		// glazeTypes runtime records, 12-94.
+// reports &c run rats. these persist thru autosize & main simulation.
+// note: runtime info for RE/EXPORTFILEs: all there is in UnspoolInfo, below.
+// note: runtime info for RE/EXPORTs is in DvriB and RcolB/XcolB, various globals and Top and ZnR members, and UnspoolInfo.p
+makAncDVRI(DvriB, nullptr);		// Date-dependent Virtual Reports/exports Info
+makAncCOL(RcolB, rpColT);		// reportCols info for user-defined reports
+makAncCOL2(XcolB, exColT,"exportCol");	// exportCols info for user-defined exports
+// imports
+makAncIMPF(ImpfB, impfT);		// IMPORTFILEs runtime info 2-94
+makAncIFFNM(IffnmB, nullptr);		// Import File Field Names compile support & runtime info 2-94
+// holidays
+makAncHDAY(HdayB, hdayT);		// holidays. default records supplied
+// when adding a basAnc, add it to basAnc::free list in cgDone, below.
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 //============================================================================================
 /*static*/ void basAnc::an_SetCULTLinks()
-{	RiB.an_SetCULTLink( rpT);
-	XiB.an_SetCULTLink( exT);
-}		// SetCULTLinks
+{	
+	// an_pCULT links set during anc<T> creation (via makAncXXX())
+	// nothing further required
+}		// basAnc::an_SetCULTLinks
 //============================================================================================
-class CULTDOC
+class CULTDOC		// local class to facilitate input structure documentation export
 {
 public:
 	CULTDOC( int options) : cu_options( options) {}

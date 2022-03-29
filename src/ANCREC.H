@@ -87,7 +87,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
     basAnc();
-    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, int dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
@@ -305,8 +305,8 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( char *what, SFIR *sFir, USI nFlds, RCT rt) 		// cpp'tor used for static instances
-        : basAnc( RFNAMED|RFOWNED, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat) )
+    anc( char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
+        : basAnc( RFNAMED|RFOWNED, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT)
         { p = 0; }								// soon code out obsolete flags RFNAMED, RFOWNED.
     anc( const BP src, int flags, char  *_what,  			// like-another constructor,
          BP _ownB, int dontRegister=0 );    				//  code included only ifdef NEEDLIKECTOR.
