@@ -1872,6 +1872,7 @@ end
 
 desc "Run documentation coverage checker"
 task :coverage do
+  all_passed = true
   time_it do
     puts("#"*60)
     puts("Check CSE User Manual's Documentation Coverage")
@@ -1904,6 +1905,7 @@ task :coverage do
     ris2 = CoverageCheck::ReadAllRecordDocuments[files]
     ris3 = CoverageCheck::DropNameFieldsIfNotInRef[CoverageCheck::AdjustMap[ris2], ris1]
     diffs = CoverageCheck::RecordInputSetDifferences[ris1, ris3, false]
+    all_passed = diffs.nil?
     diff_report = CoverageCheck::RecordInputSetDifferencesToString[
       diffs, "CSE", "Documentation"
     ]
@@ -1911,6 +1913,7 @@ task :coverage do
     File.write("documentation-coverage-report.txt", diff_report)
     puts("\nCoverage Check DONE!")
     puts("^"*60)
+    exit(1) unless all_passed
   end
 end
 
