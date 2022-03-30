@@ -68,7 +68,20 @@ if (NOT ${git_build_exit_status} MATCHES "0")
   message(FATAL_ERROR "GIT_BUILD value ${GIT_BUILD} is not accessible." )
 endif()
 
-set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}")
+# Check for modified ("dirty") state
+execute_process(
+  COMMAND ${GIT_EXECUTABLE} diff --shortstat
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE git_stat_exit_status
+  OUTPUT_VARIABLE GIT_STATUS
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if (${GIT_STATUS} MATCHES "changed")
+  set(GIT_STATUS ".dirty")
+endif()
+
+set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}${GIT_STATUS}")
 
 message("Building CSE ${CSEVRSN_MAJOR}.${CSEVRSN_MINOR}.${CSEVRSN_PATCH}${CSEVRSN_PRERELEASE}${CSEVRSN_META}")
 
