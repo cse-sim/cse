@@ -124,6 +124,14 @@ The following four allow specification of meters to record boiler auxiliary ener
 
 **blrAuxFullOffMtr=*mtrName***
 
+**blrAuxFullOff=*deprecated***
+
+**blrAuxOff=*deprecated***
+
+**blrAuxOn=*deprecated***
+
+**blrAuxOnAtall=*deprecated***
+
 **blrAuxOnAtAllMtr=*mtrName***
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**

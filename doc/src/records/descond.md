@@ -1,6 +1,6 @@
 # Descond
 
-Todo
+Cooling design conditions
 
 **dcDB=*float***
 
