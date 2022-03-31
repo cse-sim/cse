@@ -35,6 +35,8 @@ sections:
   - [1, "input-data.md"]
   - [2, "records/top-members.md"]
   - [2, "records/holiday.md"]
+  - [2, "records/descond.md"]
+  - [2, "records/inverse.md"]
   - [2, "records/material.md"]
   - [2, "records/construction.md"]
   - [2, "records/foundation.md"]
