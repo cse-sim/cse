@@ -13,14 +13,14 @@ Design dry-bulb temp.
   required: "No",
   variability: "constant") %>
 
-**dcDay=*float***
+**dcDay=*DOY***
 
 Calendar date for this design cooling conditions.
 
 <%= member_table(
   units: "",
-  legal_range: "",
-  default: "**none**",
+  legal_range: "1-365",
+  default: "200",
   required: "No",
   variability: "constant") %>
 
@@ -30,7 +30,7 @@ Solar noon beam normal.
 
 <%= member_table(
   units: "Btuh/ft^2^",
-  legal_range: "",
+  legal_range: "x $\\geq$ 0",
   default: "**none**",
   required: "No",
   variability: "constant") %>
@@ -41,7 +41,7 @@ Solar noon diffuse horizon.
 
 <%= member_table(
   units: "Btuh/ft^2^",
-  legal_range: "",
+  legal_range: "x $\\geq$ 0",
   default: "**none**",
   required: "No",
   variability: "constant") %>
@@ -52,7 +52,7 @@ Coincident daily dry-bulb range.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "",
+  legal_range: "no-limitations?",
   default: "**none**",
   required: "No",
   variability: "constant") %>
@@ -63,7 +63,7 @@ Coincident wet-bulb temp.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "",
+  legal_range: "no-limitations?",
   default: "**none**",
   required: "No",
   variability: "constant") %>
@@ -74,7 +74,7 @@ Coincident daily wet-bulb range.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "",
+  legal_range: "no-limitations?",
   default: "**none**",
   required: "No",
   variability: "constant") %>
