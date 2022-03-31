@@ -28,6 +28,12 @@ html-site-top: "/index.html"
 html-site-toc: "/cse-user-manual/index.html"
 css-files:
   - "/css/base.css"
+ignore-coverage:
+  records:
+    - "airHandler"
+  data-fields:
+    export:
+      - "exTu"
 sections:
   - [1, "introduction.md"]
   - [1, "operation.md"]
