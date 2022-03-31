@@ -31,6 +31,13 @@ css-files:
 ignore-coverage:
   records:
     - "airHandler"
+    - "boiler"
+    - "chiller"
+    - "coolPlant"
+    - "heatPlant"
+    - "inverse"
+    - "terminal"
+    - "towerPlan"
 <% if inactive_CNE_records %>
   data-fields:
     export:
