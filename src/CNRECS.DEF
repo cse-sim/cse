@@ -5261,7 +5261,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
  	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
 	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
 	*declare "double mtr_NetBldgLoad() const;"
-	*declare "RC mtr_Validate() const;"
+	*declare "RC MTR_IVL_SUB::mtr_Validate( const MTR* mtr, IVLCH ivl) const;"
 
     *p float tot		// total of following specific end uses.  Code assumes precedes them.
 						//  = allEU + bt + pv

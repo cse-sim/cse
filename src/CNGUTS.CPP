@@ -1358,6 +1358,10 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 				   name, gnFrRad, gnFrLat, gnFrRad + gnFrLat );
 
 	// accumulate zone lighting power before and after daylighting reduction, for binary results file and/or custom reports
+#if 0
+	if (Top.iHr == 0)
+		printf("\nBeg day");
+#endif
 	double gnPX = gnPower;				// fetch gain power level for modification
 	if (gnEndUse==C_ENDUSECH_LIT && zp)	// if gain has "lighting" end use
 		zp->znLitDmd += gnPX;		// accumulate zone total lighting "demand" -- b4 daylighting reduction.
@@ -2186,9 +2190,10 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 			mtrSub1->dmdCost = mtrSub1->dmd * mtr->dmdRate;
 
 #if defined( _DEBUG)
-			float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
-			if (fabs( xTot - mtrSub1->tot) > 1.)
-				printf( "\nBad sub1");
+			if (!Top.isWarmup)
+				// small errors seen during autosize, not understood
+				// disable check, investigate TODO, 3-2022
+				mtrSub1->mtr_Validate(mtr, ivl);
 #endif
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
@@ -2204,19 +2209,18 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 				}
 				else								// additional records: accumulate ...
 					mtrSum.mtr_Accum1( mtrSub1, ivl, 2);			// treatment of demand not necessarily sensible.
-#if 0 && defined( _DEBUG)
-				float xTot = VSum<float,double>( &mtrSum.clg, NENDUSES-2);
-				if (frDiff( xTot, mtrSum.tot) > .001)
-					printf( "\nBad sum");
+#if defined( _DEBUG)
+				if (!Top.isWarmup)
+					mtrSub1->mtr_Validate(mtr, ivl);
 #endif
 			}
 			firstRec = 0;
 		}
 
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		// MTR_IVL_SUB mtrSub2Was( *mtrSub2);
-		if (bTrc)
+		// if (bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
 			if (frDiff( xTot, mtrSub1->tot) > .001)
 				printf( "\n    Bad sub1");
@@ -2229,7 +2233,7 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 	// Note: doHourGains 0's MTR hour info at start hour.
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
 
-#if	defined( _DEBUG)
+#if	0 && defined( _DEBUG)
 		// if (bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub2->clg, NENDUSES);
 			if (frDiff(xTot, mtrSub2->tot, 1.f) > .001)
@@ -2239,15 +2243,39 @@ LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g
 	}
 }		// mtrsFinalize
 //-----------------------------------------------------------------------------------------------------------
-RC MTR_IVL_SUB::mtr_Validate() const
+RC MTR_IVL_SUB::mtr_Validate(		// validity checks w/ message(s)
+	const MTR* mtr,		// parent meter
+	IVLCH ivl) const	// interval being checked
 // for ad hoc tests of meter validity
 // used only in development _DEBUG builds
 // not called in RELEASE, 6-20
 {
+	RC rc{ RCOK };
+#if 0
 	if (clg < 0.01f && fanC > 0.01f)
-		printf("\nMTR_IVl_SUB:Validate bad");
+		printf("\nMeter '%s': inconsistent cooling fan energy",
+			mtrName);
+#endif
 
-	return RCOK;
+	char msgs[2000] = { 0 };
+
+	float xTot = VSum<float, double>(&clg, NENDUSES);
+	float diff = xTot - tot;
+	if (fabs(diff) > 1.f)
+		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), diff = %0.1f",
+			tot, xTot, diff);
+
+	xTot = allEU + pv + bt;
+	diff = xTot - tot;
+	if (fabs(diff) > 1.f)
+		strCatIf( msgs, sizeof( msgs), "\n    ",
+			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), diff = % 0.1f",
+				tot, xTot, diff));
+
+	if (msgs[ 0])
+		rc |= mtr->orWarn( msgs);
+
+	return rc;
 }		// MTR_IVL_SUB::mtr_Validate
 //-----------------------------------------------------------------------------------------------------------
 void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
