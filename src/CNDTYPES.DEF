@@ -477,6 +477,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC185AC_SP "NyleC185A_CWP_SP"
 			NYLEC250AC_SP "NyleC250A_CWP_SP"
 
+			MITSU_QAHVN136TAUHPB_SP "Mitsubishi_QAHV_N136TAU_HPB_SP"
+
 			// NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (MP = multi-pass mode)
 			NYLEC60A_MP  "NyleC60A_MP"
 			NYLEC90A_MP  "NyleC90A_MP"
