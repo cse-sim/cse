@@ -37,7 +37,7 @@ ignore-coverage:
     - "heatPlant"
     - "inverse"
     - "terminal"
-    - "towerPlan"
+    - "towerPlant"
 <% if inactive_CNE_records %>
   data-fields:
     export:
