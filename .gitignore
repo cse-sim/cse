@@ -4,10 +4,14 @@
 /src/untab.cpp
 /src/srfd.cpp
 /src/rcdef.sum
+/src/rcdef.err
 /src/rccn.h
 /src/dttab.cpp
 /src/dtypes.h
 /src/csevrsn.h
+
+# RCDEF generated files
+/src/rcdef.err
 
 # test files
 /test/*.rep

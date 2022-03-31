@@ -29,6 +29,8 @@ heatDsTWbO = 15
 // coolDsMo = 6, 7, 8
 coolDsDay = Jul 15, Aug 14
 verbose = 5
+unMetTzTol = .5
+unMetTzTolWarnHrs = 4
 
  repHdrL="1Z Test"
  repHdrR=""
@@ -209,7 +211,7 @@ ZONE Z1
     
 #if 1
 	// $dsDay=0: simulation; =1: heating autosize; =2: cooling autosize
-    znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))
+    znTH = select( $dsDay==1, 68, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,75,68,68,68,68,68,68,68,68,68,68,68,68,65))
     znTD = select( @weather.taDbAvg07 >60., 68, default 77 )
     znTC = select( $dsDay==2, 78, @weather.taDbAvg07 >60., hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78), default 78)
 #else
@@ -273,6 +275,8 @@ RSYS MySys
 METER SysMtr;
 
  //--------- REPORTS ------------
+
+ ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
  
 //AC
 Report rpType=UDT rpFreq=Year  rpTitle="MySys Characteristics"
@@ -289,6 +293,19 @@ Report rpType=UDT rpFreq=Year  rpTitle="MySys Characteristics"
 #endif
  
  REPORT rpType=MTR  rpMeter = SysMtr rpFreq=Month
+
+REPORT rpType=UDT rpFreq=Year rpTitle="Unmet loads info"
+    ReportCol colHead="UMTol Htg" colVal=@ZNRES[ 1].Y.unMetHrsTol[ 0] colWid=10 colDec=1
+    ReportCol colHead="UMTol Clg" colVal=@ZNRES[ 1].Y.unMetHrsTol[ 1] colWid=10 colDec=1
+    ReportCol colHead="UM0 Htg" colVal=@ZNRES[ 1].Y.unMetHrs[ 0] colWid=10 colDec=1
+    ReportCol colHead="UM0 Clg" colVal=@ZNRES[ 1].Y.unMetHrs[ 1] colWid=10 colDec=1
+    ReportCol colHead="UMX Htg" colVal=@ZNRES[ 1].Y.unMetMaxTD[ 0] colWid=10 colDec=1
+    ReportCol colHead="UMX Clg" colVal=@ZNRES[ 1].Y.unMetMaxTD[ 1] colWid=10 colDec=1
+    ReportCol colHead="UMHDH Htg" colVal=@ZNRES[ 1].Y.unMetHrDH[ 0] colWid=10 colDec=1
+    ReportCol colHead="UMHDH Clg" colVal=@ZNRES[ 1].Y.unMetHrDH[ 1] colWid=10 colDec=1
+    ReportCol colHead="UMSDH Htg" colVal=@ZNRES[ 1].Y.unMetShDH[ 0] colWid=10 colDec=1
+    ReportCol colHead="UMSDH Clg" colVal=@ZNRES[ 1].Y.unMetShDH[ 1] colWid=10 colDec=1
+
 
  #define SYSRESCOLS( RXCOL, WhenHead, when, R, F, dp) \
     RXCOL colHead=WhenHead colVal=when colWid=3 \
@@ -334,7 +351,66 @@ SYSRESCOLS( REPORTCOL,"Mon",@Top.monstr,@RSYSRES[ 1].M,.001,3)
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
 SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
 
- REPORT   rpType=ZDD     rpZone="Z1"
+#define CD1 jul 10
+#define CSEBtuSF 1000.
+//Hottest Day
+Report rpType=UDT rpFreq=HOUR  rpDayBeg= CD1; rpDayEnd=CD1 rpCPL=134
+rpTitle="Energy Balance (F, kBtu, + into the zone)"
+Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+Reportcol colVal=@znRes[1].H.tAir colHead="Tin" colWid=4 colDec=2
+Reportcol colVal=@znRes[1].H.tRad colHead="Trad" colWid=4 colDec=2
+Reportcol colVal=@zone[1].wz colHead="Win" colWid=5 colDec=4
+Reportcol colVal=@zone[1].relHum*100 colHead="RHin" colWid=3 colDec=0
+Reportcol colVal=@zone[1].twb  colHead="WBin" colWid=4 colDec=2
+Reportcol colVal=@znRes[1].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+Reportcol colVal=@znRes[1].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+Reportcol colVal=@znRes[1].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+Reportcol colVal=(@znRes[1].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+Reportcol colVal=(@znRes[1].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+Reportcol colVal=(@znRes[1].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+Reportcol colVal=@znRes[1].H.qsIz/CSEBtuSF colHead="sInfVnt" colDec=2 colWid=5
+Reportcol colVal=@znRes[1].H.ivAirX colHead="ACH" colWid=4 colDec=2
+Reportcol colVal=@znRes[1].H.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5
+Reportcol colVal=@znRes[1].H.qlMech/CSEBtuSF colHead="Clgl"  colDec=1 colWid=5  
+Reportcol colVal=@znRes[1].H.qcMech/CSEBtuSF colHead="Clgt"  colDec=1 colWid=5
+Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+Reportcol colVal=@Meter[1].H.fanc/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+Reportcol colVal=@Meter[1].H.clg/CSEBtuSF colHead="ClgkE" colDec=1 colWid=6 
+ 
+		     
+//Hottest Day Totals 
+Report rpType=UDT rpFreq=Day   rpCPL=134  rpHeader=No rpDayBeg= CD1; rpDayEnd=CD1	 //Day Summary
+Reportcol colVal="Dy"    colWid=2
+Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+Reportcol colVal=@znRes[1].D.tAir colHead="Tin" colWid=4 colDec=2
+Reportcol colVal=@znRes[1].D.tRad colHead="Trad" colWid=4 colDec=2
+Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+Reportcol colVal=@znRes[1].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+Reportcol colVal=@znRes[1].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+Reportcol colVal=@znRes[1].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+Reportcol colVal=(@znRes[1].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+Reportcol colVal=(@znRes[1].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+Reportcol colVal=(@znRes[1].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+Reportcol colVal=@znRes[1].D.qsIz/CSEBtuSF colHead="sInfVnt" colDec=1 colWid=5
+Reportcol colVal=@znRes[1].D.ivAirX colHead="ACH" colWid=4 colDec=2
+Reportcol colVal=@znRes[1].D.qsMech/CSEBtuSF colHead="Clgs" colDec=1 colWid=5   
+Reportcol colVal=@znRes[1].D.qlMech/CSEBtuSF colHead="Clgl" colDec=1 colWid=5   
+Reportcol colVal=@znRes[1].D.qcMech/CSEBtuSF colHead="Clgt" colDec=1 colWid=5 
+Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+Reportcol colVal=@Meter[1].d.fanc/CSEBtuSF colHead="fan" colDec=1 colWid=6 
+Reportcol colVal=@Meter[1].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
+
+
+REPORT   rpType=ZDD     rpZone="Z1"
+
+
         
 
  RUN

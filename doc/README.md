@@ -50,7 +50,7 @@ The specific dependencies for [Node.js] are listed in the `package.json` file.
 
 With regard to the Microsoft Build Tools, the C++ preprocessor is required in the full build process to parse parameter names from the CSE source code.
 This is accomplished with the `cl` program.
-If you type `where cl` at your prompt, then `cl` is installed and reachable.
+If you type `where cl` at your prompt and get a valid path, then `cl` is installed and reachable.
 If not, the best way to get this is to set up your Visual Studio with C++ tools (you should have this if you are able to build CSE).
 Then, to get a shell with `cl` and other tools on the path, go to `Start > Visual Studio 20XX > Developer Command Prompt for VS XX`.
 You should have access to `cl` from that prompt.

@@ -77,6 +77,7 @@ makAncLOADMTR(LdMtriB);		// Load meters
 
 // simple HVAC and DHW (for CSE T24 residential compliance)
 makAncRSYS( RSiB);			// residential HVAC system
+makAncDOAS( OAiB);			// DOAS input records basAnc
 makAncDHWSYS( WSiB);		// DHW system
 makAncDHWHEATER( WHiB);		// DHW heater
 makAncDHWTANK( WTiB);		// DHW tank
@@ -148,6 +149,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	LdMtriB.free();
 	GniB.free();
 	RSiB.free();
+	OAiB.free();
 	WSiB.free();
 	WHiB.free();
 	WLHiB.free();
@@ -1514,6 +1516,84 @@ x	CULT( "znWindFCnv",  DAT,   ZI( WINDFCNV),   0,        0, VSUBHRLY, TYFL,  0, 
 #undef ZI
 #undef XFAN
 
+//============== DOAS command (dedicated outdoor air system) ================
+RC oaStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+{
+	return ((DOAS* )p)->oa_CkfDOAS();
+}
+//---------------------------------------------------------------------------
+#define SFAN(m) (DOAS_SUPFAN + FAN_##m)
+#define EFAN(m) (DOAS_EXHFAN + FAN_##m)
+
+static CULT doasT[] =
+{
+// id                cs     fn            f   uc evf      ty     b      dfls                 p2   ckf
+//----------         -----  ------------  --- -- ------   -----  -----  -------------        ---- ----
+CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   oaStarCkf),
+// Supply Fan
+CULT( "oaSupFanVfDs",   DAT,   SFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanPress",  DAT,   SFAN(PRESS),  0,   0, VEOI,   TYFL,  0,      .3f,                N,   N),
+CULT( "oaSupFanEff",    DAT,   SFAN(EFF),    0,   0, VEOI,   TYFL,  0,      .08f,               N,   N),
+CULT( "oaSupFanShaftBhp",DAT,  SFAN(SHAFTPWR),0,  0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanElecPwr",DAT,   SFAN(ELECPWR),0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanMtr",    DAT,   SFAN(MTRI),   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaSupFanEndUse", DAT,   SFAN(ENDUSE), 0,   0, VEOI,   TYCH,  0,      C_ENDUSECH_FAN,	 	N,   N),
+CULT( "oaSupFanType",   DAT,   SFAN(FANTY),  NO_INP, 0, 0,   TYCH,  0,      C_FANTYCH_NONE,     N,   N),
+CULT( "oaSupFanVfMxF",  DAT,   SFAN(VFMXF),  NO_INP, 0, 0,   TYFL,  0,      1.0f,               N,   N),
+CULT( "oaSupFanMotPos", DAT,   SFAN(MOTPOS), NO_INP, 0, 0,   TYCH,  0,      C_MOTPOSCH_INFLO,   N,   N),
+CULT( "oaSupFanCurvePy",DAT,   SFAN(CURVEPY+PYCUBIC_K),
+                                          ARRAY,  0, VEOI,TYFL,  0,      0.f,               v 6,  N), // use default: runs at full flow only. cult entry probably needed for id for FAN error msgs
+CULT( "oaSupFanMotEff", DAT,   SFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
+
+// Exhaust Fan
+CULT( "oaExhFanVfDs",   DAT,   EFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanPress",  DAT,   EFAN(PRESS),  0,   0, VEOI,   TYFL,  0,      .3f,                N,   N),
+CULT( "oaExhFanEff",    DAT,   EFAN(EFF),    0,   0, VEOI,   TYFL,  0,      .08f,               N,   N),
+CULT( "oaExhFanShaftBhp",DAT,  EFAN(SHAFTPWR),0,  0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanElecPwr",DAT,   EFAN(ELECPWR),0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanMtr",    DAT,   EFAN(MTRI),   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaExhFanEndUse", DAT,   EFAN(ENDUSE), 0,   0, VEOI,   TYCH,  0,      C_ENDUSECH_FAN,	 	N,   N),
+CULT( "oaExhFanType",   DAT,   EFAN(FANTY),  NO_INP, 0, 0,   TYCH,  0,      C_FANTYCH_NONE,     N,   N),
+CULT( "oaExhFanVfMxF",  DAT,   EFAN(VFMXF),  NO_INP, 0, 0,   TYFL,  0,      1.0f,               N,   N),
+CULT( "oaExhFanMotPos", DAT,   EFAN(MOTPOS), NO_INP, 0, 0,   TYCH,  0,      C_MOTPOSCH_INFLO,   N,   N),
+CULT( "oaExhFanCurvePy",DAT,   EFAN(CURVEPY+PYCUBIC_K),
+                                          ARRAY,  0, VEOI,TYFL,  0,      0.f,               v 6,  N), // use default: runs at full flow only. cult entry probably needed for id for FAN error msgs
+CULT( "oaExhFanMotEff", DAT,   EFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
+
+// Heating Coil
+CULT( "oaSupTH", 		DAT,   DOAS_SUPTH, 	 0,   0, VSUBHRLY, TYFL,  0,      65.f,             N,   N),
+CULT( "oaEIRH", 		DAT,   DOAS_EIRH, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaCoilHMtr",   	DAT,   DOAS_COILHMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+// Cooling Coil
+CULT( "oaSupTC", 		DAT,   DOAS_SUPTC, 	 0,   0, VSUBHRLY, TYFL,  0,      68.f,             N,   N),
+CULT( "oaEIRC", 		DAT,   DOAS_EIRC, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaSHRtarget",	DAT,   DOAS_SHRTARGET, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaCoilCMtr",   	DAT,   DOAS_COILCMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+CULT( "oaLoadMtr",   	DAT,   DOAS_LOADMTRI,	 0,   0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+
+// Heat Exchanger
+CULT( "oaHXVfDs",		DAT,   	DOAS_HXVFDS,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXf2",			DAT,	DOAS_HXF2,			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
+CULT( "oaHXSenEffHDs",	DAT,	DOAS_HXSENEFFH,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffHf2",	DAT,	DOAS_HXSENEFFH+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffHDs",	DAT,	DOAS_HXLATEFFH,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffHf2",	DAT,	DOAS_HXLATEFFH+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffCDs",	DAT,	DOAS_HXSENEFFC,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffCf2",	DAT,	DOAS_HXSENEFFC+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffCDs",	DAT,	DOAS_HXLATEFFC,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffCf2",	DAT,	DOAS_HXLATEFFC+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXBypass",		DAT,	DOAS_HXBYPASS,		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
+CULT( "oaHXAuxPwr",		DAT,	DOAS_HXAUXPWR,		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
+CULT( "oaHXAuxMtr",   	DAT,   	DOAS_HXAUXMTRI,     0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+CULT( "endDOAS",    ENDER, 0,            0,   0, 0,      0,     0,      N,   0.f,           N,   N),
+CULT()
+};
+#undef SFAN
+#undef EFAN
+
 //=================== IZXFER command (interzone transfer) ===================
 RC izStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
 
@@ -1535,6 +1615,7 @@ static CULT izxT[] = //------ IZXFER cmd RAT Entry table, used from cnTopCult
 CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   izStarCkf),
 CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
 CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
+CULT( "izDOAS",      DAT,   IZXRAT_DOAS,  0,   0, VEOI,   TYREF, &OAiB,  0.f,                N,   N),
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
 CULT( "izAFCat",     DAT,   IZXRAT_AFCATI, 0,  0, VEOI,   TYCH,  0,      0,                  N,   N),
@@ -1586,7 +1667,7 @@ RC DUCTSEG::ds_Ckf()
 
 	if (IsSet( DUCTSEG_EXAREA))
 	{	// flat configuration: area is fixed
-		rc |= disallow( DUCTSEG_INAREA, "when dsExArea is given");
+		rc |= disallow("when dsExArea is given", DUCTSEG_INAREA);
 		ignoreN( "when dsExArea is given", DUCTSEG_DIAM, DUCTSEG_LEN,
 			DUCTSEG_BRANCHCOUNT, DUCTSEG_BRANCHLEN, DUCTSEG_BRANCHCFA, DUCTSEG_AIRVELDS, 0);
 	}
@@ -1594,9 +1675,9 @@ RC DUCTSEG::ds_Ckf()
 	{	// round: many interdependent defaults
 		// # of branches: user-input branch count takes precedence
 		if (IsSet( DUCTSEG_BRANCHCOUNT))
-			ignore( DUCTSEG_BRANCHCFA, "when dsBranchCount is given");
+			ignore("when dsBranchCount is given", DUCTSEG_BRANCHCFA);
 		if (IsSet( DUCTSEG_BRANCHLEN))
-			rc |= disallow( DUCTSEG_LEN, "when dsBranchLen is given");
+			rc |= disallow("when dsBranchLen is given", DUCTSEG_LEN);
 
 		int dimCount = IsSet( DUCTSEG_DIAM) + IsSet( DUCTSEG_LEN) + IsSet( DUCTSEG_INAREA);
 		if (dimCount == 3)
@@ -1678,7 +1759,7 @@ static CULT rsysT[] = //------ RSYS cmd RAT Entry table, used from cnTopCult
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   rsStarCkf),
-CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTYCH_ACFURN, N, N),
+CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTY_ACFURN, N, N),
 CULT( "rsDesc",		 DAT,   RSYS_DESC,       0,       0, VEOI,   TYSTR, 0,		0,		N,	 N),
 CULT( "rsPerfMap",	 DAT,	RSYS_PERFMAP,	 0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 CULT( "rsFanTy",	 DAT,	RSFAN( FANTY),   0,       0, VEOI,   TYCH,  0,      C_FANTYCH_BLOWTHRU, N, N ),
@@ -1688,6 +1769,7 @@ CULT( "rsModeCtrl",  DAT,   RSYS_MODECTRL,   0,       0, VHRLY,  TYCH,  0,    C_
 CULT( "rsElecMtr",   DAT,   RSYS_ELECMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsFuelMtr",   DAT,   RSYS_FUELMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsLoadMtr",   DAT,   RSYS_LOADMTRI,   0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+CULT( "rsSrcSideLoadMtr", DAT, RSYS_SRCSIDELOADMTRI, 0,0,VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 CULT( "rsTdDesH",	 DAT,   RSYS_TDDESH,     0,       0, VEOI,   TYFL,  0,    50.f,     N,   N),
 CULT( "rsTdDesC",	 DAT,   RSYS_TDDESC,     0,       0, VEOI,   TYFL,  0,    -25.f,    N,   N),
 CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f,     N,   N),
@@ -1723,6 +1805,7 @@ CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0
 CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
+CULT( "rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
 
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
@@ -1760,7 +1843,7 @@ CULT( "rsFEffH",     DAT,   RSYS_FEFFH,      0,       0, VSUBHRLY,TYFL, 0,      
 CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
 
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
-CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VHRLY,  TYFL,  0,      0.f,    N,   N),
+CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VSUBHRLY, TYFL, 0,     0.f,    N,   N),
 
 CULT( "rsDSEH",		 DAT,   RSYS_DSEH,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 CULT( "rsDSEC",		 DAT,   RSYS_DSEC,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
@@ -2797,6 +2880,9 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP check tolerances and precisions
 	CULT( "tol",         DAT,   TOPRAT_TOL,        0,          0, VEOI,   TYFL,  0,      N,    .001f,          N,   N),
 	CULT( "humTolF",     DAT,   TOPRAT_HUMTOLF,    0,          0, VEOI,   TYFL,  0,      N,    .0001f,         N,   N),
+	CULT( "unMetTzTol",  DAT,   TOPRAT_UNMETTZTOL, 0,          0, VEOI,   TYFL,  0,      N,    1.f,            N,   N),
+	CULT("unMetTzTolWarnHrs", DAT, TOPRAT_UNMETTZTOLWARNHRS,0, 0, VEOI,   TYFL,  0,      N,    150.f,          N,   N),
+
 // TOP energy balance checking tolerances
 	// 2-94 .00002
 	// 1-95 try even smaller with double precision masses: .00001
@@ -2879,6 +2965,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "loadmeter",   RATE,  0,                 NM_RQD,     0, 0,      0,    &LdMtriB,N,    0.f,      ldMeterT,  N),
 
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
+	CULT( "doas",        RATE,  0,                 NM_RQD,     0, 0,      0,    &OAiB,   N,    0.f,         doasT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),

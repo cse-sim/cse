@@ -116,7 +116,7 @@ RC PVARRAY::pv_CkF()
 			rc |= ignoreN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
 
 		if (axisCount != 1)
-			rc |= ignore( PVARRAY_GCR, whenAT);
+			rc |= ignore( whenAT, PVARRAY_GCR);
 	}
 
 	const char* pvModTyTx = getChoiTx(PVARRAY_MODULETYPE, 1);

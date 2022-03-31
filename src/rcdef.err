@@ -1,7 +1,0 @@
-
-    Warning: Newline in quote field: 'RC rs_CkFRatio( int fn1, int fn2, int fnRat, float vMin, float vMax) const;
-'.
-Error occurred near: RSYS
-
-    Error getting "text" after '*declare'
-Error occurred near: RSYS

@@ -1403,7 +1403,7 @@ Reportcol colVal=@Meter[MtrNatGas].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid
     Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
     Reportcol colVal=@Rsys[1].runf colHead="RFPrm" colDec=3 colWid=5
     Reportcol colVal=@Rsys[1].runfAux colHead="RFAux" colDec=3 colWid=5
-    Reportcol colVal=@ZnRes["Conditioned-zn"].H.unMetHDH colHead="UMDH" colDec=1 colWid=5
+    Reportcol colVal=@ZnRes["Conditioned-zn"].H.unMetHrDH[ 0] colHead="UMDH" colDec=1 colWid=5
     Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
     Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
     

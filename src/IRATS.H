@@ -38,7 +38,7 @@ extern anc<SGI> SgiB; 			// solar gain distributions input records
 extern anc<PRI> PriB;  			// perimeters input records
 
 extern anc<IZXRAT> IzxiB;		// interzone transfer input records
-
+extern anc<DOAS> OAiB;		    // DOAS input records
 
 extern anc<TU> TuiB;   			// terminals input
 extern anc<AH> AhiB;    		// air handlers
