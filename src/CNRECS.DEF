@@ -7072,7 +7072,7 @@ o
 o #ifndef BCPP
 o     *hide DBN bn	// dummy
 o     *z ANAME name	// for LIKEing etc
-o     TI ownTi		// was zi		// ZNI/R rcd subscript of owner zone; triggers RFOWNED bit
+o     TI ownTi		// was zi		// ZNI/R rcd subscript of owner zone
 o #else
 o     			// ownTi (base class) is ZNI/R rcd subscript of owner zone
 o #endif

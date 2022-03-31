@@ -120,7 +120,6 @@ set(source
   PSYCHRO.CPP
   PVCalc.cpp
   RMKERR.CPP
-  RUNDATA.CPP
   SHADING.CPP
   SOLAR.CPP
   srfd.cpp

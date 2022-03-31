@@ -81,7 +81,7 @@ extern anc<SHADEX> SXiB;		// SHADEX (external shading) input records
 extern anc<RFI> RfiB; 			// REPORTFILE input info
 extern anc<RFI> XfiB; 			// EXPORTFILE input info
 extern anc<RI> RiB;    			// REPORT input info
-extern anc<RI> XiB;   			// EXPORT input info.  cnPreInit changes .what from "report" to "export".
+extern anc<RI> XiB;   			// EXPORT input info.
 extern anc<COL> RcoliB;			// REPORTCOL input info for UDT reports
 extern anc<COL> XcoliB;			// EXPORTCOL input info for UDT exports
 extern anc<IMPF> ImpfiB;		// IMPORTFILE input info 2-94
