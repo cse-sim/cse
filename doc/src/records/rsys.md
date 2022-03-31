@@ -897,6 +897,14 @@ Air dry-bulb temperature at the outdoor portion of this system.
   ----------- ----------------- ------------------- -------------- -----------------
   ^o^F                          From weather file   No             hourly
 
+**rsSHRtarget=*float***
+
+Temporary test
+
+**rsSrcSideLoadMtr=*float***
+
+Temporary test
+
 **endRSYS**
 
 Optionally indicates the end of the RSYS definition.
