@@ -83,8 +83,14 @@ jobs:
         run: echo "C:\Program Files (x86)\Pandoc" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Add MSVC developer commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
-      - name: Build docs
+      - name: Set build to NOT do coverage check by default
+        run: rake set_coverage_off_by_default
+        working-directory: doc
+      - name: Build docs (without coverage check)
         run: rake
+        working-directory: doc
+      - name: Run coverage check
+        run: rake coverage
         working-directory: doc
       - name: Upload documentation
         uses: actions/upload-artifact@v2.2.4
