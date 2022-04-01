@@ -110,7 +110,7 @@ END
   required: "No",
   variability: "constant") %>
 
-**rsAdjForFanHt=*NOYESCH***
+**rsAdjForFanHt=*choice***
 
 Fan heat adjustment with two options Yes or no. Yes: fanHtRtd derived from rsFanTy and removed from capacity and input values. No: no rated fan heat adjustments.
 
@@ -144,6 +144,17 @@ Name of a LOADMETER object, if any, to which the system’s heating and cooling 
   units: "",
   legal_range: "*name of a LOADMETER*",
   default: "*none*",
+  required: "No",
+  variability: "constant") %>
+
+**rsSrcSideLoadMtr=*ldMtrName***
+
+Name of a LOADMETER object, if any, to which the system’s source-side heat (heat of rejection or outdoor coil heat transfer) are recorded.
+
+<%= member_table(
+  units: "",
+  legal_range: "*Name of ldMtrName*",
+  default: "",
   required: "No",
   variability: "constant") %>
 
@@ -415,7 +426,7 @@ Ratio of rsCAP82 over rsCAP95.
 
 **rsCOPMin115=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -426,7 +437,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimun 
 
 **rsCOPMin95=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -437,7 +448,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimun s
 
 **rsCOPMin82=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -448,7 +459,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimun s
 
 **rsCOPMin47=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -459,7 +470,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimun s
 
 **rsCOPMin35=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -470,7 +481,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimun s
 
 **rsCOPMin17=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -481,7 +492,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimun s
 
 **rsCOPMin05=*float***
 
-Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimun speed.
+Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum speed.
 
 <%= member_table(
   units: "",
@@ -558,20 +569,20 @@ Fraction of a htg minimum load at 05 ^o^F.
 
 **rsTypeAuxH=*choice***
 
-Type of auxiliary heat. The functions have C_AUXHEATTY as a prefix.
+Type of auxiliary heat.
 
 <%= csv_table(<<END, :row_header => true)
 Choice
-C_AUXHEATTY_NONE
-C_AUXHEATTY_RES
-C_AUXHEATTY_FURN
+NONE
+RES
+FURN
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_AUXHEATTY_RES",
+  default: "RES",
   required: "No",
   variability: "constant") %>
 
@@ -581,16 +592,16 @@ Type of auxiliary heating control.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-C_AUXHEATCTRL_LO, Compressor locked out if any auxiliary heating control
-C_AUXHEATCTRL_CYCLE, Compressor runs continuously auxiliary cycles
-C_AUXHEATCTRL_ALT, Alternates between compressor auxiliary
+LO, Compressor locked out if any auxiliary heating control
+CYCLE, Compressor runs continuously auxiliary cycles
+ALT, Alternates between compressor auxiliary
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_AUXHEATCTRL_CYCLE",
+  default: "CYCLE",
   required: "No",
   variability: "Start of a run") %>
 
@@ -607,7 +618,7 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd
 
 **rsAFUEAuxH=*float***
 
-Auxiliary furnace heating for annualized fuel utilization efficiency.
+For rsType=ASHP, auxiliary electric (“strip”) annualized fuel utilization efficiency. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
 
 <%= member_table(
   units: "",
@@ -632,6 +643,17 @@ END
   default: "REVCYCLEAUX",
   required: "No",
   variability: "constant") %>
+
+**rsSHRtarget=*float***
+
+Nominal target for sensible heat ratio (for fancoil).
+
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "0.7",
+  required: "No",
+  variability: "subhour") %>
 
 **rsFxCapAuxH=*float***
 

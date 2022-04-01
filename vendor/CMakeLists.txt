@@ -1,6 +1,9 @@
 include(initialize-submodules)
 initialize_submodules()
 
+# btwxt
+add_subdirectory( btwxt)
+
 # Penumbra
 add_subdirectory(penumbra)
 
@@ -88,11 +91,6 @@ set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
 if (NOT HPWHSIM_OMIT_TESTTOOL)
   set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
 endif()
-
-
-
-# btwxt
-add_subdirectory( btwxt)
 
 set_target_properties(btwxt PROPERTIES FOLDER Dependencies)
 mark_as_advanced(

@@ -110,35 +110,48 @@ module CoverageCheck
   ReadCulList = lambda do |path|
     ParseCulList[File.read(path)]
   end
-  # (Set String) (Set String) ?Bool ->
-  #   (Or Nil
-  #       (Record :in_1st_not_2nd (Or Nil (Set String))
-  #               :in_2nd_not_1st (Or Nil (Set String))))
   # Given two sets and an optional flag (defaults to false) that, if true,
   # compares on case, if false, doesn't; check for differences between the
   # contents of set 1 and the contents of set 2, reporting items in the first
   # set (but not in the second) and items in the second set (but not in the
   # first)
-  SetDifferences = lambda do |s1, s2, case_matters=false|
+  # ARGUMENTS
+  # s1: (Set String), the first set
+  # s2: (Set String), the second set
+  # case_matters: ?Bool, if true compare with case, else case-insensitive; default: false
+  # keys_to_ignore: ?(Or (Set String) nil): a set of keys to ignore; default nil 
+  # RETURNS
+  #   (Or Nil
+  #       (Record :in_1st_not_2nd (Or Nil (Set String))
+  #               :in_2nd_not_1st (Or Nil (Set String))))
+  SetDifferences = lambda do |s1, s2, case_matters=false, keys_to_ignore=nil|
+    keys_to_ignore ||= Set.new
     if s1 == s2
       nil
     elsif case_matters
-      {
-        :in_1st_not_2nd => s1 - s2,
-        :in_2nd_not_1st => s2 - s1
-      }
-    else
-      f = lambda {|m, item| m.merge({item.downcase => item})}
-      m1 = s1.inject({}, &f)
-      m2 = s2.inject({}, &f)
-      s1_ = Set.new(m1.keys)
-      s2_ = Set.new(m2.keys)
+      s1_ = s1 - keys_to_ignore
+      s2_ = s2 - keys_to_ignore
       if s1_ == s2_
         nil
       else
         {
-          :in_1st_not_2nd => Set.new((s1_ - s2_).map {|k| m1[k]}),
-          :in_2nd_not_1st => Set.new((s2_ - s1_).map {|k| m2[k]})
+          :in_1st_not_2nd => s1_ - s2_,
+          :in_2nd_not_1st => s2_ - s1_,
+        }
+      end
+    else
+      keys_to_ignore_dc = Set.new(keys_to_ignore.map {|k|k.downcase})
+      f = lambda {|m, item| m.merge({item.downcase => item})}
+      m1 = s1.inject({}, &f)
+      m2 = s2.inject({}, &f)
+      s1_ = Set.new(m1.keys) - keys_to_ignore_dc
+      s2_ = Set.new(m2.keys) - keys_to_ignore_dc
+      if s1_ == s2_
+        nil
+      else
+        {
+          :in_1st_not_2nd => Set.new((s1_ - s2_ - keys_to_ignore_dc).map {|k| m1[k]}),
+          :in_2nd_not_1st => Set.new((s2_ - s1_ - keys_to_ignore_dc).map {|k| m2[k]}),
         }
       end
     end
@@ -196,25 +209,33 @@ module CoverageCheck
     end
     n
   end
-  # (Map String (Set String)) (Map String (Set String)) ?Bool ->
+  # Given two RecordInputSet objects, an optional flag (defaulting to false)
+  # which, if true, compares based on case, and optional records to ignore and
+  # record fields to ignore, compare the two RecordInputSet objects, returning
+  # any differences. If no differences, return nil.
+  # ARGUMENTS:
+  # - ris1: (Map String (Set String))
+  # - ris2: (Map String (Set String))
+  # - case_matters: ?Bool
+  # - records_to_ignore: ?(Set String)
+  # - record_fields_to_ignore: ?(Map String (Set String))
+  # RETURN:
   # (Or Nil
   #     (Record :records_in_1st_not_2nd (Or Nil (Set String))
   #             :records_in_2nd_not_1st (Or Nil (Set String))
   #             String
   #             (Record :in_1st_not_2nd (Or Nil (Set String))
   #                     :in_2nd_not_1st (Or Nil (Set String)))))
-  # Given two RecordInputSet objects and an optional flag (defaulting
-  # to false) which, if true, compares based on case, compare the two
-  # RecordInputSet objects, returning any differences. If no differences,
-  # return nil.
-  RecordInputSetDifferences = lambda do |ris1, ris2, case_matters=false|
+  RecordInputSetDifferences = lambda do |ris1, ris2, case_matters=false, records_to_ignore=nil, record_fields_to_ignore=nil|
+    records_to_ignore ||= Set.new
+    record_fields_to_ignore ||= {}
     if ris1 == ris2
       nil
     else
       g = lambda {|x,y|{records_in_1st_not_2nd: x, records_in_2nd_not_1st: y}}
       ks1 = Set.new(ris1.keys)
       ks2 = Set.new(ris2.keys)
-      key_diffs = SetDifferences[ks1, ks2, case_matters]
+      key_diffs = SetDifferences[ks1, ks2, case_matters, records_to_ignore]
       out = nil
       if key_diffs
         out = g[key_diffs[:in_1st_not_2nd], key_diffs[:in_2nd_not_1st]]
@@ -225,10 +246,15 @@ module CoverageCheck
       m1 = ks1.inject({}, &f)
       m2 = ks2.inject({}, &f)
       ks = case_matters ? (ks1 & ks2) : (Set.new(m1.keys) & Set.new(m2.keys))
+      records_to_ignore_dc = Set.new(records_to_ignore.map {|r| r.downcase})
       ks.each do |k|
+        next if case_matters && records_to_ignore.include?(k)
+        next if !case_matters && records_to_ignore_dc.include?(k.downcase)
         k1 = case_matters ? k : m1[k]
         k2 = case_matters ? k : m2[k]
-        diffs = SetDifferences[ris1[k1], ris2[k2], case_matters]
+        diffs = SetDifferences[
+          ris1[k1], ris2[k2], case_matters,
+          record_fields_to_ignore.fetch(k1, Set.new)]
         if diffs
           if out
             out[fsd] = {} unless out.include?(fsd)

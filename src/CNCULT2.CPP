@@ -51,6 +51,7 @@ LOCAL RC topCkfI( int re);
 LOCAL RC topDC();
 LOCAL RC topZn( int re);
 LOCAL RC topIz();
+LOCAL RC topDOAS();
 LOCAL RC topDs();
 LOCAL RC topMat();
 LOCAL RC topCon1();
@@ -303,6 +304,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topHday() )			// holidays. cncult4.cpp.
 	topPr();				// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
 	CSE_E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
+	CSE_E( topDOAS() )			// do DOAS.
 	CSE_E( topHp1() )			// heatplants 1: create run recs. do TU's,AH's,BOILERS,HPLOOPs tween topHp1 & 2. cncult6.cpp.
 	CSE_E( topCp1() )			// coolplants 1: create run recs. must do AH's,CHILLERs tween topCp1 & 2. cncult6.cpp.
 	CSE_E( topTp1() )			// towerplants 1: create run recs. must to topCp2 between TopTp1 & 2. cncult6.cpp.
@@ -596,8 +598,8 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 	{	oInfo("soilDiff is used as part of the simple ground model, which is no longer supported.\n"
 			  "    Use soilCond, soilSpHt, and soilDens instead.");
 		if (IsSet(TOPRAT_SOILCOND) || IsSet(TOPRAT_SOILSPHT) || IsSet(TOPRAT_SOILDENS)) {
-			ignore(TOPRAT_SOILDIFF, "when soilCond and/or soilSpHt and/or soilDens are set.\n"
-			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)");
+			ignore("when soilCond and/or soilSpHt and/or soilDens are set.\n"
+			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)", TOPRAT_SOILDIFF);
 			tp_soilDiff = tp_soilCond / (tp_soilDens*tp_soilSpHt);
 		}
 	}
@@ -1072,6 +1074,20 @@ LOCAL RC topIz()		// do interzone transfers
 	{	IzxR.add( &ize, ABT, izie->ss);   	// add specified izxfer run record (same subscript)
 		rc |= ize->iz_Setup( izie);			// copy input to run record; check and initialize
 	}	// izxfer loop
+	return rc;
+}		// topIz
+//===========================================================================
+LOCAL RC topDOAS()		// do DOAS
+{
+	RC rc = RCOK;
+
+	CSE_E( doasR.al( OAiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
+	DOAS* iRat;
+	DOAS* rRat;
+	RLUP( OAiB, iRat)
+	{	doasR.add( &rRat, ABT, iRat->ss);   	// add specified izxfer run record (same subscript)
+		rc |= rRat->oa_Setup( iRat);			// copy input to run record; check and initialize
+	}
 	return rc;
 }		// topIz
 //===========================================================================

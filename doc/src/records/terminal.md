@@ -381,6 +381,10 @@ Name of meter, if any, which is to record energy used by this terminal fan. The 
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 
+**tuOversize=*deprecated***
+
+**tuVfMxHC=*deprecated***
+
 **endTerminal**
 
 Optional to indicates the end of terminal definition. Alternatively, the end of the door definition can be indicated by END or by beginning another object.

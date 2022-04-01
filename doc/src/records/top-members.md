@@ -147,6 +147,28 @@ Sub-hourly energy balance error tolerance.
   required: "No",
   variability: "constant") %>
 
+**unMetTzTol=*float***
+
+Zone temperature unmet load tolerance.  At the end of each subhour, if a conditioned zone temperature is more than unMetTzTol below the current heating setpoint or more than unMetTzTol above the current cooling setpoint, "unmet load" time is accumulated.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $\\geq$ 0",
+  default: "1 ^o^F",
+  required: "No",
+  variability: "constant") %>
+
+**unMetTzTolWarnHrs=*float***
+
+Unmet load warning threshold.  A warning message is issued for each zone having more than unMetTzTolWarnHrs unmet heating or cooling loads.
+
+<%= member_table(
+  units: "hr",
+  legal_range: "x $\\geq$ 0",
+  default: "150",
+  required: "No",
+  variability: "constant") %>
+
 **grndMinDim=*float***
 
 The minimum cell dimension used in the two-dimensional finite difference calculations for FOUNDATIONs.
@@ -348,15 +370,15 @@ Solar interpolation method.
 
 <%= csv_table(<<END, :row_header => true)
 Choice
-C_SLRINTERPMETH_CSE
-C_SLRINTERPMETH_TRNSYS
+CSE
+TRNSYS
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_SLRINTERPMETH_CSE",
+  default: "CSE",
   required: "No",
   variability: "constant") %>
 
@@ -944,13 +966,13 @@ Deprecated method for specifying cooling autosizing days.  Design conditions are
   required: "No",
   variability: "constant") %>
 
-**coolDsCond=*integer***
+**coolDsCond=*descondName***
 
 Cool design condition with 13 different options.
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "*name of DESCOND*",
   default: "0.0",
   required: "No",
   variability: "constant") %>

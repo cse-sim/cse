@@ -121,6 +121,7 @@ extern anc<LOADMTR> LdMtrR;		// Load meters
 extern anc<ZNR> ZrB;			// zones runtime info
 extern anc<ZNRES> ZnresB;      	// Zones simulation results info
 extern anc<IZXRAT> IzxR;		// interzone transfers
+extern anc<DOAS> doasR;			// DOAS
 extern anc<RSYS> RsR;			// residential system
 extern anc<RSYSRES> RsResR;		// residential system results
 extern anc<DUCTSEG> DsR;		// duct segments

@@ -106,7 +106,6 @@ x//#define MH_T0004  1084	//
 #define MH_P0020  5020	// "Unexpected end of file or macro in comment"
 #define MH_P0021  5021	// "Too many nested macros and #includes"
 #define MH_P0022  5022	// "pp.cpp:lisFind: matching buffer line is %d but requested line is %d\n"
-#define MH_P0023  5023	// "VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level.\n"
 #define MH_P0024  5024	// "Replacing illegal null character ('\\0') with space\n    in or after input file line number shown."	//10-92
 //pp.cpp additions 6-95
 #define MH_P0025  5025	// "'=' expected"
@@ -542,7 +541,7 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0491  6491	// "More than 100 percent of gnPower distributed:\n    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g%s"
 #define MH_S0493  6493	// "Required member '%s' has not been set,\n    and apparently no message about it appeared above"
 #define MH_S0494  6494	// "bad %s index %d in%s %s '%s' [%d]%s"
-#define MH_S0495  6495	// "cncult2.cpp:disallowN Internal error: field # %d: probable unterminated arg list" /* 3 uses */
+#define MH_S0495  6495	// "%s: Internal error: field # %d: unterminated arg list?"
 #define MH_S0496  6496	// "Can't give '%s' %s"
 #define MH_S0497  6497	// "'%s' missing: required %s"
 #define MH_S0498  6498	// "'%s' missing"

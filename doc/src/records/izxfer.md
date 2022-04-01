@@ -34,6 +34,7 @@ Choice determining interzone ventilation
   AIRNETEXTFLOW,    Specified flow from exterior to zone (either direction). Behaves identically to AIRNETEXTFAN except no electricity is consumed and no fan heat is added to the air stream.
   AIRNETIZFLOW,     Specified flow between two zones (either direction). Behaves identically to AIRNETIZFAN except no electricity is consumed and no fan heat is added to the air stream.
   AIRNETHERV,       Heat or energy recovery ventilator. Supply and exhaust air are exchanged with the exterior with heat and/or moisture exchange between the air streams. Flow may or may not be balanced.
+  AIRNETDOAS,      Air supplied from and/or exhausted to a centralized DOAS fans.
 END
 %>
 
@@ -92,6 +93,15 @@ Name of secondary zone.
   legal_range: "name of a ZONE",
   default: "*none*",
   required: "required unless constant izNVType = AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, or AIRNETHERV",
+  variability: "constant") %>
+
+**izDOAS=*oaName***
+
+Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**izVfMin** < 0).
+
+<%= member_table(
+  legal_range: "name of a DOAS",
+  required: "when izNVType = AIRNETDOAS",
   variability: "constant") %>
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011

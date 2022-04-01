@@ -795,7 +795,7 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 	}
 
 	if (IsSet(DHWSYS_SWTI))
-		rc |= disallow( DHWSYS_SSF, "when wsDHWSOLARSYS is given");
+		rc |= disallow( "when wsDHWSOLARSYS is given", DHWSYS_SSF);
 
 	// ws_tSetpoint defaults to tUse, handled during simulation
 	//  due to interaction with fixed setpoints in some HPWH models
@@ -2351,8 +2351,8 @@ RC DHWUSE::wu_CkF()		// input check / default
 		rc |= limitCheck( DHWUSE_DUR, 0., double( 60*24));
 	if (IsSet( DHWUSE_HEATRECEF))
 	{	const char* when = "when wuHeatRecEF is specified";
-		rc |= require( DHWUSE_TEMP, when);
-		rc |= disallow( DHWUSE_HOTF, when);
+		rc |= require( when, DHWUSE_TEMP);
+		rc |= disallow( when, DHWUSE_HOTF);
 		if (IsVal( DHWUSE_HEATRECEF))
 			rc |= limitCheck( DHWUSE_HEATRECEF, 0., 0.9);
 	}
@@ -2777,6 +2777,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_NYLEC125AC_SP,    hwatLARGE | HPWH::MODELS_NyleC125A_C_SP },
 	{ C_WHASHPTYCH_NYLEC185AC_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_C_SP  },
 	{ C_WHASHPTYCH_NYLEC250AC_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_C_SP },
+
+	{ C_WHASHPTYCH_MITSU_QAHVN136TAUHPB_SP, hwatLARGE | HPWH::MODELS_MITSUBISHI_QAHV_N136TAU_HPB_SP },
 
 	// { C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | HPWH::MODELS_NyleC25A_MP }, not available
 	{ C_WHASHPTYCH_NYLEC60A_MP,     hwatLARGE | HPWH::MODELS_NyleC60A_MP },
@@ -3611,7 +3613,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	// tank surrounding temp -- one of whTEx or whZone, not both
 	//   used only re HPWH 2-16, enforce for all
 	if (IsSet(DHWHEATER_TEX))
-		rc |= disallow( DHWHEATER_ZNTI, "when 'whTEx' is specified");
+		rc |= disallow( "when 'whTEx' is specified", DHWHEATER_ZNTI);
 
 	if (whfcn == whfcnLOOPHEATER && !wh_CanHaveLoopReturn())
 		rc |= oer("DHWLOOPHEATER must have whHeatSrc=ASPX or whHeatSrc=ResistanceX.");
@@ -3642,9 +3644,9 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			// note wh_vol check below (wh_vol=0 OK, else error)
 		}
 		else if (wh_type == C_WHTYPECH_STRGLRG || wh_type == C_WHTYPECH_INSTLRG)
-			rc |= require(DHWHEATER_EFF, whenTy);
+			rc |= require(whenTy, DHWHEATER_EFF);
 		else if (wh_type == C_WHTYPECH_INSTSML)
-			rc |= require(DHWHEATER_EF, whenTy);
+			rc |= require(whenTy, DHWHEATER_EF);
 	}
 	else if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	{	// STRGSML or BUILTUP HPWH model
@@ -3701,17 +3703,17 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 
 		if (wh_EF == 1.f)
 		{	// special case: "ideal" behavior (no losses)
-			ignore( DHWHEATER_LDEF, strtprintf("%s and whEF=1", whenTy));
+			ignore( strtprintf("%s and whEF=1", whenTy), DHWHEATER_LDEF);
 			wh_LDEF = 1.;
 		}
 		else
 		{	// either LDEF required or EF + prerun
 			if (!bIsPreRun)
-				rc |= require(DHWHEATER_LDEF, strtprintf("%s and DHWSYS is not PreRun", whenTy));
+				rc |= require( strtprintf("%s and DHWSYS is not PreRun", whenTy), DHWHEATER_LDEF);
 			if (IsSet(DHWHEATER_LDEF))
-				ignore( DHWHEATER_EF, strtprintf("%s and whLDEF is given", whenTy));
+				ignore( strtprintf("%s and whLDEF is given", whenTy), DHWHEATER_EF);
 			else if (bIsPreRun)
-				rc |= require(DHWHEATER_EF, strtprintf("%s and whLDEF is not given", whenTy));
+				rc |= require( strtprintf("%s and whLDEF is not given", whenTy), DHWHEATER_EF);
 		}
 	}
 
@@ -3719,7 +3721,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	{	// need sufficient info to determine tank UA
 		int argCount = IsSetCount(DHWHEATER_UA, DHWHEATER_INSULR, 0);
 		if (argCount == 2)
-			rc |= disallow(DHWHEATER_INSULR, "when 'whUA' is specified");
+			rc |= disallow( "when 'whUA' is specified", DHWHEATER_INSULR);
 		else if (argCount == 0 && wh_type == C_WHTYPECH_BUILTUP)
 			rc |= oer("whUA or whInsulR is required %s", whenTy);
 	}
@@ -3731,14 +3733,14 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	//   DHWHEATER_HEATINGCAP repeat check in wh_HPWHInit()
 	//       (after HPWH linkage established)
 	if (IsSet(DHWHEATER_HEATINGCAP) && wh_IsScalable() == 0)
-		ignore( DHWHEATER_HEATINGCAP, whenHs);
+		ignore( whenHs, DHWHEATER_HEATINGCAP);
 
 	if (!wh_CanHaveLoopReturn())
 		ignoreN(whenHs, DHWHEATER_INHTSUPPLY, DHWHEATER_INHTLOOPRET, 0);
 
 	if (IsSet(DHWHEATER_VOLRUNNING))
 	{	if (!wh_CanSetVolFromVolRunning())
-			rc |= disallow(DHWHEATER_VOLRUNNING, whenHs);
+			rc |= disallow(whenHs, DHWHEATER_VOLRUNNING);
 		else if (IsSet(DHWHEATER_VOL))
 			rc |= oer("whVol and whVolRunning cannot both be specified");
 	}
@@ -3752,7 +3754,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 	}
 	else if (wh_vol > 0.f)
 		// tolerate specified whVol==0 for instantaneous
-		rc |= disallow( DHWHEATER_VOL, whenTy);
+		rc |= disallow( whenTy, DHWHEATER_VOL);
 
 	// if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 	// TODO: checking for Ecotope HPWH model
@@ -3865,12 +3867,12 @@ RC DHWHEATER::wh_Init()		// init for run
 	if (wh_CanHaveLoopReturn() && pWS->ws_calcMode == C_WSCALCMODECH_SIM)
 	{	// no info msgs on PRERUN -- else duplicates
 		if (pWS->ws_wlCount == 0)
-		{	ignore(DHWHEATER_INHTLOOPRET, "when DHWSYS includes no DHWLOOP(s).");
+		{	ignore("when DHWSYS includes no DHWLOOP(s).", DHWHEATER_INHTLOOPRET);
 			if (whfcn == whfcnLOOPHEATER)
 				oInfo("modeled as a series heater because DHWSYS includes no DHWLOOP(s).");
 		}
 		else if (whfcn == whfcnPRIMARY && pWS->ws_wlhCount > 0)
-			ignore(DHWHEATER_INHTLOOPRET, "when DHWSYS includes DHWLOOPHEATER(s).");
+			ignore( "when DHWSYS includes DHWLOOPHEATER(s).", DHWHEATER_INHTLOOPRET);
 	}
 
 	// default meters from parent system
@@ -4245,8 +4247,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (wh_HPWH.hw_IsSetpointFixed())
 		{	int fn = pWS->ws_GetTSetpointFN(whfcn);
 			if (fn)
-				pWS->ignore(fn,
-					strtprintf("-- HPWH '%s' has a fixed setpoint.", name));
+				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", name), fn);
 
 			// force consistent ws_tSetpointDes
 			float tspFixed = wh_HPWH.hw_pHPWH->getSetpoint(HPWH::UNITS_F);
@@ -4725,10 +4726,10 @@ RC DHWTANK::wt_CkF()		// DHWTANK input check / default
 	if (nVal == 0)
 		rc |= oer("one of 'wtTEx' and 'wtZone' must be specified.");
 	else if (nVal == 2)
-		rc |= disallow( DHWTANK_ZNTI, "when 'wtTEx' is specified");
+		rc |= disallow( "when 'wtTEx' is specified", DHWTANK_ZNTI);
 
 	if (IsSet( DHWTANK_UA))
-		rc |= disallow( DHWTANK_INSULR, "when 'wtUA' is specified");
+		rc |= disallow("when 'wtUA' is specified", DHWTANK_INSULR);
 	else
 	{	float tsa = TankSurfArea_CEC( wt_vol);
 		wt_UA = tsa / max(0.68f, wt_insulR);

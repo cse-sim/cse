@@ -1371,7 +1371,6 @@ const char* FC whatEx( USI h)
 		MNAME(b->fir + ex->srcFn),   		// field member name in record (srd.h macro may access special segment)
 		(char *)b->what,				// rat name: ZONE etc
 		ex->srcIsType ? " type" : "",   		// "type" if pertinent
-		//b->isNamed() && 				if ancRec's records have name member: all now do, 1992.
 		b->ptr()								// note 1
 		?  strtprintf( "'%s'", b->rec(ex->srcI).name) 		// record name
 		:  strtprintf( "[%d]", (INT)ex->srcI) );			// else subscript
@@ -1410,8 +1409,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 // record name
 	const char* rName;
 	if ( b->ptr()						// if anchor's record block allocated: insurance, and
-	//&&  b->isNamed()						if record type has record name member: all now do, 1992
-	&&  b->rec(i).name[0] )  					// and if name is non-""
+	 &&  b->rec(i).name[0] )  					// and if name is non-""
 		rName = strtprintf( (char *)MH_E0110, b->rec(i).name, (INT)i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
 	else
 		rName = strtprintf( "[%d]", (INT)i);  			// [unnamed or] null name or not alloc'd, show subscipt only
@@ -1492,8 +1490,8 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 	// **** WRN/PWRN made effective again here 2-94, remove where effects (keystroke wait etc) not desired.
 
 	int erOp,			// error action: WRN or PWRN
-	SI isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
-	const char *fmt,		// message text
+	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
+	const char* fmt,		// message text
 	va_list ap /*=NULL*/)	// message argument list
 
 // increments error count if isWarn==0.  returns RCBAD for convenience.

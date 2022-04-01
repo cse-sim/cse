@@ -28,6 +28,24 @@ html-site-top: "/index.html"
 html-site-toc: "/cse-user-manual/index.html"
 css-files:
   - "/css/base.css"
+ignore-coverage:
+  records:
+    - "inverse"
+  data-fields:
+    coolplant:
+      - "cpStage2"
+      - "cpStage3"
+      - "cpStage4"
+      - "cpStage5"
+      - "cpStage6"
+      - "cpStage7"
+    heatplant:
+      - "hpStage2"
+      - "hpStage3"
+      - "hpStage4"
+      - "hpStage5"
+      - "hpStage6"
+      - "hpStage7"
 sections:
   - [1, "introduction.md"]
   - [1, "operation.md"]
@@ -35,6 +53,7 @@ sections:
   - [1, "input-data.md"]
   - [2, "records/top-members.md"]
   - [2, "records/holiday.md"]
+  - [2, "records/descond.md"]
   - [2, "records/material.md"]
   - [2, "records/construction.md"]
   - [2, "records/foundation.md"]
@@ -53,10 +72,9 @@ sections:
   - [2, "records/sgdist.md"]
   - [2, "records/door.md"]
   - [2, "records/perimeter.md"]
-<% if inactive_CNE_records %>
   - [2, "records/terminal.md"]
-<% end %>
   - [2, "records/izxfer.md"]
+  - [2, "records/doas.md"]
   - [2, "records/rsys.md"]
   - [2, "records/ductseg.md"]
   - [2, "records/dhwdayuse.md"]
@@ -76,14 +94,12 @@ sections:
   - [2, "records/pvarray.md"]
   - [2, "records/shadex.md"]
   - [2, "records/battery.md"]
-<% if inactive_CNE_records %>
   - [2, "records/airhandler.md"]
   - [2, "records/heatplant.md"]
   - [2, "records/boiler.md"]
   - [2, "records/coolplant.md"]
   - [2, "records/chiller.md"]
   - [2, "records/towerplant.md"]
-<% end %>
   - [2, "records/reportfile.md"]
   - [2, "records/report.md"]
   - [2, "records/reportcol.md"]

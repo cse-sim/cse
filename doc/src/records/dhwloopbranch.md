@@ -1,6 +1,6 @@
 # DHWLOOPBRANCH
 
-DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceeding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
+DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
 
 **wbName**
 
@@ -92,18 +92,18 @@ Specify exterior conditions.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-C_EXCNDCH_ADIABATIC, Adiabatic on other side
-C_EXCNDCH_AMBIENT, Ambient exterior
-C_EXCNDCH_SPECT, Specify temperature
-C_EXCNDCH_ADJZN, Adjacent zone
-C_EXCNDCH_GROUND, Ground conditions
+ADIABATIC, Adiabatic on other side
+AMBIENT, Ambient exterior
+SPECT, Specify temperature
+ADJZN, Adjacent zone
+GROUND, Ground conditions
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_EXCNDCH_SPECT",
+  default: "SPECT",
   required: "No",
   variability: "constant") %>
 
@@ -120,7 +120,7 @@ Boundary conditions for adjacent zones.
 
 **wbExTX=*float***
 
-Boudary conditions for External Exterior.
+External boundary conditions.
 
 <%= member_table(
   units: "",

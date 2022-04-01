@@ -158,7 +158,6 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_P0020, "P0020: Unexpected end of file or macro in comment" },
 	{ MH_P0021, "P0021: Too many nested macros and #includes" },
 	{ MH_P0022, "P0022: pp.cpp:lisFind: matching buffer line is %d but requested line is %d" },
-	{ MH_P0023, "P0023: VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level." },
 	{ MH_P0024, "P0024: Replacing illegal null character ('\\0') with space\n    in or after input file line number shown."},	//10-92
 	//pp.cpp additions 6-95
 	{ MH_P0025, "P0025: '=' expected" },
@@ -550,7 +549,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	},
 	{ MH_S0493, "S0493: Required member '%s' has not been set,\n    and apparently no message about it appeared above" },
 	{ MH_S0494, "S0494: bad %s index %d in%s %s '%s' [%d]%s" },
-	{ MH_S0495, "S0495: cncult2.cpp:disallowN Internal error: field # %d: probable unterminated arg list" /* 3 uses */ },
+	{ MH_S0495, "S0495: %s: Internal error: field # %d: unterminated arg list?" },
 	{ MH_S0496, "S0496: Can't give '%s' %s" },
 	{ MH_S0497, "S0497: '%s' missing: required %s" },
 	{ MH_S0498, "S0498: '%s' missing" },
@@ -1535,4 +1534,3 @@ x  { MH_T0003, "\nReport file name: %s" },
 SI msgTblCount = sizeof(msgTbl)/sizeof(MSGTBL);		// number of msgTbl entries
 
 // msgtbl.cpp end
-

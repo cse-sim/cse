@@ -149,7 +149,7 @@ Fraction of CHILLER compressor motor input power which goes to the condenser. Fo
   ----------- -------------------- ------------- -------------- -----------------
               0 &lt; *x* $\le$ 1   1.0           No             constant
 
-**chMeter=*name***
+**chMtr=*name***
 
 Name of METER to which to accumulate CHILLER's electrical input energy. Category "Clg" is used. Note that two additional commands, *chppMtr* and *chcpMtr*, are used to specify meters for recording chiller pump input energy.
 
@@ -193,7 +193,7 @@ Chiller primary pump hydraulic efficiency
   ----------- ---------------------- ------------- -------------- -----------------
               0 &lt; *x* $\le$ 1.0   .70           No             constant
 
-**chppOvrun=*float***
+**chppOvrunF=*float***
 
 Chiller primary pump maximum overrun: factor by which flow demanded by coils can exceed *chppGpm*. The primary flow is not simulated in detail; *chppOvrun* is currently used only to issue an error message if the sum of the design flows of the coils connected to a COOLPLANT exceeds the sum of the products of *chppGpm* and *chppOvrun* for the chiller's in the plants most powerful stage.
 

@@ -60,9 +60,6 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 #define RFLOCAL 0x0100	// flag for private local uses 1-92. used in: cuprobe.cpp:showProbeNames, .
 #define RFHEAP  0x0080	// set if block is in heap, else don't dmfree. 5-92.
 #define RFPERSIS 0x0040	// (run) record kept from autosize phase for main sim: don't clear its expr uses. 10-95.
-// following flags set by rcdef.exe (in makAnc<T> macro defns): OBSOLESCENT: all records named, ownable, 2-92.
-#define RFOWNED 2	// ownable record basAnc: has TI field after name. now always on 2-92.
-#define RFNAMED 1	// named record basAnc: now always on 2-92.
 //-------------------------------------------------------------------------------------------------------------------------
 class basAnc    	// base class for record anchors: basAnc<recordName>
 {
@@ -87,7 +84,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
     basAnc();
-    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, int dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
@@ -103,7 +100,6 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     RC add( record **r, int erOp, TI i=0, const char* _name=NULL);		// add record to block
     RC FC del( TI i, int erOp=ABT);								// delete record i
     void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);  // set up with static record(s)
-    int isNamed() const { return ba_flags & RFNAMED; }		// records have .name[]: always on, coding out 7-92
     static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
     static SI FC ancNext( USI &an, BP *_b);						// iterate anchors
@@ -230,17 +226,29 @@ class record		// base class for records
 	int IsNameMatch( const char* _name) const;
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 
-	// input-checking support functions in cncult2.cpp
-    // require/disallow fields
-	// RC checkN(const char* when, RC (*checkFcn)(record* pRec, int fn, const char* when), va_list ap);
-	// typedef RC (record::* RecCheckFcn)(int fn, const char* when);
-	RC checkN(const char* when, RC(record::* checkFcn)(int fn, const char* when), va_list ap);
-    RC disallowN( const char* when=NULL, ...);
-    RC disallow( int fn, const char* when);
-    RC requireN( const char* when=NULL, ...);
-    RC require( int fn, const char* when=NULL);
-    RC ignoreN( const char* when=NULL, ...);
-    RC ignore( int fn, const char* when=NULL);
+	// input-checking support functions
+	RC ValidateFN(int fn, const char* caller) const;
+    // require/disallow/ignore fields
+	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), va_list ap);
+	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), const int16_t* fnList);
+    RC disallowN( const char* when, ...);
+	RC disallow(int fn) { return disallow(NULL, fn); }
+    RC disallow(const char* when, int fn);
+	RC disallow(const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC disallowX(const char* when, Args... args) { return (disallow(when, args) | ...); }
+    RC requireN( const char* when, ...);
+	RC require(int fn) { return require(NULL, fn); }
+    RC require( const char* when, int fn);
+	RC require( const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC requireX(const char* when, Args... args) { return (require(when, args) | ...); }
+    RC ignoreN( const char* when, ...);
+	RC ignore(int fn) { return ignore(NULL, fn); }
+    RC ignore( const char* when, int fn);
+	RC ignore( const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC ignoreX(const char* when, Args... args) { return (ignore(when, args) | ...); }
     // specific error messages
     RC cantGiveEr( int fn, const char* when=NULL);
     RC notGivenEr( int fn, const char* when=NULL);
@@ -293,9 +301,9 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( char *what, SFIR *sFir, USI nFlds, RCT rt) 		// cpp'tor used for static instances
-        : basAnc( RFNAMED|RFOWNED, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat) )
-        { p = 0; }								// soon code out obsolete flags RFNAMED, RFOWNED.
+    anc( char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
+        : basAnc( 0, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT)
+        { p = 0; }
     anc( const BP src, int flags, char  *_what,  			// like-another constructor,
          BP _ownB, int dontRegister=0 );    				//  code included only ifdef NEEDLIKECTOR.
     virtual ~anc();							// destroys records, and types anchor & its recs.

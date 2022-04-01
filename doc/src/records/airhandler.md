@@ -1554,6 +1554,22 @@ METER to record crankcase heater energy use, category "Aux"; not recorded if not
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 
+**ahTsDsC**
+
+**ahTsDsH**
+
+**ahTsRaMn**
+
+**ahccSHR**
+
+**ahccVfRperTon**
+
+**coilOversize**
+
+**fanOversize**
+
+**pydxCaptFLim**
+
 **endAirHandler**
 
 Indicates the end of the air handler definition. Alternatively, the end of the air handler definition can be indicated by the declaration of another object.

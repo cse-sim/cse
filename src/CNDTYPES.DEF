@@ -275,6 +275,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  ANIZFAN "AirNetIZFan"
 			  ANEXTFLOW "AirNetExtFlow"
 			  ANIZFLOW "AirNetIZFlow"
+			  ANDOAS "AirNetDOAS"
 			  ANHERV "AirNetHERV"
 			  ANDUCTLK "AirNetDuctLk"
 			  ANSYSAIR "AirNetSysAir"
@@ -335,7 +336,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			COOL "Cool"
 			AUTO "Auto"
 			}
-*choicb RSYSTYCH {
+*choicb RSYSTY {
 			ACFURN "ACFurnace"
 			ACRES  "ACResistance"
 			ACPKGRM "ACPkgRoom"
@@ -348,6 +349,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			AC	   "AC"
 			FURN   "Furnace"
 			RES	   "Resistance"
+			FANCOIL "FanCoil"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
@@ -473,6 +475,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			NYLEC125AC_SP "NyleC125A_CWP_SP"
 			NYLEC185AC_SP "NyleC185A_CWP_SP"
 			NYLEC250AC_SP "NyleC250A_CWP_SP"
+
+			MITSU_QAHVN136TAUHPB_SP "Mitsubishi_QAHV_N136TAU_HPB_SP"
 
 			// NYLEC25A_MP  "NyleC25A_MP"		// Nyle Cxx external HPWHs (MP = multi-pass mode)
 			NYLEC60A_MP  "NyleC60A_MP"
@@ -671,6 +675,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  TFAN		"terminal"
 			  XFAN		"exhaust"
 			  ZFAN		"interzone"
+			  DSFAN		"DOAS Supply"
+			  DEFAN		"DOAS Exhaust"
 			}
 			
 *choicb FANTYCH   { NONE		"none"				// fan type/position 3-92

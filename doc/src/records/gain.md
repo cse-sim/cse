@@ -184,13 +184,13 @@ Name of a DHWSYS whose water use modulates gnPower.  For example, electricity us
   variability: "constant")
   %>
 
-**gnCtrlDHWMETER=*integer***
+**gnCtrlDHWMETER=*dhwMtrName***
 
-Controls the DHWMETER. Allows gains to track water usage such as dishwashers, clotheswashers, etc.
+Allows gains to track water usage such as dishwashers, clothes washers, etc.
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "*name of DHWMETER*",
   default: "0",
   required: "No",
   variability: "constant") %>

@@ -50,7 +50,17 @@ Heat plant pipe loss: heat assumed lost from piping connecting boilers to loads 
 
 **hpStage1=ALL**
 
-**hpStage2 through hpStage7 *same***
+**hpStage2**
+
+**hpStage3**
+
+**hpStage4**
+
+**hpStage5**
+
+**hpStage6**
+
+**hpStage7**
 
 The commands *hpStage1* through *hpStage7* allow specification of up to seven *STAGES* in which BOILERs are activated as the load increases. Each stage may be specified with a list of up to seven names of BOILERs in the HEATPLANT, or with the word ALL, meaning all of the HEATPLANT's BOILERs, or with the word ALL\_BUT and a list of up to six names of BOILERs. Each stage should be more powerful than the preceding one. If you have less than seven stages, you may skip some of the commands *hpStage1* through *hpStage7* -- the used stage numbers need not be contiguous.
 

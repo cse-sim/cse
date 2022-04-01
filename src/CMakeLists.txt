@@ -14,8 +14,9 @@ set(defs
 option(USE_XMODULE "Add XMODULE to the build." OFF)
 
 macro(c_preprocess file)
+  string(TOLOWER "${file}" file_lc)
   add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file_lc}.i"
     COMMAND ${CMAKE_COMMAND}
     ARGS
       -Dcompiler=${CMAKE_C_COMPILER}
@@ -23,24 +24,23 @@ macro(c_preprocess file)
       -Dout_dir=${CMAKE_CURRENT_BINARY_DIR}
       -Dfile=${file}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
-    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.def"
+    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.DEF"
   )
 endmacro()
 
 foreach(defFile ${defs})
-  string(TOLOWER "${defFile}" defFile)
-  string(REPLACE ".def" "" file "${defFile}")
+  string(REPLACE ".DEF" "" file "${defFile}")
   c_preprocess(${file})
 endforeach()
 
 # Run RCDEF
 add_custom_command(
   OUTPUT
-    "${CMAKE_CURRENT_SOURCE_DIR}/DTYPES.H"
-    "${CMAKE_CURRENT_SOURCE_DIR}/RCCN.H"
-    "${CMAKE_CURRENT_SOURCE_DIR}/DTTAB.CPP"
-    "${CMAKE_CURRENT_SOURCE_DIR}/SRFD.CPP"
-    "${CMAKE_CURRENT_SOURCE_DIR}/UNTAB.CPP"
+    "${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/rccn.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/dttab.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/srfd.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/untab.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
@@ -103,7 +103,7 @@ set(source
   DHWCalc.cpp
   DHWSolar.cpp
   DMPAK.CPP
-  DTTAB.CPP
+  dttab.cpp
   ENVPAK.CPP
   EXMAN.CPP
   Foundation.cpp
@@ -120,15 +120,14 @@ set(source
   PSYCHRO.CPP
   PVCalc.cpp
   RMKERR.CPP
-  RUNDATA.CPP
   SHADING.CPP
   SOLAR.CPP
-  SRFD.CPP
+  srfd.cpp
   STRPAK.CPP
   SYTB.CPP
   TDPAK.CPP
   TIMER.CPP
-  UNTAB.CPP
+  untab.cpp
   VRPAK.CPP
   WFPAK.CPP
   XIOPAK.CPP
@@ -170,7 +169,7 @@ set(headers
   CVPAK.H
   DATFCNS.H
   DMPAK.H
-  DTYPES.H
+  dtypes.h
   ENVPAK.H
   EXMAN.H
   Foundation.h
@@ -186,7 +185,7 @@ set(headers
   PGPAK.H
   PP.H
   PSYCHRO.H
-  RCCN.H
+  rccn.h
   RMKERR.H
   SOLAR.H
   SRD.H

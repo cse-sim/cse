@@ -135,7 +135,7 @@ Hot water demand determination
 
 **wsTInletDes=*float***
 
-Specifies cold water inlet temperature design (sizing).
+Cold water inlet design temperature for sizing.
 
 <%= member_table(
   units: "^o^F",
@@ -179,78 +179,67 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   variability: "daily")
   %>
 
-**wsUnkDrawDurF=*float***
-
-Unknown water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly and at the end of interval") %>
-
 **wsFaucetDrawDurF=*float***
 
-Fauce water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for faucets. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsShowerDrawDurF=*float***
 
-Shower water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for showers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsBathDrawDurF=*float***
 
-Bath water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for baths. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsCWashrDrawDurF=*float***
 
-Clothed washer water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for clothes washers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "1.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
 **wsDWashrDurF=*float***
 
-Dish washer water heater for draw duration factor to be use by warm-up waste and pipe lossesfor DHWDAYUSE draws.
+Draw duration factor for dishwashers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "1.0",
   required: "No",
-  variability: "Hourly and at the end of interval") %>
+  variability: "Hourly") %>
 
-**wsUnkDrawWaste=*float***
+**wsUnkDrawDurF=*float***
 
-Unknown water waste per draw.
+Draw duration factor for unknown end use. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "gal",
+  units: "gal/draw",
   legal_range: "x $\\geq$ 0",
   default: "0.0",
   required: "No",
@@ -258,7 +247,7 @@ Unknown water waste per draw.
 
 **wsFaucetDrawWaste=*float***
 
-Faucet water waste per draw.
+Draw water waste for faucets.
 
 <%= member_table(
   units: "gal",
@@ -269,7 +258,7 @@ Faucet water waste per draw.
 
 **wsShowerDrawWaste=*float***
 
-Shower water waste per draw.
+Draw water waste for showers.
 
 <%= member_table(
   units: "gal",
@@ -280,7 +269,7 @@ Shower water waste per draw.
 
 **wsBathDrawWaste=*float***
 
-Bath water waste per draw.
+Draw water waste for baths.
 
 <%= member_table(
   units: "gal",
@@ -291,7 +280,7 @@ Bath water waste per draw.
 
 **wsCWashrDrawWaste=*float***
 
-Clothing washer water waste per draw.
+Draw water waste for clothes washers.
 
 <%= member_table(
   units: "gal",
@@ -302,7 +291,7 @@ Clothing washer water waste per draw.
 
 **wsDWashrDrawWaste=*float***
 
-Dish washer water waste per draw.
+Draw water waste for dishwashers.
 
 <%= member_table(
   units: "gal",
@@ -311,23 +300,28 @@ Dish washer water waste per draw.
   required: "No",
   variability: "Hourly") %>
 
-Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+**wsUnkDrawWaste=*float***
 
-Note that DHWUSE draws can be referenced by multiple DHWSYSs; these adjustments apply only to the current DHWSYS.
-
-These adjustments have not impact on draw specifified by wsUse.
+Draw water waste for unknown end use.
 
 <%= member_table(
-  units: "gal/draw",
-  legal_range: "",
-  default: "0",
+  units: "gal",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
   required: "No",
-  variability: "hourly")
-  %>
+  variability: "Hourly") %>
 
 **wsBranchModel=*choice***
 
-ToDo
+Branch model selection.
+
+<%= csv_table(<<END, :row_header => true)
+"Choice","Description"
+"T24DHW","Model in appendix B of the Alternative Compliance Manual"
+"DRAWWASTE","Draw duration increase per draw waste"
+"DAYWASTE","draw duration increase per day waste"
+END
+%>
 
 **wsDayWasteVol=*float***
 
@@ -353,27 +347,16 @@ Day waste scaling factor.
   variability: "constant")
   %>
 
-**wsUnkDayWasteF=*float***
-
-Unknown relative water draw for day of waste scheme.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
-
 **wsFaucetDayWasteF=*float***
 
 Relative faucet water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsShowerDayWasteF=*float***
 
@@ -381,10 +364,10 @@ Relative shower water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsBathDayWasteF=*float***
 
@@ -392,10 +375,10 @@ Relative bath water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsCWashrDayWasteF=*float***
 
@@ -403,10 +386,10 @@ Relative clothes washer water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 **wsDWashrDayWasteF=*float***
 
@@ -414,10 +397,21 @@ Relative dish washer water draw for day of waste scheme.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $>$ 0",
   default: "0.0",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
+
+**wsUnkDayWasteF=*float***
+
+Unknown relative water draw for day of waste scheme.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "subhourly") %>
 
 **wsTUse=*float***
 
@@ -445,7 +439,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetPointLH=*float***
 
-  Specifies the hot water setpoint temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
+  Specifies the hot water set point temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
 
 <%= member_table(
   units: "^o^F",
@@ -457,7 +451,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetpointDes=*float***
 
-Specifies the design (sizing) setpoint temperature.
+Specifies the design (sizing) set point temperature.
 
 <%= member_table(
   units: "^o^F",
@@ -468,7 +462,7 @@ Specifies the design (sizing) setpoint temperature.
 
 **wsVolRunningDes=*float***
 
-Running volume for design.
+Running volume for design. Active volume (above aquastat) equals to a full tank volume, defaults from EcoSizer at end of prerun if not input. No direct use, must be passed to DHWHEATER via ALTER.
 
 <%= member_table(
   units: "gal",
@@ -501,19 +495,19 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 
 **wsDRMethod=*choice***
 
-Response control method for domestic hot water demand.
+Demand response control method.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-C_DHWDRMETH_NONE, None
-C_DHWDRMETH_SCHED, Demand response
+NONE, None
+SCHED, Demand response schedule
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "C_DHWDRMETH_NONE",
+  default: "NONE",
   required: "No",
   variability: "At the start of a run") %>
 
@@ -522,25 +516,25 @@ END
 Response control signal for domestic hot water demand.
 
 <%= csv_table(<<END, :row_header => true)
-Choice
-C_DHWDRSIG_ON
-C_DHWDRSIG_TOO
-C_DHWDRSIG_TOOLOR
-C_DHWDRSIG_TOOLOC
-C_DHWDRSIG_TOT
-C_DHWDRSIG_TOTLOR
-C_DHWDRSIG_TOTLOC
-C_DHWDRSIG_LOC
-C_DHWDRSIG_LOR
-C_DHWDRSIG_LOCLOR
-C_DHWDRSIG_COUNT
+Choice, Description
+ON, Normal operation following the water heater's internal control logic.
+TOO, Tops of the tank once by engaging the all the available heating sources (compressor and resistive elements) in the water heater to heat the tank to setpoint, regardless of the current condition.
+TOOLOR, Tops of the tank once and locks out the resistance elements, just the compressor is used to heat the tank to setpoint.
+TOOLOC, Tops of the tank once and locks out the compressor, just the resistance elements are used to heat the tank to setpoint.
+TOT, Tops of the tank on a timer using all the available heating sources (compressor and resistive elements) in the water heater. The tank starts a timer and heating to setpoint when the call is received, and repeats the heating call when the timer reaches zero.
+TOTLOR, Tops of the tank on a timer and locks out the resistance elements, just the compressor is used to heat the tank to setpoint.
+TOTLOC, Tops of the tank on a timer and locks out the compressor, just the resistance elements is used to heat the tank to setpoint.
+LOC, Locks out the compressor from the water heater's normal internal control logic.
+LOR, Locks out the resistive elements from the water heater's normal internal control logic.
+LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.
+COUNT, ???
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See Table above",
-  default: "C_DHWDRSIG_ON",
+  default: "ON",
   required: "No",
   variability: "constant") %>
 

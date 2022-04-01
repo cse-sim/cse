@@ -380,8 +380,6 @@ x	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls, 0.f), 0.8f);
 	if (!nMd)				// if zone has no modes (eg startup with no terminals)
 		spCf++;				// tell ztuCompute to build zone mode sequence
 
-	zn_unMetCDH = zn_unMetHDH = 0.f;	// unmet temp diffs
-
 	// initialize DHW heat transfer totals
 	//   TODO: could be done in DHW code iff needed
 	//   Win? -- generally less DHWHEATERs than ZONEs
@@ -687,7 +685,6 @@ x	}
 RC ZNR::zn_InitSubhr()
 {
 	// set points
-#if 1
 	if (Top.tp_autoSizing)
 	{	// avoid setpoint step changes when autosizing
 		// assume zn_tzspXbs changes hourly (altho they have subhourly variability)
@@ -698,7 +695,6 @@ RC ZNR::zn_InitSubhr()
 		zn_tzspC = (1.f - f) * zn_tzspClh + f * i.znTC;
 	}
 	else
-#endif
 	{	// not autosizing: use setpoints as input
 		zn_tzspH = i.znTH;
 		zn_tzspD = i.znTD;
@@ -1173,8 +1169,6 @@ x						printf( "1B\n");
 #else
 					tz = zn_TAirCR(zn_qsHvac, 0.);
 #endif
-					if (Top.isEndHour)
-						zn_unMetCDH = tz - zn_tzspC;		// temp excursion above setpoint
 				}
 				// else capacity sufficient
 			}
@@ -1196,9 +1190,6 @@ x						printf( "1B\n");
 #else
 					tz = zn_TAirCR(zn_qsHvac, 0.);
 #endif
-
-					if (Top.isEndHour)
-						zn_unMetHDH = tz - zn_tzspH;	// temp excursion below setpoint (< 0)
 				}
 				// else capacity sufficient
 			}
@@ -1320,40 +1311,19 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 #endif
 		}
 
-		// track unmet
+#if defined( _DEBUG)
 		// test against setpoint (with a little tolerance)
 		if (!Top.isWarmup)		// skip if warmup (including autosize)
 		{	if (zn_hcMode == RSYS::rsmHEAT)
-			{	if (tz < zn_tzsp-.001)
-				{	if (Top.isEndHour)
-						zn_unMetHDH = tz - zn_tzsp;		// hour end temp excursion below set point
-#if 0 && defined( _DEBUG)
-					if (zn_rsFSize > .9999)
-						// air request received: temp should hold
-						printf( "Heating temp error\n");
-#endif
-				}
-#if defined( _DEBUG)
-				else if (tz > zn_tzsp + .001)
+			{	if (tz > zn_tzspH + .001f)
 					printf( "\nOverheat");
-#endif
 			}
 			else if (zn_hcMode == RSYS::rsmCOOL)
-			{	if (tz > zn_tzsp+.001)
-				{	if (Top.isEndHour)
-						zn_unMetCDH = tz - zn_tzsp;		// hour end temp excursion above set point
-#if 0 && defined( _DEBUG)
-					if (zn_rsFSize > .9999)
-						// air request received: temp should hold
-						printf( "Cooling temp error\n");
-#endif
-				}
-#if defined( _DEBUG)
-				else if (tz < zn_tzsp - .001)
+			{	if (tz < zn_tzspC - .001f)
 					printf( "\nOvercool");
-#endif
 			}
 		}
+#endif
 	}
 	// else all known
 #if defined( ZNHVACFCONV)
@@ -1734,23 +1704,33 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 //-------------------------------------------------------------------------------
 RC RSYS::rs_CkF()
 {
-	ASSERT( RSYSMODES == rsmCOUNT-1);		// cndefn.h #define must be consistent
-											//   with cnrecs.def enum
+	static_assert(RSYSMODES == rsmCOUNT - 1);		// cndefn.h #define must be consistent
+													//   with cnrecs.def enum
+
+
 	int rc = RCOK;
-	const char* when;
+
+#if 1
+	rc |= rs_CkFHeating();
+
+	rc |= rs_CkFCooling();
+
+#else
+	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
 	rs_capAuxHInp = 0.f;		// insurance, see ASHP below
 	if (rs_CanCool())
-	{	when = strtprintf( "when rsType=%s",
-			getChoiTx( RSYS_TYPE));
-		
-		if (rs_IsPkgRoom())
-		{	rc |= requireN(when, RSYS_EER95, 0);
-			rc |= disallowN(when, RSYS_SEER, RSYS_COP95, 0);
+	{	if (rs_IsPkgRoom())
+		{	rc |= requireN(whenTy, RSYS_EER95, 0);
+			rc |= disallowN(whenTy, RSYS_SEER, RSYS_COP95, 0);
 			if (!IsSet(RSYS_FANPWRC))
 				rs_fanPwrC = 0.f;	// fan power included in primary by default
 		}
+		else if (rs_IsFanCoil())
+		{	// fancoil cooling (heating checked below)
+			rc |= disallowX(whenTy, ClgFNs, VC_ClgFNs);
+		}
 		else
-			rc |= requireN(when, RSYS_SEER, 0);
+			rc |= requireN(whenTy, RSYS_SEER, 0);
 
 
 		if (!IsAusz(RSYS_CAP95))
@@ -1769,7 +1749,12 @@ RC RSYS::rs_CkF()
 					RSYS_CAP82, RSYS_CAP115, 0);
 		}
 
-		if (!rs_IsASHPVC())
+		if (rs_IsASHPVC())
+		{
+			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
+			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
+		}
+		else
 		{
 			rc |= ignoreN("when rsType is not ASHPVC (VCHP2)",
 				RSYS_COPMIN05, RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
@@ -1777,62 +1762,60 @@ RC RSYS::rs_CkF()
 				// cooling?
 			rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
 		}
-		else
-		{
-			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
-			FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
-		}
 
 	}
 	else
 	{	// no cooling capability
-		when = strtprintf( "when rsType=%s (cooling not available)",
+		const char* whenNoCl = strtprintf( "when rsType=%s (cooling not available)",
 			getChoiTx( RSYS_TYPE));
-		rc |= disallowN( when, RSYS_SEER, RSYS_EER95,
-				RSYS_CAP95, RSYS_COP95, RSYS_LOADFMIN95, RSYS_COPMIN95,
-				RSYS_CAP82, RSYS_COP82, RSYS_CAPRAT8295, RSYS_LOADFMIN82, RSYS_COPMIN82,
-				RSYS_CAP115, RSYS_COP115, RSYS_CAPRAT11595, RSYS_LOADFMIN115, RSYS_COPMIN115,
-				RSYS_FCHG, RSYS_VFPERTON, RSYS_FANPWRC, RSYS_CDC,
-			    RSYS_CAPNOMC, 0);
+		rc |= disallowX(whenNoCl, Clg_FNs, VC_Clg_FNs);
 		FldSet( RSYS_CAPNOMC, 0.f);		// insurance
 	}
+
+	// -- HEATING --
+	// all heating fields EXCEPT RSYS_CAPH and RSYS_FANPWRH
+	//  = heating fields disallowed for FANCOIL
+	static constexpr int16_t htgFNs[]{ RSYS_AFUE, RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
+		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
+		RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0 };
+
+	// ASHP heating FNs (all types)
+	static constexpr int16_t ASHP_HtgFNs[]{ RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
+		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
+		RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_CAPRAT0547, RSYS_CDH, 0 };
+
+	static constexpr int16_t ASHPVC_HtgFNs[]{ RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
+		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05, 0 };
 
 	rc |= rs_CkFAuxHeat();		// check aux heat inputs
 	
 	if (!rs_CanHeat())
-	{	when = strtprintf( "when rsType=%s (heating not available)",
+	{	const char* whenTyNoHt = strtprintf( "when rsType=%s (heating not available)",
 			getChoiTx( RSYS_TYPE));
-		rc |= disallowN( when, RSYS_CAPH, RSYS_AFUE,
-				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
-				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
-				RSYS_ASHPLOCKOUTT,
-				RSYS_FANPWRH, RSYS_CDH, RSYS_LOADFMIN47, RSYS_CAPRAT1747, 0);
+		rc |= disallowX(whenTyNoHt, RSYS_CAPH, RSYS_FANPWRH);
 		FldSet( RSYS_CAPNOMH, 0.f);		// insurance
 	}
-	// else
+	// else if (rs_I)
 	// {	// general heating checks
 	// }
 		
 	if (rs_IsASHP())
 	{
-		when = strtprintf("when rsType=%s",	getChoiTx(RSYS_TYPE));
-
 		rs_AFUE = 0.f;		// drop possibly confusing default
 
 		if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
-			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", when);
+			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", whenTy);
 
 		if (IsSetCount(RSYS_CAP47, RSYS_CAP95, RSYS_CAPRAT9547, 0) == 3
 		 && !(IsAusz( RSYS_CAP47) && IsAusz( RSYS_CAP95)))
 			// cannot give all 3 values unless both caps are autosized
-			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", when);
+			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", whenTy);
 
 		if (rs_IsASHPHydronic())
 		{	// ASHPHydronic: air-to-water heat pump
 			//   approximated with air-to-air model
-			when = "when rsType=ASHPHydronic";
-			rc |= requireN(when, RSYS_COP47, RSYS_COP17, 0);
-			rc |= disallowN(when, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
+			rc |= requireN(whenTy, RSYS_COP47, RSYS_COP17, 0);
+			rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
 			if (!IsSet(RSYS_FANPWRH))
 				rs_fanPwrH = 0.f;		// hydronic: no fan power
 			if (!IsAusz(RSYS_CAP47))
@@ -1842,7 +1825,7 @@ RC RSYS::rs_CkF()
 		else
 		{	// ASHP other than ASHPHydronic
 
-			rc |= disallowN(when, RSYS_CAPH, RSYS_AFUE, 0);
+			rc |= disallowN(whenTy, RSYS_CAPH, RSYS_AFUE, 0);
 
 			if (!IsAusz(RSYS_CAP47))
 				// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
@@ -1851,9 +1834,9 @@ RC RSYS::rs_CkF()
 
 			if (rs_IsPkgRoom())
 			{
-				rc |= disallowN(when, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
+				rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
 					RSYS_CAP17, RSYS_COP17, RSYS_CAP35, RSYS_COP35, 0);
-				rc |= requireN(when, RSYS_COP47, 0);
+				rc |= requireN(whenTy, RSYS_COP47, 0);
 
 				if (!IsSet(RSYS_FANPWRH))
 					rs_fanPwrH = 0.f;	// fan power included in primary by default
@@ -1866,7 +1849,7 @@ RC RSYS::rs_CkF()
 				//   COPs defaulted from HSPF
 				//   if both COP47 and COP17 are specified, HSPF is not used
 
-				rc |= requireN(when, RSYS_HSPF, 0);
+				rc |= requireN(whenTy, RSYS_HSPF, 0);
 
 				if (IsAusz(RSYS_CAP47))
 					rc |= disallowN("when rsCap47 is AUTOSIZE",
@@ -1897,12 +1880,8 @@ RC RSYS::rs_CkF()
 	}
 	else
 	{	// not ASHP of any type
-		rc |= disallowN( "when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC",
-				RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
-				RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17,
-			    RSYS_CAP05, RSYS_COP05,
-				RSYS_COPMIN17, RSYS_COPMIN35, RSYS_COPMIN47,
-				RSYS_ASHPLOCKOUTT, RSYS_DEFROSTMODEL, RSYS_CDH, 0);
+		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
+				ASHP_HtgFNs, ASHPVC_HtgFNs);
 
 		if (!IsSet( RSYS_AFUE))
 			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
@@ -1910,6 +1889,9 @@ RC RSYS::rs_CkF()
 			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
 			FldCopyIf( RSYS_CAPH, RSYS_CAPNOMH);
 	}
+
+#endif
+
 
 #if 0
 x Parasitics are accumlated to RSYSRES also, 11-2021
@@ -1927,8 +1909,8 @@ x		oInfo( "rsFuelMtr not specified -- rsParFuel has no effect");
 				RSYS_OAVAVFDS, RSYS_OAVAVFMINF, RSYS_OAVFANPWR,
 				0);
 	else
-	{	when = "when rsOAVType is given";
-		rc |= requireN( when, RSYS_OAVRELIEFZI, RSYS_OAVAVFDS, 0);
+	{	const char* whenOAV = "when rsOAVType is given";
+		rc |= requireN( whenOAV, RSYS_OAVRELIEFZI, RSYS_OAVAVFDS, 0);
 		if (IsVal( RSYS_OAVTDIFF) && rs_OAVTdiff < 2.f)
 			oWarn( "Dubious rsOAVTdiff (%0.2f F) may cause inadvertent vent heating."
 				   "\n    rsOAVTdiff is typically >= 5 F to allow for fan heat and duct gains",
@@ -1939,6 +1921,211 @@ x		oInfo( "rsFuelMtr not specified -- rsParFuel has no effect");
 
 	return rc;
 }	// RSYS::rs_CkF
+//-----------------------------------------------------------------------------
+RC RSYS::rs_CkFHeating()
+{
+	RC rc = RCOK;
+
+#if 0
+	// all heating non-ASHP fields EXCEPT RSYS_CAPH, RSYS_FANPWRH, RSYS_FXCAPHTARG
+	//  = heating fields disallowed for FANCOIL
+	static constexpr int16_t htgFNs[]{ RSYS_AFUE, RSYS_CAPNOMH, RSYS_TDDESH, RSYS_FEFFH, 0 };
+#endif
+
+	// ASHP heating FNs (all types)
+	static constexpr int16_t ASHP_HtgFNs[]{ RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
+		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
+		RSYS_CAPRAT1747, RSYS_CAPRAT9547,  RSYS_CDH,
+		RSYS_DEFROSTMODEL, 0 };
+
+	// ASHPVC (VCHP2) active FNs
+	static constexpr int16_t ASHPVC_HtgFNs[]{ RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
+		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05,
+		RSYS_CAPRAT0547, RSYS_CAP05, RSYS_COP05, 0 };
+
+	rc |= rs_CkFAuxHeat();		// check aux heat inputs
+
+	if (!rs_CanHeat())
+	{
+		const char* whenTyNoHt = strtprintf("when rsType=%s (heating not available)",
+		getChoiTx(RSYS_TYPE));
+		rc |= ignoreX(whenTyNoHt, RSYS_CAPH, RSYS_FANPWRH, RSYS_FXCAPHTARG,
+			RSYS_AFUE, RSYS_CAPNOMH, RSYS_TDDESH, RSYS_FEFFH,
+			ASHP_HtgFNs, ASHPVC_HtgFNs);
+		FldSet(RSYS_CAPNOMH, 0.f);		// insurance
+
+		return rc;
+	}
+	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
+
+	if (rs_IsFanCoil())
+	{	// fancoil htg
+		rc |= require(whenTy, RSYS_CAPH);
+		rc |= ignoreX(whenTy, RSYS_AFUE, RSYS_CAPNOMH, RSYS_FEFFH,
+			ASHP_HtgFNs, ASHPVC_HtgFNs);
+		rs_AFUE = 0.f;
+	}
+
+	else if (rs_IsASHP())
+	{
+		rs_AFUE = 0.f;		// drop possibly confusing default
+
+		if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
+			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", whenTy);
+
+		if (IsSetCount(RSYS_CAP47, RSYS_CAP95, RSYS_CAPRAT9547, 0) == 3
+		 && !(IsAusz(RSYS_CAP47) && IsAusz(RSYS_CAP95)))
+			// cannot give all 3 values unless both caps are autosized
+			rc |= oer("rsCap47, rsCapC, and rsCapRat9547 cannot all be specfied %s", whenTy);
+
+		if (rs_IsASHPHydronic())
+		{	// ASHPHydronic: air-to-water heat pump
+			//   approximated with air-to-air model
+			rc |= requireN(whenTy, RSYS_COP47, RSYS_COP17, 0);
+			rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
+			if (!IsSet(RSYS_FANPWRH))
+				rs_fanPwrH = 0.f;		// hydronic: no fan power
+		}
+		else
+		{	// ASHP other than ASHPHydronic
+
+			rc |= disallowN(whenTy, RSYS_CAPH, RSYS_AFUE, 0);
+
+			if (rs_IsASHPPkgRoom())
+			{
+				rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAP05, RSYS_COP05,
+					RSYS_CAP17, RSYS_COP17, RSYS_CAP35, RSYS_COP35, 0);
+				rc |= requireN(whenTy, RSYS_COP47, 0);
+
+				if (!IsSet(RSYS_FANPWRH))
+					rs_fanPwrH = 0.f;	// fan power included in primary by default
+
+				// other defaults derived in rs_TopRSys1()
+			}
+			else
+			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
+				//   capacities defaulted from cooling cap95
+				//   COPs defaulted from HSPF
+				//   if both COP47 and COP17 are specified, HSPF is not used
+
+				rc |= requireN(whenTy, RSYS_HSPF, 0);
+
+				if (IsAusz(RSYS_CAP47))
+					rc |= disallowN("when rsCap47 is AUTOSIZE",
+						RSYS_CAP05, RSYS_CAP17, RSYS_CAP35, 0);
+				else
+				{	if (IsSet(RSYS_CAP17))
+						rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+					if (IsSet(RSYS_CAP05))
+						rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
+				}
+
+				if (!rs_IsASHPVC())
+				{	rc |= ignore("when rsType is not ASHPVC (VCHP2)",
+							ASHPVC_HtgFNs);
+					rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
+				}
+				else
+				{	// default loadFMins
+					FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN17);
+					FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN05);
+				}
+			}
+		}
+
+		// all heat pumps
+		if (!IsAusz(RSYS_CAP47))
+			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+			//   see DefaultCapNomsIf()
+			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
+	}
+	else
+	{	// not ASHP of any type
+		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
+				ASHP_HtgFNs, ASHPVC_HtgFNs);
+
+		if (!IsSet(RSYS_AFUE))
+			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
+		if (!IsAusz(RSYS_CAPH))
+			// rs_capH not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
+			FldCopyIf(RSYS_CAPH, RSYS_CAPNOMH);
+	}
+
+	return rc;
+}	// RSYS::rs_CkFHeating
+//-----------------------------------------------------------------------------
+RC RSYS::rs_CkFCooling()
+{
+	// compression cooling FNs
+	static constexpr int16_t Clg_FNs[] = { RSYS_SEER, RSYS_EER95, RSYS_COP95,
+		RSYS_CAP82, RSYS_COP82, RSYS_CAPRAT8295, RSYS_CAP115, RSYS_COP115, RSYS_CAPRAT11595,
+		RSYS_FCHG, RSYS_CDC, 0 };
+
+	// FNs meaningful only for variable capacity
+	//   ignored for non-VC ASHP
+	//   disallowed for others
+	static constexpr int16_t VC_ClgFNs[] = { RSYS_LOADFMIN115, RSYS_LOADFMIN95, RSYS_LOADFMIN82,
+		RSYS_COPMIN115, RSYS_COPMIN95, RSYS_COPMIN82, 0 };
+
+	int rc = RCOK;
+
+	if (!rs_CanCool())
+	{	// no cooling capability
+		const char* whenNoCl = strtprintf("when rsType=%s (cooling not available)",
+			getChoiTx(RSYS_TYPE));
+		rc |= ignoreX(whenNoCl, RSYS_CAP95, RSYS_FANPWRC, RSYS_CAPNOMC, RSYS_VFPERTON,
+			Clg_FNs, VC_ClgFNs);
+		FldSet(RSYS_CAPNOMC, 0.f);		// insurance
+		return rc;
+	}
+
+	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
+	if (rs_IsPkgRoom())
+	{
+		rc |= requireN(whenTy, RSYS_EER95, 0);
+		rc |= disallowN(whenTy, RSYS_SEER, RSYS_COP95, 0);
+		if (!IsSet(RSYS_FANPWRC))
+			rs_fanPwrC = 0.f;	// fan power included in primary by default
+	}
+	else if (rs_IsFanCoil())
+	{	// fancoil cooling
+		rc |= require(whenTy, RSYS_CAP95);
+		rc |= ignoreX(whenTy, Clg_FNs, VC_ClgFNs);
+	}
+	else
+		rc |= requireN(whenTy, RSYS_SEER, 0);
+
+	if (!IsAusz(RSYS_CAP95))
+	{	// rs_cap95 not AUTOSIZEd (altho may be expression), use as rs_capNomC default
+		FldCopyIf(RSYS_CAP95, RSYS_CAPNOMC);
+
+		if (IsSet(RSYS_CAP82))
+			rc |= disallowN("when rsCap82 is given", RSYS_CAPRAT8295, 0);
+		if (IsSet(RSYS_CAP115))
+			rc |= disallowN("when rsCap115 is given", RSYS_CAPRAT11595, 0);
+	}
+	else
+	{	// rsCap95 is autosize
+
+		rc |= disallowN("when rsCap95 is AUTOSIZE",
+				RSYS_CAP82, RSYS_CAP115, 0);
+	}
+
+	if (rs_IsASHPVC())
+	{
+		FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
+		FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
+	}
+	else
+	{
+		rc |= ignoreX("when rsType is not ASHPVC (VCHP2)",
+			VC_ClgFNs);
+		rs_loadFMin82= rs_loadFMin95 = rs_loadFMin115 = 1.f;
+	}
+
+	return rc;
+
+}		// RSYS::rs_CkFCooling
 //-----------------------------------------------------------------------------
 RC RSYS::rs_CkFCd(	// default and check Cd values
 	int mode)	// rsmCOOL or rsmHEAT
@@ -1968,6 +2155,7 @@ RC RSYS::rs_CkFCd(	// default and check Cd values
 RC RSYS::rs_CkFAuxHeat()	// check aux heat
 {
 	RC rc = RCOK;
+	rs_capAuxHInp = 0.f;
 	rs_effAuxH = 1.f;		// insurance
 	if (!rs_CanHaveAuxHeat())
 	{	rc |= disallowN("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or VCHP2",
@@ -2062,44 +2250,48 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		// rsFanPwrC (W/cfm): error if >5, warn if >2
 		rc |= limitCheck(RSYS_FANPWRC, 0., 5., 0., 2.);
 
-		rc |= rs_CkFCd(rsmCOOL);
-		
-		// default/harmonize 95 F COP
-		//   inter-default rs_COP95 <-> rs_EER95
-		//   if both input, values can be different
-		//   rs_COP95 used for VCHP2, rs_EER95 used for single speed
-		//   EER can default from SEER
-		if (rs_IsPkgRoom())
-		{	// pkg: derive SEER from EER
-			//   abram conant fit, 6-20
-			rs_SEER = 1.07f * rs_EER95;
-			// rs_COP95 not allowed
-		}
-		else if (IsSet(RSYS_EER95))
-		{	if (!IsSet(RSYS_COP95))
-				rs_COP95 = rs_EER95 / BtuperWh;
-		}
-		else
-		{	if (IsSet(RSYS_COP95))
-				rs_EER95 = rs_COP95 * BtuperWh;
-			else
-			{	// estimate missing EER from SEER
-				//   California ACM method
-				rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
-					: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
-					: 13.f;
-				rs_COP95 = rs_EER95 / BtuperWh;
+		if (!rs_IsFanCoil())
+		{
+			rc |= rs_CkFCd(rsmCOOL);
+
+			// default/harmonize 95 F COP
+			//   inter-default rs_COP95 <-> rs_EER95
+			//   if both input, values can be different
+			//   rs_COP95 used for VCHP2, rs_EER95 used for single speed
+			//   EER can default from SEER
+			if (rs_IsPkgRoom())
+			{	// pkg: derive SEER from EER
+				//   abram conant fit, 6-20
+				rs_SEER = 1.07f * rs_EER95;
+				// rs_COP95 not allowed
 			}
+			else if (IsSet(RSYS_EER95))
+			{
+				if (!IsSet(RSYS_COP95))
+					rs_COP95 = rs_EER95 / BtuperWh;
+			}
+			else
+			{
+				if (IsSet(RSYS_COP95))
+					rs_EER95 = rs_COP95 * BtuperWh;
+				else
+				{	// estimate missing EER from SEER
+					//   California ACM method
+					rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5)
+						: rs_SEER < 16.f ? 11.3f + 0.57f * (rs_SEER - 13)
+						: 13.f;
+					rs_COP95 = rs_EER95 / BtuperWh;
+				}
+			}
+			if (rs_SEER <= rs_EER95)
+				rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
+
+			// checks to prevent crazy extrapolation results
+			// cap82 > cap95 typically; occasional cap82 < cap95 examples seen so use 0.8
+			rc |= rs_CkFRatio(RSYS_CAP82, RSYS_CAP95, RSYS_CAPRAT8295, 0.8f, 2.f);
+			// cap115 < cap95 always
+			rc |= rs_CkFRatio(RSYS_CAP115, RSYS_CAP95, RSYS_CAPRAT11595, .2f, 1.f);
 		}
-		if (rs_SEER <= rs_EER95)
-			rc |= oer("rsSEER (%g) must be > rsEER (%g)", rs_SEER, rs_EER95);
-
-		// checks to prevent crazy extrapolation results
-		rc |= rs_CkFRatio(RSYS_CAP82,  RSYS_CAP95, RSYS_CAPRAT8295,  1.f, 2.f);
-		rc |= rs_CkFRatio(RSYS_CAP115, RSYS_CAP95, RSYS_CAPRAT11595, .2f, 1.f);
-
-
-
 	}
 
 	if (IsAusz( RSYS_CAP95))
@@ -2754,6 +2946,7 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pMtrHeat = rs_IsElecHeat() ? rs_pMtrElec : rs_pMtrFuel;	// heat mtr or NULL
 	rs_pMtrAux = rs_IsFuelAuxH() ? rs_pMtrFuel : rs_pMtrElec;
 	rs_pLoadMtr = LdMtrR.GetAtSafe(rs_loadMtri);
+	rs_pSrcSideLoadMtr = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -2857,57 +3050,62 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	rs_SetupFanC( avfC);	// sets rs_cap95 if avfC > 0., else sets rs_amfC
 							// derives rs_fanHRtdC
 
-	// rs_cap95 now known = net total cooling cap at 95 F (> 0)
-	//   default other cooling capacities if needed
-	//   not all used in all models
-	if (!IsSet(RSYS_CAP82))
-		rs_cap82 = rs_capRat8295 * rs_cap95;
-
-	if (!IsSet(RSYS_CAP115))
-		rs_cap115 = rs_capRat11595 * rs_cap95;
-
-#if 0
-#if 0
-	if (!IsSet(rs_cap115))
-		rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
-#endif
-	if (!IsSet(rs_COP115))
+	if (rs_IsFanCoil())
 	{
-		float inp82 = rs_cap82 / rs_COP82;
-		float inp95 = rs_cap95 / rs_COP95;
-		rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
 	}
+	else
+	{	// rs_cap95 now known = net total cooling cap at 95 F (> 0)
+		//   default other cooling capacities if needed
+		//   not all used in all models
+		if (!IsSet(RSYS_CAP82))
+			rs_cap82 = rs_capRat8295 * rs_cap95;
+
+		if (!IsSet(RSYS_CAP115))
+			rs_cap115 = rs_capRat11595 * rs_cap95;
+
+#if 0
+#if 0
+		if (!IsSet(rs_cap115))
+			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
+#endif
+		if (!IsSet(rs_COP115))
+		{
+			float inp82 = rs_cap82 / rs_COP82;
+			float inp95 = rs_cap95 / rs_COP95;
+			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
+		}
 #endif
 
-	// notes re capacity manipulations
-	// load = capSensT = capnf*shr - qFanOp
-	// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
-	// let F = fChg*fCondCap*shr
-	// load = (cap95 + qFanRat)*F - qFanOp
-	// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
-	// load = cap95*(F*(1+fanRatX)-fanOpX
-	// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
+		// notes re capacity manipulations
+		// load = capSensT = capnf*shr - qFanOp
+		// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
+		// let F = fChg*fCondCap*shr
+		// load = (cap95 + qFanRat)*F - qFanOp
+		// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
+		// load = cap95*(F*(1+fanRatX)-fanOpX
+		// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
 
-	// set up constants for single speed model
-	float cap95nf = -( fabs( rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh
-														// (< 0)
+		// set up constants for single speed model
+		float cap95nf = -(fabs(rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh
+															// (< 0)
 
-	rs_capnfX = fabs(cap95nf) > 10.f ? cap95nf * rs_fChg : 0.f;		// apply charge adjustment
+		rs_capnfX = fabs(cap95nf) > 10.f ? cap95nf * rs_fChg : 0.f;		// apply charge adjustment
 
-	// base value for SEERnf and EERnf calculations
-	//   (probably) used only for single speed
-	float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC/3.413f;	// input power, W
-	rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
-							: rs_SEER;
+		// base value for SEERnf and EERnf calculations
+		//   (probably) used only for single speed
+		float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC / 3.413f;	// input power, W
+		rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
+			: rs_SEER;
 
-	inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
-	rs_EERnfX =  inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;	// gross total EER
+		inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
+		rs_EERnfX = inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;	// gross total EER
 
 
-	// cooling performance map
-	//   currently (2-22) used for rs_IsVC() only
-	//   initialized for all
-	rc |= rs_SetupBtwxtClg();
+		// cooling performance map
+		//   currently (2-22) used for rs_IsVC() only
+		//   initialized for all
+		rc |= rs_SetupBtwxtClg();
+	}
 
 	rs_DefaultCapNomsIf();
 
@@ -3049,6 +3247,12 @@ RC RSYS::rs_EndSubhr()
 		R.ehTot += R.ehPrimary + R.ehDefrost + R.ehAux + R.ehFan;
 					/* + R.ehParasitic see above */
 		R.fhTot += R.fhPrimary + R.fhDefrost + R.fhAux /* + R.fhParasitic*/;
+
+		if (rs_pLoadMtr)	// primary LOADMTR (= indoor coil)
+			rs_pLoadMtr->S.qHtg += R.qhPrimary;
+		if (rs_pSrcSideLoadMtr)		// source-side LOADMETER (= "outdoor coil" or environment source)
+			// + = from env: >0 during heating = coil heating - compressor electricity
+			rs_pSrcSideLoadMtr->S.qHtg += R.qhPrimary - R.ehPrimary;
 	}
 	else if (rs_mode == rsmCOOL)
 	{
@@ -3061,6 +3265,12 @@ RC RSYS::rs_EndSubhr()
 		R.ecFan = eFan;
 
 		R.ecTot += R.ecPrimary + R.ecFan /* + R.ecParasitic, see above */;
+
+		if (rs_pLoadMtr)	// primary LOADMTR (= indoor coil)
+			rs_pLoadMtr->S.qClg += R.qcSen + R.qcLat;
+		if (rs_pSrcSideLoadMtr)		// source-side LOADMETER (= "outdoor coil" or environment source)
+			// + = from env: <0 when cooling = total cooling + compressor electricity
+			rs_pSrcSideLoadMtr->S.qClg += R.qcSen + R.qcLat - R.ecPrimary;
 	}
 	else if (rs_mode == rsmOAV)
 	{	// sensible "output" = fan power
@@ -3090,12 +3300,6 @@ RC RSYS::rs_EndSubhr()
 			(&R.qhZoneSen)[iMX] += float(zp->zn_qsHvac * Top.tp_subhrDur);
 			(&R.qhZoneLat)[iMX] += float(zp->zn_qlHvac * Top.tp_subhrDur);
 		}
-	}
-
-	// Load meter
-	if (rs_pLoadMtr)
-	{	rs_pLoadMtr->S.qHtg += R.qhPrimary;
-		rs_pLoadMtr->S.qClg += R.qcSen + R.qcLat;
 	}
 
 	return rc;
@@ -3131,6 +3335,35 @@ RC RSYS::rs_AfterHour()
 	return rc;
 }		// RSYS::rs_AfterHour
 //-----------------------------------------------------------------------------
+static float CoolingSHR(		// derive cooling sensible heat ratio
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon)		// coil air flow std air cfm/ton
+
+// return: rs_SHR = SHR under current conditions
+{
+	float SHR =
+		  0.0242020f * tdbCoilIn
+		- 0.0592153f * twbCoilIn
+		+ 0.0012651f * tdbOut
+		+ 0.0016375f * vfPerTon
+		// 0.f       * tdbCoilIn * tdbOut
+		// 0.f       * tdbCoilIn * vfPerTon
+		// 0.f       * twbCoilIn * tdbOut
+		- 0.0000165f * twbCoilIn * vfPerTon
+		// 0.f       * tdbOut * vfPerTon
+		+ 0.0002021f * twbCoilIn * twbCoilIn
+		// 0.f       / vfPerTon
+		+ 1.5085285f;
+
+	// limit result
+	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
+	SHR = bracket(0.5f, SHR, 1.f);
+	return SHR;
+
+}		// CoolingSHR
+//-----------------------------------------------------------------------------
 void RSYS::rs_CoolingSHR()		// derive cooling sensible heat ratio
 // call:   rs_tdbCoilIn = coil entering dry bulb, F
 //         rs_twbCoilIn = coil entering wet bulb, F
@@ -3147,7 +3380,7 @@ x		printf("Hit\n");
 	{
 		if (fabs(rs_asIn.as_tdb - 80.) < .2
 		 && fabs(rs_twbCoilIn - 67.) < 1.
-	     && fabs(rs_tdbOut - 95.f) < .2)
+		 && fabs(rs_tdbOut - 95.f) < .2)
 			printf("Hit\n");
 	}
 #endif
@@ -3158,36 +3391,7 @@ x		printf("Hit\n");
 	rs_vfPerTon = 400.f;
 #endif
 
-	// sensible heat ratio
-	static const float ASHR = 0.0242020f;
-	static const float BSHR = -0.0592153f;
-	static const float CSHR = 0.0012651f;
-	static const float DSHR = 0.0016375f;
-	static const float ESHR = 0.f;
-	static const float FSHR = 0.f;
-	static const float GSHR = 0.f;
-	static const float HSHR = -0.0000165f;
-	static const float ISHR = 0.f;
-	static const float JSHR = 0.0002021f;
-	static const float KSHR = 0.f;
-	static const float LSHR = 1.5085285f;
-
-	float SHR = ASHR * rs_tdbCoilIn +
-		BSHR * rs_twbCoilIn +
-		CSHR * rs_tdbOut +
-		DSHR * rs_vfPerTon +
-		ESHR * rs_tdbCoilIn * rs_tdbOut +
-		FSHR * rs_tdbCoilIn * rs_vfPerTon +
-		GSHR * rs_twbCoilIn * rs_tdbOut +
-		HSHR * rs_twbCoilIn * rs_vfPerTon +
-		ISHR * rs_tdbOut * rs_vfPerTon +
-		JSHR * rs_twbCoilIn * rs_twbCoilIn +
-		KSHR / rs_vfPerTon +	// OK for 1 spd or VC (air flow and cap scale together)
-		LSHR;
-
-	// limit result
-	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
-	rs_SHR = bracket(0.5f, SHR, 1.f);
+	rs_SHR = CoolingSHR(rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
 
 }		// RSYS::rs_CoolingSHR
 //-----------------------------------------------------------------------------
@@ -3376,66 +3580,77 @@ x		printf("\nhit");
 		rs_twbCoilIn = rs_twbIn;		// use known value
 	rs_tdbCoilIn = rs_asOut.as_tdb;
 
-
-	rs_CoolingSHR();
-
-	// no fan (coil-only) capacities at current conditions (fan heat elsewhere)
-	//  total, sensible
-	if (auszMode == rsmCOOL && Top.tp_pass1A)
-	{	// autosizing warmup: assume coil can produce design delta-T
-		//  (ignore sign of rs_tdDesC)
-		//  why: produces (more) stable supply air state
-		rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd and VC
-		float coilDT =		// temp diff across coil (< 0)
-			-fabs(rs_tdDesC) * rs_fCondCap - rs_fanDeltaTC;
-		rs_capSenCt = coilDT * rs_amf * Top.tp_airSH;
-		rs_capTotCt = rs_capSenCt / rs_SHR;		// total, Btuh (note rs_SHR>0 always)
-	}
-	else if (!rs_IsVCClg())
-	{	// 1 spd, not autosizing warmup, use full model
-		rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd
-		rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
-		rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible gross capacity at current conditions, Btuh
+	if (rs_IsFanCoil())
+	{
+		rs_SHR = rs_SHRtarget;		// user input (may be expression)
+		rs_capnfX = rs_capTotCt = -rs_cap95;
+		rs_fCondCap = 1.f;
+		rs_capSenCt = rs_capTotCt * rs_SHR;
 	}
 	else
-	{	// variable capacity
-		// total capacities and input, Btuh
-		//   include rated fan power
-		//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
-		float capClg, inpClg, capClgMin, inpClgMin;
-		[[maybe_unused]] RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
-			capClg, inpClg, capClgMin, inpClgMin);
+	{	// compression cooling
 
-		capClgMin = bracket(capClg, capClgMin, 0.05f*capClg);
-		inpClgMin = bracket(-capClgMin / 10.f, inpClgMin, inpClg);
+		rs_CoolingSHR();
 
-		rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;	// rs_speedFMin = min/max ratio
-																	// rs_fChg adjustment cancels
+		// no fan (coil-only) capacities at current conditions (fan heat elsewhere)
+		//  total, sensible
+		if (auszMode == rsmCOOL && Top.tp_pass1A)
+		{	// autosizing warmup: assume coil can produce design delta-T
+			//  (ignore sign of rs_tdDesC)
+			//  why: produces (more) stable supply air state
+			rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd and VC
+			float coilDT =		// temp diff across coil (< 0)
+				-fabs(rs_tdDesC) * rs_fCondCap - rs_fanDeltaTC;
+			rs_capSenCt = coilDT * rs_amf * Top.tp_airSH;
+			rs_capTotCt = rs_capSenCt / rs_SHR;		// total, Btuh (note rs_SHR>0 always)
+		}
+		else if (!rs_IsVCClg())
+		{	// 1 spd, not autosizing warmup, use full model
+			rs_CoolingCapF1Spd();		// use 1 spd model for both 1 spd
+			rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
+			rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible gross capacity at current conditions, Btuh
+		}
+		else
+		{	// variable capacity
+			// total capacities and input, Btuh
+			//   include rated fan power
+			//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
+			float capClg, inpClg, capClgMin, inpClgMin;
+			[[maybe_unused]] RC rc = rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
+				capClg, inpClg, capClgMin, inpClgMin);
+
+			capClgMin = bracket(capClg, capClgMin, 0.05f * capClg);
+			inpClgMin = bracket(-capClgMin / 10.f, inpClgMin, inpClg);
+
+			rs_speedFMin = capClg >= 0.f ? 1.f : capClgMin / capClg;	// rs_speedFMin = min/max ratio
+																		// rs_fChg adjustment cancels
 #if defined( _DEBUG)
-		if (rs_speedFMin <= 0.f || rs_speedFMin > 1.f)
-			printf("\nBad rs_speedFMin");
+			if (rs_speedFMin <= 0.f || rs_speedFMin > 1.f)
+				printf("\nBad rs_speedFMin");
 #endif
 
-		// use correlations to get adjusments for entering air state
-		float fCondInp;
-		rs_CoolingEnteringAirFactorsVS(rs_fCondCap, fCondInp);
+			// use correlations to get adjusments for entering air state
+			float fCondInp;
+			rs_CoolingEnteringAirFactorsVS(rs_fCondCap, fCondInp);
 
-		rs_capTotCt		// total coil capacity (= gross) at current conditions and speed, Btuh
-			= (capClg - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedF;
-		rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
+			rs_capTotCt		// total coil capacity (= gross) at current conditions and speed, Btuh
+				= (capClg - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedF;
+			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
-		float inpX = (inpClg - rs_fanHRtdC) * fCondInp;	// full speed input power at current conditions w/o fan
-		if (rs_speedF < 1.f)
-		{
-			//  capTotMinCt = (capClgMin - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedFMin;
-			float inpXMin = (inpClgMin - rs_fanHRtdC * rs_speedFMin) * fCondInp;	// min speed input power at current conditions w/o fan
+			float inpX = (inpClg - rs_fanHRtdC) * fCondInp;	// full speed input power at current conditions w/o fan
+			if (rs_speedF < 1.f)
+			{
+				//  capTotMinCt = (capClgMin - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedFMin;
+				float inpXMin = (inpClgMin - rs_fanHRtdC * rs_speedFMin) * fCondInp;	// min speed input power at current conditions w/o fan
 
-			inpX = inpClgMin
-				  + (inpX - inpXMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+				inpX = inpClgMin
+					+ (inpX - inpXMin) * (rs_speedF - rs_speedFMin) / (1.f - rs_speedFMin);
+			}
+
+			rs_effCt = abs(rs_capSenCt) / inpX;		// compressor-only sensible COP
 		}
-
-		rs_effCt = abs( rs_capSenCt) / inpX;		// compressor-only sensible COP
 	}
+
 	rs_capLatCt = rs_capTotCt - rs_capSenCt;	// latent, Btuh
 
 	// leaving conditions
@@ -3488,7 +3703,7 @@ x	rs_asOut = asSav;
 	rs_asOut.as_Set( 50., .001);
 #endif
 
-	if (!rs_IsVCClg())
+	if (!rs_IsVCClg() && !rs_IsFanCoil())
 	{
 		rs_CoolingEff1Spd();	// derive rs_EERt
 
@@ -5013,7 +5228,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 			}
 			else
 			{	// non-ASHP
-				rs_effHt = rs_AFUE * rs_fEffH;
+				rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
 				rs_capHt = rs_capH;		// includes fan heat
 				rs_asOut.as_AddQSen2( rs_capHt, rs_amf);
 			}
@@ -5561,10 +5776,6 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 
 	return double(rs_fxCap[0]);
 }	// RSYS::rs_FxCapForSpeedF
-
-
-
-
 //-----------------------------------------------------------------------------
 RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified supply temp
 	double tSup)
@@ -5726,15 +5937,16 @@ RC RSYS::rs_FinalizeSh()
 		runFFan = rs_runF;
 		rs_outSenTot = rs_outSen + rs_outFan;	// net cooling output, Btuh (generally < 0)
 
-		if (!rs_IsVCClg() || rs_speedF == 1.f)
-		{	rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
-		}
-		else if (rs_speedF <= rs_speedFMin)
-		{	// variable capacity: cycling at min speed
-			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));
+		if (rs_IsFanCoil())
+		{	// rs_inPrimary = 0
 
+		}
+		else if (!rs_IsVCClg() || rs_speedF == 1.f || rs_speedF <= rs_speedFMin)
+		{	// cycling possible
+			//   not variable capacity
+			//   or variable capacity below min speed	
+			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
+			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
 		}
 		else
 		{
@@ -5751,7 +5963,7 @@ RC RSYS::rs_FinalizeSh()
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.tp_subhrDur;	// compressor energy for step, Btu
 			rs_pMtrElec->H.fanC += rs_inFan * Top.tp_subhrDur;
 #if defined( _DEBUG)
-			if (rs_pMtrElec->H.clg < .01f && rs_pMtrElec->H.fanC > .01f)
+			if (!rs_IsFanCoil() && rs_pMtrElec->H.clg < .01f && rs_pMtrElec->H.fanC > .01f)
 				printf("\nFanC > 0");
 #endif
 		}
@@ -5886,7 +6098,8 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			runFFan = rs_runF;
 			rs_outSen = outTot - rs_outFan;
 			rs_PLF = 1.f;
-			rs_inPrimary = rs_outSen / rs_effHt;
+			if (!rs_IsFanCoil())
+				rs_inPrimary = rs_outSen / rs_effHt;
 		}
 
 		if (rs_pMtrHeat)
