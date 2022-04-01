@@ -899,11 +899,25 @@ Air dry-bulb temperature at the outdoor portion of this system.
 
 **rsSHRtarget=*float***
 
-Temporary test
+Nominal target for sensible heat ratio (for fancoil).
 
-**rsSrcSideLoadMtr=*float***
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "0.7",
+  required: "No",
+  variability: "subhour") %>
 
-Temporary test
+**rsSrcSideLoadMtr=*LOADMETERName***
+
+Accumulation of source-side heat (heat of rejection or outdoor coil heat transfer).
+
+<%= member_table(
+  units: "",
+  legal_range: "*Name of LOADMETER*",
+  default: "",
+  required: "No",
+  variability: "constant") %>
 
 **endRSYS**
 
