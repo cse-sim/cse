@@ -489,7 +489,6 @@ TOTLOC, Tops of the tank on a timer and locks out the compressor, just the resis
 LOC, Locks out the compressor from the water heater's normal internal control logic.
 LOR, Locks out the resistive elements from the water heater's normal internal control logic.
 LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.
-COUNT, ???
 END
 %>
 
