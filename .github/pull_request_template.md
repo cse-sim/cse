@@ -11,7 +11,8 @@ Replace the content in this section with:
 - [ ] Open draft pull request
     - [ ] Make title clearly understandable in a standalone change log context
     - [ ] Assign yourself the issue
-    - [ ] Add at least one label
+    - [ ] Add at least one label (enhancement, bug, and/or maintenance)
+    - [ ] Link the issue(s) addressed by this PR (under the development tab) 
 - [ ] Make code changes (if you haven't already)
 - [ ] Self-review of code
     - [ ] My code follows the style guidelines of this project
