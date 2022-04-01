@@ -13,7 +13,7 @@ Design dry-bulb temp.
   required: "No",
   variability: "constant") %>
 
-**dcDay=*DOY***
+**dcDay=*date***
 
 Calendar date for this design cooling conditions.
 

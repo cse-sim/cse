@@ -457,7 +457,7 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 
 **wsDRMethod=*choice***
 
-Used to better match the power demand with the supply, in order to reduce peak demand.
+Demand response control method.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
