@@ -25,11 +25,12 @@ Replace the content in this section with:
     - [ ] My changes pass all local tests
     - [ ] My changes successfully passes CI checks
     - [ ] Add any unit test for proof and documentation.
+    - [ ] Merge in main branch and address resulting conflicts and/or test failures.
 - [ ] Move pull request out of draft mode and assign reviewers
 - [ ] Iterate with reviewers until all changes are approved
     - [ ] Make changes in response to reviewer comments
+    - [ ] Merge in main branch and address resulting conflicts and/or test failures.
     - [ ] Re-request review in GitHub
-    - [ ] Add Chip for final review.
 
 ## Reviewer Checklist:
 
@@ -43,8 +44,3 @@ Replace the content in this section with:
      - [ ] Request changes, or
      - [ ] Approve
  - [ ] Iterate with author until all changes are approved
-
- ## Final Check
- - [ ] Merge master
- - [ ] Check for new errors or warnings
- - [ ] If you are the last reviewer to approve, merge the pull request and delete the branch
