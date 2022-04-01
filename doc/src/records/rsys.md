@@ -164,6 +164,16 @@ Name of a LOADMETER object, if any, to which the system’s heating and cooling 
   ----------- --------------------- ---------------- -------------- -----------------
               *name of a LOADMETER*   *not recorded*   No             constant
 
+**rsSrcSideLoadMtr=*LOADMETERName***
+
+Accumulation of source-side heat (heat of rejection or outdoor coil heat transfer).
+
+<%= member_table(
+  units: "",
+  legal_range: "*Name of LOADMETER*",
+  default: "",
+  required: "No",
+  variability: "constant") %>
 
 **rsAFUE=*float***
 
@@ -617,6 +627,17 @@ For rsType=ASHP, auxiliary electric (“strip”) annualized fuel utilization ef
   ----------- ----------------------- ------------- -------------- -----------------
                *one of above choices* REVCYCLEAUX          No             constant
 
+**rsSHRtarget=*float***
+
+Nominal target for sensible heat ratio (for fancoil).
+
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "0.7",
+  required: "No",
+  variability: "subhour") %>
+
 **rsFxCapAuxH=*float***
 
   Auxiliary heating autosizing capacity factor. If AUTOSIZEd, rsCapAuxH is set to rsFxCapAuxH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
@@ -896,28 +917,6 @@ Air dry-bulb temperature at the outdoor portion of this system.
   **Units**   **Legal Range**   **Default**         **Required**   **Variability**
   ----------- ----------------- ------------------- -------------- -----------------
   ^o^F                          From weather file   No             hourly
-
-**rsSHRtarget=*float***
-
-Nominal target for sensible heat ratio (for fancoil).
-
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.7",
-  required: "No",
-  variability: "subhour") %>
-
-**rsSrcSideLoadMtr=*LOADMETERName***
-
-Accumulation of source-side heat (heat of rejection or outdoor coil heat transfer).
-
-<%= member_table(
-  units: "",
-  legal_range: "*Name of LOADMETER*",
-  default: "",
-  required: "No",
-  variability: "constant") %>
 
 **endRSYS**
 
