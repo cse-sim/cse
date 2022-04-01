@@ -229,6 +229,10 @@ module CoverageCheck
   RecordInputSetDifferences = lambda do |ris1, ris2, case_matters=false, records_to_ignore=nil, record_fields_to_ignore=nil|
     records_to_ignore ||= Set.new
     record_fields_to_ignore ||= {}
+    if !case_matters
+      # if case doesn't matter, downcase all keys of record_fields_to_ignore
+      record_fields_to_ignore = record_fields_to_ignore.keys.inject({}) {|m, k| m.merge({k.downcase => record_fields_to_ignore[k]})}
+    end
     if ris1 == ris2
       nil
     else
@@ -241,20 +245,14 @@ module CoverageCheck
         out = g[key_diffs[:in_1st_not_2nd], key_diffs[:in_2nd_not_1st]]
       end
       # check fields
-      f = lambda {|m, item| m.merge({item.downcase => item})}
       fsd = :field_set_differences
-      m1 = ks1.inject({}, &f)
-      m2 = ks2.inject({}, &f)
-      ks = case_matters ? (ks1 & ks2) : (Set.new(m1.keys) & Set.new(m2.keys))
+      ks = ks1 & ks2
       records_to_ignore_dc = Set.new(records_to_ignore.map {|r| r.downcase})
       ks.each do |k|
-        next if case_matters && records_to_ignore.include?(k)
-        next if !case_matters && records_to_ignore_dc.include?(k.downcase)
-        k1 = case_matters ? k : m1[k]
-        k2 = case_matters ? k : m2[k]
-        diffs = SetDifferences[
-          ris1[k1], ris2[k2], case_matters,
-          record_fields_to_ignore.fetch(k1, Set.new)]
+        # ignore based on lookup that is both case sensitive and insensitive
+        next if records_to_ignore.include?(k) || records_to_ignore_dc.include?(k.downcase)
+        field_ignores = record_fields_to_ignore.fetch(k, Set.new) & record_fields_to_ignore.fetch(k.downcase, Set.new)
+        diffs = SetDifferences[ris1[k], ris2[k], case_matters, field_ignores]
         if diffs
           if out
             out[fsd] = {} unless out.include?(fsd)
