@@ -103,13 +103,13 @@ Total tank insulation resistance, built-in plus exterior wrap.
   required: "No",
   variability: "constant") %>
 
-**swTankZone=*integer***
+**swTankZone=*znName***
 
 Pointer to tank zone location, use sw_tankTEx if NULL
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "*Name of ZONE*",
   default: "",
   required: "No",
   variability: "constant") %>

@@ -839,13 +839,13 @@ Deprecated method for specifying cooling autosizing days.  Design conditions are
      months                         *none*           No           constant
 
 
-**coolDsCond=*integer***
+**coolDsCond=*descondName***
 
 Cool design condition with 13 different options.
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "*name of DESCOND*",
   default: "0.0",
   required: "No",
   variability: "constant") %>

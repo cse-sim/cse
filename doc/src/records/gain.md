@@ -138,13 +138,13 @@ Name of a DHWSYS whose water use modulates gnPower.  For example, electricity us
 ----------- ------------------- ---------------------- -------------- -----------------
             *name of a DHWSYS*  no DHWSYS/GAIN linkage            No         constant
 
-**gnCtrlDHWMETER=*integer***
+**gnCtrlDHWMETER=*dhwMtrName***
 
-Controls the gain. Allows gains to track water usage such as dishwashers, clothes washers, etc.
+Allows gains to track water usage such as dishwashers, clothes washers, etc.
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "*name of DHWMETER*",
   default: "0",
   required: "No",
   variability: "constant") %>
