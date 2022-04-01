@@ -9297,7 +9297,7 @@ ENDDHWDAYUSE
 #echoon
 // =====================================================================================================================================
 
-   repHdrL = "MF Sanden"
+   repHdrL = "MF Central"
    wfName = "CTZ12S13b.CSW"
    ebTolHour = 0.001
    ebTolDay = 0.001
@@ -9317,9 +9317,6 @@ ENDDHWDAYUSE
    auszTol = 0.05
    awTrigT = 15
    awTrigH = 1
-
- DELETE Report "eb"    // move from end of CSE file
-
 
 METER   "MtrElec"
 METER   "MtrElecLH"
@@ -9517,8 +9514,13 @@ DHWSYS   "dhwsys-2ndFlrTwoBR DU 8"
    wsSDLM = 1.16233                     // Standard distribution loss multiplier
    wsDSM = 1                            // Distribution system multiplier
 
+DELETE Report "eb"
+
 // verbose = -1         // <<< probably want message suppression
 RUN		// prerun 1 = derive daywaste factors
+
+ALTER ReportFile "Primary" rfPageFmt = No
+
 
 #define WHCHAR(h) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWHEATER Primary" \
 ReportCol colhead = "loadMax" colVal = @DHWSYS[ 1].loadMax colWid=8 \
@@ -9569,5 +9571,13 @@ ALTER DHWSYS "dhwsys1"
 // UNSET verbose
 
 RUN     // simulation
+
+ALTER DHWSYS "dhwsys1"
+  wsCalcMode = Simulate     // redundant but clear
+  ALTER DHWHEATER "dhwhtr1"
+    whASHPType = "Mitsubishi_QAHV_N136TAU_HPB_SP"
+    UNSET whHeatingCap
+
+RUN
 
 $EOF
