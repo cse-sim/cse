@@ -164,13 +164,13 @@ Name of a LOADMETER object, if any, to which the system’s heating and cooling 
   ----------- --------------------- ---------------- -------------- -----------------
               *name of a LOADMETER*   *not recorded*   No             constant
 
-**rsSrcSideLoadMtr=*LOADMETERName***
+**rsSrcSideLoadMtr=*ldMtrName***
 
-Accumulation of source-side heat (heat of rejection or outdoor coil heat transfer).
+Name of a LOADMETER object, if any, to which the system’s source-side heat (heat of rejection or outdoor coil heat transfer) are recorded.
 
 <%= member_table(
   units: "",
-  legal_range: "*Name of LOADMETER*",
+  legal_range: "*Name of ldMtrName*",
   default: "",
   required: "No",
   variability: "constant") %>
