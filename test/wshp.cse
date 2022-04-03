@@ -2394,7 +2394,7 @@ ENDREPORT
     RXCOL colHead="qDct" colVal=-@DUCTSEGRES[ dctTot].S.qhTotSen/@Top.subhrDur colWid=6 colDec=0 \
     RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
     RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
-    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=3 \
     RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
     RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot / @Top.subhrDur colWid=6 colDec = 0 \
     RXCOL colHead="COPfs" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
