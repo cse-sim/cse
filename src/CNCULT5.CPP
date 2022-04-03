@@ -1240,11 +1240,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 		//badCoilTy:
 	default:
 		rc = ERSCC(COILTY) (char *)MH_S0642, 					// "Bad coil type '%s' for %s"
-#if 1
 		r->getChoiTx( coolCoilFn+COOLCOIL_COILTY, 1, ty),
-#else
-x		chTx( r->b, coolCoilFn+COOLCOIL_COILTY, ty),
-#endif
 			IDSCC(COILTY) );
 		return rc;			// don't continue with bad type
 	}
@@ -1540,11 +1536,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 	badCoilTy:
 		return ERSHC(COILTY) (char *)MH_S0650, 					// "Bad coil type '%s' for %s"
-#if 1
 			   r->getChoiTx( heatCoilFn+HEATCOIL_COILTY, 1, ty),
-#else
-x			   chTx( r->b, heatCoilFn+HEATCOIL_COILTY, ty),
-#endif
 				IDSHC(COILTY) );
 	}
 

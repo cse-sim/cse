@@ -139,7 +139,7 @@ RC ZNR::zn_RddInit()
 	tr = trls = trlh = 80.f;		// zone radiant temps
 	wz = aWz = wzls = Top.tp_refW;	// zone humidity ratios 5-25-92
 	zn_rho0ls = zn_Rho0();			// zone air density at tz, wz, pz0
-	bcon 							// init constant part of main equation denom:
+	zn_bcon 						// init constant part of main equation denom:
 		= zn_ua    					//  sum uval*area of zone ambient lite surfs
 		  + zn_uaSpecT;				//  sum uval*area of zn specT lite surfs (hsu)
 	i.znCAirSh = i.znCAir / Top.tp_subhrDur;		// commonly used in subhr code
@@ -320,15 +320,15 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 		+ zn_uaXSpecT;			// uaT total from just above
 								// all other components (infil etc) done subhourly
 
-	// bLdHr: hour-constant non-hvac b's for denominator.   b = sigma(UA) + hc/t.
-	bLdHr = bcon; 					// just the run-const UAs
+	// zn_bLdHr: hour-constant non-hvac b's for denominator.   b = sigma(UA) + hc/t.
+	zn_bLdHr = zn_bcon; 		// just the run-const UAs
 
-	/* xqh: q = b * t - a  using only hourly components, for change tests (just below) only:
+	/* zn_xqHr: q = b * t - a  using only hourly components, for change tests (just below) only:
 	        Intended to be appropriately sensitive to changes when b*a almost equal to a,
 	        eg when aMassHr settling & all else constant,
 	        cuz terminal loads are of form  b * t - a  (with added subhrly components).
 	        Fixed problems with bug39a.inp run (1 mass surf, const temps). 12-5-94. */
-	xqh = bLdHr * tz - zn_aqLdHr;		// member only cuz saved to -Pr in loadsSubhr.
+	zn_xqHr = zn_bLdHr * tz - zn_aqLdHr;		// member only cuz saved to -Pr in loadsSubhr.
 
 	// check/warn alternate model values
 	//   However: don't correct value -- consumers use max(), min() as approp.
@@ -341,15 +341,15 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 				name, Top.When( C_IVLCH_H), i.znQMxC);
 
 	/* hourly-only load change checks:
-		xqh:     Hourly parts of  b * t - a, just above.
+		zn_xqHr:     Hourly parts of  b * t - a, just above.
 	    znLGain: latent gain rate (set per GAINs by cnguts.cpp:doHourgains, used in cnZtu.cpp:ZNR::znW).
 		         Note: for subsequent subhrs, wz change sets ztuCf in loadsSubhr.
 	    -Pr's used here are updated in loadsSubhr, every time ztuCf is on. */
-	/* aqLdHr and bLdHr are covered by xqh check & no longer checked separately 12-94.
-	   Removing aq- and bLdHr checks made NO difference in test suites 12-94. */
+	// zn_aqLdHr and zn_bLdHr are covered by zn_xqHr check & no longer checked separately 12-94.
+	//   Removing aq- and zn_bLdHr checks made NO difference in test suites 12-94
 	if (
 		// .02 found better than .05,.1,.2 in bug39a.inp run (1 mass surf, const temps) (12-94):
-		RELCHANGE( xqh, xqhPr) > .02*Top.relTol*MARG1  	// if hourly part of difference b*t-aq (for loads) changed
+		RELCHANGE( zn_xqHr, zn_xqHrPr) > .02*Top.relTol*MARG1  	// if hourly part of difference b*t-aq (for loads) changed
 		||  ABSCHANGE( znLGain, znLGainPr)		// if zone moisture GAIN rate (Btuh) changed:
 			> PsyHCondWtr*Top.absHumTol )		//  test abs lb/hr change after conversion
 	{
@@ -744,18 +744,18 @@ RC ZNR::zn_InitSubhr()
 			 + znXLGainLs;				// excess latent gain last subhr === heat of condensation. 5-97.
 
 	// b  =  sigma(UAi) + hc/t
-	zn_bLdSh = bLdHr			// non-hvac UA's constant for hour
+	zn_bLdSh = zn_bLdHr			// non-hvac UA's constant for hour
 			+ zn_uaInfil 		// + infil UA this subhr
 			+ i.znCAirSh;    	// + hc/t: .znCAirSh is hc.
 	// "cair" is heat capac of everything in zone not modelled as "mass":
 	// user const & per-ft2 parts for air, furniture, walls, etc).
 
-	/* zn_xqs: q = b * t - a  using components avail here, for change tests only:
+	/* zn_xqSh: q = b * t - a  using components avail here, for change tests only:
 	        Intended to be appropriately sensitive to changes when b*a almost equal to a,
 	        since terminal loads are of form  b * t - a.
 	        Insurance 12-94 -- need was not proven at subhour level when all masses hourly (b4 aMassSh added).
 	        But it did something: eliminated undercooling in hour 13 in S1LOH test run, 12-5-94, so keep. */
-	zn_xqs = zn_bLdSh * tzls - zn_aqLdSh;
+	zn_xqSh = zn_bLdSh * tzls - zn_aqLdSh;
 
 	// convective-radiant zone terms
 	double nAirSh =
@@ -849,19 +849,19 @@ RC ZNR::zn_LoadsSubhr(
 	// set change flag for terminal module if zone loads changed (other than subhour length change).  Cleared in ZNR::ztuCompute.
 
 	// monitor subhourly-changing loads inputs to zone heat and moisture balances except subhrDur:
-	//  heat balance:     aqLdSh: tzls, zn_qIzSh; zn_aqLdHr is hourly; znCair is constant.  bLdSh: changes only per subhrDur.
-	//                    xqs
+	//  heat balance:     aqLdSh: tzls, zn_qIzSh; zn_aqLdHr is hourly; znCair is constant.  zn_bLdSh: changes only per subhrDur.
+	//                    zn_xqSh
 	//  moisture balance: wzls.  znLGain is hourly.
 	//  other:            md
 
 	if ( ztuCf 				// if a flag already set, skip tests, update priors to avoid unnec flagging later.
 	 ||  azCf							// if all-zones change detected (outdoor w, above)
 	 ||  spCf							// spCf implies ztuCf (and more), 6-92.
-	 ||  RELCHANGE( zn_xqs, xqsPr) > .02*Top.relTol*MARG2		// b*t - a as known here: difference sensitive.
+	 ||  RELCHANGE( zn_xqSh, zn_xqShPr) > .02*Top.relTol*MARG2		// b*t - a as known here: difference sensitive.
 	     // .02 copied from hour case. Probably new dominant term;
 	     // may make some of the other checks unnec 12-5-94.
 	 ||  ABSCHANGE( tzls, tzlsPr) > Top.relTol*2.*MARG2	// Dominant term.  MATCH above. use relTol as small absTol.
-		 // historical 7-13-92 (b4 bLdHr ck above): .002
+		 // historical 7-13-92 (b4 zn_bLdHr ck above): .002
 		 // .005 (w/o mdPr check) --> .0001 ebal errs (T12) 4-92.
 		 // (without tz += tzlsDelta below, < .001 required here)
 	 ||  ABSCHANGE( wzls, wzlsPr) > .2*Top.absHumTol  	// MATCH tolerance above. dflt .000006, or as changed.
@@ -876,9 +876,9 @@ RC ZNR::zn_LoadsSubhr(
 		tzlsPr  =   tzls;
 		wzlsPr  =   wzls;
 		mdPr    =   md;
-		xqhPr = xqh;				// ditto;   hourly part of b*t - a  12-5-94.
-		xqsPr = zn_xqs;				// ditto;   as much of  b*t - a  as known here 12-5-94
-		znLGainPr = znLGain;			// ditto
+		zn_xqHrPr = zn_xqHr;		// ditto;   hourly part of b*t - a  12-5-94.
+		zn_xqShPr = zn_xqSh;		// ditto;   as much of  b*t - a  as known here 12-5-94
+		znLGainPr = znLGain;		// ditto
 	}
 	else 					// load not changed
 	{

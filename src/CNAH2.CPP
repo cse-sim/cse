@@ -3165,8 +3165,8 @@ x           ||           aTs > tz  &&  ahMode & ahHEATBIT )
 							// don't use a heat/cool zone mode if corress ah mode off (let cnztu.cpp change ahMode. ts may change.)
 							// doesn't model all quadrants of q/dT plot; improve when need found 5-95.
 #if 0//was in use
-x      if ( cooling  &&  aTs < tz  &&  ahMode & ahCOOLBIT
-x           ||           aTs > tz  &&  ahMode & ahHEATBIT )
+x							if ( cooling  &&  aTs < tz  &&  ahMode & ahCOOLBIT
+x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 #else//but believe this was intended 5-5-95
 							if ( cooling  ?  aTs < tz  &&  ahMode & ahCOOLBIT
 									:  aTs > tz  &&  ahMode & ahHEATBIT )

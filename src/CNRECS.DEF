@@ -2340,8 +2340,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *mh *e *array OC DBL sgfCAirDf		// diffuse .. These are multipliers for wthr data, later, via SgR
 
 // ZNR loads setup time variables: ua's (uval*area), used for zn_aqLdHr for 'a' for "Tz = (a + q)/b".
-    *r DBL zn_uaSpecT	// ua to specified temps (exCnd=specT surfaces), for bcon. set/used only in cnguts.cpp.
-    *r DBL zn_ua		// Overall loss to ambient (sum uval*area), constant for run, for bcon and zn_aqLdHr. Btuh/F.
+    *r DBL zn_uaSpecT	// ua to specified temps (exCnd=specT surfaces), for zn_bcon. set/used only in cnguts.cpp.
+    *r DBL zn_ua		// Overall loss to ambient (sum uval*area), constant for run, for zn_bcon and zn_aqLdHr. Btuh/F.
 						// Accumulation to double found nec for CEC custom budget *EXACT* match: float sometimes
 						// gave 1 part in 100000 differences (CEC certification test calls for 2-digit match).
     *r DBL zn_UANom		// UA to ambient based on surface UNom (derived with default surf conductances), Btuh/F
@@ -2391,9 +2391,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *h *hide DBL aMassHr   	// Hourly mass portion of zn_aqLdHr: sum ha*T to hourly masses exposed to zone. note 1. was aMassNxt.
 
     //b's (sigma(UAi))
-    *r DBL bcon  			// portion of b constant for run: ua + uaSpecT. setup time.
-    *h *hide DBL bLdHr      // b constant for hour (subhr b same): bcon.  (note 2)
-    *h *hide DBL xqh		// tz*bLhHr - zn_aqLdHr: load hourly portions using old tz, re detecting load changes only. 12-94.
+    *r DBL zn_bcon  		// portion of b constant for run: ua + uaSpecT. setup time.
+    *h *hide DBL zn_bLdHr   // b constant for hour (subhr b same): zn_bcon.  (note 2)
+    *h *hide DBL zn_xqHr	// tz*zn_bLhHr - zn_aqLdHr: load hourly portions using old tz, re detecting load changes only. 12-94.
 
 // ZNR loads runtime: subhourly q's, a's, b's for  Tz = (a + q)/b.
     *s *e DBL /*POWER*/ qMsSg	// subhour's solar gain rate (Btuh) to mass surfaces in zn, to subtract from subhour results qMass.
@@ -2426,8 +2426,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
     *s *e *hide DBL zn_aqLdSh	// non-hvac portion of a+q for subhr:
     							//  zn_aqLdHr + aMassSh + zn_qIzSh + qSgAir + top.tDbOSh*(ua + uaInfil) + tzlh*znCAir*subhrDur (told*hc/t)
-    *s *e *hide DBL zn_bLdSh	// b ditto:  bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
-    *s *e *hide DBL zn_xqs		//  like xqh but subhourly
+    *s *e *hide DBL zn_bLdSh	// b ditto: zn_bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
+    *s *e *hide DBL zn_xqSh		//  like zn_xqHr but subhourly
 
 								// subhour zone gains from duct conduction losses, Btuh
 								//   (convective/radiant only)
@@ -2660,10 +2660,12 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
     				   tested/cleared: ztuCompute.  tested to call ztuCompute: hvacIterSubhr. */
 
 // ZNR runtime: Pr's: prior values for comparison in setting above change flags
-    *s *e *hide DBL   xqhPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
-    *s *e *hide DBL   xqsPr			// for cnloads:loadsSubhr ditto 12-94
-    *s *e *hide FLOAT qIzShPr    *s *e *hide FLOAT tzlsPr 	// ..
-    *s *e *hide FLOAT wzlsPr     *s *e *hide SI mdPr		// ..
+    *s *e *hide DBL   zn_xqHrPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
+    *s *e *hide DBL   zn_xqShPr			// for cnloads:loadsSubhr ditto 12-94
+    *s *e *hide FLOAT qIzShPr
+    *s *e *hide FLOAT tzlsPr
+    *s *e *hide FLOAT wzlsPr
+    *s *e *hide SI mdPr		// ..
     *s *e *hide DBL   znLGainPr					// for cnloads.cpp:loadsHourBeg and loadsSubhr.
 
 *END					// ZNR

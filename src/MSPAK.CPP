@@ -947,17 +947,17 @@ void MSRAT::ms_RddInit(			// mass runtime init
 	ms_qd = ms_pMM->mm_qIE * ms_area;
 #endif
 	ZNR* zp;
-	if (IsMSBCZone( inside.bc_ty))			// boundary condition type: adiabatic, ambient, or zone. If zone...
+	if (IsMSBCZone( inside.bc_ty))		// boundary condition type: adiabatic, ambient, or zone. If zone...
 	{
 		zp = ZrB.p + inside.bc_zi;		// point inside adjacent zone
 		zp->haMass += inside.bc_ha;		// sum h*area between zone and masses
-		zp->bcon +=   inside.bc_ha;		// add mass h*area to zone b const part
+		zp->zn_bcon += inside.bc_ha;		// add mass h*area to zone b const part
 	}
 	if (IsMSBCZone( outside.bc_ty))		// boundary condition type: adiabatic, ambient, or zone. If zone...
 	{
 		zp = ZrB.p + outside.bc_zi;		// point outside adjacent zone
 		zp->haMass += outside.bc_ha;	// sum h*area between zone and masses
-		zp->bcon +=   outside.bc_ha;	// add mass h*area to zone b const part
+		zp->zn_bcon += outside.bc_ha;	// add mass h*area to zone b const part
 	}
 }		// MSRAT::ms_RddInit
 //-----------------------------------------------------------------------------
