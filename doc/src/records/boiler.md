@@ -124,13 +124,49 @@ The following four allow specification of meters to record boiler auxiliary ener
 
 **blrAuxFullOffMtr=*mtrName***
 
-**blrAuxFullOff=*deprecated***
+**blrAuxFullOff=*float***
 
-**blrAuxOff=*deprecated***
+Additional input energy when off.
 
-**blrAuxOn=*deprecated***
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
 
-**blrAuxOnAtall=*deprecated***
+**blrAuxOff=*float***
+
+Additional input energy when off for part or all of subhr.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
+
+**blrAuxOn=*float***
+
+Additional input energy used in proportion to plr when coil on, as for induced draft fan, default 0, hourly variable for unforseen applications.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
+
+**blrAuxOnAtall=*float***
+
+Additional input energy used in toto when coil on for any part of subhour, for unforseen uses.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
 
 **blrAuxOnAtAllMtr=*mtrName***
 
