@@ -1536,21 +1536,93 @@ METER to record crankcase heater energy use, category "Aux"; not recorded if not
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
 
-**ahTsDsC**
+**ahTsDsC=*float***
 
-**ahTsDsH**
+Cooling design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMx.
 
-**ahTsRaMn**
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
 
-**ahccSHR**
+**ahTsDsH=*float***
 
-**ahccVfRperTon**
+Heating design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMx.
 
-**coilOversize**
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
 
-**fanOversize**
+**ahTsRaMn=*float***
 
-**pydxCaptFLim**
+Return air temp at which tsSp is at ahTsMx.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
+
+**ahccSHR=*float***
+
+Sensible heat ratio (caps/capt) for cooling coil
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.77",
+  required: "No",
+  variability: "constant") %>
+
+**ahccVfRperTon=*float***
+
+DX default vfR per ton (12000 Btuh) of captRat.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "400.0",
+  required: "No",
+  variability: "runly") %>
+
+**coilOversize=*float***
+
+Fraction oversize for autoSized heat/cool coils.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.1",
+  required: "No",
+  variability: "runly") %>
+
+**fanOversize=*float***
+
+Fraction oversize for autoSized fan(s)
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",  legal_range: "x $\\ge
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
+
+**pydxCaptFLim=*float***
+
+Upper limit for value of pydxCaptF.
+
+<%= member_table(
+  units: "",
+$ 0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
 
 **endAirHandler**
 
