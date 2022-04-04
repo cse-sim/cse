@@ -1676,6 +1676,7 @@ CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      
 
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VSUBHRLY, TYFL, 0,     0.f,    N,   N),
+CULT( "rsTLiqEnt",	 DAT,	RSYS_TLIQENT,	 0,		  0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsDSEH",		 DAT,   RSYS_DSEH,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 CULT( "rsDSEC",		 DAT,   RSYS_DSEC,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
