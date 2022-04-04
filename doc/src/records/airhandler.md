@@ -1608,7 +1608,7 @@ Fraction oversize for autoSized fan(s)
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\ge$ 0",  legal_range: "x $\\ge
+  legal_range: "x $\\ge$ 0",
   default: "0.1",
   required: "No",
   variability: "constant") %>
@@ -1619,8 +1619,8 @@ Upper limit for value of pydxCaptF.
 
 <%= member_table(
   units: "",
-$ 0",
-  default: "0.1",
+  legal_range: "x $>$ 0",
+  default: "1.05",
   required: "No",
   variability: "constant") %>
 
