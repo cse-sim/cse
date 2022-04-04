@@ -3163,6 +3163,46 @@ RC RSYS::rs_AfterHour()
 	return rc;
 }		// RSYS::rs_AfterHour
 //-----------------------------------------------------------------------------
+static float WSHPHeatingCapF(	// derive heating capacity factors
+	float tSource,		// source fluid temperature, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float airFlowF,		// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
+
+{
+	// based on EnergyPlus model using example file coefficients
+	const float Tref{283.15f};
+	float ratioTSource = DegFtoK(tSource)/Tref;
+	float ratioTdbAir = DegFtoK(tdbCoilIn)/Tref;
+
+	return - 1.361311959f
+		   - 2.471798046f * ratioTdbAir
+		   + 4.173164514f * ratioTSource
+		   + 0.640757401f * airFlowF;
+		   // + 0.f * sourceFlowF;
+
+}		// WSHPHeatingCapF
+//-----------------------------------------------------------------------------
+static float WSHPHeatingInpF(	// derive heating input power factors
+	float tSource,		// source fluid temperature, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float airFlowF,		// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
+
+{
+	// based on EnergyPlus model using example file coefficients
+	const float Tref{283.15f};
+	float ratioTSource = DegFtoK(tSource)/Tref;
+	float ratioTdbAir = DegFtoK(tdbCoilIn)/Tref;
+
+	return - 2.176941116f
+		   + 0.832114286f * ratioTdbAir
+		   + 1.570743399f * ratioTSource
+		   + 0.690793651f * airFlowF;
+		   // + 0.f * sourceFlowF;
+
+}		// WSHPHeatingInpF
+//-----------------------------------------------------------------------------
 void RSYS::rs_HeatingOutletAirState(
 	int auszMode /*=rsmOff*/)	// active autosizing, if any
 								//   rsmOFF: none (normal simulation)
@@ -3206,8 +3246,11 @@ void RSYS::rs_HeatingOutletAirState(
 	}
 	else if (rs_IsWSHP())
 	{
-		rs_effHt = rs_COP47 * rs_fEffH;
-		rs_capHt = rs_capH;		// includes fan heat
+		const float airMassFlowF = 1.f;  // temporary assumption
+		const float capF = WSHPHeatingCapF(rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
+		const float inpF = WSHPHeatingInpF(rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
+		rs_effHt = rs_COP47 * rs_fEffH * capF / inpF;
+		rs_capHt = rs_capH * capF;		// includes fan heat
 		rs_asOut.as_AddQSen2(rs_capHt, rs_amf);
 
 	}
@@ -3435,6 +3478,69 @@ float RSYS::rs_CoolingEff1Spd(		// cooling efficiency, 1 spd model
 
 }		// RSYS::rs_CoolingEff1Spd
 //-----------------------------------------------------------------------------
+static float WSHPCoolingCapF(	// derive cooling capacity factors
+	float tSource,		// source fluid temperature, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float airFlowF,		// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
+
+{
+	// based on EnergyPlus model using example file coefficients
+	const float Tref{283.15f};
+	float ratioTSource = DegFtoK(tSource)/Tref;
+	float ratioTwbAir = DegFtoK(twbCoilIn)/Tref;
+
+	return - 9.149069561f
+		   + 10.87814026f * ratioTwbAir
+		   - 1.718780157f * ratioTSource
+		   + 0.746414818f * airFlowF;
+		   // + 0.f * sourceFlowF;
+
+}		// WSHPCoolingCapF
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+static float WSHPCoolingCapSenF(	// derive cooling capacity factors
+	float tSource,		// source fluid temperature, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float airFlowF,		// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
+
+{
+	// based on EnergyPlus model using example file coefficients
+	const float Tref{283.15f};
+	float ratioTSource = DegFtoK(tSource)/Tref;
+	float ratioTdbAir = DegFtoK(tdbCoilIn)/Tref;
+	float ratioTwbAir = DegFtoK(twbCoilIn)/Tref;
+
+	return - 5.462690012f
+		   + 17.95968138f * ratioTdbAir
+		   - 11.87818402f * ratioTwbAir
+		   - 0.980163419f * ratioTSource
+		   + 0.767285761f * airFlowF;
+		   // + 0.f * sourceFlowF;
+
+}		// WSHPCoolingCapSenF
+//-----------------------------------------------------------------------------
+static float WSHPCoolinginpF(	// derive cooling input power factors
+	float tSource,		// source fluid temperature, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float airFlowF,		// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
+
+{
+	// based on EnergyPlus model using example file coefficients
+	const float Tref{283.15f};
+	float ratioTSource = DegFtoK(tSource)/Tref;
+	float ratioTwbAir = DegFtoK(twbCoilIn)/Tref;
+
+	return - 3.20456384f
+		   - 0.976409399f * ratioTwbAir
+		   + 3.97892546f * ratioTSource
+		   + 0.938181818f * airFlowF;
+		   // + 0.f * sourceFlowF;
+
+}		// WSHPCoolingInpF
 void RSYS::rs_CoolingEnteringAirFactorsVS(		// adjustments for entering (indoor) air state
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
@@ -3521,9 +3627,19 @@ x		printf("\nhit");
 		}
 		else if (rs_IsWSHP())
 		{
-			rs_capTotCt = -rs_cap95;		// total gross capacity at current conditions, Btuh
-			rs_capSenCt = rs_SHR * rs_capTotCt;
-			rs_effCt = rs_EER95 / BtuperWh;
+			const float airMassFlowF = 1.f;  // temporary assumption
+			const float capF = WSHPCoolingCapF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
+			const float capSenF = WSHPCoolingCapSenF(rs_tdbOut, rs_tdbCoilIn , rs_twbCoilIn, airMassFlowF);
+			const float inpF = WSHPCoolinginpF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
+
+			rs_capTotCt = -rs_cap95 * capF;		// total gross capacity at current conditions, Btuh
+			rs_capSenCt = rs_SHRtarget * rs_capTotCt * capSenF;  // SHR set using air-to-air approach
+			if (rs_capSenCt > rs_capTotCt)
+			{
+				rs_capSenCt = rs_capTotCt;
+			}
+			rs_SHR = rs_capSenCt / rs_capTotCt;
+			rs_effCt = rs_EER95 / BtuperWh * capF / inpF;
 		}
 		else if (!rs_IsVCClg())
 		{	// 1 spd, not autosizing warmup, use full model
