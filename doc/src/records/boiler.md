@@ -118,21 +118,86 @@ The following four members permit specification of auxiliary input power use ass
 
 The following four allow specification of meters to record boiler auxiliary energy use through blrAuxOn, blrAuxOff, blrFullOff, and blrAuxOnAtAll, respectively. End use category "Aux" is used.
 
+**blrAuxOn=*float***
+
+Additional input energy used in proportion to part load ratio when coil on, as for induced draft fan, hourly variable for unforeseen applications.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
+
 **blrAuxOnMtr=*mtrName***
+
+Meter to which to charge *auxOn*.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
+
+**blrAuxOff=*float***
+
+Additional input energy when off for part or all of subhour.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
 
 **blrAuxOffMtr=*mtrName***
 
+Meter to which to charge *auxOff*.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
+
+**blrAuxFullOff=*float***
+
+Additional input energy when off for an entire subhour.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
+
 **blrAuxFullOffMtr=*mtrName***
 
-**blrAuxFullOff=*deprecated***
+Meter to which to charge *blrAuxFullOff*.
 
-**blrAuxOff=*deprecated***
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
-**blrAuxOn=*deprecated***
+**blrAuxOnAtall=*float***
 
-**blrAuxOnAtall=*deprecated***
+Additional input energy used in coil on for any part of subhour, for unforeseen uses.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "hourly") %>
 
 **blrAuxOnAtAllMtr=*mtrName***
+
+MTR for "auxOnAtall"
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------

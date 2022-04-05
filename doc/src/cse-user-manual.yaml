@@ -39,6 +39,7 @@ ignore-coverage:
       - "cpStage5"
       - "cpStage6"
       - "cpStage7"
+      - "cpstage2 through cpstage7 same"
     heatplant:
       - "hpStage2"
       - "hpStage3"
@@ -46,6 +47,7 @@ ignore-coverage:
       - "hpStage5"
       - "hpStage6"
       - "hpStage7"
+      - "hpstage2 through hpstage7 same"
 sections:
   - [1, "introduction.md"]
   - [1, "operation.md"]

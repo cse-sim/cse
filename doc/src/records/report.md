@@ -155,10 +155,6 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
   required: "Required for *rpType*=MTR",
   variability: "constant") %>
 
-**rpAH**
-
-Currently not supported.
-
 **rpDHWMeter=*dhwMtrName***
 
 Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
@@ -181,11 +177,6 @@ Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
   required: "Required for *rpType*=AFMTR",
   variability: "constant") %>
 
-**rpTu**
-
-Currently not supported.
-
-<% if inactive_CNE_records %>
 **rpAh=*ahName***
 
 Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
@@ -199,13 +190,13 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
 **rpTu=*tuName***
 
-Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD. TODO
+Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
 
 <%= member_table(
   units: "",
   legal_range: "name of a TERMINAL, ALL, SUM",
   default: "*none*",
-  required: "Required for *rpType*=?",
+  required: "Required for *rpType*",
   variability: "constant") %>
 <% end %>
 

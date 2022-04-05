@@ -335,6 +335,60 @@ When adding a new section or record you generally just open up your text editor 
 
 [some straightforward rules]: http://pandoc.org/MANUAL.html#extension-auto_identifiers
 
+## Checking for Issues
+
+The document processing system contains two quality control checking mechanisms: documentation coverage and links checks.
+
+
+### Coverage Report
+
+The coverage report can be accessed via:
+
+    > rake coverage
+
+The coverage report can be toggled to run by default or not using:
+
+    > rake set_coverage_on_by_default
+    > rake set_coverage_off_by_default
+
+Whether coverage checks run or not by default can also be changed directly by editing your local `config.yaml` file.
+Specifically, setting the `coverage?` key to true or false will set the coverage to run by default or not.
+Either way, explicitly calling `rake coverage` will always run the coverage report.
+
+The `rake coverage` check returns a non-zero exit code if any coverage issues are found.
+Certain records or fields of certain records can be ignored by specifying an `ignore-coverage` key in the YAML manifest file.
+If specified, the `ignore-coverage` dictionary-structure can contain up to two sub-fields:
+
+* records: a list of the names of records to ignore.
+  Note: if a record is ignored, none of its data fields will be compared either.
+* data-fields: a dictionary between record name and a list of data-fields to ignore
+
+An example structure appears below.
+
+```yaml
+ignore-coverage:
+  records:
+    - "airHandler"
+  data-fields:
+    export:
+      - "exTu"
+```
+
+In the example above, the "airHandler" record is completely ignored.
+In addition, the "exTu" data field of the "export" record is also ignored.
+The coverage check is accomplished by comparing the result of `cse -c` with what is in the documentation. 
+
+NOTE: the fields in ignore-coverage and the compared fields are NOT case sensitive at this time.
+However, we recommend trying to respect the case where possible should case-sensitive compare be desired in the future.
+
+
+### Link Check (i.e., Verify Links)
+
+The rake task `rake verify_links` will check the documentation for bad links.
+This can be set up to run by default during a documentation build using the local `config.yaml` file.
+Set the `verify-links?` field to true to run by default or false to disable by default.
+
+
 ## Pushing Built Documents to the Server
 
 Documents are built by default into `doc/build/output`. This directory is a check-out of the remote repository's `gh-pages` branch which uses GitHub's [GitHub Pages] functionality. The remote repository URL can be configured in the `config.yaml` file under the key `remote-repo-url`.

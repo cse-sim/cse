@@ -106,9 +106,16 @@ Specifies meter(s) whose data is to be exported, for *exType*=MTR.
   variability: "constant")
   %>
 
-**exTu**
+**exTu=*tuName***
 
-Not currently supported.
+Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
+
+<%= member_table(
+  units: "",
+  legal_range: "name of a TERMINAL, ALL, SUM",
+  default: "",
+  required: "Required for *rpType*",
+  variability: "constant") %>
 
 **exDHWMeter=*dhwMtrName***
 
