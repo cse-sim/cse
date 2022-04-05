@@ -7,6 +7,14 @@
 
 #include <cnglob.h>
 
+#undef M0BUG		// #define to enable code looking for -0 / -1 bug 4-3-2022
+					//   see github issue #213
+
+#if defined( M0BUG)
+#include "ancrec.h"
+#include "rccn.h"
+#endif
+
 /*-------------------------------- OPTIONS --------------------------------*/
 
 /*------------------------------- INCLUDES --------------------------------*/
@@ -97,9 +105,9 @@ static char * NEAR gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
 //
 // IP length formats
 static char * NEAR ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
-static char * NEAR ff3 = "%*.*d";		// dfw 0, inches only
+static char * NEAR ff3 = "%*.*d";			// dfw 0, inches only
 static char * NEAR ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
-static char * NEAR ff5 = "%*.*f";		// dfw nz, inches only
+static char * NEAR ff5 = "%*.*f";			// dfw nz, inches only
 
 #endif
 
@@ -342,6 +350,13 @@ p		wsign = !(pv==FMTPVNULL && val >= 0.);	// sign width
 			if (i != l)  *(str+l) = ' ';				// append space unless just put % there
 			*(str+l+1) = '\0';					// reterminate
 		}
+#endif
+#if defined( M0BUG)
+	if (Top.tp_date.month == 12 && Top.tp_date.mday == 3 && Top.iHr == 5 && Top.iSubhr == 1)
+	{	// trap subhour where output mismatch occurs
+		if (strcmp("-0", str) == 0 || strcmp("-1", str) == 0)
+			printf("\nHit  str='%s'  val=%f", str, val);
+	}
 #endif
 #if 0
 x consider changing "-0" to "0"?
