@@ -3646,7 +3646,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *s FLOAT rs_tdbOut		// outdoor dry-bulb temp at condensor or other outdoor components, F
 						//   default = from project weather data source (generally weather file)
 						// note: default varies subhourly but input expression is hourly
-*h FLOAT rs_tLiqEnt     // entering liquid temp, F (for WSHP)
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
 *s *e USI rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s USI rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
