@@ -120,7 +120,7 @@ The following four allow specification of meters to record boiler auxiliary ener
 
 **blrAuxOn=*float***
 
-Additional input energy used in proportion to plr when coil on, as for induced draft fan, hourly variable for unforeseen applications.
+Additional input energy used in proportion to part load ratio when coil on, as for induced draft fan, hourly variable for unforeseen applications.
 
 <%= member_table(
   units: "",

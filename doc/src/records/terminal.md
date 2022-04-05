@@ -150,7 +150,7 @@ CSE will default tuVfDs to the largest of tuVfMn, tuVfMxH, and tuVfMxC unless a 
 
 **tuOversize=*float***
 
-Fraction oversize to make autoSized terminal values setup.
+Fraction oversize to make autosized terminal values setup.
 
 <%= member_table(
   units: "",
@@ -161,7 +161,7 @@ Fraction oversize to make autoSized terminal values setup.
 
 **tuVfMxHC=*float***
 
-AutoSize tuVfMxH and -C SAME or (default) different.
+Autosize tuVfMxH.
 
 <%= member_table(
   units: "",
