@@ -96,7 +96,6 @@ Choice indicating report type. Report types may be described at greater length, 
 
   AFMTR   Air flow meter report.  Requires *rpAFMeter*
 
-<% if inactive_CNE_records %>
   AH      Air handler report. Requires *rpAh*.
 
   AHSIZE  Air handler autosizing report. Requires *rpAh*.
@@ -106,7 +105,6 @@ Choice indicating report type. Report types may be described at greater length, 
   TUSIZE  Terminal autosizing report. Requires *rpTu.*
 
   TULOAD  Terminal load. Requires *rpTu.* TODO
-<% end %>
 
   UDT     User-defined table. Data items are specified with REPORTCOL
           commands (next section). Allows creating almost any desired
@@ -196,10 +194,6 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
   ----------- ----------------------------- ------------- --------------------------- -----------------
               name of a *METER*, ALL, SUM                 Required for *rpType*=MTR   constant
 
-**rpAH**
-
-Currently not supported.
-
 **rpDHWMeter=*dhwMtrName***
 
 Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
@@ -216,18 +210,6 @@ Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
 --------- ------------------------------ ------------- ---------------------------- ---------------
           name of a *DHWMETER*, ALL, SUM               Required for *rpType*=AFMTR  constant
 
-**rpTu=*terminalName***
-
-Terminal to report for terminal-specific reports.
-
-<%= member_table(
-  units: "",
-  legal_range: "Name of *TERMINAL*",
-  default: "",
-  required: "No",
-  variability: "constant") %>
-
-<% if inactive_CNE_records %>
 **rpAh=*ahName***
 
 Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
@@ -245,12 +227,11 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
 **rpTu=*tuName***
 
-Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD. TODO
+Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
 
   **Units**   **Legal Range**                **Default**   **Required**              **Variability**
   ----------- ------------------------------ ------------- ------------------------- -----------------
-              name of a TERMINAL, ALL, SUM                 Required for *rpType*=?   constant
-<% end %>
+              name of a TERMINAL, ALL, SUM                 Required for *rpType*   constant
 
 **rpBtuSf=*float***
 

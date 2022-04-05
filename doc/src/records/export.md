@@ -93,15 +93,15 @@ Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 ----------- ----------------------------- ------------- --------------------------- -----------------
 name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
 
-**exTu=*terminalName***
+**exTu=*tuName***
 
-Terminal to export for terminal-specific reports.
+Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
 
 <%= member_table(
   units: "",
-  legal_range: "Name of *TERMINAL*",
+  legal_range: "name of a TERMINAL, ALL, SUM",
   default: "",
-  required: "No",
+  required: "Required for *rpType*",
   variability: "constant") %>
 
 **exDHWMeter=*dhwMtrName***

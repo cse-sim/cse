@@ -157,7 +157,7 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
 **wsFaucetDrawDurF=*float***
 
-Draw duration factor for faucets. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for faucets.
 
 <%= member_table(
   units: "gal/draw",
@@ -168,7 +168,7 @@ Draw duration factor for faucets. This can be used to account for water discarde
 
 **wsShowerDrawDurF=*float***
 
-Draw duration factor for showers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for showers.
 
 <%= member_table(
   units: "gal/draw",
@@ -179,7 +179,7 @@ Draw duration factor for showers. This can be used to account for water discarde
 
 **wsBathDrawDurF=*float***
 
-Draw duration factor for baths. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for baths.
 
 <%= member_table(
   units: "gal/draw",
@@ -190,7 +190,7 @@ Draw duration factor for baths. This can be used to account for water discarded 
 
 **wsCWashrDrawDurF=*float***
 
-Draw duration factor for clothes washers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for clothes washers.
 
 <%= member_table(
   units: "gal/draw",
@@ -201,7 +201,7 @@ Draw duration factor for clothes washers. This can be used to account for water 
 
 **wsDWashrDurF=*float***
 
-Draw duration factor for dishwashers. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for dishwashers.
 
 <%= member_table(
   units: "gal/draw",
@@ -212,7 +212,7 @@ Draw duration factor for dishwashers. This can be used to account for water disc
 
 **wsUnkDrawDurF=*float***
 
-Draw duration factor for unknown end use. This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw duration factor for unknown end use.
 
 <%= member_table(
   units: "gal/draw",
@@ -556,7 +556,7 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
 
 **wsDrawMaxDur=*integer***
 
-Maximum draw duration for the window.
+Maximum draw duration for the sizing window.
 
 <%= member_table(
   units: "Hr",
@@ -567,7 +567,7 @@ Maximum draw duration for the window.
 
 **wsLoadMaxDur=*integer***
 
-Maximum load duration for the window.
+Maximum load duration for the sizing window.
 
 <%= member_table(
   units: "Hr",
