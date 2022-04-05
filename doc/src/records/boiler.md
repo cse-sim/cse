@@ -118,15 +118,9 @@ The following four members permit specification of auxiliary input power use ass
 
 The following four allow specification of meters to record boiler auxiliary energy use through blrAuxOn, blrAuxOff, blrFullOff, and blrAuxOnAtAll, respectively. End use category "Aux" is used.
 
-**blrAuxOnMtr=*mtrName***
+**blrAuxOn=*float***
 
-**blrAuxOffMtr=*mtrName***
-
-**blrAuxFullOffMtr=*mtrName***
-
-**blrAuxFullOff=*float***
-
-Additional input energy when off.
+Additional input energy used in proportion to plr when coil on, as for induced draft fan, hourly variable for unforeseen applications.
 
 <%= member_table(
   units: "",
@@ -134,10 +128,21 @@ Additional input energy when off.
   default: "0.0",
   required: "No",
   variability: "hourly") %>
+
+**blrAuxOnMtr=*mtrName***
+
+Meter to which to charge *auxOn*.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 **blrAuxOff=*float***
 
-Additional input energy when off for part or all of subhr.
+Additional input energy when off for part or all of subhour.
 
 <%= member_table(
   units: "",
@@ -146,9 +151,20 @@ Additional input energy when off for part or all of subhr.
   required: "No",
   variability: "hourly") %>
 
-**blrAuxOn=*float***
+**blrAuxOffMtr=*mtrName***
 
-Additional input energy used in proportion to plr when coil on, as for induced draft fan, default 0, hourly variable for unforseen applications.
+Meter to which to charge *auxOff*.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
+
+**blrAuxFullOff=*float***
+
+Additional input energy when off for an entire subhour.
 
 <%= member_table(
   units: "",
@@ -156,10 +172,21 @@ Additional input energy used in proportion to plr when coil on, as for induced d
   default: "0.0",
   required: "No",
   variability: "hourly") %>
+
+**blrAuxFullOffMtr=*mtrName***
+
+Meter to which to charge *blrAuxFullOff*.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 **blrAuxOnAtall=*float***
 
-Additional input energy used in toto when coil on for any part of subhour, for unforseen uses.
+Additional input energy used in coil on for any part of subhour, for unforeseen uses.
 
 <%= member_table(
   units: "",
@@ -169,6 +196,8 @@ Additional input energy used in toto when coil on for any part of subhour, for u
   variability: "hourly") %>
 
 **blrAuxOnAtAllMtr=*mtrName***
+
+MTR for "auxOnAtall"
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
