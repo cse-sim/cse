@@ -1779,7 +1779,7 @@ RC RSYS::rs_CkFHeating()
 	}
 	else if (rs_IsWSHP())
 	{
-		rc |= require(whenTy, RSYS_CAPH);
+		rc |= requireN(whenTy, RSYS_CAPH, RSYS_TDBOUT, 0);
 		rc |= ignoreX(whenTy, ASHP_HtgFNs, ASHPVC_HtgFNs);
 	}
 	else if (rs_IsASHP())
