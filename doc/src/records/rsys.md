@@ -46,6 +46,8 @@ ASHPHYDRONIC          Air-to-water heat pump with hydronic distribution.
 VCHP2                 Air-to-air heat pump with variable speed
                       compressor
  
+WSHP                  Water-to-air heat pump.
+ 
 AC                    Compressor-based cooling; no heating.
                       Required ratings are SEER and capacity and EER at 95 ^o^F
                       outdoor dry bulb.
@@ -185,7 +187,7 @@ Heating Annual Fuel Utilization Efficiency (AFUE).
 
 **rsCapH=*float***
 
-Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, or RESISTANCE.
+Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, WSHP or RESISTANCE.
 
   **Units**   **Legal Range**           **Default**   **Required**   **Variability**
   ----------- ------------------------- ------------- -------------- -----------------
@@ -317,7 +319,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 **rsCOP47=*float***
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 ^o^F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 ^o^F. For rsType=WSHP, rated heating coefficient of performance at source fluid temperature = 68 ^o^F.
 
   **Units**   **Legal Range**   **Default**                                   **Required**   **Variability**
   ----------- ----------------- --------------------------------------------- -------------- -----------------
@@ -656,7 +658,7 @@ Cooling rated Seasonal Energy Efficiency Ratio (SEER).
 
 **rsEER=*float***
 
-Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoor drybulb of 95 ^o^F and entering air at 80 ^o^F drybulb and 67 ^o^F wetbulb).
+Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoor drybulb of 95 ^o^F and entering air at 80 ^o^F drybulb and 67 ^o^F wetbulb). For rsType=WSHP, rated EER at fluid source temperature = 86 ^o^F.
 
   **Units**   **Legal Range**   **Default**           **Required**   **Variability**
   ----------- ----------------- --------------------- -------------- -----------------
