@@ -1563,7 +1563,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.903.0+wshp.dbd4de7e.129.dirty for Win32 console
+! CSE 0.903.0+wshp.b85e8d3a.133 for Win32 console
 
 
 
@@ -1632,7 +1632,7 @@ Input for Run 001:
            skyModel = "anisotropic"
            bldgAzm = 0
            dt = "YES"
-           heatDsTDbO = 21.2                      // ï¿½F
+           heatDsTDbO = 21.2                      // °F
            coolDsDay = DD1                      // coolDsDay
            nSubSteps = 6
            wuDays = 15
@@ -2264,207 +2264,207 @@ Input for Run 001:
         
         MATERIAL   "m-SoftWood"  
            matDens = 35                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Steel"  
            matDens = 489                        // Density, lb/ft3
-           matSpHt = 0.12                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 26.2                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.12                       // Specific heat of material, Btu/lb-°F
+           matCond = 26.2                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-SIPSskin"  
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.45                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.45                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Gypsum Board"  
            matDens = 40                         // Density, lb/ft3
-           matSpHt = 0.27                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.27                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Insul-R5-D1.5-SH0.35-C0.01667"  
            matDens = 1.5                        // Density, lb/ft3
-           matSpHt = 0.35                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.016666                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.016666                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Synthetic Stucco"  
            matDens = 58                         // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.2                        // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.2                        // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Carpet"  
            matDens = 12.3                       // Density, lb/ft3
-           matSpHt = 0.34                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Wood layer"  
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.45                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.45                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-TileGap"  
            matDens = 0.075                      // Density, lb/ft3
-           matSpHt = 0.24                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.07353                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.07353                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-10 PSF Roof"  
            matDens = 120                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-VertWallCavity"  
            matDens = 0.075                      // Density, lb/ft3
-           matSpHt = 0.24                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.314                      // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.314                      // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.00397                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-3 Coat Stucco"  
            matDens = 116                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.4167                     // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.4167                     // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Light Roof"  
            matDens = 120                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Ins-R21-D1.5-SH0.2-C0.02183"  
            matDens = 1.5                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.021825                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.021825                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Ins-R9.1-D1.5-SH0.2-C0.03205"  
            matDens = 1.5                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.032051                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.032051                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.00418                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Ins-R13-D1.5-SH0.2-C0.02244"  
            matDens = 1.5                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.022438                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.022438                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Ins-R18-D1.5-SH0.2-C0.0162"  
            matDens = 1.5                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.016204                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.016204                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-Ins-R18-D1.5-SH0.2-C0.02546"  
            matDens = 1.5                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.025463                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 0.025463                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-SNEICConcrete"  
            matDens = 144                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-SNEICEarth"  
            matDens = 115                        // Density, lb/ft3
-           matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-SNEICCarpet"  
            matDens = 12.3                       // Density, lb/ft3
-           matSpHt = 0.34                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Zone1DoorFront-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Zone1DoorLeft-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Zone1DoorBack-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Zone1DoorRight-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-Zone1ToGarageDoorFront-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-GarageCarDoorFront-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-GarageCarDoorLeft-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-GarageCarDoorBack-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-GarageCarDoorRight-dr"  
            matThk = 0.041667                    // Thickness (feet), ft
            matDens = 41                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "m-AtticTruss"  
            matDens = 35                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "m-AtticTruss 32"  
            matDens = 35                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "IntMassMat-SoftWood"  
            matDens = 35                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "IntMassMat-Carpet"  
            matDens = 12.3                       // Density, lb/ft3
-           matSpHt = 0.34                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
         
         MATERIAL   "IntMassMat-WoodLayer"  
            matDens = 35                         // Density, lb/ft3
-           matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         MATERIAL   "IntMassMat-Gypsum"  
            matDens = 40                         // Density, lb/ft3
-           matSpHt = 0.27                       // Specific heat of material, Btu/lb-ï¿½F
-           matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
+           matSpHt = 0.27                       // Specific heat of material, Btu/lb-°F
+           matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         METER   "MtrElec"  
@@ -2476,7 +2476,7 @@ Input for Run 001:
            izNVType = "NONE"                    // Choice determining interzone ventilation
            izZn1 = "Zone1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
            izZn2 = "Attic-atc"                  // Name of secondary zone
-           izHConst = 0 * 1450 * select(@znRes["Zone1-zn"].prior.H.tAir - @znRes["Attic-atc"].prior.H.tAir > 0., 1., default 0.)    // expression describing Conductance between zones, Btu/ï¿½F
+           izHConst = 0 * 1450 * select(@znRes["Zone1-zn"].prior.H.tAir - @znRes["Attic-atc"].prior.H.tAir > 0., 1., default 0.)    // expression describing Conductance between zones, Btu/°F
         
         IZXFER   "Zone1-InfLU"  
            izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
@@ -2746,10 +2746,10 @@ Input for Run 001:
 0          znTH = 68
 0          znTC = 78
 #       #else
-           znTH = select( $dsDay==1, 70, $dsDay==2, 60, ISSEASONCOOLING, 60, default hourval(65,65,65,65,65,65,66.5,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))     // Expression representing heating setpoint, ï¿½F
-           znTC = select( $dsDay==1, 83, $dsDay==2, 78, default hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78))    // Expression representing cooling setpoint, ï¿½F
+           znTH = select( $dsDay==1, 70, $dsDay==2, 60, ISSEASONCOOLING, 60, default hourval(65,65,65,65,65,65,66.5,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))     // Expression representing heating setpoint, °F
+           znTC = select( $dsDay==1, 83, $dsDay==2, 78, default hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78))    // Expression representing cooling setpoint, °F
 #       #endif
-           znTD = select( $dsDay==1, 77, $dsDay==2, 99, ISSEASONCOOLING, 68, default 77 )    // Expression representing desired setpoint, ï¿½F
+           znTD = select( $dsDay==1, 77, $dsDay==2, 99, ISSEASONCOOLING, 68, default 77 )    // Expression representing desired setpoint, °F
            infAC = 0                            // Zone infiltration air changes per hour, 1/hr
            infELA = 0                           // Zone effective leakage area (ELA), in2
            infShld = 4                          // Zone local shielding class, used in ELA model
@@ -2989,7 +2989,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "None"               // Exterior shade type
@@ -3003,7 +3003,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "Inscrn"             // Exterior shade type
@@ -3031,7 +3031,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "None"               // Exterior shade type
@@ -3045,7 +3045,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "Inscrn"             // Exterior shade type
@@ -3073,7 +3073,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "None"               // Exterior shade type
@@ -3087,7 +3087,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "Inscrn"             // Exterior shade type
@@ -3115,7 +3115,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "None"               // Exterior shade type
@@ -3129,7 +3129,7 @@ Input for Run 001:
                  wnModel = "ASHWAT"             // Window model
                  wnFMult = 0.85                 // F? multiplier
                  wnNGlz = 2                     // Number of glazing layers
-                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-ï¿½F
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-°F
                  wnSHGC = 0.23                  // NFRC solar heat gain coefficient
                  wnDirtLoss = 0.1               // Dirt loss factor
                  wnExShd = "Inscrn"             // Exterior shade type
@@ -3680,32 +3680,32 @@ Input for Run 001:
 0          rsDefrostModel = "RevCycleAux"       // Modeling options for ASHP outdoor coil defrosting
 0          rsFxCapH = 1.466667                  // Heating sizing factor
 0          rsHSPF = 11                          // ratio of BTU heat output over the heating season to watt-hours of electricity used, ratio
-0          rsCap115 = 41846.2                   // Total cooling capacity (@ 115ï¿½F), Btuh
-0          rsCapC = 48000                       // Total rated cooling capacity (@ 95ï¿½F), Btuh
-0          rsCap82 = 52000                      // Total rated cooling capacity (@ 82ï¿½F), Btuh
-0          rsCap47 = 46000*HEATCAPF             // Total rated heating capacity (@ 47ï¿½F), Btuh
-0          rsCap17 = 42500*HEATCAPF             // Total rated heating capacity (@ 17ï¿½F), Btuh
-0          rsCap05 = 31130*HEATCAPF             // Total rated heating capacity (@ 5ï¿½F), Btuh
+0          rsCap115 = 41846.2                   // Total cooling capacity (@ 115°F), Btuh
+0          rsCapC = 48000                       // Total rated cooling capacity (@ 95°F), Btuh
+0          rsCap82 = 52000                      // Total rated cooling capacity (@ 82°F), Btuh
+0          rsCap47 = 46000*HEATCAPF             // Total rated heating capacity (@ 47°F), Btuh
+0          rsCap17 = 42500*HEATCAPF             // Total rated heating capacity (@ 17°F), Btuh
+0          rsCap05 = 31130*HEATCAPF             // Total rated heating capacity (@ 5°F), Btuh
 0          rsCapAuxH = 50000
 0          // rsCtrlAuxH = CYCLE = default
-0          rsCOP115 = 2.16013                   // ratio of cooling provided over the electrical energy consumed (@ 115ï¿½F), ratio
-0          rsCOP95 = 2.8                        // ratio of cooling provided over the electrical energy consumed (@ 95ï¿½F), ratio
-0          rsCOP82 = 3.33                        // ratio of cooling provided over the electrical energy consumed (@ 82ï¿½F), ratio
-0          rsCOP47 = 3.35                       // ratio of heating provided over the electrical energy consumed (@ 47ï¿½F), ratio
-0          rsCOP17 = 2.61                       // ratio of heating provided over the electrical energy consumed (@ 17ï¿½F), ratio
-0          rsCOP05 = 2.26                       // ratio of heating provided over the electrical energy consumed (@ 5ï¿½F), ratio
-0          rsCOPMin115 = 1.66728                // ratio of cooling provided over the elec energy consumed @ minimum 115ï¿½F capacity, ratio
-0          rsCOPMin95 = 4.01                       // ratio of cooling provided over the elec energy consumed @ minimum 95ï¿½F capacity, ratio
-0          rsCOPMin82 = 4.78                     // ratio of cooling provided over the elec energy consumed @ minimum 82ï¿½F capacity, ratio
-0          rsCOPMin47 = 4.23                    // ratio of heating provided over the elec energy consumed @ minimum 47ï¿½F capacity, ratio
-0          rsCOPMin17 = 3.37                    // ratio of heating provided over the elec energy consumed @ minimum 17ï¿½F capacity, ratio
-0          rsCOPMin05 = 2.86                    // ratio of heating provided over the elec energy consumed @ minimum 5ï¿½F capacity, ratio
-0          rsLoadFMin115 = 7800./25800.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 115ï¿½F), ratio
-0          rsLoadFMin95 = 7800./25800.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 95ï¿½F), ratio
-0          rsLoadFMin82 = 8320./27520.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 82ï¿½F), ratio
-0          rsLoadFMin47 = 7800./31400.               // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 47ï¿½F), ratio
-0          rsLoadFMin17 = 4260./17041.              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 17ï¿½F), ratio
-0          rsLoadFMin05 = 3507./14028.            // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 5ï¿½F), ratio
+0          rsCOP115 = 2.16013                   // ratio of cooling provided over the electrical energy consumed (@ 115°F), ratio
+0          rsCOP95 = 2.8                        // ratio of cooling provided over the electrical energy consumed (@ 95°F), ratio
+0          rsCOP82 = 3.33                        // ratio of cooling provided over the electrical energy consumed (@ 82°F), ratio
+0          rsCOP47 = 3.35                       // ratio of heating provided over the electrical energy consumed (@ 47°F), ratio
+0          rsCOP17 = 2.61                       // ratio of heating provided over the electrical energy consumed (@ 17°F), ratio
+0          rsCOP05 = 2.26                       // ratio of heating provided over the electrical energy consumed (@ 5°F), ratio
+0          rsCOPMin115 = 1.66728                // ratio of cooling provided over the elec energy consumed @ minimum 115°F capacity, ratio
+0          rsCOPMin95 = 4.01                       // ratio of cooling provided over the elec energy consumed @ minimum 95°F capacity, ratio
+0          rsCOPMin82 = 4.78                     // ratio of cooling provided over the elec energy consumed @ minimum 82°F capacity, ratio
+0          rsCOPMin47 = 4.23                    // ratio of heating provided over the elec energy consumed @ minimum 47°F capacity, ratio
+0          rsCOPMin17 = 3.37                    // ratio of heating provided over the elec energy consumed @ minimum 17°F capacity, ratio
+0          rsCOPMin05 = 2.86                    // ratio of heating provided over the elec energy consumed @ minimum 5°F capacity, ratio
+0          rsLoadFMin115 = 7800./25800.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 115°F), ratio
+0          rsLoadFMin95 = 7800./25800.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 95°F), ratio
+0          rsLoadFMin82 = 8320./27520.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 82°F), ratio
+0          rsLoadFMin47 = 7800./31400.               // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 47°F), ratio
+0          rsLoadFMin17 = 4260./17041.              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 17°F), ratio
+0          rsLoadFMin05 = 3507./14028.            // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 5°F), ratio
 #       #endif
            rsOAVType = "None"                   // OAV system type
            rsElecMtr = "MtrElec"                // Electric use meter
@@ -5124,7 +5124,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.903.0+wshp.dbd4de7e.129.dirty for Win32 console
+! CSE 0.903.0+wshp.b85e8d3a.133 for Win32 console
 
 
 
@@ -6237,7 +6237,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.903.0+wshp.dbd4de7e.129.dirty for Win32 console
+! CSE 0.903.0+wshp.b85e8d3a.133 for Win32 console
 
 
 
@@ -6258,18 +6258,18 @@ Input for Run 003:
 
 
 
-! CSE 0.903.0+wshp.dbd4de7e.129.dirty for Win32 console run(s) done: Tue 05-Apr-22   1:31:46 pm
+! CSE 0.903.0+wshp.b85e8d3a.133 for Win32 console run(s) done: Tue 05-Apr-22   1:45:14 pm
 
 ! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               05-Apr-22   1:22 pm   (VS 14.29    2961920 bytes)  (HPWH 1.18.0)
+!               05-Apr-22   1:44 pm   (VS 14.29    2961920 bytes)  (HPWH 1.18.0)
 ! Command line: -x!  -b -t1 wshp
 ! Input file:   C:\Users\nkruis\projects\cse\test\wshp.cse
 ! Report file:  C:\Users\nkruis\projects\cse\test\wshp.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.27     Calls = 3      T/C = 0.0903   
+!                Input:  Time = 0.24     Calls = 3      T/C = 0.0813   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 11.25    Calls = 3      T/C = 3.7493   
-!              Reports:  Time = 0.03     Calls = 3      T/C = 0.0097   
-!                Total:  Time = 11.55    Calls = 1      T/C = 11.5520  
+!           Simulation:  Time = 10.94    Calls = 3      T/C = 3.6480   
+!              Reports:  Time = 0.02     Calls = 3      T/C = 0.0067   
+!                Total:  Time = 11.21    Calls = 1      T/C = 11.2120  
