@@ -2149,6 +2149,11 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			rs_auszH.az_active = TRUE;
 			rs_fxCapHAsF = 1.4f;
 		}
+
+		if (rs_IsWSHP())
+		{
+			rs_fanHRtdH = rs_FanHRtdPerTon( rs_capH / 12000.f);
+		}
 	}
 
 	// loop all zones served by this RSYS
@@ -3249,8 +3254,9 @@ void RSYS::rs_HeatingOutletAirState(
 		const float airMassFlowF = 1.f;  // temporary assumption
 		const float capF = WSHPHeatingCapF(rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
 		const float inpF = WSHPHeatingInpF(rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
-		rs_effHt = rs_COP47 * rs_fEffH * capF / inpF;
-		rs_capHt = rs_capH * capF;		// includes fan heat
+		rs_capHt = (rs_capH - rs_fanHRtdH) * capF;  // gross heating capacity
+		float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * inpF;  // gross input power
+		rs_effHt = rs_capHt / inpX * rs_fEffH;
 		rs_asOut.as_AddQSen2(rs_capHt, rs_amf);
 
 	}
@@ -3632,14 +3638,15 @@ x		printf("\nhit");
 			const float capSenF = WSHPCoolingCapSenF(rs_tdbOut, rs_tdbCoilIn , rs_twbCoilIn, airMassFlowF);
 			const float inpF = WSHPCoolinginpF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
 
-			rs_capTotCt = -rs_cap95 * capF;		// total gross capacity at current conditions, Btuh
+			rs_capTotCt = -(rs_cap95 + rs_fanHRtdC) * capF;		// total gross capacity at current conditions, Btuh
 			rs_capSenCt = rs_SHRtarget * rs_capTotCt * capSenF;  // SHR set using air-to-air approach
 			if (rs_capSenCt > rs_capTotCt)
 			{
 				rs_capSenCt = rs_capTotCt;
 			}
 			rs_SHR = rs_capSenCt / rs_capTotCt;
-			rs_effCt = rs_EER95 / BtuperWh * capF / inpF;
+			float inpX = ((rs_cap95 / (rs_EER95 / BtuperWh)) - rs_fanHRtdC) * inpF;
+			rs_effCt = -rs_capTotCt / inpX;
 		}
 		else if (!rs_IsVCClg())
 		{	// 1 spd, not autosizing warmup, use full model
