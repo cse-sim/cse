@@ -216,9 +216,16 @@ Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
 --------- ------------------------------ ------------- ---------------------------- ---------------
           name of a *DHWMETER*, ALL, SUM               Required for *rpType*=AFMTR  constant
 
-**rpTu**
+**rpTu=*terminalName***
 
-Currently not supported.
+Terminal to report for terminal-specific reports.
+
+<%= member_table(
+  units: "",
+  legal_range: "Name of *TERMINAL*",
+  default: "",
+  required: "No",
+  variability: "constant") %>
 
 <% if inactive_CNE_records %>
 **rpAh=*ahName***

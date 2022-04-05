@@ -93,9 +93,16 @@ Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 ----------- ----------------------------- ------------- --------------------------- -----------------
 name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
 
-**exTu**
+**exTu=*terminalName***
 
-Not currently supported.
+Terminal to export for terminal-specific reports.
+
+<%= member_table(
+  units: "",
+  legal_range: "Name of *TERMINAL*",
+  default: "",
+  required: "No",
+  variability: "constant") %>
 
 **exDHWMeter=*dhwMtrName***
 

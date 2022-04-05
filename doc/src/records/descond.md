@@ -1,4 +1,4 @@
-# Descond
+# DESCOND
 
 Cooling design conditions
 
