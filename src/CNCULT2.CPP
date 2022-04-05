@@ -1345,7 +1345,7 @@ x       con->conClass = conClass(con);	// local fcn below
 	}
 	return rc;
 }		// topCon2
-		//===========================================================================
+//===========================================================================
 LOCAL RC topFnd()		// foundations
 {
 	FOUNDATION *fnd;
@@ -1384,7 +1384,7 @@ LOCAL RC topFnd()		// foundations
 	}
 	return rc;
 }		// topFnd
-		//===========================================================================
+//===========================================================================
 LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run basAnc.
 {
 	RC rc /*=RCOK*/;
@@ -1892,44 +1892,11 @@ x}		// conClass
 #endif
 
 //========================== Supporting Functions ===========================
-
-//===========================================================================
-#if 0	// superceded by basAnc::getChoiTx, 12-12-11
-x const char* chTx( 	// return text of given value for a choice data type, for error messages
-x
-x	BP b, 		// Pointer to basAnc, eg &AhuiB.  Used to retreive field info.
-x	SI fn, 		// field number. rccn.h define, eg AHU_TSU.  Field must have a "choicb" data type.
-x	SI chan )	// value in field, or CHN(value) if a CHOICN type.
-x				// Possible internal values are C_xxxxxCH_yy defines in dtypes.h;
-x				// each internal value has a string that this fcn retreives. */
-x
-x// fcn return: string representing value; displayable even if error.
-x
-x/* if chan is out of range (but b and fn valid), displays no errMsg, so can be called b4 checking chan.
-x   Recommend that caller not display returned text b4 checking for valid chan value. */
-x{
-x	// add more checks to this code if errors tend to happen...
-x
-x	USI fdTy = b->fir[fn].fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
-x	USI dt = sFdtab[fdTy].dtype;			// get data type from small Fields info Table
-x
-x	chan &= ~NCNAN;					// clear special bits in nchoice value to make checks work
-x	// added 3-1-94 as insurance -- no choicn calls at present.
-x	if (chan==0)  					// if unset
-x		return "<0>";					// bypass getChoiTx's error messages
-x	if (chan <= 0 || chan > GetDttab(dt).nchoices)	// if call good but field contents garbage (GetDttab: srd.h)
-x		return "<out of range>";				// issue no console error message here (caller already generating errmsg).
-x
-x	return getChoiTx( dt, chan);		/* get text for value 'chan' for data type dt.
-x   						   Errors issue messages but also return displayable value. */
-x}				// chTx
-#endif
-//===========================================================================
 RC ckOwnRefPt(	// check / access ref to owning record
 
 	BP toBase,			// ptr to BASE of RAT in which mbr is a subscript
 	record * fromRec,   	// ptr to RAT record containing mbr (for errmsg)
-	record **pp/*=NULL*/,    	// NULL or receives ptr to record
+	record **pp/*=NULL*/,    // NULL or receives ptr to record
 	RC *prc/*=NULL*/ )		// NULL or is set non-RCOK iff error
 
 // shorter call to ckRefPt for checking/pointing to owning record

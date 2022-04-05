@@ -1,0 +1,676 @@
+
+
+Error Messages for Run 001:
+
+---------------
+Warning at hour/subhour 23/2 on Wed 10-Jul of simulation:
+  R1331: airHandler MainAH: Inconsistency #5: teCOn (42.3631) < te (44.3511)
+           wen=0.00857276 wena=0.00857276 we=0.00618091 wexf=0.00681199;  ten=73.1476 texf=51.949
+           ql=-0.193627 qs=-0.0777392 q=-0.271366;   plr=1.09813e-05 plrSens=1.06677e-05;   case=1,1
+---------------
+Warning at hour/subhour 23/2 on Wed 10-Jul of simulation:
+  R1332: airHandler MainAH: Inconsistency #6: weSatCOn (0.00573264) < we (0.00618091)
+           wen=0.00857276 wena=0.00857276 we=0.00618091 wexf=0.00681199;  ten=73.1476 texf=51.949
+           ql=-0.193627 qs=-0.0777392 q=-0.271366;   plr=1.09813e-05 plrSens=1.06677e-05;   case=1,1
+---------------
+Warning at hour/subhour 23/4 on Wed 10-Jul of simulation:
+  R1331: airHandler MainAH: Inconsistency #5: teCOn (43.9211) < te (44.3904)
+           wen=0.00855982 wena=0.00855982 we=0.0061908 wexf=0.00681576;  ten=73.3272 texf=52.024
+           ql=-0.180399 qs=-0.0663356 q=-0.246734;   plr=9.97683e-06 plrSens=9.89345e-06;   case=1,1
+---------------
+Warning at hour/subhour 23/4 on Wed 10-Jul of simulation:
+  R1332: airHandler MainAH: Inconsistency #6: weSatCOn (0.00607514) < we (0.0061908)
+           wen=0.00855982 wena=0.00855982 we=0.0061908 wexf=0.00681576;  ten=73.3272 texf=52.024
+           ql=-0.180399 qs=-0.0663356 q=-0.246734;   plr=9.97683e-06 plrSens=9.89345e-06;   case=1,1
+---------------
+Warning at hour/subhour 23/6 on Wed 10-Jul of simulation:
+  R1331: airHandler MainAH: Inconsistency #5: teCOn (44.2916) < te (44.4266)
+           wen=0.008547 wena=0.008547 we=0.00619994 wexf=0.00681901;  ten=73.4974 texf=52.0944
+           ql=-0.173099 qs=-0.0614169 q=-0.234516;   plr=9.47595e-06 plrSens=9.45187e-06;   case=1,1
+---------------
+Warning at hour/subhour 23/6 on Wed 10-Jul of simulation:
+  R1332: airHandler MainAH: Inconsistency #6: weSatCOn (0.00616594) < we (0.00619994)
+           wen=0.008547 wena=0.008547 we=0.00619994 wexf=0.00681901;  ten=73.4974 texf=52.0944
+           ql=-0.173099 qs=-0.0614169 q=-0.234516;   plr=9.47595e-06 plrSens=9.45187e-06;   case=1,1
+---------------
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan  2.414      0  1.575  0.170      0      0      0      0      0      0      0      0      0  0.669      0      0      0      0      0      0      0      0      0      0      0
+Feb  1.728 .00966  0.976  0.136      0      0      0      0      0      0      0      0      0  0.606      0      0      0      0      0      0      0      0      0      0      0
+Mar  1.339  0.372  0.291 .00425      0      0      0      0      0      0      0      0      0  0.672      0      0      0      0      0      0      0      0      0      0      0
+Apr  1.238  0.233  0.311 0.0239      0      0      0      0      0      0      0      0      0  0.671      0      0      0      0      0      0      0      0      0      0      0
+May  2.163  1.297  0.181 .00193      0      0      0      0      0      0      0      0      0  0.683      0      0      0      0      0      0      0      0      0      0      0
+Jun  2.768  2.075 0.0456      0      0      0      0      0      0      0      0      0      0  0.647      0      0      0      0      0      0      0      0      0      0      0
+Jul  3.094  2.383 0.0281      0      0      0      0      0      0      0      0      0      0  0.683      0      0      0      0      0      0      0      0      0      0      0
+Aug  3.098  2.379 0.0329      0      0      0      0      0      0      0      0      0      0  0.686      0      0      0      0      0      0      0      0      0      0      0
+Sep  2.108  1.383 0.0814      0      0      0      0      0      0      0      0      0      0  0.644      0      0      0      0      0      0      0      0      0      0      0
+Oct  1.596  0.733  0.180      0      0      0      0      0      0      0      0      0      0  0.683      0      0      0      0      0      0      0      0      0      0      0
+Nov  1.348 0.0679  0.586 0.0604      0      0      0      0      0      0      0      0      0  0.634      0      0      0      0      0      0      0      0      0      0      0
+Dec  2.484      0  1.584  0.231      0      0      0      0      0      0      0      0      0  0.669      0      0      0      0      0      0      0      0      0      0      0
+
+Yr  25.377 10.933  5.872  0.627      0      0      0      0      0      0      0      0      0  7.944      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
+
+ mo  Tin Trad        Slr      IntGs      IntGl       Cond       Surf VntHr sInfVnt      Hload      Cload  FfanE   ClgE     HtgE
+ -- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ------ ------ --------
+  1 70.1 68.8        607       1039        370       -613      -1557     0       0       2717       -395      0      0     1575
+  2 70.7 69.9       1020        941        335       -571      -1273     0       0       2106       -755      0     10      976
+  3 72.0 72.3       1466       1044        372       -444       -784     0       0       1076      -1672      0    372      291
+  4 72.2 72.8       1870       1055        384       -474       -746     0       0       1017      -1857      0    233      311
+  5 73.2 74.8       2359       1068        385       -334       -198     0       0        460      -3236      0   1297      181
+  6 73.8 75.8       2304       1002        356       -193        180     0       0        179      -3882      0   2075       46
+  7 73.9 76.0       2478       1068        385       -183        299     0       0        126      -4371      0   2383       28
+  8 73.9 75.9       2302       1074        388       -170        265     0       0        128      -4198      0   2379       33
+  9 73.1 74.4       1850        997        353       -273       -130     0       0        415      -2871      0   1383       81
+ 10 72.4 72.9       1431       1068        385       -359       -517     0       0        714      -1944      0    733      180
+ 11 71.2 70.6        918        974        340       -507      -1136     0       0       1774       -852      0     68      586
+ 12 70.1 68.8        638       1039        370       -626      -1570     0       0       2744       -398      0      0     1584
+
+ Yr 72.2 72.8      19243      12367       4423      -4747      -7167     0       0      13457     -26433      0  10933     5872
+
+
+
+Monthly Air Handler Report, air handler "MainAH"
+
+Mon Tout WBou Tret WBre  po Tmix WBmi Tsup WBsu HrsOn FOn    VF Qheat -Qsen -Qlat -Qcoo  Qout Qfan Qloss  Qload Qbal
+--- ---- ---- ---- ---- --- ---- ---- ---- ---- ----- --- ----- ----- ----- ----- ----- ----- ---- ----- ------ ----
+Jan 46.9 45.0 70.1 55.8 .27 64.2 53.2 73.7 57.0 744.0 1.0   800 5.215     0     0     0 -4.40 1.21 .0050 -2.038    0
+Feb 49.3 45.1 70.7 55.1 .29 65.2 52.7 72.0 55.5 672.0 1.0   800 3.183 .0212 .0065 .0277 -3.75 1.10 .0008 -0.500    0
+Mar 60.8 52.4 72.0 57.3 .37 69.0 56.0 70.4 56.6 743.0 1.0   800 1.028 0.949 .0442 0.993 -2.61 1.21 -.002  1.364    0
+Apr 58.1 50.5 72.2 56.7 .41 67.9 54.9 70.0 55.7 720.0 1.0   800 1.054 0.529 0.120 0.650 -3.23 1.18 -.003  1.657    0
+May 67.1 57.0 73.2 59.3 .41 71.3 58.6 69.3 57.5 744.0 1.0   800 0.639 2.812 0.446 3.257 -1.57 1.22 -.004  2.976 .002
+Jun 73.4 60.1 73.8 60.0 .35 73.9 60.1 68.4 57.6 720.0 1.0   800 0.164 4.411 0.565 4.976 -.199 1.18 -.006  3.843 .002
+Jul 74.0 61.8 73.9 61.2 .35 74.1 61.5 68.0 58.7 744.0 1.0   800 0.101 4.888 0.913 5.801 0.127 1.22 -.008  4.368 .004
+Aug 75.0 61.3 73.9 60.6 .33 74.5 60.9 68.3 58.2 744.0 1.0   800 0.118 4.974 0.703 5.677 0.181 1.22 -.006  4.170 .003
+Sep 69.2 57.0 73.1 58.6 .33 72.3 58.3 69.1 56.9 720.0 1.0   800 0.292 3.128 0.261 3.389 -.948 1.18 -.005  2.874 .001
+Oct 64.0 55.4 72.4 58.9 .35 70.4 58.1 70.1 57.8 744.0 1.0   800 0.645 1.636 0.228 1.864 -1.80 1.22 -.003  1.808 .001
+Nov 54.5 48.6 71.2 56.1 .32 66.9 54.2 71.0 55.9 721.0 1.0   800 1.963 0.177 .0125 0.190 -3.31 1.18 -.001  0.361    0
+Dec 46.6 44.4 70.1 55.4 .27 64.2 52.8 73.5 56.6 744.0 1.0   800 5.122     0     0     0 -4.45 1.21 .0047 -1.886    0
+
+Yr  61.6 53.6 72.2 58.0 .34 69.5 56.9 70.3 57.0  8760 1.0   800 19.52 23.53 3.299 26.83 -26.0 14.3 -.028 18.995 .013
+
+
+
+Terminal Load, terminal "Corridor" of zone "Z1"
+
+PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC 
+----- ------ ----- ----- ------ ----- ----- ------
+    0     0  .0148   800   800i .0221   800   800i
+
+
+
+Hourly Energy (Btu + into the zone, except E = Energy Consumed) for Sat 29-Jun
+
+ hr  Tout   WBo     Wo   Tin  Trad    Win*      Slr       IntGs       IntGl     Cond      Surf  VntHr  sInfVnt    qsMec  qlMec     Clgt   Hload   Cload   FfanE    ClgE      HtgE
+ --  ----  ----  -----  ----  ----  ------  -------  ----------  ----------  -------  --------  -----  -------  -------  -----  -------  ------  ------  ------  ------  --------
+  1    76  63.7  .0099  75.0  75.5  .00906        0         499           0     -143       789      0        0    -1400   -237    -1638       0   -1638       0    1682         0
+  2    74  62.9  .0096  75.0  75.0  .00954        0         499           0     -198       223      0        0     -538    331     -285      79    -285       0     880         0
+  3    70  62.3  .0102  75.0  74.7  .00992        0         499           0     -280      -131      0        0      235    271      -15     522     -15       0      32         0
+  4    71  61.8  .0096  74.9  74.4  .00988        0         499           0     -319      -242      0        0      540    -11        0     530       0       0       0         0
+  5    68  61.1  .0099  74.8  74.1  .00982        0         499           0     -349       117      0        0      319    -43        0     275       0       0       0         0
+  6    69  61.1  .0096  74.4  73.8  .00974      374         499           0     -369       -53      0        0      195    -48        0     147       0       0       0         0
+  7    72  62.7  .0100  74.5  74.8  .00990     4347         778         180     -328     -5077      0        0      685    -18        0     667       0       0       0         0
+  8    78  64.5  .0100  75.0  77.1  .00900     7276         778         180     -256     -3865      0        0    -3998  -1305    -5408     105   -5408       0    2662         0
+  9    84  66.5  .0100  75.0  78.7  .00840     8142        1533         542     -127     -1620      0        0    -8682  -1838   -10520       0  -10520       0    5703         0
+ 10    90  68.8  .0104  75.0  79.7  .00835     7743        1533         542       47       221      0        0   -11006  -1522   -12527       0  -12527       0    7559         0
+ 11    94  70.5  .0108  75.0  80.1  .00855     6190        1533         542      214      2138      0        0   -12112  -1425   -13537       0  -13537       0    8879         0
+ 12    97  72.1  .0112  75.0  79.9  .00883     3836        1533         542      358      3822      0        0   -12020  -1409   -13429       0  -13429       0    9673         0
+ 13    99  73.0  .0114  75.0  79.5  .00909     2107         876         180      474      4089      0        0   -10327  -1125   -11451       0  -11451       0    9764         0
+ 14   102  72.7  .0106  75.0  79.4  .00900     2358         876         180      561      4484      0        0   -11361  -1238   -12599       0  -12599       0   10461         0
+ 15   104  71.9  .0094  75.1  80.0  .00873     4435         876         180      621      2422      0        0   -11711  -1008   -12719       0  -12719       0   10830         0
+ 16   105  71.1  .0085  75.5  81.2  .00842     6779         876         180      633       377      0        0   -12146   -692   -12839       0  -12839       0   10909         0
+ 17   107  70.3  .0076  76.3  82.5  .00814     8241         876         180      621      -496      0        0   -12775   -359   -13133       0  -13133       0   10964         0
+ 18   107  70.1  .0075  77.1  83.6  .00781     8655         589          90      601      -211      0        0   -13141   -232   -13373       0  -13373       0   11099         0
+ 19   107  69.9  .0073  77.8  84.3  .00758     8027         589          90      585       770      0        0   -13417   -177   -13593       0  -13593       0   11208         0
+ 20   104  70.8  .0085  78.2  84.2  .00786     5882         499           0      549      3608      0        0   -13798    130   -13668       0  -13668       0   11125         0
+ 21    96  70.9  .0105  77.6  82.1  .00845     1034         499           0      436      9489      0        0   -14168    -78   -14247       0  -14247       0   10615         0
+ 22    90  67.6  .0093  75.8  79.4  .00805        0         499           0      290     10420      0        0   -13342  -1188   -14529       0  -14529       0    9556         0
+ 23    85  66.1  .0093  75.0  77.4  .00812        0         499           0      156      3239      0        0    -5426   -538    -5964       0   -5964       0    4834         0
+ 24    82  65.2  .0096  75.0  76.4  .00836        0         499           0       36      1783      0        0    -3325   -371    -3697       0   -3697       0    3289         0
+
+
+
+Hourly Air Handler Report, air handler "MainAH", Sat 29-Jun
+
+Hr  Tout WBou Tret WBre  po Tmix WBmi Tsup WBsu HrsOn FOn    VF Qheat -Qsen -Qlat -Qcoo  Qout Qfan Qloss  Qload Qbal
+--- ---- ---- ---- ---- --- ---- ---- ---- ---- ----- --- ----- ----- ----- ----- ----- ----- ---- ----- ------ ----
+  1 77.1 64.2 75.0 62.0 .27 76.0 62.8 73.4 61.3  1.00 1.0   800     0 .0034 .0012 .0045 .0013 .002     0 .00158    0
+  2 75.1 63.3 75.0 62.8 .96 75.1 63.2 74.4 62.7  1.00 1.0   800     0 .0017 .0007 .0024 .0006 .002     0 .00022    0
+  3 72.2 62.5 75.0 63.2 .55 74.1 63.0 75.3 63.4  1.00 1.0   800     0 .0001     0 .0001 -.001 .002     0 -.0006    0
+  4 70.8 62.0 74.9 63.5 .27 74.3 63.3 75.6 63.7  1.00 1.0   800     0     0     0     0 -.001 .002     0 -.0005    0
+  5 69.7 61.4 74.8 63.2 .27 73.9 62.9 75.1 63.4  1.00 1.0   800     0     0     0     0 -.001 .002     0 -.0003    0
+  6 68.8 61.1 74.4 63.1 .27 73.4 62.7 74.7 63.2  1.00 1.0   800     0     0     0     0 -.001 .002     0 -.0001    0
+  7 71.0 61.9 74.5 63.1 .27 74.0 63.0 75.3 63.4  1.00 1.0   800     0     0     0     0 -.001 .002     0 -.0007    0
+  8 75.2 63.6 75.0 62.9 .60 75.1 63.2 70.4 60.7  1.00 1.0   800     0 .0052 .0021 .0073 .0002 .002     0 .00545    0
+  9 80.8 65.5 75.0 61.5 .27 77.0 62.8 65.0 57.0  1.00 1.0   800     0 .0115 .0033 .0148 .0026 .002     0 0.0106    0
+ 10 86.8 67.7 75.0 61.1 .26 78.5 63.1 62.4 55.7  1.00 1.0   800     0 .0151 .0034 .0185 .0044 .002     0 0.0125    0
+ 11 91.7 69.7 75.0 61.2 .26 79.7 63.7 61.2 55.4  1.00 1.0   800     0 .0173 .0034 .0207 .0057 .002     0 0.0134    0
+ 12 95.5 71.3 75.0 61.6 .26 80.7 64.4 61.3 56.0  1.00 1.0   800     0 .0182 .0035 .0217 .0068 .002     0 0.0132    0
+ 13 98.3 72.5 75.0 62.0 .26 81.6 65.1 62.6 57.0  1.00 1.0   800     0 .0177 .0034 .0212 .0076 .002     0 0.0119    0
+ 14  101 72.8 75.0 62.2 .26 82.2 65.4 62.1 56.9  1.00 1.0   800     0 .0187 .0033 .0220 .0078 .002     0 0.0126    0
+ 15  103 72.3 75.1 62.0 .26 82.9 65.1 61.7 56.6  1.00 1.0   800     0 .0196 .0024 .0220 .0075 .002     0 0.0129    0
+ 16  105 71.5 75.5 61.7 .26 83.6 64.6 61.7 56.2  1.00 1.0   800     0 .0203 .0013 .0216 .0071 .002     0 0.0130    0
+ 17  106 70.6 76.2 61.5 .26 84.5 64.3 61.7 55.9  1.00 1.0   800     0 .0210 .0003 .0213 .0065 .002     0 0.0132    0
+ 18  107 70.2 77.0 61.2 .26 85.2 63.9 62.1 55.5  1.00 1.0   800     0 .0214     0 .0214 .0063 .002     0 0.0135    0
+ 19  107 70.0 77.8 61.1 .26 85.8 63.8 62.5 55.2  1.00 1.0   800     0 .0215     0 .0215 .0062 .002     0 0.0136    0
+ 20  105 70.3 78.2 61.1 .26 85.9 63.8 62.4 55.2  1.00 1.0   800     0 .0216     0 .0216 .0064 .002     0 0.0136    0
+ 21  100 70.9 77.6 61.8 .26 84.1 64.5 61.4 55.8  1.00 1.0   800     0 .0210 .0012 .0222 .0064 .002     0 0.0142    0
+ 22 93.2 69.2 75.8 61.3 .26 80.9 63.7 60.6 55.1  1.00 1.0   800     0 .0189 .0028 .0217 .0055 .002     0 0.0146    0
+ 23 87.9 66.8 75.0 60.7 .27 78.9 62.5 68.7 58.1  1.00 1.0   800     0 .0099 .0017 .0116 .0041 .002     0 .00594    0
+ 24 83.5 65.6 75.0 60.9 .27 77.7 62.4 71.1 59.4  1.00 1.0   800     0 .0068 .0015 .0083 .0030 .002     0 .00364    0
+
+Day 88.8 67.6 75.5 61.9 .32 79.4 63.7 66.8 58.5 24.00 1.0   800     0 0.291 .0357 0.327 .0900 .039     0  0.198    0
+
+
+
+Hourly Energy (Btu + into the zone, except E = Energy Consumed) for Wed 25-Dec
+
+ hr  Tout   WBo     Wo   Tin  Trad    Win*      Slr       IntGs       IntGl     Cond      Surf  VntHr  sInfVnt    qsMec  qlMec     Clgt   Hload   Cload   FfanE    ClgE      HtgE
+ --  ----  ----  -----  ----  ----  ------  -------  ----------  ----------  -------  --------  -----  -------  -------  -----  -------  ------  ------  ------  ------  --------
+  1    37  36.9  .0046  70.0  67.3  .00446        0         499           0    -1025     -3076      0        0     7539    -96        0    7444       0       0       0      4548
+  2    36  35.8  .0044  70.0  67.3  .00449        0         499           0    -1048     -3217      0        0     7782     31        0    7813       0       0       0      4536
+  3    35  35.1  .0043  70.0  67.3  .00442        0         499           0    -1076     -3146      0        0     7844    -16        0    7827       0       0       0      4637
+  4    35  35.0  .0043  70.0  67.3  .00438        0         499           0    -1082     -3183      0        0     7928     15        0    7942       0       0       0      4689
+  5    35  34.5  .0041  70.0  67.2  .00430        0         499           0    -1093     -3206      0        0     7973     -6        0    7967       0       0       0      4825
+  6    34  34.0  .0041  70.0  67.2  .00419        0         499           0    -1110     -3232      0        0     8083    -48        0    8035       0       0       0      4902
+  7    34  34.0  .0041  70.0  67.2  .00420        0         589          90    -1125     -3272      0        0     8099    -39        0    8060       0       0       0      4841
+  8    34  34.2  .0041  70.0  67.1  .00420       41         589          90    -1120     -3302      0        0     8066    -54        0    8011       0       0       0      5287
+  9    35  34.9  .0043  70.0  67.3  .00425      308         589          90    -1107     -3464      0        0     7898    -41        0    7857       0       0       0      4765
+ 10    34  34.2  .0041  70.0  67.5  .00426      739         589          90    -1118     -3471      0        0     7486    -52        0    7434       0       0       0      4641
+ 11    36  35.6  .0044  70.0  67.9  .00431     1314         589          90    -1107     -3419      0        0     6782    -35        0    6747       0       0       0      4398
+ 12    36  35.6  .0044  70.0  68.3  .00439     1551         589          90    -1099     -3025      0        0     6057    -10        0    6047       0       0       0      4121
+ 13    37  36.6  .0044  70.0  68.5  .00443     1376         589          90    -1079     -2607      0        0     5701    -37        0    5664       0       0       0      3962
+ 14    39  37.6  .0044  70.0  68.5  .00447     1349         589          90    -1036     -2487      0        0     5361    -39        0    5322       0       0       0      3711
+ 15    40  38.1  .0044  70.0  68.9  .00449     2281         589          90    -1051     -2899      0        0     4694    -46        0    4648       0       0       0      3390
+ 16    40  38.1  .0044  70.0  69.5  .00450     3258         589          90    -1085     -2927      0        0     3721    -54        0    3667       0       0       0      3107
+ 17    39  37.6  .0044  70.0  69.1  .00449      945         589          90    -1068     -1226      0        0     4366    -67        0    4299       0       0       0      3283
+ 18    38  36.8  .0044  70.0  68.2  .00448        0         589          90    -1042     -1677      0        0     5888    -68        0    5820       0       0       0      3836
+ 19    37  36.5  .0044  70.0  67.8  .00445        0         499           0    -1041     -2421      0        0     6854    -20        0    6833       0       0       0      4203
+ 20    37  36.5  .0044  70.0  67.5  .00444        0         499           0    -1042     -2761      0        0     7228     -0        0    7227       0       0       0      4334
+ 21    37  36.7  .0046  70.0  67.4  .00448        0         499           0    -1039     -2922      0        0     7410      2        0    7412       0       0       0      4396
+ 22    37  36.6  .0045  70.0  67.4  .00451        0         499           0    -1029     -2977      0        0     7449     13        0    7462       0       0       0      4835
+ 23    37  37.0  .0046  70.0  67.4  .00457        0         499           0    -1028     -3012      0        0     7463     26        0    7489       0       0       0      4929
+ 24    37  37.2  .0047  70.0  67.4  .00460        0         499           0    -1034     -3069      0        0     7519     -1        0    7518       0       0       0      4429
+
+
+
+Hourly Air Handler Report, air handler "MainAH", Wed 25-Dec
+
+Hr  Tout WBou Tret WBre  po Tmix WBmi Tsup WBsu HrsOn FOn    VF Qheat -Qsen -Qlat -Qcoo  Qout Qfan Qloss  Qload Qbal
+--- ---- ---- ---- ---- --- ---- ---- ---- ---- ----- --- ----- ----- ----- ----- ----- ----- ---- ----- ------ ----
+  1 36.9 36.9 70.0 52.4 .28 61.4 48.7 79.3 56.3  1.00 1.0   800 .0142     0     0     0 -.008 .002     0 -.0080    0
+  2 36.3 36.3 70.0 52.6 .28 61.2 48.8 79.2 56.3  1.00 1.0   799 .0141     0     0     0 -.008 .002     0 -.0078    0
+  3 35.4 35.4 70.0 52.6 .28 61.0 48.6 79.2 56.3  1.00 1.0   800 .0144     0     0     0 -.008 .002     0 -.0077    0
+  4 35.1 35.0 70.0 52.5 .28 60.9 48.4 79.3 56.2  1.00 1.0   800 .0145     0     0     0 -.008 .002     0 -.0078    0
+  5 35.0 34.7 70.0 52.3 .28 60.8 48.2 79.9 56.3  1.00 1.0   797 .0150     0     0     0 -.008 .002 .0001 -.0083    0
+  6 34.4 34.2 70.0 52.2 .28 60.7 48.0 80.0 56.2  1.00 1.0   798 .0152     0     0     0 -.009 .002     0 -.0084    0
+  7 34.0 34.0 70.0 52.1 .28 60.6 47.9 79.5 56.0  1.00 1.0   800 .0150     0     0     0 -.009 .002     0 -.0080    0
+  8 34.1 34.1 70.0 52.1 .28 60.5 47.8 81.5 56.7  1.00 1.0   798 .0166     0     0     0 -.009 .002     0 -.0096    0
+  9 34.5 34.5 70.0 52.1 .28 60.7 48.0 79.3 55.9  1.00 1.0   799 .0147     0     0     0 -.008 .002     0 -.0079    0
+ 10 34.5 34.5 70.0 52.2 .27 60.7 48.1 78.8 55.8  1.00 1.0   800 .0143     0     0     0 -.008 .002     0 -.0074    0
+ 11 35.0 34.9 70.0 52.2 .27 60.8 48.1 78.0 55.4  1.00 1.0   800 .0135     0     0     0 -.008 .002     0 -.0068    0
+ 12 35.7 35.6 70.0 52.3 .27 61.1 48.4 77.1 55.3  1.00 1.0   800 .0126     0     0     0 -.008 .002     0 -.0061    0
+ 13 36.5 36.1 70.0 52.4 .27 61.2 48.6 76.7 55.2  1.00 1.0   800 .0121     0     0     0 -.008 .002     0 -.0057    0
+ 14 38.2 37.1 70.0 52.5 .27 61.7 48.9 76.3 55.1  1.00 1.0   800 .0113     0     0     0 -.008 .002     0 -.0053    0
+ 15 39.5 37.9 70.0 52.6 .27 62.1 49.1 75.5 54.8  1.00 1.0   800 .0103     0     0     0 -.007 .002     0 -.0047    0
+ 16 39.9 38.1 70.0 52.6 .27 62.3 49.2 74.6 54.4  1.00 1.0   800 .0094     0     0     0 -.007 .002     0 -.0038    0
+ 17 39.5 37.9 70.0 52.6 .27 62.1 49.1 75.1 54.7  1.00 1.0   800 .0100     0     0     0 -.007 .002     0 -.0043    0
+ 18 38.3 37.2 70.0 52.6 .27 61.8 49.0 76.9 55.4  1.00 1.0   800 .0118     0     0     0 -.008 .002     0 -.0058    0
+ 19 37.3 36.7 70.0 52.5 .27 61.5 48.8 78.1 55.8  1.00 1.0   800 .0130     0     0     0 -.008 .002     0 -.0068    0
+ 20 37.0 36.5 70.0 52.5 .27 61.4 48.7 78.5 56.0  1.00 1.0   800 .0134     0     0     0 -.008 .002     0 -.0072    0
+ 21 36.9 36.6 70.0 52.5 .27 61.4 48.8 78.7 56.1  1.00 1.0   800 .0136     0     0     0 -.008 .002     0 -.0074    0
+ 22 36.9 36.7 70.0 52.6 .28 61.3 48.8 80.6 56.9  1.00 1.0   799 .0152     0     0     0 -.008 .002     0 -.0090    0
+ 23 37.0 36.8 70.0 52.6 .28 61.3 48.9 81.1 57.1  1.00 1.0   798 .0155     0     0     0 -.008 .002     0 -.0094    0
+ 24 37.1 37.1 70.0 52.7 .28 61.4 49.0 78.9 56.4  1.00 1.0   799 .0137     0     0     0 -.008 .002     0 -.0076    0
+
+Day 36.5 36.1 70.0 52.4 .27 61.2 48.6 78.4 55.9 24.00 1.0   799 0.324     0     0     0 -.192 .039 .0002 -0.171    0
+
+
+
+! Log for Run 001:
+
+! CSE 0.903.0+termah.9aa5372b.120.dirty for Win32 console
+
+
+
+Input for Run 001:
+
+        
+        
+#       #redefine INFILM (1.461-.903)        //interior film, e = 0.9, convective only
+                                             //see appendix D
+#       #define WinINFILM (1.461)            //window interior film
+#       #redefine WALEXF 5.158               //wall exterior film, emissivity = 0.9
+#       #redefine WINEXF 3.697               //window exterior film, emissivity = 0.9
+#       #define INABSORP 0.9
+#       #define ABSORP 0.5
+#       #define COOLTEMP 75
+#       #define JAN4REP  0                 //1 for hourly reports, 0 otherwise
+#       #define JAN4NAME "600jan4.csv"
+#       #define MAR5REP  0                 //1 for hourly reports, 0 otherwise
+#       #define MAR5NAME "mar5s.csv"
+#       #define JUL27REP 0                 //1 for hourly reports, 0 otherwise
+#       #define JUL27NAME "600jul27s.csv"
+        
+        repHdrL="1Z Terminal test"
+        repHdrR=""
+        WfName="CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+        BEGDay=Jan 1
+        ENDDay=Dec 31
+        ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+        Jan1DOW=Tue
+        wuDays=30
+        nSubSteps=20
+        skyModel=anisotropic
+        dflExH=WALEXF
+        windf = .25
+        bldgAzm=0.0
+        
+        tol = 0.01      // default = .001, use much sloppier for development
+        
+        
+        MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDens=59.375
+        MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+        MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
+        MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+        MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
+        MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0       matDens=0
+        MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
+        MATERIAL   "OpaqueWin"       matCond=1/(1/.52817-1/WinInFilm-1/WINEXF)
+                                    matSpHt=0.239   matDens=87.399
+        MATERIAL   "SoftWood"  matCond=0.0842   	matSpHt=.33   	matDens=32.
+        MATERIAL   "UZMWood"   matCond=0.08   	   matSpHt=.3825   	matDens=34.
+        MATERIAL   "UZMCeilIns"  	matCond=0.025   matSpHt=0.2   matDens=1.5  matCondCT =0.00418
+        MATERIAL   "UZMDeck"  	    matCond=0.052   matSpHt=0.2  matDens=10.7/0.2
+        MATERIAL   "UZMShingle"  	matCond=1       matSpHt=0.2  matDens=24/0.2
+        
+        MATERIAL   "ConcreteBlock"     matCond=0.2946   matSpHt=0.239   matDens=87.5
+        MATERIAL   "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+        MATERIAL   "ConcreteSlab"  matCond=0.6528   matSpHt=0.239   matDens=87.5
+        
+        
+        
+        CONSTRUCTION RD
+         	layer 	lrMat="UZMDeck" lrThk=0.5/12.	
+           	layer 	lrMat="UZMShingle" lrThk=0.5/12. //Shingle
+           	
+        CONSTRUCTION TrussCon // 3/4" wood	
+          	layer 	lrMat="UZMWood" lrThk=.75/12. 	
+          	
+        
+        CONSTRUCTION CeilingCon
+        	layer 	lrMat="Gypbd" lrThk=0.5/12.	//	Revised Layers BAW 8/4
+        	
+         CONSTRUCTION opaque_window     // air-to-air U = .528
+                    layer     lrThk=1.0      lrMat="OpaqueWin"
+          
+         CONSTRUCTION lw_wall
+                    layer     lrThk=0.03937    lrMat="Plasterboard"
+                    layer     lrThk=0.2165     lrMat="FiberQuilt"
+                    layer     lrThk=0.02953    lrMat="WoodSiding"
+          
+         CONSTRUCTION lw_floor
+                    layer     lrThk=0.08202    lrMat="TimberFloor"
+                    layer     lrThk=3.291    lrMat="Insulation"
+        
+         CONSTRUCTION roofcon
+                    layer     lrThk=0.03937 lrMat="Plasterboard"
+        //          layer     lrThk=.7      lrMat="FiberQuilt"
+                    layer     lrThk=0.06234    lrMat="WoodSiding"
+        
+         CONSTRUCTION sunwall
+        //            layer     lrThk=(0.656-(2*.295/INFILM))
+        //                      lrMat="SunWallMat"
+                    layer     lrThk=0.656
+                              lrMat="SunWallMat"
+        
+        // ----- CONSTRUCTION section for heavyweight case -----
+          
+         CONSTRUCTION hw_wall
+                    layer     lrThk=0.3281
+                              lrMat="ConcreteBlock"
+                    layer     lrThk=(0.2018-(.02311/INFILM)+(.02311/1.461))
+                              lrMat="FoamInsul"
+                    layer     lrThk=0.02953   lrMat="WoodSiding"
+          
+         CONSTRUCTION hw_floor
+                    layer     lrThk=0.2625
+                              lrMat="ConcreteSlab"
+                    layer     lrThk=3.304
+                              lrMat="Insulation"
+                              
+        CONSTRUCTION CFrm2x4 // 3.5"      
+         	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+         	layer 	lrMat="SoftWood" lrThk=3.5/12.              // 2x4 joist
+           	layer 	lrMat="UZMCeilIns" lrThk=(9.794251-3.5)/12. //insulation above the joist
+        
+        CONSTRUCTION CIns //    
+         	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+           	layer 	lrMat="UZMCeilIns" lrThk=9.794251/12. //insulation between joists
+        
+        
+          
+        // ----- CONSTRUCTION section for R 1000 high resistance test case ---
+          
+         CONSTRUCTION styro
+                    layer     lrThk=23       lrMat="FoamInsul"
+        
+        // ----- GLAZETYPES --------------------------------------------------
+        
+         GLAZETYPE  Best_Double
+                    gtu=1/(1/.52817-1/WinInFilm-1/WINEXF)        //air-to air u = .52817 without films
+                    gtSHGC=0.787
+                    gtSMSO= 1
+                    gtSMSC= 1
+                    gtFMult=1
+                    gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+                    gtDMSHGC=0.686/0.787
+                    gtDMRBSol=0.686/0.787
+        
+          
+         METER MtrElec
+         METER MtrFuel
+          
+        //----- ZONE SECTION -----
+        
+#       #define GLASSTYPE Best_Double
+#       #define WALLCON lw_wall
+#       #define FLOORCON lw_floor
+        
+#       #define CEILFF .1
+        
+        // IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65      // Openable windows?
+        // IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
+        
+#       #if 1
+#       #define ZNMODELX CZM
+#       #define SFMODELX FD
+#       #else
+#       #define ZNMODELX CNE
+#       #define SFMODELX Auto
+#       #endif
+        
+        ZONE Z1
+        	znModel = ZNMODELX
+               znArea = 1444                        // Zone area, ft2
+               znVol = 12996                        // Zone volume, ft3
+               znCAir = 2888                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+        
+        
+        
+            znSC=0   
+               
+            GAIN Internal gnMeter=MtrElec gnEndUse=Lit gnPower=1000*.4
+          
+          GAIN   "F1 Corridor-znLtg"  
+                gnMeter = "MtrElec"               // Meter that tracks internal gain
+                gnEndUse = "Lit"                  // Internal gain enduse
+                gnPower = 0.4 * 1444 * 3.412 * select( $DOWH==1, hourval(0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05), $DOWH==8, hourval(0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05), $DOWH==7, hourval(0.05,0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.3,0.3,0.3,0.3,0.15,0.15,0.15,0.15,0.15,0.05,0.05,0.05,0.05,0.05,0.05,0.05), default hourval(0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.3,0.65,0.65,0.65,0.65,0.65,0.65,0.65,0.65,0.65,0.35,0.3,0.3,0.2,0.2,0.1,0.05) )    // Expression representing internal gain power, Btuh
+           
+           GAIN   "F1 Corridor-znPpl"  
+              gnPower = 7.22 * 500 * select( $DOWH==1, hourval(0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0,0,0,0,0,0), $DOWH==8, hourval(0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0,0,0,0,0,0), $DOWH==7, hourval(0,0,0,0,0,0,0.1,0.1,0.3,0.3,0.3,0.3,0.1,0.1,0.1,0.1,0.1,0.05,0.05,0,0,0,0,0), default hourval(0,0,0,0,0,0,0.1,0.2,0.95,0.95,0.95,0.95,0.5,0.95,0.95,0.95,0.95,0.3,0.1,0.1,0.1,0.1,0.05,0.05) )    // Expression representing internal gain power, Btuh
+              gnFrLat = 0.5	
+          
+          SURFACE "CbJ"     sfType=Ceiling sfCon=Cins sfArea=(1-CeilFF) * 1000;
+        		sfModel = SFMODELX
+        		
+           SURFACE "CtJ"    sfType=Ceiling sfCon=CFrm2x4 sfArea=CeilFF * 1000;
+        		sfModel = SFMODELX
+        
+            SURFACE Floor
+                sfType=Floor
+                sfArea=516.68
+                sfCon=FLOORCON
+                sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
+                sfExAbs=0                 //no solar on floor
+                sfExT=50                  //10 C ground temperature
+                sfInAbs=INABSORP
+                sfInHcModel = Unified             //floor inside film coefficient
+                sfExH=100000             //floor outside film coefficient
+                sfModel = SFMODELX
+        
+            SURFACE North_Wall
+                sfType=Wall
+                sfArea=232.51             //21.6 sq meters
+                sfAzm=0                   //north wall
+                sfCon=WALLCON
+                sfExAbs=ABSORP
+                sfInAbs=INABSORP 
+                sfInHcModel = Unified
+                sfModel = SFMODELX
+                
+            SURFACE East_Wall
+                sfType=Wall
+                sfArea=174.38             //16.2 sq meters
+                sfAzm=90                  //east wall
+                sfCon=WALLCON
+                sfExAbs=ABSORP
+                sfInAbs=INABSORP
+                sfInHcModel = Unified             //wall inside film coefficient
+                sfModel = SFMODELX
+        
+                WINDOW East_Win
+                    wnGT=GLASSTYPE
+                    wnExH=WINEXF          //window exterior film coefficient
+                    wnInH=WinInFilm       //window interior film coefficient
+                    wnHeight=4         //window height
+                    wnWidth=10          //window width
+        
+        
+          SURFACE West_Wall
+              sfType=Wall
+              sfArea=174.38             //16.2 sq meters
+              sfAzm=270                 //west wall
+              sfCon=WALLCON
+              sfExAbs=ABSORP
+              sfInAbs=INABSORP
+              sfInHcModel = Unified             //wall inside film coefficient
+              sfModel = SFMODELX
+        
+              WINDOW West_Win
+                    wnGT=GLASSTYPE
+                    wnExH=WINEXF           //window exterior film coefficient
+                    wnInH=WinInFilm        //window interior film coefficient
+                    wnHeight=4          //window height
+                    wnWidth=10           //window width
+        
+        
+        SURFACE South_Wall
+              sfType=Wall
+              sfArea=232.51                           //wall area 21.6 sq meters
+              sfAzm=180                 //south wall
+              sfCon=WALLCON
+              sfExAbs=ABSORP
+              sfInAbs=INABSORP
+              sfModel = SFMODELX
+        
+              TERMINAL "Corridor"  // "F1 Corridor"  from MF36
+                        tuAh = "MainAH"
+                           tuTH = 70 //select( $DOWH==1, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==8, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==7, hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,60,60,60,60,60), default hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70) )    // Expression representing heating setpoint, °F
+        		   tuTC = 75 //select( $DOWH==1, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==8, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==7, hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,85,85,85,85,85), default hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75) )    // Expression representing cooling setpoint, °F
+        
+                        tuVfMxC=800       // Max Cool CFM
+                        tuVfMn=800         //min Cool CFM
+                        tuVfMxH=800        //Max Heat CFM
+                        tuSRLeak=0.0            //no duct leaks
+                ENDzone // Z1
+                
+                 AIRHANDLER "MainAH"
+                    ahSched=ON
+                    ahTsSp = ZN2                //
+                    ahfanCycles=No              //1/20 bw
+                    oaVfDsMn=216.6              // F1 Cor IAQHRV
+                    oaMnCtrl=VOLUME             //
+                              
+                    sfanVfDs=800        // 0.5 CFM/ft2
+                    sfanVfMxF=1.00             //Max volume multiplier
+         	    sfanElecPwr=0.4		//W/CFM at max
+         	    
+         	    rfanType=Return             //	fan is at air handler; all return air passes through it.
+         	    rfanVfDs=800                // 400 CFM/ton
+        	    rfanVfMxF=1.00             //Max volume multiplier
+         	    rfanElecPwr=0.2		//W/CFM at max
+        
+                 // Economizer
+                    oaEcoType=INTEGRATED
+                    oaLimT=RA
+                    oaOaLeak=0                  //Economizer damper leakage frac  - default 0.1
+                    oaRaLeak=0			 //Economizer damper leakage frac  - default 0.1
+                  
+                 // Heating
+                    ahhcType=AHP                //Heat pump
+                    ahpCap47=24000
+                    ahpCap17=15000  
+                    ahpIn47=1.9	                // kW guess based on 2 ton YORK VCHP rated
+                    ahpIn17=1.7                 // kW guess
+                    ahpSupRh=0.0001                  //no backup resistance but >0 required
+                    ahhcSched=avail
+                    ahhcMtr=mtrElec 
+                  
+                  //Cooling
+                    ahccType=DX
+                    ahccCapTRat=24000        //
+                    ahccCapSRat=24000*.7       //SHR = 0.7?
+                    ahccMtr=mtrElec         //cooling plant primary meter
+                
+                    ahSOLeak=0                  //No supply duct leaks
+                    ahROLeak=0                  //No return duct leaks
+                    ahSOLoss=0                  //No supply duct losses
+                    ahROLoss=0                  //No return duct losses
+        
+        
+        
+         //--------- REPORTS ------------
+         DELETE REPORT "EB"
+         ALTER REPORTFILE Primary rfPageFmt = NO
+        
+         REPORT     rpType=MTR     rpMeter=MtrElec    rpFreq=Month
+        
+#        #define CSEBtuSF 1000  //reports in kBtu
+        
+         // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
+        //Monthly
+        Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=132
+        rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+        Reportcol colVal=$month  colHead="mo"      colWid=2
+        Reportcol colVal=@znRes[1].M.tAir colHead="Tin" colWid=4 colDec=1
+        Reportcol colVal=@znRes[1].M.tRad colHead="Trad" colWid=4 colDec=1
+        Reportcol colVal=@znRes[1].M.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+        Reportcol colVal=@znRes[1].M.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+        Reportcol colVal=@znRes[1].M.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+        Reportcol colVal=@znRes[1].M.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7 colDec=0
+        Reportcol colVal=@znRes[1].M.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8 colDec=0
+        Reportcol colVal=@znRes[1].M.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+        Reportcol colVal=@znRes[1].M.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].M.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+        Reportcol colVal=@znRes[1].M.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+        Reportcol colVal=(@Meter[MtrElec].M.fanc+@Meter[MtrElec].m.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+        Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+        Reportcol colVal=@Meter[MtrElec].m.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+        
+        Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=132  rpHeader=No    //Annual Summary
+        Reportcol colVal="Yr"       colWid=2
+        Reportcol colVal=@znRes[1].Y.tAir colHead="Tin" colWid=4 colDec=1
+        Reportcol colVal=@znRes[1].Y.tRad colHead="Trad" colWid=4 colDec=1
+        Reportcol colVal=@znRes[1].Y.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+        Reportcol colVal=@znRes[1].Y.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+        Reportcol colVal=@znRes[1].Y.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+        Reportcol colVal=@znRes[1].Y.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7
+        Reportcol colVal=@znRes[1].Y.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8
+        Reportcol colVal=@znRes[1].Y.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+        Reportcol colVal=@znRes[1].Y.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].Y.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+        Reportcol colVal=@znRes[1].Y.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+        Reportcol colVal=(@Meter[MtrElec].Y.fanc+@Meter[MtrElec].Y.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+        Reportcol colVal=@Meter[MtrElec].Y.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+        Reportcol colVal=@Meter[MtrElec].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+        
+        
+        REPORT rpType = AH rpAH = MainAH rpFreq = Month
+        
+        REPORT rpType = TULOAD rpTU = Corridor
+        
+        //hourly   #define  CD1  Jun 29  #define  HD1  Dec 25 rpBtuSf=1000
+        Report  rpType=UDT rpFreq=hour rpBtuSf=1 rpCPL=200 rpDayBeg=Jun 29 
+        rpTitle="Hourly Energy (Btu + into the zone, except E = Energy Consumed)"
+        Reportcol colVal=$hour colHead="hr"      colWid=2
+        Reportcol colVal=$tDbO colHead="Tout"  colWid=4 colDec=0
+        Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1
+        Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4
+        Reportcol colVal=@znRes[1].H.tAir colHead="Tin" colWid=4 colDec=1
+        Reportcol colVal=@znRes[1].H.tRad colHead="Trad" colWid=4 colDec=1
+        Reportcol colVal=@zone[1].wz colHead="Win*" colWid=6 colDec=5
+        Reportcol colVal=@znRes[1].H.qSlr colHead="Slr" colDec=0 colWid=7 
+        Reportcol colVal=@znRes[1].H.qsIg colHead="IntGs" colDec=0
+        Reportcol colVal=@znRes[1].H.qlIg colHead="IntGl" colDec=0
+        Reportcol colVal=@znRes[1].H.qCond colHead="Cond" colDec=0 colWid=7 
+        Reportcol colVal=@znRes[1].H.qMass colHead="Surf" colDec=0 colWid=8 
+        Reportcol colVal=@znRes[1].H.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+        Reportcol colVal=@znRes[1].H.qsIz colHead="sInfVnt" colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].H.qsMech colHead="qsMec" colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].H.qlMech colHead="qlMec"  colDec=0 colWid=5
+        Reportcol colVal=@znRes[1].H.qcMech colHead="Clgt"  colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].H.qhMech colHead="Hload" colDec=0 colWid=6
+        Reportcol colVal=@znRes[1].H.qcMech colHead="Cload" colDec=0 colWid=6
+        Reportcol colVal=(@Meter[MtrElec].H.fanc+@Meter[MtrElec].H.fanh) colHead="FfanE" colDec=0 colWid=6 
+        Reportcol colVal=@Meter[MtrElec].H.clg colHead="ClgE" colDec=0 colWid=6
+        Reportcol colVal=@Meter[MtrElec].H.htg colHead="HtgE" colDec=0 colWid=8
+        
+        REPORT rpType = AH rpAH = MainAH rpFreq = hour rpDayBeg=Jun 29 
+        
+        Report  rpType=UDT rpFreq=hour rpBtuSf=1 rpCPL=200 rpDayBeg=Dec 25
+        rpTitle="Hourly Energy (Btu + into the zone, except E = Energy Consumed)"
+        Reportcol colVal=$hour colHead="hr"      colWid=2
+        Reportcol colVal=$tDbO colHead="Tout"  colWid=4 colDec=0
+        Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1
+        Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4
+        Reportcol colVal=@znRes[1].H.tAir colHead="Tin" colWid=4 colDec=1
+        Reportcol colVal=@znRes[1].H.tRad colHead="Trad" colWid=4 colDec=1
+        Reportcol colVal=@zone[1].wz colHead="Win*" colWid=6 colDec=5
+        Reportcol colVal=@znRes[1].H.qSlr colHead="Slr" colDec=0 colWid=7 
+        Reportcol colVal=@znRes[1].H.qsIg colHead="IntGs" colDec=0
+        Reportcol colVal=@znRes[1].H.qlIg colHead="IntGl" colDec=0
+        Reportcol colVal=@znRes[1].H.qCond colHead="Cond" colDec=0 colWid=7 
+        Reportcol colVal=@znRes[1].H.qMass colHead="Surf" colDec=0 colWid=8 
+        Reportcol colVal=@znRes[1].H.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+        Reportcol colVal=@znRes[1].H.qsIz colHead="sInfVnt" colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].H.qsMech colHead="qsMec" colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].H.qlMech colHead="qlMec"  colDec=0 colWid=5
+        Reportcol colVal=@znRes[1].H.qcMech colHead="Clgt"  colDec=0 colWid=7
+        Reportcol colVal=@znRes[1].H.qhMech colHead="Hload" colDec=0 colWid=6
+        Reportcol colVal=@znRes[1].H.qcMech colHead="Cload" colDec=0 colWid=6
+        Reportcol colVal=(@Meter[MtrElec].H.fanc+@Meter[MtrElec].H.fanh) colHead="FfanE" colDec=0 colWid=6 
+        Reportcol colVal=@Meter[MtrElec].H.clg colHead="ClgE" colDec=0 colWid=6
+        Reportcol colVal=@Meter[MtrElec].H.htg colHead="HtgE" colDec=0 colWid=8
+        
+        REPORT rpType = AH rpAH = MainAH rpFreq = hour rpDayBeg=Dec 25
+         
+         RUN
+        
+         $EOF
+
+
+
+! CSE 0.903.0+termah.9aa5372b.120.dirty for Win32 console run(s) done: Tue 05-Apr-22   4:43:46 pm
+
+! Executable:   d:\cse\msvc\cse.exe
+!               05-Apr-22   4:40 pm   (VS 14.29    2958848 bytes)  (HPWH 1.18.0)
+! Command line: -x!  -t1 CRTerminalAH
+! Input file:   D:\cse\test\CRTerminalAH.cse
+! Report file:  D:\cse\test\CRTerminalAH.rep
+
+! Timing info --
+
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0450   
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
+!           Simulation:  Time = 1.20     Calls = 1      T/C = 1.2020   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 1.25     Calls = 1      T/C = 1.2520   

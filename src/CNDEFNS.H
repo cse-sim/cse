@@ -137,6 +137,11 @@
 #define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
 
+#define CRTERMAH			// define to enable support of TERMINAL / AIRHANDLER model
+							//    in convective / radiant zones
+#define SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
+								//   (development aid)
+
 #endif	// ifndef _CNEDEFNS_H
 
 // cndefns.h end

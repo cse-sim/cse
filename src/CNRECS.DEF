@@ -2217,6 +2217,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_LoadsSubhr( BOO azCf);"
     *declare "void zn_GetAirState( AIRSTATE& as) const { as.as_Set( tz, wz); }"
     *declare "void zn_GetAirStateLs( AIRSTATE& as) const { as.as_Set( tzls, wzls); }"
+    *declare "bool zn_HasTerminal() const { return tu1 != 0; }"
     *declare "int zn_HasRSYS() const { return i.zn_rsi != 0; }"
     *declare "RSYS* zn_GetRSYS();"
     *declare "const RSYS* zn_GetRSYS() const;"
@@ -2234,6 +2235,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_TAirFloatCR() { tz = zn_balC1 / zn_balC2; }"
     *declare "void zn_SetRSYSAmf( float fSize, int iAux);"
     *declare "void zn_SetRSYSAmfFromTSup();"
+    *declare "void zn_IdealHVAC();"
     *declare "RC zn_CondixCR2();"
     *declare "RC zn_AirFlowVsTsup();"
     *declare "int zn_AssessVentUtility();"
@@ -2340,8 +2342,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *mh *e *array OC DBL sgfCAirDf		// diffuse .. These are multipliers for wthr data, later, via SgR
 
 // ZNR loads setup time variables: ua's (uval*area), used for zn_aqLdHr for 'a' for "Tz = (a + q)/b".
-    *r DBL zn_uaSpecT	// ua to specified temps (exCnd=specT surfaces), for bcon. set/used only in cnguts.cpp.
-    *r DBL zn_ua		// Overall loss to ambient (sum uval*area), constant for run, for bcon and zn_aqLdHr. Btuh/F.
+    *r DBL zn_uaSpecT	// ua to specified temps (exCnd=specT surfaces), for zn_bcon. set/used only in cnguts.cpp.
+    *r DBL zn_ua		// Overall loss to ambient (sum uval*area), constant for run, for zn_bcon and zn_aqLdHr. Btuh/F.
 						// Accumulation to double found nec for CEC custom budget *EXACT* match: float sometimes
 						// gave 1 part in 100000 differences (CEC certification test calls for 2-digit match).
     *r DBL zn_UANom		// UA to ambient based on surface UNom (derived with default surf conductances), Btuh/F
@@ -2391,9 +2393,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *h *hide DBL aMassHr   	// Hourly mass portion of zn_aqLdHr: sum ha*T to hourly masses exposed to zone. note 1. was aMassNxt.
 
     //b's (sigma(UAi))
-    *r DBL bcon  			// portion of b constant for run: ua + uaSpecT. setup time.
-    *h *hide DBL bLdHr      // b constant for hour (subhr b same): bcon.  (note 2)
-    *h *hide DBL xqh		// tz*bLhHr - zn_aqLdHr: load hourly portions using old tz, re detecting load changes only. 12-94.
+    *r DBL zn_bcon  		// portion of b constant for run: ua + uaSpecT. setup time.
+    *h *hide DBL zn_bLdHr   // b constant for hour (subhr b same): zn_bcon.  (note 2)
+    *h *hide DBL zn_xqHr	// tz*zn_bLhHr - zn_aqLdHr: load hourly portions using old tz, re detecting load changes only. 12-94.
 
 // ZNR loads runtime: subhourly q's, a's, b's for  Tz = (a + q)/b.
     *s *e DBL /*POWER*/ qMsSg	// subhour's solar gain rate (Btuh) to mass surfaces in zn, to subtract from subhour results qMass.
@@ -2426,8 +2428,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
     *s *e *hide DBL zn_aqLdSh	// non-hvac portion of a+q for subhr:
     							//  zn_aqLdHr + aMassSh + zn_qIzSh + qSgAir + top.tDbOSh*(ua + uaInfil) + tzlh*znCAir*subhrDur (told*hc/t)
-    *s *e *hide DBL zn_bLdSh	// b ditto:  bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
-    *s *e *hide DBL zn_xqs		//  like xqh but subhourly
+    *s *e *hide DBL zn_bLdSh	// b ditto: zn_bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
+    *s *e *hide DBL zn_xqSh		//  like zn_xqHr but subhourly
 
 								// subhour zone gains from duct conduction losses, Btuh
 								//   (convective/radiant only)
@@ -2528,6 +2530,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
     *s *e TEMP_GZ zn_tzsp       // current step controlling set point, F
                                 //    may not be reliably set for all modes
+                                //    0 if no active setpoint
 	*s *e TEMP_GZ zn_tzspH		// current step heating set point, F
     *s *e TEMP_GZ zn_tzspD		// current step desired temp set point, F
     *s *e TEMP_GZ zn_tzspC		// current step cooling set point, F
@@ -2605,7 +2608,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
     *s *e *hide DBL /*CFLOW*/ cSum		// c:   total ah flow to zone: part of 'bw' for hum bal eqn.  PROBABLY SAME AS 'cTot'.
 
 // ZNR runtime zone temps and w's
-    *s *e DBL /*TEMP*/ tz		// zone air temp: official copy for results: active setpoint or, if floating:  (a + q)/b.
+    *s *e DBL /*TEMP*/ tz		// zone air temp: official copy for results: active setpoint or floating
     *s *e DBL /*TEMP*/ aTz		// air handler working copy of tz, possibly abandoned if change very small.
     *s *e DBL /*HUMRAT*/ wz		// zone humidity ratio (w)
     *s *e FLOAT zn_relHum		// zone relative humidity, 0 - 1
@@ -2656,14 +2659,16 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
     //re terminal code inputs, cleared in ztuCompute().
     *s *e *hide BOO spCf    	// setpoint of any tu or natvent zhx for zone changed (exman chaf's, cnztu.cpp): redo mode sequence.
     *s *e *hide BOO ztuCf	/* terminal change other than setpoint: zone load (aqLdSh/bLdSh, w), inputs, limits, .
-    				   set: loadsHourbeg, loadsSubhr, hvacIterSubhr, TU::begHour, AH::setMode,ahVshNLims,flagTus, , .
+    				   set: loadsHourbeg, loadsSubhr, hvacIterSubhr, TU::tu_BegHour, AH::ah_SetMode,ahVshNLims,flagTus, , .
     				   tested/cleared: ztuCompute.  tested to call ztuCompute: hvacIterSubhr. */
 
 // ZNR runtime: Pr's: prior values for comparison in setting above change flags
-    *s *e *hide DBL   xqhPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
-    *s *e *hide DBL   xqsPr			// for cnloads:loadsSubhr ditto 12-94
-    *s *e *hide FLOAT qIzShPr    *s *e *hide FLOAT tzlsPr 	// ..
-    *s *e *hide FLOAT wzlsPr     *s *e *hide SI mdPr		// ..
+    *s *e *hide DBL   zn_xqHrPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
+    *s *e *hide DBL   zn_xqShPr			// for cnloads:loadsSubhr ditto 12-94
+    *s *e *hide FLOAT qIzShPr
+    *s *e *hide FLOAT tzlsPr
+    *s *e *hide FLOAT wzlsPr
+    *s *e *hide SI mdPr		// ..
     *s *e *hide DBL   znLGainPr					// for cnloads.cpp:loadsHourBeg and loadsSubhr.
 
 *END					// ZNR
@@ -5741,7 +5746,7 @@ RECORD AH "airHandler" *RAT
      *declare "DBL tsfo( DBL _tr, DBL _cr);"
      *declare "BOO tsPoss( DBL _tr, DBL _wr, DBL _cr, int want, DBL & _ts);"
     *declare "BOO resizeFansIf( float _cMx, float vfDsWas);"
-    *declare "RC setMode();"
+    *declare "RC ah_SetMode();"
     *declare "BOO setTsSp1( BOO est, DBL &tsOut);"
     *declare "void wzczSp( BOO est, BOO cooling, BOO maxIt, DBL llim, DBL ulim, TU *ctu, DBL &tTsSp, FLOAT &cznC);"
     *declare "void zRat();"
@@ -6141,7 +6146,7 @@ RECORD AH "airHandler" *RAT
     *s *e BOO ahClf		// call-flag: set nz if must call ahCompute so it can test tr,cr etc to see if computation needed.
     *s *e BOO ahPtf		/* compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
 				   setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
-				                    AH::estimate, ahCompute, setMode, ; ZNR::ztuMdSets, .
+				                    AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .
 				   tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
     *s *e BOO ahPtf2		/* secondary flag for compute only after zones computed again, for non-convergence.
 				   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
@@ -6189,12 +6194,14 @@ RECORD AHRES "ahRes" *RAT		// holds air handler and all-ahs simulation results (
 *END		// AHRES
 
 //=============================================================================
-RECORD TU "terminal" *RAT		/* TERMINAL
-		Each TERMINAL record describes one zone terminal unit, associated with a single given air handler.
-		Each terminal can have local heat, air heat, and air cool capabilities.
-		Multiple terminal units are allowed in a zone (two must be used for dual duct systems). */
+RECORD TU "terminal" *RAT		// TERMINAL
 
-    *declare "RC setup();"			// initial input check/setup, cncult5.cpp
+// Each TERMINAL record describes one zone terminal unit, associated with a single given air handler.
+// Each terminal can have local heat, air heat, and air cool capabilities.
+// Multiple terminal units are allowed in a zone (two must be used for dual duct systems).
+
+    *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+    *declare "RC tu_Setup();"			// initial input check/setup, cncult5.cpp
     *declare "void fazInit( int isAusz);"
     *declare "RC tu_pass1AtoB();"
     *declare "RC tu_begP1b();"
@@ -6206,9 +6213,9 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *declare "RC tu_endAutosize();"
     *declare "void tu_auszFinal();"
     *declare "BOO resizeIf( DBL &cv, BOO isCooling, DBL cvLim, BOO decrOnly);"
-    *declare "RC begHour();"
-    *declare "RC begSubhr();"
-    *declare "RC endSubhr();"
+    *declare "RC tu_BegHour();"
+    *declare "RC tu_BegSubhr();"
+    *declare "RC tu_EndSubhr();"
     *declare "RC tuEstimate();"
     // terminal compute and end-subhour operations are done by ZNR member functions.
    // following 8 return CFLOW: heat cap flow (Btuh/F):
