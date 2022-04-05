@@ -81,7 +81,7 @@ Coincident daily wet-bulb range.
 
 **dcTauB=*float***
 
-Beam tau.
+ASHRAE beam "pseudo optical depth".
 
 <%= member_table(
   units: "",
@@ -92,7 +92,7 @@ Beam tau.
 
 **dcTauD=*float***
 
-Diffuse tau.
+ASHRAE diffuse "pseudo optical depth".
 
 <%= member_table(
   units: "",
