@@ -94,6 +94,16 @@ should contain only comma-separated data rows and data items can be referenced o
 ----------- ------------------------ ------------- -------------- -----------------
             YES NO                   YES            No             constant
 
+**imBinary=*choice***
+
+Adds the possibility to output the file as a binary option.
+
+<%= member_table(
+  units: "",
+  legal_range: "YES NO",
+  default: "No",
+  required: "No",
+  variability: "constant") %>
 
 **endImportFile**
 

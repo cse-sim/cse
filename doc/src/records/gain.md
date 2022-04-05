@@ -4,6 +4,17 @@ A GAIN object adds sensible and/or latent heat to the ZONE, and/or adds arbitrar
 
 Each gain has an amount of power (gnPower), which may optionally be accumulated to a METER (gnMeter). The power may be distributed to the zone, plenum, or return as sensible heat with an optional fraction radiant, or to the zone as latent heat (moisture addition), or not.
 
+# Gain zones
+
+The gain to the zone may be further divided into convective sensible, radiant sensible and latent heat via the gnFrRad and gnFrLat members; the plenum and return gains are assumed all convective sensible.
+
+# Gain Modeling in CNE zones
+
+In the CNE zone mode, the radiant internal gain is distributed to the surfaces in the zone, rather than going directly to the zone "air" heat capacity (znCAir). A simple model is used -- all surfaces are assumed to be opaque and to have the same (infrared) absorptivity -- even windows. Along with the assumption that the zone is spherical (implicit in the current treatment of solar gains), this allows distribution of gains to surfaces in proportion to their area, without any absorptivity or transmissivity calculations. The gain for windows and quick-model surfaces is assigned to the znCAir, except for the portion which conducts through the surface to the other side rather than through the surface film to the adjacent zone air; the gain to massive (delayed-model) surfaces is assigned to the side of surface in the zone with the gain.
+
+Radiant internal gains are included in the IgnS (Sensible Internal Gain) column in the zone energy balance reports. (They could easily be shown in a separate IgnR column if desired.) Any energy transfer shows two places in the ZEB report, with opposite signs, so that the result is zero -- otherwise it wouldn't be an energy balance. The rest of the reporting story for radiant internal gains turns out to be complex. The specified value of the radiant gain (gnPower \* gnFrZn \* gnFrRad) shows in the IgnS column. To the extent that the gain heats the zone, it also shows negatively in the Masses column, because the zone CAir is lumped with the other masses. To the extent that the gain heats massive surfaces, it also shows negatively in the masses column. To the extent that the gain conducts through windows and quick-model surfaces, it shows negatively in the Conduction column. If the gain conducts through a quick-model surface to another zone, it shows negatively in the Izone (Interzone) column, positively in the Izone column of the receiving zone, and negatively in the receiving zone's Masses or Cond column.
+
+
 **gnName**
 
 Name of gain; follows the word GAIN if given.
@@ -65,30 +76,29 @@ Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that 
   ----------- ------------------------------------ ---------------------------------- -------------- -----------------
               0 $\leq$ *x* $\leq$ 1                1.                                 No             hourly
 <% end %>
-<% if not_yet_implemented %>
+
 **gnFrPl=*float***
 
-Fraction of gain going to plenum. Plenums are not implemented as of August, 2012. Any gain directed to the plenum is discarded.
+Fraction of gain going to plenum.
+
+<%= member_table(
+  units: "",
+  legal_range: "gnFrZn + gnFrPl + gnFrRtn $\\leq$ 1",
+  default: "0.",
+  required: "No",
+  variability: "hourly") %>
+
 
 **gnFrRtn=*float***
 
-Fraction of gain going to return. The return fraction model is not implemented as of August, 2012. Any gain directed to the return is discarded.
+Fraction of gain going to return.
 
-  **Units**   **Legal Range**                      **Default**   **Required**   **Variability**
-  ----------- ------------------------------------ ------------- -------------- -----------------
-              gnFrZn + gnFrPl + gnFrRtn $\leq$ 1   0.             No             hourly
-
-The gain to the zone may be further divided into convective sensible, radiant sensible and latent heat via the gnFrRad and gnFrLat members; the plenum and return gains are assumed all convective sensible.
-
-
-In the CNE zone mode, the radiant internal gain is distributed to the surfaces in the zone, rather than going directly to the zone "air" heat capacity (znCAir). A simple model is used -- all surfaces are assumed to be opaque and to have the same (infrared) absorptivity -- even windows. Along with the assumption that the zone is spherical (implicit in the current treatment of solar gains), this allows distribution of gains to surfaces in proportion to their area, without any absorptivity or transmissivity calculations. The gain for windows and quick-model surfaces is assigned to the znCAir, except for the portion which conducts through the surface to the other side rather than through the surface film to the adjacent zone air; the gain to massive (delayed-model) surfaces is assigned to the side of surface in the zone with the gain.
-<% end %>
-
-**Gain Modeling in <% if inactive_CNE_records %>CNE <% end %>zones**
-
-<% if inactive_CNE_records %>In the CNE zone mode, t<% else %>T<% end %>he radiant internal gain is distributed to the surfaces in the zone, rather than going directly to the zone "air" heat capacity (znCAir). A simple model is used -- all surfaces are assumed to be opaque and to have the same (infrared) absorptivity -- even windows. Along with the assumption that the zone is spherical (implicit in the current treatment of solar gains), this allows distribution of gains to surfaces in proportion to their area, without any absorptivity or transmissivity calculations. The gain for windows and quick-model surfaces is assigned to the znCAir, except for the portion which conducts through the surface to the other side rather than through the surface film to the adjacent zone air; the gain to massive (delayed-model) surfaces is assigned to the side of surface in the zone with the gain.
-
-Radiant internal gains are included in the IgnS (Sensible Internal Gain) column in the zone energy balance reports. (They could easily be shown in a separate IgnR column if desired.) Any energy transfer shows two places in the ZEB report, with opposite signs, so that the result is zero -- otherwise it wouldn't be an energy balance. The rest of the reporting story for radiant internal gains turns out to be complex. The specified value of the radiant gain (gnPower \* gnFrZn \* gnFrRad) shows in the IgnS column. To the extent that the gain heats the zone, it also shows negatively in the Masses column, because the zone CAir is lumped with the other masses. To the extent that the gain heats massive surfaces, it also shows negatively in the masses column. To the extent that the gain conducts through windows and quick-model surfaces, it shows negatively in the Conduction column. If the gain conducts through a quick-model surface to another zone, it shows negatively in the Izone (Interzone) column, positively in the Izone column of the receiving zone, and negatively in the receiving zone's Masses or Cond column.
+<%= member_table(
+  units: "",
+  legal_range: "gnFrZn + gnFrPl + gnFrRtn $\\leq$ 1",
+  default: "0.",
+  required: "No",
+  variability: "hourly") %>
 
 **gnFrRad=*float***
 
@@ -125,6 +135,17 @@ Name of a DHWSYS whose water use modulates gnPower.  For example, electricity us
 ----------- ------------------- ---------------------- -------------- -----------------
             *name of a DHWSYS*  no DHWSYS/GAIN linkage            No         constant
 
+**gnCtrlDHWMETER=*dhwMtrName***
+
+Allows gains to track water usage such as dishwashers, clothes washers, etc.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of DHWMETER*",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
 **gnCtrlDHWEndUse=*dhwEndUseName***
 
 Name of the DHWSYS end use consumption that modulates gnPower.  See DHWMETER for DHW end use definitions.
@@ -132,8 +153,6 @@ Name of the DHWSYS end use consumption that modulates gnPower.  See DHWMETER for
 **Units**   **Legal Range**     **Default**            **Required**   **Variability**
 ----------- ------------------- ---------------------- -------------- -----------------
              DHW end use         Total                     No          constant
-
-
 
 **endGain**
 

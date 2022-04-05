@@ -20,7 +20,7 @@ Name of LOADMETER: required for assigning to ZONEs and RSYSs.
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        Yes            constant
 
-**endAFMeter**
+**endLOADMETER**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 

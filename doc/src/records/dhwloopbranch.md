@@ -1,6 +1,6 @@
 # DHWLOOPBRANCH
 
-DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceeding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
+DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
 
 **wbName**
 
@@ -57,6 +57,49 @@ Combined radiant/convective exterior surface conductance between insulation (or 
   **Units**       **Legal Range**   **Default**   **Required**   **Variability**
   --------------- ----------------- ------------- -------------- -----------------
   Btuh/ft^2^-^o^F   $>$ 0             1.5           No             hourly
+
+**wbExCnd=*choice***
+
+Specify exterior conditions.
+
+<%= csv_table(<<END, :row_header => true)
+Choice, Description
+ADIABATIC, Adiabatic on other side
+AMBIENT, Ambient exterior
+SPECT, Specify temperature
+ADJZN, Adjacent zone
+GROUND, Ground conditions
+END
+%>
+
+<%= member_table(
+  units: "",
+  legal_range: "See table above",
+  default: "SPECT",
+  required: "No",
+  variability: "constant") %>
+
+**wbAdjZn=*float***
+
+Boundary conditions for adjacent zones.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "runly") %>
+
+**wbExTX=*float***
+
+External boundary conditions.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "70.0",
+  required: "No",
+  variability: "runly") %>
 
 **wbFUA=*float***
 

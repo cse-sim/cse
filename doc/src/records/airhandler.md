@@ -6,7 +6,7 @@ AIRHANDLER defines a central air handling system, containing a fan or fans, opti
 
 AIRHANDLER is designed primarily to model a central system that supplies hot or cold air at a centrally determined temperature (the "Supply Temperature Setpoint") to Variable Air Volume (VAV) terminals in the zones. Some additional variations are also supported:
 
-1.  The AIRHANDLER can model a constant volume, fan-always-on system, where the supply temperature varies to meet the load of a single zone (that is, the thermostat controls the heating and/or cooling coil, but not the fan). This is done by setting the terminal minimum flow, *tuVfMn,* equal to the maximum flow, *tuVfMxH* for heating and/or *tuVfMxC* for cooling, and using a supply temperature control method that adjusts the temperarute to the load (*ahTsSp* = WZ, CZ, or ZN2, described below).
+1.  The AIRHANDLER can model a constant volume, fan-always-on system, where the supply temperature varies to meet the load of a single zone (that is, the thermostat controls the heating and/or cooling coil, but not the fan). This is done by setting the terminal minimum flow, *tuVfMn,* equal to the maximum flow, *tuVfMxH* for heating and/or *tuVfMxC* for cooling, and using a supply temperature control method that adjusts the temperature to the load (*ahTsSp* = WZ, CZ, or ZN2, described below).
 
 2.  The AIRHANDLER can model constant volume, fan cycling systems where the fan cycles with a single zone thermostat, running at full flow enough of the time to meet the load and shutting completely off the rest of the time, rather than running at variable flow to adjust to the demand from the zones.
 
@@ -46,6 +46,17 @@ The following might be used to run an air handler between 8 AM and 5 PM:
   **Units**   **Legal Range**   **Default**   **Required**   **Variability**
   ----------- ----------------- ------------- -------------- -----------------
               ON/OFF            ON            No             hourly
+
+**fanOversize=*float***
+
+Fraction oversize for autosized fan(s).
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Supply Air Temperature Controller
 
@@ -280,6 +291,28 @@ A comma must be entered between zone names and after the word ALL\_BUT.
   ----------- ------------------------------------------------ ------------- -------------- -----------------
               *name(s) of ZONEs* ALL ALL\_BUT *zone Name(s)*   ALL           NO             hourly
 
+**ahTsDsC=*float***
+
+Cooling design supply temperature, for sizing coil vs fan.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "*ahTsMn*",
+  required: "No",
+  variability: "hourly") %>
+
+**ahTsDsH=*float***
+
+Heating design supply temperature, for sizing coil vs fan.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "*ahTsMx*",
+  required: "No",
+  variability: "hourly") %>
+
 **ahCtu=*terminal name***
 
 Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since ahTsSp = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.
@@ -298,7 +331,7 @@ Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply 
 
 *AhTsRaMn* and *ahTsRaMx* are used when *ahTsSp* is RA.
 
-**ahTsRaMx=*float***
+**ahTsRaMn=*float***
 
 Return air temperature at which the supply temperature setpoint is at the *maximum* supply temperature, *ahTsMx*.
 
@@ -354,7 +387,7 @@ Design or rated pressure. The work done by the fan is computed as the product of
 
 Prior text: At most, one of the next two items may be given: in combination with sfanVfDs and sfanPress, either is sufficient to compute the other. SfanCurvePy is then used to compute the mechanical power at the fan shaft at partial loads; sfanMotEff allows determining the electrical input from the shaft power.
 
-New possible text (after addition of sfanElecPwr): Only one of sfanElecPwr, sfanEff, and sfanShaftBhp may be given: together with sfanVfDs and xfanPress, any one is sufficient for CSE to detemine the others and to compute the fan heat contribution to the air stream. <!-- TODO: fix! 7-29-2011 -->
+New possible text (after addition of sfanElecPwr): Only one of sfanElecPwr, sfanEff, and sfanShaftBhp may be given: together with sfanVfDs and xfanPress, any one is sufficient for CSE to determine the others and to compute the fan heat contribution to the air stream. <!-- TODO: fix! 7-29-2011 -->
 
 **sfanElecPwr=*float***
 
@@ -645,7 +678,7 @@ Total heating (output) capacity. For an ELECTRIC, GAS, or OIL coil, this capacit
 
 **ahhcMtr=*mtrName***
 
-Name of meter to accumulate energy use by this heat coil. The input energy used by the coil is accumulated in the end use category "Htg"; for a heat pump, the en*ergy used by the supplemental resistance heaters (regular and defrost) is accumulated under the category "hp". Not allowed when*ahhcType\* is HW, as an HW coil's energy comes from its HEATPLANT, and the HEATPLANT's BOILERs accumulate input energy to meters.
+Name of meter to accumulate energy use by this heat coil. The input energy used by the coil is accumulated in the end use category "Htg"; for a heat pump, the energy used by the supplemental resistance heaters (regular and defrost) is accumulated under the category "hp". Not allowed when*ahhcType\* is HW, as an HW coil's energy comes from its HEATPLANT, and the HEATPLANT's BOILERs accumulate input energy to meters.
 
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
@@ -933,6 +966,17 @@ A cooling coil is an optional device that remove heat and humidity from the air 
 
 The following five members are used for all cool coil types except as noted. Presence of a cool coil in the AIRHANDLER is indicated by giving an *ahccType value* other than NONE.
 
+**ahccSHR=*float***
+
+Sensible heat ratio (caps/capt) for cooling coil.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.77",
+  required: "No",
+  variability: "constant") %>
+
 **ahccType*=choice***
 
 Cool coil type choice:
@@ -1140,6 +1184,17 @@ Coefficients of cubic polynomial function of relative flow (entering air cfm/*ah
   ----------- ----------------- -------------------- -------------- -----------------
                                 0.8, 0.2, 0.0, 0.0   No             constant
 
+**pydxCaptFLim=*float***
+
+Upper limit for value of pydxCaptF.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.05",
+  required: "No",
+  variability: "constant") %>
+
 **pydxEirT=*a, b, c, d, e, f***
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust *ahccEirR* for the actual entering air temperatures. The condenser temperature is the outdoor air drybulb, but not less than 70. If the entering air wetbulb is less than 60, 60 is used, in this function only. See discussion in preceding paragraphs.
@@ -1238,6 +1293,17 @@ Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The ARI s
 \* a "ton" is 12,000 Btuh of rated capacity (*ahccCaptRat*).
 
 The following four members permit specification of auxiliary input power use associated with the cooling coil under the conditions indicated.
+
+**ahccVfRperTon=*float***
+
+Design default *ahccVfR* per ton (12000 Btuh) of *ahhcCapTRat*.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "400.0",
+  required: "No",
+  variability: "runly") %>
 
 **ahccAuxOn=*float***
 
@@ -1535,6 +1601,17 @@ METER to record crankcase heater energy use, category "Aux"; not recorded if not
   **Units**   **Legal Range**     **Default**      **Required**   **Variability**
   ----------- ------------------- ---------------- -------------- -----------------
               *name of a METER*   *not recorded*   No             constant
+
+**coilOversize=*float***
+
+Fraction oversize for autoSized heat/cool coils.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.1",
+  required: "No",
+  variability: "runly") %>
 
 **endAirHandler**
 

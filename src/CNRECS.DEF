@@ -4487,7 +4487,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   used for some models only
 								//   default = 4500
   *i FLOAT_GEZ wh_resHtPwr2;	// lower element resistance heating power, W
-								//   default = wh_resPwr
+								//   default = wh_resHtPwr
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
@@ -4543,7 +4543,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r *e DBL wh_inFuelTot;	//    annual total fuel, Btu
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
-  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
+  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_fuelMtri)
   *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
 							//   default = none (include wh_HPWHxBU in end use dhwBU)
   *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel;"
