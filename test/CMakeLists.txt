@@ -70,6 +70,7 @@ set(files
   pv_bt_test
   bt_test
   shadetest
+  CRTerminalAH
 )
 
 foreach(file ${files})

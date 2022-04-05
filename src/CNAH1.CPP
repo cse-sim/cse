@@ -1017,9 +1017,9 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 	RC rc /*=RCOK*/;		// (removed redundant init per BCC32 4.5 warning, 12-94)
 
 // flag ah to be CALLED (to check cr,tr,etc) at start subhour and if ztu re-ahEstimates's after 1st iteration.
-	// convention is: all hvac devices (but tu's?) called at start subhour.
-	/* and TRIED REMOVING 11-3-92: eliminated many calls, some computations; changed Yr wetbulb by .01 degree for many runs.
-	   Apparently need more wz monitoring elsewhere to consider removing. */
+// convention is: all hvac devices (but tu's?) called at start subhour.
+//    and TRIED REMOVING 11-3-92: eliminated many calls, some computations; changed Yr wetbulb by .01 degree for many runs.
+//    Apparently need more wz monitoring elsewhere to consider removing.
 
 	ahClf++;		// tell subhrHvacIter to call ahCompute for this ah
 	Top.ahKf++;  	// tell subhrHvacIter to check for AH's with ahClf or ahPtf on. ahPtf set in many cases below.
@@ -1027,27 +1027,27 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 
 // determine 'ahMode' including for ahTsSp==ZN,ZN2
 	AHMODE ahModeWas = ahMode;
-	CSE_E( setMode() )				// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
+	CSE_E( ah_SetMode() )				// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
 	// if ah goes on or off, sets zones ztuCf's.
 	if (ahMode==ahOFF)  return RCOK;			// if ah off, done
 
 #ifndef NOACMS
-	x #if 1 // 7-15-95
-	x// init ah working copies of tu flow limits -- zRat, setTsSp1 uses them. copies added 7-15-95.
-	x    for (TU *tu = 0;  nxTu(tu);  )  		// temp save entry flows in ZONE for upCouple/antRatTs, b4 any changes stored
-			x    {  tu->aCMn = tu->cMn;			// copy terminal flow limits (heat cap units) to working copies
-					x       tu->aCMxH = tu->cMxH;			// .. that ah may modify temporaly like ztuMode does more permanently
-					x       tu->aCMxC = tu->cMxC;			// .. during autoSizing. 7-15-95
-					x
-				 }
-			x #endif
+x #if 1 // 7-15-95
+x// init ah working copies of tu flow limits -- zRat, setTsSp1 uses them. copies added 7-15-95.
+x    for (TU *tu = 0;  nxTu(tu);  )  		// temp save entry flows in ZONE for upCouple/antRatTs, b4 any changes stored
+x    {  tu->aCMn = tu->cMn;			// copy terminal flow limits (heat cap units) to working copies
+x       tu->aCMxH = tu->cMxH;			// .. that ah may modify temporaly like ztuMode does more permanently
+x       tu->aCMxC = tu->cMxC;			// .. during autoSizing. 7-15-95
+x
+x	 }
+x #endif
 #endif
 
 // if ah just turned on, determine return air temp etc from zones (if already on, current trNx etc are up-to-date). 4-95.
-			if (ahModeWas==ahOFF)				// if just started ah, may have last run at different zone temps, so ...
-				zRat();						/* compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
-							   Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
-       							   Note ztuMode() presets aTz, zCv etc for this call. 4-95. */
+	if (ahModeWas==ahOFF)	// if just started ah, may have last run at different zone temps, so ...
+		zRat();				// compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
+							// Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
+       						// Note ztuMode() presets aTz, zCv etc for this call. 4-95.
 // estimate new ts from ahTsSp -- or leave same
 	DBL tsNu = ts;
 	{
@@ -1125,14 +1125,15 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 
 // (old) preceding call sequence: tuEstimate, ahEstimate, ztuCompute.
 {
-	/* AH::ahPtf sets include: by exman chafs for input changes (ahTsSp, ahSch, ahhc.sched, ahcc.sched, );
-				   AH::ahEstimate, ahCompute, setMode, ; ZNR::ztuMdSets (from ztuCompute).
-	        tested: cnztu.cpp:hvacSubhrIter(), AH::compute. cleared: AH::ahCompute. */
+// AH::ahPtf sets include: by exman chafs for input changes (ahTsSp, ahSch, ahhc.sched, ahcc.sched, );
+//  AH::ahEstimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets (from ztuCompute).
+//	        tested: cnztu.cpp:hvacSubhrIter(), AH::compute. cleared: AH::ahCompute.
+
 	RC rc /*=RCOK*/;
 	AhresB.p[ss].S.nIter1++;				// in ah subhour results subrecord, count times ah entered
 
 // redetermine 'ahMode' including for ahTsSp==ZN,ZN2
-	CSE_E( setMode() )				// sets ahMode to ahHEATING/-COOLING/both(usually)/-FAN/-OFF
+	CSE_E( ah_SetMode() )			// sets ahMode to ahHEATING/-COOLING/both(usually)/-FAN/-OFF
 	if (ahMode==ahOFF)				// if ah now off
 		return RCOK;				// nothing more to do for off airHandler
 	// note 10-96: ahClf stays on when return here. Clear here when/if need found.
@@ -1147,8 +1148,8 @@ x	 }
 #endif
 
 // return air temp/flow per zone temps and terminal flows; plenum loss and return fan heat
-		zRat();					/* sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
-						   Note ahEstimate sets aTs, in addition to ts, for this call. */
+		zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
+						// Note ahEstimate sets aTs, in addition to ts, for this call
 
 	/* Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
 	   Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.

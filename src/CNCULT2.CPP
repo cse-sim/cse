@@ -1896,7 +1896,7 @@ RC ckOwnRefPt(	// check / access ref to owning record
 
 	BP toBase,			// ptr to BASE of RAT in which mbr is a subscript
 	record * fromRec,   	// ptr to RAT record containing mbr (for errmsg)
-	record **pp/*=NULL*/,    	// NULL or receives ptr to record
+	record **pp/*=NULL*/,    // NULL or receives ptr to record
 	RC *prc/*=NULL*/ )		// NULL or is set non-RCOK iff error
 
 // shorter call to ckRefPt for checking/pointing to owning record

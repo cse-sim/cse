@@ -1771,7 +1771,6 @@ CULT( "endDHWUSE",   ENDER, 0,                 0,       0, 0,      0,     0,    
 CULT()
 };	// dhwUseT
 
-
 //============================= DHWDAYUSE command =============================
 LOCAL RC wduStarCkf([[maybe_unused]] CULT* c, /*DHWDAYUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWDAYUSE input, to get messages near source of error.
@@ -2641,8 +2640,6 @@ CULT( "dcTauB",     DAT,  DESCOND_TAUB,      0,       0, VEOI,   TYFL,   0,    0
 CULT( "dcTauD",     DAT,  DESCOND_TAUD,      0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcEbnSlrNoon",DAT, DESCOND_EBNSLRNOON,0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcEdhSlrNoon",DAT, DESCOND_EDHSLRNOON,0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
-
-
 CULT( "endDesCond", ENDER, 0,           0,        0, 0,      0,      0,    0.f,       N,   N),
 CULT()
 };	// dcT

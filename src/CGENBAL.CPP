@@ -30,6 +30,9 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	FLOAT tol )		// check tolerance: generally 0.001 or so
 
 {
+#if defined( SUPPRESS_ENBAL_CHECKS)
+	return;
+#else
 	double ovNet = 0., ovTot = 0.;			// accumulated overall net and total (sum abs value) energy transfer
 
 // Loop over zones, checking each and accumulating overall
@@ -138,6 +141,8 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 
 // check overall balance
 	cgecheck( ovNet, ovTot, tol, .1, "overall", NULL, ivl, Top.tp_ebErrCount);
+
+#endif
 }		// cgenbal
 //-----------------------------------------------------------------------------
 RC MSRAT::ms_Enbal(

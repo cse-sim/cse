@@ -2197,7 +2197,7 @@ x                              : _cr/_cMx;	// fraction on = fraction of ah poss 
 }			// AH::tsfo
 #endif // ifndef TSPOSS
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AH::setMode()		// set ahMode per ts sp control method and supply fan schedule
+RC AH::ah_SetMode()		// set ahMode per ts sp control method and supply fan schedule
 
 {
 	// callers 8-92: AH::estimate, AH::ahCompute
@@ -2224,7 +2224,7 @@ RC AH::setMode()		// set ahMode per ts sp control method and supply fan schedule
 			ahPtf++;					// say full ah computation required -- state of -Pr's unknown. 4-17-92.
 	}
 	return RCOK;
-}			// AH::setMode
+}			// AH::ah_SetMode
 //-----------------------------------------------------------------------------------------------------------------------------
 /* Notes re AH ZN and ZN2 supply temp control methods, Rob 5-95. Also at start of cncult5.cpp and app\cnah1.cpp.
  *
@@ -2367,7 +2367,7 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 			//else fall thru
 
 		case C_TSCMNC_ZN:  		// ZN method: WZ or CZ or off according to what zone of terminal ahCtu requires
-			// tuEstimate thence setMode have already set ahMode to ahHEATING or ahCOOLING.
+			// tuEstimate thence ah_SetMode have already set ahMode to ahHEATING or ahCOOLING.
 
 			if (ahCtu)					// no control terminal possible if ahTsSp is runtime expr
 				ctu = &TuB.p[ahCtu];			// point to specified control terminal for ZN/ZN2 methods
@@ -2989,25 +2989,26 @@ void AH::zRat()			// compute ah return air temp, flow, hum ratio per current zon
 
 // uses: aTs, aWs, zone aTz/aWs (not tz/wz), tu aCv (not cv/cz), .
 
-/* sets: crNx, cr1Nx;
-             unless flow is 0: trNx, tr1Nx, tr2Nx, wrNx, wr1Nx;
-         uUseAr;
-         dtRfan, r/sfan.dt. */
+// sets: crNx, cr1Nx;
+//       unless flow is 0: trNx, tr1Nx, tr2Nx, wrNx, wr1Nx;
+//       uUseAr;
+//       dtRfan, r/sfan.dt.
 
-// is only tu scan called in ahCompute before 1st cond'l exit.  caller: ahCompute(), at entry; possibly 2 calls in ahEstimate().
+// is only tu scan called in ahCompute before 1st cond'l exit.
+// caller: ahCompute(), at entry; possibly 2 calls in ahEstimate().
 {
 
 // c, t, w sums
-	TCUSE _uUseAr = uNONE;			// for union of terminal useAr's (eg for detecting pegged uses)
-	DBL _cr = 0.f, tcr = 0.f, wcr = 0.f;    	// init accumulators
-	//cria = 0.f;  tcria = 0.f;			// member accumulators const flow to const tz portion to not repeat in antRatTs.
+	TCUSE _uUseAr = uNONE;					// for union of terminal useAr's (eg for detecting pegged uses)
+	DBL _cr = 0., tcr = 0., wcr = 0.;    // init accumulators
+	//cria = 0.f;  tcria = 0.f;				// member accumulators const flow to const tz portion to not repeat in antRatTs.
 	for (TU *tu = NULL;  nxTu(tu);  )    	// loop terminals for airHandler
 	{
 		_uUseAr = TCUSE( _uUseAr | tu->useAr);		// 'or' together terminal useAr's
 		ZNR *zp = ZrB.p + tu->ownTi;		// zone for terminal
 		// use working copy variables  zp->aTz for zp->tz  and  tu->aCv for tu->cv  to get any prior ah updates since ztuCompute.
-		/* return flow attributable to terminal consists of:
-		     tu->aCz() (flow to zone)  and  tu->aRLeakC() (supply leakage to plenum or return).  sum === tu->aCv. */
+		// return flow attributable to terminal consists of:
+		//   tu->aCz() (flow to zone)  and  tu->aRLeakC() (supply leakage to plenum or return).  sum === tu->aCv.
 		_cr += tu->aCv;				// sum flow: add terminal's flow at vav box, working copy.
 		//if (zp->i.plenumRet)
 		//{  // here compute plenum temp and w if not previously computed.  consider tuSRLoss when implemented (also in ztuCompute).
@@ -3022,7 +3023,7 @@ void AH::zRat()			// compute ah return air temp, flow, hum ratio per current zon
 	}
 
 // t and w weighted averages
-	if (_cr != 0.f)					// if flow.  else trNx UNCHANGED.
+	if (_cr != 0.)					// if flow.  else trNx UNCHANGED.
 	{
 		trNx = tcr/_cr;   				// return air temp: weighted average
 		wrNx = wcr/_cr;					// return air hum ratio: weighted average
