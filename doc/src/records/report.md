@@ -18,18 +18,14 @@ In addition to the headers and footers of individual reports, the report file ha
 
 **Default Reports:** CSE generates the following reports by default for each run, in the order shown. They are output by default to the "Primary" report file. They may be ALTERed or DELETEd as desired, using the object names shown.
 
-  ----------------------------------------------------------------------
-  rpName        rpType        Additional members
-  ------------- ------------- ------------------------------------------
-  Err           ERR           
-
-  eb            ZEB           rpFreq=MONTH;\
-                              rpZone=SUM;
-
-  Log           LOG           
-
-  Inp           INP           
-  ----------------------------------------------------------------------
+<%= csv_table(<<END, :row_header => true)
+  rpName,        rpType,        Additional members
+  Err,           ERR
+  eb,            ZEB,           rpFreq=MONTH; rpZone=SUM;
+  Log,           LOG
+  Inp,           INP
+END
+%>
 
 <!-- from second row of table: SumSUMNot implemented?? -->
 Any reports specified by the user and not assigned to another file appear in the Primary report file between the default reports "eb" and "Log", in the order in which the REPORT objects are given in the input file.
@@ -91,14 +87,16 @@ The next three members specify how frequently values are reported and the start 
 Report Frequency: specifies interval for generating rows of report data:
 
 <%= csv_table(<<END, :row_header => false)
-  YEAR,               at run completion
-  MONTH,              at end of each month (and at run completion if mid-month)
-  DAY,                at end of each day
-  HOUR,               at end of each hour
-  HOURANDSUB,         at end of each subhour AND at end of hour
-  SUBHOUR,            at end of each subhour
+  YEAR, at run completion
+  MONTH, at end of each month (and at run completion if mid-month)
+  DAY, at end of each day
+  HOUR, at end of each hour
+  HOURANDSUB, at end of each subhour and at end of hour
+  SUBHOUR, at end of each subhour
 END
 %>
+
+
 
 *rpFreq* values of HOURANDSUB and SUBHOUR are not supported in some combinations with data selection of ALL or SUM.
 
@@ -198,7 +196,6 @@ Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
   default: "*none*",
   required: "Required for *rpType*",
   variability: "constant") %>
-<% end %>
 
 **rpBtuSf=*float***
 
@@ -220,7 +217,7 @@ Conditional reporting flag. If given, report rows are printed only when value of
   legal_range: "*any numeric expression*",
   default: "1 (reporting enabled)",
   required: "No",
-  variability: "subhour /end of interval") %>
+  variability: "subhour end of interval") %>
 
 **rpCPL=*int***
 
