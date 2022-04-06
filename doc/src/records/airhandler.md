@@ -151,7 +151,7 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "*no limit*; tipically: 40 $\\le$ *x* $\\le$ 140^o^",
+  legal_range: "*no limit*; typically: 40 $\\le$ *x* $\\le$ 140^o^",
   default: "999^o^ F",
   required: "Only for *asTsSp*=RA; recommend giving for *ahTsSp*=ZN",
   variability: "hourly") %>
