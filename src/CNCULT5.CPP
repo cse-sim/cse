@@ -372,12 +372,9 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		case C_COILTYCH_GAS:
 		case C_COILTYCH_OIL:
 		case C_COILTYCH_ELEC:
+		case C_COILTYCH_AHP:
 			hcAs.az_active = TRUE;
 			break;	// set runtime flag for implemented coil type(s)
-
-		case C_COILTYCH_AHP:
-			rc |= oer( "Cannot autoSize AHP coils.");
-			break;		// not impl 7-95. NUMS
 
 		case C_COILTYCH_NONE:
 			rc |= oer( "Cannot give \"AUTOSIZE ahhcCaptRat\""
@@ -1240,12 +1237,13 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 
 // AHP required members
 	rc |= r->requireN( (char *)MH_S0661,  					// "when ahhcType is AHP"
-					   ahhCoilFn+AHHEATCOIL_CAP17, ahhCoilFn+AHHEATCOIL_CAP47,
-					   ahhCoilFn+AHHEATCOIL_IN17,  ahhCoilFn+AHHEATCOIL_IN47,  0 );
+					   ahhCoilFn+AHHEATCOIL_CAPTRAT,
+					   ahhCoilFn+AHHEATCOIL_COP17,  ahhCoilFn+AHHEATCOIL_COP47,  0 );
 
 // some AHP input checks
-	if (cap17 >= cap47)
-		rc |= ERS2AHC(CAP17,CAP47)   (char *)MH_S0662, cap17, cap47);	//"ahpCap17 (%g) must be < ahpCap47 (%g)"
+	if (r->IsAusz(ahhCoilFn+AHHEATCOIL_CAPTRAT))
+		rc |= r->disallowN("when ahhcCaptRat is AUTOSIZE",
+			ahhCoilFn+AHHEATCOIL_CAP17, ahhCoilFn+AHHEATCOIL_CAP35, 0);
 	if (dfrFMx <= dfrFMn)
 		rc |= ERS2AHC(DFRFMX,DFRFMN) (char *)MH_S0663,dfrFMx,dfrFMn);	//"ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
 	if (tOff > tOn)
@@ -1264,57 +1262,11 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 		rc |= ERS2AHC(TFRMN,TFRPK)   (char *)MH_S0669,  tFrMn);	// "ahpTFrMn (%g) must be < 35."
 	if (35. >= tFrMx)
 		rc |= ERS2AHC(TFRPK,TFRMX)   (char *)MH_S0670,  tFrMx);	// "ahpTFrMx (%g) must be > 35."
-	if (fss[AHHEATCOIL_CAPTRAT] & FsSET)
-		r->oer( (char *)MH_S0671 );		/* "For AHP heat coil, do not give ahhcCaptRat\n"
-										   "    (instead ahpCap17 and ahpCap47 are used)"*/
 	//additional members specific to other coil types disallowN'd below.
 
-// defrost capacity. (future) should check or default somehow vs ahp cooling inputs if given?
-	if (!(fss[AHHEATCOIL_DFRCAP] & FsSET))			// if user did not give ahpDfrCap (defrost capacity)
-		dfrCap = 2 * cap17;					// default to twice 17 degree heat capacity
-	dfrCap = -fabs(dfrCap);				// make defrost capacity negative internally
-
-// 35F heating capacity
-	DBL terp35 = cap17 + (cap47 - cap17) * (35. - 17.)/(47. - 17.);	// linear interp capacity @ 35: no frost/dfr efcts
-	if (!(fss[ahhCoilFn+AHHEATCOIL_CAP35] & FsSET))				// if user did not ahpCap35
-			cap35 = terp35 * fd35Df;				// default to interpolated value times frost/defrost degradation factor
-	else									// ahpCap35 given (not expected)
-		if (cap35 > terp35)
-				rc |= ERSAHC(CAP35) (char *)MH_S0672, cap35, terp35, cap17, cap47 );
-							/* "ahpCap35 (%g) cannot be > proportional value (%g) between \n"
-							   "    ahpCap17 (%g) and ahpCap47 (%g) -- \n"
-							   "    that is, frost/defrost effects cannot increase capacity." */
 	if (rc)  return rc;				// stop here if any error has been detected
 
-// input power without crankcase heater
-	in17c = in17 - AHR->cch.p17;
-	in47c = in47 - AHR->cch.p47;
 
-// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
-
-	//Niles form: eiCyc47 = (in47 - AHR->cch.p47) * tmCycOn + AHR->cch.e47On + AHR->cch.e47Off;
-	//eliminating subtraction and addition of time-on crankcase heat yeilds: eiCyc47 = in47 * tmCycOn + AHR->cch.e47Off;
-	//DBL eiCyc47 =    				// energy input during one cycle of ARI 47F cycling test. Niles eInCyc47.
-	//            in47 * tmCycOn 		// steady-state input (incl cch) times time-on (latter may be #define in rccn.h)
-	//             + AHR->cch.e47Off;		// plus cch (crankcase heater) input during off-time (set in CCH::setup)
-	//converting energy to power here & at use just below yields:
-	DBL pCyc47 =    					// power input during one cycle of ARI 47F cycling test
-			in47 * tmCycOn / tmCycPer		// steady-state input (incl cch) times cycle on time fraction
-			+ AHR->cch.p47Off;			// plus cch (crankcase heater) input during off-time (set in CCH::setup)
-
-// determine cdm: cycling degradation coeff modified for compr only (cch removed). Niles V-K-5-b concluded.
-
-	//Niles form using energy for 1 47F cycle
-	//cdm = (in47/eiCyc47 - cd/tmCycPer - (1. - cd)/tmCycOn)/(in47/eiCyc47 - 1./tmCycPer);
-	//my form using power:
-	cdm = (in47/pCyc47 - cd - (1. - cd)*tmCycPer/tmCycOn) / (in47/pCyc47 - 1.);  		// /0 prot needed??
-
-	if (cdm < 0. || cdm >= 1.0)
-		rc |= r->oer( (char *)MH_S0673, cdm); 	/* "cdm (%g) not in range 0 <= cdm < 1\n"
-					"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
-	else if (cdm > cd)
-		r->oWarn( (char *)MH_S0674,  cdm, cd );	/* "cdm (%g) not <= ahpCd (%g): does this mean bad input?\n"
-							"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
 
 //--- finally, disallow inputs specific to other coil types
 

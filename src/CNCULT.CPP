@@ -2324,9 +2324,9 @@ static CULT ahT[] =
 	CULT( "ahhcAuxOnAtallMtr",DAT,  AHHC(AUXONATALLMTRI),  0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
 	CULT( "ahhcAuxFullOff",   DAT,  AHHC(AUXFULLOFF),      0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
 	CULT( "ahhcAuxFullOffMtr",DAT,  AHHC(AUXFULLOFFMTRI),  0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahpCap17",         DAT,  AHHC(CAP17),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code if AHP
-	CULT( "ahpCap47",         DAT,  AHHC(CAP47),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code if AHP
-	CULT( "ahpCap35",         DAT,  AHHC(CAP35),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //code dflts
+	CULT( "ahpCap17",         DAT,  AHHC(CAP17),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), 
+	CULT( "ahpCapRat1747",    DAT,  AHHC(CAPRAT1747),      0,       0, VFAZLY, TYFL,   0,    N,              .6184f, N,   N), 
+	CULT( "ahpCap35",         DAT,  AHHC(CAP35),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), 
 	CULT( "ahpFd35Df",        DAT,  AHHC(FD35DF),          0,       0, VFAZLY, TYFL,   0,    N,              .85f,   N,   N),
 	CULT( "ahpCapIa",         DAT,  AHHC(CAPIA),           0,       0, VFAZLY, TYFL,   0,    N,              .004f,  N,   N),
 	CULT( "ahpSupRh",         DAT,  AHHC(SUPRH),           0,       0, VFAZLY, TYFL,   0,    N,            10.f,     N,   N),
@@ -2339,15 +2339,15 @@ static CULT ahT[] =
 	CULT( "ahpDfrRh",         DAT,  AHHC(DFRRH),           0,       0, VFAZLY, TYFL,   0,    N,             5.f,     N,   N),
 	CULT( "ahpTOff",          DAT,  AHHC(TOFF),            0,       0, VFAZLY, TYFL,   0,    N,             5.f,     N,   N),
 	CULT( "ahpTOn",           DAT,  AHHC(TON),             0,       0, VFAZLY, TYFL,   0,    N,            12.f,     N,   N),
-	CULT( "ahpIn17",          DAT,  AHHC(IN17),            0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
-	CULT( "ahpIn47",          DAT,  AHHC(IN47),            0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
+	CULT( "ahpCOP17",         DAT,  AHHC(COP17),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
+	CULT( "ahpCOP47",         DAT,  AHHC(COP47),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
 	CULT( "ahpInIa",          DAT,  AHHC(INIA),            0,       0, VFAZLY, TYFL,   0,    N,              .004f,  N,   N),
 	CULT( "ahpCd",            DAT,  AHHC(CD),              0,       0, VFAZLY, TYFL,   0,    N,              .25f,   N,   N),
-	CULT( "ahccSHR",          DAT,  AH_AHCCSHR,            0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
 	CULT( "ahccType",         DAT,  AHCC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,  0.f,  N,   N),
 	CULT( "ahccSched",        DAT,  AHCC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
 	CULT( "ahccCaptRat",      DAT,  AHCC(CAPTRAT),         AS_OK,   0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccCapsRat",      DAT,  AHCC(CAPSRAT),         0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
+	CULT( "ahccSHRRat",       DAT,  AH_AHCCSHR,            0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
 	CULT( "ahccK1",           DAT,  AHCC(K1),              0,       0, VFAZLY, TYFL,   0,    N,             -.4f,    N,   N),
 	CULT( "ahccMinTEvap",     DAT,  AHCC(MINTEVAP),        0,       0, VFAZLY, TYFL,   0,    N,            35.f,     N,   N), // 40-->35 8-95
 	CULT( "ahccDsTDbCnd",     DAT,  AHCC(DSTDBCND),        0,       0, VFAZLY, TYFL,   0,    N,            95.f,     N,   N),

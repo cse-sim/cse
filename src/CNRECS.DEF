@@ -5562,9 +5562,7 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 
   //AHP steady state heating capacity
     *f POWER_GZ cap17		// ARI steady state rated cap @ 17 out, 70 indoor (return) air, Btuh, RQD for AHP, Niles pCapSs17.
-    *f POWER_GZ cap47		/* ARI steady state rated cap @ 47 out, 70 indoor (return) air, Btuh, RQD for AHP, Niles pCapSs47.
-				   These values are for continuous operation and reflect no cycling, frost, or defrost degradation.
-				   Error if cap17 >= cap47. */
+    *r FRAC_GZ capRat1747	// cap17 / cap47 ratio (re autosizing)
     *r POWER_GZ cap35		/* ARI steady state rated cap @ 35F outdoor, Btuh, default per fd35Df, Niles pCapSs35.
 				   Reflects frost buildup and defrost degradation but no cycling. Unlikely to be known;
 				   defaults to fd35Df (next) times a value linearly interpolated between cap17 & cap47.
@@ -5599,10 +5597,8 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *f TEMP tOff     		// low temp cutout setpoint, default 5 F, Niles tOff.
     *f TEMP tOn      		// low temp cut-back-in setpoint, default 12 F, Niles tOn. tOn==tOff ok, error if <.
   //AHHEATCOIL AHP (air source heat pump) heating power input inputs
-    *f KW_GZ in17     		// steady state power input @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.
-    *f KW_GZ in47     		/* steady state power input @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.
-				   These reflect full power, no cycling, include compr & crankcase heater.
-				   Program removes cch input energy. Externally kW, internally Btuh. */
+    *f FLOAT_GZ COP17     		// COP input @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.
+    *f FLOAT_GZ COP47     		// COP input @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.
     *f FRAC inIa     		/* indoor (return) air temp power input correction factor, default .004, Niles iacIn.
     				   Fraction decrease in steady-state input per degree above 70F. */
     *f FRAC cd       		/* ARI cycling degradation coefficient, default .25, Niles cd.
@@ -5617,6 +5613,10 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *declare "#define tmCycPer (tmCycOn + tmCycOff)	// total cycle time of ARI cycling test"	// ditto
 
 //AHHEATCOIL AHP setup time members
+    *r KW_GZ in17     		// steady state power @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.
+    *r KW_GZ in47     		/* steady state power @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.
+				   These reflect full power, no cycling, include compr & crankcase heater.
+				   Program removes cch input energy. Externally kW, internally Btuh. */
     *r POWER in17c		// compressor input power @ 17 degrees out, 70 in: in17 with cch power removed. Niles pInSs17.
     *r POWER in47c		// ditto 47 degrees.  Niles pInSs47.
     *r FLOAT cdm		// modified cd: cycling degradation coefficient adjusted to remove cch. Niles cdm.

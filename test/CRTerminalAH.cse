@@ -28,6 +28,8 @@ skyModel=anisotropic
 dflExH=WALEXF
 windf = .25
 bldgAzm=0.0
+heatDsTDbO = 21.2
+coolDsDay = Jun 30
 
 tol = 0.01      // default = .001, use much sloppier for development
 
@@ -282,10 +284,9 @@ SURFACE South_Wall
           
          // Heating
             ahhcType=AHP                //Heat pump
-            ahpCap47=24000
-            ahpCap17=15000  
-            ahpIn47=1.9	                // kW guess based on 2 ton YORK VCHP rated
-            ahpIn17=1.7                 // kW guess
+            /*AUTOSIZE*/ ahhcCaptRat = 24000
+            ahpCOP47=3  	
+            ahpCOP17=1.7
             ahpSupRh=0.0001                  //no backup resistance but >0 required
             ahhcSched=avail
             ahhcMtr=mtrElec 

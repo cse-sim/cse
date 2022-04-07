@@ -48,7 +48,7 @@ BOO AH::resizeHeatCoilIf( 		// conditionally resize heat coil to given rated cap
 
 {
 	/* called from coil models to conditionally increase coil size:
-	       doElecHeatCoil, doHWCoil, doGasOrOilFurnace, but not doAhpHeatCoil yet 7-95.
+	       doElecHeatCoil, doHWCoil, doGasOrOilFurnace, doAhpHeatCoil yet 7-95.
 	       possibly called from cnztu.cpp:hvacIterSubhr to undo any unused size increase due to thrashing during convergence. */
 
 	/* Note without tolerance added to coil size, observed in pass 2 a flow of 1.00014 * pass 1's
@@ -76,29 +76,79 @@ RC AHHEATCOIL::reSetup( 	// re set up coil for changed total capacity (.captRat)
 	case C_COILTYCH_GAS:
 	case C_COILTYCH_OIL:	// gas or oil furnace
 	case C_COILTYCH_HW:      			// hot water coil
+	case C_COILTYCH_AHP:
 	case C_COILTYCH_ELEC:
 		break;		// electric resistance heat. nothing to do. captRat preset by caller.
-
-	case C_COILTYCH_AHP:
-		return rer( PWRN, "AHHEATCOIL::reSetup: cannot autoSize AHP coils.");	// insurance
-
-		/* Air source Heat Pump will require much resetup, repeating cncult5:AHHEATCOIL::setup code.
-		   Has 2 RQD cap's, cap17 & cap47: input ratio? Has 2 RQD power inputs: input efficiencies?
-		   supRh: separately autoSized, like local heat? or specify ratio?
-		   Code-dflt'd size-dependent mbrs incl cap35, dfrCap. Other derived mbrs incl in17c, in47c, cdm.
-		   Then there's the crankcase heater (CCH object)... */
 	}
 	return setup(ah);					// (re) initialize coil model
 }			// AHHEATCOIL::reSetup
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AHHEATCOIL::setup([[maybe_unused]] AH *ah)	// set up heat coil per current capacity in record -- initially or at change while autosizing
+RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- initially or at change while autosizing
+	AH *ah				// parent AH pointer
+)
 
-// CAUTION: at first call if resizing, captRat may contain 0 or a NAN.
 {
-	//switch ( Top.tp_pass1A && ah->hcAs.az_active			// during autoSize pass 1 part A, for coil being autoSized,
-	//         ?  C_COILTYCH_ELEC  :  coilTy )			// use "electric" model.
+	if (ah->hcAs.az_active)   if (ISNANDLE(captRat))   return RCOK;	// nop if autoSizing NAN preset.
 
-	return RCOK;				// no heat coil types currently use any setup, 7-95.
+	RC rc{RCOK};
+
+	if (coilTy == C_COILTYCH_AHP)
+	{
+		cap17 = capRat1747 * captRat;
+
+		in47 = captRat / COP47;
+		in17 = cap17 / COP17;
+
+		// input power without crankcase heater
+		in17c = in17 - ah->cch.p17;
+		in47c = in47 - ah->cch.p47;
+
+		if (!ah->hcAs.az_active)
+		{
+			// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
+
+			//Niles form: eiCyc47 = (in47 - AHR->cch.p47) * tmCycOn + AHR->cch.e47On + AHR->cch.e47Off;
+			//eliminating subtraction and addition of time-on crankcase heat yeilds: eiCyc47 = in47 * tmCycOn + AHR->cch.e47Off;
+			//DBL eiCyc47 =    				// energy input during one cycle of ARI 47F cycling test. Niles eInCyc47.
+			//            in47 * tmCycOn 		// steady-state input (incl cch) times time-on (latter may be #define in rccn.h)
+			//             + AHR->cch.e47Off;		// plus cch (crankcase heater) input during off-time (set in CCH::setup)
+			//converting energy to power here & at use just below yields:
+			DBL pCyc47 =    					// power input during one cycle of ARI 47F cycling test
+				in47 * tmCycOn / tmCycPer		// steady-state input (incl cch) times cycle on time fraction
+				+ ah->cch.p47Off;			// plus cch (crankcase heater) input during off-time (set in CCH::setup)
+
+			// determine cdm: cycling degradation coeff modified for compr only (cch removed). Niles V-K-5-b concluded.
+
+			//Niles form using energy for 1 47F cycle
+			//cdm = (in47/eiCyc47 - cd/tmCycPer - (1. - cd)/tmCycOn)/(in47/eiCyc47 - 1./tmCycPer);
+			//my form using power:
+			cdm = (in47 / pCyc47 - cd - (1. - cd) * tmCycPer / tmCycOn) / (in47 / pCyc47 - 1.);  		// /0 prot needed??
+
+			if (cdm < 0. || cdm >= 1.0)
+				rc |= ah->oer((char*)MH_S0673, cdm); 	/* "cdm (%g) not in range 0 <= cdm < 1\n"
+							"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
+			else if (cdm > cd)
+				ah->oWarn((char*)MH_S0674, cdm, cd);	/* "cdm (%g) not <= ahpCd (%g): does this mean bad input?\n"
+									"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
+		}
+
+		// defrost capacity. (future) should check or default somehow vs ahp cooling inputs if given?
+		if (!ah->IsSet(AHHEATCOIL_DFRCAP))			// if user did not give ahpDfrCap (defrost capacity)
+			dfrCap = 2 * cap17;					// default to twice 17 degree heat capacity
+		dfrCap = -fabs(dfrCap);				// make defrost capacity negative internally
+
+		// 35F heating capacity
+		DBL terp35 = cap17 + (captRat - cap17) * (35. - 17.) / (47. - 17.);	// linear interp capacity @ 35: no frost/dfr efcts
+		if (!ah->IsSet(AH_AHHC + AHHEATCOIL_CAP35))				// if user did not ahpCap35
+			cap35 = terp35 * fd35Df;				// default to interpolated value times frost/defrost degradation factor
+		else									// ahpCap35 given (not expected)
+			if (cap35 > terp35)
+				rc |= ah->ooer(AH_AHHC + AHHEATCOIL_CAP35, (char*)MH_S0672, cap35, terp35, cap17, captRat);
+		/* "ahpCap35 (%g) cannot be > proportional value (%g) between \n"
+		   "    ahpCap17 (%g) and ahhcCaptRat (%g) -- \n"
+		   "    that is, frost/defrost effects cannot increase capacity." */
+	}
+	return rc;
 }			// AHHEATCOIL::setup
 //-----------------------------------------------------------------------------------------------------------------------------
 /* for DX do we need a function to compute the captRat for given load,
@@ -211,10 +261,8 @@ BOO AH::estCoils( 	// compute approx acheivable coil exit temp/hum without size 
 	{
 		if (ahhc.captRat==0 && Top.tp_sizing && hcAs.az_active)    	// if coil is being autoSized and now has 0 capacity
 			return FALSE;   					// can't approximate here til given some capacity elsewhere
-		if (ahhc.coilTy==C_COILTYCH_AHP) 			// if is heat pump (not autoSizable, does not use ahhc.captRat)
-			return FALSE;   					// can't approximate here and do not expect call
 
-		// for elec, gas, oil, hw (assuming hpOn):
+		// for elec, gas, oil, ahp, hw (assuming hpOn):
 		if (_cen != 0)						// don't divide by 0
 			_tex = _ten + ahhc.captRat * _frFanOn / _cen;		// full power exit temp
 	}
@@ -295,8 +343,7 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 			&&  ahMode & ahHEATBIT			// and ahMode allows heating (both always ok except ZN or ZN2 ts cm)
 #if 1 // 10-96 for 0 autoSized coil size
 			&&  ( ahhc.captRat != 0			// and either the coil has non-0 capacity (autoSize can make 0, 10-96)
-				  || Top.tp_sizing && hcAs.az_active    	//  or is now being autoSized
-				  || ahhc.coilTy==C_COILTYCH_AHP ) )	//  or is heat pump (not autoSizable, does not use ahhc.captRat).
+				  || Top.tp_sizing && hcAs.az_active ) )   	//  or is now being autoSized
 #endif
 	{
 		// heat coil modelling
@@ -746,19 +793,14 @@ BOO AH::doAhpHeatCoil(		// compute tex, etc that air source heat pump heating co
 	// autoSizing caution: tsFullFlow not set by AH::setTsSp1 during part A. And this fcn isn't called -- elec model used. 7-95.
 	// And (10-96) will need to not call here from doCoils if capacity (what member?) is 0 after autoSize complete.
 
-#if 0	// add when autoSizing for AHP implemented in AHHEATCOIL::reSetupCoil above.
-*
-*  /* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
-*     May undo increases since start this subhour's iteration if not needed now,
-*     eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
-*  BOO ret =
-*        resizeHeatCoilIf(   				// cond'ly adjust coil size and reSetup. above in this file.
-*                   heatCapThing(				// add tol, limits when fanCycles, etc.
-*                                 (texWant - ten) * cen ), 	// size to meet texWant when fan on
-*		     ahhc.bCaptRat );				// don't make smaller than this start-subhour size
-#else
-	BOO ret = FALSE;
-#endif
+	/* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
+		May undo increases since start this subhour's iteration if not needed now,
+		eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
+	BOO ret =
+        resizeHeatCoilIf(   				// cond'ly adjust coil size and reSetup. above in this file.
+                   heatCapThing(				// add tol, limits when fanCycles, etc.
+                                 (texWant - ten) * cen ), 	// size to meet texWant when fan on
+		     ahhc.bCaptRat );				// don't make smaller than this start-subhour size
 #endif
 
 	ahhc.tIa = tmix;				/* "indoor air temp" for heat pump model for adjusting cap and input:
@@ -790,7 +832,7 @@ DBL AHHEATCOIL::cprCapCon( FLOAT tout)   	// ahp compressor capacity as linear f
 // b4 consideration of: frost/defrost, cycling, indoor temp != 70.
 // Niles CapSs, aka pCapSs. V-K-6-a.
 {
-	return cap17 + (cap47 - cap17)*(tout - 17.)/(47. - 17.);
+	return cap17 + (captRat - cap17)*(tout - 17.)/(47. - 17.);
 }
 //----------------------------------------------------------------------------------------------------------------------------
 void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model

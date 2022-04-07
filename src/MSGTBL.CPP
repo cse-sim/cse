@@ -827,7 +827,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0659, "when ahhcType is NONE or omitted" },
 	{ MH_S0660, "when ahhcType is not AHP" },
 	{ MH_S0661, "when ahhcType is AHP" },
-	{ MH_S0662, "S0662: ahpCap17 (%g) must be < ahpCap47 (%g)" },
+	{ MH_S0662, "S0662: ahpCap17 (%g) must be < ahhcCaptRat (%g)" },
 	{ MH_S0663, "S0663: ahpDfrFMx (%g) must be > ahpDfrFMn (%g)" },
 	{ MH_S0664, "S0664: ahpTOff (%g) must be <= ahpTOn (%g)" },
 	{ MH_S0665, "S0665: ahpCd (%g) must be < 1" },
@@ -837,12 +837,8 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0669, "S0669: ahpTFrMn (%g) must be < 35." },
 	{ MH_S0670, "S0670: ahpTFrMx (%g) must be > 35." },
 	{
-		MH_S0671, "S0671: For AHP heat coil, do not give ahhcCaptRat\n"
-		"    (instead ahpCap17 and ahpCap47 are used)"
-	},
-	{
 		MH_S0672, "S0672: ahpCap35 (%g) cannot be > proportional value (%g) between \n"
-		"    ahpCap17 (%g) and ahpCap47 (%g) -- \n"
+		"    ahpCap17 (%g) and ahhcCaptRat (%g) -- \n"
 		"    that is, frost/defrost effects cannot increase capacity."
 	},
 	{
