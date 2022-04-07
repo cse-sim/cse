@@ -262,7 +262,7 @@ Design or rated (volumetric) air flow at rated pressure. Many fans will actually
 
 <%= member_table(
   units: "cfm",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "*AUTOSIZE* or *x* $\\ge$ 0",
   default: "*none*",
   required: "Yes",
   variability: "constant") %>
@@ -411,7 +411,7 @@ design or rated (volumetric) air flow.
 
 <%= member_table(
   units: "cfm",
-  legal_range: "*x* $\\gt$ 0",
+  legal_range: "*AUTOSIZE* or *x* $\\gt$ 0",
   default: "*sfanVfDs - oaVfDsMn*",
   required: "No",
   variability: "constant") %>
@@ -592,7 +592,7 @@ Total heating (output) capacity. For an ELECTRIC, GAS, or OIL coil, this capacit
 
 <%= member_table(
   units: "Btuh",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "*AUTOSIZE* or *x* $\\ge$ 0",
   default: "*none*",
   required: "Yes, if coil present, except coil type AHP",
   variability: "hourly") %>
@@ -987,7 +987,7 @@ For coil specification conditions (a.k.a. rating conditions or design conditions
 
 <%= member_table(
   units: "Btuh",
-  legal_range: "*x* $>$ 0",
+  legal_range: "*AUTOSIZE* or *x* $>$ 0",
   default: "*none*",
   required: "Yes",
   variability: "constant") %>
