@@ -617,7 +617,11 @@ Depending on the member, the appropriate type for the expression giving the memb
 
 Each member also has its *variability* (also given in the [input data](#input-data) section), or maximum acceptable *variation*. This is how often the expression for the value can change during the simulation -- hourly, daily, monthly, no change (constant), etc. The "variations" were introduced in the [expressions overview](#expressions-overview) section and will be further detailed in a [section on variation frequencies](#variation-frequencies-revisited).
 
-Three special statements, UNSET, REQUIRE, and FREEZE, add flexibility in working with members.
+Four special statements, AUTOSIZE, UNSET, REQUIRE, and FREEZE, add flexibility in working with members.
+
+#### AUTOSIZE
+
+AUTOSIZE followed by a member name sets the member name to be size by CSE. The option to *AUTOSIZE* a data field will be shown under the legal range. This is useful for large simulations where designs conditions might be difficult to gather.
 
 #### UNSET
 
