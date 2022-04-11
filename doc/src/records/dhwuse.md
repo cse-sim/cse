@@ -113,7 +113,7 @@ User-defined identifier that associates multiple DHWUSEs with a single event or 
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\le$ 0",
+  legal_range: "*x* $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "constant")

@@ -129,7 +129,7 @@ END
 
 <%= member_table(
   units: "",
-  legal_range: "YES/NO",
+  legal_range: "YES, NO",
   default: "YES when *ahTsSp*=ZN, NO otherwise",
   required: "No",
   variability: "hourly")

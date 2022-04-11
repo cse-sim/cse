@@ -351,12 +351,6 @@ NONE,            Disable advanced shading calculations
 END
 %>
 
-**Choice**    **Effect**
-------------- ---------------------------------
-PENUMBRA        Calculate shading using the Penumbra model
-NONE            Disable advanced shading calculations
-------------- ---------------------------------
-
 <%= member_table(
   units: "",
   legal_range: "*Choices above*",

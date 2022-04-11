@@ -75,7 +75,7 @@ Specifies the type of heat recovery device: Vertical, Horizontal, or SetEF.  Hor
 
 <%= member_table(
   units: "",
-  legal_range: "Vertical, Horizontal, SetE0",
+  legal_range: "Vertical, Horizontal, SetEF",
   default: "Vertical",
   required: "No",
   variability: "constant") %>

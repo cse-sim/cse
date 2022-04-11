@@ -56,9 +56,9 @@ Surface tilt from horizontal. Values outside the range 0 to 360 are first normal
 
 <%= member_table(
   units: "degrees",
-  legal_range: "*x* $\\ge$ 0",
-  default: "Dependent upon *sfType*",
-  required: "See above",
+  legal_range: "Dependent upon *sfType* See above",
+  default: "Dependent upon *sfType* See above",
+  required: "No",
   variability: "constant") %>
 
 **sfAzm=*float***
@@ -102,7 +102,7 @@ Surface U-value (NOT including surface (air film) conductances). For surfaces fo
 
 <%= member_table(
   units: "Btuh/ft^2^-^o^F",
-  legal_range: "*x* $.$ 0",
+  legal_range: "*x* $>$ 0",
   default: "Determined from *sfCon*",
   required: "if *sfCon* not given",
   variability: "constant") %>

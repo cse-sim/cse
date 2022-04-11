@@ -25,6 +25,7 @@ ASHP,                  Air-source heat pump (compressor-based heating and coolin
 ASHPKGROOM,            Packaged air-source heat pump.
 ASHPHYDRONIC,          Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
 VCHP2,                 Air-to-air heat pump with variable speed compressor
+WSHP,                  Water-to-air heat pump.
 AC,                    Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
 ACPKGROOM,             Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
 FURNACE,               Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
