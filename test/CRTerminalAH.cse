@@ -251,8 +251,8 @@ SURFACE South_Wall
 
       TERMINAL "Corridor"  // "F1 Corridor"  from MF36
                 tuAh = "MainAH"
-                   tuTH = 70 //select( $DOWH==1, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==8, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==7, hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,60,60,60,60,60), default hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70) )    // Expression representing heating setpoint, °F
-		   tuTC = 75 //select( $DOWH==1, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==8, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==7, hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,85,85,85,85,85), default hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75) )    // Expression representing cooling setpoint, °F
+                   tuTH = 70 //select( $DOWH==1, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==8, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==7, hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,60,60,60,60,60), default hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70) )    // Expression representing heating setpoint, F
+		   tuTC = 75 //select( $DOWH==1, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==8, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==7, hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,85,85,85,85,85), default hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75) )    // Expression representing cooling setpoint, F
 
                 tuVfMxC=800       // Max Cool CFM
                 tuVfMn=800         //min Cool CFM
@@ -267,12 +267,12 @@ SURFACE South_Wall
             oaVfDsMn=216.6              // F1 Cor IAQHRV
             oaMnCtrl=VOLUME             //
                       
-            sfanVfDs=800        // 0.5 CFM/ft2
+            sfanVfDs =800        // 0.5 CFM/ft2
             sfanVfMxF=1.00             //Max volume multiplier
  	    sfanElecPwr=0.4		//W/CFM at max
  	    
  	    rfanType=Return             //	fan is at air handler; all return air passes through it.
- 	    rfanVfDs=800                // 400 CFM/ton
+ 	    //rfanVfDs=800                // 400 CFM/ton
 	    rfanVfMxF=1.00             //Max volume multiplier
  	    rfanElecPwr=0.2		//W/CFM at max
 
@@ -284,7 +284,7 @@ SURFACE South_Wall
           
          // Heating
             ahhcType=AHP                //Heat pump
-            /*AUTOSIZE*/ ahhcCaptRat = 24000
+            ahhcCaptRat = 24000
             ahpCOP47=3  	
             ahpCOP17=1.7
             ahpSupRh=0.0001                  //no backup resistance but >0 required
@@ -293,7 +293,7 @@ SURFACE South_Wall
           
           //Cooling
             ahccType=DX
-            ahccCapTRat=24000        //
+            ahccCapTRat = 24000
             ahccCapSRat=24000*.7       //SHR = 0.7?
             ahccMtr=mtrElec         //cooling plant primary meter
         
@@ -408,7 +408,10 @@ Reportcol colVal=@Meter[MtrElec].H.clg colHead="ClgE" colDec=0 colWid=6
 Reportcol colVal=@Meter[MtrElec].H.htg colHead="HtgE" colDec=0 colWid=8
 
 REPORT rpType = AH rpAH = MainAH rpFreq = hour rpDayBeg=Dec 25
- 
+
+REPORT rpType = AHSIZE rpAH = MainAH
+
+
  RUN
 
  $EOF

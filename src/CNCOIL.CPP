@@ -94,7 +94,10 @@ RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- ini
 
 	if (coilTy == C_COILTYCH_AHP)
 	{
-		cap17 = capRat1747 * captRat;
+		if (!ah->IsSet(AH_AHHC + AHHEATCOIL_CAP17))
+		{
+			cap17 = capRat1747 * captRat;
+		}
 
 		in47 = captRat / COP47;
 		in17 = cap17 / COP17;
@@ -103,7 +106,7 @@ RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- ini
 		in17c = in17 - ah->cch.p17;
 		in47c = in47 - ah->cch.p47;
 
-		if (!ah->hcAs.az_active)
+		if (in47 > ah->cch.p47Off)
 		{
 			// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
 
@@ -130,6 +133,10 @@ RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- ini
 			else if (cdm > cd)
 				ah->oWarn((char*)MH_S0674, cdm, cd);	/* "cdm (%g) not <= ahpCd (%g): does this mean bad input?\n"
 									"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
+		}
+		else
+		{
+			cdm = cd;
 		}
 
 		// defrost capacity. (future) should check or default somehow vs ahp cooling inputs if given?

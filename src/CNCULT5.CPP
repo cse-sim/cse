@@ -1244,6 +1244,8 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 	if (r->IsAusz(ahhCoilFn+AHHEATCOIL_CAPTRAT))
 		rc |= r->disallowN("when ahhcCaptRat is AUTOSIZE",
 			ahhCoilFn+AHHEATCOIL_CAP17, ahhCoilFn+AHHEATCOIL_CAP35, 0);
+	if (r->IsSet(ahhCoilFn+AHHEATCOIL_CAP17))
+		rc |= r->disallowN("when ahpCap17 is given", ahhCoilFn+AHHEATCOIL_CAPRAT1747, 0);
 	if (dfrFMx <= dfrFMn)
 		rc |= ERS2AHC(DFRFMX,DFRFMN) (char *)MH_S0663,dfrFMx,dfrFMn);	//"ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
 	if (tOff > tOn)

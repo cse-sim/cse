@@ -235,9 +235,17 @@ Day 36.5 36.1 70.0 52.4 .27 61.2 48.6 78.4 55.9 24.00 1.0   799 0.324     0     
 
 
 
+Air Handler Sizing, air handler "MainAH"
+
+ PkVf  VfDs   PkQH hCapt  PkMo Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
+----- ------ ----- ------ ---- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
+    0   800i     0 .0240i    0  0    0    0    0    0    0    0     0     0     0    0 .0240i .0168i
+
+
+
 ! Log for Run 001:
 
-! CSE 0.903.0+ahp-autosizing.df54e8fe.139.dirty for Win32 console
+! CSE 0.903.0+ahp-autosizing.b0378aa4.140.dirty for Win32 console
 
 
 
@@ -496,8 +504,8 @@ Input for Run 001:
         
               TERMINAL "Corridor"  // "F1 Corridor"  from MF36
                         tuAh = "MainAH"
-                           tuTH = 70 //select( $DOWH==1, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==8, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==7, hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,60,60,60,60,60), default hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70) )    // Expression representing heating setpoint, °F
-        		   tuTC = 75 //select( $DOWH==1, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==8, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==7, hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,85,85,85,85,85), default hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75) )    // Expression representing cooling setpoint, °F
+                           tuTH = 70 //select( $DOWH==1, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==8, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==7, hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,60,60,60,60,60), default hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70) )    // Expression representing heating setpoint, F
+        		   tuTC = 75 //select( $DOWH==1, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==8, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==7, hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,85,85,85,85,85), default hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75) )    // Expression representing cooling setpoint, F
         
                         tuVfMxC=800       // Max Cool CFM
                         tuVfMn=800         //min Cool CFM
@@ -512,12 +520,12 @@ Input for Run 001:
                     oaVfDsMn=216.6              // F1 Cor IAQHRV
                     oaMnCtrl=VOLUME             //
                               
-                    sfanVfDs=800        // 0.5 CFM/ft2
+                    sfanVfDs =800        // 0.5 CFM/ft2
                     sfanVfMxF=1.00             //Max volume multiplier
          	    sfanElecPwr=0.4		//W/CFM at max
          	    
          	    rfanType=Return             //	fan is at air handler; all return air passes through it.
-         	    rfanVfDs=800                // 400 CFM/ton
+         	    //rfanVfDs=800                // 400 CFM/ton
         	    rfanVfMxF=1.00             //Max volume multiplier
          	    rfanElecPwr=0.2		//W/CFM at max
         
@@ -529,7 +537,7 @@ Input for Run 001:
                   
                  // Heating
                     ahhcType=AHP                //Heat pump
-                    /*AUTOSIZE*/ ahhcCaptRat = 24000
+                    ahhcCaptRat = 24000
                     ahpCOP47=3  	
                     ahpCOP17=1.7
                     ahpSupRh=0.0001                  //no backup resistance but >0 required
@@ -538,7 +546,7 @@ Input for Run 001:
                   
                   //Cooling
                     ahccType=DX
-                    ahccCapTRat=24000        //
+                    ahccCapTRat = 24000
                     ahccCapSRat=24000*.7       //SHR = 0.7?
                     ahccMtr=mtrElec         //cooling plant primary meter
                 
@@ -653,25 +661,28 @@ Input for Run 001:
         Reportcol colVal=@Meter[MtrElec].H.htg colHead="HtgE" colDec=0 colWid=8
         
         REPORT rpType = AH rpAH = MainAH rpFreq = hour rpDayBeg=Dec 25
-         
+        
+        REPORT rpType = AHSIZE rpAH = MainAH
+        
+        
          RUN
         
          $EOF
 
 
 
-! CSE 0.903.0+ahp-autosizing.df54e8fe.139.dirty for Win32 console run(s) done: Wed 06-Apr-22   9:57:40 pm
+! CSE 0.903.0+ahp-autosizing.b0378aa4.140.dirty for Win32 console run(s) done: Mon 11-Apr-22  11:24:33 am
 
 ! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               06-Apr-22   4:30 pm   (VS 14.29    2960896 bytes)  (HPWH 1.18.0)
+!               11-Apr-22  11:15 am   (VS 14.29    2960896 bytes)  (HPWH 1.18.0)
 ! Command line: -x!  -b -t1 CRTerminalAH
 ! Input file:   C:\Users\nkruis\projects\cse\test\CRTerminalAH.cse
 ! Report file:  C:\Users\nkruis\projects\cse\test\CRTerminalAH.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 1      T/C = 0.0860   
+!                Input:  Time = 0.10     Calls = 1      T/C = 0.0960   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.75     Calls = 1      T/C = 1.7480   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
-!                Total:  Time = 1.84     Calls = 1      T/C = 1.8390   
+!           Simulation:  Time = 1.74     Calls = 1      T/C = 1.7380   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0030   
+!                Total:  Time = 1.84     Calls = 1      T/C = 1.8370   
