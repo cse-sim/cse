@@ -93,6 +93,17 @@ Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 ----------- ----------------------------- ------------- --------------------------- -----------------
 name of a *METER*, ALL, SUM                 Required for *exType*=MTR   constant
 
+**exTu=*tuName***
+
+Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
+
+<%= member_table(
+  units: "",
+  legal_range: "name of a TERMINAL, ALL, SUM",
+  default: "",
+  required: "Required for *rpType*",
+  variability: "constant") %>
+
 **exDHWMeter=*dhwMtrName***
 
 Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
@@ -100,6 +111,17 @@ Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
   **Units**   **Legal Range**               **Default**   **Required**                **Variability**
   ----------- ----------------------------- ------------- ------------------------------ -----------------
               name of a *DHWMETER*, ALL, SUM              Required for *exType*=DHWMTR   constant
+
+**exAFMeter=*afMtrName***
+
+Air flow meter report.
+
+<%= member_table(
+  units: "",
+  legal_range: "*Name of AFMETER*",
+  default: "0",
+  required: "No",
+  variability: "runly") %>
 
 **exAh=ah*Name***
 

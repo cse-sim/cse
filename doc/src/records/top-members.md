@@ -281,20 +281,6 @@ As noted, ventAvail is evaluated hourly, permitting flexible control strategy mo
   ----------- ----------------------- -------------- -------------- -----------------
               *Choices above*          WHOLEBUILDING           No         hourly
 
-**dhwModel=*choice***
-
-Modifies aspects of DHW calculations.
-
-**Choice**    **Effect**
-------------- ---------------------------------
-T24DHW          Matches results from T24DHW.DLL
-2013            Corrected CEC 2013 methods with 2016 updates
-------------- ---------------------------------
-
-  **Units**   **Legal Range**         **Default**    **Required**   **Variability**
-  ----------- ----------------------- -------------- -------------- -----------------
-              *Choices above*          2013             No            constant
-
 **exShadeModel=*choice***
 
 Specifies advanced exterior shading model used to evaluate shading of [PVARRAYs](#pvarray) by [SHADEXs](#shadex) or other PVARRAYs.  Advanced shading is not implemented for building surfaces and this setting has no effect on walls or windows.
@@ -308,6 +294,24 @@ NONE            Disable advanced shading calculations
   **Units**   **Legal Range**         **Default**    **Required**   **Variability**
   ----------- ----------------------- -------------- -------------- -----------------
               *Choices above*          PENUMBRA           No            constant
+
+**slrInterpMeth=*choice***
+
+Solar interpolation method.
+
+<%= csv_table(<<END, :row_header => true)
+Choice
+CSE
+TRNSYS
+END
+%>
+
+<%= member_table(
+  units: "",
+  legal_range: "See table above",
+  default: "CSE",
+  required: "No",
+  variability: "constant") %>
 
 **ANTolAbs=*float***
 
@@ -834,6 +838,17 @@ Deprecated method for specifying cooling autosizing days.  Design conditions are
   ----------- ----------------- ------------- -------------- -----------------
      months                         *none*           No           constant
 
+
+**coolDsCond=*descondName***
+
+Cool design condition with 13 different options.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of DESCOND*",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
 
 ## TOP Debug Reporting

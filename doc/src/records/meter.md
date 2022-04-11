@@ -35,9 +35,28 @@ Name of meter: required for assigning energy uses to the meter elsewhere.
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*   *none*        Yes            constant
 
-<!--
-Undocumented: mtrRate, mtrDemandRate
--->
+**mtrDemandRate=*float***
+
+DmdCost per Btu of demand, for a month.
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "N/A",
+  required: "No",
+  variability: "constant") %>
+
+**mtrRate=*float***
+
+Cost of energy use per Btu.
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "N/A",
+  required: "No",
+  variability: "constant") %>
+
 **endMeter**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.

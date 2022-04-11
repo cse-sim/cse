@@ -1588,7 +1588,7 @@ x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW);
 // subhour results: unmet load (CR zones only, else zn_hcMode not set)
 // Values tracked
 //  - unMetHrs = count of hours when tz error > 0
-//  - unMetHrsTol = count of hours when tz error > zn_tzTolUnMet
+//  - unMetHrsTol = count of hours when tz error > tp_unMetTzTol
 //  - unMetShDH = deg-hr excursion accumulated each subhour
 //  - unMetHrDH = deg-hr excursion evaluated at end of hour
 //  - unMetMaxTD = largest excursion, F

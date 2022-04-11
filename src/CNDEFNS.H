@@ -71,7 +71,7 @@
 						//      (both use memcpy(), dangerous when object contains heap ptrs)
 						//   2-24-2012
 
-#undef RSYS_FIXEDSAT	// define to cause fixed RSYS supply air temp / humrat
+#undef RSYS_FIXEDOAT	// define to cause fixed RSYS supply air temp / humrat
 						//   (development aid)
 
 #define USE_STDLIB		// re conversion to non-MFC containers

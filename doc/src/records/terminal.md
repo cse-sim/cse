@@ -148,6 +148,28 @@ CSE will default tuVfDs to the largest of tuVfMn, tuVfMxH, and tuVfMxC unless a 
 
   ------------------------------------------------------------
 
+**tuOversize=*float***
+
+Fraction oversize to make autosized terminal values setup.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
+
+**tuVfMxHC=*float***
+
+Autosize tuVfMxH.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
 **tuVfMn=*float***
 
 Minimum terminal air flow rate or set output air flow rate. An hourly expression may be used to schedule the minimum or set output flow as desired.

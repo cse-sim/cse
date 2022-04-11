@@ -47,6 +47,7 @@ set(files
   ashp_dfng
   ashpvc2
   fancoil
+  wshp
   herv
   Multifamily-DOAS
   oavtest2

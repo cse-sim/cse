@@ -46,6 +46,17 @@ Specifies total tank insulation resistance. The input value should represent the
   ----------------- ----------------- ------------- -------------- -----------------
   ft^2^-^o^F/Btuh   $\ge$ .01         0             No             constant
 
+**wtZone=*znName***
+
+Zone location of DHWTANK regarding tank loss. The value of zero only valid if wtTEx is being used. Half of the heat losses go to zone air and the other goes to half radiant.
+
+<%= member_table(
+  units: "",
+  legal_range: "*Name of ZONE*",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
 **wtTEx=*float***
 
 Tank surround temperature.
