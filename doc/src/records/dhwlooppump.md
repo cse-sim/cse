@@ -44,7 +44,7 @@ Fraction of pump power that heats circulating liquid.  The remainder is discarde
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ x $<$ 1",
+  legal_range: "0 $\\le$ x $\\le$ 1",
   default: "1",
   required: "No",
   variability: "hourly")

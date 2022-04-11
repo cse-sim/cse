@@ -36,7 +36,7 @@ Tank heat loss coefficient.
 
 <%= member_table(
   units: "Btuh/^o^F",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "Derived from wtVol and wtInsulR",
   required: "No",
   variability: "constant")
@@ -48,7 +48,7 @@ Specifies tank volume.
 
 <%= member_table(
   units: "gal",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "constant")
@@ -60,7 +60,7 @@ Specifies total tank insulation resistance. The input value should represent the
 
 <%= member_table(
   units: "ft^2^-^o^F/Btuh",
-  legal_range: "x $>$ 0.01",
+  legal_range: "x $\\ge$ 0.01",
   default: "0",
   required: "No",
   variability: "constant")
@@ -83,7 +83,7 @@ Tank surround temperature.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "70",
   required: "No",
   variability: "hourly")

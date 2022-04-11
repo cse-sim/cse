@@ -146,7 +146,7 @@ Indicates the end of the foundation block definition. Alternatively, the end of 
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "",
   default: "*none*",
   required: "No",
   variability: "constant")

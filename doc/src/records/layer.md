@@ -58,8 +58,8 @@ Fraction of layer that is framing. Must be specified if frmMat is specified. See
   units: "",
   legal_range: "0 $\\leq$ *x* $\\leq$ 1",
   default: "*no framed layer*",
-  required: "No",
-  variability: "Required if  *lrFrmMat* specified, else disallowed") %>
+  required: "Required if  *lrFrmMat* specified, else disallowed",
+  variability: "constant") %>
 
 **endLayer**
 

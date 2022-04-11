@@ -78,7 +78,7 @@ Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model us
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0.5",
   required: "No",
   variability: "constant")
@@ -102,7 +102,7 @@ Door interior solar absorptivity.
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.5",
   required: "No",
   variability: "monthly-hourly")
@@ -114,7 +114,7 @@ Door exterior long wave (thermal) emittance.
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.9",
   required: "No",
   variability: "constant")
@@ -126,7 +126,7 @@ Door interior long wave (thermal) emittance.
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.9",
   required: "No",
   variability: "constant")

@@ -130,7 +130,7 @@ Window interior long wave (thermal) emittance.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.84",
   required: "No",
   variability: "constant")

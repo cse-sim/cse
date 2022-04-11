@@ -47,7 +47,7 @@ Minimum local heat output or set local heat output. If tuTLh is given, this is t
 <%= member_table(
   units: "Btuh",
   legal_range: "x $\\ge$ 0",
-  default: "if tuTLh given else no local heat",
+  default: "0 if tuTLh given else no local heat",
   required: "For set output local heat",
   variability: "hourly") %>
 
@@ -281,7 +281,7 @@ Rated capacity of the heating coil. The coil will never supply more heat than it
 
 <%= member_table(
   units: "Btu/hr",
-  legal_range: "*AUTOSIZE* or *x* $\\ge$ 0",
+  legal_range: "*AUTOSIZE* or *x* $\\gt$ 0",
   default: "*none*",
   required: "Yes",
   variability: "constant") %>
@@ -361,7 +361,7 @@ Backdraft leakage when terminal fan off., as a fraction of tfanVfDs.
 <%= member_table(
   units: "",
   legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "0.1",
+  default: "0.1 if fan present",
   required: "No",
   variability: "constant") %>
 

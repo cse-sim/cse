@@ -72,7 +72,7 @@ This is the maximum amount of energy that can be stored in the BATTERY system in
 
 <%= member_table(
   units: "KWhr",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "16",
   required: "No",
   variability: "constant")
@@ -102,7 +102,7 @@ Note: a more robust life model will need not only cycle counts but cycles by dep
 
 <%= member_table(
   units: "number of cycles",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "runly")
@@ -114,7 +114,7 @@ The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy 
 
 <%= member_table(
   units: "kW",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "4",
   required: "No",
   variability: "hourly")
@@ -126,7 +126,7 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 
 <%= member_table(
   units: "kW",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "4",
   required: "No",
   variability: "hourly")

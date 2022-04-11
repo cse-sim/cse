@@ -77,7 +77,7 @@ Density of material.
 <%= member_table(
   units: "lb/ft^3^",
   legal_range: "*x* $\\ge$ 0",
-  default: "*none*",
+  default: "0 (massless)",
   required: "No",
   variability: "constant") %>
 

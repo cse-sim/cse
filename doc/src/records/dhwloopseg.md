@@ -38,7 +38,7 @@ Length of segment.
 
 <%= member_table(
   units: "ft",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "constant")
@@ -74,7 +74,7 @@ Pipe insulation thickness
 
 <%= member_table(
   units: "in",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "constant")

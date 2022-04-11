@@ -275,7 +275,7 @@ We recommend giving 1.0 to eliminate overrun in constant volume modeling.
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "*x* $\\ge$ 1.0",
   default: "1.3",
   required: "No",
   variability: "constant") %>

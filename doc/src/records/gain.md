@@ -137,7 +137,7 @@ Fraction of total gain going to zone (gnFrZn) that is radiant rather than convec
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
   default: "0.0",
   required: "No",
   variability: "hourly")
@@ -149,7 +149,7 @@ Fraction of total gain going to zone (gnFrZn) that is latent heat (moisture addi
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.0",
   required: "No",
   variability: "hourly")
@@ -162,7 +162,7 @@ daylighting.
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "1.0",
   required: "No",
   variability: "hourly")

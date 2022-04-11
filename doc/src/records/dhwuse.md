@@ -20,7 +20,7 @@ The starting time of the hot water draw.
 
 <%= member_table(
   units: "hr",
-  legal_range: "0 $<$ x $<$ 24",
+  legal_range: "0 $\\le$ x $\\le$ 24",
   default: "*none*",
   required: "Yes",
   variability: "constant")
@@ -33,7 +33,7 @@ Durations that extend beyond midnight are included in the current day.
 
 <%= member_table(
   units: "min",
-  legal_range: "0 $<$ x $<$ 1440",
+  legal_range: "0 $\\le$ x $\\le$ 1440",
   default: "0",
   required: "No",
   variability: "hourly")
@@ -45,7 +45,7 @@ Draw flow rate at the point of use (in other words, the mixed-water flow rate). 
 
 <%= member_table(
   units: "gpm",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\le$ 0",
   default: "0",
   required: "No",
   variability: "hourly")
@@ -57,7 +57,7 @@ Fraction of draw that is hot water.  Cannot be specified with wuTemp or wuHeatRe
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ x $<$ 1",
+  legal_range: "0 $\\le$ x $\\le$ 1",
   default: "1",
   required: "No",
   variability: "hourly")
@@ -69,7 +69,7 @@ Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is g
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\le$ 0",
   default: "0",
   required: "when wuHeatRecEF is given or parent DHWSYS includes DHWHEATREC(s)",
   variability: "hourly")
@@ -85,7 +85,7 @@ If 0, detailed heat recovery modeling *may* apply, see [DHWHEATREC](#dhwheatrec)
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ x $<$ 0.9",
+  legal_range: "0 $\\le$ x $\\le$ 0.9",
   default: "0",
   required: "No",
   variability: "hourly")
@@ -113,7 +113,7 @@ User-defined identifier that associates multiple DHWUSEs with a single event or 
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\le$ 0",
   default: "0",
   required: "No",
   variability: "constant")

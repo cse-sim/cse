@@ -89,7 +89,7 @@ Indicates the end of the foundation definition. Alternatively, the end of the fo
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "",
   default: "*none*",
   required: "No",
   variability: "constant")

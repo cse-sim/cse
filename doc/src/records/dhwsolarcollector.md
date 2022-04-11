@@ -162,7 +162,7 @@ Collector piping surround temperature.
 
 <%= member_table(
   units: "Btu/h",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "from *scPumpflow*",
   required: "No",
   variability: "constant")

@@ -694,7 +694,7 @@ Cooling capacity at standard AHRI rating conditions. If rsType=ASHP and both rsC
 
 <%= member_table(
   units: "Btu/hr",
-  legal_range: "*AUTOSIZE* or *x* $\le$ 0 (x $>$ 0 coverted to $<$ 0)",
+  legal_range: "*AUTOSIZE* or *x* $\\le$ 0 (x $>$ 0 coverted to $<$ 0)",
   default: "*none*",
   required: "Yes if rsType includes cooling",
   variability: "constant") %>

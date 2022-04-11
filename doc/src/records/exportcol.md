@@ -60,7 +60,7 @@ Maximum width. Leading and trailing spaces and non-significant zeroes are remove
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "13",
   required: "No",
   variability: "constant")
@@ -72,7 +72,7 @@ Number of digits after decimal point.
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "*flexible format*",
   required: "No",
   variability: "constant")

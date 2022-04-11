@@ -27,9 +27,9 @@ Name of export. Give after the word EXPORT.
 Name of export file to which current export will be written. If omitted, if EXPORT is within an EXPORTFILE object, report will be written to that export file, or else to the automatically-supplied EXPORTFILE "Primary", which by default uses the name of the input file with the extension .csv.
 
 <%= member_table(
-  units: "name of an  *EXPORTFILE*",
-  legal_range: "current *EXPORTFILE*, if any, else 'Primary'",
-  default: "*none*",
+  units: "",
+  legal_range: "name of an  *EXPORTFILE*",
+  default: "current *EXPORTFILE*, if any, else 'Primary'",
   required: "No",
   variability: "constant")
   %>
@@ -182,7 +182,7 @@ Title for use in export header of User-Defined export. Disallowed if *exType* is
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "",
   default: "User-defined Export",
   required: "No",
   variability: "constant")

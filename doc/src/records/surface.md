@@ -69,7 +69,7 @@ Azimuth of surface with respect to znAzm. The azimuth used in simulating a surfa
   units: "degrees",
   legal_range: "unrestricted",
   default: "*none*",
-  required: "Required if *sfTilt* $\neq$ 0 and *sfTilt* $\neq$ 180",
+  required: "Required if *sfTilt* $\\neq$ 0 and *sfTilt* $\\neq$ 180",
   variability: "constant") %>
 
 **sfModel=*choice***
@@ -148,7 +148,7 @@ Surface exterior absorptivity.
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.5",
   required: "Required if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT",
   variability: "monthly-hourly") %>
@@ -159,7 +159,7 @@ Surface interior solar absorptivity.
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "0 $\\le$ *x* $\le$ 1",
   default: "sfType = CEILING, 0.2; sfType = WALL, 0.6; sfType = FLOOR, 0.8",
   required: "No",
   variability: "monthly-hourly") %>
@@ -170,7 +170,7 @@ Surface exterior long wave (thermal) emittance.
 
 <%= member_table(
   units: "",
-  legal_range: "0 $\le$ *x* $\le$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.9",
   required: "No",
   variability: "constant") %>
@@ -301,7 +301,7 @@ Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=s
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "",
   default: "1",
   required: "No",
   variability: "subhourly") %>
@@ -323,7 +323,7 @@ END
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "",
   default: "sfExHcModel = WINKELMANN: 1.66 else 2.17",
   required: "No",
   variability: "constant") %>
@@ -347,7 +347,7 @@ END
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "",
   default: "1",
   required: "No",
   variability: "subhourly") %>

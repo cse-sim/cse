@@ -76,7 +76,7 @@ SHGC multiplier with shades open. May be overriden in the specific window input.
   units: "fraction",
   legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
   default: "1.0",
-  required: "Yes",
+  required: "No",
   variability: "Monthly - Hourly")
   %>
 
@@ -88,7 +88,7 @@ SHGC multiplier with shades closed. May be overriden in the specific window inpu
   units: "fraction",
   legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
   default: "gtSMSO (no shades)",
-  required: "Yes",
+  required: "No",
   variability: "Monthly - Hourly")
   %>
 
@@ -100,7 +100,7 @@ Framing multiplier used if none given in window, for example .9 if frame and mul
   units: "fraction",
   legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
   default: "gtSHGCO",
-  required: "Yes",
+  required: "No",
   variability: "Monthly - Hourly")
   %>
 

@@ -7,8 +7,8 @@ DUCTSEG defines a duct segment. Each RSYS has at most one return duct segment an
 Optional name of duct segment; give after the word “DUCTSEG” if desired.
 
 <%= member_table(
-  units: "*63 characters*",
-  legal_range: "x $\\geq$ 0",
+  units: "",
+  legal_range: "*63 characters*",
   default: "*none*",
   required: "No",
   variability: "constant")
@@ -81,7 +81,7 @@ Duct segment surface area at outside face of insulation for flat duct shape, see
 
 <%= member_table(
   units: "ft^2^",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "*none*",
   required: "No",
   variability: "constant")
@@ -93,7 +93,7 @@ Duct segment inside surface area (at duct wall, duct wall thickness assumed negl
 
 <%= member_table(
   units: "ft^2^",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "Derived from dsDiameter and dsLength",
   required: "(see above reduct shape)",
   variability: "constant")
@@ -106,7 +106,7 @@ Duct segment round duct diameter (duct wall thickness assumed negligible)
 
 <%= member_table(
   units: "ft",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "Derived from dsInArea and dsLength",
   required: "(see above reduct shape)",
   variability: "constant")
@@ -118,7 +118,7 @@ Duct segment length.
 
 <%= member_table(
   units: "ft",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "Derived from dsInArea and dsDiameter",
   required: "(see above reduct shape)",
   variability: "constant")
@@ -154,7 +154,7 @@ Exposed (i.e. insulation) outside surface exterior long wave (thermal) emittance
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ *x* $<$ 1",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
   default: "0.9",
   required: "No",
   variability: "constant")
@@ -178,7 +178,7 @@ Insulation thermal resistance *not including* surface conductances. dsInsulR and
 
 <%= member_table(
   units: "ft^2^-^o^F-hr / Btu",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "constant")
@@ -202,7 +202,7 @@ Duct leakage. Return duct leakage is modeled as if it all occurs at the segment 
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ x $<$ 1",
+  legal_range: "0 $<$ x $\\le$ 1",
   default: "*none*",
   required: "No",
   variability: "constant")

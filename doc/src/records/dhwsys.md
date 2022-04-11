@@ -93,7 +93,7 @@ Number of identical systems of this type (including all child objects). Any valu
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "constant")
@@ -113,7 +113,7 @@ Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), the
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "constant")
@@ -150,7 +150,7 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
 <%= member_table(
   units: "gal",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "hourly")
@@ -329,7 +329,7 @@ Average amount of waste per day.
 
 <%= member_table(
   units: "gal/day",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "wsDayWasteBranchVolF * (Total DHWLOOPBRANCH vol)",
   required: "No",
   variability: "constant")
@@ -341,7 +341,7 @@ Day waste scaling factor.
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "constant")
@@ -586,7 +586,7 @@ where tInletAdj is the source cold water temperature *including any DHWHEATREC t
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ x $<$ 0.99",
+  legal_range: "0 $\\le$ x $\\le$ 0.99",
   default: "",
   required: "No",
   variability: "hourly")
@@ -610,7 +610,7 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
 
 <%= member_table(
   units: "W",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "hourly")

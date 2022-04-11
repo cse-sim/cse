@@ -51,7 +51,7 @@ End use of pump energy; defaults to "DHW".
 
 <%= member_table(
   units: "",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "hourly")
@@ -63,7 +63,7 @@ Tank heat exchanger effectiveness.
 
 <%= member_table(
   units: "",
-  legal_range: "0 $<$ x $<$ 0.99",
+  legal_range: "0 $\\le$ x $\\le$ 0.99",
   default: "0",
   required: "No",
   variability: "hourly")
