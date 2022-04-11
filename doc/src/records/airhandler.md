@@ -32,8 +32,8 @@ Name of air handler: give after the word AIRHANDLER. Required for reference in T
 Air handler schedule; OFF or ON, hourly schedulable by using CSE expression.
 
 <%= csv_table(<<END, :row_header => false)
-  OFF    supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
-  ON     supply fan runs&comma; at varying volume according to TERMINAL demand (except if *ahFanCycles* = YES&comma; fan cycles on and off at full volume).
+  OFF,    supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
+  ON,     supply fan runs&comma; at varying volume according to TERMINAL demand (except if *ahFanCycles* = YES&comma; fan cycles on and off at full volume).
 END
 %>
 
