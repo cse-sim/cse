@@ -59,7 +59,7 @@ Optionally indicates the end of the DHWPUMP definition.
   legal_range: "",
   default: "*none*",
   required: "No",
-  variability: "constant")
+  variability: "")
   %>
 
 **Related Probes:**
