@@ -937,7 +937,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		supOn = FALSE;
 	//else, in between, supOn remains unchanged, so small noise does not change suppl heat, for stability & convergence.
 
-	cap = capCon + pDfrhCon + supRh;		// full cap'y this subhour: full compr cap, + suppl res heat. set for caller.
+	cap = capCon + pDfrhCon + capSupHeat;		// full cap'y this subhour: full compr cap, + suppl res heat. set for caller.
 
 	//determine cpr heat available with compressor running only when fan on
 	//   derivation of fraction output available for fraction runtime f:
@@ -958,7 +958,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		if ( supOn				// if suppl heat enabled: enabled only at full fan flow, with hysteresis, above
 				&&  qSupLim > q)			// and heat left under special limit
 		{
-			DBL supAv = min( supRh, 		// suppl heat we can use: smaller of heater rated output,
+			DBL supAv = min( capSupHeat, 		// suppl heat we can use: smaller of heater rated output,
 							 qSupLim - q);	/* remainder of special heat limit that keeps ts down so frFanOn stays 1.0 when
                            			   fan cycling, so ah converges. See caller doAhpHeatCoil and cnah:setTsSp1.*/
 			if (q + supAv >= qWant)		// will it meet load? (frFan is 1.0 so ignored here)
@@ -1033,11 +1033,11 @@ x
 x// determine output and fraction run time for load. Niles V-K-8.
 x    //sets hlf, pRh, q, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
 x
-x    cap = capCon + pDfrhCon + supRh;		// cap'y this subhour: full compr cap, + suppl res heat. set for caller.
+x    cap = capCon + pDfrhCon + capSupHeat;		// cap'y this subhour: full compr cap, + suppl res heat. set for caller.
 x    if (capCon + pDfrhCon <= qWant)		// if can't meet (or just meets) load without suppl heat
 x    {  if (cap < qWant)				// if can't meet load with suppl heat
 x       {  q = cap;				// deliver all the possible heat
-x          pRh = pDfrhCon + supRh;   		// resistance heat input===output: defrost suppl + full reg suppl.
+x          pRh = pDfrhCon + capSupHeat;   		// resistance heat input===output: defrost suppl + full reg suppl.
 x          coilLimited = TRUE;			// tell caller (ref arg) ahp is max'd out
 x		}
 x       else					// hp with suppl heat can meet load
@@ -2321,8 +2321,8 @@ x	}
 //-----------------------------------------------------------------------------------------------------------------------------
 void AH::coilsEndSubhr()		// coil end subhour calculations, for AH::endSubHr.
 
-// sets: ahhc.q, .flueLoss, .p, .plr, .plrAv, .pAuxOn, .pAuxOff, .pAuxOnAtall, .pAuxFullOff, .
-//       ahcc.q, .qs, .ql,  .p, .plr, .plrAv, .pAuxOn, .pAuxOff, .pAuxOnAtall, .pAuxFullOff, .
+// sets: ahhc.q, .flueLoss, .p, .plr, .plrAv, .pAux.
+//       ahcc.q, .qs, .ql,  .p, .plr, .plrAv, .pAux.
 //       cch.p.
 {
 #if 0 // 10-96, 5-97 ... moved into dx coil case, below in this fcn
@@ -2352,11 +2352,8 @@ x}
 		ahhc.q = ahhc.plr = ahhc.plrAv = ahhc.flueLoss = 0.;   		// init to no output from either coil
 ahcc.qs = ahcc.ql = ahcc.q = ahcc.plr = ahcc.plrAv = 0.;   		// ..
 ahhc.p = ahcc.p = ahhc.eir = ahcc.eir = 0.;				// init to no input for either coil
-ahhc.pAuxOn = ahhc.pAuxOnAtall = 0.;				// init to no coil-on auxiliary power for either coil
-ahcc.pAuxOn = ahcc.pAuxOnAtall = 0.;
-#if 1 //moved here 11-1-96
-ahhc.pAuxFullOff = ahcc.pAuxFullOff = 0.;
-#endif
+ahhc.pAux = 0.;				// init to no coil-on auxiliary power for either coil
+ahcc.pAux = 0.;
 cch.frCprOn = 0;					// compr fraction on for crankcase htr: set in some coil cases below.
 
 // calculate coil energy output
@@ -2447,35 +2444,17 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 							   input includes AHP resistance heat, and crankcase heater input.*/
 		//if (frFanOn)					add /0 protection if need found
 		ahhc.plr = ahhc.plrAv/frFanOn;			// fan-on part load ratio (frac full pwr, or flame fractn on, when fan on)
-		/* note furnace flame assumed to cycle when fan-on plr < 1; only the flame-on time counts re following aux computations.
-		   (and thus pAuxOn and pAuxOff are independent of fanCycles) */
-		ahhc.pAuxOn = ahhc.plrAv * ahhc.auxOn;		// coil-on/furnace-on proportional aux power: avg plr * user input
-		ahhc.pAuxOff = (1. - ahhc.plrAv) * ahhc.auxOff;	// coil-off/furnace-off proportional aux power
-		ahhc.pAuxOnAtall = ahhc.auxOnAtall;		// charge all of this aux power if coil ran at all in subhour
-		//ahhc.pAuxFullOff = 0.;		0'd above 	// none of this when on at all in subhour (DOE2 pilot)
+		ahhc.pAux = ahhc.aux;
 	}
 	else						// no heat used -- ahhc.q is 0
 	{
-#if 1 //11-1-96. And 0 ahhc.pAuxOnAtall above.
 		if ( ahhc.captRat==0.				// if coil has 0 capacity (can result from autoSize)
 				&&  !(Top.tp_sizing && hcAs.az_active)		// and isn't being autoSized
 				&&  ahcc.coilTy != C_COILTYCH_AHP )		// and isn't AHP (not autoSizable and captRat may be unset)
 		{
 			// 0 size coils consume no auxiliary power, rob 11-1-96
-			ahhc.pAuxOff =     0.;			// no coil-off proportional aux power
-			//ahhc.pAuxFullOff = 0.;	0'd above	// no only-when-fully-off power
+			ahhc.pAux =     0.;			// no aux power
 		}
-		else						// normally
-		{
-			ahhc.pAuxOff =     ahhc.auxOff;		// coil-off proportional aux power
-			ahhc.pAuxFullOff = ahhc.auxFullOff;		/* charge this energy only when no heat used in entire subhour,
-       							   for screwy DOE2 pilot spec */
-		}
-#else
-		x       ahhc.pAuxOff =     ahhc.auxOff;			// coil-off proportional aux power
-		x       ahhc.pAuxFullOff = ahhc.auxFullOff;		/* charge this energy only when no heat used in entire subhour,
-x							   for screwy DOE2 pilot spec */
-#endif
 		//zero variables otherwise unset (those set in above switch are 0'd before it)
 		ahhc.pCpr = 0.;					// for cleanliness: pCpr used above in switch
 		ahhc.pRh = 0.;					// necessary: pRh used on return to AH::endSubhr
@@ -2540,33 +2519,17 @@ x							   for screwy DOE2 pilot spec */
 								   included in running coil, even tho also nz when no coil runs.*/
 		/* use of plrAv in following aux computations yields results proportional to DX compressor on time ONLY if compressor
 		   cycles at any fan-on plr < 1 (no unloading or false loading).  But anticipate no DX auxOn/auxOff uses anyway. 7-92. */
-		ahcc.pAuxOn = ahcc.plrAv * ahcc.auxOn;			// coil-on proportional aux power: fractn of full load * user input
-		ahcc.pAuxOff = (1. - ahcc.plrAv) * ahcc.auxOff;		// coil-off proportional aux power
-		ahcc.pAuxOnAtall = ahcc.auxOnAtall;			// charge all of this aux power if coil ran at all in subhour
-		//ahcc.pAuxFullOff = 0.;			0'd above	// no off-whole-subhour aux power when coil runs at all
+		ahcc.pAux = ahcc.aux;
 	}
 	else							// no coolth used: ahcc.q==0.
 	{
-#if 1 //11-1-96. And 0 ahcc.pAuxOnAtall above.
 		if ( ahcc.captRat==0.				// if coil has 0 capacity (can result from autoSize)
 				&&  !(Top.tp_sizing && ccAs.az_active)		// and isn't being autoSized
 				&&  ahcc.coilTy != C_COILTYCH_CHW )		// and isn't CHW (not autoSizable and captRat not used)
 		{
 			// 0 size coils consume no auxiliary power, rob 11-1-96
-			ahcc.pAuxOff =     0.;			// no coil-off proportional aux power
-			//ahcc.pAuxFullOff = 0.;	0'd above	// no only-when-fully-off power
+			ahcc.pAux =     0.;			// no aux power
 		}
-		else						// normally
-		{
-			ahcc.pAuxOff =     ahcc.auxOff;		// coil-off proportional aux power
-			ahcc.pAuxFullOff = ahcc.auxFullOff;		/* charge off-whole-subhour power only when no cool used
-       							   in entire subhour, like ahhc.pAuxFullOff. */
-		}
-#else
-x       ahcc.pAuxOff =     ahcc.auxOff;			// coil-off proportional aux power
-x       ahcc.pAuxFullOff = ahcc.auxFullOff;		/* charge off-whole-subhour power only when no cool used
-x							   in entire subhour, like ahhc.pAuxFullOff. */
-#endif
 		//here 0 any vbls not 0'd above that shd be 0 if coil did not run.
 		ahcc.frCprOn = 0.;				// cleanliness
 		ahcc.plr = ahcc.plrAv = 0;			// 7-95 now used in AH::endSubhr.

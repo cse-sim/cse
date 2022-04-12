@@ -605,10 +605,7 @@ RC COIL::setup(		// check/set up a base class coil subrecord
 #define MTRWRN( mtri, pow)    if (fss[COIL_##mtri] & FsSET)  if (!(fss[COIL_##pow] & FsSET)) \
 			             r->oWarn( (char *)MH_S0640, IDSC(mtri), IDSC(pow));
 		// "'%s' given, but no '%s' to charge to it given"
-	MTRWRN( AUXONMTRI, AUXON);
-	MTRWRN( AUXOFFMTRI, AUXOFF);
-	MTRWRN( AUXONATALLMTRI, AUXONATALL);
-	MTRWRN( AUXFULLOFFMTRI, AUXFULLOFF);
+	MTRWRN( AUXMTRI, AUX);
 #undef MTRWRN
 
 	return rc;					// more returns above!
@@ -1225,7 +1222,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 #else		// use this form when AHP inputs are no longer an identifiable range of field numbers
 *       	#define f ahhCoilFn+AHHEATCOIL_##
 *       	rc |= r->disallowN( "when ahhcType is not AHP",
-*				   f CAP17,  f CAP47,  f CAP35,  f FD35DF,  f CAPIA,  f SUPRH,
+*				   f CAP17,  f CAP47,  f CAP35,  f FD35DF,  f CAPIA,  f CAPSUPHEAT,
 *				   f TFRMN,  f TFRMX,  f TFRPK,  f DFRFMN,  f DFRFMX, f DFRCAP, f DFRRH,
 *				   f TOFF,   f TON,    f IN17,   f IN47,    f INIA,   f CD,     0 );
 *       	#undef f

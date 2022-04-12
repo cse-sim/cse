@@ -5373,19 +5373,8 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 
     *i TI mtri			// MTR to which to charge coil main energy use, if not through a plant.
 
-    *h POWER_GEZ auxOn		/* additional input energy used in proportion to plr when coil on, as for induced draft fan,
-    				   default 0, hourly variable for unforseen applications (why not? costs nothing).
-				   (generalization of Niles' "auxFuelFurn"; corress to DOE2 FURNACE-AUX for oil furnace). */
-    *i TI auxOnMtri		// MTR to which to charge "auxOn"
-    *h POWER_GEZ auxOff 	// addl input energy when off for part or all of subhr (proportional to 1-plr), for unforseen uses.
-    *i TI auxOffMtri		// MTR for "auxOff"
-    *h POWER_GEZ auxOnAtall	// addl input energy used in toto when coil on for any part of subhour, for unforseen uses.
-    *i TI auxOnAtallMtri	// MTR for "auzOnAtall"
-    *h POWER_GEZ auxFullOff  	/* additional input energy when off FOR ENTIRE SUBHOUR (as opposed to in proportion to 1-plr).
-    				   eg for gas furnace pilot light, which is included in effRatPy for subhours when furnace runs,
-    				   regardless of how little it runs (Niles "auxElecFurn"; DOE2 gas furnace FURNACE_AUX).
-    				   Possibly also dx or heat pump crankcase heater. */
-    *i TI auxFullOffMtri	// MTR to which auxFullOff is charged
+    *h POWER_GEZ aux		// additional input energy used by auxiliary controls and devices.
+    *i TI auxMtri		    // Meter for auxiliary energy
 
 // coil setup time members
     //(none)
@@ -5398,10 +5387,7 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *s *e FRAC  plr		// current fan-on (or furnace-on) relative load (part load ratio)
     *s *e FRAC  plrAv		// current average relative load (plr * frFanOn)
     *s *e FLOAT eir		// energy input ratio: current input/output, fan on===average. Rob's addition, for probes, 5-92.
-    *s *e POWER pAuxOn   	// coil-on proporotinal aux power this subhour
-    *s *e POWER pAuxOff  	// coil-off proportional aux power this subhour
-    *s *e POWER pAuxOnAtall	// coil on-at-all aux power this subhour
-    *s *e POWER pAuxFullOff	// auxFullOff (DOE2 pilot) power this subhour
+    *s *e POWER pAux   	// aux power this subhour
     *s *e *hide BOO notDone	// coil model may set TRUE to tell iter4Fs to not stop iteration, 7-23-95
 *END			// COIL
 //=============================================================================
@@ -5572,8 +5558,11 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 				   Used in determining default value for cap35 (preceding); not used if cap35 is given. */
     *f FRAC capIa    		/* Capacity correction factor for indoor (return) air temperature, default .004, Niles iacCap.
 				   Expressed as a fraction reduction in capacity per degree above 70F. */
-    *f KW_GZ supRh    		/* Input (& output) of supplemental resistance reheat coil, kW, default 10, Niles pSupRh.
-				   Entered in kW, converted by units stuff to Btuh internally. */
+    //*f AUXHEATTY typeSupHeat	// type of supplemental heat (C_AUXHEATTY_NONE, _RES, _FURN)
+    *f FLOAT_GEZ capSupHeat    	// Output of supplemental coil, Btu/h.
+    *f FLOAT_GZ effSupHeat		// Supplemental heat efficiency
+    *i TI supHeatMtri			// meter for supplemental heat energy use
+    *declare "MTR* pMtrSupHeat;" // runtime pointer to supplemental heat meter
   //inputs for AHP frost builtup, defrosting and their effect on capacity
     *f TEMP tFrMn    		// lowest  temp for frost buildup & defrost effects, default 17F, Niles tFrstMn.
     *f TEMP tFrMx    		// highest temp for frost buildup & defrost effects, default 47F, Niles tFrstMx.
