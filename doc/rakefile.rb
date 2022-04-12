@@ -939,7 +939,6 @@ BuildProbesYaml = lambda do
   probes_alt_orig = DefParser::ParseCnRecs[]
   probes_alt = {}
   probes_alt_orig.keys.each do |k|
-    kdc = k.downcase
     name = probes_alt_orig[k][:name]
     probes_alt[name.downcase] = probes_alt_orig[k]
   end
@@ -957,7 +956,6 @@ BuildProbesYaml = lambda do
     next if rec_alt.nil?
     flds = probes[k][:fields]
     next if flds.empty?
-    name = k
     flds.each do |fld|
       desc = nil
       flds_alt = rec_alt[:fields].select do |f|
@@ -1872,6 +1870,7 @@ end
 
 desc "Run documentation coverage checker"
 task :coverage do
+  all_passed = true
   time_it do
     puts("#"*60)
     puts("Check CSE User Manual's Documentation Coverage")
@@ -1889,6 +1888,13 @@ task :coverage do
         File.basename(CSE_USER_MANUAL_MANIFEST_PATH)
       )
     )
+    default_ignores = {
+      "records" => [], # ["record-name", ...],
+      "data-fields" => {
+        # "record-name" => ["field-name", ...],
+      },
+    }
+    ignores = doc.fetch("ignore-coverage", default_ignores)
     manifest = doc["sections"]
     files = manifest.map {|_, path| path}
     CheckCoverage[
@@ -1903,14 +1909,43 @@ task :coverage do
     end
     ris2 = CoverageCheck::ReadAllRecordDocuments[files]
     ris3 = CoverageCheck::DropNameFieldsIfNotInRef[CoverageCheck::AdjustMap[ris2], ris1]
-    diffs = CoverageCheck::RecordInputSetDifferences[ris1, ris3, false]
+    records_to_ignore = Set.new(ignores.fetch("records", []))
+    records_to_ignore.sort.reduce(true) do |print_header, r|
+      puts("\nIgnoring the following records (and any subsequent field discrepancies):") if print_header
+      puts("- #{r}")
+      false
+    end
+    data_fields_to_ignore = lambda do
+      dfs = ignores.fetch("data-fields", {})
+      ks = dfs.keys
+      ks.each do |k|
+        dfs[k] = Set.new(dfs[k])
+      end
+      dfs
+    end.call
+    data_fields_to_ignore.keys.sort.reduce(true) do |print_header, r|
+      puts("\nIgnoring the following fields:") if print_header
+      data_fields_to_ignore[r].sort.each {|f| puts("- #{r}:#{f}")}
+      false
+    end
+    diffs = CoverageCheck::RecordInputSetDifferences[
+      ris1, ris3, false,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    all_passed = diffs.nil?
     diff_report = CoverageCheck::RecordInputSetDifferencesToString[
       diffs, "CSE", "Documentation"
     ]
     puts("\n\n"+diff_report)
     File.write("documentation-coverage-report.txt", diff_report)
-    puts("\nCoverage Check DONE!")
+    if all_passed
+      puts("\nCoverage Check: PASSED")
+    else
+      puts("\nCoverage Check: FAILED")
+    end
     puts("^"*60)
+    exit(1) unless all_passed
   end
 end
 
@@ -1928,6 +1963,24 @@ end
 desc "start an irb console in the rakefile context"
 task :irb do
   binding.irb
+end
+
+def set_local_config(key, value)
+  new_config = if File.exist?(CONFIG_FILE) then YAML.load_file(CONFIG_FILE) else {} end
+  new_config[key] = value
+  File.open(CONFIG_FILE, 'w') {|f| YAML.dump(new_config, f)}
+end
+
+desc "Set coverage report off by default by writing to local config file"
+task :set_coverage_off_by_default do
+  set_local_config("coverage?", false)
+  puts("Local config updated to not run coverage by default; Path: #{CONFIG_FILE}")
+end
+
+desc "Set coverage report on by default by writing to local config file"
+task :set_coverage_on_by_default do
+  set_local_config("coverage?", true)
+  puts("Local config updated to run coverage by default; Path: #{CONFIG_FILE}")
 end
 
 task :default => [:build_all]

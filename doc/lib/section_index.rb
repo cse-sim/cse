@@ -16,7 +16,7 @@ module SectionIndex
       content.lines.map(&:chomp).each do |line|
         if line =~ /^#+\s+(.*)$/
           m_ += 1
-          name, slug = MD::NameAndSlug[line]
+          _, slug = MD::NameAndSlug[line]
           final_slug = "#" + slug
           idx[final_slug] = bn unless idx.include?(final_slug)
         end

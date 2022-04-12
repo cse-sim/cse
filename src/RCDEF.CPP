@@ -168,7 +168,6 @@
 #include <xiopak.h>     // xffilcomp
 #include <envpak.h>     // hello byebye
 #include <lookup.h>     // SWTABLE structure, looksw
-#include <ancrec.h>     // RFNAMED
 #include <cuevf.h>      // EVFHR EVFMH
 #include "cvpak.h"
 
@@ -896,7 +895,7 @@ LOCAL void dtypes(                      // do data types
 				//    ! = alias (redundant)
 				//    ~ = deprecated alias (same as ! but give info msg on input)
 				//    else "normal"
-				// NOTE: main and all aliases have same #define C_XXX_xxx
+				// NOTE: only MAIN yields #define C_XXX_xxx
 
 				choff = strsndma( &Cp4snake, Sval[ 1]);                    // choicb/n text to snake, get offset
 
@@ -2271,8 +2270,8 @@ x		{    printf( "\nRecord trap!");}
 					// write, for record name %s:
 					//    #define  makAnc%s(name)        anc<%s> name( "<what>", sfir%s, %s_NFIELDS, RT%s)
 					//    #define  makAnc%s2(name,what)  anc<%s> name( what, sfir%s, %s_NFIELDS, RT%s)      // 'what' override
-					fprintf( frc, "#define  makAnc%s(name)        anc<%s> name( \"%s\", sfir%s, %s_NFIELDS, RT%s) \n", rcNam, rcNam, Cp4snake + rcdesc->rNameSnx, rcNam, rcNam, rcNam );
-					fprintf( frc, "#define  makAnc%s2(name,what)  anc<%s> name( what, sfir%s, %s_NFIELDS, RT%s)\t// 'what' override\n", rcNam, rcNam, rcNam, rcNam, rcNam );
+					fprintf( frc, "#define  makAnc%s(name,pCult)        anc<%s> name( \"%s\", sfir%s, %s_NFIELDS, RT%s, pCult) \n", rcNam, rcNam, Cp4snake + rcdesc->rNameSnx, rcNam, rcNam, rcNam );
+					fprintf( frc, "#define  makAnc%s2(name,pCult,what)  anc<%s> name( what, sfir%s, %s_NFIELDS, RT%s, pCult)\t// 'what' override\n", rcNam, rcNam, rcNam, rcNam, rcNam );
 				}
 			}
 

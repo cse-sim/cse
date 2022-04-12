@@ -5,14 +5,15 @@ IMPORTFILE allows specification of a file from which external data can be access
 Import files are text files containing an optional header and comma-separated data fields.  With
 the header present, the structure of an import file matches that of an [EXPORT](#export) file.  This makes it convenient to import unmodified files EXPORTed from prior runs.  The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
 
-  Line      Contents                     Notes
-  --------- -----------------------      --------------------------------------
-  1         *runTitle*, *runNumber*      read but not checked
-  2         *timestamp*                  in quotes, read but not checked
-  3         *title*, *freq*              should match imTitle and imFreq (see below)
-  4         *colName1*,*colName2*,...    comma separated column names optionally in quotes
-  5 ..      *val1*,*val2*,...            comma separated values (string values optionally in quotes)
-
+<%= csv_table(<<END, :row_header => true)
+  Line,      Contents,                            Notes
+  1,         *runTitle*&comma; *runNumber*,       read but not checked
+  2,         *timestamp*,                         in quotes&comma; read but not checked
+  3,         *title*&comma; *freq*,               should match imTitle and imFreq (see below)
+  4,         *colName1*&comma; *colName2*&comma; ...,    comma separated column names optionally in quotes
+  5 ..,      *val1*&comma; *val2*&comma; ...,            comma separated values (string values optionally in quotes)
+END
+%>
 
 Example import file imp1.csv
 
@@ -56,52 +57,79 @@ Notes
 
 Name of IMPORTFILE object (for reference from Import()).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **imFileName=*string***
 
 Gives path name of file to be read. If directory is specified, CSE first looks for the file the current directory and searches include paths specified by the -I command line parameter (if any).
 
-  **Units**   **Legal Range**                            **Default**   **Required**   **Variability**
-  ----------- ------------------------------------------ ------------- -------------- -----------------
-              *file name, path optional*                                Yes             constant
+<%= member_table(
+  units: "",
+  legal_range: "*file name, path optional*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **imTitle=*string***
 
 Title expected to be found on line 3 of the import file.  A warning is issued if a non-blank imTitle does not match the import file title.
 
-  **Units**   **Legal Range**          **Default**   **Required**   **Variability**
-  ----------- ------------------------ ------------- -------------- -----------------
-               Text string             (blank)       No             constant
+<%= member_table(
+  units: "",
+  legal_range: "Text string",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **imFreq=*choice***
 
 Specifies the interval at which CSE reads from the import file.  Data is read at the beginning of the indicated interval and buffered in memory for access in expressions via import() or importStr().
 
-  **Units**   **Legal Range**           **Default**   **Required**   **Variability**
-  ----------- ------------------------- ------------- -------------- -----------------
-              YEAR, MONTH, DAY, or HOUR                    Yes             constant
-
+<%= member_table(
+  units: "",
+  legal_range: "YEAR, MONTH, DAY, or HOUR",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **imHeader=*choice***
 
 Indicates whether the import file include a 4 line header, as described above.  If NO, the import file
 should contain only comma-separated data rows and data items can be referenced only by 1-based column number.
 
-**Units**   **Legal Range**          **Default**   **Required**   **Variability**
------------ ------------------------ ------------- -------------- -----------------
-            YES NO                   YES            No             constant
+<%= member_table(
+  units: "",
+  legal_range: "YES NO",
+  default: "YES",
+  required: "No",
+  variability: "constant") %>
 
+**imBinary=*choice***
+
+Adds the possibility to output the file as a binary option.
+
+<%= member_table(
+  units: "",
+  legal_range: "YES NO",
+  default: "No",
+  required: "No",
+  variability: "constant") %>
 
 **endImportFile**
 
 Optionally indicates the end of the import file definition. Alternatively, the end of the import file definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 

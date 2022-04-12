@@ -10,44 +10,58 @@ Input for EXPORTFILEs and EXPORTs is similar to that for REPORTFILEs and REPORTs
 
 Name of EXPORTFILE object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **xfFileName=*string***
 
 path name of file to be written. If no path is specified, the file is written in the current directory. If no extension is specified, .csv is used.
 
-  **Units**   **Legal Range**                            **Default**   **Required**   **Variability**
-  ----------- ------------------------------------------ ------------- -------------- -----------------
-              *file name, path and extension optional*                 Yes             constant
+<%= member_table(
+  units: "",
+  legal_range: "*file name, path and extension optional*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **xfFileStat=*choice***
 
 What CSE should do if file *xfFileName* already exists:
 
-  ----------------- ----------------------------------------------------
-  OVERWRITE         Overwrite pre-existing file.
-
-  NEW               Issue error message if file exists.
-
-  APPEND            Append new output to present contents of existing
-                    file.
-  ----------------- ----------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  OVERWRITE,         Overwrite pre-existing file.
+  NEW,               Issue error message if file exists.
+  APPEND,            Append new output to present contents of existing file.
+END
+%>
 
 If the specified file does not exist, it is created and *xfFileStat* has no effect.
 
-  **Units**   **Legal Range**          **Default**   **Required**   **Variability**
-  ----------- ------------------------ ------------- -------------- -----------------
-              OVERWRITE, NEW, APPEND   OVERWRITE     No             constant
+<%= member_table(
+  units: "",
+  legal_range: "OVERWRITE, NEW, APPEND",
+  default: "OVERWRITE",
+  required: "No",
+  variability: "constant")
+  %>
 
 **endExportFile**
 
 Optionally indicates the end of the export file definition. Alternatively, the end of the Export file definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 
