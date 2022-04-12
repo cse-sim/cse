@@ -2569,7 +2569,7 @@ void DBC::sb_SetCoeffs(
 	if (zpx)
 	{	sb_txa = zpx->tzls;
 		sb_w = zpx->wzls;
-		sb_txr = zpx->trls;
+		sb_txr = zpx->zn_trls;
 		sb_hxr = sb_frRad*pow3( DegFtoR( 0.5*(sb_tSrf+sb_txr)));
 		// sb_hxa from input
 	}

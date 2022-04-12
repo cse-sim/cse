@@ -30,7 +30,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	FLOAT tol )		// check tolerance: generally 0.001 or so
 
 {
-#if defined( SUPPRESS_ENBAL_CHECKS)
+#if 0 && defined( SUPPRESS_ENBAL_CHECKS)
 	return;
 #else
 	double ovNet = 0., ovTot = 0.;			// accumulated overall net and total (sum abs value) energy transfer

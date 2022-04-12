@@ -2624,9 +2624,9 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 	*declare "DBL zn_Rho0() const;"
 
 							// re radiant/convective model
-	*s *e DBL /*TEMP*/ tr	//  zone radiant temp, F
-	*s *e DBL /*TEMP*/ trls	//  zone radiant temp, end last subhour, F
-	*h DBL /*TEMP*/ trlh	//  zone radiant temp, end last hour, F
+	*s *e DBL /*TEMP*/ zn_tr	//  zone radiant temp, F
+	*s *e DBL /*TEMP*/ zn_trls	//  zone radiant temp, end last subhour, F
+	*h DBL /*TEMP*/ zn_trlh	    //  zone radiant temp, end last hour, F
 
 // ZNR runtime hvac internal, mostly sub or hourly
     *s *e SI md					// current hvac mode: subscript of mdSeq

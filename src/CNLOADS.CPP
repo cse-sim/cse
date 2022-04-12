@@ -135,13 +135,13 @@ RC ZNR::zn_RddInit()
 	// Set up initial and constant values
 	//  some redundant (not needed each design day) but cheap
 	md = 1;					// zone hvac mode (control mode)
-	tz = aTz = tzls = tzlh = 80.f; 	// zone air temps, incl ah working copy
-	tr = trls = trlh = 80.f;		// zone radiant temps
-	wz = aWz = wzls = Top.tp_refW;	// zone humidity ratios 5-25-92
-	zn_rho0ls = zn_Rho0();			// zone air density at tz, wz, pz0
-	zn_bcon 						// init constant part of main equation denom:
-		= zn_ua    					//  sum uval*area of zone ambient lite surfs
-		  + zn_uaSpecT;				//  sum uval*area of zn specT lite surfs (hsu)
+	tz = aTz = tzls = tzlh = 80.f; 		// zone air temps, incl ah working copy
+	zn_tr = zn_trls = zn_trlh = 80.f;	// zone radiant temps
+	wz = aWz = wzls = Top.tp_refW;		// zone humidity ratios 5-25-92
+	zn_rho0ls = zn_Rho0();				// zone air density at tz, wz, pz0
+	zn_bcon 							// init constant part of main equation denom:
+		= zn_ua    						//  sum uval*area of zone ambient lite surfs
+		  + zn_uaSpecT;					//  sum uval*area of zn specT lite surfs (hsu)
 	i.znCAirSh = i.znCAir / Top.tp_subhrDur;		// commonly used in subhr code
 
 	// Mass->ha's done in ms_RddInit
@@ -533,9 +533,15 @@ x	}
 										//   sets values for all models
 
 	if (!Top.tp_bAllCR)
-	{	RLUP( ZrB, zp)
+	{	// all CNE zones (all CR or all CNE enforced)
+		RLUP( ZrB, zp)
 			rc |= zp->zn_LoadsSubhr( azCf);	// non-CR stuff
 											//   change-check subhour zone loads, etc.
+#if defined( CRTERMAH)
+			// may extrapolate tz if load unchanged
+			// subhour terminal/airhandler hvac
+			rc |= hvacIterSubhr();
+#endif
 		return rc;
 	}
 
@@ -650,6 +656,12 @@ x	}
 	RLUP( RsR, rs)
 		rc |= rs->rs_AllocateZoneAir();		// NOP if OAV
 
+#if 1 && defined( CRTERMAH)
+// may extrapolate tz if load unchanged
+// subhour terminal/airhandler hvac
+	rc |= hvacIterSubhr();
+#endif
+
 	RLUP( ZrB, zp)
 		rc |= zp->zn_CondixCR2();			// finalize zone for all modes (including OAV)
 
@@ -666,6 +678,13 @@ x	}
 			zp->zn_DbDump();
 #endif
 	}
+
+#if 0 && defined( CRTERMAH)
+	// may extrapolate tz if load unchanged
+	// subhour terminal/airhandler hvac
+	rc |= hvacIterSubhr();
+#endif
+
 #if defined( DEBUGDUMP)
 	if (DbDo(dbdAIRNET | dbdIZ) && ZrB.GetCount() > 0)
 	{	DbPrintf("\nZone airnet results\n"
@@ -848,7 +867,7 @@ void ZNR::zn_DbDump() const
 				zn_tzsp, zn_hcMode, zn_rsAmfSysReq[ 0], zn_sysAirI.af_amf, zn_sysAirI.as_tdb);
 	}
 	DbPrintf( "     ta=%.2f  tr=%.2f  qIzSh=%.f  fvent=%.3f  pz0=%.4f  qsHvac=%.f\n",
-			tz, tr, zn_qIzSh, zn_fVent, zn_pz0, zn_qsHvac);
+			tz, zn_tr, zn_qIzSh, zn_fVent, zn_pz0, zn_qsHvac);
 }		// zn_DbDump
 //-----------------------------------------------------------------------------
 RC ZNR::zn_LoadsSubhr(
@@ -1341,9 +1360,9 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	}
 	// else all known
 #if defined( ZNHVACFCONV)
-	tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
+	zn_tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
 #else
-	tr = zn_TRadCR( tz);
+	zn_tr = zn_TRadCR( tz);
 #endif
 
 	zn_qIzSh = zn_anAmfCpTVent + zn_AnAmfCpT( 0) + zn_sysDepAirIls.af_AmfCpT()
@@ -6497,7 +6516,7 @@ RC ZNR::zn_AfterSubhr()
 	// pz0 (pressure relative to patm at nomimal z=0) initially 0, then known from
 	//   prior AirNet solution
 	zn_rho0ls = zn_Rho0();		// last subhour moist air density at tz, wz, pz0
-	trls = tr;					// last subhour radiant temp
+	zn_trls = zn_tr;			// last subhour radiant temp
 	zn_relHumls = zn_relHum;	// lass subhour relative humdity
 
 #if 0	// unused, 9-12
@@ -6562,7 +6581,7 @@ RC ZNR::zn_AfterHour()
 	tzlh = tzls;		// air temp from final step of hour (NOT average here).
 						// needed? used in main eqn in loadsHourBeg, but .tzls cd be used directly 1-92.
 
-	trlh = trls;				// ditto radiant temp
+	zn_trlh = zn_trls;			// ditto radiant temp
 
 	zn_relHumlh = zn_relHumls;	// ditto relative humidity
 

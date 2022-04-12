@@ -78,7 +78,6 @@ RC FC hvacIterSubhr()
 #endif
 
 	RC rc=RCOK;
-	ZNR *zp;
 	TU *tu;
 	AH *ah;
 	HEATPLANT *hp;
@@ -123,6 +122,7 @@ RC FC hvacIterSubhr()
 	{	// conditionally compute terminals, by zone
 		if (Top.ztuKf)
 		{	Top.ztuKf = FALSE;
+			ZNR* zp;
 			RLUP( ZrB, zp)
 				if (zp->spCf || zp->ztuCf)			// if setpoint change or other zone/load/terminals change
 				{	ER( zp->ztuCompute() )  		// refine (compute) all terminals in zone. ER: goto er; if not RCOK.
@@ -221,9 +221,9 @@ er:			// errors come here via ER macros to do following exit stuff
 		}
 
 		// air handlers
-		/* to keep modelling accurate, fan and coils are dynamically sized down to beginning subhour value,
-		   as well as upward, as needed, from ahCompute & its subrs. Thus downsize is not needed here --
-		   and (for coils) would be hard to do -- cap'y to deliver load must be determined. */
+		// to keep modelling accurate, fan and coils are dynamically sized down to beginning subhour value,
+		// as well as upward, as needed, from ahCompute & its subrs. Thus downsize is not needed here --
+		// and (for coils) would be hard to do -- cap'y to deliver load must be determined.
 #if 0	// 7-95. fan part ran, coils never completed.
 x		RLUP (AhB, ah)
 x		{	if (ah->fanAs.az_active)
@@ -1410,7 +1410,7 @@ x          Then no error. User input for fraction of this heat of condensation t
 	ZNRES_IVL_SUB* zrs = &ZnresB.p[ss].curr.S;	// zone's subhour results in ZNRES
 												//  0d in ZNR::zn_BegSubhr1
 	zrs->tAir = tz;				// subhour result air temp
-	zrs->tRad = tr;				// subhour result radiant temp
+	zrs->tRad = zn_tr;			// subhour result radiant temp
 	zrs->wAir = wz;				// subhour result air humidity ratio
 #ifdef COMFORT_MODEL
 	zrs->PMV7730 = zn_comfPMV7730;		// subhour PMV (comfort)
@@ -1467,8 +1467,8 @@ x          Then no error. User input for fraction of this heat of condensation t
 	else
 	{	// convective/radiant model
 		zrs->qMass = 		// subhour energy transferred out of masses
-			(   zn_hcATMsSh - zn_hcAMsSh * tz	// convective coupling to mass
-			  + zn_hrATMsSh - zn_hrAMsSh * tr	// radiant coupling to mass
+			(   zn_hcATMsSh - zn_hcAMsSh * tz		// convective coupling to mass
+			  + zn_hrATMsSh - zn_hrAMsSh * zn_tr	// radiant coupling to mass
 			  - qMsSg 				// - zn's masses solar gain (Btuh) this subhr: energy to mass.
 			  - qrIgMs				// - zn's masses radiant intn'l gain (Btuh) this hour: energy to mass
 			  + znXLGainLs		// + last subhr excess latent gain: heat of condensation to zone
