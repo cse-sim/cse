@@ -12,10 +12,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Install recent SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
-        with:
-          sdk-version: 20348
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
