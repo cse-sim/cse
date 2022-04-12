@@ -181,7 +181,7 @@ If either setpoint (tuTH or tuTC) is given, tuVfMn is the cfm used when the ther
 
 <%= member_table(
   units: "cfm",
-  legal_range: "*AUTOSIZE* or x $\\ge$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "if tuTH or tuTC given, else no air heat/cool",
   required: "For set output air operation",
   variability: "hourly") %>
@@ -192,7 +192,7 @@ Maximum heating air flow rate, subject to air handler limitations. This terminal
 
 <%= member_table(
   units: "cfm",
-  legal_range: "*AUTOSIZE* or x $\\ge$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "*none*",
   required: "If *tuTH* given",
   variability: "hourly") %>
@@ -203,7 +203,7 @@ Maximum cooling air flow rate, before air handler limitations, used when the the
 
 <%= member_table(
   units: "cfm",
-  legal_range: "*AUTOSIZE* or x $\\ge$ 0",
+  legal_range: "x $\\ge$ 0",
   default: "*none*",
   required: "If *tuTC* given",
   variability: "hourly") %>
@@ -281,7 +281,7 @@ Rated capacity of the heating coil. The coil will never supply more heat than it
 
 <%= member_table(
   units: "Btu/hr",
-  legal_range: "*AUTOSIZE* or *x* $\\gt$ 0",
+  legal_range: "*x* $\\gt$ 0",
   default: "*none*",
   required: "Yes",
   variability: "constant") %>
