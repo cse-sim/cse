@@ -181,7 +181,7 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
  -- ---- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ------ ------ --------
   1 50.5 67.4 66.9        856       1912        514      -2027      -3710     0   -1230       4199          0      0      0        0
   2 55.1 67.5 67.1       1406       1623        433      -1713      -3007     0    -873       2564          0      0      0        0
-  3 63.2 68.3 67.9       1758       1665        440      -1483      -2783    13    -621       1463          0      0      0        0
+  3 63.2 68.3 67.9       1758       1665        440      -1483      -2783    13    -621       1463          0      1      0        0
   4 67.9 68.9 68.6       1954       1487        389      -1476      -2238    57    -672        944          0      3      0        0
   5 79.0 71.3 71.2       2006       1407        363       -900      -1574   288    -959         71        -71     14     21        0
   6 86.2 74.8 74.8       2093       1306        335       -667       -872   419   -1521          0       -414     19    122        0
@@ -447,7 +447,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console
+! CSE 0.904.0+master.938afeec.0.dirty for Win32 console
 
 
 
@@ -2014,18 +2014,18 @@ Input for Run 001:
 
 
 
-! CSE 0.903.0+unmet-hours.d04a46be.44 for Win32 console run(s) done: Sun 20-Mar-22   4:50:13 pm
+! CSE 0.904.0+master.938afeec.0.dirty for Win32 console run(s) done: Tue 12-Apr-22   7:55:53 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               20-Mar-22   4:45 pm   (VS 14.29    2931200 bytes)  (HPWH 1.17.1)
-! Command line: -x!  -t1 ashppkgroom
-! Input file:   D:\cse\test\ashppkgroom.cse
-! Report file:  D:\cse\test\ashppkgroom.rep
+! Executable:   c:\users\tanaya mankad\source\repos\cse\msvc\cse.exe
+!               11-Apr-22   6:27 pm   (VS 14.29    3016704 bytes)  (HPWH 1.18.0)
+! Command line: -x!  -b -t1 ashpPkgRoom
+! Input file:   C:\Users\Tanaya Mankad\source\repos\cse\test\ashpPkgRoom.cse
+! Report file:  C:\Users\Tanaya Mankad\source\repos\cse\test\ashpPkgRoom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0505   
-!           AutoSizing:  Time = 0.18     Calls = 1      T/C = 0.1840   
-!           Simulation:  Time = 6.09     Calls = 1      T/C = 6.0950   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
-!                Total:  Time = 6.39     Calls = 1      T/C = 6.3870   
+!                Input:  Time = 0.13     Calls = 2      T/C = 0.0650   
+!           AutoSizing:  Time = 0.24     Calls = 1      T/C = 0.2370   
+!           Simulation:  Time = 9.44     Calls = 1      T/C = 9.4360   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0030   
+!                Total:  Time = 9.81     Calls = 1      T/C = 9.8070   
