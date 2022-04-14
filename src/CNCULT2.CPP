@@ -377,7 +377,8 @@ RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
 	tp_subhrDur = 1.f / tp_nSubSteps;			// subhr duration
 
 	// substep ticks = even shorter steps for e.g. HPWH simulation
-	tp_nSubhrTicks = max(1, 60 / tp_nSubSteps);
+	if (tp_nSubhrTicks == 0) // Not set
+		tp_nSubhrTicks = max(1, 60 / tp_nSubSteps); // Default
 	tp_tickDurHr = 1. / (tp_nSubhrTicks * tp_nSubSteps);
 	tp_tickDurMin = tp_tickDurHr * 60.;
 
