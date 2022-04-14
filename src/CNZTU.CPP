@@ -77,6 +77,10 @@ RC FC hvacIterSubhr()
 #define MAXITER 200		// T81 gets ok errors @50, not 100, 11-92,5-94. T44 gets ok error @50, not @70. 200 for margin.
 #endif
 
+#if defined( _DEBUG)
+	const ZNR* zp1 = ZrB.GetAtSafe( 1);
+#endif
+
 	RC rc=RCOK;
 	TU *tu;
 	AH *ah;
@@ -86,8 +90,8 @@ RC FC hvacIterSubhr()
 
 // flags to indicate need to check xxClf's and xxPtf's of each class; when all clear, can exit.
 // In each case setter also sets call-flag or compute-flag of specific device. */
-	Top.ztuKf = TRUE;		/* unconditionally check the terminals once: many ztuCf/spCf sets don't ztuKf++;
-    				   some are done via exman change-flag mechanism, where setting two flags would be slow. */
+	Top.ztuKf = TRUE;		// unconditionally check the terminals once: many ztuCf/spCf sets don't ztuKf++;
+							// some are done via exman change-flag mechanism, where setting two flags would be slow.
 // don't need to init the rest: FALSE from prior subhr; xxEstimate usually sets to insure doing class once.
 //    Top.ztuKf=FALSE;		// set by ah or hp (local heat) if change may impact a terminal
 //    Top.ahKf=FALSE;		// set by hp/cp/hl if need to redo AH's
@@ -106,9 +110,9 @@ RC FC hvacIterSubhr()
 	{	ah->bVfDs = ah->sfan.vfDs;
 		ah->ahhc.bCaptRat = ah->ahhc.captRat;
 		ah->ahcc.bCaptRat = ah->ahcc.captRat;
-		ah->ahRun = FALSE;
-	}		/* say ah not computed yet this subHr: ts is old or ahEstimated.
-							   May disable autoSize increases in TU::resizeIf Set in AH::iter4Fs. */
+		ah->ahRun = FALSE;	// say ah not computed yet this subHr: ts is old or ahEstimated.
+							// May disable autoSize increases in TU::resizeIf Set in AH::iter4Fs.
+	}		
 
 // estimate all hvac classes. ER macro does "goto er" (below) if error returned
 	RLUP( TuB, tu)  ER( tu->tuEstimate() )	// estimate terminals (re ZN and ZN2 for ah's, else may do nothing)
@@ -123,11 +127,41 @@ RC FC hvacIterSubhr()
 		if (Top.ztuKf)
 		{	Top.ztuKf = FALSE;
 			ZNR* zp;
-			RLUP( ZrB, zp)
-				if (zp->spCf || zp->ztuCf)			// if setpoint change or other zone/load/terminals change
-				{	ER( zp->ztuCompute() )  		// refine (compute) all terminals in zone. ER: goto er; if not RCOK.
-					ZnresB.p[zp->ss].curr.S.nIter++;   	// count zone (tu) iterations at subhour level
+			RLUP(ZrB, zp)
+			{
+#if 0 && defined( _DEBUG)
+				if (zp->spCf)
+					printf("\nspCf true");
+				if (Top.jDay == 1 && Top.iHr == 8 && Top.iSubhr == 0)
+				{
+					// if (zp1 && zp1->tz < 70.)
+					printf("\nHit");
+
 				}
+#endif
+				if (zp->spCf || zp->ztuCf)			// if setpoint change or other zone/load/terminals change
+				{
+					ER(zp->ztuCompute())  		// refine (compute) all terminals in zone. ER: goto er; if not RCOK.
+						ZnresB.p[zp->ss].curr.S.nIter++;   	// count zone (tu) iterations at subhour level
+#if 0 && defined( _DEBUG)
+					if (Top.jDay == 1)
+					{
+						if (zp1 && zp1->tz < 70.)
+							printf("\nHit");
+
+					}
+#endif
+				}
+#if defined( _DEBUG)
+				if (Top.jDay == 1)
+				{
+					if (zp1 && abs(zp1->zn_qsHvac) < 0.01)
+						printf("\nhvacIterSubhr: tz=%0.3f  qsHvac=%0.1f", zp1->tz, zp1->zn_qsHvac);
+
+
+				}
+#endif
+			}
 		}
 
 		/* do air handlers and plants in "forward" order, exit if no changes pending
@@ -239,6 +273,16 @@ x                                 ah-.ahcc.bCaptRat );		// but not less than thi
 x		}
 #endif
 	}
+
+#if defined( _DEBUG)
+	if (Top.jDay == 1)
+	{
+		if (zp1 && zp1->tz < 70.)
+			printf("\nHit");
+
+	}
+#endif
+
 	return rc;					// error returns above, including E macros
 }		// hvacIterSubhr
 
@@ -262,13 +306,13 @@ x		}
 //-----------------------------------------------------------------------------
 static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (vent)
 
-	TI ui,	// owning terminal if HVAC, 0 for vent
-	TI zi,	// zone for terminal or vent (ie always)
-	TI ai,	// air handler subscript for Ar HVAC zhx's, else 0
+	TI ui,		// owning terminal if HVAC, 0 for vent
+	TI zi,		// zone for terminal or vent (ie always)
+	TI ai,		// air handler subscript for Ar HVAC zhx's, else 0
 	ZHXTY ty,	// LhSo, LhStH, ArSo, ArStH, ArStC, ..   cndtypes.def/dtypes.h (via rcdef) or as changed
 	NANDAT sp,	// tstat set point if needed.  Cast float argument with "V".
 	SI spPri,	// tstat set point priority if needed (determines activation order of ZHXs with same .sp)
-	char* name,	// NULL or name (eg of terminal) to copy into zhx
+	const char* name,	// NULL or name (eg of terminal) to copy into zhx
 	TI* xip)	// NULL or receives subscript of added zhx
 
 // includes chaining the record appropriately for u1, zi, ai, ty (assumes tu, zone, ah RUN records all present).
@@ -279,14 +323,15 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 
 {
 	RC rc /*=RCOK*/; 	// rc is used in E macro
-	ZHX* zhx;
 
 	// make a ZHX
+	ZHX* zhx;
 	CSE_E(ZhxB.add(&zhx, WRN))	// add a ZHX record to base ZhxB, allocating block if necessary. lib\ancrec.cpp.
 	// leave front mbrs .ty, .li, .file, .line unset (0).  does this cause runtime errmsg troubles?
 	// CAUTION: al may not errCount++, be sure error return propogated back to cul:cuf.
-// record owner is zone
-zhx->ownTi = zi;		// tentative 3-92 with added ratLudo ambiguous check
+
+	// record owner is zone
+	zhx->ownTi = zi;		// tentative 3-92 with added ratLudo ambiguous check
 
 // store caller's data
 	if (name)  strcpy(zhx->name, name);
@@ -1635,15 +1680,11 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 			hcAs.resizeIf( tuhc.q, TRUE);		// conditionally increase tuhc.captRat, plus margin
 			setToMax( hcAs.ldPk, tuhc.q);			// record local heat coil peak load
 			if (tuhc.captRat)					// might be 0 at start autoSizing. don't /0.
-#if 0
-x             setToMax( hcAs.plrPk, tuhc.q/tuhc.captRat);		// record peak plr (fraction capacity used). don't /0.
-#else // xPk stuff, 6-97
 				if (tuhc.q/tuhc.captRat > hcAs.plrPk)		// if a new peak part load ratio (plr)
 				{
 					hcAs.plrPk = tuhc.q/tuhc.captRat;		// record peak plr (fraction capacity used)
 					hcAs.xPk = tuhc.captRat;			// record capacity at time of peak plr
 				}
-#endif
 		}
 		ZNR *zp = ZrB.p + ownTi;			// terminal's zone
 		AH *ah = AhB.p + ai;			// terminal's air handler if any
@@ -1662,15 +1703,11 @@ x             setToMax( hcAs.plrPk, tuhc.q/tuhc.captRat);		// record peak plr (f
 				float vf = cv / ah->airxTs;  		// heat cfm load @ vav box: heat cap flow * conv factor @ supply temp.
 				setToMax( vhAs.ldPk, vf);   		// cfm peak
 				if (tuVfMxH)				// might be 0 at start autoSize. don't /0.
-#if 0
-x                setToMax( vhAs.plrPk, vf/tuVfMxH);   	// record new plr peak (fraction of rated flow used)
-#else // xPk stuff, 6-97
 					if (vf/tuVfMxH > vhAs.plrPk)		// if a new peak part load ratio (plr) (fraction of rated flow used)
 					{
 						vhAs.plrPk = vf/tuVfMxH;		// remember peak plr
 						vhAs.xPk = tuVfMxH;			// remember rated flow at which peak plr occurred, 6-97
 					}
-#endif
 				setToMax( qhPk, (ah->ts - zp->tz) * cz);	// record new high Btuh peak to zone. @ zone ?. Negative if not heating.
 				// merge in subhour final values of flags set if too little dT to autoSize tuVfMxH (eg weak coil)
 				dtLoH |= 					// invokes msg in tu_endAutosize (via dtLoHAs) if set on converged day
@@ -1689,15 +1726,11 @@ x                setToMax( vhAs.plrPk, vf/tuVfMxH);   	// record new plr peak (f
 				float vf = cv / ah->airxTs;  		// cool cfm load @ vav box: heat cap flow * conv factor @ supply temp.
 				setToMax( vcAs.ldPk, vf);   			// record new cfm peak
 				if (tuVfMxC)				// don't /0
-#if 0
-x                setToMax( vcAs.plrPk, vf/tuVfMxC);   	// record new plr peak @ vav box
-#else // xPk stuff, 6-97
 					if (vf/tuVfMxC > vcAs.plrPk)		// if a new peak plr @ vav box
 					{
 						vcAs.plrPk = vf/tuVfMxC;		// record peak plr
 						vcAs.xPk = tuVfMxC;			// record rated flow at which peak plr occurred, rob 6-97
 					}
-#endif
 				setToMin( qcPk, (ah->ts - zp->tz) * cz);	// record new peak cool Btuh load @ zone. @ zone?  normally Negative.
 				// merge in subhour final values of flags set if too little dT to autoSize tuVfMxC (eg weak coil)
 				dtLoC |= 			// invokes msg in tu_endAutosize (via dtLoHAs) if set on converged day
@@ -2716,6 +2749,14 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	ztuMdSets(m);				// set tu tuhc.q's and c's; .use's; aqO/bO/tzO, wcO/cO/wzO, possibly ahPtf.
 	// 10-92: conditionally sets ahClf using tz, wz, tu cz, Pr's.
 
+#if defined( _DEBUG)
+	if (Top.jDay == 1)
+	{
+		if (t < 70.)
+			printf("\nt=%0.3f q=%0.1f", t, q);
+	}
+#endif
+
 // zone's TOTAL (sensible) hvac power.        q = sigma(lhQ) + sigma(Ts - tz) * c     	where c is cap flow rate, Btuh/F.
 //                                     thus   q = sigma(lhQ) + sigma(Ts*c) - tz*sigma(c)
 	zn_qsHvac = q				// power of active (tstat ctrl'd, not pegged) zhx  [qM, tz not stored yet]
@@ -2723,6 +2764,14 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 			 - t * zn_bHvO;    	// - tz * sigma(c) for set output and pegged zhx's
 	// why not compute zn_qsHvac as  bLdSh * t - aqLdSh?  Cuz throws in all roundoff error, putting many .000's in reports.
 	// [note zn_qsHvac may be updated by AH:antRatTs when it adjusts tz.]
+
+#if defined( _DEBUG)
+	if (Top.jDay == 1)
+	{
+		if (fabs(zn_qsHvac) < .01)
+			printf("\n0 load");
+	}
+#endif
 
 // zone's latent power, similarly.      Moisture inflow = sigma(c * (ws - wz)) = sigma(c*ws) - wz*sigma(c).
 	DBL wDiffC = 0;

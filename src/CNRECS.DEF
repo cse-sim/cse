@@ -568,14 +568,16 @@ o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
     *h HUMRAT_GZ wOPvHr		// .. previous hour (used to compute -HrAv)
     *h HUMRAT_GZ wOHrAv		// .. hour average (for $ variable)
     *s HUMRAT_GZ wOSh		// .. at end current subhour: used throughout zones and systems models in program
+    *s HUMRAT_GZ tp_wOShChangeBase  // outdoor humidity ratio saved for tp_wOShChange detection
     *s FLOAT hOSh			// outdoor enthalpy at end subhour. used at in AH::doEco, TOWERPLANT::towModel. 9-92.
     *s FLOAT tp_airxOSh		// air flow heat transfer @tDbOSh (vhc*60) (Btuh/cfm-F).
     *s FLOAT tp_rhoMoistOSh		// outdoor moist air density at end of subhour, lbm/ft3
     *s FLOAT tp_rhoDryOSh		// outdoor dry air density at end of subhour, lbm/ft3
 
 // TOP: runtime: iteration control flags
-    //each of the following is TRUE if the indicated class should be checKed for call-flagged or compute-flagged objects.
-    //used in cnztu.cpp:hvacIterSubhr; set anywhere individual object call- and compute- flags are set.
+    // each of the following is TRUE if the indicated class should be checKed for call-flagged or compute-flagged objects.
+    // used in cnztu.cpp:hvacIterSubhr; set anywhere individual object call- and compute- flags are set.
+    *s BOO tp_wOShChange    // TRUE iff non-negligible change in outdoor humidity ratio
     *s *hide BOO ztuKf  	// zone terminals
     *s *hide BOO ahKf		// AHs (air handlers)
     *s *hide BOO ahKf2		// AHs: secondary flag to recall only after zones done again, eg for non-convergence
@@ -2214,7 +2216,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_BegSubhr1();"
     *declare "RC zn_BegSubhr2();"
     *declare "RC zn_InitSubhr();"
-    *declare "RC zn_LoadsSubhr( BOO azCf);"
+    *declare "RC zn_SetZtuCfIf( BOO azCf);"
     *declare "void zn_GetAirState( AIRSTATE& as) const { as.as_Set( tz, wz); }"
     *declare "void zn_GetAirStateLs( AIRSTATE& as) const { as.as_Set( tzls, wzls); }"
     *declare "bool zn_HasTerminal() const { return tu1 != 0; }"
@@ -2635,7 +2637,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
     						// contains subscript of active ZHX, or MDS_FLOAT (-1) for floating mode.
 
 // ZNR runtime: temps used by air handler, not valid outside of air handler
-    *s *e *hide DBL tuCz	// zone flow: tu->znC(tu->aCv): cv less leaks (terminal flow, set/used here by AH::upCouple())
+    *s *e *hide DBL tuCz	    // zone flow: tu->znC(tu->aCv): cv less leaks (terminal flow, set/used here by AH::upCouple())
     *s *e *hide DBL tuCzWas   	// prior zone flow -- tu->znC(tu->aCv) at entry to ah (likewise)
 
     /* note 1: items set at end interval: should they be flagged *e?
@@ -2658,9 +2660,9 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 // ZNR runtime: change flags for recompute control. Cleared in ztuCompute. "story" carefully to avoid contradictory uses.
     //re terminal code inputs, cleared in ztuCompute().
     *s *e *hide BOO spCf    	// setpoint of any tu or natvent zhx for zone changed (exman chaf's, cnztu.cpp): redo mode sequence.
-    *s *e *hide BOO ztuCf	/* terminal change other than setpoint: zone load (aqLdSh/bLdSh, w), inputs, limits, .
-    				   set: loadsHourbeg, loadsSubhr, hvacIterSubhr, TU::tu_BegHour, AH::ah_SetMode,ahVshNLims,flagTus, , .
-    				   tested/cleared: ztuCompute.  tested to call ztuCompute: hvacIterSubhr. */
+    *s *e *hide BOO ztuCf	    // terminal change other than setpoint: zone load (aqLdSh/bLdSh, w), inputs, limits, .
+            				    // set: loadsHourbeg, loadsSubhr, hvacIterSubhr, TU::tu_BegHour, AH::ah_SetMode,ahVshNLims,flagTus, , .
+    				            // tested/cleared: ztuCompute.  tested to call ztuCompute: hvacIterSubhr. */
 
 // ZNR runtime: Pr's: prior values for comparison in setting above change flags
     *s *e *hide DBL   zn_xqHrPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
@@ -5704,7 +5706,8 @@ RECORD AH "airHandler" *RAT
 // Each AH record describes one AIR HANDLER (Niles' terminology; formerly a "generic subsystem"), including
 // supply and return fans, outside air control, economizer, heat and cool coils, supply temperature regulation,
 //         and (probably deferred) warmup, optimum start, and setback/setup control.
-// Member names begin with ah-, py-, sfan-, rfan-, and oa-.
+// Member names begin with ah-, py-, sfan-, rfan-, and oa- (or have ah_ prefix)
+    *prefix ah_
 
     *declare "RC setup();"
     *declare "void fazInit( int isAusz);"
@@ -6134,8 +6137,8 @@ RECORD AH "airHandler" *RAT
     *s *e *hide HUMRAT wr1NxPr		// return humidity ratio (after leak) ditto
     *s *e *hide OFFAVAILVC hcSchPr	// prior value of heat coil schedule ahhc.Sch
     *s *e *hide OFFAVAILVC ccSchPr	// prior value of coil coil schedule ahhc.Sch
-    *s *e *hide TEMP tDbOShPr		// prior subhour-end outdoor temp
-    *s *e *hide HUMRAT wOShPr		// prior subhour-end outdoor hum rat
+    *s *e *hide TEMP ah_tDbOShPr		// prior calc subhour-end outdoor temp, F
+    *s *e *hide HUMRAT ah_wOShPr		// prior calc subhour-end outdoor hum rat
 
   // ah run... These Pr's used by cnah2.cpp:AH::flagTusIf.
     *s *e *hide TEMP tsPr    		// last ts for which terminals computed, tested/updated by hvacIterSubhr NOT BY AH
@@ -6265,7 +6268,7 @@ RECORD TU "terminal" *RAT		// TERMINAL
     //next 2: if neither given, no LH; if setpoint given, tstat-controlled; else if tuQMnLh given, constant power.
     *h TEMP_GZ   tuTLh  	// local heating set point for tstat control. hourly. default: no tstat control.
     *h POWER_GEZ tuQMnLh	// desired continuous output (Btuh) if no setpoint, or minimum if tuTLh given, hourly, default 0.
-    //rest of LH variables disallowed if neither of above given (no LH)
+                            //  rest of LH variables disallowed if neither of above given (no LH)
 
     *h POWER_GEZ tuQMxLh	// max desired power, subject to plant limits, Btuh, hourly, RQD if tuTLh given, else disallowed.
     //*r POWER_GEZ tuQDsLh	//   was intended to apportion power upon plant overload; instead, using tuhcCaptRat, 9-92.
@@ -6432,17 +6435,17 @@ RECORD TU "terminal" *RAT		// TERMINAL
 //=============================================================================
 RECORD ZHX "zhx" *RAT		// zone hvac transfer
 	// Run only.  Each record is info about HVAC of one zone by one terminal capability or (future) vent.
-			// name is copied from terminal (thus not unique), or zone if (future) vent.
-			// ownTi tentatively 3-92 set to zi despite ambiguity of multiple zhx's for same zone and terminal
+	// name is copied from terminal (thus not unique), or zone if (future) vent.
+	// ownTi tentatively 3-92 set to zi despite ambiguity of multiple zhx's for same zone and terminal
 
     // MUCH REDUNDANCY... generally 3-19-92 trying to replace zhx use with tu use; later grep & gc unnec zhx members.
     //			  basic ZHX use to keep: is what to sort to establish mode sequence.
 
 // setup time members
     *r ZHXTY zhxTy	// zhx type (cndtypes.def): LhSo, LhStH, ArSo, ArStH, ArStC, or (future) nv.
-    			// testable bits: So = set output, StH, StC, St = set temp (both),
-    			//                Lh = local heat (coil in terminal, or baseboard),
-    			//                Ar = heat/cool with air from air handler.
+    			    // testable bits: So = set output, StH, StC, St = set temp (both),
+    			    //                Lh = local heat (coil in terminal, or baseboard),
+    			    //                Ar = heat/cool with air from air handler.
 
     *h TEMP sp    	// setpoint if heat xfer is tstat controlled (SETTMP), else unused (hourly variability)
     *r SI spPri   	// setpoint priority: low #'s used first if setpoints equal, so can eg peg air heat b4 using local heat.
@@ -6462,7 +6465,7 @@ RECORD ZHX "zhx" *RAT		// zone hvac transfer
 
 // runtime members
     *h SI mda		// for SETTMP, mode (mdSeq[] subscr) in which this is active (ctrl'd by its sp) ZHX.
-    			// in lower modes, heat is max, cool min; vica versa in hier modes.
+    			    // in lower modes, heat is max, cool min; vica versa in hier modes.
 *END		// ZHX
 
 //=============================================================================
@@ -6766,6 +6769,7 @@ RECORD CHILLER "chiller" *RAT	// chiller. subobject of COOLPLANT. ChiB, ChB.
 //=============================================================================
 RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLANTs, HPLOOP hx's. TpiB, TpB.
 
+    *prefix twr_
 
     // in base class: .name, .ownTi, more.
     // Name required, for reference in COOLPLANTs and/or HPLOOPs
@@ -6859,8 +6863,8 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *r DBL ntuAOd     		// .. at off-design conditions, if given. member only as debug aid.
 
 // TOWERPLANT runtime output member
-    *s *e DBL /*TEMP*/ tpTs   	/* temperature of leaving water, for use by chillers and hploop hx's. Niles twoDel.
-				   set by tpEstimate and tpCompute. tp- to protect against confusion with AH::ts.  */
+    *s *e DBL /*TEMP*/ tpTs   	// temperature of leaving water, F. For use by chillers and hploop hx's. Niles twoDel.
+	            			    // set by tpEstimate and tpCompute. tp- to protect against confusion with AH::ts.
 
 // TOWERPLANT runtime mostly-internal members
     *s *e BOO tpClf		// call-flag: set nz if must call tpCompute so it can test tr, etc to see if computation needed.
@@ -6898,9 +6902,9 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
 // TOWERPLANT runtime prior values for change detection
     *s *e TEMP  tpTsSpPr  	// for tpEstimate
     *s *e TEMP  tpTsEstPr	// for tpEstimate
-    *s *e TEMP  tpTsPr   	// for tpCompute
-    *s *e TEMP tDbOShPr		// for tpCompute
-    *s *e HUMRAT wOShPr		// for tpCompute
+    *s *e TEMP  twr_tpTsPr  // leaving water temp at last tpCompute, F (unused?)
+    *s *e TEMP twr_tDbOShPr	// outdoor drybulb temp at last tpCompute, F
+    *s *e HUMRAT twr_wOShPr	// outdoor humidity ratio at last tpCompute, F
 *END		// TOWERPLANT
 
 #if 0		// template

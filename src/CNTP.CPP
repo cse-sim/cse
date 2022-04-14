@@ -155,8 +155,8 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 	   Added 1-95 at addition of SHINTERP, may actually be covered some other way that I don't see today.
 	   TESTED (file T81, SHINTERP undef, 1-95): changed a few tp details in probe report without changing zone or ah results. */
 #if 1
-	else if (ABSCHANGE(Top.tDbOSh, tDbOShPr)    >= Top.absTol)     tpPtf++;
-	else if (ABSCHANGE(Top.wOSh, wOShPr)        >= Top.absHumTol)  tpPtf++;
+	else if (ABSCHANGE(Top.tDbOSh, twr_tDbOShPr)    >= Top.absTol)     tpPtf++;
+	else if (ABSCHANGE(Top.wOSh, twr_wOShPr)        >= Top.absHumTol)  tpPtf++;
 #else//tried this then decided tolerances inappropriate
 	x   else if (RELCHANGE(Top.tWbO, tWbOPr)   >= Top.relTol)  tpPtf++;
 	x   else if (RELCHANGE(Top.hO, hOPr)       >= Top.relTol)  tpPtf++;
@@ -239,9 +239,9 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 	//#endif
 
 // update priors. Also, cp priors updated in change-check loop above.
-	tpTsPr = tpTs;
-	tDbOShPr = Top.tDbOSh;
-	wOShPr = Top.wOSh;
+	twr_tpTsPr = tpTs;		// unused?
+	twr_tDbOShPr = Top.tDbOSh;
+	twr_wOShPr = Top.wOSh;
 
 // clear change flags
 	tpPtf = FALSE;

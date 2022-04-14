@@ -1170,10 +1170,10 @@ x	 }
 		     						   (tr2 change < absTol) and cr1 may be tu-limited */
 			&&  ABSCHANGE( wr1Nx, wr1NxPr) < Top.absHumTol      	// if return humidity "unchanged" (tol .00003 or as changed)
 
-			&&  ABSCHANGE( Top.tDbOSh, tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
+			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
 			/* if outdoor air temp "unchanged" relative to use: obscure-case
 			   insurance; makes no difference in existing tests 6-24-92. */
-			&&  ABSCHANGE( Top.wOSh, wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
+			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
 			/* if oudoor w "unchanged" relative to use.
 			   insurance added 1-95 in preparation for SHINTERP.
 			   TESTED 1-95: adds an occasional iteration in Rob's tests,
@@ -1276,8 +1276,8 @@ x					   TRUE may enable some autoSizing stuff eg in ztuMode. 7-20-95. */
 	tr2NxPr = tr2Nx;
 	cr1NxPr = cr1Nx;
 	wr1NxPr = wr1Nx;
-	tDbOShPr = Top.tDbOSh;
-	wOShPr = Top.wOSh;
+	ah_tDbOShPr = Top.tDbOSh;
+	ah_wOShPr = Top.wOSh;
 	upPriors();				// update TU -Pr's for tests in ZNR.ztuMdSets
 	tsAhPr = ts;
 	VD hcSchPr = VD ahhc.sched;

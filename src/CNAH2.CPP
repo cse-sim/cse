@@ -3069,15 +3069,15 @@ void AH::antRatTs()			// anticipated return air conditions for current (changed)
 	{
 		ZNR *zp = ZrB.p + tu->ownTi;
 		DBL tz = zp->aTz;			// zone temp as modified by prior iterations and/or other ah's
-		DBL aCv = tu->aCv;    			// (prior) terminal vav flow.  Stored again below after possible change.
+		DBL aCv = tu->aCv;    		// (prior) terminal vav flow.  Stored again below after possible change.
 		DBL cz = tu->aCz();			// flow getting to zone: aCv less leaks to return
 		// following if-elseif cases update tz and/or cz & aCv as appropriate for use afterwards.
 		if (tu->useAr & (uSo|uMn|uMxH|uMxC))	// if constant flow
 		{
-			if (tu->bO==0.f)			// to a fixed temp zone (some other tu's setpoint) (as set up in ztuCompute)
+			if (tu->bO==0.f)		// to a fixed temp zone (some other tu's setpoint) (as set up in ztuCompute)
 				;					// just accumulate (below). cz, aCv and tz are set.
-			// can't monitor its zone mode changes without getting into its SETPOINT's AH's
-			// flow etc; don't know if that ah computed yet this iteration.
+									// can't monitor its zone mode changes without getting into its SETPOINT's AH's
+									// flow etc; don't know if that ah computed yet this iteration.
 			else     				// bO non-0: const flow to floating temp zone (as set up in ztuCompute)
 			{
 				// antRatTs...
