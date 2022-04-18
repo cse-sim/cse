@@ -24,52 +24,60 @@ Using ALTER (Section 4.5.1.2) with REPORTFILE, you can change the characteristic
 
 Name of REPORTFILE object, given immediately after the word REPORTFILE. Note that this name, not the fileName of the report file, is used to refer to the REPORTFILE in REPORTs.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **rfFileName=*path***
 
 path name of file to be written. If no path is specified, the file is written in the current directory. The default extension is .REP.
 
-  **Units**   **Legal Range**                          **Default**   **Required**   **Variability**
-  ----------- ---------------------------------------- ------------- -------------- -----------------
-              file name, path and extension optional                 Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "file name, path and extension optional",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **rfFileStat=*choice***
 
 Choice indicating what CSE should do if the file specified by *rfFileName*already exists:
 
-  ------------ ---------------------------------------------------------
-  OVERWRITE    Overwrite pre-existing file.
-
-  NEW          Issue error message if file exists at beginning of
-               session. If there are several runs in session using same
-               file, output from runs after the first will append.
-
-  APPEND       Append new output to present contents of existing file.
-  ------------ ---------------------------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  OVERWRITE,    Overwrite pre-existing file.
+  NEW,          Issue error message if file exists at beginning of session. If there are several runs in session using same file&comma; output from runs after the first will append.
+  APPEND,       Append new output to present contents of existing file.
+END
+%>
 
 If the specified file does not exist, it is created and *rfFileStat* has no effect.
 
-  **Units**   **Legal Range**          **Default**   **Required**   **Variability**
-  ----------- ------------------------ ------------- -------------- -----------------
-              OVERWRITE, NEW, APPEND   OVERWRITE     No             constant
+<%= member_table(
+  units: "",
+  legal_range: "OVERWRITE, NEW, APPEND",
+  default: "OVERWRITE",
+  required: "No",
+  variability: "constant") %>
 
 **rfPageFmt=*Choice***
 
 Choice controlling page formatting. Page formatting consists of dividing the output into pages (with form feed characters), starting a new page before each report too long to fit on the current page, and putting headers and footers on each page. Page formatting makes attractive printed output but is a distraction when examining the output on the screen and may inappropriate if you are going to further process the output with another program.
 
-  ----- ----------------------------------------------------------------
-  Yes   Do page formatting in this report file.
+<%= csv_table(<<END, :row_header => false)
+  Yes,   Do page formatting in this report file.
+  No,    Suppress page formatting. Output is continuous&comma; uninterrupted by page headers and footers or large blank spaces.
+END
+%>
 
-  No    Suppress page formatting. Output is continuous, uninterrupted by
-        page headers and footers or large blank spaces.
-  ----- ----------------------------------------------------------------
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              Yes, No           Yes           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "YES, NO",
+  default: "YES",
+  required: "No",
+  variability: "constant") %>
 
 Unless page formatting is suppressed, the page formats for all report files are controlled by the TOP members *repHdrL, repHdrR, repLPP, repTopM, repBotM,*and *repCPL*, described in Section 5.1.
 
@@ -85,9 +93,12 @@ In addition to report file *page* headers and footers, individual REPORTs have *
 
 Optionally indicates the end of the report file definition. Alternatively, the end of the report file definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
