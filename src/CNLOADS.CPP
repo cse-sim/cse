@@ -507,26 +507,14 @@ x		}
 x	}
 #endif
 
-// SIMULATE SUBHOURLY SURFACES. Must follow (any future) subhouly solar gain determination, precede zone loop. Uses Top.tp_subhrDur.
-	loadsSurfaces( TRUE);					// below. TRUE = do subhourly (not hourly masses)
+// SIMULATE SUBHOURLY SURFACES
+// Must follow (any future) subhouly solar gain determination, precede zone loop. Uses Top.tp_subhrDur.
+	loadsSurfaces( TRUE);		// below. TRUE = do subhourly (not hourly masses)
 
 	TMRSTART( TMR_ZONE);
 
 // COMPUTE INTERZONE TRANSFERS and base (infil only) airnet
 	CSE_E( loadsIzxSh1() )
-
-#if !defined( CRTERMAH)
-// GLOBAL LOAD CHANGE CHECK: outdoor humidity -- change changes all zone loads, but does not show in a,b.
-	BOO azCf = FALSE;   			// TRUE for all-zones load change
-	static float wOShPr = 0.;
-	if (fabs(Top.wOSh - wOShPr) > Top.absHumTol) 	// if outdoor w changed .00003 (or as changed) or more (typ w = .0020++)
-		/* TESTED 6-13-92 (hourly wO): ztuCf for wO change improved simulation
-		   (and added iterations) when wO changes and all else constant. */
-	{
-		wOShPr = Top.wOSh; 		// save for comparison at start next subhour
-		azCf++;					// say set zp->ztuCf for all zones (passed to zn_LoadsSubHr() below)
-	}
-#endif
 
 	BOOL bDbPrint = DbDo( dbdZM);
 #if defined( _DEBUG)
@@ -687,7 +675,7 @@ x	}
 
 	}
 #endif
-#endif
+#endif	// CRTERMAH
 
 	RLUP( ZrB, zp)
 		rc |= zp->zn_CondixCR2();			// finalize zone for all modes (including OAV)
@@ -697,8 +685,7 @@ x	}
 
 	RLUP( ZrB, zp)
 	{	rc |= zp->zn_AirX();
-		if (!zp->zn_HasTerminal())
-			rc |= zp->zn_MoistureBalCR();
+		rc |= zp->zn_MoistureBalCR();
 		rc |= zp->zn_ComfortCR();
 #if !defined( CRTERMAH)
 		rc |= zp->zn_LoadsSubhr( azCf);	// insurance, may not be needed for CR
@@ -967,7 +954,7 @@ RSYS* ZNR::zn_GetRSYS()
 //-----------------------------------------------------------------------------
 const RSYS* ZNR::zn_GetRSYS() const
 {
-	RSYS* rs = RsR.GetAtSafe( i.zn_rsi);
+	const RSYS* rs = RsR.GetAtSafe( i.zn_rsi);
 	return rs;
 }		// ZNR::zn_GetRSYS
 //-----------------------------------------------------------------------------
@@ -1364,6 +1351,41 @@ void ZNR::zn_IdealHVAC()		// idealized space conditioning
 	}
 }		// ZNR::zn_IdealHVAC
 //-----------------------------------------------------------------------------
+void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working mbrs
+{
+
+	zn_rsAmfSup = cTot / Top.tp_airSH;		// cTot = air capacity flow, Btuh/F
+
+	zn_rsAmfRet = zn_rsAmfSup;
+
+	float cFlowSum = 0.f;
+	float tSupSum = 0.f;
+	float wSupSum = 0.f;
+	for (TU* tu = nullptr; nxTu(tu); )
+	{
+		if (tu->cz > 0.)
+		{
+			if (tu->ai)
+			{
+				const AH* ah = AhB.p + tu->ai;
+				cFlowSum += tu->cz;
+				tSupSum += tu->cz * ah->ah_tSup;
+				wSupSum += tu->cz * ah->ws;
+			}
+		}
+	}
+
+	if (frDiff( cFlowSum, cTot) > 0.001)
+		printf("\nFlow mismatch");
+
+	float tSup = cFlowSum <= 0.f ? 0.f : tSupSum / cFlowSum;
+	float wSup = cFlowSum <= 0.f ? 0.f : wSupSum / cFlowSum;
+
+	zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
+	zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_MoistureBalCR
+
+}		// ZNR::zn_MapTerminalResults
+//-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 {
 	RSYS* rs = zn_GetRSYS();
@@ -1408,6 +1430,14 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 		}
 #endif
 	}
+#if defined( CRTERMAH)
+	else if (zn_HasTerminal())
+	{
+		zn_MapTerminalResults();
+
+
+	}
+#endif
 	// else all known
 #if defined( ZNHVACFCONV)
 	zn_tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
@@ -1620,7 +1650,11 @@ RC ZNR::zn_AirX()		// total air exchanges etc
 	// air motion flag; indicates mechanical air moving in space
 	//   0=no, 1=yes; re evaluation of convective coefficients
 	// TODO: improve zn_airMode, does not handle e.g. whole house fan 10-10
+#if defined( CRTERMAH)
+	zn_airMode = zn_HasTerminal()
+#else
 	zn_airMode = i.znModel == C_ZNMODELCH_CNE
+#endif
 					? cTot != 0.		// CSE: check system air flow
 					: zn_qsHvac != 0.;	// CZM: assume any load means moving air
 

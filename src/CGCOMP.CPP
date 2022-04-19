@@ -1649,13 +1649,17 @@ void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 	if (!zn_IsConvRad())
 		return;
 
-	RSYS* rs = zn_GetRSYS();
-	if (rs)		// if zone is served by RSYS
+	const RSYS* rs = zn_GetRSYS();
+#if defined( CRTERMAH)
+	if (rs || zn_HasTerminal())
+#else
+	if (rs)
+#endif
 	{	// generate IZXFERs for associated supply/return air flow
 		zn_AddIZXFER( C_IZNVTYCH_ANSYSAIR, "SysI", &zn_sysAirI);
 		zn_AddIZXFER( C_IZNVTYCH_ANSYSAIR, "SysO", &zn_sysAirO);
 		// OAV: add conditional hole
-		if (rs->rs_CanOAV())
+		if (rs && rs->rs_CanOAV())
 		{	// this RSYS may operated in OAV mode
 			// add interzone vent whose size depends on flow
 			zn_AddIZXFER( C_IZNVTYCH_ANOAVRLF, "SysOAV", &zn_OAVRlfO);

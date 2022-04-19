@@ -448,7 +448,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *d DOY xJDay		// extended jDay: same for main sim, 512 heat autosizing, 529-540 cooling autosizing.
 
     *h SI iHr		// Hour of day, 0-23.  set/used: tp_MainSim()
-    *s SI iSubhr	// subhour of hour being simulated, 0.. .  set cnguts.cpp, used cnztu,cnvhac,cnguts,cgresult.cpp.
+    *s SI iSubhr	// subhour of hour being simulated, 0.. .  set cnguts.cpp
     *s SHOY shoy	// extended subhour of year, for reporting peaks: subhr + 4 * (hr + 24*xJDay). set/used: cnguts.
     *h BOO isDT		// 1 if daylight saving time in effect, 0 if not.  Unspecified time/date variables are daylight.
    // Standard Time variables, for weather file interface and solar calcs.  Note std time date changes an hour later than daylight.
@@ -2238,6 +2238,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_SetRSYSAmf( float fSize, int iAux);"
     *declare "void zn_SetRSYSAmfFromTSup();"
     *declare "void zn_IdealHVAC();"
+    *declare "void zn_MapTerminalResults();"
     *declare "RC zn_CondixCR2();"
     *declare "RC zn_AirFlowVsTsup();"
     *declare "int zn_AssessVentUtility();"
@@ -2377,7 +2378,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
      *h *e DBL /*POWER*/ znSGain	// zn's hr's sens gain (Btuh), total from zn's GAINs, to qsIgHr.
 									// set cnguts, used cnloads.
      // qsIgHr (just below) includes znSGain but excludes qrIgAir.
-     *h *e DBL /*POWER*/ znLGain	// latent gain (Btuh), from ditto, used by cnztu.cpp:ZNR::znW.
+     *h *e DBL /*POWER*/ znLGain	// latent gain (Btuh), from ditto, used by ZNR::znW.
      // additional accumulators for lighting end use gains, re daylighting, for NREL. set cnguts, used cnztu.cpp. 9-94.
       *h *e DBL /*POWER*/ znLitDmd	// lighting demand (before reduction by gnDlFrPow)
       *h *e DBL /*POWER*/ znLitEu	// lighting energy use (after reduction by gnDlFrPow; also posted to znS/LGain & meter).
@@ -6025,7 +6026,7 @@ RECORD AH "airHandler" *RAT
     *s *e *hide SI timesReEst	// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
     *s *e AHMODE ahMode			// what ah is doing: set to: ahOFF/ahFAN/ahHEATING/ahCOOLING/ahON(normal).
     					        //  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
-    *s *e DBL /*TEMP*/ ts		// supply temp FOR TERMINALS, set from working copy aTs at ahCompute exit.
+    *s *e DBL /*TEMP*/ ah_tSup	// supply temp FOR TERMINALS, set from working copy aTs at ahCompute exit.
     					        // Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
     *s *e DBL /*HUMRAT*/ ws		// supply air hum rat for TERMINALS, set from working copy aWs at ah exit.
     *s    DBL /*HUMRAT*/ wsls	// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
@@ -6272,10 +6273,10 @@ RECORD TU "terminal" *RAT		// TERMINAL
 
     *h POWER_GEZ tuQMxLh	// max desired power, subject to plant limits, Btuh, hourly, RQD if tuTLh given, else disallowed.
     //*r POWER_GEZ tuQDsLh	//   was intended to apportion power upon plant overload; instead, using tuhcCaptRat, 9-92.
-     				//   dflt was max(tuQMnLh,tuQMxLh) or RQD if any of those vbl & tuTLh or tuQMnLh given.
+     				        //   dflt was max(tuQMnLh,tuQMxLh) or RQD if any of those vbl & tuTLh or tuQMnLh given.
     *f SI_GZ tuPriLh		// priority if setpoint equals another, low #'s used first, dfl 100, disallowed if tuTLh not given.
     *f NOYESCH tuLhNeedsFlow	// YES to disable lh when tu fan off and central fan off or VAV flow 0 (coil in terminal).
-    				// NO if can heat without flow (baseboard).  default: NO.
+    				        // NO if can heat without flow (baseboard).  default: NO.
 
     *f *nest HEATCOIL tuhc	// subrecord for terminal coil, type ELECTRIC or HW.
 		// following terminal local heat inputs are in tuhc, and now more!:
@@ -6283,7 +6284,7 @@ RECORD TU "terminal" *RAT		// TERMINAL
     //				// default NONE if no local heat, else ELEC.
     ////sched: no schedule input for terminal coil: always available, do scheduling with setpoints or min/max heat.
     //POWER_GZ tuhcCaptRat   	// rated capacity (Btu/hr), constant, RQD.
-    //TI tuhcMtr		// MTR to which to charge energy use for non-plant-supported coil types.
+    //TI tuhcMtr		        // MTR to which to charge energy use for non-plant-supported coil types.
 
 // Terminal AIR HEAT/COOL input variables
 
@@ -6299,13 +6300,13 @@ RECORD TU "terminal" *RAT		// TERMINAL
 
     *i TI ai		// 0 or AH ss (subscript) for air handler serving tu (input as air handler name). RQD if sp or Mn given.
 
-    *s *e			// *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
-       AFLOW_GEZ tuVfMxH	// heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
-    *f AFLOW_GEZ tuVfMxH_As	// .. as determined by autoSizing, less variable, for probing.
+    *s *e			            // *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
+       AFLOW_GEZ tuVfMxH	    // heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
+    *f AFLOW_GEZ tuVfMxH_As	    // .. as determined by autoSizing, less variable, for probing.
     *f AFLOW_GEZ tuVfMxH_AsNov	// .. raw autoSizing result before oversize added, for report/probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
-    *s *e AFLOW_GEZ tuVfMxC	// cooling max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTC given else disallowed
-    *f AFLOW_GEZ tuVfMxC_As	// .. as determined by autoSizing, less variable, for probing.
+    *s *e AFLOW_GEZ tuVfMxC	    // cooling max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTC given else disallowed
+    *f AFLOW_GEZ tuVfMxC_As	    // .. as determined by autoSizing, less variable, for probing.
     *f AFLOW_GEZ tuVfMxC_AsNov	// .. raw autoSizing result before oversize added, for report/probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
@@ -6319,11 +6320,11 @@ RECORD TU "terminal" *RAT		// TERMINAL
   //Air heat/cool refinements to implement once program runs and convergence problems solved (Taylor):
 
     *f FRAC tuSRLeak	// leakage 0-.5 of supply air to return, increasing supply vol and return temp.  constant; dfl .05.
-     			// note this is fraction of current cfm, whereas ah leak (before VAV dampers) is fraction max cfm.
-			// add tfanOffLeak to this if terminal has fan that is not running.
+     			        // note this is fraction of current cfm, whereas ah leak (before VAV dampers) is fraction max cfm.
+			            // add tfanOffLeak to this if terminal has fan that is not running.
 
     *r FRAC tuSRLoss	// supply air to return plenum heat loss as a fraction 0 - .5 of supply air to return air
-     			// temperature difference, constant, default .1.  Not allowed if return is ducted.
+     			        // temperature difference, constant, default .1.  Not allowed if return is ducted.
 
      //*f BOO plenumRet	is a ZONE member.
 
@@ -6341,7 +6342,7 @@ RECORD TU "terminal" *RAT		// TERMINAL
     *r FRAC tfanOffLeak		// backdraft leakage when fan off, 0 to .25 of tfanVfDs, constant, dfl .1, or 0 if no fan.
 
     *nest FAN tfan		// terminal fan FAN subrecord.  If tfan.fanType is NONE, other tfan inputs disallowed.
-    		// the following terminal inputs are in tfan:
+    		            // the following terminal inputs are in tfan:
     //FANTYCH tfanType     	// NONE (default), SERIES, or PARALLEL.  constant.  Fan source is return air.
     // 				// parallel: fan runs when VAV flow low; tfan cfm is added to VAV cfm to get zone cfm.
     // 				// series always runs; if VAV cfm < tfan cfm, rest comes from RA.
@@ -6363,13 +6364,13 @@ RECORD TU "terminal" *RAT		// TERMINAL
     *r TI xiArH		// ss of ZHX for SETOUT air heat/cool or SETTEMP air heat capability
     *r TI xiArC		// ss of ZHX for tu's SETTEMP air cool, if any
 
-    //terminal capability existence / ctrl method flags, inferred from inputs:
-     *r TCCM cmLh	// was tuCmLh	// local heat: NONE=0; SETTMPH: tstat-controlled (setpoint given); or SETOUT (only output/flow given).
-     *r TCCM cmAr	// tuCmAr 	// air heat and cool: NONE=0, SETOUT, SETTMPH, SETTMPC, SETTMPBOTH = SETTMPH|SETTMPC.
+    // terminal capability existence / ctrl method flags, inferred from inputs:
+     *r TCCM cmLh	// local heat: NONE=0; SETTMPH: tstat-controlled (setpoint given); or SETOUT (only output/flow given).
+     *r TCCM cmAr	// air heat and cool: NONE=0, SETOUT, SETTMPH, SETTMPC, SETTMPBOTH = SETTMPH|SETTMPC.
 
 // TERMINAL RUNTIME variables for ZN/ZN2 control method interaction with air handler
     *r TI ctrlsAi	// ss of ah ctrl'd by this tu under ZN/ZN2 control method, this hour (setup time).
-    			// CAUTION: verify ah->ahTsSp==ZN or ZN2 -- may vary.
+    			    // CAUTION: verify ah->ahTsSp==ZN or ZN2 -- may vary.
     *s *e AHMODE wantMd	// terminal request to ctrl'd ah: HEATING, COOLING, OFF.  set in TU::estimate, ztuCompute, AH::wzczxxxx.
 
 // terminal runtime variables -- mostly inputs to terminal code
@@ -6382,27 +6383,27 @@ RECORD TU "terminal" *RAT		// TERMINAL
     *s *e DBL /*CFLOW*/ cMxC   	// air cool (SETTMPC) max flow this subhour (Btuh/F)
 
 // terminal runtime variables set within terminal code
-    *s *e TCUSE useLh		// local heat use this subhour: uNONE(0)/uSo/uMn/uStH/uMxH.
-    *s *e TCUSE useAr		// air cool/heat use this subhour, same plus uStC/uMxC.
+    *s *e TCUSE useLh		    // local heat use this subhour: uNONE(0)/uSo/uMn/uStH/uMxH.
+    *s *e TCUSE useAr		    // air cool/heat use this subhour, same plus uStC/uMxC.
     *s *e DBL /*POWER*/ qLhWant	// desired local heat: value > tuhc.q invokes plant off check in tuEndSubhr, 9-25-92.
 
 // terminal runtime variables -- OUTPUTS of terminal module, and some AH working storage
     // actual local heat output (Btuh) (former .qLh, 9-92) is in tuhc.q, 0 if required plant off or flow not present.
     *s *e DBL /*CFLOW*/ cv     	// actual heat cap flow rate at vav damper, current subHr (Btuh/F), official ztuCompute copy.
-    *s *e DBL /*CFLOW*/ cz	// zone heat cap flow rate, current subHr (Btuh/F): cv less leaks.  for probing.
-    *s *e DBL /*CFLOW*/ aCv	// working copy of cv for air handlers to use/modify then possibly abandon
-				// ah working cz: is computed by function aCz() (above) as required
+    *s *e DBL /*CFLOW*/ cz	    // zone heat cap flow rate, current subHr (Btuh/F): cv less leaks.  for probing.
+    *s *e DBL /*CFLOW*/ aCv	    // working copy of cv for air handlers to use/modify then possibly abandon
+				                // ah working cz: is computed by function aCz() (above) as required
 
 // terminal fan runtime variables
     *s *e BOO tfanRunning	// TRUE if terminal fan running this subhour (no backflow).
-    				// ztuCompute(?) must set when tfan implemented. NO CODE YET SETS THIS TRUE as of 5-92.
+    				        // ztuCompute(?) must set when tfan implemented. NO CODE YET SETS THIS TRUE as of 5-92.
     *s *e DBL /*CFLOW*/ tfanBkC	// terminal fan backflow (supply air to return or plenum) when fan not running:
-    				// tfan.vfDs*tfanOffLeak, converted to heat cap units @ current supply temp.
-    				// 0 if no terminal fan; user must use 0 if tfanRunning.
-    				// set by AIR HANDLER in AH:ahVshNLims, 5-92.
+    				            // tfan.vfDs*tfanOffLeak, converted to heat cap units @ current supply temp.
+    				            // 0 if no terminal fan; user must use 0 if tfanRunning.
+    				            // set by AIR HANDLER in AH:ahVshNLims, 5-92.
 
 // 'aq' and 'b' for this tu's zone EXCLUDING THIS TU, or b=0 if tz and c fixed elsewhere.
-//    how AH uses: float mode:     		 tz = (aqO + c*ts)/(bO+c)
+//    how AH uses: float mode:     tz = (aqO + c*ts)/(bO+c)
 //                 setpoint mode:  if bO non-0:  c = (tz*bO - aqO)/(ts-tz)
 //                                 bO==0:        c and tz fixed by some other terminal and ah, do not recompute.
 //    set by ztuMode; may be updated by AH (for other AH's) when ts changes.

@@ -3445,26 +3445,14 @@ label:
 	tu->aCv = aCv;						// store possibly-updated tu vav flow and zone temp
 	zp->aTz = tz;						// .. in ah's working variables
 
-		// humidity
-#if 1 //10-96: add znW args; replace switch with ?:
-		DBL znXLGainSink;
-		zp->aWz = zp->znW( Top.humMeth==C_HUMTHCH_PHIL
-						   ? tu->wcO + cz * (wsls + aWs)/2. 	// use average supply hum
-						   : tu->wcO + cz * aWs,      		// C_HUMTHCH_ROB: use latest supply hum
-						   tu->cO + cz,
-						   tz,					// this is .aTz. arg added 10-96.
-						   znXLGainSink );
-#else
-x       switch (Top.humMeth)			// update zone hum for latest supply hum and tu flow, per hum calc method
-x		{
-x         case C_HUMTHCH_PHIL:
-x			zp->aWz = zp->znW( tu->wcO + cz * (wsls + aWs)/2., tu->cO + cz);	// use average supply hum
-x			break;
-x         case C_HUMTHCH_ROB:
-x			zp->aWz = zp->znW( tu->wcO + cz * aWs, tu->cO + cz);
-x			break;  	// use latest supply hum
-x		}
-#endif
+	// humidity
+	DBL znXLGainSink;
+	zp->aWz = zp->znW( Top.humMeth==C_HUMTHCH_PHIL
+						? tu->wcO + cz * (wsls + aWs)/2. 	// use average supply hum
+						: tu->wcO + cz * aWs,      		// C_HUMTHCH_ROB: use latest supply hum
+						tu->cO + cz,
+						tz,					// this is .aTz. arg added 10-96.
+						znXLGainSink );
 
 		// fanF threshold and max
 #ifndef AUTOSIZE
@@ -3729,8 +3717,8 @@ BOO AH::flagTusIf()		// if ah output changed, flag served terminals' zones and r
 // propogates air handler changes, for ahEstimate and ahCompute (called AFTER ts & ws updated).
 // Moved here from hvacIterSubhr loop, 10-15-92.
 {
-	DBL dt = ts - trNx;					// current delta-T thru air handler
-	DBL tsChg = ABSCHANGE(ts, tsPr);			// change in supply temp ts, current vs prior
+	DBL dt = ah_tSup - trNx;					// current delta-T thru air handler
+	DBL tsChg = ABSCHANGE(ah_tSup, tsPr);		// change in supply temp ts, current vs prior
 	if ( tsChg > fabs(dt) * RELoverABS			// ts change vs ah's dt: keep iterating while system floating up or down
 			||  tsChg > Top.absTol				// ts (supply temp) change > .1 degree (or as changed)
 			||  ABSCHANGE( ws, wsPr) > Top.absHumTol		// ws (supply humidity) change > .00003 (or as changed)
@@ -3740,7 +3728,7 @@ BOO AH::flagTusIf()		// if ah output changed, flag served terminals' zones and r
 		/* 10-92 Now that it is possible to ahCompute twice between ztuComputes, ideally the following Priors would be updated
 		   at ztuCompute exit -- this way, they can differ from values last used in ztuCompute by as much as tolerance.
 		   Would require making them tu members and having tu loop here. Do when need found. */
-		tsPr = ts;					// update comparators (change reference)
+		tsPr = ah_tSup;					// update comparators (change reference)
 		wsPr = ws;					// ..
 		dtPr = dt;					// ..
 		return TRUE;					// say did flag them
