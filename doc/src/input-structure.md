@@ -621,7 +621,7 @@ Four special statements, AUTOSIZE, UNSET, REQUIRE, and FREEZE, add flexibility i
 
 #### AUTOSIZE
 
-AUTOSIZE followed by a member name sets the member name to be size by CSE. The option to *AUTOSIZE* a data field will be shown under the legal range. This is useful for large simulations where designs conditions might be difficult to gather.
+AUTOSIZE followed by a member name, sets the member name to be sized by CSE. The option to *AUTOSIZE* a data field will be shown under the legal range and only applies for airflow and heating/cooling capacity from HVAC inputs. The user may opt to use this function to request CSE to perform design sizing calculations for HVAC systems from the [design parameters provided](#top-autosizing).
 
 #### UNSET
 
