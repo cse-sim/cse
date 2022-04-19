@@ -3349,7 +3349,7 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 // wc:      Rob:  sigma tu->c * ws
 //          Phil: sigma tu->c*(ws + wsls)/2.
 // c:       sigma tu->c: total supply flow into zone, heat cap units.
-	DBL aw, bw; 							// a and b for humidity balance equation
+	
 	DBL M = i.znVol * Top.airDens(_tz);		// mass of air in zone (use average temp (_tz+tzls)/2. ?? )
 	DBL _wz = 0;
 	float _wo = Top.wOSh;		// outdoor humidity
@@ -3362,6 +3362,7 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 		// compute humidity
 		switch (Top.humMeth)		// compute zone humidity by selected method.  Note that argument "wc" differs by method.
 		{
+			DBL aw, bw; 				// a and b for humidity balance equation
 		case C_HUMTHCH_ROB:  			// Rob's basic aw/bw method, like temperature
 			bw = M/Top.tp_subhrDur   		// denominator.  M/t,
 				 + (c + zn_uaInfil)/Top.tp_airSH;		//   sigma(m): divide by airSH to get mass flow from heat cap flow.
