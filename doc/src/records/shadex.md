@@ -6,17 +6,23 @@ SHADEX describes an object that shades other building surfaces using an advanced
 
 Name of photovoltaic array. Give after the word SHADEX.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **sxMounting=*choice***
 
 Specifies the mounting location of the shade.  sxMounting=Site indicates the SHADEX position is fixed and is not modified if the building is rotated.  The position of SHADEXs with sxMounting=Building are modified to include the effect of building rotation specified via [Top bldgAz](#bldgAzm)
 
-  **Units**   **Legal Range**        **Default**   **Required**   **Variability**
-  ----------- ---------------------- ------------- -------------- -----------------
-              Building or Site        Site           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "Building or Site",
+  default: "Site",
+  required: "No",
+  variability: "constant") %>
 
 **sxVertices=*list of up to 36 floats***
 
@@ -30,22 +36,23 @@ For example, to specify a rectangular shade "tree" that is 10 x 40 ft, facing so
 
     sxVertices = 5, -100, 0,   15, -100, 0,  15, -100, 40,  5, -100, 40
 
-  ----------------------------------------------------------------------
-  **Units** **Legal Range** **Default** **Required**     **Variability**
-  --------- --------------- ----------- ---------------- ---------------
-  ft         unrestricted     *none*     9, 12, 15, 18,      constant
-                                         21, 24, 27, 30,
-                                         33 or 36
-                                         values
-  ----------------------------------------------------------------------
+<%= member_table(
+  units: "ft",
+  legal_range: "unrestricted",
+  default: "*none*",
+  required: "9, 12, 15, 18, 21, 24, 27, 30, 33 or 36 values",
+  variability: "constant") %>
 
 **endSHADEX**
 
 Optionally indicates the end of the SHADEX definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 

@@ -6,33 +6,45 @@ PERIMETER defines a subobject belonging to the current zone that represents a le
 
 Optional name of perimeter.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **prLen=*float***
 
 Length of exposed perimeter.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft          *x* $>$ 0         *none*        Yes            constant
+<%= member_table(
+  units: "ft",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **prF2=*float***
 
 Perimeter conduction per unit length.
 
-  **Units**      **Legal Range**   **Default**   **Required**   **Variability**
-  -------------- ----------------- ------------- -------------- -----------------
-  Btuh/ft-^o^F   *x* $>$ 0         *none*        Yes            constant
+<%= member_table(
+  units: "Btuh/ft-^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **endPerimeter**
 
 Optionally indicates the end of the perimeter definition.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 

@@ -18,34 +18,39 @@ AIRHANDLER is designed primarily to model a central system that supplies hot or 
 
 Name of air handler: give after the word AIRHANDLER. Required for reference in TERMINALs.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 Yes            
+
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **ahSched=*choice***
 
 Air handler schedule; OFF or ON, hourly schedulable by using CSE expression.
 
-  ------ ---------------------------------------
-  OFF    supply fan off; air handler not
-         operating. Old date? Note: (future)
-         Taylor setback/setup control in effect,
-         when implemented.
+<%= csv_table(<<END, :row_header => false)
+  OFF,    supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
+  ON,     supply fan runs&comma; at varying volume according to TERMINAL demand (except if *ahFanCycles* = YES&comma; fan cycles on and off at full volume).
+END
+%>
 
-  ON     supply fan runs, at varying volume
-         according to TERMINAL demand (except if
-         *ahFanCycles* = YES, fan cycles on and
-         off at full volume).
-  ------ ---------------------------------------
 
 The following might be used to run an air handler between 8 AM and 5 PM:
 
         ahSched = select(  (\$hour > 8 && \$hour <= 5),  ON,
                                               default, OFF );
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              ON/OFF            ON            No             hourly
+
+<%= member_table(
+  units: "",
+  legal_range: "ON/OFF",
+  default: "ON",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **fanOversize=*float***
 
@@ -64,71 +69,18 @@ Fraction oversize for autosized fan(s).
 
 Supply temperature setpoint numeric value OR\* choice of control method (WZ, CZ, RA, ZN, or ZN2):
 
-  ---------- ---------------------------------------
-  *float*    A numeric value specifies the supply
-             temperature setpoint. An expression can
-             be used to make dependent on time,
-             weather, etc.
-
-  WZ         Warmest Zone: for cooling, sets the
-             supply temperature setpoint each
-             sub??hour so that the control zone (see
-             *ahWzCzns*) requiring the coolest
-             supply temperature can meet its load
-             with its VAV damper 90% of the way from
-             its minimum opening to its maximum,
-             that is, at a flow of: *tuVfMn* +
-             .9(*tuVfMxC* - \* tuVfMn\*).
-
-  CZ         Coolest Zone: analogous to WZ, but for
-             heating
-
-  RA         Supply temperature setpoint value is
-             controlled by return air temperature
-             (this cannot be done with a CSE
-             expression without lagging a subhour).
-             See *ahTsRaMn* and *ahTsRaMx*.
-
-  ZN         Causes air handler to switch between
-             heating, OFF, and cooling as required
-             by the load of a single zone. When the
-             zone thermostat (modeled through the
-             *tuTC* and *tuTH* inputs) calls for
-             neither heating nor cooling, the air
-             handler shuts down, including stopping
-             its fan(s). Changes *ahFanCycles*
-             default to YES, to simulate a constant
-             volume, fan cycling system.
-
-             Supply temperature setpoint value when
-             *ahFanCycles* = YES is taken from
-             *ahTsMn* for cooling, from *ahTsMx* for
-             heating (actual temperatures expected
-             to be limited by coil capacity since
-             fan is running at full flow). When
-             *ahFanCycles* = NO, the setpoint is
-             determined to allow meeting the load,
-             as for WZ and CZ.
-
-             When the zone is calling for neither
-             heat nor cold, the air handler shuts
-             down, including stopping its fan(s),
-             regardless of the *ahFanCycles* value.
-
-  ZN2        Causes air handler to switch between
-             heating, cooling, and FAN ONLY
-             operation as required by the load of a
-             single zone. To model a constant volume
-             system where the fan runs continuously,
-             use ZN2 and set the terminal minimum
-             flow (*tuVfMn*) equal to the maximum
-             (*tuVfMxC* and/or *tuVfMxH*).
-
-             When *ahTsSp* is ZN2, the supply
-             temperature setpoint is determined to
-             allow meeting the load, as for WZ and
-             CZ, described above.
-  ---------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+  *float*, A numeric value specifies the supply temperature setpoint. An expression can be used to make dependent on time&comma; weather&comma; etc.
+  WZ, Warmest Zone: for cooling&comma; sets the supply temperature setpoint each sub??hour so that the control zone (see*ahWzCzns*) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum&comma; that is&comma; at a flow of: *tuVfMn* + .9(*tuVfMxC* - \* tuVfMn\*).
+  CZ, Coolest Zone: analogous to WZ&comma; but for heating
+  RA, Supply temperature setpoint value is controlled by return air temperature (this cannot be done with a CSE expression without lagging a subhour). See *ahTsRaMn* and *ahTsRaMx*.
+  ZN, Causes air handler to switch between heating&comma; OFF&comma; and cooling as required by the load of a single zone. When the zone thermostat (modeled through the *tuTC* and *tuTH* inputs) calls for neither heating nor cooling&comma; the air handler shuts down&comma; including stopping its fan(s). Changes *ahFanCycles* default to YES&comma; to simulate a constant volume&comma; fan cycling system.
+  , Supply temperature setpoint value when *ahFanCycles* = YES is taken from *ahTsMn* for cooling&comma; from *ahTsMx* for heating (actual temperatures expected to be limited by coil capacity since fan is running at full flow). When *ahFanCycles* = NO&comma; the setpoint is determined to allow meeting the load&comma; as for WZ and CZ.
+  , When the zone is calling for neither heat nor cold&comma; the air handler shuts down&comma; including stopping its fan(s)&comma; regardless of the *ahFanCycles* value.
+  ZN2, Causes air handler to switch between heating&comma; cooling&comma; and FAN ONLY operation as required by the load of a single zone. To model a constant volume system where the fan runs continuously&comma; use ZN2 and set the terminal minimum flow (*tuVfMn*) equal to the maximum (*tuVfMxC* and/or *tuVfMxH*).
+ , When *ahTsSp* is ZN2&comma; the supply temperature setpoint is determined to allow meeting the load&comma; as for WZ and CZ&comma; described above.
+END
+%>
 
 Only when *ahTsSp* is ZN or ZN2 does AIRHANDLER switches between heating and cooling supply temperatures according to demand. In other cases, there is but a single setpoint value or control method (RA, CZ, or WZ); if you want the control method or numeric value to change according to time of day or year, outside temperature, etc., your CSE input must contain an appropriate conditional expression for *ahTsSp*.
 
@@ -136,72 +88,29 @@ Unless *ahTsSp* is ZN or ZN2, the AIRHANDLER does not know whether it is heating
 
 Giving *ahTsSp* is disallowed for an air handler with no economizer, no heat coil and no cooling coil. Such an AIRHANDLER object is valid as a ventilator; its supply temperature is not controlled. but rather determined by the outside temperature and/or the return air temperature.
 
-  ---------------------------------------------------------------------------
-  **Unit** **Legal**        **Default**   **Required**       **Variability**
-           **Range**
-  -------- --------------- ------------- ------------------ -----------------
-  ^o^F     *number*, RA\*,   0            YES, if coil(s)    hourly
-            WZ, CZ,                       or economizer    
-            ZN\*\*,                       present
-            ZN2\*\*
-  ---------------------------------------------------------------------------
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*number*, RA\*, WZ, CZ, ZN\*\*, ZN2\*\*,",
+  default: "0",
+  required: "Yes, if coil(s) or economizer present",
+  variability: "hourly")
+  %>
 
 \* ahTsRaMn, ahTsRaMx, ahTsMn, and ahTsMx are *required* input for this choice.
 
 \*\* only a single ZONE may be used with these choices.
 
-  -----------------------------------------------------------------------
-  **To Model**            **Use**                 **Comments**
-  ----------------------- ----------------------- -----------------------
-  VAV heating *OR*        *ahTsSp* = *numeric     CSE models this most
-  cooling system          expression,* WZ, CZ, or directly
-                          RA                      
-
-  VAV system that both    Use a conditional       Also use expressions to
-  heats and cools (single expression to change    disable the unwanted
-  duct)                   *ahTsSp* between        coil and change each
-                          heating and cooling     zone's setpoints
-                          values on the basis of  according to same
-                          outdoor temperature,    condition as *ahTsSp*.
-                          date, or some other     For example, when
-                          condition.              heating, use
-                                                  *ahccSched* = OFF and
-                                                  *tuTC *= 999; and when
-                                                  cooling, use
-                                                  *ahhcSched* = OFF and
-                                                  *tuTH* = -99.
-
-  Dual duct heating /     Use two AIRHANDLERs     
-  cooling system                                  
-
-  Single zone VAV system  *ahTsSp* = ZN2          Supply fan runs, at
-  that heats or cools per                         flow *tuVfMn*, even
-  zone thermostat                                 when neither heating
-                                                  nor cooling. Supply
-                                                  temp setpoint
-                                                  determined as for CZ or
-                                                  WZ.
-
-  Single zone constant    *ahTsSp* = *ZN2*;       Supply fan circulates
-  volume system that      *tuVfMn* = *tuVfMxH* =  air even if neither
-  heats or cools per zone *tuVfMxC*               heating nor cooling.
-  thermostat, e.g. PSZ.                           Supply temp setpoint
-                                                  determined as for CZ or
-                                                  WZ. All *tuVf*'s same
-                                                  forces constant volume.
-
-  Single zone constant    *ahTsSp*= ZN; *ahTsMx*  *AhFanCycles* defaults
-  volume, fan cycling     = heat supply temp      to YES. Supply fan off
-  system that heats or    setpoint; *ahTsMn* =    when not heating or
-  cools per zone          cool supply temp        cooling. Flow when fan
-  thermostat,e.g. PTAC,   setpoint; *tuVfMn*= 0;  on is *tuVfMxH* or
-  RESYS, or furnace.      tuVfMxH = tuVfMxC       *tuVfMxC* as applicable
-                          normally; *sfanVfDs*    (or *sfanVfDs \*
-                          &gt;= max( *tuVfMxH,    sfanVfMxF* if smaller).
-                          tuVfMxC)* to minimize   
-                          confusion about flow    
-                          modeled.                
-  -----------------------------------------------------------------------
+<%= csv_table(<<END, :row_header => true)
+**To Model**,            **Use**,                 **Comments**
+VAV heating *OR* cooling system,   *ahTsSp* = *numeric expression&comma; * WZ&comma; CZ&comma; or RA, CSE models this most directly
+VAV system that both heats and cools (single duct), Use a conditional expression to change *ahTsSp* between heating and cooling values on the basis of outdoor temperature&comma; date&comma; or some other condition., Also use expressions to disable the unwanted coil and change each zone's setpoints according to same  as *ahTsSp*. For example&comma; when heating&comma; use *ahccSched* = OFF and *tuTC *= 999; and when cooling&comma; use *ahhcSched* = OFF and *tuTH* = -99.
+Dual duct heating cooling system,     Use two AIRHANDLERs
+Single zone VAV system that heats or cools per zone thermostat, *ahTsSp* = ZN2, Supply fan runs&comma; at flow *tuVfMn*&comma; even when neither heating nor cooling. Supply temp setpoint determined as for CZ or WZ.
+Single zone constant volume system that heats or cools per zone thermostat&comma; e.g. PSZ., *ahTsSp* = *ZN2*; *tuVfMn* = *tuVfMxH* = *tuVfMxC*, Supply fan circulates air even if neither heating nor cooling. Supply temp setpoint determined as for CZ or WZ. All *tuVf*'s same forces constant volume.
+Single zone constant volume&comma; fan cycling system that heats or cools per zone thermostat&comma; e.g. PTAC&comma; RESYS&comma; or furnace., *ahTsSp*= ZN; *ahTsMx* = heat supply temp setpoint; *ahTsMn* = cool supply temp setpoint; *tuVfMn*= 0; tuVfMxH = tuVfMxC normally; *sfanVfDs* &gt;= max( *tuVfMxH&comma; tuVfMxC)* to minimize confusion about flow modeled., *AhFanCycles* defaults to YES. Supply fan off when not heating or cooling. Flow when fan  on is *tuVfMxH* or *tuVfMxC* as applicable (or *sfanVfDs \* sfanVfMxF* if smaller).
+END
+%>
 
   : Using AIRHANDLER to Model Various Systems
 
@@ -212,50 +121,40 @@ extra para to permit page break after frame
 
 Determines whether the fan cycles with the zone thermostat.
 
-  ------ ---------------------------------------
-  YES    Supply fan runs only for fraction of
-         the subhour that the zone requests
-         heating or cooling. When running,
-         supply fan runs at full flow (i.e.
-         constant volume), as determined by the
-         more limiting of the air handler and
-         terminal specifications. Use with a
-         single zone only. Not allowed with
-         *ahTsSp* = ZN2.
+<%= csv_table(<<END, :row_header => false)
+YES, Supply fan runs only for fraction of the subhour that the zone requests heating or cooling. When running&comma; supply fan runs at full flow (i.e. constant volume)&comma; as determined by the more limiting of the air handler and terminal specifications. Use with a single zone only. Not allowed with *ahTsSp* = ZN2.
+NO, Normal CSE behavior for simulating VAV systems with continuously running (or scheduled)&comma; variable flow supply fans. (For constant volume&comma; fan always on modeling&comma; use NO&comma; and make *tuVfMn* equal to *tuVfMxH/C*.)
+END
+%>
 
-  NO     Normal CSE behavior for simulating VAV
-         systems with continuously running (or
-         scheduled), variable flow supply fans.
-         (For constant volume, fan always on
-         modeling, use NO, and make *tuVfMn*
-         equal to *tuVfMxH/C*.)
-  ------ ---------------------------------------
-
-  **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
-  ----------- ----------------- ------------------------------------ -------------- -----------------
-              YES,NO            YES when *ahTsSp*=ZN, NO otherwise   No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "YES, NO",
+  default: "YES when *ahTsSp*=ZN, NO otherwise",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **ahTsMn=*float***
 
 Minimum supply temperature. Also used as cooling supply temperature setpoint value under *ahTsSp* = ZN.
 
-  **Units**   **Legal Range**                                    **Default**   **Required**           **Variability**
-  ----------- -------------------------------------------------- ------------- ---------------------- -----------------
-  ^o^F        *no limit*; typically: 40 $\le$ *x* $\le$ 140^o^   0^o^F         Only for *ahTsSp*=RA   hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*no limit*; typically: 40 $\\le$ *x* $\\le$ 140^o^",
+  default: "0^o^F",
+  required: "Only for *ahTsSp*=RA",
+  variability: "hourly")
+  %>
 
 <!-- P to permit page break after frame -->
 
-  ------------------------------------------------------------------
-  **Units** **Legal**   **Default**   **Required**   **Variability**
-            **Range**
-  --------- ----------- ----------- ---------------- ---------------
-  ^o^F      *no limit*;  999^o^ F   Only for         hourly
-            typically:              *ahTsSp*=RA;
-            40 $\le$                recommend giving
-            *x* $\le$               for *ahTsSp*=ZN
-            140^o^                                 
-
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*no limit*; typically: 40 $\\le$ *x* $\\le$ 140^o^",
+  default: "999^o^ F",
+  required: "Only for *asTsSp*=RA; recommend giving for *ahTsSp*=ZN",
+  variability: "hourly") %>
 
 **ahTsMx=*float***
 
@@ -268,28 +167,23 @@ Maximum supply temperature. Also used as heating supply temperature setpoint val
 
 Specify zones monitored to determine supply temperature setpoint value (control zones), under *ahTsSp*=WZ and CZ respectively.
 
-  --------------- ---------------------------------------
-  *zone names*    A list of zone names, with commas
-                  between them. Up to 15 names may be
-                  given.
-
-  ALL\_BUT        May be followed by a a comma and list
-                  of up to 14 zone names; all zones on
-                  air handler other than these are the
-                  control zones.
-
-  ALL             Indicates that all zones with terminals
-                  connected to the air handler are
-                  control zones.
-  --------------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+*zone names*, A list of zone names&comma; with commas between them. Up to 15 names may be given.
+ALL\_BUT, May be followed by a a comma and list of up to 14 zone names; all zones on air handler other than these are the control zones.
+ALL, Indicates that all zones with terminals connected to the air handler are control zones.
+END
+%>
 
 A comma must be entered between zone names and after the word ALL\_BUT.
 
 <!-- P to permit page break after frame -->
 
-  **Units**   **Legal Range**                                  **Default**   **Required**   **Variability**
-  ----------- ------------------------------------------------ ------------- -------------- -----------------
-              *name(s) of ZONEs* ALL ALL\_BUT *zone Name(s)*   ALL           NO             hourly
+<%= member_table(
+  units: "",
+  legal_range: "*name(s) of ZONEs* ALL ALL\_BUT *zone Name(s)*",
+  default: "ALL",
+  required: "No",
+  variability: "hourly") %>
 
 **ahTsDsC=*float***
 
@@ -317,15 +211,12 @@ Heating design supply temperature, for sizing coil vs fan.
 
 Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since ahTsSp = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.
 
-  -----------------------------------------------------------------
-  **Units** **Legal** **Default**  **Required**     **Variability**
-            **Range**
-  --------- --------- ------------ ---------------- ---------------
-            name of a AIRHANDLER's If *ahTsSp* = ZN hourly
-            TERMINAL  TERMINAL, if with more than 1
-                      only one     TERMINAL
-
-  -----------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "name of a TERMINAL",
+  default: "AIRHANDLER's TERMINAL, if only one",
+  required: "If *ahTsSp* = ZN with more than 1 TERMINAL",
+  variability: "hourly") %>
 
 <!-- For page break -->
 
@@ -343,9 +234,12 @@ When the return air temperature is between *ahTsRaMn*and *ahTsRaMx*, the supply 
 
 If return air moves outside the range *ahTsRaMn* to *ahTsRaMx*, the supply temperature setpoint does not change further.
 
-  **Units**   **Legal Range**                                    **Default**   **Required**           **Variability**
-  ----------- -------------------------------------------------- ------------- ---------------------- -----------------
-  ^o^F        *no limit*; typically: 40 $\le$ *x* $\le$ 140^o^   *none*        Only for *ahTsSp*=RA   hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*no limit*; typically: 40 $\\le$ *x* $\\le$ 140^o^",
+  default: "*none*",
+  required: " Only for *ahTsSp*=RA",
+  variability: "hourly") %>
 
 ## AIRHANDLER Supply fan
 
@@ -355,17 +249,23 @@ All AIRHANDLERs have supply fans.
 
 Supply fan type/position. A BLOWTHRU fan is located in the air path before the coils; a DRAWTHRU fan is after the coils.
 
-  **Units**   **Legal Range**      **Default**   **Required**   **Variability**
-  ----------- -------------------- ------------- -------------- -----------------
-              DRAWTHRU, BLOWTHRU   DRAWTHRU      No             constant
+<%= member_table(
+  units: "",
+  legal_range: "DRAWTHRU, BLOWTHRU",
+  default: "DRAWTHRU",
+  required: "No",
+  variability: "constant") %>
 
 **sfanVfDs=*float***
 
 Design or rated (volumetric) air flow at rated pressure. Many fans will actually blow a larger volume of air at reduced pressure: see sfanVfMxF (next).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  cfm         *x* $\ge$ 0       *none*        Yes            constant
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **sfanVfMxF=*float***
 
@@ -373,17 +273,23 @@ Overrun factor: maximum factor by which fan will exceed rated flow (at reduced p
 
 We recommend giving 1.0 to eliminate overrun in constant volume modeling.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $\ge$ 1.0     1.3           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 1.0",
+  default: "1.3",
+  required: "No",
+  variability: "constant") %>
 
 **sfanPress*=float***
 
 Design or rated pressure. The work done by the fan is computed as the product of this pressure and the current flow, except that the flow is limited to sfanVfDs. That is, in overrun (see *sfanVfMxF*) it is assumed that large VAV terminal damper openings allow the pressure to drop in proportion to the flow over rated. This work is added to the air as heat at the fan, and is termed "fan heat". Setting sfanPress to zero will eliminate simulated fan heat for theoretical simulation of a coil only.
 
-  **Units**      **Legal Range**   **Default**   **Required**   **Variability**
-  -------------- ----------------- ------------- -------------- -----------------
-  inches H~2~O   *x* $>$ 0         3             No             constant
+<%= member_table(
+  units: "inches H~2~O",
+  legal_range: "*x* $\\gt$ 0",
+  default: "3",
+  required: "No",
+  variability: "constant") %>
 
 Prior text: At most, one of the next two items may be given: in combination with sfanVfDs and sfanPress, either is sufficient to compute the other. SfanCurvePy is then used to compute the mechanical power at the fan shaft at partial loads; sfanMotEff allows determining the electrical input from the shaft power.
 
@@ -393,30 +299,34 @@ New possible text (after addition of sfanElecPwr): Only one of sfanElecPwr, sfan
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  -------------------------------------------------------------------------
-  **Units** **Legal**   **Default**        **Required**     **Variability**
-            **Range**
-  --------- --------- -------------------- ---------------- ---------------
-  W/cfm     *x* $>$ 0 derived from sfanEff If sfanEff and          constant
-                      and sfanShaftBhp     sfanShaftBhp not        
-                                           present                 
-  -------------------------------------------------------------------------
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "*x* $\\gt$ 0",
+  default: "derived from sfanEff and sfanShaftBhp",
+  required: "If sfanEff and sfanShaftBhp not present",
+  variability: "constant") %>
 
 **sfanEff=*float***
 
 Fan efficiency at design flow and pressure, as a fraction.
 
-  **Units**   **Legal Range**       **Default**                                       **Required**   **Variability**
-  ----------- --------------------- ------------------------------------------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   derived from *sfanShaftBhp* if given, else 0.65   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "derived from *sfanShaftBhp* if given, else 0.65",
+  required: "No",
+  variability: "constant") %>
 
 **sfanShaftBhp=*float***
 
 Fan shaft brake horsepower at design flow and pressure.
 
-  **Units**   **Legal Range**   **Default**               **Required**   **Variability**
-  ----------- ----------------- ------------------------- -------------- -----------------
-  bhp         *x* $>$ 0         derived from *sfanEff*.   No             constant
+<%= member_table(
+  units: "bhp",
+  legal_range: "*x* $\\gt$ 0",
+  default: "derived from *sfanEff*.",
+  required: "No",
+  variability: "constant") %>
 
 **sfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**
 
@@ -433,39 +343,45 @@ where:
 
 If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
 
-  **Units**   **Legal Range**   **Default**                **Required**   **Variability**
-  ----------- ----------------- -------------------------- -------------- -----------------
-                                *0, 1, 0, 0, 0 (linear)*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*0, 1, 0, 0, 0 (linear)*",
+  required: "No",
+  variability: "constant") %>
 
 **sfanMotEff=*float***
 
 Motor/drive efficiency.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.9           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.9",
+  required: "No",
+  variability: "constant") %>
 
 **sfanMotPos=*float***
 
 Motor/drive position: determines disposition of fan motor heat (input energy in excess of work done by fan; the work done by the fan is the "fan heat", always added to air flow).
 
-  ------------ ---------------------------------------
-  IN\_FLOW     add fan motor heat to supply air at the
-               fan position.
-
-  IN\_RETURN   add fan motor heat to the return air
-               flow.
-
-  EXTERNAL     discard fan motor heat
-  ------------ ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+IN\_FLOW,     add fan motor heat to supply air at the fan position.
+IN\_RETURN,   add fan motor heat to the return air flow.
+EXTERNAL,     discard fan motor heat
+END
+%>
 
 **sfanMtr=*mtrName***
 
 Name of meter, if any, to record energy used by supply fan. End use category used is "Fan".
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Return/Relief fan
 
@@ -475,46 +391,52 @@ A return/relief fan is optional. Its presence is established by setting *rfanTyp
 
 relief fan type/position.
 
-  --------- ---------------------------------------
-  RETURN    fan is at air handler; all return air
-            passes through it.
+<%= csv_table(<<END, :row_header => false)
+RETURN,    fan is at air handler; all return air passes through it.
+RELIEF,    fan is in exhaust path. Air being exhausted to the outdoors passes through fan; return air being recirculated does not pass through it.
+NONE,      no return/relief fan in this AIRHANDLER.
+END
+%>
 
-  RELIEF    fan is in exhaust path. Air being
-            exhausted to the outdoors passes
-            through fan; return air being
-            recirculated does not pass through it.
-
-  NONE      no return/relief fan in this
-            AIRHANDLER.
-  --------- ---------------------------------------
-
-  **Units**   **Legal Range**        **Default**   **Required**          **Variability**
-  ----------- ---------------------- ------------- --------------------- -----------------
-              NONE, RETURN, RELIEF   NONE          Yes, if fan present   constant
+<%= member_table(
+  units: "",
+  legal_range: "NONE, RETURN, RELIEF",
+  default: "NONE",
+  required: "Yes, if fan present",
+  variability: "constant") %>
 
 **rfanVfDs=*float***
 
 design or rated (volumetric) air flow.
 
-  **Units**   **Legal Range**   **Default**             **Required**   **Variability**
-  ----------- ----------------- ----------------------- -------------- -----------------
-  cfm         *x* $>$ 0         *sfanVfDs - oaVfDsMn*   No             constant
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\gt$ 0",
+  default: "*sfanVfDs - oaVfDsMn*",
+  required: "No",
+  variability: "constant") %>
 
 **rfanVfMxF=*float***
 
 factor by which fan will exceed design flow (at reduced pressure).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $\ge$ 1.0     1.3           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 1.0",
+  default: "1.3",
+  required: "No",
+  variability: "constant") %>
 
 **rfanPress=*float***
 
 design or rated pressure.
 
-  **Units**      **Legal Range**   **Default**   **Required**   **Variability**
-  -------------- ----------------- ------------- -------------- -----------------
-  inches H~2~O   *x* $>$ 0         0.75          No             constant
+<%= member_table(
+  units: "inches H~2~O",
+  legal_range: "*x* $\\gt$ 0",
+  default: "0.75",
+  required: "No",
+  variability: "constant") %>
 
 *At most, one of the next three?? items may be defined: ??* rework re rfanElecPwr
 
@@ -522,30 +444,34 @@ design or rated pressure.
 
 Fan input power per unit air flow (at design flow and pressure).
 
-  -------------------------------------------------------------------------
-  **Units** **Legal** **Default**          **Required**     **Variability**
-            **Range**
-  --------- --------- -------------------- ---------------- ---------------
-  W/cfm     *x* $>$ 0 derived from rfanEff If rfanEff and   constant
-                      and rfanShaftBhp     rfanShaftBhp not        
-                                           present                 
-  -------------------------------------------------------------------------
+<%= member_table(
+  units: "W/cfm",
+  legal_range: "*x* $>$ 0",
+  default: "derived from rfanEff and rfanShaftBhp",
+  required: "If rfanEff and rfanShaftBhp not present",
+  variability: "constant") %>
 
 **rfanEff=*float***
 
 Fan efficiency at design flow and pressure.
 
-  **Units**   **Legal Range**       **Default**                                       **Required**   **Variability**
-  ----------- --------------------- ------------------------------------------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   derived from *rfanShaftBhp* if given, else 0.65   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "derived from *rfanShaftBhp* if given, else 0.65",
+  required: "No",
+  variability: "constant") %>
 
 **rfanShaftBhp=*float***
 
 Fan shaft brake horsepower at design flow and pressure.
 
-  **Units**   **Legal Range**   **Default**               **Required**   **Variability**
-  ----------- ----------------- ------------------------- -------------- -----------------
-  bhp         *x* $>$ 0         derived from *rfanEff*.   No             constant
+<%= member_table(
+  units: "bhp",
+  legal_range: "*x* $\\gt$ 0",
+  default: "derived from *rfanEff*",
+  required: "No",
+  variability: "constant") %>
 
 **rfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**
 
@@ -562,33 +488,45 @@ where:
 
 If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
 
-  **Units**   **Legal Range**   **Default**                **Required**   **Variability**
-  ----------- ----------------- -------------------------- -------------- -----------------
-                                *0, 1, 0, 0, 0 (linear)*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*0, 1, 0, 0, 0 (linear)*",
+  required: "No",
+  variability: "constant") %>
 
 **rfanMotEff=*float***
 
 Motor/drive efficiency.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.9           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.9",
+  required: "No",
+  variability: "constant") %>
 
 **rfanMotPos=*choice***
 
 Motor/drive position.
 
-  **Units**   **Legal Range**      **Default**   **Required**   **Variability**
-  ----------- -------------------- ------------- -------------- -----------------
-              IN\_FLOW, EXTERNAL   IN\_FLOW      No             constant
+<%= member_table(
+  units: "",
+  legal_range: "IN\_FLOW, EXTERNAL",
+  default: "IN\_FLOW",
+  required: "No",
+  variability: "constant") %>
 
 **rfanMtr=*mtrName***
 
 Name of meter, if any, to record power consumption of this return fan. May be same or different from meter used for other fans and coils in this and other air handlers. "Fan" end use category is used.
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Heating coil/Modeling Furnaces
 
@@ -614,75 +552,61 @@ To specify that an AIRHANDLER has a heating coil and thus heating capability, gi
 
 Coil type choice:
 
-  ------------- ---------------------------------------
-  ELECTRIC      electric resistance heat: 100%
-                efficient, can deliver its full rated
-                capacity at any temperature and flow.
+<%= csv_table(<<END, :row_header => false)
+ELECTRIC,   electric resistance heat: 100% efficient&comma; can deliver its full rated capacity at any temperature and flow.
+HW,         hot water coil&comma; supplied by a HEATPLANT object.
+GAS or OIL, 'coil' type that models heating portion of a forced hot air furnace. Furnace 'coil' model uses inputs for full-load efficiency and part-load power input; model must be completed with appropriate auxiliaries&comma; *ahTsSp*&comma; etc. See notes above.
+ , GAS and OIL are the same here -- the differences between gas- and oil-fired furnaces is in the auxiliaries (pilot vs. draft fan&comma; etc.)&comma; which you specify separately.
+AHP, heating function of an air source heat pump.
+NONE, AIRHANDLER has no heat coil&comma; thus no heating capability.
+END
+%>
 
-  HW            hot water coil, supplied by a HEATPLANT
-                object.
-
-  GAS or OIL    "coil" type that models heating portion
-                of a forced hot air furnace. Furnace
-                "coil" model uses inputs for full-load
-                efficiency and part-load power input;
-                model must be completed with
-                appropriate auxiliaries, *ahTsSp,* etc.
-                See notes above.
-
-                GAS and OIL are the same here -- the
-                differences between gas- and oil-fired
-                furnaces is in the auxiliaries (pilot
-                vs. draft fan, etc.), which you specify
-                separately.
-
-  AHP           heating function of an air source heat
-                pump.
-
-  NONE          AIRHANDLER has no heat coil, thus no
-                heating capability.
-  ------------- ---------------------------------------
-
-  **Units**   **Legal Range**                    **Default**   **Required**              **Variability**
-  ----------- ---------------------------------- ------------- ------------------------- -----------------
-              ELECTRIC, HW, GAS OIL, AHP, NONE   NONE          Yes, if coil is present   constant
+<%= member_table(
+  units: "",
+  legal_range: "ELECTRIC, HW, GAS OIL, AHP, NONE",
+  default: "NONE",
+  required: "Yes, if coil is present",
+  variability: "constant") %>
 
 **ahhcSched=*choice***
 
 Heat coil schedule; choice of AVAIL or OFF, hourly variable. Use an appropriate ahhcSched expression if heat coil is to operate only at certain times of the day or year or only under certain weather conditions, etc.
 
-  -------- ---------------------------------------
-  AVAIL    heat coil available: will operate as
-           necessary to heat supply air to supply
-           temperature setpoint, up to the coil's
-           capacity.
+<%= csv_table(<<END, :row_header => false)
+AVAIL, heat coil available: will operate as necessary to heat supply air to supply temperature setpoint&comma; up to the coil's capacity.
+OFF, coil will not operate&comma; no matter how cold supply air is. A HW coil should be scheduled off whenever its HEATPLANT is scheduled off (*hpSched*) to insure against error messages.
+END
+%>
 
-  OFF      coil will not operate, no matter how
-           cold supply air is. A HW coil should be
-           scheduled off whenever its HEATPLANT is
-           scheduled off (*hpSched*) to insure
-           against error messages.
-  -------- ---------------------------------------
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              AVAIL, OFF        AVAIL         No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "AVAIL, OFF",
+  default: "AVAIL",
+  required: "No",
+  variability: "hourly") %>
 
 **ahhcCapTRat=*float***
 
 Total heating (output) capacity. For an ELECTRIC, GAS, or OIL coil, this capacity is always available. For an HW heating coil, when the total heat being requested from the coil's HEATPLANT would overload the HEATPLANT, the capacity of all HW coils connected to the plant (in TERMINALs as well as AIRHANDLERs) is reduced proportionately until the requested total heat is within the HEATPLANT's capacity. Not used if *ahhcType* = AHP (see *ahpCap17* and *ahpCap47*).
 
-  **Units**   **Legal Range**   **Default**   **Required**                                 **Variability**
-  ----------- ----------------- ------------- -------------------------------------------- -----------------
-  Btuh        *x* $\ge$ 0       *none*        Yes, if coil present, except coil type AHP   hourly
+<%= member_table(
+  units: "Btuh",
+  legal_range: "*x* $\\ge$ 0",
+  default: "*none*",
+  required: "Yes, if coil present, except coil type AHP",
+  variability: "hourly") %>
 
 **ahhcMtr=*mtrName***
 
 Name of meter to accumulate energy use by this heat coil. The input energy used by the coil is accumulated in the end use category "Htg"; for a heat pump, the energy used by the supplemental resistance heaters (regular and defrost) is accumulated under the category "hp". Not allowed when*ahhcType\* is HW, as an HW coil's energy comes from its HEATPLANT, and the HEATPLANT's BOILERs accumulate input energy to meters.
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 The following input is used only when *ahhcType* is HW:
 
@@ -690,9 +614,12 @@ The following input is used only when *ahhcType* is HW:
 
 Name of HEATPLANT supporting hot water coil.
 
-  **Units**   **Legal Range**         **Default**   **Required**          **Variability**
-  ----------- ----------------------- ------------- --------------------- -----------------
-              *name of a HEATPLANT*   *none*        if *ahhcType* is HW   constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a HEATPLANT*",
+  default: "*none*",
+  required: "if *ahhcType* is HW",
+  variability: "constant") %>
 
 The following inputs are used only for furnaces (*ahhcType* = GAS or OIL).
 
@@ -702,17 +629,23 @@ One of the next two items, but not both, **must** be given for furnaces:
 
 Rated energy input ratio (input energy/output energy) at full power.
 
-  **Units**   **Legal Range**   **Default**   **Required**                                           **Variability**
-  ----------- ----------------- ------------- ------------------------------------------------------ -----------------
-              *x* $\ge$ 1       *none*        if *ahhcEirR* not given and *ahhcType* is GAS or OIL   hourly
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 1",
+  default: "*none*",
+  required: "if *ahhcEirR* not given and *ahhcType* is GAS or OIL",
+  variability: "hourly") %>
 
 **ahhcEffR=*float***
 
 Rated efficiency (output energy/input energy; 1/ahhcEirR) at full power
 
-  **Units**   **Legal Range**       **Default**   **Required**                                           **Variability**
-  ----------- --------------------- ------------- ------------------------------------------------------ -----------------
-              0 $\le$ *x* $\le$ 1   *none*        if *ahhcEirR* not given and *ahhcType* is GAS or OIL   hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "*none*",
+  required: "if *ahhcEirR* not given and *ahhcType* is GAS or OIL",
+  variability: "hourly") %>
 
 **ahhcPyEi=$k_0$, $k_1$, $k_2$, $k_3$**
 
@@ -728,9 +661,12 @@ $$\text{pyEi}(\text{plrAv}) = 0.01861 + 1.094209 \cdot \textbf{plrAv} - 0.112819
 
 Note that the value of this polynomial adjusts the energy input, not the energy input ratio, for part load operation.
 
-  **Units**   **Legal Range**   **Default**                          **Required**   **Variability**
-  ----------- ----------------- ------------------------------------ -------------- -----------------
-                                0.01861, 1.094209, -0.112819, 0.0.   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "0.01861, 1.094209, -0.112819, 0.0.",
+  required: "No",
+  variability: "constant") %>
 
 **ahhcStackEffect=*float***
 
@@ -755,9 +691,12 @@ The factor "`sqrt(200.-@Top.tDbO)`" represents the volume of infiltrated air tha
 
 The divisor "`/ (10*68*sqrt(200))`" is to make the value 0.1 when tDbO is 0, that is, to make the stack effect loss use 10% of unused load when it is 0 degrees out. The actual modeling engineer must know enough about his building to be able to estimate the additional infiltration load at some temperature.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0             No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 The following heat coil input members, beginning with *ahp-*, are used when modeling the heating function of an air source heat pump with the air handler heat coil, that is, when *ahhcType*= AHP is given. Also, see the "AIRHANDLER Crankcase Heater" section with regard to specifying the heat pump's crankcase heater.
 
@@ -769,41 +708,56 @@ The next six inputs give the heat pump's steady state heating output capacity.
 
 ARI steady state (continuous operation) rated capacities at 70 degrees F indoor (return) air temp, and 17 and 47 degrees F outdoor temp, respectively. These values reflect no cycling, frost, or defrost degradation. To help you find input errors, the program issues an error message if ahpCap17 &gt;= ahpCap47.
 
-  **Units**   **Legal Range**   **Default**   **Required**        **Variability**
-  ----------- ----------------- ------------- ------------------- -----------------
-  Btuh        *x* $>$ 0                       Yes, for AHP coil   constant
+<%= member_table(
+  units: "Btuh",
+  legal_range: "*x* $\\gt$ 0",
+  default: "*none*",
+  required: "Yes, for AHP coil",
+  variability: "constant") %>
 
 **ahpCap35=*float***
 
 ARI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to *ahpFd35Df* (next description) times a value determined by linear interpolation between the given *ahpCap17* and *ahpCap47* values. If *ahpCap35* is given, CSE will issue an error message if it is greater than value determined by linear interpolation between *ahpCap17* and *ahpCap47*.
 
-  **Units**   **Legal Range**   **Default**      **Required**   **Variability**
-  ----------- ----------------- ---------------- -------------- -----------------
-  Btuh        *x* $>$ 0         from ahpFd35Df   No             constant
+<%= member_table(
+  units: "Btuh",
+  legal_range: "*x* $\\gt$ 0",
+  default: "from ahpFd35Df",
+  required: "No",
+  variability: "constant") %>
 
 **ahpFd35Df=*float***
 
 Default frost/defrost degradation factor at 35 F: reduction of output at unchanged input, due to defrosting and due to frost on outdoor coil. Used in determining default value for *ahpCap35* (preceding description); not used if *ahpCap35* is given.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .85           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.85",
+  required: "No",
+  variability: "constant") %>
 
 **ahpCapIa=*float***
 
 Capacity correction factor for indoor (return) air temperature, expressed as a fraction reduction in capacity per degree above 70F.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .004          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.004",
+  required: "No",
+  variability: "constant") %>
 
 **ahpSupRh=*float***
 
 Input (and output) power of supplemental resistance reheat coil used when heat pump alone cannot meet the load. This power input is in kW, not Btuh as for most CSE power inputs. Energy consumed by this heater, as well as the defrost supplemental resistance heater, is accumulated in category "hp" of ahhcMeter (whereas energy consumption of the heat pump compressor is accumulated under category "Htg").
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  kW          *x* $>$ 0         10 kW         No             constant
+<%= member_table(
+  units: "kW",
+  legal_range: "*x* $\\gt$ 0",
+  default: "10 kW",
+  required: "No",
+  variability: "constant") %>
 
 The next seven inputs specify frost buildup and defrosting and their effect on capacity.
 
@@ -829,9 +783,12 @@ In other words, the curve of capacity loss due to frost buildup follows straight
 
 An error will occur unless *ahpTFrMn* &lt; *ahpTFrPk* &lt; *ahpTFrMx* and *ahpTFrMn* &lt; 35 &lt; *ahpTFrMx*.
 
-  **Units**   **Legal Range**   **Default**                                      **Required**   **Variability**
-  ----------- ----------------- ------------------------------------------------ -------------- -----------------
-  ^o^F        *x* &gt; 0        *ahpTFrMn*: 17, *ahpTFrMx*: 47, *ahpTFrPk*: 42   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\gt$ 0",
+  default: "*ahpTFrMn*: 17, *ahpTFrMx*: 47, *ahpTFrPk*: 42",
+  required: "No",
+  variability: "constant") %>
 
 **ahpDfrFMn=*float***
 
@@ -853,36 +810,34 @@ During the fraction of the time spent defrosting, the heat pump's input remains 
 
 The program will issue an error message if *ahpDfrFMx* $\le$ *ahpDfrFMn*.
 
-  ---------------------------------------------------------------
-  **Units** **Legal**  **Default**   **Required** **Variability**
-            **Range**
-  --------- ---------- ------------- ------------ ---------------
-            0 $\le$    *ahpDfrFMn*:  No           constant
-            *x* $\le$  .0222,
-            1          (2 minutes/90
-                       minutes),
-                       *ahpDfrFMx*:                            
-                       .0889, (8
-                       minutes / 90
-                       minutes)
-
-  ---------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "*ahpDfrFMn*: .0222, (2 minutes/90 minutes), *ahpDfrFMx*:.0889, (8 minutes / 90 minutes)",
+  required: "No",
+  variability: "constant") %>
 
 **ahpDfrCap=*float***
 
 Cooling capacity (to air handler supply air) during defrosting. Program separately computes the lost heating capacity during defrosting, but effects of switchover transient should be included in *ahpDfrCap*.
 
-  **Units**   **Legal Range**   **Default**            **Required**   **Variability**
-  ----------- ----------------- ---------------------- -------------- -----------------
-  Btuh        *x* $\neq$ 0      2 $\cdot$ *ahpCap17*   No             constant
+<%= member_table(
+  units: "Btuh",
+  legal_range: "*x* $\\neq$ 0",
+  default: "2 $\\cdot$ *ahpCap17*",
+  required: "No",
+  variability: "constant") %>
 
 **ahpDfrRh=*float***
 
 Input (and output) power of resistance reheat coil activated during defrost. Input is in kW, not Btuh as most CSE power inputs. Energy used by this heater is accumulated in *ahhcMeter* category "hp".
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  kW          *x* &gt; 0        5 kW          No             constant
+<%= member_table(
+  units: "kW",
+  legal_range: "*x* $\\gt$ 0",
+  default: "5 kW",
+  required: "No",
+  variability: "constant") %>
 
 Inputs for air source heat pump low temperature cutout:
 
@@ -892,9 +847,12 @@ Inputs for air source heat pump low temperature cutout:
 
 Heat pump low temperature cutout setpoints. Heat pump is disabled (only the supplemental resistance heater operates) when outdoor temperature falls below *ahpTOff*, and is re-enabled when temperature rises above *ahpTOn*. Different values may be given to simulate thermostat differential. *ahpTOff* must be $\le$ *ahpTOn*; equal values are accepted.
 
-  **Units**   **Legal Range**   **Default**                  **Required**   **Variability**
-  ----------- ----------------- ---------------------------- -------------- -----------------
-  ^o^F                          *ahpTOff*: 5, *ahpTOn*: 12   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "*ahpTOff*: 5, *ahpTOn*: 12",
+  required: "No",
+  variability: "constant") %>
 
 The next four inputs specify the heating power input for an air source heat pump:
 
@@ -904,25 +862,34 @@ The next four inputs specify the heating power input for an air source heat pump
 
 Steady state (full power, no cycling) power input for compressor and crankcase heater at 70 degrees F indoor (return) air temp and 17 and 47 degrees F outdoor temp respectively.
 
-  **Units**   **Legal Range**   **Default**   **Required**        **Variability**
-  ----------- ----------------- ------------- ------------------- -----------------
-  kW          *x* &gt; 0                      Yes, for AHP coil   constant
+<%= member_table(
+  units: "kW",
+  legal_range: "*x* $\\gt$ 0",
+  default: "*none*",
+  required: "Yes, for AHP coil",
+  variability: "constant") %>
 
 **ahpInIa=*float***
 
 Indoor (return) air temp power input correction factor: fraction increase in steady-state input per degree above 70 F, or decrease below 70F.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .004          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.004",
+  required: "No",
+  variability: "constant") %>
 
 **ahpCd=*float***
 
 ARI cycling degradation coefficient: ratio of fraction drop in system coefficient of performance (COP) to fraction drop in capacity when cycling, from steady-state values, in ARI 47 F cycling performance tests. A value of .25 means that if the heat pump is cycled to drop its output to 20% of full capacity (i.e. by the fraction .8), its COP will drop by .8 \* .25 = .2. Here COP includes all energy inputs: compressor, crankcase heater, defrost operation, etc.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .25           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.25",
+  required: "No",
+  variability: "constant") %>
 
 The following four air handler heat coil members allow specification of auxiliary input power consumption associated with the heat coil (or furnace) under the indicated conditions. The single description box applies to all four.
 
@@ -942,9 +909,12 @@ Auxiliary power used only when coil is off for entire subhour; not used if the c
 
 Auxiliary power used in full value if coil is on for any fraction of a subhour.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $\ge$ 0       0             No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 The following four members specify meters for recording auxiliary energy use through ahhcAuxOn, ahhcAuxOff, ahhcAuxFullOff, and ahhcAuxOnAtAll, respectively. End use category "Aux" is used.
 
@@ -956,9 +926,12 @@ The following four members specify meters for recording auxiliary energy use thr
 
 **ahhcAuxOnAtAllMtr=*mtrName***
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Cooling coil
 
@@ -981,45 +954,30 @@ Sensible heat ratio (caps/capt) for cooling coil.
 
 Cool coil type choice:
 
-  ----------- ---------------------------------------
-  ELECTRIC    Testing artifice: removes heat at 100%
-              efficiency up to rated capacity at any
-              flow and temperature; removes no
-              humidity. Use in research runs to
-              isolate effects of coil models from
-              other parts of the CSE program.
+<%= csv_table(<<END, :row_header => false)
+ELECTRIC, Testing artifice: removes heat at 100% efficiency up to rated capacity at any flow and temperature; removes no humidity. Use in research runs to isolate effects of coil models from other parts of the CSE program.
+CHW, CHilled Water coil&comma; using a cold water from a COOLPLANT.
+DX, Direct Expansion coil&comma; with dedicated compressor and condenser modeled integrally.
+NONE, AIRHANDLER has no cooling coil and no cooling capability.
+END
+%>
 
-  CHW         CHilled Water coil, using a cold water
-              from a COOLPLANT.
-
-  DX          Direct Expansion coil, with dedicated
-              compressor and condenser modeled
-              integrally.
-
-  NONE        AIRHANDLER has no cooling coil and no
-              cooling capability.
-  ----------- ---------------------------------------
-
-  **Units**   **Legal Range**           **Default**   **Required**           **Variability**
-  ----------- ------------------------- ------------- ---------------------- -----------------
-              ELECTRIC, DX, CHW, NONE   NONE          Yes, if coil present   constant
+<%= member_table(
+  units: "",
+  legal_range: "ELECTRIC, DX, CHW, NONE",
+  default: "NONE",
+  required: "Yes, if coil present",
+  variability: "constant") %>
 
 **ahccSched*=choice***
 
 Cooling coil schedule choice, hourly variable. Use a suitable CSE expression for ahccSched if cooling coil is to operate only at certain times, only in hot weather, etc.
 
-  -------- ---------------------------------------
-  AVAIL    Cooling coil will operate as necessary
-           (within its capacity) to cool the
-           supply air to the supply temperature
-           setpoint.
-
-  OFF      Cooling coil will not operate no matter
-           how hot the supply air is. To avoid
-           error messages, a CHW coil should be
-           scheduled OFF whenever its COOLPLANT is
-           scheduled OFF.
-  -------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+AVAIL, Cooling coil will operate as necessary (within its capacity) to cool the supply air to the supply temperature setpoint.
+OFF, Cooling coil will not operate no matter how hot the supply air is. To avoid error messages&comma; a CHW coil should be scheduled OFF whenever its COOLPLANT is scheduled OFF.
+END
+%>
 
 **ahccCapTRat=*float***
 
@@ -1027,25 +985,34 @@ Total rated capacity of coil: sum of its "sensible" (heat-removing) and "latent"
 
 For coil specification conditions (a.k.a. rating conditions or design conditions), see *ahccDsTDbEn*, *ahccDsTWbEn*, *ahccDsTDbCnd*and *ahccVfR*below (see index).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  Btuh        *x* &gt; 0        *none*        Yes            constant
+<%= member_table(
+  units: "Btuh",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **ahccCapSRat=*float***
 
 Sensible (heat-removing) rated capacity of cooling coil. Not used with CHW coils.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  Btuh        *x* &gt; 0        *none*        Yes            constant
+<%= member_table(
+  units: "Btuh",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **ahccMtr=*mtrName***
 
 Name of meter, if any, to record energy use of air handler cool coil. End use category "Clg" is used. Not used with CHW coils, because the input energy use for a CHW coil is recorded by the COOLPLANT's CHILLERs.
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 The following six members are used with DX cooling coils.
 
@@ -1053,59 +1020,48 @@ The following six members are used with DX cooling coils.
 
 Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint. Should default be 35??
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        40^o^F        No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "40^o^F",
+  required: "No",
+  variability: "constant") %>
 
 **ahccK1=*float***
 
 Exponent in power relationship expressing coil effectiveness as a function of relative air flow. Used as K1 in the relationship ntu = ntuR \* relCfmk1, which says that the "number of transfer units" (on the coil outside or air side) varies with the relative air flow raised to the K1 power. Used with CHW as well as DX coils; for a CHW coil, ntuR in the formula is *ahccNtuoDs*.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* &lt; 0        -0.4          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $<$ 0",
+  default: "-0.4",
+  required: "No",
+  variability: "constant") %>
 
 **ahccBypass=*float***
 
 Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal right??.
 
-  **Units**   **Legal Range**      **Default**   **Required**   **Variability**
-  ----------- -------------------- ------------- -------------- -----------------
-              0 &lt; *x* $\le$ 1   0             No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\lt$ *x* $\\le$ 1",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
 
 The next three members are used in determining the energy input to a DX coil under various load conditions. The input is derived from the full load energy input ratio for four segments of the part load curve. <!-- Reproduce Nile's pretty curve here?? --> In the following the part load ratio (plr) is the ratio of the actual sensible + latent load on the coil to the coil's capacity. The coil's capacity is ahccCaptRat, adjusted by the coil model for differences between entering air temperature, humidity, and flow rate and the coil rating conditions. The coil may run at less than capacity even at full fan flow, depending on the air temperature change needed, the moisture content of the entering air, and the relative values of between *sfanVfDs* and *ahccVfR*.
 
-  ------------------------------ ---------------------------------------
-  full load                      plr (part load ratio) = 1.0
-
-                                 Full-load power input is power output
-                                 times *ahhcEirR.*
-
-  compressor unloading region    1.0 &gt; plr $\ge$ *ahhcMinUnldPlr*
-
-                                 Power input is the full-load input
-                                 times the value of the *pydxEirUl*
-                                 polynomial (below) for the current plr,
-                                 i.e. pydxEirUl(plr).
-
-  false loading region           *ahccMinUnldPlr* &gt; plr $\ge$
-                                 *ahccMinFsldPlr*
-
-                                 Power input in this region is constant
-                                 at the value for the low end of the
-                                 compressor unloading region, i.e.
-                                 pydxEirUl(ahccMinUnldPlr).
-
-  cycling region                 *ahccMinFsldPlr* &gt; plr $\ge$ 0
-
-                                 In this region the compressor runs at
-                                 the low end of the false loading region
-                                 for the necessary fraction of the time,
-                                 and the power input is the false
-                                 loading value correspondingly prorated,
-                                 i.e. pydxEirUl(ahccMinUnldPlr) \* plr /
-                                 ahccMinFsldPlr.
-  ------------------------------ ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+full load, plr (part load ratio) = 1.0
+ , Full-load power input is power output times *ahhcEirR.*
+compressor unloading region,    1.0 &gt; plr $\\ge$ *ahhcMinUnldPlr*
+ , Power input is the full-load input times the value of the *pydxEirUl* polynomial (below) for the current plr&comma; i.e. pydxEirUl(plr).
+false loading region, *ahccMinUnldPlr* &gt; plr $\\ge$ *ahccMinFsldPlr*
+ , Power input in this region is constant at the value for the low end of the compressor unloading region&comma; i.e. pydxEirUl(ahccMinUnldPlr).
+cycling region, *ahccMinFsldPlr* &gt; plr $\\ge$ 0
+ , In this region the compressor runs at the low end of the false loading region for the necessary fraction of the time&comma; and the power input is the false loading value correspondingly prorated&comma; i.e. pydxEirUl(ahccMinUnldPlr) \* plr / ahccMinFsldPlr.
+END
+%>
 
 The default values for the following three members are the DOE2 PTAC (Window air conditioner) values.
 
@@ -1113,25 +1069,34 @@ The default values for the following three members are the DOE2 PTAC (Window air
 
 DX compressor energy input ratio (EIR) at full load under rated conditions; defined as the full-load electric energy input divided by the rated capacity, both in Btuh; same as the reciprocal of the Coefficient Of Performance (COP). Polynomials given below are used by CSE to adjust the energy input for part load and for off rated flow and temperature conditions. The default value includes outdoor (condenser) fan energy, but not indoor (air handler supply) fan energy.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                0.438         No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "0.438",
+  required: "No",
+  variability: "constant") %>
 
 **ahccMinUnldPlr=*float***
 
 Compressor part load ratio (total current load/current capacity) at/above which "Compressor unloading" is used and pydxEirUl (below) is used to adjust the full-load power input to get the current part load power input.
 
-  **Units**   **Legal Range**       **Default**        **Required**   **Variability**
-  ----------- --------------------- ------------------ -------------- -----------------
-              0 $\le$ *x* $\le$ 1   1 (no unloading)   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "1 (no unloading)",
+  required: "No",
+  variability: "constant") %>
 
 **ahccMinFsldPlr=*float***
 
 "False Loading" is used between this compressor part load ratio and the plr where unloading is activated (*ahccMinUnldPlr*). In this region, input remains at *pydxEirUl*(*ahccMinUnldPlr).*For plr's less than *ahccMinFsldPlr*, cycling is used, and the power input goes to 0 in a straight line.
 
-  **Units**   **Legal Range**                      **Default**                           **Required**   **Variability**
-  ----------- ------------------------------------ ------------------------------------- -------------- -----------------
-              0 $\le$ *x* $\le$ *ahccMinUnldPlr*   *ahccMinUnldPlr* (no false loading)   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ *ahccMinUnldPlr*",
+  default: "*ahccMinUnldPlr* (no false loading)",
+  required: "No",
+  variability: "constant") %>
 
 The following four inputs specify polynomials to approximate functions giving DX coil capacity and power (energy) input as functions of entering temperatures, relative (to ahccVfR) flow, and relative load (plr). In each case several *float* values may be given, for use as coefficients of the polynomial. The values are ordered from constant to coefficient of highest power. If fewer than the maximum number of values are given, zeroes are used for the trailing (high order) coefficients.
 
@@ -1163,26 +1128,23 @@ The default values for the polynomial coefficients are the DOE2 PTAC values.
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust *ahccCaptRat* for the actual entering air temperatures. The condenser temperature is the outdoor drybulb, but not less than 70. See discussion in preceding paragraphs.
 
-  ------------------------------------------------------------
-  **Units** **Legal** **Default** **Required** **Variability**
-            **Range**
-  --------- --------- ----------- ------------ ---------------
-                      1.1839345,  No           constant
-                      -0.0081087,            
-                      0.00021104,
-                      -0.0061425,
-                      0.00000161,
-                      -0.0000030
-
-  ------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "1.1839345, -0.0081087, 0.00021104, -0.0061425, 0.00000161, -0.0000030",
+  required: "No",
+  variability: "constant") %>
 
 **pydxCaptF=a=a, b, c, d**
 
 Coefficients of cubic polynomial function of relative flow (entering air cfm/*ahccVfR*) whose value is used to adjust *ahccCaptRat* for the actual flow. See discussion in preceding paragraphs.
 
-  **Units**   **Legal Range**   **Default**          **Required**   **Variability**
-  ----------- ----------------- -------------------- -------------- -----------------
-                                0.8, 0.2, 0.0, 0.0   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "0.8, 0.2, 0.0, 0.0",
+  required: "No",
+  variability: "constant") %>
 
 **pydxCaptFLim=*float***
 
@@ -1199,18 +1161,12 @@ Upper limit for value of pydxCaptF.
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust *ahccEirR* for the actual entering air temperatures. The condenser temperature is the outdoor air drybulb, but not less than 70. If the entering air wetbulb is less than 60, 60 is used, in this function only. See discussion in preceding paragraphs.
 
-  ------------------------------------------------------------
-  **Units** **Legal** **Default** **Required** **Variability**
-            **Range**
-  --------- --------- ----------- ------------ ---------------
-                      -0.6550461, No           constant
-                      0.03889096,
-                      -0.0001925,
-                      0.00130464,
-                      0.00013517,
-                      -0.0002247            
-
-  ------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "-0.6550461, 0.03889096, -0.0001925, 0.00130464, 0.00013517, -0.0002247",
+  required: "No",
+  variability: "constant") %>
 
 **pydxEirUl=*a, b, c, d***
 
@@ -1218,9 +1174,12 @@ Coefficients of cubic polynomial function of part load ratio used to adjust ener
 
 This polynomial adjusts the full load energy input to part load, not the ratio of input to output, despite the "Eir" in its name.
 
-  **Units**   **Legal Range**   **Default**              **Required**   **Variability**
-  ----------- ----------------- ------------------------ -------------- -----------------
-                                0.125, 0.875, 0.0, 0.0   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "0.125, 0.875, 0.0, 0.0",
+  required: "No",
+  variability: "constant") %>
 
 The following four members are used only with CHW coils. In addition, *ahccK1,* described above, is used.
 
@@ -1228,33 +1187,45 @@ The following four members are used only with CHW coils. In addition, *ahccK1,* 
 
 name of COOLPLANT supporting CHW coil. COOLPLANTs contain CHILLERs, and are described in Section 5.21.
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-              *name of a COOLPLANT*                 for CHW coil   constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a COOLPLANT*",
+  default: "*none*",
+  required: "for CHW coil",
+  variability: "constant") %>
 
 **ahccGpmDs=*float***
 
 Design (i.e. maximum) water flow through CHW coil.
 
-  **Units**   **Legal Range**   **Default**   **Required**        **Variability**
-  ----------- ----------------- ------------- ------------------- -----------------
-  gpm         *x* &gt; 0                      Yes, for CHW coil   constant
+<%= member_table(
+  units: "gpm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "*none*",
+  required: "Yes, for CHW coil",
+  variability: "constant") %>
 
 **ahccNtuoDs=*float***
 
 CHW coil outside number of transfer units at design air flow (ahccVfR*, below). See*ahccK1\* above with regard to transfer units at other air flows.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* &gt; 0        2             No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\gt$ 0",
+  default: "2",
+  required: "No",
+  variability: "constant") %>
 
 **ahccNtuiDs=*float***
 
 CHW coil inside number of transfer units at design water flow (ahccGpmDs, above).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* &gt; 0        2             No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\gt$ 0",
+  default: "2",
+  required: "No",
+  variability: "constant") %>
 
 The following four members let you give the specification conditions for the cooling coil: the rating conditions, design conditions, or other test conditions under which the coil's performance is known. The defaults are ARI (Air-Conditioning and Refrigeration Institute) standard rating conditions.
 
@@ -1262,33 +1233,45 @@ The following four members let you give the specification conditions for the coo
 
 Design (rating) entering air dry bulb temperature, used with DX and CHW cooling coils. With CHW coils, this input is used only as the temperature at which to convert *ahccVfR* from volume to mass.
 
-  **Units**   **Legal Range**   **Default**    **Required**   **Variability**
-  ----------- ----------------- -------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        80^o^F (ARI)   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\gt$ 0",
+  default: "80^o^F (ARI)",
+  required: "No",
+  variability: "constant") %>
 
 **ahccDsTWbEn=*float***
 
 Design (rating) entering air wet bulb temperature, for CHW coils.
 
-  **Units**   **Legal Range**   **Default**    **Required**   **Variability**
-  ----------- ----------------- -------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        67^o^F (ARI)   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\gt$ 0",
+  default: "67^o^F (ARI)",
+  required: "No",
+  variability: "constant") %>
 
 **ahccDsTDbCnd=*float***
 
 Design (rating) condenser temperature (outdoor air temperature) for DX coils.
 
-  **Units**   **Legal Range**   **Default**    **Required**   **Variability**
-  ----------- ----------------- -------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        95^o^F (ARI)   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\gt$ 0",
+  default: "95^o^F (ARI)",
+  required: "No",
+  variability: "constant") %>
 
 **ahccVfR=*float***
 
 Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The ARI specification for this test condition for CHW coils is "450 cfm/ton or less", right??
 
-  **Units**   **Legal Range**   **Default**                                  **Required**   **Variability**
-  ----------- ----------------- -------------------------------------------- -------------- -----------------
-  cfm         *x* &gt; 0        DX coil: 400cfm/ton\* CHW coil: *sfanVfDs*   No             constant
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\gt$ 0",
+  default: "DX coil: 400cfm/ton\* CHW coil: *sfanVfDs*",
+  required: "No",
+  variability: "constant") %>
 
 \* a "ton" is 12,000 Btuh of rated capacity (*ahccCaptRat*).
 
@@ -1321,9 +1304,12 @@ Auxiliary power used only when coil is off for entire subhour; not used if the c
 
 Auxiliary power used in full value if coil is on for any fraction of a subhour.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* $\ge$ 0       0             No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly") %>
 
 The following four allow specification of meters to record cool coil auxiliary energy use through ahccAuxOn, ahccAuxOff, ahccFullOff, and ahccAuxOnAtAll, respectively. End use category "Aux" is used.
 
@@ -1335,9 +1321,12 @@ The following four allow specification of meters to record cool coil auxiliary e
 
 **ahccAuxOnAtAllMtr=*mtrName***
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Outside Air
 
@@ -1347,46 +1336,45 @@ Outside air introduced into the air hander supply air can be controlled on two l
 
 Minimum outside air flow control method choice, VOLUME or FRACTION. Both computations are based on the minimum outside air flow, *oaVfDsMn*; if the control method is FRACTION, the outside air flow is pro-rated when the air handler is supplying less than its design cfm. In both cases the computed minimum cfm is multiplied by a schedulable fraction, *oaMnFrac*, to let you vary the outside air or turn in off when none is desired.
 
-  ----------- ---------------------------------------
-  VOLUME      Volume (cfm) of outside air is
-              regulated:
-
-              min\_oa\_flow = oaMnFrac \* oaVfDsMn
-
-  FRACTION    Fraction of outside air in supply air
-              is regulated. The fraction is oaVfDsMn
-              divided by sfanVfDs, the air handler
-              supply fan design flow. The minimum cfm
-              of outside air is thus computed as
-
-              min\_oa\_flow = oaMnFrac \* curr\_flow
-              \* oaVfDsMn / sfanVfDs
-
-              where curr\_flow is the current air
-              handler cfm.
-  ----------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+VOLUME, Volume (cfm) of outside air is regulated:
+ , min\_oa\_flow = oaMnFrac \* oaVfDsMn
+FRACTION, Fraction of outside air in supply air is regulated. The fraction is oaVfDsMn divided by sfanVfDs&comma; the air handler supply fan design flow. The minimum cfm of outside air is thus computed as
+ , min\_oa\_flow = oaMnFrac \* curr\_flow \* oaVfDsMn / sfanVfDs
+ , where curr\_flow is the current air handler cfm.
+END
+%>
 
 If the minimum outside air flow is greater than the total requested by the terminals served by the air handler, then 100% outside air at the latter flow is used. To insure minimum outside air cfm to the zones, use suitable terminal minimum flows (*tuVfMn*) as well as air handler minimum outside air specifications.
 
-  **Units**   **Legal Range**    **Default**   **Required**   **Variability**
-  ----------- ------------------ ------------- -------------- -----------------
-              VOLUME, FRACTION   VOLUME        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "VOLUME, FRACTION",
+  default: "VOLUME",
+  required: "No",
+  variability: "constant") %>
 
 **oaVfDsMn=*float***
 
 Design minimum outside air flow. If *oaMnCtrl* is FRACTION, then this is the minimum outside air flow at full air handler flow. See formulas in *oaMnCtrl* description, just above.
 
-  **Units**   **Legal Range**   **Default**                             **Required**   **Variability**
-  ----------- ----------------- --------------------------------------- -------------- -----------------
-  cfm         *x* $\ge$ 0       0.15 times total area of zones served   No             constant
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0.15 times total area of zones served",
+  required: "No",
+  variability: "constant") %>
 
 **oaMnFrac=*float***
 
 Fraction of minimum outside air to use this hour, normally 1.0. Use a CSE expression that evaluates to 0 for hours you wish to disable the minimum outside air flow, for example to suppress ventilation during the night or during warm-up hours. Intermediate values may be used for intermediate outside air minima. See formulas in *oaMnCtrl* description, above.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   1.0           No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "1.0",
+  required: "No",
+  variability: "hourly") %>
 
 CAUTION: the minimum outside air flow only applies when the supply fan is running; it won't assure meeting minimum ventilation requirements when used with ahFanCycles = YES (constant volume, fan cycling).
 
@@ -1403,38 +1391,35 @@ Second, the economizer will operate even if the air handler is heating, resultin
 
 Type of economizer. Choice of:
 
-  ---------------- ---------------------------------------
-  NONE             No economizer; outside air flow is the
-                   minimum.
-
-  INTEGRATED       Coil and economizer operate
-                   independently.
-
-  NONINTEGRATED    Coil does not run when economizer is
-                   using all outside air: simulates
-                   interlock in some equipment designed to
-                   prevent coil icing due to insufficient
-                   load, right?
-
-  TWO\_STAGE       Economizer is disabled when coil cycles
-                   on. *NOT IMPLEMENTED* as of July 1992.
-  ---------------- ---------------------------------------
+<%= csv_table(<<END, :row_header => false)
+NONE, No economizer; outside air flow is the minimum.
+INTEGRATED, Coil and economizer operate independently.
+NONINTEGRATED, Coil does not run when economizer is using all outside air: simulates interlock in some equipment designed to prevent coil icing due to insufficient load&comma; right?
+TWO\_STAGE, Economizer is disabled when coil cycles on. *NOT IMPLEMENTED* as of July 1992.
+END
+%>
 
 **oaLimT=*float***
 
 or RAEconomizer outside air temperature high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air temperature is greater than *oaLimT*. A number may be entered, or "RA" to specify the current Return Air temperature. *OaLimT* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
-  **Units**   **Legal Range**   **Default**                   **Required**   **Variability**
-  ----------- ----------------- ----------------------------- -------------- -----------------
-  ^o^F        *number*or RA     RA (return air temperature)   No             hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*number*or RA",
+  default: "RA (return air temperature)",
+  required: "No",
+  variability: "hourly") %>
 
 **oaLimE=*float***
 
 or RAEconomizer outside air enthalpy high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air enthalpy is greater than *oaLimE*. A number may be entered, or "RA" to specify the current Return Air enthalpy. *OaLimE* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
-  **Units**   **Legal Range**   **Default**                     **Required**   **Variability**
-  ----------- ----------------- ------------------------------- -------------- -----------------
-  Btu/^o^F    *number* or RA    999 (enthalpy limit disabled)   No             hourly
+<%= member_table(
+  units: "Btu/^o^F",
+  legal_range: "*number* or RA",
+  default: "999 (enthalpy limit disabled)",
+  required: "No",
+  variability: "hourly") %>
 
 *oaOaLeak* and *oaRaLeak* specify leakages in the economizer dampers, when present. The leaks are constant-cfm flows, expressed as fractions of the maximum possible flow. Thus, when the current flow is less than the maximum possible, the range of operation of the economizer is reduced. When the two damper leakages add up to more than the current air handler flow, outside and return air are used in the ratio of the two leakages and the economizer, if enabled, is ineffective.
 
@@ -1442,17 +1427,23 @@ or RAEconomizer outside air enthalpy high limit. The economizer is disabled (out
 
 Outside air damper leakage to mixed air. Puts a minimum on return air flow and thus a maximum on outside air flow, to mixed air. If an economizer is present, *oaOaLeak* is a fraction of the supply fan design cfm, *sfanVfDs*. Otherwise, *oaOaLeak* is a fraction of the design minimum outside air flow *oaVfDsMn*.
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1.0   0.1           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
 
 **oaRaLeak=*float***
 
 Return air damper leakage to mixed air. Puts a minimum on return air flow and thus a maximum on outside air flow, to mixed air. Expressed as a fraction of the supply fan design cfm, *sfanVfDs*. Not used when no economizer is being modeled.
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1.0   0.1           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Leaks and Losses
 
@@ -1464,17 +1455,23 @@ If unequal leaks are specified, at present (July 1992) CSE will use the average 
 
 Supply duct leakage to outdoors, expressed as a fraction of supply fan design flow (*sfanVfDs*). Use 0 if the duct is indoors. A constant-cfm leak is modeled, as the pressure is constant when the fan is on.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.01          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.01",
+  required: "No",
+  variability: "constant") %>
 
 **ahROLeak=*float***
 
 Return duct leakage FROM outdoors, expressed as a fraction of *sfanVfDs*. Use 0 if the duct is indoors.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.01          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.01",
+  required: "No",
+  variability: "constant") %>
 
 *AhSOLoss* and *ahROLoss* represent conductive losses from the common supply and return ducts to the outdoors. For an individual zone's conductive duct loss, see TERMINAL member *tuSRLoss*. Losses here are expressed as a fraction of the temperature difference which is lost. For example, if the supply air temperature is 120, the outdoor temperature is 60, and the pertinent loss is .1, the effect of the loss as modeled will be to reduce the supply air temperature by 6 degrees ( .1 \* (120 - 60) ) to 114 degrees. CSE currently models these losses a constant *TEMPERATURE LOSSes* regardless of cfm.
 
@@ -1482,17 +1479,23 @@ Return duct leakage FROM outdoors, expressed as a fraction of *sfanVfDs*. Use 0 
 
 Supply duct loss/gain to the outdoors.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.1           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
 
 **ahROLoss=*float***
 
 Return duct heat loss/gain to the outdoors.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0.1           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.1",
+  required: "No",
+  variability: "constant") %>
 
 ## AIRHANDLER Crankcase Heater
 
@@ -1508,61 +1511,44 @@ Appropriateness of use of these inputs when specifying a DX system without assoc
 
 Crankcase heater presence and control method. Choice of:
 
-  ------------- --------------------------------------------------------
-  NONE          No crankcase heater present
+<%= csv_table(<<END, :row_header => false)
+NONE, No crankcase heater present
+CONSTANT, Crankcase heater input always *cchPMx* (below).
+PTC, Proportional control based on oil temp when compressor does not run in subhour (see *cchTMx*&comma; *cchMn*&comma; and *cchDT*). If compressor runs at all in subhour&comma; the oil is assumed to be hotter than *cchTMn* and crankcase heater input is *cchPMn*. (PTC stands for 'Positive Temperature Coefficient' or 'Proportional Temperature Control'.)
+TSTAT, Control based on outdoor temperature&comma; with optional differential&comma; during subhours when compressor is off; crankcase heater does not operate if compressor runs at all in subhour. See *cchTOn*&comma; *cchTOff*.
+CONSTANT\_CLO
+PTC\_CLO, Same as corresponding choices above except zero crankcase heater input during fraction of time compressor is on ('Compressor Lock Out'). There is no TSTAT\_CLO because under TSTAT the crankcase heater does not operate anyway when the compressor is on.
+END
+%>
 
-  CONSTANT      Crankcase heater input always *cchPMx* (below).
-
-  PTC           Proportional control based on oil temp when compressor
-                does not run in subhour (see *cchTMx*, *cchMn*, and
-                *cchDT*). If compressor runs at all in subhour, the oil
-                is assumed to be hotter than *cchTMn* and crankcase
-                heater input is *cchPMn*. (PTC stands for "Positive
-                Temperature Coefficient" or "Proportional Temperature
-                Control".)
-
-  TSTAT         Control based on outdoor temperature, with optional
-                differential, during subhours when compressor is off;
-                crankcase heater does not operate if compressor runs at
-                all in subhour. See *cchTOn*, *cchTOff*.
-
-  CONSTANT\_CLO
-
-  PTC\_CLO      Same as corresponding choices above except zero
-                crankcase heater input during fraction of time
-                compressor is on ("Compressor Lock Out"). There is no
-                TSTAT\_CLO because under TSTAT the crankcase heater does
-                not operate anyway when the compressor is on.
-  ------------- --------------------------------------------------------
-
-  ------------------------------------------------------------------
-  **Units** **Legal**       **Default** **Required** **Variability**
-            **Range**
-  --------- --------------- ----------- ------------ ---------------
-            CONSTANT\       PTC\_CLO if No           constant
-            CONSTANT\_CLO\  *ahhcType*                 
-            PTC\            is AHP,                
-            PTC\_CLO\       else NONE                                
-            TSTAT\                                          
-            NONE                                            
-
-  ------------------------------------------------------------------
+<%= member_table(
+  units: "",
+  legal_range: "CONSTANT CONSTANT_CLO PTC PTC_CLO TSTAT NONE",
+  default: "PTC_CLO if *ahhcType* is AHP else NONE ",
+  required: "No",
+  variability: "constant") %>
 
 **cchPMx=*float***
 
 Crankcase resistance heater input power; maximum power if *cchCM* is PTC or PTC\_CLO.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  kW          *x* &gt; 0        .4 kW         No             constant
+<%= member_table(
+  units: "kW",
+  legal_range: "*x* $\\gt$ 0",
+  default: ".4 kW",
+  required: "No",
+  variability: "constant") %>
 
 **cchPMn=*float***
 
 Crankcase heater minimum input power if *cchCM* is PTC or PTC\_CLO, disallowed for other *cchCM's*. &gt; 0.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  kW          *x* &gt; 0        .04 kW        No             constant
+<%= member_table(
+  units: "kW",
+  legal_range: "*x* $\\gt$ 0",
+  default: ".04 kW",
+  required: "No",
+  variability: "constant") %>
 
 **cchTMx=*float***
 
@@ -1572,17 +1558,23 @@ For *cchCM* = PTC or PTC\_CLO, the low temperature (max power) and high temperat
 
 (Note that actual thermostat setpoints probably cannot be used for *cchTMx* and *cchTMn* inputs, because the model assumes the difference between the oil temperature and the outdoor temperature is constant (*cchDT*) regardless of the heater power. <!-- Presumably the data the user will have will be the actual setpoints, and a formula should be established telling the user how to adjust his data for these inputs. Or, better, the program could make the adjustment. But Rob has not yet (10-92) been able to generate any interest on the part of Bruce, Phil, or Steve in developing such a formula or otherwise simplifying these inputs.) -->
 
-  **Units**   **Legal Range**   **Default**                  **Required**   **Variability**
-  ----------- ----------------- ---------------------------- -------------- -----------------
-  ^o^F                          *cchTMn*: 0; *cchTMx*: 150   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "*cchTMn*: 0; *cchTMx*: 150",
+  required: "No",
+  variability: "constant") %>
 
 **cchDT=*float***
 
 For *cchCM* = PTC or PTC\_CLO, how much warmer than the outdoor temp CSE assumes the crankcase oil to be in subhours when the compressor does not run. If the compressor runs at all in the subhour, the oil is assumed to be warmer than *cchTMn*.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F                          20^o^F        No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "20^o^F",
+  required: "No",
+  variability: "constant") %>
 
 **cchTOn=*float***
 
@@ -1590,17 +1582,23 @@ For *cchCM* = PTC or PTC\_CLO, how much warmer than the outdoor temp CSE assumes
 
 For *cchCM* = TSTAT, in subhours when compressor does not run, the crankcase heater turn-on and turn-off outdoor temperatures, respectively. Unequal values may be given to simulate thermostat differential. When the compressor runs at all in a subhour, the crankcase heater is off for the entire subhour.
 
-  **Units**   **Legal Range**            **Default**                             **Required**   **Variability**
-  ----------- -------------------------- --------------------------------------- -------------- -----------------
-  ^o^F        *cchTOff* $\ge$ *cchTOn*   *cchTOn*: 72^o^F; *chcTOff*: *chcTOn*   No             constant
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*cchTOff* $\\ge$ *cchTOn*",
+  default: "*cchTOn*: 72^o^F; *chcTOff*: *chcTOn*",
+  required: "No",
+  variability: "constant") %>
 
 **cchMtr=*name of a METER***
 
 METER to record crankcase heater energy use, category "Aux"; not recorded if not given.
 
-  **Units**   **Legal Range**     **Default**      **Required**   **Variability**
-  ----------- ------------------- ---------------- -------------- -----------------
-              *name of a METER*   *not recorded*   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
 
 **coilOversize=*float***
 
@@ -1617,9 +1615,12 @@ Fraction oversize for autoSized heat/cool coils.
 
 Indicates the end of the air handler definition. Alternatively, the end of the air handler definition can be indicated by the declaration of another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 

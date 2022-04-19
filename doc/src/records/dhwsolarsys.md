@@ -15,7 +15,7 @@ May have no tank for direct system? What if system has multiple primary tanks?
 Name of METER object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use ???).
 
 <%= member_table(
-  units: "F",
+  units: "^o^F",
   legal_range: "*name of a METER*",
   default: "*not recorded*",
   required: "No",
@@ -26,7 +26,7 @@ Name of METER object, if any, to which DHWSOLARSYS electrical energy use is reco
 Specific heat for the collector fluid.
 
 <%= member_table(
-  units: "Btu/lbm-F",
+  units: "Btu/lbm-^o^F",
   legal_range: "x $>$ 0",
   default: "0.9",
   required: "No",
@@ -49,17 +49,25 @@ End use of pump energy; defaults to "DHW".
   
 **swParElec=*float***
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-			 x $\ge$ 0         0             No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **swTankHXEff=*float***
 
 Tank heat exchanger effectiveness.
 
-**Units**   **Legal Range**         **Default**   **Required**   **Variability**
------------ ---------------------   ------------- -------------- -----------------
-			 0 $\le$ x $\le$ 0.99    0             No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 0.99",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **swTankTHxLimit=*float***
 
@@ -130,9 +138,9 @@ Surrounding temperature.
 Optionally indicates the end of the DHWSOLARSYS definition.
 
 <%= member_table(
-  units: "*n/a*",
-  legal_range: "*n/a*",
-  default: "*n/a*",
+  units: "",
+  legal_range: "",
+  default: "*none*",
   required: "No",
-  variability: "*n/a*") %>
+  variability: "") %>
 

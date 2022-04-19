@@ -15,17 +15,25 @@ AFMETER results can be REPORTed using rpType=AFMTR (or EXPORTed using exType=AFM
 
 Name of meter: required for assigning air flows to the AFMETER.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+%>
 
 **endAFMeter**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+%>
 
 **Related Probes:**
 
