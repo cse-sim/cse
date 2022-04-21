@@ -857,21 +857,6 @@ Cooling capacity (to air handler supply air) during defrosting. Program separate
   required: "No",
   variability: "constant") %>
 
-<!-->
-**ahpDfrRh=*float***
-
-Input (and output) power of resistance reheat coil activated during defrost. Input is in kW, not Btuh as most CSE power inputs. Energy used by this heater is accumulated in *ahhcMeter* category "hp".
-
-<%= member_table(
-  units: "kW",
-  legal_range: "*x* $\\gt$ 0",
-  default: "5 kW",
-  required: "No",
-  variability: "constant") %>
-
-Inputs for air source heat pump low temperature cutout:
-<\!-->
-
 **ahpTOff=*float***
 
 **ahpTOn=*float***
