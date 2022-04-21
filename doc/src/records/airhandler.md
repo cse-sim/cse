@@ -588,13 +588,13 @@ END
 
 **ahhcCapTRat=*float***
 
-Total heating (output) capacity. For an ELECTRIC, GAS, or OIL coil, this capacity is always available. For an HW heating coil, when the total heat being requested from the coil's HEATPLANT would overload the HEATPLANT, the capacity of all HW coils connected to the plant (in TERMINALs as well as AIRHANDLERs) is reduced proportionately until the requested total heat is within the HEATPLANT's capacity. Not used if *ahhcType* = AHP (see *ahpCap17* and *ahpCap47*).
+Total heating (output) capacity. For an ELECTRIC, AHP, GAS, or OIL coil, this capacity is always available. For an HW heating coil, when the total heat being requested from the coil's HEATPLANT would overload the HEATPLANT, the capacity of all HW coils connected to the plant (in TERMINALs as well as AIRHANDLERs) is reduced proportionately until the requested total heat is within the HEATPLANT's capacity. For AHP, this value represents the AHRI rated capacity at 47 ^o^F outdoor temperature.
 
 <%= member_table(
   units: "Btuh",
   legal_range: "*x* $\\ge$ 0",
   default: "*none*",
-  required: "Yes, if coil present, except coil type AHP",
+  required: "Yes, if coil present",
   variability: "hourly") %>
 
 **ahhcMtr=*mtrName***
@@ -700,13 +700,9 @@ The divisor "`/ (10*68*sqrt(200))`" is to make the value 0.1 when tDbO is 0, tha
 
 The following heat coil input members, beginning with *ahp-*, are used when modeling the heating function of an air source heat pump with the air handler heat coil, that is, when *ahhcType*= AHP is given. Also, see the "AIRHANDLER Crankcase Heater" section with regard to specifying the heat pump's crankcase heater.
 
-The next six inputs give the heat pump's steady state heating output capacity.
-
 **ahpCap17=*float***
 
-**ahpCap47=*float***
-
-ARI steady state (continuous operation) rated capacities at 70 degrees F indoor (return) air temp, and 17 and 47 degrees F outdoor temp, respectively. These values reflect no cycling, frost, or defrost degradation. To help you find input errors, the program issues an error message if ahpCap17 &gt;= ahpCap47.
+AHRI steady state (continuous operation) rated capacity at 70 degrees F indoor (return) air temp, and 17 degrees F outdoor temp, respectively. These values reflect no cycling, frost, or defrost degradation. To help you find input errors, the program issues an error message if ahpCap17 &gt;= ahhcCapTRat.
 
 <%= member_table(
   units: "Btuh",
@@ -715,9 +711,20 @@ ARI steady state (continuous operation) rated capacities at 70 degrees F indoor 
   required: "Yes, for AHP coil",
   variability: "constant") %>
 
+**ahpCapRat1747=*float***
+
+The ratio of AHRI steady state (continuous operation) rated capacities at 17 and 47 degrees F outdoor temp. This is used to determine *ahpCap35* when *ahhcCapTRat* is AUTOSIZEd.
+
+<%= member_table(
+  units: "",
+  legal_range: "*x* $\\gt$ 0",
+  default: "0.6184",
+  required: "No",
+  variability: "constant") %>
+
 **ahpCap35=*float***
 
-ARI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to *ahpFd35Df* (next description) times a value determined by linear interpolation between the given *ahpCap17* and *ahpCap47* values. If *ahpCap35* is given, CSE will issue an error message if it is greater than value determined by linear interpolation between *ahpCap17* and *ahpCap47*.
+AHRI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to *ahpFd35Df* (next description) times a value determined by linear interpolation between the given *ahpCap17* and *ahhcCapTRat* values. If *ahpCap35* is given, CSE will issue an error message if it is greater than value determined by linear interpolation between *ahpCap17* and *ahhcCapTRat*.
 
 <%= member_table(
   units: "Btuh",
@@ -748,14 +755,36 @@ Capacity correction factor for indoor (return) air temperature, expressed as a f
   required: "No",
   variability: "constant") %>
 
-**ahpSupRh=*float***
+**ahpCapSupH=*float***
 
-Input (and output) power of supplemental resistance reheat coil used when heat pump alone cannot meet the load. This power input is in kW, not Btuh as for most CSE power inputs. Energy consumed by this heater, as well as the defrost supplemental resistance heater, is accumulated in category "hp" of ahhcMeter (whereas energy consumption of the heat pump compressor is accumulated under category "Htg").
+Output capacity of the supplemental reheat coil used when heat pump alone cannot meet the load or to offset the defrost cooling load. Energy consumed by this heater is accumulated in category "HPBU" of ahhcMeter (whereas energy consumption of the heat pump compressor is accumulated under category "Htg").
 
 <%= member_table(
-  units: "kW",
+  units: "Btu/hr",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**ahpEffSupH=*float***
+
+Efficiency of the supplemental reheat coil. Use values other than the default for gas supplemental heaters.
+
+<%= member_table(
+  units: "",
   legal_range: "*x* $\\gt$ 0",
-  default: "10 kW",
+  default: "1.0",
+  required: "No",
+  variability: "hourly") %>
+
+**ahpSupHMtr=*mtrName***
+
+Specifies a meter for recording supplemental heater energy use. End use category "HPBU" is used.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
   required: "No",
   variability: "constant") %>
 
@@ -828,6 +857,7 @@ Cooling capacity (to air handler supply air) during defrosting. Program separate
   required: "No",
   variability: "constant") %>
 
+<!-->
 **ahpDfrRh=*float***
 
 Input (and output) power of resistance reheat coil activated during defrost. Input is in kW, not Btuh as most CSE power inputs. Energy used by this heater is accumulated in *ahhcMeter* category "hp".
@@ -840,6 +870,7 @@ Input (and output) power of resistance reheat coil activated during defrost. Inp
   variability: "constant") %>
 
 Inputs for air source heat pump low temperature cutout:
+<\!-->
 
 **ahpTOff=*float***
 
@@ -856,11 +887,11 @@ Heat pump low temperature cutout setpoints. Heat pump is disabled (only the supp
 
 The next four inputs specify the heating power input for an air source heat pump:
 
-**ahpIn17=*float***
+**ahpCOP47=*float***
 
-**ahpIn47=*float***
+**ahpCOP17=*float***
 
-Steady state (full power, no cycling) power input for compressor and crankcase heater at 70 degrees F indoor (return) air temp and 17 and 47 degrees F outdoor temp respectively.
+Steady state (full power, no cycling) coeffient of performance for compressor and crankcase heater at 70 degrees F indoor (return) air temp and 47 and 17 degrees F outdoor temp, respectively.
 
 <%= member_table(
   units: "kW",
@@ -882,7 +913,7 @@ Indoor (return) air temp power input correction factor: fraction increase in ste
 
 **ahpCd=*float***
 
-ARI cycling degradation coefficient: ratio of fraction drop in system coefficient of performance (COP) to fraction drop in capacity when cycling, from steady-state values, in ARI 47 F cycling performance tests. A value of .25 means that if the heat pump is cycled to drop its output to 20% of full capacity (i.e. by the fraction .8), its COP will drop by .8 \* .25 = .2. Here COP includes all energy inputs: compressor, crankcase heater, defrost operation, etc.
+AHRI cycling degradation coefficient: ratio of fraction drop in system coefficient of performance (COP) to fraction drop in capacity when cycling, from steady-state values, in AHRI 47 F cycling performance tests. A value of .25 means that if the heat pump is cycled to drop its output to 20% of full capacity (i.e. by the fraction .8), its COP will drop by .8 \* .25 = .2. Here COP includes all energy inputs: compressor, crankcase heater, defrost operation, etc.
 
 <%= member_table(
   units: "",
@@ -893,38 +924,20 @@ ARI cycling degradation coefficient: ratio of fraction drop in system coefficien
 
 The following four air handler heat coil members allow specification of auxiliary input power consumption associated with the heat coil (or furnace) under the indicated conditions. The single description box applies to all four.
 
-**ahhcAuxOn=*float***
+**ahhcAux=*float***
 
-Auxiliary power used when running, in proportion to subhour average part load ratio (plrAv). Example use: oil furnace induced draft fan.
-
-**ahhcAuxOff=*float***
-
-Auxiliary power used when coil is not running, in proportion to 1 - plrAv.
-
-**ahhcAuxFullOff=*float***
-
-Auxiliary power used only when coil is off for entire subhour; not used if the coil is on at all during a subhour. Example use: Gas furnace pilot under DOE2 model, where pilot is included in main energy input if furnace runs at all in subhour.
-
-**ahhcAuxOnAtAll=*float***
-
-Auxiliary power used in full value if coil is on for any fraction of a subhour.
+Auxiliary energy used by the heating coil.
 
 <%= member_table(
-  units: "",
+  units: "Btu/hr",
   legal_range: "*x* $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "hourly") %>
 
-The following four members specify meters for recording auxiliary energy use through ahhcAuxOn, ahhcAuxOff, ahhcAuxFullOff, and ahhcAuxOnAtAll, respectively. End use category "Aux" is used.
+**ahhcAuxMtr=*mtrName***
 
-**ahhcAuxOnMtr=*mtrName***
-
-**ahhcAuxOffMtr=*mtrName***
-
-**ahhcAuxFullOffMtr=*mtrName***
-
-**ahhcAuxOnAtAllMtr=*mtrName***
+Specifies a meter for recording auxiliary energy use. End use category "Aux" is used.
 
 <%= member_table(
   units: "",
@@ -938,17 +951,6 @@ The following four members specify meters for recording auxiliary energy use thr
 A cooling coil is an optional device that remove heat and humidity from the air passing through the AIRHANDLER. Available cooling coil types include chilled water (CHW), supported by a COOLPLANT that supplies cold water, and Direct Expansion (DX), supported by a dedicated compressor and condenser that are modeled integrally with the DX coil. No plant is used with DX coils.
 
 The following five members are used for all cool coil types except as noted. Presence of a cool coil in the AIRHANDLER is indicated by giving an *ahccType value* other than NONE.
-
-**ahccSHR=*float***
-
-Sensible heat ratio (caps/capt) for cooling coil.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.77",
-  required: "No",
-  variability: "constant") %>
 
 **ahccType*=choice***
 
@@ -1001,6 +1003,17 @@ Sensible (heat-removing) rated capacity of cooling coil. Not used with CHW coils
   legal_range: "*x* $>$ 0",
   default: "*none*",
   required: "Yes",
+  variability: "constant") %>
+
+**ahccSHRRat=*float***
+
+Sensible heat ratio (caps/capt) for cooling coil.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.77",
+  required: "No",
   variability: "constant") %>
 
 **ahccMtr=*mtrName***
@@ -1227,7 +1240,7 @@ CHW coil inside number of transfer units at design water flow (ahccGpmDs, above)
   required: "No",
   variability: "constant") %>
 
-The following four members let you give the specification conditions for the cooling coil: the rating conditions, design conditions, or other test conditions under which the coil's performance is known. The defaults are ARI (Air-Conditioning and Refrigeration Institute) standard rating conditions.
+The following four members let you give the specification conditions for the cooling coil: the rating conditions, design conditions, or other test conditions under which the coil's performance is known. The defaults are AHRI (Air-Conditioning and Refrigeration Institute) standard rating conditions.
 
 **ahccDsTDbEn=*float***
 
@@ -1236,7 +1249,7 @@ Design (rating) entering air dry bulb temperature, used with DX and CHW cooling 
 <%= member_table(
   units: "^o^F",
   legal_range: "*x* $\\gt$ 0",
-  default: "80^o^F (ARI)",
+  default: "80^o^F (AHRI)",
   required: "No",
   variability: "constant") %>
 
@@ -1247,7 +1260,7 @@ Design (rating) entering air wet bulb temperature, for CHW coils.
 <%= member_table(
   units: "^o^F",
   legal_range: "*x* $\\gt$ 0",
-  default: "67^o^F (ARI)",
+  default: "67^o^F (AHRI)",
   required: "No",
   variability: "constant") %>
 
@@ -1258,13 +1271,13 @@ Design (rating) condenser temperature (outdoor air temperature) for DX coils.
 <%= member_table(
   units: "^o^F",
   legal_range: "*x* $\\gt$ 0",
-  default: "95^o^F (ARI)",
+  default: "95^o^F (AHRI)",
   required: "No",
   variability: "constant") %>
 
 **ahccVfR=*float***
 
-Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The ARI specification for this test condition for CHW coils is "450 cfm/ton or less", right??
+Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less", right??
 
 <%= member_table(
   units: "cfm",
@@ -1288,38 +1301,20 @@ Design default *ahccVfR* per ton (12000 Btuh) of *ahhcCapTRat*.
   required: "No",
   variability: "runly") %>
 
-**ahccAuxOn=*float***
+**ahccAux=*float***
 
-Auxiliary power used when coil is running, in proportion to its subhour average part load ratio (plrAv).
-
-**ahccAuxOff=*float***
-
-Auxiliary power used when coil is not running, in proportion to 1 - plrAv.
-
-**ahccAuxFullOff=*float***
-
-Auxiliary power used only when coil is off for entire subhour; not used if the coil is on at all during the subhour.
-
-**ahccAuxOnAtAll=*float***
-
-Auxiliary power used in full value if coil is on for any fraction of a subhour.
+Auxiliary energy used by the cooling coil.
 
 <%= member_table(
-  units: "",
+  units: "Btu/hr",
   legal_range: "*x* $\\ge$ 0",
   default: "0",
   required: "No",
   variability: "hourly") %>
 
-The following four allow specification of meters to record cool coil auxiliary energy use through ahccAuxOn, ahccAuxOff, ahccFullOff, and ahccAuxOnAtAll, respectively. End use category "Aux" is used.
+**ahccAuxMtr=*mtrName***
 
-**ahccAuxOnMtr=*mtrName***
-
-**ahccAuxOffMtr=*mtrName***
-
-**ahccAuxFullOffMtr=*mtrName***
-
-**ahccAuxOnAtAllMtr=*mtrName***
+Specifies a meter for recording auxiliary energy use. End use category "Aux" is used.
 
 <%= member_table(
   units: "",
