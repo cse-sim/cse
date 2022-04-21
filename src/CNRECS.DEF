@@ -5558,9 +5558,8 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 				   Used in determining default value for cap35 (preceding); not used if cap35 is given. */
     *f FRAC capIa    		/* Capacity correction factor for indoor (return) air temperature, default .004, Niles iacCap.
 				   Expressed as a fraction reduction in capacity per degree above 70F. */
-    //*f AUXHEATTY typeSupHeat	// type of supplemental heat (C_AUXHEATTY_NONE, _RES, _FURN)
     *f FLOAT_GEZ capSupHeat    	// Output of supplemental coil, Btu/h.
-    *f FLOAT_GZ effSupHeat		// Supplemental heat efficiency
+    *h FLOAT_GZ effSupHeat		// Supplemental heat efficiency
     *i TI supHeatMtri			// meter for supplemental heat energy use
     *declare "MTR* pMtrSupHeat;" // runtime pointer to supplemental heat meter
   //inputs for AHP frost builtup, defrosting and their effect on capacity
@@ -5580,8 +5579,8 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *r POWER_NZ dfrCap   	/* cooling capacity (to ah supply air) during defrosting, default 2 * cap17, Niles pDefCool.
 				   Should include any effects of switchover transient; program will compute lost heating cap.
 				   Negative internally. (future) should check or default somehow vs ahp cooling inputs if given? */
-    *f KW_GZ dfrRh    		/* input (& output) power of addl reheat coil run during defrost, default 5kW, Niles pDefRh.
-    				   entered as kW, converted to Btuh internally by units stuff. */
+  //  *f KW_GZ dfrRh    		/* input (& output) power of addl reheat coil run during defrost, default 5kW, Niles pDefRh.
+  //  				   entered as kW, converted to Btuh internally by units stuff. */
   //AHHEATCOIL inputs for AHP low temperature cutout
     *f TEMP tOff     		// low temp cutout setpoint, default 5 F, Niles tOff.
     *f TEMP tOn      		// low temp cut-back-in setpoint, default 12 F, Niles tOn. tOn==tOff ok, error if <.
@@ -5620,7 +5619,7 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *s *e BOO  loTLockout	// TRUE if compressor locked out due to low outdoor temp (see tOff, tOn)
     *s *e BOO supOn		// TRUE if supplementary heat enabled (frFanOn is ~1.0, with hysterisis to keep ah stable).
     *s *e POWER capCon		// continuous cpr capac incl frost/defrost @ actual indoor temp, excl def & reg rh. Niles pCapMx.
-    *s *e POWER pDfrhCon  	// continuous avg power input to defrost heater @ outdoor temp (not cycling). Niles pDefRhMx.
+    *s *e POWER qDfrhCon  	// continuous avg heat ouput to defrost heater @ outdoor temp (not cycling). Niles pDefRhMx.
     //made local, only set in cases needed:
     // *s *e FRAC hlf		// heating load factor: hp compr heat used/capCon. Excludes reg & dfr rh. frCprOn may be larger.
     // *s *e FRAC plf		// part load factor, by which COP falls due to cycling.
@@ -5628,10 +5627,11 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 //AHHEATCOIL AHP runtime output members
     *s *e POWER cap		// capacity this subhour incl suppl heaters. rob's addition, used by doAhpHeatCoil re tPossH.
     				// might also be used for other coil types for current capacity.
-    //q: coil member: heat delivered, by heat pump incl suppl heaters (pRh). Niles pDel.
+    //q: coil member: heat delivered, by heat pump incl suppl heaters (qSh). Niles pDel.
     *s *e FRAC  frCprOn		// fraction of time compressor runs, this subhour. May be used by cch code. Niles tmFrRun.
     *s *e POWER pCpr		// power input to compressor (Niles pInComp): copy to .p in coilsEndSubhr.
-    *s *e POWER pRh		// input===output of reg & dfr supplemental resistance heaters. Included in q, not in p. Niles pRh.
+    *s *e POWER qSh		// output of reg (not defrost) supplemental heaters. Included in q of coil.
+    *s *e POWER pSh		// input of reg & dfr supplemental resistance heaters.
     //crankcase heater input power: see CCH.p. Niles pCch.
 *END		// AHHEATCOIL
 

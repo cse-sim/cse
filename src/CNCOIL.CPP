@@ -340,7 +340,7 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 	coilUsed = cuNONE;				// init to neither coil used
 	ahhc.notDone = ahcc.notDone = FALSE; 	// clear both coil "need another iteration" flags, tested in iter4Fs
 	//following done in coilsEndSubhr so 0'd if ah called then shut off, 10-92:
-	// ahhc.pCpr = ahhc.pRh = 0.;		// init to no power input to AHP compressor & resistance heat, 10-25-92.
+	// ahhc.pCpr = ahhc.pSh = 0.;		// init to no power input to AHP compressor & resistance heat, 10-25-92.
 	// ahhc.frCprOn = 0.;			// init to say AHP compressor did not run in subhour, for cleaner probe reports.
 	// cch.frCprOn = 0.;			// init to "compressor did not run" for crankcase heater 10-25-92
 	BOO ret = FALSE;
@@ -824,7 +824,7 @@ BOO AH::doAhpHeatCoil(		// compute tex, etc that air source heat pump heating co
 		ahhc.qSupLim = ahhc.qWant;		// special limit not needed, set to regular value.
 	ahhc.frFanOn = frFanOn;			// pass ah member into heat coil object member
 
-	ahhc.doAhpHeat( coilLimited, this);		// execute heat pump heating model, sets ahhc.cap, .q, .frCprOn, .pCpr, .pRh.
+	ahhc.doAhpHeat( coilLimited, this);		// execute heat pump heating model, sets ahhc.cap, .q, .frCprOn, .pCpr, .qSh, .pSh.
 
 	tex = ten + ahhc.q*frFanOn/cen;		// actual exit temp (doAhp decided output level).
 	tPossH = ten + ahhc.cap*frFanOn/cen;  	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
@@ -850,7 +850,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 // member runtime inputs include: .qWant: desired average output; .tIa: indoor air temp; .frFanOn;
 //				      .qSupLim: limit on TOTAL OUTPUT when suppl heat in use: caller sets to keep frFanOn 1.0.
 // member outputs: .cap (current capacity), .q (heat delivered), .frCprOn (fraction of subhour compressor ran),
-//		       .pCpr (compressor power in), pRh (res heat power in).
+//		       .pCpr (compressor power in), qSh (supp heat deslivered).
 
 // does not get called if qWant or flow (thus frFanOn) is 0.
 
@@ -868,7 +868,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 	// else: temp in hysteresis region: loTLockout remains unchanged.
 
 // determine capCon: steady state capacity for outdoor & indoor temps, with frost/defrost, excluding dfr & reg rh. Niles V-K-6-b.
-// And frTmDfr: fraction of time defrosting, in continuous operation.  And pDfrhCon, avg power input to dfr heater in contin op.
+// And frTmDfr: fraction of time defrosting, in continuous operation.  And qDfrhCon, avg heat output to dfr heater in contin op.
 
 	float frTmDfr;			// fraction of time defrosting, this subhour. Niles tmFrDef.
 	if (loTLockout)				// if compressor locked out in cold weather. part of Niles V-K-6-b-4, moved.
@@ -919,15 +919,15 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		frTmDfr = dfrFMn + frToPk * (dfrFMx - dfrFMn);	// time defrosting: same triang fcn as degradation factor
 	}
 	capCon *= (1. - capIa * (tIa - 70.));  		// adjust capacity for indoor air temp difference from 70. Niles V-K-7.
-	pDfrhCon =     					// average continuous operation power input to defrost heater
+	qDfrhCon =     					// average continuous operation heat output to defrost heater
 		frTmDfr     				// is computed fraction of time defrosting
-		* dfrRh;    				// times user-input capacity of heater
+		* capSupHeat; //dfrRh;  	// times user-input capacity of heater
 
 #if 1//rework to relate to frFanOn, 10-24-92
 
 // determine output and fraction run time for load. Niles V-K-8, modified to consider externally-determined fan fraction runtime.
-//     sets cap, q, pRh, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
-//     note output of BOTH resistance heaters is included BOTH in q and pRh.
+//     sets cap, q, qSh, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
+//     note output of BOTH supplemental heaters is included BOTH in q and qSh and pSh.
 //     fan runtime is predetermined externally, rather than here from frCprOn, to fit existing program organization 10-92.
 
 	// enable supplementary resistance heat only when fan always on, with hysteresis: use full compressor output first.
@@ -937,7 +937,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		supOn = FALSE;
 	//else, in between, supOn remains unchanged, so small noise does not change suppl heat, for stability & convergence.
 
-	cap = capCon + pDfrhCon + capSupHeat;		// full cap'y this subhour: full compr cap, + suppl res heat. set for caller.
+	cap = capCon + qDfrhCon + capSupHeat;		// full cap'y this subhour: full compr cap, + suppl heat. set for caller.
 
 	//determine cpr heat available with compressor running only when fan on
 	//   derivation of fraction output available for fraction runtime f:
@@ -949,7 +949,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 	//   substitute for hlf, substitute frFanOn for f:
 	//
 	DBL capFOn = capCon*frFanOn*(1 - cdm)/(1 - frFanOn*cdm) 	// compr capacity if runtime is frFanOn: adjust for degradation
-				 + pDfrhCon * frFanOn;				// power from defrost (negative): no degradation.
+				 + qDfrhCon * frFanOn;				// defrost reaheat (negative?): no degradation.
 
 	if (qWant >= capFOn)			// if desired heat is >= cpr can deliver (b4 considering suppl heat)
 	{
@@ -962,20 +962,20 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 							 qSupLim - q);	/* remainder of special heat limit that keeps ts down so frFanOn stays 1.0 when
                            			   fan cycling, so ah converges. See caller doAhpHeatCoil and cnah:setTsSp1.*/
 			if (q + supAv >= qWant)		// will it meet load? (frFan is 1.0 so ignored here)
-				pRh = qWant - q;			// yes, use just enough to meet load.
+				qSh = qWant - q;			// yes, use just enough to meet load.
 			else
 			{
-				pRh = supAv;
+				qSh = supAv;
 				coilLimited = TRUE;	// won't meet load, use it all and tell caller coil-limited
 			}
-			q += pRh;				// add supl heat to output
+			q += qSh;				// add supl heat to output
 		}
 		else					// suppl heat disabled or special limit already used up
 		{
 			coilLimited = TRUE;			// tell caller air handler is coil-limited
-			pRh = 0.;				// no suppl heat
+			qSh = 0.;				// no suppl heat
 		}
-		pRh += pDfrhCon * frFanOn;		// add defrost resistance heat input portion of q to suppl pRh, for meter/reports
+		qSh += qDfrhCon * frFanOn; // add defrost make-up heat portion of q to suppl qSh, for meter/reports
 	}
 	else					// heat pump can meet load in time fan runs, w/o suppl heat.  determine runtime.
 	{
@@ -986,12 +986,12 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		   = (1 - plf)/(1 - hlf) */
 		// determine compressor run time (frCprOn) to meet part load qWant. Run time is more than proportional
 		// to fraction output needed, cuz COP degrades, and added defrost for added run time complicates it.
-		//   given:  qWant = hlf * capCon + frCprOn*pDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
+		//   given:  qWant = hlf * capCon + frCprOn*qDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
 		//   substitute 3rd eqn into 2nd, then 2nd into first, move all to left, gather terms, get:
-		//     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + pDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
+		//     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + qDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
 		//   write it as A*hlf^2 + b*hlf + C = 0, and compute the coefficients:
 		DBL A = cdm * capCon;
-		DBL B = capCon * (1 - cdm) + pDfrhCon - cdm * qWant;
+		DBL B = capCon * (1 - cdm) + qDfrhCon - cdm * qWant;
 		DBL C = -qWant * (1 - cdm);
 		//apply quadratic formula, use the positive root.
 		DBL rootArg = B*B - 4*A*C;
@@ -1004,16 +1004,17 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 			{
 				frCprOn = hlf/plf;					/* run time: hlf increased for reduction in COP,
           							   ie by amount of addl input required to get rel output hlf */
-				pRh = frCprOn * pDfrhCon; 				// defrost heat used for this fraction run time
-				q = hlf * capCon + pRh;   				// heat delivered: compressor + dfr res heat
+				qSh = frCprOn * qDfrhCon; 				// defrost heat used for this fraction run time
+				q = hlf * capCon + qSh;   				// heat delivered: compressor + dfr heat
 			}
 		}
+		pSh = qSh / effSupHeat;
 
 		// debug aid checks. display only 1st message: other errors might be consequential, or vbls unset.
 		if (rootArg < 0.)   					// if wd have gotten sqrt neg # runtime lib err
 			rer( (char *)MH_R1341, ah->name,   			//   "airHandler %s: Internal error in doAhpCoil: \n"
 				 rootArg,   					//   "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
-				 cdm, pDfrhCon, capCon, qWant,   			//   "        cdm %g   pDfrhCon %g   capCon %g   qWant %g\n"
+				 cdm, qDfrhCon, capCon, qWant,   			//   "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 				 A, B, C );					//   "        A %g   B %g   C %g\n"
 		else if (hlf <= 0. || hlf > Top.hiTol*qWant/capCon)	// hlf excludes dfr rh --> less than qWant/capCon.
 			rer( (char *)MH_R1342, ah->name, 			//   "airHandler %s: Internal error in doAhpCoil: \n"
@@ -1031,18 +1032,18 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 #else//worked in brief tests, but did not relate to flow or frfanOn -- runs cpr more than caller runs fan, etc.
 x
 x// determine output and fraction run time for load. Niles V-K-8.
-x    //sets hlf, pRh, q, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
+x    //sets hlf, qSh, q, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
 x
-x    cap = capCon + pDfrhCon + capSupHeat;		// cap'y this subhour: full compr cap, + suppl res heat. set for caller.
-x    if (capCon + pDfrhCon <= qWant)		// if can't meet (or just meets) load without suppl heat
+x    cap = capCon + qDfrhCon + capSupHeat;		// cap'y this subhour: full compr cap, + suppl heat. set for caller.
+x    if (capCon + qDfrhCon <= qWant)		// if can't meet (or just meets) load without suppl heat
 x    {  if (cap < qWant)				// if can't meet load with suppl heat
 x       {  q = cap;				// deliver all the possible heat
-x          pRh = pDfrhCon + capSupHeat;   		// resistance heat input===output: defrost suppl + full reg suppl.
+x          qSh = qDfrhCon + capSupHeat;   		// supplemental heat output: defrost suppl + full reg suppl.
 x          coilLimited = TRUE;			// tell caller (ref arg) ahp is max'd out
 x		}
 x       else					// hp with suppl heat can meet load
 x       {  q = qWant;				// deliver desired heat
-x          pRh = qWant - capCon;    		// res heat: defrost, plus needed q from regular suppl heater
+x          qSh = qWant - capCon;    		// supplemental heat: defrost, plus needed q from regular suppl heater
 x		}
 x       hlf = 1.;				// heating load factor: full load
 x       plf = 1.;				// part load factor: COP not reduced at full load
@@ -1052,12 +1053,12 @@ x	else					// heat pump can meet load w/o suppl heat, therefore is cycling
 x	{
 x       // determine compressor run time (frCprOn) to meet part load qWant. Run time is more than proportional
 x       // to fraction output needed, cuz COP degrades, and added defrost for added run time complicates it.
-x       //   given:  qWant = hlf * capCon + frCprOn*pDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
+x       //   given:  qWant = hlf * capCon + frCprOn*qDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
 x       //   substitute 3rd eqn into 2nd, then 2nd into first, move all to left, gather terms, get:
-x       //     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + pDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
+x       //     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + qDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
 x       //   write it as A*hlf^2 + b*hlf + C = 0, and compute the coefficients:
 x       DBL A = cdm * capCon;
-x       DBL B = capCon * (1 - cdm) + pDfrhCon - cdm * qWant;
+x       DBL B = capCon * (1 - cdm) + qDfrhCon - cdm * qWant;
 x       DBL C = -qWant * (1 - cdm);
 x       //apply quadratic formula, use the positive root.
 x       DBL rootArg = B*B - 4*A*C;
@@ -1065,9 +1066,9 @@ x       RC rrc = RCOK;								// re suppressing consequential error messages
 x       if (rootArg < 0)								// prevent sqrt neg # runtime library error
 x       {	rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
-x                     "        cdm %g   pDfrhCon %g   capCon %g   qWant %g\n"
+x                     "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 x                     "        A %g   B %g   C %g\n",
-x                     ah->name,   rootArg,   cdm, pDfrhCon, capCon, qWant,   A, B, C );
+x                     ah->name,   rootArg,   cdm, qDfrhCon, capCon, qWant,   A, B, C );
 x          rootArg = 0.;								// use 0 and fall thru
 x		}
 x       hlf = (-B + sqrt(rootArg))/(2*A);				// frac compr cap that meets load with defrost rh added
@@ -1083,8 +1084,8 @@ x          rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    plf (%g) not > 0", ah->name, plf );
 x       else
 x          frCprOn = hlf/plf;					// run time: increase hlf for reduction in COP (reduc in output)
-x       pRh = frCprOn * pDfrhCon;   				// defrost heat used for this fraction run time
-x       q = hlf * capCon + pRh;   				// heat delivered: compressor + dfr res heat
+x       qSh = frCprOn * qDfrhCon;   				// defrost heat used for this fraction run time
+x       q = hlf * capCon + qSh;   				// heat delivered: compressor + dfr heat
 x       if (RELCHANGE( q, qWant) > Top.relTol)			// q should come out heat desired
 x          if (rrc==RCOK)						// suppress msg if any other msg just above
 x             rer( "airHandler %s: Internal error in doAhpCoil: \n"
@@ -1104,7 +1105,7 @@ x}
 
 // note cch heater input, Niles V-K-10, is in CCH::endSubhr, below in this file?
 
-	//on return, q is set, caller determines tex etc. also frCprOn, cap, pRh, pCpr.
+	//on return, q is set, caller determines tex etc. also frCprOn, cap, qSh, pSh, pCpr.
 }		// AHHEATCOIL::doAhpHeat
 //-----------------------------------------------------------------------------------------------------------------------------
 // cooling coils
@@ -2440,7 +2441,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 			rer( PWRN, (char *)MH_R1338, (UI)ahhc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad heat coil type 0x%x"
 		}
 		//if (ahhc.q)					add /0 protection add if need found
-		ahhc.eir = (ahhc.p + ahhc.pRh + cch.p)/ahhc.q;	/* energy input ratio: input/output:
+		ahhc.eir = (ahhc.p + ahhc.pSh + cch.p)/ahhc.q;	/* energy input ratio: input/output:
 							   input includes AHP resistance heat, and crankcase heater input.*/
 		//if (frFanOn)					add /0 protection if need found
 		ahhc.plr = ahhc.plrAv/frFanOn;			// fan-on part load ratio (frac full pwr, or flame fractn on, when fan on)
@@ -2457,8 +2458,9 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 		}
 		//zero variables otherwise unset (those set in above switch are 0'd before it)
 		ahhc.pCpr = 0.;					// for cleanliness: pCpr used above in switch
-		ahhc.pRh = 0.;					// necessary: pRh used on return to AH::endSubhr
-		ahhc.frCprOn = 0;				// for cleanliness
+		ahhc.pSh = 0.;					// necessary: pSh used on return to AH::endSubhr
+		ahhc.qSh = 0.;					// necessary?
+	ahhc.frCprOn = 0;				// for cleanliness
 		ahhc.plr = ahhc.plrAv = 0;			// 7-95 now used in AH::endSubhr.
 	}
 

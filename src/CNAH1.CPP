@@ -858,8 +858,9 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 					/*&& ahhc.coilTy != C_COILTYCH_HHP*/ )  			// .. (redundant: meter disallowed)
 			{
 				MtrB.p[ahhc.mtri].H.htg  += ahhc.p*Top.tp_subhrDur;		// charge heating coil input power to meter, end use "htg"
-				MtrB.p[ahhc.mtri].H.hpBU += ahhc.pRh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hp" (0 if not AHP)
 			}
+		if (ahhc.supHeatMtri)							// if meter specified for heat coil
+			MtrB.p[ahhc.supHeatMtri].H.hpBU += ahhc.pSh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hpbu" (0 if not AHP)
 		if (ahcc.mtri)								// if meter specified for cool coil
 			if (ahcc.coilTy != C_COILTYCH_CHW   					// if not a coil type that uses a plant
 					/*&& ahcc.coilTy != C_COILTYCH_HHP*/ )    				// .. (redundant: meter disallowed)

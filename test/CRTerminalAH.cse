@@ -287,7 +287,9 @@ SURFACE South_Wall
             ahhcCaptRat = 24000
             ahpCOP47=3  	
             ahpCOP17=1.7
-            ahpSupRh=0.0001                  //no backup resistance but >0 required
+            ahpEffSupH=1.0
+            ahpCapSupH=0  //0.3412142
+            //ahpSupHMtr=mtrFuel
             ahhcSched=avail
             ahhcMtr=mtrElec 
           
