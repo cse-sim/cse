@@ -139,7 +139,7 @@
 
 #define CRTERMAH			// define to enable support of TERMINAL / AIRHANDLER model
 							//    in convective / radiant zones
-#define SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
+#undef SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
 								//   (development aid)
 
 #endif	// ifndef _CNEDEFNS_H

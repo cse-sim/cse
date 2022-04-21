@@ -2246,8 +2246,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_FVentCR();"
     *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
-    *declare "RC zn_AirX();"
+    *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
     *declare "RC zn_MoistureBalCR();"
+    *declare "double zn_HumRat( double amfX, double mwX, double _tz, double& XLGain);"
     *declare "RC zn_ComfortCR();"
     *declare "void zn_DbDump() const;"
 
