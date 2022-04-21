@@ -1526,9 +1526,8 @@ LOCAL void FC NEAR doIvlAccum()
 			{	float qlErrF = pZR->curr.S.qlBal / qlAbsSum;
 				if (fabs( qlErrF) > 0.0001f)
 				{	ZNR* zp = pZR->zr_GetZone();
-					if (zp->zn_IsConvRad())
-						zp->orWarn("latent unbal = %.2f Btu (%.5f, case=%d)",
-							pZR->curr.S.qlBal, qlErrF, zp->zn_wCase);
+					zp->orWarn("latent unbal = %.2f Btu (%.5f)",
+							pZR->curr.S.qlBal, qlErrF);
 				}
 			}
 		}

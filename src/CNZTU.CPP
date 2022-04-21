@@ -1432,22 +1432,6 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 // returns non-RCOK for error that should terminate run (message issued).
 {
 
-#if 0 // 5-97 moved to end run, cnguts.cpp.
-x//----- excess humidity message
-x
-x    if (znXLGain != 0.)  			// if znW() rejected latent gain to avoid supersaturation at tu-ah convergence
-x       rer(
-x            "Zone '%s': Excess indoor humidity: \n"
-x            "    CSE had to assume a latent loss of %g Btu/hr \n"
-x            "    to prevent supersaturation of the zone air. \n"
-x            "    CSE does not simulate condensation. In your input, \n"
-x            "    please specify sufficient infiltration or ventilation for this zone.", 	// NUMS
-x            name, znXLGain );
-x       // continue now; run ended elsewhere if too many errors.
-x       /* possible future 10-96: simulate condensation by adding znXLGain as sensible gain in next, or maybe this, subhour.
-x          Then no error. User input for fraction of this heat of condensation to add? */
-#endif
-
 //----- zone's simulation results for subhour.   Values + for heat TO zone.
 //      Note q to CAir is subtracted from qMass for balance.
 	RC rc = RCOK;
@@ -1546,9 +1530,8 @@ x          Then no error. User input for fraction of this heat of condensation t
 								//	slr gain. qSgTot & qStTotSh are targets set per SgR entries in cnloads.
 								//     mass part qMsSg subtracted out of qMass above
 
-// subhour results: infiltration
+// subhour results: infiltration and conduction
 	zrs->qsInfil = zn_uaInfil * (Top.tDbOSh - tz) * Top.tp_subhrDur;	// infiltration sensible gain
-#if 1	// rework re latent bal errors, 10-15-2012
 	if (zn_IsConvRad())
 	{	// CSE zone
 		zrs->qlInfil = zn_NonAnIVAmf()		// dry-air mass flow
@@ -1556,6 +1539,9 @@ x          Then no error. User input for fraction of this heat of condensation t
 					 * PsyHCondWtr			// * 1061 Btu/lb
 					 * Top.tp_subhrDur;		// * portion of hour --> energy (Btu)
 											//   (convert power to energy)
+
+		zrs->qCond = (zn_qCondQS + zn_qDuctCond + zn_qDHWLoss) * Top.tp_subhrDur;
+		// quick surface conduction + duct gain + DHW losses to zone
 	}
 	else
 	{	// CNE zone
@@ -1576,48 +1562,22 @@ x          Then no error. User input for fraction of this heat of condensation t
 			* PsyHCondWtr 			// * 1061 Btu/lb --> power (Btuh)
 			* Top.tp_subhrDur;			// * portion of hour --> energy (Btu) (convert power to energy)
 		// 6-10-92 is above right 1) considering w not computed in a/b form (see znW); 2) when exfil != infil.
-	}
-#else
-x	DBL wDiff;
-x	switch (Top.humMeth)			// compute infil air w diff from displaced air consistently with w calc method
-x	{
-x	case C_HUMTHCH_PHIL:
-x		wDiff = //(Top.wOSh - wz);			does not balance when wz determined using (ws - wsls)/2.
-x			(Top.wOSh - (wz + wzls)/2.);
-x		break;	// use average wz
-x	case C_HUMTHCH_ROB:
-x		wDiff = (Top.wOSh - wz);
-x		break;	// use latest wz
-x	}
-x	zrs->qlInfil = 				// latent infiltration gain energy
-x		zn_uaInfil/Top.tp_airSH	// heat cap infil air flow / spec ht = mass flow (lb/hr)
-x		* wDiff	 				// * water added: entering w - average displaced w (ratios)
-x		* PsyHCondWtr 			// * 1061 Btu/lb --> power (Btuh)
-x		* Top.tp_subhrDur;			// * portion of hour --> energy (Btu) (convert power to energy)
-x	// 6-10-92 is above right 1) considering w not computed in a/b form (see znW); 2) when exfil != infil.
-#endif
 
-// subhour results: conduction
-	if (zn_IsConvRad())
-	{	zrs->qCond = (zn_qCondQS + zn_qDuctCond + zn_qDHWLoss) * Top.tp_subhrDur;
-						// quick surface conduction + duct gain + DHW losses to zone
-	}
-	else
-	{	// "traditional" CNE zone
+		zrs->qCond = (zn_ua * (Top.tDbOSh - tz)	// conduction thru walls to zone per temp diff
+				- qrIgTotO)				// less rad int gain lost to outdoors thru light surfaces 11-95
+			* Top.tp_subhrDur;				// convert power to energy
 
-		zrs->qCond  = ( zn_ua * (Top.tDbOSh - tz)	// conduction thru walls to zone per temp diff
-						- qrIgTotO )				// less rad int gain lost to outdoors thru light surfaces 11-95
-						* Top.tp_subhrDur;				// convert power to energy
 		// conduction thru specified-temp-exposure surfaces 3-91
-		XSRAT *xs /*=NULL*/;
-		for (TI xi = xsSpecT1;  xi != 0;  xi = xs->nxXsSpecT)	// these xsurfs have own chain
+		XSRAT* xs /*=NULL*/;
+		for (TI xi = xsSpecT1; xi != 0; xi = xs->nxXsSpecT)	// these xsurfs have own chain
 		{
 			xs = XsB.p + xi;						// access XSRAT record xi
 			zrs->qCond += xs->x.xs_uval * xs->x.xs_area	// ua
-					  * (xs->x.sfExT - tz) 				// * tdif
-					  * Top.tp_subhrDur;					// * hr frac
+				* (xs->x.sfExT - tz) 				// * tdif
+				* Top.tp_subhrDur;					// * hr frac
 		}
 	}
+
 
 // subhour results: interzone
 
@@ -3326,14 +3286,13 @@ Test case: T60X 12 Dec: hum driven by Infil, when getting warmer & wetter outsiz
    j. 9 iterations, 1e-10. T60x.r5j:  .002, .001. These are thousanths of Btu's.
    SO, revert to i to be sure. And, 5 iterations, 1e-9 probably plenty good, but otta test with more input files. 5-97.
 */
-#if defined( CRTERMAH)
 //---------------------------------------------------------------------------------------------------------------------------
 DBL ZNR::znW( 			// compute zone humidity ratio
 
 	DBL wc,		// humMeth = Rob:  sum of flows times w's into zone:  sigma(ah->ws * tu->cz) 	(or ah->aWs * tu->aCz, etc)
 				// humMeth = Phil: sum of AVERAGE humrats times flows into zone:
 				//				sigma( (ah->ws+ah->wsls)/2. * tu->cz) 	(or ah->aWs, tu->aCz, etc)
-	DBL c,		// sum of air handler flows into zone
+	DBL c,		// sum of air handler capacity flows into zone, Btuh/F
 	DBL _tz,		// zone temperature: .tz, or .aTz from antRatTs.
 	DBL &xLGain ) 	// receives excess latent gain power rejected to prevent supersaturation, eg znXLGain.
 // above are args so ah can pass unstored updated working values.
@@ -3349,6 +3308,18 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 // wc:      Rob:  sigma tu->c * ws
 //          Phil: sigma tu->c*(ws + wsls)/2.
 // c:       sigma tu->c: total supply flow into zone, heat cap units.
+
+#if defined( CRTERMAH)
+	if (zn_IsConvRad())
+	{	// use CR formulation for CR zones
+		double amfX = c / Top.tp_airSH;	// lbm/hr
+		double mwX = wc / Top.tp_airSH;
+
+		double _wz = zn_HumRat(amfX, mwX, _tz, xLGain);
+
+		return _wz;
+	}
+#endif
 	
 	DBL M = i.znVol * Top.airDens(_tz);		// mass of air in zone (use average temp (_tz+tzls)/2. ?? )
 	DBL _wz = 0;
@@ -3409,122 +3380,10 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 		_wz -= xw;				// reduce computed zone hum by excess
 		break;					// and call it good enough
 	}
+
 	return _wz;
+
 }			// ZNR::znW
-#else
-//---------------------------------------------------------------------------------------------------------------------------
-DBL ZNR::znW( 			// compute zone humidity ratio
-
-	DBL wc,		// humMeth = Rob:  sum of flows times w's into zone:  sigma(ah->ws * tu->cz) 	(or ah->aWs * tu->aCz, etc)
-				// humMeth = Phil: sum of AVERAGE humrats times flows into zone:
-				//				sigma( (ah->ws+ah->wsls)/2. * tu->cz) 	(or ah->aWs, tu->aCz, etc)
-	DBL c,		// sum of air handler flows into zone
-	DBL _tz,		// zone temperature: .tz, or .aTz from antRatTs. Arg added 10-96.
-	DBL& xLGain) 	// receives excess latent gain power rejected to prevent supersaturation, eg znXLGain. 10-96.
-// above are args so ah can pass unstored updated working values.  Also uses: zone: .unInfil, .znLGain, .i.znVol.
-// returns (does NOT store) zone w.
-
-// humMeth = Phil notes 6-92: to get latent energy balance, must also use average ws AND wz to compute qlMech,
-//           and average wz to compute qlInfil.
-{
-	//inputs:
-	// uaInfil: heat capacity of air infiltrating into zone (Btuh/F): divide it by specific heat (Btu/lb-F) to get mass flow (lb/hr).
-	// znLGain: moisture gain (Btuh) from user input GAIN records via cnguts.cpp:doHourGains called from cnguts.cpp:doBegIvl.
-	// wc:      Rob:  sigma tu->c * ws
-	//          Phil: sigma tu->c*(ws + wsls)/2.
-	// c:       sigma tu->c: total supply flow into zone, heat cap units.
-	DBL aw, bw; 							// a and b for humidity balance equation
-	DBL M = i.znVol * Top.airDens(_tz);		// mass of air in zone (use average temp (_tz+tzls)/2. ?? )
-	DBL _wz = 0;
-	float _wo = Top.wOSh;		// outdoor humidity
-	DBL _wzls = wzls;			// zone humidity last subhour
-	xLGain = 0;					// init to no supersaturation, no excess humidity to reject (ref arg)
-	DBL satW = psyHumRat3(_tz);   	// maximum w air at this temp can hold. lib\psycho2.cpp function.
-
-#if 0 // trial #2 (notes above) 5-97... NO! far too much condensation, leaves zone less than saturated.
-	x	// first assume all excess moisture condenses out in zone
-		x	if (_wzls > satW)					// air already in zone may be supersat if it has gotten colder
-		x{ xLGain += (_wzls - satW) * M 	// excess H2O in mass of air in zone last subhour
-		x * PsyHCondWtr			//  heat condensation of this water releases (Btu)
-		x / Top.tp_subhrDur;		//   convert energy to power
-		x       _wzls = satW;					// limit zone last subhour humidity to saturation value
-		x }
-		x	if (_wo > satW)				// air infiltrating into zone may supersaturate if colder inside than out
-			x{ xLGain += (_wo - satW)				// excess H2O in in
-			x * uaInfil / Top.tp_airSH	//  mass of infiltrating air (heat cap flow/specific heat)
-			x * PsyHCondWtr				//   heat condensation of this water releases (Btu)
-			x / Top.tp_subhrDur;			//    convert energy to power
-			x       _wo = satW;				// limit infiltrating air humidity to saturation value
-			x }
-#endif
-
-#if 1	// part of trial #3 (notes above) 5-97. GOOD, KEEP.
-		for (int j = 0; ; )		// may repeat if supersaturated, per endtest below
-		{
-#endif
-			// compute humidity
-			switch (Top.humMeth)		// compute zone humidity by selected method.  Note that argument "wc" differs by method.
-			{
-			case C_HUMTHCH_ROB:  			// Rob's basic aw/bw method, like temperature
-				bw = M / Top.tp_subhrDur   		// denominator.  M/t,
-					+ (c + zn_uaInfil) / Top.tp_airSH;		//   sigma(m): divide by airSH to get mass flow from heat cap flow.
-				aw = _wzls * M / Top.tp_subhrDur					// numerator.  wLast * M / t,
-					+ (wc + zn_uaInfil * _wo) / Top.tp_airSH	//   sigma(w*m): hums * mass flows, for air handlers and infiltration,
-					+ znLGain / PsyHCondWtr;					//   w gain independent of wz: scheduled gain.
-				_wz = aw / bw;   								// wz = aw / bw.
-				break;
-
-			case C_HUMTHCH_PHIL:			// Niles central difference method using all sorts of averages
-				if (c == 0.)					// if no flow (faster)
-					// || (single zone ah && no outside air && coil not on) <-- add if can figure out tests (forward) to skip iterations ****
-				{
-					// supply air does not affect zone humidity, omit wc from calculation: speed convergence
-					bw = zn_uaInfil / Top.tp_airSH / M;
-					aw = bw * _wo + znLGain / PsyHCondWtr / M;   	// aw = (uaInfil*Top.wOSh / Top.airSh + znLGain/1061) / M;
-				}
-				else	// general case
-				{
-					aw = ((zn_uaInfil * _wo + wc) / Top.tp_airSH + znLGain / PsyHCondWtr) / M;
-					bw = (zn_uaInfil + c) / Top.tp_airSH / M;
-				}
-				DBL bwt2 = bw * Top.tp_subhrDur / 2.;				// subexpr
-				_wz = ((1. - bwt2) * _wzls + aw * Top.tp_subhrDur) / (1. + bwt2);	// compute zone w: central difference per Niles sect I-H.
-				break;
-			}
-
-#if 1	// the rest of trial #3 (notes above fcn), 5-97. GOOD, KEEP.
-			// if supersaturated, condense out excess moisture from zone and conditionally iterate.
-			// iteration found really necessary for latent balance (so qlInfil matches qlAir when no hvac), 5-97
-			// each iteration got about .12 the excess as previous in a traced case.
-			DBL xw = _wz - satW;		// humidity in excess of saturation
-			if (xw <= 0)				// if not supersaturated
-				break;					// done, leave loop
-			xLGain += 					// heat from condensing the excess moisture
-				xw * M 					// excess hum rat * mass of air in zone = excess water (lbs)
-				* PsyHCondWtr 			//  * heat of condensation = energy (Btu)
-				/ Top.tp_subhrDur;			//   / time interval = power (Btuh)
-			if (xw > 1.e-11    		// if change was in approx 8th sig dig of w ...  TUNING ITEM, notes above fcn.
-					&& ++j < 9)		//  and haven't done 9 iterations (@ not quite 1 more sig dig each). TUNING ITEM
-			{
-				_wzls -= xw;
-				continue;  			// reduce previous zone hum by excess much and iterate
-			}
-			_wz -= xw;				// reduce computed zone hum by excess
-			break;					// and call it good enough
-		}
-#endif
-#if 0	// 10-96 additions; changed & completed 5-97; part of trial 1 and 2, superceded by trail 3.
-		x// prevent supersaturation. 10-96.
-			x    if (_wz > satW)				/* _wz > satW. No msg now cuz may iterate to 0, eg if ah coolCoil is on,
-			x						   else errMsg issued in ZNR::ztuEndSubhr above. */
-			x{ xLGain = (_wz - satW) * M * PsyHCondWtr	// convert excess H2O to Btu (heat condensation of this water would release),
-			x / Top.tp_subhrDur;			//  convert energy to power
-			x       _wz = satW;				// limit zone humidity to saturation value
-			x }
-#endif
-		return _wz;
-}			// ZNR::znW
-#endif	// CRTERMAH
 //---------------------------------------------------------------------------------------------------------------------------
 LOCAL BOO FC NEAR tuHasFlow( TU *tu, SI md)  	// test whether air would flow thru terminal in zone mode 'md'
 

@@ -14,7 +14,7 @@ Warning:
    conditions are specified via 'coolDsMo' (as opposed to 'coolDsDay').
 ---------------
 Warning: Zone 'Attic': Condensation occurred in 7688 subhours of run.
-    Total condensation heat = 57.1568 kBtu.
+    Total condensation heat = 57.1575 kBtu.
 ---------------
 
 
@@ -60,7 +60,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  1
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  1
 
 
 
@@ -71,7 +71,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console
+! CSE 0.904.0+termah.6a5591cc.80.dirty for Win32 console
 
 
 
@@ -123,7 +123,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  2
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Input for Run 001:
         		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  3
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Input for Run 001:
         //Thermostats         
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  4
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Input for Run 001:
             sfanVfMxF=1.00             //Max volume multiplier
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  5
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Input for Run 001:
         	WINDOW  Wfront; wnHeight=6.; wnWidth=105 / 6 wnGT="4040";       
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  6
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  7
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  7
 
 
 
@@ -447,21 +447,21 @@ Input for Run 001:
 
 
 
-! CSE 0.874.0+solarinterp.05da792.3 for Win32 console run(s) done: Fri 28-Aug-20   3:46:29 pm
+! CSE 0.904.0+termah.6a5591cc.80.dirty for Win32 console run(s) done: Thu 21-Apr-22   1:56:46 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               28-Aug-20   3:21 pm   (VS 14.16    2640896 bytes)  (HPWH 1.10.1+HEAD.5950964.2)
+!               21-Apr-22   1:50 pm   (VS 14.29    2998784 bytes)  (HPWH 1.18.0)
 ! Command line: -x!  -t1 autosize
 ! Input file:   D:\cse\test\autosize.cse
 ! Report file:  D:\cse\test\autosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2      T/C = 0.0065   
-!           AutoSizing:  Time = 0.35     Calls = 1      T/C = 0.3520   
-!           Simulation:  Time = 2.69     Calls = 1      T/C = 2.6880   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080   
-!                Total:  Time = 3.07     Calls = 1      T/C = 3.0670   
+!                Input:  Time = 0.02     Calls = 2      T/C = 0.0095   
+!           AutoSizing:  Time = 0.13     Calls = 1      T/C = 0.1260   
+!           Simulation:  Time = 2.62     Calls = 1      T/C = 2.6200   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 2.77     Calls = 1      T/C = 2.7700   
 
 
 
@@ -501,5 +501,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! autosize  001                            Fri 28-Aug-20   3:46:26 pm  Page  8
+! autosize  001                            Thu 21-Apr-22   1:56:43 pm  Page  8
 
