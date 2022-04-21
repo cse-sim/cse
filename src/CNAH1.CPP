@@ -179,14 +179,14 @@ slowing convergence when limit got too small while converging flow (during warmu
 	}
 }		// AH::fazInit
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AH::rddInit([[maybe_unused]] int isAusz)	// init done ONCE for main sim and once for each autoSize design day: set inital state. 7-95.
+RC AH::rddInit(int /*isAusz*/)	// init done ONCE for main sim and once for each autoSize design day: set inital state. 7-95.
 
 // see also rddiInit, next: confusing names.   Called from cnguts.cpp:cgRddInit, 7-95
 {
-	tr2Nx = 			/* initialize return air temp (used b4 1st ahCompute) to same value as zone temperatures.
-				   If tr2Nx left 0, 1st ztuMode call has (had) trouble converging using estimated ah ts's that
-				   don't relate to zones and which may be eg 0 for cooling but 40 (ahTsMn) for heating. 4-20-95.*/
-		ts = aTs = 70; 		// initing supply temp, eg re tu duct leakage to return, should speed warmup, 5-95.
+	tr2Nx = 	// initialize return air temp (used b4 1st ahCompute) to same value as zone temperatures.
+				// If tr2Nx left 0, 1st ztuMode call has (had) trouble converging using estimated ah ts's that
+				// don't relate to zones and which may be eg 0 for cooling but 40 (ahTsMn) for heating. 4-20-95
+		ah_tSup = aTs = 70.f; 		// initing supply temp, eg re tu duct leakage to return, should speed warmup, 5-95.
 	ws = aWs = Top.tp_refW;	// init supply humidity
 
 	// set up coils and fans. For those to be autoSized, initial size may be 0 or NAN; will be reSetup elsewhere during pass 1.
@@ -794,7 +794,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		ahres->wr = wr;     	// return (after plenum, before duct).  Use inputs to completed iteration.
 		ahres->tmix = tmix;
 		ahres->wmix = wen;	// mixed
-		ahres->ts = ts;
+		ahres->ts = ah_tSup;
 		ahres->ws = ws;     	// supply (after supply duct, at terminals)
 		ahres->po = po;     				// fraction outside air
 		ahres->frFanOn = frFanOn;			// fraction of time fan ran (1.0 unless fanCyles)
@@ -824,7 +824,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		DBL hhr2 =  HH(tr2,wr1,cr1);		// .. entering eco, after poss fan
 		DBL hhmix = HH(tmix,wen,cmix);		// .. exiting economizer
 		DBL hhSen = HH(tSen,ws,cmix);		// .. entering supply duct, after coil(s) and supply fan
-		DBL hhs =   HH(ts,ws,CS);   		// .. getting to terminals, after supply duct
+		DBL hhs =   HH(ah_tSup,ws,CS);   	// .. getting to terminals, after supply duct
 		ahres->qO = (hhmix - hhr2) * Top.tp_subhrDur;  	// subhr outside air q: enthalpy (rel tr/wr) change of flow thru eco
 		ahres->qLoss =  					// leak and loss q this subhour
 			( hhr1 /* - hhr=0*/  		//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
@@ -993,7 +993,7 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 initial ahCompute call for subhr
 
-// outputs for ztuCompute: AH.ahMode, AH.ts
+// outputs for ztuCompute: AH.ahMode, AH.ah_tSup
 
 {
 	// callers: cnztu.cpp:hvacIterSubhr: before tu-ah loop for subhour
@@ -1035,7 +1035,7 @@ x #endif
 							// Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
        						// Note ztuMode() presets aTz, zCv etc for this call. 4-95.
 // estimate new ts from ahTsSp -- or leave same
-	DBL tsNu = ts;
+	DBL tsNu = ah_tSup;
 	{
 		if (VD ahTsSp != VD ahTsSpPr)				// if ahTsSp changed (numerical tolerance applied just below)
 		{
@@ -1074,16 +1074,16 @@ x #endif
 	}
 
 // recompute ah if "significant" change
-	if (ABSCHANGE( tsNu, ts) > Top.absTol)  		// if estimated ts changed "significantly" 11-92
+	if (ABSCHANGE( tsNu, ah_tSup) > Top.absTol)  		// if estimated ts changed "significantly" 11-92
 		ahPtf++;						// set this ah's "must compute" flag.  Top.ahKf set above.
 
-	ts = tsNu;						// store updated supply temp
-	aTs = ts;						/* also set "air handler working copy" ts, for use eg in zRat
+	ah_tSup = tsNu;						// store updated supply temp
+	aTs = ah_tSup;						/* also set "air handler working copy" ts, for use eg in zRat
 							   at AH::ahCompute entry. Makes having two copies historical. 5-95. */
 
 // update supply air volumetric heat capacity @ ts and reference w, and terminal limits based on it
 	DBL sink = 0.;
-	ahVshNLims( ts, sink, sink); 			/* update ah->airxTs and convert tu mn/mx cfm flows to Btuh/F.
+	ahVshNLims( ah_tSup, sink, sink); 			/* update ah->airxTs and convert tu mn/mx cfm flows to Btuh/F.
 							   Note: sfan/rfan.cMx, .dT, etc: prior values used as estimate. */
 	// don't attempt refinement here, eg don't do setTsSp1 again for new airxTs, cuz eg sfan.cMx isn't current, 4-95.
 
@@ -1135,14 +1135,14 @@ x	 }
 
 // return air temp/flow per zone temps and terminal flows; plenum loss and return fan heat
 		zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
-						// Note ahEstimate sets aTs, in addition to ts, for this call
+						// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
 
 	/* Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
 	   Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.
 	     derived values include tr2Nx/wr1Nx/cr1Nx (computed by zRat from zone t/w/c's, which set ahClf upon change); dt2, . */
 
 // done if no change found
-	DBL dt2 = ts - tr2Nx;    				/* air temp change thru airHandler after return duct and return fan
+	DBL dt2 = ah_tSup - tr2Nx;    				/* air temp change thru airHandler after return duct and return fan
     							   (already recomputed) (old ts, new tr2Nx per new tr from zones) */
 	DBL tr2Chg = ABSCHANGE( tr2Nx, tr2);		// how much new tr2 changed from START prior ah iteration
 	DBL cmixNx = cr1Nx;					/* new cmix will be new cr1. ONLY VALID if eco does not change flow.
@@ -1156,10 +1156,10 @@ x	 }
 		     						   (tr2 change < absTol) and cr1 may be tu-limited */
 			&&  ABSCHANGE( wr1Nx, wr1NxPr) < Top.absHumTol      	// if return humidity "unchanged" (tol .00003 or as changed)
 
-			&&  ABSCHANGE( Top.tDbOSh, tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
+			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
 			/* if outdoor air temp "unchanged" relative to use: obscure-case
 			   insurance; makes no difference in existing tests 6-24-92. */
-			&&  ABSCHANGE( Top.wOSh, wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
+			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
 			/* if oudoor w "unchanged" relative to use.
 			   insurance added 1-95 in preparation for SHINTERP.
 			   TESTED 1-95: adds an occasional iteration in Rob's tests,
@@ -1244,10 +1244,10 @@ x  }  }
 #endif
 
 // outputs and change-flagging
-	upCouple( aTs, ts, aWs, ws);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
+	upCouple( aTs, ah_tSup, aWs, ws);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
     					   in ts and/or zone flow: anticipate ztuCompute for other ah's, to speed convergence.
     					   uses zp->tuCzWas's.  note here ts, ws are OLD values. */
-	ts = aTs;
+	ah_tSup = aTs;
 	ws = aWs;		// store working supply temp and hum ratio into ts and ws for ztuCompute
 	if (!flagTusIf())			// if ah output changed, set zp->ztuCf for served terminals. uses new ts/ws! 10-15-92.
 		flagChanges();			// else flag zones whose temps or terminal flows have changed.
@@ -1262,10 +1262,10 @@ x					   TRUE may enable some autoSizing stuff eg in ztuMode. 7-20-95. */
 	tr2NxPr = tr2Nx;
 	cr1NxPr = cr1Nx;
 	wr1NxPr = wr1Nx;
-	tDbOShPr = Top.tDbOSh;
-	wOShPr = Top.wOSh;
+	ah_tDbOShPr = Top.tDbOSh;
+	ah_wOShPr = Top.wOSh;
 	upPriors();				// update TU -Pr's for tests in ZNR.ztuMdSets
-	tsAhPr = ts;
+	tsAhPr = ah_tSup;
 	VD hcSchPr = VD ahhc.sched;
 	VD ccSchPr = VD ahcc.sched;  	// used in AH::estimate; also input-monitored by chaf's
 	VD ahTsSpPr = VD ahTsSp;					// update comparator used in AH::estimate

@@ -431,9 +431,11 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		// subhour loads (see also loadsHourBeg, from doBegIvl)
 		CSE_EF( loadsSubhr() )
 
+#if !defined( CRTERMAH)
 		// may extrapolate tz if load unchanged
-		// subhour CNE hvac
+		// subhour terminal/airhandler hvac
 		CSE_EF( hvacIterSubhr() )	// does iterative portion of subhour hvac ONLY.
+#endif
 
 		// end subhour
 		RLUP( XsB, xr)   CSE_EF( xr->x.xs_EndSubhr() )	// surface temp updates, accum conduction totals to zones,
@@ -1918,7 +1920,7 @@ void ZNRES_IVL_SUB::zr_Init1(
 	{	if (zp)
 		{	// use consistent values from zone
 			tAir = zp->tz;
-			tRad = zp->tr;
+			tRad = zp->zn_tr;
 			wAir = zp->wz;
 		}
 		else

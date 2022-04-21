@@ -2265,7 +2265,10 @@ x	}
 	ahcc.frCprOn = frFanOn 		// fraction of time fan is on (1.0 if not cycling): coil inactive when fan off
 				   * frCOn;		// times fraction of that time compressor runs, 1.0 if plr cycling region.
 
-#ifdef DEBUG //devel aid only; remove most "soon". Still getting new warnings here, 10-92. selectively make DEBUG2 1-95?
+#if defined( DEBUG2)
+// devel aid only; remove most "soon".
+// Still getting new warnings here, 10-92.
+// made DEBUG2 4-22
 
 // checks
 

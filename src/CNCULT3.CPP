@@ -3203,7 +3203,7 @@ void SBC::sb_SetTx()
 	if (sb_zi)
 	{	ZNR& z = ZrB[ sb_zi];
 		sb_txa = z.tz;
-		sb_txr = z.tr;
+		sb_txr = z.zn_tr;
 		sb_txe = sb_hxtot > 0. ? (sb_txa*sb_hxa + sb_txr*sb_hxr) / sb_hxtot : 0.f;
 	}
 	// else do nothing

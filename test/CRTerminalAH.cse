@@ -20,7 +20,7 @@ repHdrR=""
 WfName="CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 BEGDay=Jan 1
 ENDDay=Dec 31
-ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+ebTolSubhr=0.001 ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
 Jan1DOW=Tue
 wuDays=30
 nSubSteps=20

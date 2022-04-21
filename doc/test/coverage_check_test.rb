@@ -437,4 +437,92 @@ class CoverageCheckTest < TC
     expected = {"A"=>Set.new(["a","b","c","cName","d"])}
     assert_equal(expected, actual)
   end
+  def test_casing_with_RecordInputSetDifferences
+    ris1 = {
+      "A" => Set.new(["aa", "ab", "ac"]),
+      "B" => Set.new(["ba", "bb", "bc"])
+    }
+    ris3 = {
+      "a" => Set.new(["AA", "AB", "AC"]),
+      "b" => Set.new(["BA", "BB", "BC"])
+    }
+    case_sensitive = false
+    records_to_ignore = ["A"]
+    data_fields_to_ignore = {"a"=>Set.new(["ac"])}
+    diffs = RecordInputSetDifferences[
+      ris1, ris3, case_sensitive,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    assert(diffs.nil?)
+    diffs = RecordInputSetDifferences[
+      ris3, ris1, false,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    assert(diffs.nil?)
+    records_to_ignore = []
+    data_fields_to_ignore = {}
+    diffs = RecordInputSetDifferences[
+      ris1, ris3, case_sensitive,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    assert(diffs.nil?)
+    ris1 = {
+      "A" => Set.new(["aa", "ab", "ac", "ad"]),
+      "B" => Set.new(["ba", "bb", "bc"])
+    }
+    ris3 = {
+      "a" => Set.new(["AA", "AB", "AC"]),
+      "b" => Set.new(["BA", "BC"])
+    }
+    records_to_ignore = ["B"]
+    data_fields_to_ignore = {"a"=>Set.new(["ad"])}
+    diffs = RecordInputSetDifferences[
+      ris1, ris3, case_sensitive,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    assert(diffs.nil?)
+    ris1 = {
+      "A" => Set.new(["aa", "ab", "ac"]),
+      "B" => Set.new(["ba", "bc"])
+    }
+    ris3 = {
+      "a" => Set.new(["AA", "AB", "AC", "AD"]),
+      "b" => Set.new(["BA", "BB", "BC"])
+    }
+    records_to_ignore = ["B"]
+    data_fields_to_ignore = {"a"=>Set.new(["ad"])}
+    diffs = RecordInputSetDifferences[
+      ris1, ris3, case_sensitive,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    assert(diffs.nil?)
+    ris1 = {
+      "A" => Set.new(["aa", "ab", "ac", "ae"]),
+      "B" => Set.new(["ba", "bc"])
+    }
+    ris3 = {
+      "a" => Set.new(["AA", "AB", "AC", "AD"]),
+      "b" => Set.new(["BA", "BB", "BC"])
+    }
+    records_to_ignore = ["B"]
+    data_fields_to_ignore = {"a"=>Set.new(["ad"])}
+    expected = {
+      records_in_1st_not_2nd: nil,
+      records_in_2nd_not_1st: nil,
+      field_set_differences: {
+        "a" => {in_1st_not_2nd: Set.new(["ae"]), in_2nd_not_1st: Set.new()},
+      }
+    }
+    actual = RecordInputSetDifferences[
+      ris1, ris3, case_sensitive,
+      records_to_ignore,
+      data_fields_to_ignore
+    ]
+    assert_equal(expected, actual)
+  end
 end

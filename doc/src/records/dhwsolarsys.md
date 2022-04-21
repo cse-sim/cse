@@ -15,9 +15,31 @@ May have no tank for direct system? What if system has multiple primary tanks?
 Name of METER object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use ???).
 
 <%= member_table(
-  units: "F",
+  units: "^o^F",
   legal_range: "*name of a METER*",
   default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
+
+**swSCFluidSpHt=*float***
+
+Specific heat for the collector fluid.
+
+<%= member_table(
+  units: "Btu/lbm-^o^F",
+  legal_range: "x $>$ 0",
+  default: "0.9",
+  required: "No",
+  variability: "constant") %>
+
+**swSCFluidDens=*float***
+
+Density for the collector fluid.
+
+<%= member_table(
+  units: "lb/ft^3^",
+  legal_range: "x $>$ 0",
+  default: "64.0",
   required: "No",
   variability: "constant") %>
 
@@ -27,28 +49,36 @@ End use of pump energy; defaults to "DHW".
   
 **swParElec=*float***
 
-**Units**   **Legal Range**   **Default**   **Required**   **Variability**
------------ ----------------- ------------- -------------- -----------------
-			 x $\ge$ 0         0             No             hourly
-
-**swFluidVolSpHt=*float***
- 
-Default specific heat for Ethylene Glycol.
-
 <%= member_table(
-  units: "Btu/gal-^o^F",
-  legal_range: "",
-  default: "5.31",
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "0",
   required: "No",
-  variability: "constant") %>
+  variability: "hourly")
+  %>
 
 **swTankHXEff=*float***
 
 Tank heat exchanger effectiveness.
 
-**Units**   **Legal Range**         **Default**   **Required**   **Variability**
------------ ---------------------   ------------- -------------- -----------------
-			 0 $\le$ x $\le$ 0.99    0             No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ x $\\le$ 0.99",
+  default: "0",
+  required: "No",
+  variability: "hourly")
+  %>
+
+**swTankTHxLimit=*float***
+
+Temperature limit for the tank collector.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $\\geq$ 0",
+  default: "180.0",
+  required: "No",
+  variability: "constant") %>
 
 **swTankUA=*float***
 
@@ -81,13 +111,13 @@ Total tank insulation resistance, built-in plus exterior wrap.
   required: "No",
   variability: "constant") %>
 
-**swTankZn**
+**swTankZone=*znName***
 
 Pointer to tank zone location, use sw_tankTEx if NULL
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "*Name of ZONE*",
   default: "",
   required: "No",
   variability: "constant") %>
@@ -108,9 +138,9 @@ Surrounding temperature.
 Optionally indicates the end of the DHWSOLARSYS definition.
 
 <%= member_table(
-  units: "*n/a*",
-  legal_range: "*n/a*",
-  default: "*n/a*",
+  units: "",
+  legal_range: "",
+  default: "*none*",
   required: "No",
-  variability: "*n/a*") %>
+  variability: "") %>
 
