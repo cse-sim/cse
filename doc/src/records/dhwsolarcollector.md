@@ -160,9 +160,13 @@ Collector piping surround temperature.
 
 **scPumpPwr=*float***
 
-**Units**   **Legal Range**         **Default**              **Required**   **Variability**
------------ ---------------------   -------------            -------------- -----------------
- Btu/h		 x $\ge$ 0               from *scPumpflow*        No             constant
+<%= member_table(
+  units: "Btu/h",
+  legal_range: "x $\\ge$ 0",
+  default: "from *scPumpflow*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **scPumpLiqHeatF=*float***
 
@@ -202,9 +206,9 @@ Temperature difference between the tank and collector outlet where pump turns of
 Optionally indicates the end of the DHWSOLARCOLLECTOR definition.
 
 <%= member_table(
-  units: "*n/a*",
-  legal_range: "*n/a*",
-  default: "*n/a*",
+  units: "",
+  legal_range: "",
+  default: "*none*",
   required: "No",
-  variability: "*n/a*") %>
+  variability: "") %>
 

@@ -12,37 +12,41 @@ For each HEATPLANT, piping loss is modeled, as a constant fraction of the BOILER
 
 Name of HEATPLANT object, given immediately after the word HEATPLANT. This name is used to refer to the heatPlant in *tuhcHeatplant* and *ahhcHeatplant* <!-- and *_____* (for heat exchanger) --> commands.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **hpSched=*choice***
 
 Heat plant schedule: hourly variable choice of OFF, AVAIL, or ON.
 
-  ------- --------------------------------------------------------------
-  OFF     HEATPLANT will not supply hot water regardless of demand. All
-          loads (HW coils and heat exchangers) should be scheduled off
-          when the plant is off; an error will occur if a coil calls for
-          heat when its plant is off.
+<%= csv_table(<<END, :row_header => false)
+OFF,     HEATPLANT will not supply hot water regardless of demand. All loads (HW coils and heat exchangers) should be scheduled off when the plant is off; an error will occur if a coil calls for heat when its plant is off.
+AVAIL,   HEATPLANT will operate when one or more loads demand heat.
+ON,      HEATPLANT runs unconditionally. When no load wants heat&comma; least powerful (first) stage runs.
+END
+%>
 
-  AVAIL   HEATPLANT will operate when one or more loads demand heat.
-
-  ON      HEATPLANT runs unconditionally. When no load wants heat, least
-          powerful (first) stage runs.
-  ------- --------------------------------------------------------------
-
-  **Units**   **Legal Range**     **Default**   **Required**   **Variability**
-  ----------- ------------------- ------------- -------------- -----------------
-              OFF, AVAIL, or ON   AVAIL         No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "OFF, AVAIL, or ON",
+  default: "AVAIL",
+  required: "No",
+  variability: "hourly") %>
 
 **hpPipeLossF=*float***
 
 Heat plant pipe loss: heat assumed lost from piping connecting boilers to loads whenever the HEATPLANT is operating, expressed as a fraction of the boiler capacity of the plant's most powerful stage.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .01           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.01",
+  required: "No",
+  variability: "constant") %>
 
 **hpStage1=boilerName, boilerName, boilerName, ...**
 
@@ -56,17 +60,23 @@ If none of *hpStage1* through *hpStage7* are given, CSE supplies a single defaul
 
 A comma must be entered between boiler names and after the word ALL\_BUT.
 
-  **Units**   **Legal Range**                              **Default**        **Required**   **Variability**
-  ----------- -------------------------------------------- ------------------ -------------- -----------------
-              1 to 7 names;ALL\_BUT and 1 to 6 names;ALL   *hpStage1* = ALL   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "1 to 7 names;ALL\_BUT and 1 to 6 names;ALL",
+  default: "*hpStage1* = ALL",
+  required: "No",
+  variability: "constant") %>
 
 **endHeatplant**
 
 Optionally indicates the end of the HEATPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
