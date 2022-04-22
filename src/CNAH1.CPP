@@ -58,8 +58,6 @@
 #include <cnguts.h>	// Decls for this file; ZrB MDS_FLOAT
 
 //-------------------------------- OPTIONS ----------------------------------
-#define NOACMS	// re deleting aCMn, aCMxH, aCMxC 7-22-95. edit when final. Also cnah2, .
-
 #undef ONPLR		// define to use fan-on plr not average in coils autosizing.
 // believe high average plr impossible eg for heat when cool has forced large fan.
 // implies xPk stuff. Rob 6-97.  fixes BUG0089, 90, etc hc convergence problems.
@@ -71,10 +69,7 @@ to remove also search for humXtrap2 (eg in comments, cnrecs.def).
 	3-rdW version was never seen to save iters; 2-rdW version sometimes saved but more often added.
 Benefit not clear. Tested on only some files, full test not done yet 5-95. */
 
-#define ALWAYSVSH	// define for 4-17-95 trial to always recompute air vsh & tu limits.
-// WORKS to fix ZN/ZN2 problems. KEEP, tho may be 3-5% slower in some cases.
-// to undo, also undo AH::ahVshNLims() decl change in cnrecs.def,
-//  and get back if'd out ahEstimate and iter4Fs from end file or OUT459B.ZIP.
+
 
 #undef CEECLIP   	/* define to restore flow change limiting (binary search) code, added 5-2-95 re a bug it didn't fix.
 To remove, also search for ceeClip in comments; to restore, get iter4Fs if-outs from eof or OUT459B.ZIP.
@@ -1031,18 +1026,6 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 	// if ah goes on or off, sets zones ztuCf's.
 	if (ahMode==ahOFF)  return RCOK;			// if ah off, done
 
-#ifndef NOACMS
-x #if 1 // 7-15-95
-x// init ah working copies of tu flow limits -- zRat, setTsSp1 uses them. copies added 7-15-95.
-x    for (TU *tu = 0;  nxTu(tu);  )  		// temp save entry flows in ZONE for upCouple/antRatTs, b4 any changes stored
-x    {  tu->aCMn = tu->cMn;			// copy terminal flow limits (heat cap units) to working copies
-x       tu->aCMxH = tu->cMxH;			// .. that ah may modify temporaly like ztuMode does more permanently
-x       tu->aCMxC = tu->cMxC;			// .. during autoSizing. 7-15-95
-x
-x	 }
-x #endif
-#endif
-
 // if ah just turned on, determine return air temp etc from zones (if already on, current trNx etc are up-to-date). 4-95.
 	if (ahModeWas==ahOFF)	// if just started ah, may have last run at different zone temps, so ...
 		zRat();				// compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
@@ -1138,15 +1121,6 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 		return RCOK;				// nothing more to do for off airHandler
 	// note 10-96: ahClf stays on when return here. Clear here when/if need found.
 
-#ifndef NOACMS
-x	// init ah working copies of tu flow limits -- zRat uses them.
-x    for (TU *tu = 0;  nxTu(tu);  )
-x    {  tu->aCMn = tu->cMn;			// copy terminal flow limits (heat cap units) to working copies
-x       tu->aCMxH = tu->cMxH;			// .. that ah may modify temporaly like ztuMode does more permanently
-x       tu->aCMxC = tu->cMxC;			// .. during autoSizing. 7-15-95
-x	 }
-#endif
-
 // return air temp/flow per zone temps and terminal flows; plenum loss and return fan heat
 		zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
 						// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
@@ -1206,47 +1180,6 @@ x	 }
 		rWarn( PWRN, (char *)MH_R1275, name, frFanOn);		// devel aid warning "airHandler '%s': frFanOn (%g) > 1.0"
 #endif
 
-#ifndef NOACMS	// superceded 7-22-95 by resizing tuVfM's & backtracking to bVfM's in antRatTs and ztuMode
-// if autoSizing terminals, increase tu flow limits to accomodate flows ah used. 7-15-95
-x    /* cnah2:antRatTs may have used tu set temp heating or cooling flow in excess of tu's limits if autoSizing.
-x       here increase the limits to match, so if eg ztuMode immediately max's, flow remains same so ah/tu iteration converges.
-x       So eg if tu max's it gets same flow ah was using, even if eg dT sign wrong, so ah/tu iteration converges. */
-x    if (asFlow)								// else not autoSizing any tu's on ah
-x       for (tu = 0;  nxTu(tu);  )  					// loop ah's tu's
-x       { // similar to code in ztuMode() cases, but no tolerance added else creeps up if antRatTs used present max flow
-x          if (tu->useAr & uStH)						// if this terminal is set temp heating
-x          {  if (tu->vhAs.resizeIf( tu->aCv/airxTs, FALSE)) 		// if autoSizing tuVfMxH and is new max cfm
-x             {  tu->cMxH = tu->tuVfMxH * airxTs;			// convert to heat cap units
-x                // no fanF limitation expected here
-x                if (tu->asKVol)						// if autoSizing for constant volume
-x                {  tu->tuVfMn = tu->tuVfMxH;				// keep min same as max flow, cfm
-x                   tu->cMn = tu->cMxH;					// .. heat cap units
-x				 }
-x                if (tu->asHcSame)					// if keeping heat & cool capacities the same
-x                   if (tu->vcAs.resizeIf( tu->aCv/airxTs, FALSE))	// update tuVfMxC to same flow / if an increase
-x                      tu->cMxC = tu->tuVfMxC * airxTs;			// update heat cap flow to match
-x			}
-x             /* set flag re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
-x                and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
-x             tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
-x			}
-x          else if (tu->useAr & uStC)					// if terminal is set temp cooling
-x          {	if (tu->vcAs.resizeIf( tu->aCv/airxTs, FALSE))	 	// if autoSizing tuVfMxC and is new max cfm
-x             {  tu->cMxC = tu->tuVfMxC * airxTs;			// convert to heat cap units
-x                // no fanF limitation expected here
-x                if (tu->asKVol)						// if autoSizing for constant volume
-x                {  tu->tuVfMn = tu->tuVfMxC;				// keep min same as max flow, cfm
-x                   tu->cMn = tu->cMxC;					// .. heat cap units
-x				 }
-x                if (tu->asHcSame)					// if keeping heat & cool capacities the same
-x                   if (tu->vhAs.resizeIf( tu->aCv/airxTs, FALSE))	// update tuVfMxH to same flow / if an increase
-x                      tu->cMxH = tu->tuVfMxH * airxTs;			// update heat cap flow to match
-x			}
-x             /* set flag re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
-x                and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
-x             tu->aDtLoCSh |= tu->aDtLoTem  &&  aTs >= ZhxB.p[tu->xiArC].sp;	// TU::begSubhr clears when ts < sp
-x  }  }
-#else
 	/* set flags re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
 	   and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
 	if (asFlow)								// else not autoSizing any tu's on ah
@@ -1255,7 +1188,6 @@ x  }  }
 				tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
 			else if (tu->useAr & uStC)						// if terminal is set temp cooling
 				tu->aDtLoCSh |= tu->aDtLoTem  &&  aTs >= ZhxB.p[tu->xiArC].sp;	// TU::begSubhr clears when ts < sp
-#endif
 
 // outputs and change-flagging
 	upCouple( aTs, ah_tSup, aWs, ws);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
@@ -1410,58 +1342,5 @@ BOO CONVERGER::doit( 			// do converger: save value, possibly "improve" it.
 	return sig;
 }  			// CONVERGER::doit
 //----------------------------------------------------------------------------------------------------------------------------
-
-
-//***************************************************** if-outs **********************************************************
-
-
-//-----------------------------------------------------------------------------------------------------------------------------
-#if 0 // 5-11-95: later part of AH::ahEstimate (after new ts stored) before removal of if-outs:
-x
-x  #ifdef ALWAYSVSH //4-17-95
-x// update supply air volumetric heat capacity @ ts and reference w, and terminal limits based on it
-x    DBL sink = 0.;
-x    ahVshNLims( ts, sink, sink); 			/* update ah->airxTs and convert tu mn/mx cfm flows to Btuh/F.
-x							   Note: sfan/rfan.cMx, .dT, etc: prior values used as estimate. */
-x    // don't attempt refinement here, eg don't do setTsSp1 again for new airxTs, cuz eg sfan.cMx isn't current, 4-95.
-x  #else
-x  *// conditionally update supply air volumetric heat capacity (@ ts and reference w) and terminal limits based on it
-x  *  DBL sink = 0.;
-x  *  float tolMul = Top.isBegHour ? .25 : 1.;		// extra precise at start hour (when new sp likely, etc)
-x  *  ahVshNLims( ts, tolMul, sink, sink);		/* update ah->airxTs; if changed, convert mn/mx cfm flows
-x  *							   to Btuh/F and return TRUE.  Note: sfan/rfan.cMx, .dT, etc:
-x  *							   prior values used as estimate (cMx init nz by FAN::setup). */
-x  *  // don't attempt refinement here (eg don't do setTsSp1 again) cuz eg sfan.cMx isn't current, 4-95.
-x  #endif
-x
-x// if ah output changed, set zp->ztuCf for served terminals. 10-15-92.
-x    flagTusIf();
-x
-x#if 0 // 4-95. Produced poor values if ah just turned on (ZN)
-xx// compute estimated coil-off (fan only) ts for ztuMode, using old AH members as estimated values. 4-95.
-xx    // tr is based on zones based on old ts... possibly do something like antRatTs here? 4-95.
-xx    puteTsFO(tr2Nx);					// sets AH.tsFO. Below in cnah.cpp.
-xx    switch (ahMode)					// limit tsFo clearly inconsistent with ts for mode
-xx		{
-xx      case ahHEATING:	setToMin( tsFO, ts); break;	// if heating only, coil-off ts must be <= estimated ts
-xx      case ahCOOLING: setToMax( tsFO, ts); break;
-xx      //case ahON:	 dunno what to do.
-xx		}
-x#endif
-x
-x// recompute return air temp here for use in getTsMnFo? But getTsMnFo adjusts tr, cr for control (usually only) terminal & ts.
-x// TESTED 5-95: DOES change results (reported tr when off; small addl effect on some subhrs of some runs)
-x//              couldn't get convinced it was better, so keep it simple instead.
-x//    zRat();						/* re-compute return air temp from zones, using new ts re terminal leakage.
-x//							   Sets tr2Nx (if any flow), etc. Uses ts, aTz's, aCv's, etc. Below.
-x//							   Note ztuMode() may set stuff for this call. */
-x//    //tsMnFoOk = FALSE;		puteRa from zRat does: say getTsMnFo, if called, must calculate new tsMnFo value.
-x
-x    tsMnFoOk = FALSE;			// say getTsMnFo, if called eg from ztuMode, must calculate new tsMnFo value.
-x
-x    return RCOK;
-x}				// AH::ahEstimate
-x//-----------------------------------------------------------------------------------------------------------------------------
-#endif
 
 // end of cnah1.cpp

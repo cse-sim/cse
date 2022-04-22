@@ -6366,12 +6366,12 @@ RECORD TU "terminal" *RAT		// TERMINAL
     *r TI nxTu4a	// chain: 0 or ss (subscript) of next TU in air handler chain. head is AH.tu1.
 
     *r TI xiLh		// subscript of ZHX for terminal's local heat capability
-    *r TI xiArH		// ss of ZHX for SETOUT air heat/cool or SETTEMP air heat capability
-    *r TI xiArC		// ss of ZHX for tu's SETTEMP air cool, if any
+    *r TI xiArH		// ss of ZHX for cmSo air heat/cool or cmStH air heat capability
+    *r TI xiArC		// ss of ZHX for tu's cmStC air cool, if any
 
     // terminal capability existence / ctrl method flags, inferred from inputs:
-     *r TCCM cmLh	// local heat: NONE=0; SETTMPH: tstat-controlled (setpoint given); or SETOUT (only output/flow given).
-     *r TCCM cmAr	// air heat and cool: NONE=0, SETOUT, SETTMPH, SETTMPC, SETTMPBOTH = SETTMPH|SETTMPC.
+     *r TCCM cmLh	// local heat: cmNONE=0; cmStxx: tstat-controlled (setpoint given); or cmSo (only output/flow given).
+     *r TCCM cmAr	// air heat and cool: cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6.
 
 // TERMINAL RUNTIME variables for ZN/ZN2 control method interaction with air handler
     *r TI ctrlsAi	// ss of ah ctrl'd by this tu under ZN/ZN2 control method, this hour (setup time).
@@ -6384,8 +6384,8 @@ RECORD TU "terminal" *RAT		// TERMINAL
     *s *e DBL /*POWER*/ lhMxMx	// max lhMx re autoSizing user input problem diagnosis in cnztu.cpp
     // cMn,cMxH,cMxC are tuVfMn,-MxH,-C conv'd to heat cap flow rate @ curr temp/press & adjusted for current ah capacity (fanF).
     *s *e DBL /*CFLOW*/ cMn   	// specified or min or autoSized air flow this subhour (Btuh/F)
-    *s *e DBL /*CFLOW*/ cMxH   	// air heat (SETTMPH) max flow this subhour (Btuh/F)
-    *s *e DBL /*CFLOW*/ cMxC   	// air cool (SETTMPC) max flow this subhour (Btuh/F)
+    *s *e DBL /*CFLOW*/ cMxH   	// air heat (cmStH) max flow this subhour (Btuh/F)
+    *s *e DBL /*CFLOW*/ cMxC   	// air cool (cmStC) max flow this subhour (Btuh/F)
 
 // terminal runtime variables set within terminal code
     *s *e TCUSE useLh		    // local heat use this subhour: uNONE(0)/uSo/uMn/uStH/uMxH.

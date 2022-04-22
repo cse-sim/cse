@@ -344,7 +344,7 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 
 	TI xi = zhx->ss;					// fetch subscript for several uses
 
-// chain by zone, including for terminals, with addl chain for SETTEMP (tstat-ctrl'd) zhx's only
+// chain by zone, including for terminals, with addl chain for cmStxx (tstat-ctrl'd) zhx's only
 	if (zi)									// insurance: zone subscript always expected
 	{
 		ZNR* zp = ZrB.p + zi;								// point to zhx's zone's record
@@ -352,7 +352,7 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 		zp->zhx1 = xi;  					// put on (head of) zone zhx1 chain
 		if (ty & St)
 		{
-			zhx->nxZhxSt4z = zp->zhx1St;      // put on (head of) zone SETTEMP chain
+			zhx->nxZhxSt4z = zp->zhx1St;      // put on (head of) zone cmStxx chain
 			zp->zhx1St = xi;
 		}
 	}
@@ -360,7 +360,7 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 	// chain Ar zhx's by air handler
 	if (ai)									// if this zhx is associated with air handler
 	{
-		AH* ah = AhB.p + ai;								// point to zhx's ah's RUN record
+		AH* ah = AhB.p + ai;				// point to zhx's ah's RUN record
 		zhx->nxZhx4a = ah->zhx1;
 		ah->zhx1 = xi;  					// put on (head of) ah all-zhx chain
 	}
@@ -443,40 +443,6 @@ x	              TU_TUQDSLH, 					// <-- delete? later.  TUQDSLHWARN.
 					oWarn(
 						   (char*)MH_S0601,		// "tuQMxLh = %g will be ineffective because tuhcCaptRat is less: %g"
 						   tuQMxLh, tuhc.captRat);
-
-#if 0 // removing TUQDSLHWARN 1-4-95 (with temp backtrack, later edit out if no complaints) (also cncult, cnrecs.def)
-x     // MH_S0602 probably unused.
-x #ifdef TUQDSLHWARN		// option to warn for tentatively obsolete input, 9-25-92.
-x           if (sstat[TU_TUQDSLH] & FsSET)			// if design local heat entered by user
-x              oWarn(
-x(char*)MH_S0602);		/* "'tuQDsLh' is obsolete and should be removed from your input file.\n"
-x 				                   "    (Note: if heatPlant overloads, available power will be apportioned\n"
-x 				                   "    amoung HW coils in proportion to tuhcCaptRat/ahhcCaptRat values.)\n" */
-x #else
-x o          // default design local heat power to larger of min, max power if const positive exprs given
-x o
-x o         if (!(sstat[TU_TUQDSLH] & FsSET))			// if design local heat not entered by user
-x o
-x o{
-x o				SI vbl = FALSE;					// if any variable exprs given, don't default
-x o				float def = 0.f;					// use only > 0 values
-x o				if (sstat[TU_TUQMNLH] & FsSET)  			// if minimum power given
-x o					if (sstat[TU_TUQMNLH] & FsVAL)			// if set now (thus constant)
-x o						def = tuQMnLh;				// use it as default (if > 0)
-x o                else  vbl++;					// not set --> must be variable, can't default
-x o				if (cmLh == cmStH)					// max power N/A to SETOUT
-x o				if (sstat[TU_TUQMXLH] & FsSET)			// if heat max power given
-x o				if (sstat[TU_TUQMXLH] & FsVAL)			// if set now (thus constant)
-x o	              def = max(def, tuQMxLh);  		// use it as default if larger
-x o                   else  vbl++;					// not set --> must be variable, can't default
-x o             if (def > 0.f && !vbl)				// if found a default value and NO variable exprs
-x o                tuQDsLh = def;					// set design power to default found
-x o             else
-x o                rc |= require(TU_TUQDSLH);		// no def found --> design power must be given in input.  explain?
-x o								// lh design q intended here?? **rob 7-21-92**
-x o }
-x #endif
-#endif
 
 				if (cmLh == cmSo)
 				{
@@ -3195,7 +3161,7 @@ ahOff:
 			}
 			// not max cooling; if terminal also heats, do nothing here now
 			if (x->xiArH)					// if same terminal has air heating capability
-				break;						// flow was computed for its heat zhx (setout or settemp)
+				break;						// flow was computed for its heat zhx (cmSo or cmStxx)
 			// lower (cooler) mode, or mode between heat and cool (via goto from ArStH), gets min flow.
 minFlow:
 			tu->useAr = uMn;
