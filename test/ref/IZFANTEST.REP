@@ -60,7 +60,7 @@ Day  0.824      0      0      0      0      0      0      0      0  0.824      0
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  1
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Mass Wall3              Area: 100.000   UNom: 0.1015      tc: 3.56   subhrly:
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  2
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ IzXfer Hole1            Zn1: Single  Zn2: (ambient)  UAconst: 0      NVctrl: Air
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  3
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Hourly Energy Balance, zone "Single", Thu 02-Jul
   16 75.00 60.31      0      0     0     0  0.789  0.189 -0.977    0      0     0 -.0150 0.0150      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  4
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hourly Energy Balance, zone "Single", Sat 04-Jul
    6 72.00 58.72      0      0     0     0  0.715 -0.715      0    0      0     0 -.0124 0.0124      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  5
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Hourly Energy Balance, zone "Single", Sun 05-Jul
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  6
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hourly Energy Balance, zone "Single", Tue 07-Jul
   18 75.00 63.32      0      0     0     0  0.443  0.175 -0.618    0      0     0 0.0326 -.0326      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  7
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Hourly Energy Balance, zone "Single", Thu 09-Jul
    8 72.56 60.73      0      0     0     0  0.582 -0.582      0    0      0     0 0.0114 -.0114      0    0
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  8
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Hourly Energy Balance, zone "Single", Fri 10-Jul
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page  9
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ Hourly User-defined Report, Thu 02-Jul
       Thu 02-Jul           17               86               75               -1.12k          159.013            0               34.317
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 10
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 10
 
 
 
@@ -651,7 +651,7 @@ Hourly User-defined Report, Fri 03-Jul
       Fri 03-Jul            2               58.82            73.902            0               -1.09k            1              308.828
       Fri 03-Jul            3               56.84            72.988            0               -1.2k             1              308.805
       Fri 03-Jul            4               55.76            72.155            0               -1.23k            0.962          298.444
-      Fri 03-Jul            5               54.86            72                0             -911                0.63           207.248
+      Fri 03-Jul            5               54.86            72                0             -911                0.63           207.247
       Fri 03-Jul            6               53.96            72                0             -672                0.396          143.021
       Fri 03-Jul            7               55.4             72                0             -521                0.287          112.99
       Fri 03-Jul            8               58.28            72                0             -435                0.285          112.554
@@ -690,7 +690,7 @@ Hourly User-defined Report, Sat 04-Jul
       Sat 04-Jul           11               73.58            73.359            0               82.833            0.967          299.631
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 11
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ Hourly User-defined Report, Mon 06-Jul
       Mon 06-Jul            5               57.92            72                0             -712                0.643          210.839
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 12
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 12
 
 
 
@@ -816,7 +816,7 @@ Hourly User-defined Report, Wed 08-Jul
       ----------       ----------       ----------       ----------       ----------       ----------       ----------       ----------
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 13
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 13
 
 
 
@@ -879,7 +879,7 @@ Hourly User-defined Report, Thu 09-Jul
       Thu 09-Jul           23               81.14            75               -1.47k          133.909            0               34.279
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 14
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 14
 
 
 
@@ -921,7 +921,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001: AirNet fan heat
 
-! CSE 0.893.0 for Win32 console
+! CSE 0.904.0+termah.601cff22.81.dirty for Win32 console
 
 
 
@@ -942,7 +942,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 15
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Input for Run 001: AirNet fan heat
            izFanElecPwr = 1 izFanVfDs = @Zone[ "Single"].znArea izFanMtr = VentMtr izFanEndUse = FANV
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 16
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Input for Run 001: AirNet fan heat
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 17
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 17
 
 
 
@@ -1077,21 +1077,21 @@ Input for Run 001: AirNet fan heat
 
 
 
-! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:09:25 am
+! CSE 0.904.0+termah.601cff22.81.dirty for Win32 console run(s) done: Fri 22-Apr-22   1:41:39 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
+!               22-Apr-22   1:38 pm   (VS 14.29    2999296 bytes)  (HPWH 1.18.0)
 ! Command line: -x!  -t1 izfantest
 ! Input file:   D:\cse\test\izfantest.cse
 ! Report file:  D:\cse\test\izfantest.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0460   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0430   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.02     Calls = 1      T/C = 1.0230   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0100   
-!                Total:  Time = 1.08     Calls = 1      T/C = 1.0850   
+!           Simulation:  Time = 1.10     Calls = 1      T/C = 1.1000   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
+!                Total:  Time = 1.15     Calls = 1      T/C = 1.1480   
 
 
 
@@ -1131,5 +1131,5 @@ Input for Run 001: AirNet fan heat
 
 
 ------------------------------------------------------------------------------
-! izfantest  001  AirNet fan heat          Tue 22-Jun-21  11:09:24 am  Page 18
+! izfantest  001  AirNet fan heat          Fri 22-Apr-22   1:41:38 pm  Page 18
 

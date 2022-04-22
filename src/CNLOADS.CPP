@@ -666,7 +666,7 @@ x	}
 // subhour terminal/airhandler hvac
 	rc |= hvacIterSubhr();
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay == 1)
 	{
 		if (zp1 && abs( zp1->zn_qsHvac) < 0.01)
@@ -945,7 +945,6 @@ void ZNR::zn_DbDump() const
 	DbPrintf( "     ta=%.2f  tr=%.2f  qIzSh=%.f  fvent=%.3f  pz0=%.4f  qsHvac=%.f\n",
 			tz, zn_tr, zn_qIzSh, zn_fVent, zn_pz0, zn_qsHvac);
 }		// zn_DbDump
-
 //-----------------------------------------------------------------------------
 RSYS* ZNR::zn_GetRSYS()
 {
@@ -1670,6 +1669,9 @@ RC ZNR::zn_AirX(		// total air exchanges etc
 	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf + amfX;
 	zn_airX = zn_ivAirX + amfSys / zn_dryAirMass;
 
+#if 1
+	zn_HcAirX();
+#else
 	// air motion flag; indicates mechanical air moving in space
 	//   0=no, 1=yes; re evaluation of convective coefficients
 	// TODO: improve zn_airMode, does not handle e.g. whole house fan 10-10
@@ -1686,6 +1688,7 @@ RC ZNR::zn_AirX(		// total air exchanges etc
 		if (zn_airMode && !i.zn_rsi)
 			i.zn_hcAirX += 4.8;		// additional "virtual" air flow for non-RSYS zones
 	}
+#endif
 	return rc;
 }		// ZNR::zn_AirX
 //------------------------------------------------------------------------------
@@ -1713,7 +1716,7 @@ RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
 
 	// TODO: HPWH moisture removal? 2-16
 
-	zn_wCase = 0;	// debug aid
+	int wCase = 0;	// debug aid
 					//   0 = time constant OK, result OK
 					//   1 = short time constant (steady state sln used), result OK
 					//   2 = time constant OK, result limited
@@ -1723,7 +1726,7 @@ RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
 	if (f > 1.f)
 	{	zn_dryAirMassEff *= f;
 		f = 1.f;
-		zn_wCase += 1;
+		wCase += 1;
 	}
 	wz = mw * Top.tp_subhrDur/(zn_dryAirMassEff*i.zn_HIRatio) + wzls*(1. - f);
 
@@ -1737,7 +1740,7 @@ RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
 	{	XLGain = (wz-wzClamp) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
 		znXLGain += XLGain;		// zone total excess latent gain, Btuh
 		wz = wzClamp;
-		zn_wCase += 2;		// limits applied
+		wCase += 2;		// limits applied
 	}
 #endif
 
@@ -1745,7 +1748,7 @@ RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
 	zn_qlHvac = zn_sysAirI.af_QLat( wzls);
 	if (fabs( zn_qlHvac) < .1)
 		zn_qlHvac = 0.;		// drop tiny values (re report aesthetics)
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (zn_qlHvac > 0.)
 		printf("\nqlHvac > 0");
 #endif
@@ -1921,6 +1924,28 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 #endif
 	return rc;
 }		// ZNR::zn_ComfortCR
+//-----------------------------------------------------------------------------
+bool ZNR::zn_IsAirHVACActive() const		// determine air motion
+// used re convective coefficient determination
+//   see SBC::sb_HCZone case C_CONVMODELCH_ASHRAE
+// returns true iff air system is operating (causing air motion)
+// Note: relies on zn_qsHvac not initialized (prior step value persists)
+{
+	// TODO: could enhance re other air movers (e.g. whole house fans)
+	return zn_qsHvac != 0.;
+}		// ZNR::zn_IsAirMovingMech
+//------------------------------------------------------------------------------
+float ZNR::zn_HcAirX()	// nominal air change rate
+// re convection coefficient derivation
+// returns zone air change rate, ACH
+{
+	if (!i.zn_hcAirXIsSet)	// if not fixed by user input
+	{	i.zn_hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
+		if (zn_IsAirHVACActive() && !zn_HasAirHVAC())
+			i.zn_hcAirX += 4.8f;		// additional "virtual" air flow for non-air zones
+	}
+	return i.zn_hcAirX;
+}		// ZNR::zn_HcAirX
 //=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
@@ -6730,7 +6755,8 @@ x	zn_qsHvacls = zn_qsHvac;	// last subhour hvac sensible power
 x	zn_qlHvacls = zn_qlHvac;	// last subhour hvac latent power
 #endif
 
-	zn_hcAirXls = i.zn_hcAirX;			// last subhour air exchange rate
+	zn_hcAirXls = i.zn_hcAirX;	// last subhour air exchange rate
+								//    for convection coefficient models
 
 	// ducts: nothing needed (current step values are used (lagged) at beg
 	//        of next step, then initialized)

@@ -60,7 +60,7 @@ Monthly Energy Balance, Sum of Zones
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  1
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Monthly Energy Balance, zone "Attic"
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  2
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Hourly Energy Balance, zone "Z1", Fri 04-Jan
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  3
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
   2q 68.00 59.56 -0.000      0     0      0 .00005 -.0001  1      0    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  4
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
   4i 66.63 58.57 -0.000      0     0      0 .00004 -0.000  1      0    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  5
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
   6a 65.03 57.91 -0.000      0     0      0 .00002 -0.000  1      0    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  6
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
   7x 64.74 57.81 -0.000      0 .0001      0 -0.000 -0.000  1      0    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  7
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
   9p 66.13 59.45 -0.000      0 .0001      0 -.0001 -0.000  1      0    0      0     0 .00001 -0.000      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  8
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
  11h 68.59 61.71      0      0     0      0 -.0001 .00001  1      0    0      0     0 .00001 -0.000      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page  9
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
   12 71.16 63.43      0      0 .0013  .0004 -.0029 .00128         0    0      0     0 .00008 -.0001      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 10
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 10
 
 
 
@@ -690,7 +690,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
  14w 74.58 63.40 .00001      0     0      0 .00005 .00011  1 -.0002    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 11
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
  16o 74.67 63.26 .00001      0 .0001      0 .00008 .00015  1 -.0003    0      0     0 .00001 -0.000      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 12
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 12
 
 
 
@@ -816,7 +816,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
  18g 74.75 63.93 .00001      0 .0001      0 .00009 .00014  1 -.0003    0      0     0 -0.000 .00001      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 13
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 13
 
 
 
@@ -879,7 +879,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
 19ad 74.79 61.77 .00001      0     0      0 .00008 .00011  1 -.0002    0      0     0 -0.000 .00001      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 14
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 14
 
 
 
@@ -942,7 +942,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
  21v 74.88 62.32      0      0     0      0 .00003 .00002  1 -.0001    0      0     0 .00001 -0.000      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 15
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
  23n 74.63 63.55 -0.000      0     0      0 .00003 -0.000  1      0    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 16
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Hourly and Subhourly Energy Balance, zone "Z1", Fri 26-Jul
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 17
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Yr   3.504      0      0      0      0      0      0      0      0      0      0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 18
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 18
 
 
 
@@ -1194,7 +1194,7 @@ Subhourly User-defined Report, Mon 10-Jun
            1               69.152            3.523           73.355           73.102            1.000            2.155            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 19
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 19
 
 
 
@@ -1257,7 +1257,7 @@ Subhourly User-defined Report, Mon 10-Jun
            3               65.408            3.523           71.864           71.77             1.000            2.926            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 20
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 20
 
 
 
@@ -1320,7 +1320,7 @@ Subhourly User-defined Report, Mon 10-Jun
            5               62.672            3.099           69.962           70.135            1.000            3.742            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 21
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 21
 
 
 
@@ -1383,7 +1383,7 @@ Subhourly User-defined Report, Mon 10-Jun
            6               63.5              3.3             69.63            70.526            1.000            2.935            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 22
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 22
 
 
 
@@ -1446,7 +1446,7 @@ Subhourly User-defined Report, Mon 10-Jun
            8               71.708            4.629           71.791           72.354            1.000            7.103            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 23
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 23
 
 
 
@@ -1509,7 +1509,7 @@ Subhourly User-defined Report, Mon 10-Jun
           10               78.116            3.982           74.458           74.928                0            3.705           -2.31k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 24
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 24
 
 
 
@@ -1572,7 +1572,7 @@ Subhourly User-defined Report, Mon 10-Jun
           12               83.48             3.87            74.542           75.566                0            4.229           -5.41k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 25
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 25
 
 
 
@@ -1635,7 +1635,7 @@ Subhourly User-defined Report, Mon 10-Jun
           14               87.116            3.39            74.625           75.992                0            4.246           -7.29k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 26
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 26
 
 
 
@@ -1698,7 +1698,7 @@ Subhourly User-defined Report, Mon 10-Jun
           15               87.98             3.915           74.667           76.384                0            4.561           -8.87k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 27
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 27
 
 
 
@@ -1761,7 +1761,7 @@ Subhourly User-defined Report, Mon 10-Jun
           17               87.044            3.322           74.75            76.4                  0            4.017           -7.88k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 28
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 28
 
 
 
@@ -1824,7 +1824,7 @@ Subhourly User-defined Report, Mon 10-Jun
           19               84.632            3.109           74.833           75.448                0            3.477           -3.98k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 29
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 29
 
 
 
@@ -1887,7 +1887,7 @@ Subhourly User-defined Report, Mon 10-Jun
           21               79.16             2.27            74.917           75.09                 0            2.310           -1.35k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 30
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 30
 
 
 
@@ -1950,7 +1950,7 @@ Subhourly User-defined Report, Mon 10-Jun
           23               74.948            2.27            74.998           74.825            1.000            2.754            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 31
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 31
 
 
 
@@ -2013,7 +2013,7 @@ Subhourly User-defined Report, Tue 11-Jun
            0               69.62             0.436           73.918           73.895            1.000            3.358            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 32
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 32
 
 
 
@@ -2076,7 +2076,7 @@ Subhourly User-defined Report, Tue 11-Jun
            2               65.804            1.096           72.278           72.349            1.000            4.298            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 33
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 33
 
 
 
@@ -2139,7 +2139,7 @@ Subhourly User-defined Report, Tue 11-Jun
            4               61.592            1.007           69.493           69.801            1.000            4.969            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 34
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 34
 
 
 
@@ -2202,7 +2202,7 @@ Subhourly User-defined Report, Tue 11-Jun
            6               62.78             1.062           68.105           68.834            1.000            3.767            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 35
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 35
 
 
 
@@ -2265,7 +2265,7 @@ Subhourly User-defined Report, Tue 11-Jun
            7               69.62             0.125           70.088           71.118            1.000            0.834            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 36
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 36
 
 
 
@@ -2328,7 +2328,7 @@ Subhourly User-defined Report, Tue 11-Jun
            9               78.548            1.242           73.366           74.064                0            2.419            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 37
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 37
 
 
 
@@ -2391,7 +2391,7 @@ Subhourly User-defined Report, Tue 11-Jun
           11               86.108            1.89            74.5             75.63                 0            3.430           -5.73k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 38
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 38
 
 
 
@@ -2454,7 +2454,7 @@ Subhourly User-defined Report, Tue 11-Jun
           13               90.032            1.599           74.583           76.013                0            3.723           -7.67k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 39
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 39
 
 
 
@@ -2517,7 +2517,7 @@ Subhourly User-defined Report, Tue 11-Jun
           15               92.3              1.88            74.667           76.514                0            3.925           -9.63k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 40
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 40
 
 
 
@@ -2580,7 +2580,7 @@ Subhourly User-defined Report, Tue 11-Jun
           16               92.84             1.732           74.708           76.677                0            3.754           -9.79k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 41
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 41
 
 
 
@@ -2643,7 +2643,7 @@ Subhourly User-defined Report, Tue 11-Jun
           18               92.876            1.554           74.792           76.21                 0            3.411           -7.75k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 42
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 42
 
 
 
@@ -2706,7 +2706,7 @@ Subhourly User-defined Report, Tue 11-Jun
           20               83.84             1.522           74.875           75.375                0            2.564           -2.9k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 43
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 43
 
 
 
@@ -2769,7 +2769,7 @@ Subhourly User-defined Report, Tue 11-Jun
           22               68.648            2.428           74.638           74.682            1.000            3.572            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 44
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 44
 
 
 
@@ -2832,7 +2832,7 @@ Subhourly User-defined Report, Wed 12-Jun
       ----------       ----------       ----------       ----------       ----------       ----------       ----------       ----------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 45
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 45
 
 
 
@@ -2895,7 +2895,7 @@ Subhourly User-defined Report, Wed 12-Jun
            1               58.892            1.399           68.091           68.615            1.000            5.454            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 46
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 46
 
 
 
@@ -2958,7 +2958,7 @@ Subhourly User-defined Report, Wed 12-Jun
            3               55.22             1.643           66.522           66.544                0            2.082            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 47
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 47
 
 
 
@@ -3021,7 +3021,7 @@ Subhourly User-defined Report, Wed 12-Jun
            5               53.564            1.589           64.75            64.812                0            2.054         1010.42
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 48
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 48
 
 
 
@@ -3084,7 +3084,7 @@ Subhourly User-defined Report, Wed 12-Jun
            7               56.372            1.554           64.925           65.857                0            1.722            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 49
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 49
 
 
 
@@ -3147,7 +3147,7 @@ Subhourly User-defined Report, Wed 12-Jun
            8               64.58             1.79            66.886           67.887                0            1.732            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 50
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 50
 
 
 
@@ -3210,7 +3210,7 @@ Subhourly User-defined Report, Wed 12-Jun
           10               72.428            2.059           69.554           70.171                0            2.602            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 51
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 51
 
 
 
@@ -3273,7 +3273,7 @@ Subhourly User-defined Report, Wed 12-Jun
           12               77.504            2.417           72.962           73.435                0            3.083            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 52
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 52
 
 
 
@@ -3336,7 +3336,7 @@ Subhourly User-defined Report, Wed 12-Jun
           14               81.932            2.651           74.625           75.741                0            3.495           -4.85k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 53
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 53
 
 
 
@@ -3399,7 +3399,7 @@ Subhourly User-defined Report, Wed 12-Jun
           16               83.696            3.054           74.708           76.347                0            3.786           -6.91k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 54
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 54
 
 
 
@@ -3462,7 +3462,7 @@ Subhourly User-defined Report, Wed 12-Jun
           17               81.32             2.965           74.75            76.183                0            3.381           -5.53k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 55
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 55
 
 
 
@@ -3525,7 +3525,7 @@ Subhourly User-defined Report, Wed 12-Jun
           19               76.064            2.204           74.833           75.199                0            2.067           -1.33k
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 56
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 56
 
 
 
@@ -3588,7 +3588,7 @@ Subhourly User-defined Report, Wed 12-Jun
           21               66.164            2.572           73.964           74.134            1.000            4.365            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 57
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 57
 
 
 
@@ -3651,7 +3651,7 @@ Subhourly User-defined Report, Wed 12-Jun
           23               60.548            2.013           70.575           71.098            1.000            5.591            0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 58
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 58
 
 
 
@@ -3714,7 +3714,7 @@ Subhourly User-defined Report, Wed 12-Jun
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 59
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 59
 
 
 
@@ -3777,7 +3777,7 @@ Hourly User-defined Report, Wed 06-Mar
           3              53.96           53.96           52.838           0               0               0               0               0               0               0               0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 60
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 60
 
 
 
@@ -3840,7 +3840,7 @@ Hourly User-defined Report, Fri 08-Mar
           3              52.34           52.34           52.848          58.856          92.993           0               0               0               0               0            1999.32
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 61
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 61
 
 
 
@@ -3903,7 +3903,7 @@ Hourly User-defined Report, Fri 08-Mar
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 62
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 62
 
 
 
@@ -3966,7 +3966,7 @@ Mass CbJ                Area: 465.012   UNom: 0.02888     tc: 0.60   subhrly:
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 63
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 63
 
 
 
@@ -4029,7 +4029,7 @@ IzXfer SxA              Zn1: Z1  Zn2: Attic  UAconst: 0      NVctrl: AirNetIZ
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 64
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 64
 
 
 
@@ -4092,7 +4092,7 @@ Mass RDw                Area: 130.139   UNom: 0.6162      tc: 1.10   subhrly:
  Outside: Ambient   RSrfNom: 0.17                                             
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 65
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 65
 
 
 
@@ -4155,7 +4155,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 66
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 66
 
 
 
@@ -4167,7 +4167,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.904.0+master.938afeec.0.dirty for Win32 console   Tue 12-Apr-22   7:54:26 am
+! CSE 0.904.0+termah.601cff22.81.dirty for Win32 console   Fri 22-Apr-22   2:27:18 pm
 
 
 ================
@@ -4218,7 +4218,7 @@ tilt theta ta<=ts  ta>ts   theta ta<=ts  ta>ts
   20   -70  0.112  0.160      70  0.160  0.112
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 67
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 67
 
 
 
@@ -4281,7 +4281,7 @@ Surface 'RDTe': tilt=23
      wf=1.000  uf=1.467  rf=1.000  lf=0.631  vf=0.181  fcWind=0.100  fcWind2=8.501
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 68
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 68
 
 
 
@@ -4344,7 +4344,7 @@ Z1 CZ: anMCp/T[ 0]=54.48/4050.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2326545.31  Dair=31015.09  Nrad=108064.24  Drad=1439.13  CX=553.74  airX=5.703
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 69
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 69
 
 
 
@@ -4407,7 +4407,7 @@ Z1 CZ: anMCp/T[ 0]=52.61/3893.5  anMCp/T[ 1]=53.95/3992.3  ventUt=1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.170  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 70
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 70
 
 
 
@@ -4444,7 +4444,7 @@ Wed 10-Jul  hr=0 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.596  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.875  dryAirMass=247.82  XLGain=0.00  W=0.012455  twb=62.91  rh=0.5671
 Z1 CZ: anMCp/T[ 0]=52.84/3897.6  anMCp/T[ 1]=53.93/3977.6  ventUt=1
-     Nair=2303106.94  Dair=31090.18  Nrad=106263.08  Drad=1420.30  CX=572.27  airX=5.675
+     Nair=2303106.95  Dair=31090.18  Nrad=106263.08  Drad=1420.30  CX=572.27  airX=5.675
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.59  qIzSh=-15  fvent=0.000  pz0=-0.0005  qsHvac=-1455
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.114  mwDuctLk=0.000  mwSys=0.000
@@ -4470,7 +4470,7 @@ Attic UZ: anMCp/T[ 0]=142.07/10483.6  anMCp/T[ 1]=142.76/10534.6  ventUt=0
      Nair=86372.41  Dair=1075.88  Nrad=82309.00  Drad=917.44  CX=616.50  airX=12.116
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 71
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 71
 
 
 
@@ -4504,7 +4504,7 @@ Wed 10-Jul  hr=0 subhr=8
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.585  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.871  dryAirMass=247.84  XLGain=0.00  W=0.012414  twb=62.85  rh=0.5652
 Z1 CZ: anMCp/T[ 0]=52.58/3859.6  anMCp/T[ 1]=67.95/4987.8  ventUt=1
-     Nair=2302169.94  Dair=31079.69  Nrad=106181.44  Drad=1421.66  CX=569.60  airX=5.671
+     Nair=2302169.95  Dair=31079.69  Nrad=106181.44  Drad=1421.66  CX=569.60  airX=5.671
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.50  qIzSh=-34  fvent=0.000  pz0=-0.0008  qsHvac=-1241
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.030  mwDuctLk=0.000  mwSys=0.000
@@ -4533,7 +4533,7 @@ Attic UZ: anMCp/T[ 0]=140.53/10337.7  anMCp/T[ 1]=140.98/10371.3  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 72
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 72
 
 
 
@@ -4547,7 +4547,7 @@ Wed 10-Jul  hr=0 subhr=10
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.574  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.867  dryAirMass=247.85  XLGain=0.00  W=0.012389  twb=62.82  rh=0.5641
 Z1 CZ: anMCp/T[ 0]=52.34/3829.3  anMCp/T[ 1]=80.38/5880.3  ventUt=1
-     Nair=2301575.25  Dair=31072.94  Nrad=106139.00  Drad=1422.53  CX=567.93  airX=5.667
+     Nair=2301575.26  Dair=31072.94  Nrad=106139.00  Drad=1422.53  CX=567.93  airX=5.667
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.45  qIzSh=-46  fvent=0.000  pz0=-0.0010  qsHvac=-1115
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.975  mwDuctLk=0.000  mwSys=0.000
@@ -4581,7 +4581,7 @@ Wed 10-Jul  hr=0 subhr=12
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.549  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.858  dryAirMass=247.86  XLGain=0.00  W=0.012366  twb=62.79  rh=0.5631
 Z1 CZ: anMCp/T[ 0]=51.81/3778.3  anMCp/T[ 1]=91.81/6694.8  ventUt=1
-     Nair=2300931.14  Dair=31065.41  Nrad=106114.66  Drad=1423.53  CX=566.17  airX=5.658
+     Nair=2300931.15  Dair=31065.41  Nrad=106114.66  Drad=1423.53  CX=566.17  airX=5.658
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.40  qIzSh=-58  fvent=0.000  pz0=-0.0012  qsHvac=-1000
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.922  mwDuctLk=0.000  mwSys=0.000
@@ -4596,7 +4596,7 @@ Wed 10-Jul  hr=0 subhr=13
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 73
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 73
 
 
 
@@ -4607,7 +4607,7 @@ Wed 10-Jul  hr=0 subhr=13
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.519  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.848  dryAirMass=247.86  XLGain=0.00  W=0.012355  twb=62.78  rh=0.5626
 Z1 CZ: anMCp/T[ 0]=51.19/3726.5  anMCp/T[ 1]=97.25/7079.5  ventUt=1
-     Nair=2300560.06  Dair=31060.94  Nrad=106110.98  Drad=1424.11  CX=565.21  airX=5.648
+     Nair=2300560.07  Dair=31060.94  Nrad=106110.98  Drad=1424.11  CX=565.21  airX=5.648
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.38  qIzSh=-64  fvent=0.000  pz0=-0.0012  qsHvac=-946
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.896  mwDuctLk=0.000  mwSys=0.000
@@ -4624,7 +4624,7 @@ Wed 10-Jul  hr=0 subhr=14
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.544  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.856  dryAirMass=247.87  XLGain=0.00  W=0.012345  twb=62.76  rh=0.5621
 Z1 CZ: anMCp/T[ 0]=51.68/3756.2  anMCp/T[ 1]=102.54/7452.5  ventUt=1
-     Nair=2300255.71  Dair=31057.37  Nrad=106112.54  Drad=1424.73  CX=564.20  airX=5.656
+     Nair=2300255.72  Dair=31057.37  Nrad=106112.53  Drad=1424.73  CX=564.20  airX=5.656
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.35  qIzSh=-70  fvent=0.000  pz0=-0.0014  qsHvac=-893
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.869  mwDuctLk=0.000  mwSys=0.000
@@ -4659,7 +4659,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.534  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=0.853  dryAirMass=247.88  XLGain=0.00  W=0.012325  twb=62.73  rh=0.5613
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 74
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 74
 
 
 
@@ -4667,7 +4667,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.534  mwDuctLk=0.000  mwSys=0.000
 ------------------------------------------------------------------------------
 
 Z1 CZ: anMCp/T[ 0]=51.47/3728.6  anMCp/T[ 1]=112.68/8162.7  ventUt=1
-     Nair=2299504.94  Dair=31048.23  Nrad=106132.00  Drad=1426.13  CX=562.02  airX=5.653
+     Nair=2299504.95  Dair=31048.23  Nrad=106132.00  Drad=1426.13  CX=562.02  airX=5.653
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.31  qIzSh=-82  fvent=0.000  pz0=-0.0016  qsHvac=-795
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.818  mwDuctLk=0.000  mwSys=0.000
@@ -4722,7 +4722,7 @@ Z1 CZ: anMCp/T[ 0]=50.86/3666.3  anMCp/T[ 1]=127.09/9160.6  ventUt=1
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 75
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 75
 
 
 
@@ -4785,7 +4785,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.670  mwDuctLk=0.000  mwSys=0.000
      tdb=79.85  airX=11.379  dryAirMass=48.40  XLGain=0.00  W=0.012114  twb=64.22  rh=0.4560
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 76
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 76
 
 
 
@@ -4848,7 +4848,7 @@ Attic UZ: anMCp/T[ 0]=132.76/9608.2  anMCp/T[ 1]=133.05/9630.0  ventUt=0
      ta=79.35  tr=83.30  qIzSh=-926  fvent=0.000  pz0=-0.0104  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 77
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 77
 
 
 
@@ -4898,7 +4898,7 @@ Wed 10-Jul  hr=0 subhr=28
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.194  mwDuctLk=0.000  mwSys=0.000
      tdb=74.04  airX=2.749  dryAirMass=247.91  XLGain=0.00  W=0.012220  twb=62.60  rh=0.5566
 Z1 CZ: anMCp/T[ 0]=55.94/3971.8  anMCp/T[ 1]=165.97/11783.7  ventUt=1
-     Nair=2299289.68  Dair=31050.50  Nrad=105689.37  Drad=1425.61  CX=560.38  airX=2.749
+     Nair=2299289.69  Dair=31050.50  Nrad=105689.37  Drad=1425.61  CX=560.38  airX=2.749
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.11  qIzSh=-505  fvent=1.000  pz0=-0.0028  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.552  mwDuctLk=0.000  mwSys=0.000
@@ -4911,7 +4911,7 @@ Attic UZ: anMCp/T[ 0]=131.47/9485.8  anMCp/T[ 1]=131.82/9511.5  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 78
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 78
 
 
 
@@ -4941,7 +4941,7 @@ Wed 10-Jul  hr=1 subhr=0
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.486  mwDuctLk=0.000  mwSys=0.000
      tdb=74.03  airX=2.848  dryAirMass=247.93  XLGain=0.00  W=0.012184  twb=62.55  rh=0.5551
 Z1 CZ: anMCp/T[ 0]=57.97/4105.1  anMCp/T[ 1]=171.98/12177.3  ventUt=1
-     Nair=2286825.64  Dair=30884.83  Nrad=108203.82  Drad=1460.32  CX=511.69  airX=2.848
+     Nair=2286825.65  Dair=30884.83  Nrad=108203.82  Drad=1460.32  CX=511.69  airX=2.848
      TH=64.92  TD=68.00  TC=74.08  qhCap=20000  qcCap=-34000
      ta=74.03  tr=74.08  qIzSh=-555  fvent=1.000  pz0=-0.0029  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.482  mwDuctLk=0.000  mwSys=0.000
@@ -4974,7 +4974,7 @@ Wed 10-Jul  hr=1 subhr=2
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 79
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 79
 
 
 
@@ -5037,7 +5037,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.940  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=61.26/4315.8  anMCp/T[ 1]=181.85/12810.8  ventUt=1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 80
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 80
 
 
 
@@ -5100,7 +5100,7 @@ Z1 CZ: anMCp/T[ 0]=63.03/4427.0  anMCp/T[ 1]=187.16/13144.4  ventUt=1
      ta=73.96  tr=73.95  qIzSh=-697  fvent=1.000  pz0=-0.0032  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 81
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 81
 
 
 
@@ -5163,7 +5163,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.088  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=123.50/8838.9  anMCp/T[ 1]=123.90/8868.6  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 82
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 82
 
 
 
@@ -5226,7 +5226,7 @@ Attic UZ: anMCp/T[ 0]=122.20/8731.8  anMCp/T[ 1]=122.61/8762.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 83
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 83
 
 
 
@@ -5289,7 +5289,7 @@ Attic UZ: anMCp/T[ 0]=121.13/8641.6  anMCp/T[ 1]=121.54/8672.5  ventUt=0
 Wed 10-Jul  hr=1 subhr=18
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 84
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 84
 
 
 
@@ -5352,7 +5352,7 @@ Wed 10-Jul  hr=1 subhr=21
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.006  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 85
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 85
 
 
 
@@ -5415,7 +5415,7 @@ Z1 CZ: anMCp/T[ 0]=70.56/4874.0  anMCp/T[ 1]=209.44/14468.3  ventUt=1
      Nair=2270344.69  Dair=30808.81  Nrad=108734.53  Drad=1476.42  CX=486.30  airX=3.464
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 86
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 86
 
 
 
@@ -5478,7 +5478,7 @@ Z1 CZ: anMCp/T[ 0]=71.66/4934.6  anMCp/T[ 1]=212.69/14646.7  ventUt=1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.801  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 87
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 87
 
 
 
@@ -5541,7 +5541,7 @@ Attic UZ: anMCp/T[ 0]=117.88/8356.4  anMCp/T[ 1]=118.34/8390.8  ventUt=0
      Nair=73088.75  Dair=1011.63  Nrad=70704.09  Drad=886.55  CX=571.00  airX=9.928
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 88
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 88
 
 
 
@@ -5604,7 +5604,7 @@ Attic UZ: anMCp/T[ 0]=114.86/8115.3  anMCp/T[ 1]=115.29/8147.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 89
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 89
 
 
 
@@ -5667,7 +5667,7 @@ Wed 10-Jul  hr=2 subhr=7
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 90
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 90
 
 
 
@@ -5730,7 +5730,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.647  mwDuctLk=0.000  mwSys=0.000
      tdb=73.24  airX=3.972  dryAirMass=248.46  XLGain=0.00  W=0.011801  twb=61.79  rh=0.5527
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 91
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 91
 
 
 
@@ -5793,7 +5793,7 @@ Z1 CZ: anMCp/T[ 0]=82.42/5553.2  anMCp/T[ 1]=246.56/16612.3  ventUt=1
      TH=64.88  TD=68.00  TC=74.12  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 92
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 92
 
 
 
@@ -5856,7 +5856,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.087  mwDuctLk=0.000  mwSys=0.000
      tdb=72.11  airX=8.760  dryAirMass=49.13  XLGain=0.00  W=0.011812  twb=61.46  rh=0.5756
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 93
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 93
 
 
 
@@ -5919,7 +5919,7 @@ Attic UZ: anMCp/T[ 0]=102.89/7133.6  anMCp/T[ 1]=102.86/7131.1  ventUt=0
      ta=71.73  tr=74.87  qIzSh=-247  fvent=1.000  pz0=-0.0066  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 94
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 94
 
 
 
@@ -5982,7 +5982,7 @@ Attic UZ: anMCp/T[ 0]=101.22/6993.1  anMCp/T[ 1]=101.08/6982.7  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 95
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 95
 
 
 
@@ -6045,7 +6045,7 @@ Wed 10-Jul  hr=2 subhr=26
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 96
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 96
 
 
 
@@ -6108,7 +6108,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.398  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=91.06/5995.3  anMCp/T[ 1]=274.46/18070.4  ventUt=1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 97
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 97
 
 
 
@@ -6171,7 +6171,7 @@ Z1 CZ: anMCp/T[ 0]=90.94/5977.8  anMCp/T[ 1]=274.32/18031.4  ventUt=1
      ta=72.39  tr=72.54  qIzSh=-1826  fvent=1.000  pz0=-0.0060  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 98
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 98
 
 
 
@@ -6234,7 +6234,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=4.458  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=92.22/6302.3  anMCp/T[ 1]=91.72/6265.5  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 99
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 99
 
 
 
@@ -6297,7 +6297,7 @@ Attic UZ: anMCp/T[ 0]=89.36/6098.3  anMCp/T[ 1]=88.79/6056.4  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 100
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 100
 
 
 
@@ -6360,7 +6360,7 @@ Attic UZ: anMCp/T[ 0]=86.50/5895.1  anMCp/T[ 1]=85.86/5847.9  ventUt=0
 Wed 10-Jul  hr=3 subhr=12
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 101
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 101
 
 
 
@@ -6423,7 +6423,7 @@ Wed 10-Jul  hr=3 subhr=15
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.157  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 102
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 102
 
 
 
@@ -6486,7 +6486,7 @@ Z1 CZ: anMCp/T[ 0]=90.21/5877.5  anMCp/T[ 1]=273.21/17801.5  ventUt=1
      Nair=2223385.35  Dair=30974.61  Nrad=103211.37  Drad=1433.90  CX=518.64  airX=4.502
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 103
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 103
 
 
 
@@ -6549,7 +6549,7 @@ Z1 CZ: anMCp/T[ 0]=90.07/5858.9  anMCp/T[ 1]=273.02/17759.4  ventUt=1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=3.655  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 104
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 104
 
 
 
@@ -6612,7 +6612,7 @@ Attic UZ: anMCp/T[ 0]=74.30/5034.1  anMCp/T[ 1]=73.30/4961.1  ventUt=0
      Nair=58151.07  Dair=878.46  Nrad=62742.25  Drad=870.55  CX=510.60  airX=6.074
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 105
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 105
 
 
 
@@ -6675,7 +6675,7 @@ Attic UZ: anMCp/T[ 0]=71.53/4840.0  anMCp/T[ 1]=70.43/4760.5  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 106
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 106
 
 
 
@@ -6738,7 +6738,7 @@ Wed 10-Jul  hr=4 subhr=1
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 107
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 107
 
 
 
@@ -6801,7 +6801,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.890  mwDuctLk=0.000  mwSys=0.000
      tdb=71.12  airX=4.461  dryAirMass=249.52  XLGain=0.00  W=0.011602  twb=60.88  rh=0.5841
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 108
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 108
 
 
 
@@ -6864,7 +6864,7 @@ Z1 CZ: anMCp/T[ 0]=88.81/5730.3  anMCp/T[ 1]=270.41/17446.6  ventUt=1
      TH=64.79  TD=68.00  TC=74.21  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 109
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 109
 
 
 
@@ -6927,7 +6927,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.709  mwDuctLk=0.000  mwSys=0.000
      tdb=66.27  airX=4.703  dryAirMass=49.69  XLGain=0.00  W=0.011598  twb=59.33  rh=0.6892
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 110
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 110
 
 
 
@@ -6990,7 +6990,7 @@ Attic UZ: anMCp/T[ 0]=55.51/3737.3  anMCp/T[ 1]=53.83/3616.5  ventUt=0
      ta=66.01  tr=68.48  qIzSh=63  fvent=1.000  pz0=-0.0024  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 111
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 111
 
 
 
@@ -7053,7 +7053,7 @@ Attic UZ: anMCp/T[ 0]=52.57/3536.6  anMCp/T[ 1]=50.76/3407.3  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 112
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 112
 
 
 
@@ -7116,7 +7116,7 @@ Wed 10-Jul  hr=4 subhr=20
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 113
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 113
 
 
 
@@ -7179,7 +7179,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.737  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=87.39/5596.3  anMCp/T[ 1]=267.30/17117.7  ventUt=1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 114
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 114
 
 
 
@@ -7242,7 +7242,7 @@ Z1 CZ: anMCp/T[ 0]=87.14/5572.5  anMCp/T[ 1]=266.78/17060.9  ventUt=1
      ta=70.30  tr=70.47  qIzSh=-1695  fvent=1.000  pz0=-0.0057  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 115
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 115
 
 
 
@@ -7305,7 +7305,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.781  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=39.88/2678.9  anMCp/T[ 1]=37.36/2499.8  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 116
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 116
 
 
 
@@ -7368,7 +7368,7 @@ Attic UZ: anMCp/T[ 0]=38.12/2558.7  anMCp/T[ 1]=35.49/2372.3  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 117
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 117
 
 
 
@@ -7431,7 +7431,7 @@ Attic UZ: anMCp/T[ 0]=37.94/2543.3  anMCp/T[ 1]=35.26/2353.4  ventUt=0
 Wed 10-Jul  hr=5 subhr=6
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 118
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 118
 
 
 
@@ -7494,7 +7494,7 @@ Wed 10-Jul  hr=5 subhr=9
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.925  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 119
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 119
 
 
 
@@ -7557,7 +7557,7 @@ Z1 CZ: anMCp/T[ 0]=88.01/5572.1  anMCp/T[ 1]=269.75/17078.7  ventUt=1
      Nair=2161937.48  Dair=30964.67  Nrad=99964.64  Drad=1423.18  CX=509.67  airX=4.428
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 120
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 120
 
 
 
@@ -7620,7 +7620,7 @@ Z1 CZ: anMCp/T[ 0]=88.46/5589.7  anMCp/T[ 1]=271.03/17126.0  ventUt=1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.880  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 121
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 121
 
 
 
@@ -7683,7 +7683,7 @@ Attic UZ: anMCp/T[ 0]=43.43/2883.6  anMCp/T[ 1]=41.01/2713.0  ventUt=0
      Nair=46860.30  Dair=741.45  Nrad=57672.98  Drad=864.81  CX=445.20  airX=3.375
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 122
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 122
 
 
 
@@ -7746,7 +7746,7 @@ Attic UZ: anMCp/T[ 0]=45.76/3031.4  anMCp/T[ 1]=43.45/2868.5  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 123
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 123
 
 
 
@@ -7809,7 +7809,7 @@ Wed 10-Jul  hr=5 subhr=25
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 124
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 124
 
 
 
@@ -7872,7 +7872,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.627  mwDuctLk=0.000  mwSys=0.000
      tdb=69.43  airX=4.570  dryAirMass=250.23  XLGain=0.00  W=0.011858  twb=60.70  rh=0.6318
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 125
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 125
 
 
 
@@ -7935,7 +7935,7 @@ Z1 CZ: anMCp/T[ 0]=87.89/5532.4  anMCp/T[ 1]=268.73/16915.9  ventUt=1
      TH=64.71  TD=68.00  TC=74.29  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 126
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 126
 
 
 
@@ -7998,7 +7998,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.953  mwDuctLk=0.000  mwSys=0.000
      tdb=64.71  airX=3.268  dryAirMass=49.82  XLGain=0.00  W=0.011888  twb=59.23  rh=0.7462
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 127
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 127
 
 
 
@@ -8061,7 +8061,7 @@ Attic UZ: anMCp/T[ 0]=38.70/2581.3  anMCp/T[ 1]=36.68/2440.0  ventUt=0
      ta=65.13  tr=65.71  qIzSh=51  fvent=1.000  pz0=-0.0013  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 128
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 128
 
 
 
@@ -8124,7 +8124,7 @@ Attic UZ: anMCp/T[ 0]=36.23/2426.9  anMCp/T[ 1]=34.35/2295.3  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 129
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 129
 
 
 
@@ -8187,7 +8187,7 @@ Wed 10-Jul  hr=6 subhr=14
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 130
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 130
 
 
 
@@ -8250,7 +8250,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.707  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=62.56/4112.2  anMCp/T[ 1]=190.55/12525.0  ventUt=1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 131
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 131
 
 
 
@@ -8313,7 +8313,7 @@ Z1 CZ: anMCp/T[ 0]=57.80/3829.7  anMCp/T[ 1]=175.97/11658.5  ventUt=1
      ta=69.73  tr=70.52  qIzSh=-612  fvent=1.000  pz0=-0.0030  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 132
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 132
 
 
 
@@ -8376,7 +8376,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.751  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=34.96/2382.7  anMCp/T[ 1]=34.18/2327.9  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 133
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 133
 
 
 
@@ -8439,7 +8439,7 @@ Attic UZ: anMCp/T[ 0]=36.18/2476.4  anMCp/T[ 1]=35.62/2437.7  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 134
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 134
 
 
 
@@ -8502,7 +8502,7 @@ Attic UZ: anMCp/T[ 0]=37.67/2591.1  anMCp/T[ 1]=37.38/2570.4  ventUt=0
 Wed 10-Jul  hr=7 subhr=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 135
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 135
 
 
 
@@ -8565,7 +8565,7 @@ Wed 10-Jul  hr=7 subhr=3
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.930  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 136
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 136
 
 
 
@@ -8628,7 +8628,7 @@ Z1 CZ: anMCp/T[ 0]=20.58/1433.7  anMCp/T[ 1]=61.32/4272.2  ventUt=1
      Nair=2149788.77  Dair=30533.59  Nrad=107755.23  Drad=1505.51  CX=424.31  airX=1.009
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 137
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 137
 
 
 
@@ -8691,7 +8691,7 @@ Z1 CZ: anMCp/T[ 0]=17.04/1200.6  anMCp/T[ 1]=17.66/1244.5  ventUt=1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.257  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 138
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 138
 
 
 
@@ -8754,7 +8754,7 @@ Attic UZ: anMCp/T[ 0]=49.08/3486.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=56952.53  Dair=756.55  Nrad=60600.95  Drad=881.48  CX=439.55  airX=4.117
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 139
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 139
 
 
 
@@ -8817,7 +8817,7 @@ Attic UZ: anMCp/T[ 0]=54.83/3925.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 140
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 140
 
 
 
@@ -8880,7 +8880,7 @@ Wed 10-Jul  hr=7 subhr=19
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 141
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 141
 
 
 
@@ -8943,7 +8943,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=3.432  mwDuctLk=0.000  mwSys=0.000
      tdb=71.24  airX=1.107  dryAirMass=249.10  XLGain=0.00  W=0.012556  twb=62.18  rh=0.6287
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 142
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 142
 
 
 
@@ -9006,7 +9006,7 @@ Z1 CZ: anMCp/T[ 0]=74.05/5530.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.67  TD=68.00  TC=74.33  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 143
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 143
 
 
 
@@ -9069,7 +9069,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=3.739  mwDuctLk=0.000  mwSys=0.000
      tdb=79.54  airX=6.222  dryAirMass=48.40  XLGain=0.00  W=0.012463  twb=64.55  rh=0.4733
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 144
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 144
 
 
 
@@ -9132,7 +9132,7 @@ Attic UZ: anMCp/T[ 0]=77.70/5807.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=80.64  tr=75.59  qIzSh=-458  fvent=0.000  pz0=-0.0053  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 145
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 145
 
 
 
@@ -9195,7 +9195,7 @@ Attic UZ: anMCp/T[ 0]=86.75/6523.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 146
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 146
 
 
 
@@ -9258,7 +9258,7 @@ Wed 10-Jul  hr=8 subhr=8
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 147
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 147
 
 
 
@@ -9321,7 +9321,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.512  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=107.18/8372.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 148
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 148
 
 
 
@@ -9384,7 +9384,7 @@ Z1 CZ: anMCp/T[ 0]=113.11/8902.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=72.79  tr=73.71  qIzSh=670  fvent=0.000  pz0=0.0046  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 149
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 149
 
 
 
@@ -9447,7 +9447,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.766  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=130.83/10098.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 150
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 150
 
 
 
@@ -9510,7 +9510,7 @@ Attic UZ: anMCp/T[ 0]=138.33/10741.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 151
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 151
 
 
 
@@ -9573,7 +9573,7 @@ Attic UZ: anMCp/T[ 0]=144.96/11323.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=8 subhr=24
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 152
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 152
 
 
 
@@ -9636,7 +9636,7 @@ Wed 10-Jul  hr=8 subhr=27
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.080  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 153
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 153
 
 
 
@@ -9699,7 +9699,7 @@ Z1 CZ: anMCp/T[ 0]=138.34/11327.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2282902.36  Dair=30807.24  Nrad=112433.91  Drad=1498.31  CX=474.05  airX=2.293
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 154
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 154
 
 
 
@@ -9762,7 +9762,7 @@ Z1 CZ: anMCp/T[ 0]=141.70/11686.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.566  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 155
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 155
 
 
 
@@ -9825,7 +9825,7 @@ Attic UZ: anMCp/T[ 0]=169.35/13573.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=115457.27  Dair=1137.27  Nrad=77579.60  Drad=917.71  CX=637.96  airX=14.847
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 156
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 156
 
 
 
@@ -9888,7 +9888,7 @@ Attic UZ: anMCp/T[ 0]=175.73/14159.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 157
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 157
 
 
 
@@ -9951,7 +9951,7 @@ Wed 10-Jul  hr=9 subhr=13
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 158
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 158
 
 
 
@@ -10014,7 +10014,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.594  mwDuctLk=0.000  mwSys=0.000
      tdb=74.42  airX=2.694  dryAirMass=247.51  XLGain=0.00  W=0.012832  twb=63.52  rh=0.5766
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 159
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 159
 
 
 
@@ -10056,7 +10056,7 @@ Wed 10-Jul  hr=9 subhr=18
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.751  mwDuctLk=0.000  mwSys=0.000
      tdb=74.42  airX=2.743  dryAirMass=247.51  XLGain=0.00  W=0.012842  twb=63.54  rh=0.5771
 Z1 CZ: anMCp/T[ 0]=165.36/14128.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2341528.79  Dair=31409.25  Nrad=104923.07  Drad=1382.85  CX=630.28  airX=7.543
+     Nair=2341528.79  Dair=31409.25  Nrad=104923.06  Drad=1382.85  CX=630.28  airX=7.543
      TH=64.58  TD=68.00  TC=74.42  qhCap=20000  qcCap=-34000
      ta=74.42  tr=75.42  qIzSh=1823  fvent=0.000  pz0=0.0084  qsHvac=-4788
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.105  mwDuctLk=0.000  mwSys=0.000
@@ -10073,11 +10073,11 @@ Wed 10-Jul  hr=9 subhr=19
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.828  mwDuctLk=0.000  mwSys=0.000
      tdb=74.42  airX=2.767  dryAirMass=247.51  XLGain=0.00  W=0.012847  twb=63.54  rh=0.5773
 Z1 CZ: anMCp/T[ 0]=166.78/14283.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2341970.01  Dair=31413.94  Nrad=104923.95  Drad=1382.30  CX=631.23  airX=7.567
+     Nair=2341970.01  Dair=31413.94  Nrad=104923.94  Drad=1382.30  CX=631.23  airX=7.567
      TH=64.58  TD=68.00  TC=74.42  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 160
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 160
 
 
 
@@ -10099,7 +10099,7 @@ Wed 10-Jul  hr=9 subhr=20
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.903  mwDuctLk=0.000  mwSys=0.000
      tdb=74.42  airX=2.790  dryAirMass=247.50  XLGain=0.00  W=0.012851  twb=63.55  rh=0.5775
 Z1 CZ: anMCp/T[ 0]=168.19/14436.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2342407.33  Dair=31418.59  Nrad=104923.70  Drad=1381.75  CX=632.17  airX=7.590
+     Nair=2342407.34  Dair=31418.59  Nrad=104923.70  Drad=1381.75  CX=632.17  airX=7.590
      TH=64.58  TD=68.00  TC=74.42  qhCap=20000  qcCap=-34000
      ta=74.42  tr=75.46  qIzSh=1921  fvent=0.000  pz0=0.0086  qsHvac=-4999
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.251  mwDuctLk=0.000  mwSys=0.000
@@ -10140,7 +10140,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.385  mwDuctLk=0.000  mwSys=0.000
      tdb=104.72  airX=17.443  dryAirMass=46.21  XLGain=0.00  W=0.012882  twb=71.77  rh=0.2233
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 161
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 161
 
 
 
@@ -10203,7 +10203,7 @@ Attic UZ: anMCp/T[ 0]=199.63/16540.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=105.92  tr=98.08  qIzSh=-4604  fvent=0.000  pz0=-0.0217  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 162
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 162
 
 
 
@@ -10266,7 +10266,7 @@ Attic UZ: anMCp/T[ 0]=202.54/16868.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 163
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 163
 
 
 
@@ -10279,7 +10279,7 @@ Wed 10-Jul  hr=9 subhr=29
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.534  mwDuctLk=0.000  mwSys=0.000
      tdb=74.42  airX=2.984  dryAirMass=247.49  XLGain=0.00  W=0.012882  twb=63.59  rh=0.5788
 Z1 CZ: anMCp/T[ 0]=179.91/15763.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2346154.62  Dair=31458.27  Nrad=104884.85  Drad=1377.00  CX=640.05  airX=7.784
+     Nair=2346154.63  Dair=31458.27  Nrad=104884.85  Drad=1377.00  CX=640.05  airX=7.784
      TH=64.58  TD=68.00  TC=74.42  qhCap=20000  qcCap=-34000
      ta=74.42  tr=75.61  qIzSh=2375  fvent=0.000  pz0=0.0099  qsHvac=-5901
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.773  mwDuctLk=0.000  mwSys=0.000
@@ -10329,7 +10329,7 @@ Wed 10-Jul  hr=10 subhr=2
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 164
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 164
 
 
 
@@ -10392,7 +10392,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.316  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=188.53/16715.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 165
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 165
 
 
 
@@ -10433,7 +10433,7 @@ Wed 10-Jul  hr=10 subhr=7
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.605  mwDuctLk=0.000  mwSys=0.000
      tdb=74.46  airX=3.179  dryAirMass=247.40  XLGain=0.00  W=0.013106  twb=63.90  rh=0.5879
 Z1 CZ: anMCp/T[ 0]=191.55/17050.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2349993.10  Dair=31486.55  Nrad=104681.11  Drad=1373.91  CX=646.52  airX=7.979
+     Nair=2349993.11  Dair=31486.55  Nrad=104681.10  Drad=1373.91  CX=646.52  airX=7.979
      TH=64.54  TD=68.00  TC=74.46  qhCap=20000  qcCap=-34000
      ta=74.46  tr=75.64  qIzSh=2788  fvent=0.000  pz0=0.0111  qsHvac=-6319
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.771  mwDuctLk=0.000  mwSys=0.000
@@ -10455,7 +10455,7 @@ Z1 CZ: anMCp/T[ 0]=193.04/17216.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.46  tr=75.65  qIzSh=2843  fvent=0.000  pz0=0.0112  qsHvac=-6404
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 166
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 166
 
 
 
@@ -10510,7 +10510,7 @@ Wed 10-Jul  hr=10 subhr=11
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.183  mwDuctLk=0.000  mwSys=0.000
      tdb=74.46  airX=3.277  dryAirMass=247.32  XLGain=0.00  W=0.013321  twb=64.17  rh=0.5973
 Z1 CZ: anMCp/T[ 0]=197.39/17707.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2351550.85  Dair=31503.27  Nrad=104602.72  Drad=1371.90  CX=649.50  airX=8.077
+     Nair=2351550.86  Dair=31503.27  Nrad=104602.71  Drad=1371.90  CX=649.50  airX=8.077
      TH=64.54  TD=68.00  TC=74.46  qhCap=20000  qcCap=-34000
      ta=74.46  tr=75.67  qIzSh=3010  fvent=0.000  pz0=0.0117  qsHvac=-6658
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.364  mwDuctLk=0.000  mwSys=0.000
@@ -10518,7 +10518,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.364  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=221.00/18744.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 167
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 167
 
 
 
@@ -10581,7 +10581,7 @@ Attic UZ: anMCp/T[ 0]=225.20/19177.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 168
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 168
 
 
 
@@ -10644,7 +10644,7 @@ Attic UZ: anMCp/T[ 0]=229.00/19577.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=10 subhr=18
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 169
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 169
 
 
 
@@ -10707,7 +10707,7 @@ Wed 10-Jul  hr=10 subhr=21
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.621  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 170
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 170
 
 
 
@@ -10770,7 +10770,7 @@ Z1 CZ: anMCp/T[ 0]=214.53/19730.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2356192.19  Dair=31551.86  Nrad=104379.04  Drad=1366.09  CX=658.15  airX=8.366
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 171
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 171
 
 
 
@@ -10833,7 +10833,7 @@ Z1 CZ: anMCp/T[ 0]=218.20/20181.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.585  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 172
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 172
 
 
 
@@ -10896,7 +10896,7 @@ Attic UZ: anMCp/T[ 0]=241.46/20999.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=162371.41  Dair=1312.88  Nrad=105861.97  Drad=990.52  CX=779.77  airX=22.086
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 173
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 173
 
 
 
@@ -10959,7 +10959,7 @@ Attic UZ: anMCp/T[ 0]=242.61/21219.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 174
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 174
 
 
 
@@ -11022,7 +11022,7 @@ Wed 10-Jul  hr=11 subhr=7
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 175
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 175
 
 
 
@@ -11085,7 +11085,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.469  mwDuctLk=0.000  mwSys=0.000
      tdb=74.50  airX=3.836  dryAirMass=246.59  XLGain=0.00  W=0.015124  twb=66.36  rh=0.6754
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 176
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 176
 
 
 
@@ -11093,7 +11093,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.469  mwDuctLk=0.000  mwSys=0.000
 ------------------------------------------------------------------------------
 
 Z1 CZ: anMCp/T[ 0]=230.41/21938.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2362039.30  Dair=31595.92  Nrad=104218.57  Drad=1361.01  CX=682.48  airX=8.636
+     Nair=2362039.31  Dair=31595.92  Nrad=104218.57  Drad=1361.01  CX=682.48  airX=8.636
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.88  qIzSh=4773  fvent=0.000  pz0=0.0159  qsHvac=-9086
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.424  mwDuctLk=0.000  mwSys=0.000
@@ -11148,7 +11148,7 @@ Z1 CZ: anMCp/T[ 0]=233.15/22350.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 177
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 177
 
 
 
@@ -11211,7 +11211,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.683  mwDuctLk=0.000  mwSys=0.000
      tdb=125.50  airX=23.045  dryAirMass=44.40  XLGain=0.00  W=0.015322  twb=78.83  rh=0.1468
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 178
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 178
 
 
 
@@ -11274,7 +11274,7 @@ Attic UZ: anMCp/T[ 0]=250.21/22544.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=126.54  tr=119.80  qIzSh=-9116  fvent=0.000  pz0=-0.0316  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 179
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 179
 
 
 
@@ -11337,7 +11337,7 @@ Attic UZ: anMCp/T[ 0]=250.97/22740.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 180
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 180
 
 
 
@@ -11400,7 +11400,7 @@ Wed 10-Jul  hr=11 subhr=26
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 181
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 181
 
 
 
@@ -11463,7 +11463,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.721  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=246.48/24480.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 182
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 182
 
 
 
@@ -11526,7 +11526,7 @@ Z1 CZ: anMCp/T[ 0]=247.43/24654.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.54  tr=76.04  qIzSh=6211  fvent=0.000  pz0=0.0185  qsHvac=-10974
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 183
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 183
 
 
 
@@ -11547,7 +11547,7 @@ Wed 10-Jul  hr=12 subhr=3
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.520  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.128  dryAirMass=246.45  XLGain=0.00  W=0.015403  twb=66.71  rh=0.6866
 Z1 CZ: anMCp/T[ 0]=247.81/24719.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2368875.55  Dair=31645.27  Nrad=104123.64  Drad=1355.42  CX=698.48  airX=8.928
+     Nair=2368875.56  Dair=31645.27  Nrad=104123.64  Drad=1355.42  CX=698.48  airX=8.928
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.05  qIzSh=6247  fvent=0.000  pz0=0.0185  qsHvac=-11035
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.010  mwDuctLk=0.000  mwSys=0.000
@@ -11589,7 +11589,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.967  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=256.02/23644.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 184
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 184
 
 
 
@@ -11641,7 +11641,7 @@ Wed 10-Jul  hr=12 subhr=8
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.283  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.160  dryAirMass=246.52  XLGain=0.00  W=0.015203  twb=66.47  rh=0.6779
 Z1 CZ: anMCp/T[ 0]=249.78/25050.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2369574.17  Dair=31651.03  Nrad=104154.15  Drad=1354.87  CX=699.58  airX=8.960
+     Nair=2369574.18  Dair=31651.03  Nrad=104154.15  Drad=1354.87  CX=699.58  airX=8.960
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.08  qIzSh=6432  fvent=0.000  pz0=0.0187  qsHvac=-11330
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.878  mwDuctLk=0.000  mwSys=0.000
@@ -11652,7 +11652,7 @@ Attic UZ: anMCp/T[ 0]=257.71/23872.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 185
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 185
 
 
 
@@ -11684,7 +11684,7 @@ Wed 10-Jul  hr=12 subhr=10
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.186  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.172  dryAirMass=246.55  XLGain=0.00  W=0.015098  twb=66.34  rh=0.6733
 Z1 CZ: anMCp/T[ 0]=250.57/25183.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2369853.89  Dair=31653.37  Nrad=104161.64  Drad=1354.63  CX=700.02  airX=8.972
+     Nair=2369853.90  Dair=31653.37  Nrad=104161.63  Drad=1354.63  CX=700.02  airX=8.972
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.09  qIzSh=6506  fvent=0.000  pz0=0.0188  qsHvac=-11445
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.803  mwDuctLk=0.000  mwSys=0.000
@@ -11715,7 +11715,7 @@ Attic UZ: anMCp/T[ 0]=259.19/24081.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=12 subhr=12
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 186
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 186
 
 
 
@@ -11778,7 +11778,7 @@ Wed 10-Jul  hr=12 subhr=15
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.940  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 187
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 187
 
 
 
@@ -11838,10 +11838,10 @@ Wed 10-Jul  hr=12 subhr=18
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.787  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.220  dryAirMass=246.74  XLGain=0.00  W=0.014603  twb=65.74  rh=0.6517
 Z1 CZ: anMCp/T[ 0]=253.62/25710.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2370924.61  Dair=31662.19  Nrad=104187.65  Drad=1353.72  CX=701.68  airX=9.020
+     Nair=2370924.62  Dair=31662.19  Nrad=104187.65  Drad=1353.72  CX=701.68  airX=9.020
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 188
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 188
 
 
 
@@ -11904,7 +11904,7 @@ Z1 CZ: anMCp/T[ 0]=254.73/25904.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.253  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 189
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 189
 
 
 
@@ -11924,7 +11924,7 @@ Wed 10-Jul  hr=12 subhr=22
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.579  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.243  dryAirMass=246.84  XLGain=0.00  W=0.014334  twb=65.42  rh=0.6400
 Z1 CZ: anMCp/T[ 0]=255.09/25968.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2371435.22  Dair=31666.32  Nrad=104199.63  Drad=1353.30  CX=702.45  airX=9.043
+     Nair=2371435.23  Dair=31666.32  Nrad=104199.63  Drad=1353.30  CX=702.45  airX=9.043
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.16  qIzSh=6954  fvent=0.000  pz0=0.0194  qsHvac=-12110
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.194  mwDuctLk=0.000  mwSys=0.000
@@ -11958,7 +11958,7 @@ Wed 10-Jul  hr=12 subhr=24
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.473  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.254  dryAirMass=246.90  XLGain=0.00  W=0.014197  twb=65.25  rh=0.6340
 Z1 CZ: anMCp/T[ 0]=255.80/26096.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2371685.37  Dair=31668.32  Nrad=104205.54  Drad=1353.10  CX=702.82  airX=9.054
+     Nair=2371685.38  Dair=31668.32  Nrad=104205.54  Drad=1353.10  CX=702.82  airX=9.054
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.17  qIzSh=7029  fvent=0.000  pz0=0.0195  qsHvac=-12219
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.074  mwDuctLk=0.000  mwSys=0.000
@@ -11967,7 +11967,7 @@ Attic UZ: anMCp/T[ 0]=263.76/24827.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=188658.56  Dair=1356.02  Nrad=133846.88  Drad=1056.81  CX=861.60  airX=24.771
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 190
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 190
 
 
 
@@ -12030,7 +12030,7 @@ Attic UZ: anMCp/T[ 0]=264.46/24968.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 191
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 191
 
 
 
@@ -12061,7 +12061,7 @@ Wed 10-Jul  hr=12 subhr=29
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.217  mwDuctLk=0.000  mwSys=0.000
      tdb=74.54  airX=4.280  dryAirMass=247.03  XLGain=0.00  W=0.013854  twb=64.84  rh=0.6190
 Z1 CZ: anMCp/T[ 0]=257.55/26414.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2372298.42  Dair=31673.19  Nrad=104220.10  Drad=1352.61  CX=703.72  airX=9.080
+     Nair=2372298.42  Dair=31673.19  Nrad=104220.09  Drad=1352.61  CX=703.72  airX=9.080
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.19  qIzSh=7216  fvent=0.000  pz0=0.0197  qsHvac=-12488
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.768  mwDuctLk=0.000  mwSys=0.000
@@ -12078,7 +12078,7 @@ Wed 10-Jul  hr=13 subhr=0
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.333  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.299  dryAirMass=247.04  XLGain=0.00  W=0.013803  twb=64.79  rh=0.6159
 Z1 CZ: anMCp/T[ 0]=258.65/26558.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2372493.74  Dair=31674.90  Nrad=104216.13  Drad=1352.51  CX=689.80  airX=9.099
+     Nair=2372493.75  Dair=31674.90  Nrad=104216.12  Drad=1352.51  CX=689.80  airX=9.099
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.22  qIzSh=7267  fvent=0.000  pz0=0.0198  qsHvac=-11203
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.763  mwDuctLk=0.000  mwSys=0.000
@@ -12093,7 +12093,7 @@ Wed 10-Jul  hr=13 subhr=1
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 192
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 192
 
 
 
@@ -12156,7 +12156,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.683  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.328  dryAirMass=247.08  XLGain=0.00  W=0.013734  twb=64.70  rh=0.6129
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 193
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 193
 
 
 
@@ -12164,7 +12164,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.683  mwDuctLk=0.000  mwSys=0.000
 ------------------------------------------------------------------------------
 
 Z1 CZ: anMCp/T[ 0]=260.44/26867.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2374290.27  Dair=31678.89  Nrad=104263.41  Drad=1352.33  CX=690.55  airX=9.128
+     Nair=2374290.28  Dair=31678.89  Nrad=104263.41  Drad=1352.33  CX=690.55  airX=9.128
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.25  qIzSh=7443  fvent=0.000  pz0=0.0202  qsHvac=-12723
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.914  mwDuctLk=0.000  mwSys=0.000
@@ -12181,7 +12181,7 @@ Wed 10-Jul  hr=13 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.744  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.327  dryAirMass=247.08  XLGain=0.00  W=0.013742  twb=64.71  rh=0.6133
 Z1 CZ: anMCp/T[ 0]=260.39/26893.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2374408.07  Dair=31679.79  Nrad=104269.46  Drad=1352.18  CX=690.82  airX=9.127
+     Nair=2374408.08  Dair=31679.79  Nrad=104269.46  Drad=1352.18  CX=690.82  airX=9.127
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.26  qIzSh=7472  fvent=0.000  pz0=0.0203  qsHvac=-12780
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.972  mwDuctLk=0.000  mwSys=0.000
@@ -12198,7 +12198,7 @@ Wed 10-Jul  hr=13 subhr=6
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.860  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.342  dryAirMass=247.08  XLGain=0.00  W=0.013758  twb=64.73  rh=0.6140
 Z1 CZ: anMCp/T[ 0]=261.29/27017.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2374622.72  Dair=31681.60  Nrad=104276.55  Drad=1352.05  CX=691.08  airX=9.142
+     Nair=2374622.73  Dair=31681.60  Nrad=104276.55  Drad=1352.05  CX=691.08  airX=9.142
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.27  qIzSh=7530  fvent=0.000  pz0=0.0203  qsHvac=-12865
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.001  mwDuctLk=0.000  mwSys=0.000
@@ -12219,7 +12219,7 @@ Z1 CZ: anMCp/T[ 0]=261.83/27104.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 194
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 194
 
 
 
@@ -12282,7 +12282,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.191  mwDuctLk=0.000  mwSys=0.000
      tdb=138.70  airX=24.897  dryAirMass=43.51  XLGain=0.00  W=0.014012  twb=80.38  rh=0.0948
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 195
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 195
 
 
 
@@ -12301,7 +12301,7 @@ Wed 10-Jul  hr=13 subhr=11
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.307  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.378  dryAirMass=247.03  XLGain=0.00  W=0.013918  twb=64.93  rh=0.6210
 Z1 CZ: anMCp/T[ 0]=263.43/27396.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2375454.76  Dair=31688.34  Nrad=104311.25  Drad=1351.37  CX=692.39  airX=9.178
+     Nair=2375454.77  Dair=31688.34  Nrad=104311.25  Drad=1351.37  CX=692.39  airX=9.178
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.31  qIzSh=7749  fvent=0.000  pz0=0.0208  qsHvac=-13225
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.244  mwDuctLk=0.000  mwSys=0.000
@@ -12345,7 +12345,7 @@ Attic UZ: anMCp/T[ 0]=263.61/25312.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=139.14  tr=135.07  qIzSh=-11366  fvent=0.000  pz0=-0.0366  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 196
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 196
 
 
 
@@ -12408,7 +12408,7 @@ Attic UZ: anMCp/T[ 0]=263.35/25366.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 197
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 197
 
 
 
@@ -12471,7 +12471,7 @@ Wed 10-Jul  hr=13 subhr=20
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 198
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 198
 
 
 
@@ -12481,7 +12481,7 @@ Wed 10-Jul  hr=13 subhr=20
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.096  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.437  dryAirMass=246.86  XLGain=0.00  W=0.014373  twb=65.48  rh=0.6408
 Z1 CZ: anMCp/T[ 0]=266.79/28033.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2376818.55  Dair=31699.15  Nrad=104358.86  Drad=1350.26  CX=694.52  airX=9.237
+     Nair=2376818.56  Dair=31699.15  Nrad=104358.86  Drad=1350.26  CX=694.52  airX=9.237
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.37  qIzSh=8136  fvent=0.000  pz0=0.0215  qsHvac=-13830
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.759  mwDuctLk=0.000  mwSys=0.000
@@ -12498,7 +12498,7 @@ Wed 10-Jul  hr=13 subhr=21
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.184  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.443  dryAirMass=246.84  XLGain=0.00  W=0.014430  twb=65.55  rh=0.6433
 Z1 CZ: anMCp/T[ 0]=267.15/28104.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2376960.89  Dair=31700.26  Nrad=104363.00  Drad=1350.15  CX=694.73  airX=9.243
+     Nair=2376960.90  Dair=31700.26  Nrad=104363.00  Drad=1350.15  CX=694.73  airX=9.243
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.38  qIzSh=8179  fvent=0.000  pz0=0.0216  qsHvac=-13895
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.818  mwDuctLk=0.000  mwSys=0.000
@@ -12515,7 +12515,7 @@ Wed 10-Jul  hr=13 subhr=22
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.272  mwDuctLk=0.000  mwSys=0.000
      tdb=74.58  airX=4.450  dryAirMass=246.81  XLGain=0.00  W=0.014487  twb=65.62  rh=0.6458
 Z1 CZ: anMCp/T[ 0]=267.51/28174.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2377102.08  Dair=31701.36  Nrad=104366.87  Drad=1350.04  CX=694.94  airX=9.250
+     Nair=2377102.09  Dair=31701.36  Nrad=104366.87  Drad=1350.04  CX=694.94  airX=9.250
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.38  qIzSh=8222  fvent=0.000  pz0=0.0216  qsHvac=-13959
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.878  mwDuctLk=0.000  mwSys=0.000
@@ -12534,7 +12534,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.360  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=267.87/28244.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 199
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 199
 
 
 
@@ -12597,7 +12597,7 @@ Z1 CZ: anMCp/T[ 0]=268.93/28453.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.58  tr=76.40  qIzSh=8395  fvent=0.000  pz0=0.0220  qsHvac=-14210
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 200
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 200
 
 
 
@@ -12660,7 +12660,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.295  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=262.31/25605.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 201
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 201
 
 
 
@@ -12723,7 +12723,7 @@ Attic UZ: anMCp/T[ 0]=263.56/25742.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 202
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 202
 
 
 
@@ -12738,7 +12738,7 @@ Wed 10-Jul  hr=14 subhr=3
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.551  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.490  dryAirMass=246.59  XLGain=0.00  W=0.014968  twb=66.21  rh=0.6658
 Z1 CZ: anMCp/T[ 0]=269.67/28666.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2379756.28  Dair=31711.19  Nrad=104608.17  Drad=1349.29  CX=706.90  airX=9.290
+     Nair=2379756.29  Dair=31711.19  Nrad=104608.17  Drad=1349.29  CX=706.90  airX=9.290
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.53  qIzSh=8543  fvent=0.000  pz0=0.0222  qsHvac=-14655
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.197  mwDuctLk=0.000  mwSys=0.000
@@ -12772,7 +12772,7 @@ Wed 10-Jul  hr=14 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.413  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.496  dryAirMass=246.59  XLGain=0.00  W=0.014932  twb=66.16  rh=0.6642
 Z1 CZ: anMCp/T[ 0]=270.03/28725.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2379969.16  Dair=31712.92  Nrad=104641.60  Drad=1349.13  CX=707.37  airX=9.296
+     Nair=2379969.17  Dair=31712.92  Nrad=104641.60  Drad=1349.13  CX=707.37  airX=9.296
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.55  qIzSh=8574  fvent=0.000  pz0=0.0222  qsHvac=-14756
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.080  mwDuctLk=0.000  mwSys=0.000
@@ -12786,7 +12786,7 @@ Attic UZ: anMCp/T[ 0]=263.83/25792.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=14 subhr=6
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 203
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 203
 
 
 
@@ -12798,7 +12798,7 @@ Wed 10-Jul  hr=14 subhr=6
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.353  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.501  dryAirMass=246.60  XLGain=0.00  W=0.014902  twb=66.13  rh=0.6629
 Z1 CZ: anMCp/T[ 0]=270.36/28770.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380087.47  Dair=31713.90  Nrad=104657.25  Drad=1349.06  CX=707.57  airX=9.301
+     Nair=2380087.48  Dair=31713.90  Nrad=104657.25  Drad=1349.06  CX=707.57  airX=9.301
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.56  qIzSh=8594  fvent=0.000  pz0=0.0222  qsHvac=-14808
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.009  mwDuctLk=0.000  mwSys=0.000
@@ -12815,7 +12815,7 @@ Wed 10-Jul  hr=14 subhr=7
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.256  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.497  dryAirMass=246.61  XLGain=0.00  W=0.014866  twb=66.08  rh=0.6614
 Z1 CZ: anMCp/T[ 0]=270.09/28750.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380140.24  Dair=31714.28  Nrad=104671.58  Drad=1348.98  CX=707.77  airX=9.297
+     Nair=2380140.25  Dair=31714.28  Nrad=104671.58  Drad=1348.98  CX=707.77  airX=9.297
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.57  qIzSh=8595  fvent=0.000  pz0=0.0222  qsHvac=-14840
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.955  mwDuctLk=0.000  mwSys=0.000
@@ -12832,7 +12832,7 @@ Wed 10-Jul  hr=14 subhr=8
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.200  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.503  dryAirMass=246.63  XLGain=0.00  W=0.014824  twb=66.03  rh=0.6595
 Z1 CZ: anMCp/T[ 0]=270.50/28804.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380251.29  Dair=31715.16  Nrad=104687.49  Drad=1348.94  CX=707.93  airX=9.303
+     Nair=2380251.30  Dair=31715.16  Nrad=104687.48  Drad=1348.94  CX=707.93  airX=9.303
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.58  qIzSh=8618  fvent=0.000  pz0=0.0222  qsHvac=-14892
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.896  mwDuctLk=0.000  mwSys=0.000
@@ -12849,7 +12849,7 @@ Wed 10-Jul  hr=14 subhr=9
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.104  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 204
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 204
 
 
 
@@ -12909,10 +12909,10 @@ Wed 10-Jul  hr=14 subhr=12
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.873  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.500  dryAirMass=246.70  XLGain=0.00  W=0.014617  twb=65.78  rh=0.6506
 Z1 CZ: anMCp/T[ 0]=270.39/28831.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380476.38  Dair=31716.67  Nrad=104744.51  Drad=1348.82  CX=708.44  airX=9.300
+     Nair=2380476.39  Dair=31716.67  Nrad=104744.51  Drad=1348.82  CX=708.44  airX=9.300
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 205
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 205
 
 
 
@@ -12952,7 +12952,7 @@ Wed 10-Jul  hr=14 subhr=14
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.728  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.504  dryAirMass=246.74  XLGain=0.00  W=0.014498  twb=65.64  rh=0.6454
 Z1 CZ: anMCp/T[ 0]=270.66/28879.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380603.18  Dair=31717.55  Nrad=104770.10  Drad=1348.78  CX=708.65  airX=9.304
+     Nair=2380603.19  Dair=31717.55  Nrad=104770.10  Drad=1348.78  CX=708.65  airX=9.304
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.63  qIzSh=8681  fvent=0.000  pz0=0.0223  qsHvac=-15099
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.424  mwDuctLk=0.000  mwSys=0.000
@@ -12969,13 +12969,13 @@ Wed 10-Jul  hr=14 subhr=15
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.648  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.503  dryAirMass=246.77  XLGain=0.00  W=0.014435  twb=65.56  rh=0.6426
 Z1 CZ: anMCp/T[ 0]=270.67/28889.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380640.94  Dair=31717.73  Nrad=104783.69  Drad=1348.79  CX=708.71  airX=9.303
+     Nair=2380640.95  Dair=31717.73  Nrad=104783.69  Drad=1348.79  CX=708.71  airX=9.303
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.63  qIzSh=8691  fvent=0.000  pz0=0.0224  qsHvac=-15128
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.345  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 206
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 206
 
 
 
@@ -13029,7 +13029,7 @@ Wed 10-Jul  hr=14 subhr=18
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.425  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.507  dryAirMass=246.84  XLGain=0.00  W=0.014240  twb=65.33  rh=0.6341
 Z1 CZ: anMCp/T[ 0]=270.97/28951.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380807.32  Dair=31718.90  Nrad=104813.36  Drad=1348.72  CX=708.99  airX=9.307
+     Nair=2380807.33  Dair=31718.90  Nrad=104813.36  Drad=1348.72  CX=708.99  airX=9.307
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.65  qIzSh=8730  fvent=0.000  pz0=0.0224  qsHvac=-15219
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.106  mwDuctLk=0.000  mwSys=0.000
@@ -13038,7 +13038,7 @@ Attic UZ: anMCp/T[ 0]=263.11/25822.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=194080.51  Dair=1351.69  Nrad=151616.02  Drad=1095.68  CX=893.14  airX=24.974
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 207
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 207
 
 
 
@@ -13072,7 +13072,7 @@ Wed 10-Jul  hr=14 subhr=20
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.274  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.509  dryAirMass=246.89  XLGain=0.00  W=0.014105  twb=65.16  rh=0.6283
 Z1 CZ: anMCp/T[ 0]=271.14/28989.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380905.56  Dair=31719.57  Nrad=104830.93  Drad=1348.68  CX=709.14  airX=9.309
+     Nair=2380905.57  Dair=31719.57  Nrad=104830.93  Drad=1348.68  CX=709.14  airX=9.309
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.66  qIzSh=8755  fvent=0.000  pz0=0.0225  qsHvac=-15275
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.946  mwDuctLk=0.000  mwSys=0.000
@@ -13101,7 +13101,7 @@ Attic UZ: anMCp/T[ 0]=262.92/25828.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 208
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 208
 
 
 
@@ -13164,7 +13164,7 @@ Wed 10-Jul  hr=14 subhr=25
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 209
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 209
 
 
 
@@ -13227,7 +13227,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.678  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.519  dryAirMass=247.11  XLGain=0.00  W=0.013545  twb=64.49  rh=0.6038
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 210
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 210
 
 
 
@@ -13252,7 +13252,7 @@ Wed 10-Jul  hr=14 subhr=29
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.604  mwDuctLk=0.000  mwSys=0.000
      tdb=74.62  airX=4.520  dryAirMass=247.14  XLGain=0.00  W=0.013474  twb=64.40  rh=0.6007
 Z1 CZ: anMCp/T[ 0]=272.10/29179.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2381309.62  Dair=31722.33  Nrad=104888.26  Drad=1348.53  CX=709.72  airX=9.320
+     Nair=2381309.63  Dair=31722.33  Nrad=104888.26  Drad=1348.53  CX=709.72  airX=9.320
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.69  qIzSh=8874  fvent=0.000  pz0=0.0227  qsHvac=-15498
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.225  mwDuctLk=0.000  mwSys=0.000
@@ -13290,7 +13290,7 @@ Z1 CZ: anMCp/T[ 0]=272.50/29255.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 211
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 211
 
 
 
@@ -13353,7 +13353,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.126  mwDuctLk=0.000  mwSys=0.000
      tdb=142.44  airX=24.670  dryAirMass=43.29  XLGain=0.00  W=0.013223  twb=80.44  rh=0.0814
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 212
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 212
 
 
 
@@ -13416,7 +13416,7 @@ Attic UZ: anMCp/T[ 0]=257.88/25509.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=142.21  tr=141.11  qIzSh=-11163  fvent=0.000  pz0=-0.0361  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 213
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 213
 
 
 
@@ -13479,7 +13479,7 @@ Attic UZ: anMCp/T[ 0]=255.67/25333.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 214
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 214
 
 
 
@@ -13542,7 +13542,7 @@ Wed 10-Jul  hr=15 subhr=14
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 215
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 215
 
 
 
@@ -13552,7 +13552,7 @@ Wed 10-Jul  hr=15 subhr=14
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.066  mwDuctLk=0.000  mwSys=0.000
      tdb=74.67  airX=4.536  dryAirMass=247.20  XLGain=0.00  W=0.013346  twb=64.26  rh=0.5944
 Z1 CZ: anMCp/T[ 0]=273.09/29532.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2383984.29  Dair=31730.75  Nrad=105339.10  Drad=1348.31  CX=699.65  airX=9.336
+     Nair=2383984.30  Dair=31730.75  Nrad=105339.10  Drad=1348.31  CX=699.65  airX=9.336
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=76.94  qIzSh=9141  fvent=0.000  pz0=0.0236  qsHvac=-16349
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.930  mwDuctLk=0.000  mwSys=0.000
@@ -13605,7 +13605,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.158  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=273.28/29601.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 216
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 216
 
 
 
@@ -13668,7 +13668,7 @@ Z1 CZ: anMCp/T[ 0]=273.49/29673.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.67  tr=76.97  qIzSh=9253  fvent=0.000  pz0=0.0239  qsHvac=-16552
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 217
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 217
 
 
 
@@ -13731,7 +13731,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.875  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=248.18/24765.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 218
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 218
 
 
 
@@ -13783,7 +13783,7 @@ Wed 10-Jul  hr=15 subhr=26
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.442  mwDuctLk=0.000  mwSys=0.000
      tdb=74.67  airX=4.552  dryAirMass=247.11  XLGain=0.00  W=0.013599  twb=64.56  rh=0.6054
 Z1 CZ: anMCp/T[ 0]=273.96/29822.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2384600.90  Dair=31734.31  Nrad=105425.36  Drad=1348.07  CX=700.54  airX=9.352
+     Nair=2384600.91  Dair=31734.31  Nrad=105425.36  Drad=1348.07  CX=700.54  airX=9.352
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=76.99  qIzSh=9367  fvent=0.000  pz0=0.0242  qsHvac=-16737
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.867  mwDuctLk=0.000  mwSys=0.000
@@ -13794,7 +13794,7 @@ Attic UZ: anMCp/T[ 0]=246.74/24661.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 219
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 219
 
 
 
@@ -13857,7 +13857,7 @@ Attic UZ: anMCp/T[ 0]=245.35/24562.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=16 subhr=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 220
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 220
 
 
 
@@ -13869,7 +13869,7 @@ Wed 10-Jul  hr=16 subhr=0
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.558  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.562  dryAirMass=247.05  XLGain=0.00  W=0.013690  twb=64.69  rh=0.6085
 Z1 CZ: anMCp/T[ 0]=274.52/29931.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2384901.66  Dair=31735.69  Nrad=105538.03  Drad=1347.97  CX=702.65  airX=9.362
+     Nair=2384901.67  Dair=31735.69  Nrad=105538.03  Drad=1347.97  CX=702.65  airX=9.362
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.07  qIzSh=9423  fvent=0.000  pz0=0.0243  qsHvac=-15637
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.877  mwDuctLk=0.000  mwSys=0.000
@@ -13886,7 +13886,7 @@ Wed 10-Jul  hr=16 subhr=1
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.543  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.557  dryAirMass=247.04  XLGain=0.00  W=0.013708  twb=64.71  rh=0.6093
 Z1 CZ: anMCp/T[ 0]=274.20/29895.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386162.13  Dair=31735.67  Nrad=105579.13  Drad=1348.22  CX=702.95  airX=9.357
+     Nair=2386162.14  Dair=31735.67  Nrad=105579.12  Drad=1348.22  CX=702.95  airX=9.357
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.08  qIzSh=9410  fvent=0.000  pz0=0.0243  qsHvac=-16907
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.899  mwDuctLk=0.000  mwSys=0.000
@@ -13903,7 +13903,7 @@ Wed 10-Jul  hr=16 subhr=2
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.546  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.557  dryAirMass=247.03  XLGain=0.00  W=0.013723  twb=64.73  rh=0.6099
 Z1 CZ: anMCp/T[ 0]=274.22/29895.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386212.17  Dair=31736.06  Nrad=105599.81  Drad=1348.24  CX=703.11  airX=9.357
+     Nair=2386212.18  Dair=31736.06  Nrad=105599.81  Drad=1348.24  CX=703.11  airX=9.357
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.08  qIzSh=9409  fvent=0.000  pz0=0.0243  qsHvac=-16935
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.872  mwDuctLk=0.000  mwSys=0.000
@@ -13920,7 +13920,7 @@ Wed 10-Jul  hr=16 subhr=3
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.547  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 221
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 221
 
 
 
@@ -13946,7 +13946,7 @@ Wed 10-Jul  hr=16 subhr=4
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.546  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.556  dryAirMass=247.02  XLGain=0.00  W=0.013748  twb=64.76  rh=0.6110
 Z1 CZ: anMCp/T[ 0]=274.11/29881.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386295.87  Dair=31736.79  Nrad=105623.44  Drad=1348.15  CX=703.42  airX=9.356
+     Nair=2386295.88  Dair=31736.79  Nrad=105623.44  Drad=1348.15  CX=703.42  airX=9.356
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.10  qIzSh=9403  fvent=0.000  pz0=0.0243  qsHvac=-16975
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.824  mwDuctLk=0.000  mwSys=0.000
@@ -13983,7 +13983,7 @@ Z1 CZ: anMCp/T[ 0]=273.94/29859.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2386330.51  Dair=31737.00  Nrad=105648.00  Drad=1348.15  CX=703.56  airX=9.353
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 222
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 222
 
 
 
@@ -14023,7 +14023,7 @@ Wed 10-Jul  hr=16 subhr=8
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.537  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.550  dryAirMass=247.01  XLGain=0.00  W=0.013783  twb=64.80  rh=0.6125
 Z1 CZ: anMCp/T[ 0]=273.77/29836.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386340.81  Dair=31736.97  Nrad=105670.70  Drad=1348.18  CX=703.63  airX=9.350
+     Nair=2386340.82  Dair=31736.97  Nrad=105670.70  Drad=1348.18  CX=703.63  airX=9.350
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.12  qIzSh=9384  fvent=0.000  pz0=0.0244  qsHvac=-17022
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.684  mwDuctLk=0.000  mwSys=0.000
@@ -14040,13 +14040,13 @@ Wed 10-Jul  hr=16 subhr=9
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.535  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.549  dryAirMass=247.01  XLGain=0.00  W=0.013789  twb=64.81  rh=0.6128
 Z1 CZ: anMCp/T[ 0]=273.68/29826.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386341.31  Dair=31736.91  Nrad=105681.03  Drad=1348.21  CX=703.64  airX=9.349
+     Nair=2386341.32  Dair=31736.91  Nrad=105681.03  Drad=1348.21  CX=703.64  airX=9.349
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.13  qIzSh=9380  fvent=0.000  pz0=0.0245  qsHvac=-17030
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.648  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 223
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 223
 
 
 
@@ -14100,7 +14100,7 @@ Wed 10-Jul  hr=16 subhr=12
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.531  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.546  dryAirMass=247.00  XLGain=0.00  W=0.013805  twb=64.83  rh=0.6135
 Z1 CZ: anMCp/T[ 0]=273.47/29798.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386335.38  Dair=31736.70  Nrad=105707.36  Drad=1348.28  CX=703.67  airX=9.346
+     Nair=2386335.39  Dair=31736.70  Nrad=105707.36  Drad=1348.28  CX=703.67  airX=9.346
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.14  qIzSh=9367  fvent=0.000  pz0=0.0246  qsHvac=-17047
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.544  mwDuctLk=0.000  mwSys=0.000
@@ -14109,7 +14109,7 @@ Attic UZ: anMCp/T[ 0]=238.64/23839.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=179678.36  Dair=1292.46  Nrad=155225.61  Drad=1103.42  CX=857.39  airX=22.541
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 224
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 224
 
 
 
@@ -14172,7 +14172,7 @@ Attic UZ: anMCp/T[ 0]=236.85/23647.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 225
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 225
 
 
 
@@ -14235,7 +14235,7 @@ Wed 10-Jul  hr=16 subhr=19
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 226
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 226
 
 
 
@@ -14298,7 +14298,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.540  mwDuctLk=0.000  mwSys=0.000
      tdb=74.71  airX=4.541  dryAirMass=246.98  XLGain=0.00  W=0.013840  twb=64.87  rh=0.6150
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 227
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 227
 
 
 
@@ -14361,7 +14361,7 @@ Z1 CZ: anMCp/T[ 0]=273.13/29739.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 228
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 228
 
 
 
@@ -14424,7 +14424,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.113  mwDuctLk=0.000  mwSys=0.000
      tdb=137.32  airX=21.680  dryAirMass=43.62  XLGain=0.00  W=0.013865  twb=80.00  rh=0.0972
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 229
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 229
 
 
 
@@ -14477,7 +14477,7 @@ Wed 10-Jul  hr=17 subhr=1
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.604  mwDuctLk=0.000  mwSys=0.000
      tdb=74.75  airX=4.543  dryAirMass=246.96  XLGain=0.00  W=0.013870  twb=64.92  rh=0.6155
 Z1 CZ: anMCp/T[ 0]=273.27/29731.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2387361.63  Dair=31735.39  Nrad=105658.30  Drad=1348.45  CX=705.14  airX=9.343
+     Nair=2387361.63  Dair=31735.39  Nrad=105658.29  Drad=1348.45  CX=705.14  airX=9.343
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.12  qIzSh=9305  fvent=0.000  pz0=0.0250  qsHvac=-16811
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.093  mwDuctLk=0.000  mwSys=0.000
@@ -14487,7 +14487,7 @@ Attic UZ: anMCp/T[ 0]=229.51/22819.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=136.87  tr=138.30  qIzSh=-8592  fvent=0.000  pz0=-0.0298  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 230
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 230
 
 
 
@@ -14537,7 +14537,7 @@ Wed 10-Jul  hr=17 subhr=4
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.669  mwDuctLk=0.000  mwSys=0.000
      tdb=74.75  airX=4.545  dryAirMass=246.95  XLGain=0.00  W=0.013899  twb=64.95  rh=0.6168
 Z1 CZ: anMCp/T[ 0]=273.38/29719.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2387256.62  Dair=31734.53  Nrad=105658.55  Drad=1348.65  CX=704.84  airX=9.345
+     Nair=2387256.63  Dair=31734.53  Nrad=105658.55  Drad=1348.65  CX=704.84  airX=9.345
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.11  qIzSh=9284  fvent=0.000  pz0=0.0252  qsHvac=-16764
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.021  mwDuctLk=0.000  mwSys=0.000
@@ -14550,7 +14550,7 @@ Attic UZ: anMCp/T[ 0]=227.52/22577.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 231
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 231
 
 
 
@@ -14613,7 +14613,7 @@ Wed 10-Jul  hr=17 subhr=8
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 232
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 232
 
 
 
@@ -14676,7 +14676,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.806  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=273.38/29662.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 233
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 233
 
 
 
@@ -14739,7 +14739,7 @@ Z1 CZ: anMCp/T[ 0]=273.49/29649.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.75  tr=77.09  qIzSh=9206  fvent=0.000  pz0=0.0257  qsHvac=-16617
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 234
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 234
 
 
 
@@ -14802,7 +14802,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.611  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=217.01/21336.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 235
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 235
 
 
 
@@ -14865,7 +14865,7 @@ Attic UZ: anMCp/T[ 0]=215.01/21089.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 236
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 236
 
 
 
@@ -14928,7 +14928,7 @@ Attic UZ: anMCp/T[ 0]=213.07/20846.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=17 subhr=24
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 237
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 237
 
 
 
@@ -14940,7 +14940,7 @@ Wed 10-Jul  hr=17 subhr=24
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.118  mwDuctLk=0.000  mwSys=0.000
      tdb=74.75  airX=4.564  dryAirMass=246.83  XLGain=0.00  W=0.014213  twb=65.33  rh=0.6304
 Z1 CZ: anMCp/T[ 0]=274.36/29660.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386907.11  Dair=31734.49  Nrad=105445.87  Drad=1348.44  CX=704.20  airX=9.364
+     Nair=2386907.12  Dair=31734.49  Nrad=105445.86  Drad=1348.44  CX=704.20  airX=9.364
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.02  qIzSh=9153  fvent=0.000  pz0=0.0262  qsHvac=-16350
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.449  mwDuctLk=0.000  mwSys=0.000
@@ -14957,7 +14957,7 @@ Wed 10-Jul  hr=17 subhr=25
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.144  mwDuctLk=0.000  mwSys=0.000
      tdb=74.75  airX=4.566  dryAirMass=246.82  XLGain=0.00  W=0.014230  twb=65.35  rh=0.6311
 Z1 CZ: anMCp/T[ 0]=274.47/29664.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386881.84  Dair=31734.50  Nrad=105424.07  Drad=1348.41  CX=704.14  airX=9.366
+     Nair=2386881.85  Dair=31734.50  Nrad=105424.07  Drad=1348.41  CX=704.14  airX=9.366
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.01  qIzSh=9148  fvent=0.000  pz0=0.0262  qsHvac=-16317
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.427  mwDuctLk=0.000  mwSys=0.000
@@ -14991,7 +14991,7 @@ Wed 10-Jul  hr=17 subhr=27
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.198  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 238
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 238
 
 
 
@@ -15017,7 +15017,7 @@ Wed 10-Jul  hr=17 subhr=28
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.225  mwDuctLk=0.000  mwSys=0.000
      tdb=74.75  airX=4.572  dryAirMass=246.80  XLGain=0.00  W=0.014283  twb=65.41  rh=0.6334
 Z1 CZ: anMCp/T[ 0]=274.83/29679.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386800.87  Dair=31734.52  Nrad=105354.05  Drad=1348.31  CX=703.96  airX=9.372
+     Nair=2386800.88  Dair=31734.52  Nrad=105354.05  Drad=1348.31  CX=703.96  airX=9.372
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=76.98  qIzSh=9135  fvent=0.000  pz0=0.0264  qsHvac=-16212
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.358  mwDuctLk=0.000  mwSys=0.000
@@ -15051,10 +15051,10 @@ Wed 10-Jul  hr=18 subhr=0
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.278  mwDuctLk=0.000  mwSys=0.000
      tdb=74.79  airX=4.575  dryAirMass=246.77  XLGain=0.00  W=0.014318  twb=65.47  rh=0.6341
 Z1 CZ: anMCp/T[ 0]=274.98/29673.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386677.40  Dair=31734.41  Nrad=105257.85  Drad=1348.25  CX=707.86  airX=9.375
+     Nair=2386677.41  Dair=31734.41  Nrad=105257.85  Drad=1348.25  CX=707.86  airX=9.375
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 239
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 239
 
 
 
@@ -15077,7 +15077,7 @@ Wed 10-Jul  hr=18 subhr=1
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.295  mwDuctLk=0.000  mwSys=0.000
      tdb=74.79  airX=4.573  dryAirMass=246.76  XLGain=0.00  W=0.014337  twb=65.49  rh=0.6349
 Z1 CZ: anMCp/T[ 0]=274.86/29647.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2387827.20  Dair=31733.69  Nrad=105231.04  Drad=1348.22  CX=707.69  airX=9.373
+     Nair=2387827.21  Dair=31733.69  Nrad=105231.04  Drad=1348.22  CX=707.69  airX=9.373
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.93  qIzSh=9090  fvent=0.000  pz0=0.0265  qsHvac=-15925
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.302  mwDuctLk=0.000  mwSys=0.000
@@ -15117,7 +15117,7 @@ Z1 CZ: anMCp/T[ 0]=274.80/29614.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.241  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 240
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 240
 
 
 
@@ -15180,7 +15180,7 @@ Attic UZ: anMCp/T[ 0]=203.63/19687.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=153372.29  Dair=1215.56  Nrad=144294.95  Drad=1075.99  CX=816.39  airX=18.897
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 241
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 241
 
 
 
@@ -15231,7 +15231,7 @@ Wed 10-Jul  hr=18 subhr=9
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.469  mwDuctLk=0.000  mwSys=0.000
      tdb=74.79  airX=4.568  dryAirMass=246.70  XLGain=0.00  W=0.014497  twb=65.69  rh=0.6418
 Z1 CZ: anMCp/T[ 0]=274.51/29504.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2387150.03  Dair=31729.05  Nrad=105082.14  Drad=1348.66  CX=706.22  airX=9.368
+     Nair=2387150.04  Dair=31729.05  Nrad=105082.14  Drad=1348.66  CX=706.22  airX=9.368
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.84  qIzSh=8973  fvent=0.000  pz0=0.0268  qsHvac=-15530
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.007  mwDuctLk=0.000  mwSys=0.000
@@ -15243,7 +15243,7 @@ Attic UZ: anMCp/T[ 0]=200.77/19351.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 242
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 242
 
 
 
@@ -15291,7 +15291,7 @@ Wed 10-Jul  hr=18 subhr=12
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.537  mwDuctLk=0.000  mwSys=0.000
      tdb=74.79  airX=4.567  dryAirMass=246.68  XLGain=0.00  W=0.014560  twb=65.76  rh=0.6446
 Z1 CZ: anMCp/T[ 0]=274.42/29455.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386928.72  Dair=31727.74  Nrad=105016.76  Drad=1348.72  CX=705.78  airX=9.367
+     Nair=2386928.73  Dair=31727.74  Nrad=105016.76  Drad=1348.72  CX=705.78  airX=9.367
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.81  qIzSh=8931  fvent=0.000  pz0=0.0269  qsHvac=-15382
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.894  mwDuctLk=0.000  mwSys=0.000
@@ -15306,7 +15306,7 @@ Wed 10-Jul  hr=18 subhr=13
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 243
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 243
 
 
 
@@ -15334,7 +15334,7 @@ Wed 10-Jul  hr=18 subhr=14
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.584  mwDuctLk=0.000  mwSys=0.000
      tdb=74.79  airX=4.567  dryAirMass=246.66  XLGain=0.00  W=0.014603  twb=65.81  rh=0.6464
 Z1 CZ: anMCp/T[ 0]=274.39/29425.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2386783.44  Dair=31726.90  Nrad=104970.91  Drad=1348.76  CX=705.49  airX=9.367
+     Nair=2386783.45  Dair=31726.90  Nrad=104970.91  Drad=1348.76  CX=705.49  airX=9.367
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.79  qIzSh=8904  fvent=0.000  pz0=0.0270  qsHvac=-15282
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.823  mwDuctLk=0.000  mwSys=0.000
@@ -15369,7 +15369,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.633  mwDuctLk=0.000  mwSys=0.000
      tdb=74.79  airX=4.567  dryAirMass=246.64  XLGain=0.00  W=0.014646  twb=65.87  rh=0.6482
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 244
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 244
 
 
 
@@ -15432,7 +15432,7 @@ Z1 CZ: anMCp/T[ 0]=274.41/29361.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 245
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 245
 
 
 
@@ -15495,7 +15495,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.546  mwDuctLk=0.000  mwSys=0.000
      tdb=124.11  airX=17.464  dryAirMass=44.54  XLGain=0.00  W=0.014827  twb=78.08  rh=0.1478
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 246
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 246
 
 
 
@@ -15558,7 +15558,7 @@ Attic UZ: anMCp/T[ 0]=186.75/17680.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=123.31  tr=127.19  qIzSh=-5347  fvent=0.000  pz0=-0.0181  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 247
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 247
 
 
 
@@ -15621,7 +15621,7 @@ Attic UZ: anMCp/T[ 0]=183.88/17343.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 248
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 248
 
 
 
@@ -15684,7 +15684,7 @@ Wed 10-Jul  hr=19 subhr=2
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 249
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 249
 
 
 
@@ -15711,7 +15711,7 @@ Wed 10-Jul  hr=19 subhr=3
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.514  mwDuctLk=0.000  mwSys=0.000
      tdb=74.83  airX=4.490  dryAirMass=246.50  XLGain=0.00  W=0.014943  twb=66.24  rh=0.6602
 Z1 CZ: anMCp/T[ 0]=269.59/28554.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2385106.24  Dair=31706.24  Nrad=104300.97  Drad=1350.07  CX=705.68  airX=9.290
+     Nair=2385106.25  Dair=31706.24  Nrad=104300.97  Drad=1350.07  CX=705.68  airX=9.290
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.42  qIzSh=8381  fvent=0.000  pz0=0.0269  qsHvac=-13545
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.934  mwDuctLk=0.000  mwSys=0.000
@@ -15728,7 +15728,7 @@ Wed 10-Jul  hr=19 subhr=4
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.402  mwDuctLk=0.000  mwSys=0.000
      tdb=74.83  airX=4.469  dryAirMass=246.50  XLGain=0.00  W=0.014935  twb=66.23  rh=0.6598
 Z1 CZ: anMCp/T[ 0]=268.33/28381.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2384614.40  Dair=31701.48  Nrad=104305.75  Drad=1350.70  CX=704.63  airX=9.269
+     Nair=2384614.41  Dair=31701.48  Nrad=104305.75  Drad=1350.70  CX=704.63  airX=9.269
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.40  qIzSh=8301  fvent=0.000  pz0=0.0268  qsHvac=-13394
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.827  mwDuctLk=0.000  mwSys=0.000
@@ -15747,7 +15747,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.290  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=267.07/28208.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 250
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 250
 
 
 
@@ -15810,7 +15810,7 @@ Z1 CZ: anMCp/T[ 0]=263.28/27689.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.83  tr=76.32  qIzSh=7987  fvent=0.000  pz0=0.0261  qsHvac=-12796
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 251
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 251
 
 
 
@@ -15873,7 +15873,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.034  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=165.94/15518.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 252
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 252
 
 
 
@@ -15936,7 +15936,7 @@ Attic UZ: anMCp/T[ 0]=161.50/15075.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 253
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 253
 
 
 
@@ -15968,7 +15968,7 @@ Wed 10-Jul  hr=19 subhr=16
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.091  mwDuctLk=0.000  mwSys=0.000
      tdb=74.83  airX=4.218  dryAirMass=246.59  XLGain=0.00  W=0.014676  twb=65.91  rh=0.6487
 Z1 CZ: anMCp/T[ 0]=253.34/26339.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2379544.12  Dair=31654.24  Nrad=104214.34  Drad=1355.93  CX=695.36  airX=9.018
+     Nair=2379544.13  Dair=31654.24  Nrad=104214.34  Drad=1355.93  CX=695.36  airX=9.018
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.17  qIzSh=7381  fvent=0.000  pz0=0.0248  qsHvac=-11683
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.497  mwDuctLk=0.000  mwSys=0.000
@@ -15999,7 +15999,7 @@ Attic UZ: anMCp/T[ 0]=157.24/14652.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=19 subhr=18
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 254
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 254
 
 
 
@@ -16062,7 +16062,7 @@ Wed 10-Jul  hr=19 subhr=21
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.569  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 255
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 255
 
 
 
@@ -16125,7 +16125,7 @@ Z1 CZ: anMCp/T[ 0]=243.67/25042.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2376427.68  Dair=31624.29  Nrad=104236.50  Drad=1359.39  CX=689.62  airX=8.856
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 256
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 256
 
 
 
@@ -16188,7 +16188,7 @@ Z1 CZ: anMCp/T[ 0]=240.12/24569.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.449  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 257
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 257
 
 
 
@@ -16208,7 +16208,7 @@ Wed 10-Jul  hr=19 subhr=28
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.862  mwDuctLk=0.000  mwSys=0.000
      tdb=74.83  airX=3.976  dryAirMass=246.73  XLGain=0.00  W=0.014326  twb=65.49  rh=0.6336
 Z1 CZ: anMCp/T[ 0]=238.94/24412.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2374955.47  Dair=31609.94  Nrad=104265.64  Drad=1361.08  CX=686.92  airX=8.776
+     Nair=2374955.46  Dair=31609.94  Nrad=104265.64  Drad=1361.08  CX=686.92  airX=8.776
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.01  qIzSh=6532  fvent=0.000  pz0=0.0229  qsHvac=-10287
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.363  mwDuctLk=0.000  mwSys=0.000
@@ -16251,7 +16251,7 @@ Attic UZ: anMCp/T[ 0]=142.18/13137.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=117012.97  Dair=1070.11  Nrad=125008.17  Drad=1033.61  CX=716.88  airX=12.836
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 258
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 258
 
 
 
@@ -16314,7 +16314,7 @@ Attic UZ: anMCp/T[ 0]=141.65/13022.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 259
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 259
 
 
 
@@ -16377,7 +16377,7 @@ Wed 10-Jul  hr=20 subhr=7
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 260
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 260
 
 
 
@@ -16440,7 +16440,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.936  mwDuctLk=0.000  mwSys=0.000
      tdb=74.88  airX=3.728  dryAirMass=246.80  XLGain=0.00  W=0.014118  twb=65.25  rh=0.6237
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 261
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 261
 
 
 
@@ -16503,7 +16503,7 @@ Z1 CZ: anMCp/T[ 0]=220.33/21663.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 262
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 262
 
 
 
@@ -16559,14 +16559,14 @@ Wed 10-Jul  hr=20 subhr=16
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.500  mwDuctLk=0.000  mwSys=0.000
      tdb=74.88  airX=3.602  dryAirMass=246.81  XLGain=0.00  W=0.014086  twb=65.21  rh=0.6223
 Z1 CZ: anMCp/T[ 0]=216.56/21121.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2369193.63  Dair=31543.86  Nrad=104526.50  Drad=1369.17  CX=669.23  airX=8.402
+     Nair=2369193.64  Dair=31543.86  Nrad=104526.50  Drad=1369.17  CX=669.23  airX=8.402
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.86  qIzSh=4907  fvent=0.000  pz0=0.0189  qsHvac=-8007
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.135  mwDuctLk=0.000  mwSys=0.000
      tdb=108.23  airX=12.613  dryAirMass=45.84  XLGain=0.00  W=0.014073  twb=73.81  rh=0.2198
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 263
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 263
 
 
 
@@ -16585,7 +16585,7 @@ Wed 10-Jul  hr=20 subhr=17
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.427  mwDuctLk=0.000  mwSys=0.000
      tdb=74.88  airX=3.581  dryAirMass=246.81  XLGain=0.00  W=0.014083  twb=65.21  rh=0.6222
 Z1 CZ: anMCp/T[ 0]=215.30/20941.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2368812.20  Dair=31540.23  Nrad=104540.51  Drad=1369.61  CX=668.57  airX=8.381
+     Nair=2368812.20  Dair=31540.23  Nrad=104540.50  Drad=1369.61  CX=668.57  airX=8.381
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.85  qIzSh=4821  fvent=0.000  pz0=0.0187  qsHvac=-7891
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.135  mwDuctLk=0.000  mwSys=0.000
@@ -16602,7 +16602,7 @@ Wed 10-Jul  hr=20 subhr=18
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.354  mwDuctLk=0.000  mwSys=0.000
      tdb=74.88  airX=3.560  dryAirMass=246.81  XLGain=0.00  W=0.014080  twb=65.21  rh=0.6221
 Z1 CZ: anMCp/T[ 0]=214.03/20762.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2368430.58  Dair=31536.58  Nrad=104554.63  Drad=1370.04  CX=667.90  airX=8.360
+     Nair=2368430.59  Dair=31536.58  Nrad=104554.63  Drad=1370.04  CX=667.90  airX=8.360
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.84  qIzSh=4736  fvent=0.000  pz0=0.0185  qsHvac=-7776
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.136  mwDuctLk=0.000  mwSys=0.000
@@ -16629,7 +16629,7 @@ Attic UZ: anMCp/T[ 0]=140.92/12587.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=107.43  tr=112.41  qIzSh=-2551  fvent=0.000  pz0=-0.0125  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 264
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 264
 
 
 
@@ -16692,7 +16692,7 @@ Attic UZ: anMCp/T[ 0]=141.10/12532.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 265
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 265
 
 
 
@@ -16705,7 +16705,7 @@ Wed 10-Jul  hr=20 subhr=23
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.985  mwDuctLk=0.000  mwSys=0.000
      tdb=74.88  airX=3.454  dryAirMass=246.82  XLGain=0.00  W=0.014070  twb=65.19  rh=0.6216
 Z1 CZ: anMCp/T[ 0]=207.67/19870.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2366519.91  Dair=31518.16  Nrad=104627.31  Drad=1372.24  CX=664.56  airX=8.254
+     Nair=2366519.92  Dair=31518.16  Nrad=104627.31  Drad=1372.24  CX=664.56  airX=8.254
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.80  qIzSh=4321  fvent=0.000  pz0=0.0173  qsHvac=-7211
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.150  mwDuctLk=0.000  mwSys=0.000
@@ -16755,7 +16755,7 @@ Wed 10-Jul  hr=20 subhr=26
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 266
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 266
 
 
 
@@ -16818,7 +16818,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.536  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=199.91/18811.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 267
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 267
 
 
 
@@ -16881,7 +16881,7 @@ Z1 CZ: anMCp/T[ 0]=197.65/18467.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.92  tr=75.74  qIzSh=3660  fvent=0.000  pz0=0.0155  qsHvac=-6222
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 268
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 268
 
 
 
@@ -16936,7 +16936,7 @@ Wed 10-Jul  hr=21 subhr=5
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.030  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=3.253  dryAirMass=246.83  XLGain=0.00  W=0.013958  twb=65.07  rh=0.6159
 Z1 CZ: anMCp/T[ 0]=195.55/18140.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2363643.63  Dair=31477.43  Nrad=104825.18  Drad=1377.61  CX=654.57  airX=8.053
+     Nair=2363643.62  Dair=31477.43  Nrad=104825.18  Drad=1377.61  CX=654.57  airX=8.053
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.71  qIzSh=3491  fvent=0.000  pz0=0.0151  qsHvac=-5981
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.162  mwDuctLk=0.000  mwSys=0.000
@@ -16944,7 +16944,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.162  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=143.79/12429.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 269
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 269
 
 
 
@@ -16979,7 +16979,7 @@ Wed 10-Jul  hr=21 subhr=7
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.866  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=3.229  dryAirMass=246.85  XLGain=0.00  W=0.013897  twb=64.99  rh=0.6133
 Z1 CZ: anMCp/T[ 0]=194.13/17923.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2363157.57  Dair=31472.93  Nrad=104833.35  Drad=1378.15  CX=653.70  airX=8.029
+     Nair=2363157.56  Dair=31472.93  Nrad=104833.35  Drad=1378.15  CX=653.70  airX=8.029
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.70  qIzSh=3379  fvent=0.000  pz0=0.0149  qsHvac=-5821
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.144  mwDuctLk=0.000  mwSys=0.000
@@ -17007,7 +17007,7 @@ Attic UZ: anMCp/T[ 0]=144.66/12421.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 270
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 270
 
 
 
@@ -17056,7 +17056,7 @@ Wed 10-Jul  hr=21 subhr=11
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.542  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=3.181  dryAirMass=246.91  XLGain=0.00  W=0.013751  twb=64.82  rh=0.6070
 Z1 CZ: anMCp/T[ 0]=191.29/17490.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2362172.24  Dair=31463.71  Nrad=104851.30  Drad=1379.27  CX=651.90  airX=7.981
+     Nair=2362172.25  Dair=31463.71  Nrad=104851.30  Drad=1379.27  CX=651.90  airX=7.981
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.67  qIzSh=3160  fvent=0.000  pz0=0.0143  qsHvac=-5505
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.102  mwDuctLk=0.000  mwSys=0.000
@@ -17070,7 +17070,7 @@ Attic UZ: anMCp/T[ 0]=145.54/12415.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=21 subhr=12
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 271
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 271
 
 
 
@@ -17133,7 +17133,7 @@ Wed 10-Jul  hr=21 subhr=15
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.220  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 272
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 272
 
 
 
@@ -17196,7 +17196,7 @@ Z1 CZ: anMCp/T[ 0]=186.19/16734.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2360415.85  Dair=31447.00  Nrad=104887.75  Drad=1381.31  CX=648.64  airX=7.895
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 273
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 273
 
 
 
@@ -17219,7 +17219,7 @@ Wed 10-Jul  hr=21 subhr=19
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.899  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=3.082  dryAirMass=247.04  XLGain=0.00  W=0.013403  twb=64.40  rh=0.5920
 Z1 CZ: anMCp/T[ 0]=185.44/16626.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2360161.24  Dair=31444.54  Nrad=104893.60  Drad=1381.61  CX=648.16  airX=7.882
+     Nair=2360161.25  Dair=31444.54  Nrad=104893.60  Drad=1381.61  CX=648.16  airX=7.882
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.60  qIzSh=2734  fvent=0.000  pz0=0.0133  qsHvac=-4884
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.008  mwDuctLk=0.000  mwSys=0.000
@@ -17259,7 +17259,7 @@ Z1 CZ: anMCp/T[ 0]=183.95/16411.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.987  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 274
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 274
 
 
 
@@ -17322,7 +17322,7 @@ Attic UZ: anMCp/T[ 0]=149.59/12417.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=104088.62  Dair=1091.60  Nrad=104566.82  Drad=979.61  CX=678.44  airX=13.145
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 275
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 275
 
 
 
@@ -17356,7 +17356,7 @@ Wed 10-Jul  hr=21 subhr=26
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.387  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=2.992  dryAirMass=247.16  XLGain=0.00  W=0.013090  twb=64.02  rh=0.5784
 Z1 CZ: anMCp/T[ 0]=180.12/15870.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2358354.95  Dair=31426.95  Nrad=104939.33  Drad=1383.78  CX=644.71  airX=7.792
+     Nair=2358354.96  Dair=31426.95  Nrad=104939.33  Drad=1383.78  CX=644.71  airX=7.792
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.54  qIzSh=2376  fvent=0.000  pz0=0.0124  qsHvac=-4357
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.942  mwDuctLk=0.000  mwSys=0.000
@@ -17385,7 +17385,7 @@ Attic UZ: anMCp/T[ 0]=150.60/12426.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 276
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 276
 
 
 
@@ -17399,7 +17399,7 @@ Wed 10-Jul  hr=21 subhr=28
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.241  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=2.965  dryAirMass=247.19  XLGain=0.00  W=0.013002  twb=63.90  rh=0.5747
 Z1 CZ: anMCp/T[ 0]=178.55/15652.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2357827.63  Dair=31421.73  Nrad=104954.26  Drad=1384.43  CX=643.69  airX=7.765
+     Nair=2357827.64  Dair=31421.73  Nrad=104954.26  Drad=1384.43  CX=643.69  airX=7.765
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.53  qIzSh=2276  fvent=0.000  pz0=0.0122  qsHvac=-4209
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.926  mwDuctLk=0.000  mwSys=0.000
@@ -17416,7 +17416,7 @@ Wed 10-Jul  hr=21 subhr=29
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.168  mwDuctLk=0.000  mwSys=0.000
      tdb=74.92  airX=2.952  dryAirMass=247.21  XLGain=0.00  W=0.012959  twb=63.84  rh=0.5728
 Z1 CZ: anMCp/T[ 0]=177.75/15542.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2357561.65  Dair=31419.09  Nrad=104962.10  Drad=1384.76  CX=643.17  airX=7.752
+     Nair=2357561.66  Dair=31419.09  Nrad=104962.10  Drad=1384.76  CX=643.17  airX=7.752
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.52  qIzSh=2226  fvent=0.000  pz0=0.0120  qsHvac=-4135
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.918  mwDuctLk=0.000  mwSys=0.000
@@ -17448,7 +17448,7 @@ Wed 10-Jul  hr=22 subhr=1
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 277
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 277
 
 
 
@@ -17511,7 +17511,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.939  mwDuctLk=0.000  mwSys=0.000
      tdb=74.96  airX=2.893  dryAirMass=247.27  XLGain=0.00  W=0.012784  twb=63.62  rh=0.5644
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 278
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 278
 
 
 
@@ -17574,7 +17574,7 @@ Z1 CZ: anMCp/T[ 0]=172.23/14877.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 279
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 279
 
 
 
@@ -17637,7 +17637,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.483  mwDuctLk=0.000  mwSys=0.000
      tdb=94.74  airX=12.695  dryAirMass=47.07  XLGain=0.00  W=0.012548  twb=68.84  rh=0.2939
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 280
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 280
 
 
 
@@ -17700,7 +17700,7 @@ Attic UZ: anMCp/T[ 0]=144.29/11664.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=94.11  tr=98.82  qIzSh=-1915  fvent=0.000  pz0=-0.0103  qsHvac=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 281
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 281
 
 
 
@@ -17763,7 +17763,7 @@ Attic UZ: anMCp/T[ 0]=143.14/11531.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 ================
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 282
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 282
 
 
 
@@ -17826,7 +17826,7 @@ Wed 10-Jul  hr=22 subhr=20
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 283
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 283
 
 
 
@@ -17889,7 +17889,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.113  mwDuctLk=0.000  mwSys=0.000
 Z1 CZ: anMCp/T[ 0]=161.28/13591.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 284
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 284
 
 
 
@@ -17952,7 +17952,7 @@ Z1 CZ: anMCp/T[ 0]=159.15/13349.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      ta=74.96  tr=75.36  qIzSh=1419  fvent=0.000  pz0=0.0100  qsHvac=-2779
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 285
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 285
 
 
 
@@ -18007,7 +18007,7 @@ Wed 10-Jul  hr=22 subhr=29
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.849  mwDuctLk=0.000  mwSys=0.000
      tdb=74.96  airX=2.605  dryAirMass=247.45  XLGain=0.00  W=0.012321  twb=63.01  rh=0.5444
 Z1 CZ: anMCp/T[ 0]=157.01/13106.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2351973.23  Dair=31344.92  Nrad=105326.70  Drad=1394.70  CX=617.87  airX=7.405
+     Nair=2351973.23  Dair=31344.92  Nrad=105326.69  Drad=1394.70  CX=617.87  airX=7.405
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.35  qIzSh=1338  fvent=0.000  pz0=0.0098  qsHvac=-2650
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.995  mwDuctLk=0.000  mwSys=0.000
@@ -18015,7 +18015,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.995  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=139.05/11039.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 286
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 286
 
 
 
@@ -18033,7 +18033,7 @@ Wed 10-Jul  hr=23 subhr=0
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.768  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.580  dryAirMass=247.44  XLGain=0.00  W=0.012308  twb=63.01  rh=0.5431
 Z1 CZ: anMCp/T[ 0]=155.47/12960.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2351681.18  Dair=31341.61  Nrad=105339.43  Drad=1395.03  CX=610.93  airX=7.380
+     Nair=2351681.19  Dair=31341.61  Nrad=105339.43  Drad=1395.03  CX=610.93  airX=7.380
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.36  qIzSh=1300  fvent=0.000  pz0=0.0096  qsHvac=-1278
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.933  mwDuctLk=0.000  mwSys=0.000
@@ -18050,7 +18050,7 @@ Wed 10-Jul  hr=23 subhr=1
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.676  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.550  dryAirMass=247.44  XLGain=0.00  W=0.012296  twb=62.99  rh=0.5426
 Z1 CZ: anMCp/T[ 0]=153.70/12793.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2352498.37  Dair=31336.40  Nrad=105385.86  Drad=1395.76  CX=610.05  airX=7.350
+     Nair=2352498.38  Dair=31336.40  Nrad=105385.86  Drad=1395.76  CX=610.05  airX=7.350
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.35  qIzSh=1266  fvent=0.000  pz0=0.0094  qsHvac=-2482
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.876  mwDuctLk=0.000  mwSys=0.000
@@ -18078,7 +18078,7 @@ Attic UZ: anMCp/T[ 0]=135.93/10774.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 287
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 287
 
 
 
@@ -18093,7 +18093,7 @@ Wed 10-Jul  hr=23 subhr=3
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.517  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.500  dryAirMass=247.45  XLGain=0.00  W=0.012273  twb=62.96  rh=0.5416
 Z1 CZ: anMCp/T[ 0]=150.68/12506.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2351642.78  Dair=31326.07  Nrad=105481.72  Drad=1397.27  CX=608.03  airX=7.300
+     Nair=2351642.79  Dair=31326.07  Nrad=105481.72  Drad=1397.27  CX=608.03  airX=7.300
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.34  qIzSh=1205  fvent=0.000  pz0=0.0091  qsHvac=-2396
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.768  mwDuctLk=0.000  mwSys=0.000
@@ -18141,7 +18141,7 @@ Attic UZ: anMCp/T[ 0]=133.09/10530.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Wed 10-Jul  hr=23 subhr=6
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 288
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 288
 
 
 
@@ -18153,7 +18153,7 @@ Wed 10-Jul  hr=23 subhr=6
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.280  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.425  dryAirMass=247.46  XLGain=0.00  W=0.012243  twb=62.92  rh=0.5403
 Z1 CZ: anMCp/T[ 0]=146.16/12078.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2350451.46  Dair=31311.77  Nrad=105599.95  Drad=1399.21  CX=605.34  airX=7.225
+     Nair=2350451.47  Dair=31311.77  Nrad=105599.95  Drad=1399.21  CX=605.34  airX=7.225
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.33  qIzSh=1117  fvent=0.000  pz0=0.0086  qsHvac=-2268
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.614  mwDuctLk=0.000  mwSys=0.000
@@ -18170,7 +18170,7 @@ Wed 10-Jul  hr=23 subhr=7
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.202  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.400  dryAirMass=247.47  XLGain=0.00  W=0.012233  twb=62.91  rh=0.5399
 Z1 CZ: anMCp/T[ 0]=144.65/11936.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2350075.58  Dair=31307.28  Nrad=105634.53  Drad=1399.80  CX=604.51  airX=7.200
+     Nair=2350075.59  Dair=31307.28  Nrad=105634.53  Drad=1399.80  CX=604.51  airX=7.200
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.32  qIzSh=1088  fvent=0.000  pz0=0.0084  qsHvac=-2225
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.564  mwDuctLk=0.000  mwSys=0.000
@@ -18187,7 +18187,7 @@ Wed 10-Jul  hr=23 subhr=8
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.123  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.375  dryAirMass=247.47  XLGain=0.00  W=0.012224  twb=62.90  rh=0.5395
 Z1 CZ: anMCp/T[ 0]=143.14/11794.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2349697.83  Dair=31302.76  Nrad=105669.43  Drad=1400.40  CX=603.68  airX=7.175
+     Nair=2349697.84  Dair=31302.76  Nrad=105669.43  Drad=1400.40  CX=603.68  airX=7.175
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.32  qIzSh=1059  fvent=0.000  pz0=0.0082  qsHvac=-2184
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.515  mwDuctLk=0.000  mwSys=0.000
@@ -18204,7 +18204,7 @@ Wed 10-Jul  hr=23 subhr=9
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.044  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 289
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 289
 
 
 
@@ -18230,7 +18230,7 @@ Wed 10-Jul  hr=23 subhr=10
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=6.965  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.325  dryAirMass=247.48  XLGain=0.00  W=0.012207  twb=62.87  rh=0.5387
 Z1 CZ: anMCp/T[ 0]=140.12/11512.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2348937.06  Dair=31293.64  Nrad=105740.23  Drad=1401.60  CX=601.99  airX=7.125
+     Nair=2348937.07  Dair=31293.64  Nrad=105740.23  Drad=1401.60  CX=601.99  airX=7.125
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.31  qIzSh=1003  fvent=0.000  pz0=0.0079  qsHvac=-2101
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.419  mwDuctLk=0.000  mwSys=0.000
@@ -18267,7 +18267,7 @@ Z1 CZ: anMCp/T[ 0]=137.09/11230.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
      Nair=2348170.01  Dair=31284.41  Nrad=105812.30  Drad=1402.83  CX=600.26  airX=7.074
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 290
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 290
 
 
 
@@ -18330,7 +18330,7 @@ Z1 CZ: anMCp/T[ 0]=132.55/10810.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.189  mwDuctLk=0.000  mwSys=0.000
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 291
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 291
 
 
 
@@ -18393,7 +18393,7 @@ Attic UZ: anMCp/T[ 0]=121.95/9568.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=87180.92  Dair=1022.54  Nrad=88622.21  Drad=939.57  CX=612.40  airX=10.495
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 292
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 292
 
 
 
@@ -18427,7 +18427,7 @@ Wed 10-Jul  hr=23 subhr=20
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=6.179  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.073  dryAirMass=247.51  XLGain=0.00  W=0.012134  twb=62.78  rh=0.5356
 Z1 CZ: anMCp/T[ 0]=124.95/10116.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2345033.77  Dair=31246.41  Nrad=106117.56  Drad=1408.01  CX=592.85  airX=6.873
+     Nair=2345033.78  Dair=31246.41  Nrad=106117.56  Drad=1408.01  CX=592.85  airX=6.873
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.26  qIzSh=745  fvent=0.000  pz0=0.0063  qsHvac=-1706
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.974  mwDuctLk=0.000  mwSys=0.000
@@ -18444,7 +18444,7 @@ Wed 10-Jul  hr=23 subhr=21
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=6.100  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=2.047  dryAirMass=247.51  XLGain=0.00  W=0.012128  twb=62.77  rh=0.5353
 Z1 CZ: anMCp/T[ 0]=123.43/9978.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2344639.70  Dair=31241.61  Nrad=106153.98  Drad=1408.63  CX=592.00  airX=6.847
+     Nair=2344639.71  Dair=31241.61  Nrad=106153.98  Drad=1408.63  CX=592.00  airX=6.847
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.25  qIzSh=721  fvent=0.000  pz0=0.0062  qsHvac=-1669
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.933  mwDuctLk=0.000  mwSys=0.000
@@ -18456,7 +18456,7 @@ Attic UZ: anMCp/T[ 0]=119.63/9366.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 293
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 293
 
 
 
@@ -18519,7 +18519,7 @@ Wed 10-Jul  hr=23 subhr=25
 ----------------
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 294
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 294
 
 
 
@@ -18582,7 +18582,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.551  mwDuctLk=0.000  mwSys=0.000
      tdb=75.00  airX=1.870  dryAirMass=247.53  XLGain=0.00  W=0.012084  twb=62.71  rh=0.5334
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 295
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 295
 
 
 
@@ -18615,7 +18615,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.623  mwDuctLk=0.000  mwSys=0.000
 Attic UZ: anMCp/T[ 0]=113.86/8862.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83605.65  Dair=999.72  Nrad=86132.46  Drad=934.25  CX=599.48  airX=9.766
      ta=85.92  tr=89.74  qIzSh=-921  fvent=0.000  pz0=-0.0076  qsHvac=0
-! CSE 0.904.0+master.938afeec.0.dirty for Win32 console
+! CSE 0.904.0+termah.601cff22.81.dirty for Win32 console
 
 
 
@@ -18645,7 +18645,7 @@ Attic UZ: anMCp/T[ 0]=113.86/8862.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 296
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 296
 
 
 
@@ -18708,7 +18708,7 @@ Input for Run 001:
          DELETE HOLIDAY "Columbus Day"
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 297
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 297
 
 
 
@@ -18771,7 +18771,7 @@ Input for Run 001:
         // ----- CONSTRUCTION section for heavyweight case -----
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 298
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 298
 
 
 
@@ -18834,7 +18834,7 @@ Input for Run 001:
 #       #define ACEIL 516.68
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 299
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 299
 
 
 
@@ -18897,7 +18897,7 @@ Input for Run 001:
                 sfCon=WALLCON
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 300
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 300
 
 
 
@@ -18960,7 +18960,7 @@ Input for Run 001:
               sfInHcModel = Unified             //wall inside film coefficient
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 301
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 301
 
 
 
@@ -19023,7 +19023,7 @@ Input for Run 001:
                       ohDistUp=1.64     //dance from top of window
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 302
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 302
 
 
 
@@ -19086,7 +19086,7 @@ Input for Run 001:
                  znCAIR = .01
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 303
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 303
 
 
 
@@ -19149,7 +19149,7 @@ Input for Run 001:
                     sfExHcModel=Unified  sfInHcModel=Unified
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 304
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 304
 
 
 
@@ -19212,7 +19212,7 @@ Input for Run 001:
                 reportcol colVal=0
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 305
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 305
 
 
 
@@ -19275,7 +19275,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 306
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 306
 
 
 
@@ -19284,21 +19284,21 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+master.938afeec.0.dirty for Win32 console run(s) done: Tue 12-Apr-22   7:54:32 am
+! CSE 0.904.0+termah.601cff22.81.dirty for Win32 console run(s) done: Fri 22-Apr-22   2:27:21 pm
 
-! Executable:   c:\users\tanaya mankad\source\repos\cse\msvc\cse.exe
-!               11-Apr-22   6:27 pm   (VS 14.29    3016704 bytes)  (HPWH 1.18.0)
-! Command line: -x!  -b -t1 1zattic
-! Input file:   C:\Users\Tanaya Mankad\source\repos\cse\test\1zattic.cse
-! Report file:  C:\Users\Tanaya Mankad\source\repos\cse\test\1zattic.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               22-Apr-22   2:15 pm   (VS 14.29    2998784 bytes)  (HPWH 1.18.0)
+! Command line: -x!  -t1 1zattic
+! Input file:   D:\cse\test\1zattic.cse
+! Report file:  D:\cse\test\1zattic.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0580   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0420   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 6.07     Calls = 1      T/C = 6.0680   
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0220   
-!                Total:  Time = 6.24     Calls = 1      T/C = 6.2350   
+!           Simulation:  Time = 2.75     Calls = 1      T/C = 2.7450   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
+!                Total:  Time = 2.80     Calls = 1      T/C = 2.8010   
 
 
 
@@ -19338,5 +19338,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! 1zattic  001                             Tue 12-Apr-22   7:54:26 am  Page 307
+! 1zattic  001                             Fri 22-Apr-22   2:27:18 pm  Page 307
 

@@ -2220,10 +2220,13 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_GetAirState( AIRSTATE& as) const { as.as_Set( tz, wz); }"
     *declare "void zn_GetAirStateLs( AIRSTATE& as) const { as.as_Set( tzls, wzls); }"
     *declare "bool zn_HasTerminal() const { return tu1 != 0; }"
-    *declare "int zn_HasRSYS() const { return i.zn_rsi != 0; }"
+    *declare "bool zn_HasAirTerminal() const { return zn_airTerminalCount > 0; }"
+    *declare "bool zn_HasRSYS() const { return i.zn_rsi != 0; }"
+    *declare "bool zn_HasAirHVAC() const { return zn_HasRSYS() || zn_HasAirTerminal(); }"
     *declare "RSYS* zn_GetRSYS();"
     *declare "const RSYS* zn_GetRSYS() const;"
     *declare "int zn_IsHCAvail( int what) const;"
+    *declare "bool zn_IsAirHVACActive() const;"
     *declare "float zn_VentTSup();"
     *declare "double zn_TAirCR( double mCpT, double mCp, double qRad) const;"
     *declare "double zn_TAirCR( double mCpT, double mCp) const;"
@@ -2247,6 +2250,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
     *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
+    *declare "float zn_HcAirX();"
     *declare "RC zn_MoistureBalCR();"
     *declare "double zn_HumRat( double amfX, double mwX, double _tz, double& XLGain);"
     *declare "RC zn_ComfortCR();"
@@ -2283,7 +2287,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *r TI xsSpecT1	// 0 or chain head of zn's XSURFs with .sfExCnd==C_EXCNDCH_SPECT: used hourly.  next: XSRAT.nxXsSpecT.
     *r TI tu1			// head of chain of zone's terminals: 0 or TuB subscript. next: TU.nxTu.
     *r TI zhx1			// chain head of zone's ZHX's (Zone Hvac Xfers): 0 or ZhxB subscript. next: ZHX.nxZhx4z.
-    *r TI zhx1St		// ... zone's SETTMP (tstat-ctrl'd) ZHX's.    next: ZHX.nxZhzSt4z.
+    *r TI zhx1St		// ... zone's cmStxx (tstat-ctrl'd) ZHX's.    next: ZHX.nxZhzSt4z.
+    *r SI zn_airTerminalCount;      // # of terminals serving this zone that can supply air
+                                    //   known after all TU::tu_Setup()s complete
 
 // ZNR setup time: other
     *r BOO znSCF		// non-0 if i.znSC given by user; 0 to default Shade Closure in cnloads.cpp
@@ -2581,9 +2587,6 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 #endif
     *s *e DBL zn_qlIz		// latent gain from IZXFER sources (infil, vent, and duct leakage), Btuh
 							//   does NOT include HVAC
-	*s *e LI zn_wCase		// debug aid, see code
-    *s *e LI zn_airMode		// system mechanical air circulation mode (0=off, 1=on) re evaluation of
-							//   convective coefficents for rad/conv model
 	*s *e DBL zn_rho		// zone moist air density at nominal w=tp_refW, lb/cf
 	*s *e DBL zn_rho0		// zone moist air density at nominal z=0, lb/cf; computed from tzls and zn_pz0[ 0]
    	*s DBL zn_rho0ls		// ditto, prior step
@@ -2598,7 +2601,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 	*s *e FLOAT zn_airX		// overall zone air change rate (changes/hr)
 							//   includes *all* air flows; used re convective coeff determination
 
-	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-RSYS zones having HVAC loads
+	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-air zones having HVAC loads
 								//   inputable for testing; used re convection coeff model
 	*s FLOAT zn_hcAirXls	// prior subhour value of i.zn_hcAirX
 	*s FLOAT zn_hcFrc		// inside surface forced convection coefficient, Btuh/ft2-F
@@ -6207,6 +6210,7 @@ RECORD TU "terminal" *RAT		// TERMINAL
 
     *declare "virtual RC RunDup( const record* pSrc, int options=0);"
     *declare "RC tu_Setup();"			// initial input check/setup, cncult5.cpp
+    *declare "bool tu_IsAirTerminal() const {  return cmAr != cmNONE; }"
     *declare "void fazInit( int isAusz);"
     *declare "RC tu_pass1AtoB();"
     *declare "RC tu_begP1b();"

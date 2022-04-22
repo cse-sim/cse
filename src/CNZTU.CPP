@@ -152,7 +152,7 @@ RC FC hvacIterSubhr()
 					}
 #endif
 				}
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 				if (Top.jDay == 1)
 				{
 					if (zp1 && abs(zp1->zn_qsHvac) < 0.01)
@@ -274,7 +274,7 @@ x		}
 #endif
 	}
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay == 1)
 	{
 		if (zp1 && zp1->tz < 69.99)
@@ -807,6 +807,8 @@ x;									// don't require tuVfDs for autoSizing ... 6-95
 	{
 		nxTu4z = zp->tu1;  				// tu pts to prior chain (or 0 if no prior)
 		zp->tu1 = ss;					// zone chain hd pts to cur tu
+		if (tu_IsAirTerminal())
+			zp->zn_airTerminalCount++;
 	}
 	// chain by air handler
 	if (ah)
