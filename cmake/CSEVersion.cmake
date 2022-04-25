@@ -81,7 +81,11 @@ if (${GIT_STATUS} MATCHES "changed")
   set(GIT_STATUS ".dirty")
 endif()
 
-set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}${GIT_STATUS}")
+if(NOT ${GIT_BUILD} MATCHES "^0$")
+  set(CSEVRSN_META "+${GIT_BRANCH}.${GIT_SHA}.${GIT_BUILD}${GIT_STATUS}")
+else()
+  set(CSEVRSN_META "")
+endif()
 
 message("Building CSE ${CSEVRSN_MAJOR}.${CSEVRSN_MINOR}.${CSEVRSN_PATCH}${CSEVRSN_PRERELEASE}${CSEVRSN_META}")
 
