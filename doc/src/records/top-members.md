@@ -81,7 +81,7 @@ Number of subhour steps used per hour in the simulation. 4 is the time-honored v
   required: "No",
   variability: "constant") %>
 
-**nSubhrTick=*int***
+**nSubhrTicks=*int***
 
 Number of subhour ticks used per *nSubSteps* in the simulation.
 
