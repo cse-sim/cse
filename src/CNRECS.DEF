@@ -2251,7 +2251,6 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
     *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
-    *declare "RC zn_MoistureBalCR();"
     *declare "double zn_HumRat( double amfX, double mwX, double _tz, double& XLGain);"
     *declare "double zn_AirXMoistureBal( bool bFinal, double amfX=0., double mwX=0., double _tz=-99.);"
     *declare "RC zn_ComfortCR();"
@@ -2594,7 +2593,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 	*s *e DBL zn_dryAirMassEff	// effective dry air mass in zone, lbm
 								//  = zn_dryAirMass except when zone moisture time constant
 								//    requires increase for numerical stability
-								//    See zn_MoistureBalCR()
+								//    See zn_AirXMoistureBal()
 	*s *e FLOAT zn_ivAirX	// zone infiltration/ventilation air change rate (changes/hr)
 							//   includes flow induced by system (HVAC, duct leakage, )
 							//   but not system flows

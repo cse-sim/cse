@@ -676,17 +676,8 @@ x	}
 
 	RLUP( ZrB, zp)
 	{	
-		if (Top.tp_dbgFlag)
-		{
-			if (zp->zn_IsConvRad())
-				zp->zn_AirXMoistureBal(true);
-		}
-		else
-		{
-			rc |= zp->zn_AirX();
-			if (zp->zn_IsConvRad())
-				rc |= zp->zn_MoistureBalCR();
-		}
+		if (zp->zn_IsConvRad())
+			zp->zn_AirXMoistureBal(true);
 		rc |= zp->zn_ComfortCR();
 #if !defined( CRTERMAH)
 		rc |= zp->zn_LoadsSubhr( azCf);	// insurance, may not be needed for CR
@@ -1382,7 +1373,7 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 	float wSup = cFlowSum <= 0.f ? 0.f : wSupSum / cFlowSum;
 
 	zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
-	zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_MoistureBalCR
+	zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
 
 }		// ZNR::zn_MapTerminalResults
 //-----------------------------------------------------------------------------
@@ -1409,7 +1400,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			if (zn_hcMode == RSYS::rsmOAV)
 				zn_OAVRlfO.af_AccumDry( -zn_rsAmfSup, tz, wzls);	// w not used
 			else
-				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_MoistureBalCR
+				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
 #if defined( _DEBUG)
 			if (tz < -100.f || tz > 200.f)
 				warn( "Zone '%s': unreasonable air temp %0.2f\n", name, tz);
@@ -1656,7 +1647,7 @@ RC ZNR::zn_AirX(		// total air exchanges etc
 	zn_rho = psyDenMoistAir( _tz, wzls);		// moist air density
 	zn_dryAirMass = max( i.znVol * psyDenDryAir2( zn_rho, wzls), .1);	// dry air mass, lbm
 	zn_dryAirMassEff = zn_dryAirMass;			// effective dry air mass, lbm
-												//   zn_MoistureBalCR() may adjust re short time steps
+												//   zn_AirXMoistureBal() may adjust re short time steps
 
 	// TODO: improve other infil models?
 	zn_ivAirX = (zn_AnAmf() + zn_NonAnIVAmf()) / zn_dryAirMass;
@@ -1678,128 +1669,6 @@ RC ZNR::zn_AirX(		// total air exchanges etc
 
 	return rc;
 }		// ZNR::zn_AirX
-static double mwSave;
-static float fSave;
-static double wzlsSave;
-static double wzSave1, wzSave2;
-//------------------------------------------------------------------------------
-RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
-// see also znW() re CNE zone moisture balance
-{
-	RC rc = RCOK;
-
-#if 0
-	wz = zn_HumRat(0.f, 0.f, tz, znXLGain);
-#else
-
-	// internal gain
-	double mwIG = znLGain/PsyHCondWtr;		// latent internal gains, lbm/hr
-
-	// non-airnet infil, lbm/hr
-	double mwInf = zn_NonAnIVAmf()*Top.wOSh;
-
-	// IZXFER (airnet) gains not including duct leakage and HVAC
-	double mwAN = (1.f-zn_fVent) * zn_airNetI[ 0].af_Wmf()
-		        + (zn_fVent)     * zn_airNetI[ 1].af_Wmf();
-
-	double mw = mwIG + mwInf + mwAN		// total water vapor mass flow rate, lbm/hr
-			  + zn_ductLkI.af_Wmf() + zn_sysAirI.af_Wmf();
-	mwSave = mw;
-
-	// TODO: HPWH moisture removal? 2-16
-
-	int wCase = 0;	// debug aid
-					//   0 = time constant OK, result OK
-					//   1 = short time constant (steady state sln used), result OK
-					//   2 = time constant OK, result limited
-					//   3 = short time constant (steady state sln used), result clamped
-
-	float f = zn_airX*Top.tp_subhrDur / i.zn_HIRatio;
-	fSave = f;
-	if (f > 1.f)
-	{	zn_dryAirMassEff *= f;
-		f = 1.f;
-		wCase += 1;
-	}
-	wzlsSave = wzls;
-	wz = mw * Top.tp_subhrDur/(zn_dryAirMassEff*i.zn_HIRatio) + wzls*(1. - f);
-	wzSave1 = wz;
-
-
-	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
-						// if predicted humidity ratio is physically impossible, assume
-						//   magic (sensible) heat transfer
-						// + = into zone (= "condensation")
-	double wSat = psyHumRat3( tz);   // maximum w air at this temp can hold
-	double wzClamp = bracket( double( PsyWmin), wz, wSat);
-	if (wz != wzClamp)
-	{	XLGain = (wz-wzClamp) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
-		znXLGain += XLGain;		// zone total excess latent gain, Btuh
-		wz = wzClamp;
-		wCase += 2;		// limits applied
-	}
-#endif
-	wzSave2 = wz;
-
-	// latent gains to space
-	zn_qlHvac = zn_sysAirI.af_QLat( wzls);
-	if (fabs( zn_qlHvac) < .1)
-		zn_qlHvac = 0.;		// drop tiny values (re report aesthetics)
-#if 0 && defined( _DEBUG)
-	if (zn_qlHvac > 0.)
-		printf("\nqlHvac > 0");
-#endif
-	zn_qlIz = (1.f-zn_fVent) * zn_airNetI[ 0].af_QLat( wzls)
-	        + (zn_fVent)     * zn_airNetI[ 1].af_QLat( wzls)
-			+ zn_ductLkI.af_QLat( wzls);
-
-	zn_twb = psyTWetBulb( tz, wz);
-	zn_relHum = psyRelHum3( wz, wSat);
-
-	// zone humidity ratio now known
-	//  finalize return air state
-	zn_sysAirO.as_w = wz;
-
-#if 0
-x	float relHum = psyRelHum2( tz, zn_twb);
-x	if (tz > 50 && fabs( zn_relHum - relHum) > .0001)
-x		printf( "hit");
-#endif
-
-#if 0 && defined( _DEBUG)
-x moisture balance experiment
-x generally does not balance, 5-10-2012
-x	double znLDelta = zn_dryAirMass*(wz - wzls)*PsyHCondWtr;
-x	double znLX = (zn_qlHvac + znLGain)*Top.tp_subhrDur;
-x	if (frDiff( znLDelta, znLX) > .01)
-x		printf( "Mismatch\n");
-#endif
-
-#if defined( DEBUGDUMP)
-	if (DbDo( dbdZM))
-	{	DbPrintf( "%s W:  mwIG=%0.3f  mwInf=%0.3f  mwAN=%0.3f  mwDuctLk=%0.3f  mwSys=%0.3f  mwSum=%0.3f\n"
-			"     tdb=%0.2f  airX=%0.3f  hcAirX=%0.3f dryAirMass=%0.2f  XLGain=%0.2f  W=%0.6f  twb=%0.2f  rh=%0.4f\n",
-			name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(), mw,
-			tz, zn_airX, i.zn_hcAirX, zn_dryAirMass, znXLGain, wz, zn_twb, zn_relHum);
-
-#if 1
-	DbPrintf("     rho=%0.4f  rho0ls=%0.4f  wzls=%0.6f  dryAirMassEff=%0.2f  qlHvac=%0.2f  qlIz=%0.2f\n",
-		zn_rho, zn_rho0ls, wzls, zn_dryAirMassEff, zn_qlHvac, zn_qlIz);
-#endif
-	}
-#endif
-
-	return rc;
-}		// ZNR::zn_MoistureBalCR
-//------------------------------------------------------------------------------------
-#undef DOCOMPARE
-template< typename T> void compare(T v1, T v2)
-{
-#if defined( DOCOMPARE)
-	if (frDiff(v1, v2) > 0.00001)
-		printf("\nCompare fail");
-#endif
-}
 //------------------------------------------------------------------------------
 double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 	bool bFinal,				// true: set ZNR members to calculated zone state
@@ -1812,8 +1681,6 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 
 // see also znW() re CNE zone moisture balance
 {
-
-
 	if (_tz < -98.)
 		_tz = tz;
 
@@ -1832,8 +1699,6 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 
 	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf + amfX;
 	double airX = ivAirX + amfSys / dryAirMass;
-	compare(airX, double(zn_airX));
-
 
 	// internal gain
 	double mwIG = znLGain / PsyHCondWtr;		// latent internal gains, lbm/hr
@@ -1847,7 +1712,6 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 
 	double mw = mwIG + mwInf + mwAN + mwX	// total water vapor mass flow rate, lbm/hr
 		+ zn_ductLkI.af_Wmf() + zn_sysAirI.af_Wmf();
-	compare(mw, mwSave);
 
 	// TODO: HPWH moisture removal? 2-16
 
@@ -1858,16 +1722,12 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 					//   3 = short time constant (steady state sln used), result clamped
 
 	float f = airX * Top.tp_subhrDur / i.zn_HIRatio;
-	compare(f, fSave);
 	if (f > 1.f)
 	{	dryAirMassEff *= f;
 		f = 1.f;
 		wCase += 1;
 	}
-	compare(dryAirMassEff, zn_dryAirMassEff);
-	compare(wzls, wzlsSave);
 	double _wz = mw * Top.tp_subhrDur / (dryAirMassEff * i.zn_HIRatio) + wzls * (1. - f);
-	compare(_wz, wzSave1);
 
 	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
 						// if predicted humidity ratio is physically impossible, assume
@@ -1880,47 +1740,6 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 		_wz = wzClamp;
 		wCase += 2;		// limits applied
 	}
-	compare(_wz, wzSave2);
-
-#if defined( DOCOMPARE)
-
-	compare(zn_rho, rho);
-
-	compare(zn_dryAirMass, dryAirMass);
-	compare(zn_dryAirMassEff, dryAirMassEff);
-	compare(double( zn_ivAirX), ivAirX);
-	compare(double( zn_airX), airX);
-	compare(wz, _wz);
-	compare(zn_sysAirO.as_w, _wz);
-	compare(znXLGain, XLGain);
-
-	// modified airX re convection coefficients
-	float hcAirX = i.zn_hcAirX;
-	if (!i.zn_hcAirXIsSet)	// if not fixed by user input
-	{
-		float hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
-		if (zn_IsAirHVACActive() && !zn_HasAirHVAC())
-			hcAirX += 4.8f;		// additional "virtual" air flow for non-air zones
-	}
-	compare(hcAirX, i.zn_hcAirX);
-
-	double qlHvac = zn_sysAirI.af_QLat(wzls);
-	if (fabs(qlHvac) < .1)
-		qlHvac = 0.;		// drop tiny values (re report aesthetics)
-	compare(qlHvac, zn_qlHvac);
-
-	double qlIz = (1.f - zn_fVent) * zn_airNetI[0].af_QLat(wzls)
-		+ (zn_fVent)*zn_airNetI[1].af_QLat(wzls)
-		+ zn_ductLkI.af_QLat(wzls);
-
-	compare(qlIz, zn_qlIz);
-
-	double twb = psyTWetBulb(_tz, _wz);
-	compare(twb, zn_twb);
-	float relHum = psyRelHum3(_wz, wSat);
-	compare(relHum, zn_relHum);
-
-#else
 
 	if (bFinal)
 	{	// set ZNR members
@@ -1966,12 +1785,12 @@ x			printf("hit");
 #endif
 
 #if 0 && defined( _DEBUG)
-		x		moisture balance experiment
-			x		generally does not balance, 5 - 10 - 2012
-			x		double znLDelta = zn_dryAirMass * (wz - wzls) * PsyHCondWtr;
-		x		double znLX = (zn_qlHvac + znLGain) * Top.tp_subhrDur;
-		x		if (frDiff(znLDelta, znLX) > .01)
-			x			printf("Mismatch\n");
+x		moisture balance experiment
+x		generally does not balance, 5 - 10 - 2012
+x		double znLDelta = zn_dryAirMass * (wz - wzls) * PsyHCondWtr;
+x		double znLX = (zn_qlHvac + znLGain) * Top.tp_subhrDur;
+x		if (frDiff(znLDelta, znLX) > .01)
+x			printf("Mismatch\n");
 #endif
 
 #if defined( DEBUGDUMP)
@@ -1979,18 +1798,14 @@ x			printf("hit");
 		{
 			DbPrintf("%s W:  mwIG=%0.3f  mwInf=%0.3f  mwAN=%0.3f  mwDuctLk=%0.3f  mwSys=%0.3f  mwSum=%0.3f\n"
 				"     tdb=%0.2f  airX=%0.3f  hcAirX=%0.3f dryAirMass=%0.2f  XLGain=%0.2f  W=%0.6f  twb=%0.2f  rh=%0.4f\n",
-			name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(), mw,
-			_tz, zn_airX, i.zn_hcAirX, zn_dryAirMass, znXLGain, wz, zn_twb, zn_relHum);
-
-#if 1
+				name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(), mw,
+				_tz, zn_airX, i.zn_hcAirX, zn_dryAirMass, znXLGain, wz, zn_twb, zn_relHum);
 			DbPrintf("     rho=%0.4f  rho0ls=%0.4f  wzls=%0.6f  dryAirMassEff=%0.2f  qlHvac=%0.2f  qlIz=%0.2f\n",
 				zn_rho, zn_rho0ls, wzls, zn_dryAirMassEff, zn_qlHvac, zn_qlIz);
-#endif
 #endif
 
 		}
 	}	// bFinal
-#endif
 
 	return _wz;
 
