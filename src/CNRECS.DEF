@@ -282,8 +282,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
     *h LI tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
-    *i LI tp_dbgPrintMaskC	// ditto, constant portion (value known during setup)
+    *i LI tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
     *declare "LI tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
+    *s LI tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
 
 //TOP: inputs: autoSizing
     *i FRAC_GZ auszTol   	// autosizing result tolerance, dfl .005
@@ -2250,9 +2251,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
     *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
-    *declare "float zn_HcAirX();"
     *declare "RC zn_MoistureBalCR();"
     *declare "double zn_HumRat( double amfX, double mwX, double _tz, double& XLGain);"
+    *declare "double zn_AirXMoistureBal( bool bFinal, double amfX=0., double mwX=0., double _tz=-99.);"
     *declare "RC zn_ComfortCR();"
     *declare "void zn_DbDump() const;"
 
@@ -2588,8 +2589,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
     *s *e DBL zn_qlIz		// latent gain from IZXFER sources (infil, vent, and duct leakage), Btuh
 							//   does NOT include HVAC
 	*s *e DBL zn_rho		// zone moist air density at nominal w=tp_refW, lb/cf
-	*s *e DBL zn_rho0		// zone moist air density at nominal z=0, lb/cf; computed from tzls and zn_pz0[ 0]
-   	*s DBL zn_rho0ls		// ditto, prior step
+	*s DBL zn_rho0ls		// prior step zone moist air density at nominal z=0, lb/cf; computed from tzls and zn_pz0[ 0]
 	*s *e DBL zn_dryAirMass	// total mass of *dry* air in zone, lbm
 	*s *e DBL zn_dryAirMassEff	// effective dry air mass in zone, lbm
 								//  = zn_dryAirMass except when zone moisture time constant

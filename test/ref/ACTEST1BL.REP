@@ -288,7 +288,7 @@ AC Check Values (rates are kBTU/hr) for Thu 08-Jan
   1  8  9 29  50.5   7.00      0  78.0 .0020 -24.31  -0.16 -24.47      1.00 48.69  0.999  1.611  2.167  25.45  29.59  25.45   7.46  -156k -23.63      0 .1515 .1515   1.308   3.126   4.433
   1  8 10 29  52.2   7.00      0  78.0 .0021 -24.33  -0.17 -24.49      1.00 48.75  0.991  1.558  2.078  24.61  28.37  24.61   7.21  -155k -23.63      0 .1526 .1526   1.317   3.226   4.543
   1  8 11 29  54.0   7.00      0  78.0 .0021 -24.34  -0.18 -24.52      1.00 48.81  0.982  1.502  1.985  23.73  27.11  23.73   6.95  -153k -23.62      0 .1539 .1539   1.328   3.340   4.667
-  1  8 12 29  56.5   7.00      0  78.0 .0021 -24.36  -0.18 -24.54      1.00 48.83  0.970  1.429  1.867  22.58  25.49  22.58   6.62  -152k -23.60      0 .1557 .1557   1.341   3.486   4.827
+  1  8 12 29  56.5   7.00      0  78.0 .0021 -24.36  -0.18 -24.54      1.00 48.82  0.970  1.429  1.867  22.58  25.49  22.58   6.62  -152k -23.60      0 .1557 .1557   1.341   3.486   4.827
   1  8 13 29  59.5   7.00      0  78.0 .0021 -24.39  -0.19 -24.58      1.00 48.83  0.956  1.347  1.737  21.29  23.72  21.29   6.24  -149k -23.59      0 .1580 .1580   1.359   3.679   5.037
   1  8 14 29  55.8   7.00      0  78.0 .0021 -24.38  -0.18 -24.56      1.00 48.80  0.974  1.450  1.899  22.90  25.94  22.90   6.71  -152k -23.64      0 .1554 .1554   1.357   3.649   5.006
   1  8 15 29  54.9   7.00      0  78.0 .0021 -24.38  -0.18 -24.56      1.00 48.80  0.978  1.476  1.942  23.31  26.51  23.31   6.83  -153k -23.65      0 .1548 .1548   1.343   3.491   4.834
@@ -1342,7 +1342,7 @@ AC Check Values (rates are kBTU/hr) for Thu 12-Feb
   2 12 13 29  64.6  11.00  11.00  78.0 .0098 -28.45 -10.81 -39.26      0.80 65.73  1.165  1.272  1.615  20.09  22.06  20.09   4.71  -146k -42.11 -10.51 .2889 .2889   2.486   8.803  11.289
   2 12 14 29  66.2  11.00  11.00  78.0 .0099 -28.47 -10.81 -39.28      0.80 65.78  1.156  1.242  1.570  19.61  21.44  19.61   4.60  -145k -42.25 -10.53 .2922 .2922   2.516   9.063  11.579
   2 12 15 29  66.2  11.00  11.00  78.0 .0099 -28.47 -10.85 -39.31      0.80 65.83  1.157  1.242  1.570  19.61  21.44  19.61   4.59  -144k -42.27 -10.65 .2928 .2928   2.533   9.194  11.726
-  2 12 16 29  66.0  11.00  11.00  78.0 .0099 -28.47 -10.86 -39.32      0.80 65.85  1.159  1.245  1.575  19.67  21.51  19.67   4.60  -144k -42.28 -10.74 .2929 .2929   2.536   9.204  11.740
+  2 12 16 29  66.0  11.00  11.00  78.0 .0099 -28.47 -10.85 -39.32      0.80 65.85  1.159  1.245  1.575  19.67  21.51  19.67   4.60  -144k -42.28 -10.74 .2929 .2929   2.536   9.204  11.740
   2 12 17 29  65.1  11.00  11.00  78.0 .0099 -28.47 -10.87 -39.34      0.80 65.84  1.164  1.262  1.600  19.93  21.84  19.93   4.65  -145k -42.22 -10.77 .2913 .2913   2.530   9.136  11.665
   2 12 18 29  63.5  11.00  11.00  78.0 .0098 -28.45 -10.87 -39.33      0.80 65.79  1.174  1.293  1.646  20.42  22.48  20.42   4.77  -146k -42.09 -10.75 .2881 .2881   2.508   8.947  11.455
   2 12 19 29  57.2  11.00  11.00  78.0 .0098 -28.39 -10.93 -39.31      0.79 65.67  1.212  1.423  1.845  22.48  25.19  22.48   5.23  -150k -41.62 -10.84 .2770 .2770   2.444   8.377  10.821
@@ -1487,7 +1487,7 @@ AC Check Values (rates are kBTU/hr) for Tue 17-Feb
   2 17  8 29  38.3  16.00  16.00  78.0 .0100 -33.05 -15.61 -48.66      0.77 65.69  1.334  1.937  2.701  30.59  36.88  30.59   6.89  -160k -47.56 -14.31 .2968 .2968   2.554   6.750   9.304
   2 17  9 29  45.1  16.00  16.00  78.0 .0101 -33.14 -15.59 -48.73      0.77 65.85  1.294  1.723  2.327  27.21  31.77  27.21   6.15  -156k -48.08 -14.26 .3084 .3084   2.621   7.366   9.986
   2 17 10 29  50.4  16.00  16.00  78.0 .0102 -33.21 -15.63 -48.84      0.77 66.03  1.264  1.582  2.092  24.99  28.57  24.99   5.65  -152k -48.55 -14.42 .3189 .3189   2.717   8.217  10.934
-  2 17 11 29  54.0  16.00  16.00  78.0 .0103 -33.24 -15.64 -48.88      0.77 66.16  1.243  1.494  1.951  23.60  26.65  23.60   5.33  -150k -48.88 -14.56 .3266 .3266   2.797   8.898  11.694
+  2 17 11 29  54.0  16.00  16.00  78.0 .0103 -33.24 -15.64 -48.89      0.77 66.16  1.243  1.494  1.951  23.60  26.65  23.60   5.33  -150k -48.88 -14.56 .3266 .3266   2.797   8.898  11.694
   2 17 12 29  57.6  16.00  16.00  78.0 .0103 -33.30 -15.63 -48.93      0.77 66.25  1.222  1.414  1.825  22.33  24.92  22.33   5.05  -147k -49.22 -14.57 .3341 .3341   2.862   9.470  12.333
   2 17 13 29  60.8  16.00  16.00  78.0 .0104 -33.35 -15.63 -48.98      0.77 66.32  1.202  1.346  1.722  21.26  23.51  21.26   4.82  -145k -49.53 -14.53 .3411 .3411   2.925  10.024  12.948
   2 17 14 29  61.0  16.00  16.00  78.0 .0104 -33.35 -15.63 -48.98      0.77 66.31  1.201  1.343  1.717  21.21  23.44  21.21   4.81  -145k -49.53 -14.47 .3412 .3412   2.955  10.293  13.248
@@ -3115,7 +3115,7 @@ Ducts (rates are kBTU/hr) for Sat 28-Feb
  13 18 130.2 140.0 139.7 57.05 57.52  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.80 -12.45    -70.88 -88.82  19.63 -67.72 -25.58
  13 19 130.2 140.0 139.7 57.06 57.52  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.81 -12.45    -70.88 -88.82  19.63 -67.72 -25.58
  13 20 130.2 140.0 139.7 57.07 57.53  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.81 -12.46    -70.88 -88.83  19.63 -67.73 -25.57
- 13 21 130.2 140.0 139.7 57.07 57.54  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.81 -12.46    -70.88 -88.83  19.63 -67.73 -25.56
+ 13 21 130.2 140.0 139.7 57.07 57.54  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.81 -12.46    -70.88 -88.83  19.63 -67.73 -25.57
  13 22 130.2 140.0 139.7 57.08 57.54  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.82 -12.46    -70.88 -88.84  19.63 -67.74 -25.56
  13 23 130.2 140.0 139.7 57.09 57.55  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.82 -12.47    -70.88 -88.84  19.63 -67.75 -25.55
  13 24 130.2 140.0 139.7 57.09 57.56  -0.33  -0.78  -4.39  -5.49    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.46 -11.83 -12.47    -70.88 -88.84  19.63 -67.75 -25.55
@@ -3230,7 +3230,7 @@ Ducts (rates are kBTU/hr) for Sat 28-Feb
  17 13 130.2 140.0 139.7 57.56 58.02  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.12 -12.79    -71.02 -89.33  21.58 -68.31 -25.63
  17 14 130.2 140.0 139.7 57.55 58.02  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.12 -12.78    -71.02 -89.33  21.58 -68.31 -25.63
  17 15 130.2 140.0 139.7 57.55 58.01  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.12 -12.78    -71.02 -89.33  21.58 -68.31 -25.64
- 17 16 130.2 140.0 139.7 57.55 58.01  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.12 -12.78    -71.02 -89.33  21.58 -68.30 -25.65
+ 17 16 130.2 140.0 139.7 57.55 58.01  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.12 -12.78    -71.02 -89.32  21.58 -68.30 -25.65
  17 17 130.2 140.0 139.7 57.54 58.00  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.11 -12.77    -71.03 -89.32  21.58 -68.30 -25.65
  17 18 130.2 140.0 139.7 57.54 58.00  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.11 -12.77    -71.03 -89.32  21.58 -68.29 -25.66
  17 19 130.2 140.0 139.7 57.53 57.99  -0.33  -0.80  -4.40  -5.52    133.0 140.0 139.8 78.00  82.96 83.23  -0.19  -0.47 -12.11 -12.77    -71.03 -89.32  21.58 -68.29 -25.67
@@ -3378,7 +3378,7 @@ Ducts (rates are kBTU/hr) for Sat 28-Feb
  22 11 130.0 140.0 139.7 55.85 56.32  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.10 -11.70    -70.80 -87.92  18.19 -66.42 -26.33
  22 12 130.0 140.0 139.7 55.85 56.32  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.10 -11.70    -70.80 -87.92  18.19 -66.42 -26.33
  22 13 130.0 140.0 139.7 55.84 56.31  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.09 -11.70    -70.80 -87.92  18.19 -66.41 -26.33
- 22 14 130.0 140.0 139.7 55.84 56.30  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.09 -11.70    -70.80 -87.92  18.19 -66.41 -26.33
+ 22 14 130.0 140.0 139.7 55.83 56.30  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.09 -11.70    -70.80 -87.92  18.19 -66.41 -26.33
  22 15 130.0 140.0 139.7 55.83 56.30  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.09 -11.69    -70.80 -87.91  18.19 -66.41 -26.34
  22 16 130.0 140.0 139.7 55.82 56.29  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.09 -11.69    -70.80 -87.91  18.19 -66.40 -26.34
  22 17 130.0 140.0 139.7 55.82 56.29  -0.31  -0.74  -4.37  -5.42    133.0 140.0 139.8 78.00  82.96 83.23  -0.18  -0.43 -11.08 -11.69    -70.81 -87.91  18.19 -66.40 -26.34
@@ -4454,7 +4454,7 @@ IzXfer RDuctZone-DLkO   Zn1: RDuctZone  Zn2: --  UAconst: 0      NVctrl: AirNetD
 ! Log for Run 001: Simple Default, no latent
 
 ################
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console   Thu 24-Mar-22   5:22:41 pm
+! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console   Mon 25-Apr-22  10:39:46 am
 
 
 ================
@@ -4678,7 +4678,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.957  mwSys=0.000
      tdb=10.00  airX=0.607  dryAirMass=842.04  XLGain=300.40  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971797.60  Dair=96757.65  Nrad=16933.74  Drad=1679.06  CX=618.21  airX=5.407
+     Nair=971797.61  Dair=96757.65  Nrad=16933.74  Drad=1679.06  CX=618.21  airX=5.407
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3782  fvent=0.000  pz0=0.0252  qsHvac=-4260
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=2.799  mwDuctLk=0.000  mwSys=0.000
@@ -4916,7 +4916,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.953  mwSys=0.000
      tdb=10.00  airX=0.606  dryAirMass=842.04  XLGain=296.84  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971776.29  Dair=96757.42  Nrad=16933.52  Drad=1679.06  CX=618.21  airX=5.406
+     Nair=971776.30  Dair=96757.42  Nrad=16933.52  Drad=1679.06  CX=618.21  airX=5.406
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3767  fvent=0.000  pz0=0.0253  qsHvac=-4241
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=2.782  mwDuctLk=0.000  mwSys=0.000
@@ -5430,7 +5430,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3735  fvent=0.000  pz0=0.0251  qsHvac=-4200
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=2.725  mwDuctLk=0.000  mwSys=0.000
-     tdb=10.00  airX=0.533  dryAirMass=842.04  XLGain=2262.81  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.533  dryAirMass=842.04  XLGain=2262.82  W=0.001320  twb=10.00  rh=1.0000
 RDuctZone CZ: anMCp/T[ 0]=108.99/4906.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=973750.05  Dair=96741.97  Nrad=17075.69  Drad=1681.84  CX=612.16  airX=5.333
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -11238,7 +11238,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
      runF=0.281  qCondAir=138.49  qCondRad=170.35, qCondTot=308.83
      ta0=78.00  ta1=72.56  ta2=72.45  ta3=72.33
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.805  mwSys=0.000
-     tdb=10.00  airX=0.591  dryAirMass=842.04  XLGain=156.71  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.591  dryAirMass=842.04  XLGain=156.70  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=971406.92  Dair=96754.43  Nrad=16925.80  Drad=1679.04  CX=618.21  airX=5.391
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -11546,7 +11546,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.805  mwSys=0.000
      tdb=10.00  airX=0.592  dryAirMass=842.04  XLGain=156.00  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971420.54  Dair=96754.62  Nrad=16926.19  Drad=1679.04  CX=618.21  airX=5.392
+     Nair=971420.53  Dair=96754.62  Nrad=16926.19  Drad=1679.04  CX=618.21  airX=5.392
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3587  fvent=0.000  pz0=0.0236  qsHvac=-3911
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.674  mwDuctLk=0.000  mwSys=0.000
@@ -12334,7 +12334,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.687  mwDuctLk=0.000  mwSys=0.000
      tdb=10.00  airX=0.525  dryAirMass=842.04  XLGain=1171.06  W=0.001320  twb=10.00  rh=1.0000
 RDuctZone CZ: anMCp/T[ 0]=107.35/4505.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=972248.55  Dair=96740.34  Nrad=17071.51  Drad=1681.82  CX=612.15  airX=5.325
+     Nair=972248.54  Dair=96740.34  Nrad=17071.51  Drad=1681.82  CX=612.15  airX=5.325
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.11  qIzSh=3432  fvent=0.000  pz0=-0.0107  qsHvac=-4913
 Single W:  mwIG=0.000  mwInf=0.000  mwAN=0.222  mwDuctLk=0.000  mwSys=8.151
@@ -13522,7 +13522,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3665  fvent=0.000  pz0=0.0242  qsHvac=-3993
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.772  mwDuctLk=0.000  mwSys=0.000
-     tdb=10.00  airX=0.528  dryAirMass=842.04  XLGain=1257.25  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.528  dryAirMass=842.04  XLGain=1257.24  W=0.001320  twb=10.00  rh=1.0000
 RDuctZone CZ: anMCp/T[ 0]=108.04/4688.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=972516.30  Dair=96741.03  Nrad=17073.03  Drad=1681.83  CX=612.16  airX=5.328
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -15626,7 +15626,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.851  mwSys=0.000
      tdb=10.00  airX=0.622  dryAirMass=842.04  XLGain=170.02  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971898.83  Dair=96760.58  Nrad=16940.89  Drad=1679.08  CX=618.22  airX=5.422
+     Nair=971898.82  Dair=96760.58  Nrad=16940.89  Drad=1679.08  CX=618.22  airX=5.422
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.07  qIzSh=3978  fvent=0.000  pz0=0.0267  qsHvac=-4333
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.823  mwDuctLk=0.000  mwSys=0.000
@@ -15970,7 +15970,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.07  qIzSh=4001  fvent=0.000  pz0=0.0268  qsHvac=-4357
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.780  mwDuctLk=0.000  mwSys=0.000
-     tdb=10.00  airX=0.550  dryAirMass=842.04  XLGain=1240.82  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.550  dryAirMass=842.04  XLGain=1240.83  W=0.001320  twb=10.00  rh=1.0000
 RDuctZone CZ: anMCp/T[ 0]=112.46/5902.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=973731.86  Dair=96745.44  Nrad=17083.54  Drad=1681.86  CX=612.16  airX=5.350
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -16488,7 +16488,7 @@ RDuctZone CZ: anMCp/T[ 0]=112.74/5977.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=0.000  mwInf=0.000  mwAN=0.221  mwDuctLk=0.000  mwSys=8.596
      tdb=78.00  airX=8.127  dryAirMass=661.65  XLGain=0.00  W=0.001642  twb=50.57  rh=0.0809
 Single CZ: anMCp/T[ 0]=14.60/774.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8389605.41  Dair=107006.28  Nrad=207245.66  Drad=2444.91  CX=791.28  airX=8.127
+     Nair=8389605.41  Dair=107006.28  Nrad=207245.67  Drad=2444.91  CX=791.28  airX=8.127
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=5843  amfSup=5317   tSup=41.49
      ta=78.00  tr=83.11  qIzSh=-365  fvent=0.000  pz0=-0.0043  qsHvac=-47161
 
@@ -16522,7 +16522,7 @@ RDuctZone CZ: anMCp/T[ 0]=112.76/5982.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=0.000  mwInf=0.000  mwAN=0.222  mwDuctLk=0.000  mwSys=8.594
      tdb=78.00  airX=8.128  dryAirMass=661.65  XLGain=0.00  W=0.001641  twb=50.57  rh=0.0809
 Single CZ: anMCp/T[ 0]=14.66/778.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8389609.16  Dair=107006.34  Nrad=207245.66  Drad=2444.91  CX=791.28  airX=8.128
+     Nair=8389609.17  Dair=107006.34  Nrad=207245.66  Drad=2444.91  CX=791.28  airX=8.128
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=5844  amfSup=5318   tSup=41.49
      ta=78.00  tr=83.11  qIzSh=-366  fvent=0.000  pz0=-0.0043  qsHvac=-47160
 
@@ -16646,7 +16646,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.12  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.849  mwSys=0.000
      tdb=10.00  airX=0.625  dryAirMass=842.04  XLGain=164.00  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971952.58  Dair=96761.31  Nrad=16943.81  Drad=1679.09  CX=618.21  airX=5.425
+     Nair=971952.59  Dair=96761.31  Nrad=16943.81  Drad=1679.09  CX=618.21  airX=5.425
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.07  qIzSh=4028  fvent=0.000  pz0=0.0270  qsHvac=-4381
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.686  mwDuctLk=0.000  mwSys=0.000
@@ -17338,7 +17338,7 @@ RDuctZone CZ: anMCp/T[ 0]=113.50/6184.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=0.000  mwInf=0.000  mwAN=0.220  mwDuctLk=0.000  mwSys=8.576
      tdb=78.00  airX=8.181  dryAirMass=661.67  XLGain=0.00  W=0.001626  twb=50.54  rh=0.0802
 Single CZ: anMCp/T[ 0]=14.69/800.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8389633.68  Dair=107006.36  Nrad=207250.93  Drad=2444.94  CX=789.92  airX=8.181
+     Nair=8389633.68  Dair=107006.36  Nrad=207250.94  Drad=2444.94  CX=789.92  airX=8.181
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=5882  amfSup=5353   tSup=41.72
      ta=78.00  tr=83.11  qIzSh=-345  fvent=0.000  pz0=-0.0040  qsHvac=-47178
 
@@ -22154,7 +22154,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.12  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.832  mwSys=0.000
      tdb=10.00  airX=0.629  dryAirMass=842.04  XLGain=141.97  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971992.49  Dair=96762.13  Nrad=16946.77  Drad=1679.10  CX=618.21  airX=5.429
+     Nair=971992.48  Dair=96762.13  Nrad=16946.77  Drad=1679.10  CX=618.21  airX=5.429
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.07  qIzSh=4079  fvent=0.000  pz0=0.0276  qsHvac=-4413
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=1.768  mwDuctLk=0.000  mwSys=0.000
@@ -24770,7 +24770,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
      runF=0.288  qCondAir=142.13  qCondRad=174.77, qCondTot=316.90
      ta0=78.00  ta1=72.56  ta2=72.44  ta3=72.33
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.812  mwSys=0.000
-     tdb=10.00  airX=0.607  dryAirMass=842.04  XLGain=146.02  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.607  dryAirMass=842.04  XLGain=146.03  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=971650.38  Dair=96757.72  Nrad=16935.72  Drad=1679.07  CX=618.20  airX=5.407
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -26336,7 +26336,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.828  mwSys=0.000
      tdb=10.00  airX=0.605  dryAirMass=842.04  XLGain=164.46  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=971644.25  Dair=96757.44  Nrad=16933.95  Drad=1679.06  CX=618.21  airX=5.405
+     Nair=971644.26  Dair=96757.44  Nrad=16933.95  Drad=1679.06  CX=618.21  airX=5.405
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3767  fvent=0.000  pz0=0.0252  qsHvac=-4108
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=2.024  mwDuctLk=0.000  mwSys=0.000
@@ -26442,7 +26442,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.06  qIzSh=3760  fvent=0.000  pz0=0.0252  qsHvac=-4102
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=2.048  mwDuctLk=0.000  mwSys=0.000
-     tdb=10.00  airX=0.535  dryAirMass=842.04  XLGain=1542.09  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.535  dryAirMass=842.04  XLGain=1542.10  W=0.001320  twb=10.00  rh=1.0000
 RDuctZone CZ: anMCp/T[ 0]=109.37/5013.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=973124.80  Dair=96742.35  Nrad=17076.69  Drad=1681.84  CX=612.16  airX=5.335
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -26648,7 +26648,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=2.094  mwDuctLk=0.000  mwSys=0.000
      tdb=10.00  airX=0.534  dryAirMass=842.04  XLGain=1592.20  W=0.001320  twb=10.00  rh=1.0000
 RDuctZone CZ: anMCp/T[ 0]=109.21/4971.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=973131.99  Dair=96742.19  Nrad=17076.42  Drad=1681.84  CX=612.16  airX=5.334
+     Nair=973132.00  Dair=96742.19  Nrad=17076.42  Drad=1681.84  CX=612.16  airX=5.334
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
      ta=10.00  tr=10.11  qIzSh=3879  fvent=0.000  pz0=-0.0106  qsHvac=-5779
 Single W:  mwIG=0.000  mwInf=0.000  mwAN=0.256  mwDuctLk=0.000  mwSys=8.390
@@ -27286,7 +27286,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=10.00  txr=10.11  txe=10.06
      runF=0.287  qCondAir=141.33  qCondRad=173.81, qCondTot=315.14
      ta0=78.00  ta1=72.56  ta2=72.45  ta3=72.33
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.838  mwSys=0.000
-     tdb=10.00  airX=0.603  dryAirMass=842.04  XLGain=178.24  W=0.001320  twb=10.00  rh=1.0000
+     tdb=10.00  airX=0.603  dryAirMass=842.04  XLGain=178.25  W=0.001320  twb=10.00  rh=1.0000
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=971616.06  Dair=96756.91  Nrad=16932.47  Drad=1679.06  CX=618.21  airX=5.403
      TH=1.00  TD=2.00  TC=10.00  qhCap=1000000  qcCap=-1000000
@@ -29056,7 +29056,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.573  mwSys=0.000
      tdb=140.00  airX=1.240  dryAirMass=652.39  XLGain=0.00  W=0.008143  twb=79.73  rh=0.0654
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503085.24  Dair=96573.00  Nrad=428045.08  Drad=3066.15  CX=1628.00  airX=6.040
+     Nair=13503085.23  Dair=96573.00  Nrad=428045.08  Drad=3066.15  CX=1628.00  airX=6.040
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16535  fvent=0.000  pz0=0.0351  qsHvac=17557
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.838  mwDuctLk=0.000  mwSys=0.000
@@ -29096,7 +29096,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.846  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.090  dryAirMass=653.70  XLGain=0.00  W=0.006867  twb=78.34  rh=0.0552
 RDuctZone CZ: anMCp/T[ 0]=173.05/8948.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13501201.81  Dair=96548.77  Nrad=429235.57  Drad=3071.02  CX=1561.23  airX=5.890
+     Nair=13501201.81  Dair=96548.78  Nrad=429235.57  Drad=3071.02  CX=1561.23  airX=5.890
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15278  fvent=0.000  pz0=-0.0457  qsHvac=15865
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.603  mwDuctLk=0.000  mwSys=66.493
@@ -29600,7 +29600,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.572  mwSys=0.000
      tdb=140.00  airX=1.239  dryAirMass=652.39  XLGain=0.00  W=0.008137  twb=79.73  rh=0.0653
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503086.94  Dair=96573.08  Nrad=428035.96  Drad=3066.13  CX=1627.99  airX=6.039
+     Nair=13503086.93  Dair=96573.08  Nrad=428035.96  Drad=3066.13  CX=1627.99  airX=6.039
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16540  fvent=0.000  pz0=0.0351  qsHvac=17568
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.974  mwDuctLk=0.000  mwSys=0.000
@@ -29634,7 +29634,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.572  mwSys=0.000
      tdb=140.00  airX=1.239  dryAirMass=652.39  XLGain=0.00  W=0.008136  twb=79.73  rh=0.0653
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503085.97  Dair=96573.07  Nrad=428035.73  Drad=3066.13  CX=1627.99  airX=6.039
+     Nair=13503085.96  Dair=96573.07  Nrad=428035.73  Drad=3066.13  CX=1627.99  airX=6.039
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16539  fvent=0.000  pz0=0.0351  qsHvac=17568
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.982  mwDuctLk=0.000  mwSys=0.000
@@ -29668,7 +29668,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.571  mwSys=0.000
      tdb=140.00  airX=1.239  dryAirMass=652.39  XLGain=0.00  W=0.008136  twb=79.73  rh=0.0653
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503085.02  Dair=96573.06  Nrad=428035.52  Drad=3066.13  CX=1627.99  airX=6.039
+     Nair=13503085.03  Dair=96573.06  Nrad=428035.52  Drad=3066.13  CX=1627.99  airX=6.039
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16538  fvent=0.000  pz0=0.0351  qsHvac=17567
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.991  mwDuctLk=0.000  mwSys=0.000
@@ -30008,13 +30008,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.549  mwSys=0.000
      tdb=140.00  airX=1.237  dryAirMass=652.40  XLGain=0.00  W=0.008132  twb=79.72  rh=0.0653
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503069.09  Dair=96572.87  Nrad=428034.43  Drad=3066.13  CX=1627.42  airX=6.037
+     Nair=13503069.10  Dair=96572.87  Nrad=428034.43  Drad=3066.13  CX=1627.42  airX=6.037
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16527  fvent=0.000  pz0=0.0351  qsHvac=17557
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.041  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.091  dryAirMass=653.63  XLGain=0.00  W=0.006948  twb=78.43  rh=0.0559
 RDuctZone CZ: anMCp/T[ 0]=173.17/8818.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13501069.99  Dair=96548.90  Nrad=429230.50  Drad=3071.01  CX=1563.78  airX=5.891
+     Nair=13501070.00  Dair=96548.90  Nrad=429230.49  Drad=3071.01  CX=1563.78  airX=5.891
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15425  fvent=0.000  pz0=-0.0458  qsHvac=16015
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.622  mwDuctLk=0.000  mwSys=66.213
@@ -30048,7 +30048,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.027  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.090  dryAirMass=653.62  XLGain=0.00  W=0.006952  twb=78.43  rh=0.0559
 RDuctZone CZ: anMCp/T[ 0]=173.11/8786.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13501038.19  Dair=96548.84  Nrad=429231.06  Drad=3071.01  CX=1563.78  airX=5.890
+     Nair=13501038.20  Dair=96548.84  Nrad=429231.06  Drad=3071.01  CX=1563.78  airX=5.890
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15449  fvent=0.000  pz0=-0.0458  qsHvac=16039
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.612  mwDuctLk=0.000  mwSys=66.125
@@ -30082,7 +30082,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.013  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.090  dryAirMass=653.62  XLGain=0.00  W=0.006955  twb=78.44  rh=0.0559
 RDuctZone CZ: anMCp/T[ 0]=173.05/8754.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13501006.33  Dair=96548.78  Nrad=429231.46  Drad=3071.01  CX=1563.78  airX=5.890
+     Nair=13501006.34  Dair=96548.78  Nrad=429231.46  Drad=3071.01  CX=1563.78  airX=5.890
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15473  fvent=0.000  pz0=-0.0458  qsHvac=16063
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.603  mwDuctLk=0.000  mwSys=66.035
@@ -30184,7 +30184,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.966  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.088  dryAirMass=653.61  XLGain=0.00  W=0.006960  twb=78.44  rh=0.0560
 RDuctZone CZ: anMCp/T[ 0]=172.69/8649.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500901.64  Dair=96548.42  Nrad=429233.07  Drad=3071.01  CX=1563.78  airX=5.888
+     Nair=13500901.65  Dair=96548.42  Nrad=429233.07  Drad=3071.01  CX=1563.78  airX=5.888
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15528  fvent=0.000  pz0=-0.0457  qsHvac=16117
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.604  mwDuctLk=0.000  mwSys=65.713
@@ -30202,7 +30202,7 @@ Sat 28-Feb  hr=1 subhr=7
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.81
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.052  Uduct=0.2468
      amfFL=19687.5  amfLeak=802.6  uaTot=26.8161  beta=0.994  tSrf=129.98
-     runF=0.453  qCondAir=-301.49  qCondRad=-723.75, qCondTot=-1025.25
+     runF=0.453  qCondAir=-301.49  qCondRad=-723.75, qCondTot=-1025.24
      ta0=55.17  ta1=55.17  ta2=55.41  ta3=55.65
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -30286,7 +30286,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.914  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.084  dryAirMass=653.61  XLGain=0.00  W=0.006959  twb=78.44  rh=0.0560
 RDuctZone CZ: anMCp/T[ 0]=172.16/8535.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500788.71  Dair=96547.89  Nrad=429234.71  Drad=3071.01  CX=1563.78  airX=5.884
+     Nair=13500788.72  Dair=96547.89  Nrad=429234.71  Drad=3071.01  CX=1563.78  airX=5.884
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15567  fvent=0.000  pz0=-0.0456  qsHvac=16154
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.604  mwDuctLk=0.000  mwSys=65.381
@@ -30338,7 +30338,7 @@ Sat 28-Feb  hr=1 subhr=11
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.82
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.052  Uduct=0.2468
      amfFL=19687.5  amfLeak=799.5  uaTot=26.8160  beta=0.994  tSrf=129.97
-     runF=0.451  qCondAir=-300.61  qCondRad=-721.68, qCondTot=-1022.29
+     runF=0.451  qCondAir=-300.61  qCondRad=-721.67, qCondTot=-1022.29
      ta0=55.09  ta1=55.09  ta2=55.33  ta3=55.57
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -30422,7 +30422,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.850  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.081  dryAirMass=653.62  XLGain=0.00  W=0.006950  twb=78.43  rh=0.0559
 RDuctZone CZ: anMCp/T[ 0]=171.58/8391.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500645.46  Dair=96547.31  Nrad=429237.57  Drad=3071.02  CX=1563.78  airX=5.881
+     Nair=13500645.47  Dair=96547.31  Nrad=429237.57  Drad=3071.02  CX=1563.78  airX=5.881
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15629  fvent=0.000  pz0=-0.0455  qsHvac=16215
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.591  mwDuctLk=0.000  mwSys=64.952
@@ -30484,7 +30484,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.404  mwSys=0.000
      tdb=140.00  airX=1.221  dryAirMass=652.42  XLGain=0.00  W=0.008106  twb=79.69  rh=0.0651
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502875.90  Dair=96570.29  Nrad=428044.70  Drad=3066.14  CX=1627.42  airX=6.021
+     Nair=13502875.89  Dair=96570.29  Nrad=428044.70  Drad=3066.14  CX=1627.42  airX=6.021
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16363  fvent=0.000  pz0=0.0342  qsHvac=17385
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.828  mwDuctLk=0.000  mwSys=0.000
@@ -30513,7 +30513,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=707.0  uaTot=22.8067  beta=0.995  tSrf=132.98
-     runF=0.449  qCondAir=-170.10  qCondRad=-411.35, qCondTot=-581.45
+     runF=0.449  qCondAir=-170.10  qCondRad=-411.34, qCondTot=-581.45
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.390  mwSys=0.000
      tdb=140.00  airX=1.219  dryAirMass=652.43  XLGain=0.00  W=0.008103  twb=79.69  rh=0.0650
@@ -30561,7 +30561,7 @@ RDuctZone CZ: anMCp/T[ 0]=170.94/8245.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13500500.67  Dair=96546.67  Nrad=429240.44  Drad=3071.02  CX=1563.78  airX=5.877
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15686  fvent=0.000  pz0=-0.0454  qsHvac=16270
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.582  mwDuctLk=0.000  mwSys=64.515
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.582  mwDuctLk=0.000  mwSys=64.514
      tdb=78.00  airX=12.460  dryAirMass=651.75  XLGain=0.00  W=0.011154  twb=66.22  rh=0.5417
 Single CZ: anMCp/T[ 0]=20.76/1001.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386087.90  Dair=107013.74  Nrad=205600.29  Drad=2437.91  CX=1172.40  airX=12.460
@@ -31164,7 +31164,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.222  mwSys=0.000
      tdb=140.00  airX=1.200  dryAirMass=652.50  XLGain=0.00  W=0.008033  twb=79.61  rh=0.0645
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502630.13  Dair=96566.97  Nrad=428064.11  Drad=3066.17  CX=1624.25  airX=6.000
+     Nair=13502630.13  Dair=96566.97  Nrad=428064.11  Drad=3066.17  CX=1624.24  airX=6.000
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16152  fvent=0.000  pz0=0.0325  qsHvac=17162
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.552  mwDuctLk=0.000  mwSys=0.000
@@ -31751,7 +31751,7 @@ RDuctZone CZ: anMCp/T[ 0]=167.41/7506.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13499768.51  Dair=96543.13  Nrad=429260.42  Drad=3071.05  CX=1560.01  airX=5.854
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15930  fvent=0.000  pz0=-0.0447  qsHvac=16501
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.518  mwDuctLk=0.000  mwSys=62.160
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.518  mwDuctLk=0.000  mwSys=62.161
      tdb=78.00  airX=12.193  dryAirMass=651.82  XLGain=0.00  W=0.011090  twb=66.13  rh=0.5387
 Single CZ: anMCp/T[ 0]=19.95/894.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8385982.48  Dair=107012.92  Nrad=205604.17  Drad=2437.93  CX=1170.84  airX=12.193
@@ -31776,7 +31776,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.140  mwSys=0.000
      tdb=140.00  airX=1.191  dryAirMass=652.56  XLGain=0.00  W=0.007974  twb=79.55  rh=0.0640
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502527.50  Dair=96565.60  Nrad=428073.97  Drad=3066.19  CX=1624.25  airX=5.991
+     Nair=13502527.51  Dair=96565.60  Nrad=428073.97  Drad=3066.19  CX=1624.25  airX=5.991
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16067  fvent=0.000  pz0=0.0316  qsHvac=17070
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.323  mwDuctLk=0.000  mwSys=0.000
@@ -31850,7 +31850,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.301  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.051  dryAirMass=653.98  XLGain=0.00  W=0.006591  twb=78.04  rh=0.0530
 RDuctZone CZ: anMCp/T[ 0]=166.96/7456.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499718.97  Dair=96542.68  Nrad=429261.76  Drad=3071.05  CX=1560.01  airX=5.851
+     Nair=13499718.97  Dair=96542.69  Nrad=429261.76  Drad=3071.05  CX=1560.01  airX=5.851
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15918  fvent=0.000  pz0=-0.0446  qsHvac=16488
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.525  mwDuctLk=0.000  mwSys=62.002
@@ -31912,7 +31912,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.124  mwSys=0.000
      tdb=140.00  airX=1.189  dryAirMass=652.57  XLGain=0.00  W=0.007962  twb=79.54  rh=0.0639
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502500.95  Dair=96565.23  Nrad=428076.25  Drad=3066.19  CX=1624.25  airX=5.989
+     Nair=13502500.96  Dair=96565.23  Nrad=428076.24  Drad=3066.19  CX=1624.25  airX=5.989
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16042  fvent=0.000  pz0=0.0316  qsHvac=17044
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.280  mwDuctLk=0.000  mwSys=0.000
@@ -32227,7 +32227,7 @@ RDuctZone CZ: anMCp/T[ 0]=166.35/7326.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13499589.82  Dair=96542.07  Nrad=429264.56  Drad=3071.06  CX=1544.52  airX=5.847
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15962  fvent=0.000  pz0=-0.0445  qsHvac=16528
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.503  mwDuctLk=0.000  mwSys=61.533
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.503  mwDuctLk=0.000  mwSys=61.534
      tdb=78.00  airX=12.122  dryAirMass=651.84  XLGain=0.00  W=0.011073  twb=66.11  rh=0.5379
 Single CZ: anMCp/T[ 0]=20.06/883.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8385972.16  Dair=107013.03  Nrad=205606.10  Drad=2437.94  CX=1170.03  airX=12.122
@@ -32292,7 +32292,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.153  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.047  dryAirMass=654.15  XLGain=0.00  W=0.006427  twb=77.86  rh=0.0517
 RDuctZone CZ: anMCp/T[ 0]=166.31/7306.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499570.30  Dair=96542.03  Nrad=429265.01  Drad=3071.06  CX=1544.52  airX=5.847
+     Nair=13499570.31  Dair=96542.03  Nrad=429265.01  Drad=3071.06  CX=1544.52  airX=5.847
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15976  fvent=0.000  pz0=-0.0445  qsHvac=16542
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.496  mwDuctLk=0.000  mwSys=61.458
@@ -32354,7 +32354,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.067  mwSys=0.000
      tdb=140.00  airX=1.183  dryAirMass=652.61  XLGain=0.00  W=0.007926  twb=79.50  rh=0.0636
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502430.75  Dair=96564.31  Nrad=428081.94  Drad=3066.20  CX=1620.04  airX=5.983
+     Nair=13502430.76  Dair=96564.31  Nrad=428081.94  Drad=3066.20  CX=1620.04  airX=5.983
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15985  fvent=0.000  pz0=0.0310  qsHvac=16982
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.124  mwDuctLk=0.000  mwSys=0.000
@@ -32388,13 +32388,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.063  mwSys=0.000
      tdb=140.00  airX=1.182  dryAirMass=652.61  XLGain=0.00  W=0.007923  twb=79.49  rh=0.0636
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502420.00  Dair=96564.13  Nrad=428082.72  Drad=3066.20  CX=1620.04  airX=5.982
+     Nair=13502419.99  Dair=96564.13  Nrad=428082.72  Drad=3066.20  CX=1620.04  airX=5.982
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15972  fvent=0.000  pz0=0.0310  qsHvac=16968
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.114  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.044  dryAirMass=654.19  XLGain=0.00  W=0.006387  twb=77.81  rh=0.0514
 RDuctZone CZ: anMCp/T[ 0]=165.85/7259.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499523.64  Dair=96541.57  Nrad=429265.96  Drad=3071.06  CX=1544.52  airX=5.844
+     Nair=13499523.65  Dair=96541.57  Nrad=429265.96  Drad=3071.06  CX=1544.52  airX=5.844
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15959  fvent=0.000  pz0=-0.0443  qsHvac=16525
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.505  mwDuctLk=0.000  mwSys=61.308
@@ -32422,7 +32422,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.060  mwSys=0.000
      tdb=140.00  airX=1.182  dryAirMass=652.62  XLGain=0.00  W=0.007920  twb=79.49  rh=0.0636
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502415.12  Dair=96564.07  Nrad=428083.18  Drad=3066.20  CX=1620.04  airX=5.982
+     Nair=13502415.13  Dair=96564.07  Nrad=428083.18  Drad=3066.20  CX=1620.04  airX=5.982
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15969  fvent=0.000  pz0=0.0310  qsHvac=16965
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.105  mwDuctLk=0.000  mwSys=0.000
@@ -32456,7 +32456,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.056  mwSys=0.000
      tdb=140.00  airX=1.182  dryAirMass=652.62  XLGain=0.00  W=0.007918  twb=79.49  rh=0.0636
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502410.29  Dair=96564.01  Nrad=428083.59  Drad=3066.20  CX=1620.04  airX=5.982
+     Nair=13502410.29  Dair=96564.01  Nrad=428083.58  Drad=3066.20  CX=1620.04  airX=5.982
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15965  fvent=0.000  pz0=0.0310  qsHvac=16961
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.095  mwDuctLk=0.000  mwSys=0.000
@@ -32490,7 +32490,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.052  mwSys=0.000
      tdb=140.00  airX=1.181  dryAirMass=652.62  XLGain=0.00  W=0.007915  twb=79.49  rh=0.0636
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502405.48  Dair=96563.95  Nrad=428083.96  Drad=3066.20  CX=1620.04  airX=5.981
+     Nair=13502405.47  Dair=96563.95  Nrad=428083.96  Drad=3066.20  CX=1620.04  airX=5.981
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15962  fvent=0.000  pz0=0.0310  qsHvac=16957
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.086  mwDuctLk=0.000  mwSys=0.000
@@ -32966,13 +32966,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.9
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.993  mwSys=0.000
      tdb=140.00  airX=1.174  dryAirMass=652.66  XLGain=0.00  W=0.007880  twb=79.45  rh=0.0633
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502332.65  Dair=96562.99  Nrad=428089.68  Drad=3066.21  CX=1620.04  airX=5.974
+     Nair=13502332.64  Dair=96562.99  Nrad=428089.68  Drad=3066.21  CX=1620.04  airX=5.974
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15903  fvent=0.000  pz0=0.0303  qsHvac=16894
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.934  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.036  dryAirMass=654.42  XLGain=0.00  W=0.006166  twb=77.57  rh=0.0496
 RDuctZone CZ: anMCp/T[ 0]=164.71/7058.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499324.40  Dair=96540.43  Nrad=429270.92  Drad=3071.07  CX=1544.52  airX=5.836
+     Nair=13499324.39  Dair=96540.43  Nrad=429270.92  Drad=3071.07  CX=1544.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16001  fvent=0.000  pz0=-0.0441  qsHvac=16563
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.485  mwDuctLk=0.000  mwSys=60.600
@@ -33006,7 +33006,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.925  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.036  dryAirMass=654.43  XLGain=0.00  W=0.006153  twb=77.56  rh=0.0495
 RDuctZone CZ: anMCp/T[ 0]=164.69/7048.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499314.86  Dair=96540.41  Nrad=429271.44  Drad=3071.07  CX=1544.52  airX=5.836
+     Nair=13499314.85  Dair=96540.41  Nrad=429271.44  Drad=3071.07  CX=1544.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16008  fvent=0.000  pz0=-0.0441  qsHvac=16570
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.482  mwDuctLk=0.000  mwSys=60.562
@@ -33028,7 +33028,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.75  txe=139.8
      ta0=54.17  ta1=54.17  ta2=54.41  ta3=54.65
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.90
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
-     amfFL=19687.5  amfLeak=680.9  uaTot=22.8069  beta=0.995  tSrf=132.99
+     amfFL=19687.5  amfLeak=681.0  uaTot=22.8069  beta=0.995  tSrf=132.99
      runF=0.432  qCondAir=-163.77  qCondRad=-396.31, qCondTot=-560.08
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.988  mwSys=0.000
@@ -33040,7 +33040,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.918  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.036  dryAirMass=654.45  XLGain=0.00  W=0.006140  twb=77.54  rh=0.0494
 RDuctZone CZ: anMCp/T[ 0]=164.69/7048.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499314.98  Dair=96540.41  Nrad=429271.78  Drad=3071.07  CX=1524.52  airX=5.836
+     Nair=13499314.97  Dair=96540.41  Nrad=429271.78  Drad=3071.07  CX=1524.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16008  fvent=0.000  pz0=-0.0441  qsHvac=16568
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.481  mwDuctLk=0.000  mwSys=60.543
@@ -33063,12 +33063,12 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.75  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.90
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=680.9  uaTot=22.8069  beta=0.995  tSrf=132.99
-     runF=0.432  qCondAir=-163.76  qCondRad=-396.25, qCondTot=-560.01
+     runF=0.432  qCondAir=-163.76  qCondRad=-396.25, qCondTot=-560.00
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.987  mwSys=0.000
      tdb=140.00  airX=1.174  dryAirMass=652.66  XLGain=0.00  W=0.007873  twb=79.44  rh=0.0632
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502314.53  Dair=96562.72  Nrad=428091.41  Drad=3066.21  CX=1616.70  airX=5.974
+     Nair=13502314.54  Dair=96562.72  Nrad=428091.41  Drad=3066.21  CX=1616.70  airX=5.974
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15884  fvent=0.000  pz0=0.0303  qsHvac=16873
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.910  mwDuctLk=0.000  mwSys=0.000
@@ -33102,7 +33102,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.9
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.985  mwSys=0.000
      tdb=140.00  airX=1.173  dryAirMass=652.67  XLGain=0.00  W=0.007870  twb=79.44  rh=0.0632
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502312.86  Dair=96562.70  Nrad=428091.66  Drad=3066.21  CX=1616.70  airX=5.973
+     Nair=13502312.85  Dair=96562.70  Nrad=428091.67  Drad=3066.21  CX=1616.70  airX=5.973
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15882  fvent=0.000  pz0=0.0303  qsHvac=16872
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.903  mwDuctLk=0.000  mwSys=0.000
@@ -33176,7 +33176,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.889  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.036  dryAirMass=654.50  XLGain=0.00  W=0.006089  twb=77.49  rh=0.0490
 RDuctZone CZ: anMCp/T[ 0]=164.70/7049.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499315.17  Dair=96540.42  Nrad=429271.27  Drad=3071.06  CX=1524.52  airX=5.836
+     Nair=13499315.16  Dair=96540.42  Nrad=429271.27  Drad=3071.06  CX=1524.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16008  fvent=0.000  pz0=-0.0441  qsHvac=16568
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.477  mwDuctLk=0.000  mwSys=60.497
@@ -33212,7 +33212,7 @@ RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.882  mwDuctLk=0.000  mwSys=0.000
 RDuctZone CZ: anMCp/T[ 0]=164.70/7049.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13499315.19  Dair=96540.42  Nrad=429271.28  Drad=3071.06  CX=1524.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
-     ta=140.00  tr=139.85  qIzSh=-16009  fvent=0.000  pz0=-0.0441  qsHvac=16568
+     ta=140.00  tr=139.85  qIzSh=-16008  fvent=0.000  pz0=-0.0441  qsHvac=16568
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.476  mwDuctLk=0.000  mwSys=60.487
      tdb=78.00  airX=12.004  dryAirMass=651.87  XLGain=0.00  W=0.011044  twb=66.07  rh=0.5364
 Single CZ: anMCp/T[ 0]=20.18/863.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
@@ -33312,7 +33312,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.860  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.036  dryAirMass=654.55  XLGain=0.00  W=0.006039  twb=77.43  rh=0.0486
 RDuctZone CZ: anMCp/T[ 0]=164.70/7049.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499315.27  Dair=96540.42  Nrad=429271.34  Drad=3071.06  CX=1524.52  airX=5.836
+     Nair=13499315.26  Dair=96540.42  Nrad=429271.34  Drad=3071.06  CX=1524.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16009  fvent=0.000  pz0=-0.0441  qsHvac=16568
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.473  mwDuctLk=0.000  mwSys=60.458
@@ -33646,7 +33646,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.9
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.970  mwSys=0.000
      tdb=140.00  airX=1.172  dryAirMass=652.70  XLGain=0.00  W=0.007842  twb=79.41  rh=0.0630
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502292.40  Dair=96562.43  Nrad=428094.29  Drad=3066.22  CX=1616.71  airX=5.972
+     Nair=13502292.39  Dair=96562.43  Nrad=428094.29  Drad=3066.22  CX=1616.71  airX=5.972
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15866  fvent=0.000  pz0=0.0303  qsHvac=16854
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.789  mwDuctLk=0.000  mwSys=0.000
@@ -33680,7 +33680,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.9
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.969  mwSys=0.000
      tdb=140.00  airX=1.172  dryAirMass=652.70  XLGain=0.00  W=0.007840  twb=79.40  rh=0.0630
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502291.20  Dair=96562.41  Nrad=428094.42  Drad=3066.22  CX=1616.71  airX=5.972
+     Nair=13502291.21  Dair=96562.41  Nrad=428094.42  Drad=3066.22  CX=1616.71  airX=5.972
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15865  fvent=0.000  pz0=0.0303  qsHvac=16853
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.782  mwDuctLk=0.000  mwSys=0.000
@@ -33821,7 +33821,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=140.00  tr=139.75  qIzSh=-15861  fvent=0.000  pz0=0.0303  qsHvac=16849
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.753  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.036  dryAirMass=654.74  XLGain=0.00  W=0.005861  twb=77.23  rh=0.0472
-RDuctZone CZ: anMCp/T[ 0]=164.70/7049.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
+RDuctZone CZ: anMCp/T[ 0]=164.70/7049.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13499315.75  Dair=96540.43  Nrad=429271.99  Drad=3071.06  CX=1524.52  airX=5.836
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16009  fvent=0.000  pz0=-0.0441  qsHvac=16568
@@ -33924,7 +33924,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.732  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.035  dryAirMass=654.77  XLGain=0.00  W=0.005826  twb=77.20  rh=0.0469
 RDuctZone CZ: anMCp/T[ 0]=164.71/7049.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499315.86  Dair=96540.43  Nrad=429272.16  Drad=3071.06  CX=1524.52  airX=5.835
+     Nair=13499315.85  Dair=96540.43  Nrad=429272.16  Drad=3071.06  CX=1524.52  airX=5.835
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16009  fvent=0.000  pz0=-0.0441  qsHvac=16568
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.455  mwDuctLk=0.000  mwSys=60.295
@@ -33986,7 +33986,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.9
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.962  mwSys=0.000
      tdb=140.00  airX=1.171  dryAirMass=652.71  XLGain=0.00  W=0.007829  twb=79.39  rh=0.0629
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502280.58  Dair=96562.28  Nrad=428095.45  Drad=3066.22  CX=1616.71  airX=5.971
+     Nair=13502280.59  Dair=96562.28  Nrad=428095.45  Drad=3066.22  CX=1616.71  airX=5.971
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15857  fvent=0.000  pz0=0.0303  qsHvac=16844
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.718  mwDuctLk=0.000  mwSys=0.000
@@ -34229,7 +34229,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=140.00  tr=139.75  qIzSh=-15845  fvent=0.000  pz0=0.0300  qsHvac=16831
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.735  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.032  dryAirMass=654.87  XLGain=0.00  W=0.005738  twb=77.10  rh=0.0462
-RDuctZone CZ: anMCp/T[ 0]=164.12/7018.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
+RDuctZone CZ: anMCp/T[ 0]=164.12/7018.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13499284.72  Dair=96539.84  Nrad=429271.46  Drad=3071.06  CX=1504.90  airX=5.832
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15958  fvent=0.000  pz0=-0.0439  qsHvac=16515
@@ -34876,7 +34876,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.853  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.031  dryAirMass=654.93  XLGain=0.00  W=0.005685  twb=77.04  rh=0.0458
 RDuctZone CZ: anMCp/T[ 0]=164.10/6998.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499265.14  Dair=96539.82  Nrad=429270.93  Drad=3071.06  CX=1504.90  airX=5.831
+     Nair=13499265.13  Dair=96539.82  Nrad=429270.93  Drad=3071.06  CX=1504.90  airX=5.831
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15975  fvent=0.000  pz0=-0.0439  qsHvac=16533
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.475  mwDuctLk=0.000  mwSys=60.102
@@ -34910,7 +34910,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.859  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.031  dryAirMass=654.93  XLGain=0.00  W=0.005686  twb=77.04  rh=0.0458
 RDuctZone CZ: anMCp/T[ 0]=164.10/6997.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499264.10  Dair=96539.82  Nrad=429270.92  Drad=3071.06  CX=1504.90  airX=5.831
+     Nair=13499264.09  Dair=96539.82  Nrad=429270.92  Drad=3071.06  CX=1504.90  airX=5.831
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15976  fvent=0.000  pz0=-0.0439  qsHvac=16534
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.476  mwDuctLk=0.000  mwSys=60.100
@@ -35142,7 +35142,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.939  mwSys=0.000
      tdb=140.00  airX=1.168  dryAirMass=652.74  XLGain=0.00  W=0.007803  twb=79.36  rh=0.0627
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502251.66  Dair=96561.89  Nrad=428097.77  Drad=3066.22  CX=1613.59  airX=5.968
+     Nair=13502251.65  Dair=96561.89  Nrad=428097.77  Drad=3066.22  CX=1613.59  airX=5.968
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15832  fvent=0.000  pz0=0.0300  qsHvac=16817
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.843  mwDuctLk=0.000  mwSys=0.000
@@ -35278,7 +35278,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.932  mwSys=0.000
      tdb=140.00  airX=1.167  dryAirMass=652.74  XLGain=0.00  W=0.007800  twb=79.36  rh=0.0626
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502242.77  Dair=96561.78  Nrad=428098.13  Drad=3066.22  CX=1613.59  airX=5.967
+     Nair=13502242.78  Dair=96561.78  Nrad=428098.13  Drad=3066.22  CX=1613.59  airX=5.967
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15826  fvent=0.000  pz0=0.0300  qsHvac=16811
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.789  mwDuctLk=0.000  mwSys=0.000
@@ -35307,7 +35307,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.75  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=677.3  uaTot=22.8069  beta=0.995  tSrf=132.98
-     runF=0.430  qCondAir=-162.90  qCondRad=-394.15, qCondTot=-557.05
+     runF=0.430  qCondAir=-162.90  qCondRad=-394.14, qCondTot=-557.05
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.930  mwSys=0.000
      tdb=140.00  airX=1.167  dryAirMass=652.74  XLGain=0.00  W=0.007799  twb=79.36  rh=0.0626
@@ -35642,7 +35642,7 @@ Sat 28-Feb  hr=6 subhr=17
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.75  txe=139.82
      hc=0.540  hr=1.330  htot=1.870  cx=0.339  Rduct=4.062  Uduct=0.2462
      amfFL=19687.5  amfLeak=760.1  uaTot=26.7599  beta=0.994  tSrf=129.87
-     runF=0.429  qCondAir=-288.73  qCondRad=-693.81, qCondTot=-982.53
+     runF=0.429  qCondAir=-288.73  qCondRad=-693.81, qCondTot=-982.54
      ta0=53.99  ta1=53.99  ta2=54.23  ta3=54.47
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -35686,7 +35686,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.902  mwSys=0.000
      tdb=140.00  airX=1.164  dryAirMass=652.75  XLGain=0.00  W=0.007790  twb=79.35  rh=0.0626
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502203.43  Dair=96561.26  Nrad=428100.49  Drad=3066.23  CX=1613.59  airX=5.964
+     Nair=13502203.44  Dair=96561.26  Nrad=428100.49  Drad=3066.23  CX=1613.59  airX=5.964
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15793  fvent=0.000  pz0=0.0297  qsHvac=16777
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.618  mwDuctLk=0.000  mwSys=0.000
@@ -35856,7 +35856,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=5.886  mwSys=0.000
      tdb=140.00  airX=1.162  dryAirMass=652.76  XLGain=0.00  W=0.007785  twb=79.34  rh=0.0625
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502187.76  Dair=96561.06  Nrad=428101.45  Drad=3066.23  CX=1613.59  airX=5.962
+     Nair=13502187.77  Dair=96561.06  Nrad=428101.45  Drad=3066.23  CX=1613.59  airX=5.962
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15782  fvent=0.000  pz0=0.0294  qsHvac=16765
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.543  mwDuctLk=0.000  mwSys=0.000
@@ -36066,7 +36066,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.463  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.024  dryAirMass=655.11  XLGain=0.00  W=0.005501  twb=76.84  rh=0.0443
 RDuctZone CZ: anMCp/T[ 0]=162.91/6767.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499034.58  Dair=96538.63  Nrad=429274.40  Drad=3071.06  CX=1499.34  airX=5.824
+     Nair=13499034.59  Dair=96538.63  Nrad=429274.40  Drad=3071.06  CX=1499.34  airX=5.824
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-16040  fvent=0.000  pz0=-0.0437  qsHvac=16594
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.418  mwDuctLk=0.000  mwSys=59.355
@@ -36168,7 +36168,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.542  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.025  dryAirMass=655.14  XLGain=0.00  W=0.005475  twb=76.81  rh=0.0441
 RDuctZone CZ: anMCp/T[ 0]=163.13/6864.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13499131.78  Dair=96538.85  Nrad=429273.83  Drad=3071.06  CX=1488.32  airX=5.825
+     Nair=13499131.79  Dair=96538.85  Nrad=429273.83  Drad=3071.06  CX=1488.32  airX=5.825
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15973  fvent=0.000  pz0=-0.0437  qsHvac=16527
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.448  mwDuctLk=0.000  mwSys=59.548
@@ -36706,7 +36706,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.056  mwSys=0.000
      tdb=140.00  airX=1.181  dryAirMass=652.75  XLGain=0.00  W=0.007795  twb=79.35  rh=0.0626
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502390.79  Dair=96563.72  Nrad=428091.95  Drad=3066.22  CX=1612.48  airX=5.981
+     Nair=13502390.80  Dair=96563.72  Nrad=428091.95  Drad=3066.22  CX=1612.48  airX=5.981
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15947  fvent=0.000  pz0=0.0306  qsHvac=16936
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=3.983  mwDuctLk=0.000  mwSys=0.000
@@ -36774,7 +36774,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.080  mwSys=0.000
      tdb=140.00  airX=1.184  dryAirMass=652.74  XLGain=0.00  W=0.007800  twb=79.36  rh=0.0626
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502417.18  Dair=96564.05  Nrad=428090.18  Drad=3066.21  CX=1612.48  airX=5.984
+     Nair=13502417.19  Dair=96564.05  Nrad=428090.18  Drad=3066.21  CX=1612.48  airX=5.984
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-15966  fvent=0.000  pz0=0.0309  qsHvac=16956
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.052  mwDuctLk=0.000  mwSys=0.000
@@ -36876,7 +36876,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.115  mwSys=0.000
      tdb=140.00  airX=1.188  dryAirMass=652.74  XLGain=0.00  W=0.007810  twb=79.37  rh=0.0627
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502464.06  Dair=96564.68  Nrad=428086.99  Drad=3066.21  CX=1612.48  airX=5.988
+     Nair=13502464.05  Dair=96564.68  Nrad=428086.99  Drad=3066.21  CX=1612.48  airX=5.988
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16006  fvent=0.000  pz0=0.0312  qsHvac=16998
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.152  mwDuctLk=0.000  mwSys=0.000
@@ -36978,7 +36978,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.152  mwSys=0.000
      tdb=140.00  airX=1.192  dryAirMass=652.73  XLGain=0.00  W=0.007820  twb=79.38  rh=0.0628
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502512.17  Dair=96565.32  Nrad=428083.62  Drad=3066.20  CX=1612.48  airX=5.992
+     Nair=13502512.18  Dair=96565.32  Nrad=428083.62  Drad=3066.20  CX=1612.48  airX=5.992
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16047  fvent=0.000  pz0=0.0315  qsHvac=17041
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.254  mwDuctLk=0.000  mwSys=0.000
@@ -37052,7 +37052,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.316  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.047  dryAirMass=654.93  XLGain=0.00  W=0.005708  twb=77.07  rh=0.0460
 RDuctZone CZ: anMCp/T[ 0]=166.64/7792.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500053.32  Dair=96542.37  Nrad=429255.06  Drad=3071.03  CX=1488.32  airX=5.847
+     Nair=13500053.33  Dair=96542.37  Nrad=429255.06  Drad=3071.03  CX=1488.32  airX=5.847
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15538  fvent=0.000  pz0=-0.0442  qsHvac=16104
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.562  mwDuctLk=0.000  mwSys=62.427
@@ -37109,18 +37109,18 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.75  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=694.7  uaTot=22.8068  beta=0.995  tSrf=132.98
-     runF=0.441  qCondAir=-167.15  qCondRad=-404.23, qCondTot=-571.39
+     runF=0.441  qCondAir=-167.15  qCondRad=-404.23, qCondTot=-571.38
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.201  mwSys=0.000
      tdb=140.00  airX=1.197  dryAirMass=652.71  XLGain=0.00  W=0.007836  twb=79.40  rh=0.0629
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502581.96  Dair=96566.28  Nrad=428078.69  Drad=3066.20  CX=1614.75  airX=5.997
+     Nair=13502581.97  Dair=96566.28  Nrad=428078.69  Drad=3066.20  CX=1614.75  airX=5.997
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16109  fvent=0.000  pz0=0.0318  qsHvac=17107
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.376  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.051  dryAirMass=654.89  XLGain=0.00  W=0.005752  twb=77.11  rh=0.0463
 RDuctZone CZ: anMCp/T[ 0]=167.15/7876.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500136.58  Dair=96542.88  Nrad=429253.11  Drad=3071.03  CX=1501.42  airX=5.851
+     Nair=13500136.59  Dair=96542.88  Nrad=429253.11  Drad=3071.03  CX=1501.42  airX=5.851
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15525  fvent=0.000  pz0=-0.0443  qsHvac=16093
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.562  mwDuctLk=0.000  mwSys=62.701
@@ -37148,7 +37148,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.212  mwSys=0.000
      tdb=140.00  airX=1.199  dryAirMass=652.71  XLGain=0.00  W=0.007840  twb=79.40  rh=0.0630
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502598.04  Dair=96566.49  Nrad=428076.77  Drad=3066.19  CX=1614.75  airX=5.999
+     Nair=13502598.03  Dair=96566.49  Nrad=428076.77  Drad=3066.19  CX=1614.75  airX=5.999
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16123  fvent=0.000  pz0=0.0318  qsHvac=17122
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.395  mwDuctLk=0.000  mwSys=0.000
@@ -37182,7 +37182,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.227  mwSys=0.000
      tdb=140.00  airX=1.200  dryAirMass=652.70  XLGain=0.00  W=0.007844  twb=79.41  rh=0.0630
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502612.67  Dair=96566.68  Nrad=428075.56  Drad=3066.19  CX=1614.75  airX=6.000
+     Nair=13502612.66  Dair=96566.68  Nrad=428075.56  Drad=3066.19  CX=1614.75  airX=6.000
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.75  qIzSh=-16134  fvent=0.000  pz0=0.0322  qsHvac=17133
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.424  mwDuctLk=0.000  mwSys=0.000
@@ -37290,7 +37290,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.492  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.058  dryAirMass=654.77  XLGain=0.00  W=0.005864  twb=77.24  rh=0.0472
 RDuctZone CZ: anMCp/T[ 0]=168.29/8081.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500340.08  Dair=96544.02  Nrad=429249.30  Drad=3071.02  CX=1501.42  airX=5.858
+     Nair=13500340.07  Dair=96544.02  Nrad=429249.30  Drad=3071.02  CX=1501.42  airX=5.858
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15479  fvent=0.000  pz0=-0.0446  qsHvac=16050
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.569  mwDuctLk=0.000  mwSys=63.343
@@ -37546,7 +37546,7 @@ Sat 28-Feb  hr=8 subhr=13
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.82
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.058  Uduct=0.2464
      amfFL=19687.5  amfLeak=793.5  uaTot=26.7836  beta=0.994  tSrf=129.97
-     runF=0.448  qCondAir=-298.48  qCondRad=-716.77, qCondTot=-1015.26
+     runF=0.448  qCondAir=-298.48  qCondRad=-716.77, qCondTot=-1015.25
      ta0=54.94  ta1=54.94  ta2=55.18  ta3=55.42
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -37556,7 +37556,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.365  mwSys=0.000
      tdb=140.00  airX=1.216  dryAirMass=652.65  XLGain=0.00  W=0.007897  twb=79.47  rh=0.0634
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502800.37  Dair=96569.21  Nrad=428061.23  Drad=3066.17  CX=1614.75  airX=6.016
+     Nair=13502800.38  Dair=96569.21  Nrad=428061.23  Drad=3066.17  CX=1614.75  airX=6.016
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16294  fvent=0.000  pz0=0.0332  qsHvac=17303
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.667  mwDuctLk=0.000  mwSys=0.000
@@ -37590,13 +37590,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.380  mwSys=0.000
      tdb=140.00  airX=1.218  dryAirMass=652.64  XLGain=0.00  W=0.007903  twb=79.47  rh=0.0635
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502815.86  Dair=96569.41  Nrad=428060.02  Drad=3066.17  CX=1614.75  airX=6.018
+     Nair=13502815.85  Dair=96569.41  Nrad=428060.02  Drad=3066.17  CX=1614.75  airX=6.018
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16306  fvent=0.000  pz0=0.0335  qsHvac=17316
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.698  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.070  dryAirMass=654.55  XLGain=0.00  W=0.006073  twb=77.47  rh=0.0489
 RDuctZone CZ: anMCp/T[ 0]=170.09/8443.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500699.35  Dair=96545.82  Nrad=429240.83  Drad=3071.01  CX=1501.41  airX=5.870
+     Nair=13500699.34  Dair=96545.82  Nrad=429240.83  Drad=3071.01  CX=1501.41  airX=5.870
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15369  fvent=0.000  pz0=-0.0450  qsHvac=15946
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.595  mwDuctLk=0.000  mwSys=64.509
@@ -37630,7 +37630,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.720  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.070  dryAirMass=654.53  XLGain=0.00  W=0.006096  twb=77.49  rh=0.0491
 RDuctZone CZ: anMCp/T[ 0]=170.15/8477.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13500732.59  Dair=96545.88  Nrad=429239.72  Drad=3071.01  CX=1501.41  airX=5.870
+     Nair=13500732.58  Dair=96545.88  Nrad=429239.72  Drad=3071.01  CX=1501.41  airX=5.870
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.85  qIzSh=-15344  fvent=0.000  pz0=-0.0450  qsHvac=15921
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.605  mwDuctLk=0.000  mwSys=64.630
@@ -37658,7 +37658,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.404  mwSys=0.000
      tdb=140.00  airX=1.220  dryAirMass=652.63  XLGain=0.00  W=0.007913  twb=79.48  rh=0.0635
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502852.18  Dair=96569.90  Nrad=428057.24  Drad=3066.16  CX=1614.75  airX=6.020
+     Nair=13502852.17  Dair=96569.90  Nrad=428057.24  Drad=3066.16  CX=1614.75  airX=6.020
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16338  fvent=0.000  pz0=0.0335  qsHvac=17350
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.743  mwDuctLk=0.000  mwSys=0.000
@@ -37726,7 +37726,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.431  mwSys=0.000
      tdb=140.00  airX=1.223  dryAirMass=652.62  XLGain=0.00  W=0.007924  twb=79.50  rh=0.0636
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502888.73  Dair=96570.40  Nrad=428054.45  Drad=3066.16  CX=1614.75  airX=6.023
+     Nair=13502888.72  Dair=96570.40  Nrad=428054.45  Drad=3066.16  CX=1614.75  airX=6.023
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16370  fvent=0.000  pz0=0.0338  qsHvac=17384
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.800  mwDuctLk=0.000  mwSys=0.000
@@ -37936,7 +37936,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.963  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.082  dryAirMass=654.30  XLGain=0.00  W=0.006321  twb=77.74  rh=0.0509
 RDuctZone CZ: anMCp/T[ 0]=172.01/8848.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13501100.74  Dair=96547.75  Nrad=429230.43  Drad=3071.00  CX=1501.41  airX=5.882
+     Nair=13501100.75  Dair=96547.75  Nrad=429230.43  Drad=3071.00  CX=1501.41  airX=5.882
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-15233  fvent=0.000  pz0=-0.0454  qsHvac=15817
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.636  mwDuctLk=0.000  mwSys=65.844
@@ -37970,7 +37970,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=4.986  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.083  dryAirMass=654.27  XLGain=0.00  W=0.006347  twb=77.77  rh=0.0511
 RDuctZone CZ: anMCp/T[ 0]=172.07/8882.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13501134.40  Dair=96547.81  Nrad=429229.41  Drad=3070.99  CX=1501.41  airX=5.883
+     Nair=13501134.41  Dair=96547.81  Nrad=429229.41  Drad=3070.99  CX=1501.41  airX=5.883
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-15208  fvent=0.000  pz0=-0.0454  qsHvac=15791
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.647  mwDuctLk=0.000  mwSys=65.971
@@ -38129,7 +38129,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=720.4  uaTot=22.8066  beta=0.995  tSrf=132.98
-     runF=0.457  qCondAir=-173.40  qCondRad=-419.05, qCondTot=-592.45
+     runF=0.457  qCondAir=-173.40  qCondRad=-419.05, qCondTot=-592.44
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.595  mwSys=0.000
      tdb=140.00  airX=1.242  dryAirMass=652.55  XLGain=0.00  W=0.007995  twb=79.57  rh=0.0642
@@ -38147,7 +38147,7 @@ Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.653  mwDuctLk=0.000  mwSys=66.680
      tdb=78.00  airX=12.714  dryAirMass=651.72  XLGain=0.00  W=0.011194  twb=66.28  rh=0.5436
 Single CZ: anMCp/T[ 0]=22.15/1163.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386252.69  Dair=107015.12  Nrad=205607.51  Drad=2437.94  CX=1172.28  airX=12.714
-     TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9005  amfSup=8195   tSup=55.85
+     TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9005  amfSup=8194   tSup=55.85
      ta=78.00  tr=82.28  qIzSh=-565  fvent=0.000  pz0=-0.0053  qsHvac=-44089
 
 
@@ -38168,7 +38168,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.607  mwSys=0.000
      tdb=140.00  airX=1.243  dryAirMass=652.54  XLGain=0.00  W=0.008001  twb=79.58  rh=0.0642
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503120.74  Dair=96573.52  Nrad=428035.77  Drad=3066.13  CX=1621.40  airX=6.043
+     Nair=13503120.73  Dair=96573.52  Nrad=428035.77  Drad=3066.13  CX=1621.40  airX=6.043
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16567  fvent=0.000  pz0=0.0352  qsHvac=17595
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.114  mwDuctLk=0.000  mwSys=0.000
@@ -38270,7 +38270,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.645  mwSys=0.000
      tdb=140.00  airX=1.247  dryAirMass=652.52  XLGain=0.00  W=0.008020  twb=79.60  rh=0.0644
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503169.96  Dair=96574.18  Nrad=428031.71  Drad=3066.12  CX=1621.40  airX=6.047
+     Nair=13503169.95  Dair=96574.18  Nrad=428031.71  Drad=3066.12  CX=1621.40  airX=6.047
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16609  fvent=0.000  pz0=0.0356  qsHvac=17639
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.143  mwDuctLk=0.000  mwSys=0.000
@@ -38639,12 +38639,12 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=732.4  uaTot=22.8066  beta=0.995  tSrf=132.98
-     runF=0.465  qCondAir=-176.29  qCondRad=-425.99, qCondTot=-602.28
+     runF=0.465  qCondAir=-176.29  qCondRad=-425.99, qCondTot=-602.27
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.783  mwSys=0.000
      tdb=140.00  airX=1.263  dryAirMass=652.45  XLGain=0.00  W=0.008089  twb=79.68  rh=0.0649
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503349.72  Dair=96576.60  Nrad=428017.39  Drad=3066.10  CX=1621.39  airX=6.063
+     Nair=13503349.73  Dair=96576.60  Nrad=428017.39  Drad=3066.10  CX=1621.39  airX=6.063
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16762  fvent=0.000  pz0=0.0368  qsHvac=17802
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.247  mwDuctLk=0.000  mwSys=0.000
@@ -38678,7 +38678,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.795  mwSys=0.000
      tdb=140.00  airX=1.264  dryAirMass=652.44  XLGain=0.00  W=0.008095  twb=79.68  rh=0.0650
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503364.70  Dair=96576.79  Nrad=428016.15  Drad=3066.10  CX=1621.39  airX=6.064
+     Nair=13503364.69  Dair=96576.79  Nrad=428016.15  Drad=3066.10  CX=1621.39  airX=6.064
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16774  fvent=0.000  pz0=0.0368  qsHvac=17814
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.252  mwDuctLk=0.000  mwSys=0.000
@@ -38820,7 +38820,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.297  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.117  dryAirMass=653.72  XLGain=0.00  W=0.006868  twb=78.34  rh=0.0552
 RDuctZone CZ: anMCp/T[ 0]=177.35/9885.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502130.31  Dair=96553.09  Nrad=429209.19  Drad=3070.97  CX=1539.97  airX=5.917
+     Nair=13502130.30  Dair=96553.09  Nrad=429209.19  Drad=3070.97  CX=1539.97  airX=5.917
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14943  fvent=0.000  pz0=-0.0466  qsHvac=15544
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.669  mwDuctLk=0.000  mwSys=69.216
@@ -38860,7 +38860,7 @@ RDuctZone CZ: anMCp/T[ 0]=177.39/9917.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.676  mwDuctLk=0.000  mwSys=69.334
      tdb=78.00  airX=13.009  dryAirMass=651.65  XLGain=0.00  W=0.011256  twb=66.36  rh=0.5466
 Single CZ: anMCp/T[ 0]=22.62/1264.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386351.36  Dair=107015.59  Nrad=205601.11  Drad=2437.92  CX=1172.28  airX=13.009
+     Nair=8386351.35  Dair=107015.59  Nrad=205601.11  Drad=2437.92  CX=1172.28  airX=13.009
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9214  amfSup=8384   tSup=56.32
      ta=78.00  tr=82.28  qIzSh=-500  fvent=0.000  pz0=-0.0048  qsHvac=-44150
 
@@ -39290,7 +39290,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.008  mwSys=0.000
      tdb=140.00  airX=1.288  dryAirMass=652.33  XLGain=0.00  W=0.008208  twb=79.81  rh=0.0659
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503646.09  Dair=96580.59  Nrad=427992.99  Drad=3066.07  CX=1629.20  airX=6.088
+     Nair=13503646.08  Dair=96580.59  Nrad=427992.99  Drad=3066.07  CX=1629.20  airX=6.088
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17015  fvent=0.000  pz0=0.0387  qsHvac=18072
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.393  mwDuctLk=0.000  mwSys=0.000
@@ -39302,7 +39302,7 @@ RDuctZone CZ: anMCp/T[ 0]=179.76/10401.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.686  mwDuctLk=0.000  mwSys=70.863
      tdb=78.00  airX=13.181  dryAirMass=651.62  XLGain=0.00  W=0.011290  twb=66.41  rh=0.5482
 Single CZ: anMCp/T[ 0]=22.88/1323.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386409.20  Dair=107015.85  Nrad=205597.75  Drad=2437.90  CX=1174.09  airX=13.181
+     Nair=8386409.20  Dair=107015.85  Nrad=205597.76  Drad=2437.90  CX=1174.09  airX=13.181
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9335  amfSup=8495   tSup=56.59
      ta=78.00  tr=82.28  qIzSh=-461  fvent=0.000  pz0=-0.0046  qsHvac=-44192
 
@@ -39358,7 +39358,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.027  mwSys=0.000
      tdb=140.00  airX=1.290  dryAirMass=652.32  XLGain=0.00  W=0.008220  twb=79.82  rh=0.0660
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503670.75  Dair=96580.91  Nrad=427990.91  Drad=3066.06  CX=1629.20  airX=6.090
+     Nair=13503670.76  Dair=96580.91  Nrad=427990.91  Drad=3066.06  CX=1629.20  airX=6.090
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17035  fvent=0.000  pz0=0.0387  qsHvac=18094
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.388  mwDuctLk=0.000  mwSys=0.000
@@ -39450,7 +39450,7 @@ Sat 28-Feb  hr=10 subhr=9
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.73  txe=139.81
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.047  Uduct=0.2471
      amfFL=19687.5  amfLeak=843.7  uaTot=26.8485  beta=0.994  tSrf=130.08
-     runF=0.476  qCondAir=-313.63  qCondRad=-752.21, qCondTot=-1065.85
+     runF=0.476  qCondAir=-313.63  qCondRad=-752.22, qCondTot=-1065.85
      ta0=56.20  ta1=56.20  ta2=56.44  ta3=56.67
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -39494,7 +39494,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.067  mwSys=0.000
      tdb=140.00  airX=1.294  dryAirMass=652.29  XLGain=0.00  W=0.008243  twb=79.84  rh=0.0661
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503722.75  Dair=96581.61  Nrad=427986.66  Drad=3066.06  CX=1629.20  airX=6.094
+     Nair=13503722.74  Dair=96581.61  Nrad=427986.66  Drad=3066.06  CX=1629.20  airX=6.094
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17079  fvent=0.000  pz0=0.0391  qsHvac=18141
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.392  mwDuctLk=0.000  mwSys=0.000
@@ -39504,9 +39504,9 @@ RDuctZone CZ: anMCp/T[ 0]=180.47/10585.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14681  fvent=0.000  pz0=-0.0473  qsHvac=15295
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.697  mwDuctLk=0.000  mwSys=71.456
-     tdb=78.00  airX=13.249  dryAirMass=651.60  XLGain=0.00  W=0.011302  twb=66.43  rh=0.5488
+     tdb=78.00  airX=13.250  dryAirMass=651.60  XLGain=0.00  W=0.011302  twb=66.43  rh=0.5488
 Single CZ: anMCp/T[ 0]=23.31/1367.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386452.13  Dair=107016.29  Nrad=205596.11  Drad=2437.89  CX=1174.09  airX=13.249
+     Nair=8386452.13  Dair=107016.29  Nrad=205596.11  Drad=2437.89  CX=1174.09  airX=13.250
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9382  amfSup=8537   tSup=56.69
      ta=78.00  tr=82.27  qIzSh=-451  fvent=0.000  pz0=-0.0045  qsHvac=-44201
 
@@ -39812,7 +39812,7 @@ RDuctZone CZ: anMCp/T[ 0]=182.20/10902.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.683  mwDuctLk=0.000  mwSys=72.355
      tdb=78.00  airX=13.349  dryAirMass=651.59  XLGain=0.00  W=0.011320  twb=66.45  rh=0.5496
 Single CZ: anMCp/T[ 0]=23.00/1376.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386460.24  Dair=107015.98  Nrad=205594.71  Drad=2437.89  CX=1174.09  airX=13.349
+     Nair=8386460.24  Dair=107015.98  Nrad=205594.72  Drad=2437.89  CX=1174.09  airX=13.349
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9455  amfSup=8604   tSup=56.84
      ta=78.00  tr=82.27  qIzSh=-418  fvent=0.000  pz0=-0.0043  qsHvac=-44233
 
@@ -40242,7 +40242,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.276  mwSys=0.000
      tdb=140.00  airX=1.318  dryAirMass=652.17  XLGain=0.00  W=0.008358  twb=79.97  rh=0.0671
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504000.75  Dair=96585.37  Nrad=427963.67  Drad=3066.02  CX=1635.98  airX=6.118
+     Nair=13504000.74  Dair=96585.37  Nrad=427963.67  Drad=3066.02  CX=1635.98  airX=6.118
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17319  fvent=0.000  pz0=0.0411  qsHvac=18397
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.419  mwDuctLk=0.000  mwSys=0.000
@@ -40270,8 +40270,8 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.73  txe=139.8
      ta0=56.58  ta1=56.58  ta2=56.82  ta3=57.05
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.88
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
-     amfFL=19687.5  amfLeak=764.6  uaTot=22.8065  beta=0.995  tSrf=132.98
-     runF=0.485  qCondAir=-184.15  qCondRad=-444.64, qCondTot=-628.79
+     amfFL=19687.5  amfLeak=764.7  uaTot=22.8065  beta=0.995  tSrf=132.98
+     runF=0.485  qCondAir=-184.15  qCondRad=-444.65, qCondTot=-628.79
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.283  mwSys=0.000
      tdb=140.00  airX=1.319  dryAirMass=652.17  XLGain=0.00  W=0.008363  twb=79.97  rh=0.0671
@@ -40310,7 +40310,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.291  mwSys=0.000
      tdb=140.00  airX=1.320  dryAirMass=652.16  XLGain=0.00  W=0.008368  twb=79.98  rh=0.0671
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504020.49  Dair=96585.63  Nrad=427961.99  Drad=3066.02  CX=1635.98  airX=6.120
+     Nair=13504020.50  Dair=96585.63  Nrad=427961.99  Drad=3066.02  CX=1635.98  airX=6.120
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17335  fvent=0.000  pz0=0.0411  qsHvac=18414
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.418  mwDuctLk=0.000  mwSys=0.000
@@ -40548,7 +40548,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.346  mwSys=0.000
      tdb=140.00  airX=1.326  dryAirMass=652.13  XLGain=0.00  W=0.008399  twb=80.01  rh=0.0674
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504092.00  Dair=96586.59  Nrad=427956.21  Drad=3066.01  CX=1635.98  airX=6.126
+     Nair=13504092.01  Dair=96586.59  Nrad=427956.21  Drad=3066.01  CX=1635.98  airX=6.126
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17395  fvent=0.000  pz0=0.0418  qsHvac=18478
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.443  mwDuctLk=0.000  mwSys=0.000
@@ -40684,7 +40684,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.376  mwSys=0.000
      tdb=140.00  airX=1.330  dryAirMass=652.11  XLGain=0.00  W=0.008416  twb=80.03  rh=0.0675
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504134.38  Dair=96587.16  Nrad=427952.80  Drad=3066.00  CX=1635.98  airX=6.130
+     Nair=13504134.38  Dair=96587.16  Nrad=427952.78  Drad=3066.00  CX=1635.98  airX=6.130
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17432  fvent=0.000  pz0=0.0418  qsHvac=18517
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.441  mwDuctLk=0.000  mwSys=0.000
@@ -40718,13 +40718,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.385  mwSys=0.000
      tdb=140.00  airX=1.331  dryAirMass=652.11  XLGain=0.00  W=0.008420  twb=80.03  rh=0.0676
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504144.27  Dair=96587.30  Nrad=427952.00  Drad=3066.00  CX=1635.98  airX=6.131
+     Nair=13504144.27  Dair=96587.30  Nrad=427951.99  Drad=3066.00  CX=1635.98  airX=6.131
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17440  fvent=0.000  pz0=0.0421  qsHvac=18525
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.454  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.171  dryAirMass=653.42  XLGain=0.00  W=0.007145  twb=78.64  rh=0.0574
 RDuctZone CZ: anMCp/T[ 0]=185.85/11707.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503938.18  Dair=96561.60  Nrad=429169.67  Drad=3070.91  CX=1573.59  airX=5.971
+     Nair=13503938.19  Dair=96561.60  Nrad=429169.67  Drad=3070.91  CX=1573.59  airX=5.971
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14311  fvent=0.000  pz0=-0.0486  qsHvac=14942
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.688  mwDuctLk=0.000  mwSys=74.672
@@ -40752,7 +40752,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.393  mwSys=0.000
      tdb=140.00  airX=1.332  dryAirMass=652.10  XLGain=0.00  W=0.008425  twb=80.04  rh=0.0676
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504156.69  Dair=96587.47  Nrad=427951.03  Drad=3066.00  CX=1635.97  airX=6.132
+     Nair=13504156.69  Dair=96587.47  Nrad=427951.02  Drad=3066.00  CX=1635.97  airX=6.132
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17452  fvent=0.000  pz0=0.0421  qsHvac=18538
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.454  mwDuctLk=0.000  mwSys=0.000
@@ -40826,7 +40826,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.453  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.171  dryAirMass=653.42  XLGain=0.00  W=0.007143  twb=78.64  rh=0.0574
 RDuctZone CZ: anMCp/T[ 0]=185.93/11773.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504003.24  Dair=96561.68  Nrad=429167.72  Drad=3070.91  CX=1573.59  airX=5.971
+     Nair=13504003.25  Dair=96561.68  Nrad=429167.72  Drad=3070.91  CX=1573.59  airX=5.971
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14257  fvent=0.000  pz0=-0.0486  qsHvac=14890
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.700  mwDuctLk=0.000  mwSys=74.903
@@ -40860,7 +40860,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.452  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.172  dryAirMass=653.42  XLGain=0.00  W=0.007142  twb=78.64  rh=0.0574
 RDuctZone CZ: anMCp/T[ 0]=185.96/11795.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504024.95  Dair=96561.71  Nrad=429167.10  Drad=3070.91  CX=1573.59  airX=5.972
+     Nair=13504024.96  Dair=96561.71  Nrad=429167.10  Drad=3070.91  CX=1573.59  airX=5.972
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14240  fvent=0.000  pz0=-0.0486  qsHvac=14872
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.704  mwDuctLk=0.000  mwSys=74.978
@@ -40931,7 +40931,7 @@ RDuctZone CZ: anMCp/T[ 0]=186.50/11869.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13504098.74  Dair=96562.25  Nrad=429165.77  Drad=3070.91  CX=1573.59  airX=5.975
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14240  fvent=0.000  pz0=-0.0488  qsHvac=14874
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.694  mwDuctLk=0.000  mwSys=75.147
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.694  mwDuctLk=0.000  mwSys=75.148
      tdb=78.00  airX=13.671  dryAirMass=651.53  XLGain=0.00  W=0.011370  twb=66.52  rh=0.5520
 Single CZ: anMCp/T[ 0]=23.68/1506.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386588.46  Dair=107016.66  Nrad=205589.75  Drad=2437.87  CX=1175.29  airX=13.671
@@ -40990,7 +40990,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.447  mwSys=0.000
      tdb=140.00  airX=1.338  dryAirMass=652.07  XLGain=0.00  W=0.008453  twb=80.07  rh=0.0678
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504229.56  Dair=96588.45  Nrad=427945.14  Drad=3065.99  CX=1635.97  airX=6.138
+     Nair=13504229.56  Dair=96588.45  Nrad=427945.13  Drad=3065.99  CX=1635.97  airX=6.138
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17513  fvent=0.000  pz0=0.0425  qsHvac=18604
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.464  mwDuctLk=0.000  mwSys=0.000
@@ -41058,7 +41058,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.464  mwSys=0.000
      tdb=140.00  airX=1.340  dryAirMass=652.07  XLGain=0.00  W=0.008461  twb=80.07  rh=0.0679
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504249.67  Dair=96588.72  Nrad=427943.53  Drad=3065.99  CX=1635.97  airX=6.140
+     Nair=13504249.66  Dair=96588.72  Nrad=427943.53  Drad=3065.99  CX=1635.97  airX=6.140
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17530  fvent=0.000  pz0=0.0428  qsHvac=18621
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.478  mwDuctLk=0.000  mwSys=0.000
@@ -41116,7 +41116,7 @@ Sat 28-Feb  hr=11 subhr=28
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.72  txe=139.80
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.043  Uduct=0.2473
      amfFL=19687.5  amfLeak=874.7  uaTot=26.8712  beta=0.994  tSrf=130.15
-     runF=0.494  qCondAir=-322.86  qCondRad=-773.73, qCondTot=-1096.60
+     runF=0.494  qCondAir=-322.86  qCondRad=-773.74, qCondTot=-1096.60
      ta0=56.91  ta1=56.91  ta2=57.14  ta3=57.37
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.88
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -41267,7 +41267,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=140.00  tr=139.72  qIzSh=-17581  fvent=0.000  pz0=0.0431  qsHvac=18677
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.481  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.183  dryAirMass=653.43  XLGain=0.00  W=0.007129  twb=78.63  rh=0.0573
-RDuctZone CZ: anMCp/T[ 0]=187.71/12122.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
+RDuctZone CZ: anMCp/T[ 0]=187.71/12122.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13504349.40  Dair=96563.46  Nrad=429159.48  Drad=3070.90  CX=1572.92  airX=5.983
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14157  fvent=0.000  pz0=-0.0491  qsHvac=14795
@@ -41427,7 +41427,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.72  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.88
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=780.4  uaTot=22.8064  beta=0.995  tSrf=132.97
-     runF=0.496  qCondAir=-188.01  qCondRad=-453.73, qCondTot=-641.74
+     runF=0.496  qCondAir=-188.01  qCondRad=-453.74, qCondTot=-641.74
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.523  mwSys=0.000
      tdb=140.00  airX=1.347  dryAirMass=652.02  XLGain=0.00  W=0.008500  twb=80.11  rh=0.0682
@@ -41438,7 +41438,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.466  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.183  dryAirMass=653.44  XLGain=0.00  W=0.007120  twb=78.62  rh=0.0572
 RDuctZone CZ: anMCp/T[ 0]=187.79/12183.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504409.97  Dair=96563.54  Nrad=429157.18  Drad=3070.89  CX=1572.92  airX=5.983
+     Nair=13504409.96  Dair=96563.54  Nrad=429157.18  Drad=3070.89  CX=1572.92  airX=5.983
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14107  fvent=0.000  pz0=-0.0491  qsHvac=14746
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.702  mwDuctLk=0.000  mwSys=76.066
@@ -41466,13 +41466,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.527  mwSys=0.000
      tdb=140.00  airX=1.347  dryAirMass=652.02  XLGain=0.00  W=0.008503  twb=80.12  rh=0.0682
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504340.70  Dair=96589.95  Nrad=427935.19  Drad=3065.98  CX=1641.11  airX=6.147
+     Nair=13504340.71  Dair=96589.95  Nrad=427935.19  Drad=3065.98  CX=1641.11  airX=6.147
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17609  fvent=0.000  pz0=0.0431  qsHvac=18707
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.462  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.183  dryAirMass=653.44  XLGain=0.00  W=0.007118  twb=78.61  rh=0.0572
 RDuctZone CZ: anMCp/T[ 0]=187.80/12196.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504422.10  Dair=96563.56  Nrad=429156.76  Drad=3070.89  CX=1572.92  airX=5.983
+     Nair=13504422.09  Dair=96563.56  Nrad=429156.76  Drad=3070.89  CX=1572.92  airX=5.983
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14097  fvent=0.000  pz0=-0.0491  qsHvac=14736
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.704  mwDuctLk=0.000  mwSys=76.107
@@ -41772,7 +41772,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.565  mwSys=0.000
      tdb=140.00  airX=1.351  dryAirMass=651.99  XLGain=0.00  W=0.008529  twb=80.14  rh=0.0684
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504391.53  Dair=96590.64  Nrad=427930.64  Drad=3065.97  CX=1641.11  airX=6.151
+     Nair=13504391.54  Dair=96590.64  Nrad=427930.64  Drad=3065.97  CX=1641.11  airX=6.151
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17652  fvent=0.000  pz0=0.0434  qsHvac=18753
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.448  mwDuctLk=0.000  mwSys=0.000
@@ -41806,7 +41806,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.570  mwSys=0.000
      tdb=140.00  airX=1.352  dryAirMass=651.99  XLGain=0.00  W=0.008532  twb=80.15  rh=0.0684
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504396.88  Dair=96590.71  Nrad=427930.17  Drad=3065.97  CX=1641.11  airX=6.152
+     Nair=13504396.87  Dair=96590.71  Nrad=427930.17  Drad=3065.97  CX=1641.11  airX=6.152
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17657  fvent=0.000  pz0=0.0438  qsHvac=18758
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.458  mwDuctLk=0.000  mwSys=0.000
@@ -41846,7 +41846,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.455  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.190  dryAirMass=653.47  XLGain=0.00  W=0.007089  twb=78.58  rh=0.0570
 RDuctZone CZ: anMCp/T[ 0]=188.88/12390.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504614.94  Dair=96564.63  Nrad=429152.23  Drad=3070.89  CX=1572.92  airX=5.990
+     Nair=13504614.93  Dair=96564.63  Nrad=429152.23  Drad=3070.89  CX=1572.92  airX=5.990
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14053  fvent=0.000  pz0=-0.0494  qsHvac=14695
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.690  mwDuctLk=0.000  mwSys=76.582
@@ -41908,13 +41908,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.582  mwSys=0.000
      tdb=140.00  airX=1.353  dryAirMass=651.98  XLGain=0.00  W=0.008539  twb=80.15  rh=0.0685
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504415.38  Dair=96590.97  Nrad=427928.60  Drad=3065.97  CX=1641.11  airX=6.153
+     Nair=13504415.39  Dair=96590.97  Nrad=427928.60  Drad=3065.97  CX=1641.11  airX=6.153
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17674  fvent=0.000  pz0=0.0438  qsHvac=18776
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.448  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.190  dryAirMass=653.48  XLGain=0.00  W=0.007083  twb=78.58  rh=0.0569
-RDuctZone CZ: anMCp/T[ 0]=188.91/12415.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504639.38  Dair=96564.66  Nrad=429151.43  Drad=3070.88  CX=1572.92  airX=5.990
+RDuctZone CZ: anMCp/T[ 0]=188.91/12415.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
+     Nair=13504639.37  Dair=96564.66  Nrad=429151.43  Drad=3070.88  CX=1572.92  airX=5.990
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14032  fvent=0.000  pz0=-0.0494  qsHvac=14675
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.694  mwDuctLk=0.000  mwSys=76.664
@@ -41931,7 +41931,7 @@ Sat 28-Feb  hr=12 subhr=22
 
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.72  txe=139.80
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.040  Uduct=0.2475
-     amfFL=19687.5  amfLeak=882.8  uaTot=26.8885  beta=0.994  tSrf=130.17
+     amfFL=19687.5  amfLeak=882.7  uaTot=26.8885  beta=0.994  tSrf=130.17
      runF=0.498  qCondAir=-325.40  qCondRad=-779.63, qCondTot=-1105.03
      ta0=57.08  ta1=57.08  ta2=57.31  ta3=57.54
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.88
@@ -41948,7 +41948,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.445  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.190  dryAirMass=653.48  XLGain=0.00  W=0.007079  twb=78.57  rh=0.0569
 RDuctZone CZ: anMCp/T[ 0]=188.93/12427.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504651.60  Dair=96564.68  Nrad=429151.07  Drad=3070.88  CX=1572.92  airX=5.990
+     Nair=13504651.59  Dair=96564.68  Nrad=429151.07  Drad=3070.88  CX=1572.92  airX=5.990
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14022  fvent=0.000  pz0=-0.0494  qsHvac=14665
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.695  mwDuctLk=0.000  mwSys=76.705
@@ -41976,7 +41976,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.590  mwSys=0.000
      tdb=140.00  airX=1.354  dryAirMass=651.98  XLGain=0.00  W=0.008544  twb=80.16  rh=0.0685
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504426.26  Dair=96591.11  Nrad=427927.67  Drad=3065.97  CX=1641.11  airX=6.154
+     Nair=13504426.25  Dair=96591.11  Nrad=427927.67  Drad=3065.97  CX=1641.11  airX=6.154
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17683  fvent=0.000  pz0=0.0438  qsHvac=18786
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.442  mwDuctLk=0.000  mwSys=0.000
@@ -42084,7 +42084,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.433  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.190  dryAirMass=653.50  XLGain=0.00  W=0.007066  twb=78.56  rh=0.0568
 RDuctZone CZ: anMCp/T[ 0]=188.99/12476.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504700.52  Dair=96564.74  Nrad=429149.61  Drad=3070.88  CX=1572.92  airX=5.990
+     Nair=13504700.51  Dair=96564.74  Nrad=429149.61  Drad=3070.88  CX=1572.92  airX=5.990
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13981  fvent=0.000  pz0=-0.0494  qsHvac=14625
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.702  mwDuctLk=0.000  mwSys=76.864
@@ -42316,7 +42316,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.627  mwSys=0.000
      tdb=140.00  airX=1.359  dryAirMass=651.95  XLGain=0.00  W=0.008566  twb=80.18  rh=0.0687
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504477.83  Dair=96591.81  Nrad=427923.19  Drad=3065.96  CX=1644.51  airX=6.159
+     Nair=13504477.84  Dair=96591.81  Nrad=427923.19  Drad=3065.96  CX=1644.51  airX=6.159
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17727  fvent=0.000  pz0=0.0441  qsHvac=18834
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.438  mwDuctLk=0.000  mwSys=0.000
@@ -42418,9 +42418,9 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.635  mwSys=0.000
      tdb=140.00  airX=1.360  dryAirMass=651.95  XLGain=0.00  W=0.008572  twb=80.19  rh=0.0688
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504488.98  Dair=96591.96  Nrad=427922.21  Drad=3065.96  CX=1644.51  airX=6.160
+     Nair=13504488.97  Dair=96591.96  Nrad=427922.21  Drad=3065.96  CX=1644.51  airX=6.160
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
-     ta=140.00  tr=139.72  qIzSh=-17737  fvent=0.000  pz0=0.0441  qsHvac=18844
+     ta=140.00  tr=139.72  qIzSh=-17736  fvent=0.000  pz0=0.0441  qsHvac=18844
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.439  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.194  dryAirMass=653.53  XLGain=0.00  W=0.007034  twb=78.52  rh=0.0566
 RDuctZone CZ: anMCp/T[ 0]=189.58/12605.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
@@ -42452,7 +42452,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.638  mwSys=0.000
      tdb=140.00  airX=1.360  dryAirMass=651.95  XLGain=0.00  W=0.008574  twb=80.19  rh=0.0688
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504492.70  Dair=96592.01  Nrad=427921.88  Drad=3065.96  CX=1644.51  airX=6.160
+     Nair=13504492.71  Dair=96592.01  Nrad=427921.88  Drad=3065.96  CX=1644.51  airX=6.160
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17740  fvent=0.000  pz0=0.0441  qsHvac=18847
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.439  mwDuctLk=0.000  mwSys=0.000
@@ -42832,7 +42832,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.455  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.198  dryAirMass=653.56  XLGain=0.00  W=0.007009  twb=78.49  rh=0.0564
 RDuctZone CZ: anMCp/T[ 0]=190.16/12740.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504961.65  Dair=96565.92  Nrad=429142.42  Drad=3070.87  CX=1569.30  airX=5.998
+     Nair=13504961.64  Dair=96565.92  Nrad=429142.42  Drad=3070.87  CX=1569.30  airX=5.998
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13882  fvent=0.000  pz0=-0.0497  qsHvac=14531
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.703  mwDuctLk=0.000  mwSys=77.557
@@ -43802,7 +43802,7 @@ Sat 28-Feb  hr=14 subhr=17
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.72  txe=139.80
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.037  Uduct=0.2477
      amfFL=19687.5  amfLeak=900.0  uaTot=26.9040  beta=0.994  tSrf=130.20
-     runF=0.508  qCondAir=-330.59  qCondRad=-791.74, qCondTot=-1122.32
+     runF=0.508  qCondAir=-330.58  qCondRad=-791.74, qCondTot=-1122.32
      ta0=57.44  ta1=57.44  ta2=57.67  ta3=57.91
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.88
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -43846,7 +43846,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.822  mwSys=0.000
      tdb=140.00  airX=1.381  dryAirMass=651.87  XLGain=0.00  W=0.008644  twb=80.26  rh=0.0693
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504738.24  Dair=96595.32  Nrad=427903.79  Drad=3065.93  CX=1646.54  airX=6.181
+     Nair=13504738.23  Dair=96595.32  Nrad=427903.79  Drad=3065.93  CX=1646.54  airX=6.181
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17950  fvent=0.000  pz0=0.0457  qsHvac=19070
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.618  mwDuctLk=0.000  mwSys=0.000
@@ -43954,7 +43954,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.649  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.216  dryAirMass=653.54  XLGain=0.00  W=0.007029  twb=78.52  rh=0.0565
 RDuctZone CZ: anMCp/T[ 0]=193.05/13354.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13505570.76  Dair=96568.81  Nrad=429128.95  Drad=3070.85  CX=1566.44  airX=6.016
+     Nair=13505570.77  Dair=96568.81  Nrad=429128.95  Drad=3070.85  CX=1566.44  airX=6.016
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13672  fvent=0.000  pz0=-0.0505  qsHvac=14329
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.718  mwDuctLk=0.000  mwSys=79.297
@@ -44022,7 +44022,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.660  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.216  dryAirMass=653.53  XLGain=0.00  W=0.007036  twb=78.52  rh=0.0566
 RDuctZone CZ: anMCp/T[ 0]=193.09/13387.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13505603.15  Dair=96568.85  Nrad=429127.92  Drad=3070.85  CX=1566.44  airX=6.016
+     Nair=13505603.16  Dair=96568.85  Nrad=429127.92  Drad=3070.85  CX=1566.44  airX=6.016
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13645  fvent=0.000  pz0=-0.0505  qsHvac=14302
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.725  mwDuctLk=0.000  mwSys=79.428
@@ -44220,7 +44220,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.896  mwSys=0.000
      tdb=140.00  airX=1.390  dryAirMass=651.85  XLGain=0.00  W=0.008668  twb=80.28  rh=0.0695
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504836.14  Dair=96596.63  Nrad=427896.45  Drad=3065.92  CX=1646.54  airX=6.190
+     Nair=13504836.13  Dair=96596.63  Nrad=427896.45  Drad=3065.92  CX=1646.54  airX=6.190
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-18033  fvent=0.000  pz0=0.0464  qsHvac=19158
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.708  mwDuctLk=0.000  mwSys=0.000
@@ -44288,7 +44288,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.899  mwSys=0.000
      tdb=140.00  airX=1.390  dryAirMass=651.84  XLGain=0.00  W=0.008673  twb=80.29  rh=0.0696
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504847.39  Dair=96596.79  Nrad=427895.05  Drad=3065.92  CX=1648.82  airX=6.190
+     Nair=13504847.40  Dair=96596.79  Nrad=427895.05  Drad=3065.92  CX=1648.82  airX=6.190
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-18043  fvent=0.000  pz0=0.0464  qsHvac=19169
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.717  mwDuctLk=0.000  mwSys=0.000
@@ -44300,7 +44300,7 @@ RDuctZone CZ: anMCp/T[ 0]=193.71/13523.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.732  mwDuctLk=0.000  mwSys=79.871
      tdb=78.00  airX=14.221  dryAirMass=651.46  XLGain=0.00  W=0.011446  twb=66.63  rh=0.5557
 Single CZ: anMCp/T[ 0]=24.82/1732.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386811.20  Dair=107017.80  Nrad=205583.15  Drad=2437.84  CX=1177.46  airX=14.221
+     Nair=8386811.20  Dair=107017.80  Nrad=205583.14  Drad=2437.84  CX=1177.46  airX=14.221
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10068  amfSup=9162   tSup=58.03
      ta=78.00  tr=82.27  qIzSh=-203  fvent=0.000  pz0=-0.0031  qsHvac=-44449
 
@@ -44402,7 +44402,7 @@ RDuctZone CZ: anMCp/T[ 0]=194.24/13563.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.723  mwDuctLk=0.000  mwSys=79.916
      tdb=78.00  airX=14.224  dryAirMass=651.45  XLGain=0.00  W=0.011448  twb=66.63  rh=0.5557
 Single CZ: anMCp/T[ 0]=24.44/1706.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386785.25  Dair=107017.43  Nrad=205582.69  Drad=2437.84  CX=1177.46  airX=14.224
+     Nair=8386785.25  Dair=107017.43  Nrad=205582.68  Drad=2437.84  CX=1177.46  airX=14.224
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10072  amfSup=9166   tSup=58.04
      ta=78.00  tr=82.27  qIzSh=-200  fvent=0.000  pz0=-0.0031  qsHvac=-44452
 
@@ -44436,7 +44436,7 @@ RDuctZone CZ: anMCp/T[ 0]=194.24/13564.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.724  mwDuctLk=0.000  mwSys=79.929
      tdb=78.00  airX=14.225  dryAirMass=651.45  XLGain=0.00  W=0.011449  twb=66.63  rh=0.5558
 Single CZ: anMCp/T[ 0]=24.45/1707.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386785.99  Dair=107017.44  Nrad=205582.57  Drad=2437.84  CX=1177.45  airX=14.225
+     Nair=8386785.99  Dair=107017.44  Nrad=205582.57  Drad=2437.84  CX=1177.46  airX=14.225
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10073  amfSup=9166   tSup=58.04
      ta=78.00  tr=82.27  qIzSh=-200  fvent=0.000  pz0=-0.0031  qsHvac=-44452
 
@@ -44470,7 +44470,7 @@ RDuctZone CZ: anMCp/T[ 0]=194.24/13566.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.725  mwDuctLk=0.000  mwSys=79.941
      tdb=78.00  airX=14.226  dryAirMass=651.45  XLGain=0.00  W=0.011449  twb=66.63  rh=0.5558
 Single CZ: anMCp/T[ 0]=24.46/1708.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386786.74  Dair=107017.45  Nrad=205582.46  Drad=2437.84  CX=1177.45  airX=14.226
+     Nair=8386786.74  Dair=107017.45  Nrad=205582.46  Drad=2437.84  CX=1177.46  airX=14.226
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10074  amfSup=9167   tSup=58.04
      ta=78.00  tr=82.27  qIzSh=-200  fvent=0.000  pz0=-0.0031  qsHvac=-44452
 
@@ -44504,7 +44504,7 @@ RDuctZone CZ: anMCp/T[ 0]=194.24/13567.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.725  mwDuctLk=0.000  mwSys=79.953
      tdb=78.00  airX=14.228  dryAirMass=651.45  XLGain=0.00  W=0.011450  twb=66.64  rh=0.5558
 Single CZ: anMCp/T[ 0]=24.47/1709.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386787.49  Dair=107017.46  Nrad=205582.37  Drad=2437.84  CX=1177.45  airX=14.228
+     Nair=8386787.49  Dair=107017.46  Nrad=205582.37  Drad=2437.84  CX=1177.46  airX=14.228
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10075  amfSup=9168   tSup=58.04
      ta=78.00  tr=82.27  qIzSh=-199  fvent=0.000  pz0=-0.0031  qsHvac=-44452
 
@@ -44606,7 +44606,7 @@ RDuctZone CZ: anMCp/T[ 0]=194.25/13571.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.728  mwDuctLk=0.000  mwSys=79.986
      tdb=78.00  airX=14.231  dryAirMass=651.45  XLGain=0.00  W=0.011451  twb=66.64  rh=0.5559
 Single CZ: anMCp/T[ 0]=24.50/1711.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=8386789.78  Dair=107017.49  Nrad=205582.12  Drad=2437.84  CX=1177.45  airX=14.231
+     Nair=8386789.77  Dair=107017.49  Nrad=205582.12  Drad=2437.84  CX=1177.45  airX=14.231
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10077  amfSup=9170   tSup=58.05
      ta=78.00  tr=82.27  qIzSh=-199  fvent=0.000  pz0=-0.0031  qsHvac=-44452
 
@@ -44866,7 +44866,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.919  mwSys=0.000
      tdb=140.00  airX=1.392  dryAirMass=651.82  XLGain=0.00  W=0.008701  twb=80.31  rh=0.0698
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504871.04  Dair=96597.12  Nrad=427890.93  Drad=3065.91  CX=1648.81  airX=6.192
+     Nair=13504871.04  Dair=96597.12  Nrad=427890.93  Drad=3065.91  CX=1648.82  airX=6.192
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-18064  fvent=0.000  pz0=0.0467  qsHvac=19193
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.803  mwDuctLk=0.000  mwSys=0.000
@@ -45151,7 +45151,7 @@ Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.741  mwDuctLk=0.000  mwSys=80.160
      tdb=78.00  airX=14.250  dryAirMass=651.45  XLGain=0.00  W=0.011456  twb=66.64  rh=0.5561
 Single CZ: anMCp/T[ 0]=24.65/1724.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386802.36  Dair=107017.64  Nrad=205581.46  Drad=2437.83  CX=1177.45  airX=14.250
-     TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10090  amfSup=9181   tSup=58.07
+     TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=10089  amfSup=9181   tSup=58.07
      ta=78.00  tr=82.27  qIzSh=-198  fvent=0.000  pz0=-0.0031  qsHvac=-44452
 
 
@@ -45774,7 +45774,7 @@ Sat 28-Feb  hr=16 subhr=15
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.72  txe=139.80
      hc=0.540  hr=1.332  htot=1.872  cx=0.339  Rduct=4.035  Uduct=0.2478
      amfFL=19687.5  amfLeak=905.2  uaTot=26.9193  beta=0.994  tSrf=130.21
-     runF=0.511  qCondAir=-332.28  qCondRad=-795.62, qCondTot=-1127.89
+     runF=0.511  qCondAir=-332.27  qCondRad=-795.62, qCondTot=-1127.89
      ta0=57.55  ta1=57.55  ta2=57.78  ta3=58.01
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.88
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -45808,12 +45808,12 @@ Sat 28-Feb  hr=16 subhr=16
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.72  txe=139.80
      hc=0.540  hr=1.332  htot=1.872  cx=0.339  Rduct=4.035  Uduct=0.2478
      amfFL=19687.5  amfLeak=905.0  uaTot=26.9193  beta=0.994  tSrf=130.21
-     runF=0.511  qCondAir=-332.22  qCondRad=-795.49, qCondTot=-1127.71
+     runF=0.511  qCondAir=-332.22  qCondRad=-795.49, qCondTot=-1127.70
      ta0=57.55  ta1=57.55  ta2=57.78  ta3=58.01
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.88
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=804.4  uaTot=22.8062  beta=0.995  tSrf=132.97
-     runF=0.511  qCondAir=-193.89  qCondRad=-467.53, qCondTot=-661.41
+     runF=0.511  qCondAir=-193.89  qCondRad=-467.52, qCondTot=-661.41
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.889  mwSys=0.000
      tdb=140.00  airX=1.388  dryAirMass=651.80  XLGain=0.00  W=0.008719  twb=80.33  rh=0.0699
@@ -45852,7 +45852,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.887  mwSys=0.000
      tdb=140.00  airX=1.388  dryAirMass=651.80  XLGain=0.00  W=0.008719  twb=80.33  rh=0.0699
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504826.03  Dair=96596.52  Nrad=427892.33  Drad=3065.91  CX=1650.54  airX=6.188
+     Nair=13504826.01  Dair=96596.52  Nrad=427892.33  Drad=3065.91  CX=1650.54  airX=6.188
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-18026  fvent=0.000  pz0=0.0467  qsHvac=19154
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.919  mwDuctLk=0.000  mwSys=0.000
@@ -45886,7 +45886,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.884  mwSys=0.000
      tdb=140.00  airX=1.388  dryAirMass=651.80  XLGain=0.00  W=0.008719  twb=80.33  rh=0.0699
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504822.42  Dair=96596.47  Nrad=427892.56  Drad=3065.91  CX=1650.54  airX=6.188
+     Nair=13504822.43  Dair=96596.47  Nrad=427892.56  Drad=3065.91  CX=1650.54  airX=6.188
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-18023  fvent=0.000  pz0=0.0467  qsHvac=19151
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.922  mwDuctLk=0.000  mwSys=0.000
@@ -46371,7 +46371,7 @@ RDuctZone CZ: anMCp/T[ 0]=193.67/13291.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13505506.59  Dair=96569.43  Nrad=429126.29  Drad=3070.84  CX=1582.82  airX=6.020
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13822  fvent=0.000  pz0=-0.0507  qsHvac=14483
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.735  mwDuctLk=0.000  mwSys=79.365
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.735  mwDuctLk=0.000  mwSys=79.364
      tdb=78.00  airX=14.148  dryAirMass=651.45  XLGain=0.00  W=0.011452  twb=66.64  rh=0.5559
 Single CZ: anMCp/T[ 0]=23.84/1636.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386713.35  Dair=107016.83  Nrad=205580.46  Drad=2437.83  CX=1177.62  airX=14.148
@@ -46396,7 +46396,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.847  mwSys=0.000
      tdb=140.00  airX=1.383  dryAirMass=651.80  XLGain=0.00  W=0.008713  twb=80.33  rh=0.0699
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504769.40  Dair=96595.76  Nrad=427896.69  Drad=3065.92  CX=1650.64  airX=6.183
+     Nair=13504769.41  Dair=96595.76  Nrad=427896.69  Drad=3065.92  CX=1650.64  airX=6.183
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17977  fvent=0.000  pz0=0.0464  qsHvac=19102
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.972  mwDuctLk=0.000  mwSys=0.000
@@ -46838,7 +46838,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.826  mwSys=0.000
      tdb=140.00  airX=1.381  dryAirMass=651.81  XLGain=0.00  W=0.008707  twb=80.32  rh=0.0698
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504738.75  Dair=96595.34  Nrad=427899.49  Drad=3065.92  CX=1650.64  airX=6.181
+     Nair=13504738.76  Dair=96595.34  Nrad=427899.49  Drad=3065.92  CX=1650.64  airX=6.181
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17951  fvent=0.000  pz0=0.0464  qsHvac=19075
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=6.023  mwDuctLk=0.000  mwSys=0.000
@@ -46906,7 +46906,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.823  mwSys=0.000
      tdb=140.00  airX=1.380  dryAirMass=651.81  XLGain=0.00  W=0.008705  twb=80.32  rh=0.0698
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504734.17  Dair=96595.28  Nrad=427899.90  Drad=3065.92  CX=1650.64  airX=6.180
+     Nair=13504734.16  Dair=96595.28  Nrad=427899.90  Drad=3065.92  CX=1650.64  airX=6.180
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17947  fvent=0.000  pz0=0.0464  qsHvac=19071
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=6.031  mwDuctLk=0.000  mwSys=0.000
@@ -47314,7 +47314,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.798  mwSys=0.000
      tdb=140.00  airX=1.377  dryAirMass=651.82  XLGain=0.00  W=0.008699  twb=80.31  rh=0.0698
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504703.72  Dair=96594.87  Nrad=427902.45  Drad=3065.93  CX=1650.03  airX=6.177
+     Nair=13504703.71  Dair=96594.87  Nrad=427902.45  Drad=3065.93  CX=1650.03  airX=6.177
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17920  fvent=0.000  pz0=0.0461  qsHvac=19042
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=6.047  mwDuctLk=0.000  mwSys=0.000
@@ -47382,7 +47382,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.787  mwSys=0.000
      tdb=140.00  airX=1.376  dryAirMass=651.82  XLGain=0.00  W=0.008697  twb=80.31  rh=0.0697
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504689.03  Dair=96594.67  Nrad=427903.33  Drad=3065.93  CX=1650.03  airX=6.176
+     Nair=13504689.02  Dair=96594.67  Nrad=427903.33  Drad=3065.93  CX=1650.03  airX=6.176
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17908  fvent=0.000  pz0=0.0461  qsHvac=19029
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=6.020  mwDuctLk=0.000  mwSys=0.000
@@ -47416,13 +47416,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.780  mwSys=0.000
      tdb=140.00  airX=1.375  dryAirMass=651.82  XLGain=0.00  W=0.008697  twb=80.31  rh=0.0697
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504681.27  Dair=96594.57  Nrad=427903.78  Drad=3065.93  CX=1650.03  airX=6.175
+     Nair=13504681.26  Dair=96594.57  Nrad=427903.78  Drad=3065.93  CX=1650.03  airX=6.175
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17902  fvent=0.000  pz0=0.0458  qsHvac=19022
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.993  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.214  dryAirMass=653.04  XLGain=0.00  W=0.007517  twb=79.05  rh=0.0604
 RDuctZone CZ: anMCp/T[ 0]=192.56/12994.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13505212.02  Dair=96568.32  Nrad=429133.14  Drad=3070.86  CX=1589.70  airX=6.014
+     Nair=13505212.01  Dair=96568.32  Nrad=429133.14  Drad=3070.86  CX=1589.70  airX=6.014
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13963  fvent=0.000  pz0=-0.0504  qsHvac=14621
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.741  mwDuctLk=0.000  mwSys=78.662
@@ -47484,13 +47484,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.767  mwSys=0.000
      tdb=140.00  airX=1.374  dryAirMass=651.82  XLGain=0.00  W=0.008695  twb=80.31  rh=0.0697
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504662.61  Dair=96594.31  Nrad=427904.91  Drad=3065.93  CX=1650.04  airX=6.174
+     Nair=13504662.62  Dair=96594.31  Nrad=427904.91  Drad=3065.93  CX=1650.04  airX=6.174
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17885  fvent=0.000  pz0=0.0458  qsHvac=19005
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.966  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.213  dryAirMass=653.03  XLGain=0.00  W=0.007518  twb=79.05  rh=0.0604
 RDuctZone CZ: anMCp/T[ 0]=192.51/12959.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13505177.03  Dair=96568.27  Nrad=429134.14  Drad=3070.86  CX=1589.70  airX=6.013
+     Nair=13505177.02  Dair=96568.27  Nrad=429134.14  Drad=3070.86  CX=1589.70  airX=6.013
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-13993  fvent=0.000  pz0=-0.0504  qsHvac=14649
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.730  mwDuctLk=0.000  mwSys=78.533
@@ -47626,7 +47626,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.897  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.210  dryAirMass=653.04  XLGain=0.00  W=0.007513  twb=79.05  rh=0.0604
 RDuctZone CZ: anMCp/T[ 0]=191.95/12856.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13505075.15  Dair=96567.71  Nrad=429136.03  Drad=3070.86  CX=1589.70  airX=6.010
+     Nair=13505075.14  Dair=96567.71  Nrad=429136.03  Drad=3070.86  CX=1589.70  airX=6.010
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14016  fvent=0.000  pz0=-0.0503  qsHvac=14671
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.730  mwDuctLk=0.000  mwSys=78.260
@@ -47660,7 +47660,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.883  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.210  dryAirMass=653.04  XLGain=0.00  W=0.007511  twb=79.04  rh=0.0603
 RDuctZone CZ: anMCp/T[ 0]=191.92/12839.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13505057.76  Dair=96567.68  Nrad=429136.60  Drad=3070.86  CX=1589.70  airX=6.010
+     Nair=13505057.75  Dair=96567.68  Nrad=429136.60  Drad=3070.86  CX=1589.70  airX=6.010
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14030  fvent=0.000  pz0=-0.0503  qsHvac=14685
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.724  mwDuctLk=0.000  mwSys=78.190
@@ -47688,7 +47688,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.726  mwSys=0.000
      tdb=140.00  airX=1.369  dryAirMass=651.83  XLGain=0.00  W=0.008687  twb=80.30  rh=0.0697
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504608.49  Dair=96593.59  Nrad=427908.41  Drad=3065.94  CX=1650.04  airX=6.169
+     Nair=13504608.50  Dair=96593.59  Nrad=427908.41  Drad=3065.94  CX=1650.04  airX=6.169
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17839  fvent=0.000  pz0=0.0454  qsHvac=18956
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.869  mwDuctLk=0.000  mwSys=0.000
@@ -48232,7 +48232,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.609  mwSys=0.000
      tdb=140.00  airX=1.356  dryAirMass=651.86  XLGain=0.00  W=0.008657  twb=80.27  rh=0.0694
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504454.58  Dair=96591.52  Nrad=427919.45  Drad=3065.95  CX=1650.04  airX=6.156
+     Nair=13504454.59  Dair=96591.52  Nrad=427919.45  Drad=3065.95  CX=1650.04  airX=6.156
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17708  fvent=0.000  pz0=0.0444  qsHvac=18819
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.623  mwDuctLk=0.000  mwSys=0.000
@@ -48470,7 +48470,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.83  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.510  mwSys=0.000
      tdb=140.00  airX=1.345  dryAirMass=651.88  XLGain=0.00  W=0.008637  twb=80.25  rh=0.0693
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504334.32  Dair=96589.91  Nrad=427927.39  Drad=3065.96  CX=1648.19  airX=6.145
+     Nair=13504334.33  Dair=96589.91  Nrad=427927.39  Drad=3065.96  CX=1648.19  airX=6.145
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17606  fvent=0.000  pz0=0.0437  qsHvac=18710
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.569  mwDuctLk=0.000  mwSys=0.000
@@ -48578,7 +48578,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.554  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.185  dryAirMass=653.23  XLGain=0.00  W=0.007322  twb=78.84  rh=0.0588
 RDuctZone CZ: anMCp/T[ 0]=188.09/11948.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504173.53  Dair=96563.85  Nrad=429154.78  Drad=3070.89  CX=1584.21  airX=5.985
+     Nair=13504173.52  Dair=96563.85  Nrad=429154.78  Drad=3070.89  CX=1584.21  airX=5.985
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.83  qIzSh=-14385  fvent=0.000  pz0=-0.0493  qsHvac=15027
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.671  mwDuctLk=0.000  mwSys=75.415
@@ -48742,7 +48742,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.374  mwSys=0.000
      tdb=140.00  airX=1.330  dryAirMass=651.91  XLGain=0.00  W=0.008605  twb=80.22  rh=0.0690
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504153.52  Dair=96587.49  Nrad=427939.59  Drad=3065.98  CX=1648.20  airX=6.130
+     Nair=13504153.53  Dair=96587.49  Nrad=427939.59  Drad=3065.98  CX=1648.20  airX=6.130
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17453  fvent=0.000  pz0=0.0426  qsHvac=18549
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.521  mwDuctLk=0.000  mwSys=0.000
@@ -48776,7 +48776,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.356  mwSys=0.000
      tdb=140.00  airX=1.327  dryAirMass=651.91  XLGain=0.00  W=0.008600  twb=80.21  rh=0.0690
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504132.41  Dair=96587.21  Nrad=427941.11  Drad=3065.98  CX=1648.20  airX=6.127
+     Nair=13504132.42  Dair=96587.21  Nrad=427941.11  Drad=3065.98  CX=1648.20  airX=6.127
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.72  qIzSh=-17435  fvent=0.000  pz0=0.0422  qsHvac=18531
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.503  mwDuctLk=0.000  mwSys=0.000
@@ -48844,13 +48844,13 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.323  mwSys=0.000
      tdb=140.00  airX=1.324  dryAirMass=651.92  XLGain=0.00  W=0.008591  twb=80.20  rh=0.0689
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13504087.36  Dair=96586.61  Nrad=427944.37  Drad=3065.99  CX=1648.20  airX=6.124
+     Nair=13504087.35  Dair=96586.61  Nrad=427944.37  Drad=3065.99  CX=1648.20  airX=6.124
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17396  fvent=0.000  pz0=0.0419  qsHvac=18490
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.489  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.169  dryAirMass=653.27  XLGain=0.00  W=0.007283  twb=78.79  rh=0.0585
 RDuctZone CZ: anMCp/T[ 0]=185.54/11457.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503685.34  Dair=96561.30  Nrad=429164.24  Drad=3070.90  CX=1584.22  airX=5.969
+     Nair=13503685.34  Dair=96561.30  Nrad=429164.25  Drad=3070.90  CX=1584.22  airX=5.969
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14519  fvent=0.000  pz0=-0.0486  qsHvac=15155
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.680  mwDuctLk=0.000  mwSys=74.044
@@ -48980,7 +48980,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.258  mwSys=0.000
      tdb=140.00  airX=1.316  dryAirMass=651.94  XLGain=0.00  W=0.008571  twb=80.18  rh=0.0687
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503999.04  Dair=96585.41  Nrad=427950.93  Drad=3066.00  CX=1648.20  airX=6.116
+     Nair=13503999.03  Dair=96585.41  Nrad=427950.93  Drad=3066.00  CX=1648.20  airX=6.116
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17321  fvent=0.000  pz0=0.0415  qsHvac=18410
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.471  mwDuctLk=0.000  mwSys=0.000
@@ -49184,12 +49184,12 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.161  mwSys=0.000
      tdb=140.00  airX=1.305  dryAirMass=651.98  XLGain=0.00  W=0.008538  twb=80.15  rh=0.0685
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503872.09  Dair=96583.71  Nrad=427960.72  Drad=3066.01  CX=1648.20  airX=6.105
+     Nair=13503872.10  Dair=96583.71  Nrad=427960.72  Drad=3066.01  CX=1648.20  airX=6.105
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17213  fvent=0.000  pz0=0.0405  qsHvac=18296
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.426  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.153  dryAirMass=653.30  XLGain=0.00  W=0.007255  twb=78.76  rh=0.0583
-RDuctZone CZ: anMCp/T[ 0]=182.98/10892.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
+RDuctZone CZ: anMCp/T[ 0]=182.99/10892.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13503125.35  Dair=96558.73  Nrad=429176.71  Drad=3070.92  CX=1584.22  airX=5.953
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14725  fvent=0.000  pz0=-0.0480  qsHvac=15353
@@ -49224,7 +49224,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.426  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.153  dryAirMass=653.30  XLGain=0.00  W=0.007253  twb=78.76  rh=0.0583
 RDuctZone CZ: anMCp/T[ 0]=182.92/10848.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503081.46  Dair=96558.67  Nrad=429178.02  Drad=3070.92  CX=1584.22  airX=5.953
+     Nair=13503081.47  Dair=96558.67  Nrad=429178.02  Drad=3070.92  CX=1584.22  airX=5.953
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14761  fvent=0.000  pz0=-0.0480  qsHvac=15388
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.663  mwDuctLk=0.000  mwSys=72.253
@@ -49252,7 +49252,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.131  mwSys=0.000
      tdb=140.00  airX=1.302  dryAirMass=651.99  XLGain=0.00  W=0.008527  twb=80.14  rh=0.0684
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503829.79  Dair=96583.14  Nrad=427964.03  Drad=3066.02  CX=1648.20  airX=6.102
+     Nair=13503829.78  Dair=96583.14  Nrad=427964.03  Drad=3066.02  CX=1648.20  airX=6.102
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17177  fvent=0.000  pz0=0.0405  qsHvac=18257
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.425  mwDuctLk=0.000  mwSys=0.000
@@ -49326,9 +49326,9 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.409  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.148  dryAirMass=653.31  XLGain=0.00  W=0.007248  twb=78.76  rh=0.0583
 RDuctZone CZ: anMCp/T[ 0]=182.22/10685.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502919.81  Dair=96557.97  Nrad=429181.77  Drad=3070.93  CX=1584.22  airX=5.948
+     Nair=13502919.82  Dair=96557.97  Nrad=429181.77  Drad=3070.93  CX=1584.22  airX=5.948
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
-     ta=140.00  tr=139.84  qIzSh=-14825  fvent=0.000  pz0=-0.0479  qsHvac=15450
+     ta=140.00  tr=139.84  qIzSh=-14826  fvent=0.000  pz0=-0.0479  qsHvac=15450
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.658  mwDuctLk=0.000  mwSys=71.777
      tdb=78.00  airX=13.277  dryAirMass=651.58  XLGain=0.00  W=0.011319  twb=66.45  rh=0.5496
 Single CZ: anMCp/T[ 0]=22.18/1300.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
@@ -49360,7 +49360,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.420  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.148  dryAirMass=653.31  XLGain=0.00  W=0.007247  twb=78.76  rh=0.0583
 RDuctZone CZ: anMCp/T[ 0]=182.19/10664.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502898.81  Dair=96557.94  Nrad=429182.99  Drad=3070.93  CX=1578.22  airX=5.948
+     Nair=13502898.82  Dair=96557.94  Nrad=429182.99  Drad=3070.93  CX=1578.22  airX=5.948
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14843  fvent=0.000  pz0=-0.0479  qsHvac=15466
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.655  mwDuctLk=0.000  mwSys=71.680
@@ -49456,7 +49456,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.065  mwSys=0.000
      tdb=140.00  airX=1.294  dryAirMass=652.02  XLGain=0.00  W=0.008492  twb=80.11  rh=0.0681
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503732.95  Dair=96581.82  Nrad=427973.55  Drad=3066.03  CX=1642.83  airX=6.094
+     Nair=13503732.94  Dair=96581.82  Nrad=427973.56  Drad=3066.03  CX=1642.83  airX=6.094
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17092  fvent=0.000  pz0=0.0397  qsHvac=18165
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.436  mwDuctLk=0.000  mwSys=0.000
@@ -49530,7 +49530,7 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.457  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.144  dryAirMass=653.31  XLGain=0.00  W=0.007252  twb=78.76  rh=0.0583
 RDuctZone CZ: anMCp/T[ 0]=181.51/10526.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502762.30  Dair=96557.25  Nrad=429187.06  Drad=3070.94  CX=1578.22  airX=5.944
+     Nair=13502762.31  Dair=96557.25  Nrad=429187.06  Drad=3070.94  CX=1578.22  airX=5.944
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14885  fvent=0.000  pz0=-0.0477  qsHvac=15506
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.658  mwDuctLk=0.000  mwSys=71.292
@@ -49592,7 +49592,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=7.035  mwSys=0.000
      tdb=140.00  airX=1.291  dryAirMass=652.04  XLGain=0.00  W=0.008471  twb=80.08  rh=0.0680
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503693.57  Dair=96581.28  Nrad=427977.73  Drad=3066.04  CX=1642.83  airX=6.091
+     Nair=13503693.58  Dair=96581.28  Nrad=427977.73  Drad=3066.04  CX=1642.83  airX=6.091
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-17058  fvent=0.000  pz0=0.0394  qsHvac=18128
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.465  mwDuctLk=0.000  mwSys=0.000
@@ -49932,7 +49932,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.967  mwSys=0.000
      tdb=140.00  airX=1.283  dryAirMass=652.09  XLGain=0.00  W=0.008424  twb=80.04  rh=0.0676
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503606.40  Dair=96580.12  Nrad=427986.55  Drad=3066.05  CX=1642.83  airX=6.083
+     Nair=13503606.39  Dair=96580.12  Nrad=427986.55  Drad=3066.05  CX=1642.83  airX=6.083
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-16985  fvent=0.000  pz0=0.0387  qsHvac=18050
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.545  mwDuctLk=0.000  mwSys=0.000
@@ -49971,8 +49971,8 @@ SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      ta=140.00  tr=139.73  qIzSh=-16973  fvent=0.000  pz0=0.0387  qsHvac=18036
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.556  mwDuctLk=0.000  mwSys=0.000
      tdb=140.00  airX=1.133  dryAirMass=653.25  XLGain=0.00  W=0.007319  twb=78.83  rh=0.0588
-RDuctZone CZ: anMCp/T[ 0]=179.79/10173.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13502413.20  Dair=96555.53  Nrad=429196.01  Drad=3070.95  CX=1578.22  airX=5.933
+RDuctZone CZ: anMCp/T[ 0]=179.79/10173.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
+     Nair=13502413.19  Dair=96555.53  Nrad=429196.01  Drad=3070.95  CX=1578.22  airX=5.933
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-14996  fvent=0.000  pz0=-0.0473  qsHvac=15611
 Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.681  mwDuctLk=0.000  mwSys=70.378
@@ -50383,7 +50383,7 @@ RDuctZone CZ: anMCp/T[ 0]=178.64/9889.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13502130.88  Dair=96554.38  Nrad=429203.03  Drad=3070.96  CX=1585.89  airX=5.926
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-15120  fvent=0.000  pz0=-0.0470  qsHvac=15731
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.689  mwDuctLk=0.000  mwSys=69.641
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.689  mwDuctLk=0.000  mwSys=69.642
      tdb=78.00  airX=13.032  dryAirMass=651.62  XLGain=0.00  W=0.011280  twb=66.40  rh=0.5477
 Single CZ: anMCp/T[ 0]=21.83/1208.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386289.71  Dair=107014.81  Nrad=205589.76  Drad=2437.87  CX=1174.12  airX=13.032
@@ -50510,7 +50510,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.879  mwSys=0.000
      tdb=140.00  airX=1.273  dryAirMass=652.16  XLGain=0.00  W=0.008358  twb=79.97  rh=0.0671
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503481.46  Dair=96578.41  Nrad=427998.65  Drad=3066.07  CX=1637.27  airX=6.073
+     Nair=13503481.45  Dair=96578.41  Nrad=427998.65  Drad=3066.07  CX=1637.27  airX=6.073
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-16876  fvent=0.000  pz0=0.0381  qsHvac=17931
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.595  mwDuctLk=0.000  mwSys=0.000
@@ -50748,7 +50748,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.860  mwSys=0.000
      tdb=140.00  airX=1.271  dryAirMass=652.19  XLGain=0.00  W=0.008337  twb=79.95  rh=0.0669
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503456.50  Dair=96578.06  Nrad=428001.30  Drad=3066.08  CX=1637.27  airX=6.071
+     Nair=13503456.51  Dair=96578.06  Nrad=428001.30  Drad=3066.08  CX=1637.27  airX=6.071
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-16854  fvent=0.000  pz0=0.0378  qsHvac=17907
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.516  mwDuctLk=0.000  mwSys=0.000
@@ -50782,7 +50782,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.857  mwSys=0.000
      tdb=140.00  airX=1.271  dryAirMass=652.19  XLGain=0.00  W=0.008335  twb=79.94  rh=0.0669
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503453.27  Dair=96578.02  Nrad=428001.65  Drad=3066.08  CX=1637.27  airX=6.071
+     Nair=13503453.28  Dair=96578.02  Nrad=428001.65  Drad=3066.08  CX=1637.27  airX=6.071
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-16851  fvent=0.000  pz0=0.0378  qsHvac=17904
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.507  mwDuctLk=0.000  mwSys=0.000
@@ -50841,7 +50841,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.73  txe=139.8
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.048  Uduct=0.2470
      amfFL=19687.5  amfLeak=828.4  uaTot=26.8421  beta=0.994  tSrf=130.04
      runF=0.468  qCondAir=-309.17  qCondRad=-741.73, qCondTot=-1050.90
-     ta0=55.84  ta1=55.84  ta2=56.07  ta3=56.30
+     ta0=55.83  ta1=55.83  ta2=56.07  ta3=56.30
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=736.4  uaTot=22.8066  beta=0.995  tSrf=132.98
@@ -50893,7 +50893,7 @@ RDuctZone CZ: anMCp/T[ 0]=178.04/9744.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=13501987.88  Dair=96553.78  Nrad=429208.84  Drad=3070.98  CX=1585.89  airX=5.922
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.84  qIzSh=-15182  fvent=0.000  pz0=-0.0469  qsHvac=15789
-Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.665  mwDuctLk=0.000  mwSys=69.256
+Single W:  mwIG=25.448  mwInf=0.000  mwAN=0.665  mwDuctLk=0.000  mwSys=69.257
      tdb=78.00  airX=12.987  dryAirMass=651.63  XLGain=0.00  W=0.011270  twb=66.38  rh=0.5472
 Single CZ: anMCp/T[ 0]=21.59/1181.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386263.92  Dair=107014.57  Nrad=205592.22  Drad=2437.88  CX=1174.12  airX=12.987
@@ -50986,7 +50986,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.841  mwSys=0.000
      tdb=140.00  airX=1.269  dryAirMass=652.20  XLGain=0.00  W=0.008320  twb=79.93  rh=0.0668
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503433.03  Dair=96577.75  Nrad=428003.54  Drad=3066.08  CX=1637.27  airX=6.069
+     Nair=13503433.04  Dair=96577.75  Nrad=428003.54  Drad=3066.08  CX=1637.27  airX=6.069
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.73  qIzSh=-16835  fvent=0.000  pz0=0.0378  qsHvac=17887
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.454  mwDuctLk=0.000  mwSys=0.000
@@ -51530,7 +51530,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.804  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.24  XLGain=0.00  W=0.008286  twb=79.89  rh=0.0665
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503381.65  Dair=96577.06  Nrad=428008.22  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503381.64  Dair=96577.06  Nrad=428008.22  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16791  fvent=0.000  pz0=0.0375  qsHvac=17839
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.351  mwDuctLk=0.000  mwSys=0.000
@@ -51554,7 +51554,7 @@ Sat 28-Feb  hr=22 subhr=5
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.81
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.049  Uduct=0.2470
      amfFL=19687.5  amfLeak=825.0  uaTot=26.8354  beta=0.994  tSrf=130.04
-     runF=0.466  qCondAir=-308.12  qCondRad=-739.27, qCondTot=-1047.39
+     runF=0.466  qCondAir=-308.11  qCondRad=-739.27, qCondTot=-1047.39
      ta0=55.75  ta1=55.75  ta2=55.98  ta3=56.22
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -51870,7 +51870,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.805  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.25  XLGain=0.00  W=0.008273  twb=79.88  rh=0.0664
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503382.89  Dair=96577.07  Nrad=428008.78  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503382.90  Dair=96577.07  Nrad=428008.78  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16792  fvent=0.000  pz0=0.0375  qsHvac=17840
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.364  mwDuctLk=0.000  mwSys=0.000
@@ -51904,7 +51904,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.805  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.25  XLGain=0.00  W=0.008272  twb=79.87  rh=0.0664
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503383.17  Dair=96577.08  Nrad=428008.80  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503383.16  Dair=96577.08  Nrad=428008.80  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16792  fvent=0.000  pz0=0.0375  qsHvac=17840
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.365  mwDuctLk=0.000  mwSys=0.000
@@ -51938,7 +51938,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.805  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008271  twb=79.87  rh=0.0664
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503383.43  Dair=96577.08  Nrad=428008.82  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503383.44  Dair=96577.08  Nrad=428008.82  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16792  fvent=0.000  pz0=0.0375  qsHvac=17840
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.367  mwDuctLk=0.000  mwSys=0.000
@@ -51972,7 +51972,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.805  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008270  twb=79.87  rh=0.0664
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503383.73  Dair=96577.08  Nrad=428008.85  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503383.73  Dair=96577.08  Nrad=428008.83  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16792  fvent=0.000  pz0=0.0375  qsHvac=17840
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.368  mwDuctLk=0.000  mwSys=0.000
@@ -52040,7 +52040,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.806  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008268  twb=79.87  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503384.37  Dair=96577.09  Nrad=428008.87  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503384.36  Dair=96577.09  Nrad=428008.87  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16793  fvent=0.000  pz0=0.0375  qsHvac=17841
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.371  mwDuctLk=0.000  mwSys=0.000
@@ -52074,7 +52074,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.806  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008267  twb=79.87  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503384.69  Dair=96577.09  Nrad=428008.88  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503384.69  Dair=96577.09  Nrad=428008.87  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16793  fvent=0.000  pz0=0.0375  qsHvac=17841
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.372  mwDuctLk=0.000  mwSys=0.000
@@ -52176,7 +52176,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.807  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008265  twb=79.87  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503385.77  Dair=96577.11  Nrad=428008.89  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503385.78  Dair=96577.11  Nrad=428008.89  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16794  fvent=0.000  pz0=0.0375  qsHvac=17842
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.376  mwDuctLk=0.000  mwSys=0.000
@@ -52210,7 +52210,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.807  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008264  twb=79.87  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503386.16  Dair=96577.11  Nrad=428008.89  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503386.15  Dair=96577.11  Nrad=428008.89  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16794  fvent=0.000  pz0=0.0375  qsHvac=17842
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.377  mwDuctLk=0.000  mwSys=0.000
@@ -52307,7 +52307,7 @@ DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.8
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
      amfFL=19687.5  amfLeak=733.6  uaTot=22.8067  beta=0.995  tSrf=132.98
-     runF=0.466  qCondAir=-176.56  qCondRad=-426.74, qCondTot=-603.30
+     runF=0.466  qCondAir=-176.56  qCondRad=-426.74, qCondTot=-603.31
      ta0=78.00  ta1=82.96  ta2=83.10  ta3=83.23
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.808  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.26  XLGain=0.00  W=0.008262  twb=79.86  rh=0.0663
@@ -52346,7 +52346,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.808  mwSys=0.000
      tdb=140.00  airX=1.265  dryAirMass=652.27  XLGain=0.00  W=0.008262  twb=79.86  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503387.79  Dair=96577.13  Nrad=428008.87  Drad=3066.09  CX=1634.05  airX=6.065
+     Nair=13503387.80  Dair=96577.13  Nrad=428008.87  Drad=3066.09  CX=1634.05  airX=6.065
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16795  fvent=0.000  pz0=0.0375  qsHvac=17843
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.383  mwDuctLk=0.000  mwSys=0.000
@@ -52516,7 +52516,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.798  mwSys=0.000
      tdb=140.00  airX=1.264  dryAirMass=652.27  XLGain=0.00  W=0.008259  twb=79.86  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503378.39  Dair=96577.01  Nrad=428009.10  Drad=3066.09  CX=1632.65  airX=6.064
+     Nair=13503378.39  Dair=96577.01  Nrad=428009.09  Drad=3066.09  CX=1632.65  airX=6.064
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16788  fvent=0.000  pz0=0.0375  qsHvac=17836
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.348  mwDuctLk=0.000  mwSys=0.000
@@ -52584,7 +52584,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.84  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.789  mwSys=0.000
      tdb=140.00  airX=1.263  dryAirMass=652.27  XLGain=0.00  W=0.008257  twb=79.86  rh=0.0663
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503367.04  Dair=96576.85  Nrad=428009.66  Drad=3066.09  CX=1632.65  airX=6.063
+     Nair=13503367.04  Dair=96576.85  Nrad=428009.65  Drad=3066.09  CX=1632.65  airX=6.063
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16777  fvent=0.000  pz0=0.0372  qsHvac=17824
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.317  mwDuctLk=0.000  mwSys=0.000
@@ -53366,7 +53366,7 @@ DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.8
 SDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=6.703  mwSys=0.000
      tdb=140.00  airX=1.254  dryAirMass=652.30  XLGain=0.00  W=0.008231  twb=79.83  rh=0.0661
 SDuctZone CZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=13503256.15  Dair=96575.37  Nrad=428016.84  Drad=3066.10  CX=1632.66  airX=6.054
+     Nair=13503256.16  Dair=96575.37  Nrad=428016.84  Drad=3066.10  CX=1632.66  airX=6.054
      TH=140.00  TD=145.00  TC=150.00  qhCap=1000000  qcCap=-1000000
      ta=140.00  tr=139.74  qIzSh=-16684  fvent=0.000  pz0=0.0365  qsHvac=17726
 RDuctZone W:  mwIG=0.000  mwInf=0.000  mwAN=5.086  mwDuctLk=0.000  mwSys=0.000
@@ -53390,7 +53390,7 @@ Sat 28-Feb  hr=23 subhr=29
 DUCTSEG 'MySysSup':  ty=supply  loc=SDuctZone  txa=140.00  txr=139.74  txe=139.81
      hc=0.540  hr=1.331  htot=1.871  cx=0.339  Rduct=4.049  Uduct=0.2470
      amfFL=19687.5  amfLeak=817.6  uaTot=26.8358  beta=0.994  tSrf=130.02
-     runF=0.461  qCondAir=-305.99  qCondRad=-734.30, qCondTot=-1040.29
+     runF=0.461  qCondAir=-305.99  qCondRad=-734.29, qCondTot=-1040.29
      ta0=55.56  ta1=55.56  ta2=55.80  ta3=56.03
 DUCTSEG 'MySysRet':  ty=return  loc=RDuctZone  txa=140.00  txr=139.85  txe=139.89
      hc=0.540  hr=1.335  htot=1.875  cx=0.338  Rduct=3.851  Uduct=0.2597
@@ -53415,7 +53415,7 @@ Single CZ: anMCp/T[ 0]=21.42/1132.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=8386216.40  Dair=107014.39  Nrad=205594.83  Drad=2437.89  CX=1173.65  airX=12.820
      TH=70.00  TD=74.00  TC=78.00  tSP=78.00  md=2  amfReq=9084  amfSup=8267   tSup=56.03
      ta=78.00  tr=82.27  qIzSh=-538  fvent=0.000  pz0=-0.0052  qsHvac=-44111
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console
+! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console
 
 
 
@@ -54118,18 +54118,18 @@ Input for Run 001:
 
 
 
-! CSE 0.903.0+wshp.86e65c39.96 for Win32 console run(s) done: Thu 24-Mar-22   5:22:44 pm
+! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console run(s) done: Mon 25-Apr-22  10:39:49 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Mar-22   5:19 pm   (VS 14.29    2942976 bytes)  (HPWH 1.17.1)
-! Command line: -x!  -b -t1 actest1bL
-! Input file:   D:\cse\test\actest1bL.cse
-! Report file:  D:\cse\test\actest1bL.rep
+!               25-Apr-22  10:34 am   (VS 14.29    3000320 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 actest1bl
+! Input file:   D:\cse\test\actest1bl.cse
+! Report file:  D:\cse\test\actest1bl.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 1      T/C = 0.0920   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0610   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.90     Calls = 1      T/C = 2.8990   
-!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0590   
-!                Total:  Time = 3.05     Calls = 1      T/C = 3.0500   
+!           Simulation:  Time = 2.64     Calls = 1      T/C = 2.6380   
+!              Reports:  Time = 0.06     Calls = 1      T/C = 0.0560   
+!                Total:  Time = 2.76     Calls = 1      T/C = 2.7600   

@@ -921,7 +921,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 	i.zn_hcAirXIsSet = IsSet( ZNI_I+ZNISUB_HCAIRX);	// 1 iff zn_hcAirX is set
 										//  WHY: ZNI status bytes not  passed to ZNR
-										//       Need status in zn_HcAirX()
+										//       Need status in zn_AirX()
 
 	if (!(fs[ ZNI_I+ZNISUB_ZNAREA] & FsSET))
 		ooer( ZNI_I+ZNISUB_ZNAREA, "no znArea given");

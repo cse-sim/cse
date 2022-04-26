@@ -2667,6 +2667,10 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 
 // ye Olde dept of a b c's
 	cTot = zn_bHvO + cz;				// total flow to zone.  bHvO is sum of c's of other terminals.  for probing.
+#if defined( _DEBUG)
+	if (frDiff( cSum, double( cTot)) > 0.0001)
+		printf("\ncSum mismatch");
+#endif
 	// SAME AS cSum -- verify and delete one? 5-92.
 // zone humidity ratio
 	aWz =					// working copy of wz for air handler to modify
