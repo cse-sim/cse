@@ -149,12 +149,7 @@ RC ZNR::zn_RddInit()
 	//							 but believe these don't need init for start-interval masses
 	haMass = 0.;				// +='d in ms_rddInit. pre-0'd object may be re-used in autoSizing.
 	znXLGain = znXLGainLs = 0;	// no condensation heat leftover from prior iteration, rob 6-11-97
-#if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97. Mbrs not added. DELETE.
-x	znXLGainYr = 0;				// init cumulative excess latent gain (condensation), rob 5-97
-x	znNSubhrXLG = 0;			// init # subhours with XLG, rob 5-97. May be reusued in autosizing.
-#endif
 	zn_ebErrCount = 0;			// count of short-interval energy balance errors
-
 
 	// HVAC convective delivery fraction
 	//   needs elaboration for radiant systems
@@ -1614,19 +1609,23 @@ double ZNR::zn_AnAmf() const		// current AirNet mass flow rate
 	return amf;
 }		// ZNR::zn_AnAmf
 //-----------------------------------------------------------------------------
-double ZNR::zn_NonAnIVAmf() const	// non-airnet dry air mass flow rate
+double ZNR::zn_NonAnIVAmf(	// non-airnet dry air mass flow rate
+	double dryAirMass /*=-1.*/) const	// current zone dry air mass, lbm
+										//   default = zn_dryAirMass
 // Note: non-airnet flows contribute to heat and moisture balance
-//       but *NOT* pressure balance (TODO?)
+//       but *NOT* pressure balance (assumed balanced)
 // returns dry air mass flow rate (lbm/hr) into zone due to non-AirNet sources
 {
-	double amf = i.infAC * zn_dryAirMass;
+	if (dryAirMass < 0.)
+		dryAirMass = zn_dryAirMass;
+	double amf = i.infAC * dryAirMass;
 	if (i.infELA > 0.f)
 	{	float amfELA =
 	     Top.tp_rhoDryOSh
 		  * 60.f
 		  * i.infELA		// user input effective leakage area (ft2), hourly variable
 		  * sqrt( 			// flow is proportional to square root of
-			  zn_stackc * fabs( tzlh - Top.tDbOSh) + 	//  stack coeff (see ZNR.zn_InfilSetup) * delta t
+			  zn_stackc * fabs( tzls - Top.tDbOSh) + 	//  stack coeff (see ZNR.zn_InfilSetup) * delta t
 			  zn_windc * Top.windSpeedSquaredSh ); 		//  wind coeff (ditto) * wind speed ^ 2
 
 		amf += amfELA;
@@ -1675,11 +1674,13 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 								// false: use temporary vars only
 	double amfX /*=0.*/,		// additional system flow (e.g. air handler), lbm/h
 	double mwX /*=0.*/,			// air handler moisture flow, lbm/hr
-	double _tz /*=-99.*/)
+	double _tz /*=-99.*/,		// alternative air temp, F; default = ZNR tz
+	double* pXLGain /*=nullptr*/)	// if non-null, return condensation heat gain, Btu
+
+// see also ZNR::znW() re CNE zone moisture balance
 
 // returns humidity ratio
 
-// see also znW() re CNE zone moisture balance
 {
 	if (_tz < -98.)
 		_tz = tz;
@@ -1692,8 +1693,9 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 	// air changes due to infil + vent
 	// includes flows induced by ducts / HVAC
 	//   but not those flows
-	// TODO: improve other infil models?
-	double ivAirX = (zn_AnAmf() + zn_NonAnIVAmf()) / dryAirMass;
+	// TODO: improve other infil models
+	double nonAnIVAmf = zn_NonAnIVAmf( dryAirMass);
+	double ivAirX = (zn_AnAmf() + nonAnIVAmf) / dryAirMass;
 	if (ivAirX < 0.f)
 		ivAirX = 0.f;
 
@@ -1704,7 +1706,7 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 	double mwIG = znLGain / PsyHCondWtr;		// latent internal gains, lbm/hr
 
 	// non-airnet infil, lbm/hr
-	double mwInf = zn_NonAnIVAmf() * Top.wOSh;
+	double mwInf = nonAnIVAmf * Top.wOSh;
 
 	// IZXFER (airnet) gains not including duct leakage and HVAC
 	double mwAN = (1.f - zn_fVent) * zn_airNetI[0].af_Wmf()
@@ -1740,6 +1742,8 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 		_wz = wzClamp;
 		wCase += 2;		// limits applied
 	}
+	if (pXLGain)
+		*pXLGain = XLGain;
 
 	if (bFinal)
 	{	// set ZNR members
@@ -1812,18 +1816,51 @@ x			printf("Mismatch\n");
 }		// ZNR::zn_AirXMoistureBal
 
 //----------------------------------------------------------------------------------
+#if defined( OLDHUM)
 double ZNR::zn_HumRat(		// zone moisture ratio
 	double amfX,		// additional system flow (e.g. air handler), lbm/h
 	double mwX,			// air handler moisture flow, lbm/hr
 	double _tz,
-	double& XLGain)
+	double* pXLGain /*=nullptr*/)
 
 	// returns zone humidity ratio
 
 
 	// see also znW() re CNE zone moisture balance
 {
+
+	if (_tz < -98.)
+		_tz = tz;
+
+#if 1
 	RC rc = zn_AirX(amfX, _tz);
+#else
+
+	double rho = psyDenMoistAir(_tz, wzls);		// moist air density
+	double dryAirMass = max(i.znVol * psyDenDryAir2(rho, wzls), .1);	// dry air mass, lbm
+	zn_dryAirMass = dryAirMass;
+	zn_dryAirMassEff = dryAirMass;			// effective dry air mass, lbm
+												//   zn_AirXMoistureBal() may adjust re short time steps
+
+	// TODO: improve other infil models?
+	zn_ivAirX = (zn_AnAmf() + zn_NonAnIVAmf()) / dryAirMass;
+	// air changes due to infil + vent
+	// includes flows induced by ducts / HVAC
+	//   but not those flows
+	if (zn_ivAirX < 0.f)
+		zn_ivAirX = 0.f;
+
+	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf + amfX;
+	zn_airX = zn_ivAirX + amfSys / dryAirMass;
+
+	// modified airX re convection coefficients
+	if (!i.zn_hcAirXIsSet)	// if not fixed by user input
+	{
+		i.zn_hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
+		if (zn_IsAirHVACActive() && !zn_HasAirHVAC())
+			i.zn_hcAirX += 4.8f;		// additional "virtual" air flow for non-air zones
+	}
+#endif
 
 	// internal gain
 	double mwIG = znLGain / PsyHCondWtr;		// latent internal gains, lbm/hr
@@ -1857,7 +1894,7 @@ double ZNR::zn_HumRat(		// zone moisture ratio
 	double _wz = mw * Top.tp_subhrDur / (zn_dryAirMassEff * i.zn_HIRatio) + wzls * (1. - f);
 
 	double wSat = psyHumRat3(_tz);   // maximum w air at this temp can hold
-	XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
+	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
 						// if predicted humidity ratio is physically impossible, assume
 						//   magic (sensible) heat transfer
 						// + = into zone (= "condensation")
@@ -1869,53 +1906,13 @@ double ZNR::zn_HumRat(		// zone moisture ratio
 		wCase += 2;		// limits applied
 	}
 
+	if (pXLGain)
+		*pXLGain = XLGain;
+
 	return _wz;
 
-#if 0
-
-	// latent gains to space
-	zn_qlHvac = zn_sysAirI.af_QLat(wzls);
-	if (fabs(zn_qlHvac) < .1)
-		zn_qlHvac = 0.;		// drop tiny values (re report aesthetics)
-	zn_qlIz = (1.f - zn_fVent) * zn_airNetI[0].af_QLat(wzls)
-		+ (zn_fVent)*zn_airNetI[1].af_QLat(wzls)
-		+ zn_ductLkI.af_QLat(wzls);
-
-	zn_twb = psyTWetBulb(tz, wz);
-	zn_relHum = psyRelHum3(wz, wSat);
-
-	// zone humidity ratio now known
-	//  finalize return air state
-	zn_sysAirO.as_w = wz;
-#endif
-
-#if 0
-	x	float relHum = psyRelHum2(tz, zn_twb);
-	x	if (tz > 50 && fabs(zn_relHum - relHum) > .0001)
-		x		printf("hit");
-#endif
-
-#if 0 && defined( _DEBUG)
-	x moisture balance experiment
-		x generally does not balance, 5 - 10 - 2012
-		x	double znLDelta = zn_dryAirMass * (wz - wzls) * PsyHCondWtr;
-	x	double znLX = (zn_qlHvac + znLGain) * Top.tp_subhrDur;
-	x	if (frDiff(znLDelta, znLX) > .01)
-		x		printf("Mismatch\n");
-#endif
-
-#if defined( DEBUGDUMP)
-	if (DbDo(dbdZM))
-	{
-		DbPrintf("%s W:  mwIG=%0.3f  mwInf=%0.3f  mwAN=%0.3f  mwDuctLk=%0.3f  mwSys=%0.3f\n"
-			"     tdb=%0.2f  airX=%0.3f  hcAirX=%0.3f dryAirMass=%0.2f  XLGain=%0.2f  W=%0.6f  twb=%0.2f  rh=%0.4f\n",
-			name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(),
-			tz, zn_airX, i.zn_hcAirX, zn_dryAirMass, znXLGain, wz, zn_twb, zn_relHum);
-	}
-#endif
-
-	return rc;
 }		// ZNR::zn_HumRat
+#endif
 
 //------------------------------------------------------------------------------
 RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model

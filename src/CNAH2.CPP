@@ -3315,13 +3315,11 @@ label:
 	zp->aTz = tz;						// .. in ah's working variables
 
 	// humidity
-	DBL znXLGainSink;
-	zp->aWz = zp->znW( Top.humMeth==C_HUMTHCH_PHIL
-						? tu->wcO + cz * (wsls + aWs)/2. 	// use average supply hum
+	zp->aWz = zp->znW(Top.humMeth == C_HUMTHCH_PHIL
+						? tu->wcO + cz * (wsls + aWs) / 2. 	// use average supply hum
 						: tu->wcO + cz * aWs,      		// C_HUMTHCH_ROB: use latest supply hum
 						tu->cO + cz,
-						tz,					// this is .aTz. arg added 10-96.
-						znXLGainSink );
+						tz);					// this is .aTz. arg added 10-96.
 
 		// fanF threshold and max
 #ifndef AUTOSIZE

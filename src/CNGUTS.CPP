@@ -823,17 +823,6 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
 						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
 			}
-#if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97. Mbrs not added. DELETE.
-x			// duplicate message to test new members
-x			ZNR * zp;
-x			RLUP( ZrB, zp)
-x				if (zp->znNSubhrXLG)
-x					rWarn( "Zone \"%s\": condensation occurred in %ld subhours of run.\n"
-x                     "    A total of %g kBtu of condensation heat was added to the zone.",
-x                     zp->i.name, (long)zp->znNSubhrXLG,
-x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
-#endif
-			ah;
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"

@@ -2251,8 +2251,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
     *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
-    *declare "double zn_HumRat( double amfX, double mwX, double _tz, double& XLGain);"
-    *declare "double zn_AirXMoistureBal( bool bFinal, double amfX=0., double mwX=0., double _tz=-99.);"
+    *declare "double zn_HumRat( double amfX, double mwX, double _tz, double* pXLGain=nullptr);"
+    *declare "double zn_AirXMoistureBal( bool bFinal, double amfX=0., double mwX=0., double _tz=-99., double* pXLGain=nullptr);"
     *declare "RC zn_ComfortCR();"
     *declare "void zn_DbDump() const;"
 
@@ -2264,7 +2264,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC ztuMode();"
     *declare "RC ztuMdSeq();"
     *declare "RC ztuAbs( SI md, BOO fromZtu, DBL &aqHvO, DBL &bHvO, DBL &wcO, DBL &wcO1, DBL &cO );"
-    *declare "DBL znW( DBL wc, DBL c, DBL tz, DBL &zLGain);"
+    *declare "DBL znW( DBL wc, DBL c, DBL tz, DBL* pXLGain=nullptr);"
     *declare "void ztuMdSets( SI md);"
     *declare "BOO nxTu( TU *&tu);"
     *declare "BOO nxZhx( ZHX *&x);"
@@ -2476,7 +2476,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "double zn_AnAmfCp( int iV) const { return zn_airNetI[ iV].af_AmfCp(); }"
     *declare "double zn_AnAmfCpT( int iV) const { return zn_airNetI[ iV].af_AmfCpT(); }"
     *declare "double zn_AnAmf() const;"			// returns actual
-    *declare "double zn_NonAnIVAmf() const;"
+    *declare "double zn_NonAnIVAmf( double dryAirMass=-1.) const;"
 
 	*s *e FLOAT zn_fVentPrf				// preferred vent fraction for this zone in isolation
 										//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)

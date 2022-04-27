@@ -1585,13 +1585,6 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 		}
 	}
 
-#if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97
-x// excess latent gain... accumulate to a zone member for reporting during autoSizing, when ZNRES accumulation isn't done
-x  znXLGainYr += znXLGain * Top.tp_subhrDur;		// convert power to energy. Used for (autosize) msg.
-x  if (znXLGain != 0)
-x     znNSubhrXLG++;					// count subhours with excess latent gain
-#endif
-
 	return rc;
 }			// ZNR::ztuEndSubhr
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -2674,7 +2667,7 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	// SAME AS cSum -- verify and delete one? 5-92.
 // zone humidity ratio
 	aWz =					// working copy of wz for air handler to modify
-		wz = znW( wcSum1, cSum, tz, znXLGain);	// set members: wz to zone humidity ratio, znXLGain to excess latent gain if any.
+		wz = znW( wcSum1, cSum, tz, &znXLGain);	// set members: wz to zone humidity ratio, znXLGain to excess latent gain if any.
 												// note use of special wcSum. fcn below.
 
 // store outputs of terminals other than the active terminal for this zone mode, flag ah's that need calling
@@ -3211,8 +3204,7 @@ tzOhum: ;		// common exit for air cases. cz contains tu->cz.
 				break;	// use latest ws's
 			}
 			tu->cO = cSum - cz;				// zone total flow excluding this tu: for ah use with updated cz.
-			DBL xLGainSink;
-			tu->wzO = znW( tu->wcO, tu->cO, tz, xLGainSink);	// what zone's w wd be w/o this ah, for change-monitoring 6-92.
+			tu->wzO = znW( tu->wcO, tu->cO, tz);	// what zone's w wd be w/o this ah, for change-monitoring 6-92.
 
 			// set ah must-compute flag on change in zone w excluding this terminal
 
@@ -3266,7 +3258,7 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 				//				sigma( (ah->ws+ah->wsls)/2. * tu->cz) 	(or ah->aWs, tu->aCz, etc)
 	DBL c,		// sum of air handler capacity flows into zone, Btuh/F
 	DBL _tz,		// zone temperature: .tz, or .aTz from antRatTs.
-	DBL &xLGain ) 	// receives excess latent gain power rejected to prevent supersaturation, eg znXLGain.
+	DBL* pXLGain /*=nullptr*/) 	// optionally receives excess latent gain power rejected to prevent supersaturation, eg znXLGain.
 // above are args so ah can pass unstored updated working values.
 // Also uses: zone: .unInfil, .znLGain, .i.znVol.
 // returns (does NOT store) zone w.
@@ -3287,8 +3279,20 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 		double amfX = c / Top.tp_airSH;	// lbm/hr
 		double mwX = wc / Top.tp_airSH;
 
-		double _wz = zn_HumRat(amfX, mwX, _tz, xLGain);
-
+		double _wz;
+#if defined( OLDHUM)
+		if (Top.tp_dbgFlag == 1)
+			_wz = zn_HumRat(amfX, mwX, _tz, pXLGain);
+		else if (Top.tp_dbgFlag == 2)
+		{
+			double _wz1 = zn_HumRat(amfX, mwX, _tz, pXLGain);
+			_wz = zn_AirXMoistureBal(false, amfX, mwX, _tz, pXLGain);
+			if (frDiff(_wz, _wz1) > 0.0001)
+				printf("\nMismatch");
+		}
+		else
+#endif
+			_wz = zn_AirXMoistureBal(true, amfX, mwX, _tz, pXLGain);
 		return _wz;
 	}
 #endif
@@ -3297,7 +3301,7 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 	DBL _wz = 0;
 	float _wo = Top.wOSh;		// outdoor humidity
 	DBL _wzls = wzls;			// zone humidity last subhour
-	xLGain = 0;					// init to no supersaturation, no excess humidity to reject (ref arg)
+	double xLGain = 0.;			// init to no supersaturation, no excess humidity to reject (ref arg)
 	DBL satW = psyHumRat3(_tz);   	// maximum w air at this temp can hold. lib\psycho2.cpp function.
 
 	for (int j = 0;  ;  )		// may repeat if supersaturated, per endtest below
@@ -3352,6 +3356,9 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 		_wz -= xw;				// reduce computed zone hum by excess
 		break;					// and call it good enough
 	}
+
+	if (pXLGain)
+		*pXLGain = xLGain;
 
 	return _wz;
 
