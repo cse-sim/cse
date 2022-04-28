@@ -92,4 +92,6 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: Documentation
-          path: doc/output\n!doc/output/.git
+          path: | 
+                doc/output
+                !doc/output/.git
