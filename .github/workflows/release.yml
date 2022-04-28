@@ -42,9 +42,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: |
-                        doc/output
-                        !doc/output/.git
+          publish_dir: doc/output
           user_name: 'cse-ci'
           user_email: 'ci@cse.org'
           full_commit_message: "Update docs for ${{ github.event.release.tag_name }}."
