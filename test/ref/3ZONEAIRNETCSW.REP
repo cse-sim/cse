@@ -1,11 +1,5 @@
 
 
-
-
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Balance, Sum of Zones
 
  Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
@@ -58,77 +52,9 @@ Hourly User-defined Report, Thu 10-Jan
 
 
 
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  1
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
 ! Log for Run 001:
 
-! CSE 0.870.0 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  2
-
-
-
-
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -184,15 +110,6 @@ Input for Run 001:
         REPORT
             rpType=UDT rpFreq=HOUR rpDayBeg=Jan 10  rpDayEnd=Jan 10 rpCpl = 210
             reportCol colVal=$hour  colHead="Hour"
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  3
-
-
-
-
-------------------------------------------------------------------------------
-
             reportCol colVal=@izxfer[ "H141"].air1.tdb colHead="Zone1 T"
         	reportCol colVal=@izxfer[ "H241"].air1.tdb colHead="Zone2 T"
         	reportCol colVal=@izxfer[ "H341"].air1.tdb colHead="Zone3 T"
@@ -247,15 +164,6 @@ Input for Run 001:
 #       #if defined( COOLING)
 0            TERMINAL Z2C
 0               tuAh="MainAH"
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  4
-
-
-
-
-------------------------------------------------------------------------------
-
 0               tuSRLeak=0.0            //no duct leaks
 0               tuVfMxC=10000
 0               tuVfMn=0
@@ -310,15 +218,6 @@ Input for Run 001:
 0           sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.00000000
 0         
 0           ahccType=ELECTRIC
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  5
-
-
-
-
-------------------------------------------------------------------------------
-
 0           ahccCapTRat=1000000        //very large
 0           ahccCapSRat=1000000        //No latent load capacity BESTEST p.19
 #        #endif
@@ -332,111 +231,18 @@ Input for Run 001:
 
 
 
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:47:46 am
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  6
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.870.0 for Win32 console run(s) done: Wed 17-Jun-20   4:24:43 pm
-
-! Executable:   d:\cse\msvc\cse.exe
-!               17-Jun-20   4:02 pm   (VS 14.16    2623488 bytes)  (HPWH 1.9.0+master.6ae38ca.38)
-! Command line: -x!  -t1 3zoneairnetCSW
-! Input file:   D:\cse\test\3zoneairnetCSW.cse
-! Report file:  D:\cse\test\3zoneairnetCSW.rep
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 3ZoneAirNetCSW
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\3ZoneAirNetCSW.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\3ZoneAirNetCSW.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0030   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0450   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 2.44     Calls = 1      T/C = 2.4350   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0030   
-!                Total:  Time = 2.45     Calls = 1      T/C = 2.4470   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 3zoneairnetCSW  001                      Wed 17-Jun-20   4:24:40 pm  Page  7
-
+!           Simulation:  Time = 3.18     Calls = 1      T/C = 3.1800   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 3.23     Calls = 1      T/C = 3.2260   

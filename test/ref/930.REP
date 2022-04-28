@@ -1,11 +1,5 @@
 
 
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Balance, Sum of Zones
 
  Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
@@ -24,48 +18,6 @@ Monthly Energy Balance, Sum of Zones
  Dec 68.01 44.73 -1.892      0 0.835 0.203 -2.299      0  3.153    0      0     0      0 .00027 -.0003    0
 
  Yr  72.81 50.90 -13.97      0 21.78 2.391 -15.83      0  5.621    0      0     0      0 .00011 -.0001    0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  1
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
 
 
 
@@ -116,20 +68,6 @@ Mass North_Wall         Area: 232.510   UNom: 0.1005      tc: 12.74  subhrly:
   Layer  thk: 1.000   vhc: 0       cond: 0.131      R: 7.624  
   Layer  thk: 0.0295  vhc: 7.125   cond: 0.0809     R: 0.365  
  Outside: Ambient   rsurf=0.00  h=5.158                                       
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  2
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 Mass East_Wall          Area: 109.797   UNom: 0.1005      tc: 12.74  subhrly: 
  Inside: Zone '930'   rsurf=0.00  h=0.558                                     
   Layer  thk: 0.0820  vhc: 20.912  cond: 0.295      R: 0.278  
@@ -157,41 +95,6 @@ Mass South_Wall         Area: 232.510   UNom: 0.1005      tc: 12.74  subhrly:
   Layer  thk: 1.000   vhc: 0       cond: 0.131      R: 7.624  
   Layer  thk: 0.0295  vhc: 7.125   cond: 0.0809     R: 0.365  
  Outside: Ambient   rsurf=0.00  h=5.158                                       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  3
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
 
 
 
@@ -245,19 +148,6 @@ Annual Heating Energy Report
 
 
 
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  4
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Use, meter "COOLMETER"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -308,19 +198,6 @@ Yr   2.391      0      0      0      0      0      0      0      0      0      0
 
 
 
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  5
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
-
-
 Hourly Energy Balance, zone "930", Fri 04-Jan
 
  Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
@@ -351,36 +228,6 @@ Hourly Energy Balance, zone "930", Fri 04-Jan
   24 68.00 41.01 -.0048      0     0 .0003 -.0051      0 .00964    0      0     0      0      0      0    0
 
  Day 68.00 40.77 -0.117      0 .0316 .0066 -0.151      0  0.230    0      0     0      0 -0.000 .00003    0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  6
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
 
 
 
@@ -417,36 +264,6 @@ Day -3.4 -4.7 68.0 40.8   0 68.0 40.8 68.0 40.8 24.00 1.0  1003     0     0     
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  7
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
-
-
 Hourly Energy Balance, zone "930", Fri 26-Jul
 
  Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
@@ -477,36 +294,6 @@ Hourly Energy Balance, zone "930", Fri 26-Jul
   24 80.60 56.75 -.0006      0     0 .0003 .00303      0 -.0028    0      0     0      0 -.0001 .00013    0
 
  Day 80.56 55.63 .00028      0 .0941 .0066 .00272      0 -0.104    0      0     0      0 .00018 -.0002    0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  8
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
 
 
 
@@ -543,36 +330,6 @@ Day 80.7 55.6 80.6 55.6   0 80.6 55.6 75.7 53.9 24.00 1.0  1003     0 0.104     
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page  9
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
-
-
 Hourly Energy Balance, zone "930", Wed 16-Oct
 
  Hr   Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
@@ -603,36 +360,6 @@ Hourly Energy Balance, zone "930", Wed 16-Oct
   24 71.59 48.63 -.0017      0     0 .0003 .00225      0 -.0008    0      0     0      0 .00003 -0.000    0
 
  Day 73.10 49.05 -.0233      0 .0598 .0066 -.0346      0 -.0084    0      0     0      0 .00002 -0.000    0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 10
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
 
 
 
@@ -671,31 +398,7 @@ Day 58.9 43.0 73.1 49.0   0 73.1 49.0 73.1 49.0 24.00 1.0  1003     0 .0002     
 
 ! Log for Run 001:
 
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 11
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -751,15 +454,6 @@ I       //  use BESTEST absorptivity                                    SW 7/16/
 I       //  Use built-in view factors                                   SW/BAW 7/17/95
 I       //  Add meters for heating and cooling                          SW 7/17/95
 I       //  Model infiltraion using ventilation
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 12
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I       //  system to bypass airmass problem                            BAW 7/18/95
 I       //  Change materials to use more accurate
 I       //  conversion factors                                          BAW 7/19/95
@@ -814,15 +508,6 @@ I        MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDen
 I         
 I        MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
 I         
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 13
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I        MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
 I         
 I        MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
@@ -877,15 +562,6 @@ I                             lrMat="SunWallMat"
 I       
 I       // ----- CONSTRUCTION section for heavyweight case -----
 I         
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 14
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I        CONSTRUCTION hw_wall
 I                   layer     lrThk=0.3281
 I                             lrMat="ConcreteBlock"
@@ -940,15 +616,6 @@ I0          oaOaLeak=0                  //No economizer damper leaks to outside
 I0          oaRaLeak=0                  //No economizer leaks to return air
 I0          ahSOLeak=0                  //No supply duct leaks
 I0          ahROLeak=0                  //No return duct leaks
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 15
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I0          ahSOLoss=0                  //No supply duct losses
 I0          ahROLoss=0                  //No return duct losses
 I0      
@@ -1003,15 +670,6 @@ I0          sfanCurvePy=0.00000000, 1.00000000, 0.00000000, 0.00000000,0.0000000
 I0          sfanMtr=GAINMETER
 I0        
 I0          //COOLING COIL
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 16
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I0          //=========
 I0          ahccType=ELECTRIC
 I0          ahccCapTRat=0.1           //very small
@@ -1066,15 +724,6 @@ I           oaEcoType=None
 I           sfanVfDs= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60 
 I           oaVfDsMn= .0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60
 I           oaOaLeak=0
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 17
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I           oaRaLeak=0
 I           ahSOLeak=0
 I           ahROLeak=0
@@ -1129,15 +778,6 @@ I               sfAzm=0                   //north wall
 I               sfCon=WALLCON
 I               sfExAbs=ABSORP
 I               sfInAbs=INABSORP
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 18
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I               sfInH=INFILM             //wall inside film coefficient
 I       
 I           SURFACE East_Wall
@@ -1192,15 +832,6 @@ I
 I#      #ifdef EASTWESTWIN
 I             WINDOW West_Win
 I                   wnGT=GLASSTYPE
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 19
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I                   wnExH=WINEXF           //window exterior film coefficient
 I                   wnInH=WinInFilm        //window interior film coefficient
 I                   wnHeight=WINH          //window height
@@ -1255,15 +886,6 @@ I0                 SHADE South_OH1
 I0                    ohDepth=OHDPTH    //overhang depth
 I0                    ohDistUp=1.64     //dance from top of window
 I0                    ohExL=1.64        //distance:left edge of win to left edge of oh
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 20
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I0                    ohExR=14.76       //distance:rght edge of win to rght edge of oh
 I0      
 I0                SGDIST
@@ -1318,15 +940,6 @@ I#      #endif
 I       
 I#      #ifdef VENTILATE
 I0      TERMINAL  CASE
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 21
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I0              tuAh="MainAH"
 I0              tuSRLeak=0.0            //no duct leaks
 I0              tuVfMxC=1003            //1703.16 cu.m/hr
@@ -1381,15 +994,6 @@ I               reportcol colval=@meter[HEATMETER].y.tot* 0.000000292997   ColHe
 I       
 I       
 I        REPORT     rpType=MTR     rpMeter=COOLMETER    rpFreq=Month
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 22
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I        REPORT "Cooling Energy"
 I               rpType=UDT 
 I               rpFreq=YEAR
@@ -1444,15 +1048,6 @@ I               exBtuSf=1000000
 I               exportcol colVal=@znRes[1].name
 I               exportcol colVal=@meter[COOLMETER].Y.dmd/-3413    //kwh
 I               exportcol colVal=@Top.qcPeakM
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 23
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I               exportcol colVal=@Top.qcPeakD
 I               exportcol colVal=@Top.qcPeakH
 I               exportcol colVal=@meter[HEATMETER].Y.dmd/3413
@@ -1507,15 +1102,6 @@ I0              exFreq=HOUR
 I#          #ifdef HOURLYTEMPS
 I0              exType=ZEB
 I#            #ifdef SUNZONE
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 24
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I0              exZone=SUNSPACE
 I#            #else
 I0              exZone=CASE
@@ -1570,15 +1156,6 @@ I0              exZone=SUNSPACE
 I#            #else
 I0              exZone=CASE
 I#            #endif
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 25
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
 I#          #else
 I0              exType=MTR
 I0              exMeter=COOLMETER
@@ -1619,84 +1196,18 @@ I
 
 
 
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:47:39 am
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 26
-
-
-
-BESTEST                                                                    930
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.899.0+update-windows-sdk.92201cb.31 for Win32 console run(s) done: Mon 20-Dec-21  10:34:39 am
-
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               20-Dec-21  10:32 am   (VS 14.29    2902016 bytes)  (HPWH 1.16.0)
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
 ! Command line: -x!  -b -t1 930
-! Input file:   C:\Users\nkruis\projects\cse\test\930.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\930.rep
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\930.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\930.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0100   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.50     Calls = 1      T/C = 0.5010   
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0180   
-!                Total:  Time = 0.57     Calls = 1      T/C = 0.5670   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! 930  001                                 Mon 20-Dec-21  10:34:38 am  Page 27
-
+!           Simulation:  Time = 0.36     Calls = 1      T/C = 0.3610   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
+!                Total:  Time = 0.37     Calls = 1      T/C = 0.3730   

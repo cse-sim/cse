@@ -1,11 +1,5 @@
 
 
-
-
-------------------------------------------------------------------------------
-
-
-
 Error Messages for Run 001:
 
 ---------------
@@ -57,18 +51,6 @@ Yr   2.535      0  2.535      0      0      0      0      0      0      0      0
 
 
 
-
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  1
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
 Annual Heating Energy Report
 
       Pk kW   Heat KWh
@@ -108,27 +90,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.893.0 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  2
-
-
-
-
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -184,15 +146,6 @@ Input for Run 001:
         //Holes from Zone 2 to Zone 3
         IZXFER H231  izNVTYPE = AirNetIZ    izZN1 = Z2 izALo =.25  izHD = 24. izNVEff = 1 izZN2 = Z3
         
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  3
-
-
-
-
-------------------------------------------------------------------------------
-
         //Holes in Zone 3 to Outdoors based on 1/150
         IZXFER H341 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 24. izNVEff = 1
         IZXFER H342 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 24. izNVEff = 1
@@ -247,15 +200,6 @@ Input for Run 001:
         
         //----- ZONE SECTION -----
         
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  4
-
-
-
-
-------------------------------------------------------------------------------
-
          ZONE Z1
             znArea=1000 znVol=8000 infAC=0
             GAIN Internal
@@ -310,15 +254,6 @@ Input for Run 001:
          AIRHANDLER "MainAH"
             ahSched=ON
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  5
-
-
-
-
-------------------------------------------------------------------------------
-
             ahfanCycles=No              //1/20 bw
             oaVfDsMn=0
             oaMnCtrl=VOLUME             //
@@ -373,15 +308,6 @@ Input for Run 001:
                   Exportcol colVal=@Top.runDateTime
                   Exportcol colVal=@meter[HEATMETER].Y.dmd/3413             ColHead="Pk Ht kW"
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  6
-
-
-
-
-------------------------------------------------------------------------------
-
                   Exportcol colVal=@meter[CoolMETER].Y.dmd/3413 ColHead="Pk Cl kW"
                   Exportcol colval=@meter[CoolMETER].y.tot* 0.000292997   ColHead="Cool kWh"
         
@@ -392,114 +318,18 @@ Input for Run 001:
 
 
 
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:47:47 am
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  7
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:09:10 am
-
-! Executable:   d:\cse\msvc\cse.exe
-!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
-! Command line: -x!  -t1 Fresno
-! Input file:   D:\cse\test\Fresno.cse
-! Report file:  D:\cse\test\Fresno.rep
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 Fresno
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\Fresno.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\Fresno.rep
 
 ! Timing info --
 
 !                Input:  Time = 0.01     Calls = 1      T/C = 0.0090   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.61     Calls = 1      T/C = 0.6150   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
-!                Total:  Time = 0.64     Calls = 1      T/C = 0.6400   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! Fresno  001                              Tue 22-Jun-21  11:09:09 am  Page  8
-
+!           Simulation:  Time = 0.73     Calls = 1      T/C = 0.7330   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
+!                Total:  Time = 0.74     Calls = 1      T/C = 0.7440   

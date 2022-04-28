@@ -1,11 +1,5 @@
 
 
-
-
-------------------------------------------------------------------------------
-
-
-
 Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
  Day              Hour YesSOE YesEgy[kWh] YesBT[kW]  NoSOE NoEgy[kWh] NoBT[kW]
@@ -39,33 +33,7 @@ Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
 ! Log for Run 001:
 
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  1
-
-
-
-
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -121,15 +89,6 @@ Input for Run 001:
           rpHeader = "Yes"
           rpFooter = "No"
           ReportCol colhead="Day" colVal=@Top.dateStr
-
-------------------------------------------------------------------------------
-! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  2
-
-
-
-
-------------------------------------------------------------------------------
-
           ReportCol colhead="Hour" colVal=@Top.iHr
           ReportCol colhead="YesSOE" colWid=6 colVal=@BATTERY["BatteryInitYes"].soe
           ReportCol colhead="YesEgy[kWh]" colWid=11 colVal=@BATTERY["BatteryInitYes"].energy
@@ -144,110 +103,18 @@ Input for Run 001:
 
 
 
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:36 am
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  3
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:10:28 am
-
-! Executable:   d:\cse\msvc\cse.exe
-!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
-! Command line: -x!  -t1 bt_test
-! Input file:   D:\cse\test\bt_test.cse
-! Report file:  D:\cse\test\bt_test.rep
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 bt_test
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\bt_test.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\bt_test.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0000   
+!                Input:  Time = 0.05     Calls = 1      T/C = 0.0530   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.10     Calls = 1      T/C = 0.0960   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0150   
-!                Total:  Time = 0.11     Calls = 1      T/C = 0.1110   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! bt_test  001                             Mon 07-Jan-19   9:10:28 am  Page  4
-
+!           Simulation:  Time = 0.04     Calls = 1      T/C = 0.0440   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000   
+!                Total:  Time = 0.10     Calls = 1      T/C = 0.0970   
