@@ -808,7 +808,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0646, "when ahccType is not CHW" },
 	{
 		MH_S0647, "S0647: %scoiling coil rating air flow (%g) differs \n"
-		"    from supply fan design flow (%g) by more than 25%"
+		"    from supply fan design flow (%g) by more than 25%%"
 	},	// 20 --> 25%  .485 5-97
 	{ MH_S0648, "when ahccType is not DX" },
 	{ MH_S0649, "when ahccType is not DX nor CHW" },

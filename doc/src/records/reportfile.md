@@ -75,7 +75,7 @@ END
 <%= member_table(
   units: "",
   legal_range: "YES, NO",
-  default: "YES",
+  default: "No",
   required: "No",
   variability: "constant") %>
 
