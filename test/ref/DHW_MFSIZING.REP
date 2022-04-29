@@ -1,71 +1,8 @@
 
 
-
-MF Central
-------------------------------------------------------------------------------
-
-
-
 ! Log for Run 001:
 
-! CSE 0.903.0+update-hpwhsim.289afea8.100 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  1
-
-
-
-MF Central
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -121,15 +58,6 @@ Input for Run 001:
 #        #define  RefrConst_WEH  hourval( -0.3467,-0.2779,-0.2844,-0.2954,-0.4680,-0.5127,-0.7110,-0.5662,0.0463,-0.2995,-0.2388,-0.2646,-0.2905,-0.2730,-0.3306,-0.0031,-0.4356,-0.2580,0.2384,0.1176,-0.0458,-0.0596,-0.5300,0.0197 )
 #        #define  RefrTemp_WD    hourval( 0.0195,0.0167,0.0169,0.0165,0.0183,0.0218,0.0178,0.0136,0.0151,0.0189,0.0188,0.0183,0.0156,0.0169,0.0137,0.0149,0.0197,0.0208,0.0184,0.0144,0.0166,0.0184,0.0188,0.0229)
 #        #define  RefrTemp_WEH   hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129)
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  2
-
-
-
-MF Central
-------------------------------------------------------------------------------
-
         
         //File generated at 2021-02-15 20:16:40.066349
 #       #echooff
@@ -184,15 +112,6 @@ MF Central
            wsFaucetDayWasteF = 1                // used to determine ratio of Shower/Faucet water waste
            wsDayWasteBranchVolF = 1.4 * 19.84 * exp( -0.554 * 3/2)    // Number of branch volumes discarded per day (wsBranchModel = DayWaste) (expression)
            wsCalcMode = "Prerun"
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  3
-
-
-
-MF Central
-------------------------------------------------------------------------------
-
               
           DHWHEATER   "dhwhtr1"  
               whMult = 1                        // Water heater multiplier
@@ -247,15 +166,6 @@ MF Central
         
                  DHWLOOPBRANCH   "dhwlpbr2-DHW System 1"  
                     wbMult = 4                  // DHW loop branch multiplier
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  4
-
-
-
-MF Central
-------------------------------------------------------------------------------
-
                     wbSize = 1                  // DHW loop branch nominal pipe size (diameter), in
                     wbLength = 13.015           // DHW loop branch length, ft
                     wbFlow = 2                  // DHW loop branch flow (gpm), gpm
@@ -310,15 +220,6 @@ MF Central
                  wgTy = "Return"                // DHW loop segment type
                  wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 17.015              // DHW loop segment length, ft
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  5
-
-
-
-MF Central
-------------------------------------------------------------------------------
-
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
                  wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
                  wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
@@ -373,15 +274,6 @@ MF Central
            wsWF = 1                             // Water usage waste factor (applies to both old and new style use/profiles), frac
            wsSDLM = 1.16233                     // Standard distribution loss multiplier
            wsDSM = 1                            // Distribution system multiplier
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  6
-
-
-
-MF Central
-------------------------------------------------------------------------------
-
         
         DHWSYS   "dhwsys-2ndFlrTwoBR DU 8"  
            wsCentralDHWSYS = "dhwsys1"    // Central DHWSYS that this DHWSYS provides load info for
@@ -396,50 +288,6 @@ MF Central
         RUN		// prerun 1 = derive daywaste factors
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! dhw_mfsizing  001                        Mon 28-Mar-22   3:48:10 pm  Page  7
-
 
 DHWHEATER Primary
 
@@ -501,7 +349,7 @@ Yr   12690      0      0      0  12690      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.903.0+update-hpwhsim.289afea8.100 for Win32 console
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -612,7 +460,7 @@ Yr   11187      0      0      0  11187      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.903.0+update-hpwhsim.289afea8.100 for Win32 console
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -692,7 +540,7 @@ Yr   11428      0      0      0  11428      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.903.0+update-hpwhsim.289afea8.100 for Win32 console
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -711,18 +559,18 @@ Input for Run 004:
 
 
 
-! CSE 0.903.0+update-hpwhsim.289afea8.100 for Win32 console run(s) done: Mon 28-Mar-22   3:48:15 pm
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:34 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               28-Mar-22   3:48 pm   (VS 14.29    2958848 bytes)  (HPWH 1.18.0)
-! Command line: -x!  -t1 dhw_mfsizing
-! Input file:   D:\cse\test\dhw_mfsizing.cse
-! Report file:  D:\cse\test\dhw_mfsizing.rep
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 dhw_mfsizing
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\dhw_mfsizing.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\dhw_mfsizing.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.84     Calls = 4      T/C = 0.2102   
+!                Input:  Time = 1.04     Calls = 4      T/C = 0.2597   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.56     Calls = 4      T/C = 1.1407   
-!              Reports:  Time = 0.00     Calls = 4      T/C = 0.0005   
-!                Total:  Time = 5.42     Calls = 1      T/C = 5.4180   
+!           Simulation:  Time = 7.32     Calls = 4      T/C = 1.8295   
+!              Reports:  Time = 0.00     Calls = 4      T/C = 0.0010   
+!                Total:  Time = 8.36     Calls = 1      T/C = 8.3630   
