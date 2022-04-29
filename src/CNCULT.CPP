@@ -1195,7 +1195,7 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 	CULT( "*",             STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   rfStarCkf),
 	CULT( "rfFileName",    DAT,   RFI_FILENAME,  RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                     N,   N), // set to inputfile.rep for primary
 	CULT( "rfFileStat",    DAT,   RFI_FILESTAT,  0,       0, 0,      TYCH,   0,   v C_FILESTATCH_OVERWRITE,0.f,  N,   N), // used in rfStarCkf: no VEOI
-	CULT( "rfPageFmt",     DAT,   RFI_PAGEFMT,   0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_YES,0.f,           N,   N),
+	CULT( "rfPageFmt",     DAT,   RFI_PAGEFMT,   0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_NO,0.f,           N,   N),
 	CULT( "endReportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT( "report",        RATE,  0,             0,       0, 0,      0,     &RiB, N,    0.f,                    rpT,  N),
 	CULT()

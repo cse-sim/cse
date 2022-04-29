@@ -1,11 +1,5 @@
 
 
-
-
-------------------------------------------------------------------------------
-
-
-
 Error Messages for Run 001:
 
 ---------------
@@ -56,79 +50,9 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 
 
-
-
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  1
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.8e03ac59.89.dirty for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  2
-
-
-
-
-------------------------------------------------------------------------------
+! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
 
 
 
@@ -184,15 +108,6 @@ Input for Run 001:
          	layer 	lrMat="R13fglass" lrThk=3.5/12 
         		lrFrmFrac=.25 
         		lrFrmMat= "SoftWood"           // needs fix for multiple frame layers
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  3
-
-
-
-
-------------------------------------------------------------------------------
-
          	layer 	lrMat="Gypbd" lrThk=0.5/12
         
         CONSTRUCTION FurnCon // 
@@ -247,15 +162,6 @@ Input for Run 001:
 #       #redefine Intgain_mo choose1($month,\
 #                 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21)
         //Thermostats         
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  4
-
-
-
-
-------------------------------------------------------------------------------
-
 #       #redefine SZ_Heat_hr hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)
 #       #redefine Liv_Heat_hr hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)
 #       #redefine Slp_Heat_hr hourval(65,65,65,65,65,65,65,68,65,65,65,65,65,65,65,65,65,65,65,65,65,68,68,65)
@@ -310,15 +216,6 @@ Input for Run 001:
         
             sfanVfDs=10000
             sfanVfMxF=1.00             //Max volume multiplier
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  5
-
-
-
-
-------------------------------------------------------------------------------
-
             sfanPress=0                //equal to zero so no fan heat added to airstream, and no fan energy consumption
             sfanEff=1.000              //combined sup & ret fan mech efficiency
             sfanMotEff=1.000           //combined sup & ret fan motor efficiency
@@ -373,15 +270,6 @@ Input for Run 001:
         SURFACE "Front" sfType=Wall; sfArea=442; sfAzm=0; sfCon="Wall_R19A5";       
         	DOOR DFront   drArea=20.;   drU=0.7827  
         	WINDOW  Wfront; wnHeight=6.; wnWidth=105 / 6 wnGT="4040";       
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  6
-
-
-
-
-------------------------------------------------------------------------------
-
         SURFACE "Left" sfType=Wall;   sfArea=442;     sfAzm=90;    sfCon="Wall_R19A5";   
               	WINDOW  Wleft;    wnHeight=6.;  wnWidth=105 / 6;   wnGT="4040";       
         SURFACE "Back" sfType=Wall;   sfArea=442;     sfAzm=180;    sfCon="Wall_R19A5";   
@@ -409,97 +297,18 @@ Input for Run 001:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  7
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.904.0+termah.8e03ac59.89.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:11:13 pm
+! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:28:06 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   1:57 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 autosize
-! Input file:   D:\cse\test\autosize.cse
-! Report file:  D:\cse\test\autosize.rep
+!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 Autosize
+! Input file:   D:\cse\test\Autosize.cse
+! Report file:  D:\cse\test\Autosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 2      T/C = 0.0095   
-!           AutoSizing:  Time = 0.13     Calls = 1      T/C = 0.1330   
-!           Simulation:  Time = 2.79     Calls = 1      T/C = 2.7930   
+!                Input:  Time = 0.01     Calls = 2      T/C = 0.0060   
+!           AutoSizing:  Time = 0.14     Calls = 1      T/C = 0.1390   
+!           Simulation:  Time = 3.30     Calls = 1      T/C = 3.2980   
 !              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
-!                Total:  Time = 2.95     Calls = 1      T/C = 2.9500   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! autosize  001                            Fri 29-Apr-22   2:11:10 pm  Page  8
-
+!                Total:  Time = 3.45     Calls = 1      T/C = 3.4500   

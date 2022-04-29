@@ -1,11 +1,5 @@
 
 
-
-
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Balance, Sum of Zones
 
  Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
@@ -56,19 +50,6 @@ Annual Heating Energy Report
 
 
 
-
-
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  1
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Use, meter "COOLMETER"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -100,35 +81,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.8e03ac59.89.dirty for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  2
-
-
-
-
-------------------------------------------------------------------------------
+! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
 
 
 
@@ -184,15 +137,6 @@ Input for Run 001:
         //Holes from Zone 2 to Zone 3
         IZXFER H231  izNVTYPE = AirNetIZ    izZN1 = Z2 izALo =.25  izHD = 24. izNVEff = 1 izZN2 = Z3
         
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  3
-
-
-
-
-------------------------------------------------------------------------------
-
         //Holes in Zone 3 to Outdoors based on 1/150
         IZXFER H341 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 24. izNVEff = 1
         IZXFER H342 izNVTYPE = AirNetExt izZN1 = Z3 izALo = 2  izHD = 24. izNVEff = 1
@@ -247,15 +191,6 @@ Input for Run 001:
         
         //----- ZONE SECTION -----
         
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  4
-
-
-
-
-------------------------------------------------------------------------------
-
          ZONE Z1
             znArea=1000 znVol=8000 infAC=0
             GAIN Internal
@@ -310,15 +245,6 @@ Input for Run 001:
          AIRHANDLER "MainAH"
             ahSched=ON
             ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  5
-
-
-
-
-------------------------------------------------------------------------------
-
             ahfanCycles=No              //1/20 bw
             oaVfDsMn=0
             oaMnCtrl=VOLUME             //
@@ -373,15 +299,6 @@ Input for Run 001:
                   Exportcol colVal=@Top.runDateTime
                   Exportcol colVal=@meter[HEATMETER].Y.dmd/3413             ColHead="Pk Ht kW"
                   Exportcol colval=@meter[HEATMETER].y.tot* 0.000292997   ColHead="Heat KWh"
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  6
-
-
-
-
-------------------------------------------------------------------------------
-
                   Exportcol colVal=@meter[CoolMETER].Y.dmd/3413 ColHead="Pk Cl kW"
                   Exportcol colval=@meter[CoolMETER].y.tot* 0.000292997   ColHead="Cool kWh"
         
@@ -392,114 +309,18 @@ Input for Run 001:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  7
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.904.0+termah.8e03ac59.89.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:10:03 pm
+! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:28:13 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   1:57 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 fresno
-! Input file:   D:\cse\test\fresno.cse
-! Report file:  D:\cse\test\fresno.rep
+!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 Fresno
+! Input file:   D:\cse\test\Fresno.cse
+! Report file:  D:\cse\test\Fresno.rep
 
 ! Timing info --
 
 !                Input:  Time = 0.01     Calls = 1      T/C = 0.0080   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.66     Calls = 1      T/C = 0.6610   
+!           Simulation:  Time = 0.82     Calls = 1      T/C = 0.8180   
 !              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
-!                Total:  Time = 0.67     Calls = 1      T/C = 0.6740   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! fresno  001                              Fri 29-Apr-22   2:10:02 pm  Page  8
-
+!                Total:  Time = 0.83     Calls = 1      T/C = 0.8270   
