@@ -557,7 +557,7 @@ x					 "    from %ssupply fan design flow (%g) by more than 20%.",		// NUMS
 				else if ( 1.251 * ahcc.vfR < sfan.vfDs
 						  ||  ahcc.vfR > 1.251 * sfan.vfDs )				// if sfan rating cfm 25% different from DX coil's
 					oWarn( "%scoiling coil rating air flow (%g) differs \n"
-						   "    from %ssupply fan design flow (%g) by more than 25%.",		// NUMS
+						   "    from %ssupply fan design flow (%g) by more than 25%%.",		// NUMS
 #endif
 										  vfRgiven ? "" : "defaulted ",     ahcc.vfR,
 										  fanAs.az_active ? "autoSized " : "",  sfan.vfDs );
