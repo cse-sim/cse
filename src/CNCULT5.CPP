@@ -58,10 +58,6 @@ x 			// later code tuQDsLh totally out of program if no objections to this chang
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
 
-/*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL RC FC NEAR addZhx( TI ui, TI zi, TI ai, ZHXTY ty, NANDAT sp, SI spPri, char *name, TI *xip);
-
-
 //================================= FUNCTIONS FOR CHECKING TERMINALS AND AIR HANDLERS =========================================
 
 
@@ -91,553 +87,10 @@ RC FC topTu()			// check / set up terminals
 
 // called between topAh1 and topAh2 -- assumes ah run records already added.
 {
-	TU *tui, *tu;
-	RC rc /*=RCOK*/;
-
-// re ownership for probes. CAUTION: run .ownB's also set in cnguts:cgPreInit; if changed here, change there for showProbeNames.
-	TuB.ownB = &ZrB;	// terminals are owned by zones and zone run subscripts match zone input subscripts.
-						// Setting run record .ownB enables use of zone subscript from input context
-						// for resolution of ambiguous references by name at runtime (probes) 1-92.
-
-// clear terminals run records and set "ownership".  Note topZn cleared ZhxB; we add ZHX's here.
-
-	CSE_E( TuB.al( TuiB.n, WRN) )		// delete (unexpected) old tu's, alloc needed # tu's at once for min fragmentation
-	// CAUTION: may not errCount++, be sure error return propogated back to cul:cuf.
-	// CAUTION: run .ownB's also set in cnguts:cgPreInit; if changed here, change there for showProbeNames.
-	TuB.ownB = &ZrB;			/* terminals are owned by zones and zone run subscripts match zone input subscs.
-					   Setting run basAnc .ownB enables use of zone subscript from input context
-					   for resolution of ambiguous references by name at runtime (probes) 1-92. */
-
-// copy terminal input records to run records, check, set up.
-
-	RLUP( TuiB, tui)				// loop terminal input records (cnglob.h macro)
-	{
-		TuB.add( &tu, ABT, tui->ss);   		// add terminal runtime record.  Error unexpected cuz al'd above.
-		*tu = *tui;				// copy entire input record into run record, including name
-		rc |= tu->setup();			// check and set up terminal run record (below)
-	}
+	RC rc = TuB.RunDup(TuiB, &ZrB);
 	return rc;
 }			// topTu
-//============================================================================================================================
-RC TU::setup()			// check and set up terminal record: call for each terminal after input
 
-{
-	RC rc=RCOK;
-	AH *ah = NULL;
-	ZNR *zp = NULL;
-	rc |= ckOwnRefPt( &ZrB, this, (record **)&zp ); 	// insurance check of ref to tu's zone, get zone ptr zp
-	float tfanVfDs = -1.f;				/* for conditional tfan design flow dflt if air heat/cool & needed inputs
-       							   given, constant, and > 0. (no default if variable, 0, or if lh only) */
-
-	if (zp->zn_IsConvRad())
-	{	oer( "Zone has znModel=%s and thus cannot be served by a terminal",
-			zp->getChoiTx( ZNI_I + ZNISUB_ZNMODEL));
-	}
-
-
-	//============== determine capabilities specified ===============
-
-	if ((sstat[TU_TUTLH] | sstat[TU_TUQMNLH]) & FsSET)		// terminal has local heat if lh setpoint or min q given
-		cmLh = (sstat[TU_TUTLH] & FsSET)  ? cmStH : cmSo;		// if sp given, is set temp (tstat ctrl), else set output
-	else
-		cmLh = cmNONE;  						// else no local heat. say so (value 0)
-
-	cmAr = cmNONE;  							// say no air heat/cool / init to 0 for bit setting
-	if ((sstat[TU_TUTH]|sstat[TU_TUTC]|sstat[TU_TUVFMN]) & FsSET)	// has air heat and/or cool if min flow or either sp given
-		if ((sstat[TU_TUTH] | sstat[TU_TUTC]) & FsSET)		// if either setpoint given, is tstat controlled, set bits
-		{
-			cmAr = cmNONE;						// insurance
-			if (sstat[TU_TUTH] & FsSET)  cmAr = TCCM( cmAr | cmStH);    	// if heating sp given, set "set temp heating" bit
-			if (sstat[TU_TUTC] & FsSET)  cmAr = TCCM( cmAr | cmStC);  	// .. cooling bit.  both form cmStBOTH.
-		}
-		else
-			cmAr = cmSo;   					// no setpoints means constant output
-	//else cmAr = cmNONE;   					// else no air heat/cool: value 0, preset above
-
-
-	//============= check local heat members ================
-
-	if (cmLh==cmNONE)
-	{
-
-		// no-local-heat checks: errors for lh members given
-
-		rc |= disallowN( 						// prohibit entry of list of fields
-				  (char *)MH_S0600,				/* "when terminal has no local heat\n"
-									   "    (when neither tuTLh nor tuQMnLh given)" */
-				  TU_TUQMXLH, TU_TUPRILH, TU_TULHNEEDSFLOW,
-#if 0 // removing TUQDSLHWARN 1-4-95 (with temp backtrack, later edit out if no complaints)
-x	              TU_TUQDSLH, 					// <-- delete? later.  TUQDSLHWARN.
-#endif
-				  0 );
-
-		if (sstat[TU_TUHC + HEATCOIL_CAPTRAT] & FsAS)				// if "AUTOSIZE tuhcCaptRat" given
-			oer( "Cannot autoSize tuhcCaptRat when terminal has no local heat\n"
-				 "    (when neither tuTLh nor tuQMnLh given)" );		// NUMS
-
-		rc |= tuhc.setup( C_COILAPPCH_TUHC, this, TU_TUHC, 0, 1);	// check coil variables for prohibited terminal coil
-	}
-	else
-	{
-		// local-heat-present checks
-
-		tuhc.setup( C_COILAPPCH_TUHC, this, TU_TUHC, 1, 0);		// check/set up required terminal local heat coil
-
-		if ((sstat[TU_TUQMXLH] & (FsSET|FsVAL))==(FsSET|FsVAL) )			// if max lh power given & set (constant)
-			if ((sstat[TU_TUHC+HEATCOIL_CAPTRAT] & (FsSET|FsVAL))==(FsSET|FsVAL) )	// if coil power given and set (constant)
-				if (tuQMxLh > tuhc.captRat)						// do the user a favor
-					oWarn(
-						   (char *)MH_S0601,		// "tuQMxLh = %g will be ineffective because tuhcCaptRat is less: %g"
-						   tuQMxLh, tuhc.captRat );
-
-#if 0 // removing TUQDSLHWARN 1-4-95 (with temp backtrack, later edit out if no complaints) (also cncult, cnrecs.def)
-x     // MH_S0602 probably unused.
-x #ifdef TUQDSLHWARN		// option to warn for tentatively obsolete input, 9-25-92.
-x           if (sstat[TU_TUQDSLH] & FsSET)			// if design local heat entered by user
-x              oWarn(
-x                     (char *)MH_S0602 );		/* "'tuQDsLh' is obsolete and should be removed from your input file.\n"
-x 				                   "    (Note: if heatPlant overloads, available power will be apportioned\n"
-x 				                   "    amoung HW coils in proportion to tuhcCaptRat/ahhcCaptRat values.)\n" */
-x #else
-x o          // default design local heat power to larger of min, max power if const positive exprs given
-x o
-x o         if (!(sstat[TU_TUQDSLH] & FsSET))			// if design local heat not entered by user
-x o
-x o			{
-x o				SI vbl = FALSE;					// if any variable exprs given, don't default
-x o				float def = 0.f;					// use only > 0 values
-x o				if (sstat[TU_TUQMNLH] & FsSET)  			// if minimum power given
-x o					if (sstat[TU_TUQMNLH] & FsVAL)			// if set now (thus constant)
-x o						def = tuQMnLh;				// use it as default (if > 0)
-x o                else  vbl++;					// not set --> must be variable, can't default
-x o				if (cmLh==cmStH)					// max power N/A to SETOUT
-x o				if (sstat[TU_TUQMXLH] & FsSET)			// if heat max power given
-x o				if (sstat[TU_TUQMXLH] & FsVAL)			// if set now (thus constant)
-x o	              def = max( def, tuQMxLh);  		// use it as default if larger
-x o                   else  vbl++;					// not set --> must be variable, can't default
-x o             if (def > 0.f  &&  !vbl)				// if found a default value and NO variable exprs
-x o                tuQDsLh = def;					// set design power to default found
-x o             else
-x o                rc |= require( TU_TUQDSLH);		// no def found --> design power must be given in input.  explain?
-x o								// lh design q intended here?? **rob 7-21-92**
-x o			}
-x #endif
-#endif
-
-		if (cmLh==cmSo)
-		{
-
-			// set output local heat checks
-
-			rc |= disallowN( (char *)MH_S0603,		/* "when local heat is not thermostat controlled\n"
-				                           "    (when tuTLh is not given)" */
-							 TU_TUQMXLH, TU_TUPRILH, 0 );
-
-			if (sstat[TU_TUHC + HEATCOIL_CAPTRAT] & FsAS)		// if "AUTOSIZE tuhcCaptRat" given
-				oer( "Cannot autoSize tuhcCaptRat when local heat is not thermostat controlled\n"
-					 "    (when tuTLh is not given)" );					// NUMS
-		}
-		else
-		{
-
-			// setpoint controlled local heat checks / setup
-
-			/* require max heat spec: else omission yields mysteriously inoperative local heat.
-			   wouldn't it be nicer to default it to the coil capacity if given? 12-92. */
-			rc |= require( (char *)MH_S0604, TU_TUQMXLH);  // "when terminal has thermostat-controlled local heat\n"
-														   // "    (when tuTLh is given)"
-			// terminal local heat coil autoSizing
-			if (sstat[TU_TUHC + HEATCOIL_CAPTRAT] & FsAS)		// if "AUTOSIZE tuhcCaptRat" given
-			{
-				switch (tuhc.coilTy)					// check now for implemented type
-				{
-				case C_COILTYCH_HW:
-				case C_COILTYCH_ELEC:
-					hcAs.az_active = TRUE;
-					break;	// for autoSizable coil type(s) set runtime Boolean
-					//case C_COILTYCH_NONE:
-				default:
-					break;
-				}
-				// terminal won't use over tuQMxLh coil Btu's, so if const 0 give error now instead of mysterious failure.
-				// (and if tuQMxLh < tuhcCaptRat during run, msg issued after autoSizing.)
-				if (Top.tp_autoSizing)							// if autoSizing phase 7-21-95
-					if ((sstat[TU_TUQMXLH] & (FsSET|FsVAL))==(FsSET|FsVAL) )		// if max lh power given & set (constant)
-						if (tuQMxLh==0)
-							oer( "Cannot autoSize tuhcCaptRat with tuQMxLh = 0.");	// NUMS
-			}
-		}
-	}
-
-	//================== disallow members for absent air heat/cool ================
-
-	// non-tstat-air-heat, non-tstat-air-cool checks
-
-	if (!(cmAr & cmStH))							// any value but cmStH or cmStBOTH
-	{
-		rc |= disallowN( (char *)MH_S0605, TU_TUVFMXH, TU_TUPRIH, 0); 	// "when tuTH not given"
-		if (sstat[TU_TUVFMXH] & FsAS)
-			rc |= oer( "Cannot autoSize tuVfMxH when tuTH not given.");	// NUMS
-	}
-	if (!(cmAr & cmStC))							// any value but cmStC or cmStBOTH
-	{
-		rc |= disallowN( (char *)MH_S0606, TU_TUVFMXC, TU_TUPRIC, 0);  	// "when tuTC not given"
-		if (sstat[TU_TUVFMXC] & FsAS)
-			rc |= oer( "Cannot autoSize tuVfMxC when tuTC not given.");	// NUMS
-	}
-
-	if (sstat[TU_TUVFMN] & FsAS)						// if AUTOSIZE tuVfMn given
-	{
-		if (!(cmAr & (cmStH|cmStC)))							// no set temp air heat nor cool
-			rc |= oer( "Cannot autoSize tuVfMn when neither tuTH nor tuTC not given."); 		// NUMS
-		if (!(sstat[TU_TUVFMXH] & FsAS)  &&  !(sstat[TU_TUVFMXC] & FsAS)) 		// if AUTOSIZING neither air heat nor cool
-			rc |= oer( "Cannot autoSize tuVfMn when autoSizing nether tuVfMxH nor tuVfMxC.");	// NUMS
-	}
-
-	if (sstat[TU_TUVFMXHC] & FsSET)						// if  tuVfMxHC = same|different  given
-		//if (tuVfMxHC==C_DIFFSAMECH_SAME)					for errors only if 'same' given... & reword msgs
-	{
-		if ((cmAr & cmStBOTH) != cmStBOTH)					// if not both set temp air heat and cool
-			rc |= oer( "Cannot give tuVfMxHC without both tuTH and tuTC.");	// NUMS
-		else if (!(   (sstat[TU_TUVFMXH] & FsAS)
-					  && (sstat[TU_TUVFMXC] & FsAS) )) 				// if NOT AUTOSIZING BOTH air heat and cool
-			rc |= oer( "Cannot give tuVfMxHC without \n"
-					   "    both \"AUTOSIZE tuVfMxH\" and \"AUTOSIZE tuVfMxC\".");	// NUMS
-	}
-
-	if (!(FsAS & (sstat[TU_TUHC + HEATCOIL_CAPTRAT] | sstat[TU_TUVFMXH] | sstat[TU_TUVFMXC]))) 	// if NO autosizes for tu
-		rc |= disallow( "when no terminal members are being autoSized", TU_TUOVERSIZE);  		// NUMS
-
-	if (cmAr==cmNONE)   						// no air heat nor air cool
-	{
-
-		rc |= disallowN( (char *)MH_S0607,	// "when terminal has no air heat nor cool\n"
-											// "    (when none of tuTH, tuTC, or tuVfMn is given)"
-						 TU_AI, TU_TUSRLEAK, TU_TUSRLOSS,
-						 TU_TFANSCH, TU_TFANOFFLEAK, TU_TFAN+FAN_FANTY, 0);
-	}
-	else
-	{
-
-		//=============== check present air heat and/or cool ================
-
-		rc |= requireN( (char *)MH_S0608,				/* "when terminal has air heat or cool\n"
-									   "    (when any of tuTH, tuTC, or tuVfMn are given)" */
-						TU_AI, 0 );					// member(s) required for air heat
-		//if (!rc)?
-		rc |= ckRefPt( &AhB, ai, "tuAh", NULL, (record **)&ah);		// check air handler ref, to an ah RUN record
-
-		// default design flow and tfan Ds flow to larger of min, heat mx, cool mx flow given constant or autoSized values.
-
-#if 1 //7-10-95 & code setting/using ausz
-		/* story: tuVfDs defaulting to support autoSizing and require no additional input 7-10-95:
-				1) don't expect fan overload during autoSize phase: if tu being autoSized, AH::asFlow is on;
-		  if not, there is tuVfDs default or required input.
-				2) but just in case, during autoSizing ah code defaults 0 tuVfDs dynamically to max( tuVfMn, MxH, MxC).
-				3) at end autoSize a default value for main sim may be put in tu->tuVfDs (without FsSET|FsVAL).
-				4) fall thru here again at reSetup, any constant default also applied, nz value remains for ah. 6-95. */
-
-		BOO ausz = FALSE;					// TRUE if any autoSize's given: defer default
-#endif
-		SI vbl = FALSE;					// TRUE if any variable exprs given: don't default
-		float def = 0.f;					// use only > 0 values
-		if (sstat[TU_TUVFMN] & FsSET)     			// if minimum flow given
-			if (sstat[TU_TUVFMN] & FsAS)			// if being autoSized 7-95, its not constant nor variable
-				ausz++;						// set flag
-			else if (sstat[TU_TUVFMN] & FsVAL)			// else if set now (thus constant)
-				def = tuVfMn;					// use it as default (if > 0)
-			else  vbl++;					// not set, not autoSized --> must be variable, can't default
-		if (cmAr & cmStH)					// heat max only pertinent with tstat ctrl'd heat
-			if (sstat[TU_TUVFMXH] & FsSET)   			// if heat max flow given
-				if (sstat[TU_TUVFMXH] & FsAS)			// if being autoSized 7-95, its not constant nor variable
-					ausz++;					// set flag
-				else if (sstat[TU_TUVFMXH] & FsVAL)		// if set now (thus constant)
-					setToMax( def, tuVfMxH);  			// use it as default if larger
-				else  vbl++;					// not set --> must be variable, can't default
-		if (cmAr & cmStC)					// cool max only pertinent with tstat ctrl'd cool
-			if (sstat[TU_TUVFMXC] & FsSET)   			// if cool max flow given
-				if (sstat[TU_TUVFMXC] & FsAS)			// if being autoSized 7-95, its not constant nor variable
-					ausz++;					// set flag
-				else if (sstat[TU_TUVFMXC] & FsVAL)		// if set now (thus constant)
-					setToMax( def, tuVfMxC);  			// use it as default if larger
-				else  vbl++;					// not set --> must be variable, can't default
-		/* if any exprs given, don't use the constants or autoSizes -- require input.
-		   if only constants or autoSizes given, use max for main sim.
-		   if both constants & autoSizes given, don't store the constants b4 ausz phase: leave 0 for dynamic default.
-		   ausz results applied elsewhere (tu_auszFinal()) at end ausz phase. */
-#if 1 //7-10-95 & code setting/using ausz
-		if ( !vbl						// if found NO variable exprs for tuVfMn, -MxH, or -MxC
-				&&  ( def > 0.f 					// and found a constant value usable as default
-					  ||  ausz ) )					//     or an autosized value (will be applied to dflt b4 main sim)
-		{
-			// then tuVfDs need not be input
-#else
-x		if (def > 0.f  &&  !vbl)				// if found a non-0 default value and NO variable exprs
-x		{
-#endif
-			setToMax( tfanVfDs, def);				// use default for terminal fan default (max: insurance)
-			// complete tfanVfDs code like tuVfDs when tfan implemented. 7-95.
-			if (!(sstat[TU_TUVFDS] & FsSET))      		// if design flow not given
-#ifndef AUTOSIZE
-x                tuVfDs = def;					// set design flow to default found
-#else
-#if 1 //7-10-95 & code setting/using ausz
-				if (ausz)					// when constant default and also autosize default,
-
-					if (Top.tp_autoSizing)	// don't apply constant default at start autoSizing:
-											//   leave 0 for dynamic default in cnah2.cpp.
-#endif
-						setToMax( tuVfDs, def);  			// apply constant default found to design air flow
-			// use 'floor' to take max cuz tu_auszFinal() may put max
-			// autoSized tuVfMxH,C back into INPUT RECORD tuVfDs as partial main sim default. 6-95.
-		}
-#if 0 //7-10-95 ausz added -- more precise re mixed constant & ausz input.
-x        else									// no tuVfDs default found
-x        if ((sstat[TU_TUVFMXH] & FsAS) || (sstat[TU_TUVFMXC] & FsAS))	// if air heat or cool autoSize requested
-x           ;									// don't require tuVfDs for autoSizing ... 6-95
-#endif
-#endif
-			else   						// no tuVfDs default found or variable exprs also found
-				rc |= require( TU_TUVFDS);				// design flow must be input when no clear default. explain?
-
-
-			// require max heating cfm tuVfMxH if heat setpoint tuTH given, else disallow. and tuVfMxC likewise.
-
-			if (sstat[TU_TUTH] & FsSET)
-				rc |= require( (char *)MH_S0691, TU_TUVFMXH);	// "\n    when terminal has thermostat-controlled air heat "
-             													// "(when tuTH is given)"
-			else
-				rc |= disallow( (char *)MH_S0605, TU_TUVFMXH);	// "when tuTH not given"
-			if (sstat[TU_TUTC] & FsSET)
-				rc |= require( (char *)MH_S0692, TU_TUVFMXC);	// "\n    when terminal has thermostat-controlled air cooling "
-             													// "(when tuTC is given)"
-			else
-				rc |= disallow( (char *)MH_S0606, TU_TUVFMXC);	// "when tuTC not given"
-
-			// disallow tuSRLoss if return not ducted
-
-			if (zp)						// if zone reference ok
-				if (!zp->i.plenumRet)				// if ducted return zone, S to R loss disallowed
-				{
-					disallow((char*)MH_S0609, TU_TUSRLOSS);		// error if given  *** check wording when plenums done ***
-													  			// "when zone plenumRet is 0"
-					tuSRLoss = 0.f;					// set to 0 (is RUN RECORD!) (CULT defaults non-0)
-				}
-
-			if (cmAr==cmSo)
-			{
-
-				// set output air heat/cool checks.  tuVfMn is set (it got us here), but may be 0 at runtime.
-
-				if ((sstat[TU_TUVFMN] & (FsSET|FsVAL))==(FsSET|FsVAL))	// if tuVfMn given by user and now set (thus constant)
-					tfanVfDs = tuVfMn;					// use it as terminal fan flow default
-			}
-			//else { tstat controlled air heat and/or cool checks ... could go here. }
-
-		}	// end of  "if ... else  / check present air heat and/or cool"
-
-		if (rc)   return rc;		// enough for this terminal if any error
-
-		//================= checks re terminal fan ===================
-
-		// note don't know if fan is for LH or air heat/cool til tfanSched evaluated at run time.
-
-		if (cmLh==cmNONE  &&  cmAr==cmNONE)    			// if useless terminal (and no error if here)
-		{
-			rc |= disallowN( (char *)MH_S0610,   	/* "when terminal has no capabilities: \n"
-							"    no setpoint (tuTLh, tuTH, tuTC) nor minimum (tuQMnLh, tuVfMn) given"*/
-							 TU_TFANSCH, TU_TFANOFFLEAK,
-							 TU_TFAN+FAN_FANTY, 0 );		// only tfanType checked; if user deletes that,
-			// will get to FAN::setup for rest of fan subrecord member msgs.
-			if (rc)  return rc;			// don't setup fan if tfanType may be set without adding "prohibited" argument
-		}
-		rc |= tfan.fn_setup( C_FANAPPCH_TFAN, this, TU_TFAN, tfanVfDs, NULL);	// check/set up opt'l tu fan; pass dflt its ds flow
-
-		if (tfan.fanTy==C_FANTYCH_NONE)				// if no fan specified
-		{
-			rc |= disallowN( (char *)MH_S0611, 			// "when tfanType = NONE"
-							 TU_TFANSCH, TU_TFANOFFLEAK, 0);	// disallow these variables
-			tfanOffLeak = 0.f;					// no fan back-leakage (this is RUN record!)(insurance)
-			CHN(tfanSch) = C_TFANSCHVC_OFF;			// schedule of absent fan is OFF (cnah code may assume)
-		}
-		else							// have fan
-		{
-			// tfanOffLeak is defaulted non-0 by CULT.
-			rc |= require((char*)MH_S0612, TU_TFANSCH); 	// schedule required "when tfanType not NONE"
-		}
-
-		//=============== useless terminal check ===============
-
-		if (rc==RCOK  &&  cmLh==cmNONE  &&  cmAr==cmNONE)
-		{
-			oWarn( (char *)MH_S0613);	/* "Ignoring terminal with no capabilities: \n"
-						   "    no setpoint (tuTLh, tuTH, tuTC) nor minimum (tuQMnLh, tuVfMn) given" */
-			return rc;
-		}
-
-		//=============== set up terminal, with more checks ===============
-
-		if (rc)   return rc;					// do not attempt setup with bad members, bad zp, bad ah, etc
-
-		// add zhx (zone hvac transfer) records for each capability of terminal.  cncult2.cpp:topZn cleared ZhxB.
-
-		if (cmLh==cmSo)
-			CSE_E( addZhx( ss, ownTi, 0, LhSo, 0, 0, name, &xiLh ) )    		// local heat, set output
-		else if (cmLh==cmStH)
-			CSE_E( addZhx( ss, ownTi, 0, LhStH, VD tuTLh, tuPriLh, name, &xiLh ) )	// local heat, set temp
-
-		if (cmAr==cmSo)
-			CSE_E( addZhx( ss, ownTi, ai, ArSo, 0, 0, name, &xiArH ) )    		// air heat/cool set out. Will be linked as heat.
-		else
-		{
-			if (cmAr & cmStH)
-				CSE_E( addZhx( ss, ownTi, ai, ArStH, VD tuTH, tuPriH, name, &xiArH) )  	// set temp air heat
-			if (cmAr & cmStC)
-				CSE_E( addZhx( ss, ownTi, ai, ArStC, VD tuTC, tuPriC, name, &xiArC) )  	// set temp air cool: can have both zhx's
-		}
-		if (xiLh)
-		{
-			ZhxB.p[xiLh].xiArH = xiArH;     // cross-link
-			ZhxB.p[xiLh].xiArC =  xiArC;
-		}
-		if (xiArH)
-		{
-			ZhxB.p[xiArH].xiLh = xiLh;      // ..
-			ZhxB.p[xiArH].xiArC = xiArC;
-		}
-		if (xiArC)
-		{
-			ZhxB.p[xiArC].xiLh = xiLh;      // ..
-			ZhxB.p[xiArC].xiArH = xiArH;
-		}
-
-		// terminal air heat/cool autosizing setup. Don't get here on inappropriate inputs as checked above.
-
-		if ((sstat[TU_TUVFMXH] & FsAS) || (sstat[TU_TUVFMXC] & FsAS))	// if air heat or cool autoSize requested
-		{
-			if (sstat[TU_TUVFMXH] & FsAS)  vhAs.az_active = TRUE;  	// set runtime flags
-			if (sstat[TU_TUVFMXC] & FsAS)  vcAs.az_active = TRUE;
-
-			ah->asFlow = TRUE;				// say a tu of ah's is being flow-sized: may change part A supply temp.
-
-			if (tuVfMxHC==C_DIFFSAMECH_SAME)		// heat/cool max air flow same/different choice (default _DIFF)
-			{
-				asHcSame = TRUE;   			// convert to Boolean for convenience
-				// note don't get here if not autoSizing both tuVfMxH and -C: error'd above.
-			}
-			if (sstat[TU_TUVFMN] & FsAS)			// request to autoSize min air flow means to autoSize for const volume.
-			{
-				asKVol = TRUE;							// set runtime constant volume flag.
-
-				if ((sstat[TU_TUVFMXH] & FsAS) && (sstat[TU_TUVFMXC] & FsAS))	// if autoSizing both heat and cool
-					asHcSame = TRUE;   						// constant volume implies heat and cool the same.
-
-				/* error if if ahFanCycles is runtime variable,
-				   cuz when FALSE, autoSized tuVfMn is tuVfMx, but when TRUE, non-0 tuVfMn causes runtime error.
-				   (See AH::setup for errors for autoSize tuVfMn with const ahFanCycles=YES or ahTsSp=ZN.
-				    If ahFanCycles varies cuz default varies cuz ahTsSp varies, there is only the runtime check.) */
-				if ((ah->sstat[AH_AHFANCYCLES] & (FsSET|FsVAL))==FsSET)		// if set but doesn't have value yet
-				{
-					USI evf;
-					if ( exInfo( EXN(ah->ahFanCycles), &evf, NULL, NULL) != RCOK	// get expr's evaluation freq, exman.cpp / if fail
-							||  evf > EVFRUN )						// if varies more than at start of run
-						rc |= oer( "When autoSizing tuVfMn,\n"
-								   "    airhandler %s's ahFanCycles value cannot be runtime variable.",
-								   ah->name );
-				}
-			}
-		}
-
-		// chain TU's by zone
-		if (zp)						// insurance
-		{
-			nxTu4z = zp->tu1;  				// tu pts to prior chain (or 0 if no prior)
-			zp->tu1 = ss;					// zone chain hd pts to cur tu
-		}
-		// chain by air handler
-		if (ah)
-		{
-			nxTu4a = ah->tu1;
-			ah->tu1 = ss;						// all-tu's-for-ah chain
-		}
-
-		// set up change flag setting by expression manager -- makes table entries if given fields contain non-constant expressions
-
-		// set zone setpoint change flag on changes in ...
-		chafN( &ZrB, zp->ss, offsetof(ZNR,spCf), TU_TUTH, TU_TUTC, TU_TUTLH, 0);
-
-		// limit changes set "zone terminal change" flag
-		//   causes tu recompute even if limit change does not change flow: ok, as expect few scheduled limit changes.
-		//   if tu capability absent, will be no exprs.
-		chafN( &ZrB, zp->ss,  offsetof(ZNR, ztuCf),  TU_TUQMNLH, TU_TUQMXLH, TU_TUVFMN, TU_TUVFMXH, TU_TUVFMXC, 0);
-
-		return rc;				// additional returns above
-}				// TU::setup
-//============================================================================================================================
-LOCAL RC FC NEAR addZhx(			// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (vent)
-
-	TI ui,	// owning terminal if HVAC, 0 for vent
-	TI zi,	// zone for terminal or vent (ie always)
-	TI ai,	// air handler subscript for Ar HVAC zhx's, else 0
-	ZHXTY ty,	// LhSo, LhStH, ArSo, ArStH, ArStC, ..   cndtypes.def/dtypes.h (via rcdef) or as changed
-	NANDAT sp,	// tstat set point if needed.  Cast float argument with "V".
-	SI spPri,	// tstat set point priority if needed (determines activation order of ZHXs with same .sp)
-	char *name,	// NULL or name (eg of terminal) to copy into zhx
-	TI *xip )	// NULL or receives subscript of added zhx
-
-// includes chaining the record appropriately for u1, zi, ai, ty (assumes tu, zone, ah RUN records all present).
-
-// CAUTION: may not errCount++, be sure error return propogated back to cul:cuf.
-
-// caller does: sets .xiCool, .xiHeat if non-0, .
-
-{
-	RC rc /*=RCOK*/; 	// rc is used in E macro
-	ZHX *zhx;
-
-// make a ZHX
-	CSE_E( ZhxB.add( &zhx, WRN) )	// add a ZHX record to base ZhxB, allocating block if necessary. lib\ancrec.cpp.
-	// leave front mbrs .ty, .li, .file, .line unset (0).  does this cause runtime errmsg troubles?
-	// CAUTION: al may not errCount++, be sure error return propogated back to cul:cuf.
-// record owner is zone
-	zhx->ownTi = zi;		// tentative 3-92 with added ratLudo ambiguous check
-
-// store caller's data
-	if (name)  strcpy (zhx->name, name);
-	zhx->zhxTy = ty;
-	VD zhx->sp = sp;		// VD macro stores into float as tho it is a void * to prevent float error on NAN (expr handle)
-	zhx->spPri = spPri;
-	zhx->ui = ui;
-	zhx->zi = zi;
-	zhx->ai = ai;
-
-	TI xi = zhx->ss;					// fetch subscript for several uses
-
-// chain by zone, including for terminals, with addl chain for SETTEMP (tstat-ctrl'd) zhx's only
-	if (zi)									// insurance: zone subscript always expected
-	{
-		ZNR * zp = ZrB.p + zi;								// point to zhx's zone's record
-		zhx->nxZhx4z = zp->zhx1;
-		zp->zhx1 = xi;  					// put on (head of) zone zhx1 chain
-		if (ty & St)
-		{
-			zhx->nxZhxSt4z = zp->zhx1St;      // put on (head of) zone SETTEMP chain
-			zp->zhx1St = xi;
-		}
-	}
-
-// chain Ar zhx's by air handler
-	if (ai)									// if this zhx is associated with air handler
-	{
-		AH * ah = AhB.p + ai;								// point to zhx's ah's RUN record
-		zhx->nxZhx4a = ah->zhx1;
-		ah->zhx1 = xi;  					// put on (head of) ah all-zhx chain
-	}
-
-// return subscript
-	if (xip)  *xip = xi;
-		return rc;				// each E macro also can return
-}			// addZhx
 //============================================================================================================================
 RC FC topAh2()		// check / set up air handlers, part 2, done after terminal check/setup
 
@@ -919,12 +372,9 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		case C_COILTYCH_GAS:
 		case C_COILTYCH_OIL:
 		case C_COILTYCH_ELEC:
+		case C_COILTYCH_AHP:
 			hcAs.az_active = TRUE;
 			break;	// set runtime flag for implemented coil type(s)
-
-		case C_COILTYCH_AHP:
-			rc |= oer( "Cannot autoSize AHP coils.");
-			break;		// not impl 7-95. NUMS
 
 		case C_COILTYCH_NONE:
 			rc |= oer( "Cannot give \"AUTOSIZE ahhcCaptRat\""
@@ -1155,10 +605,7 @@ RC COIL::setup(		// check/set up a base class coil subrecord
 #define MTRWRN( mtri, pow)    if (fss[COIL_##mtri] & FsSET)  if (!(fss[COIL_##pow] & FsSET)) \
 			             r->oWarn( (char *)MH_S0640, IDSC(mtri), IDSC(pow));
 		// "'%s' given, but no '%s' to charge to it given"
-	MTRWRN( AUXONMTRI, AUXON);
-	MTRWRN( AUXOFFMTRI, AUXOFF);
-	MTRWRN( AUXONATALLMTRI, AUXONATALL);
-	MTRWRN( AUXFULLOFFMTRI, AUXFULLOFF);
+	MTRWRN( AUXMTRI, AUX);
 #undef MTRWRN
 
 	return rc;					// more returns above!
@@ -1240,11 +687,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 		//badCoilTy:
 	default:
 		rc = ERSCC(COILTY) (char *)MH_S0642, 					// "Bad coil type '%s' for %s"
-#if 1
 		r->getChoiTx( coolCoilFn+COOLCOIL_COILTY, 1, ty),
-#else
-x		chTx( r->b, coolCoilFn+COOLCOIL_COILTY, ty),
-#endif
 			IDSCC(COILTY) );
 		return rc;			// don't continue with bad type
 	}
@@ -1351,6 +794,12 @@ x #endif
 			if (fss[COOLCOIL_VFR] & FsSET && fss[COOLCOIL_VFRPERTON] & FsSET)
 				rc = r->oer( (char *)MH_S0652, 					// "Cannot give both %s and %s" NUMS no, new use.
 										  IDSCC(VFR), IDSCC(VFRPERTON) );
+
+			// Use same assumptions as RSYS to default if vfRperTon is set. Otherwise, use CULT default (0.77)
+			if (!r->IsSet(coolCoilFn + COOLCOIL_SHRRAT) && r->IsSet(coolCoilFn + COOLCOIL_VFRPERTON))
+			{
+				SHRRat = CoolingSHR(dsTDbCnd ,dsTDbEn, dsTWbEn, vfRperTon);
+			}
 
 			 // disallow ahccVfR when autoSizing, 8-28-95.
 			 // Note Bruce says ok to completely remove ahccVfR for DX, 8-95.
@@ -1540,11 +989,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 	badCoilTy:
 		return ERSHC(COILTY) (char *)MH_S0650, 					// "Bad coil type '%s' for %s"
-#if 1
 			   r->getChoiTx( heatCoilFn+HEATCOIL_COILTY, 1, ty),
-#else
-x			   chTx( r->b, heatCoilFn+HEATCOIL_COILTY, ty),
-#endif
 				IDSHC(COILTY) );
 	}
 
@@ -1783,7 +1228,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 #else		// use this form when AHP inputs are no longer an identifiable range of field numbers
 *       	#define f ahhCoilFn+AHHEATCOIL_##
 *       	rc |= r->disallowN( "when ahhcType is not AHP",
-*				   f CAP17,  f CAP47,  f CAP35,  f FD35DF,  f CAPIA,  f SUPRH,
+*				   f CAP17,  f CAP47,  f CAP35,  f FD35DF,  f CAPIA,  f CAPSUPHEAT,
 *				   f TFRMN,  f TFRMX,  f TFRPK,  f DFRFMN,  f DFRFMX, f DFRCAP, f DFRRH,
 *				   f TOFF,   f TON,    f IN17,   f IN47,    f INIA,   f CD,     0 );
 *       	#undef f
@@ -1795,12 +1240,15 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 
 // AHP required members
 	rc |= r->requireN( (char *)MH_S0661,  					// "when ahhcType is AHP"
-					   ahhCoilFn+AHHEATCOIL_CAP17, ahhCoilFn+AHHEATCOIL_CAP47,
-					   ahhCoilFn+AHHEATCOIL_IN17,  ahhCoilFn+AHHEATCOIL_IN47,  0 );
+					   ahhCoilFn+AHHEATCOIL_CAPTRAT,
+					   ahhCoilFn+AHHEATCOIL_COP17,  ahhCoilFn+AHHEATCOIL_COP47,  0 );
 
 // some AHP input checks
-	if (cap17 >= cap47)
-		rc |= ERS2AHC(CAP17,CAP47)   (char *)MH_S0662, cap17, cap47);	//"ahpCap17 (%g) must be < ahpCap47 (%g)"
+	if (r->IsAusz(ahhCoilFn+AHHEATCOIL_CAPTRAT))
+		rc |= r->disallowN("when ahhcCaptRat is AUTOSIZE",
+			ahhCoilFn+AHHEATCOIL_CAP17, ahhCoilFn+AHHEATCOIL_CAP35, 0);
+	if (r->IsSet(ahhCoilFn+AHHEATCOIL_CAP17))
+		rc |= r->disallowN("when ahpCap17 is given", ahhCoilFn+AHHEATCOIL_CAPRAT1747, 0);
 	if (dfrFMx <= dfrFMn)
 		rc |= ERS2AHC(DFRFMX,DFRFMN) (char *)MH_S0663,dfrFMx,dfrFMn);	//"ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
 	if (tOff > tOn)
@@ -1819,57 +1267,11 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 		rc |= ERS2AHC(TFRMN,TFRPK)   (char *)MH_S0669,  tFrMn);	// "ahpTFrMn (%g) must be < 35."
 	if (35. >= tFrMx)
 		rc |= ERS2AHC(TFRPK,TFRMX)   (char *)MH_S0670,  tFrMx);	// "ahpTFrMx (%g) must be > 35."
-	if (fss[AHHEATCOIL_CAPTRAT] & FsSET)
-		r->oer( (char *)MH_S0671 );		/* "For AHP heat coil, do not give ahhcCaptRat\n"
-										   "    (instead ahpCap17 and ahpCap47 are used)"*/
 	//additional members specific to other coil types disallowN'd below.
 
-// defrost capacity. (future) should check or default somehow vs ahp cooling inputs if given?
-	if (!(fss[AHHEATCOIL_DFRCAP] & FsSET))			// if user did not give ahpDfrCap (defrost capacity)
-		dfrCap = 2 * cap17;					// default to twice 17 degree heat capacity
-	dfrCap = -fabs(dfrCap);				// make defrost capacity negative internally
-
-// 35F heating capacity
-	DBL terp35 = cap17 + (cap47 - cap17) * (35. - 17.)/(47. - 17.);	// linear interp capacity @ 35: no frost/dfr efcts
-	if (!(fss[ahhCoilFn+AHHEATCOIL_CAP35] & FsSET))				// if user did not ahpCap35
-			cap35 = terp35 * fd35Df;				// default to interpolated value times frost/defrost degradation factor
-	else									// ahpCap35 given (not expected)
-		if (cap35 > terp35)
-				rc |= ERSAHC(CAP35) (char *)MH_S0672, cap35, terp35, cap17, cap47 );
-							/* "ahpCap35 (%g) cannot be > proportional value (%g) between \n"
-							   "    ahpCap17 (%g) and ahpCap47 (%g) -- \n"
-							   "    that is, frost/defrost effects cannot increase capacity." */
 	if (rc)  return rc;				// stop here if any error has been detected
 
-// input power without crankcase heater
-	in17c = in17 - AHR->cch.p17;
-	in47c = in47 - AHR->cch.p47;
 
-// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
-
-	//Niles form: eiCyc47 = (in47 - AHR->cch.p47) * tmCycOn + AHR->cch.e47On + AHR->cch.e47Off;
-	//eliminating subtraction and addition of time-on crankcase heat yeilds: eiCyc47 = in47 * tmCycOn + AHR->cch.e47Off;
-	//DBL eiCyc47 =    				// energy input during one cycle of ARI 47F cycling test. Niles eInCyc47.
-	//            in47 * tmCycOn 		// steady-state input (incl cch) times time-on (latter may be #define in rccn.h)
-	//             + AHR->cch.e47Off;		// plus cch (crankcase heater) input during off-time (set in CCH::setup)
-	//converting energy to power here & at use just below yields:
-	DBL pCyc47 =    					// power input during one cycle of ARI 47F cycling test
-			in47 * tmCycOn / tmCycPer		// steady-state input (incl cch) times cycle on time fraction
-			+ AHR->cch.p47Off;			// plus cch (crankcase heater) input during off-time (set in CCH::setup)
-
-// determine cdm: cycling degradation coeff modified for compr only (cch removed). Niles V-K-5-b concluded.
-
-	//Niles form using energy for 1 47F cycle
-	//cdm = (in47/eiCyc47 - cd/tmCycPer - (1. - cd)/tmCycOn)/(in47/eiCyc47 - 1./tmCycPer);
-	//my form using power:
-	cdm = (in47/pCyc47 - cd - (1. - cd)*tmCycPer/tmCycOn) / (in47/pCyc47 - 1.);  		// /0 prot needed??
-
-	if (cdm < 0. || cdm >= 1.0)
-		rc |= r->oer( (char *)MH_S0673, cdm); 	/* "cdm (%g) not in range 0 <= cdm < 1\n"
-					"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
-	else if (cdm > cd)
-		r->oWarn( (char *)MH_S0674,  cdm, cd );	/* "cdm (%g) not <= ahpCd (%g): does this mean bad input?\n"
-							"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
 
 //--- finally, disallow inputs specific to other coil types
 

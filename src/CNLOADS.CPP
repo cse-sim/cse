@@ -135,13 +135,13 @@ RC ZNR::zn_RddInit()
 	// Set up initial and constant values
 	//  some redundant (not needed each design day) but cheap
 	md = 1;					// zone hvac mode (control mode)
-	tz = aTz = tzls = tzlh = 80.f; 	// zone air temps, incl ah working copy
-	tr = trls = trlh = 80.f;		// zone radiant temps
-	wz = aWz = wzls = Top.tp_refW;	// zone humidity ratios 5-25-92
-	zn_rho0ls = zn_Rho0();			// zone air density at tz, wz, pz0
-	bcon 							// init constant part of main equation denom:
-		= zn_ua    					//  sum uval*area of zone ambient lite surfs
-		  + zn_uaSpecT;				//  sum uval*area of zn specT lite surfs (hsu)
+	tz = aTz = tzls = tzlh = 80.f; 		// zone air temps, incl ah working copy
+	zn_tr = zn_trls = zn_trlh = 80.f;	// zone radiant temps
+	wz = aWz = wzls = Top.tp_refW;		// zone humidity ratios 5-25-92
+	zn_rho0ls = zn_Rho0();				// zone air density at tz, wz, pz0
+	zn_bcon 							// init constant part of main equation denom:
+		= zn_ua    						//  sum uval*area of zone ambient lite surfs
+		  + zn_uaSpecT;					//  sum uval*area of zn specT lite surfs (hsu)
 	i.znCAirSh = i.znCAir / Top.tp_subhrDur;		// commonly used in subhr code
 
 	// Mass->ha's done in ms_RddInit
@@ -149,12 +149,7 @@ RC ZNR::zn_RddInit()
 	//							 but believe these don't need init for start-interval masses
 	haMass = 0.;				// +='d in ms_rddInit. pre-0'd object may be re-used in autoSizing.
 	znXLGain = znXLGainLs = 0;	// no condensation heat leftover from prior iteration, rob 6-11-97
-#if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97. Mbrs not added. DELETE.
-x	znXLGainYr = 0;				// init cumulative excess latent gain (condensation), rob 5-97
-x	znNSubhrXLG = 0;			// init # subhours with XLG, rob 5-97. May be reusued in autosizing.
-#endif
 	zn_ebErrCount = 0;			// count of short-interval energy balance errors
-
 
 	// HVAC convective delivery fraction
 	//   needs elaboration for radiant systems
@@ -320,15 +315,15 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 		+ zn_uaXSpecT;			// uaT total from just above
 								// all other components (infil etc) done subhourly
 
-	// bLdHr: hour-constant non-hvac b's for denominator.   b = sigma(UA) + hc/t.
-	bLdHr = bcon; 					// just the run-const UAs
+	// zn_bLdHr: hour-constant non-hvac b's for denominator.   b = sigma(UA) + hc/t.
+	zn_bLdHr = zn_bcon; 		// just the run-const UAs
 
-	/* xqh: q = b * t - a  using only hourly components, for change tests (just below) only:
+	/* zn_xqHr: q = b * t - a  using only hourly components, for change tests (just below) only:
 	        Intended to be appropriately sensitive to changes when b*a almost equal to a,
 	        eg when aMassHr settling & all else constant,
 	        cuz terminal loads are of form  b * t - a  (with added subhrly components).
 	        Fixed problems with bug39a.inp run (1 mass surf, const temps). 12-5-94. */
-	xqh = bLdHr * tz - zn_aqLdHr;		// member only cuz saved to -Pr in loadsSubhr.
+	zn_xqHr = zn_bLdHr * tz - zn_aqLdHr;		// member only cuz saved to -Pr in loadsSubhr.
 
 	// check/warn alternate model values
 	//   However: don't correct value -- consumers use max(), min() as approp.
@@ -341,20 +336,20 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 				name, Top.When( C_IVLCH_H), i.znQMxC);
 
 	/* hourly-only load change checks:
-		xqh:     Hourly parts of  b * t - a, just above.
+		zn_xqHr:     Hourly parts of  b * t - a, just above.
 	    znLGain: latent gain rate (set per GAINs by cnguts.cpp:doHourgains, used in cnZtu.cpp:ZNR::znW).
 		         Note: for subsequent subhrs, wz change sets ztuCf in loadsSubhr.
 	    -Pr's used here are updated in loadsSubhr, every time ztuCf is on. */
-	/* aqLdHr and bLdHr are covered by xqh check & no longer checked separately 12-94.
-	   Removing aq- and bLdHr checks made NO difference in test suites 12-94. */
+	// zn_aqLdHr and zn_bLdHr are covered by zn_xqHr check & no longer checked separately 12-94.
+	//   Removing aq- and zn_bLdHr checks made NO difference in test suites 12-94
 	if (
 		// .02 found better than .05,.1,.2 in bug39a.inp run (1 mass surf, const temps) (12-94):
-		RELCHANGE( xqh, xqhPr) > .02*Top.relTol*MARG1  	// if hourly part of difference b*t-aq (for loads) changed
+		RELCHANGE( zn_xqHr, zn_xqHrPr) > .02*Top.relTol*MARG1  	// if hourly part of difference b*t-aq (for loads) changed
 		||  ABSCHANGE( znLGain, znLGainPr)		// if zone moisture GAIN rate (Btuh) changed:
 			> PsyHCondWtr*Top.absHumTol )		//  test abs lb/hr change after conversion
 	{
-		ztuCf++;							// say zone load changed: must do ztuCompute.
-		// ztuCf causes -Pr's to be updated.
+		ztuCf++;					// say zone load changed: must do ztuCompute.
+									// ztuCf causes -Pr's to be updated.
 	}
 	return RCOK;
 }		// ZNR::zn_BegHour2
@@ -369,13 +364,6 @@ RC ZNR::zn_BegSubhr1()			// zone start of subhour, part 1
 	// zn_windFLkg defaults from zn_eaveZ and zn_infShld
 	//   else is input (subhour variability)
 	zn_windPresV = Top.tp_WindPresV( i.zn_windFLkg * Top.windSpeedSh);
-
-#if 0	// moved to zn_BegSubhr2() (below), 2-11-2016
-x	// forced convection coeff, Btuh/ft2-F; re C_CONVMODELCH_UNIFIED
-x	//   based on lagged value of zone total air change rate
-x	//   combined with surface-specific sb_hcNat, see SBC::sb_SetCoeffs()
-x	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls, 0.f), 0.8f);
-#endif
 
 	if (!nMd)				// if zone has no modes (eg startup with no terminals)
 		spCf++;				// tell ztuCompute to build zone mode sequence
@@ -392,13 +380,11 @@ x	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls, 0.f), 0.8f);
 RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 // call *after* lagged values used
 {
-#if 1	// moved from zn_BegSubhr1 (above), 2-11-2016
 	// forced convection coeff, Btuh/ft2-F; re C_CONVMODELCH_UNIFIED
 	//   based on lagged value of zone total air change rate
 	//   combined with surface-specific sb_hcNat, see SBC::sb_SetCoeffs()
 	//   must be done *after* DHW calcs re HPWH air motion
 	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls + zn_hpwhAirX, 0.f), 0.8f);
-#endif
 	zn_airNetI[ 0].af_Init();
 	zn_airNetI[ 1].af_Init();
 
@@ -507,40 +493,55 @@ x		}
 x	}
 #endif
 
-// SIMULATE SUBHOURLY SURFACES. Must follow (any future) subhouly solar gain determination, precede zone loop. Uses Top.tp_subhrDur.
-	loadsSurfaces( TRUE);					// below. TRUE = do subhourly (not hourly masses)
+// SIMULATE SUBHOURLY SURFACES
+// Must follow (any future) subhouly solar gain determination, precede zone loop. Uses Top.tp_subhrDur.
+	loadsSurfaces( TRUE);		// below. TRUE = do subhourly (not hourly masses)
 
 	TMRSTART( TMR_ZONE);
 
 // COMPUTE INTERZONE TRANSFERS and base (infil only) airnet
 	CSE_E( loadsIzxSh1() )
 
-// GLOBAL LOAD CHANGE CHECK: outdoor humidity -- change changes all zone loads, but does not show in a,b.
-	BOO azCf = FALSE;   			// TRUE for all-zones load change
-	static float wOShPr = 0.;
-	if (fabs(Top.wOSh - wOShPr) > Top.absHumTol) 	// if outdoor w changed .00003 (or as changed) or more (typ w = .0020++)
-		/* TESTED 6-13-92 (hourly wO): ztuCf for wO change improved simulation
-		   (and added iterations) when wO changes and all else constant. */
-	{
-		wOShPr = Top.wOSh; 		// save for comparison at start next subhour
-		azCf++;					// say set zp->ztuCf for all zones (passed to zn_LoadsSubHr() below)
-	}
-
 	BOOL bDbPrint = DbDo( dbdZM);
+#if defined( _DEBUG)
+	const ZNR* zp1 = ZrB.GetAtSafe( 1);
+#endif
 
-	RLUP( ZrB, zp)
+	// GLOBAL LOAD CHANGE CHECK: outdoor humidity
+	//   change changes all zone loads, but does not show in a,b.
+	BOO azCf = Top.tp_wOShChange;
+
+	RLUP(ZrB, zp)
+	{
 		rc |= zp->zn_InitSubhr();		// final zone init for loads calc
 										//   sets values for all models
+#if defined( CRTERMAH)
+		rc |= zp->zn_SetZtuCfIf(azCf);
+#endif
+
+	}
 
 	if (!Top.tp_bAllCR)
-	{	RLUP( ZrB, zp)
+	{	// all CNE zones (all CR or all CNE enforced)
+#if !defined( CRTERMAH)
+		RLUP( ZrB, zp)
 			rc |= zp->zn_LoadsSubhr( azCf);	// non-CR stuff
 											//   change-check subhour zone loads, etc.
+#else
+			// may extrapolate tz if load unchanged
+			// subhour terminal/airhandler hvac
+		rc |= hvacIterSubhr();
+		RLUP(ZrB, zp)
+		{
+			zp->zn_MapTerminalResults();
+			zp->zn_AirXMoistureBal(true);
+		}
+#endif
 		return rc;
 	}
 
-	// current floating temp of all zones
-	RLUP( ZrB, zp)
+	// current floating temp of non-terminal zones
+	RLUPC( ZrB, zp, !zp->zn_HasTerminal())
 		zp->zn_TAirFloatCR();
 
 	// convective-radiant model multizone vent control
@@ -568,8 +569,9 @@ x	}
 						//   =0: vent not useful
 						//   <0: vent forbidden by conditions in 1 or more zones
 						//       e.g. heating or cooling required
-		RLUP(ZrB, zp)
-		{	int nVU1 = zp->zn_AssessVentUtility();
+		RLUPC(ZrB, zp, !zp->zn_HasTerminal())
+		{
+			int nVU1 = zp->zn_AssessVentUtility();
 #if 0 && defined(_DEBUG)
 			if (bReportVent)
 			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr, Top.iHr, zp->name, nVU1);
@@ -645,10 +647,26 @@ x	}
 
 	RLUP( ZrB, zp)
 		rc |= zp->zn_CondixCR( ventAvail);	// duct leakage can add cross-zone air
-											//   do all zones before zn_AirX() etc.
+											//   do all zones before zn_AirXMoistureBal() etc.
 
 	RLUP( RsR, rs)
 		rc |= rs->rs_AllocateZoneAir();		// NOP if OAV
+
+#if defined( CRTERMAH)
+// may extrapolate tz if load unchanged
+// subhour terminal/airhandler hvac
+	rc |= hvacIterSubhr();
+
+#if 0 && defined( _DEBUG)
+	if (Top.jDay == 1)
+	{
+		if (zp1 && abs( zp1->zn_qsHvac) < 0.01)
+			printf("\nloadSubhr: tz=%0.3f  qsHvac=%0.1f", zp1->tz, zp1->zn_qsHvac);
+
+
+	}
+#endif
+#endif	// CRTERMAH
 
 	RLUP( ZrB, zp)
 		rc |= zp->zn_CondixCR2();			// finalize zone for all modes (including OAV)
@@ -657,15 +675,19 @@ x	}
 		rc |= rs->rs_FinalizeSh();
 
 	RLUP( ZrB, zp)
-	{	rc |= zp->zn_AirX();
-		rc |= zp->zn_MoistureBalCR();
+	{	
+		if (zp->zn_IsConvRad())
+			zp->zn_AirXMoistureBal(true);
 		rc |= zp->zn_ComfortCR();
+#if !defined( CRTERMAH)
 		rc |= zp->zn_LoadsSubhr( azCf);	// insurance, may not be needed for CR
+#endif
 #if defined( DEBUGDUMP)
 		if (bDbPrint)
 			zp->zn_DbDump();
 #endif
 	}
+
 #if defined( DEBUGDUMP)
 	if (DbDo(dbdAIRNET | dbdIZ) && ZrB.GetCount() > 0)
 	{	DbPrintf("\nZone airnet results\n"
@@ -744,18 +766,20 @@ RC ZNR::zn_InitSubhr()
 			 + znXLGainLs;				// excess latent gain last subhr === heat of condensation. 5-97.
 
 	// b  =  sigma(UAi) + hc/t
-	zn_bLdSh = bLdHr			// non-hvac UA's constant for hour
+	zn_bLdSh = zn_bLdHr			// non-hvac UA's constant for hour
 			+ zn_uaInfil 		// + infil UA this subhr
 			+ i.znCAirSh;    	// + hc/t: .znCAirSh is hc.
 	// "cair" is heat capac of everything in zone not modelled as "mass":
 	// user const & per-ft2 parts for air, furniture, walls, etc).
 
-	/* zn_xqs: q = b * t - a  using components avail here, for change tests only:
+#if !defined( CRTERMAH)
+	/* zn_xqSh: q = b * t - a  using components avail here, for change tests only:
 	        Intended to be appropriately sensitive to changes when b*a almost equal to a,
 	        since terminal loads are of form  b * t - a.
 	        Insurance 12-94 -- need was not proven at subhour level when all masses hourly (b4 aMassSh added).
 	        But it did something: eliminated undercooling in hour 13 in S1LOH test run, 12-5-94, so keep. */
-	zn_xqs = zn_bLdSh * tzls - zn_aqLdSh;
+	zn_xqSh = zn_bLdSh * tzls - zn_aqLdSh;
+#endif
 
 	// convective-radiant zone terms
 	double nAirSh =
@@ -794,6 +818,21 @@ RC ZNR::zn_InitSubhr()
 	zn_balC1 = zn_nAirSh*zn_dRpCx + zn_nRxCx;
 	zn_balC2 = zn_dAirSh*zn_dRpCx + zn_dRxCx;
 
+#if defined( CRTERMAH)
+	if (zn_IsConvRad())
+	{	// convective/radiant: set up CNE-style zone factors
+		zn_aqLdSh = zn_balC1 / zn_dRpCx;
+		zn_bLdSh = zn_balC2 / zn_dRpCx;
+	}
+
+	// zn_xqSh: q = b * t - a  using components avail here, for change tests only:
+	//  Intended to be appropriately sensitive to changes when b*a almost equal to a,
+	//  since terminal loads are of form  b * t - a.
+	//  Insurance 12-94 -- need was not proven at subhour level when all masses hourly (b4 aMassSh added).
+	//  But it did something: eliminated undercooling in hour 13 in S1LOH test run, 12-5-94, so keep. */
+	zn_xqSh = zn_bLdSh * tzls - zn_aqLdSh;
+#endif
+
 	zn_hcMode = RSYS::rsmOFF;
 
 #if defined( DEBUGDUMP)
@@ -805,6 +844,62 @@ RC ZNR::zn_InitSubhr()
 #endif
 	return RCOK;
 }		// ZNR::zn_InitSubhr
+//-----------------------------------------------------------------------------
+RC ZNR::zn_SetZtuCfIf(
+	BOO azCf)		// TRUE iff "all-zones change" e.g. outdoor w changed
+{
+
+	// set change flag for terminal module if zone loads changed.  Cleared in ZNR::ztuCompute.
+
+	// monitor subhourly-changing loads inputs to zone heat and moisture balances except subhrDur:
+	//  heat balance:     aqLdSh: tzls, zn_qIzSh; zn_aqLdHr is hourly; znCair is constant.  zn_bLdSh: changes only per subhrDur.
+	//                    zn_xqSh
+	//  moisture balance: wzls.  znLGain is hourly.
+	//  other:            md
+
+	if (ztuCf 				// if a flag already set, skip tests, update priors to avoid unnec flagging later.
+	 || azCf							// if all-zones change detected (outdoor w, above)
+	 || spCf							// spCf implies ztuCf (and more), 6-92.
+	 || RELCHANGE(zn_xqSh, zn_xqShPr) > .02 * Top.relTol * MARG2		// b*t - a as known here: difference sensitive.
+		 // .02 copied from hour case. Probably new dominant term;
+		 // may make some of the other checks unnec 12-5-94.
+	 || ABSCHANGE(tzls, tzlsPr) > Top.relTol * 2. * MARG2	// Dominant term.  MATCH above. use relTol as small absTol.
+		 // historical 7-13-92 (b4 zn_bLdHr ck above): .002
+		 // .005 (w/o mdPr check) --> .0001 ebal errs (T12) 4-92.
+		 // (without tz += tzlsDelta below, < .001 required here)
+	 || ABSCHANGE(wzls, wzlsPr) > .2 * Top.absHumTol  	// MATCH tolerance above. dflt .000006, or as changed.
+		 // .00002 (vs what??) adds iterations;
+		 // .00001 adds even more; otherwise unexplored.
+	 || md != mdPr				// if zn hvac mode changed last subhr, don't skip tu's now:
+								// eg be sure tz right on change into a setpoint mode.
+	 || RELCHANGE(zn_qIzSh, qIzShPr) > .00005)
+	{
+		ztuCf++;					// say zone's load changed.
+		qIzShPr = zn_qIzSh;		// reset comparators (Prior values), whenever (and only when) flag set.
+		tzlsPr = tzls;
+		wzlsPr = wzls;
+		mdPr = md;
+		zn_xqHrPr = zn_xqHr;		// ditto;   hourly part of b*t - a  12-5-94.
+		zn_xqShPr = zn_xqSh;		// ditto;   as much of  b*t - a  as known here 12-5-94
+		znLGainPr = znLGain;		// ditto
+	}
+	else 					// load not changed
+	{
+		// extrapolate zone temp in case ztuCompute not invoked elsewhere:
+		// this is zone/terminal item that changes most when not zone changing much;
+		// other items, such as zn_qsHvac, remain approx same for same tz rate of change. 4-92
+		aTz =								// ah working copy of tz: init same as tz
+			tz += tzlsDelta;				// extrapolate zone temp
+
+		// Also extraploate zone w cuz znLGain and qlMech continue.
+		// Tried removing in 6-92, restoring seemed to reduce # subhours & # iterations in test runs.
+		aWz =								// ah working copy
+			wz += wzlsDelta;    			// also extrap zone humidity ratio
+	}
+
+	return RCOK;
+
+}		// ZNR::zn_SetZtuCfIf
 //-----------------------------------------------------------------------------
 void ZNR::zn_CoupleDHWLossSubhr(
 	double qLoss,		// loss rate from DHWHEATER, DHWTANK, etc., Btuh 
@@ -839,70 +934,8 @@ void ZNR::zn_DbDump() const
 				zn_tzsp, zn_hcMode, zn_rsAmfSysReq[ 0], zn_sysAirI.af_amf, zn_sysAirI.as_tdb);
 	}
 	DbPrintf( "     ta=%.2f  tr=%.2f  qIzSh=%.f  fvent=%.3f  pz0=%.4f  qsHvac=%.f\n",
-			tz, tr, zn_qIzSh, zn_fVent, zn_pz0, zn_qsHvac);
+			tz, zn_tr, zn_qIzSh, zn_fVent, zn_pz0, zn_qsHvac);
 }		// zn_DbDump
-//-----------------------------------------------------------------------------
-RC ZNR::zn_LoadsSubhr(
-	BOO azCf)		// TRUE iff "all-zones change" e.g. outdoor w changed
-{
-
-	// set change flag for terminal module if zone loads changed (other than subhour length change).  Cleared in ZNR::ztuCompute.
-
-	// monitor subhourly-changing loads inputs to zone heat and moisture balances except subhrDur:
-	//  heat balance:     aqLdSh: tzls, zn_qIzSh; zn_aqLdHr is hourly; znCair is constant.  bLdSh: changes only per subhrDur.
-	//                    xqs
-	//  moisture balance: wzls.  znLGain is hourly.
-	//  other:            md
-
-	if ( ztuCf 				// if a flag already set, skip tests, update priors to avoid unnec flagging later.
-	 ||  azCf							// if all-zones change detected (outdoor w, above)
-	 ||  spCf							// spCf implies ztuCf (and more), 6-92.
-	 ||  RELCHANGE( zn_xqs, xqsPr) > .02*Top.relTol*MARG2		// b*t - a as known here: difference sensitive.
-	     // .02 copied from hour case. Probably new dominant term;
-	     // may make some of the other checks unnec 12-5-94.
-	 ||  ABSCHANGE( tzls, tzlsPr) > Top.relTol*2.*MARG2	// Dominant term.  MATCH above. use relTol as small absTol.
-		 // historical 7-13-92 (b4 bLdHr ck above): .002
-		 // .005 (w/o mdPr check) --> .0001 ebal errs (T12) 4-92.
-		 // (without tz += tzlsDelta below, < .001 required here)
-	 ||  ABSCHANGE( wzls, wzlsPr) > .2*Top.absHumTol  	// MATCH tolerance above. dflt .000006, or as changed.
-		 // .00002 (vs what??) adds iterations;
-		 // .00001 adds even more; otherwise unexplored.
-	 ||  md != mdPr				// if zn hvac mode changed last subhr, don't skip tu's now:
-								// eg be sure tz right on change into a setpoint mode.
-	 ||  RELCHANGE( zn_qIzSh,  qIzShPr) > .00005 )
-	{
-		ztuCf++;					// say zone's load changed.
-		qIzShPr =   zn_qIzSh;		// reset comparators (Prior values), whenever (and only when) flag set.
-		tzlsPr  =   tzls;
-		wzlsPr  =   wzls;
-		mdPr    =   md;
-		xqhPr = xqh;				// ditto;   hourly part of b*t - a  12-5-94.
-		xqsPr = zn_xqs;				// ditto;   as much of  b*t - a  as known here 12-5-94
-		znLGainPr = znLGain;			// ditto
-	}
-	else 					// load not changed
-	{
-		// extrapolate zone temp in case ztuCompute not invoked elsewhere:
-		// this is zone/terminal item that changes most when not zone changing much;
-		// other items, such as zn_qsHvac, remain approx same for same tz rate of change. 4-92
-		aTz =								// ah working copy of tz: init same as tz
-			tz += tzlsDelta;				// extrapolate zone temp
-
-		// Also extraploate zone w cuz znLGain and qlMech continue.
-		// Tried removing in 6-92, restoring seemed to reduce # subhours & # iterations in test runs.
-		aWz =								// ah working copy
-			wz += wzlsDelta;    			// also extrap zone humidity ratio
-	}
-
-#if 0
-x	// init zone's mass solar and radiant internal gains. Mass loop after this zone loop sums into them.
-x	qMsSg = 0.f;
-x	qrIgMs = 0.f;
-#endif
-
-	return RCOK;
-
-}		// ZNR::zn_LoadsSubhr
 //-----------------------------------------------------------------------------
 RSYS* ZNR::zn_GetRSYS()
 {
@@ -912,7 +945,7 @@ RSYS* ZNR::zn_GetRSYS()
 //-----------------------------------------------------------------------------
 const RSYS* ZNR::zn_GetRSYS() const
 {
-	RSYS* rs = RsR.GetAtSafe( i.zn_rsi);
+	const RSYS* rs = RsR.GetAtSafe( i.zn_rsi);
 	return rs;
 }		// ZNR::zn_GetRSYS
 //-----------------------------------------------------------------------------
@@ -1029,16 +1062,39 @@ x			printf( "Hit\n");
 x	}
 #endif
 
+#if defined( CRTERMAH)
+	zn_rsAmfSysReq[ 0] = zn_rsAmfSysReq[ 1] = 0.;	// RSYS air requests
+
+	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
+	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
+
+	if (zn_HasTerminal())
+	{
+		zn_fVent = 0.f;		// no vent
+		zn_pz0 = zn_pz0W[0];
+
+		return rc;
+	}
+
 	// zn_fVent = fVent	-- don't change until end (zone value used herein)
 	zn_qsHvac = 0.;
 	zn_qlHvac = 0.;
 #if defined( ZNHVACFCONV)
 	zn_fConv = 1.f;		// HVAC convective fraction
 #endif
-	zn_rsAmfSysReq[ 0] = zn_rsAmfSysReq[ 1] = 0.;	// RSYS air requests
+
+#else
+	// zn_fVent = fVent	-- don't change until end (zone value used herein)
+	zn_qsHvac = 0.;
+	zn_qlHvac = 0.;
+#if defined( ZNHVACFCONV)
+	zn_fConv = 1.f;		// HVAC convective fraction
+#endif
+	zn_rsAmfSysReq[0] = zn_rsAmfSysReq[1] = 0.;	// RSYS air requests
 
 	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
+#endif
 
 	int bUZ = zn_IsUZ();
 	float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zn_fVentPrf : Top.tp_fVent;
@@ -1151,48 +1207,7 @@ x						printf( "1B\n");
 		}
 		else
 		{	// non-RSYS zone ("magic" heating and cooling)
-			double qhCap =  max( 0., i.znQMxH);
-			double qcCap =  min( 0., i.znQMxC);
-			if (tz > zn_tzspC)
-			{	zn_hcMode = RSYS::rsmCOOL;
-				tz = zn_tzsp = zn_tzspC;
-#if defined( ZNHVACFCONV)
-				zn_fConv = zn_fConvC;
-				zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
-#else
-				zn_qsHvac = zn_QAirCR(tz);
-#endif
-				if (fabs( zn_qsHvac) > fabs( qcCap))
-				{	zn_qsHvac = qcCap;
-#if defined( ZNHVACFCONV)
-					tz = zn_TAirCR( zn_qsHvac*zn_fConv, 0., zn_qsHvac*(1.f-zn_fConv));
-#else
-					tz = zn_TAirCR(zn_qsHvac, 0.);
-#endif
-				}
-				// else capacity sufficient
-			}
-			else if (tz < zn_tzspH)
-			{	// tz < TH: air needs heating
-				zn_hcMode = RSYS::rsmHEAT;
-				tz = zn_tzsp = zn_tzspH;
-#if defined( ZNHVACFCONV)
-				zn_fConv = zn_fConvH;
-				zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
-#else
-				zn_qsHvac = zn_QAirCR( tz);
-#endif
-				if (zn_qsHvac > qhCap)
-				{	// heat at heating capacity, find resulting tz.
-					zn_qsHvac = qhCap;
-#if defined( ZNHVACFCONV)
-					tz = zn_TAirCR( zn_qsHvac*zn_fConv, 0., zn_qsHvac*(1.f-zn_fConv));
-#else
-					tz = zn_TAirCR(zn_qsHvac, 0.);
-#endif
-				}
-				// else capacity sufficient
-			}
+			zn_IdealHVAC();
 		}
 	}
 
@@ -1281,6 +1296,91 @@ void ZNR::zn_SetRSYSAmfFromTSup()	// set RSYS-to-zone air flow given tSup
 	// else zn_rsAmfxxx = 0
 }		// ZNR::zn_SetRSYSAmfFromTSup
 //-----------------------------------------------------------------------------
+void ZNR::zn_IdealHVAC()		// idealized space conditioning
+// applies "magic" heating or cooling
+{
+	if (tz > zn_tzspC && i.znQMxC < 0.f)
+	{
+		zn_hcMode = RSYS::rsmCOOL;
+		tz = zn_tzsp = zn_tzspC;
+	#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvC;
+		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
+	#else
+		zn_qsHvac = zn_QAirCR(tz);
+	#endif
+		if (fabs(zn_qsHvac) > fabs(i.znQMxC))
+		{	zn_qsHvac = i.znQMxC;
+	#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
+	#else
+			tz = zn_TAirCR(zn_qsHvac, 0.);
+	#endif
+		}
+		// else capacity sufficient
+	}
+	else if (tz < zn_tzspH && i.znQMxH > 0.f)
+	{	// tz < TH: air needs heating
+		zn_hcMode = RSYS::rsmHEAT;
+		tz = zn_tzsp = zn_tzspH;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvH;
+		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
+#else
+		zn_qsHvac = zn_QAirCR(tz);
+#endif
+		if (zn_qsHvac > i.znQMxH)
+		{	// heat at heating capacity, find resulting tz.
+			zn_qsHvac = i.znQMxH;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(zn_qsHvac, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+}		// ZNR::zn_IdealHVAC
+//-----------------------------------------------------------------------------
+void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working mbrs
+{
+
+	zn_rsAmfSup = cTot / Top.tp_airSH;		// cTot = air capacity flow, Btuh/F
+
+	zn_rsAmfRet = zn_rsAmfSup;
+
+	double cFlowSum = 0.f;
+	double tSup = 0.f;
+	double wSup = 0.f;
+	for (TU* tu = nullptr; nxTu(tu); )
+	{
+		if (tu->cz > 0.)
+		{
+			if (tu->ai)
+			{
+				const AH* ah = AhB.p + tu->ai;
+				cFlowSum += tu->cz;
+				tSup += tu->cz * ah->ah_tSup;
+				wSup += tu->cz * ah->ws;
+			}
+		}
+	}
+
+#if defined( _DEBUG)
+	if (frDiff( cFlowSum, double( cTot)) > 0.001)
+		printf("\nFlow mismatch");
+#endif
+	if (cFlowSum > 0.)
+	{
+		tSup /= cFlowSum;
+		wSup /= cFlowSum;
+	}
+
+	zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
+	zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
+
+}		// ZNR::zn_MapTerminalResults
+//-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 {
 	RSYS* rs = zn_GetRSYS();
@@ -1304,7 +1404,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			if (zn_hcMode == RSYS::rsmOAV)
 				zn_OAVRlfO.af_AccumDry( -zn_rsAmfSup, tz, wzls);	// w not used
 			else
-				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_MoistureBalCR
+				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
 #if defined( _DEBUG)
 			if (tz < -100.f || tz > 200.f)
 				warn( "Zone '%s': unreasonable air temp %0.2f\n", name, tz);
@@ -1325,11 +1425,19 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 		}
 #endif
 	}
+#if defined( CRTERMAH)
+	else if (zn_HasTerminal())
+	{
+		zn_MapTerminalResults();
+
+
+	}
+#endif
 	// else all known
 #if defined( ZNHVACFCONV)
-	tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
+	zn_tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
 #else
-	tr = zn_TRadCR( tz);
+	zn_tr = zn_TRadCR( tz);
 #endif
 
 	zn_qIzSh = zn_anAmfCpTVent + zn_AnAmfCpT( 0) + zn_sysDepAirIls.af_AmfCpT()
@@ -1510,150 +1618,311 @@ double ZNR::zn_AnAmf() const		// current AirNet mass flow rate
 	return amf;
 }		// ZNR::zn_AnAmf
 //-----------------------------------------------------------------------------
-double ZNR::zn_NonAnIVAmf() const	// non-airnet dry air mass flow rate
+double ZNR::zn_NonAnIVAmf(	// non-airnet dry air mass flow rate
+	double dryAirMass /*=-1.*/) const	// current zone dry air mass, lbm
+										//   default = zn_dryAirMass
 // Note: non-airnet flows contribute to heat and moisture balance
-//       but *NOT* pressure balance (TODO?)
+//       but *NOT* pressure balance (assumed balanced)
 // returns dry air mass flow rate (lbm/hr) into zone due to non-AirNet sources
 {
-	double amf = i.infAC * zn_dryAirMass;
+	if (dryAirMass < 0.)
+		dryAirMass = zn_dryAirMass;
+	double amf = i.infAC * dryAirMass;
 	if (i.infELA > 0.f)
 	{	float amfELA =
 	     Top.tp_rhoDryOSh
 		  * 60.f
 		  * i.infELA		// user input effective leakage area (ft2), hourly variable
 		  * sqrt( 			// flow is proportional to square root of
-			  zn_stackc * fabs( tzlh - Top.tDbOSh) + 	//  stack coeff (see ZNR.zn_InfilSetup) * delta t
+			  zn_stackc * fabs( tzls - Top.tDbOSh) + 	//  stack coeff (see ZNR.zn_InfilSetup) * delta t
 			  zn_windc * Top.windSpeedSquaredSh ); 		//  wind coeff (ditto) * wind speed ^ 2
 
 		amf += amfELA;
 	}
 	return amf;
 }		// ZNR::zn_NonAnIVAmf
-//-----------------------------------------------------------------------------
-RC ZNR::zn_AirX()		// total air exchanges etc
-{
-	RC rc = RCOK;
-
-	// air motion flag; indicates mechanical air moving in space
-	//   0=no, 1=yes; re evaluation of convective coefficients
-	// TODO: improve zn_airMode, does not handle e.g. whole house fan 10-10
-	zn_airMode = i.znModel == C_ZNMODELCH_CNE
-					? cTot != 0.		// CSE: check system air flow
-					: zn_qsHvac != 0.;	// CZM: assume any load means moving air
-
-	// subhour results: total air exchange
-
-	zn_rho = psyDenMoistAir( tz, wz);		// moist air density
-	zn_dryAirMass = max( i.znVol * psyDenDryAir2( zn_rho, wz), .1);	// dry air mass, lbm
-	zn_dryAirMassEff = zn_dryAirMass;			// effective dry air mass, lbm
-												//   zn_MoistureBalCR() may adjust re short time steps
-
-	// TODO: improve other infil models?
-	zn_ivAirX = (zn_AnAmf() + zn_NonAnIVAmf()) / zn_dryAirMass;
-												// air changes due to infil + vent
-												// includes flows induced by ducts / HVAC
-												//   but not those flows
-	if (zn_ivAirX < 0.f)
-		zn_ivAirX = 0.f;
-
-	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf;
-	zn_airX = zn_ivAirX + amfSys / zn_dryAirMass;
-	if (!i.zn_hcAirXIsSet)
-	{	i.zn_hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
-		if (zn_airMode && !i.zn_rsi)
-			i.zn_hcAirX += 4.8;		// additional "virtual" air flow for non-RSYS zones
-	}
-	return rc;
-}		// ZNR::zn_AirX
 //------------------------------------------------------------------------------
-RC ZNR::zn_MoistureBalCR()		// moisture balance for convective/radiant zones
-// see also znW() re CNE zone moisture balance
+double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
+	bool bFinal,				// true: set ZNR members to calculated zone state
+								// false: use temporary vars only
+	double amfX /*=0.*/,		// additional system flow (e.g. air handler), lbm/h
+	double mwX /*=0.*/,			// air handler moisture flow, lbm/hr
+	double _tz /*=-99.*/,		// alternative air temp, F; default = ZNR tz
+	double* pXLGain /*=nullptr*/)	// if non-null, return condensation heat gain, Btu
+
+// see also ZNR::znW() re CNE zone moisture balance
+
+// returns humidity ratio
+
 {
-	RC rc = RCOK;
+	if (_tz < -98.)
+		_tz = tz;
+
+	double rho = psyDenMoistAir(_tz, wzls);		// moist air density, lbm/ft3
+	double dryAirMass = max(i.znVol * psyDenDryAir2( rho, wzls), .1);	// dry air mass, lbm
+	double dryAirMassEff = dryAirMass;			// effective dry air mass
+												// may be adjusted below re short time steps
+
+	// air changes due to infil + vent
+	// includes flows induced by ducts / HVAC
+	//   but not those flows
+	// TODO: improve other infil models
+	double nonAnIVAmf = zn_NonAnIVAmf( dryAirMass);
+	double ivAirX = (zn_AnAmf() + nonAnIVAmf) / dryAirMass;
+	if (ivAirX < 0.f)
+		ivAirX = 0.f;
+
+	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf + amfX;
+	double airX = ivAirX + amfSys / dryAirMass;
 
 	// internal gain
-	double mwIG = znLGain/PsyHCondWtr;		// latent internal gains, lbm/hr
+	double mwIG = znLGain / PsyHCondWtr;		// latent internal gains, lbm/hr
 
 	// non-airnet infil, lbm/hr
-	double mwInf = zn_NonAnIVAmf()*Top.wOSh;
+	double mwInf = nonAnIVAmf * Top.wOSh;
 
 	// IZXFER (airnet) gains not including duct leakage and HVAC
-	double mwAN = (1.f-zn_fVent) * zn_airNetI[ 0].af_Wmf()
-		        + (zn_fVent)     * zn_airNetI[ 1].af_Wmf();
+	double mwAN = (1.f - zn_fVent) * zn_airNetI[0].af_Wmf()
+		+ (zn_fVent)*zn_airNetI[1].af_Wmf();
 
-	double mw = mwIG + mwInf + mwAN		// total water vapor mass flow rate, lbm/hr
-			  + zn_ductLkI.af_Wmf() + zn_sysAirI.af_Wmf();
+	double mw = mwIG + mwInf + mwAN + mwX	// total water vapor mass flow rate, lbm/hr
+		+ zn_ductLkI.af_Wmf() + zn_sysAirI.af_Wmf();
 
 	// TODO: HPWH moisture removal? 2-16
 
-	zn_wCase = 0;	// debug aid
+	int wCase = 0;	// debug aid
 					//   0 = time constant OK, result OK
 					//   1 = short time constant (steady state sln used), result OK
 					//   2 = time constant OK, result limited
 					//   3 = short time constant (steady state sln used), result clamped
 
-	float f = zn_airX*Top.tp_subhrDur / i.zn_HIRatio;
+	float f = airX * Top.tp_subhrDur / i.zn_HIRatio;
 	if (f > 1.f)
-	{	zn_dryAirMassEff *= f;
+	{	dryAirMassEff *= f;
 		f = 1.f;
-		zn_wCase += 1;
+		wCase += 1;
 	}
-	wz = mw * Top.tp_subhrDur/(zn_dryAirMassEff*i.zn_HIRatio) + wzls*(1. - f);
+	double _wz = mw * Top.tp_subhrDur / (dryAirMassEff * i.zn_HIRatio) + wzls * (1. - f);
 
-	double wSat = psyHumRat3( tz);   // maximum w air at this temp can hold
 	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
 						// if predicted humidity ratio is physically impossible, assume
 						//   magic (sensible) heat transfer
 						// + = into zone (= "condensation")
-	double wzClamp = bracket( double( PsyWmin), wz, wSat);
-	if (wz != wzClamp)
-	{	XLGain = (wz-wzClamp) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
-		znXLGain += XLGain;		// zone total excess latent gain, Btuh
-		wz = wzClamp;
-		zn_wCase += 2;		// limits applied
+	double wSat = psyHumRat3(_tz);   // maximum w air at this temp can hold
+	double wzClamp = bracket(double(PsyWmin), _wz, wSat);
+	if (_wz != wzClamp)
+	{	XLGain = (_wz - wzClamp) * dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
+		_wz = wzClamp;
+		wCase += 2;		// limits applied
 	}
+	if (pXLGain)
+		*pXLGain = XLGain;
 
-	// latent gains to space
-	zn_qlHvac = zn_sysAirI.af_QLat( wzls);
-	if (fabs( zn_qlHvac) < .1)
-		zn_qlHvac = 0.;		// drop tiny values (re report aesthetics)
-	zn_qlIz = (1.f-zn_fVent) * zn_airNetI[ 0].af_QLat( wzls)
-	        + (zn_fVent)     * zn_airNetI[ 1].af_QLat( wzls)
-			+ zn_ductLkI.af_QLat( wzls);
+	if (bFinal)
+	{	// set ZNR members
+		zn_rho = rho;
+		zn_dryAirMass = dryAirMass;
+		zn_dryAirMassEff = dryAirMassEff;
+		zn_ivAirX = ivAirX;
+		zn_airX = airX;
 
-	zn_twb = psyTWetBulb( tz, wz);
-	zn_relHum = psyRelHum3( wz, wSat);
+		// modified airX re convection coefficients
+		if (!i.zn_hcAirXIsSet)	// if not fixed by user input
+		{	i.zn_hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
+			if (zn_IsAirHVACActive() && !zn_HasAirHVAC())
+				i.zn_hcAirX += 4.8f;		// additional "virtual" air flow for non-air zones
+		}
 
-	// zone humidity ratio now known
-	//  finalize return air state
-	zn_sysAirO.as_w = wz;
+		wz = _wz;
+		znXLGain = XLGain;			// zone total excess latent gain, Btuh
+
+		// latent gains to space
+		zn_qlHvac = zn_sysAirI.af_QLat(wzls);
+		if (fabs(zn_qlHvac) < .1)
+			zn_qlHvac = 0.;		// drop tiny values (re report aesthetics)
+#if 0 && defined( _DEBUG)
+		if (zn_qlHvac > 0.)
+			printf("\nqlHvac > 0");
+#endif
+		zn_qlIz = (1.f - zn_fVent) * zn_airNetI[0].af_QLat(wzls)
+			+ (zn_fVent)*zn_airNetI[1].af_QLat(wzls)
+			+ zn_ductLkI.af_QLat(wzls);
+
+		zn_twb = psyTWetBulb(_tz, _wz);
+		zn_relHum = psyRelHum3(_wz, wSat);
+
+		// zone humidity ratio now known
+		//  finalize return air state
+		zn_sysAirO.as_w = wz;
 
 #if 0
-x	float relHum = psyRelHum2( tz, zn_twb);
-x	if (tz > 50 && fabs( zn_relHum - relHum) > .0001)
-x		printf( "hit");
+x		float relHum = psyRelHum2(tz, zn_twb);
+x		if (tz > 50 && fabs(zn_relHum - relHum) > .0001)
+x			printf("hit");
 #endif
 
 #if 0 && defined( _DEBUG)
-x moisture balance experiment
-x generally does not balance, 5-10-2012
-x	double znLDelta = zn_dryAirMass*(wz - wzls)*PsyHCondWtr;
-x	double znLX = (zn_qlHvac + znLGain)*Top.tp_subhrDur;
-x	if (frDiff( znLDelta, znLX) > .01)
-x		printf( "Mismatch\n");
+x		moisture balance experiment
+x		generally does not balance, 5 - 10 - 2012
+x		double znLDelta = zn_dryAirMass * (wz - wzls) * PsyHCondWtr;
+x		double znLX = (zn_qlHvac + znLGain) * Top.tp_subhrDur;
+x		if (frDiff(znLDelta, znLX) > .01)
+x			printf("Mismatch\n");
 #endif
 
 #if defined( DEBUGDUMP)
-	if (DbDo( dbdZM))
-	{	DbPrintf( "%s W:  mwIG=%0.3f  mwInf=%0.3f  mwAN=%0.3f  mwDuctLk=%0.3f  mwSys=%0.3f\n"
-			"     tdb=%0.2f  airX=%0.3f  dryAirMass=%0.2f  XLGain=%0.2f  W=%0.6f  twb=%0.2f  rh=%0.4f\n",
-			name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(),
-			tz, zn_airX, zn_dryAirMass, XLGain, wz, zn_twb, zn_relHum);
+		if (DbDo(dbdZM))
+		{
+			DbPrintf("%s W:  mwIG=%0.3f  mwInf=%0.3f  mwAN=%0.3f  mwDuctLk=%0.3f  mwSys=%0.3f  mwSum=%0.3f\n"
+				"     tdb=%0.2f  airX=%0.3f  hcAirX=%0.3f dryAirMass=%0.2f  XLGain=%0.2f  W=%0.6f  twb=%0.2f  rh=%0.4f\n",
+				name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(), mw,
+				_tz, zn_airX, i.zn_hcAirX, zn_dryAirMass, znXLGain, wz, zn_twb, zn_relHum);
+			DbPrintf("     rho=%0.4f  rho0ls=%0.4f  wzls=%0.6f  dryAirMassEff=%0.2f  qlHvac=%0.2f  qlIz=%0.2f\n",
+				zn_rho, zn_rho0ls, wzls, zn_dryAirMassEff, zn_qlHvac, zn_qlIz);
+#endif
+
+		}
+	}	// bFinal
+
+	return _wz;
+
+}		// ZNR::zn_AirXMoistureBal
+//----------------------------------------------------------------------------------
+#if defined( OLDHUM)
+RC ZNR::zn_AirX(		// total air exchanges etc
+	double amfX /*=0.*/,	// additional air flow, lbm
+	double _tz /*=-99.*/)	// zone air dry bulb, F
+							//   default = current tz
+{
+	RC rc = RCOK;
+
+	if (_tz < -98.)
+		_tz = tz;
+
+	zn_rho = psyDenMoistAir(_tz, wzls);		// moist air density
+	zn_dryAirMass = max(i.znVol * psyDenDryAir2(zn_rho, wzls), .1);	// dry air mass, lbm
+	zn_dryAirMassEff = zn_dryAirMass;			// effective dry air mass, lbm
+												//   zn_AirXMoistureBal() may adjust re short time steps
+
+	// TODO: improve other infil models?
+	zn_ivAirX = (zn_AnAmf() + zn_NonAnIVAmf()) / zn_dryAirMass;
+	// air changes due to infil + vent
+	// includes flows induced by ducts / HVAC
+	//   but not those flows
+	if (zn_ivAirX < 0.f)
+		zn_ivAirX = 0.f;
+
+	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf + amfX;
+	zn_airX = zn_ivAirX + amfSys / zn_dryAirMass;
+
+	// modified airX re convection coefficients
+	if (!i.zn_hcAirXIsSet)	// if not fixed by user input
+	{
+		i.zn_hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
+		if (zn_IsAirHVACActive() && !zn_HasAirHVAC())
+			i.zn_hcAirX += 4.8f;		// additional "virtual" air flow for non-air zones
+	}
+
+	return rc;
+}		// ZNR::zn_AirX
+//-----------------------------------------------------------------------------
+double ZNR::zn_HumRat(		// zone moisture ratio
+	double amfX,		// additional system flow (e.g. air handler), lbm/h
+	double mwX,			// air handler moisture flow, lbm/hr
+	double _tz,
+	double* pXLGain /*=nullptr*/)
+
+	// returns zone humidity ratio
+
+
+	// see also znW() re CNE zone moisture balance
+{
+
+	if (_tz < -98.)
+		_tz = tz;
+
+#if 1
+	RC rc = zn_AirX(amfX, _tz);
+#else
+
+	double rho = psyDenMoistAir(_tz, wzls);		// moist air density
+	double dryAirMass = max(i.znVol * psyDenDryAir2(rho, wzls), .1);	// dry air mass, lbm
+	zn_dryAirMass = dryAirMass;
+	zn_dryAirMassEff = dryAirMass;			// effective dry air mass, lbm
+												//   zn_AirXMoistureBal() may adjust re short time steps
+
+	// TODO: improve other infil models?
+	zn_ivAirX = (zn_AnAmf() + zn_NonAnIVAmf()) / dryAirMass;
+	// air changes due to infil + vent
+	// includes flows induced by ducts / HVAC
+	//   but not those flows
+	if (zn_ivAirX < 0.f)
+		zn_ivAirX = 0.f;
+
+	double amfSys = zn_ductLkI.af_amf + zn_sysAirI.af_amf + amfX;
+	zn_airX = zn_ivAirX + amfSys / dryAirMass;
+
+	// modified airX re convection coefficients
+	if (!i.zn_hcAirXIsSet)	// if not fixed by user input
+	{
+		i.zn_hcAirX = zn_airX;		// note: does NOT include zn_hpwhAirX
+		if (zn_IsAirHVACActive() && !zn_HasAirHVAC())
+			i.zn_hcAirX += 4.8f;		// additional "virtual" air flow for non-air zones
 	}
 #endif
 
-	return rc;
-}		// zn_MoisturBalCR
+	// internal gain
+	double mwIG = znLGain / PsyHCondWtr;		// latent internal gains, lbm/hr
+
+	// non-airnet infil, lbm/hr
+	double mwInf = zn_NonAnIVAmf() * Top.wOSh;
+
+	// IZXFER (airnet) gains not including duct leakage and HVAC
+	double mwAN = (1.f - zn_fVent) * zn_airNetI[0].af_Wmf()
+		+ (zn_fVent)*zn_airNetI[1].af_Wmf();
+
+	double mw = mwIG + mwInf + mwAN + mwX		// total water vapor mass flow rate, lbm/hr
+		+ zn_ductLkI.af_Wmf() + zn_sysAirI.af_Wmf();
+
+	// TODO: HPWH moisture removal? 2-16
+
+	int wCase = 0;	// debug aid
+					//   0 = time constant OK, result OK
+					//   1 = short time constant (steady state sln used), result OK
+					//   2 = time constant OK, result limited
+					//   3 = short time constant (steady state sln used), result clamped
+
+
+	float f = zn_airX * Top.tp_subhrDur / i.zn_HIRatio;
+	if (f > 1.f)
+	{
+		zn_dryAirMassEff *= f;
+		f = 1.f;
+		wCase += 1;
+	}
+	double _wz = mw * Top.tp_subhrDur / (zn_dryAirMassEff * i.zn_HIRatio) + wzls * (1. - f);
+
+	double wSat = psyHumRat3(_tz);   // maximum w air at this temp can hold
+	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
+						// if predicted humidity ratio is physically impossible, assume
+						//   magic (sensible) heat transfer
+						// + = into zone (= "condensation")
+	double wzClamp = bracket(double(PsyWmin), _wz, wSat);
+	if (_wz != wzClamp)
+	{
+		XLGain = (_wz - wzClamp) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
+		_wz = wzClamp;
+		wCase += 2;		// limits applied
+	}
+
+	if (pXLGain)
+		*pXLGain = XLGain;
+
+	return _wz;
+
+}		// ZNR::zn_HumRat
+#endif
+
 //------------------------------------------------------------------------------
 RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 // sets zn_comfPMV7730 and zn_comfPPD7730
@@ -1683,6 +1952,16 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 #endif
 	return rc;
 }		// ZNR::zn_ComfortCR
+//-----------------------------------------------------------------------------
+bool ZNR::zn_IsAirHVACActive() const		// determine air motion
+// used re convective coefficient determination
+//   see SBC::sb_HCZone case C_CONVMODELCH_ASHRAE
+// returns true iff air system is operating (causing air motion)
+// Note: relies on zn_qsHvac not initialized (prior step value persists)
+{
+	// TODO: could enhance re other air movers (e.g. whole house fans)
+	return zn_qsHvac != 0.;
+}		// ZNR::zn_IsAirMovingMech
 //=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
@@ -2879,6 +3158,23 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	rs_SetupFanC( avfC);	// sets rs_cap95 if avfC > 0., else sets rs_amfC
 							// derives rs_fanHRtdC
 
+	// notes re capacity manipulations
+	// load = capSensT = capnf*shr - qFanOp
+	// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
+	// let F = fChg*fCondCap*shr
+	// load = (cap95 + qFanRat)*F - qFanOp
+	// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
+	// load = cap95*(F*(1+fanRatX)-fanOpX
+	// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
+
+
+#if 1
+	// set up constants for single speed model
+	float cap95nf = -(fabs(rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh
+														// (< 0)
+	rs_capnfX = min( cap95nf * rs_fChg, -10.f);			// apply charge adjustment
+#endif
+
 	if (rs_IsFanCoil())
 	{
 	}
@@ -2897,32 +3193,12 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 			rs_cap115 = rs_capRat11595 * rs_cap95;
 
 #if 0
-#if 0
-		if (!IsSet(rs_cap115))
-			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
-#endif
-		if (!IsSet(rs_COP115))
-		{
-			float inp82 = rs_cap82 / rs_COP82;
-			float inp95 = rs_cap95 / rs_COP95;
-			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
-		}
-#endif
-
-		// notes re capacity manipulations
-		// load = capSensT = capnf*shr - qFanOp
-		// capnf = (cap95 + qfanRat)*fChg*fSize*fCondCap
-		// let F = fChg*fCondCap*shr
-		// load = (cap95 + qFanRat)*F - qFanOp
-		// load = (cap95*(1 + fanRatX))*F - cap95*fanOpX
-		// load = cap95*(F*(1+fanRatX)-fanOpX
-		// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
-
 		// set up constants for single speed model
 		float cap95nf = -(fabs(rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh
 															// (< 0)
 
 		rs_capnfX = fabs(cap95nf) > 10.f ? cap95nf * rs_fChg : 0.f;		// apply charge adjustment
+#endif
 
 		// base value for SEERnf and EERnf calculations
 		//   (probably) used only for single speed
@@ -3295,35 +3571,6 @@ void RSYS::rs_HeatingOutletAirState(
 #endif
 	return;
 }		// RSYS::rs_HeatingOutletAirState
-//-----------------------------------------------------------------------------
-static float CoolingSHR(		// derive cooling sensible heat ratio
-	float tdbOut,		// outdoor dry bulb, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float vfPerTon)		// coil air flow std air cfm/ton
-
-// return: rs_SHR = SHR under current conditions
-{
-	float SHR =
-		  0.0242020f * tdbCoilIn
-		- 0.0592153f * twbCoilIn
-		+ 0.0012651f * tdbOut
-		+ 0.0016375f * vfPerTon
-		// 0.f       * tdbCoilIn * tdbOut
-		// 0.f       * tdbCoilIn * vfPerTon
-		// 0.f       * twbCoilIn * tdbOut
-		- 0.0000165f * twbCoilIn * vfPerTon
-		// 0.f       * tdbOut * vfPerTon
-		+ 0.0002021f * twbCoilIn * twbCoilIn
-		// 0.f       / vfPerTon
-		+ 1.5085285f;
-
-	// limit result
-	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
-	SHR = bracket(0.5f, SHR, 1.f);
-	return SHR;
-
-}		// CoolingSHR
 //-----------------------------------------------------------------------------
 void RSYS::rs_CoolingSHR()		// derive cooling sensible heat ratio
 // call:   rs_tdbCoilIn = coil entering dry bulb, F
@@ -6483,7 +6730,7 @@ RC ZNR::zn_AfterSubhr()
 	// pz0 (pressure relative to patm at nomimal z=0) initially 0, then known from
 	//   prior AirNet solution
 	zn_rho0ls = zn_Rho0();		// last subhour moist air density at tz, wz, pz0
-	trls = tr;					// last subhour radiant temp
+	zn_trls = zn_tr;			// last subhour radiant temp
 	zn_relHumls = zn_relHum;	// lass subhour relative humdity
 
 #if 0	// unused, 9-12
@@ -6492,7 +6739,8 @@ x	zn_qsHvacls = zn_qsHvac;	// last subhour hvac sensible power
 x	zn_qlHvacls = zn_qlHvac;	// last subhour hvac latent power
 #endif
 
-	zn_hcAirXls = i.zn_hcAirX;			// last subhour air exchange rate
+	zn_hcAirXls = i.zn_hcAirX;	// last subhour air exchange rate
+								//    for convection coefficient models
 
 	// ducts: nothing needed (current step values are used (lagged) at beg
 	//        of next step, then initialized)
@@ -6548,7 +6796,7 @@ RC ZNR::zn_AfterHour()
 	tzlh = tzls;		// air temp from final step of hour (NOT average here).
 						// needed? used in main eqn in loadsHourBeg, but .tzls cd be used directly 1-92.
 
-	trlh = trls;				// ditto radiant temp
+	zn_trlh = zn_trls;			// ditto radiant temp
 
 	zn_relHumlh = zn_relHumls;	// ditto relative humidity
 

@@ -2973,9 +2973,10 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 	switch (sb_hcModel)
 	{
 	case C_CONVMODELCH_ASHRAE:
-		sb_hcNat = z.zn_airMode ? sb_hcConst[ 2] : sb_hcConst[ TD>0.];
+		// use "system on" value iff prior step active air HVAC
+		sb_hcNat = z.zn_IsAirHVACActive() ? sb_hcConst[2] : sb_hcConst[TD>0.];
 #if defined( CONV_ASHRAECOMPARE)
-		sb_hcNatAsh = sb_hCXAsh.hc_HCAsh( z.zn_airMode, sb_txa, sb_tSrf);
+		sb_hcNatAsh = sb_hCXAsh.hc_HCAsh( z.zn_IsMechAirMotion(), sb_txa, sb_tSrf);
 #endif
 		sb_hcFrc = 0.f;
 		break;
@@ -3203,7 +3204,7 @@ void SBC::sb_SetTx()
 	if (sb_zi)
 	{	ZNR& z = ZrB[ sb_zi];
 		sb_txa = z.tz;
-		sb_txr = z.tr;
+		sb_txr = z.zn_tr;
 		sb_txe = sb_hxtot > 0. ? (sb_txa*sb_hxa + sb_txr*sb_hxr) / sb_hxtot : 0.f;
 	}
 	// else do nothing

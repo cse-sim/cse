@@ -58,8 +58,6 @@
 #include <cnguts.h>	// Decls for this file; ZrB MDS_FLOAT
 
 //-------------------------------- OPTIONS ----------------------------------
-#define NOACMS	// re deleting aCMn, aCMxH, aCMxC 7-22-95. edit when final. Also cnah2, .
-
 #undef ONPLR		// define to use fan-on plr not average in coils autosizing.
 // believe high average plr impossible eg for heat when cool has forced large fan.
 // implies xPk stuff. Rob 6-97.  fixes BUG0089, 90, etc hc convergence problems.
@@ -71,10 +69,7 @@ to remove also search for humXtrap2 (eg in comments, cnrecs.def).
 	3-rdW version was never seen to save iters; 2-rdW version sometimes saved but more often added.
 Benefit not clear. Tested on only some files, full test not done yet 5-95. */
 
-#define ALWAYSVSH	// define for 4-17-95 trial to always recompute air vsh & tu limits.
-// WORKS to fix ZN/ZN2 problems. KEEP, tho may be 3-5% slower in some cases.
-// to undo, also undo AH::ahVshNLims() decl change in cnrecs.def,
-//  and get back if'd out ahEstimate and iter4Fs from end file or OUT459B.ZIP.
+
 
 #undef CEECLIP   	/* define to restore flow change limiting (binary search) code, added 5-2-95 re a bug it didn't fix.
 To remove, also search for ceeClip in comments; to restore, get iter4Fs if-outs from eof or OUT459B.ZIP.
@@ -179,14 +174,14 @@ slowing convergence when limit got too small while converging flow (during warmu
 	}
 }		// AH::fazInit
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AH::rddInit([[maybe_unused]] int isAusz)	// init done ONCE for main sim and once for each autoSize design day: set inital state. 7-95.
+RC AH::rddInit(int /*isAusz*/)	// init done ONCE for main sim and once for each autoSize design day: set inital state. 7-95.
 
 // see also rddiInit, next: confusing names.   Called from cnguts.cpp:cgRddInit, 7-95
 {
-	tr2Nx = 			/* initialize return air temp (used b4 1st ahCompute) to same value as zone temperatures.
-				   If tr2Nx left 0, 1st ztuMode call has (had) trouble converging using estimated ah ts's that
-				   don't relate to zones and which may be eg 0 for cooling but 40 (ahTsMn) for heating. 4-20-95.*/
-		ts = aTs = 70; 		// initing supply temp, eg re tu duct leakage to return, should speed warmup, 5-95.
+	tr2Nx = 	// initialize return air temp (used b4 1st ahCompute) to same value as zone temperatures.
+				// If tr2Nx left 0, 1st ztuMode call has (had) trouble converging using estimated ah ts's that
+				// don't relate to zones and which may be eg 0 for cooling but 40 (ahTsMn) for heating. 4-20-95
+		ah_tSup = aTs = 70.f; 		// initing supply temp, eg re tu duct leakage to return, should speed warmup, 5-95.
 	ws = aWs = Top.tp_refW;	// init supply humidity
 
 	// set up coils and fans. For those to be autoSized, initial size may be 0 or NAN; will be reSetup elsewhere during pass 1.
@@ -407,11 +402,11 @@ x #endif
 			&&  ahcc.capsRat				//   divide-by-0 protection
 			&&  ccAs.ldPkAs				// and a non-0 load has been found: divide-by-0 protection
 			&&  ccAs.plrPkAs				// and its plr has been found non-0: divide-by-0 protection
-			&&  ahccSHR && 1 - ahccSHR )		// yet more divide-by-0 insurance
+			&&  ahcc.SHRRat && 1 - ahcc.SHRRat )		// yet more divide-by-0 insurance
 	{
 #if 0//SHR let elec coil be oversized
-x       float plrs = ccAs.plrPkAs * qcPkSAs/ccAs.ldPkAs / ahccSHR;   	// plr * sensible load fraction / sens cap frac
-x       float plrl = ccAs.plrPkAs * qcPkLAs/ccAs.ldPkAs / (1 - ahccSHR);	// plr * latent load fraction / latent cap frac
+x       float plrs = ccAs.plrPkAs * qcPkSAs/ccAs.ldPkAs / ahcc.SHRRat;   	// plr * sensible load fraction / sens cap frac
+x       float plrl = ccAs.plrPkAs * qcPkLAs/ccAs.ldPkAs / (1 - ahcc.SHRRat);	// plr * latent load fraction / latent cap frac
 #else//7-21-95
 		float plrs  = ccAs.plrPkAs * (qcPkSAs/ccAs.ldPkAs) / (ahcc.capsRat/ahcc.captRat);	// sensible part load ratio
 		//  plr      *  sens load fraction   /  sens cap frac
@@ -562,7 +557,7 @@ x					 "    from %ssupply fan design flow (%g) by more than 20%.",		// NUMS
 				else if ( 1.251 * ahcc.vfR < sfan.vfDs
 						  ||  ahcc.vfR > 1.251 * sfan.vfDs )				// if sfan rating cfm 25% different from DX coil's
 					oWarn( "%scoiling coil rating air flow (%g) differs \n"
-						   "    from %ssupply fan design flow (%g) by more than 25%.",		// NUMS
+						   "    from %ssupply fan design flow (%g) by more than 25%%.",		// NUMS
 #endif
 										  vfRgiven ? "" : "defaulted ",     ahcc.vfR,
 										  fanAs.az_active ? "autoSized " : "",  sfan.vfDs );
@@ -610,7 +605,7 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 	ccAs.final( this, ahi, coilOversize);
 	fanAs.final( this, ahi, fanOversize);
 
-// additional stuff: cool coil capsRat: equal to captRat * ahccSHR etc per coil model, no separate AUSZ substruct.
+// additional stuff: cool coil capsRat: equal to captRat * SHRRat etc per coil model, no separate AUSZ substruct.
 	if (ccAs.az_active)				// if autoSized cool coil, ahcc.capsRat was autoSized too.
 	{
 		ahcc.capsRat_AsNov = ahcc.capsRat;	// save non-oversized copy (for report, probes)
@@ -794,7 +789,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		ahres->wr = wr;     	// return (after plenum, before duct).  Use inputs to completed iteration.
 		ahres->tmix = tmix;
 		ahres->wmix = wen;	// mixed
-		ahres->ts = ts;
+		ahres->ts = ah_tSup;
 		ahres->ws = ws;     	// supply (after supply duct, at terminals)
 		ahres->po = po;     				// fraction outside air
 		ahres->frFanOn = frFanOn;			// fraction of time fan ran (1.0 unless fanCyles)
@@ -824,10 +819,10 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		DBL hhr2 =  HH(tr2,wr1,cr1);		// .. entering eco, after poss fan
 		DBL hhmix = HH(tmix,wen,cmix);		// .. exiting economizer
 		DBL hhSen = HH(tSen,ws,cmix);		// .. entering supply duct, after coil(s) and supply fan
-		DBL hhs =   HH(ts,ws,CS);   		// .. getting to terminals, after supply duct
+		DBL hhs =   HH(ah_tSup,ws,CS);   	// .. getting to terminals, after supply duct
 		ahres->qO = (hhmix - hhr2) * Top.tp_subhrDur;  	// subhr outside air q: enthalpy (rel tr/wr) change of flow thru eco
 		ahres->qLoss =  					// leak and loss q this subhour
-			( hhr1 /* - hhr=0*/  		//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
+			( hhr1 /* - hhr=0*/  			//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
 			  + hhs - hhSen ) * Top.tp_subhrDur;	//   + sup duct leak-out and cond loss: enthalpy change thru it
 		ahres->qLoad = (/*hhr=0*/ - hhs) * Top.tp_subhrDur;	/* subhr load q: zone load, tu duct loss, plenum loss =
        							   enth change thru tus/zns/plenum (use prior return to get balance) */
@@ -839,8 +834,6 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		// ah results: input energies
 		ahres->pc = ahcc.p * Top.tp_subhrDur;
 		ahres->ph = ahhc.p * Top.tp_subhrDur;
-		ahres->pAuxC = (ahcc.pAuxOn + ahcc.pAuxOnAtall) * Top.tp_subhrDur;  	// cool aux energy input (ah-on-only portion)
-		ahres->pAuxH = (ahhc.pAuxOn + ahhc.pAuxOnAtall) * Top.tp_subhrDur;  	// heat aux energy input (ditto)
 		ahres->pFan = sfan.p*Top.tp_subhrDur + rfan.p*Top.tp_subhrDur;
 
 		// ah results: iteration counts: most are ++'d directly from code
@@ -860,37 +853,25 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 					/*&& ahhc.coilTy != C_COILTYCH_HHP*/ )  			// .. (redundant: meter disallowed)
 			{
 				MtrB.p[ahhc.mtri].H.htg  += ahhc.p*Top.tp_subhrDur;		// charge heating coil input power to meter, end use "htg"
-				MtrB.p[ahhc.mtri].H.hpBU += ahhc.pRh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hp" (0 if not AHP)
 			}
-		if (ahhc.auxOnMtri)							// heating coil-on load-proportional aux energy
-			MtrB.p[ahhc.auxOnMtri].H.HAUX += ahhc.pAuxOn*Top.tp_subhrDur;		//  (eg oil furnace draft fan)
-		if (ahhc.auxOnAtallMtri)							// heating aux energy when on at all in subr
-			MtrB.p[ahhc.auxOnAtallMtri].H.HAUX += ahhc.pAuxOnAtall*Top.tp_subhrDur;
-
+		if (ahhc.supHeatMtri)							// if meter specified for heat coil
+			MtrB.p[ahhc.supHeatMtri].H.hpBU += ahhc.pSh*Top.tp_subhrDur;		// charge AHP suppl res heat to end use "hpbu" (0 if not AHP)
 		if (ahcc.mtri)								// if meter specified for cool coil
 			if (ahcc.coilTy != C_COILTYCH_CHW   					// if not a coil type that uses a plant
 					/*&& ahcc.coilTy != C_COILTYCH_HHP*/ )    				// .. (redundant: meter disallowed)
 				MtrB.p[ahcc.mtri].H.clg += ahcc.p*Top.tp_subhrDur;			// charge cool coil input power, end use "cooling"
-		if (ahcc.auxOnMtri)							// cooling coil-on load-proportional aux energy
-			MtrB.p[ahcc.auxOnMtri].H.CAUX += ahcc.pAuxOn*Top.tp_subhrDur;
-		if (ahcc.auxOnAtallMtri)							// cooling aux energy when on at all in subr
-			MtrB.p[ahcc.auxOnAtallMtri].H.CAUX += ahcc.pAuxOnAtall*Top.tp_subhrDur;
 	}
+
 
 // --- result input energies and meter charges that can be non-0 even when ah is off
 
-	//note ahres is 0'd in AH::begSubhr.
-	ahres->pAuxC += (ahcc.pAuxOff + ahcc.pAuxFullOff) * Top.tp_subhrDur;		// cool aux energy input even if ah off
-	ahres->pAuxH += (ahhc.pAuxOff + ahhc.pAuxFullOff) * Top.tp_subhrDur;		// heat aux energy input even if ah off
+	ahres->pAuxC = ahcc.pAux * Top.tp_subhrDur;  	// cool aux energy input (ah-on-only portion)
+	ahres->pAuxH = ahhc.pAux * Top.tp_subhrDur;  	// heat aux energy input (ditto)
+	if (ahhc.auxMtri)							// heating aux energy
+		MtrB.p[ahhc.auxMtri].H.HAUX += ahhc.pAux*Top.tp_subhrDur;
 
-	if (ahhc.auxOffMtri)							// heating coil-off proportional aux energy
-		MtrB.p[ahhc.auxOffMtri].H.HAUX += ahhc.pAuxOff*Top.tp_subhrDur;
-	if (ahhc.auxFullOffMtri)							// heating aux energy when coil off entire subhr
-		MtrB.p[ahhc.auxFullOffMtri].H.HAUX += ahhc.pAuxFullOff*Top.tp_subhrDur;	// eg gas pilot per DOE2 -- incl in polynomial if partly on
-	if (ahcc.auxOffMtri)							// cooling coil-off proporitonal aux energy
-		MtrB.p[ahcc.auxOffMtri].H.CAUX += ahcc.pAuxOff*Top.tp_subhrDur;
-	if (ahcc.auxFullOffMtri)							// cooling aux energy when coil off entire subhr
-		MtrB.p[ahcc.auxFullOffMtri].H.CAUX += ahcc.pAuxFullOff*Top.tp_subhrDur;	//  eg possibly heat pump crankcase heater?
+	if (ahcc.auxMtri)
+		MtrB.p[ahcc.auxMtri].H.CAUX += ahcc.pAux*Top.tp_subhrDur;
 
 	if (cch.mtri)							// if crankcase htr has a meter
 		MtrB.p[cch.mtri].H.aux += cch.p*Top.tp_subhrDur;			// post its input (set by CCH:endSubhr from coilsEndSubhr)
@@ -1007,7 +988,7 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 initial ahCompute call for subhr
 
-// outputs for ztuCompute: AH.ahMode, AH.ts
+// outputs for ztuCompute: AH.ahMode, AH.ah_tSup
 
 {
 	// callers: cnztu.cpp:hvacIterSubhr: before tu-ah loop for subhour
@@ -1017,9 +998,9 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 	RC rc /*=RCOK*/;		// (removed redundant init per BCC32 4.5 warning, 12-94)
 
 // flag ah to be CALLED (to check cr,tr,etc) at start subhour and if ztu re-ahEstimates's after 1st iteration.
-	// convention is: all hvac devices (but tu's?) called at start subhour.
-	/* and TRIED REMOVING 11-3-92: eliminated many calls, some computations; changed Yr wetbulb by .01 degree for many runs.
-	   Apparently need more wz monitoring elsewhere to consider removing. */
+// convention is: all hvac devices (but tu's?) called at start subhour.
+//    and TRIED REMOVING 11-3-92: eliminated many calls, some computations; changed Yr wetbulb by .01 degree for many runs.
+//    Apparently need more wz monitoring elsewhere to consider removing.
 
 	ahClf++;		// tell subhrHvacIter to call ahCompute for this ah
 	Top.ahKf++;  	// tell subhrHvacIter to check for AH's with ahClf or ahPtf on. ahPtf set in many cases below.
@@ -1027,29 +1008,17 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 
 // determine 'ahMode' including for ahTsSp==ZN,ZN2
 	AHMODE ahModeWas = ahMode;
-	CSE_E( setMode() )				// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
+	CSE_E( ah_SetMode() )				// sets ahMode (ahHEATING/-COOLING/both(usually)/-FAN/-OFF)
 	// if ah goes on or off, sets zones ztuCf's.
 	if (ahMode==ahOFF)  return RCOK;			// if ah off, done
 
-#ifndef NOACMS
-	x #if 1 // 7-15-95
-	x// init ah working copies of tu flow limits -- zRat, setTsSp1 uses them. copies added 7-15-95.
-	x    for (TU *tu = 0;  nxTu(tu);  )  		// temp save entry flows in ZONE for upCouple/antRatTs, b4 any changes stored
-			x    {  tu->aCMn = tu->cMn;			// copy terminal flow limits (heat cap units) to working copies
-					x       tu->aCMxH = tu->cMxH;			// .. that ah may modify temporaly like ztuMode does more permanently
-					x       tu->aCMxC = tu->cMxC;			// .. during autoSizing. 7-15-95
-					x
-				 }
-			x #endif
-#endif
-
 // if ah just turned on, determine return air temp etc from zones (if already on, current trNx etc are up-to-date). 4-95.
-			if (ahModeWas==ahOFF)				// if just started ah, may have last run at different zone temps, so ...
-				zRat();						/* compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
-							   Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
-       							   Note ztuMode() presets aTz, zCv etc for this call. 4-95. */
+	if (ahModeWas==ahOFF)	// if just started ah, may have last run at different zone temps, so ...
+		zRat();				// compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
+							// Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
+       						// Note ztuMode() presets aTz, zCv etc for this call. 4-95.
 // estimate new ts from ahTsSp -- or leave same
-	DBL tsNu = ts;
+	DBL tsNu = ah_tSup;
 	{
 		if (VD ahTsSp != VD ahTsSpPr)				// if ahTsSp changed (numerical tolerance applied just below)
 		{
@@ -1088,16 +1057,16 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 	}
 
 // recompute ah if "significant" change
-	if (ABSCHANGE( tsNu, ts) > Top.absTol)  		// if estimated ts changed "significantly" 11-92
+	if (ABSCHANGE( tsNu, ah_tSup) > Top.absTol)  		// if estimated ts changed "significantly" 11-92
 		ahPtf++;						// set this ah's "must compute" flag.  Top.ahKf set above.
 
-	ts = tsNu;						// store updated supply temp
-	aTs = ts;						/* also set "air handler working copy" ts, for use eg in zRat
+	ah_tSup = tsNu;						// store updated supply temp
+	aTs = ah_tSup;						/* also set "air handler working copy" ts, for use eg in zRat
 							   at AH::ahCompute entry. Makes having two copies historical. 5-95. */
 
 // update supply air volumetric heat capacity @ ts and reference w, and terminal limits based on it
 	DBL sink = 0.;
-	ahVshNLims( ts, sink, sink); 			/* update ah->airxTs and convert tu mn/mx cfm flows to Btuh/F.
+	ahVshNLims( ah_tSup, sink, sink); 			/* update ah->airxTs and convert tu mn/mx cfm flows to Btuh/F.
 							   Note: sfan/rfan.cMx, .dT, etc: prior values used as estimate. */
 	// don't attempt refinement here, eg don't do setTsSp1 again for new airxTs, cuz eg sfan.cMx isn't current, 4-95.
 
@@ -1125,37 +1094,29 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 
 // (old) preceding call sequence: tuEstimate, ahEstimate, ztuCompute.
 {
-	/* AH::ahPtf sets include: by exman chafs for input changes (ahTsSp, ahSch, ahhc.sched, ahcc.sched, );
-				   AH::ahEstimate, ahCompute, setMode, ; ZNR::ztuMdSets (from ztuCompute).
-	        tested: cnztu.cpp:hvacSubhrIter(), AH::compute. cleared: AH::ahCompute. */
+// AH::ahPtf sets include: by exman chafs for input changes (ahTsSp, ahSch, ahhc.sched, ahcc.sched, );
+//  AH::ahEstimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets (from ztuCompute).
+//	        tested: cnztu.cpp:hvacSubhrIter(), AH::compute. cleared: AH::ahCompute.
+
 	RC rc /*=RCOK*/;
 	AhresB.p[ss].S.nIter1++;				// in ah subhour results subrecord, count times ah entered
 
 // redetermine 'ahMode' including for ahTsSp==ZN,ZN2
-	CSE_E( setMode() )				// sets ahMode to ahHEATING/-COOLING/both(usually)/-FAN/-OFF
+	CSE_E( ah_SetMode() )			// sets ahMode to ahHEATING/-COOLING/both(usually)/-FAN/-OFF
 	if (ahMode==ahOFF)				// if ah now off
 		return RCOK;				// nothing more to do for off airHandler
 	// note 10-96: ahClf stays on when return here. Clear here when/if need found.
 
-#ifndef NOACMS
-x	// init ah working copies of tu flow limits -- zRat uses them.
-x    for (TU *tu = 0;  nxTu(tu);  )
-x    {  tu->aCMn = tu->cMn;			// copy terminal flow limits (heat cap units) to working copies
-x       tu->aCMxH = tu->cMxH;			// .. that ah may modify temporaly like ztuMode does more permanently
-x       tu->aCMxC = tu->cMxC;			// .. during autoSizing. 7-15-95
-x	 }
-#endif
-
 // return air temp/flow per zone temps and terminal flows; plenum loss and return fan heat
-		zRat();					/* sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
-						   Note ahEstimate sets aTs, in addition to ts, for this call. */
+		zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
+						// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
 
 	/* Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
 	   Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.
 	     derived values include tr2Nx/wr1Nx/cr1Nx (computed by zRat from zone t/w/c's, which set ahClf upon change); dt2, . */
 
 // done if no change found
-	DBL dt2 = ts - tr2Nx;    				/* air temp change thru airHandler after return duct and return fan
+	DBL dt2 = ah_tSup - tr2Nx;    				/* air temp change thru airHandler after return duct and return fan
     							   (already recomputed) (old ts, new tr2Nx per new tr from zones) */
 	DBL tr2Chg = ABSCHANGE( tr2Nx, tr2);		// how much new tr2 changed from START prior ah iteration
 	DBL cmixNx = cr1Nx;					/* new cmix will be new cr1. ONLY VALID if eco does not change flow.
@@ -1169,10 +1130,10 @@ x	 }
 		     						   (tr2 change < absTol) and cr1 may be tu-limited */
 			&&  ABSCHANGE( wr1Nx, wr1NxPr) < Top.absHumTol      	// if return humidity "unchanged" (tol .00003 or as changed)
 
-			&&  ABSCHANGE( Top.tDbOSh, tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
+			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
 			/* if outdoor air temp "unchanged" relative to use: obscure-case
 			   insurance; makes no difference in existing tests 6-24-92. */
-			&&  ABSCHANGE( Top.wOSh, wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
+			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
 			/* if oudoor w "unchanged" relative to use.
 			   insurance added 1-95 in preparation for SHINTERP.
 			   TESTED 1-95: adds an occasional iteration in Rob's tests,
@@ -1205,47 +1166,6 @@ x	 }
 		rWarn( PWRN, (char *)MH_R1275, name, frFanOn);		// devel aid warning "airHandler '%s': frFanOn (%g) > 1.0"
 #endif
 
-#ifndef NOACMS	// superceded 7-22-95 by resizing tuVfM's & backtracking to bVfM's in antRatTs and ztuMode
-// if autoSizing terminals, increase tu flow limits to accomodate flows ah used. 7-15-95
-x    /* cnah2:antRatTs may have used tu set temp heating or cooling flow in excess of tu's limits if autoSizing.
-x       here increase the limits to match, so if eg ztuMode immediately max's, flow remains same so ah/tu iteration converges.
-x       So eg if tu max's it gets same flow ah was using, even if eg dT sign wrong, so ah/tu iteration converges. */
-x    if (asFlow)								// else not autoSizing any tu's on ah
-x       for (tu = 0;  nxTu(tu);  )  					// loop ah's tu's
-x       { // similar to code in ztuMode() cases, but no tolerance added else creeps up if antRatTs used present max flow
-x          if (tu->useAr & uStH)						// if this terminal is set temp heating
-x          {  if (tu->vhAs.resizeIf( tu->aCv/airxTs, FALSE)) 		// if autoSizing tuVfMxH and is new max cfm
-x             {  tu->cMxH = tu->tuVfMxH * airxTs;			// convert to heat cap units
-x                // no fanF limitation expected here
-x                if (tu->asKVol)						// if autoSizing for constant volume
-x                {  tu->tuVfMn = tu->tuVfMxH;				// keep min same as max flow, cfm
-x                   tu->cMn = tu->cMxH;					// .. heat cap units
-x				 }
-x                if (tu->asHcSame)					// if keeping heat & cool capacities the same
-x                   if (tu->vcAs.resizeIf( tu->aCv/airxTs, FALSE))	// update tuVfMxC to same flow / if an increase
-x                      tu->cMxC = tu->tuVfMxC * airxTs;			// update heat cap flow to match
-x			}
-x             /* set flag re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
-x                and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
-x             tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
-x			}
-x          else if (tu->useAr & uStC)					// if terminal is set temp cooling
-x          {	if (tu->vcAs.resizeIf( tu->aCv/airxTs, FALSE))	 	// if autoSizing tuVfMxC and is new max cfm
-x             {  tu->cMxC = tu->tuVfMxC * airxTs;			// convert to heat cap units
-x                // no fanF limitation expected here
-x                if (tu->asKVol)						// if autoSizing for constant volume
-x                {  tu->tuVfMn = tu->tuVfMxC;				// keep min same as max flow, cfm
-x                   tu->cMn = tu->cMxC;					// .. heat cap units
-x				 }
-x                if (tu->asHcSame)					// if keeping heat & cool capacities the same
-x                   if (tu->vhAs.resizeIf( tu->aCv/airxTs, FALSE))	// update tuVfMxH to same flow / if an increase
-x                      tu->cMxH = tu->tuVfMxH * airxTs;			// update heat cap flow to match
-x			}
-x             /* set flag re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
-x                and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
-x             tu->aDtLoCSh |= tu->aDtLoTem  &&  aTs >= ZhxB.p[tu->xiArC].sp;	// TU::begSubhr clears when ts < sp
-x  }  }
-#else
 	/* set flags re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
 	   and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
 	if (asFlow)								// else not autoSizing any tu's on ah
@@ -1254,13 +1174,12 @@ x  }  }
 				tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
 			else if (tu->useAr & uStC)						// if terminal is set temp cooling
 				tu->aDtLoCSh |= tu->aDtLoTem  &&  aTs >= ZhxB.p[tu->xiArC].sp;	// TU::begSubhr clears when ts < sp
-#endif
 
 // outputs and change-flagging
-	upCouple( aTs, ts, aWs, ws);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
+	upCouple( aTs, ah_tSup, aWs, ws);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
     					   in ts and/or zone flow: anticipate ztuCompute for other ah's, to speed convergence.
     					   uses zp->tuCzWas's.  note here ts, ws are OLD values. */
-	ts = aTs;
+	ah_tSup = aTs;
 	ws = aWs;		// store working supply temp and hum ratio into ts and ws for ztuCompute
 	if (!flagTusIf())			// if ah output changed, set zp->ztuCf for served terminals. uses new ts/ws! 10-15-92.
 		flagChanges();			// else flag zones whose temps or terminal flows have changed.
@@ -1275,10 +1194,10 @@ x					   TRUE may enable some autoSizing stuff eg in ztuMode. 7-20-95. */
 	tr2NxPr = tr2Nx;
 	cr1NxPr = cr1Nx;
 	wr1NxPr = wr1Nx;
-	tDbOShPr = Top.tDbOSh;
-	wOShPr = Top.wOSh;
+	ah_tDbOShPr = Top.tDbOSh;
+	ah_wOShPr = Top.wOSh;
 	upPriors();				// update TU -Pr's for tests in ZNR.ztuMdSets
-	tsAhPr = ts;
+	tsAhPr = ah_tSup;
 	VD hcSchPr = VD ahhc.sched;
 	VD ccSchPr = VD ahcc.sched;  	// used in AH::estimate; also input-monitored by chaf's
 	VD ahTsSpPr = VD ahTsSp;					// update comparator used in AH::estimate
@@ -1409,58 +1328,5 @@ BOO CONVERGER::doit( 			// do converger: save value, possibly "improve" it.
 	return sig;
 }  			// CONVERGER::doit
 //----------------------------------------------------------------------------------------------------------------------------
-
-
-//***************************************************** if-outs **********************************************************
-
-
-//-----------------------------------------------------------------------------------------------------------------------------
-#if 0 // 5-11-95: later part of AH::ahEstimate (after new ts stored) before removal of if-outs:
-x
-x  #ifdef ALWAYSVSH //4-17-95
-x// update supply air volumetric heat capacity @ ts and reference w, and terminal limits based on it
-x    DBL sink = 0.;
-x    ahVshNLims( ts, sink, sink); 			/* update ah->airxTs and convert tu mn/mx cfm flows to Btuh/F.
-x							   Note: sfan/rfan.cMx, .dT, etc: prior values used as estimate. */
-x    // don't attempt refinement here, eg don't do setTsSp1 again for new airxTs, cuz eg sfan.cMx isn't current, 4-95.
-x  #else
-x  *// conditionally update supply air volumetric heat capacity (@ ts and reference w) and terminal limits based on it
-x  *  DBL sink = 0.;
-x  *  float tolMul = Top.isBegHour ? .25 : 1.;		// extra precise at start hour (when new sp likely, etc)
-x  *  ahVshNLims( ts, tolMul, sink, sink);		/* update ah->airxTs; if changed, convert mn/mx cfm flows
-x  *							   to Btuh/F and return TRUE.  Note: sfan/rfan.cMx, .dT, etc:
-x  *							   prior values used as estimate (cMx init nz by FAN::setup). */
-x  *  // don't attempt refinement here (eg don't do setTsSp1 again) cuz eg sfan.cMx isn't current, 4-95.
-x  #endif
-x
-x// if ah output changed, set zp->ztuCf for served terminals. 10-15-92.
-x    flagTusIf();
-x
-x#if 0 // 4-95. Produced poor values if ah just turned on (ZN)
-xx// compute estimated coil-off (fan only) ts for ztuMode, using old AH members as estimated values. 4-95.
-xx    // tr is based on zones based on old ts... possibly do something like antRatTs here? 4-95.
-xx    puteTsFO(tr2Nx);					// sets AH.tsFO. Below in cnah.cpp.
-xx    switch (ahMode)					// limit tsFo clearly inconsistent with ts for mode
-xx		{
-xx      case ahHEATING:	setToMin( tsFO, ts); break;	// if heating only, coil-off ts must be <= estimated ts
-xx      case ahCOOLING: setToMax( tsFO, ts); break;
-xx      //case ahON:	 dunno what to do.
-xx		}
-x#endif
-x
-x// recompute return air temp here for use in getTsMnFo? But getTsMnFo adjusts tr, cr for control (usually only) terminal & ts.
-x// TESTED 5-95: DOES change results (reported tr when off; small addl effect on some subhrs of some runs)
-x//              couldn't get convinced it was better, so keep it simple instead.
-x//    zRat();						/* re-compute return air temp from zones, using new ts re terminal leakage.
-x//							   Sets tr2Nx (if any flow), etc. Uses ts, aTz's, aCv's, etc. Below.
-x//							   Note ztuMode() may set stuff for this call. */
-x//    //tsMnFoOk = FALSE;		puteRa from zRat does: say getTsMnFo, if called, must calculate new tsMnFo value.
-x
-x    tsMnFoOk = FALSE;			// say getTsMnFo, if called eg from ztuMode, must calculate new tsMnFo value.
-x
-x    return RCOK;
-x}				// AH::ahEstimate
-x//-----------------------------------------------------------------------------------------------------------------------------
-#endif
 
 // end of cnah1.cpp
