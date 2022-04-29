@@ -101,7 +101,7 @@ Caution should be exercised in using air heat and air cooling in the same termin
 Name of air handler supplying this terminal.
 
 <%= member_table(
-  units: "Btu/F",
+  units: "",
   legal_range: "name of an *AIRHANDLER*",
   default: "*If omitted*, terminal has no air heating nor cooling capability.",
   required: "No",
