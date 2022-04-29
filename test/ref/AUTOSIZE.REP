@@ -52,7 +52,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.904.0+ahp-autosizing.b50a0264.119 for Win32 console
 
 
 
@@ -74,7 +74,7 @@ Input for Run 001:
         MATERIAL   "R11fglass"  	matCond=.025   matSpHt=.2   matDens=1.5  // 3.5" thick
         MATERIAL   "R13fglass"  	matCond=.025   matSpHt=.2   matDens=1.5  // 3.5"  Needs check on values
         MATERIAL   "R19fglass"  	matCond=.025   matSpHt=.2   matDens=1.5  // 5.5"  Needs check on values
-        MATERIAL   "CeilInsul"  	matCond=.025   matSpHt=.2   matDens=1.5  // Table R3-18 ï¿½ Attic Model Inputs
+        MATERIAL   "CeilInsul"  	matCond=.025   matSpHt=.2   matDens=1.5  // Table R3-18 – Attic Model Inputs
         MATERIAL   "comboSheath"  	matCond=.035   matSpHt=.2   matDens=8.2 
         MATERIAL   "SoftWood"  	matCond=.0667   matSpHt=.33   matDens=32
         MATERIAL   "ConcreteSlab"  matCond=1   matSpHt=0.2   matDens=144 
@@ -297,18 +297,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:47:51 am
+! CSE 0.904.0+ahp-autosizing.b50a0264.119 for Win32 console run(s) done: Fri 29-Apr-22   2:39:50 pm
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
+!               29-Apr-22   2:16 pm   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
 ! Command line: -x!  -b -t1 Autosize
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\Autosize.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\Autosize.rep
+! Input file:   C:\Users\nkruis\projects\cse\test\Autosize.cse
+! Report file:  C:\Users\nkruis\projects\cse\test\Autosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2      T/C = 0.0070   
-!           AutoSizing:  Time = 0.16     Calls = 1      T/C = 0.1590   
-!           Simulation:  Time = 3.71     Calls = 1      T/C = 3.7100   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
-!                Total:  Time = 3.89     Calls = 1      T/C = 3.8850   
+!                Input:  Time = 0.28     Calls = 2      T/C = 0.1385   
+!           AutoSizing:  Time = 0.44     Calls = 1      T/C = 0.4400   
+!           Simulation:  Time = 7.78     Calls = 1      T/C = 7.7750   
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0110   
+!                Total:  Time = 8.51     Calls = 1      T/C = 8.5050   
