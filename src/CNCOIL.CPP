@@ -200,7 +200,7 @@ RC COOLCOIL::reSetup( 		// re set up coil for changed total capacity (.captRat) 
 		break;			// sensible capacity is same as total capacity
 
 	case C_COILTYCH_DX:      			// Direct eXpansion cooling coil
-		capsRat = ah->ahccSHR * captRat;   	// determine sensible capacity per Sens Heat Ratio input
+		capsRat = SHRRat * captRat;   	// determine sensible capacity per Sens Heat Ratio input
 		break;				// dxSetup is called after switch.
 
 	case C_COILTYCH_CHW:

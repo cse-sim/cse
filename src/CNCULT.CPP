@@ -2343,7 +2343,7 @@ static CULT ahT[] =
 	CULT( "ahccSched",        DAT,  AHCC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
 	CULT( "ahccCaptRat",      DAT,  AHCC(CAPTRAT),         AS_OK,   0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccCapsRat",      DAT,  AHCC(CAPSRAT),         0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
-	CULT( "ahccSHRRat",       DAT,  AH_AHCCSHR,            0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
+	CULT( "ahccSHRRat",       DAT,  AHCC(SHRRAT),          0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
 	CULT( "ahccK1",           DAT,  AHCC(K1),              0,       0, VFAZLY, TYFL,   0,    N,             -.4f,    N,   N),
 	CULT( "ahccMinTEvap",     DAT,  AHCC(MINTEVAP),        0,       0, VFAZLY, TYFL,   0,    N,            35.f,     N,   N), // 40-->35 8-95
 	CULT( "ahccDsTDbCnd",     DAT,  AHCC(DSTDBCND),        0,       0, VFAZLY, TYFL,   0,    N,            95.f,     N,   N),

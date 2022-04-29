@@ -407,11 +407,11 @@ x #endif
 			&&  ahcc.capsRat				//   divide-by-0 protection
 			&&  ccAs.ldPkAs				// and a non-0 load has been found: divide-by-0 protection
 			&&  ccAs.plrPkAs				// and its plr has been found non-0: divide-by-0 protection
-			&&  ahccSHR && 1 - ahccSHR )		// yet more divide-by-0 insurance
+			&&  ahcc.SHRRat && 1 - ahcc.SHRRat )		// yet more divide-by-0 insurance
 	{
 #if 0//SHR let elec coil be oversized
-x       float plrs = ccAs.plrPkAs * qcPkSAs/ccAs.ldPkAs / ahccSHR;   	// plr * sensible load fraction / sens cap frac
-x       float plrl = ccAs.plrPkAs * qcPkLAs/ccAs.ldPkAs / (1 - ahccSHR);	// plr * latent load fraction / latent cap frac
+x       float plrs = ccAs.plrPkAs * qcPkSAs/ccAs.ldPkAs / ahcc.SHRRat;   	// plr * sensible load fraction / sens cap frac
+x       float plrl = ccAs.plrPkAs * qcPkLAs/ccAs.ldPkAs / (1 - ahcc.SHRRat);	// plr * latent load fraction / latent cap frac
 #else//7-21-95
 		float plrs  = ccAs.plrPkAs * (qcPkSAs/ccAs.ldPkAs) / (ahcc.capsRat/ahcc.captRat);	// sensible part load ratio
 		//  plr      *  sens load fraction   /  sens cap frac
@@ -610,7 +610,7 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 	ccAs.final( this, ahi, coilOversize);
 	fanAs.final( this, ahi, fanOversize);
 
-// additional stuff: cool coil capsRat: equal to captRat * ahccSHR etc per coil model, no separate AUSZ substruct.
+// additional stuff: cool coil capsRat: equal to captRat * SHRRat etc per coil model, no separate AUSZ substruct.
 	if (ccAs.az_active)				// if autoSized cool coil, ahcc.capsRat was autoSized too.
 	{
 		ahcc.capsRat_AsNov = ahcc.capsRat;	// save non-oversized copy (for report, probes)

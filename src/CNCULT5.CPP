@@ -795,6 +795,12 @@ x #endif
 				rc = r->oer( (char *)MH_S0652, 					// "Cannot give both %s and %s" NUMS no, new use.
 										  IDSCC(VFR), IDSCC(VFRPERTON) );
 
+			// Use same assumptions as RSYS to default if vfRperTon is set. Otherwise, use CULT default (0.77)
+			if (!r->IsSet(coolCoilFn + COOLCOIL_SHRRAT) && r->IsSet(coolCoilFn + COOLCOIL_VFRPERTON))
+			{
+				SHRRat = CoolingSHR(dsTDbCnd ,dsTDbEn, dsTWbEn, vfRperTon);
+			}
+
 			 // disallow ahccVfR when autoSizing, 8-28-95.
 			 // Note Bruce says ok to completely remove ahccVfR for DX, 8-95.
 			 if ( fss[COOLCOIL_VFR] & FsSET				// if ahccVfR given

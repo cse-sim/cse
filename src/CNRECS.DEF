@@ -5412,6 +5412,7 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     *s *e POWER_NZ capsRat	// dx: sensible rated capacity <= CaptRat Btu/hr, const for input, *s cuz varies during autoSize.
     *f POWER capsRat_As		// AutoSized ditto for naming consistency. 6-95.
     *f POWER capsRat_AsNov	// Raw autoSized ditto, b4 oversize added, for report & probing. 7-95.
+    *f FRAC_GZ SHRRat		// sensible heat ratio (caps/capt) for cooling coil
     // cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
     *f TEMP_GZ minTEvap		// dx: min evaporator (effective surface) temp (below which compressor cuts out), default 35F. (40F til 8-95)
     *f FLOAT_LZ k1		/* dx, chw: power of relative air flow to which outside number of transfer units is proportional.
@@ -5777,7 +5778,6 @@ RECORD AH "airHandler" *RAT
     //input -- in addition to AUTOSIZE ahhcCaptRat, ahccCaptRat, sfanVfDs, rfanVfDs: these set FsAS field status bit.
     *h TEMP ahTsDsH		// heating design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMx.
     *h TEMP ahTsDsC		// cooling ..
-    *f FRAC_GZ ahccSHR		// sensible heat ratio (caps/capt) for cooling coil
     *f FRAC coilOversize  	// fraction oversize for autoSized heat/cool coils
     *f FRAC fanOversize  	// fraction oversize for autoSized fan(s)
     //setup
@@ -5786,7 +5786,7 @@ RECORD AH "airHandler" *RAT
 				   change to const supply temp model in part A. */
     //runtime
     *nest AUSZ hcAs		// autoSizing working data members re heat coil
-    *nest AUSZ ccAs		//  .. re cool coil (total only. sens cap: see .ahccSHR. sens load: see .qcs)
+    *nest AUSZ ccAs		//  .. re cool coil (total only. sens cap: see .SHRRat. sens load: see .qcs)
     *nest AUSZ fanAs	//  .. re fan(s) -- autosized rfan slaves to sfan.
     // values saved at entry to hvacIterSubhr for conditional backtracking during autoSizing.
      *s *e AFLOW_GEZ bVfDs	// sfan.vfDs. see COIL::bCaptRat for ahhc and ahcc.
@@ -5996,6 +5996,7 @@ RECORD AH "airHandler" *RAT
     // OFFAVAILVC ahccSch	// OFF or AVAIL, hourly, default AVAIL.
     // POWER_GZ ahccCaptRat  	// total rated capacity (Btu/hr), constant, RQD.
     // POWER_GZ ahccCapsRat  	// sensible rated capacity 1-CaptRat Btu/hr, constant.  Can it default to a % of CaptRat?
+    // FRAC_GZ ahccSHRRat	    // sensible heat ratio (caps/capt) for cooling coil
     // TI ahccMtr		// MTR to which to charge energy use for non-plant-supported coil types.
     // many more now -- should update this, 5-92.
 
