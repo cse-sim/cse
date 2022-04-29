@@ -105,7 +105,7 @@ RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- ini
 		// input power without crankcase heater
 		in17c = in17 - ah->cch.p17;
 		in47c = in47 - ah->cch.p47;
-
+#if 0  // Disable C_d modications for now. Creates challenges for autosizing that still need to be resolved.
 		if (in47 > ah->cch.p47Off)
 		{
 			// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
@@ -138,6 +138,9 @@ RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- ini
 		{
 			cdm = cd;
 		}
+#else
+		cdm = cd;
+#endif		
 
 		// defrost capacity. (future) should check or default somehow vs ahp cooling inputs if given?
 		if (!ah->IsSet(AHHEATCOIL_DFRCAP))			// if user did not give ahpDfrCap (defrost capacity)
