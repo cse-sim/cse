@@ -822,7 +822,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		DBL hhs =   HH(ah_tSup,ws,CS);   	// .. getting to terminals, after supply duct
 		ahres->qO = (hhmix - hhr2) * Top.tp_subhrDur;  	// subhr outside air q: enthalpy (rel tr/wr) change of flow thru eco
 		ahres->qLoss =  					// leak and loss q this subhour
-			( hhr1 /* - hhr=0*/  		//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
+			( hhr1 /* - hhr=0*/  			//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
 			  + hhs - hhSen ) * Top.tp_subhrDur;	//   + sup duct leak-out and cond loss: enthalpy change thru it
 		ahres->qLoad = (/*hhr=0*/ - hhs) * Top.tp_subhrDur;	/* subhr load q: zone load, tu duct loss, plenum loss =
        							   enth change thru tus/zns/plenum (use prior return to get balance) */

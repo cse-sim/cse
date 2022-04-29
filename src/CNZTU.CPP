@@ -1441,7 +1441,12 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 	zrs->eqfVentHr = zn_fVent * Top.tp_subhrDur;	// equivalent full vent operation, hr
 
 	if (!zn_IsConvRad())
-	{	rc |= zn_AirX();		// called earlier for CR
+	{	
+#if defined( OLDHUM)
+		never successfully run
+		see all-CNE case in loadsSubhr()
+		rc |= zn_AirX();		// called earlier for CR
+#endif
 
 		// subhour results:
 		//   heat transferred out of masses, incl heat transferred out of "cair" (accounted as a mass heat),
@@ -1806,8 +1811,8 @@ x			printf( "YAK\n");
 //----------------------------------------------------------------------------------------------------------------------------
 RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, terminal outputs, etc.
 
-/* expects air handlers to have been estimated first (AH::ahEstimate) to establish supply temp ts;
-   may call AH::ahEstimate again for various mode change and increase-ts cases re CZ, WZ, ZN, and ZN2 ahTsSp ctrl. */
+// expects air handlers to have been estimated first (AH::ahEstimate) to establish supply temp ts;
+// may call AH::ahEstimate again for various mode change and increase-ts cases re CZ, WZ, ZN, and ZN2 ahTsSp ctrl.
 
 // inputs:  ZNR.aqLdSh, bLdSh, md, nMd, mdSeq[*],
 //          TU.mnLh,mxLh,cMn,cMxH/C,
@@ -2659,7 +2664,7 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	this->zn_b = bZn + cz;				// add flow, or 0
 
 // ye Olde dept of a b c's
-	cTot = zn_bHvO + cz;				// total flow to zone.  bHvO is sum of c's of other terminals.  for probing.
+	cTot = zn_bHvO + cz;		// total flow to zone.  zn_bHvO is sum of c's of other terminals.  for probing.
 #if defined( _DEBUG)
 	if (frDiff( cSum, double( cTot)) > 0.0001)
 		printf("\ncSum mismatch");
@@ -2674,7 +2679,7 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	ztuMdSets(m);				// set tu tuhc.q's and c's; .use's; aqO/bO/tzO, wcO/cO/wzO, possibly ahPtf.
 	// 10-92: conditionally sets ahClf using tz, wz, tu cz, Pr's.
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay == 1)
 	{
 		if (t < 69.99)
@@ -2690,7 +2695,7 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	// why not compute zn_qsHvac as  bLdSh * t - aqLdSh?  Cuz throws in all roundoff error, putting many .000's in reports.
 	// [note zn_qsHvac may be updated by AH:antRatTs when it adjusts tz.]
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay == 1)
 	{
 		if (fabs(zn_qsHvac) < .01)
@@ -2698,19 +2703,21 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	}
 #endif
 
-// zone's latent power, similarly.      Moisture inflow = sigma(c * (ws - wz)) = sigma(c*ws) - wz*sigma(c).
-	DBL wDiffC = 0;
-	switch (Top.humMeth)	// use average or latest values per humidity calc method, else zone latent gain does not balance
-	{
-	case C_HUMTHCH_PHIL:
-		wDiffC = wcSum1 - (wz + wzls)/2.* cSum;	// sigma(c * (average ws - average wz)), as in znW.
-		break;    					// balance fails unless both ws and wz are average.
-	case C_HUMTHCH_ROB:
-		wDiffC = wcSum1 - wz * cSum;
-		break;   	// sigma(c*ws) - wz*sigma(c).  note humMeth changes wcSum1.
+	if (!zn_IsConvRad())
+	{	// zone's latent power, similarly.      Moisture inflow = sigma(c * (ws - wz)) = sigma(c*ws) - wz*sigma(c).
+		DBL wDiffC = 0;
+		switch (Top.humMeth)	// use average or latest values per humidity calc method, else zone latent gain does not balance
+		{
+		case C_HUMTHCH_PHIL:
+			wDiffC = wcSum1 - (wz + wzls) / 2. * cSum;	// sigma(c * (average ws - average wz)), as in znW.
+			break;    					// balance fails unless both ws and wz are average.
+		case C_HUMTHCH_ROB:
+			wDiffC = wcSum1 - wz * cSum;
+			break;   	// sigma(c*ws) - wz*sigma(c).  note humMeth changes wcSum1.
+		}
+		zn_qlHvac = wDiffC / Top.tp_airSH	// moisture inflow * heat cap flow / spec heat to get mass flow (lb/hr)
+			* PsyHCondWtr;				// * 1061 to get power (Btuh)
 	}
-	zn_qlHvac = wDiffC / Top.tp_airSH	// moisture inflow * heat cap flow / spec heat to get mass flow (lb/hr)
-			 * PsyHCondWtr;				// * 1061 to get power (Btuh)
 
 #ifdef DEBUG2//cnglob.h
 // but can't power be computed more easily this way??  assumes no vent etc not in zn_qsHvac.

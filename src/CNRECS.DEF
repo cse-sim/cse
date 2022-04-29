@@ -2137,7 +2137,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     *h FLOAT zn_hcFrcF		// forced convection coefficient factor, default = 0.2
 							//     interior hcFrc = zn_hcFrcF * zn_hcAirX^.8
 	*s *e FLOAT zn_hcAirX;	// zone air change rate (1/hr), input for testing
-							//     else calculated subhourly in zn_AirX()
+							//     else calculated subhourly in zn_AirXMoistureBal()
 	*r INT zn_hcAirXIsSet	// 1 iff zn_hcAirX is set from input (for testing)
 							//     WHY: ZNI status bytes not passed to ZNR, need flag
 

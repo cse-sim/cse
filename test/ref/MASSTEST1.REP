@@ -10,7 +10,7 @@ Monthly Energy Balance, Sum of Zones
 
  Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
 ---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
- Jan 50.23 47.99      0      0     0     0  1.878      0 -1.878    0      0     0      0      0      0    0
+ Jan 50.23 47.99      0      0     0     0  1.878      0 -1.878    0      0     0      0 .00002 -0.000    0
  Feb 50.19 47.98      0      0     0     0  1.469      0 -1.469    0      0     0      0      0      0    0
  Mar 50.19 47.98      0      0     0     0  1.624      0 -1.624    0      0     0      0      0      0    0
  Apr 50.19 47.98      0      0     0     0  1.573      0 -1.573    0      0     0      0      0      0    0
@@ -23,7 +23,7 @@ Monthly Energy Balance, Sum of Zones
  Nov 90.00 63.64      0      0     0     0 -1.591      0  1.591    0      0     0      0      0      0    0
  Dec 90.00 63.64      0      0     0     0 -1.642      0  1.642    0      0     0      0      0      0    0
 
- Yr  60.15 52.35      0      0     0     0  9.439      0 -9.439    0      0     0      0      0      0    0
+ Yr  60.15 52.35      0      0     0     0  9.439      0 -9.439    0      0     0      0 .00002 -0.000    0
 
 
 
@@ -60,7 +60,7 @@ Monthly Energy Balance, Sum of Zones
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  1
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  1
 
 
 
@@ -123,7 +123,7 @@ Hourly Energy Balance, zone "Single", Thu 01-Oct
   16 90.00 63.64      0      0     0     0 -7.005      0  7.005    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  2
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  2
 
 
 
@@ -186,7 +186,7 @@ Hourly Energy Balance, zone "Single", Sat 03-Oct
    6 90.00 63.64      0      0     0     0 -3.388      0  3.388    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  3
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  3
 
 
 
@@ -249,7 +249,7 @@ Hourly Energy Balance, zone "Single", Sun 04-Oct
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  4
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  4
 
 
 
@@ -312,7 +312,7 @@ Hourly Energy Balance, zone "Single", Tue 06-Oct
   18 90.00 63.64      0      0     0     0 -2.272      0  2.272    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  5
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  5
 
 
 
@@ -375,7 +375,7 @@ Hourly Energy Balance, zone "Single", Thu 08-Oct
    8 90.00 63.64      0      0     0     0 -2.224      0  2.224    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  6
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  6
 
 
 
@@ -438,7 +438,7 @@ Hourly Energy Balance, zone "Single", Sat 10-Oct
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  7
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  7
 
 
 
@@ -501,7 +501,7 @@ Hourly Energy Balance, zone "Single", Sat 10-Oct
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  8
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  8
 
 
 
@@ -564,7 +564,7 @@ Day 63.0 55.6 50.2 48.0   0 50.2 48.0 50.0 47.9 24.00 1.0 10000     0 52.43     
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page  9
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page  9
 
 
 
@@ -627,7 +627,7 @@ Daily Energy Balance, zone "Single", Oct
   29 90.00 63.64      0      0     0     0 -52.97      0 52.966    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 10
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 10
 
 
 
@@ -690,7 +690,7 @@ Daily Energy Balance, zone "Single", Dec
    6 90.00 63.64      0      0     0     0 -52.97      0 52.966    0      0     0      0      0      0    0
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 11
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 11
 
 
 
@@ -753,7 +753,7 @@ Daily Energy Balance, zone "Single", Dec
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 12
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 12
 
 
 
@@ -816,7 +816,7 @@ Mass Wall2              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
  Outside: SpecifiedT 70   rsurf=0.00  h=1.500                                 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 13
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 13
 
 
 
@@ -879,7 +879,7 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 14
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 14
 
 
 
@@ -890,7 +890,7 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
 
 ! Log for Run 001:
 
-! CSE 0.870.0 for Win32 console
+! CSE 0.904.0+termah.8e03ac59.89.dirty for Win32 console
 
 
 
@@ -942,7 +942,7 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 15
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 15
 
 
 
@@ -1005,7 +1005,7 @@ Input for Run 001:
         CONSTRUCTION ExpSlabfloor 				
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 16
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 16
 
 
 
@@ -1068,7 +1068,7 @@ Input for Run 001:
          	TERMINAL HeatTerm TuTlh=Heat_mo tuQMxLH = HeatCap tuhcCaptRat = HeatCap 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 17
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 17
 
 
 
@@ -1131,7 +1131,7 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 18
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 18
 
 
 
@@ -1140,21 +1140,21 @@ Input for Run 001:
 
 
 
-! CSE 0.870.0 for Win32 console run(s) done: Wed 17-Jun-20   4:26:38 pm
+! CSE 0.904.0+termah.8e03ac59.89.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:12:51 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-Jun-20   4:02 pm   (VS 14.16    2623488 bytes)  (HPWH 1.9.0+master.6ae38ca.38)
+!               29-Apr-22   1:57 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
 ! Command line: -x!  -t1 masstest1
 ! Input file:   D:\cse\test\masstest1.cse
 ! Report file:  D:\cse\test\masstest1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.00     Calls = 1      T/C = 0.0040   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0070   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.99     Calls = 1      T/C = 0.9900   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0060   
-!                Total:  Time = 1.00     Calls = 1      T/C = 1.0030   
+!           Simulation:  Time = 1.11     Calls = 1      T/C = 1.1070   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 1.12     Calls = 1      T/C = 1.1210   
 
 
 
@@ -1194,5 +1194,5 @@ Input for Run 001:
 
 
 ------------------------------------------------------------------------------
-! masstest1  001                           Wed 17-Jun-20   4:26:37 pm  Page 19
+! masstest1  001                           Fri 29-Apr-22   2:12:50 pm  Page 19
 
