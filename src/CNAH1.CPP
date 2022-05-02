@@ -355,7 +355,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 	if ( hcAs.az_active				// if autosizing heat coil
 			&&  ahhc.captRat				// and cap is non-0: else unused (and would divide by 0)
 			&&  hcAs.plrPkAs				// divide by 0 protection
-			&&  hcAs.plrPkAs < auszLoTol 				// if heat coil's part load ratio < 1 - tolerance
+			&&  hcAs.plrPkAs < auszLoTol 	// if heat coil's part load ratio < 1 - tolerance
 #if 1 // xPk stuff, 6-97
 			&&  hcAs.plrPkAs * hcAs.xPkAs/ahhc.captRat < auszLoTol )	/* .. even when plr mapped to current size, in case model
 								      REDUCES size or size smaller last day, 6-97 */
@@ -365,8 +365,9 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 		DBL was = ahhc.captRat;					// for debugging message, rob 6-97
 #if 1 // xPk stuff, 6-97
 #if 1 // former TRIAL, 6-97. or 5/6 like cc and fan?
-		setToMin( ahhc.captRat, 					// reduce (precaution) cap to bring plr half way to 1
-			  hcAs.xPkAs * (hcAs.plrPkAs+1)/2 );			// (just half way in case relation between capt & plr not linear)
+		float reducedCap = hcAs.xPkAs * (hcAs.plrPkAs + 1.f) / 2.f;
+		setToMin(ahhc.captRat, reducedCap);	// reduce (precaution) cap to bring plr half way to 1
+											// (just half way in case relation between capt & plr not linear)
 #else // historical, but many convergence problems 6-97 with oversize fan (BUG0089,90).
 x      setToMin( ahhc.captRat, 					// reduce (precaution) cap to bring plr to 1 - half of tolerance
 x            hcAs.xPkAs * hcAs.plrPkAs/(1 - .5*Top.auszTol) );	// (presumes relation between capt & plr is linear for ahhc)
@@ -662,9 +663,6 @@ RC AH::begSubhr()			// airHandler stuff done at start of subhour
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::endSubhr() 		// airHandler stuff done at end subhr
 {
-// backtrack for correction of aux energy meter categories, 9-22-92 CSE .326. Code out later if no user objection.
-#define CAUX aux	// was "clg", believed wrong, and manual says aux.
-#define HAUX aux	// was "htg"
 
 // calculate actual coil output, and input power
 	coilsEndSubhr();				// sets cch/ahhc/ahcc .p/.q, and other members for probes/results.  cncoil.cpp.
@@ -868,18 +866,16 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 	ahres->pAuxC = ahcc.pAux * Top.tp_subhrDur;  	// cool aux energy input (ah-on-only portion)
 	ahres->pAuxH = ahhc.pAux * Top.tp_subhrDur;  	// heat aux energy input (ditto)
 	if (ahhc.auxMtri)							// heating aux energy
-		MtrB.p[ahhc.auxMtri].H.HAUX += ahhc.pAux*Top.tp_subhrDur;
+		MtrB.p[ahhc.auxMtri].H.aux += ahhc.pAux*Top.tp_subhrDur;
 
 	if (ahcc.auxMtri)
-		MtrB.p[ahcc.auxMtri].H.CAUX += ahcc.pAux*Top.tp_subhrDur;
+		MtrB.p[ahcc.auxMtri].H.aux += ahcc.pAux*Top.tp_subhrDur;
 
 	if (cch.mtri)							// if crankcase htr has a meter
 		MtrB.p[cch.mtri].H.aux += cch.p*Top.tp_subhrDur;			// post its input (set by CCH:endSubhr from coilsEndSubhr)
 
 	return RCOK;
 
-#undef HAUX
-#undef CAUX
 }				// AH::endSubHr
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::ah_AfterSubhr() 		// airHandler stuff done between subhours: after reports/exports

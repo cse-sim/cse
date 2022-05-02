@@ -74,8 +74,8 @@ RC AHHEATCOIL::reSetup( 	// re set up coil for changed total capacity (.captRat)
 			 ?  C_COILTYCH_ELEC  :  coilTy )		// find load by using "electric" model.
 	{
 	case C_COILTYCH_GAS:
-	case C_COILTYCH_OIL:	// gas or oil furnace
-	case C_COILTYCH_HW:      			// hot water coil
+	case C_COILTYCH_OIL:		// gas or oil furnace
+	case C_COILTYCH_HW:      	// hot water coil
 	case C_COILTYCH_AHP:
 	case C_COILTYCH_ELEC:
 		break;		// electric resistance heat. nothing to do. captRat preset by caller.
@@ -105,7 +105,7 @@ RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- ini
 		// input power without crankcase heater
 		in17c = in17 - ah->cch.p17;
 		in47c = in47 - ah->cch.p47;
-#if 0  // Disable C_d modications for now. Creates challenges for autosizing that still need to be resolved.
+#if 0  // Disable C_d modications for now. Creates challenges for autosizing that still need to be resolved. 4-2022
 		if (in47 > ah->cch.p47Off)
 		{
 			// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
@@ -2355,13 +2355,13 @@ x}
 
 // init to no coil input or output energy
 
-		// here 0 variables set below. Additional vbl's not set in if's below may be 0'd in else's.
-		ahhc.q = ahhc.plr = ahhc.plrAv = ahhc.flueLoss = 0.;   		// init to no output from either coil
-ahcc.qs = ahcc.ql = ahcc.q = ahcc.plr = ahcc.plrAv = 0.;   		// ..
-ahhc.p = ahcc.p = ahhc.eir = ahcc.eir = 0.;				// init to no input for either coil
-ahhc.pAux = 0.;				// init to no coil-on auxiliary power for either coil
-ahcc.pAux = 0.;
-cch.frCprOn = 0;					// compr fraction on for crankcase htr: set in some coil cases below.
+	// here 0 variables set below. Additional vbl's not set in if's below may be 0'd in else's.
+	ahhc.q = ahhc.plr = ahhc.plrAv = ahhc.flueLoss = 0.;   		// init to no output from either coil
+	ahcc.qs = ahcc.ql = ahcc.q = ahcc.plr = ahcc.plrAv = 0.;   		// ..
+	ahhc.p = ahcc.p = ahhc.eir = ahcc.eir = 0.;				// init to no input for either coil
+	ahhc.pAux = 0.;				// init to no coil-on auxiliary power for either coil
+	ahcc.pAux = 0.;
+	cch.frCprOn = 0;					// compr fraction on for crankcase htr: set in some coil cases below.
 
 // calculate coil energy output
 
@@ -2438,7 +2438,11 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 		case C_COILTYCH_AHP:			// air source heat pump
 			ahhc.p = ahhc.pCpr;			// copy input power from member doAhpHeat sets
 			//how define plr? fraction output: .q/.cap. fraction run time (larger): .frCprOn.
+#if 1	// use compressor capacity only, 5-2022
+			ahhc.plrAv = ahhc.q / ahhc.captRat;
+#else
 			ahhc.plrAv = ahhc.q / ahhc.cap;
+#endif
 			cch.frCprOn = ahhc.frCprOn;		// copy compressor runtime for crankcase heater to use
 			break;
 
@@ -2466,7 +2470,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 		ahhc.pCpr = 0.;					// for cleanliness: pCpr used above in switch
 		ahhc.pSh = 0.;					// necessary: pSh used on return to AH::endSubhr
 		ahhc.qSh = 0.;					// necessary?
-	ahhc.frCprOn = 0;				// for cleanliness
+		ahhc.frCprOn = 0;				// for cleanliness
 		ahhc.plr = ahhc.plrAv = 0;			// 7-95 now used in AH::endSubhr.
 	}
 
