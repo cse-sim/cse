@@ -1379,20 +1379,20 @@ TWO\_STAGE, Economizer is disabled when coil cycles on. *NOT IMPLEMENTED* as of 
 END
 %>
 
-**oaLimT=*float***
+**oaLimT=*float* or *RA***
 
-or RAEconomizer outside air temperature high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air temperature is greater than *oaLimT*. A number may be entered, or "RA" to specify the current Return Air temperature. *OaLimT* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
+Economizer outside air temperature high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air temperature is greater than *oaLimT*. A number may be entered, or "RA" to specify the current Return Air temperature. *OaLimT* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "*number*or RA",
+  legal_range: "*number* or RA",
   default: "RA (return air temperature)",
   required: "No",
   variability: "hourly") %>
 
-**oaLimE=*float***
+**oaLimE=*float* or *RA***
 
-or RAEconomizer outside air enthalpy high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air enthalpy is greater than *oaLimE*. A number may be entered, or "RA" to specify the current Return Air enthalpy. *OaLimE* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
+Economizer outside air enthalpy high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air enthalpy is greater than *oaLimE*. A number may be entered, or "RA" to specify the current Return Air enthalpy. *OaLimE* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
 <%= member_table(
   units: "Btu/^o^F",

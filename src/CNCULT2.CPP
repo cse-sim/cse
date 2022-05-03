@@ -1755,7 +1755,7 @@ void ZNR::addRIgDist( 	// add radiant internal gain distribution for gain origin
 	if (rIgDist)				// if zone has table allocated: insurance
 		for (int iR = 0; iR < rIgDistN; iR++)	// loop over used entries
 		{
-			RIGDIST * e1 = rIgDist + iR;		// point entry
+			RIGDIST *e1 = rIgDist + iR;		// point entry
 			if ( e1->targTy==targTy		// if entry matches
 					&&  e1->targTi==targTi		// ..
 					&&  e1->targP==p )			// testing targP is redundant

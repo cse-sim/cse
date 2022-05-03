@@ -511,7 +511,7 @@ x	              TU_TUQDSLH, 					// <-- delete? later.  TUQDSLHWARN.
 		if (!(cmAr & (cmStH | cmStC)))							// no set temp air heat nor cool
 			rc |= oer("Cannot autoSize tuVfMn when neither tuTH nor tuTC not given."); 		// NUMS
 		if (!(sstat[TU_TUVFMXH] & FsAS) && !(sstat[TU_TUVFMXC] & FsAS)) 		// if AUTOSIZING neither air heat nor cool
-			rc |= oer("Cannot autoSize tuVfMn when autoSizing nether tuVfMxH nor tuVfMxC.");	// NUMS
+			rc |= oer("Cannot autoSize tuVfMn when autoSizing neither tuVfMxH nor tuVfMxC.");	// NUMS
 	}
 
 	if (sstat[TU_TUVFMXHC] & FsSET)						// if  tuVfMxHC = same|different  given

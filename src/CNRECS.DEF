@@ -1893,10 +1893,10 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     *d *hide CHP az_doing	// optional desc of current action re Top.verbose > 2 display
 							//    on stack or tmpstr, do not release
 							//    NULL if not known
-    *s *e *hide float e1	// two prior results for warmup convergence tests
-    *s *e *hide float e2	// ..
-    *s *e *hide float orig	// original value for no-change 1-iteration convergence test for part 1B;
-    						// also original value for small-change pass 2 outer endTest.
+    *s *e *hide float az_e1	// two prior results for warmup convergence tests
+    *s *e *hide float az_e2	// ..
+    *s *e *hide float az_orig	// original value for no-change 1-iteration convergence test for part 1B;
+    						    // also original value for small-change pass 2 outer endTest.
 
     // autoSizing results go in parent object to have desired probe names. Members assumed, TOGETHER, IN ORDER:
     //   *s *e float x		value being autoSized
@@ -5352,6 +5352,8 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 // Uses are: base class for COOLCOIL (airhandler cooling coil),
 // 	         base class for HEATCOIL (terminal heat coil, base class for AHHEATCOIL (ah heating coil)) */
 
+    *prefix co_
+
     *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// cncult5.cpp
 
 // COIL subrecord inputtable members
@@ -5389,10 +5391,11 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *s *e POWER q		// average (not fan-on) output power level for subhour
     *s *e POWER qPr		// output at which coil's plant last computed, for call-flagging plant. set: cnhp.cpp. used: cncoil.cpp
     *s *e POWER p		// input power level this subhour, from plant or to charge to meter (*subhrDur!).
-				// p = input from plant tentative 9-92; implemented for HW coils.
-    *s *e FRAC  plr		// current fan-on (or furnace-on) relative load (part load ratio)
-    *s *e FRAC  plrAv		// current average relative load (plr * frFanOn)
+				        // p = input from plant tentative 9-92; implemented for HW coils.
+    *s *e FRAC  co_plr  // current fan-on (or furnace-on) relative load (part load ratio)
+    *s *e FRAC  co_plrAv  // current average relative load (plr * frFanOn)
     *s *e FLOAT eir		// energy input ratio: current input/output, fan on===average. Rob's addition, for probes, 5-92.
+    *s *e POWER co_capMax  // maximum capacity this subhour, used to calculate tPossH/C.
     *s *e POWER pAux   	// aux power this subhour
     *s *e *hide BOO notDone	// coil model may set TRUE to tell iter4Fs to not stop iteration, 7-23-95
 *END			// COIL
@@ -5513,19 +5516,19 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
 RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBRECORD
 			Use is: terminal coil, base class for AHHEATCOIL (next) */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib, BOO isAhh=FALSE);"	// cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib, BOO isAhh=FALSE);"
 
     // has all members of base class COIL, and...
-// heat coil additional input members
-				// CAUTION: cncult5:HEATCOIL::setup code used to assume .effRat was 1st derived class member, 7-92.
-   //for GAS or OIL furnace "coil" in ah
+    // heat coil additional input members
+	//  CAUTION: HEATCOIL::setup code used to assume .effRat was 1st derived class member, 7-92.
+   // for GAS or OIL furnace "coil" in ah
     *f FRAC_GZ effRat		// efficiency @ rated load: alternate eir input, converted into eirRat in setup.
     *f *nest PYCUBIC pyEi	/* cubic polynomial coefficients to correct full-load energy input for part load ratio
     				   for GAS or OIL heat coil.  Default (per DOE2): .01861, 1.094209, -.112819, 0. */
     *h FRAC stackEffect  	/* fraction of unused capacity that must be used (increasing plr) to make up for increased
     				   infiltration due to hot stack when (indoor) furnace runs but not continuously.  Default 0.
     				   Expect function of Top.tDbO. */
-   //for HW coil
+   // for HW coil
     *i TI hpi			// subscript of HEATPLANT serving HW coil
 // heat coil setup time members
    //for HW coil
@@ -5535,9 +5538,9 @@ RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBREC
    //for GAS or OIL furnace "coil" in ah
     *s *e POWER flueLoss	// part-load flue loss this subhour, GAS and OIL only
    //for HW or AHP coil
-    *s *e POWER qWant		/* HW:  desired output===input, doHWCoil to hpCompute, used in determining capF.
-    				   AHP: desired output, doAhpHeatCoil to doAhpHeat. */
-    //*s *e POWER q		// current output power: is a COIL member.
+    *s *e POWER qWant		// HW:  desired output===input, doHWCoil to hpCompute, used in determining capF.
+    				        // AHP: desired output, doAhpHeatCoil to doAhpHeat
+    //*s *e POWER q		    // current output power: is a COIL member.
     //*s *e POWER qPr		// output at which coil's plant last computed, for change-flagged plant: COIL member
 *END		// HEATCOIL
 //=============================================================================
@@ -5624,7 +5627,7 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *s *e DBL frFanOn		// fraction of time fan runs, 1.0 if not cycling, copy of AH.frFanOn.
 //AHHEATCOIL AHP runtime internal members
     *s *e BOO  loTLockout	// TRUE if compressor locked out due to low outdoor temp (see tOff, tOn)
-    *s *e BOO supOn		// TRUE if supplementary heat enabled (frFanOn is ~1.0, with hysterisis to keep ah stable).
+    *s *e BOO supOn		    // TRUE if supplementary heat enabled (frFanOn is ~1.0, with hysterisis to keep ah stable).
     *s *e POWER capCon		// continuous cpr capac incl frost/defrost @ actual indoor temp, excl def & reg rh. Niles pCapMx.
     *s *e POWER qDfrhCon  	// continuous avg heat ouput to defrost heater @ outdoor temp (not cycling). Niles pDefRhMx.
     //made local, only set in cases needed:
@@ -5632,8 +5635,6 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     // *s *e FRAC plf		// part load factor, by which COP falls due to cycling.
     // *s *e FRAC frTmDfr 	// fraction of time defrosting, this subhour. Niles tmFrDef.
 //AHHEATCOIL AHP runtime output members
-    *s *e POWER cap		// capacity this subhour incl suppl heaters. rob's addition, used by doAhpHeatCoil re tPossH.
-    				// might also be used for other coil types for current capacity.
     //q: coil member: heat delivered, by heat pump incl suppl heaters (qSh). Niles pDel.
     *s *e FRAC  frCprOn		// fraction of time compressor runs, this subhour. May be used by cch code. Niles tmFrRun.
     *s *e POWER pCpr		// power input to compressor (Niles pInComp): copy to .p in coilsEndSubhr.
@@ -6096,20 +6097,20 @@ RECORD AH "airHandler" *RAT
 
   // ah run, internal, general/miscellaneous
     *s *e TCUSE uUseAr     	// 'or' of tu.useAr's at refine() entry, for detecting pegged terminals, set in zRat, tentative.
-    *h *e BOO fcc		// TRUE if fan cycles: fan runs only fraction of subhour requested by control terminal, else off.
-    				//                     when on, fan runs full flow and coil usually at a high power.
-    				// set hourly from ahFanCycles else ahTsSp==ZN by AH::begHour.
-				// when TRUE: frFanOn is fraction time on for fan (and usually coil).
-				//            flows and powers become average, divide by frFanOn for fan-on value.
-				//            ah Temps, w's, plr's, po remain fan-on values.
-				// when FALSE: fan runs all the time (normal VAV case), frFanOn is 1.0.
-    *h *e BOO isZNorZN2			// TRUE if ahTsSp is ZN or ZN2 this hour. 5-95.
+    *h *e BOO fcc		    // TRUE if fan cycles: fan runs only fraction of subhour requested by control terminal, else off.
+    				        //                     when on, fan runs full flow and coil usually at a high power.
+    				        // set hourly from ahFanCycles else ahTsSp==ZN by AH::begHour.
+				            // when TRUE: frFanOn is fraction time on for fan (and usually coil).
+				            //            flows and powers become average, divide by frFanOn for fan-on value.
+				            //            ah Temps, w's, plr's, po remain fan-on values.
+				            // when FALSE: fan runs all the time (normal VAV case), frFanOn is 1.0.
+    *h *e BOO isZNorZN2			    // TRUE if ahTsSp is ZN or ZN2 this hour. 5-95.
     *s *e DBL /*TEMP*/ tsSp1    	// ahTsSp as number: WZ/CZ/ZN/ZN2 resolved to temp now needed, set by AH::setTsSp1.
-    *s *e DBL /*TEMP*/ tsFullFlow	/* heating ts for full flow, special re AHP suppl rh stability, usually not set,
-    					   cnah2.cpp:setTsSp1 to cncoil.cpp:doAhpHeatCoil. */
+    *s *e DBL /*TEMP*/ tsFullFlow	// heating ts for full flow, special re AHP suppl rh stability, usually not set,
+                					// cnah2.cpp:setTsSp1 to cncoil.cpp:doAhpHeatCoil
     *s *e BOO ecoEnabled		// TRUE if economizer present and currently enabled
     *s *e BOO coilLockout		// TRUE if cooling coil disabled by full-open non-integrated economizer
-    *s *e DBL po			// current fraction outside air
+    *s *e DBL po			    // current fraction outside air
     *s *e COILUSED coilUsed		// coil in use, doCoils to coilsEndSubhr: cuNONE, cuHEAT, or cuCOOL. 12-3-92.
 
   // ah run, internal, fan/coil overload handling
